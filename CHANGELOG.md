@@ -3,6 +3,7 @@
 ## Major changes
 
 ## Features
+- Add store log for different user activities in store #553 !857 @k.miklobusec
 - Messages to working groups (AG) are now sent in email copy to the member sending them. #493 !774 @zommuter
 - it is now possible to sign out from my main region (and chose a new one) #26 !778 @peter.toennies
 - API to display report per region allowing ambassadors to work on their reports !529 #296 @NerdyProjects

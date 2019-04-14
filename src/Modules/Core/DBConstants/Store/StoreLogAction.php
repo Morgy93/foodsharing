@@ -11,7 +11,7 @@ class StoreLogAction
 	public const MOVED_TO_JUMPER = 5;
 	public const MOVED_TO_TEAM = 6;
 	public const REMOVED_FROM_STORE = 7;
-    public const LEFT_STORE	= 8;
+	public const LEFT_STORE = 8;
 	public const MADE_STORE_MANAGER = 9;
 	public const REMOVED_AS_STORE_MANAGER = 10;
 	public const SIGN_UP_SLOT = 11;
