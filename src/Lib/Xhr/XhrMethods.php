@@ -29,7 +29,6 @@ use Intervention\Image\ImageManager;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Foodsharing\Modules\Core\DBConstants\Store\StoreLogAction;
-use Symfony\Component\HttpKernel\HttpCache\Store;
 
 class XhrMethods
 {
@@ -1461,7 +1460,7 @@ class XhrMethods
 				$this->storeModel->addTeamMessage($data['bid'], $data['msg']);
 				$reason = $data['msg'];
 			}
-			$this->storeGateway->addStoreLog($data['bid'], $this->session->id(), '', $data['date'], StoreLogAction::SIGN_OUT_SLOT , 'NULL', $reason);
+			$this->storeGateway->addStoreLog($data['bid'], $this->session->id(), '', $data['date'], StoreLogAction::SIGN_OUT_SLOT, 'NULL', $reason);
 		}
 
 		return json_encode(array(
@@ -1484,6 +1483,7 @@ class XhrMethods
 		if ($this->session->isOrgaTeam() || $this->storeGateway->isResponsible($this->session->id(), $data['bid'])) {
 			$this->storeGateway->confirmFetcher($data['fsid'], $data['bid'], date('Y-m-d H:i:s', strtotime($data['date'])));
 			$this->storeGateway->addStoreLog($data['bid'], $this->session->id(), $data['fsid'], date('Y-m-d H:i:s', strtotime($data['date'])), StoreLogAction::SLOT_CONFIRMED, 'NULL', 'NULL');
+
 			return 1;
 		}
 	}
