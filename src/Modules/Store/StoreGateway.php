@@ -488,7 +488,7 @@ class StoreGateway extends BaseGateway implements BellUpdaterInterface
 			'confirmed' => $confirmed
 		]);
 
-		$this->addStoreLog($bid, $fsid, NULL, $this->dateTimeToPickupDate($date), StoreLogAction::SIGN_UP_SLOT, 'NULL', 'NULL');
+		$this->addStoreLog($bid, $fsid, null, $this->dateTimeToPickupDate($date), StoreLogAction::SIGN_UP_SLOT, 'NULL', 'NULL');
 
 		return $queryResult;
 	}
@@ -890,15 +890,15 @@ class StoreGateway extends BaseGateway implements BellUpdaterInterface
 
 	public function addStoreLog($store_id, $foodsaver_id, $fs_id_p, $dateReference, $action, $content, $reason)
 	{
-		return($this->db->insert('fs_store_log', [
+		return $this->db->insert('fs_store_log', [
 			'store_id' => $store_id,
 			'action' => $action,
 			'fs_id_a' => $foodsaver_id,
-			'fs_id_p'=> $fs_id_p,
+			'fs_id_p' => $fs_id_p,
 			'date_reference' => $dateReference,
 			'content' => strip_tags($content),
 			'reason' => strip_tags($reason),
-		]));
+		]);
 	}
 
 	private function getSingleStoreNote($id): array

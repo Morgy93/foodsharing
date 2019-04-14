@@ -1461,7 +1461,7 @@ class XhrMethods
 				$this->storeModel->addTeamMessage($data['bid'], $data['msg']);
 				$reason = $data['msg'];
 			}
-			$this->storeGateway->addStoreLog($data['bid'], $this->session->id(), '' , $data['date'], StoreLogAction::SIGN_OUT_SLOT , 'NULL', $reason);
+			$this->storeGateway->addStoreLog($data['bid'], $this->session->id(), '', $data['date'], StoreLogAction::SIGN_OUT_SLOT , 'NULL', $reason);
 		}
 
 		return json_encode(array(
@@ -1473,7 +1473,8 @@ class XhrMethods
 	{
 		if (($this->session->isOrgaTeam() || $this->storeGateway->isResponsible($this->session->id(), $data['bid'])) && isset($data['date'])) {
 			$this->storeModel->deleteFetchDate($data['fsid'], $data['bid'], date('Y-m-d H:i:s', strtotime($data['date'])));
-			$this->storeGateway->addStoreLog($data['bid'], $this->session->id(), $data['fsid'], date('Y-m-d H:i:s', strtotime($data['date'])), StoreLogAction::REMOVED_FROM_SLOT , 'NULL', 'NULL');
+			$this->storeGateway->addStoreLog($data['bid'], $this->session->id(), $data['fsid'], date('Y-m-d H:i:s', strtotime($data['date'])), StoreLogAction::REMOVED_FROM_SLOT, 'NULL', 'NULL');
+
 			return 1;
 		}
 	}
