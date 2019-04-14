@@ -8,7 +8,9 @@ use Foodsharing\Modules\Bell\BellUpdaterInterface;
 use Foodsharing\Modules\Bell\BellUpdateTrigger;
 use Foodsharing\Modules\Core\BaseGateway;
 use Foodsharing\Modules\Core\Database;
+use Foodsharing\Modules\Core\DBConstants\Store\StoreLogAction;
 use Foodsharing\Modules\Region\RegionGateway;
+
 
 class StoreGateway extends BaseGateway implements BellUpdaterInterface
 {
@@ -486,6 +488,8 @@ class StoreGateway extends BaseGateway implements BellUpdaterInterface
 			'confirmed' => $confirmed
 		]);
 
+		$this->addStoreLog($bid, $fsid, NULL, $this->dateTimeToPickupDate($date), StoreLogAction::SIGN_UP_SLOT, 'NULL', 'NULL');
+
 		return $queryResult;
 	}
 
@@ -672,8 +676,10 @@ class StoreGateway extends BaseGateway implements BellUpdaterInterface
 		]);
 	}
 
-	public function deleteBPost($id): int
+	public function deleteBPost($id, $foodsaver_id): int
 	{
+		$result = $this->getSingleStoreNote($id);
+		$this->addStoreLog($result['betrieb_id'], $foodsaver_id, $result['foodsaver_id'], $result['zeit'], StoreLogAction::DELETED_FROM_WALL, $result['text'], 'NULL');
 		return $this->db->delete('fs_betrieb_notiz', ['id' => $id]);
 	}
 
@@ -880,5 +886,35 @@ class StoreGateway extends BaseGateway implements BellUpdaterInterface
 		} else {
 			return null;
 		}
+	}
+
+	public function addStoreLog($store_id, $foodsaver_id, $fs_id_p, $dateReference, $action, $content, $reason)
+	{
+		return($this->db->insert('fs_store_log', [
+			'store_id' => $store_id,
+			'action' => $action,
+			'fs_id_a' => $foodsaver_id,
+			'fs_id_p'=> $fs_id_p,
+			'date_reference' => $dateReference,
+			'content' => strip_tags($content),
+			'reason' => strip_tags($reason),
+		]));
+	}
+
+	private function getSingleStoreNote($id): array
+	{
+		return $this->db->fetch('
+			SELECT
+			`id`,
+			`foodsaver_id`,
+			`betrieb_id`,
+			`text`,
+			`zeit`,
+			UNIX_TIMESTAMP(`zeit`) AS zeit_ts
+
+			FROM 		`fs_betrieb_notiz`
+
+			WHERE `id` = :id',
+			[':id' => $id]);
 	}
 }

@@ -28,6 +28,8 @@ use Foodsharing\Services\SanitizerService;
 use Intervention\Image\ImageManager;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
+use Foodsharing\Modules\Core\DBConstants\Store\StoreLogAction;
+use Symfony\Component\HttpKernel\HttpCache\Store;
 
 class XhrMethods
 {
@@ -1320,9 +1322,17 @@ class XhrMethods
 
 	public function xhr_denyRequest($data)
 	{
+		$LogAction = -1;
+
 		if ($this->session->isOrgaTeam() || $this->session->id() == $data['fsid'] || $this->storeGateway->isResponsible($this->session->id(), $data['bid'])) {
 			$this->storeModel->denyRequest($data['fsid'], $data['bid']);
+			if ($this->session->id() == $data['fsid']) {
+				$LogAction = StoreLogAction::REQUEST_CANCELLED;
+			} else {
+				$LogAction = StoreLogAction::REQUEST_DECLINED;
+			}
 
+			$this->storeGateway->addStoreLog($data['bid'], $this->session->id(), $data['fsid'], '', $LogAction, 'NULL', 'NULL');
 			$msg = 'Deine Anfrage wurde erfolgreich zur&uuml;ckgezogen!';
 
 			return json_encode(array('status' => 1, 'msg' => $msg));
@@ -1339,14 +1349,7 @@ class XhrMethods
 			return XhrResponses::PERMISSION_DENIED;
 		}
 		$this->storeModel->acceptRequest($data['fsid'], $data['bid']);
-
-		$this->storeGateway->add_betrieb_notiz(array(
-			'foodsaver_id' => $data['fsid'],
-			'betrieb_id' => $data['bid'],
-			'text' => '{ACCEPT_REQUEST}',
-			'zeit' => date('Y-m-d H:i:s'),
-			'milestone' => 2
-		));
+		$this->storeGateway->addStoreLog($data['bid'], $this->session->id(), $data['fsid'], '', StoreLogAction::REQUEST_APPROVED, 'NULL', 'NULL');
 
 		$bezirk_id = $this->model->getVal('bezirk_id', 'betrieb', $data['bid']);
 		$this->regionGateway->linkBezirk($data['fsid'], $bezirk_id);
@@ -1361,6 +1364,8 @@ class XhrMethods
 		}
 
 		$this->storeModel->warteRequest($data['fsid'], $data['bid']);
+		$this->storeGateway->addStoreLog($data['bid'], $this->session->id(), $data['fsid'], '', StoreLogAction::REQUEST_APPROVED, 'NULL', 'NULL');
+		$this->storeGateway->addStoreLog($data['bid'], $this->session->id(), $data['fsid'], '', StoreLogAction::MOVED_TO_JUMPER, 'NULL', 'NULL');
 
 		return json_encode(array('status' => 1));
 	}
@@ -1407,6 +1412,7 @@ class XhrMethods
 			), 'store-request-' . (int)$data['id']);
 		}
 
+		$this->storeGateway->addStoreLog($data['id'], $this->session->id(), 'NULL', '', StoreLogAction::REQUEST_TO_JOIN, 'NULL', 'NULL');
 		$this->storeModel->teamRequest($this->session->id(), $data['id']);
 
 		return json_encode(array('status' => $status, 'msg' => $msg));
@@ -1445,6 +1451,7 @@ class XhrMethods
 	public function xhr_delDate($data)
 	{
 		$status = 0;
+		$reason = '';
 		if ($this->storeGateway->isInTeam($this->session->id(), $data['bid']) && isset($data['date'])) {
 			if ($this->storeModel->deleteFetchDate($this->session->id(), $data['bid'], $data['date'])) {
 				$status = 1;
@@ -1452,7 +1459,9 @@ class XhrMethods
 
 			if (isset($data['msg'])) {
 				$this->storeModel->addTeamMessage($data['bid'], $data['msg']);
+				$reason = $data['msg'];
 			}
+			$this->storeGateway->addStoreLog($data['bid'], $this->session->id(), '' , $data['date'], StoreLogAction::SIGN_OUT_SLOT , 'NULL', $reason);
 		}
 
 		return json_encode(array(
@@ -1464,7 +1473,7 @@ class XhrMethods
 	{
 		if (($this->session->isOrgaTeam() || $this->storeGateway->isResponsible($this->session->id(), $data['bid'])) && isset($data['date'])) {
 			$this->storeModel->deleteFetchDate($data['fsid'], $data['bid'], date('Y-m-d H:i:s', strtotime($data['date'])));
-
+			$this->storeGateway->addStoreLog($data['bid'], $this->session->id(), $data['fsid'], date('Y-m-d H:i:s', strtotime($data['date'])), StoreLogAction::REMOVED_FROM_SLOT , 'NULL', 'NULL');
 			return 1;
 		}
 	}
@@ -1473,7 +1482,7 @@ class XhrMethods
 	{
 		if ($this->session->isOrgaTeam() || $this->storeGateway->isResponsible($this->session->id(), $data['bid'])) {
 			$this->storeGateway->confirmFetcher($data['fsid'], $data['bid'], date('Y-m-d H:i:s', strtotime($data['date'])));
-
+			$this->storeGateway->addStoreLog($data['bid'], $this->session->id(), $data['fsid'], date('Y-m-d H:i:s', strtotime($data['date'])), StoreLogAction::SLOT_CONFIRMED, 'NULL', 'NULL');
 			return 1;
 		}
 	}
@@ -1482,7 +1491,7 @@ class XhrMethods
 	{
 		$fsid = $this->model->getVal('foodsaver_id', 'betrieb_notiz', $data['pid']);
 		if ($this->session->isOrgaTeam() || $fsid == $this->session->id()) {
-			$this->storeGateway->deleteBPost($data['pid']);
+			$this->storeGateway->deleteBPost($data['pid'], $this->session->id());
 
 			return 1;
 		}
@@ -1519,9 +1528,11 @@ class XhrMethods
 			if ($data['action'] == 'toteam') {
 				$check = true;
 				$this->model->update('UPDATE `fs_betrieb_team` SET `active` = 1 WHERE foodsaver_id = ' . (int)$data['fsid'] . ' AND betrieb_id = ' . (int)$data['bid']);
+				$this->storeGateway->addStoreLog($data['bid'], $this->session->id(), $data['fsid'], '', StoreLogAction::MOVED_TO_TEAM, 'NULL', 'NULL');
 			} elseif ($data['action'] == 'tojumper') {
 				$check = true;
 				$this->model->update('UPDATE `fs_betrieb_team` SET `active` = 2 WHERE foodsaver_id = ' . (int)$data['fsid'] . ' AND betrieb_id = ' . (int)$data['bid']);
+				$this->storeGateway->addStoreLog($data['bid'], $this->session->id(), $data['fsid'], '', StoreLogAction::MOVED_TO_JUMPER, 'NULL', 'NULL');
 			} elseif ($data['action'] == 'delete') {
 				$check = true;
 				$this->model->del('DELETE FROM `fs_betrieb_team` WHERE foodsaver_id = ' . (int)$data['fsid'] . ' AND betrieb_id = ' . (int)$data['bid']);
@@ -1533,6 +1544,7 @@ class XhrMethods
 				if ($scid = $this->storeGateway->getBetriebConversation((int)$data['bid'], true)) {
 					$this->messageModel->deleteUserFromConversation($scid, (int)$data['fsid'], true);
 				}
+				$this->storeGateway->addStoreLog($data['bid'], $this->session->id(), $data['fsid'], '', StoreLogAction::REMOVED_FROM_STORE, 'NULL', 'NULL');
 			}
 
 			if ($check) {

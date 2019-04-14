@@ -7,6 +7,7 @@ use Foodsharing\Lib\Xhr\XhrResponses;
 use Foodsharing\Lib\Xhr\XhrDialog;
 use Foodsharing\Modules\Core\Control;
 use Foodsharing\Modules\Core\DBConstants\Region\Type;
+use Foodsharing\Modules\Core\DBConstants\Store\StoreLogAction;
 use Foodsharing\Permissions\StorePermissions;
 use Foodsharing\Services\SanitizerService;
 
@@ -341,6 +342,7 @@ class StoreXhr extends Control
 			$xhr->addMessage($this->translationHelper->s('signout_error_admin'), 'error');
 		} elseif ($this->storeGateway->isInTeam($this->session->id(), $_GET['id'])) {
 			$this->model->signout($_GET['id'], $this->session->id());
+			$this->storeGateway->addStoreLog($_GET['id'], $this->session->id(), 'NULL', 'NULL', StoreLogAction::LEFT_STORE, 'NULL', 'NULL' );
 			$xhr->addScript('goTo("/?page=relogin&url=" + encodeURIComponent("/?page=dashboard") );');
 		} else {
 			$xhr->addMessage($this->translationHelper->s('no_member'), 'error');
