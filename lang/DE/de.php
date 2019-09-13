@@ -195,6 +195,8 @@ $g_lang['team_status_1'] = '<strong>Es werden noch Helfer gesucht</strong>';
 $g_lang['team_status_2'] = '<strong>Es werden dringend noch Helfer gesucht</strong>';
 $g_lang['attach_image'] = 'Bild anhängen';
 $g_lang['write_teaser'] = 'Schreibe etwas...';
+$g_lang['new_welcome'] = 'Neue Willkommen ! ';
+
 $g_lang['pubbtime_1'] = 'morgens';
 $g_lang['pubbtime_2'] = 'mittags/nachmittags';
 $g_lang['pubbtime_3'] = 'abends';
