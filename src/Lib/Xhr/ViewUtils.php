@@ -72,7 +72,12 @@ class ViewUtils
 		if ($time > 0) {
 			$count_info .= '<div>Kooperation seit ' . $this->translationHelper->s('month_' . (int)date('m', $time)) . ' ' . date('Y', $time) . '</div>';
 		}
+		$new_welcome = '';
 
+		if ((int)$b['allow_mentor'] == 1) {
+			$new_welcome = '<div class="ui-padding">
+							' . $this->viewUtils->v_info('' . $this->translationHelper->s('new_welcome')) . ' </div>';
+		}
 		if ((int)$b['public_time'] != 0) {
 			$b['public_info'] .= '<div>Es wird in etwa ' . $this->translationHelper->s('pubbtime_' . (int)$b['public_time']) . ' abgeholt. Geh bitte niemals ohne Absprache zum Laden!</div>';
 		}
@@ -84,11 +89,12 @@ class ViewUtils
 		$status = $this->viewUtils->v_getStatusAmpel($b['betrieb_status_id']);
 
 		return '
-			' . $this->viewUtils->v_input_wrapper($this->translationHelper->s('status'), $status . '<span class="bstatus">' . $this->translationHelper->s('betrieb_status_' . $b['betrieb_status_id']) . '</span>' . $count_info) . '
+			' . $new_welcome
+			  . $this->viewUtils->v_input_wrapper($this->translationHelper->s('status'), $status . '<span class="bstatus">' . $this->translationHelper->s('betrieb_status_' . $b['betrieb_status_id']) . '</span>' . $count_info) . '
 			' . $this->viewUtils->v_input_wrapper('Verantwortliche Foodsaver', $verantwortlich, 'bcntverantwortlich') . '
 			' . $besonderheiten . '
 			<div class="ui-padding">
-				' . $this->viewUtils->v_info('' . $this->translationHelper->s('team_status_' . $b['team_status']) . '') . '		
+				' . $this->viewUtils->v_info('' . $this->translationHelper->s('team_status_' . $b['team_status']) . '') . '
 			</div>
 			' . $button;
 	}
