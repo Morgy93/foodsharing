@@ -58,7 +58,7 @@ class StoreGateway extends BaseGateway implements BellUpdaterInterface
 					`fs_betrieb`.fax,
 					`fs_betrieb`.team_status,
 					`kette_id`,
-					`fs_betrieb.allow_tutoring` as allow_tutoring
+					`fs_betrieb`.allow_tutoring as allow_tutoring
 
 		FROM 		`fs_betrieb`
 
