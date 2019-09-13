@@ -138,6 +138,10 @@ class StoreView extends View
 				array('id' => 1, 'name' => 'Ja'),
 				array('id' => 0, 'name' => 'Nein')
 			))),
+			$this->v_utils->v_form_select('allow_mentor', array('values' => array(
+				array('id' => 1, 'name' => 'Ja'),
+				array('id' => 0, 'name' => 'Nein')
+			))),
 			$this->v_utils->v_form_select('prefetchtime', array('values' => array(
 				array('id' => 604800, 'name' => '1 Woche'),
 				array('id' => 1209600, 'name' => '2 Wochen'),

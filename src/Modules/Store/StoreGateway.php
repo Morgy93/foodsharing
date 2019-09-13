@@ -56,7 +56,8 @@ class StoreGateway extends BaseGateway implements BellUpdaterInterface
 					`fs_betrieb`.email,
 					`fs_betrieb`.fax,
 					`fs_betrieb`.team_status,
-					`kette_id`
+					`kette_id`,
+					`fs_betrieb.allow_mentor` as allow_mentor
 
 		FROM 		`fs_betrieb`
 
@@ -247,7 +248,8 @@ class StoreGateway extends BaseGateway implements BellUpdaterInterface
 			b.`prefetchtime`,
 			b.`team_conversation_id`,
 			b.`springer_conversation_id`,
-			count(DISTINCT(a.date)) AS pickup_count
+			count(DISTINCT(a.date)) AS pickup_count,
+			b.`allow_mentor`
 
 			FROM 		`fs_betrieb` b
 			LEFT JOIN   `fs_abholer` a
@@ -339,6 +341,7 @@ class StoreGateway extends BaseGateway implements BellUpdaterInterface
 							CONCAT(fs.name," ",fs.nachname) AS name,
 							name as vorname,
 							t.`verantwortlich`,
+							t.`mentor`,
 							t.`stat_last_update`,
 							t.`stat_fetchcount`,
 							t.`stat_first_fetch`,
