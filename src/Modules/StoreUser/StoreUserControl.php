@@ -359,5 +359,4 @@ class StoreUserControl extends Control
 
 		return false;
 	}
-
 }
