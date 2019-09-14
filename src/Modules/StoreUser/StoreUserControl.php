@@ -82,10 +82,9 @@ class StoreUserControl extends Control
 			if (isset($_POST['form_submit']) && $_POST['form_submit'] == 'team' && $this->storePermissions->mayEditStore($store['id'])) {
 				$this->sanitizerService->handleTagSelect('foodsaver');
 				if (!empty($g_data['foodsaver'])) {
-					if (!empty($g_data['mentors'])){
+					if (!empty($g_data['mentors'])) {
 						$this->model->addBetriebTeam($_GET['id'], $g_data['foodsaver'], $g_data['verantwortlicher'], $g_data['mentors']);
-					}
-					else {
+					} else {
 						$this->model->addBetriebTeam($_GET['id'], $g_data['foodsaver'], $g_data['verantwortlicher']);
 					}
 				} else {
@@ -137,8 +136,9 @@ class StoreUserControl extends Control
 					}
 					$verantwortlich_select = $this->v_utils->v_form_checkbox('verantwortlicher', array('values' => $bibsaver, 'checked' => $checked));
 					$mentor_select = '';
-					if ($store['allow_mentor'])
+					if ($store['allow_mentor']) {
 						$mentor_select = $this->v_utils->v_form_checkbox('mentors', array('values' => $bibsaver, 'checked' => $checked_Mentor));
+					}
 					$edit_team = $this->v_utils->v_form(
 						'team',
 
