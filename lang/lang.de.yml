@@ -178,6 +178,7 @@ pickup:
   confirm: 'Bestätigen'
   kick: Austragen
   leave: Austragen
+  mentorOffer: Einführung anbieten
   open_profile: Profil aufrufen
   really_kick_user_date_title: '{name} für {date} austragen?'
   really_leave_date_title: Für {date} austragen?
