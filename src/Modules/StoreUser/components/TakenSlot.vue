@@ -36,6 +36,11 @@
       <i class="fa fa-times-circle mr-1" /> {{ $i18n('pickup.leave') }}
     </b-dropdown-item>
     <b-dropdown-item
+      v-if="confirmed && allowMentor"
+    >
+      <i class="fa fa-user-plus mr-1" /> {{ $i18n('pickup.mentorOffer') }}
+    </b-dropdown-item>
+    <b-dropdown-item
       v-if="allowKick && !allowLeave"
       @click="$emit('kick', profile.id)"
     >
@@ -74,6 +79,10 @@ export default {
     allowConfirm: {
       type: Boolean,
       default: false
+    },
+    allowMentor: {
+      type: Boolean,
+      default: true
     },
     allowChat: {
       type: Boolean,
