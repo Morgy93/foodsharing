@@ -294,6 +294,8 @@ class StoreGateway extends BaseGateway implements BellUpdaterInterface
 		', [':id' => $storeId]);
 
 		$out['verantwortlich'] = false;
+		$out['mentor'] = false;
+
 		$foodsaver = array();
 		$out['team_js'] = array();
 		$out['team'] = array();
@@ -317,6 +319,11 @@ class StoreGateway extends BaseGateway implements BellUpdaterInterface
 					$out['verantwortlicher'] = $v['id'];
 					if ($v['id'] == $fs_id) {
 						$out['verantwortlich'] = true;
+					}
+				}
+				if ($v['mentor'] == 1) {
+					if ($v['id'] == $fs_id) {
+						$out['mentor'] = true;
 					}
 				}
 			}
