@@ -122,6 +122,15 @@ class StoreUserView extends View
 				$click = '';
 			}
 
+			if ($fs['mentor'] == 1 && $fs['verantwortlich'] == 0) {
+				$class .= ' mentor';
+			}
+
+			if ($fs['mentor'] == 1 && $fs['verantwortlich'] == 1) {
+				$class .= ' mentorBieb';
+			}
+
+
 			if ($fs['verified'] != 1) {
 				$class .= ' notVerified';
 			}
