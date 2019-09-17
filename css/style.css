@@ -572,6 +572,14 @@ ul.team li a.verantwortlich {
   background-color: #dcc27e;
 }
 
+ul.team li a.mentor {
+  background-color: #33DDDD;
+}
+
+ul.team li a.mentorBieb {
+  background-color: #5AAF63;
+}
+
 ul.team li a.notVerified {
   background-color: #f3f3f3;
 }
