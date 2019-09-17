@@ -130,7 +130,6 @@ class StoreUserView extends View
 				$class .= ' mentorBieb';
 			}
 
-
 			if ($fs['verified'] != 1) {
 				$class .= ' notVerified';
 			}
