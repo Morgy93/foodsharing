@@ -47,7 +47,6 @@
             :key="pickup.date.valueOf()"
             :store-id="storeId"
             :is-coordinator="isCoordinator"
-            :is-Mentor="isMentor"
             :user="user"
             @leave="leave"
             @kick="kick"
@@ -89,10 +88,6 @@ export default {
     teamConversationId: {
       type: Number,
       default: null
-    },
-    isMentor: {
-      type: Boolean,
-      default: false
     }
   },
   data () {

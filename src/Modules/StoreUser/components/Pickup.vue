@@ -30,7 +30,6 @@
               :allow-leave="slot.profile.id == user.id && !isInPast"
               :allow-kick="isCoordinator && !isInPast"
               :allow-confirm="isCoordinator"
-              :allow-mentor="isMentor"
               :allow-chat="slot.profile.id !== user.id"
               @leave="$refs.modal_leave.show()"
               @kick="activeSlot = slot; $refs.modal_kick.show()"
@@ -168,10 +167,6 @@ export default {
       default: () => []
     },
     isCoordinator: {
-      type: Boolean,
-      default: false
-    },
-    isMentor: {
       type: Boolean,
       default: false
     },
