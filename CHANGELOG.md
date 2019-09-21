@@ -3,6 +3,7 @@
 ## Major changes
 
 ## Features
+- Added mentoring to store settings and foodsavers can be mentors !1052 #443 @fs_k  
 - Added Rest endpoint for nearby baskets !875 @alex.simm
 - updated bootstrap-vue to v2.0.0-rc28 @peter.toennies
 - Added Rest endpoint for the current user's profile !880 @dthulke
