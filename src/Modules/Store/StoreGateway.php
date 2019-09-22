@@ -58,7 +58,7 @@ class StoreGateway extends BaseGateway implements BellUpdaterInterface
 					`fs_betrieb`.fax,
 					`fs_betrieb`.team_status,
 					`kette_id`,
-					`fs_betrieb.allow_mentor` as allow_mentor
+					`fs_betrieb.allow_tutoring` as allow_tutoring
 
 		FROM 		`fs_betrieb`
 
@@ -250,7 +250,7 @@ class StoreGateway extends BaseGateway implements BellUpdaterInterface
 			b.`team_conversation_id`,
 			b.`springer_conversation_id`,
 			count(DISTINCT(a.date)) AS pickup_count,
-			b.`allow_mentor`
+			b.`allow_tutoring`
 
 			FROM 		`fs_betrieb` b
 			LEFT JOIN   `fs_abholer` a
@@ -294,7 +294,7 @@ class StoreGateway extends BaseGateway implements BellUpdaterInterface
 		', [':id' => $storeId]);
 
 		$out['verantwortlich'] = false;
-		$out['mentor'] = false;
+		$out['tutor'] = false;
 
 		$foodsaver = array();
 		$out['team_js'] = array();
@@ -321,9 +321,9 @@ class StoreGateway extends BaseGateway implements BellUpdaterInterface
 						$out['verantwortlich'] = true;
 					}
 				}
-				if ($v['mentor'] == 1) {
+				if ($v['tutor'] == 1) {
 					if ($v['id'] == $fs_id) {
-						$out['mentor'] = true;
+						$out['tutor'] = true;
 					}
 				}
 			}
@@ -349,7 +349,7 @@ class StoreGateway extends BaseGateway implements BellUpdaterInterface
 							CONCAT(fs.name," ",fs.nachname) AS name,
 							name as vorname,
 							t.`verantwortlich`,
-							t.`mentor`,
+							t.`tutor`,
 							t.`stat_last_update`,
 							t.`stat_fetchcount`,
 							t.`stat_first_fetch`,
