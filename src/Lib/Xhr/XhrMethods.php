@@ -377,7 +377,7 @@ class XhrMethods
 			foreach ($data['types'] as $t) {
 				if ($t == 'betriebe' && $this->session->may('fs')) {
 					$team_status = array();
-					$mentoring = '';
+					$tutoring = '';
 					$nkoorp = '';
 					if (isset($data['options']) && is_array($data['options'])) {
 						foreach ($data['options'] as $opt) {
@@ -387,8 +387,8 @@ class XhrMethods
 								$team_status[] = 'team_status = 1';
 							} elseif ($opt == 'nkoorp') {
 								$nkoorp = ' AND betrieb_status_id NOT IN(3,5)';
-							} elseif ($opt == 'allow_mentoring') {
-								$mentoring = ' AND allow_mentor = 1';
+							} elseif ($opt == 'allow_tutoring') {
+								$tutoring = ' AND allow_tutoring = 1';
 							}
 						}
 					}
@@ -399,8 +399,8 @@ class XhrMethods
 						$team_status = '';
 					}
 
-					$out['betriebe'] = $this->model->q(' SELECT `id`,lat,lon FROM fs_betrieb WHERE lat != "" ' . $team_status . $nkoorp . $mentoring);
-					$out['select'] = 'SELECT `id`,lat,lon FROM fs_betrieb WHERE lat != "" ' . $team_status . $nkoorp . $mentoring;
+					$out['betriebe'] = $this->model->q(' SELECT `id`,lat,lon FROM fs_betrieb WHERE lat != "" ' . $team_status . $nkoorp . $tutoring);
+					$out['select'] = 'SELECT `id`,lat,lon FROM fs_betrieb WHERE lat != "" ' . $team_status . $nkoorp . $tutoring;
 				} elseif ($t == 'fairteiler') {
 					$out['fairteiler'] = $this->model->q(' SELECT `id`,lat,lon,bezirk_id AS bid FROM fs_fairteiler WHERE lat != "" AND status = 1 ');
 				} elseif ($t == 'baskets') {
