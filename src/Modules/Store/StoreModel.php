@@ -205,7 +205,7 @@ class StoreModel extends Db
 			`prefetchtime`,
 			`public_info`,
 			`public_time`,
-			`allow_mentor`
+			`allow_tutoring`
 
 			FROM 		`fs_betrieb`
 
@@ -357,7 +357,7 @@ class StoreModel extends Db
 				`sticker` =  ' . (int)$data['sticker'] . ',
 				`abholmenge` =  ' . (int)$data['abholmenge'] . ',
 				`prefetchtime` = ' . (int)$data['prefetchtime'] . ',
-				`allow_mentor` = ' . (int)$data['allow_mentor'] . '
+				`allow_tutoring` = ' . (int)$data['allow_tutoring'] . '
 
 		WHERE 	`id` = ' . (int)$id);
 	}
@@ -610,7 +610,7 @@ class StoreModel extends Db
 		}
 	}
 
-	public function addBetriebTeam($storeId, $member, $verantwortlicher = false, $mentors = false)
+	public function addBetriebTeam($storeId, $member, $verantwortlicher = false, $tutors = false)
 	{
 		if (empty($member)) {
 			return false;
@@ -620,8 +620,8 @@ class StoreModel extends Db
 				$this->session->id() => true
 			);
 		}
-		if (!$mentors) {
-			$mentors = array(
+		if (!$tutors) {
+			$tutors = array(
 				0 => false
 			);
 		}
@@ -631,32 +631,32 @@ class StoreModel extends Db
 		}
 		$verantwortlicher = $tmp;
 
-		$tmp_mentor = array();
-		foreach ($mentors as $ment) {
-			$tmp_mentor[$ment] = $ment;
+		$tmp_tutor = array();
+		foreach ($tutors as $tut) {
+			$tmp_tutor[$tut] = $tut;
 		}
-		$mentors = $tmp_mentor;
+		$tutors = $tmp_tutor;
 
 		$values = array();
 		$member_ids = array();
 
 		foreach ($member as $m) {
 			$v = 0;
-			$mentor = 0;
+			$tutor = 0;
 			if (isset($verantwortlicher[$m])) {
 				$v = 1;
 			}
-			if (isset($mentors[$m])) {
-				$mentor = 1;
+			if (isset($tutors[$m])) {
+				$tutor = 1;
 			}
 
 			$member_ids[] = (int)$m;
-			$values[] = '(' . (int)$storeId . ',' . (int)$m . ',' . $v . ',' . $mentor . ',1,NOW())';
+			$values[] = '(' . (int)$storeId . ',' . (int)$m . ',' . $v . ',' . $tutor . ',1,NOW())';
 		}
 
 		$this->del('DELETE FROM `fs_betrieb_team` WHERE `betrieb_id` = ' . (int)$storeId . ' AND active = 1 AND foodsaver_id NOT IN(' . implode(',', $member_ids) . ')');
 
-		$sql = 'INSERT IGNORE INTO `fs_betrieb_team` (`betrieb_id`,`foodsaver_id`,`verantwortlich`,`mentor`,`active`,`stat_add_date`) VALUES ' . implode(',', $values);
+		$sql = 'INSERT IGNORE INTO `fs_betrieb_team` (`betrieb_id`,`foodsaver_id`,`verantwortlich`,`tutor`,`active`,`stat_add_date`) VALUES ' . implode(',', $values);
 
 		if ($cid = $this->storeGateway->getBetriebConversation($storeId)) {
 			$this->messageModel->setConversationMembers($cid, $member_ids);
@@ -676,10 +676,10 @@ class StoreModel extends Db
 				UPDATE	`fs_betrieb_team` SET verantwortlich = 1 WHERE betrieb_id = ' . (int)$storeId . ' AND foodsaver_id IN(' . implode(',', $verantwortlicher) . ')
 			');
 			$this->update('
-				UPDATE	`fs_betrieb_team` SET mentor = 0 WHERE betrieb_id = ' . (int)$storeId . '
+				UPDATE	`fs_betrieb_team` SET tutor = 0 WHERE betrieb_id = ' . (int)$storeId . '
 			');
 			$this->update('
-				UPDATE	`fs_betrieb_team` SET mentor = 1 WHERE betrieb_id = ' . (int)$storeId . ' AND foodsaver_id IN(' . implode(',', $mentors) . ')
+				UPDATE	`fs_betrieb_team` SET tutor = 1 WHERE betrieb_id = ' . (int)$storeId . ' AND foodsaver_id IN(' . implode(',', $tutors) . ')
 			');
 
 			return true;

@@ -82,8 +82,8 @@ class StoreUserControl extends Control
 			if (isset($_POST['form_submit']) && $_POST['form_submit'] == 'team' && $this->storePermissions->mayEditStore($store['id'])) {
 				$this->sanitizerService->handleTagSelect('foodsaver');
 				if (!empty($g_data['foodsaver'])) {
-					if (!empty($g_data['mentors'])) {
-						$this->model->addBetriebTeam($_GET['id'], $g_data['foodsaver'], $g_data['verantwortlicher'], $g_data['mentors']);
+					if (!empty($g_data['tutors'])) {
+						$this->model->addBetriebTeam($_GET['id'], $g_data['foodsaver'], $g_data['verantwortlicher'], $g_data['tutors']);
 					} else {
 						$this->model->addBetriebTeam($_GET['id'], $g_data['foodsaver'], $g_data['verantwortlicher']);
 					}
@@ -125,19 +125,19 @@ class StoreUserControl extends Control
 				}
 				if ($store['verantwortlich']) {
 					$checked = array();
-					$checked_Mentor = array();
+					$checked_Tutors = array();
 					foreach ($store['foodsaver'] as $fs) {
 						if ($fs['verantwortlich'] == 1) {
 							$checked[] = $fs['id'];
 						}
-						if ($fs['mentor'] == 1) {
-							$checked_Mentor[] = $fs['id'];
+						if ($fs['tutor'] == 1) {
+							$checked_Tutors[] = $fs['id'];
 						}
 					}
 					$verantwortlich_select = $this->v_utils->v_form_checkbox('verantwortlicher', array('values' => $bibsaver, 'checked' => $checked));
-					$mentor_select = '';
-					if ($store['allow_mentor']) {
-						$mentor_select = $this->v_utils->v_form_checkbox('mentors', array('values' => $bibsaver, 'checked' => $checked_Mentor));
+					$tutor_select = '';
+					if ($store['allow_tutoring']) {
+						$tutor_select = $this->v_utils->v_form_checkbox('tutors', array('values' => $bibsaver, 'checked' => $checked_Tutors));
 					}
 					$edit_team = $this->v_utils->v_form(
 						'team',
@@ -146,7 +146,7 @@ class StoreUserControl extends Control
 							$this->v_utils->v_form_tagselect('foodsaver', ['valueOptions' => $this->foodsaverGateway->xhrGetTagFsAll($this->session->listRegionIDs())]
 							),
 							$verantwortlich_select,
-							$mentor_select
+							$tutor_select
 						],
 						['submit' => $this->translationHelper->s('save')]
 					);
@@ -167,8 +167,8 @@ class StoreUserControl extends Control
 					$info .= $this->v_utils->v_input_wrapper('Namensnennung', $press);
 				}
 
-				if ($mentoring = $this->allowMentoring($store['allow_mentor'])) {
-					$info .= $this->v_utils->v_input_wrapper($this->translationHelper->s('mentor_pickups'), $mentoring);
+				if ($tutoring = $this->allowTutoring($store['allow_tutoring'])) {
+					$info .= $this->v_utils->v_input_wrapper($this->translationHelper->s('tutor_pickups'), $tutoring);
 				}
 
 				/* find yourself in the pickup list and show your last pickup date in store info */
@@ -347,14 +347,14 @@ class StoreUserControl extends Control
 		return false;
 	}
 
-	private function allowMentoring(int $id)
+	private function allowTutoring(int $id)
 	{
 		if ($id === 0) {
-			return $this->translationHelper->s('do_not_allow_mentoring');
+			return $this->translationHelper->s('do_not_allow_tutoring');
 		}
 
 		if ($id === 1) {
-			return $this->translationHelper->s('allow_mentoring');
+			return $this->translationHelper->s('allow_tutoring');
 		}
 
 		return false;

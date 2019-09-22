@@ -87,7 +87,7 @@ class ViewUtils
 		}
 		$new_welcome = '';
 
-		if ((int)$b['allow_mentor'] == 1) {
+		if ((int)$b['allow_tutoring'] == 1) {
 			$new_welcome = '<div class="ui-padding">
 							' . $this->viewUtils->v_info('' . $this->translationHelper->s('new_welcome')) . ' </div>';
 		}

@@ -138,7 +138,7 @@ class StoreView extends View
 				array('id' => 1, 'name' => 'Ja'),
 				array('id' => 0, 'name' => 'Nein')
 			))),
-			$this->v_utils->v_form_select('allow_mentor', array('values' => array(
+			$this->v_utils->v_form_select('allow_tutoring', array('values' => array(
 				array('id' => 1, 'name' => 'Ja'),
 				array('id' => 0, 'name' => 'Nein')
 			))),
