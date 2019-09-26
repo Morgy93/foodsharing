@@ -74,9 +74,8 @@ class ViewUtils
 		}
 		$new_welcome = '';
 
-		if ((int)$b['allow_tutoring'] == 1) {
-			$new_welcome = '<div class="ui-padding">
-							' . $this->viewUtils->v_info('' . $this->translationHelper->s('new_welcome')) . ' </div>';
+		if ((int)$b['allow_tutoring'] == 1 && !empty($b['map_welcome_desc'])) {
+			$new_welcome = $this->viewUtils->v_info($b['map_welcome_desc']);
 		}
 		if ((int)$b['public_time'] != 0) {
 			$b['public_info'] .= '<div>Es wird in etwa ' . $this->translationHelper->s('pubbtime_' . (int)$b['public_time']) . ' abgeholt. Geh bitte niemals ohne Absprache zum Laden!</div>';

@@ -123,6 +123,11 @@ class StoreView extends View
 				['id' => 3, 'name' => 'abends'],
 				['id' => 4, 'name' => 'nachts']
 			]]),
+			$this->v_utils->v_form_select('allow_tutoring', array('values' => array(
+				array('id' => 1, 'name' => 'Ja'),
+				array('id' => 0, 'name' => 'Nein')
+			))),
+			$this->v_utils->v_form_textarea('map_welcome_desc', array('maxlength' => 180, 'desc' => '<div>' . $this->v_utils->v_info('<strong>Wichtig:</strong> Gib hier keine genauen Abholzeiten an.') . '</div>')),
 			$first_post,
 			$this->v_utils->v_form_select('ueberzeugungsarbeit', array('values' => array(
 				array('id' => 1, 'name' => 'Überhaupt kein Problem, er/sie war/en sofort begeistert!'),
@@ -135,10 +140,6 @@ class StoreView extends View
 				array('id' => 0, 'name' => 'Nein')
 			))),
 			$this->v_utils->v_form_select('sticker', array('values' => array(
-				array('id' => 1, 'name' => 'Ja'),
-				array('id' => 0, 'name' => 'Nein')
-			))),
-			$this->v_utils->v_form_select('allow_tutoring', array('values' => array(
 				array('id' => 1, 'name' => 'Ja'),
 				array('id' => 0, 'name' => 'Nein')
 			))),

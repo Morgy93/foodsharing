@@ -250,7 +250,8 @@ class StoreGateway extends BaseGateway implements BellUpdaterInterface
 			b.`team_conversation_id`,
 			b.`springer_conversation_id`,
 			count(DISTINCT(a.date)) AS pickup_count,
-			b.`allow_tutoring`
+			b.`allow_tutoring`,
+			b.`map_welcome_desc`
 
 			FROM 		`fs_betrieb` b
 			LEFT JOIN   `fs_abholer` a
