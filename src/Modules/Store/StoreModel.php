@@ -205,7 +205,8 @@ class StoreModel extends Db
 			`prefetchtime`,
 			`public_info`,
 			`public_time`,
-			`allow_tutoring`
+			`allow_tutoring`,
+            `map_welcome_desc`
 
 			FROM 		`fs_betrieb`
 
@@ -357,7 +358,8 @@ class StoreModel extends Db
 				`sticker` =  ' . (int)$data['sticker'] . ',
 				`abholmenge` =  ' . (int)$data['abholmenge'] . ',
 				`prefetchtime` = ' . (int)$data['prefetchtime'] . ',
-				`allow_tutoring` = ' . (int)$data['allow_tutoring'] . '
+				`allow_tutoring` = ' . (int)$data['allow_tutoring'] . ',
+				`map_welcome_desc` =  ' . $this->strval($data['map_welcome_desc']) . '
 
 		WHERE 	`id` = ' . (int)$id);
 	}
@@ -392,7 +394,9 @@ class StoreModel extends Db
 			`ueberzeugungsarbeit`,
 			`presse`,
 			`sticker`,
-      `abholmenge`
+			`abholmenge`,
+            `allow_tutoring`,
+            `map_welcome_desc`
 			)
 			VALUES
 			(
@@ -421,8 +425,10 @@ class StoreModel extends Db
 			' . (int)$data['ueberzeugungsarbeit'] . ',
 			' . (int)$data['presse'] . ',
 			' . (int)$data['sticker'] . ',
-      ' . (int)$data['abholmenge'] . '
-			)');
+     	    ' . (int)$data['abholmenge'] . ',
+     	    ' . (int)$data['allow_tutoring'] . ',
+			' . $this->strval($data['map_welcome_desc']) . '
+     	    )');
 
 		if (isset($data['lebensmittel']) && is_array($data['lebensmittel'])) {
 			foreach ($data['lebensmittel'] as $lebensmittel_id) {
