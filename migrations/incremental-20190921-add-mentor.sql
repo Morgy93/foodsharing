@@ -3,3 +3,7 @@ alter table fs_betrieb
 
 alter table fs_betrieb_team
     add tutor tinyint(3) default 0 null after verantwortlich;
+
+alter table fs_betrieb
+    add map_welcome_desc varchar(200) null after public_info;
+
