@@ -30,7 +30,7 @@ class MapView extends View
 			$betriebe = '<li><a name="betriebe" class="ui-corner-all betriebe"><span class="fa-stack fa-lg" style="color: #9E3235"><i class="fas fa-circle fa-stack-2x"></i><i class="fas fa-shopping-cart fa-stack-1x fa-inverse"></i></span><span>Betriebe</span></a>
 				<div id="map-options">
 					<label><input type="checkbox" name="viewopt[]" value="allebetriebe" /> Alle Betriebe</label>
-					<label><input type="checkbox" name="viewopt[]" value="allow_tutoring" /> Einführungsabholungsbetriebe</label>
+					<label><input type="checkbox" name="viewopt[]" value="allow_tutoring" /> Für Einführungen</label>
 					<label><input checked="checked" type="checkbox" name="viewopt[]" value="needhelp" /> HelferInnen gesucht</label>
 					<label><input checked="checked" type="checkbox" name="viewopt[]" value="needhelpinstant" /> HelferInnen dringend gesucht</label>
 					<label><input type="checkbox" name="viewopt" value="nkoorp" /> in Verhandlung</label>
