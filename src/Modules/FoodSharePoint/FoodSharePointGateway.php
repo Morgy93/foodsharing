@@ -251,9 +251,12 @@ class FoodSharePointGateway extends BaseGateway
 		);
 	}
 
-	public function unfollow($food_share_point_id, $fs_id)
+	public function unfollow($food_share_point_id, $fs_id): void
 	{
-		return $this->db->delete('fs_fairteiler_follower', ['fairteiler_id' => $food_share_point_id, 'foodsaver_id' => $fs_id]);
+		$this->db->delete('fs_fairteiler_follower', ['fairteiler_id' => $food_share_point_id, 'foodsaver_id' => $fs_id]);
+		// unsubscribe from the bell notification that updates when things get posted in FoodSharePoint
+		$foodSharePointUpdateBellId = $this->bellGateway->getOneByIdentifier('fairteiler-' . $food_share_point_id);
+		$this->bellGateway->delBellForFoodsaver($foodSharePointUpdateBellId, $fs_id);
 	}
 
 	public function getFollower($id)
