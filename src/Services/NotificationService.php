@@ -34,6 +34,7 @@ final class NotificationService
 		$foodSharePoint = $this->foodSharePointGateway->getFoodSharePoint($foodSharePointId);
 		if (!$foodSharePoint) {
 			http_response_code(404);
+
 			return;
 		}
 		$post = $this->foodSharePointGateway->getLastFoodSharePointPost($foodSharePointId);
@@ -81,14 +82,32 @@ final class NotificationService
 		}
 
 		$followersWithoutPostAuthor = array_diff($infoFollowers, [$post['fs_id']]);
-		$this->bellGateway->addBell(
-			$followersWithoutPostAuthor,
-			'ft_update_title',
-			'ft_update',
-			'img img-recycle yellow',
-			array('href' => '/?page=fairteiler&sub=ft&id=' . $foodSharePoint['id']),
-			array('name' => $foodSharePoint['name'], 'user' => $post['fs_name'], 'teaser' => $this->sanitizerService->tt($post['body'], 100)),
-			'fairteiler-' . $foodSharePoint['id']
-		);
+
+		$bellIdentifier = 'fairteiler-' . $foodSharePoint['id'];
+		$bellForThisFoodSharePointExists = $this->bellGateway->bellWithIdentifierExists($bellIdentifier);
+
+		if (!$bellForThisFoodSharePointExists) {
+			$this->bellGateway->addBell(
+				$followersWithoutPostAuthor,
+				'ft_update_title',
+				'ft_update',
+				'img img-recycle yellow',
+				['href' => '/?page=fairteiler&sub=ft&id=' . $foodSharePoint['id']],
+				[
+					'name' => $foodSharePoint['name'],
+					'user' => $post['fs_name'],
+					'teaser' => $this->sanitizerService->tt($post['body'], 100)
+				],
+				$bellIdentifier
+			);
+		} else {
+			$bellId = $this->bellGateway->getOneByIdentifier($bellIdentifier);
+			$this->bellGateway->updateBell($bellId, [
+				'vars' => [
+					'name' => $foodSharePoint['name'],
+					'user' => $post['fs_name'],
+					'teaser' => $this->sanitizerService->tt($post['body'], 100)]
+			], true);
+		}
 	}
 }
