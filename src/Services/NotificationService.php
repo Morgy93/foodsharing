@@ -33,6 +33,7 @@ final class NotificationService
 	{
 		$foodSharePoint = $this->foodSharePointGateway->getFoodSharePoint($foodSharePointId);
 		if (!$foodSharePoint) {
+			http_response_code(404);
 			return;
 		}
 		$post = $this->foodSharePointGateway->getLastFoodSharePointPost($foodSharePointId);
