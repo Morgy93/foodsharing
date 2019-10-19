@@ -106,8 +106,10 @@ final class NotificationService
 				'vars' => [
 					'name' => $foodSharePoint['name'],
 					'user' => $post['fs_name'],
-					'teaser' => $this->sanitizerService->tt($post['body'], 100)]
-			], true);
+					'teaser' => $this->sanitizerService->tt($post['body'], 100)],
+				'time' => new \DateTime()
+			], true, true, $infoFollowers);
+			$this->bellGateway->setBellsAsSeen([$bellId], $post['fs_id'], true);
 		}
 	}
 }

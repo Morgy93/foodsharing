@@ -83,7 +83,7 @@ class BellGateway extends BaseGateway
 	/**
 	 * @param array $data - the data to be updated. $data['var'] and data['attr'] must not be serialized.
 	 */
-	public function updateBell(int $bellId, array $data, bool $setUnseen = false, bool $updateClients = true): void
+	public function updateBell(int $bellId, array $data, bool $setUnseen = false, bool $updateClients = true, ?array $updatedFoodsaverIds = null): void
 	{
 		if (isset($data['attr'])) {
 			$data['attr'] = serialize($data['attr']);
@@ -103,7 +103,14 @@ class BellGateway extends BaseGateway
 
 		$this->db->update('fs_bell', $data, ['id' => $bellId]);
 
-		$foodsaverIds = $this->db->fetchAllValuesByCriteria('fs_foodsaver_has_bell', 'foodsaver_id', ['bell_id' => $bellId]);
+		if ($updatedFoodsaverIds !== null) {
+			$this->db->delete('fs_foodsaver_has_bell', ['bell_id' => $bellId]);
+			foreach ($updatedFoodsaverIds as $foodsaverId) {
+				$this->db->insert('fs_foodsaver_has_bell', ['foodsaver_id' => $foodsaverId, 'bell_id' => $bellId]);
+			}
+		}
+
+		$foodsaverIds = $updatedFoodsaverIds ?? $this->db->fetchAllValuesByCriteria('fs_foodsaver_has_bell', 'foodsaver_id', ['bell_id' => $bellId]);
 
 		if ($setUnseen && !empty($foodsaverIds)) {
 			$this->db->update('fs_foodsaver_has_bell', ['seen' => 0], ['foodsaver_id' => $foodsaverIds, 'bell_id' => $bellId]);
@@ -232,12 +239,12 @@ class BellGateway extends BaseGateway
 		$this->updateMultipleFoodsaverClients($foodsaverIds);
 	}
 
-	public function setBellsAsSeen(array $bellIds, int $foodsaverId): void
+	public function setBellsAsSeen(array $bellIds, int $foodsaverId, bool $updateClients = false): void
 	{
-		$this->db->execute(
-			'UPDATE `fs_foodsaver_has_bell` SET `seen` = 1 WHERE `bell_id` IN (' . implode(',', array_map('intval', $bellIds)) . ') AND `foodsaver_id` =:fsId',
-			['fsId' => $foodsaverId]
-		);
+		$this->db->update('fs_foodsaver_has_bell', ['seen' => 1], ['bell_id' => $bellIds, 'foodsaver_id' => $foodsaverId]);
+		if ($updateClients) {
+			$this->updateFoodsaverClient($foodsaverId);
+		}
 	}
 
 	private function updateFoodsaverClient(int $foodsaverId): void
