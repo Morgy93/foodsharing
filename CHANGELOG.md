@@ -19,6 +19,7 @@
 - Reduced complexity of the profile module !1037 @peter.toennies
 - refactored blog from model to gateway !789 #9 @peter.toennies
 - refactored statsman from model to gateway !1111 #9 @peter.toennies
+- Removed Xhr method for posting store wall posts (xhr_addPinPost) and made it part of the REST API (POST on /api/stores/{id}/posts}. !1138 #719 @janopae
 
 ## Dev/Test/CI stuff
 
