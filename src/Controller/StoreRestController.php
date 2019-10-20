@@ -79,22 +79,47 @@ class StoreRestController extends AbstractFOSRestController
 			'last' => 1
 		]);
 
+		$this->sendBellNotificationForNewPost($storeId);
+
+		return $this->handleView($this->view([], 200));
+	}
+
+	private function sendBellNotificationForNewPost(int $storeId)
+	{
 		$storeName = $this->storeGateway->getBetrieb($storeId)['name'];
 		$team = $this->storeGateway->getStoreTeam($storeId);
 
-		$this->bellGateway->addBell(
-			$team,
-			'store_wallpost_title',
-			'store_wallpost',
-			'img img-store brown',
-			['href' => '/?page=fsbetrieb&id=' . $storeId],
-			[
-				'user' => $this->session->user('name'),
-				'name' => $storeName
-			],
-			'store-wallpost-' . $storeId
-		);
+		$team = array_map(function ($foodsaver) {return $foodsaver['id']; }, $team);
 
-		return $this->handleView($this->view([], 200));
+		$bellForThisStoreAlreadyExists = $this->bellGateway->bellWithIdentifierExists('store-wallpost-' . $storeId);
+		if (!$bellForThisStoreAlreadyExists) {
+			$this->bellGateway->addBell(
+				$team,
+				'store_wallpost_title',
+				'store_wallpost',
+				'img img-store brown',
+				['href' => '/?page=fsbetrieb&id=' . $storeId],
+				[
+					'user' => $this->session->user('name'),
+					'name' => $storeName
+				],
+				'store-wallpost-' . $storeId
+			);
+		} else {
+			$bellId = $this->bellGateway->getOneByIdentifier('store-wallpost-' . $storeId);
+			$this->bellGateway->updateBell(
+				$bellId,
+				[
+					'time' => new \DateTime(),
+					'vars' => [
+						'user' => $this->session->user('name'),
+						'name' => $storeName
+					]
+				],
+				true,
+				true,
+				$team
+			);
+		}
 	}
 }
