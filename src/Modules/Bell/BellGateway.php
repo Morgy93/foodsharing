@@ -83,7 +83,7 @@ class BellGateway extends BaseGateway
 	/**
 	 * @param array $data - the data to be updated. $data['var'] and data['attr'] must not be serialized.
 	 */
-	public function updateBell(int $bellId, array $data, bool $setUnseen = false, bool $updateClients = true, ?array $updatedFoodsaverIds = null): void
+	public function updateBell(int $bellId, array $data, bool $updateClients = true): void
 	{
 		if (isset($data['attr'])) {
 			$data['attr'] = serialize($data['attr']);
@@ -103,16 +103,30 @@ class BellGateway extends BaseGateway
 
 		$this->db->update('fs_bell', $data, ['id' => $bellId]);
 
-		if ($updatedFoodsaverIds !== null) {
-			$this->db->delete('fs_foodsaver_has_bell', ['bell_id' => $bellId]);
-			foreach ($updatedFoodsaverIds as $foodsaverId) {
-				$this->db->insert('fs_foodsaver_has_bell', ['foodsaver_id' => $foodsaverId, 'bell_id' => $bellId]);
-			}
+		if ($updateClients) {
+			$foodsaverIds = $this->db->fetchAllValuesByCriteria('fs_foodsaver_has_bell', 'foodsaver_id', ['bell_id' => $bellId]);
+			$this->updateMultipleFoodsaverClients($foodsaverIds);
+		}
+	}
+
+	/**
+	 * Some bell updates contain urgent information, so foodsavers who deleted the bell need it to reappear. This
+	 * function makes sure that a ceratin group of foodsavers sees the bell. Foodsavers seeing the bell who are not
+	 * in $foodsaverIds won't be affected.
+	 *
+	 * @param int $bellId - bell to reappear
+	 * @param int[] $foodsaverIds - foodsavers, for whom the bell will reappear if they closed it
+	 * @param bool $markBellAsUnread - if true, the bells will also be marked as unread if the users marked them as read
+	 * before
+	 * @param bool $updateClients - whether the browsers of the affected foodsavers should be immediately updated
+	 */
+	public function makeSureFoodsaversSeeBell(int $bellId, array $foodsaverIds, bool $markBellAsUnread = true, bool $updateClients = true): void
+	{
+		foreach ($foodsaverIds as $foodsaverId) {
+			$this->db->insertIgnore('fs_foodsaver_has_bell', ['foodsaver_id' => $foodsaverId, 'bell_id' => $bellId]);
 		}
 
-		$foodsaverIds = $updatedFoodsaverIds ?? $this->db->fetchAllValuesByCriteria('fs_foodsaver_has_bell', 'foodsaver_id', ['bell_id' => $bellId]);
-
-		if ($setUnseen && !empty($foodsaverIds)) {
+		if ($markBellAsUnread) {
 			$this->db->update('fs_foodsaver_has_bell', ['seen' => 0], ['foodsaver_id' => $foodsaverIds, 'bell_id' => $bellId]);
 		}
 

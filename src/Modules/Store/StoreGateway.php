@@ -530,12 +530,13 @@ class StoreGateway extends BaseGateway implements BellUpdaterInterface
 	}
 
 	/**
-	 * @param bool $markNotificationAsUnread:
+	 * @param bool $makeSureResponsibleFoodsaversSeeBell:
 	 * if an older notification exists, that has already been marked as read,
 	 * it can be marked as unread again while updating it
 	 */
-	public function updateBellNotificationForBiebs(int $storeId, bool $markNotificationAsUnread = false): void
+	public function updateBellNotificationForBiebs(int $storeId, bool $makeSureResponsibleFoodsaversSeeBell = false): void
 	{
+		$responsibleFoodsavers = $this->getResponsibleFoodsavers($storeId);
 		$storeName = $this->db->fetchValueByCriteria('fs_betrieb', 'name', ['id' => $storeId]);
 		$messageIdentifier = 'store-fetch-unconfirmed-' . $storeId;
 		$messageCount = $this->getUnconfirmedFetchesCount($storeId);
@@ -554,10 +555,13 @@ class StoreGateway extends BaseGateway implements BellUpdaterInterface
 				'time' => $messageTimestamp,
 				'expiration' => $messageExpiration
 			];
-			$this->bellGateway->updateBell($oldBellId, $data, $markNotificationAsUnread);
+			$this->bellGateway->updateBell($oldBellId, $data);
+			if ($makeSureResponsibleFoodsaversSeeBell) {
+				$this->bellGateway->makeSureFoodsaversSeeBell($oldBellId, $responsibleFoodsavers);
+			}
 		} elseif ($messageCount > 0 && !$oldBellExists) {
 			$this->bellGateway->addBell(
-				$this->getResponsibleFoodsavers($storeId),
+				$responsibleFoodsavers,
 				'betrieb_fetch_title',
 				'betrieb_fetch',
 				'img img-store brown',
@@ -946,7 +950,8 @@ class StoreGateway extends BaseGateway implements BellUpdaterInterface
 				'expiration' => $this->getNextUnconfirmedFetchTime($storeId)
 			];
 
-			$this->bellGateway->updateBell($bell['id'], $newMessageData, false, false);
+			$this->bellGateway->updateBell($bell['id'], $newMessageData);
+			// if there are no more unconfirmed fetches left, we don't remove expired bells on purpose, so the responsible foodsaver see that they missed it – BIEBs can still confirm it after it expired
 		}
 	}
 

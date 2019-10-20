@@ -108,8 +108,8 @@ final class NotificationService
 					'user' => $post['fs_name'],
 					'teaser' => $this->sanitizerService->tt($post['body'], 100)],
 				'time' => new \DateTime()
-			], true, true, $infoFollowers);
-			$this->bellGateway->setBellsAsSeen([$bellId], $post['fs_id'], true);
+			]);
+			$this->bellGateway->makeSureFoodsaversSeeBell($bellId, $followersWithoutPostAuthor);
 		}
 	}
 }

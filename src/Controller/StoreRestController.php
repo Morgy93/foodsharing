@@ -88,13 +88,13 @@ class StoreRestController extends AbstractFOSRestController
 	{
 		$storeName = $this->storeGateway->getBetrieb($storeId)['name'];
 		$team = $this->storeGateway->getStoreTeam($storeId);
-
 		$team = array_map(function ($foodsaver) {return $foodsaver['id']; }, $team);
+		$teamExceptAuthor = array_diff($team, [$this->session->id()]);
 
 		$bellForThisStoreAlreadyExists = $this->bellGateway->bellWithIdentifierExists('store-wallpost-' . $storeId);
 		if (!$bellForThisStoreAlreadyExists) {
 			$this->bellGateway->addBell(
-				$team,
+				$teamExceptAuthor,
 				'store_wallpost_title',
 				'store_wallpost',
 				'img img-store brown',
@@ -115,12 +115,9 @@ class StoreRestController extends AbstractFOSRestController
 						'user' => $this->session->user('name'),
 						'name' => $storeName
 					]
-				],
-				true,
-				true,
-				$team
+				]
 			);
-			$this->bellGateway->setBellsAsSeen([$bellId], $this->session->id(), true);
+			$this->bellGateway->makeSureFoodsaversSeeBell($bellId, $teamExceptAuthor);
 		}
 	}
 }

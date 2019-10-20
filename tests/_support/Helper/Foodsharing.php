@@ -677,7 +677,7 @@ class Foodsharing extends \Codeception\Module\Db
 		return $post;
 	}
 
-	public function addBells($users, $extra_params = [])
+	public function addBells($users, $extra_params = []): int
 	{
 		$params = array_merge([
 			'name' => 'title',
@@ -700,6 +700,8 @@ class Foodsharing extends \Codeception\Module\Db
 				'seen' => 0
 			]);
 		}
+
+		return $bell_id;
 	}
 
 	public function addBlogPost($authorId, $regionId, $extra_params = [])

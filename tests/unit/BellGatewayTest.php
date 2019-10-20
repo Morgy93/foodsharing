@@ -121,4 +121,26 @@ class BellGatewayTest extends \Codeception\Test\Unit
 
 		$this->tester->seeInDatabase('fs_bell', $updatedData);
 	}
+
+	public function testMakeSureFoodsaversSeeBellMakesSureFoodsaversSeeBell()
+	{
+		$userWhoReceivedBellAndStillHasIt = $this->tester->createFoodsaver();
+		$userWhoDeletedTheirBell = $this->tester->createFoodsaver();
+		$bellId = $this->tester->addBells([$userWhoReceivedBellAndStillHasIt]);
+
+		$this->gateway->makeSureFoodsaversSeeBell($bellId, [$userWhoReceivedBellAndStillHasIt['id'], $userWhoDeletedTheirBell]['id']);
+
+		$this->tester->seeInDatabase('fs_foodsaver_has_bell', ['foodsaver_id' => $userWhoDeletedTheirBell['id'], 'bell_id' => $bellId]);
+	}
+
+	public function testMakeSureFoodsaversSeeBellLeavesUnspecifiedFoodsaversUntouched()
+	{
+		$userWhoReceivedBellAndShouldStillHaveTheBellAfterUpdate = $this->tester->createFoodsaver();
+		$userWhoDeletedTheirBell = $this->tester->createFoodsaver();
+		$bellId = $this->tester->addBells([$userWhoReceivedBellAndShouldStillHaveTheBellAfterUpdate]);
+
+		$this->gateway->makeSureFoodsaversSeeBell($bellId, [$userWhoDeletedTheirBell]['id']);
+
+		$this->tester->seeInDatabase('fs_foodsaver_has_bell', ['foodsaver_id' => $userWhoReceivedBellAndShouldStillHaveTheBellAfterUpdate['id'], 'bell_id' => $bellId]);
+	}
 }
