@@ -128,7 +128,7 @@ class BellGatewayTest extends \Codeception\Test\Unit
 		$userWhoDeletedTheirBell = $this->tester->createFoodsaver();
 		$bellId = $this->tester->addBells([$userWhoReceivedBellAndStillHasIt]);
 
-		$this->gateway->makeSureFoodsaversSeeBell($bellId, [$userWhoReceivedBellAndStillHasIt['id'], $userWhoDeletedTheirBell]['id']);
+		$this->gateway->makeSureFoodsaversSeeBell($bellId, [$userWhoReceivedBellAndStillHasIt['id'], $userWhoDeletedTheirBell['id']]);
 
 		$this->tester->seeInDatabase('fs_foodsaver_has_bell', ['foodsaver_id' => $userWhoDeletedTheirBell['id'], 'bell_id' => $bellId]);
 	}
@@ -139,7 +139,7 @@ class BellGatewayTest extends \Codeception\Test\Unit
 		$userWhoDeletedTheirBell = $this->tester->createFoodsaver();
 		$bellId = $this->tester->addBells([$userWhoReceivedBellAndShouldStillHaveTheBellAfterUpdate]);
 
-		$this->gateway->makeSureFoodsaversSeeBell($bellId, [$userWhoDeletedTheirBell]['id']);
+		$this->gateway->makeSureFoodsaversSeeBell($bellId, [$userWhoDeletedTheirBell['id']]);
 
 		$this->tester->seeInDatabase('fs_foodsaver_has_bell', ['foodsaver_id' => $userWhoReceivedBellAndShouldStillHaveTheBellAfterUpdate['id'], 'bell_id' => $bellId]);
 	}
