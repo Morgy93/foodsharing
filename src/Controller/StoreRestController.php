@@ -120,6 +120,7 @@ class StoreRestController extends AbstractFOSRestController
 				true,
 				$team
 			);
+			$this->bellGateway->setBellsAsSeen([$bellId], $this->session->id(), true);
 		}
 	}
 }
