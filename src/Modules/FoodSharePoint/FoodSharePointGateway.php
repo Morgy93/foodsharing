@@ -255,6 +255,9 @@ class FoodSharePointGateway extends BaseGateway
 	{
 		$this->db->delete('fs_fairteiler_follower', ['fairteiler_id' => $food_share_point_id, 'foodsaver_id' => $fs_id]);
 		// unsubscribe from the bell notification that updates when things get posted in FoodSharePoint
+		if (!$this->bellGateway->bellWithIdentifierExists('fairteiler-' . $food_share_point_id)) {
+			return;
+		}
 		$foodSharePointUpdateBellId = $this->bellGateway->getOneByIdentifier('fairteiler-' . $food_share_point_id);
 		$this->bellGateway->delBellForFoodsaver($foodSharePointUpdateBellId, $fs_id);
 	}
