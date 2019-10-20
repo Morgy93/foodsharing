@@ -292,7 +292,6 @@ class StoreGateway extends BaseGateway implements BellUpdaterInterface
 
 		$out['verantwortlich'] = false;
 		$foodsaver = array();
-		$out['team_js'] = array();
 		$out['team'] = array();
 		$out['jumper'] = false;
 
@@ -307,7 +306,6 @@ class StoreGateway extends BaseGateway implements BellUpdaterInterface
 		if (!empty($out['foodsaver'])) {
 			$out['team'] = array();
 			foreach ($out['foodsaver'] as $v) {
-				$out['team_js'][] = $v['id'];
 				$foodsaver[$v['id']] = $v['name'];
 				$out['team'][] = array('id' => $v['id'], 'value' => $v['name']);
 				if ($v['verantwortlich'] == 1) {
@@ -320,7 +318,6 @@ class StoreGateway extends BaseGateway implements BellUpdaterInterface
 		} else {
 			$out['foodsaver'] = array();
 		}
-		$out['team_js'] = implode(',', $out['team_js']);
 
 		return $out;
 	}
