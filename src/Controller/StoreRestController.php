@@ -63,7 +63,7 @@ class StoreRestController extends AbstractFOSRestController
 	 * @Rest\Post("stores/{storeId}/posts")
 	 * @Rest\RequestParam(name="text")
 	 */
-	public function addStorePostAction(int $storeId, ParamFetcher $paramFetcher)
+	public function addStorePostAction(int $storeId, ParamFetcher $paramFetcher): Response
 	{
 		if (!$this->storePermissions->mayWriteStoreWall($storeId)) {
 			throw new AccessDeniedHttpException();
@@ -84,7 +84,7 @@ class StoreRestController extends AbstractFOSRestController
 		return $this->handleView($this->view([], 200));
 	}
 
-	private function sendBellNotificationForNewPost(int $storeId)
+	private function sendBellNotificationForNewPost(int $storeId): void
 	{
 		$storeName = $this->storeGateway->getBetrieb($storeId)['name'];
 		$team = $this->storeGateway->getStoreTeam($storeId);
