@@ -51,7 +51,7 @@ final class NotificationService
 		}
 
 		$attach = json_decode($post['attach'], true);
-		if (!isset($attach['image']) && empty($attach['image'])) {
+		if (empty($attach['image'])) {
 			return;
 		}
 
