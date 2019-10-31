@@ -10,7 +10,13 @@ dir=$(dirname "$0")
 # shellcheck source=./inc.sh
 source "$dir"/inc.sh
 
-docker-compose \
+if ! [ -x "$(command -v docker-compose)" ]; then
+  dcCmd=podman-compose
+else
+  dcCmd=docker-compose
+fi
+
+$dcCmd \
   --file "$dir"/../docker/docker-compose."$FS_ENV".yml \
   --project-name foodsharing_"$FS_ENV" \
   "$@"
