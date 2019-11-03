@@ -39,7 +39,7 @@ function dc() {
 
 function sql-query() {
   local database=$1 query=$2;
-  dc exec -T db sh -c "mysql --password=$MYSQL_PASSWORD $database --execute=\"$query\""
+  dc run -T db sh -c "mysql --password=$MYSQL_PASSWORD $database --execute=\"$query\""
 }
 
 function sql-file() {
@@ -117,12 +117,12 @@ function recreatedb() {
 function migratedb() {
   echo "Migrating database for $FS_ENV"
   local container=${1:-app}
-  exec-in-container $container vendor/bin/phinx migrate
-  exec-in-container $container bin/console maintenance:recreateGroupStructure
+  run-in-container $container vendor/bin/phinx migrate
+  run-in-container $container bin/console maintenance:recreateGroupStructure
 }
 
 function wait-for-mysql() {
-  exec-in-container-asroot db "while ! mysql --password=$MYSQL_PASSWORD --silent --execute='select 1' >/dev/null 2>&1; do sleep 1; done"
+  run-in-container-asroot db "while ! mysql --password=$MYSQL_PASSWORD --silent --execute='select 1' >/dev/null 2>&1; do sleep 1; done"
 }
 
 function wait-for-assets() {

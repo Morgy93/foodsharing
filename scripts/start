@@ -24,8 +24,8 @@ dc up -d
 
 echo "Running composer install"
 # exec-in-container is defined in inc.sh
-exec-in-container app composer install
-exec-in-container-asroot app rm --recursive --force cache/.views-cache cache/di-cache.php
+run-in-container app composer install
+run-in-container-asroot app rm --recursive --force cache/.views-cache cache/di-cache.php
 
 echo "Waiting for database"
 wait-for-mysql
@@ -38,7 +38,7 @@ migratedb
 
 echo "Waiting for assets to be generated..."
 wait-for-assets
-exec-in-container app bin/console assets:install
+run-in-container app bin/console assets:install
 
 echo
 echo "  Go visit http://localhost:18080 now!"

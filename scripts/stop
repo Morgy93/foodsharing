@@ -8,6 +8,10 @@ dir=$(dirname "$0")
 source "$dir"/inc.sh
 
 echo "Stopping containers"
-dc stop
+if ! [ -x "$(command -v docker-compose)" ]; then
+  dc down
+else
+  dc stop
+fi
 
 echo "All stopped!"
