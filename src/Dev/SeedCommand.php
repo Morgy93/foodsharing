@@ -122,19 +122,19 @@ class SeedCommand extends Command implements CustomCommandInterface
 		foreach (range(0, 5) as $number) {
 			$user = $I->createAmbassador($password, [
 			'email' => 'userbot' . $number . '@example.com',
-			'name' => 'Bot' . $number ,
+			'name' => 'Bot' . $number,
 			'bezirk_id' => $bezirk1,
 			]);
 			$this->ambassadors[] = $user['id'];
 			$I->addBezirkAdmin($bezirk1, $user['id']);
-			$I->addBezirkMember($bezirk1parent,$user['id']);
+			$I->addBezirkMember($bezirk1parent, $user['id']);
 		}
 
 		// create some parent ambassadors
 		foreach (range(6, 10) as $number) {
 			$user = $I->createAmbassador($password, [
 				'email' => 'userbot' . $number . '@example.com',
-				'name' => 'Bot' . $number ,
+				'name' => 'Bot' . $number,
 				'bezirk_id' => $bezirk1,
 			]);
 			$this->parentambassadors[] = $user['id'];
@@ -180,7 +180,7 @@ class SeedCommand extends Command implements CustomCommandInterface
 			$I->addCollector($user['id'], $store['id']);
 			$I->addStoreNotiz($user['id'], $store['id']);
 			$I->addForumThemePost($theme['id'], $user['id']);
-			$I->addBezirkMember($bezirk1parent,$user['id']);
+			$I->addBezirkMember($bezirk1parent, $user['id']);
 		}
 		$this->output->writeln('Created some other users');
 

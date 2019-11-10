@@ -59,7 +59,7 @@ class ReportRestController extends AbstractFOSRestController
 		$reports = array_merge(
 			$this->reportGateway->getReportsByReporteeRegions($regions, $this->session->id()),
 			$this->reportGateway->getReportsForRegionlessByReporterRegion($regions, $this->session->id()),
-			$this->reportGateway->getReportsByReporteeRegions($addReportsAgainstAmbassadorsForRegions, $this->session->id(), false,true)
+			$this->reportGateway->getReportsByReporteeRegions($addReportsAgainstAmbassadorsForRegions, $this->session->id(), false, true)
 		);
 
 		$view = $this->view([
