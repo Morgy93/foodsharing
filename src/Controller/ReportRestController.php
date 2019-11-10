@@ -50,7 +50,7 @@ class ReportRestController extends AbstractFOSRestController
 		// this path implicitly includes reports against ambassadors for subregions as it includes all of them anyway.
 		} else {
 			$regions = [$regionId];
-			/* this path needs to add reports against ambassadors of subregions because they will not see themselves. Exclude $regionId
+			/* this path needs to add reports against ambassadors of sub-regions because they will not see themselves. Exclude $regionId
 			so no report is shown twice. */
 
 			$addReportsAgainstAmbassadorsForRegions = $this->regionGateway->listIdsForDescendantsAndSelf($regionId, false);
@@ -59,7 +59,7 @@ class ReportRestController extends AbstractFOSRestController
 		$reports = array_merge(
 			$this->reportGateway->getReportsByReporteeRegions($regions, $this->session->id()),
 			$this->reportGateway->getReportsForRegionlessByReporterRegion($regions, $this->session->id()),
-			$this->reportGateway->getReportsByReporteeRegions($addReportsAgainstAmbassadorsForRegions, $this->session->id(), true)
+			$this->reportGateway->getReportsByReporteeRegions($addReportsAgainstAmbassadorsForRegions, $this->session->id(), false,true)
 		);
 
 		$view = $this->view([
