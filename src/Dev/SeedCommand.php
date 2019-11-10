@@ -269,6 +269,5 @@ class SeedCommand extends Command implements CustomCommandInterface
 		foreach (range(0, 2) as $_) {
 			$I->addReport($this->getRandomIDOfArray($this->foodsavers), $this->getRandomIDOfArray($this->parentambassadors), 0, 1);
 		}
-
 	}
 }
