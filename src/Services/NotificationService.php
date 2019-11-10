@@ -39,11 +39,11 @@ final class NotificationService
 		}
 		$post = $this->foodSharePointGateway->getLastFoodSharePointPost($foodSharePointId);
 
-		$this->sendEmailNotification($foodSharePoint, $post);
-		$this->sendBellNotification($foodSharePoint, $post);
+		$this->sendFoodSharePointEmailNotification($foodSharePoint, $post);
+		$this->sendFoodSharePointBellNotification($foodSharePoint, $post);
 	}
 
-	private function sendEmailNotification(array $foodSharePoint, array $post): void
+	private function sendFoodSharePointEmailNotification(array $foodSharePoint, array $post): void
 	{
 		$eMailFollowers = $this->foodSharePointGateway->getEmailFollower($foodSharePoint['id']);
 		if (!$eMailFollowers || empty($post['attach'])) {
@@ -74,7 +74,7 @@ final class NotificationService
 		}
 	}
 
-	private function sendBellNotification(array $foodSharePoint, array $post): void
+	private function sendFoodSharePointBellNotification(array $foodSharePoint, array $post): void
 	{
 		$infoFollowers = $this->foodSharePointGateway->getInfoFollowerIds($foodSharePoint['id']);
 		if (!$infoFollowers) {
