@@ -23,6 +23,8 @@ class SeedCommand extends Command implements CustomCommandInterface
 
 	protected $foodsavers = [];
 	protected $stores = [];
+	protected $ambassadors = [];
+	protected $parentambassadors = [];
 
 	/**
 	 * returns the name of the command.
@@ -95,6 +97,7 @@ class SeedCommand extends Command implements CustomCommandInterface
 	{
 		$I = $this->helper;
 		$bezirk1 = '241'; // this is called 'Göttingen'
+		$bezirk1parent = '57'; // this is called Niedersachsen
 		$bezirk_vorstand = '1373';
 		$ag_aktive = '1565';
 		$ag_testimonials = '1564';
@@ -114,6 +117,29 @@ class SeedCommand extends Command implements CustomCommandInterface
 			'about_me_public' => 'hello!'
 		]);
 		$this->writeUser($userbot, $password, 'ambassador');
+		// create some more ambassadors
+		$this->ambassadors = [$userbot['id']];
+		foreach (range(0, 5) as $number) {
+			$user = $I->createAmbassador($password, [
+			'email' => 'userbot' . $number . '@example.com',
+			'name' => 'Bot' . $number ,
+			'bezirk_id' => $bezirk1,
+			]);
+			$this->ambassadors[] = $user['id'];
+			$I->addBezirkAdmin($bezirk1, $user['id']);
+			$I->addBezirkMember($bezirk1parent,$user['id']);
+		}
+
+		// create some parent ambassadors
+		foreach (range(6, 10) as $number) {
+			$user = $I->createAmbassador($password, [
+				'email' => 'userbot' . $number . '@example.com',
+				'name' => 'Bot' . $number ,
+				'bezirk_id' => $bezirk1,
+			]);
+			$this->parentambassadors[] = $user['id'];
+			$I->addBezirkAdmin($bezirk1parent, $user['id']);
+		}
 
 		$userorga = $I->createOrga($password, false, ['email' => 'userorga@example.com', 'name' => 'Orga', 'bezirk_id' => $bezirk1]);
 		$this->writeUser($userorga, $password, 'orga');
@@ -121,6 +147,7 @@ class SeedCommand extends Command implements CustomCommandInterface
 		$I->addBezirkAdmin($bezirk1, $userbot['id']);
 		$I->addBezirkMember($ag_quiz, $userbot['id']);
 		$I->addBezirkAdmin($ag_quiz, $userbot['id']);
+		$I->addBezirkMember($bezirk1parent, $userbot['id']);
 
 		$I->addBezirkMember($bezirk_vorstand, $userbot['id']);
 		$I->addBezirkMember($ag_aktive, $userbot['id']);
@@ -153,6 +180,7 @@ class SeedCommand extends Command implements CustomCommandInterface
 			$I->addCollector($user['id'], $store['id']);
 			$I->addStoreNotiz($user['id'], $store['id']);
 			$I->addForumThemePost($theme['id'], $user['id']);
+			$I->addBezirkMember($bezirk1parent,$user['id']);
 		}
 		$this->output->writeln('Created some other users');
 
@@ -212,12 +240,35 @@ class SeedCommand extends Command implements CustomCommandInterface
 		}
 		$this->output->writeln('Created blog posts');
 
+		// Report foodsaver against foodsaver, not confirmed
 		foreach (range(0, 4) as $_) {
 			$I->addReport($this->getRandomIDOfArray($this->foodsavers), $this->getRandomIDOfArray($this->foodsavers), 0, 0);
 		}
 
+		// Report foodsaver against foodsaver confirmed
 		foreach (range(0, 3) as $_) {
 			$I->addReport($this->getRandomIDOfArray($this->foodsavers), $this->getRandomIDOfArray($this->foodsavers), 0, 1);
 		}
+
+		// Report foodsaver against ambassador
+		foreach (range(0, 1) as $_) {
+			$I->addReport($this->getRandomIDOfArray($this->foodsavers), $this->getRandomIDOfArray($this->ambassadors), 0, 1);
+		}
+
+		// Report ambassador against ambassador
+		foreach (range(0, 2) as $_) {
+			$I->addReport($this->getRandomIDOfArray($this->ambassadors), $this->getRandomIDOfArray($this->ambassadors), 0, 1);
+		}
+
+		// Report Ambassador against foodsaver
+		foreach (range(0, 3) as $_) {
+			$I->addReport($this->getRandomIDOfArray($this->ambassadors), $this->getRandomIDOfArray($this->foodsavers), 0, 1);
+		}
+
+		// Report foodsaver against parentambassador
+		foreach (range(0, 2) as $_) {
+			$I->addReport($this->getRandomIDOfArray($this->foodsavers), $this->getRandomIDOfArray($this->parentambassadors), 0, 1);
+		}
+
 	}
 }

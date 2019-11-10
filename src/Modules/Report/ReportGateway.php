@@ -4,6 +4,7 @@ namespace Foodsharing\Modules\Report;
 
 use Envms\FluentPDO\Queries\Select;
 use Foodsharing\Modules\Core\BaseGateway;
+use Foodsharing\Modules\Core\DBConstants\Foodsaver\Role;
 
 class ReportGateway extends BaseGateway
 {
@@ -242,7 +243,7 @@ class ReportGateway extends BaseGateway
 		return $query;
 	}
 
-	public function getReportsByReporteeRegions($regions, $excludeReportsAboutUser = null, $includeOnlyAdminsOfSelectedGroups = false)
+	public function getReportsByReporteeRegions($regions, $excludeReportsAboutUser = null, bool $excludeReportsAboutAdmins = true, $includeOnlyAdminsOfSelectedGroups = false)
 	{
 		$query = $this->reportSelect();
 
@@ -256,6 +257,9 @@ class ReportGateway extends BaseGateway
 		}
 		if ($excludeReportsAboutUser !== null) {
 			$query = $query->where('fs.id != ?', $excludeReportsAboutUser);
+		}
+		if ($excludeReportsAboutAdmins) {
+			$query = $query->where('fs.rolle < ?', Role::AMBASSADOR);
 		}
 		if ($includeOnlyAdminsOfSelectedGroups) {
 			$query = $query->innerJoin('fs_botschafter admin ON admin.foodsaver_id = fs.id AND admin.bezirk_id = fs.bezirk_id');
