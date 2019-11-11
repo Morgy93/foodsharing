@@ -32,7 +32,7 @@ class ReportGatewayTest extends \Codeception\Test\Unit
 		$reportAgainstAmb = $this->tester->addReport($foodsaverInChild['id'], $adminInChild['id']);
 		$anotherReportAgainstAmb = $this->tester->addReport($randomFoodsaver['id'], $adminInChild['id']);
 		$reportAgainstUser = $this->tester->addReport($adminInChild['id'], $foodsaverInChild['id']);
-		$result = $this->gateway->getReportsByReporteeRegions([$this->childRegion['id'], $this->childChildRegion['id']], null, false,true);
+		$result = $this->gateway->getReportsByReporteeRegions([$this->childRegion['id'], $this->childChildRegion['id']], null, false, true);
 		$this->tester->assertCount(2, $result);
 	}
 }
