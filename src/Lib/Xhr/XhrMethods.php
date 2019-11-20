@@ -318,7 +318,7 @@ class XhrMethods
 			), array(
 				'user' => $this->session->user('name'),
 				'name' => $betrieb
-			), 'store-wallpost-' . $storeId, 1,  $expire->addDays(ExpireTime::STORE_WALL));
+			), 'store-wallpost-' . $storeId, 1, $expire->addDays(ExpireTime::STORE_WALL));
 			$_SESSION['last_pinPost'] = time();
 			return $this->xhr_getPinPost($data);
 		}

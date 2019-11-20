@@ -5,6 +5,7 @@ namespace Foodsharing\Modules\Bell;
 use Foodsharing\Lib\WebSocketSender;
 use Foodsharing\Modules\Core\BaseGateway;
 use Foodsharing\Modules\Core\Database;
+use phpDocumentor\Reflection\Types\Boolean;
 
 class BellGateway extends BaseGateway
 {
@@ -199,6 +200,14 @@ class BellGateway extends BaseGateway
 		);
 
 		return $this->unserializeBells($bells);
+	}
+
+	public function deleteExpiredBellsByIdentifier(string $identifier ): bool
+	{
+		$expiredBells = getExpiredByIdentifier($identifier);
+		foreach ($expiredBells as $bell) {
+			delBellsByIdentifier($bell['identifier']);
+		}
 	}
 
 	public function bellWithIdentifierExists(string $identifier): bool

@@ -72,6 +72,10 @@ class MaintenanceControl extends ConsoleControl
 		$this->deleteUnconfirmedFetchDates();
 
 		/*
+		 * delete Bells with expired from certain identifiers
+		 */
+		$this->deleteExpiredBells();
+		/*
 		 * deactivate too old food baskets
 		 */
 		$this->deactivateBaskets();
@@ -215,6 +219,11 @@ class MaintenanceControl extends ConsoleControl
 				'fs-sleep' . (int)$foodsaver['id']
 			);
 		}
+	}
+
+	private function deleteExpiredBells()
+	{
+		$this->bellGateway->deleteExpiredBellsByIdentifier('store-wallpost-%');
 	}
 
 	private function deactivateBaskets()
