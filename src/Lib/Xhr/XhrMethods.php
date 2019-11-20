@@ -3,6 +3,7 @@
 namespace Foodsharing\Lib\Xhr;
 
 use Exception;
+use Carbon\Carbon;
 use Flourish\fImage;
 use Foodsharing\Helpers\DataHelper;
 use Foodsharing\Helpers\EmailHelper;
@@ -13,6 +14,7 @@ use Foodsharing\Lib\Db\Mem;
 use Foodsharing\Lib\Session;
 use Foodsharing\Lib\View\Utils;
 use Foodsharing\Modules\Bell\BellGateway;
+use Foodsharing\Modules\Bell\ExpireTime;
 use Foodsharing\Modules\Core\DBConstants\Region\Type;
 use Foodsharing\Modules\Email\EmailGateway;
 use Foodsharing\Modules\Foodsaver\FoodsaverGateway;
@@ -310,15 +312,14 @@ class XhrMethods
 		) {
 			$betrieb = $this->model->getVal('name', 'betrieb', $storeId);
 			$teamArray = explode(',', $data['team']);
-
+			$expire = new Carbon();
 			$this->bellGateway->addBell($teamArray, 'store_wallpost_title', 'store_wallpost', 'img img-store brown', array(
 				'href' => '/?page=fsbetrieb&id=' . $storeId
 			), array(
 				'user' => $this->session->user('name'),
 				'name' => $betrieb
-			), 'store-wallpost-' . $storeId);
+			), 'store-wallpost-' . $storeId, 1, $expire->addDays(ExpireTime::STORE_WALL));
 			$_SESSION['last_pinPost'] = time();
-
 			return $this->xhr_getPinPost($data);
 		}
 	}
