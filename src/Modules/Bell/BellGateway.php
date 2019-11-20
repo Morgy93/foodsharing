@@ -276,9 +276,9 @@ class BellGateway extends BaseGateway
 
 	public function deleteExpiredBellsByIdentifier(string $identifier): bool
 	{
-		$expiredBells = getExpiredByIdentifier($identifier);
+		$expiredBells = $this->getExpiredByIdentifier($identifier);
 		foreach ($expiredBells as $bell) {
-			delBellsByIdentifier($bell['identifier']);
+			$this->delBellsByIdentifier($bell['identifier']);
 		}
 	}
 }
