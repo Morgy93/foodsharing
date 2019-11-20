@@ -202,7 +202,7 @@ class BellGateway extends BaseGateway
 		return $this->unserializeBells($bells);
 	}
 
-	public function deleteExpiredBellsByIdentifier(string $identifier ): bool
+	public function deleteExpiredBellsByIdentifier(string $identifier): bool
 	{
 		$expiredBells = getExpiredByIdentifier($identifier);
 		foreach ($expiredBells as $bell) {

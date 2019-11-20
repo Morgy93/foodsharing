@@ -320,6 +320,7 @@ class XhrMethods
 				'name' => $betrieb
 			), 'store-wallpost-' . $storeId, 1, $expire->addDays(ExpireTime::STORE_WALL));
 			$_SESSION['last_pinPost'] = time();
+
 			return $this->xhr_getPinPost($data);
 		}
 	}
