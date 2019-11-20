@@ -5,7 +5,6 @@ namespace Foodsharing\Modules\Bell;
 use Foodsharing\Lib\WebSocketSender;
 use Foodsharing\Modules\Core\BaseGateway;
 use Foodsharing\Modules\Core\Database;
-use phpDocumentor\Reflection\Types\Boolean;
 
 class BellGateway extends BaseGateway
 {
