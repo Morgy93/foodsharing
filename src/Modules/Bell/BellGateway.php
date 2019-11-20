@@ -201,14 +201,6 @@ class BellGateway extends BaseGateway
 		return $this->unserializeBells($bells);
 	}
 
-	public function deleteExpiredBellsByIdentifier(string $identifier): bool
-	{
-		$expiredBells = getExpiredByIdentifier($identifier);
-		foreach ($expiredBells as $bell) {
-			delBellsByIdentifier($bell['identifier']);
-		}
-	}
-
 	public function bellWithIdentifierExists(string $identifier): bool
 	{
 		return $this->db->exists('fs_bell', ['identifier' => $identifier]);
@@ -280,5 +272,13 @@ class BellGateway extends BaseGateway
 		}
 
 		return $bells;
+	}
+
+	public function deleteExpiredBellsByIdentifier(string $identifier): bool
+	{
+		$expiredBells = getExpiredByIdentifier($identifier);
+		foreach ($expiredBells as $bell) {
+			delBellsByIdentifier($bell['identifier']);
+		}
 	}
 }
