@@ -395,7 +395,10 @@ class StoreModel extends Db
 			`presse`,
 			`sticker`,
 			`abholmenge`,
+<<<<<<< HEAD
 			`prefetchtime`
+=======
+>>>>>>> 1dacc916906e2959c373f8f4ffcc5ba057682eba
             `allow_tutoring`,
             `map_welcome_desc`
 			)
@@ -426,7 +429,6 @@ class StoreModel extends Db
 			' . (int)$data['ueberzeugungsarbeit'] . ',
 			' . (int)$data['presse'] . ',
 			' . (int)$data['sticker'] . ',
-			' . (int)$data['abholmenge'] . ',
 			' . (int)$data['prefetchtime'] . '
      	    ' . (int)$data['abholmenge'] . ',
      	    ' . (int)$data['allow_tutoring'] . ',
