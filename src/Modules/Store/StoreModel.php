@@ -394,11 +394,8 @@ class StoreModel extends Db
 			`ueberzeugungsarbeit`,
 			`presse`,
 			`sticker`,
+			`prefetchtime`,
 			`abholmenge`,
-<<<<<<< HEAD
-			`prefetchtime`
-=======
->>>>>>> 1dacc916906e2959c373f8f4ffcc5ba057682eba
             `allow_tutoring`,
             `map_welcome_desc`
 			)
