@@ -426,7 +426,7 @@ class StoreModel extends Db
 			' . (int)$data['ueberzeugungsarbeit'] . ',
 			' . (int)$data['presse'] . ',
 			' . (int)$data['sticker'] . ',
-			' . (int)$data['prefetchtime'] . '
+			' . (int)$data['prefetchtime'] . ',
      	    ' . (int)$data['abholmenge'] . ',
      	    ' . (int)$data['allow_tutoring'] . ',
 			' . $this->strval($data['map_welcome_desc']) . '
