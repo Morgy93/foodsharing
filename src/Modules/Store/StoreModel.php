@@ -394,8 +394,8 @@ class StoreModel extends Db
 			`ueberzeugungsarbeit`,
 			`presse`,
 			`sticker`,
+			`prefetchtime`,
 			`abholmenge`,
-			`prefetchtime`
             `allow_tutoring`,
             `map_welcome_desc`
 			)
@@ -426,8 +426,7 @@ class StoreModel extends Db
 			' . (int)$data['ueberzeugungsarbeit'] . ',
 			' . (int)$data['presse'] . ',
 			' . (int)$data['sticker'] . ',
-			' . (int)$data['abholmenge'] . ',
-			' . (int)$data['prefetchtime'] . '
+			' . (int)$data['prefetchtime'] . ',
      	    ' . (int)$data['abholmenge'] . ',
      	    ' . (int)$data['allow_tutoring'] . ',
 			' . $this->strval($data['map_welcome_desc']) . '
