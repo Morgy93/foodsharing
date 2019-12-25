@@ -165,22 +165,17 @@ final class BlogGateway extends BaseGateway
 
 	public function add_blog_entry(array $data): int
 	{
-		$active = 0;
-		if ($this->session->isOrgaTeam() || $this->session->isAdminFor($data['bezirk_id'])) {
-			$active = 1;
-		}
-
 		$id = $this->db->insert(
 			'fs_blog_entry',
 			[
 				'bezirk_id' => (int)$data['bezirk_id'],
 				'foodsaver_id' => (int)$data['foodsaver_id'],
-				'name' => strip_tags($this->$data['name']),
-				'teaser' => strip_tags($this->$data['teaser']),
-				'body' => $this->$data['body'],
-				'time' => strip_tags($this->$data['time']),
-				'picture' => strip_tags($this->$data['picture']),
-				'active' => $active
+				'name' => strip_tags($data['name']),
+				'teaser' => strip_tags($data['teaser']),
+				'body' => $data['body'],
+				'time' => strip_tags($data['time']),
+				'picture' => strip_tags($data['picture']),
+				'active' => 0
 			]
 		);
 
