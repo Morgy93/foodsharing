@@ -175,19 +175,19 @@ final class BlogGateway extends BaseGateway
 			]
 		);
 
-		$foodsaver = array();
-		$orgateam = $this->foodsaverGateway->getOrgateam();
-		$botschafter = $this->foodsaverGateway->getAmbassadors($data['bezirk_id']);
+		$recipients = [];
+		$orgaTeam = $this->foodsaverGateway->getOrgateam();
+		$ambassadorsOfRegion = $this->foodsaverGateway->getAmbassadors($data['bezirk_id']);
 
-		foreach ($orgateam as $o) {
-			$foodsaver[$o['id']] = $o;
+		foreach ($orgaTeam as $o) {
+			$recipients[$o['id']] = $o;
 		}
-		foreach ($botschafter as $b) {
-			$foodsaver[$b['id']] = $b;
+		foreach ($ambassadorsOfRegion as $b) {
+			$recipients[$b['id']] = $b;
 		}
 
 		$this->bellGateway->addBell(
-			$foodsaver,
+			$recipients,
 			'blog_new_check_title',
 			'blog_new_check',
 			'fas fa-bullhorn',
