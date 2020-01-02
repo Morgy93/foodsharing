@@ -2,7 +2,6 @@
 
 namespace Foodsharing\Modules\Blog;
 
-use Foodsharing\Lib\Session;
 use Foodsharing\Modules\Bell\BellGateway;
 use Foodsharing\Modules\Core\BaseGateway;
 use Foodsharing\Modules\Core\Database;
@@ -14,20 +13,17 @@ final class BlogGateway extends BaseGateway
 	private $bellGateway;
 	private $foodsaverGateway;
 	private $sanitizerService;
-	private $session;
 
 	public function __construct(
 		BellGateway $bellGateway,
 		Database $db,
 		FoodsaverGateway $foodsaverGateway,
-		SanitizerService $sanitizerService,
-		Session $session
+		SanitizerService $sanitizerService
 	) {
 		parent::__construct($db);
 		$this->bellGateway = $bellGateway;
 		$this->foodsaverGateway = $foodsaverGateway;
 		$this->sanitizerService = $sanitizerService;
-		$this->session = $session;
 	}
 
 	public function update_blog_entry(int $id, array $data): int
