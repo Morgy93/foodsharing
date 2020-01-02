@@ -100,11 +100,11 @@ class BlogView extends View
 			), CNT_LEFT);
 		}
 		if (is_array($bezirke) && count($bezirke) > 1) {
-			$bezirkchoose = $this->v_utils->v_form_select('bezirk_id', array('values' => $bezirke));
+			$bezirkchoose = $this->v_utils->v_form_select('blog_article_is_for_which_region', array('values' => $bezirke));
 		} elseif (is_array($bezirke)) {
 			$bezirk = end($bezirke);
 			$title = 'Neuer Artikel für ' . $bezirk['name'];
-			$bezirkchoose = $this->v_utils->v_form_hidden('bezirk_id', $bezirk['id']);
+			$bezirkchoose = $this->v_utils->v_form_hidden('blog_article_is_for_which_region', $bezirk['id']);
 		}
 
 		return $this->v_utils->v_form('test', array(
