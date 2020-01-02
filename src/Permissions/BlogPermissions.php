@@ -15,7 +15,7 @@ final class BlogPermissions
 
 	public function mayAdd(int $regionId): bool
 	{
-		return $this->session->isOrgaTeam() || $this->session->isAdminFor($regionId);
+		return $this->session->may('orga') || $this->session->isAdminFor($regionId);
 	}
 
 	public function mayEdit($authorOfPost): bool
