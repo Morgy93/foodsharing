@@ -163,7 +163,7 @@ final class BlogGateway extends BaseGateway
 		);
 	}
 
-	public function add_blog_entry(array $data): int
+	public function add_blog_entry(array $data, string $userName): int
 	{
 		$id = $this->db->insert(
 			'fs_blog_entry',
@@ -197,7 +197,7 @@ final class BlogGateway extends BaseGateway
 			'fas fa-bullhorn',
 			['href' => '/?page=blog&sub=edit&id=' . $id],
 			[
-				'user' => $this->session->user('name'),
+				'user' => $userName,
 				'teaser' => $this->sanitizerService->tt($data['teaser'], 100),
 				'title' => $data['name']
 			],
