@@ -118,11 +118,11 @@ final class BlogGateway extends BaseGateway
 		);
 	}
 
-	public function listArticle(): array
+	public function listArticle(array $regionIds, bool $isOrga): array
 	{
 		$not = '';
-		if (!$this->session->isOrgaTeam()) {
-			$not = 'WHERE 		`bezirk_id` IN (' . implode(',', array_map('intval', $this->session->listRegionIDs())) . ')';
+		if (!$isOrga) {
+			$not = 'WHERE 		`bezirk_id` IN (' . implode(',', array_map('intval', $regionIds)) . ')';
 		}
 
 		return $this->db->fetchAll('

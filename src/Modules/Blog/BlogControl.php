@@ -87,7 +87,7 @@ class BlogControl extends Control
 
 			$this->pageHelper->addContent($this->view->headline($title));
 
-			if ($data = $this->blogGateway->listArticle()) {
+			if ($data = $this->blogGateway->listArticle($this->session->listRegionIDs(), $this->session->may('orga'))) {
 				$this->pageHelper->addContent($this->view->listArticle($data));
 			} else {
 				$this->flashMessageHelper->info($this->translationHelper->s('blog_entry_empty'));
