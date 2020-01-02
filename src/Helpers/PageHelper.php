@@ -247,7 +247,7 @@ final class PageHelper
 				'hasFsRole' => $this->session->may('fs'),
 				'isOrgaTeam' => $this->session->isOrgaTeam(),
 				'may' => [
-					'administrateBlog' => $this->blogPermissions->mayAdministrateBlog(),
+					'administrateBlog' => $this->blogPermissions->mayAccessBlogMenu(),
 					'editQuiz' => $this->quizPermissions->mayEditQuiz(),
 					'handleReports' => $this->session->mayHandleReports(),
 					'addStore' => $this->storePermissions->mayCreateStore(),

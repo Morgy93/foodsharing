@@ -81,7 +81,7 @@ class BlogControl extends Control
 
 	public function manage()
 	{
-		if ($this->blogPermissions->mayAdministrateBlog()) {
+		if ($this->blogPermissions->mayAccessBlogMenu()) {
 			$this->pageHelper->addBread($this->translationHelper->s('manage_blog'));
 			$title = 'Blog Artikel';
 
@@ -120,7 +120,7 @@ class BlogControl extends Control
 
 	public function add()
 	{
-		if ($this->blogPermissions->mayAdministrateBlog()) {
+		if ($this->blogPermissions->maySuggestBlogEntries()) {
 			$this->handle_add();
 
 			$this->pageHelper->addBread($this->translationHelper->s('bread_new_blog_entry'));
@@ -150,7 +150,7 @@ class BlogControl extends Control
 	{
 		global $g_data;
 
-		if ($this->blogPermissions->mayAdministrateBlog() && $this->submitted()) {
+		if ($this->blogPermissions->maySuggestBlogEntries() && $this->submitted()) {
 			$g_data['foodsaver_id'] = $this->session->id();
 			$g_data['time'] = date('Y-m-d H:i:s');
 
