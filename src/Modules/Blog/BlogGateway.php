@@ -159,7 +159,7 @@ final class BlogGateway extends BaseGateway
 		);
 	}
 
-	public function add_blog_entry(array $data, string $userName): int
+	public function addBlogEntryWithoutActivation(array $data, string $userName): int
 	{
 		$id = $this->db->insert(
 			'fs_blog_entry',
