@@ -21,7 +21,7 @@
 - Region statistics for ambassadors do not include workgroup admins anymore #778 !1341 @Caluera
 - Fix bug preventing publishing, editing and deleting of blog posts !1349 @pfaufisch
 - Fix small bug in sending quickreply messages without personal field !1321 !1367 @alex.simm
-- Leaving a district is captured in history. Leaving a home district removes verification. @fs_k
+- Leaving a district is captured in history. Leaving a home district removes verification. !!1358 @fs_k
 - Fix WallpostPermissions now deny read access by default #352 !1353 @pfaufisch
 
 ## Refactoring
