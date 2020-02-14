@@ -767,7 +767,7 @@ final class FoodsaverGateway extends BaseGateway
 		if ($mainRegion_id === $regionId) {
 			$this->db->update('fs_foodsaver', [
 				'bezirk_id' => 0,
-				'verified' => 0
+				'verified'  => 0
 			], [
 				'id' => $fsId
 			]);
