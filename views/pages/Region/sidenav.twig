@@ -11,6 +11,7 @@
 
 <div id="signout_sure" title="{{ 'are_you_sure'|trans }}">
     {% include 'partials/info.twig' with {'msg': 'group.really_quit_name'|trans({'%name%': region.name})} %}
+    {% include 'partials/info.twig' with {'msg': 'group.quitting_home_district_warning'|trans} %}
     <input type="hidden" name="bid" class="bid" value="{{ region.id }}" />
 </div>
 
