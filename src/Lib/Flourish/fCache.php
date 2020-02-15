@@ -304,24 +304,20 @@ class fCache
 				if ($res->countReturnedRows()) {
 					return false;
 				}
-				try {
-					$value_placeholder = $this->config['value_data_type'] == 'blob' ? '%l' : '%s';
-					$this->data_store->query(
-						'INSERT INTO %r (%r, %r, %r) VALUES (%s, ' . $value_placeholder . ', %i)',
-						$this->config['table'],
-						$this->config['key_column'],
-						$this->config['value_column'],
-						$this->config['ttl_column'],
-						$key,
-						$value,
-						(!$ttl) ? 0 : time() + $ttl
-					);
 
-					return true;
-				} catch (fSQLException $e) {
-					return false;
-				}
+				$value_placeholder = $this->config['value_data_type'] == 'blob' ? '%l' : '%s';
+				$this->data_store->query(
+					'INSERT INTO %r (%r, %r, %r) VALUES (%s, ' . $value_placeholder . ', %i)',
+					$this->config['table'],
+					$this->config['key_column'],
+					$this->config['value_column'],
+					$this->config['ttl_column'],
+					$key,
+					$value,
+					(!$ttl) ? 0 : time() + $ttl
+				);
 
+				return true;
 			case 'directory':
 				if (file_exists($this->config['path'] . $key)) {
 					return false;
@@ -653,33 +649,29 @@ class fCache
 
 				$expiration_date = (!$ttl) ? 0 : time() + $ttl;
 
-				try {
-					$value_placeholder = $this->config['value_data_type'] == 'blob' ? '%l' : '%s';
-					if (!$res->countReturnedRows()) {
-						$this->data_store->query(
-							'INSERT INTO %r (%r, %r, %r) VALUES (%s, ' . $value_placeholder . ', %i)',
-							$this->config['table'],
-							$this->config['key_column'],
-							$this->config['value_column'],
-							$this->config['ttl_column'],
-							$key,
-							$value,
-							$expiration_date
-						);
-					} else {
-						$this->data_store->query(
-							'UPDATE %r SET %r = ' . $value_placeholder . ', %r = %s WHERE %r = %s',
-							$this->config['table'],
-							$this->config['value_column'],
-							$value,
-							$this->config['ttl_column'],
-							$expiration_date,
-							$this->config['key_column'],
-							$key
-						);
-					}
-				} catch (fSQLException $e) {
-					return false;
+				$value_placeholder = $this->config['value_data_type'] == 'blob' ? '%l' : '%s';
+				if (!$res->countReturnedRows()) {
+					$this->data_store->query(
+						'INSERT INTO %r (%r, %r, %r) VALUES (%s, ' . $value_placeholder . ', %i)',
+						$this->config['table'],
+						$this->config['key_column'],
+						$this->config['value_column'],
+						$this->config['ttl_column'],
+						$key,
+						$value,
+						$expiration_date
+					);
+				} else {
+					$this->data_store->query(
+						'UPDATE %r SET %r = ' . $value_placeholder . ', %r = %s WHERE %r = %s',
+						$this->config['table'],
+						$this->config['value_column'],
+						$value,
+						$this->config['ttl_column'],
+						$expiration_date,
+						$this->config['key_column'],
+						$key
+					);
 				}
 
 				return true;

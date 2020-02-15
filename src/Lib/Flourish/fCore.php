@@ -206,20 +206,6 @@ class fCore
 	private static $significant_error_lines = array();
 
 	/**
-	 * An SMTP connection for sending error and exception emails.
-	 *
-	 * @var fSMTP
-	 */
-	private static $smtp_connection = null;
-
-	/**
-	 * The email address to send error emails from.
-	 *
-	 * @var string
-	 */
-	private static $smtp_from_email = null;
-
-	/**
 	 * Creates a nicely formatted backtrace to the the point where this method is called.
 	 *
 	 * @param  int $remove_lines  The number of trailing lines to remove from the backtrace
@@ -511,18 +497,6 @@ class fCore
 	}
 
 	/**
-	 * Sets an fSMTP object to be used for sending error and exception emails.
-	 *
-	 * @param  fSMTP  $smtp        The SMTP connection to send emails over
-	 * @param  string $from_email  The email address to use in the `From:` header
-	 */
-	public static function configureSMTP($smtp, $from_email)
-	{
-		self::$smtp_connection = $smtp;
-		self::$smtp_from_email = $from_email;
-	}
-
-	/**
 	 * Prints a debugging message if global or code-specific debugging is enabled.
 	 *
 	 * @param  string  $message  The debug message
@@ -609,142 +583,6 @@ class fCore
 	}
 
 	/**
-	 * Disables including the context information with exception and error messages.
-	 *
-	 * The context information includes the following superglobals:
-	 *
-	 *  - `$_SERVER`
-	 *  - `$_POST`
-	 *  - `$_GET`
-	 *  - `$_SESSION`
-	 *  - `$_FILES`
-	 *  - `$_COOKIE`
-	 */
-	public static function disableContext()
-	{
-		self::$show_context = false;
-	}
-
-	/**
-	 * Enables debug messages globally, i.e. they will be shown for any call to ::debug().
-	 *
-	 * @param  bool $flag  If debugging messages should be shown
-	 */
-	public static function enableDebugging($flag)
-	{
-		self::$debug = (bool)$flag;
-	}
-
-	/**
-	 * Turns on a feature where undefined constants are automatically created with the string value equivalent to the name.
-	 *
-	 * This functionality only works if ::enableErrorHandling() has been
-	 * called first. This functionality may have a very slight performance
-	 * impact since a `E_STRICT` error message must be captured and then a
-	 * call to [http://php.net/define define()] is made.
-	 */
-	public static function enableDynamicConstants()
-	{
-		if (!self::$handles_errors) {
-			throw new fProgrammerException(
-				'Dynamic constants can not be enabled unless error handling has been enabled via %s',
-				__CLASS__ . '::enableErrorHandling()'
-			);
-		}
-		self::$dynamic_constants = true;
-	}
-
-	/**
-	 * Turns on developer-friendly error handling that includes context information including a backtrace and superglobal dumps.
-	 *
-	 * All errors that match the current
-	 * [http://php.net/error_reporting error_reporting()] level will be
-	 * redirected to the destination and will include a full backtrace. In
-	 * addition, dumps of the following superglobals will be made to aid in
-	 * debugging:
-	 *
-	 *  - `$_SERVER`
-	 *  - `$_POST`
-	 *  - `$_GET`
-	 *  - `$_SESSION`
-	 *  - `$_FILES`
-	 *  - `$_COOKIE`
-	 *
-	 * The superglobal dumps are only done once per page, however a backtrace
-	 * in included for each error.
-	 *
-	 * If an email address is specified for the destination, only one email
-	 * will be sent per script execution. If both error and
-	 * [enableExceptionHandling() exception handling] are set to the same
-	 * email address, the email will contain both errors and exceptions.
-	 *
-	 * @param  string  $destination          The destination for the errors and context information - an email address, a file path or the string `'html'`
-	 * @param  bool $handle_fatal_errors  If true, a shutdown function will be registered to handle a fatal error.
-	 *                                       Be aware, other shutdown functions could inadvertantly disable this one or exit the process.
-	 */
-	public static function enableErrorHandling($destination, $handle_fatal_errors = false)
-	{
-		if (!self::checkDestination($destination)) {
-			return;
-		}
-		self::$error_destination = $destination;
-		self::$handles_errors = true;
-		set_error_handler(self::callback(self::handleError));
-
-		if ($handle_fatal_errors) {
-			register_shutdown_function(self::callback(self::handleFatalError));
-		}
-	}
-
-	/**
-	 * Turns on developer-friendly uncaught exception handling that includes context information including a backtrace and superglobal dumps.
-	 *
-	 * Any uncaught exception will be redirected to the destination specified,
-	 * and the page will execute the `$closing_code` callback before exiting.
-	 * The destination will receive a message with the exception messaage, a
-	 * full backtrace and dumps of the following superglobals to aid in
-	 * debugging:
-	 *
-	 *  - `$_SERVER`
-	 *  - `$_POST`
-	 *  - `$_GET`
-	 *  - `$_SESSION`
-	 *  - `$_FILES`
-	 *  - `$_COOKIE`
-	 *
-	 * The superglobal dumps are only done once per page, however a backtrace
-	 * in included for each error.
-	 *
-	 * If an email address is specified for the destination, only one email
-	 * will be sent per script execution.
-	 *
-	 * If an email address is specified for the destination, only one email
-	 * will be sent per script execution. If both exception and
-	 * [enableErrorHandling() error handling] are set to the same
-	 * email address, the email will contain both exceptions and errors.
-	 *
-	 * @param  string   $destination   The destination for the exception and context information - an email address, a file path or the string `'html'`
-	 * @param  callback $closing_code  This callback will happen after the exception is handled and before page execution stops. Good for printing a footer. If no callback is provided and the exception extends fException, fException::printMessage() will be called.
-	 * @param  array    $parameters    The parameters to send to `$closing_code`
-	 */
-	public static function enableExceptionHandling($destination, $closing_code = null, $parameters = array())
-	{
-		if (!self::checkDestination($destination)) {
-			return;
-		}
-		self::$handles_exceptions = true;
-		self::$exception_destination = $destination;
-		self::$exception_handler_callback = $closing_code;
-		if (!is_object($parameters)) {
-			settype($parameters, 'array');
-		} else {
-			$parameters = array($parameters);
-		}
-		self::$exception_handler_parameters = $parameters;
-		set_exception_handler(self::callback(self::handleException));
-	}
-
-	/**
 	 * Prints the ::dump() of a value.
 	 *
 	 * The dump will be printed in a `<pre>` tag with the class `exposed` if
@@ -796,29 +634,6 @@ class fCore
 	public static function getDebug($force = false)
 	{
 		return self::$debug || $force;
-	}
-
-	/**
-	 * A shutdown function to handle a fatal error.
-	 *
-	 * @internal
-	 */
-	public static function handleFatalError()
-	{
-		$error = error_get_last();
-
-		$allowed_error_types = array(
-			E_ERROR, E_CORE_ERROR
-		);
-
-		if ($error != null && in_array($error['type'], $allowed_error_types)) {
-			$error_number = $error['type'];
-			$error_file = $error['file'];
-			$error_line = $error['line'];
-			$error_string = $error['message'];
-
-			self::handleError($error_number, $error_string, $error_file, $error_line);
-		}
 	}
 
 	/**
@@ -927,62 +742,6 @@ class fCore
 	}
 
 	/**
-	 * Handles an uncaught exception, creating the necessary context information, sending it to the specified destination and finally executing the closing callback.
-	 *
-	 * @internal
-	 *
-	 * @param  object $exception  The uncaught exception to handle
-	 */
-	public static function handleException($exception)
-	{
-		$message = ($exception->getMessage()) ? $exception->getMessage() : '{no message}';
-		if ($exception instanceof fException) {
-			$trace = $exception->formatTrace();
-		} else {
-			$trace = $exception->getTraceAsString();
-		}
-		$code = ($exception->getCode()) ? ' (code ' . $exception->getCode() . ')' : '';
-
-		$info = $trace . "\n" . $message . $code;
-		$headline = self::compose('Uncaught') . ' ' . get_class($exception);
-		$info_block = $headline . "\n" . str_pad('', strlen($headline), '-') . "\n" . trim($info);
-
-		$trace_lines = explode("\n", $trace);
-
-		self::sendMessageToDestination('exception', $info_block, end($trace_lines));
-
-		if (self::$exception_handler_callback === null) {
-			if (self::$exception_destination != 'html' && $exception instanceof fException) {
-				$exception->printMessage();
-			}
-
-			return;
-		}
-
-		try {
-			self::call(self::$exception_handler_callback, self::$exception_handler_parameters);
-		} catch (Exception $e) {
-			trigger_error(
-				self::compose(
-					'An exception was thrown in the %s closing code callback',
-					'setExceptionHandling()'
-				),
-				E_USER_ERROR
-			);
-		}
-	}
-
-	/**
-	 * Registers a callback to handle debug messages instead of the default action of calling ::expose() on the message.
-	 *
-	 * @param  callback $callback  A callback that accepts a single parameter, the string debug message to handle
-	 */
-	public static function registerDebugCallback($callback)
-	{
-		self::$debug_callback = self::callback($callback);
-	}
-
-	/**
 	 * Resets the configuration of the class.
 	 *
 	 * @internal
@@ -1019,79 +778,6 @@ class fCore
 		self::$handles_exceptions = false;
 		self::$significant_error_lines = array();
 		self::$show_context = true;
-		self::$smtp_connection = null;
-		self::$smtp_from_email = null;
-	}
-
-	/**
-	 * Sends an email or writes a file with messages generated during the page execution.
-	 *
-	 * This method prevents multiple emails from being sent or a log file from
-	 * being written multiple times for one script execution.
-	 *
-	 * @internal
-	 */
-	public static function sendMessagesOnShutdown()
-	{
-		$messages = array();
-
-		if (self::$error_message_queue) {
-			$message = join("\n\n", self::$error_message_queue);
-			$messages[self::$error_destination] = $message;
-		}
-
-		if (self::$exception_message) {
-			if (isset($messages[self::$exception_destination])) {
-				$messages[self::$exception_destination] .= "\n\n";
-			} else {
-				$messages[self::$exception_destination] = '';
-			}
-			$messages[self::$exception_destination] .= self::$exception_message;
-		}
-
-		$hash = md5(join('', self::$significant_error_lines), true);
-		$hash = strtr(base64_encode($hash), '/', '-');
-		$hash = substr(rtrim($hash, '='), 0, 8);
-
-		$first_file_line = preg_replace(
-			'#^.*[/\\\\](.*)$#',
-			'\1',
-			reset(self::$significant_error_lines)
-		);
-
-		$subject = self::compose(
-			'[%1$s] %2$s error(s) beginning at %3$s {%4$s}',
-			isset($_SERVER['SERVER_NAME']) ? $_SERVER['SERVER_NAME'] : php_uname('n'),
-			count($messages),
-			$first_file_line,
-			$hash
-		);
-
-		foreach ($messages as $destination => $message) {
-			if (self::$show_context) {
-				$message .= "\n\n" . self::generateContext();
-			}
-
-			if (self::checkDestination($destination) == 'email') {
-				if (self::$smtp_connection) {
-					$email = new fEmail();
-					foreach (explode(',', $destination) as $recipient) {
-						$email->addRecipient($recipient);
-					}
-					$email->setFromEmail(self::$smtp_from_email);
-					$email->setSubject($subject);
-					$email->setBody($message);
-					$email->send(self::$smtp_connection);
-				} else {
-					mail($destination, $subject, $message);
-				}
-			} else {
-				$handle = fopen($destination, 'a');
-				fwrite($handle, $subject . "\n\n");
-				fwrite($handle, $message . "\n\n");
-				fclose($handle);
-			}
-		}
 	}
 
 	/**
