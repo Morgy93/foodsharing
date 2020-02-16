@@ -188,11 +188,9 @@ final class ProfileGateway extends BaseGateway
 				object_name = \'bezirk_id\'
 			order by date desc
 			limit 1';
-		if ($home_district_history = $this->db->fetch($stm, [':fs_id' => $this->fs_id])
-		) {
+		if ($home_district_history = $this->db->fetch($stm, [':fs_id' => $this->fs_id])) {
 			$data['home_district_history'] = $home_district_history;
 		}
-
 
 		return $data;
 	}
