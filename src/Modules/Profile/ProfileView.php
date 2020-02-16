@@ -591,7 +591,7 @@ class ProfileView extends View
 	{
 		if ($this->foodsaver['foodsaver']) {
 			$fsa = [];
-			$fsHomeDistrict;
+			$fsHomeDistrict = '';
 			foreach ($this->foodsaver['foodsaver'] as $foodsaver) {
 				if ($foodsaver['id'] == $this->foodsaver['bezirk_id']) {
 					$fsHomeDistrict = '<a class="light" href="/?page=bezirk&bid=' . $foodsaver['id'] . '&sub=forum">' . $foodsaver['name'] . '</a>';
