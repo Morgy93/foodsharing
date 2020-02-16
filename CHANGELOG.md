@@ -163,6 +163,7 @@
 - Leaving a district is captured in history. Leaving a home district removes verification. @fs_k
  - Leaving a district is captured in history. Leaving a home district removes verification. !!1358 @fs_k
 - Leaving a district is captured in history. Leaving a home district removes verification. @fs_k
+ - Leaving a district is captured in history. Leaving a home district removes verification. !!1358 @fs_k
 - Fix WallpostPermissions now deny read access by default #352 !1353 @pfaufisch
 - Fixed mailboxes not beeing generated for some users !1356 #705 @kheyer
 - Resolve "If name of the district or adress is too long on the business card, this is cut off or goes over the edge" #700 !1362 @chriswalg @kheyer
