@@ -595,7 +595,7 @@ class ProfileView extends View
 			foreach ($this->foodsaver['foodsaver'] as $foodsaver) {
 				if ($foodsaver['id'] == $this->foodsaver['bezirk_id']) {
 					$fsHomeDistrict = '<a class="light" href="/?page=bezirk&bid=' . $foodsaver['id'] . '&sub=forum">' . $foodsaver['name'] . '</a>';
-					if ($this->session->may('bot')) {
+					if ($this->session->may('bot') && !empty($this->foodsaver['home_district_history'])) {
 						$fsHomeDistrict .= ' (<a class="light" href="/profile/' . $this->foodsaver['home_district_history']['changer_id'] . '">' . $this->foodsaver['home_district_history']['changer_full_name'] . '</a> ';
 						$fsHomeDistrict .= Carbon::parse($this->foodsaver['home_district_history']['date'])->format('d.m.Y h:i:s') . ')';
 					}
