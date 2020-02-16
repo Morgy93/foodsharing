@@ -6,6 +6,7 @@ use Foodsharing\Lib\Session;
 use Foodsharing\Modules\Bell\BellGateway;
 use Foodsharing\Modules\Foodsaver\FoodsaverGateway;
 use Foodsharing\Modules\Region\RegionGateway;
+use Foodsharing\Modules\Settings\SettingsGateway;
 use Foodsharing\Permissions\RegionPermissions;
 use Foodsharing\Services\ImageService;
 use FOS\RestBundle\Controller\AbstractFOSRestController;
@@ -14,6 +15,7 @@ use Symfony\Component\HttpKernel\Exception\HttpException;
 
 class RegionRestController extends AbstractFOSRestController
 {
+	private $settingsGateway;
 	private $bellGateway;
 	private $foodsaverGateway;
 	private $regionGateway;
@@ -22,6 +24,7 @@ class RegionRestController extends AbstractFOSRestController
 	private $imageService;
 
 	public function __construct(
+		SettingsGateway $settingsGateway,
 		BellGateway $bellGateway,
 		FoodsaverGateway $foodsaverGateway,
 		RegionPermissions $regionPermissions,
@@ -29,6 +32,7 @@ class RegionRestController extends AbstractFOSRestController
 		Session $session,
 		ImageService $imageService
 	) {
+		$this->settingsGateway = $settingsGateway;
 		$this->bellGateway = $bellGateway;
 		$this->foodsaverGateway = $foodsaverGateway;
 		$this->regionPermissions = $regionPermissions;
@@ -56,6 +60,7 @@ class RegionRestController extends AbstractFOSRestController
 		$this->regionGateway->linkBezirk($sessionId, $regionId);
 
 		if (!$this->session->getCurrentRegionId()) {
+			$this->settingsGateway->logChangedSetting($sessionId, ['bezirk_id' => 0], ['bezirk_id' => $regionId], ['bezirk_id']);
 			$this->foodsaverGateway->updateProfile($sessionId, ['bezirk_id' => $regionId]);
 		}
 
