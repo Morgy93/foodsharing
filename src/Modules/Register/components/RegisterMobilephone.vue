@@ -4,17 +4,10 @@
       <label for="mobile">{{ $i18n('register.login_mobile_phone') }}</label>
     </div>
     <div class="col-sm-auto">
-      <VuePhoneNumberInput
-        :value="computedMobile"
-        :preferred-countries="telCountries"
-        :show-code-on-list="true"
-        :translations="{
-          countrySelectorLabel: 'Ländercode',
-          countrySelectorError: 'Wähle einen Ländercode',
-          phoneNumberLabel: 'Handynummer',
-          example: 'Beispiel :'
-        }"
-        @update="$emit('update:mobile', $event.formattedNumber ? $event.formattedNumber : $event.phoneNumber)"
+      <vue-tel-input
+        :v-model="mobile"
+        v-bind="telInputProps"
+        @update="$emit('input:mobile', $event.number)"
       />
     </div>
     <div class="mt-3 col-sm-auto">
@@ -41,23 +34,25 @@
   </form>
 </template>
 <script>
-import VuePhoneNumberInput from 'vue-phone-number-input'
-import 'vue-phone-number-input/dist/vue-phone-number-input.css'
+import { VueTelInput } from 'vue-tel-input'
 
 export default {
   components: {
-    VuePhoneNumberInput
+    VueTelInput
   },
   props: { mobile: { type: String, default: null } },
   data () {
     return {
-      telCountries: ['DE', 'AT', 'CH']
-    }
-  },
-  computed: {
-    computedMobile: function () {
-      // cut of the country code if it is already added.
-      return this.mobile && this.mobile.startsWith('+') ? this.mobile.slice(3) : this.mobile
+      telInputProps: {
+        mode: 'international',
+        defaultCountry: 'DE',
+        disabledFetchingCountry: true,
+        placeholder: 'Beispiel: 17912345678',
+        preferredCountries: ['DE', 'AT', 'CH'],
+        name: 'mobilephone',
+        maxLen: 15,
+        validCharactersOnly: true
+      }
     }
   }
 }
