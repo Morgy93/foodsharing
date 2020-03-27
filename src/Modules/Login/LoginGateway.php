@@ -113,7 +113,7 @@ class LoginGateway extends BaseGateway
 				'name' => strip_tags($data['name']),
 				'nachname' => strip_tags($data['surname']),
 				'geb_datum' => strip_tags($data['birthdate']),
-				'handy' => strip_tags($data['mobile_phone']),
+				'handy' => ltrim($data['mobile_phone']),
 				'newsletter' => (int)$data['newsletter'],
 				'geschlecht' => (int)$data['gender'],
 				'anmeldedatum' => $this->db->now(),
