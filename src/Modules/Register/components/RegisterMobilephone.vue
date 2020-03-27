@@ -5,9 +5,9 @@
     </div>
     <div class="col-sm-auto">
       <vue-tel-input
-        :v-model="mobile"
+        v-model="mobile"
         v-bind="telInputProps"
-        @update="$emit('input:mobile', $event.number)"
+        @input="$emit('update:mobile', $event)"
       />
     </div>
     <div class="mt-3 col-sm-auto">
@@ -40,9 +40,9 @@ export default {
   components: {
     VueTelInput
   },
-  props: { mobile: { type: String, default: null } },
   data () {
     return {
+      mobile: null,
       telInputProps: {
         mode: 'international',
         defaultCountry: 'DE',
