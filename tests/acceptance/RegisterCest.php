@@ -19,8 +19,8 @@ class RegisterCest
 		$this->password = sq('password');
 		$this->birthdate = '27.08.1983';
 		$this->birthdateUSFormat = '1983-08-27';
-		$this->mobile_number = '1773231323';
-		$this->mobile_country_code = '+49';
+		$this->mobile_number = '177 3231323';
+		$this->mobile_country_code = '+49 ';
 	}
 
 	public function _after()
