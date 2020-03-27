@@ -43,7 +43,6 @@ export default {
   components: {
     VueTelInput
   },
-  props: { mobile: { type: String, default: null } },
   data () {
     return {
       isValid: false,
