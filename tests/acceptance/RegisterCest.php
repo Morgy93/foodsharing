@@ -59,11 +59,7 @@ class RegisterCest
 		$I->click('weiter');
 
 		$I->waitForElementVisible('#step4', 4);
-		// open country selector
-		$I->executeJS("$('.select-country-container input').click()");
-		// choose german country code
-		$I->executeJS("$('.vue-recycle-scroller__item-view button')[0].click()");
-		$I->fillField('input[class=input-tel__input]', $this->mobile_number);
+		$I->fillField('input[class=vti__input]', $this->mobile_number);
 		$I->click('weiter');
 
 		// tick all the check boxes
