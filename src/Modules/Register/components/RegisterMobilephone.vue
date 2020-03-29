@@ -5,9 +5,11 @@
     </div>
     <div class="col-sm-auto">
       <vue-tel-input
-        v-model="mobile"
+        :value="mobile"
         v-bind="telInputProps"
-        @input="$emit('update:mobile', $event)"
+        :class="{ 'is-invalid': !isValid }"
+        @input="update"
+        @validate="validate"
       />
     </div>
     <div class="mt-3 col-sm-auto">
@@ -26,7 +28,7 @@
       <button
         class="btn btn-secondary mt-3"
         type="submit"
-        @click.prevent="$emit('next')"
+        @click.prevent="redirect()"
       >
         {{ $i18n('register.next') }}
       </button>
@@ -40,9 +42,10 @@ export default {
   components: {
     VueTelInput
   },
+  props: { mobile: { type: String, default: null } },
   data () {
     return {
-      mobile: null,
+      isValid: false,
       telInputProps: {
         mode: 'international',
         defaultCountry: 'DE',
@@ -50,10 +53,29 @@ export default {
         placeholder: 'Beispiel: 17912345678',
         preferredCountries: ['DE', 'AT', 'CH'],
         name: 'mobilephone',
-        maxLen: 15,
+        maxLen: 18,
         validCharactersOnly: true
+      }
+    }
+  },
+  methods: {
+    update (phoneNumber, phoneObject) {
+      this.isValid = phoneObject.isValid
+      this.$emit('update:mobile', phoneNumber)
+    },
+    validate (phoneObject) {
+      this.isValid = phoneObject.isValid
+    },
+    redirect () {
+      if (this.isValid || this.mobile === null || this.mobile === '') {
+        this.$emit('next')
       }
     }
   }
 }
 </script>
+<style lang="scss">
+.is-invalid {
+    border-color: red;
+}
+</style>
