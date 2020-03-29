@@ -37,6 +37,7 @@
 </template>
 <script>
 import { VueTelInput } from 'vue-tel-input'
+import i18n from '@/i18n'
 
 export default {
   components: {
@@ -50,7 +51,7 @@ export default {
         mode: 'international',
         defaultCountry: 'DE',
         disabledFetchingCountry: true,
-        placeholder: 'Beispiel: 17912345678',
+        placeholder: i18n('register.phone_example'),
         preferredCountries: ['DE', 'AT', 'CH'],
         name: 'mobilephone',
         maxLen: 18,
