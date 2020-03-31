@@ -16,6 +16,9 @@ use Foodsharing\Modules\Quiz\QuizHelper;
 use Foodsharing\Modules\Region\RegionGateway;
 use Foodsharing\Modules\Store\StoreGateway;
 use Foodsharing\Services\StoreService;
+use Symfony\Component\HttpFoundation\Session\SessionInterface;
+use Symfony\Component\HttpFoundation\Session\Session as SymfonySession;
+use Symfony\Component\HttpFoundation\Session\Storage\PhpBridgeSessionStorage;
 
 class Session
 {
@@ -28,6 +31,8 @@ class Session
 	private $storeService;
 	private $initialized = false;
 	private $translationHelper;
+	/** @var SessionInterface $sessionInterface */
+	private $sessionInterface;
 
 	public function __construct(
 		Mem $mem,
@@ -37,7 +42,8 @@ class Session
 		BuddyGateway $buddyGateway,
 		StoreGateway $storeGateway,
 		StoreService $storeService,
-		TranslationHelper $translationHelper
+		TranslationHelper $translationHelper,
+		SessionInterface $sessionInterface
 	) {
 		$this->mem = $mem;
 		$this->foodsaverGateway = $foodsaverGateway;
@@ -47,6 +53,7 @@ class Session
 		$this->storeGateway = $storeGateway;
 		$this->storeService = $storeService;
 		$this->translationHelper = $translationHelper;
+		$this->sessionInterface = $sessionInterface;
 	}
 
 	public function initIfCookieExists()
@@ -96,6 +103,10 @@ class Session
 		);
 
 		fSession::open();
+
+		// https://symfony.com/doc/4.4/components/http_foundation/session_php_bridge.html
+		$session = new SymfonySession(new PhpBridgeSessionStorage());
+		$session->start();
 
 		if (!isset($_COOKIE['CSRF_TOKEN']) || !$_COOKIE['CSRF_TOKEN'] || !$this->isValidCsrfToken('cookie', $_COOKIE['CSRF_TOKEN'])) {
 			$cookieExpires = $this->isPersistent() ? strtotime('1 week') : 0;
@@ -360,7 +371,6 @@ class Session
 		if (!$this->initialized) {
 			$this->init($rememberMe);
 		}
-
 		$this->refreshFromDatabase($fs_id);
 	}
 
@@ -372,9 +382,10 @@ class Session
 			$fs_id = $this->id();
 		}
 
+		$this->mem->updateActivity($fs_id);
 		$fs = $this->foodsaverGateway->getFoodsaverDetails($fs_id);
 		if (!$fs) {
-			throw new \Exception('Foodsaver details not found in database.');
+			$this->routeHelper->goPage('logout');
 		}
 		$this->set('g_location', [
 			'lat' => $fs['lat'],
