@@ -39,7 +39,6 @@
 import { VueTelInput } from 'vue-tel-input'
 import i18n from '@/i18n'
 
-
 export default {
   components: {
     VueTelInput
