@@ -1,7 +1,7 @@
 <template>
   <form class="my-1">
     <div class="col-sm-auto">
-      <label for="mobile">{{ $i18n('register.login_mobile_phone') }}</label>
+      <label>{{ $i18n('register.login_mobile_phone') }}</label>
     </div>
     <div class="col-sm-auto">
       <vue-tel-input
@@ -37,6 +37,8 @@
 </template>
 <script>
 import { VueTelInput } from 'vue-tel-input'
+import i18n from '@/i18n'
+
 
 export default {
   components: {
@@ -50,7 +52,7 @@ export default {
         mode: 'international',
         defaultCountry: 'DE',
         disabledFetchingCountry: true,
-        placeholder: 'Beispiel: 17912345678',
+        placeholder: i18n('register.phone_example'),
         preferredCountries: ['DE', 'AT', 'CH'],
         name: 'mobilephone',
         maxLen: 18,
