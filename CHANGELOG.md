@@ -73,6 +73,7 @@ are welcomed to check the E-Mails generated for missed chat messages. @janopae
 - fix some doc annotations !1361 @\_fridtjof_
 - update mkdirp to version 1 @peter.toennies
 - update codeception to version 4, phpunit to version 9, and sebastian/diff to version 4 !1369 @peter.toennies
+- added german contributing guide and english FAQs to devdocs !1376 @Jonathan_B
 - updated sentry to version 2 @peter.toennies
 - update codeception to version 4, phpunit to version 9, and sebastian/diff to version 4 #1369 @peter.toennies
 - Less ports are exposed to the dev computer's network now !1367 @\_fridtjof_
