@@ -185,6 +185,7 @@ store:
   allStoresOfRegion: Alle Betriebe aus dem Bezirk
   addNewStoresButton: Neuen Betrieb eintragen
   noStores: Es sind noch keine Betriebe eingetragen
+  meeting_overview: Terminübersicht
 
 pickup:
   dates: Abholtermine

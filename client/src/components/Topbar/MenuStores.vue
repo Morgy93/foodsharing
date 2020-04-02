@@ -11,6 +11,17 @@
         :class="'badge badge-pill '+badgeClass(globalPickupStatus)"
       >&nbsp;</span>
     </template>
+    <a
+      :href="$url('meeting_overview')"
+      role="menuitem"
+      class="dropdown-item"
+    >
+      <small><i class="fas fa-columns" /> {{ $i18n('store.meeting_overview') }} </small>
+    </a>
+    <div
+      v-if="stores.length && mayAddStore"
+      class="dropdown-divider"
+    />
     <div
       v-for="store in stores"
       :key="store.id"
