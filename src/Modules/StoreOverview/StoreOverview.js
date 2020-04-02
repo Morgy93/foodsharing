@@ -8,4 +8,3 @@ vueRegister({
   StoreOverview
 })
 vueApply('#vue-storeoverview')
-

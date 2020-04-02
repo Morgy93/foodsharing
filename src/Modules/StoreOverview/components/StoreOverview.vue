@@ -159,7 +159,7 @@ import {
   BButton,
   BCard
 } from 'bootstrap-vue'
-import StoreStatusIcon from './StoreStatusIcon.vue'
+import StoreStatusIcon from '../../Store/components/StoreStatusIcon.vue'
 import i18n from '@/i18n'
 
 export default {
