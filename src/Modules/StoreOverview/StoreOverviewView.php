@@ -8,6 +8,6 @@ class StoreOverviewView extends View
 {
 	public function StoreOverview()
 	{
-			return $this->vueComponent('store-overview', 'storeOverview');
+		return $this->vueComponent('store-overview', 'storeOverview');
 	}
 }

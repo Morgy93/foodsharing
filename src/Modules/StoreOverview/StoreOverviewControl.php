@@ -16,7 +16,6 @@ class StoreOverviewControl extends Control
 
 	public function index()
 	{
-		$this->pageHelper->addContent('<h1>Test</h1>');
 		$this->pageHelper->addContent($this->view->StoreOverview());
 	}
 }
