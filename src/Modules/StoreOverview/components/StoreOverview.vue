@@ -32,12 +32,17 @@
               <i class="fas fa-times" />
             </button>
           </div>
-          <div class="col-auto text-right">
-            <b-form-checkbox
-              v-model="status"
+          <div class="col-auto align-middle">
+            <input
+              id="checkbox"
+              v-model="checked"
+              type="checkbox"
+            >
+            <label
+              for="checkbox"
             >
               Nur meine verantwortlichen Betriebe anzeigen.
-            </b-form-checkbox>
+            </label>
           </div>
         </div>
         <b-table
