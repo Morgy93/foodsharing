@@ -7,4 +7,4 @@ import StoreOverview from './components/StoreOverview.vue'
 vueRegister({
   StoreOverview
 })
-vueApply('#vue-storeoverview')
+vueApply('#vue-storeOverview')
