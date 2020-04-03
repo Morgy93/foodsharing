@@ -38,7 +38,7 @@ class Routing
 		'report' => 'Report',
 		'search' => 'Search',
 		'settings' => 'Settings',
-		'storeoverview' => 'StoreOverview',
+		'store-overview' => 'StoreOverview',
 		'statistics' => 'Statistics',
 		'betrieb' => 'Store',
 		'fsbetrieb' => 'StoreUser',

@@ -16,9 +16,7 @@ class StoreOverviewControl extends Control
 
 	public function index()
 	{
-		$this->pageHelper->addBread($this->translationHelper->s('registration'));
-		$this->pageHelper->addTitle($this->translationHelper->s('registration'));
-
-		$this->pageHelper->addContent($this->view->registerForm());
+		$this->pageHelper->addContent('<h1>Test</h1>');
+		$this->pageHelper->addContent($this->view->StoreOverview());
 	}
 }

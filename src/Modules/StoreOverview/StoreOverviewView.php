@@ -6,8 +6,8 @@ use Foodsharing\Modules\Core\View;
 
 class StoreOverviewView extends View
 {
-	public function registerForm()
+	public function StoreOverview()
 	{
-		return $this->vueComponent('store-overview', 'StoreOverview');
+			return $this->vueComponent('store-overview', 'storeOverview');
 	}
 }
