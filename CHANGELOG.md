@@ -283,6 +283,7 @@
 - Replaces hard coded Links in AdminMenu !1510 @mr-kenhoff
 - Moved database request for the maintenance script from model to gateway !1394 #9 @alex.simm
 - Add database constraint between fs_betrieb_kategorie and fs_betrieb !1429 @Günter Mühldorfer 
+- Add database constraint between fs_betrieb_kategorie and fs_betrieb !1429 @ffm_hessen 
 
 ## Dev/Test/CI stuff
 - Add "linux" tag for finding CI servers !1332 @nicksellen
