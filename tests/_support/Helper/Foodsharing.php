@@ -307,7 +307,7 @@ class Foodsharing extends \Codeception\Module\Db
 			'team_conversation_id' => $team_conversation,
 			'springer_conversation_id' => $springer_conversation,
 			'kette_id' => 0,
-			'betrieb_kategorie_id' => NULL,
+			'betrieb_kategorie_id' => null,
 		], $extra_params);
 		$params['status_date'] = $this->toDateTime($params['status_date']);
 		$params['added'] = $this->toDateTime($params['added']);
@@ -982,4 +982,3 @@ class Foodsharing extends \Codeception\Module\Db
 		return $dt->format('Y-m-d H:i:s');
 	}
 }
-
