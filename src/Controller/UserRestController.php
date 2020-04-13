@@ -5,6 +5,7 @@ namespace Foodsharing\Controller;
 use Foodsharing\Lib\Session;
 use Foodsharing\Modules\Foodsaver\FoodsaverGateway;
 use Foodsharing\Modules\Login\LoginGateway;
+use Foodsharing\Permissions\ProfilePermissions;
 use FOS\RestBundle\Controller\AbstractFOSRestController;
 use FOS\RestBundle\Controller\Annotations as Rest;
 use FOS\RestBundle\Request\ParamFetcher;
@@ -17,12 +18,14 @@ class UserRestController extends AbstractFOSRestController
 	private $session;
 	private $loginGateway;
 	private $foodsaverGateway;
+	private $profilePermissions;
 
-	public function __construct(Session $session, LoginGateway $loginGateway, FoodsaverGateway $foodsaverGateway)
+	public function __construct(Session $session, LoginGateway $loginGateway, FoodsaverGateway $foodsaverGateway, ProfilePermissions $profilePermissions)
 	{
 		$this->session = $session;
 		$this->loginGateway = $loginGateway;
 		$this->foodsaverGateway = $foodsaverGateway;
+		$this->profilePermissions = $profilePermissions;
 	}
 
 	/**
@@ -100,7 +103,7 @@ class UserRestController extends AbstractFOSRestController
 	 */
 	public function deleteUserAction(int $userId): Response
 	{
-		if ($userId !== $this->session->id() && !$this->session->may('orga')) {
+		if ($userId !== $this->session->id() && !$this->profilePermissions->mayDeleteUser()) {
 			throw new HttpException(403);
 		}
 

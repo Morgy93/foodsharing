@@ -1,13 +1,20 @@
 import '@/core'
 import '@/globals'
+
+import { vueRegister, vueApply } from '@/vue'
+import ActivityOverview from './components/ActivityOverview'
+
 import './Dashboard.css'
 
-import activity from '@/activity'
 import i18n from '@/i18n'
 import { subscribeForPushNotifications } from '@/pushNotifications'
 import { pulseSuccess, pulseError } from '@/script'
 
-activity.init()
+vueRegister({
+  ActivityOverview
+})
+
+vueApply('#activity-overview')
 
 // Push Notification Banner
 const pushnotificationsBanner = document.querySelector('#top-banner-pushnotifications')

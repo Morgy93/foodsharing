@@ -289,139 +289,7 @@ class DashboardControl extends Control
 			$this->pageHelper->addContent($this->view->u_events($events));
 		}
 
-		$this->pageHelper->addStyle('
-			#activity ul.linklist li span.time{margin-left:58px;display:block;margin-top:10px;}
-
-			#activity ul.linklist li span.qr
-			{
-				margin-left:58px;
-				border-radius: 3px;
-				opacity:0.5;
-			}
-
-			#activity ul.linklist li span.qr:hover
-			{
-				opacity:1;
-			}
-
-			#activity ul.linklist li span.qr img
-			{
-				height:32px;
-				width:32px;
-				margin-right:-35px;
-				border-right:1px solid #ffffff;
-				border-top-left-radius: 3px;
-				border-bottom-left-radius: 3px;
-			}
-			#activity ul.linklist li span.qr textarea, #activity ul.linklist li span.qr .loader
-			{
-				border: 0 none;
-				height: 16px;
-				margin-left: 36px;
-				padding: 8px;
-				width: 78.6%;
-				border-top-right-radius: 3px;
-				border-bottom-right-radius: 3px;
-				margin-right:-30px;
-				background-color:#F9F9F9;
-			}
-
-			#activity ul.linklist li span.qr .loader
-			{
-				background-color: #ffffff;
-				position: relative;
-				text-align: left;
-				top: -10px;
-			}
-
-			#activity ul.linklist li span.t span.txt {
-				overflow: hidden;
-				text-overflow: unset;
-				white-space: normal;
-				padding-left:10px;
-				border-left:2px solid #4A3520;
-				margin-bottom:10px;
-				display:block;
-			}
-			#activity ul.linklist li span
-			{
-				color:#4A3520;
-			}
-			#activity ul.linklist li span a
-			{
-				color:var(--fs-green) !important;
-			}
-			#activity span.n i.fa
-			{
-				display:inline-block;
-				width:11px;
-				text-align:center;
-			}
-			#activity span.n small
-			{
-				float:right;
-				opacity:0.8;
-				font-size:12px;
-			}
-			#activity ul.linklist li span a:hover
-			{
-				text-decoration:underline !important;
-				color:var(--fs-green) !important;
-			}
-
-			#activity ul.linklist li
-			{
-				margin-bottom:10px;
-				background-color:#ffffff;
-				padding:10px;
-				border-radius: 6px;
-			}
-
-			ul.linklist li span.n
-			{
-				font-weight:normal;
-				font-size:13px;
-				margin-bottom:10px;
-				text-overflow: unset;
-				white-space: inherit;
-			}
-
-			@media (max-width: 900px)
-			{
-				#activity ul.linklist li span.qr textarea, #activity ul.linklist li span.qr .loader
-				{
-					width:74.6%;
-				}
-			}
-			@media (max-width: 400px)
-			{
-				ul.linklist li span.n
-				{
-					height:55px;
-				}
-				#activity ul.linklist li span.qr textarea, #activity ul.linklist li span.qr .loader
-				{
-					width:82%;
-				}
-				#activity ul.linklist li span.time, #activity ul.linklist li span.qr
-				{
-					margin-left:0px;
-				}
-				#activity span.n small
-				{
-					float:none;
-					display:block;
-				}
-			}
-		');
-		$this->pageHelper->addContent('
-		<div class="head ui-widget-header ui-corner-top">
-			Updates-Übersicht<span class="option"><a id="activity-option" href="#activity-listings" class="fas fa-cog"></a></span>
-		</div>
-		<div id="activity">
-			<div class="loader" style="padding:40px;background-image:url(/img/469.gif);background-repeat:no-repeat;background-position:center;"></div>
-			<div style="display:none" id="activity-info">' . $this->v_utils->v_info('Es gibt gerade nichts Neues') . '</div>
-		</div>');
+		$this->pageHelper->addContent($this->view->vueComponent('activity-overview', 'activity-overview', []));
 
 		/*
 		 * Top
@@ -440,24 +308,33 @@ class DashboardControl extends Control
 		// special case: stat_fetchcount and stat_fetchweight are correlated, each pickup increases both count and weight
 		$pickup_text = '';
 		if ($pickups > 0) {
-			$pickup_text = 'Du hast <strong style="white-space:nowrap">' . $pickups . ' x</strong> Lebensmittel abgeholt und damit <strong style="white-space:nowrap">' .
-				number_format($gerettet, 0, ',', '.') . '&thinsp;kg</strong> gerettet.';
+			$pickup_text = $this->translationHelper->sv('you_saved_times_weight', ['pickups' => $pickups, 'weight' => number_format($gerettet, 0, ',', '.')]);
+		}
+		if ($me['bezirk_name'] == null) {
+			$home_district_text = '</p>' .
+			'<p>' . '<a  class="button" href="javascript:becomeBezirk()" >' . $this->translationHelper->s('please_choose_your_home_district') . '</a>';
+		} else {
+			$home_district_text = $this->translationHelper->s('your_home_district_is') . $me['bezirk_name'] . '.';
 		}
 
 		$this->pageHelper->addContent(
 			'
 		<div class="pure-u-1 ui-padding-bottom">
-		<ul id="conten-top"  class="top corner-all linklist" >
+		<ul class="content-top corner-all linklist">
 		<li>
-
-            <a href="profile/' . $me['id'] . '">
-                <div class="ui-padding">
-                    <div class="img">' . $this->imageService->avatar($me, 50) . '</div>
-                    <h3 class "corner-all">Hallo ' . $me['name'] . '</h3>
-                    <p>' . $pickup_text . ' Dein Stammbezirk ist ' . $me['bezirk_name'] . '.</p>
-                    <div style="clear:both;"></div>
-                </div>
-            </a>
+            
+			<div class="ui-padding">
+				<a href="profile/' . $me['id'] . '">
+					<div class="img">' . $this->imageService->avatar($me, 50) . '</div>
+				</a>
+				<h3 class "corner-all">' . $this->translationHelper->sv('greeting', ['name' => $me['name']]) . '</h3>
+				<p>'
+					. $pickup_text . $home_district_text .
+				'</p>
+				<div style="clear:both;"></div>
+				
+            </div>
+            
 		</li>
 		</ul>
 		</div>',

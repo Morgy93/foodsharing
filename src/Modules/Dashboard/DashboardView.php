@@ -31,14 +31,7 @@ class DashboardView extends View
 
 	public function updates()
 	{
-		$this->pageHelper->addContent('
-	<div class="head ui-widget-header ui-corner-top">
-		Updates-Übersicht<span class="option"><a id="activity-option" href="#activity-listings" class="fas fa-cog"></a></span>
-	</div>
-	<div id="activity">
-		<div class="loader" style="padding:40px;background-image:url(/img/469.gif);background-repeat:no-repeat;background-position:center;"></div>
-		<div style="display:none" id="activity-info">' . $this->v_utils->v_info('Es gibt gerade nichts Neues') . '</div>
-	</div>');
+		$this->pageHelper->addContent($this->vueComponent('activity-overview', 'activity-overview', []));
 	}
 
 	public function foodsharerMenu()

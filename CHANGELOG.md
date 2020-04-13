@@ -16,6 +16,14 @@
 - Orgas are now able to delete wallposts for foodshare points !1359 @pfaufisch
 - Limit forum notifications to users logged in last 6 months #64 !1385 @fs_k
 - Show internal email address on user's own profile !1386 #465 @alex.simm
+- Dashboard updates can be filtered !735 !1424 @D0nPiano @ChrisOelmueller
+- Updates from events + foodsharepoints displayed on dashboard !735 #227 #588 @D0nPiano @ChrisOelmueller
+- Picture thumbnails are included in dashboard snippets of wallposts !735 #454 @D0nPiano @ChrisOelmueller
+- Link Avatar pictures on dashboard to profiles !735 #464 @D0nPiano @ChrisOelmueller
+- Add option for new forum threads in unmoderated fora to send mail or not !1233 @jofranz @Caluera
+- Add option for new forum threads in unmoderated fora to send mail or not !1233 #64 @jofranz @Caluera
+- Refactored register form to multi step pages in vue !1099 !1309 @chriswalg
+- Introduce permissions for user profile data handling: maySeeHistory(), mayAdministrateUserProfile(), mayHandleFoodsaverRegionMenu() and mayDeleteFoodsaverFromRegion() !1288 @jofranz
 
 ## Bugfixes
 - On Mobile last pickup and member since information is shown on team list in stores #788 !1335 @fs_k
@@ -37,11 +45,22 @@
 - Don't include unconfirmed slots into statistics and fetch history !1360 @caluera
 - Fix reapplication not possible after beeing denied once !1277 #767 @chris2up9
 - Fix missing region id bug for food share points !1375 @alex.simm
-- Set height for topbar and removed the height of div#main. Now is the broadcast message completely readable !1383 !1391 @chriswalg
+- Set height for topbar and removed the height of div#main. Now is the broadcast message completely readable !1383 !1391 !1432 @chriswalg
 - Fixes crash in the date formatting logic when updating the list of bells !1388 @dthulke
 - Adds a null check to the chat server to avoid null WebSocket messages !1398 @dthulke
 - Fixed bug in email template rendering during when quickreplying to forum topics !1403 @alex.simm
+- Links in shortened dashboard updates no longer invalid due to cut-off #691 !735 @D0nPiano @ChrisOelmueller
+- Now possible to have many disabled sources of dashboard updates #365 !735 @D0nPiano @ChrisOelmueller
 - Fixes the marker loading in the region admin tool !1415 @dthulke
+- Adjusted picture sizes of slots, thread posts and of menubasket. !1298 !1423 #735 @moffer
+- Submenus of burger menu (mobile view) for example 'Infos' can be scrolled. !1411 @moffer
+- Submenus of burger menu (mobile view) for example 'Infos' can be scrolled. !1411 #838 #837 @moffer
+- Fix registration link on login page !1425 #856 @alex.simm
+- Adjusted picture sizes of slots, thread posts and of menubasket. !1298 #735 @moffer
+- Submenus of burger menu (mobile view) for example 'Infos' can be scrolled. !1411 #838 #837 @moffer
+- Fix link of top-left icon in navbar and make the hover-heart appear more often !1421 #853 @alex.simm 
+- fixed arrow handling !1408 @jonathan_b
+- Show a prompt to select a home district on the dashboard if none is choosen #716 !1123 @lebe1 @dthulke @Caluera
 
 ## Refactoring
 - Name generation for chat groups has been extracted to an own method method, which is now used by push notifications
@@ -58,7 +77,7 @@ are welcomed to check the E-Mails generated for missed chat messages. @janopae
 - Add function to database class that allows inserting multiple rows !1267 #757 @alex.simm
 - Remove Sessions from Gateway-Classes !1314 @panschk
 - Exchange nightly not fully working bell update check with the daily/reliable method !1312 @jofranz
-- Update date-fns to version 2.9.0 !1042 !1363 @chriswalg
+- Update date-fns to version 2.9.0 !1042 !1363 !1422 @chriswalg @ChrisOelmueller
 - Moved newsletter test functionality from Xhr to Rest API !1354 @alex.simm
 - Removed lost@foodsharing address and added sending a reply email if an address was not found #510 !1346 @alex.simm
 - Redesigned the option to delete FS account if not agreeing with privacy policy. !1318 @thefeiter
@@ -66,9 +85,12 @@ are welcomed to check the E-Mails generated for missed chat messages. @janopae
 - redirected the refs from storelist.vue to lang.de.yml !1386 #824 @jonathan_b
 - Extended the text in footer for "DoNotReply"-Mails with the information not to reply to the message #826 !1389 @thesoult
 - Use Geoapify as tile server and use mapbox gl to render vector tiles !1405 @dthulke
+- recreate Dashboard update-overview with vue components !735 !1424 @D0nPiano @ChrisOelmueller
+- changed ActivityModel to return data without HTML or JS !735 !1424 @D0nPiano @ChrisOelmueller
 - New function for deleting store wall posts via rest !1390 #9 @alex.simm
 - Get rid of /upload.php !1365 @\_fridtjof_
 - Removed unused delPost xhr function !1417 @alex.simm
+- Removed ActivityModel by moving functions to ActivityXhr !1434 #9 @alex.simm 
 
 ## Dev/Test/CI stuff
 - Add "linux" tag for finding CI servers !1332 @nicksellen

@@ -34,7 +34,7 @@
           role="menuitem"
           class="dropdown-item dropdown-item-sub"
         >
-          <i class="far fa-comment" />Forum
+          <i class="far fa-comment-alt" />Forum
         </a>
         <a
           v-if="region.isBot"
@@ -45,7 +45,7 @@
           <i class="far fa-comment-dots" />Bot-Forum
         </a>
         <a
-          :href="$url('fairteiler', region.id)"
+          :href="$url('foodsharepoints', region.id)"
           role="menuitem"
           class="dropdown-item dropdown-item-sub"
         >
@@ -87,7 +87,7 @@
           <i class="fas fa-chart-bar" />Statistik
         </a>
         <a
-          v-if="region.isBot"
+          v-if="region.mayHandleFoodsaverRegionMenu"
           :href="$url('foodsaverList', region.id)"
           role="menuitem"
           class="dropdown-item dropdown-item-sub"

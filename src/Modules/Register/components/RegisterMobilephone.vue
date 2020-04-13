@@ -12,6 +12,12 @@
         @validate="validate"
       />
     </div>
+    <div
+      v-if="!isValid"
+      class="col-sm-auto invalid-feedback"
+    >
+      <span>{{ $i18n('register.phone_not_valid') }}</span>
+    </div>
     <div class="mt-3 col-sm-auto">
       <div class="msg-inside info">
         <i class="fas fa-info-circle" /> {{ $i18n('register.login_phone_info') }}
@@ -37,6 +43,7 @@
 </template>
 <script>
 import { VueTelInput } from 'vue-tel-input'
+import i18n from '@/i18n'
 
 export default {
   components: {
@@ -45,12 +52,12 @@ export default {
   props: { mobile: { type: String, default: null } },
   data () {
     return {
-      isValid: false,
+      phoneNumberValid: false,
       telInputProps: {
         mode: 'international',
         defaultCountry: 'DE',
         disabledFetchingCountry: true,
-        placeholder: 'Beispiel: 17912345678',
+        placeholder: i18n('register.phone_example'),
         preferredCountries: ['DE', 'AT', 'CH'],
         name: 'mobilephone',
         maxLen: 18,
@@ -58,24 +65,33 @@ export default {
       }
     }
   },
+  computed: {
+    isValid () {
+      return this.phoneNumberValid || this.mobile === null || this.mobile === ''
+    }
+  },
   methods: {
     update (phoneNumber, phoneObject) {
-      this.isValid = phoneObject.isValid
+      this.phoneNumberValid = phoneObject.isValid
       this.$emit('update:mobile', phoneNumber)
     },
     validate (phoneObject) {
-      this.isValid = phoneObject.isValid
+      this.phoneNumberValid = phoneObject.isValid
     },
     redirect () {
-      if (this.isValid || this.mobile === null || this.mobile === '') {
+      if (this.isValid) {
         this.$emit('next')
       }
     }
   }
 }
 </script>
-<style lang="scss">
+<style lang="scss" scoped>
 .is-invalid {
-    border-color: red;
+    outline: red auto 1px;
+}
+.invalid-feedback {
+  font-size: 100%;
+  display: unset;
 }
 </style>

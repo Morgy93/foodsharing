@@ -118,6 +118,7 @@ register:
   lastname_minLength: Der Nachname muss aus mindestens 2 Zeichen bestehen.
   login_phone_info: Es kann hilfreich sein, Deine Telefonnummer mit anderen Foodsharern zu teilen
   phone_example: Beispiel +4917912345678
+  phone_not_valid: Die eingegebene Telefonnummer ist nicht gültig.
   forgotten_password: Passwort vergessen?
   have_read_the_legal_stuff1: Ich habe die
   have_read_the_legal_stuff2: zur Kenntnis genommen
@@ -146,6 +147,7 @@ register:
 terminology:
   forum: Forum
   events: Termine
+  stores: Betriebe
   ambassador_forum: BotschafterInnenforum
   ambassadors: Botschafter
   admins: Administratoren
@@ -156,6 +158,7 @@ terminology:
   groups: Arbeitsgruppen
   group: Arbeitsgruppe
   subgroups: Untergruppen
+  mailboxes: Mailboxen
   n_foodsaver: 'Ein Foodsaver|%count% Foodsaver'
   n_sleeping: 'Eine Schlafmütze|%count% Schlafmützen'
   n_ambassadors: 'Ein(e) BotschafterIn|%count% BotschafterInnen'
@@ -237,6 +240,7 @@ forum:
   no_threads: Noch keine Themen gepostet
   sending_error: Beim Senden ist ein Fehler aufgetreten
   markdown_description: 'Zur Formatierung von *<i>kursivem</i>* oder **<b>fettem</b>** Text kannst du <a href="https://de.wikipedia.org/wiki/Markdown" target="_blank">Markdown</a> verwenden.<br />Achtung: Möchtest du ein * in deinem Text verwenden, so musst du ein \ voranstellen. Zum Beispiel beim Gendern des Wortes Botschafter\*innen.'
+  inform_per_email: Forenmitglieder per E-Mail über diesen Beitrag informieren, nur in unmoderierten Foren möglich 
 
 chat:
   open_chat: Nachricht schreiben
@@ -372,6 +376,28 @@ search:
 
 dashboard:
   title: Dashboard
+  updates_title_all: "Updates-Übersicht"
+  updates_title_some: "Updates-Übersicht ({0})"
+  display_all: Alle
+  no_updates: "Keine Updates"
+  no_more_updates_all: "Das war's!"
+  no_more_updates_event: "Keine weiteren Termine"
+  no_more_updates_foodsharepoint: "Keine weiteren Fairteiler-Posts"
+  no_more_updates_forum: "Keine weiteren Foren-Einträge"
+  no_more_updates_friendWall: "Keine weiteren Status-Meldungen"
+  no_more_updates_mailbox: "Keine weiteren Mailbox-Nachrichten"
+  no_more_updates_store: "Keine weiteren Betriebs-Infos"
+  activity_filter_info: Hier kannst Du einstellen, welche Updates auf Deiner Startseite angezeigt werden sollen.
+  empty_section: "Du hast noch keine {type}"
+  event_title: "Termin: {title}"
+  save_selection: Einstellungen speichern
+  source_foodsharepoint: "Fairteiler {0}"
+  source_friendWall: "Pinnwand von {0}"
+  source_friendWall_own: "Deine Pinnwand"
+  source_forum: "Forum {0}"
+  source_forum_bot: "BOT-Forum {0}"
+  source_event: "Termin {0}"
+  source_store: "Betriebe {0}"
 
 home:
   title: Startseite
@@ -419,6 +445,7 @@ menu:
     administration: Administration
     notifications: Benachrichtigungen
     contact: Kontakt
+  your_settings: Deine Daten/Einstellungen
 
 newsletter:
   test_email_sent: E-Mail wurde versendet!

@@ -31,7 +31,6 @@ $g_lang['pass_generator'] = 'Foodsaver-Ausweisgenerator';
 $g_lang['choose_foodsaver'] = 'W&auml;hle die Foodsaver aus, denen Du einen Ausweis drucken willst';
 $g_lang['back_to_overview'] = 'zur&uuml;ck zur &Uuml;bersicht';
 $g_lang['plz'] = 'Postleitzahl (automatisch aus Karte oben!)';
-$g_lang['settings'] = 'Deine Daten/Einstellungen';
 $g_lang['email'] = 'E-Mail-Adresse';
 $g_lang['attachement'] = 'Anhang';
 $g_lang['email_pass'] = 'Passwort';
@@ -259,3 +258,5 @@ $g_lang['registration'] = 'Registrieren';
 $g_lang['you_are_already_register_please_logg_out_if_you_want_to_register_again'] = 'Du bist bereits registriert. Bitte logge Dich aus, wenn du dich erneut registrieren möchtest.';
 
 
+$g_lang['new_thread_without_email'] = 'Ohne Mail eröffnet';
+$g_lang['new_thread_with_email'] = 'Eröffnet und Mail GESENDET';
