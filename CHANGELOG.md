@@ -62,6 +62,8 @@
 - Fix link of top-left icon in navbar and make the hover-heart appear more often !1421 #853 @alex.simm 
 - fixed arrow handling !1408 @jonathan_b
 - Show a prompt to select a home district on the dashboard if none is choosen #716 !1123 @lebe1 @dthulke @Caluera
+- Fixed rendering error when replying to forum posts !1447 @ChrisOelmueller
+- Make the description clearer for the mail option when opening new thread !1453 @Caluera
 
 ## Refactoring
 - Name generation for chat groups has been extracted to an own method method, which is now used by push notifications
@@ -78,7 +80,7 @@ are welcomed to check the E-Mails generated for missed chat messages. @janopae
 - Add function to database class that allows inserting multiple rows !1267 #757 @alex.simm
 - Remove Sessions from Gateway-Classes !1314 @panschk
 - Exchange nightly not fully working bell update check with the daily/reliable method !1312 @jofranz
-- Update date-fns to version 2.9.0 !1042 !1363 !1422 @chriswalg @ChrisOelmueller
+- Update date-fns to version 2.9.0 !1042 !1363 !1422 !1447 @chriswalg @ChrisOelmueller
 - Moved newsletter test functionality from Xhr to Rest API !1354 @alex.simm
 - Removed lost@foodsharing address and added sending a reply email if an address was not found #510 !1346 @alex.simm
 - Redesigned the option to delete FS account if not agreeing with privacy policy. !1318 @thefeiter
@@ -345,7 +347,7 @@ And we have even included some new features for you.
 - Show Warning and prevent save if sleeping timespan has no complete date given #632 !957 @fs_k
 - Fixed and moved ipIsBlocked method which is used on the team page contact form. Added minutes to warning message !974 @jofranz
 - Enable ambassador's new threads by default. #614 !967 @ctwx_ok
-- Fixed fancybox loading (apple) and navigation sprites !977 #644 @jofranz
+- Fixed fancybox loading (apple) and navigation sprites !977 #644 !1433 #717 @jofranz @ChrisOelmueller
 - Updates from the regional "bot-forum" / ambassador board are now shown on dashboard #40 !994 @jofranz
 - Fixed hidden attribution-line on main map !980 #661 @mr-kenhoff
 - Fixed date display for chats in the top bar overlay. !988 @ctwx_ok
