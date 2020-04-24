@@ -32,7 +32,7 @@ final class BlogPermissions
 	public function mayAdministrateBlog()
 	{
 		return false;
-		return true || $this->session->isAdminForAWorkGroup() || $this->session->may('orga');
+		//return true || $this->session->isAdminForAWorkGroup() || $this->session->may('orga');
 	}
 	
 	public function maySuggestBlogEntries()
