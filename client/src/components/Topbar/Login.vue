@@ -70,60 +70,58 @@
   </form>
 </template>
 
-<script>
+<script lang="ts">
 import { login } from '@/api/user'
+import { url } from '@/urls'
 
 import { pulseError, pulseSuccess } from '@/script'
 import i18n from '@/i18n'
 import serverData from '@/server-data'
+import Vue from 'vue'
+import Component from 'vue-class-component'
 
-export default {
-  data () {
-    return {
-      email: serverData.isDev ? 'userbot@example.com' : '',
-      password: serverData.isDev ? 'user' : '',
-      isLoading: false,
-      error: null
-    }
-  },
-  methods: {
-    async submit () {
-      if (!this.email) {
-        pulseError(i18n('login.error_no_email'))
-        window.location = this.$url('login')
-        return
-      }
-      if (!this.password) {
-        pulseError(i18n('login.error_no_password'))
-        window.location = this.$url('login')
-        return
-      }
-      this.isLoading = true
-      try {
-        const user = await login(this.email, this.password)
-        pulseSuccess(i18n('login.success', { user_name: user.name }))
-
-        const urlParams = new URLSearchParams(window.location.search)
-
-        if (urlParams.has('ref')) {
-          window.location = decodeURIComponent(urlParams.get('ref'))
-        } else {
-          window.location = this.$url('dashboard')
+@Component({})
+export default class Login extends Vue {
+      private email: string= serverData.isDev ? 'userbot@example.com' : '';
+      password= serverData.isDev ? 'user' : '';
+      isLoading: boolean= false;
+      error= null;
+      async submit () {
+        if (!this.email) {
+          pulseError(i18n('login.error_no_email'))
+          window.location = url('login')
+          return
         }
-      } catch (err) {
-        this.isLoading = false
-        if (err.code && err.code === 401) {
-          pulseError(i18n('login.error_no_auth'))
-          setTimeout(() => {
-            window.location = this.$url('login')
-          }, 2000)
-        } else {
-          pulseError(i18n('error_unexpected'))
-          throw err
+        if (!this.password) {
+          pulseError(i18n('login.error_no_password'))
+          window.location = url('login')
+          return
+        }
+        this.isLoading = true
+        try {
+          const user = await login(this.email, this.password)
+          pulseSuccess(i18n('login.success', { user_name: user.name }))
+
+          const urlParams = new URLSearchParams(window.location.search)
+
+          if (urlParams.has('ref')) {
+            window.location.href = decodeURIComponent(urlParams.get('ref') as string)
+          } else {
+            window.location = url('dashboard')
+          }
+        } catch (err) {
+          this.isLoading = false
+          if (err.code && err.code === 401) {
+            // pulseError(i18n('login.error_no_auth'))
+            setTimeout(() => {
+              // window.location = this.$url('login')
+            }, 2000)
+          } else {
+            // pulseError(i18n('error_unexpected'))
+            throw err
+          }
         }
       }
-    }
-  }
 }
 </script>
 

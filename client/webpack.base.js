@@ -23,7 +23,7 @@ if (production) {
 
 module.exports = {
   resolve: {
-    extensions: ['.js', '.vue'],
+    extensions: ['.js', '.vue', '.ts'],
     modules: [
       resolve('node_modules')
     ],
@@ -36,7 +36,8 @@ module.exports = {
       '@': resolve('src'),
       '@php': resolve('../src'),
       '>': resolve('test'),
-      '@translations': resolve('../lang')
+      '@translations': resolve('../lang'),
+      vue$: 'vue/dist/vue.esm.js'
     }
   },
   module: {
@@ -68,9 +69,14 @@ module.exports = {
       },
       {
         test: /\.vue$/,
-        exclude: /(node_modules)/,
-        use: 'vue-loader'
+        loader: 'vue-loader',
+        options: {
+          loaders: {
+            ts: 'ts-loader'
+          }
+        }
       },
+      { test: /\.ts$/, loader: 'ts-loader', options: { appendTsSuffixTo: [/\.vue$/] } },
       {
         test: /\.css$/,
         use: [

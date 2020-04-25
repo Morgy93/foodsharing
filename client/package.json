@@ -8,7 +8,8 @@
     "clean-assets": "shx rm -rf ../assets",
     "build": "yarn clean-assets && NODE_ENV=production webpack",
     "dev": "yarn clean-assets && webpack-dev-server --hot --config serve.config.js",
-    "test": "node test"
+    "test": "node test",
+    "tsc": "tsc"
   },
   "dependencies": {
     "@fortawesome/fontawesome-free": "^5.13.0",
@@ -50,12 +51,23 @@
     "typeface-alfa-slab-one": "^0.0.72",
     "underscore": "^1.9.2",
     "vue": "^2.6.11",
+    "vue-class-component": "^7.2.3",
+    "vue-property-decorator": "^8.4.2",
     "vue-tel-input": "^4.3.0",
     "vuelidate": "^0.7.5",
     "vue-infinite-loading": "^2.4.5",
     "whatwg-fetch": "^3.0.0"
   },
   "devDependencies": {
+    "@typescript-eslint/eslint-plugin": "^2.26.0",
+    "@typescript-eslint/parser": "^2.26.0",
+    "@vue/eslint-config-airbnb": "^5.0.2",
+    "@vue/eslint-config-typescript": "^5.0.2",
+    "@vue/cli-plugin-babel": "~4.3.0",
+    "@vue/cli-plugin-eslint": "~4.3.0",
+    "@vue/cli-plugin-typescript": "~4.3.0",
+    "@vue/cli-service": "~4.3.0",
+    "typescript": "~3.8.3",
     "@babel/core": "^7.8.7",
     "@babel/preset-env": "^7.8.7",
     "@sentry/webpack-plugin": "^1.10.0",
@@ -104,17 +116,18 @@
     "yaml-loader": "^0.6.0"
   },
   "eslintConfig": {
-    "parser": "vue-eslint-parser",
-    "parserOptions": {
-      "parser": "babel-eslint"
-    },
     "env": {
-      "browser": true
+      "node": true
     },
     "extends": [
       "standard",
-      "plugin:vue/recommended"
+      "plugin:vue/recommended",
+      "eslint:recommended",
+      "@vue/typescript"
     ],
+    "parserOptions": {
+      "ecmaVersion": 2020
+    },
     "rules": {
       "object-curly-spacing": [
         "error",

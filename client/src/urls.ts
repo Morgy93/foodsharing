@@ -2,30 +2,30 @@
 // e.g. $url('profile', 15)
 
 const urls = {
-  profile: (id) => `/profile/${id}`,
-  forum: (regionId, isAmb = false, topicId = null, postId = null) => {
+  profile: (id: string) => `/profile/${id}`,
+  forum: (regionId: any, isAmb = false, topicId = null, postId = null) => {
     return (`/?page=bezirk&bid=${regionId}` +
       `&sub=${isAmb ? 'botforum' : 'forum'}` +
       (topicId === null ? '' : `&tid=${topicId}`) +
       (postId === null ? '' : `&pid=${postId}#tpost-${postId}`)
     )
   },
-  fairteiler: (regionId) => `/?page=bezirk&bid=${regionId}&sub=fairteiler`,
-  foodsharepoint: (regionId, fspId) => `?page=fairteiler&sub=ft&bid=${regionId}&id=${fspId}`,
-  foodsharepoints: (regionId) => `/?page=bezirk&bid=${regionId}&sub=fairteiler`,
-  members: (regionId) => `/?page=bezirk&bid=${regionId}&sub=members`,
-  statistic: (regionId) => `/?page=bezirk&bid=${regionId}&sub=statistic`,
-  event: (eventId) => `/?page=event&id=${eventId}`,
-  events: (regionId) => `/?page=bezirk&bid=${regionId}&sub=events`,
-  store: (storeId) => `/?page=betrieb&id=${storeId}`,
-  stores: (regionId) => `/?page=betrieb&bid=${regionId}`,
+  fairteiler: (regionId: any) => `/?page=bezirk&bid=${regionId}&sub=fairteiler`,
+  foodsharepoint: (regionId: any, fspId: any) => `?page=fairteiler&sub=ft&bid=${regionId}&id=${fspId}`,
+  foodsharepoints: (regionId: any) => `/?page=bezirk&bid=${regionId}&sub=fairteiler`,
+  members: (regionId: any) => `/?page=bezirk&bid=${regionId}&sub=members`,
+  statistic: (regionId: any) => `/?page=bezirk&bid=${regionId}&sub=statistic`,
+  event: (eventId: any) => `/?page=event&id=${eventId}`,
+  events: (regionId: any) => `/?page=bezirk&bid=${regionId}&sub=events`,
+  store: (storeId: any) => `/?page=betrieb&id=${storeId}`,
+  stores: (regionId: any) => `/?page=betrieb&bid=${regionId}`,
   storeList: () => '/?page=fsbetrieb',
   storeAdd: (regionId = null) => regionId ? `/?page=betrieb&a=new&bid=${regionId}` : '/?page=betrieb&a=new',
   workingGroups: (regionId = null) => regionId ? `/?page=groups&p=${regionId}` : '/?page=groups',
-  workingGroupEdit: (groupId) => `/?page=groups&sub=edit&id=${groupId}`,
-  wall: (regionId) => `/?page=bezirk&bid=${regionId}&sub=wall`,
-  foodsaverList: (regionId) => `/?page=foodsaver&bid=${regionId}`,
-  passports: (regionId) => `/?page=passgen&bid=${regionId}`,
+  workingGroupEdit: (groupId: any) => `/?page=groups&sub=edit&id=${groupId}`,
+  wall: (regionId: any) => `/?page=bezirk&bid=${regionId}&sub=wall`,
+  foodsaverList: (regionId: any) => `/?page=foodsaver&bid=${regionId}`,
+  passports: (regionId: any) => `/?page=passgen&bid=${regionId}`,
   conversations: (conversationId = null) => `/?page=msg${conversationId ? `&cid=${conversationId}` : ''}`,
   dashboard: () => '/?page=dashboard',
   map: () => '/karte',
@@ -34,7 +34,7 @@ const urls = {
   settings: () => '/?page=settings',
   logout: () => '/?page=logout',
   joininfo: () => '/?page=content&sub=joininfo',
-  basket: (basketId) => `/essenskoerbe/${basketId}`,
+  basket: (basketId: any) => `/essenskoerbe/${basketId}`,
   baskets: () => '/essenskoerbe',
   upgradeToFs: () => '/?page=settings&sub=upgrade/up_fs',
   mission: () => '/ueber-uns',
@@ -66,11 +66,11 @@ const urls = {
   imprint: () => '/impressum',
   donate: () => '/unterstuetzung',
   changelog: () => '/?page=content&sub=changelog',
-  reports: (regionId) => `/?page=report&bid=${regionId}`,
+  reports: (regionId: any) => `/?page=report&bid=${regionId}`,
   login: () => '/?page=login'
 }
 
-const url = (key, ...params) => {
+const url = (key: string | number, ...params: any[]) => {
   if (!urls[key]) {
     console.error(new Error(`url() Error: url key '${key}' does not exist`))
     return '#'

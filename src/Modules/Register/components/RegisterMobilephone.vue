@@ -45,43 +45,47 @@
 import { VueTelInput } from 'vue-tel-input'
 import i18n from '@/i18n'
 
-export default {
+import Vue from 'vue'
+import Component from 'vue-class-component'
+import { Prop } from 'vue-property-decorator'
+
+@Component({
   components: {
     VueTelInput
-  },
-  props: { mobile: { type: String, default: null } },
-  data () {
-    return {
-      phoneNumberValid: false,
-      telInputProps: {
-        mode: 'international',
-        defaultCountry: 'DE',
-        disabledFetchingCountry: true,
-        placeholder: i18n('register.phone_example'),
-        preferredCountries: ['DE', 'AT', 'CH'],
-        name: 'mobilephone',
-        maxLen: 18,
-        validCharactersOnly: true
-      }
-    }
-  },
-  computed: {
-    isValid () {
-      return this.phoneNumberValid || this.mobile === null || this.mobile === ''
-    }
-  },
-  methods: {
-    update (phoneNumber, phoneObject) {
-      this.phoneNumberValid = phoneObject.isValid
-      this.$emit('update:mobile', phoneNumber)
-    },
-    validate (phoneObject) {
-      this.phoneNumberValid = phoneObject.isValid
-    },
-    redirect () {
-      if (this.isValid) {
-        this.$emit('next')
-      }
+  }
+})
+export default class RegisterMobilephone extends Vue {
+  @Prop({ type: String, default: null })
+  mobile;
+
+  phoneNumberValid = false;
+  telInputProps = {
+    mode: 'international',
+    defaultCountry: 'DE',
+    disabledFetchingCountry: true,
+    placeholder: i18n('register.phone_example'),
+    preferredCountries: ['DE', 'AT', 'CH'],
+    name: 'mobilephone',
+    maxLen: 18,
+    validCharactersOnly: true
+  }
+
+  get isValid () {
+    return this.phoneNumberValid || this.mobile === null || this.mobile === ''
+  }
+
+  update (phoneNumber, phoneObject) {
+    this.phoneNumberValid = phoneObject.isValid
+    this.$emit('update:mobile', phoneNumber)
+  }
+
+  validate (phoneObject) {
+    this.phoneNumberValid = phoneObject.isValid
+  }
+
+  redirect () {
+    if (this.isValid) {
+      this.$emit('next')
     }
   }
 }

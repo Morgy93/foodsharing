@@ -22,8 +22,7 @@ var join = {
         newsletter: ($('#newsletter').prop('checked')) ? 1 : 0
       },
       success: function (ret) {
-        if (ret.status !== undefined && ret.status === 1) {
-        } else if (ret.status !== undefined && ret.status === 0) {
+        if (ret.status !== undefined && ret.status === 0) {
           pulseError(ret.error)
         }
       }

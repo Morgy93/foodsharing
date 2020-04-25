@@ -93,8 +93,6 @@ export function u_printChildBezirke (element) {
       if (data.status == 1) {
         $(`#becomebezirkchooser-childs-${parent}`).remove()
         $('#becomebezirkchooser-wrapper').append(data.html)
-      } else {
-
       }
     },
     complete: function () {
