@@ -20,10 +20,10 @@
 - Updates from events + foodsharepoints displayed on dashboard !735 !1441 #227 #588 @D0nPiano @ChrisOelmueller
 - Picture thumbnails are included in dashboard snippets of wallposts !735 #454 @D0nPiano @ChrisOelmueller
 - Link Avatar pictures on dashboard to profiles !735 #464 @D0nPiano @ChrisOelmueller
-- Add option for new forum threads in unmoderated fora to send mail or not !1233 @jofranz @Caluera
 - Add option for new forum threads in unmoderated fora to send mail or not !1233 #64 @jofranz @Caluera
 - Refactored register form to multi step pages in vue !1099 !1309 @chriswalg
 - Introduce permissions for user profile data handling: maySeeHistory(), mayAdministrateUserProfile(), mayHandleFoodsaverRegionMenu() and mayDeleteFoodsaverFromRegion() !1288 @jofranz
+- Make it possible to unfollow forum bells #271 !1191 @jofranz @chriswalg @ChrisOelmueller @moffer
 
 ## Bugfixes
 - Don't ask to accept the legal requirements when not logged in. #811 !1384 @CarolineFischer
@@ -54,8 +54,6 @@
 - Now possible to have many disabled sources of dashboard updates #365 !735 @D0nPiano @ChrisOelmueller
 - Fixes the marker loading in the region admin tool !1415 @dthulke
 - Adjusted picture sizes of slots, thread posts and of menubasket. !1298 !1423 #735 @moffer
-- Submenus of burger menu (mobile view) for example 'Infos' can be scrolled. !1411 @moffer
-- Submenus of burger menu (mobile view) for example 'Infos' can be scrolled. !1411 #838 #837 @moffer
 - Fix registration link on login page !1425 #856 @alex.simm
 - Adjusted picture sizes of slots, thread posts and of menubasket. !1298 #735 @moffer
 - Submenus of burger menu (mobile view) for example 'Infos' can be scrolled. !1411 #838 #837 @moffer
@@ -66,10 +64,7 @@
 - Make the description clearer for the mail option when opening new thread !1453 @Caluera
 
 ## Refactoring
-- Name generation for chat groups has been extracted to an own method method, which is now used by push notifications
-and in the E-Mail generation for missed chat messages. The new method does a slightly better job at naming; beta testers
-are welcomed to check the E-Mails generated for missed chat messages. @janopae
-are welcomed to check the E-Mails generated for missed chat messages. @janopae 
+- Name generation for chat groups has been extracted to an own method method, which is now used by push notifications and in the E-Mail generation for missed chat messages. The new method does a slightly better job at naming; beta testers are welcomed to check the E-Mails generated for missed chat messages. @janopae 
 - Improve mayEditStore() to fail faster !1311 @jofranz
 - Moved the button for new stores to vue store list !1282 @chriswalg
 - Restructure the definition of the Region ID constants. !1325 @theFeiter
@@ -98,6 +93,7 @@ are welcomed to check the E-Mails generated for missed chat messages. @janopae
 - Reimplement footer in vue !1437 @ChrisOelmueller
 - redirected the german refs from storestatusicon.vue and pickuplist.vue to lang.de.yml !1392 #824 @jonathan_b @thesoult
 - Refactored store infos to vue js !1406 @chriswalg
+- Moved profile Rest endpoint to user controller !1374 @alex.simm
 
 ## Dev/Test/CI stuff
 - Add "linux" tag for finding CI servers !1332 @nicksellen
@@ -116,6 +112,7 @@ are welcomed to check the E-Mails generated for missed chat messages. @janopae
 - replace all uses of npm by yarn !1397 @peter.toennies
 - improve PHP Database documentation, add new convenience methods and make delete safer !1399 @\_fridtjof_
 - Added a workaround to devdocs for fedora 32 or debian 10 and docker !1439 @chriswalg
+- added information on our Workflow and how to solve Merge Conflicts in devdocs @jonathan_b
 
 # 2020-03-16 Hotfix
 - Fix nightly fetcher warnings by using expected id instead of betrieb_id allowing all nightly maintenance methods to be executed again #747 !1348 @jofranz
