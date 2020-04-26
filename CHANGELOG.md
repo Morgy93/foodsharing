@@ -3,7 +3,7 @@
 ## Major changes
 
 ## Features
-- Add Web Push Notifications #336 !734 @janopae
+- Introduce Web Push Notifications #336 !734 @janopae
 - Use WebSocket connection to determine whether a user is online or not !734 @janopae
 - Re-enable pickup slot markers after production release !1331 !1307 @jofranz
 - Refactored register form to multi step pages in vue !1099 !1309 !1370 !1401 @chriswalg @moffer
@@ -24,6 +24,7 @@
 - Refactored register form to multi step pages in vue !1099 !1309 @chriswalg
 - Introduce permissions for user profile data handling: maySeeHistory(), mayAdministrateUserProfile(), mayHandleFoodsaverRegionMenu() and mayDeleteFoodsaverFromRegion() !1288 @jofranz
 - Make it possible to unfollow forum bells #271 !1191 @jofranz @chriswalg @ChrisOelmueller @moffer
+- Introduce permissions for user profile data handling: maySeeHistory(), mayAdministrateUserProfile(), mayHandleFoodsaverRegionMenu() and mayDeleteFoodsaverFromRegion() !1288 !1438 @jofranz @alex.simm
 
 ## Bugfixes
 - Don't ask to accept the legal requirements when not logged in. #811 !1384 @CarolineFischer
@@ -62,9 +63,13 @@
 - Show a prompt to select a home district on the dashboard if none is choosen #716 !1123 @lebe1 @dthulke @Caluera
 - Fixed rendering error when replying to forum posts !1447 @ChrisOelmueller
 - Make the description clearer for the mail option when opening new thread !1453 @Caluera
+- Fix issues introduced with push notifications #831 #841 #857 !1442 !1443 !1444 !1445 !1446 @janopae
 
 ## Refactoring
 - Name generation for chat groups has been extracted to an own method method, which is now used by push notifications and in the E-Mail generation for missed chat messages. The new method does a slightly better job at naming; beta testers are welcomed to check the E-Mails generated for missed chat messages. @janopae 
+- Name generation for chat groups has been extracted to an own method method, which is now used by push notifications
+and in the E-Mail generation for missed chat messages. The new method does a slightly better job at naming; beta testers
+are welcomed to check the E-Mails generated for missed chat messages. @janopae
 - Improve mayEditStore() to fail faster !1311 @jofranz
 - Moved the button for new stores to vue store list !1282 @chriswalg
 - Restructure the definition of the Region ID constants. !1325 @theFeiter
