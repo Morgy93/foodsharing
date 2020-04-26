@@ -118,14 +118,27 @@ class StoreControl extends Control
 					$g_data['foodsaver'] = $this->storeGateway->getStoreManagers($_GET['id']);
 				}
 
-				$this->pageHelper->addContent($this->view->betrieb_form($region, '', $this->storeGateway->getBasics_groceries(), $this->storeGateway->getBasics_chain(), $this->storeGateway->getStoreCategories(), $this->storeGateway->getStoreStateList(), $this->weightHelper->getWeightListEntries()));
+				$this->pageHelper->addContent(
+					$this->view->vueComponent('vue-storeedit', 'store-edit', [
+						'storeData' => $data,
+
+						'foodTypeOptions' => $this->storeGateway->getBasics_groceries(),
+						'chainOptions' => $this->storeGateway->getBasics_chain(),
+						'categoryOptions' => $this->storeGateway->getStoreCategories(),
+						'statusOptions' => $this->storeGateway->getStoreStateList(),
+						'weightOptions' => $this->weightHelper->getWeightListEntries(),
+					])
+				);
+				$this->pageHelper->addContent(
+					$this->view->betrieb_form($region, '', null, null, null, null, null)
+				);
 			} else {
 				$this->flashMessageHelper->info('Diesen Betrieb kannst Du nicht bearbeiten');
 			}
 
 			$this->pageHelper->addContent($this->v_utils->v_field($this->v_utils->v_menu([
 				$this->routeHelper->pageLink('betrieb', 'back_to_overview')
-			]), $this->translationHelper->s('actions')), CNT_RIGHT);
+			]), $this->translationHelper->s('actions')), CNT_TOP);
 		} elseif (isset($_GET['id'])) {
 			$this->routeHelper->go('/?page=fsbetrieb&id=' . (int)$_GET['id']);
 		} else {

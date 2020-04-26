@@ -18,6 +18,14 @@
 - Clarify that new forum threads won't reach members inactive for more than six months !1553 ("merging" !1385 and !1233) @zommuter
 - Push notifications for group chats no longer sound like the message addresses the user specifically !1574 @\_fridtjof_
 - Exclude workgroups from the "my groups" section in the topbar search for which the user was not yet accepted !1589 @alex.simm
+- Clarify that new forum threads won't reache members inactive for more than six months !1553 ("merging" !1385 and !1233) @zommuter
+- Allow to accept privacy notice, so people can become store managers again !1551 @NerdyProjects
+- Add new store status "does no longer exist" #786 !1469 @ChrisOelmueller
+- Adds new option "not yet clarified" for some store settings #33 !859 !1469 @Caluera @ChrisOelmueller
+
+## Bugfixes
+- Allow creating new store chains for admins of the respective group #609 !1469 @ChrisOelmueller
+- Fix an old status update message for store cooperation !1469 @Caluera
 
 ## Refactoring
 - Move master-update function for regions to the rest controller !1547 @alex.simm 
@@ -34,6 +42,12 @@
 - Rename Fair-Teiler to Fairteiler #906 !1590 @ChrisOelmueller
 - Rename "Service" classes to "Transaction" classes and move them to the corresponding modules @janopae !1475
 - Rename "Helper" namespace to "Utility" @janopae !1475
+
+- Remove Magnific Popup by rewriting trust banana UI code to fancybox !1530 @ChrisOelmueller
+- Some refactorings from StoreModel to StoreGateway !1196 !1554 #9 @svenpascal @alex.simm
+- Move team-status control to store-edit view !989 !1414 !1469 @jofranz @ChrisOelmueller
+- Rest API endpoints for editing store properties, store chains, etc &3 #9 #609 !1469 @ChrisOelmueller
+- Rebuild store-edit screen in Vue !1469 @ChrisOelmueller
 
 ## Dev/Test/CI stuff
 - Include sentry as symfony bundle to hopefully not miss error reporting for Rest API anymore !1562 @NerdyProjects

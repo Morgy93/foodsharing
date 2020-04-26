@@ -4,13 +4,13 @@ picture_upload_widget:
   choose_picture: Wähle ein Bild von Deinem Rechner!
 
 button:
-  save: Speichern
   change_picture: Bild ändern
   attach_image: Bild anhängen
   rotate_right: im Uhrzeigersinn drehen
   upload: Hochladen
   yes_i_am_sure: Ja, ich bin mir sicher
   abort: Abbrechen
+  save: Speichern
   send: Senden
   answer: Antworten
   clear_filter: Filter leeren
@@ -277,6 +277,60 @@ store:
   days_ago: "(vor {howMany} Tagen)"
   team_conversation_name: 'Team {name}'
   springer_conversation_name: 'Springer {name}'
+
+storeedit:
+  text:
+    header: Texte
+    title: Name des Betriebs
+    titlePlaceholder: Name des Betriebs...
+    publicInfo: Öffentliche Infos zum Betrieb
+    publicInfoLabel: Diesen Text sehen Foodsaver, die sich für das Team bewerben möchten. (max. 180 Zeichen)
+    publicInfoWarning: 'Wichtig: Gib hier keine genauen Abholzeiten an.'
+    publicInfoDetails: Es ist schon vorgekommen, dass dann Leute unabgesprochen zum Laden gehen.
+    particularities: Besonderheiten
+  fetch:
+    header: Abholung
+    amount: 'Wie viel Kilogramm werden pro Abholung ungefähr mitgenommen?'
+    time: Ungefähre Tageszeit der Abholung
+    time0: Keine Angabe
+    time1: morgens
+    time2: mittags/nachmittags
+    time3: abends
+    time4: nachts
+    prefetchtime: 'Wie viele Wochen im Voraus können sich Foodsaver mittels automatischer Slots eintragen?'
+    week: 1 Woche
+    weeks: '{count} Wochen'
+    foodTypes: 'Welche Lebensmittel dürfen abgeholt werden?'
+  coop:
+    header: Kooperation
+    start: Beginn der Kooperation
+    difficulty: 'War es einfach, eine/n Verantwortliche/n zu überzeugen, mit foodsharing zu kooperieren?'
+    difficulty1: 'Überhaupt kein Problem, er/sie war/en sofort begeistert!'
+    difficulty2: 'Nach Überzeugungsarbeit erklärte er/sie sich bereit mitzumachen'
+    difficulty3: 'Ganz schwierig, aber am Ende hat er/sie eingewilligt'
+    difficulty4: 'Zuerst sah es schlecht aus, dann hat er/sie sich aber doch gemeldet'
+    publicity: 'Ist der Betrieb/Laden/Verein bereit, bei der Presse und foodsharing.de genannt zu werden?'
+    sticker: 'Ist der Betrieb/Laden/Verein etc. gewillt, einen Sticker beim Eingang oder anderswo sichtbar anzubringen?'
+    contactPerson: Betriebsansprechpartner (Filialleiter etc.)
+    contactPhone: Festnetznummer oder Telefonnummer
+    contactFax: Fax
+    contactMail: E-Mail-Adresse
+  store:
+    header: Betrieb
+    status: Status
+    statusInfo: 'Bitte aktualisiere nach jedem Betriebskontakt ({contactDetails}) den Status ({statusDetails}) des Betriebes, sodass der Stand der Ansprache für alle sichtbar ist.'
+    contactDetails: '<a href="https://wiki.foodsharing.de/Kooperationsaufbau_-_Checkliste" target="_blank">Wiki: Kooperationsaufbau - Checkliste</a>'
+    statusDetails: '<a href="https://wiki.foodsharing.de/Betrieb" target="_blank">Wiki: Betrieb</a>'
+    statusReason: 'Nur kooperationswillige Betriebe werden später oben im Betriebsmenü der Navigationsleiste angezeigt.'
+    chain: Betriebskette
+    chainDetails: 'Bitte nur inhabergeführte Betriebe bis maximal 3 Filialen ansprechen, niemals Filialen einer größeren Kette ansprechen! Betriebskettenregeln beachten!'
+    category: Kategorie
+    newChain: Neue Kette
+    newCategory: Neue Kategorie
+  location:
+    header: Standort
+  dropdownDefault: '-- Bitte auswählen: --'
+  unspecified: 'Noch unklar'
 
 pickup:
   dates: Abholtermine

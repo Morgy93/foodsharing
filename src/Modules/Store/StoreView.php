@@ -103,7 +103,7 @@ class StoreView extends View
 		return $out;
 	}
 
-	public function betrieb_form($region = false, $page = '', $lebensmittel_values, $chains, $categories, $status, $weightArray)
+	public function betrieb_form($region = false, $page, $lebensmittel_values, $chains, $categories, $status, $weightArray)
 	{
 		global $g_data;
 
@@ -142,26 +142,37 @@ class StoreView extends View
 			$latLonOptions['location'] = ['lat' => 0, 'lon' => 0];
 		}
 
-		return $this->v_utils->v_quickform($this->translationHelper->s('betrieb'), [
+		$fieldset = array_merge([
 			$bc,
 			$this->v_utils->v_form_hidden('page', $page),
-			$this->v_utils->v_form_text('name', ['required' => true]),
 			$this->latLonPicker('LatLng', $latLonOptions),
-
-			$this->v_utils->v_form_select('kette_id', ['add' => true, 'values' => $chains, 'desc' => 'Bitte nur inhabergeführte Betriebe bis maximal 3 Filialen ansprechen, niemals Filialen einer größeren Kette ansprechen! Betriebskettenregeln beachten!']),
+		], ($chains == null) ? [] : [
+			$this->v_utils->v_form_text('name', ['required' => true]),
+			$this->v_utils->v_form_select('kette_id', [
+				'add' => true,
+				'values' => $chains,
+				'desc' => $this->translator->trans('storeedit.store.chainDetails'),
+			]),
+		], ($categories == null) ? [] : [
 			$this->v_utils->v_form_select('betrieb_kategorie_id', ['add' => true, 'values' => $categories]),
-
-			$this->v_utils->v_form_select('betrieb_status_id', ['values' => $status, 'desc' => $this->v_utils->v_info($this->translationHelper->s('store_status_impact_explanation'))]),
+		], ($status == null) ? [] : [
+			$this->v_utils->v_form_select('betrieb_status_id', [
+				'values' => $status,
+				'desc' => $this->v_utils->v_info($this->translationHelper->s('store_status_impact_explanation')),
+			]),
+		], ($lebensmittel_values == null) ? [] : [
+			$this->v_utils->v_form_checkbox('lebensmittel', ['values' => $lebensmittel_values]),
 
 			$this->v_utils->v_form_text('ansprechpartner'),
 			$this->v_utils->v_form_text('telefon'),
 			$this->v_utils->v_form_text('fax'),
 			$this->v_utils->v_form_text('email'),
 
-			$this->v_utils->v_form_checkbox('lebensmittel', ['values' => $lebensmittel_values]),
 			$this->v_utils->v_form_date('begin'),
+
 			$this->v_utils->v_form_textarea('besonderheiten'),
 			$this->v_utils->v_form_textarea('public_info', ['maxlength' => 180, 'desc' => 'Hier kannst Du einige Infos für die Foodsaver angeben, die sich für das Team bewerben möchten. <br />(max. 180 Zeichen)<div>' . $this->v_utils->v_info('<strong>Wichtig:</strong> Gib hier keine genauen Abholzeiten an.<br />Es ist des Öfteren vorgekommen, dass Leute unabgesprochen zum Laden gegangen sind.') . '</div>']),
+		], ($weightArray == null) ? [] : [
 			$this->v_utils->v_form_select('public_time', ['values' => [
 				['id' => 0, 'name' => 'Keine Angabe'],
 				['id' => 1, 'name' => 'morgens'],
@@ -169,7 +180,11 @@ class StoreView extends View
 				['id' => 3, 'name' => 'abends'],
 				['id' => 4, 'name' => 'nachts']
 			]]),
+		], [
 			$first_post,
+		], ($weightArray == null) ? [] : [
+			$this->v_utils->v_form_select('abholmenge', ['values' => $weightArray]),
+
 			$this->v_utils->v_form_select('ueberzeugungsarbeit', ['values' => [
 				['id' => 1, 'name' => 'Überhaupt kein Problem, er/sie war/en sofort begeistert!'],
 				['id' => 2, 'name' => 'Nach Überzeugungsarbeit erklärte er/sie sich bereit mitzumachen '],
@@ -190,8 +205,9 @@ class StoreView extends View
 				['id' => 1814400, 'name' => '3 Wochen'],
 				['id' => 2419200, 'name' => '4 Wochen']
 			]]),
-			$this->v_utils->v_form_select('abholmenge', ['values' => $weightArray])
 		]);
+
+		return $this->v_utils->v_quickform($this->translationHelper->s('betrieb'), $fieldset);
 	}
 
 	public function bubble(array $store): string

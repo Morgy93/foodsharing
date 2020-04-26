@@ -78,6 +78,15 @@ class StoreGateway extends BaseGateway implements BellUpdaterInterface
 		return $result;
 	}
 
+	public function editStoreTitle($storeId, $title): int
+	{
+		return $this->db->update(
+			'fs_betrieb',
+			['name' => $title],
+			['id' => $storeId]
+		);
+	}
+
 	public function getMapsStores(int $regionId): array
 	{
 		return $this->db->fetchAll('

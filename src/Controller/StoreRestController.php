@@ -26,6 +26,7 @@ class StoreRestController extends AbstractFOSRestController
 	// literal constants
 	private const NOT_LOGGED_IN = 'not logged in';
 	private const ID = 'id';
+	private const STORE_TITLE = 'name';
 
 	public function __construct(
 		Session $session,
@@ -45,7 +46,7 @@ class StoreRestController extends AbstractFOSRestController
 	 * Returns details of the store with the given ID. Returns 200 and the
 	 * store, 404 if the store does not exist, or 401 if not logged in.
 	 *
-	 * @Rest\Get("stores/{storeId}", requirements={"basketId" = "\d+"})
+	 * @Rest\Get("stores/{storeId}", requirements={"storeId" = "\d+"})
 	 */
 	public function getStoreAction(int $storeId): Response
 	{
@@ -80,6 +81,29 @@ class StoreRestController extends AbstractFOSRestController
 		}
 
 		return $this->handleView($this->view($filteredStoresForUser, 200));
+	}
+
+	/**
+	 * @Rest\Patch("stores/{storeId}/title", requirements={"storeId" = "\d+"})
+	 *
+	 * @Rest\RequestParam(name="name", nullable=false)
+	 *
+	 * @param int $storeId ID of an existing store
+	 */
+	public function updateStoreTitleAction(int $storeId, ParamFetcher $paramFetcher)
+	{
+		if (!$this->storePermissions->mayEditStore($storeId)) {
+			throw new AccessDeniedHttpException();
+		}
+
+		$title = trim(strip_tags($paramFetcher->get(self::STORE_TITLE)));
+		if (empty($title)) {
+			throw new HttpException(400, 'Store title cannot be empty.');
+		}
+
+		$this->storeGateway->editStoreTitle($storeId, $title);
+
+		return $this->getStoreAction($storeId);
 	}
 
 	/**
