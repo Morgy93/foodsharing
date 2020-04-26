@@ -29,6 +29,7 @@ $g_lang['verantwortlicher'] = 'Verantwortliche Mitglieder';
 $g_lang['info'] = 'Infos';
 $g_lang['edit_team'] = 'Team bearbeiten';
 $g_lang['change_status'] = 'Status ändern';
+$g_lang['status_msg_0'] = 'Status nicht festgelegt';
 $g_lang['status_msg_1'] = 'Es besteht noch kein Kontakt';
 $g_lang['status_msg_2'] = 'Verhandlungen laufen';
 $g_lang['status_msg_3'] = 'Betrieb ist bereit zu kooperieren';
