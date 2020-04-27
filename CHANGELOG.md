@@ -64,12 +64,11 @@
 - Fixed rendering error when replying to forum posts !1447 @ChrisOelmueller
 - Make the description clearer for the mail option when opening new thread !1453 @Caluera
 - Fix issues introduced with push notifications #831 #841 #857 !1442 !1443 !1444 !1445 !1446 @janopae
+- Short Description is shown on profile and purpose of both self descriptions is made clear in settings !1145 #656 @fs_k @Caluera
+- Fallback to raster tiles if the browser does not support WebGL !1455 @dthulke
 
 ## Refactoring
-- Name generation for chat groups has been extracted to an own method method, which is now used by push notifications and in the E-Mail generation for missed chat messages. The new method does a slightly better job at naming; beta testers are welcomed to check the E-Mails generated for missed chat messages. @janopae 
-- Name generation for chat groups has been extracted to an own method method, which is now used by push notifications
-and in the E-Mail generation for missed chat messages. The new method does a slightly better job at naming; beta testers
-are welcomed to check the E-Mails generated for missed chat messages. @janopae
+- Name generation for chat groups has been extracted to an own method method, which is now used by push notifications and in the E-Mail generation for missed chat messages. The new method does a slightly better job at naming; beta testers are welcomed to check the E-Mails generated for missed chat messages. @janopae
 - Improve mayEditStore() to fail faster !1311 @jofranz
 - Moved the button for new stores to vue store list !1282 @chriswalg
 - Restructure the definition of the Region ID constants. !1325 @theFeiter
@@ -99,6 +98,8 @@ are welcomed to check the E-Mails generated for missed chat messages. @janopae
 - redirected the german refs from storestatusicon.vue and pickuplist.vue to lang.de.yml !1392 #824 @jonathan_b @thesoult
 - Refactored store infos to vue js !1406 @chriswalg
 - Moved profile Rest endpoint to user controller !1374 @alex.simm
+- Removed the two deprecated functions from Session.php !1259 @koenvg
+- Extend RegionPermissions to a mayAdministrateRegions() method. Removes the topbar menu entry if false !1236 @jofranz
 
 ## Dev/Test/CI stuff
 - Add "linux" tag for finding CI servers !1332 @nicksellen

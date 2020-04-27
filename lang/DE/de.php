@@ -35,7 +35,9 @@ $g_lang['email'] = 'E-Mail-Adresse';
 $g_lang['attachement'] = 'Anhang';
 $g_lang['email_pass'] = 'Passwort';
 $g_lang['click_to_edit'] = 'Klicken zum bearbeiten';
-$g_lang['about_me_public'] = 'Kurzbeschreibung';
+$g_lang['about_me_public'] = 'Öffentliche Kurzbeschreibung';
+$g_lang['about_me_intern'] = 'Kurzbeschreibung';
+$g_lang['about_me_intern_profile'] = 'Über sich selbst';
 $g_lang['autokennzeichen_id'] = 'Autokennzeichen Deiner Stadt/Region';
 $g_lang['telefon'] = 'Festnetznummer';
 $g_lang['handy'] = 'Handynummer';
@@ -234,8 +236,6 @@ $g_lang['wallboard'] = 'Pinnwand';
 
 $g_lang['you'] = 'Du';
 $g_lang['store'] = 'Betrieb';
-$g_lang['message_notification_unnamed_conversation'] = '{var} hat dir geschrieben.';
-$g_lang['message_notification_named_conversation']	= '{foodsaver} hat dir in {conversation} geschrieben.';
 
 $g_lang['error_ajax'] = 'Das hat leider nicht geklappt. Vielleicht funktioniert deine Internetverbindung gerade nicht. Lade die Seite neu und probiere es noch mal.';
 

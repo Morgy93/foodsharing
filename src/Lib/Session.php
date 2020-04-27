@@ -9,7 +9,6 @@ use Flourish\fSession;
 use Foodsharing\Helpers\TranslationHelper;
 use Foodsharing\Lib\Db\Mem;
 use Foodsharing\Modules\Buddy\BuddyGateway;
-use Foodsharing\Modules\Core\DBConstants\Region\RegionIDs;
 use Foodsharing\Modules\Core\DBConstants\Region\Type;
 use Foodsharing\Modules\Foodsaver\FoodsaverGateway;
 use Foodsharing\Modules\Quiz\QuizHelper;
@@ -518,25 +517,6 @@ class Session
 	public function mayBezirk($regionId): bool
 	{
 		return isset($_SESSION['client']['bezirke'][$regionId]) || $this->isAdminFor($regionId) || $this->isOrgaTeam();
-	}
-
-	/**
-	 * @deprecated Please use permission class in permission folder:
-	 * @see ReportPermissions::mayHandleReports()
-	 */
-	public function mayHandleReports()
-	{
-		// group "Regelverletzungen/Meldungen"
-		return $this->may('orga') || $this->isAdminFor(RegionIDs::EUROPE_REPORT_TEAM);
-	}
-
-	/**
-	 * @deprecated Please use permission class in permission folder:
-	 * @see QuizPermissions::mayEditQuiz()
-	 */
-	public function mayEditQuiz()
-	{
-		return $this->may('orga') || $this->isAdminFor(RegionIDs::QUIZ_AND_REGISTRATION_WORK_GROUP);
 	}
 
 	public function isAdminForAWorkGroup()
