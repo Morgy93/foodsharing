@@ -3,32 +3,41 @@
 namespace Foodsharing\Controller;
 
 use Foodsharing\Lib\Session;
+use Foodsharing\Modules\Region\ForumFollowerGateway;
 use Foodsharing\Modules\Region\ForumGateway;
+use Foodsharing\Modules\Region\RegionGateway;
 use Foodsharing\Permissions\ForumPermissions;
 use Foodsharing\Services\ForumService;
 use Foodsharing\Services\SanitizerService;
-use FOS\RestBundle\Controller\Annotations as Rest;
 use FOS\RestBundle\Controller\AbstractFOSRestController;
+use FOS\RestBundle\Controller\Annotations as Rest;
 use FOS\RestBundle\Request\ParamFetcher;
+use Symfony\Component\HttpFoundation\Response as SymfonyResponse;
 use Symfony\Component\HttpKernel\Exception\HttpException;
 
 class ForumRestController extends AbstractFOSRestController
 {
 	private $session;
+	private $regionGateway;
 	private $forumGateway;
+	private $forumFollowerGateway;
 	private $forumPermissions;
 	private $forumService;
 	private $sanitizerService;
 
 	public function __construct(
 		Session $session,
+		RegionGateway $regionGateway,
 		ForumGateway $forumGateway,
+		ForumFollowerGateway $forumFollowerGateway,
 		ForumPermissions $forumPermissions,
 		ForumService $forumService,
 		SanitizerService $sanitizerService
 	) {
 		$this->session = $session;
+		$this->regionGateway = $regionGateway;
 		$this->forumGateway = $forumGateway;
+		$this->forumFollowerGateway = $forumFollowerGateway;
 		$this->forumPermissions = $forumPermissions;
 		$this->forumService = $forumService;
 		$this->sanitizerService = $sanitizerService;
@@ -54,10 +63,10 @@ class ForumRestController extends AbstractFOSRestController
 		if (isset($thread['post_time'])) {
 			$normalizedThread['lastPost']['createdAt'] = str_replace(' ', 'T', $thread['post_time']);
 			$normalizedThread['lastPost']['body'] = $this->sanitizerService->markdownToHtml($thread['post_body']);
-			$normalizedThread['lastPost']['author'] = RestNormalization::normalizeFoodsaver($thread, 'foodsaver_');
+			$normalizedThread['lastPost']['author'] = RestNormalization::normalizeUser($thread, 'foodsaver_');
 		}
 		if (isset($thread['creator_name'])) {
-			$normalizedThread['creator'] = RestNormalization::normalizeFoodsaver($thread, 'creator_');
+			$normalizedThread['creator'] = RestNormalization::normalizeUser($thread, 'creator_');
 		}
 
 		return $normalizedThread;
@@ -69,23 +78,23 @@ class ForumRestController extends AbstractFOSRestController
 			'id' => $post['id'],
 			'body' => $this->sanitizerService->markdownToHtml($post['body']),
 			'createdAt' => str_replace(' ', 'T', $post['time']),
-			'author' => RestNormalization::normalizeFoodsaver($post, 'author_'),
+			'author' => RestNormalization::normalizeUser($post, 'author_'),
 			'reactions' => $post['reactions'] ?: new \ArrayObject(),
 			'mayDelete' => $this->forumPermissions->mayDeletePost($post)
 		];
 	}
 
 	/**
-	 * @param $forumId integer which forum to return threads for (maps to regions/groups)
-	 * @param $forumSubId integer each region/group as another namespace to separate different forums with the same base id (region/group id, here: forumId).
+	 * @param int $forumId which forum to return threads for (maps to regions/groups)
+	 * @param int $forumSubId each region/group as another namespace to separate different forums with the same base id (region/group id, here: forumId).
 	 * So with any forumId, there is (currently) 2, possibly infinite, actual forums (list of threads)
 	 * @Rest\Get("forum/{forumId}/{forumSubId}", requirements={"forumId" = "\d+", "forumSubId" = "\d"})
-	 *
-	 * @return \Symfony\Component\HttpFoundation\Response
 	 */
-	public function listThreadsAction(int $forumId, int $forumSubId): \Symfony\Component\HttpFoundation\Response
+	public function listThreadsAction(int $forumId, int $forumSubId): SymfonyResponse
 	{
-		$this->throwExceptionIfNotAllowedToAccessForum($forumId, $forumSubId);
+		if (!$this->forumPermissions->mayAccessForum($forumId, $forumSubId)) {
+			throw new HttpException(403);
+		}
 
 		$threads = $this->getNormalizedThreads($forumId, $forumSubId);
 
@@ -94,13 +103,6 @@ class ForumRestController extends AbstractFOSRestController
 		], 200);
 
 		return $this->handleView($view);
-	}
-
-	private function throwExceptionIfNotAllowedToAccessForum(int $forumId, int $forumSubId)
-	{
-		if (!$this->forumPermissions->mayAccessForum($forumId, $forumSubId)) {
-			throw new HttpException(403);
-		}
 	}
 
 	private function getNormalizedThreads(int $forumId, int $forumSubId)
@@ -116,21 +118,7 @@ class ForumRestController extends AbstractFOSRestController
 	/**
 	 * @Rest\Get("forum/thread/{threadId}", requirements={"threadId" = "\d+"})
 	 */
-	public function getThreadAction($threadId)
-	{
-		$thread = $this->getValidatedThreadOrThrowException($threadId);
-
-		$thread = $this->normalizeThread($thread);
-		$thread = $this->addAdditionalInformationToThread($thread, $threadId);
-
-		$view = $this->view([
-			'data' => $thread
-		], 200);
-
-		return $this->handleView($view);
-	}
-
-	private function getValidatedThreadOrThrowException($threadId)
+	public function getThreadAction(int $threadId): SymfonyResponse
 	{
 		$thread = $this->forumGateway->getThread($threadId);
 
@@ -142,29 +130,32 @@ class ForumRestController extends AbstractFOSRestController
 			throw new HttpException(403);
 		}
 
-		return $thread;
-	}
-
-	private function addAdditionalInformationToThread($thread, $threadId)
-	{
+		$thread = $this->normalizeThread($thread);
 		$posts = $this->forumGateway->listPosts($threadId);
 
-		$thread['isFollowing'] = $this->forumGateway->isFollowing($this->session->id(), $threadId);
+		$thread['isFollowingEmail'] = $this->forumFollowerGateway->isFollowingEmail($this->session->id(), $threadId);
+		$thread['isFollowingBell'] = $this->forumFollowerGateway->isFollowingBell($this->session->id(), $threadId);
 		$thread['mayModerate'] = $this->forumPermissions->mayModerate($threadId);
 		$thread['posts'] = array_map(function ($post) {
 			return $this->normalizePost($post);
 		}, $posts);
 
-		return $thread;
+		$view = $this->view([
+			'data' => $thread
+		], 200);
+
+		return $this->handleView($view);
 	}
 
 	/**
 	 * @Rest\Post("forum/thread/{threadId}/posts", requirements={"threadId" = "\d+"})
 	 * @Rest\RequestParam(name="body")
 	 */
-	public function createPostAction($threadId, ParamFetcher $paramFetcher)
+	public function createPostAction(int $threadId, ParamFetcher $paramFetcher): SymfonyResponse
 	{
-		$this->throwExceptionIfNotAllowedToPostToThread($threadId);
+		if (!$this->forumPermissions->mayPostToThread($threadId)) {
+			throw new HttpException(403);
+		}
 
 		$body = $paramFetcher->get('body');
 		$this->forumService->addPostToThread($this->session->id(), $threadId, $body);
@@ -172,26 +163,23 @@ class ForumRestController extends AbstractFOSRestController
 		return $this->handleView($this->view());
 	}
 
-	private function throwExceptionIfNotAllowedToPostToThread($threadId)
-	{
-		if (!$this->forumPermissions->mayPostToThread($threadId)) {
-			throw new HttpException(403);
-		}
-	}
-
 	/**
 	 * @Rest\Post("forum/{forumId}/{forumSubId}", requirements={"forumId" = "\d+", "forumSubId" = "\d"})
 	 * @Rest\RequestParam(name="title")
 	 * @Rest\RequestParam(name="body")
 	 */
-	public function createThreadAction($forumId, $forumSubId, ParamFetcher $paramFetcher)
+	public function createThreadAction(int $forumId, int $forumSubId, ParamFetcher $paramFetcher): SymfonyResponse
 	{
-		$this->throwExceptionIfNotAllowedToAccessForum($forumId, $forumSubId);
+		if (!$this->forumPermissions->mayAccessForum($forumId, $forumSubId)) {
+			throw new HttpException(403);
+		}
 
 		$body = $paramFetcher->get('body');
 		$title = $paramFetcher->get('title');
+		$regionDetails = $this->regionGateway->getRegionDetails($forumId);
+		$postActiveWithoutModeration = ($this->session->user('verified') && !$regionDetails['moderated']) || $this->session->isAmbassadorForRegion([$forumId]);
 
-		$threadId = $this->forumService->createThread($this->session->id(), $title, $body, $forumId, $forumSubId);
+		$threadId = $this->forumService->createThread($this->session->id(), $title, $body, $regionDetails, $forumSubId, $postActiveWithoutModeration, true);
 
 		return $this->getThreadAction($threadId);
 	}
@@ -201,13 +189,19 @@ class ForumRestController extends AbstractFOSRestController
 	 * @Rest\RequestParam(name="isSticky", nullable=true, default=null)
 	 * @Rest\RequestParam(name="isActive", nullable=true, default=null)
 	 */
-	public function patchThreadAction($threadId, ParamFetcher $paramFetcher)
+	public function patchThreadAction(int $threadId, ParamFetcher $paramFetcher): SymfonyResponse
 	{
-		$this->throwExceptionIfNotAllowedToModerateThread($threadId);
+		if (!$this->forumPermissions->mayModerate($threadId)) {
+			throw new HttpException(403);
+		}
 
 		$isSticky = $paramFetcher->get('isSticky');
 		if (!is_null($isSticky)) {
-			$this->stickOrUnstickThread($threadId, $isSticky);
+			if ($isSticky === true) {
+				$this->forumGateway->stickThread($threadId);
+			} else {
+				$this->forumGateway->unstickThread($threadId);
+			}
 		}
 		$isActive = $paramFetcher->get('isActive');
 		if ($isActive === true) {
@@ -217,47 +211,49 @@ class ForumRestController extends AbstractFOSRestController
 		return $this->getThreadAction($threadId);
 	}
 
-	private function throwExceptionIfNotAllowedToModerateThread($threadId)
-	{
-		if (!$this->forumPermissions->mayModerate($threadId)) {
-			throw new HttpException(403);
-		}
-	}
-
-	private function stickOrUnstickThread($threadId, $isSticky)
-	{
-		if ($isSticky === true) {
-			$this->forumGateway->stickThread($threadId);
-		} else {
-			$this->forumGateway->unstickThread($threadId);
-		}
-	}
-
 	/**
-	 * @Rest\Post("forum/thread/{threadId}/follow", requirements={"threadId" = "\d+"})
+	 * @Rest\Post("forum/thread/{threadId}/follow/email", requirements={"threadId" = "\d+"})
 	 */
-	public function followThreadAction($threadId)
-	{
-		$this->throwExceptionIfNotAllowedToAccessThread($threadId);
-
-		$this->forumGateway->followThread($this->session->id(), $threadId);
-
-		return $this->handleView($this->view([]));
-	}
-
-	private function throwExceptionIfNotAllowedToAccessThread($threadId)
+	public function followThreadByEmailAction(int $threadId): SymfonyResponse
 	{
 		if (!$this->forumPermissions->mayAccessThread($threadId)) {
 			throw new HttpException(403);
 		}
+		$this->forumFollowerGateway->followThreadByEmail($this->session->id(), $threadId);
+
+		return $this->handleView($this->view([]));
 	}
 
 	/**
-	 * @Rest\Delete("forum/thread/{threadId}/follow", requirements={"threadId" = "\d+"})
+	 * @Rest\Post("forum/thread/{threadId}/follow/bell", requirements={"threadId" = "\d+"})
 	 */
-	public function unfollowThreadAction($threadId)
+	public function followThreadByBellAction(int $threadId): SymfonyResponse
 	{
-		$this->forumGateway->unfollowThread($this->session->id(), $threadId);
+		if (!$this->forumPermissions->mayAccessThread($threadId)) {
+			throw new HttpException(403);
+		}
+
+		$this->forumFollowerGateway->followThreadByBell($this->session->id(), $threadId);
+
+		return $this->handleView($this->view([]));
+	}
+
+	/**
+	 * @Rest\Delete("forum/thread/{threadId}/follow/email", requirements={"threadId" = "\d+"})
+	 */
+	public function unfollowThreadByEmailAction(int $threadId): SymfonyResponse
+	{
+		$this->forumFollowerGateway->unfollowThreadByEmail($this->session->id(), $threadId);
+
+		return $this->handleView($this->view([]));
+	}
+
+	/**
+	 * @Rest\Delete("forum/thread/{threadId}/follow/bell", requirements={"threadId" = "\d+"})
+	 */
+	public function unfollowThreadByBellAction(int $threadId): SymfonyResponse
+	{
+		$this->forumFollowerGateway->unfollowThreadByBell($this->session->id(), $threadId);
 
 		return $this->handleView($this->view([]));
 	}
@@ -265,16 +261,7 @@ class ForumRestController extends AbstractFOSRestController
 	/**
 	 * @Rest\Delete("forum/post/{postId}", requirements={"postId" = "\d+"})
 	 */
-	public function deletePostAction($postId)
-	{
-		$this->validatePostOrThrowException($postId);
-
-		$this->forumGateway->deletePost($postId);
-
-		return $this->handleView($this->view([]));
-	}
-
-	private function validatePostOrThrowException($postId)
+	public function deletePostAction(int $postId): SymfonyResponse
 	{
 		$post = $this->forumGateway->getPost($postId);
 		if (!$post) {
@@ -283,16 +270,22 @@ class ForumRestController extends AbstractFOSRestController
 		if (!$this->forumPermissions->mayDeletePost($post)) {
 			throw new HttpException(403);
 		}
+
+		$this->forumGateway->deletePost($postId);
+
+		return $this->handleView($this->view([]));
 	}
 
 	/**
 	 * @Rest\Post("forum/post/{postId}/reaction/{emoji}", requirements={"postId" = "\d+", "emoji" = "\w+"})
 	 */
-	public function addReactionAction($postId, $emoji)
+	public function addReactionAction(int $postId, string $emoji): SymfonyResponse
 	{
 		$threadId = $this->forumGateway->getThreadForPost($postId);
 
-		$this->throwExceptionIfNotAllowedToAccessThread($threadId);
+		if (!$this->forumPermissions->mayAccessThread($threadId)) {
+			throw new HttpException(403);
+		}
 
 		$this->forumService->addReaction($this->session->id(), $postId, $emoji);
 
@@ -302,7 +295,7 @@ class ForumRestController extends AbstractFOSRestController
 	/**
 	 * @Rest\Delete("forum/post/{postId}/reaction/{emoji}", requirements={"postId" = "\d+", "emoji" = "\w+"})
 	 */
-	public function deleteReactionAction($postId, $emoji)
+	public function deleteReactionAction(int $postId, string $emoji): SymfonyResponse
 	{
 		$this->forumService->removeReaction($this->session->id(), $postId, $emoji);
 

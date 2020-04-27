@@ -18,7 +18,7 @@ define('DB_DB', 'foodsharing');
 define('ERROR_REPORT', E_ALL);
 define('BASE_URL', $protocol . '://localhost:18080');
 
-define('INFLUX_DSN', 'influxdb://influxdb:8086/foodsharing');
+define('INFLUX_DSN', 'udp+influxdb://influxdb:8089/foodsharing');
 
 define('DEFAULT_EMAIL', 'noreply@foodsharing.de');
 define('SUPPORT_EMAIL', 'it@foodsharing.network');
@@ -29,10 +29,9 @@ define('EMAIL_PUBLIC_NAME', 'foodsharing-Freiwillige');
 define('NOREPLY_EMAIL_HOST', 'foodsharing.de');
 define('PLATFORM_MAILBOX_HOST', 'foodsharing.network');
 
-define('MAILBOX_OWN_DOMAINS', array('foodsharing.network', 'lebensmittelretten.de', 'foodsharing.de'));
+define('MAILBOX_OWN_DOMAINS', ['foodsharing.network', 'lebensmittelretten.de', 'foodsharing.de']);
 
-define('SMTP_HOST', 'maildev');
-define('SMTP_PORT', 25);
+define('MAILER_HOST', 'maildev');
 
 define('MEM_ENABLED', true);
 
@@ -52,3 +51,6 @@ define('BOUNCE_IMAP_PORT', null);
 if (!defined('ROOT_DIR')) {
 	define('ROOT_DIR', './');
 }
+
+define('WEBPUSH_PUBLIC_KEY', 'BGBBW8RtRe4LpGT+6Q7BJGGSbgcULM/w9BrxBLva2AVf85Pj7t4xrViT3lsxn8Dp0fpJ1SPoDbwP1n6gt3/R7ps='); // test public key
+define('WEBPUSH_PRIVATE_KEY', 'z5g0ssYryhDhQnwVAZ2Q2oOiqF3ZngJzkLXMrww8gDU='); // test private key

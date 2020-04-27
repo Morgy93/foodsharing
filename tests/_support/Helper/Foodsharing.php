@@ -2,8 +2,15 @@
 
 namespace Helper;
 
+use Carbon\Carbon;
 use DateTime;
 use Faker;
+use Foodsharing\Modules\Core\DBConstants\Foodsaver\Role;
+use Foodsharing\Modules\Core\DBConstants\FoodSharePoint\FollowerType;
+use Foodsharing\Modules\Core\DBConstants\Info\InfoType;
+use Foodsharing\Modules\Core\DBConstants\Quiz\SessionStatus;
+use Foodsharing\Modules\Core\DBConstants\Region\RegionIDs;
+use Foodsharing\Modules\Core\DBConstants\Region\Type;
 
 class Foodsharing extends \Codeception\Module\Db
 {
@@ -18,7 +25,7 @@ class Foodsharing extends \Codeception\Module\Db
 
 	public function clear()
 	{
-		$this->driver->executeQuery('
+		$this->_getDriver()->executeQuery('
 			DELETE FROM fs_foodsaver;
 			DELETE FROM fs_foodsaver_has_bezirk;
 			DELETE FROM fs_foodsaver_has_conversation;
@@ -45,7 +52,7 @@ class Foodsharing extends \Codeception\Module\Db
 
 	public function clearTable($table)
 	{
-		$this->driver->deleteQueryByCriteria($table, []);
+		$this->_getDriver()->deleteQueryByCriteria($table, []);
 	}
 
 	/**
@@ -54,7 +61,7 @@ class Foodsharing extends \Codeception\Module\Db
 	 * @param string pass to set as foodsharer password
 	 * @param array extra_params override params
 	 *
-	 * @return an array with all the foodsaver fields
+	 * @return array with all the foodsaver fields
 	 */
 	public function createFoodsharer($pass = null, $extra_params = [])
 	{
@@ -77,31 +84,103 @@ class Foodsharing extends \Codeception\Module\Db
 			'last_login' => $this->faker->dateTimeBetween('-1 years', '-1 hours'),
 			'anschrift' => $this->faker->streetName,
 			'handy' => $this->faker->phoneNumber,
-			'photo_public' => 1,
 			'active' => 1,
 			'privacy_policy_accepted_date' => '2018-05-24 10:24:53',
 			'privacy_notice_accepted_date' => '2018-05-24 18:25:28',
 			'token' => uniqid()
 		], $extra_params);
-		$params['passwd'] = $this->encryptMd5($params['email'], $pass);
+		$params['password'] = password_hash($pass, PASSWORD_ARGON2I, [
+			'time_cost' => 1
+		]);
 		$params['geb_datum'] = $this->toDateTime($params['geb_datum']);
 		$params['last_login'] = $this->toDateTime($params['last_login']);
 		$params['anmeldedatum'] = $this->toDateTime($params['anmeldedatum']);
 		$id = $this->haveInDatabase('fs_foodsaver', $params);
 		if ($params['bezirk_id']) {
-			$this->addBezirkMember($params['bezirk_id'], $id);
+			$this->addRegionMember($params['bezirk_id'], $id);
 		}
 		$params['id'] = $id;
 
 		return $params;
 	}
 
-	public function createQuizTry($fs_id, $level, $status)
+	public function createQuiz(int $quizId, int $questionCount = 1): array
 	{
+		$roles = [
+			Role::FOODSAVER => 'Foodsaver/in',
+			Role::STORE_MANAGER => 'Betriebsverantwortliche/r',
+			Role::AMBASSADOR => 'Botschafter/in'
+		];
+		$params = [
+			'id' => $quizId,
+			'name' => 'Quiz #' . $quizId,
+			'desc' => 'Werde ' . $roles[$quizId] . ' mit diesem Quiz.',
+			'maxfp' => 0,
+			'questcount' => $questionCount,
+		];
+		$params['id'] = $this->haveInDatabase('fs_quiz', $params);
+
+		$params['questions'] = [];
+		for ($i = 1; $i <= $questionCount; ++$i) {
+			$questionText = 'Frage #' . $i . ' für Quiz #' . $params['id'];
+			$params['questions'][] = $this->createQuestion($params['id'], $questionText);
+		}
+
+		return $params;
+	}
+
+	private function createQuestion(int $quizId, string $text = 'Question', int $failurePoints = 1): array
+	{
+		$params = [
+			'text' => $text,
+			'duration' => 60,
+			'wikilink' => 'wiki.foodsharing.de'
+		];
+		$questionId = $this->haveInDatabase('fs_question', $params);
+		$params['id'] = $questionId;
+
+		$this->haveInDatabase('fs_question_has_quiz', [
+			'question_id' => $questionId,
+			'quiz_id' => $quizId,
+			'fp' => $failurePoints
+		]);
+
+		$params['answers'] = [];
+		$params['answers'][] = $this->createAnswer($questionId, true);
+		$params['answers'][] = $this->createAnswer($questionId, false);
+
+		return $params;
+	}
+
+	private function createAnswer(int $questionId, bool $right = true): array
+	{
+		$params = [
+			'question_id' => $questionId,
+			'text' => ($right ? 'Richtige' : 'Falsche') . ' Antwort',
+			'explanation' => 'Diese Antwort ist ' . ($right ? 'richtig' : 'falsch') . '.',
+			'right' => $right ? 1 : 0
+		];
+		$params['id'] = $this->haveInDatabase('fs_answer', $params);
+
+		return $params;
+	}
+
+	public function letUserFailQuiz(array $user, int $daysAgo, int $times)
+	{
+		$level = $user['rolle'] + 1;
+		foreach (range(1, $times) as $i) {
+			$this->createQuizTry($user['id'], $level, SessionStatus::FAILED, $daysAgo);
+		}
+	}
+
+	public function createQuizTry(int $fsId, int $level, int $status, int $daysAgo = 0)
+	{
+		$startTime = Carbon::now()->subDays($daysAgo);
 		$v = [
 			'quiz_id' => $level,
 			'status' => $status,
-			'foodsaver_id' => $fs_id,
+			'foodsaver_id' => $fsId,
+			'time_start' => $this->toDateTime($startTime)
 		];
 		$this->haveInDatabase('fs_quiz_session', $v);
 	}
@@ -112,6 +191,7 @@ class Foodsharing extends \Codeception\Module\Db
 			'verified' => 1,
 			'rolle' => 1,
 			'quiz_rolle' => 1,
+			'geschlecht' => random_int(0, 3)
 		], $extra_params);
 		$params = $this->createFoodsharer($pass, $params);
 		$this->createQuizTry($params['id'], 1, 1);
@@ -181,7 +261,7 @@ class Foodsharing extends \Codeception\Module\Db
 			'ueberzeugungsarbeit' => 0,
 			'presse' => 0,
 			'sticker' => 0,
-			'abholmenge' => $this->faker->numberBetween(0, 70),
+			'abholmenge' => $this->faker->numberBetween(0, 7),
 			'team_status' => 1,
 			'prefetchtime' => 1209600,
 
@@ -231,9 +311,11 @@ class Foodsharing extends \Codeception\Module\Db
 			'confirmed' => 1
 		], $extra_params);
 		$params['date'] = $this->toDateTime($params['date']);
-
-		$id = $this->haveInDatabase('fs_abholer', $params);
-		$params['id'] = $id;
+		$res = $this->countInDatabase('fs_abholer', $params);
+		if ($res < 1) {
+			$id = $this->haveInDatabase('fs_abholer', $params);
+			$params['id'] = $id;
+		}
 
 		return $params;
 	}
@@ -276,7 +358,7 @@ class Foodsharing extends \Codeception\Module\Db
 	public function addRecurringPickup($store, $extra_params = [])
 	{
 		$hours = $this->faker->numberBetween(0, 23);
-		$minutes = $this->faker->randomElement($array = array('00', '05', '10', '15', '20', '25', '30', '35', '40', '45', '50', '55'));
+		$minutes = $this->faker->randomElement($array = ['00', '05', '10', '15', '20', '25', '30', '35', '40', '45', '50', '55']);
 
 		$params = array_merge([
 			'betrieb_id' => $store,
@@ -300,10 +382,27 @@ class Foodsharing extends \Codeception\Module\Db
 		return $params;
 	}
 
+	public function addPicker($store, $foodsaverId, $extra_params = [])
+	{
+		$date = $this->faker->date('Y-m-d H:i:s');
+		$params = array_merge([
+			'foodsaver_id' => $foodsaverId,
+			'betrieb_id' => $store,
+			'date' => $date,
+			'confirmed' => '1'
+		], $extra_params);
+
+		$params['date'] = $this->toDateTime($params['date']);
+
+		$id = $this->haveInDatabase('fs_abholer', $params);
+		$params['id'] = $id;
+
+		return $params;
+	}
+
 	public function createWorkingGroup($name, $extra_params = [])
 	{
-		/* 392 is global working groups */
-		$parentId = 392;
+		$parentId = RegionIDs::GLOBAL_WORKING_GROUPS;
 		if (array_key_exists('parent_id', $extra_params)) {
 			$parentId = $extra_params[$parentId];
 		}
@@ -312,7 +411,7 @@ class Foodsharing extends \Codeception\Module\Db
 			'teaser' => 'an autogenerated working group without a description',
 		], $extra_params);
 
-		return $this->createRegion($name, $parentId, 7, $extra_params);
+		return $this->createRegion($name, $parentId, Type::WORKING_GROUP, $extra_params);
 	}
 
 	public function createMailbox($name = null)
@@ -326,12 +425,12 @@ class Foodsharing extends \Codeception\Module\Db
 		return $mb;
 	}
 
-	public function createRegion($name = null, $parentId = 741, $type = 9, $extra_params = [])
+	public function createRegion($name = null, $parentId = RegionIDs::EUROPE, $type = Type::PART_OF_TOWN, $extra_params = [])
 	{
 		if ($name == null) {
 			$name = $this->faker->lastName() . '-region';
 		}
-		/* 741 is germany, so suitable for normal sub regions */
+
 		$v = array_merge([
 			'parent_id' => $parentId,
 			'name' => $name,
@@ -341,32 +440,32 @@ class Foodsharing extends \Codeception\Module\Db
 		$mailbox = $this->createMailbox('region-' . $v['id']);
 		$this->updateInDatabase('fs_bezirk', ['mailbox_id' => $mailbox['id']], ['id' => $v['id']]);
 		/* Add to closure table for hierarchies */
-		$this->driver->executeQuery('INSERT INTO `fs_bezirk_closure`
+		$this->_getDriver()->executeQuery('INSERT INTO `fs_bezirk_closure`
 		(ancestor_id, bezirk_id, depth)
 		SELECT t.ancestor_id, ?, t.depth+1 FROM `fs_bezirk_closure` AS t WHERE t.bezirk_id = ?
-		UNION ALL SELECT ?, ?, 0', array($v['id'], $parentId, $v['id'], $v['id']));
+		UNION ALL SELECT ?, ?, 0', [$v['id'], $parentId, $v['id'], $v['id']]);
 
 		return $v;
 	}
 
-	public function addBezirkAdmin($bezirk_id, $fs_id)
+	public function addRegionAdmin($region_id, $fs_id)
 	{
 		$v = [
-			'bezirk_id' => $bezirk_id,
+			'bezirk_id' => $region_id,
 			'foodsaver_id' => $fs_id,
 		];
 		$this->haveInDatabase('fs_botschafter', $v);
 	}
 
-	public function addBezirkMember($bezirk_id, $fs_id, $is_active = true)
+	public function addRegionMember($region_id, $fs_id, $is_active = true)
 	{
 		if (is_array($fs_id)) {
-			array_map(function ($x) use ($bezirk_id, $is_active) {
-				$this->addBezirkMember($bezirk_id, $x, $is_active);
+			array_map(function ($x) use ($region_id, $is_active) {
+				$this->addRegionMember($region_id, $x, $is_active);
 			}, $fs_id);
 		} else {
 			$v = [
-				'bezirk_id' => $bezirk_id,
+				'bezirk_id' => $region_id,
 				'foodsaver_id' => $fs_id,
 				'active' => $is_active ? 1 : 0,
 			];
@@ -374,7 +473,7 @@ class Foodsharing extends \Codeception\Module\Db
 		}
 	}
 
-	public function addForumTheme($bezirk_id, $fs_id, $bot_theme = false, $extra_params = [])
+	public function addForumTheme($region_id, $fs_id, $bot_theme = false, $extra_params = [])
 	{
 		$params = array_merge([
 			'foodsaver_id' => $fs_id,
@@ -388,7 +487,7 @@ class Foodsharing extends \Codeception\Module\Db
 
 		$this->haveInDatabase('fs_bezirk_has_theme', [
 			'theme_id' => $theme_id,
-			'bezirk_id' => $bezirk_id,
+			'bezirk_id' => $region_id,
 			'bot_theme' => ($bot_theme ? 1 : 0),
 		]);
 
@@ -484,7 +583,7 @@ class Foodsharing extends \Codeception\Module\Db
 		return $params;
 	}
 
-	public function createFairteiler($user, $bezirk, $extra_params = [])
+	public function createFoodSharePoint($user, $bezirk, $extra_params = [])
 	{
 		$params = array_merge([
 			'bezirk_id' => $bezirk,
@@ -503,36 +602,36 @@ class Foodsharing extends \Codeception\Module\Db
 
 		$id = $this->haveInDatabase('fs_fairteiler', $params);
 
-		$this->addFairteilerAdmin($user, $id);
+		$this->addFoodSharePointAdmin($user, $id);
 
 		$params['id'] = $id;
 
 		return $params;
 	}
 
-	public function addFairteilerFollower($user, $fairteiler, $extra_params = [])
+	public function addFoodSharePointFollower($user, $foodSharePoint, $extra_params = [])
 	{
 		$params = array_merge([
-			'fairteiler_id' => $fairteiler,
+			'fairteiler_id' => $foodSharePoint,
 			'foodsaver_id' => $user,
-			'type' => 1,
-			'infotype' => 1,
+			'type' => FollowerType::FOLLOWER,
+			'infotype' => InfoType::EMAIL,
 		], $extra_params);
 		$this->haveInDatabase('fs_fairteiler_follower', $params);
 
 		return $params;
 	}
 
-	public function addFairteilerAdmin($user, $fairteiler, $extra_params = [])
+	public function addFoodSharePointAdmin($user, $foodSharePoint, $extra_params = [])
 	{
-		return $this->addFairteilerFollower($user, $fairteiler, array_merge($extra_params, ['type' => 2]));
+		return $this->addFoodSharePointFollower($user, $foodSharePoint, array_merge($extra_params, ['type' => FollowerType::FOOD_SHARE_POINT_MANAGER]));
 	}
 
-	public function addFairteilerPost($user, $fairteiler, $extra_params = [])
+	public function addFoodSharePointPost($user, $foodSharePoint, $extra_params = [])
 	{
 		$post = $this->createWallpost($user, $extra_params);
 		$this->haveInDatabase('fs_fairteiler_has_wallpost', [
-			'fairteiler_id' => $fairteiler,
+			'fairteiler_id' => $foodSharePoint,
 			'wallpost_id' => $post['id'],
 		]);
 
@@ -655,6 +754,20 @@ class Foodsharing extends \Codeception\Module\Db
 		return $params;
 	}
 
+	public function updateThePrivacyPolicyDate()
+	{
+		$lastModified = $this->grabFromDatabase('fs_content', 'last_mod', ['name' => 'datenschutz']);
+		$beforeLastModified = date('Y-m-d H:i:s', strtotime('+1 day', strtotime($lastModified)));
+		$this->updateInDatabase('fs_content', ['last_mod' => $beforeLastModified], ['name' => 'datenschutz']);
+
+		return $lastModified;
+	}
+
+	public function resetThePrivacyPolicyDate($lastModified)
+	{
+		$this->updateInDatabase('fs_content', ['last_mod' => $lastModified], ['name' => 'datenschutz']);
+	}
+
 	// =================================================================================================================
 	// private methods
 	// =================================================================================================================
@@ -665,7 +778,7 @@ class Foodsharing extends \Codeception\Module\Db
 		$last_post_date = new DateTime($this->grabFromDatabase('fs_theme_post', 'time', ['id' => $last_post_id]));
 		$this_post_date = new DateTime($post['time']);
 		if ($last_post_date >= $this_post_date) {
-			$this->driver->executeQuery('UPDATE fs_theme SET last_post_id = ? WHERE id = ?', [$post['id'], $theme_id]);
+			$this->_getDriver()->executeQuery('UPDATE fs_theme SET last_post_id = ? WHERE id = ?', [$post['id'], $theme_id]);
 		}
 	}
 

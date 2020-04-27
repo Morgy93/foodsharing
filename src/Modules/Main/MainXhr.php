@@ -5,14 +5,12 @@ namespace Foodsharing\Modules\Main;
 use Exception;
 use Flourish\fImage;
 use Flourish\fUpload;
-use Foodsharing\Lib\Db\Db;
 use Foodsharing\Modules\Core\Control;
 
 class MainXhr extends Control
 {
-	public function __construct(Db $model)
+	public function __construct()
 	{
-		$this->model = $model;
 		parent::__construct();
 	}
 
@@ -20,6 +18,7 @@ class MainXhr extends Control
 	{
 		$function = '';
 		$newname = '';
+		$inid = '';
 
 		$check = false;
 
@@ -28,12 +27,12 @@ class MainXhr extends Control
 			$inid = strip_tags($_POST['inid']);
 			$upload = new fUpload();
 			$upload->setMIMETypes(
-				array(
+				[
 					'image/gif',
 					'image/jpeg',
 					'image/pjpeg',
 					'image/png'
-				),
+				],
 				$this->translationHelper->s('no_image')
 			);
 			try {
@@ -53,7 +52,7 @@ class MainXhr extends Control
 		}
 
 		if (!$check) {
-			$function = 'window.parent.pulseError(\'Sorry, Dieses Foto konnte nicht verarbeitet werden.\');window.parent.$(\'.attach-preview\').hide();';
+			$function = 'window.parent.pulseError(\'Sorry, dieses Foto konnte nicht verarbeitet werden.\');window.parent.$(\'.attach-preview\').hide();';
 		}
 
 		echo '<html><head><title>upload</title>

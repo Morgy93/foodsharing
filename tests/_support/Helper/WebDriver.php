@@ -10,12 +10,21 @@ use Facebook\WebDriver\WebDriverExpectedCondition;
 class WebDriver extends \Codeception\Module\WebDriver
 {
 	/**
-	 * Same as assertRegExp but makes it available inside AcceptanceTester
-	 * (not sure why it isn't anyway... there might be a better way).
+	 * Checks if the element is REALLY visible in the current viewport.
+	 * The available standard WebDriver actions only check if an element is
+	 * somewhere in th DOM, but not nessecarily if it's visible.
 	 */
-	public function doAssertRegExp($regexp, $text)
+	public function elementVisibleInViewport($selector)
 	{
-		return $this->assertRegExp($regexp, $text);
+		$visible = $this->executeJS('
+                    var elem = document.querySelector(arguments[0]);
+                    box = elem.getBoundingClientRect();
+                    cx = box.left + box.width / 2;
+                    cy = box.top + box.height / 2;
+                    return document.elementFromPoint(cx, cy) === elem;', [$selector]
+		);
+
+		return $this->assertTrue((bool)$visible, 'Element \'' . $selector . '\' not visible in viewport');
 	}
 
 	public function seeFormattedDateInRange($min, $max, $format, $actual)

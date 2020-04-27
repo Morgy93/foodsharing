@@ -18,7 +18,7 @@ describe('vMap', () => {
       defaultMarkerOptions: {
         color: 'orange',
         icon: 'smile',
-        prefix: 'img'
+        prefix: 'fa'
       }
     }
 
@@ -27,6 +27,9 @@ describe('vMap', () => {
         <div class="vmap" id="map"
              style="width: 500px; height: 500px;"
              data-options="${escape(JSON.stringify(options))}"></div>`
+
+    // Mapbox GL tries to call this function
+    window.URL.createObjectURL = function () {}
 
     require('@php/Lib/View/vMap')
   })

@@ -6,6 +6,8 @@ use Endroid\QrCode\QrCode;
 use Foodsharing\Helpers\IdentificationHelper;
 use Foodsharing\Modules\Bell\BellGateway;
 use Foodsharing\Modules\Core\Control;
+use Foodsharing\Modules\Core\DBConstants\Foodsaver\Gender;
+use Foodsharing\Modules\Core\DBConstants\Foodsaver\Role;
 use Foodsharing\Modules\Foodsaver\FoodsaverGateway;
 use Foodsharing\Modules\Region\RegionGateway;
 use setasign\Fpdi\Tcpdf\Fpdi;
@@ -39,13 +41,13 @@ final class PassportGeneratorControl extends Control
 
 		$this->regionId = false;
 		if (($this->regionId = $this->identificationHelper->getGetId('bid')) === false) {
-			$this->regionId = $this->session->getCurrentBezirkId();
+			$this->regionId = $this->session->getCurrentRegionId();
 		}
 
 		// isBotForA() returns true if user is an ambassador (AMB) for this region. If the user is an AMB and the bezirk/region is a working group it returns false
-		if ($this->session->isBotForA([$this->regionId], false, true) || $this->session->isOrgaTeam()) {
+		if ($this->session->isAmbassadorForRegion([$this->regionId], false, true) || $this->session->isOrgaTeam()) {
 			$this->region = false;
-			if ($region = $this->regionGateway->getBezirk($this->regionId)) {
+			if ($region = $this->regionGateway->getRegion($this->regionId)) {
 				$this->region = $region;
 			}
 		} else {
@@ -100,12 +102,12 @@ final class PassportGeneratorControl extends Control
 
 	public function generate(array $foodsavers): void
 	{
-		$tmp = array();
+		$tmp = [];
 		foreach ($foodsavers as $foodsaver) {
 			$tmp[$foodsaver] = (int)$foodsaver;
 		}
 		$foodsavers = $tmp;
-		$is_generated = array();
+		$is_generated = [];
 
 		$pdf = new Fpdi();
 		$pdf->AddPage();
@@ -117,7 +119,7 @@ final class PassportGeneratorControl extends Control
 		$y = 0;
 		$card = 0;
 
-		$noPhoto = array();
+		$noPhoto = [];
 
 		end($foodsavers);
 
@@ -188,19 +190,19 @@ final class PassportGeneratorControl extends Control
 
 				$pdf->useTemplate($fs_logo, 13.5 + $x, 13.6 + $y, 29.8);
 
-				$style = array(
+				$style = [
 					'vpadding' => 'auto',
 					'hpadding' => 'auto',
-					'fgcolor' => array(0, 0, 0),
+					'fgcolor' => [0, 0, 0],
 					'bgcolor' => false, //array(255,255,255)
 					'module_width' => 1, // width of a single module in points
 					'module_height' => 1 // height of a single module in points
-				);
+				];
 
 				// QRCODE,L : QR-CODE Low error correction
 				$pdf->write2DBarcode('https://foodsharing.de/profile/' . $fs_id, 'QRCODE,L', 70.5 + $x, 43 + $y, 20, 20, $style, 'N');
 
-				if ($photo = $this->foodsaverGateway->getPhoto($fs_id)) {
+				if ($photo = $this->foodsaverGateway->getPhotoFileName($fs_id)) {
 					if (file_exists('images/crop_' . $photo)) {
 						$pdf->Image('images/crop_' . $photo, 14 + $x, 29.7 + $y, 24);
 					} elseif (file_exists('images/' . $photo)) {
@@ -243,37 +245,46 @@ final class PassportGeneratorControl extends Control
 
 	public function getRole(int $gender_id, int $role_id)
 	{
-		$role = [
-			0 => [ // not defined
-				0 => 'Freiwillige_r',
-				1 => 'Foodsaver_in',
-				2 => 'Betriebsverantwortliche_r',
-				3 => 'Botschafter_in',
-				4 => 'Botschafter_in' // role 4 stands for Orga but is referred to an AMB for the business card
-			],
-			1 => [ // male
-				0 => 'Freiwilliger',
-				1 => 'Foodsaver',
-				2 => 'Betriebsverantwortlicher',
-				3 => 'Botschafter',
-				4 => 'Botschafter'
-			],
-			2 => [ // female
-				0 => 'Freiwillige',
-				1 => 'Foodsaverin',
-				2 => 'Betriebsverantwortliche',
-				3 => 'Botschafterin',
-				4 => 'Botschafterin'
-			]
-		];
+		switch ($gender_id) {
+			case Gender::MALE:
+			  $role = [
+					Role::FOODSHARER => 'Freiwilliger',
+					Role::FOODSAVER => 'Foodsaver',
+					Role::STORE_MANAGER => 'Betriebsverantwortlicher',
+					Role::AMBASSADOR => 'Botschafter',
+					Role::ORGA => 'Botschafter' //Orga is referred to an AMB for the business card
+				];
+				break;
 
-		return $role[$gender_id][$role_id];
+			case Gender::FEMALE:
+			  $role = [
+					Role::FOODSHARER => 'Freiwillige',
+					Role::FOODSAVER => 'Foodsaverin',
+					Role::STORE_MANAGER => 'Betriebsverantwortliche',
+					Role::AMBASSADOR => 'Botschafterin',
+					Role::ORGA => 'Botschafterin'
+				];
+				break;
+
+			// All other gender_id's:
+			default:
+				$role = [
+					Role::FOODSHARER => 'Freiwillige_r',
+					Role::FOODSAVER => 'Foodsaver_in',
+					Role::STORE_MANAGER => 'Betriebsverantwortliche_r',
+					Role::AMBASSADOR => 'Botschafter_in',
+					Role::ORGA => 'Botschafter_in'
+				];
+			  break;
+		}
+
+		return $role[$role_id];
 	}
 
 	private function download1(): void
 	{
 		$this->pageHelper->addJs('
-			setTimeout(function(){goTo("/?page=passgen&bid=' . $this->regionId . '&dl2")},100);		
+			setTimeout(function(){goTo("/?page=passgen&bid=' . $this->regionId . '&dl2")},100);
 		');
 	}
 

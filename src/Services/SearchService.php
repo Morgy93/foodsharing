@@ -6,12 +6,12 @@ use Foodsharing\Lib\Session;
 use Foodsharing\Modules\Buddy\BuddyGateway;
 use Foodsharing\Modules\Region\RegionGateway;
 use Foodsharing\Modules\Store\StoreModel;
-use Foodsharing\Modules\WorkGroup\WorkGroupModel;
+use Foodsharing\Modules\WorkGroup\WorkGroupGateway;
 
 class SearchService
 {
 	private $buddyGateway;
-	private $workGroupModel;
+	private $workGroupGateway;
 	private $storeModel;
 	private $regionGateway;
 	private $session;
@@ -20,15 +20,15 @@ class SearchService
 
 	public function __construct(
 		BuddyGateway $buddyGateway,
-		WorkGroupModel $workGroupModel,
+		WorkGroupGateway $workGroupGateway,
 		StoreModel $storeModel,
-		regionGateway $regionGateway,
+		RegionGateway $regionGateway,
 		Session $session,
 		SanitizerService $sanitizerService,
 		ImageService $imageService
 	) {
 		$this->buddyGateway = $buddyGateway;
-		$this->workGroupModel = $workGroupModel;
+		$this->workGroupGateway = $workGroupGateway;
 		$this->storeModel = $storeModel;
 		$this->regionGateway = $regionGateway;
 		$this->session = $session;
@@ -55,48 +55,48 @@ class SearchService
 					$img = $this->imageService->img($b['photo']);
 				}
 
-				$result[] = array(
+				$result[] = [
 					'name' => $b['name'] . ' ' . $b['nachname'],
 					'teaser' => '',
 					'img' => $img,
 					'click' => 'chat(\'' . $b['id'] . '\');',
 					'id' => $b['id'],
-					'search' => array(
+					'search' => [
 						$b['name'], $b['nachname']
-					)
-				);
+					]
+				];
 			}
-			$index[] = array(
+			$index[] = [
 				'title' => 'Menschen die Du kennst',
 				'key' => 'buddies',
 				'result' => $result
-			);
+			];
 		}
 
 		/*
 		 * Groups load Groups connected to the user in the array
 		*/
-		if ($groups = $this->workGroupModel->listMemberGroups($fsId)) {
+		if ($groups = $this->workGroupGateway->listMemberGroups($fsId)) {
 			$result = [];
 			foreach ($groups as $b) {
 				$img = '/img/groups.png';
 				if (!empty($b['photo'])) {
 					$img = 'images/' . str_replace('photo/', 'photo/thumb_', $b['photo']);
 				}
-				$result[] = array(
+				$result[] = [
 					'name' => $b['name'],
 					'teaser' => $this->sanitizerService->tt($b['teaser'], 65),
 					'img' => $img,
 					'href' => '/?page=bezirk&bid=' . $b['id'] . '&sub=forum',
-					'search' => array(
+					'search' => [
 						$b['name']
-					)
-				);
+					]
+				];
 			}
-			$index[] = array(
+			$index[] = [
 				'title' => 'Deine Gruppen',
 				'result' => $result
-			);
+			];
 		}
 
 		/*
@@ -105,19 +105,19 @@ class SearchService
 		if ($betriebe = $this->storeModel->listMyBetriebe()) {
 			$result = [];
 			foreach ($betriebe as $b) {
-				$result[] = array(
+				$result[] = [
 					'name' => $b['name'],
 					'teaser' => $b['str'] . ' ' . $b['hsnr'] . ', ' . $b['plz'] . ' ' . $b['stadt'],
 					'href' => '/?page=fsbetrieb&id=' . $b['id'],
-					'search' => array(
+					'search' => [
 						$b['name'], $b['str']
-					)
-				);
+					]
+				];
 			}
-			$index[] = array(
+			$index[] = [
 				'title' => 'Deine Betriebe',
 				'result' => $result
-			);
+			];
 		}
 
 		/*
@@ -126,20 +126,20 @@ class SearchService
 		$bezirke = $this->regionGateway->listForFoodsaverExceptWorkingGroups($this->session->id());
 		$result = [];
 		foreach ($bezirke as $b) {
-			$result[] = array(
+			$result[] = [
 				'name' => $b['name'],
 				'teaser' => '',
 				'img' => false,
 				'href' => '/?page=bezirk&bid=' . $b['id'] . '&sub=forum',
-				'search' => array(
+				'search' => [
 					$b['name']
-				)
-			);
+				]
+			];
 		}
-		$index[] = array(
+		$index[] = [
 			'title' => 'Deine Bezirke',
 			'result' => $result
-		);
+		];
 
 		return $index;
 	}

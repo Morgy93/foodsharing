@@ -26,15 +26,17 @@ let numConnections = 0
 const sendToUser = (userId, channel, method, payload) => {
   fetchSessionIdsForUser(userId, (err, sessionIds) => {
     if (err) return console.error('could not get session ids for', userId, err)
-    for (let sessionId of sessionIds) {
+    for (const sessionId of sessionIds) {
       sendToSession(sessionId, channel, method, payload)
     }
   })
 }
 
 const sendToSession = (sessionId, channel, method, payload) => {
-  for (let connection of connectionsForSession(sessionId)) {
-    connection.emit(channel, { m: method, o: payload })
+  for (const connection of connectionsForSession(sessionId)) {
+    if (channel != null) {
+      connection.emit(channel, { m: method, o: payload })
+    }
   }
 }
 
@@ -91,8 +93,30 @@ const parseRequestURL = (req) => {
   return new URL(req.url, 'http://localhost')
 }
 
+/**
+ * API of this server
+ * This server supports GET-Requests on
+ * - /
+ *  Sends a message to clients.
+ *  arguments:
+ *    c: int (optional) - the session id the message should be sent to
+ *    u: int (optional) - the foodsaver id the message should be sent to
+ *    us: comma-separated list of ints (optional) - the foodsaver ids the message should be sent to if it should be sent to multiple foodsavers
+ *    Either one of c, u or us is required.
+ *    a: string (required) - the frontend component the message should be sent to, e. g. 'conv' or 'bell'
+ *    o: json-encoded array (required) - options for the frontend component that should receive the message
+ *
+ *  - /stats
+ *    Will return a JSON object containing the number of connections, the number of registrations and the number of sessions,
+ *    e. g. {connections: 24, registrations: 42, sessions: 34}
+ *
+ *  - /is-connected
+ *    Returns "true" if the specified foodsaver has an open connection to the websocket and "false" if not.
+ *    arguments:
+ *      u: int (required) - foodsaver id
+ */
 const inputServer = http.createServer((req, res) => {
-  let url = parseRequestURL(req)
+  const url = parseRequestURL(req)
   if (url.pathname === '/stats') {
     res.writeHead(200)
     res.end(JSON.stringify({
@@ -103,8 +127,40 @@ const inputServer = http.createServer((req, res) => {
     return
   }
 
+  if (url.pathname === '/is-connected') {
+    const userId = url.searchParams.get('u')
+    if (userId === null) {
+      res.writeHead(400)
+      res.end('Parameter u must be specified and be a foodsaver id.')
+      return
+    }
+
+    fetchSessionIdsForUser(userId, (err, sessionIds) => {
+      if (err) {
+        res.writeHead(500)
+        res.end('Error matching the user id to a session.')
+        return
+      }
+
+      res.writeHead(200)
+      for (const sessionId of sessionIds) {
+        if (sessionId in connectedClients) {
+          res.end('true') // there is at least one session for userId
+          return
+        }
+      }
+      res.end('false') // there's no session for userId
+    })
+    return // avoid res.end() to be called later on in this function before the callback resolves
+  }
+
   const sessionId = url.searchParams.get('c')
   const app = url.searchParams.get('a')
+  if (app === null) {
+    res.writeHead(400)
+    res.end('Parameter a must be specified.')
+    return
+  }
   const method = url.searchParams.get('m')
   const options = url.searchParams.get('o')
   const userId = url.searchParams.get('u')
@@ -119,7 +175,7 @@ const inputServer = http.createServer((req, res) => {
   }
 
   if (userIds) {
-    for (let userId of userIds.split(',')) {
+    for (const userId of userIds.split(',')) {
       sendToUser(userId, app, method, options)
     }
   }
@@ -137,7 +193,7 @@ const io = connectSocketIO(chatServer)
 io.use((socket, next) => {
   const cookieVal = socket.request.headers.cookie
   if (cookieVal) {
-    let cookie = parseCookie(cookieVal)
+    const cookie = parseCookie(cookieVal)
     socket.sid = cookie.PHPSESSID || cookie.sessionid
     if (socket.sid) return next()
   }

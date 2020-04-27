@@ -2,11 +2,15 @@ import $ from 'jquery'
 
 import L from 'leaflet'
 import 'leaflet.awesome-markers'
-
 import 'leaflet.markercluster'
+import 'mapbox-gl-leaflet'
+
+import 'mapbox-gl/dist/mapbox-gl.css'
 
 import 'corejs-typeahead'
 import PhotonAddressEngine from 'typeahead-address-photon'
+
+import { initMap } from '@/mapUtils'
 
 export let map
 export let clusterGroup
@@ -33,13 +37,7 @@ export async function initializeMap (el, cb = null) {
     prefix: defaultMarkerOptions.prefix
   })
 
-  map = L
-    .map(el)
-    .setView(center, zoom)
-
-  L.tileLayer('https://maps.wikimedia.org/osm-intl/{z}/{x}/{y}.png', {
-    attribution: 'Geocoding by <a href="https://photon.komoot.de">Komoot Photon</a>, Tiles by <a href="https://foundation.wikimedia.org/w/index.php?title=Maps_Terms_of_Use">Wikimedia</a>'
-  }).addTo(map)
+  map = initMap(el, center, zoom)
 
   clearCluster()
 
@@ -61,15 +59,15 @@ function initializeSearchpanel (searchpanel, cb = null) {
     {
       icon: 'smile',
       markerColor: 'orange',
-      prefix: 'img'
+      prefix: 'fa'
     })
 
-  let engine = new PhotonAddressEngine(
+  const engine = new PhotonAddressEngine(
     {
       url: 'https://photon.komoot.de',
       formatResult: function (feature) {
-        let prop = feature.properties
-        let formatted = [prop.name || '', prop.street, prop.housenumber || '', prop.postcode, prop.city, prop.country].filter(Boolean).join(' ')
+        const prop = feature.properties
+        const formatted = [prop.name || '', prop.street, prop.housenumber || '', prop.postcode, prop.city, prop.country].filter(Boolean).join(' ')
         return formatted
       },
       lang: 'de'

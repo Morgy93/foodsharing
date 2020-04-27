@@ -18,11 +18,12 @@
 #msg-conversation {
   height: 100px;
   overflow: auto;
-  background-color: #dbd7d1;
+  background-color: #fff;
 }
 
 #conversation-list li.active {
-  background-color: #dbd7d1;
+background-color: #dbd7d1;
+border-radius: 4px;
 }
 
 #conversation-list li.active a, #conversation-list li.active a:active, #conversation-list li.active a:focus {
@@ -40,7 +41,7 @@
 }
 
 #msg-conversation div.loader i {
-  color: #4a3520;
+  color: var(--fs-brown);
   font-size: 20px;
 }
 
@@ -50,18 +51,33 @@
 
 #msg-conversation span.time {
   font-size: 13px;
-  color: #b4aba3;
+  color: #533a20;
   margin-top: 4px;
+}
+
+#msg-conversation li.my-message span.time {
+  color: var(--fs-brown);
 }
 
 #msg-conversation span.body {
   border-radius: 6px;
-  background: none repeat scroll 0 0 #ffffff;
+  background: none repeat scroll 0 0 #e1e1db;
   margin-left: 50px;
   min-height: 35px;
   padding: 6px;
   position: relative;
-  color: #4a3520;
+  color: var(--fs-brown);
+}
+
+#msg-conversation li.my-message span.body {
+  background: none repeat scroll 0 0 var(--fs-beige);
+  margin-left: 0px;
+  margin-right: 50px;
+  color: var(--fs-brown);
+}
+
+#msg-conversation li.my-message span.img {
+  float: right;
 }
 
 #msg-conversation span.body:after {
@@ -69,12 +85,19 @@
   position: absolute;
   border-style: solid;
   border-width: 8px 9px 8px 0;
-  border-color: transparent #ffffff;
+  border-color: transparent #e1e1db;
   display: block;
   width: 0;
   z-index: 1;
   left: -9px;
   top: 8px;
+}
+
+#msg-conversation li.my-message span.body:after {
+  border-width: 8px 0 8px 9px;
+  border-color: transparent var(--fs-beige);
+  left: unset;
+  right: -9px;
 }
 
 #msg-conversation ul li {
@@ -115,8 +138,10 @@
   color: #fff;
 }
 
-li.unread-1 {
-  background-color: #f5f5b5;
+ul.conversation-list > li.unread-1 {
+    background-color: #dbd7d1;
+    border: 1px solid #533a20;
+    border-radius: 4px;
 }
 
 @media all and (max-width: 600px) {
@@ -180,7 +205,7 @@ li.unread-1 {
   }
 
   #msg-conversation-title {
-    color: #4a3520;
+    color: var(--fs-brown);
   }
 
   #msg-conversation-wrapper {

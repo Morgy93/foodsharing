@@ -1,5 +1,7 @@
 <?php
 
+use Codeception\Lib\Friend;
+
 /**
  * Inherited Methods.
  *
@@ -12,13 +14,14 @@
  * @method void am($role)
  * @method void lookForwardTo($achieveValue)
  * @method void comment($description)
- * @method \Codeception\Lib\Friend haveFriend($name, $actorClass = NULL)
+ * @method Friend haveFriend($name, $actorClass = NULL)
  *
  * @SuppressWarnings(PHPMD)
  */
-class AcceptanceTester extends \Codeception\Actor
+class AcceptanceTester extends Codeception\Actor
 {
 	use _generated\AcceptanceTesterActions;
+	use \Codeception\Lib\Actor\Shared\Friend;
 
 	/**
 	 * Wait to see the body element.
@@ -58,7 +61,7 @@ class AcceptanceTester extends \Codeception\Actor
 	public function seeMatches($regexp, $selector = 'html')
 	{
 		$text = $this->grabTextFrom($selector);
-		$this->doAssertRegExp($regexp, $text);
+		$this->assertRegExp($regexp, $text);
 	}
 
 	public function waitForActiveAPICalls($timeout = 60)

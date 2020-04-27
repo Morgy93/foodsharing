@@ -5,8 +5,8 @@ namespace Foodsharing\Controller;
 use Foodsharing\Lib\Session;
 use Foodsharing\Modules\Message\MessageGateway;
 use Foodsharing\Modules\Message\MessageModel;
-use FOS\RestBundle\Controller\Annotations as Rest;
 use FOS\RestBundle\Controller\AbstractFOSRestController;
+use FOS\RestBundle\Controller\Annotations as Rest;
 use FOS\RestBundle\Request\ParamFetcher;
 use Symfony\Component\HttpKernel\Exception\HttpException;
 
@@ -28,7 +28,8 @@ class MessageRestController extends AbstractFOSRestController
 	{
 		$ids = $this->getNormalizedMsgConversations();
 
-		if ($this->conversationIsStoredInSession($conversationId)) {
+		// isConversationStoredInSession
+		if (isset($ids[(int)$conversationId])) {
 			return true;
 		}
 
@@ -50,15 +51,6 @@ class MessageRestController extends AbstractFOSRestController
 		}
 
 		return $ids;
-	}
-
-	private function conversationIsStoredInSession($conversationId)
-	{
-		if (isset($ids[(int)$conversationId])) {
-			return true;
-		}
-
-		return false;
 	}
 
 	/**
@@ -86,7 +78,7 @@ class MessageRestController extends AbstractFOSRestController
 
 		$members = $this->model->listConversationMembers($conversationId);
 		$publicMemberInfo = function ($member) {
-			return RestNormalization::normalizeFoodsaver($member);
+			return RestNormalization::normalizeUser($member);
 		};
 		$members = array_map($publicMemberInfo, $members);
 
@@ -118,7 +110,13 @@ class MessageRestController extends AbstractFOSRestController
 		$limit = $paramFetcher->get('limit');
 		$offset = $paramFetcher->get('offset');
 
-		$conversations = $this->model->listConversations($limit, $offset);
+		// Filter out any conversations with the wrong member type (this should rarely happen).
+		$conversations = array_filter(
+			$this->model->listConversations($limit, $offset),
+			function ($c) {
+				return is_array($c['member']);
+			});
+
 		$view = $this->view($conversations, 200);
 
 		return $this->handleView($view);

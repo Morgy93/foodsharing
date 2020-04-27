@@ -54,9 +54,6 @@ class ReportView extends View
 					'id' => 10,
 					'name' => 'Häufiges kurzfristiges Absagen der Abholungen'],
 				[
-					'id' => 11,
-					'name' => 'Ignoriert Kontaktaufnahme'],
-				[
 					'id' => 12,
 					'name' => 'Schmeißt gerettete Lebensmittel weg'],
 				[
@@ -161,7 +158,7 @@ class ReportView extends View
 	{
 		$menu = [
 			['name' => 'Neue Meldungen (' . $stats['new'] . ')', 'href' => '/?page=report&sub=uncom'],
-			['name' => 'Bestätigte (' . $stats['com'] . ')', 'href' => '/?page=report&sub=com']
+			['name' => 'Zugestellte (' . $stats['com'] . ')', 'href' => '/?page=report&sub=com']
 		];
 
 		$active = 'uncom';
@@ -200,7 +197,7 @@ class ReportView extends View
 			});
 		');
 
-		$rows = array();
+		$rows = [];
 		foreach ($reports as $r) {
 			$rows[] = [
 				['cnt' => '<input type="hidden" class="rid" name="rid" value="' . $r['id'] . '"><span class="photo"><a title="' . $r['fs_name'] . ' ' . $r['fs_nachname'] . '" href="/profile/' . (int)$r['fs_id'] . '"><img id="miniq-' . $r['fs_id'] . '" src="' . $this->imageService->img($r['fs_photo']) . '" /></a></span>'],

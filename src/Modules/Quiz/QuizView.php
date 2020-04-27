@@ -2,6 +2,8 @@
 
 namespace Foodsharing\Modules\Quiz;
 
+use Foodsharing\Modules\Core\DBConstants\Foodsaver\Role;
+use Foodsharing\Modules\Core\DBConstants\Quiz\SessionStatus;
 use Foodsharing\Modules\Core\View;
 
 class QuizView extends View
@@ -15,40 +17,40 @@ class QuizView extends View
 
 	public function sessionList($sessions, $quiz)
 	{
-		$rows = array();
+		$rows = [];
 
 		$this->pageHelper->addJs('
 			$(".usersessionlink").parent().parent().on("click", function(){
 				goTo($(this).children("td").children(".usersessionlink").attr("href"));
-			});		
+			});
 		');
 
 		foreach ($sessions as $s) {
 			$status = '<span style="color:orange;">Quiz läuft</span>';
-			if ($s['min_status'] == 1) {
+			if ($s['min_status'] == SessionStatus::PASSED) {
 				$status = '<span style="color:green">bestanden</span>';
-			} elseif ($s['max_status'] == 2) {
+			} elseif ($s['max_status'] == SessionStatus::FAILED) {
 				$status = '<span style="color:red;">durchgefallen</span>';
 			}
 
-			$rows[] = array(
-				array('cnt' => '<a style="margin-left:10px;" href="#"><img src="' . $this->imageService->img($s['fs_photo']) . '" /></a>'),
-				array('cnt' => '<a class="usersessionlink" href="/?page=quiz&sub=sessiondetail&fsid=' . $s['fs_id'] . '">' . $s['fs_name'] . '</a>'),
-				array('cnt' => $s['max_fp']),
-				array('cnt' => substr($s['time_start'], 0, -3)),
-				array('cnt' => $s['trycount']),
-				array('cnt' => $status)
-			);
+			$rows[] = [
+				['cnt' => '<a style="margin-left:10px;" href="#"><img src="' . $this->imageService->img($s['fs_photo']) . '" /></a>'],
+				['cnt' => '<a class="usersessionlink" href="/?page=quiz&sub=sessiondetail&fsid=' . $s['fs_id'] . '">' . $s['fs_name'] . '</a>'],
+				['cnt' => $s['max_fp']],
+				['cnt' => substr($s['time_start'], 0, -3)],
+				['cnt' => $s['trycount']],
+				['cnt' => $status]
+			];
 		}
 
-		$table = $this->v_utils->v_tablesorter(array(
-			array('name' => '&nbsp;', 'width' => 50, 'sort' => false),
-			array('name' => 'Name'),
-			array('name' => 'FP', 'width' => 40),
-			array('name' => 'Datum', 'width' => 100),
-			array('name' => 'Versuche', 'width' => 40),
-			array('name' => 'Status', 'width' => 75)
-		), $rows, array('pager' => true));
+		$table = $this->v_utils->v_tablesorter([
+			['name' => '&nbsp;', 'width' => 50, 'sort' => false],
+			['name' => 'Name'],
+			['name' => 'FP', 'width' => 40],
+			['name' => 'Datum', 'width' => 100],
+			['name' => 'Versuche', 'width' => 40],
+			['name' => 'Status', 'width' => 75]
+		], $rows, ['pager' => true]);
 
 		return $this->v_utils->v_field($table, $quiz['name']);
 	}
@@ -58,7 +60,9 @@ class QuizView extends View
 		$out = '';
 
 		/*
-		 * [0] => Array
+		 * Example:
+		 *
+		  [0] => Array
 			(
 				[id] => 9
 				[fp] => 0.00
@@ -81,32 +85,32 @@ class QuizView extends View
 		 */
 
 		$cur_qid = $sessions[0]['quiz_id'];
-		$rows = array();
+		$rows = [];
 		foreach ($sessions as $key => $s) {
 			$status = '<span style="color:orange;">Quiz läuft</span>';
-			if ($s['status'] == 1) {
+			if ($s['status'] == SessionStatus::PASSED) {
 				$status = '<span style="color:green">bestanden</span>';
-			} elseif ($s['status'] == 2) {
+			} elseif ($s['status'] == SessionStatus::FAILED) {
 				$status = '<span style="color:red;">durchgefallen</span>';
 			}
 
-			$rows[] = array(
-				array('cnt' => substr($s['time_start'], 0, -3)),
-				array('cnt' => $s['fp']),
-				array('cnt' => $status),
+			$rows[] = [
+				['cnt' => substr($s['time_start'], 0, -3)],
+				['cnt' => $s['fp']],
+				['cnt' => $status],
 
-				array('cnt' => $this->v_utils->v_toolbar(array('id' => $s['id'], 'types' => array('delete'), 'confirmMsg' => 'Soll diese Quiz-Session wirklich gel&ouml;scht werden?')))
-			);
+				['cnt' => $this->v_utils->v_toolbar(['id' => $s['id'], 'types' => ['delete'], 'confirmMsg' => 'Soll diese Quiz-Session wirklich gel&ouml;scht werden?'])]
+			];
 			if ($cur_qid != $s['quiz_id'] || $key == (count($sessions) - 1)) {
 				$cur_qid = $s['quiz_id'];
-				$out .= $this->v_utils->v_field($this->v_utils->v_tablesorter(array(
-					array('name' => 'Datum'),
-					array('name' => 'FP', 'width' => 40),
-					array('name' => 'Status', 'width' => 75),
-					array('name' => '&nbsp;', 'width' => 30)
-				), $rows, array('pager' => true)), $s['quiz_name'] . ' Quiz');
+				$out .= $this->v_utils->v_field($this->v_utils->v_tablesorter([
+					['name' => 'Datum'],
+					['name' => 'FP', 'width' => 40],
+					['name' => 'Status', 'width' => 75],
+					['name' => '&nbsp;', 'width' => 30]
+				], $rows, ['pager' => true]), $s['quiz_name'] . ' Quiz');
 
-				$rows = array();
+				$rows = [];
 			}
 		}
 
@@ -120,20 +124,20 @@ class QuizView extends View
 
 	public function listQuiz($quizze)
 	{
-		$menu = array();
+		$menu = [];
 		$out = '';
 		if (is_array($quizze)) {
 			foreach ($quizze as $q) {
-				$menu[] = array(
+				$menu[] = [
 					'name' => $q['name'],
 					'href' => '/?page=quiz&id=' . (int)$q['id']
-				);
+				];
 			}
 		}
 		if (empty($menu)) {
 			$out = $this->v_utils->v_info('Es wurde noch kein Quiz angelegt');
 		} else {
-			$out = $this->menu($menu, array('active' => 'quiz&id=' . (int)$_GET['id']));
+			$out = $this->menu($menu, ['active' => 'quiz&id=' . (int)$_GET['id']]);
 		}
 
 		return $this->v_utils->v_field($out, ' Quizze');
@@ -151,7 +155,7 @@ class QuizView extends View
 	{
 		return '
 		<div id="quizcomment">
-			' . $this->v_utils->v_form_textarea('quizusercomment', array('placeholder' => $this->translationHelper->s('quizusercomment'), 'nolabel' => true)) . '
+			' . $this->v_utils->v_form_textarea('quizusercomment', ['placeholder' => $this->translationHelper->s('quizusercomment'), 'nolabel' => true]) . '
 		</div>';
 	}
 
@@ -159,39 +163,39 @@ class QuizView extends View
 	{
 		return
 			$this->v_utils->v_form_textarea('text') .
-			$this->v_utils->v_form_select('duration', array(
-				'values' => array(
-					array('id' => 10, 'name' => '10 Sekunden'),
-					array('id' => 20, 'name' => '20 Sekunden'),
-					array('id' => 30, 'name' => '30 Sekunden'),
-					array('id' => 40, 'name' => '40 Sekunden'),
-					array('id' => 50, 'name' => '50 Sekunden'),
-					array('id' => 60, 'name' => '1 Minute'),
-					array('id' => 70, 'name' => '1 Min 10 Sekunden'),
-					array('id' => 80, 'name' => '1 Min 20 Sekunden'),
-					array('id' => 90, 'name' => '1,5 Minuten'),
-					array('id' => 100, 'name' => '1 Min 40 Sekunden'),
-					array('id' => 110, 'name' => '1 Min 50 Sekunden'),
-					array('id' => 120, 'name' => '2 Minuten'),
-					array('id' => 130, 'name' => '2 Min 10 Sekunden'),
-					array('id' => 140, 'name' => '2 Min 20 Sekunden'),
-					array('id' => 150, 'name' => '2,5 Minuten'),
-					array('id' => 160, 'name' => '2 Min 40 Sekunden'),
-					array('id' => 170, 'name' => '2 Min 50 Sekunden'),
-					array('id' => 180, 'name' => '3 Minuten'),
-					array('id' => 190, 'name' => '3 Min 10 Sekunden'),
-					array('id' => 200, 'name' => '3 Min 20 Sekunden')
-				)
-			)) .
-			$this->v_utils->v_form_select('fp', array(
-				'values' => array(
-					array('id' => 1, 'name' => '1 Fehlerpunkt'),
-					array('id' => 2, 'name' => '2 Fehlerpunkte'),
-					array('id' => 3, 'name' => '3 Fehlerpunkte'),
-					array('id' => 12, 'name' => '12 Fehlerpunkte (k. o.)'),
-					array('id' => 0, 'name' => 'keine Fehlerpunkte (Scherzfrage)')
-				)
-			)) .
+			$this->v_utils->v_form_select('duration', [
+				'values' => [
+					['id' => 10, 'name' => '10 Sekunden'],
+					['id' => 20, 'name' => '20 Sekunden'],
+					['id' => 30, 'name' => '30 Sekunden'],
+					['id' => 40, 'name' => '40 Sekunden'],
+					['id' => 50, 'name' => '50 Sekunden'],
+					['id' => 60, 'name' => '1 Minute'],
+					['id' => 70, 'name' => '1 Min 10 Sekunden'],
+					['id' => 80, 'name' => '1 Min 20 Sekunden'],
+					['id' => 90, 'name' => '1,5 Minuten'],
+					['id' => 100, 'name' => '1 Min 40 Sekunden'],
+					['id' => 110, 'name' => '1 Min 50 Sekunden'],
+					['id' => 120, 'name' => '2 Minuten'],
+					['id' => 130, 'name' => '2 Min 10 Sekunden'],
+					['id' => 140, 'name' => '2 Min 20 Sekunden'],
+					['id' => 150, 'name' => '2,5 Minuten'],
+					['id' => 160, 'name' => '2 Min 40 Sekunden'],
+					['id' => 170, 'name' => '2 Min 50 Sekunden'],
+					['id' => 180, 'name' => '3 Minuten'],
+					['id' => 190, 'name' => '3 Min 10 Sekunden'],
+					['id' => 200, 'name' => '3 Min 20 Sekunden']
+				]
+			]) .
+			$this->v_utils->v_form_select('fp', [
+				'values' => [
+					['id' => 1, 'name' => '1 Fehlerpunkt'],
+					['id' => 2, 'name' => '2 Fehlerpunkte'],
+					['id' => 3, 'name' => '3 Fehlerpunkte'],
+					['id' => 12, 'name' => '12 Fehlerpunkte (k. o.)'],
+					['id' => 0, 'name' => 'keine Fehlerpunkte (Scherzfrage)']
+				]
+			]) .
 			$this->v_utils->v_form_text('wikilink');
 	}
 
@@ -200,33 +204,33 @@ class QuizView extends View
 		return
 			$this->v_utils->v_form_textarea('text') .
 			$this->v_utils->v_form_textarea('explanation') .
-			$this->v_utils->v_form_select('right', array('values' => array(
-				array('id' => 1, 'name' => 'Richtig'),
-				array('id' => 0, 'name' => 'Falsch'),
-				array('id' => 2, 'name' => 'Neutral')
-			)));
+			$this->v_utils->v_form_select('right', ['values' => [
+				['id' => 1, 'name' => 'Richtig'],
+				['id' => 0, 'name' => 'Falsch'],
+				['id' => 2, 'name' => 'Neutral']
+			]]);
 	}
 
 	public function quizMenu()
 	{
-		$menu = array();
+		$menu = [];
 
-		$menu[] = array(
+		$menu[] = [
 			'name' => 'Neues Quiz Anlegen',
 			'href' => '/?page=quiz&sub=newquiz'
-		);
+		];
 
 		return $this->menu($menu);
 	}
 
 	public function quizForm()
 	{
-		return $this->v_utils->v_quickform('Neues Quiz', array(
+		return $this->v_utils->v_quickform('Neues Quiz', [
 			$this->v_utils->v_form_text('name'),
 			$this->v_utils->v_form_tinymce('desc'),
 			$this->v_utils->v_form_text('maxfp'),
 			$this->v_utils->v_form_text('questcount')
-		));
+		]);
 	}
 
 	public function quizQuestion($question, $answers)
@@ -240,7 +244,7 @@ class QuizView extends View
 		$i = 0;
 		foreach ($answers as $k => $a) {
 			++$i;
-			$cb[] = array('id' => $a['id'], 'name' => $a['text']);
+			$cb[] = ['id' => $a['id'], 'name' => $a['text']];
 			$out .= '
 			<li id="qanswer-' . $a['id'] . '" class="answer" onmouseout="$(this).css(\'background-color\',\'transparent\');" onmouseover="$(this).css(\'background-color\',\'#FFFFFF\');" style="cursor:pointer;border-radius:10px;display:block;list-style:none;padding:10px 10px;font-size:14px;color:#4A3520">
 				<label>
@@ -288,18 +292,18 @@ class QuizView extends View
 		</p>';
 	}
 
-	public function result($explains, $fp, $maxfp)
+	public function result($explains, $failurePoints, $maxFailurePoints)
 	{
 		$valid = 'Sorry, diesmal hat es nicht geklappt.';
 		$bg = '#ED563D';
-		if ($fp < $maxfp) {
+		if ($failurePoints < $maxFailurePoints) {
 			$valid = 'Herzlichen Glückwunsch! Bestanden.';
 			$bg = '#48A21C';
 		}
 		$out = '
 		<div style="font-size:16px;font-weight:bold;margin-bottom:15px;background-color:' . $bg . ';padding:15px;border-radius:10px;line-height:30px;text-align:center;color:#fff;">
 		' . $valid . '<br />
-		<span style="font-size:13px;">' . $fp . ' von maximal ' . $maxfp . ' Fehlerpunkten</span>
+		<span style="font-size:13px;">' . $failurePoints . ' von maximal ' . $maxFailurePoints . ' Fehlerpunkten</span>
 		</div>';
 
 		$out .= '
@@ -332,17 +336,17 @@ class QuizView extends View
 		</div>
 		<p style="text-align:center;">';
 
-		if ($fp < $maxfp) {
+		if ($failurePoints < $maxFailurePoints) {
 			switch ($this->session->get('quiz-id')) {
-				case 1:
+				case Role::FOODSAVER:
 					$out .= '<a href="/?page=settings&sub=upgrade/up_fs" class="button">Jetzt die Foodsaver-Anmeldung abschließen.</a>';
 					break;
 
-				case 2:
+				case Role::STORE_MANAGER:
 					$out .= '<a href="/?page=settings&sub=upgrade/up_bip" class="button">Jetzt die Betriebsverantwortlichenanmeldung abschließen.</a>';
 					break;
 
-				case 3:
+				case Role::AMBASSADOR:
 					$out .= '<a href="/?page=settings&sub=upgrade/up_bot" class="button">Jetzt die Botschafteranmeldung abschließen.</a>';
 					break;
 
@@ -357,7 +361,7 @@ class QuizView extends View
 		return $out;
 	}
 
-	public function initQuiz($quiz, $page)
+	public function initQuizPage(array $page): string
 	{
 		return '<h1>' . $page['title'] . '</h1>' . $page['body'];
 	}
@@ -370,8 +374,8 @@ class QuizView extends View
 					heightStyle: "content",
 					animate: 200,
 					collapsible: true,
-					autoHeight: false, 
-    				active: false 
+					autoHeight: false,
+    				active: false
 				});
 				setTimeout(function(){
 					$("#questions").css("opacity",1);
@@ -394,10 +398,10 @@ class QuizView extends View
 					<p style="margin-top:15px;">
 						<a href="#" class="button" onclick="ajreq(\'addanswer\',{qid:' . (int)$q['id'] . '});return false;">Antwort hinzufügen</a> <a href="#" class="button" onclick="if(confirm(\'Wirklich die ganze Frage löschen?\')){ajreq(\'delquest\',{id:' . (int)$q['id'] . '});}return false;">Frage komplett löschen</a> <a href="#" class="button" onclick="ajreq(\'editquest\',{id:' . (int)$q['id'] . ',qid:' . (int)$quiz_id . '});return false;">Frage bearbeiten</a> <a class="button" href="/?page=quiz&sub=wall&id=' . (int)$q['id'] . '">Kommentare</a>
 					</p>') . '
-					
+
 					' . $this->v_utils->v_input_wrapper('Antworten', $answers) . '
 
-					
+
 				 </div>';
 			}
 			$out .= '
@@ -409,28 +413,30 @@ class QuizView extends View
 		return $this->v_utils->v_field($this->v_utils->v_info('Noch keine Fragen zu diesem Quiz'), 'Fragen');
 	}
 
-	public function answerSidebar($answers, $quiz_id)
+	public function answerSidebar(array $answers): string
 	{
-		if (!empty($answers)) {
-			$out = '<ul class="linklist">';
-			foreach ($answers as $a) {
-				$ampel = 'ampel ampel-gruen';
-				if ($a['right'] == 0) {
-					$ampel = 'ampel ampel-rot';
-				} elseif ($a['right'] == 2) {
-					$ampel = '';
-				}
-				$out .= '
-				<li>
-					<a href="#" onclick="ajreq(\'editanswer\',{app:\'quiz\',id:' . $a['id'] . '});return false;" class="ui-corner-all">
-						<span style="height:35px;overflow:hidden;font-size:11px;"><strong class="' . $ampel . '" style="float:right;margin:0 0 0 3px;"><span>&nbsp;</span></strong>' . $this->sanitizerService->tt($a['text'], 60) . '</span>
-						<span style="clear:both;"></span>
-					</a>
-				</li>';
-			}
-			$out .= '</ul>';
-
-			return $this->v_utils->v_field($out, 'Antwortmöglichkeiten');
+		if (empty($answers)) {
+			return '';
 		}
+
+		$out = '<ul class="linklist">';
+		foreach ($answers as $a) {
+			$ampel = 'ampel ampel-gruen';
+			if ($a['right'] == 0) {
+				$ampel = 'ampel ampel-rot';
+			} elseif ($a['right'] == 2) {
+				$ampel = '';
+			}
+			$out .= '
+			<li>
+			<a href="#" onclick="ajreq(\'editanswer\',{app:\'quiz\',id:' . $a['id'] . '});return false;" class="ui-corner-all">
+			<span style="height:35px;overflow:hidden;font-size:11px;"><strong class="' . $ampel . '" style="float:right;margin:0 0 0 3px;"><span>&nbsp;</span></strong>' . $this->sanitizerService->tt($a['text'], 60) . '</span>
+			<span style="clear:both;"></span>
+			</a>
+			</li>';
+		}
+		$out .= '</ul>';
+
+		return $this->v_utils->v_field($out, 'Antwortmöglichkeiten');
 	}
 }

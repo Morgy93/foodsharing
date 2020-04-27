@@ -64,7 +64,7 @@ class MailboxGateway extends BaseGateway
 			$mails = array_merge($mails, $contacts);
 		}
 
-		return $mails ? $mails : array();
+		return $mails ? $mails : [];
 	}
 
 	public function addMailbox(string $name, int $member = 0): int
@@ -74,7 +74,7 @@ class MailboxGateway extends BaseGateway
 
 	public function getNewCount(array $boxes): array
 	{
-		$barr = array();
+		$barr = [];
 		foreach ($boxes as $b) {
 			$barr[] = $b['id'];
 		}
@@ -84,14 +84,11 @@ class MailboxGateway extends BaseGateway
 			SELECT 	COUNT(`mm`.id) AS count,
 					mb.name,
 					mb.id
-				
 			FROM 	`fs_mailbox` mb,
 					`fs_mailbox_message` mm
-
 			WHERE 	mm.mailbox_id = mb.id
 			AND 	mb.id IN(' . implode(',', array_map('intval', $barr)) . ')
 			AND 	mm.read = 0
-				
 			GROUP BY mm.mailbox_id
 		'
 		);
@@ -104,7 +101,7 @@ class MailboxGateway extends BaseGateway
 
 	public function deleteMessage(int $mid): int
 	{
-		$attach = $this->db->fetchValueByCriteria('mailbox_message', 'attach', ['id' => $mid]);
+		$attach = $this->db->fetchValueByCriteria('fs_mailbox_message', 'attach', ['id' => $mid]);
 		if (!empty($attach)) {
 			$attach = json_decode($attach, true);
 			if (is_array($attach)) {
@@ -140,10 +137,10 @@ class MailboxGateway extends BaseGateway
 					m.`answer`,
 					m.`body`,
 					m.`mailbox_id`,
-					b.name AS mailbox				
-			FROM 	fs_mailbox_message m				
-			LEFT JOIN fs_mailbox b				
-			ON m.mailbox_id = b.id				
+					b.name AS mailbox
+			FROM 	fs_mailbox_message m
+			LEFT JOIN fs_mailbox b
+			ON m.mailbox_id = b.id
 			WHERE	m.id = :message_id
 		',
 			[':message_id' => $message_id]
@@ -155,18 +152,8 @@ class MailboxGateway extends BaseGateway
 		return $this->db->update('fs_mailbox_message', ['read' => $read], ['id' => $mail_id]);
 	}
 
-	public function listMessages(int $mailbox_id, $folder = 'inbox')
+	public function listMessages(int $mailbox_id, int $folder): array
 	{
-		$farray = array(
-			'inbox' => 1,
-			'sent' => 2,
-			'trash' => 3,
-		);
-
-		if (!isset($farray[$folder])) {
-			return false;
-		}
-
 		return $this->db->fetchAll(
 			'
 			SELECT 	`id`,
@@ -181,10 +168,10 @@ class MailboxGateway extends BaseGateway
 					`answer`
 			FROM 	fs_mailbox_message
 			WHERE	mailbox_id = :mailbox_id
-			AND 	folder = :farray_folder				
+			AND 	folder = :farray_folder
 			ORDER BY `time` DESC
 		',
-			[':mailbox_id' => $mailbox_id, ':farray_folder' => (int)$farray[$folder]]
+			[':mailbox_id' => $mailbox_id, ':farray_folder' => $folder]
 		);
 	}
 
@@ -221,33 +208,38 @@ class MailboxGateway extends BaseGateway
 
 	public function getMailbox(int $mb_id)
 	{
-		try {
-			$email_name = $this->db->fetchValue(
-				'SELECT CONCAT(name," ", nachname) FROM fs_foodsaver WHERE mailbox_id = :mb_id',
-				[':mb_id' => $mb_id]
-			);
-		} catch (Exception $e) {
-			$email_name = '';
-		}
 		if ($mb = $this->db->fetchByCriteria('fs_mailbox', ['name'], ['id' => $mb_id])) {
-			if ($email_name) {
-				$mb['email_name'] = $email_name;
-			} elseif ($email_name = $this->db->fetchValueByCriteria(
-				'fs_bezirk',
-				'email_name',
-				['mailbox_id' => $mb_id]
-			)) {
-				$mb['email_name'] = $email_name;
-			} elseif ($email_name = $this->db->fetchValue(
-				'SELECT email_name FROM fs_mailbox_member WHERE mailbox_id = :mb_id AND email_name != "" LIMIT 1',
-				[':mb_id' => $mb_id]
-			)) {
-				$mb['email_name'] = $email_name;
-			} else {
-				$mb['email_name'] = '';
+			$mb['email_name'] = '';
+			try {
+				$mb['email_name'] = $this->db->fetchValue(
+					'SELECT CONCAT(name," ", nachname) FROM fs_foodsaver WHERE mailbox_id = :mb_id',
+					[':mb_id' => $mb_id]
+				);
+
+				return $mb;
+			} catch (Exception $e) {
 			}
 
-			return $mb;
+			try {
+				$mb['email_name'] = $this->db->fetchValueByCriteria(
+					'fs_bezirk',
+					'email_name',
+					['mailbox_id' => $mb_id]
+				);
+
+				return $mb;
+			} catch (Exception $e) {
+			}
+
+			try {
+				$mb['email_name'] = $this->db->fetchValue(
+					'SELECT email_name FROM fs_mailbox_member WHERE mailbox_id = :mb_id AND email_name != "" LIMIT 1',
+					[':mb_id' => $mb_id]
+				);
+
+				return $mb;
+			} catch (Exception $e) {
+			}
 		}
 
 		return false;
@@ -264,10 +256,8 @@ class MailboxGateway extends BaseGateway
 					SELECT 	fs.id AS id,
 							CONCAT(fs.name," ",fs.nachname) AS name,
 							mm.email_name
-				
 					FROM 	`fs_mailbox_member` mm,
 							`fs_foodsaver` fs
-				
 					WHERE 	mm.foodsaver_id = fs.id
 					AND 	mm.mailbox_id = :b_id
 				',
@@ -294,18 +284,17 @@ class MailboxGateway extends BaseGateway
 		if ($mbid > 0) {
 			$this->db->delete('fs_mailbox_member', ['mailbox_id' => $mbid]);
 
-			$insert = array();
+			$insert = [];
 
 			foreach ($foodsaver as $fs) {
-				$insert[] = '(' . $mbid . ',' . (int)$fs . ',' . strip_tags($g_data['email_name']) . ')';
+				$insert[] = [
+					'mailbox_id' => $mbid,
+					'foodsaver_id' => (int)$fs,
+					'email_name' => '\'' . strip_tags($g_data['email_name']) . '\''
+				];
 			}
 
-			$this->db->execute('
-				INSERT INTO `fs_mailbox_member`
-				(`mailbox_id`,`foodsaver_id`,`email_name`)
-				VALUES
-				' . implode(',', $insert) . '		
-			');
+			$this->db->insertMultiple('fs_mailbox_member', $insert);
 
 			return true;
 		}
@@ -332,36 +321,35 @@ class MailboxGateway extends BaseGateway
 	}
 
 	/**
-	 * Get region IDs from all member-groups and regions where the user is admin.
+	 * Get region IDs from all member-groups and regions where the user is ambassador / admin.
 	 */
-	private function getMailboxBezirkIds(int $fsId): array
+	private function getMailboxAdminRegions(int $fsId): array
 	{
-		// get region IDs where the user is ambassador
 		return $this->db->fetchAllValuesByCriteria('fs_botschafter', 'bezirk_id', ['foodsaver_id' => $fsId]);
 	}
 
 	public function getBoxes(bool $isAmbassador, int $fsId, bool $mayStoreManager)
 	{
 		if ($isAmbassador) {
-			$regions = $this->getMailboxBezirkIds($fsId);
-			$bids = array();
-			$mboxes = array();
-			foreach ($regions as $b) {
-				$bids[] = (int)$b;
+			$mailboxAdminRegions = $this->getMailboxAdminRegions($fsId);
+			$selectedRegions = [];
+			$mBoxes = [];
+			foreach ($mailboxAdminRegions as $region) {
+				$selectedRegions[] = (int)$region;
 			}
 
-			if ($regions = $this->db->fetchAll(
+			if ($mailboxAdminRegions = $this->db->fetchAll(
 				'
 				SELECT 	`id`,`mailbox_id`,`name`
 				FROM 	`fs_bezirk`
-				WHERE 	`id` IN (' . implode(',', array_map('intval', $bids)) . ')
+				WHERE 	`id` IN (' . implode(',', array_map('intval', $selectedRegions)) . ')
 				AND 	`mailbox_id` = 0
 			'
 			)
 			) {
-				foreach ($regions as $b) {
-					if ($b['mailbox_id'] == 0) {
-						$mb_name = strtolower($b['name']);
+				foreach ($mailboxAdminRegions as $region) {
+					if ($region['mailbox_id'] == 0) {
+						$mb_name = strtolower($region['name']);
 						$mb_name = trim($mb_name);
 						$mb_name = str_replace(
 							['ä', 'ö', 'ü', 'è', 'à', 'ß', ' ', '-', '/', '\\'],
@@ -374,49 +362,40 @@ class MailboxGateway extends BaseGateway
 							continue;
 						}
 
-						$tmp_name = $mb_name;
-						$i = 0;
+						$mb_id = $this->createMailbox($mb_name);
 
-						while (($mb_id = $this->db->insert('fs_mailbox', ['name' => strip_tags($tmp_name)])) === false) {
-							++$i;
-							$tmp_name = $mb_name . $i;
-						}
-
-						if ($this->db->update('fs_bezirk', ['mailbox_id' => (int)$mb_id], ['id' => (int)$b['id']])) {
-							$b['mailbox_id'] = $mb_id;
+						if ($this->db->update('fs_bezirk', ['mailbox_id' => (int)$mb_id], ['id' => (int)$region['id']])) {
+							$region['mailbox_id'] = $mb_id;
 						}
 					}
 				}
 			}
-			if ($regions = $this->db->fetchAll(
+			if ($mailboxAdminRegions = $this->db->fetchAll(
 				'
 				SELECT 	m.`id`,
 						m.`name`,
 						b.email_name,
 						b.id AS bezirk_id
-					
 				FROM 	`fs_bezirk` b,
 						`fs_mailbox` m
-					
 				WHERE 	b.mailbox_id = m.id
-				AND 	b.`id` IN (' . implode(',', array_map('intval', $bids)) . ')
-				
+				AND 	b.`id` IN (' . implode(',', array_map('intval', $selectedRegions)) . ')
 			'
 			)
 			) {
-				foreach ($regions as $b) {
-					if (empty($b['email_name'])) {
-						$b['email_name'] = 'foodsharing ' . $b['name'];
+				foreach ($mailboxAdminRegions as $region) {
+					if (empty($region['email_name'])) {
+						$region['email_name'] = 'foodsharing ' . $region['name'];
 						$this->db->update(
 							'fs_bezirk',
-							['email_name' => strip_tags($b['email_name'])],
-							['id' => (int)$b['bezirk_id']]
+							['email_name' => strip_tags($region['email_name'])],
+							['id' => (int)$region['bezirk_id']]
 						);
 					}
-					$mboxes[] = [
-						'id' => $b['id'],
-						'name' => $b['name'],
-						'email_name' => $b['email_name'],
+					$mBoxes[] = [
+						'id' => $region['id'],
+						'name' => $region['name'],
+						'email_name' => $region['email_name'],
 						'type' => 'bot',
 					];
 				}
@@ -447,16 +426,8 @@ class MailboxGateway extends BaseGateway
 
 			$mb_name = substr($mb_name, 0, 25);
 
-			$tmp_name = $mb_name;
-			$i = 0;
-			$mb_id = 0;
-
-			if ($tmp_name[0] !== '.' && strlen($tmp_name) > 3) {
-				while (($mb_id = $this->db->insert('fs_mailbox', ['name' => strip_tags($tmp_name)])) === false) {
-					++$i;
-					$tmp_name = $mb_name . $i;
-				}
-
+			if ($mb_name[0] !== '.' && strlen($mb_name) > 3) {
+				$mb_id = $this->createMailbox($mb_name);
 				if ($this->db->update('fs_foodsaver', ['mailbox_id' => (int)$mb_id], ['id' => $fsId])) {
 					$me['mailbox_id'] = $mb_id;
 				}
@@ -467,10 +438,8 @@ class MailboxGateway extends BaseGateway
 			SELECT 	mb.`name`,
 					mb.`id`,
 					mm.email_name
-		
 			FROM	`fs_mailbox` mb,
 					`fs_mailbox_member` mm
-		
 			WHERE 	mm.mailbox_id = mb.id
 			AND 	mm.foodsaver_id = :fs_id
 		',
@@ -486,7 +455,7 @@ class MailboxGateway extends BaseGateway
 						['mailbox_id' => (int)$m['id'], 'foodsaver_id' => $fsId]
 					);
 				}
-				$mboxes[] = [
+				$mBoxes[] = [
 					'id' => $m['id'],
 					'name' => $m['name'],
 					'email_name' => $m['email_name'],
@@ -499,16 +468,16 @@ class MailboxGateway extends BaseGateway
 			'
 				SELECT 		m.`id`,
 							m.name,
-							CONCAT(fs.`name`," ",fs.`nachname`) AS email_name				
+							CONCAT(fs.`name`," ",fs.`nachname`) AS email_name
 				FROM 		`fs_mailbox` m,
-							`fs_foodsaver` fs				
+							`fs_foodsaver` fs
 				WHERE 		fs.mailbox_id = m.id
 				AND 		fs.id = :fs_id
 			',
 			[':fs_id' => $fsId]
 		)
 		) {
-			$mboxes[] = [
+			$mBoxes[] = [
 				'id' => $mebox['id'],
 				'name' => $mebox['name'],
 				'email_name' => $mebox['email_name'],
@@ -516,11 +485,7 @@ class MailboxGateway extends BaseGateway
 			];
 		}
 
-		if (empty($mboxes)) {
-			return false;
-		}
-
-		return $mboxes;
+		return empty($mBoxes) ? false : $mBoxes;
 	}
 
 	public function getMailboxId(int $mid)
@@ -530,5 +495,48 @@ class MailboxGateway extends BaseGateway
 		} catch (Exception $e) {
 			return 0;
 		}
+	}
+
+	/**
+	 * Returns the mailbox ID and attachment info for the message ID. The attachment info is a json encoded list that
+	 * contains 'filename', 'origname', and 'mime' for each attachment.
+	 *
+	 * @return array
+	 */
+	public function getAttachmentFileInfo(int $messageId)
+	{
+		return $this->db->fetchByCriteria('fs_mailbox_message', ['mailbox_id', 'attach'], ['id' => $messageId]);
+	}
+
+	/**
+	 * Returns the folder of the mail with this message ID.
+	 */
+	public function getMailFolderId(int $messageId): int
+	{
+		return $this->db->fetchValueByCriteria('fs_mailbox_message', 'folder', ['id' => $messageId]);
+	}
+
+	/**
+	 * Returns the HTML body of the mail with this message ID.
+	 */
+	public function getMessageHtmlBody(int $messageId): string
+	{
+		return $this->db->fetchValueByCriteria('fs_mailbox_message', 'body_html', ['id' => $messageId]);
+	}
+
+	/**
+	 * Creates a Mailbox for the user and returns its ID.
+	 */
+	private function createMailbox(string $mb_name): int
+	{
+		$mb_id = 0;
+		$i = 0;
+		$insert_name = $mb_name;
+		while (($mb_id = $this->db->insert('fs_mailbox', ['name' => strip_tags($insert_name)])) === 0) {
+			++$i;
+			$insert_name = $mb_name . $i;
+		}
+
+		return $mb_id;
 	}
 }

@@ -5,7 +5,10 @@
   >
     <li class="nav-item">
       <a
+        v-b-tooltip.hover.bottom
         :href="$url('map')"
+        :title="$i18n('storelist.map')"
+        :aria-label="$i18n('storelist.map')"
         class="nav-link"
       >
         <i class="fas fa-map-marker-alt" />
@@ -17,7 +20,7 @@
         class="nav-link"
       >
         <i class="fas fa-rocket" />
-        Mach mit!
+        {{ $i18n('register.topbar') }}
       </a>
     </li>
 
@@ -28,12 +31,15 @@
 </template>
 
 <script>
+
+import { VBTooltip } from 'bootstrap-vue'
 import MenuBullhorn from './MenuBullhorn'
 import MenuInformation from './MenuInformation'
 import MenuEnvelope from './MenuEnvelope'
 
 export default {
   components: { MenuBullhorn, MenuInformation, MenuEnvelope },
+  directives: { VBTooltip },
   props: {
     isMobile: {
       type: Boolean,

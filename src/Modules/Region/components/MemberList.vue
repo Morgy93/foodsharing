@@ -41,9 +41,9 @@
           <div class="col">
             <button
               v-b-tooltip.hover
+              :title="$i18n('button.clear_filter')"
               type="button"
               class="btn btn-sm"
-              :title="$i18n('button.clear_filter')"
               @click="clearFilter"
             >
               <i class="fas fa-times" />
@@ -63,25 +63,20 @@
         responsive
         class="foto-table"
       >
-        <template
-          slot="imageUrl"
-          slot-scope="data"
-        >
+        <template v-slot:cell(imageUrl)="row">
           <div>
             <img
-              :src="data.value"
+              :src="row.value"
               :alt="$i18n('terminology.profile_picture')"
+              class="user_pic_width"
             >
           </div>
         </template>
-        <template
-          slot="user.name"
-          slot-scope="{ item: { user } }"
-        >
+        <template v-slot:cell(userName)="row">
           <a
-            :href="$url('profile', user.id)"
+            :href="$url('profile', row.item.user.id)"
           >
-            {{ user.name }}
+            {{ row.item.user.name }}
           </a>
         </template>
       </b-table>
@@ -99,13 +94,11 @@
 
 <script>
 import { optimizedCompare } from '@/utils'
-import bTable from '@b/components/table/table'
-import bPagination from '@b/components/pagination/pagination'
-import bTooltip from '@b/directives/tooltip/tooltip'
+import { BTable, BPagination, VBTooltip } from 'bootstrap-vue'
 
 export default {
-  components: { bTable, bPagination },
-  directives: { bTooltip },
+  components: { BTable, BPagination },
+  directives: { VBTooltip },
   props: {
     regionName: {
       type: String,
@@ -125,18 +118,19 @@ export default {
       currentPage: 1,
       perPage: 20,
       filterText: '',
-      fields: {
-        imageUrl: {
-          label: '',
+      fields: [
+        {
+          key: 'imageUrl',
           sortable: false,
+          label: '',
           class: 'foto-column'
-        },
-        'user.name': {
+        }, {
+          key: 'userName',
           label: this.$i18n('group.name'),
           sortable: false,
           class: 'align-middle'
         }
-      }
+      ]
     }
   },
   computed: {
@@ -144,7 +138,7 @@ export default {
       if (!this.filterText.trim()) {
         return this.members
       }
-      let filterText = this.filterText ? this.filterText.toLowerCase() : null
+      const filterText = this.filterText ? this.filterText.toLowerCase() : null
       return this.members.filter((member) => {
         return (
           !filterText || (member.user.name.toLowerCase().indexOf(filterText) !== -1

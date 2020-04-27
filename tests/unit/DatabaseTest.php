@@ -104,4 +104,55 @@ class DatabaseTest extends \Codeception\Test\Unit
 		$this->db->insertOrUpdate('fs_foodsaver', $data);
 		$this->tester->seeInDatabase('fs_foodsaver', $data);
 	}
+
+	public function testDelete()
+	{
+		$params = ['quiz_id' => 1, 'foodsaver_id' => $this->foodsaver['id']];
+		$this->tester->haveInDatabase('fs_quiz_session', $params);
+
+		$this->db->delete('fs_quiz_session', $params);
+
+		$this->tester->dontSeeInDatabase('fs_quiz_session', $params);
+	}
+
+	public function testDeleteWithLimit()
+	{
+		$params = ['foodsaver_id' => $this->foodsaver['id']];
+		$this->tester->haveInDatabase('fs_quiz_session', $params);
+		$this->tester->haveInDatabase('fs_quiz_session', $params);
+		$this->assertEquals(3, $this->db->count('fs_quiz_session', $params));
+
+		$delCount = $this->db->delete('fs_quiz_session', $params, 2);
+
+		$this->assertEquals(2, $delCount);
+		$this->assertEquals(1, $this->db->count('fs_quiz_session', $params));
+	}
+
+	public function testFlattenArray()
+	{
+		// use reflection to access private function
+		$class = new ReflectionClass($this->db);
+		$method = $class->getMethod('flattenArray');
+		$method->setAccessible(true);
+
+		// without keys
+		$this->assertEquals($method->invokeArgs($this->db, [['a', ['b', 'c'], 'd'], false]), ['a', 'b', 'c', 'd']);
+		$this->assertEquals($method->invokeArgs($this->db, [['a', ['a', 'c'], 'd'], false]), ['a', 'a', 'c', 'd']);
+		$this->assertEquals($method->invokeArgs($this->db, [[['a', 'b'], ['c', 'd']], false]), ['a', 'b', 'c', 'd']);
+		$this->assertEquals($method->invokeArgs($this->db, [[['a', 'b'], ['a', 'd']], false]), ['a', 'b', 'a', 'd']);
+		$this->assertEquals($method->invokeArgs($this->db, [['A' => 'a', ['B' => 'b', 'C' => 'c'], 'D' => 'd'], false]), ['a', 'b', 'c', 'd']);
+		$this->assertEquals($method->invokeArgs($this->db, [['A' => 'a', ['A' => 'b', 'C' => 'c'], 'D' => 'd'], false]), ['a', 'b', 'c', 'd']);
+		$this->assertEquals($method->invokeArgs($this->db, [[['A' => 'a', 'B' => 'b'], ['C' => 'c', 'D' => 'd']], false]), ['a', 'b', 'c', 'd']);
+		$this->assertEquals($method->invokeArgs($this->db, [[['A' => 'a', 'B' => 'b'], ['A' => 'c', 'D' => 'd']], false]), ['a', 'b', 'c', 'd']);
+
+		// with keys
+		$this->assertEquals($method->invokeArgs($this->db, [['A' => 'a', ['B' => 'b', 'C' => 'c'], 'D' => 'd']]),
+			['A' => 'a', 'B' => 'b', 'C' => 'c', 'D' => 'd']);
+		$this->assertEquals($method->invokeArgs($this->db, [['A' => 'a', ['A' => 'b', 'C' => 'c'], 'D' => 'd']]),
+			['A' => 'b', 'C' => 'c', 'D' => 'd']);
+		$this->assertEquals($method->invokeArgs($this->db, [[['A' => 'a', 'B' => 'b'], ['C' => 'c', 'D' => 'd']]]),
+			['A' => 'a', 'B' => 'b', 'C' => 'c', 'D' => 'd']);
+		$this->assertEquals($method->invokeArgs($this->db, [[['A' => 'a', 'B' => 'b'], ['A' => 'c', 'D' => 'd']]]),
+			['A' => 'c', 'B' => 'b', 'D' => 'd']);
+	}
 }

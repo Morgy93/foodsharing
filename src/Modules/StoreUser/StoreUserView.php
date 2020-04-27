@@ -44,10 +44,10 @@ class StoreUserView extends View
 		);
 	}
 
-	public function u_getVerantwortlicher($betrieb)
+	public function u_getVerantwortlicher($storeData)
 	{
-		$out = array();
-		foreach ($betrieb['foodsaver'] as $fs) {
+		$out = [];
+		foreach ($storeData['foodsaver'] as $fs) {
 			if ($fs['verantwortlich'] == 1) {
 				$out[] = $fs;
 			}
@@ -56,47 +56,48 @@ class StoreUserView extends View
 		return $out;
 	}
 
-	public function handleRequests($betrieb)
+	public function handleRequests($storeData)
 	{
 		$out = '<table class="pintable">';
 		$odd = 'odd';
 		$this->pageHelper->addJs('$("table.pintable tr td ul li").tooltip();');
 
-		foreach ($betrieb['requests'] as $r) {
+		foreach ($storeData['requests'] as $r) {
 			if ($odd == 'even') {
 				$odd = 'odd';
 			} else {
 				$odd = 'even';
 			}
+			$verificationStatus = $r['verified'] ? '<i class="fas fa-user-check" title="' . $this->translationHelper->s('user_is_verified') . '"></i> ' : '';
 			$out .= '
 		<tr class="' . $odd . ' request-' . $r['id'] . '">
 			<td class="img" width="35px"><a href="/profile/' . (int)$r['id'] . '"><img src="' . $this->imageService->img($r['photo']) . '" /></a></td>
-			<td style="padding-top:17px;"><span class="msg"><a href="/profile/' . (int)$r['id'] . '">' . $r['name'] . '</a></span></td>
-			<td style="width:92px;padding-top:17px;"><span class="msg"><ul class="toolbar"><li class="ui-state-default ui-corner-left" title="Ablehnen" onclick="denyRequest(' . (int)$r['id'] . ',' . (int)$betrieb['id'] . ');"><span class="ui-icon ui-icon-closethick"></span></li><li class="ui-state-default" title="Auf die Springerliste setzen" onclick="warteRequest(' . (int)$r['id'] . ',' . (int)$betrieb['id'] . ');"><span class="ui-icon ui-icon-star"></span></li><li class="ui-state-default ui-corner-right" title="Akzeptieren" onclick="acceptRequest(' . (int)$r['id'] . ',' . (int)$betrieb['id'] . ');"><span class="ui-icon ui-icon-heart"></span></li></ul></span></td>
+			<td style="padding-top:17px;"><span class="msg">' . $verificationStatus . '<a href="/profile/' . (int)$r['id'] . '">' . $r['name'] . '</a></span></td>
+			<td style="width:92px;padding-top:17px;"><span class="msg"><ul class="toolbar"><li class="ui-state-default ui-corner-left" title="Ablehnen" onclick="denyRequest(' . (int)$r['id'] . ',' . (int)$storeData['id'] . ');"><span class="ui-icon ui-icon-closethick"></span></li><li class="ui-state-default" title="Auf die Springerliste setzen" onclick="warteRequest(' . (int)$r['id'] . ',' . (int)$storeData['id'] . ');"><span class="ui-icon ui-icon-star"></span></li><li class="ui-state-default ui-corner-right" title="Akzeptieren" onclick="acceptRequest(' . (int)$r['id'] . ',' . (int)$storeData['id'] . ');"><span class="ui-icon ui-icon-heart"></span></li></ul></span></td>
 		</tr>';
 		}
 
 		$out .= '</table>';
 
-		$this->pageHelper->hiddenDialog('requests', array($out));
-		$this->pageHelper->addJs('$("#dialog_requests").dialog("option","title","Anfragen für ' . $this->sanitizerService->jsSafe($betrieb['name'], '"') . '");');
+		$this->pageHelper->hiddenDialog('requests', [$out]);
+		$this->pageHelper->addJs('$("#dialog_requests").dialog("option","title","Anfragen für ' . $this->sanitizerService->jsSafe($storeData['name'], '"') . '");');
 		$this->pageHelper->addJs('$("#dialog_requests").dialog("option","buttons",{});');
 		$this->pageHelper->addJs('$("#dialog_requests").dialog("open");');
 	}
 
-	public function u_innerRow($contentType, $betrieb)
+	public function u_innerRow($contentType, $storeData)
 	{
 		$out = '';
-		if ($betrieb[$contentType] != '') {
-			$betrieb[$contentType] = trim($betrieb[$contentType]);
-			nl2br($betrieb[$contentType]);
+		if ($storeData[$contentType] != '') {
+			$storeData[$contentType] = trim($storeData[$contentType]);
+			nl2br($storeData[$contentType]);
 
-			if (($contentType == 'telefon' || $contentType == 'handy') && strpbrk($betrieb[$contentType], '1234567890')) {
-				$phoneNumber = preg_replace('/[^0-9\+]/', '', $betrieb[$contentType]);
+			if (($contentType == 'telefon' || $contentType == 'handy') && strpbrk($storeData[$contentType], '1234567890')) {
+				$phoneNumber = preg_replace('/[^0-9\+]/', '', $storeData[$contentType]);
 
-				$content = '<a href="tel:' . $phoneNumber . '">' . $betrieb[$contentType] . '</a>';
+				$content = '<a href="tel:' . $phoneNumber . '">' . $storeData[$contentType] . '</a>';
 			} else {
-				$content = $betrieb[$contentType];
+				$content = $storeData[$contentType];
 			}
 
 			$out = '<div class="innerRow"><span class="label">' . $this->translationHelper->s($contentType) . '</span>
@@ -106,21 +107,18 @@ class StoreUserView extends View
 		return $out;
 	}
 
-	public function u_team($betrieb)
+	public function u_team($storeData)
 	{
 		$id = $this->identificationHelper->id('team');
 		$out = '<ul id="' . $id . '" class="team">';
-		$jssaver = array();
 		$sleeper = '';
 
-		foreach ($betrieb['foodsaver'] as $fs) {
-			$jssaver[] = (int)$fs['id'];
-
+		foreach ($storeData['foodsaver'] as $fs) {
 			$class = '';
 			$click = 'profile(' . (int)$fs['id'] . ');';
 			if ($fs['verantwortlich'] == 1) {
 				$class .= ' verantwortlich';
-			} elseif ($betrieb['verantwortlich'] || $this->session->isAdminFor($betrieb['bezirk_id']) || $this->session->isOrgaTeam()) {
+			} elseif ($storeData['verantwortlich'] || $this->session->isAdminFor($storeData['bezirk_id']) || $this->session->isOrgaTeam()) {
 				$class .= ' context-team';
 				$click = '';
 			}
@@ -140,22 +138,29 @@ class StoreUserView extends View
 			}
 
 			if ((int)$fs['last_fetch'] > 0) {
-				$last = $this->translationHelper->sv('stat_fetchcount', array(
+				$last = $this->translationHelper->sv('stat_fetchcount', [
 					'date' => date('d.m.Y', $fs['last_fetch'])
-				));
+				]);
 			} else {
-				$last = $this->translationHelper->sv('stat_fetchcount_none', array());
+				$last = $this->translationHelper->sv('stat_fetchcount_none', []);
 			}
 
 			//date at which user was added
 			$memberSince = '';
-			if ($betrieb['verantwortlich']) {
+			if ($storeData['verantwortlich']) {
 				$addedAt = (!is_null($fs['add_date']) && $fs['add_date'] > 0)
 						? date('d.m.Y', $fs['add_date'])
 						: '(' . $this->translationHelper->s('stat_since_unknown') . ')';
-				$memberSince = $this->translationHelper->sv('stat_teammember_since', array(
+				$memberSince = $this->translationHelper->sv('stat_teammember_since', [
 					'date' => $addedAt
-				));
+				]);
+			}
+
+			if ($this->session->isMob()) {
+				$mouseOverInfoMobile = '<span class="item">' . $last . '</span>';
+				$mouseOverInfoMobile .= '<span class="item">' . $memberSince . '</span>';
+			} else {
+				$mouseOverInfoMobile = '';
 			}
 
 			$onclick = ' onclick="' . $click . 'return false;"';
@@ -171,6 +176,7 @@ class StoreUserView extends View
 						' . $this->imageService->avatar($fs) . '
 						<span class="infos">
 							<span class="item"><strong>' . $fs['name'] . '</strong> <span style="float:right">(' . $fs['stat_fetchcount'] . ')</span></span>
+							' . $mouseOverInfoMobile . '
 							' . $tel . '
 						</span>
 					</a>
@@ -186,13 +192,11 @@ class StoreUserView extends View
 			}
 		}
 
-		if ($betrieb['springer']) {
-			foreach ($betrieb['springer'] as $fs) {
-				$jssaver[] = (int)$fs['id'];
-
+		if ($storeData['springer']) {
+			foreach ($storeData['springer'] as $fs) {
 				$class = '';
 				$click = 'profile(' . (int)$fs['id'] . ');';
-				if ($betrieb['verantwortlich'] || $this->session->isAdminFor($betrieb['bezirk_id']) || $this->session->isOrgaTeam()) {
+				if ($storeData['verantwortlich'] || $this->session->isAdminFor($storeData['bezirk_id']) || $this->session->isOrgaTeam()) {
 					$class .= ' context-jumper';
 					$click = '';
 				}
@@ -210,9 +214,9 @@ class StoreUserView extends View
 				$addedAt = (!is_null($fs['add_date']) && $fs['add_date'] > 0)
 						? date('d.m.Y', $fs['add_date'])
 						: '(' . $this->translationHelper->s('stat_since_unknown') . ')';
-				$jumperSince = $this->translationHelper->sv('stat_jumper_since', array(
+				$jumperSince = $this->translationHelper->sv('stat_jumper_since', [
 					'date' => $addedAt
-				));
+				]);
 
 				$onclick = ' onclick="' . $click . 'return false;"';
 				$href = '#';
@@ -245,287 +249,79 @@ class StoreUserView extends View
 
 		$out .= $sleeper . '</ul><div style="clear:both"></div>';
 
-		if ($betrieb['verantwortlich']) {
+		if ($storeData['verantwortlich']) {
 			$this->pageHelper->addJs('
 			$("#team_status").on("change", function(){
 				var val = $(this).val();
 				showLoader();
 				$.ajax({
-					url: "/xhr.php?f=bteamstatus&bid=' . (int)$betrieb['id'] . '&s=" + val,
+					url: "/xhr.php?f=bteamstatus&bid=' . (int)$storeData['id'] . '&status=" + val,
 					success: function(){
 						hideLoader();
 					}
 				});
-			});		
+			});
 		');
 			global $g_data;
-			$g_data['team_status'] = $betrieb['team_status'];
+			$g_data['team_status'] = $storeData['team_status'];
 
 			$out .= '
 			<div class="ui-padding">' .
-				$this->v_utils->v_form_select('team_status', array(
-					'values' => array(
-						array('id' => 0, 'name' => 'Team ist voll'),
-						array('id' => 1, 'name' => 'HelferInnen gesucht'),
-						array('id' => 2, 'name' => 'Es werden dringend HelferInnen gesucht!')
-					)
-				)) . '</div>';
+				$this->v_utils->v_form_select('team_status', [
+					'values' => [
+						['id' => 0, 'name' => 'Team ist voll'],
+						['id' => 1, 'name' => 'HelferInnen gesucht'],
+						['id' => 2, 'name' => 'Es werden dringend HelferInnen gesucht!']
+					]
+				]) . '</div>';
 		}
 
 		return $out;
 	}
 
-	public function u_betriebList($betriebe, $title, $verantwortlich)
+	public function u_storeList($storeData, $title)
 	{
-		if (empty($betriebe)) {
+		if (empty($storeData)) {
 			return '';
 		}
 
-		$bezirk = false;
-		$betriebrows = array();
-		foreach ($betriebe as $i => $b) {
-			$status = $this->v_utils->v_getStatusAmpel($b['betrieb_status_id']);
+		$isRegion = false;
+		$storeRows = [];
+		foreach ($storeData as $i => $store) {
+			$status = $this->v_utils->v_getStatusAmpel($store['betrieb_status_id']);
 
-			$betriebrows[$i] = array(
-				array('cnt' => '<a class="linkrow ui-corner-all" href="/?page=fsbetrieb&id=' . $b['id'] . '">' . $b['name'] . '</a>'),
-				array('cnt' => $b['str'] . ' ' . $b['hsnr']),
-				array('cnt' => $b['plz']),
-				array('cnt' => $status)
-			);
+			$storeRows[$i] = [
+				['cnt' => '<a class="linkrow ui-corner-all" href="/?page=fsbetrieb&id=' . $store['id'] . '">' . $store['name'] . '</a>'],
+				['cnt' => $store['str'] . ' ' . $store['hsnr']],
+				['cnt' => $store['plz']],
+				['cnt' => $status]
+			];
 
-			if (isset($b['bezirk_name'])) {
-				$betriebrows[$i][] = array('cnt' => $b['bezirk_name']);
-				$bezirk = true;
-			}
-
-			if ($verantwortlich) {
-				$betriebrows[$i][] = array('cnt' => $this->v_utils->v_toolbar(array('id' => $b['id'], 'types' => array('edit'), 'confirmMsg' => 'Soll ' . $b['name'] . ' wirklich unwiderruflich gel&ouml;scht werden?')));
+			if (isset($store['bezirk_name'])) {
+				$storeRows[$i][] = ['cnt' => $store['bezirk_name']];
+				$isRegion = true;
 			}
 		}
 
-		$head = array(
-			array('name' => 'Name', 'width' => 180),
-			array('name' => 'Anschrift'),
-			array('name' => 'Postleitzahl', 'width' => 90),
-			array('name' => 'Status', 'width' => 50));
-		if ($bezirk) {
-			$head[] = array('name' => 'Region');
-		}
-		if ($verantwortlich) {
-			$head[] = array('name' => 'Aktionen', 'sort' => false, 'width' => 30);
+		$head = [
+			['name' => 'Name', 'width' => 180],
+			['name' => 'Anschrift'],
+			['name' => 'Postleitzahl', 'width' => 90],
+			['name' => 'Status', 'width' => 50]];
+		if ($isRegion) {
+			$head[] = ['name' => 'Region'];
 		}
 
-		$table = $this->v_utils->v_tablesorter($head, $betriebrows);
+		$table = $this->v_utils->v_tablesorter($head, $storeRows);
 
 		return $this->v_utils->v_field($table, $title);
 	}
 
-	/**
-	 * @param $fetch_dow
-	 * @param $betrieb
-	 *
-	 * @return array
-	 */
-	public function u_getNextDates($fetch_dow, $betrieb, $irregularPickups)
-	{
-		$out = array();
-
-		if ($fetch_dow) {
-			$start_days = array();
-			foreach ($fetch_dow as $dow => $fd) {
-				$part = explode('-', $dow);
-				$dow = (int)$part[0];
-
-				if ($dow == date('w')) {
-					$start_days[] = array(
-						// Zeige auch schon vergangene Termine an q'n'dirty
-						'ts' => time(),
-						'time' => $fd['time'],
-						'fetcher' => $fd['fetcher'],
-						'dow' => $dow
-					);
-				} else {
-					$start_days[] = array(
-						'ts' => strtotime('next ' . $this->u_day($dow)),
-						'time' => $fd['time'],
-						'fetcher' => $fd['fetcher'],
-						'dow' => $dow
-					);
-				}
-			}
-
-			$month_change = 0;
-			$y = 0;
-			$cur_month = date('m', $start_days[0]['ts']);
-			$i = 0;
-
-			while ($i <= 35) {
-				foreach ($start_days as $sd) {
-					++$i;
-					$ts = $sd['ts'] + ($y * 604800);
-					$date = new \DateTime(date('Y-m-d', $sd['ts']) . ' ' . $sd['time'], new \DateTimeZone('Europe/Berlin'));
-					//Ein Tag addieren
-					if ($y > 0) {
-						$date->add(new \DateInterval('P' . ($y * 7) . 'D'));
-					}
-					//DateTime Formatierte 2010-03-05 Ausgabe
-
-					$out[$date->format('Y-m-d H-i')] = array(
-						'time' => $date->format('H:i:s'),
-						'fetcher' => $sd['fetcher']
-					);
-				}
-				if (date('m', $ts) != $cur_month) {
-					++$month_change;
-				}
-
-				++$y;
-			}
-		}
-
-		if ($adddates = $irregularPickups) {
-			$out = array_merge($out, $adddates);
-		}
-
-		ksort($out);
-
-		if (!empty($out)) {
-			$out2 = array();
-			foreach ($out as $key => $o) {
-				$k = explode(' ', $key);
-				$k = explode('-', $k[0]);
-				$time = mktime(0, 0, 0, $k[1], $k[2], $k[0]);
-				$out2[$key] = $o;
-
-				$max = 1209600;
-				if ((int)$betrieb['prefetchtime'] > 0) {
-					$max = $betrieb['prefetchtime'];
-				}
-
-				if ($time - time() >= $max) {
-					return $out2;
-				}
-			}
-		}
-
-		return $out;
-	}
-
-	public function u_day($dow)
-	{
-		$days = array(
-			0 => 'Sunday',
-			1 => 'Monday',
-			2 => 'Tuesday',
-			3 => 'Wednesday',
-			4 => 'Thursday',
-			5 => 'Friday',
-			6 => 'Saturday'
-		);
-
-		return $days[$dow];
-	}
-
-	public function u_form_checkboxTagAlt($date, $option = array())
-	{
-		$ago = false;
-		if (strtotime($date) < time()) {
-			$ago = true;
-		}
-
-		$id = 'fetch-' . $this->identificationHelper->id($date);
-		$out = '<input type="hidden" id="' . $id . '-date" name="' . $id . '-date" value="' . $date . '" />';
-
-		$bindabei = false;
-
-		$out .= '
-		<ul class="imglist" id="' . $id . '-imglist">';
-
-		$i = 0;
-
-		if ($values = $this->dataHelper->getValue($id)) {
-			foreach ($values as $fs) {
-				if ($fs['id'] == $this->session->id()) {
-					$bindabei = true;
-				}
-
-				$aclass = '';
-				$class = $id . '-' . $fs['id'];
-				$click = 'profile(' . (int)$fs['id'] . ');';
-
-				if (!$ago && $option['verantwortlich'] && $fs['confirmed'] == 0) {
-					$aclass = 'context-unconfirmed';
-					$click = '';
-				} elseif (!$ago && $option['verantwortlich']) {
-					$aclass .= 'context-confirmed';
-					$click = '';
-				}
-
-				if ($fs['id'] == $this->session->id() && !$ago) {
-					$click = 'u_undate(\'' . $date . '\',\'' . $this->timeHelper->niceDate(strtotime($date), true) . '\');return false;';
-					$aclass = '';
-				}
-
-				if ($fs['confirmed'] == 0) {
-					$class .= ' unconfirmed';
-					$fs['name'] = $this->translationHelper->sv('not_confirmed', array('name' => $fs['name']));
-				}
-				$out .= '
-			<li class="filled ' . $class . '">
-				<a class="' . $aclass . '" href="#" onclick="' . $click . 'return false;" title="' . $fs['name'] . '"><input type="hidden" name="date" value="' . $fs['id'] . ':::' . $date . '" /><img src="' . $this->imageService->img($fs['photo']) . '" alt="' . $fs['name'] . '" /><span>&nbsp;</span></a>
-			</li>';
-				++$i;
-			}
-		}
-
-		if (isset($option['fetcher_count']) && $i < $option['fetcher_count']) {
-			for ($y = 0; $y < ($option['fetcher_count'] - $i); ++$y) {
-				if (!$bindabei) {
-					$out .= '
-				<li class="filled empty timedialog-add-me">
-					<a href="#" onclick="return false;" title="' . $this->translationHelper->s('add_me_here') . '"><img src="/img/nobody.gif" alt="nobody" /></a>
-					<input type="hidden" name="' . $id . '-date" class="daydate" value="' . $date . '::' . $this->format_db_date($date) . '::' . $this->translationHelper->s('dow' . date('w', strtotime($date))) . '" />
-					<input type="hidden" name="' . $id . '-dateid" class="dayid" value="' . $id . '" />
-				</li>';
-				} else {
-					$out .= '
-				<li class="empty nohover">
-					<a href="#" onclick="return false;" title=""><img src="/img/nobody.gif" alt="nobody" /></a>
-				</li>';
-				}
-			}
-		}
-
-		$out .= '
-		</ul><div style="clear:both;"></div>';
-
-		$part = explode(' ', $date);
-
-		if ($part[0] == date('Y-m-d')) {
-			$option['class'] = 'today';
-		}
-
-		$dellink = '';
-
-		if (!$ago && isset($option['field']['additional']) && ($option['verantwortlich'] || $this->session->isOrgaTeam() || $this->session->isAdminFor($option['bezirk_id']))) {
-			$dellink = '<br /><a class="button" href="#" onclick="if(confirm(\'' . $this->translationHelper->s('delete-manual-slot-warning-text') . '\')){ajreq(\'deldate\',{app:\'betrieb\',id:\'' . (int)$_GET['id'] . '\',time:\'' . $option['field']['datetime'] . '\'});}return false;">Termin löschen</a>';
-		}
-
-		return $this->v_utils->v_input_wrapper($this->translationHelper->s($id), $out . $dellink, $id, $option);
-	}
-
-	public function format_db_date($date): string
-	{
-		$part = explode('-', $date);
-
-		return (int)$part[2] . '. ' . $this->translationHelper->s('month_' . (int)$part[1]);
-	}
-
-	public function u_form_abhol_table($zeiten = false, $option = array())
+	public function u_form_abhol_table($allDates = false, $option = [])
 	{
 		$out = '
 		<table class="timetable">
-			
+
 			<thead>
 				<tr>
 					<th class="ui-padding">' . $this->translationHelper->s('day') . '</th>
@@ -542,8 +338,8 @@ class StoreUserView extends View
 		$dows = range(1, 6);
 		$dows[] = 0;
 		$odd = 'even';
-		if (is_array($zeiten)) {
-			foreach ($zeiten as $z) {
+		if (is_array($allDates)) {
+			foreach ($allDates as $date) {
 				if ($odd == 'even') {
 					$odd = 'odd';
 				} else {
@@ -553,13 +349,13 @@ class StoreUserView extends View
 				$day = '';
 				foreach ($dows as $d) {
 					$sel = '';
-					if ($d == $z['dow']) {
+					if ($d == $date['dow']) {
 						$sel = ' selected="selected"';
 					}
 					$day .= '<option' . $sel . ' value="' . $d . '">' . $this->translationHelper->s('dow' . $d) . '</option>';
 				}
 
-				$time = explode(':', $z['time']);
+				$time = explode(':', $date['time']);
 
 				$out .= '
 			    <tr class="' . $odd . '">
@@ -587,7 +383,7 @@ class StoreUserView extends View
                         </select>
                     </td>
                     <td class="ui-padding" style="width:100px">
-                        <input class="fetchercount" style="width:20px; float: left" type="text" name="nft-count[]" value="' . $z['fetcher'] . '"/>
+                        <input class="fetchercount" style="width:20px; float: left" type="text" name="nft-count[]" value="' . $date['fetcher'] . '"/>
                         <button style="float: right; height: 32px" class="nft-remove"></button>
                     </td>
 			    </tr>';
@@ -600,13 +396,13 @@ class StoreUserView extends View
                 <tr>
                     <td class="ui-padding">
                         <select class="nft-row" style="width:100px;" name="newfetchtime[]" id="nft-dow">
-                            <option value="0">' . $this->translationHelper->s('dow0') . '</option>	
-                            <option value="1">' . $this->translationHelper->s('dow1') . '</option>	
-                            <option value="2">' . $this->translationHelper->s('dow2') . '</option>	
-                            <option value="3">' . $this->translationHelper->s('dow3') . '</option>	
-                            <option value="4">' . $this->translationHelper->s('dow4') . '</option>	
-                            <option value="5">' . $this->translationHelper->s('dow5') . '</option>	
-                            <option value="6">' . $this->translationHelper->s('dow6') . '</option>		
+                            <option value="0">' . $this->translationHelper->s('dow0') . '</option>
+                            <option value="1">' . $this->translationHelper->s('dow1') . '</option>
+                            <option value="2">' . $this->translationHelper->s('dow2') . '</option>
+                            <option value="3">' . $this->translationHelper->s('dow3') . '</option>
+                            <option value="4">' . $this->translationHelper->s('dow4') . '</option>
+                            <option value="5">' . $this->translationHelper->s('dow5') . '</option>
+                            <option value="6">' . $this->translationHelper->s('dow6') . '</option>
                         </select>
                     </td>
                     <td class="ui-padding">

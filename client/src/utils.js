@@ -1,7 +1,9 @@
 import dateFnsFormat from 'date-fns/format'
-import dateFnsIsSameYear from 'date-fns/is_same_year'
+import dateFnsIsSameDay from 'date-fns/isSameDay'
+import dateFnsIsSameYear from 'date-fns/isSameYear'
 import dateFnsLocaleDE from 'date-fns/locale/de'
-import dateFnsDistanceInWords from 'date-fns/distance_in_words'
+import dateFnsFormatDistance from 'date-fns/formatDistance'
+import dateFnsAddDays from 'date-fns/addDays'
 
 import { ajreq } from '@/script'
 
@@ -37,24 +39,29 @@ export function expose (data) {
 }
 
 export function dateFormat (date, format = 'full-long') {
-  if (format === 'full-long') {
-    if (dateFnsIsSameYear(date, new Date())) {
-      return dateFormat(date, 'dddd, Do MMM, HH:mm [Uhr]')
-    } else {
-      return dateFormat(date, 'dddd, Do MMM YYYY, HH:mm [Uhr]')
-    }
-  } else if (format === 'full-short') {
-    if (dateFnsIsSameYear(date, new Date())) {
-      return dateFormat(date, 'dd, DD. MMM, HH:mm')
-    } else {
-      return dateFormat(date, 'dd, DD. MMM YY, HH:mm')
-    }
-  } else {
-    return dateFnsFormat(date, format, { locale: dateFnsLocaleDE })
+  switch (format) {
+    case 'full-long':
+      if (dateFnsIsSameDay(date, new Date())) {
+        return dateFormat(date, "'heute', cccc, HH:mm 'Uhr'")
+      } else if (dateFnsIsSameDay(date, dateFnsAddDays(new Date(), 1))) {
+        return dateFormat(date, "'morgen', cccc, HH:mm 'Uhr'")
+      } else if (dateFnsIsSameYear(date, new Date())) {
+        return dateFormat(date, "cccc, do MMM, HH:mm 'Uhr'")
+      } else {
+        return dateFormat(date, "cccccc, do MMM yyyy, HH:mm 'Uhr'")
+      }
+    case 'full-short':
+      if (dateFnsIsSameYear(date, new Date())) {
+        return dateFormat(date, 'cccccc, d. MMM, HH:mm')
+      } else {
+        return dateFormat(date, 'cccccc, d.M.yyyy, HH:mm')
+      }
+    default:
+      return dateFnsFormat(date, format, { locale: dateFnsLocaleDE })
   }
 }
 export function dateDistanceInWords (date) {
-  return dateFnsDistanceInWords(new Date(), date, {
+  return dateFnsFormatDistance(date, new Date(), {
     locale: dateFnsLocaleDE,
     addSuffix: true
   })
@@ -77,5 +84,24 @@ export function optimizedCompare (a, b, key) {
     return (elemA > elemB ? 1 : (elemA === elemB ? 0 : -1))
   } else {
     return elemA.localeCompare(elemB)
+  }
+}
+
+export const generateQueryString = params => {
+  const qs = Object.keys(params)
+    .filter(key => params[key] !== '')
+    .map(key => key + '=' + params[key])
+    .join('&')
+  return qs.length ? `?${qs}` : ''
+}
+
+export function isWebGLSupported () {
+  // https://stackoverflow.com/a/22953053
+  try {
+    var canvas = document.createElement('canvas')
+    return !!window.WebGLRenderingContext &&
+      (canvas.getContext('webgl') || canvas.getContext('experimental-webgl'))
+  } catch (e) {
+    return false
   }
 }

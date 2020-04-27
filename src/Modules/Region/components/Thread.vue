@@ -12,51 +12,46 @@
 
     <div
       v-if="regionId"
-      class="card rounded"
+      class="card rounded above"
     >
       <div class="card-header text-white bg-primary">
-        <div class="row">
-          <div class="col text-truncate ml-2 pt-1 font-weight-bold">
+        <div class="row m-1 pt-2">
+          <h6 class="text-truncate">
             {{ title }}
-          </div>
-          <div class="col text-right">
-            <a
-              class="btn btn-sm btn-secondary"
-              @click="toggleFollow"
-            >
-              {{ $i18n(isFollowing ? 'forum.unfollow' : 'forum.follow') }}
-            </a>
-            <a
-              v-if="mayModerate"
-              class="btn btn-sm btn-secondary"
-              @click="toggleStickyness"
-            >
-              {{ $i18n(isSticky ? 'forum.unstick' : 'forum.stick') }}
-            </a>
-          </div>
+          </h6>
         </div>
       </div>
+      <ThreadActions
+        :is-following-bell.sync="isFollowingBell"
+        :is-following-email.sync="isFollowingEmail"
+        :is-sticky.sync="isSticky"
+        :thread-id="id"
+        :show-sticky="mayModerate"
+      />
       <div
         v-if="!isActive && mayModerate"
-        class="card-body"
+        class="card-body mb-2"
       >
         <div
-          class="alert alert-warning"
+          class="alert alert-warning mb-2"
           role="alert"
         >
-          {{ $i18n('forum.thread_is_inactive_description') }}
-          <hr>
+          <span>
+            {{ $i18n('forum.thread.inactive') }}
+          </span>
+        </div>
+        <div>
           <button
             class="btn btn-secondary btn-sm"
             @click="activateThread"
           >
-            <i class="fas fa-check" /> {{ $i18n('forum.activate_thread') }}
+            <i class="fas fa-check" /> {{ $i18n('forum.thread.activate') }}
           </button>
           <button
-            class="btn btn-secondary btn-sm"
+            class="btn btn-danger btn-sm float-right"
             @click="$refs.deleteModal.show()"
           >
-            <i class="fas fa-trash-alt" /> {{ $i18n('forum.delete_thread') }}
+            <i class="fas fa-trash-alt" /> {{ $i18n('forum.thread.delete') }}
           </button>
         </div>
       </div>
@@ -76,18 +71,30 @@
         :is-loading="loadingPosts.indexOf(post.id) != -1"
         :created-at="new Date(post.createdAt)"
         @delete="deletePost(post)"
-        @toggleFollow="toggleFollow"
         @reactionAdd="reactionAdd(post, arguments[0])"
         @reactionRemove="reactionRemove(post, arguments[0])"
         @reply="reply"
       />
     </div>
+
+    <div
+      v-if="regionId"
+      class="card rounded below"
+    >
+      <ThreadActions
+        :is-following-bell.sync="isFollowingBell"
+        :is-following-email.sync="isFollowingEmail"
+        :is-sticky.sync="isSticky"
+        :thread-id="id"
+      />
+    </div>
+
     <div
       v-if="!isLoading && !errorMessage && !posts.length"
       class="alert alert-warning"
       role="alert"
     >
-      Bisher keine Beiträge vorhanden
+      {{ $i18n('forum.no_posts') }}
     </div>
     <div
       v-if="errorMessage"
@@ -98,15 +105,13 @@
     </div>
     <ThreadForm
       ref="form"
-      :is-following="isFollowing"
       :error-message="errorMessage"
       @submit="createPost"
-      @toggleFollow="toggleFollow"
     />
 
     <b-modal
       ref="deleteModal"
-      :title="$i18n('forum.delete_thread')"
+      :title="$i18n('forum.thread.delete')"
       :cancel-title="$i18n('button.abort')"
       :ok-title="$i18n('button.yes_i_am_sure')"
       @ok="deleteThread"
@@ -117,10 +122,12 @@
 </template>
 
 <script>
-import bModal from '@b/components/modal/modal'
 
-import ThreadPost from './ThreadPost'
+import { BModal } from 'bootstrap-vue'
+
+import ThreadActions from './ThreadActions'
 import ThreadForm from './ThreadForm'
+import ThreadPost from './ThreadPost'
 import * as api from '@/api/forum'
 import { pulseError } from '@/script'
 import i18n from '@/i18n'
@@ -128,7 +135,7 @@ import { user } from '@/server-data'
 import { GET } from '@/browser'
 
 export default {
-  components: { bModal, ThreadPost, ThreadForm },
+  components: { BModal, ThreadActions, ThreadForm, ThreadPost },
   props: {
     id: {
       type: Number,
@@ -146,7 +153,8 @@ export default {
       isActive: true,
       mayModerate: false,
       mayDelete: false,
-      isFollowing: true,
+      isFollowingEmail: true,
+      isFollowingBell: true,
 
       isLoading: false,
       loadingPosts: [],
@@ -160,7 +168,7 @@ export default {
   },
   methods: {
     scrollToPost (pid) {
-      let els = window.document.getElementsByName(`post-${pid}`)
+      const els = window.document.getElementsByName(`post-${pid}`)
       if (els.length > 0) {
         els[0].scrollIntoView(false)
       }
@@ -169,9 +177,9 @@ export default {
       // this.$refs.form.text = `> ${body.split('\n').join('\n> ')}\n\n${this.$refs.form.text}`
       this.$refs.form.focus()
     },
-    async reload () {
+    async reload (isDeleteAction = false) {
       try {
-        let res = (await api.getThread(this.id)).data
+        const res = (await api.getThread(this.id)).data
         Object.assign(this, {
           title: res.title,
           regionId: res.regionId,
@@ -181,12 +189,18 @@ export default {
           isActive: res.isActive,
           mayModerate: res.mayModerate,
           mayDelete: res.mayDelete,
-          isFollowing: res.isFollowing
+          isFollowingEmail: res.isFollowingEmail,
+          isFollowingBell: res.isFollowingBell
         })
         this.isLoading = false
       } catch (err) {
-        this.isLoading = false
-        this.errorMessage = err.message
+        if (!isDeleteAction) {
+          this.isLoading = false
+          this.errorMessage = err.message
+        } else {
+          // In this case the last post was deleted.
+          window.location = this.$url('forum', this.regionId)
+        }
       }
     },
 
@@ -195,7 +209,7 @@ export default {
 
       try {
         await api.deletePost(post.id)
-        await this.reload()
+        await this.reload(true)
       } catch (err) {
         pulseError(i18n('error_unexpected'))
       } finally {
@@ -224,7 +238,7 @@ export default {
       }
     },
     async reactionRemove (post, key, onlyLocally = false) {
-      let reactionUser = post.reactions[key].find(r => r.id === user.id)
+      const reactionUser = post.reactions[key].find(r => r.id === user.id)
 
       if (!reactionUser) return
 
@@ -240,41 +254,11 @@ export default {
         }
       }
     },
-    async toggleFollow () {
-      let targetState = !this.isFollowing
-      this.isFollowing = targetState
-      try {
-        if (targetState) {
-          await api.followThread(this.id)
-        } else {
-          await api.unfollowThread(this.id)
-        }
-      } catch (err) {
-        // failed? undo it
-        this.isFollowing = !targetState
-        pulseError(i18n('error_unexpected'))
-      }
-    },
-    async toggleStickyness () {
-      let targetState = !this.isSticky
-      this.isSticky = targetState
-      try {
-        if (targetState) {
-          await api.stickThread(this.id)
-        } else {
-          await api.unstickThread(this.id)
-        }
-      } catch (err) {
-        // failed? undo it
-        this.isSticky = !targetState
-        pulseError(i18n('error_unexpected'))
-      }
-    },
     async createPost (body) {
       this.errorMessage = null
-      let dummyPost = {
+      const dummyPost = {
         id: -1,
-        time: new Date(),
+        createdAt: new Date(),
         body: body,
         reactions: {},
         author: {
@@ -287,9 +271,10 @@ export default {
 
       try {
         await api.createPost(this.id, body)
+        await api.followThreadByBell(this.id)
         await this.reload()
       } catch (err) {
-        let index = this.posts.indexOf(dummyPost)
+        const index = this.posts.indexOf(dummyPost)
         this.posts.splice(index, 1)
 
         this.errorMessage = err.message

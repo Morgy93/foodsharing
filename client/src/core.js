@@ -1,6 +1,6 @@
 import 'whatwg-fetch'
 
-import '@/raven'
+import '@/sentry'
 
 import '@/style'
 
@@ -10,8 +10,7 @@ import 'jquery-migrate'
 import { initialize, ajreq } from '@/script'
 
 import 'jquery-ui'
-
-import 'fullpage.js'
+import registerServiceWorker from '@/registerServiceWorker'
 import 'jquery-contextmenu'
 import 'jquery-contextmenu/dist/jquery.ui.position'
 import 'jquery-contextmenu/dist/jquery.contextMenu.css'
@@ -24,6 +23,7 @@ import '@/join'
 
 import '@/menu'
 import '@/becomeBezirk'
+import '@/footer'
 
 import serverData from '@/server-data'
 
@@ -31,6 +31,7 @@ import socket from '@/socket'
 import { getCsrfToken } from '@/api/base'
 
 initialize()
+registerServiceWorker()
 
 $('#fs-profile-rate-comment').dialog({
   modal: true,

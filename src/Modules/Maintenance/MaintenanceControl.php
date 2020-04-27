@@ -2,21 +2,27 @@
 
 namespace Foodsharing\Modules\Maintenance;
 
-use Flourish\fImage;
 use Foodsharing\Helpers\EmailHelper;
 use Foodsharing\Helpers\TranslationHelper;
 use Foodsharing\Modules\Bell\BellGateway;
+use Foodsharing\Modules\Bell\BellUpdateTrigger;
 use Foodsharing\Modules\Console\ConsoleControl;
+use Foodsharing\Modules\Core\DBConstants\Region\RegionIDs;
 use Foodsharing\Modules\Foodsaver\FoodsaverGateway;
+use Foodsharing\Modules\Quiz\QuizHelper;
 use Foodsharing\Modules\Store\StoreGateway;
 
 class MaintenanceControl extends ConsoleControl
 {
+	private $model;
 	private $bellGateway;
 	private $storeGateway;
 	private $foodsaverGateway;
 	private $emailHelper;
 	private $translationHelper;
+	private $maintenanceGateway;
+	private $quizHelper;
+	private $bellUpdateTrigger;
 
 	public function __construct(
 		MaintenanceModel $model,
@@ -24,7 +30,10 @@ class MaintenanceControl extends ConsoleControl
 		StoreGateway $storeGateway,
 		FoodsaverGateway $foodsaverGateway,
 		EmailHelper $emailHelper,
-		TranslationHelper $translationHelper
+		TranslationHelper $translationHelper,
+		MaintenanceGateway $maintenanceGateway,
+		QuizHelper $quizHelper,
+		BellUpdateTrigger $bellUpdateTrigger
 	) {
 		$this->model = $model;
 		$this->bellGateway = $bellGateway;
@@ -32,6 +41,9 @@ class MaintenanceControl extends ConsoleControl
 		$this->foodsaverGateway = $foodsaverGateway;
 		$this->emailHelper = $emailHelper;
 		$this->translationHelper = $translationHelper;
+		$this->maintenanceGateway = $maintenanceGateway;
+		$this->quizHelper = $quizHelper;
+		$this->bellUpdateTrigger = $bellUpdateTrigger;
 
 		parent::__construct();
 	}
@@ -44,35 +56,24 @@ class MaintenanceControl extends ConsoleControl
 	public function daily()
 	{
 		/*
-		 * warn food store manager if there are no fetching people
+		 * warn store manager if there are no fetching people
 		 */
 		$this->betriebFetchWarning();
 
 		/*
-		 * update bezirk ids
-		 * there is this old 1:n relation foodsaver <=> bezirk we just check in one step the relation table
-		 */
-		//$this->updateBezirkIds();
-
-		/*
-		 * fill memcache with info about users if they want information mails etc..
+		 * fill memcache with info about users if they want information mails etc.
 		 */
 		$this->memcacheUserInfo();
 
 		/*
-		 * delete old bells
-		 */
-		$this->deleteBells();
-
-		/*
-		 * delete unuser images
+		 * delete unused images
 		 */
 		$this->deleteImages();
 
 		/*
-		 * delete unconfirmed Betrieb dates in the past
+		 * delete unconfirmed store dates in the past
 		 */
-		$this->deleteUnconformedFetchDates();
+		$this->deleteUnconfirmedFetchDates();
 
 		/*
 		 * deactivate too old food baskets
@@ -99,11 +100,6 @@ class MaintenanceControl extends ConsoleControl
 		$this->model->deleteOldIpBlocks();
 
 		/*
-		 * check inactive users and send wake up emails or set in sleeping mode
-		 */
-		//$this->sleepingMode();
-
-		/*
 		 * There may be some groups where people should automatically be added
 		 * (e.g. Hamburgs BIEB group)
 		 */
@@ -113,14 +109,11 @@ class MaintenanceControl extends ConsoleControl
 		 * sleeping users, where the time period of sleepiness ended
 		 */
 		$this->wakeupSleepingUsers();
-	}
 
-	public function hourly()
-	{
 		/*
-		 * some updates for new user management
-		*/
-		//$this->model->updateRolle();
+		 * updates outdated bells with passed expiration date
+		 */
+		$this->bellUpdateTrigger->triggerUpdate();
 	}
 
 	public function rebuildBezirkClosure()
@@ -138,114 +131,57 @@ class MaintenanceControl extends ConsoleControl
 	private function updateSpecialGroupMemberships()
 	{
 		self::info('updating HH bieb austausch');
-		$hh_biebs = $this->storeGateway->getBiebIds(31);
+		$hh_biebs = $this->storeGateway->getStoreManagersOf(31);
 		$hh_biebs[] = 3166;   // Gerard Roscoe
 		$counts = $this->foodsaverGateway->updateGroupMembers(826, $hh_biebs, true);
-		self::info('+' . $counts[0] . ', -' . $counts[1]);
+		self::info('+' . $counts['inserts'] . ', -' . $counts['deletions']);
 
 		self::info('updating Europe Bot group');
-		$bots = $this->foodsaverGateway->getBotIds(741);
-		$counts = $this->foodsaverGateway->updateGroupMembers(881, $bots, true);
-		self::info('+' . $counts[0] . ', -' . $counts[1]);
+		$bots = $this->foodsaverGateway->getRegionAmbassadorIds(RegionIDs::EUROPE);
+		$counts = $this->foodsaverGateway->updateGroupMembers(RegionIDs::EUROPE_BOT_GROUP, $bots, true);
+		self::info('+' . $counts['inserts'] . ', -' . $counts['deletions']);
 
 		self::info('updating berlin bieb austausch');
-		$berlin_biebs = $this->storeGateway->getBiebIds(47);
+		$berlin_biebs = $this->storeGateway->getStoreManagersOf(47);
 		$counts = $this->foodsaverGateway->updateGroupMembers(1057, $berlin_biebs, true);
-		self::info('+' . $counts[0] . ', -' . $counts[1]);
+		self::info('+' . $counts['inserts'] . ', -' . $counts['deletions']);
 
 		self::info('updating Switzerland BOT group');
-		$chBots = $this->foodsaverGateway->getBotIds(106);
-		$counts = $this->foodsaverGateway->updateGroupMembers(1763, $chBots, true);
-		self::info('+' . $counts[0] . ', -' . $counts[1]);
+		$chBots = $this->foodsaverGateway->getRegionAmbassadorIds(RegionIDs::SWITZERLAND);
+		$counts = $this->foodsaverGateway->updateGroupMembers(RegionIDs::SWITZERLAND_BOT_GROUP, $chBots, true);
+		self::info('+' . $counts['inserts'] . ', -' . $counts['deletions']);
 
 		self::info('updating Austria BOT group');
-		$aBots = $this->foodsaverGateway->getBotIds(63);
-		$counts = $this->foodsaverGateway->updateGroupMembers(761, $aBots, true);
-		self::info('+' . $counts[0] . ', -' . $counts[1]);
+		$aBots = $this->foodsaverGateway->getRegionAmbassadorIds(RegionIDs::AUSTRIA);
+		$counts = $this->foodsaverGateway->updateGroupMembers(RegionIDs::AUSTRIA_BOT_GROUP, $aBots, true);
+		self::info('+' . $counts['inserts'] . ', -' . $counts['deletions']);
 
-		self::info('updating Zürich BIEB austausch');
-		$zuerich_biebs = $this->storeGateway->getBiebIds(108);
+		self::info('updating Zürich BIEB group');
+		$zuerich_biebs = $this->storeGateway->getStoreManagersOf(108);
 		$counts = $this->foodsaverGateway->updateGroupMembers(1313, $zuerich_biebs, true);
-		self::info('+' . $counts[0] . ', -' . $counts[1]);
+		self::info('+' . $counts['inserts'] . ', -' . $counts['deletions']);
 
-		self::info('updating Wien BIEB austausch (Filialverantwortung)');
-		$wien_biebs = $this->storeGateway->getBiebIds(13);
+		self::info('updating Wien BIEB group');
+		$wien_biebs = $this->storeGateway->getStoreManagersOf(13);
 		$counts = $this->foodsaverGateway->updateGroupMembers(707, $wien_biebs, true);
-		self::info('+' . $counts[0] . ', -' . $counts[1]);
-	}
+		self::info('+' . $counts['inserts'] . ', -' . $counts['deletions']);
 
-	private function sleepingMode()
-	{
-		/*
-		 * get foodsaver more than 30 days inactive set to sleeping mode and send email
-		 */
-
-		self::info('sleeping mode');
-
-		$inactive_fsids = array();
-		if ($foodsaver = $this->model->listFoodsaverInactiveSince(30)) {
-			foreach ($foodsaver as $fs) {
-				$inactive_fsids[$fs['id']] = $fs['id'];
-				$this->emailHelper->tplMail('user/sleeping_automated', $fs['email'], array(
-					'name' => $fs['name'],
-					'anrede' => $this->translationHelper->s('anrede_' . $fs['geschlecht'])
-				));
-
-				$this->infoToBotsUserDeactivated($fs);
-			}
-			$this->model->setFoodsaverInactive($inactive_fsids);
-
-			self::info(count($inactive_fsids) . ' user going to sleep..');
-		}
-
-		/*
-		 * get all foodasver theyre dont login since 14 days and send an wake up email
-		 */
-		if ($foodsaver = $this->model->listFoodsaverInactiveSince(14)) {
-			foreach ($foodsaver as $fs) {
-				$this->emailHelper->tplMail('user/sleeping_warning', $fs['email'], array(
-					'name' => $fs['name'],
-					'anrede' => $this->translationHelper->s('anrede_' . $fs['geschlecht'])
-				));
-			}
-
-			self::info(count($foodsaver) . ' get an wakeup email..');
-		}
-	}
-
-	private function infoToBotsUserDeactivated($foodsaver)
-	{
-		if ($botschafer = $this->model->getUserBotschafter($foodsaver['id'])) {
-			$this->bellGateway->addBell(
-				$botschafer,
-				'fs_sleepmode_title',
-				'fs_sleepmode',
-				'fas fa-user',
-				array('href' => '#', 'onclick' => 'profile(' . $foodsaver['id'] . ');return false;'),
-				array('name' => $foodsaver['name'], 'nachname' => $foodsaver['nachname'], 'id' => $foodsaver['id']),
-				'fs-sleep' . (int)$foodsaver['id']
-			);
-		}
+		self::info('updating Graz BIEB group');
+		$graz_biebs = $this->storeGateway->getStoreManagersOf(149);
+		$counts = $this->foodsaverGateway->updateGroupMembers(1655, $graz_biebs, true);
+		self::info('+' . $counts['inserts'] . ', -' . $counts['deletions']);
 	}
 
 	private function deactivateBaskets()
 	{
-		$count = $this->model->deactivateOldBaskets();
+		$count = $this->maintenanceGateway->deactivateOldBaskets();
 		self::info($count . ' old foodbaskets deactivated');
 	}
 
-	private function deleteBells()
+	private function deleteUnconfirmedFetchDates()
 	{
-		if ($ids = $this->model->listOldBellIds()) {
-			$this->model->deleteBells($ids);
-			self::info(count($ids) . ' old bells deleted');
-		}
-	}
-
-	private function deleteUnconformedFetchDates()
-	{
-		self::info('delete unfonfirmed fetchdates...');
-		$count = $this->model->deleteUnconformedFetchDates();
+		self::info('delete unconfirmed fetchdates...');
+		$count = $this->maintenanceGateway->deleteUnconfirmedFetchDates();
 		self::success($count . ' deleted');
 	}
 
@@ -256,7 +192,7 @@ class MaintenanceControl extends ConsoleControl
 
 		/* foodsaver photos */
 		if ($foodsaver = $this->model->q('SELECT id, photo FROM fs_foodsaver WHERE photo != ""')) {
-			$update = array();
+			$update = [];
 			foreach ($foodsaver as $fs) {
 				if (!file_exists('images/' . $fs['photo'])) {
 					$update[] = $fs['id'];
@@ -266,7 +202,7 @@ class MaintenanceControl extends ConsoleControl
 				$this->model->update('UPDATE fs_foodsaver SET photo = "" WHERE id IN(' . implode(',', $update) . ')');
 			}
 		}
-		$check = array();
+		$check = [];
 		if ($foodsaver = $this->model->q('SELECT id, photo FROM fs_foodsaver WHERE photo != ""')) {
 			foreach ($foodsaver as $fs) {
 				$check[$fs['photo']] = $fs['id'];
@@ -296,51 +232,20 @@ class MaintenanceControl extends ConsoleControl
 		}
 	}
 
-	private function checkAvatars()
-	{
-		if ($foodsaver = $this->model->listAvatars()) {
-			$nophoto = array();
-			foreach ($foodsaver as $fs) {
-				if (file_exists('images/' . $fs['photo'])) {
-					if (!file_exists('images/50_q_' . $fs['photo'])) {
-						copy('images/' . $fs['photo'], 'images/50_q_' . $fs['photo']);
-						$photo = new fImage('images/50_q_' . $fs['photo']);
-						$photo->cropToRatio(1, 1);
-						$photo->resize(50, 50);
-						$photo->saveChanges();
-					}
-				} else {
-					$nophoto[] = (int)$fs['id'];
-				}
-			}
-
-			if (!empty($nophoto)) {
-				$this->model->noAvatars($nophoto);
-				self::info(count($nophoto) . ' foodsaver noavatar updates');
-			}
-		}
-	}
-
 	private function memcacheUserInfo()
 	{
-		$admins = $this->foodsaverGateway->getBotIds(0, false, true);
+		$admins = $this->foodsaverGateway->getAllWorkGroupAmbassadorIds();
 		if (!$admins) {
-			$admins = array();
+			$admins = [];
 		}
 		$this->mem->set('all_global_group_admins', serialize($admins));
-	}
-
-	private function updateBezirkIds()
-	{
-		$this->model->updateBezirkIds();
-		self::info('bezirk_id relation update');
 	}
 
 	private function masterBezirkUpdate()
 	{
 		self::info('master bezirk update');
 		/* Master Bezirke */
-		if ($foodasver = $this->model->q('
+		if ($foodsaver = $this->model->q('
 				SELECT
 				b.`id`,
 				b.`name`,
@@ -357,7 +262,7 @@ class MaintenanceControl extends ConsoleControl
 
 		')
 		) {
-			foreach ($foodasver as $fs) {
+			foreach ($foodsaver as $fs) {
 				if (!$this->model->qRow('SELECT bezirk_id FROM `fs_foodsaver_has_bezirk` WHERE foodsaver_id = ' . (int)$fs['foodsaver_id'] . ' AND bezirk_id = ' . $fs['master'])) {
 					if ((int)$fs['master'] > 0) {
 						$this->model->insert('
@@ -401,137 +306,26 @@ class MaintenanceControl extends ConsoleControl
 		self::success('OK');
 	}
 
-	public function membackup()
-	{
-		self::info('backup memcache to file...');
-
-		$this->mem->ensureConnected();
-
-		if ($keys = $this->mem->cache->getAllKeys()) {
-			$bar = $this->progressbar(count($keys));
-			$data = array();
-			$i = 0;
-			foreach ($keys as $key) {
-				++$i;
-				$bar->update($i);
-				if (substr($key, 0, 3) == 'cb-' || substr($key, 0, 5) == 'user-') {
-					$data[$key] = $this->mem->get($key);
-				}
-			}
-			file_put_contents(ROOT_DIR . 'tmp/membackup.ser', serialize($data));
-		}
-
-		echo "\n";
-		self::success('OK');
-	}
-
-	public function memrestore()
-	{
-		self::info('backup memcache from file...');
-		if ($data = file_get_contents(ROOT_DIR . 'tmp/membackup.ser')) {
-			$data = unserialize($data);
-
-			$bar = $this->progressbar(count($data));
-			$i = 0;
-
-			$this_night_ts = (mktime(5, 0, 0, date('n'), date('j'), date('Y')) + (24 * 60 * 60));
-
-			foreach ($data as $key => $val) {
-				++$i;
-				$bar->update($i);
-
-				$ttl = 0;
-
-				$this->mem->set($key, $val, $ttl);
-			}
-		}
-
-		echo "\n";
-		self::success('OK');
-	}
-
 	public function betriebFetchWarning()
 	{
-		if ($foodsaver = $this->model->getAlertBetriebeAdmins()) {
+		if ($foodsaver = $this->model->getStoreManagersWhichWillBeAlerted()) {
 			self::info('send ' . count($foodsaver) . ' warnings...');
 			foreach ($foodsaver as $fs) {
-				$this->emailHelper->tplMail('chat/fetch_warning', $fs['fs_email'], array(
+				$this->emailHelper->tplMail('chat/fetch_warning', $fs['fs_email'], [
 					'anrede' => $this->translationHelper->s('anrede_' . $fs['geschlecht']),
 					'name' => $fs['fs_name'],
 					'betrieb' => $fs['betrieb_name'],
 					'link' => BASE_URL . '/?page=fsbetrieb&id=' . $fs['betrieb_id']
-				));
+				]);
 			}
 			self::success('OK');
 		}
 	}
 
-	public function setbotasbib()
-	{
-		if ($betriebe = $this->model->q('SELECT id, name, bezirk_id FROM fs_betrieb')) {
-			foreach ($betriebe as $b) {
-				if (!$this->model->q('SELECT foodsaver_id FROM fs_betrieb_team WHERE verantwortlich = 1 AND betrieb_id = ' . (int)$b['id'])) {
-					if ($foodsaver = $this->model->q('
-						SELECT 	fs.id, fs.name
-						FROM fs_foodsaver fs, fs_botschafter b
-						WHERE b.foodsaver_id = fs.id
-						AND b.bezirk_id = ' . $b['bezirk_id'])
-					) {
-						foreach ($foodsaver as $fs) {
-							echo $b['id'] . ',';
-							$this->model->insert('INSERT IGNORE INTO `fs_betrieb_team`(`foodsaver_id`, `betrieb_id`, `verantwortlich`, `active`) VALUES (' . $fs['id'] . ',' . $b['id'] . ',1,1)');
-						}
-					}
-				}
-			}
-		}
-	}
-
-	public function eqalrole()
-	{
-		$count = $this->model->update('UPDATE fs_foodsaver SET rolle = quiz_rolle WHERE quiz_rolle > rolle');
-		self::info($count . ' updates...');
-	}
-
-	public function quizrole()
-	{
-		if ($foodsaver = $this->model->q('SELECT id FROM fs_foodsaver WHERE rolle > 0')) {
-			$bar = $this->progressbar(count($foodsaver));
-			foreach ($foodsaver as $key => $fs) {
-				$bar->update(($key + 1));
-				$count_fs_quiz = (int)$this->model->qOne('SELECT COUNT(id) FROM fs_quiz_session WHERE foodsaver_id = ' . (int)$fs['id'] . ' AND quiz_id = 1 AND `status` = 1');
-				$count_bib_quiz = (int)$this->model->qOne('SELECT COUNT(id) FROM fs_quiz_session WHERE foodsaver_id = ' . (int)$fs['id'] . ' AND quiz_id = 2 AND `status` = 1');
-				$count_bot_quiz = (int)$this->model->qOne('SELECT COUNT(id) FROM fs_quiz_session WHERE foodsaver_id = ' . (int)$fs['id'] . ' AND quiz_id = 3 AND `status` = 1');
-
-				$quiz_rolle = 0;
-				if ($count_fs_quiz > 0) {
-					$quiz_rolle = 1;
-				}
-				if ($count_bib_quiz > 0) {
-					$quiz_rolle = 2;
-				}
-				if ($count_bot_quiz > 0) {
-					$quiz_rolle = 3;
-				}
-
-				$this->model->update('UPDATE fs_foodsaver SET quiz_rolle = ' . (int)$quiz_rolle . ' WHERE id = ' . (int)$fs['id']);
-			}
-		}
-	}
-
 	private function wakeupSleepingUsers()
 	{
-		$this->model->update('
-			UPDATE
-				fs_foodsaver
-			SET
-				sleep_status = 0
-			WHERE
-				sleep_status = 1
-			AND
-				sleep_until > 0
-			AND
-				sleep_until < CURDATE()
-		');
+		self::info('wake up sleeping users...');
+		$count = $this->maintenanceGateway->wakeupSleepingUsers();
+		self::success($count . ' users woken up');
 	}
 }

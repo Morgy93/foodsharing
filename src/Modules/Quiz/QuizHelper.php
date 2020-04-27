@@ -2,59 +2,53 @@
 
 namespace Foodsharing\Modules\Quiz;
 
+use Foodsharing\Modules\Core\DBConstants\Foodsaver\Role;
 use Foodsharing\Modules\Foodsaver\FoodsaverGateway;
 use Foodsharing\Modules\Store\StoreGateway;
 
 class QuizHelper
 {
-	private $quizGateway;
+	private $quizSessionGateway;
 	private $storeGateway;
 	private $foodsaverGateway;
 
-	public function __construct(QuizGateway $quizGateway, StoreGateway $storeGateway, FoodsaverGateway $foodsaverGateway)
+	public function __construct(QuizSessionGateway $quizSessionGateway, StoreGateway $storeGateway, FoodsaverGateway $foodsaverGateway)
 	{
-		$this->quizGateway = $quizGateway;
+		$this->quizSessionGateway = $quizSessionGateway;
 		$this->storeGateway = $storeGateway;
 		$this->foodsaverGateway = $foodsaverGateway;
 	}
 
-	public function refreshQuizData($fs_id, $fs_role)
+	public function refreshQuizData(int $fsId, int $fsRole): int
 	{
-		$count_fs_quiz = $this->quizGateway->countByQuizId($fs_id, 1);
-		$count_bib_quiz = $this->quizGateway->countByQuizId($fs_id, 2);
-		$count_bot_quiz = $this->quizGateway->countByQuizId($fs_id, 3);
+		$this->refreshFsQuizRole($fsId);
 
-		$count_verantwortlich = $this->storeGateway->getStoreCountForBieb($fs_id);
-		$count_botschafter = $this->foodsaverGateway->getBezirkCountForBotschafter($fs_id);
+		return $this->nextQuizTodo($fsId, $fsRole);
+	}
 
-		$quiz_rolle = 0;
-		if ($count_fs_quiz > 0) {
-			$quiz_rolle = 1;
-		}
-		if ($count_bib_quiz > 0) {
-			$quiz_rolle = 2;
-		}
-		if ($count_bot_quiz > 0) {
-			$quiz_rolle = 3;
+	public function refreshFsQuizRole(int $fsId): int
+	{
+		foreach ([Role::AMBASSADOR, Role::STORE_MANAGER, Role::FOODSAVER] as $quizRole) {
+			if ($this->quizSessionGateway->hasPassedQuiz($fsId, $quizRole)) {
+				return $this->foodsaverGateway->setQuizRole($fsId, $quizRole);
+			}
 		}
 
-		$this->quizGateway->setRole($fs_id, $quiz_rolle);
+		return $this->foodsaverGateway->setQuizRole($fsId, Role::FOODSHARER);
+	}
 
-		$hastodo_id = 0;
-		if (
-			$fs_role == 1 && $count_fs_quiz == 0
-		) {
-			$hastodo_id = 1;
-		} elseif (
-			($fs_role > 1 || $count_verantwortlich > 0) && $count_bib_quiz === 0
-		) {
-			$hastodo_id = 2;
-		} elseif (
-			($fs_role > 2 || $count_botschafter > 0) && $count_bot_quiz === 0
-		) {
-			$hastodo_id = 3;
+	public function nextQuizTodo(int $fsId, int $fsRole): int
+	{
+		$doesManageStores = (int)$this->storeGateway->getStoreCountForBieb($fsId) > 0;
+
+		if ($fsRole == Role::FOODSAVER && !$this->quizSessionGateway->hasPassedQuiz($fsId, Role::FOODSAVER)) {
+			return Role::FOODSAVER;
+		} elseif (($fsRole > Role::FOODSAVER || $doesManageStores) && !$this->quizSessionGateway->hasPassedQuiz($fsId, Role::STORE_MANAGER)) {
+			return Role::STORE_MANAGER;
+		} elseif (($fsRole > Role::STORE_MANAGER || $this->foodsaverGateway->isAdminForAnyGroupOrRegion($fsId)) && !$this->quizSessionGateway->hasPassedQuiz($fsId, Role::AMBASSADOR)) {
+			return Role::AMBASSADOR;
 		}
 
-		return $hastodo_id;
+		return Role::FOODSHARER;
 	}
 }

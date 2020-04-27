@@ -8,23 +8,23 @@ services:
 
   web:
     container_name: foodsharing_test_web
-    image: registry.gitlab.com/foodsharing-dev/images/web:1.7
+    image: registry.gitlab.com/foodsharing-dev/images/web:1.8
     ports:
-      - 28080:8080
+      - "127.0.0.1:28080:8080"
     expose:
       - 8080
     depends_on:
       - app
       - chat
     volumes:
-      - ../:/app
+      - ../:/app:delegated
 
   # main php app
   #------------------------------------
 
   app:
     container_name: foodsharing_test_app
-    image: registry.gitlab.com/foodsharing-dev/images/php:2.18
+    image: registry.gitlab.com/foodsharing-dev/images/php:2.20
     working_dir: /app
     expose:
       - 9000
@@ -38,9 +38,9 @@ services:
       - redis
       - mailqueuerunner
     volumes:
-      - ../:/app
-      - selenium_downloads:/downloads
-      - /dev/null:/usr/local/etc/php/conf.d/docker-php-ext-xdebug.ini
+      - ../:/app:delegated
+      - selenium_downloads:/downloads:cached
+      - /dev/null:/usr/local/etc/php/conf.d/docker-php-ext-xdebug.ini:delegated
     environment:
       FS_ENV: test
       REDIS_HOST: redis
@@ -50,20 +50,20 @@ services:
 
   client:
     container_name: foodsharing_test_client
-    image: node:11.13.0-alpine
+    image: node:13.10.1-alpine
     # We don't run anything long running in here yet - build is run via ./scripts/build-assets
     command: 'true'
     working_dir: /app/client
     user: "${UID}"
     volumes:
-      - ../:/app
+      - ../:/app:delegated
 
   # php mail queue runner
   #------------------------------------
 
   mailqueuerunner:
     container_name: foodsharing_test_mailqueuerunner
-    image: registry.gitlab.com/foodsharing-dev/images/php:2.18
+    image: registry.gitlab.com/foodsharing-dev/images/php:2.20
     command: php run.php Mails queueWorker
     working_dir: /app
     restart: always
@@ -75,14 +75,14 @@ services:
       - redis:redis
       - db:db
     volumes:
-      - ../:/app
+      - ../:/app:delegated
     environment:
       FS_ENV: test
       REDIS_HOST: redis
 
   chat:
     container_name: foodsharing_test_chat
-    image: node:11.13.0-alpine
+    image: node:13.10.1-alpine
     command: sh -c "yarn && node server.js 0.0.0.0"
     working_dir: /app/chat
     depends_on:
@@ -93,31 +93,32 @@ services:
       - 1337
       - 1338
     volumes:
-      - ../:/app
+      - ../:/app:delegated
 
   # mysql
   #------------------------------------
 
   db:
     container_name: foodsharing_test_db
-    image: registry.gitlab.com/foodsharing-dev/images/db/test:1.1
-    # so we can mount tmpfs inside container
-    privileged: true
+    image: registry.gitlab.com/foodsharing-dev/images/db/test:1.4
     expose:
       - 3306
     ports:
-      - 23306:3306
+      - "127.0.0.1:23306:3306"
     environment:
       MYSQL_ROOT_PASSWORD: root
+      TZ: Europe/Berlin
+    tmpfs:
+      - /var/lib/mysql-tmpfs
     volumes:
-      - ../:/app
+      - ../:/app:delegated
 
   # redis
   #------------------------------------
 
   redis:
     container_name: foodsharing_test_redis
-    image: redis:alpine
+    image: redis:5.0.8-alpine
     expose:
       - 6379
 
@@ -128,14 +129,14 @@ services:
 
   selenium:
     container_name: foodsharing_test_selenium
-    image: registry.gitlab.com/foodsharing-dev/images/selenium:1.2
+    image: registry.gitlab.com/foodsharing-dev/images/selenium:1.3
     shm_size: 256M
     links:
       - web:web
     expose:
       - 4444
     volumes:
-      - selenium_downloads:/home/seluser/Downloads
+      - selenium_downloads:/home/seluser/Downloads:cached
 
   # phpmyadmin
   #------------------------------------
@@ -149,7 +150,7 @@ services:
       PMA_PASSWORD: root
     restart: always
     ports:
-      - 28081:80
+      - "127.0.0.1:28081:80"
     volumes:
       - /sessions
 
@@ -165,21 +166,22 @@ services:
     image: djfarrelly/maildev
     container_name: foodsharing_test_maildev
     ports:
-      - 28084:80
+      - "127.0.0.1:28084:80"
 
   influxdb:
     container_name: foodsharing_test_influxdb
-    image: influxdb:1.6.4-alpine
+    image: influxdb:latest
     command: >
       influxd -config /etc/influxdb/influxdb.toml
     ports:
-    - 28086:8086
+    - "127.0.0.1:28086:8086"
+    - "127.0.0.1:28089:8089/udp"
     environment:
       INFLUXDB_ADMIN_ENABLED: "true"
       INFLUXDB_DB: "foodsharing"
     volumes:
-    - influxdb:/var/lib/influxdb
-    - ./conf/influxdb/influxdb.toml:/etc/influxdb/influxdb.toml
+    - influxdb:/var/lib/influxdb:cached
+    - ./conf/influxdb/influxdb.toml:/etc/influxdb/influxdb.toml:cached
 
 
 volumes:

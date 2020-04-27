@@ -4,8 +4,8 @@ namespace Foodsharing\Modules\Core;
 
 use Foodsharing\Helpers\DataHelper;
 use Foodsharing\Helpers\IdentificationHelper;
-use Foodsharing\Helpers\RouteHelper;
 use Foodsharing\Helpers\PageHelper;
+use Foodsharing\Helpers\RouteHelper;
 use Foodsharing\Helpers\TimeHelper;
 use Foodsharing\Helpers\TranslationHelper;
 use Foodsharing\Lib\Session;
@@ -76,7 +76,7 @@ class View
 		}
 
 		return '
-		<div class="top corner-all">
+		<div class="content-top corner-all">
 			' . $icon . '
 			<h3>' . $title . '</h3>
 			' . $subtitle . '
@@ -111,7 +111,7 @@ class View
 		</p>
 		<p>Unser Mumble-Server:<br />mumble.foodsharing.de</p>
 		<p>Anleitung unter: <a target="_blank" href="https://wiki.foodsharing.de/Mumble">wiki.foodsharing.de/Mumble</a></p>
-		', 'Ort', array('class' => 'ui-padding'));
+		', 'Ort', ['class' => 'ui-padding']);
 
 		return $out;
 	}
@@ -125,7 +125,7 @@ class View
 			' . $location['zip'] . ' ' . $location['city'] . '
 		</p>
 				
-		', 'Ort', array('class' => 'ui-padding'));
+		', 'Ort', ['class' => 'ui-padding']);
 
 		return $out;
 	}
@@ -156,7 +156,7 @@ class View
 		</div>';
 	}
 
-	public function fsAvatarList($foodsaver, $option = array())
+	public function fsAvatarList($foodsaver, $option = [])
 	{
 		if (!is_array($foodsaver)) {
 			return '';
@@ -171,9 +171,9 @@ class View
 			$id = $option['id'];
 		}
 
-		$height = 185;
+		$maxHeight = 185;
 		if (isset($option['height'])) {
-			$height = $option['height'];
+			$maxHeight = $option['height'];
 		}
 
 		$out = '
@@ -183,8 +183,6 @@ class View
 			shuffle($foodsaver);
 		}
 		foreach ($foodsaver as $fs) {
-			$jssaver[] = (int)$fs['id'];
-
 			$photo = $this->imageService->avatar($fs);
 
 			$click = ' onclick="profile(' . (int)$fs['id'] . ');return false;"';
@@ -210,14 +208,14 @@ class View
 		</div>';
 
 		if ($option['scroller']) {
-			$out = $this->v_utils->v_scroller($out, $height);
+			$out = $this->v_utils->v_scroller($out, $maxHeight);
 			$this->pageHelper->addStyle('.scroller .overview{left:0;}.scroller{margin:0}');
 		}
 
 		return $out;
 	}
 
-	public function menu($items, $option = array())
+	public function menu($items, $option = [])
 	{
 		$title = false;
 		if (isset($option['title'])) {
@@ -272,7 +270,7 @@ class View
 		</div>';
 	}
 
-	public function peopleChooser($id, $option = array())
+	public function peopleChooser($id, $option = [])
 	{
 		$this->pageHelper->addJs('
 			var date = new Date(); 
@@ -345,7 +343,7 @@ class View
 		return $this->v_utils->v_input_wrapper($this->translationHelper->s($id), '<div id="' . $id . '">' . $input . '</div>', $id, $option);
 	}
 
-	public function latLonPicker($id, $options = array())
+	public function latLonPicker($id, $options = [])
 	{
 		if (!isset($options['location'])) {
 			$data = $this->session->getLocation();
@@ -367,25 +365,28 @@ class View
 			}
 		}
 
-		return $this->v_utils->v_input_wrapper($this->translationHelper->s('position_search'), '
+		$out = $this->v_utils->v_input_wrapper($this->translationHelper->s('position_search'), $this->v_utils->v_info($this->translationHelper->s('position_search_infobox')) . '
 		<input placeholder="Bitte hier Deine Adresse suchen! Falls nötig, danach unten korrigieren." type="text" value="" id="addresspicker" type="text" class="input text value ui-corner-top" />
-		<div id="map" class="pickermap"></div>') .
+		<div id="map" class="pickermap"></div>');
+		$out .=
 			$this->v_utils->v_form_text('anschrift', ['value' => $options['anschrift'], 'required' => '1']) .
 			$this->v_utils->v_form_text('plz', ['value' => $options['plz'], 'disabled' => '1', 'required' => '1']) .
 			$this->v_utils->v_form_text('ort', ['value' => $options['ort'], 'disabled' => '1', 'required' => '1']) .
 			$this->v_utils->v_form_text('lat', ['value' => $data['lat']]) .
 			$this->v_utils->v_form_text('lon', ['value' => $data['lon']]) .
 			'';
-	}
-
-	public function simpleContent($content)
-	{
-		$out = $this->v_utils->v_field($content['body'], $content['title'], array('class' => 'ui-padding'));
 
 		return $out;
 	}
 
-	public function vueComponent($id, $component, $props = array(), $data = array())
+	public function simpleContent($content)
+	{
+		$out = $this->v_utils->v_field($content['body'], $content['title'], ['class' => 'ui-padding']);
+
+		return $out;
+	}
+
+	public function vueComponent($id, $component, $props = [], $data = [])
 	{
 		return $this->twig->render('partials/vue-wrapper.twig', [
 			'id' => $id,
