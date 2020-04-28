@@ -10,8 +10,8 @@ use Foodsharing\Modules\Bell\BellUpdaterInterface;
 use Foodsharing\Modules\Bell\BellUpdateTrigger;
 use Foodsharing\Modules\Core\BaseGateway;
 use Foodsharing\Modules\Core\Database;
-use Foodsharing\Modules\Core\DBConstants\Store\StoreLogAction;
 use Foodsharing\Modules\Core\DBConstants\Store\CooperationStatus;
+use Foodsharing\Modules\Core\DBConstants\Store\StoreLogAction;
 use Foodsharing\Modules\Region\RegionGateway;
 
 class StoreGateway extends BaseGateway implements BellUpdaterInterface
@@ -973,8 +973,7 @@ class StoreGateway extends BaseGateway implements BellUpdaterInterface
 		int $action,
 		?string $content = null,
 		?string $reason = null
-	)
-	{
+	) {
 		return $this->db->insert('fs_store_log', [
 			'store_id' => $store_id,
 			'action' => $action,

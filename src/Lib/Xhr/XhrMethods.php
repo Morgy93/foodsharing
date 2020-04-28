@@ -15,6 +15,7 @@ use Foodsharing\Lib\View\Utils;
 use Foodsharing\Modules\Bell\BellGateway;
 use Foodsharing\Modules\Core\DBConstants\Email\EmailStatus;
 use Foodsharing\Modules\Core\DBConstants\Region\Type;
+use Foodsharing\Modules\Core\DBConstants\Store\StoreLogAction;
 use Foodsharing\Modules\Email\EmailGateway;
 use Foodsharing\Modules\Foodsaver\FoodsaverGateway;
 use Foodsharing\Modules\Mailbox\MailboxGateway;
@@ -33,7 +34,6 @@ use Foodsharing\Services\SanitizerService;
 use Intervention\Image\ImageManager;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
-use Foodsharing\Modules\Core\DBConstants\Store\StoreLogAction;
 
 class XhrMethods
 {

@@ -3,7 +3,6 @@
 namespace Foodsharing\Services;
 
 use Carbon\Carbon;
-use Foodsharing\Modules\Core\DBConstants\Store\StoreLogAction;
 use Foodsharing\Modules\Store\StoreGateway;
 use Foodsharing\Modules\Store\TeamStatus;
 

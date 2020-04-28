@@ -136,7 +136,6 @@ final class PickupRestController extends AbstractFOSRestController
 				$fsId,
 				$date,
 				StoreLogAction::SLOT_CONFIRMED,
-
 			);
 		}
 
