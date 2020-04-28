@@ -68,7 +68,7 @@ final class PickupRestController extends AbstractFOSRestController
 		$date = $this->parsePickupDate($pickupDate);
 
 		$isConfirmed = $this->storeService->joinPickup($storeId, $date, $fsId, $this->session->id());
-		$this->storeGateway->addStoreLog($storeId, $fsId, null, $date->format('Y-m-d H:i:s'), StoreLogAction::SIGN_UP_SLOT, null, null);
+		$this->storeGateway->addStoreLog($storeId, $fsId, null, $date, StoreLogAction::SIGN_UP_SLOT);
 
 		return $this->handleView($this->view([
 			'isConfirmed' => $isConfirmed
@@ -98,20 +98,16 @@ final class PickupRestController extends AbstractFOSRestController
 				$storeId,
 				$fsId,
 				null,
-				$date->format('Y-m-d H:i:s'),
-				StoreLogAction::SIGN_OUT_SLOT,
-				null,
-				null
+				$date,
+				StoreLogAction::SIGN_OUT_SLOT
 			);
 		} else {
 			$this->storeGateway->addStoreLog( // the user got kicked/the pickup got denied
 				$storeId,
 				$this->session->id(),
 				$fsId,
-				$date->format('Y-m-d H:i:s'),
-				StoreLogAction::REMOVED_FROM_SLOT,
-				null,
-				null
+				$date,
+				StoreLogAction::REMOVED_FROM_SLOT
 			);
 		}
 
@@ -138,10 +134,9 @@ final class PickupRestController extends AbstractFOSRestController
 				$storeId,
 				$this->session->id(),
 				$fsId,
-				$date->format('Y-m-d H:i:s'),
+				$date,
 				StoreLogAction::SLOT_CONFIRMED,
-				null,
-				null
+
 			);
 		}
 

@@ -1265,7 +1265,7 @@ class XhrMethods
 				$LogAction = StoreLogAction::REQUEST_DECLINED;
 			}
 
-			$this->storeGateway->addStoreLog($data['bid'], $this->session->id(), $data['fsid'], '', $LogAction, 'NULL', 'NULL');
+			$this->storeGateway->addStoreLog($data['bid'], $this->session->id(), $data['fsid'], null, $LogAction);
 			$msg = 'Deine Anfrage wurde erfolgreich zur&uuml;ckgezogen!';
 
 			return json_encode(['status' => 1, 'msg' => $msg]);
@@ -1283,7 +1283,7 @@ class XhrMethods
 		}
 		$this->storeModel->acceptRequest($data['fsid'], $data['bid']);
 
-		$this->storeGateway->addStoreLog($data['bid'], $this->session->id(), $data['fsid'], '', StoreLogAction::REQUEST_APPROVED, 'NULL', 'NULL');
+		$this->storeGateway->addStoreLog($data['bid'], $this->session->id(), $data['fsid'], null, StoreLogAction::REQUEST_APPROVED);
 
 		$this->storeGateway->add_betrieb_notiz([
 			'foodsaver_id' => $data['fsid'],
@@ -1306,8 +1306,8 @@ class XhrMethods
 		}
 
 		$this->storeModel->warteRequest($data['fsid'], $data['bid']);
-		$this->storeGateway->addStoreLog($data['bid'], $this->session->id(), $data['fsid'], '', StoreLogAction::REQUEST_APPROVED, 'NULL', 'NULL');
-		$this->storeGateway->addStoreLog($data['bid'], $this->session->id(), $data['fsid'], '', StoreLogAction::MOVED_TO_JUMPER, 'NULL', 'NULL');
+		$this->storeGateway->addStoreLog($data['bid'], $this->session->id(), $data['fsid'], null, StoreLogAction::REQUEST_APPROVED);
+		$this->storeGateway->addStoreLog($data['bid'], $this->session->id(), $data['fsid'], null, StoreLogAction::MOVED_TO_JUMPER);
 
 		return json_encode(['status' => 1]);
 	}
@@ -1354,7 +1354,7 @@ class XhrMethods
 			], 'store-request-' . (int)$data['id']);
 		}
 
-		$this->storeGateway->addStoreLog($data['id'], $this->session->id(), 'NULL', '', StoreLogAction::REQUEST_TO_JOIN, 'NULL', 'NULL');
+		$this->storeGateway->addStoreLog($data['id'], $this->session->id(), null, null, StoreLogAction::REQUEST_TO_JOIN);
 		$this->storeModel->teamRequest($this->session->id(), $data['id']);
 
 		return json_encode(['status' => $status, 'msg' => $msg]);
@@ -1415,7 +1415,7 @@ class XhrMethods
 			if ($data['action'] == 'toteam') {
 				$check = true;
 				$this->model->update('UPDATE `fs_betrieb_team` SET `active` = 1 WHERE foodsaver_id = ' . (int)$data['fsid'] . ' AND betrieb_id = ' . $storeId);
-				$this->storeGateway->addStoreLog($data['bid'], $this->session->id(), $data['fsid'], '', StoreLogAction::MOVED_TO_TEAM, 'NULL', 'NULL');
+				$this->storeGateway->addStoreLog($data['bid'], $this->session->id(), $data['fsid'], null, StoreLogAction::MOVED_TO_TEAM);
 			} elseif ($data['action'] == 'tojumper') {
 				$check = true;
 				$this->model->update('UPDATE `fs_betrieb_team` SET `active` = 2 WHERE foodsaver_id = ' . (int)$data['fsid'] . ' AND betrieb_id = ' . $storeId);
@@ -1430,7 +1430,7 @@ class XhrMethods
 				if ($scid = $this->storeGateway->getBetriebConversation($storeId, true)) {
 					$this->messageModel->deleteUserFromConversation($scid, (int)$data['fsid'], true);
 				}
-				$this->storeGateway->addStoreLog($data['bid'], $this->session->id(), $data['fsid'], '', StoreLogAction::REMOVED_FROM_STORE, 'NULL', 'NULL');
+				$this->storeGateway->addStoreLog($data['bid'], $this->session->id(), $data['fsid'], null, StoreLogAction::REMOVED_FROM_STORE);
 			}
 
 			if ($check) {
