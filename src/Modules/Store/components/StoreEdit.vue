@@ -18,7 +18,7 @@
               <b-card-title class="required">
                 {{ $i18n('storeedit.text.title') }}
               </b-card-title>
-              <b-card-text>
+              <b-card-text class="store-title">
                 <b-form-input
                   v-model.trim="form.title"
                   :placeholder="$i18n('storeedit.text.titlePlaceholder')"
@@ -108,7 +108,7 @@
               <b-card-title>
                 {{ $i18n('storeedit.fetch.time') }}
               </b-card-title>
-              <b-card-text>
+              <b-card-text class="store-time">
                 <b-form-select
                   v-model="form.time"
                   :options="timeOptions"
@@ -129,6 +129,17 @@
                 />
               </b-card-text>
               <!-- -->
+
+              <b-card-title>
+                {{ $i18n('storeedit.fetch.teamStatus') }}
+              </b-card-title>
+              <b-card-text>
+                <b-form-select
+                  v-model="form.teamStatus"
+                  :options="teamStatusOptions"
+                  @change="change($event, 'teamStatus')"
+                />
+              </b-card-text>
             </b-col>
 
             <b-col sm="6">
@@ -411,6 +422,7 @@ const BAD_TO_GOOD = {
   begin: 'start',
   betrieb_status_id: 'status',
   sticker: 'sticker',
+  team_status: 'teamStatus',
   public_time: 'time',
   name: 'title',
   abholmenge: 'weight'
@@ -419,8 +431,8 @@ const GOOD_TO_BAD = _.invert(BAD_TO_GOOD)
 
 export default {
   props: {
+    storeData: { type: Object, required: true },
     // regionPickerHtml: { type: String, required: true },
-    storeData: { type: Object, default: null },
     weightOptions: { type: Array, default: null },
     foodTypeOptions: { type: Array, default: null },
     statusOptions: { type: Array, default: null },
@@ -452,6 +464,14 @@ export default {
         { value: 2419200, text: i18n('storeedit.fetch.weeks', { count: 4 }) }
       ]
     },
+    teamStatusOptions () {
+      return [
+        { value: null, text: i18n('storeedit.dropdownDefault'), disabled: true },
+        { value: 0, text: i18n('storeedit.fetch.teamStatus0') },
+        { value: 1, text: i18n('storeedit.fetch.teamStatus1') },
+        { value: 2, text: i18n('storeedit.fetch.teamStatus2') }
+      ]
+    },
     timeOptions () {
       return [
         { value: null, text: i18n('storeedit.dropdownDefault'), disabled: true },
@@ -472,9 +492,10 @@ export default {
   },
   methods: {
     async change (newValue, field) {
+      const storeId = this.storeData.id
       const dbField = GOOD_TO_BAD[field]
       if (dbField) {
-        await updateStore(this.storeData.id, dbField, newValue)
+        await updateStore(storeId, dbField, newValue)
       } else {
         console.warn('Tried updating unknown store field:', field)
       }

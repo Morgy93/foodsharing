@@ -5,6 +5,7 @@ namespace Foodsharing\Controller;
 use Foodsharing\Lib\Session;
 use Foodsharing\Modules\Bell\BellGateway;
 use Foodsharing\Modules\Bell\DTO\Bell;
+use Foodsharing\Modules\Core\DBConstants\Store\TeamStatus;
 use Foodsharing\Modules\Store\StoreGateway;
 use Foodsharing\Modules\Store\StoreTransactions;
 use Foodsharing\Permissions\StorePermissions;
@@ -102,10 +103,22 @@ class StoreRestController extends AbstractFOSRestController
 		if (empty($field)) {
 			throw new HttpException(400, 'Store field to edit cannot be empty.');
 		}
-
+		// TODO check if this property exists in the schema here? (don't just write new DB stuff)
 		$newValue = $paramFetcher->get(self::STORE_VALUE);
 		// TODO map to correct data type?!
-		$this->storeGateway->editStore($storeId, $field, $newValue);
+
+		switch ($field) {
+			case 'team_status':
+				if (in_array($newValue, [TeamStatus::CLOSED, TeamStatus::OPEN, TeamStatus::OPEN_SEARCHING])) {
+					$this->storeGateway->setStoreTeamStatus($storeId, $newValue);
+				} else {
+					throw new HttpException(400, 'Team status value not supported');
+				}
+				break;
+			default:
+				$this->storeGateway->editStore($storeId, $field, $newValue);
+				break;
+		}
 
 		return $this->getStoreAction($storeId);
 	}

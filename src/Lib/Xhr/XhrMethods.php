@@ -1073,17 +1073,6 @@ class XhrMethods
 		return json_encode($out);
 	}
 
-	public function xhr_bteamstatus($data)
-	{
-		$teamStatus = (int)$_GET['status'];
-		$storeId = (int)$_GET['bid'];
-		if ($this->storePermissions->mayEditStore($storeId) && in_array($teamStatus,
-				range(\Foodsharing\Modules\Core\DBConstants\Store\TeamStatus::CLOSED,
-				\Foodsharing\Modules\Core\DBConstants\Store\TeamStatus::OPEN_SEARCHING))) {
-			$this->storeGateway->setStoreTeamStatus($storeId, $teamStatus);
-		}
-	}
-
 	public function xhr_getBezirk($data)
 	{
 		global $g_data;

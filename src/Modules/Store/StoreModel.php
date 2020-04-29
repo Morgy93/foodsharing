@@ -71,6 +71,7 @@ class StoreModel extends Db
 			`ueberzeugungsarbeit`,
 			`presse`,
 			`sticker`,
+			`team_status`,
 			`abholmenge`,
 			`prefetchtime`,
 			`public_info`,

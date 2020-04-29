@@ -1,67 +1,50 @@
 <?php
 
-use Carbon\Carbon;
-use Foodsharing\Modules\Core\DBConstants\Store\CooperationStatus;
-
 class StoreCest
 {
-	private $region;
-	private $store;
+	private $bezirk_id = 241;
 
-	private $foodsaver;
-	private $storeCoordinator;
-
-	public function _before(AcceptanceTester $I)
+	private function createStoreAndUsers()
 	{
-		$this->region = $I->createRegion();
-		$regionId = $this->region['id'];
-
-		$this->store = $I->createStore($regionId, null, null, ['betrieb_status_id' => CooperationStatus::COOPERATION_ESTABLISHED]);
-
-		$this->foodsaver = $I->createFoodsaver();
-		$I->addRegionMember($regionId, $this->foodsaver['id']);
-		$I->addStoreTeam($this->store['id'], $this->foodsaver['id']);
-
-		$this->storeCoordinator = $I->createStoreCoordinator();
-		$I->addRegionMember($regionId, $this->storeCoordinator['id']);
+		$I = $this->tester;
+		$this->store = $I->createStore($this->bezirk_id);
+		$this->storeCoordinator = $I->createStoreCoordinator(null, ['bezirk_id' => $this->bezirk_id]);
 		$I->addStoreTeam($this->store['id'], $this->storeCoordinator['id'], true);
 	}
 
-	public function willKeepApproxPickupTime(AcceptanceTester $I)
+	private function loginAsCoordinator()
 	{
+		$I = $this->tester;
 		$I->login($this->storeCoordinator['email']);
+	}
+
+	public function WillKeepApproxPickupTime(\AcceptanceTester $I)
+	{
+		$this->loginAsCoordinator();
 
 		// Check original value
 		$I->amOnPage('/?page=betrieb&a=edit&id=' . $this->store['id']);
-		$I->see('Keine Angabe', '#public_time option[selected]');
+		$I->click('Abholung', '.store-edit ul.nav');
+		$I->see('Keine Angabe', '.store-time');
 
-		// Change option and save the page
-		$I->selectOption('public_time', 'morgens');
-		$I->click('Senden');
+		// TODO vue-B selected / selectOption
+		// document.getElementById('id').selectedOptions might work but where's the document?
+		// $I->selectOption('.store-time select', 'morgens');
+		// //$I->dontSee('abends', '.store-time');
 
-		// Check the page again to make sure our option was saved
+		// Change option and save the page by navigating away
+		$I->selectOption('.store-time select', 'morgens');
+		$I->click('Texte', '.store-edit ul.nav');
+
+		// Reload + check the page again, to make sure our option was saved
 		$I->amOnPage('/?page=betrieb&a=edit&id=' . $this->store['id']);
-		$I->see('morgens', '#public_time option[selected]');
+		$I->click('Abholung', '.store-edit ul.nav');
+		$I->see('morgens');
 	}
 
-	public function watchFetchlist(AcceptanceTester $I)
+	public function _before(AcceptanceTester $I)
 	{
-		$I->haveInDatabase('fs_abholer', [
-			'betrieb_id' => $this->store['id'],
-			'foodsaver_id' => $this->foodsaver['id'],
-			'date' => Carbon::now()
-		]);
-
-		$I->login($this->storeCoordinator['email']);
-		$I->amOnPage($I->storeUrl($this->store['id']));
-		$I->waitForText('Optionen');
-		$I->click('Abholungshistorie');
-		$I->waitForText('Zeitraum');
-		$I->fillField('#daterange_from', '01.01.1970');
-		$I->fillField('#daterange_to', Carbon::now()->toString());
-		$I->click('#daterange_submit');
-
-		$I->waitForText($this->foodsaver['name']);
-		$I->see($this->foodsaver['name'] . ' ' . $this->foodsaver['nachname']);
+		$this->tester = $I;
+		$this->createStoreAndUsers();
 	}
 }

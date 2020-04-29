@@ -52,71 +52,70 @@ class CompanyCest
 		$I->login($this->sameRegionFoodsaver['email']);
 	}
 
-	public function CoordinatorCanSeeCompanyOnDashboard(\HtmlAcceptanceTester $I)
-	{
-		$this->loginAsCoordinator();
-		$I->see('Du bist verantwortlich', 'div.head.ui-widget-header.ui-corner-top');
-		$I->see($this->store['name'], 'a.ui-corner-all');
-	}
-
-	public function MemberCanSeeCompanyOnDashboard(\HtmlAcceptanceTester $I)
-	{
-		$this->loginAsMember();
-		$I->see('Du holst Lebensmittel ab bei', 'div.head.ui-widget-header.ui-corner-top');
-		$I->see($this->store['name'], 'a.ui-corner-all');
-	}
-
 	/**
-	 * @param HtmlAcceptanceTester $I
-	 * @example["loginAsCoordinator"]
-	 * @example["loginAsMember"]
-	 */
-	public function CanAccessCompanyPage(\HtmlAcceptanceTester $I, \Codeception\Example $example)
-	{
-		call_user_func([$this, $example[0]]);
-		$I->amOnPage($I->storeUrl($this->store['id']));
-		$I->see($this->store['name'], '#main .bread');
-	}
-
-	/**
-	 * @param HtmlAcceptanceTester $I
-	 * @example["loginAsFoodsharer"]
-	 * @example["loginAsUnconnectedFoodsaver"]
-	 * @example["loginAsSameRegionFoodsaver"]
-	 */
-	public function CanNotAccessCompanyPage(\HtmlAcceptanceTester $I, \Codeception\Example $example)
-	{
-		call_user_func([$this, $example[0]]);
-		$I->amOnPage($I->storeUrl($this->store['id']));
-		$I->cantSeeInCurrentUrl('fsbetrieb');
-	}
-
-	/**
-	 * @param HtmlAcceptanceTester $I
 	 * @example["loginAsCoordinator", true]
 	 * @example["loginAsMember", false]
 	 */
-	public function CanAccessCompanyEditPage(\HtmlAcceptanceTester $I, \Codeception\Example $example)
+	public function CoordinatorCanSeeCompanyOnDashboard(\AcceptanceTester $I, \Codeception\Example $example)
+	{
+		$canManage = $example[1];
+		call_user_func([$this, $example[0]]);
+		if ($canManage) {
+			$I->see('Du bist verantwortlich', 'div.head.ui-widget-header.ui-corner-top');
+		} else {
+			$I->see('Du holst Lebensmittel ab bei', 'div.head.ui-widget-header.ui-corner-top');
+		}
+		$I->see($this->store['name'], 'a.ui-corner-all');
+	}
+
+	/**
+	 * @param AcceptanceTester $I
+	 * @example["loginAsCoordinator", true]
+	 * @example["loginAsMember", true]
+	 * @example["loginAsFoodsharer", false]
+	 * @example["loginAsUnconnectedFoodsaver", false]
+	 * @example["loginAsSameRegionFoodsaver", false]
+	 */
+	public function CanAccessCompanyPage(\AcceptanceTester $I, \Codeception\Example $example)
+	{
+		$canAccess = $example[1];
+		call_user_func([$this, $example[0]]);
+		$I->amOnPage($I->storeUrl($this->store['id']));
+		if ($canAccess) {
+			$I->see($this->store['name'] . '-Team', 'div.head.ui-widget-header.ui-corner-top');
+		} else {
+			$I->cantSeeInCurrentUrl('fsbetrieb');
+		}
+	}
+
+	/**
+	 * @param AcceptanceTester $I
+	 * @example["loginAsCoordinator", true]
+	 * @example["loginAsMember", false]
+	 */
+	public function CanAccessCompanyEditPage(\AcceptanceTester $I, \Codeception\Example $example)
 	{
 		$canAccess = $example[1];
 		call_user_func([$this, $example[0]]);
 		$I->amOnPage($I->storeEditUrl($this->store['id']));
 		if ($canAccess) {
 			$I->see('Stammbezirk');
-			$I->see('Betriebsansprechpartner');
+			$I->see('unabgesprochen', '.alert');
+			$I->click('Kooperation', '.store-edit ul.nav');
+			$I->see('Überzeugungsarbeit');
 		} else {
 			$I->dontSee('Stammbezirk');
-			$I->dontSee('Betriebsansprechpartner');
+			$I->dontSee('unabgesprochen', '.alert');
 		}
 	}
 
-	public function _before(HtmlAcceptanceTester $I)
+	public function _before(AcceptanceTester $I)
 	{
 		$this->tester = $I;
 		$this->createStoreAndUsers();
 	}
 
-	public function _after(HtmlAcceptanceTester $I)
+	public function _after(AcceptanceTester $I)
 	{
 	}
 }

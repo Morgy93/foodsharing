@@ -64,12 +64,11 @@ $storeId = $I->grabFromCurrentUrl('~&id=(\d+)~');
 
 /* Rename the store */
 $I->amOnPage($I->storeEditUrl($storeId));
-$I->fillField('#name', $newStoreName);
-$I->click('Senden');
+$I->fillField('.store-title input', $newStoreName);
+$I->click('Abholung', '.store-edit ul.nav');
 
-$I->see($newStoreName . '-Team');
-/* Reload to get rid of green overlay */
 $I->amOnPage($I->storeUrl($storeId));
+$I->see($newStoreName . '-Team');
 
 /* Add more Users */
 $I->click('Team bearbeiten');
@@ -90,10 +89,8 @@ $I->click('Speichern', '#team-form');
 
 /* Edit the store to see that team does not change */
 $I->amOnPage($I->storeEditUrl($storeId));
-$I->click('Senden');
-$I->see('Änderungen wurden gespeichert');
+$I->click('Abholung', '.store-edit ul.nav');
 
-/* Reload to get rid of green overlay */
 $I->amOnPage($I->storeUrl($storeId));
 
 $I->waitForElement('.store-team tr.table-warning[data-pk="' . $bibA['id'] . '"]', 5);
