@@ -26,7 +26,8 @@ class StoreRestController extends AbstractFOSRestController
 	// literal constants
 	private const NOT_LOGGED_IN = 'not logged in';
 	private const ID = 'id';
-	private const STORE_TITLE = 'name';
+	private const STORE_FIELD = 'field';
+	private const STORE_VALUE = 'newValue';
 
 	public function __construct(
 		Session $session,
@@ -84,24 +85,27 @@ class StoreRestController extends AbstractFOSRestController
 	}
 
 	/**
-	 * @Rest\Patch("stores/{storeId}/title", requirements={"storeId" = "\d+"})
+	 * @Rest\Patch("stores/{storeId}/edit/{field}", requirements={"storeId" = "\d+", "field" = "\w+"})
 	 *
-	 * @Rest\RequestParam(name="name", nullable=false)
+	 * @Rest\RequestParam(name="newValue", nullable=false)
 	 *
 	 * @param int $storeId ID of an existing store
+	 * @param string $field which store property to update
 	 */
-	public function updateStoreTitleAction(int $storeId, ParamFetcher $paramFetcher)
+	public function updateStoreAction(int $storeId, string $field, ParamFetcher $paramFetcher)
 	{
 		if (!$this->storePermissions->mayEditStore($storeId)) {
 			throw new AccessDeniedHttpException();
 		}
 
-		$title = trim(strip_tags($paramFetcher->get(self::STORE_TITLE)));
-		if (empty($title)) {
-			throw new HttpException(400, 'Store title cannot be empty.');
+		$field = trim(strip_tags($field));
+		if (empty($field)) {
+			throw new HttpException(400, 'Store field to edit cannot be empty.');
 		}
 
-		$this->storeGateway->editStoreTitle($storeId, $title);
+		$newValue = $paramFetcher->get(self::STORE_VALUE);
+		// TODO map to correct data type?!
+		$this->storeGateway->editStore($storeId, $field, $newValue);
 
 		return $this->getStoreAction($storeId);
 	}

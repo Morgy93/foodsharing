@@ -290,17 +290,18 @@ storeedit:
     particularities: Besonderheiten
   fetch:
     header: Abholung
-    amount: 'Wie viel Kilogramm werden pro Abholung ungefähr mitgenommen?'
+    amount: Mit wie vielen Lebensmitteln ist pro Abholtermin zu rechnen?
     time: Ungefähre Tageszeit der Abholung
     time0: Keine Angabe
     time1: morgens
     time2: mittags/nachmittags
     time3: abends
     time4: nachts
-    prefetchtime: 'Wie viele Wochen im Voraus können sich Foodsaver mittels automatischer Slots eintragen?'
+    prefetchtime: Kalender-Slots jeweils wie lange im Voraus erzeugen?
     week: 1 Woche
     weeks: '{count} Wochen'
-    foodTypes: 'Welche Lebensmittel dürfen abgeholt werden?'
+    teamstatus: Teamstatus
+    foodTypes: Welche Lebensmittel werden abgeholt?
   coop:
     header: Kooperation
     start: Beginn der Kooperation
@@ -325,7 +326,7 @@ storeedit:
     chain: Betriebskette
     chainDetails: 'Bitte nur inhabergeführte Betriebe bis maximal 3 Filialen ansprechen, niemals Filialen einer größeren Kette ansprechen! Betriebskettenregeln beachten!'
     category: Kategorie
-    newChain: Neue Kette
+    newChain: Neue Betriebskette
     newCategory: Neue Kategorie
   location:
     header: Standort

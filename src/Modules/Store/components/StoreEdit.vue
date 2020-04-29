@@ -22,7 +22,7 @@
                 <b-form-input
                   v-model.trim="form.title"
                   :placeholder="$i18n('storeedit.text.titlePlaceholder')"
-                  @change="titleChange"
+                  @change="change($event, 'title')"
                 />
               </b-card-text>
               <!-- -->
@@ -51,7 +51,7 @@
                   :state="form.publicInfo.length > 180 ? false : null"
                   rows="4"
                   max-rows="6"
-                  @change="$emit('update:form', form)"
+                  @change="change($event, 'publicInfo')"
                 />
               </b-card-text>
               <!-- -->
@@ -66,7 +66,7 @@
                 <b-form-textarea
                   v-model.trim="form.particularities"
                   rows="13"
-                  @change="$emit('update:form', form)"
+                  @change="change($event, 'particularities')"
                 />
               </b-card-text>
               <!-- -->
@@ -90,7 +90,7 @@
                   :options="weightOptions"
                   value-field="id"
                   text-field="name"
-                  @change="weightChange"
+                  @change="change($event, 'weight')"
                 >
                   <template v-slot:first>
                     <b-form-select-option
@@ -112,7 +112,7 @@
                 <b-form-select
                   v-model="form.time"
                   :options="timeOptions"
-                  @change="timeChange"
+                  @change="change($event, 'time')"
                 />
               </b-card-text>
               <!-- -->
@@ -125,7 +125,7 @@
                 <b-form-select
                   v-model="form.prefetchtime"
                   :options="prefetchtimeOptions"
-                  @change="prefetchtimeChange"
+                  @change="change($event, 'prefetchtime')"
                 />
               </b-card-text>
               <!-- -->
@@ -144,6 +144,7 @@
                     :options="foodTypeOptions"
                     value-field="id"
                     text-field="name"
+                    @change="change($event, 'foodType')"
                   />
                 </b-form-group>
               </b-card-text>
@@ -166,7 +167,7 @@
                 <b-form-datepicker
                   v-model="form.start"
                   type="text"
-                  @change="startChange"
+                  @change="change($event, 'start')"
                 />
               </b-card-text>
               <!-- -->
@@ -179,7 +180,7 @@
                 <b-form-select
                   v-model="form.difficulty"
                   :options="difficultyOptions"
-                  @change="difficultyChange"
+                  @change="change($event, 'difficulty')"
                 />
               </b-card-text>
               <!-- -->
@@ -192,7 +193,7 @@
                 <b-form-select
                   v-model="form.publicity"
                   :options="yesNoOptions"
-                  @change="publicityChange"
+                  @change="change($event, 'publicity')"
                 />
               </b-card-text>
               <!-- -->
@@ -205,7 +206,7 @@
                 <b-form-select
                   v-model="form.sticker"
                   :options="yesNoOptions"
-                  @change="stickerChange"
+                  @change="change($event, 'sticker')"
                 />
               </b-card-text>
             </b-col>
@@ -217,7 +218,7 @@
               <b-card-text>
                 <b-form-input
                   v-model="form.contactPerson"
-                  @change="$emit('update:form', form)"
+                  @change="change($event, 'contactPerson')"
                 />
               </b-card-text>
               <!-- -->
@@ -229,7 +230,7 @@
               <b-card-text>
                 <b-form-input
                   v-model.trim="form.contactPhone"
-                  @change="$emit('update:form', form)"
+                  @change="change($event, 'contactPhone')"
                 />
               </b-card-text>
               <!-- -->
@@ -241,7 +242,7 @@
               <b-card-text>
                 <b-form-input
                   v-model.trim="form.contactFax"
-                  @change="$emit('update:form', form)"
+                  @change="change($event, 'contactFax')"
                 />
               </b-card-text>
               <!-- -->
@@ -253,7 +254,7 @@
               <b-card-text>
                 <b-form-input
                   v-model.trim="form.contactMail"
-                  @change="$emit('update:form', form)"
+                  @change="change($event, 'contactMail')"
                 />
               </b-card-text>
             </b-col>
@@ -290,7 +291,7 @@
                   :options="statusOptions"
                   value-field="id"
                   text-field="name"
-                  @change="statusChange"
+                  @change="change($event, 'status')"
                 >
                   <template v-slot:first>
                     <b-form-select-option
@@ -315,7 +316,7 @@
                   :options="chainOptions"
                   value-field="id"
                   text-field="name"
-                  @change="chainChange"
+                  @change="change($event, 'chain')"
                 >
                   <template v-slot:first>
                     <b-form-select-option
@@ -337,7 +338,7 @@
                   :options="categoryOptions"
                   value-field="id"
                   text-field="name"
-                  @change="categoryChange"
+                  @change="change($event, 'category')"
                 >
                   <template v-slot:first>
                     <b-form-select-option
@@ -392,7 +393,29 @@
 <script>
 import _ from 'underscore'
 import i18n from '@/i18n'
-import { updateStoreTitle } from '@/api/stores'
+import { updateStore } from '@/api/stores'
+
+const BAD_TO_GOOD = {
+  betrieb_kategorie_id: 'category',
+  kette_id: 'chain',
+  ansprechpartner: 'contactPerson',
+  telefon: 'contactPhone',
+  fax: 'contactFax',
+  email: 'contactMail',
+  ueberzeugungsarbeit: 'difficulty',
+  lebensmittel: 'foodType',
+  besonderheiten: 'particularities',
+  prefetchtime: 'prefetchtime',
+  presse: 'publicity',
+  public_info: 'publicInfo',
+  begin: 'start',
+  betrieb_status_id: 'status',
+  sticker: 'sticker',
+  public_time: 'time',
+  name: 'title',
+  abholmenge: 'weight'
+}
+const GOOD_TO_BAD = _.invert(BAD_TO_GOOD)
 
 export default {
   props: {
@@ -407,26 +430,7 @@ export default {
   data: function () {
     console.log('DATA', this.storeData)
     return {
-      form: {
-        category: this.storeData.betrieb_kategorie_id,
-        chain: this.storeData.kette_id,
-        contactPerson: this.storeData.ansprechpartner,
-        contactPhone: this.storeData.telefon,
-        contactFax: this.storeData.fax,
-        contactMail: this.storeData.email,
-        difficulty: this.storeData.ueberzeugungsarbeit,
-        foodType: this.storeData.lebensmittel,
-        particularities: this.storeData.besonderheiten,
-        prefetchtime: this.storeData.prefetchtime,
-        publicity: this.storeData.presse,
-        publicInfo: this.storeData.public_info,
-        start: this.storeData.begin,
-        status: this.storeData.betrieb_status_id,
-        sticker: this.storeData.sticker,
-        time: this.storeData.public_time,
-        title: this.storeData.name,
-        weight: this.storeData.abholmenge
-      }
+      form: _.mapObject(GOOD_TO_BAD, (val, key) => { return this.storeData[val] })
     }
   },
   computed: {
@@ -464,51 +468,16 @@ export default {
         { value: '1', text: i18n('yes') },
         { value: '0', text: i18n('no') }
       ]
-    },
-    fooOptions () {
-      return [{ value: null, text: 'Please select', disabled: true }].concat(_.flatten([]))
     }
   },
   methods: {
-    categoryChange () {
-      this.$emit('update:form', this.form)
-    },
-    chainChange () {
-      this.$emit('update:form', this.form)
-    },
-    difficultyChange () {
-      this.$emit('update:form', this.form)
-    },
-    foodTypeChange () {
-      this.$emit('update:form', this.form)
-    },
-    prefetchtimeChange () {
-      this.$emit('update:form', this.form)
-    },
-    publicityChange () {
-      this.$emit('update:form', this.form)
-    },
-    startChange () {
-      this.$emit('update:form', this.form)
-    },
-    statusChange () {
-      this.$emit('update:form', this.form)
-    },
-    stickerChange () {
-      this.$emit('update:form', this.form)
-    },
-    timeChange () {
-      this.$emit('update:form', this.form)
-    },
-    async titleChange () {
-      this.$emit('update:form', this.form)
-      await updateStoreTitle(this.storeData.id, this.form.title)
-    },
-    weightChange () {
-      this.$emit('update:form', this.form)
-    },
-    submit () {
-      console.log(this.form)
+    async change (newValue, field) {
+      const dbField = GOOD_TO_BAD[field]
+      if (dbField) {
+        await updateStore(this.storeData.id, dbField, newValue)
+      } else {
+        console.warn('Tried updating unknown store field:', field)
+      }
     }
   }
 }
