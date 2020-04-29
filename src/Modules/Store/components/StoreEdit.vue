@@ -178,7 +178,7 @@
                 <b-form-datepicker
                   v-model="form.start"
                   type="text"
-                  @change="change($event, 'start')"
+                  @input="change($event, 'start')"
                 />
               </b-card-text>
               <!-- -->

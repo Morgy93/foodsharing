@@ -39,7 +39,7 @@ class StoreCest
 		// Reload + check the page again, to make sure our option was saved
 		$I->amOnPage('/?page=betrieb&a=edit&id=' . $this->store['id']);
 		$I->click('Abholung', '.store-edit ul.nav');
-		$I->see('morgens');
+		$I->see('morgens', '.store-time');
 	}
 
 	public function _before(AcceptanceTester $I)

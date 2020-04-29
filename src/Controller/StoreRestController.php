@@ -115,6 +115,12 @@ class StoreRestController extends AbstractFOSRestController
 					throw new HttpException(400, 'Team status value not supported');
 				}
 				break;
+			case 'lebensmittel':
+				if (!is_array($newValue)) {
+					throw new HttpException(400, 'FoodTypes value must be an array');
+				}
+				$this->storeGateway->setStoreFoodTypes($storeId, $newValue);
+				break;
 			default:
 				$this->storeGateway->editStore($storeId, $field, $newValue);
 				break;

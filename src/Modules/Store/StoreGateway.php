@@ -1247,6 +1247,22 @@ class StoreGateway extends BaseGateway implements BellUpdaterInterface
 		$this->db->update('fs_betrieb', ['team_status' => $teamStatus], ['id' => $storeId]);
 	}
 
+	public function setStoreFoodTypes(int $storeId, array $foodTypes)
+	{
+		$result = $this->db->delete('fs_betrieb_has_lebensmittel', [
+			'betrieb_id' => $storeId,
+		]);
+
+		$values = [];
+		foreach ($foodTypes as $foodId) {
+			$values[] = [
+				'betrieb_id' => $storeId,
+				'lebensmittel_id' => (int)$foodId,
+			];
+		}
+		$this->db->insertMultiple('fs_betrieb_has_lebensmittel', $values);
+	}
+
 	public function getStores()
 	{
 		return $this->db->fetchAllByCriteria('fs_betrieb', ['id', 'name']);
