@@ -231,7 +231,7 @@ $g_lang['menu_all_store'] = 'Alle Betriebe';
 $g_lang['menu_foodtypes'] = 'Lebensmitteltypen verwalten';
 $g_lang['menu_email_tpl'] = 'E-Mail-Vorlagen';
 
-$g_lang['changelog'] = 'Changelog';
+$g_lang['release-notes'] = 'Release Notes';
 $g_lang['wallboard'] = 'Pinnwand';
 
 $g_lang['you'] = 'Du';

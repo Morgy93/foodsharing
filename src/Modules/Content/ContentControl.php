@@ -343,17 +343,18 @@ class ContentControl extends Control
 		}
 	}
 
-	public function changelog(): void
+	public function releaseNotes(): void
 	{
-		$this->pageHelper->addBread('Changelog');
-		$this->pageHelper->addTitle('Changelog');
-		$markdown = file_get_contents('CHANGELOG.md');
+		$this->pageHelper->addBread('Release Notes');
+		$this->pageHelper->addTitle('Release Notes');
+		$markdown = file_get_contents('release-notes.md');
 		$markdown = preg_replace('/\@(\S+)/', '[@\1](https://gitlab.com/\1)', $markdown);
 		$markdown = preg_replace('/!([0-9]+)/', '[!\1](https://gitlab.com/foodsharing-dev/foodsharing/merge_requests/\1)', $markdown);
 		$markdown = preg_replace('/#([0-9]+)/', '[#\1](https://gitlab.com/foodsharing-dev/foodsharing/issues/\1)', $markdown);
 		$Parsedown = new Parsedown();
 		$cl['body'] = $Parsedown->parse($markdown);
-		$cl['title'] = 'Changelog';
+		$cl['title'] = 'Release Notes';
+		$cl['body'] .= '<a href="https://gitlab.com/foodsharing-dev/foodsharing/-/blob/master/CHANGELOG.md">Aktuelles Changelog</a>';
 		$this->pageHelper->addContent($this->view->simple($cl));
 	}
 
