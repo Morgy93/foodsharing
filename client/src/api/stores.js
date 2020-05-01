@@ -34,6 +34,10 @@ export async function updateStore (storeId, field, newValue) {
   return patch(`/stores/${storeId}/edit/${field}`, { newValue: newValue })
 }
 
+export async function addStoreChain (name, logo = '') {
+  return post('/chains', { name, logo })
+}
+
 export async function deleteStorePost (postId) {
   return remove(`/stores/posts/${postId}`)
 }

@@ -11,6 +11,8 @@ class StorePermissions
 	private $storeGateway;
 	private $session;
 
+	private const storeChainGroup = 332;
+
 	public function __construct(
 		StoreGateway $storeGateway,
 		Session $session
@@ -120,6 +122,22 @@ class StorePermissions
 		}
 		$store = $this->storeGateway->getBetrieb($storeId);
 		if ($this->session->isAdminFor($store['bezirk_id'])) {
+			return true;
+		}
+
+		return false;
+	}
+
+	/* suggestion from https://gitlab.com/foodsharing-dev/foodsharing/-/issues/609#note_251488009 */
+	public function mayManageStoreChains(): bool
+	{
+		if (!$this->session->may()) {
+			return false;
+		}
+		if ($this->session->isOrgaTeam()) {
+			return true;
+		}
+		if ($this->session->isAdminFor(self::storeChainGroup)) {
 			return true;
 		}
 

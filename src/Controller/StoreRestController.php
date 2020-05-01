@@ -29,6 +29,8 @@ class StoreRestController extends AbstractFOSRestController
 	private const ID = 'id';
 	private const STORE_FIELD = 'field';
 	private const STORE_VALUE = 'newValue';
+	private const CHAIN_NAME = 'name';
+	private const CHAIN_LOGO = 'logo';
 
 	public function __construct(
 		Session $session,
@@ -127,6 +129,61 @@ class StoreRestController extends AbstractFOSRestController
 		}
 
 		return $this->getStoreAction($storeId);
+	}
+
+	/**
+	 * Returns details of the storechain with the given ID. Returns 200 and the
+	 * details as array. Throws 404 if chain not found, 401 if not logged in.
+	 *
+	 * @Rest\Get("chains/{chainId}", requirements={"chainId" = "\d+"})
+	 */
+	public function getStoreChainAction(int $chainId): Response
+	{
+		if (!$this->session->may()) {
+			throw new HttpException(401, self::NOT_LOGGED_IN);
+		}
+		$chain = $this->storeGateway->getOne_kette($chainId);
+
+		if (!$chain) {
+			throw new HttpException(404, 'Store chain does not exist.');
+		}
+
+		return $this->handleView($this->view(['chain' => $chain], 200));
+	}
+
+	/**
+	 * Adds a new store-chain. Returns the created chain data.
+	 * Throws 401 if not logged in, 403 if not allowed to create new chains,
+	 * or 400 if chain creation failed.
+	 *
+	 * @Rest\Post("chains")
+	 * @Rest\RequestParam(name="name", nullable=false)
+	 * @Rest\RequestParam(name="logo", nullable=true)
+	 */
+	public function addStoreChainAction(ParamFetcher $paramFetcher): Response
+	{
+		if (!$this->session->may()) {
+			throw new HttpException(401, self::NOT_LOGGED_IN);
+		}
+
+		if (!$this->storePermissions->mayManageStoreChains()) {
+			throw new AccessDeniedHttpException();
+		}
+
+		$name = trim(strip_tags($paramFetcher->get(self::CHAIN_NAME)));
+		if (empty($name)) {
+			throw new HttpException(400, 'Store chain name must not be empty.');
+		}
+
+		$logo = $paramFetcher->get(self::CHAIN_LOGO);
+
+		$chainId = $this->storeGateway->addStoreChain($name, $logo);
+
+		if (!$chainId) {
+			throw new HttpException(400, 'Unable to create store chain.');
+		}
+
+		return $this->getStoreChainAction($chainId);
 	}
 
 	/**

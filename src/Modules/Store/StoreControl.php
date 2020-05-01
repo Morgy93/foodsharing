@@ -121,6 +121,7 @@ class StoreControl extends Control
 				$this->pageHelper->addContent(
 					$this->view->vueComponent('vue-storeedit', 'store-edit', [
 						'storeData' => $data,
+						'mayManageStoreChains' => $this->storePermissions->mayManageStoreChains(),
 
 						'foodTypeOptions' => $this->storeGateway->getBasics_groceries(),
 						'chainOptions' => $this->storeGateway->getBasics_chain(),

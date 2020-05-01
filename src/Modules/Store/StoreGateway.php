@@ -1040,7 +1040,7 @@ class StoreGateway extends BaseGateway implements BellUpdaterInterface
 		return $this->db->count('fs_abholer', ['betrieb_id' => $storeId, 'confirmed' => 0, 'date >' => $this->db->now()]);
 	}
 
-	private function getOne_kette($id): array
+	public function getOne_kette($id): array
 	{
 		return $this->db->fetch('
 			SELECT   `id`,
@@ -1261,6 +1261,14 @@ class StoreGateway extends BaseGateway implements BellUpdaterInterface
 			];
 		}
 		$this->db->insertMultiple('fs_betrieb_has_lebensmittel', $values);
+	}
+
+	public function addStoreChain(string $chainName, string $chainLogo = '')
+	{
+		return $this->db->insert('fs_kette', [
+			'name' => $chainName,
+			'logo' => $chainLogo,
+		]);
 	}
 
 	public function getStores()

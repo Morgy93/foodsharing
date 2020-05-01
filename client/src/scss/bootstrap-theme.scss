@@ -104,7 +104,7 @@ $navbar-dark-hover-color: rgba(#ffffff, 1) ;
         font-size: 0.9rem;
         }
 
-        input.form-control {
+        input.form-control:not(.with-border) {
         padding-left: 0;
         border: none;
 

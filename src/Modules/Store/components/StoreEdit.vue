@@ -362,15 +362,45 @@
                 </b-form-select>
               </b-card-text>
 
-              <b-card-text class="d-flex justify-content-between">
-                <button class="btn btm-sm btn-secondary">
-                  <i class="fas fa-plus-circle" />
-                  {{ $i18n('storeedit.store.newChain') }}
-                </button>
-                <button class="btn btm-sm btn-secondary">
-                  <i class="fas fa-plus-circle" />
-                  {{ $i18n('storeedit.store.newCategory') }}
-                </button>
+              <b-card-text>
+                <b-row align-h="end">
+                  <!-- should be sm="6" with two buttons -->
+                  <b-col
+                    v-for="btn in addDatabaseEntryButtons"
+                    :key="btn.id"
+                    sm="12"
+                    class="mb-2"
+                  >
+                    <b-button
+                      v-b-toggle="btn.id"
+                      variant="outline-secondary"
+                      :class="btn.id"
+                      block
+                    >
+                      <i class="fas fa-plus-circle" />
+                      {{ btn.text }}
+                    </b-button>
+                  </b-col>
+                </b-row>
+                <b-collapse id="newchain">
+                  <b-input-group>
+                    <b-form-input
+                      v-model.trim="newchainText"
+                      class="form-control with-border"
+                    />
+                    <b-input-group-append>
+                      <b-button
+                        :disabled="!newchainText.trim()"
+                        variant="secondary"
+                        type="submit"
+                        size="sm"
+                        @click.prevent="addDatabaseEntry('newchain')"
+                      >
+                        <i class="fas fa-plus" />
+                      </b-button>
+                    </b-input-group-append>
+                  </b-input-group>
+                </b-collapse>
               </b-card-text>
             </b-col>
           </b-row>
@@ -404,7 +434,7 @@
 <script>
 import _ from 'underscore'
 import i18n from '@/i18n'
-import { updateStore } from '@/api/stores'
+import { addStoreChain, updateStore } from '@/api/stores'
 
 const BAD_TO_GOOD = {
   betrieb_kategorie_id: 'category',
@@ -432,6 +462,7 @@ const GOOD_TO_BAD = _.invert(BAD_TO_GOOD)
 export default {
   props: {
     storeData: { type: Object, required: true },
+    mayManageStoreChains: { type: Boolean, default: false },
     // regionPickerHtml: { type: String, required: true },
     weightOptions: { type: Array, default: null },
     foodTypeOptions: { type: Array, default: null },
@@ -442,10 +473,22 @@ export default {
   data: function () {
     console.log('DATA', this.storeData)
     return {
-      form: _.mapObject(GOOD_TO_BAD, (val, key) => { return this.storeData[val] })
+      form: _.mapObject(GOOD_TO_BAD, (val, key) => { return this.storeData[val] }),
+      newchainText: ''
     }
   },
   computed: {
+    addDatabaseEntryButtons () {
+      return _.filter([{
+        text: i18n('storeedit.store.newChain'),
+        id: 'newchain',
+        can: this.mayManageStoreChains
+      }, {
+        text: i18n('storeedit.store.newCategory'),
+        id: 'newcategory',
+        can: false // TODO Re-implement this after cleaning up categories in DB
+      }], (btn) => { return btn.can })
+    },
     difficultyOptions () {
       return [
         { value: null, text: i18n('storeedit.dropdownDefault'), disabled: true },
@@ -498,6 +541,15 @@ export default {
         await updateStore(storeId, dbField, newValue)
       } else {
         console.warn('Tried updating unknown store field:', field)
+      }
+    },
+    async addDatabaseEntry (field) {
+      const newValue = this[field + 'Text']
+      this[field + 'Text'] = ''
+      if (field === 'newchain') {
+        await addStoreChain(newValue)
+      } else {
+        console.warn('Tried adding untethered database entry:', { newValue, field })
       }
     }
   }
