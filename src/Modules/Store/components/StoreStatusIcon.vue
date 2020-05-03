@@ -26,18 +26,17 @@ export default {
     description () {
       switch (this.status) {
         case 1:
-          return i18n('storestatusicon.nocontact')
         case 2:
-          return i18n('storestatusicon.inprogress')
+          return i18n('storestatus.2')
         case 3:
         case 5:
-          return i18n('storestatusicon.cooperating')
+          return i18n('storestatus.5')
         case 4:
-          return i18n('storestatusicon.nocooperation')
+          return i18n('storestatus.4')
         case 6:
-          return i18n('storestatusicon.nowaste')
+          return i18n('storestatus.6')
         default:
-          return i18n('storestatusicon.unclear')
+          return i18n('storestatus.0')
       }
     }
   }

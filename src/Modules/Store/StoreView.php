@@ -103,20 +103,14 @@ class StoreView extends View
 		return $out;
 	}
 
-	public function betrieb_form($region = false, $page, $lebensmittel_values, $chains, $categories, $status, $weightArray)
+	public function betrieb_form($region)
 	{
 		global $g_data;
-
-		$bc = $this->v_utils->v_bezirkChooser('bezirk_id', $region);
 
 		if (!isset($g_data['foodsaver'])) {
 			$g_data['foodsaver'] = [$this->session->id()];
 		}
 
-		$first_post = '';
-		if ($this->identificationHelper->getAction('new')) {
-			$first_post = $this->v_utils->v_form_textarea('first_post', ['required' => true]);
-		}
 		if (isset($g_data['stadt'])) {
 			$g_data['ort'] = $g_data['stadt'];
 		}
@@ -126,8 +120,6 @@ class StoreView extends View
 		if (isset($g_data['hsnr'])) {
 			$g_data['anschrift'] .= ' ' . $g_data['hsnr'];
 		}
-
-		$this->pageHelper->addJs('$("textarea").css("height","70px");$("textarea").autosize();');
 
 		$latLonOptions = [];
 
@@ -142,72 +134,17 @@ class StoreView extends View
 			$latLonOptions['location'] = ['lat' => 0, 'lon' => 0];
 		}
 
-		$fieldset = array_merge([
-			$bc,
-			$this->v_utils->v_form_hidden('page', $page),
-			$this->latLonPicker('LatLng', $latLonOptions),
-		], ($chains == null) ? [] : [
+		$editExisting = !$this->identificationHelper->getAction('new');
+		$fieldset = array_merge($editExisting ? [] : [
 			$this->v_utils->v_form_text('name', ['required' => true]),
-			$this->v_utils->v_form_select('kette_id', [
-				'add' => true,
-				'values' => $chains,
-				'desc' => $this->translator->trans('storeedit.store.chainDetails'),
-			]),
-		], ($categories == null) ? [] : [
-			$this->v_utils->v_form_select('betrieb_kategorie_id', ['add' => true, 'values' => $categories]),
-		], ($status == null) ? [] : [
-			$this->v_utils->v_form_select('betrieb_status_id', [
-				'values' => $status,
-				'desc' => $this->v_utils->v_info($this->translationHelper->s('store_status_impact_explanation')),
-			]),
-		], ($lebensmittel_values == null) ? [] : [
-			$this->v_utils->v_form_checkbox('lebensmittel', ['values' => $lebensmittel_values]),
-
-			$this->v_utils->v_form_text('ansprechpartner'),
-			$this->v_utils->v_form_text('telefon'),
-			$this->v_utils->v_form_text('fax'),
-			$this->v_utils->v_form_text('email'),
-
-			$this->v_utils->v_form_date('begin'),
-
-			$this->v_utils->v_form_textarea('besonderheiten'),
-			$this->v_utils->v_form_textarea('public_info', ['maxlength' => 180, 'desc' => 'Hier kannst Du einige Infos für die Foodsaver angeben, die sich für das Team bewerben möchten. <br />(max. 180 Zeichen)<div>' . $this->v_utils->v_info('<strong>Wichtig:</strong> Gib hier keine genauen Abholzeiten an.<br />Es ist des Öfteren vorgekommen, dass Leute unabgesprochen zum Laden gegangen sind.') . '</div>']),
-		], ($weightArray == null) ? [] : [
-			$this->v_utils->v_form_select('public_time', ['values' => [
-				['id' => 0, 'name' => 'Keine Angabe'],
-				['id' => 1, 'name' => 'morgens'],
-				['id' => 2, 'name' => 'mittags/nachmittags'],
-				['id' => 3, 'name' => 'abends'],
-				['id' => 4, 'name' => 'nachts']
-			]]),
 		], [
-			$first_post,
-		], ($weightArray == null) ? [] : [
-			$this->v_utils->v_form_select('abholmenge', ['values' => $weightArray]),
-
-			$this->v_utils->v_form_select('ueberzeugungsarbeit', ['values' => [
-				['id' => 1, 'name' => 'Überhaupt kein Problem, er/sie war/en sofort begeistert!'],
-				['id' => 2, 'name' => 'Nach Überzeugungsarbeit erklärte er/sie sich bereit mitzumachen '],
-				['id' => 3, 'name' => 'Ganz schwierig, aber am Ende hat er/sie eingewilligt'],
-				['id' => 4, 'name' => 'Zuerst sah es schlecht aus, dann hat er/sie sich aber doch gemeldet']
-			]]),
-			$this->v_utils->v_form_select('presse', ['values' => [
-				['id' => 1, 'name' => 'Ja'],
-				['id' => 0, 'name' => 'Nein']
-			]]),
-			$this->v_utils->v_form_select('sticker', ['values' => [
-				['id' => 1, 'name' => 'Ja'],
-				['id' => 0, 'name' => 'Nein']
-			]]),
-			$this->v_utils->v_form_select('prefetchtime', ['values' => [
-				['id' => 604800, 'name' => '1 Woche'],
-				['id' => 1209600, 'name' => '2 Wochen'],
-				['id' => 1814400, 'name' => '3 Wochen'],
-				['id' => 2419200, 'name' => '4 Wochen']
-			]]),
+			$this->v_utils->v_bezirkChooser('bezirk_id', $region),
+			$this->latLonPicker('LatLng', $latLonOptions),
+		], $editExisting ? [] : [
+			$this->v_utils->v_form_textarea('first_post'),
 		]);
 
-		return $this->v_utils->v_quickform($this->translationHelper->s('betrieb'), $fieldset);
+		return $this->v_utils->v_quickform($this->translator->trans('storeview.store'), $fieldset);
 	}
 
 	public function bubble(array $store): string
@@ -227,34 +164,56 @@ class StoreView extends View
 		$count_info = '';
 		$activeFoodSaver = count($b['foodsaver']);
 		$jumperFoodSaver = count($b['springer']);
-		$count_info .= '<div>' . $this->translationHelper->sv('store_info', ['active' => $activeFoodSaver, 'jumper' => $jumperFoodSaver]) . '</div>';
+		$count_info .= '<div>' . $this->translator->trans('storeview.teamInfo', [
+			'{active}' => $activeFoodSaver,
+			'{jumper}' => $jumperFoodSaver,
+		]) . '</div>';
 		$pickup_count = (int)$b['pickup_count'];
 		if ($pickup_count > 0) {
-			$count_info .= '<div>' . $this->translationHelper->sv('store_info_pickupcount', ['pickupCount' => $pickup_count]) . '</div>';
-			$fetch_weight = round(floatval(($pickup_count * $this->weightHelper->mapIdToKilos($b['abholmenge']))), 2);
-			$count_info .= '<div>' . $this->translationHelper->sv('store_info_pickupweight', ['fetch_weight' => $fetch_weight]) . '</div>';
+			$count_info .= '<div>' . $this->translator->trans('storeview.pickupCount', [
+				'{pickupCount}' => $pickup_count,
+			]) . '</div>';
+			$fetch_weight = round(floatval(
+				$pickup_count * $this->weightHelper->mapIdToKilos($b['abholmenge'])
+			), 2);
+			$count_info .= '<div>' . $this->translator->trans('storeview.pickupWeight', [
+				'{fetch_weight}' => $fetch_weight,
+			]) . '</div>';
 		}
 
 		$time = strtotime($b['begin']);
 		if ($time > 0) {
-			$count_info .= '<div> ' . $this->translationHelper->sv('store_info_cooperation', ['startTime' => $this->translationHelper->s('month_' . (int)date('m', $time)) . ' ' . date('Y', $time)]) . '</div>';
+			$count_info .= '<div>' . $this->translator->trans('storeview.cooperation', [
+				'{startTime}' => $this->translationHelper->s('month_' . (int)date('m', $time)) . ' ' . date('Y', $time),
+			]) . '</div>';
 		}
 
 		if ((int)$b['public_time'] != 0) {
-			$b['public_info'] .= '<div>' . $this->translationHelper->sv('store_info_freq', ['freq' => $this->translationHelper->s('pubbtime_' . (int)$b['public_time'])]) . '</div>';
+			$count_info .= '<div>' . $this->translator->trans('storeview.frequency', [
+				'{freq}' => $this->translator->trans('storeview.frequency' . (int)$b['public_time']),
+			]) . '</div>';
 		}
 
 		if (!empty($b['public_info'])) {
-			$besonderheiten = $this->v_utils->v_input_wrapper($this->translationHelper->s('info'), $b['public_info'], 'bcntspecial');
+			$besonderheiten = $this->v_utils->v_input_wrapper(
+				$this->translator->trans('storeview.info'),
+				$b['public_info'],
+				'bcntspecial'
+			);
 		}
 
 		$status = $this->v_utils->v_getStatusAmpel($b['betrieb_status_id']);
-		$html = $this->v_utils->v_input_wrapper($this->translationHelper->s('status'), $status . '<span class="bstatus">' . $this->translationHelper->s('betrieb_status_' . $b['betrieb_status_id']) . '</span>' . $count_info) . '
-			' . $this->v_utils->v_input_wrapper($this->translationHelper->s('foodsaver'), $verantwortlich, 'bcntverantwortlich') . '
-			' . $besonderheiten . '
-			<div class="ui-padding">
-				' . $this->v_utils->v_info('' . $this->translationHelper->s('team_status_' . $b['team_status']) . '') . '
-			</div>';
+		$bstatus = $this->translator->trans('storestatus.' . (int)$b['betrieb_status_id']) . '.';
+		$tstatus = $this->translator->trans('storeedit.fetch.teamStatus' . (int)$b['team_status']);
+		$html = $this->v_utils->v_input_wrapper(
+			$this->translator->trans('storeedit.store.status'),
+			$status . '<span class="bstatus">' . $bstatus . '</span>' . $count_info
+		) . '
+		' . $this->v_utils->v_input_wrapper(
+			$this->translator->trans('storeview.managers'), $verantwortlich, 'bcntverantwortlich'
+		) . '
+		' . $besonderheiten . '<div class="ui-padding">
+		' . $this->v_utils->v_info('<strong>' . $tstatus . '</strong>') . '</div>';
 
 		return $html;
 	}

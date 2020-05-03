@@ -25,7 +25,7 @@ class StoreCest
 		// Check original value
 		$I->amOnPage('/?page=betrieb&a=edit&id=' . $this->store['id']);
 		$I->click('Abholung', '.store-edit ul.nav');
-		$I->see('Keine Angabe', '.store-time');
+		$I->waitForText('Keine Angabe', 5, '.store-time');
 
 		// TODO vue-B selected / selectOption
 		// document.getElementById('id').selectedOptions might work but where's the document?
@@ -39,7 +39,7 @@ class StoreCest
 		// Reload + check the page again, to make sure our option was saved
 		$I->amOnPage('/?page=betrieb&a=edit&id=' . $this->store['id']);
 		$I->click('Abholung', '.store-edit ul.nav');
-		$I->see('morgens', '.store-time');
+		$I->waitForText('morgens', 5, '.store-time');
 	}
 
 	public function _before(AcceptanceTester $I)

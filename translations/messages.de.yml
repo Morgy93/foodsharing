@@ -239,6 +239,21 @@ fsp:
   twig:
     n_in_region: '{0} Keine Fairteiler in %name%| {1} Ein Fairteiler in %name%| [2, Inf[ %count% Fairteiler in %name%'
 
+storeview:
+  store: Betrieb
+  info: Informationen
+  teamInfo: 'Es sind <strong>{active}</strong> Aktive und <strong>{jumper}</strong> Springer im Team.'
+  pickupCount: 'Bei diesem Betrieb wurde <strong>{pickupCount}<span style="white-space:nowrap"> </span>x</strong> abgeholt.'
+  pickupWeight: 'Es wurden <strong>{fetch_weight}<span style="white-space:nowrap"> </span>kg</strong> gerettet.'
+  cooperation: 'Kooperation seit {startTime}.'
+  frequency: 'Es wird in etwa {freq} abgeholt. Geh bitte niemals ohne Absprache zum Laden!'
+  frequency1: morgens
+  frequency2: mittags/nachmittags
+  frequency3: abends
+  frequency4: nachts
+  status: Aktueller Status
+  managers: Verantwortliche Foodsaver
+
 store:
   pickup_slot_unavailable: Dieser Abhol-Slot liegt weiter in der Zukunft als von Deinen BIEBs vorgesehen ist. Betroffen hiervon sind derzeit zwei Tage am Ende der Liste. Versuch es also bitte in 1 resp. 2 Tagen wieder.
   add_new_store: Neuen Betrieb anlegen
@@ -290,7 +305,14 @@ storeedit:
     particularities: Besonderheiten
   fetch:
     header: Abholung
-    amount: Mit wie vielen Lebensmitteln ist pro Abholtermin zu rechnen?
+    weight: Mit wie vielen Lebensmitteln ist pro Abholtermin zu rechnen?
+    weight1: 1-3 kg
+    weight2: 3-5 kg
+    weight3: 5-10 kg
+    weight4: 10-20 kg
+    weight5: 20-30 kg
+    weight6: 40-50 kg
+    weight7: mehr als 50 kg
     time: Ungefähre Tageszeit der Abholung
     time0: Keine Angabe
     time1: morgens
@@ -333,7 +355,10 @@ storeedit:
     newCategory: Neue Kategorie
   location:
     header: Standort
+    seeBelow: Bitte unten ausfüllen und abspeichern
+    submit: Standort abspeichern
   dropdownDefault: '-- Bitte auswählen: --'
+  optionalDefault: '-- keine --'
   unspecified: 'Noch unklar'
 
 pickup:
@@ -715,13 +740,14 @@ newsletter:
   test_email_sent: E-Mail wurde versendet!
   test_email_invalid: Mit der E-Mail-Adresse stimmt etwas nicht!
 
-storestatusicon:
-  nocontact: Es besteht noch kein Kontakt
-  inprogress: Verhandlungen laufen
-  cooperating: Betrieb kooperiert bereits
-  nocooperation: Will nicht kooperieren
-  nowaste: Spendet an Tafel etc. und wirft nichts weg
-  unclear: Status unklar
+storestatus:
+  0: Status unklar
+  1: Es besteht noch kein Kontakt
+  2: Verhandlungen laufen
+  3: Betrieb ist bereit zu kooperieren
+  4: Will nicht kooperieren
+  5: Betrieb kooperiert bereits
+  6: Spendet an Tafel etc. und wirft nichts weg
 
 storelist:
  entered: "Eingetragen:"

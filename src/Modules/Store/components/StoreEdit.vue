@@ -6,15 +6,10 @@
         card
         pills
       >
-        <!-- STORE TEXT -->
-        <b-tab
-          :title="$i18n('storeedit.text.header')"
-          active
-          no-body
-        >
+        <!-- eslint-disable-next-line vue/max-attributes-per-line -->
+        <b-tab :title="$i18n('storeedit.text.header')" no-body>
           <b-row class="store-text">
             <b-col sm="6">
-              <!-- store title -->
               <b-card-title class="required">
                 {{ $i18n('storeedit.text.title') }}
               </b-card-title>
@@ -25,12 +20,11 @@
                   @change="change($event, 'title')"
                 />
               </b-card-text>
-              <!-- -->
 
-              <!-- -->
               <b-card-title>
                 {{ $i18n('storeedit.text.publicInfo') }}
               </b-card-title>
+
               <b-card-text>
                 <b-alert show>
                   <i class="fas fa-info-circle" />
@@ -46,65 +40,49 @@
                     </span>
                   </div>
                 </b-alert>
+
                 <b-form-textarea
                   v-model.trim="form.publicInfo"
-                  :state="form.publicInfo.length > 180 ? false : null"
+                  :state="(form.publicInfo && form.publicInfo.length > 180) ? false : null"
+                  :placeholder="$i18n('storeedit.text.publicInfo') + '...'"
                   rows="4"
                   max-rows="6"
                   @change="change($event, 'publicInfo')"
                 />
               </b-card-text>
-              <!-- -->
             </b-col>
 
             <b-col sm="6">
-              <!-- store particularities -->
               <b-card-title>
                 {{ $i18n('storeedit.text.particularities') }}
               </b-card-title>
               <b-card-text>
                 <b-form-textarea
                   v-model.trim="form.particularities"
+                  :placeholder="$i18n('storeedit.text.particularities') + '...'"
                   rows="13"
                   @change="change($event, 'particularities')"
                 />
               </b-card-text>
-              <!-- -->
             </b-col>
           </b-row>
         </b-tab>
 
-        <b-tab
-          :title="$i18n('storeedit.fetch.header')"
-          no-body
-        >
+        <!-- eslint-disable-next-line vue/max-attributes-per-line -->
+        <b-tab :title="$i18n('storeedit.fetch.header')" no-body>
           <b-row class="store-fetch">
             <b-col sm="6">
-              <!-- fetch amount -->
               <b-card-title>
-                {{ $i18n('storeedit.fetch.amount') }}
+                {{ $i18n('storeedit.fetch.weight') }}
               </b-card-title>
               <b-card-text>
                 <b-form-select
                   v-model="form.weight"
                   :options="weightOptions"
-                  value-field="id"
-                  text-field="name"
                   @change="change($event, 'weight')"
-                >
-                  <template v-slot:first>
-                    <b-form-select-option
-                      :value="null"
-                      disabled
-                    >
-                      {{ $i18n('storeedit.dropdownDefault') }}
-                    </b-form-select-option>
-                  </template>
-                </b-form-select>
+                />
               </b-card-text>
-              <!-- -->
 
-              <!-- -->
               <b-card-title>
                 {{ $i18n('storeedit.fetch.time') }}
               </b-card-title>
@@ -115,9 +93,7 @@
                   @change="change($event, 'time')"
                 />
               </b-card-text>
-              <!-- -->
 
-              <!-- -->
               <b-card-title>
                 {{ $i18n('storeedit.fetch.prefetchtime') }}
               </b-card-title>
@@ -128,7 +104,6 @@
                   @change="change($event, 'prefetchtime')"
                 />
               </b-card-text>
-              <!-- -->
 
               <b-card-title>
                 {{ $i18n('storeedit.fetch.teamStatus') }}
@@ -143,12 +118,10 @@
             </b-col>
 
             <b-col sm="6">
-              <!-- food types -->
               <b-card-title>
                 {{ $i18n('storeedit.fetch.foodTypes') }}
               </b-card-title>
               <b-card-text>
-                <!-- b-form-group :label="$i18n('storeedit.fetch.foodTypes')" -->
                 <b-form-group>
                   <b-form-checkbox-group
                     v-model="form.foodType"
@@ -159,18 +132,14 @@
                   />
                 </b-form-group>
               </b-card-text>
-              <!-- -->
             </b-col>
           </b-row>
         </b-tab>
 
-        <b-tab
-          :title="$i18n('storeedit.coop.header')"
-          no-body
-        >
+        <!-- eslint-disable-next-line vue/max-attributes-per-line -->
+        <b-tab :title="$i18n('storeedit.coop.header')" no-body>
           <b-row class="store-coop">
             <b-col sm="6">
-              <!-- -->
               <b-card-title>
                 {{ $i18n('storeedit.coop.start') }}
               </b-card-title>
@@ -181,9 +150,7 @@
                   @input="change($event, 'start')"
                 />
               </b-card-text>
-              <!-- -->
 
-              <!-- -->
               <b-card-title>
                 {{ $i18n('storeedit.coop.difficulty') }}
               </b-card-title>
@@ -194,9 +161,7 @@
                   @change="change($event, 'difficulty')"
                 />
               </b-card-text>
-              <!-- -->
 
-              <!-- -->
               <b-card-title>
                 {{ $i18n('storeedit.coop.publicity') }}
               </b-card-title>
@@ -207,9 +172,7 @@
                   @change="change($event, 'publicity')"
                 />
               </b-card-text>
-              <!-- -->
 
-              <!-- -->
               <b-card-title>
                 {{ $i18n('storeedit.coop.sticker') }}
               </b-card-title>
@@ -232,9 +195,7 @@
                   @change="change($event, 'contactPerson')"
                 />
               </b-card-text>
-              <!-- -->
 
-              <!-- -->
               <b-card-title>
                 {{ $i18n('storeedit.coop.contactPhone') }}
               </b-card-title>
@@ -244,9 +205,7 @@
                   @change="change($event, 'contactPhone')"
                 />
               </b-card-text>
-              <!-- -->
 
-              <!-- -->
               <b-card-title>
                 {{ $i18n('storeedit.coop.contactFax') }}
               </b-card-title>
@@ -256,9 +215,7 @@
                   @change="change($event, 'contactFax')"
                 />
               </b-card-text>
-              <!-- -->
 
-              <!-- -->
               <b-card-title>
                 {{ $i18n('storeedit.coop.contactMail') }}
               </b-card-title>
@@ -272,13 +229,10 @@
           </b-row>
         </b-tab>
 
-        <b-tab
-          :title="$i18n('storeedit.store.header')"
-          no-body
-        >
+        <!-- eslint-disable-next-line vue/max-attributes-per-line -->
+        <b-tab :title="$i18n('storeedit.store.header')" no-body>
           <b-row class="store-status">
             <b-col sm="6">
-              <!-- store status -->
               <b-card-title>
                 {{ $i18n('storeedit.store.status') }}
               </b-card-title>
@@ -299,22 +253,10 @@
                 </b-alert>
                 <b-form-select
                   v-model="form.status"
-                  :options="statusOptions"
-                  value-field="id"
-                  text-field="name"
+                  :options="storeStatusOptions"
                   @change="change($event, 'status')"
-                >
-                  <template v-slot:first>
-                    <b-form-select-option
-                      :value="null"
-                      disabled
-                    >
-                      {{ $i18n('storeedit.dropdownDefault') }}
-                    </b-form-select-option>
-                  </template>
-                </b-form-select>
+                />
               </b-card-text>
-              <!-- -->
             </b-col>
 
             <b-col sm="6">
@@ -334,7 +276,7 @@
                       :value="null"
                       disabled
                     >
-                      {{ $i18n('storeedit.dropdownDefault') }}
+                      {{ $i18n('storeedit.optionalDefault') }}
                     </b-form-select-option>
                   </template>
                 </b-form-select>
@@ -356,7 +298,7 @@
                       :value="null"
                       disabled
                     >
-                      {{ $i18n('storeedit.dropdownDefault') }}
+                      {{ $i18n('storeedit.optionalDefault') }}
                     </b-form-select-option>
                   </template>
                 </b-form-select>
@@ -406,28 +348,18 @@
           </b-row>
         </b-tab>
 
-        <b-tab
-          class="hidden"
-          :title="$i18n('storeedit.location.header')"
-          no-body
-        >
+        <!-- eslint-disable-next-line vue/max-attributes-per-line -->
+        <b-tab :title="$i18n('storeedit.location.header')" no-body>
           <b-row class="store-location">
             <b-col>
-              <!--
-              <div v-html="regionPickerHtml" />
-              -->
-              TODO (see below)
+              <b-card-title>
+                {{ $i18n('storeedit.location.seeBelow') }}
+              </b-card-title>
             </b-col>
           </b-row>
         </b-tab>
       </b-tabs>
     </b-card>
-    <!-- MISSING: -->
-    <!-- INTEGRATE REGION PICKER -->
-    <!-- INTEGRATE ADDRESS PICKER -->
-    <!-- ADDRESS FIELDS (x4) -->
-    <!-- CREATE NEW CHAIN FUNCTIONALITY -->
-    <!-- CREATE NEW CATEGORY FUNCTIONALITY -->
   </div>
 </template>
 
@@ -463,15 +395,11 @@ export default {
   props: {
     storeData: { type: Object, required: true },
     mayManageStoreChains: { type: Boolean, default: false },
-    // regionPickerHtml: { type: String, required: true },
-    weightOptions: { type: Array, default: null },
     foodTypeOptions: { type: Array, default: null },
-    statusOptions: { type: Array, default: null },
     categoryOptions: { type: Array, default: null },
     chainOptions: { type: Array, default: null }
   },
   data: function () {
-    console.log('DATA', this.storeData)
     return {
       form: _.mapObject(GOOD_TO_BAD, (val, key) => { return this.storeData[val] }),
       newchainText: ''
@@ -482,16 +410,16 @@ export default {
       return _.filter([{
         text: i18n('storeedit.store.newChain'),
         id: 'newchain',
-        can: this.mayManageStoreChains
+        visible: this.mayManageStoreChains
       }, {
         text: i18n('storeedit.store.newCategory'),
         id: 'newcategory',
-        can: false // TODO Re-implement this after cleaning up categories in DB
-      }], (btn) => { return btn.can })
+        visible: false // TODO Re-implement this after cleaning up categories in DB
+      }], (btn) => { return btn.visible })
     },
     difficultyOptions () {
       return [
-        { value: null, text: i18n('storeedit.dropdownDefault'), disabled: true },
+        { value: 0, text: i18n('storeedit.dropdownDefault'), disabled: true },
         { value: 1, text: i18n('storeedit.coop.difficulty1') },
         { value: 2, text: i18n('storeedit.coop.difficulty2') },
         { value: 3, text: i18n('storeedit.coop.difficulty3') },
@@ -505,6 +433,18 @@ export default {
         { value: 1209600, text: i18n('storeedit.fetch.weeks', { count: 2 }) },
         { value: 1814400, text: i18n('storeedit.fetch.weeks', { count: 3 }) },
         { value: 2419200, text: i18n('storeedit.fetch.weeks', { count: 4 }) }
+      ]
+    },
+    storeStatusOptions () {
+      return [
+        { value: null, text: i18n('storeedit.dropdownDefault'), disabled: true },
+        { value: 0, text: i18n('storestatus.0') },
+        { value: 1, text: i18n('storestatus.1') },
+        { value: 2, text: i18n('storestatus.2') },
+        { value: 3, text: i18n('storestatus.3') },
+        { value: 4, text: i18n('storestatus.4') },
+        { value: 5, text: i18n('storestatus.5') },
+        { value: 6, text: i18n('storestatus.6') }
       ]
     },
     teamStatusOptions () {
@@ -523,6 +463,18 @@ export default {
         { value: 2, text: i18n('storeedit.fetch.time2') },
         { value: 3, text: i18n('storeedit.fetch.time3') },
         { value: 4, text: i18n('storeedit.fetch.time4') }
+      ]
+    },
+    weightOptions () {
+      return [
+        { value: 0, text: i18n('storeedit.dropdownDefault'), disabled: true },
+        { value: 1, text: i18n('storeedit.fetch.weight1') },
+        { value: 2, text: i18n('storeedit.fetch.weight2') },
+        { value: 3, text: i18n('storeedit.fetch.weight3') },
+        { value: 4, text: i18n('storeedit.fetch.weight4') },
+        { value: 5, text: i18n('storeedit.fetch.weight5') },
+        { value: 6, text: i18n('storeedit.fetch.weight6') },
+        { value: 7, text: i18n('storeedit.fetch.weight7') }
       ]
     },
     yesNoOptions () {

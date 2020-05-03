@@ -71,6 +71,7 @@
 <script>
 import { format } from 'date-fns'
 import differenceInCalendarDays from 'date-fns/differenceInCalendarDays'
+import i18n from '@/i18n'
 import Markdown from '@/components/Markdown/Markdown'
 
 export default {
@@ -80,9 +81,9 @@ export default {
       type: String,
       default: ''
     },
-    collectionQuantity: {
-      type: String,
-      default: ''
+    weight: {
+      type: Number,
+      default: 0
     },
     storeTitle: {
       type: String,
@@ -116,6 +117,13 @@ export default {
   computed: {
     allowedToMentionInPublic () {
       return this.press === 1
+    },
+    collectionQuantity () {
+      if (this.weight) {
+        return i18n('storeedit.fetch.weight' + this.weight)
+      } else {
+        return i18n('storeedit.unspecified')
+      }
     },
     formatLastFetchDate () {
       return format(new Date(this.lastFetchDate), 'dd.MM.yyyy')

@@ -14,7 +14,6 @@ use Foodsharing\Permissions\StorePermissions;
 use Foodsharing\Utility\DataHelper;
 use Foodsharing\Utility\Sanitizer;
 use Foodsharing\Utility\TimeHelper;
-use Foodsharing\Utility\WeightHelper;
 use Symfony\Contracts\Translation\TranslatorInterface;
 
 class StoreUserControl extends Control
@@ -27,7 +26,6 @@ class StoreUserControl extends Control
 	private $dataHelper;
 	private $sanitizerService;
 	private $timeHelper;
-	private $weightHelper;
 	private $translator;
 
 	public function __construct(
@@ -40,7 +38,6 @@ class StoreUserControl extends Control
 		DataHelper $dataHelper,
 		Sanitizer $sanitizerService,
 		TimeHelper $timeHelper,
-		WeightHelper $weightHelper,
 		TranslatorInterface $translator
 	) {
 		$this->view = $view;
@@ -52,7 +49,6 @@ class StoreUserControl extends Control
 		$this->dataHelper = $dataHelper;
 		$this->sanitizerService = $sanitizerService;
 		$this->timeHelper = $timeHelper;
-		$this->weightHelper = $weightHelper;
 		$this->translator = $translator;
 
 		parent::__construct();
@@ -192,7 +188,7 @@ class StoreUserControl extends Control
 					'postcode' => $store['plz'],
 					'city' => $store['stadt'],
 					'storeTitle' => $store['name'],
-					'collectionQuantity' => $this->weightHelper->getFetchWeightName($store['abholmenge']),
+					'weight' => $store['abholmenge'],
 					'press' => $store['presse'],
 				]), CNT_RIGHT);
 

@@ -90,7 +90,7 @@ class StoreControl extends Control
 				}
 
 				$chosenRegion = ($regionId > 0 && Type::isAccessibleRegion($this->regionGateway->getType($regionId))) ? $region : null;
-				$this->pageHelper->addContent($this->view->betrieb_form($chosenRegion, 'betrieb', $this->storeGateway->getBasics_groceries(), $this->storeGateway->getBasics_chain(), $this->storeGateway->getStoreCategories(), $this->storeGateway->getStoreStateList(), $this->weightHelper->getWeightListEntries()));
+				$this->pageHelper->addContent($this->view->betrieb_form($chosenRegion));
 
 				$this->pageHelper->addContent($this->v_utils->v_field($this->v_utils->v_menu([
 					['name' => $this->translationHelper->s('back_to_overview'), 'href' => '/?page=fsbetrieb&bid=' . $regionId]
@@ -109,7 +109,7 @@ class StoreControl extends Control
 			$this->pageHelper->addTitle($this->translationHelper->s('edit'));
 
 			if ($this->storePermissions->mayEditStore($id)) {
-				$this->handle_edit();
+				$this->handle_edit($data['name']);
 
 				$this->dataHelper->setEditData($data);
 
@@ -122,16 +122,13 @@ class StoreControl extends Control
 					$this->view->vueComponent('vue-storeedit', 'store-edit', [
 						'storeData' => $data,
 						'mayManageStoreChains' => $this->storePermissions->mayManageStoreChains(),
-
 						'foodTypeOptions' => $this->storeGateway->getBasics_groceries(),
 						'chainOptions' => $this->storeGateway->getBasics_chain(),
 						'categoryOptions' => $this->storeGateway->getStoreCategories(),
-						'statusOptions' => $this->storeGateway->getStoreStateList(),
-						'weightOptions' => $this->weightHelper->getWeightListEntries(),
 					])
 				);
 				$this->pageHelper->addContent(
-					$this->view->betrieb_form($region, '', null, null, null, null, null)
+					$this->view->betrieb_form($region)
 				);
 			} else {
 				$this->flashMessageHelper->info('Diesen Betrieb kannst Du nicht bearbeiten');
@@ -171,7 +168,7 @@ class StoreControl extends Control
 		}
 	}
 
-	private function handle_edit()
+	private function handle_edit(string $storeName)
 	{
 		global $g_data;
 		if ($this->submitted()) {
@@ -180,8 +177,8 @@ class StoreControl extends Control
 			$g_data['hsnr'] = '';
 			$g_data['str'] = $g_data['anschrift'];
 
-			if ($this->storeModel->update_betrieb($id, $g_data)) {
-				$this->storeTransactions->setStoreNameInConversations($id, $g_data['name']);
+			if ($this->storeModel->update_legacyStoreInfo($id, $g_data, $storeName)) {
+				$this->storeTransactions->setStoreNameInConversations($id, $storeName);
 				$this->flashMessageHelper->info($this->translationHelper->s('betrieb_edit_success'));
 				$this->routeHelper->go('/?page=fsbetrieb&id=' . $id);
 			} else {
@@ -194,13 +191,13 @@ class StoreControl extends Control
 	{
 		global $g_data;
 		if ($this->submitted()) {
-			$g_data['status_date'] = date('Y-m-d H:i:s');
-
 			if (!isset($g_data['bezirk_id'])) {
 				$g_data['bezirk_id'] = $this->session->getCurrentRegionId();
 			}
 			if (!in_array($g_data['bezirk_id'], $this->session->listRegionIDs())) {
-				$this->flashMessageHelper->error($this->translationHelper->s('store.can_only_create_store_in_member_region'));
+				$this->flashMessageHelper->error(
+					$this->translationHelper->s('store.can_only_create_store_in_member_region')
+				);
 				$this->routeHelper->goPage();
 			}
 

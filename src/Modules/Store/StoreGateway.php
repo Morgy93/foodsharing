@@ -82,8 +82,11 @@ class StoreGateway extends BaseGateway implements BellUpdaterInterface
 	{
 		return $this->db->update(
 			'fs_betrieb',
-			// TODO check integrity and whether properties should be settable, data type matches
-			[$field => $newValue],
+			[
+				// TODO check integrity and whether properties should be settable, data type matches
+				$field => $newValue,
+				'status_date' => date('Y-m-d H:i:s'),
+			],
 			['id' => $storeId]
 		);
 	}
