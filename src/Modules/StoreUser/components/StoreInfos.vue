@@ -58,10 +58,10 @@
           {{ $i18n('store.my_last_pickup') }}
         </div>
         <span>
-          {{ formatLastFetchDate() }}
+          {{ formatLastFetchDate }}
         </span>
-        <span v-if="distanceInDays() > 1">
-          ({{ $i18n('store.days_before') }} {{ distanceInDays() }} {{ $i18n('store.days') }})
+        <span v-if="distanceInDays > 1">
+          {{ $i18n('store.days_ago', { howMany: distanceInDays }) }}
         </span>
       </div>
     </div>
@@ -116,13 +116,10 @@ export default {
   computed: {
     allowedToMentionInPublic () {
       return this.press === 1
-    }
-  },
-  methods: {
+    },
     formatLastFetchDate () {
       return format(new Date(this.lastFetchDate), 'dd.MM.yyyy')
     },
-
     distanceInDays () {
       return differenceInCalendarDays(new Date(), new Date(this.lastFetchDate))
     }
