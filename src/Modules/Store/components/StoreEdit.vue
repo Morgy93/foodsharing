@@ -10,9 +10,7 @@
         <b-tab :title="$i18n('storeedit.text.header')" no-body>
           <b-row class="store-text">
             <b-col sm="6">
-              <b-card-title class="required">
-                {{ $i18n('storeedit.text.title') }}
-              </b-card-title>
+              <b-card-title :title="$i18n('storeedit.text.title')" />
               <b-card-text class="store-title">
                 <b-form-input
                   v-model.trim="form.title"
@@ -21,10 +19,7 @@
                 />
               </b-card-text>
 
-              <b-card-title>
-                {{ $i18n('storeedit.text.publicInfo') }}
-              </b-card-title>
-
+              <b-card-title :title="$i18n('storeedit.text.publicInfo')" />
               <b-card-text>
                 <b-alert show>
                   <i class="fas fa-info-circle" />
@@ -53,9 +48,7 @@
             </b-col>
 
             <b-col sm="6">
-              <b-card-title>
-                {{ $i18n('storeedit.text.particularities') }}
-              </b-card-title>
+              <b-card-title :title="$i18n('storeedit.text.particularities')" />
               <b-card-text>
                 <b-form-textarea
                   v-model.trim="form.particularities"
@@ -72,9 +65,7 @@
         <b-tab :title="$i18n('storeedit.fetch.header')" no-body>
           <b-row class="store-fetch">
             <b-col sm="6">
-              <b-card-title>
-                {{ $i18n('storeedit.fetch.weight') }}
-              </b-card-title>
+              <b-card-title :title="$i18n('storeedit.fetch.weight')" />
               <b-card-text>
                 <b-form-select
                   v-model="form.weight"
@@ -83,9 +74,7 @@
                 />
               </b-card-text>
 
-              <b-card-title>
-                {{ $i18n('storeedit.fetch.time') }}
-              </b-card-title>
+              <b-card-title :title="$i18n('storeedit.fetch.time')" />
               <b-card-text class="store-time">
                 <b-form-select
                   v-model="form.time"
@@ -94,9 +83,7 @@
                 />
               </b-card-text>
 
-              <b-card-title>
-                {{ $i18n('storeedit.fetch.prefetchtime') }}
-              </b-card-title>
+              <b-card-title :title="$i18n('storeedit.fetch.prefetchtime')" />
               <b-card-text>
                 <b-form-select
                   v-model="form.prefetchtime"
@@ -105,9 +92,7 @@
                 />
               </b-card-text>
 
-              <b-card-title>
-                {{ $i18n('storeedit.fetch.teamStatus') }}
-              </b-card-title>
+              <b-card-title :title="$i18n('storeedit.fetch.teamStatus')" />
               <b-card-text>
                 <b-form-select
                   v-model="form.teamStatus"
@@ -118,9 +103,7 @@
             </b-col>
 
             <b-col sm="6">
-              <b-card-title>
-                {{ $i18n('storeedit.fetch.foodTypes') }}
-              </b-card-title>
+              <b-card-title :title="$i18n('storeedit.fetch.foodTypes')" />
               <b-card-text>
                 <b-form-group>
                   <b-form-checkbox-group
@@ -140,9 +123,7 @@
         <b-tab :title="$i18n('storeedit.coop.header')" no-body>
           <b-row class="store-coop">
             <b-col sm="6">
-              <b-card-title>
-                {{ $i18n('storeedit.coop.start') }}
-              </b-card-title>
+              <b-card-title :title="$i18n('storeedit.coop.start')" />
               <b-card-text>
                 <b-form-datepicker
                   v-model="form.start"
@@ -151,9 +132,7 @@
                 />
               </b-card-text>
 
-              <b-card-title>
-                {{ $i18n('storeedit.coop.difficulty') }}
-              </b-card-title>
+              <b-card-title :title="$i18n('storeedit.coop.difficulty')" />
               <b-card-text>
                 <b-form-select
                   v-model="form.difficulty"
@@ -162,9 +141,7 @@
                 />
               </b-card-text>
 
-              <b-card-title>
-                {{ $i18n('storeedit.coop.publicity') }}
-              </b-card-title>
+              <b-card-title :title="$i18n('storeedit.coop.publicity')" />
               <b-card-text>
                 <b-form-select
                   v-model="form.publicity"
@@ -173,9 +150,7 @@
                 />
               </b-card-text>
 
-              <b-card-title>
-                {{ $i18n('storeedit.coop.sticker') }}
-              </b-card-title>
+              <b-card-title :title="$i18n('storeedit.coop.sticker')" />
               <b-card-text>
                 <b-form-select
                   v-model="form.sticker"
@@ -186,9 +161,7 @@
             </b-col>
 
             <b-col sm="6">
-              <b-card-title>
-                {{ $i18n('storeedit.coop.contactPerson') }}
-              </b-card-title>
+              <b-card-title :title="$i18n('storeedit.coop.contactPerson')" />
               <b-card-text>
                 <b-form-input
                   v-model="form.contactPerson"
@@ -196,9 +169,7 @@
                 />
               </b-card-text>
 
-              <b-card-title>
-                {{ $i18n('storeedit.coop.contactPhone') }}
-              </b-card-title>
+              <b-card-title :title="$i18n('storeedit.coop.contactPhone')" />
               <b-card-text>
                 <b-form-input
                   v-model.trim="form.contactPhone"
@@ -206,9 +177,7 @@
                 />
               </b-card-text>
 
-              <b-card-title>
-                {{ $i18n('storeedit.coop.contactFax') }}
-              </b-card-title>
+              <b-card-title :title="$i18n('storeedit.coop.contactFax')" />
               <b-card-text>
                 <b-form-input
                   v-model.trim="form.contactFax"
@@ -216,9 +185,7 @@
                 />
               </b-card-text>
 
-              <b-card-title>
-                {{ $i18n('storeedit.coop.contactMail') }}
-              </b-card-title>
+              <b-card-title :title="$i18n('storeedit.coop.contactMail')" />
               <b-card-text>
                 <b-form-input
                   v-model.trim="form.contactMail"
@@ -233,9 +200,7 @@
         <b-tab :title="$i18n('storeedit.store.header')" no-body>
           <b-row class="store-status">
             <b-col sm="6">
-              <b-card-title>
-                {{ $i18n('storeedit.store.status') }}
-              </b-card-title>
+              <b-card-title :title="$i18n('storeedit.store.status')" />
               <b-card-text>
                 <b-alert show>
                   <i class="fas fa-info-circle" />
@@ -260,9 +225,7 @@
             </b-col>
 
             <b-col sm="6">
-              <b-card-title>
-                {{ $i18n('storeedit.store.chain') }}
-              </b-card-title>
+              <b-card-title :title="$i18n('storeedit.store.chain')" />
               <b-card-text>
                 <b-form-select
                   v-model="form.chain"
@@ -282,9 +245,7 @@
                 </b-form-select>
               </b-card-text>
 
-              <b-card-title>
-                {{ $i18n('storeedit.store.category') }}
-              </b-card-title>
+              <b-card-title :title="$i18n('storeedit.store.category')" />
               <b-card-text>
                 <b-form-select
                   v-model="form.category"
@@ -352,9 +313,7 @@
         <b-tab :title="$i18n('storeedit.location.header')" no-body>
           <b-row class="store-location">
             <b-col>
-              <b-card-title>
-                {{ $i18n('storeedit.location.seeBelow') }}
-              </b-card-title>
+              <b-card-title :title="$i18n('storeedit.location.seeBelow')" />
             </b-col>
           </b-row>
         </b-tab>
@@ -521,18 +480,6 @@ export default {
     padding: 5px 10px;
     background-color: var(--fs-white);
     color: var(--fs-brown);
-
-    &.required {
-      background-color: var(--fs-beige);
-      border-left-color: var(--fs-brown);
-
-      &::after {
-        content: '*';
-        float: right;
-        text-align: right;
-        font-size: 20px;
-      }
-    }
   }
   /deep/ .custom-control-label {
     line-height: 1.5;
