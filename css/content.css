@@ -253,7 +253,13 @@ a.linkrow span.item {
   padding-left: 17px;
 }
 
-.ampel span {
+.store-trafficlight {
+  display: inline-block;
+  text-decoration: none;
+}
+
+.ampel span,
+.store-trafficlight span {
   display: block;
   width: 17px;
   height: 17px;

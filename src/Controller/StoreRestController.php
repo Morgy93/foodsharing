@@ -124,7 +124,8 @@ class StoreRestController extends AbstractFOSRestController
 				$this->storeGateway->setStoreFoodTypes($storeId, $newValue);
 				break;
 			default:
-				$this->storeGateway->editStore($storeId, $field, $newValue);
+				$fsId = $this->session->id();
+				$this->storeGateway->editStore($storeId, $field, $newValue, $fsId);
 				break;
 		}
 

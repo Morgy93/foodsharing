@@ -32,6 +32,7 @@ export default {
         case 5:
           return i18n('storestatus.5')
         case 4:
+        case 7:
           return i18n('storestatus.4')
         case 6:
           return i18n('storestatus.6')

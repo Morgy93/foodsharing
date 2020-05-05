@@ -202,12 +202,11 @@ class StoreView extends View
 			);
 		}
 
-		$status = $this->v_utils->v_getStatusAmpel($b['betrieb_status_id']);
-		$bstatus = $this->translator->trans('storestatus.' . (int)$b['betrieb_status_id']) . '.';
+		$bstatus = $this->v_utils->v_getStatusAmpel($b['betrieb_status_id']);
 		$tstatus = $this->translator->trans('storeedit.fetch.teamStatus' . (int)$b['team_status']);
 		$html = $this->v_utils->v_input_wrapper(
 			$this->translator->trans('storeedit.store.status'),
-			$status . '<span class="bstatus">' . $bstatus . '</span>' . $count_info
+			$bstatus . $count_info
 		) . '
 		' . $this->v_utils->v_input_wrapper(
 			$this->translator->trans('storeview.managers'), $verantwortlich, 'bcntverantwortlich'

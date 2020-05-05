@@ -78,8 +78,12 @@ class StoreGateway extends BaseGateway implements BellUpdaterInterface
 		return $result;
 	}
 
-	public function editStore($storeId, $field, $newValue): int
+	public function editStore($storeId, $field, $newValue, $fsId): int
 	{
+		if ($field == 'betrieb_status_id') {
+			$this->addStatusChangeNote($storeId, $newValue, $fsId);
+		}
+
 		return $this->db->update(
 			'fs_betrieb',
 			[
@@ -89,6 +93,29 @@ class StoreGateway extends BaseGateway implements BellUpdaterInterface
 			],
 			['id' => $storeId]
 		);
+	}
+
+	private function addStatusChangeNote($storeId, $newValue, $fsId): int
+	{
+		$last = $this->db->fetch('
+			SELECT id, milestone
+			FROM  `fs_betrieb_notiz`
+			WHERE `betrieb_id` = :id
+			ORDER BY id DESC
+			LIMIT 1
+		', [':id' => $storeId]);
+
+		if ($last['milestone'] == 3) {
+			$this->db->delete('fs_betrieb_notiz', ['id' => $last['id']]);
+		}
+
+		return $this->add_betrieb_notiz([
+			'foodsaver_id' => $fsId,
+			'betrieb_id' => $storeId,
+			'text' => 'status_msg_' . (int)$newValue,
+			'zeit' => date('Y-m-d H:i:s'),
+			'milestone' => 3,
+		]);
 	}
 
 	public function getMapsStores(int $regionId): array
@@ -110,13 +137,14 @@ class StoreGateway extends BaseGateway implements BellUpdaterInterface
 					k.logo
 
 			FROM 	fs_betrieb b
-                    LEFT JOIN fs_kette k
-                    ON b.kette_id = k.id
+			LEFT JOIN fs_kette k ON b.kette_id = k.id
 
-			WHERE   b.bezirk_id = :regionId
-			AND     b.`lat` != ""
-        ', [
-			':regionId' => $regionId
+			WHERE 	b.bezirk_id = :regionId
+			  AND	b.betrieb_status_id <> :permanentlyClosed
+			  AND	b.`lat` != ""
+		', [
+				':regionId' => $regionId,
+				':permanentlyClosed' => CooperationStatus::PERMANENTLY_CLOSED,
 		]);
 	}
 
@@ -769,29 +797,6 @@ class StoreGateway extends BaseGateway implements BellUpdaterInterface
 		}
 
 		return $this->db->fetchValueByCriteria('fs_betrieb', $chatType, ['id' => $storeId]);
-	}
-
-	public function changeBetriebStatus($fs_id, $storeId, $status): int
-	{
-		$last = $this->db->fetch('SELECT id, milestone FROM `fs_betrieb_notiz` WHERE `betrieb_id` = :id ORDER BY id DESC LIMIT 1', [':id' => $storeId]);
-
-		if ($last['milestone'] == 3) {
-			$this->db->delete('fs_betrieb_notiz', ['id' => $last['id']]);
-		}
-
-		$this->add_betrieb_notiz([
-			'foodsaver_id' => $fs_id,
-			'betrieb_id' => $storeId,
-			'text' => 'status_msg_' . (int)$status,
-			'zeit' => date('Y-m-d H:i:s'),
-			'milestone' => 3
-		]);
-
-		return $this->db->update(
-			'fs_betrieb',
-			['betrieb_status_id' => $status],
-			['id' => $storeId]
-		);
 	}
 
 	public function add_betrieb_notiz($data): int

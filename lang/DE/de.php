@@ -154,7 +154,6 @@ $g_lang['rolle_4_3'] = 'Orgamensch';
 
 $g_lang['want_to_fetch'] = 'In diesem Team würde ich gerne helfen.';
 $g_lang['to_team_page'] = 'Zur Teamseite';
-$g_lang['status'] = 'Aktueller Status';
 $g_lang['info'] = 'Informationen';
 $g_lang['photo'] = 'Foto';
 $g_lang['||ENDE||'] = true;

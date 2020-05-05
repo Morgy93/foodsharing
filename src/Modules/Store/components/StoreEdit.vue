@@ -403,7 +403,8 @@ export default {
         { value: 3, text: i18n('storestatus.3') },
         { value: 4, text: i18n('storestatus.4') },
         { value: 5, text: i18n('storestatus.5') },
-        { value: 6, text: i18n('storestatus.6') }
+        { value: 6, text: i18n('storestatus.6') },
+        { value: 7, text: i18n('storestatus.7') }
       ]
     },
     teamStatusOptions () {

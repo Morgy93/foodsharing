@@ -9,6 +9,7 @@ use Foodsharing\Utility\PageHelper;
 use Foodsharing\Utility\RouteHelper;
 use Foodsharing\Utility\Sanitizer;
 use Foodsharing\Utility\TranslationHelper;
+use Symfony\Contracts\Translation\TranslatorInterface;
 
 class Utils
 {
@@ -29,6 +30,16 @@ class Utils
 	private $identificationHelper;
 	private $dataHelper;
 	private $translationHelper;
+	/* @var TranslatorInterface */
+	private $translator;
+
+	/**
+	 * @required
+	 */
+	public function setTranslator(TranslatorInterface $translator)
+	{
+		$this->translator = $translator;
+	}
 
 	public function __construct(
 		Sanitizer $sanitizerService,
@@ -1365,28 +1376,21 @@ class Utils
 
 	public function v_getStatusAmpel($status)
 	{
-		$out = '';
-		switch ($status) {
-			case 1:
-				$out = '<span class="hidden">1</span><a href="#" onclick="return false;" title="Es besteht noch kein Kontakt" class="ampel ampel-grau"><span>&nbsp;</span></a>';
-				break;
-			case 2:
-				$out = '<span class="hidden">2</span><a href="#" onclick="return false;" title="Verhandlungen laufen" class="ampel ampel-gelb"><span>&nbsp;</span></a>';
-				break;
-			case 3:
-				$out = '<span class="hidden">3</span><a href="#" onclick="return false;" title="Betrieb kooperiert bereits" class="ampel ampel-gruen"><span>&nbsp;</span></a>';
-				break;
-			case 5:
-				$out = '<span class="hidden">3</span><a href="#" onclick="return false;" title="Betrieb kooperiert bereits" class="ampel ampel-gruen"><span>&nbsp;</span></a>';
-				break;
-			case 4:
-				$out = '<span class="hidden">4</span><a href="#" onclick="return false;" title="Will nicht kooperieren" class="ampel ampel-rot"><span>&nbsp;</span></a>';
-				break;
-			case 6:
-				$out = '<span class="hidden">4</span><a href="#" onclick="return false;" title="Spendet an Tafel etc. und wirft nichts weg" class="ampel ampel-blau"><span>&nbsp;</span></a>';
-				break;
-		}
+		$color = [
+			0 => 'grau',
+			1 => 'grau',
+			2 => 'gelb',
+			3 => 'gruen',
+			4 => 'rot',
+			5 => 'gruen',
+			6 => 'blau',
+			7 => 'rot',
+		][$status] ?? '';
 
-		return $out;
+		return $this->translator->trans('storestatus.light', [
+			'{statusNum}' => $status,
+			'{color}' => $color,
+			'{title}' => $this->translator->trans('storestatus.' . $status),
+		]);
 	}
 }

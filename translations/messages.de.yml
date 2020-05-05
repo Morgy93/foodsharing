@@ -748,6 +748,12 @@ storestatus:
   4: Will nicht kooperieren
   5: Betrieb kooperiert bereits
   6: Spendet an Tafel etc. und wirft nichts weg
+  7: Betrieb existiert nicht mehr
+  light: |
+    <span class='sr-only'>{statusNum}</span>
+    <a href='#' onclick='return false;' class='store-trafficlight ampel-{color}' title='{title}'>
+    <span>&nbsp;</span></a>
+    <span>{title}</span>
 
 storelist:
  entered: "Eingetragen:"
