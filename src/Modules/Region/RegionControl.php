@@ -92,10 +92,24 @@ final class RegionControl extends Control
 		return $this->forumPermissions->mayAccessAmbassadorBoard($regionId);
 	}
 
+	private function isHomeDistrict($region)
+	{
+		$isWorkGroup = $this->isWorkGroup($region);
+		if ($isWorkGroup) {
+			return false;
+		}
+		if ((int)$region['id'] === $this->session->getCurrentRegionId()) {
+			return true;
+		}
+		return false;
+	}
+
 	private function regionViewData($region, $activeSubpage)
 	{
 		$isWorkGroup = $this->isWorkGroup($region);
 		$regionId = (int)$region['id'];
+		$isHomeDistrict = $this->isHomeDistrict($region);
+
 		$menu = [
 			['name' => 'terminology.forum', 'href' => '/?page=bezirk&bid=' . $regionId . '&sub=forum'],
 			['name' => 'terminology.events', 'href' => '/?page=bezirk&bid=' . $regionId . '&sub=events'],
@@ -163,6 +177,7 @@ final class RegionControl extends Control
 			'id' => $this->region['id'],
 			'name' => $this->region['name'],
 			'isWorkGroup' => $isWorkGroup,
+			'isHomeDistrict' => $isHomeDistrict,
 			'stat' => $stat,
 			'admins' => array_map($avatarListEntry, array_slice($this->region['botschafter'], 0, 30)),
 		];
