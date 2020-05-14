@@ -101,6 +101,7 @@ final class RegionControl extends Control
 		if ((int)$region['id'] === $this->session->getCurrentRegionId()) {
 			return true;
 		}
+
 		return false;
 	}
 
