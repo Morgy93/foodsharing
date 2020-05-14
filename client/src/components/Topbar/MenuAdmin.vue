@@ -34,56 +34,56 @@ export default {
       const items = []
       if (this.may.administrateBlog) {
         items.push({
-          url: '/?page=blog&sub=manage',
+          url: this.$url('blogEdit'),
           icon: 'far fa-newspaper',
           label: this.$i18n('menu.blog')
         })
       }
       if (this.may.editQuiz) {
         items.push({
-          url: '/?page=quiz',
+          url: this.$url('quizEdit'),
           icon: 'fas fa-question-circle',
           label: this.$i18n('menu.quiz')
         })
       }
       if (this.may.handleReports) {
         items.push({
-          url: '/?page=report&sub=uncom',
+          url: this.$url('reports'),
           icon: 'fas fa-exclamation',
           label: this.$i18n('menu.reports')
         })
       }
       if (this.may.administrateRegions) {
         items.push({
-          url: '/?page=region',
+          url: this.$url('region'),
           icon: 'fas fa-map',
           label: this.$i18n('menu.manage_regions')
         })
       }
       if (this.may.administrateNewsletterEmail) {
         items.push({
-          url: '/?page=email',
+          url: this.$url('email'),
           icon: 'fas fa-envelope',
           label: this.$i18n('menu.email')
         })
       }
       if (this.may.manageMailboxes) {
         items.push({
-          url: '/?page=mailbox&a=manage',
+          url: this.$url('mailboxManage'),
           icon: 'far fa-envelope',
           label: this.$i18n('menu.manage_mailboxes')
         })
       }
       if (this.may.editFAQ) {
         items.push({
-          url: '/?page=faq',
+          url: this.$url('faqEdit'),
           icon: 'fas fa-question',
           label: this.$i18n('menu.faq')
         })
       }
       if (this.may.editContent) {
         items.push({
-          url: '/?page=content',
+          url: this.$url('contentEdit'),
           icon: 'fas fa-file-alt',
           label: this.$i18n('menu.content')
         })
