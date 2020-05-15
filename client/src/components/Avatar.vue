@@ -47,7 +47,7 @@ export default {
       if (this.url) {
         return '/images/' + prefix + this.url
       } else {
-        return '/img/' + prefix + 'avatar.png'
+        return require(`img/${prefix}avatar.png`)
       }
     }
   }

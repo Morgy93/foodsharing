@@ -102,7 +102,8 @@ module.exports = merge(webpackBase, {
         loader: 'url-loader',
         options: {
           limit: 10000,
-          name: dev ? 'img/[name].[ext]' : 'img/[name].[hash:7].[ext]'
+          name: dev ? 'img/[name].[ext]' : 'img/[name].[hash:7].[ext]',
+          esModule: false
         }
       },
       {

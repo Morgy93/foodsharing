@@ -104,6 +104,19 @@ services:
       - ../:/app:delegated
       - chat-node-modules:/app/node_modules:cached
 
+  # Storybook server
+  #------------------------------------
+  storybook:
+    container_name: foodsharing_dev_storybook
+    command: sh -c "yarn && yarn run storybook"
+    image: node:13.10.1-alpine
+    working_dir: /app/client
+    ports:
+      - "127.0.0.1:18087:18087"
+    volumes:
+      - ../:/app:cached
+      - storybook-node-modules:/app/client/node_modules:cached
+
   # mysql
   #------------------------------------
 
@@ -182,4 +195,5 @@ services:
 volumes:
   client-node-modules:
   chat-node-modules:
+  storybook-node-modules:
   influxdb:
