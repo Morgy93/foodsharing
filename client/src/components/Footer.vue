@@ -155,7 +155,7 @@
           target="_blank"
           rel="nofollow noopener"
         ><img
-          src="/img/manitu_logo.png"
+          src="~img/manitu_logo.png"
           alt="Manitu"
         ></a>
       </div>

@@ -49,7 +49,7 @@ export default {
       if (this.url) {
         return '/images/' + prefix + this.url
       } else {
-        return '/img/' + prefix + 'avatar.png'
+        return require(`img/${prefix}avatar.png`)
       }
     }
   }
@@ -75,13 +75,13 @@ export default {
   left: -10%;
 }
 .sleeping35::after {
-  background-image: url('/img/sleep35x35.png');
+  background-image: url('~img/sleep35x35.png');
 }
 .sleeping50::after {
-  background-image: url('/img/sleep50x50.png');
+  background-image: url('~img/sleep50x50.png');
 }
 .sleeping130::after {
-  background-image: url('/img/sleep130x130.png');
+  background-image: url('~img/sleep130x130.png');
 }
 .auto-scale {
   height: 100%;
