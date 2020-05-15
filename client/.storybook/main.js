@@ -1,5 +1,5 @@
-
 const custom = require('../webpack.base.js');
+const shims = require('../shims')
 
 module.exports = {
   stories: ['../src/components/**/*.stories.js'],
@@ -27,7 +27,7 @@ module.exports = {
       ]
     });
 
-    console.log(config);
+    config.module.rules = config.module.rules.concat(shims.rules);
 
     return config;
   }
