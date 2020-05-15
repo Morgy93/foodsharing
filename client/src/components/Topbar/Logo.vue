@@ -7,6 +7,7 @@
     food<span>shar<span>i</span>ng</span>
   </a>
 </template>
+
 <script>
 export default {
   props: {
@@ -17,6 +18,7 @@ export default {
   }
 }
 </script>
+
 <style lang="scss" scoped>
 .navbar-brand {
     font-family: 'Alfa Slab One',serif;
