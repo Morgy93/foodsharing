@@ -98,6 +98,8 @@
     "@storybook/addon-centered": "^5.3.18",
     "@storybook/addon-viewport": "^5.3.18",
     "@storybook/addon-a11y": "^5.3.18",
+    "@storybook/addons": "^5.3.18",
+    "@storybook/theming": "^5.3.18",
     "url-loader": "^4.0.0",
     "vue-eslint-parser": "^7.0.0",
     "vue-loader": "^15.9.1",
