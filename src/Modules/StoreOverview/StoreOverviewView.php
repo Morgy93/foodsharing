@@ -28,15 +28,15 @@ class StoreOverviewView extends View
 		}
 
 		$countDates = 14;
-		$date = date("d.m.");
+		$date = date('d.m.');
 
 		$head = [
 			['name' => 'Betrieb', 'width' => 180],
 			['name' => $date, 'width' => 90]];
 
-			for ($i = 1; $i <= $countDates; $i++) {
-				$head[] = ['name' =>  date("d.m." , strtotime("+" . $i . "day")), 'width' => 90];
-			}
+		for ($i = 1; $i <= $countDates; $i++) {
+			$head[] = ['name' =>  date("d.m." , strtotime("+" . $i . "day")), 'width' => 90];
+		}
 
 		$table = $this->v_utils->v_tablesorter($head, $storeRows);
 
