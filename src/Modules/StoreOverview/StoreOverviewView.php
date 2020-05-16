@@ -34,8 +34,8 @@ class StoreOverviewView extends View
 			['name' => 'Betrieb', 'width' => 180],
 			['name' => $date, 'width' => 90]];
 
-		for ($i = 1; $i <= $countDates; $i++) {
-			$head[] = ['name' =>  date("d.m." , strtotime("+" . $i . "day")), 'width' => 90];
+		for ($i = 1; $i <= $countDates; ++$i) {
+			$head[] = ['name' => date('d.m.', strtotime('+' . $i . 'day')), 'width' => 90];
 		}
 
 		$table = $this->v_utils->v_tablesorter($head, $storeRows);

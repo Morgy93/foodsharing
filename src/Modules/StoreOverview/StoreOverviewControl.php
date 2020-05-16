@@ -26,6 +26,5 @@ class StoreOverviewControl extends Control
 
 		$stores = $this->storeGateway->getMyStores($this->session->id(), $this->session->getCurrentRegionId());
 		$this->pageHelper->addContent($this->view->u_storeList($stores['sonstige'], $this->translationHelper->s('overview_stores')));
-
 	}
 }
