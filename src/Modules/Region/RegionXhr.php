@@ -66,20 +66,22 @@ final class RegionXhr extends Control
 
 	public function quickreply()
 	{
-		if (isset($_GET['bid'], $_GET['tid'], $_GET['pid'], $_POST['msg']) && $this->session->may(
-			) && $_POST['msg'] != '') {
+		$data = json_decode(file_get_contents('php://input'), true);
+
+		if (isset($_GET['bid'], $_GET['tid'], $_GET['pid'], $data['msg']) && $this->session->may(
+			) && $data['msg'] != '') {
 			$sub = 'forum';
 			if ($_GET['sub'] != 'forum') {
 				$sub = 'botforum';
 			}
 
-			$body = $_POST['msg'];
+			$body = $data['msg'];
 
 			if ($this->forumPermissions->mayPostToThread($_GET['tid'])
 				&& $bezirk = $this->regionGateway->getRegion($_GET['bid'])
 			) {
 				if ($post_id = $this->forumGateway->addPost($this->session->id(), $_GET['tid'], $body)) {
-					if ($follower = $this->forumFollowerGateway->getThreadFollower($this->session->id(), $_GET['tid'])) {
+					if ($follower = $this->forumFollowerGateway->getThreadEmailFollower($this->session->id(), $_GET['tid'])) {
 						$theme = $this->forumGateway->getThreadInfo($_GET['tid']);
 
 						foreach ($follower as $f) {
@@ -121,7 +123,6 @@ final class RegionXhr extends Control
 
 		if ($this->session->mayBezirk($groupId)) {
 			$this->foodsaverGateway->deleteFromRegion($groupId, $this->session->id());
-			$this->notificationService->sendEmailIfGroupHasNoAdmin($groupId);
 
 			return $this->responses->success();
 		}

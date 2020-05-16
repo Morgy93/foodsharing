@@ -195,7 +195,8 @@ class MailboxXhr extends Control
 			if (isset($sender['mailbox'], $sender['host']) && $sender != null) {
 				$subject = 'Re: ' . trim(str_replace(['Re:', 'RE:', 're:', 'aw:', 'Aw:', 'AW:'], '', $message['subject']));
 
-				$body = strip_tags($_POST['msg']) . "\n\n\n\n--------- Nachricht von " . $this->timeHelper->niceDate($message['time_ts']) . " ---------\n\n>\t" . str_replace("\n", "\n>\t", $message['body']);
+				$data = json_decode(file_get_contents('php://input'), true);
+				$body = strip_tags($data['msg']) . "\n\n\n\n--------- Nachricht von " . $this->timeHelper->niceDate($message['time_ts']) . " ---------\n\n>\t" . str_replace("\n", "\n>\t", $message['body']);
 
 				$mail = new AsyncMail($this->mem);
 				$mail->setFrom($message['mailbox'] . '@' . PLATFORM_MAILBOX_HOST, $this->session->user('name'));

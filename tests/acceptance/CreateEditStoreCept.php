@@ -39,9 +39,9 @@ $I->fillField('#first_post', 'A first wallpost entry on the store');
 $I->click('Senden');
 
 /* See my mobile number because I am responsible */
-$I->waitForText($storeStreet, null, '#input-1-wrapper');
-$I->waitForText($storePostcode, null, '#input-1-wrapper');
-$I->waitForText($storeCity, null, '#input-1-wrapper');
+$I->waitForText($storeStreet, null, '#inputAdress');
+$I->waitForText($storePostcode, null, '#inputAdress');
+$I->waitForText($storeCity, null, '#inputAdress');
 $I->see($bibA['handy']);
 
 $teamConversationId = $I->grabFromDatabase('fs_betrieb', 'team_conversation_id', ['name' => $storeName]);
@@ -105,6 +105,7 @@ $teamConversationMembers = $I->grabColumnFromDatabase('fs_foodsaver_has_conversa
 $jumperConversationMembers = $I->grabColumnFromDatabase('fs_foodsaver_has_conversation', 'foodsaver_id', ['conversation_id' => $jumperConversationId]);
 $storeTeamIDs = [$bibA['id'], $foodsaverA['id'], $foodsaverB['id']];
 $storeCoordinatorIDs = [$bibA['id']];
+$I->assertEquals($storeTeamIDs, $I->grabColumnFromDatabase('fs_betrieb_team', 'foodsaver_id', ['betrieb_id' => $storeId, 'active' => 1]));
 $I->assertEquals($storeTeamIDs, $teamConversationMembers);
 /* TODO fails, please fix. See https://gitlab.com/foodsharing-dev/issues0/issues/352 :) */
 /*

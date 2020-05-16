@@ -1,17 +1,24 @@
 import '@/core'
 import '@/globals'
+
+import { vueRegister, vueApply } from '@/vue'
+import ActivityOverview from './components/ActivityOverview'
+
 import './Dashboard.css'
 
-import activity from '@/activity'
 import i18n from '@/i18n'
 import { subscribeForPushNotifications } from '@/pushNotifications'
 import { pulseSuccess, pulseError } from '@/script'
 
-activity.init()
+vueRegister({
+  ActivityOverview
+})
+
+vueApply('#activity-overview')
 
 // Push Notification Banner
 const pushnotificationsBanner = document.querySelector('#top-banner-pushnotifications')
-if (('PushManager' in window) && (Notification.permission === 'default') && !document.cookie.includes('pushNotificationBannerClosed=true')) {
+if (('serviceWorker' in navigator) && ('PushManager' in window) && (Notification.permission === 'default') && !document.cookie.includes('pushNotificationBannerClosed=true')) {
   pushnotificationsBanner.style.display = ''
 
   const pushnotificationsButton = document.querySelector('#button-pushnotifications')

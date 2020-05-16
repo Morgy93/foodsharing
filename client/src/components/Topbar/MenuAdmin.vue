@@ -1,14 +1,14 @@
 <template>
   <b-nav-item-dropdown
     id="dropdown-admin"
-    v-b-tooltip="$i18n('menu.tooltips.administration')"
+    v-b-tooltip="$i18n('menu.entry.administration')"
     right
     no-caret
   >
     <template v-slot:button-content>
       <i class="fas fa-cog" />
       <span class="d-md-none">
-        {{ $i18n('menu.tooltips.administration') }}
+        {{ $i18n('menu.entry.administration') }}
       </span>
     </template>
     <b-dropdown-item
@@ -23,10 +23,6 @@
 <script>
 export default {
   props: {
-    isOrgaTeam: {
-      type: Boolean,
-      default: false
-    },
     may: {
       type: Object,
       default: () => {}
@@ -36,15 +32,6 @@ export default {
     items () {
       // TODO: replace hard coded links with $url()
       const items = []
-      if (this.isOrgaTeam) {
-        items.push(...[
-          {
-            url: '/?page=region',
-            icon: 'fas fa-map',
-            label: this.$i18n('menu.manage_regions')
-          }
-        ])
-      }
       if (this.may.administrateBlog) {
         items.push({
           url: '/?page=blog&sub=manage',
@@ -64,6 +51,13 @@ export default {
           url: '/?page=report&sub=uncom',
           icon: 'fas fa-exclamation',
           label: this.$i18n('menu.reports')
+        })
+      }
+      if (this.may.administrateRegions) {
+        items.push({
+          url: '/?page=region',
+          icon: 'fas fa-map',
+          label: this.$i18n('menu.manage_regions')
         })
       }
       if (this.may.administrateNewsletterEmail) {

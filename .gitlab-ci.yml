@@ -2,8 +2,10 @@ include:
   template: Dependency-Scanning.gitlab-ci.yml
 
 dependency_scanning:
-  only:
-  - master
+  rules:
+  - if: '$CI_MERGE_REQUEST_TARGET_BRANCH_NAME == "master"'
+    when: always
+  - when: never
 
 .defaults: &defaults
   tags:
@@ -119,7 +121,7 @@ build:frontend:
 
 build:backend:
   <<: *defaults
-  image: registry.gitlab.com/foodsharing-dev/images/php:2.19
+  image: registry.gitlab.com/foodsharing-dev/images/php:4
   stage: build
   script:
     - composer install --verbose --prefer-dist --no-progress --no-interaction --no-suggest --no-scripts --ignore-platform-reqs
@@ -128,6 +130,8 @@ build:backend:
     - vendor/bin/phpstan analyse --memory-limit=768M --no-progress
     - composer install --verbose --prefer-dist --no-progress --no-interaction --no-dev --classmap-authoritative --no-suggest --no-scripts --ignore-platform-reqs
     - composer dump-autoload --classmap-authoritative
+    - mkdir assets
+    - FS_ENV=dev bin/console assets:install
   cache:
     key: backend:build:v1
     paths:
@@ -136,6 +140,7 @@ build:backend:
   artifacts:
     expire_in: 1 week
     paths:
+    - assets
     - vendor
   except:
   - schedules

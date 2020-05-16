@@ -3,10 +3,20 @@
 ## Major changes
 
 ## Features
-- Add Web Push Notifications #336 !734 @janopae
-- Use WebSocket connection to determine whether a user is online or not !734 @janopae
+
+## Bugfixes
+
+## Refactoring
+
+## Dev/Test/CI stuff
+
+# 2020-05-16 
+
+## Features
+- Introduce Web Push Notifications #336 !734 @janopae
+- Use WebSocket connection to determine whether a user is online or not !734 !1470 @janopae
 - Re-enable pickup slot markers after production release !1331 !1307 @jofranz
-- Refactored register form to multi step pages in vue !1099 !1309 !1370 @chriswalg @moffer
+- Refactored register form to multi step pages in vue !1099 !1309 !1370 !1401 !1476 @chriswalg @moffer @ChrisOelmueller
 - Redirect to login page after login failed !1342 @chriswalg
 - Display icon for verified Foodsavers in store popup #766 !1294 @pfaufisch
 - update twig to version 3 @peter.toennies
@@ -16,8 +26,29 @@
 - Orgas are now able to delete wallposts for foodshare points !1359 @pfaufisch
 - Limit forum notifications to users logged in last 6 months #64 !1385 @fs_k
 - Show internal email address on user's own profile !1386 #465 @alex.simm
+- Dashboard updates can be filtered !735 !1424 @D0nPiano @ChrisOelmueller
+- Updates from events + foodsharepoints displayed on dashboard !735 !1441 #227 #588 @D0nPiano @ChrisOelmueller
+- Picture thumbnails are included in dashboard snippets of wallposts !735 #454 @D0nPiano @ChrisOelmueller
+- Link Avatar pictures on dashboard to profiles !735 #464 @D0nPiano @ChrisOelmueller
+- Add option for new forum threads in unmoderated fora to send mail or not !1233 #64 @jofranz @Caluera
+- Make it possible to unfollow forum bells #271 !1191 !1467 @jofranz @chriswalg @ChrisOelmueller @moffer
+- Introduce permissions for user profile data handling: maySeeHistory(), mayAdministrateUserProfile(), mayHandleFoodsaverRegionMenu() and mayDeleteFoodsaverFromRegion() !1288 !1438 @jofranz @alex.simm
+- Improve Metrics collection: Log execution timing including database execution timings for all controllers now. !1480 @NerdyProjects
+- Release notes introduced and replaced with the changelog !1474 @chriswalg
+- Extend the lifetime of persistent sessions after every request !1496 @dthulke
+- Include topic title in bell notification for forum posts #869 !1487 @ChrisOelmueller
+- Load store menu in the top bar only when the menu is opened in order to make the slot markers release ready !1502 @janopae
+- Update all package dependencies to current as of 2020-05-11 !1503 @NerdyProjects
+- Allow changing the language for all translation capable texts !1485 @NerdyProjects
+- Allow adding people to conversation by putting their ID into the recipient field !1508 @NerdyProjects
+- Return less results for the user search when creating a new conversation !1513 @NerdyProjects
+  - Now, it returns everybody who is in the same groups as you but excludes people that are just in state or country groups (e.g. Niedersachsen, Deutschland, Europa).
+  - Ambassadors additionally get all people in their ambassador regions and subregions
+  - Orga and Welcome team get all people, now also including foodsharers
+- Massively optimize performance of user search when creating a new conversation !1513 @NerdyProjects
 
 ## Bugfixes
+- Don't ask to accept the legal requirements when not logged in. #811 !1384 @CarolineFischer
 - On Mobile last pickup and member since information is shown on team list in stores #788 !1335 @fs_k
 - Date strings on Dashboard are now displayed in correct language #606 !1316 @pfaufisch
 - Fixed mails not displaying line breaks !1317 !1344 @pfaufisch
@@ -37,16 +68,32 @@
 - Don't include unconfirmed slots into statistics and fetch history !1360 @caluera
 - Fix reapplication not possible after beeing denied once !1277 #767 @chris2up9
 - Fix missing region id bug for food share points !1375 @alex.simm
-- Set height for topbar and removed the height of div#main. Now is the broadcast message completely readable !1383 !1391 @chriswalg
+- Set height for topbar and removed the height of div#main. Now is the broadcast message completely readable !1383 !1391 !1432 @chriswalg
 - Fixes crash in the date formatting logic when updating the list of bells !1388 @dthulke
 - Adds a null check to the chat server to avoid null WebSocket messages !1398 @dthulke
 - Fixed bug in email template rendering during when quickreplying to forum topics !1403 @alex.simm
+- Links in shortened dashboard updates no longer invalid due to cut-off #691 !735 @D0nPiano @ChrisOelmueller
+- Now possible to have many disabled sources of dashboard updates #365 !735 @D0nPiano @ChrisOelmueller
+- Fixes the marker loading in the region admin tool !1415 @dthulke
+- Adjusted picture sizes of slots, thread posts and of menubasket. !1298 !1423 #735 @moffer
+- Fix registration link on login page !1425 #856 @alex.simm
+- Adjusted picture sizes of slots, thread posts and of menubasket. !1298 #735 @moffer
+- Submenus of burger menu (mobile view) for example 'Infos' can be scrolled. !1411 #838 #837 @moffer
+- Fix link of top-left icon in navbar and make the hover-heart appear more often !1421 #853 @alex.simm 
+- fixed arrow handling !1408 @jonathan_b
+- Show a prompt to select a home district on the dashboard if none is choosen #716 !1123 @lebe1 @dthulke @Caluera
+- Fixed rendering error when replying to forum posts !1447 @ChrisOelmueller
+- Make the description clearer for the mail option when opening new thread !1453 @Caluera
+- Fix issues introduced with push notifications #831 #841 #857 !1442 !1443 !1444 !1445 !1446 @janopae
+- Short Description is shown on profile and purpose of both self descriptions is made clear in settings !1145 #656 @fs_k @Caluera
+- Fallback to raster tiles if the browser does not support WebGL !1455 @dthulke
+- Correct wording: "Fairteiler" and "FairTeiler" to "Fair-Teiler" in some files #890 !1479 @treee111
+- Correct Dashboard preview of ordered + unordered lists #455 !1481 @ChrisOelmueller
+- Fix gender selection during registration that was set to 'unselected' by mistake @alex.simm
+- TagEdit color correction when hovering #867 !1514 @ChrisOelmueller
 
 ## Refactoring
-- Name generation for chat groups has been extracted to an own method method, which is now used by push notifications
-and in the E-Mail generation for missed chat messages. The new method does a slightly better job at naming; beta testers
-are welcomed to check the E-Mails generated for missed chat messages. @janopae
-are welcomed to check the E-Mails generated for missed chat messages. @janopae 
+- Name generation for chat groups has been extracted to an own method method, which is now used by push notifications and in the E-Mail generation for missed chat messages. The new method does a slightly better job at naming; beta testers are welcomed to check the E-Mails generated for missed chat messages. @janopae
 - Improve mayEditStore() to fail faster !1311 @jofranz
 - Moved the button for new stores to vue store list !1282 @chriswalg
 - Restructure the definition of the Region ID constants. !1325 @theFeiter
@@ -57,16 +104,32 @@ are welcomed to check the E-Mails generated for missed chat messages. @janopae
 - Add function to database class that allows inserting multiple rows !1267 #757 @alex.simm
 - Remove Sessions from Gateway-Classes !1314 @panschk
 - Exchange nightly not fully working bell update check with the daily/reliable method !1312 @jofranz
-- Update date-fns to version 2.9.0 !1042 !1363 @chriswalg
+- Update date-fns to version 2.9.0 !1042 !1363 !1422 !1447 @chriswalg @ChrisOelmueller
 - Moved newsletter test functionality from Xhr to Rest API !1354 @alex.simm
 - Removed lost@foodsharing address and added sending a reply email if an address was not found #510 !1346 @alex.simm
 - Redesigned the option to delete FS account if not agreeing with privacy policy. !1318 @thefeiter
 - Use larger SQL queries for event invitations instead of many small queries !1285 #774 @alex.simm
 - redirected the refs from storelist.vue to lang.de.yml !1386 #824 @jonathan_b
 - Extended the text in footer for "DoNotReply"-Mails with the information not to reply to the message #826 !1389 @thesoult
+- redirected hardcoded German strings from topbar to lang.de.yml !1410 #824 @jonathan_b 
 - Use Geoapify as tile server and use mapbox gl to render vector tiles !1405 @dthulke
+- recreate Dashboard update-overview with vue components !735 !1424 @D0nPiano @ChrisOelmueller
+- changed ActivityModel to return data without HTML or JS !735 !1424 @D0nPiano @ChrisOelmueller
 - New function for deleting store wall posts via rest !1390 #9 @alex.simm
 - Get rid of /upload.php !1365 @\_fridtjof_
+- Removed unused delPost xhr function !1417 @alex.simm
+- Removed ActivityModel by moving functions to ActivityXhr !1434 #9 @alex.simm 
+- Reimplement footer in vue !1437 @ChrisOelmueller
+- redirected the german refs from storestatusicon.vue and pickuplist.vue to lang.de.yml !1392 #824 @jonathan_b @thesoult
+- Refactored store infos to vue js !1406 !1477 !1492 @chriswalg @ChrisOelmueller
+- Moved profile Rest endpoint to user controller !1374 @alex.simm
+- Removed the two deprecated functions from Session.php !1259 @koenvg
+- Extend RegionPermissions to a mayAdministrateRegions() method. Removes the topbar menu entry if false !1236 @jofranz
+- Update to PHP 7.4.5 and fix some backwards incompatible changes @NerdyProjects
+- Add database constraints to fs_faq !1436 @ffm_hessen
+- Replace XHR request for baskets in topbar by existing REST endpoint !1472 @alex.simm
+- CSS adjustments for foodbasket page, mobile dashboard view with columns !1494 @ChrisOelmueller
+- Port WebSocket server ("chat") to TypeScript and refactor it in an object oriented way !1470 @janopae 
 
 ## Dev/Test/CI stuff
 - Add "linux" tag for finding CI servers !1332 @nicksellen
@@ -84,6 +147,12 @@ are welcomed to check the E-Mails generated for missed chat messages. @janopae
 - added information in devdocs @jonathan_b
 - replace all uses of npm by yarn !1397 @peter.toennies
 - improve PHP Database documentation, add new convenience methods and make delete safer !1399 @\_fridtjof_
+- Added a workaround to devdocs for fedora 32 or debian 10 and docker !1439 @chriswalg
+- added information on our Workflow and how to solve Merge Conflicts in devdocs @jonathan_b
+- added text about refactoring to devdocs @Caluera !1464
+- added text about releases to devdocs @Caluera !1486
+
+
 
 # 2020-03-16 Hotfix
 - Fix nightly fetcher warnings by using expected id instead of betrieb_id allowing all nightly maintenance methods to be executed again #747 !1348 @jofranz
@@ -177,6 +246,8 @@ Another release from your lovely dev Team. A lot of changes have been done "unde
 - Fixed broken tooltips !1304 @ctwx_ok
 - Fix error message when downgrading a foodsaver and do only downgrade if user role has decreased !1323 @pfaufisch @jofranz
 - Temporarily disable pickup slot markers for production release !1307 @jofranz
+- Passportgenerator list sorted by name default, workgroups are not shown anymore !1310 @fs_k
+- Fix text overflow problems with events and notifications #722 #876 !1487 @ChrisOelmueller
 
 ## Refactoring
 - Optimize database access for legal queries !1292 @CarolineFischer
@@ -315,7 +386,7 @@ And we have even included some new features for you.
 - Show Warning and prevent save if sleeping timespan has no complete date given #632 !957 @fs_k
 - Fixed and moved ipIsBlocked method which is used on the team page contact form. Added minutes to warning message !974 @jofranz
 - Enable ambassador's new threads by default. #614 !967 @ctwx_ok
-- Fixed fancybox loading (apple) and navigation sprites !977 #644 @jofranz
+- Fixed fancybox loading (apple) and navigation sprites !977 #644 !1433 #717 @jofranz @ChrisOelmueller
 - Updates from the regional "bot-forum" / ambassador board are now shown on dashboard #40 !994 @jofranz
 - Fixed hidden attribution-line on main map !980 #661 @mr-kenhoff
 - Fixed date display for chats in the top bar overlay. !988 @ctwx_ok

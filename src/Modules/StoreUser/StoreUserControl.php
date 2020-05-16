@@ -144,35 +144,26 @@ class StoreUserControl extends Control
 
 				/*Infos*/
 
-				$info = '';
-				if (!empty($store['besonderheiten'])) {
-					$info .= $this->v_utils->v_input_wrapper($this->translationHelper->s('besonderheiten'), nl2br($store['besonderheiten']));
-				}
-				if ($quantityName = $this->weightHelper->getFetchWeightName($store['abholmenge'])) {
-					$info .= $this->v_utils->v_input_wrapper($this->translationHelper->s('menge'), $quantityName);
-				}
-				if ($press = $this->mentionPublicly($store['presse'])) {
-					$info .= $this->v_utils->v_input_wrapper('Namensnennung', $press);
-				}
-
 				/* find yourself in the pickup list and show your last pickup date in store info */
+				$lastFetchDate = null;
 				foreach ($store['foodsaver'] as $fs) {
 					if ($fs['id'] === $this->session->id() && $fs['last_fetch'] != null) {
 						$lastFetchDate = Carbon::createFromTimestamp($fs['last_fetch']);
-						$info .= $this->v_utils->v_input_wrapper($this->translationHelper->s('my_last_pickup'), $lastFetchDate->format('d.m.Y') . ' (' . $this->translationHelper->s('prefix_Ago')
-								. ' ' . Carbon::now()->diff($lastFetchDate)->days . ' ' . $this->translationHelper->s('days') . ')');
 						break;
 					}
 				}
 
-				$this->pageHelper->addContent($this->v_utils->v_field(
-					$this->v_utils->v_input_wrapper($this->translationHelper->s('address'), $store['str'] . ' ' . $store['hsnr'] . '<br />' . $store['plz'] . ' ' . $store['stadt']) .
-					$info,
-
-					$store['name'],
-
-					['class' => 'ui-padding']
-				), CNT_RIGHT);
+				$this->pageHelper->addContent($this->view->vueComponent('vue-storeinfos', 'store-infos', [
+					'particularitiesDescription' => $store['besonderheiten'],
+					'lastFetchDate' => $lastFetchDate,
+					'street' => $store['str'],
+					'housenumber' => $store['hsnr'],
+					'postcode' => $store['plz'],
+					'city' => $store['stadt'],
+					'storeTitle' => $store['name'],
+					'collectionQuantity' => $this->weightHelper->getFetchWeightName($store['abholmenge']),
+					'press' => $store['presse'],
+				]), CNT_RIGHT);
 
 				/* options menu */
 				$menu = [];
@@ -204,9 +195,9 @@ class StoreUserControl extends Control
 					$this->v_utils->v_field(
 						$this->view->u_team($store) . '',
 						$store['name'] . '-Team',
-						($this->session->isMob() && count($store['foodsaver']) > 8) ? ['class' => 'moreswap moreswap-height-280'] : []
+						['class' => 'truncate-content truncate-height-280 collapse-mobile']
 					),
-					CNT_LEFT,
+					CNT_LEFT
 				);
 
 				if ($this->storePermissions->mayReadStoreWall($store['id'])) {
@@ -224,7 +215,7 @@ class StoreUserControl extends Control
 								</div>
 
 								<div class="posts"></div>
-							</div>', 'Pinnwand', $this->session->isMob() ? ['class' => 'moreswap moreswap-height-280'] : []));
+							</div>', 'Pinnwand', ['class' => 'truncate-content truncate-height-280 collapse-mobile force-collapse']));
 				/* end of pinboard */
 				} else {
 					$this->pageHelper->addContent($this->v_utils->v_info('Du bist momentan auf der Springerliste. Sobald Hilfe benötigt wird, wirst Du kontaktiert.'));
@@ -319,18 +310,5 @@ class StoreUserControl extends Control
 			$this->pageHelper->addContent($this->view->u_storeList($stores['team'], $this->translationHelper->s('you_fetcher')));
 			$this->pageHelper->addContent($this->view->u_storeList($stores['sonstige'], $this->translationHelper->sv('more_stores', ['name' => $region['name']])));
 		}
-	}
-
-	private function mentionPublicly(int $id)
-	{
-		if ($id === 0) {
-			return $this->translationHelper->s('may_not_referred_to_in_public');
-		}
-
-		if ($id === 1) {
-			return $this->translationHelper->s('may_referred_to_in_public');
-		}
-
-		return false;
 	}
 }

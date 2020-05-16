@@ -18,7 +18,6 @@ $container = initializeContainer();
 	NEVER ADD SOMETING TO THIS LIST!
 */
 $csrf_whitelist = [
-	// 'Activity::loadMore',
 	// 'Activity::load',
 	// 'Application::accept',
 	// 'Application::decline',
@@ -70,10 +69,8 @@ $csrf_whitelist = [
 	// 'Message::loadconversation',
 	// 'Message::loadmore',
 	// 'Message::sendmsg',
-	// 'Message::loadconvlist',
 	// 'Message::user2conv',
 	// 'Message::newconversation',
-	// 'Message::heartbeat($opt)',
 	// 'Message::people',
 	// 'Profile::rate',
 	// 'Profile::history',

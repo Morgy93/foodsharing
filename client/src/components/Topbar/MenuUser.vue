@@ -16,7 +16,7 @@
         role="menuitem"
         class="nav-link"
       >
-        <i class="fas fa-cog" /> {{ $i18n('settings') }}
+        <i class="fas fa-cog" /> {{ $i18n('menu.your_settings') }}
       </a>
       <a
         :href="$url('logout')"
@@ -28,7 +28,7 @@
     </div>
     <b-nav-item-dropdown
       v-else
-      v-b-tooltip="$i18n('menu.tooltips.your_account')"
+      v-b-tooltip="$i18n('menu.entry.your_account')"
       no-caret
       class="user"
       right
@@ -48,7 +48,7 @@
         role="menuitem"
         class="dropdown-item"
       >
-        <i class="fas fa-cog" /> {{ $i18n('settings') }}
+        <i class="fas fa-cog" /> {{ $i18n('menu.your_settings') }}
       </a>
       <a
         :href="$url('logout')"

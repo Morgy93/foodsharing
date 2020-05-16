@@ -16,6 +16,7 @@
   - [Code style](codestyle.md)
   - [Testing](testing.md)
   - [Code quality and review](code-review.md)
+  - [Rebase](rebase.md)
   - [Troubleshooting](troubleshooting.md)
   - [Beta Testing (DE)](beta-testing-de.md)
 
@@ -28,6 +29,8 @@
     - [icons](icons.md)
   - [Databases](database.md)
   - [Tests](tests.md)
+  - [Refactoring](refactor.md)
+  - [Release](release.md)
   - [Glossary](GLOSSARY.md)
 
 - [About the devdocs](about-devdocs.md)

@@ -229,6 +229,7 @@ final class FoodsaverGateway extends BaseGateway
 			'geb_datum',
 			'anmeldedatum',
 			'photo',
+			'about_me_intern',
 			'about_me_public',
 			'orgateam',
 			'data',
@@ -262,7 +263,7 @@ final class FoodsaverGateway extends BaseGateway
 		]);
 	}
 
-	public function getAmbassadors(int $regionId): array
+	public function getAdminsOrAmbassadors(int $groupId): array
 	{
 		return $this->db->fetchAll('
 			SELECT 	fs.`id`,
@@ -278,11 +279,10 @@ final class FoodsaverGateway extends BaseGateway
 			        INNER JOIN `fs_botschafter` amb
                     ON fs.id = amb.`foodsaver_id`
 
-			WHERE   amb.`bezirk_id` = :regionId
-			AND		fs.deleted_at IS NULL
-        ', [
-			':regionId' => $regionId
-		]);
+			WHERE amb.`bezirk_id` = :regionId
+			AND		fs.deleted_at IS NULL',
+			[':regionId' => $groupId]
+		);
 	}
 
 	public function getActiveAmbassadors(): array
@@ -681,6 +681,7 @@ final class FoodsaverGateway extends BaseGateway
 			'telefon',
 			'handy',
 			'geb_datum',
+			'about_me_intern',
 			'about_me_public',
 			'homepage',
 			'position'
@@ -694,6 +695,7 @@ final class FoodsaverGateway extends BaseGateway
 			'anschrift',
 			'telefon',
 			'handy',
+			'about_me_intern',
 			'about_me_public',
 			'homepage',
 			'position'
@@ -905,11 +907,44 @@ final class FoodsaverGateway extends BaseGateway
 		);
 	}
 
+	public function getProfileForUsers(array $fsIds): array
+	{
+		$res = $this->db->fetchAllByCriteria(
+			'fs_foodsaver',
+			['id', 'name', 'photo', 'sleep_status'],
+			['id' => $fsIds]);
+
+		$profiles = [];
+		foreach ($res as $p) {
+			$profile = new Profile();
+			$profile->id = $p['id'];
+			$profile->name = $p['name'];
+			$profile->avatar = $p['photo'];
+			$profile->sleepStatus = $p['sleep_status'];
+			$profiles[$p['id']] = $profile;
+		}
+
+		return $profiles;
+	}
+
 	/**
 	 * Returns the first name of the foodsaver.
 	 */
 	public function getFoodsaverName($foodsaverId): string
 	{
-		return $this->db->fetchValueByCriteria('fs_foodsaver', 'name', ['id' => $foodsaverId]);
+		return $this->db->fetchValueByCriteria('fs_foodsaver', 'name', ['id' => $foodsaverId, 'deleted_at' => null]);
+	}
+
+	public function foodsaverExists($foodsaverId): bool
+	{
+		return $this->foodsaversExist([$foodsaverId]);
+	}
+
+	public function foodsaversExist(array $foodsaverIds): bool
+	{
+		$foodsaverIds = array_unique($foodsaverIds);
+		$existing = $this->db->fetchAllValuesByCriteria('fs_foodsaver', 'id', ['id' => $foodsaverIds, 'deleted_at' => null]);
+
+		return count($foodsaverIds) === count($existing);
 	}
 }

@@ -48,13 +48,13 @@ export function dateFormat (date, format = 'full-long') {
       } else if (dateFnsIsSameYear(date, new Date())) {
         return dateFormat(date, "cccc, do MMM, HH:mm 'Uhr'")
       } else {
-        return dateFormat(date, "cccc, do MMM yyyy, HH:mm 'Uhr'")
+        return dateFormat(date, "cccccc, do MMM yyyy, HH:mm 'Uhr'")
       }
     case 'full-short':
       if (dateFnsIsSameYear(date, new Date())) {
-        return dateFormat(date, 'cc, dd. MMM, HH:mm')
+        return dateFormat(date, 'cccccc, d. MMM, HH:mm')
       } else {
-        return dateFormat(date, 'cc, dd. MMM yy, HH:mm')
+        return dateFormat(date, 'cccccc, d.M.yyyy, HH:mm')
       }
     default:
       return dateFnsFormat(date, format, { locale: dateFnsLocaleDE })
@@ -93,4 +93,51 @@ export const generateQueryString = params => {
     .map(key => key + '=' + params[key])
     .join('&')
   return qs.length ? `?${qs}` : ''
+}
+
+function autoLink (text) {
+  const pattern = /(^|\s)((?:https?|ftp):\/\/([-A-Z0-9+\u0026@#/%?=()~_|!:,.;]*[-A-Z0-9+\u0026@#/%=~()_|]))/gi
+  const currentHost = document.location.host
+
+  return text.replace(pattern, function (match, space, url, urlWithoutProto) {
+    return `${space}<a href="${url}" ${urlWithoutProto.split('/', 2)[0] !== currentHost ? ' target="_blank"' : ''}>${urlWithoutProto}</a>`
+  })
+}
+
+function nl2br (str) {
+  const breakTag = '<br>'
+  return (`${str}`).replace(/([^>\r\n]?)(\r\n|\n\r|\r|\n)/g, `$1${breakTag}$2`)
+}
+
+export function plainToHtml (string) {
+  const entityMap = {
+    '&': '&amp;',
+    '<': '&lt;',
+    '>': '&gt;'
+  }
+  return autoLink(nl2br(String(string).replace(/[&<>]/g, function fromEntityMap (s) {
+    return entityMap[s]
+  })))
+}
+
+export function plainToHtmlAttribute (string) {
+  const entityMap = {
+    '"': '&quot',
+    "'": '&#39;'
+  }
+  return String(string).replace(/["']/g, function fromEntityMap (s) {
+    return entityMap[s]
+  }
+  )
+}
+
+export function isWebGLSupported () {
+  // https://stackoverflow.com/a/22953053
+  try {
+    var canvas = document.createElement('canvas')
+    return !!window.WebGLRenderingContext &&
+      (canvas.getContext('webgl') || canvas.getContext('experimental-webgl'))
+  } catch (e) {
+    return false
+  }
 }

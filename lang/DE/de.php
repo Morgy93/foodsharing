@@ -31,12 +31,13 @@ $g_lang['pass_generator'] = 'Foodsaver-Ausweisgenerator';
 $g_lang['choose_foodsaver'] = 'W&auml;hle die Foodsaver aus, denen Du einen Ausweis drucken willst';
 $g_lang['back_to_overview'] = 'zur&uuml;ck zur &Uuml;bersicht';
 $g_lang['plz'] = 'Postleitzahl (automatisch aus Karte oben!)';
-$g_lang['settings'] = 'Deine Daten/Einstellungen';
 $g_lang['email'] = 'E-Mail-Adresse';
 $g_lang['attachement'] = 'Anhang';
 $g_lang['email_pass'] = 'Passwort';
 $g_lang['click_to_edit'] = 'Klicken zum bearbeiten';
-$g_lang['about_me_public'] = 'Kurzbeschreibung';
+$g_lang['about_me_public'] = 'Öffentliche Kurzbeschreibung';
+$g_lang['about_me_intern'] = 'Kurzbeschreibung';
+$g_lang['about_me_intern_profile'] = 'Über sich selbst';
 $g_lang['autokennzeichen_id'] = 'Autokennzeichen Deiner Stadt/Region';
 $g_lang['telefon'] = 'Festnetznummer';
 $g_lang['handy'] = 'Handynummer';
@@ -230,13 +231,13 @@ $g_lang['menu_all_store'] = 'Alle Betriebe';
 $g_lang['menu_foodtypes'] = 'Lebensmitteltypen verwalten';
 $g_lang['menu_email_tpl'] = 'E-Mail-Vorlagen';
 
+$g_lang['release-notes'] = 'Was ist neu?';
 $g_lang['changelog'] = 'Changelog';
+$g_lang['current_changelog'] = 'Aktuelles Changelog';
 $g_lang['wallboard'] = 'Pinnwand';
 
 $g_lang['you'] = 'Du';
 $g_lang['store'] = 'Betrieb';
-$g_lang['message_notification_unnamed_conversation'] = '{var} hat dir geschrieben.';
-$g_lang['message_notification_named_conversation']	= '{foodsaver} hat dir in {conversation} geschrieben.';
 
 $g_lang['error_ajax'] = 'Das hat leider nicht geklappt. Vielleicht funktioniert deine Internetverbindung gerade nicht. Lade die Seite neu und probiere es noch mal.';
 
@@ -259,3 +260,5 @@ $g_lang['registration'] = 'Registrieren';
 $g_lang['you_are_already_register_please_logg_out_if_you_want_to_register_again'] = 'Du bist bereits registriert. Bitte logge Dich aus, wenn du dich erneut registrieren möchtest.';
 
 
+$g_lang['new_thread_without_email'] = 'Ohne Mail eröffnet';
+$g_lang['new_thread_with_email'] = 'Eröffnet und Mail GESENDET';
