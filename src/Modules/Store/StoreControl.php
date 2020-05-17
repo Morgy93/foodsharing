@@ -100,6 +100,7 @@ class StoreControl extends Control
 				$this->routeHelper->go('?page=settings&sub=upgrade/up_bip');
 			}
 		} elseif ($id = $this->identificationHelper->getActionId('delete')) {
+			// see #485
 		} elseif ($id = $this->identificationHelper->getActionId('edit')) {
 			$this->pageHelper->addBread($this->translationHelper->s('bread_betrieb'), '/?page=betrieb');
 			$this->pageHelper->addBread($this->translationHelper->s('edit_store'));
@@ -128,7 +129,7 @@ class StoreControl extends Control
 					])
 				);
 				$this->pageHelper->addContent(
-					$this->view->betrieb_form($region)
+					$this->view->betrieb_form($region, 'store-legacydata d-none')
 				);
 			} else {
 				$this->flashMessageHelper->info('Diesen Betrieb kannst Du nicht bearbeiten');

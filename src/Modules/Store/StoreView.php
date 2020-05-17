@@ -103,7 +103,7 @@ class StoreView extends View
 		return $out;
 	}
 
-	public function betrieb_form($region)
+	public function betrieb_form($region, $classes = '')
 	{
 		global $g_data;
 
@@ -144,7 +144,12 @@ class StoreView extends View
 			$this->v_utils->v_form_textarea('first_post'),
 		]);
 
-		return $this->v_utils->v_quickform($this->translator->trans('storeview.store'), $fieldset);
+		return $this->v_utils->v_quickform(
+			$this->translator->trans('storeview.store'),
+			$fieldset,
+			['id' => 'legacydata'],
+			['class' => $classes]
+		);
 	}
 
 	public function bubble(array $store): string

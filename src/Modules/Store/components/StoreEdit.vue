@@ -5,6 +5,7 @@
         content-class="mt-2"
         card
         pills
+        @activate-tab="switchTab"
       >
         <!-- eslint-disable-next-line vue/max-attributes-per-line -->
         <b-tab :title="$i18n('storeedit.text.header')" no-body>
@@ -324,6 +325,7 @@
 
 <script>
 import _ from 'underscore'
+import $ from 'jquery'
 import i18n from '@/i18n'
 import { addStoreChain, updateStore } from '@/api/stores'
 
@@ -446,6 +448,16 @@ export default {
     }
   },
   methods: {
+    switchTab (newIndex, oldIndex) {
+      const locationTabIndex = 4
+      if (newIndex === locationTabIndex) {
+        // show legacy fields/form when opening Location tab
+        $('.store-legacydata').removeClass('d-none')
+      } else if (oldIndex === locationTabIndex) {
+        // hide legacy fields/form since we are leaving that tab
+        $('.store-legacydata').addClass('d-none')
+      }
+    },
     async change (newValue, field) {
       const storeId = this.storeData.id
       const dbField = GOOD_TO_BAD[field]

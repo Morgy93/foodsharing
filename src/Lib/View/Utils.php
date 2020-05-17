@@ -74,9 +74,9 @@ class Utils
 		$this->twig = $twig;
 	}
 
-	public function v_quickform($titel, $elements, $option = [])
+	public function v_quickform($title, $elements, $option = [], $wrapOption = [])
 	{
-		return $this->v_field('<div class="v-form">' . $this->v_form($titel, $elements, $option) . '</div>', $titel);
+		return $this->v_field('<div class="v-form">' . $this->v_form($title, $elements, $option) . '</div>', $title, $wrapOption);
 	}
 
 	public function v_scroller($content, $maxHeight)
