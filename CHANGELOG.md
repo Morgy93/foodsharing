@@ -14,6 +14,7 @@
 - Fix javascript error accessing the map the first time / without localstorage. !1528 @NerdyProjects
 
 ## Refactoring
+- Adjust privacy policy screen layout !1535 @ChrisOelmueller
 
 ## Dev/Test/CI stuff
 - Migrate gitlab CI config to use rules instead of only/except !1529 @NerdyProjects
