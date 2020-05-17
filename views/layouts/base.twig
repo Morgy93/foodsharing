@@ -48,7 +48,9 @@
 
     <body class="{{ bodyClasses|join(' ') }}">
         {% include 'partials/becomeBezirk.twig' %}
-        {{ menu | raw }}
+        {% if not (hideMenu is defined and hideMenu) %}
+            {{ menu | raw }}
+        {% endif %}
         {% if broadcast_message %}
             <div class="inner inside msg-inside info">{{ broadcast_message | raw }}</div>
         {% endif %}
