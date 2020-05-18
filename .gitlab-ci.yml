@@ -203,7 +203,7 @@ test:combined:
   <<: *defaults
   image: registry.gitlab.com/foodsharing-dev/images/ci_combined:1
   services:
-    - name: redis:redis:5.0.8-alpine
+    - name: redis:5.0.8-alpine
       alias: redis
     - name: registry.gitlab.com/foodsharing-dev/images/db/dev:1.4
       alias: db
