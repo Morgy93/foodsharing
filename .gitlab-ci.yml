@@ -234,7 +234,7 @@ test:combined:
     - /start.sh &
     - composer install --verbose --prefer-dist --no-progress --no-interaction --no-suggest --no-scripts --ignore-platform-reqs
     - mysql -u root -proot -hdb --execute="drop database if exists foodsharing; create database foodsharing"
-    - cat migrations/migrations/initial.sql migrations/static.sql migrations/27-profilchange.sql migrations/27-verify.sql migrations/incremental-* | mysql -uroot -proot -hdb
+    - cat migrations/initial.sql migrations/static.sql migrations/27-profilchange.sql migrations/27-verify.sql migrations/incremental-* | mysql -uroot -proot -hdb foodsharing
     - vendor/bin/codecept run --xml --html
   after_script:
   # collect any test output
