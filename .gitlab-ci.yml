@@ -175,6 +175,7 @@ test:
   # deploy without relying on potentially flaky tests
   rules:
   - if: $CI_MERGE_REQUEST_ID
+    when: never
   - if: $CI_PIPELINE_SOURCE == "schedule"
     when: never
   # run it on our foodsharing ci server
@@ -226,7 +227,7 @@ test:combined:
     - build:backend
     - build:backend-chat
   script:
-    - cp docker/ci_combined/supervisor_chat.conf /etc/supervisor/conf.d/
+    - cp docker/conf/ci_combined/supervisor_chat.conf /etc/supervisor/conf.d/
     - sed -i "s#/app#$CI_BUILDS_DIR#g" /usr/local/etc/php-fpm.d/fpm.conf
     - sed -i "s#/app#$CI_BUILDS_DIR#g" /etc/nginx/conf.d/default.conf
     - /start.sh &; sleep 2
