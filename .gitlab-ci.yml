@@ -5,6 +5,8 @@ variables:
   MYSQL_ROOT_PASSWORD: root
   TZ: Europe/Berlin
   FF_NETWORK_PER_BUILD: 1
+  REDIS_HOST: redis
+  FS_ENV: ci
 
 .defaults: &defaults
   tags:
