@@ -50,3 +50,5 @@ modules:
             db: foodsharing
         \Helper\Maildev:
             url: http://maildev:80
+params:
+    - .codeception-env
