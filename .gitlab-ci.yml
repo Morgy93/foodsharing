@@ -227,13 +227,14 @@ test:combined:
     - build:backend
     - build:backend-chat
   script:
-    - cp docker/conf/ci_combined/supervisor_chat.conf /etc/supervisor/conf.d/
+    - cp docker/conf/ci_combined/supervisor_apps.conf /etc/supervisor/conf.d/
+    - sed -i "s#/app#$CI_BUILDS_DIR#g" /etc/supervisor/conf.d/supervisor_apps.conf
     - sed -i "s#/app#$CI_BUILDS_DIR#g" /usr/local/etc/php-fpm.d/fpm.conf
     - sed -i "s#/app#$CI_BUILDS_DIR#g" /etc/nginx/conf.d/default.conf
     - /start.sh &
     - composer install --verbose --prefer-dist --no-progress --no-interaction --no-suggest --no-scripts --ignore-platform-reqs
-    - mysql -u root -p root -h db --execute="drop database if exists foodsharing; create database foodsharing"
-    - cat migrations/migrations/initial.sql migrations/static.sql migrations/27-profilchange.sql migrations/27-verify.sql migrations/incremental-* | mysql -u root -p root -h db
+    - mysql -u root -proot -hdb --execute="drop database if exists foodsharing; create database foodsharing"
+    - cat migrations/migrations/initial.sql migrations/static.sql migrations/27-profilchange.sql migrations/27-verify.sql migrations/incremental-* | mysql -uroot -proot -hdb
     - vendor/bin/codecept run --xml --html
   after_script:
   # collect any test output
