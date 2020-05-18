@@ -243,8 +243,8 @@ test:combined:
     - apt-get update && apt-get install sudo
     - /start.sh &
     - sudo -u www-data composer install --verbose --prefer-dist --no-progress --no-interaction --no-suggest --no-scripts --ignore-platform-reqs
-    - sudo -u www-data vendor/bin/codecept run --xml --html acceptance ForumPostCest
-    - sudo -u www-data vendor/bin/codecept run --xml --html functional
+    - sudo -u www-data vendor/bin/codecept run acceptance ForumPostCest
+    - sudo -u www-data vendor/bin/codecept run functional
   after_script:
   # collect any test output
   artifacts:
