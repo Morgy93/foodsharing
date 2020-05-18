@@ -108,7 +108,7 @@ build:frontend:
   image: node:13.10.1-alpine
   stage: build
   script:
-  - (cd client && yarn && yarn lint && yarn test && yarn build)
+  - (cd client && yarn && yarn lint && yarn build)
   cache:
     key: client:build:v2
     paths:
