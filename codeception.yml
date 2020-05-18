@@ -51,4 +51,4 @@ modules:
         \Helper\Maildev:
             url: http://maildev:80
 params:
-    - .codeception-env
+    - .codeception.env
