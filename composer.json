@@ -27,7 +27,8 @@
     "phpstan/phpstan": "0.12.25",
     "phpunit/phpunit": "9.1.4",
     "roave/security-advisories": "dev-master",
-    "sebastian/diff": "4.0.1"
+    "sebastian/diff": "4.0.1",
+    "vlucas/phpdotenv": "4.1.5"
   },
   "require": {
     "ext-dom": "*",
