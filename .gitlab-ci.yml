@@ -2,7 +2,6 @@ variables:
   # https://docs.docker.com/engine/userguide/storagedriver/selectadriver/
   # https://gitlab.com/gitlab-org/gitlab-ce/issues/19971
   DOCKER_DRIVER: overlay
-  GIT_CLONE_PATH: $CI_BUILDS_DIR/app
   MYSQL_ROOT_PASSWORD: root
   TZ: Europe/Berlin
 
@@ -211,7 +210,7 @@ test:combined:
       alias: selenium
     - name: djfarrelly/maildev
       alias: maildev
-      command: ["bin/maildev",  "--web 80", "--smtp 25", "--hide-extensions STARTTLS"]
+      command: ["bin/maildev",  "--web", "80", "--smtp", "25", "--hide-extensions", "STARTTLS"]
 
       # only run tests for MR, not for the target branch. While this might show to be dangerous, it also allows us to
   # deploy without relying on potentially flaky tests
@@ -227,7 +226,9 @@ test:combined:
     - build:backend
     - build:backend-chat
   script:
-    - cp /app/docker/ci_combined/supervisor_chat.conf /etc/supervisor/conf.d/
+    - cp docker/ci_combined/supervisor_chat.conf /etc/supervisor/conf.d/
+    - sed -i "s#/app#$CI_BUILDS_DIR#g" /usr/local/etc/php-fpm.d/fpm.conf
+    - sed -i "s#/app#$CI_BUILDS_DIR#g" /etc/nginx/conf.d/default.conf
     - /start.sh &; sleep 2
     - composer install --verbose --prefer-dist --no-progress --no-interaction --no-suggest --no-scripts --ignore-platform-reqs
     - mysql -u root -p root -h db --execute="drop database if exists foodsharing; create database foodsharing"
