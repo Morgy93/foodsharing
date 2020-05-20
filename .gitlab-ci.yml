@@ -205,7 +205,7 @@ test:combined:
     FF_NETWORK_PER_BUILD: 1
     REDIS_HOST: redis
     FS_ENV: ci
-  image: registry.gitlab.com/foodsharing-dev/images/ci_combined:1
+  image: registry.gitlab.com/foodsharing-dev/images/ci_combined:3
   services:
     - name: redis:5.0.8-alpine
       alias: redis
