@@ -209,7 +209,7 @@ test:combined:
   services:
     - name: redis:5.0.8-alpine
       alias: redis
-    - name: registry.gitlab.com/foodsharing-dev/images/db/dev:1.4
+    - name: registry.gitlab.com/foodsharing-dev/images/db/test:2
       alias: db
     - name: selenium/standalone-chrome-debug
       alias: selenium
