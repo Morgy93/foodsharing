@@ -6,11 +6,13 @@ import '@/style'
 
 import $ from 'jquery'
 import 'jquery-migrate'
+import Tagify from '@yaireo/tagify'
 
 import { initialize } from '@/script'
 
 import 'jquery-ui'
 import registerServiceWorker from '@/registerServiceWorker'
+import '@yaireo/tagify/src/tagify.scss'
 import './scss/bootstrap-theme.scss'
 import './scss/index.scss'
 
@@ -45,3 +47,5 @@ $.ajaxPrefilter(function (options) {
     }
   }
 })
+
+window.Tagify = Tagify

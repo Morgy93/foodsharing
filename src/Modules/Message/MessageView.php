@@ -16,72 +16,91 @@ final class MessageView extends View
 	private function peopleChooser($id, $option = [])
 	{
 		$this->pageHelper->addJs('
-			var date = new Date();
-			tstring = ""+date.getYear() + ""+date.getMonth() + ""+date.getDate() + ""+date.getHours();
-			var localsource = [];
-			$.ajax({
-				url: "/api/search/legacyindex",
-				dataType: "json",
-				success: function(json){
+// via https://github.com/yairEO/tagify#ajax-whitelist
 
-					if(json.length > 0 && json[0] != undefined && json[0].key != undefined && json[0].key == "buddies")
-					{
+// The DOM element you wish to replace with Tagify
+var input = document.querySelector("input#' . $id . '.tag");
 
-						for(y=0;y<json[0].result.length;y++)
-						{
-							localsource.push({id:json[0].result[y].id,value:`${json[0].result[y].name} (${json[0].result[y].id})`});
-						}
+// initialize Tagify on the above input node reference
+var tagify = new Tagify(input, {
+  editTags: false,
+  enforceWhitelist: true,
+  whitelist: [],
+  dropdown: {
+    position: "all",
+    enabled: 3 // show suggestions dropdown after how many typed characters
+  },
+})
 
-					}
-				},
-				complete: function(){
-					$("#' . $id . ' input.tag").tagedit({
-						autocompleteOptions: {
-							delay: 300,
-							source: function(request, response) {
-					            /* Remote results only if string > 3: */
+// Chainable event listeners
+tagify.on("add", onAddTag)
+      .on("remove", onRemoveTag)
+      .on("input", onInput)
+      .on("edit", onTagEdit)
+      .on("invalid", onInvalidTag)
+      .on("click", onTagClick)
+      .on("focus blur", onTagifyFocusBlur)
+      .on("dropdown:select", onDropdownSelect)
 
-								if(request.term.length > 3)
-								{
-									$.ajax({
-						                url: "/api/search/user",
-										data: {q:request.term},
-						                dataType: "json",
-						                success: function(data) {
-											response(data);
-											// following doesn\'t work somehow => ignoring
-											// local = [];
-											// term = request.term.toLowerCase();
-											// for(i=0;i<localsource.length;i++)
-											// {
-											// 	if(localsource[i].value.indexOf(term) > 0)
-											// 	{
-											// 		local.push(localsource[i]);
-											// 	}
-											// }
-											// response(merge(local,data,"id"));
-						                }
-						            });
-								}
-								else
-								{
-									response(localsource);
-								}
+// tag added callback
+function onAddTag(e){
+    console.log("onAddTag: ", e.detail)
+    console.log("original input value: ", input.value)
+    tagify.off("add", onAddTag) // example of removing a custom Tagify event
+}
 
-					        },
-							minLength: 1
-						},
-						allowEdit: false,
-						allowAdd: false,
-						animSpeed:1
-					});
-				}
-			});
+// tag removed callback
+function onRemoveTag(e){
+    console.log("onRemoveTag:", e.detail, "tagify instance value:", tagify.value)
+}
+// on character(s) added/removed (user is typing/deleting)
+function onInput(e){
+  console.log("onInput: ", e.detail)
+  var value = e.detail.value
+  tagify.settings.whitelist.length = 0 // reset current whitelist
+  // https://developer.mozilla.org/en-US/docs/Web/API/AbortController/abort
+  // controller && controller.abort()
+  // controller = new AbortController()
+  tagify.loading(true).dropdown.hide.call(tagify) // show the loader animation
 
-				var localsource = [];
+  // get new search results (whitelist) from server
+  $.ajax({
+    url: "/api/search/user",
+    data: {q: value},
+    dataType: "json",
+    success: function(json){
+      // https://stackoverflow.com/q/30640771/104380
+      // replace tagify "whitelist" array values with new values (JSON result)
+      console.log("RETVAL", value, json)
+      tagify.settings.whitelist.splice(0, json.length, ...json)
+      // render the suggestions dropdown. "newValue" is when "input" event is called while editing a tag
+      tagify.loading(false).dropdown.show.call(tagify, e.detail.value)
+    }
+  })
+}
+
+function onTagEdit(e){
+    console.log("onTagEdit: ", e.detail)
+}
+function onInvalidTag(e){
+    console.log("onInvalidTag: ", e.detail)
+}
+
+function onTagClick(e){
+    console.log(e.detail)
+    console.log("onTagClick: ", e.detail)
+}
+
+function onTagifyFocusBlur(e){
+    console.log(e.type, "event fired")
+}
+
+function onDropdownSelect(e){
+    console.log("onDropdownSelect: ", e.detail)
+}
 		');
 
-		$input = '<input type="text" name="' . $id . '[]" value="" class="tag input text value" />';
+		$input = '<input type="text" name="' . $id . '" id="' . $id . '" value="" class="tag input text value" />';
 
 		return $this->v_utils->v_input_wrapper($this->translationHelper->s($id), '<div id="' . $id . '">' . $input . '</div>', $id, $option);
 	}

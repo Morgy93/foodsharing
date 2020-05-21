@@ -228,13 +228,14 @@ const msg = {
 
   getRecipients: function () {
     const out = []
-    $('#compose_recipients li.tagedit-listelement-old input').each(function () {
-      let id = $(this).attr('name').replace('compose_recipients[', '').split('-')[0]
+    $('#compose_recipients > tags > tag').each(function () {
+      let id = $(this).attr('id')
       id = parseInt(id)
       out[out.length] = id
     })
 
     if (out.length > 0) {
+      // TODO removeAllTags() from tagify recipient list
       return out
     } else {
       pulseError(i18n('chat.empty_recipients'))

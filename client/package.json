@@ -15,6 +15,7 @@
     "@sentry/browser": "^5.15.4",
     "@sentry/integrations": "^5.15.4",
     "@sum.cumo/vue-datepicker": "^2.0.0",
+    "@yaireo/tagify": "~3.9.3",
     "autosize": "^4.0.2",
     "bootstrap": "^4.4.1",
     "bootstrap-vue": "^2.9.0",
@@ -48,11 +49,10 @@
     "typeface-alfa-slab-one": "^0.0.72",
     "underscore": "^1.9.2",
     "vue": "^2.6.11",
+    "vue-croppie": "^2.0.1",
     "vue-infinite-loading": "^2.4.5",
     "vue-tel-input": "^4.3.0",
     "vuelidate": "^0.7.5",
-    "vue-croppie": "^2.0.1",
-    "vue-infinite-loading": "^2.4.5",
     "whatwg-fetch": "^3.0.0"
   },
   "devDependencies": {
