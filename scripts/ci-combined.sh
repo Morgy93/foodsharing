@@ -22,12 +22,11 @@ cat migrations/initial.sql migrations/static.sql migrations/27-profilchange.sql 
 chown -R www-data:www-data .
 chown -R www-data:www-data /var/www
 /start.sh &
-sudo -u www-data composer install --verbose --prefer-dist --no-progress --no-interaction --no-suggest --no-scripts --ignore-platform-reqs
-export WEB_URL=http://build:8080
+sudo -E -u www-data composer install --verbose --prefer-dist --no-progress --no-interaction --no-suggest --no-scripts --ignore-platform-reqs
 log-header "Running tests"
 failed=0
 SECONDS=0
-sudo -u www-data vendor/bin/codecept run --xml --html || failed=1
+sudo -E -u www-data vendor/bin/codecept run --xml --html || failed=1
 echo $SECONDS seconds elapsed
 
 if [ $failed -eq 1 ]; then
@@ -38,7 +37,7 @@ if [ $failed -eq 1 ]; then
 
   log-header "Rerunning failed tests"
   SECONDS=0
-  sudo -u www-data vendor/bin/codecept run --xml --html -g failed || failed=2
+  sudo -E -u www-data vendor/bin/codecept run --xml --html -g failed || failed=2
   echo $SECONDS seconds elapsed
 fi
 
@@ -50,7 +49,7 @@ if [ $failed -eq 2 ]; then
 
   log-header "Rerunning failed tests"
   SECONDS=0
-  sudo -u www-data vendor/bin/codecept run --xml --html -g failed || failed=3
+  sudo -E -u www-data vendor/bin/codecept run --xml --html -g failed || failed=3
   echo $SECONDS seconds elapsed
 fi
 
@@ -62,7 +61,7 @@ if [ $failed -eq 3 ]; then
 
   log-header "Rerunning failed tests"
   SECONDS=0
-  sudo -u www-data vendor/bin/codecept run -g failed
+  sudo -E -u www-data vendor/bin/codecept run -g failed
   echo $SECONDS seconds elapsed
 fi
 
