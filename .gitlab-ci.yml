@@ -212,7 +212,7 @@ test:combined:
       alias: redis
     - name: registry.gitlab.com/foodsharing-dev/images/db/test:2
       alias: db
-    - name: selenium/standalone-chrome-debug
+    - name: selenium/standalone-chrome:3.141.59-20200515
       alias: selenium
     - name: djfarrelly/maildev
       alias: maildev
