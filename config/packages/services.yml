@@ -88,6 +88,7 @@ services:
         class: Swift_SmtpTransport
         arguments:
             - !php/const MAILER_HOST
+            - !php/const MAILER_PORT
 
     Swift_Mailer:
         class: Swift_Mailer

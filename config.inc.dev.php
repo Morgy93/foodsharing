@@ -32,6 +32,7 @@ define('PLATFORM_MAILBOX_HOST', 'foodsharing.network');
 define('MAILBOX_OWN_DOMAINS', ['foodsharing.network', 'lebensmittelretten.de', 'foodsharing.de']);
 
 define('MAILER_HOST', 'maildev');
+define('MAILER_PORT', '1025');
 
 define('MEM_ENABLED', true);
 

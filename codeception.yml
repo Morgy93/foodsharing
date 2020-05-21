@@ -49,6 +49,6 @@ modules:
             host: db
             db: foodsharing
         \Helper\Maildev:
-            url: http://maildev:80
+            url: http://maildev:1080
 params:
     - env

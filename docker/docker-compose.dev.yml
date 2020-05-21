@@ -156,13 +156,13 @@ services:
   maildev:
     command: >
       bin/maildev
-        --web 80
-        --smtp 25
+        --web 1080
+        --smtp 1025
         --hide-extensions STARTTLS
-    image: djfarrelly/maildev
+    image: maildev/maildev
     container_name: foodsharing_dev_maildev
     ports:
-      - "127.0.0.1:18084:80"
+      - "127.0.0.1:18084:1080"
 
   influxdb:
     container_name: foodsharing_dev_influxdb
