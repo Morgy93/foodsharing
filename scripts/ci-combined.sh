@@ -19,6 +19,23 @@ sed -i "s#/app#$CI_PROJECT_DIR#g" /usr/local/etc/php-fpm.d/fpm.conf
 sed -i "s#/app#$CI_PROJECT_DIR#g" /etc/nginx/conf.d/default.conf
 mysql -u root -proot -hdb --execute="drop database if exists foodsharing; create database foodsharing"
 cat migrations/initial.sql migrations/static.sql migrations/27-profilchange.sql migrations/27-verify.sql migrations/incremental-* | mysql -uroot -proot -hdb foodsharing
+dirs="\
+  images \
+  images/basket \
+  images/wallpost \
+  images/picture \
+  images/workgroup \
+  data/attach \
+  data/mailattach \
+  data/mailattach/tmp \
+  data/pass \
+  data/visite \
+  cache \
+  cache/searchindex \
+  tmp \
+"
+mkdir -p $dirs
+chmod 777 $dirs
 chown -R www-data:www-data .
 chown -R www-data:www-data /var/www
 /start.sh &
