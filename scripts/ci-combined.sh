@@ -33,7 +33,7 @@ if [ $failed -eq 1 ]; then
   log-header "Check for codeception errors"
   # check if codeception generated a report file that contains failed tests
   # Otherwise, codeception probably failed itself and the whole job should fail
-  grep -E '<error|<failure' /app/tests/_output/report.xml || (echo "report.xml is incomplete, aborting" && false)
+  grep -E '<error|<failure' tests/_output/report.xml || (echo "report.xml is incomplete, aborting" && false)
 
   log-header "Rerunning failed tests"
   SECONDS=0
@@ -45,7 +45,7 @@ if [ $failed -eq 2 ]; then
   log-header "Check for codeception errors"
   # check if codeception generated a report file that contains failed tests
   # Otherwise, codeception probably failed itself and the whole job should fail
-  grep -E '<error|<failure' /app/tests/_output/report.xml || (echo "report.xml is incomplete, aborting" && false)
+  grep -E '<error|<failure' tests/_output/report.xml || (echo "report.xml is incomplete, aborting" && false)
 
   log-header "Rerunning failed tests"
   SECONDS=0
@@ -57,7 +57,7 @@ if [ $failed -eq 3 ]; then
   log-header "Check for codeception errors"
   # check if codeception generated a report file that contains failed tests
   # Otherwise, codeception probably failed itself and the whole job should fail
-  grep -E '<error|<failure' /app/tests/_output/report.xml || (echo "report.xml is incomplete, aborting" && false)
+  grep -E '<error|<failure' tests/_output/report.xml || (echo "report.xml is incomplete, aborting" && false)
 
   log-header "Rerunning failed tests"
   SECONDS=0
