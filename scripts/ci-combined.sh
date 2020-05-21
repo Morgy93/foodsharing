@@ -14,9 +14,6 @@ echo $SECONDS seconds elapsed
 
 cp docker/conf/ci_combined/supervisor_apps.conf /etc/supervisor/conf.d/
 rm /usr/local/etc/php/conf.d/docker-php-ext-xdebug.ini
-echo "request_slowlog_timeout = 4s" >> /usr/local/etc/php-fpm.d/fpm.conf
-echo "slowlog = /var/log/slow.log"  >> /usr/local/etc/php-fpm.d/fpm.conf
-cp .codeception.ci.env .codeception.env
 sed -i "s#/app#$CI_PROJECT_DIR#g" /etc/supervisor/conf.d/supervisor_apps.conf
 sed -i "s#/app#$CI_PROJECT_DIR#g" /usr/local/etc/php-fpm.d/fpm.conf
 sed -i "s#/app#$CI_PROJECT_DIR#g" /etc/nginx/conf.d/default.conf
