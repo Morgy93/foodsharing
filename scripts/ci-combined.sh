@@ -4,7 +4,6 @@ export FS_ENV=ci
 
 set -o errexit
 set -x
-env
 
 dir=$(dirname "$0")
 
@@ -24,7 +23,7 @@ chown -R www-data:www-data .
 chown -R www-data:www-data /var/www
 /start.sh &
 sudo -u www-data composer install --verbose --prefer-dist --no-progress --no-interaction --no-suggest --no-scripts --ignore-platform-reqs
-
+export WEB_URL=http://build:8080
 log-header "Running tests"
 failed=0
 SECONDS=0
