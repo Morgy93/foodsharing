@@ -207,7 +207,7 @@ test:combined:
     REDIS_HOST: redis
     FS_ENV: ci
     WEB_URL: http://build:8080/
-  image: registry.gitlab.com/foodsharing-dev/images/ci_combined:3
+  image: registry.gitlab.com/foodsharing-dev/images/ci_combined:4
   services:
     - name: redis:5.0.8-alpine
       alias: redis
