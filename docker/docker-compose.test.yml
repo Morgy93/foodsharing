@@ -44,6 +44,7 @@ services:
     environment:
       FS_ENV: test
       REDIS_HOST: redis
+      WEB_URL: http://web:8080/
 
   # webpack client javascript
   #------------------------------------

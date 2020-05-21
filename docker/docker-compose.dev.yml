@@ -40,6 +40,7 @@ services:
       - ${PWD}/docker/conf/app/php.dev.ini:/usr/local/etc/php/conf.d/dev-config.ini:cached
     environment:
       FS_ENV: dev
+      WEB_URL: http://web:8080/
 
   # webpack client javascript
   #------------------------------------
