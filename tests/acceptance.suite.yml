@@ -19,6 +19,10 @@ modules:
             connection_timeout: 20
             request_timeout: 40
             wait: 5
+            capabilities:
+                chromeOptions:
+                    args: ["--headless", "--disable-gpu"]
+                    binary: "/usr/bin/google-chrome"
         - \Helper\Foodsharing
         - \Helper\FoodsharingUI
         - \Helper\FoodsharingUrl
