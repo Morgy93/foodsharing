@@ -23,7 +23,7 @@ define('DB_PASS', 'root');
 define('DB_DB', 'foodsharing');
 /* disable influx writing by sending UDP data to localhost... */
 define('INFLUX_DSN', 'udp+influxdb://localhost:8089/foodsharing');
-define('ERROR_REPORT', E_ALL);
+error_reporting(-1);
 define('BASE_URL', $protocol . '://lmr.local/');
 define('DEFAULT_EMAIL', 'noreply@foodsharing.de');
 define('SUPPORT_EMAIL', 'it@foodsharing.network');

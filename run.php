@@ -44,5 +44,5 @@ $appInstance = $container->get(ltrim($app, '\\'));
 if (is_callable([$appInstance, $method])) {
 	$appInstance->$method();
 } else {
-	echo 'Modul ' . $app . ' konnte nicht geladen werden';
+	echo 'Modul ' . $app . " konnte nicht geladen werden\n";
 }
