@@ -201,6 +201,7 @@ test:combined:
   <<: *defaults
   variables:
     MYSQL_ROOT_PASSWORD: root
+    MYSQL_INITDB_SKIP_TZINFO: 1
     TZ: Europe/Berlin
     FF_NETWORK_PER_BUILD: 1
     REDIS_HOST: redis
