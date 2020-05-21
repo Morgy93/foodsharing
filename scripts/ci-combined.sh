@@ -4,6 +4,7 @@ export FS_ENV=ci
 
 set -o errexit
 set -x
+env
 
 dir=$(dirname "$0")
 
