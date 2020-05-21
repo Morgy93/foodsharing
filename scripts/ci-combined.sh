@@ -22,7 +22,7 @@ cat migrations/initial.sql migrations/static.sql migrations/27-profilchange.sql 
 chown -R www-data:www-data .
 chown -R www-data:www-data /var/www
 /start.sh &
-sudo -E -u www-data composer install --verbose --prefer-dist --no-progress --no-interaction --no-suggest --no-scripts --ignore-platform-reqs
+sudo -u www-data composer install --verbose --prefer-dist --no-progress --no-interaction --no-suggest --no-scripts --ignore-platform-reqs
 log-header "Running tests"
 failed=0
 SECONDS=0
