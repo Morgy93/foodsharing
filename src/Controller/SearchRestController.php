@@ -63,8 +63,15 @@ class SearchRestController extends AbstractFOSRestController
 		$q = $paramFetcher->get('q');
 
 		if (preg_match('/^[0-9]+$/', $q) && $foodsaverGateway->foodsaverExists((int)$q)) {
-			$user = $foodsaverGateway->getFoodsaverName((int)$q);
-			$results = [['id' => (int)$q, 'value' => $user . ' (' . (int)$q . ')']];
+			$fsId = (int)$q;
+			// TODO this should also include `nachname`
+			$name = $foodsaverGateway->getFoodsaverName($fsId);
+			$photo = $foodsaverGateway->getPhotoFileName($fsId);
+			$results = [[
+				'id' => $fsId,
+				'value' => $name . ' (' . $fsId . ')',
+				'photo' => $photo,
+			]];
 		} else {
 			if (in_array(RegionIDs::EUROPE_WELCOME_TEAM, $this->session->listRegionIDs(), true) ||
 				$this->session->may('orga')) {
@@ -95,7 +102,18 @@ class SearchRestController extends AbstractFOSRestController
 				false,
 				$regions
 			);
-			$results = array_map(function ($v) { return ['id' => $v->id, 'value' => $v->name . ' (' . $v->id . ')']; }, $results);
+			$results = array_map(function ($v) use ($foodsaverGateway) {
+				$fsId = $v->id;
+				$name = $v->name;
+				// $city = $v->teaser;
+				$photo = $foodsaverGateway->getPhotoFileName($fsId);
+
+				return [
+					'id' => $fsId,
+					'value' => $name . ' (' . $fsId . ')',
+					'photo' => $photo,
+				];
+			}, $results);
 		}
 
 		return $this->handleView($this->view($results, 200));

@@ -13,8 +13,9 @@ final class MessageView extends View
 		]);
 	}
 
-	private function peopleChooser($id, $option = [])
+	private function peopleChooser($id)
 	{
+		// still gotta remove v_form_tagselect once this is working for people-select fields
 		$this->pageHelper->addJs('
 // via https://github.com/yairEO/tagify#ajax-whitelist
 
@@ -23,39 +24,52 @@ var input = document.querySelector("input#' . $id . '.tag");
 
 // initialize Tagify on the above input node reference
 var tagify = new Tagify(input, {
+  delimiters: null,
   editTags: false,
   enforceWhitelist: true,
   whitelist: [],
+  skipInvalid: true,
   dropdown: {
-    position: "all",
+    classname : "usersearch-dropdown",
+    position: "text",
     enabled: 3 // show suggestions dropdown after how many typed characters
   },
+  templates: {
+    tag: function(v, tagData) {
+      try {
+        return `
+          <tag contenteditable="false" spellcheck="false"
+            title="${v}"
+            class="tagify__tag ${tagData.class ? tagData.class : \'\'}"
+            ${this.getAttributes(tagData)}
+          >
+            <x title="remove tag" class="tagify__tag__removeBtn"></x>
+            <div class="tagify__tag__div">
+              <img src="${tagData.photo ? `/images/mini_q_${tagData.photo}` : \'/img/mini_q_avatar.png\'}">
+              <span class="tagify__tag-text">${v}</span>
+            </div>
+          </tag>
+        `
+      } catch (err) { console.warn(err) }
+    },
+    dropdownItem: function (tagData) {
+      try {
+        return `
+          <div class="tagify__dropdown__item ${tagData.class ? tagData.class : \'\'}">
+            <img src="${tagData.photo ? `/images/mini_q_${tagData.photo}` : \'/img/mini_q_avatar.png\'}">
+            <span>${tagData.value}</span>
+          </div>
+        `
+      } catch (err) { console.warn(err) }
+    }
+  }
 })
 
-// Chainable event listeners
-tagify.on("add", onAddTag)
-      .on("remove", onRemoveTag)
-      .on("input", onInput)
-      .on("edit", onTagEdit)
-      .on("invalid", onInvalidTag)
-      .on("click", onTagClick)
-      .on("focus blur", onTagifyFocusBlur)
-      .on("dropdown:select", onDropdownSelect)
+// Event listeners (can be chained as well)
+tagify.on("input", onInput)
 
-// tag added callback
-function onAddTag(e){
-    console.log("onAddTag: ", e.detail)
-    console.log("original input value: ", input.value)
-    tagify.off("add", onAddTag) // example of removing a custom Tagify event
-}
-
-// tag removed callback
-function onRemoveTag(e){
-    console.log("onRemoveTag:", e.detail, "tagify instance value:", tagify.value)
-}
 // on character(s) added/removed (user is typing/deleting)
-function onInput(e){
-  console.log("onInput: ", e.detail)
+function onInput (e) {
   var value = e.detail.value
   tagify.settings.whitelist.length = 0 // reset current whitelist
   // https://developer.mozilla.org/en-US/docs/Web/API/AbortController/abort
@@ -71,38 +85,17 @@ function onInput(e){
     success: function(json){
       // https://stackoverflow.com/q/30640771/104380
       // replace tagify "whitelist" array values with new values (JSON result)
-      console.log("RETVAL", value, json)
       tagify.settings.whitelist.splice(0, json.length, ...json)
       // render the suggestions dropdown. "newValue" is when "input" event is called while editing a tag
       tagify.loading(false).dropdown.show.call(tagify, e.detail.value)
     }
   })
 }
-
-function onTagEdit(e){
-    console.log("onTagEdit: ", e.detail)
-}
-function onInvalidTag(e){
-    console.log("onInvalidTag: ", e.detail)
-}
-
-function onTagClick(e){
-    console.log(e.detail)
-    console.log("onTagClick: ", e.detail)
-}
-
-function onTagifyFocusBlur(e){
-    console.log(e.type, "event fired")
-}
-
-function onDropdownSelect(e){
-    console.log("onDropdownSelect: ", e.detail)
-}
 		');
 
 		$input = '<input type="text" name="' . $id . '" id="' . $id . '" value="" class="tag input text value" />';
 
-		return $this->v_utils->v_input_wrapper($this->translationHelper->s($id), '<div id="' . $id . '">' . $input . '</div>', $id, $option);
+		return $this->v_utils->v_input_wrapper($this->translationHelper->s($id), '<div id="tagify-' . $id . '">' . $input . '</div>', $id);
 	}
 
 	public function compose(): string

@@ -1,3 +1,57 @@
+/* Usersearch-specific Tagify modifications */
+.tagify__dropdown.usersearch-dropdown .tagify__dropdown__wrapper {
+  margin: 0;
+  padding: 0 0.2em;
+  border-color: var(--fs-brown);
+  border-radius: 4px;
+}
+.tagify__dropdown.usersearch-dropdown .tagify__dropdown__item {
+  padding: 0.2em;
+  margin: 0 -0.2em;
+  border-radius: 4px;
+  background-clip: padding-box;
+}
+.tagify__dropdown.usersearch-dropdown .tagify__dropdown__item--active {
+  background-color: var(--fs-green);
+}
+
+tags.tagify {
+  padding: 2px;
+  --tags-focus-border-color: var(--fs-brown);
+  --tag-remove-btn-bg--hover: var(--danger);
+}
+tags.tagify .tagify__tag {
+  --tag-bg: var(--fs-brown);
+  --tag-text-color: var(--fs-white);
+  --tag-remove-bg: rgba(var(--fs-brown-rgb), 0.8);
+  --tag-hover: var(--fs-brown);
+  --tag-inset-shadow-size: 1rem;
+  margin: 2px;
+}
+
+tags.tagify .tagify__tag .tagify__tag__div .tagify__tag-text {
+  vertical-align: middle;
+}
+
+/* Picture handling */
+.tagify__dropdown.usersearch-dropdown img,
+#tagify-compose_recipients .tagify__tag__div > img {
+  display: inline-block;
+  vertical-align: middle;
+  height: 25px;
+  width: 25px;
+  margin-right: 5px;
+  border-radius: 3px;
+  transition: .12s ease-out;
+}
+
+#tagify-compose_recipients .tagify__tag__div > img {
+  margin: -0.3em -0.5em; /* -1 * var(--tag-pad) */
+  margin-right: 3px;
+}
+
+/* --- */
+
 #conv_submit {
   float: right;
   font-family: "Font Awesome 5 Free", monospace;

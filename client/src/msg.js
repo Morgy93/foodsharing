@@ -228,7 +228,7 @@ const msg = {
 
   getRecipients: function () {
     const out = []
-    $('#compose_recipients > tags > tag').each(function () {
+    $('#tagify-compose_recipients > tags > tag').each(function () {
       let id = $(this).attr('id')
       id = parseInt(id)
       out[out.length] = id
