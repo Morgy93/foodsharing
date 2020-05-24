@@ -13,9 +13,10 @@
             <b-col sm="6">
               <b-card-title :title="$i18n('storeedit.text.title')" />
               <b-card-text class="store-title">
-                <b-form-input
-                  v-model.trim="form.title"
+                <b-input
+                  v-model="form.title"
                   :placeholder="$i18n('storeedit.text.titlePlaceholder')"
+                  trim
                   @change="change($event, 'title')"
                 />
               </b-card-text>
@@ -38,11 +39,12 @@
                 </b-alert>
 
                 <b-form-textarea
-                  v-model.trim="form.publicInfo"
+                  v-model="form.publicInfo"
                   :state="(form.publicInfo && form.publicInfo.length > 180) ? false : null"
                   :placeholder="$i18n('storeedit.text.publicInfo') + '...'"
                   rows="4"
                   max-rows="6"
+                  trim
                   @change="change($event, 'publicInfo')"
                 />
               </b-card-text>
@@ -52,9 +54,10 @@
               <b-card-title :title="$i18n('storeedit.text.particularities')" />
               <b-card-text>
                 <b-form-textarea
-                  v-model.trim="form.particularities"
+                  v-model="form.particularities"
                   :placeholder="$i18n('storeedit.text.particularities') + '...'"
                   rows="13"
+                  trim
                   @change="change($event, 'particularities')"
                 />
               </b-card-text>
@@ -173,7 +176,8 @@
               <b-card-title :title="$i18n('storeedit.coop.contactPhone')" />
               <b-card-text>
                 <b-form-input
-                  v-model.trim="form.contactPhone"
+                  v-model="form.contactPhone"
+                  trim
                   @change="change($event, 'contactPhone')"
                 />
               </b-card-text>
@@ -181,7 +185,8 @@
               <b-card-title :title="$i18n('storeedit.coop.contactFax')" />
               <b-card-text>
                 <b-form-input
-                  v-model.trim="form.contactFax"
+                  v-model="form.contactFax"
+                  trim
                   @change="change($event, 'contactFax')"
                 />
               </b-card-text>
@@ -189,7 +194,8 @@
               <b-card-title :title="$i18n('storeedit.coop.contactMail')" />
               <b-card-text>
                 <b-form-input
-                  v-model.trim="form.contactMail"
+                  v-model="form.contactMail"
+                  trim
                   @change="change($event, 'contactMail')"
                 />
               </b-card-text>
@@ -289,8 +295,9 @@
                 <b-collapse id="newchain">
                   <b-input-group>
                     <b-form-input
-                      v-model.trim="newchainText"
+                      v-model="newchainText"
                       class="form-control with-border"
+                      trim
                     />
                     <b-input-group-append>
                       <b-button
@@ -463,6 +470,7 @@ export default {
       const dbField = GOOD_TO_BAD[field]
       if (dbField) {
         await updateStore(storeId, dbField, newValue)
+        this.successToast()
       } else {
         console.warn('Tried updating unknown store field:', field)
       }
@@ -475,6 +483,17 @@ export default {
       } else {
         console.warn('Tried adding untethered database entry:', { newValue, field })
       }
+    },
+    successToast () {
+      this.$bvToast.toast(' ', {
+        title: i18n('saved'),
+        variant: 'success',
+        toaster: 'b-toaster-top-right',
+        noCloseButton: true,
+        autoHideDelay: 3000, // milliseconds
+        solid: false, // transparent
+        isStatus: true // accessibility
+      })
     }
   }
 }
@@ -526,6 +545,26 @@ export default {
         padding-top: 5px;
       }
     }
+  }
+}
+</style>
+
+<style lang="scss">
+.b-toast.b-toast-success {
+  font-size: 24px;
+  float: right;
+  width: -webkit-fill-available;
+  width: fit-content;
+
+  .toast-header > strong::before {
+    font-family: "Font Awesome 5 Free", monospace;
+    font-weight: 900;
+    font-style: normal;
+    font-size: inherit;
+    text-rendering: auto;
+    content: '\f00c'; // fa-check
+    display: inline-block;
+    padding: 5px 10px;
   }
 }
 </style>
