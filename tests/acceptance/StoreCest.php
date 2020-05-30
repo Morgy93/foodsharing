@@ -2,13 +2,13 @@
 
 class StoreCest
 {
-	private $bezirk_id = 241;
+	private $regionId;
 
-	private function createStoreAndUsers()
+	private function createStoreAndUsers($regionId)
 	{
 		$I = $this->tester;
-		$this->store = $I->createStore($this->bezirk_id);
-		$this->storeCoordinator = $I->createStoreCoordinator(null, ['bezirk_id' => $this->bezirk_id]);
+		$this->store = $I->createStore($regionId);
+		$this->storeCoordinator = $I->createStoreCoordinator(null, ['bezirk_id' => $regionId]);
 		$I->addStoreTeam($this->store['id'], $this->storeCoordinator['id'], true);
 	}
 
@@ -45,6 +45,7 @@ class StoreCest
 	public function _before(AcceptanceTester $I)
 	{
 		$this->tester = $I;
-		$this->createStoreAndUsers();
+		$this->region = $I->createRegion();
+		$this->createStoreAndUsers($this->region['id']);
 	}
 }

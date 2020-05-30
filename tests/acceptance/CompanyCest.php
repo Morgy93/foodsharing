@@ -99,13 +99,27 @@ class CompanyCest
 		call_user_func([$this, $example[0]]);
 		$I->amOnPage($I->storeEditUrl($this->store['id']));
 		if ($canAccess) {
-			$I->see('Stammbezirk');
-			$I->see('unabgesprochen', '.alert');
-			$I->click('Kooperation', '.store-edit ul.nav');
-			$I->see('Überzeugungsarbeit');
-		} else {
+			$I->see('Texte', '.card-header');
+			$I->see('Name des Betriebs');
+			$I->see('(max. 180 Zeichen)', '.alert');
 			$I->dontSee('Stammbezirk');
-			$I->dontSee('unabgesprochen', '.alert');
+			$I->click('Abholung', '.card-header');
+			$I->see('mittags/nachmittags');
+			$I->click('Kooperation', '.card-header');
+			$I->see('Überzeugungsarbeit');
+			$I->click('Betrieb', '.card-header');
+			// TODO the text is there, this should be found:
+			// $I->see('Nur kooperationswillige Betriebe', '.alert');
+			$I->see('kooperiert bereits');
+			$I->click('Standort', '.card-header');
+			$I->see('Stammbezirk', 'form');
+			// The button is there, should be found:
+			// $I->see('Senden');
+			$I->see('Postleitzahl', 'form');
+		} else {
+			$I->dontSee('Name des Betriebs');
+			$I->dontSee('180 Zeichen', '.alert');
+			$I->dontSee('Postleitzahl');
 		}
 	}
 
