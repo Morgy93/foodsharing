@@ -4,14 +4,13 @@ namespace Foodsharing\Permissions;
 
 use Foodsharing\Lib\Session;
 use Foodsharing\Modules\Core\DBConstants\Store\TeamStatus;
+use Foodsharing\Modules\Core\DBConstants\Region\RegionIDs;
 use Foodsharing\Modules\Store\StoreGateway;
 
 class StorePermissions
 {
 	private $storeGateway;
 	private $session;
-
-	private const storeChainGroup = 332;
 
 	public function __construct(
 		StoreGateway $storeGateway,
@@ -137,7 +136,7 @@ class StorePermissions
 		if ($this->session->isOrgaTeam()) {
 			return true;
 		}
-		if ($this->session->isAdminFor(self::storeChainGroup)) {
+		if ($this->session->isAdminFor(RegionIDs::STORE_CHAIN_WORK_GROUP)) {
 			return true;
 		}
 

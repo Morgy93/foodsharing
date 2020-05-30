@@ -12,6 +12,7 @@ class RegionIDs
 
 	// workgroups with special permissions:
 	public const NEWSLETTER_WORK_GROUP = 331;
+	public const STORE_CHAIN_WORK_GROUP = 332;
 	public const QUIZ_AND_REGISTRATION_WORK_GROUP = 341;
 	public const EUROPE_REPORT_TEAM = 432;
 
