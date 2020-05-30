@@ -14,4 +14,13 @@ class TeamStatus
 	public const CLOSED = 0;
 	public const OPEN = 1;
 	public const OPEN_SEARCHING = 2;
+
+	public static function isValidTeamStatus(int $status)
+	{
+		return in_array($status, [
+			self::CLOSED,
+			self::OPEN,
+			self::OPEN_SEARCHING,
+		]);
+	}
 }

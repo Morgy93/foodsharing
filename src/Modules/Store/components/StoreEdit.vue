@@ -359,6 +359,14 @@ const BAD_TO_GOOD = {
 }
 const GOOD_TO_BAD = _.invert(BAD_TO_GOOD)
 
+const rawToast = {
+  toaster: 'b-toaster-top-right',
+  noCloseButton: true,
+  autoHideDelay: 3000, // milliseconds
+  solid: false, // transparent
+  isStatus: true // accessibility
+}
+
 export default {
   props: {
     storeData: { type: Object, required: true },
@@ -469,8 +477,14 @@ export default {
       const storeId = this.storeData.id
       const dbField = GOOD_TO_BAD[field]
       if (dbField) {
-        await updateStore(storeId, dbField, newValue)
-        this.successToast()
+        try {
+          await updateStore(storeId, dbField, newValue)
+          this.successToast()
+        } catch (err) {
+          console.error(`Could not update field ${field} to '${newValue}'.`, err.message)
+          this.burnedToast()
+          // TODO reset vue data to old, non-updated value
+        }
       } else {
         console.warn('Tried updating unknown store field:', field)
       }
@@ -485,15 +499,16 @@ export default {
       }
     },
     successToast () {
-      this.$bvToast.toast(' ', {
+      this.$bvToast.toast(' ', Object.assign({
         title: i18n('saved'),
-        variant: 'success',
-        toaster: 'b-toaster-top-right',
-        noCloseButton: true,
-        autoHideDelay: 3000, // milliseconds
-        solid: false, // transparent
-        isStatus: true // accessibility
-      })
+        variant: 'success'
+      }, rawToast))
+    },
+    burnedToast () {
+      this.$bvToast.toast(' ', Object.assign({
+        title: i18n('no'),
+        variant: 'danger'
+      }, rawToast))
     }
   }
 }
@@ -550,6 +565,7 @@ export default {
 </style>
 
 <style lang="scss">
+.b-toast.b-toast-danger,
 .b-toast.b-toast-success {
   font-size: 24px;
   float: right;
@@ -562,9 +578,19 @@ export default {
     font-style: normal;
     font-size: inherit;
     text-rendering: auto;
-    content: '\f00c'; // fa-check
     display: inline-block;
     padding: 5px 10px;
+  }
+}
+
+.b-toast.b-toast-danger {
+  .toast-header > strong::before {
+    content: '\f071'; // fa-exclamation-triangle
+  }
+}
+.b-toast.b-toast-success {
+  .toast-header > strong::before {
+    content: '\f00c'; // fa-check
   }
 }
 </style>

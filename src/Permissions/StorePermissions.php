@@ -3,8 +3,8 @@
 namespace Foodsharing\Permissions;
 
 use Foodsharing\Lib\Session;
-use Foodsharing\Modules\Core\DBConstants\Store\TeamStatus;
 use Foodsharing\Modules\Core\DBConstants\Region\RegionIDs;
+use Foodsharing\Modules\Core\DBConstants\Store\TeamStatus;
 use Foodsharing\Modules\Store\StoreGateway;
 
 class StorePermissions

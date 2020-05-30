@@ -107,7 +107,7 @@ class StoreRestController extends AbstractFOSRestController
 
 		switch ($field) {
 			case 'team_status':
-				if (in_array($newValue, [TeamStatus::CLOSED, TeamStatus::OPEN, TeamStatus::OPEN_SEARCHING])) {
+				if (TeamStatus::isValidTeamStatus($newValue)) {
 					$this->storeGateway->setStoreTeamStatus($storeId, $newValue);
 				} else {
 					throw new HttpException(400, 'Team status value not supported');
