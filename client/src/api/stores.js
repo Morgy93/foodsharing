@@ -31,7 +31,7 @@ export async function setPickupSlots (storeId, pickupDate, totalSlots) {
 }
 
 export async function updateStore (storeId, field, newValue) {
-  return patch(`/stores/${storeId}/edit/${field}`, { newValue: newValue })
+  return patch(`/stores/${storeId}/data/${field}`, { newValue: newValue })
 }
 
 export async function addStoreChain (name, logo = '') {

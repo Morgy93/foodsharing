@@ -27,10 +27,6 @@ class StoreRestController extends AbstractFOSRestController
 	// literal constants
 	private const NOT_LOGGED_IN = 'not logged in';
 	private const ID = 'id';
-	private const STORE_FIELD = 'field';
-	private const STORE_VALUE = 'newValue';
-	private const CHAIN_NAME = 'name';
-	private const CHAIN_LOGO = 'logo';
 
 	public function __construct(
 		Session $session,
@@ -88,7 +84,7 @@ class StoreRestController extends AbstractFOSRestController
 	}
 
 	/**
-	 * @Rest\Patch("stores/{storeId}/edit/{field}", requirements={"storeId" = "\d+", "field" = "\w+"})
+	 * @Rest\Patch("stores/{storeId}/data/{field}", requirements={"storeId" = "\d+", "field" = "\w+"})
 	 *
 	 * @Rest\RequestParam(name="newValue", nullable=false)
 	 *
@@ -106,7 +102,7 @@ class StoreRestController extends AbstractFOSRestController
 			throw new HttpException(400, 'Store field to edit cannot be empty.');
 		}
 		// TODO check if this property exists in the schema here? (don't just write new DB stuff)
-		$newValue = $paramFetcher->get(self::STORE_VALUE);
+		$newValue = $paramFetcher->get('newValue');
 		// TODO map to correct data type?!
 
 		switch ($field) {
@@ -171,12 +167,12 @@ class StoreRestController extends AbstractFOSRestController
 			throw new AccessDeniedHttpException();
 		}
 
-		$name = trim(strip_tags($paramFetcher->get(self::CHAIN_NAME)));
+		$name = trim(strip_tags($paramFetcher->get('name')));
 		if (empty($name)) {
 			throw new HttpException(400, 'Store chain name must not be empty.');
 		}
 
-		$logo = $paramFetcher->get(self::CHAIN_LOGO);
+		$logo = $paramFetcher->get('logo');
 
 		$chainId = $this->storeGateway->addStoreChain($name, $logo);
 
