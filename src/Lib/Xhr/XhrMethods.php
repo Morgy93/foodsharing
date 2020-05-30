@@ -13,6 +13,7 @@ use Foodsharing\Modules\Bell\DTO\Bell;
 use Foodsharing\Modules\Core\DBConstants\Email\EmailStatus;
 use Foodsharing\Modules\Core\DBConstants\Region\Type;
 use Foodsharing\Modules\Core\DBConstants\Region\WorkgroupFunction;
+use Foodsharing\Modules\Core\DBConstants\WallPost\StoreWallEntryType;
 use Foodsharing\Modules\Email\EmailGateway;
 use Foodsharing\Modules\Foodsaver\FoodsaverGateway;
 use Foodsharing\Modules\Mailbox\MailboxGateway;
@@ -228,24 +229,22 @@ class XhrMethods
 							<span class="time">' . $this->format_dt($wallpost['zeit']) . ' von ' . $wallpost['name'] . '</span>' . $delete . '
 						</div>';
 
-					if ($wallpost['milestone'] == 1) {
+					if ($wallpost['milestone'] != StoreWallEntryType::TEXT_POSTED) {
 						$odd .= ' milestone';
-
+					}
+					if ($wallpost['milestone'] == StoreWallEntryType::STORE_CREATED) {
 						$msg = '
 					<div class="milestone">
 						<a href="/profile/' . (int)$wallpost['fsid'] . '">' . $wallpost['name'] . '</a> ' . $this->translationHelper->sv('betrieb_added', date('d.m.Y', $wallpost['zeit'])) . '
 					</div>';
 
 						$pic = 'img/milestone.png';
-					} elseif ($wallpost['milestone'] == 2) {
-						$odd .= ' milestone';
+					} elseif ($wallpost['milestone'] == StoreWallEntryType::TEAM_MEMBER_ACCEPTED) {
 						$msg = '<span class="msg">' . $this->translationHelper->sv('accept_request', '<a href="/profile/' . (int)$wallpost['fsid'] . '">' . $this->model->getVal('name', 'foodsaver', $wallpost['fsid']) . '</a>') . '</span>';
-					} elseif ($wallpost['milestone'] == 3) {
-						$odd .= ' milestone';
+					} elseif ($wallpost['milestone'] == StoreWallEntryType::TEAM_STATUS_CHANGED) {
 						$pic = 'img/milestone.png';
 						$msg = '<span class="msg"><strong>' . $this->translationHelper->sv('status_change_at', date('d.m.Y', $wallpost['zeit'])) . '</strong> ' . $this->translationHelper->s($wallpost['text']) . '</span>';
-					} elseif ($wallpost['milestone'] == 5) {
-						$odd .= ' milestone';
+					} elseif ($wallpost['milestone'] == StoreWallEntryType::TEAM_MEMBER_LEFT) {
 						$msg = '<span class="msg">' . $this->translationHelper->sv('quiz_dropped', '<a href="/profile/' . (int)$wallpost['fsid'] . '">' . $this->model->getVal('name', 'foodsaver', $wallpost['fsid']) . '</a>') . '</span>';
 					}
 
@@ -1272,7 +1271,7 @@ class XhrMethods
 			'betrieb_id' => $data['bid'],
 			'text' => '{ACCEPT_REQUEST}',
 			'zeit' => date('Y-m-d H:i:s'),
-			'milestone' => 2
+			'milestone' => StoreWallEntryType::TEAM_MEMBER_ACCEPTED,
 		]);
 
 		$bezirk_id = $this->model->getVal('bezirk_id', 'betrieb', $data['bid']);

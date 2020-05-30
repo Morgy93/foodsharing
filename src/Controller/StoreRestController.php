@@ -6,6 +6,7 @@ use Foodsharing\Lib\Session;
 use Foodsharing\Modules\Bell\BellGateway;
 use Foodsharing\Modules\Bell\DTO\Bell;
 use Foodsharing\Modules\Core\DBConstants\Store\TeamStatus;
+use Foodsharing\Modules\Core\DBConstants\WallPost\StoreWallEntryType;
 use Foodsharing\Modules\Store\StoreGateway;
 use Foodsharing\Modules\Store\StoreTransactions;
 use Foodsharing\Permissions\StorePermissions;
@@ -199,7 +200,7 @@ class StoreRestController extends AbstractFOSRestController
 			'betrieb_id' => $storeId,
 			'text' => $text,
 			'zeit' => date('Y-m-d H:i:s'),
-			'milestone' => 0,
+			'milestone' => StoreWallEntryType::TEXT_POSTED,
 			'last' => 1
 		]);
 

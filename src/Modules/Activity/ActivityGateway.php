@@ -3,6 +3,7 @@
 namespace Foodsharing\Modules\Activity;
 
 use Foodsharing\Modules\Core\BaseGateway;
+use Foodsharing\Modules\Core\DBConstants\WallPost\StoreWallEntryType;
 
 class ActivityGateway extends BaseGateway
 {
@@ -300,7 +301,7 @@ class ActivityGateway extends BaseGateway
 			AND 	bt.betrieb_id = n.betrieb_id
 			AND 	bt.foodsaver_id = :foodsaver_id
 			AND 	bt.active = 1
-			AND 	n.milestone = 0
+			AND 	n.milestone = :post
 			AND 	n.last = 1
 
 			ORDER BY n.id DESC
@@ -311,6 +312,7 @@ class ActivityGateway extends BaseGateway
 			$stm,
 			[
 				':foodsaver_id' => $fsId,
+				':post' => StoreWallEntryType::TEXT_POSTED,
 				':start_item_index' => $page * self::ITEMS_PER_PAGE,
 				':items_per_page' => self::ITEMS_PER_PAGE,
 			]

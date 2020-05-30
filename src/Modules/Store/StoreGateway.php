@@ -12,6 +12,7 @@ use Foodsharing\Modules\Core\BaseGateway;
 use Foodsharing\Modules\Core\Database;
 use Foodsharing\Modules\Core\DBConstants\Store\CooperationStatus;
 use Foodsharing\Modules\Core\DBConstants\StoreTeam\MembershipStatus;
+use Foodsharing\Modules\Core\DBConstants\WallPost\StoreWallEntryType;
 use Foodsharing\Modules\Region\RegionGateway;
 use Foodsharing\Modules\Store\DTO\StoreForTopbarMenu;
 
@@ -97,24 +98,12 @@ class StoreGateway extends BaseGateway implements BellUpdaterInterface
 
 	private function addStatusChangeNote($storeId, $newValue, $fsId): int
 	{
-		$last = $this->db->fetch('
-			SELECT id, milestone
-			FROM  `fs_betrieb_notiz`
-			WHERE `betrieb_id` = :id
-			ORDER BY id DESC
-			LIMIT 1
-		', [':id' => $storeId]);
-
-		if ($last['milestone'] == 3) {
-			$this->db->delete('fs_betrieb_notiz', ['id' => $last['id']]);
-		}
-
 		return $this->add_betrieb_notiz([
 			'foodsaver_id' => $fsId,
 			'betrieb_id' => $storeId,
 			'text' => 'status_msg_' . (int)$newValue,
 			'zeit' => date('Y-m-d H:i:s'),
-			'milestone' => 3,
+			'milestone' => StoreWallEntryType::TEAM_STATUS_CHANGED,
 		]);
 	}
 

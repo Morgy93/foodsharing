@@ -11,6 +11,7 @@ use Foodsharing\Modules\Core\DBConstants\Info\InfoType;
 use Foodsharing\Modules\Core\DBConstants\Quiz\SessionStatus;
 use Foodsharing\Modules\Core\DBConstants\Region\RegionIDs;
 use Foodsharing\Modules\Core\DBConstants\Region\Type;
+use Foodsharing\Modules\Core\DBConstants\WallPost\StoreWallEntryType;
 
 class Foodsharing extends \Codeception\Module\Db
 {
@@ -353,7 +354,7 @@ class Foodsharing extends \Codeception\Module\Db
 		$params = array_merge([
 			'foodsaver_id' => $user,
 			'betrieb_id' => $store,
-			'milestone' => 0,
+			'milestone' => StoreWallEntryType::TEXT_POSTED,
 			'text' => $this->faker->realText(100),
 			'zeit' => $this->faker->dateTime(),
 			'last' => 0, // should be 1 for newest entry, can't do that here though

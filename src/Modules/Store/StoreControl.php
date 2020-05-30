@@ -7,6 +7,7 @@ use Foodsharing\Modules\Bell\DTO\Bell;
 use Foodsharing\Modules\Core\Control;
 use Foodsharing\Modules\Core\DBConstants\Region\Type;
 use Foodsharing\Modules\Core\DBConstants\Store\CooperationStatus;
+use Foodsharing\Modules\Core\DBConstants\WallPost\StoreWallEntryType;
 use Foodsharing\Modules\Foodsaver\FoodsaverGateway;
 use Foodsharing\Modules\Region\RegionGateway;
 use Foodsharing\Permissions\StorePermissions;
@@ -218,7 +219,7 @@ class StoreControl extends Control
 					'betrieb_id' => $id,
 					'text' => '{BETRIEB_ADDED}',
 					'zeit' => date('Y-m-d H:i:s', (time() - 10)),
-					'milestone' => 1
+					'milestone' => StoreWallEntryType::STORE_CREATED,
 				]);
 
 				if (isset($g_data['first_post']) && !empty($g_data['first_post'])) {
@@ -227,7 +228,7 @@ class StoreControl extends Control
 						'betrieb_id' => $id,
 						'text' => $g_data['first_post'],
 						'zeit' => date('Y-m-d H:i:s'),
-						'milestone' => 0
+						'milestone' => StoreWallEntryType::TEXT_POSTED,
 					]);
 				}
 
