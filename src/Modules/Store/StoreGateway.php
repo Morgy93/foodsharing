@@ -70,7 +70,7 @@ class StoreGateway extends BaseGateway implements BellUpdaterInterface
 		if ($verantwortlich = $this->getBiebsForStore($storeId)) {
 			$result['verantwortlicher'] = $verantwortlich;
 		}
-		if ($kette = $this->getOne_kette($result['kette_id'])) {
+		if ($kette = $this->getStoreChain($result['kette_id'])) {
 			$result['kette'] = $kette;
 		}
 
@@ -1037,19 +1037,12 @@ class StoreGateway extends BaseGateway implements BellUpdaterInterface
 		return $this->db->count('fs_abholer', ['betrieb_id' => $storeId, 'confirmed' => 0, 'date >' => $this->db->now()]);
 	}
 
-	public function getOne_kette($id): array
+	public function getStoreChain($chainId): array
 	{
-		return $this->db->fetch('
-			SELECT   `id`,
-			         `name`,
-			         `logo`
-
-			FROM     `fs_kette`
-
-			WHERE    `id` = :id
-        ', [
-			':id' => $id
-		]);
+		return $this->db->fetchByCriteria('fs_kette',
+			['id', 'name', 'logo'],
+			['id' => $chainId]
+		);
 	}
 
 	/**

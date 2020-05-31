@@ -98,7 +98,6 @@ class StoreRestController extends AbstractFOSRestController
 			throw new AccessDeniedHttpException();
 		}
 
-		$field = trim(strip_tags($field));
 		if (empty($field)) {
 			throw new HttpException(400, 'Store field to edit cannot be empty.');
 		}
@@ -140,7 +139,7 @@ class StoreRestController extends AbstractFOSRestController
 		if (!$this->session->may()) {
 			throw new HttpException(401, self::NOT_LOGGED_IN);
 		}
-		$chain = $this->storeGateway->getOne_kette($chainId);
+		$chain = $this->storeGateway->getStoreChain($chainId);
 
 		if (!$chain) {
 			throw new HttpException(404, 'Store chain does not exist.');
@@ -168,7 +167,7 @@ class StoreRestController extends AbstractFOSRestController
 			throw new AccessDeniedHttpException();
 		}
 
-		$name = trim(strip_tags($paramFetcher->get('name')));
+		$name = trim($paramFetcher->get('name'));
 		if (empty($name)) {
 			throw new HttpException(400, 'Store chain name must not be empty.');
 		}
