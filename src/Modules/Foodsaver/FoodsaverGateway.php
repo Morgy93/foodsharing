@@ -777,7 +777,7 @@ final class FoodsaverGateway extends BaseGateway
 			$this->db->insert(
 				'fs_foodsaver_change_history',
 				[
-					'date' => date(\DateTime::ISO8601),
+					'date' => $this->db->now(),
 					'fs_id' => $fsId,
 					'changer_id' => $fsId,
 					'object_name' => 'bezirk_id',
@@ -789,7 +789,7 @@ final class FoodsaverGateway extends BaseGateway
 				'fs_verify_history',
 				[
 					'fs_id' => $fsId,
-					'date' => date(\DateTime::ISO8601),
+					'date' => $this->db->now(),
 					'bot_id' => $fsId,
 					'change_status' => 0
 				]
