@@ -100,29 +100,29 @@ class StoreControl extends Control
 				$this->flashMessageHelper->info('Zum Anlegen eines Betriebes musst Du Betriebsverantwortlicher sein');
 				$this->routeHelper->go('?page=settings&sub=upgrade/up_bip');
 			}
-		} elseif ($id = $this->identificationHelper->getActionId('delete')) {
+		} elseif ($storeId = $this->identificationHelper->getActionId('delete')) {
 			// see #485
-		} elseif ($id = $this->identificationHelper->getActionId('edit')) {
+		} elseif ($storeId = $this->identificationHelper->getActionId('edit')) {
+			$store = $this->storeModel->getOne_betrieb($storeId);
+			// TODO check inconsistency between this + store view breadcrumb (page=fsbetrieb)
 			$this->pageHelper->addBread($this->translationHelper->s('bread_betrieb'), '/?page=betrieb');
+			$this->pageHelper->addBread($store['name'], '/?page=fsbetrieb&id=' . $storeId);
 			$this->pageHelper->addBread($this->translationHelper->s('edit_store'));
-			$data = $this->storeModel->getOne_betrieb($id);
 
-			$this->pageHelper->addTitle($data['name']);
+			$this->pageHelper->addTitle($store['name']);
 			$this->pageHelper->addTitle($this->translationHelper->s('edit'));
 
-			if ($this->storePermissions->mayEditStore($id)) {
-				$this->handle_edit($data['name']);
+			if ($this->storePermissions->mayEditStore($storeId)) {
+				$this->handle_edit($store['name']);
 
-				$this->dataHelper->setEditData($data);
+				$this->dataHelper->setEditData($store);
 
-				$region = $this->storeModel->getValues(['id', 'name'], 'bezirk', $data['bezirk_id']);
-				if (isset($_GET['id'])) {
-					$g_data['foodsaver'] = $this->storeGateway->getStoreManagers($_GET['id']);
-				}
+				$region = $this->storeModel->getValues(['id', 'name'], 'bezirk', $store['bezirk_id']);
+				$g_data['foodsaver'] = $this->storeGateway->getStoreManagers($storeId);
 
 				$this->pageHelper->addContent(
 					$this->view->vueComponent('vue-storeedit', 'store-edit', [
-						'storeData' => $data,
+						'storeData' => $store,
 						'mayManageStoreChains' => $this->storePermissions->mayManageStoreChains(),
 						'foodTypeOptions' => $this->storeGateway->getBasics_groceries(),
 						'chainOptions' => $this->storeGateway->getBasics_chain(),
@@ -137,7 +137,7 @@ class StoreControl extends Control
 			}
 
 			$this->pageHelper->addContent($this->v_utils->v_field($this->v_utils->v_menu([
-				$this->routeHelper->pageLink('betrieb', 'back_to_overview')
+				$this->routeHelper->pageLink('fsbetrieb&id=' . $storeId, 'back_to_betrieb')
 			]), $this->translationHelper->s('actions')), CNT_TOP);
 		} elseif (isset($_GET['id'])) {
 			$this->routeHelper->go('/?page=fsbetrieb&id=' . (int)$_GET['id']);
@@ -147,11 +147,17 @@ class StoreControl extends Control
 			$stores = $this->storeModel->listBetriebReq($regionId);
 
 			$storesMapped = array_map(function ($store) {
+				$storeStatus = (int)$store['betrieb_status_id'];
+				// status COOPERATION_STARTING and COOPERATION_ESTABLISHED are the same
+				// => always return COOPERATION_STARTING
+				if ($storeStatus == CooperationStatus::COOPERATION_ESTABLISHED) {
+					$storeStatus = CooperationStatus::COOPERATION_STARTING;
+				}
+
 				return [
 					'id' => (int)$store['id'],
 					'name' => $store['name'],
-					// status COOPERATION_STARTING and COOPERATION_ESTABLISHED are the same (in cooperation), always return COOPERATION_STARTING
-					'status' => $store['betrieb_status_id'] == CooperationStatus::COOPERATION_ESTABLISHED ? CooperationStatus::COOPERATION_STARTING : (int)$store['betrieb_status_id'],
+					'status' => $storeStatus,
 					'added' => $store['added'],
 					'region' => $store['bezirk_name'],
 					'address' => $store['anschrift'],
