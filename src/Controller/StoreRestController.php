@@ -7,6 +7,7 @@ use Foodsharing\Modules\Bell\BellGateway;
 use Foodsharing\Modules\Bell\DTO\Bell;
 use Foodsharing\Modules\Core\DBConstants\Store\TeamStatus;
 use Foodsharing\Modules\Core\DBConstants\WallPost\StoreWallEntryType;
+use Foodsharing\Modules\Store\DTO\Store;
 use Foodsharing\Modules\Store\StoreGateway;
 use Foodsharing\Modules\Store\StoreTransactions;
 use Foodsharing\Permissions\StorePermissions;
@@ -87,7 +88,7 @@ class StoreRestController extends AbstractFOSRestController
 	/**
 	 * @Rest\Patch("stores/{storeId}/data/{field}", requirements={"storeId" = "\d+", "field" = "\w+"})
 	 *
-	 * @Rest\RequestParam(name="newValue", nullable=false)
+	 * @Rest\RequestParam(name="newValue", nullable=true)
 	 *
 	 * @param int $storeId ID of an existing store
 	 * @param string $field which store property to update
@@ -101,9 +102,16 @@ class StoreRestController extends AbstractFOSRestController
 		if (empty($field)) {
 			throw new HttpException(400, 'Store field to edit cannot be empty.');
 		}
-		// TODO check if this property exists in the schema here? (don't just write new DB stuff)
+
 		$newValue = $paramFetcher->get('newValue');
-		// TODO map to correct data type?!
+
+		if (!Store::isValidStoreField($field)) {
+			throw new HttpException(400, 'Cannot edit this store field: ' . $field);
+		}
+
+		if ($newValue === null && !in_array($field, ['presse', 'sticker'])) {
+			throw new HttpException(400, 'Cannot set this store field to null: ' . $field);
+		}
 
 		switch ($field) {
 			case 'team_status':
