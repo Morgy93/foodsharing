@@ -89,7 +89,7 @@ class BlogView extends View
 	{
 		$bezirkchoose = '';
 		if ($add) {
-			$title = $this->translationHelper->s('neu_blog_entry');
+			$title = $this->translationHelper->s('bread_new_blog_entry');
 		} else {
 			$title = $this->translationHelper->s('edit_article');
 			global $g_data;

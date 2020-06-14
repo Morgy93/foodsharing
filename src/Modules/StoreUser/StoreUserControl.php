@@ -70,8 +70,8 @@ class StoreUserControl extends Control
 	public function index()
 	{
 		if (isset($_GET['id'])) {
-			$this->pageHelper->addBread($this->translationHelper->s('betrieb_bread'), '/?page=fsbetrieb');
-			$this->pageHelper->addTitle($this->translationHelper->s('betrieb_bread'));
+			$this->pageHelper->addBread($this->translator->trans('bread.stores'), '/?page=fsbetrieb');
+			$this->pageHelper->addTitle($this->translator->trans('bread.stores'));
 			$this->pageHelper->addStyle('.button{margin-right:8px;}#right .tagedit-list{width:256px;}#foodsaver-wrapper{padding-top:0px;}');
 			global $g_data;
 
@@ -211,7 +211,7 @@ class StoreUserControl extends Control
 
 				if ($this->storePermissions->mayEditStore($store['id'])) {
 					$menu[] = ['name' => $this->translationHelper->s('fetch_history'), 'click' => "ajreq('fetchhistory',{app:'betrieb',bid:" . (int)$store['id'] . '});'];
-					$menu[] = ['name' => $this->translationHelper->s('edit_betrieb'), 'href' => '/?page=betrieb&a=edit&id=' . $store['id']];
+					$menu[] = ['name' => $this->translator->trans('bread.store.edit'), 'href' => '/?page=betrieb&a=edit&id=' . $store['id']];
 					$menu[] = ['name' => $this->translationHelper->s('edit_team'), 'click' => '$(\'#teamEditor\').dialog({modal:true,width:$(window).width()*0.95,title:\'' . $this->translationHelper->s('edit_team') . '\'});'];
 					$menu[] = ['name' => $this->translationHelper->s('edit_fetchtime'), 'click' => '$(\'#bid\').val(' . (int)$store['id'] . ');$(\'#dialog_abholen\').dialog(\'open\');return false;'];
 				}

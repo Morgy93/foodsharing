@@ -15,6 +15,13 @@ button:
   answer: Antworten
   clear_filter: Filter leeren
 
+bread:
+  backToOverview: zurück zur Übersicht
+  stores: Alle Betriebe
+  store:
+    new: Neuen Betrieb eintragen
+    edit: Betrieb bearbeiten
+
 group:
   name: Name
   description: Beschreibung
@@ -257,7 +264,6 @@ storeview:
 
 store:
   pickup_slot_unavailable: Dieser Abhol-Slot liegt weiter in der Zukunft als von Deinen BIEBs vorgesehen ist. Betroffen hiervon sind derzeit zwei Tage am Ende der Liste. Versuch es also bitte in 1 resp. 2 Tagen wieder.
-  add_new_store: Neuen Betrieb anlegen
   all_of_my_stores: Alle meine Betriebe
   tooltip_yellow: Offene Abholungen in den nächsten fünf Tagen
   tooltip_orange: Offene Abholungen in den nächsten drei Tagen
@@ -295,6 +301,12 @@ store:
   springer_conversation_name: 'Springer {name}'
 
 storeedit:
+  add_new_store: Neuen Betrieb anlegen
+  needsStoreManager: Zum Anlegen eines Betriebes musst Du das Betriebsverantwortlichen-Quiz bestanden haben.
+  needsRegionMembership: Du kannst Betriebe nur in Regionen anlegen, in denen Du Mitglied bist.
+  newSuccess: Kooperationsbetrieb wurde gespeichert
+  notAllowed: Diesen Betrieb kannst Du nicht bearbeiten
+  savedChanges: Änderungen wurden gespeichert
   text:
     header: Texte
     title: Name des Betriebs
