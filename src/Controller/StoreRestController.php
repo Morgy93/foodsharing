@@ -109,8 +109,10 @@ class StoreRestController extends AbstractFOSRestController
 			throw new HttpException(400, 'Cannot edit this store field: ' . $field);
 		}
 
-		if ($newValue === null && !in_array($field, ['presse', 'sticker'])) {
+		if ($newValue === null && !Store::isNullable($field)) {
 			throw new HttpException(400, 'Cannot set this store field to null: ' . $field);
+		} elseif (!$newValue && !Store::isEmptyable($field)) {
+			throw new HttpException(400, 'Cannot set this store field to empty value: ' . $field);
 		}
 
 		switch ($field) {

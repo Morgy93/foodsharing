@@ -40,10 +40,30 @@ class Store
 		'team_conversation_id',
 		'springer_conversation_id',
 		'deleted_at',
+		'lebensmittel', // special-cased handling in StoreRestController
 	];
 
 	public static function isValidStoreField(string $field)
 	{
 		return in_array($field, self::COLUMNS_IN_DATABASE);
+	}
+
+	public static function isEmptyable(string $field)
+	{
+		return !in_array($field, [
+			'id',
+			'bezirk_id',
+			'added',
+			'name',
+			'besonderheiten',
+		]);
+	}
+
+	public static function isNullable(string $field)
+	{
+		return in_array($field, [
+			'presse',
+			'sticker',
+		]);
 	}
 }
