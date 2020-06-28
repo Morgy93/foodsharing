@@ -17,8 +17,9 @@
                 <b-input
                   v-model="form.title"
                   :placeholder="$i18n('storeedit.text.titlePlaceholder')"
+                  lazy
                   trim
-                  @change="change($event, 'title')"
+                  @change="change('title')"
                 />
               </b-card-text>
 
@@ -42,11 +43,11 @@
                 <b-form-textarea
                   v-model="form.publicInfo"
                   :state="(form.publicInfo && form.publicInfo.length > 180) ? false : null"
-                  :placeholder="$i18n('storeedit.text.publicInfo') + '...'"
-                  rows="4"
-                  max-rows="6"
+                  :placeholder="$i18n('storeedit.text.publicInfo') + '…'"
+                  rows="6"
+                  lazy
                   trim
-                  @change="change($event, 'publicInfo')"
+                  @change="change('publicInfo')"
                 />
               </b-card-text>
             </b-col>
@@ -56,10 +57,11 @@
               <b-card-text>
                 <b-form-textarea
                   v-model="form.particularities"
-                  :placeholder="$i18n('storeedit.text.particularities') + '...'"
-                  rows="13"
+                  :placeholder="$i18n('storeedit.text.particularities') + '…'"
+                  rows="12"
+                  lazy
                   trim
-                  @change="change($event, 'particularities')"
+                  @change="change('particularities')"
                 />
               </b-card-text>
             </b-col>
@@ -75,7 +77,7 @@
                 <b-form-select
                   v-model="form.weight"
                   :options="weightOptions"
-                  @change="change($event, 'weight')"
+                  @change="change('weight')"
                 />
               </b-card-text>
 
@@ -84,7 +86,7 @@
                 <b-form-select
                   v-model="form.time"
                   :options="timeOptions"
-                  @change="change($event, 'time')"
+                  @change="change('time')"
                 />
               </b-card-text>
 
@@ -93,7 +95,7 @@
                 <b-form-select
                   v-model="form.prefetchtime"
                   :options="prefetchtimeOptions"
-                  @change="change($event, 'prefetchtime')"
+                  @change="change('prefetchtime')"
                 />
               </b-card-text>
 
@@ -102,7 +104,7 @@
                 <b-form-select
                   v-model="form.teamStatus"
                   :options="teamStatusOptions"
-                  @change="change($event, 'teamStatus')"
+                  @change="change('teamStatus')"
                 />
               </b-card-text>
             </b-col>
@@ -116,7 +118,7 @@
                     :options="foodTypeOptions"
                     value-field="id"
                     text-field="name"
-                    @change="change($event, 'foodType')"
+                    @change="change('foodType')"
                   />
                 </b-form-group>
               </b-card-text>
@@ -133,7 +135,7 @@
                 <b-form-datepicker
                   v-model="form.start"
                   type="text"
-                  @input="change($event, 'start')"
+                  @input="change('start')"
                 />
               </b-card-text>
 
@@ -142,7 +144,7 @@
                 <b-form-select
                   v-model="form.difficulty"
                   :options="difficultyOptions"
-                  @change="change($event, 'difficulty')"
+                  @change="change('difficulty')"
                 />
               </b-card-text>
 
@@ -151,7 +153,7 @@
                 <b-form-select
                   v-model="form.publicity"
                   :options="yesNoOptions"
-                  @change="change($event, 'publicity')"
+                  @change="change('publicity')"
                 />
               </b-card-text>
 
@@ -160,7 +162,7 @@
                 <b-form-select
                   v-model="form.sticker"
                   :options="yesNoOptions"
-                  @change="change($event, 'sticker')"
+                  @change="change('sticker')"
                 />
               </b-card-text>
             </b-col>
@@ -170,7 +172,7 @@
               <b-card-text>
                 <b-form-input
                   v-model="form.contactPerson"
-                  @change="change($event, 'contactPerson')"
+                  @change="change('contactPerson')"
                 />
               </b-card-text>
 
@@ -178,8 +180,9 @@
               <b-card-text>
                 <b-form-input
                   v-model="form.contactPhone"
+                  lazy
                   trim
-                  @change="change($event, 'contactPhone')"
+                  @change="change('contactPhone')"
                 />
               </b-card-text>
 
@@ -187,8 +190,9 @@
               <b-card-text>
                 <b-form-input
                   v-model="form.contactFax"
+                  lazy
                   trim
-                  @change="change($event, 'contactFax')"
+                  @change="change('contactFax')"
                 />
               </b-card-text>
 
@@ -196,8 +200,9 @@
               <b-card-text>
                 <b-form-input
                   v-model="form.contactMail"
+                  lazy
                   trim
-                  @change="change($event, 'contactMail')"
+                  @change="change('contactMail')"
                 />
               </b-card-text>
             </b-col>
@@ -227,7 +232,7 @@
                 <b-form-select
                   v-model="form.status"
                   :options="storeStatusOptions"
-                  @change="change($event, 'status')"
+                  @change="change('status')"
                 />
               </b-card-text>
             </b-col>
@@ -240,7 +245,7 @@
                   :options="chainOptions"
                   value-field="id"
                   text-field="name"
-                  @change="change($event, 'chain')"
+                  @change="change('chain')"
                 >
                   <template v-slot:first>
                     <b-form-select-option
@@ -260,7 +265,7 @@
                   :options="categoryOptions"
                   value-field="id"
                   text-field="name"
-                  @change="change($event, 'category')"
+                  @change="change('category')"
                 >
                   <template v-slot:first>
                     <b-form-select-option
@@ -298,6 +303,7 @@
                     <b-form-input
                       v-model="newchainText"
                       class="form-control with-border"
+                      lazy
                       trim
                     />
                     <b-input-group-append>
@@ -474,8 +480,9 @@ export default {
         $('.store-legacydata').addClass('d-none')
       }
     },
-    async change (newValue, field) {
+    async change (field) {
       const storeId = this.storeData.id
+      const newValue = this.form[field]
       const dbField = GOOD_TO_BAD[field]
       if (dbField) {
         try {
