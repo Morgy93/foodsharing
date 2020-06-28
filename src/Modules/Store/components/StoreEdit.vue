@@ -3,13 +3,14 @@
     <b-card no-body>
       <b-tabs
         content-class="mt-2"
-        card
+        justified
         pills
+        card
         @activate-tab="switchTab"
       >
         <!-- eslint-disable-next-line vue/max-attributes-per-line -->
         <b-tab :title="$i18n('storeedit.text.header')" no-body>
-          <b-row class="store-text">
+          <b-row class="store-section store-text">
             <b-col sm="6">
               <b-card-title :title="$i18n('storeedit.text.title')" />
               <b-card-text class="store-title">
@@ -67,7 +68,7 @@
 
         <!-- eslint-disable-next-line vue/max-attributes-per-line -->
         <b-tab :title="$i18n('storeedit.fetch.header')" no-body>
-          <b-row class="store-fetch">
+          <b-row class="store-section store-fetch">
             <b-col sm="6">
               <b-card-title :title="$i18n('storeedit.fetch.weight')" />
               <b-card-text>
@@ -125,7 +126,7 @@
 
         <!-- eslint-disable-next-line vue/max-attributes-per-line -->
         <b-tab :title="$i18n('storeedit.coop.header')" no-body>
-          <b-row class="store-coop">
+          <b-row class="store-section store-coop">
             <b-col sm="6">
               <b-card-title :title="$i18n('storeedit.coop.start')" />
               <b-card-text>
@@ -205,7 +206,7 @@
 
         <!-- eslint-disable-next-line vue/max-attributes-per-line -->
         <b-tab :title="$i18n('storeedit.store.header')" no-body>
-          <b-row class="store-status">
+          <b-row class="store-section store-status">
             <b-col sm="6">
               <b-card-title :title="$i18n('storeedit.store.status')" />
               <b-card-text>
@@ -319,7 +320,7 @@
 
         <!-- eslint-disable-next-line vue/max-attributes-per-line -->
         <b-tab :title="$i18n('storeedit.location.header')" no-body>
-          <b-row class="store-location">
+          <b-row class="store-section store-location">
             <b-col>
               <b-card-title :title="$i18n('storeedit.location.seeBelow')" />
             </b-col>
@@ -519,6 +520,9 @@ export default {
   .card {
     padding: 10px;
   }
+  ::v-deep .tabs .card-header:first-child {
+    border-radius: 6px;
+  }
   .card-title {
     font-size: 16px;
     padding-left: 8px;
@@ -528,12 +532,19 @@ export default {
     background-color: var(--fs-white);
     color: var(--fs-brown);
   }
-  /deep/ .custom-control-label {
+
+  // column separation, same combined value as the bootstrap margin-bottom for `p`
+  .row.store-section > div {
+    margin-top: 0.5rem;
+    margin-bottom: 0.5rem;
+  }
+
+  ::v-deep .custom-control-label {
     line-height: 1.5;
     font-size: 20px;
     min-width: 250px;
   }
-  /deep/ .alert {
+  ::v-deep .alert {
     display: flex;
     border: 0;
     margin: 15px 0;
@@ -565,6 +576,10 @@ export default {
 </style>
 
 <style lang="scss">
+.old-storeedit {
+  padding-bottom: 15px;
+}
+
 .b-toast.b-toast-danger,
 .b-toast.b-toast-success {
   font-size: 24px;

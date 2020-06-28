@@ -103,7 +103,7 @@ class StoreView extends View
 		return $out;
 	}
 
-	public function betrieb_form($region, $classes = '')
+	public function betrieb_form($region)
 	{
 		global $g_data;
 
@@ -144,8 +144,11 @@ class StoreView extends View
 			$this->v_utils->v_form_textarea('first_post'),
 		]);
 
+		$classes = $editExisting ? 'store-legacydata d-none' : '';
+		$title = $this->translator->trans($editExisting ? 'bread.store.edit' : 'bread.store.new');
+
 		return $this->v_utils->v_quickform(
-			$this->translator->trans('storeview.store'),
+			$title,
 			$fieldset,
 			['id' => 'legacydata'],
 			['class' => $classes]

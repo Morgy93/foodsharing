@@ -138,7 +138,9 @@ class StoreControl extends Control
 				])
 			);
 			$this->pageHelper->addContent(
-				$this->view->betrieb_form($region, 'store-legacydata d-none')
+			'<div class="old-storeedit">'
+				. $this->view->betrieb_form($region) .
+			'</div>'
 			);
 
 			$this->pageHelper->addContent($this->v_utils->v_field($this->v_utils->v_menu([
