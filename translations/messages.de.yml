@@ -199,6 +199,7 @@ options: Optionen
 error_unexpected: Es ist ein Fehler aufgetreten
 success: Erfolgreich abgeschlossen
 saved: Gespeichert
+oops: Fehler
 delete: Löschen
 notice: Hinweis!
 

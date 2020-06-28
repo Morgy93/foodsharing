@@ -17,8 +17,8 @@
                 <b-input
                   v-model="form.title"
                   :placeholder="$i18n('storeedit.text.titlePlaceholder')"
-                  lazy
                   trim
+                  :state="((form.title || '').length > 0) ? null : false"
                   @change="change('title')"
                 />
               </b-card-text>
@@ -128,7 +128,7 @@
                     :options="foodTypeOptions"
                     value-field="id"
                     text-field="name"
-                    @change="change('foodType')"
+                    @change="change('foodType', $event)"
                   />
                 </b-form-group>
               </b-card-text>
@@ -490,18 +490,21 @@ export default {
         $('.store-legacydata').addClass('d-none')
       }
     },
-    async change (field) {
+    async change (field, evt = null) {
       const storeId = this.storeData.id
-      const newValue = this.form[field]
+      const newValue = evt || this.form[field]
       const dbField = GOOD_TO_BAD[field]
       if (dbField) {
         try {
           await updateStore(storeId, dbField, newValue)
           this.successToast()
+          this.storeData[dbField] = newValue
         } catch (err) {
           console.error(`Could not update field ${field} to '${newValue}'.`, err.message)
           this.burnedToast()
-          // TODO reset vue data to old, non-updated value
+          // reset vue data to old, non-updated value
+          const oldValue = this.storeData[dbField]
+          this.form[field] = oldValue
         }
       } else {
         console.warn('Tried updating unknown store field:', field)
@@ -524,7 +527,7 @@ export default {
     },
     burnedToast () {
       this.$bvToast.toast(' ', Object.assign({
-        title: i18n('no'),
+        title: i18n('oops'),
         variant: 'danger'
       }, rawToast))
     }
