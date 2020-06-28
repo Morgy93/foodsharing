@@ -316,6 +316,7 @@ storeedit:
     publicInfoWarning: 'Wichtig: Gib hier keine genauen Abholzeiten an.'
     publicInfoDetails: Es ist schon vorgekommen, dass dann Leute unabgesprochen zum Laden gehen.
     particularities: Besonderheiten
+    particularitiesInfo: Diesen Text sehen alle im Betriebs-Team.
   fetch:
     header: Abholung
     weight: Mit wie vielen Lebensmitteln ist pro Abholtermin zu rechnen?

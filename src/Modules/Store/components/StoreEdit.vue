@@ -55,6 +55,16 @@
             <b-col sm="6">
               <b-card-title :title="$i18n('storeedit.text.particularities')" />
               <b-card-text>
+                <b-alert show>
+                  <i class="fas fa-info-circle" />
+                  <div class="info-text">
+                    <span>
+                      {{ $i18n('storeedit.text.particularitiesInfo') }}
+                    </span>
+                    <span v-html="$i18n('info.md')" />
+                  </div>
+                </b-alert>
+
                 <b-form-textarea
                   v-model="form.particularities"
                   :placeholder="$i18n('storeedit.text.particularities') + '…'"
