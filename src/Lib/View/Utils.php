@@ -14,28 +14,23 @@ use Symfony\Contracts\Translation\TranslatorInterface;
 class Utils
 {
 	private $id;
-
-	/**
-	 * @var \Foodsharing\Lib\Session
-	 */
-	private $session;
+	private Session $session;
 
 	/**
 	 * @var \Twig\Environment
 	 */
 	private $twig;
-	private $sanitizerService;
-	private $pageHelper;
-	private $routeHelper;
-	private $identificationHelper;
-	private $dataHelper;
-	private $translationHelper;
-	/* @var TranslatorInterface */
-	private $translator;
+	private Sanitizer $sanitizerService;
+	private PageHelper $pageHelper;
+	private RouteHelper $routeHelper;
+	private IdentificationHelper $identificationHelper;
+	private DataHelper $dataHelper;
+	private TranslationHelper $translationHelper;
+	private TranslatorInterface $translator;
 
 	/**
-	 * @required
-	 */
+	* @required
+	*/
 	public function setTranslator(TranslatorInterface $translator)
 	{
 		$this->translator = $translator;

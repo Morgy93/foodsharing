@@ -9,9 +9,10 @@ use Symfony\Contracts\Translation\TranslatorInterface;
 
 class StoreTransactions
 {
-	private $messageGateway;
-	private $storeGateway;
-	private $translator;
+	private MessageGateway $messageGateway;
+	private StoreGateway $storeGateway;
+	private TranslatorInterface $translator;
+
 	const MAX_SLOTS_PER_PICKUP = 10;
 	// status constants for getAvailablePickupStatus
 	const STATUS_RED_TODAY_TOMORROW = 3;

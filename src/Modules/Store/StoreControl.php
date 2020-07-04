@@ -17,16 +17,16 @@ use Symfony\Contracts\Translation\TranslatorInterface;
 
 class StoreControl extends Control
 {
-	private $bellGateway;
-	private $storeModel;
-	private $storeGateway;
-	private $storePermissions;
-	private $storeTransactions;
-	private $regionGateway;
-	private $foodsaverGateway;
-	private $translator;
-	private $identificationHelper;
-	private $dataHelper;
+	private BellGateway $bellGateway;
+	private StoreModel $storeModel;
+	private StoreGateway $storeGateway;
+	private StorePermissions $storePermissions;
+	private StoreTransactions $storeTransactions;
+	private RegionGateway $regionGateway;
+	private FoodsaverGateway $foodsaverGateway;
+	private TranslatorInterface $translator;
+	private IdentificationHelper $identificationHelper;
+	private DataHelper $dataHelper;
 
 	public function __construct(
 		StoreModel $model,

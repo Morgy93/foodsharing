@@ -9,8 +9,8 @@ use Foodsharing\Modules\Store\StoreGateway;
 
 class StorePermissions
 {
-	private $storeGateway;
-	private $session;
+	private StoreGateway $storeGateway;
+	private Session $session;
 
 	public function __construct(
 		StoreGateway $storeGateway,

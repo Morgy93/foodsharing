@@ -18,7 +18,7 @@ use Symfony\Contracts\Translation\TranslatorInterface;
 
 class StoreView extends View
 {
-	private $weightHelper;
+	private WeightHelper $weightHelper;
 
 	public function __construct(
 		\Twig\Environment $twig,

@@ -18,24 +18,15 @@ use Symfony\Contracts\Translation\TranslatorInterface;
 
 class StoreUserControl extends Control
 {
-	private $regionGateway;
-	private $storeGateway;
-	private $storeModel;
-	private $storePermissions;
-	private $foodsaverGateway;
-	private $dataHelper;
-	private $sanitizerService;
-	private $timeHelper;
-	/* @var TranslatorInterface */
-	private $translator;
-
-	/**
-	 * @required
-	 */
-	public function setTranslator(TranslatorInterface $translator)
-	{
-		$this->translator = $translator;
-	}
+	private RegionGateway $regionGateway;
+	private StoreGateway $storeGateway;
+	private StoreModel $storeModel;
+	private StorePermissions $storePermissions;
+	private FoodsaverGateway $foodsaverGateway;
+	private DataHelper $dataHelper;
+	private Sanitizer $sanitizerService;
+	private TimeHelper $timeHelper;
+	private TranslatorInterface $translator;
 
 	public function __construct(
 		StoreUserView $view,

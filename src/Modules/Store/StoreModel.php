@@ -10,10 +10,10 @@ use Foodsharing\Modules\Region\RegionGateway;
 
 class StoreModel extends Db
 {
-	private $bellGateway;
-	private $storeGateway;
-	private $regionGateway;
-	private $messageGateway;
+	private BellGateway $bellGateway;
+	private StoreGateway $storeGateway;
+	private RegionGateway $regionGateway;
+	private MessageGateway $messageGateway;
 
 	public function __construct(
 		BellGateway $bellGateway,
