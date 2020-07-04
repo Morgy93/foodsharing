@@ -430,8 +430,7 @@ export default {
     },
     storeStatusOptions () {
       return [
-        { value: null, text: i18n('storeedit.dropdownDefault'), disabled: true },
-        { value: 0, text: i18n('storestatus.0') },
+        { value: 0, text: i18n('storeedit.dropdownDefault'), disabled: true },
         { value: 1, text: i18n('storestatus.1') },
         { value: 2, text: i18n('storestatus.2') },
         { value: 3, text: i18n('storestatus.3') },
