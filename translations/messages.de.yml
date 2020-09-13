@@ -863,7 +863,6 @@ wall:
 events:
   bread: Termine
   add_new_event: Jetzt neuen Termin eintragen
-  add_event: Neuer Termin
   create:
     date: Datum
     title: Neue Veranstaltung eintragen
