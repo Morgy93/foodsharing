@@ -3,31 +3,31 @@
 namespace Foodsharing\Modules\WorkGroup;
 
 use Foodsharing\Modules\Core\Control;
-use Foodsharing\Modules\Core\DBConstants\Region\ApplyType;
 use Foodsharing\Modules\Core\DBConstants\Region\RegionIDs;
 use Foodsharing\Modules\Core\DBConstants\Region\Type;
-use Foodsharing\Services\ImageService;
+use Foodsharing\Permissions\WorkGroupPermissions;
+use Foodsharing\Utility\ImageHelper;
 use Symfony\Component\Form\FormFactoryInterface;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 
 class WorkGroupControl extends Control
 {
-	/**
-	 * @var FormFactoryBuilder
-	 */
-	private $formFactory;
-	private $imageService;
-	private $workGroupGateway;
+	private WorkGroupGateway $workGroupGateway;
+	private WorkGroupPermissions $workGroupPermissions;
+	private ImageHelper $imageService;
+	private FormFactoryInterface $formFactory;
 
 	public function __construct(
 		WorkGroupView $view,
-		ImageService $imageService,
-		WorkGroupGateway $workGroupGateway
+		WorkGroupGateway $workGroupGateway,
+		WorkGroupPermissions $workGroupPermissions,
+		ImageHelper $imageService
 	) {
 		$this->view = $view;
-		$this->imageService = $imageService;
 		$this->workGroupGateway = $workGroupGateway;
+		$this->workGroupPermissions = $workGroupPermissions;
+		$this->imageService = $imageService;
 
 		parent::__construct();
 	}
@@ -35,12 +35,12 @@ class WorkGroupControl extends Control
 	/**
 	 * @required
 	 */
-	public function setFormFactory(FormFactoryInterface $formFactory)
+	public function setFormFactory(FormFactoryInterface $formFactory): void
 	{
 		$this->formFactory = $formFactory;
 	}
 
-	public function index(Request $request, Response $response)
+	public function index(Request $request, Response $response): void
 	{
 		if (!$this->session->may()) {
 			$this->routeHelper->goLogin();
@@ -55,42 +55,7 @@ class WorkGroupControl extends Control
 		}
 	}
 
-	private function fulfillApplicationRequirements($group, $stats)
-	{
-		return
-			$stats['bananacount'] >= $group['banana_count']
-			&& $stats['fetchcount'] >= $group['fetch_count']
-			&& $stats['weeks'] >= $group['week_num'];
-	}
-
-	private function mayEdit($group)
-	{
-		/* this actually only implements access for bots for _direct parents_, not all hierarchical parents */
-		return $this->session->isOrgaTeam() || $this->session->isAdminFor($group['id']) || $this->session->isAdminFor($group['parent_id']);
-	}
-
-	private function mayAccess($group)
-	{
-		return $this->session->mayBezirk($group['id']) || $this->session->isAdminFor($group['parent_id']);
-	}
-
-	private function mayApply($group, $applications, $stats)
-	{
-		return
-			!$this->session->mayBezirk($group['id'])
-			&& !in_array($group['id'], $applications)
-			&& ($group['apply_type'] == ApplyType::EVERYBODY
-			  || ($group['apply_type'] == ApplyType::REQUIRES_PROPERTIES && $this->fulfillApplicationRequirements($group, $stats)));
-	}
-
-	private function mayJoin($group)
-	{
-		return
-			!$this->session->mayBezirk($group['id'])
-			&& $group['apply_type'] == ApplyType::OPEN;
-	}
-
-	private function getSideMenuData($activeUrlPartial = null)
+	private function getSideMenuData(?string $activeUrlPartial = null): array
 	{
 		$countries = $this->workGroupGateway->getCountryGroups();
 		$bezirke = $this->session->getRegions();
@@ -122,20 +87,23 @@ class WorkGroupControl extends Control
 			}, $myGroups
 		);
 
-		return ['global' => $menuGlobal,
+		return [
+			'global' => $menuGlobal,
 			'local' => $menuLocalRegions,
 			'countries' => $menuCountries,
 			'groups' => $menuMyGroups,
-			'active' => $activeUrlPartial];
+			'active' => $activeUrlPartial,
+		];
 	}
 
-	private function list(Request $request, Response $response)
+	private function list(Request $request, Response $response): void
 	{
-		$this->pageHelper->addTitle($this->translationHelper->s('groups'));
+		$this->pageHelper->addTitle($this->translator->trans('terminology.groups'));
 
+		$sessionId = $this->session->id();
 		$parent = $request->query->getInt('p', RegionIDs::GLOBAL_WORKING_GROUPS);
-		$myApplications = $this->workGroupGateway->getApplications($this->session->id());
-		$myStats = $this->workGroupGateway->getStats($this->session->id());
+		$myApplications = $this->workGroupGateway->getApplications($sessionId);
+		$myStats = $this->workGroupGateway->getStats($sessionId);
 		$groups = $this->getGroups($parent, $myApplications, $myStats);
 
 		$response->setContent(
@@ -150,26 +118,26 @@ class WorkGroupControl extends Control
 	{
 		return array_map(
 			function ($group) use ($applications, $stats) {
+				$leaders = array_map(function ($leader) {
+					return array_merge($leader, ['image' => $this->imageService->img($leader['photo'])]);
+				}, $group['leaders']);
+
+				$satisfied = $this->workGroupPermissions->fulfillApplicationRequirements($group, $stats);
+
 				return array_merge(
 					$group,
 					[
-						'leaders' => array_map(
-							function ($leader) {
-								return array_merge($leader, ['image' => $this->imageService->img($leader['photo'])]);
-							},
-							$group['leaders']
-						),
+						'leaders' => $leaders,
 						'image' => $group['photo'] ? 'images/' . $group['photo'] : null,
 						'appliedFor' => in_array($group['id'], $applications),
 						'applyMinBananaCount' => $group['banana_count'],
 						'applyMinFetchCount' => $group['fetch_count'],
 						'applyMinFoodsaverWeeks' => $group['week_num'],
-						'applicationRequirementsNotFulfilled' => ($group['apply_type'] == ApplyType::REQUIRES_PROPERTIES)
-																	&& !$this->fulfillApplicationRequirements($group, $stats),
-						'mayEdit' => $this->mayEdit($group),
-						'mayAccess' => $this->mayAccess($group),
-						'mayApply' => $this->mayApply($group, $applications, $stats),
-						'mayJoin' => $this->mayJoin($group),
+						'applicationRequirementsNotFulfilled' => !$satisfied,
+						'mayEdit' => $this->workGroupPermissions->mayEdit($group),
+						'mayAccess' => $this->workGroupPermissions->mayAccess($group),
+						'mayApply' => $this->workGroupPermissions->mayApply($group, $applications, $stats),
+						'mayJoin' => $this->workGroupPermissions->mayJoin($group),
 					]
 				);
 			},
@@ -177,33 +145,29 @@ class WorkGroupControl extends Control
 		);
 	}
 
-	private function edit(Request $request, Response $response)
+	private function edit(Request $request, Response $response): void
 	{
 		$groupId = $request->query->getInt('id');
-
-		if ($group = $this->workGroupGateway->getGroup($groupId)) {
-			if ($group['type'] != Type::WORKING_GROUP) {
-				$this->routeHelper->go('/?page=dashboard');
-			}
-			if (!$this->mayEdit($group)) {
-				$this->routeHelper->go('/?page=dashboard');
-			}
-
-			$this->pageHelper->addBread($group['name'] . ' bearbeiten', '/?page=groups&sub=edit&id=' . (int)$group['id']);
-			$editWorkGroupRequest = EditWorkGroupData::fromGroup($group);
-			$form = $this->formFactory->create(WorkGroupForm::class, $editWorkGroupRequest);
-			$form->handleRequest($request);
-			if ($form->isSubmitted()) {
-				if ($form->isValid()) {
-					$data = $editWorkGroupRequest->toGroup();
-					$this->workGroupGateway->updateGroup($group['id'], $data);
-					$this->workGroupGateway->updateTeam($group['id'], $data['member'], $data['leader']);
-					$this->flashMessageHelper->info('Änderungen gespeichert!');
-					$this->routeHelper->goSelf();
-				}
-			}
+		$group = $this->workGroupGateway->getGroup($groupId);
+		if (!$group) {
+			$this->routeHelper->go('/?page=groups');
+		} elseif ($group['type'] != Type::WORKING_GROUP || !$this->workGroupPermissions->mayEdit($group)) {
+			$this->routeHelper->go('/?page=dashboard');
 		}
 
+		$this->pageHelper->addBread($group['name'] . ' bearbeiten', '/?page=groups&sub=edit&id=' . (int)$group['id']);
+		$editWorkGroupRequest = EditWorkGroupData::fromGroup($group);
+		$form = $this->formFactory->create(WorkGroupForm::class, $editWorkGroupRequest);
+		$form->handleRequest($request);
+		if ($form->isSubmitted()) {
+			if ($form->isValid()) {
+				$data = $editWorkGroupRequest->toGroup();
+				$this->workGroupGateway->updateGroup($group['id'], $data);
+				$this->workGroupGateway->updateTeam($group['id'], $data['member'], $data['leader']);
+				$this->flashMessageHelper->info('Änderungen gespeichert!');
+				$this->routeHelper->goSelf();
+			}
+		}
 		$response->setContent($this->render('pages/WorkGroup/edit.twig',
 			['nav' => $this->getSideMenuData(), 'group' => $group, 'form' => $form->createView()]
 		));

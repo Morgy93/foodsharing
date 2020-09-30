@@ -6,7 +6,6 @@ use Exception;
 use Flourish\fAuthorization;
 use Flourish\fImage;
 use Flourish\fSession;
-use Foodsharing\Helpers\TranslationHelper;
 use Foodsharing\Lib\Db\Mem;
 use Foodsharing\Modules\Buddy\BuddyGateway;
 use Foodsharing\Modules\Core\DBConstants\Region\Type;
@@ -14,38 +13,31 @@ use Foodsharing\Modules\Foodsaver\FoodsaverGateway;
 use Foodsharing\Modules\Quiz\QuizHelper;
 use Foodsharing\Modules\Region\RegionGateway;
 use Foodsharing\Modules\Store\StoreGateway;
-use Foodsharing\Services\StoreService;
 
 class Session
 {
 	private $mem;
+	private $buddyGateway;
 	private $foodsaverGateway;
 	private $quizHelper;
 	private $regionGateway;
-	private $buddyGateway;
 	private $storeGateway;
-	private $storeService;
 	private $initialized = false;
-	private $translationHelper;
 
 	public function __construct(
 		Mem $mem,
+		BuddyGateway $buddyGateway,
 		FoodsaverGateway $foodsaverGateway,
 		QuizHelper $quizHelper,
 		RegionGateway $regionGateway,
-		BuddyGateway $buddyGateway,
-		StoreGateway $storeGateway,
-		StoreService $storeService,
-		TranslationHelper $translationHelper
+		StoreGateway $storeGateway
 	) {
 		$this->mem = $mem;
+		$this->buddyGateway = $buddyGateway;
 		$this->foodsaverGateway = $foodsaverGateway;
 		$this->quizHelper = $quizHelper;
 		$this->regionGateway = $regionGateway;
-		$this->buddyGateway = $buddyGateway;
 		$this->storeGateway = $storeGateway;
-		$this->storeService = $storeService;
-		$this->translationHelper = $translationHelper;
 	}
 
 	public function initIfCookieExists()
@@ -143,7 +135,7 @@ class Session
 		return $user[$index];
 	}
 
-	public function id()
+	public function id(): ?int
 	{
 		if (!$this->initialized) {
 			return null;
@@ -214,10 +206,8 @@ class Session
 
 	/**
 	 * gets a user specific option and will be available after next login.
-	 *
-	 * @param $name
 	 */
-	public function option($key)
+	public function getOption($key)
 	{
 		return $this->get('useroption_' . $key);
 	}
@@ -226,25 +216,6 @@ class Session
 	{
 		$this->foodsaverGateway->setOption($this->id(), $key, $val);
 		$this->set('useroption_' . $key, $val);
-	}
-
-	public function addMsg($message, $type, $title = null)
-	{
-		$this->checkInitialized();
-		$msg = fSession::get('g_message', []);
-
-		if (!isset($msg[$type])) {
-			$msg[$type] = [];
-		}
-
-		if (!$title) {
-			$title = ' ' . $this->translationHelper->s($type);
-		} else {
-			$title = ' ';
-		}
-
-		$msg[$type][] = ['msg' => $message, 'title' => $title];
-		fSession::set('g_message', $msg);
 	}
 
 	/**

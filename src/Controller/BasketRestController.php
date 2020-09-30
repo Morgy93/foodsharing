@@ -4,11 +4,12 @@ namespace Foodsharing\Controller;
 
 use Foodsharing\Lib\Session;
 use Foodsharing\Modules\Basket\BasketGateway;
+use Foodsharing\Modules\Basket\BasketTransactions;
 use Foodsharing\Modules\Core\DBConstants\Basket\Status as BasketStatus;
 use Foodsharing\Modules\Core\DBConstants\BasketRequests\Status as RequestStatus;
-use Foodsharing\Services\BasketService;
-use Foodsharing\Services\ImageService;
-use Foodsharing\Services\MessageService;
+use Foodsharing\Modules\Message\MessageTransactions;
+use Foodsharing\Permissions\BasketPermissions;
+use Foodsharing\Utility\ImageHelper;
 use FOS\RestBundle\Controller\AbstractFOSRestController;
 use FOS\RestBundle\Controller\Annotations as Rest;
 use FOS\RestBundle\Request\ParamFetcher;
@@ -21,11 +22,12 @@ use Symfony\Component\HttpKernel\Exception\HttpException;
  */
 final class BasketRestController extends AbstractFOSRestController
 {
-	private $gateway;
-	private $service;
-	private $imageService;
-	private $messageService;
-	private $session;
+	private BasketGateway $gateway;
+	private BasketTransactions $basketTransactions;
+	private ImageHelper $imageHelper;
+	private MessageTransactions $messageTransactions;
+	private Session $session;
+	private BasketPermissions $basketPermissions;
 
 	// literal constants
 	private const TIME_TS = 'time_ts';
@@ -51,16 +53,18 @@ final class BasketRestController extends AbstractFOSRestController
 
 	public function __construct(
 		BasketGateway $gateway,
-		BasketService $service,
-		ImageService $imageService,
-		MessageService $messageService,
-		Session $session
+		BasketTransactions $basketTransactions,
+		ImageHelper $imageHelper,
+		MessageTransactions $messageTransactions,
+		Session $session,
+		BasketPermissions $basketPermissions
 	) {
 		$this->gateway = $gateway;
-		$this->service = $service;
-		$this->imageService = $imageService;
-		$this->messageService = $messageService;
+		$this->basketTransactions = $basketTransactions;
+		$this->imageHelper = $imageHelper;
+		$this->messageTransactions = $messageTransactions;
 		$this->session = $session;
+		$this->basketPermissions = $basketPermissions;
 	}
 
 	/**
@@ -75,13 +79,12 @@ final class BasketRestController extends AbstractFOSRestController
 	 */
 	public function listBasketsAction(ParamFetcher $paramFetcher): Response
 	{
-		if (!$this->session->may()) {
-			throw new HttpException(401, self::NOT_LOGGED_IN);
-		}
-
 		$baskets = [];
 		switch ($paramFetcher->get('type')) {
 			case 'mine':
+				if (!$this->session->may()) {
+					throw new HttpException(401, self::NOT_LOGGED_IN);
+				}
 				$baskets = $this->getCurrentUsersBaskets();
 				break;
 			case 'coordinates':
@@ -130,7 +133,7 @@ final class BasketRestController extends AbstractFOSRestController
 		return $this->handleView($this->view(['baskets' => $baskets], 200));
 	}
 
-	private function getCurrentUsersBaskets()
+	private function getCurrentUsersBaskets(): array
 	{
 		$updates = $this->gateway->listUpdates($this->session->id());
 		$baskets = $this->gateway->listMyBaskets($this->session->id());
@@ -290,7 +293,7 @@ final class BasketRestController extends AbstractFOSRestController
 			$contactTypes = array_map('intval', $contactTypes);
 		}
 
-		$basket = $this->service->addBasket(
+		$basket = $this->basketTransactions->addBasket(
 			$description,
 			'',
 			$contactTypes,
@@ -311,6 +314,7 @@ final class BasketRestController extends AbstractFOSRestController
 
 	/**
 	 * Checks if the number is a valid value in the given range.
+	 * TODO Duplicated in FoodSharePointRestController.php.
 	 */
 	private function isValidNumber($value, $lowerBound, $upperBound): bool
 	{
@@ -330,8 +334,16 @@ final class BasketRestController extends AbstractFOSRestController
 		if (!$this->session->may()) {
 			throw new HttpException(401, self::NOT_LOGGED_IN);
 		}
+		$basket = $this->gateway->getBasket($basketId);
+		if (empty($basket)) {
+			throw new HttpException(404, 'Basket was not found or cannot be deleted.');
+		}
 
-		$status = $this->gateway->removeBasket($basketId, $this->session->id());
+		if (!$this->basketPermissions->mayDelete($basket)) {
+			throw new HttpException(401, 'you are not allowed to delete this basket.');
+		}
+
+		$status = $this->gateway->removeBasket($basketId);
 
 		if ($status === 0) {
 			throw new HttpException(404, 'Basket was not found or cannot be deleted.');
@@ -402,7 +414,7 @@ final class BasketRestController extends AbstractFOSRestController
 		$tmp = uniqid('tmp/', true);
 		file_put_contents($tmp, $request->getContent());
 		try {
-			$picname = $this->imageService->createResizedPictures($tmp, 'images/basket/', self::SIZES);
+			$picname = $this->imageHelper->createResizedPictures($tmp, 'images/basket/', self::SIZES);
 			unlink($tmp);
 		} catch (\Exception $e) {
 			throw new HttpException(400, 'Picture could not be resized: ' . $e->getMessage());
@@ -410,7 +422,7 @@ final class BasketRestController extends AbstractFOSRestController
 
 		//remove old images
 		if (isset($basket[self::PICTURE]) && $basket[self::PICTURE] !== '') {
-			$this->imageService->removeResizedPictures('images/basket/', $basket[self::PICTURE], self::SIZES);
+			$this->imageHelper->removeResizedPictures('images/basket/', $basket[self::PICTURE], self::SIZES);
 		}
 
 		//update basket
@@ -436,7 +448,7 @@ final class BasketRestController extends AbstractFOSRestController
 		//update basket
 		$basket = $this->findEditableBasket($basketId);
 		if (isset($basket[self::PICTURE])) {
-			$this->imageService->removeResizedPictures('images/basket/', $basket[self::PICTURE], self::SIZES);
+			$this->imageHelper->removeResizedPictures('images/basket/', $basket[self::PICTURE], self::SIZES);
 			$basket[self::PICTURE] = null;
 			$this->gateway->editBasket($basketId, $basket[self::DESCRIPTION], null, $basket[self::LAT], $basket[self::LON], $this->session->id());
 		}
@@ -476,7 +488,7 @@ final class BasketRestController extends AbstractFOSRestController
 		}
 
 		// Send the message to the creator
-		$this->messageService->sendMessageToUser($basketCreatorId, $this->session->id(), $message, 'basket/request');
+		$this->messageTransactions->sendMessageToUser($basketCreatorId, $this->session->id(), $message, 'basket/request');
 		$this->gateway->setStatus($basketId, RequestStatus::REQUESTED_MESSAGE_UNREAD, $this->session->id());
 
 		return $this->getBasketAction($basketId);

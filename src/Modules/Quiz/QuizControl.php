@@ -2,29 +2,29 @@
 
 namespace Foodsharing\Modules\Quiz;
 
-use Foodsharing\Helpers\DataHelper;
-use Foodsharing\Helpers\IdentificationHelper;
 use Foodsharing\Modules\Core\Control;
 use Foodsharing\Modules\Foodsaver\FoodsaverGateway;
 use Foodsharing\Permissions\QuizPermissions;
-use Foodsharing\Services\ImageService;
+use Foodsharing\Utility\DataHelper;
+use Foodsharing\Utility\IdentificationHelper;
+use Foodsharing\Utility\ImageHelper;
 
 class QuizControl extends Control
 {
-	private $quizGateway;
-	private $quizSessionGateway;
-	private $foodsaverGateway;
-	private $imageService;
-	private $identificationHelper;
-	private $dataHelper;
-	private $quizPermissions;
+	private QuizGateway $quizGateway;
+	private QuizSessionGateway $quizSessionGateway;
+	private FoodsaverGateway $foodsaverGateway;
+	private ImageHelper $imageHelper;
+	private IdentificationHelper $identificationHelper;
+	private DataHelper $dataHelper;
+	private QuizPermissions $quizPermissions;
 
 	public function __construct(
 		QuizView $view,
 		QuizGateway $quizGateway,
 		QuizSessionGateway $quizSessionGateway,
 		FoodsaverGateway $foodsaverGateway,
-		ImageService $imageService,
+		ImageHelper $imageTransactions,
 		IdentificationHelper $identificationHelper,
 		DataHelper $dataHelper,
 		QuizPermissions $quizPermissions
@@ -33,7 +33,7 @@ class QuizControl extends Control
 		$this->quizGateway = $quizGateway;
 		$this->quizSessionGateway = $quizSessionGateway;
 		$this->foodsaverGateway = $foodsaverGateway;
-		$this->imageService = $imageService;
+		$this->imageHelper = $imageTransactions;
 		$this->identificationHelper = $identificationHelper;
 		$this->dataHelper = $dataHelper;
 		$this->quizPermissions = $quizPermissions;
@@ -176,7 +176,7 @@ class QuizControl extends Control
 			$this->pageHelper->addContent($this->getSessionDetailTopbarContent($fs), CNT_TOP);
 
 			if ($sessions = $this->quizSessionGateway->listUserSessions($_GET['fsid'])) {
-				$this->pageHelper->addContent($this->view->userSessions($sessions, $fs));
+				$this->pageHelper->addContent($this->view->userSessions($sessions));
 			}
 		}
 	}
@@ -184,8 +184,10 @@ class QuizControl extends Control
 	private function getSessionDetailTopbarContent($fs)
 	{
 		$title = 'Quiz-Sessions von ' . $fs['name'] . ' ' . $fs['nachname'];
-		$subtitle = $this->translationHelper->s('rolle_' . $fs['rolle'] . '_' . $fs['geschlecht']);
-		$icon = $this->imageService->avatar($fs);
+		$subtitle = $this->translator->trans(
+			$this->translationHelper->getRoleName($fs['rolle'], $fs['geschlecht'])
+		);
+		$icon = $this->imageHelper->avatar($fs);
 
 		return $this->view->topbar($title, $subtitle, $icon);
 	}

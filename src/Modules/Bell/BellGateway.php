@@ -11,10 +11,7 @@ use Foodsharing\Modules\Core\Database;
 
 class BellGateway extends BaseGateway
 {
-	/**
-	 * @var WebSocketConnection
-	 */
-	private $webSocketConnection;
+	private WebSocketConnection $webSocketConnection;
 
 	public function __construct(Database $db, WebSocketConnection $webSocketConnection)
 	{
@@ -91,15 +88,12 @@ class BellGateway extends BaseGateway
 	/**
 	 * Method returns an array of all bells a user sees.
 	 *
-	 * @param $fsId
-	 * @param string $limit
-	 *
 	 * @return BellForList[]
 	 */
-	public function listBells($fsId, $limit = '')
+	public function listBells(int $fsId, ?int $limit = null, int $offset = 0)
 	{
-		if ($limit !== '') {
-			$limit = ' LIMIT 0,' . (int)$limit;
+		if ($limit !== null) {
+			$limit = ' LIMIT ' . $offset . ', ' . $limit;
 		}
 
 		$stm = '
@@ -171,19 +165,25 @@ class BellGateway extends BaseGateway
 		return $this->db->exists('fs_bell', ['identifier' => $identifier]);
 	}
 
-	public function delBellForFoodsaver($bellId, $fsId): void
+	/**
+	 * Deletes the bell with the given ID for a specific foodsaver. Returns whether the bell was succesfully
+	 * deleted.
+	 */
+	public function delBellForFoodsaver(int $bellId, int $fsId): bool
 	{
-		$bellIsCloseable = $this->db->fetchValueByCriteria('fs_bell', 'closeable', ['id' => (int)$bellId]);
+		$bellIsCloseable = $this->db->fetchValueByCriteria('fs_bell', 'closeable', ['id' => $bellId]);
 
 		if (!$bellIsCloseable) {
-			return;
+			return false;
 		}
 
-		$this->db->delete('fs_foodsaver_has_bell', ['bell_id' => (int)$bellId, 'foodsaver_id' => (int)$fsId]);
+		$deleted = $this->db->delete('fs_foodsaver_has_bell', ['bell_id' => $bellId, 'foodsaver_id' => $fsId]);
 		$this->updateFoodsaverClient($fsId);
+
+		return $deleted > 0;
 	}
 
-	public function delBellsByIdentifier($identifier): void
+	public function delBellsByIdentifier(string $identifier): void
 	{
 		$foodsaverIds = $this->db->fetchAllValues(
 			'SELECT DISTINCT `foodsaver_id`
@@ -198,9 +198,13 @@ class BellGateway extends BaseGateway
 		$this->updateMultipleFoodsaverClients($foodsaverIds);
 	}
 
-	public function setBellsAsSeen(array $bellIds, int $foodsaverId): void
+	/**
+	 * Marks the bells specified by a list of IDs and the owner's ID as read. Returns the number of
+	 * bells that were successfully changed.
+	 */
+	public function setBellsAsSeen(array $bellIds, int $foodsaverId): int
 	{
-		$this->db->update('fs_foodsaver_has_bell',
+		return $this->db->update('fs_foodsaver_has_bell',
 			['seen' => 1],
 			[
 				'bell_id' => array_map('intval', $bellIds),

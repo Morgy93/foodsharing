@@ -17,7 +17,6 @@ time, mark, audio, video {
   border: 0;
   font: inherit;
   vertical-align: baseline;
-  /*color:#4A3520;*/
 }
 
 /* HTML5 display-role reset for older browsers */
@@ -32,6 +31,10 @@ a {
 
 strong {
   font-weight: bold;
+}
+
+em {
+  font-style: italic;
 }
 
 body {
@@ -152,10 +155,6 @@ table.mce-item-table td {
   padding: 15px;
 }
 
-em {
-  font-style: italic;
-}
-
 table {
   border-collapse: collapse;
   border-spacing: 0;
@@ -248,22 +247,26 @@ a.linkrow span.item {
   display: none;
 }
 
-.ampel {
+.trafficlight {
   display: block;
   text-decoration: none;
   padding-left: 17px;
 }
 
-.ampel span {
+.store-trafficlight {
+  display: inline-block;
+}
+
+.trafficlight span {
   display: block;
   width: 17px;
   height: 17px;
-  background-image: url(/img/ampel.png);
+  background-image: url('/img/ampel.png');
   background-repeat: no-repeat;
   text-decoration: none;
 }
 
-div.head a.ampel {
+div.head a.trafficlight {
   float: left;
   padding-left: 0;
   padding-right: 8px;
@@ -271,25 +274,11 @@ div.head a.ampel {
   top: -2px;
 }
 
-.ampel-gelb span {
-  background-position: -17px 0;
-}
-
-.ampel-rot span {
-  background-position: -34px 0;
-}
-
-.ampel-gruen span {
-  background-position: 0 0;
-}
-
-.ampel-grau span {
-  background-position: -51px 0;
-}
-
-.ampel-blau span {
-  background-position: -68px 0;
-}
+.trafficlight.color-warn span { background-position: -17px 0; }
+.trafficlight.color-danger span { background-position: -34px 0; }
+.trafficlight.color-success span { background-position: 0 0; }
+.trafficlight.color-light span { background-position: -51px 0; }
+.trafficlight.color-info span { background-position: -68px 0; }
 
 ul.toolbar {
   margin: 0 !important;
@@ -344,15 +333,6 @@ ul.toolbar span.ui-icon {
   padding-bottom: 10px;
 }
 
-table.timetable td {
-  height: 20px;
-  vertical-align: middle;
-}
-
-table.timetable select {
-  width: 50px;
-}
-
 input.swap {
   color: #666666;
 }
@@ -403,6 +383,7 @@ i {
 }
 
 .page-section {
+  position: relative;
   margin-top: 15px;
 }
 
@@ -441,6 +422,7 @@ i {
   margin-bottom: 20px;
 }
 
+/* TODO check if I'm used anywhere */
 .page .ui-accordion h3 {
   font-family: 'Alfa Slab One', serif;
   font-weight: normal;
@@ -453,19 +435,27 @@ i {
 }
 
 .pageImage {
-  margin-left: 20px;
-  margin-top: 20px;
-  margin-right:20px;
+  margin: 0.5rem 1rem;
+  margin-top: 0;
 }
-
-.pageImageFloatRight {
-  margin-left: 20px;
-  margin-top: 20px;
+.pageImage.right {
+  margin-right: 0;
   float: right;
 }
-
-.pageImageFloatLeft {
-  margin-right: 20px;
-  margin-top: 20px;
+.pageImage.left {
+  margin-left: 0;
   float: left;
+}
+.pageImage.clear {
+  clear: both;
+}
+@media (max-width: 627px) {
+  .pageImage,
+  .pageImage.left,
+  .pageImage.right {
+    float: none;
+    display: block;
+    margin: 0.5rem auto;
+    max-width: 100%;
+  }
 }

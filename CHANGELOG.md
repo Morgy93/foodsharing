@@ -1,21 +1,140 @@
 # Unreleased
 
 ## Features
+- Display deep link to forum posts, better responsive layout #937 !1650 !1652 @ChrisOelmueller
+- New store status "permanently closed" #786 !1655 @ChrisOelmueller
+- Add voting tool #309 #975 !1633 !1668 !1687 @alex.simm
+- Add FairSharePoint Function Workgroup #974 !1667 !1679 @fs_k
+- Send a message with optional custom text when rejecting or kicking someone from a pickup slot !1677 #595 @alex.simm
+- Add ageband to statistic page !1685 @fs_k
+
+## Changes
+- Removed FAQ section !1568 @chriswalg
+- Disable chat notification by mail for new users. #949 !1620 @chriswalg
+- Removed quiz description #737 !1565 @chriswalg
+- Removed unused legal agreement for new amb's #821 !1619 @chriswalg
+- Allow translating lots and lots of text !1637 !1666 @ChrisOelmueller
+- Workgroup Admins of Startpage and Team/Partner page can edit their pages #967 !1651 @fs_k
+- Moved guide page (ratgeber) to wiki page #776 !1567 !1664 @chriswalg
+- Add store log for different user activities in store #553 !1658 @fs_k
+- Orga may 'delete' foodbaskets #51 !1670 @fsk_k
+ 
+## Bugfixes
+- Filter outdated baskets from REST responses #706 !1608 @alex.simm
+- Fix removal of non-existing user photos in nightly maintenance !1634 @alex.simm
+- Allow seeing basket markers on map without being logged in !1636 @alex.simm
+- Removed form for new amb's #821 !1619 @chriswalg
+- Fix default center value for leaflet map !1644 @alex.simm
+- Exclude author of FoodSharePoint posts from notification emails !1638 #835 @alex.simm
+- Try to correct scrolling to requested forum post #930 #968 !1650 @ChrisOelmueller
+- Allow adding workgroup admins or members if none exist currently #896 !1637 @ChrisOelmueller
+- Fix server error when activating new email address that has already been activated #966 !1664 @alex.simm
+- Fix disappearing store traffic light when store name is long !1682 #984 @ChrisOelmueller
+- Fix last creation date in pass generation table when creating multiple passes !1684 #686 @alex.simm 
+- Fix a page crash with unexpected URL parameters !1686 @ChrisOelmueller
+
+## Refactoring
+- Move registration request to the REST endpoint #819 !1632 !1642 @alex.simm
+- Renamed unused table fs_basket_has_wallpost and removed related code #889 !1569 @chriswalg
+- Rewrite forum thread list in Vue #86 #764 #962 !1650 !1652 @ChrisOelmueller
+- Use existing use search endpoint for tagedit autocomplete !1588 @alex.simm
+- Move removal of store requests to new REST endpoint !1648 !1683 @alex.simm
+- Move buddy requests to REST endpoint !1646 #847 #798 @alex.simm
+- Use TranslatorInterface for many old translations !1637 !1655 !1659 !1662 !1663 !1666 !1688 @ChrisOelmueller
+- Prepare event invitations for REST !1627 !1657 @ChrisOelmueller
+- Some PHP linting chores and more type hints !1641 @ChrisOelmueller
+- Refactor some translations from twig to messages.de.yml #824 !1639 @chriswalg @jonathan_b
+- Prepare event invitations for REST !1627 @ChrisOelmueller
+- Clarify and extract some permission handling !1671 @ChrisOelmueller
+- Some PHP linting chores and more type hints !1641 !1654 @ChrisOelmueller
+- Increase phpstan analysis level to 3 and fix all issues !1654 @ChrisOelmueller
+- Move bell XHR requests to REST !1659 @alex.simm
+- Increase phpstan analysis level to 4 and fix all issues !1672 @ChrisOelmueller
+- Introduce some more specific store gateway functionality !1686 @ChrisOelmueller
+- Replace Vue filters with prototypes !1689 @ChrisOelmueller
+
+## Dev/Test/CI stuff
+- Fix banana unit test !1649 !1656 #964 @alex.simm
+- Update devdocs for database migrations in phinx, fedora 32 and WSL2 !1675 @chriswalg
+
+# Release "Birne" (pear), 2020-08-09
+
+## Major changes
+- New store-team list !1499 !1591 !1593 !1621 @ChrisOelmueller
+- Workgroup Function: Welcome to workgroup #945 !1544 !1612 @fs_k
+
+## Features
 - Sort own (managed) stores to top of topbar store list #920 !1546 @ChrisOelmueller
 - Allow opening bell notifications in new tab #912 !1540 @ChrisOelmueller
+- Added Workgroup Function: Welcome to workgroup !1544 @fs_k
+- Add integration with BigBlueButton video conferencing system !1561 @NerdyProjects
+- Show an error notification if the user is redirected from a region page to the dashboard !1571 @alex.simm
+- Better highlight the position picker input-box !1583 !1586 @ChrisOelmueller
+- Removed faq and replaced to external freshdesk support form in top and footer menu #817 !1587 @chriswalg
+- Call foodsaver from pickup slot dropdown menu #772 !1591 @ChrisOelmueller
+- Hide all phone numbers for unverified store team members and jumpers !1591 @ChrisOelmueller
+- Show an popover for the "remember me"-function, if clicked in password field on login page !1585 #370 @TheSoulT
+- Add a link to reset the password in the login popover !1585 @TheSoulT
+- Store managers can toggle team list mode to sort by last pickup !1593 @ChrisOelmueller
+- Public profile page, to allow checking badge validity #688 !1604 @ChrisOelmueller
+- Ask whether message draft should be kept when switching between chat conversations !1621 @ChrisOelmueller
+- Make titles of forum threads searchable !1609 #99 @alex.simm
 
 ## Bugfixes
-- Clarify that new forum threads won't reache members inactive for more than six months !1553 ("merging" !1385 and !1233) @zommuter
-- Allow to accept privacy notice, so people can become store managers again !1551 @NerdyProjects
+- Clarify that new forum threads won't reach members inactive for more than six months !1553 ("merging" !1385 and !1233) @zommuter
+- Push notifications for group chats no longer sound like the message addresses the user specifically !1574 @\_fridtjof_
+- Exclude workgroups from the "my groups" section in the topbar search for which the user was not yet accepted !1589 @alex.simm
+- Only count pickups via the function getMyStore until the current day !1599 @chriswalg
+- Stop overwriting mailbox names if they contain unread mails #789 !1600 @ChrisOelmueller
+- Prevent page from jumping to top when deleting bells !1597 @ChrisOelmueller
+- Fix crashing "All my stores" page when user has no home district !1616 #936 @alex.simm 
+- Fix creation and deletion of buddy bells !1618 #942 @alex.simm
+- Fix wrong viewer/session ID on profile page !1629 @alex.simm
 
 ## Refactoring
 - Move master-update function for regions to the rest controller !1547 @alex.simm 
 - Add missing endpoint for deleting forum threads !1545 #913 @alex.simm
 - Use rest endpoints for basket deletion and the coordinates on the baskets map !1550 @alex.simm 
-- Remove Magnific Popup by rewriting trust banana UI code to fancybox !1530 @ChrisOelmueller
-- Some refactorings from StoreModel to StoreGateway !1196 #9 @svenpascal
+- Remove Magnific Popup by rewriting trust banana UI code to fancybox !1530 !1556 @ChrisOelmueller
+- Some refactorings from StoreModel to StoreGateway !1196 !1554 !1558 #9 @svenpascal @alex.simm
+- Modernize icon handling of store bells + fairteiler bells #907 !1560 !1566 !1597 @ChrisOelmueller
+- Rewrite store team list in Vue !1499 !1591 @ChrisOelmueller
+- Increase phpstan analysis level to 2 and fix all issues !1575 @NerdyProjects
+- Use Request/Response objects in the application entry points !1576 @\_fridtjof_
+- Do not show unsubscribed email subscriptions for forum threads in notification settings #893 !1570 @chriswalg
+- Remove and refactor some PHP translations &22 !1583 !1590 @ChrisOelmueller
+- Rename Fair-Teiler to Fairteiler #906 !1590 @ChrisOelmueller
+- Rename "Service" classes to "Transaction" classes and move them to the corresponding modules @janopae !1475
+- Rename "Helper" namespace to "Utility" @janopae !1475
+- REST API: file uploads with resizing of images in foodshare points !818 @alangecker
+- Removed dependency on old Db class from some classes !1598 #9 @alex.simm
+- Move sending of bananas to new REST endpoint !1617 #798 @alex.simm 
+- Remove jquery contextmenu, refactor some dashboard view code &22 !1606 @ChrisOelmueller
+- Refactor profile view, permissions, and pickup schedule overview !1604 @ChrisOelmueller
+- Rewrite store pickup history in Vue, using the Pickup components &9 &22 !1611 @ChrisOelmueller
 
 ## Dev/Test/CI stuff
+- Include sentry as symfony bundle to hopefully not miss error reporting for Rest API anymore !1562 @NerdyProjects
+- Include Phinx database migration tool for (hopefully soon) automated migrations and less confusion about database state !1549 @NerdyProjects
+- Install phinx as a separate project in deployment !1584 @NerdyProjects
+- made development on Windows possible again by tweaking direcotry cache and line endings !1603 @peter.toennies
+- Add emails to seed data !1601 @alex.simm
+- Update to Symfony 5 / FOSRestBundle 3 !1573 @NerdyProjects
+
+# 2020-07-15 Hotfix
+- Disabled report link on profile page and Xhr functions for sending reports !1610 @alex.simm
+
+# 2020-06-15 Hotfix
+- Allow emails for password reset and email address change to be sent with higher priority !1557 #925 @alex.simm 
+- Gender value for women and man is now fixed !1564 @chriswalg
+- Show on profile a warning if the private mail adresse is on bounce list for orga and foodsaver them self. #931 !1572 @chriswalg
+- Update devdocs to recommend Docker Desktop for Win10 Home !1578 @\_fridtjof_
+- Use gitlab ci services instead of building and running docker images in CI !1577 @NerdyProjects
+
+# 2020-06-01 Hotfix
+
+## Bugfixes 
+- Allow to accept privacy notice, so people can become store managers again !1551 @NerdyProjects
 
 # 2020-05-18 Hotfix
 
@@ -37,17 +156,18 @@
 - Wrap long email address in user profile #828 !1541 @ChrisOelmueller
 
 ## Refactoring
+- Make the instant search in the topbar use a new rest endpoint without legacy wrapping code for search results !1522 !1559 !1579 @alex.simm
 
 ## Dev/Test/CI stuff
 - Migrate gitlab CI config to use rules instead of only/except !1529 @NerdyProjects
 - Do not run CI tests before deployment !1529 @NerdyProjects
 - Do not run gitlab dependency scanning job as nobody used the output !1533 @NerdyProjects
+- Explain (wanted) php code structure in devdocs !1463 @flukx
 
-# 2020-05-16 
+# Release "Apfelsine" (orange), 2020-05-16
 
 ## Features
 - Introduce Web Push Notifications #336 !734 @janopae
-- Use WebSocket connection to determine whether a user is online or not !734 !1470 @janopae
 - Re-enable pickup slot markers after production release !1331 !1307 @jofranz
 - Refactored register form to multi step pages in vue !1099 !1309 !1370 !1401 !1476 @chriswalg @moffer @ChrisOelmueller
 - Redirect to login page after login failed !1342 @chriswalg
@@ -57,7 +177,6 @@
 - Added number of food share points to statistics !1351 #81 @alex.simm
 - Switch the tile server from maps.wikimedia.org to MapTiler !1355 @dthulke
 - Orgas are now able to delete wallposts for foodshare points !1359 @pfaufisch
-- Limit forum notifications to users logged in last 6 months #64 !1385 @fs_k
 - Show internal email address on user's own profile !1386 #465 @alex.simm
 - Dashboard updates can be filtered !735 !1424 @D0nPiano @ChrisOelmueller
 - Updates from events + foodsharepoints displayed on dashboard !735 !1441 #227 #588 @D0nPiano @ChrisOelmueller
@@ -87,7 +206,6 @@
 - Fixed mails not displaying line breaks !1317 !1344 @pfaufisch
 - Improved the banner on welcome page for mobile devices !1329 @chriswalg
 - Makes a break with longer words so that e.g. links in the store description don't come across the page #715 !1269 @chriswalg
-- Fix nightly fetcher warnings by using expected id instead of betrieb_id allowing all nightly maintenance methods to be executed again #747 !1348 @jofranz
 - Region statistics for ambassadors do not include workgroup admins anymore #778 !1341 @Caluera
 - Fix bug preventing publishing, editing and deleting of blog posts !1349 @pfaufisch
 - Fix small bug in sending quickreply messages without personal field !1321 !1347 @alex.simm
@@ -268,21 +386,17 @@
 - Don't include unconfirmed slots into statistics and fetch history !1360 @caluera
 - Fix reapplication not possible after beeing denied once !1277 #767 @chris2up9
 - Fix missing region id bug for food share points !1375 @alex.simm
-- Set height for topbar and removed the height of div#main. Now is the broadcast message completely readable !1383 !1391 !1432 @chriswalg
 - Fixes crash in the date formatting logic when updating the list of bells !1388 @dthulke
-- Adds a null check to the chat server to avoid null WebSocket messages !1398 @dthulke
 - Fixed bug in email template rendering during when quickreplying to forum topics !1403 @alex.simm
 - Links in shortened dashboard updates no longer invalid due to cut-off #691 !735 @D0nPiano @ChrisOelmueller
 - Now possible to have many disabled sources of dashboard updates #365 !735 @D0nPiano @ChrisOelmueller
 - Fixes the marker loading in the region admin tool !1415 @dthulke
 - Adjusted picture sizes of slots, thread posts and of menubasket. !1298 !1423 #735 @moffer
 - Fix registration link on login page !1425 #856 @alex.simm
-- Adjusted picture sizes of slots, thread posts and of menubasket. !1298 #735 @moffer
 - Submenus of burger menu (mobile view) for example 'Infos' can be scrolled. !1411 #838 #837 @moffer
 - Fix link of top-left icon in navbar and make the hover-heart appear more often !1421 #853 @alex.simm
 - fixed arrow handling !1408 @jonathan_b
 - Show a prompt to select a home district on the dashboard if none is choosen #716 !1123 @lebe1 @dthulke @Caluera
-- Fixed rendering error when replying to forum posts !1447 @ChrisOelmueller
 - Make the description clearer for the mail option when opening new thread !1453 @Caluera
 - Fix issues introduced with push notifications #831 #841 #857 !1442 !1443 !1444 !1445 !1446 @janopae
 - Short Description is shown on profile and purpose of both self descriptions is made clear in settings !1145 #656 @fs_k @Caluera
@@ -291,11 +405,11 @@
 - Correct Dashboard preview of ordered + unordered lists #455 !1481 @ChrisOelmueller
 - Fix gender selection during registration that was set to 'unselected' by mistake @alex.simm
 - TagEdit color correction when hovering #867 !1514 @ChrisOelmueller
+- Fixed outgoing mails not displaying line breaks !1317 @pfaufisch
 
 ## Refactoring
 - Name generation for chat groups has been extracted to an own method method, which is now used by push notifications and in the E-Mail generation for missed chat messages. The new method does a slightly better job at naming; beta testers are welcomed to check the E-Mails generated for missed chat messages. @janopae
 - Improve mayEditStore() to fail faster !1311 @jofranz
-- Moved the button for new stores to vue store list !1282 @chriswalg
 - Restructure the definition of the Region ID constants. !1325 @theFeiter
 - Remove moment.js dependency. !1303 #678 @ctwx_ok
 - Moved the button for new stores to vue store list !1282 !1339 @chriswalg
@@ -329,15 +443,16 @@
 - Add database constraints to fs_faq !1436 @ffm_hessen
 - Replace XHR request for baskets in topbar by existing REST endpoint !1472 @alex.simm
 - CSS adjustments for foodbasket page, mobile dashboard view with columns !1494 @ChrisOelmueller
+- Port WebSocket server ("chat") to TypeScript and refactor it in an object oriented way !1470 @janopae
 - Port WebSocket server ("chat") to TypeScript and refactor it in an object oriented way !1470 @janopae 
 - Leaving regions is done by new Rest endpoint !1459 @alex.simm
 - Replaces hard coded Links in AdminMenu !1510 @mr-kenhoff
+- Moved database request for the maintenance script from model to gateway !1394 #9 @alex.simm
 
 ## Dev/Test/CI stuff
 - Add "linux" tag for finding CI servers !1332 @nicksellen
 - fix some doc annotations !1361 @\_fridtjof_
 - update mkdirp to version 1 @peter.toennies
-- update codeception to version 4, phpunit to version 9, and sebastian/diff to version 4 !1369 @peter.toennies
 - added german contributing guide and english FAQs to devdocs !1376 @Jonathan_B
 - updated sentry to version 2 @peter.toennies
 - update codeception to version 4, phpunit to version 9, and sebastian/diff to version 4 #1369 @peter.toennies
@@ -353,6 +468,7 @@
 - added information on our Workflow and how to solve Merge Conflicts in devdocs @jonathan_b
 - added text about refactoring to devdocs @Caluera !1464
 - added text about releases to devdocs @Caluera !1486
+- Changes text for posting test tasks in beta Slack channel @moffer !1471
 
 # 2020-04-22 Hotfix
 - Use Geoapify as tile server and use mapbox gl to render vector tiles !1405 @dthulke
@@ -362,7 +478,7 @@
 - Fixed rendering error when replying to forum posts !1447 @ChrisOelmueller
 
 
-# 2020-03-26 Hotfix 
+# 2020-03-26 Hotfix
 - Use WebSocket connection to determine whether a user is online or not !734 @janopae
 - Adds a null check to the chat server to avoid null WebSocket messages !1398 @dthulke
 * start documenting database tables and columns !1259 @flukx
@@ -431,7 +547,6 @@ Another release from your lovely dev Team. A lot of changes have been done "unde
 - Narrow down permissions to not allow ambassadors calling newsletter sending xhr methods !1197 @jofranz
 - Fix database method which prevents newsletter sending #754 !1198 @jofranz
 - Improved SQL query which caused that the team of large work groups could not be updated anymore #726 !1199 @dthulke
-- Show events on dashboard which started one/more days in the past and are ongoing !1215 @treee111
 - Use font awesome icons for store status indicators to avoid that they disappear when the store name is too long #742 !1190 @dthulke
 - Avoid duplicate names in user autocomplete !1223 @dthulke
 - Fix error when logging out while not logged in !1240 #753 @alex.simm
@@ -442,7 +557,6 @@ Another release from your lovely dev Team. A lot of changes have been done "unde
 - Remove "Aktionen"-column from list of user stores !1252 @koenvg
 - Fix wrong may group use. Admins of EUROPE_REPORT_TEAM (region/workgroup id: 432) now actually have reports permissions on a level with orga !1250 @jofranz
 - !1199 fix: Remove group members only from specific group instead of all groups and regions !1258 @jofranz
-- Show correct from/to information in mailboxes !1239 #603 @alex.simm
 - Redesign for chatbox and messages page !1265 @chriswalg
 - Center basket map on Germany if logged out !1249 #740 @alex.simm
 - Show correct from/to information in mailboxes !1264 !1239 #603 @alex.simm
@@ -461,6 +575,7 @@ Another release from your lovely dev Team. A lot of changes have been done "unde
 - Temporarily disable pickup slot markers for production release !1307 @jofranz
 - Passportgenerator list sorted by name default, workgroups are not shown anymore !1310 @fs_k
 - Fix text overflow problems with events and notifications #722 #876 !1487 @ChrisOelmueller
+- Bots can now add up to three new store managers to abandoned stores #209 #405 !1319 @pfaufisch
 
 ## Refactoring
 - Optimize database access for legal queries !1292 @CarolineFischer
@@ -544,7 +659,6 @@ And we have even included some new features for you.
     - event page !915 @jofranz
     - store settings !922 @jofranz
     - fair-share-point settings !1085 @jofranz
-- InfluxDB Metrics via UDP !882 @alangecker
 - Added average daily fetch count to statistics page !900 @chris2up9
 - Use SwiftMailer for outgoing emails !925 @NerdyProjects
 - Shake it! Randomly shuffle ambassadors and working group admin's list order to make it harder always to contact the most senior one !924 @jofranz
@@ -606,9 +720,6 @@ And we have even included some new features for you.
 - Passport generation is now reliable working with all genders. !997 #665 @mr-kenhoff
 - Don't return outdated baskets via the REST API !1008 @dthulke
 - Fixed saving an edited quiz answer !1006 #408 @svenpascal
-- Fixed hidden attribution-line on main map !980 #661 @mr-kenhoff
-- Fixed date display for chats in the top bar overlay. !988 @ctwx_ok
-- Updates from the regional "bot-forum" / ambassador board are now shown on dashboard #40 !994 @jofranz
 - Added contact form email information to email body/text as a workaround to make it possible for people to reply !979 @jofranz
 - Return images attached to a wall post in the WallRestController !1013 @dthulke
 - Don't show forum updates from deleted users on dashboard !1011 #666 @alex.simm
@@ -661,8 +772,6 @@ And we have even included some new features for you.
 - enable functional tests (symfony kernel running inside conception; for limits see inside tests/functional folder) !884 @NerdyProjects
 - Use BSD tools in scripts/clean instead of GNU tools for Unix (macOS/OSX) bash. !889 @svenpascal
 - updated codeception to version 3 @peter.toennies
-- remove verbose output of bounce mail processing and mail fetcher, add bounce mail stats to influx db @NerdyProjects
-- remove progressbar from cron scripts !919 @NerdyProjects
 - include rules from !511 in devdocs @flukx
 - updated eslint to v6, eslint-config-standard to v14, eslint-plugin-node to v10, and eslint-plugin-html to v6 @peter.toennies
 - updated webpack loaders. sass to v8, eslint to v3, style to v1, css to v3, file to v4, null to v3, url to v2, and mini-css-extract-plugin to v0.8 @peter.toennies
@@ -812,7 +921,6 @@ We are very proud to finally release foodsharing with an **AGPLv3** licence, mak
 ## Features
 - On dashboard there now is a symbol indicating the confirmation status of a pickup !661 @jofranz
 - Pre-fill end date of pickup history with today's date for comfort reasons !660 @jofranz
-- Conversation API returns name (or null) !658 @nicksellen
 - Added the amount of events conditionally to the dashboard event headline in case there is more than one event !650 @jofranz
 - Added a new button to the contextmenu which appears by clicking the profilepic in shops #302 !671 @peter.reutlingen
 - Make date in event a mandatory field #436 !669 @tihar
@@ -829,14 +937,12 @@ We are very proud to finally release foodsharing with an **AGPLv3** licence, mak
 
 ## Bugfixes
 - Search index is now shared between deployments so we avoid a lot of javascript errors regarding failed requests !657 @NerdyProjects
-- Fixup conversation header display !658 @nicksellen
 - Fixed bug in #302 goto_profile_from_teamsite !671 with !675 @peter.reutlingen
 - Fixed an SQL injection in an FoodsaverGateway method @alangecker
 - Properly escape Fair-Teiler names in all occurrences !690 @NerdyProjects
 - Avoid strip_tags on bell data !691 @NerdyProjects
 - Permission checks when joining regions !696 @NerdyProjects
 - Fixed the bug that the number of pickups in the team list isn't shown when the name is too long. #381 !688 @peter.reutlingen
-- Fix mass mail sender and email output formatting !707 @NerdyProjects
 - Only foodsavers add themselves to working groups !713 @NerdyProjects
 - Only allow edting regions as an orga user !714 @NerdyProjects
 - higher entropy for security & privacy related tokens !709 @alangecker
@@ -1133,7 +1239,6 @@ You can read a bit more about the recent weeks and happenings of the developers 
 Many thanks to @peter.toennies @NerdyProjects @alangecker @theolampert @nicksellen @EmiliaPaz @michi-zuri @tiltec (in order of appearance in this changelog) for all their work done for this release.
 
 ## Features
-- updated fpdi plugin to v2.0.2 !351 #168 by @peter.toennies
 - update symfony to 4.1.0 as well as other dependencies !351 @NerdyProjects
 - remove user list in forums to allow big regions to work !421 @NerdyProjects
 - add php intl component for localized internationalization !421 @NerdyProjects
@@ -1157,7 +1262,6 @@ Many thanks to @peter.toennies @NerdyProjects @alangecker @theolampert @nicksell
 - fixed wrong gendering of AMBs in region view and profile view. !386 #214 @peter.toennies
 - Added a format placeholder to date input #217 @theolampert
 - reduced the height of store info popups by removing the warning frame. !388 #216 @peter.toennies
-- The notification for quiz comments is now for the Bots of the quiz team only. !367 #107 by @peter.toennies
 - fixed wrong usage of gateway in API. !400 @peter.toennies
 - fixed missalignment in future-pickups list. !389 #136 @EmiliaPaz
 - Regaining support for mobile Safari 10 !396 #221 @michi-zuri
@@ -1169,7 +1273,6 @@ Many thanks to @peter.toennies @NerdyProjects @alangecker @theolampert @nicksell
 
 ## Refactoring
 - Extract StoreUser module javascript !358 @nicksellen
-- refactored and cleaned the whole activity module. !352 by @peter.toennies
 - refactored and cleaned the whole API module. !368 #9 by @peter.toennies
 - refactored Basket to use gateway. !399 @peter.toennies
 - refactored Bell to use gateway. !402 by @peter.toennies
@@ -1416,7 +1519,6 @@ Thanks to all contributors who made this release possible (in alphabetical order
 - Fixed a relict that would only allow using scripts/stop for dev containers !225 @NerdyProjects
 - Changed maildev port to 18084, (18083 is used by virtualbox (vboxwebsrv)) !218 @inktrap
 - Added support to collect code coverage statistics in codeception !222 @NerdyProjects
-- Changed maildev port to 18084, (18083 is used by virtualbox (vboxwebsrv)) !304 @inktrap
 - Use cleanly populated database between each test !210 @NerdyProjects
 - Add vagrant docker-compose dev environment option !195 @TimFoe @nicksellen
 

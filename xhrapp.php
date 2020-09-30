@@ -4,6 +4,8 @@ use Foodsharing\Lib\Routing;
 use Foodsharing\Lib\Session;
 use Foodsharing\Lib\Xhr\XhrResponses;
 use Symfony\Component\DependencyInjection\Container;
+use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\HttpFoundation\Response;
 
 require __DIR__ . '/includes/setup.php';
 require_once 'config.inc.php';
@@ -24,7 +26,6 @@ $csrf_whitelist = [
 	// 'Basket::basketCoordinates',
 	// 'Basket::newBasket',
 	// 'Basket::publish',
-	// 'Basket::resizePic',
 	// 'Basket::nearbyBaskets',
 	// 'Basket::bubble',
 	// 'Basket::fsBubble',
@@ -34,25 +35,11 @@ $csrf_whitelist = [
 	// 'Basket::editBasket',
 	// 'Basket::publishEdit',
 	// 'Basket::finishRequest',
-	// 'Bell::infobar',
-	// 'Bell::delbell',
-	// 'Bell::markBellsAsRead',
-	// 'Buddy::request',
-	// 'Buddy::removeRequest',
-	// 'Buddy::makeCard',
 	// 'Email::testmail' .
-	// 'Event::accept',
-	// 'Event::maybe',
-	// 'Event::noaccept',
-	// 'Event::ustat',
-	// 'Event::ustatadd',
+	// 'Event::eventresponse',
 	// 'Foodsaver::loadFoodsaver',
 	// 'Foodsaver::foodsaverrefresh',
 	// 'Foodsaver::delFromRegion',
-	// 'Login::loginsubmit',
-	'Login::photoupload',
-	'Login::joinsubmit',
-	'Login::join',
 	'Mailbox::attach',
 	// 'Mailbox::loadmails',
 	// 'Mailbox::move',
@@ -93,7 +80,6 @@ $csrf_whitelist = [
 	// 'Quiz::next',
 	// 'Quiz::pause',
 	// 'Quiz::updatequest',
-	// 'Region::morethemes',
 	'Region::quickreply',
 	// 'Region::signout',
 	// 'Report::loadReport',
@@ -110,8 +96,6 @@ $csrf_whitelist = [
 	// 'Settings::sleepmode',
 	// 'Store::savedate',
 	// 'Store::deldate',
-	// 'Store::getfetchhistory',
-	// 'Store::fetchhistory',
 	// 'Store::adddate',
 	// 'Store::savebezirkids',
 	// 'Store::setbezirkids',
@@ -135,13 +119,13 @@ if (isset($_GET['app'], $_GET['m'])) {
 	$meth = str_replace('/', '', $_GET['m']);
 
 	require_once 'config.inc.php';
-	require_once 'lang/DE/de.php';
 
 	/* @var \Foodsharing\Lib\Session $session */
 	$session = $container->get(Session::class);
 	$session->initIfCookieExists();
 
-	$request = \Symfony\Component\HttpFoundation\Request::createFromGlobals();
+	$request = Request::createFromGlobals();
+	$response = new Response();
 
 	$class = Routing::getClassName($app, 'Xhr');
 	$obj = $container->get(ltrim($class, '\\'));
@@ -151,8 +135,11 @@ if (isset($_GET['app'], $_GET['m'])) {
 		$whitelist_key = explode('\\', $class)[3] . '::' . $meth;
 		if (!in_array($whitelist_key, $csrf_whitelist)) {
 			if (!$session->isValidCsrfHeader()) {
-				header('HTTP/1.1 403 Forbidden');
-				die('CSRF Failed: CSRF token missing or incorrect.');
+				$response->setProtocolVersion('1.1');
+				$response->setStatusCode(Response::HTTP_FORBIDDEN);
+				$response->setContent('CSRF Failed: CSRF token missing or incorrect.');
+				$response->send();
+				exit();
 			}
 		}
 
@@ -160,17 +147,19 @@ if (isset($_GET['app'], $_GET['m'])) {
 		$out = $obj->$meth($request);
 
 		if ($out === XhrResponses::PERMISSION_DENIED) {
-			header('HTTP/1.1 403 Forbidden');
-			exit();
+			$response->setProtocolVersion('1.1');
+			$response->setStatusCode(Response::HTTP_FORBIDDEN);
+		} else {
+			if (!isset($out['script'])) {
+				$out['script'] = '';
+			}
+
+			$out['script'] = '$(".tooltip").tooltip({show: false,hide:false,position: {	my: "center bottom-20",	at: "center top",using: function( position, feedback ) {	$( this ).css( position );	$("<div>").addClass( "arrow" ).addClass( feedback.vertical ).addClass( feedback.horizontal ).appendTo( this );}}});' . $out['script'];
+
+			$response->headers->set('Content-Type', 'application/json');
+			$response->setContent(json_encode($out));
 		}
 
-		if (!isset($out['script'])) {
-			$out['script'] = '';
-		}
-
-		$out['script'] = '$(".tooltip").tooltip({show: false,hide:false,position: {	my: "center bottom-20",	at: "center top",using: function( position, feedback ) {	$( this ).css( position );	$("<div>").addClass( "arrow" ).addClass( feedback.vertical ).addClass( feedback.horizontal ).appendTo( this );}}});' . $out['script'];
-
-		header('Content-Type: application/json');
-		echo json_encode($out);
+		$response->send();
 	}
 }

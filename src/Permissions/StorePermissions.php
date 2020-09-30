@@ -3,13 +3,14 @@
 namespace Foodsharing\Permissions;
 
 use Foodsharing\Lib\Session;
-use Foodsharing\Modules\Core\DBConstants\Store\TeamStatus;
+use Foodsharing\Modules\Core\DBConstants\Store\TeamStatus as StoreTeamStatus;
 use Foodsharing\Modules\Store\StoreGateway;
+use Foodsharing\Modules\Store\TeamStatus as UserTeamStatus;
 
 class StorePermissions
 {
-	private $storeGateway;
-	private $session;
+	private StoreGateway $storeGateway;
+	private Session $session;
 
 	public function __construct(
 		StoreGateway $storeGateway,
@@ -26,15 +27,15 @@ class StorePermissions
 			return false;
 		}
 
-		$store = $this->storeGateway->getBetrieb($storeId);
+		$storeTeamStatus = $this->storeGateway->getStoreTeamStatus($storeId);
 
 		// store open?
-		if (!in_array($store['team_status'], [TeamStatus::OPEN, TeamStatus::OPEN_SEARCHING])) {
+		if (!in_array($storeTeamStatus, [StoreTeamStatus::OPEN, StoreTeamStatus::OPEN_SEARCHING])) {
 			return false;
 		}
 
 		// already in team?
-		if ($this->storeGateway->getUserTeamStatus($fsId, $storeId) !== \Foodsharing\Modules\Store\TeamStatus::NoMember) {
+		if ($this->storeGateway->getUserTeamStatus($fsId, $storeId) !== UserTeamStatus::NoMember) {
 			return false;
 		}
 
@@ -51,12 +52,12 @@ class StorePermissions
 		if ($this->session->isOrgaTeam()) {
 			return true;
 		}
-		if ($this->storeGateway->getUserTeamStatus($fsId, $storeId) >= \Foodsharing\Modules\Store\TeamStatus::WaitingList) {
+		if ($this->storeGateway->getUserTeamStatus($fsId, $storeId) >= UserTeamStatus::WaitingList) {
 			return true;
 		}
 
-		$store = $this->storeGateway->getBetrieb($storeId);
-		if ($this->session->isAdminFor($store['bezirk_id'])) {
+		$storeRegion = $this->storeGateway->getStoreRegionId($storeId);
+		if ($this->session->isAdminFor($storeRegion)) {
 			return true;
 		}
 
@@ -73,12 +74,12 @@ class StorePermissions
 		if ($this->session->isOrgaTeam()) {
 			return true;
 		}
-		if ($this->storeGateway->getUserTeamStatus($fsId, $storeId) >= \Foodsharing\Modules\Store\TeamStatus::Member) {
+		if ($this->storeGateway->getUserTeamStatus($fsId, $storeId) >= UserTeamStatus::Member) {
 			return true;
 		}
 
-		$store = $this->storeGateway->getBetrieb($storeId);
-		if ($this->session->isAdminFor($store['bezirk_id'])) {
+		$storeRegion = $this->storeGateway->getStoreRegionId($storeId);
+		if ($this->session->isAdminFor($storeRegion)) {
 			return true;
 		}
 
@@ -96,7 +97,7 @@ class StorePermissions
 			|| $this->storeGateway->getStoreComment($postId)['foodsaver_id'] === $this->session->id();
 	}
 
-	public function mayCreateStore()
+	public function mayCreateStore(): bool
 	{
 		return $this->session->may('bieb');
 	}
@@ -115,11 +116,11 @@ class StorePermissions
 		if ($this->session->isOrgaTeam()) {
 			return true;
 		}
-		if ($this->storeGateway->getUserTeamStatus($fsId, $storeId) === \Foodsharing\Modules\Store\TeamStatus::Coordinator) {
+		if ($this->storeGateway->getUserTeamStatus($fsId, $storeId) === UserTeamStatus::Coordinator) {
 			return true;
 		}
-		$store = $this->storeGateway->getBetrieb($storeId);
-		if ($this->session->isAdminFor($store['bezirk_id'])) {
+		$storeRegion = $this->storeGateway->getStoreRegionId($storeId);
+		if ($this->session->isAdminFor($storeRegion)) {
 			return true;
 		}
 
@@ -169,7 +170,7 @@ class StorePermissions
 		return $this->mayEditPickups($storeId);
 	}
 
-	public function maySeeFetchHistory(int $storeId): bool
+	public function maySeePickupHistory(int $storeId): bool
 	{
 		return $this->mayEditStore($storeId);
 	}
@@ -187,7 +188,12 @@ class StorePermissions
 		return true;
 	}
 
-	public function maySeePickups($storeId)
+	public function maySeePickups(int $storeId): bool
+	{
+		return $this->mayDoPickup($storeId);
+	}
+
+	public function maySeePhoneNumbers(int $storeId): bool
 	{
 		return $this->mayDoPickup($storeId);
 	}

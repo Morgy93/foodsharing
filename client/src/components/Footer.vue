@@ -29,10 +29,12 @@
           </li>
           <li>
             <a
-              :href="$url('faq')"
-              :aria-label="$i18n('footer.faq')"
+              :href="$url('support')"
+              target="_blank"
+              rel="noopener noreferrer nofollow"
+              :aria-label="$i18n('footer.support')"
             >
-              {{ $i18n('footer.faq') }}
+              {{ $i18n('footer.support') }}
             </a>
           </li>
         </ul>
@@ -43,6 +45,8 @@
             <a
               :href="$url('guide')"
               :aria-label="$i18n('footer.guide')"
+              target="_blank"
+              rel="noopener noreferrer nofollow"
             >
               {{ $i18n('footer.guide') }}
             </a>
@@ -140,7 +144,7 @@
             rel="nofollow noopener"
           ><img
             src="/img/denns_logo_100.png"
-            alt="Denn's Biomarkt"
+            alt="Denn's - Wir sind Bio."
           ></a>
         </span>
       </div>

@@ -7,11 +7,14 @@ use Foodsharing\Modules\Core\Control;
 
 class StatisticsControl extends Control
 {
-	private $contentGateway;
-	private $statisticsGateway;
+	private ContentGateway $contentGateway;
+	private StatisticsGateway $statisticsGateway;
 
-	public function __construct(StatisticsGateway $statisticsGateway, StatisticsView $view, ContentGateway $contentGateway)
-	{
+	public function __construct(
+		StatisticsGateway $statisticsGateway,
+		StatisticsView $view,
+		ContentGateway $contentGateway
+	) {
 		$this->statisticsGateway = $statisticsGateway;
 		$this->view = $view;
 		$this->contentGateway = $contentGateway;
@@ -19,7 +22,7 @@ class StatisticsControl extends Control
 		parent::__construct();
 	}
 
-	public function index()
+	public function index(): void
 	{
 		$content = $this->contentGateway->get(11);
 
@@ -30,7 +33,7 @@ class StatisticsControl extends Control
 		$stat_total['totalBaskets'] = $this->statisticsGateway->countAllBaskets();
 		$stat_total['avgWeeklyBaskets'] = $this->statisticsGateway->avgWeeklyBaskets();
 
-		$stat_cities = $this->statisticsGateway->listStatCities();
+		$stat_regions = $this->statisticsGateway->listStatRegions();
 		$stat_fs = $this->statisticsGateway->listStatFoodsaver();
 
 		$this->pageHelper->addContent($this->view->getStatTotal(
@@ -39,7 +42,7 @@ class StatisticsControl extends Control
 			$this->statisticsGateway->avgDailyFetchCount(),
 			$this->statisticsGateway->countActiveFoodSharePoints()
 		), CNT_TOP);
-		$this->pageHelper->addContent($this->view->getStatCities($stat_cities), CNT_LEFT);
+		$this->pageHelper->addContent($this->view->getStatRegions($stat_regions), CNT_LEFT);
 		$this->pageHelper->addContent($this->view->getStatFoodsaver($stat_fs), CNT_RIGHT);
 
 		$this->setContentWidth(12, 12);

@@ -4,11 +4,9 @@ class ChatCest
 {
 	private $foodsaver1;
 	private $foodsaver2;
-	private $testBezirk;
 
 	public function _before(AcceptanceTester $I)
 	{
-		$this->testBezirk = 241;
 		$this->createUsers($I);
 	}
 
@@ -18,12 +16,25 @@ class ChatCest
 
 	private function createUsers(AcceptanceTester $I)
 	{
-		$this->foodsaver1 = $I->createFoodsaver(null, ['bezirk_id' => $this->testBezirk]);
-		$this->foodsaver2 = $I->createFoodsaver(null, ['bezirk_id' => $this->testBezirk]);
+		$this->foodsaver1 = $I->createFoodsaver(null);
+		$this->foodsaver2 = $I->createFoodsaver(null);
 	}
 
 	public function CanSendAndReceiveChatMessages(AcceptanceTester $I)
 	{
+		// Activate chat notifications by mail
+		$I->login($this->foodsaver2['email']);
+
+		$I->amOnPage('?page=settings&sub=info/');
+		$I->selectOption('form input[name=infomail_message]', '1');
+		$I->click('Speichern');
+		$I->see('Änderungen wurden gespeichert.');
+		$I->seeInDatabase('fs_foodsaver', [
+			'id' => $this->foodsaver2['id'],
+			'infomail_message' => '1'
+		]);
+		$I->logout();
+
 		$I->login($this->foodsaver1['email']);
 
 		// view the other users profile and start a chat

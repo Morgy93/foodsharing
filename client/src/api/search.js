@@ -40,9 +40,17 @@ function mapOldResponseToNewFormat (data) {
 }
 
 export async function instantSearch (query) {
-  return mapOldResponseToNewFormat((await get(`/../xhrapp.php?app=search&m=search&s=${encodeURIComponent(query)}`)).data)
+  return await get(`/search/all?q=${encodeURIComponent(query)}`)
+}
+
+export async function searchUser (query) {
+  return await get(`/search/user?q=${encodeURIComponent(query)}`)
 }
 
 export async function instantSearchIndex () {
   return mapOldResponseToNewFormat(await get('/search/legacyindex'))
+}
+
+export async function searchForum (groupId, subforumId, query) {
+  return await get(`/search/forum/${groupId}/${subforumId}?q=${encodeURIComponent(query)}`)
 }

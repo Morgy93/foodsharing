@@ -10,25 +10,24 @@ use Foodsharing\Modules\Region\RegionGateway;
 use Foodsharing\Modules\Settings\SettingsGateway;
 use Foodsharing\Modules\Store\StoreGateway;
 use Foodsharing\Permissions\RegionPermissions;
-use Foodsharing\Services\ImageService;
-use Foodsharing\Services\NotificationService;
+use Foodsharing\Utility\ImageHelper;
 use FOS\RestBundle\Controller\AbstractFOSRestController;
 use FOS\RestBundle\Controller\Annotations as Rest;
 use Swagger\Annotations as SWG;
+use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\Exception\AccessDeniedHttpException;
 use Symfony\Component\HttpKernel\Exception\HttpException;
 
 class RegionRestController extends AbstractFOSRestController
 {
-	private $settingsGateway;
-	private $bellGateway;
-	private $foodsaverGateway;
-	private $regionGateway;
-	private $storeGateway;
-	private $regionPermissions;
-	private $session;
-	private $imageService;
-	private $notificationService;
+	private BellGateway $bellGateway;
+	private FoodsaverGateway $foodsaverGateway;
+	private RegionGateway $regionGateway;
+	private StoreGateway $storeGateway;
+	private RegionPermissions $regionPermissions;
+	private Session $session;
+	private ImageHelper $imageHelper;
+	private SettingsGateway $settingsGateway;
 
 	public function __construct(
 		SettingsGateway $settingsGateway,
@@ -38,8 +37,7 @@ class RegionRestController extends AbstractFOSRestController
 		RegionGateway $regionGateway,
 		StoreGateway $storeGateway,
 		Session $session,
-		ImageService $imageService,
-		NotificationService $notificationService
+		ImageHelper $imageHelper
 	) {
 		$this->settingsGateway = $settingsGateway;
 		$this->bellGateway = $bellGateway;
@@ -48,25 +46,26 @@ class RegionRestController extends AbstractFOSRestController
 		$this->regionGateway = $regionGateway;
 		$this->storeGateway = $storeGateway;
 		$this->session = $session;
-		$this->imageService = $imageService;
-		$this->notificationService = $notificationService;
+		$this->imageHelper = $imageHelper;
 	}
 
 	/**
 	 * @Rest\Post("region/{regionId}/join", requirements={"regionId" = "\d+"})
 	 */
-	public function joinRegionAction($regionId)
+	public function joinRegionAction(int $regionId): Response
 	{
-		if (!$this->regionGateway->getRegion($regionId)) {
+		$region = $this->regionGateway->getRegion($regionId);
+		if (!$region) {
 			throw new HttpException(404);
 		}
 		if (!$this->regionPermissions->mayJoinRegion($regionId)) {
 			throw new HttpException(403);
 		}
 
-		$region = $this->regionGateway->getRegion($regionId);
-
 		$sessionId = $this->session->id();
+		if ($sessionId === null) {
+			throw new AccessDeniedHttpException();
+		}
 
 		$this->regionGateway->linkBezirk($sessionId, $regionId);
 
@@ -75,12 +74,18 @@ class RegionRestController extends AbstractFOSRestController
 			$this->foodsaverGateway->updateProfile($sessionId, ['bezirk_id' => $regionId]);
 		}
 
-		$bots = $this->foodsaverGateway->getAdminsOrAmbassadors($regionId);
+		$regionWelcomeGroupId = $this->regionGateway->getRegionWelcomeGroupId($regionId);
+		if ($regionWelcomeGroupId) {
+			$welcomeBellRecipients = $this->foodsaverGateway->getAdminsOrAmbassadors($regionWelcomeGroupId);
+		} else {
+			$welcomeBellRecipients = $this->foodsaverGateway->getAdminsOrAmbassadors($regionId);
+		}
+
 		$foodsaver = $this->session->get('user');
 		$bellData = Bell::create(
 			'new_foodsaver_title',
 			$foodsaver['verified'] ? 'new_foodsaver_verified' : 'new_foodsaver',
-			$this->imageService->img($foodsaver['photo'], 50),
+			$this->imageHelper->img($foodsaver['photo'], 50),
 			['href' => '/profile/' . (int)$sessionId . ''],
 			[
 				'name' => $foodsaver['name'] . ' ' . $foodsaver['nachname'],
@@ -89,11 +94,9 @@ class RegionRestController extends AbstractFOSRestController
 			'new-fs-' . $sessionId,
 			true
 		);
-		$this->bellGateway->addBell($bots, $bellData);
+		$this->bellGateway->addBell($welcomeBellRecipients, $bellData);
 
-		$view = $this->view([], 200);
-
-		return $this->handleView($view);
+		return $this->handleView($this->view([], 200));
 	}
 
 	/**
@@ -110,7 +113,7 @@ class RegionRestController extends AbstractFOSRestController
 	 * @SWG\Response(response="409", description="User is still an active store manager in the region")
 	 * @Rest\Post("region/{regionId}/leave", requirements={"regionId" = "\d+"})
 	 */
-	public function leaveRegionAction($regionId)
+	public function leaveRegionAction(int $regionId): Response
 	{
 		if (!$this->session->may()) {
 			throw new AccessDeniedHttpException();
@@ -138,7 +141,7 @@ class RegionRestController extends AbstractFOSRestController
 	 * @SWG\Response(response="403", description="Insufficient permissions")
 	 * @Rest\Patch("region/{regionId}/masterupdate", requirements={"regionId" = "\d+"})
 	 */
-	public function masterUpdateAction(int $regionId)
+	public function masterUpdateAction(int $regionId): Response
 	{
 		if (!$this->regionPermissions->mayAdministrateRegions()) {
 			throw new HttpException(403);

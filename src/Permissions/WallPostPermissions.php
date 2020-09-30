@@ -5,24 +5,31 @@ namespace Foodsharing\Permissions;
 use Foodsharing\Lib\Session;
 use Foodsharing\Modules\Core\DBConstants\Region\RegionIDs;
 use Foodsharing\Modules\Event\EventGateway;
+use Foodsharing\Modules\FoodSharePoint\FoodSharePointGateway;
 use Foodsharing\Modules\Region\RegionGateway;
 
 class WallPostPermissions
 {
-	private $regionGateway;
-	private $eventGateway;
-	private $eventPermission;
-	private $session;
+	private RegionGateway $regionGateway;
+	private EventGateway $eventGateway;
+	private EventPermissions $eventPermission;
+	private FoodSharePointGateway $fspGateway;
+	private FoodSharePointPermissions $fspPermission;
+	private Session $session;
 
 	public function __construct(
 		RegionGateway $regionGateway,
 		EventGateway $eventGateway,
 		EventPermissions $eventPermissions,
+		FoodSharePointPermissions $fspPermission,
+		FoodSharePointGateway $fspGateway,
 		Session $session
 	) {
 		$this->regionGateway = $regionGateway;
 		$this->eventGateway = $eventGateway;
 		$this->eventPermission = $eventPermissions;
+		$this->fspPermission = $fspPermission;
+		$this->fspGateway = $fspGateway;
 		$this->session = $session;
 	}
 
@@ -36,9 +43,8 @@ class WallPostPermissions
 				$result = $fsId && $this->regionGateway->hasMember($fsId, $targetId);
 				break;
 			case 'event':
-				$event = $this->eventGateway->getEventWithInvites($targetId);
-
-				$result = $this->eventPermission->mayCommentInEvent($event);
+				$event = $this->eventGateway->getEvent($targetId, true);
+				$result = ($event === null) ? false : $this->eventPermission->mayCommentInEvent($event);
 				break;
 			case 'fairteiler':
 				$result = true;
@@ -78,8 +84,11 @@ class WallPostPermissions
 	/**
 	 * method describing _global_ deletion access to walls. Every author is always allowed to remove their own posts.
 	 */
-	public function mayDeleteFromWall(int $fsId, string $target, int $targetId): bool
+	public function mayDeleteFromWall(?int $fsId, string $target, int $targetId): bool
 	{
+		if ($fsId === null) {
+			return false;
+		}
 		switch ($target) {
 			case 'bezirk':
 				$result = $this->regionGateway->isAdmin($fsId, $targetId);
@@ -90,7 +99,12 @@ class WallPostPermissions
 				$result = $this->mayReadWall($fsId, $target, $targetId);
 				break;
 			case 'fairteiler':
-				$result = $this->session->may('orga');
+				$fsp = $this->fspGateway->getFoodSharePoint($targetId);
+				if (empty($fsp) || empty($fsp['bezirk_id'])) {
+					$result = false;
+				} else {
+					$result = $this->fspPermission->mayDeleteFoodSharePointWallPostOfRegion($fsp['bezirk_id']);
+				}
 				break;
 			default:
 				$result = false;

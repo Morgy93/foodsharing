@@ -1,12 +1,14 @@
-
 <template>
   <div
     class="avatar"
-    :class="{ 'auto-scale': autoScale, sleeping: sleepStatus, sleeping35: size === 35, sleeping50: size === 50, sleeping130: size === 130}"
+    :class="[{'sleeping': sleepStatus}, `sleep${size}`]"
+    :style="wrapperStyle"
   >
     <img
       :src="avatarUrl"
-      style="height:100%"
+      :class="imgClass"
+      style="height: 100%"
+      :style="imgStyle"
     >
   </div>
 </template>
@@ -27,6 +29,14 @@ export default {
       type: Number,
       default: 0
     },
+    imgClass: {
+      type: String,
+      default: ''
+    },
+    rounded: {
+      type: Boolean,
+      default: true
+    },
     autoScale: {
       type: Boolean,
       default: true
@@ -34,23 +44,31 @@ export default {
   },
   computed: {
     avatarUrl () {
-      let prefix = ''
-      switch (this.size) {
-        case 35:
-          prefix = 'mini_q_'
-          break
-        case 50:
-          prefix = '50_q_'
-          break
-        case 130:
-          prefix = '130_q_'
-          break
-      }
+      const prefix = {
+        35: 'mini_q_',
+        50: '50_q_',
+        130: '130_q_'
+      }[this.size] || ''
       if (this.url) {
         return '/images/' + prefix + this.url
       } else {
         return '/img/' + prefix + 'avatar.png'
       }
+    },
+    wrapperStyle () {
+      const styles = {}
+      if (this.autoScale) {
+        styles.height = '100%'
+        styles.width = 'auto'
+      }
+      return styles
+    },
+    imgStyle () {
+      const styles = {}
+      if (this.rounded) {
+        styles['border-radius'] = '5px'
+      }
+      return styles
     }
   }
 }
@@ -59,7 +77,6 @@ export default {
 <style lang="scss" scoped>
 .avatar {
   position: relative;
-  // margin: auto;
   display: inline-block;
   background-size: cover;
 }
@@ -74,17 +91,13 @@ export default {
   top: -10%;
   left: -10%;
 }
-.sleeping35::after {
+.sleep35::after {
   background-image: url('/img/sleep35x35.png');
 }
-.sleeping50::after {
+.sleep50::after {
   background-image: url('/img/sleep50x50.png');
 }
-.sleeping130::after {
+.sleep130::after {
   background-image: url('/img/sleep130x130.png');
-}
-.auto-scale {
-  height: 100%;
-  width: auto;
 }
 </style>

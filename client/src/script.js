@@ -8,28 +8,11 @@ import 'jquery-fancybox'
 import 'jquery-ui-addons'
 
 import { GET, goTo, isMob } from '@/browser'
-
 import conv from '@/conv'
+import { removeStoreRequest } from '@/api/stores'
+import i18n from '@/i18n'
 
 export { goTo, isMob, GET }
-
-export const dialogs = {
-  dialogs: [],
-  add: function (dialog) {
-    this.dialogs[this.dialogs.length] = dialog
-  },
-  closeAll: function () {
-    for (var i = 0; i < dialogs.dialogs.length; i++) {
-      var $dia = $(`#${dialogs.dialogs[i]}`)
-      if ($dia.length > 0) {
-        if ($dia.dialog('isOpen') === true) {
-          $dia.dialog('close')
-        }
-      }
-    }
-    dialogs.dialogs = []
-  }
-}
 
 export function collapse_wrapper (id) {
   const $content = $(`#${id}-wrapper .element-wrapper`)
@@ -135,23 +118,6 @@ export function initialize () {
       })
     })
 
-    $('textarea.inlabel, input.inlabel').each(function () {
-      var $this = $(this)
-      if ($this.val() === '') {
-        $this.val($this.attr('title'))
-      }
-      $this.on('focus', function () {
-        if ($this.val() === $this.attr('title')) {
-          $this.val('')
-        }
-      })
-      $this.on('blur', function () {
-        if ($this.val() === '') {
-          $this.val($this.attr('title'))
-        }
-      })
-    })
-
     if (!isMob()) {
       $('#main a').tooltip({
         show: false,
@@ -187,17 +153,16 @@ export function initialize () {
         modal: true,
         autoOpen: false,
         buttons: {
-          'unwiderruflich löschen': function () {
+          [i18n('button.permadelete')]: function () {
             goTo($('#dialog-confirm-url').val())
             $(this).dialog('close')
           },
-          Abbrechen: function () {
+          [i18n('button.cancel')]: function () {
             $(this).dialog('close')
           }
         }
       })
     })
-    // $('.button').button();
     $('.dialog').dialog()
 
     $('ul.toolbar li').on('mouseenter', function () {
@@ -234,16 +199,6 @@ export function initialize () {
             uploadPhoto()
           }
         }
-    })
-
-    $('#fancylink').fancybox({
-      minWidth: 470,
-      maxWidth: 470,
-      minHeight: 450,
-      scrolling: 'auto',
-      helpers: {
-        overlay: { closeClick: false }
-      }
     })
   })
 }
@@ -370,15 +325,6 @@ export const pulseInfo = definePulse('info', 4000)
 export const pulseSuccess = definePulse('success', 5000)
 export const pulseError = definePulse('error', 6000)
 
-export function addHover (sel) {
-  $(sel).on('mouseenter', function () { $(this).addClass('hover') })
-    .on('mouseleave', function () { $(this).removeClass('hover') })
-}
-
-export function aNotify () {
-  // $('#xhr-chat-notify')[0].play();
-}
-
 export function checkEmail (email) {
   var filter = /^([a-zA-Z0-9_.-])+@(([a-zA-Z0-9-])+\.)+([a-zA-Z0-9]{2,4})+$/
 
@@ -399,24 +345,12 @@ export function img (photo, size) {
   }
 }
 
-export function fancy (content, title, subtitle) {
-  let t = ''
-  let s = ''
-  if (title != undefined) {
-    t = `<h3>${title}</h3>`
-  }
-  if (subtitle != undefined) {
-    s = `<p class="subtitle">${subtitle}</p>`
-  }
-  $('#fancy').html(`<div class="popbox">${t}${s}${content}</div>`)
-  $('#fancylink').trigger('click')
-}
-
-export function xhrf (func) {
+export function xhrf (func, fdata = null) {
   showLoader()
   $.ajax({
     dataType: 'json',
     url: `/xhr.php?f=${func}`,
+    data: fdata || {},
     success: function (data) {
       hideLoader()
       if (data.status == 1) {
@@ -433,26 +367,6 @@ export function reload () {
   window.location.reload()
 }
 
-export function v_field (content, title, id) {
-  return `<div id="${id}"><div class="head ui-widget-header ui-corner-top">${title}</div><div class="ui-widget ui-widget-content ui-corner-bottom margin-bottom ui-padding">${content}</div></div>`
-}
-
-export function openPhotoDialog (fs_id) {
-  $('#uploadPhoto-fs_id').val(fs_id)
-  $('#uploadPhoto').dialog('open')
-}
-
-export function info (txt) {
-  if ($('#info-msg').length == 0) {
-    $('#top').after(`<div class="ui-widget ui-msg"><div class="ui-state-highlight ui-corner-all ui-padding"><span style="float: left; margin-right: .3em;" class="ui-icon ui-icon-info"></span><ul id="info-msg">${txt}</ul><div class="clear"></div></div></div>`)
-  } else {
-    $('#info-msg').append(`<li>${txt}</li>`)
-  }
-}
-export function error (txt) {
-  pulseError(txt)
-}
-
 export function uploadPhoto () {
   $('#uploadPhoto form').trigger('submit')
 }
@@ -460,7 +374,7 @@ export function uploadPhoto () {
 export function uploadPhotoReady (id, file) {
   $(`#miniq-${id}`).attr('src', file)
   $('#uploadPhoto').dialog('close')
-  info('Foto erfolgreich hochgeladen!')
+  pulseInfo('Foto erfolgreich hochgeladen!')
 }
 
 export function addSelect (id) {
@@ -478,10 +392,6 @@ export function addSelect (id) {
       }
     })
   }
-}
-
-export function betrieb (id) {
-  goTo(`/?page=betrieb&id=${id}`)
 }
 
 export function ucfirst (str) {
@@ -663,21 +573,17 @@ export function betriebRequest (id) {
   })
 }
 
-export function rejectBetriebRequest (fsid, bid) {
+export async function withdrawStoreRequest (fsid, bid) {
   showLoader()
-  $.ajax({
-    dataType: 'json',
-    data: `fsid=${fsid}&bid=${bid}`,
-    url: '/xhr.php?f=denyRequest',
-    success: function (data) {
-      if (data.status == 1) {
-        pulseSuccess(data.msg)
-      } else {
-        pulseError(data.msg)
-      }
-    },
-    complete: function () { hideLoader() }
-  })
+
+  try {
+    await removeStoreRequest(bid, fsid)
+    pulseSuccess(i18n('store.request.withdrawn'))
+  } catch (e) {
+    pulseError(i18n('error_unexpected'))
+  }
+
+  hideLoader()
 }
 
 export function checkAllCb (sel) {
@@ -690,14 +596,6 @@ export function becomeBezirk () {
     maxWidth: 400
   })
   $('#becomeBezirk-link').trigger('click')
-}
-export function preZero (number, length) {
-  if (length == undefined) {
-    length = 2
-  }
-  var num = `${number}`
-  while (num.length < length) num = `0${num}`
-  return num
 }
 
 export function shuffle (o) {

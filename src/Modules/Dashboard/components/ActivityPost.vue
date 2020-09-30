@@ -121,8 +121,8 @@
       </span>
     </span>
     <span class="time">
-      <i class="far fa-clock" /> {{ when | dateDistanceInWords }}
-      <i class="fas fa-angle-right" /> {{ when | dateFormat('full-short') }}
+      <i class="far fa-clock" /> {{ $dateDistanceInWords(when) }}
+      <i class="fas fa-angle-right" /> {{ $dateFormat(when, 'full-short') }}
     </span>
     <span class="c" />
   </li>
@@ -303,17 +303,6 @@ export default {
     img {
       float: left;
       padding-right: 10px;
-    }
-
-    span.img-txt {
-      display: inline;
-      vertical-align: bottom;
-
-      span.txt {
-        border: 0;
-        display: inline;
-        padding-left: 0;
-      }
     }
 
     span.txt {

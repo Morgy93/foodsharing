@@ -2,25 +2,26 @@
 
 namespace Foodsharing\Modules\Store;
 
-use Foodsharing\Helpers\DataHelper;
-use Foodsharing\Helpers\IdentificationHelper;
-use Foodsharing\Helpers\WeightHelper;
 use Foodsharing\Modules\Bell\BellGateway;
 use Foodsharing\Modules\Bell\DTO\Bell;
 use Foodsharing\Modules\Core\Control;
 use Foodsharing\Modules\Core\DBConstants\Region\Type;
 use Foodsharing\Modules\Core\DBConstants\Store\CooperationStatus;
+use Foodsharing\Modules\Core\DBConstants\Store\Milestone;
 use Foodsharing\Modules\Foodsaver\FoodsaverGateway;
 use Foodsharing\Modules\Region\RegionGateway;
 use Foodsharing\Permissions\StorePermissions;
-use Foodsharing\Services\StoreService;
+use Foodsharing\Utility\DataHelper;
+use Foodsharing\Utility\IdentificationHelper;
+use Foodsharing\Utility\WeightHelper;
 
 class StoreControl extends Control
 {
 	private $bellGateway;
+	private $storeModel;
 	private $storeGateway;
 	private $storePermissions;
-	private $storeService;
+	private $storeTransactions;
 	private $regionGateway;
 	private $foodsaverGateway;
 	private $identificationHelper;
@@ -30,7 +31,7 @@ class StoreControl extends Control
 	public function __construct(
 		StoreModel $model,
 		StorePermissions $storePermissions,
-		StoreService $storeService,
+		StoreTransactions $storeTransactions,
 		StoreView $view,
 		BellGateway $bellGateway,
 		StoreGateway $storeGateway,
@@ -40,12 +41,12 @@ class StoreControl extends Control
 		DataHelper $dataHelper,
 		WeightHelper $weightHelper
 	) {
-		$this->model = $model;
+		$this->storeModel = $model;
 		$this->view = $view;
 		$this->bellGateway = $bellGateway;
 		$this->storeGateway = $storeGateway;
 		$this->storePermissions = $storePermissions;
-		$this->storeService = $storeService;
+		$this->storeTransactions = $storeTransactions;
 		$this->foodsaverGateway = $foodsaverGateway;
 		$this->regionGateway = $regionGateway;
 		$this->identificationHelper = $identificationHelper;
@@ -82,45 +83,38 @@ class StoreControl extends Control
 			if ($this->storePermissions->mayCreateStore()) {
 				$this->handle_add($this->session->id());
 
-				$this->pageHelper->addBread($this->translationHelper->s('bread_betrieb'), '/?page=betrieb');
-				$this->pageHelper->addBread($this->translationHelper->s('add_new_store'));
+				$this->pageHelper->addBread($this->translator->trans('store.bread'), '/?page=fsbetrieb');
+				$this->pageHelper->addBread($this->translator->trans('storeedit.add-new'));
 
 				if (isset($_GET['id'])) {
 					$g_data['foodsaver'] = $this->storeGateway->getStoreManagers($_GET['id']);
 				}
 
-				$chosenRegion = ($regionId > 0 && $this->regionGateway->getType($regionId) <= Type::REGION) ? $region : null;
+				$chosenRegion = ($regionId > 0 && Type::isAccessibleRegion($this->regionGateway->getType($regionId))) ? $region : null;
 				$this->pageHelper->addContent($this->view->betrieb_form($chosenRegion, 'betrieb', $this->storeGateway->getBasics_groceries(), $this->storeGateway->getBasics_chain(), $this->storeGateway->getStoreCategories(), $this->storeGateway->getStoreStateList(), $this->weightHelper->getWeightListEntries()));
 
 				$this->pageHelper->addContent($this->v_utils->v_field($this->v_utils->v_menu([
-					['name' => $this->translationHelper->s('back_to_overview'), 'href' => '/?page=fsbetrieb&bid=' . $regionId]
-				]), $this->translationHelper->s('actions')), CNT_RIGHT);
+					['name' => $this->translator->trans('bread.backToOverview'), 'href' => '/?page=fsbetrieb&bid=' . $regionId]
+				]), $this->translator->trans('storeedit.actions')), CNT_RIGHT);
 			} else {
 				$this->flashMessageHelper->info('Zum Anlegen eines Betriebes musst Du Betriebsverantwortlicher sein');
 				$this->routeHelper->go('?page=settings&sub=upgrade/up_bip');
 			}
 		} elseif ($id = $this->identificationHelper->getActionId('delete')) {
-			/*
-			if($this->model->del_betrieb($id))
-			{
-				$this->flashMessageHelper->info($this->translationHelper->s('betrieb_deleted'));
-				$this->routeHelper->goPage();
-			}
-			*/
 		} elseif ($id = $this->identificationHelper->getActionId('edit')) {
-			$this->pageHelper->addBread($this->translationHelper->s('bread_betrieb'), '/?page=betrieb');
-			$this->pageHelper->addBread($this->translationHelper->s('edit_store'));
-			$data = $this->model->getOne_betrieb($id);
+			$this->pageHelper->addBread($this->translator->trans('store.bread'), '/?page=fsbetrieb');
+			$this->pageHelper->addBread($this->translator->trans('storeedit.bread'));
+			$data = $this->storeModel->getOne_betrieb($id);
 
 			$this->pageHelper->addTitle($data['name']);
-			$this->pageHelper->addTitle($this->translationHelper->s('edit'));
+			$this->pageHelper->addTitle($this->translator->trans('storeedit.bread'));
 
 			if ($this->storePermissions->mayEditStore($id)) {
 				$this->handle_edit();
 
 				$this->dataHelper->setEditData($data);
 
-				$region = $this->model->getValues(['id', 'name'], 'bezirk', $data['bezirk_id']);
+				$region = $this->storeModel->getValues(['id', 'name'], 'bezirk', $data['bezirk_id']);
 				if (isset($_GET['id'])) {
 					$g_data['foodsaver'] = $this->storeGateway->getStoreManagers($_GET['id']);
 				}
@@ -131,14 +125,14 @@ class StoreControl extends Control
 			}
 
 			$this->pageHelper->addContent($this->v_utils->v_field($this->v_utils->v_menu([
-				$this->routeHelper->pageLink('betrieb', 'back_to_overview')
-			]), $this->translationHelper->s('actions')), CNT_RIGHT);
+				$this->routeHelper->pageLink('betrieb')
+			]), $this->translator->trans('storeedit.actions')), CNT_RIGHT);
 		} elseif (isset($_GET['id'])) {
 			$this->routeHelper->go('/?page=fsbetrieb&id=' . (int)$_GET['id']);
 		} else {
-			$this->pageHelper->addBread($this->translationHelper->s('betrieb_bread'), '/?page=betrieb');
+			$this->pageHelper->addBread($this->translator->trans('store.bread'), '/?page=fsbetrieb');
 
-			$stores = $this->model->listBetriebReq($regionId);
+			$stores = $this->storeModel->listBetriebReq($regionId);
 
 			$storesMapped = array_map(function ($store) {
 				return [
@@ -173,12 +167,12 @@ class StoreControl extends Control
 			$g_data['hsnr'] = '';
 			$g_data['str'] = $g_data['anschrift'];
 
-			if ($this->model->update_betrieb($id, $g_data)) {
-				$this->storeService->setStoreNameInConversations($id, $g_data['name']);
-				$this->flashMessageHelper->info($this->translationHelper->s('betrieb_edit_success'));
+			if ($this->storeModel->update_betrieb($id, $g_data)) {
+				$this->storeTransactions->setStoreNameInConversations($id, $g_data['name']);
+				$this->flashMessageHelper->info($this->translator->trans('storeedit.edit_success'));
 				$this->routeHelper->go('/?page=fsbetrieb&id=' . $id);
 			} else {
-				$this->flashMessageHelper->error($this->translationHelper->s('error'));
+				$this->flashMessageHelper->error($this->translator->trans('error_unexpected'));
 			}
 		}
 	}
@@ -193,7 +187,7 @@ class StoreControl extends Control
 				$g_data['bezirk_id'] = $this->session->getCurrentRegionId();
 			}
 			if (!in_array($g_data['bezirk_id'], $this->session->listRegionIDs())) {
-				$this->flashMessageHelper->error($this->translationHelper->s('store.can_only_create_store_in_member_region'));
+				$this->flashMessageHelper->error($this->translator->trans('storeedit.not-in-region'));
 				$this->routeHelper->goPage();
 			}
 
@@ -206,14 +200,14 @@ class StoreControl extends Control
 			}
 			$g_data['hsnr'] = '';
 
-			if ($id = $this->model->add_betrieb($g_data)) {
-				$this->storeService->setStoreNameInConversations($id, $g_data['name']);
+			if ($id = $this->storeModel->add_betrieb($g_data)) {
+				$this->storeTransactions->setStoreNameInConversations($id, $g_data['name']);
 				$this->storeGateway->add_betrieb_notiz([
 					'foodsaver_id' => $this->session->id(),
 					'betrieb_id' => $id,
 					'text' => '{BETRIEB_ADDED}',
 					'zeit' => date('Y-m-d H:i:s', (time() - 10)),
-					'milestone' => 1
+					'milestone' => Milestone::CREATED,
 				]);
 
 				if (isset($g_data['first_post']) && !empty($g_data['first_post'])) {
@@ -222,13 +216,13 @@ class StoreControl extends Control
 						'betrieb_id' => $id,
 						'text' => $g_data['first_post'],
 						'zeit' => date('Y-m-d H:i:s'),
-						'milestone' => 0
+						'milestone' => Milestone::NONE,
 					]);
 				}
 
 				$foodsaver = $this->foodsaverGateway->getFoodsaversByRegion($g_data['bezirk_id']);
 
-				$bellData = Bell::create('store_new_title', 'store_new', 'img img-store brown', [
+				$bellData = Bell::create('store_new_title', 'store_new', 'fas fa-store-alt', [
 					'href' => '/?page=fsbetrieb&id=' . (int)$id
 				], [
 					'user' => $this->session->user('name'),
@@ -236,11 +230,11 @@ class StoreControl extends Control
 				], 'store-new-' . (int)$id);
 				$this->bellGateway->addBell($foodsaver, $bellData);
 
-				$this->flashMessageHelper->info($this->translationHelper->s('betrieb_add_success'));
+				$this->flashMessageHelper->info($this->translator->trans('storeedit.add_success'));
 
 				$this->routeHelper->go('/?page=fsbetrieb&id=' . (int)$id);
 			} else {
-				$this->flashMessageHelper->error($this->translationHelper->s('error'));
+				$this->flashMessageHelper->error($this->translator->trans('error_unexpected'));
 			}
 		}
 	}

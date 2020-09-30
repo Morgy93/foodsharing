@@ -8,12 +8,15 @@ use Foodsharing\Modules\Store\StoreGateway;
 
 class QuizHelper
 {
-	private $quizSessionGateway;
-	private $storeGateway;
-	private $foodsaverGateway;
+	private QuizSessionGateway $quizSessionGateway;
+	private StoreGateway $storeGateway;
+	private FoodsaverGateway $foodsaverGateway;
 
-	public function __construct(QuizSessionGateway $quizSessionGateway, StoreGateway $storeGateway, FoodsaverGateway $foodsaverGateway)
-	{
+	public function __construct(
+		QuizSessionGateway $quizSessionGateway,
+		StoreGateway $storeGateway,
+		FoodsaverGateway $foodsaverGateway
+	) {
 		$this->quizSessionGateway = $quizSessionGateway;
 		$this->storeGateway = $storeGateway;
 		$this->foodsaverGateway = $foodsaverGateway;

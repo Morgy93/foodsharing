@@ -1,8 +1,20 @@
 parameters:
-  level: 0
+  level: 4
   paths:
     - src
   excludes_analyse:
     - %currentWorkingDirectory%/src/Lib/Flourish
+    - %currentWorkingDirectory%/src/Dev
+  bootstrapFiles:
+    - config.inc.php
   ignoreErrors:
     - '#Static call to instance method Carbon\\CarbonInterval::[a-zA-Z]+\(\)#'
+    # We include constant values for MEM_ENABLED from config.inc.*.php:
+    -
+      message: '#If condition is always true#'
+      paths:
+        - src/Lib/Db/Mem.php
+    -
+      message: '#Unreachable statement - code above always terminates#'
+      paths:
+        - src/Lib/Db/Mem.php

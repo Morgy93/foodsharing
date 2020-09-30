@@ -2,112 +2,77 @@
 
 namespace Foodsharing\Modules\Store;
 
-use Foodsharing\Helpers\DataHelper;
-use Foodsharing\Helpers\IdentificationHelper;
-use Foodsharing\Helpers\PageHelper;
-use Foodsharing\Helpers\RouteHelper;
-use Foodsharing\Helpers\TimeHelper;
-use Foodsharing\Helpers\TranslationHelper;
-use Foodsharing\Helpers\WeightHelper;
 use Foodsharing\Lib\Session;
 use Foodsharing\Lib\View\Utils;
 use Foodsharing\Modules\Core\View;
-use Foodsharing\Services\ImageService;
-use Foodsharing\Services\SanitizerService;
-use Symfony\Component\Translation\TranslatorInterface;
+use Foodsharing\Utility\DataHelper;
+use Foodsharing\Utility\IdentificationHelper;
+use Foodsharing\Utility\ImageHelper;
+use Foodsharing\Utility\PageHelper;
+use Foodsharing\Utility\RouteHelper;
+use Foodsharing\Utility\Sanitizer;
+use Foodsharing\Utility\TimeHelper;
+use Foodsharing\Utility\TranslationHelper;
+use Foodsharing\Utility\WeightHelper;
+use Symfony\Contracts\Translation\TranslatorInterface;
 
 class StoreView extends View
 {
 	private $weightHelper;
 
 	public function __construct(
-			\Twig\Environment $twig,
-			Utils $viewUtils,
-			Session $session,
-			SanitizerService $sanitizerService,
-			PageHelper $pageHelper,
-			TimeHelper $timeHelper,
-			ImageService $imageService,
-			RouteHelper $routeHelper,
-			IdentificationHelper $identificationHelper,
-			DataHelper $dataHelper,
-			TranslationHelper $translationHelper,
-			WeightHelper $weightHelper,
-			TranslatorInterface $translator
-			) {
+		\Twig\Environment $twig,
+		Session $session,
+		Utils $viewUtils,
+		DataHelper $dataHelper,
+		IdentificationHelper $identificationHelper,
+		ImageHelper $imageService,
+		PageHelper $pageHelper,
+		RouteHelper $routeHelper,
+		Sanitizer $sanitizerService,
+		TimeHelper $timeHelper,
+		TranslationHelper $translationHelper,
+		WeightHelper $weightHelper,
+		TranslatorInterface $translator
+	) {
 		$this->weightHelper = $weightHelper;
 		parent::__construct(
-						$twig,
-						$viewUtils,
-						$session,
-						$sanitizerService,
-						$pageHelper,
-						$timeHelper,
-						$imageService,
-						$routeHelper,
-						$identificationHelper,
-						$dataHelper,
-						$translationHelper,
-						$translator
-						);
+			$twig,
+			$session,
+			$viewUtils,
+			$dataHelper,
+			$identificationHelper,
+			$imageService,
+			$pageHelper,
+			$routeHelper,
+			$sanitizerService,
+			$timeHelper,
+			$translationHelper,
+			$translator
+		);
 	}
 
 	public function dateForm()
 	{
-		return
-			'<div id="datepicker" style="height:220px;"></div>' .
-			$this->v_utils->v_input_wrapper('Uhrzeit', $this->v_utils->v_form_time('time')) .
-			$this->v_utils->v_form_select('fetchercount', ['selected' => 1, 'values' => [
-				['id' => 1, 'name' => '1 Abholer/in'],
-				['id' => 2, 'name' => '2 Abholer/innen'],
-				['id' => 3, 'name' => '3 Abholer/innen'],
-				['id' => 4, 'name' => '4 Abholer/innen'],
-				['id' => 5, 'name' => '5 Abholer/innen'],
-				['id' => 6, 'name' => '6 Abholer/innen'],
-				['id' => 7, 'name' => '7 Abholer/innen'],
-				['id' => 8, 'name' => '8 Abholer/innen']
+		return '<div id="datepicker" style="height: 220px;"></div>'
+			. $this->v_utils->v_input_wrapper($this->translator->trans('time'), $this->v_utils->v_form_time('time'))
+			. $this->v_utils->v_form_select('fetchercount', ['selected' => 1, 'values' => [
+				['id' => 1, 'name' => $this->translator->trans('pickup.edit.slotcount')],
+				['id' => 2, 'name' => $this->translator->trans('pickup.edit.slotscount', ['{count}' => 2])],
+				['id' => 3, 'name' => $this->translator->trans('pickup.edit.slotscount', ['{count}' => 3])],
+				['id' => 4, 'name' => $this->translator->trans('pickup.edit.slotscount', ['{count}' => 4])],
+				['id' => 5, 'name' => $this->translator->trans('pickup.edit.slotscount', ['{count}' => 5])],
+				['id' => 6, 'name' => $this->translator->trans('pickup.edit.slotscount', ['{count}' => 6])],
+				['id' => 7, 'name' => $this->translator->trans('pickup.edit.slotscount', ['{count}' => 7])],
+				['id' => 8, 'name' => $this->translator->trans('pickup.edit.slotscount', ['{count}' => 8])],
 			]]);
-	}
-
-	public function fetchHistory()
-	{
-		return $this->v_utils->v_form_daterange('daterange', [
-				'content_after' => ' <a href="#" id="daterange_submit" class="button"><i class="fas fa-search"></i></a>'
-			]) . '<div id="daterange_content"></div>';
-	}
-
-	public function fetchlist($history)
-	{
-		$out = '
-			<ul class="linklist history">';
-		$curdate = 0;
-		foreach ($history as $h) {
-			if ($curdate != $h['date']) {
-				$out .= '<li class="title">' . $this->timeHelper->niceDate($h['date_ts']) . '</li>';
-				$curdate = $h['date'];
-			}
-			$out .= '
-				<li>
-					<a class="corner-all" href="/profile/' . (int)$h['id'] . '">
-						<span class="i"><img src="' . $this->imageService->img($h['photo']) . '" /></span>
-						<span class="n">' . $h['name'] . ' ' . $h['nachname'] . '</span>
-						<span class="t"></span>
-						<span class="c"></span>
-					</a>
-				</li>';
-		}
-
-		$out .= '
-			</ul>';
-
-		return $out;
 	}
 
 	public function betrieb_form($region = false, $page = '', $lebensmittel_values, $chains, $categories, $status, $weightArray)
 	{
 		global $g_data;
 
-		$bc = $this->v_utils->v_bezirkChooser('bezirk_id', $region);
+		$regionPicker = $this->v_utils->v_regionPicker($region ?: [], $this->translator->trans('terminology.region'));
 
 		if (!isset($g_data['foodsaver'])) {
 			$g_data['foodsaver'] = [$this->session->id()];
@@ -142,8 +107,8 @@ class StoreView extends View
 			$latLonOptions['location'] = ['lat' => 0, 'lon' => 0];
 		}
 
-		return $this->v_utils->v_quickform($this->translationHelper->s('betrieb'), [
-			$bc,
+		return $this->v_utils->v_quickform($this->translator->trans('betrieb'), [
+			$regionPicker,
 			$this->v_utils->v_form_hidden('page', $page),
 			$this->v_utils->v_form_text('name', ['required' => true]),
 			$this->latLonPicker('LatLng', $latLonOptions),
@@ -151,7 +116,7 @@ class StoreView extends View
 			$this->v_utils->v_form_select('kette_id', ['add' => true, 'values' => $chains, 'desc' => 'Bitte nur inhabergeführte Betriebe bis maximal 3 Filialen ansprechen, niemals Filialen einer größeren Kette ansprechen! Betriebskettenregeln beachten!']),
 			$this->v_utils->v_form_select('betrieb_kategorie_id', ['add' => true, 'values' => $categories]),
 
-			$this->v_utils->v_form_select('betrieb_status_id', ['values' => $status, 'desc' => $this->v_utils->v_info($this->translationHelper->s('store_status_impact_explanation'))]),
+			$this->v_utils->v_form_select('betrieb_status_id', ['values' => $status, 'desc' => $this->v_utils->v_info($this->translator->trans('store_status_impact_explanation'))]),
 
 			$this->v_utils->v_form_text('ansprechpartner'),
 			$this->v_utils->v_form_text('telefon'),
@@ -160,7 +125,9 @@ class StoreView extends View
 
 			$this->v_utils->v_form_checkbox('lebensmittel', ['values' => $lebensmittel_values]),
 			$this->v_utils->v_form_date('begin'),
-			$this->v_utils->v_form_textarea('besonderheiten'),
+			$this->v_utils->v_form_textarea('besonderheiten', [
+				'desc' => $this->v_utils->v_info($this->translator->trans('formatting.md'), false, '<i class="fab fa-markdown fa-2x d-inline align-middle text-muted"></i>')
+			]),
 			$this->v_utils->v_form_textarea('public_info', ['maxlength' => 180, 'desc' => 'Hier kannst Du einige Infos für die Foodsaver angeben, die sich für das Team bewerben möchten. <br />(max. 180 Zeichen)<div>' . $this->v_utils->v_info('<strong>Wichtig:</strong> Gib hier keine genauen Abholzeiten an.<br />Es ist des Öfteren vorgekommen, dass Leute unabgesprochen zum Laden gegangen sind.') . '</div>']),
 			$this->v_utils->v_form_select('public_time', ['values' => [
 				['id' => 0, 'name' => 'Keine Angabe'],
@@ -196,49 +163,80 @@ class StoreView extends View
 
 	public function bubble(array $store): string
 	{
-		$b = $store;
-		$verantwortlich = '<ul class="linklist">';
-		foreach ($b['foodsaver'] as $fs) {
+		$managers = '<ul class="linklist">';
+		foreach ($store['foodsaver'] as $fs) {
 			if ($fs['verantwortlich'] == 1) {
-				$verantwortlich .= '
-			<li><a style="background-color:transparent;" href="/profile/' . (int)$fs['id'] . '">' . $this->imageService->avatar($fs, 50) . '</a></li>';
+				$managers .= '<li>' .
+					'<a style="background-color: transparent;" href="/profile/' . intval($fs['id']) . '">'
+					. $this->imageService->avatar($fs, 50) .
+					'</a></li>';
 			}
 		}
-		$verantwortlich .= '</ul>';
+		$managers .= '</ul>';
 
-		$besonderheiten = '';
+		$count_info = '<div>' . $this->translator->trans('storeview.teamInfo', [
+			'{active}' => count($store['foodsaver']),
+			'{jumper}' => count($store['springer']),
+		]) . '</div>';
 
-		$count_info = '';
-		$activeFoodSaver = count($b['foodsaver']);
-		$jumperFoodSaver = count($b['springer']);
-		$count_info .= '<div>' . $this->translationHelper->sv('store_info', ['active' => $activeFoodSaver, 'jumper' => $jumperFoodSaver]) . '</div>';
-		$pickup_count = (int)$b['pickup_count'];
+		$pickup_count = intval($store['pickup_count']);
 		if ($pickup_count > 0) {
-			$count_info .= '<div>' . $this->translationHelper->sv('store_info_pickupcount', ['pickupCount' => $pickup_count]) . '</div>';
-			$fetch_weight = round(floatval(($pickup_count * $this->weightHelper->mapIdToKilos($b['abholmenge']))), 2);
-			$count_info .= '<div>' . $this->translationHelper->sv('store_info_pickupweight', ['fetch_weight' => $fetch_weight]) . '</div>';
+			$count_info .= '<div>' . $this->translator->trans('storeview.pickupCount', [
+				'{pickupCount}' => $this->translator->trans('storeview.counter', [
+					'{suffix}' => 'x',
+					'{count}' => $pickup_count,
+				]),
+			]) . '</div>';
+
+			$pickupWeight = $this->translator->trans('storeview.counter', [
+				'{suffix}' => 'kg',
+				'{count}' => round(floatval(
+					$pickup_count * $this->weightHelper->mapIdToKilos($store['abholmenge'])
+				), 2),
+			]);
+			$count_info .= '<div>' . $this->translator->trans('storeview.pickupWeight', [
+				'{pickupWeight}' => $pickupWeight,
+			]) . '</div>';
 		}
 
-		$time = strtotime($b['begin']);
-		if ($time > 0) {
-			$count_info .= '<div> ' . $this->translationHelper->sv('store_info_cooperation', ['startTime' => $this->translationHelper->s('month_' . (int)date('m', $time)) . ' ' . date('Y', $time)]) . '</div>';
+		$when = strtotime($store['begin']);
+		if ($when > 0) {
+			$startTime = $this->translator->trans('month.' . intval(date('m', $when))) . ' ' . date('Y', $when);
+			$count_info .= '<div>' . $this->translator->trans('storeview.cooperation', [
+				'{startTime}' => $startTime,
+			]) . '</div>';
 		}
 
-		if ((int)$b['public_time'] != 0) {
-			$b['public_info'] .= '<div>' . $this->translationHelper->sv('store_info_freq', ['freq' => $this->translationHelper->s('pubbtime_' . (int)$b['public_time'])]) . '</div>';
+		$fetchTime = intval($store['public_time']);
+		if ($fetchTime != 0) {
+			$count_info .= '<div>' . $this->translator->trans('storeview.frequency', [
+				'{freq}' => $this->translator->trans('storeview.frequency' . $fetchTime),
+			]) . '</div>';
 		}
 
-		if (!empty($b['public_info'])) {
-			$besonderheiten = $this->v_utils->v_input_wrapper($this->translationHelper->s('info'), $b['public_info'], 'bcntspecial');
+		$publicInfo = '';
+		if (!empty($store['public_info'])) {
+			$publicInfo = $this->v_utils->v_input_wrapper(
+				$this->translator->trans('storeview.info'),
+				$store['public_info'],
+				'bcntspecial'
+			);
 		}
 
-		$status = $this->v_utils->v_getStatusAmpel($b['betrieb_status_id']);
-		$html = $this->v_utils->v_input_wrapper($this->translationHelper->s('status'), $status . '<span class="bstatus">' . $this->translationHelper->s('betrieb_status_' . $b['betrieb_status_id']) . '</span>' . $count_info) . '
-			' . $this->v_utils->v_input_wrapper($this->translationHelper->s('foodsaver'), $verantwortlich, 'bcntverantwortlich') . '
-			' . $besonderheiten . '
-			<div class="ui-padding">
-				' . $this->v_utils->v_info('' . $this->translationHelper->s('team_status_' . $b['team_status']) . '') . '
-			</div>';
+		$status = $this->v_utils->v_getStatusAmpel($store['betrieb_status_id']);
+
+		// Store status
+		$bstatus = $this->translator->trans('storestatus.' . intval($store['betrieb_status_id'])) . '.';
+		// Team status
+		$tstatus = $this->translator->trans('storeedit.fetch.teamStatus' . intval($store['team_status']));
+
+		$html = $this->v_utils->v_input_wrapper(
+			$this->translator->trans('storeedit.store.status'),
+			$status . '<span class="bstatus">' . $bstatus . '</span>' . $count_info
+		) . $this->v_utils->v_input_wrapper(
+			$this->translator->trans('storeview.managers'), $managers, 'bcntverantwortlich'
+		) . $publicInfo . '<div class="ui-padding">'
+		. $this->v_utils->v_info('<strong>' . $tstatus . '</strong>') . '</div>';
 
 		return $html;
 	}

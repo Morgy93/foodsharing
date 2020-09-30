@@ -8,14 +8,14 @@ use Foodsharing\Modules\Core\View;
 
 class QuizView extends View
 {
-	public function abortOrPause()
+	public function abortOrPause(): string
 	{
 		return '
 				<p>Nimm Dir doch noch die Zeit diese Frage zu beantworten! Ansonsten wird diese Frage als falsch gewertet.</p>
 				<p>Nach der Beantwortung der Frage kannst Du auch <strong>pausieren</strong> ohne Fehlerpunkte zu bekommen.</p>';
 	}
 
-	public function sessionList($sessions, $quiz)
+	public function sessionList(array $sessions, array $quiz): string
 	{
 		$rows = [];
 
@@ -55,14 +55,14 @@ class QuizView extends View
 		return $this->v_utils->v_field($table, $quiz['name']);
 	}
 
-	public function userSessions($sessions, $fs)
+	public function userSessions(array $sessions): string
 	{
 		$out = '';
 
 		/*
-		 * Example:
-		 *
-		  [0] => Array
+		* Example:
+		*
+			[0] => Array
 			(
 				[id] => 9
 				[fp] => 0.00
@@ -81,8 +81,7 @@ class QuizView extends View
 				[time_start_ts] => 1404716793
 				[name] => Foodsaver
 			)
-
-		 */
+		*/
 
 		$cur_qid = $sessions[0]['quiz_id'];
 		$rows = [];
@@ -99,7 +98,11 @@ class QuizView extends View
 				['cnt' => $s['fp']],
 				['cnt' => $status],
 
-				['cnt' => $this->v_utils->v_toolbar(['id' => $s['id'], 'types' => ['delete'], 'confirmMsg' => 'Soll diese Quiz-Session wirklich gel&ouml;scht werden?'])]
+				['cnt' => $this->v_utils->v_toolbar([
+					'id' => $s['id'],
+					'types' => ['delete'],
+					'confirmMsg' => 'Soll diese Quiz-Session wirklich gel&ouml;scht werden?',
+				])]
 			];
 			if ($cur_qid != $s['quiz_id'] || $key == (count($sessions) - 1)) {
 				$cur_qid = $s['quiz_id'];
@@ -117,12 +120,12 @@ class QuizView extends View
 		return $out;
 	}
 
-	public function noSessions($quiz)
+	public function noSessions(array $quiz): string
 	{
 		return $this->v_utils->v_field($this->v_utils->v_info('Dieses Quiz wurde noch nicht ausgeführt'), $quiz['name']);
 	}
 
-	public function listQuiz($quizze)
+	public function listQuiz($quizze): string
 	{
 		$menu = [];
 		$out = '';
@@ -143,7 +146,7 @@ class QuizView extends View
 		return $this->v_utils->v_field($out, ' Quizze');
 	}
 
-	public function quizbuttons($quizid)
+	public function quizbuttons($quizid): string
 	{
 		return '
 		<div class="ui-widget ui-widget-content ui-corner-all ui-padding margin-bottom">
@@ -151,15 +154,15 @@ class QuizView extends View
 		</div>';
 	}
 
-	public function quizComment()
+	public function quizComment(): string
 	{
-		return '
-		<div id="quizcomment">
-			' . $this->v_utils->v_form_textarea('quizusercomment', ['placeholder' => $this->translationHelper->s('quizusercomment'), 'nolabel' => true]) . '
-		</div>';
+		return '<div id="quizcomment"> ' . $this->v_utils->v_form_textarea('quizusercomment', [
+			'placeholder' => $this->translator->trans('quizusercomment'),
+			'nolabel' => true
+		]) . '</div>';
 	}
 
-	public function questionForm()
+	public function questionForm(): string
 	{
 		return
 			$this->v_utils->v_form_textarea('text') .
@@ -199,7 +202,7 @@ class QuizView extends View
 			$this->v_utils->v_form_text('wikilink');
 	}
 
-	public function answerForm()
+	public function answerForm(): string
 	{
 		return
 			$this->v_utils->v_form_textarea('text') .
@@ -223,7 +226,7 @@ class QuizView extends View
 		return $this->menu($menu);
 	}
 
-	public function quizForm()
+	public function quizForm(): string
 	{
 		return $this->v_utils->v_quickform('Neues Quiz', [
 			$this->v_utils->v_form_text('name'),
@@ -233,7 +236,7 @@ class QuizView extends View
 		]);
 	}
 
-	public function quizQuestion($question, $answers)
+	public function quizQuestion(array $question, array $answers): string
 	{
 		$out = '
 				<div style="float:right;width:150px;margin-left:50px;margin-bottom:10px;" id="countdown"></div>
@@ -279,7 +282,7 @@ class QuizView extends View
 			</table>';
 	}
 
-	public function pause()
+	public function pause(): string
 	{
 		$msg = '';
 		if (isset($_GET['timefail'])) {
@@ -287,12 +290,12 @@ class QuizView extends View
 		}
 
 		return $msg . '
-		<p style="text-align:center;padding:40px;">
+		<p style="text-align: center; padding: 40px;">
 			<img src="/img/clockloader.gif" />
 		</p>';
 	}
 
-	public function result($explains, $failurePoints, $maxFailurePoints)
+	public function result($explains, $failurePoints, $maxFailurePoints): string
 	{
 		$valid = 'Sorry, diesmal hat es nicht geklappt.';
 		$bg = '#ED563D';
@@ -312,42 +315,50 @@ class QuizView extends View
 			$exp = '';
 
 			foreach ($e['explains'] as $ex) {
-				$right = 'Auch diese Antwort wäre <strong style="color:green;font-weight:bold;">richtig</strong> gewesen!';
+				$right = 'Auch diese Antwort wäre <strong style="color: green; font-weight: bold;">richtig</strong> gewesen!';
 				if ($ex['right'] == 0) {
-					$right = 'Diese Antwort ist <strong style="color:red;font-weight:bold;">nicht richtig</strong>!';
+					$right = 'Diese Antwort ist <strong style="color: red; font-weight: bold;">nicht richtig</strong>!';
 				} elseif ($ex['right'] != 1) {
 					$right = 'Diese Antwort wurde nicht gewertet.';
 				}
 				$exp .= $this->v_utils->v_input_wrapper(
 					$right,
-					'<div style="margin:10px 0;">' . $ex['text'] . '</div>' .
-					'<div class="ui-state-highlight ui-corner-all" style="padding:15px"><p><strong>Erklärung:</strong> ' . $ex['explanation'] . '</p></div>'
+					'<div style="margin: 10px 0;">' . $ex['text'] . '</div>' .
+					'<div class="ui-state-highlight ui-corner-all" style="padding: 15px;">'
+						. '<p><strong>Erklärung:</strong> ' . $ex['explanation'] . '</p>' .
+					'</div>'
 				);
 			}
 
 			$out .= '
-				 <h3><strong>Frage ' . (int)$e['number'] . ' ' . (100 - $e['percent']) . ' % richtig</strong> - ' . $e['userfp'] . '/' . $e['fp'] . ' Fehlerpunkten</h3>
-				 <div style="background-color:#FFFFFF;">
-				 	<p style="font-style:italic;padding:15px;">&bdquo;' . ($e['text']) . '&ldquo;</p>
-				 	' . $exp . '
-				 </div>';
+				<h3><strong>Frage ' . (int)$e['number'] . ' ' . (100 - $e['percent']) . ' % richtig</strong> - ' . $e['userfp'] . '/' . $e['fp'] . ' Fehlerpunkten</h3>
+				<div style="background-color:#FFFFFF;">
+					<p style="font-style:italic;padding:15px;">&bdquo;' . ($e['text']) . '&ldquo;</p>
+					' . $exp . '
+				</div>';
 		}
 		$out .= '
 		</div>
-		<p style="text-align:center;">';
+		<p style="text-align: center;">';
 
 		if ($failurePoints < $maxFailurePoints) {
 			switch ($this->session->get('quiz-id')) {
 				case Role::FOODSAVER:
-					$out .= '<a href="/?page=settings&sub=upgrade/up_fs" class="button">Jetzt die Foodsaver-Anmeldung abschließen.</a>';
+					$out .= '<a href="/?page=settings&sub=upgrade/up_fs" class="button">'
+						. 'Jetzt die Foodsaver-Anmeldung abschließen.' .
+					'</a>';
 					break;
 
 				case Role::STORE_MANAGER:
-					$out .= '<a href="/?page=settings&sub=upgrade/up_bip" class="button">Jetzt die Betriebsverantwortlichenanmeldung abschließen.</a>';
+					$out .= '<a href="/?page=settings&sub=upgrade/up_bip" class="button">'
+						. 'Jetzt die Betriebsverantwortlichenanmeldung abschließen.' .
+					'</a>';
 					break;
 
 				case Role::AMBASSADOR:
-					$out .= '<a href="/?page=settings&sub=upgrade/up_bot" class="button">Jetzt die Botschafteranmeldung abschließen.</a>';
+					$out .= '<a href="/?page=settings&sub=upgrade/up_bot" class="button">'
+						. 'Jetzt die Botschafteranmeldung abschließen.'
+					. '</a>';
 					break;
 
 				default:
@@ -366,7 +377,7 @@ class QuizView extends View
 		return '<h1>' . $page['title'] . '</h1>' . $page['body'];
 	}
 
-	public function listQuestions($questions, $quiz_id)
+	public function listQuestions($questions, $quiz_id): string
 	{
 		if (is_array($questions)) {
 			$this->pageHelper->addJs('
@@ -375,34 +386,36 @@ class QuizView extends View
 					animate: 200,
 					collapsible: true,
 					autoHeight: false,
-    				active: false
+					active: false
 				});
-				setTimeout(function(){
-					$("#questions").css("opacity",1);
-				},500);');
+				setTimeout(function () {
+					$("#questions").css("opacity", 1);
+				}, 500);');
 			$out = '
 			<div id="questions">';
 			foreach ($questions as $q) {
 				$answers = '<ul class="answers" id="answerlist-' . $q['id'] . '">';
 				if (is_array($q['answers'])) {
 					foreach ($q['answers'] as $k => $a) {
-						$answers .= '<li class="right-' . $a['right'] . '" id="answer-' . $a['id'] . '">' . $a['text'] . ' <span class="explanation"><strong>Erklärung: </strong>' . $a['explanation'] . '</span> <a class="dellink" href="#" onclick="if(confirm(\'Antwort wirklich löschen?\')){ajreq(\'delanswer\',{id:' . (int)$a['id'] . '});}return false;">[löschen]</a> <a class="dellink" href="#" onclick="ajreq(\'editanswer\',{id:' . (int)$a['id'] . '});return false;">[bearbeiten]</a></li>';
+						$answers .= '<li class="right-' . $a['right'] . '" id="answer-' . $a['id'] . '">'
+							. $a['text']
+							. ' <span class="explanation"><strong>Erklärung: </strong>' . $a['explanation'] . '</span>'
+							. ' <a class="dellink" href="#" onclick="if(confirm(\'Antwort wirklich löschen?\')){ajreq(\'delanswer\',{id:' . (int)$a['id'] . '});}return false;">[löschen]</a>'
+							. ' <a class="dellink" href="#" onclick="ajreq(\'editanswer\',{id:' . (int)$a['id'] . '});return false;">[bearbeiten]</a>'
+						. '</li>';
 					}
 				}
 				$answers .= '</ul>';
 				$out .= '
-				 <h3 class="question-' . $q['id'] . '"><strong>#' . (int)$q['id'] . ' </strong> - <span class="teaser">' . $this->sanitizerService->tt($q['text'], 50) . ' ' . (int)$q['comment_count'] . ' Kommentare</span></h3>
-				 <div class="question-' . $q['id'] . '">
+				<h3 class="question-' . $q['id'] . '"><strong>#' . (int)$q['id'] . ' </strong> - <span class="teaser">' . $this->sanitizerService->tt($q['text'], 50) . ' ' . (int)$q['comment_count'] . ' Kommentare</span></h3>
+				<div class="question-' . $q['id'] . '">
 					' . $this->v_utils->v_input_wrapper('Frage', $q['text'] . '
 					<p><strong>' . $q['fp'] . ' Fehlerpunkte, ' . $q['duration'] . ' Sekunden zum Antworten</strong></p>
 					<p style="margin-top:15px;">
 						<a href="#" class="button" onclick="ajreq(\'addanswer\',{qid:' . (int)$q['id'] . '});return false;">Antwort hinzufügen</a> <a href="#" class="button" onclick="if(confirm(\'Wirklich die ganze Frage löschen?\')){ajreq(\'delquest\',{id:' . (int)$q['id'] . '});}return false;">Frage komplett löschen</a> <a href="#" class="button" onclick="ajreq(\'editquest\',{id:' . (int)$q['id'] . ',qid:' . (int)$quiz_id . '});return false;">Frage bearbeiten</a> <a class="button" href="/?page=quiz&sub=wall&id=' . (int)$q['id'] . '">Kommentare</a>
 					</p>') . '
-
 					' . $this->v_utils->v_input_wrapper('Antworten', $answers) . '
-
-
-				 </div>';
+				</div>';
 			}
 			$out .= '
 			</div>';
@@ -419,23 +432,30 @@ class QuizView extends View
 			return '';
 		}
 
-		$out = '<ul class="linklist">';
+		$out = '
+<ul class="linklist">';
 		foreach ($answers as $a) {
-			$ampel = 'ampel ampel-gruen';
+			$indicator = 'trafficlight color-success';
 			if ($a['right'] == 0) {
-				$ampel = 'ampel ampel-rot';
+				$indicator = 'trafficlight color-danger';
 			} elseif ($a['right'] == 2) {
-				$ampel = '';
+				$indicator = '';
 			}
 			$out .= '
-			<li>
-			<a href="#" onclick="ajreq(\'editanswer\',{app:\'quiz\',id:' . $a['id'] . '});return false;" class="ui-corner-all">
-			<span style="height:35px;overflow:hidden;font-size:11px;"><strong class="' . $ampel . '" style="float:right;margin:0 0 0 3px;"><span>&nbsp;</span></strong>' . $this->sanitizerService->tt($a['text'], 60) . '</span>
+	<li>
+		<a href="#" onclick="ajreq(\'editanswer\',{app:\'quiz\',id:' . $a['id'] . '});return false;" class="ui-corner-all">
+			<span style="height: 35px; overflow: hidden; font-size: 11px;">'
+			. '<strong class="' . $indicator . '" style="float: right; margin: 0 0 0 3px;">'
+				. '<span>&nbsp;</span>'
+			. '</strong>'
+			. $this->sanitizerService->tt($a['text'], 60) .
+			'</span>
 			<span style="clear:both;"></span>
-			</a>
-			</li>';
+		</a>
+	</li>';
 		}
-		$out .= '</ul>';
+		$out .= '
+</ul>';
 
 		return $this->v_utils->v_field($out, 'Antwortmöglichkeiten');
 	}

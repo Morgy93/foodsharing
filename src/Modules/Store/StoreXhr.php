@@ -8,15 +8,16 @@ use Foodsharing\Lib\Xhr\XhrDialog;
 use Foodsharing\Lib\Xhr\XhrResponses;
 use Foodsharing\Modules\Core\Control;
 use Foodsharing\Modules\Core\DBConstants\Region\Type;
+use Foodsharing\Modules\Core\DBConstants\Store\StoreLogAction;
 use Foodsharing\Permissions\StorePermissions;
-use Foodsharing\Services\SanitizerService;
-use Foodsharing\Services\StoreService;
+use Foodsharing\Utility\Sanitizer;
 
 class StoreXhr extends Control
 {
+	private $storeModel;
 	private $storeGateway;
 	private $storePermissions;
-	private $storeService;
+	private $storeTransactions;
 	private $sanitizerService;
 
 	public function __construct(
@@ -24,14 +25,14 @@ class StoreXhr extends Control
 		StoreView $view,
 		StoreGateway $storeGateway,
 		StorePermissions $storePermissions,
-		StoreService $storeService,
-		SanitizerService $sanitizerService
+		StoreTransactions $storeTransactions,
+		Sanitizer $sanitizerService
 	) {
-		$this->model = $model;
+		$this->storeModel = $model;
 		$this->view = $view;
 		$this->storeGateway = $storeGateway;
 		$this->storePermissions = $storePermissions;
-		$this->storeService = $storeService;
+		$this->storeTransactions = $storeTransactions;
 		$this->sanitizerService = $sanitizerService;
 
 		parent::__construct();
@@ -55,7 +56,7 @@ class StoreXhr extends Control
 				$fetchercount = 8;
 			}
 
-			if ($this->storeService->changePickupSlots($storeId, Carbon::createFromTimeString($time), $fetchercount)) {
+			if ($this->storeTransactions->changePickupSlots($storeId, Carbon::createFromTimeString($time), $fetchercount)) {
 				$this->flashMessageHelper->info('Abholtermin wurde eingetragen!');
 
 				return [
@@ -64,121 +65,6 @@ class StoreXhr extends Control
 				];
 			}
 		}
-	}
-
-	public function getfetchhistory()
-	{
-		$storeId = (int)$_GET['bid'];
-
-		if (!$this->storePermissions->maySeeFetchHistory($storeId)) {
-			return XhrResponses::PERMISSION_DENIED;
-		}
-
-		if ($history = $this->storeGateway->getFetchHistory($storeId, $_GET['from'], $_GET['to'])) {
-			return [
-				'status' => 1,
-				'script' => '
-				$("daterange_from").datepicker("close");
-				$("daterange_to").datepicker("close");
-				$("#daterange_content").html(\'' . $this->sanitizerService->jsSafe($this->view->fetchlist($history)) . '\');
-					'
-			];
-		}
-	}
-
-	public function fetchhistory()
-	{
-		$storeId = (int)$_GET['bid'];
-
-		if (!$this->storePermissions->maySeeFetchHistory($storeId)) {
-			return XhrResponses::PERMISSION_DENIED;
-		}
-
-		$dia = new XhrDialog();
-		$dia->setTitle('Abholungshistorie');
-
-		$id = 'daterange';
-
-		$dia->addContent($this->view->fetchHistory());
-
-		$dia->addJsAfter('
-
-				$( "#' . $id . '_from" ).datepicker({
-					changeMonth: true,
-					maxDate: "0",
-
-					onClose: function( selectedDate ) {
-						$( "#' . $id . '_to" ).datepicker( "option", "minDate", selectedDate );
-					}
-				});
-				$( "#' . $id . '_to" ).datepicker({
-					changeMonth: true,
-					maxDate: "0",
-					autoOpen: true,
-					onClose: function( selectedDate ) {
-						$( "#' . $id . '_from" ).datepicker( "option", "maxDate", selectedDate );
-					}
-				});
-
-				$( "#' . $id . '_to" ).val(new Date(Date.now()).toLocaleDateString("de-DE", {year: "numeric", month: "2-digit", day: "2-digit", }));
-				$( "#' . $id . '_from" ).datepicker("show");
-
-
-				$(window).on("resize", function(){
-					$("#' . $dia->getId() . '").dialog("option",{
-						height:($(window).height()-40)
-					});
-				});
-
-				$("#daterange_submit").on("click", function(ev){
-					ev.preventDefault();
-
-					var date = $( "#' . $id . '_from" ).datepicker("getDate");
-
-					var from = "";
-					var to = "";
-
-					if(date !== null)
-					{
-						from = date.getFullYear() + "-" + preZero((date.getMonth()+1)) + "-" + preZero(date.getDate());
-						date = $( "#' . $id . '_to" ).datepicker("getDate");
-
-						if(date === null)
-						{
-							to = from;
-						}
-						else
-						{
-							to = date.getFullYear() + "-" + preZero((date.getMonth()+1)) + "-" + preZero(date.getDate());
-
-							var now = new Date();
-							if(date.toDateString() == now.toDateString()) {
-								to = to + " " + preZero(now.getHours()) + ":" + preZero(now.getMinutes()) + ":59"
-							} else {
-								to = to + " " + "23:59:59"
-							}
-						}
-
-						ajreq("getfetchhistory",{app:"betrieb",from:from,to:to,bid:' . $storeId . '});
-					}
-					else
-					{
-						alert("Du musst erst ein Datum ausw&auml;hlen ;)");
-					}
-				});
-
-		');
-
-		if ($this->session->isMob()) {
-			$dia->addOpt('width', '95%');
-		} else {
-			$dia->addOpt('width', '40%');
-		}
-
-		$dia->addOpt('height', '($(window).height()-40)', false);
-		$dia->noOverflow();
-
-		return $dia->xhrout();
 	}
 
 	public function adddate()
@@ -252,7 +138,7 @@ class StoreXhr extends Control
 				$ids[] = (int)$b['betrieb_id'];
 			}
 			if (!empty($ids)) {
-				if ($betriebe = $this->model->q('SELECT id,name,bezirk_id,str,hsnr FROM fs_betrieb WHERE id IN(' . implode(',', $ids) . ') AND ( bezirk_id = 0 OR bezirk_id IS NULL)')) {
+				if ($betriebe = $this->storeModel->q('SELECT id,name,bezirk_id,str,hsnr FROM fs_betrieb WHERE id IN(' . implode(',', $ids) . ') AND ( bezirk_id = 0 OR bezirk_id IS NULL)')) {
 					$dia = new XhrDialog();
 
 					$dia->setTitle('Fehlende Zuordnung');
@@ -263,7 +149,7 @@ class StoreXhr extends Control
 					$bezirks = $this->session->getRegions();
 
 					foreach ($bezirks as $key => $b) {
-						if (!in_array($b['type'], [Type::CITY, Type::DISTRICT, Type::REGION, Type::PART_OF_TOWN])) {
+						if (!Type::isAccessibleRegion($b['type'])) {
 							unset($bezirks[$key]);
 						}
 					}
@@ -311,7 +197,7 @@ class StoreXhr extends Control
 						});
 					');
 					$dia->addContent($cnt);
-					$dia->addContent($this->v_utils->v_input_wrapper(false, '<a class="button" id="savebetriebetoselect" href="#">' . $this->translationHelper->s('save') . '</a>'));
+					$dia->addContent($this->v_utils->v_input_wrapper('', '<a class="button" id="savebetriebetoselect" href="#">' . $this->translator->trans('button.save') . '</a>'));
 
 					return $dia->xhrout();
 				}
@@ -324,12 +210,13 @@ class StoreXhr extends Control
 		$xhr = new Xhr();
 		$status = $this->storeGateway->getUserTeamStatus($this->session->id(), $_GET['id']);
 		if ($status === TeamStatus::Coordinator) {
-			$xhr->addMessage($this->translationHelper->s('signout_error_admin'), 'error');
+			$xhr->addMessage($this->translator->trans('storeedit.team.cannot-leave'), 'error');
 		} elseif ($status >= TeamStatus::Applied) {
-			$this->model->signout($_GET['id'], $this->session->id());
+			$this->storeModel->signout($_GET['id'], $this->session->id());
+			$this->storeGateway->addStoreLog($_GET['id'], $this->session->id(), null, null, StoreLogAction::LEFT_STORE);
 			$xhr->addScript('goTo("/?page=relogin&url=" + encodeURIComponent("/?page=dashboard") );');
 		} else {
-			$xhr->addMessage($this->translationHelper->s('no_member'), 'error');
+			$xhr->addMessage($this->translator->trans('store.not-in-team'), 'error');
 		}
 		$xhr->send();
 	}
@@ -345,7 +232,7 @@ class StoreXhr extends Control
 
 		return [
 				'status' => 1,
-				'script' => 'pulseError("' . $this->translationHelper->s('store_error') . '");',
+				'script' => 'pulseError("' . $this->translator->trans('store.error') . '");',
 		];
 	}
 
@@ -358,12 +245,12 @@ class StoreXhr extends Control
 		$dia->setTitle($store['name']);
 		$dia->addContent($this->view->bubble($store));
 		if (($store['inTeam']) || $this->session->isOrgaTeam()) {
-			$dia->addButton($this->translationHelper->s('to_team_page'), 'goTo(\'/?page=fsbetrieb&id=' . (int)$store['id'] . '\');');
+			$dia->addButton($this->translator->trans('store.go'), 'goTo(\'/?page=fsbetrieb&id=' . (int)$store['id'] . '\');');
 		}
 		if ($store['team_status'] != 0 && (!$store['inTeam'] && (!$store['pendingRequest']))) {
-			$dia->addButton($this->translationHelper->s('want_to_fetch'), 'betriebRequest(' . (int)$store['id'] . ');return false;');
+			$dia->addButton($this->translator->trans('store.request.request'), 'betriebRequest(' . (int)$store['id'] . ');return false;');
 		} elseif ($store['team_status'] != 0 && (!$store['inTeam'] && ($store['pendingRequest']))) {
-			$dia->addButton($this->translationHelper->s('withdraw_application'), 'rejectBetriebRequest(' . (int)$this->session->id() . ',' . (int)$store['id'] . ');return false;');
+			$dia->addButton($this->translator->trans('store.request.withdraw'), 'withdrawStoreRequest(' . (int)$this->session->id() . ',' . (int)$store['id'] . ');return false;');
 		}
 		$modal = false;
 		if (isset($_GET['modal'])) {

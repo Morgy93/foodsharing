@@ -3,11 +3,12 @@
 
 const urls = {
   profile: (id) => `/profile/${id}`,
-  forum: (regionId, isAmb = false, topicId = null, postId = null) => {
+  forum: (regionId, subforumId = 0, topicId = null, postId = null, newThread = false) => {
     return (`/?page=bezirk&bid=${regionId}` +
-      `&sub=${isAmb ? 'botforum' : 'forum'}` +
+      `&sub=${(subforumId === 1) ? 'botforum' : 'forum'}` +
       (topicId === null ? '' : `&tid=${topicId}`) +
-      (postId === null ? '' : `&pid=${postId}#tpost-${postId}`)
+      (postId === null ? '' : `&pid=${postId}#post-${postId}`) +
+      (newThread ? '&newthread=1' : '')
     )
   },
   academy: () => '/?page=content&sub=academy',
@@ -29,15 +30,14 @@ const urls = {
   event: (eventId) => `/?page=event&id=${eventId}`,
   events: (regionId) => `/?page=bezirk&bid=${regionId}&sub=events`,
   fairteiler: (regionId) => `/?page=bezirk&bid=${regionId}&sub=fairteiler`,
-  faq: () => '/faq',
-  faqEdit: () => '/?page=faq',
+  support: () => 'https://foodsharing.freshdesk.com/support/home',
   festival: () => '/?page=content&sub=festival',
   foodsaverList: (regionId) => `/?page=foodsaver&bid=${regionId}`,
   foodsharepoint: (regionId, fspId) => `?page=fairteiler&sub=ft&bid=${regionId}&id=${fspId}`,
   foodsharepoints: (regionId) => `/?page=bezirk&bid=${regionId}&sub=fairteiler`,
   fsstaedte: () => '/?page=content&sub=fsstaedte',
   grundsaetze: () => 'https://wiki.foodsharing.de/Grundsätze',
-  guide: () => '/ratgeber',
+  guide: () => 'https://wiki.foodsharing.de/Hygiene-Ratgeber_f%C3%BCr_Lebensmittel',
   home: () => '/',
   imprint: () => '/impressum',
   infos: () => '/?page=content&sub=infohub',
@@ -55,6 +55,10 @@ const urls = {
   mission: () => '/ueber-uns',
   partner: () => '/partner',
   passports: (regionId) => `/?page=passgen&bid=${regionId}`,
+  passwordReset: () => '/?page=login&sub=passwordReset',
+  poll: (pollId) => `/?page=poll&id=${pollId}`,
+  pollNew: (regionId) => `/?page=poll&bid=${regionId}&sub=new`,
+  polls: (regionId) => `/?page=bezirk&bid=${regionId}&sub=polls`,
   press: () => '/?page=content&sub=presse',
   quizEdit: () => '/?page=quiz',
   region: () => '/?page=region',
@@ -63,7 +67,7 @@ const urls = {
   settings: () => '/?page=settings',
   statistic: (regionId) => `/?page=bezirk&bid=${regionId}&sub=statistic`,
   statistics: () => '/statistik',
-  store: (storeId) => `/?page=betrieb&id=${storeId}`,
+  store: (storeId) => `/?page=fsbetrieb&id=${storeId}`,
   storeAdd: (regionId = null) => regionId ? `/?page=betrieb&a=new&bid=${regionId}` : '/?page=betrieb&a=new',
   storeList: () => '/?page=fsbetrieb',
   stores: (regionId) => `/?page=betrieb&bid=${regionId}`,
@@ -74,7 +78,8 @@ const urls = {
   wiki: () => 'https://wiki.foodsharing.de/',
   workingGroupEdit: (groupId) => `/?page=groups&sub=edit&id=${groupId}`,
   workingGroups: (regionId = null) => regionId ? `/?page=groups&p=${regionId}` : '/?page=groups',
-  workshops: () => '/?page=content&sub=workshops'
+  workshops: () => '/?page=content&sub=workshops',
+  urlencode: (url) => encodeURIComponent(`${url}`)
 }
 
 const url = (key, ...params) => {

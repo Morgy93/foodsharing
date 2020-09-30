@@ -2,10 +2,10 @@
 
 namespace Foodsharing\Controller;
 
-use Foodsharing\Helpers\EmailHelper;
 use Foodsharing\Lib\Session;
 use Foodsharing\Modules\Email\EmailGateway;
 use Foodsharing\Permissions\NewsletterEmailPermissions;
+use Foodsharing\Utility\EmailHelper;
 use FOS\RestBundle\Controller\AbstractFOSRestController;
 use FOS\RestBundle\Controller\Annotations as Rest;
 use FOS\RestBundle\Request\ParamFetcher;
@@ -17,10 +17,10 @@ use Symfony\Component\HttpKernel\Exception\HttpException;
  */
 final class NewsletterRestController extends AbstractFOSRestController
 {
-	private $emailGateway;
-	private $newsletterEmailPermissions;
-	private $session;
-	private $emailHelper;
+	private EmailGateway $emailGateway;
+	private NewsletterEmailPermissions $newsletterEmailPermissions;
+	private Session $session;
+	private EmailHelper $emailHelper;
 
 	private const NOT_ALLOWED = 'not allowed';
 	private const INVALID_ADDRESS = 'invalid address';

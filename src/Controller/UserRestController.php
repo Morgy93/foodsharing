@@ -2,31 +2,41 @@
 
 namespace Foodsharing\Controller;
 
-use Foodsharing\Helpers\EmailHelper;
+use Carbon\Carbon;
 use Foodsharing\Lib\Session;
+use Foodsharing\Modules\Core\DBConstants\Foodsaver\Gender;
 use Foodsharing\Modules\Foodsaver\FoodsaverGateway;
 use Foodsharing\Modules\Login\LoginGateway;
 use Foodsharing\Modules\Profile\ProfileGateway;
+use Foodsharing\Modules\Register\DTO\RegisterData;
+use Foodsharing\Modules\Register\RegisterTransactions;
 use Foodsharing\Permissions\ProfilePermissions;
 use Foodsharing\Permissions\ReportPermissions;
 use Foodsharing\Permissions\UserPermissions;
+use Foodsharing\Utility\EmailHelper;
 use FOS\RestBundle\Controller\AbstractFOSRestController;
 use FOS\RestBundle\Controller\Annotations as Rest;
 use FOS\RestBundle\Request\ParamFetcher;
 use Mobile_Detect;
+use Swagger\Annotations as SWG;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\Exception\HttpException;
 
 class UserRestController extends AbstractFOSRestController
 {
-	private $session;
-	private $loginGateway;
-	private $foodsaverGateway;
-	private $profileGateway;
-	private $reportPermissions;
-	private $userPermissions;
-	private $profilePermissions;
-	private $emailHelper;
+	private Session $session;
+	private LoginGateway $loginGateway;
+	private FoodsaverGateway $foodsaverGateway;
+	private ProfileGateway $profileGateway;
+	private ReportPermissions $reportPermissions;
+	private UserPermissions $userPermissions;
+	private ProfilePermissions $profilePermissions;
+	private EmailHelper $emailHelper;
+	private RegisterTransactions $registerTransactions;
+
+	private const MIN_RATING_MESSAGE_LENGTH = 100;
+	private const MIN_PASSWORD_LENGTH = 8;
+	private const MIN_AGE_YEARS = 18;
 
 	public function __construct(
 		Session $session,
@@ -36,8 +46,9 @@ class UserRestController extends AbstractFOSRestController
 		ReportPermissions $reportPermissions,
 		UserPermissions $userPermissions,
 		ProfilePermissions $profilePermissions,
-		EmailHelper $emailHelper)
-	{
+		EmailHelper $emailHelper,
+		RegisterTransactions $registerTransactions
+	) {
 		$this->session = $session;
 		$this->loginGateway = $loginGateway;
 		$this->foodsaverGateway = $foodsaverGateway;
@@ -46,6 +57,7 @@ class UserRestController extends AbstractFOSRestController
 		$this->userPermissions = $userPermissions;
 		$this->profilePermissions = $profilePermissions;
 		$this->emailHelper = $emailHelper;
+		$this->registerTransactions = $registerTransactions;
 	}
 
 	/**
@@ -178,6 +190,71 @@ class UserRestController extends AbstractFOSRestController
 		], 200));
 	}
 
+	/**
+	 * Registers a new user.
+	 *
+	 * @Rest\Post("user")
+	 * @Rest\RequestParam(name="firstname", nullable=false)
+	 * @Rest\RequestParam(name="lastname", nullable=false)
+	 * @Rest\RequestParam(name="email", nullable=false)
+	 * @Rest\RequestParam(name="password", nullable=false)
+	 * @Rest\RequestParam(name="gender", nullable=false, requirements="\d+")
+	 * @Rest\RequestParam(name="birthdate", nullable=false)
+	 * @Rest\RequestParam(name="mobilePhone", nullable=true)
+	 * @Rest\RequestParam(name="subscribeNewsletter", requirements="(0|1)", default=0)
+	 */
+	public function registerUserAction(ParamFetcher $paramFetcher): Response
+	{
+		// validate data
+		$data = new RegisterData();
+		$data->firstName = trim(strip_tags($paramFetcher->get('firstname')));
+		$data->lastName = trim(strip_tags($paramFetcher->get('lastname')));
+		if (empty($data->firstName) || empty($data->lastName)) {
+			throw new HttpException(400, 'names must not be empty');
+		}
+
+		$data->email = trim($paramFetcher->get('email'));
+		if (empty($data->email) || !$this->emailHelper->validEmail($data->email)
+			|| !$this->isEmailValidForRegistration($data->email)) {
+			throw new HttpException(400, 'email is not valid or already used');
+		}
+
+		$data->password = trim($paramFetcher->get('password'));
+		if (strlen($data->password) < self::MIN_PASSWORD_LENGTH) {
+			throw new HttpException(400, 'password is too short');
+		}
+
+		$data->gender = (int)$paramFetcher->get('gender');
+		if (!Gender::isValid($data->gender)) {
+			$data->gender = Gender::NOT_SELECTED;
+		}
+
+		$birthdate = Carbon::createFromFormat('Y-m-d', $paramFetcher->get('birthdate'));
+		if (empty($birthdate)) {
+			throw new HttpException(400, 'invalid birthdate');
+		}
+		$minBirthdate = Carbon::today()->subYears(self::MIN_AGE_YEARS);
+		if ($birthdate > $minBirthdate) {
+			throw new HttpException(400, 'you are not old enough');
+		}
+		$data->birthday = $birthdate;
+
+		$data->mobilePhone = strip_tags($paramFetcher->get('mobilePhone') ?? '');
+		$data->subscribeNewsletter = (int)$paramFetcher->get('subscribeNewsletter') == 1;
+
+		try {
+			// register user and send out registration email
+			$id = $this->registerTransactions->registerUser($data);
+
+			// return the created user
+			$user = RestNormalization::normalizeUser($this->foodsaverGateway->getFoodsaverBasics($id));
+
+			return $this->handleView($this->view($user, 200));
+		} catch (\Exception $e) {
+			throw new HttpException(500, 'could not register user');
+		}
+	}
+
 	private function isEmailValidForRegistration(string $email): bool
 	{
 		return !$this->emailHelper->isFoodsharingEmailAddress($email)
@@ -189,7 +266,7 @@ class UserRestController extends AbstractFOSRestController
 	 */
 	public function deleteUserAction(int $userId): Response
 	{
-		if ($userId !== $this->session->id() && !$this->profilePermissions->mayDeleteUser()) {
+		if (!$this->profilePermissions->mayDeleteUser($userId)) {
 			throw new HttpException(403);
 		}
 
@@ -199,6 +276,48 @@ class UserRestController extends AbstractFOSRestController
 		$this->foodsaverGateway->deleteFoodsaver($userId);
 
 		return $this->handleView($this->view());
+	}
+
+	/**
+	 * Gives a banana to a user.
+	 *
+	 * @SWG\Parameter(name="userId", in="path", type="integer", description="to which user to give the banana")
+	 * @SWG\Parameter(name="message", in="body", type="string", description="message to the user")
+	 * @SWG\Response(response="200", description="Success.")
+	 * @SWG\Response(response="400", description="Accompanying message is too short.")
+	 * @SWG\Response(response="403", description="Insufficient permissions to rate that user.")
+	 * @SWG\Response(response="404", description="User to rate does not exist.")
+	 * @SWG\Tag(name="user")
+	 *
+	 * @Rest\Put("user/{userId}/banana", requirements={"userId" = "\d+"})
+	 * @Rest\RequestParam(name="message", nullable=false)
+	 */
+	public function addBanana(int $userId, ParamFetcher $paramFetcher): Response
+	{
+		// make sure that users may not give themselves bananas
+		if (!$this->session->may() || $this->session->id() === $userId) {
+			throw new HttpException(403);
+		}
+
+		// check if the user exists
+		if (!$this->foodsaverGateway->foodsaverExists($userId)) {
+			throw new HttpException(404);
+		}
+
+		// do not allow giving bananas twice
+		if ($this->profileGateway->hasGivenBanana($this->session->id(), $userId)) {
+			throw new HttpException(403);
+		}
+
+		// check length of message
+		$message = trim($paramFetcher->get('message'));
+		if (strlen($message) < self::MIN_RATING_MESSAGE_LENGTH) {
+			throw new HttpException(400, 'text too short: ' . strlen($message) . ' < ' . self::MIN_RATING_MESSAGE_LENGTH);
+		}
+
+		$this->profileGateway->giveBanana($userId, $message, $this->session->id());
+
+		return $this->handleView($this->view([], 200));
 	}
 
 	private function handleUserView(): Response

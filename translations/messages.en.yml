@@ -41,6 +41,9 @@ group:
   really_quit_name: Do you really want to quit the group %name%?
   delete_group_sure: Do you really want to delete the group {groupName}?
 
+settings:
+  header: Your data and settings
+
 menu:
   manage_regions: Manage regions
   blog: Manage blog content
@@ -48,7 +51,6 @@ menu:
   reports: Violation reports
   email: Newsletter tool
   manage_mailboxes: Manage mailboxes
-  faq: Manage FAQ
   content: Manage content
   entry:
     activities: Activities
@@ -93,7 +95,7 @@ menu:
     team: Team
     partners: Partner
     background: Background
-    faq: F.A.Q.
+    support: Help & Support
     wiki: Wiki
     guide: Guide
     statistics: Statistics
@@ -104,4 +106,13 @@ menu:
     fs: Foodsaver
     ids: Passports
     joinregion: Join a region
-  your_settings: Your data and settings
+
+profile:
+  banana:
+    by: ' by '
+    sent: The banana was sent!
+    messageTooShort: The text message accompanying your banana should be at least 100 characters long.
+
+test:
+  plain: This is a nice translation
+  vars: 'My name is {NAME} and I am {AGE} years old'

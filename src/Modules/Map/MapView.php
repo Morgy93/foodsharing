@@ -11,11 +11,11 @@ class MapView extends View
 		$this->pageHelper->addHidden('
 			<div id="b_content" class="loading">
 				<div class="inner">
-					' . $this->v_utils->v_input_wrapper($this->translationHelper->s('status'), 'Betrieb spendet', 'bcntstatus') . '
-					' . $this->v_utils->v_input_wrapper('Verantwortliche Foodsaver', '...', 'bcntverantwortlich') . '
-					' . $this->v_utils->v_input_wrapper($this->translationHelper->s('specials'), '...', 'bcntspecial') . '
+					' . $this->v_utils->v_input_wrapper($this->translator->trans('status'), 'Betrieb spendet', 'bcntstatus') . '
+					' . $this->v_utils->v_input_wrapper($this->translator->trans('storeview.managers'), '...', 'bcntverantwortlich') . '
+					' . $this->v_utils->v_input_wrapper($this->translator->trans('specials'), '...', 'bcntspecial') . '
 				</div>
-				<input type="hidden" class="fetchbtn" name="fetchbtn" value="' . $this->translationHelper->s('want_to_fetch') . '" />
+				<input type="hidden" class="fetchbtn" name="fetchbtn" value="' . $this->translator->trans('storeview.want_to_fetch') . '" />
 			</div>
 		');
 
@@ -45,7 +45,7 @@ class MapView extends View
 							<ul class="linklist">
 								<li><a name="baskets" class="ui-corner-all baskets"><span class="fa-stack fa-lg" style="color: #72B026"><i class="fas fa-circle fa-stack-2x"></i><i class="fas fa-shopping-basket fa-stack-1x fa-inverse"></i></span><span>Essenskörbe</span></a></li>
 								' . $betriebe . '
-								<li><a name="fairteiler" class="ui-corner-all fairteiler"><span class="fa-stack fa-lg" style="color: #FFCA92"><i class="fas fa-circle fa-stack-2x"></i><i class="fas fa-recycle fa-stack-1x fa-inverse"></i></span><span>Fair-Teiler</span></a></li>
+								<li><a name="fairteiler" class="ui-corner-all fairteiler"><span class="fa-stack fa-lg" style="color: #FFCA92"><i class="fas fa-circle fa-stack-2x"></i><i class="fas fa-recycle fa-stack-1x fa-inverse"></i></span><span>Fairteiler</span></a></li>
 							</ul>
 						</div>
 					</div>

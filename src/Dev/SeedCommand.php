@@ -8,6 +8,9 @@ use Codeception\Lib\Di;
 use Codeception\Lib\ModuleContainer;
 use Foodsharing\Modules\Core\DBConstants\Region\RegionIDs;
 use Foodsharing\Modules\Core\DBConstants\Region\Type;
+use Foodsharing\Modules\Core\DBConstants\Region\WorkgroupFunction;
+use Foodsharing\Modules\Core\DBConstants\Voting\VotingScope;
+use Foodsharing\Modules\Core\DBConstants\Voting\VotingType;
 use Foodsharing\Modules\WorkGroup\WorkGroupGateway;
 use Helper\Foodsharing;
 use Symfony\Component\Console\Command\Command;
@@ -46,9 +49,10 @@ class SeedCommand extends Command implements CustomCommandInterface
 		return 'foodsharing:seed';
 	}
 
-	public function getDescription()
+	protected function configure(): void
 	{
-		return 'seed the dev db';
+		$this->setDescription('Seed the dev db.');
+		$this->setHelp('This commands adds seed data to the database. The general rule is that before running this command, you have a working instance of foodsharing without customized data (e.g. missing regions, quizzes, ...) but already including all the data that is directly used in the code (so you will not get any internal server errors). The future goal is, to make the code as much independent of data as possible and move all data you may want to playing around into the seed.');
 	}
 
 	protected function execute(InputInterface $input, OutputInterface $output)
@@ -69,6 +73,8 @@ class SeedCommand extends Command implements CustomCommandInterface
 		$this->seed();
 
 		$this->output->writeln('All done!');
+
+		return 0;
 	}
 
 	protected function getRandomIDOfArray(array $value, $number = 1)
@@ -107,13 +113,23 @@ class SeedCommand extends Command implements CustomCommandInterface
 	protected function seed()
 	{
 		$I = $this->helper;
-		$region1 = '241'; // this is called 'Göttingen'
+		$I->_getDbh()->beginTransaction();
+		$I->_getDriver()->executeQuery('SET FOREIGN_KEY_CHECKS=0;', []);
+		$regionOne = $I->createRegion('Göttingen');
+		$region1 = $regionOne['id'];
+		$regionTwo = $I->createRegion('Entenhausen');
+		$region2 = $regionTwo['id'];
+		$regionOneWorkGroup = $I->createWorkingGroup('Schnippelparty Göttingen', ['parent_id' => $regionOne['id']]);
 		$region_vorstand = RegionIDs::TEAM_BOARD_MEMBER;
 		$ag_aktive = RegionIDs::TEAM_ADMINISTRATION_MEMBER;
 		$ag_testimonials = RegionIDs::TEAM_BOARD_MEMBER;
 		$ag_quiz = RegionIDs::QUIZ_AND_REGISTRATION_WORK_GROUP;
+		$ag_startpage = RegionIDs::PR_START_PAGE;
+		$ag_partnerandteam = RegionIDs::PR_PARTNER_AND_TEAM_WORK_GROUP;
 		$password = 'user';
-		$region1WorkGroup = '1135'; // workgroup 'Schnippelparty Göttingen' from 'Göttingen'
+		$region1WorkGroup = $regionOneWorkGroup['id']; // workgroup 'Schnippelparty Göttingen' from 'Göttingen'
+
+		$region1Subregion = $I->createRegion('Stadtteil von Göttingen', ['type' => Type::PART_OF_TOWN, 'parent_id' => $region1]);
 
 		// Create users
 		$this->output->writeln('Create basic users:');
@@ -126,6 +142,9 @@ class SeedCommand extends Command implements CustomCommandInterface
 		$userStoreManager = $I->createStoreCoordinator($password, ['email' => 'storemanager1@example.com', 'name' => 'Three', 'bezirk_id' => $region1]);
 		$this->writeUser($userStoreManager, $password, 'store coordinator');
 
+		$userStoreManager2 = $I->createStoreCoordinator($password, ['email' => 'storemanager2@example.com', 'name' => 'Four', 'bezirk_id' => $region1]);
+		$this->writeUser($userStoreManager2, $password, 'store coordinator2');
+
 		$userbot = $I->createAmbassador($password, [
 			'email' => 'userbot@example.com',
 			'name' => 'Bot',
@@ -133,6 +152,24 @@ class SeedCommand extends Command implements CustomCommandInterface
 			'about_me_intern' => 'hello!'
 		]);
 		$this->writeUser($userbot, $password, 'ambassador');
+
+		$userbot2 = $I->createAmbassador($password, [
+			'email' => 'userbot2@example.com',
+			'name' => 'Bot2',
+			'bezirk_id' => $region1,
+			'about_me_intern' => 'hello!'
+		]);
+		$this->writeUser($userbot2, $password, 'ambassador');
+
+		$userbotregion2 = $I->createAmbassador($password, [
+			'email' => 'userbotreg2@example.com',
+			'name' => 'Bot Entenhausen',
+			'bezirk_id' => $region2,
+			'about_me_intern' => 'hello!'
+		]);
+		$I->addRegionAdmin($region2, $userbotregion2['id']);
+
+		$this->writeUser($userbotregion2, $password, 'ambassador');
 
 		$userorga = $I->createOrga($password, false, ['email' => 'userorga@example.com', 'name' => 'Orga', 'bezirk_id' => $region1]);
 		$this->writeUser($userorga, $password, 'orga');
@@ -145,8 +182,13 @@ class SeedCommand extends Command implements CustomCommandInterface
 		// Add users to region
 		$this->output->writeln('- add users to region');
 		$I->addRegionAdmin($region1, $userbot['id']);
+		$I->addRegionAdmin($region1, $userbot2['id']);
 		$I->addRegionMember($ag_quiz, $userbot['id']);
 		$I->addRegionAdmin($ag_quiz, $userbot['id']);
+		$I->addRegionMember($ag_startpage, $userStoreManager['id']);
+		$I->addRegionAdmin($ag_startpage, $userStoreManager['id']);
+		$I->addRegionMember($ag_partnerandteam, $userStoreManager2['id']);
+		$I->addRegionAdmin($ag_partnerandteam, $userStoreManager2['id']);
 		$I->addRegionMember($region_vorstand, $userbot['id']);
 		$I->addRegionMember($ag_aktive, $userbot['id']);
 
@@ -159,6 +201,33 @@ class SeedCommand extends Command implements CustomCommandInterface
 			$I->addRegionMember($id, $userbot['id']);
 			$I->addRegionAdmin($id, $userbot['id']);
 		}
+
+		// Create a welcome Group
+		$this->output->writeln('- create welcome group');
+		$welcomeGroup = $I->createWorkingGroup('Begrüßung Göttingen', ['parent_id' => $region1, 'email_name' => 'Begruessung.Göttingen', 'teaser' => 'Hier sind die Begrüßer für unseren Bezirk']);
+		$I->haveInDatabase('fs_region_function', ['region_id' => $welcomeGroup['id'], 'function_id' => WorkgroupFunction::WELCOME, 'target_id' => $region1]);
+		$welcomeGroup['id'];
+		$this->output->writeln('- make foodsaver responsible for welcome group');
+		$I->addRegionMember($welcomeGroup['id'], $user2['id']);
+		$I->addRegionAdmin($welcomeGroup['id'], $user2['id']);
+
+		// Create voting Group
+		$this->output->writeln('- create voting group');
+		$votingGroup = $I->createWorkingGroup('Abstimmungen Göttingen', ['parent_id' => $region1, 'email_name' => 'Abstimmung.Göttingen', 'teaser' => 'Hier sind die Abstimmungen für unseren Bezirk']);
+		$I->haveInDatabase('fs_region_function', ['region_id' => $votingGroup['id'], 'function_id' => WorkgroupFunction::VOTING, 'target_id' => $region1]);
+		$I->addRegionMember($votingGroup['id'], $userStoreManager['id']);
+		$I->addRegionAdmin($votingGroup['id'], $userStoreManager['id']);
+		$I->addRegionMember($votingGroup['id'], $userbot['id']);
+		$I->addRegionAdmin($votingGroup['id'], $userbot['id']);
+
+		// Create fsp Group
+		$this->output->writeln('- create fsp group');
+		$fspGroup = $I->createWorkingGroup('Fairteiler Göttingen', ['parent_id' => $region1, 'email_name' => 'Fairteiler.Göttingen', 'teaser' => 'Hier sind die Fairteileransprechpartner für unseren Bezirk']);
+		$I->haveInDatabase('fs_region_function', ['region_id' => $fspGroup['id'], 'function_id' => WorkgroupFunction::FSP, 'target_id' => $region1]);
+		$I->addRegionMember($fspGroup['id'], $userStoreManager['id']);
+		$I->addRegionAdmin($fspGroup['id'], $userStoreManager['id']);
+		$I->addRegionMember($fspGroup['id'], $userbot['id']);
+		$I->addRegionAdmin($fspGroup['id'], $userbot['id']);
 
 		// Create store team conversations
 		$this->output->writeln('- create store team conversations');
@@ -175,6 +244,20 @@ class SeedCommand extends Command implements CustomCommandInterface
 		$I->addStoreTeam($store['id'], $userStoreManager['id'], true);
 		$I->addStoreTeam($store['id'], $userbot['id'], true);
 		$I->addRecurringPickup($store['id']);
+
+		$this->output->writeln('- create store chains');
+		foreach (range(0, 50) as $_) {
+			$I->addStoreChain();
+			$this->output->write('.');
+		}
+		$this->output->writeln(' done');
+
+		$this->output->writeln('- create food types');
+		foreach (range(0, 10) as $_) {
+			$I->addStoreFoodType();
+			$this->output->write('.');
+		}
+		$this->output->writeln(' done');
 
 		// Forum theads and posts
 		$this->output->writeln('- create forum threads and posts');
@@ -219,6 +302,17 @@ class SeedCommand extends Command implements CustomCommandInterface
 		}
 		$this->output->writeln(' done');
 
+		// Create more Forum Threads
+		$this->output->writeln('- Create more forum Threads');
+		$randomFsList = array_slice($this->foodsavers, -100, 100, true);
+		foreach ($this->getRandomIDOfArray($randomFsList, 30) as $random_user) {
+			foreach (range(0, 5) as $_) {
+				$I->addForumTheme($region1, $random_user);
+			}
+			$this->output->write('.');
+		}
+		$this->output->writeln(' done');
+
 		// add some users to a workgroup
 		$this->output->writeln('Add users to workgroup');
 		// but only the ones we generated above
@@ -254,9 +348,7 @@ class SeedCommand extends Command implements CustomCommandInterface
 		$this->output->writeln('Create foodbaskets');
 		foreach (range(0, 500) as $_) {
 			$user = $this->getRandomIDOfArray($this->foodsavers);
-			$foodbasket = $I->createFoodbasket($user);
-			$commenter = $this->getRandomIDOfArray($this->foodsavers);
-			$I->addFoodbasketWallpost($commenter, $foodbasket['id']);
+			$I->createFoodbasket($user);
 			$this->output->write('.');
 		}
 		$this->output->writeln(' done');
@@ -300,5 +392,56 @@ class SeedCommand extends Command implements CustomCommandInterface
 			$this->output->write('.');
 		}
 		$this->output->writeln(' done');
+
+		$this->output->writeln('Create polls');
+		foreach ([VotingType::SELECT_ONE_CHOICE, VotingType::SELECT_MULTIPLE, VotingType::THUMB_VOTING,
+					 VotingType::SCORE_VOTING] as $type) {
+			$this->createPoll($region1, $userbot['id'], $type,
+				[$user2['id'], $userStoreManager['id'], $userStoreManager2['id'], $userbot['id'], $userorga['id']]
+			);
+			$this->output->write('.');
+		}
+		$this->createPoll($region1, $userbot['id'], VotingType::SELECT_ONE_CHOICE,
+			[$user2['id'], $userStoreManager['id'], $userStoreManager2['id'], $userbot['id'], $userorga['id']],
+			Carbon::now('-14 days'), Carbon::now('-7 days')
+		);
+		$this->output->write('.');
+
+		$this->output->writeln(' done');
+
+		$I->_getDriver()->executeQuery('SET FOREIGN_KEY_CHECKS=1;', []);
+		$I->_getDbh()->commit();
+	}
+
+	private function createPoll(int $regionId, int $authorId, int $type, array $voterIds,
+								?Carbon $startDate = null, ?Carbon $endDate = null)
+	{
+		$possibleValues = [];
+		switch ($type) {
+			case VotingType::SELECT_ONE_CHOICE:
+			case VotingType::SELECT_MULTIPLE:
+				$possibleValues = [1];
+				break;
+			case VotingType::THUMB_VOTING:
+				$possibleValues = [1, 0, -1];
+				break;
+			case VotingType::SCORE_VOTING:
+				$possibleValues = [3, 2, 1, 0, -1, -2, -3];
+				break;
+		}
+
+		$params = ['type' => $type, 'scope' => VotingScope::FOODSAVERS];
+		if (!is_null($startDate)) {
+			$params['start'] = $startDate->format('Y-m-d H:i:s');
+		}
+		if (!is_null($endDate)) {
+			$params['end'] = $endDate->format('Y-m-d H:i:s');
+		}
+
+		$poll = $this->helper->createPoll($regionId, $authorId, $params);
+		foreach (range(0, 3) as $_) {
+			$this->helper->createPollOption($poll['id'], $possibleValues);
+		}
+		$this->helper->addVoters($poll['id'], $voterIds);
 	}
 }

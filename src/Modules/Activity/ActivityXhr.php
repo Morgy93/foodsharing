@@ -6,7 +6,7 @@ use Foodsharing\Lib\Xhr\Xhr;
 use Foodsharing\Modules\Core\Control;
 use Foodsharing\Modules\Core\DBConstants\Region\Type;
 use Foodsharing\Modules\Mailbox\MailboxGateway;
-use Foodsharing\Services\ImageService;
+use Foodsharing\Utility\ImageHelper;
 
 class ActivityXhr extends Control
 {
@@ -15,7 +15,7 @@ class ActivityXhr extends Control
 	private $activityGateway;
 
 	public function __construct(
-		ImageService $imageService,
+		ImageHelper $imageService,
 		MailboxGateway $mailboxGateway,
 		ActivityGateway $activityGateway
 	) {
@@ -45,7 +45,7 @@ class ActivityXhr extends Control
 				$options = false;
 			}
 
-			$this->session->setOption('activity-listings', $options, $this->model);
+			$this->session->setOption('activity-listings', $options);
 		}
 
 		$page = $_GET['page'] ?? 0;
@@ -56,7 +56,7 @@ class ActivityXhr extends Control
 			'buddywall' => []
 		];
 
-		if ($sesOptions = $this->session->option('activity-listings')) {
+		if ($sesOptions = $this->session->getOption('activity-listings')) {
 			foreach ($sesOptions as $o) {
 				if (isset($hidden_ids[$o['index']])) {
 					$hidden_ids[$o['index']][$o['id']] = $o['id'];
@@ -91,11 +91,11 @@ class ActivityXhr extends Control
 				$options = false;
 			}
 
-			$this->session->setOption('activity-listings', $options, $this->model);
+			$this->session->setOption('activity-listings', $options);
 		}
 
 		if (isset($_GET['select_all_options'])) {
-			$this->session->setOption('activity-listings', false, $this->model);
+			$this->session->setOption('activity-listings', false);
 		}
 	}
 
@@ -117,7 +117,7 @@ class ActivityXhr extends Control
 
 		$option = [];
 
-		if ($list = $this->session->option('activity-listings')) {
+		if ($list = $this->session->getOption('activity-listings')) {
 			$option = $list;
 		}
 
@@ -186,22 +186,22 @@ class ActivityXhr extends Control
 
 		$xhr->addData('listings', [
 			0 => [
-				'name' => $this->translationHelper->s('groups'),
+				'name' => $this->translator->trans('search.mygroups'),
 				'index' => 'bezirk',
 				'items' => $listings['groups']
 			],
 			1 => [
-				'name' => $this->translationHelper->s('regions'),
+				'name' => $this->translator->trans('search.myregions'),
 				'index' => 'bezirk',
 				'items' => $listings['regions']
 			],
 			2 => [
-				'name' => $this->translationHelper->s('mailboxes'),
+				'name' => $this->translator->trans('terminology.mailboxes'),
 				'index' => 'mailbox',
 				'items' => $listings['mailboxes']
 			],
 			3 => [
-				'name' => $this->translationHelper->s('buddywalls'),
+				'name' => $this->translator->trans('search.mybuddies'),
 				'index' => 'buddywall',
 				'items' => $listings['buddywalls']
 			],

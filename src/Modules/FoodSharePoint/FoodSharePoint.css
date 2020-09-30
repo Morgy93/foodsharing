@@ -1,9 +1,13 @@
-.ft-head {
+.fsp-head {
   height: 80px;
   width: 100%;
   background-image: url(/img/foodSharePointHead.jpg);
   background-position: center;
   background-repeat: no-repeat;
+}
+
+.fsp-desc {
+  overflow-wrap: break-word;
 }
 
 /* food share point list */
@@ -58,19 +62,7 @@ span#wallpost-loader img {
   overflow: hidden;
 }
 
-#fbshare-dialog {
-  text-align: center;
-}
-
-#fbshare-dialog a img {
-  margin: 15px;
-}
-
 @media all and (max-width: 500px) {
-  #fbshare-wrapper {
-    display: none;
-  }
-
   textarea.comment {
     width: 94% !important;
   }

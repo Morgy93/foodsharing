@@ -5,7 +5,7 @@ namespace Foodsharing\Controller;
 use Foodsharing\Lib\Session;
 use Foodsharing\Modules\Foodsaver\FoodsaverGateway;
 use Foodsharing\Modules\Message\MessageGateway;
-use Foodsharing\Services\MessageService;
+use Foodsharing\Modules\Message\MessageTransactions;
 use FOS\RestBundle\Controller\AbstractFOSRestController;
 use FOS\RestBundle\Controller\Annotations as Rest;
 use FOS\RestBundle\Request\ParamFetcher;
@@ -14,16 +14,20 @@ use Symfony\Component\HttpKernel\Exception\HttpException;
 
 class MessageRestController extends AbstractFOSRestController
 {
-	private $foodsaverGateway;
-	private $messageGateway;
-	private $messageService;
-	private $session;
+	private FoodsaverGateway $foodsaverGateway;
+	private MessageGateway $messageGateway;
+	private MessageTransactions $messageTransactions;
+	private Session $session;
 
-	public function __construct(FoodsaverGateway $foodsaverGateway, MessageGateway $messageGateway, MessageService $messageService, Session $session)
-	{
+	public function __construct(
+		FoodsaverGateway $foodsaverGateway,
+		MessageGateway $messageGateway,
+		MessageTransactions $messageTransactions,
+		Session $session
+	) {
 		$this->foodsaverGateway = $foodsaverGateway;
 		$this->messageGateway = $messageGateway;
-		$this->messageService = $messageService;
+		$this->messageTransactions = $messageTransactions;
 		$this->session = $session;
 	}
 
@@ -154,7 +158,7 @@ class MessageRestController extends AbstractFOSRestController
 		$limit = $paramFetcher->get('limit');
 		$offset = $paramFetcher->get('offset');
 
-		$data = $this->messageService->listConversationsWithProfilesForUser($this->session->id(), $limit, $offset);
+		$data = $this->messageTransactions->listConversationsWithProfilesForUser($this->session->id(), $limit, $offset);
 
 		return $this->handleView($this->view([
 			'conversations' => array_values($data['conversations']),
@@ -172,7 +176,7 @@ class MessageRestController extends AbstractFOSRestController
 			throw new HttpException(401);
 		}
 		$body = $paramFetcher->get('body');
-		$this->messageService->sendMessage($conversationId, $this->session->id(), $body);
+		$this->messageTransactions->sendMessage($conversationId, $this->session->id(), $body);
 
 		return $this->handleView($this->view([], 200));
 	}
@@ -183,9 +187,11 @@ class MessageRestController extends AbstractFOSRestController
 	 */
 	public function patchConversationAction(int $conversationId, ParamFetcher $paramFetcher): Response
 	{
-		if ($this->messageGateway->isConversationLocked($conversationId) || !$this->session->may(
-			) || !$this->messageGateway->mayConversation($this->session->id(), $conversationId)) {
+		if (!$this->session->may() || !$this->messageGateway->mayConversation($this->session->id(), $conversationId)) {
 			throw new HttpException(401);
+		}
+		if ($this->messageGateway->isConversationLocked($conversationId)) {
+			throw new HttpException(403);
 		}
 
 		if ($name = $paramFetcher->get('name')) {
@@ -201,16 +207,19 @@ class MessageRestController extends AbstractFOSRestController
 	 */
 	public function removeMemberFromConversationAction(int $conversationId, int $userId): Response
 	{
-		if (true || !$this->session->may() || $userId !== $this->session->id()) {
-			/* disable functionality for now */
-			/* only allow users to remove themselves from conversations */
+		/* disable functionality for now */
+		/* only allow users to remove themselves from conversations */
+		throw new HttpException(403);
+		/*
+		if (!$this->session->may() || $userId !== $this->session->id()) {
 			throw new HttpException(403);
 		}
-		if (!$this->messageService->deleteUserFromConversation($conversationId, $userId)) {
+		if (!$this->messageTransactions->deleteUserFromConversation($conversationId, $userId)) {
 			throw new HttpException(400);
 		}
 
 		return $this->handleView($this->view([], 200));
+		*/
 	}
 
 	/**

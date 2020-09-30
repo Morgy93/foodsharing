@@ -8,24 +8,36 @@ use Foodsharing\Modules\Core\DBConstants\Region\Type;
 use Foodsharing\Modules\Foodsaver\FoodsaverGateway;
 use Foodsharing\Modules\Region\RegionGateway;
 use Foodsharing\Modules\Search\SearchGateway;
-use Foodsharing\Services\SearchService;
+use Foodsharing\Modules\Search\SearchHelper;
+use Foodsharing\Modules\Search\SearchIndexGenerator;
+use Foodsharing\Permissions\ForumPermissions;
 use FOS\RestBundle\Controller\AbstractFOSRestController;
 use FOS\RestBundle\Controller\Annotations as Rest;
 use FOS\RestBundle\Request\ParamFetcher;
+use Swagger\Annotations as SWG;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\Exception\HttpException;
 
 class SearchRestController extends AbstractFOSRestController
 {
-	private $session;
-	private $searchGateway;
-	private $searchService;
+	private Session $session;
+	private SearchGateway $searchGateway;
+	private SearchIndexGenerator $searchIndexGenerator;
+	private SearchHelper $searchHelper;
+	private ForumPermissions $forumPermissions;
 
-	public function __construct(Session $session, SearchGateway $searchGateway, SearchService $searchService)
-	{
+	public function __construct(
+		Session $session,
+		SearchGateway $searchGateway,
+		SearchIndexGenerator $searchIndexGenerator,
+		SearchHelper $searchHelper,
+		ForumPermissions $forumPermissions
+	) {
 		$this->session = $session;
 		$this->searchGateway = $searchGateway;
-		$this->searchService = $searchService;
+		$this->searchIndexGenerator = $searchIndexGenerator;
+		$this->searchHelper = $searchHelper;
+		$this->forumPermissions = $forumPermissions;
 	}
 
 	/**
@@ -36,7 +48,7 @@ class SearchRestController extends AbstractFOSRestController
 		if (!$this->session->may()) {
 			throw new HttpException(403);
 		}
-		$data = $this->searchService->generateIndex($this->session->id());
+		$data = $this->searchIndexGenerator->generateIndex($this->session->id());
 
 		$view = $this->view($data, 200);
 
@@ -80,15 +92,75 @@ class SearchRestController extends AbstractFOSRestController
 						$regionGateway->listIdsForDescendantsAndSelf($region)
 					);
 				}
-				array_unique($regions);
+				$regions = array_unique($regions);
 			}
 
 			$results = $this->searchGateway->searchUserInGroups(
 				$q,
+				false,
 				$regions
 			);
-			$results = array_map(function ($v) { return ['id' => $v['id'], 'value' => $v['name'] . ' ' . $v['nachname'] . ' (' . $v['id'] . ')']; }, $results);
+			$results = array_map(function ($v) { return ['id' => $v->id, 'value' => $v->name . ' (' . $v->id . ')']; }, $results);
 		}
+
+		return $this->handleView($this->view($results, 200));
+	}
+
+	/**
+	 * General search endpoint that returns foodsavers, stores, and regions.
+	 *
+	 * @Rest\Get("search/all")
+	 * @Rest\QueryParam(name="q", description="Search query.")
+	 */
+	public function searchAction(ParamFetcher $paramFetcher): Response
+	{
+		if (!$this->session->may()) {
+			throw new HttpException(403);
+		}
+
+		$q = $paramFetcher->get('q');
+		if (empty($q)) {
+			throw new HttpException(400);
+		}
+
+		$results = $this->searchHelper->search($q);
+
+		return $this->handleView($this->view($results, 200));
+	}
+
+	/**
+	 * Searches in the titles of forum threads in a specific group.
+	 *
+	 * @SWG\Parameter(name="groupId", in="path", type="integer", description="which forum to return threads for (region or group)")
+	 * @SWG\Parameter(name="subforumId", in="path", type="integer", description="ID of the forum in the group (normal or ambassador forum)")
+	 * @SWG\Parameter(name="q", in="query", type="string", description="search query")
+	 * @SWG\Response(response="200", description="Success",
+	 *     @SWG\Schema(type="object", @SWG\Property(property="data", type="array",
+	 *         @SWG\Items(type="object",
+	 *             @SWG\Property(property="id", type="integer", description="thread id"),
+	 *             @SWG\Property(property="name", type="string", description="thread title")
+	 *         )
+	 *     ))
+	 * )
+	 * @SWG\Response(response="400", description="Empty search query.")
+	 * @SWG\Response(response="403", description="Insufficient permissions to search in that forum.")
+	 * @SWG\Tag(name="search")
+	 *
+	 * @Rest\Get("search/forum/{groupId}/{subforumId}", requirements={"groupId" = "\d+", "subforumId" = "\d+"})
+	 * @Rest\QueryParam(name="q", description="Search query.", nullable=false)
+	 */
+	public function searchForumTitleAction(int $groupId, int $subforumId, ParamFetcher $paramFetcher): Response
+	{
+		if (!$this->session->may() || !$this->forumPermissions->mayAccessForum($groupId, $subforumId)) {
+			throw new HttpException(403);
+		}
+
+		$q = $paramFetcher->get('q');
+		if (empty($q)) {
+			throw new HttpException(400);
+		}
+
+		$results = $this->searchGateway->searchForumTitle($q, $groupId, $subforumId);
 
 		return $this->handleView($this->view($results, 200));
 	}

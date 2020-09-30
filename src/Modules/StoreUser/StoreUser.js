@@ -2,12 +2,15 @@
 
 import '@/core'
 import '@/globals'
+import $ from 'jquery'
+
+import 'jquery-tagedit'
+import 'jquery-tagedit-auto-grow-input'
 
 import i18n from '@/i18n'
-
 import { expose } from '@/utils'
+import './StoreUser.css'
 
-import $ from 'jquery'
 import {
   ajax,
   pulseError, pulseInfo,
@@ -15,10 +18,7 @@ import {
   hideLoader,
   GET
 } from '@/script'
-
-import 'jquery-tagedit'
-import 'jquery-tagedit-auto-grow-input'
-import '@/tablesorter'
+import '@/tablesorter' // Remove after replacing u_storeList
 
 import {
   u_updatePosts,
@@ -26,15 +26,13 @@ import {
   u_delPost,
   acceptRequest,
   warteRequest,
-  denyRequest,
-  createJumperMenu,
-  createMenu,
-  u_timetableAction,
-  addContextMenu
+  denyRequest
 } from './StoreUser.lib'
 import { vueApply, vueRegister } from '@/vue'
+import PickupHistory from './components/PickupHistory'
 import PickupList from './components/PickupList'
 import StoreInfos from './components/StoreInfos'
+import StoreTeam from './components/StoreTeam'
 import { deleteStorePost } from '@/api/stores'
 
 expose({
@@ -43,24 +41,24 @@ expose({
   u_delPost,
   acceptRequest,
   warteRequest,
-  denyRequest,
-  createJumperMenu,
-  createMenu,
-  u_timetableAction
+  denyRequest
 })
 
 $(document).ready(() => {
   $('.cb-verantwortlicher').on('click', function () {
     if ($('.cb-verantwortlicher:checked').length >= 4) {
-      pulseError(i18n('max_3_leader'))
+      pulseError(i18n('storeedit.team.max-sm'))
       return false
     }
   })
 
   $('#team-form').on('submit', function (ev) {
-    if ($('.cb-verantwortlicher:checked').length == 0) {
-      pulseError(i18n('verantwortlicher_must_be'))
+    if ($('.cb-verantwortlicher:checked').length == 0 && $('#set_new_store_manager').val() != 'true') {
+      pulseError(i18n('storeedit.team.need-sm'))
       ev.preventDefault()
+      return false
+    } else if ($('#set_new_store_manager').val() == 'true' && $('.tagedit-listelement-old').length > 3) {
+      pulseError(i18n('storeedit.team.max-sm'))
       return false
     }
   })
@@ -159,25 +157,15 @@ $(document).ready(() => {
     ]
   })
 
-  $('#changeStatus').button().on('click', () => {
-    $('#changeStatus-hidden').dialog({
-      title: i18n('change_status'),
-      modal: true
-    })
-  })
-
   $('.nft-remove').button({
     text: false,
     icons: {
-      primary: 'ui-icon-minus'
+      primary: 'ui-icon-trash'
     }
   }).on('click', function () {
     const $this = $(this)
     $this.parent().parent().remove()
   })
-
-  addContextMenu('.context-team', 160, createMenu)
-  addContextMenu('.context-jumper', 95, createJumperMenu)
 
   $('.timetable').on('keyup', '.fetchercount', function () {
     if (this.value != '') {
@@ -185,7 +173,7 @@ $(document).ready(() => {
       if (val == 0) {
         val = 1
       } else if (val > 2) {
-        pulseInfo(i18n('max_2_foodsaver'), {
+        pulseInfo(i18n('pickup.edit.many-people'), {
           sticky: true
         })
       }
@@ -197,22 +185,10 @@ $(document).ready(() => {
     text: false
   }).on('click', function () {
     $('table.timetable tbody').append($('table#nft-hidden-row tbody').html())
-    let clname = 'odd'
-    $('table.timetable tbody tr').each(function () {
-      if (clname == 'odd') {
-        clname = 'even'
-      } else {
-        clname = 'odd'
-      }
-
-      const $this = $(this)
-      $this.removeClass('odd even')
-      $this.addClass(clname)
-    })
     $('.nft-remove').button({
       text: false,
       icons: {
-        primary: 'ui-icon-minus'
+        primary: 'ui-icon-trash'
       }
     }).on('click', function () {
       const $this = $(this)
@@ -221,9 +197,13 @@ $(document).ready(() => {
   })
 
   vueRegister({
+    PickupHistory,
     PickupList,
-    StoreInfos
+    StoreInfos,
+    StoreTeam
   })
+  vueApply('#vue-pickup-history', true)
   vueApply('#vue-pickuplist', true)
   vueApply('#vue-storeinfos', true)
+  vueApply('#vue-storeteam', true)
 })

@@ -6,8 +6,8 @@ use Foodsharing\Modules\Core\View;
 
 class WallPostView extends View
 {
-	private $table;
-	private $wallId;
+	private string $table;
+	private int $wallId;
 
 	public function setTable(string $table, int $wallId): void
 	{
@@ -57,7 +57,7 @@ class WallPostView extends View
 			}
 			$del = '';
 			if ($mayDelete || $p['foodsaver_id'] == $this->session->id()) {
-				$del = '<span class="dot">·</span><a onclick="u_delPost(' . $p['id'] . ', \'' . $this->table . '\', ' . $this->wallId . ');return false;" href="#p' . $p['id'] . '" class="pdelete light">' . $this->translationHelper->s('delete') . '</a>';
+				$del = '<span class="dot">·</span><a onclick="u_delPost(' . $p['id'] . ', \'' . $this->table . '\', ' . $this->wallId . ');return false;" href="#p' . $p['id'] . '" class="pdelete light">' . $this->translator->trans('wall.delete') . '</a>';
 			}
 
 			$out .= '

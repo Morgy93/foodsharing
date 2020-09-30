@@ -8,7 +8,7 @@ use Foodsharing\Modules\Core\Database;
 
 final class ProfileGateway extends BaseGateway
 {
-	private $webSocketConnection;
+	private WebSocketConnection $webSocketConnection;
 
 	public function __construct(Database $db, WebSocketConnection $webSocketConnection)
 	{
@@ -222,8 +222,12 @@ final class ProfileGateway extends BaseGateway
 		return (int)$this->db->fetchValue($stm, [':fs_id' => $fsId]);
 	}
 
-	public function giveBanana(int $fsId, string $message = '', int $sessionId): int
+	public function giveBanana(int $fsId, string $message = '', ?int $sessionId): int
 	{
+		if ($sessionId === null) {
+			throw new \UnexpectedValueException('Must be logged in to give banana.');
+		}
+
 		return $this->db->insert(
 			'fs_rating',
 			[
@@ -235,13 +239,16 @@ final class ProfileGateway extends BaseGateway
 		);
 	}
 
-	public function getBananaMessage(int $fsId, int $sessionId)
+	/**
+	 * Returns whether the user with the raterId has already given a banana with the user with userId.
+	 */
+	public function hasGivenBanana(?int $raterId, int $userId): bool
 	{
-		return $this->db->fetchValueByCriteria(
-			'fs_rating',
-			'msg',
-			['foodsaver_id' => $fsId, 'rater_id' => $sessionId]
-		);
+		if ($raterId === null) {
+			return false;
+		}
+
+		return $this->db->exists('fs_rating', ['foodsaver_id' => $userId, 'rater_id' => $raterId]);
 	}
 
 	public function getNextDates(int $fsId, int $limit = 10): array
@@ -319,7 +326,7 @@ final class ProfileGateway extends BaseGateway
 		';
 		$ret = $this->db->fetchAll($stm, [':fs_id' => $fsId]);
 
-		return ($ret === false) ? [] : $ret;
+		return $ret;
 	}
 
 	public function listStoresOfFoodsaver(int $fsId): array

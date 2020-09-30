@@ -2,11 +2,57 @@
 
 namespace Foodsharing\Modules\Event;
 
+use Foodsharing\Lib\Session;
+use Foodsharing\Lib\View\Utils;
 use Foodsharing\Modules\Core\DBConstants\Region\Type;
 use Foodsharing\Modules\Core\View;
+use Foodsharing\Permissions\EventPermissions;
+use Foodsharing\Utility\DataHelper;
+use Foodsharing\Utility\IdentificationHelper;
+use Foodsharing\Utility\ImageHelper;
+use Foodsharing\Utility\PageHelper;
+use Foodsharing\Utility\RouteHelper;
+use Foodsharing\Utility\Sanitizer;
+use Foodsharing\Utility\TimeHelper;
+use Foodsharing\Utility\TranslationHelper;
+use Symfony\Contracts\Translation\TranslatorInterface;
 
 class EventView extends View
 {
+	private $eventPermissions;
+
+	public function __construct(
+		\Twig\Environment $twig,
+		Session $session,
+		Utils $viewUtils,
+		EventPermissions $eventPermissions,
+		DataHelper $dataHelper,
+		IdentificationHelper $identificationHelper,
+		ImageHelper $imageService,
+		PageHelper $pageHelper,
+		RouteHelper $routeHelper,
+		Sanitizer $sanitizerService,
+		TimeHelper $timeHelper,
+		TranslationHelper $translationHelper,
+		TranslatorInterface $translator
+	) {
+		parent::__construct(
+			$twig,
+			$session,
+			$viewUtils,
+			$dataHelper,
+			$identificationHelper,
+			$imageService,
+			$pageHelper,
+			$routeHelper,
+			$sanitizerService,
+			$timeHelper,
+			$translationHelper,
+			$translator
+		);
+		$this->eventPermissions = $eventPermissions;
+	}
+
 	public function eventForm($bezirke)
 	{
 		global $g_data;
@@ -21,48 +67,53 @@ class EventView extends View
 		$end_time = ['hour' => 16, 'min' => 0];
 
 		if (isset($g_data['start'])) {
-			$start_time = ['hour' => (int)date('H', $g_data['start_ts']), 'min' => (int)date('i', $g_data['start_ts'])];
+			$start_time = [
+				'hour' => (int)date('H', $g_data['start_ts']),
+				'min' => (int)date('i', $g_data['start_ts']),
+			];
 			$g_data['date'] = $g_data['start'];
 		}
 
 		if (isset($g_data['end'])) {
-			$end_time = ['hour' => (int)date('H', $g_data['end_ts']), 'min' => (int)date('i', $g_data['end_ts'])];
+			$end_time = [
+				'hour' => (int)date('H', $g_data['end_ts']),
+				'min' => (int)date('i', $g_data['end_ts']),
+			];
 			$g_data['dateend'] = $g_data['end'];
 		}
 
-		$title = $this->translationHelper->s('new_event');
+		$title = $this->translator->trans('events.create.title');
 		$this->pageHelper->addStyle('
-			label.addend{
-				display:inline-block;
-				margin-left:15px;
-				cursor:pointer;
+			label.addend {
+				display: inline-block;
+				margin-left: 15px;
+				cursor: pointer;
 			}
 		');
 		$this->pageHelper->addJs('
-			$("#online_type").on("change", function(){
-				if($(this).val() == 0)
-				{
-					$("#location_name-wrapper").removeClass("required");
-					$("#anschrift-wrapper").removeClass("required");
-					$("#plz-wrapper").removeClass("required");
-					$("#ort-wrapper").removeClass("required");
-					$("#location_name-wrapper").next().hide();
-					$("#location_name-wrapper, #anschrift-wrapper, #plz-wrapper, #ort-wrapper").hide();
-				}
-				else
-				{
-					$("#location_name-wrapper").addClass("required");
+			$("#online_type").on("change", function () {
+				if ($(this).val() == 1) {
 					$("#anschrift-wrapper").addClass("required");
 					$("#plz-wrapper").addClass("required");
 					$("#ort-wrapper").addClass("required");
 					$("#location_name-wrapper").next().show();
-					$("#location_name-wrapper, #anschrift-wrapper, #plz-wrapper, #ort-wrapper").show();
+					$("#anschrift-wrapper, #plz-wrapper, #ort-wrapper").show();
+				} else {
+					$("#anschrift-wrapper").removeClass("required");
+					$("#plz-wrapper").removeClass("required");
+					$("#ort-wrapper").removeClass("required");
+					$("#location_name-wrapper").next().hide();
+					$("#anschrift-wrapper, #plz-wrapper, #ort-wrapper").hide();
 				}
 			});
 			
 			var dateend_wrapper = document.getElementById("dateend-wrapper");	
 			
-			$("#date").after(\'<label class="addend"><input type="checkbox" name="addend" id="addend" value="1" /> Das Event geht über mehrere Tage</label>\');
+			$("#date").after(
+				\'<label class="addend"><input type="checkbox" name="addend" id="addend" value="1" /> '
+				. $this->translator->trans('events.create.multiday') .
+				'</label>\'
+			);
                
             dateend_wrapper.style.display = "none";
 
@@ -70,7 +121,7 @@ class EventView extends View
 			var datestart = new Date(document.getElementById("date").value.split(" ")[0]);
 			datestart.setDate(datestart.getDate() + 1);
 			
-   			if(dateend >= datestart)
+			if (dateend >= datestart)
 			{
                 document.getElementById("addend").checked = true;
                 dateend_wrapper.style.display = "block";
@@ -78,14 +129,11 @@ class EventView extends View
 			
 			dateend_wrapper.classList.remove("required");
 			
-			$("#addend").on("change", function(){
-				if($("#addend:checked").length > 0)
-				{
+			$("#addend").on("change", function () {
+				if ($("#addend:checked").length > 0) {
 					dateend_wrapper.style.display = "block";
 					dateend_wrapper.classList.add("required");
-				}
-				else
-				{
+				} else {
 					dateend_wrapper.style.display = "none";
 					dateend_wrapper.classList.remove("required");
 				}
@@ -93,8 +141,8 @@ class EventView extends View
 	
 			');
 
-		$bez = '';
-		$ag = '';
+		$regions = '';
+		$groups = '';
 		$sid = 0;
 		if (isset($g_data['bezirk_id'])) {
 			$sid = (int)$g_data['bezirk_id'];
@@ -110,28 +158,25 @@ class EventView extends View
 				}
 
 				if ($b['type'] == Type::WORKING_GROUP) {
-					$ag .= '<option value="' . $b['id'] . '"' . $sel . '>' . $b['name'] . '</option>';
+					$groups .= '<option value="' . $b['id'] . '"' . $sel . '>' . $b['name'] . '</option>';
 				} else {
-					$bez .= '<option value="' . $b['id'] . '"' . $sel . '>' . $b['name'] . '</option>';
+					$regions .= '<option value="' . $b['id'] . '"' . $sel . '>' . $b['name'] . '</option>';
 				}
 			}
 		}
 
-		if (!empty($ag)) {
-			$ag = '<optgroup label="Deine Arbeitsgruppen">' . $ag . '</optgroup>';
+		if (!empty($groups)) {
+			$groups = '<optgroup label="' . $this->translator->trans('events.create.groups') . '">' . $groups . '</optgroup>';
 		}
-		if (!empty($bez)) {
-			$bez = '<optgroup label="Deine Bezirke">' . $bez . '</optgroup>';
+		if (!empty($regions)) {
+			$regions = '<optgroup label="' . $this->translator->trans('events.create.regions') . '">' . $regions . '</optgroup>';
 		}
 
 		$this->pageHelper->addJs('
-			$("#public").on("change", function(){
-				if($("#public:checked").length > 0)
-				{
+			$("#public").on("change", function () {
+				if ($("#public:checked").length > 0) {
 					$("#input-wrapper").hide();
-				}
-				else
-				{
+				} else {
 					$("#input-wrapper").show();
 				}
 			});		
@@ -139,17 +184,26 @@ class EventView extends View
 
 		$delinvites = '';
 		if (isset($_GET['id'])) {
-			$delinvites = '<br /><label><input type="checkbox" name="delinvites" id="delinvites" value="1" /> Vorhandene Einladungen löschen?</label>';
+			$delinvites = '<br />'
+				. '<label>'
+				. '<input type="checkbox" name="delinvites" id="delinvites" value="1" /> '
+				. $this->translator->trans('events.create.delinvites')
+				. '</label>';
 		}
 
-		$bezirkchoose = $this->v_utils->v_input_wrapper('Für welchen Bezirk oder welche AG ist das Event?', '
-			<select class="input select value" name="bezirk_id" id="bezirk_id">
-				' . $ag . '
-				' . $bez . '
+		$bezirkchoose = $this->v_utils->v_input_wrapper($this->translator->trans('events.create.who'),
+			'<select class="input select value" name="bezirk_id" id="bezirk_id">
+				' . $groups . '
+				' . $regions . '
 			</select>
 			<p style="padding-top:10px;">
-				<label><input type="checkbox" name="invite" id="invite" checked="checked" value="' . $g_data['invite'] . '" /> Alle Foodsaver aus der Gruppe/dem Bezirk zum Termin einladen?</label><br />
-				<label><input type="checkbox" name="invitesubs" id="invitesubs" checked="checked" value="' . $g_data['invitesubs'] . '" /> Alle untergeordneten Gruppen/Bezirke einschließen?</label>
+				<label><input type="checkbox" name="invite" id="invite" checked="checked" value="' . $g_data['invite'] . '" /> '
+				. $this->translator->trans('events.create.inviteAll') .
+				'</label>
+				<br />
+				<label><input type="checkbox" name="invitesubs" id="invitesubs" checked="checked" value="' . $g_data['invitesubs'] . '" /> '
+				. $this->translator->trans('events.create.cascading') .
+				'</label>
 				' . $delinvites . '
 			</p>
 		');
@@ -162,7 +216,10 @@ class EventView extends View
 				$chk = ' checked="checked"';
 				$this->pageHelper->addJs('$("#input-wrapper").hide();');
 			}
-			$public_el = $this->v_utils->v_input_wrapper('Ist die Veranstaltung öffentlich?', '<label><input id="public" type="checkbox" name="public" value="1"' . $chk . ' /> Ja die Veranstaltung ist Öffentlich</label>');
+			$public_el = $this->v_utils->v_input_wrapper($this->translator->trans('events.create.public'),
+				'<label><input id="public" type="checkbox" name="public" value="1"' . $chk . ' /> '
+				. $this->translator->trans('events.create.isPublic') .
+				'</label>');
 		}
 
 		foreach (['anschrift', 'plz', 'ort', 'lat', 'lon'] as $i) {
@@ -182,98 +239,94 @@ class EventView extends View
 			$public_el,
 			$bezirkchoose,
 			$this->v_utils->v_form_text('name', ['required' => true]),
-			$this->v_utils->v_form_date('date', ['required' => true]),
+			$this->v_utils->v_form_date('date', ['required' => true, 'label' => $this->translator->trans('events.create.date')]),
 			$this->v_utils->v_form_date('dateend', ['required' => true]),
-			$this->v_utils->v_input_wrapper('Uhrzeit Beginn', $this->v_utils->v_form_time('time_start', $start_time)),
-			$this->v_utils->v_input_wrapper('Uhrzeit Ende', $this->v_utils->v_form_time('time_end', $end_time)),
-			$this->v_utils->v_form_textarea('description', ['desc' => $this->translationHelper->s('desc_desc'), 'required' => true]),
+			$this->v_utils->v_input_wrapper(
+				$this->translator->trans('events.create.starttime'),
+				$this->v_utils->v_form_time('time_start', $start_time)
+			),
+			$this->v_utils->v_input_wrapper(
+				$this->translator->trans('events.create.endtime'),
+				$this->v_utils->v_form_time('time_end', $end_time)
+			),
+			$this->v_utils->v_form_textarea('description', [
+				'desc' => $this->translator->trans('events.create.desc'),
+				'required' => true,
+			]),
 			$this->v_utils->v_form_select('online_type', ['values' => [
-				['id' => 1, 'name' => $this->translationHelper->s('offline')],
-				['id' => 0, 'name' => $this->translationHelper->s('online')]
+				['id' => 1, 'name' => $this->translator->trans('events.create.offline')],
+				['id' => 0, 'name' => $this->translator->trans('events.create.mumble')],
+				['id' => 2, 'name' => $this->translator->trans('events.create.online')],
 			]]),
 			$this->v_utils->v_form_text('location_name', ['required' => true]),
 			$this->latLonPicker('latLng', $latLonOptions),
-			$this->v_utils->v_info($this->translationHelper->s('saveEventInfo'))
-		], ['submit' => $this->translationHelper->s('save')]), $title, ['class' => 'ui-padding']);
+			$this->v_utils->v_info($this->translator->trans('events.create.info'))
+		], ['submit' => $this->translator->trans('button.save')]), $title, ['class' => 'ui-padding']);
 	}
 
 	public function statusMenu(array $event, int $user_status): string
 	{
 		$menu = [];
+		$eventId = intval($event['id']);
 
-		if ($event['fs_id'] == $this->session->id() || $this->session->isOrgaTeam()) {
+		if ($this->eventPermissions->mayEditEvent($event)) {
 			$menu[] = [
-				'name' => 'Event bearbeiten',
-				'href' => '/?page=event&sub=edit&id=' . (int)$event['id']
+				'name' => $this->translator->trans('events.menu.edit'),
+				'href' => '/?page=event&sub=edit&id=' . $eventId,
 			];
 		}
 
-		if ($user_status !== -1) {
-			if ($user_status !== InvitationStatus::WONT_JOIN) {
-				$menu[] = [
-					'name' => 'Ich kann doch nicht',
-					'click' => 'ajreq(\'ustat\',{id:' . (int)$event['id'] . ',s:3});return false;'
-				];
-			}
-
-			if ($user_status === InvitationStatus::INVITED) {
-				$menu[] = [
-					'name' => 'Einladung annehmen',
-					'click' => 'ajreq(\'ustat\',{id:' . (int)$event['id'] . ',s:1});return false;'
-				];
-			}
-
-			if ($user_status !== InvitationStatus::INVITED && $user_status !== InvitationStatus::ACCEPTED) {
-				$menu[] = [
-					'name' => 'Ich kann doch',
-					'click' => 'ajreq(\'ustat\',{id:' . (int)$event['id'] . ',s:1});return false;'
-				];
-			}
-
-			if ($user_status !== InvitationStatus::MAYBE) {
-				$menu[] = [
-					'name' => 'Ich kann vielleicht',
-					'click' => 'ajreq(\'ustat\',{id:' . (int)$event['id'] . ',s:2});return false;'
-				];
-			}
-		} else {
+		if ($this->eventPermissions->mayJoinEvent($event)) {
 			$menu[] = [
-				'name' => 'Ich werde teilnehmen',
-				'click' => 'ajreq(\'ustatadd\',{id:' . (int)$event['id'] . ',s:1});return false;'
+				'name' => $this->translator->trans('events.menu.yes'),
+				'click' => $this->buildEventResponse($eventId, InvitationStatus::ACCEPTED),
 			];
 			$menu[] = [
-				'name' => 'Ich werde vielleicht teilnehmen',
-				'click' => 'ajreq(\'ustatadd\',{id:' . (int)$event['id'] . ',s:2});return false;'
+				'name' => $this->translator->trans('events.menu.maybe'),
+				'click' => $this->buildEventResponse($eventId, InvitationStatus::MAYBE),
+			];
+			$menu[] = [
+				'name' => $this->translator->trans('events.menu.no'),
+				'click' => $this->buildEventResponse($eventId, InvitationStatus::WONT_JOIN),
 			];
 		}
 
-		return $this->v_utils->v_field($this->menu($menu), $this->translationHelper->s('event_options'), [], 'fas fa-cog');
+		return $this->v_utils->v_field(
+			$this->menu($menu), $this->translator->trans('events.menu.options'), [], 'fas fa-cog'
+		);
+	}
+
+	/** TODO Duplicated in DashboardView right now.
+	 * @param int $newStatus  The invitation response (a valid {@see InvitationStatus})
+	 */
+	private function buildEventResponse(int $eventId, $newStatus): string
+	{
+		return "ajreq('eventresponse',{app:'event',id:'" . $eventId . "',s:'" . $newStatus . "'});return false;";
 	}
 
 	public function eventTop(array $event): string
 	{
-		if (date('Y-m-d', $event['start_ts']) != date('Y-m-d', $event['end_ts'])) {
-			$end = ' ' . $this->translationHelper->s('to') . ' ' . $this->timeHelper->niceDate($event['end_ts']);
-		} else {
-			$end = ' ' . $this->translationHelper->s('to') . ' ' . $this->ts_time($event['end_ts']);
-		}
+		$sameDay = (date('Y-m-d', $event['start_ts']) == date('Y-m-d', $event['end_ts']));
+		$end = $sameDay ? $this->ts_time($event['end_ts']) : $this->timeHelper->niceDate($event['end_ts']);
+		$duration = $this->translator->trans('events.duration', [
+			'{from}' => $this->timeHelper->niceDate($event['start_ts']),
+			'{until}' => $end,
+		]);
 
 		return '
 		<div class="event welcome ui-padding margin-bottom ui-corner-all">
 			<div class="welcome_profile_image">
 				<span class="calendar">
-					<span class="month">' . $this->translationHelper->s('month_' . (int)date('m', $event['start_ts'])) . '</span>
+					<span class="month">' . $this->timeHelper->month($event['start_ts']) . '</span>
 					<span class="day">' . date('d', $event['start_ts']) . '</span>
 				</span>
 				<div class="clear"></div>
 			</div>
 			<div class="welcome_profile_name">
-				<div class="user_display_name">
-					' . $event['name'] . '
-				</div>
+				<div class="user_display_name">' . $event['name'] . '</div>
 				<div class="welcome_quick_link">
 					<ul>
-						<li>' . $this->timeHelper->niceDate($event['start_ts']) . $end . '</li>
+						<li>' . $duration . '</li>
 					</ul>
 					<div class="clear"></div>
 				</div>
@@ -284,7 +337,7 @@ class EventView extends View
 
 	private function ts_time($ts): string
 	{
-		return date('H:i', $ts) . ' Uhr';
+		return $this->translator->trans('date.time', ['{time}' => date('H:i', $ts)]);
 	}
 
 	public function invites(array $invites): string
@@ -293,17 +346,26 @@ class EventView extends View
 
 		if (!empty($invites['accepted'])) {
 			$avatars = $this->placeFsAvatars($invites['accepted'], 60);
-			$out .= $this->v_utils->v_field($avatars, '' . count($invites['accepted']) . ' sind dabei');
+			$out .= $this->v_utils->v_field(
+				$avatars,
+				$this->translator->trans('events.acceptedCount', ['{count}' => count($invites['accepted'])])
+			);
 		}
 
 		if (!empty($invites['maybe'])) {
 			$avatars = $this->placeFsAvatars($invites['maybe'], 54);
-			$out .= $this->v_utils->v_field($avatars, '' . count($invites['maybe']) . ' kommen vielleicht');
+			$out .= $this->v_utils->v_field(
+				$avatars,
+				$this->translator->trans('events.maybeCount', ['{count}' => count($invites['maybe'])])
+			);
 		}
 
 		if (!empty($invites['invited'])) {
 			$avatars = $this->placeFsAvatars($invites['invited'], 54);
-			$out .= $this->v_utils->v_field($avatars, '' . count($invites['invited']) . ' Einladungen');
+			$out .= $this->v_utils->v_field(
+				$avatars,
+				$this->translator->trans('events.invitedCount', ['{count}' => count($invites['invited'])])
+			);
 		}
 
 		return $out;
@@ -311,30 +373,38 @@ class EventView extends View
 
 	private function placeFsAvatars(array $foodsavers, int $maxNumberOfAvatars): string
 	{
-		if (!empty($foodsavers)) {
-			$out = '<ul class="fsicons">';
-
-			if (count($foodsavers) > $maxNumberOfAvatars) {
-				shuffle($foodsavers);
-				$foodsaverDisplayed = array_slice($foodsavers, 0, $maxNumberOfAvatars);
-			} else {
-				$foodsaverDisplayed = $foodsavers;
-			}
-
-			foreach ($foodsaverDisplayed as $fs) {
-				$out .= '
-				<li>
-					<a title="' . $fs['name'] . '" style="background-image:url(' . $this->imageService->img($fs['photo']) . ');" href="/profile/' . (int)$fs['id'] . '"><span></span></a>	
-				</li>';
-			}
-			if (count($foodsavers) > $maxNumberOfAvatars) {
-				$out .= '<li class="row">...und ' . (count($foodsavers) - $maxNumberOfAvatars) . ' weitere</li></ul>';
-			}
-
-			return $out;
+		if (empty($foodsavers)) {
+			return '';
 		}
 
-		return '';
+		$out = '<ul class="event-avatars p-1">';
+
+		if (count($foodsavers) > $maxNumberOfAvatars) {
+			shuffle($foodsavers);
+			$foodsaverDisplayed = array_slice($foodsavers, 0, $maxNumberOfAvatars);
+			$howManyMore = count($foodsavers) - $maxNumberOfAvatars;
+		} else {
+			$foodsaverDisplayed = $foodsavers;
+			$howManyMore = 0;
+		}
+
+		foreach ($foodsaverDisplayed as $fs) {
+			$out .= '
+			<li>
+				<a title="' . $fs['name'] . '" href="/profile/' . (int)$fs['id'] . '">
+					<img src="' . $this->imageService->img($fs['photo']) . '" class="corner-all">
+				</a>
+			</li>';
+		}
+		$out .= '</ul>';
+		if ($howManyMore > 0) {
+			$out .=
+				'<div class="p-1 pl-2">'
+				. $this->translator->trans('events.morePeople', ['{count}' => $howManyMore])
+				. '</div>';
+		}
+
+		return $out;
 	}
 
 	public function event(array $event): string
@@ -343,8 +413,25 @@ class EventView extends View
 			'<p>' . nl2br(
 				$this->routeHelper->autolink($event['description'])
 			) . '</p>',
-			$this->translationHelper->s('description'),
+			$this->translator->trans('events.description'),
 			['class' => 'ui-padding event-description']
+		);
+	}
+
+	public function locationMumble()
+	{
+		return $this->v_utils->v_field('
+		<p style="text-align: center;">
+			<a target="_blank" href="https://wiki.foodsharing.de/Mumble">'
+			. '<img src="/img/mlogo.png" alt="Mumble" />' .
+			'</a>
+		</p>
+		<p> ' . $this->translator->trans('events.mumble.text') . '</p>
+		<p> ' . $this->translator->trans('events.mumble.location') . '</p>
+		<p> ' . $this->translator->trans('events.mumble.guide') . '</p>
+',
+			$this->translator->trans('events.mumble.title'),
+			['class' => 'ui-padding']
 		);
 	}
 }

@@ -12,13 +12,17 @@ use Symfony\Component\HttpKernel\Exception\HttpException;
 
 class ReportRestController extends AbstractFOSRestController
 {
-	private $session;
-	private $reportPermissions;
-	private $reportGateway;
-	private $regionGateway;
+	private Session $session;
+	private RegionGateway $regionGateway;
+	private ReportGateway $reportGateway;
+	private ReportPermissions $reportPermissions;
 
-	public function __construct(Session $session, RegionGateway $regionGateway, ReportGateway $reportGateway, ReportPermissions $reportPermissions)
-	{
+	public function __construct(
+		Session $session,
+		RegionGateway $regionGateway,
+		ReportGateway $reportGateway,
+		ReportPermissions $reportPermissions
+	) {
 		$this->session = $session;
 		$this->regionGateway = $regionGateway;
 		$this->reportGateway = $reportGateway;
@@ -60,10 +64,6 @@ class ReportRestController extends AbstractFOSRestController
 			$this->reportGateway->getReportsByReporteeRegions($addReportsAgainstAmbassadorsForRegions, $this->session->id(), true)
 		);
 
-		$view = $this->view([
-			'data' => $reports
-		], 200);
-
-		return $this->handleView($view);
+		return $this->handleView($this->view(['data' => $reports], 200));
 	}
 }

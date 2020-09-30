@@ -3,8 +3,6 @@
 namespace Foodsharing\Modules\Foodsaver;
 
 use Carbon\Carbon;
-use Exception;
-use Foodsharing\Helpers\DataHelper;
 use Foodsharing\Modules\Core\BaseGateway;
 use Foodsharing\Modules\Core\Database;
 use Foodsharing\Modules\Core\DBConstants\Foodsaver\Role;
@@ -12,6 +10,7 @@ use Foodsharing\Modules\Core\DBConstants\Region\RegionIDs;
 use Foodsharing\Modules\Core\DBConstants\Region\Type;
 use Foodsharing\Modules\Region\ForumFollowerGateway;
 use Foodsharing\Modules\Store\StoreModel;
+use Foodsharing\Utility\DataHelper;
 
 final class FoodsaverGateway extends BaseGateway
 {
@@ -364,36 +363,22 @@ final class FoodsaverGateway extends BaseGateway
 		');
 	}
 
-	public function xhrGetFoodsaver(array $data): array
+	public function xhrGetStoremanagersOfRegionsForTagSelect(array $regionIds): array
 	{
-		if (isset($data['bid'])) {
-			throw new Exception('filterung by bezirkIds is not supported anymore');
-		}
+		return $this->db->fetchAll('
+			SELECT DISTINCT
+				fs.`id`,
+				CONCAT(fs.`name`," ",fs.`nachname`," (",fs.`id`,")") AS value
 
-		$term = $data['term'];
-		$term = trim($term);
-		$term = preg_replace('/[^a-zA-ZäöüÖÜß]/', '', $term);
-		$term = $term . '%';
+			FROM 	fs_foodsaver fs
+					INNER JOIN fs_foodsaver_has_bezirk hb
+					ON hb.foodsaver_id = fs.id
 
-		if (strlen($term) > 2) {
-			$out = $this->db->fetchAll('
-				SELECT	`id`,
-						CONCAT_WS(" ", `name`, `nachname`, CONCAT("(", `id`, ")")) AS value
-
-				FROM 	fs_foodsaver
-
-				WHERE 	(`name` LIKE :term
-						OR	`nachname` LIKE :term2)
-				AND     deleted_at IS NULL
-			', [
-				':term' => $term,
-				':term2' => $term
-			]);
-
-			return $out;
-		}
-
-		return [];
+			WHERE 	hb.bezirk_id IN(' . $this->dataHelper->commaSeparatedIds($regionIds) . ')
+			AND		fs.deleted_at IS NULL
+			AND		fs.rolle >= 2
+			AND		fs.privacy_notice_accepted_date IS NOT NULL
+		');
 	}
 
 	public function getEmailAddress(int $fsId): string
@@ -428,24 +413,6 @@ final class FoodsaverGateway extends BaseGateway
 				'rolle <=' => $maxRole
 			], $criteria)
 		);
-
-		return $this->dataHelper->useIdAsKey($foodsavers);
-	}
-
-	public function getRegionAmbassadorsEmailAddresses(array $regionIds): array
-	{
-		$foodsavers = $this->db->fetchAll('
-			SELECT 	fs.`id`,
-					fs.`email`
-
-			FROM 	`fs_foodsaver` fs
-					INNER JOIN `fs_botschafter` b
-					ON b.foodsaver_id = fs.id
-
-			WHERE 	fs.deleted_at IS NULL
-            AND     b.`bezirk_id` > 0
-			AND     b.`bezirk_id` IN(' . $this->dataHelper->commaSeparatedIds($regionIds) . ')
-		');
 
 		return $this->dataHelper->useIdAsKey($foodsavers);
 	}
@@ -740,8 +707,6 @@ final class FoodsaverGateway extends BaseGateway
 
 	/**
 	 * set option is an key value store each var is available in the user session.
-	 *
-	 * @param $val
 	 */
 	public function setOption(int $fsId, string $key, $val): int
 	{
@@ -759,8 +724,11 @@ final class FoodsaverGateway extends BaseGateway
 		]);
 	}
 
-	public function deleteFromRegion(int $regionId, int $fsId): void
+	public function deleteFromRegion(int $regionId, ?int $fsId): void
 	{
+		if ($fsId === null) {
+			return;
+		}
 		$this->db->delete('fs_botschafter', ['bezirk_id' => $regionId, 'foodsaver_id' => $fsId]);
 		$this->db->delete('fs_foodsaver_has_bezirk', ['bezirk_id' => $regionId, 'foodsaver_id' => $fsId]);
 

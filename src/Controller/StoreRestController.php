@@ -5,9 +5,11 @@ namespace Foodsharing\Controller;
 use Foodsharing\Lib\Session;
 use Foodsharing\Modules\Bell\BellGateway;
 use Foodsharing\Modules\Bell\DTO\Bell;
+use Foodsharing\Modules\Core\DBConstants\Store\Milestone;
+use Foodsharing\Modules\Core\DBConstants\Store\StoreLogAction;
 use Foodsharing\Modules\Store\StoreGateway;
+use Foodsharing\Modules\Store\StoreTransactions;
 use Foodsharing\Permissions\StorePermissions;
-use Foodsharing\Services\StoreService;
 use FOS\RestBundle\Controller\AbstractFOSRestController;
 use FOS\RestBundle\Controller\Annotations as Rest;
 use FOS\RestBundle\Request\ParamFetcher;
@@ -19,7 +21,7 @@ class StoreRestController extends AbstractFOSRestController
 {
 	private Session $session;
 	private StoreGateway $storeGateway;
-	private StoreService $storeService;
+	private StoreTransactions $storeTransactions;
 	private StorePermissions $storePermissions;
 	private BellGateway $bellGateway;
 
@@ -27,11 +29,16 @@ class StoreRestController extends AbstractFOSRestController
 	private const NOT_LOGGED_IN = 'not logged in';
 	private const ID = 'id';
 
-	public function __construct(Session $session, StoreGateway $storeGateway, StoreService $storeService, StorePermissions $storePermissions, BellGateway $bellGateway)
-	{
+	public function __construct(
+		Session $session,
+		StoreGateway $storeGateway,
+		StoreTransactions $storeTransactions,
+		StorePermissions $storePermissions,
+		BellGateway $bellGateway
+	) {
 		$this->session = $session;
 		$this->storeGateway = $storeGateway;
-		$this->storeService = $storeService;
+		$this->storeTransactions = $storeTransactions;
 		$this->storePermissions = $storePermissions;
 		$this->bellGateway = $bellGateway;
 	}
@@ -68,7 +75,7 @@ class StoreRestController extends AbstractFOSRestController
 			throw new HttpException(403, self::NOT_LOGGED_IN);
 		}
 
-		$filteredStoresForUser = $this->storeService->getFilteredStoresForUser($this->session->id());
+		$filteredStoresForUser = $this->storeTransactions->getFilteredStoresForUser($this->session->id());
 
 		if ($filteredStoresForUser === []) {
 			return $this->handleView($this->view([], 204));
@@ -81,7 +88,7 @@ class StoreRestController extends AbstractFOSRestController
 	 * @Rest\Post("stores/{storeId}/posts")
 	 * @Rest\RequestParam(name="text")
 	 */
-	public function addStorePostAction(int $storeId, ParamFetcher $paramFetcher)
+	public function addStorePostAction(int $storeId, ParamFetcher $paramFetcher): Response
 	{
 		if (!$this->storePermissions->mayWriteStoreWall($storeId)) {
 			throw new AccessDeniedHttpException();
@@ -93,17 +100,17 @@ class StoreRestController extends AbstractFOSRestController
 			'betrieb_id' => $storeId,
 			'text' => $text,
 			'zeit' => date('Y-m-d H:i:s'),
-			'milestone' => 0,
+			'milestone' => Milestone::NONE,
 			'last' => 1
 		]);
 
-		$storeName = $this->storeGateway->getBetrieb($storeId)['name'];
+		$storeName = $this->storeGateway->getStoreName($storeId);
 		$team = $this->storeGateway->getStoreTeam($storeId);
 
 		$bellData = Bell::create(
 			'store_wallpost_title',
 			'store_wallpost',
-			'img img-store brown',
+			'fas fa-thumbtack',
 			['href' => '/?page=fsbetrieb&id=' . $storeId],
 			[
 				'user' => $this->session->user('name'),
@@ -122,13 +129,40 @@ class StoreRestController extends AbstractFOSRestController
 	 *
 	 * @Rest\Delete("stores/posts/{postId}")
 	 */
-	public function deleteStorePostAction(int $postId)
+	public function deleteStorePostAction(int $postId): Response
 	{
 		if (!$this->storePermissions->mayDeleteStoreWallPost($postId)) {
 			throw new AccessDeniedHttpException();
 		}
+		$result = $this->storeGateway->getSingleStoreNote($postId);
+
+		$this->storeGateway->addStoreLog($result['betrieb_id'], $this->session->id(), $result['foodsaver_id'], new \DateTime($result['zeit']), StoreLogAction::DELETED_FROM_WALL, $result['text']);
 
 		$this->storeGateway->deleteBPost($postId);
+
+		return $this->handleView($this->view([], 200));
+	}
+
+	/**
+	 * Removes the user's own request or denies another user's request for a store.
+	 *
+	 * @Rest\Delete("stores/{storeId}/requests/{userId}")
+	 */
+	public function removeStoreRequestAction(int $storeId, int $userId): Response
+	{
+		if ($this->session->id() !== $userId && !$this->storePermissions->mayEditStoreTeam($storeId)) {
+			throw new HttpException(403);
+		}
+
+		$this->storeTransactions->removeStoreRequest($storeId, $userId);
+
+		if ($this->session->id() == $userId) {
+			$LogAction = StoreLogAction::REQUEST_CANCELLED;
+		} else {
+			$LogAction = StoreLogAction::REQUEST_DECLINED;
+		}
+
+		$this->storeGateway->addStoreLog($storeId, $this->session->id(), $userId, null, $LogAction);
 
 		return $this->handleView($this->view([], 200));
 	}

@@ -2,13 +2,13 @@
 
 namespace Foodsharing\Modules\Mailbox;
 
-use Foodsharing\Helpers\TimeHelper;
 use Foodsharing\Lib\Mail\AsyncMail;
 use Foodsharing\Lib\Xhr\XhrResponses;
 use Foodsharing\Modules\Core\Control;
 use Foodsharing\Modules\Core\DBConstants\Mailbox\MailboxFolder;
 use Foodsharing\Permissions\MailboxPermissions;
-use Foodsharing\Services\SanitizerService;
+use Foodsharing\Utility\Sanitizer;
+use Foodsharing\Utility\TimeHelper;
 
 class MailboxXhr extends Control
 {
@@ -19,7 +19,7 @@ class MailboxXhr extends Control
 
 	public function __construct(
 		MailboxView $view,
-		SanitizerService $sanitizerService,
+		Sanitizer $sanitizerService,
 		TimeHelper $timeHelper,
 		MailboxGateway $mailboxGateway,
 		MailboxPermissions $mailboxPermissions
@@ -59,9 +59,9 @@ class MailboxXhr extends Control
 
 			$init = 'window.parent.mb_finishFile("' . $new_filename . '");';
 		} elseif (!$attachmentIsAllowed) {
-			$init = 'window.parent.pulseInfo(\'' . $this->sanitizerService->jsSafe($this->translationHelper->s('wrong_file')) . '\');window.parent.mb_removeLast();';
+			$init = 'window.parent.pulseInfo(\'' . $this->translator->trans('mailbox.filetype') . '\');window.parent.mb_removeLast();';
 		} else {
-			$init = 'window.parent.pulseInfo(\'' . $this->sanitizerService->jsSafe($this->translationHelper->s('file_to_big')) . '\');window.parent.mb_removeLast();';
+			$init = 'window.parent.pulseInfo(\'' . $this->translator->trans('mailbox.filesize') . '\');window.parent.mb_removeLast();';
 		}
 
 		echo '<html><head>
@@ -124,11 +124,16 @@ class MailboxXhr extends Control
 			}
 
 			$nc_js = '';
-			if ($boxes = $this->mailboxGateway->getBoxes($this->session->isAmbassador(), $this->session->id(), $this->mailboxPermissions->mayHaveMailbox())) {
+			// we already handled the "not a store manager case" (PERMISSION_DENIED) earlier
+			if ($boxes = $this->mailboxGateway->getBoxes($this->session->isAmbassador(), $this->session->id(), true)) {
 				if ($newcount = $this->mailboxGateway->getNewCount($boxes)) {
 					foreach ($newcount as $nc) {
+						// locate the tree entry for this mailbox with jQuery + append unread count
+						$mailboxName = $nc['name'] . '@' . PLATFORM_MAILBOX_HOST;
 						$nc_js .= '
-								$( "ul.dynatree-container a.dynatree-title:contains(\'' . $nc['name'] . '@' . PLATFORM_MAILBOX_HOST . '\')" ).removeClass("nonew").addClass("newmail").text("' . $nc['name'] . '@' . PLATFORM_MAILBOX_HOST . ' (' . (int)$nc['count'] . ')");';
+				$("ul.dynatree-container a.dynatree-title").filter(function () {
+					return $(this).text() === "' . $mailboxName . '";
+				}).addClass("newmail").attr("data-count","(' . $nc['count'] . ') ");';
 					}
 				}
 			}
@@ -196,7 +201,11 @@ class MailboxXhr extends Control
 				$subject = 'Re: ' . trim(str_replace(['Re:', 'RE:', 're:', 'aw:', 'Aw:', 'AW:'], '', $message['subject']));
 
 				$data = json_decode(file_get_contents('php://input'), true);
-				$body = strip_tags($data['msg']) . "\n\n\n\n--------- Nachricht von " . $this->timeHelper->niceDate($message['time_ts']) . " ---------\n\n>\t" . str_replace("\n", "\n>\t", $message['body']);
+				$body = strip_tags($data['msg'])
+					. "\n\n\n\n--------- "
+					. $this->translator->trans('mailbox.signature', ['{date}' => $this->timeHelper->niceDate($message['time_ts'])])
+					. " ---------\n\n>\t"
+					. str_replace("\n", "\n>\t", $message['body']);
 
 				$mail = new AsyncMail($this->mem);
 				$mail->setFrom($message['mailbox'] . '@' . PLATFORM_MAILBOX_HOST, $this->session->user('name'));
@@ -234,7 +243,7 @@ class MailboxXhr extends Control
 
 				echo json_encode([
 					'status' => 1,
-					'message' => 'Spitze! Die E-Mail wurde versendet.'
+					'message' => $this->translator->trans('mailbox.okay'),
 				]);
 				exit();
 			}
@@ -242,7 +251,7 @@ class MailboxXhr extends Control
 
 		echo json_encode([
 			'status' => 0,
-			'message' => 'Die E-Mail konnte nicht gesendet werden.'
+			'message' => $this->translator->trans('mailbox.failed'),
 		]);
 		exit();
 	}
@@ -258,7 +267,7 @@ class MailboxXhr extends Control
 			if ((time() - $last) < 15) {
 				return [
 					'status' => 1,
-					'script' => 'pulseError("Du kannst nur eine E-Mail pro 15 Sekunden versenden, bitte warte einen Augenblick...");'
+					'script' => 'pulseError("' . $this->translator->trans('mailbox.ratelimit') . '");',
 				];
 			}
 		}
@@ -277,7 +286,7 @@ class MailboxXhr extends Control
 				if (count($an) > 100) {
 					return [
 						'status' => 1,
-						'script' => 'pulseError("Zu viele Empfänger");'
+						'script' => 'pulseError("' . $this->translator->trans('mailbox.recipients') . '");'
 					];
 				}
 				$attach = false;
@@ -340,19 +349,19 @@ class MailboxXhr extends Control
 					date('Y-m-d H:i:s'),
 					'',
 					1
-				)
-				) {
+				)) {
 					if (($mb_id = $this->mailboxGateway->getMailboxId($_POST['reply']))
-						&& $this->mailboxPermissions->mayMailbox($mb_id)) {
+						&& $this->mailboxPermissions->mayMailbox($mb_id)
+					) {
 						$this->mailboxGateway->setAnswered($_POST['reply']);
 					}
 
 					return [
 						'status' => 1,
 						'script' => '
-									pulseInfo("' . $this->translationHelper->s('send_success') . '");
-									mb_clearEditor();
-									mb_closeEditor();'
+							pulseInfo("' . $this->translator->trans('mailbox.okay') . '");
+							mb_clearEditor();
+							mb_closeEditor();'
 					];
 				}
 			}

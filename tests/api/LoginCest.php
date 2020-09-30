@@ -3,8 +3,8 @@
 class LoginCest
 {
 	/**
-	 * @example ["createFoodsaver", "Dein Stammbezirk ist"]
-	 * @example ["createFoodsharer", "Willkommen "]
+	 * @example ["createFoodsaver", "Wähle den Bezirk aus"]
+	 * @example ["createFoodsharer", "Viel Spaß beim Retten"]
 	 * @example ["createStoreCoordinator", "Dein Stammbezirk ist"]
 	 * @example ["createAmbassador", "Dein Stammbezirk ist"]
 	 * @example ["createOrga", "Dein Stammbezirk ist"]
@@ -51,6 +51,6 @@ class LoginCest
 
 		$I->seeResponseCodeIs(\Codeception\Util\HttpCode::OK);
 		$I->seeHtml();
-		$I->seeResponseContains('Falsche Zugangsdaten');
+		$I->seeResponseContains('E-Mail-Adresse oder Passwort sind falsch');
 	}
 }

@@ -1,14 +1,19 @@
-import { get } from './base'
+import { get, patch, remove } from './base'
 
 // wrapper around the legacy SearchXHR method
 export async function getBellList () {
-  return (await get('/../xhrapp.php?app=bell&m=infobar')).data.list
+  return await get('/bells')
 }
 
 export function deleteBell (id) {
-  return get(`/../xhrapp.php?app=bell&m=delbell&id=${id}`)
+  return remove(`/bells/${id}`)
 }
 
-export function markBellsAsRead (ids) {
-  return get(`/../xhrapp.php?app=bell&m=markBellsAsRead&ids=${JSON.stringify(ids)}`)
+/**
+ * Returns the number of bells that were successfully marked as read.
+ */
+export async function markBellsAsRead (ids) {
+  return (await patch('/bells', {
+    ids: ids
+  })).marked
 }

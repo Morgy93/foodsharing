@@ -18,7 +18,6 @@ import socket from '@/socket'
 import { expose } from '@/utils'
 
 import {
-  betrieb,
   chat,
   pulseInfo,
   pulseError,
@@ -26,16 +25,14 @@ import {
   profile,
   goTo,
   reload,
-  dialogs,
   ajreq,
   ajax,
   u_loadCoords,
   showLoader,
   hideLoader,
   becomeBezirk,
-  preZero,
   betriebRequest,
-  rejectBetriebRequest,
+  withdrawStoreRequest,
   error
 } from '@/script'
 
@@ -46,7 +43,6 @@ import {
 expose({
   $,
   jQuery: $,
-  betrieb,
   chat,
   pulseInfo,
   pulseError,
@@ -54,16 +50,14 @@ expose({
   profile,
   goTo,
   reload,
-  dialogs,
   ajreq,
   ajax,
   u_loadCoords,
   showLoader,
   hideLoader,
   becomeBezirk,
-  preZero,
   betriebRequest,
-  rejectBetriebRequest,
+  withdrawStoreRequest,
   u_printChildBezirke,
   conv,
   error,

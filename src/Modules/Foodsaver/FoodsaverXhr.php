@@ -6,31 +6,27 @@ use Foodsharing\Lib\Xhr\XhrResponses;
 use Foodsharing\Modules\Core\Control;
 use Foodsharing\Modules\Region\RegionGateway;
 use Foodsharing\Permissions\RegionPermissions;
-use Foodsharing\Services\NotificationService;
-use Foodsharing\Services\SanitizerService;
+use Foodsharing\Utility\Sanitizer;
 
 class FoodsaverXhr extends Control
 {
-	private $foodsaverGateway;
-	private $regionGateway;
-	private $sanitizerService;
-	private $regionPermissions;
-	private $notificationService;
+	private FoodsaverGateway $foodsaverGateway;
+	private RegionGateway $regionGateway;
+	private RegionPermissions $regionPermissions;
+	private Sanitizer $sanitizerService;
 
 	public function __construct(
 		FoodsaverView $view,
-		RegionGateway $regionGateway,
-		SanitizerService $sanitizerService,
-		RegionPermissions $regionPermissions,
 		FoodsaverGateway $foodsaverGateway,
-		NotificationService $notificationService
+		RegionGateway $regionGateway,
+		RegionPermissions $regionPermissions,
+		Sanitizer $sanitizerService
 	) {
 		$this->view = $view;
 		$this->foodsaverGateway = $foodsaverGateway;
 		$this->regionGateway = $regionGateway;
-		$this->sanitizerService = $sanitizerService;
 		$this->regionPermissions = $regionPermissions;
-		$this->notificationService = $notificationService;
+		$this->sanitizerService = $sanitizerService;
 
 		parent::__construct();
 	}
@@ -48,14 +44,17 @@ class FoodsaverXhr extends Control
 
 			return [
 				'status' => 1,
-				'script' => '$("#fsform").html(\'' . $this->sanitizerService->jsSafe($html) . '\');$(".button").button();$(".avatarlink img").load(function(){$(".avatarlink img").fadeIn();});'
+				'script' => '
+					$("#fsform").html(\'' . $this->sanitizerService->jsSafe($html) . '\');
+					$(".button").button();
+					$(".avatarlink img").load(function () {
+						$(".avatarlink img").fadeIn();
+					});'
 			];
 		}
 	}
 
-	/**
-	 * xrh reload foodsaver list.
-	 */
+	// Reload foodsaver list for region 'bid'
 	public function foodsaverrefresh()
 	{
 		$regionId = $_GET['bid'];
@@ -68,13 +67,13 @@ class FoodsaverXhr extends Control
 
 		return [
 			'status' => 1,
-			'script' => '$("#foodsaverlist").replaceWith(\'' . $html . '\');fsapp.init();'
+			'script' => '
+				$("#foodsaverlist").replaceWith(\'' . $html . '\');
+				fsapp.init();'
 		];
 	}
 
-	/**
-	 * Method to delete a foodsaver from an region.
-	 */
+	// Delete foodsaver 'id' from region 'bid'
 	public function deleteFromRegion()
 	{
 		$regionId = $_GET['bid'];
@@ -86,7 +85,10 @@ class FoodsaverXhr extends Control
 
 		return [
 			'status' => 1,
-			'script' => 'pulseInfo("Foodsaver wurde entfernt");$("#fsform").html("");fsapp.refreshFoodsaver();'
+			'script' => '
+				pulseInfo("' . $this->translator->trans('foodsaver.kicked') . '");
+				$("#fsform").html("");
+				fsapp.refreshFoodsaver();'
 		];
 	}
 }

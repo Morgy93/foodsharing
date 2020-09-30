@@ -3,32 +3,10 @@
 namespace Foodsharing\Modules\Dashboard;
 
 use Foodsharing\Modules\Core\View;
+use Foodsharing\Modules\Event\InvitationStatus;
 
 class DashboardView extends View
 {
-	public function newBaskets($baskets)
-	{
-		$out = '<ul class="linklist baskets">';
-		foreach ($baskets as $b) {
-			$out .= '
-			<li>
-				<a onclick="ajreq(\'bubble\',{app:\'basket\',id:' . (int)$b['id'] . '});return false;" href="#" class="corner-all">
-					<span class="i">' . $this->img($b) . '</span>
-					<span class="n">Essenskorb von ' . $b['fs_name'] . '</span>
-					<span class="t">veröffentlicht: ' . $this->timeHelper->niceDate($b['time_ts']) . '</span>
-					<span class="d">' . $b['description'] . '</span>
-					<span class="c"></span>
-				</a>
-
-			</li>';
-		}
-
-		$out .= '
-				</ul>';
-
-		return $this->v_utils->v_field($out, $this->translationHelper->s('new_foodbaskets'));
-	}
-
 	public function updates()
 	{
 		$this->pageHelper->addContent($this->vueComponent('activity-overview', 'activity-overview', []));
@@ -37,49 +15,60 @@ class DashboardView extends View
 	public function foodsharerMenu()
 	{
 		return $this->menu([
-			['name' => $this->translationHelper->s('new_basket'), 'click' => "ajreq('newBasket',{app:'basket'});return false;"],
-			['name' => $this->translationHelper->s('all_baskets'), 'href' => '/karte?load=baskets']
+			['name' => $this->translator->trans('basket.new'), 'click' => "ajreq('newBasket',{app:'basket'});return false;"],
+			['name' => $this->translator->trans('basket.all_map'), 'href' => '/karte?load=baskets']
 		]);
 	}
 
-	public function nearbyBaskets($baskets)
+	public function listBaskets(array $baskets, bool $nearby): string
 	{
 		$out = '<ul class="linklist baskets">';
 		foreach ($baskets as $b) {
-			$out .= '
-			<li>
-				<a onclick="ajreq(\'bubble\',{app:\'basket\',id:' . (int)$b['id'] . '});return false;" href="#" class="corner-all">
-					<span class="i">' . $this->img($b) . '</span>
-					<span class="n">Essenskorb von ' . $b['fs_name'] . ' (' . $this->distance($b['distance']) . ')</span>
-					<span class="t">' . $this->timeHelper->niceDate($b['time_ts']) . '</span>
-					<span class="d">' . $b['description'] . '</span>
-					<span class="c"></span>
-				</a>
-
-			</li>';
+			$out .= $this->basketListEntry($b, $nearby);
 		}
+		$out .= '</ul>';
+		$label = $nearby ? $this->translator->trans('basket.nearby') : $this->translator->trans('basket.recent');
 
-		$out .= '
-				</ul>';
-
-		return $this->v_utils->v_field($out, $this->translationHelper->s('close_foodbaskets'));
+		return $this->v_utils->v_field($out, $label);
 	}
 
-	private function img($basket)
+	private function basketListEntry(array $basket, bool $nearby): string
 	{
-		if ($basket['picture'] != '' && file_exists(ROOT_DIR . 'images/basket/50x50-' . $basket['picture'])) {
-			return '<img src="/images/basket/thumb-' . $basket['picture'] . '" height="50" />';
+		$basketId = intval($basket['id']);
+		$by = $this->translator->trans('basket.by', ['{name}' => $basket['fs_name']]);
+		if ($nearby && $basket['distance']) {
+			$by .= ' (' . $this->distance($basket['distance']) . ')';
 		}
 
-		return '<img src="/img/basket50x50.png" height="50" />';
+		if ($basket['picture'] && file_exists(ROOT_DIR . 'images/basket/50x50-' . $basket['picture'])) {
+			$img = '<img src="/images/basket/thumb-' . $basket['picture'] . '" height="50" />';
+		} else {
+			$img = '<img src="/img/basket50x50.png" height="50" />';
+		}
+		$when = $this->timeHelper->niceDate($basket['time_ts']);
+
+		return '
+		<li>
+			<a onclick="ajreq(\'bubble\',{app:\'basket\',id:' . $basketId . '}); return false;" href="#" class="corner-all">
+				<span class="i">' . $img . '</span>
+				<span class="n">' . $by . '</span>
+				<span class="t">' . $when . '</span>
+				<span class="d">' . $basket['description'] . '</span>
+			</a>
+		</li>';
 	}
 
 	public function becomeFoodsaver()
 	{
 		return '
-	   <div class="msg-inside info">
-			   <i class="fas fa-info-circle"></i> <strong><a href="/?page=settings&sub=upgrade/up_fs">Ich möchte jetzt das Foodsaver-Quiz machen und Foodsaver werden!</a></strong>
-	   </div>';
+		<div class="msg-inside info">
+			<i class="fas fa-info-circle"></i>
+			<strong>
+				<a href="/?page=settings&sub=upgrade/up_fs">
+				' . $this->translator->trans('foodsaver.upgrade.ad_fs') . '
+				</a>
+			</strong>
+		</div>';
 	}
 
 	public function u_nextDates($dates)
@@ -101,293 +90,100 @@ class DashboardView extends View
 			</ul>
 		</div>';
 
-		return $this->v_utils->v_field($out, $this->translationHelper->s('next_dates'), ['class' => 'truncate-content truncate-height-150 collapse-mobile']);
+		return $this->v_utils->v_field($out, $this->translator->trans('dashboard.pickupdates'), [
+			'class' => 'truncate-content truncate-height-150 collapse-mobile',
+		]);
 	}
 
 	public function u_myBetriebe($betriebe)
 	{
 		$out = '';
-		if (!empty($betriebe['verantwortlich'])) {
-			$list = '
-			<ul class="linklist">';
-			foreach ($betriebe['verantwortlich'] as $b) {
-				$list .= '
-				<li>
-					<a class="ui-corner-all" href="/?page=fsbetrieb&id=' . $b['id'] . '">' . $b['name'] . '</a>
-				</li>';
-			}
-			$list .= '
-			</ul>';
-			$out = $this->v_utils->v_field($list, $this->translator->trans('dashboard.you_are_responsible_for_stores'), ['class' => 'ui-padding truncate-content truncate-height-85 collapse-mobile']);
-		}
+		$out .= $this->u_storeLinkList(
+			$betriebe['verantwortlich'],
+			$this->translator->trans('dashboard.my.managing'),
+			'truncate-height-85'
+		);
 
-		if (!empty($betriebe['team'])) {
-			$list = '
-			<ul class="linklist">';
-			foreach ($betriebe['team'] as $b) {
-				$list .= '
-				<li>
-					<a class="ui-corner-all" href="/?page=fsbetrieb&id=' . $b['id'] . '">' . $b['name'] . '</a>
-				</li>';
-			}
-			$list .= '
-			</ul>';
-			$out .= $this->v_utils->v_field($list, $this->translator->trans('dashboard.you_pickup_at_stores'), ['class' => 'ui-padding truncate-content truncate-height-140 collapse-mobile']);
-		}
+		$out .= $this->u_storeLinkList(
+			$betriebe['team'],
+			$this->translator->trans('dashboard.my.stores'),
+			'truncate-height-140'
+		);
 
-		if (!empty($betriebe['waitspringer'])) {
-			$list = '
-			<ul class="linklist">';
-			foreach ($betriebe['waitspringer'] as $b) {
-				$list .= '
-				<li>
-					<a class="ui-corner-all" href="/?page=fsbetrieb&id=' . $b['id'] . '">' . $b['name'] . '</a>
-				</li>';
-			}
-			$list .= '
-			</ul>';
-			$out .= $this->v_utils->v_field($list, $this->translator->trans('dashboard.you_wait_at_stores'), ['class' => 'ui-padding']);
-		}
+		$out .= $this->u_storeLinkList(
+			$betriebe['waitspringer'],
+			$this->translator->trans('dashboard.my.waiting'),
+			'truncate-height-85'
+		);
 
-		if (!empty($betriebe['anfrage'])) {
-			$this->pageHelper->addJsFunc('
-				function u_anfrage_action(key,el)
-				{
-					val = $(el).children("input:first").val().split(":::");
-
-					if(key == "deny")
-					{
-						u_sign_out(val[0],val[1],el);
-					}
-					else if(key == "map")
-					{
-						u_gotoMap(val[0],val[1],el);
-					}
-				}
-
-				function u_sign_out(fsid,bid,el)
-					{
-						var item = $(el);
-						showLoader();
-						$.ajax({
-							dataType:"json",
-							data: "fsid="+fsid+"&bid="+bid,
-							url:"/xhr.php?f=denyRequest",
-							success : function(data){
-								if(data.status == 1)
-								{
-									pulseSuccess(data.msg);
-									window.setTimeout(function(){reload()},1500);
-								}else{
-									pulseError(data.msg);
-									window.setTimeout(function(){reload()},1500);
-								}
-							},
-							complete:function(){hideLoader();}
-						});
-					}
-
-				function u_gotoMap(fsid,betriebid,el)
-					{
-						var item = $(el);
-						showLoader();
-						var baseUrl = "?page=map&bid=";
-						window.location.href = baseUrl+betriebid;
-
-					}
-			');
-			$this->pageHelper->addJs('
-				function createSignoutMenu() {
-					return {
-						callback: function(key, options) {
-							u_anfrage_action(key,this);
-						},
-						items: {
-							"deny": {name: "Anfrage beenden",icon:"fas fa-trash-alt fa-fw"},
-							"map": {name: "Auf Karte anschauen",icon:"fas fa-map-marked-alt fa-fw"}
-						}
-					};
-				}
-
-				$("#store-request").on("click", function(e){
-					var $this = $(this);
-					$this.data("runCallbackThingie", createSignoutMenu);
-					var _offset = $this.offset(),
-						position = {
-							x: _offset.left - 30,
-							y: _offset.top - 97
-						}
-					$this.contextMenu(position);
-				});
-
-				$.contextMenu({
-					selector: "#store-request",
-					trigger: "none",
-					build: function($trigger, e) {
-						return $trigger.data("runCallbackThingie")();
-					}
-				});
-
-
-			');
-			$list = '
-			<ul class="linklist">';
-			foreach ($betriebe['anfrage'] as $b) {
-				//<a id="anfrage-betrieb" class="ui-corner-all" href="/?page=fsbetrieb&id='.$b['id'].'">'.$b['name'].'</a>
-				$list .= '
-				<li>
-					<a id="store-request" class="ui-corner-all" href="#" onclick="return false;">' . $b['name'] . '<input type="hidden" name="anfrage" value="' . $this->session->id() . ':::' . $b['id'] . '" /></a>
-				</li>';
-			}
-			$list .= '
-			</ul>';
-			$out .= $this->v_utils->v_field($list, 'Anfragen gestellt bei', ['class' => 'ui-padding truncate-content truncate-height-50 collapse-mobile']);
-		}
+		$out .= $this->u_storeLinkList(
+			$betriebe['requested'],
+			$this->translator->trans('dashboard.my.pending'),
+			'truncate-height-50'
+		);
 
 		if (empty($out)) {
-			$out = $this->v_utils->v_info('Du bist bis jetzt in keinem Betriebsteam.');
+			$out = $this->v_utils->v_info(
+				$this->translator->trans('dashboard.my.no-stores')
+			);
 		}
 
 		return $out;
 	}
 
-	public function u_updates($updates)
+	private function u_storeLinkList($storeList, $title, $classes = ''): string
 	{
-		$out = '';
-		$i = 0;
-		foreach ($updates as $u) {
-			$fs = [
-				'id' => $u['foodsaver_id'],
-				'name' => $u['foodsaver_name'],
-				'photo' => $u['foodsaver_photo'],
-				'sleep_status' => $u['sleep_status']
-			];
-			$out .= '
-			<div class="updatepost">
-					<a class="poster ui-corner-all" href="/profile/' . (int)$u['foodsaver_id'] . '">
-						' . $this->imageService->avatar($fs, 50) . '
-					</a>
-					<div class="post">
-						' . $this->u_update_type($u) . '
-					</div>
-					<div style="clear:both;"></div>
-			</div>';
+		if (empty($storeList)) {
+			return '';
 		}
-
-		return $this->v_utils->v_field($out, $this->translationHelper->s('updates'), ['class' => 'ui-padding']);
-	}
-
-	public function u_update_type($u)
-	{
-		$out = '';
-		if ($u['type'] == 'forum') {
-			$out = '
-				<div class="activity_feed_content">
-					<div class="activity_feed_content_text">
-						<div class="activity_feed_content_info">
-							<a href="/profile/' . (int)$u['foodsaver_id'] . '">' . $u['foodsaver_name'] . '</a> hat etwas zum Thema "<a href="/?page=bezirk&bid=' . $u['bezirk_id'] . '&sub=forum&tid=' . $u['id'] . '&pid=' . $u['last_post_id'] . '#post' . $u['last_post_id'] . '">' . $u['name'] . '</a>" ins Forum geschrieben.
-						</div>
-					</div>
-
-					<div class="activity_feed_content_link">
-						' . $u['post_body'] . '
-					</div>
-
-				</div>
-
-				<div class="js_feed_comment_border">
-					<div class="comment_mini_link_like">
-						<div class="foot">
-							<span class="time">' . $this->timeHelper->niceDate($u['update_time_ts']) . '</span>
-						</div>
-					</div>
-					<div class="clear"></div>
-				</div>';
-		} elseif ($u['type'] == 'bforum') {
-			$out = '
-				<div class="activity_feed_content">
-					<div class="activity_feed_content_text">
-						<div class="activity_feed_content_info">
-							<a href="/profile/' . (int)$u['foodsaver_id'] . '">' . $u['foodsaver_name'] . '</a> hat etwas zum Thema "<a href="/?page=bezirk&bid=' . $u['bezirk_id'] . '&sub=botforum&tid=' . $u['id'] . '&pid=' . $u['last_post_id'] . '#post' . $u['last_post_id'] . '">' . $u['name'] . '</a>" ins Botschafterforum geschrieben.
-						</div>
-					</div>
-
-					<div class="activity_feed_content_link">
-						' . $u['post_body'] . '
-					</div>
-
-				</div>
-
-				<div class="js_feed_comment_border">
-					<div class="comment_mini_link_like">
-						<div class="foot">
-							<span class="time">' . $this->timeHelper->niceDate($u['update_time_ts']) . '</span>
-						</div>
-					</div>
-					<div class="clear"></div>
-				</div>';
-		} elseif ($u['type'] == 'bpin') {
-			$out = '
-				<div class="activity_feed_content">
-					<div class="activity_feed_content_text">
-						<div class="activity_feed_content_info">
-							<a href="/profile/' . (int)$u['foodsaver_id'] . '">' . $u['foodsaver_name'] . '</a> hat etwas auf die Pinnwand von <a href="/?page=fsbetrieb&id=' . $u['betrieb_id'] . '">' . $u['betrieb_name'] . '</a> geschrieben.
-						</div>
-					</div>
-
-					<div class="activity_feed_content_link">
-						' . $u['text'] . '
-					</div>
-
-				</div>
-
-				<div class="js_feed_comment_border">
-					<div class="comment_mini_link_like">
-						<div class="foot">
-							<span class="time">' . $this->timeHelper->niceDate($u['update_time_ts']) . '</span>
-						</div>
-					</div>
-					<div class="clear"></div>
-				</div>';
+		$list = '<ul class="linklist">';
+		foreach ($storeList as $store) {
+			$list .=
+			'<li>' .
+				'<a class="ui-corner-all" href="/?page=fsbetrieb&id=' . $store['id'] . '">' .
+					$store['name'] .
+				'</a>' .
+			'</li>';
 		}
+		$list .= '</ul>';
 
-		return $out;
+		return $this->v_utils->v_field(
+			$list,
+			$title,
+			['class' => 'ui-padding collapse-mobile truncate-content ' . $classes]
+		);
 	}
 
 	public function u_invites($invites)
 	{
-		$this->pageHelper->addStyle('
-			@media (max-width: 410px)
-			{
-				.top_margin_on_small_screen
-				{
-					margin-top: 45px;
-				}
-			}
-		');
-
 		$out = '';
 		foreach ($invites as $i) {
+			$eventId = intval($i['id']);
 			$out .= '
 			<div class="post event">
-				<a href="/?page=event&id=' . (int)$i['id'] . '" class="calendar">
-					<span class="month">' . $this->translationHelper->s('month_' . (int)date('m', $i['start_ts'])) . '</span>
+				<a href="/?page=event&id=' . $eventId . '" class="calendar">
+					<span class="month">' . $this->timeHelper->month($i['start_ts']) . '</span>
 					<span class="day">' . date('d', $i['start_ts']) . '</span>
 				</a>
-
 
 				<div class="container activity_feed_content">
 					<div class="activity_feed_content_text">
 						<div class="activity_feed_content_info">
-							<p><a href="/?page=event&id=' . (int)$i['id'] . '">' . $i['name'] . '</a></p>
+							<p><a href="/?page=event&id=' . $eventId . '">' . $i['name'] . '</a></p>
 							<p>' . $this->timeHelper->niceDate($i['start_ts']) . '</p>
 						</div>
 					</div>
 
 					<div class="row activity-feed-content-buttons">
-						<div class="col mr-2"><a href="#" onclick="ajreq(\'accept\',{app:\'event\',id:\'' . (int)$i['id'] . '\'});return false;" class="button">Einladung annehmen</a></div>
-						<div class="col-md-auto mr-2"><a href="#" onclick="ajreq(\'maybe\',{app:\'event\',id:\'' . (int)$i['id'] . '\'});return false;" class="button">Vielleicht</a></div>
-						<div class="col-md-auto"><a href="#" onclick="ajreq(\'noaccept\',{app:\'event\',id:\'' . (int)$i['id'] . '\'});return false;" class="button">Nein</a></div>
+						<div class="col mr-md-1"><a href="#" onclick="'
+							. $this->buildEventResponse($eventId, InvitationStatus::ACCEPTED) .
+						'" class="button">' . $this->translator->trans('events.button.yes') . '</a></div>
+						<div class="col-md-auto mx-1"><a href="#" onclick="'
+							. $this->buildEventResponse($eventId, InvitationStatus::MAYBE) .
+						'" class="button">' . $this->translator->trans('events.button.maybe') . '</a></div>
+						<div class="col-md-auto ml-md-1"><a href="#" onclick="'
+							. $this->buildEventResponse($eventId, InvitationStatus::WONT_JOIN) .
+						'" class="button">' . $this->translator->trans('events.button.no') . '</a></div>
 					</div>
 				</div>
 
@@ -396,30 +192,43 @@ class DashboardView extends View
 			';
 		}
 
-		return $this->v_utils->v_field($out, $this->translationHelper->s('you_were_invited'), ['class' => 'ui-padding truncate-content collapse-mobile']);
+		return $this->v_utils->v_field($out, $this->translator->trans('dashboard.invitations'), [
+			'class' => 'ui-padding truncate-content collapse-mobile',
+		]);
+	}
+
+	/** TODO Duplicated in EventView right now.
+	 * @param int $newStatus  The invitation response (a valid {@see InvitationStatus})
+	 */
+	private function buildEventResponse(int $eventId, $newStatus): string
+	{
+		return "ajreq('eventresponse',{app:'event',id:'" . $eventId . "',s:'" . $newStatus . "'});return false;";
 	}
 
 	public function u_events($events)
 	{
 		$out = '';
 		foreach ($events as $i) {
+			$eventId = intval($i['id']);
 			$out .= '
 			<div class="post event">
-				<a href="/?page=event&id=' . (int)$i['id'] . '" class="calendar">
-					<span class="month">' . $this->translationHelper->s('month_' . (int)date('m', $i['start_ts'])) . '</span>
+				<a href="/?page=event&id=' . $eventId . '" class="calendar">
+					<span class="month">' . $this->timeHelper->month($i['start_ts']) . '</span>
 					<span class="day">' . date('d', $i['start_ts']) . '</span>
 				</a>
 
 				<div class="activity_feed_content">
 					<div class="activity_feed_content_text">
 						<div class="activity_feed_content_info">
-							<p><a href="/?page=event&id=' . (int)$i['id'] . '">' . $i['name'] . '</a></p>
+							<p><a href="/?page=event&id=' . $eventId . '">' . $i['name'] . '</a></p>
 							<p>' . $this->timeHelper->niceDate($i['start_ts']) . '</p>
 						</div>
 					</div>
 
 					<div>
-						<a href="/?page=event&id=' . (int)$i['id'] . '" class="button">Zum Event</a>
+						<a href="/?page=event&id=' . $eventId . '" class="button">'
+						. $this->translator->trans('events.goto') .
+						'</a>
 					</div>
 				</div>
 
@@ -429,9 +238,9 @@ class DashboardView extends View
 		}
 
 		if (count($events) > 1) {
-			$eventTitle = $this->translationHelper->s('events_headline') . ' (' . count($events) . ')';
+			$eventTitle = $this->translator->trans('dashboard.events', ['{count}' => count($events)]);
 		} else {
-			$eventTitle = $this->translationHelper->s('event_headline');
+			$eventTitle = $this->translator->trans('dashboard.event');
 		}
 
 		return $this->v_utils->v_field($out, $eventTitle, ['class' => 'ui-padding truncate-content']);

@@ -7,7 +7,13 @@
           :class="{'today': isToday, 'past': isInPast, 'soon': isSoon, 'empty': emptySlots > 0, 'coord': isCoordinator}"
         >
           <span>
-            {{ date | dateFormat('full-long') }}
+            {{ $dateFormat(date, 'full-long') }}
+          </span>
+          <span
+            v-if="showRelativeDate"
+            class="text-muted"
+          >
+            ({{ $dateDistanceInWords(date) }})
           </span>
           <div
             v-if="isCoordinator && !isInPast"
@@ -89,19 +95,24 @@
     <b-modal
       ref="modal_kick"
       :title="$i18n('pickup.really_kick_user_date_title', {'date': $dateFormat(date, 'full-long'), 'name': activeSlot.profile.name})"
-      :cancel-title="$i18n('button.abort')"
+      :cancel-title="$i18n('button.cancel')"
       :ok-title="$i18n('button.yes_i_am_sure')"
       modal-class="bootstrap"
       header-class="d-flex"
       content-class="pr-3 pt-3"
-      @ok="$emit('kick', { 'date': date, 'fsId': activeSlot.profile.id })"
+      @ok="$emit('kick', { 'date': date, 'fsId': activeSlot.profile.id, 'message': kickMessage })"
     >
       <p>{{ $i18n('pickup.really_kick_user_date', {'date': $dateFormat(date, 'full-long'), 'name': activeSlot.profile.name}) }}</p>
+      <p>{{ $i18n('pickup.really_kick_user_info', {'name': activeSlot.profile.name}) }}</p>
+      <b-form-textarea
+        v-model="kickMessage"
+        rows="4"
+      />
     </b-modal>
     <b-modal
       ref="modal_team_message"
       :title="$i18n('pickup.leave_team_message_title')"
-      :cancel-title="$i18n('button.abort')"
+      :cancel-title="$i18n('button.cancel')"
       :ok-title="$i18n('pickup.team_message_send_and_leave')"
       modal-class="bootstrap"
       header-class="d-flex"
@@ -124,7 +135,7 @@
     <b-modal
       ref="modal_delete"
       :title="$i18n('pickup.delete_title')"
-      :cancel-title="$i18n('button.abort')"
+      :cancel-title="$i18n('button.cancel')"
       :ok-title="$i18n('delete')"
       modal-class="bootstrap"
       @ok="$emit('delete', date)"
@@ -149,11 +160,12 @@ export default {
   props: {
     storeId: { type: Number, default: null },
     date: { type: Date, required: true },
+    showRelativeDate: { type: Boolean, default: false },
     isAvailable: { type: Boolean, default: false },
     totalSlots: { type: Number, default: 0 },
     occupiedSlots: { type: Array, default: () => [] },
     isCoordinator: { type: Boolean, default: false },
-    user: { type: Object, default: null }
+    user: { type: Object, default: () => { return { id: null } } }
   },
   data () {
     return {
@@ -164,7 +176,8 @@ export default {
           name: '',
           id: null
         }
-      }
+      },
+      kickMessage: ''
     }
   },
   computed: {

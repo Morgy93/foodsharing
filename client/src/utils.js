@@ -4,6 +4,8 @@ import dateFnsIsSameYear from 'date-fns/isSameYear'
 import dateFnsLocaleDE from 'date-fns/locale/de'
 import dateFnsFormatDistance from 'date-fns/formatDistance'
 import dateFnsAddDays from 'date-fns/addDays'
+// awesome-phonenumber is used by vue-tel-input and no explicit dep:
+import PhoneNumber from 'awesome-phonenumber'
 
 import { ajreq } from '@/script'
 
@@ -39,25 +41,31 @@ export function expose (data) {
 }
 
 export function dateFormat (date, format = 'full-long') {
-  switch (format) {
-    case 'full-long':
-      if (dateFnsIsSameDay(date, new Date())) {
-        return dateFormat(date, "'heute', cccc, HH:mm 'Uhr'")
-      } else if (dateFnsIsSameDay(date, dateFnsAddDays(new Date(), 1))) {
-        return dateFormat(date, "'morgen', cccc, HH:mm 'Uhr'")
-      } else if (dateFnsIsSameYear(date, new Date())) {
-        return dateFormat(date, "cccc, do MMM, HH:mm 'Uhr'")
-      } else {
-        return dateFormat(date, "cccccc, do MMM yyyy, HH:mm 'Uhr'")
-      }
-    case 'full-short':
-      if (dateFnsIsSameYear(date, new Date())) {
-        return dateFormat(date, 'cccccc, d. MMM, HH:mm')
-      } else {
-        return dateFormat(date, 'cccccc, d.M.yyyy, HH:mm')
-      }
-    default:
-      return dateFnsFormat(date, format, { locale: dateFnsLocaleDE })
+  try {
+    switch (format) {
+      case 'day':
+        return dateFormat(date, 'd.M.yyyy')
+      case 'full-long':
+        if (dateFnsIsSameDay(date, new Date())) {
+          return dateFormat(date, "'heute', cccc, HH:mm 'Uhr'")
+        } else if (dateFnsIsSameDay(date, dateFnsAddDays(new Date(), 1))) {
+          return dateFormat(date, "'morgen', cccc, HH:mm 'Uhr'")
+        } else if (dateFnsIsSameYear(date, new Date())) {
+          return dateFormat(date, "cccc, do MMM, HH:mm 'Uhr'")
+        } else {
+          return dateFormat(date, "cccccc, do MMM yyyy, HH:mm 'Uhr'")
+        }
+      case 'full-short':
+        if (dateFnsIsSameYear(date, new Date())) {
+          return dateFormat(date, 'cccccc, d. MMM, HH:mm')
+        } else {
+          return dateFormat(date, 'cccccc, d.M.yyyy, HH:mm')
+        }
+      default:
+        return dateFnsFormat(date, format, { locale: dateFnsLocaleDE })
+    }
+  } catch (error) {
+    console.error({ error, date })
   }
 }
 export function dateDistanceInWords (date) {
@@ -68,6 +76,31 @@ export function dateDistanceInWords (date) {
 }
 
 const noLocale = /^[\w-.\s,]*$/
+const noPhoneDigit = /[^+0-9]/g
+
+export function callableNumber (number, allowInvalid = false) {
+  if (!number) {
+    return ''
+  }
+  let digits = number.toString()
+  // check for invalid +49(0) numbers that we can try to "rescue" later:
+  // (this will fail for `+49 (0)` etc which are not worth the effort)
+  digits = digits.replace(/^(\+\d{1,3})\(0\)/, '$1')
+  // now strip the remaining non-number characters aside from country code:
+  digits = digits.replace(noPhoneDigit, '')
+  // convert an implicit country code into the expected format:
+  // maybe it's given as 0049 instead of +49?
+  digits = digits.replace(/^00/, '+')
+
+  const phone = new PhoneNumber(digits)
+  if (phone.isValid()) {
+    return 'tel:' + digits
+  } else if (allowInvalid) {
+    return (digits.length > 6) ? digits : ''
+  } else {
+    return ''
+  }
+}
 
 /**
  * Compare function used in sorting of btable
