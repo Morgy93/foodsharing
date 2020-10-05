@@ -89,10 +89,6 @@ final class RegionControl extends Control
 
 	private function isHomeDistrict($region)
 	{
-		$isWorkGroup = $this->isWorkGroup($region);
-		if ($isWorkGroup) {
-			return false;
-		}
 		if ((int)$region['id'] === $this->session->getCurrentRegionId()) {
 			return true;
 		}
