@@ -10,15 +10,7 @@
 {% endembed %}
 
 <div id="signout_sure" title="{{ 'are_you_sure'|trans }}">
-    {% if region.isWorkGroup %}
-        {% include 'partials/info.twig' with {'msg': 'group.really_quit_workgroup'|trans({'%name%': region.name})} %}
-    {% else %}
-        {% if region.isHomeDistrict %}
-            {% include 'partials/info.twig' with {'msg': 'group.quitting_home_district_warning'|trans({'%name%': region.name})} %}
-        {% else %}
-            {% include 'partials/info.twig' with {'msg': 'group.really_quit_district'|trans({'%name%': region.name})} %}
-        {% endif %}
-    {% endif %}
+    {% include 'partials/info.twig' with {'msg': (region.isWorkGroup ? 'group.really_quit_workgroup' : (region.isHomeDistrict ? 'group.quitting_home_district_warning': 'group.really_quit_district')) |trans({'%name%': region.name})} %}
     <input type="hidden" name="bid" class="bid" value="{{ region.id }}" />
 </div>
 
