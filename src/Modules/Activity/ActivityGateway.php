@@ -11,11 +11,10 @@ class ActivityGateway extends BaseGateway
 	public function fetchAllFoodSharePointWallUpdates(int $fsId, int $page): array
 	{
 		$stm = '
-			SELECT
-				w.id,
-				f.name,
-				f.bezirk_id AS region_id,
-				f.ort AS fsp_location,
+			select w_id as id,
+				f_name as name,
+				region_id,
+				fsp_location,
 				w.body,
 				w.time,
 				w.attach,
@@ -23,21 +22,26 @@ class ActivityGateway extends BaseGateway
 				fs.id AS fs_id,
 				fs.name AS fs_name,
 				fs.photo AS fs_photo,
+				fsp_id
+			from (SELECT
+				max(hw.wallpost_id) as w_id,
+				f.name as f_name,
+				f.bezirk_id AS region_id,
+				f.ort AS fsp_location,
 				f.id AS fsp_id
 			FROM
 				fs_fairteiler_follower ff
 				left outer join fs_fairteiler f on ff.fairteiler_id = f.id
 				left outer join fs_fairteiler_has_wallpost hw on hw.fairteiler_id = f.id
-				left outer join fs_wallpost w on hw.wallpost_id = w.id
-				left outer join fs_foodsaver fs on w.foodsaver_id = fs.id
-			WHERE
-				w.id IS NOT NULL
-			AND
+		 	where
 				ff.foodsaver_id = :foodsaver_id
-			ORDER BY w.id DESC
-			LIMIT :start_item_index, :items_per_page
-		';
-
+			group by hw.fairteiler_id) source
+			left outer join fs_wallpost w on source.w_id = w.id
+			left outer join fs_foodsaver fs on w.foodsaver_id = fs.id
+			where
+				w.id IS NOT NULL
+			order by w.id desc
+			LIMIT :start_item_index, :items_per_page';
 		$posts = $this->db->fetchAll(
 			$stm,
 			[
@@ -53,36 +57,33 @@ class ActivityGateway extends BaseGateway
 	public function fetchAllFriendWallUpdates(array $buddyIds, int $page): array
 	{
 		$stm = '
-			SELECT
-				w.id,
-				w.body,
-				w.time,
-				w.attach,
-				UNIX_TIMESTAMP(w.time) AS time_ts,
-				fs.id AS fs_id,
-				fs.name AS fs_name,
-				fs.photo AS fs_photo,
-
-				poster.id AS poster_id,
-				poster.name AS poster_name
-			FROM
-				fs_foodsaver_has_wallpost hw,
-				fs_foodsaver fs,
-				fs_wallpost w
-			LEFT JOIN
-				fs_foodsaver poster
-			ON w.foodsaver_id = poster.id
-			WHERE
-				w.id IS NOT NULL
-			AND
-				w.id = hw.wallpost_id
-			AND
-				hw.foodsaver_id = fs.id
-			AND
+		SELECT
+			w.id,
+			w.body,
+			w.time,
+			w.attach,
+			UNIX_TIMESTAMP(w.time) AS time_ts,
+			fs.id AS fs_id,
+			fs.name AS fs_name,
+			fs.photo AS fs_photo,
+			poster.id AS poster_id,
+			poster.name AS poster_name
+        FROM
+        	(
+        	select
+            	max(hw.wallpost_id) as w_id
+            from
+				fs_foodsaver_has_wallpost hw
+            where
 				hw.foodsaver_id IN(' . implode(',', $buddyIds) . ')
-
-			ORDER BY w.id DESC
-			LIMIT :start_item_index, :items_per_page
+            group by hw.foodsaver_id) source
+		left outer join fs_wallpost w on source.w_id = w.id
+		left outer join fs_foodsaver fs on w.foodsaver_id = fs.id
+		LEFT outer JOIN fs_foodsaver poster ON w.foodsaver_id = poster.id
+		WHERE
+			w.id IS NOT NULL
+		ORDER BY w.id DESC
+		LIMIT :start_item_index, :items_per_page
 		';
 
 		$posts = $this->db->fetchAll(
@@ -227,37 +228,44 @@ class ActivityGateway extends BaseGateway
 	public function fetchAllEventUpdates(int $fsId, int $page): array
 	{
 		$stm = '
-			SELECT
-				w.id,
-				e.name,
-				w.body,
-				w.time,
-				w.attach,
-				UNIX_TIMESTAMP(w.time) AS time_ts,
-				fs.id AS fs_id,
-				fs.name AS fs_name,
-				fs.photo AS fs_photo,
-				b.name AS event_region,
-				e.id AS event_id
+		select
+			w_id as id,
+			e_name as name,
+			w.body,
+			w.time,
+			w.attach,
+			UNIX_TIMESTAMP(w.time) AS time_ts,
+			fs.id AS fs_id,
+			fs.name AS fs_name,
+			fs.photo AS fs_photo,
+			event_region,
+			event_id
+       	from
+			(SELECT
+				max(hw.wallpost_id) as w_id,
+				e.name as e_name,
+				e.id AS event_id,
+                b.name AS event_region
 			FROM
 				fs_foodsaver_has_event fhe
 				left outer join fs_event e on fhe.event_id = e.id
 				left outer join fs_event_has_wallpost hw on hw.event_id = e.id
-				left outer join fs_wallpost w on hw.wallpost_id = w.id
-				left outer join fs_foodsaver fs on w.foodsaver_id = fs.id
 				left outer join fs_bezirk b on e.bezirk_id = b.id
-			WHERE
-				w.id IS NOT NULL
-			AND
+            where
 				fhe.foodsaver_id = :foodsaver_id
 			AND
 				e.end > now()
 			AND
 				fhe.status <> 3
-			ORDER BY w.id DESC
+            group by hw.event_id
+			) source
+		left outer join fs_wallpost w on source.w_id = w.id
+		left outer join fs_foodsaver fs on w.foodsaver_id = fs.id
+		WHERE
+			w.id IS NOT NULL
+		ORDER BY w.id DESC
 			LIMIT :start_item_index, :items_per_page
-		';
-
+			';
 		$events = $this->db->fetchAll(
 			$stm,
 			[
