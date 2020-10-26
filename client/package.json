@@ -49,11 +49,11 @@
     "typeface-alfa-slab-one": "^0.0.72",
     "underscore": "^1.11.0",
     "vue": "^2.6.11",
-    "vue-infinite-loading": "^2.4.5",
-    "vue-tel-input": "^4.4.2",
-    "vue-slider-component": "^3.2.7",
-    "vuelidate": "^0.7.5",
     "vue-croppie": "^2.0.1",
+    "vue-infinite-loading": "^2.4.5",
+    "vue-slider-component": "^3.2.7",
+    "vue-tel-input": "^4.4.2",
+    "vuelidate": "^0.7.5",
     "whatwg-fetch": "^3.4.1"
   },
   "devDependencies": {
@@ -99,7 +99,7 @@
     "webpack": "^4.44.2",
     "webpack-bundle-analyzer": "^3.9.0",
     "webpack-cli": "^3.3.12",
-    "webpack-dev-server": "^3.10.3",
+    "webpack-dev-server": "^3.11.0",
     "webpack-merge": "^4.2.2",
     "write-file-webpack-plugin": "^4.5.1",
     "yaml-loader": "^0.6.0"
