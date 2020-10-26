@@ -8,7 +8,7 @@
     :show-only-on-mobile="showOnlyOnMobile"
     :hide-only-on-mobile="hideOnlyOnMobile"
   >
-    <template v-slot:heading-text>
+    <template #heading-text>
       <span
         v-if="unread"
         class="badge badge-danger"
@@ -30,7 +30,7 @@
           :key="bell.id"
           :bell="bell"
           @remove="onBellDelete"
-          @bellRead="onBellRead"
+          @bell-read="onBellRead"
         />
       </div>
     </div>

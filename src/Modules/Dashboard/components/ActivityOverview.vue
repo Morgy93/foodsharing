@@ -69,7 +69,7 @@
     >
       <ActivityOptionListings
         @close="showListings = false"
-        @reloadData="$refs.thread.reloadData()"
+        @reload-data="$refs.thread.reload-data()"
       />
     </div>
     <ActivityThread

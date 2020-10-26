@@ -48,7 +48,7 @@
         <RegisterSuccess
           v-if="page === 6"
           id="step6"
-          @loadLogin="loadLogin()"
+          @load-login="loadLogin()"
         />
       </div>
     </div>

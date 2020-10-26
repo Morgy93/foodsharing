@@ -6,7 +6,7 @@
     icon="fa-shopping-basket"
     class="topbar-baskets"
   >
-    <template v-slot:heading-text>
+    <template #heading-text>
       <span
         v-if="showLabel"
         class="d-none d-sm-inline-block"
@@ -30,7 +30,7 @@
           v-for="basket in basketsSorted"
           :key="basket.id"
           :basket="basket"
-          @basketRemove="openRemoveBasketForm"
+          @basket-remove="openRemoveBasketForm"
         />
       </div>
       <div class="btn-group special btn-group-sm">

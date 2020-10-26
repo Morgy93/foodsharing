@@ -54,8 +54,8 @@
               :may-delete="mayDelete"
               :may-edit="mayEdit"
               @delete="$emit('delete')"
-              @reactionAdd="$emit('reactionAdd', $event)"
-              @reactionRemove="$emit('reactionRemove', $event)"
+              @reactionAdd="$emit('reaction-add', $event)"
+              @reactionRemove="$emit('reaction-remove', $event)"
               @reply="$emit('reply', body)"
             />
           </div>

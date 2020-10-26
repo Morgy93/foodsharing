@@ -88,7 +88,7 @@ export default {
       await setFilters(this.listings)
       this.$emit('close')
       this.isLoading = false
-      this.$emit('reloadData')
+      this.$emit('reload-data')
     },
   },
 }

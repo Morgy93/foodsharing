@@ -9,7 +9,7 @@
     :hide-only-on-mobile="hideOnlyOnMobile"
     right
   >
-    <template v-slot:heading-text>
+    <template #heading-text>
       <span
         v-if="unread"
         class="badge badge-danger"
@@ -24,7 +24,7 @@
           v-for="conversation in conversations"
           :key="conversation.id"
           :conversation="conversation"
-          @chatOpened="close"
+          @chat-opened="close"
         />
       </div>
     </div>

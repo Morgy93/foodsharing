@@ -63,11 +63,11 @@ export default {
     },
   },
   watch: {
-    votingRequestValues () { this.$emit('updateVotingRequestValues', this.votingRequestValues) },
+    votingRequestValues () { this.$emit('update-voting-request-values', this.votingRequestValues) },
   },
   mounted () {
-    this.$emit('updateValidSelection', true)
-    this.$emit('updateVotingRequestValues', this.votingRequestValues)
+    this.$emit('update-valid-selection', true)
+    this.$emit('update-voting-request-values', this.votingRequestValues)
   },
 }
 </script>

@@ -16,7 +16,7 @@
       sort-by="optionText"
       :sort-desc="false"
     >
-      <template v-slot:head(value1)>
+      <template #head(value1)>
         {{ $i18n('poll.results.votes') }}
       </template>
     </b-table>
@@ -30,16 +30,16 @@
       responsive
       striped
     >
-      <template v-slot:head(value1)>
+      <template #head(value1)>
         <i class="fas fa-thumbs-up" />
       </template>
-      <template v-slot:head(value0)>
+      <template #head(value0)>
         <i class="fas fa-meh" />
       </template>
-      <template v-slot:head(value-1)>
+      <template #head(value-1)>
         <i class="fas fa-thumbs-down" />
       </template>
-      <template v-slot:head(average)="row">
+      <template #head(average)="row">
         {{ row.label }} (<i class="fas fa-thumbs-up" /> - <i class="fas fa-thumbs-down" />)
       </template>
     </b-table>

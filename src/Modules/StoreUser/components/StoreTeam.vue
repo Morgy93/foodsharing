@@ -60,11 +60,11 @@
         show-empty
         sort-null-last
       >
-        <template v-slot:cell(ava)="data">
+        <template #cell(ava)="data">
           <StoreTeamAvatar :user="data.item" />
         </template>
 
-        <template v-slot:cell(info)="data">
+        <template #cell(info)="data">
           <StoreTeamInfo
             :user="data.item"
             :store-manager-view="managementModeEnabled"
@@ -72,14 +72,14 @@
           />
         </template>
 
-        <template v-slot:cell(mobinfo)="data">
+        <template #cell(mobinfo)="data">
           <StoreTeamInfotext
             :member="data.item"
             :may-edit-store="mayEditStore"
           />
         </template>
 
-        <template v-slot:cell(call)="data">
+        <template #cell(call)="data">
           <b-button
             v-if="data.item.callable || !data.item.copyNumber"
             variant="link"
@@ -100,7 +100,7 @@
           </b-button>
         </template>
 
-        <template v-slot:row-details="data">
+        <template #row-details="data">
           <StoreTeamInfotext
             v-if="wXS"
             :member="data.item"

@@ -81,7 +81,7 @@ export default {
       conv.userChat(userId)
     },
     openRemoveDialog (userId, e) {
-      this.$emit('basketRemove', this.basket.id, userId)
+      this.$emit('basket-remove', this.basket.id, userId)
     },
   },
 }

@@ -2,8 +2,8 @@
   <a
     :class="bellClasses"
     :href="bell.href"
-    @click="$emit('bellRead', bell)"
-    @click.middle="$emit('bellRead', bell)"
+    @click="$emit('bell-read', bell)"
+    @click.middle="$emit('bell-read', bell)"
   >
     <div class="bell-grid">
       <div class="bell-icon">
