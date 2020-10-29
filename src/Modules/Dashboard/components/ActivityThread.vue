@@ -73,8 +73,8 @@ export default {
       return updates.filter(a => this.displayedTypes.indexOf(a.type) !== -1)
     },
     async infiniteHandler ($state) {
-      var updates = await getUpdates(this.page)
-      var filtered = this.hideUnwanted(updates)
+      const updates = await getUpdates(this.page)
+      const filtered = this.hideUnwanted(updates)
       if (filtered.length) {
         this.page += 1
         updates.sort((a, b) => {

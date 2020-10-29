@@ -41,11 +41,11 @@ export function closeAllDialogs () {
 export const sleepmode = {
   init: function () {
     $('.sleepmode-1, .sleepmode-2').on('mouseover', function () {
-      var $this = $(this)
+      const $this = $(this)
       $this.append(`<span class="corner-all bubble bubble-right ui-shadow">${$this.text()} nimmt sich gerade eine Auszeit und ist im Schlafmützen-Modus</span>`)
     })
     $('.sleepmode-1, .sleepmode-2').on('mouseout', function () {
-      var $this = $(this)
+      const $this = $(this)
       $this.children('.bubble').remove()
     })
   },
@@ -123,7 +123,7 @@ export function initialize () {
         show: false,
         hide: false,
         content: function () {
-          var el = $(this)
+          const el = $(this)
           if (el.attr('title').substring(0, 4) == '#tt-') {
             const id = el.attr('title').substring(4)
             return $(`.${id}`).html()
@@ -232,7 +232,7 @@ export const ajax = {
     }
   },
   req: function (app, method, option) {
-    var opt = {}
+    let opt = {}
     if (option != undefined) {
       opt = option
     }
@@ -326,7 +326,7 @@ export const pulseSuccess = definePulse('success', 5000)
 export const pulseError = definePulse('error', 6000)
 
 export function checkEmail (email) {
-  var filter = /^([a-zA-Z0-9_.-])+@(([a-zA-Z0-9-])+\.)+([a-zA-Z0-9]{2,4})+$/
+  const filter = /^([a-zA-Z0-9_.-])+@(([a-zA-Z0-9-])+\.)+([a-zA-Z0-9]{2,4})+$/
 
   if (!filter.test(email)) {
     return false
@@ -396,7 +396,7 @@ export function addSelect (id) {
 
 export function ucfirst (str) {
   str += ''
-  var f = str.charAt(0).toUpperCase()
+  const f = str.charAt(0).toUpperCase()
   return f + str.substr(1)
 }
 
@@ -599,7 +599,7 @@ export function becomeBezirk () {
 }
 
 export function shuffle (o) {
-  for (var j, x, i = o.length; i; j = Math.floor(Math.random() * i), x = o[--i], o[i] = o[j], o[j] = x);
+  for (let j, x, i = o.length; i; j = Math.floor(Math.random() * i), x = o[--i], o[i] = o[j], o[j] = x);
   return o
 }
 
@@ -626,7 +626,7 @@ export function merge (firstArray, secondArray, keyProperty, objectPropertiesToM
     })
   } else {
     _.each(secondArray, function (itemFromSecond) {
-      var itemFromFirst = _.find(firstArray, function (item) {
+      const itemFromFirst = _.find(firstArray, function (item) {
         return item[keyProperty] === itemFromSecond[keyProperty]
       })
 

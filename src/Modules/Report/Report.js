@@ -8,7 +8,7 @@ import { GET } from '@/script'
 
 if (GET('a') === 'undefined') {
   // The container for the report list only exists if a region specific page is requested
-  var reportListContainerId = 'vue-reportlist'
+  const reportListContainerId = 'vue-reportlist'
   if (document.getElementById(reportListContainerId)) {
     vueRegister({
       ReportList,
