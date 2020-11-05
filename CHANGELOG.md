@@ -37,6 +37,7 @@
 - Remove the abandoned deployer/recipes package and deployer/phar-update and update deployer to v 7 !1743 @peter.toennies
 - Remove the abandoned deployer recipes package !1743 @peter.toennies
 - Annotate some variables in unit tests, streamline namespace "imports" !1748 @ChrisOelmueller
+- Update TypeScript in the Chat module to version 4 !1751 @peter.toennies
 
 # 2020-10-23 Hotfix
 

@@ -12,26 +12,26 @@ export class SocketController {
     }
 
     @OnSocketConnection()
-    onConnect (socket: Socket): void {
+    onConnect (): void {
         this.connectionRegistry.numConnections++;
     }
 
     @OnSocketEvent('register')
     onRegister (socket: Socket): void {
-        const sessionId = this.readSessionId(socket);
+        const sessionId = SocketController.readSessionId(socket);
         this.connectionRegistry.register(sessionId, new Connection(socket));
     }
 
     @OnSocketEvent('disconnect')
     onDisconnect (socket: Socket): void {
-        const sessionId = this.readSessionId(socket);
+        const sessionId = SocketController.readSessionId(socket);
         this.connectionRegistry.removeRegistration(sessionId, socket.id);
         this.connectionRegistry.numConnections--;
     }
 
     @OnSocketEvent('visibilitychange')
     onClientVisibilityChange (socket: Socket, hidden: boolean): void {
-        const sessionId = this.readSessionId(socket);
+        const sessionId = SocketController.readSessionId(socket);
         const connection = this.connectionRegistry.getConnection(sessionId, socket.id);
         if (!connection) {
             return;
@@ -39,7 +39,7 @@ export class SocketController {
         connection.clientIsHidden = hidden;
     }
 
-    private readSessionId (socket: Socket): string {
+    private static readSessionId (socket: Socket): string {
         const cookieVal = socket.request.headers.cookie;
         if (!cookieVal) {
             throw new Error('not authorized');
