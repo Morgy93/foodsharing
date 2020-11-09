@@ -83,6 +83,14 @@ class EventControl extends Control
 		} elseif ($event['online'] == 1) {
 			$this->pageHelper->addContent($this->view->locationMumble(), CNT_RIGHT);
 		}
+		if (!is_null($event['fs_id'])) {
+			$creator = [
+				'id' => $event['fs_id'],
+				'name' => $event['fs_name'],
+				'photo' => $event['fs_photo'],
+			];
+			$this->pageHelper->addContent($this->view->creator($creator), CNT_LEFT);
+		}
 
 		if ($event['invites']) {
 			$this->pageHelper->addContent($this->view->invites($event['invites']), CNT_RIGHT);

@@ -418,6 +418,14 @@ class EventView extends View
 		);
 	}
 
+	public function creator(array $user): string
+	{
+		return $this->v_utils->v_field(
+			$this->placeFsAvatars([$user], 1),
+			$this->translator->trans('events.created-by')
+		);
+	}
+
 	public function locationMumble()
 	{
 		return $this->v_utils->v_field('

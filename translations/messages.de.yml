@@ -891,6 +891,7 @@ events:
       speichere ihn zu einem späteren Zeitpunkt erneut ab.
   duration: '{from} bis {until}'
   description: Beschreibung
+  created-by: Angelegt von
   mumble:
     title: Online-Termin (Mumble)
     text: 'Online-Sprachkonferenzen führen wir mit <em>Mumble</em> durch.'
