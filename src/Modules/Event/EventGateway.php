@@ -52,7 +52,6 @@ class EventGateway extends BaseGateway
 				e.`end`,
 				UNIX_TIMESTAMP(e.end) AS end_ts,
 				e.description,
-				e.bot,
 				e.online,
 				e.public
 			FROM
@@ -214,7 +213,6 @@ class EventGateway extends BaseGateway
 			'start' => $event['start'],
 			'end' => $event['end'],
 			'description' => $event['description'],
-			'bot' => 0,
 			'online' => $event['online'],
 		];
 

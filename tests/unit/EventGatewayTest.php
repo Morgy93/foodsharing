@@ -51,9 +51,8 @@ class EventGatewayTest extends \Codeception\Test\Unit
 			'start' => '2018-09-01 12:00',
 			'end' => '2018-09-30 12:00',
 			'description' => 'd',
-			'bot' => 0,
 			'online' => 0,
-			'otherStuff' => 'that should not bother...'
+			'otherStuff' => 'that should not bother...',
 		];
 		$id = $this->gateway->addEvent($this->foodsaver['id'], $event);
 		$this->assertGreaterThan(0, $id);
@@ -72,7 +71,6 @@ class EventGatewayTest extends \Codeception\Test\Unit
 			'start' => '2018-09-01 12:00',
 			'end' => '2018-09-30 12:00',
 			'description' => 'd',
-			'bot' => 0,
 			'online' => 0,
 		];
 		$eventid = $this->gateway->addEvent($this->foodsaver['id'], $event);
