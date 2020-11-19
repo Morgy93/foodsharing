@@ -51,6 +51,12 @@ export function setThreadStatus (threadId, status) {
   })
 }
 
+export function setThreadTitle (threadId, title) {
+  return patch(`/forum/thread/${threadId}`, {
+    title: title,
+  })
+}
+
 export function createPost (threadId, body) {
   return post(`/forum/thread/${threadId}/posts`, {
     body: body,

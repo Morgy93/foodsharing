@@ -249,7 +249,7 @@ class ForumRestController extends AbstractFOSRestController
 	}
 
 	/**
-	 * Change attributes for a thread: Stickyness, activate thread, status.
+	 * Change attributes for a thread: Stickyness, activate thread, status, title.
 	 *
 	 * @OA\Tag(name="forum")
 	 * @OA\Response(response="200", description="success")
@@ -259,6 +259,7 @@ class ForumRestController extends AbstractFOSRestController
 	 * @Rest\RequestParam(name="isSticky", nullable=true, default=null, description="should thread be pinned to the top of forum?")
 	 * @Rest\RequestParam(name="isActive", nullable=true, default=null, description="should a thread in a moderated forum be activated?")
 	 * @Rest\RequestParam(name="status", nullable=true, default=null, description="if the thread is open or closed")
+	 * @Rest\RequestParam(name="title", nullable=true, default=null, description="new title of the thread")
 	 */
 	public function patchThreadAction(int $threadId, ParamFetcher $paramFetcher): SymfonyResponse
 	{
@@ -284,6 +285,10 @@ class ForumRestController extends AbstractFOSRestController
 		$status = $paramFetcher->get('status');
 		if (!is_null($status)) {
 			$this->forumGateway->setThreadStatus($threadId, intval($status));
+		}
+		$title = $paramFetcher->get('title');
+		if (!empty($title)) {
+			$this->forumGateway->setThreadTitle($threadId, $title);
 		}
 
 		return $this->getThreadAction($threadId);

@@ -396,4 +396,12 @@ class ForumGateway extends BaseGateway
 			return $threadId['theme_id'];
 		}
 	}
+
+	/**
+	 * Replaces the title of a thread with a new string. Returns whether the title was set successfully.
+	 */
+	public function setThreadTitle(int $threadId, string $title): bool
+	{
+		return $this->db->update('fs_theme', ['name' => $title], ['id' => $threadId]) > 0;
+	}
 }
