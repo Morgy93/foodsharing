@@ -32,16 +32,10 @@
       </div>
     </div>
 
-    <div
-      v-if="managementModeEnabled"
-      class="bg-white ui-corner-top p-2 team-management"
-    >
-      <span class="text-muted">{{ $i18n('store.sm.managementEffect') }}</span>
-    </div>
-
     <!-- preparation for more store-management features -->
     <StoreManagementPanel
-      v-if="false && managementModeEnabled"
+      v-if="managementModeEnabled"
+      :store-id="storeId"
       classes="p-2 team-management"
     />
 
