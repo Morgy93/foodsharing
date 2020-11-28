@@ -5,6 +5,7 @@ namespace Foodsharing\Lib;
 use Foodsharing\Lib\Db\Mem;
 use Foodsharing\Lib\View\Utils;
 use Foodsharing\Modules\Core\InfluxMetrics;
+use Foodsharing\Modules\Core\View;
 use Foodsharing\Modules\Foodsaver\FoodsaverGateway;
 use Foodsharing\Utility\EmailHelper;
 use Foodsharing\Utility\FlashMessageHelper;
@@ -31,7 +32,7 @@ abstract class FoodsharingController extends AbstractController
 	 */
 	protected ContainerInterface $fullServiceContainer;
 
-	protected $view;
+	protected View $view;
 	// $sub and $sub_func were deliberately left out in this compatibility layer for the time being.
 	// However, a replacement or better solution for their behavior will be necessary for porting some controllers.
 
