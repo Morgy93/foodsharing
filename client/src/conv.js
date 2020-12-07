@@ -286,9 +286,9 @@ const conv = {
   append: function (key, message) {
     const msgclass = (message.authorId === serverData.user.id) ? 'chatboxmessage my-message' : 'chatboxmessage'
 
-    if (key >= 0 && conv.chatboxes[key] !== undefined) {conv.chatboxes[key].last_mid = parseInt(message.id)
-
-    conv.chatboxes[key].el.children('.slimScrollDiv').children('.chatboxcontent').append(`
+    if (key >= 0 && conv.chatboxes[key] !== undefined) {
+      conv.chatboxes[key].last_mid = parseInt(message.id)
+      conv.chatboxes[key].el.children('.slimScrollDiv').children('.chatboxcontent').append(`
         <div title="${profileStore.profiles[message.authorId].name}" class="${msgclass}">
         <span class="chatboxmessagefrom">
           <a class="photo" href="${url('profile', message.authorId)}">

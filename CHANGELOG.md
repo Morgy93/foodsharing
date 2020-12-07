@@ -99,6 +99,7 @@
 - User with administrativ orga power are part of the orga koordination group !2038 @fs_k
 - Make expected format of input in user settings clearer !2032 @iron9
 - translations: changed wording in calendar module !2076 @Jonathan_B
+- Store-related conversations include a link to their store now !1807 @ChrisOelmueller
 
 ## Bugfixes
 - Long links in the location field of events do not overflow the location box
@@ -269,6 +270,7 @@
 - Allow editing of polls in the first hour !1786 #975 @alex.simm
 - Restrict the search in a store's edit team dialog to people from the same region !1812 #1012 @alex.simm
 - Rewrite blogpost management list in Vue !1791 @ChrisOelmueller
+- Complete redesign of the footer !1769 @chriswalg
 
 ## Bugfixes
 - Resolved the CooperationStatus tooltip "no longer exists" and "No contact yet" in StoreList !1714 @chriswalg

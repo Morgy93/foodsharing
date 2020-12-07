@@ -296,7 +296,11 @@ const msg = {
     const title = `
       &nbsp;<div class="images">
         ${otherMembers.map(member => `
-          <a title="${plainToHtmlAttribute(profileStore.profiles[member].name)}" href="/profile/${profileStore.profiles[member].id}">
+          <a
+            class="member-img"
+            title="${plainToHtmlAttribute(profileStore.profiles[member].name)}"
+            href="${url('profile', profileStore.profiles[member].id)}"
+          >
             <img src="${img(profileStore.profiles[member].avatar, 'mini')}" width="22" alt="${plainToHtmlAttribute(profileStore.profiles[member].name)}" />
           </a>
         `).slice(0, 25).join('')}
