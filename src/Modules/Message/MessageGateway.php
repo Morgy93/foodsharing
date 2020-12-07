@@ -33,14 +33,14 @@ final class MessageGateway extends BaseGateway
 		return $this->db->fetchValueByCriteria('fs_conversation', 'name', ['id' => $conversationId]);
 	}
 
-	public function createConversation(array $fsIds, bool $locked = false): int
+	public function createConversation(array $fsIds, bool $locked = false, ?int $storeId = null): int
 	{
 		$this->db->beginTransaction();
 
 		$conversationId = $this->db->insert('fs_conversation', [
 			'locked' => $locked ? 1 : 0,
+			'store_id' => $storeId,
 		]);
-
 		foreach ($fsIds as $fsId) {
 			$this->db->insert('fs_foodsaver_has_conversation', [
 				'foodsaver_id' => $fsId,
