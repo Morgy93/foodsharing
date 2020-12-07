@@ -4,33 +4,10 @@ namespace Foodsharing\Modules\Message;
 
 class Conversation
 {
-	/**
-	 * @var int
-	 */
-	public $id;
-
-	/**
-	 * @var string
-	 */
-	public $title;
-
-	/**
-	 * @var bool
-	 */
-	public $hasUnreadMessages;
-
-	/**
-	 * @var array
-	 */
-	public $members;
-
-	/**
-	 * @var ?Message
-	 */
-	public $lastMessage;
-
-	/**
-	 * @var ?array
-	 */
-	public $messages;
+	public int $id;
+	public ?string $title;
+	public bool $hasUnreadMessages;
+	public array $members;
+	public ?Message $lastMessage;
+	public ?array $messages = [];
 }
