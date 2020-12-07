@@ -288,7 +288,10 @@ const msg = {
 
     const conversationTitle = conversation.title || `Unterhaltung mit ${otherMembers.map(member => profileStore.profiles[member].name).join(', ')}`
 
-    const titleText = `${plainToHtml(conversationTitle)}`
+    let titleText = `${plainToHtml(conversationTitle)}`
+    if (conversation.storeId) {
+      titleText = `<a href="${url('store', conversation.storeId)}">${titleText}</a>`
+    }
 
     const title = `
       &nbsp;<div class="images">

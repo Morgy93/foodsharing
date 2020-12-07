@@ -338,6 +338,14 @@ const conv = {
           `)
         }
         title = title.join(', ')
+      } else if (conversation.storeId) {
+        title = `
+          <a href="${url('store', conversation.storeId)}">
+            ${plainToHtml(title)}
+          </a>
+        `
+      } else {
+        title = plainToHtml(title)
       }
 
       if (key >= 0 && conv.chatboxes[key] !== undefined) {
