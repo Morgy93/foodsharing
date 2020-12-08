@@ -21,7 +21,6 @@ class XhrController extends AbstractController
 	   NEVER ADD SOMETING TO THIS LIST!
 	*/
 	private const csrf_whitelist = [
-		// 'getPinPost',
 		// 'activeSwitch',
 		// 'childBezirke',
 		// 'bBubble',
@@ -40,15 +39,11 @@ class XhrController extends AbstractController
 		// 'bezirkTree',
 		// 'bteamstatus',
 		// 'getBezirk',
-		// 'denyRequest',
-		// 'acceptRequest',
 		// 'warteRequest',
 		// 'betriebRequest',
 		// 'saveBezirk',
-		// 'delDate',
 		// 'fetchDeny',
 		// 'fetchConfirm',
-		// 'delBPost',
 		// 'delPost',
 		// 'abortEmail',
 		// 'bcontext'
