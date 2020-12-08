@@ -4,25 +4,30 @@ namespace Foodsharing\Modules\Foodsaver;
 
 use Foodsharing\Modules\Core\DBConstants\Foodsaver\Role;
 use Foodsharing\Modules\Quiz\QuizSessionGateway;
-use Foodsharing\Modules\Store\StoreModel;
+use Foodsharing\Modules\Store\StoreTransactions;
 
 class FoodsaverTransactions
 {
-	private $foodsaverGateway;
-	private $quizSessionGateway;
+	private FoodsaverGateway $foodsaverGateway;
+	private QuizSessionGateway $quizSessionGateway;
+	private StoreTransactions $storeTransactions;
 
 	public function __construct(
 		FoodsaverGateway $foodsaverGateway,
-		QuizSessionGateway $quizSessionGateway
+		QuizSessionGateway $quizSessionGateway,
+		StoreTransactions $storeTransactions
 	) {
 		$this->foodsaverGateway = $foodsaverGateway;
 		$this->quizSessionGateway = $quizSessionGateway;
+		$this->storeTransactions = $storeTransactions;
 	}
 
-	public function downgradeAndBlockForQuizPermanently(int $fsId, StoreModel $storeModel): int
+	public function downgradeAndBlockForQuizPermanently(int $fsId): int
 	{
 		$this->quizSessionGateway->blockUserForQuiz($fsId, Role::FOODSAVER);
 
-		return $this->foodsaverGateway->downgradePermanently($fsId, $storeModel);
+		$this->storeTransactions->leaveAllStoreTeams($fsId);
+
+		return $this->foodsaverGateway->downgradePermanently($fsId);
 	}
 }
