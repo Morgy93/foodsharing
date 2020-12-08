@@ -64,6 +64,7 @@ and persistent session disabled after each request, so that LastLogin is set cor
 - Remove some unused global JS !1766 @ChrisOelmueller
 - Rewrite trust banana dialog in REST and Vue !1770 @ChrisOelmueller
 - Split pickup-related gateway functionality off of StoreGateway !1800 @ChrisOelmueller
+- Use DTO for creating new stores, remove parts of StoreModel !1809 @ChrisOelmueller
 
 ## Dev/Test/CI stuff
 - Update many frontend dependencies !1723 @chriswalg
