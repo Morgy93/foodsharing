@@ -21,7 +21,7 @@ class StorePermissions
 		$this->session = $session;
 	}
 
-	public function mayJoinStoreRequest(int $storeId): bool
+	public function mayJoinStoreRequest(int $storeId, int $userId): bool
 	{
 		$fsId = $this->session->id();
 		if (!$fsId) {
