@@ -46,7 +46,6 @@ class XhrController extends AbstractController
 		// 'fetchConfirm',
 		// 'delPost',
 		// 'abortEmail',
-		// 'bcontext'
 	];
 
 	/**
