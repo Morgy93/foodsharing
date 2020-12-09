@@ -23,6 +23,7 @@
   report admins and arbitration admins can't report each other
   only new reports shown in report list. #1046 !1902
 - Regionoptions for profile mediation / report Buttons #1046 !1903 
+- Edit Team in stores is no more, functionality moved to team management mode !1810 @ChrisOelmueller
 
 ## Bugfixes
 - Fix transmitted choices in checkbox voting !1847 @alex.simm
@@ -51,6 +52,7 @@
 - Move map marker requests to a REST endpoint !1863 @alex.simm
 - Split pickup-related gateway functionality off of StoreGateway !1800 @ChrisOelmueller
 - Use DTO for creating new stores, remove parts of StoreModel !1809 @ChrisOelmueller
+- Reimplement store-team management actions in REST, remove more StoreModel parts !1810 @ChrisOelmueller
 
 ## Dev/Test/CI stuff
 - Made ForumPostCest more reliable !1853 !1856 !1857 !1882 @\_fridtjof_
