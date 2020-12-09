@@ -39,7 +39,6 @@ class XhrController extends AbstractController
 		// 'bezirkTree',
 		// 'bteamstatus',
 		// 'getBezirk',
-		// 'warteRequest',
 		// 'betriebRequest',
 		// 'saveBezirk',
 		// 'fetchDeny',

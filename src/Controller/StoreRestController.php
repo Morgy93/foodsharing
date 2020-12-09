@@ -201,8 +201,9 @@ class StoreRestController extends AbstractFOSRestController
 	 * @OA\Tag(name="stores")
 	 *
 	 * @Rest\Patch("stores/{storeId}/requests/{userId}")
+	 * @Rest\RequestParam(name="moveToStandby", nullable=true, description="whether the new member should become part of the standby team instead of the regular team")
 	 */
-	public function acceptStoreRequestAction(int $storeId, int $userId): Response
+	public function acceptStoreRequestAction(int $storeId, int $userId, ParamFetcher $paramFetcher): Response
 	{
 		if (!$this->session->id()) {
 			throw new HttpException(401);
@@ -214,7 +215,8 @@ class StoreRestController extends AbstractFOSRestController
 			throw new HttpException(404);
 		}
 
-		$this->storeTransactions->acceptStoreRequest($storeId, $userId);
+		$moveToStandby = boolval($paramFetcher->get('moveToStandby'));
+		$this->storeTransactions->acceptStoreRequest($storeId, $userId, $moveToStandby);
 
 		return $this->handleView($this->view([], 200));
 	}
