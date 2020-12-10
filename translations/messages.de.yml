@@ -111,8 +111,6 @@ homepage: 'Deine Webseite'
 #
 # FORM DATA KEYS: StoreView (team + pickup time management)
 # --
-verantwortlicher: 'Verantwortliche Mitglieder'
-storemanagers: Betriebsverantwortliche
 team_status: Teamstatus
 fetchercount: 'Anzahl der Abholer*innen'
 #
@@ -696,18 +694,9 @@ storeedit:
     leave: Aus Betrieb austragen
     cannot-leave: Du bist noch verantwortlich für diesen Betrieb und kannst ihn daher nicht verlassen!
     empty: Das Team darf nicht leer sein
-    need-sm: Es muss mindestens eine verantwortliche Person für den Betrieb geben!
-    max-sm: Bitte wähle maximal drei Betriebsverantwortliche
-    unmanaged: |
-      In diesem Betrieb gibt es aktuell keine Verantwortliche!
-      Bitte füge bis zu drei Betriebsverantwortliche hinzu, die diesen Betrieb in Zukunft betreuen.
-    note: 'Hinweis:'
-    amb: |
-      Du bist nicht verantwortlich für diesen Betrieb.
-      Du hast jedoch weitreichende Rechte als Botschafter*in.
-    orga: |
-      Du bist nicht verantwortlich für diesen Betrieb.
-      Du hast jedoch weitreichende Rechte als Teil des globalen Orgateams.
+    note: '<strong>Hinweis:</strong> Du bist nicht verantwortlich für diesen Betrieb.'
+    amb: 'Du hast jedoch weitreichende Rechte als Botschafter*in.'
+    orga: 'Du hast jedoch weitreichende Rechte als Teil des globalen Orgateams.'
   store:
     status: Status
   fetch:

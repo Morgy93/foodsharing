@@ -4,9 +4,7 @@ namespace Foodsharing\Modules\StoreUser;
 
 use Carbon\Carbon;
 use Foodsharing\Modules\Core\Control;
-use Foodsharing\Modules\Core\DBConstants\Foodsaver\Role;
 use Foodsharing\Modules\Core\DBConstants\Store\CooperationStatus;
-use Foodsharing\Modules\Core\DBConstants\Store\StoreLogAction;
 use Foodsharing\Modules\Foodsaver\FoodsaverGateway;
 use Foodsharing\Modules\Region\RegionGateway;
 use Foodsharing\Modules\Store\PickupGateway;
@@ -84,98 +82,26 @@ class StoreUserControl extends Control
 				'prefetchtime' => $store['prefetchtime']
 			];
 
-			if (isset($_POST['form_submit']) && $_POST['form_submit'] == 'team' && $this->storePermissions->mayEditStore($storeId)) {
-				$this->sanitizerService->handleTagSelect('storemanagers');
-				if (!empty($g_data['storemanagers'])) {
-					if (count($g_data['storemanagers']) > 3) {
-						$this->flashMessageHelper->error($this->translator->trans('storeedit.team.max-sm'));
-					} else {
-						foreach ($g_data['storemanagers'] as $fsId) {
-							$addedStoremanager = $this->storeGateway->addStoreManager($storeId, $fsId);
-							$this->storeGateway->addStoreLog($storeId, $this->session->id(), $fsId, null, StoreLogAction::APPOINT_STORE_MANAGER);
-						}
-					}
-				}
-
-				$this->sanitizerService->handleTagSelect('foodsaver');
-				if (!empty($g_data['foodsaver'])) {
-					$addedTeam = $this->storeModel->addBetriebTeam($storeId, $g_data['foodsaver'], $g_data['verantwortlicher']);
-				} elseif (empty($g_data['storemanagers'])) {
-					$this->flashMessageHelper->info($this->translator->trans('storeedit.team.empty'));
-				}
-				if (isset($addedStoremanager) || isset($addedTeam)) {
-					$this->flashMessageHelper->success($this->translator->trans('settings.saved'));
-				}
-				$this->routeHelper->goSelf();
-			}
-
 			$this->pageHelper->addTitle($store['name']);
 
 			if ($this->storePermissions->mayAccessStore($storeId)) {
-				if ((!$store['verantwortlich'] && $this->session->isAdminFor($store['bezirk_id']))) {
-					$store['verantwortlich'] = true;
-					$this->flashMessageHelper->info(
-						'<strong>' . $this->translator->trans('storeedit.team.note') . '</strong> '
-						. $this->translator->trans('storeedit.team.amb')
-					);
-				} elseif (!$store['verantwortlich'] && $this->session->may('orga')) {
-					$store['verantwortlich'] = true;
-					$this->flashMessageHelper->info(
-						'<strong>' . $this->translator->trans('storeedit.team.note') . '</strong> '
-						. $this->translator->trans('storeedit.team.orga')
-					);
+				if (!$store['verantwortlich']) {
+					if ($this->session->may('orga')) {
+						$extraResponsibility = true;
+						$extraMessage = $this->translator->trans('storeedit.team.orga');
+					} elseif ($this->session->isAdminFor($store['bezirk_id'])) {
+						$extraResponsibility = true;
+						$extraMessage = $this->translator->trans('storeedit.team.amb');
+					}
+					if ($extraResponsibility) {
+						$store['verantwortlich'] = true;
+						$this->flashMessageHelper->info($this->translator->trans('storeedit.team.note') . $extraMessage);
+					}
 				}
 
 				$this->dataHelper->setEditData($store);
 
 				$this->pageHelper->addBread($store['name']);
-
-				$bibsaver = [];
-				foreach ($store['foodsaver'] as $fs) {
-					if ($fs['rolle'] >= Role::STORE_MANAGER) {
-						$bibsaver[] = $fs;
-					}
-				}
-
-				if ($store['verantwortlich']) {
-					$checked = [];
-					foreach ($store['foodsaver'] as $fs) {
-						if ($fs['verantwortlich'] == 1) {
-							$checked[] = $fs['id'];
-						}
-					}
-					$verantwortlich_select = $this->v_utils->v_form_checkbox('verantwortlicher', ['values' => $bibsaver, 'checked' => $checked]);
-					$valueOptions = $this->foodsaverGateway->xhrGetFoodsaversOfRegionsForTagSelect($this->session->listRegionIDs());
-
-					$elements = [
-						$this->v_utils->v_form_tagselect('foodsaver', [
-							'valueOptions' => $valueOptions,
-							'label' => $this->translator->trans('storeedit.team.foodsaver'),
-						]),
-						$verantwortlich_select,
-					];
-
-					if (empty($checked)) {
-						$noStoreManagerWarning = $this->v_utils->v_error($this->translator->trans('storeedit.team.unmanaged'));
-						$hiddenField = $this->v_utils->v_form_hidden('set_new_store_manager', 'true');
-						$elements = [
-							$noStoreManagerWarning,
-							$this->v_utils->v_form_tagselect('storemanagers', ['valueOptions' => $this->foodsaverGateway->xhrGetStoremanagersOfRegionsForTagSelect($this->session->listRegionIDs())]
-							),
-							$hiddenField,
-						];
-					}
-
-					$edit_team = $this->v_utils->v_form(
-						'team',
-						$elements,
-						['submit' => $this->translator->trans('button.save')]
-					);
-
-					$this->pageHelper->addHidden('<div id="teamEditor">' . $edit_team . '</div>');
-				}
-
-				/*Infos*/
 
 				/* find yourself in the pickup list and show your last pickup date in store info */
 				$lastFetchDate = null;
@@ -186,6 +112,7 @@ class StoreUserControl extends Control
 					}
 				}
 
+				/* Infos */
 				$this->pageHelper->addContent($this->view->vueComponent('vue-storeinfos', 'store-infos', [
 					'particularitiesDescription' => $store['besonderheiten'] ?? '',
 					'lastFetchDate' => $lastFetchDate,
@@ -218,14 +145,6 @@ class StoreUserControl extends Control
 					$menu[] = [
 						'name' => $this->translator->trans('storeedit.bread'),
 						'href' => '/?page=betrieb&a=edit&id=' . $storeId,
-					];
-					$menu[] = [
-						'name' => $this->translator->trans('storeedit.team.bread'),
-						'click' => '$(\'#teamEditor\').dialog({'
-						. 'modal: true,'
-						. 'width: $(window).width() * 0.95,'
-						. 'title: \'' . $this->translator->trans('storeedit.team.bread') . '\''
-						. '});',
 					];
 					$menu[] = [
 						'name' => $this->translator->trans('pickup.edit.bread'),
