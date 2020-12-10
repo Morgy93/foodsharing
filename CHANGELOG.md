@@ -22,7 +22,7 @@
 - Replaced in topbar donation page to twingle pages !1773 @chriswalg
 - Complete redesign of the footer !1769 !1805 @chriswalg
 - Allow editing of polls in the first hour !1786 #975 @alex.simm
-- Edit Team in stores is no more, functionality moved to team management mode !1810 @ChrisOelmueller
+- Edit Team in stores is no more, functionality moved to team management mode !1810 !1811 @ChrisOelmueller
 
 ## Bugfixes
 - Resolved the CooperationStatus tooltip "no longer exists" and "No contact yet" in StoreList !1714 @chriswalg
@@ -66,7 +66,7 @@ and persistent session disabled after each request, so that LastLogin is set cor
 - Rewrite trust banana dialog in REST and Vue !1770 @ChrisOelmueller
 - Split pickup-related gateway functionality off of StoreGateway !1800 @ChrisOelmueller
 - Use DTO for creating new stores, remove parts of StoreModel !1809 @ChrisOelmueller
-- Reimplement store-team management actions in REST, remove more StoreModel parts !1810 @ChrisOelmueller
+- Reimplement store-team management actions in REST, remove more StoreModel parts !1810 !1811 @ChrisOelmueller
 
 ## Dev/Test/CI stuff
 - Update many frontend dependencies !1723 @chriswalg
