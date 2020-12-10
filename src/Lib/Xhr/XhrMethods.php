@@ -21,7 +21,6 @@ use Foodsharing\Modules\Message\MessageGateway;
 use Foodsharing\Modules\Region\ForumGateway;
 use Foodsharing\Modules\Region\RegionGateway;
 use Foodsharing\Modules\Store\StoreGateway;
-use Foodsharing\Modules\Store\StoreModel;
 use Foodsharing\Permissions\NewsletterEmailPermissions;
 use Foodsharing\Permissions\RegionPermissions;
 use Foodsharing\Permissions\StorePermissions;
@@ -42,7 +41,6 @@ class XhrMethods
 	private Session $session;
 	private Utils $v_utils;
 	private ViewUtils $xhrViewUtils;
-	private StoreModel $storeModel;
 	private MessageGateway $messageGateway;
 	private RegionGateway $regionGateway;
 	private StorePermissions $storePermissions;
@@ -68,7 +66,6 @@ class XhrMethods
 		Db $model,
 		Utils $viewUtils,
 		ViewUtils $xhrViewUtils,
-		StoreModel $storeModel,
 		MessageGateway $messageGateway,
 		RegionGateway $regionGateway,
 		ForumGateway $forumGateway,
@@ -93,7 +90,6 @@ class XhrMethods
 		$this->model = $model;
 		$this->v_utils = $viewUtils;
 		$this->xhrViewUtils = $xhrViewUtils;
-		$this->storeModel = $storeModel;
 		$this->messageGateway = $messageGateway;
 		$this->regionGateway = $regionGateway;
 		$this->forumGateway = $forumGateway;
@@ -871,7 +867,8 @@ class XhrMethods
 		');
 			}
 		}
-		$storeName = $this->model->getVal('name', 'betrieb', $data['bid']);
+		$storeName = $this->storeGateway->getStoreName($data['bid']);
+
 		$team = $this->storeGateway->getStoreTeam($data['bid']);
 		$team = array_map(function ($foodsaver) { return $foodsaver['id']; }, $team);
 		$bellData = Bell::create('store_cr_times_title', 'store_cr_times', 'fas fa-user-clock', [
