@@ -67,6 +67,7 @@ and persistent session disabled after each request, so that LastLogin is set cor
 - Split pickup-related gateway functionality off of StoreGateway !1800 @ChrisOelmueller
 - Use DTO for creating new stores, remove parts of StoreModel !1809 @ChrisOelmueller
 - Reimplement store-team management actions in REST, remove more StoreModel parts !1810 !1811 @ChrisOelmueller
+- Remove StoreModel remains, introduce DTO for editing stores !1814 @ChrisOelmueller
 
 ## Dev/Test/CI stuff
 - Update many frontend dependencies !1723 @chriswalg
