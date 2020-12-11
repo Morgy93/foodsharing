@@ -1005,4 +1005,17 @@ class StoreGateway extends BaseGateway
 			'foodsaver_id' => $userId
 		]);
 	}
+
+	// TODO FIXME either (understand and fix) or remove this whole `setbezirkids` thing
+	public function setbezirkids(array $storeIds): array
+	{
+		$placeholders = $this->db->generatePlaceholders(count($storeIds));
+
+		return $this->db->fetchAll('
+			SELECT id,name,bezirk_id,str,hsnr
+			FROM fs_betrieb
+			WHERE id IN(' . $placeholders . ')
+			AND ( bezirk_id = 0 OR bezirk_id IS NULL)
+		', $storeIds);
+	}
 }

@@ -9,7 +9,6 @@ use Foodsharing\Modules\Foodsaver\FoodsaverGateway;
 use Foodsharing\Modules\Region\RegionGateway;
 use Foodsharing\Modules\Store\PickupGateway;
 use Foodsharing\Modules\Store\StoreGateway;
-use Foodsharing\Modules\Store\StoreModel;
 use Foodsharing\Permissions\StorePermissions;
 use Foodsharing\Utility\DataHelper;
 use Foodsharing\Utility\Sanitizer;
@@ -21,7 +20,6 @@ class StoreUserControl extends Control
 	private $regionGateway;
 	private $pickupGateway;
 	private $storeGateway;
-	private $storeModel;
 	private $storePermissions;
 	private $foodsaverGateway;
 	private $dataHelper;
@@ -34,7 +32,6 @@ class StoreUserControl extends Control
 		RegionGateway $regionGateway,
 		PickupGateway $pickupGateway,
 		StoreGateway $storeGateway,
-		StoreModel $model,
 		StorePermissions $storePermissions,
 		FoodsaverGateway $foodsaverGateway,
 		DataHelper $dataHelper,
@@ -46,7 +43,6 @@ class StoreUserControl extends Control
 		$this->regionGateway = $regionGateway;
 		$this->pickupGateway = $pickupGateway;
 		$this->storeGateway = $storeGateway;
-		$this->storeModel = $model;
 		$this->storePermissions = $storePermissions;
 		$this->foodsaverGateway = $foodsaverGateway;
 		$this->dataHelper = $dataHelper;
