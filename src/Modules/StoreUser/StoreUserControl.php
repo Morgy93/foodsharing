@@ -86,17 +86,7 @@ class StoreUserControl extends Control
 
 			if ($this->storePermissions->mayAccessStore($storeId)) {
 				if (!$store['verantwortlich']) {
-					if ($this->session->may('orga')) {
-						$extraResponsibility = true;
-						$extraMessage = $this->translator->trans('storeedit.team.orga');
-					} elseif ($this->session->isAdminFor($store['bezirk_id'])) {
-						$extraResponsibility = true;
-						$extraMessage = $this->translator->trans('storeedit.team.amb');
-					}
-					if ($extraResponsibility) {
-						$store['verantwortlich'] = true;
-						$this->flashMessageHelper->info($this->translator->trans('storeedit.team.note') . $extraMessage);
-					}
+					$store['verantwortlich'] = $this->isResponsibleForThisStoreAnyways($store['bezirk_id']);
 				}
 
 				$this->dataHelper->setEditData($store);
@@ -341,5 +331,26 @@ class StoreUserControl extends Control
 			) . '
 		</div>'
 		);
+	}
+
+	/**
+	 * Certain users will be able to manage a store even if not explicitly listed as manager:
+	 * - all (direct) ambassadors of the region attached to the store
+	 * - members of the global orga team
+	 */
+	private function isResponsibleForThisStoreAnyways($regionId): bool
+	{
+		$isRegionAdmin = $this->session->isAdminFor($regionId);
+
+		if (!$isRegionAdmin && !$this->session->may('orga')) {
+			return false;
+		}
+
+		$this->flashMessageHelper->info(
+			$this->translator->trans('storeedit.team.note')
+			. $this->translator->trans($isRegionAdmin ? 'storeedit.team.amb' : 'storeedit.team.orga')
+		);
+
+		return true;
 	}
 }
