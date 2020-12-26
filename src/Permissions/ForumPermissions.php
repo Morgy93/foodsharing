@@ -96,16 +96,6 @@ class ForumPermissions
 		return $this->mayPostToRegion($regionId, true);
 	}
 
-	public function mayActivateThreads(int $regionId): bool
-	{
-		return $this->mayPostToRegion($regionId, true);
-	}
-
-	public function mayChangeStickiness(int $regionId): bool
-	{
-		return $this->mayPostToRegion($regionId, true);
-	}
-
 	public function mayDeletePost(array $post): bool
 	{
 		if ($this->session->may('orga')) {
