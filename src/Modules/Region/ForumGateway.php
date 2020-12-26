@@ -326,20 +326,6 @@ class ForumGateway extends BaseGateway
 		return true;
 	}
 
-	public function getRegionForPost($post_id)
-	{
-		return $this->db->fetchValue('
-			SELECT 	bt.bezirk_id
-
-			FROM 	fs_bezirk_has_theme bt,
-					fs_theme_post tp,
-					fs_theme t
-			WHERE 	t.id = tp.theme_id
-			AND 	t.id = bt.theme_id
-			AND 	tp.id = :id
-		', ['id' => $post_id]);
-	}
-
 	public function getForumsForThread($threadId)
 	{
 		return $this->db->fetchAll('
