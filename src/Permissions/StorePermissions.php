@@ -224,11 +224,6 @@ class StorePermissions
 		return $this->mayEditPickups($storeId);
 	}
 
-	public function mayDeletePickup(int $storeId): bool
-	{
-		return $this->mayEditPickups($storeId);
-	}
-
 	public function maySeePickupHistory(int $storeId): bool
 	{
 		return $this->mayEditStore($storeId);
