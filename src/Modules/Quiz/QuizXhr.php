@@ -486,7 +486,7 @@ class QuizXhr extends Control
 				}
 			}
 
-			// this variable we need to output an message that the last question was only a joke
+			// whether to output a message that the last question was only a joke
 			$was_a_joke = false;
 
 			/*
@@ -598,9 +598,6 @@ class QuizXhr extends Control
 
 						$dia->addContent($this->view->quizQuestion($question, $answers));
 
-						/*
-						 * for later function is not ready yet :)
-						 */
 						$dia->addButton('Weiter', 'questcheckresult();return false;');
 						$dia->addButton('Pause', 'ajreq(\'pause\',{app:\'quiz\',sid:\'' . $session_id . '\'});');
 
@@ -617,7 +614,6 @@ class QuizXhr extends Control
 								$close.off("click");
 								$close.on("click", function(){
 									ajreq("pause",{app:"quiz",sid:' . (int)$session_id . '});
-									//abortOrPause("' . $dia->getId() . '");
 								});
 								$("#quizcomment").hide();
 								$(".quiz-questiondialog .ui-dialog-buttonset button:last").hide();
@@ -652,13 +648,10 @@ class QuizXhr extends Control
 							var count = ' . (int)$question['duration'] . ';
 							var counter = null;
 
-							function timer()
-							{
+							function timer() {
 							  count--;
 					          $("#countdown").progressbar("value",count);
-							  //$("#countdown").text((count)+"");
-							  if (count <= 0)
-							  {
+							  if (count <= 0) {
 							     questcheckresult(true);
 							     return;
 							  }
@@ -696,25 +689,6 @@ class QuizXhr extends Control
 								$("#abortOrPause").dialog("open");
 							}
 
-							function questcomment(el)
-							{
-								if($(\'#qanswers input:checked\').length > 0)
-								{
-									clearInterval(counter);
-									$(".ui-dialog-buttonpane button:contains(\'Kommentar\')").hide();
-									$("#quizwrapper input, #countdown").hide();
-									$("#quizwrapper").css({
-										"height":"50%",
-										"overflow":"auto"
-									});
-									$("#quizcomment").show();
-								}
-								else
-								{
-									pulseError(\'Bitte triff erst eine Auswahl!\')
-								}
-							}
-
 							function questgonext(special)
 							{
 								if(special == undefined)
@@ -723,30 +697,6 @@ class QuizXhr extends Control
 								}
 								clearInterval(counter);
 								ajreq(\'next\',{answer:$(\'.qanswers\').serialize(),noco:$(\'.nocheck:checked\').length,app:\'quiz\',commentanswers:"' . $this->sanitizerService->jsSafe($comment_answers) . '",comment:$(\'#quizusercomment\').val(),qid:' . (int)$question['id'] . ',special:special});
-							}
-
-							function breaknext()
-							{
-								if($(\'#qanswers input:checked\').length > 0)
-								{
-									questgonext("pause");
-								}
-								else
-								{
-									pulseError(\'Bitte triff erst eine Auswahl!\')
-								}
-							}
-
-							function questionnext()
-							{
-								if($(\'#qanswers input:checked\').length > 0)
-								{
-									questgonext();
-								}
-								else
-								{
-									pulseError(\'Bitte triff eine Auswahl!\')
-								}
 							}
 
 							function questcheckresult(nowait)
@@ -923,17 +873,15 @@ class QuizXhr extends Control
 				}
 
 				foreach ($answers as $a) {
-					// schwerzfrageoder
 					if ($joke) {
 						$bg = '#F5F5B5';
 						$atext = '';
 						$color = '#4A3520';
-					} //neutraleantwort
-					elseif ($a['right'] == AnswerRating::NEUTRAL) {
+					} elseif ($a['right'] == AnswerRating::NEUTRAL) {
 						$atext = 'Neutrale Antwort wird nicht gewertet';
 						$bg = '#F5F5B5';
 						$color = '#4A3520';
-					} // Antwort richtig angeklickt
+					}
 					elseif ((isset($uanswers[$a['id']]) && $a['right'] == AnswerRating::CORRECT) || (!isset($uanswers[$a['id']]) && $a['right'] == AnswerRating::WRONG)) {
 						if ($a['right'] == AnswerRating::WRONG) {
 							$atext = 'Diese Antwort war natürlich falsch. Das hast Du richtig erkannt.';
@@ -942,7 +890,7 @@ class QuizXhr extends Control
 						}
 						$bg = 'var(--fs-green)';
 						$color = '#ffffff';
-					} // Antwort richtig, weil nicht angeklickt
+					}
 					else {
 						if ($a['right'] == AnswerRating::WRONG) {
 							$atext = 'Falsch! Diese Antwort stimmt nicht.';
@@ -1007,15 +955,15 @@ class QuizXhr extends Control
 		');
 
 		$dia->addOpt('open', '
-			function(){
-				setTimeout(function(){
+			function() {
+				setTimeout(function() {
 					$close = $("#' . $dia->getId() . '").prev().children(".ui-dialog-titlebar-close");
-					//$close.off("click");
-					$close.on("click", function(){
+					$close.on("click", function() {
 						ajreq(\'next\',{app:\'quiz\'});
 					});
-				},200);
-			}', false);
+				}, 200);
+			}
+		', false);
 
 		$dia->addButton('Später weitermachen', '$(this).dialog("close");');
 		$dia->addButton('weiter gehts!', 'ajreq(\'next\',{app:\'quiz\'});');
