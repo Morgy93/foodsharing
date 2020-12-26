@@ -296,7 +296,7 @@ class UserRestController extends AbstractFOSRestController
 	 * @Rest\Put("user/{userId}/banana", requirements={"userId" = "\d+"})
 	 * @Rest\RequestParam(name="message", nullable=false)
 	 */
-	public function addBanana(int $userId, ParamFetcher $paramFetcher): Response
+	public function addBananaAction(int $userId, ParamFetcher $paramFetcher): Response
 	{
 		// make sure that users may not give themselves bananas
 		if (!$this->session->may() || $this->session->id() === $userId) {
@@ -322,15 +322,5 @@ class UserRestController extends AbstractFOSRestController
 		$this->profileTransactions->giveBanana($userId, $message, $this->session->id());
 
 		return $this->handleView($this->view([], 200));
-	}
-
-	private function handleUserView(): Response
-	{
-		$user = RestNormalization::normalizeUser([
-			'id' => $this->session->id(),
-			'name' => $this->session->get('user')['name']
-		]);
-
-		return $this->handleView($this->view($user, 200));
 	}
 }
