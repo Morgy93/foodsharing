@@ -242,42 +242,6 @@ class MailsControl extends ConsoleControl
 		return $stats;
 	}
 
-	private function getMailAddressParts($str)
-	{
-		$parts = explode('@', trim($str));
-		if (count($parts) != 2) {
-			throw new \Exception($str . ' is not a valid email address');
-		}
-		$part['mailbox'] = $parts[0];
-		$part['host'] = $parts[1];
-
-		return $part;
-	}
-
-	public function fixWrongMailSenderFormat()
-	{
-		$res = $this->database->fetchAll('SELECT id, sender, `to` FROM fs_mailbox_message WHERE id < 185882 AND id > 175000');
-		foreach ($res as $r) {
-			$sender = json_decode($r['sender']);
-			$to = json_decode($r['to']);
-			if (is_string($sender)) {
-				$newSender = json_encode($this->getMailAddressParts($sender));
-				$newTo = [];
-				foreach ($to as $recip) {
-					if (strpos($recip, ';')) {
-						foreach (explode(';', $recip) as $rp) {
-							$newTo[] = $this->getMailAddressParts($rp);
-						}
-					} else {
-						$newTo[] = $this->getMailAddressParts($recip);
-					}
-				}
-				$newTo = json_encode($newTo);
-				$this->database->update('fs_mailbox_message', ['sender' => $newSender, 'to' => $newTo], ['id' => $r['id']]);
-			}
-		}
-	}
-
 	private function attach_allow($filename, $mime)
 	{
 		if (strlen($filename) < 300) {
