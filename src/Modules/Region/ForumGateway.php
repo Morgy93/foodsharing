@@ -145,17 +145,6 @@ class ForumGateway extends BaseGateway
 		$this->db->delete('fs_theme', ['id' => $thread_id]);
 	}
 
-	public function getBotThreadStatus($thread_id)
-	{
-		return $this->db->fetch('
-			SELECT  ht.bot_theme,
-					ht.bezirk_id
-			FROM
-					fs_bezirk_has_theme ht
-			WHERE   ht.theme_id = :theme_id
-		', ['theme_id' => $thread_id]);
-	}
-
 	public function stickThread($thread_id)
 	{
 		return $this->db->update(
