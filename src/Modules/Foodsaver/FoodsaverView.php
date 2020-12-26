@@ -193,15 +193,4 @@ class FoodsaverView extends View
 			])
 		]);
 	}
-
-	public function u_delete_account()
-	{
-		$content = '
-	<div style="text-align: center; margin-bottom: 10px;">
-		<span id="delete-account">' . $this->translator->trans('foodsaver.delete_account_now') . '</span>
-	</div>
-	';
-
-		return $this->v_utils->v_field($content, $this->translator->trans('foodsaver.delete_account'), ['class' => 'ui-padding']);
-	}
 }
