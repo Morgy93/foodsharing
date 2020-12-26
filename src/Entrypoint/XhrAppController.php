@@ -124,8 +124,6 @@ class XhrAppController extends AbstractController
 		// 'Store::getfetchhistory',
 		// 'Store::fetchhistory',
 		// 'Store::adddate',
-		// 'Store::savebezirkids',
-		// 'Store::setbezirkids',
 		// 'Store::signout',
 		'Team::contact',
 		// 'WallPost::delpost',

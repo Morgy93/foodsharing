@@ -868,11 +868,7 @@ class StoreGateway extends BaseGateway
 
 	public function updateStoreRegion(int $storeId, int $regionId): int
 	{
-		return $this->db->update('fs_betrieb', [
-			'bezirk_id' => $regionId
-		], [
-			'id' => $storeId
-		]);
+		return $this->db->update('fs_betrieb', ['bezirk_id' => $regionId], ['id' => $storeId]);
 	}
 
 	public function updateStoreConversation(int $storeId, int $conversationId, bool $isStandby): int
@@ -1005,16 +1001,4 @@ class StoreGateway extends BaseGateway
 		]);
 	}
 
-	// TODO FIXME either (understand and fix) or remove this whole `setbezirkids` thing
-	public function setbezirkids(array $storeIds): array
-	{
-		$placeholders = $this->db->generatePlaceholders(count($storeIds));
-
-		return $this->db->fetchAll('
-			SELECT id,name,bezirk_id,str,hsnr
-			FROM fs_betrieb
-			WHERE id IN(' . $placeholders . ')
-			AND ( bezirk_id = 0 OR bezirk_id IS NULL)
-		', $storeIds);
-	}
 }
