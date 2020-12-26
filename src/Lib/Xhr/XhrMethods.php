@@ -299,7 +299,11 @@ class XhrMethods
 	public function xhr_cropagain($data)
 	{
 		$id = $this->session->id();
-		if ($photo = $this->model->getVal('photo', 'foodsaver', $id)) {
+		if ($photo = $this->model->qOne('
+			SELECT `photo`
+			FROM   `fs_foodsaver`
+			WHERE  `id` = ' . intval($id))
+		) {
 			$path = ROOT_DIR . 'images';
 			$img = $photo;
 
