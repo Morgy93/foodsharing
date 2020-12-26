@@ -49,30 +49,6 @@ class ReportGateway extends BaseGateway
 		$this->db->update('fs_report', ['committed' => 1], ['id' => $id]);
 	}
 
-	public function getReportedSavers(): array
-	{
-		return $this->db->fetchAll(
-			'
-			SELECT 	fs.name,
-					CONCAT(fs.nachname," (",COUNT(rp.foodsaver_id),")") AS nachname,
-					fs.photo,
-					fs.id,
-					fs.sleep_status,
-					COUNT(rp.foodsaver_id) AS count,
-					CONCAT("/?page=report&sub=foodsaver&id=",fs.id) AS `href`
-				
-			FROM 	fs_foodsaver fs,
-					fs_report rp
-				
-			WHERE 	rp.foodsaver_id = fs.id
-				
-			GROUP 	BY rp.foodsaver_id
-				
-			ORDER BY count DESC, fs.name
-		'
-		);
-	}
-
 	public function getReportStats(): array
 	{
 		$ret = $this->db->fetchAll(
