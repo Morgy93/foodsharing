@@ -381,19 +381,4 @@ class MailsControl extends ConsoleControl
 
 		return true;
 	}
-
-	public static function parseEmailAddress($email, $name = false)
-	{
-		$p = explode('@', $email);
-
-		if ($name === false) {
-			$name = $email;
-		}
-
-		return [
-			'personal' => $name,
-			'mailbox' => $p[0],
-			'host' => $p[1]
-		];
-	}
 }
