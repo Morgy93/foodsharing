@@ -5,6 +5,7 @@ namespace Foodsharing\Permissions;
 use Foodsharing\Lib\Session;
 use Foodsharing\Modules\Core\DBConstants\Region\RegionIDs;
 use Foodsharing\Modules\Region\RegionGateway;
+use Foodsharing\Modules\Core\DBConstants\Region\Type;
 
 class ProfilePermissions
 {
@@ -24,6 +25,14 @@ class ProfilePermissions
 		}
 
 		if (!$this->session->isAmbassador()) {
+			return false;
+		}
+
+		if ($regionId !== null && inarray($this->regionGateway->getType($regionId), [
+			Type::COUNTRY,
+			Type::FEDERAL_STATE,
+			TYPE::WORKING_GROUP
+					])) {
 			return false;
 		}
 
