@@ -154,6 +154,8 @@ i {
     max-width: 300px;
     box-shadow: 0 0 7px rgba(0, 0, 0, 0.3);
     .scroll-container {
+      // Fixes problem that list of dropdown items is to long (older browser - for e.g. otter browser with webkit engine)
+      max-height: 340px;
       // LibSass is deprecated: https://github.com/sass/libsass/issues/2701
       max-height: unquote("min(340px, 70vh)");
     // Fixes problem that list of dropdown items is to long.
