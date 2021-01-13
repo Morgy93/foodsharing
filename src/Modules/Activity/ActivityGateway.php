@@ -21,7 +21,7 @@ class ActivityGateway extends BaseGateway
 				w.attach,
 				UNIX_TIMESTAMP(w.time) AS time_ts,
 				fs.id AS fs_id,
-				fs.name AS fs_name,
+				IFNULL(fs.name,"abgemeldeter Benutzer") AS fs_name,
 				fs.photo AS fs_photo,
 				fsp_id
 			from (SELECT
