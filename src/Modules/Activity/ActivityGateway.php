@@ -184,7 +184,7 @@ class ActivityGateway extends BaseGateway
 					n.`text`,
 					n.`zeit` AS update_time,
 					UNIX_TIMESTAMP( n.`zeit` ) AS update_time_ts,
-					fs.name AS foodsaver_name,
+					IFNULL(fs.name,"abgemeldeter Benutzer") AS foodsaver_name,
 					fs.sleep_status,
 					fs.id AS foodsaver_id,
 					fs.photo AS foodsaver_photo,
