@@ -9,6 +9,7 @@
 ## Bugfixes
 - Fix transmitted choices in checkbox voting !1847 @alex.simm
 - Fix frontend validation in new poll form !1854 #975 @alex.simm
+- Fix activityloader store wall if entry is from deleted user !1855 @fs_k
 
 ## Refactoring
 - Remove unused code from the Flourish library !1789 @\_fridtjof_
