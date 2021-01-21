@@ -8,6 +8,12 @@ import Cropper from 'cropperjs'
 import 'cropperjs/dist/cropper.css'
 import './WorkGroup.css'
 import { searchUser } from '@/api/search'
+import { expose } from '@/utils'
+import { pulseError, pulseInfo } from '@/script'
+import i18n from '@/i18n'
+import { sendEmailToWorkingGroup } from '@/api/workinggroups'
+
+expose({ trySendEmailToWorkingGroup })
 
 const $groups = $('.groups .field')
 if ($groups.length > 3) {
@@ -171,3 +177,12 @@ $('#work_group_form_members input.tag').tagedit(tageditOptions)
 $('#work_group_form_administrators input.tag').tagedit(tageditOptions)
 
 $('.fancybox').fancybox()
+
+async function trySendEmailToWorkingGroup (groupId, message) {
+  try {
+    await sendEmailToWorkingGroup(groupId, message)
+    pulseInfo(i18n('group.contact.sent'))
+  } catch (err) {
+    pulseError(i18n('error_unexpected'))
+  }
+}

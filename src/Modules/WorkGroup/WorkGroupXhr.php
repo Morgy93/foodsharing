@@ -127,41 +127,6 @@ class WorkGroupXhr extends Control
 		];
 	}
 
-	/** Contact group via email.
-	 * @return array|string
-	 */
-	public function sendtogroup()
-	{
-		if (!$this->session->may()) {
-			return XhrResponses::PERMISSION_DENIED;
-		}
-
-		$group = $this->workGroupGateway->getGroup($_GET['id']);
-		if (!$group || empty($group['email'])) {
-			return $this->responses->fail_generic();
-		}
-
-		$message = $_GET['msg'];
-		if (empty($message)) {
-			return $this->responses->fail_generic();
-		}
-
-		$userMail = $this->session->user('email');
-		$recipients = [$group['email'], $userMail];
-
-		$this->emailHelper->tplMail('general/workgroup_contact', $recipients, [
-			'gruppenname' => $group['name'],
-			'message' => $message,
-			'username' => $this->session->user('name'),
-			'userprofile' => BASE_URL . '/profile/' . $this->session->id(),
-		], $userMail);
-
-		return [
-			'status' => 1,
-			'script' => 'pulseInfo("' . $this->translator->trans('group.contact.sent') . '");',
-		];
-	}
-
 	public function contactgroup(): array
 	{
 		$group = $this->workGroupGateway->getGroup($_GET['id']);
@@ -177,10 +142,10 @@ class WorkGroupXhr extends Control
 		$dialog->addAbortButton();
 		$dialog->addButton($this->translator->trans('group.contact.send'),
 			'if ($(\'#message\').val() != \'\') {'
-				. 'ajreq(\'sendtogroup\','
-				. '{id:' . (int)$_GET['id']
-				. ',msg:$(\'#message\').val()'
-				. '});'
+				. 'trySendEmailToWorkingGroup('
+				. (int)$_GET['id']
+				. ',$(\'#message\').val()'
+				. ');'
 				. '$(\'#' . $dialog->getId() . '\').dialog(\'close\');'
 			. '} else {'
 				. 'pulseInfo(\'' . $this->translator->trans('group.contact.empty') . '\');'
