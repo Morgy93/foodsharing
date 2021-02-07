@@ -881,6 +881,7 @@ forum:
     close: "Thema schließen"
     open: "Thema wieder öffnen"
     closed: "geschlossenes Thema"
+    rename: "Thread umbenennen"
   hold_back_for_moderation: "Das Thema wurde gespeichert und wird veröffentlicht sobald ein*e Botschafter*in/Moderator*in es bestätigt."
   no_posts: "Bisher keine Beiträge vorhanden"
   no_threads: "Noch keine Themen gepostet"
