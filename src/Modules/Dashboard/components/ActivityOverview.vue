@@ -181,7 +181,7 @@ export default {
   }
 
   .header-divider {
-    border-left: 1px solid var(--fs-beige);
+    border-start: 1px solid var(--fs-beige);
     height: 18px;
     width: 1px;
     display: inline-block;

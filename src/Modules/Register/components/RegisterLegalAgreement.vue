@@ -1,5 +1,5 @@
 <template>
-  <form class="my-1 ml-3 mt-3">
+  <form class="my-1 ms-3 mt-3">
     <b-form-checkbox
       id="acceptGdpr"
       :checked="acceptGdpr"
@@ -35,7 +35,7 @@
       {{ $i18n('register.signup_newsletter') }}
     </b-form-checkbox>
     <button
-      class="btn btn-secondary ml-3 mt-3"
+      class="btn btn-secondary ms-3 mt-3"
       type="button"
       @click="$emit('prev')"
     >

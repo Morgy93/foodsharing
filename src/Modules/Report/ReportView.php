@@ -192,7 +192,7 @@ class ReportView extends View
 
 	public function listReports($reports): string
 	{
-		$this->pageHelper->addStyle('.tablesorter td{ cursor:pointer; }');
+		$this->pageHelper->addStyle('.tablesorter td{ form-control-color; }');
 
 		$this->pageHelper->addJs('
 			$(".tablesorter tr").on("click", function(){

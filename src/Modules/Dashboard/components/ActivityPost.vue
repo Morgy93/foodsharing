@@ -31,7 +31,7 @@
     </span>
 
     <span class="t">
-      <span class="txt mb-1 pl-2">
+      <span class="txt mb-1 ps-2">
         <span v-if="gallery">
           <a
             v-for="img in gallery"
@@ -263,7 +263,7 @@ export default {
       overflow: hidden;
       text-overflow: unset;
       white-space: normal;
-      border-left: 3px solid var(--border);
+      border-start: 3px solid var(--border);
       display: block;
 
       a {

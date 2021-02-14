@@ -268,22 +268,22 @@ class QuizView extends View
 			++$i;
 			$cb[] = ['id' => $a['id'], 'name' => $a['text']];
 			$out .= '
-			<li id="qanswer-' . $a['id'] . '" class="answer" onmouseout="$(this).css(\'background-color\',\'transparent\');" onmouseover="$(this).css(\'background-color\',\'#FFFFFF\');" style="cursor:pointer;border-radius:10px;display:block;list-style:none;padding:10px 10px;font-size:14px;color:#4A3520">
+			<li id="qanswer-' . $a['id'] . '" class="answer" onmouseout="$(this).css(\'background-color\',\'transparent\');" onmouseover="$(this).css(\'background-color\',\'#FFFFFF\');" style="form-control-color;border-radius:10px;display:block;list-style:none;padding:10px 10px;font-size:14px;color:#4A3520">
 				<label>
-					<span style="cursor:pointer;user-select:none;float:left">' . ($k + 1) . '. &nbsp;</span>
-					<input id="qacb-' . $a['id'] . '" style="cursor:pointer;float:left;" type="checkbox" class="qanswers" name="qanswers[]" value="' . $a['id'] . '" />
-					<span style="cursor:pointer;user-select:none;display:block;margin-left:43px;">' . $a['text'] . '</span>
+					<span style="form-control-color;user-select:none;float:left">' . ($k + 1) . '. &nbsp;</span>
+					<input id="qacb-' . $a['id'] . '" style="form-control-color;float:left;" type="checkbox" class="qanswers" name="qanswers[]" value="' . $a['id'] . '" />
+					<span style="form-control-color;user-select:none;display:block;margin-left:43px;">' . $a['text'] . '</span>
 					<span class="clear"></span>
 				</label>
 			</li>';
 		}
 		++$i;
 		$out .= '
-		<li class="noanswer" onmouseout="$(this).css(\'background-color\',\'transparent\');" onmouseover="$(this).css(\'background-color\',\'#FFFFFF\');" style="cursor:pointer;-moz-user-select:none;border-radius:10px;display:block;list-style:none;padding:10px 10px;font-size:14px;">
+		<li class="noanswer" onmouseout="$(this).css(\'background-color\',\'transparent\');" onmouseover="$(this).css(\'background-color\',\'#FFFFFF\');" style="form-control-color;-moz-user-select:none;border-radius:10px;display:block;list-style:none;padding:10px 10px;font-size:14px;">
 			<label>
-				<span style="cursor:pointer;user-select:none;float:left">' . ($i) . '. &nbsp;</span>
+				<span style="form-control-color;user-select:none;float:left">' . ($i) . '. &nbsp;</span>
 				<input class="nocheck" style="float:left;" type="checkbox" name="none" value="0" />
-				<span style="cursor:pointer;wouser-select:none;display:block;margin-left:43px;color:#4A3520;">Es ist keine Antwort richtig!</span>
+				<span style="form-control-color;wouser-select:none;display:block;margin-left:43px;color:#4A3520;">Es ist keine Antwort richtig!</span>
 				<span class="clear"></span>
 			</label>
 		</li>

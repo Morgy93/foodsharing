@@ -38,7 +38,7 @@
       </b-link>
     </div>
     <div class="mx-1 blog-text">
-      <span class="blog-title ml-1">
+      <span class="blog-title ms-1">
         {{ blogTitle }}
       </span>
       <span class="blog-teaser d-inline-block mx-1 text-muted">
@@ -48,7 +48,7 @@
     <b-link
       v-if="mayEdit"
       v-b-tooltip="$i18n('blog.edit')"
-      class="ml-auto mx-1"
+      class="ms-auto mx-1"
       :href="$url('blogEdit', blogId)"
     >
       <i class="fas fa-fw fa-pencil-alt" />

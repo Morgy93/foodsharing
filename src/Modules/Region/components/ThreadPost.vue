@@ -11,7 +11,7 @@
           v-if="wXS"
           :link="deepLink"
           :date="createdAt"
-          classes="ml-auto"
+          classes="ms-auto"
           @scroll="$emit('scroll', $event)"
         />
       </div>
@@ -45,10 +45,10 @@
             v-if="!wXS"
             :link="deepLink"
             :date="createdAt"
-            classes="col-auto text-muted pt-1 pl-3"
+            classes="col-auto text-muted pt-1 ps-3"
             @scroll="$emit('scroll', $event)"
           />
-          <div class="col text-right">
+          <div class="col text-end">
             <ThreadPostActions
               v-if="mayReply"
               :reactions="reactions"
@@ -104,6 +104,6 @@ export default {
 
 <style lang="scss" scoped>
     .avatarSide {
-        border-right: 1px solid #eee;
+        border-end: 1px solid #eee;
     }
 </style>

@@ -360,7 +360,7 @@ export default {
   blockquote {
     margin: 0;
     padding-left: 0.5rem;
-    border-left: 3px solid var(--border);
+    border-start: 3px solid var(--border);
 
     div {
       margin: 0.25rem;

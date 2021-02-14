@@ -4,11 +4,11 @@
       <div
         class="card-header bg-primary text-white d-flex justify-content-between align-items-center mb-1"
       >
-        <div class="font-weight-bolder">
+        <div class="fw-bolder">
           {{ $i18n('blog.title') }}
         </div>
 
-        <b-button-group class="header-buttons ml-1">
+        <b-button-group class="header-buttons ms-1">
           <b-button
             v-b-tooltip.hover="$i18n('blog.go')"
             variant="secondary"

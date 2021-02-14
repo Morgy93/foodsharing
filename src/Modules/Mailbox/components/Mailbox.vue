@@ -3,14 +3,14 @@
     <div class="card rounded">
       <div class="card-header bg-primary text-white">
         <div class="row align-items-center">
-          <div class="col font-weight-bolder">
+          <div class="col fw-bolder">
             {{ $i18n('mailbox.title') }}
           </div>
-          <div class="col col-3 text-right">
+          <div class="col col-3 text-end">
             <b-button
               v-b-tooltip
               :title="$i18n('mailbox.write')"
-              class="btn btn-secondary btn-sm write-new ml-1"
+              class="btn btn-secondary btn-sm write-new ms-1"
               @click="mailboxWrite"
             >
               <i class="fas faw fa-plus" />

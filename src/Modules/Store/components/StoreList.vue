@@ -118,7 +118,7 @@
             </b-card>
           </template>
         </b-table>
-        <div class="float-right p-1 pr-3">
+        <div class="float-end p-1 pe-3">
           <b-pagination
             v-model="currentPage"
             :total-rows="storesFiltered.length"

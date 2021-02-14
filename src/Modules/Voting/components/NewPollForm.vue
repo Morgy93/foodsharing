@@ -70,7 +70,7 @@
               <label for="input-startdatetime">{{ $i18n('poll.new_poll.time') }}</label>
             </b-col>
           </b-form-row>
-          <b-form-row class="ml-1">
+          <b-form-row class="ms-1">
             <b-col>
               <b-form-datepicker
                 id="input-startdate"
@@ -106,7 +106,7 @@
           :label="$i18n('poll.new_poll.end_date')"
           class="mb-3 datepicker"
         >
-          <b-form-row class="ml-2">
+          <b-form-row class="ms-2">
             <b-col>
               <b-form-datepicker
                 id="input-enddate"
@@ -143,7 +143,7 @@
           class="mb-4"
         >
           <div
-            class="mb-2 ml-2"
+            class="mb-2 ms-2"
             v-html="$i18n('forum.markdown_description')"
           />
           <b-form-textarea
@@ -153,7 +153,7 @@
             trim
             :state="$v.description.$error ? false : null"
             rows="5"
-            class="ml-1"
+            class="ms-1"
           />
           <div
             v-if="$v.description.$error"
@@ -173,7 +173,7 @@
             v-model="numOptions"
             min="2"
             max="200"
-            class="m-1 mb-3 mr-3"
+            class="m-1 mb-3 me-3"
             style="width:120px"
             size="sm"
             @input="updateNumOptions"
@@ -196,7 +196,7 @@
                 v-model="$v.options.$model[index-1]"
                 trim
                 :state="$v.options.$error ? false : null"
-                class="mr-3 mb-1"
+                class="me-3 mb-1"
               />
             </b-col>
           </b-form-row>
@@ -231,7 +231,7 @@
       :ok-title="$i18n('button.send')"
       modal-class="bootstrap"
       header-class="d-flex"
-      content-class="pr-3 pt-3"
+      content-class="pe-3 pt-3"
       @ok="submitPoll"
     >
       {{ $i18n('poll.new_poll.submit_question', { 'date': formattedEditTime }) }}

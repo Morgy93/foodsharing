@@ -19,7 +19,7 @@
           <div class="col">
             <button
               :disabled="!text.trim()"
-              class="btn btn-primary float-right"
+              class="btn btn-primary float-end"
               @click="submit"
             >
               {{ $i18n('button.send') }}

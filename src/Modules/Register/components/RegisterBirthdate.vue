@@ -15,7 +15,7 @@
         :typeable="true"
         :show-calendar-on-button-click="true"
         :calendar-button="true"
-        input-class="datepickerClass pl-3"
+        input-class="datepickerClass ps-3"
         :class="{ 'is-invalid': $v.birthdate.$error }"
         class="datepicker"
         calendar-button-icon="fa fa-calendar"
@@ -37,7 +37,7 @@
       </div>
     </div>
     <button
-      class="btn btn-secondary ml-3 mt-3"
+      class="btn btn-secondary ms-3 mt-3"
       type="button"
       @click="$emit('prev')"
     >
@@ -50,7 +50,7 @@
     >
       {{ $i18n('register.next') }}
     </button>
-    <span class="mr-3 d-flex flex-row-reverse">{{ $i18n('register.requiredFields') }}<sup><i class="fas fa-asterisk" /></sup></span>
+    <span class="me-3 d-flex flex-row-reverse">{{ $i18n('register.requiredFields') }}<sup><i class="fas fa-asterisk" /></sup></span>
   </form>
 </template>
 

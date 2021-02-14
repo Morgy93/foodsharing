@@ -1,7 +1,7 @@
 <template>
   <b-navbar-nav
     id="topbar-navright"
-    class="ml-auto"
+    class="ms-auto"
   >
     <menu-item
       :url="$url('map')"

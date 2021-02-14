@@ -55,7 +55,7 @@
             <i class="fas fa-check" /> {{ $i18n('forum.thread.activate') }}
           </button>
           <button
-            class="btn btn-danger btn-sm float-right"
+            class="btn btn-danger btn-sm float-end"
             @click="$refs.deleteModal.show()"
           >
             <i class="fas fa-trash-alt" /> {{ $i18n('forum.thread.delete') }}

@@ -7,7 +7,7 @@
       <Avatar
         :url="avatar"
         :size="50"
-        class="member-pic mt-1 pr-2 pt-1"
+        class="member-pic mt-1 pe-2 pt-1"
         :auto-scale="false"
       />
     </a>
@@ -28,7 +28,7 @@
       </div>
       <!-- For whitespace and layout reasons, the text needs to be enclosed directly: -->
       <!-- eslint-disable-next-line vue/singleline-html-element-content-newline -->
-      <div class="msg ml-1 p-1 pl-2">{{ text }}</div>
+      <div class="msg ms-1 p-1 ps-2">{{ text }}</div>
     </div>
   </div>
 </template>
@@ -95,7 +95,7 @@ export default {
 
   .msg {
     white-space: pre-line;
-    border-left: 3px solid var(--border);
+    border-start: 3px solid var(--border);
   }
 
   .time a {

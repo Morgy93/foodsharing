@@ -87,13 +87,13 @@
           </div>
         </div>
         <button
-          class="btn btn-secondary ml-3 mt-3"
+          class="btn btn-secondary ms-3 mt-3"
           type="submit"
           @click.prevent="redirect()"
         >
           {{ $i18n('register.next') }}
         </button>
-        <span class="mr-3 d-flex flex-row-reverse">
+        <span class="me-3 d-flex flex-row-reverse">
           {{ $i18n('register.requiredFields') }}
           <sup>
             <i class="fas fa-asterisk" />

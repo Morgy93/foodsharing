@@ -15,7 +15,7 @@
 
       <div class="submit d-flex">
         <b-button
-          class="ml-auto mt-2"
+          class="ms-auto mt-2"
           :class="{'d-none': !newPostExists}"
           variant="outline-secondary"
           :disabled="!newPostExists"

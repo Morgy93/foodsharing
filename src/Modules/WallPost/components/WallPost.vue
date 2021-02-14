@@ -5,7 +5,7 @@
     :class="`wallpost-${post.id}`"
   >
     <div class="metadata text-muted w-100 mx-1 d-inline-flex">
-      <span class="author flex-grow-1 flex-shrink-1 ml-sm-2 mr-1" :class="{'with-padding': !wXS}">
+      <span class="author flex-grow-1 flex-shrink-1 ms-sm-2 me-1" :class="{'with-padding': !wXS}">
         <span
           v-if="isManager(post.author.id)"
           v-b-tooltip="$i18n('store.isManager')"
@@ -21,7 +21,7 @@
 
       <span
         v-b-tooltip="$dateFormat(post.createdAt, 'full-long')"
-        class="datetime text-right flex-grow-0 flex-shrink-1"
+        class="datetime text-end flex-grow-0 flex-shrink-1"
       >
         <i class="far fa-fw fa-clock" />
         {{ displayedDate }}
@@ -29,7 +29,7 @@
     </div>
 
     <div class="content w-100 m-1 flex-grow-0 flex-shrink-0 d-flex">
-      <div class="img mr-2 flex-grow-0 flex-shrink-0 align-self-baseline">
+      <div class="img me-2 flex-grow-0 flex-shrink-0 align-self-baseline">
         <a
           :href="$url('profile', post.author.id)"
           class="d-inline-block"
@@ -44,7 +44,7 @@
         </a>
       </div>
 
-      <div class="msg ml-1">
+      <div class="msg ms-1">
         <Markdown :source="post.body" />
       </div>
     </div>
@@ -97,7 +97,7 @@
           {{ $i18n('wall.confirm-deletion', { name: post.author.name }) }}
         </strong>
         <blockquote class="excerpt">
-          <div class="msg ml-1">
+          <div class="msg ms-1">
             <Markdown :source="post.body" />
           </div>
         </blockquote>
@@ -184,7 +184,7 @@ export default {
 
     .author {
       &.with-padding {
-        padding-left: calc(50px + 0.25rem); // avatar width + ml-1 post body alignment
+        padding-left: calc(50px + 0.25rem); // avatar width + ms-1 post body alignment
 
         .is-manager {
           margin-left: -2.5em; // width of .fa-stack
@@ -231,7 +231,7 @@ export default {
     margin: 0.5rem;
     margin-left: 0;
     padding-left: 0.5rem;
-    border-left: 3px solid var(--border);
+    border-start: 3px solid var(--border);
   }
 }
 
@@ -267,7 +267,7 @@ export default {
 
   // Display quotes as more distinct
   ::v-deep blockquote {
-    border-left: 3px solid var(--border);
+    border-start: 3px solid var(--border);
     padding-left: 1rem;
     padding-top: 0.5rem;
     padding-bottom: 0.5rem;

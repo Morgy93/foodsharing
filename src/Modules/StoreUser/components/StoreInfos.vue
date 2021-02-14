@@ -186,7 +186,7 @@ export default {
       blockquote {
         margin: 0.5rem 0;
         padding: 0.5rem;
-        border-left: 2px solid var(--border);
+        border-start: 2px solid var(--border);
         background-color: var(--fs-white);
       }
     }

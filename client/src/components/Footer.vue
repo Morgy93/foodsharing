@@ -127,7 +127,7 @@
                 :href="$url('hoster')"
                 target="_blank"
                 :rel="externalLink"
-                data-toggle="tooltip"
+                data-bs-toggle="tooltip"
                 data-placement="top"
                 :title="$i18n('footer.hosting_tooltip')"
               >

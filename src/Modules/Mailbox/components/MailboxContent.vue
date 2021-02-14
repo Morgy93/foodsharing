@@ -3,15 +3,15 @@
     <div
       v-b-tooltip.hover.right
       :title="fullName"
-      class="mailbox-name text-monospace d-inline-block pr-2"
+      class="mailbox-name font-monospace d-inline-block pe-2"
     >
       <i :class="['fas fa-fw', unreadCount ? 'fa-envelope' : 'fa-envelope-open-text']" />
       {{ mailboxName }}
     </div>
 
-    <div class="mailbox-folders ml-4">
+    <div class="mailbox-folders ms-4">
       <b-link
-        :class="{'font-weight-bold': !!unreadCount}"
+        :class="{'fw-bold': !!unreadCount}"
         @click.prevent="loadMailbox(FOLDER_INBOX)"
       >
         {{ $i18n('mailbox.inbox') }}

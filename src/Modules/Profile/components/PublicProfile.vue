@@ -28,7 +28,7 @@
       <span class="fs-name text-muted">
         {{ $i18n('profile.public.who', { name: initials, from: fromRegion }) }}
       </span>
-      <span class="fs-id text-muted text-monospace bg-light">
+      <span class="fs-id text-muted font-monospace bg-light">
         #{{ fsId }}
       </span>
 
