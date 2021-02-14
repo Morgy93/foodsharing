@@ -116,11 +116,7 @@ module.exports = merge(webpackBase, {
   },
   plugins,
   optimization: {
-    minimizer: [
-      new TerserPlugin({
-        sourceMap: true,
-      }),
-    ],
+    minimizer: [new TerserPlugin()],
     runtimeChunk: true,
     splitChunks: {
       chunks: 'all',
