@@ -68,7 +68,7 @@ abstract class Control
 			$this->isXhrControl = true;
 		}
 
-		if ($this->isControl) {
+		/*if ($this->isControl) {
 			$webpackModules = $dir . '../../../assets/modules.json';
 			$manifest = json_decode(file_get_contents($webpackModules), true);
 			$moduleName = substr($className, 0, $pos);
@@ -82,7 +82,7 @@ abstract class Control
 					}
 				}
 			}
-		}
+		} */
 		$this->metrics->addPageStatData(['controller' => $className]);
 	}
 

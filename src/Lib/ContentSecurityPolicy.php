@@ -13,9 +13,10 @@ class ContentSecurityPolicy
 
 		$policy = [
 			'default-src' => [
-				$none
+				$none,
 			],
 			'script-src' => [
+				'http://localhost:18099',
 				$self,
 				$unsafeInline,
 				$unsafeEval // lots of `$.globalEval` still ... 😢

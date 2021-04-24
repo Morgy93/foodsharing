@@ -55,7 +55,11 @@
     </head>
 
     <body class="{{ bodyClasses|join(' ') }}">
-        {% include 'partials/becomeBezirk.twig' %}
+
+    <script src="http://localhost:18099/build/@vite/client" type="module"></script>
+    <script src="http://localhost:18099/build/app.js" type="module"></script>
+
+    {% include 'partials/becomeBezirk.twig' %}
         {{ menu | raw }}
         {% if broadcast_message %}
             <div class="inner inside broadcast-message">{{ broadcast_message | raw }}</div>

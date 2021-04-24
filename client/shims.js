@@ -5,7 +5,7 @@ function lib (filename) {
   return path.join(clientRoot, 'lib', filename)
 }
 
-const production = process.env.NODE_ENV === 'production'
+const production = import.meta.env.NODE_ENV === 'production'
 
 Object.assign(module.exports, convert({
 

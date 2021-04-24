@@ -88,7 +88,7 @@ abstract class FoodsharingController extends AbstractController
 			throw new \Exception('Please rename the controller "' . $className . '" to end with "Controller".');
 		}
 
-		$projectDir = $container->get('kernel')->getProjectDir();
+		/* $projectDir = $container->get('kernel')->getProjectDir();
 		$webpackModules = $projectDir . '/assets/modules.json';
 		$manifest = json_decode(file_get_contents($webpackModules), true);
 		$moduleName = substr($className, 0, $pos);
@@ -101,7 +101,7 @@ abstract class FoodsharingController extends AbstractController
 					$this->pageHelper->addWebpackStylesheet($asset);
 				}
 			}
-		}
+		} */
 
 		$this->metrics->addPageStatData(['controller' => $className]);
 	}

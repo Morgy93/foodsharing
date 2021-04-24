@@ -49,6 +49,7 @@ services:
     image: node:14.14.0-alpine3.12
     ports:
       - 18080:18080
+      - 18099:18099
     command: sh -c "yarn && yarn dev"
     working_dir: /home/node/app/client
     user: "node"

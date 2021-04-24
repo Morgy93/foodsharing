@@ -82,7 +82,8 @@
     "tecnickcom/tcpdf": "6.4.1",
     "twig/intl-extra": "3.3.0",
     "twig/twig": "3.3.0",
-    "voku/bounce-mail-handler": "6.0.3"
+    "voku/bounce-mail-handler": "6.0.3",
+    "pentatrion/vite-bundle": "0.1.2"
   },
   "autoload": {
     "psr-4": {

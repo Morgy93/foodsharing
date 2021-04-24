@@ -2,7 +2,7 @@ import '@/core'
 import '@/globals'
 import i18n from '@/i18n'
 import { vueApply, vueRegister } from '@/vue'
-import Index from './components/Index'
+import Index from './components/Index.vue'
 
 vueRegister({
   Index,
