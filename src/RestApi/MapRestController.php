@@ -33,7 +33,7 @@ class MapRestController extends AbstractFOSRestController
 	}
 
 	/**
-	 * Returns the coordinates of all baskets.
+	 * Returns the coordinates of all baskets or foodsharepoints or stores.
 	 *
 	 * @OA\Response(response="200", description="Success.")
 	 * @OA\Response(response="401", description="Not logged in.")

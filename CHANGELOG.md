@@ -338,6 +338,7 @@
 - User with administrativ orga power are part of the orga koordination group !2038 @fs_k
 - Make expected format of input in user settings clearer !2032 @iron9
 - translations: changed wording in calendar module !2076 @Jonathan_B
+- Added map to fairteiler / FoodSharePoint #1035 !1970 @fabian.rudolf 
 
 ## Bugfixes
 - Long links in the location field of events do not overflow the location box

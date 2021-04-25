@@ -4,6 +4,7 @@ namespace Foodsharing\Modules\FoodSharePoint;
 
 use Foodsharing\Lib\Session;
 use Foodsharing\Lib\View\Utils;
+use Foodsharing\Lib\View\vMap;
 use Foodsharing\Modules\Core\DBConstants\Info\InfoType;
 use Foodsharing\Modules\Core\View;
 use Foodsharing\Modules\Foodsaver\Profile;
@@ -144,8 +145,56 @@ class FoodSharePointView extends View
 		);
 
 		return $this->v_utils->v_field(
-			$address . $location,
+			$address,
 			$this->translator->trans('fsp.address'),
+			['class' => 'ui-padding']
+		);
+	}
+
+	public function map(): string
+	{
+		$mapHtml = $this->v_utils->v_input_wrapper($this->translator->trans('smallMap.title'),
+			'<i>'
+			. $this->translator->trans('smallMap.noCoordinatesAvailable')
+			. '</i>'
+		);
+
+		if ($this->foodSharePoint['lat'] != 0 || $this->foodSharePoint['lon'] != 0) {
+			$map = new vMap([$this->foodSharePoint['lat'], $this->foodSharePoint['lon']]);
+			$map->addMarker($this->foodSharePoint['lat'], $this->foodSharePoint['lon']);
+			$map->setDefaultMarkerOptions('recycle', '#FFCA92');
+			$map->setCenter($this->foodSharePoint['lat'], $this->foodSharePoint['lon']);
+
+			$mapHtml = $map->render();
+			$mapHtml .= $this->v_utils->v_input_wrapper('', '<a href="/?page=map&fspid='
+				. $this->foodSharePoint['id']
+				. '&lat='
+				. $this->foodSharePoint['lat']
+				. '&lon='
+				. $this->foodSharePoint['lon']
+				. '" target="_blank">'
+				. $this->translator->trans('smallMap.enlarge')
+				. '</a><br />'
+				. '<b>'
+				. $this->translator->trans('smallMap.coordinates')
+				. '</b><br />'
+				. $this->foodSharePoint['lat']
+				. ', '
+				. $this->foodSharePoint['lon']
+				. '<br /><br /><a href="https://www.google.com/maps/search/?api=1&query='
+				. $this->foodSharePoint['lat']
+				. ','
+				. $this->foodSharePoint['lon']
+				. '" target="_blank" rel="noreferrer">'
+				. $this->translator->trans('smallMap.showOnGoogleMaps')
+				. '</a>'
+			);
+
+		}
+
+		return $this->v_utils->v_field(
+			$mapHtml,
+			$this->translator->trans('smallMap.title'),
 			['class' => 'ui-padding']
 		);
 	}

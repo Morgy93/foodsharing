@@ -9,6 +9,8 @@ import { vueApply, vueRegister } from '@/vue'
 import FileUploadVForm from '@/components/upload/FileUploadVForm'
 import { GET } from '@/browser'
 import AvatarList from '@/components/AvatarList'
+import { initializeMap } from '@php/Lib/View/vMap'
+import $ from 'jquery'
 
 import './FoodSharePoint.css'
 
@@ -35,3 +37,7 @@ if (sub === 'add' || sub === 'edit') {
     vueApply('#fsp-managers')
   }
 }
+
+$(document).ready(() => {
+  $('.vmap').each((i, el) => initializeMap(el))
+})

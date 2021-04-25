@@ -739,7 +739,6 @@ fsp:
   editSuccess: "Fairteiler wurde erfolgreich bearbeitet"
   address: "Adresse"
   street: "Anschrift"
-  location: "Postleitzahl / Ort"
   pic: "Foto"
   addedOn: "Hinzugefügt am"
   addedBy: "Hinzugefügt von"
@@ -1573,6 +1572,14 @@ content:
 map:
   title: "Karte"
   donates: "Betrieb spendet" #MapView
+
+# used in FoodSharePointView.php
+smallMap:
+  title: "Karte"
+  enlarge: "Karte vergrößern."
+  coordinates: "Breitengrad, Längengrad"
+  noCoordinatesAvailable: "Keine Koordinaten hinterlegt."
+  showOnGoogleMaps: "Extern auf Google Maps anzeigen."
 
 messages:
   bread: "Nachrichten"

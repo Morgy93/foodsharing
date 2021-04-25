@@ -43,6 +43,12 @@ class MapControl extends Control
 			$center = $this->mapGateway->getStoreLocation($storeId);
 			$this->pageHelper->addJs('ajreq(\'bubble\', { app: \'store\', id: ' . $storeId . ' });');
 		}
+		
+		if ($this->session->id() && isset($_GET['fspid'])) {
+			$fspId = intval($_GET['fspid']);
+			$center = $this->mapGateway->getFoodsharePointLocation($fspId);
+			$this->pageHelper->addJs('ajreq(\'bubble\', { app: \'fsp\', id: ' . $fspId . ' });');
+		}
 
 		$this->pageHelper->addJs('u_init_map();');
 
