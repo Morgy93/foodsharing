@@ -11,6 +11,7 @@
 - Redesign startpage !1778 @chriswalg
 - Edit Team in stores is no more, functionality moved to team management mode !1810 !1811 @ChrisOelmueller
 - Added a link in Footer.vue to our beta testing issues on beta and dev !1961 @chriswalg
+- Make the own personal address visible for the logged in user, as it is already for ORGA #994 !1957 @leonja
 
 ## Bugfixes
 - Add permission checks to REST endpoints !1946 @alex.simm
@@ -31,6 +32,7 @@
 - Fixed restart behavior for some docker containers !1937 @\_fridtjof_
 - Update some backend dependencies !1942 @chriswalg
 - Update minishlink WebPush to version 6 !1745 @peter.toennies
+- Update chat dependencies !1962 @chriswalg
 
 # 2021-04-09 Hotfix
 
@@ -122,6 +124,7 @@
 - Update some frontend dependencies !1842 !1881 !1890 !1892 @chriswalg @\_fridtjof_
 - Update some backend dependencies !1885 !1897 @chriswalg
 - Fixed Xdebug !1883 @\_fridtjof_
+- Improved table cleanup during seed command !1859 @scarya
 
 # 2021-02-08 Hotfix
 

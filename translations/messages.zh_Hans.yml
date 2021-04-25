@@ -1,1 +1,15 @@
-{}
+email: 电子邮件地址
+plz: 邮编(从地图上自动生成)
+address: 地址
+name: 名称
+description: 描述
+desc: 描述
+edit: 更改
+nachname: 姓氏
+geb_datum: 出生日期
+handy: 手机号码
+telefon: 座机号码
+attachement: 附件
+options: 选项
+picture: 照片
+bezirk: 地区
