@@ -24,7 +24,7 @@ class BusinessCardControl extends Control
 
 		$this->pageHelper->addContent($this->view->top(), CNT_TOP);
 
-		if ($data = $this->gateway->getMyData($this->session->id(), $this->session->may('bieb'))) {
+		if ($data = $this->gateway->getFoodsaverData($this->session->id())) {
 			if (mb_strlen($data['anschrift']) >= self::MAX_CHAR_PER_LINE || mb_strlen($data['plz'] . ' ' . $data['stadt']) >= self::MAX_CHAR_PER_LINE) {
 				$this->flashMessageHelper->info($this->translator->trans('bcard.info.address_shortened'));
 			}
@@ -39,32 +39,40 @@ class BusinessCardControl extends Control
 
 			$choices = [];
 
-			foreach ($data['bot'] as $b) {
-				$choices[] = [
-					'value' => 'bot:' . $b['id'],
-					'text' => $this->translator->trans('bcard.for', [
-						'{role}' => $this->translator->trans('terminology.ambassador.d'),
-						'{region}' => $b['name'],
-					]),
-				];
+			if ($this->session->may('bot')) {
+				$ambassadorRegions = $this->gateway->getAmbassadorRegions($this->session->id());
+				foreach ($ambassadorRegions as $b) {
+					$choices[] = [
+						'value' => 'bot:' . $b['id'],
+						'text' => $this->translator->trans('bcard.for', [
+							'{role}' => $this->translator->trans('terminology.ambassador.d'),
+							'{region}' => $b['name'],
+						]),
+					];
+				}
 			}
-			foreach ($data['sm'] as $b) {
-				$choices[] = [
-					'value' => 'sm:' . $b['id'],
-					'text' => $this->translator->trans('bcard.for', [
-						'{role}' => $this->translator->trans('terminology.storemanager.d'),
-						'{region}' => $b['name'],
-					]),
-				];
-			}
-			foreach ($data['fs'] as $b) {
-				$choices[] = [
-					'value' => 'fs:' . $b['id'],
-					'text' => $this->translator->trans('bcard.for', [
-						'{role}' => $this->translator->trans('terminology.foodsaver.d'),
-						'{region}' => $b['name'],
-					]),
-				];
+
+			if ($this->session->may('fs')) {
+				$fsRegions = $this->gateway->getFoodsaverRegions($this->session->id());
+				foreach ($fsRegions as $b) {
+					$choices[] = [
+						'value' => 'fs:' . $b['id'],
+						'text' => $this->translator->trans('bcard.for', [
+							'{role}' => $this->translator->trans('terminology.foodsaver.d'),
+							'{region}' => $b['name'],
+						]),
+					];
+
+					if ($this->session->may('bieb')) {
+						$choices[] = [
+							'value' => 'sm:' . $b['id'],
+							'text' => $this->translator->trans('bcard.for', [
+								'{role}' => $this->translator->trans('terminology.storemanager.d'),
+								'{region}' => $b['name'],
+							]),
+						];
+					}
+				}
 			}
 
 			$this->pageHelper->addContent($this->view->optionForm($choices));
@@ -73,7 +81,12 @@ class BusinessCardControl extends Control
 
 	public function makeCard()
 	{
-		$data = $this->gateway->getMyData($this->session->id(), $this->session->may('bieb'));
+		$data = $this->gateway->getFoodsaverData($this->session->id());
+		$data['fs'] = $this->gateway->getFoodsaverRegions($this->session->id());
+		if ($this->session->may('bieb')) {
+			$data['sm'] = $data['fs'];
+		}
+		$data['bot'] = $this->gateway->getAmbassadorRegions($this->session->id());
 		$opt = $this->getRequest('opt');
 		if (!$data || !$opt) {
 			return;
@@ -104,9 +117,13 @@ class BusinessCardControl extends Control
 		}
 
 		if (isset($mailbox['email'])) {
-			$data['email'] = $mailbox['email'];
+			$data['email'] = $this->gateway->getMailboxData($this->session->id());
 		}
 		$data['subtitle'] = $this->displayedRole($role, $data['geschlecht'], $mailbox['name']);
+
+		$includeAddress = boolval($this->getRequest('address'));
+		$includePhone = boolval($this->getRequest('phone'));
+		$createQRCode = boolval($this->getRequest('qr'));
 
 		if (mb_strlen($data['anschrift']) > self::MAX_CHAR_PER_LINE) {
 			$street_number_pos = $this->index_of_first_number($data['anschrift']);
@@ -119,7 +136,7 @@ class BusinessCardControl extends Control
 			$data['stadt'] = mb_substr($data['stadt'], 0, (self::MAX_CHAR_PER_LINE - strlen($data['plz']) - 4)) . '...';
 		}
 
-		$this->generatePdf($data, $role);
+		$this->generatePdf($data, $role, $includeAddress, $includePhone, $createQRCode);
 	}
 
 	private function displayedRole(string $role, int $gender, string $regionName): string
@@ -141,7 +158,8 @@ class BusinessCardControl extends Control
 		return $this->translator->trans('bcard.for', ['{role}' => $roleName, '{region}' => $regionName]);
 	}
 
-	private function generatePdf(array $data, string $role = 'fs'): void
+	private function generatePdf(array $data, string $role = 'fs', bool $includeAddress = true,
+								 bool $includePhone = true, bool $createQRCode = false): void
 	{
 		$pdf = new Fpdi();
 		$pdf->AddPage();
@@ -177,14 +195,19 @@ class BusinessCardControl extends Control
 			$pdf->MultiCell(50, 12, $data['subtitle'], 0, 'L');
 
 			$pdf->SetTextColor(0, 0, 0);
-			$pdf->Text(52.3 + $x, 44.8 + $y, $data['anschrift']);
-			$pdf->Text(52.3 + $x, 47.8 + $y, $data['plz'] . ' ' . $data['stadt']);
-			$tel = $data['handy'];
-			if (empty($tel)) {
-				$tel = $data['telefon'];
+			if ($includeAddress) {
+				$pdf->Text(52.3 + $x, 44.8 + $y, $data['anschrift']);
+				$pdf->Text(52.3 + $x, 47.8 + $y, $data['plz'] . ' ' . $data['stadt']);
 			}
 
-			$pdf->Text(52.3 + $x, 51.8 + $y, $tel);
+			if ($includePhone) {
+				$tel = $data['handy'];
+				if (empty($tel)) {
+					$tel = $data['telefon'];
+				}
+				$pdf->Text(52.3 + $x, 51.8 + $y, $tel);
+			}
+
 			$pdf->Text(52.3 + $x, 56.2 + $y, $data['email']);
 			$pdf->Text(52.3 + $x, 61.6 + $y, BASE_URL);
 			if ($x == 0) {

@@ -2,37 +2,44 @@
 
 namespace Foodsharing\Modules\BusinessCard;
 
+use Exception;
 use Foodsharing\Modules\Core\BaseGateway;
 
 class BusinessCardGateway extends BaseGateway
 {
-	public function getMyData($fsId, $isBieb)
+	public function getFoodsaverData(int $fsId): array
 	{
-		$stm = '
-			SELECT 	fs.id,
-					fs.`name`,
-					fs.`geschlecht`,
-					fs.`nachname`,
-					fs.`plz`,
-					fs.`stadt`,
-					fs.`anschrift`,
-					fs.`telefon`,
-					fs.`handy`,
-					fs.`verified`,
-					fs.email
+		return $this->db->fetchByCriteria('fs_foodsaver', [
+			'id', 'name', 'nachname', 'geschlecht', 'plz', 'stadt', 'anschrift', 'telefon', 'handy', 'verified', 'email'
+		], ['id' => $fsId]);
+	}
 
-			FROM 	fs_foodsaver fs
+	/**
+	 * Returns ID and name of all regions in which the user is a member.
+	 */
+	public function getFoodsaverRegions(int $fsId): array
+	{
+		return $this->db->fetchAll('
+			SELECT 	b.name,
+					b.id
 
-			WHERE 	fs.id = :foodsaver_id
-		';
-		$fs = $this->db->fetch($stm, [':foodsaver_id' => $fsId]);
+			FROM 	fs_bezirk b,
+					fs_foodsaver_has_bezirk fhb
 
-		$stm = 'SELECT mb.name FROM fs_mailbox mb, fs_foodsaver fs WHERE fs.mailbox_id = mb.id AND fs.id = :foodsaver_id';
-		if ($isBieb && $mailbox = $this->db->fetchValue($stm, [':foodsaver_id' => $fsId])) {
-			$fs['email'] = $mailbox . '@' . PLATFORM_MAILBOX_HOST;
-		}
+			WHERE 	fhb.bezirk_id = b.id
+			AND 	fhb.foodsaver_id = :foodsaver_id
+			AND 	b.type != 7
+			AND  b.type != 6
+			AND  b.type != 5
+		', [':foodsaver_id' => $fsId]);
+	}
 
-		$stm = '
+	/**
+	 * Returns ID, name, and email of all regions for which the user is ambassador.
+	 */
+	public function getAmbassadorRegions(int $fsId): array
+	{
+		return $this->db->fetchAll('
 			SELECT 	b.name,
 					b.id,
 					CONCAT(mb.`name`,"@","' . PLATFORM_MAILBOX_HOST . '") AS email,
@@ -46,30 +53,26 @@ class BusinessCardGateway extends BaseGateway
 			AND 	bot.bezirk_id = b.id
 			AND 	bot.foodsaver_id = :foodsaver_id
 			AND 	b.type != 7
-		';
-		$fs['bot'] = $this->db->fetchAll($stm, [':foodsaver_id' => $fsId]);
+		', [':foodsaver_id' => $fsId]);
+	}
 
-		$stm = '
-			SELECT 	b.name,
-					b.id
+	/**
+	 * Returns the user's foodsharing email address.
+	 */
+	public function getMailboxData(int $fsId): ?string
+	{
+		try {
+			$mailbox = $this->db->fetchValue('
+			SELECT mb.name
+			FROM fs_mailbox mb, fs_foodsaver fs
+			WHERE fs.mailbox_id = mb.id
+			AND fs.id = :foodsaver_id', [
+				':foodsaver_id' => $fsId
+			]);
 
-			FROM 	fs_bezirk b,
-					fs_foodsaver_has_bezirk fhb
-
-			WHERE 	fhb.bezirk_id = b.id
-			AND 	fhb.foodsaver_id = :foodsaver_id
-			AND 	b.type != 7
-			AND  b.type != 6
-			AND  b.type != 5
-		';
-		$fs['fs'] = $this->db->fetchAll($stm, [':foodsaver_id' => $fsId]);
-
-		if ($isBieb) {
-			$fs['sm'] = $fs['fs'];
-		} else {
-			$fs['sm'] = [];
+			return $mailbox . '@' . PLATFORM_MAILBOX_HOST;
+		} catch (Exception $e) {
+			return null;
 		}
-
-		return $fs;
 	}
 }
