@@ -62,10 +62,6 @@ lifetime: "Wie lange soll dein Essenskorb gültig sein?"
 teaser: "Teaser"
 bezirk_id: "Für welche Region ist der Artikel relevant?"
 #
-# FORM DATA KEYS: BusinessCardView
-# --
-opt: "Optionen"
-#
 # FORM DATA KEYS: EmailControl
 # --
 testemail: "Test-E-Mail-Adresse"
@@ -258,6 +254,9 @@ bcard:
   generate: "Visitenkarten erstellen"
   info:
     address_shortened: "Deine Anschrift und/oder PLZ + Ort werden auf der Visitenkarte gekürzt ausgegeben."
+  includeAddress: "mit Adresse"
+  includePhone: "mit Telefonnummer"
+  createQRCode: "QR-Code erstellen"
 
 group:
   name: "Name"

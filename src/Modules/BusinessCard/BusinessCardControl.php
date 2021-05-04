@@ -41,8 +41,8 @@ class BusinessCardControl extends Control
 
 			foreach ($data['bot'] as $b) {
 				$choices[] = [
-					'id' => 'bot:' . $b['id'],
-					'name' => $this->translator->trans('bcard.for', [
+					'value' => 'bot:' . $b['id'],
+					'text' => $this->translator->trans('bcard.for', [
 						'{role}' => $this->translator->trans('terminology.ambassador.d'),
 						'{region}' => $b['name'],
 					]),
@@ -50,8 +50,8 @@ class BusinessCardControl extends Control
 			}
 			foreach ($data['sm'] as $b) {
 				$choices[] = [
-					'id' => 'sm:' . $b['id'],
-					'name' => $this->translator->trans('bcard.for', [
+					'value' => 'sm:' . $b['id'],
+					'text' => $this->translator->trans('bcard.for', [
 						'{role}' => $this->translator->trans('terminology.storemanager.d'),
 						'{region}' => $b['name'],
 					]),
@@ -59,8 +59,8 @@ class BusinessCardControl extends Control
 			}
 			foreach ($data['fs'] as $b) {
 				$choices[] = [
-					'id' => 'fs:' . $b['id'],
-					'name' => $this->translator->trans('bcard.for', [
+					'value' => 'fs:' . $b['id'],
+					'text' => $this->translator->trans('bcard.for', [
 						'{role}' => $this->translator->trans('terminology.foodsaver.d'),
 						'{region}' => $b['name'],
 					]),

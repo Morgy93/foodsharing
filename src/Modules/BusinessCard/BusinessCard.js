@@ -1,14 +1,10 @@
 /* eslint-disable camelcase */
 import '@/core'
 import '@/globals'
-import $ from 'jquery'
-import { expose } from '@/utils'
+import { vueApply, vueRegister } from '@/vue'
+import BusinessCardForm from './components/BusinessCardForm'
 
-expose({
-  u_download,
+vueRegister({
+  BusinessCardForm,
 })
-
-function u_download (short) {
-  $('#dlbox').show()
-  $('#dlbox a').attr('href', `/?page=bcard&a=dl&b=${short}`)
-}
+vueApply('#business-card-form')
