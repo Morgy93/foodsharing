@@ -20,7 +20,7 @@ final class TranslationHelper
 		return $out;
 	}
 
-	public function getRoleName(string $role, int $gender): string
+	public function getRoleName(int $role, int $gender): string
 	{
 		$role = [
 			Role::FOODSHARER => 'foodsharer',

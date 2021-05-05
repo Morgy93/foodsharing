@@ -3,6 +3,8 @@
 namespace Foodsharing\Modules\BusinessCard;
 
 use Foodsharing\Modules\Core\Control;
+use Foodsharing\Modules\Core\DBConstants\Foodsaver\Role;
+use JeroenDesloovere\VCard\VCard;
 use setasign\Fpdi\Tcpdf\Fpdi;
 
 class BusinessCardControl extends Control
@@ -43,7 +45,7 @@ class BusinessCardControl extends Control
 				$ambassadorRegions = $this->gateway->getAmbassadorRegions($this->session->id());
 				foreach ($ambassadorRegions as $b) {
 					$choices[] = [
-						'value' => 'bot:' . $b['id'],
+						'value' => Role::AMBASSADOR . ':' . $b['id'],
 						'text' => $this->translator->trans('bcard.for', [
 							'{role}' => $this->translator->trans('terminology.ambassador.d'),
 							'{region}' => $b['name'],
@@ -56,7 +58,7 @@ class BusinessCardControl extends Control
 				$fsRegions = $this->gateway->getFoodsaverRegions($this->session->id());
 				foreach ($fsRegions as $b) {
 					$choices[] = [
-						'value' => 'fs:' . $b['id'],
+						'value' => Role::FOODSAVER . ':' . $b['id'],
 						'text' => $this->translator->trans('bcard.for', [
 							'{role}' => $this->translator->trans('terminology.foodsaver.d'),
 							'{region}' => $b['name'],
@@ -65,7 +67,7 @@ class BusinessCardControl extends Control
 
 					if ($this->session->may('bieb')) {
 						$choices[] = [
-							'value' => 'sm:' . $b['id'],
+							'value' => Role::STORE_MANAGER . ':' . $b['id'],
 							'text' => $this->translator->trans('bcard.for', [
 								'{role}' => $this->translator->trans('terminology.storemanager.d'),
 								'{region}' => $b['name'],
@@ -82,34 +84,39 @@ class BusinessCardControl extends Control
 	public function makeCard()
 	{
 		$data = $this->gateway->getFoodsaverData($this->session->id());
-		$data['fs'] = $this->gateway->getFoodsaverRegions($this->session->id());
-		if ($this->session->may('bieb')) {
-			$data['sm'] = $data['fs'];
+		if (!$data) {
+			return;
 		}
-		$data['bot'] = $this->gateway->getAmbassadorRegions($this->session->id());
+
 		$opt = $this->getRequest('opt');
 		if (!$data || !$opt) {
 			return;
-		} else {
-			$opt = explode(':', $opt); // role:region
 		}
 
+		$opt = explode(':', $opt);
 		if (count($opt) != 2 || (int)$opt[1] < 0) {
 			return;
 		}
 
 		$regionId = (int)$opt[1];
-		$role = $opt[0];
+		$role = (int)$opt[0];
 		$mailbox = false;
 
-		if (isset($data[$role]) && $data[$role] != false) {
-			foreach ($data[$role] as $d) {
-				if ($d['id'] == $regionId) {
-					$mailbox = $d;
-				}
+		$regions = [];
+		switch ($role) {
+			case Role::FOODSAVER:
+			case Role::STORE_MANAGER:
+				$regions = $this->gateway->getFoodsaverRegions($this->session->id());
+				break;
+			case Role::AMBASSADOR:
+				$regions = $this->gateway->getAmbassadorRegions($this->session->id());
+				break;
+		}
+
+		foreach ($regions as $d) {
+			if ($d['id'] == $regionId) {
+				$mailbox = $d;
 			}
-		} else {
-			return;
 		}
 
 		if (!$mailbox) {
@@ -119,7 +126,9 @@ class BusinessCardControl extends Control
 		if (isset($mailbox['email'])) {
 			$data['email'] = $this->gateway->getMailboxData($this->session->id());
 		}
-		$data['subtitle'] = $this->displayedRole($role, $data['geschlecht'], $mailbox['name']);
+
+		$roleName = $this->translator->trans($this->translationHelper->getRoleName($role, $data['geschlecht']));
+		$data['subtitle'] = $this->translator->trans('bcard.for', ['{role}' => $roleName, '{region}' => $mailbox['name']]);
 
 		$includeAddress = boolval($this->getRequest('address'));
 		$includePhone = boolval($this->getRequest('phone'));
@@ -137,25 +146,6 @@ class BusinessCardControl extends Control
 		}
 
 		$this->generatePdf($data, $role, $includeAddress, $includePhone, $createQRCode);
-	}
-
-	private function displayedRole(string $role, int $gender, string $regionName): string
-	{
-		$modifier = 'dmfd'[$gender]; // 0=d 1=m 2=f 3=d
-		switch ($role) {
-			case 'sm':
-				$roleName = $this->translator->trans('terminology.storemanager.' . $modifier);
-				break;
-			case 'bot':
-				$roleName = $this->translator->trans('terminology.ambassador.' . $modifier);
-				break;
-			case 'fs':
-			default:
-				$roleName = $this->translator->trans('terminology.foodsaver.' . $modifier);
-				break;
-		}
-
-		return $this->translator->trans('bcard.for', ['{role}' => $roleName, '{region}' => $regionName]);
 	}
 
 	private function generatePdf(array $data, string $role = 'fs', bool $includeAddress = true,
