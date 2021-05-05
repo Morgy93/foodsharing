@@ -200,6 +200,21 @@ class BusinessCardControl extends Control
 
 			$pdf->Text(52.3 + $x, 56.2 + $y, $data['email']);
 			$pdf->Text(52.3 + $x, 61.6 + $y, BASE_URL);
+
+			if ($createQRCode) {
+				$vcard = $this->createVCard($data, $role, $includeAddress, $includePhone);
+				$style = [
+					'border' => 0,
+					'vpadding' => 0,
+					'hpadding' => 0,
+					'fgcolor' => [0, 0, 0],
+					'bgcolor' => [255, 255, 255],
+					'module_width' => 1,
+					'module_height' => 1
+				];
+				$pdf->write2DBarcode($vcard, 'QRCODE,L', $x + 80, $y + 16, 15, 15, $style, 'N');
+			}
+
 			if ($x == 0) {
 				$x += 91;
 			} else {
@@ -220,5 +235,32 @@ class BusinessCardControl extends Control
 
 		// return position of the first number in the string
 		return strlen($text);
+	}
+
+	/**
+	 * Creates a vCard from the user data and returns it as a string.
+	 */
+	private function createVCard(array $data, string $role, bool $includeAddress, bool $includePhone): string
+	{
+		$role = $this->translationHelper->getRoleName($role, $data['geschlecht']);
+
+		$vcard = new VCard();
+		$vcard->addName($data['nachname'], $data['name']);
+		$vcard->addCompany('Foodsharing');
+		$vcard->addRole($this->translator->trans($role));
+		$vcard->addEmail($data['email']);
+		if ($includePhone) {
+			if (!empty($data['handy'])) {
+				$vcard->addPhoneNumber($data['handy'], 'PREF;CELL');
+			} else {
+				$vcard->addPhoneNumber($data['telefon'], 'PREF;HOME');
+			}
+		}
+		if ($includeAddress) {
+			$vcard->addAddress(null, null, $data['anschrift'], $data['stadt'], null, $data['plz']);
+		}
+		$vcard->addURL(BASE_URL . '/profile/' . $data['id']);
+
+		return $vcard->getOutput();
 	}
 }
