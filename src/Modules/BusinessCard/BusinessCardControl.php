@@ -83,13 +83,14 @@ class BusinessCardControl extends Control
 
 	public function makeCard()
 	{
+		// get user data and parse parameters
 		$data = $this->gateway->getFoodsaverData($this->session->id());
-		if (!$data) {
+		if (empty($data)) {
 			return;
 		}
 
 		$opt = $this->getRequest('opt');
-		if (!$data || !$opt) {
+		if (!$opt) {
 			return;
 		}
 
@@ -97,11 +98,13 @@ class BusinessCardControl extends Control
 		if (count($opt) != 2 || (int)$opt[1] < 0) {
 			return;
 		}
-
 		$regionId = (int)$opt[1];
 		$role = (int)$opt[0];
-		$mailbox = false;
+		$includeAddress = boolval($this->getRequest('address'));
+		$includePhone = boolval($this->getRequest('phone'));
+		$createQRCode = boolval($this->getRequest('qr'));
 
+		// get region data based on the selected role
 		$regions = [];
 		switch ($role) {
 			case Role::FOODSAVER:
@@ -113,27 +116,22 @@ class BusinessCardControl extends Control
 				break;
 		}
 
+		// find the selected region
+		$selectedRegion = null;
 		foreach ($regions as $d) {
 			if ($d['id'] == $regionId) {
-				$mailbox = $d;
+				$selectedRegion = $d;
 			}
 		}
-
-		if (!$mailbox) {
+		if (!$selectedRegion) {
 			return;
 		}
 
-		if (isset($mailbox['email'])) {
+		if (isset($selectedRegion['email'])) {
 			$data['email'] = $this->gateway->getMailboxData($this->session->id());
 		}
 
-		$roleName = $this->translator->trans($this->translationHelper->getRoleName($role, $data['geschlecht']));
-		$data['subtitle'] = $this->translator->trans('bcard.for', ['{role}' => $roleName, '{region}' => $mailbox['name']]);
-
-		$includeAddress = boolval($this->getRequest('address'));
-		$includePhone = boolval($this->getRequest('phone'));
-		$createQRCode = boolval($this->getRequest('qr'));
-
+		// shorten address strings if they are too long
 		if (mb_strlen($data['anschrift']) > self::MAX_CHAR_PER_LINE) {
 			$street_number_pos = $this->index_of_first_number($data['anschrift']);
 			$length_street_number = mb_strlen($data['anschrift']) - $street_number_pos;
@@ -145,12 +143,14 @@ class BusinessCardControl extends Control
 			$data['stadt'] = mb_substr($data['stadt'], 0, (self::MAX_CHAR_PER_LINE - strlen($data['plz']) - 4)) . '...';
 		}
 
-		$this->generatePdf($data, $role, $includeAddress, $includePhone, $createQRCode);
+		$this->generatePdf($data, $selectedRegion, $role, $includeAddress, $includePhone, $createQRCode);
 	}
 
-	private function generatePdf(array $data, string $role = 'fs', bool $includeAddress = true,
+	private function generatePdf(array $data, array $region, int $role = Role::FOODSAVER, bool $includeAddress = true,
 								 bool $includePhone = true, bool $createQRCode = false): void
 	{
+		$roleName = $this->translator->trans($this->translationHelper->getRoleName($role, $data['geschlecht']));
+
 		$pdf = new Fpdi();
 		$pdf->AddPage();
 		$pdf->SetTextColor(0, 0, 0);
@@ -182,7 +182,8 @@ class BusinessCardControl extends Control
 			}
 
 			$pdf->SetXY(48.5 + $x, 35.2 + $y);
-			$pdf->MultiCell(50, 12, $data['subtitle'], 0, 'L');
+			$subtitle = $this->translator->trans('bcard.for', ['{role}' => $roleName, '{region}' => $region['name']]);
+			$pdf->MultiCell(50, 12, $subtitle, 0, 'L');
 
 			$pdf->SetTextColor(0, 0, 0);
 			if ($includeAddress) {
@@ -212,7 +213,7 @@ class BusinessCardControl extends Control
 					'module_width' => 1,
 					'module_height' => 1
 				];
-				$pdf->write2DBarcode($vcard, 'QRCODE,L', $x + 80, $y + 16, 15, 15, $style, 'N');
+				$pdf->write2DBarcode($vcard, 'QRCODE,H', $x + 80, $y + 16, 15, 15, $style, 'N');
 			}
 
 			if ($x == 0) {
@@ -223,7 +224,7 @@ class BusinessCardControl extends Control
 			}
 		}
 
-		$pdf->Output('bcard-' . $role . '.pdf', 'D');
+		$pdf->Output('bcard-' . $roleName . '.pdf', 'D');
 	}
 
 	private function index_of_first_number($text)
@@ -240,14 +241,14 @@ class BusinessCardControl extends Control
 	/**
 	 * Creates a vCard from the user data and returns it as a string.
 	 */
-	private function createVCard(array $data, string $role, bool $includeAddress, bool $includePhone): string
+	private function createVCard(array $data, int $role, bool $includeAddress, bool $includePhone): string
 	{
-		$role = $this->translationHelper->getRoleName($role, $data['geschlecht']);
+		$roleName = $this->translationHelper->getRoleName($role, $data['geschlecht']);
 
 		$vcard = new VCard();
 		$vcard->addName($data['nachname'], $data['name']);
 		$vcard->addCompany('Foodsharing');
-		$vcard->addRole($this->translator->trans($role));
+		$vcard->addRole($this->translator->trans($roleName));
 		$vcard->addEmail($data['email']);
 		if ($includePhone) {
 			if (!empty($data['handy'])) {
