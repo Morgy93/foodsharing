@@ -328,8 +328,7 @@ class FoodSharePointControl extends Control
 
 		$this->pageHelper->addContent($this->view->desc(), CNT_RIGHT);
 		$this->pageHelper->addContent($this->view->address(), CNT_RIGHT);
-		$this->pageHelper->addContent($this->view->map(), CNT_RIGHT);		
-		
+		$this->pageHelper->addContent($this->view->map(), CNT_RIGHT);
 	}
 
 	public function add(Request $request): void

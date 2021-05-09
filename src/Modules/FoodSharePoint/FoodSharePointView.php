@@ -138,11 +138,12 @@ class FoodSharePointView extends View
 	public function address(): string
 	{
 		$address = $this->v_utils->v_input_wrapper($this->translator->trans('fsp.street'),
-			$this->foodSharePoint['anschrift']
-		);
-		$location = $this->v_utils->v_input_wrapper($this->translator->trans('fsp.location'),
-			$this->foodSharePoint['plz'] . ' ' . $this->foodSharePoint['ort']
-		);
+		   $this->foodSharePoint['anschrift']
+		   . '<br />'
+		   . $this->foodSharePoint['plz']
+		   . ' '
+		   . $this->foodSharePoint['ort']
+	    );
 
 		return $this->v_utils->v_field(
 			$address,
