@@ -167,13 +167,43 @@ class FoodSharePointView extends View
 			$map->setCenter($this->foodSharePoint['lat'], $this->foodSharePoint['lon']);
 
 			$mapHtml = $map->render();
-			$mapHtml .= $this->v_utils->v_input_wrapper('', '<a href="/?page=map&fspid='
-				. $this->foodSharePoint['id']
-				. '&lat='
-				. $this->foodSharePoint['lat']
-				. '&lon='
-				. $this->foodSharePoint['lon']
-				. '" target="_blank">'
+			$this->pageHelper->addJsFunc("
+				function openPostPage(url, data) {
+					var form = document.createElement('form');
+					document.body.appendChild(form);
+					form.target = '_blank';
+					form.method = 'post';
+					form.action = url;
+					for (var name in data) {
+						var input = document.createElement('input');
+						input.type = 'hidden';
+						input.name = name;
+						input.value = data[name];
+						form.appendChild(input);
+					}
+					form.submit();
+					document.body.removeChild(form);
+				}
+				");
+			$this->pageHelper->addJsFunc('
+				function enlargeMap() {
+					openPostPage(\'/karte\', { fairteiler: [ '
+				. json_encode($this->foodSharePoint)
+				. ' ] } );'
+				. ' } ');
+			$mapHtml .= $this->v_utils->v_input_wrapper('', '<a id="enlargeMap" title="'
+				. $this->translator->trans('smallMap.enlarge')
+				. '" href="#" onclick="'
+				. 'enlargeMap();return false;'
+				. '">'
+
+//				'<a href="/?page=map&fspid='
+//				. $this->foodSharePoint['id']
+//				. '&lat='
+//				. $this->foodSharePoint['lat']
+//				. '&lon='
+//				. $this->foodSharePoint['lon']
+//				. '" target="_blank">'
 				. $this->translator->trans('smallMap.enlarge')
 				. '</a><br />'
 				. '<b>'
@@ -198,6 +228,36 @@ class FoodSharePointView extends View
 			$this->translator->trans('smallMap.title'),
 			['class' => 'ui-padding']
 		);
+	}
+
+	public function bubbleNoUser(array $fairteiler): string
+	{
+		$img = '';
+		if (!empty($fairteiler['picture'])) {
+			$img = '<div style="width: 100%; overflow: hidden;">
+				<img src="/images/basket/medium-' . $fairteiler['picture'] . '" width="100%" />
+			</div>';
+		}
+
+		return $img . $this->v_utils->v_input_wrapper(
+				$this->translator->trans('fsp.description'),
+				nl2br($this->routeHelper->autolink($fairteiler['description']))
+			);
+	}
+
+	public function bubble(array $fairteiler): string
+	{
+		$img = '';
+		if (!empty($fairteiler['picture'])) {
+			$img = '<div style="width: 100%; overflow: hidden;">
+				<img src="/images/basket/medium-' . $fairteiler['picture'] . '" width="100%" />
+			</div>';
+		}
+
+		return $img . $this->v_utils->v_input_wrapper(
+				$this->translator->trans('fsp.street'),
+				nl2br($this->routeHelper->autolink($fairteiler['description']))
+			);
 	}
 
 	public function foodSharePointForm(array $data = []): string

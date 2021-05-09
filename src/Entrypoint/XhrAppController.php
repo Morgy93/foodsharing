@@ -25,7 +25,7 @@ class XhrAppController extends AbstractController
 	}
 
 	/*
-		methods wich are excluded from the CSRF Protection.
+		methods which are excluded from the CSRF Protection.
 		We start with every method and remove one by another
 		NEVER ADD SOMETING TO THIS LIST!
 	*/
