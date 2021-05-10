@@ -13,6 +13,10 @@ export async function getBaskets () {
   })
 }
 
+export async function getBasket (basketId) {
+  return get(`/baskets/${basketId}`)
+}
+
 export async function requestBasket (basketId, message) {
   return (post(`/baskets/${basketId}/request`, {
     message: message,

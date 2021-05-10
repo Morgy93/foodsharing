@@ -23,6 +23,8 @@ import 'mapbox-gl-leaflet'
 import 'mapbox-gl/dist/mapbox-gl.css'
 import './Map.css'
 import { getMapMarkers } from '@/api/map'
+import { vueApply, vueRegister } from '@/vue'
+import BasketPopup from './components/BasketPopup'
 
 let u_map = null
 let markers = null
@@ -111,6 +113,11 @@ const map = {
 
 expose({ map })
 
+vueRegister({
+  BasketPopup,
+})
+const basketPopup = vueApply('#vue-basket-popup')[0]
+
 function u_init_map (lat, lon, zoom) {
   map.init()
   if (lat == undefined && storage.get('center') == undefined) {
@@ -192,7 +199,7 @@ async function loadMarker (types, loader) {
       const type = el.layer.options.type
 
       if (type === 'bk') {
-        ajreq('bubble', { app: 'basket', id: fsid })
+        basketPopup.load(fsid)
       } else if (type === 'b') {
         ajreq('bubble', { app: 'store', id: fsid })
       } else if (type === 'f') {

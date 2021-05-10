@@ -54,5 +54,7 @@ class MapControl extends Control
 		}
 
 		$this->pageHelper->addJs('map.initMarker(' . $jsarr . ');');
+
+		$this->pageHelper->addContent($this->view->vueComponent('vue-basket-popup', 'BasketPopup'));
 	}
 }

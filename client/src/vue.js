@@ -34,7 +34,7 @@ export function vueApply (selector, disableElNotFoundException = false) {
     }
     throw new Error(`vueUse-Error: no elements were found with selector '${selector}'`)
   }
-  elements.forEach((el, index) => {
+  return elements.map((el, index) => {
     const componentName = el.getAttribute('data-vue-component')
     const props = JSON.parse(el.getAttribute('data-vue-props')) || {}
     const initialData = JSON.parse(el.getAttribute('vue-initial-data')) || {}
@@ -58,5 +58,7 @@ export function vueApply (selector, disableElNotFoundException = false) {
         vm.$children[0][key] = initialData[key]
       }
     }
+
+    return vm.$children[0]
   })
 }
