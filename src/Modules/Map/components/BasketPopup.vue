@@ -2,7 +2,7 @@
 <template>
   <b-modal
     ref="basketPopupModal"
-    :title="$i18n('basket.by', { name: basket!=null ? basket.creator.name : '' } )"
+    :title="basketTitle"
     modal-class="bootstrap"
     header-class="d-flex"
     content-class="pr-3 pt-3"
@@ -23,7 +23,17 @@
     <div
       v-else
     >
-      {{ basket }}
+      <div v-if="basket.picture" style="width: 100%; overflow: hidden;">
+        <img :src="pictureSource" width="100%">
+      </div>
+
+      <p v-if="basket.createdAt">
+        {{ creationDate }}
+      </p>
+
+      <p v-if="basket.description">
+        {{ basket.description }}
+      </p>
     </div>
 
     <template #modal-footer>
@@ -59,6 +69,21 @@ export default {
       loading: false,
     }
   },
+  computed: {
+    basketTitle () {
+      if (this.basket && this.basket.creator) {
+        return i18n('basket.by', { name: this.basket.creator.name })
+      } else {
+        return i18n('terminology.basket')
+      }
+    },
+    pictureSource () {
+      return `/images/basket/medium-${this.basket.picture}`
+    },
+    creationDate () {
+      return this.$dateFormat(new Date(this.basket.createdAt * 1000))
+    },
+  },
   methods: {
     async load (basketId) {
       this.basketId = basketId
@@ -79,6 +104,3 @@ export default {
   },
 }
 </script>
-
-<style lang="scss" scoped>
-</style>
