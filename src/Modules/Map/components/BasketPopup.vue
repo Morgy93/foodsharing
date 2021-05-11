@@ -7,7 +7,6 @@
     header-class="d-flex"
     content-class="pr-3 pt-3"
     size="sm"
-    scrollable
     centered
     hide-backdrop
   >
@@ -28,10 +27,12 @@
       </div>
 
       <p v-if="basket.createdAt">
+        {{ $i18n('basket.date') }}<br>
         {{ creationDate }}
       </p>
 
       <p v-if="basket.description">
+        {{ $i18n('description') }}<br>
         {{ basket.description }}
       </p>
     </div>
@@ -86,6 +87,7 @@ export default {
   },
   methods: {
     async load (basketId) {
+      this.basket = null
       this.basketId = basketId
       this.$refs.basketPopupModal.show()
 
@@ -104,3 +106,6 @@ export default {
   },
 }
 </script>
+
+<style lang="scss" scoped>
+</style>

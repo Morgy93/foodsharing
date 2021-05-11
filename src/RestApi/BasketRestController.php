@@ -194,23 +194,29 @@ final class BasketRestController extends AbstractFOSRestController
 	 */
 	public function getBasketAction(int $basketId): Response
 	{
-		if (!$this->session->may()) {
-			throw new HttpException(401, self::NOT_LOGGED_IN);
-		}
-
 		$basket = $this->gateway->getBasket($basketId);
 		$this->verifyBasketIsAvailable($basket);
-		if ($basket['fs_id'] == $this->session->id()) {
-			$requests = $this->gateway->listRequests($basketId, $this->session->id());
-		} else {
-			$requests = $this->gateway->getRequest($basketId, $this->session->id(), $basket['foodsaver_id']);
-			if ($requests) {
-				$requests = [$requests];
-			}
-		}
-		$basket = $this->normalizeBasket($basket, $requests);
 
-		return $this->handleView($this->view(['basket' => $basket], 200));
+		if ($this->session->may()) {
+			if ($basket['fs_id'] == $this->session->id()) {
+				$requests = $this->gateway->listRequests($basketId, $this->session->id());
+			} else {
+				$requests = $this->gateway->getRequest($basketId, $this->session->id(), $basket['foodsaver_id']);
+				if ($requests) {
+					$requests = [$requests];
+				}
+			}
+			$result = $this->normalizeBasket($basket, $requests);
+		} else {
+			// return less data when not logged in
+			$result = [
+				'id' => $basket['id'],
+				'picture' => $basket['picture'],
+				'description' => $basket['description']
+			];
+		}
+
+		return $this->handleView($this->view(['basket' => $result], 200));
 	}
 
 	/**
