@@ -328,7 +328,7 @@ const conv = {
       if (title == null) {
         title = []
         for (const memberId of conversation.members) {
-          if (memberId == serverData.user.id || profileStore.profiles[memberId].name === null) {
+          if (memberId === serverData.user.id || profileStore.profiles[memberId].name === null) {
             continue
           }
           title.push(`
