@@ -16,12 +16,16 @@
       class="card rounded above"
     >
       <div class="card-header text-white bg-primary">
-        <i v-if="!isOpen" class="fas fa-lock mr-1" :title="$i18n('forum.thread.closed')" />
         <editable-headline
           :text="title"
           :may-edit="mayModerate"
+          edit-button-tooltip-key="forum.thread.rename"
           @text-changed="renameThread"
-        />
+        >
+          <template #contentBefore>
+            <i v-if="!isOpen" class="fas fa-lock mr-1" :title="$i18n('forum.thread.closed')" />
+          </template>
+        </editable-headline>
       </div>
       <ThreadActions
         :is-following-bell.sync="isFollowingBell"
@@ -155,7 +159,7 @@ import { user } from '@/server-data'
 import { GET } from '@/browser'
 import { setThreadStatus } from '@/api/forum'
 import ThreadStatus from './ThreadStatus'
-import EditableHeadline from './EditableHeadline'
+import EditableHeadline from '@/components/EditableHeadline'
 
 export default {
   components: { BModal, ThreadActions, ThreadForm, ThreadPost, EditableHeadline },
