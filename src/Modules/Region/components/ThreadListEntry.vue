@@ -9,9 +9,9 @@
           :size="50"
         />
       </span>
-      <div class="flex-grow-1 d-flex flex-wrap-reverse flex-sm-nowrap">
+      <div class="flex-grow-1 d-flex flex-wrap-reverse flex-sm-nowrap text-truncate">
         <div
-          class="thread-main px-1 mr-1 align-self-center flex-grow-1 flex-shrink-1 flex-sm-noshrink"
+          class="thread-main px-1 mr-1 align-self-center flex-grow-1 flex-shrink-1 flex-sm-noshrink text-truncate"
           :class="{'font-weight-bold': thread.isSticky}"
         >
           <span class="thread-title d-inline" :class="titleClass">
