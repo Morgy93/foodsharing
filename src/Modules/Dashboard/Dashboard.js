@@ -3,6 +3,7 @@ import '@/globals'
 
 import { vueRegister, vueApply } from '@/vue'
 import ActivityOverview from './components/ActivityOverview'
+// import InstallPWA from './components/InstallPWA'
 import DashboardWarning from './components/DashboardWarning'
 import EventPanel from '../Event/components/EventPanel'
 
@@ -18,6 +19,11 @@ vueRegister({
 })
 vueApply('#activity-overview')
 vueApply('#event-panel', true)
+
+// vueRegister({
+//   InstallPWA,
+// })
+// vueApply('#install-pwa')
 
 if (document.querySelector('#dashboard-warning') !== null) {
   vueRegister({

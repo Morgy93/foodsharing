@@ -1650,6 +1650,11 @@ dashboard:
     info: "Wenn du keine Push-Benachrichtigungen mehr empfangen willst, kannst du sie jederzeit in den Einstellungen wieder deaktivieren."
     button: "Push-Benachrichtigungen aktivieren"
   deleted_user: "abgemeldete*r Benutzer*in"
+  pwa:
+    title: "Du kannst jetzt die Web App von foodsharing installieren."
+    info: "Die Web App hat die gleichen Funktionen wie die Webseite und kann dir den Zugriff auf foodsharing erleichtern. Auf Android gibt es ebenfalls die foodsharing App im Play Store zu laden."
+    button: "Web App installieren"
+  deleted_user: "abgemeldeter Benutzer"
 
 home:
   title: "Startseite"

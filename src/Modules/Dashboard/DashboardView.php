@@ -8,6 +8,7 @@ class DashboardView extends View
 {
 	public function updates()
 	{
+		// $this->pageHelper->addContent($this->vueComponent('install-pwa', 'install-pwa', []));
 		$this->pageHelper->addContent($this->vueComponent('activity-overview', 'activity-overview', []));
 	}
 

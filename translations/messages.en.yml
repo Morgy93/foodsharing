@@ -1519,6 +1519,11 @@ search:
   mystores: My stores
   noresults: No results could be found
   thread-title-only: Only titles are searched, not the content of the threads.
+dashboard:
+  pwa:
+    title: You can now install the foodsharing web app.
+    info: The web app has the same features as the website and can help you access foodsharing. On Android, you can also download the foodsharing app from the Play Store.
+    button: Install web app
 month:
   short:
     "12": Dec.

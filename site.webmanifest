@@ -1,6 +1,6 @@
 {
-    "name": "",
-    "short_name": "",
+    "name": "foodsharing",
+    "short_name": "foodsharing",
     "icons": [
         {
             "src": "/img/favicon/android-chrome-192x192.png",
@@ -15,5 +15,8 @@
     ],
     "theme_color": "#533a20",
     "background_color": "#533a20",
-    "display": "standalone"
-}
+    "display": "standalone",
+    "start_url": "/?source=pwa",
+    "scope": "/",
+    "description": ""
+  }

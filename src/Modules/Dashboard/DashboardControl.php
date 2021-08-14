@@ -189,6 +189,12 @@ class DashboardControl extends Control
 			CNT_TOP
 		);
 
+		// // Advertisement for PWA installation
+		// $this->pageHelper->addContent(
+		// 	$this->twig->render('partials/installPwaBanner.twig'),
+		// 	CNT_TOP
+		// );
+
 		$this->pageHelper->addContent($this->view->foodsharerMenu(), CNT_LEFT);
 
 		$cnt = $this->contentGateway->get(33);
@@ -240,6 +246,7 @@ class DashboardControl extends Control
 			$this->pageHelper->addContent($this->eventView->dashboardEventPanels($events));
 		}
 
+		// $this->pageHelper->addContent($this->view->vueComponent('install-pwa', 'install-pwa', []));
 		$this->pageHelper->addContent($this->view->vueComponent('activity-overview', 'activity-overview', []));
 
 		$me = $this->foodsaverGateway->getFoodsaverBasics($this->session->id());
@@ -295,11 +302,26 @@ class DashboardControl extends Control
 			CNT_TOP
 		);
 
+		$this->pageHelper->addContent(
+			'
+		<div class="ui-padding-bottom">
+			<button class="pwa-install-btn">Download Web App</button>
+		</div>',
+
+			CNT_TOP
+		);
+
 		// Advertisement for Push Notifications
 		$this->pageHelper->addContent(
 			$this->twig->render('partials/pushNotificationBanner.twig'),
 			CNT_TOP
 		);
+
+		// // Advertisement for PWA installation
+		// $this->pageHelper->addContent(
+		// 	$this->twig->render('partials/installPwaBanner.twig'),
+		// 	CNT_TOP
+		// );
 
 		// Next pickup dates
 		if ($dates = $this->profileGateway->getNextDates($this->session->id(), 10)) {
