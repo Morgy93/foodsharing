@@ -13,6 +13,7 @@ class Routing
 		'bcard' => 'BusinessCard',
 		'content' => 'Content',
 		'dashboard' => 'Dashboard',
+		'dropOffPoint' => 'DropOffPoint',
 		'email' => 'Email',
 		'event' => 'Event',
 		'fairteiler' => 'FoodSharePoint',

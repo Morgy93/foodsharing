@@ -11,12 +11,15 @@ use Foodsharing\Modules\Core\DBConstants\Store\StoreLogAction;
 use Foodsharing\Permissions\StorePermissions;
 use Foodsharing\Utility\Sanitizer;
 
+/**
+ * Can be instantiated via reflection by the @link Routing.php
+ */
 class StoreXhr extends Control
 {
-	private $storeGateway;
-	private $storePermissions;
-	private $storeTransactions;
-	private $sanitizerService;
+	private StoreGateway $storeGateway;
+	private StorePermissions $storePermissions;
+	private StoreTransactions $storeTransactions;
+	private Sanitizer $sanitizerService;
 
 	public function __construct(
 		StoreView $view,

@@ -13,6 +13,9 @@ use Foodsharing\Modules\Foodsaver\FoodsaverGateway;
 use Foodsharing\Utility\ImageHelper;
 use Foodsharing\Utility\TimeHelper;
 
+/**
+ * Can be instantiated via reflection by the @link Routing.php
+ */
 class BasketXhr extends Control
 {
 	private BasketGateway $basketGateway;

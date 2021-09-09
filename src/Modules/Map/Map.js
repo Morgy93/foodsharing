@@ -48,6 +48,12 @@ const fIcon = L.AwesomeMarkers.icon({
   markerColor: 'beige',
 })
 
+const dropOffPointIcon = L.AwesomeMarkers.icon({
+  icon: 'hand-holding-heart',
+  // TODO-810: consistent color
+  markerColor: 'purple',
+})
+
 const map = {
   initiated: false,
   init: function () {
@@ -198,6 +204,8 @@ async function loadMarker (types, loader) {
       } else if (type === 'f') {
         const bid = (el.layer.options.bid)
         goTo(`/?page=fairteiler&sub=ft&bid=${bid}&id=${fsid}`)
+      } else if (type === 'dropOffPoint') {
+        ajreq('bubble', { app: 'dropOffPoint', id: fsid })
       }
     })
 
@@ -234,6 +242,22 @@ async function loadMarker (types, loader) {
         markers.addLayer(marker)
       }
     }
+
+    if (data.dropOffPoints != undefined) {
+      $('#map-control li a.dropOffPoints').addClass('active')
+      for (let i = 0; i < data.dropOffPoints.length; i++) {
+        const a = data.dropOffPoints[i]
+        const marker = L.marker(new L.LatLng(a.lat, a.lon), {
+          id: a.id,
+          bid: a.regionId,
+          icon: dropOffPointIcon,
+          type: 'dropOffPoint',
+        })
+
+        markers.addLayer(marker)
+      }
+    }
+
     u_map.addLayer(markers)
   } catch (e) {
     console.error(e)

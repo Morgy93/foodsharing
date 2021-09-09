@@ -47,6 +47,12 @@ class MapGateway extends BaseGateway
 		}, $markers);
 	}
 
+	public function getDropOffPointMarkers() : array
+	{
+		// TODO-810: Change when new database for drop-off points exists.
+		return $this->getFoodSharePointMarkers();
+	}
+
 	public function getStoreMarkers(array $excludedStoreTypes, array $teamStatus): array
 	{
 		$query = 'SELECT id, lat, lon FROM fs_betrieb WHERE lat != ""';
