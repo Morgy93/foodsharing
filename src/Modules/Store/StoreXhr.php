@@ -12,7 +12,7 @@ use Foodsharing\Permissions\StorePermissions;
 use Foodsharing\Utility\Sanitizer;
 
 /**
- * Can be instantiated via reflection by the @link Routing.php
+ * Can be instantiated via reflection by the @see Routing.php.
  */
 class StoreXhr extends Control
 {

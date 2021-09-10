@@ -825,6 +825,27 @@ class Foodsharing extends \Codeception\Module\Db
 		return $params;
 	}
 
+	public function createDropOffPoint($user): array
+	{
+		$params = array_merge([
+			'name' => $this->faker->realText(20),
+			'description' => $this->faker->realText(200),
+			'anschrift' => $this->faker->streetName,
+			'plz' => $this->faker->postcode,
+			'ort' => $this->faker->city,
+			'lat' => $this->faker->latitude,
+			'lon' => $this->faker->longitude,
+			'add_date' => $this->faker->dateTime($max = 'now'),
+		]);
+
+		$params['add_date'] = $this->toDateTime($params['add_date']);
+
+		$id = $this->haveInDatabase('fs_drop_off_point', $params);
+		$params['id'] = $id;
+
+		return $params;
+	}
+
 	public function addBells($users, $extra_params = [])
 	{
 		$params = array_merge([

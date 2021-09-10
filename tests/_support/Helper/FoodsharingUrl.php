@@ -85,6 +85,11 @@ class FoodsharingUrl extends \Codeception\Module\Db
 		return '/essenskoerbe/' . (int)$basket_id;
 	}
 
+	public function dropOffPointInfoUrl(int $drop_off_point_id): string
+	{
+		return '/drop-off-point/' . $drop_off_point_id;
+	}
+
 	public function settingsUrl()
 	{
 		return '/?page=settings&sub=general';

@@ -243,7 +243,7 @@ async function loadMarker (types, loader) {
       }
     }
 
-    if (data.dropOffPoints != undefined) {
+    if (data.dropOffPoints !== undefined) {
       $('#map-control li a.dropOffPoints').addClass('active')
       for (let i = 0; i < data.dropOffPoints.length; i++) {
         const a = data.dropOffPoints[i]

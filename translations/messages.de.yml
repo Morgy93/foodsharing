@@ -1769,6 +1769,10 @@ basket:
   publish_error: "Es gab einen Fehler. Der Essenskorb konnte nicht veröffentlicht werden."
   published: "Danke dir, der Essenskorb wurde veröffentlicht."
 
+drop_off_point:
+  title: "Abgabestelle"
+  go: "zur Abgabestelle"
+
 personal_data:
   label: "Kontakt"
   mobile: "Handynummer"

@@ -14,7 +14,7 @@ use Foodsharing\Utility\ImageHelper;
 use Foodsharing\Utility\TimeHelper;
 
 /**
- * Can be instantiated via reflection by the @link Routing.php
+ * Can be instantiated via reflection by the @see Routing.php.
  */
 class BasketXhr extends Control
 {

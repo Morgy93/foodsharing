@@ -4644,6 +4644,110 @@ class InitialMigration extends Phinx\Migration\AbstractMigration
 			['id' => '6', 'weight' => '45'],
 			['id' => '7', 'weight' => '64']
 		])->save();
+
+		// TODO-810: This needs to be in specific new migration file,
+		//  but we were not able to create it properly yet.
+
+		$this->table('fs_drop_off_point', [
+			'id' => false,
+			'primary_key' => ['id'],
+			'engine' => 'InnoDB',
+			'encoding' => 'utf8mb4',
+			'collation' => 'utf8mb4_unicode_ci',
+			'comment' => '',
+		])// TODO-810: What columns do we want?
+		->addColumn('id', 'integer', [
+			'null' => false,
+			'limit' => '10',
+			'signed' => false,
+			'identity' => 'enable',
+		])/*->addColumn('bezirk_id', 'integer', [
+			'null' => true,
+			'default' => null,
+			'limit' => '10',
+			'signed' => false,
+			'after' => 'id',
+		])*/
+		->addColumn('name', 'string', [
+			'null' => true,
+			'default' => null,
+			'limit' => 260,
+			'collation' => 'utf8mb4_unicode_ci',
+			'encoding' => 'utf8mb4',
+			'after' => 'bezirk_id',
+		])/*->addColumn('picture', 'string', [
+			'null' => false,
+			'limit' => 100,
+			'collation' => 'utf8mb4_unicode_ci',
+			'encoding' => 'utf8mb4',
+			'after' => 'name',
+		])*/
+		/*->addColumn('status', 'integer', [
+			'null' => true,
+			'default' => null,
+			'limit' => MysqlAdapter::INT_TINY,
+			'signed' => false,
+			'after' => 'picture',
+		])*/
+		->addColumn('description', 'text', [
+			'null' => true,
+			'default' => null,
+			'limit' => MysqlAdapter::TEXT_MEDIUM,
+			'collation' => 'utf8mb4_unicode_ci',
+			'encoding' => 'utf8mb4',
+			'after' => 'status',
+		])->addColumn('anschrift', 'string', [
+			'null' => true,
+			'default' => null,
+			'limit' => 260,
+			'collation' => 'utf8mb4_unicode_ci',
+			'encoding' => 'utf8mb4',
+			'after' => 'desc',
+		])->addColumn('plz', 'string', [
+			'null' => true,
+			'default' => null,
+			'limit' => 5,
+			'collation' => 'utf8mb4_unicode_ci',
+			'encoding' => 'utf8mb4',
+			'after' => 'anschrift',
+		])->addColumn('ort', 'string', [
+			'null' => true,
+			'default' => null,
+			'limit' => 100,
+			'collation' => 'utf8mb4_unicode_ci',
+			'encoding' => 'utf8mb4',
+			'after' => 'plz',
+		])->addColumn('lat', 'string', [
+			'null' => true,
+			'default' => null,
+			'limit' => 100,
+			'collation' => 'utf8mb4_unicode_ci',
+			'encoding' => 'utf8mb4',
+			'after' => 'ort',
+		])->addColumn('lon', 'string', [
+			'null' => true,
+			'default' => null,
+			'limit' => 100,
+			'collation' => 'utf8mb4_unicode_ci',
+			'encoding' => 'utf8mb4',
+			'after' => 'lat',
+		])->addColumn('add_date', 'date', [
+			'null' => true,
+			'default' => null,
+			'after' => 'lon',
+		])/*->addColumn('add_foodsaver', 'integer', [
+			'null' => true,
+			'default' => null,
+			'limit' => '10',
+			'signed' => false,
+			'after' => 'add_date',
+		])*/
+		/*->addIndex(['bezirk_id'], [
+			'name' => 'fairteiler_FKIndex1',
+			'unique' => false,
+		])*/
+		->create();
+
 		$content = [['id' => '4', 'name' => 'fuer-unternehmen', 'title' => 'Für Unternehmen', 'body' => '<p><span>Wir freuen uns sehr, dass Ihr Betrieb an foodsharing interessiert ist! Gemeinsam mit foodsharing k&ouml;nnen Sie sich daf&uuml;r einsetzen, dass aussortierte und unverk&auml;ufliche Lebensmittel eine sinnvolle Verwendung anstelle der Entsorgung erfahren.</span></p>
 <p><span><strong>Was ist unser Ziel?</strong><br />Wir Foodsaver sind eine Gruppe von Menschen, die sich ehrenamtlich daf&uuml;r engagieren, dass weniger Lebensmittel in den M&uuml;ll wandern. Weltweit landet n&auml;mlich jedes dritte produzierte Lebensmittel in der Tonne. In jedem einzelnen stecken aber Arbeitszeit, Ressourcen, zum Teil lange Transportwege und Geld. Foodsharing bietet eine M&ouml;glichkeit, all das wieder wertzusch&auml;tzen, indem wir Essen eine zweite Chance geben.</span></p>
 <p><span><strong>Das k&ouml;nnen wir Ihrem Betrieb bieten:</strong><br /> Deshalb k&uuml;mmern wir uns um alle Lebensmittel, die aus verschiedenen Gr&uuml;nden nicht mehr verkauft werden k&ouml;nnen, aber noch genie&szlig;bar sind. Falls gew&uuml;nscht, wird das Abgeholte von den Foodsavern nach Verwertbarkeit sortiert. Die noch genie&szlig;baren Produkte werden anschlie&szlig;end weiter verteilt. Damit die Rechtssicherheit f&uuml;r die Lebensmittelspendebetriebe gew&auml;hrleistet ist, &nbsp;unterschreiben alle Foodsaver eine<a href="https://wiki.foodsharing.de/Rechtsvereinbarung" target="_blank" style="text-decoration: none;"><span> </span></a><a href="https://wiki.foodsharing.de/Rechtsvereinbarung" target="_blank">Rechtsvereinbarung</a></span><span>, mit der sie die volle Verantwortung f&uuml;r die abgeholten Lebensmittel &uuml;bernehmen.</span></p>

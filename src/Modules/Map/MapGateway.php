@@ -4,6 +4,7 @@ namespace Foodsharing\Modules\Map;
 
 use Foodsharing\Modules\Core\BaseGateway;
 use Foodsharing\Modules\Core\Database;
+use Foodsharing\Modules\DropOffPoint\DropOffPointGateway;
 use Foodsharing\Modules\Map\DTO\MapMarker;
 
 class MapGateway extends BaseGateway
@@ -47,10 +48,15 @@ class MapGateway extends BaseGateway
 		}, $markers);
 	}
 
-	public function getDropOffPointMarkers() : array
+	public function getDropOffPointMarkers(): array
 	{
-		// TODO-810: Change when new database for drop-off points exists.
-		return $this->getFoodSharePointMarkers();
+		$markers = $this->db->fetchAllByCriteria(
+			DropOffPointGateway::DROP_OFF_POINT_TABLE_NAME,
+			['id', 'lat', 'lon']);
+
+		return array_map(function ($x) {
+			return MapMarker::create($x['id'], $x['lat'], $x['lon']);
+		}, $markers);
 	}
 
 	public function getStoreMarkers(array $excludedStoreTypes, array $teamStatus): array

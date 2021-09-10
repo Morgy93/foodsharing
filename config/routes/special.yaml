@@ -152,3 +152,13 @@ essenskoerbe_id:
 essenskoerbe_method:
   path: /essenskoerbe/{method}
   controller: Foodsharing\Entrypoint\IndexController
+
+drop-off-point:
+  path: /drop-off-point/
+  controller: Foodsharing\Entrypoint\IndexController
+
+drop-off-point_id:
+  path: /drop-off-point/{id}
+  controller: Foodsharing\Entrypoint\IndexController
+  requirements:
+    id: '\d+'

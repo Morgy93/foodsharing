@@ -492,7 +492,7 @@ class SeedCommand extends Command implements CustomCommandInterface
 		}
 		$this->output->writeln(' done');
 
-		// create food share point
+		// create food share points
 		$this->output->writeln('Create food share points');
 		foreach ($this->getRandomIDOfArray($this->foodsavers, 50) as $user) {
 			$foodSharePoint = $I->createFoodSharePoint($user, $region1);
@@ -502,6 +502,15 @@ class SeedCommand extends Command implements CustomCommandInterface
 				}
 				$I->addFoodSharePointPost($follower, $foodSharePoint['id']);
 			}
+			$this->output->write('.');
+		}
+		$this->output->writeln(' done');
+
+		// create drop-off points
+		$this->output->writeln('Create drop-off points');
+		foreach (range(0, 50) as $_) {
+			$user = $this->getRandomIDOfArray($this->foodsavers);
+			$I->createDropOffPoint($user);
 			$this->output->write('.');
 		}
 		$this->output->writeln(' done');
