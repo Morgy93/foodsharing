@@ -12,7 +12,7 @@ class DropOffPointGateway extends BaseGateway
 	/**
 	 * TODO-810: full description please.
 	 *
-	 * @param $id int identifier of the drop-off-point to be fetched
+	 * @param int $id identifier of the drop-off-point to be fetched
 	 *
 	 * @return array array with all information that is fetched
 	 *
