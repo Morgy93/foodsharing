@@ -3,26 +3,25 @@
 namespace Foodsharing\Modules\DropOffPoint;
 
 use Foodsharing\Modules\Core\Control;
+use Symfony\Component\HttpFoundation\Request;
 
-// TODO-810: Not yet working.
 class DropOffPointControl extends Control
 {
 	private DropOffPointGateway $dropOffPointGateway;
 
-	public function __construct(DropOffPointView $view, DropOffPointGateway $basketGateway)
+	public function __construct(DropOffPointView $view, DropOffPointGateway $dropOffPointGateway)
 	{
 		$this->view = $view;
-		$this->dropOffPointGateway = $basketGateway;
+		$this->dropOffPointGateway = $dropOffPointGateway;
 
 		parent::__construct();
 	}
 
-	public function index(): void
+	public function index(Request $request): void
 	{
-		if ($id = $this->uriInt(2)) {
-			if ($dropOffPoint = $this->dropOffPointGateway->getDropOffPoint($id)) {
-				$this->dropOffPoint($dropOffPoint);
-			}
+		if ($dropOffPointId = intval($request->query->get('id'))) {
+			// TODO-810 Prepare dropOffPoint data array object and path it into view.
+			$this->dropOffPoint([]);
 		}
 	}
 

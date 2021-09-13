@@ -37,8 +37,9 @@ class DropOffPointXhr extends Control
 
 			$xhrDialog->setTitle($dropOffPoint['name']);
 			$xhrDialog->addContent($dropOffPoint['description']);
-			$xhrDialog->addButton($this->translator->trans('drop_off_point.go'),
-				'goTo(\'/drop-off-point/' . $dropOffPointId . '\');'
+			$xhrDialog->addButton(
+				$this->translator->trans('drop_off_point.go'),
+				'goTo(\'/?page=dropOffPoint&id=' . $dropOffPointId . '\');'
 			);
 
 			return $xhrDialog->xhrout();

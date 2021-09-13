@@ -4,6 +4,9 @@ namespace Foodsharing\Lib\View;
 
 use Foodsharing\Utility\PageHelper;
 
+/**
+ * @deprecated
+ */
 class vPage
 {
 	private $title;
