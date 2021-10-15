@@ -2,6 +2,7 @@
 
 namespace Foodsharing\Modules\Region;
 
+use Carbon\Carbon;
 use Foodsharing\Modules\Core\Control;
 use Foodsharing\Modules\Core\DBConstants\Region\RegionOptionType;
 use Foodsharing\Modules\Core\DBConstants\Region\Type;
@@ -469,6 +470,12 @@ final class RegionControl extends Control
 			$viewData['pickupData']['weekly'] = $this->gateway->listRegionPickupsByDate((int)$region['id'], '%Y/%v');
 			$viewData['pickupData']['monthly'] = $this->gateway->listRegionPickupsByDate((int)$region['id'], '%Y-%m');
 			$viewData['pickupData']['yearly'] = $this->gateway->listRegionPickupsByDate((int)$region['id'], '%Y');
+			$date = Carbon::today();
+			$viewData['utilizationData']['today'] = $this->gateway->regionUtilization((int)$region['id'], $date->toDateString());
+			$date->addDay();
+			$viewData['utilizationData']['tomorrow'] = $this->gateway->regionUtilization((int)$region['id'], $date->toDateString());
+			$date->addDay();
+			$viewData['utilizationData']['dayAfterTomorrow'] = $this->gateway->regionUtilization((int)$region['id'], $date->toDateString());
 		}
 		$response->setContent($this->render('pages/Region/statistic.twig', $viewData));
 	}

@@ -14,6 +14,7 @@ import Thread from './components/Thread'
 import MemberList from './components/MemberList'
 import GenderList from './components/GenderList'
 import PickupList from './components/PickupList'
+import UtilizationList from './components/UtilizationList'
 import AgeBandList from './components/AgeBandList'
 import ThreadList from './components/ThreadList'
 import PollList from './components/PollList'
@@ -67,9 +68,11 @@ $(document).ready(() => {
     vueRegister({
       GenderList,
       PickupList,
+      UtilizationList,
       AgeBandList,
     })
     vueApply('#vue-genderlist')
+    vueApply('#vue-utilizationlist')
     vueApply('#vue-ageBandlist')
     vueApply('#vue-pickuplist', true)
   } else if (['botforum', 'forum'].includes(GET('sub'))) {

@@ -2,6 +2,16 @@
 
 {% block main %}
     {% include 'partials/vue-wrapper.twig' with {
+        id: 'vue-utilizationlist',
+        component: 'utilization-list',
+        props: {
+            regionName: region.name,
+            utilizationDataTodayTab: utilizationData.today,
+            utilizationDataTomorrowTab: utilizationData.tomorrow,
+            utilizationDataDayAfterTomorrowTab: utilizationData.dayAfterTomorrow,
+        }
+    } %}
+    {% include 'partials/vue-wrapper.twig' with {
         id: 'vue-genderlist',
         component: 'gender-list',
         props: {

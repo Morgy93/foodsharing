@@ -1239,6 +1239,20 @@ ageBandList:
   ageBand: "Altersgruppe"
   NumberOfAgeband: "Anzahl"
 
+utilizationList:
+  header_for_district: "Auslastung der Abholslots in {bezirk}"
+  today_tab: "Heute"
+  tomorrow_tab: "Morgen"
+  dayaftertomorrow_tab : "Übermorgen"
+  id_table_header: "id"
+  storeName_table_header: "Name"
+  MaxFetchSlot_table_header: "Max. Slots"
+  OccupiedSlots_table_header: "Abholer"
+  Freeslots_table_header: "Freie Slots"
+  Utilization_table_header: "Belegung"
+  NumberOfActiveMembers_table_header: "Aktive"
+  NumberOfWaitingMembers_table_header: "Springer"
+
 regionOptions:
   header_page: "Optionen für {bezirk}"
   success: "Optionen erfolgreich gespeichert"

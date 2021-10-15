@@ -619,6 +619,71 @@ class RegionGateway extends BaseGateway
 		);
 	}
 
+	public function regionUtilization(int $districtId, $day): array
+	{
+		$regionIDs = implode(',', array_map('intval', $this->listIdsForDescendantsAndSelf($districtId)));
+
+		$regionStoreId = implode(',', array_map('intval', $this->db->fetchAllValues('select id from fs_betrieb where bezirk_id in (' . $regionIDs . ')')));
+
+		return $this->db->fetchAll(
+			'select Store.id,
+				   Store.name as StoreName,
+				   MaxFetch.day,
+				   MaxFetch.NumberOfAppointments,
+				   MaxFetch.MaxFetchSlot,
+				   case when BelegteSlots is not null then BelegteSlots else 0 end as OccupiedSlots,
+				   MaxFetchSlot- (case when BelegteSlots is not null then BelegteSlots else 0 end) as Freeslots,
+				   case when MaxFetchSlot > 0 then concat(round(((case when BelegteSlots is not null then BelegteSlots else 0 end ) / MaxFetchSlot) * 100,2),\'%\') else 0 end as Utilization,
+				   Aktive as NumberOfActiveMembers,
+				   Springer as NumberOfWaitingMembers
+					from
+			(select betrieb_id,
+				   date_format(fetchtime,\'%Y-%m-%d\') as day,
+				   count(distinct fetchtime) as NumberOfAppointments,
+				   sum(MaxFetchSlot) as MaxFetchSlot
+			from (
+				select  RegPickup.betrieb_id,
+						case when customPickup.time is not null then customPickup.time else concat(:day1, date_format(RegPickup.time,\' %H:%i:00\')) end as fetchtime,
+						case when fetchercount is not null then fetchercount else fetcher end as MaxFetchSlot
+				from fs_abholzeiten RegPickup
+					left outer join
+					   (select *
+						from fs_fetchdate basefd
+						where date_format(time,\'%Y-%m-%d\')=:day2
+						   and basefd.betrieb_id in (' . $regionStoreId . ')) customPickup
+					on RegPickup.betrieb_id =customPickup.betrieb_id and RegPickup.time = date_format(customPickup.time,\'%H:%i:00\')
+				where RegPickup.dow = dayofweek(str_to_date(:day3,\'%Y-%m-%d\'))-1
+					and RegPickup.betrieb_id in (' . $regionStoreId . ')
+			union distinct
+				select
+					fd.betrieb_id, fd.time as pickuptime, fetchercount as MaxFetchSlot
+				from fs_fetchdate fd
+					where date_format(time,\'%Y-%m-%d\')=:day4
+					and fd.betrieb_id in (' . $regionStoreId . ')
+				) innerMaxFetch
+			group by betrieb_id, date_format(fetchtime,\'%Y-%m-%d\')) MaxFetch
+			left outer join fs_betrieb Store on MaxFetch.betrieb_id = Store.id
+			left outer join
+				(select
+					betrieb_id, date_format(date,\'%Y-%m-%d\') as day, count(*) as BelegteSlots
+				from fs_abholer innerOccupied
+					where date_format(date,\'%Y-%m-%d\')=:day5
+					and betrieb_id in (' . $regionStoreId . ')
+					group by betrieb_id, date_format(date,\'%Y-%m-%d\')
+					) Occupied on Occupied.betrieb_id = MaxFetch.betrieb_id
+			left outer join
+			( select team.betrieb_id,
+					 sum(case when team.active = 1 then 1 else 0  end) as Aktive,
+					 sum(case when team.active = 2 then 1 else 0  end) as Springer
+				   from fs_betrieb_team team
+					where team.betrieb_id in (' . $regionStoreId . ')
+					group by betrieb_id
+					) members on members.betrieb_id = MaxFetch.betrieb_id
+					where MaxFetchSlot > 0',
+			[':day1' => $day, ':day2' => $day, ':day3' => $day, ':day4' => $day, ':day5' => $day]
+		);
+	}
+
 	/**
 	 * Returns an option for the region, or null if the option is not set for the region.
 	 * See {@see RegionOptionType}.
