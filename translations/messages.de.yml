@@ -1198,6 +1198,20 @@ memberlist:
   header_for_workgroup: "Foodsaver in der Arbeitsgruppe {bezirk}"
   some_in_all: "({some} von {all})"
 
+utilizationList:
+  header_for_district: "Auslastung der Abholslots in {bezirk}"
+  today_tab: "Heute"
+  tomorrow_tab: "Morgen"
+  dayaftertomorrow_tab : "Übermorgen"
+  id_table_header: "id"
+  storeName_table_header: "Name"
+  MaxFetchSlot_table_header: "Max. Slots"
+  OccupiedSlots_table_header: "Abholer"
+  Freeslots_table_header: "Freie Slots"
+  Utilization_table_header: "Belegung"
+  NumberOfActiveMembers_table_header: "Aktive"
+  NumberOfWaitingMembers_table_header: "Springer"
+
 genderlist:
   header_for_district: "Verteilung der Foodsaver nach Geschlecht in {bezirk}"
   district_tab: "Bezirk"
@@ -1238,20 +1252,6 @@ ageBandList:
   home_district_tab: "Stammbezirk"
   ageBand: "Altersgruppe"
   NumberOfAgeband: "Anzahl"
-
-utilizationList:
-  header_for_district: "Auslastung der Abholslots in {bezirk}"
-  today_tab: "Heute"
-  tomorrow_tab: "Morgen"
-  dayaftertomorrow_tab : "Übermorgen"
-  id_table_header: "id"
-  storeName_table_header: "Name"
-  MaxFetchSlot_table_header: "Max. Slots"
-  OccupiedSlots_table_header: "Abholer"
-  Freeslots_table_header: "Freie Slots"
-  Utilization_table_header: "Belegung"
-  NumberOfActiveMembers_table_header: "Aktive"
-  NumberOfWaitingMembers_table_header: "Springer"
 
 regionOptions:
   header_page: "Optionen für {bezirk}"

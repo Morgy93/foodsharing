@@ -12,9 +12,9 @@ import './Region.css'
 import { vueRegister, vueApply } from '@/vue'
 import Thread from './components/Thread'
 import MemberList from './components/MemberList'
+import UtilizationList from './components/UtilizationList'
 import GenderList from './components/GenderList'
 import PickupList from './components/PickupList'
-import UtilizationList from './components/UtilizationList'
 import AgeBandList from './components/AgeBandList'
 import ThreadList from './components/ThreadList'
 import PollList from './components/PollList'
@@ -66,13 +66,13 @@ $(document).ready(() => {
     vueApply('#vue-memberlist')
   } else if (GET('sub') == 'statistic') {
     vueRegister({
+      UtilizationList,
       GenderList,
       PickupList,
-      UtilizationList,
       AgeBandList,
     })
+    vueApply('#vue-utilizationlist', true)
     vueApply('#vue-genderlist')
-    vueApply('#vue-utilizationlist')
     vueApply('#vue-ageBandlist')
     vueApply('#vue-pickuplist', true)
   } else if (['botforum', 'forum'].includes(GET('sub'))) {

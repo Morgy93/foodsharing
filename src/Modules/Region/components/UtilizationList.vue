@@ -12,7 +12,7 @@
           card
         >
           <b-tab
-            :title="$i18n('utilizationList.today_tab')"
+            :title="$i18n('pickuplist.today_tab')"
             active
           >
             <b-pagination
@@ -155,41 +155,49 @@ export default {
       currentPageTomorrow: 1,
       currentPageDayAfterTomorrow: 1,
       perPage: 10,
-      fields: {
-        StoreName: {
+      fields: [
+        {
+          key: 'StoreName',
           label: this.$i18n('utilizationList.storeName_table_header'),
           sortable: true,
         },
-        NumberOfAppointments: {
+        {
+          key: 'NumberOfAppointments',
           label: this.$i18n('pickuplist.NumberOfAppointments_table_header'),
           sortable: true,
         },
-        MaxFetchSlot: {
+        {
+          key: 'MaxFetchSlot',
           label: this.$i18n('utilizationList.MaxFetchSlot_table_header'),
           sortable: true,
         },
-        OccupiedSlots: {
+        {
+
+          key: 'OccupiedSlots',
           label: this.$i18n('utilizationList.OccupiedSlots_table_header'),
           sortable: true,
         },
-        Freeslots: {
+        {
+          key: 'Freeslots',
           label: this.$i18n('utilizationList.Freeslots_table_header'),
           sortable: true,
         },
-        Utilization: {
+        {
+          key: 'Utilization',
           label: this.$i18n('utilizationList.Utilization_table_header'),
           sortable: true,
         },
-        NumberOfActiveMembers: {
+        {
+          key: 'NumberOfActiveMembers',
           label: this.$i18n('utilizationList.NumberOfActiveMembers_table_header'),
           sortable: true,
         },
-        NumberOfWaitingMembers: {
+        {
+          key: 'NumberOfWaitingMembers',
           label: this.$i18n('utilizationList.NumberOfWaitingMembers_table_header'),
           sortable: true,
         },
-
-      },
+      ],
     }
   },
 }
