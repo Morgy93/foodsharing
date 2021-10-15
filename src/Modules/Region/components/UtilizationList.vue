@@ -12,7 +12,7 @@
           card
         >
           <b-tab
-            :title="$i18n('pickuplist.today_tab')"
+            :title="$i18n('utilizationList.today_tab')"
             active
           >
             <b-pagination
