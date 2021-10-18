@@ -8,6 +8,7 @@
 ## Changes
 - Allow admins of the working group "Redaktion" to edit blog posts #34 !2061 @alex.simm
 - Addded Utilization statistic @fs_k
+- Addded Utilization statistic !2066 @fs_k
 
 - "New event" page requires login !2058 @Buntelrus
 - Add a button to the group member list for removing members !2073 @alex.simm @chriswalg
@@ -18,6 +19,7 @@
 - Fix for store change !2065 @fs_k
 - Fix for future timeslot visibility to use Europe/Berlin timezone !2070 @fs_k 
 - Fix in Ageband Statistic @fs_k
+- Fix in Ageband Statistic !2066 @fs_k
 
 ## Refactoring
 
