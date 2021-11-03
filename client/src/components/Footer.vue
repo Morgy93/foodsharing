@@ -306,7 +306,7 @@
               v-else
               :href="$url('releaseNotes')"
             >
-              {{ $i18n('releases.2021-03') }}
+              {{ $i18n('releases.2021-09') }}
               <i class="fas fa-magic social_icons" />
             </a>
             <br>
@@ -374,7 +374,7 @@ export default {
       return 'https://www.youtube.com/user/foodsharingtv'
     },
     betaTestingIssues () {
-      return 'https://gitlab.com/foodsharing-dev/foodsharing-beta-testing/-/issues'
+      return 'https://beta.foodsharing.de/?page=bezirk&bid=734&sub=forum'
     },
     externalLink () {
       return 'nofollow noreferrer noopener'

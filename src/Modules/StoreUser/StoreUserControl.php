@@ -133,9 +133,19 @@ class StoreUserControl extends Control
 					];
 				}
 				if ($this->storePermissions->mayEditStore($storeId)) {
+					$this->view->u_legacy_teamEdit();
 					$menu[] = [
 						'name' => $this->translator->trans('storeedit.bread'),
 						'href' => '/?page=betrieb&a=edit&id=' . $storeId,
+					];
+					// ToDO (Deprecated): may be removed in one of the next releases, as the function has been incorporated in a new place.
+					$menu[] = [
+						'name' => $this->translator->trans('storeedit.team.bread'),
+						'click' => '$(\'#disabledteamedit\').dialog({'
+							. 'modal: true,'
+							. 'width: $(window).width() / 1.5,'
+							. 'title: \'' . $this->translator->trans('storeedit.team.bread') . '\''
+							. '});',
 					];
 					$menu[] = [
 						'name' => $this->translator->trans('pickup.edit.bread'),
@@ -167,6 +177,7 @@ class StoreUserControl extends Control
 						'team' => $this->getDisplayedStoreTeam($store),
 						'storeId' => $storeId,
 						'storeTitle' => $store['name'],
+						'regionId' => $store['bezirk_id'],
 					]),
 					CNT_LEFT
 				);
@@ -342,7 +353,10 @@ class StoreUserControl extends Control
 	 */
 	private function isResponsibleForThisStoreAnyways($storeId): bool
 	{
-		if ($this->storePermissions->mayEditStore($storeId)) {
+		if ($this->session->may('orga')) {
+			$extraResponsibility = true;
+			$extraMessageKey = 'storeedit.team.orga';
+		} elseif ($this->storePermissions->mayEditStore($storeId)) {
 			$extraResponsibility = true;
 			$extraMessageKey = '';
 
@@ -358,9 +372,6 @@ class StoreUserControl extends Control
 			} elseif ($this->session->isAdminFor($storeGroup)) {
 				$extraMessageKey = 'storeedit.team.coordinator';
 			}
-		} elseif ($this->session->may('orga')) {
-			$extraResponsibility = true;
-			$extraMessageKey = 'storeedit.team.orga';
 		} else {
 			$extraResponsibility = false;
 			$extraMessageKey = '';

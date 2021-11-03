@@ -6,7 +6,7 @@ description: 描述
 desc: 描述
 edit: 更改
 nachname: 姓氏
-geb_datum: 出生日期
+geb_datum: 生日日期
 handy: 手机号码
 telefon: 座机号码
 attachement: 附件
@@ -64,3 +64,5 @@ anschrift: 街道号及房号（在上面地图自动生成，然后手动矫正
 message: 信息
 subject: 标题
 add: 加入
+dashboard:
+  greeting: 你好 {name}! 很高兴你能来这里。

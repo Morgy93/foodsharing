@@ -30,7 +30,10 @@
             type="email"
             name="login-email"
             class="form-control text-primary"
+            autocomplete="email"
+            autofocus
             @keydown.enter="submit"
+            @focus="focusLogin=true"
           >
         </div>
         <div
@@ -53,11 +56,10 @@
             type="password"
             name="login-password"
             class="form-control text-primary"
-            autocomplete="on"
+            autocomplete="current-password"
             @keydown.enter="submit"
           >
         </div>
-        <!-- TODO: Disabled until there is a solution in issue 956.
         <div>
           <b-checkbox
             id="login-rememberme"
@@ -69,7 +71,6 @@
             {{ $i18n('login.steady_login') }}
           </b-checkbox>
         </div>
-        -->
         <b-overlay
           :show="isLoading"
         >
@@ -79,6 +80,7 @@
           <b-button
             id="login-btn"
             :aria-label="$i18n('login.login_button_label')"
+            type="submit"
             secondary
             class="login-btn"
             @click="submit"

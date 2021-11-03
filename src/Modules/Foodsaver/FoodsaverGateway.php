@@ -320,7 +320,18 @@ final class FoodsaverGateway extends BaseGateway
 			'geschlecht',
 			'email'
 		], [
-			'orgateam' => 1
+			'orgateam' => 1,
+			'rolle' => ROLE::ORGA
+		]);
+	}
+
+	public function getOrgaTeamId(): array
+	{
+		return $this->db->fetchAllByCriteria('fs_foodsaver', [
+			'id'
+		], [
+			'orgateam' => 1,
+			'rolle' => ROLE::ORGA
 		]);
 	}
 
@@ -512,6 +523,35 @@ final class FoodsaverGateway extends BaseGateway
 			$sql, [
 			':ancestorId' => $regionId,
 			':regionId' => $regionId
+		]);
+	}
+
+	/**
+	 * Retrieves the list of all admins for all existing workgroup function.
+	 *
+	 * Because the region data model holds both, <i>regions</i> <b>and</b> <i>work groups</i>,
+	 * one can decide which one to query via flag parameters.
+	 *
+	 * Testdistricts are excluded (343 Streuobstwiese,3113 Apfelbaum)
+	 *
+	 * @param int $wgFunction The workgroup function ID
+	 */
+	public function getWorkgroupFunctionAdminIds(int $wgFunction): array
+	{
+		$sql = '
+			select
+			    distinct b.foodsaver_id
+			from fs_botschafter b
+				left outer join fs_region_function rf on b.bezirk_id = rf.region_id
+			where
+				rf.function_id = :wgFunctionId
+			and rf.target_id not in (:excludedRegions)
+		';
+
+		return $this->db->fetchAllValues(
+			$sql, [
+			':wgFunctionId' => $wgFunction,
+			':excludedRegions' => join(',', RegionIDs::getTestRegions())
 		]);
 	}
 

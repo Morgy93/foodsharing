@@ -34,8 +34,16 @@ if (file_exists($revision_filename)) {
 	require_once $revision_filename;
 }
 
+if (!defined('FCM_KEY')) {
+	define('FCM_KEY', '');
+}
+
 if (!defined('RAVEN_JAVASCRIPT_CONFIG') && getenv('RAVEN_JAVASCRIPT_CONFIG')) {
 	define('RAVEN_JAVASCRIPT_CONFIG', getenv('RAVEN_JAVASCRIPT_CONFIG'));
+}
+
+if (!defined('SENTRY_TRACING_SAMPLE_RATE')) {
+	define('SENTRY_TRACING_SAMPLE_RATE', 0); // disables tracing
 }
 
 if (!defined('CSP_REPORT_URI')) {

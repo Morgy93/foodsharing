@@ -338,8 +338,8 @@ geschlecht: Genere
 anschrift: Via e numero civico (automaticamente dalla mappa sopra, correggere successivamente
   se necessario)
 last_login: Ultimo accesso
-handy: Numero di cellulare
-telefon: Numero di rete fissa
+handy: Numero di cellulare (incluso il prefisso internazionale, inizia con +)
+telefon: Numero di rete fissa (incluso il prefisso internazionale, inizia con +)
 attachement: Allegato
 email: Indirizzo e-mail
 plz: Codice postale (automaticamente dalla mappa sopra)
@@ -352,7 +352,7 @@ subject: Oggetto
 nachname: Cognome
 add: aggiungi
 name: Nome
-geb_datum: Data di nascita
+geb_datum: Data di nascita (AAAA-MM-GG)
 validate:
   required: '{it} non può essere vuoto'
 notice: Nota!
@@ -468,7 +468,7 @@ register:
   have_read_the_legal_stuff1: io ho la
   forgotten_password: Password dimenticata?
   phone_not_valid: Il numero di telefono inserito non è valido.
-  phone_example: Esempio +3917912345678
+  phone_example: Esempio +49 179 12345678
   login_phone_info: Può essere utile condividere il tuo numero di telefono con altre
     persone di foodsharing
   lastname_minLength: Il cognome deve essere composto da almeno 2 lettere.
@@ -497,6 +497,7 @@ register:
   register_button_label: Registrati
   title: Registrazione
   topbar: Prendi parte
+  landline_example: Esempio +49 30 12345678
 store_status_impact_explanation: "Dopo ogni contatto aziendale (<a href=\"https://wiki.foodsharing.de/Kooperationsaufbau_-_Checkliste\"\
   \ target=\"_blank\"> Wiki: Kooperationsaufbau - Checkliste</a>) lo stato (<a href=\"\
   https ://wiki.foodsharing.de/Betrieb\"target=\"_blank\">Wiki: Betrieb</a>) dell'azienda,\
@@ -764,6 +765,7 @@ store:
     managementEffect: "Ordinamento in base alla data dell'ultimo ritiro:"
     managementToggleOff: Torna alla visualizzazione standard
     managementToggleOn: Attivare la visualizzazione per i responsabili delle agenzie
+    searchPlaceholder: Nome o ID
   days_before: prima
   days: Giorni
   my_last_pickup: Il mio ultimo ritiro
@@ -906,6 +908,9 @@ startpage:
     title: in privato
   call_to_action_button: Partecipare
   slogan: Insieme per apprezzare in più il cibo
+  slogan_3: foodsharing è e rimane gratuito.
+  slogan_2: collaborativo, sostenibile e riconoscente
+  slogan_1: Insieme per apprezzare di più il cibo
 poll:
   results:
     option_text: Opzione
@@ -937,10 +942,9 @@ poll:
     missing_fields: Tutti i campi devono essere compilati
     submit_success: La riconciliazione è stata creata
     submit: Salvare il voto
-    option_texts_required: Inserisci un testo per ogni opzione.
+    option_texts_required: Inserisci un testo unico per ogni opzione.
     option: Opzioni
-    options: Le opzioni devono essere disponibili per la selezione. Quando si vota,
-      vengono visualizzati ciascuno in un ordine casuale.
+    options: Le opzioni devono essere disponibili per la selezione.
     description_required: Si prega di inserire una descrizione.
     description_placeholder: Che tipo di voto è questo?
     description: Descrizione
@@ -956,6 +960,7 @@ poll:
     name_required: Inserisci un nome.
     name: Nome della votazione
     title: Nuova votazione
+    shuffle_options: Mostra le opzioni in ordine casuale quando si vota
   untraceable: Le informazioni su come avete votato per quale opzione non possono
     essere rintracciate e quindi non possono più essere visualizzate qui.
   vote_success: Hai votato con successo.
@@ -1886,6 +1891,9 @@ profile:
     history: Cronologia del passaporto
     buddy: Conosco {nome}
     edit: Modifica profilo
+  no_common_workgroups: Non sei in un gruppo con {name}
+  workgroups_member: Sei con {name} nei seguenti gruppi
+  workgroups_admin: '{name} è la persona di contatto per i gruppi'
 mail:
   noreply_addresses_not_allowed: Le e-mail a indirizzi "noreply@" non sono consegnabili.<br>Si
     prega di controllare l'indirizzo del destinatario.
@@ -2215,6 +2223,7 @@ releases:
   "2020-10": Release 'Cranberry' (ottobre 2020)
   "2020-12": Release 'Drachenfrucht' (dicembre 2020)
   "2021-03": Release "Erdbeere" 🍓 (marzo 2021)
+  "2021-09": Versione "fig" 🥧 (settembre 2021)
 base:
   jsrequired: Sfortunatamente, qui non funziona nulla senza JavaScript.
   slogan: Condividere il cibo invece di buttarlo via - foodsharing Germania

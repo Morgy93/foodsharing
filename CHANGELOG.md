@@ -1,21 +1,45 @@
-# Release "Feige", Unreleased
+# Release "Grapefruit", unreleased
+
+## Features
+
+## Changes
+- Allow admins of the working group "Redaktion" to edit blog posts #34 !2061 @alex.simm
+
+- "New event" page requires login !2058 @Buntelrus
+## Bugfixes
+- Fixed the list of responsible store members in REST responses !2033 #1124 @alex.simm
+- Fixed for content edit !2062 @fs_k
+- Fix for store change !2065 @fs_k
+- Fix for future timeslot visibility to use Europe/Berlin timezone !2070 @fs_k 
+
+## Refactoring
+
+## Dev/Test/CI stuff
+
+- Update codeception to 4.1.22 because of a security fix !2055 @Morgy93
+- Enable Gitlab dependency scanning !2056 @\_fridtjof_
+
+# Release "Feige", 2021-09-24
 
 ## Features
 - Allow users to remove trust bananas on their own profile #592 !1920 @alex.simm
 - Added a button that allows removing users from the email bounce list !1927 @alex.simm
 - For unconfirmed pickup slots, explain in the popup text that a store manager still has to confirm it. !1949 @blinry
-- Forum threads can now be closed !1851 !1990 #724 @alex.simm
-- Add french translation to language chooser !1964 @alex.simm
+- Forum threads can now be closed !1851 !1990 !2045 #724 @alex.simm
+- Add french and italian translation to language chooser !1964 !2039 @alex.simm
 - Introduces Push Notifications for the Android App !1647 !1976 @dthulke
 - Improve wording in German texts, to make the language more consistent, clear, and inclusive in some places. !1959 @blinry @Claraaa @alex.simm @fs_k
-- Display same-day pickups when confirming to sign into a pickup slot !1827 @ChrisOelmueller
+- Display same-day pickups when confirming to sign into a pickup slot !1827 !2040 @ChrisOelmueller
 - Show membership in profile for workgroups !1988 !1996 @chriswalg
 - IT-Support Admins can delete bananas upon request over it@foodsharing.network. !2002 @fs_k
+- Added a user search field to the store management panel !2007 !2033 @alex.simm
+- New calendar API including token management #80 !1719 !2029 !2045 @alex.simm
+- Set iCalendar status for exported pickup events !2030 @iron9
 
 ## Changes
 - Profile storelist now shows store cooperation status !1828 !1935 @ChrisOelmueller @chriswalg
 - Added a partners page for foodsharing.at !1931 @alex.simm
-- Redesign startpage !1778 !1982 !1991 !1997 @chriswalg
+- Redesign startpage !1778 !1982 !1991 !1997 !2015 @chriswalg @Morgy93
 - Edit Team in stores is no more, functionality moved to team management mode !1810 !1811 @ChrisOelmueller
 - Added a link in Footer.vue to our beta testing issues on beta and dev !1961 @chriswalg
 - Make the own personal address visible for the logged in user, as it is already for ORGA #994 !1957 @leonja
@@ -23,14 +47,23 @@
 - New pickupslots availability moved from midnight to actual pickuptime. #1024 @fs_k
 - Convert regular slots to manual slots as soon as someone joins an empty slot !1825 @ChrisOelmueller
 - Added a title name for social icons and replaced manitu logo in svg format to footer !1985 @chriswalg
-- Allow admins of the newsletter group to see the full list of regions !2011 @alex.simm 
+- Allow admins of the newsletter group to see the full list of regions !2011 @alex.simm
+- Enabled session cookie checkbox in login form and enabled persistent session for 1 day #956 !2013 @Morgy93
+- Allow authors of poll to decide if the options will be shown in a random order #975 !1986 @alex.simm
+- Notice as a popup in store for the menu item "Edit Team" where this new function is located !2020 @chriswalg
+- Let email input field of login page autofocus !2027 @iron9
+- Activate autocompletion for login form !2022 @iron9
+- Admins of Voting Workgroups are automatically member of a overall voting in praxis workgroup !2038 @fs_k
+- User with administrativ orga power are part of the orga koordination group !2038 @fs_k
+- Make expected format of input in user settings clearer !2032 @iron9
 
 ## Bugfixes
+- Long links in the location field of events do not overflow the location box
 - Add permission checks to REST endpoints !1946 @alex.simm
 - Prevent a timeout when creating polls for many users !1893 @alex.simm
 - Allow orga to apply for working groups !1953 !1973 #1050 @alex.simm
 - Excluded wall post author from store team members notified about new post !1960 @fabian.rudolf
-- Business Card generation: show info and cut of the rest if street or plz + city is longer than 49 characters #834 !1489 @treee111
+- Business Card generation: show info and cut off the rest if street or plz + city is longer than 49 characters #834 !1489 @treee111
 - Fix permissions for content IDs @alex.simm
 - Fix link to wiki on the registration page !1992 @alex.simm
 - Fixed the link texts in the newsletter email template !1993 @alex.simm
@@ -39,9 +72,12 @@
 - Prevent stores to show up multiple times #1063 !1900 @bjarne.schindler
 - Fix errors that occur for non-existing password reset keys !2004 @alex.simm
 - Text overflow fixed !2008 #1105 #1106 @YertleTurtleGit
+- the function FoodsaverGateway:getOrgaTeam now factors in the user role Orga !2038 @fs_k
+- Set correct MIME type for attachments which are fetched via IMAP #1092 !2041 @Thylossus
+- Some checks for PHP data types in order to avoid Sentry errors !2001 @alex.simm  
 
 ## Refactoring
-- Change DTOs for dashboard updates to use date objects !1926 @alex.simm
+- Update documentation: Give more on information on how to post a testing task in the forum
 - Reimplement storelist in user profiles in Vue !1828 @ChrisOelmueller
 - New look for event header panels and dashboard invitations including the event's region #992 !1717 #1079 !1940 #1075 !1943 @chriswalg @ChrisOelmueller @fs_k
 - Use new upload API for profile photos !1916 !1929 !1932 !1933 !1994 @alex.simm
@@ -50,17 +86,20 @@
 - Use a new REST endpoint for deleting emails !1979 #798 @alex.simm
 
 ## Dev/Test/CI stuff
-- Update some frontend dependencies !1892 @chriswalg
 - Update mdbook to 0.4.7 !1938 @chriwalg
 - Update some frontend dependencies !1892 !1939 !1950 @chriswalg
 - Fixed restart behavior for some docker containers !1937 @\_fridtjof_
 - Update some backend dependencies !1942 @chriswalg
 - Update minishlink WebPush to version 6 !1745 @peter.toennies
-- Update chat dependencies !1962 @chriswalg
 - Remove obsolete code for picture uploads !1969 @alex.simm
 - Update chat dependencies !1962 !1751 @chriswalg
 - Added a foodsharing glossary to our dev docs !1936 @chriswalg
 - Delete links in docker compose yml files. It seems to work without it and podman does not work with it. !1972 @chriswalg
+- Add basic markdown linting features !2016 @Morgy93
+- Update betaTestingIssues link !2028 @Morgy93
+- Update docs and MR template for latest beta testing guidelines !2019 @Morgy93
+- Update sentry-symfony to latest version !2042 !2047 @\_fridtjof_
+- Add docs about markdown and documentation in general
 
 # 2021-04-09 Hotfix
 - Add permission checks to REST endpoints !1944 @alex.simm
@@ -88,7 +127,6 @@
 - New menu entry for changing the language of the website #1015 !1877 !1880 @alex.simm
 - Show icon and tooltip for working groups with extra functions !1846 @alex.simm
 - Added a button that allows the creator of a poll to delete it within the first hour #975 !1906 !1912 @alex.simm
-- New calendar API including token management #80 !1719 @alex.simm
 
 ## Changes
 - New look for mailbox folder list (rewrite in Vue) !1788 @ChrisOelmueller

@@ -78,6 +78,8 @@ group:
       d'information
     tooltip_function_region387: Les admins de ce groupe de travail peuvent retirer
       des entrées dans la liste de diffusion
+    tooltip_function_region327: Les administrateur·rice·s de ce groupe de travail
+      peuvent modifier les entrées du blog
   function:
     tooltip_function_10: Les admins de ce groupe peuvent accepter des contributions
       dans les forums déjà modérés.
@@ -339,8 +341,8 @@ options: Options
 botschafter: Ambassadeur·ice
 anschrift: Rue et numéro de rue (automatiquement complété par la carte ci-dessus,
   corrigez par la suite si nécessaire)
-handy: Numéro de téléphone portable
-telefon: Numéro de téléphone fixe
+handy: Numéro de téléphone mobile (y compris l'indicatif du pays, commençant par +)
+telefon: Numéro de ligne fixe (y compris l'indicatif du pays, commençant par +)
 attachement: Pièce jointe
 email: Adresse courriel
 plz: Code postal (automatiquement complété par la carte ci-dessus)
@@ -348,7 +350,7 @@ edit: modifier
 message: Message
 nachname: Nom
 add: ajouter
-geb_datum: Date de naissance
+geb_datum: Date de naissance (AAAA-MM-JJ)
 position: Position chez foodsharing (public)
 page:
   welcome_main_1: Nous sommes une initiative qui agit contre le gaspillage alimentaire.
@@ -366,8 +368,9 @@ settings:
     link_title: 'ICS/ICAL/WebCal :'
     token-warning: "Important : le lien doit rester secret !\nIl contient une clé\
       \ pour accéder à ton compte sans mot de passe.\n"
-    teaser: "Tu peux ouvrir ton calendrier de collectes avec un programme.\nPour cela,\
-      \ abonne-toi à un des deux liens ci-dessous.\n"
+    teaser: "Tu peux visualiser le calendrier de collectes avec le programme de calendrier\
+      \ de ton choix.\nCrée d'abord un jeton, puis abonne-toi à l'un des deux liens\
+      \ de calendrier.\nTu trouveras plus d'informations dans le wiki à la rubrique\n"
     title: Ton calendrier de collectes
     menu: Calendrier
     delete_token:
@@ -479,7 +482,8 @@ email_template:
       \ Inscription au registre :\n\n Inscription au registre des associations\n Tribunal d’enregistrement :\
       \ tribunal de Cologne\n Numéro d’enregistrement : VR 17439\n Responsable du\
       \ contenu d’après § 55 Abs. 2 RStV :\n  Frank Bowinkelmann"
-    general_information_requirements: Mentions suivant l'article
+    general_information_requirements: Mentions suivant l'article 5 de la loi sur les
+      télémédias (Telemediengesetz)
   manual_slots_get_ignored: Cette notification est envoyée que pour les collectes
     régulières. Les collectes particulières ajoutées manuellement, modifiées ou supprimées
     ne sont pas prises en compte.
@@ -578,8 +582,8 @@ foodsaver:
   about_me_intern: "Cette description sera visible sur ton profil par toute la communauté\
     \ de foodsharing.\n"
   about_me_public: "Cette description sera visible sur l'équipe <a href=\"https://foodsharing.de/team\"\
-    >Team-</a>\net sur la page <a href=\"https://foodsharing.de/team/ehemalige\">Ehemaligenseite</a>\
-    \ par tous leurs membres.\n"
+    >Team-</a>\net sur la page <a href=\"https://foodsharing.de/team/ehemalige\">Ehemaligenseite</a>\n\
+    par tous leurs membres.\n"
   manage:
     orga: Fait partie de l'équipe organisation nationale
     remove: Supprimer du secteur géographique
@@ -628,7 +632,7 @@ recipients:
   empty-region: Il n'y a encore aucun(e) collecteur.ice dans les secteurs géographiques
     choisis
   region-hint: "<strong>Remarque :</strong>\nPour marquer les sous-secteurs, ouvre\
-    \ le dossier en premier !\nAucun courriel ne sera envoyé aux secteurs géographiques\
+    \ le dossier en premier.\nAucun courriel ne sera envoyé aux secteurs géographiques\
     \ qui ne sont pas visibles.\n"
   manual: Saisie manuelle
   choose: Choisir les secteurs géographiques séparément
@@ -846,7 +850,7 @@ register:
   have_read_the_legal_stuff1: Je l'ai
   forgotten_password: Mot de passe oublié ?
   phone_not_valid: Le numéro de téléphone renseigné est invalide.
-  phone_example: Exemple +331122334455
+  phone_example: Exemple +33 1 22 33 44 55
   login_phone_info: Partager ton numéro de téléphone avec les autres foodsharer peut
     être plus pratique
   lastname_minLength: Ton nom doit se composer d'au moins 2 caractères.
@@ -871,6 +875,7 @@ register:
   register_button_label: S'inscrire
   title: Inscription
   topbar: Rejoins-nous
+  landline_example: Exemple +33 1 22 33 44 55
 login:
   pwreset:
     mailSent: Très bien, un lien t'a été envoyé par courriel pour modifier ton mot
@@ -892,7 +897,7 @@ login:
   logout: Se déconnecter
   success: <b>Une merveilleuse journée à toi, {user_name} !</b>
   error_no_password: Entre ton mot de passe.
-  steady_login: Rester connecté·e (utilise des cookies)
+  steady_login: Restez connecté pendant une journée (utilise des cookies)
   save_password: Enregistrer le mot de passe
   login_button_label: Se connecter
   forgotten_password_label: Mot de passe oublié ?
@@ -1001,6 +1006,7 @@ store:
     reallyDemote: Souhaites-tu réellement retirer {name} en tant que RM dans ce magasin ?
     demoteAsManager: Retirer en tant que responsable coopération
     promoteToManager: Rendre responsable
+    searchPlaceholder: Nom ou ID
   springer_conversation_name: Replaçant(e) {name}
   team_conversation_name: Équipe {name}
   days_before: avant
@@ -1453,7 +1459,7 @@ events:
   notFound: Cet évènement n'existe pas ou n'est pas disponible.
   goto: afficher l'évènement
   mumble:
-    guide: 'Aide : <strong><a href="https://wiki.foodsharing.de/Mumble">wiki.foodsharing.de/Mumble</a></strong>'
+    guide: 'Aide : <strong><a href="https://wiki.foodsharing.de/Mumble">wiki.foodsharing.de/Mumble</a></strong>'
     location: 'Notre serveur : <br><strong>mumble.foodsharing.de</strong>'
     text: La conférence vidéo se déroule sur <em>Mumble</em>.
     title: Évènement en ligne (Appel audio en ligne)
@@ -1714,7 +1720,7 @@ search:
   noresults: Aucun résultat
   thread-title-only: La recherche a lieu dans les titres, pas dans les contributions.
   forum: Rechercher par titre ...
-  placeholder: Recherche ...
+  placeholder: Recherche de personnes, groupes, entreprises, ...
   title: Recherche
 index:
   confirm_open_video: Souhaites-tu regarder la vidéo sur YouTube ? La vidéo se lancera
@@ -1844,7 +1850,7 @@ home:
 reports:
   reportmessage: Dis-nous par quel moyen tu es joignable pour d'éventuelles questions.
   info: " <br> <br> ! ! Entre la <b>date</b>, le <b>lieu</b> et l'<b>horaire</b> liés\
-    \ au signalement ! ! <br>\nVérifie que tu as bien utilisé les moyens de communication\
+    \ au signalement ! ! <br> Vérifie que tu as bien utilisé les moyens de communication\
     \ disponibles pour joindre la personne en question et en parler directement avec\
     \ elle et clarifier la situation. Dis-nous comment nous pouvons te joindre si\
     \ nous avons besoin de plus de détails pour régler le différend."
@@ -1962,6 +1968,7 @@ releases:
   "2020-10": Version « Canneberge » (octobre 2020)
   "2020-12": Version « fruit du dragon » (décembre 2020)
   "2021-03": Version « fraise » 🍓 (mars 2021)
+  "2021-09": Version « Figue » 🥧 (septembre 2021)
 startpage:
   donate:
     text: "Nous nous efforçons de faire parrainer toutes nos dépenses. Cependant,\
@@ -2078,10 +2085,9 @@ poll:
     missing_fields: Il faut remplir tous les champs
     submit_success: Ce vote a été publié
     submit: soumettre au vote
-    option_texts_required: Écris un texte pour chacune des options.
+    option_texts_required: Écris un texte univoque pour chacune des options.
     option: Option
-    options: Options possibles. Lors du vote, elles seront affichées dans un ordre
-      aléatoire.
+    options: Options possibles.
     description_required: Donne une description.
     description_placeholder: De quel type de vote s'agit-il ici ?
     description: Description
@@ -2097,6 +2103,7 @@ poll:
     name_required: Il faut entrer un titre pour ce vote.
     name: Titre du vote
     title: Nouveau vote
+    shuffle_options: Afficher les options dans un ordre aléatoire lors du vote
   untraceable: Nous ne pouvons pas retrouver l'information concernant ton vote car
     celui-ci a été anonymisé.
   vote_success: a voté !
@@ -2133,9 +2140,9 @@ becomeregion:
     text2: Nous ne sommes pas destinés à répondre à toutes les questions générales,
       nous pouvons seulement t'aider sur les questions relevant de la création/réactivation/gestion
       de secteurs géographiques.
-    text1: "Bien joué ! Si tu souhaites créer un nouveau secteur géographique et que\
-      \ tu as des questions auxquelles tu n'as pas trouvé de réponse dans le wiki,\
-      \ écris-nous un courriel à :"
+    text1: "Si tu souhaites créer un nouveau secteur géographique et que tu as des\
+      \ questions auxquelles tu n'as pas trouvé de réponse dans le wiki, écris-nous\
+      \ un courriel à :"
     region_link_text: Créer ou réactiver un secteur géographique
     main: "Pour entrer dans ton premier secteur géographique, clique dans le menu\
       \ déroulant sur « Europe ». Si tu ne trouves pas de secteur qui correspondent\
@@ -2231,7 +2238,6 @@ buddy:
 base:
   jsrequired: Le site ne fonctionne pas sans JavaScript.
   slogan: Nos denrées alimentaires sont précieuses, partageons-les ! - foodsharing
-    France
   keywords: foodsharing, denrées alimentaires, DLC, DLUO, gaspillage alimentaire,
     alimentation, jeter de la nourriture à la poubelle, donner, redistribuer, échange
     de nourriture
