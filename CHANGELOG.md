@@ -2,6 +2,7 @@
 
 ## Features
 
+- Add frontend functionality to display 'today' or 'tomorrow' in the event header instead of date #1120 @alexander-sav
 - Set iCalendar location for exported pickup events #1139 !2072 @iron9
 
 - Display community pin for local foodsharing communities. #53 @fs_k 
