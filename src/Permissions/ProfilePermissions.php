@@ -4,8 +4,8 @@ namespace Foodsharing\Permissions;
 
 use Foodsharing\Lib\Session;
 use Foodsharing\Modules\Core\DBConstants\Region\RegionIDs;
-use Foodsharing\Modules\Region\RegionGateway;
 use Foodsharing\Modules\Core\DBConstants\Region\Type;
+use Foodsharing\Modules\Region\RegionGateway;
 
 class ProfilePermissions
 {
