@@ -28,7 +28,7 @@ class ProfilePermissions
 			return false;
 		}
 
-		if ($regionId !== null && inarray($this->regionGateway->getType($regionId), [
+		if ($regionId !== null && in_array($this->regionGateway->getType($regionId), [
 			Type::COUNTRY,
 			Type::FEDERAL_STATE,
 			TYPE::WORKING_GROUP
