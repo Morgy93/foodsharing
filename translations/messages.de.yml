@@ -1868,6 +1868,10 @@ dashboard:
   chooseHomeRegion: "Bitte wähle einen Stammbezirk aus."
   greeting: "Hallo {name}! Schön, dass du hier bist."
   foodsharer: "Viel Spaß beim Retten!"
+  become_foodsaver:
+    salutation: "Lieber Foodsharer,"
+    text: "du willst dich noch mehr gegen Lebensmittelverschwendung einsetzen? Dann rette wie schon tausende andere Foodsaver Lebensmittel bei Bäckereien, Supermärkten, Restaurants etc."
+    button: "Jetzt Foodsaver*in werden!"
   foodsharer_amount: "Du hast schon {weight} Kilos gerettet!"
   foodsaver_amount: |
       Du hast <strong style="white-space:nowrap">{pickups}&thinsp;x</strong> Lebensmittel abgeholt

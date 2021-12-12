@@ -70,6 +70,11 @@ class DashboardView extends View
 		</div>';
 	}
 
+	public function dashboardBecomeFoodsaver()
+	{
+		return $this->vueComponent('dashboard-become-foodsaver', 'dashboardBecomeFoodsaver');
+	}
+
 	public function u_nextDates($dates)
 	{
 		$out = '

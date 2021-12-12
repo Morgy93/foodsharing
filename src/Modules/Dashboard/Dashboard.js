@@ -4,6 +4,7 @@ import '@/globals'
 import { vueRegister, vueApply } from '@/vue'
 import ActivityOverview from './components/ActivityOverview'
 import DashboardWarning from './components/DashboardWarning'
+import DashboardBecomeFoodsaver from './components/DashboardBecomeFoodsaver'
 import EventPanel from '../Event/components/EventPanel'
 
 import './Dashboard.css'
@@ -24,6 +25,13 @@ if (document.querySelector('#dashboard-warning') !== null) {
     DashboardWarning,
   })
   vueApply('#dashboard-warning')
+}
+
+if (document.querySelector('#dashboard-become-foodsaver') !== null) {
+  vueRegister({
+    DashboardBecomeFoodsaver,
+  })
+  vueApply('#dashboard-become-foodsaver')
 }
 
 // Push Notification Banner

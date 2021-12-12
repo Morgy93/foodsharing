@@ -197,7 +197,7 @@ class DashboardControl extends Control
 
 		$this->pageHelper->addContent($this->view->foodsharerMenu(), CNT_LEFT);
 
-		$cnt = $this->contentGateway->get(ContentId::QUIZ_REMARK_PAGE_33);
+		/*$cnt = $this->contentGateway->get(ContentId::QUIZ_REMARK_PAGE_33);
 
 		$cnt['body'] = str_replace([
 			'{NAME}',
@@ -207,9 +207,9 @@ class DashboardControl extends Control
 			$this->translator->trans('salutation.' . $this->session->user('gender'))
 		], $cnt['body']);
 
-		$this->pageHelper->addContent($this->v_utils->v_info($cnt['body']));
+		$this->pageHelper->addContent($this->v_utils->v_info($cnt['body']));*/
 
-		$this->pageHelper->addContent($this->view->becomeFoodsaver());
+		$this->pageHelper->addContent($this->view->dashboardBecomeFoodsaver());
 
 		$this->view->updates();
 
