@@ -19,6 +19,7 @@ import { vueApply, vueRegister } from '@/vue'
 import Calendar from './components/Calendar'
 import ProfilePicture from './components/ProfilePicture'
 import NameInput from './components/NameInput'
+import QuizIndex from './components/QuizIndex'
 
 if (GET('sub') === 'calendar') {
   vueRegister({
@@ -30,6 +31,11 @@ if (GET('sub') === 'calendar') {
     ProfilePicture,
   })
   vueApply('#image-upload')
+} else if (GET('sub') === 'up_fs') {
+  vueRegister({
+    QuizIndex,
+  })
+  vueApply('#quiz-index')
 }
 
 vueRegister({

@@ -1626,6 +1626,18 @@ settings:
     desc: Der eigene Name kann nicht selbstständig geändert werden. Du kannst aber eine <a {link}">Namesänderung beantragen</a>.
     request: Namensänderung beantragen
     info: Um deinen Namen zu ändern musst du eine*n Botschafter*in aus deinem Stammbezirk kontaktieren. Diese*r kann dann die Namensänderung für dich durchführen.<hr/>Wer Botschafter in deinem Stammbezirk ist, siehst du im <a {link}>Forum deines Bezirks</a> in der linken Seitenleiste.
+  foodsaver_quiz:
+    title: Bereite dich vor
+    text1: Es ist wichtig, dass alle Foodsaver*innen Zuverlässigkeit, kompetentes Auftreten und Handeln und ein gutes Verständnis für die Abläufe bei der Abholung mitbringen.
+    text2: Deswegen ist für alle Menschen, die Foodsaver werden wollen, dieses Quiz Vorraussetzung. Das Quiz überprüft das Wissen und Verständnis, das für ein gutes Miteinander und ein professionelles Auftreten im Rahmen von foodsharing notwendig ist. Um das Quiz zu bestehen, solltest du einige Dokumente aus dem foodsharing-Wiki anschauen und verinnerlichen.
+    goto_learn_infos_wiki: Zum Lernmaterial im Wiki
+    help_text: Du hast Prüfungsangst, Legasthenie, Deutsch als Fremdsprache, Lernbehinderungen oder anderen Schwierigkeiten bei der Bewältigung des Quizes?
+    help_button: Unterstützung für Quiz anfragen
+    start_quiz_title: Wenn du bereit bist, geht es hier zum Quiz
+    quiz_time_limit: Quiz mit Zeitlimit (10 Fragen)
+    quiz_without_time_limit: Quiz ohne Zeitlimit (20 Fragen)
+    quiz_hint: Du hast 3 Versuche und nach einer Lernpause noch 1 Monat nochmal 2 weitere Versuche.
+
 mail:
   noreply_addresses_not_allowed: "E-Mails an \"noreply@\" Adressen sind nicht zustellbar.<br>Bitte überprüfe die Empfangsadresse."
 

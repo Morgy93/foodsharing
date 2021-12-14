@@ -69,6 +69,7 @@ const urls = {
   polls: (regionId) => `/?page=bezirk&bid=${regionId}&sub=polls`,
   press: () => '/?page=content&sub=presse',
   quizEdit: () => '/?page=quiz',
+  quizFoodsaverWiki: () => 'https://wiki.foodsharing.de/Quiz#Quiz_f.C3.BCr_Foodsaver',
   region: () => '/?page=region',
   releaseNotes: () => '/?page=content&sub=releaseNotes',
   reports: (regionId = null) => regionId ? `/?page=report&bid=${regionId}` : '/?page=report',

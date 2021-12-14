@@ -610,7 +610,7 @@ class SettingsView extends View
 		return $out;
 	}
 
-	public function quizIndex($quiz)
+	public function quizIndex_old($quiz)
 	{
 		$out = '';
 
@@ -626,6 +626,14 @@ class SettingsView extends View
 		$out = $this->v_utils->v_field($out, $quiz['name'] . $this->translator->trans('quiz.quizleft'), ['class' => 'ui-padding']);
 
 		return $out;
+	}
+
+	public function quizIndex($quiz)
+	{
+		return $this->vueComponent('quiz-index', 'QuizIndex', [
+			'quizId' => $quiz['id'],
+			'quizName' => $quiz['name'],
+		]);
 	}
 
 	public function picture_box($photo): string
