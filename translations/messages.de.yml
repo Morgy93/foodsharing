@@ -1637,6 +1637,22 @@ settings:
     quiz_time_limit: Quiz mit Zeitlimit (10 Fragen)
     quiz_without_time_limit: Quiz ohne Zeitlimit (20 Fragen)
     quiz_hint: Du hast 3 Versuche und nach einer Lernpause noch 1 Monat nochmal 2 weitere Versuche.
+  quiz_modal:
+    title: "Jetzt geht es los"
+    before_title: "Vor dem Quiz"
+    before_text: "Hast du alle aufgeführten Wiki-Dokumente aufmerksam durchgelesen und verinnerlicht?"
+    during_title: "Während des Quizzes"
+    during_text_1: "Bearbeite das Quiz alleine und ungestört."
+    during_text_2: "Lies dir alle Fragen und Antworten sorgfältig durch."
+    during_text_3: "Es können auch mehrere Antworten richtig sein."
+    during_text_4: "Lies dir nach jeder Frage die Zwischenerklärungen durch, welche Antworten richtig waren."
+    after_title: "Nach dem Quiz"
+    after_text_1: "Erhalte direkt Feedback, ob du bestanden hast."
+    after_text_2: "Lies dir in Ruhe die Begründungen für alle Antworten durch."
+    button_start: "Quiz starten"
+    hint_title: "Übrigens"
+    hint_text: "Alle hier aufgeführten Beschreibungen basieren auf Fällen aus dem echten Foodsaver-Leben. Eine mögliche Anlehnung an Ereignisse, die sich so oder so ähnlich zugetragen haben, ist gewollt."
+
 
 mail:
   noreply_addresses_not_allowed: "E-Mails an \"noreply@\" Adressen sind nicht zustellbar.<br>Bitte überprüfe die Empfangsadresse."
