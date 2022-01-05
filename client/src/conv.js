@@ -117,7 +117,7 @@ const conv = {
   },
 
   /**
-   * push retrieve function on recieved data by polling will execute this here
+   * push retrieve function on received data by polling will execute this here
    */
   push: function (data) {
     const key = conv.getKey(data.cid)
@@ -142,7 +142,7 @@ const conv = {
     conv.storeOpenedChatWindows()
   },
 
-  // maximoze mini box
+  // maximize mini box
   maxbox: function (cid) {
     const key = conv.getKey(cid)
     conv.chatboxes[key].el.children('.slimScrollDiv, .chatboxinput').show()
@@ -169,7 +169,7 @@ const conv = {
         $ta[0].focus()
       }, 100)
 
-      // replace to many line breaks
+      // replace too many line breaks
       // eslint-disable-next-line no-control-regex
       val = val.replace(/(\n){3,}/gim, '\n\n')
 
@@ -193,7 +193,7 @@ const conv = {
   },
 
   /**
-   * close the chatbox to thr given cid
+   * close the chatbox to the given cid
    */
   close: function (cid) {
     const tmp = []

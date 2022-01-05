@@ -2,11 +2,11 @@ import 'reflect-metadata';
 import { ServerFacade } from '../ServerFacade';
 import { createServer } from 'http';
 import { OnConnectionMetadata, OnSocketEventMetadata } from './EventActionMetadata';
-import * as SocketIO from 'socket.io';
+import { Server } from 'socket.io';
 
 export class SocketIOServerFacade implements ServerFacade {
     private readonly server = createServer();
-    private readonly socketIo = SocketIO(this.server);
+    private readonly socketIo = new Server(this.server, { allowEIO3: true });
 
     listen (port: number): void {
         this.server.listen(port);
@@ -34,10 +34,10 @@ export class SocketIOServerFacade implements ServerFacade {
                 try {
                     result = controller[methodName](socket);
                 } catch (error) {
-                    socket.error(error);
+                    socket._error(error);
                 }
                 if (result instanceof Promise) {
-                    result.catch(error => socket.error(error));
+                    result.catch(error => socket._error(error));
                 }
             });
         }
@@ -57,10 +57,10 @@ export class SocketIOServerFacade implements ServerFacade {
                     try {
                         result = controller[methodName](socket, ...args);
                     } catch (error) {
-                        socket.error(error);
+                        socket._error(error);
                     }
                     if (result instanceof Promise) {
-                        result.catch(error => socket.error(error));
+                        result.catch(error => socket._error(error));
                     }
                 });
             }
