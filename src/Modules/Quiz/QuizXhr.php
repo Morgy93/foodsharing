@@ -298,8 +298,7 @@ class QuizXhr extends Control
 			return $this->resumeQuizSession($quizId, $runningQuizSession);
 		}
 
-		//return $this->startNewQuizSession($quizId);
-		return $this->next($quizId);
+		return $this->startNewQuizSession($quizId);
 	}
 
 	private function resumeQuizSession(int $quizId, array $quizSession): array
@@ -348,18 +347,7 @@ class QuizXhr extends Control
 				$this->session->set('quiz-questions', $questions);
 				$this->session->set('quiz-index', 0);
 
-				/*
-				 * Make a litle output for the user that he/she can just start the quiz now
-				 */
-				$dia = new XhrDialog();
-				$dia->addOpt('width', 600);
-				$dia->setTitle($quiz['name'] . '-Quiz');
-				$quizHowTo = $this->contentGateway->get(ContentId::QUIZ_START_PAGE_17);
-				$dia->addContent($this->view->initQuizPage($quizHowTo));
-				$dia->addAbortButton();
-				$dia->addButton('Quiz starten', 'ajreq(\'next\',{app:\'quiz\'});$(\'#' . $dia->getId() . '\').dialog(\'close\');');
-
-				return $dia->xhrout();
+				return $this->next();
 			}
 		}
 
@@ -472,8 +460,9 @@ class QuizXhr extends Control
 			/*
 			 * If the quiz index is 0 we have to start a new quiz session
 			 */
+
 			$easyMode = 0;
-			if (isset($_GET['easymode']) && $_GET['easymode'] == 1) {
+			if ($this->session->get('quiz-easymode')) {
 				$easyMode = 1;
 			}
 
