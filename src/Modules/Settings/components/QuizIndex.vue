@@ -7,39 +7,42 @@
       <div>{{ $i18n('settings.foodsaver_quiz.text1') }}</div>
       <br>
       <div>{{ $i18n('settings.foodsaver_quiz.text2') }}</div>
-      <br>
-      <div>
-        <b-button
-          variant="secondary"
-          class="pl-5 pr-5"
-          :href="$url('quizFoodsaverWiki')"
-          target="_blank"
+      <b-container>
+        <b-row
+          class="mt-4 mb-4 justify-content-center"
         >
-          {{ $i18n('settings.foodsaver_quiz.goto_learn_infos_wiki') }}
-        </b-button>
-      </div>
-      <br>
-      <div>{{ $i18n('settings.foodsaver_quiz.help_text') }}</div>
-      <br>
-      <div>
-        <b-button
-          variant="secondary"
-          class="pl-5 pr-5"
-          :href="$url('quizFoodsaverWiki')"
-          target="_blank"
+          <b-button
+            variant="secondary"
+            class="pl-5 pr-5"
+            :href="$url('quizFoodsaverWiki')"
+            target="_blank"
+          >
+            {{ $i18n('settings.foodsaver_quiz.goto_learn_infos_wiki') }}
+          </b-button>
+        </b-row>
+        <b-row>
+          <div>{{ $i18n('settings.foodsaver_quiz.help_text') }}</div>
+        </b-row>
+
+        <b-row
+          class="mb-4 justify-content-center"
         >
-          {{ $i18n('settings.foodsaver_quiz.help_button') }}
-        </b-button>
-      </div>
-      <br>
-      <h4>{{ $i18n('settings.foodsaver_quiz.start_quiz_title') }}</h4>
-      <div>
-        <b-container>
-          <b-row>
+          <b-button
+            variant="secondary"
+            class="pl-5 pr-5"
+            :href="$url('quizFoodsaverWiki')"
+            target="_blank"
+          >
+            {{ $i18n('settings.foodsaver_quiz.help_button') }}
+          </b-button>
+        </b-row>
+        <h4>{{ $i18n('settings.foodsaver_quiz.start_quiz_title') }}</h4>
+        <div>
+          <b-row
+            class="mb-4 justify-content-center"
+          >
             <b-col
-              cols="12"
-              lg="6"
-              class="mb-4"
+              :class="{'col-auto': quizId != 1, 'col-6': quizId == 1}"
             >
               <b-button
                 v-b-modal.quizModalWithTime
@@ -49,7 +52,10 @@
                 {{ $i18n('settings.foodsaver_quiz.quiz_time_limit') }}
               </b-button>
             </b-col>
-            <b-col>
+            <b-col
+              v-if="quizId == '1'"
+              :class="{'col-12': quizId != 1, 'col-6': quizId == 1}"
+            >
               <div>
                 <b-button
                   v-b-modal.quizModalWithoutTime
@@ -85,9 +91,9 @@
               </div>
             </b-col>
           </b-row>
-        </b-container>
-        <div>{{ $i18n('settings.foodsaver_quiz.quiz_hint') }}</div>
-      </div>
+        </div>
+      </b-container>
+      <div>{{ $i18n('settings.foodsaver_quiz.quiz_hint') }}</div>
     </div>
   </div>
 </template>
