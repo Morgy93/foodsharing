@@ -298,7 +298,8 @@ class QuizXhr extends Control
 			return $this->resumeQuizSession($quizId, $runningQuizSession);
 		}
 
-		return $this->startNewQuizSession($quizId);
+		//return $this->startNewQuizSession($quizId);
+		return $this->next($quizId);
 	}
 
 	private function resumeQuizSession(int $quizId, array $quizSession): array
@@ -471,9 +472,8 @@ class QuizXhr extends Control
 			/*
 			 * If the quiz index is 0 we have to start a new quiz session
 			 */
-
 			$easyMode = 0;
-			if ($this->session->get('quiz-easymode')) {
+			if (isset($_GET['easymode']) && $_GET['easymode'] == 1) {
 				$easyMode = 1;
 			}
 

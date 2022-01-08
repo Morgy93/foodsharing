@@ -42,7 +42,7 @@
               class="mb-4"
             >
               <b-button
-                v-b-modal.modal-1
+                v-b-modal.quizModalWithTime
                 variant="secondary"
                 class="pl-5 pr-5"
               >
@@ -52,48 +52,35 @@
             <b-col>
               <div>
                 <b-button
-                  v-b-modal.modal-1
+                  v-b-modal.quizModalWithoutTime
                   variant="secondary"
                   class="pl-5 pr-5"
                 >
                   {{ $i18n('settings.foodsaver_quiz.quiz_without_time_limit') }}
                 </b-button>
                 <b-modal
-                  id="modal-1"
+                  id="quizModalWithTime"
                   modal-class="bootstrap"
                   header-class="d-flex"
                   content-class="pr-3 pt-3"
                   :cancel-title="$i18n('button.cancel')"
                   :ok-title="$i18n('settings.quiz_modal.button_start')"
                   :title="quizName + ': '+ $i18n('settings.quiz_modal.title')"
-                  @ok="startQuiz"
+                  @ok="startQuizWithTime"
                 >
-                  <p>
-                    <i class="fas fa-glasses" /> {{ $i18n('settings.quiz_modal.before_title') }}
-                  </p>
-                  <ul class="mb-4">
-                    <li>{{ $i18n('settings.quiz_modal.before_text') }}</li>
-                  </ul>
-                  <p>
-                    <i class="fas fa-question" /> {{ $i18n('settings.quiz_modal.during_title') }}
-                  </p>
-                  <ul class="mb-4">
-                    <li>{{ $i18n('settings.quiz_modal.during_text_1') }}</li>
-                    <li>{{ $i18n('settings.quiz_modal.during_text_2') }}</li>
-                    <li>{{ $i18n('settings.quiz_modal.during_text_3') }}</li>
-                    <li>{{ $i18n('settings.quiz_modal.during_text_4') }}</li>
-                  </ul>
-                  <p>
-                    <i class="fas fa-check-circle" /> {{ $i18n('settings.quiz_modal.after_title') }}
-                  </p>
-                  <ul>
-                    <li>{{ $i18n('settings.quiz_modal.after_text_1') }}</li>
-                    <li>{{ $i18n('settings.quiz_modal.after_text_2') }}</li>
-                  </ul>
-                  <p>
-                    {{ $i18n('settings.quiz_modal.hint_title') }}:<br>
-                    {{ $i18n('settings.quiz_modal.hint_text') }}
-                  </p>
+                  <QuizStartPopup />
+                </b-modal>
+                <b-modal
+                  id="quizModalWithoutTime"
+                  modal-class="bootstrap"
+                  header-class="d-flex"
+                  content-class="pr-3 pt-3"
+                  :cancel-title="$i18n('button.cancel')"
+                  :ok-title="$i18n('settings.quiz_modal.button_start')"
+                  :title="quizName + ': '+ $i18n('settings.quiz_modal.title')"
+                  @ok="startQuizWithoutTime"
+                >
+                  <QuizStartPopup />
                 </b-modal>
               </div>
             </b-col>
@@ -106,16 +93,21 @@
 </template>
 
 <script>
+import QuizStartPopup from './QuizStartPopup'
 import { ajreq } from '@/script'
 
 export default {
+  components: { QuizStartPopup },
   props: {
     quizId: { type: Number, default: null },
     quizName: { type: String, default: '' },
   },
   methods: {
-    startQuiz () {
+    startQuizWithTime () {
       ajreq('startquiz', { app: 'quiz', qid: this.quizId })
+    },
+    startQuizWithoutTime () {
+      ajreq('startquiz', { app: 'quiz', easymode: 1, qid: this.quizId })
     },
   },
 }
