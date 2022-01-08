@@ -6,7 +6,7 @@ import { Server } from 'socket.io';
 
 export class SocketIOServerFacade implements ServerFacade {
     private readonly server = createServer();
-    private readonly socketIo = new Server(this.server);
+    private readonly socketIo = new Server(this.server, { allowEIO3: true });
 
     listen (port: number): void {
         this.server.listen(port);
