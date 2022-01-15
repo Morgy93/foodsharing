@@ -11,4 +11,15 @@ class Conversation
 	public array $members;
 	public ?Message $lastMessage;
 	public ?array $messages = [];
+
+	public function __construct()
+	{
+		$this->id = 0;
+		$this->title = null;
+		$this->storeId = null;
+		$this->hasUnreadMessages = false;
+		$this->members = [];
+		$this->lastMessage = null;
+		$this->messages = null;
+	}
 }
