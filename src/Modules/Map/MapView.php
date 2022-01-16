@@ -6,7 +6,15 @@ use Foodsharing\Modules\Core\View;
 
 class MapView extends View
 {
-	public function lMap()
+	public function lMap($center)
+	{
+		return $this->vueComponent('leaflet-global-map', 'LeafletGlobalMap', [
+			'lat' => $center['lat'],
+			'lon' => $center['lon'],
+		]);
+	}
+
+	public function lMap_old()
 	{
 		$this->pageHelper->addHidden('
 			<div id="b_content" class="loading">

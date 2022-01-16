@@ -69,4 +69,7 @@
 
 <script>
 
+export default {
+
+}
 </script>
