@@ -528,21 +528,6 @@ class SettingsView extends View
 		return $out;
 	}
 
-	public function quizContinue_old($quiz)
-	{
-		$out = '';
-
-		$out .= $this->v_utils->v_input_wrapper($this->translator->trans('quiz.notfinishedyet'), $this->translator->trans('quiz.safeandsound'));
-
-		$out .= $quiz['desc'];
-
-		$out .= '<p><a onclick="ajreq(\'startquiz\',{app:\'quiz\',qid:' . (int)$quiz['id'] . '});" href="#" class="button button-big">' . $this->translator->trans('quiz.continuenow') . '</a></p>';
-
-		$out = $this->v_utils->v_field($out, $quiz['name'] . $this->translator->trans('quiz.continuetype'), ['class' => 'ui-padding']);
-
-		return $out;
-	}
-
 	public function quizContinue($quiz)
 	{
 		return $this->vueComponent('quiz-index', 'QuizIndex', [
@@ -554,19 +539,13 @@ class SettingsView extends View
 
 	public function quizRetry($quiz, $failed_count, $max_failed_count)
 	{
-		$out = $this->v_utils->v_input_wrapper($this->translator->trans('quiz.trynumber') . ' ' . ($failed_count + 1), '<p>' . $failed_count . $this->translator->trans('quiz.failedbeforebut') . ' ' . ($max_failed_count - $failed_count) . '</p><p>' . $this->translator->trans('quiz.failedbeforebut') . '</p>');
-
-		$out .= $quiz['desc'];
-
-		$out .= '<p><a onclick="ajreq(\'startquiz\',{app:\'quiz\',qid:' . (int)$quiz['id'] . '});" href="#" class="button button-big">' . $this->translator->trans('quiz.timedstart') . '</a></p>';
-
-		if ($quiz['id'] == 1) {
-			$out .= '<p><a onclick="ajreq(\'startquiz\',{app:\'quiz\',easymode:1,qid:' . (int)$quiz['id'] . '});" href="#" class="button button-big">' . $this->translator->trans('quiz.regstart') . '</a></p>';
-		}
-
-		$out = $this->v_utils->v_field($out, $quiz['name'] . $this->translator->trans('quiz.quizleft'), ['class' => 'ui-padding']);
-
-		return $out;
+		return $this->vueComponent('quiz-index', 'QuizIndex', [
+			'quizId' => $quiz['id'],
+			'quizName' => $quiz['name'],
+			'quizState' => 2,
+			'failedCount' => $failed_count,
+			'maxFailedCount' => $max_failed_count,
+		]);
 	}
 
 	public function confirmBip($cnt, $rv)

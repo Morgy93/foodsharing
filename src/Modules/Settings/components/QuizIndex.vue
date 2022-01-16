@@ -6,8 +6,12 @@
       >
         {{ quizName }}: {{ $i18n('settings.foodsaver_quiz.title') }}</span>
       <span
-        v-else
+        v-if="quizState === 1"
       >{{ quizName }}: {{ $i18n('quiz.continuetype') }}
+      </span>
+      <span
+        v-else
+      >{{ quizName }}: {{ $i18n('quiz.quizleft') }}
       </span>
     </div>
     <div class="bootstrap ui-widget-content corner-bottom margin-bottom ui-padding">
@@ -88,12 +92,35 @@
         <div>{{ $i18n('settings.foodsaver_quiz.quiz_hint') }}</div>
       </div>
       <div
-        v-else
+        v-if="quizState === 1"
       >
         <b-container>
           <b-row>
             <div>{{ $i18n('quiz.notfinishedyet') }}</div>
             <div>{{ $i18n('quiz.safeandsound') }}</div>
+          </b-row>
+          <b-row
+            class="mt-4 mb-4 justify-content-center"
+          >
+            <b-button
+              variant="secondary"
+              class="pl-5 pr-5"
+              @click="showModal(false)"
+            >
+              {{ $i18n('quiz.continuenow') }}
+            </b-button>
+          </b-row>
+        </b-container>
+      </div>
+      <div
+        v-else
+      >
+        <b-container>
+          <b-row>
+            <div>{{ $i18n('quiz.trynumber') }} {{ failedCount + 1 }}</div>
+          </b-row>
+          <b-row>
+            <div>{{ failedCount }} {{ $i18n('quiz.failedbeforebut') }} {{ failedCount -1 }}</div>
           </b-row>
           <b-row
             class="mt-4 mb-4 justify-content-center"
@@ -135,6 +162,8 @@ export default {
     quizId: { type: Number, default: null },
     quizName: { type: String, default: '' },
     quizState: { type: Number, default: 0 },
+    failedCount: { type: Number, default: null },
+    maxFailedCount: { type: Number, default: null },
   },
   data () {
     return {
