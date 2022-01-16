@@ -84,15 +84,23 @@
       <div
         v-else
       >
-        <div>{{ $i18n('quiz.notfinishedyet') }}</div>
-        <div>{{ $i18n('quiz.safeandsound') }}</div>
-        <b-button
-          variant="secondary"
-          class="pl-5 pr-5"
-          @click="showModal(false)"
-        >
-          {{ $i18n('quiz.continuenow') }}
-        </b-button>
+        <b-container>
+          <b-row>
+            <div>{{ $i18n('quiz.notfinishedyet') }}</div>
+            <div>{{ $i18n('quiz.safeandsound') }}</div>
+          </b-row>
+          <b-row
+            class="mt-4 mb-4 justify-content-center"
+          >
+            <b-button
+              variant="secondary"
+              class="pl-5 pr-5"
+              @click="showModal(false)"
+            >
+              {{ $i18n('quiz.continuenow') }}
+            </b-button>
+          </b-row>
+        </b-container>
       </div>
     </div>
     <b-modal
