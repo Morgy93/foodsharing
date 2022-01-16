@@ -24,6 +24,11 @@ class MapView extends View
 
 	public function mapControl()
 	{
+		return $this->vueComponent('map-control', 'MapControl');
+	}
+
+	public function mapControl_old()
+	{
 		$betriebe = '';
 
 		if ($this->session->may('fs')) {

@@ -25,6 +25,7 @@ import './Map.css'
 import { getMapMarkers } from '@/api/map'
 import { vueApply, vueRegister } from '@/vue'
 import CommunityBubble from './components/CommunityBubble'
+import MapControl from './components/MapControl'
 
 let u_map = null
 let markers = null
@@ -303,4 +304,7 @@ init_bDialog()
 
 vueRegister({
   CommunityBubble,
+  MapControl,
 })
+
+vueApply('#map-control')
