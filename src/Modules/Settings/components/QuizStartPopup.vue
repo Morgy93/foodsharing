@@ -4,7 +4,8 @@
       <i class="fas fa-glasses" /> {{ $i18n('settings.quiz_modal.before_title') }}
     </p>
     <ul class="mb-4">
-      <li>{{ $i18n('settings.quiz_modal.before_text') }}</li>
+      <li>{{ $i18n('settings.quiz_modal.before_text_1') }}</li>
+      <li>{{ $i18n('settings.quiz_modal.before_text_2') }}</li>
     </ul>
     <p>
       <i class="fas fa-question" /> {{ $i18n('settings.quiz_modal.during_title') }}
