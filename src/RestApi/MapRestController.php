@@ -61,17 +61,32 @@ class MapRestController extends AbstractFOSRestController
 			if (is_array($status) && !empty($status)) {
 				foreach ($status as $s) {
 					switch ($s) {
-						case 'needhelpinstant':
+						case 'NEED_HELP_INSTANT':
 							$teamStatus[] = TeamStatus::OPEN_SEARCHING;
-							break;
-						case 'needhelp':
-							$teamStatus[] = TeamStatus::OPEN;
-							break;
-						case 'nkoorp':
 							$excludedStoreTypes = array_merge($excludedStoreTypes, [
-								CooperationStatus::COOPERATION_STARTING, CooperationStatus::COOPERATION_ESTABLISHED
+								CooperationStatus::PERMANENTLY_CLOSED, CooperationStatus::GIVES_TO_OTHER_CHARITY,
+								CooperationStatus::DOES_NOT_WANT_TO_WORK_WITH_US
 							]);
 							break;
+						case 'NEED_HELP':
+							$teamStatus[] = TeamStatus::OPEN;
+							$excludedStoreTypes = array_merge($excludedStoreTypes, [
+								CooperationStatus::PERMANENTLY_CLOSED, CooperationStatus::GIVES_TO_OTHER_CHARITY,
+								CooperationStatus::DOES_NOT_WANT_TO_WORK_WITH_US
+							]);
+							break;
+						case 'IN_NEGOTIATION':
+							$excludedStoreTypes = array_merge($excludedStoreTypes, [
+								CooperationStatus::COOPERATION_STARTING, CooperationStatus::COOPERATION_ESTABLISHED,
+								CooperationStatus::PERMANENTLY_CLOSED, CooperationStatus::GIVES_TO_OTHER_CHARITY,
+								CooperationStatus::DOES_NOT_WANT_TO_WORK_WITH_US
+							]);
+							break;
+						default:
+							$excludedStoreTypes = array_merge($excludedStoreTypes, [
+								CooperationStatus::PERMANENTLY_CLOSED, CooperationStatus::GIVES_TO_OTHER_CHARITY,
+								CooperationStatus::DOES_NOT_WANT_TO_WORK_WITH_US
+							]);
 					}
 				}
 			}
