@@ -30,22 +30,28 @@
               {{ $i18n('settings.foodsaver_quiz.goto_learn_infos_wiki') }}
             </b-button>
           </b-row>
-          <b-row>
-            <div>{{ $i18n('settings.foodsaver_quiz.help_text') }}</div>
-          </b-row>
 
-          <b-row
+          <b-alert
+            variant="dark"
+            show
             class="mb-4 justify-content-center"
           >
-            <b-button
-              variant="secondary"
-              class="pl-5 pr-5"
-              :href="$url('quizFoodsaverWiki')"
-              target="_blank"
+            <b-row>
+              <div>{{ $i18n('settings.foodsaver_quiz.help_text') }}</div>
+            </b-row>
+            <b-row
+              class="mb-4 justify-content-center"
             >
-              {{ $i18n('settings.foodsaver_quiz.help_button') }}
-            </b-button>
-          </b-row>
+              <b-button
+                variant="outline-secondary"
+                class="pl-5 pr-5"
+                :href="$url('quizFoodsaverWiki')"
+                target="_blank"
+              >
+                {{ $i18n('settings.foodsaver_quiz.help_button') }}
+              </b-button>
+            </b-row>
+          </b-alert>
           <h4>{{ $i18n('settings.foodsaver_quiz.start_quiz_title') }}</h4>
           <div>
             <b-row
