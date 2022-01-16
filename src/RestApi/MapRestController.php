@@ -61,6 +61,12 @@ class MapRestController extends AbstractFOSRestController
 			if (is_array($status) && !empty($status)) {
 				foreach ($status as $s) {
 					switch ($s) {
+						case 'STANDARD':
+							$excludedStoreTypes = array_merge($excludedStoreTypes, [
+								CooperationStatus::PERMANENTLY_CLOSED, CooperationStatus::GIVES_TO_OTHER_CHARITY,
+								CooperationStatus::DOES_NOT_WANT_TO_WORK_WITH_US
+							]);
+							break;
 						case 'NEED_HELP_INSTANT':
 							$teamStatus[] = TeamStatus::OPEN_SEARCHING;
 							$excludedStoreTypes = array_merge($excludedStoreTypes, [
@@ -80,6 +86,10 @@ class MapRestController extends AbstractFOSRestController
 								CooperationStatus::COOPERATION_STARTING, CooperationStatus::COOPERATION_ESTABLISHED,
 								CooperationStatus::PERMANENTLY_CLOSED, CooperationStatus::GIVES_TO_OTHER_CHARITY,
 								CooperationStatus::DOES_NOT_WANT_TO_WORK_WITH_US
+							]);
+							break;
+						case 'ALL_STORES':
+							$excludedStoreTypes = array_merge($excludedStoreTypes, [
 							]);
 							break;
 						default:

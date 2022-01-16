@@ -27,16 +27,14 @@ class MapView extends View
 		$betriebe = '';
 
 		if ($this->session->may('fs')) {
-			$betriebe = '<li>
-				<a name="betriebe" class="map-legend-entry stores">
-					<i class="fas fa-shopping-cart"></i>'
-					. $this->translator->trans('menu.entry.stores') .
-				'</a>
-				<div id="map-options" class="map-legend-selection" >
-					<label><input type="checkbox" name="viewopt[]" value="allebetriebe" /> ' . $this->translator->trans('store.bread') . '</label>
+			$betriebe = '<li><a name="betriebe" class="ui-corner-all betriebe"><span class="fa-stack fa-lg" style="color: #9E3235"><i class="fas fa-circle fa-stack-2x"></i><i class="fas fa-shopping-cart fa-stack-1x fa-inverse"></i></span><span>' . $this->translator->trans('menu.entry.stores') . '</span></a>
+				<div id="map-options">
+					<label><input type="checkbox" name="viewopt[]" value="STANDARD" /> ' . 'Standard' . '</label>
 					<label><input checked="checked" type="checkbox" name="viewopt[]" value="NEED_HELP" /> ' . $this->translator->trans('menu.entry.helpwanted') . '</label>
 					<label><input checked="checked" type="checkbox" name="viewopt[]" value="NEED_HELP_INSTANT" /> ' . $this->translator->trans('menu.entry.helpneeded') . '</label>
 					<label><input type="checkbox" name="viewopt" value="IN_NEGOTIATION" /> ' . $this->translator->trans('menu.entry.in_negotiation') . '</label>
+					<label><input type="checkbox" name="viewopt" value="ALL_STORES" /> ' . $this->translator->trans('store.bread') . '</label>
+
 				</div>
 			</li>';
 		}
