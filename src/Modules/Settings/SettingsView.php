@@ -528,7 +528,7 @@ class SettingsView extends View
 		return $out;
 	}
 
-	public function quizContinue($quiz)
+	public function quizContinue_old($quiz)
 	{
 		$out = '';
 
@@ -541,6 +541,15 @@ class SettingsView extends View
 		$out = $this->v_utils->v_field($out, $quiz['name'] . $this->translator->trans('quiz.continuetype'), ['class' => 'ui-padding']);
 
 		return $out;
+	}
+
+	public function quizContinue($quiz)
+	{
+		return $this->vueComponent('quiz-index', 'QuizIndex', [
+			'quizId' => $quiz['id'],
+			'quizName' => $quiz['name'],
+			'quizState' => 1,
+		]);
 	}
 
 	public function quizRetry($quiz, $failed_count, $max_failed_count)
