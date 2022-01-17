@@ -1,7 +1,7 @@
 /* eslint-disable camelcase,eqeqeq */
 
-// import '@/core'
-// import '@/globals'
+import '@/core'
+import '@/globals'
 
 // import $ from 'jquery'
 
