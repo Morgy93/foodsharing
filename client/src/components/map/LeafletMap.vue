@@ -40,7 +40,7 @@ export default {
   props: {
     zoom: { type: Number, required: true },
     center: { type: Array, required: true },
-    height: { type: String, required: true },
+    height: { type: String, default: 'height: 100%' },
   },
   data () {
     return {

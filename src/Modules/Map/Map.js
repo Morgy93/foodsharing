@@ -309,5 +309,5 @@ vueRegister({
   LeafletGlobalMap,
 })
 
-vueApply('#map-control')
+// vueApply('#map-control')
 vueApply('#leaflet-global-map')

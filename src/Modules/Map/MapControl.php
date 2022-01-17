@@ -36,7 +36,7 @@ class MapControl extends Control
 		$this->pageHelper->addContent(
 			$this->view->lMap($center)
 		);
-		$this->pageHelper->addContent($this->view->mapControl(), CNT_TOP);
+		//	$this->pageHelper->addContent($this->view->mapControl(), CNT_TOP);
 
 		/*	$jsarr = '';
 			if (isset($_GET['load']) && $_GET['load'] == 'baskets') {
