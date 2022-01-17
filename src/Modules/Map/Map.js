@@ -1,37 +1,37 @@
 /* eslint-disable camelcase,eqeqeq */
 
-import '@/core'
-import '@/globals'
+// import '@/core'
+// import '@/globals'
 
-import $ from 'jquery'
+// import $ from 'jquery'
 
-import { getBrowserLocation, expose } from '@/utils'
-import { GET } from '@/browser'
+// import { getBrowserLocation, expose } from '@/utils'
+// import { GET } from '@/browser'
 
-import { showLoader, hideLoader, goTo, ajreq } from '@/script'
+// import { showLoader, hideLoader, goTo, ajreq } from '@/script'
 
-import storage from '@/storage'
+// import storage from '@/storage'
 
-import { initMap } from '@/mapUtils'
+// import { initMap } from '@/mapUtils'
 
-import L from 'leaflet'
+// import L from 'leaflet'
 
-import 'leaflet.awesome-markers'
-import 'leaflet.markercluster'
-import 'mapbox-gl-leaflet'
+// import 'leaflet.awesome-markers'
+// import 'leaflet.markercluster'
+// import 'mapbox-gl-leaflet'
 
-import 'mapbox-gl/dist/mapbox-gl.css'
+// import 'mapbox-gl/dist/mapbox-gl.css'
 import './Map.css'
-import { getMapMarkers } from '@/api/map'
+// import { getMapMarkers } from '@/api/map'
 import { vueApply, vueRegister } from '@/vue'
 import CommunityBubble from './components/CommunityBubble'
 import MapControl from './components/MapControl'
 import LeafletGlobalMap from '@/components/map/LeafletGlobalMap'
 
-let u_map = null
-let markers = null
+// let u_map = null
+// let markers = null
 
-expose({
+/* expose({
   u_map,
   u_init_map,
   u_loadDialog,
@@ -180,7 +180,7 @@ async function loadMarker (types, loader) {
     }
   }
 
-  if (loader == undefined) {
+  /* if (loader == undefined) {
     loader = true
   }
 
@@ -301,7 +301,7 @@ $('#map-options input').on('change', function () {
   }, 100)
 })
 
-init_bDialog()
+init_bDialog() */
 
 vueRegister({
   CommunityBubble,
