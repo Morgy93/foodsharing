@@ -27,7 +27,7 @@ class MapControl extends Control
 
 		if (!empty($center)) {
 			if ($center['lat'] == 0 && $center['lon'] == 0) {
-			//	$this->pageHelper->addJs('u_map.fitBounds([[46.0, 4.0],[55.0, 17.0]]);');
+				//	$this->pageHelper->addJs('u_map.fitBounds([[46.0, 4.0],[55.0, 17.0]]);');
 				$center['lat'] = '46.0, 4.0';
 				$center['lon'] = '55.0, 17.0';
 			}

@@ -3,7 +3,7 @@
 <template>
   <l-map
     ref="map"
-    style="height: 300px"
+    :style="height"
     :zoom="zoom"
     :center="center"
   >
@@ -40,6 +40,7 @@ export default {
   props: {
     zoom: { type: Number, required: true },
     center: { type: Array, required: true },
+    height: { type: String, required: true },
   },
   data () {
     return {

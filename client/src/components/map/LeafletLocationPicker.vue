@@ -29,6 +29,7 @@ export default {
   data () {
     return {
       coords: this.coordinates,
+      height: 'height: 300px',
     }
   },
   mounted () {

@@ -1,8 +1,8 @@
 <template>
   <div id="map">
-    {{ lat }} {{ lon }}
     <leaflet-map
       ref="leafletMap"
+      :style="height"
       :zoom="6"
       :center="[lat, lon]"
     />
@@ -17,6 +17,11 @@ export default {
   props: {
     lat: { type: String, required: true },
     lon: { type: String, required: true },
+  },
+  data: function () {
+    return {
+      height: 'height: 100%',
+    }
   },
 }
 </script>
