@@ -3,7 +3,8 @@
 <template>
   <l-map
     ref="map"
-    :style="height"
+    class="leaflet-map"
+    :style="style"
     :zoom="zoom"
     :center="center"
   >
@@ -40,7 +41,7 @@ export default {
   props: {
     zoom: { type: Number, required: true },
     center: { type: Array, required: true },
-    height: { type: String, default: 'height: 100%' },
+    height: { type: String, default: '100%' },
   },
   data () {
     return {
@@ -57,6 +58,16 @@ export default {
     useVectorMap () {
       return isWebGLSupported()
     },
+    style () {
+      return `height: ${this.height}`
+    },
+  },
+  mounted () {
+    // the leaflet map needs to be initialised with some delay
+    const map = this.getMapObject()
+    setTimeout(function () {
+      map.invalidateSize(true)
+    }, 100)
   },
   methods: {
     /**
