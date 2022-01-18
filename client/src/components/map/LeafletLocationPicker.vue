@@ -3,6 +3,7 @@
 <template>
   <leaflet-map
     ref="leafletMap"
+    :height="height"
     :zoom="zoom"
     :center="coordinates"
   >
