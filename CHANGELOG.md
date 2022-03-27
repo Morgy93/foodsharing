@@ -56,6 +56,7 @@ and an A4 sheet is used. !2198 #chriswalg
 - Fix typos in forum markdown hints. !2167 @NINI1988
 - Fixed the user search pointing to a non-existing path !2170 @alex.simm
 - The visibility of the StoreWall can be toggled again !2177 @nudin
+- Overwrites the default bootstrap link color to green. !2172 @NINI1988
 
 ## Refactoring
 - move even more hardcoded language to language files !2109 !2183 @jonathan_b
