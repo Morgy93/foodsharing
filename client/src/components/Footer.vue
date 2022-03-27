@@ -416,6 +416,10 @@ a, p, li {
   color: var(--fs-black);
 }
 
+a:hover{
+  color: var(--fs-black);
+}
+
 p {
   line-height: 1rem;
 }

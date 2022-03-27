@@ -7,6 +7,8 @@ $border-radius: 6px;
 $navbar-padding-y: 0.1em;
 $navbar-dark-color: rgba(#ffffff, 0.7) ;
 $navbar-dark-hover-color: rgba(#ffffff, 1) ;
+$link-color: var(--fs-green);
+$link-hover-color: var(--fs-green);
 
 
 @import "~bootstrap/scss/functions";

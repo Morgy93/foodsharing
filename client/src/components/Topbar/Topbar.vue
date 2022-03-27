@@ -177,6 +177,10 @@ export default {
   color: var(--primary);
 }
 
+::v-deep .navbar a{
+   color: var(--primary);
+}
+
 ::v-deep .navbar-collapse {
   &.show {
     // Only when menu is shown. Fixes problem that list of dropdown items is to long.
