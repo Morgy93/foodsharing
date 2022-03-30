@@ -57,4 +57,65 @@ class StatsGateway extends BaseGateway
 			':storeIdA' => $storeId, ':storeIdB' => $storeId, ':storeIdC' => $storeId
 		]);
 	}
+
+	public function getFoodsaverPickups(): array
+	{
+		return $this->getUserPropertyCount('fs_abholer', 'WHERE date < NOW() AND confirmed = 1');
+	}
+
+	public function getBananaCount(): array
+	{
+		return $this->getUserPropertyCount('fs_rating');
+	}
+
+	public function getBuddyCount(): array
+	{
+		return $this->getUserPropertyCount('fs_buddy', 'WHERE confirmed = 1');
+	}
+
+	public function getForumPostCount(): array
+	{
+		return $this->getUserPropertyCount('fs_theme_post');
+	}
+
+	public function getWallPostCount(): array
+	{
+		return $this->getUserPropertyCount('fs_wallpost');
+	}
+
+	public function getStoreNoteCount(): array
+	{
+		return $this->getUserPropertyCount('fs_betrieb_notiz', 'WHERE milestone = 0');
+	}
+
+	public function getNotFetchedReportCount(): array
+	{
+		return $this->getUserPropertyCount('fs_report', 'WHERE `reporttype` = 1 AND committed = 1 AND tvalue like \'%Ist gar nicht zum Abholen gekommen%\'');
+	}
+
+	/**
+	 * Counts the entries per user in a specific table for all users and returns it as a map
+	 * from foodsharer-ID to the number.
+	 */
+	private function getUserPropertyCount(string $table, string $conditions = ''): array
+	{
+		$data = $this->db->fetch('SELECT f.id, IFNULL(a.count,0) as count
+								FROM fs_foodsaver f
+								LEFT OUTER JOIN (
+									SELECT foodsaver_id as id,
+									COUNT(*) as count
+									FROM :table ' . $conditions . '
+									GROUP BY foodsaver_id
+								) a
+								ON f.id = a.id', [
+			':table' => $table,
+			':conditions' => $conditions
+		]);
+
+		$mapped = [];
+		foreach ($data as $d) {
+			$mapped[$d[0]] = $d[1];
+		}
+		return $mapped;
+	}
 }

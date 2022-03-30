@@ -30,55 +30,38 @@ class StatsControl extends ConsoleControl
 	{
 		self::info('Statistik Auswertung für Foodsaver');
 
-		if ($allFsIds = $this->model->getAllFoodsaverIds()) {
-			foreach ($allFsIds as $fsid) {
-				$totalKilosFetchedByFoodsaver = $this->model->getTotalKilosFetchedByFoodsaver($fsid);
-				$stat_fetchcount = (int)$this->model->qOne(
-					'SELECT COUNT(foodsaver_id) FROM fs_abholer WHERE foodsaver_id = ' . (int)$fsid . ' AND `date` < NOW() AND confirmed = 1'
-				);
-				$stat_post = (int)$this->model->qOne(
-					'SELECT COUNT(id) FROM fs_theme_post WHERE foodsaver_id = ' . (int)$fsid
-				);
-				$stat_post += (int)$this->model->qOne(
-					'SELECT COUNT(id) FROM fs_wallpost WHERE foodsaver_id = ' . (int)$fsid
-				);
-				$stat_post += (int)$this->model->qOne(
-					'SELECT COUNT(id) FROM fs_betrieb_notiz WHERE milestone = 0 AND foodsaver_id = ' . (int)$fsid
-				);
+		$fetchCount = $this->statsGateway->getFoodsaverPickups();
+		$bananaCount = $this->statsGateway->getBananaCount();
+		$buddyCount = $this->statsGateway->getBuddyCount();
+		$forumPosts = $this->statsGateway->getForumPostCount();
+		$wallPosts = $this->statsGateway->getWallPostCount();
+		$storeNoteCount = $this->statsGateway->getStoreNoteCount();
+		$notFetchedCount = $this->statsGateway->getNotFetchedReportCount();
 
-				$stat_bananacount = (int)$this->model->qOne(
-					'SELECT COUNT(foodsaver_id) FROM fs_rating WHERE foodsaver_id = ' . (int)$fsid
-				);
+		$allFsIds = $this->model->getAllFoodsaverIds();
+		foreach ($allFsIds as $fsid) {
+			$totalKilosFetchedByFoodsaver = $this->model->getTotalKilosFetchedByFoodsaver($fsid);
+			$stat_fetchrate = 100;
 
-				$stat_buddycount = (int)$this->model->qone(
-					'SELECT COUNT(foodsaver_id) FROM fs_buddy WHERE foodsaver_id = ' . (int)$fsid . ' AND confirmed = 1'
-				);
+			if ($notFetchedCount[$fsid] > 0 && $fetchCount[$fsid] >= $notFetchedCount[$fsid]) {
+				$stat_fetchrate = round(100 - ($notFetchedCount[$fsid] / ($fetchCount[$fsid] / 100)), 2);
+			}
 
-				$stat_fetchrate = 100;
-
-				$count_not_fetch = (int)$this->model->qOne(
-					'SELECT COUNT(foodsaver_id) FROM fs_report WHERE `reporttype` = 1 AND committed = 1 AND tvalue like \'%Ist gar nicht zum Abholen gekommen%\' AND foodsaver_id = ' . (int)$fsid
-				);
-
-				if ($count_not_fetch > 0 && $stat_fetchcount >= $count_not_fetch) {
-					$stat_fetchrate = round(100 - ($count_not_fetch / ($stat_fetchcount / 100)), 2);
-				}
-
-				$this->model->update(
-					'
+			$postCount = $forumPosts[$fsid] + $wallPosts[$fsid] + $storeNoteCount[$fsid];
+			$this->model->update(
+				'
 						UPDATE fs_foodsaver
 
 						SET 	stat_fetchweight = ' . (float)$totalKilosFetchedByFoodsaver . ',
-						stat_fetchcount = ' . (int)$stat_fetchcount . ',
-						stat_postcount = ' . (int)$stat_post . ',
-						stat_buddycount = ' . (int)$stat_buddycount . ',
-						stat_bananacount = ' . (int)$stat_bananacount . ',
+						stat_fetchcount = ' . $fetchCount[$fsid] . ',
+						stat_postcount = ' . $postCount . ',
+						stat_buddycount = ' . $buddyCount[$fsid] . ',
+						stat_bananacount = ' . $bananaCount[$fsid] . ',
 						stat_fetchrate = ' . (float)$stat_fetchrate . '
 
 						WHERE 	id = ' . (int)$fsid . '
 				'
-				);
-			}
+			);
 		}
 
 		self::success('foodsaver ready :o)');
