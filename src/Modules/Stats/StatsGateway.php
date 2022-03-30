@@ -65,7 +65,7 @@ class StatsGateway extends BaseGateway
 
 	public function getFoodsaverPickups(): array
 	{
-		return $this->getUserPropertyCount('fs_abholer', 'WHERE date < NOW() AND confirmed = 1');
+		return $this->getUserPropertyCount('fs_abholer', 'WHERE `date` < NOW() AND confirmed = 1');
 	}
 
 	public function getBananaCount(): array
@@ -104,22 +104,19 @@ class StatsGateway extends BaseGateway
 	 */
 	private function getUserPropertyCount(string $table, string $conditions = ''): array
 	{
-		$data = $this->db->fetch('SELECT f.id, IFNULL(a.count,0) as count
+		$data = $this->db->fetchAll('SELECT f.id, IFNULL(a.count,0) as count
 								FROM fs_foodsaver f
 								LEFT OUTER JOIN (
 									SELECT foodsaver_id as id,
 									COUNT(*) as count
-									FROM :table ' . $conditions . '
+									FROM ' . $table . ' ' . $conditions . '
 									GROUP BY foodsaver_id
 								) a
-								ON f.id = a.id', [
-			':table' => $table,
-			':conditions' => $conditions
-		]);
+								ON f.id = a.id');
 
 		$mapped = [];
 		foreach ($data as $d) {
-			$mapped[$d[0]] = $d[1];
+			$mapped[$d['id']] = $d['count'];
 		}
 
 		return $mapped;
@@ -127,9 +124,8 @@ class StatsGateway extends BaseGateway
 
 	public function getTotalKilosFetchedByFoodsaver(int $foodsaverId)
 	{
-		$result = $this->db->fetch('
-			SELECT
-			       sum(fw.weight) AS saved
+		$result = $this->db->fetchValue('
+			SELECT sum(fw.weight) AS saved
 			FROM fs_abholer fa
 				left outer join fs_betrieb fb on fa.betrieb_id = fb.id
 				left outer join fs_fetchweight fw on fb.abholmenge = fw.id
@@ -141,7 +137,7 @@ class StatsGateway extends BaseGateway
 			':foodsaverId' => $foodsaverId
 		]);
 
-		return empty($result) ? 0 : $result;
+		return is_null($result) ? 0 : $result;
 	}
 
 	public function updateUserStats(int $userId, float $totalKilos, int $fetchCount, int $postCount,
