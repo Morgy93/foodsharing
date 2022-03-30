@@ -15,32 +15,6 @@ class StatsModel extends Db
 		$this->weightHelper = $weightHelper;
 	}
 
-	public function getTotalKilosFetchedByFoodsaver(int $fs_id)
-	{
-		$savedWeight = 0;
-		if ($queryResult = $this->qOne('
-			SELECT
-			       sum(fw.weight) AS saved
-			FROM fs_abholer fa
-				left outer join fs_betrieb fb on fa.betrieb_id = fb.id
-				left outer join fs_fetchweight fw on fb.abholmenge = fw.id
-			WHERE
-			      fa.foodsaver_id = ' . $fs_id . '
-			  AND fa.date < now()
-			  AND fa.confirmed = 1
-		')
-		) {
-			$savedWeight = $queryResult;
-		}
-
-		return $savedWeight;
-	}
-
-	public function getAllFoodsaverIds()
-	{
-		return $this->qCol('SELECT id FROM fs_foodsaver');
-	}
-
 	public function updateStoreStats(
 		$betrieb_id,
 		$foodsaver_id,

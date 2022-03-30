@@ -38,30 +38,18 @@ class StatsControl extends ConsoleControl
 		$storeNoteCount = $this->statsGateway->getStoreNoteCount();
 		$notFetchedCount = $this->statsGateway->getNotFetchedReportCount();
 
-		$allFsIds = $this->model->getAllFoodsaverIds();
+		$allFsIds = $this->statsGateway->getAllFoodsaverIds();
 		foreach ($allFsIds as $fsid) {
-			$totalKilosFetchedByFoodsaver = $this->model->getTotalKilosFetchedByFoodsaver($fsid);
-			$stat_fetchrate = 100;
+			$totalKilosFetchedByFoodsaver = $this->statsGateway->getTotalKilosFetchedByFoodsaver($fsid);
+			$fetchrate = 100;
 
 			if ($notFetchedCount[$fsid] > 0 && $fetchCount[$fsid] >= $notFetchedCount[$fsid]) {
-				$stat_fetchrate = round(100 - ($notFetchedCount[$fsid] / ($fetchCount[$fsid] / 100)), 2);
+				$fetchrate = round(100 - ($notFetchedCount[$fsid] / ($fetchCount[$fsid] / 100)), 2);
 			}
 
 			$postCount = $forumPosts[$fsid] + $wallPosts[$fsid] + $storeNoteCount[$fsid];
-			$this->model->update(
-				'
-						UPDATE fs_foodsaver
-
-						SET 	stat_fetchweight = ' . (float)$totalKilosFetchedByFoodsaver . ',
-						stat_fetchcount = ' . $fetchCount[$fsid] . ',
-						stat_postcount = ' . $postCount . ',
-						stat_buddycount = ' . $buddyCount[$fsid] . ',
-						stat_bananacount = ' . $bananaCount[$fsid] . ',
-						stat_fetchrate = ' . (float)$stat_fetchrate . '
-
-						WHERE 	id = ' . (int)$fsid . '
-				'
-			);
+			$this->statsGateway->updateUserStats($fsid, $totalKilosFetchedByFoodsaver, $fetchCount[$fsid],
+				$postCount, $buddyCount[$fsid], $bananaCount[$fsid], $fetchrate);
 		}
 
 		self::success('foodsaver ready :o)');

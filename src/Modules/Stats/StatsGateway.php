@@ -58,6 +58,11 @@ class StatsGateway extends BaseGateway
 		]);
 	}
 
+	public function getAllFoodsaverIds()
+	{
+		return $this->db->fetchAllValuesByCriteria('fs_foodsaver', 'id');
+	}
+
 	public function getFoodsaverPickups(): array
 	{
 		return $this->getUserPropertyCount('fs_abholer', 'WHERE date < NOW() AND confirmed = 1');
@@ -116,6 +121,41 @@ class StatsGateway extends BaseGateway
 		foreach ($data as $d) {
 			$mapped[$d[0]] = $d[1];
 		}
+
 		return $mapped;
+	}
+
+	public function getTotalKilosFetchedByFoodsaver(int $foodsaverId)
+	{
+		$result = $this->db->fetch('
+			SELECT
+			       sum(fw.weight) AS saved
+			FROM fs_abholer fa
+				left outer join fs_betrieb fb on fa.betrieb_id = fb.id
+				left outer join fs_fetchweight fw on fb.abholmenge = fw.id
+			WHERE
+			      fa.foodsaver_id = :foodsaverId
+			  AND fa.date < now()
+			  AND fa.confirmed = 1
+		', [
+			':foodsaverId' => $foodsaverId
+		]);
+
+		return empty($result) ? 0 : $result;
+	}
+
+	public function updateUserStats(int $userId, float $totalKilos, int $fetchCount, int $postCount,
+									int $buddyCount, int $bananaCount, float $fetchRate): void
+	{
+		$this->db->update('fs_foodsaver', [
+			'stat_fetchweight' => $totalKilos,
+			'stat_fetchcount' => $fetchCount,
+			'stat_postcount' => $postCount,
+			'stat_buddycount' => $buddyCount,
+			'stat_bananacount' => $bananaCount,
+			'stat_fetchrate' => $fetchRate
+		], [
+			'id' => $userId
+		]);
 	}
 }
