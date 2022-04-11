@@ -470,19 +470,7 @@ class StoreRestController extends AbstractFOSRestController
 	 */
 	public function moveMemberToStandbyTeamAction(int $storeId, int $userId): Response
 	{
-		if (!$this->session->id()) {
-			throw new UnauthorizedHttpException(self::NOT_LOGGED_IN);
-		}
-		if (!$this->storePermissions->mayEditStoreTeam($storeId)) {
-			throw new AccessDeniedHttpException();
-		}
-		if ($this->storeGateway->getUserTeamStatus($userId, $storeId) === TeamMembershipStatus::NoMember) {
-			throw new NotFoundHttpException('User is not a member of this store.');
-		}
-
-		$this->storeTransactions->moveMemberToStandbyTeam($storeId, $userId);
-
-		return $this->handleView($this->view([], 200));
+		return $this->moveUserToTeamType($storeId, $userId, true);
 	}
 
 	/**
@@ -501,18 +489,22 @@ class StoreRestController extends AbstractFOSRestController
 	 */
 	public function moveUserToRegularTeamAction(int $storeId, int $userId): Response
 	{
+		return $this->moveUserToTeamType($storeId, $userId, false);
+	}
+
+	private function moveUserToTeamType(int $storeId, int $userId, bool $standby): Response
+	{
 		if (!$this->session->id()) {
 			throw new UnauthorizedHttpException(self::NOT_LOGGED_IN);
 		}
 		if (!$this->storePermissions->mayEditStoreTeam($storeId)) {
 			throw new AccessDeniedHttpException();
 		}
-
 		if ($this->storeGateway->getUserTeamStatus($userId, $storeId) === TeamMembershipStatus::NoMember) {
 			throw new NotFoundHttpException('User is not a member of this store.');
 		}
 
-		$this->storeTransactions->moveMemberToRegularTeam($storeId, $userId);
+		$this->storeTransactions->moveMemberToTeamType($storeId, $userId, $standby);
 
 		return $this->handleView($this->view([], 200));
 	}
