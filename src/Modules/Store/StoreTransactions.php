@@ -390,38 +390,27 @@ class StoreTransactions
 		}
 	}
 
-	public function moveMemberToStandbyTeam(int $storeId, int $userId): void
+	public function moveMemberToTeamType(int $storeId, int $userId, bool $standby = false)
 	{
-		$this->storeGateway->setUserMembershipStatus($storeId, $userId, MembershipStatus::JUMPER);
+		// set membership status
+		$membershipStatus = $standby ? MembershipStatus::JUMPER : MembershipStatus::MEMBER;
+		$this->storeGateway->setUserMembershipStatus($storeId, $userId, $membershipStatus);
 
-		$standbyTeamChatId = $this->storeGateway->getBetriebConversation($storeId, true);
-		if ($standbyTeamChatId) {
-			$this->messageGateway->addUserToConversation($standbyTeamChatId, $userId);
+		// add to correct chat group
+		$newChatId = $this->storeGateway->getBetriebConversation($storeId, $standby);
+		if ($newChatId) {
+			$this->messageGateway->addUserToConversation($newChatId, $userId);
 		}
 
-		$teamChatId = $this->storeGateway->getBetriebConversation($storeId);
-		if ($teamChatId) {
-			$this->messageGateway->deleteUserFromConversation($teamChatId, $userId);
+		// remove from wrong chat group
+		$oldChatId = $this->storeGateway->getBetriebConversation($storeId, !$standby);
+		if ($oldChatId) {
+			$this->messageGateway->deleteUserFromConversation($oldChatId, $userId);
 		}
 
-		$this->storeGateway->addStoreLog($storeId, $this->session->id(), $userId, null, StoreLogAction::MOVED_TO_JUMPER);
-	}
-
-	public function moveMemberToRegularTeam(int $storeId, int $userId): void
-	{
-		$this->storeGateway->setUserMembershipStatus($storeId, $userId, MembershipStatus::MEMBER);
-
-		$teamChatId = $this->storeGateway->getBetriebConversation($storeId);
-		if ($teamChatId) {
-			$this->messageGateway->addUserToConversation($teamChatId, $userId);
-		}
-
-		$standbyTeamChatId = $this->storeGateway->getBetriebConversation($storeId, true);
-		if ($standbyTeamChatId) {
-			$this->messageGateway->deleteUserFromConversation($standbyTeamChatId, $userId);
-		}
-
-		$this->storeGateway->addStoreLog($storeId, $this->session->id(), $userId, null, StoreLogAction::MOVED_TO_TEAM);
+		// add store log message
+		$storeLogAction = $standby ? StoreLogAction::MOVED_TO_JUMPER : StoreLogAction::MOVED_TO_TEAM;
+		$this->storeGateway->addStoreLog($storeId, $this->session->id(), $userId, null, $storeLogAction);
 	}
 
 	public function makeMemberResponsible(int $storeId, int $userId): void
@@ -450,11 +439,7 @@ class StoreTransactions
 	{
 		$this->storeGateway->addUserToTeam($storeId, $userId);
 
-		if ($moveToStandby) {
-			$this->moveMemberToStandbyTeam($storeId, $userId);
-		} else {
-			$this->moveMemberToRegularTeam($storeId, $userId);
-		}
+		$this->moveMemberToTeam($storeId, $userId, $moveToStandby);
 
 		$this->storeGateway->add_betrieb_notiz([
 			'foodsaver_id' => $userId,
