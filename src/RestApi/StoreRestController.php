@@ -251,7 +251,7 @@ class StoreRestController extends AbstractFOSRestController
 	 * @OA\Response(response="200", description="Success")
 	 * @OA\Response(response="401", description="Not logged in")
 	 * @OA\Response(response="403", description="Insufficient permissions to accept requests")
-	 * @OA\Response(response="404", description="Request does not exist")
+	 * @OA\Response(response="404", description="Store or request does not exist")
 	 * @OA\Tag(name="stores")
 	 *
 	 * @Rest\Patch("stores/{storeId}/requests/{userId}")
@@ -259,12 +259,7 @@ class StoreRestController extends AbstractFOSRestController
 	 */
 	public function acceptStoreRequestAction(int $storeId, int $userId, ParamFetcher $paramFetcher): Response
 	{
-		if (!$this->session->id()) {
-			throw new UnauthorizedHttpException(self::NOT_LOGGED_IN);
-		}
-		if (!$this->storePermissions->mayAcceptRequests($storeId)) {
-			throw new AccessDeniedHttpException();
-		}
+		$this->handleStoreManagerExceptions($storeId, $userId, ['allowExternals']);
 		if ($this->storeGateway->getUserTeamStatus($userId, $storeId) !== TeamMembershipStatus::Applied) {
 			throw new NotFoundHttpException('Request does not exist.');
 		}
@@ -283,20 +278,14 @@ class StoreRestController extends AbstractFOSRestController
 	 * @OA\Response(response="200", description="Success")
 	 * @OA\Response(response="401", description="Not logged in")
 	 * @OA\Response(response="403", description="Insufficient permissions to remove the request")
-	 * @OA\Response(response="404", description="Request does not exist")
+	 * @OA\Response(response="404", description="Store or request does not exist")
 	 * @OA\Tag(name="stores")
 	 *
 	 * @Rest\Delete("stores/{storeId}/requests/{userId}")
 	 */
 	public function declineStoreRequestAction(int $storeId, int $userId): Response
 	{
-		$sessionId = $this->session->id();
-		if (!$sessionId) {
-			throw new UnauthorizedHttpException(self::NOT_LOGGED_IN);
-		}
-		if ($sessionId !== $userId && !$this->storePermissions->mayEditStoreTeam($storeId)) {
-			throw new AccessDeniedHttpException();
-		}
+		$this->handleStoreManagerExceptions($storeId, $userId, ['mayEditOneself']);
 		if ($this->storeGateway->getUserTeamStatus($userId, $storeId) !== TeamMembershipStatus::Applied) {
 			throw new NotFoundHttpException('Request does not exist.');
 		}
@@ -330,15 +319,7 @@ class StoreRestController extends AbstractFOSRestController
 	 */
 	public function addStoreMemberAction(int $storeId, int $userId): Response
 	{
-		if (!$this->session->id()) {
-			throw new UnauthorizedHttpException(self::NOT_LOGGED_IN);
-		}
-		if (!$this->storeGateway->storeExists($storeId)) {
-			throw new NotFoundHttpException('Store does not exist.');
-		}
-		if (!$this->storePermissions->mayEditStoreTeam($storeId)) {
-			throw new AccessDeniedHttpException();
-		}
+		$this->handleStoreManagerExceptions($storeId, $userId, ['allowExternals']);
 		$userRole = $this->foodsaverGateway->getRole($userId);
 		if (!$this->storePermissions->mayAddUserToStoreTeam($storeId, $userId, $userRole)) {
 			throw new UnprocessableEntityHttpException();
@@ -357,7 +338,7 @@ class StoreRestController extends AbstractFOSRestController
 	 * @OA\Response(response="200", description="Success")
 	 * @OA\Response(response="401", description="Not logged in")
 	 * @OA\Response(response="403", description="Insufficient permissions to manage this store team (if user is not yourself)")
-	 * @OA\Response(response="404", description="User is not a member of this store team")
+	 * @OA\Response(response="404", description="Store does not exists or user is not a member of it")
 	 * @OA\Response(response="422", description="User cannot currently leave this team")
 	 * @OA\Tag(name="stores")
 	 *
@@ -365,17 +346,7 @@ class StoreRestController extends AbstractFOSRestController
 	 */
 	public function removeStoreMemberAction(int $storeId, int $userId): Response
 	{
-		if (!$this->session->id()) {
-			throw new UnauthorizedHttpException(self::NOT_LOGGED_IN);
-		}
-		if ($userId !== $this->session->id()) {
-			if (!$this->storePermissions->mayEditStoreTeam($storeId)) {
-				throw new AccessDeniedHttpException();
-			}
-		}
-		if ($this->storeGateway->getUserTeamStatus($userId, $storeId) === TeamMembershipStatus::NoMember) {
-			throw new NotFoundHttpException('User is not a member of this store team.');
-		}
+		$this->handleStoreManagerExceptions($storeId, $userId, ['mayEditOneself']);
 		if (!$this->storePermissions->mayLeaveStoreTeam($storeId, $userId)) {
 			throw new UnprocessableEntityHttpException();
 		}
@@ -401,15 +372,7 @@ class StoreRestController extends AbstractFOSRestController
 	 */
 	public function addStoreManagerAction(int $storeId, int $userId): Response
 	{
-		if (!$this->session->id()) {
-			throw new UnauthorizedHttpException(self::NOT_LOGGED_IN);
-		}
-		if (!$this->storePermissions->mayEditStoreTeam($storeId)) {
-			throw new AccessDeniedHttpException();
-		}
-		if (!$this->storeGateway->storeExists($storeId)) {
-			throw new NotFoundHttpException('Store does not exist.');
-		}
+		$this->handleStoreManagerExceptions($storeId, $userId, ['allowExternals']);
 		$userRole = $this->foodsaverGateway->getRole($userId);
 		if (!$this->storePermissions->mayBecomeStoreManager($storeId, $userId, $userRole)) {
 			throw new UnprocessableEntityHttpException();
@@ -428,7 +391,7 @@ class StoreRestController extends AbstractFOSRestController
 	 * @OA\Response(response="200", description="Success")
 	 * @OA\Response(response="401", description="Not logged in")
 	 * @OA\Response(response="403", description="Insufficient permissions to manage this store team")
-	 * @OA\Response(response="404", description="Store does not exist")
+	 * @OA\Response(response="404", description="Store does not exists or user is not a member of it")
 	 * @OA\Response(response="422", description="User cannot lose responsibility for this store")
 	 * @OA\Tag(name="stores")
 	 *
@@ -436,15 +399,7 @@ class StoreRestController extends AbstractFOSRestController
 	 */
 	public function removeStoreManagerAction(int $storeId, int $userId): Response
 	{
-		if (!$this->session->id()) {
-			throw new UnauthorizedHttpException(self::NOT_LOGGED_IN);
-		}
-		if (!$this->storePermissions->mayEditStoreTeam($storeId)) {
-			throw new AccessDeniedHttpException();
-		}
-		if (!$this->storeGateway->storeExists($storeId)) {
-			throw new NotFoundHttpException('Store does not exist.');
-		}
+		$this->handleStoreManagerExceptions($storeId, $userId);
 		if (!$this->storePermissions->mayLoseStoreManagement($storeId, $userId)) {
 			throw new UnprocessableEntityHttpException();
 		}
@@ -463,7 +418,7 @@ class StoreRestController extends AbstractFOSRestController
 	 * @OA\Response(response="200", description="Success")
 	 * @OA\Response(response="401", description="Not logged in")
 	 * @OA\Response(response="403", description="Insufficient permissions to manage this store team")
-	 * @OA\Response(response="404", description="User is not a member of this store")
+	 * @OA\Response(response="404", description="Store does not exists or user is not a member of it")
 	 * @OA\Tag(name="stores")
 	 *
 	 * @Rest\Patch("stores/{storeId}/members/{userId}/standby")
@@ -482,7 +437,7 @@ class StoreRestController extends AbstractFOSRestController
 	 * @OA\Response(response="200", description="Success")
 	 * @OA\Response(response="401", description="Not logged in")
 	 * @OA\Response(response="403", description="Insufficient permissions to manage this store team")
-	 * @OA\Response(response="404", description="User is not a member of this store")
+	 * @OA\Response(response="404", description="Store does not exists or user is not a member of it")
 	 * @OA\Tag(name="stores")
 	 *
 	 * @Rest\Delete("stores/{storeId}/members/{userId}/standby")
@@ -494,18 +449,47 @@ class StoreRestController extends AbstractFOSRestController
 
 	private function moveUserToTeamType(int $storeId, int $userId, bool $standby): Response
 	{
-		if (!$this->session->id()) {
+		$this->handleStoreManagerExceptions($storeId, $userId);
+		$this->storeTransactions->moveMemberToTeamType($storeId, $userId, $standby);
+		return $this->handleView($this->view([], 200));
+	}
+
+	/**
+	 * Asserts the following:
+	 * 
+	 *  - Session is logged in
+	 *  - Store exists
+	 *  - May edit the store team
+	 *  - Given target user is the stores team
+	 *
+	 * @param integer $storeId
+	 * @param integer $targetId
+	 * @param array $excludeChecks
+	 * @return void
+	 */
+	private function handleStoreManagerExceptions(int $storeId, int $targetId, array $flags = [])
+	{
+		$sessionId = $this->session->id();
+		// Logged in
+		if ($sessionId) {
 			throw new UnauthorizedHttpException(self::NOT_LOGGED_IN);
 		}
-		if (!$this->storePermissions->mayEditStoreTeam($storeId)) {
+
+		// Store exists
+		if (!$this->storeGateway->storeExists($storeId)) {
+			throw new NotFoundHttpException('Store does not exist.');
+		}
+
+		// Session may edit target user (mayEditStoreTeam OR (session is targetUser AND 'mayEditOneself' flag is set))
+		if (!$this->storePermissions->mayEditStoreTeam($storeId) && !(in_array('mayEditOneself', $flags) && $sessionId == $targetId)) {
 			throw new AccessDeniedHttpException();
 		}
-		if ($this->storeGateway->getUserTeamStatus($userId, $storeId) === TeamMembershipStatus::NoMember) {
+
+		// Target user is in Team
+		if (!in_array('allowExternals', $flags) && $this->storeGateway->getUserTeamStatus($targetId, $storeId) === TeamMembershipStatus::NoMember) {
 			throw new NotFoundHttpException('User is not a member of this store.');
 		}
 
-		$this->storeTransactions->moveMemberToTeamType($storeId, $userId, $standby);
-
-		return $this->handleView($this->view([], 200));
+		//TODO maybe require status flag?
 	}
 }
