@@ -447,6 +447,15 @@ class StoreRestController extends AbstractFOSRestController
 		return $this->moveUserToTeamType($storeId, $userId, false);
 	}
 
+	/**
+	 * Moves a store-team member to the standby team or the regular team.
+	 * Will succeed no matter the team the member was already part of.
+	 *
+	 * @param integer $storeId
+	 * @param integer $userId
+	 * @param boolean $standby Whether to move the user to the standby team
+	 * @return Response
+	 */
 	private function moveUserToTeamType(int $storeId, int $userId, bool $standby): Response
 	{
 		$this->handleEditTeamExceptions($storeId, $userId);

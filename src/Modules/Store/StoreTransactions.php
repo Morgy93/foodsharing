@@ -439,7 +439,7 @@ class StoreTransactions
 	{
 		$this->storeGateway->addUserToTeam($storeId, $userId);
 
-		$this->moveMemberToTeam($storeId, $userId, $moveToStandby);
+		$this->moveMemberToTeamType($storeId, $userId, $moveToStandby);
 
 		$this->storeGateway->add_betrieb_notiz([
 			'foodsaver_id' => $userId,
