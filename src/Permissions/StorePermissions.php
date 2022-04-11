@@ -238,11 +238,6 @@ class StorePermissions
 		return $this->mayEditStore($storeId);
 	}
 
-	public function mayAcceptRequests(int $storeId): bool
-	{
-		return $this->mayEditStore($storeId);
-	}
-
 	public function mayAddPickup(int $storeId): bool
 	{
 		return $this->mayEditPickups($storeId);
