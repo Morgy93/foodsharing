@@ -259,7 +259,7 @@ class StoreRestController extends AbstractFOSRestController
 	 */
 	public function acceptStoreRequestAction(int $storeId, int $userId, ParamFetcher $paramFetcher): Response
 	{
-		$this->handleStoreManagerExceptions($storeId, $userId, ['allowExternals']);
+		$this->handleEditTeamExceptions($storeId, $userId, ['allowExternals']);
 		if ($this->storeGateway->getUserTeamStatus($userId, $storeId) !== TeamMembershipStatus::Applied) {
 			throw new NotFoundHttpException('Request does not exist.');
 		}
@@ -285,7 +285,7 @@ class StoreRestController extends AbstractFOSRestController
 	 */
 	public function declineStoreRequestAction(int $storeId, int $userId): Response
 	{
-		$this->handleStoreManagerExceptions($storeId, $userId, ['mayEditOneself']);
+		$this->handleEditTeamExceptions($storeId, $userId, ['mayEditOneself']);
 		if ($this->storeGateway->getUserTeamStatus($userId, $storeId) !== TeamMembershipStatus::Applied) {
 			throw new NotFoundHttpException('Request does not exist.');
 		}
@@ -319,7 +319,7 @@ class StoreRestController extends AbstractFOSRestController
 	 */
 	public function addStoreMemberAction(int $storeId, int $userId): Response
 	{
-		$this->handleStoreManagerExceptions($storeId, $userId, ['allowExternals']);
+		$this->handleEditTeamExceptions($storeId, $userId, ['allowExternals']);
 		$userRole = $this->foodsaverGateway->getRole($userId);
 		if (!$this->storePermissions->mayAddUserToStoreTeam($storeId, $userId, $userRole)) {
 			throw new UnprocessableEntityHttpException();
@@ -346,7 +346,7 @@ class StoreRestController extends AbstractFOSRestController
 	 */
 	public function removeStoreMemberAction(int $storeId, int $userId): Response
 	{
-		$this->handleStoreManagerExceptions($storeId, $userId, ['mayEditOneself']);
+		$this->handleEditTeamExceptions($storeId, $userId, ['mayEditOneself']);
 		if (!$this->storePermissions->mayLeaveStoreTeam($storeId, $userId)) {
 			throw new UnprocessableEntityHttpException();
 		}
@@ -372,7 +372,7 @@ class StoreRestController extends AbstractFOSRestController
 	 */
 	public function addStoreManagerAction(int $storeId, int $userId): Response
 	{
-		$this->handleStoreManagerExceptions($storeId, $userId, ['allowExternals']);
+		$this->handleEditTeamExceptions($storeId, $userId, ['allowExternals']);
 		$userRole = $this->foodsaverGateway->getRole($userId);
 		if (!$this->storePermissions->mayBecomeStoreManager($storeId, $userId, $userRole)) {
 			throw new UnprocessableEntityHttpException();
@@ -399,7 +399,7 @@ class StoreRestController extends AbstractFOSRestController
 	 */
 	public function removeStoreManagerAction(int $storeId, int $userId): Response
 	{
-		$this->handleStoreManagerExceptions($storeId, $userId);
+		$this->handleEditTeamExceptions($storeId, $userId);
 		if (!$this->storePermissions->mayLoseStoreManagement($storeId, $userId)) {
 			throw new UnprocessableEntityHttpException();
 		}
@@ -449,33 +449,30 @@ class StoreRestController extends AbstractFOSRestController
 
 	private function moveUserToTeamType(int $storeId, int $userId, bool $standby): Response
 	{
-		$this->handleStoreManagerExceptions($storeId, $userId);
+		$this->handleEditTeamExceptions($storeId, $userId);
 		$this->storeTransactions->moveMemberToTeamType($storeId, $userId, $standby);
 		return $this->handleView($this->view([], 200));
 	}
 
 	/**
-	 * Asserts the following:
-	 * 
+	 * Makes sure an edit to the team can be performed and throws an exception otherwise.
+	 * The asserted properties are:
 	 *  - Session is logged in
 	 *  - Store exists
-	 *  - May edit the store team
-	 *  - Given target user is the stores team
+	 *  - Session may edit the store team (edits to the requesting user are additionally allowed with flag 'mayEditOneself')
+	 *  - Given target user is the stores team (check disabled with flag 'allowExternals')
 	 *
 	 * @param integer $storeId
-	 * @param integer $targetId
-	 * @param array $excludeChecks
+	 * @param integer $targetId The id of the affected user
+	 * @param array $flags list of flags that influence the assertions
 	 * @return void
 	 */
-	private function handleStoreManagerExceptions(int $storeId, int $targetId, array $flags = [])
+	private function handleEditTeamExceptions(int $storeId, int $targetId, array $flags = [])
 	{
 		$sessionId = $this->session->id();
-		// Logged in
 		if ($sessionId) {
 			throw new UnauthorizedHttpException(self::NOT_LOGGED_IN);
 		}
-
-		// Store exists
 		if (!$this->storeGateway->storeExists($storeId)) {
 			throw new NotFoundHttpException('Store does not exist.');
 		}
@@ -485,11 +482,9 @@ class StoreRestController extends AbstractFOSRestController
 			throw new AccessDeniedHttpException();
 		}
 
-		// Target user is in Team
+		// Target user is in Team (or externals are allowed)
 		if (!in_array('allowExternals', $flags) && $this->storeGateway->getUserTeamStatus($targetId, $storeId) === TeamMembershipStatus::NoMember) {
 			throw new NotFoundHttpException('User is not a member of this store.');
 		}
-
-		//TODO maybe require status flag?
 	}
 }
