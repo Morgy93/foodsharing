@@ -202,8 +202,8 @@ class StoreGateway extends BaseGateway
 			  AND	b.betrieb_status_id <> :permanentlyClosed
 			  AND	b.`lat` != ""
 		', [
-				':regionId' => $regionId,
-				':permanentlyClosed' => CooperationStatus::PERMANENTLY_CLOSED,
+			':regionId' => $regionId,
+			':permanentlyClosed' => CooperationStatus::PERMANENTLY_CLOSED,
 		]);
 	}
 
@@ -829,7 +829,8 @@ class StoreGateway extends BaseGateway
 	 */
 	public function getStoreWallpost(int $storeId, int $postId): array
 	{
-		return $this->db->fetchByCriteria('fs_betrieb_notiz',
+		return $this->db->fetchByCriteria(
+			'fs_betrieb_notiz',
 			['id', 'foodsaver_id', 'betrieb_id', 'text', 'zeit'],
 			['id' => $postId, 'betrieb_id' => $storeId]
 		);
@@ -1018,15 +1019,5 @@ class StoreGateway extends BaseGateway
 				WHERE 	fs_betrieb.bezirk_id = fs_bezirk.id
 				AND 	fs_betrieb.bezirk_id IN(' . implode(',', $regionIds) . ')
 		');
-	}
-
-	public function listStoresWithoutRegion(array $storeIds): array
-	{
-		return $this->db->fetchAll(
-			'SELECT id,name,bezirk_id,str,hsnr
-			FROM fs_betrieb
-			WHERE id IN(' . implode(',', $storeIds) . ')
-			AND ( bezirk_id = 0 OR bezirk_id IS NULL)'
-		);
 	}
 }

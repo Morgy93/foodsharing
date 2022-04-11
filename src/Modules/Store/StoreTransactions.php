@@ -78,7 +78,7 @@ class StoreTransactions
 		return $storeId;
 	}
 
-	public function updateAllStoreData(int $storeId, array $legacyGlobalData): bool
+	public function updateAllStoreData(int $storeId, array $legacyGlobalData): void
 	{
 		$this->storeGateway->setGroceries($storeId, $legacyGlobalData['lebensmittel'] ?? []);
 
@@ -124,8 +124,6 @@ class StoreTransactions
 		$store->updatedAt = Carbon::now();
 
 		$this->storeGateway->updateStoreData($store->id, $store);
-
-		return true;
 	}
 
 	/**
