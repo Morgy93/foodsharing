@@ -157,15 +157,16 @@ class ProfileView extends View
 	{
 		$out = '<div class="bootstrap">';
 
-		$out .= '<a class="btn btn-sm btn-danger cancel-all-button" href="#" onclick="'
-				. 'if(confirm(\''
-					. $this->translator->trans('profile.signoutAllConfirmation', ['{name}' => $this->foodsaver['name']])
-				. '\')){'
-				. 'ajreq(\'deleteAllDatesFromFoodsaver\','
-				. '{app:\'profile\',fsid:' . $this->foodsaver['id'] . '}'
-				. ')};return false;">'
-					. $this->translator->trans('profile.signoutAll')
-				. '</a>';
+		// Temporarily removed 'sign out of all' pickups button:
+		// $out .= '<a class="btn btn-sm btn-danger cancel-all-button" href="#" onclick="'
+		// 		. 'if(confirm(\''
+		// 			. $this->translator->trans('profile.signoutAllConfirmation', ['{name}' => $this->foodsaver['name']])
+		// 		. '\')){'
+		// 		. 'ajreq(\'deleteAllDatesFromFoodsaver\','
+		// 		. '{app:\'profile\',fsid:' . $this->foodsaver['id'] . '}'
+		// 		. ')};return false;">'
+		// 			. $this->translator->trans('profile.signoutAll')
+		// 		. '</a>';
 
 		$out .= '
 <div class="clear datelist">';
@@ -192,12 +193,12 @@ class ProfileView extends View
 				$out .= '
 		<div class="col flex-grow-0 flex-shrink-1">
 			<a class="btn btn-sm btn-secondary" href="#" onclick="'
-			. 'ajreq(\'deleteSinglePickup\','
-			. '{app:\'profile\''
-			. ',fsid:' . $this->foodsaver['id']
-			. ',storeId:' . $date['betrieb_id']
-			. ',date:' . $date['date_ts']
-			. '});return false;">' . $this->translator->trans('profile.signoutPickup') . '</a>
+					. 'ajreq(\'deleteSinglePickup\','
+					. '{app:\'profile\''
+					. ',fsid:' . $this->foodsaver['id']
+					. ',storeId:' . $date['betrieb_id']
+					. ',date:' . $date['date_ts']
+					. '});return false;">' . $this->translator->trans('profile.signoutPickup') . '</a>
 		</div>';
 			}
 			$out .= '
@@ -283,7 +284,7 @@ class ProfileView extends View
 		if ($fsId != $this->session->id()) {
 			$writeMessage = '<li><a href="#" onclick="chat(' . $fsId . ');return false;">'
 				. '<i class="fas fa-comment fa-fw"></i>' . $this->translator->trans('chat.open_chat')
-			. '</a></li>';
+				. '</a></li>';
 		}
 
 		return '
@@ -463,7 +464,7 @@ class ProfileView extends View
 			$label = $this->translator->trans('profile.stats.baskets');
 			$stats[] = '<a href="/essenskoerbe">'
 				. $this->renderStat($basketCount, '', $label, 'stat_basketcount')
-			. '</a>';
+				. '</a>';
 		}
 
 		if ($this->session->may('fs')) {
@@ -629,9 +630,11 @@ class ProfileView extends View
 		[$ambassador, $infos] = $this->renderAmbassadorInformation($infos);
 		$infos = $this->renderFoodsaverInformation($ambassador, $infos);
 		$infos = $this->renderOrgaTeamMemberInformation($infos);
-		if ($this->foodsaver['id'] != $this->session->id()
+		if (
+			$this->foodsaver['id'] != $this->session->id()
 			&& $this->foodsaver['rolle'] > Role::FOODSHARER
-			&& $this->session->may('fs')) {
+			&& $this->session->may('fs')
+		) {
 			$infos = $this->renderFoodsaverTeamMemberInformation($infos);
 		}
 		$infos = $this->renderSleepingHatInformation($infos);

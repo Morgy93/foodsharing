@@ -16,6 +16,7 @@
 - Make map legend colapsable !2166 @NINI1988
 - Make map legend collapsible !2166 @NINI1988
 - Updated the link to instagram on the startpage !2179 #1206 @alex.simm
+- Set a timeout on the sending chat messages to websockets !2167 #1069 @alex.simm 
 
 ## Bugfixes
 - Fix the community marker map for regions that do not yet have a pin #1183 !2154 @alex.simm  
