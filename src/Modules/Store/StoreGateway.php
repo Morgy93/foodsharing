@@ -541,10 +541,8 @@ class StoreGateway extends BaseGateway
 			WHERE t.betrieb_id = :storeId
 				AND t.verantwortlich = 1
 				AND fs.deleted_at IS NULL
-				AND t.`active` = :membershipStatus
 		', [
-			':storeId' => $storeId,
-			':membershipStatus' => MembershipStatus::MEMBER
+			':storeId' => $storeId
 		]);
 	}
 
