@@ -465,7 +465,7 @@ class StoreTransactions
 	// notify people who can do something with the request: store managers, region ambassadors, or orga
 	private function notifyStoreManagersAboutRequest(int $storeId, int $userId): void
 	{
-		$bellRecipients = $this->storeGateway->getBiebsForStore($storeId);
+		$bellRecipients = $this->storeGateway->getStoreManagers($storeId);
 		if (!$bellRecipients) {
 			$regionId = $this->storeGateway->getStoreRegionId($storeId);
 			$ambassadors = $this->foodsaverGateway->getAdminsOrAmbassadors($regionId);

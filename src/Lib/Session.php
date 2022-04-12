@@ -438,8 +438,7 @@ class Session
 			'verified' => (int)$fs['verified']
 		];
 		if ((int)$fs['rolle'] > 0) {
-			if ($r = $this->regionGateway->listRegionsForBotschafter($fs['id'])
-			) {
+			if ($r = $this->regionGateway->listRegionsForBotschafter($fs['id'])) {
 				$_SESSION['client']['botschafter'] = $r;
 				$mailbox = true;
 				foreach ($r as $rr) {
@@ -450,7 +449,7 @@ class Session
 			$_SESSION['client']['bezirke'] = $this->regionGateway->listForFoodsaver($fs['id']) ?? [];
 		}
 
-		if ($responsibleStoreIds = $this->storeGateway->listStoreIdsWhereResponsible($fs['id'])) {
+		if ($responsibleStoreIds = $this->storeGateway->listStoreIds($fs['id'], true)) {
 			$_SESSION['client']['verantwortlich'] = $responsibleStoreIds;
 			$mailbox = true;
 		}
