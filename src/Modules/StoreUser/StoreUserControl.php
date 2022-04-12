@@ -312,7 +312,7 @@ class StoreUserControl extends Control
 			// personal info
 			'id', 'name', 'photo', 'quiz_rolle', 'sleep_status', 'verified',
 			// team-related info
-			'verantwortlich', 'active', 'stat_fetchcount', 'add_date',
+			'verantwortlich', 'team_active', 'stat_fetchcount', 'add_date',
 		];
 		if ($this->storePermissions->maySeePhoneNumbers($store['id'])) {
 			array_push($allowedFields, 'handy', 'telefon', 'last_fetch');

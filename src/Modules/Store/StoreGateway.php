@@ -500,10 +500,20 @@ class StoreGateway extends BaseGateway
 	public function getStoreTeam($storeId, int $status = MembershipStatus::MEMBER): array
 	{
 		$userDetails = ' ';
-		if ($status >= MembershipStatus::MEMBER) {
-			$userDetails = 'fs.telefon, fs.handy, fs.quiz_rolle, fs.rolle, t.verantwortlich, t.stat_last_update,
-				t.stat_fetchcount, t.stat_first_fetch, t.stat_add_date, UNIX_TIMESTAMP(t.stat_last_fetch) AS
-				last_fetch, UNIX_TIMESTAMP(t.stat_add_date) AS add_date, ';
+		if ($status == MembershipStatus::MEMBER || $status == MembershipStatus::JUMPER) {
+			$userDetails = '
+				fs.telefon,
+				fs.handy,
+				fs.quiz_rolle,
+				fs.rolle,
+				t.active AS team_active,
+				t.verantwortlich,
+				t.stat_last_update,
+				t.stat_fetchcount,
+				t.stat_first_fetch,
+				t.stat_add_date,
+				UNIX_TIMESTAMP(t.stat_last_fetch) AS last_fetch,
+				UNIX_TIMESTAMP(t.stat_add_date) AS add_date,';
 		}
 
 		return $this->db->fetchAll('SELECT
