@@ -479,7 +479,7 @@ class StoreRestController extends AbstractFOSRestController
 	private function handleEditTeamExceptions(int $storeId, int $targetId, array $flags = [])
 	{
 		$sessionId = $this->session->id();
-		if ($sessionId) {
+		if (!$sessionId) {
 			throw new UnauthorizedHttpException(self::NOT_LOGGED_IN);
 		}
 		if (!$this->storeGateway->storeExists($storeId)) {

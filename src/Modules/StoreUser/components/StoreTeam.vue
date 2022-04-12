@@ -6,7 +6,7 @@
   - unverified team members
   - jumpers
   Sleeping team members will come last in each of those sections.
-  Check `tableSortFunction` (and StoreGateway:getStoreTeam) for details.
+  Check `tableSortFunction` (and StoreGateway:getStoreMembers) for details.
   -->
   <div :class="['bootstrap store-team w-100', `team-${storeId}`]">
     <div class="card rounded mb-2">
@@ -412,7 +412,7 @@ export default {
       // ORDER BY
       // isManager (verantwortlich) DESC
       if (a.isManager !== b.isManager) { return direction * (a.isManager - b.isManager) }
-      // isJumper (team_active == MembershipStatus::JUMPER) ASC
+      // isJumper (active == MembershipStatus::JUMPER) ASC
       if (a.isJumper !== b.isJumper) { return -1 * direction * (a.isJumper - b.isJumper) }
       // isVerified (verified == 1) DESC
       if (a.isVerified !== b.isVerified) { return direction * (a.isVerified - b.isVerified) }
@@ -434,15 +434,15 @@ export default {
 
       return {
         id: fs.id,
-        isActive: fs.team_active === 1, // MembershipStatus::MEMBER
-        isJumper: fs.team_active === 2, // MembershipStatus::JUMPER
+        isActive: fs.active === 1, // MembershipStatus::MEMBER
+        isJumper: fs.active === 2, // MembershipStatus::JUMPER
         isManager: !!fs.verantwortlich,
         _rowVariant: fs.verantwortlich ? 'warning' : '',
         isVerified: fs.verified === 1,
         mayManage: fs.quiz_rolle >= 2, // Role::STORE_MANAGER
         // mayAmb: fs.quiz_rolle >= 3, // Role::AMBASSADOR
         avatar: fs.photo,
-        isWaiting: fs.team_active === 2 || fs.verified < 1, // MembershipStatus::JUMPER or unverified
+        isWaiting: fs.active === 2 || fs.verified < 1, // MembershipStatus::JUMPER or unverified
         sleepStatus: fs.sleep_status,
         name: fs.name,
         number: fs.handy || fs.telefon || '',

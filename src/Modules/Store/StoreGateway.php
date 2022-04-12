@@ -394,8 +394,8 @@ class StoreGateway extends BaseGateway
 		if ($result) {
 			$result['lebensmittel'] = $this->getGroceries($storeId);
 			$result['foodsaver'] = $this->getStoreTeam($storeId);
-			$result['springer'] = $this->getBetriebSpringer($storeId);
-			$result['requests'] = $this->getApplications($storeId);
+			$result['springer'] = $this->getStoreTeam($storeId, MembershipStatus::JUMPER);
+			$result['requests'] = $this->getStoreTeam($storeId, MembershipStatus::APPLIED_FOR_TEAM);
 			$result['verantwortlich'] = false;
 			$result['team'] = [];
 			$result['jumper'] = false;
@@ -457,29 +457,6 @@ class StoreGateway extends BaseGateway
 		$this->db->insertMultiple('fs_betrieb_has_lebensmittel', $newFoodData);
 	}
 
-	private function getApplications(int $storeId): array
-	{
-		return $this->db->fetchAll('
-			SELECT 		fs.`id`,
-						fs.photo,
-						CONCAT(fs.name," ",fs.nachname) AS name,
-						name as vorname,
-						fs.sleep_status,
-			       		fs.verified
-
-			FROM 		`fs_betrieb_team` t
-						INNER JOIN `fs_foodsaver` fs
-			            ON fs.id = t.foodsaver_id
-
-			WHERE 		`betrieb_id` = :storeId
-			AND 		t.active = :membershipStatus
-			AND			fs.deleted_at IS NULL
-		', [
-			':storeId' => $storeId,
-			':membershipStatus' => MembershipStatus::APPLIED_FOR_TEAM
-		]);
-	}
-
 	public function getStoreName(int $storeId): string
 	{
 		return $this->db->fetchValueByCriteria('fs_betrieb', 'name', ['id' => $storeId]);
@@ -520,79 +497,31 @@ class StoreGateway extends BaseGateway
 		');
 	}
 
-	public function getStoreTeam($storeId): array
+	public function getStoreTeam($storeId, int $status = MembershipStatus::MEMBER): array
 	{
-		return $this->db->fetchAll('
-				SELECT  fs.`id`,
-						fs.`verified`,
-						fs.`active`,
-						fs.`telefon`,
-						fs.`handy`,
-						fs.photo,
-						fs.quiz_rolle,
-						fs.rolle,
-						CONCAT(fs.name," ",fs.nachname) AS name,
-						name as vorname,
-						t.`active` AS team_active,
-						t.`verantwortlich`,
-						t.`stat_last_update`,
-						t.`stat_fetchcount`,
-						t.`stat_first_fetch`,
-						t.`stat_add_date`,
-						UNIX_TIMESTAMP(t.`stat_last_fetch`) AS last_fetch,
-						UNIX_TIMESTAMP(t.`stat_add_date`) AS add_date,
-						fs.sleep_status
+		$userDetails = ' ';
+		if ($status >= MembershipStatus::MEMBER) {
+			$userDetails = 'fs.telefon, fs.handy, fs.quiz_rolle, fs.rolle, t.verantwortlich, t.stat_last_update,
+				t.stat_fetchcount, t.stat_first_fetch, t.stat_add_date, UNIX_TIMESTAMP(t.stat_last_fetch) AS
+				last_fetch, UNIX_TIMESTAMP(t.stat_add_date) AS add_date, ';
+		}
 
-				FROM 	`fs_betrieb_team` t
-				INNER JOIN `fs_foodsaver` fs
-				     	ON fs.id = t.foodsaver_id
-
-				WHERE	`betrieb_id` = :id
-				AND 	t.active  = :membershipStatus
-				AND		fs.deleted_at IS NULL
-
-				ORDER BY fs.id
+		return $this->db->fetchAll('SELECT
+				' . $userDetails . '
+				fs.id,
+				fs.photo,
+				CONCAT(fs.name," ",fs.nachname) AS name,
+				fs.`name` as vorname,
+				fs.sleep_status,
+				fs.verified,
+				fs.active
+			FROM fs_betrieb_team t
+			INNER JOIN fs_foodsaver fs ON fs.id = t.foodsaver_id
+			WHERE betrieb_id = :id AND t.active = :membershipStatus AND fs.deleted_at IS NULL
+			ORDER BY fs.id
 		', [
 			':id' => $storeId,
-			':membershipStatus' => MembershipStatus::MEMBER
-		]);
-	}
-
-	public function getBetriebSpringer($storeId): array
-	{
-		return $this->db->fetchAll('
-				SELECT  fs.`id`,
-						fs.`verified`,
-						fs.`active`,
-						fs.`telefon`,
-						fs.`handy`,
-						fs.photo,
-						fs.quiz_rolle,
-						fs.rolle,
-						CONCAT(fs.name," ",fs.nachname) AS name,
-						name as vorname,
-						t.`active` AS team_active,
-						t.`verantwortlich`,
-						t.`stat_last_update`,
-						t.`stat_fetchcount`,
-						t.`stat_first_fetch`,
-						t.`stat_add_date`,
-						UNIX_TIMESTAMP(t.`stat_last_fetch`) AS last_fetch,
-						UNIX_TIMESTAMP(t.`stat_add_date`) AS add_date,
-						fs.sleep_status
-
-				FROM 	`fs_betrieb_team` t
-						INNER JOIN `fs_foodsaver` fs
-				        ON fs.id = t.foodsaver_id
-
-				WHERE 	`betrieb_id` = :id
-				AND 	t.active  = :membershipStatus
-				AND		fs.deleted_at IS NULL
-
-				ORDER BY fs.id
-		', [
-			':id' => $storeId,
-			':membershipStatus' => MembershipStatus::JUMPER
+			':membershipStatus' => $status
 		]);
 	}
 

@@ -66,7 +66,7 @@ class RestNormalization
 			// 'roleLevel' => $data['quiz_rolle'], // should be added to FS:getFoodsaverDetails
 			/* team-related data: */
 			'isManager' => boolval($data['verantwortlich'] ?? false),
-			// 'team_active' (membership status) should be included as well
+			// 'active' (membership status) should be included as well
 		];
 	}
 
