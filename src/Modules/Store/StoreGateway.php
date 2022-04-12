@@ -78,7 +78,7 @@ class StoreGateway extends BaseGateway
 		if ($bezirk = $this->regionGateway->getRegionName($result['bezirk_id'])) {
 			$result['bezirk'] = $bezirk;
 		}
-		if ($verantwortlich = $this->getBiebsForStore($storeId)) {
+		if ($verantwortlich = $this->getStoreManagers($storeId)) {
 			$result['verantwortlicher'] = $verantwortlich;
 		}
 		if ($kette = $this->getOne_kette($result['kette_id'])) {
@@ -229,40 +229,6 @@ class StoreGateway extends BaseGateway
 		]);
 	}
 
-	private function getStoreListQuery(): string
-	{
-		return '
-			SELECT 	s.id,
-					s.name,
-					s.betrieb_status_id,
-					s.kette_id,
-					s.betrieb_kategorie_id,
-
-					r.name AS region_name,
-
-					s.added,
-					s.ansprechpartner,
-					s.fax,
-					s.telefon,
-					s.email,
-
-					CONCAT(s.str," ",s.hsnr) AS anschrift,
-					s.str,
-					s.hsnr,
-					s.plz,
-					s.stadt,
-					CONCAT(s.lat,", ",s.lon) AS geo,
-					s.`betrieb_status_id`,
-
-					t.verantwortlich,
-					t.active
-
-			FROM 	fs_betrieb s
-					INNER JOIN      fs_bezirk r        ON  r.id = s.bezirk_id
-					LEFT OUTER JOIN fs_betrieb_team t  ON  t.betrieb_id = s.id
-		';
-	}
-
 	/**
 	 * @param ?int $userId if set, include all own stores (from any region) in output
 	 * @param ?int $addFromRegionId if set, include all stores (own or otherwise) from given region in output
@@ -270,7 +236,34 @@ class StoreGateway extends BaseGateway
 	 */
 	public function getMyStores(?int $userId, ?int $addFromRegionId = null, bool $sortByOwnTeamStatus = true): array
 	{
-		$query = $this->getStoreListQuery();
+		$query = 'SELECT
+			 	s.id,
+				s.name,
+				s.betrieb_status_id,
+				s.kette_id,
+				s.betrieb_kategorie_id,
+
+				r.name AS region_name,
+
+				s.added,
+				s.ansprechpartner,
+				s.fax,
+				s.telefon,
+				s.email,
+
+				CONCAT(s.str," ",s.hsnr) AS anschrift,
+				s.str,
+				s.hsnr,
+				s.plz,
+				s.stadt,
+				CONCAT(s.lat,", ",s.lon) AS geo,
+				s.`betrieb_status_id`,
+
+				t.verantwortlich,
+				t.active
+			FROM fs_betrieb s
+			INNER JOIN fs_bezirk r ON r.id = s.bezirk_id
+			LEFT OUTER JOIN fs_betrieb_team t ON t.betrieb_id = s.id';
 
 		$betriebe = [];
 
@@ -500,7 +493,7 @@ class StoreGateway extends BaseGateway
 	public function getStoreTeam($storeId, int $status = MembershipStatus::MEMBER): array
 	{
 		$userDetails = ' ';
-		if ($status == MembershipStatus::MEMBER || $status == MembershipStatus::JUMPER) {
+		if ($status !== MembershipStatus::APPLIED_FOR_TEAM) {
 			$userDetails = '
 				fs.telefon,
 				fs.handy,
@@ -535,40 +528,23 @@ class StoreGateway extends BaseGateway
 		]);
 	}
 
-	public function getBiebsForStore($storeId)
-	{
-		return $this->db->fetchAll('
-			SELECT 	`foodsaver_id` as id
-
-			FROM fs_betrieb_team
-
-			WHERE `betrieb_id` = :betrieb_id
-			AND verantwortlich = 1
-			AND `active` = :membershipStatus
-        ', [
-			':betrieb_id' => $storeId,
-			':membershipStatus' => MembershipStatus::MEMBER
-		]);
-	}
-
 	/**
 	 * Returns all managers of a store.
 	 */
 	public function getStoreManagers(int $storeId): array
 	{
-		return $this->db->fetchAllValues('
-			SELECT 	t.`foodsaver_id`,
-					t.`verantwortlich`
-
-			FROM 	`fs_betrieb_team` t
-					INNER JOIN  `fs_foodsaver` fs
-					ON fs.id = t.foodsaver_id
-
-			WHERE 	t.`betrieb_id` = :storeId
-					AND t.verantwortlich = 1
-					AND fs.deleted_at IS NULL
+		return $this->db->fetchAllValues('SELECT
+				t.foodsaver_id,
+				t.verantwortlich
+			FROM fs_betrieb_team t
+			INNER JOIN fs_foodsaver fs ON fs.id = t.foodsaver_id
+			WHERE t.betrieb_id = :storeId
+				AND t.verantwortlich = 1
+				AND fs.deleted_at IS NULL
+				AND `active` = :membershipStatus
 		', [
 			':storeId' => $storeId,
+			':membershipStatus' => MembershipStatus::MEMBER
 		]);
 	}
 
@@ -681,21 +657,15 @@ class StoreGateway extends BaseGateway
 	 */
 	public function getStoreManagersOf(int $regionId): array
 	{
-		return $this->db->fetchAllValues('
-            SELECT DISTINCT
-                    bt.foodsaver_id
-
-            FROM    `fs_bezirk_closure` c
-			        INNER JOIN `fs_betrieb` b
-                    ON c.bezirk_id = b.bezirk_id
-			            INNER JOIN `fs_betrieb_team` bt
-                        ON bt.betrieb_id = b.id
-			                INNER JOIN `fs_foodsaver` fs
-                            ON fs.id = bt.foodsaver_id
-
-			WHERE   c.ancestor_id = :regionId
-            AND     bt.verantwortlich = 1
-            AND     fs.deleted_at IS NULL
+		return $this->db->fetchAllValues('SELECT DISTINCT
+                bt.foodsaver_id
+            FROM fs_bezirk_closure c
+			INNER JOIN fs_betrieb b ON c.bezirk_id = b.bezirk_id
+			INNER JOIN fs_betrieb_team bt ON bt.betrieb_id = b.id
+			INNER JOIN fs_foodsaver fs ON fs.id = bt.foodsaver_id
+			WHERE c.ancestor_id = :regionId
+            	AND bt.verantwortlich = 1
+            	AND fs.deleted_at IS NULL
         ', [
 			':regionId' => $regionId
 		]);
@@ -738,14 +708,13 @@ class StoreGateway extends BaseGateway
 		return $stores;
 	}
 
-	public function listStoreIds($fsId)
+	public function listStoreIds($fsId, $whereResponsible = false)
 	{
-		return $this->db->fetchAllValuesByCriteria('fs_betrieb_team', 'betrieb_id', ['foodsaver_id' => $fsId]);
-	}
-
-	public function listStoreIdsWhereResponsible($fsId)
-	{
-		return $this->db->fetchAllByCriteria('fs_betrieb_team', ['betrieb_id'], ['foodsaver_id' => $fsId, 'verantwortlich' => 1]);
+		$criteria = ['foodsaver_id' => $fsId];
+		if ($whereResponsible) {
+			$criteria['verantwortlich'] = 1;
+		}
+		return $this->db->fetchAllValuesByCriteria('fs_betrieb_team', 'betrieb_id', $criteria);
 	}
 
 	private function getOne_kette($id): array
