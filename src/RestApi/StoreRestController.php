@@ -451,15 +451,13 @@ class StoreRestController extends AbstractFOSRestController
 	 * Moves a store-team member to the standby team or the regular team.
 	 * Will succeed no matter the team the member was already part of.
 	 *
-	 * @param integer $storeId
-	 * @param integer $userId
-	 * @param boolean $standby Whether to move the user to the standby team
-	 * @return Response
+	 * @param bool $standby Whether to move the user to the standby team
 	 */
 	private function moveUserToTeamType(int $storeId, int $userId, bool $standby): Response
 	{
 		$this->handleEditTeamExceptions($storeId, $userId);
 		$this->storeTransactions->moveMemberToTeamType($storeId, $userId, $standby);
+
 		return $this->handleView($this->view([], 200));
 	}
 
@@ -469,11 +467,11 @@ class StoreRestController extends AbstractFOSRestController
 	 *  - Session is logged in
 	 *  - Store exists
 	 *  - Session may edit the store team (edits to the requesting user are additionally allowed with flag 'mayEditOneself')
-	 *  - Given target user is the stores team (check disabled with flag 'allowExternals')
+	 *  - Given target user is the stores team (check disabled with flag 'allowExternals').
 	 *
-	 * @param integer $storeId
-	 * @param integer $targetId The id of the affected user
+	 * @param int $targetId The id of the affected user
 	 * @param array $flags list of flags that influence the assertions
+	 *
 	 * @return void
 	 */
 	private function handleEditTeamExceptions(int $storeId, int $targetId, array $flags = [])

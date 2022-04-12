@@ -714,6 +714,7 @@ class StoreGateway extends BaseGateway
 		if ($whereResponsible) {
 			$criteria['verantwortlich'] = 1;
 		}
+
 		return $this->db->fetchAllValuesByCriteria('fs_betrieb_team', 'betrieb_id', $criteria);
 	}
 
