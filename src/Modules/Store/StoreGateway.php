@@ -19,37 +19,23 @@ class StoreGateway extends BaseGateway
 	private const LINKED_TABLES = [
 		'r' => ['name' => 'fs_bezirk', 'link' => 'r.id = s.bezirk_id'],
 		't' => ['name' => 'fs_betrieb_team', 'link' => 't.betrieb_id = s.id'],
+		'c' => ['name' => 'fs_kette', 'link' => 'c.id = s.kette_id'],
 	];
 
-	private const DETAILS_COLUMNS = [
+	private const DETAILS_COLUMNS = [ // TODO add way to reference other keys easily
 		'id' => ['s.id'],
 		'name' => ['s.name'],
-
-		'test' => ['r.name'],
-		'?' => [
-			's.plz AS zip_code',
-			's.bezirk_id AS region_id',
-			's.kette_id',
-			's.betrieb_kategorie_id',
-			's.name',
-			's.str',
-			's.hsnr',
-			'CONCAT(s.str, " ",s.hsnr) AS anschrift',
-			's.stadt',
-			's.lat',
-			's.lon',
-			's.betrieb_status_id',
-			's.status_date',
-			's.ansprechpartner',
-			's.telefon',
-			's.email',
-			's.fax',
-			's.team_status',
-			's.kette_id',
-			'r.name',
-
-		],
+		'store_status_id' => ['s.betrieb_status_id AS store_status_id'],
+		'coords' => ['s.lat', 's.lon'],
+		'address' => ['s.str', 's.hsnr', 'CONCAT(s.str, " ",s.hsnr) AS address', 's.stadt AS city', 's.plz AS zip'],
+		'contact' => ['s.ansprechpartner', 's.telefon', 's.email', 's.fax'],
+		'region_id' => ['s.bezirk_id AS region_id'],
+		'region' => ['s.bezirk_id AS region_id', 'r.name AS region_name'],
+		'chain_id' => ['s.kette_id AS chain_id'],
+		'store_category_id' => ['s.betrieb_kategorie_id AS store_category_id'],
+		'chain_logo' => ['c.logo AS chain_logo'],
 	];
+
 
 	private const STATUS_PARAMS = [
 		'applicant_user_status' => MembershipStatus::APPLIED_FOR_TEAM,
@@ -115,6 +101,11 @@ class StoreGateway extends BaseGateway
 			'candidates' => 's.betrieb_status_id NOT IN (:closed_store_status, :unwilling_store_status, :unneeded_store_status)'
 		][$cooperation_status];
 
+		// 'required' option
+		if (isset($options['required'])) {
+			$wheres = array_merge($wheres, array_map(fn ($col) => $col . ' IS NOT NULL AND ' . $col . ' != ""', $options['required']));
+		}
+
 		// Find required tables
 		$shorthands = array_map(function ($col) {
 			preg_match_all('/(\w+)\.\w+/', $col, $matches);
@@ -139,7 +130,7 @@ class StoreGateway extends BaseGateway
 			}
 		}
 
-		return [$query, $params];
+		// return [$query, $params];
 		return $this->db->fetchAll($query, $params);
 	}
 
@@ -307,38 +298,6 @@ class StoreGateway extends BaseGateway
 		}
 
 		return $result;
-	}
-
-
-
-	public function getMapsStores(int $regionId): array
-	{
-		return $this->db->fetchAll('
-            SELECT 	b.id,
-                    b.betrieb_status_id,
-					b.plz,
-					b.`lat`,
-					b.`lon`,
-					b.`stadt`,
-					b.kette_id,
-					b.betrieb_kategorie_id,
-					b.name,
-					CONCAT(b.str," ",b.hsnr) AS anschrift,
-					b.str,
-					b.hsnr,
-					b.`betrieb_status_id`,
-					k.logo
-
-			FROM 	fs_betrieb b
-			LEFT JOIN fs_kette k ON b.kette_id = k.id
-
-			WHERE 	b.bezirk_id = :regionId
-			  AND	b.betrieb_status_id <> :permanentlyClosed
-			  AND	b.`lat` != ""
-		', [
-			':regionId' => $regionId,
-			':permanentlyClosed' => CooperationStatus::PERMANENTLY_CLOSED,
-		]);
 	}
 
 	public function listMyStores(int $fsId): array
