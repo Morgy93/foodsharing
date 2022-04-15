@@ -581,7 +581,7 @@ class XhrMethods
 			$out['foodsaver'] = $foodsaver;
 		}
 
-		$betriebe = $this->storeGateway->getStoresNew(
+		$betriebe = $this->storeGateway->getStores(
 			['name',  'coords', 'address', 'chain_id', 'chain_logo'],
 			['region' => $data['id'], 'required' => ['s.lat']]
 		);

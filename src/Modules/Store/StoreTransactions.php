@@ -280,7 +280,7 @@ class StoreTransactions
 		if ($userId === null) {
 			return [];
 		}
-		$filteredStoresForUser = $this->storeGateway->getStoresNew(
+		$filteredStoresForUser = $this->storeGateway->getStores(
 			['name', 'managing'],
 			['foodsaver' => $userId, 'user_involvement' => 'member', 'cooperation_status' => 'candidates', 'order' => 't.verantwortlich DESC, s.name ASC']
 		);
@@ -381,7 +381,7 @@ class StoreTransactions
 	public function leaveAllStoreTeams(int $userId): void
 	{
 		$ownStoreIds = array_column(
-			$this->storeGateway->getStoresNew([], ['foodsaver' => $userId, 'user_involvement' => 'any', 'cooperation_status' => 'any']),
+			$this->storeGateway->getStores([], ['foodsaver' => $userId, 'user_involvement' => 'any', 'cooperation_status' => 'any']),
 			'id'
 		);
 

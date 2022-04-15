@@ -38,7 +38,7 @@ class FixStoreChatNamesCommand extends Command
 
 	protected function execute(InputInterface $input, OutputInterface $output): int
 	{
-		$stores = $this->storeGateway->getStores();
+		$stores = $this->storeGateway->getStores(['name'], ['cooperation_status' => 'any']);
 		foreach ($stores as $store) {
 			$this->storeTransactions->setStoreNameInConversations($store['id'], $store['name']);
 		}

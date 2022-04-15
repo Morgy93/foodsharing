@@ -56,7 +56,7 @@ class StoreGateway extends BaseGateway
 		$this->regionGateway = $regionGateway;
 	}
 
-	public function getStoresNew(?array $details = [], ?array $options = [])
+	public function getStores(?array $details = [], ?array $options = [])
 	{
 		// find the columns to fetch
 		$columns = (array)array_map(fn ($key) => self::DETAILS_COLUMNS[$key], array_merge(['id'], $details));
@@ -840,11 +840,6 @@ class StoreGateway extends BaseGateway
 	public function setStoreTeamStatus(int $storeId, int $teamStatus)
 	{
 		$this->db->update('fs_betrieb', ['team_status' => $teamStatus], ['id' => $storeId]);
-	}
-
-	public function getStores()
-	{
-		return $this->db->fetchAllByCriteria('fs_betrieb', ['id', 'name']);
 	}
 
 	public function addStoreRequest(int $storeId, int $userId): int

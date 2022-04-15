@@ -450,7 +450,7 @@ class Session
 		}
 
 		$responsibleStoreIds = array_column(
-			$this->storeGateway->getStoresNew([], ['foodsaver' => $fs['id'], 'user_involvement' => 'manager', 'cooperation_status' => 'any']),
+			$this->storeGateway->getStores([], ['foodsaver' => $fs['id'], 'user_involvement' => 'manager', 'cooperation_status' => 'any']),
 			'id'
 		);
 		if ($responsibleStoreIds) {
