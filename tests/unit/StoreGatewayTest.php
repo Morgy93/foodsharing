@@ -51,52 +51,29 @@ class StoreGatewayTest extends \Codeception\Test\Unit
 
 	public function testIsInTeam()
 	{
-		$this->assertEquals(TeamStatus::NoMember,
+		$this->assertEquals(
+			TeamStatus::NoMember,
 			$this->gateway->getUserTeamStatus($this->foodsaver['id'], $this->store['id'])
 		);
 
 		$this->tester->addStoreTeam($this->store['id'], $this->foodsaver['id']);
-		$this->assertEquals(TeamStatus::Member,
+		$this->assertEquals(
+			TeamStatus::Member,
 			$this->gateway->getUserTeamStatus($this->foodsaver['id'], $this->store['id'])
 		);
 
 		$coordinator = $this->tester->createStoreCoordinator();
 		$this->tester->addStoreTeam($this->store['id'], $coordinator['id'], true);
-		$this->assertEquals(TeamStatus::Coordinator,
+		$this->assertEquals(
+			TeamStatus::Coordinator,
 			$this->gateway->getUserTeamStatus($coordinator['id'], $this->store['id'])
 		);
 
 		$waiter = $this->tester->createFoodsaver();
 		$this->tester->addStoreTeam($this->store['id'], $waiter['id'], false, true);
-		$this->assertEquals(TeamStatus::WaitingList,
+		$this->assertEquals(
+			TeamStatus::WaitingList,
 			$this->gateway->getUserTeamStatus($waiter['id'], $this->store['id'])
-		);
-	}
-
-	public function testListStoresForFoodsaver()
-	{
-		$this->assertEquals(
-			[
-				'verantwortlich' => [],
-				'team' => [],
-				'waitspringer' => [],
-				'requested' => [],
-				'sonstige' => [$this->storeData()],
-			],
-			$this->gateway->getMyStores($this->foodsaver['id'], $this->region['id'])
-		);
-
-		$this->tester->addStoreTeam($this->store['id'], $this->foodsaver['id']);
-
-		$this->assertEquals(
-			[
-				'verantwortlich' => [],
-				'team' => [$this->storeData('team')],
-				'waitspringer' => [],
-				'requested' => [],
-				'sonstige' => [],
-			],
-			$this->gateway->getMyStores($this->foodsaver['id'], $this->region['id'])
 		);
 	}
 

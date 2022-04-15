@@ -286,20 +286,31 @@ class StoreUserControl extends Control
 			}
 
 			$region = $this->regionGateway->getRegion($this->session->getCurrentRegionId());
-			$stores = $this->storeGateway->getMyStores($this->session->id(), $this->session->getCurrentRegionId());
+
+
+			$stores = $this->storeGateway->getStores(
+				['store_status_id', 'name', 'address'],
+				['foodsaver' => $this->session->id(), 'group_by_role', 'user_involvement' => 'any']
+			);
+			$region_stores = $this->storeGateway->getStores(
+				['store_status_id', 'name', 'address'],
+				['region' => $this->session->getCurrentRegionId()]
+			);
+			$stores['other'] = array_values(array_udiff($region_stores, array_merge(...array_values($stores)), fn ($a, $b) => $a['id'] - $b['id']));
+
 			$this->pageHelper->addContent($this->view->u_storeList(
-				$stores['verantwortlich'],
+				$stores['manager'],
 				$this->translator->trans('storelist.managing')
 			));
 			$this->pageHelper->addContent($this->view->u_storeList(
-				$stores['team'],
+				$stores['member'],
 				$this->translator->trans('storelist.fetching')
 			));
 
 			if (!is_null($region)) {
 				$regionName = $region['name'];
 				$this->pageHelper->addContent($this->view->u_storeList(
-					$stores['sonstige'],
+					$stores['other'],
 					$this->translator->trans('storelist.others', ['{region}' => $regionName])
 				));
 			}

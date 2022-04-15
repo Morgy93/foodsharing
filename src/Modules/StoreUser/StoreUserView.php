@@ -83,22 +83,16 @@ class StoreUserView extends View
 			return '';
 		}
 
-		$isRegion = false;
 		$storeRows = [];
 		foreach ($storeData as $i => $store) {
-			$status = $this->v_utils->v_getStatusAmpel($store['betrieb_status_id']);
+			$status = $this->v_utils->v_getStatusAmpel($store['store_status_id']);
 
 			$storeRows[$i] = [
 				['cnt' => '<a class="linkrow ui-corner-all" href="/?page=fsbetrieb&id=' . $store['id'] . '">' . $store['name'] . '</a>'],
-				['cnt' => $store['str'] . ' ' . $store['hsnr']],
-				['cnt' => $store['plz']],
+				['cnt' => $store['address']],
+				['cnt' => $store['zip']],
 				['cnt' => $status]
 			];
-
-			if (isset($store['bezirk_name'])) {
-				$storeRows[$i][] = ['cnt' => $store['bezirk_name']];
-				$isRegion = true;
-			}
 		}
 
 		$head = [
@@ -107,9 +101,6 @@ class StoreUserView extends View
 			['name' => $this->translator->trans('storelist.zipcode'), 'width' => 90],
 			['name' => $this->translator->trans('storelist.status'), 'width' => 50]
 		];
-		if ($isRegion) {
-			$head[] = ['name' => $this->translator->trans('region.type.region')];
-		}
 
 		$table = $this->v_utils->v_tablesorter($head, $storeRows);
 

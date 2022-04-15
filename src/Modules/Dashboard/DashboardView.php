@@ -98,25 +98,25 @@ class DashboardView extends View
 	{
 		$out = '';
 		$out .= $this->u_storeLinkList(
-			$betriebe['verantwortlich'],
+			$betriebe['manager'],
 			$this->translator->trans('dashboard.my.managing'),
 			'truncate-height-85'
 		);
 
 		$out .= $this->u_storeLinkList(
-			$betriebe['team'],
+			$betriebe['member'],
 			$this->translator->trans('dashboard.my.stores'),
 			'truncate-height-140'
 		);
 
 		$out .= $this->u_storeLinkList(
-			$betriebe['waitspringer'],
+			$betriebe['jumper'],
 			$this->translator->trans('dashboard.my.waiting'),
 			'truncate-height-85'
 		);
 
 		$out .= $this->u_storeLinkList(
-			$betriebe['requested'],
+			$betriebe['applicant'],
 			$this->translator->trans('dashboard.my.pending'),
 			'truncate-height-50'
 		);

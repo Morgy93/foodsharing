@@ -128,17 +128,17 @@ class DashboardControl extends Control
 				$cnt['body'] = '<div>' . substr(strip_tags($cnt['body']), 0, 120) . ' ...'
 					. '<a href="#" onclick="$(this).parent().hide().next().show(); return false;">'
 					. $this->translator->trans('dashboard.quiz.read') . '</a>'
-				. '</div>'
-				. '<div style="display: none;">' . $cnt['body'] . '</div>';
+					. '</div>'
+					. '<div style="display: none;">' . $cnt['body'] . '</div>';
 			} else {
 				$cnt['body'] = $cnt['body'] . '<p>'
 					. '<a href="#" onclick="ajreq(\'quizpopup\', {app:\'quiz\'});return false;">'
 					. $this->translator->trans('dashboard.quiz.go') . '</a>'
-				. '</p><p>'
+					. '</p><p>'
 					. '<a href="#" onclick="$(this).parent().parent().hide(); ajax.req(\'quiz\', \'hideinfo\'); return false;">'
 					. '<i class="far fa-check-square"></i> ' . $this->translator->trans('dashboard.quiz.ack')
 					. '</a>'
-				. '</p>';
+					. '</p>';
 			}
 			$this->pageHelper->addContent($this->v_utils->v_info($cnt['body'], $cnt['title']));
 		}
@@ -268,7 +268,7 @@ class DashboardControl extends Control
 		if ($me['bezirk_name'] == null) {
 			$home_district_text = '</p><p>' .
 				'<a class="button" href="javascript:becomeBezirk()">'
-					. $this->translator->trans('dashboard.chooseHomeRegion') .
+				. $this->translator->trans('dashboard.chooseHomeRegion') .
 				'</a>';
 		} else {
 			$home_district_text = $this->translator->trans('dashboard.homeRegion', ['{region}' => $me['bezirk_name']]);
@@ -286,7 +286,7 @@ class DashboardControl extends Control
 				</a>
 				<h3 class "corner-all">' . $this->translator->trans('dashboard.greeting', ['{name}' => $me['name']]) . '</h3>
 				<p>'
-					. $pickup_text . $home_district_text .
+				. $pickup_text . $home_district_text .
 				'</p>
 				<div class="clear"></div>
 
@@ -325,15 +325,21 @@ class DashboardControl extends Control
 			}
 
 			$out = $this->v_utils->v_field(
-				'<ul class="linklist">' . $regions . '</ul>', $this->translator->trans('dashboard.my.regions'), [
+				'<ul class="linklist">' . $regions . '</ul>',
+				$this->translator->trans('dashboard.my.regions'),
+				[
 					'class' => 'ui-padding truncate-content truncate-height-85 collapse-mobile',
-			]);
+				]
+			);
 
 			if ($hasGroups) {
 				$out .= $this->v_utils->v_field(
-					'<ul class="linklist">' . $groups . '</ul>', $this->translator->trans('dashboard.my.groups'), [
+					'<ul class="linklist">' . $groups . '</ul>',
+					$this->translator->trans('dashboard.my.groups'),
+					[
 						'class' => 'ui-padding truncate-content truncate-height-140 collapse-mobile',
-				]);
+					]
+				);
 			}
 
 			$this->pageHelper->addContent($out, CNT_RIGHT);
@@ -356,9 +362,9 @@ class DashboardControl extends Control
 					<a class="ui-corner-all" onclick="ajreq(\'bubble\', {app:\'basket\', id:' . (int)$b['id'] . ', modal:1}); return false;" href="#">
 						<span style="float: left; margin-right: 7px;"><img width="35px" src="' . $img . '" class="ui-corner-all"></span>
 						<span style="height: 35px; overflow: hidden; font-size: 11px; line-height: 16px;">'
-						. '<strong style="float: right; margin: 0 0 0 3px;">(' . $distance . ')</strong>'
-						. $this->sanitizerService->tt($b['description'], 50)
-						. '</span>
+					. '<strong style="float: right; margin: 0 0 0 3px;">(' . $distance . ')</strong>'
+					. $this->sanitizerService->tt($b['description'], 50)
+					. '</span>
 						<span class="clear"></span>
 					</a>
 				</li>';
@@ -373,11 +379,19 @@ class DashboardControl extends Control
 				$this->v_utils->v_field($out, $this->translator->trans('basket.nearby'), [
 					'class' => 'truncate-content truncate-height-150 collapse-mobile',
 				]),
-			CNT_LEFT);
+				CNT_LEFT
+			);
 		}
 
 		// Stores
-		if ($stores = $this->storeGateway->getMyStores($this->session->id())) {
+		// only id and name needed
+		$this->storeGateway->getStores(['name'], ['foodsaver' => $this->session->id(), 'group_by_role']);
+
+
+
+
+		$stores = $this->storeGateway->getStores(['name'], ['foodsaver' => $this->session->id(), 'group_by_role', 'user_involvement' => 'any']);
+		if ($stores) {
 			$this->pageHelper->addContent($this->view->u_myBetriebe($stores), CNT_LEFT);
 		} else {
 			$this->pageHelper->addContent($this->v_utils->v_info($this->translator->trans('dashboard.my.no-stores')), CNT_LEFT);

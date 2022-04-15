@@ -504,8 +504,16 @@ class StoreRestController extends AbstractFOSRestController
 	 */
 	public function getStores(): Response
 	{
-		$stores = $this->storeGateway->getStores(['name'], ['foodsaver' => 1843]);
-
+		$stores = $this->storeGateway->getStores(
+			['store_status_id', 'name', 'address'],
+			['foodsaver' => $this->session->id(), 'group_by_role', 'user_involvement' => 'any']
+		);
+		$region_stores = $this->storeGateway->getStores(
+			['store_status_id', 'name', 'address'],
+			['region' => $this->session->getCurrentRegionId()]
+		);
+		// $stores = [array_merge(...array_values($stores)), $region_stores];
+		$stores['other'] = array_values(array_udiff($region_stores, array_merge(...array_values($stores)), fn ($a, $b) => $a['id'] - $b['id']));
 		return $this->handleView($this->view($stores, 200));
 	}
 }

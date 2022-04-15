@@ -34,6 +34,7 @@ class StoreGateway extends BaseGateway
 		'store_category_id' => ['s.betrieb_kategorie_id AS store_category_id'],
 		'chain_logo' => ['c.logo AS chain_logo'],
 		'managing' => ['t.verantwortlich AS managing'],
+		'membership_status' => ['t.active AS membership_status', 't.verantwortlich AS managing'],
 		'added' => ['s.added'],
 	];
 
@@ -59,11 +60,12 @@ class StoreGateway extends BaseGateway
 
 	public function getStores(?array $details = [], ?array $options = [])
 	{
+		$use_grouping = isset($options['foodsaver']) && ($options['group_by_role'] ?? in_array('group_by_role', $options));
+
 		// find the columns to fetch
-		$columns = (array)array_map(fn ($key) => self::DETAILS_COLUMNS[$key], array_merge(['id'], $details));
+		$columns = (array)array_map(fn ($key) => self::DETAILS_COLUMNS[$key], array_merge(['id'], $details, $use_grouping ? ['membership_status'] : []));
 		$columns = array_unique(array_merge(...$columns));
 
-		// Generate where clauses and params from $options:
 		$wheres = [];
 		$params = [];
 
@@ -84,7 +86,7 @@ class StoreGateway extends BaseGateway
 
 		// 'region' and 'include_subregions' options
 		if (isset($options['region'])) {
-			$include_subregions = $options['include_subregions'] ?? in_array('include_subregions', $options) || false;
+			$include_subregions = $options['include_subregions'] ?? in_array('include_subregions', $options);
 			$region_ids = $include_subregions ?
 				$this->regionGateway->listIdsForDescendantsAndSelf($options['region'], true, false) :
 				[$options['region']];
@@ -133,8 +135,17 @@ class StoreGateway extends BaseGateway
 			}
 		}
 
-		// return [$query, $params];
-		return $this->db->fetchAll($query, $params);
+		$stores = $this->db->fetchAll($query, $params);
+
+		if ($use_grouping) {
+			$groups = ['manager' => [], 'member' => [], 'jumper' => [], 'applicant' => []];
+			foreach ($stores as $store) {
+				$group = $store['managing'] == 1 ? 'manager' : ['applicant', 'member', 'jumper'][$store['membership_status']];
+				$groups[$group][] = $store;
+			}
+			$stores = $groups;
+		}
+		return $stores;
 	}
 
 	public function addStore(CreateStoreData $store): int
@@ -298,110 +309,6 @@ class StoreGateway extends BaseGateway
 		if ($result) {
 			$result['lebensmittel'] = array_column($this->getGroceries($storeId), 'id');
 		}
-
-		return $result;
-	}
-
-	/**
-	 * @param ?int $userId if set, include all own stores (from any region) in output
-	 * @param ?int $addFromRegionId if set, include all stores (own or otherwise) from given region in output
-	 * @param bool $sortByOwnTeamStatus if true, split the resulting stores into multiple categories (depending on own team status)
-	 */
-	public function getMyStores(?int $userId, ?int $addFromRegionId = null): array
-	{
-		$query = 'SELECT
-			 	s.id,
-				s.name,
-				s.betrieb_status_id,
-				s.kette_id,
-				s.betrieb_kategorie_id,
-
-				r.name AS region_name,
-
-				s.added,
-				s.ansprechpartner,
-				s.fax,
-				s.telefon,
-				s.email,
-
-				CONCAT(s.str," ",s.hsnr) AS anschrift,
-				s.str,
-				s.hsnr,
-				s.plz,
-				s.stadt,
-				CONCAT(s.lat,", ",s.lon) AS geo,
-				s.`betrieb_status_id`,
-
-				t.verantwortlich,
-				t.active
-			FROM fs_betrieb s
-			INNER JOIN fs_bezirk r ON r.id = s.bezirk_id
-			LEFT OUTER JOIN fs_betrieb_team t ON t.betrieb_id = s.id';
-
-		$betriebe = [];
-
-		// when given a user id fetch data for those users (sorted)
-		if (!is_null($userId)) {
-			$betriebe = $this->db->fetchAll($query . '
-				WHERE    t.foodsaver_id = :userId
-
-				ORDER BY t.verantwortlich DESC, s.name ASC
-			', [
-				':userId' => $userId,
-			]);
-		}
-
-		$result = [
-			'verantwortlich' => [],
-			'team' => [],
-			'waitspringer' => [],
-			'requested' => [],
-			'sonstige' => [],
-		];
-
-		$already_in = [];
-
-		//sort into buckets based on team status
-
-		//mark processed stores in already_in
-		foreach ($betriebe as $b) {
-			$already_in[$b['id']] = true;
-
-			if ($b['verantwortlich'] == 0) {
-				if ($b['active'] == MembershipStatus::APPLIED_FOR_TEAM) {
-					$result['requested'][] = $b;
-				} elseif ($b['active'] == MembershipStatus::MEMBER) {
-					$result['team'][] = $b;
-				} elseif ($b['active'] == MembershipStatus::JUMPER) {
-					$result['waitspringer'][] = $b;
-				}
-			} else {
-				$result['verantwortlich'][] = $b;
-			}
-		}
-
-		// if region id is given fetch all stores in that reagion + subregions
-		if ($addFromRegionId !== null) {
-			$child_region_ids = $this->regionGateway->listIdsForDescendantsAndSelf($addFromRegionId);
-			if (!empty($child_region_ids)) {
-				$placeholders = $this->db->generatePlaceholders(count($child_region_ids));
-				$betriebe = $this->db->fetchAll(
-					$query . ' WHERE bezirk_id IN(' . $placeholders . ') ORDER BY r.name DESC',
-					$child_region_ids
-				);
-
-				// add stores not allready seen to 'sonstige'
-				foreach ($betriebe as $b) {
-					if (!isset($already_in[$b['id']])) {
-						$already_in[$b['id']] = true;
-						$result['sonstige'][] = $b;
-					}
-				}
-			}
-		}
-
-		// TODO für mich: 
-		// option, nach
 
 		return $result;
 	}
