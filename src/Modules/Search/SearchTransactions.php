@@ -130,10 +130,7 @@ class SearchTransactions
 		}
 
 		// load stores in which the user is a member or jumper
-		$betriebe = $this->storeGateway->getStoresNew(
-			['name', 'address'],
-			['foodsaver' => $userId, 'user_involvement' => 'team']
-		);
+		$betriebe = $this->storeGateway->getStoresNew(['name', 'address'], ['foodsaver' => $userId]);
 		$index['myStores'] = array_map(
 			fn ($b) => SearchIndexEntry::create($b['id'], $b['name'], $b['address'] . ', ' . $b['zip'] . ' ' . $b['city'], null),
 			$betriebe
