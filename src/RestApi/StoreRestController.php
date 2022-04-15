@@ -494,4 +494,18 @@ class StoreRestController extends AbstractFOSRestController
 			throw new NotFoundHttpException('User is not a member of this store.');
 		}
 	}
+
+	/**
+	 * TEST code, temporary.
+	 *
+	 * @OA\Tag(name="stores")
+	 *
+	 * @Rest\Get("stores")
+	 */
+	public function getStores(): Response
+	{
+		$stores = $this->storeGateway->getStores(['name'], ['foodsaver' => 1843]);
+
+		return $this->handleView($this->view($stores, 200));
+	}
 }
