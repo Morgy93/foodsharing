@@ -10,7 +10,6 @@ use Foodsharing\Modules\Core\DBConstants\StoreTeam\MembershipStatus;
 use Foodsharing\Modules\Region\RegionGateway;
 use Foodsharing\Modules\Store\DTO\CreateStoreData;
 use Foodsharing\Modules\Store\DTO\Store;
-use Foodsharing\Modules\Store\DTO\StoreForTopbarMenu;
 
 class StoreGateway extends BaseGateway
 {
@@ -37,7 +36,6 @@ class StoreGateway extends BaseGateway
 		'managing' => ['t.verantwortlich AS managing'],
 	];
 
-
 	private const STATUS_PARAMS = [
 		'applicant_user_status' => MembershipStatus::APPLIED_FOR_TEAM,
 		'member_user_status' => MembershipStatus::MEMBER,
@@ -61,7 +59,7 @@ class StoreGateway extends BaseGateway
 	public function getStoresNew(?array $details = [], ?array $options = [])
 	{
 		// find the columns to fetch
-		$columns = (array)array_map(fn ($key) => self::DETAILS_COLUMNS[$key],  array_merge(['id'], $details));
+		$columns = (array)array_map(fn ($key) => self::DETAILS_COLUMNS[$key], array_merge(['id'], $details));
 		$columns = array_unique(array_merge(...$columns));
 
 		// Generate where clauses and params from $options:
@@ -112,6 +110,7 @@ class StoreGateway extends BaseGateway
 		// Find required tables
 		$shorthands = array_map(function ($col) {
 			preg_match_all('/(\w+)\.\w+/', $col, $matches);
+
 			return $matches[1];
 		}, array_merge($columns, $wheres));
 		$shorthands = array_diff(array_unique(array_merge(...$shorthands)), ['s']);
@@ -205,7 +204,6 @@ class StoreGateway extends BaseGateway
 			'last' => 0, // TODO remove this column entirely
 		]);
 	}
-
 
 	public function storeExists(int $storeId): bool
 	{

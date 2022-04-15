@@ -449,7 +449,6 @@ class Session
 			$_SESSION['client']['bezirke'] = $this->regionGateway->listForFoodsaver($fs['id']) ?? [];
 		}
 
-
 		$responsibleStoreIds = array_column(
 			$this->storeGateway->getStoresNew([], ['foodsaver' => $fs['id'], 'user_involvement' => 'manager', 'cooperation_status' => 'any']),
 			'id'

@@ -16,7 +16,6 @@ use Foodsharing\Modules\Message\MessageGateway;
 use Foodsharing\Modules\Region\RegionGateway;
 use Foodsharing\Modules\Store\DTO\CreateStoreData;
 use Foodsharing\Modules\Store\DTO\Store;
-use Foodsharing\Modules\Store\DTO\StoreForTopbarMenu;
 use Symfony\Contracts\Translation\TranslatorInterface;
 
 class StoreTransactions
