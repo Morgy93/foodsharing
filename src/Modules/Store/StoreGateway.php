@@ -300,28 +300,6 @@ class StoreGateway extends BaseGateway
 		return $result;
 	}
 
-	public function listMyStores(int $fsId): array
-	{
-		return $this->db->fetchAll('
-			SELECT 	b.id,
-					b.name,
-					b.plz,
-					b.stadt,
-					b.str,
-					b.hsnr
-
-			FROM	fs_betrieb b
-					INNER JOIN fs_betrieb_team t
-					ON b.id = t.betrieb_id
-
-			WHERE	t.foodsaver_id = :fsId
-			AND     t.active = :membershipStatus
-		', [
-			':fsId' => $fsId,
-			':membershipStatus' => MembershipStatus::MEMBER
-		]);
-	}
-
 	/**
 	 * @param ?int $userId if set, include all own stores (from any region) in output
 	 * @param ?int $addFromRegionId if set, include all stores (own or otherwise) from given region in output

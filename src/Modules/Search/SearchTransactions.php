@@ -129,12 +129,15 @@ class SearchTransactions
 			}, $groups);
 		}
 
-		// load stores in which the user is a member
-		if ($betriebe = $this->storeGateway->listMyStores($userId)) {
-			$index['myStores'] = array_map(function ($b) {
-				return SearchIndexEntry::create($b['id'], $b['name'], $b['str'] . ' ' . $b['hsnr'] . ', ' . $b['plz'] . ' ' . $b['stadt'], null);
-			}, $betriebe);
-		}
+		// load stores in which the user is a member or jumper
+		$betriebe = $this->storeGateway->getStoresNew(
+			['name', 'address'],
+			['foodsaver' => $userId, 'user_involvement' => 'team']
+		);
+		$index['myStores'] = array_map(
+			fn ($b) => SearchIndexEntry::create($b['id'], $b['name'], $b['address'] . ', ' . $b['zip'] . ' ' . $b['city'], null),
+			$betriebe
+		);
 
 		// load regions in which the user is a member
 		$bezirke = $this->regionGateway->listForFoodsaverExceptWorkingGroups($userId);
