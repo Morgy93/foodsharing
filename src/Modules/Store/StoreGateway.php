@@ -16,6 +16,52 @@ class StoreGateway extends BaseGateway
 {
 	private RegionGateway $regionGateway;
 
+	private const LINKED_TABLES = [
+		'r' => ['name' => 'fs_bezirk', 'link' => 'r.id = s.bezirk_id'],
+		't' => ['name' => 'fs_betrieb_team', 'link' => 't.betrieb_id = s.id'],
+	];
+
+	private const DETAILS_COLUMNS = [
+		'id' => ['s.id'],
+		'name' => ['s.name'],
+
+		'test' => ['r.name'],
+		'?' => [
+			's.plz AS zip_code',
+			's.bezirk_id AS region_id',
+			's.kette_id',
+			's.betrieb_kategorie_id',
+			's.name',
+			's.str',
+			's.hsnr',
+			'CONCAT(s.str, " ",s.hsnr) AS anschrift',
+			's.stadt',
+			's.lat',
+			's.lon',
+			's.betrieb_status_id',
+			's.status_date',
+			's.ansprechpartner',
+			's.telefon',
+			's.email',
+			's.fax',
+			's.team_status',
+			's.kette_id',
+			'r.name',
+
+		],
+	];
+
+	private const STATUS_PARAMS = [
+		'applicant_user_status' => MembershipStatus::APPLIED_FOR_TEAM,
+		'member_user_status' => MembershipStatus::MEMBER,
+		'jumper_user_status' => MembershipStatus::JUMPER,
+		'starting_store_status' => CooperationStatus::COOPERATION_STARTING,
+		'unwilling_store_status' => CooperationStatus::DOES_NOT_WANT_TO_WORK_WITH_US,
+		'established_store_status' => CooperationStatus::COOPERATION_ESTABLISHED,
+		'unneeded_store_status' => CooperationStatus::GIVES_TO_OTHER_CHARITY,
+		'closed_store_status' => CooperationStatus::PERMANENTLY_CLOSED,
+	];
+
 	public function __construct(
 		Database $db,
 		RegionGateway $regionGateway
@@ -23,6 +69,78 @@ class StoreGateway extends BaseGateway
 		parent::__construct($db);
 
 		$this->regionGateway = $regionGateway;
+	}
+
+
+	public function getStoresNew(?array $details = [], ?array $options = [])
+	{
+		// find the columns to fetch
+		$columns = (array)array_map(fn ($key) => self::DETAILS_COLUMNS[$key],  array_merge(['id'], $details));
+		$columns = array_unique(array_merge(...$columns));
+
+		// Generate where clauses and params from $options:
+		$wheres = [];
+		$params = [];
+
+		// 'foodsaver' and 'user_involvement' options
+		if (isset($options['foodsaver'])) {
+			$wheres[] = 't.foodsaver_id = :foodsaver_id';
+			$params['foodsaver_id'] = $options['foodsaver'];
+			$user_involvement = $options['user_involvement'] ?? 'team';
+			$wheres[] = [
+				'any' => '', // empty where clasuses get deleted later
+				'applicant' => 't.active = :applicant_user_status',
+				'jumper' => 't.active = :jumper_user_status',
+				'team' => 't.active IN (:member_user_status, :jumper_user_status)',
+				'member' => 't.active = :member_user_status',
+				'manager' => 't.verantwortlich = 1',
+			][$user_involvement];
+		}
+
+		// 'region' and 'include_subregions' options
+		if (isset($options['region'])) {
+			$include_subregions = $options['include_subregions'] ?? in_array('include_subregions', $options) || false;
+			$region_ids = $include_subregions ?
+				$this->regionGateway->listIdsForDescendantsAndSelf($options['region'], true, false) :
+				[$options['region']];
+			$wheres[] = 's.bezirk_id IN (' . implode(',', $region_ids) . ')';
+		}
+
+		// 'cooperation_status' option
+		$cooperation_status = $options['cooperation_status'] ?? 'existing';
+		$wheres[] = [
+			'any' => '', // empty where clasuses get deleted later
+			'existing' => 's.betrieb_status_id <> :closed_store_status',
+			'cooperating' => 's.betrieb_status_id IN (:starting_store_status, :established_store_status)',
+			'candidates' => 's.betrieb_status_id NOT IN (:closed_store_status, :unwilling_store_status, :unneeded_store_status)'
+		][$cooperation_status];
+
+		// Find required tables
+		$shorthands = array_map(function ($col) {
+			preg_match_all('/(\w+)\.\w+/', $col, $matches);
+			return $matches[1];
+		}, array_merge($columns, $wheres));
+		$shorthands = array_diff(array_unique(array_merge(...$shorthands)), ['s']);
+		$joins = array_map(
+			fn ($shorthand) => 'LEFT JOIN ' . self::LINKED_TABLES[$shorthand]['name'] . ' ' . $shorthand
+				. ' ON ' . self::LINKED_TABLES[$shorthand]['link'],
+			$shorthands
+		);
+
+		// Generate query
+		$wheres = array_diff($wheres, ['']);
+		$query = 'SELECT ' . implode(', ', $columns) . ' FROM fs_betrieb s ' . implode(' ', $joins) . ' WHERE ' . implode(' AND ', $wheres);
+		$query = preg_replace('/(\w+)\.(\w+)/', '$1.`$2`', $query);
+
+		// add required constant parameters:
+		foreach (self::STATUS_PARAMS as $param => $value) {
+			if (strpos($query, ':' . $param)) {
+				$params[$param] = $value;
+			}
+		}
+
+		return [$query, $params];
+		return $this->db->fetchAll($query, $params);
 	}
 
 	public function addStore(CreateStoreData $store): int
@@ -40,6 +158,60 @@ class StoreGateway extends BaseGateway
 			'status_date' => $store->updatedAt,
 		]);
 	}
+
+	public function updateStoreData(int $storeId, Store $store): int
+	{
+		return $this->db->update('fs_betrieb', [
+			'name' => $store->name,
+			'bezirk_id' => $store->regionId,
+
+			'lat' => $store->lat,
+			'lon' => $store->lon,
+			'str' => $store->str,
+			'hsnr' => $store->hsnr, // deprecated
+			'plz' => $store->zip,
+			'stadt' => $store->city,
+
+			'public_info' => $store->publicInfo,
+			'public_time' => $store->publicTime,
+
+			'betrieb_kategorie_id' => $store->categoryId,
+			'kette_id' => $store->chainId,
+			'betrieb_status_id' => $store->cooperationStatus,
+
+			'besonderheiten' => $store->description,
+
+			'ansprechpartner' => $store->contactName,
+			'telefon' => $store->contactPhone,
+			'fax' => $store->contactFax,
+			'email' => $store->contactEmail,
+			'begin' => $store->cooperationStart,
+
+			'prefetchtime' => $store->calendarInterval,
+			'abholmenge' => $store->weight,
+			'ueberzeugungsarbeit' => $store->effort,
+			'presse' => $store->publicity,
+			'sticker' => $store->sticker,
+
+			'status_date' => $store->updatedAt,
+		], [
+			'id' => $storeId,
+		]);
+	}
+
+	// TODO rename to addStoreMilestone and clean up data handling
+	public function add_betrieb_notiz(array $data): int
+	{
+		return $this->db->insert('fs_betrieb_notiz', [
+			'foodsaver_id' => $data['foodsaver_id'],
+			'betrieb_id' => $data['betrieb_id'],
+			'milestone' => $data['milestone'],
+			'text' => strip_tags($data['text']),
+			'zeit' => $data['zeit'],
+			'last' => 0, // TODO remove this column entirely
+		]);
+	}
+
 
 	public function storeExists(int $storeId): bool
 	{
@@ -137,45 +309,7 @@ class StoreGateway extends BaseGateway
 		return $result;
 	}
 
-	public function updateStoreData(int $storeId, Store $store): int
-	{
-		return $this->db->update('fs_betrieb', [
-			'name' => $store->name,
-			'bezirk_id' => $store->regionId,
 
-			'lat' => $store->lat,
-			'lon' => $store->lon,
-			'str' => $store->str,
-			'hsnr' => $store->hsnr, // deprecated
-			'plz' => $store->zip,
-			'stadt' => $store->city,
-
-			'public_info' => $store->publicInfo,
-			'public_time' => $store->publicTime,
-
-			'betrieb_kategorie_id' => $store->categoryId,
-			'kette_id' => $store->chainId,
-			'betrieb_status_id' => $store->cooperationStatus,
-
-			'besonderheiten' => $store->description,
-
-			'ansprechpartner' => $store->contactName,
-			'telefon' => $store->contactPhone,
-			'fax' => $store->contactFax,
-			'email' => $store->contactEmail,
-			'begin' => $store->cooperationStart,
-
-			'prefetchtime' => $store->calendarInterval,
-			'abholmenge' => $store->weight,
-			'ueberzeugungsarbeit' => $store->effort,
-			'presse' => $store->publicity,
-			'sticker' => $store->sticker,
-
-			'status_date' => $store->updatedAt,
-		], [
-			'id' => $storeId,
-		]);
-	}
 
 	public function getMapsStores(int $regionId): array
 	{
@@ -626,19 +760,6 @@ class StoreGateway extends BaseGateway
 			'betrieb_id' => $data['betrieb_id'],
 			'milestone' => Milestone::NONE,
 			'text' => $data['text'],
-			'zeit' => $data['zeit'],
-			'last' => 0, // TODO remove this column entirely
-		]);
-	}
-
-	// TODO rename to addStoreMilestone and clean up data handling
-	public function add_betrieb_notiz(array $data): int
-	{
-		return $this->db->insert('fs_betrieb_notiz', [
-			'foodsaver_id' => $data['foodsaver_id'],
-			'betrieb_id' => $data['betrieb_id'],
-			'milestone' => $data['milestone'],
-			'text' => strip_tags($data['text']),
 			'zeit' => $data['zeit'],
 			'last' => 0, // TODO remove this column entirely
 		]);
