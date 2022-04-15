@@ -34,6 +34,7 @@ class StoreGateway extends BaseGateway
 		'chain_id' => ['s.kette_id AS chain_id'],
 		'store_category_id' => ['s.betrieb_kategorie_id AS store_category_id'],
 		'chain_logo' => ['c.logo AS chain_logo'],
+		'managing' => ['t.verantwortlich AS managing'],
 	];
 
 
@@ -56,7 +57,6 @@ class StoreGateway extends BaseGateway
 
 		$this->regionGateway = $regionGateway;
 	}
-
 
 	public function getStoresNew(?array $details = [], ?array $options = [])
 	{
@@ -105,6 +105,9 @@ class StoreGateway extends BaseGateway
 		if (isset($options['required'])) {
 			$wheres = array_merge($wheres, array_map(fn ($col) => $col . ' IS NOT NULL AND ' . $col . ' != ""', $options['required']));
 		}
+
+		// 'order' option
+		$order = isset($options['order']) ? 'ORDER BY ' . $options['order'] : '';
 
 		// Find required tables
 		$shorthands = array_map(function ($col) {
@@ -725,53 +728,6 @@ class StoreGateway extends BaseGateway
         ', [
 			':regionId' => $regionId
 		]);
-	}
-
-	/**
-	 * @return StoreForTopbarMenu[]
-	 */
-	public function listFilteredStoresForFoodsaver($fsId): array
-	{
-		$rows = $this->db->fetchAll('
-			SELECT 	b.`id`,
-					b.name,
-					bt.verantwortlich AS managing
-
-			FROM 	`fs_betrieb_team` bt
-					INNER JOIN `fs_betrieb` b
-			        ON bt.betrieb_id = b.id
-
-			WHERE   bt.`foodsaver_id` = :fsId
-			AND 	bt.active = :membershipStatus
-			AND 	b.betrieb_status_id NOT IN (:doesNotWantToWorkWithUs, :givesToOtherCharity)
-			ORDER BY bt.verantwortlich DESC, b.name ASC
-		', [
-			':fsId' => $fsId,
-			':membershipStatus' => MembershipStatus::MEMBER,
-			':doesNotWantToWorkWithUs' => CooperationStatus::DOES_NOT_WANT_TO_WORK_WITH_US,
-			':givesToOtherCharity' => CooperationStatus::GIVES_TO_OTHER_CHARITY
-		]);
-
-		$stores = [];
-		foreach ($rows as $row) {
-			$store = new StoreForTopbarMenu();
-			$store->id = $row['id'];
-			$store->name = $row['name'];
-			$store->isManaging = $row['managing'];
-			$stores[] = $store;
-		}
-
-		return $stores;
-	}
-
-	public function listStoreIds($fsId, $whereResponsible = false)
-	{
-		$criteria = ['foodsaver_id' => $fsId];
-		if ($whereResponsible) {
-			$criteria['verantwortlich'] = 1;
-		}
-
-		return $this->db->fetchAllValuesByCriteria('fs_betrieb_team', 'betrieb_id', $criteria);
 	}
 
 	private function getOne_kette($id): array

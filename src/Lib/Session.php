@@ -449,7 +449,12 @@ class Session
 			$_SESSION['client']['bezirke'] = $this->regionGateway->listForFoodsaver($fs['id']) ?? [];
 		}
 
-		if ($responsibleStoreIds = $this->storeGateway->listStoreIds($fs['id'], true)) {
+
+		$responsibleStoreIds = array_column(
+			$this->storeGateway->getStoresNew([], ['foodsaver' => $fs['id'], 'user_involvement' => 'manager', 'cooperation_status' => 'any']),
+			'id'
+		);
+		if ($responsibleStoreIds) {
 			$_SESSION['client']['verantwortlich'] = $responsibleStoreIds;
 			$mailbox = true;
 		}

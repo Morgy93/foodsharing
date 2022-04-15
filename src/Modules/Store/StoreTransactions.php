@@ -276,19 +276,19 @@ class StoreTransactions
 		}
 	}
 
-	/**
-	 * @return StoreForTopbarMenu[]
-	 */
 	public function getFilteredStoresForUser(?int $userId): array
 	{
 		if ($userId === null) {
 			return [];
 		}
-		$filteredStoresForUser = $this->storeGateway->listFilteredStoresForFoodsaver($userId);
+		$filteredStoresForUser = $this->storeGateway->getStoresNew(
+			['name', 'managing'],
+			['foodsaver' => $userId, 'user_involvement' => 'member', 'cooperation_status' => 'candidates', 'order' => 't.verantwortlich DESC, s.name ASC']
+		);
 
 		foreach ($filteredStoresForUser as $store) {
 			// add info about the next free pickup slot to the store
-			$store->pickupStatus = $this->getAvailablePickupStatus($store->id);
+			$store['pickupStatus'] = $this->getAvailablePickupStatus($store['id']);
 		}
 
 		return $filteredStoresForUser;
@@ -381,7 +381,10 @@ class StoreTransactions
 
 	public function leaveAllStoreTeams(int $userId): void
 	{
-		$ownStoreIds = $this->storeGateway->listStoreIds($userId);
+		$ownStoreIds = array_column(
+			$this->storeGateway->getStoresNew([], ['foodsaver' => $userId, 'user_involvement' => 'any', 'cooperation_status' => 'any']),
+			'id'
+		);
 
 		foreach ($ownStoreIds as $storeId) {
 			$this->removeStoreMember($storeId, $userId);

@@ -27,7 +27,7 @@
           {{ store.name }}
         </span>
         <span
-          v-if="store.isManaging"
+          v-if="store.managing"
           v-b-tooltip="$i18n('store.tooltip_managing')"
           class="text-muted is-managing flex-grow-0 flex-shrink-0"
         >
