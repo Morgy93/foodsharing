@@ -140,20 +140,22 @@ class StoreControl extends Control
 		} else {
 			$this->pageHelper->addBread($this->translator->trans('store.bread'), '/?page=fsbetrieb');
 
-			$stores = $this->storeGateway->listStoresInRegion($regionId, true);
-
+			$stores = $this->storeGateway->getStores(
+				['name', 'store_status_id', 'added', 'region_name', 'address', 'coords'],
+				['region' => $regionId, 'include_subregions', 'cooperation_status' => 'any']
+			);
 			$storesMapped = array_map(function ($store) {
 				return [
 					'id' => (int)$store['id'],
 					'name' => $store['name'],
 					// status COOPERATION_STARTING and COOPERATION_ESTABLISHED are the same (in cooperation), always return COOPERATION_STARTING
-					'status' => $store['betrieb_status_id'] == CooperationStatus::COOPERATION_ESTABLISHED ? CooperationStatus::COOPERATION_STARTING : (int)$store['betrieb_status_id'],
+					'status' => $store['store_status_id'] == CooperationStatus::COOPERATION_ESTABLISHED ? CooperationStatus::COOPERATION_STARTING : (int)$store['store_status_id'],
 					'added' => $store['added'],
-					'region' => $store['bezirk_name'],
-					'address' => $store['anschrift'],
-					'city' => $store['stadt'],
-					'zipcode' => $store['plz'],
-					'geo' => $store['geo'],
+					'region' => $store['region_name'],
+					'address' => $store['address'],
+					'city' => $store['city'],
+					'zipcode' => $store['zip'],
+					'geo' => $store['lat'] . ', ' . $store['lon'],
 				];
 			}, $stores);
 
