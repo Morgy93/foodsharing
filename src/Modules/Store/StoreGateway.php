@@ -307,7 +307,7 @@ class StoreGateway extends BaseGateway
 	 * @param ?int $addFromRegionId if set, include all stores (own or otherwise) from given region in output
 	 * @param bool $sortByOwnTeamStatus if true, split the resulting stores into multiple categories (depending on own team status)
 	 */
-	public function getMyStores(?int $userId, ?int $addFromRegionId = null, bool $sortByOwnTeamStatus = true): array
+	public function getMyStores(?int $userId, ?int $addFromRegionId = null): array
 	{
 		$query = 'SELECT
 			 	s.id,
@@ -340,6 +340,7 @@ class StoreGateway extends BaseGateway
 
 		$betriebe = [];
 
+		// when given a user id fetch data for those users (sorted)
 		if (!is_null($userId)) {
 			$betriebe = $this->db->fetchAll($query . '
 				WHERE    t.foodsaver_id = :userId
@@ -350,40 +351,36 @@ class StoreGateway extends BaseGateway
 			]);
 		}
 
-		if ($sortByOwnTeamStatus) {
-			$result = [
-				'verantwortlich' => [],
-				'team' => [],
-				'waitspringer' => [],
-				'requested' => [],
-				'sonstige' => [],
-			];
-		} else {
-			$result = [];
-		}
+		$result = [
+			'verantwortlich' => [],
+			'team' => [],
+			'waitspringer' => [],
+			'requested' => [],
+			'sonstige' => [],
+		];
 
 		$already_in = [];
 
+		//sort into buckets based on team status
+
+		//mark processed stores in already_in
 		foreach ($betriebe as $b) {
 			$already_in[$b['id']] = true;
 
-			if ($sortByOwnTeamStatus) {
-				if ($b['verantwortlich'] == 0) {
-					if ($b['active'] == MembershipStatus::APPLIED_FOR_TEAM) {
-						$result['requested'][] = $b;
-					} elseif ($b['active'] == MembershipStatus::MEMBER) {
-						$result['team'][] = $b;
-					} elseif ($b['active'] == MembershipStatus::JUMPER) {
-						$result['waitspringer'][] = $b;
-					}
-				} else {
-					$result['verantwortlich'][] = $b;
+			if ($b['verantwortlich'] == 0) {
+				if ($b['active'] == MembershipStatus::APPLIED_FOR_TEAM) {
+					$result['requested'][] = $b;
+				} elseif ($b['active'] == MembershipStatus::MEMBER) {
+					$result['team'][] = $b;
+				} elseif ($b['active'] == MembershipStatus::JUMPER) {
+					$result['waitspringer'][] = $b;
 				}
 			} else {
-				$result[$b['id']] = $b;
+				$result['verantwortlich'][] = $b;
 			}
 		}
 
+		// if region id is given fetch all stores in that reagion + subregions
 		if ($addFromRegionId !== null) {
 			$child_region_ids = $this->regionGateway->listIdsForDescendantsAndSelf($addFromRegionId);
 			if (!empty($child_region_ids)) {
@@ -393,18 +390,18 @@ class StoreGateway extends BaseGateway
 					$child_region_ids
 				);
 
+				// add stores not allready seen to 'sonstige'
 				foreach ($betriebe as $b) {
 					if (!isset($already_in[$b['id']])) {
 						$already_in[$b['id']] = true;
-						if ($sortByOwnTeamStatus) {
-							$result['sonstige'][] = $b;
-						} else {
-							$result[$b['id']] = $b;
-						}
+						$result['sonstige'][] = $b;
 					}
 				}
 			}
 		}
+
+		// TODO für mich: 
+		// option, nach
 
 		return $result;
 	}
