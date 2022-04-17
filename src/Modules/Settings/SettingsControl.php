@@ -215,7 +215,7 @@ class SettingsControl extends Control
 		$quizStatus = $this->quizSessionGateway->getQuizStatus($role, $fsId);
 		switch ($quizStatus['status']) {
 			case QuizStatus::NEVER_TRIED:
-				$this->pageHelper->addContent($this->view->quizIndex($quiz));
+				$this->pageHelper->addContent($this->view->quizIndex($quiz, $role));
 				break;
 
 			case QuizStatus::RUNNING:

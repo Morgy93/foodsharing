@@ -36,6 +36,7 @@
           </b-row>
 
           <b-alert
+            v-if="role === 1"
             variant="dark"
             show
             class="mb-4 justify-content-center"
@@ -92,7 +93,7 @@
         <div>{{ $i18n('settings.foodsaver_quiz.quiz_hint') }}</div>
       </div>
       <div
-        v-if="quizState === 1"
+        v-else
       >
         <b-container>
           <b-row>
@@ -113,7 +114,7 @@
         </b-container>
       </div>
       <div
-        v-else
+        v-if="quizState > 0"
       >
         <b-container>
           <b-row>
@@ -160,6 +161,7 @@ export default {
   components: { QuizStartPopup },
   props: {
     quizId: { type: Number, default: null },
+    role: { type: Number, default: 0 },
     quizName: { type: String, default: '' },
     quizState: { type: Number, default: 0 },
     failedCount: { type: Number, default: null },

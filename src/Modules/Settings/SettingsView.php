@@ -616,10 +616,11 @@ class SettingsView extends View
 		return $out;
 	}
 
-	public function quizIndex($quiz)
+	public function quizIndex($quiz, $role)
 	{
 		return $this->vueComponent('quiz-index', 'QuizIndex', [
 			'quizId' => $quiz['id'],
+			'role' => $role,
 			'quizName' => $quiz['name'],
 		]);
 	}
