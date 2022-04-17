@@ -31,7 +31,7 @@ if (GET('sub') === 'calendar') {
     ProfilePicture,
   })
   vueApply('#image-upload')
-} else if (GET('sub') === 'up_fs') {
+} else if (GET('sub') === 'up_fs' || GET('sub') === 'up_bip') {
   vueRegister({
     QuizIndex,
   })
