@@ -40,7 +40,7 @@
                   type="checkbox"
                   name="viewopt"
                   value="IN_NEGOTIATION"
-                > {{ $i18n('menu.entry.in_negotiation') }}</label>
+                > {{ $i18n('menu.entry.other_stores') }}</label>
                 <label><input
                   type="checkbox"
                   name="viewopt"
