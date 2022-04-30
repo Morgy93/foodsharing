@@ -120,7 +120,7 @@ final class PassportGeneratorControl extends Control
 
 		if (count($tmp) === 1) {
 			$pdf->SetAutoPageBreak(false, 0);
-			$pdf->AddPage('L',array(70,100));
+			$pdf->AddPage('L', [70, 100]);
 		} else {
 			$pdf->AddPage();
 		}
