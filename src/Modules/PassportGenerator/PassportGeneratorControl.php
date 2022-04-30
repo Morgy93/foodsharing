@@ -117,7 +117,14 @@ final class PassportGeneratorControl extends Control
 		$is_generated = [];
 
 		$pdf = new Fpdi();
-		$pdf->AddPage();
+
+		if (count($tmp) === 1) {
+			$pdf->SetAutoPageBreak(false, 0);
+			$pdf->AddPage('L',array(70,100));
+		} else {
+			$pdf->AddPage();
+		}
+
 		$pdf->SetTextColor(0, 0, 0);
 		$pdf->AddFont('Ubuntu-L', '', 'lib/font/ubuntul.php', true);
 		$pdf->AddFont('AcmeFont Regular', '', 'lib/font/acmefont.php', true);
