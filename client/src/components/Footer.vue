@@ -118,7 +118,7 @@
         >
           <b-row>
             <b-col
-              v-if="isFsDotAt"
+              v-if="!isFsDotAt"
               xl="6"
               cols="12"
             >
@@ -153,7 +153,7 @@
                 :rel="externalLink"
               >
                 <img
-                  src="/img/footer/lebensministerium_Logo_2014_at.png"
+                  src="/img/footer/BMLRT_Logo.png"
                   :alt="$i18n('footer.lebensministerium_alt_text')"
                   class="pt-4"
                 >
@@ -306,8 +306,7 @@
               v-else
               :href="$url('releaseNotes')"
             >
-              {{ $i18n('releases.2021-09') }}
-              <i class="fas fa-magic social_icons" />
+              {{ $i18n('releases.2022-05') }}
             </a>
             <br>
             <a :href="$url('devdocs')">

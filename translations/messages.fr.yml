@@ -270,7 +270,7 @@ maxfp: Nombre maximum de points faibles à passer
 answers: Quelles réponses sont correctes ?
 duration: Il est temps de répondre
 explanation: Explication
-fp: Points faibles
+fp: Points d'erreur
 text: Texte
 right: Score
 week_num: Combien de semaines un membre doit-il être enregistré sur la plateforme
@@ -2363,3 +2363,12 @@ teamjs:
 sig:
   buddies: Les gens que tu connais
 deletefromregion: Vraiment supprimer du secteur ?
+fpcapital: P.E.
+nofp: pas de point d'erreur (question blague)
+quiz:
+  question: Question
+  questions: Questions
+  not_passed_details: Malheureusement tu n'as pas passé. Tu as {points}, mais tu aurais
+    dû avoir moins que {maxpoints} points d'erreur !
+  congrats_details: Félicitations ! Passé avec {points} de {max_points} points d'erreur !
+fpsingular: Point d'erreur

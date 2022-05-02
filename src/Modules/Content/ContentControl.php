@@ -356,10 +356,16 @@ class ContentControl extends Control
 	{
 		$releaseList = [
 			[
+				'id' => '2022-05',
+				'title' => $this->translator->trans('releases.2022-05'),
+				'markdown' => $this->parseGitlabLinks(file_get_contents('release-notes/2022-05.md') ?: ''),
+				'visible' => true,
+			],
+			[
 				'id' => '2022-01',
 				'title' => $this->translator->trans('releases.2022-01'),
 				'markdown' => $this->parseGitlabLinks(file_get_contents('release-notes/2022-01.md') ?: ''),
-				'visible' => true,
+				'visible' => false,
 			],
 			[
 				'id' => '2021-09',

@@ -1,4 +1,16 @@
-# Release "Heidelbeere", unreleased
+# Release "I", unreleased
+
+## Features
+
+## Changes
+
+## Bugfixes
+
+## Refactoring
+
+## Dev/Test/CI stuff
+
+# Release "Heidelbeere", 2022-05-01
 
 ## Features
 - It is now differentiated between completely new foodsavers and foodsavers who were verified before. !1129
@@ -8,7 +20,6 @@
 - Add E-Mail of reported user in overview !2120 @fs_k
 - Store-related conversations include a link to their store now !1807 !2134 !2147 @ChrisOelmueller
 - Removed deprecated "Edit Team" button in the store view for store managers
-- Store-related conversations include a link to their store now !1807 @ChrisOelmueller
 - Removed the limit of calendar entries in iCal export #1167 !2131 @alex.simm
 - The too conspicuous attention mark before delete account menu entry in profile settings has been removed !2165 @NINI1988
 - Long chat names are now better visible !2161 @AntonBallmaier
@@ -39,6 +50,7 @@
 - Fixed markdown code in IT tasks documentation to actually render links as URLs !2150
 - added info to devdocs: !2146 @jonathan_b
 - Added verification and pass history to the seed data #738 !2127 @alex.simm
+- Add default values for several db table columns !2669 @Morgy93
 
 # Release "Grapefruit", 2022-01-13
 
@@ -73,7 +85,6 @@
 - move more hardcoded language to language files !2108 !2122 !2110 @jonathan_b
 - Get Members in MemberList.vue from Rest Api !2094 !2111 !2123 @chriswalg @alex.simm
 - Refactored the format of the quick search index !2115 @alex.simm 
-- Get Members in MemberList.vue from Rest Api !2094 @chriswalg @alex.simm
 
 ## Dev/Test/CI stuff
 

@@ -421,7 +421,7 @@ group:
     duplicate_stores_team: 'Betriebskoordinationsteam schon angelegt! Pro Bezirk kann es nur ein Betriebskoordinationsteam geben.'
     duplicate_report_team: 'Meldungsteam schon angelegt! Pro Bezirk kann es nur ein Meldungsteam geben.'
     duplicate_mediation_team: 'Mediationsteam schon angelegt! Pro Bezirk kann es nur ein Mediationsteam geben.'
-    duplicate_arbitration_team: 'Schiedstelle schon angelegt! Pro Bezirk kann es nur ein Schiedstelle geben.'
+    duplicate_arbitration_team: 'Schiedstelle schon angelegt! Pro Bezirk kann es nur eine Schiedstelle geben.'
     duplicate_fsmanagement_team: 'Verwaltungsteam schon angelegt! Pro Bezirk kann es nur ein Verwaltungsteam geben.'
     duplicate_pr_team: 'Öffentlichkeitsarbeitsteam schon angelegt! Pro Bezirk kann es nur ein Öffentlichkeitsarbeitsteam geben.'
     duplicate_moderation_team: 'Moderationsteam schon angelegt! Pro Bezirk kann es nur ein Moderationsteam geben.'
@@ -461,15 +461,15 @@ legal:
   if_delete:
     legal_1: "Hier ist <a href=\"https://foodsharing.de/?page=legal\" target=\"_blank\">unsere derzeitige Datenschutz-Vereinbarung.</a>"
     legal_2: "Hier findest Du, <a href=\"https://www.dsgvo.tools/aufbewahrungsfristen/\" target=\"_blank\">wie sich die Gesetze aufeinander beziehen. (Seite auf Deutsch)</a>"
-    this_gets_deleted_main: "Folgende informationen werden von dir gelöscht und können nicht wiederhergestellt werden:"
+    this_gets_deleted_main: "Folgende Informationen werden von dir gelöscht und können nicht wiederhergestellt werden:"
     this_gets_deleted_stores: "<ul><li>Betriebe denen du beigetreten warst.</ul></li>"
     this_gets_deleted_quiz: "<ul><li>Dein foodsaver-Quiz wird entfernt.</ul></li>"
     this_gets_deleted_verify: "<ul><li>Deine Verifzierung wird entfernt.</ul></li>"
     this_gets_deleted_friendlist: "<ul><li>Deine Freundesliste wird entfernt.</ul></li>"
     this_gets_deleted_trustbananas: "<ul><li>Bananen, die du vergeben hast, werden entfernt.</ul></li>"
-    this_doesnt_get_deleted: "Folgende Informationen sind nicht mehr im aktiven System verfügbar, werden aber seperat archiviert auf Grund von §17 DSGVO:"
+    this_doesnt_get_deleted: "Folgende Informationen sind nicht mehr im aktiven System verfügbar, werden aber seperat archiviert auf Grund von Artikel 17, Abs. 3 DSGVO:"
     this_doesnt_get_deleted_name: "<ul><li>Dein Name</ul></li>"
-    this_doesnt_get_deleted_address: "<ul><li>Deine Addresse</ul></li>"
+    this_doesnt_get_deleted_address: "<ul><li>Deine Adresse</ul></li>"
     this_doesnt_get_deleted_history: "<ul><li>Historie deiner Verifizierung</ul></li>"
 
   actions:
@@ -752,7 +752,7 @@ store:
     team: "Nachricht ans Team"
     jumper: "Nachricht an Springer"
   not-in-team: "Du bist noch nicht im Team dieses Betriebes."
-  pickup_slot_unavailable: "Dieser Slot liegt weiter in der Zukunft als von deinen Betriebserantwortlichen vorgesehen ist. Versuche es also bitte zu einem späteren Zeitpunkt erneut."
+  pickup_slot_unavailable: "Dieser Slot liegt weiter in der Zukunft als von deinen Betriebsverantwortlichen vorgesehen ist. Versuche es also bitte zu einem späteren Zeitpunkt erneut."
   all_of_my_stores: "Alle meine Betriebe"
   tooltip_yellow: "Offene Abholungen in den nächsten fünf Tagen"
   tooltip_orange: "Offene Abholungen in den nächsten drei Tagen"
@@ -828,7 +828,7 @@ store:
   willgetcontacted: "Du bist momentan auf der Springerliste. Sobald Hilfe benötigt wird, wirst Du kontaktiert."
   team:
     isfull: "Team ist voll"
-  filter: "Filtern nach ..."
+  filter: "Filtern nach …"
   enterdate: "Abholtermin eintragen"
   enternumber: "Du musst noch die Anzahl der Abholer*innen auswählen."
   leaveinfo: "Hier kannst Du einige Infos für die Foodsaver angeben, die sich für das Team bewerben möchten."
@@ -1701,11 +1701,11 @@ profile:
     join: "Mitmachen & Registrieren"
   mediation:
     title: "Mediationsanfrage für {name}"
-    info: "Wir finden es toll, dass du dir Unterstützung suchst, um ein Thema mit dem Foodsaver anzusprechen. Das Mediationsteam kann hierbei als Vermittler auftreten und helfen das eure Gespräche auf Augenhöhe und mit gegenseitigem Respekt geführt werden. Du erreichst die lokale Mediations-Arbeitsgruppe unter folgender E-Mail-Adresse:"
+    info: "Wir finden es toll, dass du dir Unterstützung suchst, um ein Thema mit der:dem Foodsaver:in anzusprechen. Das Mediationsteam kann hierbei als Vermittler auftreten und helfen, dass eure Gespräche auf Augenhöhe und mit gegenseitigem Respekt geführt werden. Du erreichst die lokale Mediations-Arbeitsgruppe unter folgender E-Mail-Adresse:"
     no_group: "Leider gibt es für den Stammbezirk des Foodsavers noch keine lokale Mediationsgruppe. Du kannst das Thema bei einem Gruppentreffen oder im Forum ansprechen, so dass ein lokales Mediationsteam gewählt wird."
   report:
     title: "Meldung über {name}"
-    info: "Bitte gib Datum, Ort und Uhrzeit des Vorfalles an. Bitte überprüfe ob du die dir verfügbaren Kommunikationswege probiert hast um den Vorfall mit bei der Person direkt anzusprechen und den Sachverhalt zu klären. Gib bitte an wie du am besten für Rückfragen bei der Bearbeitung zu erreichen bist."
+    info: "Bitte gib Datum, Ort und Uhrzeit des Vorfalles an. Bitte überprüfe, ob du die dir verfügbaren Kommunikationswege probiert hast, um den Vorfall bei der Person direkt anzusprechen und den Sachverhalt zu klären. Gib bitte an, wie du am besten für Rückfragen bei der Bearbeitung zu erreichen bist."
     send: "Meldung abschicken"
     sent: "Meldung wurde versendet"
     mail: "Du erreichst deine lokale Meldungsgruppe auch unter folgender E-Mail-Adresse:"
@@ -1714,11 +1714,11 @@ profile:
     oldReportButtonTextPart2: "Wendet euch bei Bedarf an die lokale Meldungsgruppe in eurem Bezirk."
     oldReportButtonTextPart3: "Mehr Infos zum Meldesystem findet ihr"
     reporterHasNoReportGroup: "Du kannst die technische Unterstützung des Meldesystemes nicht nutzen, da es in deinem Bezirk keine lokale Meldungsgruppe gibt."
-    noReportGroup: "Du kannst die technische Unterstützung des Meldesystems nicht nutzen, da für den Bezirk des Foodsaver diese nicht aktiviert ist."
+    noReportGroup: "Du kannst die technische Unterstützung des Meldesystems nicht nutzen, da diese für den Bezirk des Foodsaver nicht aktiviert ist."
     reportedAdminNoArbitration: "Du kannst keine Meldung gegen {name} absetzen, da diese*r Administrator*in der lokalen Meldungsgruppe des Bezirkes ist und dort keine Schiedstelle existiert."
     reporterAdminNoArbitration: "Du bist Administrator*in der lokalen Meldungsgruppe und da es keine lokale Schiedsstelle gibt, kannst du keine Meldung absetzen."
     repAdminAgainstArbAdmin: "Du bist Administrator*in des Meldebearbeitungsteams und willst eine*n Administrator*in der Schiedsstelle melden. Dies wird im Moment technisch nicht unterstützt. Du kannst jederzeit eine Meldung per E-Mail an die für euch lokal Verantwortlichen für diesen Fall einreichen."
-    arbAdminAgainstRepAdmin: "Du bist Administrator*in der Schiedstelle und willst eine*n Administrator*in der Meldebearbeitung melden. Dies wird im Moment technisch nicht unterstützt. Du kannst jederzeit eine Meldung per E-Mail an die für euch lokal verantwortlichen für diesen Fall einreichen."
+    arbAdminAgainstRepAdmin: "Du bist Administrator*in der Schiedstelle und willst eine*n Administrator*in der Meldebearbeitung melden. Dies wird im Moment technisch nicht unterstützt. Du kannst jederzeit eine Meldung per E-Mail an die für euch lokal Verantwortlichen für diesen Fall einreichen."
     inthisblog: "in diesem Blogeintrag" #this and the following appear in ReportRequest
     kindofreport: "Bitte wähle die Art der Meldung"
     late: "Ist zu spät gekommen"
@@ -1812,7 +1812,7 @@ dashboard:
   no_more_updates_forum: "Keine weiteren Foren-Einträge"
   no_more_updates_friendWall: "Keine weiteren Status-Meldungen"
   no_more_updates_mailbox: "Keine weiteren Mailbox-Nachrichten"
-  no_more_updates_store: "Keine weiteren Betriebs-Infos"
+  no_more_updates_store: "Keine weiteren Betriebsinfos"
   activity_filter_info: "Hier kannst du einstellen, welche Updates auf deiner Startseite angezeigt werden sollen."
   empty_section: "Du hast noch keine {type}"
   save_selection: "Einstellungen speichern"
@@ -2089,10 +2089,11 @@ footer:
   beta_testing_issues: "Test-Aufgaben der Beta-Version"
   it_devdocs: "by foodsharing IT"
   wiener_tafel_alt_text: "Wiener Tafel"
-  lebensministerium_alt_text: "Lebensministerium"
+  lebensministerium_alt_text: "Bundesministerium für Landwirtschaft, Regionen und Tourismus"
   denns_at_alt_text: "Denn's Biomarkt"
 
 releases:
+  "2022-05": "Release \"Heidelbeere\" 🍇 (Mai 2022)"
   "2022-01": "Release \"Grapefruit\" 🍋 (Januar 2022)"
   "2021-09": "Release \"Feige\" 🥧 (September 2021)"
   "2021-03": "Release \"Erdbeere\" 🍓 (März 2021)"
@@ -2149,7 +2150,7 @@ region:
   new: "Neuer Bezirk"
   created: "{region} wurde angelegt"
   edit: "Bezirk bearbeiten"
-  noParent: "Ohne `Eltern` Bezirk"
+  noParent: "Ohne Elternbezirk"
   delete: "Bezirk löschen"
   none: "Noch kein Bezirk gewählt"
   type:
@@ -2492,7 +2493,7 @@ contentmanagement: "Inhaltsverwaltung" #contentControl
 activitypost:
   showeverything: "alles zeigen"
   less: "weniger"
-  write: "Schreibe eine Antwort ..."
+  write: "Schreibe eine Antwort …"
 deletefromregion: "Wirklich aus dem Bezirk löschen?"
 savewithus: "Rette mit!"
 logincontrol:
