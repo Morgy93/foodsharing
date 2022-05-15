@@ -24,7 +24,7 @@ class WeightHelper
 			7 => ['value' => 45, 'name' => '40-50 kg'],
 			8 => ['value' => 62.5, 'name' => '50-75 kg'],
 			9 => ['value' => 87.5, 'name' => '75-100 kg'],
-		   10 => ['value' => 110, 'name' => 'mehr als 100kg']
+		   10 => ['value' => 110, 'name' => 'mehr als 100 kg']
 		];
 	}
 

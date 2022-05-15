@@ -177,7 +177,7 @@ class Foodsharing extends \Codeception\Module\Db
 		$this->haveInDatabase('fs_fetchweight', $params);
 		$params = ['id' => 9, 'weight' => 87.5, 'name' => '75-100 kg'];
 		$this->haveInDatabase('fs_fetchweight', $params);
-		$params = ['id' => 10, 'weight' => 110, 'name' => 'mehr als 100kg'];
+		$params = ['id' => 10, 'weight' => 110, 'name' => 'mehr als 100 kg'];
 		$this->haveInDatabase('fs_fetchweight', $params);
 	}
 
