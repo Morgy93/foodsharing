@@ -278,6 +278,10 @@ class SeedCommand extends Command implements CustomCommandInterface
 
 		$this->output->writeln('Create store categories:');
 		$I->createStoreCategories();
+
+		$this->output->writeln('Create fetchweight:');
+		$I->createFetchWeight();
+
 		// Create users
 		$this->output->writeln('Create basic users:');
 		$user1 = $I->createFoodsharer($password, ['email' => 'user1@example.com', 'name' => 'One', 'bezirk_id' => $region1]);
