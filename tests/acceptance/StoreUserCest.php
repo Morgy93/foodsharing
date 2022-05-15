@@ -15,8 +15,11 @@ class StoreUserCest
 	 * @example[3, "5-10 kg"]
 	 * @example[4, "10-20 kg"]
 	 * @example[5, "20-30 kg"]
-	 * @example[6, "40-50 kg"]
-	 * @example[7, "mehr als 50 kg"]
+	 * @example[6, "30-40 kg"]
+	 * @example[7, "40-50 kg"]
+	 * @example[8, "50-75 kg"]
+	 * @example[9, "75-100 kg"]
+	 * @example[110, "mehr als 100 kg"]
 	 */
 	public function SeeTheFetchedQuantity(AcceptanceTester $I, Codeception\Example $example)
 	{
