@@ -369,20 +369,12 @@ final class ProfileGateway extends BaseGateway
 		$stm = 'SELECT 	DATE_FORMAT(a.date,\'%Y-%v\') AS calenderWeek,
 						bez.name AS districtName,
 						kat.name AS categorieName,
-						CASE b.abholmenge
-							WHEN 0 THEN \'' . $this->weightHelper->getFetchWeightName(0) . '\'
-							WHEN 1 THEN \'' . $this->weightHelper->getFetchWeightName(1) . '\'
-							WHEN 2 THEN \'' . $this->weightHelper->getFetchWeightName(2) . '\'
-							WHEN 3 THEN \'' . $this->weightHelper->getFetchWeightName(3) . '\'
-							WHEN 4 THEN \'' . $this->weightHelper->getFetchWeightName(4) . '\'
-							WHEN 5 THEN \'' . $this->weightHelper->getFetchWeightName(5) . '\'
-							WHEN 6 THEN \'' . $this->weightHelper->getFetchWeightName(6) . '\'
-							WHEN 7 THEN \'' . $this->weightHelper->getFetchWeightName(7) . '\'
-						END AS pickupAmount,
+						fw.name AS pickupAmount,
 						COUNT(*) AS pickupCount
 				FROM `fs_abholer` a
 					LEFT OUTER JOIN fs_betrieb b ON a.betrieb_id = b.id
 					LEFT OUTER JOIN fs_betrieb_kategorie kat ON b.betrieb_kategorie_id = kat.id
+					LEFT OUTER JOIN fs_fetchweight fw on b.abholmenge = fw.id
 					LEFT OUTER JOIN fs_bezirk bez ON b.bezirk_id = bez.id
 				WHERE a.foodsaver_id = :fs_id
 				  AND a.date > CURRENT_DATE() - INTERVAL 1 MONTH
