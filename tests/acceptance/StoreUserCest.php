@@ -23,7 +23,7 @@ class StoreUserCest
 	 */
 	public function SeeTheFetchedQuantity(AcceptanceTester $I, Codeception\Example $example)
 	{
-		$this->store = $I->createStore($this->bezirk_id['id'], null, null, ['abholmenge' => $example[0]]);
+		$this->store = $I->createStore($this->bezirk_id['id'], null, null, ['abholmenge' => $example[1]]);
 		$I->addStoreTeam($this->store['id'], $this->storeCoordinator['id'], true);
 
 		$I->amOnPage($I->storeUrl($this->store['id']));

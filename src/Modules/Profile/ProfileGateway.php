@@ -6,18 +6,15 @@ use Foodsharing\Lib\WebSocketConnection;
 use Foodsharing\Modules\Core\BaseGateway;
 use Foodsharing\Modules\Core\Database;
 use Foodsharing\Modules\Core\DBConstants\Region\Type;
-use Foodsharing\Utility\WeightHelper;
 
 final class ProfileGateway extends BaseGateway
 {
 	private WebSocketConnection $webSocketConnection;
-	private $weightHelper;
 
-	public function __construct(Database $db, WebSocketConnection $webSocketConnection, WeightHelper $weightHelper)
+	public function __construct(Database $db, WebSocketConnection $webSocketConnection)
 	{
 		parent::__construct($db);
 		$this->webSocketConnection = $webSocketConnection;
-		$this->weightHelper = $weightHelper;
 	}
 
 	/**
