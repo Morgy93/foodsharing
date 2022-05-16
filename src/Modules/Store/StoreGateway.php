@@ -378,8 +378,8 @@ class StoreGateway extends BaseGateway
         			b.`team_conversation_id`,
         			b.`springer_conversation_id`,
         			count(DISTINCT(a.date)) AS pickup_count,
-			        fw.`name` as abholmenge_name
-					fw.`weight` as abholmenge_gewicht
+			        fw.`name` as abholmenge_name,
+                    fw.`weight` as abholmenge_gewicht
 			FROM 	`fs_betrieb` b
         			LEFT JOIN `fs_abholer` a
         			ON a.betrieb_id = b.id
