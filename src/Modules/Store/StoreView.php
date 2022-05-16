@@ -14,13 +14,10 @@ use Foodsharing\Utility\RouteHelper;
 use Foodsharing\Utility\Sanitizer;
 use Foodsharing\Utility\TimeHelper;
 use Foodsharing\Utility\TranslationHelper;
-use Foodsharing\Utility\WeightHelper;
 use Symfony\Contracts\Translation\TranslatorInterface;
 
 class StoreView extends View
 {
-	private $weightHelper;
-
 	public function __construct(
 		\Twig\Environment $twig,
 		Session $session,
@@ -34,10 +31,8 @@ class StoreView extends View
 		Sanitizer $sanitizerService,
 		TimeHelper $timeHelper,
 		TranslationHelper $translationHelper,
-		WeightHelper $weightHelper,
 		TranslatorInterface $translator
 	) {
-		$this->weightHelper = $weightHelper;
 		parent::__construct(
 			$twig,
 			$session,
@@ -207,7 +202,7 @@ class StoreView extends View
 			$pickupWeight = $this->translator->trans('storeview.counter', [
 				'{suffix}' => 'kg',
 				'{count}' => round(floatval(
-					$pickup_count * $this->weightHelper->mapIdToKilos($store['abholmenge'])
+					$pickup_count * $store['abholmenge_gewicht']
 				), 2),
 			]);
 			$count_info .= '<div>' . $this->translator->trans('storeview.pickupWeight', [

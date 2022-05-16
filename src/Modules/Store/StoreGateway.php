@@ -377,11 +377,14 @@ class StoreGateway extends BaseGateway
         			b.`prefetchtime`,
         			b.`team_conversation_id`,
         			b.`springer_conversation_id`,
-        			count(DISTINCT(a.date)) AS pickup_count
-
+        			count(DISTINCT(a.date)) AS pickup_count,
+			        fw.`name` as abholmenge_name
+					fw.`weight` as abholmenge_gewicht
 			FROM 	`fs_betrieb` b
         			LEFT JOIN `fs_abholer` a
         			ON a.betrieb_id = b.id
+        			LEFT OUTER JOIN `fs_fetchweight` fw
+        			ON b.abholmenge = fw.id
 			AND		a.date < CURDATE()
 
 			WHERE 	b.`id` = :storeId
