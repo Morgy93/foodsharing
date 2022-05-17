@@ -11,7 +11,6 @@ class StoreUserCest
 
 	public function SeeTheFetchedQuantity(AcceptanceTester $I)
 	{
-		$I->createFetchWeight();
 		$this->store = $I->createStore($this->bezirk_id['id'], null, null, ['abholmenge' => '1']);
 		$I->addStoreTeam($this->store['id'], $this->storeCoordinator['id'], true);
 		$I->amOnPage($I->storeUrl($this->store['id']));
