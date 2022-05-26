@@ -382,12 +382,11 @@ class StoreGateway extends BaseGateway
                     fw.`weight` as abholmenge_gewicht
 			FROM 	`fs_betrieb` b
         			LEFT JOIN `fs_abholer` a
-        			ON a.betrieb_id = b.id
+        			ON a.betrieb_id = b.id AND a.`date` < CURDATE()
         			LEFT OUTER JOIN `fs_fetchweight` fw
         			ON b.abholmenge = fw.id
-			AND		a.date < CURDATE()
-
 			WHERE 	b.`id` = :storeId
+
 
 			GROUP BY b.`id`
         ', [

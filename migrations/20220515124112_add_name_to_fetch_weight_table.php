@@ -30,6 +30,5 @@ final class addNameToFetchWeightTable extends AbstractMigration
 			['id' => '9', 'weight' => '87.5', 'name' => '75-100 kg'],
 			['id' => '10', 'weight' => '110', 'name' => 'mehr als 100 kg']
 		])->save();
-
 	}
 }
