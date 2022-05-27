@@ -145,7 +145,7 @@ class Foodsharing extends \Codeception\Module\Db
 	public function createFetchWeight()
 	{
 		$this->_getDriver()->executeQuery('DELETE FROM fs_fetchweight', []);
-		
+
 		$params = ['id' => 0, 'weight' => 0, 'name' => 'Keine Angabe'];
 		$this->haveInDatabase('fs_fetchweight', $params);
 		$params = ['id' => 1, 'weight' => 2, 'name' => '1-3 kg'];
