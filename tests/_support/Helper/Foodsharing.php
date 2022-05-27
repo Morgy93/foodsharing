@@ -133,31 +133,19 @@ class Foodsharing extends \Codeception\Module\Db
 
 	public function createStoreCategories()
 	{
-		$params = ['id' => 1, 'name' => 'Supermarkt'];
-		$this->haveInDatabase('fs_betrieb_kategorie', $params);
-		$params = ['id' => 2, 'name' => 'Bäckerei'];
-		$this->haveInDatabase('fs_betrieb_kategorie', $params);
-		$params = ['id' => 3, 'name' => 'Bio-Supermarkt'];
-		$this->haveInDatabase('fs_betrieb_kategorie', $params);
-		$params = ['id' => 4, 'name' => 'Bio-Bäckerei'];
-		$this->haveInDatabase('fs_betrieb_kategorie', $params);
-		$params = ['id' => 5, 'name' => 'Organisation'];
-		$this->haveInDatabase('fs_betrieb_kategorie', $params);
-		$params = ['id' => 6, 'name' => 'Organisation - Einführungen'];
-		$this->haveInDatabase('fs_betrieb_kategorie', $params);
-		$params = ['id' => 7, 'name' => 'Organisation - Treffen'];
-		$this->haveInDatabase('fs_betrieb_kategorie', $params);
-		$params = ['id' => 8, 'name' => 'Öffentlichkeitsarbeit'];
-		$this->haveInDatabase('fs_betrieb_kategorie', $params);
-		$params = ['id' => 9, 'name' => 'Schnellimbiss'];
-		$this->haveInDatabase('fs_betrieb_kategorie', $params);
-		$params = ['id' => 10, 'name' => 'Restaurant'];
-		$this->haveInDatabase('fs_betrieb_kategorie', $params);
+		for ($i = 1; $i <= 10; ++$i) {
+			$params = [
+				'id' => $i,
+				'name' => 'Supermarkt_' . $i,
+			];
+			$this->haveInDatabase('fs_betrieb_kategorie', $params);
+		}
 	}
 
 	public function createFetchWeight()
 	{
 		$this->_getDriver()->executeQuery('DELETE FROM fs_fetchweight', []);
+		
 		$params = ['id' => 0, 'weight' => 0, 'name' => 'Keine Angabe'];
 		$this->haveInDatabase('fs_fetchweight', $params);
 		$params = ['id' => 1, 'weight' => 2, 'name' => '1-3 kg'];
