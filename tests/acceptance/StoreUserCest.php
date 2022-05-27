@@ -9,13 +9,25 @@ class StoreUserCest
 		$I->login($this->storeCoordinator['email']);
 	}
 
-	public function SeeTheFetchedQuantity(AcceptanceTester $I)
+	/**
+	 * @example{ "value": 1, "name": "1-3 kg"}
+	 * @example{ "value": 2, "name": "3-5 kg"}
+	 * @example{ "value": 3, "name": "5-10 kg"}
+	 * @example{ "value": 4, "name": "10-20 kg"}
+	 * @example{ "value": 5, "name": "20-30 kg"}
+	 * @example{ "value": 6, "name": "30-40 kg"}
+	 * @example{ "value": 7, "name": "40-50 kg"}
+	 * @example{ "value": 8, "name": "50-75 kg"}
+	 * @example{ "value": 9, "name": "75-100 kg"}
+	 * @example{ "value":10, "name": "mehr als 100 kg"}
+	 */
+	public function SeeTheFetchedQuantity(AcceptanceTester $I, Codeception\Example $example, Codeception\Example $examplebla)
 	{
-		$this->store = $I->createStore($this->bezirk_id['id'], null, null, ['abholmenge' => '1']);
+		$this->store = $I->createStore($this->bezirk_id['id'], null, null, ['abholmenge' => $example['value']]);
 		$I->addStoreTeam($this->store['id'], $this->storeCoordinator['id'], true);
 		$I->amOnPage($I->storeUrl($this->store['id']));
 		$I->see('Abholmenge im Schnitt');
-		$I->see('1-3 kg');
+		$I->see($example['name']);
 	}
 
 	/**
