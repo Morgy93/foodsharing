@@ -8,6 +8,7 @@ use Foodsharing\Modules\Bell\DTO\Bell;
 use Foodsharing\Modules\Core\DBConstants\Bell\BellType;
 use Foodsharing\Modules\Foodsaver\FoodsaverGateway;
 use Foodsharing\Modules\Profile\ProfileGateway;
+use Foodsharing\Modules\Store\PickupGateway;
 use Foodsharing\Permissions\ProfilePermissions;
 use Foodsharing\Utility\EmailHelper;
 use FOS\RestBundle\Controller\AbstractFOSRestController;
@@ -22,6 +23,7 @@ class VerificationRestController extends AbstractFOSRestController
 	private BellGateway $bellGateway;
 	private FoodsaverGateway $foodsaverGateway;
 	private ProfileGateway $profileGateway;
+	private PickupGateway $pickupGateway;
 	private ProfilePermissions $profilePermissions;
 	private Session $session;
 	private EmailHelper $emailHelper;
@@ -31,6 +33,7 @@ class VerificationRestController extends AbstractFOSRestController
 		BellGateway $bellGateway,
 		FoodsaverGateway $foodsaverGateway,
 		ProfileGateway $profileGateway,
+		PickupGateway $pickupGateway,
 		ProfilePermissions $profilePermissions,
 		Session $session,
 		EmailHelper $emailHelper,
@@ -39,6 +42,7 @@ class VerificationRestController extends AbstractFOSRestController
 		$this->bellGateway = $bellGateway;
 		$this->foodsaverGateway = $foodsaverGateway;
 		$this->profileGateway = $profileGateway;
+		$this->pickupGateway = $pickupGateway;
 		$this->profilePermissions = $profilePermissions;
 		$this->session = $session;
 		$this->emailHelper = $emailHelper;
@@ -126,7 +130,7 @@ class VerificationRestController extends AbstractFOSRestController
 			throw new HttpException(422, 'User is already deverified');
 		}
 
-		$hasPlannedPickups = $this->profileGateway->getNextDates($userId, 1);
+		$hasPlannedPickups = $this->pickupGateway->getNextPickups($userId, 1);
 		if ($hasPlannedPickups) {
 			throw new HttpException(400, 'This user must not be signed up for any future pickups.');
 		}

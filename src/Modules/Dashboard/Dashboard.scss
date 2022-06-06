@@ -1,0 +1,8 @@
+.alert-broadcast .description {
+    & a {
+        text-decoration: underline;
+    }
+    & * {
+        margin-bottom: 0 !important;
+    }
+}

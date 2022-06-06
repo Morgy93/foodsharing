@@ -12,8 +12,8 @@ import ReportRequest from './components/ReportRequest'
 import BananaList from './components/BananaList'
 import PublicProfile from './components/PublicProfile'
 import ProfileStoreList from './components/ProfileStoreList'
-import PickupHistory from '../StoreUser/components/PickupHistory'
 import EmailBounceList from './components/EmailBounceList'
+import PickupsSection from './components/PickupsSection'
 import ProfilePickupsStat from './components/ProfilePickupsStat'
 // Wallpost
 import { URL_PART } from '@/browser'
@@ -34,22 +34,22 @@ async function trySendBuddyRequest (userId) {
 
 vueRegister({
   BananaList,
-  PickupHistory,
   ProfileStoreList,
   PublicProfile,
   MediationRequest,
   ReportRequest,
   EmailBounceList,
+  PickupsSection,
   ProfilePickupsStat,
 })
 
 vueApply('#vue-profile-bananalist', true) // BananaList
-vueApply('#vue-pickup-history', true) // PickupHistory
 vueApply('#vue-profile-storelist', true) // ProfileStoreList
 vueApply('#profile-public', true) // PublicProfile
 vueApply('#mediation-Request', true) // MediationRequest
 vueApply('#report-Request', true) // ReportRequest
 vueApply('#email-bounce-list', true)
+vueApply('#pickups-section', true)
 vueApply('#profile-pickups-stat', true)
 
 if (URL_PART(0) === 'profile') {

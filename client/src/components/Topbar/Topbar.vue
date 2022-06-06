@@ -10,7 +10,7 @@
       type="custom"
     >
       <b-container fluid="xl">
-        <b-navbar-brand>
+        <b-navbar-brand class="text-center">
           <Logo :link-url="loggedIn ? $url('dashboard') : $url('home')" />
         </b-navbar-brand>
 
@@ -23,14 +23,14 @@
             :url="$url('joininfo')"
             icon="fa-hands-helping"
             :title="$i18n('register.topbar')"
-            :show-title-always="true"
+            :show-title="true"
           />
           <menu-item
             id="login"
             :url="$url('login')+'&ref='+encodeURIComponent(loginReferrer)"
             icon="fa-sign-in-alt"
             :title="$i18n('login.topbar')"
-            :show-title-always="true"
+            :show-title="true"
           />
         </b-navbar-nav>
 
@@ -39,16 +39,12 @@
           v-if="loggedIn"
           :has-fs-role="hasFsRole"
           :regions="regions"
+          :display-mailbox="mailbox"
           :working-groups="workingGroups"
           :may-add-store="may.addStore"
           :avatar="avatar"
           :user-id="userId"
           @open-search="searchOpen = !searchOpen"
-        />
-
-        <search
-          v-if="hasFsRole"
-          :show-on-mobile="searchOpen"
         />
 
         <b-navbar-toggle target="nav-collapse">
@@ -58,10 +54,18 @@
         <b-collapse
           id="nav-collapse"
           is-nav
+          class="justify-content-end mb-3 mb-sm-0"
         >
+          <search
+            v-if="hasFsRole"
+            class="my-3 my-sm-0"
+          />
           <menu-loggedout v-if="!loggedIn" />
           <menu-loggedin
             v-if="loggedIn"
+            :has-fs-role="hasFsRole"
+            :regions="regions"
+            :working-groups="workingGroups"
             :display-mailbox="mailbox"
             :user-id="userId"
             :avatar="avatar"
@@ -75,12 +79,14 @@
 
 <script>
 import { BNavbarBrand, BNavbarToggle, BCollapse } from 'bootstrap-vue'
-import Logo from './Logo'
-import MenuLoggedout from './MenuLoggedout'
-import MenuLoggedin from './MenuLoggedin'
-import MenuItem from './MenuItem'
-import LoggedInFixedNav from './LoggedInFixedNav'
-import Search from './Search/Search'
+import Logo from './Items/Logo'
+import MenuLoggedout from './_States/NavLoggedout'
+import MenuLoggedin from './_States/NavLoggedin'
+import MenuItem from './Items/MenuItem'
+import LoggedInFixedNav from './_States/NavFixed'
+import Search from './Items/Search/Search'
+
+import MediaQueryMixin from '../../utils/MediaQueryMixin'
 
 export default {
   components: {
@@ -94,6 +100,7 @@ export default {
     MenuLoggedin,
     Search,
   },
+  mixins: [MediaQueryMixin],
   props: {
     userId: {
       type: Number,
@@ -113,7 +120,7 @@ export default {
     },
     hasFsRole: {
       type: Boolean,
-      default: true,
+      default: false,
     },
     may: {
       type: Object,
@@ -143,38 +150,60 @@ export default {
 }
 </script>
 <style lang="scss" scoped>
-#topbar {
-  height: 50px;
-  nav {
-    box-shadow: 0em 0em 5px 0px black;
+#topbar,
+nav,
+.nav-row {
+  min-height: 45px;
+}
+
+#topbar nav {
+    box-shadow: 0em 0em 5px 0px rgba(0, 0, 0, 0.35);
+    border-bottom: 1px solid var(--border);
     background-color: var(--fs-beige);
     color: var(--primary);
-  }
 }
-  .bootstrap .navbar-brand {
-    padding: 0;
-    margin-right: 3px;
-  }
- .nav-row {
+
+.bootstrap .navbar-brand {
+  padding: 0;
+  margin-right: 3px;
+}
+
+.nav-row {
   margin:0;
   display: flex;
-  flex-grow: 1;
   align-items: center;
   justify-content: space-evenly;
-  ::v-deep .nav-item {
-    padding-right: 6px;
+}
+
+::v-deep .nav-item,
+::v-deep .navbar-brand,
+.navbar-toggler {
+  min-width: 25px;
+  color: var(--primary);
+  padding: .25rem;
+
+  @media (min-width: 321px) {
+    min-width: 35px;
   }
-  .login-popover {
-    background-color: --var(beige);
-    border: 1px solid rgb(83, 58, 32);
-    .arrow {
-      display: none;
-    }
+
+  @media (min-width: 450px) {
+    min-width: 45px;
   }
 }
 
-.navbar-toggler {
-  color: var(--primary);
+::v-deep .nav-item {
+  text-align: center;
+
+  .collapse.show & {
+    text-align: unset;
+    display: inline-block !important;
+    & .nav-link i,
+    &.show .nav-link img {
+      width: 20px;
+      margin-right: 10px;
+      text-align: center;
+    }
+  }
 }
 
 ::v-deep .navbar-collapse {
@@ -182,15 +211,10 @@ export default {
     // Only when menu is shown. Fixes problem that list of dropdown items is to long.
     max-height: 70vh;
     overflow: auto;
-    border-top: 1px solid var(--primary);
+
     .dropdown-menu .scroll-container  {
       max-height: initial;
     }
-  }
-  &.show .nav-link i, &.collapsing .nav-link i {
-      width: 20px;
-      margin-right: 10px;
-      text-align: center;
   }
   order: 2;
 }

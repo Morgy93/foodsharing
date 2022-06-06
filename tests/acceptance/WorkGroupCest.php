@@ -79,25 +79,6 @@ class WorkGroupCest
 		$I->see('Noch keine Themen gepostet');
 	}
 
-	public function canEditTeamList(AcceptanceTester $I)
-	{
-		$user = $I->createFoodsaver();
-		$admin = $I->createFoodsaver();
-		$I->login($this->groupAdmin['email']);
-		$I->amOnPage($I->groupEditUrl($this->testGroup['id']));
-		$I->addInTagSelect($admin['id'], '#work_group_form_administrators');
-		$I->addInTagSelect($user['id'], '#work_group_form_members');
-		$I->click('Änderungen speichern');
-		$I->waitForText('Änderungen wurden gespeichert');
-		$I->see($user['name'], '#work_group_form_members');
-		$I->see($admin['name'], '#work_group_form_administrators');
-		$I->removeFromTagSelect($user['name'], 'work_group_form_members');
-		$I->click('Änderungen speichern');
-		$I->see('Änderungen wurden gespeichert');
-		$I->dontSee($user['name'], '#work_group_form_members');
-		$I->see($admin['name'], '#work_group_form_administrators');
-	}
-
 	/**
 	 * @example["unconnectedFoodsaver"]
 	 * @example["regionMember"]

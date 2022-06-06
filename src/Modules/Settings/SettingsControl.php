@@ -138,6 +138,8 @@ class SettingsControl extends Control
 			$this->pageHelper->addContent(
 				$this->view->quizSession($session, $session['try_count'], $this->contentGateway)
 			);
+		} else {
+			$this->pageHelper->addContent($this->v_utils->v_info($this->translator->trans('quiz.session_deleted')));
 		}
 	}
 

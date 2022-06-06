@@ -1,0 +1,75 @@
+<template>
+  <fs-dropdown-menu
+    menu-title="menu.entry.infos"
+    :items="headings"
+    icon="fa-info"
+    right
+  />
+</template>
+<script>
+import FsDropdownMenu from '../FsDropdownMenu'
+
+export default {
+  components: { FsDropdownMenu },
+  props: {
+    wXS: {
+      type: Boolean,
+      default: true,
+    },
+    displayArrow: {
+      type: Boolean,
+      default: true,
+    },
+    displayText: {
+      type: Boolean,
+      default: false,
+    },
+  },
+  data () {
+    return {
+      headings:
+      [
+        {
+          heading: 'menu.entry.aboutUs',
+          menuItems: [
+            { url: 'mission', menuTitle: 'menu.entry.mission' },
+            { url: 'grundsaetze', menuTitle: 'menu.entry.fundamentals' },
+            { url: 'blog', menuTitle: 'menu.entry.blog' },
+            { url: 'team', menuTitle: 'menu.entry.team' },
+            { url: 'partner', menuTitle: 'menu.entry.partners' },
+          ],
+        },
+        {
+          heading: 'menu.entry.background',
+          menuItems: [
+            { url: 'support', menuTitle: 'menu.entry.support', target: '_blank' },
+            { url: 'wiki', menuTitle: 'menu.entry.wiki' },
+            { url: 'guide', menuTitle: 'menu.entry.guide', target: '_blank' },
+            { url: 'statistics', menuTitle: 'menu.entry.statistics' },
+            { url: 'dataprivacy', menuTitle: 'menu.entry.dataprivacy' },
+            { url: 'releaseNotes', menuTitle: 'menu.entry.release-notes' },
+          ],
+        },
+        {
+          heading: 'menu.entry.regionalgroups',
+          menuItems: [
+            { url: 'communitiesGermany', menuTitle: 'menu.entry.Germany' },
+            { url: 'communitiesAustria', menuTitle: 'menu.entry.Austria' },
+            { url: 'communitiesSwitzerland', menuTitle: 'menu.entry.Swiss' },
+            { url: 'international', menuTitle: 'menu.entry.international' },
+          ],
+        },
+        {
+          heading: 'menu.entry.contact',
+          menuItems: [
+            { url: 'contact', menuTitle: 'menu.entry.contact' },
+            { url: 'press', menuTitle: 'menu.entry.press' },
+            { url: 'infosCompany', menuTitle: 'menu.entry.forcompanies' },
+            { url: 'imprint', menuTitle: 'menu.entry.imprint' },
+          ],
+        },
+      ],
+    }
+  },
+}
+</script>

@@ -47,11 +47,16 @@ There are a number of helper scripts available. Most of them obey the `FS_INT` e
 
 Using the `docker-compose` you can run various php-scripts, e.g.
 ```
+./scripts/docker-compose run --rm --no-deps app php -f run.php Maintenance daily
 ./scripts/docker-compose run --rm --no-deps app php -f run.php Stats foodsaver
 ./scripts/docker-compose run --rm --no-deps app php -f run.php Stats betriebe
 ./scripts/docker-compose run --rm --no-deps app php -f run.php Stats bezirke
 ```
-This runs the statistics scripts that are run nightly on the production server.
+This runs the maintenance and statistics scripts that are run nightly on the production server.
+More generally you can run a public php function using:
+```
+./scripts/docker-compose run --rm --no-deps app php -f run.php <Module> <public_function>
+```
 This can be necessary to test code concerning statistics since they are usually never run locally.
 `--rm` removes the containers afterwards, `--no-deps` lets docker not worry about any dependendent containers. This is often useful since they are often running already.
 

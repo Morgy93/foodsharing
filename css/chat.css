@@ -217,7 +217,7 @@
 
 .chatboxoptions a {
   background-color: transparent;
-  color: white;
+  color: var(--fs-white) !important;
   display: inline-block;
   font-weight: bold;
   margin: 0;
@@ -228,12 +228,12 @@
 }
 
 .chatboxoptions a:hover {
-  color: #dbd7d2;
+  color: var(--fs-beige) !important;
 }
 
 .chatboxtitle {
   padding: 7px;
-  color: #ffffff;
+  color: var(--fs-white) !important;
   display: block;
   float: left;
   width: 205px;
@@ -243,20 +243,20 @@
   outline: 0;
 }
 
+.chatboxtitle a {
+  color: var(--fs-beige) !important;
+}
+
+.chatboxtitle a:hover {
+  text-decoration: none;
+  color: var(--fs-green) !important;
+}
+
 .chatboxtitle i {
   margin-right: 3px;
   position: relative;
   top: -1px;
-  color: #ffffff;
-}
-
-.chatboxtitle, .chatboxtitle:hover, .chatboxtitle:active, .chatboxtitle:focus {
-  outline: 0 !important;
-}
-
-.chatboxtitle:hover {
-  text-decoration: none;
-  color: #ffffff;
+  color: var(--fs-beige) !important;
 }
 
 .conversation-list .pics {

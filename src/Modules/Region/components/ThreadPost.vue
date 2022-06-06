@@ -71,7 +71,7 @@ import Avatar from '@/components/Avatar'
 import ThreadPostActions from './ThreadPostActions'
 import ThreadPostDate from './ThreadPostDate'
 import conv from '@/conv'
-import MediaQueryMixin from '@/utils/VueMediaQueryMixin'
+import MediaQueryMixin from '@/utils/MediaQueryMixin'
 
 export default {
   components: { Avatar, ThreadPostActions, ThreadPostDate },

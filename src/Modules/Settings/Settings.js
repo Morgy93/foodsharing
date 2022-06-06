@@ -29,6 +29,11 @@ if (GET('sub') === 'calendar') {
 } else if (GET('sub') === 'general') {
   vueRegister({
     ProfilePicture,
+    NameInput,
+  })
+  vueApply('#image-upload')
+  vueApply('#name-input')
+}
   })
   vueApply('#image-upload')
 } else if (GET('sub') === 'up_fs' || GET('sub') === 'up_bip') {
@@ -37,11 +42,6 @@ if (GET('sub') === 'calendar') {
   })
   vueApply('#quiz-index')
 }
-
-vueRegister({
-  NameInput,
-})
-vueApply('#name-input')
 
 expose({
   confirmDeleteUser,

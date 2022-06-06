@@ -2,11 +2,15 @@
 
 namespace Foodsharing\Modules\Dashboard;
 
+use Exception;
 use Foodsharing\Modules\Core\BaseGateway;
 
 class DashboardGateway extends BaseGateway
 {
-	public function getUser($id)
+	/**
+	 * @throws Exception
+	 */
+	public function getUser($id): array
 	{
 		return $this->db->fetch('
 				SELECT

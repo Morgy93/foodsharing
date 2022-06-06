@@ -21,6 +21,7 @@ $I->login($ambassador['email']);
 
 $I->amOnPage('/profile/' . $foodsaver['id']);
 $I->click('Verifizierungshistorie');
+$I->waitForPageBody();
 $I->waitForText('Es liegen keine Daten vor');
 
 $I->amOnPage('/?page=passgen&bid=' . $region['id']);
@@ -35,6 +36,6 @@ $I->seeElement($verify_undo);
 
 $I->amOnPage('/profile/' . $foodsaver['id']);
 $I->click('Verifizierungshistorie');
-
-$I->waitForElement('.history .verify');
+$I->waitForPageBody();
+$I->seeElement('.history .verify');
 $I->seeElement('.history .unverify');

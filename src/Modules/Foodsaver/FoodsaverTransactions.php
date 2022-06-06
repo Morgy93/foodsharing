@@ -2,6 +2,7 @@
 
 namespace Foodsharing\Modules\Foodsaver;
 
+use Foodsharing\Lib\Session;
 use Foodsharing\Modules\Basket\BasketGateway;
 use Foodsharing\Modules\Core\DBConstants\Foodsaver\Role;
 use Foodsharing\Modules\Quiz\QuizSessionGateway;
@@ -13,17 +14,20 @@ class FoodsaverTransactions
 	private QuizSessionGateway $quizSessionGateway;
 	private BasketGateway $basketGateway;
 	private StoreTransactions $storeTransactions;
+	private Session $session;
 
 	public function __construct(
 		FoodsaverGateway $foodsaverGateway,
 		QuizSessionGateway $quizSessionGateway,
 		BasketGateway $basketGateway,
-		StoreTransactions $storeTransactions
+		StoreTransactions $storeTransactions,
+		Session $session
 	) {
 		$this->foodsaverGateway = $foodsaverGateway;
 		$this->quizSessionGateway = $quizSessionGateway;
 		$this->basketGateway = $basketGateway;
 		$this->storeTransactions = $storeTransactions;
+		$this->session = $session;
 	}
 
 	public function downgradeAndBlockForQuizPermanently(int $fsId): int
@@ -35,7 +39,7 @@ class FoodsaverTransactions
 		return $this->foodsaverGateway->downgradePermanently($fsId);
 	}
 
-	public function deleteFoodsaver(int $foodsaverId): void
+	public function deleteFoodsaver(int $foodsaverId, ?string $reason): void
 	{
 		// set all active baskets of the user to deleted
 		$this->basketGateway->removeActiveUserBaskets($foodsaverId);
@@ -43,6 +47,6 @@ class FoodsaverTransactions
 		$this->storeTransactions->leaveAllStoreTeams($foodsaverId);
 
 		// delete the user
-		$this->foodsaverGateway->deleteFoodsaver($foodsaverId);
+		$this->foodsaverGateway->deleteFoodsaver($foodsaverId, $this->session->id(), $reason);
 	}
 }

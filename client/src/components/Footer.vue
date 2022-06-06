@@ -29,6 +29,14 @@
                 {{ $i18n('footer.infosPrivatePersons') }}
               </a>
             </li>
+            <li class="nav-item">
+              <a
+                :href="$url('devdocs')"
+                :aria-label="$i18n('footer.infosDeveloper')"
+              >
+                {{ $i18n('footer.infosDeveloper') }}
+              </a>
+            </li>
           </ul>
         </b-col>
         <b-col

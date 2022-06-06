@@ -1244,7 +1244,6 @@ dashboard:
   updates_title_all: Vue d'ensemble des mises à jour
   title: Tableau de bord
 profile:
-  signoutAllConfirmation: Retirer {name} de toutes les collectes à venir ?
   report:
     arbAdminAgainstRepAdmin: Tu es admin dans un groupe d'arbitrage et tu essayes
       de signaler un membre admin groupe de traitement des signalements. Cette action
@@ -1300,8 +1299,6 @@ profile:
     who: '{name} de {from}'
   mediationRequest: Demander une médiation
   reportRequest: déposer un signalement
-  signoutAll: retirer de toutes
-  signoutPickup: retirer
   pinboard: Mis à jour de statut de {name}
   about_me_intern: À propos de moi
   workgroups: '{name} est interlocuteur.ice pour les groupes de travail suivants :'

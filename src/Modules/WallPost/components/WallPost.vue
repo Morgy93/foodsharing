@@ -37,7 +37,6 @@
           <Avatar
             :url="post.author.avatar"
             :size="50"
-            :rounded="true"
             class="member-pic img"
             :sleep-status="post.author.sleepStatus"
           />
@@ -112,7 +111,7 @@ import differenceInCalendarYears from 'date-fns/differenceInCalendarYears'
 import serverData from '@/server-data'
 import Avatar from '@/components/Avatar'
 import Markdown from '@/components/Markdown/Markdown'
-import MediaQueryMixin from '@/utils/VueMediaQueryMixin'
+import MediaQueryMixin from '@/utils/MediaQueryMixin'
 
 export default {
   components: { Avatar, Markdown },

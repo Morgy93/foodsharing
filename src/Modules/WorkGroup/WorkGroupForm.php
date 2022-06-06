@@ -3,7 +3,6 @@
 namespace Foodsharing\Modules\WorkGroup;
 
 use Foodsharing\Lib\Form\PictureUploadType;
-use Foodsharing\Lib\Form\TageditType;
 use Foodsharing\Modules\Core\DBConstants\Region\ApplyType;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
@@ -28,8 +27,6 @@ class WorkGroupForm extends AbstractType
 			]])
 			->add('bananaCount', IntegerType::class, ['label' => 'group.application_requirements.banana_count'])
 			->add('fetchCount', IntegerType::class, ['label' => 'group.application_requirements.fetch_count'])
-			->add('weekNum', IntegerType::class, ['label' => 'group.application_requirements.member_since_weeks'])
-			->add('members', TageditType::class, ['label' => 'group.members'])
-			->add('administrators', TageditType::class, ['label' => 'group.administrators']);
+			->add('weekNum', IntegerType::class, ['label' => 'group.application_requirements.member_since_weeks']);
 	}
 }

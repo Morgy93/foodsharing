@@ -1,5 +1,6 @@
 :root {
   --border: #e3ded3;
+  --border-radius: 6px;
 
   --warning-rgb: 255, 193,  7; /* bootstrap default, #ffc107 */
   --danger-rgb:  220,  53, 69; /* bootstrap default, #dc3545 */
@@ -201,8 +202,8 @@ blockquote:after {
 }
 /* RESET END */
 
-body {
-  background-color: var(--fs-beige);
+body{
+  background-color: var(--fs-white);
 }
 
 .odd {
@@ -260,9 +261,8 @@ div#main {
   line-height: 1.6em;
   margin: 0 auto;
   max-width: 1100px;
-  padding: 0;
+  padding: 2rem 0;
   min-height: calc(83vh);
-  padding-bottom: 30px;
 }
 
 .inside {
@@ -984,7 +984,7 @@ td.load {
   text-decoration: none !important;
 }
 
-ul.bread {
+/* ul.bread {
   display: block;
   list-style: none;
   float: left;
@@ -992,6 +992,7 @@ ul.bread {
   padding: 0;
   background-color: transparent !important;
 }
+*/
 
 ul.bread li,
 ul.bread li a {
@@ -1008,6 +1009,10 @@ ul.bread li:before {
   margin-right: 10px;
   position: relative;
   top: 1px;
+}
+
+ul.bread li.last {
+  color: unset;
 }
 
 ul.bread li {
@@ -1087,16 +1092,23 @@ ul.linklist li > a:hover .avatar span.bubble {
   padding-top: 7px;
 }
 
-div.bottom_bar .float_right {
+div.bottom_bar .button-interactions {
   float: right;
   display: block;
 }
 
 @media (max-width: 1025px) {
-  div.bottom_bar .float_right {
-    float: none !important;
-    display: block;
+  div.bottom_bar .button-interactions {
+    float: none;
     text-align: center;
+    display: inline-flex;
+    flex-direction: column;
+    width: 100%;
+    justify-content: space-around;
+  }
+
+  div.bottom_bar .button-interactions a:not(:last-child) {
+    margin-bottom: 5px;
   }
 
   .inside {

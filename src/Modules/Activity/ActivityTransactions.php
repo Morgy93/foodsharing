@@ -334,11 +334,6 @@ class ActivityTransactions
 
 			$forumTypeString = $is_bot ? 'botforum' : 'forum';
 
-			$replyUrl = '/xhrapp.php?app=bezirk&m=quickreply&bid=' . (int)$u['bezirk_id']
-				. '&tid=' . (int)$u['id']
-				. '&pid=' . (int)$u['last_post_id']
-				. '&sub=' . $forumTypeString;
-
 			$out[] = ActivityUpdate::create(
 				'forum',
 				Carbon::createFromTimestamp($u['update_time_ts']),
@@ -348,7 +343,7 @@ class ActivityTransactions
 				$is_bot ? '_bot' : '',
 				$this->imageHelper->img($u['foodsaver_photo'], 50),
 				[],
-				$replyUrl,
+				null,
 				(int)$u['foodsaver_id'],
 				$u['foodsaver_name'],
 				(int)$u['id'],

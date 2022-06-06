@@ -552,7 +552,7 @@ class FoodsaverGateway extends BaseGateway
 		]);
 	}
 
-	public function deleteFoodsaver(int $fsId): void
+	public function deleteFoodsaver(int $fsId, ?int $deletingUser, ?string $reason): void
 	{
 		$this->db->update('fs_foodsaver', ['password' => null, 'deleted_at' => $this->db->now()], ['id' => $fsId]);
 
@@ -599,7 +599,9 @@ class FoodsaverGateway extends BaseGateway
 				'telefon' => null,
 				'handy' => null,
 				'geb_datum' => null,
-				'deleted_at' => $this->db->now()
+				'deleted_at' => $this->db->now(),
+				'deleted_by' => $deletingUser,
+				'deleted_reason' => $reason
 			], [
 			'id' => $fsId
 		]);

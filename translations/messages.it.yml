@@ -1850,7 +1850,6 @@ profile:
   notFound: Questo profilo utente non esiste o non esiste più
   go: Chiama il profilo
   title: Profilo
-  signoutAll: cancellare tutti gli impegni
   mediation:
     no_group: Purtroppo non esiste ancora un gruppo di mediazione locale per il distretto
       di provenienza di Foodsaver. Puoi sollevare la questione in una riunione di
@@ -1873,9 +1872,6 @@ profile:
     who: '{nome} da {from}'
   mediationRequest: Richiesta di mediazione
   reportRequest: Invia messaggio
-  signoutAllConfirmation: Davvero firmare {nome} fuori da tutte le prossime date di
-    ritiro?
-  signoutPickup: firmara l´uscita
   pinboard: Aggiornamenti di stato da {nome}
   about_me_intern: Riguardo a te stesso
   sleepinfo: '{nome} é dormiglione da {da} a {fino a}'

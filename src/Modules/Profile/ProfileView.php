@@ -17,6 +17,7 @@ use Foodsharing\Modules\Mailbox\MailboxGateway;
 use Foodsharing\Modules\Region\RegionGateway;
 use Foodsharing\Permissions\ProfilePermissions;
 use Foodsharing\Permissions\ReportPermissions;
+use Foodsharing\Permissions\StorePermissions;
 use Foodsharing\Utility\DataHelper;
 use Foodsharing\Utility\IdentificationHelper;
 use Foodsharing\Utility\ImageHelper;
@@ -32,6 +33,7 @@ class ProfileView extends View
 {
 	private array $foodsaver;
 	private ProfilePermissions $profilePermissions;
+	private StorePermissions $storePermissions;
 	private ReportPermissions $reportPermissions;
 	private RegionGateway $regionGateway;
 	private MailboxGateway $mailboxGateway;
@@ -43,6 +45,7 @@ class ProfileView extends View
 		Session $session,
 		Utils $viewUtils,
 		ProfilePermissions $profilePermissions,
+		StorePermissions $storePermissions,
 		ReportPermissions $reportPermissions,
 		DataHelper $dataHelper,
 		IdentificationHelper $identificationHelper,
@@ -78,12 +81,13 @@ class ProfileView extends View
 		$this->mailboxGateway = $mailboxGateway;
 		$this->regionGateway = $regionGateway;
 		$this->profilePermissions = $profilePermissions;
+		$this->storePermissions = $storePermissions;
 		$this->reportPermissions = $reportPermissions;
 		$this->groupFunctionGateway = $groupFunctionGateway;
 		$this->groupGateway = $groupGateway;
 	}
 
-	public function profile(string $wallPosts, array $userStores = [], array $fetchDates = [], array $pickupsStat = []): void
+	public function profile(string $wallPosts, array $userStores = [], array $pickupsStat = []): void
 	{
 		$page = new vPage($this->foodsaver['name'], $this->infos());
 		$fsId = $this->foodsaver['id'];
@@ -107,6 +111,19 @@ class ProfileView extends View
 			]));
 		}
 
+		if ($maySeePickups) {
+			$page->addSection(
+				$this->vueComponent('pickups-section', 'PickupsSection', [
+					'showRegisteredTab' => $maySeePickups,
+					'showOptionsTab' => $this->storePermissions->maySeePickupOptions($fsId),
+					'showHistoryTab' => $maySeePickups,
+					'fsId' => $fsId,
+					'allowSlotCancelation' => $this->profilePermissions->mayCancelSlotsFromProfile($fsId),
+					'isOwnProfile' => ($fsId == $this->session->id()),
+				]),
+				$this->translator->trans('pickup.overview.header')
+			);
+		}
 		if ($maySeePickupsStat && $pickupsStat) {
 			$page->addSection($this->vueComponent('profile-pickups-stat', 'ProfilePickupsStat', [
 				'pickupsStatData' => $pickupsStat
@@ -120,13 +137,6 @@ class ProfileView extends View
 			$this->pageHelper->addStyle('#wallposts .tools {display:none;}');
 		}
 
-		if ($fetchDates) {
-			$page->addSection($this->fetchDates($fetchDates), $this->translator->trans('dashboard.pickupdates'));
-		}
-
-		if ($maySeePickups) {
-			$page->addSection($this->pastPickups(), $this->translator->trans('pickup.history.title'));
-		}
 		$page->addSectionLeft(
 			$this->photo($mayAdmin, $maySeeHistory, $userStores)
 		);
@@ -158,63 +168,6 @@ class ProfileView extends View
 				</div>
 			    <div class="infos"> ' . $infos . ' </div>
 			</div>';
-	}
-
-	private function fetchDates(array $fetchDates): string
-	{
-		$out = '<div class="bootstrap">';
-
-		// Temporarily removed 'sign out of all' pickups button:
-		// $out .= '<a class="btn btn-sm btn-danger cancel-all-button" href="#" onclick="'
-		// 		. 'if(confirm(\''
-		// 			. $this->translator->trans('profile.signoutAllConfirmation', ['{name}' => $this->foodsaver['name']])
-		// 		. '\')){'
-		// 		. 'ajreq(\'deleteAllDatesFromFoodsaver\','
-		// 		. '{app:\'profile\',fsid:' . $this->foodsaver['id'] . '}'
-		// 		. ')};return false;">'
-		// 			. $this->translator->trans('profile.signoutAll')
-		// 		. '</a>';
-
-		$out .= '
-<div class="clear datelist">';
-		foreach ($fetchDates as $date) {
-			$userConfirmedForPickup = ($date['confirmed'] == 1 ? '✓' : '?') . '&nbsp;';
-
-			$out .= '
-	<div class="row align-items-center p-1 border-top">';
-			$out .= '
-		<div class="col my-1">
-			<a href="/?page=fsbetrieb&id=' . $date['betrieb_id'] . '" class="ui-corner-all">
-				<span class="title">'
-				. $userConfirmedForPickup . $this->timeHelper->niceDate($date['date_ts']) .
-				'</span>
-			</a>
-		</div>
-		<div class="col my-1 text-center text-md-left">
-			<a href="/?page=fsbetrieb&id=' . $date['betrieb_id'] . '" class="ui-corner-all">
-				<span class="title">' . $date['betrieb_name'] . '</span>
-			</a>
-		</div>';
-
-			if ($this->session->isAdminFor($date['bezirk_id']) || $this->session->may('orga')) {
-				$out .= '
-		<div class="col flex-grow-0 flex-shrink-1">
-			<a class="btn btn-sm btn-secondary" href="#" onclick="'
-					. 'ajreq(\'deleteSinglePickup\','
-					. '{app:\'profile\''
-					. ',fsid:' . $this->foodsaver['id']
-					. ',storeId:' . $date['betrieb_id']
-					. ',date:' . $date['date_ts']
-					. '});return false;">' . $this->translator->trans('profile.signoutPickup') . '</a>
-		</div>';
-			}
-			$out .= '
-	</div>';
-		}
-		$out .= '
-</div>';
-
-		return $out . '</div>';
 	}
 
 	private function photo(bool $profileVisitorMayAdminThisFoodsharer, bool $profileVisitorMaySeeHistory, array $userStores = []): string
@@ -838,22 +791,5 @@ class ProfileView extends View
 		}
 
 		return $out;
-	}
-
-	// widget to query history of recent pickups
-	private function pastPickups(): string
-	{
-		return $this->vueComponent('vue-pickup-history', 'PickupHistory', [
-			'fsId' => $this->foodsaver['id'],
-			'collapsedAtFirst' => false,
-		]);
-	}
-
-	private function statPickups(): string
-	{
-		return $this->vueComponent('vue-pickup-history', 'PickupHistory', [
-			'fsId' => $this->foodsaver['id'],
-			'collapsedAtFirst' => false,
-		]);
 	}
 }

@@ -207,7 +207,7 @@ import {
 import i18n from '@/i18n'
 import { callableNumber } from '@/utils'
 import { chat, pulseSuccess, pulseError } from '@/script'
-import MediaQueryMixin from '@/utils/VueMediaQueryMixin'
+import MediaQueryMixin from '@/utils/MediaQueryMixin'
 
 import { legacyXhrCall } from './legacy'
 import StoreManagementPanel from './StoreManagementPanel'

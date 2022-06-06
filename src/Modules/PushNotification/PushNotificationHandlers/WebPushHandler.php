@@ -28,6 +28,7 @@ class WebPushHandler implements PushNotificationHandlerInterface
 		];
 
 		$this->webpush = new WebPush($auth);
+		$this->webpush->setAutomaticPadding(0);
 		$this->translator = $translator;
 	}
 

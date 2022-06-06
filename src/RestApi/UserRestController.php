@@ -13,6 +13,7 @@ use Foodsharing\Modules\Profile\ProfileGateway;
 use Foodsharing\Modules\Profile\ProfileTransactions;
 use Foodsharing\Modules\Register\DTO\RegisterData;
 use Foodsharing\Modules\Register\RegisterTransactions;
+use Foodsharing\Modules\Store\PickupGateway;
 use Foodsharing\Modules\Uploads\UploadsGateway;
 use Foodsharing\Permissions\ProfilePermissions;
 use Foodsharing\Permissions\ReportPermissions;
@@ -33,6 +34,7 @@ class UserRestController extends AbstractFOSRestController
 	private FoodsaverGateway $foodsaverGateway;
 	private ProfileGateway $profileGateway;
 	private UploadsGateway $uploadsGateway;
+	private PickupGateway $pickupGateway;
 	private ReportPermissions $reportPermissions;
 	private UserPermissions $userPermissions;
 	private ProfilePermissions $profilePermissions;
@@ -44,6 +46,7 @@ class UserRestController extends AbstractFOSRestController
 	private const MIN_RATING_MESSAGE_LENGTH = 100;
 	private const MIN_PASSWORD_LENGTH = 8;
 	private const MIN_AGE_YEARS = 18;
+	private const DELETE_USER_MAX_REASON_LEN = 200;
 
 	public function __construct(
 		Session $session,
@@ -57,7 +60,8 @@ class UserRestController extends AbstractFOSRestController
 		EmailHelper $emailHelper,
 		RegisterTransactions $registerTransactions,
 		ProfileTransactions $profileTransactions,
-		FoodsaverTransactions $foodsaverTransactions
+		FoodsaverTransactions $foodsaverTransactions,
+		PickupGateway $pickupGateway
 	) {
 		$this->session = $session;
 		$this->loginGateway = $loginGateway;
@@ -71,6 +75,7 @@ class UserRestController extends AbstractFOSRestController
 		$this->registerTransactions = $registerTransactions;
 		$this->profileTransactions = $profileTransactions;
 		$this->foodsaverTransactions = $foodsaverTransactions;
+		$this->pickupGateway = $pickupGateway;
 	}
 
 	/**
@@ -208,9 +213,11 @@ class UserRestController extends AbstractFOSRestController
 	public function testRegisterEmailAction(ParamFetcher $paramFetcher): Response
 	{
 		$email = $paramFetcher->get('email');
-		if (empty($email)
+		if (
+			empty($email)
 			|| !$this->emailHelper->validEmail($email)
-			|| $this->foodsaverGateway->emailDomainIsBlacklisted($email)) {
+			|| $this->foodsaverGateway->emailDomainIsBlacklisted($email)
+		) {
 			throw new HttpException(400, 'email is not valid');
 		}
 
@@ -245,7 +252,8 @@ class UserRestController extends AbstractFOSRestController
 		}
 
 		$data->email = trim($paramFetcher->get('email'));
-		if (empty($data->email) || !$this->emailHelper->validEmail($data->email)
+		if (
+			empty($data->email) || !$this->emailHelper->validEmail($data->email)
 			|| !$this->isEmailValidForRegistration($data->email)
 			|| $this->foodsaverGateway->emailDomainIsBlacklisted($data->email)
 		) {
@@ -298,15 +306,21 @@ class UserRestController extends AbstractFOSRestController
 	 * @OA\Tag(name="user")
 	 *
 	 * @Rest\Delete("user/{userId}", requirements={"userId" = "\d+"})
+	 * @Rest\RequestParam(name="reason", nullable=true, default="")
 	 */
-	public function deleteUserAction(int $userId): Response
+	public function deleteUserAction(int $userId, ParamFetcher $paramFetcher): Response
 	{
 		if (!$this->profilePermissions->mayDeleteUser($userId)) {
 			throw new HttpException(403);
 		}
 
+		$reason = trim($paramFetcher->get('reason'));
+		if (strlen($reason) > self::DELETE_USER_MAX_REASON_LEN) {
+			throw new HttpException(400, 'reason text is too long: must be at most ' . self::DELETE_USER_MAX_REASON_LEN . ' characters');
+		}
+
 		// needs the session ID, so we can't log out just yet
-		$this->foodsaverTransactions->deleteFoodsaver($userId);
+		$this->foodsaverTransactions->deleteFoodsaver($userId, $reason);
 
 		if ($userId === $this->session->id()) {
 			$this->session->logout();

@@ -53,21 +53,24 @@
 
         <style type="text/css">{{ head.css | raw }}</style>
     </head>
-
     <body class="{{ bodyClasses|join(' ') }}">
         {% include 'partials/becomeBezirk.twig' %}
         {{ menu | raw }}
-        {% if broadcast_message %}
-            <div class="inner inside broadcast-message">{{ broadcast_message | raw }}</div>
-        {% endif %}
-
         {% block overtop %}
             {{ content.overtop.html | raw }}
         {% endblock %}
 
         {% block full %}
-
-            <div id="main" class="{{ isMob ? 'mobile' : '' }}">
+            {% if app.request.get('page') is same as('dashboard') %}
+                {# /*
+                * to keep the old page stable,
+                * cause of the different types of grid systems
+                */ #}
+                <main id="main" class="container my-3 my-sm-5">
+                    {{ _main|raw }}
+                </main>
+            {% else %}
+                <div id="main" class="{{ isMob ? 'mobile' : '' }}">
 
                 {% include 'partials/breadcrumbs.twig' with { items: bread } %}
             {% if _top is not empty %}
@@ -147,6 +150,7 @@
 
             </div>
 
+            {% endif %}
         {% endblock full %}
 
         {% block footer %}

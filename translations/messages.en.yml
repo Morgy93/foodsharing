@@ -377,8 +377,6 @@ profile:
     cta: 'The complete profile of {name} is available after registration:'
     textMayNot: and is therefore not allowed to accept any food on behalf of foodsharing.
     textMay: and is therefore allowed to accept food on behalf of foodsharing.
-  signoutAll: Sign out of all
-  signoutPickup: sign out
   regions: '{name} is a foodsaver in'
   stats:
     baskets: Food baskets
@@ -478,8 +476,6 @@ profile:
   title: Profile
   pinboard: Status updates from {name}
   about_me_intern: About me
-  signoutAllConfirmation: Do you really want to unsubscribe {name} from all upcoming
-    pickup dates?
   go: Go to profile page
   mediation:
     no_group: Unfortunately there is no local mediation group for the home district
@@ -759,6 +755,50 @@ pickup:
     \ on {date}?\n{name} will receive the following message about this:\n"
   same_day_entry: '[{when}] {name}'
   same_day_hint: 'On the {day} you have signed into the following pickups:'
+  overview:
+    header: Pickups
+    tab:
+      registered:
+        name: Registered Pickups
+        tooltip:
+          own: Future pickups, for which you signed up
+          other: Future pickups the user signed up for
+        empty: Currenly no pickups are registered.
+      options:
+        name: Pickup Options
+        tooltip:
+          own: Future pickups, for which you could sign up
+        empty: Currently there are now free pickups slots in any of your teams.
+      history:
+        name: History
+        tooltip:
+          own: Past pickups in which you participated
+          other: Pickups in the last Month in which the user participated
+        empty: There have been no pickups yet.
+    cols:
+      time: Date
+      store: Store
+      slots: Slots
+    status:
+      confirmed: Confirmed
+      pending: Pending
+      option: Slot available
+    menu:
+      refresh: Refresh
+      signOffAll: Sign all off
+      signOff: Sign off
+      registeredSwitch: Show registered Slots
+      loadMore: Load more
+    modals:
+      signOffAll:
+        title: Sign all slots off?
+        message: Do you really want to sign off all registered slots of this user?
+      signOff:
+        title: Sign off slot?
+        message: Do you really want to sign this user off a registered slot?
+    allLoaded: All entries are shown.
+    freeSlots: "{slots} free"
+
 storeview:
   cooperation: Cooperation since {startTime}.
   store: Store
@@ -1352,6 +1392,7 @@ footer:
   partner: Partners
   infosPrivatePersons: For private persons
   infosCompany: For companies
+  infosDeveloper: For developers
   guide: Hygiene guide
   dataprivacy: Privacy
   imprint: Impressum
@@ -1531,7 +1572,7 @@ foodsaver:
   restricted: Unfortunately, you are not authorised to view this data.
   mailchange_error: Activation of your new email address has failed. Please try again.
   url_error: Something is wrong with your homepage URL
-  delete_account_sure: Are you sure you want to delete {name}'s account?
+  delete_account_sure: Are you sure you want to delete your account?
   edit_failure: Nothing was changed or changes were not saved
   edit_success: Changes have been saved
 store:
@@ -2165,6 +2206,8 @@ dashboard:
     buddies: People you know
     users: foodsavers
   source_event: Appointment {0}
+  showmore: Show more
+  showless: Show less
   source_forum_bot: Ambassador forum {0}
   source_forum: Forum {0}
   source_friendWall_own: Your pinboard
@@ -2199,7 +2242,7 @@ dashboard:
     part_2: request a new activation email here
     part_1: Please confirm your email address by clicking on the link in the activation
       email. Alternatively, you can
-  source_mailbox: '{o}'
+  source_mailbox: '{0}'
   quiz:
     read: continue reading
     go: Go to the quiz
@@ -2546,3 +2589,33 @@ activitypost:
   less: less
   write: Write an answer …
 deletelow: delete
+
+error:
+  mail_bounce:
+    title: "Blocked email address!"
+    description: "Your email address is blocked for foodsharing emails and communication."
+    link_1: "Change email address"
+    link_2: "I need help"
+  mail_activation:
+    title: "Email address not confirmed!"
+    description: "Please confirm your email address by clicking on the link in the activation email."
+    link_1: "Request a new activation email"
+    link_2: "Change email address"
+  adress:
+    title: "There was a mistake with your address."
+    info: "Please check your address. The coordinates could not be determined."
+    link: "To the address input"
+  choose_home_region:
+    title: "Select a root district."
+    info: "In order for you to continue, a root district is required."
+    link: "Select root district now"
+
+information:
+  push:
+    title: "You can now receive push notifications from foodsharing."
+    info: "If you no longer want to receive push notifications, you can deactivate them at any time in the settings."
+    link: "To the settings"
+  calendar_sync:
+    title: "Do you know the calendar synchronization for your pickups?"
+    info: "This will allow you to see your next pickup dates using a calendar program of your choice."
+    link: "Subscribe now"

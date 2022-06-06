@@ -64,6 +64,9 @@ class SettingsView extends View
 
 	public function sleepMode($sleep)
 	{
+		if ($sleep['sleep_status'] == SleepStatus::NONE && $sleep['sleep_from'] != null) {
+			$sleep['sleep_status'] = SleepStatus::TEMP;
+		}
 		$this->dataHelper->setEditData($sleep);
 
 		if ($sleep['sleep_status'] != SleepStatus::TEMP) {
@@ -148,7 +151,10 @@ class SettingsView extends View
 				'maxlength' => 150
 			]),
 			$this->v_utils->v_info($this->translator->trans('settings.sleep.show'))
-		], ['submit' => $this->translator->trans('button.save')]);
+		], [
+			'submit' => $this->translator->trans('button.save'),
+			'id' => 'schlafmtzenfunktion' // this needs to be hardcoded until the form was rewritten in Vue
+		]);
 
 		return '<div id="formwrapper" style="display: none;">' . $out . '</div>';
 	}
@@ -456,8 +462,7 @@ class SettingsView extends View
 				. $this->translator->trans('legal.if_delete.this_doesnt_get_deleted_address')
 				. $this->translator->trans('legal.if_delete.this_doesnt_get_deleted_history')
 				. '<button type="button" id="delete-account" class="btn btn-sm btn-danger"'
-				. ' onclick="confirmDeleteUser(' . $fsId . ',\''
-				. $this->translator->trans('foodsaver.your_account') . '\')">'
+				. ' onclick="confirmDeleteSelf(' . $fsId . ')">'
 				. $this->translator->trans('foodsaver.delete_account_now')
 				. '</button>'
 		);

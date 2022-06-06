@@ -586,7 +586,6 @@ profile:
     join: Delta og meld deg på
     cta: 'Hele profilen til {name} er tilgjengelig etter innlogging:'
     textMay: og kan derfor ta imot mat på vegne av foodsharing.
-  signoutPickup: levere
   ambRegions: '{name} er {role} for'
   stats:
     posts: Foruminnlegg
@@ -703,12 +702,9 @@ profile:
       til den som er ansvarlig for deg lokalt i denne saken.
   notFound: Denne brukerprofilen eksisterer ikke eller eksisterer ikke lenger
   go: Gå til profilsiden
-  signoutAllConfirmation: Vil du virkelig avslutte abonnementet på {name} fra alle
-    kommende innsamlingsdatoer?
   workgroups_member: Du og {name} er i følgende arbeidsgrupper
   sleepinfo: '{name} er inaktiv fra {from} til {til}'
   sleeping: '{name} er inaktiv på ubestemt tid'
-  signoutAll: Fjern overalt
 settings:
   photo:
     title: Bildet ditt

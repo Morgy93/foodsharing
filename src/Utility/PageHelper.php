@@ -90,12 +90,7 @@ final class PageHelper
 
 	public function generateAndGetGlobalViewData(): array
 	{
-		global $g_broadcast_message;
-
-		$menu = $this->getMenu();
-
 		$this->getMessages();
-
 		$mainWidth = 24;
 
 		$contentLeft = $this->getContent(CNT_LEFT);
@@ -121,6 +116,10 @@ final class PageHelper
 
 		$bodyClasses[] = 'page-' . $this->routeHelper->getPage();
 
+		if ($this->routeHelper->getPage() === 'dashboard') {
+			$bodyClasses[] = 'bootstrap';
+		}
+
 		$footer = $this->getFooter();
 
 		return [
@@ -128,11 +127,10 @@ final class PageHelper
 			'bread' => $this->bread,
 			'bodyClasses' => $bodyClasses,
 			'serverDataJSON' => json_encode($this->getServerData()),
-			'menu' => $menu,
+			'menu' => $this->getMenu(),
 			'dev' => FS_ENV == 'dev',
 			'hidden' => $this->hidden,
 			'isMob' => $this->session->isMob(),
-			'broadcast_message' => $this->session->id() ? $g_broadcast_message : '', // only when logged in
 			'footer' => $footer,
 			'HTTP_HOST' => $_SERVER['HTTP_HOST'] ?? BASE_URL,
 			'content' => [

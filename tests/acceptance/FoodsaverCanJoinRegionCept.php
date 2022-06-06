@@ -24,14 +24,12 @@ $I->login($user['email']);
 /*$I->moveMouseOver('//*[contains(@id, "mainMenu")]/li[contains(. ,"Bezirke")]');
 $I->click('Bezirk beitreten');
 */
-
-$I->see('Bitte auswählen');
+$I->amOnPage('/?page=dashboard');
+$I->see('Bitte auswählen...');
 $I->selectOption('#xv-childbezirk-0', $region['name']);
-$I->moveMouseOver('#becomebezirkchooser-button');
-$I->waitForActiveAPICalls();
 $I->click('#becomebezirkchooser-button');
+$I->amOnPage('/?page=bezirk');
 $I->waitForElementVisible('//a[contains(text(), "Neues Thema")]');
-
 $I->dontSeeInDatabase('fs_foodsaver_has_bell', ['foodsaver_id' => $ambassador['id']]);
 $I->seeInDatabase('fs_foodsaver_has_bell', ['foodsaver_id' => $welcomeAdmin['id']]);
 $I->seeInDatabase('fs_foodsaver_has_bezirk', ['foodsaver_id' => $user['id'], 'bezirk_id' => $region['id']]);
