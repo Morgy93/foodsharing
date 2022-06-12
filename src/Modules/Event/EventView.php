@@ -109,29 +109,29 @@ class EventView extends View
 					$("#anschrift-wrapper, #plz-wrapper, #ort-wrapper").hide();
 				}
 			});
-			
-			var dateend_wrapper = document.getElementById("dateend-wrapper");	
-			
+
+			var dateend_wrapper = document.getElementById("dateend-wrapper");
+
 			$("#date").after(
 				\'<label class="addend"><input type="checkbox" name="addend" id="addend" value="1" /> '
 			. $this->translator->trans('events.create.multiday') .
 			'</label>\'
 			);
-               
+
             dateend_wrapper.style.display = "none";
 
             var dateend = new Date(document.getElementById("dateend").value.split(" ")[0]);
 			var datestart = new Date(document.getElementById("date").value.split(" ")[0]);
 			datestart.setDate(datestart.getDate() + 1);
-			
+
 			if (dateend >= datestart)
 			{
                 document.getElementById("addend").checked = true;
                 dateend_wrapper.style.display = "block";
 			}
-			
+
 			dateend_wrapper.classList.remove("required");
-			
+
 			$("#addend").on("change", function () {
 				if ($("#addend:checked").length > 0) {
 					dateend_wrapper.style.display = "block";
@@ -141,7 +141,7 @@ class EventView extends View
 					dateend_wrapper.classList.remove("required");
 				}
 			});
-	
+
 			');
 
 		$regions = '';
@@ -182,7 +182,7 @@ class EventView extends View
 				} else {
 					$("#input-wrapper").show();
 				}
-			});		
+			});
 		');
 
 		$delinvites = '';
@@ -269,24 +269,6 @@ class EventView extends View
 			$this->latLonPicker('latLng', $latLonOptions),
 			$this->v_utils->v_info($this->translator->trans('events.create.info'))
 		], ['submit' => $this->translator->trans('button.save')]), $title, ['class' => 'ui-padding']);
-	}
-
-	public function dashboardEventPanels(array $events, bool $invitationsTitle = false): string
-	{
-		$out = '';
-		foreach ($events as $e) {
-			$out .= $this->eventPanel($e);
-		}
-
-		if ($invitationsTitle) {
-			$eventTitle = $this->translator->trans('dashboard.invitations');
-		} elseif (count($events) > 1) {
-			$eventTitle = $this->translator->trans('dashboard.events', ['{count}' => count($events)]);
-		} else {
-			$eventTitle = $this->translator->trans('dashboard.event');
-		}
-
-		return $this->v_utils->v_field($out, $eventTitle, ['class' => 'truncate-content truncate-height-160']);
 	}
 
 	public function eventPanel(array $event, bool $mayEdit = false): string

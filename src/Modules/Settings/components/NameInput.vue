@@ -40,7 +40,12 @@
       header-class="d-flex"
     >
       <div
-        v-html="$i18n('settings.name_change.info', {link: `href=/?page=bezirk&bid=${regionId}&sub=forum`})"
+        v-if="regionId > 0"
+        v-html="$i18n('settings.name_change.foodsaver_info', {link: `href=/?page=bezirk&bid=${regionId}&sub=forum`})"
+      />
+      <div
+        v-else
+        v-html="$i18n('settings.name_change.foodsharer_info', { link: `href=${$url('support')}` })"
       />
     </b-modal>
   </div>
@@ -58,8 +63,8 @@ export default {
       default: '',
     },
     regionId: {
-      type: String,
-      default: '',
+      type: Number,
+      default: 0,
     },
   },
 

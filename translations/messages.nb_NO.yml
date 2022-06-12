@@ -73,6 +73,7 @@ startpage:
 language_chooser:
   title: Velg språk
   content: Vennligst velg et språk
+  choose_button: Aktualisere
 poll:
   results:
     sum: Total
@@ -586,7 +587,6 @@ profile:
     join: Delta og meld deg på
     cta: 'Hele profilen til {name} er tilgjengelig etter innlogging:'
     textMay: og kan derfor ta imot mat på vegne av foodsharing.
-  signoutPickup: levere
   ambRegions: '{name} er {role} for'
   stats:
     posts: Foruminnlegg
@@ -703,12 +703,9 @@ profile:
       til den som er ansvarlig for deg lokalt i denne saken.
   notFound: Denne brukerprofilen eksisterer ikke eller eksisterer ikke lenger
   go: Gå til profilsiden
-  signoutAllConfirmation: Vil du virkelig avslutte abonnementet på {name} fra alle
-    kommende innsamlingsdatoer?
   workgroups_member: Du og {name} er i følgende arbeidsgrupper
   sleepinfo: '{name} er inaktiv fra {from} til {til}'
   sleeping: '{name} er inaktiv på ubestemt tid'
-  signoutAll: Fjern overalt
 settings:
   photo:
     title: Bildet ditt
@@ -895,11 +892,6 @@ foodsaver:
   delete_account_sure: Er du sikker på at du vil slette kontoen til {name}?
   restricted: Du er ikke autorisert til å se disse dataene.
   your_account: din
-  addresschange:
-    title: Advarsel om adresseendring
-    text: En adresse endret her oppdaterer ikke de geografiske koordinatene som kreves
-      for for eksempel matkurver. Det anbefales derfor sterkt at brukeren selv endrer
-      adressen i {settings}.
   delete_own_account: Du er i ferd med å slette din egen konto. Er du sikker?
   about_me_intern: "Denne korte beskrivelsen vil vises på profilsiden din\nog er synlig\
     \ der for alle i matdelingssamfunnet.\n"

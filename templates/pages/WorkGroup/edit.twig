@@ -26,17 +26,12 @@
         {% endblock %}
     {% endembed %}
 
-    {% embed 'components/field.twig' with {'title': 'group.members'|trans, 'classes': ['ui-padding']} %}
-        {% block content %}
-            {{ form_row(form.members) }}
-        {% endblock %}
-    {% endembed %}
-
-    {% embed 'components/field.twig' with {'title': 'group.administrators'|trans, 'classes': ['ui-padding']} %}
-        {% block content %}
-            {{ form_row(form.administrators) }}
-        {% endblock %}
-    {% endembed %}
+    <div class="msg-inside ' . $type . '">
+        <i class="fas fa-info-circle"></i>
+        {{ 'group.member_list.old_edit_hint'|trans }}
+        <a href="?page=bezirk&sub=members&bid={{ group.id }}">{{ 'group.member_list.old_edit_hint_link'|trans }}</a>
+    </div>
+    <br>
 
     <input type="submit" value="{{ 'group.actions.safe'|trans }}" />
     {{ form_end(form) }}

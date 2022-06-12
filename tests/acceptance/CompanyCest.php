@@ -55,15 +55,18 @@ class CompanyCest
 	public function CoordinatorCanSeeCompanyOnDashboard(AcceptanceTester $I)
 	{
 		$this->loginAsCoordinator();
-		$I->see('Du bist verantwortlich', 'div.head.ui-widget-header.ui-corner-top');
-		$I->see($this->store['name'], 'a.ui-corner-all');
+		$I->see('Deine Betriebe', '.list-group-header');
+		$I->see($this->store['name'], 'strong');
+		$I->seeElement('.fas.fa-cog');
+		$I->logMeOut();
 	}
 
 	public function MemberCanSeeCompanyOnDashboard(AcceptanceTester $I)
 	{
 		$this->loginAsMember();
-		$I->see('Du holst Lebensmittel ab bei', 'div.head.ui-widget-header.ui-corner-top');
-		$I->see($this->store['name'], 'a.ui-corner-all');
+		$I->see('Deine Betriebe', '.list-group-header');
+		$I->see($this->store['name'], 'strong');
+		$I->logMeOut();
 	}
 
 	/**

@@ -169,7 +169,7 @@ class ActivityTransactions
 				$u['body'] ?? '',
 				$u['event_region'],
 				'',
-				$this->imageHelper->img($u['fs_photo'], 50),
+				$u['fs_photo'] ?? '',
 				$u['gallery'] ?? [],
 				$replyUrl,
 				$u['fs_id'],
@@ -194,7 +194,7 @@ class ActivityTransactions
 				$u['body'] ?? '',
 				$u['fsp_location'],
 				'',
-				$this->imageHelper->img($u['fs_photo'], 50),
+				$u['fs_photo'] ?? '',
 				$u['gallery'] ?? [],
 				null,
 				$u['fs_id'],
@@ -240,7 +240,7 @@ class ActivityTransactions
 				$u['body'] ?? '',
 				$u['fs_name'],
 				$is_own ? '_own' : '',
-				$this->imageHelper->img($u['fs_photo'], 50),
+				$u['fs_photo'] ?? '',
 				$u['gallery'] ?? [],
 				null,
 				$u['fs_id'],
@@ -334,11 +334,6 @@ class ActivityTransactions
 
 			$forumTypeString = $is_bot ? 'botforum' : 'forum';
 
-			$replyUrl = '/xhrapp.php?app=bezirk&m=quickreply&bid=' . (int)$u['bezirk_id']
-				. '&tid=' . (int)$u['id']
-				. '&pid=' . (int)$u['last_post_id']
-				. '&sub=' . $forumTypeString;
-
 			$out[] = ActivityUpdate::create(
 				'forum',
 				Carbon::createFromTimestamp($u['update_time_ts']),
@@ -346,9 +341,9 @@ class ActivityTransactions
 				$u['post_body'] ?? '',
 				$u['bezirk_name'],
 				$is_bot ? '_bot' : '',
-				$this->imageHelper->img($u['foodsaver_photo'], 50),
+				$u['foodsaver_photo'] ?? '',
 				[],
-				$replyUrl,
+				null,
 				(int)$u['foodsaver_id'],
 				$u['foodsaver_name'],
 				(int)$u['id'],
@@ -377,7 +372,7 @@ class ActivityTransactions
 				$u['text'] ?? '',
 				$u['region_name'],
 				'',
-				$this->imageHelper->img($u['foodsaver_photo'], 50),
+				$u['foodsaver_photo'] ?? '',
 				null,
 				null,
 				$u['foodsaver_id'],

@@ -216,6 +216,7 @@ quiz:
   regstart: "Quiz ohne Zeitlimit und 20 Fragen starten"
   quizleft: " - Jetzt gilt es noch das Quiz zu bestehen!"
   nownownow: "Quiz jetzt starten"
+  session_deleted: "Die Ergebnisse für dieses Quiz wurden gelöscht, da das Quiz vor mehr als zwei Wochen abgeschlossen wurde."
 
 # quiz: "Quiz
 # For legacy UI reasons (QuizView), needs to be toplevel with this exact key:
@@ -246,7 +247,7 @@ button:
   save: "Speichern"
   next: "Weiter"
   change_picture: "Bild ändern"
-  attach_image: "Bild anhängen"
+  attach_image: "Bild hochladen (png- oder jpg-Format)"
   rotate_right: "im Uhrzeigersinn drehen"
   upload: "Hochladen"
   new: "Neu"
@@ -460,6 +461,8 @@ group:
     add_member: "In das Team aufnehmen"
     admin_mode_on: "Ansicht für Administrator*innen aktivieren"
     admin_mode_off: "Zurück zur Standard-Ansicht"
+    old_edit_hint: "Die Mitgliederverwaltung findest du jetzt auf dem Reiter"
+    old_edit_hint_link: "Mitglieder"
 
 legal:
   pp: "Datenschutzerklärung"
@@ -685,7 +688,7 @@ time: "Uhrzeit"
 day: "Tag"
 
 formatting:
-  md: "Du kannst zur Formatierung <a href=\"http://markdown.de/\">Markdown</a> verwenden."
+  md: "Du kannst zur Formatierung <a href=\"https://markdown.de/\">Markdown</a> verwenden."
 
 fsp:
   yours: "Fairteiler in deinen Bezirken"
@@ -767,6 +770,9 @@ store:
   tooltip_yellow: "Offene Abholungen in den nächsten fünf Tagen"
   tooltip_orange: "Offene Abholungen in den nächsten drei Tagen"
   tooltip_red: "Offene Abholungen heute oder morgen"
+  short_tooltip_yellow: "Offene Abholungen in 5 Tagen"
+  short_tooltip_orange: "Offene Abholungen in 3 Tagen"
+  short_tooltip_red: "Offene Abholungen heute oder morgen"
   tooltip_managing: "Du bist verantwortlich für diesen Betrieb"
   allStoresOfRegion: "Alle Betriebe aus dem Bezirk"
   addNewStoresButton: "Neuen Betrieb eintragen"
@@ -870,6 +876,7 @@ storeedit:
     bread: "Team bearbeiten"
     foodsaver: "Foodsaver"
     leave: "Aus Betrieb austragen"
+    leave_myself: "Dich selbst"
     cannot-leave: "Du bist noch verantwortlich für diesen Betrieb und kannst ihn daher nicht verlassen."
     empty: "Das Team darf nicht leer sein"
     need-sm: "Es muss mindestens eine verantwortliche Person für den Betrieb geben."
@@ -962,6 +969,49 @@ pickup:
       Zusätzlich benötigte Helfer*innen können mit Fahrradanhänger oder ähnlichem
       außer Sichtweite des Betriebes warten.
     added: "Abholtermin wurde eingetragen."
+  overview:
+    header: Abholtermine
+    tab:
+      registered:
+        name: Eingetragene Abholtermine
+        tooltip:
+          own: Zukünftige Abholtermine, für die du dich eingetragen hast
+          other: Eingetragene zukünftige Abholtermine
+        empty: Momentan sind keine Abholungen eingetragen.
+      options:
+        name: Abholoptionen
+        tooltip:
+          own: Zukünftige Abholtermine, für die du dich noch eintragen könntest
+        empty: Momentan sind in deinen Betrieben keine Slots frei.
+      history:
+        name: Abholhistorie
+        tooltip:
+          own: Vergangene Abholtermine, an denen du teilgenommen hast
+          other: Vergangene Abholtermine des letzten Monats, an denen teilgenommen wurde
+        empty: Es wurde noch an keinen Abholungen teilgenommen.
+    cols:
+      time: Zeitpunkt
+      store: Betrieb
+      slots: Slots
+    status:
+      confirmed: Bestätigt
+      pending: Unbestätigt
+      option: Slot verfügbar
+    menu:
+      refresh: Aktualisieren
+      signOffAll: Aus allen austragen
+      signOff: Austragen
+      registeredSwitch: Eingetragene Abholungen
+      loadMore: Weitere laden
+    modals:
+      signOffAll:
+        title: Aus allen Slots austragen?
+        message: Willst du den/die Nutzer*in wirklich aus allen eingetragenen Slots austragen?
+      signOff:
+        title: Aus Slot austragen?
+        message: Willst du/die den Nutzer*in wirklich aus diesem Slot austragen?
+    allLoaded: Es werden bereits alle Einträge angezeigt.
+    freeSlots: "{slots} frei"
 
 calendar:
   locale: "de"
@@ -1112,6 +1162,7 @@ events:
   invitedCount: "{count} Einladungen"
   morePeople: "… und {count} weitere"
   button:
+    change: "Antwort ändern"
     yes: "Bin dabei"
     maybe: "Vielleicht"
     no: "Kann nicht"
@@ -1446,9 +1497,6 @@ foodsaver:
     amb_requested: "Anfrage erfolgreich versendet."
     amb_success: "Danke dir für deine Motivation, mehr Verantwortung zu übernehmen. Die Anfrage wird schnellstmöglich vom globalen Orga-Team bearbeitet."
   restricted: "Du hast leider keine Berechtigung, diese Daten einzusehen."
-  addresschange:
-    title: "Warnung bzgl. Adressänderung"
-    text: "Eine hier geänderte Adresse aktualisiert nicht die Geokoordinaten, welche etwa für Essenskörbe benötigt werden. Daher wird dringend empfohlen, dass der Nutzer die Adresse selbst in den {settings} ändert."
   list:
     summary: "{count} Foodsaver in {region}"
     inactive: ", die sich 6 Monate nicht eingeloggt haben:"
@@ -1625,7 +1673,8 @@ settings:
     title: Name (Vor- & Nachname)
     desc: Der eigene Name kann nicht selbstständig geändert werden. Du kannst aber eine <a {link}">Namesänderung beantragen</a>.
     request: Namensänderung beantragen
-    info: Um deinen Namen zu ändern musst du eine*n Botschafter*in aus deinem Stammbezirk kontaktieren. Diese*r kann dann die Namensänderung für dich durchführen.<hr/>Wer Botschafter in deinem Stammbezirk ist, siehst du im <a {link}>Forum deines Bezirks</a> in der linken Seitenleiste.
+    foodsaver_info: "Um deinen Namen zu ändern musst du eine*n Botschafter*in aus deinem Stammbezirk kontaktieren. Diese*r kann dann die Namensänderung für dich durchführen.<hr/>Wer Botschafter in deinem Stammbezirk ist, siehst du im <a {link}>Forum deines Bezirks</a> in der linken Seitenleiste."
+    foodsharer_info: "Um deinen Namen zu ändern musst du uns eine Anfrage unter <a {link}>Support-Formular</a> erstellen."
 mail:
   noreply_addresses_not_allowed: "E-Mails an \"noreply@\" Adressen sind nicht zustellbar.<br>Bitte überprüfe die Empfangsadresse."
 
@@ -1716,9 +1765,6 @@ profile:
   sleepinfo: "{name} hat eine Schlafmütze auf vom {from} bis {until}"
   about_me_intern: "Über sich selbst"
   pinboard: "Status-Updates von {name}"
-  signoutPickup: "austragen"
-  signoutAll: "Aus allen austragen"
-  signoutAllConfirmation: "Wirklich {name} aus allen kommenden Abholterminen austragen?"
   reportRequest: "Meldung einreichen"
   mediationRequest: "Mediation anfragen"
   public:
@@ -1863,7 +1909,6 @@ dashboard:
     part_3: "oder"
     part_4: "deine E-Mail-Adresse ändern"
   mail_activation_error_title: "E-Mail-Adresse nicht bestätigt"
-  checkAddress: "Bitte überprüfe deine Adresse. Die Koordinaten konnten nicht ermittelt werden."
   homeRegion: "Dein Stammbezirk ist {region}."
   chooseHomeRegion: "Bitte wähle einen Stammbezirk aus."
   greeting: "Hallo {name}! Schön, dass du hier bist."
@@ -1875,25 +1920,33 @@ dashboard:
   my:
     regions: "Deine Bezirke" #also in searchindexgenerator
     groups: "Deine Gruppen" #also in searchindexgenerator
-    stores: "Du holst Lebensmittel ab bei"
+    stores: "Deine Betriebe"
+    events: "Events"
+    baskets: "Essenskörbe"
     pending: "Anfragen gestellt bei"
     waiting: "Du bist auf der Springerliste bei"
-    managing: "Du bist verantwortlich für"
     no-stores: "Du bist bis jetzt in keinem Betriebsteam."
     users: "Foodsaver*innen"
     buddies: "Menschen, die Du kennst"
-  invitations: "Du wurdest eingeladen"
+  options:
+    hide:
+      text: "Ausblenden"
+      tooltip: "Hier kannst du Informationen auf dem Dashboard ausblenden"
+    reset: Zurücksetzen
+    grid_toggle:
+      2_columns: "Zur 2-Spalten-Ansicht wechseln"
+      3_columns: "Zur 3-Spalten-Ansicht wechseln"
+  showmore: "Mehr anzeigen"
+  showless: "Weniger anzeigen"
+  invitation: "Du wurdest eingeladen"
+  invitationCount: "Du wurdest eingeladen ({count})"
   event: "Nächstes Event"
-  events: "Nächste Events ({count})"
+  eventCount: "Nächste Events ({count})"
   pickupdates: "Nächste Abholtermine"
   quiz:
     ack: "Hinweis gelesen und nicht mehr anzeigen"
     read: "weiterlesen"
     go: "Weiter zum Quiz"
-  push:
-    title: "Du kannst jetzt Push-Benachrichtigungen von foodsharing empfangen."
-    info: "Wenn du keine Push-Benachrichtigungen mehr empfangen willst, kannst du sie jederzeit in den Einstellungen wieder deaktivieren."
-    button: "Push-Benachrichtigungen aktivieren"
   deleted_user: "abgemeldete*r Benutzer*in"
 
 home:
@@ -1919,6 +1972,7 @@ basket:
   recent: "Neueste Essenskörbe"
   nearby: "Essenskörbe in deiner Nähe"
   nearby-short: "In deiner Nähe"
+  no_nearby: "Es gibt keine Essenskörbe im Umkreis von {radius} Kilometer"
   mapsearch: "Adresssuche…"
   go: "zum Essenskorb"
   by: "Essenskorb von {name}"
@@ -1952,7 +2006,7 @@ basket:
     <br><br>
     Auf unserer Karte findest du gegebenenfalls weitere Essenskörbe in deiner Gegend.
   no_requests: "Bisher keine Anfragen"
-  requested_by: "angefragt von"
+  requested_by: "angefragt von {name}"
   request_close: "Essenskorbanfrage abschließen"
   request: "Essenskorb anfragen"
   request-fs: "Essenskorb anfragen auf unserer foodsharing-Homepage"
@@ -2034,6 +2088,7 @@ menu:
     all_messages: "Alle Nachrichten"
     messages: "Nachrichten"
     your_groups: "Deine Gruppen"
+    your_baskets: "Deine Essenskörbe"
     groups: "Gruppenübersicht"
     your_account: "Dein Account"
     your_stores: "Deine Betriebe" #also in searchindexgenerator
@@ -2102,6 +2157,7 @@ footer:
   guide: "Hygiene-Ratgeber"
   infosCompany: "Für Unternehmen"
   infosPrivatePersons: "Für Privatpersonen"
+  infosDeveloper: "Für Entwickler:innen"
   partner: "Partner"
   our_partner: "Unsere Partner"
   contact: "Kontakt"
@@ -2257,7 +2313,7 @@ stats:
     fsp: "Fairteiler werden zum Tausch von Lebensmitteln genutzt."
   avg:
     pickups: "Rettungseinsätze gibt es derzeit durchschnittlich pro Tag."
-    baskets: "Essenskörbe werden derzeit durschnittlich pro Woche online gestellt."
+    baskets: "Essenskörbe werden derzeit durchschnittlich pro Woche online gestellt."
   leader:
     regions: "Aktivste Bezirke"
     users: "Aktivste Foodsaver"
@@ -2428,6 +2484,7 @@ poll:
 language_chooser:
   title: "Sprache wählen"
   content: "Bitte wähle eine Sprache aus"
+  choose_button: "Aktualisieren"
 
 startpage:
   welcome_text: "Willkommen bei foodsharing"
@@ -2521,9 +2578,11 @@ startpage:
 
 contentmanagement: "Inhaltsverwaltung" #contentControl
 activitypost:
-  showeverything: "alles zeigen"
-  less: "weniger"
+  Response: "Antworten"
+  response: "antworten"
   write: "Schreibe eine Antwort …"
+  quickreply_info: "<b>Umschalttaste + Eingabetaste</b> zum Hinzufügen einer neuen Zeile."
+  quickreply_button: Jetzt Senden<br>oder <b>Eingabetaste</b> drücken.
 deletefromregion: "Wirklich aus dem Bezirk löschen?"
 savewithus: "Rette mit!"
 logincontrol:
@@ -2547,3 +2606,33 @@ numbers:
   thousands_separator: "."
   million_abbreviation: " Mio."
   billion_abbreviation: " Mrd."
+
+error:
+  mail_bounce:
+    title: "Gesperrte E-Mail-Adresse!"
+    description: "Deine E-Mail-Adresse ist für foodsharing-Mails und -Kommunikation gesperrt."
+    link_1: "E-Mail-Adresse ändern"
+    link_2: "Ich benötige Hilfe"
+  mail_activation:
+    title: "E-Mail-Adresse nicht bestätigt!"
+    description: "Bitte bestätige deine E-Mail-Adresse, indem du auf den Link in der Aktivierungsmail klickst."
+    link_1: "Eine neue Aktivierungsmail anfordern"
+    link_2: "E-Mail-Adresse ändern"
+  adress:
+    title: "Es gab einen Fehler mit deiner Adresse."
+    info: "Bitte überprüfe deine Adresse. Die Koordinaten konnten nicht ermittelt werden."
+    link: "Zur Adressen Eingabe"
+  choose_home_region:
+    title: "Wähle einen Stammbezirk aus."
+    info: "Damit du Weitermachen kannst, wird ein Stammbezirk benötigt."
+    link: "Jetzt Stammbezirk auswählen"
+
+information:
+  push:
+    title: "Du kannst jetzt Push-Benachrichtigungen von foodsharing empfangen."
+    info: "Wenn du keine Push-Benachrichtigungen mehr empfangen willst, kannst du sie jederzeit in den Einstellungen wieder deaktivieren."
+    link: "Zu den Einstellungen"
+  calendar_sync:
+    title: "Kennst du die Kalender Synchronisation für deine Abholungen?"
+    info: "Damit kannst du deine nächsten Abholtermine mit einem Kalenderprogramm deiner Wahl sehen."
+    link: "Jetzt abonnieren"

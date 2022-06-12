@@ -16,11 +16,22 @@ export async function joinPickup (storeId, pickupDate, fsId) {
   return post(`/stores/${storeId}/pickups/${date}/${fsId}`)
 }
 
-export async function leavePickup (storeId, pickupDate, fsId, message) {
+export async function leavePickup (storeId, pickupDate, fsId, message, sendKickMessage = true) {
   const date = pickupDate.toISOString()
   return remove(`/stores/${storeId}/pickups/${date}/${fsId}`, {
-    message: message,
+    message,
+    sendKickMessage,
   })
+}
+
+export async function leaveAllPickups (fsId, message, sendKickMessage = false) {
+  return remove(
+    `/pickups/${fsId}`,
+    {
+      message,
+      sendKickMessage,
+    },
+  )
 }
 
 export async function confirmPickup (storeId, pickupDate, fsId) {
@@ -68,4 +79,16 @@ export async function listSameDayPickupsForUser (fsId, onDate) {
     ...p,
     date: dateFnsParseISO(p.date),
   }))
+}
+
+export async function listRegisteredPickups (fsId) {
+  return await get(`/pickup/registered?fsId=${fsId}`)
+}
+
+export async function listPickupOptions (fsId, page) {
+  return await get(`/pickup/options?page=${page}`)
+}
+
+export async function listPastPickups (fsId, page) {
+  return await get(`/pickup/history?fsId=${fsId}&page=${page}`)
 }

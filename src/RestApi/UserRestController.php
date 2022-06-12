@@ -11,8 +11,10 @@ use Foodsharing\Modules\Foodsaver\FoodsaverTransactions;
 use Foodsharing\Modules\Login\LoginGateway;
 use Foodsharing\Modules\Profile\ProfileGateway;
 use Foodsharing\Modules\Profile\ProfileTransactions;
+use Foodsharing\Modules\Region\RegionGateway;
 use Foodsharing\Modules\Register\DTO\RegisterData;
 use Foodsharing\Modules\Register\RegisterTransactions;
+use Foodsharing\Modules\Store\PickupGateway;
 use Foodsharing\Modules\Uploads\UploadsGateway;
 use Foodsharing\Permissions\ProfilePermissions;
 use Foodsharing\Permissions\ReportPermissions;
@@ -33,6 +35,8 @@ class UserRestController extends AbstractFOSRestController
 	private FoodsaverGateway $foodsaverGateway;
 	private ProfileGateway $profileGateway;
 	private UploadsGateway $uploadsGateway;
+	private RegionGateway $regionGateway;
+	private PickupGateway $pickupGateway;
 	private ReportPermissions $reportPermissions;
 	private UserPermissions $userPermissions;
 	private ProfilePermissions $profilePermissions;
@@ -52,19 +56,22 @@ class UserRestController extends AbstractFOSRestController
 		FoodsaverGateway $foodsaverGateway,
 		ProfileGateway $profileGateway,
 		UploadsGateway $uploadsGateway,
+		RegionGateway $regionGateway,
 		ReportPermissions $reportPermissions,
 		UserPermissions $userPermissions,
 		ProfilePermissions $profilePermissions,
 		EmailHelper $emailHelper,
 		RegisterTransactions $registerTransactions,
 		ProfileTransactions $profileTransactions,
-		FoodsaverTransactions $foodsaverTransactions
+		FoodsaverTransactions $foodsaverTransactions,
+		PickupGateway $pickupGateway
 	) {
 		$this->session = $session;
 		$this->loginGateway = $loginGateway;
 		$this->foodsaverGateway = $foodsaverGateway;
 		$this->profileGateway = $profileGateway;
 		$this->uploadsGateway = $uploadsGateway;
+		$this->regionGateway = $regionGateway;
 		$this->reportPermissions = $reportPermissions;
 		$this->userPermissions = $userPermissions;
 		$this->profilePermissions = $profilePermissions;
@@ -72,6 +79,7 @@ class UserRestController extends AbstractFOSRestController
 		$this->registerTransactions = $registerTransactions;
 		$this->profileTransactions = $profileTransactions;
 		$this->foodsaverTransactions = $foodsaverTransactions;
+		$this->pickupGateway = $pickupGateway;
 	}
 
 	/**
@@ -114,6 +122,57 @@ class UserRestController extends AbstractFOSRestController
 	}
 
 	/**
+	 * Normalizes the detailed profile of a user.
+	 *
+	 * @param array $data user profile data
+	 */
+	private function normalizeUserDetails(array $data): array
+	{
+		$loggedIn = $this->session->may();
+		$mayEditUserProfile = $this->profilePermissions->mayEditUserProfile($data['id']);
+		$mayAdministrateUserProfile = $this->profilePermissions->mayAdministrateUserProfile($data['id'], $data['bezirk_id']);
+
+		$response = [];
+		$response['id'] = $data['id'];
+		$response['verified'] = ($data['verified'] === 1) ? true : false;
+		$response['region_id'] = $data['bezirk_id'];
+		$response['region_name'] = ($data['bezirk_id'] === null) ? null : $this->regionGateway->getRegionName($data['bezirk_id']);
+
+		if ($loggedIn) {
+			$response['firstname'] = $data['name'];
+			$response['lastname'] = $data['nachname'];
+			$response['about_me_public'] = $data['about_me_public'];
+			$response['homepage'] = $data['homepage'];
+		} else {
+			$response['firstname'] = ($data['name'] === null) ? null : $data['name'][0]; // Only return first character
+		}
+
+		if ($mayEditUserProfile) {
+			$response['address'] = $data['anschrift'];
+			$response['city'] = $data['stadt'];
+			$response['postcode'] = $data['plz'];
+			$response['lat'] = $data['lat'];
+			$response['lon'] = $data['lon'];
+			$response['email'] = $data['email'];
+			$response['landline'] = $data['telefon'];
+			$response['mobile'] = $data['handy'];
+			$response['geb_datum'] = $data['geb_datum'];
+			$response['about_me_intern'] = $data['about_me_intern'];
+		}
+
+		if ($mayAdministrateUserProfile) {
+			$response['rolle'] = $data['rolle'];
+			$response['position'] = $data['position'];
+			$response['geschlecht'] = $data['geschlecht'];
+		}
+
+		$response['mayEditUserProfile'] = $mayEditUserProfile;
+		$response['mayAdministrateUserProfile'] = $mayAdministrateUserProfile;
+
+		return $response;
+	}
+
+	/**
 	 * Lists the detailed profile of a user. Returns 403 if not allowed or 200 and the data.
 	 *
 	 * @OA\Tag(name="user")
@@ -122,16 +181,12 @@ class UserRestController extends AbstractFOSRestController
 	 */
 	public function userDetailsAction(int $id): Response
 	{
-		if (!$this->userPermissions->maySeeUserDetails($id)) {
-			throw new HttpException(403);
-		}
-
 		$data = $this->profileGateway->getData($id, -1, $this->reportPermissions->mayHandleReports());
 		if (!$data || empty($data)) {
 			throw new HttpException(404, 'User does not exist.');
 		}
 
-		return $this->handleView($this->view(RestNormalization::normaliseUserDetails($data), 200));
+		return $this->handleView($this->view($this->normalizeUserDetails($data), 200));
 	}
 
 	/**
@@ -209,9 +264,11 @@ class UserRestController extends AbstractFOSRestController
 	public function testRegisterEmailAction(ParamFetcher $paramFetcher): Response
 	{
 		$email = $paramFetcher->get('email');
-		if (empty($email)
+		if (
+			empty($email)
 			|| !$this->emailHelper->validEmail($email)
-			|| $this->foodsaverGateway->emailDomainIsBlacklisted($email)) {
+			|| $this->foodsaverGateway->emailDomainIsBlacklisted($email)
+		) {
 			throw new HttpException(400, 'email is not valid');
 		}
 
@@ -246,7 +303,8 @@ class UserRestController extends AbstractFOSRestController
 		}
 
 		$data->email = trim($paramFetcher->get('email'));
-		if (empty($data->email) || !$this->emailHelper->validEmail($data->email)
+		if (
+			empty($data->email) || !$this->emailHelper->validEmail($data->email)
 			|| !$this->isEmailValidForRegistration($data->email)
 			|| $this->foodsaverGateway->emailDomainIsBlacklisted($data->email)
 		) {

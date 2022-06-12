@@ -6,8 +6,8 @@ use Carbon\Carbon;
 use Foodsharing\Lib\Session;
 use Foodsharing\Modules\Event\EventGateway;
 use Foodsharing\Modules\Event\InvitationStatus;
-use Foodsharing\Modules\Profile\ProfileGateway;
 use Foodsharing\Modules\Settings\SettingsGateway;
+use Foodsharing\Modules\Store\PickupGateway;
 use FOS\RestBundle\Controller\AbstractFOSRestController;
 use FOS\RestBundle\Controller\Annotations as Rest;
 use Jsvrcek\ICS\CalendarExport;
@@ -28,7 +28,7 @@ class CalendarRestController extends AbstractFOSRestController
 {
 	private Session $session;
 	private SettingsGateway $settingsGateway;
-	private ProfileGateway $profileGateway;
+	private PickupGateway $pickupGateway;
 	private EventGateway $eventGateway;
 	private TranslatorInterface $translator;
 
@@ -37,13 +37,13 @@ class CalendarRestController extends AbstractFOSRestController
 	public function __construct(
 		Session $session,
 		SettingsGateway $settingsGateway,
-		ProfileGateway $profileGateway,
+		PickupGateway $pickupGateway,
 		EventGateway $eventGateway,
 		TranslatorInterface $translator
 	) {
 		$this->session = $session;
 		$this->settingsGateway = $settingsGateway;
-		$this->profileGateway = $profileGateway;
+		$this->pickupGateway = $pickupGateway;
 		$this->eventGateway = $eventGateway;
 		$this->translator = $translator;
 	}
@@ -139,7 +139,7 @@ class CalendarRestController extends AbstractFOSRestController
 		}
 
 		// add all future pickup dates
-		$dates = $this->profileGateway->getNextDates($userId);
+		$dates = $this->pickupGateway->getNextPickups($userId);
 		$pickups = array_map(function ($date) use ($userId) {
 			return $this->createPickupEvent($date, $userId);
 		}, $dates);
@@ -161,30 +161,28 @@ class CalendarRestController extends AbstractFOSRestController
 
 	private function createPickupEvent(array $pickup, int $userId): CalendarEvent
 	{
-		$start = Carbon::createFromTimestamp($pickup['date_ts']);
+		$start = Carbon::createFromTimestamp($pickup['timestamp']);
 
-		$summary = $this->translator->trans('calendar.export.pickup.name', ['{store}' => $pickup['betrieb_name']]);
+		$summary = $this->translator->trans('calendar.export.pickup.name', ['{store}' => $pickup['store_name']]);
 		$status = 'CONFIRMED';
 		if (!$pickup['confirmed']) {
 			$summary .= ' (' . $this->translator->trans('calendar.export.pickup.unconfirmed') . ')';
 			$status = 'TENTATIVE';
 		}
 
-		$full_address = $pickup['betrieb_anschrift'] . ', '
-			. $pickup['betrieb_plz'] . ' ' . $pickup['betrieb_stadt'];
-		$location = (new Location())->setName($full_address);
-		$store_url = BASE_URL . '/?page=fsbetrieb&id=' . $pickup['betrieb_id'];
+		$location = (new Location())->setName($pickup['address']);
+		$store_url = BASE_URL . '/?page=fsbetrieb&id=' . $pickup['store_id'];
 
 		$event = new CalendarEvent();
 		$event->setStart($start);
 		$event->setEnd($start->clone()->addMinutes(30));
 		$event->setSummary($summary);
-		$event->setUid($userId . $pickup['betrieb_id'] . $pickup['date_ts'] . '@fetch.foodsharing.de');
+		$event->setUid($userId . $pickup['store_id'] . $pickup['timestamp'] . '@fetch.foodsharing.de');
 		$event->setDescription($this->translator->trans(
 			'calendar.export.pickup.description',
 			[
 				'{url}' => $store_url,
-				'{store}' => $pickup['betrieb_name'],
+				'{store}' => $pickup['store_name'],
 			]
 		));
 		$event->setUrl($store_url);

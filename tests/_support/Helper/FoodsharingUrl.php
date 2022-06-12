@@ -34,6 +34,11 @@ class FoodsharingUrl extends \Codeception\Module\Db
 		return '/?page=groups&sub=edit&id=' . (int)$groupId;
 	}
 
+	public function groupMemberListUrl($groupId)
+	{
+		return '/?page=bezirk&sub=members&bid=' . (int)$groupId;
+	}
+
 	public function groupListUrl()
 	{
 		return '/?page=groups';

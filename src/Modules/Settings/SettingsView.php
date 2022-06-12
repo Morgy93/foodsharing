@@ -64,6 +64,9 @@ class SettingsView extends View
 
 	public function sleepMode($sleep)
 	{
+		if ($sleep['sleep_status'] == SleepStatus::NONE && $sleep['sleep_from'] != null) {
+			$sleep['sleep_status'] = SleepStatus::TEMP;
+		}
 		$this->dataHelper->setEditData($sleep);
 
 		if ($sleep['sleep_status'] != SleepStatus::TEMP) {
@@ -148,7 +151,10 @@ class SettingsView extends View
 				'maxlength' => 150
 			]),
 			$this->v_utils->v_info($this->translator->trans('settings.sleep.show'))
-		], ['submit' => $this->translator->trans('button.save')]);
+		], [
+			'submit' => $this->translator->trans('button.save'),
+			'id' => 'schlafmtzenfunktion' // this needs to be hardcoded until the form was rewritten in Vue
+		]);
 
 		return '<div id="formwrapper" style="display: none;">' . $out . '</div>';
 	}

@@ -241,7 +241,8 @@ class PickupGateway extends BaseGateway implements BellUpdaterInterface
 
 	public function getRegularPickups(int $storeId)
 	{
-		return $this->db->fetchAllByCriteria('fs_abholzeiten',
+		return $this->db->fetchAllByCriteria(
+			'fs_abholzeiten',
 			['time', 'dow', 'fetcher'],
 			['betrieb_id' => $storeId]
 		);
@@ -282,7 +283,8 @@ class PickupGateway extends BaseGateway implements BellUpdaterInterface
 
 	public function updateOnetimePickupTotalSlots(int $storeId, \DateTime $date, int $slots): bool
 	{
-		return $this->db->update('fs_fetchdate',
+		return $this->db->update(
+			'fs_fetchdate',
 			['fetchercount' => $slots],
 			['betrieb_id' => $storeId, 'time' => $this->db->date($date)]
 		) === 1;
@@ -352,7 +354,8 @@ class PickupGateway extends BaseGateway implements BellUpdaterInterface
 						function ($e) {
 							return ['foodsaverId' => $e['foodsaver_id'], 'isConfirmed' => (bool)$e['confirmed']];
 						},
-						array_filter($signups,
+						array_filter(
+							$signups,
 							function ($e) use ($date) {
 								return $date == $e['date'];
 							}
@@ -378,7 +381,8 @@ class PickupGateway extends BaseGateway implements BellUpdaterInterface
 				function ($e) {
 					return ['foodsaverId' => $e['foodsaver_id'], 'isConfirmed' => (bool)$e['confirmed']];
 				},
-				array_filter($signups,
+				array_filter(
+					$signups,
 					function ($e) use ($slot) {
 						return $slot['date'] == $e['date'];
 					}
@@ -402,6 +406,95 @@ class PickupGateway extends BaseGateway implements BellUpdaterInterface
 		}
 
 		return $slots;
+	}
+
+	/**
+	 * Returns past pickup dates to which the foodsaver signed in.
+	 * If either page or pageSize is set to -1 pagination is disabled and all entries are returned.
+	 *
+	 * @param int $fsId ID of the foodsaver
+	 * @param int $page the number of the page to be queried (for pagination)
+	 * @param int $pageSize the size of pages to be queried (for pagination)
+	 * @param bool $fullHistory whether to include entries older than a month
+	 *
+	 * @return array the fetched pickups including information about the other fs who took part and the store
+	 */
+	public function getPastPickups(int $fsId, int $page, int $pageSize, bool $fullHistory): array
+	{
+		$timeContraint = '';
+		if (!$fullHistory) {
+			$timeContraint = 'AND p1.date > NOW() - INTERVAL 1 MONTH ';
+		}
+		$query = 'SELECT
+				s.id AS store_id,
+				s.name AS store_name,
+				UNIX_TIMESTAMP(p1.`date`) AS `timestamp`,
+				p1.confirmed,
+				GROUP_CONCAT(f.id) AS fs_ids,
+				GROUP_CONCAT(QUOTE(CONCAT(f.name, " ", f.nachname))) AS fs_names,
+				GROUP_CONCAT(IFNULL(f.photo, "")) AS fs_avatars,
+				GROUP_CONCAT(p2.confirmed) AS slot_confimations
+			FROM fs_abholer p1
+			LEFT JOIN fs_abholer p2 ON p1.betrieb_id = p2.betrieb_id AND p1.date = p2.date
+			LEFT JOIN fs_foodsaver f ON f.id = p2.foodsaver_id
+			LEFT JOIN fs_betrieb s ON s.id = p1.betrieb_id
+			WHERE p1.foodsaver_id = :fs_id AND p1.date < NOW() '
+			. $timeContraint .
+			'GROUP BY p1.betrieb_id, p1.date
+			ORDER BY p1.date DESC';
+
+		$params = ['fs_id' => $fsId];
+		if ($page != -1 && $pageSize != -1) {
+			$query .= ' LIMIT :page_size OFFSET :start_item_index';
+			$params['start_item_index'] = $page * $pageSize;
+			$params['page_size'] = $pageSize;
+		}
+
+		return $this->db->fetchAll($query, $params);
+	}
+
+	/**
+	 * Returns the next dates which the foodsaver signed into.
+	 *
+	 * @param int $fsId ID of the foodsaver
+	 * @param int|null $limit if not null, the result will be limited to a number of dates
+	 *
+	 * @throws \Exception
+	 */
+	public function getNextPickups(int $fsId, int $limit = null): array
+	{
+		$stm = 'SELECT
+				s.id AS store_id,
+				s.name AS store_name,
+				CONCAT(s.str, " ", s.hsnr, ", ", s.plz, " ", s.stadt) AS `address`,
+				UNIX_TIMESTAMP(a.`date`) AS `timestamp`,
+				a.confirmed,
+				GROUP_CONCAT(f.id) AS fs_ids,
+				GROUP_CONCAT(QUOTE(CONCAT(f.name, " ", f.nachname))) AS fs_names,
+				GROUP_CONCAT(IFNULL(f.photo, "")) AS fs_avatars,
+				GROUP_CONCAT(a2.confirmed) AS slot_confimations,
+				d.fetchercount AS max_fetchers
+			FROM `fs_abholer` a
+			LEFT OUTER JOIN `fs_abholer` a2 ON
+				a.betrieb_id = a2.betrieb_id AND a.date = a2.date
+			LEFT OUTER JOIN `fs_foodsaver` f ON
+				a2.foodsaver_id = f.id
+			LEFT OUTER JOIN `fs_betrieb` s ON
+				a.betrieb_id = s.id
+			LEFT OUTER JOIN `fs_fetchdate` d ON
+				a.betrieb_id = d.betrieb_id AND a.`date` = d.time
+			WHERE a.foodsaver_id = :fs_id AND a.`date` > NOW()
+			GROUP BY a.id
+			ORDER BY a.`date`';
+
+		$params = [':fs_id' => $fsId];
+
+		if (!is_null($limit)) {
+			$stm .= ' LIMIT :limit';
+			$params[':limit'] = $limit;
+		}
+
+		return $this->db->fetchAll($stm, $params);
 	}
 
 	private function realMod(int $a, int $b)

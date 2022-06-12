@@ -58,9 +58,11 @@ class UserApiCest
 		$I->seeResponseIsJson();
 	}
 
-	public function getUserDetails(\ApiTester $I)
+	/**
+	 * Get also own user details with 'current' instead of ID.
+	 */
+	public function getUserDetailsCurrentWithoutId(\ApiTester $I)
 	{
-		$testUser = $I->createFoodsaver();
 		$I->login($this->user[self::EMAIL]);
 
 		// see your own details
@@ -71,22 +73,164 @@ class UserApiCest
 		$I->sendGET(self::API_USER . '/current/details');
 		$I->seeResponseCodeIs(Http::OK);
 		$I->seeResponseIsJson();
+	}
 
-		// do not see someone else's details unless you are orga
-		$I->sendGET(self::API_USER . '/' . $testUser[self::ID] . '/details');
-		$I->seeResponseCodeIs(Http::FORBIDDEN);
+	/**
+	 * Do not see details of non-existing user.
+	 */
+	public function getUserDetailsNoneExistingUser(\ApiTester $I)
+	{
+		$I->login($this->user[self::EMAIL]);
+
+		$I->sendGET(self::API_USER . '/999999999/details');
+		$I->seeResponseCodeIs(Http::NOT_FOUND);
 		$I->seeResponseIsJson();
+	}
 
-		$I->login($this->userOrga[self::EMAIL]);
+	/**
+	 * Check that only limited fields are returned for a none logged in user.
+	 */
+	public function getUserDetailsNoUser(\ApiTester $I)
+	{
+		// no login
+
+		$I->sendGET(self::API_USER . '/' . $this->user[self::ID] . '/details');
+		$I->seeResponseCodeIs(Http::OK);
+		$I->seeResponseIsJson();
+		$I->seeResponseMatchesJsonType([
+			'id' => 'integer',
+			'firstname' => 'string:regex(~.?~)', // firstname is allowed only as 0 or 1 caracter
+			'verified' => 'boolean',
+			'region_id' => 'integer',
+			'region_name' => 'string'
+		]);
+		$I->dontSeeResponseContains('lastname');
+		$I->dontSeeResponseContains('address');
+		$I->dontSeeResponseContains('city');
+		$I->dontSeeResponseContains('postcode');
+		$I->dontSeeResponseContains('lat');
+		$I->dontSeeResponseContains('lon');
+		$I->dontSeeResponseContains('email');
+		$I->dontSeeResponseContains('landline');
+		$I->dontSeeResponseContains('mobile');
+		$I->dontSeeResponseContains('geb_datum');
+		$I->dontSeeResponseContains('about_me_intern');
+		$I->canSeeResponseContainsJson([
+			'mayEditUserProfile' => false,
+			'mayAdministrateUserProfile' => false
+		]);
+	}
+
+	/**
+	 * Check that only allowed fields for another user are return in the response.
+	 */
+	public function getUserDetailsOfOtherUser(\ApiTester $I)
+	{
+		$testUser = $I->createFoodsaver();
+		$I->login($this->user[self::EMAIL]);
+
 		$I->sendGET(self::API_USER . '/' . $testUser[self::ID] . '/details');
 		$I->seeResponseCodeIs(Http::OK);
 		$I->seeResponseIsJson();
+		$I->seeResponseMatchesJsonType([
+			'id' => 'integer',
+			'firstname' => 'string',
+			'lastname' => 'string',
+			'verified' => 'boolean',
+			'region_id' => 'integer',
+			'region_name' => 'string',
+			'homepage' => 'string|null',
+			'about_me_public' => 'string|null',
+		]);
+		$I->dontSeeResponseContains('address');
+		$I->dontSeeResponseContains('city');
+		$I->dontSeeResponseContains('postcode');
+		$I->dontSeeResponseContains('lat');
+		$I->dontSeeResponseContains('lon');
+		$I->dontSeeResponseContains('email');
+		$I->dontSeeResponseContains('landline');
+		$I->dontSeeResponseContains('mobile');
+		$I->dontSeeResponseContains('geb_datum');
+		$I->dontSeeResponseContains('about_me_intern');
+		$I->canSeeResponseContainsJson([
+			'mayEditUserProfile' => false,
+			'mayAdministrateUserProfile' => false
+		]);
+	}
 
-		// do not see details of non-existing user
-		$I->sendGET(self::API_USER . '/999999999/details');
-		codecept_debug($I->grabResponse());
-		$I->seeResponseCodeIs(Http::NOT_FOUND);
+	/**
+	 * Check that only allowed fields of the current user are return in the response.
+	 */
+	public function getUserDetailsFromCurrentUser(\ApiTester $I)
+	{
+		$I->login($this->user[self::EMAIL]);
+
+		$I->sendGET(self::API_USER . '/' . $this->user[self::ID] . '/details');
+		$I->seeResponseCodeIs(Http::OK);
 		$I->seeResponseIsJson();
+		$I->seeResponseMatchesJsonType([
+			'id' => 'integer',
+			'firstname' => 'string',
+			'lastname' => 'string',
+			'verified' => 'boolean',
+			'region_id' => 'integer',
+			'region_name' => 'string',
+			'address' => 'string',
+			'city' => 'string',
+			'postcode' => 'string|integer',
+			'lat' => 'string|float',
+			'lon' => 'string|float',
+			'email' => 'string:email',
+			'landline' => 'string|null',
+			'mobile' => 'string|null',
+			'geb_datum' => 'string|date',
+			'homepage' => 'string|null',
+			'about_me_intern' => 'string|null',
+			'about_me_public' => 'string|null'
+		]);
+		$I->canSeeResponseContainsJson([
+			'mayEditUserProfile' => true,
+			'mayAdministrateUserProfile' => false
+		]);
+	}
+
+	/**
+	 * Check that all fields of a user are returned for an orga user.
+	 */
+	public function getUserDetailsAsOrgaUser(\ApiTester $I)
+	{
+		$I->login($this->userOrga[self::EMAIL]);
+
+		$I->sendGET(self::API_USER . '/' . $this->user[self::ID] . '/details');
+		$I->seeResponseCodeIs(Http::OK);
+		$I->seeResponseIsJson();
+		$I->seeResponseMatchesJsonType([
+			'id' => 'integer',
+			'firstname' => 'string',
+			'lastname' => 'string',
+			'verified' => 'boolean',
+			'region_id' => 'integer',
+			'region_name' => 'string',
+			'address' => 'string',
+			'city' => 'string',
+			'postcode' => 'string|integer',
+			'lat' => 'string|float',
+			'lon' => 'string|float',
+			'email' => 'string:email',
+			'landline' => 'string|null',
+			'mobile' => 'string|null',
+			'geb_datum' => 'string|date',
+			'homepage' => 'string|null',
+			'about_me_intern' => 'string|null',
+			'about_me_public' => 'string|null',
+			'rolle' => 'integer',
+			'position' => 'string|null',
+			'geschlecht' => 'integer',
+		]);
+		$I->canSeeResponseContainsJson([
+			'mayEditUserProfile' => true,
+			'mayAdministrateUserProfile' => true
+		]);
 	}
 
 	/**

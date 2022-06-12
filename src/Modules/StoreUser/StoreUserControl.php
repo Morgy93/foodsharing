@@ -96,10 +96,14 @@ class StoreUserControl extends Control
 
 				/* find yourself in the pickup list and show your last pickup date in store info */
 				$lastFetchDate = null;
+				$userIsInStore = false;
 				foreach ($store['foodsaver'] as $fs) {
-					if ($fs['id'] === $this->session->id() && $fs['last_fetch'] != null) {
-						$lastFetchDate = Carbon::createFromTimestamp($fs['last_fetch']);
-						break;
+					if ($fs['id'] === $this->session->id()) {
+						$userIsInStore = true;
+						if ($fs['last_fetch'] != null) {
+							$lastFetchDate = Carbon::createFromTimestamp($fs['last_fetch']);
+							break;
+						}
 					}
 				}
 
@@ -119,47 +123,28 @@ class StoreUserControl extends Control
 				/* options menu */
 				$menu = [];
 
+				/* store options */
+				$teamConversionId = null;
 				if ($this->storePermissions->mayChatWithRegularTeam($store)) {
-					$menu[] = [
-						'name' => $this->translator->trans('store.chat.team'),
-						'click' => 'conv.chat(' . $store['team_conversation_id'] . ');',
-					];
+					$teamConversionId = $store['team_conversation_id'];
 				}
 
+				$springerConversationId = null;
 				if ($this->storePermissions->mayChatWithJumperWaitingTeam($store)) {
-					$menu[] = [
-						'name' => $this->translator->trans('store.chat.jumper'),
-						'click' => 'conv.chat(' . $store['springer_conversation_id'] . ');',
-					];
-				}
-				if ($this->storePermissions->mayEditStore($storeId)) {
-					$menu[] = [
-						'name' => $this->translator->trans('storeedit.bread'),
-						'href' => '/?page=betrieb&a=edit&id=' . $storeId,
-					];
-
-					$menu[] = [
-						'name' => $this->translator->trans('pickup.edit.bread'),
-						'click' => '$(\'#bid\').val(' . $storeId . ');'
-							. '$(\'#editpickups\').dialog(\'open\');'
-							. 'return false;',
-					];
+					$springerConversationId = $store['springer_conversation_id'];
 				}
 
-				if (!$store['verantwortlich'] || $this->session->isAmbassador() || $this->session->may('orga')) {
-					$menu[] = [
-						'name' => $this->translator->trans('storeedit.team.leave'),
-						'click' => 'u_betrieb_sign_out(' . $storeId . '); return false;',
-					];
-					$this->addStoreLeaveModal();
-				}
-
-				if (!empty($menu)) {
-					$this->pageHelper->addContent($this->v_utils->v_menu(
-						$menu,
-						$this->translator->trans('store.actions')
-					), CNT_LEFT);
-				}
+				$this->pageHelper->addContent(
+						$this->view->vueComponent('vue-storeoptions', 'storeOptions', [
+							'teamConversionId' => $teamConversionId,
+							'springerConversationId' => $springerConversationId,
+							'mayEditStore' => $this->storePermissions->mayEditStore($storeId),
+							'mayLeaveStoreTeam' => $userIsInStore && $this->storePermissions->mayLeaveStoreTeam($storeId, $this->session->id()),
+							'storeId' => $storeId,
+							'fsId' => $this->session->id()
+						]),
+					CNT_LEFT
+					);
 
 				/* team list */
 				$this->pageHelper->addContent(

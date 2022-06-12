@@ -202,14 +202,14 @@ import compareAsc from 'date-fns/compareAsc'
 import {
   demoteAsStoreManager, promoteToStoreManager,
   moveMemberToStandbyTeam, moveMemberToRegularTeam,
-  removeStoreMember,
 } from '@/api/stores'
 import i18n from '@/i18n'
 import { callableNumber } from '@/utils'
 import { chat, pulseSuccess, pulseError } from '@/script'
-import MediaQueryMixin from '@/utils/VueMediaQueryMixin'
+import MediaQueryMixin from '@/mixins/MediaQueryMixin'
 
 import { legacyXhrCall } from './legacy'
+import { removeFromTeam } from '../../Store/Store'
 import StoreManagementPanel from './StoreManagementPanel'
 import StoreTeamAvatar from './StoreTeamAvatar'
 import StoreTeamInfo from './StoreTeamInfo'
@@ -317,28 +317,6 @@ export default {
         fs.isActive = !newStatusIsStandby
         fs._showDetails = false
         this.$set(this.team, index, fs)
-      }
-      this.isBusy = false
-    },
-    async removeFromTeam (fsId, fsName) {
-      if (!fsId) {
-        return
-      }
-      if (!confirm(i18n('store.sm.reallyRemove', { name: fsName }))) {
-        return
-      }
-
-      this.isBusy = true
-      try {
-        await removeStoreMember(this.storeId, fsId)
-      } catch (e) {
-        pulseError(i18n('error_unexpected'))
-        this.isBusy = false
-        return
-      }
-      const index = this.foodsaver.findIndex(member => member.id === fsId)
-      if (index >= 0) {
-        this.foodsaver.splice(index, 1)
       }
       this.isBusy = false
     },
@@ -455,6 +433,7 @@ export default {
       }
     },
     legacyXhrCall,
+    removeFromTeam,
   },
 }
 </script>

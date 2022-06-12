@@ -114,15 +114,12 @@ class QuizSessionGateway extends BaseGateway
 	final public function getExtendedUserSession(int $sessionId, int $fsId): array
 	{
 		if ($session = $this->getUserSession($sessionId, $fsId)) {
-			$questions = [];
 			$session['try_count'] = $this->countSessions($fsId, $session['quiz_id']);
 
-			if (!empty($session['quiz_questions'])) {
+			if (!empty($session['quiz_questions']) && !empty($session['quiz_result'])) {
 				$session['quiz_questions'] = unserialize($session['quiz_questions']);
 				$questions = $this->collectQuestionsWithAnswers($session['quiz_questions']);
-			}
 
-			if (!empty($session['quiz_result'])) {
 				$session['quiz_result'] = unserialize($session['quiz_result']);
 
 				foreach ($session['quiz_result'] as $quizKey => $quizResult) {

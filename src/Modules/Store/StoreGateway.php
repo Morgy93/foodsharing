@@ -202,8 +202,8 @@ class StoreGateway extends BaseGateway
 			  AND	b.betrieb_status_id <> :permanentlyClosed
 			  AND	b.`lat` != ""
 		', [
-				':regionId' => $regionId,
-				':permanentlyClosed' => CooperationStatus::PERMANENTLY_CLOSED,
+			':regionId' => $regionId,
+			':permanentlyClosed' => CooperationStatus::PERMANENTLY_CLOSED,
 		]);
 	}
 
@@ -829,7 +829,8 @@ class StoreGateway extends BaseGateway
 	 */
 	public function getStoreWallpost(int $storeId, int $postId): array
 	{
-		return $this->db->fetchByCriteria('fs_betrieb_notiz',
+		return $this->db->fetchByCriteria(
+			'fs_betrieb_notiz',
 			['id', 'foodsaver_id', 'betrieb_id', 'text', 'zeit'],
 			['id' => $postId, 'betrieb_id' => $storeId]
 		);
@@ -922,9 +923,33 @@ class StoreGateway extends BaseGateway
 		$this->db->update('fs_betrieb', ['team_status' => $teamStatus], ['id' => $storeId]);
 	}
 
-	public function getStores()
+	/**
+	 * Return all stores.
+	 * Can be restricted to stores the user is a member of.
+	 *
+	 * @return array name and id of the stores
+	 */
+	public function getStores(int $fs_id = null): array
 	{
-		return $this->db->fetchAllByCriteria('fs_betrieb', ['id', 'name']);
+		if ($fs_id) {
+			return $this->db->fetchAll('SELECT
+				b.id,
+				b.`name`
+			FROM
+				fs_betrieb_team t
+			JOIN fs_betrieb b ON
+				b.id = t.betrieb_id AND b.betrieb_status_id IN (:established, :starting)
+			WHERE
+				t.foodsaver_id = :fs_id AND t.active = :membership_status
+			', [
+				'fs_id' => $fs_id,
+				'membership_status' => MembershipStatus::MEMBER,
+				':established' => CooperationStatus::COOPERATION_ESTABLISHED,
+				':starting' => CooperationStatus::COOPERATION_STARTING
+			]);
+		} else {
+			return $this->db->fetchAllByCriteria('fs_betrieb', ['id', 'name']);
+		}
 	}
 
 	public function addStoreRequest(int $storeId, int $userId): int

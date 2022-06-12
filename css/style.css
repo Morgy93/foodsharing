@@ -1,5 +1,6 @@
 :root {
   --border: #e3ded3;
+  --border-radius: 6px;
 
   --warning-rgb: 255, 193,  7; /* bootstrap default, #ffc107 */
   --danger-rgb:  220,  53, 69; /* bootstrap default, #dc3545 */
@@ -159,29 +160,6 @@
   margin: 0 auto;
 }
 
-a,
-.bootstrap a,
-.markdown a[href],
-.bootstrap .markdown a,
-.ui-widget-content a {
-  color: var(--fs-green);
-  text-decoration: none;
-}
-
-a:hover,
-.bootstrap a:hover,
-.markdown a[href]:hover,
-.bootstrap .markdown a:hover,
-.ui-widget-content a:hover {
-  color: var(--fs-green);
-  text-decoration: underline;
-}
-
-.markdown a[href],
-.bootstrap .markdown a {
-  font-weight: bold;
-}
-
 .ui-dialog,
 .ui-shadow {
   box-shadow: 0 0 7px rgba(0, 0, 0, 0.3);
@@ -201,8 +179,8 @@ blockquote:after {
 }
 /* RESET END */
 
-body {
-  background-color: var(--fs-beige);
+body{
+  background-color: var(--fs-white);
 }
 
 .odd {
@@ -260,9 +238,17 @@ div#main {
   line-height: 1.6em;
   margin: 0 auto;
   max-width: 1100px;
-  padding: 0;
+  padding: 2rem 0;
   min-height: calc(83vh);
-  padding-bottom: 30px;
+}
+
+/* ONLY REQUIRED FOR OLD PAGES --- REMOVE WHEN ALL ARE REVAMPED! */
+body:not(.page-dashboard):not(.page-index):not(.page-login) .headline {
+  display: none !important;
+}
+
+nav .navbar-collapse.collapse.show .headline {
+  display: inline-block !important;
 }
 
 .inside {
@@ -984,7 +970,7 @@ td.load {
   text-decoration: none !important;
 }
 
-ul.bread {
+/* ul.bread {
   display: block;
   list-style: none;
   float: left;
@@ -992,6 +978,7 @@ ul.bread {
   padding: 0;
   background-color: transparent !important;
 }
+*/
 
 ul.bread li,
 ul.bread li a {
@@ -1008,6 +995,10 @@ ul.bread li:before {
   margin-right: 10px;
   position: relative;
   top: 1px;
+}
+
+ul.bread li.last {
+  color: unset;
 }
 
 ul.bread li {
@@ -1087,16 +1078,23 @@ ul.linklist li > a:hover .avatar span.bubble {
   padding-top: 7px;
 }
 
-div.bottom_bar .float_right {
+div.bottom_bar .button-interactions {
   float: right;
   display: block;
 }
 
 @media (max-width: 1025px) {
-  div.bottom_bar .float_right {
-    float: none !important;
-    display: block;
+  div.bottom_bar .button-interactions {
+    float: none;
     text-align: center;
+    display: inline-flex;
+    flex-direction: column;
+    width: 100%;
+    justify-content: space-around;
+  }
+
+  div.bottom_bar .button-interactions a:not(:last-child) {
+    margin-bottom: 5px;
   }
 
   .inside {

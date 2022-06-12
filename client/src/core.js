@@ -14,9 +14,8 @@ import registerServiceWorker from '@/registerServiceWorker'
 import './scss/bootstrap-theme.scss'
 import './scss/index.scss'
 
-import '@/menu'
 import '@/becomeBezirk'
-import '@/footer'
+import '@/views/views'
 
 import serverData from '@/server-data'
 

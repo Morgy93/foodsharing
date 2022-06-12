@@ -285,6 +285,7 @@ menu:
     all_messages: All messages
     messages: Messages
     your_groups: Your groups
+    your_baskets: Your baskets
     groups: Group overview
     your_account: Your account
     your_stores: Your stores
@@ -377,8 +378,6 @@ profile:
     cta: 'The complete profile of {name} is available after registration:'
     textMayNot: and is therefore not allowed to accept any food on behalf of foodsharing.
     textMay: and is therefore allowed to accept food on behalf of foodsharing.
-  signoutAll: Sign out of all
-  signoutPickup: sign out
   regions: '{name} is a foodsaver in'
   stats:
     baskets: Food baskets
@@ -478,8 +477,6 @@ profile:
   title: Profile
   pinboard: Status updates from {name}
   about_me_intern: About me
-  signoutAllConfirmation: Do you really want to unsubscribe {name} from all upcoming
-    pickup dates?
   go: Go to profile page
   mediation:
     no_group: Unfortunately there is no local mediation group for the home district
@@ -605,6 +602,7 @@ events:
   goto: Go to the event
   edited: Event was changed successfully.
   button:
+    change: Change RSVP
     maybe: Maybe
     yes: I will join
     no: I can not
@@ -759,6 +757,50 @@ pickup:
     \ on {date}?\n{name} will receive the following message about this:\n"
   same_day_entry: '[{when}] {name}'
   same_day_hint: 'On the {day} you have signed into the following pickups:'
+  overview:
+    header: Pickups
+    tab:
+      registered:
+        name: Registered Pickups
+        tooltip:
+          own: Future pickups, for which you signed up
+          other: Future pickups the user signed up for
+        empty: Currenly no pickups are registered.
+      options:
+        name: Pickup Options
+        tooltip:
+          own: Future pickups, for which you could sign up
+        empty: Currently there are now free pickups slots in any of your teams.
+      history:
+        name: History
+        tooltip:
+          own: Past pickups in which you participated
+          other: Pickups in the last Month in which the user participated
+        empty: There have been no pickups yet.
+    cols:
+      time: Date
+      store: Store
+      slots: Slots
+    status:
+      confirmed: Confirmed
+      pending: Pending
+      option: Slot available
+    menu:
+      refresh: Refresh
+      signOffAll: Sign all off
+      signOff: Sign off
+      registeredSwitch: Show registered Slots
+      loadMore: Load more
+    modals:
+      signOffAll:
+        title: Sign all slots off?
+        message: Do you really want to sign off all registered slots of this user?
+      signOff:
+        title: Sign off slot?
+        message: Do you really want to sign this user off a registered slot?
+    allLoaded: All entries are shown.
+    freeSlots: "{slots} free"
+
 storeview:
   cooperation: Cooperation since {startTime}.
   store: Store
@@ -1352,6 +1394,7 @@ footer:
   partner: Partners
   infosPrivatePersons: For private persons
   infosCompany: For companies
+  infosDeveloper: For developers
   guide: Hygiene guide
   dataprivacy: Privacy
   imprint: Impressum
@@ -1390,6 +1433,8 @@ basket:
   nearby-short: Nearby
   mapsearch: Search for an address…
   nearby: Food baskets nearby
+  no_nearby: There are no food baskets within {radius} kilometer
+
   recent: Newest food baskets
   all: All food baskets
   title: Food baskets
@@ -1440,7 +1485,7 @@ basket:
   request-fs: Request food basket on our foodsharing homepage
   request: Request food basket
   request_close: Close food basket request
-  requested_by: requested by
+  requested_by: requested by {name}
   no_requests: No inquiries so far
   requests: Requests ({count})
   provider: Provider
@@ -1517,11 +1562,6 @@ foodsaver:
   delete_own_account: You are about to delete your own account. Are you sure?
   delete_account_now: Delete account now
   actions: Activities
-  addresschange:
-    title: Warning regarding change of address
-    text: An address changed here does not update the geographic coordinates that
-      are required for food baskets, for example. It is therefore strongly recommended
-      that the user change the address himself in the {settings}.
   about_me_intern: "This short description will be displayed on your profile page\n\
     and is visible there for everyone in the foodsharing community.\n"
   about_me_public: "This short description will be displayed on the <a href=\"https://foodsharing.de/team\"\
@@ -1603,6 +1643,11 @@ store:
   tooltip_managing: You are responsible for this store
   not-in-team: You are not a member of this store's team yet.
   tooltip_yellow: Open collections in the next five days
+  tooltip_orange: Vacant pick-ups in the next three days
+  tooltip_red: Vacant pick-ups today or tomorrow
+  short_tooltip_yellow: Open pickups in 5 days
+  short_tooltip_orange: Open pickups in 3 days
+  short_tooltip_red: Open pickups today or tomorrow
   springer_conversation_name: Jumper {name}
   my_last_pickup: My last pick-up
   average_collection_quantity: Pick-up quantity on average
@@ -1612,8 +1657,6 @@ store:
   isJumper: Is on the jumper list.
   noPickup: Has never picked up here.
   go: To the team page
-  tooltip_red: Vacant pick-ups today or tomorrow
-  tooltip_orange: Vacant pick-ups in the next three days
   pickup_slot_unavailable: This pick-up slot is further in the future than intended
     by the responsibles. So please try again at a later date.
   appliedFor: Request made
@@ -1915,6 +1958,7 @@ storemanagers: Store managers
 language_chooser:
   title: "Choose language"
   content: "Please choose a language"
+  choose_button: "Update"
 plz: Post code (automatically filled by the map above)
 fsp:
   twig:
@@ -2153,10 +2197,11 @@ addresspicker:
   infobox: Please enter the address in the text field between this message and the
     map and then confirm this by selecting it on the map.
 dashboard:
-  invitations: You were invited
   my:
     groups: Your groups
     regions: Your regions
+    events: Events
+    baskets: Foodbaskets
     no-stores: You are not in any team yet.
     managing: You are responsible for
     pending: Requests have been made to
@@ -2164,7 +2209,17 @@ dashboard:
     waiting: You are on the jumper list at
     buddies: People you know
     users: foodsavers
+  options:
+    hide:
+      text: Hide
+      tooltip: Here can you hide information on the dashboard
+    reset: Reset
+    grid_toggle:
+      2_columns: Go to 2 columns view
+      3_columns: Go to 2 columns view
   source_event: Appointment {0}
+  showmore: Show more
+  showless: Show less
   source_forum_bot: Ambassador forum {0}
   source_forum: Forum {0}
   source_friendWall_own: Your pinboard
@@ -2199,7 +2254,7 @@ dashboard:
     part_2: request a new activation email here
     part_1: Please confirm your email address by clicking on the link in the activation
       email. Alternatively, you can
-  source_mailbox: '{o}'
+  source_mailbox: '{0}'
   quiz:
     read: continue reading
     go: Go to the quiz
@@ -2207,8 +2262,10 @@ dashboard:
   greeting: Hello {name}! Nice to have you there.
   source_store: Stores {0}
   pickupdates: Next pickups
-  events: Next events ({count})
+  invitation: You were invited
+  invitationCount: You were invited ({count})
   event: Next event
+  eventCount: Next events ({count})
   foodsaver_amount: "You have picked up groceries <strong style=\"white-space:nowrap\"\
     >{pickups}&thinsp;&times;</strong>\nand saved <strong style=\"white-space:nowrap\"\
     >{weight}&thinsp;kg</strong>.\n"
@@ -2542,7 +2599,39 @@ teamjs:
   wrongmail: There is something wrong with your email address.
 contentmanagement: Content management
 activitypost:
-  showeverything: show everything
-  less: less
+  Response: "Answer"
+  response: "answer"
   write: Write an answer …
+  quickreply_info: <b>Shift + Return</b> to add a new line.
+  quickreply_button: Send now<br>or press<b>Return</b>.
 deletelow: delete
+
+error:
+  mail_bounce:
+    title: "Blocked email address!"
+    description: "Your email address is blocked for foodsharing emails and communication."
+    link_1: "Change email address"
+    link_2: "I need help"
+  mail_activation:
+    title: "Email address not confirmed!"
+    description: "Please confirm your email address by clicking on the link in the activation email."
+    link_1: "Request a new activation email"
+    link_2: "Change email address"
+  adress:
+    title: "There was a mistake with your address."
+    info: "Please check your address. The coordinates could not be determined."
+    link: "To the address input"
+  choose_home_region:
+    title: "Select a root district."
+    info: "In order for you to continue, a root district is required."
+    link: "Select root district now"
+
+information:
+  push:
+    title: "You can now receive push notifications from foodsharing."
+    info: "If you no longer want to receive push notifications, you can deactivate them at any time in the settings."
+    link: "To the settings"
+  calendar_sync:
+    title: "Do you know the calendar synchronization for your pickups?"
+    info: "This will allow you to see your next pickup dates using a calendar program of your choice."
+    link: "Subscribe now"

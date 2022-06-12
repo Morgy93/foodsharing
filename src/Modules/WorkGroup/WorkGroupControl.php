@@ -187,7 +187,6 @@ class WorkGroupControl extends Control
 			if ($form->isValid()) {
 				$data = $editWorkGroupRequest->toGroup();
 				$this->workGroupGateway->updateGroup($group['id'], $data);
-				$this->workGroupGateway->updateTeam($group['id'], $data['member'], $data['leader']);
 				$this->flashMessageHelper->success($this->translator->trans('group.saved'));
 				$this->routeHelper->goSelf();
 			}

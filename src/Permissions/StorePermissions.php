@@ -8,7 +8,6 @@ use Foodsharing\Modules\Core\DBConstants\Foodsaver\Role;
 use Foodsharing\Modules\Core\DBConstants\Region\WorkgroupFunction;
 use Foodsharing\Modules\Core\DBConstants\Store\TeamStatus as StoreTeamStatus;
 use Foodsharing\Modules\Group\GroupFunctionGateway;
-use Foodsharing\Modules\Region\RegionGateway;
 use Foodsharing\Modules\Store\StoreGateway;
 use Foodsharing\Modules\Store\TeamStatus as UserTeamStatus;
 
@@ -16,19 +15,19 @@ class StorePermissions
 {
 	private StoreGateway $storeGateway;
 	private Session $session;
-	private RegionGateway $regionGateway;
 	private GroupFunctionGateway $groupFunctionGateway;
+	private ProfilePermissions $profilePermissions;
 
 	public function __construct(
 		StoreGateway $storeGateway,
 		Session $session,
-		RegionGateway $regionGateway,
-		GroupFunctionGateway $groupFunctionGateway
+		GroupFunctionGateway $groupFunctionGateway,
+		ProfilePermissions $profilePermissions
 	) {
 		$this->storeGateway = $storeGateway;
 		$this->session = $session;
-		$this->regionGateway = $regionGateway;
 		$this->groupFunctionGateway = $groupFunctionGateway;
+		$this->profilePermissions = $profilePermissions;
 	}
 
 	/**
@@ -225,6 +224,10 @@ class StorePermissions
 			return true;
 		}
 
+		if ($this->profilePermissions->mayAdministrateUserProfile($fsId)) {
+			return true;
+		}
+
 		return false;
 	}
 
@@ -330,5 +333,10 @@ class StorePermissions
 		}
 
 		return true;
+	}
+
+	public function maySeePickupOptions(int $userId): bool
+	{
+		return $this->session->may('fs') && $this->session->id() == $userId;
 	}
 }

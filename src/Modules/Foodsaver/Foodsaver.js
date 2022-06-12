@@ -7,6 +7,7 @@ import 'jquery-dynatree'
 import i18n from '@/i18n'
 import { deleteUser } from '@/api/user'
 import './Foodsaver.css'
+import { attachAddressPicker } from '@/addressPicker'
 
 const fsapp = {
   init: function () {
@@ -70,3 +71,5 @@ expose({
   confirmDeleteUser,
   confirmDeleteSelf,
 })
+
+attachAddressPicker()

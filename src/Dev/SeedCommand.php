@@ -280,7 +280,7 @@ class SeedCommand extends Command implements CustomCommandInterface
 		$I->createStoreCategories();
 		// Create users
 		$this->output->writeln('Create basic users:');
-		$user1 = $I->createFoodsharer($password, ['email' => 'user1@example.com', 'name' => 'One', 'bezirk_id' => $region1]);
+		$user1 = $I->createFoodsharer($password, ['email' => 'user1@example.com', 'name' => 'One']);
 		$this->writeUser($user1, $password, 'foodsharer');
 
 		$user2 = $I->createFoodsaver($password, ['email' => 'user2@example.com', 'name' => 'Two', 'bezirk_id' => $region1]);

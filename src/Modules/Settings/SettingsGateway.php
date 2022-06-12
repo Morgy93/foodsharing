@@ -64,6 +64,9 @@ class SettingsGateway extends BaseGateway
 
 	public function updateSleepMode(int $fsId, int $status, string $from, string $to, string $msg): int
 	{
+		$from = $from ?: null;
+		$to = $to ?: null;
+
 		return $this->db->update(
 			'fs_foodsaver',
 			[

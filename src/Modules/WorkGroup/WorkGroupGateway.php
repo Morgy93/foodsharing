@@ -6,18 +6,13 @@ use Exception;
 use Foodsharing\Modules\Core\BaseGateway;
 use Foodsharing\Modules\Core\Database;
 use Foodsharing\Modules\Core\DBConstants\Region\Type;
-use Foodsharing\Modules\Region\ForumFollowerGateway;
 
 class WorkGroupGateway extends BaseGateway
 {
-	private ForumFollowerGateway $forumFollowerGateway;
-
 	public function __construct(
-		Database $db,
-		ForumFollowerGateway $forumFollowerGateway
+		Database $db
 	) {
 		parent::__construct($db);
-		$this->forumFollowerGateway = $forumFollowerGateway;
 	}
 
 	/*
@@ -41,98 +36,6 @@ class WorkGroupGateway extends BaseGateway
 		}
 
 		return [];
-	}
-
-	/**
-	 * Updates Group Members and Group-Admins.
-	 */
-	public function updateTeam(int $regionId, array $memberIds, array $leaderIds): void
-	{
-		$this->forumFollowerGateway->deleteForumSubscriptions($regionId, $memberIds, false);
-
-		if ($memberIds) {
-			$currentMemberIds = $this->db->fetchAllValuesByCriteria(
-				'fs_foodsaver_has_bezirk',
-				'foodsaver_id',
-				[
-					'bezirk_id' => $regionId,
-					'active' => 1
-				]
-			);
-
-			$deletedMemberIds = array_diff($currentMemberIds, $memberIds);
-
-			// delete all members if they're not in the submitted array
-			foreach ($deletedMemberIds as $m) {
-				$this->db->delete('fs_foodsaver_has_bezirk', [
-					'foodsaver_id' => $m,
-					'bezirk_id' => $regionId
-				]);
-			}
-
-			// insert new members
-			foreach ($memberIds as $m) {
-				$this->db->insertIgnore(
-					'fs_foodsaver_has_bezirk',
-					[
-						'foodsaver_id' => (int)$m,
-						'bezirk_id' => $regionId,
-						'active' => 1,
-						'added' => $this->db->now()
-					]
-				);
-			}
-		} else {
-			$this->emptyMember($regionId);
-		}
-
-		// the same for the group admins
-		$this->forumFollowerGateway->deleteForumSubscriptions($regionId, $leaderIds, true);
-
-		if ($leaderIds) {
-			// delete all group-admins (botschafter) if they're not in the submitted array
-			$this->db->execute('
-				DELETE
-				FROM	`fs_botschafter`
-				WHERE	`bezirk_id` = ' . $regionId . '
-				AND		`foodsaver_id` NOT IN(' . implode(',', array_map('intval', $leaderIds)) . ')
-			');
-
-			// insert new group-admins
-			foreach ($leaderIds as $m) {
-				$this->db->insertIgnore(
-					'fs_botschafter',
-					[
-						'foodsaver_id' => (int)$m,
-						'bezirk_id' => $regionId
-					]
-				);
-			}
-		} else {
-			$this->emptyLeader($regionId);
-		}
-	}
-
-	/**
-	 * Delete all Leaders from a group.
-	 */
-	private function emptyLeader(int $regionId): int
-	{
-		return $this->db->delete('fs_botschafter', ['bezirk_id' => $regionId]);
-	}
-
-	/**
-	 * Delete all members from a group.
-	 */
-	private function emptyMember(int $regionId): int
-	{
-		return $this->db->delete(
-			'fs_foodsaver_has_bezirk',
-			[
-				'bezirk_id' => $regionId,
-				'active' => 1
-			]
-		);
 	}
 
 	public function getGroup(int $regionId): array

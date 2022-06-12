@@ -2,9 +2,11 @@
 
 namespace Foodsharing\Modules\Maintenance;
 
+use Carbon\Carbon;
 use Foodsharing\Modules\Core\BaseGateway;
 use Foodsharing\Modules\Core\DBConstants\Basket\Status;
 use Foodsharing\Modules\Core\DBConstants\Foodsaver\SleepStatus;
+use Foodsharing\Modules\Core\DBConstants\Quiz\SessionStatus;
 
 class MaintenanceGateway extends BaseGateway
 {
@@ -18,7 +20,8 @@ class MaintenanceGateway extends BaseGateway
 		return $this->db->update(
 			'fs_basket',
 			['status' => Status::DELETED_OTHER_REASON],
-			['status' => Status::REQUESTED_MESSAGE_READ, 'until <' => $this->db->now()]);
+			['status' => Status::REQUESTED_MESSAGE_READ, 'until <' => $this->db->now()]
+		);
 	}
 
 	/**
@@ -32,7 +35,7 @@ class MaintenanceGateway extends BaseGateway
 	}
 
 	/**
-	 * Removes the temporary sleep status from users if it is outdated.
+	 * Removes the temporary sleep status including dates from users if it is outdated.
 	 *
 	 * @return int the number of users that were changed
 	 */
@@ -40,8 +43,23 @@ class MaintenanceGateway extends BaseGateway
 	{
 		return $this->db->update(
 			'fs_foodsaver',
-			['sleep_status' => SleepStatus::NONE],
-			['sleep_status' => SleepStatus::TEMP, 'sleep_until >' => 0, 'sleep_until <' => $this->db->now()]);
+			['sleep_status' => SleepStatus::NONE, 'sleep_from' => null, 'sleep_until' => null],
+			['sleep_status' => SleepStatus::TEMP, 'sleep_until >' => 0, 'sleep_until <' => $this->db->curdate()]
+		);
+	}
+
+	/**
+	 * Removes the temporary sleep status from users if it is outdated.
+	 *
+	 * @return int the number of users that were changed
+	 */
+	public function putUsersToSleep(): int
+	{
+		return $this->db->update(
+			'fs_foodsaver',
+			['sleep_status' => SleepStatus::TEMP],
+			['sleep_status' => SleepStatus::NONE, 'sleep_from <=' => $this->db->curdate()]
+		);
 	}
 
 	/**
@@ -138,8 +156,8 @@ class MaintenanceGateway extends BaseGateway
 
 					AND
 						b.id IN(:storeIds)', [
-						':storeIds' => implode(',', $storeIds)
-					]);
+					':storeIds' => implode(',', $storeIds)
+				]);
 			}
 		}
 
@@ -207,5 +225,26 @@ class MaintenanceGateway extends BaseGateway
 	public function unsetUserPhotos(array $foodsaverIds): void
 	{
 		$this->db->update('fs_foodsaver', ['photo' => ''], ['id' => $foodsaverIds]);
+	}
+
+	/**
+	 * Updates all quiz sessions that were finished or aborted more than two weeks ago by setting
+	 * questions and answers to null. After this the quiz results can not be seen anymore.
+	 *
+	 * @return int the number of updated entries
+	 */
+	public function updateFinishedQuizSessions(): int
+	{
+		return $this->db->update(
+			'fs_quiz_session',
+			[
+				'quiz_result' => null,
+				'quiz_questions' => null,
+			],
+			[
+				'status' => [SessionStatus::FAILED, SessionStatus::PASSED],
+				'time_end <' => Carbon::now()->subWeeks(2)->format('Y-m-d H:i:s'),
+			]
+		);
 	}
 }

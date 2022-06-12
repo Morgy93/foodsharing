@@ -33,9 +33,9 @@ export default {
       type: String,
       default: '',
     },
-    rounded: {
+    round: {
       type: Boolean,
-      default: true,
+      default: false,
     },
     autoScale: {
       type: Boolean,
@@ -45,10 +45,12 @@ export default {
   computed: {
     avatarUrl () {
       const prefix = {
+        16: 'mini_q_',
         35: 'mini_q_',
         50: '50_q_',
         130: '130_q_',
       }[this.size] || ''
+
       if (this.url) {
         if (this.url.startsWith('/api/uploads/')) {
           // path for pictures uploaded with the new API
@@ -62,18 +64,21 @@ export default {
       }
     },
     wrapperStyle () {
-      const styles = {}
+      const styles = {
+        height: `${this.size}px`,
+        width: `${this.size}px`,
+        display: this.size === 16 ? 'inline-flex' : null,
+      }
       if (this.autoScale) {
         styles.height = '100%'
         styles.width = 'auto'
       }
+
       return styles
     },
     imgStyle () {
       const styles = {}
-      if (this.rounded) {
-        styles['border-radius'] = '5px'
-      }
+      styles['border-radius'] = this.round ? '50%' : 'var(--border-radius)'
       return styles
     },
   },
@@ -86,6 +91,7 @@ export default {
   display: inline-block;
   background-size: cover;
 }
+
 .sleeping::after {
   content: '';
   display: block;
@@ -94,16 +100,25 @@ export default {
   background-repeat: no-repeat;
   background-size: cover;
   position: absolute;
-  top: -10%;
-  left: -10%;
+  top: 0;
+  left: 0;
 }
+
 .sleep35::after {
   background-image: url('/img/sleep35x35.png');
+  top: -10px;
+  left: -10px;
 }
+
 .sleep50::after {
   background-image: url('/img/sleep50x50.png');
+  top: -10px;
+  left: -20px;
 }
+
 .sleep130::after {
   background-image: url('/img/sleep130x130.png');
+  top: -10px;
+  left: -20px;
 }
 </style>

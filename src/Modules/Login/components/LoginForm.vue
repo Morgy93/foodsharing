@@ -130,9 +130,19 @@ export default {
       }
     },
   },
+  created () {
+    if (localStorage.getItem('login-rememberme')) {
+      this.rememberMe = true
+    }
+  },
   methods: {
 
     async submit () {
+      if (this.rememberMe) {
+        localStorage.setItem('login-rememberme', 'true')
+      } else {
+        localStorage.removeItem('login-rememberme')
+      }
       if (!this.email) {
         pulseError(i18n('login.error_no_email'))
         return

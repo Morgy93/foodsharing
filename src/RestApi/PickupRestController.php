@@ -11,6 +11,7 @@ use Foodsharing\Modules\Message\MessageTransactions;
 use Foodsharing\Modules\Store\PickupGateway;
 use Foodsharing\Modules\Store\StoreGateway;
 use Foodsharing\Modules\Store\StoreTransactions;
+use Foodsharing\Permissions\ProfilePermissions;
 use Foodsharing\Permissions\StorePermissions;
 use Foodsharing\Utility\TimeHelper;
 use FOS\RestBundle\Controller\AbstractFOSRestController;
@@ -28,6 +29,7 @@ final class PickupRestController extends AbstractFOSRestController
 	private PickupGateway $pickupGateway;
 	private StoreGateway $storeGateway;
 	private StorePermissions $storePermissions;
+	private ProfilePermissions $profilePermissions;
 	private StoreTransactions $storeTransactions;
 	private MessageTransactions $messageTransactions;
 
@@ -37,6 +39,7 @@ final class PickupRestController extends AbstractFOSRestController
 		PickupGateway $pickupGateway,
 		StoreGateway $storeGateway,
 		StorePermissions $storePermissions,
+		ProfilePermissions $profilePermissions,
 		StoreTransactions $storeTransactions,
 		MessageTransactions $messageTransactions
 	) {
@@ -45,6 +48,7 @@ final class PickupRestController extends AbstractFOSRestController
 		$this->pickupGateway = $pickupGateway;
 		$this->storeGateway = $storeGateway;
 		$this->storePermissions = $storePermissions;
+		$this->profilePermissions = $profilePermissions;
 		$this->storeTransactions = $storeTransactions;
 		$this->messageTransactions = $messageTransactions;
 	}
@@ -79,10 +83,13 @@ final class PickupRestController extends AbstractFOSRestController
 	}
 
 	/**
+	 * Remove a user from a pickup.
+	 *
 	 * @OA\Tag(name="pickup")
 	 *
 	 * @Rest\Delete("stores/{storeId}/pickups/{pickupDate}/{fsId}", requirements={"storeId" = "\d+", "pickupDate" = "[^/]+", "fsId" = "\d+"})
 	 * @RequestParam(name="message", nullable=true, default="")
+	 * @RequestParam(name="sendKickMessage", nullable=true, default=true)
 	 */
 	public function leavePickupAction(int $storeId, string $pickupDate, int $fsId, ParamFetcher $paramFetcher): Response
 	{
@@ -90,6 +97,40 @@ final class PickupRestController extends AbstractFOSRestController
 			throw new HttpException(403);
 		}
 
+		$message = trim($paramFetcher->get('message'));
+		$sendKickMessage = $paramFetcher->get('sendKickMessage') || !$this->profilePermissions->mayCancelSlotsFromProfile($fsId);
+		$this->leavePickup($storeId, $pickupDate, $fsId, $message, $sendKickMessage);
+
+		return $this->handleView($this->view([], 200));
+	}
+
+	/**
+	 * Remove a user from all his pickups.
+	 *
+	 * @OA\Tag(name="pickup")
+	 *
+	 * @Rest\Delete("pickups/{fsId}", requirements={"fsId" = "\d+"})
+	 * @RequestParam(name="message", nullable=true, default="")
+	 * @RequestParam(name="sendKickMessage", nullable=true, default=true)
+	 */
+	public function leaveAllPickupsAction(int $fsId, ParamFetcher $paramFetcher)
+	{
+		if (!$this->profilePermissions->mayCancelSlotsFromProfile($fsId)) {
+			throw new HttpException(403);
+		}
+		$pickups = $this->pickupGateway->getNextPickups($fsId);
+		$message = trim($paramFetcher->get('message'));
+		$sendKickMessage = $paramFetcher->get('sendKickMessage');
+
+		foreach ($pickups as $pickup) {
+			$this->leavePickup($pickup['store_id'], date(DATE_ATOM, $pickup['timestamp']), $fsId, $message, $sendKickMessage);
+		}
+
+		return $this->handleView($this->view([], 200));
+	}
+
+	private function leavePickup(int $storeId, string $pickupDate, int $fsId, string $message = '', bool $sendKickMessage = true)
+	{
 		$date = TimeHelper::parsePickupDate($pickupDate);
 		if (is_null($date)) {
 			throw new HttpException(400, 'Invalid date format');
@@ -112,7 +153,6 @@ final class PickupRestController extends AbstractFOSRestController
 				StoreLogAction::SIGN_OUT_SLOT
 			);
 		} else {
-			$message = trim($paramFetcher->get('message'));
 			$this->storeGateway->addStoreLog( // the user got kicked/the pickup got denied
 				$storeId,
 				$this->session->id(),
@@ -124,11 +164,11 @@ final class PickupRestController extends AbstractFOSRestController
 			);
 
 			// send direct message to the user
-			$formattedMessage = $this->storeTransactions->createKickMessage($fsId, $storeId, $date, $message);
-			$this->messageTransactions->sendMessageToUser($fsId, $this->session->id(), $formattedMessage);
+			if ($sendKickMessage) {
+				$formattedMessage = $this->storeTransactions->createKickMessage($fsId, $storeId, $date, $message);
+				$this->messageTransactions->sendMessageToUser($fsId, $this->session->id(), $formattedMessage);
+			}
 		}
-
-		return $this->handleView($this->view([], 200));
 	}
 
 	/**
@@ -269,5 +309,178 @@ final class PickupRestController extends AbstractFOSRestController
 		});
 
 		return $pickups;
+	}
+
+	/**
+	 * Get past pickups of a user.
+	 * Might be restricted to the last month depending on the permissions.
+	 *
+	 * @OA\Tag(name="pickup")
+	 *
+	 * @Rest\Get("pickup/history")
+	 * @Rest\QueryParam(name="fsId", nullable=true, default=null)
+	 * @Rest\QueryParam(name="page", nullable=false, default=0)
+	 * @Rest\QueryParam(name="pageSize", nullable=false, default=50)
+	 */
+	public function listPastPickupsAction(ParamFetcher $paramFetcher): Response
+	{
+		$fsId = (int)($paramFetcher->get('fsId') ?? $this->session->id());
+		$page = (int)$paramFetcher->get('page');
+		$pageSize = (int)$paramFetcher->get('pageSize');
+
+		if (!$this->session->id() || !$this->profilePermissions->maySeePickups($fsId)) {
+			throw new HttpException(403);
+		}
+
+		$maySeeFullHistory = $this->profilePermissions->maySeeAllPickups($fsId);
+
+		$pickups = $this->pickupGateway->getPastPickups($fsId, $page, $pageSize, $maySeeFullHistory);
+
+		$pickups = array_map(fn ($pickup) => [
+			'date' => RestNormalization::normalizeDate($pickup['timestamp']),
+			'store' => [
+				'id' => $pickup['store_id'],
+				'name' => $pickup['store_name'],
+			],
+			'confirmed' => $pickup['confirmed'],
+			'slots' => [
+				'occupied' => array_map(
+					fn ($id, $name, $avatar, $confirmed) => [
+						'id' => (int)$id,
+						'name' => $name,
+						'avatar' => $avatar == '' ? null : $avatar,
+						'confirmed' => (int)$confirmed,
+					],
+					str_getcsv($pickup['fs_ids']),
+					str_getcsv($pickup['fs_names'], ',', '\''),
+					str_getcsv($pickup['fs_avatars']),
+					str_getcsv($pickup['slot_confimations'])
+				)
+			]
+		], $pickups);
+
+		return $this->handleView($this->view($pickups));
+	}
+
+	/**
+	 * Get all future pickups a user has registered.
+	 *
+	 * @OA\Tag(name="pickup")
+	 *
+	 * @Rest\Get("pickup/registered")
+	 * @Rest\QueryParam(name="fsId", nullable=true, default=null)
+	 */
+	public function listRegisteredPickupsAction(ParamFetcher $paramFetcher): Response
+	{
+		$fsId = (int)($paramFetcher->get('fsId') ?? $this->session->id());
+
+		if (!$this->session->id() || !$this->profilePermissions->maySeePickups($fsId)) {
+			throw new HttpException(403);
+		}
+
+		$pickups = $this->pickupGateway->getNextPickups($fsId);
+
+		$pickups = array_map(fn ($pickup) => [
+			'date' => RestNormalization::normalizeDate($pickup['timestamp']),
+			'store' => [
+				'id' => $pickup['store_id'],
+				'name' => $pickup['store_name'],
+			],
+			'confirmed' => $pickup['confirmed'],
+			'slots' => [
+				'occupied' => array_map(
+					fn ($id, $name, $avatar, $confirmed) => [
+						'id' => (int)$id,
+						'name' => $name,
+						'avatar' => $avatar == '' ? null : $avatar,
+						'confirmed' => (int)$confirmed,
+					],
+					str_getcsv($pickup['fs_ids']),
+					str_getcsv($pickup['fs_names'], ',', '\''),
+					str_getcsv($pickup['fs_avatars']),
+					str_getcsv($pickup['slot_confimations'])
+				),
+				'max' => $pickup['max_fetchers'],
+			]
+		], $pickups);
+
+		return $this->handleView($this->view($pickups));
+	}
+
+	/**
+	 * Get all pickup options a user has, including already registered slots.
+	 *
+	 * @OA\Response(response="200", description="Success")
+	 * @OA\Response(response="403", description="Insufficient permissions")
+	 * @OA\Tag(name="pickup")
+	 *
+	 * @Rest\Get("pickup/options")
+	 * @Rest\QueryParam(name="page", nullable=false, default=0)
+	 * @Rest\QueryParam(name="pageSize", nullable=false, default=50)
+	 */
+	public function listPickupOptionsAction(ParamFetcher $paramFetcher): Response
+	{
+		$page = (int)$paramFetcher->get('page');
+		$pageSize = (int)$paramFetcher->get('pageSize');
+		$id = $this->session->id();
+		if (!$this->session->may() || !$this->storePermissions->maySeePickupOptions($id)) {
+			throw new HttpException(403);
+		}
+
+		//fetch stores and pickup slots:
+		$pickupOptions = [];
+		$pickupSlots = null;
+
+		$isConfirmed = function ($id, $users) {
+			foreach ($users as $u) {
+				if ($u['profile']['id'] === $id) {
+					return $u['isConfirmed'];
+				}
+			}
+
+			return null;
+		};
+
+		foreach ($this->storeGateway->getStores($id) as $store) {
+			$pickupSlots = $this->enrichPickupSlots(
+				$this->pickupGateway->getPickupSlots($store['id']),
+				$store['id']
+			);
+
+			$pickupOptions = array_merge($pickupOptions, array_map(
+				fn ($slot) => [
+					'date' => RestNormalization::normalizeDate(strtotime($slot['date'])),
+					'store' => $store,
+					'confirmed' => $isConfirmed($id, $slot['occupiedSlots']),
+					'slots' => [
+						'occupied' => array_map(
+							fn ($user) => [
+								'id' => $user['profile']['id'],
+								'name' => $user['profile']['name'],
+								'avatar' => $user['profile']['avatar'],
+								'confirmed' => $user['isConfirmed'],
+							],
+							$slot['occupiedSlots']
+						),
+						'max' => $slot['totalSlots'],
+					],
+				],
+				$pickupSlots
+			));
+		}
+
+		// Filtering (exclude completely filled slots without the user in them)
+		$pickupOptions = array_values(array_filter(
+			$pickupOptions,
+			fn ($obj) => count($obj['slots']['occupied']) < $obj['slots']['max'] || !is_null($obj['confirmed'])
+		));
+
+		usort($pickupOptions, fn ($a, $b) => strtotime($a['date']) <=> strtotime($b['date']));
+
+		if ($page != -1 && $pageSize != -1) {
+			$pickupOptions = array_slice($pickupOptions, $page * $pageSize, $pageSize);
+		}
+
+		return $this->handleView($this->view($pickupOptions));
 	}
 }

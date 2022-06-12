@@ -45,8 +45,10 @@ variables:
   - build:backend
   - build:backend-chat
   script:
+  - chmod -R 750 ./
   - (cd deployer && composer install)
   - deployer/vendor/bin/dep deploy $CI_ENVIRONMENT_NAME --revision $CI_COMMIT_SHA
+  - ./scripts/deploy.restart-chatserver.sh
   - ./scripts/deploy.notifyslack.sh
 
 stages:

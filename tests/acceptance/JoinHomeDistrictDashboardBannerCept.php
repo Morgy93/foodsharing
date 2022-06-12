@@ -12,5 +12,5 @@ $foodsaver = $I->createFoodsaver();
 $I->login($foodsaver['email']);
 $I->amOnPage('/?page=dashboard');
 $I->executeJS("$('button:contains(Schließen)').trigger('click')");
-$I->click('Bitte wähle einen Stammbezirk aus.');
+$I->click('Jetzt Stammbezirk auswählen');
 $I->see('Wähle den Bezirk aus, in dem du aktiv werden möchtest');

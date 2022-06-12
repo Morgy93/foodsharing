@@ -2,7 +2,6 @@
 
 namespace Foodsharing\RestApi;
 
-use Carbon\Carbon;
 use Foodsharing\Lib\Session;
 use Foodsharing\Modules\Foodsaver\FoodsaverGateway;
 use Foodsharing\Modules\Profile\ProfileGateway;
@@ -59,57 +58,5 @@ final class FoodsaverRestController extends AbstractFOSRestController
 		$pickups = $this->pickupGateway->getSameDayPickupsForUser($fsId, $day);
 
 		return $this->handleView($this->view($pickups));
-	}
-
-	/**
-	 * @OA\Tag(name="foodsaver")
-	 *
-	 * @Rest\Get("foodsaver/{fsId}/pickups/{fromDate}/{toDate}", requirements={"fsId" = "\d+", "fromDate" = "[^/]+", "toDate" = "[^/]+"})
-	 */
-	public function listPastPickupsAction(int $fsId, string $fromDate, string $toDate): Response
-	{
-		if (!$this->session->id() || !$this->profilePermissions->maySeePickups($fsId)) {
-			throw new HttpException(403);
-		}
-
-		// convert date strings into datetime objects
-		$from = TimeHelper::parsePickupDate($fromDate);
-		$to = TimeHelper::parsePickupDate($toDate);
-		if (is_null($from) || is_null($to)) {
-			throw new HttpException(400, 'Invalid date format');
-		}
-		$from = $from->min(Carbon::now())->max(Carbon::now()->subMonth());
-		$to = $to->min(Carbon::now());
-
-		$pickups = [
-			['occupiedSlots' => $this->profileGateway->getRecentPickups($fsId, $from, $to)],
-		];
-
-		return $this->handleView($this->view([
-			'pickups' => $this->enrichPickupSlots($pickups),
-		]));
-	}
-
-	/**
-	 * @deprecated This is a (less generic) duplicate of PickupRestController:enrichPickupSlots.
-	 *
-	 * It should be removed soon, or combined into a RestNormalization or DTO.
-	 * Right now, this is not possible because of the foodsaverGateway coupling!
-	 */
-	private function enrichPickupSlots(array $pickups): array
-	{
-		foreach ($pickups as &$pickup) {
-			foreach ($pickup['occupiedSlots'] as &$slot) {
-				$details = $this->foodsaverGateway->getFoodsaver($slot['foodsaverId']);
-				$slot['profile'] = RestNormalization::normalizeUser($details);
-				unset($slot['foodsaverId']);
-			}
-		}
-		unset($pickup);
-		usort($pickups, function ($a, $b) {
-			return $a['date']->lt($b['date']) ? -1 : 1;
-		});
-
-		return $pickups;
 	}
 }

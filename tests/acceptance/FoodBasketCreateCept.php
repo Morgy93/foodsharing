@@ -15,7 +15,7 @@ $I->login($foodsaver['email'], $pass);
 $I->amOnPage('/');
 
 $I->click('.topbar-baskets > a');
-$I->see('Essenskorb anlegen');
+$I->waitForText('Essenskorb anlegen');
 
 $I->click('Essenskorb anlegen');
 $I->waitForText('Wie lange soll dein Essenskorb gültig sein?');
@@ -81,7 +81,7 @@ $nick->does(
 		$I->waitForText('Anfrage absenden');
 		$I->fillField('#contactmessage', 'Hi friend, can I have the basket please?');
 		$I->click('Anfrage absenden');
-
+		$I->waitForActiveAPICalls();
 		$I->waitForText('Anfrage wurde versendet');
 	});
 
@@ -91,7 +91,7 @@ $I->waitForElementNotVisible('#fancybox-loading');
 $I->waitForText('Anfragen (1)');
 $I->click('.topbar-baskets > a');
 $I->waitForText('angefragt von');
-$I->click('.topbar-baskets .requests > a');
+$I->click('.topbar-baskets .requests');
 $I->waitForText('Hi friend, can I have');
 $I->click('.topbar-baskets > a');
 $I->waitForText('angefragt von');

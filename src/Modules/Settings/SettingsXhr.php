@@ -3,6 +3,7 @@
 namespace Foodsharing\Modules\Settings;
 
 use DateTime;
+use DateTimeZone;
 use Foodsharing\Lib\Xhr\Xhr;
 use Foodsharing\Lib\Xhr\XhrDialog;
 use Foodsharing\Modules\Core\Control;
@@ -155,7 +156,8 @@ class SettingsXhr extends Control
 			];
 		}
 
-		$this->settingsGateway->logChangedSetting($fsId,
+		$this->settingsGateway->logChangedSetting(
+			$fsId,
 			['email' => $this->session->user('email')],
 			['email' => $newEmail],
 			['email']
@@ -173,41 +175,41 @@ class SettingsXhr extends Control
 
 	public function sleepmode(): void
 	{
-		/**
-		 * from
-		 * until
-		 * msg
-		 * status.
-		 */
-		$from = '';
-		$to = '';
-		$msg = '';
-
-		$states = [
-			SleepStatus::NONE => true,
-			SleepStatus::TEMP => true,
-			SleepStatus::FULL => true
-		];
-
-		if (isset($_POST['from']) && $date = DateTime::createFromFormat('d.m.Y', $_POST['from'])) {
-			$from = $date->format('Y-m-d H:i:s');
-		}
-		if (isset($_POST['until']) && $date = DateTime::createFromFormat('d.m.Y', $_POST['until'])) {
-			$to = $date->format('Y-m-d H:i:s');
-		}
-		if ($txt = $this->getPostString('msg')) {
-			$msg = $txt;
-		}
 		$xhr = new Xhr();
 		$xhr->setStatus(0);
-		if (isset($states[$_POST['status']])) {
-			$status = (int)$_POST['status'];
+		if (!isset($_POST['status'])) {
+			$xhr->send();
 
-			$this->settingsGateway->updateSleepMode($this->session->id(), $status, $from, $to, $msg);
+			return;
+		}
+		$status = (int)$_POST['status'];
 
-			$xhr->setStatus(1);
+		$from = '';
+		$until = '';
+		$msg = $this->getPostString('msg') ?: '';
+		if ($status == 0) {
+			$msg = '';
 		}
 
+		if ($status == SleepStatus::TEMP) {
+			if (!isset($_POST['from']) || !isset($_POST['until'])) {
+				$xhr->send();
+
+				return;
+			}
+			$date_from = DateTime::createFromFormat('d.m.Y', $_POST['from']);
+			$from = $date_from->format('Y-m-d H:i:s');
+			$date_until = DateTime::createFromFormat('d.m.Y', $_POST['until']);
+			$until = $date_until->format('Y-m-d H:i:s');
+			$now = new DateTime('now', new DateTimeZone('Europe/Prague'));
+			if ($date_from > $now) { // Sleep after today, not yet sleeping
+				$status = 0;
+			}
+		}
+
+		$this->settingsGateway->updateSleepMode($this->session->id(), $status, $from, $until, $msg);
+
+		$xhr->setStatus(1);
 		$xhr->send();
 	}
 }

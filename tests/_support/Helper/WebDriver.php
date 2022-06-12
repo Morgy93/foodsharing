@@ -72,4 +72,18 @@ class WebDriver extends \Codeception\Module\WebDriver
 	{
 		$this->webDriver->wait($timeout)->until($condition);
 	}
+
+	public function seeCookieHasSessionExpiry($cookieName)
+	{
+		$cookie = $this->webDriver->manage()->getCookieNamed($cookieName);
+		codecept_debug($cookie);
+		$this->assertNull($cookie['expiry']);
+	}
+
+	public function seeCookieHasNoSessionExpiry($cookieName)
+	{
+		$cookie = $this->webDriver->manage()->getCookieNamed($cookieName);
+		codecept_debug($cookie);
+		$this->assertNotNull($cookie['expiry']);
+	}
 }

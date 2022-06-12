@@ -1,32 +1,65 @@
 # Release "I", unreleased
 
 ## Features
-- The number of unread mails is now displayed as a red badge. !2188 @AntonBallmaier
+- The number of unread mails is now displayed as a red badge. !2188 !2230 @AntonBallmaier
 - Improved Calendar exports. Events are now included and pickup descriptions contain links. !2182 @AntonBallmaier
 - Past events are shown now below current and upcoming events within the overview !2162 @merhoc
+- The profile page now contains one unified pickup section. Future pickup options are now visible in that section. !2211 !2226 @AntonBallmaier
 - Pickup statistics on profile !2208 @fs_k
-- Allow the foodsaver, which is verifiable, to create itself in the profile settings (without cut markers) !2198 #chriswalg
+- Allow the foodsaver, which is verifiable, to create itself in the profile settings (without cut markers) !2198 @chriswalg
+- Dashboard revamped, shines in a new style and new features !2227 !2245 !2248 !2252 @sefn
+- In the footer of the website, "For developers" is added under "Participate" to create an easier way to IT. !2241 @NINI1988
+- On the login page, "Stay logged in for one day" is saved in local storage for the next logins. !2249 @NINI1988
 
 ## Changes
--Checks in the id card creation function if only one foodsaver is selected and then reduces the 
-size to the area for a single id card. If more than one foodsaver is selected, then the old logic takes effect 
-and an A4 sheet is used. !2198 #chriswalg
+- Checks in the id card creation function if only one foodsaver is selected and then reduces the 
+  size to the area for a single id card. If more than one foodsaver is selected, then the old logic takes effect 
+  and an A4 sheet is used. !2198 #chriswalg
 - Send a bell notification and email, if a foodsaver was verified. !2198 #chriswalg
+- Unifiying the foodsaver adress change page and adress change page for ambassadors !2171 @NINI1988
+- Set fileformat jpg / png for wallposts !2229 @chriswalg
+- Removed the possibility to edit the member list on a working group's edit page !2228 @alex.simm
+- Info for foodsharer how can change the name !2240 @chriswalg
+- Renamed the button to update displayed language !1232 @martincodes-de
 
 ## Bugfixes
-- When going back during registration, email and password are unchanged. !1114 @AntonBallmaier
+- When going back during registration, email and password are unchanged. !2184 @AntonBallmaier
 - Push notifications can be (de-)activated in the settings again #1239 @alex.simm
+- Show the region name in the updates overview on the dashboard even when the titel is long #1207 @Caroline Fischer
+- Using the sleeping function on the translated website is working again #1133 !2225 @alex.simm
+- Prevent "Payload to large" errors due to padding in web push #1213 !2212 @alex.simm  
+- When setting a sleeping interval starting in the future, you no longer get a sleeping hat right away. !2215 @AntonBallmaier
+- When setting a sleep interval it does no longer a end one day to early. !2215 @AntonBallmaier
+- Prevent "Payload to large" errors due to padding in web push #1213 !2212 @alex.simm
+- The public profile page can handle names with unicode characters #1265 !2239 @alex.simm
+- Fix a type error for the report button on profile !2246 #1271 @alex.simm
+- Prevent "Payload to large" errors due to padding in web push #1213 !2212 @alex.simm
+- Fixed a bug where iOS devices zoom into an input field !2235 @sefan
 
 ## Refactoring
 - Currently running events are shown within the event overview until their end !2162 @merhoc
 - Use the same event panel view within the event overview as in other places !2162 @merhoc
 - Simplify code in the content module @alex.simm
+- Use a REST endpoint for quickreplying to forum threads #798 @alex.simm
+- Extract some redundant permission checks into one function. !2203 @AntonBallmaier
+- The TopBarNavigation is now unified !2238 !2245 !2248 !2252 @sefn
+- The TopBarNavigation is now unified !2238 !2245 !2248 @sefn
+- Rebuild store options to vue #2231 @chriswalg
 
 ## Dev/Test/CI stuff
 - bump node to version 16 !2135 @peter.toennies
 - Update mdbook to 0.4.18 #1178 !2206 @alex.simm
 - Change all emitted Vue events to kebab-case and add linter rules #996 !2163 @alex.simm
 - Switch to an iCal package that is PHP8 compatible #1065 !2151 @alex.simm
+- replace tap-spec by tap-arc and bump superagent to V7 !2129 @peter.toennies
+- Added an Index to speed up the pickup slots. !2193 @AntonBallmaier
+- Updated symfony backend dependencies !2214 @alex.simm
+- Added instructions to run nightly maintenance to dev docs. !2215 @AntonBallmaier
+- Remove questions from quiz sessions after the session is finished or aborted #1030 @alex.simm
+- Results of quiz sessions will be removed two weeks after the session is finished or aborted #1030 @alex.simm
+- Add a workaround to upload files to the startpage. #1245 !2233 @stcz 
+- Added missing indices to the store database table !2232 @alex.simm 
+- bump mocha to versio 10 !2255 @peter.toennies
 
 # Release "Heidelbeere", 2022-05-01
 

@@ -13,11 +13,12 @@ set('repository', 'git@gitlab.com:foodsharing-dev/foodsharing.git');
 
 // Shared files/dirs between deploys
 set('shared_files', ['config.inc.prod.php']);
-set('shared_dirs', ['images', 'data', 'tmp']);
+set('shared_dirs', ['images', 'data', 'tmp', 'uploads']);
 
 // Writable dirs by web server
 set('writable_dirs', ['tmp', 'cache', 'var']);
-set('http_user', 'www-data');
+set('http_user', 'fs-php');
+set('http_group', 'www-data');
 set('remote_user', 'deploy');
 set('deploy_path', '/var/www/{{alias}}');
 set('cachetool', '/run/php7.4-fpm-{{alias}}.sock');
@@ -54,6 +55,13 @@ task('deploy:cache:warmup', function () {
 	run('FS_ENV=prod {{release_path}}/bin/console cache:warmup -e prod');
 })->desc('Warmup symfony cache');
 
+task('deploy:permissions', function () {
+	run('
+		chgrp -R {{http_group}} {{release_path}};
+		chmod 750 {{release_path}};
+	');
+})->desc('Allow only www-data to access the files');
+
 desc('Deploy your project');
 task('deploy', [
 	'deploy:info',
@@ -64,6 +72,7 @@ task('deploy', [
 	'deploy:writable',
 	'deploy:shared',
 	'deploy:clear_paths',
+	'deploy:permissions',
 	'deploy:create_revision',
 	'deploy:cache:warmup',
 	'deploy:symlink',

@@ -1,7 +1,10 @@
 import '@/core'
 import '@/globals'
-import { vueApply, vueRegister } from '@/vue'
-import Index from './components/Index'
+
+import { vueRegister, vueApply } from '@/vue'
+
+// View: Index
+import Index from '@/views/pages/Index/Index.vue'
 
 vueRegister({
   Index,

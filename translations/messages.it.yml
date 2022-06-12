@@ -1020,6 +1020,7 @@ poll:
 language_chooser:
   content: Scegli una lingua
   title: Scegli la lingua
+  choose_button: Aggiornamento
 email_template:
   login: Accedi per rispondere
   foodbasket_request: Il tuo cesto di cibo è stato richiesto da %SENDER%
@@ -1121,11 +1122,6 @@ foodsaver:
   actions: Azioni
   title: Foodsaver
   bread: Tutti i Foodsaver
-  addresschange:
-    text: Un indirizzo cambiato qui non aggiorna le geo-coordinate, che sono necessarie
-      per i cesti alimentari, per esempio. Perciò è fortemente raccomandato che l'utente
-      cambi l'indirizzo da solo nelle {impostazioni}.
-    title: Avviso di cambio di indirizzo
   restricted: Spiacente, non hai il permesso di visualizzare questi dati.
   about_me_intern: "Questa breve descrizione sarà visualizzata sulla pagina del tuo\
     \ profilo\ne sarà visibile a tutti nella comunità del foodsharing.\n"
@@ -1850,7 +1846,6 @@ profile:
   notFound: Questo profilo utente non esiste o non esiste più
   go: Chiama il profilo
   title: Profilo
-  signoutAll: cancellare tutti gli impegni
   mediation:
     no_group: Purtroppo non esiste ancora un gruppo di mediazione locale per il distretto
       di provenienza di Foodsaver. Puoi sollevare la questione in una riunione di
@@ -1873,9 +1868,6 @@ profile:
     who: '{nome} da {from}'
   mediationRequest: Richiesta di mediazione
   reportRequest: Invia messaggio
-  signoutAllConfirmation: Davvero firmare {nome} fuori da tutte le prossime date di
-    ritiro?
-  signoutPickup: firmara l´uscita
   pinboard: Aggiornamenti di stato da {nome}
   about_me_intern: Riguardo a te stesso
   sleepinfo: '{nome} é dormiglione da {da} a {fino a}'

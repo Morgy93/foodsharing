@@ -63,10 +63,6 @@ class EditWorkGroupData
 	 */
 	public ?string $photo;
 
-	public array $members;
-
-	public array $administrators;
-
 	public static function fromGroup(array $group): self
 	{
 		$workGroupRequest = new self();
@@ -77,16 +73,6 @@ class EditWorkGroupData
 		$workGroupRequest->fetchCount = $group['fetch_count'];
 		$workGroupRequest->weekNum = $group['week_num'];
 		$workGroupRequest->photo = $group['photo'] ? 'images/' . $group['photo'] : null;
-
-		$workGroupRequest->members = [null]; // [#896] make sure to enable deleteEmptyItems
-		foreach ($group['member'] as $m) {
-			$workGroupRequest->members[$m['id']] = $m['name'];
-		}
-
-		$workGroupRequest->administrators = [null]; // [#896] make sure to enable deleteEmptyItems
-		foreach ($group['leader'] as $m) {
-			$workGroupRequest->administrators[$m['id']] = $m['name'];
-		}
 
 		return $workGroupRequest;
 	}
@@ -104,16 +90,6 @@ class EditWorkGroupData
 			$this->weekNum = 0;
 		}
 
-		$member = [];
-		foreach ($this->members as $k => $v) {
-			$member[] = explode('-', $k)[0];
-		}
-
-		$administrators = [];
-		foreach ($this->administrators as $k => $v) {
-			$administrators[] = explode('-', $k)[0];
-		}
-
 		$photo = $this->photo ? explode('images/', $this->photo, 2)[1] : null;
 
 		$res = [
@@ -123,9 +99,7 @@ class EditWorkGroupData
 			'banana_count' => $this->bananaCount,
 			'fetch_count' => $this->fetchCount,
 			'week_num' => $this->weekNum,
-			'photo' => $photo,
-			'member' => $member,
-			'leader' => $administrators
+			'photo' => $photo
 		];
 
 		return $res;

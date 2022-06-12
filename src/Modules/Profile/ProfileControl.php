@@ -7,6 +7,7 @@ use Foodsharing\Modules\Core\Control;
 use Foodsharing\Modules\Mailbox\MailboxGateway;
 use Foodsharing\Modules\Mails\MailsGateway;
 use Foodsharing\Modules\Region\RegionGateway;
+use Foodsharing\Modules\Store\PickupGateway;
 use Foodsharing\Permissions\ProfilePermissions;
 use Foodsharing\Permissions\ReportPermissions;
 
@@ -20,6 +21,7 @@ final class ProfileControl extends Control
 	private MailboxGateway $mailboxGateway;
 	private ReportPermissions $reportPermissions;
 	private ProfilePermissions $profilePermissions;
+	private PickupGateway $pickupGateway;
 
 	public function __construct(
 		MailsGateway $mailsGateway,
@@ -29,7 +31,8 @@ final class ProfileControl extends Control
 		BasketGateway $basketGateway,
 		MailboxGateway $mailboxGateway,
 		ReportPermissions $reportPermissions,
-		ProfilePermissions $profilePermissions
+		ProfilePermissions $profilePermissions,
+		PickupGateway $pickupGateway
 	) {
 		$this->view = $view;
 		$this->mailsGateway = $mailsGateway;
@@ -39,6 +42,7 @@ final class ProfileControl extends Control
 		$this->mailboxGateway = $mailboxGateway;
 		$this->reportPermissions = $reportPermissions;
 		$this->profilePermissions = $profilePermissions;
+		$this->pickupGateway = $pickupGateway;
 
 		parent::__construct();
 
@@ -104,25 +108,21 @@ final class ProfileControl extends Control
 	public function profile(): void
 	{
 		$fsId = $this->foodsaver['id'];
-		$regionId = $this->foodsaver['bezirk_id'];
 
-		$mayAdmin = $this->profilePermissions->mayAdministrateUserProfile($fsId, $regionId);
-		$maySeePickups = $this->profilePermissions->maySeePickups($fsId);
 		$maySeeStores = $this->profilePermissions->maySeeStores($fsId);
 		$maySeePickupsStat = $this->profilePermissions->maySeePickupsStat($fsId);
 
 		$wallPosts = $this->wallposts('foodsaver', $fsId);
 		$userStores = $maySeeStores ? $this->profileGateway->listStoresOfFoodsaver($fsId) : [];
-		$fetchDates = $maySeePickups ? $this->profileGateway->getNextDates($fsId, 50) : [];
 		$profilePickupsStat = $maySeePickupsStat ? $this->profileGateway->getPickupsStat($fsId) : [];
 
-		$this->view->profile($wallPosts, $userStores, $fetchDates, $profilePickupsStat);
+		$this->view->profile($wallPosts, $userStores, $profilePickupsStat);
 	}
 
 	private function profilePublic(array $profileData): void
 	{
 		$isVerified = $profileData['verified'] ?? 0;
-		$initials = ($profileData['name'] ?? '?')[0] . '.';
+		$initials = mb_substr($profileData['name'] ?? '?', 0, 1) . '.';
 		$regionId = $profileData['bezirk_id'] ?? null;
 		$regionName = ($regionId === null) ? '?' : $this->regionGateway->getRegionName($regionId);
 		$this->pageHelper->addContent(

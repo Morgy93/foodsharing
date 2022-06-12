@@ -71,28 +71,6 @@ class RestNormalization
 	}
 
 	/**
-	 * Normalises the detailed profile of a user.
-	 *
-	 * @param array $data user profile data
-	 */
-	public static function normaliseUserDetails(array $data): array
-	{
-		return [
-			'id' => $data['id'],
-			'firstname' => $data['name'],
-			'lastname' => $data['nachname'],
-			'address' => $data['anschrift'],
-			'city' => $data['stadt'],
-			'postcode' => $data['plz'],
-			'lat' => $data['lat'],
-			'lon' => $data['lon'],
-			'email' => $data['email'],
-			'landline' => $data['telefon'],
-			'mobile' => $data['handy'],
-		];
-	}
-
-	/**
 	 * @return ?SleepStatus
 	 */
 	private static function getSleepStatus(array $data, string $prefix = '')

@@ -104,7 +104,6 @@ class XhrAppController extends AbstractController
 		// 'Quiz::pause',
 		// 'Quiz::updatequest',
 		// 'Region::morethemes',
-		'Region::quickreply',
 		// 'Region::signout',
 		// 'Report::loadReport',
 		// 'Report::comReport',

@@ -151,6 +151,7 @@ class FoodsaverControl extends Control
 		global $g_data;
 
 		if ($this->submitted()) {
+			$g_data['stadt'] = $g_data['ort'];
 			if ($this->session->may('orga')) {
 				if (isset($g_data['orgateam']) && is_array($g_data['orgateam']) && $g_data['orgateam'][0] == 1) {
 					$g_data['orgateam'] = 1;

@@ -68,7 +68,7 @@ class StoreCest
 		$I->click('.b-calendar-grid-body > .row:first-child > .col:last-child');
 		// submit search
 		$I->click('.pickup-search-button > button');
-
+		$I->waitForActiveAPICalls();
 		$I->waitForElement('.pickup-date', 5);
 		$I->see($this->foodsaver['name'] . ' ' . $this->foodsaver['nachname']);
 		$I->waitForText('vor etwa 3 Jahren');
