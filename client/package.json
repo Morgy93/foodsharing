@@ -84,7 +84,7 @@
     "jsdom-global": "^3.0.2",
     "loader-utils": "^2.0.2",
     "markdownlint-cli": "^0.30.0",
-    "mini-css-extract-plugin": "^1.6.2",
+    "mini-css-extract-plugin": "<2.0.0",
     "mkdirp": "^1.0.4",
     "mocha": "^10.0.0",
     "node-localstorage": "^2.2.1",
