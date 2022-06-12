@@ -89,12 +89,11 @@ module.exports = {
         ],
       },
       {
-        test: /\.yml$/,
+        test: /\.ya?ml$/,
         exclude: [
           /(node_modules)/,
         ],
         use: [
-          'json-loader',
           'yaml-loader',
         ],
       },
