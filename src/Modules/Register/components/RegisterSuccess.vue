@@ -6,7 +6,7 @@
       </div>
       <b-button
         class="btn btn-secondary ml-3 mt-3"
-        @click="$emit('loadLogin')"
+        @click="$emit('load-login')"
       >
         {{ $i18n('login.login_button_label') }}
       </b-button>

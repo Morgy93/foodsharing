@@ -6,8 +6,10 @@ use Foodsharing\Lib\Session;
 use Foodsharing\Modules\Bell\BellGateway;
 use Foodsharing\Modules\Bell\DTO\Bell;
 use Foodsharing\Modules\Core\DBConstants\Bell\BellType;
+use Foodsharing\Modules\Core\DBConstants\Foodsaver\Role;
 use Foodsharing\Modules\Core\DBConstants\Region\RegionOptionType;
 use Foodsharing\Modules\Core\DBConstants\Region\RegionPinStatus;
+use Foodsharing\Modules\Core\DBConstants\Region\Type;
 use Foodsharing\Modules\Core\DBConstants\Region\WorkgroupFunction;
 use Foodsharing\Modules\Foodsaver\FoodsaverGateway;
 use Foodsharing\Modules\Group\GroupFunctionGateway;
@@ -15,7 +17,9 @@ use Foodsharing\Modules\Region\RegionGateway;
 use Foodsharing\Modules\Region\RegionTransactions;
 use Foodsharing\Modules\Settings\SettingsGateway;
 use Foodsharing\Modules\Store\StoreGateway;
+use Foodsharing\Modules\WorkGroup\WorkGroupTransactions;
 use Foodsharing\Permissions\RegionPermissions;
+use Foodsharing\Permissions\WorkGroupPermissions;
 use Foodsharing\Utility\ImageHelper;
 use FOS\RestBundle\Controller\AbstractFOSRestController;
 use FOS\RestBundle\Controller\Annotations as Rest;
@@ -37,6 +41,8 @@ class RegionRestController extends AbstractFOSRestController
 	private SettingsGateway $settingsGateway;
 	private GroupFunctionGateway $groupFunctionGateway;
 	private RegionTransactions $regionTransactions;
+	private WorkGroupPermissions $workGroupPermissions;
+	private WorkGroupTransactions $workGroupTransactions;
 
 	// literal constants
 	private const LAT = 'lat';
@@ -54,7 +60,9 @@ class RegionRestController extends AbstractFOSRestController
 		Session $session,
 		ImageHelper $imageHelper,
 		GroupFunctionGateway $groupFunctionGateway,
-		RegionTransactions $regionTransactions
+		RegionTransactions $regionTransactions,
+		WorkGroupPermissions $workGroupPermissions,
+		WorkGroupTransactions $workGroupTransactions
 	) {
 		$this->settingsGateway = $settingsGateway;
 		$this->bellGateway = $bellGateway;
@@ -66,6 +74,8 @@ class RegionRestController extends AbstractFOSRestController
 		$this->imageHelper = $imageHelper;
 		$this->groupFunctionGateway = $groupFunctionGateway;
 		$this->regionTransactions = $regionTransactions;
+		$this->workGroupPermissions = $workGroupPermissions;
+		$this->workGroupTransactions = $workGroupTransactions;
 	}
 
 	/**
@@ -310,5 +320,124 @@ class RegionRestController extends AbstractFOSRestController
 		$response = $this->foodsaverGateway->listActiveFoodsaversByRegion($regionId);
 
 		return $this->handleView($this->view($response, 200));
+	}
+
+	/**
+	 * Removes a member from a region or working group. If the user was not a member of the region/group, nothing happens.
+	 *
+	 * @OA\Response(response="200", description="Success")
+	 * @OA\Response(response="401", description="Not logged in")
+	 * @OA\Response(response="403", description="Insufficient permissions")
+	 * @OA\Response(response="404", description="Region not found")
+	 * @OA\Tag(name="region")
+	 *
+	 * @Rest\Delete("region/{regionId}/members/{memberId}", requirements={"regionId" = "\d+", "memberId" = "\d+"})
+	 */
+	public function removeMember(int $regionId, int $memberId): Response
+	{
+		if (!$this->session->may()) {
+			throw new HttpException(401);
+		}
+
+		$region = $this->regionGateway->getRegion($regionId);
+
+		if (empty($region)) {
+			throw new HttpException(404);
+		}
+
+		if ($region['type'] == Type::WORKING_GROUP) {
+			if (!$this->workGroupPermissions->mayEdit($region)) {
+				throw new HttpException(403);
+			}
+			$this->regionGateway->removeRegionAdmin($regionId, $memberId);
+			$this->workGroupTransactions->removeMemberFromGroup($regionId, $memberId);
+		} else {
+			if (!$this->regionPermissions->mayDeleteFoodsaverFromRegion($regionId)) {
+				throw new HttpException(403);
+			}
+			$this->foodsaverGateway->deleteFromRegion($regionId, $memberId, $this->session->id());
+		}
+
+		return $this->handleView($this->view([], 200));
+	}
+
+	/**
+	 * Sets an user as Admin / Ambassador of a region / workgroup.
+	 *
+	 * @OA\Response(response="200", description="Success")
+	 * @OA\Response(response="401", description="Not logged in")
+	 * @OA\Response(response="403", description="Insufficient permissions")
+	 * @OA\Response(response="404", description="Region not found")
+	 * @OA\Tag(name="region")
+	 * @Rest\Post("region/{regionId}/members/{memberId}/admin", requirements={"regionId" = "\d+", "memberId" = "\d+"})
+	 */
+	public function setAdminOrAmbassador(int $regionId, int $memberId): Response
+	{
+		if (!$this->session->may()) {
+			throw new HttpException(401);
+		}
+
+		$region = $this->regionGateway->getRegion($regionId);
+
+		if (empty($region)) {
+			throw new HttpException(404);
+		}
+
+		if ($region['type'] == Type::WORKING_GROUP) {
+			if (!$this->workGroupPermissions->mayEdit($region)) {
+				throw new HttpException(403);
+			}
+		} else {
+			if (!$this->regionPermissions->maySetRegionAdmin()) {
+				throw new HttpException(403);
+			}
+			if (!$this->foodsaverGateway->getRole($memberId) >= Role::AMBASSADOR) {
+				throw new HttpException(403);
+			}
+		}
+
+		$this->regionGateway->setRegionAdmin($regionId, $memberId);
+
+		return $this->handleView($this->view([], 200));
+	}
+
+	/**
+	 * Sets an user as Admin / Ambassador of a region / workgroup.
+	 *
+	 * @OA\Response(response="200", description="Success")
+	 * @OA\Response(response="401", description="Not logged in")
+	 * @OA\Response(response="403", description="Insufficient permissions")
+	 * @OA\Response(response="404", description="Region not found")
+	 * @OA\Tag(name="region")
+	 * @Rest\Delete ("region/{regionId}/members/{memberId}/admin", requirements={"regionId" = "\d+", "memberId" = "\d+"})
+	 */
+	public function removeAdminOrAmbassador(int $regionId, int $memberId): Response
+	{
+		if (!$this->session->may()) {
+			throw new HttpException(401);
+		}
+
+		$region = $this->regionGateway->getRegion($regionId);
+
+		if (empty($region)) {
+			throw new HttpException(404);
+		}
+
+		if ($region['type'] == Type::WORKING_GROUP) {
+			if (!$this->workGroupPermissions->mayEdit($region)) {
+				throw new HttpException(403);
+			}
+		} else {
+			if (!$this->regionPermissions->mayRemoveRegionAdmin()) {
+				throw new HttpException(403);
+			}
+			if (!$this->foodsaverGateway->getRole($memberId) >= Role::AMBASSADOR) {
+				throw new HttpException(403);
+			}
+		}
+
+		$this->regionGateway->removeRegionAdmin($regionId, $memberId);
+
+		return $this->handleView($this->view([], 200));
 	}
 }

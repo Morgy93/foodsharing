@@ -39,7 +39,10 @@ class MapView extends View
 
 		return '
 			<div id="map-control-wrapper">
-				<div class="ui-dialog ui-widget ui-widget-content ui-corner-all" tabindex="-1">
+				<div id="map-control-colapse" class="ui-dialog ui-widget ui-widget-content" tabindex="-1">
+					<i class="fas fa-layer-group"></i>
+				</div>
+				<div id="map-legend" class="ui-dialog ui-widget ui-widget-content ui-corner-all" tabindex="-1">
 					<div class="ui-dialog-content ui-widget-content">
 						<div id="map-control">
 							<ul class="linklist">

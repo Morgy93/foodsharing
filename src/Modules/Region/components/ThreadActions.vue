@@ -9,7 +9,7 @@
         :checked="isFollowingBell"
         class="bell"
         switch
-        @change="$emit('toggle:follow-bell')"
+        @change="$emit('update:follow-bell')"
       >
         <a :class="{'text-strike': true, 'enabled': isFollowingBell}">
           {{ $i18n('forum.follow.bell') }}
@@ -19,7 +19,7 @@
         :checked="isFollowingEmail"
         class="email"
         switch
-        @change="$emit('toggle:follow-email')"
+        @change="$emit('update:follow-email')"
       >
         <a :class="{'text-strike': true, 'enabled': isFollowingEmail}">
           {{ $i18n('forum.follow.email') }}
@@ -30,7 +30,7 @@
         :checked="isSticky"
         class="sticky"
         switch
-        @change="$emit('toggle:sticky')"
+        @change="$emit('update:sticky')"
       >
         <a :class="{'text-bold enabled': isSticky}">
           {{ $i18n('forum.thread.stick') }}

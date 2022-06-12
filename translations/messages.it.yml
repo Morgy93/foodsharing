@@ -863,19 +863,19 @@ message_text_to_group_admin_workgroup: 'La regione/gruppo di lavoro <b>{groupNam
 startpage:
   towns:
     title: Città foodsharing
-    text: "Le città partecipanti si differenziano per il fatto di essere ancora in\
-      \ cammino o di essere già state designate come città del foodsharing.\nsono\
+    text: "\"Le città partecipanti si differenziano per il fatto di essere ancora\
+      \ in cammino o di essere già state designate come città del foodsharing.\nsono\
       \ state designate come città del foodsharing. Quest'ultimo è il caso se, oltre\
       \ a una squadra di foodsharing sul terreno\nuna dichiarazione di motivazione\
       \ firmata dal comune come simbolo del partenariato tra il foodsharing e il settore\
-      \ pubblico.\nfoodsharing e il settore pubblico.\n"
+      \ pubblico.\nfoodsharing e il settore pubblico.\"\n"
   donate:
     title: Donazioni
     link: Sostieni foodsharing
-    text: "Cerchiamo una sponsorizzazione per qualsiasi spesa. In alcuni casi, tuttavia,\
+    text: "\"Cerchiamo una sponsorizzazione per qualsiasi spesa. In alcuni casi, tuttavia,\
       \ questo non è possibile o non è possibile\no non completamente, ad esempio\
       \ per il finanziamento di eventi, consulenza legale o assicurazioni.\nSiamo\
-      \ felici di qualsiasi supporto.\n"
+      \ felici di qualsiasi supporto.\"\n"
   welcome_text: Benvenuti a foodsharing
   more_infos: Scopri di più
   mission:
@@ -903,11 +903,11 @@ startpage:
       part1: Inoltre ci sono
   how_we_work:
     title: È così che funziona
-    text: "Tutto questo viene fatto su base volontaria e gratuita, in modo indipendente\
+    text: "\"Tutto questo viene fatto su base volontaria e gratuita, in modo indipendente\
       \ e senza pubblicità. La piattaforma è il cuore\ndella nostra comunità. Qui\
       \ facciamo rete e ci coordiniamo a livello locale e in tutta Europa. Il sito\
       \ web e l'applicazione beta sono\nopen source e si basa sull'impegno e la passione\
-      \ di molti. Come puoi entrare nell'IT?\n"
+      \ di molti. Come puoi entrare nell'IT?\"\n"
   member:
     title: come membro
     text: Condividi il tuo cibo in eccesso con la comunità del foodsharing o salva
@@ -918,12 +918,12 @@ startpage:
     text: Siamo stati fondati nel 2012 e ora siamo un movimento internazionale con
       oltre 200.000 utenti in Germania, Austria, Svizzera e altri paesi europei.
   demands:
-    text: "Piano d'azione con l'aiuto ambientale tedesco\npubblicato in occasione\
+    text: "\"Piano d'azione con l'aiuto ambientale tedesco\npubblicato in occasione\
       \ del 6° compleanno del foodsharing il 12.12.2018. Per salvare la Germania da\
       \ un'altra violazione della parola\n- come ha fatto con gli obiettivi di protezione\
       \ del clima per il 2020 - foodsharing e Deutsche Umwelthilfe stanno delineando\
       \ con un\npiano d'azione, senza il quale l'obiettivo di dimezzamento non può\
-      \ essere raggiunto.\n"
+      \ essere raggiunto.\"\n"
     title: Pretese
   store:
     text: Lavori in un supermercato, un ristorante, una mensa…? Registra la tua azienda
@@ -1112,7 +1112,7 @@ foodsaver:
   your_account: a te
   delete_account_now: Elimina account ora
   delete_account_sure: Sei sicuro di voler eliminare l'account di {nome}?
-  delete_account: ⚠️ Elimina account
+  delete_account: Elimina account
   profileBack: Torna al profilo
   edit_failure: Non è stato modificato nulla o le modifiche non sono state salvate
   edit_success: Le modifiche sono state salvate
@@ -1294,9 +1294,9 @@ forum:
   threads: Sogetti
   from: Di {name}
   markdown_description: 'Per la formattazione da *<i>corsivo</i>* o **<b>grassetto</b>**
-    Puoi usare il testo <a href="https://de.wikipedia.org/wiki/Markdown" target="_blank">Markdown</a>.<br />
-    Attenzione: Se tu volessi utilizzare un * nel testo, devi far precedere
-    un &bsol;. Per esempio nel genere della parola ambasciatore&bsol;*trice.'
+    Puoi usare il testo <a href="https://de.wikipedia.org/wiki/Markdown" target="_blank">Markdown</a>.<br
+    /> Attenzione: Se tu volessi utilizzare un * nel testo, devi far precedere un
+    &bsol;. Per esempio nel genere della parola ambasciatore&bsol;*trice.'
   hold_back_for_moderation: Il tema è stato salvato e verrà pubblicato in seguito
     a conferma da parte di un ambasciatore/moderatore.
 first_post: Primo inserimento nella bacheca
@@ -1356,6 +1356,7 @@ events:
   add_event: Nuovo appuntamento
   add_new_event: Inserisci un nuovo appuntamento adesso
   bread: Appuntamento
+  past: Appuntamenti passati
 wall:
   error-delete: Non è possibile rimuovere questo post.
   info-logging: Si nota pregho, che per evitare conflitti, il contenuto e la persona
@@ -2112,7 +2113,8 @@ footer:
   about_us: Su di noi
   call_to_action: Partecipare
   beta_testing_issues: Compiti di prova della versione beta
-  lebensministerium_alt_text: Ministero della vita - Austria
+  lebensministerium_alt_text: Ministero Federale dell'Agricoltura, delle Regioni e
+    del Turismo - Austria
   wiener_tafel_alt_text: Wiener Tafel - Tavola di cibo a Vienna
   denns_at_alt_text: Denn's Biomarkt
   donate: Sostenere
@@ -2170,7 +2172,6 @@ region:
   no-huge: Spiacente, non puoi selezionare un paese o uno stato come regione.
   change: Cambiare distretto
 polls:
-  filter_by: Filtrare per
   future: Votazioni futuri
   ended: Votazioni passati
   ongoing: Riconciliazioni in corso
@@ -2340,3 +2341,4 @@ quiz:
   nownownow: Inizia il quiz adesso
   timedstart: Iniziare il quiz con tempo limitato e 10 domande
 deletelow: elimina
+filter_by: Filtrare per

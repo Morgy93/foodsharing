@@ -132,6 +132,17 @@ class Foodsharing extends \Codeception\Module\Db
 		return $params;
 	}
 
+	public function createStoreCategories()
+	{
+		for ($i = 1; $i <= 10; ++$i) {
+			$params = [
+				'id' => $i,
+				'name' => 'Supermarkt_' . $i,
+			];
+			$this->haveInDatabase('fs_betrieb_kategorie', $params);
+		}
+	}
+
 	public function createQuiz(int $quizId, int $questionCount = 1): array
 	{
 		$roles = [
@@ -303,6 +314,7 @@ class Foodsharing extends \Codeception\Module\Db
 			'betrieb_status_id' => $this->faker->numberBetween(0, 6),
 			'status' => 1,
 			'added' => $this->faker->dateTime(),
+			'betrieb_kategorie_id' => $this->faker->numberBetween(1, 10),
 			'plz' => $this->faker->postcode(),
 			'stadt' => $this->faker->city(),
 			'str' => $this->faker->streetAddress(),
@@ -331,7 +343,6 @@ class Foodsharing extends \Codeception\Module\Db
 			'team_conversation_id' => $team_conversation,
 			'springer_conversation_id' => $springer_conversation,
 			'kette_id' => 0,
-			'betrieb_kategorie_id' => 0,
 		], $extra_params);
 		$params['status_date'] = $this->toDateTime($params['status_date']);
 		$params['added'] = $this->toDateTime($params['added']);

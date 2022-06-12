@@ -29,7 +29,7 @@
           v-for="basket in basketsSorted"
           :key="basket.id"
           :basket="basket"
-          @basketRemove="openRemoveBasketForm"
+          @basket-remove="openRemoveBasketForm"
         />
       </div>
     </div>

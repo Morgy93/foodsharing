@@ -8,12 +8,7 @@ class ContentGateway extends BaseGateway
 {
 	public function get($id): array
 	{
-		return $this->db->fetch('
-				SELECT `title`, `body`
-				FROM fs_content
-				WHERE `id` = :id
-			', [':id' => $id]
-		);
+		return $this->db->fetchByCriteria('fs_content', ['title', 'body'], ['id' => $id]);
 	}
 
 	public function getMultiple(array $ids): array

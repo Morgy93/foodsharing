@@ -6,15 +6,18 @@ use Foodsharing\Lib\WebSocketConnection;
 use Foodsharing\Modules\Core\BaseGateway;
 use Foodsharing\Modules\Core\Database;
 use Foodsharing\Modules\Core\DBConstants\Region\Type;
+use Foodsharing\Utility\WeightHelper;
 
 final class ProfileGateway extends BaseGateway
 {
 	private WebSocketConnection $webSocketConnection;
+	private $weightHelper;
 
-	public function __construct(Database $db, WebSocketConnection $webSocketConnection)
+	public function __construct(Database $db, WebSocketConnection $webSocketConnection, WeightHelper $weightHelper)
 	{
 		parent::__construct($db);
 		$this->webSocketConnection = $webSocketConnection;
+		$this->weightHelper = $weightHelper;
 	}
 
 	/**
@@ -109,8 +112,7 @@ final class ProfileGateway extends BaseGateway
 			AND 	b.foodsaver_id = :fs_id
 			AND 	bz.type != 7
 		';
-		if ($bot = $this->db->fetchAll($stm, [':fs_id' => $fsId])
-		) {
+		if ($bot = $this->db->fetchAll($stm, [':fs_id' => $fsId])) {
 			$data['botschafter'] = $bot;
 		}
 
@@ -124,8 +126,7 @@ final class ProfileGateway extends BaseGateway
 			AND 	b.foodsaver_id = :fs_id
 			AND		bz.type != :type
 		';
-		if ($fs = $this->db->fetchAll($stm, [':fs_id' => $fsId, ':type' => Type::WORKING_GROUP])
-		) {
+		if ($fs = $this->db->fetchAll($stm, [':fs_id' => $fsId, ':type' => Type::WORKING_GROUP])) {
 			$data['foodsaver'] = $fs;
 		}
 
@@ -161,8 +162,7 @@ final class ProfileGateway extends BaseGateway
 			AND 	b.foodsaver_id = :fs_id
 			AND 	bz.type = 7
 		';
-		if ($orga = $this->db->fetchAll($stm, [':fs_id' => $fsId])
-		) {
+		if ($orga = $this->db->fetchAll($stm, [':fs_id' => $fsId])) {
 			$data['orga'] = $orga;
 		}
 
@@ -294,7 +294,7 @@ final class ProfileGateway extends BaseGateway
 	}
 
 	/**
-	 * Returns the next dates which the foodsaver signed into.
+	 * Returns the next pickup dates which the foodsaver signed into.
 	 *
 	 * @param int $fsId ID of the foodsaver
 	 * @param int|null $limit if not null, the result will be limited to a number of dates
@@ -361,6 +361,44 @@ final class ProfileGateway extends BaseGateway
 			':fs_id' => $fsId,
 			':date_from' => $this->db->date($from),
 			':date_to' => $this->db->date($to),
+		]);
+	}
+
+	public function getPickupsStat(int $fsId): array
+	{
+		$stm = 'SELECT 	DATE_FORMAT(a.date,\'%Y-%v\') AS calenderWeek,
+						bez.name AS districtName,
+						kat.name AS categorieName,
+						CASE b.abholmenge
+							WHEN 0 THEN \'' . $this->weightHelper->getFetchWeightName(0) . '\'
+							WHEN 1 THEN \'' . $this->weightHelper->getFetchWeightName(1) . '\'
+							WHEN 2 THEN \'' . $this->weightHelper->getFetchWeightName(2) . '\'
+							WHEN 3 THEN \'' . $this->weightHelper->getFetchWeightName(3) . '\'
+							WHEN 4 THEN \'' . $this->weightHelper->getFetchWeightName(4) . '\'
+							WHEN 5 THEN \'' . $this->weightHelper->getFetchWeightName(5) . '\'
+							WHEN 6 THEN \'' . $this->weightHelper->getFetchWeightName(6) . '\'
+							WHEN 7 THEN \'' . $this->weightHelper->getFetchWeightName(7) . '\'
+						END AS pickupAmount,
+						COUNT(*) AS pickupCount
+				FROM `fs_abholer` a
+					LEFT OUTER JOIN fs_betrieb b ON a.betrieb_id = b.id
+					LEFT OUTER JOIN fs_betrieb_kategorie kat ON b.betrieb_kategorie_id = kat.id
+					LEFT OUTER JOIN fs_bezirk bez ON b.bezirk_id = bez.id
+				WHERE a.foodsaver_id = :fs_id
+				  AND a.date > CURRENT_DATE() - INTERVAL 1 MONTH
+				GROUP BY DATE_FORMAT(date,\'%Y-%v\'),
+						 bez.name,
+						 kat.id,
+						 b.abholmenge
+				ORDER BY
+						a.`date` DESC,
+						bez.name ASC,
+						kat.id   ASC,
+						b.abholmenge ASC
+		';
+
+		return $this->db->fetchAll($stm, [
+			':fs_id' => $fsId,
 		]);
 	}
 
@@ -442,10 +480,10 @@ final class ProfileGateway extends BaseGateway
 	{
 		try {
 			if (($status = $this->db->fetchValueByCriteria(
-					'fs_buddy',
-					'confirmed',
-					['foodsaver_id' => $sessionId, 'buddy_id' => $fsId]
-				)) !== []) {
+				'fs_buddy',
+				'confirmed',
+				['foodsaver_id' => $sessionId, 'buddy_id' => $fsId]
+			)) !== []) {
 				return $status;
 			}
 		} catch (\Exception $e) {

@@ -19,6 +19,7 @@ class RegionIDs
 	public const CREATING_WORK_GROUPS_WORK_GROUP = 1701;
 	public const IT_SUPPORT_GROUP = 387;
 	public const EDITORIAL_GROUP = 327;
+	public const BOT_WELCOME_TEAM = 328;
 
 	// region and ambassador groups
 	public const EUROPE_BOT_GROUP = 881;

@@ -1,0 +1,34 @@
+geb_datum: Datum narození (RRRR-MM-DD)
+name: Jméno
+add: přidat
+nachname: Příjmení
+subject: Předmět
+message: Zpráva
+address: Adresa
+edit: upravit
+edit_websites: Úprava veřejných webových stránek
+desc: popis
+telefon: Číslo pevné linky (včetně kódu země, začíná znakem +)
+description: popis
+plz: PSČ (automaticky z mapy výše)
+email: Emailová adresa
+attachement: E-mailové poznámky
+anschrift: Ulice a číslo domu (automaticky z výše uvedené mapy, v případě potřeby
+  opravte)
+handy: Číslo mobilního telefonu (včetně předvolby země, začíná na +)
+last_login: Poslední přihlášení
+geschlecht: Pohlaví
+botschafter: Ambasador
+options: Možnosti
+picture: Obrázek
+parent_id: Nadřazená organizace
+fs_id: foodsharing-ID
+lat: Zeměpisná šířka
+lon: Zeměpisná délka
+stadt: Vaše město nebo obec
+bezirk: Okres
+betrieb: Spolupracující společnost/i
+active: Aktivuje
+mailbox_name: Název schránky
+rolle: Uživatelská role
+title: Nadpis

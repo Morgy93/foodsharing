@@ -456,11 +456,10 @@ class SettingsView extends View
 				. $this->translator->trans('legal.if_delete.this_doesnt_get_deleted_address')
 				. $this->translator->trans('legal.if_delete.this_doesnt_get_deleted_history')
 				. '<button type="button" id="delete-account" class="btn btn-sm btn-danger"'
-				. ' onclick="confirmDeleteUser(' . $fsId . ',\''
-				. $this->translator->trans('foodsaver.your_account') . '\')">'
+				. ' onclick="confirmDeleteSelf(' . $fsId . ')">'
 				. $this->translator->trans('foodsaver.delete_account_now')
 				. '</button>'
-			);
+		);
 
 		return $this->v_utils->v_field($content, '⚠️ ' . $this->translator->trans('foodsaver.delete_account'), ['class' => 'ui-padding bootstrap']);
 	}
@@ -471,7 +470,6 @@ class SettingsView extends View
 
 		$regionPicker = '';
 		$position = '';
-		$communications = $this->v_utils->v_form_text('homepage');
 
 		if ($this->session->may('orga')) {
 			$bezirk = ['id' => 0, 'name' => false];
@@ -492,12 +490,16 @@ class SettingsView extends View
 		$latLonOptions['location'] = ['lat' => $g_data['lat'], 'lon' => $g_data['lon']];
 
 		return $this->v_utils->v_quickform($this->translator->trans('settings.header'), [
+			$this->vueComponent('name-input', 'NameInput', [
+				'name' => $this->dataHelper->getValue('name'),
+				'lastName' => $this->dataHelper->getValue('nachname'),
+				'regionId' => $this->dataHelper->getValue('bezirk_id'),
+			]),
+			$this->v_utils->v_form_date('geb_datum', ['required' => true, 'yearRangeFrom' => (int)date('Y') - 120, 'yearRangeTo' => (int)date('Y') - 8]),
+			$this->v_utils->v_form_text('handy', ['placeholder' => $this->translator->trans('register.phone_example')]),
+			$this->v_utils->v_form_text('telefon', ['placeholder' => $this->translator->trans('register.landline_example')]),
 			$regionPicker,
 			$this->latLonPicker('LatLng', $latLonOptions, '_profile'),
-			$this->v_utils->v_form_text('telefon', ['placeholder' => $this->translator->trans('register.landline_example')]),
-			$this->v_utils->v_form_text('handy', ['placeholder' => $this->translator->trans('register.phone_example')]),
-			$this->v_utils->v_form_date('geb_datum', ['required' => true, 'yearRangeFrom' => (int)date('Y') - 120, 'yearRangeTo' => (int)date('Y') - 8]),
-			$communications,
 			$position,
 			$this->v_utils->v_form_textarea('about_me_intern', [
 				'desc' => $this->translator->trans('foodsaver.about_me_intern'),
@@ -505,6 +507,7 @@ class SettingsView extends View
 			$this->v_utils->v_form_textarea('about_me_public', [
 				'desc' => $this->translator->trans('foodsaver.about_me_public'),
 			]),
+			$this->v_utils->v_form_text('homepage'),
 		], ['submit' => $this->translator->trans('button.save')]);
 	}
 

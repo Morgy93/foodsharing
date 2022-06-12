@@ -4,10 +4,21 @@
     :items="headings"
     icon="fa-envelope"
     right
-  />
+  >
+    <template #heading-text>
+      <span
+        v-if="unread"
+        class="badge badge-danger"
+      >
+        {{ unread }}
+      </span>
+      <span v-else />
+    </template>
+  </fs-dropdown-menu>
 </template>
 
 <script>
+import { get } from '@/api/base'
 import FsDropdownMenu from './FsDropdownMenu'
 
 export default {
@@ -49,7 +60,11 @@ export default {
           { url: 'international', menuTitle: 'menu.entry.international' },
         ],
       }],
+      unread: 0,
     }
+  },
+  async mounted () {
+    this.unread = await get('/emails/unread-count')
   },
 }
 

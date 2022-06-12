@@ -20,7 +20,7 @@ set('writable_dirs', ['tmp', 'cache', 'var']);
 set('http_user', 'www-data');
 set('remote_user', 'deploy');
 set('deploy_path', '/var/www/{{alias}}');
-set('cachetool', '/var/run/php7-fpm-{{alias}}.sock');
+set('cachetool', '/run/php7.4-fpm-{{alias}}.sock');
 
 // default timeout of 300 was failing sometimes
 set('default_timeout', 600);

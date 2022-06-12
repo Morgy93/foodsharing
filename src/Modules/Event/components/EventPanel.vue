@@ -40,7 +40,7 @@
           </div>
           <br>
 
-          <b-button-group size="sm">
+          <b-button-group v-if="statusAvailable()" size="sm">
             <b-button
               :variant="statusVariant(1)"
               @click="acceptInvitation(eventId); currentStatus = 1"
@@ -130,6 +130,9 @@ export default {
     acceptInvitation,
     maybeInvitation,
     declineInvitation,
+    statusAvailable: function () {
+      return this.currentStatus >= 0
+    },
     statusVariant: function (s) {
       if (s === this.currentStatus) {
         return 'secondary'

@@ -43,7 +43,7 @@
           :may-add-store="may.addStore"
           :avatar="avatar"
           :user-id="userId"
-          @openSearch="searchOpen = !searchOpen"
+          @open-search="searchOpen = !searchOpen"
         />
 
         <search

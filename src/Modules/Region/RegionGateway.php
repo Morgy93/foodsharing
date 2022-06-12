@@ -377,6 +377,22 @@ class RegionGateway extends BaseGateway
 		]);
 	}
 
+	public function setRegionAdmin(int $regionId, int $fs_id)
+	{
+		$this->db->insert('fs_botschafter', [
+			'bezirk_id' => $regionId,
+			'foodsaver_id' => $fs_id
+		]);
+	}
+
+	public function removeRegionAdmin(int $regionId, int $fs_id)
+	{
+		$this->db->delete('fs_botschafter', [
+			'bezirk_id' => $regionId,
+			'foodsaver_id' => $fs_id
+		]);
+	}
+
 	public function update_bezirkNew(int $regionId, array $data)
 	{
 		if (isset($data['botschafter']) && is_array($data['botschafter'])) {

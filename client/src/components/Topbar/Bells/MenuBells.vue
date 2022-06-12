@@ -30,7 +30,7 @@
           :key="bell.id"
           :bell="bell"
           @remove="onBellDelete"
-          @bellRead="onBellRead"
+          @bell-read="onBellRead"
         />
       </div>
     </div>

@@ -196,19 +196,19 @@ class EventControl extends Control
 		if (($start_date = $this->getPostDate('date')) && $start_time = $this->getPostTime('time_start')) {
 			if ($end_time = $this->getPostTime('time_end')) {
 				$out['start'] = date('Y-m-d', $start_date) . ' ' . sprintf('%02d', $start_time['hour']) . ':' . sprintf(
-						'%02d',
-						$start_time['min']
-					) . ':00';
+					'%02d',
+					$start_time['min']
+				) . ':00';
 				$out['end'] = date('Y-m-d', $start_date) . ' ' . sprintf('%02d', $end_time['hour']) . ':' . sprintf(
-						'%02d',
-						$end_time['min']
-					) . ':00';
+					'%02d',
+					$end_time['min']
+				) . ':00';
 
 				if ((int)$this->getPostInt('addend') == 1 && ($ed = $this->getPostDate('dateend'))) {
 					$out['end'] = date('Y-m-d', $ed) . ' ' . sprintf('%02d', $end_time['hour']) . ':' . sprintf(
-							'%02d',
-							$end_time['min']
-						) . ':00';
+						'%02d',
+						$end_time['min']
+					) . ':00';
 				}
 			}
 		}

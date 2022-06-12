@@ -155,15 +155,31 @@ group:
     add_member: add to team
     admin_mode_on: Activate view for administrators
     admin_mode_off: Back to the standard view
+    set_admin_text: Do you really want to make {name} ({id}) an admin?
+    set_ambassador_title: Make ambassador
+    set_admin_title: Make administrator
+    set_ambassador_text: Do you really want to make {name} ({id}) an ambassador?
+    remove_ambassador_title: remove as ambassador
+    remove_ambassador_text: Are you sure you want to remove {name} ({id}) as an ambassador?
+    remove_admin_text: Are you sure you want to remove {name} ({id}) as an admin?
+    remove_admin_title: remove as admin
   application_from: by
   entermotivation: 'Motivation:'
   enterskills: 'Skills:'
   entertime: 'Available Time:'
   application_region: 'Application for '
   enterxp: 'Experience:'
+  motivation: motivation text
 settings:
   header: Your data and settings
-
+  name_change:
+    title: Name (first & last name)
+    desc: You cannot change your name yourself. You can however <a {link}">request
+      a name change</a>.
+    request: Request name change
+    info: To get your name changed you have to contact an ambassador of your home
+      region. He*She can change your name for you.<hr/>You can find out who the ambassadors
+      of you region are in the left sidebar of your <a {link}>home regions forum page</a>.
   push:
     not-supported: Your browser does not support push notifications.
     title: Push notifications
@@ -244,6 +260,7 @@ settings:
     passcheck: Please confirm the change with your password
     sent: Now go to your <strong>new</strong> email inbox to confirm the address.
     passfail: Your password is wrong, you made a mistake?
+    question: 'Do you really want us to change your email address to this:'
   chatmail: "If you receive an internal message on the foodsharing homepage,\nbut\
     \ you are not logged in at the moment, we can inform you by mail.\nDo you want\
     \ that?\n"
@@ -415,15 +432,29 @@ profile:
     view:
       delivered: Delivered
       newreport: New reports
+      why: Why are you reporting this person?
+      tardy: was late for a pickup
+      noshow: Did not come to the pickup
+      respect: Behaved impolite or disrespectful
+      dirty: Did not leave the pickup place tidy
     control:
       total: total
       tot: total
       newreports: New reports
+      delivered: Delivered Complaints
+      from: Reports by
+      notes: notes and decisions
     inthisblog: in this blog post
     xhr:
       deleted: Report was deleted!
       confirmed: Report was confirmed!
+      plsconfirm: Really delete this report?
+      reportee: Reported by
     kindofreport: Please choose the type of report
+    sells: Person sells rescued food
+    noshow: The person didn't come
+    late: The person was late
+    cancellation: Frequent late cancellation of appointments without finding a replacement
   history:
     wasVerified: Verified
     lostVerification: De-verified
@@ -487,6 +518,11 @@ profile:
   cantdeleteall: You can not delete all dates!
   cantdeletethis: You can not delete individual events.
   alldatesdeleted: All dates were deleted
+  pickups_stat:
+    districtName: Region
+    pickupCount: Number of pickups
+    calenderWeek: Week number
+    categorieName: Category
 test:
   plain: This is a nice translation
   vars: 'My name is {NAME} and I am {AGE} years old'
@@ -558,6 +594,7 @@ events:
     desc: What kind of event is that?
     inviteAll: Invite entire group / district?
   bread: Events
+  past: Past events
   menu:
     edit: Edit event
     yes: Accept invitation
@@ -653,6 +690,17 @@ calendar:
   locale: de
   labelNav: Calendar navigation
   labelHelp: Navigation is also possible with arrow keys
+  export:
+    pickup:
+      name: "{store} Pickup"
+      unconfirmed: (not confirmed)
+      description: 'Foodsharing pickup at <a href="{url}">{store}</a>'
+    event:
+      statusUnspecified: You have not stated whether you would like to participate
+        in this event. You can do so on the linked page.
+      linkTitle: Foodsharing Event
+      description: Description
+
 pickup:
   signout_confirm: Are you sure?
   copyNumber: Copy phone number
@@ -739,6 +787,7 @@ validate:
 no: No
 yes: Yes
 are_you_sure: Are you sure?
+filter_by: filter by
 terminology:
   buddies: Buddies
   polls: Polls
@@ -804,6 +853,7 @@ terminology:
   reports: Reporting View (local reporting group)
   arbitration: Reporting View (LS)
   pin: Description of the district
+  homepage: Homepage
 login:
   pwreset:
     bread: Reset password
@@ -929,6 +979,7 @@ reports:
     of the incident !! <br> Please check if you have tried the available communication
     channels to address the incident directly with the person and to clarify the facts.
     Please indicate how you can best be reached for queries during processing.'
+  about_email: via email
 recipients:
   test: Test the newsletter
   done: All e-mails have been sent
@@ -1284,6 +1335,7 @@ releases:
   "2021-03": Release "strawberry" 🍓 (March 2021)
   "2021-09": "Release \"fig\" \U0001F967 (September 2021)"
   "2022-01": Release "Grapefruit" 🍋 (January 2022)
+  "2022-05": Release "Blueberry" 🍇 (May 2022)
 footer:
   it_devdocs: by foodsharing IT
   donate_now: Donate now
@@ -1406,6 +1458,7 @@ basket:
   my_list_empty: You have not entered any food baskets
 map:
   title: Map
+  donates: company donates
 content:
   content: Content
   name: Unique name
@@ -1478,7 +1531,7 @@ foodsaver:
   restricted: Unfortunately, you are not authorised to view this data.
   mailchange_error: Activation of your new email address has failed. Please try again.
   url_error: Something is wrong with your homepage URL
-  delete_account_sure: Are you sure you want to delete {name}'s account?
+  delete_account_sure: Are you sure you want to delete your account?
   edit_failure: Nothing was changed or changes were not saved
   edit_success: Changes have been saved
 store:
@@ -1564,6 +1617,34 @@ store:
   pickup_slot_unavailable: This pick-up slot is further in the future than intended
     by the responsibles. So please try again at a later date.
   appliedFor: Request made
+  willgetcontacted: You are currently on the jumper list. You will be contacted if
+    help is needed.
+  team:
+    isfull: Team is full
+  filter: Filter by …
+  enterdate: Add pickup date
+  enternumber: You need to select the number of people who can pick up.
+  prefetchfour: 4 weeks
+  maxchar: (max. 180 characters)
+  important: 'Important:'
+  prefetchone: 1 week
+  prefetchtwo: 2 weeks
+  prefetchthree: 3 weeks
+  locked: You cannot edit this store.
+  leaveinfo: Here you can provide some information for the foodsavers who want to
+    apply for the team.
+  nodetails: Do not provide exact pick-up times here.
+  nodeclaration: not specified
+  nochains: Please only address owner-managed businesses with a maximum of 3 branches,
+    never address branches of a larger chain! Please note the chain rules!
+  convince:
+    much: Difficult negotiations, but in the end he*she agreed.
+    final: At first it looked bad, but then he*she got in touch.
+    none: No problem at all, he*she was immediately enthusiastic!
+    some: After some persuasion, he*she agreed to participate.
+  complete: complete database
+  peoplecame: It has often happened that people went to a store unsolicited.
+  smneeded: To set up a business, you must be a store manager.
 search:
   mygroups: My groups
   mybuddies: My buddies
@@ -1713,7 +1794,6 @@ polls:
   hint: The voting module can be tested in the transregional working group "Abstimmungen
     - Test".
   hint_2: You can find notes on using polls in the Wiki
-  filter_by: filter by
 storeedit:
   bread: Edit store
   team:
@@ -1791,6 +1871,9 @@ legal:
     this_doesnt_get_deleted_history: <ul><li>Your verification history</ul></li>
     this_gets_deleted_verify: <ul><li>Your verification will be removed.</ul></li>
     this_gets_deleted_friendlist: <ul><li>Your friends list will be removed.</ul></li>
+    this_doesnt_get_deleted: 'The following information is no longer available in
+      the active system, but is archived separately based on Article 17 paragraph
+      3 sentence 1 letter b GDPR:'
 answers: Which answers are correct?
 name: Name
 bcard:
@@ -1951,6 +2034,7 @@ chat:
     \ field is discarded.\n\nIf you cancel this dialogue, your draft will be carried\
     \ over into the new conversation instead.\n"
   incorrect_address: This email address is not valid
+  receivermissing: Please enter a recipient
 delete: Delete
 error_unexpected: An error has occurred
 register:
@@ -2401,6 +2485,21 @@ quiz:
     nresponses: Neutral answers
     wresponses: Wrong answers
     writecomment: Write a comment to this question
+    correctb: is wrong. You spotted that correctly!
+    neut: is neutral and therefore without weighting.
+    responses: Responses
+    joke: was meant as a joke and does not get weighted
+    koquestion: The question was especially important, and sadly you didn't answer
+      it correctly.
+    wrongb: isn't correct this way!
+    fpsum: error points in total
+    sadlywrong: was sadly answered incorrectly.
+    alsowrong: has sadly been evaluated as wrong, since you didn't choose anything
+      or the time ran out.
+    percenta: you just answered to
+    percentb: '% correctly.'
+    whatisko: Questions like these are especially heavily weighted and sadly if you
+      don't answer them correctly you fail the quiz.
   waitxdays: You can try it again in
   notfinishedyet: You have not finished the quiz yet.
   continuenow: Continue the quiz now!
@@ -2417,6 +2516,18 @@ quiz:
   timedstart: Start the quiz with limited time and 10 questions
   finished: Congratulations, you made it!
   trynumber: This was attempt number
+  finishnow:
+    fs: Finish your foodsaver registration now.
+    bv: Finish the store manager signup process now.
+    bot: Finish the ambassador signup process now.
+  donecorrectly: you answered absolutely correct. Congrats!
+  wikilink: A wiki article to about this topic
+  learnbreak: learning break
+  safeandsound: No problem. Your session is saved. You can continue it at any time.
+  continuetype: '-quiz: continue now'
+  failedbeforebut: " times you didn't pass the quiz. This amount of tries are left\
+    \ for you:"
+  quizleft: " - now all that's left to do is pass the quiz!"
 nofp: no error points (not a serious question)
 fpsingular: Error point
 request_time: 'Time of request:'
@@ -2433,5 +2544,5 @@ contentmanagement: Content management
 activitypost:
   showeverything: show everything
   less: less
-  write: Write an answer ...
+  write: Write an answer …
 deletelow: delete

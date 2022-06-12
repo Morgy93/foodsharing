@@ -230,7 +230,7 @@ class SeedCommand extends Command implements CustomCommandInterface
 		for ($m = 0; $m <= 10; ++$m) {
 			$store_id = $this->getRandomIDOfArray($this->stores);
 			for ($i = 0; $i <= 10; ++$i) {
-				$pickupDate = Carbon::create(2019, 4, random_int(1, 30), random_int(1, 24), random_int(1, 59));
+				$pickupDate = Carbon::create(2022, 4, random_int(1, 30), random_int(1, 24), random_int(1, 59));
 				for ($k = 0; $k <= 2; ++$k) {
 					$foodSaver_id = $this->getRandomIDOfArray($this->foodsavers);
 					$this->helper->addCollector($foodSaver_id, $store_id, ['date' => $pickupDate->toDateTimeString()]);
@@ -276,6 +276,8 @@ class SeedCommand extends Command implements CustomCommandInterface
 
 		$region1Subregion = $I->createRegion('Stadtteil von Göttingen', ['type' => Type::PART_OF_TOWN, 'parent_id' => $region1]);
 
+		$this->output->writeln('Create store categories:');
+		$I->createStoreCategories();
 		// Create users
 		$this->output->writeln('Create basic users:');
 		$user1 = $I->createFoodsharer($password, ['email' => 'user1@example.com', 'name' => 'One', 'bezirk_id' => $region1]);

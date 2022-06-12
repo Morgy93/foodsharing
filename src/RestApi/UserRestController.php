@@ -44,6 +44,7 @@ class UserRestController extends AbstractFOSRestController
 	private const MIN_RATING_MESSAGE_LENGTH = 100;
 	private const MIN_PASSWORD_LENGTH = 8;
 	private const MIN_AGE_YEARS = 18;
+	private const DELETE_USER_MAX_REASON_LEN = 200;
 
 	public function __construct(
 		Session $session,
@@ -298,15 +299,21 @@ class UserRestController extends AbstractFOSRestController
 	 * @OA\Tag(name="user")
 	 *
 	 * @Rest\Delete("user/{userId}", requirements={"userId" = "\d+"})
+	 * @Rest\RequestParam(name="reason", nullable=true, default="")
 	 */
-	public function deleteUserAction(int $userId): Response
+	public function deleteUserAction(int $userId, ParamFetcher $paramFetcher): Response
 	{
 		if (!$this->profilePermissions->mayDeleteUser($userId)) {
 			throw new HttpException(403);
 		}
 
+		$reason = trim($paramFetcher->get('reason'));
+		if (strlen($reason) > self::DELETE_USER_MAX_REASON_LEN) {
+			throw new HttpException(400, 'reason text is too long: must be at most ' . self::DELETE_USER_MAX_REASON_LEN . ' characters');
+		}
+
 		// needs the session ID, so we can't log out just yet
-		$this->foodsaverTransactions->deleteFoodsaver($userId);
+		$this->foodsaverTransactions->deleteFoodsaver($userId, $reason);
 
 		if ($userId === $this->session->id()) {
 			$this->session->logout();

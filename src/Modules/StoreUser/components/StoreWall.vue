@@ -38,7 +38,7 @@
         :managers="managers"
         :may-delete-everything="mayDeleteEverything"
         class="wallpost"
-        @deletePost="deletePost"
+        @delete-post="deletePost"
       />
     </ul>
     <b-link

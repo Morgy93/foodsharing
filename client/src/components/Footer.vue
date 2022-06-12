@@ -118,7 +118,7 @@
         >
           <b-row>
             <b-col
-              v-if="isFsDotAt"
+              v-if="!isFsDotAt"
               xl="6"
               cols="12"
             >
@@ -153,7 +153,7 @@
                 :rel="externalLink"
               >
                 <img
-                  src="/img/footer/lebensministerium_Logo_2014_at.png"
+                  src="/img/footer/BMLRT_Logo.png"
                   :alt="$i18n('footer.lebensministerium_alt_text')"
                   class="pt-4"
                 >
@@ -306,8 +306,7 @@
               v-else
               :href="$url('releaseNotes')"
             >
-              {{ $i18n('releases.2021-09') }}
-              <i class="fas fa-magic social_icons" />
+              {{ $i18n('releases.2022-05') }}
             </a>
             <br>
             <a :href="$url('devdocs')">
@@ -362,7 +361,7 @@ export default {
       return this.isFsDotAt ? 'https://www.facebook.com/oesterreichfoodsharing' : 'https://www.facebook.com/foodsharing.de'
     },
     instagramUrl () {
-      return this.isFsDotAt ? 'https://instagram.com/foodsharing.at' : 'https://www.instagram.com/foodsharing.de_offiziell'
+      return this.isFsDotAt ? 'https://instagram.com/foodsharing.at' : 'https://www.instagram.com/foodsharing_de'
     },
     twitterUrl () {
       return 'https://twitter.com/FoodsharingDE'

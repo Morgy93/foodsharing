@@ -114,8 +114,8 @@ class EventView extends View
 			
 			$("#date").after(
 				\'<label class="addend"><input type="checkbox" name="addend" id="addend" value="1" /> '
-				. $this->translator->trans('events.create.multiday') .
-				'</label>\'
+			. $this->translator->trans('events.create.multiday') .
+			'</label>\'
 			);
                
             dateend_wrapper.style.display = "none";
@@ -194,7 +194,8 @@ class EventView extends View
 				. '</label>';
 		}
 
-		$bezirkchoose = $this->v_utils->v_input_wrapper($this->translator->trans('events.create.who'),
+		$bezirkchoose = $this->v_utils->v_input_wrapper(
+			$this->translator->trans('events.create.who'),
 			'<select class="input select value" name="bezirk_id" id="bezirk_id">
 				' . $groups . '
 				' . $regions . '
@@ -209,7 +210,8 @@ class EventView extends View
 				'</label>
 				' . $delinvites . '
 			</p>
-		');
+		'
+		);
 
 		$public_el = '';
 
@@ -219,10 +221,12 @@ class EventView extends View
 				$chk = ' checked="checked"';
 				$this->pageHelper->addJs('$("#input-wrapper").hide();');
 			}
-			$public_el = $this->v_utils->v_input_wrapper($this->translator->trans('events.create.public'),
+			$public_el = $this->v_utils->v_input_wrapper(
+				$this->translator->trans('events.create.public'),
 				'<label><input id="public" type="checkbox" name="public" value="1"' . $chk . ' /> '
-				. $this->translator->trans('events.create.isPublic') .
-				'</label>');
+					. $this->translator->trans('events.create.isPublic') .
+					'</label>'
+			);
 		}
 
 		foreach (['anschrift', 'plz', 'ort', 'lat', 'lon'] as $i) {
@@ -379,11 +383,12 @@ class EventView extends View
 
 	public function locationMumble()
 	{
-		return $this->v_utils->v_field('
+		return $this->v_utils->v_field(
+			'
 		<p style="text-align: center;">
 			<a target="_blank" href="https://wiki.foodsharing.de/Mumble">'
-			. '<img src="/img/mlogo.png" alt="Mumble" />' .
-			'</a>
+				. '<img src="/img/mlogo.png" alt="Mumble" />' .
+				'</a>
 		</p>
 		<p> ' . $this->translator->trans('events.mumble.text') . '</p>
 		<p> ' . $this->translator->trans('events.mumble.location') . '</p>

@@ -4,15 +4,18 @@ namespace Foodsharing\RestApi;
 
 use Foodsharing\Lib\Session;
 use Foodsharing\Modules\Bell\BellGateway;
+use Foodsharing\Modules\Bell\DTO\Bell;
 use Foodsharing\Modules\Core\DBConstants\Bell\BellType;
 use Foodsharing\Modules\Foodsaver\FoodsaverGateway;
 use Foodsharing\Modules\Profile\ProfileGateway;
 use Foodsharing\Permissions\ProfilePermissions;
+use Foodsharing\Utility\EmailHelper;
 use FOS\RestBundle\Controller\AbstractFOSRestController;
 use FOS\RestBundle\Controller\Annotations as Rest;
 use OpenApi\Annotations as OA;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\Exception\HttpException;
+use Symfony\Contracts\Translation\TranslatorInterface;
 
 class VerificationRestController extends AbstractFOSRestController
 {
@@ -21,19 +24,25 @@ class VerificationRestController extends AbstractFOSRestController
 	private ProfileGateway $profileGateway;
 	private ProfilePermissions $profilePermissions;
 	private Session $session;
+	private EmailHelper $emailHelper;
+	protected TranslatorInterface $translator;
 
 	public function __construct(
 		BellGateway $bellGateway,
 		FoodsaverGateway $foodsaverGateway,
 		ProfileGateway $profileGateway,
 		ProfilePermissions $profilePermissions,
-		Session $session
+		Session $session,
+		EmailHelper $emailHelper,
+		TranslatorInterface $translator
 	) {
 		$this->bellGateway = $bellGateway;
 		$this->foodsaverGateway = $foodsaverGateway;
 		$this->profileGateway = $profileGateway;
 		$this->profilePermissions = $profilePermissions;
 		$this->session = $session;
+		$this->emailHelper = $emailHelper;
+		$this->translator = $translator;
 	}
 
 	/**
@@ -66,6 +75,24 @@ class VerificationRestController extends AbstractFOSRestController
 
 		$this->foodsaverGateway->changeUserVerification($userId, $sessionId, true);
 		$this->bellGateway->delBellsByIdentifier(BellType::createIdentifier(BellType::NEW_FOODSAVER_IN_REGION, $userId));
+
+		$passportGenLink = '?page=settings&sub=passport';
+		$bellData = Bell::create(
+			'foodsaver_verified_title',
+			'foodsaver_verified',
+			'fas fa-camera',
+			['href' => $passportGenLink],
+			['user' => $this->session->user('name')],
+			BellType::createIdentifier(BellType::FOODSAVER_VERIFIED, $userId));
+		$this->bellGateway->addBell($userId, $bellData);
+
+		$passportMailLink = 'https://foodsharing.de/' . $passportGenLink;
+		$fs = $this->foodsaverGateway->getFoodsaver($userId);
+		$this->emailHelper->tplMail('user/verification', $fs['email'], [
+				'name' => $fs['name'],
+				'link' => $passportMailLink,
+				'anrede' => $this->translator->trans('salutation.' . $fs['geschlecht']),
+		], false, true);
 
 		return $this->handleView($this->view([], 200));
 	}

@@ -80,7 +80,7 @@
             for="filter-input"
             class="col-form-label col-form-label-sm"
           >
-            {{ $i18n('polls.filter_by') }}
+            {{ $i18n('filter_by') }}
           </label>
           <b-form-input
             id="filter-input"

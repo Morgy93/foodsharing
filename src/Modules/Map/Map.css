@@ -95,12 +95,34 @@ div#main {
   font-weight: lighter;
 }
 
+#map-control-colapse {
+  position: absolute;
+  height: 30px;
+  width: 30px;
+  border-radius: 100px;
+  margin: 0 0 5px auto;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+#map-legend {
+  transition: opacity 0.2s ease-in-out;
+}
+
+#map-legend.colapsed {
+  visibility: hidden;
+  opacity: 0;
+  transition: visibility 0s 0.2s, opacity 0.2s ease-in-out;
+}
+
 #map-control-wrapper {
   position: absolute;
   right: 16px;
   margin: 0;
   top: 80px;
   z-index: 800 !important;
+  height: 0;
 }
 
 #map-control-wrapper > div {

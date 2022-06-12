@@ -76,7 +76,7 @@
       ok-variant="outline-danger"
       centered
       hide-header-close
-      @ok="$emit('deletePost', post.id)"
+      @ok="$emit('delete-post', post.id)"
     >
       <template #modal-header>
         <div v-if="!isOwn(post)" class="alert alert-warning" role="alert">

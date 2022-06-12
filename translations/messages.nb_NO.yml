@@ -2,15 +2,15 @@ startpage:
   donate:
     title: Donere
     link: Støtt foodsharing
-    text: "Vi prøver å sponse eventuelle utgifter. I noen tilfeller lykkes eller lykkes\
-      \ dette imidlertid ikke\ni sin helhet, for eksempel til utgifter til finansiering\
-      \ av arrangementer, juridisk rådgivning eller forsikring.\nVi tar gjerne imot\
-      \ all støtte.\n"
+    text: "\"Vi prøver å sponse eventuelle utgifter. I noen tilfeller lykkes eller\
+      \ lykkes dette imidlertid ikke\ni sin helhet, for eksempel til utgifter til\
+      \ finansiering av arrangementer, juridisk rådgivning eller forsikring.\nVi tar\
+      \ gjerne imot all støtte.\"\n"
   demands:
     title: Krav
-    text: "Handlingsplan for Tyskland\nFoodsharing og Deutsche Umwelthilfe viser med\
-      \ en handlingsplan\nhvilke tiltak Tyskland måtte iverksette for å nå målet om\
-      \ å\nhalvere matsvinnet.\n"
+    text: "\"Handlingsplan for Tyskland\nFoodsharing og Deutsche Umwelthilfe viser\
+      \ med en handlingsplan\nhvilke tiltak Tyskland måtte iverksette for å nå målet\
+      \ om å\nhalvere matsvinnet.\"\n"
   near_you:
     text2:
       part2: Matkurver
@@ -43,11 +43,11 @@ startpage:
   welcome_text: Velkommen til foodsharing
   call_to_action_button: Delta
   how_we_work:
-    text: "Alt dette bygges opp frivillig og gratis, uavhengig og reklamefritt. Denne\
-      \ plattformen er hjertet\nav samfunnet vårt. Det er stedet hvor vi koordinerer\
+    text: "\"Alt dette bygges opp frivillig og gratis, uavhengig og reklamefritt.\
+      \ Denne plattformen er hjertet\nav samfunnet vårt. Det er stedet hvor vi koordinerer\
       \ oss lokalt og i hele Europa. Nettstedet og betaappen er\nåpen kildekode og\
       \ de er basert på involvering og medfølelse fra mange. Hvordan kan du delta\
-      \ i IT-avdelingen?\n"
+      \ i IT-avdelingen?\"\n"
     title: Slik går det
   private:
     title: privat
@@ -65,11 +65,11 @@ startpage:
   this_is_how_it_works: Slik fungerer det
   towns:
     title: foodsharing byer
-    text: "Deltakende byer er forskjellige når det gjelder om de fortsatt er på vei\
-      \ eller allerede ble anerkjent\nsom en matdelingsby. Det siste er tilfellet\
+    text: "\"Deltakende byer er forskjellige når det gjelder om de fortsatt er på\
+      \ vei eller allerede ble anerkjent\nsom en matdelingsby. Det siste er tilfellet\
       \ når det er et matdelingsteam på stedet også en\nmotivasjonserklæring signert\
       \ av byadministrasjonen som et symbol på partnerskapet mellom\nfoodsharing og\
-      \ offentlig sektor.\n"
+      \ offentlig sektor.\"\n"
 language_chooser:
   title: Velg språk
   content: Vennligst velg et språk
@@ -151,7 +151,6 @@ polls:
   end_date: Sluttdato
   start_date: Startdato
   title: Tittel
-  filter_by: filtrer etter
   hint_2: Du kan finne informasjon om hvordan du bruker stemmegivning i wikien
   new_poll: Opprett en ny avstemming
   hint: Stemmemodulen kan testes i den nasjonale arbeidsgruppen «Avstemming – Test».
@@ -861,7 +860,7 @@ foodsaver:
     orga: er en del av det globale organisasjonsteamet
     remove: Slett fra regionen
   delete_account_now: Slett kontoen nå
-  delete_account: ⚠️ Slett konto
+  delete_account: Slett konto
   edit_success: Endringer er lagret
   title: Matredder
   upgrade:
@@ -1638,6 +1637,7 @@ events:
       \ å også vise avtalen på dashbordet til nykommere i mellomtiden,\nlagre den\
       \ igjen på et senere tidspunkt.\n"
   bread: Arrangementer
+  past: Tidligere arrangementer
   button:
     maybe: Kanskje
     yes: Jeg deltar
@@ -2253,3 +2253,4 @@ quiz:
   finishnow:
     fs: Fullfør registreringen som matredder nå.
 fpsingular: feilpunktet
+filter_by: filtrer etter

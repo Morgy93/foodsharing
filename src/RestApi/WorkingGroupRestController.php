@@ -37,37 +37,6 @@ class WorkingGroupRestController extends AbstractFOSRestController
 	}
 
 	/**
-	 * Removes a member from a working group. If the user was not a member of the group, nothing happens.
-	 *
-	 * @OA\Response(response="200", description="Success")
-	 * @OA\Response(response="401", description="Not logged in")
-	 * @OA\Response(response="403", description="Insufficient permissions")
-	 * @OA\Response(response="404", description="Group not found")
-	 * @OA\Tag(name="groups")
-	 *
-	 * @Rest\Delete("groups/{groupId}/members/{memberId}", requirements={"groupId" = "\d+", "memberId" = "\d+"})
-	 */
-	public function removeMember(int $groupId, int $memberId): Response
-	{
-		if (!$this->session->may()) {
-			throw new HttpException(401);
-		}
-
-		$group = $this->workGroupGateway->getGroup($groupId);
-		if (empty($group) || $group['type'] !== Type::WORKING_GROUP) {
-			throw new HttpException(404);
-		}
-
-		if (!$this->workGroupPermissions->mayEdit($group)) {
-			throw new HttpException(403);
-		}
-
-		$this->workGroupTransactions->removeMemberFromGroup($groupId, $memberId);
-
-		return $this->handleView($this->view([], 200));
-	}
-
-	/**
 	 * Adds a member to a working group. If the user is already a member of the group, nothing happens.
 	 *
 	 * @OA\Response(response="200", description="Success")

@@ -18,4 +18,9 @@ class SettingsPermissions
 	{
 		return $this->session->may('fs');
 	}
+
+	public function mayUsePassportGeneration(): bool
+	{
+		return $this->session->may('fs') && $this->session->isVerified();
+	}
 }

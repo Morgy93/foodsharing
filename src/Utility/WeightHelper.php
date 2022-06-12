@@ -15,6 +15,7 @@ class WeightHelper
 	private function createWeightBaseArray(): array
 	{
 		return [
+			0 => ['value' => 0, 'name' => 'Keine Angabe'],
 			1 => ['value' => 2, 'name' => '1-3 kg'],
 			2 => ['value' => 4, 'name' => '3-5 kg'],
 			3 => ['value' => 7.5, 'name' => '5-10 kg'],

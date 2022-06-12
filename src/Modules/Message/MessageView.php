@@ -26,7 +26,7 @@ final class MessageView extends View
 			tstring = ""+date.getYear() + ""+date.getMonth() + ""+date.getDate() + ""+date.getHours();
 			var localsource = [];
 			$.ajax({
-				url: "/api/search/legacyindex",
+				url: "/api/search/index",
 				dataType: "json",
 				success: function (json) {
 					if (json.length > 0 && json[0] != undefined && json[0].key == "buddies") {

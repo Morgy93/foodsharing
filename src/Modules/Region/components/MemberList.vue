@@ -30,6 +30,7 @@
             class="col-11"
           >
             <user-search-input
+              v-if="isWorkGroup"
               id="new-foodsaver-search"
               class="m-1"
               :placeholder="$i18n('search.user_search.placeholder')"
@@ -115,11 +116,41 @@
             </a>
           </template>
           <template
-            v-if="isWorkGroup && mayEditMembers && managementModeEnabled"
+            v-if="mayRemoveAdminOrAmbassador && managementModeEnabled"
+            #cell(removeAdminButton)="row"
+          >
+            <b-button
+              v-if="row.item.isAdminOrAmbassadorOfRegion === true"
+              v-b-tooltip="$i18n(isWorkGroup ? 'group.member_list.remove_admin_title' : 'group.member_list.remove_ambassador_title')"
+              size="sm"
+              variant="danger"
+              :disabled="isBusy"
+              @click="showRemoveAdminMemberConfirmation(row.item.id, row.item.name)"
+            >
+              <i class="fas fa-fw fa-user-slash" />
+            </b-button>
+          </template>
+          <template
+            v-if="maySetAdminOrAmbassador && managementModeEnabled"
+            #cell(setAdminButton)="row"
+          >
+            <b-button
+              v-if="userId !== row.item.id && row.item.isAdminOrAmbassadorOfRegion !== true && (isWorkGroup ? row.item.role === 2: row.item.role === 3)"
+              v-b-tooltip="$i18n(isWorkGroup ? 'group.member_list.set_admin_title' : 'group.member_list.set_ambassador_title')"
+              size="sm"
+              variant="warning"
+              :disabled="isBusy"
+              @click="showSetAdminMemberConfirmation(row.item.id, row.item.name)"
+            >
+              <i class="fas fa-fw fa-user-graduate" />
+            </b-button>
+          </template>
+          <template
+            v-if="mayEditMembers && managementModeEnabled"
             #cell(removeButton)="row"
           >
             <b-button
-              v-if="userId !== row.item.id"
+              v-if="userId !== row.item.id && row.item.isAdminOrAmbassadorOfRegion !== true"
               v-b-tooltip="$i18n('group.member_list.remove_title')"
               size="sm"
               variant="danger"
@@ -146,8 +177,8 @@
 <script>
 import { optimizedCompare } from '@/utils'
 import { BButton, BTable, BPagination, VBTooltip } from 'bootstrap-vue'
-import { removeMember, addMember } from '@/api/groups'
-import { listRegionMembers } from '@/api/regions'
+import { addMember } from '@/api/groups'
+import { removeMember, listRegionMembers, setAdminOrAmbassador, removeAdminOrAmbassador } from '@/api/regions'
 import { hideLoader, pulseError, showLoader } from '@/script'
 import i18n from '@/i18n'
 import UserSearchInput from '@/components/UserSearchInput'
@@ -168,6 +199,8 @@ export default {
       default: false,
     },
     mayEditMembers: { type: Boolean, default: false },
+    maySetAdminOrAmbassador: { type: Boolean, default: false },
+    mayRemoveAdminOrAmbassador: { type: Boolean, default: false },
   },
   data () {
     return {
@@ -185,6 +218,16 @@ export default {
           label: this.$i18n('group.name'),
           sortable: false,
           class: 'align-middle',
+        }, {
+          key: 'setAdminButton',
+          label: '',
+          sortable: false,
+          class: 'button-column',
+        }, {
+          key: 'removeAdminButton',
+          label: '',
+          sortable: false,
+          class: 'button-column',
         }, {
           key: 'removeButton',
           label: '',
@@ -236,6 +279,62 @@ export default {
     clearFilter () {
       this.filterStatus = null
       this.filterText = ''
+    },
+    async tryRemoveAdminMember (memberId) {
+      showLoader()
+      this.isBusy = true
+      try {
+        await removeAdminOrAmbassador(this.groupId, memberId)
+        const index = this.memberList.findIndex(member => member.id === memberId)
+        if (index >= 0) {
+          this.memberList[index].isAdminOrAmbassadorOfRegion = false
+        }
+      } catch (e) {
+        pulseError(i18n('error_unexpected'))
+      }
+      this.isBusy = false
+      hideLoader()
+    },
+    async showRemoveAdminMemberConfirmation (memberId, memberName) {
+      const remove = await this.$bvModal.msgBoxConfirm(i18n(this.isWorkGroup ? 'group.member_list.remove_admin_text' : 'group.member_list.remove_ambassador_text', { name: memberName, id: memberId }), {
+        modalClass: 'bootstrap',
+        title: i18n(this.isWorkGroup ? 'group.member_list.remove_admin_title' : 'group.member_list.remove_ambassador_title'),
+        cancelTitle: i18n('button.cancel'),
+        okTitle: i18n('yes'),
+        headerClass: 'd-flex',
+        contentClass: 'pr-3 pt-3',
+      })
+      if (remove) {
+        this.tryRemoveAdminMember(memberId)
+      }
+    },
+    async trySetAdminMember (memberId) {
+      showLoader()
+      this.isBusy = true
+      try {
+        await setAdminOrAmbassador(this.groupId, memberId)
+        const index = this.memberList.findIndex(member => member.id === memberId)
+        if (index >= 0) {
+          this.memberList[index].isAdminOrAmbassadorOfRegion = true
+        }
+      } catch (e) {
+        pulseError(i18n('error_unexpected'))
+      }
+      this.isBusy = false
+      hideLoader()
+    },
+    async showSetAdminMemberConfirmation (memberId, memberName) {
+      const remove = await this.$bvModal.msgBoxConfirm(i18n(this.isWorkGroup ? 'group.member_list.set_admin_text' : 'group.member_list.set_ambassador_text', { name: memberName, id: memberId }), {
+        modalClass: 'bootstrap',
+        title: i18n(this.isWorkGroup ? 'group.member_list.set_admin_title' : 'group.member_list.set_ambassador_title'),
+        cancelTitle: i18n('button.cancel'),
+        okTitle: i18n('yes'),
+        headerClass: 'd-flex',
+        contentClass: 'pr-3 pt-3',
+      })
+      if (remove) {
+        this.trySetAdminMember(memberId)
+      }
     },
     async tryRemoveMember (memberId) {
       showLoader()

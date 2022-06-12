@@ -130,6 +130,10 @@ export default {
       return this.isMailValidForRegistration && !this.$v.$invalid && !this.isMailInvalid
     },
   },
+  mounted () {
+    this.confirmPassword = this.password
+    this.isMailValidForRegistration = true
+  },
   methods: {
     redirect () {
       this.$v.$touch()

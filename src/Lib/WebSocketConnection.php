@@ -16,6 +16,7 @@ use function Sentry\captureException;
 class WebSocketConnection
 {
 	private $guzzle;
+	private const DEFAULT_TIMEOUT = 30; // sending timeout in seconds
 
 	public function __construct(Client $guzzle)
 	{
@@ -34,13 +35,13 @@ class WebSocketConnection
 	public function sendSock(int $fsid, string $app, string $method, array $options): void
 	{
 		$url = SOCK_URL . 'users/' . $fsid . '/' . $app . '/' . $method;
-		$this->post($url, [RequestOptions::JSON => $options]);
+		$this->post($url, [RequestOptions::JSON => $options, RequestOptions::TIMEOUT => self::DEFAULT_TIMEOUT]);
 	}
 
 	public function sendSockMulti(array $fsids, string $app, string $method, array $options): void
 	{
 		$url = SOCK_URL . 'users/' . join(',', $fsids) . '/' . $app . '/' . $method;
-		$this->post($url, [RequestOptions::JSON => $options]);
+		$this->post($url, [RequestOptions::JSON => $options, RequestOptions::TIMEOUT => self::DEFAULT_TIMEOUT]);
 	}
 
 	public function isUserOnline(int $fsid): bool

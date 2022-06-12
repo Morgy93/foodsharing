@@ -96,4 +96,62 @@ class EventGatewayTest extends \Codeception\Test\Unit
 			$this->tester->seeInDatabase('fs_foodsaver_has_event', ['foodsaver_id' => $fsid, 'event_id' => $eventid, 'status' => 0]);
 		}
 	}
+
+	public function testListEvents()
+	{
+		$dateFormat = 'Y-m-d H:i';
+
+		$dateMinusTwoHours = date($dateFormat, time() - (2 * 60 * 60));
+		$dateMinusOneHour = date($dateFormat, time() - (60 * 60));
+		$datePlusOneHour = date($dateFormat, time() + (60 * 60));
+		$datePlusTwoHours = date($dateFormat, time() + (2 * 60 * 60));
+		$events = [
+			[
+				'bezirk_id' => $this->region['id'],
+				'location_id' => null,
+				'public' => 0,
+				'name' => 'EventInPast',
+				'start' => $dateMinusTwoHours,
+				'end' => $dateMinusOneHour,
+				'description' => 'd',
+				'bot' => 0,
+				'online' => 0,
+			],
+			[
+				'bezirk_id' => $this->region['id'],
+				'location_id' => null,
+				'public' => 0,
+				'name' => 'EventRunning',
+				'start' => $dateMinusOneHour,
+				'end' => $datePlusOneHour,
+				'description' => 'd',
+				'bot' => 0,
+				'online' => 0,
+			],
+			[
+				'bezirk_id' => $this->region['id'],
+				'location_id' => null,
+				'public' => 0,
+				'name' => 'EventInFuture',
+				'start' => $datePlusOneHour,
+				'end' => $datePlusTwoHours,
+				'description' => 'd',
+				'bot' => 0,
+				'online' => 0,
+			],
+		];
+		foreach ($events as $event) {
+			$eventid = $this->gateway->addEvent($this->foodsaver['id'], $event);
+			$this->assertGreaterThan(0, $eventid);
+		}
+		$listedEvents = $this->gateway->listForRegion($this->region['id']);
+
+		$this->assertEquals(sizeof($events), sizeof($listedEvents), 'All events of a region should be listed');
+
+		foreach ($events as $event) {
+			$this->assertNotEmpty(array_filter($listedEvents, function ($listedEvent) use ($event) {
+				return $listedEvent['name'] == $event['name'];
+			}));
+		}
+	}
 }

@@ -35,6 +35,8 @@ class ContentId
 	public const QUIZ_MESSAGE_SM_UNVERIFIED_PAGE_45 = 45;
 	public const QUIZ_POPUP_AMB_PAGE_35 = 35;
 	public const QUIZ_POPUP_AMB_LAST_PAGE_36 = 36;
+	public const QUIZ_LEGAL_FOODSAVER = 30;
+	public const QUIZ_LEGAL_STOREMANAGER = 31;
 
 	public const PRIVACY_POLICY_CONTENT = 28;
 	public const TEAM_HEADER_PAGE_39 = 39;
@@ -58,4 +60,24 @@ class ContentId
 	public const STARTPAGE_BLOCK1_CH = 89;
 	public const STARTPAGE_BLOCK2_CH = 90;
 	public const STARTPAGE_BLOCK3_CH = 91;
+
+	public const PRESS = 58;
+	public const COMMUNITIES_GERMANY = 52;
+	public const COMMUNITIES_AUSTRIA = 61;
+	public const COMMUNITIES_SWITZERLAND = 62;
+	public const DEMANDS = 60;
+	public const CONTACT = 73;
+	public const ACADEMY = 69;
+	public const FESTIVAL = 72;
+	public const INTERNATIONAL = 74;
+	public const TRANSPARENCY = 68;
+	public const CAMPAIGN_LEERE_TONNE = 46;
+	public const RESCUE_FOOD_SHARE_POINT = 49;
+	public const IMPRESSUM = 8;
+	public const ABOUT = 9;
+	public const INFO_HUB = 59;
+	public const FOODSHARING_STAEDTE = 66;
+	public const FOR_COMPANIES = 4;
+	public const WORKSHOPS = 71;
+	public const STATISTICS_PAGE = 11;
 }

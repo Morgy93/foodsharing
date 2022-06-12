@@ -270,7 +270,7 @@ maxfp: Nombre maximum de points faibles à passer
 answers: Quelles réponses sont correctes ?
 duration: Il est temps de répondre
 explanation: Explication
-fp: Points faibles
+fp: Points d'erreur
 text: Texte
 right: Score
 week_num: Combien de semaines un membre doit-il être enregistré sur la plateforme
@@ -683,10 +683,10 @@ forum:
     error: Ta contribution n'a pas pu être sauvegardée.
     success: Super ! Ta réponse a été sauvegardée.
   markdown_description: "Pour formater le texte en *<i>cursif</i>* ou **<b>gras</b>**,\
-    \ utilise  <a href=\"https://fr.wikipedia.org/wiki/Markdown\" target=\"_blank\"\
-    >Markdown</a>.\n<br />Attention: Si tu souhaites mettre une étoile au sein de\
-    \ ton texte, il faudra ajouter un &bsol; avant l'étoile (&bsol;*) pour que celle-ci soit\
-    \ visible."
+    \ utilise <a href=\"https://fr.wikipedia.org/wiki/Markdown\" target=\"_blank\"\
+    >Markdown</a>.\n<br />Attention : Si tu souhaites mettre une étoile au sein de\
+    \ ton texte, il faudra ajouter un &bsol; avant l'étoile (&bsol;*) pour que celle-ci\
+    \ soit visible."
   sending_error: Une erreur est survenue lors de l'envoi
   no_threads: Aucune discussion
   no_posts: Aucune contribution à afficher
@@ -953,8 +953,8 @@ legal:
       et ne pourront pas être récupérées :'
     this_gets_deleted_stores: <ul><li>Entreprises auxquelles tu avais adhéré.</ul></li>
     this_doesnt_get_deleted: 'Les informations suivantes ne sont plus disponibles
-      dans le système actif, mais sont archivées séparément sur la base du §17 du
-      RGPD :'
+      dans le système actif, mais sont archivées séparément sur la base du article
+      17, paragraphe 3 du RGPD :'
     this_doesnt_get_deleted_address: <ul><li>Ton adresse</ul></li>
     this_doesnt_get_deleted_history: <ul><li>Historique de ta vérification</ul></li>
     this_doesnt_get_deleted_name: <ul><li>Ton nom</ul></li>
@@ -1442,7 +1442,7 @@ pickup:
   leave_team_message_template: Cher tout le monde, le {date}…
   leave_team_message_title: Envoyer un message à l'équipe
   leave_pickup_message_team: Notifier l'équipe
-  leave_pickup_ok: J'ai déjà trouvé un(e) replaçant(e).
+  leave_pickup_ok: J'ai déjà trouvé un(e) replaçant(e)
   really_leave_date: Tu es responsable de cette collecte, c'est ton rôle de trouver
     un(e) remplaçant(e).
   kick_message_footer: Amicalement, l'équipe des responsables coopération
@@ -1466,6 +1466,7 @@ pickup:
   same_day_hint: 'Tu es inscrit·e le {day} pour les collectes suivantes :'
 events:
   bread: Évènements
+  past: Évènements passés
   rsvp:
     no: Tu seras noté·e comme « ne pouvant pas participer »
     maybe: Cool que tu puisses peut-être trouver le temps !
@@ -1580,8 +1581,8 @@ storeedit:
   edit_success: Les modifications ont été enregistrées avec succès
   add_success: Nouveau magasin partenaire ajouté
   fetch:
-    teamStatus2: Besoin de renforts urgent !
-    teamStatus1: Ton aide est la bienvenue !
+    teamStatus2: Besoin de renforts urgent
+    teamStatus1: Ton aide est la bienvenue
     teamStatus0: Cette équipe est complète et n'a pas besoin d'aide supplémentaire
       pour le moment
     teamStatus: Statut de l'équipe
@@ -1710,7 +1711,7 @@ formatting:
   md: Tu peux utiliser Markdown pour formater <a href="https://www.markdownguide.org/">Markdown</a>
     à utiliser.
 footer:
-  lebensministerium_alt_text: Lebensministerium autrichien
+  lebensministerium_alt_text: Ministère fédéral de l'Agriculture autrichien
   wiener_tafel_alt_text: Wiener Tafel
   it_devdocs: par le groupe informatique de foodsharing
   donate_now: Faire un don
@@ -1826,8 +1827,8 @@ bell:
   betrieb_fetch_title: '{betrieb}'
   new_foodsaver_verified: Est déjà formé(e) - peut déjà se lancer !
   new_foodsaver_verified_title: '{name} fraîchement arrivé(e) à {bezirk}'
-  new_foodsaver: A besoin d'être formé.e !
-  new_foodsaver_needs_introduction: A besoin d'être formé.e !
+  new_foodsaver: A besoin d'être formé.e
+  new_foodsaver_needs_introduction: A besoin d'être formé.e
   new_foodsaver_title: '{name} nouvellement arrivé(e) à {bezirk}'
   new_quiz_comment: '{comment}'
   new_quiz_comment_title: Nouveau commentaire sur le Quiz
@@ -2363,3 +2364,12 @@ teamjs:
 sig:
   buddies: Les gens que tu connais
 deletefromregion: Vraiment supprimer du secteur ?
+fpcapital: P.E.
+nofp: pas de point d'erreur (question blague)
+quiz:
+  question: Question
+  questions: Questions
+  not_passed_details: Malheureusement tu n'as pas passé. Tu as {points}, mais tu aurais
+    dû avoir moins que {maxpoints} points d'erreur !
+  congrats_details: Félicitations ! Passé avec {points} de {max_points} points d'erreur !
+fpsingular: Point d'erreur

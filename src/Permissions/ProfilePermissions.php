@@ -4,17 +4,20 @@ namespace Foodsharing\Permissions;
 
 use Foodsharing\Lib\Session;
 use Foodsharing\Modules\Core\DBConstants\Region\RegionIDs;
+use Foodsharing\Modules\Foodsaver\FoodsaverGateway;
 use Foodsharing\Modules\Region\RegionGateway;
 
 class ProfilePermissions
 {
 	private Session $session;
 	private RegionGateway $regionGateway;
+	private FoodsaverGateway $foodsaverGateway;
 
-	public function __construct(Session $session, RegionGateway $regionGateway)
+	public function __construct(Session $session, RegionGateway $regionGateway, FoodsaverGateway $foodsaverGateway)
 	{
 		$this->session = $session;
 		$this->regionGateway = $regionGateway;
+		$this->foodsaverGateway = $foodsaverGateway;
 	}
 
 	public function mayAdministrateUserProfile(int $userId, ?int $regionId = null): bool
@@ -59,6 +62,20 @@ class ProfilePermissions
 	public function maySeeStores(int $fsId): bool
 	{
 		return $this->session->id() == $fsId || $this->mayAdministrateUserProfile($fsId);
+	}
+
+	public function maySeePickupsStat(int $fsId): bool
+	{
+		if ($this->mayAdministrateUserProfile($fsId)) {
+			return true;
+		}
+
+		$getFsID = $this->foodsaverGateway->getFoodsaverBasics($fsId);
+		if ($getFsID['bezirk_id'] != $this->session->getCurrentRegionId()) {
+			return false;
+		}
+
+		return $this->session->id() == $fsId || $this->session->may('bieb');
 	}
 
 	public function maySeeEmailAddress(int $fsId): bool

@@ -136,10 +136,10 @@ export default {
     toggleReaction (key, dontRemove = false) {
       if (this.gaveIThisReaction(key)) {
         if (!dontRemove) {
-          this.$emit('reactionRemove', key)
+          this.$emit('reaction-remove', key)
         }
       } else {
-        this.$emit('reactionAdd', key)
+        this.$emit('reaction-add', key)
       }
     },
     giveEmoji (key) {

@@ -122,12 +122,13 @@ class Utils
 		});');
 		$this->pageHelper->addHidden('<div id="' . $id . '-dialog"><div id="' . $id . '-tree"></div></div>');
 
-		return $this->v_input_wrapper($label,
+		return $this->v_input_wrapper(
+			$label,
 			'<span id="' . $id . '-preview">' . $region['name'] . '</span> '
-			. '<span id="' . $id . '-button">' . $this->translator->trans('region.change') . '</span>'
-			. '<input type="hidden" name="' . $id . '" id="' . $id . '" value="' . $region['id'] . '" />'
-			. '<input type="hidden" name="' . $id . '-hName" id="' . $id . '-hName" value="' . $region['id'] . '" />'
-			. '<input type="hidden" name="' . $id . 'hId" id="' . $id . '-hId" value="' . $region['id'] . '" />'
+				. '<span id="' . $id . '-button">' . $this->translator->trans('region.change') . '</span>'
+				. '<input type="hidden" name="' . $id . '" id="' . $id . '" value="' . $region['id'] . '" />'
+				. '<input type="hidden" name="' . $id . '-hName" id="' . $id . '-hName" value="' . $region['id'] . '" />'
+				. '<input type="hidden" name="' . $id . 'hId" id="' . $id . '-hId" value="' . $region['id'] . '" />'
 		);
 	}
 
@@ -537,7 +538,8 @@ class Utils
 			$val = substr($val['name'], 0, 30);
 		}
 
-		$this->pageHelper->addJs('
+		$this->pageHelper->addJs(
+			'
 			$("#' . $id . '-button").button().on("click", function () {
 				$("#' . $id . '").trigger("click");
 			});
@@ -734,9 +736,9 @@ class Utils
 		return $this->v_input_wrapper(
 			$label,
 			'<input placeholder="' . $this->translator->trans('date.from') . '" class="input text date value"'
-			. ' type="text" id="' . $id . '_from" name="' . $id . '[from]">
+				. ' type="text" id="' . $id . '_from" name="' . $id . '[from]">
 			<input placeholder="' . $this->translator->trans('date.to') . '" class="input text date value"'
-			. ' type="text" id="' . $id . '_to" name="' . $id . '[to]">',
+				. ' type="text" id="' . $id . '_to" name="' . $id . '[to]">',
 			$id,
 			[]
 		);
@@ -854,15 +856,19 @@ class Utils
 		$color = 'light';
 		switch ($status) {
 			case 2:
-				$color = 'warn'; break;
+				$color = 'warn';
+				break;
 			case 3:
 			case 5:
-				$color = 'success'; break;
+				$color = 'success';
+				break;
 			case 4:
 			case 7:
-				$color = 'danger'; break;
+				$color = 'danger';
+				break;
 			case 6:
-				$color = 'info'; break;
+				$color = 'info';
+				break;
 		}
 
 		return '<a href="#" onclick="return false;" title="'

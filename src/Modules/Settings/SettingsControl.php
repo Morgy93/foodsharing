@@ -11,6 +11,7 @@ use Foodsharing\Modules\Core\DBConstants\Quiz\QuizStatus;
 use Foodsharing\Modules\Core\DBConstants\Quiz\SessionStatus;
 use Foodsharing\Modules\Foodsaver\FoodsaverGateway;
 use Foodsharing\Modules\FoodSharePoint\FoodSharePointGateway;
+use Foodsharing\Modules\PassportGenerator\PassportGeneratorTransaction;
 use Foodsharing\Modules\Quiz\QuizGateway;
 use Foodsharing\Modules\Quiz\QuizSessionGateway;
 use Foodsharing\Modules\Region\ForumFollowerGateway;
@@ -31,6 +32,7 @@ class SettingsControl extends Control
 	private ForumFollowerGateway $forumFollowerGateway;
 	private RegionGateway $regionGateway;
 	private SettingsPermissions $settingsPermissions;
+	private PassportGeneratorTransaction $passportGeneratorTransaction;
 
 	public function __construct(
 		SettingsView $view,
@@ -43,7 +45,8 @@ class SettingsControl extends Control
 		DataHelper $dataHelper,
 		ForumFollowerGateway $forumFollowerGateway,
 		RegionGateway $regionGateway,
-		SettingsPermissions $settingsPermissions
+		SettingsPermissions $settingsPermissions,
+		PassportGeneratorTransaction $passportGeneratorTransaction
 	) {
 		$this->view = $view;
 		$this->settingsGateway = $settingsGateway;
@@ -56,6 +59,7 @@ class SettingsControl extends Control
 		$this->forumFollowerGateway = $forumFollowerGateway;
 		$this->regionGateway = $regionGateway;
 		$this->settingsPermissions = $settingsPermissions;
+		$this->passportGeneratorTransaction = $passportGeneratorTransaction;
 
 		parent::__construct();
 
@@ -90,6 +94,10 @@ class SettingsControl extends Control
 			$menu[] = ['name' => $this->translator->trans('settings.calendar.menu'), 'href' => '/?page=settings&sub=calendar'];
 		}
 
+		if ($this->settingsPermissions->mayUsePassportGeneration()) {
+			$menu[] = ['name' => $this->translator->trans('settings.passport.menu'), 'href' => '/?page=settings&sub=passport'];
+		}
+
 		$this->pageHelper->addContent($this->view->menu($menu, [
 			'title' => $this->translator->trans('settings.title'),
 			'active' => $this->getSub(),
@@ -112,7 +120,8 @@ class SettingsControl extends Control
 		];
 
 		$this->pageHelper->addContent($this->view->menu(
-			$menu, ['title' => $this->translator->trans('settings.account'), 'active' => $this->getSub()]
+			$menu,
+			['title' => $this->translator->trans('settings.account'), 'active' => $this->getSub()]
 		), CNT_LEFT);
 	}
 
@@ -177,7 +186,7 @@ class SettingsControl extends Control
 				$this->pageHelper->addContent(
 					$this->v_utils->v_info(
 						$this->translator->trans('foodsaver.upgrade.quiz_error')
-						. ' <a href=mailto:' . SUPPORT_EMAIL . '>' . SUPPORT_EMAIL . '</a>'
+							. ' <a href=mailto:' . SUPPORT_EMAIL . '>' . SUPPORT_EMAIL . '</a>'
 					)
 				);
 			}
@@ -235,7 +244,7 @@ class SettingsControl extends Control
 				break;
 
 			default:
-				$this->pageHelper->addContent($this->view->quizFailed($this->contentGateway->get(13)));
+				$this->pageHelper->addContent($this->view->quizFailed($this->contentGateway->get(ContentId::QUIZ_FAILED_PAGE_13)));
 		}
 	}
 
@@ -276,8 +285,8 @@ class SettingsControl extends Control
 					$this->routeHelper->go('/?page=relogin&url=' . urlencode('/?page=dashboard'));
 				}
 			}
-			$cnt = $this->contentGateway->get(14);
-			$rv = $this->contentGateway->get(30);
+			$cnt = $this->contentGateway->get(ContentId::QUIZ_CONFIRM_FS_PAGE_14);
+			$rv = $this->contentGateway->get(ContentId::QUIZ_LEGAL_FOODSAVER);
 			$this->pageHelper->addContent($this->view->confirmFs($cnt, $rv));
 		}
 	}
@@ -297,8 +306,8 @@ class SettingsControl extends Control
 					$this->routeHelper->go('/?page=dashboard');
 				}
 			}
-			$cnt = $this->contentGateway->get(15);
-			$rv = $this->contentGateway->get(31);
+			$cnt = $this->contentGateway->get(ContentId::QUIZ_CONFIRM_SM_PAGE_15);
+			$rv = $this->contentGateway->get(ContentId::QUIZ_LEGAL_STOREMANAGER);
 			$this->pageHelper->addContent($this->view->confirmBip($cnt, $rv));
 		}
 	}
@@ -373,11 +382,18 @@ class SettingsControl extends Control
 
 		$this->dataHelper->setEditData($data);
 
-		$this->pageHelper->addContent($this->view->foodsaver_form(
-			$this->translator->trans('foodsaver.title'))
-		);
+		$this->pageHelper->addContent($this->view->foodsaver_form());
 
 		$this->pageHelper->addContent($this->picture_box(), CNT_RIGHT);
+	}
+
+	public function passport()
+	{
+		if ($this->settingsPermissions->mayUsePassportGeneration()) {
+			$this->passportGeneratorTransaction->generate([$this->session->id()], false);
+		} else {
+			$this->routeHelper->go('/?page=settings');
+		}
 	}
 
 	public function calendar()

@@ -17,7 +17,7 @@
         </a>
       </div>
 
-      <div class="card-body p-0">
+      <div v-show="displayWall" class="card-body p-0">
         <StoreWall
           :store-id="storeId"
           :compact="!displayWall"

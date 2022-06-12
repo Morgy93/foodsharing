@@ -22,7 +22,8 @@ $I->seeInDatabase('fs_foodsaver', [
 	'id' => $foodsaver['id'],
 	'name' => null,
 	'email' => null,
-	'nachname' => null
+	'nachname' => null,
+	'deleted_by' => $foodsaver['id']
 ]);
 
 $I->seeInDatabase('fs_foodsaver_archive', [

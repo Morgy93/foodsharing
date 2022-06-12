@@ -34,6 +34,16 @@ final class RegionPermissions
 		return $this->session->may('orga');
 	}
 
+	public function maySetRegionAdmin(): bool
+	{
+		return $this->session->may('orga');
+	}
+
+	public function mayRemoveRegionAdmin(): bool
+	{
+		return $this->session->may('orga');
+	}
+
 	public function mayAdministrateWorkgroupFunction(int $wgfunction): bool
 	{
 		if (WorkgroupFunction::isRestrictedWorkgroupFunction($wgfunction)) {

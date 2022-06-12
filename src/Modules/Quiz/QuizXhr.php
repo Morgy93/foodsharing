@@ -5,6 +5,7 @@ namespace Foodsharing\Modules\Quiz;
 use Foodsharing\Lib\Xhr\XhrDialog;
 use Foodsharing\Modules\Content\ContentGateway;
 use Foodsharing\Modules\Core\Control;
+use Foodsharing\Modules\Core\DBConstants\Content\ContentId;
 use Foodsharing\Modules\Core\DBConstants\Foodsaver\Role;
 use Foodsharing\Modules\Core\DBConstants\Quiz\AnswerRating;
 use Foodsharing\Permissions\QuizPermissions;
@@ -352,7 +353,7 @@ class QuizXhr extends Control
 				$dia = new XhrDialog();
 				$dia->addOpt('width', 600);
 				$dia->setTitle($quiz['name'] . '-Quiz');
-				$quizHowTo = $this->contentGateway->get(17);
+				$quizHowTo = $this->contentGateway->get(ContentId::QUIZ_START_PAGE_17);
 				$dia->addContent($this->view->initQuizPage($quizHowTo));
 				$dia->addAbortButton();
 				$dia->addButton('Quiz starten', 'ajreq(\'next\',{app:\'quiz\'});$(\'#' . $dia->getId() . '\').dialog(\'close\');');
@@ -403,7 +404,7 @@ class QuizXhr extends Control
 			$dia->addButton('Jetzt mit dem Quiz meine Rolle als Botschafter*In bestätigen', 'goTo(\'/?page=settings&sub=up_bot\');');
 		}
 
-		$content = $this->contentGateway->get(36);
+		$content = $this->contentGateway->get(ContentId::QUIZ_POPUP_AMB_LAST_PAGE_36);
 		$dia->setTitle($content['title']);
 		$dia->addContent($content['body']);
 
@@ -427,7 +428,7 @@ class QuizXhr extends Control
 					$dia->addButton('Ja, ich möchte jetzt mit dem Quiz meine Rolle als Botschafter*In bestätigen.', 'goTo(\'/?page=settings&sub=up_bot\');');
 				}
 
-				$content = $this->contentGateway->get(18);
+				$content = $this->contentGateway->get(ContentId::QUIZ_POPUP_PAGE_18);
 				$dia->setTitle($content['title']);
 				$dia->addContent($content['body']);
 

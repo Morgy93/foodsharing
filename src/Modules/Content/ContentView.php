@@ -15,33 +15,6 @@ class ContentView extends View
 		</div>';
 	}
 
-	public function partner(array $cnt): string
-	{
-		return '
-		<div class="page ui-padding ui-widget-content corner-all">
-			<h1>' . $cnt['title'] . '</h1>
-			' . $cnt['body'] . '
-		</div>';
-	}
-
-	public function impressum(array $cnt): string
-	{
-		return '
-		<div class="page ui-padding ui-widget-content corner-all">
-			<h1>' . $cnt['title'] . '</h1>
-			' . $cnt['body'] . '
-		</div>';
-	}
-
-	public function about(array $cnt): string
-	{
-		return '
-		<div class="page ui-padding ui-widget-content corner-all">
-			<h1>' . $cnt['title'] . '</h1>
-			' . $cnt['body'] . '
-		</div>';
-	}
-
 	public function joininfo(): string
 	{
 		return '

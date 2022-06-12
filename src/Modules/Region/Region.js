@@ -19,6 +19,7 @@ import ThreadList from './components/ThreadList'
 import PollList from './components/PollList'
 import Options from './components/Options'
 import Pin from './components/Pin'
+import EventList from '../Event/components/EventList'
 import { leaveRegion } from '@/api/regions'
 // Wallpost
 import '../WallPost/WallPost.css'
@@ -63,7 +64,7 @@ $(document).ready(() => {
       MemberList,
     })
     vueApply('#vue-memberlist')
-  } else if (GET('sub') == 'statistic') {
+  } else if (GET('sub') === 'statistic') {
     vueRegister({
       GenderList,
       PickupList,
@@ -99,5 +100,10 @@ $(document).ready(() => {
       Pin,
     })
     vueApply('#vue-pin')
+  } else if (GET('sub') === 'events') {
+    vueRegister({
+      EventList,
+    })
+    vueApply('#vue-eventlist')
   }
 })

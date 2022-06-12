@@ -16,6 +16,11 @@ class EventGateway extends BaseGateway
 		$this->regionGateway = $regionGateway;
 	}
 
+	/**
+	 * Gets the current and upcoming events of a specified region and returns them as array.
+	 *
+	 * @param int $regionId The identifier of the region
+	 */
 	public function listForRegion(int $regionId): array
 	{
 		return $this->db->fetchAll('
@@ -30,7 +35,6 @@ class EventGateway extends BaseGateway
 				fs_event e
 			WHERE
 				e.bezirk_id = :regionId
-			AND e.start > NOW()
 			ORDER BY
 				e.start
 		', [':regionId' => $regionId]);
@@ -140,87 +144,40 @@ class EventGateway extends BaseGateway
 		return $out;
 	}
 
-	public function getEventsInterestedIn(int $userId): array
+	/**
+	 * Returns all future events with specific statuses a foodsaver is invited to.
+	 *
+	 * @param int $userId The id of the user
+	 * @param array $statuses Array of InvitationStatus. Statuses to be included in the result
+	 *
+	 * @return array all events matching the invitation status
+	 */
+	public function getEventsByStatus(int $userId, array $statuses): array
 	{
-		$next = $this->db->fetchAll('
-			SELECT
-				e.id,
-				e.name,
-				e.description,
-				e.start,
-				e.end,
-				UNIX_TIMESTAMP(e.start) AS start_ts,
-				e.bezirk_id,
-				r.name AS regionName,
-				fhe.status
-			FROM
-				fs_event e
-			LEFT JOIN
-				fs_foodsaver_has_event fhe
-			ON
-				e.id = fhe.event_id
-			AND
-				fhe.foodsaver_id = :userId
-			LEFT JOIN
-				fs_bezirk r
-			ON
-				e.bezirk_id = r.id
-
-			WHERE
-				e.end >= CURDATE()
-			AND
-				((e.public = 1 AND (fhe.status IS NULL OR fhe.status <> 3))
-				OR
-					fhe.status IN(1,2)
-				)
-			ORDER BY e.start
-		', [':userId' => $userId]);
-
-		$out = [];
-
-		if ($next) {
-			foreach ($next as $n) {
-				$out[date('Y-m-d H:i', $n['start_ts']) . '-' . $n['id']] = $n;
-			}
-		}
-
-		return $out;
-	}
-
-	public function getEventInvitations(int $userId): array
-	{
-		return $this->db->fetchAll('
-			SELECT
-				e.id,
-				e.name,
-				e.description,
-				e.start,
-				e.end,
-				UNIX_TIMESTAMP(e.start) AS start_ts,
-				e.bezirk_id,
-				r.name AS regionName,
-				fhe.`status`
-
-			FROM
-				fs_event e
-			LEFT JOIN
-				fs_foodsaver_has_event fhe
-			ON
-				e.id = fhe.event_id
-			AND
-				fhe.foodsaver_id = :userId
-			LEFT JOIN
-				fs_bezirk r
-			ON
-				e.bezirk_id = r.id
-
-			WHERE
-				fhe.status = 0
-			AND
-				e.end > NOW()
-			ORDER BY
-				e.start
-		', [':userId' => $userId]);
+		return $this->db->fetchAll('SELECT
+			e.id,
+			e.name,
+			e.description,
+			e.start,
+			e.end,
+			e.bezirk_id AS region_id,
+			r.name AS regionName,
+			UNIX_TIMESTAMP(e.start) AS start_ts,
+			UNIX_TIMESTAMP(e.end) AS end_ts,
+			fhe.status,
+			l.street,
+			l.zip,
+			l.city
+		FROM fs_event e 
+		JOIN fs_foodsaver_has_event fhe ON e.id = fhe.event_id
+		LEFT JOIN fs_location l ON e.location_id = l.id
+		LEFT JOIN fs_bezirk r ON e.bezirk_id = r.id
+		WHERE
+			fhe.foodsaver_id = :fs_id	
+			AND e.end > NOW()
+			AND STATUS IN (' . implode(',', $statuses) . ')
+		ORDER BY e.start
+		', ['fs_id' => $userId]);
 	}
 
 	public function addEvent(int $creatorId, array $event): int
@@ -313,10 +270,14 @@ class EventGateway extends BaseGateway
 			$regionIds = $this->regionGateway->listIdsForDescendantsAndSelf($regionId);
 		}
 
-		$foodsaverIds = $this->db->fetchAllValuesByCriteria('fs_foodsaver_has_bezirk', 'foodsaver_id',
+		$foodsaverIds = $this->db->fetchAllValuesByCriteria(
+			'fs_foodsaver_has_bezirk',
+			'foodsaver_id',
 			['bezirk_id' => $regionIds, 'active' => 1]
 		);
-		$invited = $this->db->fetchAllValuesByCriteria('fs_foodsaver_has_event', 'foodsaver_id',
+		$invited = $this->db->fetchAllValuesByCriteria(
+			'fs_foodsaver_has_event',
+			'foodsaver_id',
 			['event_id' => $eventId]
 		);
 

@@ -1,25 +1,65 @@
-# Release "Heidelbeere", unreleased
+# Release "I", unreleased
+
+## Features
+- The number of unread mails is now displayed as a red badge. !2188 @AntonBallmaier
+- Improved Calendar exports. Events are now included and pickup descriptions contain links. !2182 @AntonBallmaier
+- Past events are shown now below current and upcoming events within the overview !2162 @merhoc
+- Pickup statistics on profile !2208 @fs_k
+- Allow the foodsaver, which is verifiable, to create itself in the profile settings (without cut markers) !2198 #chriswalg
+
+## Changes
+-Checks in the id card creation function if only one foodsaver is selected and then reduces the 
+size to the area for a single id card. If more than one foodsaver is selected, then the old logic takes effect 
+and an A4 sheet is used. !2198 #chriswalg
+- Send a bell notification and email, if a foodsaver was verified. !2198 #chriswalg
+
+## Bugfixes
+- When going back during registration, email and password are unchanged. !1114 @AntonBallmaier
+- Push notifications can be (de-)activated in the settings again #1239 @alex.simm
+
+## Refactoring
+- Currently running events are shown within the event overview until their end !2162 @merhoc
+- Use the same event panel view within the event overview as in other places !2162 @merhoc
+- Simplify code in the content module @alex.simm
+
+## Dev/Test/CI stuff
+- bump node to version 16 !2135 @peter.toennies
+- Update mdbook to 0.4.18 #1178 !2206 @alex.simm
+- Change all emitted Vue events to kebab-case and add linter rules #996 !2163 @alex.simm
+- Switch to an iCal package that is PHP8 compatible #1065 !2151 @alex.simm
+
+# Release "Heidelbeere", 2022-05-01
 
 ## Features
 - It is now differentiated between completely new foodsavers and foodsavers who were verified before. !1129
+- The settings page now contains information about requesting a name change. !2163 @AntonBallmaier
 
 ## Changes
 - Add E-Mail of reported user in overview !2120 @fs_k
 - Store-related conversations include a link to their store now !1807 !2134 !2147 @ChrisOelmueller
 - Removed deprecated "Edit Team" button in the store view for store managers
-- Store-related conversations include a link to their store now !1807 @ChrisOelmueller
 - Removed the limit of calendar entries in iCal export #1167 !2131 @alex.simm
 - The too conspicuous attention mark before delete account menu entry in profile settings has been removed !2165 @NINI1988
 - Long chat names are now better visible !2161 @AntonBallmaier
+- Reordered the input elements on the profile settings page !2174 @AntonBallmaier
+- Make map legend colapsable !2166 @NINI1988
+- Make map legend collapsible !2166 @NINI1988
+- Updated the link to instagram on the startpage !2179 #1206 @alex.simm
+- Set a timeout on the sending chat messages to websockets !2167 #1069 @alex.simm 
+- Store-related conversations include a link to their store now !1807 !2134 @ChrisOelmueller
+- add/remove Admins over memberlist for groups and regions !2143 @fs_k 
+- It will be logged who deleted a user profile @alex.simm
 
 ## Bugfixes
 - Fix the community marker map for regions that do not yet have a pin #1183 !2154 @alex.simm  
 - Redirect to login for user that is not logged in at https://foodsharing.de/?page=login&a=resendActivationMail #1136 !2138 @ESchae
 - Fix typos in forum markdown hints. !2167 @NINI1988
+- Fixed the user search pointing to a non-existing path !2170 @alex.simm
+- The visibility of the StoreWall can be toggled again !2177 @nudin
 - Overwrites the default bootstrap link color to green. !2172 @NINI1988
 
 ## Refactoring
-- move even more hardcoded language to language files !2109 @jonathan_b
+- move even more hardcoded language to language files !2109 !2183 @jonathan_b
 
 ## Dev/Test/CI stuff
 - removed the "request" package !2136 @peter.toennies
@@ -32,6 +72,7 @@
 - Fixed markdown code in IT tasks documentation to actually render links as URLs !2150
 - added info to devdocs: !2146 @jonathan_b
 - Added verification and pass history to the seed data #738 !2127 @alex.simm
+- Add default values for several db table columns !2669 @Morgy93
 
 # Release "Grapefruit", 2022-01-13
 
@@ -66,7 +107,6 @@
 - move more hardcoded language to language files !2108 !2122 !2110 @jonathan_b
 - Get Members in MemberList.vue from Rest Api !2094 !2111 !2123 @chriswalg @alex.simm
 - Refactored the format of the quick search index !2115 @alex.simm 
-- Get Members in MemberList.vue from Rest Api !2094 @chriswalg @alex.simm
 
 ## Dev/Test/CI stuff
 

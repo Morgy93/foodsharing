@@ -18,6 +18,7 @@ import { confirmDeleteUser } from '../Foodsaver/Foodsaver'
 import { vueApply, vueRegister } from '@/vue'
 import Calendar from './components/Calendar'
 import ProfilePicture from './components/ProfilePicture'
+import NameInput from './components/NameInput'
 
 if (GET('sub') === 'calendar') {
   vueRegister({
@@ -27,8 +28,10 @@ if (GET('sub') === 'calendar') {
 } else if (GET('sub') === 'general') {
   vueRegister({
     ProfilePicture,
+    NameInput,
   })
   vueApply('#image-upload')
+  vueApply('#name-input')
 }
 
 expose({

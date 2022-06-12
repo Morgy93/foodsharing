@@ -43,12 +43,24 @@ const fsapp = {
   },
 }
 
-export async function confirmDeleteUser (fsId, name) {
-  if (window.confirm(i18n('foodsaver.delete_account_sure', { name }))) {
-    await deleteUser(fsId)
+export async function confirmDeleteSelf (fsId) {
+  if (window.confirm(i18n('foodsaver.delete_account_sure'))) {
+    await deleteUser(fsId, null)
     pulseSuccess(i18n('success'))
-    goTo('/?page=dashboard')
+    goTo('/?page=logout')
   }
+}
+
+export async function confirmDeleteUser (fsId, name) {
+  let reason
+  do {
+    reason = window.prompt(i18n('foodsaver.delete_account_sure_reason', { name }))
+    if (reason !== null && reason.length > 0) {
+      await deleteUser(fsId, reason)
+      pulseSuccess(i18n('success'))
+      goTo('/?page=dashboard')
+    }
+  } while (reason !== null && reason.length < 1)
 }
 
 fsapp.init()
@@ -56,4 +68,5 @@ fsapp.init()
 expose({
   fsapp,
   confirmDeleteUser,
+  confirmDeleteSelf,
 })

@@ -65,7 +65,7 @@ class ReportXhr extends Control
 			$dialog = new XhrDialog();
 			$dialog->setTitle($this->translator->trans('profile.report.xhr.reporting') . ' ' . $report['fs_name'] . ' ' . $report['fs_nachname']);
 
-			$content = $this->v_utils->v_input_wrapper($this->translator->trans('profile.report.xhr.Report ID'), $report['id']);
+			$content = $this->v_utils->v_input_wrapper($this->translator->trans('profile.report.xhr.reportID'), $report['id']);
 			$content .= $this->v_utils->v_input_wrapper($this->translator->trans('reports.time'), $this->timeHelper->niceDate($report['time_ts']));
 
 			if (isset($report['betrieb'])) {
@@ -95,7 +95,7 @@ class ReportXhr extends Control
 			if ($report['committed'] === 0) {
 				$dialog->addButton($this->translator->trans('profile.report.xhr.delivered'), 'ajreq(\'comReport\',{\'id\':' . (int)$_GET['id'] . '});');
 			}
-			$dialog->addButton($this->translator->trans('button.delete'), 'if(confirm(' . $this->translator->trans('profile.report.xhr.plsconfirm') . ')){ajreq(\'delReport\',{id:' . $report['id'] . '});$(\'#' . $dialog->getId() . '\').dialog(\'close\');}');
+			$dialog->addButton($this->translator->trans('button.delete'), 'if(confirm("' . $this->translator->trans('profile.report.xhr.plsconfirm') . '")){ajreq(\'delReport\',{id:' . $report['id'] . '});$(\'#' . $dialog->getId() . '\').dialog(\'close\');}');
 
 			return $dialog->xhrout();
 		}
@@ -122,7 +122,7 @@ class ReportXhr extends Control
 	{
 		if ($this->reportPermissions->mayHandleReports()) {
 			$this->reportGateway->delReport($_GET['id']);
-			$this->flashMessageHelper->success($this->translator->trans('profile.report.xhr.xxx'));
+			$this->flashMessageHelper->success($this->translator->trans('profile.report.xhr.deleted'));
 
 			return [
 				'status' => 1,

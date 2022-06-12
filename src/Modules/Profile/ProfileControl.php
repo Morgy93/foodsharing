@@ -109,12 +109,14 @@ final class ProfileControl extends Control
 		$mayAdmin = $this->profilePermissions->mayAdministrateUserProfile($fsId, $regionId);
 		$maySeePickups = $this->profilePermissions->maySeePickups($fsId);
 		$maySeeStores = $this->profilePermissions->maySeeStores($fsId);
+		$maySeePickupsStat = $this->profilePermissions->maySeePickupsStat($fsId);
 
 		$wallPosts = $this->wallposts('foodsaver', $fsId);
 		$userStores = $maySeeStores ? $this->profileGateway->listStoresOfFoodsaver($fsId) : [];
 		$fetchDates = $maySeePickups ? $this->profileGateway->getNextDates($fsId, 50) : [];
+		$profilePickupsStat = $maySeePickupsStat ? $this->profileGateway->getPickupsStat($fsId) : [];
 
-		$this->view->profile($wallPosts, $userStores, $fetchDates);
+		$this->view->profile($wallPosts, $userStores, $fetchDates, $profilePickupsStat);
 	}
 
 	private function profilePublic(array $profileData): void

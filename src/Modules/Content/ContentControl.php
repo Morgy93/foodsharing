@@ -73,12 +73,7 @@ class ContentControl extends Control
 					$this->routeHelper->pageLink('content')
 				]), $this->translator->trans('content.actions')), CNT_RIGHT);
 			} elseif ($id = $this->identificationHelper->getActionId('view')) {
-				if ($cnt = $this->contentGateway->get($id)) {
-					$this->pageHelper->addBread($cnt['title']);
-					$this->pageHelper->addTitle($cnt['title']);
-
-					$this->pageHelper->addContent($this->view->simple($cnt));
-				}
+				$this->addContent($id);
 			} elseif (isset($_GET['id'])) {
 				$this->routeHelper->go('/?page=content&a=edit&id=' . (int)$_GET['id']);
 			} else {
@@ -118,12 +113,6 @@ class ContentControl extends Control
 
 	public function legacyToolbar($id, string $contentName): string
 	{
-		if (isset($_GET['bid'])) {
-			$bid = '&bid=' . (int)$_GET['bid'];
-		} else {
-			$bid = $this->session->getCurrentRegionId();
-		}
-
 		$page = $this->routeHelper->getPage();
 		// edit
 		$out = '<li onclick="goTo(\'/?page=' . $page . '&id=' . $id . '&a=edit\');"'
@@ -152,152 +141,77 @@ class ContentControl extends Control
 			$contentId = ContentId::PARTNER_PAGE_AU_79;
 		}
 
-		if ($cnt = $this->contentGateway->get($contentId)) {
-			$this->pageHelper->addBread($cnt['title']);
-			$this->pageHelper->addTitle($cnt['title']);
-
-			$this->pageHelper->addContent($this->view->partner($cnt));
-		}
+		$this->addContent($contentId);
 	}
 
 	public function presse(): void
 	{
-		if ($cnt = $this->contentGateway->get(58)) {
-			$this->pageHelper->addBread($cnt['title']);
-			$this->pageHelper->addTitle($cnt['title']);
-
-			$this->pageHelper->addContent($this->view->simple($cnt));
-		}
+		$this->addContent(ContentId::PRESS);
 	}
 
 	public function communitiesGermany(): void
 	{
-		if ($cnt = $this->contentGateway->get(52)) {
-			$this->pageHelper->addBread($cnt['title']);
-			$this->pageHelper->addTitle($cnt['title']);
-
-			$this->pageHelper->addContent($this->view->simple($cnt));
-		}
+		$this->addContent(ContentId::COMMUNITIES_GERMANY);
 	}
 
 	public function communitiesAustria(): void
 	{
-		if ($cnt = $this->contentGateway->get(61)) {
-			$this->pageHelper->addBread($cnt['title']);
-			$this->pageHelper->addTitle($cnt['title']);
-
-			$this->pageHelper->addContent($this->view->simple($cnt));
-		}
+		$this->addContent(ContentId::COMMUNITIES_AUSTRIA);
 	}
 
 	public function communitiesSwitzerland(): void
 	{
-		if ($cnt = $this->contentGateway->get(62)) {
-			$this->pageHelper->addBread($cnt['title']);
-			$this->pageHelper->addTitle($cnt['title']);
-
-			$this->pageHelper->addContent($this->view->simple($cnt));
-		}
+		$this->addContent(ContentId::COMMUNITIES_SWITZERLAND);
 	}
 
 	public function forderungen(): void
 	{
-		if ($cnt = $this->contentGateway->get(60)) {
-			$this->pageHelper->addBread($cnt['title']);
-			$this->pageHelper->addTitle($cnt['title']);
-
-			$this->pageHelper->addContent($this->view->simple($cnt));
-		}
+		$this->addContent(ContentId::DEMANDS);
 	}
 
 	public function contact(): void
 	{
-		if ($cnt = $this->contentGateway->get(73)) {
-			$this->pageHelper->addBread($cnt['title']);
-			$this->pageHelper->addTitle($cnt['title']);
-
-			$this->pageHelper->addContent($this->view->simple($cnt));
-		}
+		$this->addContent(ContentId::CONTACT);
 	}
 
 	public function academy(): void
 	{
-		if ($cnt = $this->contentGateway->get(69)) {
-			$this->pageHelper->addBread($cnt['title']);
-			$this->pageHelper->addTitle($cnt['title']);
-
-			$this->pageHelper->addContent($this->view->simple($cnt));
-		}
+		$this->addContent(ContentId::ACADEMY);
 	}
 
 	public function festival(): void
 	{
-		if ($cnt = $this->contentGateway->get(72)) {
-			$this->pageHelper->addBread($cnt['title']);
-			$this->pageHelper->addTitle($cnt['title']);
-
-			$this->pageHelper->addContent($this->view->simple($cnt));
-		}
+		$this->addContent(ContentId::FESTIVAL);
 	}
 
 	public function international(): void
 	{
-		if ($cnt = $this->contentGateway->get(74)) {
-			$this->pageHelper->addBread($cnt['title']);
-			$this->pageHelper->addTitle($cnt['title']);
-
-			$this->pageHelper->addContent($this->view->simple($cnt));
-		}
+		$this->addContent(ContentId::INTERNATIONAL);
 	}
 
 	public function transparency(): void
 	{
-		if ($cnt = $this->contentGateway->get(68)) {
-			$this->pageHelper->addBread($cnt['title']);
-			$this->pageHelper->addTitle($cnt['title']);
-
-			$this->pageHelper->addContent($this->view->simple($cnt));
-		}
+		$this->addContent(ContentId::TRANSPARENCY);
 	}
 
 	public function leeretonne(): void
 	{
-		if ($cnt = $this->contentGateway->get(46)) {
-			$this->pageHelper->addBread($cnt['title']);
-			$this->pageHelper->addTitle($cnt['title']);
-
-			$this->pageHelper->addContent($this->view->simple($cnt));
-		}
+		$this->addContent(ContentId::CAMPAIGN_LEERE_TONNE);
 	}
 
 	public function foodSharePointRescue(): void
 	{
-		if ($cnt = $this->contentGateway->get(49)) {
-			$this->pageHelper->addBread($cnt['title']);
-			$this->pageHelper->addTitle($cnt['title']);
-
-			$this->pageHelper->addContent($this->view->simple($cnt));
-		}
+		$this->addContent(ContentId::RESCUE_FOOD_SHARE_POINT);
 	}
 
 	public function impressum(): void
 	{
-		if ($cnt = $this->contentGateway->get(8)) {
-			$this->pageHelper->addBread($cnt['title']);
-			$this->pageHelper->addTitle($cnt['title']);
-
-			$this->pageHelper->addContent($this->view->impressum($cnt));
-		}
+		$this->addContent(ContentId::IMPRESSUM);
 	}
 
 	public function about(): void
 	{
-		if ($cnt = $this->contentGateway->get(9)) {
-			$this->pageHelper->addBread($cnt['title']);
-			$this->pageHelper->addTitle($cnt['title']);
-
-			$this->pageHelper->addContent($this->view->about($cnt));
-		}
+		$this->addContent(ContentId::ABOUT);
 	}
 
 	public function ratgeber(): void
@@ -314,52 +228,38 @@ class ContentControl extends Control
 
 	public function fuer_unternehmen(): void
 	{
-		if ($cnt = $this->contentGateway->get(4)) {
-			$this->pageHelper->addBread($cnt['title']);
-			$this->pageHelper->addTitle($cnt['title']);
-
-			$this->pageHelper->addContent($this->view->partner($cnt));
-		}
+		$this->addContent(ContentId::FOR_COMPANIES);
 	}
 
 	public function infohub(): void
 	{
-		if ($cnt = $this->contentGateway->get(59)) {
-			$this->pageHelper->addBread($cnt['title']);
-			$this->pageHelper->addTitle($cnt['title']);
-
-			$this->pageHelper->addContent($this->view->simple($cnt));
-		}
+		$this->addContent(ContentId::INFO_HUB);
 	}
 
 	public function fsstaedte(): void
 	{
-		if ($cnt = $this->contentGateway->get(66)) {
-			$this->pageHelper->addBread($cnt['title']);
-			$this->pageHelper->addTitle($cnt['title']);
-
-			$this->pageHelper->addContent($this->view->simple($cnt));
-		}
+		$this->addContent(ContentId::FOODSHARING_STAEDTE);
 	}
 
 	public function workshops(): void
 	{
-		if ($cnt = $this->contentGateway->get(71)) {
-			$this->pageHelper->addBread($cnt['title']);
-			$this->pageHelper->addTitle($cnt['title']);
-
-			$this->pageHelper->addContent($this->view->simple($cnt));
-		}
+		$this->addContent(ContentId::WORKSHOPS);
 	}
 
 	public function releaseNotes(): void
 	{
 		$releaseList = [
 			[
+				'id' => '2022-05',
+				'title' => $this->translator->trans('releases.2022-05'),
+				'markdown' => $this->parseGitlabLinks(file_get_contents('release-notes/2022-05.md') ?: ''),
+				'visible' => true,
+			],
+			[
 				'id' => '2022-01',
 				'title' => $this->translator->trans('releases.2022-01'),
 				'markdown' => $this->parseGitlabLinks(file_get_contents('release-notes/2022-01.md') ?: ''),
-				'visible' => true,
+				'visible' => false,
 			],
 			[
 				'id' => '2021-09',
@@ -462,5 +362,14 @@ class ContentControl extends Control
 		$markdown = preg_replace('/\W#([0-9]+)/', ' [#\1](https://gitlab.com/foodsharing-dev/foodsharing/issues/\1)', $markdown) ?? $markdown;
 
 		return $markdown;
+	}
+
+	private function addContent(int $contentId)
+	{
+		if ($cnt = $this->contentGateway->get($contentId)) {
+			$this->pageHelper->addBread($cnt['title']);
+			$this->pageHelper->addTitle($cnt['title']);
+			$this->pageHelper->addContent($this->view->simple($cnt));
+		}
 	}
 }

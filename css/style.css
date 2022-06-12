@@ -1115,3 +1115,7 @@ div.bottom_bar .float_right {
   margin-left: -20px;
   padding: 10px 20px;
 }
+
+.bootstrap input.form-control::placeholder {
+  color: var(--fs-light-grey);
+}

@@ -7,6 +7,5 @@ return [
 	JMS\SerializerBundle\JMSSerializerBundle::class => ['all' => true],
 	Exercise\HTMLPurifierBundle\ExerciseHTMLPurifierBundle::class => ['all' => true],
 	Nelmio\ApiDocBundle\NelmioApiDocBundle::class => ['all' => true],
-	FOS\RestBundle\FOSRestBundle::class => ['all' => true],
-	Welp\IcalBundle\WelpIcalBundle::class => ['all' => true]
+	FOS\RestBundle\FOSRestBundle::class => ['all' => true]
 ];

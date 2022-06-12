@@ -273,6 +273,10 @@ $('#map-control li a').on('click', function () {
   return false
 })
 
+$('#map-control-colapse').on('click', function () {
+  $('#map-legend').toggleClass('colapsed')
+})
+
 $('#map-options input').on('change', function () {
   if ($(this).val() === 'allebetriebe') {
     $('#map-options input').prop('checked', false)

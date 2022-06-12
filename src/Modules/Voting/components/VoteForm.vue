@@ -15,29 +15,29 @@
         v-if="poll.type===0"
         :options="shuffledOptions"
         :enabled="mayVote"
-        @updateValidSelection="updateValidSelection"
-        @updateVotingRequestValues="updateVotingRequestValues"
+        @update-valid-selection="updateValidSelection"
+        @update-voting-request-values="updateVotingRequestValues"
       />
       <MultiSelectionVotingComponent
         v-else-if="poll.type===1"
         :options="shuffledOptions"
         :enabled="mayVote"
-        @updateValidSelection="updateValidSelection"
-        @updateVotingRequestValues="updateVotingRequestValues"
+        @update-valid-selection="updateValidSelection"
+        @update-voting-request-values="updateVotingRequestValues"
       />
       <ThumbVotingComponent
         v-else-if="poll.type===2"
         :options="shuffledOptions"
         :enabled="mayVote"
-        @updateValidSelection="updateValidSelection"
-        @updateVotingRequestValues="updateVotingRequestValues"
+        @update-valid-selection="updateValidSelection"
+        @update-voting-request-values="updateVotingRequestValues"
       />
       <ScoreVotingComponent
         v-else-if="poll.type===3"
         :options="shuffledOptions"
         :enabled="mayVote"
-        @updateValidSelection="updateValidSelection"
-        @updateVotingRequestValues="updateVotingRequestValues"
+        @update-valid-selection="updateValidSelection"
+        @update-voting-request-values="updateVotingRequestValues"
       />
 
       <b-alert

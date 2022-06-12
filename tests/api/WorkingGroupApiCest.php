@@ -26,7 +26,7 @@ class WorkingGroupApiCest
 	public function canRemoveMembersFromWorkingGroups(\ApiTester $I)
 	{
 		$I->login($this->userOrga['email']);
-		$I->sendDelete('api/groups/' . $this->workingGroup['id'] . '/members/' . $this->user['id']);
+		$I->sendDelete('api/region/' . $this->workingGroup['id'] . '/members/' . $this->user['id']);
 		$I->seeResponseCodeIs(\Codeception\Util\HttpCode::OK);
 	}
 }

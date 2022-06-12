@@ -44,7 +44,7 @@
       icon="fa-search"
       :hide-title-always="true"
       :show-only-on-mobile="true"
-      @click="$emit('openSearch')"
+      @click="$emit('open-search')"
     />
   </b-navbar-nav>
 </template>

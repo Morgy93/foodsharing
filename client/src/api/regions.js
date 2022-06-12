@@ -1,4 +1,4 @@
-import { get, patch, post } from './base'
+import { get, patch, post, remove } from './base'
 
 export function joinRegion (regionId) {
   return post(`/region/${regionId}/join`)
@@ -34,4 +34,16 @@ export function listRegionChildren (regionId) {
 
 export function listRegionMembers (regionId) {
   return get(`/region/${regionId}/members`)
+}
+
+export function removeMember (regionId, memberId) {
+  return remove(`/region/${regionId}/members/${memberId}`)
+}
+
+export function removeAdminOrAmbassador (regionId, memberId) {
+  return remove(`/region/${regionId}/members/${memberId}/admin`)
+}
+
+export function setAdminOrAmbassador (regionId, memberId) {
+  return post(`/region/${regionId}/members/${memberId}/admin`)
 }

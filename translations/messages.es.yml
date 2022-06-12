@@ -24,7 +24,7 @@ handy: Teléfono mobil
 telefon: Teléfono fijo
 attachement: Documento adjunto
 email: Correo electrónico
-plz: Código postal (¡automáticamente desde el mapa anterior!)
+plz: Código postal (automáticamente desde el mapa anterior)
 desc: Descripción
 description: Descripción
 edit: editar
@@ -43,7 +43,7 @@ dateend: Fecha de fin
 online_type: ¿Ocurre el evento fuera de línea o en línea?
 opt: Opciones
 dashboard:
-  checkAddress: Por favor, comprueba tu dirección! Las coordenadas no se han podido
+  checkAddress: Por favor, comprueba tu dirección. Las coordenadas no se han podido
     determinar.
   mail_activation_error_title: Correo electrónico no confirmado
   mail_activation_error_body:

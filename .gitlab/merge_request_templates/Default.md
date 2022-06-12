@@ -1,3 +1,5 @@
+<!-- Please leave the merge request in the draft state as long as you are working on it and remove the 
+draft state when you are done and would like a review. -->
 Closes #____ (e.g. #230)
 
 ## What does this MR do?
@@ -25,7 +27,6 @@ Closes #____ (e.g. #230)
 - [ ] no unrelated changes
 - [ ] asked someone for a code review
 - [ ] set a "for:" label to indicate who will be affected by this change
-- [ ] used "state:" labels to track this MR's state until it was beta tested
 - [ ] added to the next milestone (see https://gitlab.com/foodsharing-dev/foodsharing/-/milestones, unless it has a "for:Dev" label)
 - [ ] added an entry to `CHANGELOG.md`
 - [ ] added a short text that can be used in the release notes

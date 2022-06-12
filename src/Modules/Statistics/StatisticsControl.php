@@ -4,6 +4,7 @@ namespace Foodsharing\Modules\Statistics;
 
 use Foodsharing\Modules\Content\ContentGateway;
 use Foodsharing\Modules\Core\Control;
+use Foodsharing\Modules\Core\DBConstants\Content\ContentId;
 
 class StatisticsControl extends Control
 {
@@ -24,7 +25,7 @@ class StatisticsControl extends Control
 
 	public function index(): void
 	{
-		$content = $this->contentGateway->get(11);
+		$content = $this->contentGateway->get(ContentId::STATISTICS_PAGE);
 
 		$this->pageHelper->addTitle($content['title']);
 		$this->pageHelper->addBread($content['title']);

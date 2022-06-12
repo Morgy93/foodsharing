@@ -73,6 +73,9 @@ export default {
   border-width: 0.5rem;
   font-weight: bolder;
 
+  // Heidelbeere
+  &[data-id="2022-05"] { border-color: #5780a9; }
+
   // Grapefruit
   &[data-id="2022-01"] { border-color: #CC4D46; }
 
