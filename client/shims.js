@@ -58,14 +58,6 @@ Object.assign(module.exports, convert({
     ],
   },
 
-  'typeahead-address-photon': {
-    imports: {
-      jQuery: 'jquery',
-      Bloodhound: 'corejs-typeahead',
-    },
-    exports: 'this.PhotonAddressEngine',
-  },
-
   'jquery-ui-addons': {
     resolve: lib('jquery-ui-addons.js'),
     imports: {
@@ -139,7 +131,6 @@ function convert (entries) {
       disableAMD = false,
       imports = {},
       dependencies = [],
-      exports,
     } = options
 
     const test = resolve || require.resolve(name)
@@ -158,13 +149,6 @@ function convert (entries) {
 
     for (const dependency of dependencies) {
       importsLoaderOptions.push(`_${global._counter++}=${dependency}`)
-    }
-
-    if (exports) {
-      rules.push({
-        test,
-        use: `exports-loader?${exports}`,
-      })
     }
 
     rules.push({
