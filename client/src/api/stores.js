@@ -61,3 +61,7 @@ export async function moveMemberToStandbyTeam (storeId, userId) {
 export async function moveMemberToRegularTeam (storeId, userId) {
   return remove(`/stores/${storeId}/members/${userId}/standby`)
 }
+
+export async function updateStore (storeId, field, newValue) {
+  return patch(`/stores/${storeId}/data/${field}`, { newValue: newValue })
+}

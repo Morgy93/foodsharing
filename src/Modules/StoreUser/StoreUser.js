@@ -26,6 +26,7 @@ import StoreApplications from './components/StoreApplications'
 import StoreInfos from './components/StoreInfos'
 import StoreTeam from './components/StoreTeam'
 import StoreOptions from './components/StoreOptions'
+import StoreTeamStatus from './components/StoreTeamStatus'
 
 expose({
   u_betrieb_sign_out,
@@ -117,6 +118,7 @@ $(document).ready(() => {
     StoreInfos,
     StoreTeam,
     StoreOptions,
+    StoreTeamStatus,
   })
   vueApply('#vue-pickup-history', true) // PickupHistory
   vueApply('#vue-pickuplist', true) // PickupList
@@ -125,4 +127,5 @@ $(document).ready(() => {
   vueApply('#vue-storeinfos', true) // StoreInfos
   vueApply('#vue-storeteam', true) // StoreTeam
   vueApply('#vue-storeoptions', true) // StoreOptions
+  vueApply('#vue-store-teamstatus', true) // StoreTeamStatus
 })

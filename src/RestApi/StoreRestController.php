@@ -507,4 +507,57 @@ class StoreRestController extends AbstractFOSRestController
 			throw new NotFoundHttpException('User is not a member of this store.');
 		}
 	}
+
+	/**
+	 * @Rest\Patch("stores/{storeId}/data/{field}", requirements={"storeId" = "\d+", "field" = "\w+"})
+	 *
+	 * @Rest\RequestParam(name="newValue", nullable=true)
+	 *
+	 * @param int $storeId ID of an existing store
+	 * @param string $field which store property to update
+	 */
+	public function updateStoreAction(int $storeId, string $field, ParamFetcher $paramFetcher)
+	{
+		if (!$this->storePermissions->mayEditStore($storeId)) {
+			throw new AccessDeniedHttpException();
+		}
+
+		if (empty($field)) {
+			throw new HttpException(400, 'Store field to edit cannot be empty.');
+		}
+
+		$newValue = $paramFetcher->get('newValue');
+
+		if (!Store::isValidStoreField($field)) {
+			throw new HttpException(400, 'Cannot edit this store field: ' . $field);
+		}
+
+		if ($newValue === null && !Store::isNullable($field)) {
+			throw new HttpException(400, 'Cannot set this store field to null: ' . $field);
+		} elseif (!$newValue && !Store::isEmptyable($field)) {
+			throw new HttpException(400, 'Cannot set this store field to empty value: ' . $field);
+		}
+
+		switch ($field) {
+			case 'team_status':
+				if (TeamStatus::isValidTeamStatus($newValue)) {
+					$this->storeGateway->setStoreTeamStatus($storeId, $newValue);
+				} else {
+					throw new HttpException(400, 'Team status value not supported');
+				}
+				break;
+			case 'lebensmittel':
+				if (!is_array($newValue)) {
+					throw new HttpException(400, 'FoodTypes value must be an array');
+				}
+				$this->storeGateway->setStoreFoodTypes($storeId, $newValue);
+				break;
+			default:
+				$fsId = $this->session->id();
+				$this->storeGateway->editStore($storeId, $field, $newValue, $fsId);
+				break;
+		}
+
+		return $this->getStoreAction($storeId);
+	}
 }

@@ -160,13 +160,23 @@ class StoreUserControl extends Control
 				);
 
 				/* team status */
-				if ($this->storePermissions->mayEditStore($storeId)) {
+				/* if ($this->storePermissions->mayEditStore($storeId)) {
 					$this->pageHelper->addContent(
 						$this->v_utils->v_field(
 							$this->view->u_legacyStoreTeamStatus($store),
 							$this->translator->trans('status'),
 							['class' => 'ui-padding']
 						),
+						CNT_LEFT
+					);
+				} */
+
+				/* team status in vue */
+				if ($this->storePermissions->mayEditStore($storeId)) {
+					$this->pageHelper->addContent(
+						$this->view->vueComponent('vue-store-teamstatus', 'StoreTeamStatus', [
+							'storeData' => $store
+						]),
 						CNT_LEFT
 					);
 				}
