@@ -29,7 +29,6 @@ module.exports = {
     ],
     alias: {
       ...shims.alias,
-      fonts: resolve('../fonts'),
       img: resolve('../img'),
       css: resolve('../css'),
       js: resolve('lib'),
@@ -42,7 +41,7 @@ module.exports = {
   module: {
     rules: [
       {
-        test: /\.js$/,
+        test: /\.m?js$/,
         exclude: [
           /(node_modules)/,
           resolve('lib'), // ignore the old lib/**.js files
@@ -55,7 +54,7 @@ module.exports = {
                 '@babel/preset-env',
                 {
                   targets: {
-                    browsers: ['> 0.5%', 'ie_mob >=11'],
+                    browsers: ['> 0.5%', 'last 2 versions', 'Firefox ESR', 'not dead'],
                   },
                   useBuiltIns: 'usage',
                   modules: 'commonjs',
@@ -75,7 +74,12 @@ module.exports = {
         test: /\.(sc|c)ss$/,
         use: [
           production ? MiniCssExtractPlugin.loader : 'style-loader',
-          'css-loader',
+          {
+            loader: 'css-loader',
+            options: {
+              url: false,
+            },
+          },
           'sass-loader',
         ],
       },
