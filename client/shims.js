@@ -5,8 +5,6 @@ function lib (filename) {
   return path.join(clientRoot, 'lib', filename)
 }
 
-const production = process.env.NODE_ENV === 'production'
-
 Object.assign(module.exports, convert({
 
   leaflet: {
@@ -33,17 +31,6 @@ Object.assign(module.exports, convert({
       require.resolve('leaflet.markercluster/dist/MarkerCluster.css'),
       require.resolve('leaflet.markercluster/dist/MarkerCluster.Default.css'),
     ],
-  },
-
-  'jquery-migrate': {
-    // production version does not show all the JQMIGRATE warnings/traces
-    resolve: require.resolve(production ? 'jquery-migrate/dist/jquery-migrate.min.js' : 'jquery-migrate'),
-    // disableAMD resolves https://github.com/jquery/jquery-migrate/issues/273
-    // maybe can remove if newer versions of jquery-migrate fix the issue
-    disableAMD: true,
-    imports: {
-      jQuery: 'jquery',
-    },
   },
 
   'jquery-slimscroll': {
@@ -128,7 +115,6 @@ function convert (entries) {
 
     const {
       resolve,
-      disableAMD = false,
       imports = {},
       dependencies = [],
     } = options
@@ -137,10 +123,6 @@ function convert (entries) {
 
     if (resolve) {
       aliases[name] = resolve
-    }
-
-    if (disableAMD) {
-      importsLoaderOptions.push('define=>false')
     }
 
     for (const [k, v] of Object.entries(imports)) {
