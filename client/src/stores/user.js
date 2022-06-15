@@ -21,6 +21,9 @@ export const getters = {
   hasCalendarToken () {
     return store.user?.hasCalendarToken !== null || false
   },
+  getRegionId () {
+    return store.user?.regionId
+  },
   getMailBox () {
     return store.user?.mailboxId
   },

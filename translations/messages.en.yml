@@ -2202,6 +2202,7 @@ dashboard:
   my:
     groups: Your groups
     regions: Your regions
+    region: Your region
     events: Events
     baskets: Foodbaskets
     no-stores: You are not in any team yet.

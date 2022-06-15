@@ -1935,6 +1935,7 @@ dashboard:
       und damit <strong style="white-space:nowrap">{weight}&thinsp;kg</strong> gerettet.
   my:
     regions: "Deine Bezirke" #also in searchindexgenerator
+    region: "Dein Bezirk" #also in searchindexgenerator
     groups: "Deine Gruppen" #also in searchindexgenerator
     stores: "Deine Betriebe"
     events: "Events"
