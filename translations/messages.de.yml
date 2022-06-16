@@ -873,6 +873,7 @@ storeedit:
   add-new: "Neuen Betrieb anlegen"
   not-in-region: "Du kannst Betriebe nur in Regionen anlegen, in denen du Mitglied bist."
   actions: "Optionen"
+  dropdownDefault: '-- Bitte auswählen: --'
   team:
     bread: "Team bearbeiten"
     foodsaver: "Foodsaver"
