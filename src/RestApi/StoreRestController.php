@@ -523,19 +523,19 @@ class StoreRestController extends AbstractFOSRestController
 		}
 
 		if (empty($field)) {
-			throw new HttpException(400, 'Store field to edit cannot be empty.');
+			throw new UnprocessableEntityHttpException('Store field to edit cannot be empty.');
 		}
 
 		$newValue = $paramFetcher->get('newValue');
 
 		if (!Store::isValidStoreField($field)) {
-			throw new HttpException(400, 'Cannot edit this store field: ' . $field);
+			throw new UnprocessableEntityHttpException('Cannot edit this store field: ' . $field);
 		}
 
 		if ($newValue === null && !Store::isNullable($field)) {
-			throw new HttpException(400, 'Cannot set this store field to null: ' . $field);
+			throw new UnprocessableEntityHttpException('Cannot set this store field to null: ' . $field);
 		} elseif (!$newValue && !Store::isEmptyable($field)) {
-			throw new HttpException(400, 'Cannot set this store field to empty value: ' . $field);
+			throw new UnprocessableEntityHttpException('Cannot set this store field to empty value: ' . $field);
 		}
 
 		switch ($field) {
@@ -543,12 +543,12 @@ class StoreRestController extends AbstractFOSRestController
 				if (TeamStatus::isValidTeamStatus($newValue)) {
 					$this->storeGateway->setStoreTeamStatus($storeId, $newValue);
 				} else {
-					throw new HttpException(400, 'Team status value not supported');
+					throw new UnprocessableEntityHttpException('Team status value not supported');
 				}
 				break;
 			case 'lebensmittel':
 				if (!is_array($newValue)) {
-					throw new HttpException(400, 'FoodTypes value must be an array');
+					throw new UnprocessableEntityHttpException('FoodTypes value must be an array');
 				}
 				$this->storeGateway->setStoreFoodTypes($storeId, $newValue);
 				break;
