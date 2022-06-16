@@ -1054,4 +1054,37 @@ class StoreGateway extends BaseGateway
 			AND ( bezirk_id = 0 OR bezirk_id IS NULL)'
 		);
 	}
+
+	public function setStoreFoodTypes(int $storeId, array $foodTypes)
+	{
+		$result = $this->db->delete('fs_betrieb_has_lebensmittel', [
+			'betrieb_id' => $storeId,
+		]);
+
+		$values = [];
+		foreach ($foodTypes as $foodId) {
+			$values[] = [
+				'betrieb_id' => $storeId,
+				'lebensmittel_id' => (int)$foodId,
+			];
+		}
+		$this->db->insertMultiple('fs_betrieb_has_lebensmittel', $values);
+	}
+
+	public function editStore($storeId, $field, $newValue, $fsId): int
+	{
+		if ($field == 'betrieb_status_id') {
+			$this->addStatusChangeNote($storeId, $newValue, $fsId);
+		}
+
+		return $this->db->update(
+			'fs_betrieb',
+			[
+				// TODO check integrity and whether properties should be settable, data type matches
+				$field => $newValue,
+				'status_date' => date('Y-m-d H:i:s'),
+			],
+			['id' => $storeId]
+		);
+	}
 }
