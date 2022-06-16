@@ -1,7 +1,7 @@
 import '@/core'
 import '@/globals'
 import '@/tablesorter'
-import 'jquery.tinymce'
+import 'js/tinymce/jquery.tinymce.min'
 import './Quiz.css'
 
 import { expose } from '@/utils'

@@ -8,12 +8,9 @@ const webpack = require('webpack')
 const plugins = [
   new VueLoaderPlugin(),
   new WriteFilePlugin(), // to write files to filesystem when using webpack-dev-server
-  new webpack.ProvidePlugin({
-    // the following globals are needed for legacy packages and should hopefully vanish over time
-    L: 'leaflet',
-    jQuery: 'jquery',
-    'window.jQuery': 'jquery',
-  }),
+  // this is needed for vMap.test.js for some reason.
+  // Do not use this global anywhere and remove if awesome-markers and/or markercluster are replaced or removed!
+  new webpack.ProvidePlugin({ L: 'leaflet' }),
 ]
 
 const production = process.env.NODE_ENV === 'production'
@@ -41,17 +38,6 @@ module.exports = {
       '@php': resolve('../src'),
       '>': resolve('test'),
       '@translations': resolve('../translations'),
-      // the following resolves are needed for legacy packages and will hopefully vanish over time.
-      'jquery-tagedit-auto-grow-input': resolve('lib/tagedit/js/jquery.autoGrowInput.js'),
-      'jquery-tagedit': resolve('lib/tagedit/js/jquery.tagedit.js'),
-      'jquery.tinymce': resolve('lib/tinymce/jquery.tinymce.min'),
-      'leaflet.awesome-markers': require.resolve('leaflet.awesome-markers/dist/leaflet.awesome-markers.js'),
-      'leaflet.css-awesome-markers': require.resolve('leaflet.awesome-markers/dist/leaflet.awesome-markers.css'),
-      tablesorter: resolve('lib/tablesorter/jquery.tablesorter.js'),
-      'tablesorter-pagercontrols': resolve('lib/tablesorter/jquery.tablesorter.pager.js'),
-      'jquery-fancybox': resolve('lib/fancybox/jquery.fancybox.pack.js'),
-      'jquery-ui-addons': resolve('lib/jquery-ui-addons.js'),
-      'jquery-dynatree': resolve('lib/dynatree/jquery.dynatree.js'),
     },
   },
   module: {
@@ -103,6 +89,58 @@ module.exports = {
           'yaml-loader',
         ],
       },
+      {
+        test: require.resolve('jquery-slimscroll'),
+        loader: 'imports-loader',
+        options:
+          {
+            imports: 'default jquery jQuery',
+          },
+      },
+      {
+        test: lib('jquery-ui-addon-autosize.js'),
+        loader: 'imports-loader',
+        options: {
+          type: 'commonjs',
+          imports: {
+            moduleName: 'jquery',
+            name: 'jQuery',
+          },
+          additionalCode: 'window.jQuery = jQuery',
+        },
+      },
+      {
+        test: lib('jquery-ui-addon-datepicker.js'),
+        loader: 'imports-loader',
+        options:
+          {
+            imports: 'default jquery jQuery',
+          },
+      },
+      {
+        test: lib('fancybox/jquery.fancybox.pack.js'),
+        loader: 'imports-loader',
+        options:
+          {
+            imports: 'default jquery jQuery',
+          },
+      },
+      {
+        test: lib('dynatree/jquery.dynatree.js'),
+        loader: 'imports-loader',
+        options:
+          {
+            imports: 'default jquery jQuery',
+          },
+      },
+      {
+        test: lib('tablesorterWrapper.js'),
+        loader: 'imports-loader',
+        options:
+          {
+            imports: 'default jquery jQuery',
+          },
+      },
     ],
   },
   plugins,
@@ -110,4 +148,8 @@ module.exports = {
 
 function resolve (dir) {
   return path.join(clientRoot, dir)
+}
+
+function lib (filename) {
+  return path.join(clientRoot, 'lib', filename)
 }

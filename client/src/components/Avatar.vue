@@ -105,19 +105,19 @@ export default {
 }
 
 .sleep35::after {
-  background-image: url('../../../img/sleep35x35.png');
+  background-image: url('img/sleep35x35.png');
   top: -10px;
   left: -10px;
 }
 
 .sleep50::after {
-  background-image: url('../../../img/sleep50x50.png');
+  background-image: url('img/sleep50x50.png');
   top: -10px;
   left: -20px;
 }
 
 .sleep130::after {
-  background-image: url('../../../img/sleep130x130.png');
+  background-image: url('img/sleep130x130.png');
   top: -10px;
   left: -20px;
 }

@@ -1,6 +1,6 @@
 import '@/core'
 import '@/globals'
-import 'jquery-dynatree'
+import 'js/dynatree/jquery.dynatree'
 import 'js/dynatree/skin/ui.dynatree.css'
 import { vueRegister, vueApply } from '@/vue'
 import PollOverview from './components/PollOverview.vue'

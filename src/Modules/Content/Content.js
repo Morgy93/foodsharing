@@ -2,7 +2,7 @@ import '@/core'
 import '@/globals'
 import '@/tablesorter'
 
-import 'jquery.tinymce' // cannot go earlier!
+import 'js/tinymce/jquery.tinymce.min' // cannot go earlier!
 
 import { GET } from '@/browser'
 import { expose } from '@/utils'

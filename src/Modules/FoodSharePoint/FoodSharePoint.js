@@ -1,8 +1,7 @@
 /* eslint-disable camelcase */
 import '@/core'
 import '@/globals'
-import 'jquery-tagedit'
-import 'jquery-tagedit-auto-grow-input'
+import 'js/tageditWrapper'
 import 'jquery-jcrop'
 import { attachAddressPicker } from '@/addressPicker'
 import { vueApply, vueRegister } from '@/vue'

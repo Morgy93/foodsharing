@@ -4,8 +4,9 @@ import $ from 'jquery'
 import _ from 'underscore'
 
 import 'jquery-slimscroll'
-import 'jquery-fancybox'
-import 'jquery-ui-addons'
+import 'js/fancybox/jquery.fancybox.pack'
+import 'js/jquery-ui-addon-autosize' // depends on jquery-ui which is loaded later
+import 'js/jquery-ui-addon-datepicker' // depends on jquery-ui which is loaded next line
 import 'jquery-ui'
 
 import { GET, goTo, isMob } from '@/browser'

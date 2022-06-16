@@ -71,7 +71,7 @@ export default {
     min-width: 64px;
     width: 64px;
     height: 50px;
-    background-image: url('../../../../img/forum_bubble.png');
+    background-image: url('img/forum_bubble.png');
   }
 
   .thread-title {

@@ -3,7 +3,7 @@ import '@/core'
 import '@/globals'
 import './Settings.css'
 import 'jquery-jcrop'
-import 'jquery-dynatree'
+import 'js/dynatree/jquery.dynatree'
 import 'js/dynatree/skin/ui.dynatree.css'
 import { attachAddressPicker } from '@/addressPicker'
 import {

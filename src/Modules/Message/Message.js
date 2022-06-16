@@ -1,7 +1,6 @@
 import '@/core'
 import '@/globals'
-import 'jquery-tagedit'
-import 'jquery-tagedit-auto-grow-input'
+import 'js/tageditWrapper'
 import './Message.css'
 
 import msg from '@/msg'

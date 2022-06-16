@@ -84,11 +84,11 @@ div.statdisplay a.item:hover {
 }
 
 .stat_bananacount {
-  background: url("../../../img/banana.png") no-repeat center 22px;
+  background: url("img/banana.png") no-repeat center 22px;
 }
 
 .stat_bananacount.bouched {
-  background-image: url("../../../img/bananan.png");
+  background-image: url("img/bananan.png");
 }
 
 .page .linklist {

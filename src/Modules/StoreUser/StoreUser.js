@@ -4,8 +4,7 @@ import '@/core'
 import '@/globals'
 import $ from 'jquery'
 
-import 'jquery-tagedit'
-import 'jquery-tagedit-auto-grow-input'
+import 'js/tageditWrapper'
 
 import i18n from '@/i18n'
 import { expose } from '@/utils'

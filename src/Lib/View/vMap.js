@@ -1,13 +1,7 @@
 import $ from 'jquery'
 
 import L from 'leaflet'
-import 'leaflet.awesome-markers'
-import 'leaflet.css-awesome-markers'
-import 'leaflet.markercluster'
-import 'leaflet.markercluster/dist/MarkerCluster.css'
-import 'leaflet.markercluster/dist/MarkerCluster.Default.css'
-import 'mapbox-gl-leaflet'
-import 'mapbox-gl/dist/mapbox-gl.css'
+import 'js/leafletWrapper'
 
 import 'corejs-typeahead'
 import 'css/typeahead.css'

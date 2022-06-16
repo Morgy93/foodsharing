@@ -67,7 +67,7 @@
 
 .avatar.size-mini.sleepmode-1 i,
 .avatar.size-mini.sleepmode-2 i {
-  background-image: url(../img/sleep35x35.png);
+  background-image: url(img/sleep35x35.png);
   left: -4px;
   position: relative;
   top: -6px;
@@ -75,7 +75,7 @@
 
 .avatar.size-50.sleepmode-1 i,
 .avatar.size-50.sleepmode-2 i {
-  background-image: url(../img/sleep50x50.png);
+  background-image: url(img/sleep50x50.png);
   left: -8px;
   position: relative;
   top: -7px;
@@ -83,7 +83,7 @@
 
 .avatar.size-130.sleepmode-1 i,
 .avatar.size-130.sleepmode-2 i {
-  background-image: url(../img/sleep130x130.png);
+  background-image: url(img/sleep130x130.png);
   left: -30px;
   position: relative;
   top: -25px;
@@ -721,7 +721,7 @@ ul.linklist li > a:hover span {
 }
 
 .loading {
-  background: url(../img/dialog-loader.gif) no-repeat center !important;
+  background: url(img/dialog-loader.gif) no-repeat center !important;
 }
 
 .loading .inner {
@@ -730,7 +730,7 @@ ul.linklist li > a:hover span {
 
 /* TODO where is this used? */
 span.verified {
-  background-image: url(../img/verify.png);
+  background-image: url(img/verify.png);
   display: block;
   width: 36px;
   height: 36px;
@@ -904,13 +904,13 @@ a.preview-thumb:hover {
 
 .attach-load {
   background-repeat: no-repeat;
-  background-image: url(../img/icon-mail/attach-loader.gif);
+  background-image: url(img/icon-mail/attach-loader.gif);
   background-position: center;
 }
 
 td.load {
   background-repeat: no-repeat;
-  background-image: url(../img/icon-mail/attach-loader.gif);
+  background-image: url(img/icon-mail/attach-loader.gif);
   background-position: center;
 }
 
