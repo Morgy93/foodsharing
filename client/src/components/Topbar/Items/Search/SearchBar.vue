@@ -1,11 +1,25 @@
 <template>
   <div id="search-bar">
-    <b-input-group
-      :prepend-html="prependHtml"
-    >
+    <b-input-group>
+      <b-input-group-prepend>
+        <b-input-group-text>
+          <i
+            class="fas"
+            :class="{
+              'fa-search': !isLoading,
+              'fa-spinner fa-spin': isLoading,
+            }"
+          />
+          <span
+            class="hide-for-users"
+            v-html="$i18n('search.placeholder')"
+          />
+        </b-input-group-text>
+      </b-input-group-prepend>
       <b-form-input
         id="searchfield"
         v-model="query"
+        autocomplete="off"
         :placeholder="$i18n('search.placeholder')"
       />
     </b-input-group>
@@ -18,6 +32,7 @@
         :users="results.users || []"
         :regions="results.regions || []"
         :stores="results.stores || []"
+        :food-share-points="results.foodSharePoints || []"
         :my-groups="index.myGroups"
         :my-regions="index.myRegions"
         :my-stores="index.myStores"
@@ -54,6 +69,7 @@ export default {
         stores: [],
         users: [],
         regions: [],
+        foodSharePoints: [],
       },
       index: {
         myStores: [],
@@ -62,14 +78,6 @@ export default {
         myBuddies: [],
       },
     }
-  },
-  computed: {
-    prependHtml () {
-      if (this.isLoading) {
-        return '<i class="fas fa-spinner fa-spin"/>'
-      }
-      return '<i class="fas fa-search"/>'
-    },
   },
   watch: {
     query (query, oldQuery) {
@@ -146,7 +154,7 @@ export default {
     max-width: initial;
   }
 
-  @media (min-width: 1280px) {
+  @media (min-width: 1200px) {
     max-width: 500px;
     min-width: 500px;
   }
@@ -156,7 +164,7 @@ export default {
   display: block;
   max-height: 80vh;
   overflow-y: auto;
-  box-shadow: 0em 0em 5px 0px rgba(0, 0, 0, 0.35);
+  box-shadow: 0em 1em 5px -10px rgba(0, 0, 0, 0.35);
   left: 0;
   top: 30px;
 }

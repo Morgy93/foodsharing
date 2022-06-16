@@ -1,20 +1,20 @@
 <template>
   <a
     :href="href"
-    :aria-label="$i18n('home.title')"
+    aria-label="foodsharing"
     class="navbar-brand brand"
   >
     <span
       v-if="viewIsMD"
       class="logo-text"
     >
-      food<span class="green">shar<span class="apple">i</span>ng</span>
+      food<span class="text-secondary">shar<span class="apple">i</span>ng</span>
     </span>
     <span
       v-else
-      class="logo-text"
+      class="text-primary"
     >
-      f<span class="green">s</span>
+      f<span class="text-secondary">s</span>
     </span>
   </a>
 </template>
@@ -42,10 +42,6 @@ export default {
       min-width: auto;
     }
 
-    span.green {
-        color: #64ae25;
-        position: relative;
-    }
     span.logo-text:hover .apple::before {
       content: '♥';
       color: red;

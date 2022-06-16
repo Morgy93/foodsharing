@@ -105,6 +105,20 @@
       />
       <div class="dropdown-divider" />
     </div>
+    <div v-if="filtered.foodSharePoints.length">
+      <h3 class="dropdown-header">
+        <i class="fas fa-recycle" /> {{ $i18n('terminology.fsps') }}
+      </h3>
+      <search-result-entry
+        v-for="foodSharePoint in filtered.foodSharePoints"
+        :key="foodSharePoint.id"
+        :href="$url('foodsharepoint', foodSharePoint.id)"
+        :title="foodSharePoint.name"
+        :teaser="foodSharePoint.teaser"
+        :image="foodSharePoint.image"
+      />
+      <div class="dropdown-divider" />
+    </div>
     <div v-if="filtered.regions.length">
       <h3 class="dropdown-header">
         <i class="fas fa-home" /> {{ $i18n('terminology.regions') }}
@@ -147,6 +161,10 @@ export default {
       default: () => [],
     },
     regions: {
+      type: Array,
+      default: () => [],
+    },
+    foodSharePoints: {
       type: Array,
       default: () => [],
     },
@@ -197,6 +215,7 @@ export default {
         regions: this.regions.filter(filterFunction),
         users: this.users.filter(filterFunction),
         groups: this.groups.filter(filterFunction),
+        foodSharePoints: this.foodSharePoints.filter(filterFunction),
         myGroups: this.myGroups.filter(filterFunction),
         myStores: this.myStores.filter(filterFunction),
         myRegions: this.myRegions.filter(filterFunction),
@@ -220,6 +239,7 @@ export default {
                 !this.filtered.regions.length &&
                 !this.filtered.users.length &&
                 !this.filtered.groups.length &&
+                !this.filtered.foodSharePoints.length &&
                 !this.filtered.myGroups.length &&
                 !this.filtered.myStores.length &&
                 !this.filtered.myRegions.length &&

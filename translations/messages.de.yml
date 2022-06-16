@@ -638,6 +638,7 @@ terminology:
   reports: "Meldungsansicht (LMG)"
   arbitration: "Meldungsansicht (LS)"
   fsp: "Fairteiler" #also in MapView
+  fsps: "Fairteiler"
   basket: "Essenskorb"
   baskets: "Essenskörbe" #also in MapView
   community: "Ortsgruppe {name}"
@@ -1479,6 +1480,7 @@ foodsaver:
     Diese Kurzbeschreibung wird auf deiner Profilseite angezeigt
     und ist dort für alle in der foodsharing-Community sichtbar.
   upgrade:
+    learning: "Jetzt Erklärvideo anschauen"
     ad_fs: "Ich möchte jetzt das Foodsaver-Quiz machen und Foodsaver*in werden!"
     to_fs: "Werde Foodsaver*in"
     needs_fs: "Du musst erst Foodsaver werden"
@@ -1881,6 +1883,7 @@ dashboard:
   updates_title_all: "Updates-Übersicht"
   updates_title_some: "Updates-Übersicht ({0})"
   display_all: "Alle"
+  settings: "Einstellungen"
   settings_tooltip: "Übersichts-Einstellungen"
   no_updates: "Keine Updates"
   no_more_updates_all: "Das war's!"
@@ -1911,6 +1914,7 @@ dashboard:
   mail_activation_error_title: "E-Mail-Adresse nicht bestätigt"
   homeRegion: "Dein Stammbezirk ist {region}."
   chooseHomeRegion: "Bitte wähle einen Stammbezirk aus."
+  greeting_short: "Hallo {name}!"
   greeting: "Hallo {name}! Schön, dass du hier bist."
   foodsharer: "Viel Spaß beim Retten!"
   foodsharer_amount: "Du hast schon {weight} Kilos gerettet!"

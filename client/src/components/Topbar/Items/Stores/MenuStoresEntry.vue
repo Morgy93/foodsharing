@@ -2,36 +2,32 @@
   <a
     :href="$url('store', entry.id)"
     role="menuitem"
-    class="dropdown-item"
+    class="dropdown-header dropdown-item d-flex justify-content-between align-items-center"
     :clss="classes"
   >
-    <div class="d-flex mb-auto justify-content-between align-items-center">
-      <div class="d-flex text-truncate">
-        <div
-          v-if="entry.pickupStatus > 0"
-          class="d-flex align-items-center"
-        >
-          <i
-            class="fas fa-circle mr-1"
-            :class="{
-              'text-primary': entry.pickupStatus === 1,
-              'text-warning': entry.pickupStatus === 2,
-              'text-danger': entry.pickupStatus === 3
-            }"
-          />
-        </div>
-        <h5
-          v-b-tooltip="entry.name.length > 30 ? entry.name : ''"
-          class="d-inline-block text-truncate"
-          v-html="entry.name"
-        />
-      </div>
+    <span class="d-flex align-items-center truncated dropdown-action">
       <i
         v-if="entry.isManaging"
-        class="fas fa-users-cog text-muted"
+        v-b-tooltip="$i18n('store.tooltip_managing')"
+        class="store-entry--icon fas fa-users-cog"
         style="cursor: help;"
       />
-    </div>
+      <span
+        v-b-tooltip="entry.name.length > 30 ? entry.name : ''"
+        class="d-inline-block text-truncate"
+        v-html="entry.name"
+      />
+    </span>
+    <i
+      v-if="entry.pickupStatus > 0"
+      v-b-tooltip="$i18n('store.tooltip_'+['yellow', 'orange', 'red'][entry.pickupStatus - 1])"
+      class="fas fa-circle mr-1"
+      :class="{
+        'text-primary': entry.pickupStatus === 1,
+        'text-warning': entry.pickupStatus === 2,
+        'text-danger': entry.pickupStatus === 3
+      }"
+    />
   </a>
 </template>
 
@@ -59,19 +55,8 @@ export default {
 </script>
 
 <style lang="scss" scoped>
-.dropdown-item {
-    padding: 0.8em 1em;
-    border: unset;
-
-    h5 {
-      font-weight: bold;
-      font-size: 0.9em;
-          margin: 0;
-    }
-
-    p {
-        font-size: 0.8em;
-    }
+.store-entry--icon {
+  color: currentColor;
 }
 
 .truncated {

@@ -1,44 +1,54 @@
 <template>
   <a
-    class="d-flex flex-column"
-    :class="classes"
+    class="dropdown-header dropdown-item"
+    :class="{
+      'list-group-item-warning': basket.requests.length > 0,
+    }"
     :href="$url('basket', basket.id)"
   >
-    <div class="d-flex">
+    <span
+      class="d-flex justify-content-between align-items-center text-truncate"
+    >
       <div
-        class="icon w-20 mr-2 d-flex text-center justifiy-content-center align-items-center"
+        class="mr-2"
       >
-        <img
+        <div
           class="img-thumbnail"
-          style="min-width: 42px;"
-          src="/img/basket.png"
         >
+          <img
+            width="35px"
+            style="max-widht: 35px;"
+            src="/img/basket.png"
+            loading="lazy"
+          >
+        </div>
       </div>
-      <div class="d-flex flex-column justify-content-between truncated">
-        <div class="d-flex justify-content-between align-items-center">
-          <h5
+      <span class="d-flex flex-column text-truncate">
+        <span class="d-flex justify-content-between align-items-center text-truncate">
+          <span
             class="mb-1 text-truncate"
             v-html="basket.description"
           />
-        </div>
+          <small class="text-muted text-right nowrap">
+            {{ relativeTime(basket.createdAt) }}
+          </small>
+        </span>
         <small
           v-if="!basket.requests.length"
-          class="mb-1 text-muted text-truncate"
+          class="mb-1 text-truncate"
           v-html="$i18n('basket.no_requests')"
         />
-
         <small
           v-if="basket.requests.length > 0"
           class="mb-1 text-truncate"
           v-html="$i18n('basket.requested_by', { name: basket.requests.map(r => r.user.name).join(', ') })"
         />
-      </div>
-    </div>
-    <a
+      </span>
+    </span>
+    <button
       v-for="(entry, key) in basket.requests"
       :key="key"
-      href="#"
-      class="requests img-thumbnail mt-1 d-flex align-items-center justify-content-between truncated"
+      class="requests  w-100 img-thumbnail mt-1 d-flex align-items-center justify-content-between truncated"
       @click.prevent="openChat(entry.user.id, $event)"
     >
       <div class="d-flex">
@@ -64,19 +74,20 @@
       >
         <i class="fas fa-times" />
       </button>
-    </a>
+    </button>
   </a>
 </template>
 
 <script>
 import TruncateMixin from '@/mixins/TruncateMixin'
+import DateFormatterMixin from '@/mixins/DateFormatterMixin'
 
 import Avatar from '@/components/Avatar'
 import conv from '@/conv'
 
 export default {
   components: { Avatar },
-  mixins: [TruncateMixin],
+  mixins: [TruncateMixin, DateFormatterMixin],
   props: {
     basket: {
       type: Object,
@@ -88,53 +99,14 @@ export default {
       hover: false,
     }
   },
-  computed: {
-    classes () {
-      return [
-        'list-group-item',
-        'list-group-item-action',
-        this.basket.requests.length > 0 ? 'list-group-item-warning' : null,
-      ]
-    },
-  },
+
   methods: {
-    openChat (userId, e) {
+    openChat (userId) {
       conv.userChat(userId)
     },
-    openRemoveDialog (userId, e) {
+    openRemoveDialog (userId) {
       this.$emit('basket-remove', this.basket.id, userId)
     },
   },
 }
 </script>
-
-<style lang="scss" scoped>
-.list-group-item {
-    padding: 0.4em 1em;
-    border: unset;
-
-    h5 {
-      font-weight: bold;
-      font-size: 0.9em;
-    }
-
-    p {
-        font-size: 0.8em;
-    }
-}
-
-.icon {
-  height: 42px;
-  width: 42px;
-  line-height: 0.7em;
-  font-size: 1.5rem;
-}
-
-.truncated {
-  flex: 1;
-
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-}
-</style>

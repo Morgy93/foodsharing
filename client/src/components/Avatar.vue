@@ -1,14 +1,16 @@
 <template>
   <div
     class="avatar"
-    :class="[{'sleeping': sleepStatus}, `sleep${size}`]"
+    :class="[{'sleeping': isSleeping}, `sleep${size}`]"
     :style="wrapperStyle"
   >
     <img
+      :alt="$i18n('terminology.profile_picture')"
       :src="avatarUrl"
       :class="imgClass"
       style="height: 100%"
       :style="imgStyle"
+      loading="lazy"
     >
   </div>
 </template>
@@ -25,8 +27,8 @@ export default {
       type: Number,
       default: 35,
     },
-    sleepStatus: {
-      type: Number,
+    isSleeping: {
+      type: [Number, Boolean],
       default: 0,
     },
     imgClass: {

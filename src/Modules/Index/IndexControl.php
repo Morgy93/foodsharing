@@ -41,7 +41,7 @@ class IndexControl extends Control
 			$page_content_blocks[0]['body'],
 			$page_content_blocks[1]['body'],
 			$page_content_blocks[2]['body'],
-			$country), CNT_OVERTOP
+			$country), CNT_MAIN
 		);
 	}
 }

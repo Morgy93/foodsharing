@@ -5,11 +5,10 @@
     class="bootstrap bg-white pt-5 pb-5"
   >
     <b-container>
-      <b-row>
+      <b-row class="mb-5">
         <b-col
-          xl="3"
-          sm="6"
-          cols="12"
+          md="3"
+          cols="6"
         >
           <h2>{{ $i18n('footer.call_to_action') }}</h2>
           <ul class="nav flex-column">
@@ -40,109 +39,50 @@
           </ul>
         </b-col>
         <b-col
-          xl="3"
-          sm="6"
-          cols="12"
-          class="pt-5 pt-sm-0"
+          md="3"
+          cols="6"
+          class="mb-5 pt-sm-0"
         >
-          <h2>{{ $i18n('footer.about_us') }}</h2>
-          <b-row>
-            <b-col
-              sm="4"
-              cols="3"
+          <h2>{{ $i18n(informationen[0].name) }}</h2>
+          <ul class="nav flex-column">
+            <li
+              v-for="(information, index) in informationen[0].items"
+              :key="index"
+              class="nav-item"
             >
-              <ul class="nav flex-column">
-                <li class="nav-item">
-                  <a
-                    :href="$url('team')"
-                    :aria-label="$i18n('footer.team')"
-                  >
-                    {{ $i18n('footer.team') }}
-                  </a>
-                </li>
-                <li class="nav-item">
-                  <a
-                    :href="$url('partner')"
-                    :aria-label="$i18n('footer.partner')"
-                  >
-                    {{ $i18n('footer.partner') }}
-                  </a>
-                </li>
-                <li class="nav-item">
-                  <a
-                    :href="$url('contact')"
-                    :aria-label="$i18n('footer.contact')"
-                  >
-                    {{ $i18n('footer.contact') }}
-                  </a>
-                </li>
-                <li class="nav-item">
-                  <a
-                    :href="$url('press')"
-                    :aria-label="$i18n('footer.press')"
-                  >
-                    {{ $i18n('footer.press') }}
-                  </a>
-                </li>
-              </ul>
-            </b-col>
-            <b-col
-              xl="2"
-              cols="3"
-            >
-              <ul class="nav flex-column">
-                <li class="nav-item">
-                  <a
-                    :href="$url('statistics')"
-                    :aria-label="$i18n('footer.statistics')"
-                  >
-                    {{ $i18n('footer.statistics') }}
-                  </a>
-                </li>
-                <li class="nav-item">
-                  <a
-                    :href="$url('wiki')"
-                    :aria-label="$i18n('footer.wiki')"
-                  >
-                    {{ $i18n('footer.wiki') }}
-                  </a>
-                </li>
-                <li class="nav-item">
-                  <a
-                    :href="$url('blog')"
-                    :aria-label="$i18n('footer.blog')"
-                  >
-                    {{ $i18n('footer.blog') }}
-                  </a>
-                </li>
-              </ul>
-            </b-col>
-          </b-row>
+              <a
+                :href="$url(information.url)"
+                :aria-label="$i18n(information.title)"
+                v-html="$i18n(information.title)"
+              />
+            </li>
+          </ul>
         </b-col>
         <b-col
-          xl="6"
+          md="6"
           cols="12"
-          class="pt-4 pt-xl-5 pt-sm-0"
+          class="pt-xl-5 pt-sm-0"
         >
           <b-row>
             <b-col
-              v-if="!isFsDotAt"
+              v-if="isDotAt"
               xl="6"
               cols="12"
             >
               <p>{{ $i18n('footer.our_partner') }}</p>
               <a
-                :href="$url('hoster')"
+                v-b-tooltip="$i18n('footer.hosting_tooltip')"
+                :href="$url('hosting')"
                 target="_blank"
                 :rel="externalLink"
-                data-toggle="tooltip"
-                data-placement="top"
-                :title="$i18n('footer.hosting_tooltip')"
               >
                 <img
                   height="25px"
+                  :alt="$i18n('footer.hosting_tooltip')"
                   src="/img/footer/manitu_logo.svg"
-                ></a>
+                  loading="lazy"
+                >
+              </a>
               <a
                 :href="$url('denns')"
                 target="_blank"
@@ -150,6 +90,7 @@
               >
                 <img
                   src="/img/footer/denns_logo_at.png"
+                  loading="lazy"
                   class="pl-4"
                   :alt="$i18n('footer.denns_at_alt_text')"
                 >
@@ -162,6 +103,7 @@
               >
                 <img
                   src="/img/footer/BMLRT_Logo.png"
+                  loading="lazy"
                   :alt="$i18n('footer.lebensministerium_alt_text')"
                   class="pt-4"
                 >
@@ -173,6 +115,7 @@
               >
                 <img
                   src="/img/footer/wiener_tafel_logo_at.png"
+                  loading="lazy"
                   class="pl-4 pt-4"
                   :alt="$i18n('footer.wiener_tafel_alt_text')"
                 >
@@ -182,16 +125,20 @@
               v-else
               sm="6"
               cols="12"
+              class="mb-5"
             >
               <p>{{ $i18n('footer.hosting_info') }}</p>
               <a
-                :href="$url('hoster')"
+                v-b-tooltip="$i18n('footer.hosting_tooltip')"
+                :href="$url('hosting')"
                 target="_blank"
                 :rel="externalLink"
               >
                 <img
                   height="49px"
-                  :alt="$i18n('footer.hosting_info')"
+                  loading="lazy"
+                  class="img-fluid"
+                  :alt="$i18n('footer.hosting_tooltip')"
                   src="/img/footer/manitu_logo.svg"
                 >
               </a>
@@ -199,7 +146,7 @@
             <b-col
               sm="6"
               cols="12"
-              class="pt-xl-0 pt-5"
+              class="pt-xl-0"
             >
               <ul>
                 <li>
@@ -220,121 +167,186 @@
           </b-row>
         </b-col>
       </b-row>
-      <div class="line pt-3 pt-xl-5" />
-      <b-row class="pt-3">
+      <b-row>
         <b-col
-          xl="8"
+          md="3"
           cols="6"
+          class="mb-5 mb-xl-0"
         >
-          <b-row>
-            <b-col
-              xl="4"
-              sm="8"
-              cols="3"
+          <h2>{{ $i18n(informationen[1].name) }}</h2>
+          <ul class="nav flex-column">
+            <li
+              v-for="(information, index) in informationen[1].items"
+              :key="index"
+              class="nav-item"
             >
               <a
-                :href="$url('imprint')"
-                :aria-label="$i18n('footer.imprint')"
-                class="pr-sm-4"
-              >
-                {{ $i18n('footer.imprint') }}</a>
-              <a
-                :href="$url('dataprivacy')"
-                :aria-label="$i18n('footer.dataprivacy')"
-              >
-                {{ $i18n('footer.dataprivacy') }}
-              </a>
-            </b-col>
-            <b-col
-              xl="3"
-              sm="4"
+                :href="$url(information.url)"
+                :aria-label="$i18n(information.title)"
+                v-html="$i18n(information.title)"
+              />
+            </li>
+          </ul>
+        </b-col>
+        <b-col
+          md="3"
+          cols="6"
+          class="mb-5 mb-xl-0"
+        >
+          <h2>{{ $i18n(informationen[2].name) }}</h2>
+          <ul class="nav flex-column">
+            <li
+              v-for="(information, index) in informationen[2].items"
+              :key="index"
+              class="nav-item"
             >
               <a
-                v-if="!isFsDotAt"
-                class="social_icons"
-                :href="twitterUrl"
-                target="_blank"
-                title="Twitter"
-                :rel="externalLink"
-              >
-                <i class="fab fa-twitter-square pr-2" />
-              </a>
+                :href="$url(information.url)"
+                :aria-label="$i18n(information.title)"
+                v-html="$i18n(information.title)"
+              />
+            </li>
+          </ul>
+        </b-col>
+        <b-col
+          xl="2"
+          md="2"
+          cols="6"
+          class="mb-5 mb-xl-0"
+        >
+          <h2>{{ $i18n(informationen[3].name) }}</h2>
+          <ul class="nav flex-column">
+            <li
+              v-for="(information, index) in informationen[3].items"
+              :key="index"
+              class="nav-item"
+            >
               <a
-                class="social_icons"
-                :href="facebookUrl"
-                target="_blank"
-                title="Facebook"
-                :rel="externalLink"
-              >
-                <i class="fab fa-facebook-square pr-2" />
-              </a>
+                :href="$url(information.url)"
+                :aria-label="$i18n(information.title)"
+                v-html="$i18n(information.title)"
+              />
+            </li>
+          </ul>
+        </b-col>
+        <b-col
+          xl="2"
+          md="2"
+          cols="6"
+          class="mb-5 mb-xl-0"
+        >
+          <h2>{{ $i18n(informationen[4].name) }}</h2>
+          <ul class="nav flex-column">
+            <li
+              v-for="(information, index) in informationen[4].items"
+              :key="index"
+              class="nav-item"
+            >
               <a
-                class="social_icons"
-                :href="instagramUrl"
-                target="_blank"
-                title="Instagram"
-                :rel="externalLink"
-              >
-                <i class="fab fa-instagram-square pr-2" />
-              </a>
+                :href="$url(information.url)"
+                :aria-label="$i18n(information.title)"
+                v-html="$i18n(information.title)"
+              />
+            </li>
+          </ul>
+        </b-col>
+        <b-col
+          xl="2"
+          md="2"
+          cols="12"
+          class="mb-5 mb-xl-0"
+        >
+          <h2>{{ $i18n(informationen[5].name) }}</h2>
+          <ul class="nav flex-column">
+            <li
+              v-for="(information, index) in informationen[5].items"
+              :key="index"
+              class="nav-item"
+            >
               <a
-                class="social_icons"
-                :href="linkedinUrl"
-                title="LinkedIn"
-                target="_blank"
-                :rel="externalLink"
-              >
-                <i class="fab fa-linkedin pr-2" />
-              </a>
-              <a
-                class="social_icons"
-                :href="youtubeUrl"
-                title="YouTube"
-                target="_blank"
-                :rel="externalLink"
-              >
-                <i class="fab fa-youtube-square" />
-              </a>
-            </b-col>
+                :href="$url(information.url)"
+                :aria-label="$i18n(information.title)"
+                v-html="$i18n(information.title)"
+              />
+            </li>
+          </ul>
+        </b-col>
+      </b-row>
+      <div class="line pt-3 pt-xl-5" />
+      <b-row
+        class="mt-3 justify-content-between"
+      >
+        <b-col
+          md="6"
+          cols="12"
+          class="mb-5 mb-md-0"
+        >
+          <b-row
+            class="col"
+          >
+            <a
+              :href="$url('imprint')"
+              :aria-label="$i18n('footer.imprint')"
+              class="mr-3"
+            >
+              {{ $i18n('footer.imprint') }}</a>
+            <a
+              :href="$url('dataprivacy')"
+              :aria-label="$i18n('footer.dataprivacy')"
+              class="mr-3"
+            >
+              {{ $i18n('footer.dataprivacy') }}
+            </a>
+            <a
+              :href="$url('contact')"
+              :aria-label="$i18n('menu.entry.contact')"
+              class="mr-3"
+            >
+              {{ $i18n('menu.entry.contact') }}
+            </a>
+          </b-row>
+          <b-row
+            v-if="!isDotAt"
+            class="col"
+          >
+            <a
+              v-for="(social, index) in socials"
+              :key="index"
+              v-b-tooltip="social.name"
+              :href="$url(social.url + '_'+ (isDotAt ? 'at' : 'de'))"
+              class="social_icons"
+              :rel="externalLink"
+            >
+              <i :class="social.icon" />
+            </a>
           </b-row>
         </b-col>
         <b-col
-          xl="4"
-          cols="6"
-          class="d-flex justify-content-end"
+          md="6"
+          cols="12"
+          class="d-flex flex-column align-items-md-end"
         >
-          <p>
-            <a
-              v-if="isBeta || isDev"
-              :href="betaTestingIssues"
-            >
-              {{ $i18n('footer.beta_testing_issues') }}
-            </a>
-            <a
-              v-else
-              :href="$url('releaseNotes')"
-            >
-              {{ $i18n('releases.2022-05') }}
-            </a>
-            <br>
-            <a :href="$url('devdocs')">
-              {{ $i18n('footer.it_devdocs') }}
-            </a>
-          </p>
-        </b-col>
-      </b-row>
-      <b-row>
-        <b-col>
-          <div class="text-right text-truncate">
-            <span
-              v-if="srcRevision && isBeta"
-              class="rev-link"
-            >
-              <a :href="revisionLink">
-                {{ $i18n('footer.version', {version: srcRevision}) }}
-              </a>
-            </span>
-          </div>
+          <a
+            v-if="isBeta || isDev"
+            :href="$url('beta_testing_forum')"
+          >
+            {{ $i18n('footer.beta_testing_issues') }}
+          </a>
+          <a
+            v-else
+            :href="$url('releaseNotes')"
+            v-html="$i18n('releases.2022-05')"
+          />
+          <a
+            :href="$url('devdocs')"
+            v-html="$i18n('footer.it_devdocs')"
+          />
+          <a
+            v-if="version && isBeta"
+            class="text-truncate"
+            :href="$url('git_revision', version)"
+            v-html="$i18n('footer.version', { version })"
+          />
         </b-col>
       </b-row>
     </b-container>
@@ -342,50 +354,109 @@
 </template>
 
 <script>
+import RouteCheckMixin from '@/mixins/RouteAndDeviceCheckMixin'
+
 export default {
+  mixins: [RouteCheckMixin],
   props: {
-    isFsDotAt: {
-      type: Boolean,
-      default: false,
-    },
-    srcRevision: {
+    version: {
       type: String,
-      default: null,
-    },
-    isBeta: {
-      type: Boolean,
-      default: false,
-    },
-    isDev: {
-      type: Boolean,
-      default: false,
+      default: 'cf107753e219b5af997f1f22ff92839fcf754091',
     },
   },
-  computed: {
-    revisionLink () {
-      return this.isBeta ? 'https://gitlab.com/foodsharing-dev/foodsharing/tree/' + this.srcRevision : ''
-    },
-    facebookUrl () {
-      return this.isFsDotAt ? 'https://www.facebook.com/oesterreichfoodsharing' : 'https://www.facebook.com/foodsharing.de'
-    },
-    instagramUrl () {
-      return this.isFsDotAt ? 'https://instagram.com/foodsharing.at' : 'https://www.instagram.com/foodsharing_de'
-    },
-    twitterUrl () {
-      return 'https://twitter.com/FoodsharingDE'
-    },
-    linkedinUrl () {
-      return 'https://www.linkedin.com/company/foodsharingde'
-    },
-    youtubeUrl () {
-      return 'https://www.youtube.com/user/foodsharingtv'
-    },
-    betaTestingIssues () {
-      return 'https://beta.foodsharing.de/?page=bezirk&bid=734&sub=forum'
-    },
-    externalLink () {
-      return 'nofollow noreferrer noopener'
-    },
+  data () {
+    return {
+      externalLink: 'nofollow noreferrer noopener',
+      socials: [
+        {
+          name: 'Twitter',
+          url: 'twitter',
+          icon: 'fab fa-twitter',
+        },
+        {
+          name: 'Facebook',
+          url: 'facebook',
+          icon: 'fab fa-facebook',
+        },
+        {
+          name: 'Instagram',
+          url: 'instagram',
+          icon: 'fab fa-instagram',
+        },
+        {
+          name: 'LinkedIn',
+          url: 'linkedin',
+          icon: 'fab fa-linkedin',
+        },
+        {
+          name: 'YouTube',
+          url: 'youtube',
+          icon: 'fab fa-youtube',
+        },
+        {
+          name: 'TikTok',
+          url: 'tiktok',
+          icon: 'fab fa-tiktok',
+        },
+      ],
+      informationen: [
+        {
+          name: 'menu.entry.regionalgroups',
+          items: [
+            { url: 'communitiesGermany', title: 'menu.entry.Germany' },
+            { url: 'communitiesAustria', title: 'menu.entry.Austria' },
+            { url: 'communitiesSwitzerland', title: 'menu.entry.Swiss' },
+            { url: 'international', title: 'menu.entry.international' },
+          ],
+        },
+        {
+          name: 'menu.entry.aboutUs',
+          items: [
+            { url: 'mission', title: 'menu.entry.mission' },
+            { url: 'grundsaetze', title: 'menu.entry.fundamentals' },
+            { url: 'blog', title: 'menu.entry.blog' },
+            { url: 'team', title: 'menu.entry.team' },
+            { url: 'partner', title: 'menu.entry.partners' },
+            { url: 'press', title: 'menu.entry.press' },
+          ],
+        },
+        {
+          name: 'menu.entry.background',
+          items: [
+            { url: 'support', title: 'menu.entry.support', target: '_blank' },
+            { url: 'wiki', title: 'menu.entry.wiki' },
+            { url: 'guide', title: 'menu.entry.guide', target: '_blank' },
+            { url: 'statistics', title: 'menu.entry.statistics' },
+            { url: 'releaseNotes', title: 'menu.entry.release-notes' },
+          ],
+        },
+        {
+          name: 'menu.entry.fundraising',
+          items: [
+            { url: 'donations', title: 'menu.entry.donations' },
+            { url: 'circle_of_friends', title: 'menu.entry.friendcircle' },
+            { url: 'selfservice', title: 'menu.entry.selfservice' },
+            { url: 'transparency', title: 'menu.entry.transparency' },
+          ],
+        },
+        {
+          name: 'menu.entry.politics',
+          items: [
+            { url: 'fsstaedte', title: 'menu.entry.fscities' },
+            { url: 'claims', title: 'menu.entry.demands' },
+            { url: 'leeretonne', title: 'menu.entry.pastcampaigns' },
+          ],
+        },
+        {
+          name: 'menu.entry.education',
+          items: [
+            { url: 'academy', title: 'menu.entry.academy' },
+            { url: 'workshops', title: 'menu.entry.talksandworkshops' },
+            { url: 'festival', title: 'menu.entry.fsfestival' },
+          ],
+        },
+      ],
+    }
   },
 }
 </script>
@@ -398,6 +469,11 @@ export default {
 .social_icons {
   color: var(--fs-light-grey);
   font-size: 1.2rem;
+  padding: .25rem;
+
+  :not(:last-child) {
+    margin-right: .5rem;
+  }
 }
 
 ul {

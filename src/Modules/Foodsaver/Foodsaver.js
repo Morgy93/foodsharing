@@ -72,4 +72,6 @@ expose({
   confirmDeleteSelf,
 })
 
-attachAddressPicker()
+if (document.querySelector('#map')) {
+  attachAddressPicker()
+}

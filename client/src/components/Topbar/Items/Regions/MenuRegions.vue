@@ -15,6 +15,10 @@
       >
         {{ activeRegion ? truncate(activeRegion.name, isVisibleOnMobile ? 15 : 30) : $i18n('terminology.regions') }}
       </span>
+      <span
+        class="hide-for-users"
+        v-html="activeRegion ? activeRegion.name : $i18n('terminology.regions')"
+      />
     </template>
 
     <template
@@ -26,18 +30,17 @@
         :key="region.id"
         class="group d-flex flex-column align-items-baseline"
       >
-        <a
+        <button
           v-if="region.id !== activeRegionId || regions.length !== 1"
           v-b-toggle="toggleId(region.id)"
           role="menuitem"
-          href="#"
           target="_self"
           class="dropdown-item dropdown-header"
         >
           <span
             v-html="truncate(region.name)"
           />
-        </a>
+        </button>
         <b-collapse
           :id="toggleId(region.id)"
           class="dropdown-submenu"
@@ -49,7 +52,7 @@
             :key="key"
             :href="entry.href ? $url(entry.href, region.id, entry.special) : '#'"
             role="menuitem"
-            class="dropdown-item sub"
+            class="dropdown-item dropdown-action"
             @click="setActiveRegion(region.id), entry.func ? entry.func() : null"
           >
             <i
@@ -73,28 +76,27 @@
       />
     </template>
     <template #actions>
-      <a
-        href="#"
+      <button
         role="menuitem"
         class="dropdown-item dropdown-action"
         @click="joinRegionDialog"
       >
-        <small>
-          <i class="fas fa-plus" />
-          {{ $i18n('menu.entry.joinregion') }}
-        </small>
-      </a>
+        <i class="fas fa-plus" />
+        {{ $i18n('menu.entry.joinregion') }}
+      </button>
     </template>
   </fs-dropdown-menu>
 </template>
 <script>
+// Store
+import { getters } from '@/stores/regions'
+// Components
 import FsDropdownMenu from '../FsDropdownMenu'
 import { becomeBezirk } from '@/script'
-
+// Mixins
 import ConferenceOpener from '@/mixins/ConferenceOpenerMixin'
 import RegionUpdater from '@/mixins/RegionUpdaterMixin'
 import Truncate from '@/mixins/TruncateMixin'
-
 import TopBarMixin from '@/mixins/TopBarMixin'
 
 export default {
@@ -102,6 +104,9 @@ export default {
   components: { FsDropdownMenu },
   mixins: [ConferenceOpener, RegionUpdater, Truncate, TopBarMixin],
   computed: {
+    regions () {
+      return getters.get()
+    },
     activeRegion () {
       return this.regions.find(r => r.id === this.activeRegionId)
     },

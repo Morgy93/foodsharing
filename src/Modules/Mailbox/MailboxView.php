@@ -19,8 +19,10 @@ class MailboxView extends View
 	{
 		return $this->v_utils->v_quickform($box['name'] . '@' . PLATFORM_MAILBOX_HOST, [
 			$this->v_utils->v_form_tagselect('foodsaver_' . $box['id'], $this->translator->trans('mailbox.member')),
-			$this->v_utils->v_input_wrapper($this->translator->trans('mailbox.name'),
-				'<input type="text" value="' . $box['email_name'] . '" name="email_name" class="input text value">'),
+			$this->v_utils->v_input_wrapper(
+				$this->translator->trans('mailbox.name'),
+				'<input type="text" value="' . $box['email_name'] . '" name="email_name" class="input text value">'
+			),
 			$this->v_utils->v_form_hidden('mbid', $box['id'])
 		], ['submit' => $this->translator->trans('button.save')]);
 	}
@@ -46,8 +48,8 @@ class MailboxView extends View
 		return '
 			<tr class="message">
 				<td colspan="4" align="center"><div class="ui-padding">'
-				. $this->v_utils->v_info($this->translator->trans('mailbox.empty'))
-				. '</div></td>
+			. $this->v_utils->v_info($this->translator->trans('mailbox.empty'))
+			. '</div></td>
 			</tr>
 		';
 	}
@@ -120,7 +122,7 @@ class MailboxView extends View
 			}
 
 			$attach_class = 'none';
-			if (!empty($m['attach'])) {
+			if (!empty($m['attach']) && $m['attach'] !== '[]') {
 				$attach_class = 'check';
 			}
 
@@ -195,14 +197,14 @@ class MailboxView extends View
 				<div class="message-top">
 					<div class="buttonbar">
 						<a href="#" onclick="mb_deleteEmail();return false;" class="button">'
-						. $this->translator->trans('mailbox.delete')
-						. '</a> '
-						. '<a href="#" onclick="mb_answer();return false;" class="button">'
-						. $this->translator->trans('mailbox.reply')
-						. '</a> '
-						. '<a href="#" onclick="trySetEmailStatus(' . $mail['id'] . ', false);return false;" class="button">'
-						. $this->translator->trans('mailbox.mark_as_unread')
-						. '</a>
+			. $this->translator->trans('mailbox.delete')
+			. '</a> '
+			. '<a href="#" onclick="mb_answer();return false;" class="button">'
+			. $this->translator->trans('mailbox.reply')
+			. '</a> '
+			. '<a href="#" onclick="trySetEmailStatus(' . $mail['id'] . ', false);return false;" class="button">'
+			. $this->translator->trans('mailbox.mark_as_unread')
+			. '</a>
 					</div>
 					<table class="header">
 						<tr>

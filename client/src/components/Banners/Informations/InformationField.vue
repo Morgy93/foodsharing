@@ -1,0 +1,118 @@
+<template>
+  <div
+    v-if="!isSet"
+    class="information-field alert alert-info d-flex justify-content-between"
+  >
+    <i
+      v-if="icon"
+      class="fas info-icon align-self-center mr-3 d-none d-md-block "
+      :class="icon"
+    />
+    <div class="flex-grow-1 d-flex flex-column justify-content-between">
+      <div class="alignt-self-start">
+        <h4
+          v-if="title"
+          v-html="$i18n(title)"
+        />
+        <p
+          v-if="description"
+          class="description mb-1 w-md-50"
+          v-html="$i18n(description)"
+        />
+      </div>
+      <div
+        v-if="links.length > 0"
+        class="d-flex align-items-center my-2"
+      >
+        <a
+          v-for="(link, key) in links"
+          :key="key"
+          class="btn btn-sm btn-info font-weight-bold align-self-start mr-2"
+          :href="link.urlShortHand ? $url(link.urlShortHand) : link.href"
+          v-html="$i18n(link.text)"
+        />
+      </div>
+    </div>
+    <i
+      v-if="isCloseable"
+      class="close-interaction fas fa-times"
+      @click.prevent="close"
+    />
+  </div>
+</template>
+
+<script>
+export default {
+  props: {
+    type: { type: String, default: 'info' },
+    tag: { type: String, default: '' },
+    icon: { type: String, default: '' },
+    title: { type: String, default: '' },
+    description: { type: String, default: '' },
+    isCloseable: { type: Boolean, default: true },
+    links: { type: Array, default: () => [] },
+  },
+  data () {
+    return {}
+  },
+  computed: {
+    isSet () {
+      return JSON.parse(localStorage.getItem(this.tag)) || false
+    },
+  },
+  async created () {
+    if (this.isSet) {
+      this.close()
+    }
+  },
+  methods: {
+    setSeen () {
+      if (this.isCloseable) {
+        localStorage.setItem(this.tag, JSON.stringify(true))
+      }
+    },
+    close () {
+      this.setSeen()
+      this.remove()
+    },
+    remove () {
+      this.$emit('close')
+      this.$destroy()
+      if (this.$el && this.$el?.parentNode) {
+        this.$el.parentNode.removeChild(this.$el)
+      }
+    },
+  },
+}
+</script>
+
+<style lang="scss" scoped>
+.information-field {
+  min-height: 100px;
+}
+
+.alert-broadcast {
+  min-height: 0;
+  align-content: center;
+}
+
+.info-icon {
+  font-size: 3rem;
+}
+
+.close-interaction {
+  cursor: pointer;
+
+  &:hover {
+    color: var(--primary);
+  }
+}
+
+.list-group-item-action {
+  cursor: pointer;
+}
+
+::v-deep.description a {
+  text-decoration: underline;
+}
+</style>

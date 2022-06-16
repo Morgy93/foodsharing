@@ -60,6 +60,7 @@ $I->waitForText('Essenskorb veröffentlichen', 3);
 $I->waitForElement('#description');
 $I->fillField('description', $description . $updateDescription);
 $I->click('Essenskorb veröffentlichen');
+$I->waitForActiveAPICalls();
 $I->waitForText('Aktualisiert am');
 
 $I->see($updateDescription);

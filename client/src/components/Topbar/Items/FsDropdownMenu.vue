@@ -29,19 +29,24 @@
           :class="{'show': showTitle}"
           v-html="$i18n(title)"
         />
+        <span
+          v-if="title"
+          class="hide-for-users"
+          v-html="$i18n(title)"
+        />
       </slot>
     </template>
-    <div
+    <li
       :class="{'scroll-container': scrollbar}"
     >
       <slot name="content">
         <template v-for="heading in items">
-          <h3
+          <h6
             :key="heading.heading"
             class="dropdown-header"
           >
             {{ $i18n(heading.heading) }}
-          </h3>
+          </h6>
           <a
             v-for="item in heading.menuItems"
             :key="item.url"
@@ -55,11 +60,11 @@
           </a>
         </template>
       </slot>
-    </div>
-    <div class="actions">
+    </li>
+    <li class="actions">
       <!-- eslint-disable-next-line vue/max-attributes-per-line -->
       <slot name="actions" :hide="closeDropdownMenu" />
-    </div>
+    </li>
   </b-nav-item-dropdown>
 </template>
 <script>
@@ -84,7 +89,7 @@ export default {
     },
     lazy: {
       type: Boolean,
-      default: false,
+      default: true,
     },
     right: {
       type: Boolean,
@@ -116,11 +121,6 @@ export default {
   position: relative;
 }
 
-.headline,
-.icon {
-  color: var(--primary);
-}
-
 .headline {
   display: none;
 
@@ -137,9 +137,14 @@ export default {
 }
 
 ::v-deep.item a::after {
-  // @media (max-width: 576px) {
+  opacity: .25;
+  @media (max-width: 576px) {
      display: none;
-  // }
+  }
+}
+
+::v-deep .dropdown-item {
+  font-size: 0.8rem;
 }
 
 .actions {
@@ -150,5 +155,12 @@ export default {
   &:empty {
     display: none;
   }
+}
+
+::v-deep .text-truncate {
+  flex: 1;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 </style>

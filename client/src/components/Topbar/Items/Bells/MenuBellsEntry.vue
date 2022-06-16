@@ -1,7 +1,10 @@
 <template>
   <a
-    class="d-flex"
-    :class="classes"
+    class="dropdown-header dropdown-item d-flex justify-content-between align-items-center"
+    :class="{
+      'list-group-item-warning': !bell.isRead,
+      'disabledLoading': bell.isDeleting,
+    }"
     :href="bell.href"
     @click="$emit('read', bell)"
     @mouseover="viewIsMD && toggleState()"
@@ -19,7 +22,6 @@
       <Avatar
         v-else-if="bell.image && !state"
         class="img-thumbnail"
-        style="min-width: 42px;"
         :url="bell.image"
         :size="35"
       />
@@ -30,36 +32,36 @@
         @click.stop.prevent="closeBell()"
       />
     </div>
-    <div class="d-flex flex-column justify-content-between truncated">
-      <div class="d-flex justify-content-between align-items-center">
-        <h5
+    <span class="d-flex w-100 flex-column text-truncate">
+      <span class="d-flex justify-content-between align-items-center text-truncate">
+        <span
           class="mb-1 text-truncate"
-        >
-          {{ $i18n(`bell.${bell.title}`, bell.payload) }}
-        </h5>
+          v-html="$i18n(`bell.${bell.title}`, bell.payload)"
+        />
         <small class="text-muted text-right nowrap">
-          {{ $dateDistanceInWords(bell.createdAt) }}
+          {{ relativeTime(bell.createdAt) }}
         </small>
-      </div>
-      <p
-        class="mb-0 text-truncate"
-      >
-        {{ $i18n(`bell.${bell.key}`, bell.payload) }}
-      </p>
-    </div>
+      </span>
+      <small
+        class="text-truncate"
+        v-html="$i18n(`bell.${bell.key}`, bell.payload)"
+      />
+    </span>
   </a>
 </template>
 
 <script>
 import Avatar from '@/components/Avatar'
+
 import StateTogglerMixin from '@/mixins/StateTogglerMixin'
 import MediaQueryMixin from '@/mixins/MediaQueryMixin'
+import DateFormatterMixin from '@/mixins/DateFormatterMixin'
 
 export default {
   components: {
     Avatar,
   },
-  mixins: [StateTogglerMixin, MediaQueryMixin],
+  mixins: [StateTogglerMixin, MediaQueryMixin, DateFormatterMixin],
   props: {
     bell: {
       type: Object,
@@ -74,8 +76,6 @@ export default {
   computed: {
     classes () {
       return [
-        'list-group-item',
-        'list-group-item-action',
         !this.bell.isRead ? 'list-group-item-warning' : null,
         this.bell.isDeleting ? 'disabledLoading' : null,
       ]
@@ -92,32 +92,10 @@ export default {
 </script>
 
 <style lang="scss" scoped>
-.list-group-item {
-    padding: 0.4em 1em;
-    border: unset;
-
-    h5 {
-      font-weight: bold;
-      font-size: 0.9em;
-    }
-
-    p {
-        font-size: 0.8em;
-    }
-}
-
 .icon {
-  height: 42px;
-  width: 42px;
+  height: 35px;
+  width: 35px;
   line-height: 0.7em;
   font-size: 1.5rem;
-}
-
-.truncated {
-  flex: 1;
-
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
 }
 </style>

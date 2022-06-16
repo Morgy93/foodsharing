@@ -2,17 +2,16 @@
 import $ from 'jquery'
 import i18n from '@/i18n'
 import { expose } from '@/utils'
+import { pulseError } from '@/script'
+import { deletePost } from '@/api/wall'
 
-function delWallpost (postId, module, wallId) {
-  $.ajax({
-    url: `/xhrapp.php?app=wallpost&m=delpost&table=${module}&id=${wallId}&post=${postId}`,
-    dataType: 'JSON',
-    success: function (data) {
-      if (data.status == 1) {
-        $(`.wallpost-${postId}`).remove()
-      }
-    },
-  })
+async function delWallpost (postId, module, wallId) {
+  try {
+    await deletePost(module, wallId, postId)
+    $(`.wallpost-${postId}`).remove()
+  } catch (e) {
+    pulseError(i18n('error_unexpected'))
+  }
 }
 
 function finishImage (file) {

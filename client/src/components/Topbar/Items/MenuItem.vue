@@ -21,6 +21,11 @@
       :class="{'show': showTitle}"
       v-html="title"
     />
+    <span
+      v-if="title"
+      class="hide-for-users"
+      v-html="title"
+    />
   </b-nav-item>
 </template>
 
@@ -61,11 +66,6 @@ export default {
   position: relative;
 }
 
-.headline,
-.icon {
-  color: var(--primary);
-}
-
 .headline {
   display: none;
 
@@ -73,5 +73,12 @@ export default {
   &.show {
     display: inline-block;
   }
+}
+
+::v-deep .text-truncate {
+  flex: 1;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 </style>

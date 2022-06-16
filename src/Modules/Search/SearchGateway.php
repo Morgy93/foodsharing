@@ -56,6 +56,25 @@ class SearchGateway extends BaseGateway
 		);
 	}
 
+	/**
+	 * Searches the given term in the list of food-share-points.
+	 *
+	 * @return array SearchResult[] Array of food-share-points containing the search term
+	 */
+	public function searchFoodSharePoints(string $q, array $regions = null): array
+	{
+		return $this->searchTable(
+			'fs_fairteiler',
+			['name', 'ort', 'plz', 'anschrift'],
+			$q,
+			[
+				'name' => '`name`',
+				'teaser' => 'CONCAT(`anschrift`,", ",`plz`," ",`ort`)'
+			],
+			$regions
+		);
+	}
+
 	private function searchTable(string $table, array $fields, string $query, array $show = [], array $regions_to_search = null): array
 	{
 		$q = trim($query);

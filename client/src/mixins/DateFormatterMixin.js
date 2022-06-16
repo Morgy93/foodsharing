@@ -10,6 +10,18 @@ import formatDistanceStrict from 'date-fns/formatDistanceStrict'
 import addDays from 'date-fns/addDays'
 import parseISO from 'date-fns/parseISO'
 
+import TimeAgo from 'javascript-time-ago'
+
+// English.
+import de from 'javascript-time-ago/locale/de'
+import en from 'javascript-time-ago/locale/en'
+
+TimeAgo.addDefaultLocale(en)
+TimeAgo.addLocale(de)
+
+// "de" language will be used, as it's the first one to match.
+const timeAgo = new TimeAgo(['ru-RU', 'de-DE', 'en-US'])
+
 // https://date-fns.org/docs/Getting-Started
 
 export default {
@@ -63,6 +75,9 @@ export default {
       } catch (error) {
         console.error({ error, date })
       }
+    },
+    relativeTime (date) { // https://gitlab.com/catamphetamine/javascript-time-ago#readme
+      return timeAgo.format(date, 'mini-minute-now')
     },
     dateDistanceInWords (date, short = false) {
       const now = new Date()

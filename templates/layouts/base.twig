@@ -61,7 +61,7 @@
         {% endblock %}
 
         {% block full %}
-            {% if app.request.get('page') is same as('dashboard') %}
+            {% if route in 'dashboard,index'|split(',') %}
                 {# /*
                 * to keep the old page stable,
                 * cause of the different types of grid systems

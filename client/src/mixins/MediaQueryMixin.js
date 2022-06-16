@@ -13,7 +13,7 @@ const mediaQuery = {
   },
   lg: {
     min: 992,
-    max: 1999,
+    max: 1200,
   },
   xl: {
     min: 1200,

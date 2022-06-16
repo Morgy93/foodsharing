@@ -160,6 +160,30 @@
   margin: 0 auto;
 }
 
+/* a,
+.bootstrap a,
+.markdown a[href],
+.bootstrap .markdown a,
+.ui-widget-content a {
+  color: var(--fs-green);
+  text-decoration: none;
+}
+
+a:hover,
+.bootstrap a:hover,
+.markdown a[href]:hover,
+.bootstrap .markdown a:hover,
+.ui-widget-content a:hover {
+  color: var(--fs-green);
+  text-decoration: underline;
+}
+
+.markdown a[href],
+.bootstrap .markdown a {
+  font-weight: bold;
+} */
+
+
 .ui-dialog,
 .ui-shadow {
   box-shadow: 0 0 7px rgba(0, 0, 0, 0.3);
@@ -240,15 +264,6 @@ div#main {
   max-width: 1100px;
   padding: 2rem 0;
   min-height: calc(83vh);
-}
-
-/* ONLY REQUIRED FOR OLD PAGES --- REMOVE WHEN ALL ARE REVAMPED! */
-body:not(.page-dashboard):not(.page-index):not(.page-login) .headline {
-  display: none !important;
-}
-
-nav .navbar-collapse.collapse.show .headline {
-  display: inline-block !important;
 }
 
 .inside {

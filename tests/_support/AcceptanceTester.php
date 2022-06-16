@@ -36,6 +36,7 @@ class AcceptanceTester extends Codeception\Actor
 		$I = $this;
 		$I->amOnPage('/');
 		$I->executeJS('window.localStorage.clear();');
+		$I->waitForElement('#login');
 		$I->click('#login');
 		$I->waitForElement('#login-email');
 		$I->fillField('#login-email', $email);
@@ -44,6 +45,8 @@ class AcceptanceTester extends Codeception\Actor
 		$I->waitForActiveAPICalls();
 		$I->waitForElementNotVisible('#pulse-success');
 		$I->waitForPageBody();
+		$I->waitForElement('.intro');
+		$I->see('Hallo', 'h1');
 	}
 
 	public function logMeOut()

@@ -7,9 +7,10 @@
 - The profile page now contains one unified pickup section. Future pickup options are now visible in that section. !2211 !2226 @AntonBallmaier
 - Pickup statistics on profile !2208 @fs_k
 - Allow the foodsaver, which is verifiable, to create itself in the profile settings (without cut markers) !2198 @chriswalg
-- Dashboard revamped, shines in a new style and new features !2227 !2245 !2248 !2252 @sefn
+- Dashboard revamped, shines in a new style and new features !2227 !2245 !2248 !2252 !2254 !2261 !2262 !2263 !2264 !2265 !2267 !2266 @sefn
 - In the footer of the website, "For developers" is added under "Participate" to create an easier way to IT. !2241 @NINI1988
 - On the login page, "Stay logged in for one day" is saved in local storage for the next logins. !2249 @NINI1988
+- Food-share-points are listed in the topbar search #1251 !2260 @alex.simm 
 
 ## Changes
 - Checks in the id card creation function if only one foodsaver is selected and then reduces the 
@@ -35,7 +36,10 @@
 - The public profile page can handle names with unicode characters #1265 !2239 @alex.simm
 - Fix a type error for the report button on profile !2246 #1271 @alex.simm
 - Prevent "Payload to large" errors due to padding in web push #1213 !2212 @alex.simm
-- Fixed a bug where iOS devices zoom into an input field !2235 @sefan
+- Fixed a bug where iOS devices zoom into an input field !2235 @sefn
+- iOS users should now open the adresses with maps.app !2236 @sefn 
+- The lifetime of baskets are now really in days, before the hours and minutes wasn't compared. It was possible to add a basket at 11pm with the lifetime of 1 day, but it would be deleted 12am. !1243 @martincodes-de
+- Email attachment icon is no longer shown on all emails. !2242 @AntonBallmaier
 
 ## Refactoring
 - Currently running events are shown within the event overview until their end !2162 @merhoc
@@ -43,9 +47,9 @@
 - Simplify code in the content module @alex.simm
 - Use a REST endpoint for quickreplying to forum threads #798 @alex.simm
 - Extract some redundant permission checks into one function. !2203 @AntonBallmaier
-- The TopBarNavigation is now unified !2238 !2245 !2248 !2252 @sefn
-- The TopBarNavigation is now unified !2238 !2245 !2248 @sefn
+- The TopBarNavigation is now unified !2238 !2245 !2248 !2252 !2254 @sefn
 - Rebuild store options to vue #2231 @chriswalg
+- Changed deleting wall posts to the API #798 !2253 @alex.simm  
 
 ## Dev/Test/CI stuff
 - bump node to version 16 !2135 @peter.toennies
@@ -61,11 +65,12 @@
 - Add a workaround to upload files to the startpage. #1245 !2233 @stcz 
 - Added missing indices to the store database table !2232 @alex.simm 
 - bump mocha to versio 10 !2255 @peter.toennies
+- Add how to connect other device with local development website to dev docs !2259 @NINI1988
 
 # Release "Heidelbeere", 2022-05-01
 
 ## Features
-- It is now differentiated between completely new foodsavers and foodsavers who were verified before. !1129
+- It is now differentiated between completely new foodsavers and foodsavers who were verified before. #1129 !2149
 - The settings page now contains information about requesting a name change. !2163 @AntonBallmaier
 
 ## Changes

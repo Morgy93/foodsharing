@@ -7,7 +7,6 @@
     :badge="unread"
     :show-title="showTitle"
     scrollbar
-    right
   >
     <template
       v-if="bells.length > 0"
@@ -32,18 +31,15 @@
       />
     </template>
     <template #actions="{ hide }">
-      <a
-        href="#"
+      <button
         role="menuitem"
         class="dropdown-item dropdown-action"
         :class="{ 'disabled': !unread }"
         @click="markNewBellsAsRead(); hide();"
       >
-        <small>
-          <i class="fas fa-check-double" />
-          {{ $i18n('menu.entry.mark_as_read') }}
-        </small>
-      </a>
+        <i class="fas fa-check-double" />
+        {{ $i18n('menu.entry.mark_as_read') }}
+      </button>
     </template>
   </fs-dropdown-menu>
 </template>

@@ -34,11 +34,10 @@ const urls = {
   event: (eventId) => `/?page=event&id=${eventId}`,
   eventEdit: (eventId) => `/?page=event&id=${eventId}&sub=edit`,
   events: (regionId) => `/?page=bezirk&bid=${regionId}&sub=events`,
-  fairteiler: (regionId) => `/?page=bezirk&bid=${regionId}&sub=fairteiler`,
   support: () => 'https://foodsharing.freshdesk.com/support/home',
   festival: () => '/?page=content&sub=festival',
   foodsaverList: (regionId) => `/?page=foodsaver&bid=${regionId}`,
-  foodsharepoint: (regionId, fspId) => `?page=fairteiler&sub=ft&bid=${regionId}&id=${fspId}`,
+  foodsharepoint: (fspId) => `?page=fairteiler&sub=ft&id=${fspId}`,
   foodsharepoints: (regionId) => `/?page=bezirk&bid=${regionId}&sub=fairteiler`,
   fsstaedte: () => '/?page=content&sub=fsstaedte',
   grundsaetze: () => 'https://wiki.foodsharing.de/Grundsätze',
@@ -69,10 +68,6 @@ const urls = {
   pollNew: (regionId) => `/?page=poll&bid=${regionId}&sub=new`,
   polls: (regionId) => `/?page=bezirk&bid=${regionId}&sub=polls`,
   press: () => '/?page=content&sub=presse',
-  quizEdit: () => '/?page=quiz',
-  quizFs: () => '/?page=settings&sub=up_fs',
-  quizBip: () => '/?page=settings&sub=up_bip',
-  quizBot: () => '/?page=settings&sub=up_bot',
   region: () => '/?page=region',
   releaseNotes: () => '/?page=content&sub=releaseNotes',
   reports: (regionId = null) => regionId ? `/?page=report&bid=${regionId}` : '/?page=report',
@@ -98,12 +93,42 @@ const urls = {
   donations: () => 'https://spenden.foodsharing.de',
   circle_of_friends: () => 'https://spenden.foodsharing.de/freundeskreis',
   selfservice: () => 'https://spenden.foodsharing.de/selfservice',
-  devdocs: () => 'https://devdocs.foodsharing.network',
-  hoster: () => 'https://manitu.de',
+  resendActivationMail: () => '/?page=login&a=resendActivationMail',
+
+  //
+  quizEdit: () => '/?page=quiz',
+  quizLearning: () => 'https://youtu.be/9Fk6MHC-M1o',
+  quizFs: () => '/?page=settings&sub=up_fs',
+  quizBip: () => '/?page=settings&sub=up_bip',
+  quizBot: () => '/?page=settings&sub=up_bot',
+
+  // Footer Links
+  hosting: () => 'https://manitu.de',
   wiener_tafel: () => 'https://www.wienertafel.at',
   bmlfuw: () => 'https://www.bmlrt.gv.at',
   denns: () => 'https://www.denns-biomarkt.at',
-  resendActivationMail: () => '/?page=login&a=resendActivationMail',
+  devdocs: () => 'https://devdocs.foodsharing.network',
+
+  // Beta Testing
+  beta: () => 'https://beta.foodsharing.de',
+  beta_testing_forum: () => 'https://beta.foodsharing.de/?page=bezirk&bid=734&sub=forum',
+
+  // Gitlab
+  git_revision: (revision) => `https://gitlab.com/foodsharing-dev/foodsharing/tree/${revision}`,
+
+  // Social Media
+  twitter_de: () => 'https://twitter.com/FoodsharingDE',
+  twitter_at: () => 'https://twitter.com/FoodsharingDE', // GERMAN VERSION
+  linkedin_de: () => 'https://www.linkedin.com/company/foodsharingde',
+  linkedin_at: () => 'https://www.linkedin.com/company/foodsharingde', // GERMAN VERSION
+  youtube_de: () => 'https://www.youtube.com/user/foodsharingtv',
+  youtube_at: () => 'https://www.youtube.com/user/foodsharingtv', // GERMAN VERSION
+  instagram_de: () => 'https://www.instagram.com/foodsharing_de',
+  instagram_at: () => 'https://instagram.com/foodsharing.at',
+  facebook_de: () => 'https://www.facebook.com/foodsharing.de',
+  facebook_at: () => 'https://www.facebook.com/oesterreichfoodsharing',
+  tiktok_de: () => 'https://www.tiktok.com/@foodsharing.de',
+  tiktok_at: () => 'https://www.tiktok.com/@foodsharing.de', // GERMAN VERSION
 }
 
 const url = (key, ...params) => {

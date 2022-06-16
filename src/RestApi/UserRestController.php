@@ -14,11 +14,19 @@ use Foodsharing\Modules\Profile\ProfileTransactions;
 use Foodsharing\Modules\Region\RegionGateway;
 use Foodsharing\Modules\Register\DTO\RegisterData;
 use Foodsharing\Modules\Register\RegisterTransactions;
-use Foodsharing\Modules\Store\PickupGateway;
+use Foodsharing\Modules\Settings\SettingsGateway;
 use Foodsharing\Modules\Uploads\UploadsGateway;
+use Foodsharing\Permissions\BlogPermissions;
+use Foodsharing\Permissions\ContentPermissions;
+use Foodsharing\Permissions\MailboxPermissions;
+use Foodsharing\Permissions\NewsletterEmailPermissions;
 use Foodsharing\Permissions\ProfilePermissions;
+use Foodsharing\Permissions\QuizPermissions;
+use Foodsharing\Permissions\RegionPermissions;
 use Foodsharing\Permissions\ReportPermissions;
+use Foodsharing\Permissions\StorePermissions;
 use Foodsharing\Permissions\UserPermissions;
+use Foodsharing\Permissions\WorkGroupPermissions;
 use Foodsharing\Utility\EmailHelper;
 use FOS\RestBundle\Controller\AbstractFOSRestController;
 use FOS\RestBundle\Controller\Annotations as Rest;
@@ -36,10 +44,20 @@ class UserRestController extends AbstractFOSRestController
 	private ProfileGateway $profileGateway;
 	private UploadsGateway $uploadsGateway;
 	private RegionGateway $regionGateway;
-	private PickupGateway $pickupGateway;
-	private ReportPermissions $reportPermissions;
+	private SettingsGateway $settingsGateway;
+
 	private UserPermissions $userPermissions;
 	private ProfilePermissions $profilePermissions;
+	private BlogPermissions $blogPermissions;
+	private ContentPermissions $contentPermissions;
+	private MailboxPermissions $mailboxPermissions;
+	private NewsletterEmailPermissions $newsletterEmailPermissions;
+	private QuizPermissions $quizPermissions;
+	private RegionPermissions $regionPermissions;
+	private ReportPermissions $reportPermissions;
+	private StorePermissions $storePermissions;
+	private WorkGroupPermissions $workGroupPermissions;
+
 	private EmailHelper $emailHelper;
 	private RegisterTransactions $registerTransactions;
 	private ProfileTransactions $profileTransactions;
@@ -57,14 +75,23 @@ class UserRestController extends AbstractFOSRestController
 		ProfileGateway $profileGateway,
 		UploadsGateway $uploadsGateway,
 		RegionGateway $regionGateway,
-		ReportPermissions $reportPermissions,
-		UserPermissions $userPermissions,
-		ProfilePermissions $profilePermissions,
 		EmailHelper $emailHelper,
 		RegisterTransactions $registerTransactions,
 		ProfileTransactions $profileTransactions,
 		FoodsaverTransactions $foodsaverTransactions,
-		PickupGateway $pickupGateway
+		SettingsGateway $settingsGateway,
+
+		UserPermissions $userPermissions,
+		ProfilePermissions $profilePermissions,
+		MailboxPermissions $mailboxPermissions,
+		QuizPermissions $quizPermissions,
+		ReportPermissions $reportPermissions,
+		StorePermissions $storePermissions,
+		ContentPermissions $contentPermissions,
+		BlogPermissions $blogPermissions,
+		RegionPermissions $regionPermissions,
+		NewsletterEmailPermissions $newsletterEmailPermissions,
+		WorkGroupPermissions $workGroupPermissions
 	) {
 		$this->session = $session;
 		$this->loginGateway = $loginGateway;
@@ -72,14 +99,23 @@ class UserRestController extends AbstractFOSRestController
 		$this->profileGateway = $profileGateway;
 		$this->uploadsGateway = $uploadsGateway;
 		$this->regionGateway = $regionGateway;
-		$this->reportPermissions = $reportPermissions;
-		$this->userPermissions = $userPermissions;
-		$this->profilePermissions = $profilePermissions;
 		$this->emailHelper = $emailHelper;
 		$this->registerTransactions = $registerTransactions;
 		$this->profileTransactions = $profileTransactions;
 		$this->foodsaverTransactions = $foodsaverTransactions;
-		$this->pickupGateway = $pickupGateway;
+		$this->settingsGateway = $settingsGateway;
+
+		$this->userPermissions = $userPermissions;
+		$this->profilePermissions = $profilePermissions;
+		$this->mailboxPermissions = $mailboxPermissions;
+		$this->quizPermissions = $quizPermissions;
+		$this->reportPermissions = $reportPermissions;
+		$this->storePermissions = $storePermissions;
+		$this->contentPermissions = $contentPermissions;
+		$this->blogPermissions = $blogPermissions;
+		$this->regionPermissions = $regionPermissions;
+		$this->newsletterEmailPermissions = $newsletterEmailPermissions;
+		$this->workGroupPermissions = $workGroupPermissions;
 	}
 
 	/**
@@ -134,15 +170,42 @@ class UserRestController extends AbstractFOSRestController
 
 		$response = [];
 		$response['id'] = $data['id'];
-		$response['verified'] = ($data['verified'] === 1) ? true : false;
-		$response['region_id'] = $data['bezirk_id'];
-		$response['region_name'] = ($data['bezirk_id'] === null) ? null : $this->regionGateway->getRegionName($data['bezirk_id']);
+		$response['foodsaver'] = ($this->session->may('fs')) ? true : false;
+		$response['isVerified'] = ($data['verified'] === 1) ? true : false;
+		$response['regionId'] = $data['bezirk_id'];
+		$response['regionName'] = ($data['bezirk_id'] === null) ? null : $this->regionGateway->getRegionName($data['bezirk_id']);
+		$response['aboutMePublic'] = $data['about_me_public'];
 
 		if ($loggedIn) {
+			$infos = $this->foodsaverGateway->getFoodsaverBasics($this->session->id());
+
+			$response['mailboxId'] = $data['mailbox_id'];
+			$response['hasCalendarToken'] = $this->settingsGateway->getApiToken($this->session->id());
 			$response['firstname'] = $data['name'];
 			$response['lastname'] = $data['nachname'];
-			$response['about_me_public'] = $data['about_me_public'];
+			$response['gender'] = $data['geschlecht'];
+			$response['photo'] = $data['photo'];
+			$response['sleeping'] = boolval($data['sleep_status']);
 			$response['homepage'] = $data['homepage'];
+
+			$response['stats']['weight'] = floatval($infos['stat_fetchweight']);
+			$response['stats']['count'] = $infos['stat_fetchcount'];
+
+			$response['coordinates']['lat'] = floatval($data['lat']);
+			$response['coordinates']['lon'] = floatval($data['lon']);
+
+			$response['permissions'] = [
+				'mayEditUserProfile' => $mayEditUserProfile,
+				'mayAdministrateUserProfile' => $mayAdministrateUserProfile,
+				'administrateBlog' => $this->blogPermissions->mayAdministrateBlog(),
+				'editQuiz' => $this->quizPermissions->mayEditQuiz(),
+				'handleReports' => $this->reportPermissions->mayHandleReports(),
+				'addStore' => $this->storePermissions->mayCreateStore(),
+				'manageMailboxes' => $this->mailboxPermissions->mayManageMailboxes(),
+				'editContent' => $this->contentPermissions->mayEditContent(),
+				'administrateNewsletterEmail' => $this->newsletterEmailPermissions->mayAdministrateNewsletterEmail(),
+				'administrateRegions' => $this->regionPermissions->mayAdministrateRegions(),
+			];
 		} else {
 			$response['firstname'] = ($data['name'] === null) ? null : $data['name'][0]; // Only return first character
 		}
@@ -151,23 +214,17 @@ class UserRestController extends AbstractFOSRestController
 			$response['address'] = $data['anschrift'];
 			$response['city'] = $data['stadt'];
 			$response['postcode'] = $data['plz'];
-			$response['lat'] = $data['lat'];
-			$response['lon'] = $data['lon'];
 			$response['email'] = $data['email'];
 			$response['landline'] = $data['telefon'];
 			$response['mobile'] = $data['handy'];
-			$response['geb_datum'] = $data['geb_datum'];
-			$response['about_me_intern'] = $data['about_me_intern'];
+			$response['birthday'] = $data['geb_datum'];
+			$response['aboutMeIntern'] = $data['about_me_intern'];
 		}
 
 		if ($mayAdministrateUserProfile) {
-			$response['rolle'] = $data['rolle'];
+			$response['role'] = $data['rolle'];
 			$response['position'] = $data['position'];
-			$response['geschlecht'] = $data['geschlecht'];
 		}
-
-		$response['mayEditUserProfile'] = $mayEditUserProfile;
-		$response['mayAdministrateUserProfile'] = $mayAdministrateUserProfile;
 
 		return $response;
 	}

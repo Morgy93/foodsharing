@@ -7,7 +7,6 @@
     :badge="unread"
     :show-title="showTitle"
     scrollbar
-    right
   >
     <template
       v-if="conversations.length > 0"
@@ -30,27 +29,22 @@
       />
     </template>
     <template #actions="{ hide }">
-      <a
-        href="#"
+      <button
         role="menuitem"
         class="dropdown-item dropdown-action"
         :class="{ 'disabled': !unread }"
         @click="markUnreadMessagesAsRead(); hide();"
       >
-        <small>
-          <i class="fas fa-check-double" />
-          {{ $i18n('menu.entry.mark_as_read') }}
-        </small>
-      </a>
+        <i class="fas fa-check-double" />
+        {{ $i18n('menu.entry.mark_as_read') }}
+      </button>
       <a
         :href="$url('conversations')"
         role="menuitem"
         class="dropdown-item dropdown-action"
       >
-        <small>
-          <i class="fas fa-comments" />
-          {{ $i18n('menu.entry.all_messages') }}
-        </small>
+        <i class="fas fa-comments" />
+        {{ $i18n('menu.entry.all_messages') }}
       </a>
     </template>
   </fs-dropdown-menu>

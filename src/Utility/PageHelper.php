@@ -38,7 +38,6 @@ final class PageHelper
 
 	public array $jsData = [];
 
-	private IdentificationHelper $identificationHelper;
 	private ImageHelper $imageService;
 	private RouteHelper $routeHelper;
 	private Sanitizer $sanitizerService;
@@ -60,7 +59,6 @@ final class PageHelper
 		ImageHelper $imageService,
 		Environment $twig,
 		RouteHelper $routeHelper,
-		IdentificationHelper $identificationHelper,
 		MailboxPermissions $mailboxPermissions,
 		QuizPermissions $quizPermissions,
 		ReportPermissions $reportPermissions,
@@ -72,7 +70,6 @@ final class PageHelper
 		WorkGroupPermissions $workGroupPermissions
 	) {
 		$this->twig = $twig;
-		$this->identificationHelper = $identificationHelper;
 		$this->imageService = $imageService;
 		$this->routeHelper = $routeHelper;
 		$this->sanitizerService = $sanitizerService;
@@ -116,7 +113,7 @@ final class PageHelper
 
 		$bodyClasses[] = 'page-' . $this->routeHelper->getPage();
 
-		if ($this->routeHelper->getPage() === 'dashboard') {
+		if (in_array($this->routeHelper->getPage(), ['dashboard', 'index'])) {
 			$bodyClasses[] = 'bootstrap';
 		}
 
@@ -128,6 +125,7 @@ final class PageHelper
 			'bodyClasses' => $bodyClasses,
 			'serverDataJSON' => json_encode($this->getServerData()),
 			'menu' => $this->getMenu(),
+			'route' => $this->routeHelper->getPage(),
 			'dev' => FS_ENV == 'dev',
 			'hidden' => $this->hidden,
 			'isMob' => $this->session->isMob(),
@@ -240,25 +238,9 @@ final class PageHelper
 			}
 		}
 
-		if ($user = $this->session->get('user')) {
-			$user['id'] = $this->session->id();
-			$user['permissions'] = [
-				'administrateBlog' => $this->blogPermissions->mayAdministrateBlog(),
-				'editQuiz' => $this->quizPermissions->mayEditQuiz(),
-				'handleReports' => $this->reportPermissions->mayHandleReports(),
-				'addStore' => $this->storePermissions->mayCreateStore(),
-				'manageMailboxes' => $this->mailboxPermissions->mayManageMailboxes(),
-				'editContent' => $this->contentPermissions->mayEditContent(),
-				'administrateNewsletterEmail' => $this->newsletterEmailPermissions->mayAdministrateNewsletterEmail(),
-				'administrateRegions' => $this->regionPermissions->mayAdministrateRegions()
-			];
-		} else {
-			$user = null;
-		}
-
 		$params = array_merge(
 			[
-				'user' => $user,
+				'isLoggedIn' => $this->session->id() !== null,
 				'regions' => $regions,
 				'groups' => $workingGroups,
 			]
@@ -277,10 +259,7 @@ final class PageHelper
 	private function getFooter(): string
 	{
 		$params = [
-			'isFsDotAt' => strpos($_SERVER['HTTP_HOST'] ?? BASE_URL, 'foodsharing.at') !== false,
-			'srcRevision' => defined('SRC_REVISION') ? SRC_REVISION : null,
-			'isBeta' => strpos($_SERVER['HTTP_HOST'] ?? BASE_URL, 'beta.foodsharing') !== false,
-			'isDev' => strpos($_SERVER['SERVER_NAME'] ?? BASE_URL, 'localhost') !== false,
+			'version' => defined('SRC_REVISION') ? SRC_REVISION : null,
 		];
 
 		return $this->twig->render(

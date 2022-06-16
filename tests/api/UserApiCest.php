@@ -100,24 +100,39 @@ class UserApiCest
 		$I->seeResponseMatchesJsonType([
 			'id' => 'integer',
 			'firstname' => 'string:regex(~.?~)', // firstname is allowed only as 0 or 1 caracter
-			'verified' => 'boolean',
-			'region_id' => 'integer',
-			'region_name' => 'string'
+			'isVerified' => 'boolean',
+			'regionId' => 'integer',
+			'regionName' => 'string'
 		]);
 		$I->dontSeeResponseContains('lastname');
 		$I->dontSeeResponseContains('address');
 		$I->dontSeeResponseContains('city');
 		$I->dontSeeResponseContains('postcode');
-		$I->dontSeeResponseContains('lat');
-		$I->dontSeeResponseContains('lon');
 		$I->dontSeeResponseContains('email');
 		$I->dontSeeResponseContains('landline');
 		$I->dontSeeResponseContains('mobile');
-		$I->dontSeeResponseContains('geb_datum');
-		$I->dontSeeResponseContains('about_me_intern');
-		$I->canSeeResponseContainsJson([
-			'mayEditUserProfile' => false,
-			'mayAdministrateUserProfile' => false
+		$I->dontSeeResponseContains('birthday');
+		$I->dontSeeResponseContains('aboutMeIntern');
+
+		$I->dontSeeResponseContainsJson([
+			'stats' => [
+				'weight' => 'float|integer',
+				'count' => 'float|integer',
+			]
+		]);
+
+		$I->dontSeeResponseContainsJson([
+			'coordinates' => [
+				'lat',
+				'lon',
+			]
+		]);
+
+		$I->dontSeeResponseContainsJson([
+			'permissions' => [
+				'mayEditUserProfile' => false,
+				'mayAdministrateUserProfile' => false
+			]
 		]);
 	}
 
@@ -136,25 +151,40 @@ class UserApiCest
 			'id' => 'integer',
 			'firstname' => 'string',
 			'lastname' => 'string',
-			'verified' => 'boolean',
-			'region_id' => 'integer',
-			'region_name' => 'string',
+			'isVerified' => 'boolean',
+			'regionId' => 'integer',
+			'regionName' => 'string',
 			'homepage' => 'string|null',
-			'about_me_public' => 'string|null',
+			'aboutMePublic' => 'string|null',
 		]);
 		$I->dontSeeResponseContains('address');
 		$I->dontSeeResponseContains('city');
 		$I->dontSeeResponseContains('postcode');
-		$I->dontSeeResponseContains('lat');
-		$I->dontSeeResponseContains('lon');
 		$I->dontSeeResponseContains('email');
 		$I->dontSeeResponseContains('landline');
 		$I->dontSeeResponseContains('mobile');
-		$I->dontSeeResponseContains('geb_datum');
-		$I->dontSeeResponseContains('about_me_intern');
-		$I->canSeeResponseContainsJson([
-			'mayEditUserProfile' => false,
-			'mayAdministrateUserProfile' => false
+		$I->dontSeeResponseContains('birthday');
+		$I->dontSeeResponseContains('aboutMeIntern');
+
+		$I->seeResponseMatchesJsonType([
+			'stats' => [
+				'weight' => 'string|float|integer',
+				'count' => 'string|float|integer',
+			]
+		]);
+
+		$I->seeResponseMatchesJsonType([
+			'coordinates' => [
+				'lat' => 'string|float|integer',
+				'lon' => 'string|float|integer',
+			]
+		]);
+
+		$I->seeResponseMatchesJsonType([
+			'permissions' => [
+				'mayEditUserProfile' => 'boolean',
+				'mayAdministrateUserProfile' => 'boolean'
+			]
 		]);
 	}
 
@@ -172,25 +202,41 @@ class UserApiCest
 			'id' => 'integer',
 			'firstname' => 'string',
 			'lastname' => 'string',
-			'verified' => 'boolean',
-			'region_id' => 'integer',
-			'region_name' => 'string',
+			'isVerified' => 'boolean',
+			'regionId' => 'integer',
+			'regionName' => 'string',
 			'address' => 'string',
 			'city' => 'string',
 			'postcode' => 'string|integer',
-			'lat' => 'string|float',
-			'lon' => 'string|float',
 			'email' => 'string:email',
 			'landline' => 'string|null',
 			'mobile' => 'string|null',
-			'geb_datum' => 'string|date',
+			'birthday' => 'string|date',
 			'homepage' => 'string|null',
-			'about_me_intern' => 'string|null',
-			'about_me_public' => 'string|null'
+			'aboutMeIntern' => 'string|null',
+			'aboutMePublic' => 'string|null',
+			'gender' => 'integer'
 		]);
-		$I->canSeeResponseContainsJson([
-			'mayEditUserProfile' => true,
-			'mayAdministrateUserProfile' => false
+
+		$I->seeResponseMatchesJsonType([
+			'stats' => [
+				'weight' => 'string|float|integer',
+				'count' => 'string|float|integer',
+			]
+		]);
+
+		$I->seeResponseMatchesJsonType([
+			'coordinates' => [
+				'lat' => 'string|float|integer',
+				'lon' => 'string|float|integer',
+			]
+		]);
+
+		$I->seeResponseMatchesJsonType([
+			'permissions' => [
+				'mayEditUserProfile' => 'boolean',
+				'mayAdministrateUserProfile' => 'boolean'
+			]
 		]);
 	}
 
@@ -208,28 +254,43 @@ class UserApiCest
 			'id' => 'integer',
 			'firstname' => 'string',
 			'lastname' => 'string',
-			'verified' => 'boolean',
-			'region_id' => 'integer',
-			'region_name' => 'string',
+			'isVerified' => 'boolean',
+			'regionId' => 'integer',
+			'regionName' => 'string',
 			'address' => 'string',
 			'city' => 'string',
 			'postcode' => 'string|integer',
-			'lat' => 'string|float',
-			'lon' => 'string|float',
 			'email' => 'string:email',
 			'landline' => 'string|null',
 			'mobile' => 'string|null',
-			'geb_datum' => 'string|date',
+			'birthday' => 'string|date',
 			'homepage' => 'string|null',
-			'about_me_intern' => 'string|null',
-			'about_me_public' => 'string|null',
-			'rolle' => 'integer',
+			'aboutMeIntern' => 'string|null',
+			'aboutMePublic' => 'string|null',
+			'role' => 'integer',
 			'position' => 'string|null',
-			'geschlecht' => 'integer',
+			'gender' => 'integer',
 		]);
-		$I->canSeeResponseContainsJson([
-			'mayEditUserProfile' => true,
-			'mayAdministrateUserProfile' => true
+
+		$I->seeResponseMatchesJsonType([
+			'stats' => [
+				'weight' => 'string|float|integer',
+				'count' => 'string|float|integer',
+			]
+		]);
+
+		$I->seeResponseMatchesJsonType([
+			'coordinates' => [
+				'lat' => 'string|float|integer',
+				'lon' => 'string|float|integer',
+			]
+		]);
+
+		$I->seeResponseContainsJson([
+			'permissions' => [
+				'mayEditUserProfile' => true,
+				'mayAdministrateUserProfile' => true
+			]
 		]);
 	}
 

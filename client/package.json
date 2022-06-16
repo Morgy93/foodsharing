@@ -25,6 +25,7 @@
     "cropperjs": "^1.5.11",
     "date-fns": "^2.20.1",
     "install": "^0.13.0",
+    "javascript-time-ago": "^2.5.4",
     "jquery": "^3.4.1",
     "jquery-contextmenu": "^2.9.2",
     "jquery-jcrop": "^0.9.13",

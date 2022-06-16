@@ -56,7 +56,7 @@ class BasketGateway extends BaseGateway
 				'lon' => (float)$lon,
 				'bezirk_id' => (int)$region_id,
 				'appost' => $appost,
-				'until' => date('Y-m-d', time() + $lifeTimeInSeconds),
+				'until' => date('Y-m-d H:i:s', time() + $lifeTimeInSeconds),
 			]
 		);
 	}

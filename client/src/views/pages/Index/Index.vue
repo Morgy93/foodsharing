@@ -1,13 +1,13 @@
 <template>
   <b-container
     fluid
-    class="bootstrap bg-white"
+    class="bg-white p-0"
   >
-    <div class="card text-white pb-5">
+    <div class="card text-white mb-5">
       <div class="header-desktop" />
       <div class="card-img-overlay">
-        <b-container>
-          <b-row>
+        <b-container class="mt-4 mt-md-0">
+          <b-row class="align-content-center d-flex justify-content-center">
             <b-col
               lg="2"
               class="d-none d-lg-block"
@@ -36,7 +36,7 @@
                 </b-button>
               </b-card-text>
               <h4
-                class="d-none d-lg-block"
+                class="d-none d-sm-block"
               >
                 <b>{{ $i18n('startpage.slogan_2') }}</b><br>
                 {{ $i18n('startpage.slogan_3') }}
@@ -48,7 +48,7 @@
     </div>
     <b-row
       v-if="contentBlockVisible"
-      class="ml-3 ml-md-5"
+      class="container m-auto"
     >
       <b-col
         cols="12"
@@ -77,7 +77,7 @@
       v-if="contentBlockVisible"
       class="line pt-3 pt-xl-5"
     />
-    <b-row class="mt-3 ml-3 ml-md-5">
+    <b-row class="container mt-5 ml-auto mr-auto">
       <b-col
         cols="12"
         xl="3"
@@ -102,7 +102,7 @@
         </p>
       </b-col>
     </b-row>
-    <b-row class="ml-3 ml-md-5 mr-5 mt-5">
+    <b-row class="container mt-5 ml-auto mr-auto">
       <b-col
         xl="4"
         class="text-xl-right"
@@ -118,6 +118,7 @@
           controls
           allowfullscreen
           poster="/img/startpage/Video-1200.png"
+          loading="lazy"
         >
           <source
             src="/img/startpage/intro.webm"
@@ -130,7 +131,7 @@
         </b-embed>
       </b-col>
     </b-row>
-    <b-row class="mt-3 ml-3 ml-md-5 mt-5">
+    <b-row class="container mt-5 ml-auto mr-auto">
       <b-col
         cols="12"
         xl="4"
@@ -151,7 +152,7 @@
     <div class="card text-white pb-5 mt-5">
       <div class="call-to-action-image" />
       <div class="card-img-overlay p-xl-5">
-        <b-row class="p-xl-5">
+        <b-row class="container mt-5 ml-auto mr-auto">
           <b-col
             cols="12"
             xl="4"
@@ -246,7 +247,7 @@
         </b-row>
       </div>
     </div>
-    <b-row class="mt-3 ml-3 ml-md-5 mt-5">
+    <b-row class="container mt-5 ml-auto mr-auto">
       <b-col
         cols="12"
         xl="3"
@@ -276,7 +277,7 @@
       <div class="card-img-overlay p-xl-5">
         <b-row
           align-h="end"
-          class="p-xl-5"
+          class="container mt-5 ml-auto mr-auto"
         >
           <b-col
             xl="6"
@@ -339,7 +340,7 @@
       </div>
     </div>
     <b-row
-      class="ml-md-5"
+      class="container mt-5 ml-auto mr-auto"
       align-v="center"
     >
       <b-col
@@ -366,14 +367,14 @@
         md="8"
         class="mt-3 align-self-end"
       >
-        <b-img
+        <b-img-lazy
           fluid
           src="/img/startpage/picture-forderungen.png"
         />
       </b-col>
     </b-row>
     <b-row
-      class="ml-md-5 mt-5"
+      class="container mt-5 ml-auto mr-auto"
       align-v="center"
     >
       <b-col
@@ -385,6 +386,7 @@
           class="card-img teaser-towns"
           src="/img/startpage/foodsharing-staedte.png"
           alt="Card image"
+          loading="lazy"
           fluid
         >
       </b-col>
@@ -408,7 +410,9 @@
     <div class="card text-white pb-5 mt-5">
       <div class="teaser-donate" />
       <div class="card-img-overlay p-xl-5">
-        <b-row class="p-xl-5">
+        <b-row
+          class="container mt-5 ml-auto mr-auto"
+        >
           <b-col
             xl="6"
             cols="12"

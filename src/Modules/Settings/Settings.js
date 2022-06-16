@@ -4,7 +4,6 @@ import '@/globals'
 import './Settings.css'
 import 'jquery-jcrop'
 import 'jquery-dynatree'
-import { attachAddressPicker } from '@/addressPicker'
 import {
   pulseSuccess,
   pulseError,
@@ -38,10 +37,6 @@ expose({
   confirmDeleteUser,
   collapse_wrapper,
 })
-
-if (GET('sub') === 'general') {
-  attachAddressPicker()
-}
 
 // Fill the Push Notifications module with life
 refreshPushNotificationSettings()

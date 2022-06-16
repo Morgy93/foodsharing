@@ -56,7 +56,7 @@ class CompanyCest
 	{
 		$this->loginAsCoordinator();
 		$I->see('Deine Betriebe', '.list-group-header');
-		$I->see($this->store['name'], 'strong');
+		$I->see($this->store['name'], '.field-headline');
 		$I->seeElement('.fas.fa-cog');
 		$I->logMeOut();
 	}
@@ -65,7 +65,7 @@ class CompanyCest
 	{
 		$this->loginAsMember();
 		$I->see('Deine Betriebe', '.list-group-header');
-		$I->see($this->store['name'], 'strong');
+		$I->see($this->store['name'], '.field-headline');
 		$I->logMeOut();
 	}
 

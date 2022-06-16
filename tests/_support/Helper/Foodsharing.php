@@ -545,7 +545,7 @@ class Foodsharing extends \Codeception\Module\Db
 			'body' => $body,
 			'body_html' => $body,
 			'time' => $this->faker->dateTimeThisDecade()->format('Y-m-d H:i:s'),
-			'attach' => null,
+			'attach' => '[]',
 			'read' => ($folder == MailboxFolder::FOLDER_INBOX) ? $this->faker->boolean() : true,
 			'answer' => false
 		], $extra_params);
@@ -598,11 +598,14 @@ class Foodsharing extends \Codeception\Module\Db
 			$name = $this->faker->lastName() . '-region';
 		}
 
-		$v = array_merge([
-			'parent_id' => RegionIDs::EUROPE,
-			'name' => $name,
-			'type' => Type::PART_OF_TOWN],
-			$extra_params);
+		$v = array_merge(
+			[
+				'parent_id' => RegionIDs::EUROPE,
+				'name' => $name,
+				'type' => Type::PART_OF_TOWN
+			],
+			$extra_params
+		);
 		$v['id'] = $this->haveInDatabase('fs_bezirk', $v);
 		if (empty($v['email'])) {
 			$mailbox = $this->createMailbox('region-' . $v['id']);

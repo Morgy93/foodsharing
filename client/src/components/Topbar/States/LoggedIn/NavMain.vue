@@ -5,17 +5,19 @@
   >
     <MenuRegions
       v-if="isFoodsaver"
-      class="spacer"
       :show-title="true"
-      :regions="regions"
+    />
+    <div
+      v-if="isFoodsaver"
+      class="spacer"
     />
     <MenuGroups
       v-if="isFoodsaver"
       :show-title="true"
-      :groups="groups"
     />
     <MenuStores
       v-if="isFoodsaver"
+      :user="user"
     />
     <MenuItem
       v-if="!isFoodsaver"
@@ -24,21 +26,25 @@
       :show-title="viewIsMD"
       :url="$url('quizFs')"
     />
+    <div
+      v-if="!isFoodsaver"
+      class="spacer"
+    />
     <MenuBaskets
-      :show-title="!isFoodsaver && viewIsMD"
+      :show-title="!isFoodsaver && viewIsLG"
     />
-    <MenuMailbox
-      v-if="user.mailbox_id"
+    <MenuMessages
+      :show-title="!isFoodsaver && viewIsLG"
     />
-    <MenuMessages />
-    <MenuBells />
+    <MenuBells
+      :show-title="!isFoodsaver && viewIsLG"
+    />
   </b-navbar-nav>
 </template>
 
 <script>
 import MenuItem from '@/components/Topbar/Items/MenuItem'
 
-import MenuMailbox from '@/components/Topbar/Items/Mailbox/MenuMailbox'
 import MenuMessages from '@/components/Topbar/Items/Messages/MenuMessages'
 import MenuBells from '@/components/Topbar/Items/Bells/MenuBells'
 import MenuGroups from '@/components/Topbar/Items/Groups/MenuGroups'
@@ -52,7 +58,6 @@ export default {
   components: {
     MenuItem,
     MenuMessages,
-    MenuMailbox,
     MenuBells,
     MenuGroups,
     MenuRegions,

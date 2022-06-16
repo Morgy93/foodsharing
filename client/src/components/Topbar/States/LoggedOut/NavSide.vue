@@ -13,17 +13,23 @@
       :title="$i18n('login.topbar')"
       :show-title="true"
     />
+    <div v-if="!viewIsLG">
+      <div class="mb-3" />
+      <MenuLogin />
+    </div>
   </b-navbar-nav>
 </template>
 
 <script>
 import MenuItem from '../../Items/MenuItem'
+import MenuLogin from '../../Items/Login/MenuLogin'
 
 import TopBarMixin from '@/mixins/TopBarMixin'
 
 export default {
   components: {
     MenuItem,
+    MenuLogin,
   },
   mixins: [TopBarMixin],
 }

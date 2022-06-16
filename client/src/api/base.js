@@ -42,7 +42,7 @@ export async function request (path, options = {}) {
       return json
     }
   } catch (err) {
-    console.error(err)
+    // console.error(err) // disabled for error handling in stores!
     self.fetch.activeFetchCalls--
     throw err
   }

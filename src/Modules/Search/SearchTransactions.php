@@ -67,6 +67,7 @@ class SearchTransactions
 		$regions = $this->searchGateway->searchRegions($q);
 		$users = $this->searchGateway->searchUserInGroups($q, $this->searchPermissions->maySeeUserAddress(), $regionsFilter);
 		$stores = $this->searchGateway->searchStores($q, $regionsFilter);
+		$foodSharePoints = $this->searchGateway->searchFoodSharePoints($q);
 		if ($singleUser = $this->searchSingleUserByID($q)) {
 			array_unshift($users, $singleUser);
 		}
@@ -74,7 +75,8 @@ class SearchTransactions
 		return [
 			'regions' => $regions,
 			'users' => $users,
-			'stores' => $stores
+			'stores' => $stores,
+			'foodSharePoints' => $foodSharePoints
 		];
 	}
 

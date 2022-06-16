@@ -3,7 +3,6 @@
     title="menu.entry.activities"
     icon="fa-bullhorn"
     :show-title="showTitle"
-    right
   >
     <template #content>
       <div
@@ -11,11 +10,10 @@
         :key="idx"
         class="group"
       >
-        <a
+        <button
           v-b-toggle="toggleId(idx)"
           role="menuitem"
           class="dropdown-header dropdown-item text-truncate"
-          href="#"
           target="_self"
           :class="{ 'disabled': collapsed }"
           v-html="$i18n(heading.name)"

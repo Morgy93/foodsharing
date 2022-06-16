@@ -30,33 +30,31 @@
       />
     </template>
     <template #actions>
-      <a
-        href="#"
+      <button
         role="menuitem"
         class="food-basket-create-test-class dropdown-item dropdown-action"
         @click="openBasketCreationForm"
       >
-        <small>
-          <i class="fas fa-plus" />
-          {{ $i18n('basket.add') }}
-        </small>
-      </a>
+        <i class="fas fa-plus" />
+        {{ $i18n('basket.add') }}
+      </button>
       <a
         :href="$url('baskets')"
         role="menuitem"
         class="dropdown-item dropdown-action"
       >
-        <small>
-          <i class="fas fa-list" />
-          {{ $i18n('basket.all') }}
-        </small>
+        <i class="fas fa-list" />
+        {{ $i18n('basket.all') }}
       </a>
     </template>
   </fs-dropdown-menu>
 </template>
 <script>
+// DataStore
+import { getters } from '@/stores/baskets'
+// Components
 import MenuBasketsEntry from './MenuBasketsEntry'
-import basketStore from '@/stores/baskets'
+
 import FsDropdownMenu from '../FsDropdownMenu'
 
 import { ajreq } from '@/script'
@@ -69,14 +67,11 @@ export default {
   mixins: [TopBarMixin],
   computed: {
     baskets () {
-      return basketStore.baskets
+      return getters.getOwn()
     },
     basketsSorted () {
       return this.baskets.slice().sort((a, b) => dateFnsCompareDesc(a.updatedAt, b.updatedAt))
     },
-  },
-  created () {
-    basketStore.loadBaskets()
   },
   methods: {
     openBasketCreationForm () {

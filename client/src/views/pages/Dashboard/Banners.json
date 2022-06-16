@@ -1,0 +1,35 @@
+{
+  "release": {
+    "version": "2022-05",
+    "time": "2022-05-01T00:00:00Z"
+  },
+  "informations": [
+    {
+      "type": "calendar",
+      "tag": "information.calendar_sync",
+      "icon" : "fa-calendar-alt",
+      "title" : "information.calendar_sync.title",
+      "description" : "information.calendar_sync.info",
+      "links" : [
+        {
+          "urlShortHand": "settingsCalendar",
+          "text": "information.calendar_sync.link"
+        }
+      ]
+    },
+    {
+      "type": "push",
+      "tag": "information.push",
+      "icon" : "fa-info-circle",
+      "title" : "information.push.title",
+      "description" : "information.push.info",
+      "links" : [
+        {
+          "urlShortHand": "settingsNotifications",
+          "text": "information.push.link"
+        }
+      ]
+    }
+  ]
+
+}

@@ -115,8 +115,8 @@ $(document).ready(() => {
 async function tryRemoveBasket (basketId) {
   try {
     await removeBasket(basketId)
-    await basketStore.loadBaskets()
     pulseInfo(i18n('basket.not_active'))
+    await basketStore.getters.getOwn()
   } catch (e) {
     pulseError(i18n('error_unexpected'))
   }

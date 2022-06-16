@@ -1,7 +1,15 @@
-import { post, remove } from './base'
+import { get, post, remove } from './base'
 
 export function login (email, password, rememberMe) {
   return post('/user/login', { email, password, remember_me: rememberMe })
+}
+
+export function getUser () {
+  return get('/user/current')
+}
+
+export function getDetails () {
+  return get('/user/current/details')
 }
 
 export function deleteUser (id, reason) {

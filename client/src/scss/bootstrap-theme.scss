@@ -1,5 +1,5 @@
-$primary: #533a20;
-$secondary: #64ae24;
+@import "./colors.scss";
+
 $card-spacer-x: 8px;
 $card-spacer-y: 6px;
 $card-border-width: 0;
@@ -95,6 +95,10 @@ $navbar-dark-hover-color: rgba(#ffffff, 1) ;
     .btn-sm, .btn-group-sm > .btn {
         font-size: 0.7rem;
     }
+    .btn-icon {
+        display: flex;
+        align-items: center;
+    }
 
     .btn-secondary, a:not([href]):not([tabindex]).btn-secondary {
         color: white;
@@ -140,7 +144,7 @@ $navbar-dark-hover-color: rgba(#ffffff, 1) ;
     h4 { font-size: 1.2rem; }
     h5 { font-size: 1.1rem; }
     h6 { font-size: 1rem; }
-    h1, h2 { font-weight: 800; }
+    h1, h2 { font-family: "Alfa Slab One", serif; }
     h3, h4 { font-weight: 500; }
     h1, h2, h3, h4, h5, h6 { margin: 0.25rem 0; }
 }

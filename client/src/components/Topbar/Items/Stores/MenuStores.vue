@@ -7,13 +7,7 @@
     lazy
   >
     <template
-      v-if="!loaded"
-      #content
-    >
-      <i class="fas fa-spinner fa-spin" />
-    </template>
-    <template
-      v-else-if="stores.length > 0"
+      v-if="stores.length > 0"
       #content
     >
       <menu-stores-entry
@@ -34,65 +28,41 @@
     </template>
     <template #actions>
       <a
-        v-if="mayAddStore"
+        v-if="user.permissions.addStore"
         :href="$url('storeAdd')"
         role="menuitem"
-        class="dropdown-item"
+        class="dropdown-item dropdown-action"
       >
-        <small>
-          <i class="fas fa-plus" />
-          {{ $i18n('storeedit.add-new') }}
-        </small>
+        <i class="fas fa-plus" />
+        {{ $i18n('storeedit.add-new') }}
       </a>
       <a
         :href="$url('storeList')"
         role="menuitem"
-        class="dropdown-item"
+        class="dropdown-item dropdown-action"
       >
-        <small>
-          <i class="fas fa-list" />
-          {{ $i18n('store.all_of_my_stores') }}
-        </small>
+        <i class="fas fa-list" />
+        {{ $i18n('store.all_of_my_stores') }}
       </a>
     </template>
   </fs-dropdown-menu>
 </template>
 
 <script>
+// Stores
+import { getters } from '@/stores/stores'
+// Components
 import MenuStoresEntry from './MenuStoresEntry'
 import FsDropdownMenu from '../FsDropdownMenu'
-import vueStore from '@/stores/stores'
-
+// Mixin
 import TopBarMixin from '@/mixins/TopBarMixin'
 
 export default {
   components: { MenuStoresEntry, FsDropdownMenu },
   mixins: [TopBarMixin],
-  props: {
-    mayAddStore: {
-      type: Boolean,
-      default: false,
-    },
-  },
-  data () {
-    return {
-      loaded: false,
-    }
-  },
   computed: {
     stores () {
-      return vueStore.stores || []
-    },
-  },
-  async created () {
-    this.loadStores()
-  },
-  methods: {
-    async loadStores () {
-      if (vueStore.stores === null) {
-        await vueStore.loadStores()
-      }
-      this.loaded = true
+      return getters.get()
     },
   },
 }

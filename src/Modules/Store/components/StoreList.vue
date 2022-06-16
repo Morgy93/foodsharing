@@ -288,8 +288,15 @@ export default {
       this.filterStatus = null
       this.filterText = ''
     },
-    mapLink: function (store) {
-      return 'geo:0,0?q=' + store.geo
+    mapLink (store) {
+      if (['iPad', 'iPhone', 'iPod'].includes(
+        navigator?.userAgentData?.platform ||
+        navigator?.platform ||
+        'unknown')) {
+        return `maps://?q=?q=${store.geo})`
+      }
+
+      return `geo:0,0?q=${store.geo}`
     },
   },
 }

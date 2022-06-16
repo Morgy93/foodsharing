@@ -1,12 +1,13 @@
 <template>
-  <a
-    class="d-flex"
-    :class="classes"
-    href="#"
+  <button
+    class="dropdown-header dropdown-item d-flex justify-content-between align-items-center"
+    :class="{
+      'list-group-item-warning': conversation.hasUnreadMessages,
+    }"
     @click="openChat"
   >
     <div
-      class="icon w-20 mr-2 d-flex text-center justifiy-content-center align-items-center"
+      class="mr-2"
     >
       <div
         class="avatars img-thumbnail"
@@ -20,22 +21,22 @@
         />
       </div>
     </div>
-    <div class="d-flex flex-column justify-content-between truncated">
-      <div class="d-flex justify-content-between align-items-center">
-        <h5
+    <span class="d-flex w-100 flex-column text-truncate">
+      <span class="d-flex justify-content-between align-items-center text-truncate">
+        <span
           class="mb-1 text-truncate"
-        >
-          {{ title }}
-        </h5>
+          v-html="title"
+        />
         <small class="text-muted text-right nowrap">
-          {{ $dateDistanceInWords(conversation.lastMessage.sentAt) }}
+          {{ relativeTime(conversation.lastMessage.sentAt) }}
         </small>
-      </div>
-      <p class="mb-0 text-truncate">
-        {{ conversation.lastMessage.body }}
-      </p>
-    </div>
-  </a>
+      </span>
+      <small
+        class="text-truncate"
+        v-html="conversation.lastMessage.body"
+      />
+    </span>
+  </button>
 </template>
 <script>
 import serverData from '@/server-data'
@@ -43,11 +44,15 @@ import conv from '@/conv'
 import profileStore from '@/stores/profiles'
 
 import Avatar from '@/components/Avatar'
+import DateFormatterMixin from '@/mixins/DateFormatterMixin'
 
 export default {
   components: {
     Avatar,
   },
+  mixins: [
+    DateFormatterMixin,
+  ],
   props: {
     conversation: {
       type: Object,
@@ -55,14 +60,6 @@ export default {
     },
   },
   computed: {
-    classes () {
-      return [
-        'list-group-item',
-        'list-group-item-action',
-        'align-items-start',
-        this.conversation.hasUnreadMessages ? 'list-group-item-warning' : null,
-      ]
-    },
     title () {
       if (this.conversation.title) return this.conversation.title
       return this.filteredMemberList()
@@ -101,20 +98,6 @@ export default {
 </script>
 
 <style lang="scss" scoped>
-.list-group-item {
-    padding: 0.4em 1em;
-    border: unset;
-
-    h5 {
-      font-weight: bold;
-      font-size: 0.9em;
-    }
-
-    p {
-        font-size: 0.8em;
-    }
-}
-
 ::v-deep.avatars {
   &.avatars_2,
   &.avatars_3,
@@ -199,13 +182,5 @@ export default {
 
 .nowrap {
     white-space: nowrap;
-}
-
-.truncated {
-  flex: 1;
-
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
 }
 </style>
