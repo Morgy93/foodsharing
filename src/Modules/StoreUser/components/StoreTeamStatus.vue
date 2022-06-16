@@ -37,7 +37,7 @@ export default {
   data: function () {
     return {
       form: _.mapObject(GOOD_TO_BAD, (val, key) => { return this.storeData[val] }),
-      newchainText: '',
+      newFormValue: this.storeData,
     }
   },
   computed: {
@@ -59,7 +59,8 @@ export default {
         try {
           await updateStore(storeId, dbField, newValue)
           this.successToast()
-          this.storeData[dbField] = newValue
+          this.newFormValue[dbField] = newValue
+          //   this.storeData[dbField] = newValue
         } catch (err) {
           console.error(`Could not update field ${field} to '${newValue}'.`, err.message)
           this.burnedToast()
