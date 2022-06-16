@@ -18,5 +18,4 @@ class MapView extends View
 	{
 		return $this->vueComponent('map-control', 'MapControl');
 	}
-
 }
