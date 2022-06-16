@@ -1,6 +1,7 @@
 import '@/core'
 import '@/globals'
 import 'jquery-dynatree'
+import 'js/dynatree/skin/ui.dynatree.css'
 import { vueRegister, vueApply } from '@/vue'
 import StoreList from './components/StoreList.vue'
 import { attachAddressPicker } from '@/addressPicker'

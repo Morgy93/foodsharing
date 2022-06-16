@@ -1,6 +1,7 @@
 import '@/core'
 import '@/globals'
 import 'jquery-dynatree'
+import 'js/dynatree/skin/ui.dynatree.css'
 import 'jquery.tinymce'
 import $ from 'jquery'
 import i18n from '@/i18n'

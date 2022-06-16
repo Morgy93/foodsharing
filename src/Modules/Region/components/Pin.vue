@@ -62,6 +62,7 @@ import i18n from '@/i18n'
 import L from 'leaflet'
 import LeafletLocationPicker from '@/components/map/LeafletLocationPicker'
 import 'leaflet.awesome-markers'
+import 'leaflet.css-awesome-markers'
 L.AwesomeMarkers.Icon.prototype.options.prefix = 'fa'
 
 const STATUS_INACTIVE = 0

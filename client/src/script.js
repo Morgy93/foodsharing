@@ -6,6 +6,7 @@ import _ from 'underscore'
 import 'jquery-slimscroll'
 import 'jquery-fancybox'
 import 'jquery-ui-addons'
+import 'jquery-ui'
 
 import { GET, goTo, isMob } from '@/browser'
 import conv from '@/conv'

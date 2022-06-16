@@ -650,7 +650,7 @@ input.ui-button::-moz-focus-inner, button.ui-button::-moz-focus-inner {
 }
 
 .ui-progressbar .ui-progressbar-overlay {
-    background: url(/css/gen/img/animated-overlay.gif);
+    background: url(images/animated-overlay.gif);
     height: 100%;
     filter: alpha(opacity=25);
     opacity: .25
@@ -897,7 +897,7 @@ body .ui-tooltip {
 
 .ui-widget-header {
     border: 1px solid #4A3522;
-    background: #4A3522 url(/css/gen/img/ui-bg_highlight-soft_25_4A3522_1x100.png) 50% 50% repeat-x;
+    background: #4A3522 url(images/ui-bg_highlight-soft_25_4A3522_1x100.png) 50% 50% repeat-x;
     color: #F8F6E1;
     font-weight: bold
 }
@@ -946,7 +946,7 @@ body .ui-tooltip {
 .ui-state-highlight, .ui-widget-content .ui-state-highlight,
 .ui-widget-header .ui-state-highlight {
     border: 1px solid #d9bb73;
-    background: #f5f5b5 url(/css/images/ui-bg_highlight-hard_75_f5f5b5_1x100.png) 50% top repeat-x;
+    background: #f5f5b5 url(images/ui-bg_highlight-hard_75_f5f5b5_1x100.png) 50% top repeat-x;
     color: #060200
 }
 
@@ -957,7 +957,7 @@ body .ui-tooltip {
 
 .ui-state-error, .ui-widget-content .ui-state-error, .ui-widget-header .ui-state-error {
     border: 1px solid #f8893f;
-    background: #fee4bd url(/css/images/ui-bg_highlight-hard_65_fee4bd_1x100.png) 50% top repeat-x;
+    background: #fee4bd url(images/ui-bg_highlight-hard_65_fee4bd_1x100.png) 50% top repeat-x;
     color: var(--fs-brown)
 }
 
@@ -1000,31 +1000,31 @@ body .ui-tooltip {
 }
 
 .ui-icon, .ui-widget-content .ui-icon {
-    background-image: url(/css/images/ui-icons_1e1b1d_256x240.png)
+    background-image: url(images/ui-icons_1e1b1d_256x240.png)
 }
 
 .ui-widget-header .ui-icon {
-    background-image: url(/css/images/ui-icons_F8F6E1_256x240.png)
+    background-image: url(images/ui-icons_F8F6E1_256x240.png)
 }
 
 .ui-state-default .ui-icon {
-    background-image: url(/css/images/ui-icons_ffffff_256x240.png)
+    background-image: url(images/ui-icons_ffffff_256x240.png)
 }
 
 .ui-state-hover .ui-icon, .ui-state-focus .ui-icon {
-    background-image: url(/css/images/ui-icons_ffffff_256x240.png)
+    background-image: url(images/ui-icons_ffffff_256x240.png)
 }
 
 .ui-state-active .ui-icon {
-    background-image: url(/css/images/ui-icons_407B35_256x240.png)
+    background-image: url(images/ui-icons_407B35_256x240.png)
 }
 
 .ui-state-highlight .ui-icon {
-    background-image: url(/css/images/ui-icons_cb672b_256x240.png)
+    background-image: url(images/ui-icons_cb672b_256x240.png)
 }
 
 .ui-state-error .ui-icon, .ui-state-error-text .ui-icon {
-    background-image: url(/css/images/ui-icons_ff7519_256x240.png)
+    background-image: url(images/ui-icons_ff7519_256x240.png)
 }
 
 .ui-icon-blank {
@@ -1752,7 +1752,7 @@ body .ui-tooltip {
 .ui-widget-shadow {
     margin: -8px 0 0 -8px;
     padding: 8px;
-    background: #aaa url(/css/gen/img/ui-bg_flat_75_aaaaaa_40x100.png) 50% 50% repeat-x;
+    background: #aaa url(images/ui-bg_flat_75_aaaaaa_40x100.png) 50% 50% repeat-x;
     opacity: .3;
     filter: Alpha(Opacity=30);
     border-radius: 8px
@@ -1794,7 +1794,7 @@ body .ui-tooltip {
 }
 
 .ui-accordion-header .ui-icon {
-    background-image: url("/img/ui-icons_ffffff_256x240.png") !important;
+    background-image: url("images/ui-icons_ffffff_256x240.png") !important;
 }
 
 .ui-accordion-header:hover {
