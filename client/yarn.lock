@@ -5391,6 +5391,11 @@ jquery-jcrop@^0.9.13:
   resolved "https://registry.npmjs.org/jquery-jcrop/-/jquery-jcrop-0.9.13.tgz"
   integrity sha1-zajJVX//xWVAAIzHtikaDsQHG/U=
 
+jquery-migrate@^3.4.0:
+  version "3.4.0"
+  resolved "https://registry.yarnpkg.com/jquery-migrate/-/jquery-migrate-3.4.0.tgz#915d6e914c76bd7410a58c86d20fec0052784af9"
+  integrity sha512-K0W02EhZyqjVpyF5pdi+t238cIfQACzMsXiX4AEfEOxPPfiZZFzf3brtFY21FOOEPiWZF4mH04TXHDE6e2YDyg==
+
 jquery-slimscroll@^1.3.8:
   version "1.3.8"
   resolved "https://registry.npmjs.org/jquery-slimscroll/-/jquery-slimscroll-1.3.8.tgz"

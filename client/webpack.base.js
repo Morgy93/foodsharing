@@ -38,6 +38,8 @@ module.exports = {
       '@php': resolve('../src'),
       '>': resolve('test'),
       '@translations': resolve('../translations'),
+      // do only show debug information in development mode
+      'jquery-migrate': require.resolve(production ? 'jquery-migrate/dist/jquery-migrate.min.js' : 'jquery-migrate'),
     },
   },
   module: {

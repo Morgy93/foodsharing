@@ -5,6 +5,7 @@ import '@/sentry'
 import '@/style'
 
 import $ from 'jquery'
+import 'jquery-migrate'
 
 import { initialize } from '@/script'
 
