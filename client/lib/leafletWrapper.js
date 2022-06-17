@@ -1,4 +1,5 @@
-import 'leaflet.awesome-markers/dist/leaflet.awesome-markers.js'
+import 'leaflet/dist/leaflet.css'
+import 'leaflet.awesome-markers/dist/leaflet.awesome-markers'
 import 'leaflet.awesome-markers/dist/leaflet.awesome-markers.css'
 import 'leaflet.markercluster'
 import 'leaflet.markercluster/dist/MarkerCluster.css'
