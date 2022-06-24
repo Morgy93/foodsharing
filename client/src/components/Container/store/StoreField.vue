@@ -42,8 +42,8 @@ export default {
   },
   computed: {
     pickupStringStatus () {
-      if (entry.pickupStatus > 0) {
-        return $i18n('store.tooltip_'+['yellow', 'orange', 'red'][entry.pickupStatus - 1])
+      if (this.entry.pickupStatus > 0) {
+        return this.$i18n('store.tooltip_' + ['yellow', 'orange', 'red'][this.entry.pickupStatus - 1])
       }
       return ''
     },
