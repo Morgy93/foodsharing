@@ -204,8 +204,11 @@ export default {
     isFoodsaver: () => DataUser.getters.isFoodsaver(),
     hasStores: () => DataStores.getters.get(),
     hasPickups: () => DataPickups.getters.getRegistered(),
+    isStoresVisible () {
+      return this.visible.stores || this.visible.managing_stores || this.visible.waiting_stores
+    },
     hasRightColumn () {
-      return (this.hasPickups && this.visible.pickups) || (this.hasStores && this.visible.stores)
+      return (this.hasPickups && this.visible.pickups) || (this.hasStores && this.isStoresVisible)
     },
     hasCoordinates: () => DataUser.getters.hasCoordinates(),
     getCoordinates: () => DataUser.getters.getCoordinates(),
