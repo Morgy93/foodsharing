@@ -97,6 +97,8 @@
       <div class="grid-item grid-item--left">
         <PickupContainer v-if="isFoodsaver && (visible.stores && (state || !viewIsXL) || !visible.stores && hasPickups)" />
         <BasketContainer />
+        <ManagingStoreContainer v-if="isFoodsaver && (state && visible.managing_stores || !viewIsXL && visible.managing_stores)" />
+        <WaitingStoreContainer v-if="isFoodsaver && (state && visible.waiting_stores || !viewIsXL && visible.waiting_stores)" />
         <StoreContainer v-if="isFoodsaver && (state && visible.stores || !viewIsXL && visible.stores)" />
         <GroupContainer v-if="isFoodsaver && visible.groups" />
         <RegionContainer v-if="isFoodsaver && visible.regions" />
@@ -118,6 +120,8 @@
         class="grid-item grid-item--right"
       >
         <PickupContainer v-if="isFoodsaver" />
+        <ManagingStoreContainer v-if="isFoodsaver && visible.managing_stores" />
+        <WaitingStoreContainer v-if="isFoodsaver && visible.waiting_stores" />
         <StoreContainer v-if="isFoodsaver && visible.stores" />
       </div>
     </div>
@@ -141,6 +145,8 @@ import ErrorContainer from '@/components/Banners/Errors/ErrorContainer.vue'
 import Informations from '@/components/Banners/Informations/InformationContainer.vue'
 import ActivityContainer from '@/components/Container/activity/ActivityOverview.vue'
 import StoreContainer from '@/components/Container/store/StoreContainer.vue'
+import ManagingStoreContainer from '@/components/Container/store/ManagingStoreContainer.vue'
+import WaitingStoreContainer from '@/components/Container/store/WaitingStoreContainer.vue'
 import PickupContainer from '@/components/Container/pickup/PickupContainer.vue'
 import EventContainer from '@/components/Container/event/EventContainer.vue'
 import BasketContainer from '@/components/Container/basket/BasketContainer.vue'
@@ -161,6 +167,8 @@ export default {
     Informations,
     ActivityContainer,
     StoreContainer,
+    ManagingStoreContainer,
+    WaitingStoreContainer,
     PickupContainer,
     EventContainer,
     BasketContainer,
@@ -185,6 +193,8 @@ export default {
         regions: true,
         events: true,
         stores: true,
+        managing_stores: true,
+        waiting_stores: true,
       },
     }
   },
@@ -234,6 +244,8 @@ export default {
         regions: true,
         events: true,
         stores: true,
+        managing_stores: true,
+        waiting_stores: true,
       }
     },
   },

@@ -1939,10 +1939,11 @@ dashboard:
     regions: "Deine Bezirke" #also in searchindexgenerator
     groups: "Deine Gruppen" #also in searchindexgenerator
     stores: "Deine Betriebe"
+    managing_stores: "Deine verantwortlichen Betriebe"
+    waiting_stores: "Deine Springer Betriebe"
     events: "Events"
     baskets: "Essenskörbe"
     pending: "Anfragen gestellt bei"
-    waiting: "Du bist auf der Springerliste bei"
     no-stores: "Du bist bis jetzt in keinem Betriebsteam."
     users: "Foodsaver*innen"
     buddies: "Menschen, die Du kennst"

@@ -4,17 +4,41 @@
     title="menu.entry.your_stores"
     icon="fa-shopping-cart"
     scrollbar
-    lazy
   >
     <template
-      v-if="stores.length > 0"
+      v-if="getAllStores.length > 0 "
       #content
     >
-      <menu-stores-entry
-        v-for="store in stores"
-        :key="store.id"
-        :entry="store"
-      />
+      <div
+        v-for="(store, key) in getStores"
+        :key="key"
+        class="store d-flex flex-column align-items-baseline"
+      >
+        <button
+          v-if="getStores.length !== 1"
+          v-b-toggle="toggleId(key)"
+          role="menuitem"
+          target="_self"
+          class="dropdown-item dropdown-header text-truncate"
+        >
+          <span
+            class="text-truncate"
+            v-html="$i18n(store.name)"
+          />
+        </button>
+        <b-collapse
+          :id="toggleId(key)"
+          class="dropdown-submenu"
+          :accordion="$options.name"
+          :visible="key === 0"
+        >
+          <MenuStoresEntry
+            v-for="(entry, k) in store.list"
+            :key="k"
+            :entry="entry"
+          />
+        </b-collapse>
+      </div>
     </template>
     <template
       v-else
@@ -23,7 +47,7 @@
       <small
         role="menuitem"
         class="disabled dropdown-item"
-        v-html="$i18n('store.noStores')"
+        v-html="$i18n('groups.empty')"
       />
     </template>
     <template #actions>
@@ -47,22 +71,49 @@
     </template>
   </fs-dropdown-menu>
 </template>
-
 <script>
-// Stores
+// Store
 import { getters } from '@/stores/stores'
+
 // Components
-import MenuStoresEntry from './MenuStoresEntry'
 import FsDropdownMenu from '../FsDropdownMenu'
-// Mixin
+import MenuStoresEntry from './MenuStoresEntry'
+
+// Mixins
+import ConferenceOpener from '@/mixins/ConferenceOpenerMixin'
+import MediaQueryMixin from '@/mixins/MediaQueryMixin'
 import TopBarMixin from '@/mixins/TopBarMixin'
+import TruncateMixin from '@/mixins/TruncateMixin'
 
 export default {
-  components: { MenuStoresEntry, FsDropdownMenu },
-  mixins: [TopBarMixin],
+  name: 'MenuStores',
+  components: { FsDropdownMenu, MenuStoresEntry },
+  mixins: [ConferenceOpener, MediaQueryMixin, TopBarMixin, TruncateMixin],
   computed: {
-    stores () {
+    getAllStores () {
       return getters.get()
+    },
+
+    getStores () {
+      return [
+        {
+          name: 'dashboard.my.managing_stores',
+          list: getters.getManaging(),
+        },
+        {
+          name: 'dashboard.my.stores',
+          list: getters.getOthers(),
+        },
+        {
+          name: 'dashboard.my.waiting_stores',
+          list: getters.getWaiting(),
+        },
+      ].filter(e => e.list.length > 0)
+    },
+  },
+  methods: {
+    toggleId (id) {
+      return this.$options.name + '_' + id
     },
   },
 }
