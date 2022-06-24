@@ -6,7 +6,7 @@
   >
     <i
       v-b-tooltip="entry.pickupStatus > 0 ? $i18n('store.tooltip_'+['yellow', 'orange', 'red'][entry.pickupStatus - 1]) : ''"
-      class="fas fa-circle"
+      class="field-icon fas fa-circle"
       :class="{
         'text-white-50': entry.pickupStatus === 0,
         'text-primary': entry.pickupStatus === 1,
@@ -17,8 +17,7 @@
     <i
       v-if="entry.isManaging"
       v-b-tooltip="$i18n('store.tooltip_managing')"
-      class="store-entry--icon fas fa-users-cog"
-      style="cursor: help;"
+      class="field-icon fas fa-users-cog text-muted"
     />
     {{ entry.name }}
   </a>
@@ -48,15 +47,8 @@ export default {
 </script>
 
 <style lang="scss" scoped>
-.store-entry--icon {
+.field-icon {
   color: currentColor;
-}
-
-.truncated {
-  flex: 1;
-
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
+  cursor: help;
 }
 </style>

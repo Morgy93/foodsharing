@@ -12,8 +12,7 @@
       <i
         v-if="entry.isManaging"
         v-b-tooltip="$i18n('store.tooltip_managing')"
-        class="fas fa-users-cog text-muted"
-        style="cursor: help;"
+        class="field-icon fas fa-users-cog text-muted"
       />
     </div>
     <div
@@ -43,3 +42,12 @@ export default {
   },
 }
 </script>
+
+<style lang="scss" scoped>
+
+.field-icon {
+  color: currentColor;
+  cursor: help;
+}
+
+</style>
