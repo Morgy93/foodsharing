@@ -25,7 +25,7 @@
 - Info for foodsharer how can change the name !2240 @chriswalg
 - Renamed the button to update displayed language !1232 @martincodes-de
 - Improved nightly maintenance runtime !2176 @AntonBallmaier
-- The visible region name of the top bar is forced to the home region !2269 @sefan
+- The visible region name of the top bar is forced to the home region !2269 @sefn
 
 ## Bugfixes
 - When going back during registration, email and password are unchanged. !2184 @AntonBallmaier
