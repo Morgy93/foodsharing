@@ -2174,6 +2174,8 @@ weight: Estimated weight
 about_me_intern: Short description
 about_me_public: Public short description
 regions: Regions
+groups:
+  empty: You're not in any working groups yet
 daterange: Time period
 ort: City/municipality (automatically from the map above)
 stadt: Your city or town

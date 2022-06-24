@@ -35,9 +35,10 @@
           v-b-toggle="toggleId(region.id)"
           role="menuitem"
           target="_self"
-          class="dropdown-item dropdown-header"
+          class="dropdown-item dropdown-header text-truncate"
         >
           <span
+            class="text-truncate"
             v-html="truncate(region.name)"
           />
         </button>
@@ -96,13 +97,13 @@ import { becomeBezirk } from '@/script'
 // Mixins
 import ConferenceOpener from '@/mixins/ConferenceOpenerMixin'
 import RegionUpdater from '@/mixins/RegionUpdaterMixin'
-import Truncate from '@/mixins/TruncateMixin'
+import TruncateMixin from '@/mixins/TruncateMixin'
 import TopBarMixin from '@/mixins/TopBarMixin'
 
 export default {
   name: 'MenuGroups',
   components: { FsDropdownMenu },
-  mixins: [ConferenceOpener, RegionUpdater, Truncate, TopBarMixin],
+  mixins: [ConferenceOpener, RegionUpdater, TruncateMixin, TopBarMixin],
   computed: {
     regions () {
       return getters.get()

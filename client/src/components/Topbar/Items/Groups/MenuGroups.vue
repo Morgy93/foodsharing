@@ -1,36 +1,35 @@
 <template>
   <fs-dropdown-menu
-    v-if="groups.length > 0"
     id="dropdown-groups"
     title="menu.entry.your_groups"
     icon="fa-users"
     scrollbar
   >
-    <template #content>
+    <template
+      v-if="groups.length > 0"
+      #content
+    >
       <div
-        v-for="(group, idx) in groups"
+        v-for="group in groups"
         :key="group.id"
-        class="group text-truncate"
+        class="group d-flex flex-column align-items-baseline"
       >
         <button
-          v-if="!alwaysOpen"
+          v-if="groups.length !== 1"
           v-b-toggle="toggleId(group.id)"
           role="menuitem"
-          class="dropdown-header dropdown-item text-truncate"
           target="_self"
-          v-html="group.name"
-        />
-        <h6
-          v-if="alwaysOpen"
-          role="menuitem"
-          class="dropdown-header text-truncate"
-          v-html="group.name"
-        />
+          class="dropdown-item dropdown-header text-truncate"
+        >
+          <span
+            class="text-truncate"
+            v-html="group.name"
+          />
+        </button>
         <b-collapse
           :id="toggleId(group.id)"
           class="dropdown-submenu"
-          :visible="idx === 0"
-          :accordion="'groups'"
+          :accordion="$options.name"
         >
           <a
             v-for="(entry,key) in generateMenu(group)"
@@ -49,24 +48,27 @@
         </b-collapse>
       </div>
     </template>
+    <template
+      v-else
+      #content
+    >
+      <small
+        role="menuitem"
+        class="disabled dropdown-item"
+        v-html="$i18n('groups.empty')"
+      />
+    </template>
     <template #actions>
       <a
         :href="$url('workingGroups')"
         role="menuitem"
-        class="dropdown-item"
+        class="dropdown-item dropdown-action"
       >
         <i class="fas fa-users" />
         {{ $i18n('menu.entry.groups') }}
       </a>
     </template>
   </fs-dropdown-menu>
-  <menu-item
-    v-else
-    :url="$url('workingGroups')"
-    :title="$i18n('menu.entry.groups')"
-    :show-title="false"
-    icon="fa-users"
-  />
 </template>
 <script>
 // Store
@@ -74,17 +76,17 @@ import { getters } from '@/stores/groups'
 
 // Components
 import FsDropdownMenu from '../FsDropdownMenu'
-import MenuItem from '../MenuItem'
 
 // Mixins
 import ConferenceOpener from '@/mixins/ConferenceOpenerMixin'
 import MediaQueryMixin from '@/mixins/MediaQueryMixin'
 import TopBarMixin from '@/mixins/TopBarMixin'
+import TruncateMixin from '@/mixins/TruncateMixin'
 
 export default {
   name: 'MenuGroups',
-  components: { FsDropdownMenu, MenuItem },
-  mixins: [ConferenceOpener, MediaQueryMixin, TopBarMixin],
+  components: { FsDropdownMenu },
+  mixins: [ConferenceOpener, MediaQueryMixin, TopBarMixin, TruncateMixin],
   computed: {
     groups () {
       return getters.get()
