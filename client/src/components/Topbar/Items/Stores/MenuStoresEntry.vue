@@ -5,7 +5,7 @@
     class="dropdown-item dropdown-action"
   >
     <i
-      v-b-tooltip="entry.pickupStatus > 0 ? $i18n('store.tooltip_'+['yellow', 'orange', 'red'][entry.pickupStatus - 1]) : ''"
+      v-b-tooltip="pickupStringStatus"
       class="field-icon fas fa-circle"
       :class="{
         'text-white-50': entry.pickupStatus === 0,
@@ -33,14 +33,11 @@ export default {
     },
   },
   computed: {
-    classes () {
-      return [
-        'list-group-item',
-        'list-group-item-action',
-      ]
-    },
     pickupStringStatus () {
-      return 'store.tooltip_' + ['yellow', 'orange', 'red'][this.entry.pickupStatus - 1]
+      if (entry.pickupStatus > 0) {
+        return $i18n('store.tooltip_'+['yellow', 'orange', 'red'][entry.pickupStatus - 1])
+      }
+      return ''
     },
   },
 }

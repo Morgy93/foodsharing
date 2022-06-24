@@ -29,7 +29,7 @@
       />
       <small
         class="field-subline"
-        v-html="$i18n('store.short_tooltip_'+['yellow', 'orange', 'red'][entry.pickupStatus - 1])"
+        v-html="pickupStringStatus"
       />
     </div>
   </a>
@@ -39,6 +39,14 @@
 export default {
   props: {
     entry: { type: Object, default: () => {} },
+  },
+  computed: {
+    pickupStringStatus () {
+      if (entry.pickupStatus > 0) {
+        return $i18n('store.tooltip_'+['yellow', 'orange', 'red'][entry.pickupStatus - 1])
+      }
+      return ''
+    },
   },
 }
 </script>
