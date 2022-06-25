@@ -2,9 +2,13 @@
   <Dropdown
     title="User"
     direction="right"
+    :badge="getMailUnreadCount"
   >
     <template #icon>
-      <Avatar :size="16" />
+      <Avatar
+        :size="16"
+        class="nav-icon"
+      />
     </template>
     <template #content>
       <a
@@ -13,7 +17,7 @@
         role="menuitem"
         class="dropdown-item dropdown-action list-group-item-warning"
       >
-        <i class="fas fa-info-circle" /> {{ $i18n('menu.entry.release-notes') }}
+        <i class="nav-icon fas fa-info-circle" /> {{ $i18n('menu.entry.release-notes') }}
       </a>
       <a
         v-if="isBeta || isDev"
@@ -21,7 +25,7 @@
         role="menuitem"
         class="dropdown-item dropdown-action list-group-item-danger"
       >
-        <i class="fas fa-info-circle" /> {{ $i18n('content.changelog') }}
+        <i class="nav-icon fas fa-info-circle" /> {{ $i18n('content.changelog') }}
       </a>
       <div
         v-if="isBeta || isDev"
@@ -34,9 +38,9 @@
         role="menuitem"
         class="dropdown-item dropdown-action position-relative"
       >
-        <div class="badge badge-danger badge-user-inline">{{ getUnreadCount }}</div>
-        <i class="fas fa-envelope" />
+        <i class="nav-icon fas fa-envelope" />
         {{ $i18n('menu.entry.mailbox') }}
+        <div class="badge badge-danger badge-user-inline">{{ getMailUnreadCount }}</div>
       </a>
       <div
         v-if="hasMailBox"
@@ -47,14 +51,14 @@
         role="menuitem"
         class="dropdown-item dropdown-action"
       >
-        <i class="fas fa-address-card" /> {{ $i18n('profile.title') }}
+        <i class="nav-icon fas fa-address-card" /> {{ $i18n('profile.title') }}
       </a>
       <a
         :href="$url('settings')"
         role="menuitem"
         class="dropdown-item dropdown-action"
       >
-        <i class="fas fa-cog" /> {{ $i18n('settings.header') }}
+        <i class="nav-icon fas fa-cog" /> {{ $i18n('settings.header') }}
       </a>
       <div class="dropdown-divider" />
       <button
@@ -71,7 +75,7 @@
         role="menuitem"
         class="dropdown-item dropdown-action"
       >
-        <i class="fas fa-power-off" /> {{ $i18n('login.logout') }}
+        <i class="nav-icon fas fa-power-off" /> {{ $i18n('login.logout') }}
       </a>
     </template>
   </Dropdown>
@@ -84,7 +88,6 @@ import DataLanguageChooser from '@/stores/languageChooser'
 import Avatar from '../../Avatar.vue'
 import Dropdown from '../_NavItems/NavDropdown'
 // Mixins
-import TopBarMixin from '@/mixins/TopBarMixin'
 import RouteCheckMixin from '@/mixins/RouteAndDeviceCheckMixin'
 
 export default {
@@ -92,16 +95,16 @@ export default {
     Avatar,
     Dropdown,
   },
-  mixins: [TopBarMixin, RouteCheckMixin],
+  mixins: [RouteCheckMixin],
   computed: {
     getUserId () {
       return DataUser.getters.getUser()?.id
     },
-    permissions () {
-      return DataUser.getters.getPermissions()
+    getMailUnreadCount () {
+      return DataUser.getters.getMailUnreadCount()
     },
-    hasPermissions () {
-      return DataUser.getters.hasPermissions()
+    hasMailBox () {
+      return DataUser.getters.hasMailBox()
     },
   },
   methods: {
@@ -112,8 +115,7 @@ export default {
 }
 </script>
 <style lang="scss" scoped>
-::v-deep.user-menu .badge {
-  top: 7px;
-  left: 1.8rem;
+.badge-user-inline {
+  margin-left: auto;
 }
 </style>

@@ -19,8 +19,8 @@
           v-if="badge"
           class="badge badge-danger"
           :class="{
-            'onlyNine': badge.length === 1,
-            'overNinetyNine': badge.length > 2,
+            'onlyNine': String(badge).length === 1,
+            'overNinetyNine': String(badge).length > 2,
           }"
           v-html="badge"
         />
@@ -147,11 +147,16 @@ export default {
 
 .dropdown-action {
   font-size: 0.8rem;
+  display: flex;
+  align-items: center;
+
   & i {
+    line-height: 0;
     display: inline-flex;
     justify-content: center;
-    align-content: center;
+    align-items: center;
     width: 1rem;
+    height: 1rem;
     margin-right: 0.5rem;
   }
 }

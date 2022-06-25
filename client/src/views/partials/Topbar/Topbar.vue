@@ -67,9 +67,9 @@
             <Link v-if="viewIsMobile" icon="fa-globe" title="Bezirke"/>
             <Link v-if="viewIsMobile" icon="fa-comments" title="Gruppen"/>
             <Dropdown v-if="!viewIsMobile" badge="33" icon="fa-comments" title="Nachrichten" direction="right"/>
-            <Dropdown v-if="!viewIsMobile" badge="3" icon="fa-bell" title="Benachrichtigungen" direction="right"/>
+            <!-- <Dropdown v-if="!viewIsMobile" badge="3" icon="fa-bell" title="Benachrichtigungen" direction="right"/> -->
+            <NavBells />
             <NavUser />
-            <!-- <Dropdown icon="fa-user-circle" title="Hallo Stefan" direction="right"/> -->
           </ul>
         </ul>
       </div>
@@ -83,6 +83,7 @@
 <script>
 // Store
 import DataUser from '@/stores/user'
+import DataBells from '@/stores/bells'
 import DataStores from '@/stores/stores'
 import DataBaskets from '@/stores/baskets'
 import DataGroups from '@/stores/groups.js'
@@ -94,6 +95,7 @@ import Logo from '@/components/Topbar/Logo'
 //
 import NavAdmin from '@/components/Topbar/Admin/NavAdmin'
 import NavUser from '@/components/Topbar/User/NavUser'
+import NavBells from '@/components/Topbar/Bells/NavBells'
 // Hidden Elements
 import LanguageChooser from '@/components/Topbar/LanguageChooser'
 import SearchBarModal from '@/components/SearchBar/SearchBarModal'
@@ -109,6 +111,7 @@ export default {
     Link,
     NavAdmin,
     NavUser,
+    NavBells,
   },
   mixins: [MediaQueryMixin],
   props: {
@@ -147,8 +150,32 @@ export default {
     isLoggedIn () {
       return DataUser.getters.isLoggedIn()
     },
+    isFoodsaver () {
+      return DataUser.getters.isFoodsaver()
+    },
+    hasMailbox () {
+      return DataUser.getters.hasMailBox()
+    },
     homeHref () {
       return (this.isLoggedIn) ? this.$url('dashboard') : this.$url('home')
+    },
+  },
+  watch: {
+    hasMailbox: {
+      async handler (newValue) {
+        if (newValue) {
+          await DataUser.mutations.fetchMailUnreadCount()
+        }
+      },
+      deep: true,
+    },
+    isFoodsaver: {
+      async handler (newValue) {
+        if (newValue) {
+          await DataStores.mutations.fetch()
+        }
+      },
+      deep: true,
     },
   },
   async created () {
@@ -160,12 +187,7 @@ export default {
     if (this.isLoggedIn) {
       await DataUser.mutations.fetchDetails()
       await DataBaskets.mutations.fetchOwn()
-      if (this.isFoodsaver) {
-        await DataStores.mutations.fetch()
-        if (this.hasMailBox) {
-          await DataUser.mutations.fetchMailUnreadCount()
-        }
-      }
+      await DataBells.mutations.fetch()
     }
   },
 }

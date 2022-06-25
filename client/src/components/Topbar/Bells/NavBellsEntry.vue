@@ -11,23 +11,23 @@
     @mouseout="viewIsMD && toggleState()"
   >
     <div
-      class="icon w-20 mr-2 d-flex text-center justifiy-content-center align-items-center"
+      class="icon mr-2 d-flex text-center justifiy-content-center align-items-center"
       @click.stop.prevent="toggleState()"
     >
       <i
         v-if="bell.icon && !state"
-        class="d-flex img-thumbnail w-100 h-100 align-items-center justify-content-center"
+        class="icon d-flex img-thumbnail align-items-center justify-content-center"
         :class="[bell.icon]"
       />
       <Avatar
         v-else-if="bell.image && !state"
-        class="img-thumbnail"
+        class="icon img-thumbnail"
         :url="bell.image"
         :size="35"
       />
       <i
         v-else
-        class="d-flex img-thumbnail w-100 h-100 align-items-center justify-content-center"
+        class="icon d-flex img-thumbnail align-items-center justify-content-center"
         :class="'fas fa-times'"
         @click.stop.prevent="closeBell()"
       />
@@ -39,7 +39,7 @@
           v-html="$i18n(`bell.${bell.title}`, bell.payload)"
         />
         <small class="text-muted text-right nowrap">
-          {{ relativeTime(bell.createdAt) }}
+          {{ relativeTime(new Date(bell.createdAt)) }}
         </small>
       </span>
       <small
@@ -93,8 +93,8 @@ export default {
 
 <style lang="scss" scoped>
 .icon {
-  height: 35px;
-  width: 35px;
+  width: 2.5rem;
+  height: 2.5rem;
   line-height: 0.7em;
   font-size: 1.5rem;
 }

@@ -5,7 +5,7 @@ import { session_id, GET } from '@/script'
 
 import msg from '@/msg'
 import conv from '@/conv'
-import bellsStore from '@/stores/bells'
+import DataBells from '@/stores/bells'
 import conversationStore, { convertMessage } from '@/stores/conversations'
 
 export default {
@@ -42,7 +42,7 @@ export default {
 
     socket.on('bell', function (data) {
       if (data.m === 'update') {
-        bellsStore.loadBells()
+        DataBells.mutations.fetch()
       }
     })
   },

@@ -24,6 +24,15 @@ export const getters = {
   getMailBox () {
     return store.user?.mailboxId
   },
+  hasMailBox () {
+    return store.user?.mailboxId > 0 || false
+  },
+  getMailUnreadCount () {
+    if (store.mailUnreadCount > 0) {
+      return store.mailUnreadCount < 99 ? store.mailUnreadCount : '99+'
+    }
+    return null
+  },
   getStats () {
     return store.user?.stats || {}
   },
@@ -46,12 +55,6 @@ export const getters = {
             store.user.permissions.administrateNewsletterEmail ||
             store.user.permissions.administrateRegions)
   },
-  getMailUnreadCount () {
-    if (store.mailUnreadCount > 0) {
-      return store.mailUnreadCount < 99 ? store.mailUnreadCount : '99+'
-    }
-    return null
-  },
 }
 
 export const mutations = {
@@ -66,10 +69,6 @@ export const mutations = {
   async fetchMailUnreadCount () {
     store.mailUnreadCount = await getMailUnreadCount()
   },
-
-  // setLoggedIn (status) {
-  //   store.isLoggedIn = status
-  // },
 }
 
 export default { store, getters, mutations }

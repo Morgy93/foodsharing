@@ -1,18 +1,15 @@
 <template>
-  <fs-dropdown-menu
-    id="dropdown-bells"
-    class="topbar-bells"
+  <Dropdown
     title="menu.entry.notifications"
     icon="fa-bell"
     :badge="unread"
-    :show-title="showTitle"
-    scrollbar
+    direction="right"
   >
     <template
       v-if="bells.length > 0"
       #content
     >
-      <menu-bells-entry
+      <BellsEntry
         v-for="bell in bells"
         :key="bell.id"
         :bell="bell"
@@ -30,54 +27,49 @@
         v-html="$i18n('bell.no_bells')"
       />
     </template>
-    <template #actions="{ hide }">
+    <template #actions>
       <button
         role="menuitem"
         class="dropdown-item dropdown-action"
         :class="{ 'disabled': !unread }"
-        @click="markNewBellsAsRead(); hide();"
+        @click="markNewBellsAsRead()"
       >
         <i class="fas fa-check-double" />
         {{ $i18n('menu.entry.mark_as_read') }}
       </button>
     </template>
-  </fs-dropdown-menu>
+  </Dropdown>
 </template>
 <script>
-import FsDropdownMenu from '../FsDropdownMenu'
-import MenuBellsEntry from './MenuBellsEntry'
-
-import bellStore from '@/stores/bells'
+// Stores
+import DataBell from '@/stores/bells'
+// Components
+import Dropdown from '../_NavItems/NavDropdown'
+import BellsEntry from './NavBellsEntry'
+// Mixins
 import { pulseError } from '@/script'
-import dateFnsParseISO from 'date-fns/parseISO'
-
-import TopBarMixin from '@/mixins/TopBarMixin'
 
 export default {
-  components: { MenuBellsEntry, FsDropdownMenu },
-  mixins: [TopBarMixin],
+  components: {
+    BellsEntry,
+    Dropdown,
+  },
   computed: {
     bells () {
-      return bellStore.bells.map(bell => {
-        const newBell = Object.assign({}, bell)
-        newBell.createdAt = dateFnsParseISO(bell.createdAt)
-        return newBell
-      })
+      return DataBell.getters.get()
     },
     unread () {
-      if (bellStore.unreadCount) {
-        return bellStore.unreadCount < 99 ? bellStore.unreadCount : '99+'
+      const unread = DataBell.getters.getUnreadCount()
+      if (unread) {
+        return unread < 99 ? unread : '99+'
       }
       return null
     },
   },
-  created () {
-    bellStore.loadBells()
-  },
   methods: {
     async onBellDelete (id) {
       try {
-        await bellStore.delete(id)
+        await DataBell.mutations.delete(id)
       } catch (err) {
         pulseError(this.$i18n('error_unexpected'))
       }
@@ -85,7 +77,7 @@ export default {
     async onBellRead (bell) {
       if (!bell.isRead) {
         try {
-          await bellStore.markAsRead(bell)
+          await DataBell.mutations.markAsRead(bell)
         } catch (err) {
           pulseError(this.$i18n('error_unexpected'))
         }
@@ -93,7 +85,7 @@ export default {
     },
     markNewBellsAsRead () {
       try {
-        bellStore.markNewBellsAsRead()
+        DataBell.mutations.markNewBellsAsRead()
       } catch {
         pulseError(this.$i18n('error_unexpected'))
       }
