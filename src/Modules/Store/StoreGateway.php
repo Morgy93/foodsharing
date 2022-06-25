@@ -769,7 +769,7 @@ class StoreGateway extends BaseGateway
 	}
 
 	/**
-	 * @return Returns a array of memberships with following objects information (betrieb_id, name, managing, membershipstatus)
+	 * @return array[] Returns a array of memberships with following objects information (betrieb_id, name, managing, membershipstatus)
 	 */
 	public function listAllStoreTeamMembershipsForFoodsaver(int $fsId): array
 	{

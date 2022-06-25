@@ -14,7 +14,7 @@ class StoreStatusforMemberDTO
 	{
 		$this->id = 0;
 		$this->name = '';
-		$this->isManaging = 0;
+		$this->isManaging = false;
 		$this->membershipStatus = 0;
 		$this->pickupStatus = 0;
 	}

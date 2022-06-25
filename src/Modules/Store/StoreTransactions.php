@@ -291,7 +291,7 @@ class StoreTransactions
 			$storeStatus->id = $membership['betrieb_id'];
 			$storeStatus->name = $membership['name'];
 			$storeStatus->isManaging = $membership['managing'];
-			$storeStatus->membershipStatusId = $membership['membershipstatus'];
+			$storeStatus->membershipStatus = $membership['membershipstatus'];
 			if ($membership['membershipstatus'] == MembershipStatus::MEMBER) {
 				// add info about the next free pickup slot to the store
 				$storeStatus->pickupStatus = $this->getAvailablePickupStatus($membership['betrieb_id']);
