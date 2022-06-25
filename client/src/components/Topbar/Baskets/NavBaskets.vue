@@ -1,6 +1,6 @@
 <template>
-  <NavDropdown
-    title="menu.entry.your_baskets"
+  <Dropdown
+    :title="$i18n('menu.entry.your_baskets')"
     icon="fa-shopping-basket"
     :badge="basketsSorted.length "
   >
@@ -8,7 +8,7 @@
       v-if="basketsSorted.length > 0"
       #content
     >
-      <menu-baskets-entry
+      <BasketsEntry
         v-for="basket in basketsSorted"
         :key="basket.id"
         :basket="basket"
@@ -43,21 +43,20 @@
         {{ $i18n('basket.all') }}
       </a>
     </template>
-  </NavDropdown>
+  </Dropdown>
 </template>
 <script>
-// DataStore
+// Stores
 import { getters } from '@/stores/baskets'
 // Components
-import MenuBasketsEntry from './MenuBasketsEntry'
-
-import NavDropdown from '../_NavItems/NavDropdown'
-
+import Dropdown from '../_NavItems/NavDropdown'
+import BasketsEntry from './NavBasketsEntry'
+// Others
 import { ajreq } from '@/script'
 import dateFnsCompareDesc from 'date-fns/compareDesc'
 
 export default {
-  components: { MenuBasketsEntry, NavDropdown },
+  components: { BasketsEntry, Dropdown },
   computed: {
     baskets () {
       return getters.getOwn()
@@ -68,11 +67,9 @@ export default {
   },
   methods: {
     openBasketCreationForm () {
-      this.$refs.dropdown.visible = false
       ajreq('newBasket', { app: 'basket' })
     },
     openRemoveBasketForm (basketId, userId) {
-      this.$refs.dropdown.visible = false
       ajreq('removeRequest', {
         app: 'basket',
         id: basketId,

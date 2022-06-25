@@ -9,21 +9,18 @@
     <span
       class="d-flex justify-content-between align-items-center text-truncate"
     >
-      <div
-        class="mr-2"
-      >
-        <div
-          class="img-thumbnail"
+      <div class="icon icon--rounded mr-2 d-flex text-center justifiy-content-center align-items-center">
+        <img
+          v-if="basket.picture"
+          class="icon icon--big icon--rounded img-thumbnail d-flex align-items-center justify-content-center"
+          :src="getImageUrl(basket.picture)"
         >
-          <img
-            width="35px"
-            style="max-widht: 35px;"
-            src="/img/basket.png"
-            loading="lazy"
-          >
-        </div>
+        <i
+          v-else
+          class="fas fa-shopping-basket icon icon--big d-flex img-thumbnail align-items-center justify-content-center"
+        />
       </div>
-      <span class="d-flex flex-column text-truncate">
+      <span class="w-100 d-flex flex-column text-truncate">
         <span class="d-flex justify-content-between align-items-center text-truncate">
           <span
             class="mb-1 text-truncate"
@@ -79,11 +76,12 @@
 </template>
 
 <script>
-import TruncateMixin from '@/mixins/TruncateMixin'
-import DateFormatterMixin from '@/mixins/DateFormatterMixin'
-
+// Others
 import Avatar from '@/components/Avatar'
 import conv from '@/conv'
+// Mixins
+import TruncateMixin from '@/mixins/TruncateMixin'
+import DateFormatterMixin from '@/mixins/DateFormatterMixin'
 
 export default {
   components: { Avatar },
@@ -101,6 +99,13 @@ export default {
   },
 
   methods: {
+    getImageUrl (picture) {
+      if (picture) {
+        return `/images/basket/thumb-${picture}`
+      } else {
+        return '/img/basket.png'
+      }
+    },
     openChat (userId) {
       conv.userChat(userId)
     },
@@ -110,3 +115,6 @@ export default {
   },
 }
 </script>
+<style lang="scss" scoped>
+@import '../../../scss/icon-sizes.scss';
+</style>

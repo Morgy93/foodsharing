@@ -29,7 +29,8 @@
         <Dropdown v-if="!viewIsMobile" icon="fa-globe" title="Regions"/>
         <Dropdown v-if="!viewIsMobile" icon="fa-users" title="Gruppen"/>
         <Dropdown icon="fa-shopping-cart" title="Stores"/>
-        <Dropdown badge="99+" icon="fa-shopping-basket" title="Essenskörbe"/>
+        <!-- <Dropdown badge="99+" icon="fa-shopping-basket" title="Essenskörbe"/> -->
+        <NavBaskets />
 
         <!-- <Dropdown v-if="viewIsMobile" icon="fa-comments" title="Nachrichten"/> -->
         <NavConversations v-if="viewIsMobile" />
@@ -98,6 +99,7 @@ import NavAdmin from '@/components/Topbar/Admin/NavAdmin'
 import NavUser from '@/components/Topbar/User/NavUser'
 import NavBells from '@/components/Topbar/Bells/NavBells'
 import NavConversations from '@/components/Topbar/Conversations/NavConversations'
+import NavBaskets from '@/components/Topbar/Baskets/NavBaskets'
 // Hidden Elements
 import LanguageChooser from '@/components/Topbar/LanguageChooser'
 import SearchBarModal from '@/components/SearchBar/SearchBarModal'
@@ -115,6 +117,7 @@ export default {
     NavUser,
     NavBells,
     NavConversations,
+    NavBaskets,
   },
   mixins: [MediaQueryMixin],
   props: {
