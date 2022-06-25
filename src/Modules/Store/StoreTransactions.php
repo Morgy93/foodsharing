@@ -16,7 +16,8 @@ use Foodsharing\Modules\Message\MessageGateway;
 use Foodsharing\Modules\Region\RegionGateway;
 use Foodsharing\Modules\Store\DTO\CreateStoreData;
 use Foodsharing\Modules\Store\DTO\Store;
-use Foodsharing\Modules\Store\DTO\StoreForTopbarMenu;
+use Foodsharing\Modules\Store\DTO\StoreStatusforMemberDTO;
+use Foodsharing\Modules\Store\DTO\PickUpStatus;
 use Symfony\Contracts\Translation\TranslatorInterface;
 
 class StoreTransactions
@@ -31,10 +32,6 @@ class StoreTransactions
 	private Session $session;
 	const MAX_SLOTS_PER_PICKUP = 10;
 	// status constants for getAvailablePickupStatus
-	const STATUS_RED_TODAY_TOMORROW = 3;
-	const STATUS_ORANGE_3_DAYS = 2;
-	const STATUS_YELLOW_5_DAYS = 1;
-	const STATUS_GREEN = 0;
 
 	public function __construct(
 		MessageGateway $messageGateway,
@@ -231,13 +228,13 @@ class StoreTransactions
 	{
 		$availableDate = $this->getNextAvailablePickupTime($storeId, Carbon::tomorrow()->addDays(5));
 		if (is_null($availableDate)) {
-			return self::STATUS_GREEN;
+			return PickUpStatus::STATUS_GREEN;
 		} elseif ($availableDate < Carbon::tomorrow()->addDay()) {
-			return self::STATUS_RED_TODAY_TOMORROW;
+			return PickUpStatus::STATUS_RED_TODAY_TOMORROW;
 		} elseif ($availableDate < Carbon::tomorrow()->addDays(3)) {
-			return self::STATUS_ORANGE_3_DAYS;
+			return PickUpStatus::STATUS_ORANGE_3_DAYS;
 		} else {
-			return self::STATUS_YELLOW_5_DAYS;
+			return PickUpStatus::STATUS_YELLOW_5_DAYS;
 		}
 	}
 
@@ -279,21 +276,31 @@ class StoreTransactions
 	}
 
 	/**
-	 * @return StoreForTopbarMenu[]
+	 * @return StoreStatusforMemberDTO[]
 	 */
-	public function getFilteredStoresForUser(?int $userId): array
+	public function listAllStoreStatusForFoodsaver(?int $fsId): array
 	{
-		if ($userId === null) {
+		if ($fsId === null) {
 			return [];
 		}
-		$filteredStoresForUser = $this->storeGateway->listFilteredStoresForFoodsaver($userId);
+		$store_team_memberships = $this->storeGateway->listAllStoreTeamMembershipsForFoodsaver($fsId);
 
-		foreach ($filteredStoresForUser as $store) {
-			// add info about the next free pickup slot to the store
-			$store->pickupStatus = $this->getAvailablePickupStatus($store->id);
+		$storeStatusList = [];
+		foreach ($store_team_memberships as $membership) {
+			$storeStatus = new StoreStatusforMemberDTO();
+			$storeStatus->id = $membership['betrieb_id'];
+			$storeStatus->name = $membership['name'];
+			$storeStatus->isManaging = $membership['managing'];
+			$storeStatus->membershipStatus = MembershipStatus::toString($membership['membershipstatus']);
+			if ($membership['membershipstatus'] == MembershipStatus::MEMBER) {
+				// add info about the next free pickup slot to the store
+				$storeStatus->pickupStatus = PickUpStatus::toString($this->getAvailablePickupStatus($membership['betrieb_id']));
+			}
+			$storeStatusList[] = $storeStatus;
+			
 		}
 
-		return $filteredStoresForUser;
+		return $storeStatusList;
 	}
 
 	public function requestStoreTeamMembership(int $storeId, int $userId): void

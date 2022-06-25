@@ -81,21 +81,22 @@ class StoreRestController extends AbstractFOSRestController
 	/**
 	 * @OA\Tag(name="stores")
 	 *
+	 * Provides a list of all user related stores and the possible picks
+	 *
 	 * @Rest\Get("user/current/stores")
 	 */
-	public function getFilteredStoresForUserAction(): Response
+	public function getListOfStoreStatusForCurrentFoodsaver(): Response
 	{
 		if (!$this->session->may()) {
 			throw new UnauthorizedHttpException(self::NOT_LOGGED_IN);
 		}
+		$listOfStoreStatus = $this->storeTransactions->listAllStoreStatusForFoodsaver($this->session->id());
 
-		$filteredStoresForUser = $this->storeTransactions->getFilteredStoresForUser($this->session->id());
-
-		if ($filteredStoresForUser === []) {
+		if ($listOfStoreStatus === []) {
 			return $this->handleView($this->view([], 204));
 		}
 
-		return $this->handleView($this->view($filteredStoresForUser, 200));
+		return $this->handleView($this->view($listOfStoreStatus, 200));
 	}
 
 	/**

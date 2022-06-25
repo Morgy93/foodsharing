@@ -6,11 +6,11 @@ use Foodsharing\Modules\Core\BaseGateway;
 use Foodsharing\Modules\Core\Database;
 use Foodsharing\Modules\Core\DBConstants\Store\CooperationStatus;
 use Foodsharing\Modules\Core\DBConstants\Store\Milestone;
+use Foodsharing\Modules\Core\DBConstants\StoreTeam\Responsible;
 use Foodsharing\Modules\Core\DBConstants\StoreTeam\MembershipStatus;
 use Foodsharing\Modules\Region\RegionGateway;
 use Foodsharing\Modules\Store\DTO\CreateStoreData;
 use Foodsharing\Modules\Store\DTO\Store;
-use Foodsharing\Modules\Store\DTO\StoreForTopbarMenu;
 
 class StoreGateway extends BaseGateway
 {
@@ -302,7 +302,7 @@ class StoreGateway extends BaseGateway
 			$already_in[$b['id']] = true;
 
 			if ($sortByOwnTeamStatus) {
-				if ($b['verantwortlich'] == 0) {
+				if ($b['verantwortlich'] == Responsible::MANAGER) {
 					if ($b['active'] == MembershipStatus::APPLIED_FOR_TEAM) {
 						$result['requested'][] = $b;
 					} elseif ($b['active'] == MembershipStatus::MEMBER) {
@@ -417,7 +417,7 @@ class StoreGateway extends BaseGateway
 						'id' => $v['id'],
 						'value' => $v['name']
 					];
-					if ($v['verantwortlich'] == 1) {
+					if ($v['verantwortlich'] == Responsible::MANAGER) {
 						$result['verantwortlicher'] = $v['id'];
 						if ($v['id'] == $fs_id) {
 							$result['verantwortlich'] = true;
@@ -604,10 +604,11 @@ class StoreGateway extends BaseGateway
 			FROM fs_betrieb_team
 
 			WHERE `betrieb_id` = :betrieb_id
-			AND verantwortlich = 1
+			AND verantwortlich = :reponsible
 			AND `active` = :membershipStatus
         ', [
 			':betrieb_id' => $storeId,
+			':reponsible' => Responsible::MANAGER,
 			':membershipStatus' => MembershipStatus::MEMBER
 		]);
 	}
@@ -626,10 +627,11 @@ class StoreGateway extends BaseGateway
 					ON fs.id = t.foodsaver_id
 
 			WHERE 	t.`betrieb_id` = :storeId
-					AND t.verantwortlich = 1
+					AND t.verantwortlich = :responsible
 					AND fs.deleted_at IS NULL
 		', [
 			':storeId' => $storeId,
+			':responsible' => Responsible::MANAGER
 		]);
 	}
 
@@ -643,9 +645,11 @@ class StoreGateway extends BaseGateway
 					INNER JOIN `fs_betrieb_team` bt
 			        ON bt.foodsaver_id = fs.id
 
-			WHERE 	bt.verantwortlich = 1
+			WHERE 	bt.verantwortlich = :responsible
 			AND		fs.deleted_at IS NULL
-		');
+		',[
+			':responsible' => Responsible::MANAGER
+		]);
 
 		$result = [];
 		foreach ($verant as $v) {
@@ -657,7 +661,7 @@ class StoreGateway extends BaseGateway
 
 	public function getStoreCountForBieb($fs_id)
 	{
-		return $this->db->count('fs_betrieb_team', ['foodsaver_id' => $fs_id, 'verantwortlich' => 1]);
+		return $this->db->count('fs_betrieb_team', ['foodsaver_id' => $fs_id, 'verantwortlich' => Responsible::MANAGER]);
 	}
 
 	public function getStoreTeamStatus(int $storeId): int
@@ -676,7 +680,8 @@ class StoreGateway extends BaseGateway
 		]);
 
 		if ($result) {
-			if ($result['verantwortlich'] && $result['active'] == MembershipStatus::MEMBER) {
+			if ($result['verantwortlich'] != Responsible::MANAGER
+			    && $result['active'] == MembershipStatus::MEMBER) {
 				return TeamStatus::Coordinator;
 			} else {
 				switch ($result['active']) {
@@ -755,48 +760,41 @@ class StoreGateway extends BaseGateway
                             ON fs.id = bt.foodsaver_id
 
 			WHERE   c.ancestor_id = :regionId
-            AND     bt.verantwortlich = 1
+            AND     bt.verantwortlich = :responsible
             AND     fs.deleted_at IS NULL
         ', [
-			':regionId' => $regionId
+			':regionId' => $regionId,
+			':responsible' => Responsible::MANAGER
 		]);
 	}
 
 	/**
-	 * @return StoreForTopbarMenu[]
+	 * @return Returns a array of memberships with following objects information (betrieb_id, name, managing, membershipstatus)
 	 */
-	public function listFilteredStoresForFoodsaver($fsId): array
+	public function listAllStoreTeamMembershipsForFoodsaver(int $fsId): array
 	{
-		$rows = $this->db->fetchAll('
-			SELECT 	b.`id`,
-					b.name,
-					bt.verantwortlich AS managing
+		if($fsId == 0) {
+			return [];
+		} 
 
+		$result = $this->db->fetchAll('
+			SELECT 	bt.betrieb_id,
+					b.name,
+					bt.verantwortlich AS managing,
+					bt.active as membershipstatus
 			FROM 	`fs_betrieb_team` bt
 					INNER JOIN `fs_betrieb` b
 			        ON bt.betrieb_id = b.id
 
 			WHERE   bt.`foodsaver_id` = :fsId
-			AND 	bt.active = :membershipStatus
 			AND 	b.betrieb_status_id NOT IN (:doesNotWantToWorkWithUs, :givesToOtherCharity)
 			ORDER BY bt.verantwortlich DESC, b.name ASC
 		', [
 			':fsId' => $fsId,
-			':membershipStatus' => MembershipStatus::MEMBER,
 			':doesNotWantToWorkWithUs' => CooperationStatus::DOES_NOT_WANT_TO_WORK_WITH_US,
 			':givesToOtherCharity' => CooperationStatus::GIVES_TO_OTHER_CHARITY
 		]);
-
-		$stores = [];
-		foreach ($rows as $row) {
-			$store = new StoreForTopbarMenu();
-			$store->id = $row['id'];
-			$store->name = $row['name'];
-			$store->isManaging = $row['managing'];
-			$stores[] = $store;
-		}
-
-		return $stores;
+		return $result;
 	}
 
 	public function listStoreIds($fsId)
@@ -806,7 +804,7 @@ class StoreGateway extends BaseGateway
 
 	public function listStoreIdsWhereResponsible($fsId)
 	{
-		return $this->db->fetchAllByCriteria('fs_betrieb_team', ['betrieb_id'], ['foodsaver_id' => $fsId, 'verantwortlich' => 1]);
+		return $this->db->fetchAllByCriteria('fs_betrieb_team', ['betrieb_id'], ['foodsaver_id' => $fsId, 'verantwortlich' => Responsible::MANAGER]);
 	}
 
 	private function getOne_kette($id): array
@@ -957,7 +955,7 @@ class StoreGateway extends BaseGateway
 		return $this->db->insertOrUpdate('fs_betrieb_team', [
 			'betrieb_id' => $storeId,
 			'foodsaver_id' => $userId,
-			'verantwortlich' => 0,
+			'verantwortlich' => Responsible::MEMBER,
 			'active' => MembershipStatus::APPLIED_FOR_TEAM,
 		]);
 	}
@@ -970,7 +968,7 @@ class StoreGateway extends BaseGateway
 		return $this->db->insertOrUpdate('fs_betrieb_team', [
 			'betrieb_id' => $storeId,
 			'foodsaver_id' => $userId,
-			'verantwortlich' => 1,
+			'verantwortlich' => Responsible::MANAGER,
 			'active' => MembershipStatus::MEMBER,
 		]);
 	}
@@ -978,7 +976,7 @@ class StoreGateway extends BaseGateway
 	public function removeStoreManager(int $storeId, int $userId): int
 	{
 		return $this->db->update('fs_betrieb_team', [
-			'verantwortlich' => 0,
+			'verantwortlich' => Responsible::MEMBER,
 		], [
 			'betrieb_id' => $storeId,
 			'foodsaver_id' => $userId,
