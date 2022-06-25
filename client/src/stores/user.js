@@ -5,12 +5,12 @@ import { getDetails } from '@/api/user'
 export const store = Vue.observable({
   mailUnreadCount: 0,
   user: null,
-  isLoggedIn: false,
+  isLoggedIn: document.cookie.split(';').some(cookie => cookie.trim().startsWith('CSRF_TOKEN=')),
 })
 
 export const getters = {
   isLoggedIn () {
-    return store.isLoggedIn
+    return store.isLoggedIn || document.cookie.split(';').some(cookie => cookie.trim().startsWith('CSRF_TOKEN='))
   },
   isFoodsaver () {
     return store.user?.foodsaver
@@ -67,9 +67,9 @@ export const mutations = {
     store.mailUnreadCount = await getMailUnreadCount()
   },
 
-  setLoggedIn (status) {
-    store.isLoggedIn = status
-  },
+  // setLoggedIn (status) {
+  //   store.isLoggedIn = status
+  // },
 }
 
 export default { store, getters, mutations }

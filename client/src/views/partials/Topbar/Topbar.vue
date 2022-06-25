@@ -2,9 +2,26 @@
   <!-- eslint-disable -->
   <div class="bootstrap">
   <nav class="nav navbar navbar-expand-md">
+    <ul class="metanav-container container">
+      <ul
+        v-if="!viewIsMobile"
+        class="metanav"
+      >
+        <Link
+          v-for="(link, idx) of metaNav"
+          :key="idx"
+          :title="link.title"
+          :href="$url(link.url)"
+        />
+        <Dropdown title="Admin" direction="right"/>
+      </ul>
+    </ul>
     <ul class="container nav-container">
+
       <ul class="mainnav">
-        <Link>
+        <Link
+          :href="homeHref"
+        >
           <template #text>
             <Logo small/>
           </template>
@@ -33,11 +50,16 @@
 
       <div class="collapse navbar-collapse" id="navbarSupportedContent">
         <ul class="navbar-navside">
-          <ul class="metanav">
-            <Link title="Karte"/>
-            <Link title="Kontakt"/>
-            <Link title="Mitmachen"/>
-            <Link title="Hilfe"/>
+          <ul
+            v-if="viewIsMobile"
+            class="metanav"
+          >
+            <Link
+              v-for="(link, idx) of metaNav"
+              :key="idx"
+              :title="link.title"
+              :href="$url(link.url)"
+            />
             <Dropdown title="Admin" direction="right"/>
           </ul>
           <ul class="sidenav">
@@ -92,16 +114,41 @@ export default {
       type: Array,
       default: () => [],
     },
-    isLoggedIn: {
-      type: Boolean,
-      default: false,
+  },
+  data () {
+    return {
+      metaNav: [
+        {
+          title: 'Karte',
+          url: 'map',
+        },
+        {
+          title: 'IT\'ler? Wir brauchen dich!',
+          url: 'devdocsItTasks',
+        },
+        {
+          title: 'Kontakt',
+          url: 'contact',
+        },
+        {
+          title: 'Hilfe',
+          url: 'wiki',
+        },
+      ],
+    }
+  },
+  computed: {
+    isLoggedIn () {
+      return DataUser.getters.isLoggedIn()
+    },
+    homeHref () {
+      return (this.isLoggedIn) ? this.$url('dashboard') : this.$url('home')
     },
   },
   async created () {
     // TODO: NO APIS :(
     DataGroups.mutations.set(this.groups)
     DataRegions.mutations.set(this.regions)
-    DataUser.mutations.setLoggedIn(this.isLoggedIn)
 
     // Load data
     if (this.isLoggedIn) {
@@ -125,7 +172,7 @@ export default {
     0px 9.7px 5.3px -10px rgba(0, 0, 0, 0.039),
     0px 20.1px 11px -10px rgba(0, 0, 0, 0.048),
     0px 55px 30px -10px rgba(0, 0, 0, 0.07);
-
+  display: block;
   position: sticky;
   top: 0;
   z-index: 1020;
@@ -170,14 +217,22 @@ export default {
   }
 }
 
+.nav .metanav-container,
 .nav .nav-container {
   align-items: flex-end;
   padding-bottom: 0;
   margin-bottom: 0.25rem;
 
+  padding-left: 0;
+  padding-right: 0;
+
   @media(max-width: 768px ) {
     align-items: center;
   }
+}
+
+.metanav-container {
+  border-bottom: 1px solid var(--fs-color-primary-200)
 }
 
 ::v-deep .navbar-collapse {
