@@ -1,0 +1,23 @@
+.icon {
+    --size: 2.5rem;
+    min-width: var(--size);
+    min-height: var(--size);
+    width: var(--size);
+    height: var(--size);
+    line-height: 0.7em;
+    font-size: .5rem;
+}
+
+.icon--big {
+    font-size: 1.5rem;
+}
+
+.icon--rounded {
+    border-radius: var(--border-radius);
+    overflow: hidden;
+}
+
+.icon--autosize {
+    width: 100%;
+    height: 100%;
+}

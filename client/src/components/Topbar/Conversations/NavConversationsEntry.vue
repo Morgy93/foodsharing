@@ -10,7 +10,7 @@
       class="mr-2"
     >
       <div
-        class="avatars img-thumbnail"
+        class="icon img-thumbnail"
         :class="[`avatars_${avatars.length}`]"
       >
         <Avatar
@@ -98,13 +98,13 @@ export default {
 </script>
 
 <style lang="scss" scoped>
+@import '../../../scss/icon-sizes.scss';
+
 ::v-deep.avatars {
   &.avatars_2,
   &.avatars_3,
   &.avatars_4 {
     display: grid;
-    width: 42px;
-    height: 42px;
     & .avatar {
       display: inline-flex;
       border-radius: 0;
@@ -127,10 +127,8 @@ export default {
 
     &:nth-child(2) {
       grid-area: 1 / 2;
-      // border-top-left-radius: var(--border-radius);
       border-top-right-radius: var(--border-radius);
       border-bottom-right-radius: var(--border-radius);
-      // border-bottom-left-radius: var(--border-radius);
     }
 
     & img {
@@ -165,7 +163,7 @@ export default {
   }
 
    &:nth-child(2) {
-     grid-area: 1 / 2;
+    grid-area: 1 / 2;
     border-top-right-radius: var(--border-radius);
   }
 

@@ -7,27 +7,27 @@
     }"
     :href="bell.href"
     @click="$emit('read', bell)"
-    @mouseover="viewIsMD && toggleState()"
-    @mouseout="viewIsMD && toggleState()"
+    @mouseover="!isTouch && toggleState()"
+    @mouseout="!isTouch && toggleState()"
   >
     <div
-      class="icon mr-2 d-flex text-center justifiy-content-center align-items-center"
+      class="icon icon--rounded mr-2 d-flex text-center justifiy-content-center align-items-center"
       @click.stop.prevent="toggleState()"
     >
       <i
         v-if="bell.icon && !state"
-        class="icon d-flex img-thumbnail align-items-center justify-content-center"
-        :class="[bell.icon]"
+        class="icon icon--big icon--rounded d-flex img-thumbnail align-items-center justify-content-center"
+        :class="bell.icon"
       />
       <Avatar
         v-else-if="bell.image && !state"
-        class="icon img-thumbnail"
+        class="icon icon--rounded img-thumbnail"
         :url="bell.image"
         :size="35"
       />
       <i
         v-else
-        class="icon d-flex img-thumbnail align-items-center justify-content-center"
+        class="icon icon--big img-thumbnail d-flex align-items-center justify-content-center"
         :class="'fas fa-times'"
         @click.stop.prevent="closeBell()"
       />
@@ -92,10 +92,5 @@ export default {
 </script>
 
 <style lang="scss" scoped>
-.icon {
-  width: 2.5rem;
-  height: 2.5rem;
-  line-height: 0.7em;
-  font-size: 1.5rem;
-}
+@import '../../../scss/icon-sizes.scss';
 </style>

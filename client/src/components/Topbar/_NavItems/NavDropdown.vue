@@ -175,6 +175,6 @@ export default {
 
 .dropdown-menu-scrollable {
   max-height: 65vh;
-  overflow: scroll;
+  overflow-y: auto;
 }
 </style>

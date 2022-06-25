@@ -1,24 +1,31 @@
 <template>
   <a
     :href="href"
-    class="dropdown-item text-truncate search-result"
+    class="d-flex dropdown-item text-truncate search-result"
   >
     <div
       v-if="image"
-      :style="{backgroundImage: `url('${image}')`}"
-      class="bg-primary image"
-    />
-    {{ title }}
-    <small
-      v-if="teaser"
-      class="text-truncate"
+      class="icon img-thumbnail mr-2"
     >
-      <i
-        v-if="teaserIcon"
-        :class="`fa-fw ${teaserIcon}`"
-      />
-      {{ teaser }}
-    </small>
+      <img
+        class="icon--autosize icon--rounded"
+        :src="image"
+        :alt="title"
+      >
+    </div>
+    <div>
+      <h6 class="m-0">{{ title }}</h6>
+      <small
+        v-if="teaser"
+        class="text-muted text-truncate"
+      >
+        <i
+          v-if="teaserIcon"
+          :class="`fa-fw ${teaserIcon}`"
+        />
+        {{ teaser }}
+      </small>
+    </div>
   </a>
 </template>
 <script>
@@ -49,16 +56,5 @@ export default {
 </script>
 
 <style lang="scss" scoped>
-.search-result small {
-    display: block;
-    margin-top: -0.1em;
-}
-.image {
-    float: left;
-    height: 2em;
-    width: 2em;
-    background-size: cover;
-    margin-right: 0.4em;
-    margin-top: 0.2em;
-}
+@import '../../scss/icon-sizes.scss';
 </style>
