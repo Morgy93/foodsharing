@@ -16,6 +16,9 @@ import {
   expose,
 } from '@/utils'
 import './PassportGenerator.css'
+import { vueApply, vueRegister } from '@/vue'
+
+import PassportGeneratorView from '@/views/pages/Regions/PassportGenerator/PassportGeneratorView'
 
 expose({
   checkAllCb,
@@ -127,3 +130,9 @@ $('a.dateclick').on('click', function () {
   }
   return false
 })
+
+vueRegister({
+  PassportGeneratorView,
+})
+
+vueApply('#passport-generator-view')
