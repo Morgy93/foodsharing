@@ -59,14 +59,11 @@
             :is-loading="isLoading"
           />
         </div>
-      </div>
-      <div
-        class="mt-3"
-        style="z-index: 3000"
-      >
-        <button type="button" class="btn btn-outline-light" data-dismiss="modal">
-          Press [ESC] or click here
-        </button>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-sm btn-light" data-dismiss="modal">
+            You can use the <code class="key">ESC</code> hotkey or click here to close this modal.
+          </button>
+        </div>
       </div>
     </div>
   </div>
@@ -156,5 +153,14 @@ export default {
 <style lang="scss" scoped>
 .is-clickable {
   cursor: pointer;
+}
+
+.key {
+  padding: 0.05rem 0.3rem;
+  border-radius: calc(var(--border-radius) / 2);
+  border: 1px solid var(--fs-color-secondary-500);
+  background-color: var(--fs-color-secondary-200);
+  color: var(--fs-color-secondary-700);
+  font-weight: 600;
 }
 </style>

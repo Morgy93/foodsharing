@@ -6,7 +6,10 @@
     >
       {{ $i18n('search.noresults') }}
     </div>
-    <div v-if="filtered.myBuddies.length">
+    <div
+      v-if="filtered.myBuddies.length"
+      class="entry"
+    >
       <h3 class="dropdown-header">
         <i class="fas fa-user" /> {{ $i18n('search.mybuddies') }}
       </h3>
@@ -18,9 +21,11 @@
         :teaser="buddy.teaser"
         :image="buddy.image"
       />
-      <div class="dropdown-divider" />
     </div>
-    <div v-if="filtered.myGroups.length">
+    <div
+      v-if="filtered.myGroups.length"
+      class="entry"
+    >
       <h3 class="dropdown-header">
         <i class="fas fa-users" /> {{ $i18n('search.mygroups') }}
       </h3>
@@ -32,9 +37,11 @@
         :teaser="group.teaser"
         :image="group.image"
       />
-      <div class="dropdown-divider" />
     </div>
-    <div v-if="filtered.myStores.length">
+    <div
+      v-if="filtered.myStores.length"
+      class="entry"
+    >
       <h3 class="dropdown-header">
         <i class="fas fa-shopping-cart" /> {{ $i18n('search.mystores') }}
       </h3>
@@ -46,9 +53,11 @@
         :teaser="store.teaser"
         :image="store.image"
       />
-      <div class="dropdown-divider" />
     </div>
-    <div v-if="filtered.myRegions.length">
+    <div
+      v-if="filtered.myRegions.length"
+      class="entry"
+    >
       <h3 class="dropdown-header">
         <i class="fas fa-home" /> {{ $i18n('search.myregions') }}
       </h3>
@@ -60,10 +69,12 @@
         :teaser="region.teaser"
         :image="region.image"
       />
-      <div class="dropdown-divider" />
     </div>
 
-    <div v-if="filtered.groups.length">
+    <div
+      v-if="filtered.groups.length"
+      class="entry"
+    >
       <h3 class="dropdown-header">
         <i class="fas fa-users" /> {{ $i18n('search.groups') }}
       </h3>
@@ -75,9 +86,11 @@
         :teaser="group.teaser"
         :image="group.image"
       />
-      <div class="dropdown-divider" />
     </div>
-    <div v-if="filtered.users.length">
+    <div
+      v-if="filtered.users.length"
+      class="entry"
+    >
       <h3 class="dropdown-header">
         <i class="fas fa-child" /> {{ $i18n('search.persons') }}
       </h3>
@@ -89,7 +102,6 @@
         :teaser="user.teaser"
         :image="user.image"
       />
-      <div class="dropdown-divider" />
     </div>
     <div v-if="filtered.stores.length">
       <h3 class="dropdown-header">
@@ -103,7 +115,6 @@
         :teaser="store.teaser"
         :image="store.image"
       />
-      <div class="dropdown-divider" />
     </div>
     <div v-if="filtered.foodSharePoints.length">
       <h3 class="dropdown-header">
@@ -117,7 +128,6 @@
         :teaser="foodSharePoint.teaser"
         :image="foodSharePoint.image"
       />
-      <div class="dropdown-divider" />
     </div>
     <div v-if="filtered.regions.length">
       <h3 class="dropdown-header">
@@ -254,5 +264,11 @@ export default {
 .dropdown-header {
     white-space: normal;
     margin-bottom: 0;
+}
+
+.entry:not(:last-child) {
+  padding-bottom: 1rem;
+  margin-bottom: 1rem;
+  border-bottom: 1px solid var(--lt-color-gray-300);
 }
 </style>
