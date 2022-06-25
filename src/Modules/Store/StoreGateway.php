@@ -6,8 +6,8 @@ use Foodsharing\Modules\Core\BaseGateway;
 use Foodsharing\Modules\Core\Database;
 use Foodsharing\Modules\Core\DBConstants\Store\CooperationStatus;
 use Foodsharing\Modules\Core\DBConstants\Store\Milestone;
-use Foodsharing\Modules\Core\DBConstants\StoreTeam\Responsible;
 use Foodsharing\Modules\Core\DBConstants\StoreTeam\MembershipStatus;
+use Foodsharing\Modules\Core\DBConstants\StoreTeam\Responsible;
 use Foodsharing\Modules\Region\RegionGateway;
 use Foodsharing\Modules\Store\DTO\CreateStoreData;
 use Foodsharing\Modules\Store\DTO\Store;
@@ -647,7 +647,7 @@ class StoreGateway extends BaseGateway
 
 			WHERE 	bt.verantwortlich = :responsible
 			AND		fs.deleted_at IS NULL
-		',[
+		', [
 			':responsible' => Responsible::MANAGER
 		]);
 
@@ -681,7 +681,7 @@ class StoreGateway extends BaseGateway
 
 		if ($result) {
 			if ($result['verantwortlich'] != Responsible::MANAGER
-			    && $result['active'] == MembershipStatus::MEMBER) {
+				&& $result['active'] == MembershipStatus::MEMBER) {
 				return TeamStatus::Coordinator;
 			} else {
 				switch ($result['active']) {
@@ -773,9 +773,9 @@ class StoreGateway extends BaseGateway
 	 */
 	public function listAllStoreTeamMembershipsForFoodsaver(int $fsId): array
 	{
-		if($fsId == 0) {
+		if ($fsId == 0) {
 			return [];
-		} 
+		}
 
 		$result = $this->db->fetchAll('
 			SELECT 	bt.betrieb_id,
@@ -794,6 +794,7 @@ class StoreGateway extends BaseGateway
 			':doesNotWantToWorkWithUs' => CooperationStatus::DOES_NOT_WANT_TO_WORK_WITH_US,
 			':givesToOtherCharity' => CooperationStatus::GIVES_TO_OTHER_CHARITY
 		]);
+
 		return $result;
 	}
 

@@ -15,9 +15,9 @@ use Foodsharing\Modules\Foodsaver\FoodsaverGateway;
 use Foodsharing\Modules\Message\MessageGateway;
 use Foodsharing\Modules\Region\RegionGateway;
 use Foodsharing\Modules\Store\DTO\CreateStoreData;
+use Foodsharing\Modules\Store\DTO\PickUpStatus;
 use Foodsharing\Modules\Store\DTO\Store;
 use Foodsharing\Modules\Store\DTO\StoreStatusforMemberDTO;
-use Foodsharing\Modules\Store\DTO\PickUpStatus;
 use Symfony\Contracts\Translation\TranslatorInterface;
 
 class StoreTransactions
@@ -297,7 +297,6 @@ class StoreTransactions
 				$storeStatus->pickupStatus = PickUpStatus::toString($this->getAvailablePickupStatus($membership['betrieb_id']));
 			}
 			$storeStatusList[] = $storeStatus;
-			
 		}
 
 		return $storeStatusList;

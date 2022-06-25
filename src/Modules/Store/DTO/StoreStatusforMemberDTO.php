@@ -10,11 +10,12 @@ class StoreStatusforMemberDTO
 	public string $membershipStatus;
 	public string $pickupStatus;
 
-	public function __construct() {
-		$this->id=0;
-		$this->name="";
-		$this->isManaging=0;
-		$this->membershipStatus="";
-		$this->pickupStatus="";
-	  }
+	public function __construct()
+	{
+		$this->id = 0;
+		$this->name = '';
+		$this->isManaging = 0;
+		$this->membershipStatus = '';
+		$this->pickupStatus = '';
+	}
 }
