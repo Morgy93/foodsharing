@@ -1,18 +1,16 @@
 <template>
-  <fs-dropdown-menu
-    id="dropdown-messages"
+  <Dropdown
     title="menu.entry.messages"
     icon="fa-comments"
-    class="topbar-messages"
     :badge="unread"
-    :show-title="showTitle"
-    scrollbar
+    direction="right"
+    scrollable
   >
     <template
       v-if="conversations.length > 0"
       #content
     >
-      <menu-messages-entry
+      <ConversationsEntry
         v-for="conversation in conversations"
         :key="conversation.id"
         :conversation="conversation"
@@ -47,22 +45,20 @@
         {{ $i18n('menu.entry.all_messages') }}
       </a>
     </template>
-  </fs-dropdown-menu>
+  </Dropdown>
 </template>
 <script>
-import MenuMessagesEntry from './MenuMessagesEntry'
+// Stores
 import conversationStore from '@/stores/conversations'
-import FsDropdownMenu from '../FsDropdownMenu'
-
-import TopBarMixin from '@/mixins/TopBarMixin'
+// Components
+import Dropdown from '../_NavItems/NavDropdown'
+import ConversationsEntry from './NavConversationsEntry'
+// Mixins
 
 export default {
-  components: { MenuMessagesEntry, FsDropdownMenu },
-  mixins: [TopBarMixin],
+  components: { ConversationsEntry, Dropdown },
   computed: {
     conversations () {
-      /* let res = Array.from(conversationStore.conversations) // .filter(c => c.lastMessage || c.messages)
-      return res */
       return Object.values(conversationStore.conversations).filter((a) => (a.lastMessage != null)).sort(
         (a, b) => (a.hasUnreadMessages === b.hasUnreadMessages) ? ((a.lastMessage.sentAt < b.lastMessage.sentAt) ? 1 : -1) : (a.hasUnreadMessages ? -1 : 1),
       )

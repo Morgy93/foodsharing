@@ -31,8 +31,9 @@
         <Dropdown icon="fa-shopping-cart" title="Stores"/>
         <Dropdown badge="99+" icon="fa-shopping-basket" title="Essenskörbe"/>
 
-        <Dropdown v-if="viewIsMobile" icon="fa-comments" title="Nachrichten"/>
-        <Dropdown v-if="viewIsMobile" icon="fa-bell" title="Benachrichtigungen"/>
+        <!-- <Dropdown v-if="viewIsMobile" icon="fa-comments" title="Nachrichten"/> -->
+        <NavConversations v-if="viewIsMobile" />
+        <NavBells v-if="viewIsMobile" />
 
         <Link
           v-if="viewIsMobile"
@@ -66,9 +67,9 @@
             <Link icon="fa-search" title="Suche" data-toggle="modal" data-target="#searchBarModal"/>
             <Link v-if="viewIsMobile" icon="fa-globe" title="Bezirke"/>
             <Link v-if="viewIsMobile" icon="fa-comments" title="Gruppen"/>
-            <Dropdown v-if="!viewIsMobile" badge="33" icon="fa-comments" title="Nachrichten" direction="right"/>
-            <!-- <Dropdown v-if="!viewIsMobile" badge="3" icon="fa-bell" title="Benachrichtigungen" direction="right"/> -->
-            <NavBells />
+            <!-- <Dropdown v-if="!viewIsMobile" badge="33" icon="fa-comments" title="Nachrichten" direction="right"/> -->
+            <NavConversations v-if="!viewIsMobile"/>
+            <NavBells v-if="!viewIsMobile"/>
             <NavUser />
           </ul>
         </ul>
@@ -96,6 +97,7 @@ import Logo from '@/components/Topbar/Logo'
 import NavAdmin from '@/components/Topbar/Admin/NavAdmin'
 import NavUser from '@/components/Topbar/User/NavUser'
 import NavBells from '@/components/Topbar/Bells/NavBells'
+import NavConversations from '@/components/Topbar/Conversations/NavConversations'
 // Hidden Elements
 import LanguageChooser from '@/components/Topbar/LanguageChooser'
 import SearchBarModal from '@/components/SearchBar/SearchBarModal'
@@ -112,6 +114,7 @@ export default {
     NavAdmin,
     NavUser,
     NavBells,
+    NavConversations,
   },
   mixins: [MediaQueryMixin],
   props: {

@@ -4,6 +4,7 @@
     icon="fa-bell"
     :badge="unread"
     direction="right"
+    scrollable
   >
     <template
       v-if="bells.length > 0"

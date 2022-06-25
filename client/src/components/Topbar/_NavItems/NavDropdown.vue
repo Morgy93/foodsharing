@@ -34,30 +34,38 @@
     </button>
     <div
       class="dropdown-menu"
-      :class="{ 'dropdown-menu-right': direction === 'right' } "
+      :class="{
+        'dropdown-menu-right': direction === 'right'
+      }"
       :aria-labelledby="title"
     >
-      <slot name="content">
-        <a
-          class="dropdown-item"
-          href="#"
-        >
-          Action
-        </a>
-        <a
-          class="dropdown-item"
-          href="#"
-        >
-          Another action
-        </a>
-        <div class="dropdown-divider" />
-        <a
-          class="dropdown-item"
-          href="#"
-        >
-          Something else here
-        </a>
-      </slot>
+      <li
+        :class="{
+          'dropdown-menu-scrollable': scrollable
+        }"
+      >
+        <slot name="content">
+          <a
+            class="dropdown-item"
+            href="#"
+          >
+            Action
+          </a>
+          <a
+            class="dropdown-item"
+            href="#"
+          >
+            Another action
+          </a>
+          <div class="dropdown-divider" />
+          <a
+            class="dropdown-item"
+            href="#"
+          >
+            Something else here
+          </a>
+        </slot>
+      </li>
       <li class="actions">
         <slot name="actions">
           <a
@@ -103,6 +111,10 @@ export default {
     badge: {
       type: [String, Number],
       default: 0,
+    },
+    scrollable: {
+      type: Boolean,
+      default: false,
     },
   },
 }
@@ -159,5 +171,10 @@ export default {
     height: 1rem;
     margin-right: 0.5rem;
   }
+}
+
+.dropdown-menu-scrollable {
+  max-height: 65vh;
+  overflow: scroll;
 }
 </style>
