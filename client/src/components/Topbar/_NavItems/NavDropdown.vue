@@ -142,8 +142,10 @@ export default {
 
 .dropdown-action {
   font-size: 0.8rem;
-
   & i {
+    display: inline-flex;
+    justify-content: center;
+    align-content: center;
     width: 1rem;
     margin-right: 0.5rem;
   }

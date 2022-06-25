@@ -13,7 +13,7 @@
           :title="link.title"
           :href="$url(link.url)"
         />
-        <Dropdown title="Admin" direction="right"/>
+        <MenuAdmin />
       </ul>
     </ul>
     <ul class="container nav-container">
@@ -60,7 +60,7 @@
               :title="link.title"
               :href="$url(link.url)"
             />
-            <Dropdown title="Admin" direction="right"/>
+            <MenuAdmin />
           </ul>
           <ul class="sidenav">
             <Link icon="fa-search" title="Suche" data-toggle="modal" data-target="#searchBarModal"/>
@@ -90,6 +90,8 @@ import DataRegions from '@/stores/regions.js'
 import Dropdown from '@/components/Topbar/_NavItems/NavDropdown'
 import Link from '@/components/Topbar/_NavItems/NavLink'
 import Logo from '@/components/Topbar/Logo'
+//
+import MenuAdmin from '@/components/Topbar/Admin/NavAdmin'
 // Hidden Elements
 import LanguageChooser from '@/components/Topbar/LanguageChooser'
 import SearchBarModal from '@/components/SearchBar/SearchBarModal'
@@ -103,6 +105,7 @@ export default {
     SearchBarModal,
     Dropdown,
     Link,
+    MenuAdmin,
   },
   mixins: [MediaQueryMixin],
   props: {
@@ -284,6 +287,13 @@ export default {
       & .dropdown-menu {
         position: unset;
         display: block;
+      }
+
+      & .dropdown-toggle {
+        width: 100%;
+        text-align: left;
+        pointer-events: none;
+        color: var(--lt-color-gray-500)
       }
 
       & .nav-text {
