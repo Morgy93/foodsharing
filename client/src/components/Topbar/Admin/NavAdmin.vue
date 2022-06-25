@@ -62,7 +62,12 @@
       </a>
     </template>
     <template #actions>
-      <span class="dropdown-item dropdown-action disabled">You are special 🥰</span>
+      <span
+        class="dropdown-item dropdown-action disabled"
+        style="user-select: none"
+      >
+        Special snowflake, HA? ❄️
+      </span>
     </template>
   </Dropdown>
 </template>
