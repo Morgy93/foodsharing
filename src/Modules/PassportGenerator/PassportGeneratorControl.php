@@ -73,16 +73,10 @@ final class PassportGeneratorControl extends Control
 					$this->translator->trans('pass.verify.hasPickup')
 				) .
 			'</div>');
-
-			$this->pageHelper->addContent('<form id="generate" method="post">');
-			foreach ($regions as $region) {
-				$this->pageHelper->addContent($this->view->passTable($region));
-			}
-			$this->pageHelper->addContent('</form>');
-			$this->pageHelper->addContent($this->view->menubar(), CNT_RIGHT);
-			$this->pageHelper->addContent($this->view->start(), CNT_RIGHT);
-			$this->pageHelper->addContent($this->view->tips(), CNT_RIGHT);
 		}
+
+		$this->pageHelper->addContent($this->view->vueComponent("passport-generator-view", "PassportGeneratorView"));
+
 
 		if (isset($_GET['dl1'])) {
 			$this->download1();
