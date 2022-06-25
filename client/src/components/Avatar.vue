@@ -48,6 +48,7 @@ export default {
     avatarUrl () {
       const prefix = {
         16: 'mini_q_',
+        24: 'mini_q_',
         35: 'mini_q_',
         50: '50_q_',
         130: '130_q_',
@@ -71,7 +72,7 @@ export default {
         width: `${this.size}px`,
         display: this.size === 16 ? 'inline-flex' : null,
       }
-      if (this.autoScale && this.size !== 16) {
+      if (this.autoScale && ![16, 24].includes(this.size)) {
         styles.height = '100%'
         styles.width = 'auto'
       }

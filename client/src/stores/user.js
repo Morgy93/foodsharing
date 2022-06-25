@@ -36,7 +36,7 @@ export const getters = {
   getPermissions () {
     return store.user?.permissions || {}
   },
-  hasPermissions () {
+  hasAdminPermissions () {
     return store.user?.permissions &&
             (store.user.permissions.administrateBlog ||
             store.user.permissions.editQuiz ||

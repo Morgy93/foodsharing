@@ -1,10 +1,8 @@
 <template>
-  <fs-dropdown-menu
+  <NavDropdown
     id="dropdown-stores"
-    title="menu.entry.your_stores"
+    :title="$i18n('menu.entry.stores')"
     icon="fa-shopping-cart"
-    scrollbar
-    lazy
   >
     <template
       v-if="stores.length > 0"
@@ -28,7 +26,7 @@
     </template>
     <template #actions>
       <a
-        v-if="user.permissions.addStore"
+        v-if="hasAddStorePermission"
         :href="$url('storeAdd')"
         role="menuitem"
         class="dropdown-item dropdown-action"
@@ -45,24 +43,25 @@
         {{ $i18n('store.all_of_my_stores') }}
       </a>
     </template>
-  </fs-dropdown-menu>
+  </NavDropdown>
 </template>
 
 <script>
 // Stores
+import DataUser from '@/stores/user'
 import { getters } from '@/stores/stores'
 // Components
+import NavDropdown from '../_NavItems/NavDropdown'
 import MenuStoresEntry from './MenuStoresEntry'
-import FsDropdownMenu from '../FsDropdownMenu'
-// Mixin
-import TopBarMixin from '@/mixins/TopBarMixin'
 
 export default {
-  components: { MenuStoresEntry, FsDropdownMenu },
-  mixins: [TopBarMixin],
+  components: { MenuStoresEntry, NavDropdown },
   computed: {
     stores () {
       return getters.get()
+    },
+    hasAddStorePermission () {
+      return DataUser.getters.getPermissions().addStore || false
     },
   },
 }

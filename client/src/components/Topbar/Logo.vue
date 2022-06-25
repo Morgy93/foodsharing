@@ -1,22 +1,20 @@
 <template>
-  <a
-    :href="href"
+  <span
     aria-label="foodsharing"
-    class="brand"
+    class="foodsharing"
   >
     <span
-      v-if="viewIsMD"
+      v-if="viewIsMD && !small"
       class="logo-text"
     >
       food<span class="text-secondary">shar<span class="apple">i</span>ng</span>
     </span>
     <span
       v-else
-      class="text-primary"
     >
       f<span class="text-secondary">s</span>
     </span>
-  </a>
+  </span>
 </template>
 <script>
 import MediaQueryMixin from '@/mixins/MediaQueryMixin'
@@ -24,19 +22,22 @@ import MediaQueryMixin from '@/mixins/MediaQueryMixin'
 export default {
   mixins: [MediaQueryMixin],
   props: {
-    href: {
-      type: String,
-      default: '',
+    small: {
+      type: Boolean,
+      default: false,
     },
   },
 }
 </script>
 <style lang="scss" scoped>
-.brand {
-    margin: 0;
+.foodsharing {
     font-family: 'Alfa Slab One',serif;
-    color: var(--primary);
+    color: currentColor;
     font-size: 1.1rem;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
 
     @media (max-width: 330px) {
       min-width: auto;

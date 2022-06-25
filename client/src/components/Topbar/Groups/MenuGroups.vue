@@ -1,52 +1,53 @@
 <template>
-  <fs-dropdown-menu
-    v-if="groups.length > 0"
+  <NavDropdown
     id="dropdown-groups"
-    title="menu.entry.your_groups"
+    :title="$i18n('menu.entry.groups')"
     icon="fa-users"
-    scrollbar
   >
     <template #content>
-      <div
-        v-for="(group, idx) in groups"
-        :key="group.id"
-        class="group text-truncate"
-      >
-        <button
-          v-if="!alwaysOpen"
-          v-b-toggle="toggleId(group.id)"
-          role="menuitem"
-          class="dropdown-header dropdown-item text-truncate"
-          target="_self"
-          v-html="group.name"
-        />
-        <h6
-          v-if="alwaysOpen"
-          role="menuitem"
-          class="dropdown-header text-truncate"
-          v-html="group.name"
-        />
-        <b-collapse
-          :id="toggleId(group.id)"
-          class="dropdown-submenu"
-          :visible="idx === 0"
-          :accordion="'groups'"
+      <div v-if="groups.length > 0">
+        <div
+          v-for="(group, idx) in groups"
+          :key="group.id"
+          class="group text-truncate"
         >
-          <a
-            v-for="(entry,key) in generateMenu(group)"
-            :key="key"
-            :href="entry.href ? $url(entry.href, group.id, entry.special) : '#'"
+          <button
+            v-if="!alwaysOpen"
+            v-b-toggle="toggleId(group.id)"
             role="menuitem"
-            class="dropdown-item dropdown-action"
-            @click="entry.func ? entry.func() : null"
+            class="dropdown-header dropdown-item text-truncate"
+            target="_self"
+            @click.stop
+            v-html="group.name"
+          />
+          <h6
+            v-if="alwaysOpen"
+            role="menuitem"
+            class="dropdown-header text-truncate"
+            v-html="group.name"
+          />
+          <b-collapse
+            :id="toggleId(group.id)"
+            class="dropdown-submenu"
+            :visible="idx === 0"
+            :accordion="'groups'"
           >
-            <i
-              class="fas"
-              :class="entry.icon"
-            />
-            {{ $i18n(entry.text) }}
-          </a>
-        </b-collapse>
+            <a
+              v-for="(entry,key) in generateMenu(group)"
+              :key="key"
+              :href="entry.href ? $url(entry.href, group.id, entry.special) : '#'"
+              role="menuitem"
+              class="dropdown-item dropdown-action"
+              @click="entry.func ? entry.func() : null"
+            >
+              <i
+                class="fas"
+                :class="entry.icon"
+              />
+              {{ $i18n(entry.text) }}
+            </a>
+          </b-collapse>
+        </div>
       </div>
     </template>
     <template #actions>
@@ -59,23 +60,13 @@
         {{ $i18n('menu.entry.groups') }}
       </a>
     </template>
-  </fs-dropdown-menu>
-  <menu-item
-    v-else
-    :url="$url('workingGroups')"
-    :title="$i18n('menu.entry.groups')"
-    :show-title="false"
-    icon="fa-users"
-  />
+  </NavDropdown>
 </template>
 <script>
 // Store
 import { getters } from '@/stores/groups'
-
 // Components
-import FsDropdownMenu from '../FsDropdownMenu'
-import MenuItem from '../MenuItem'
-
+import NavDropdown from '../_NavItems/NavDropdown'
 // Mixins
 import ConferenceOpener from '@/mixins/ConferenceOpenerMixin'
 import MediaQueryMixin from '@/mixins/MediaQueryMixin'
@@ -83,7 +74,7 @@ import TopBarMixin from '@/mixins/TopBarMixin'
 
 export default {
   name: 'MenuGroups',
-  components: { FsDropdownMenu, MenuItem },
+  components: { NavDropdown },
   mixins: [ConferenceOpener, MediaQueryMixin, TopBarMixin],
   computed: {
     groups () {

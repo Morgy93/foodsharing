@@ -1,12 +1,8 @@
 <template>
-  <fs-dropdown-menu
-    ref="dropdown"
-    class="topbar-baskets"
+  <NavDropdown
     title="menu.entry.your_baskets"
     icon="fa-shopping-basket"
     :badge="basketsSorted.length "
-    :show-title="showTitle"
-    scrollbar
   >
     <template
       v-if="basketsSorted.length > 0"
@@ -47,7 +43,7 @@
         {{ $i18n('basket.all') }}
       </a>
     </template>
-  </fs-dropdown-menu>
+  </NavDropdown>
 </template>
 <script>
 // DataStore
@@ -55,16 +51,13 @@ import { getters } from '@/stores/baskets'
 // Components
 import MenuBasketsEntry from './MenuBasketsEntry'
 
-import FsDropdownMenu from '../FsDropdownMenu'
+import NavDropdown from '../_NavItems/NavDropdown'
 
 import { ajreq } from '@/script'
 import dateFnsCompareDesc from 'date-fns/compareDesc'
 
-import TopBarMixin from '@/mixins/TopBarMixin'
-
 export default {
-  components: { MenuBasketsEntry, FsDropdownMenu },
-  mixins: [TopBarMixin],
+  components: { MenuBasketsEntry, NavDropdown },
   computed: {
     baskets () {
       return getters.getOwn()

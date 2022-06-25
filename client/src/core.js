@@ -1,5 +1,4 @@
 import 'whatwg-fetch'
-
 import '@/sentry'
 
 import '@/style'
@@ -11,8 +10,11 @@ import { initialize } from '@/script'
 
 import 'jquery-ui'
 import registerServiceWorker from '@/registerServiceWorker'
-import './scss/bootstrap-theme.scss'
 import './scss/index.scss'
+
+// Bootstrap
+import 'bootstrap'
+import './scss/bootstrap-theme.scss'
 
 import '@/becomeBezirk'
 import '@/views/views'

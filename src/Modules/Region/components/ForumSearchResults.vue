@@ -33,7 +33,7 @@
 </template>
 
 <script>
-import SearchResultEntry from '@/components/Topbar/Items/Search/SearchResultEntry'
+import SearchResultEntry from '@/components/SearchBar/SearchResultEntry'
 import differenceInCalendarYears from 'date-fns/differenceInCalendarYears'
 import parseISO from 'date-fns/parseISO'
 
