@@ -13,7 +13,7 @@
           :title="link.title"
           :href="$url(link.url)"
         />
-        <MenuAdmin />
+        <NavAdmin />
       </ul>
     </ul>
     <ul class="container nav-container">
@@ -29,7 +29,7 @@
         <Dropdown v-if="!viewIsMobile" icon="fa-globe" title="Regions"/>
         <Dropdown v-if="!viewIsMobile" icon="fa-users" title="Gruppen"/>
         <Dropdown icon="fa-shopping-cart" title="Stores"/>
-        <Dropdown icon="fa-shopping-basket" title="Essenskörbe"/>
+        <Dropdown badge="99+" icon="fa-shopping-basket" title="Essenskörbe"/>
 
         <Dropdown v-if="viewIsMobile" icon="fa-comments" title="Nachrichten"/>
         <Dropdown v-if="viewIsMobile" icon="fa-bell" title="Benachrichtigungen"/>
@@ -60,15 +60,16 @@
               :title="link.title"
               :href="$url(link.url)"
             />
-            <MenuAdmin />
+            <NavAdmin />
           </ul>
           <ul class="sidenav">
             <Link icon="fa-search" title="Suche" data-toggle="modal" data-target="#searchBarModal"/>
             <Link v-if="viewIsMobile" icon="fa-globe" title="Bezirke"/>
             <Link v-if="viewIsMobile" icon="fa-comments" title="Gruppen"/>
-            <Dropdown v-if="!viewIsMobile" icon="fa-comments" title="Nachrichten" direction="right"/>
+            <Dropdown v-if="!viewIsMobile" badge="33" icon="fa-comments" title="Nachrichten" direction="right"/>
             <Dropdown v-if="!viewIsMobile" badge="3" icon="fa-bell" title="Benachrichtigungen" direction="right"/>
-            <Dropdown icon="fa-user-circle" title="Hallo Stefan" direction="right"/>
+            <NavUser />
+            <!-- <Dropdown icon="fa-user-circle" title="Hallo Stefan" direction="right"/> -->
           </ul>
         </ul>
       </div>
@@ -91,7 +92,8 @@ import Dropdown from '@/components/Topbar/_NavItems/NavDropdown'
 import Link from '@/components/Topbar/_NavItems/NavLink'
 import Logo from '@/components/Topbar/Logo'
 //
-import MenuAdmin from '@/components/Topbar/Admin/NavAdmin'
+import NavAdmin from '@/components/Topbar/Admin/NavAdmin'
+import NavUser from '@/components/Topbar/User/NavUser'
 // Hidden Elements
 import LanguageChooser from '@/components/Topbar/LanguageChooser'
 import SearchBarModal from '@/components/SearchBar/SearchBarModal'
@@ -105,7 +107,8 @@ export default {
     SearchBarModal,
     Dropdown,
     Link,
-    MenuAdmin,
+    NavAdmin,
+    NavUser,
   },
   mixins: [MediaQueryMixin],
   props: {

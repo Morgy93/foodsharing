@@ -25,7 +25,12 @@
           v-html="badge"
         />
       </slot>
-      <span class="nav-text">{{ title }}</span>
+      <slot name="text">
+        <span
+          class="nav-text"
+          v-html="title"
+        />
+      </slot>
     </button>
     <div
       class="dropdown-menu"

@@ -38,9 +38,11 @@
 }
 
 .nav-link {
-  border: 0;
+  align-items: center;
   background-color: transparent;
-
+  border: 0;
+  display: flex;
+  justify-content: center;
   position: relative;
 
   & .badge {
@@ -52,7 +54,7 @@
     z-index: 1;
 
     &.onlyNine {
-      right: -4px;
+      right: 0.5rem;
     }
 
     &.overNinetyNine {
@@ -83,4 +85,12 @@
   .sidenav & {
     display: none;
   }
+}
+
+.nav-icon {
+  min-width: 1rem;
+  max-width: 1rem;
+  min-height: 1rem;
+  max-height: 1rem;
+  margin-right: 0.25rem;
 }
