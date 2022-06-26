@@ -335,7 +335,10 @@ class PassportGeneratorTransaction extends AbstractController
 			$foodsaver["role_name"] = $this->getRole($foodsaver["gender_id"], $foodsaver["role_id"]);
 			unset($foodsaver["gender_id"]);
 			unset($foodsaver["role_id"]);
-			$foodsaver["verified"] = (bool)$foodsaver["verified"];
+			unset($foodsaver["bezirk_name"]);
+			unset($foodsaver["bezirk_id"]);
+			$foodsaver["is_verified"] = (bool)$foodsaver["is_verified"];
+			$foodsaver["last_pass_timestamp"] = !is_null($foodsaver["last_pass_datetime"]) ? strtotime($foodsaver["last_pass_datetime"]) : null;
 			return $foodsaver;
 		}, $rawFoodsaver);
 
