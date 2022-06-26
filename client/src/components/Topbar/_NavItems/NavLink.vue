@@ -8,7 +8,7 @@
       <slot name="icon">
         <i
           v-if="icon"
-          class="nav-icon fas"
+          class="icon-nav fas"
           :class="icon"
         />
       </slot>

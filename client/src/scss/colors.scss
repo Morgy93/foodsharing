@@ -1,5 +1,6 @@
 $primary: #533a20;
 $secondary: #64ae24;
+$gray: #5e636e;
 $success: $secondary;
 
 @import "~bootstrap/scss/functions";
@@ -16,19 +17,19 @@ $success: $secondary;
 $colorlist: (
   "primary": $primary,
   "secondary": $secondary,
-  "light": scale-color(tint($primary, 95), $saturation: 65),
+  "gray": $gray,
 );
 
 :root {
-
-    --fs-color-transparent: transparent;
-
+    /**
+        Generated
+    */
     @each $name, $color in $colorlist {
-        $step: 100%;
+        $step: 110%;
         @for $i from 1 through 9 {
             $index: $i * 100;
             @if $i < 5 {
-                $step: $step - 10%;
+                $step: $step - 15%;
                 --fs-color-#{$name}-#{$index}: #{tint($color, $step)};
                 // --fs-color-#{$name}-#{$index}: #{scale-color(tint($color, $step), $saturation: $step / 2.5)};
             }
@@ -45,6 +46,17 @@ $colorlist: (
 
         }
     }
+    @each $name, $color in $colorlist {
+        $step: 100;
+        @for $i from 1 through 9 {
+            $index: $i * 10;
+            --fs-color-#{$name}-alpha-#{$index}: #{scale-color($color, $alpha: -($step - $index))};
+        }
+    }
+    /**
+        NEW STYLES
+    */
+    --fs-color-transparent: transparent;
 
     /**
         OLD STYLES
@@ -66,7 +78,7 @@ $colorlist: (
     --fs-brown: var(--fs-color-primary-500); /* #533a20 */
     --fs-green: var(--fs-color-secondary-500); /* #64ae24 */
     --fs-beige: var(--fs-color-primary-200); /* #f1e7c9 */
-    --fs-white: var(--fs-color-light-500); /* #f9f5e0 */
+    --fs-white: var(--fs-color-secondary-100); /* #f9f5e0 */
     --fs-dark-grey: var(--lt-color-gray-600); /* #9C9C9C */
     --fs-black: var(--lt-color-gray-900); /*#333333 */
     --fs-light-grey: var(--lt-color-gray-500); /* #555555 */

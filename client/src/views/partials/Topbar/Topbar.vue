@@ -1,7 +1,7 @@
 <template>
   <!-- eslint-disable -->
-  <div class="bootstrap sticky">
-  <nav class="nav navbar navbar-expand-md">
+  <div class="bootstrap">
+  <nav class="sticky nav navbar navbar-expand-md">
     <ul class="metanav-container container">
       <ul
         v-if="!viewIsMobile"
@@ -27,13 +27,10 @@
           </template>
         </Link>
         <Dropdown v-if="!viewIsMobile" icon="fa-globe" title="Regions"/>
-        <Dropdown v-if="!viewIsMobile" icon="fa-users" title="Gruppen"/>
-        <!-- <Dropdown icon="fa-shopping-cart" title="Stores"/> -->
+        <NavGroups v-if="!viewIsMobile" />
         <NavStores />
-        <!-- <Dropdown badge="99+" icon="fa-shopping-basket" title="Essenskörbe"/> -->
         <NavBaskets />
 
-        <!-- <Dropdown v-if="viewIsMobile" icon="fa-comments" title="Nachrichten"/> -->
         <NavConversations v-if="viewIsMobile" />
         <NavBells v-if="viewIsMobile" />
 
@@ -68,8 +65,7 @@
           <ul class="sidenav">
             <Link icon="fa-search" title="Suche" data-toggle="modal" data-target="#searchBarModal"/>
             <Link v-if="viewIsMobile" icon="fa-globe" title="Bezirke"/>
-            <Link v-if="viewIsMobile" icon="fa-comments" title="Gruppen"/>
-            <!-- <Dropdown v-if="!viewIsMobile" badge="33" icon="fa-comments" title="Nachrichten" direction="right"/> -->
+            <Link v-if="viewIsMobile" :href="$url('workingGroups')" icon="fa-users" :title="$i18n('menu.entry.groups')"/>
             <NavConversations v-if="!viewIsMobile"/>
             <NavBells v-if="!viewIsMobile"/>
             <NavUser />
@@ -102,6 +98,7 @@ import NavBells from '@/components/Topbar/Bells/NavBells'
 import NavConversations from '@/components/Topbar/Conversations/NavConversations'
 import NavBaskets from '@/components/Topbar/Baskets/NavBaskets'
 import NavStores from '@/components/Topbar/Stores/NavStores'
+import NavGroups from '@/components/Topbar/Groups/NavGroups'
 // Hidden Elements
 import LanguageChooser from '@/components/Topbar/LanguageChooser'
 import SearchBarModal from '@/components/SearchBar/SearchBarModal'
@@ -122,6 +119,7 @@ export default {
     NavConversations,
     NavBaskets,
     NavStores,
+    NavGroups,
   },
   mixins: [MediaQueryMixin, ScrollMixin],
   props: {
@@ -230,7 +228,6 @@ export default {
   display: block;
   color: var(--fs-color-primary-500);
   background-color: var(--fs-color-primary-100);
-  border-bottom: 1px solid var(--fs-color-primary-200);
 }
 
 .metanav,
@@ -284,7 +281,7 @@ export default {
 }
 
 .metanav-container {
-  border-bottom: 1px solid var(--fs-color-primary-200)
+  border-bottom: 1px solid var(--fs-color-gray-200)
 }
 
 ::v-deep .navbar-collapse {

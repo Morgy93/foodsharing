@@ -1,3 +1,5 @@
+@import '../../../scss/icon-sizes.scss';
+
 .nav-link {
     margin-right: 0.25rem;
     color: currentColor;
@@ -84,12 +86,4 @@
   .sidenav & {
     display: none;
   }
-}
-
-.nav-icon {
-  min-width: 1rem;
-  max-width: 1rem;
-  min-height: 1rem;
-  max-height: 1rem;
-  margin-right: 0.25rem;
 }

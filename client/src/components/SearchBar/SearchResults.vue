@@ -11,7 +11,7 @@
       class="entry"
     >
       <h3 class="dropdown-header">
-        <i class="fas fa-user" /> {{ $i18n('search.mybuddies') }}
+        <i class="icon-subnav fas fa-user" /> {{ $i18n('search.mybuddies') }}
       </h3>
       <search-result-entry
         v-for="buddy in filtered.myBuddies"
@@ -27,7 +27,7 @@
       class="entry"
     >
       <h3 class="dropdown-header">
-        <i class="fas fa-users" /> {{ $i18n('search.mygroups') }}
+        <i class="icon-subnav fas fa-users" /> {{ $i18n('search.mygroups') }}
       </h3>
       <search-result-entry
         v-for="group in filtered.myGroups"
@@ -43,7 +43,7 @@
       class="entry"
     >
       <h3 class="dropdown-header">
-        <i class="fas fa-shopping-cart" /> {{ $i18n('search.mystores') }}
+        <i class="icon-subnav fas fa-shopping-cart" /> {{ $i18n('search.mystores') }}
       </h3>
       <search-result-entry
         v-for="store in filtered.myStores"
@@ -59,7 +59,7 @@
       class="entry"
     >
       <h3 class="dropdown-header">
-        <i class="fas fa-home" /> {{ $i18n('search.myregions') }}
+        <i class="icon-subnav fas fa-home" /> {{ $i18n('search.myregions') }}
       </h3>
       <search-result-entry
         v-for="region in filtered.myRegions"
@@ -76,7 +76,7 @@
       class="entry"
     >
       <h3 class="dropdown-header">
-        <i class="fas fa-users" /> {{ $i18n('search.groups') }}
+        <i class="icon-subnav fas fa-users" /> {{ $i18n('search.groups') }}
       </h3>
       <search-result-entry
         v-for="group in filtered.groups"
@@ -92,7 +92,7 @@
       class="entry"
     >
       <h3 class="dropdown-header">
-        <i class="fas fa-child" /> {{ $i18n('search.persons') }}
+        <i class="icon-subnav fas fa-child" /> {{ $i18n('search.persons') }}
       </h3>
       <search-result-entry
         v-for="user in filtered.users"
@@ -105,7 +105,7 @@
     </div>
     <div v-if="filtered.stores.length">
       <h3 class="dropdown-header">
-        <i class="fas fa-shopping-cart" /> {{ $i18n('menu.entry.stores') }}
+        <i class="icon-subnav fas fa-shopping-cart" /> {{ $i18n('menu.entry.stores') }}
       </h3>
       <search-result-entry
         v-for="store in filtered.stores"
@@ -118,7 +118,7 @@
     </div>
     <div v-if="filtered.foodSharePoints.length">
       <h3 class="dropdown-header">
-        <i class="fas fa-recycle" /> {{ $i18n('terminology.fsps') }}
+        <i class="icon-subnav fas fa-recycle" /> {{ $i18n('terminology.fsps') }}
       </h3>
       <search-result-entry
         v-for="foodSharePoint in filtered.foodSharePoints"
@@ -131,7 +131,7 @@
     </div>
     <div v-if="filtered.regions.length">
       <h3 class="dropdown-header">
-        <i class="fas fa-home" /> {{ $i18n('terminology.regions') }}
+        <i class="icon-subnav fas fa-home" /> {{ $i18n('terminology.regions') }}
       </h3>
       <search-result-entry
         v-for="region in filtered.regions"
@@ -261,10 +261,7 @@ export default {
 </script>
 
 <style lang="scss" scoped>
-.dropdown-header {
-    white-space: normal;
-    margin-bottom: 0;
-}
+@import '../../scss/icon-sizes.scss';
 
 .entry:not(:last-child) {
   padding-bottom: 1rem;

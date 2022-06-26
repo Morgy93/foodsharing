@@ -8,11 +8,9 @@ $navbar-padding-y: 0.1em;
 $navbar-dark-color: rgba(#ffffff, 0.7) ;
 $navbar-dark-hover-color: rgba(#ffffff, 1) ;
 
-
 :root {
     --border-radius: #{$border-radius};
 }
-
 
 @import "~bootstrap/scss/functions";
 @import "~bootstrap/scss/variables";

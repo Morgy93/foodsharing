@@ -10,7 +10,7 @@
       <slot name="icon">
         <i
           v-if="icon"
-          class="nav-icon fas"
+          class="icon-nav fas"
           :class="icon"
         />
       </slot>
@@ -163,13 +163,7 @@ export default {
   align-items: center;
 
   & i {
-    line-height: 0;
-    display: inline-flex;
-    justify-content: center;
-    align-items: center;
-    width: 1rem;
-    height: 1rem;
-    margin-right: 0.5rem;
+    @extend .icon-subnav;
   }
 }
 

@@ -1,41 +1,23 @@
 <template>
-  <!-- eslint-disable -->
-  <div @click.prevent>
-    <div class="card">
-      <div class="card-header" :id="entry.id">
-        <h5 class="mb-0">
-          <button class="btn btn-link" data-toggle="collapse" :data-target="'#'+entry.id" aria-expanded="true" :aria-controls="entry.id">
-            {{ entry.name }}
-          </button>
-        </h5>
-      </div>
-
-      <div :id="entry.id" class="collapse" :aria-labelledby="entry.id" data-parent="#regions">
-        <div class="card-body">
-          Anim pariatur cliche reprehenderit, enim eiusmod high life accusamus terry richardson ad squid. 3 wolf moon officia aute, non cupidatat skateboard dolor brunch. Food truck quinoa nesciunt laborum eiusmod. Brunch 3 wolf moon tempor, sunt aliqua put a bird on it squid single-origin coffee nulla assumenda shoreditch et. Nihil anim keffiyeh helvetica, craft beer labore wes anderson cred nesciunt sapiente ea proident. Ad vegan excepteur butcher vice lomo. Leggings occaecat craft beer farm-to-table, raw denim aesthetic synth nesciunt you probably haven't heard of them accusamus labore sustainable VHS.
-        </div>
-      </div>
-    </div>
-    <!-- <ul class="">
-      <li
-        v-for="(item, idx) of menu(entry)"
-        :key="idx"
+  <ul class="">
+    <li
+      v-for="(item, idx) of menu(entry)"
+      :key="idx"
+    >
+      <a
+        :href="item.href ? $url(item.href, entry.id, item.special) : '#'"
+        role="menuitem"
+        class="dropdown-item dropdown-action"
+        @click="item.func ? item.func() : null"
       >
-        <a
-          :href="item.href ? $url(item.href, entry.id, item.special) : '#'"
-          role="menuitem"
-          class="dropdown-item dropdown-action"
-          @click="item.func ? item.func() : null"
-        >
-          <i
-            class="fas"
-            :class="item.icon"
-          />
-          {{ $i18n(item.text) }}
-        </a>
-      </li>
-    </ul> -->
-  </div>
+        <i
+          class="fas"
+          :class="item.icon"
+        />
+        {{ $i18n(item.text) }}
+      </a>
+    </li>
+  </ul>
 </template>
 <script>
 // Mixins

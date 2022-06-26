@@ -6,7 +6,7 @@
   >
     <i
       v-b-tooltip="pickupStringStatus"
-      class="icon icon--small-container mr-2 fas fa-circle"
+      class="icon-subnav fas fa-circle"
       :class="{
         'text-transparent': entry.pickupStatus === 0,
         'text-primary': entry.pickupStatus === 1,

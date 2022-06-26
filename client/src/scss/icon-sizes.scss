@@ -4,13 +4,26 @@
     min-height: var(--size);
     width: var(--size);
     height: var(--size);
-    line-height: 0.7em;
-    font-size: 1em;
     color: currentColor;
 
     display: inline-flex;
     align-items: center;
     justify-content: center;
+
+    font-size: 1em;
+    line-height: 0;
+}
+
+.icon-nav {
+    @extend .icon;
+    --size: 1em;
+    margin-right: 0.25rem;
+}
+
+.icon-subnav {
+    @extend .icon;
+    --size: 1rem;
+    margin-right: 0.25rem;
 }
 
 .icon--small-container {
