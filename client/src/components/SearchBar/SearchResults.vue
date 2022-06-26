@@ -266,6 +266,6 @@ export default {
 .entry:not(:last-child) {
   padding-bottom: 1rem;
   margin-bottom: 1rem;
-  border-bottom: 1px solid var(--lt-color-gray-300);
+  border-bottom: 1px solid var(--fs-color-gray-300);
 }
 </style>

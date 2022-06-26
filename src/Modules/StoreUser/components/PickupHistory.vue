@@ -209,7 +209,7 @@ export default {
   }
 
   .date-separator {
-    border-top-color: var(--border);
+    border-top-color: var(--fs-color-border);
   }
   .date-separator::after {
     content: '->';

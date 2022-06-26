@@ -40,11 +40,11 @@
 
 .q-neutral {
   background-color: #f5f5b5;
-  color: var(--fs-brown);
+  color: var(--fs-color-primary-500);
 }
 
 .q-neutral label.wrapper-label {
-  color: var(--fs-brown) !important;
+  color: var(--fs-color-primary-500) !important;
 }
 
 .question {
@@ -52,7 +52,7 @@
   font-weight: bold;
   position: relative;
   width: 96%;
-  background: var(--fs-brown);
+  background: var(--fs-color-primary-500);
   border-radius: 10px;
   padding: 15px;
 }
@@ -62,7 +62,7 @@
   position: absolute;
   border-style: solid;
   border-width: 10px 10px 10px 0;
-  border-color: transparent var(--fs-brown);
+  border-color: transparent var(--fs-color-primary-500);
   display: block;
   width: 0;
   z-index: 1;

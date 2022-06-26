@@ -33,7 +33,7 @@ table.pintable tr.milestone {
 table.pintable tr.milestone td {
   vertical-align: middle;
   text-align: center;
-  color: var(--fs-brown);
+  color: var(--fs-color-primary-500);
   padding-top: 10px;
   padding-bottom: 10px;
 }

@@ -73,8 +73,8 @@ export default {
 
 <style lang="scss">
 input[disabled]{
-  color: var(--fs-light-grey);
-  background-color: rgba(var(--fs-light-grey-rgb), 0.2);
+  color: var(--fs-color-gray-500);
+  background-color: var(--fs-color-gray-alpha-20);
 }
 
 .element-wrapper{

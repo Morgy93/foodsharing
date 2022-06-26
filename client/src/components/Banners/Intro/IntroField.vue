@@ -1,7 +1,7 @@
 <template>
   <div
     v-if="user"
-    class="intro alert alert-primary d-flex align-items-center"
+    class="intro alert alert-secondary d-flex align-items-center"
   >
     <a
       v-if="user"

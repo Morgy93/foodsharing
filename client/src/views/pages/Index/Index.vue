@@ -495,12 +495,12 @@ export default {
 }
 
 ::v-deep .link {
-  color: var(--fs-green);
+  color: var(--fs-color-secondary-500);
   font-weight: bold;
 }
 
 .line {
-  border-bottom: 1px solid var(--fs-light-grey);
+  border-bottom: 1px solid var(--fs-color-gray-500);
   width: 90%;
   margin: 0 auto;
 }
@@ -520,7 +520,7 @@ svg {
 }
 
 .teaser-background {
-  background-color: var(--fs-beige);
+  background-color: var(--fs-color-primary-200);
   max-width: 805px;
   max-height: 451px;
 }

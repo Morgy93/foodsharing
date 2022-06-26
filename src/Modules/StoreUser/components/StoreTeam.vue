@@ -457,7 +457,7 @@ export default {
 
     tr {
       display: flex;
-      border-bottom: 1px solid var(--border);
+      border-bottom: 1px solid var(--fs-color-border);
 
       &.b-table-details {
         justify-content: center;
@@ -482,7 +482,7 @@ export default {
 
   tr td {
     padding: 3px;
-    border-top-color: var(--border);
+    border-top-color: var(--fs-color-border);
     vertical-align: middle;
     cursor: default;
     display: inline-block;
@@ -509,19 +509,19 @@ export default {
       .member-call {
         padding: 10px;
         align-self: center;
-        color: var(--fs-green);
+        color: var(--fs-color-secondary-500);
 
         &.copy-clipboard { opacity: 0.7; }
 
         &:hover {
-          background-color: var(--fs-green);
+          background-color: var(--fs-color-secondary-500);
           color: var(--white);
         }
         &:focus {
-          outline: 2px solid var(--fs-green);
+          outline: 2px solid var(--fs-color-secondary-500);
         }
         &:disabled {
-          color: var(--fs-beige);
+          color: var(--fs-color-primary-200);
         }
       }
     }

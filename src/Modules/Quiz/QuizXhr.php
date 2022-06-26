@@ -941,7 +941,7 @@ class QuizXhr extends Control
 						} else {
 							$atext = 'Richtig! Diese Antwort stimmt.';
 						}
-						$bg = 'var(--fs-green)';
+						$bg = 'var(--fs-color-secondary-500)';
 						$color = '#ffffff';
 					} // Antwort richtig, weil nicht angeklickt
 					else {

@@ -3,7 +3,7 @@
 }
 
 .profile-infos {
-  color: var(--fs-brown);
+  color: var(--fs-color-primary-500);
   margin-bottom: -5px;
 }
 .profile-infos.profile-main {
@@ -26,7 +26,7 @@
   font-weight: bold;
 }
 .verify {
-  background-color: var(--fs-green);
+  background-color: var(--fs-color-secondary-500);
 }
 .unverify {
   background-color: red;
@@ -55,7 +55,7 @@
   padding: 0 5px 0 5px;
   margin-right: 8px;
   border-radius: 50%;
-  background-color: var(--fs-green);
+  background-color: var(--fs-color-secondary-500);
   text-align: center;
   width: 62px;
 }
@@ -121,5 +121,5 @@ div.pickup > div.pickup-title > div.store-title {
 }
 #disabledreports a {
   font-weight: bolder;
-  color: var(--fs-green);
+  color: var(--fs-color-secondary-500);
 }

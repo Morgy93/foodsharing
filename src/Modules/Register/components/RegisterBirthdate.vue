@@ -90,10 +90,10 @@ export default {
 </script>
 <style scoped>
 .datepickerClass {
-  border: 1px solid var(--border) !important;
+  border: 1px solid var(--fs-color-border) !important;
 }
 .datepicker ::v-deep .input-group-text{
-  background-color: var(--fs-green);
+  background-color: var(--fs-color-secondary-500);
   color: white;
 }
 </style>

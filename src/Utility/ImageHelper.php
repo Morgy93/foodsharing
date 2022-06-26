@@ -175,7 +175,7 @@ final class ImageHelper
 					$bg = 'box-sizing:border-box;border:3px solid #4A3520;';
 					break;
 				case Role::STORE_MANAGER:
-					$bg = 'box-sizing:border-box;border:3px solid var(--fs-green);';
+					$bg = 'box-sizing:border-box;border:3px solid var(--fs-color-secondary-500);';
 					break;
 				case Role::AMBASSADOR:
 					$bg = 'box-sizing:border-box;border:3px solid #FFBB00;';

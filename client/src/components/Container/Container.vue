@@ -88,19 +88,19 @@ export default {
   }
 }
 
-.list-group-header,
-.list-group-expand {
-  cursor: pointer;
-  padding: 0 1rem;
-  display: flex;
-  align-items: center;
-  min-height: 40px;
-}
-
 .list-group-header {
-  background-color: var(--primary);
-  color: var(--white);
+  align-items: center;
+  background-color: var(--fs-color-primary-500);
+  color: var(--fs-color-primary-100);
+  cursor: pointer;
+  display: flex;
   justify-content: space-between;
+  min-height: 40px;
+  padding: 0 1rem;
+
+  &:hover {
+    background-color: var(--fs-color-primary-600);
+  }
 
   h5 {
     font-size: 0.8rem;

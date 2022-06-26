@@ -72,7 +72,7 @@
 
 .content-top {
   background-color: var(--white);
-  color: var(--fs-brown);
+  color: var(--fs-color-primary-500);
   padding: 15px;
   margin-bottom: 15px;
 }
@@ -99,7 +99,7 @@
   padding: 8px !important;
   position: absolute !important;
   width: 250px !important;
-  color: var(--fs-brown) !important;
+  color: var(--fs-color-primary-500) !important;
   font-size: 13px !important;
   font-weight: bold !important;
   z-index: 150;
@@ -141,7 +141,7 @@
 .markdown a[href],
 .bootstrap .markdown a,
 .ui-widget-content a {
-  color: var(--fs-green);
+  color: var(--fs-color-secondary-500);
   text-decoration: none;
 }
 
@@ -150,7 +150,7 @@ a:hover,
 .markdown a[href]:hover,
 .bootstrap .markdown a:hover,
 .ui-widget-content a:hover {
-  color: var(--fs-green);
+  color: var(--fs-color-secondary-500);
   text-decoration: underline;
 }
 
@@ -180,12 +180,12 @@ blockquote:after {
 /* RESET END */
 
 body{
-  background-color: var(--fs-white);
+  background-color: var(--fs-color-secondary-100);
 }
 
 .odd {
   background-color: #fffffe;
-  border-bottom: 1px solid var(--border);
+  border-bottom: 1px solid var(--fs-color-border);
 }
 
 .v-form {
@@ -194,14 +194,14 @@ body{
 }
 
 .input-wrapper {
-  border-bottom: 1px solid var(--border);
+  border-bottom: 1px solid var(--fs-color-border);
   padding-bottom: 15px;
   padding-top: 15px;
   margin-top: 0;
 }
 
 .input-wrapper label.wrapper-label {
-  color: var(--fs-brown);
+  color: var(--fs-color-primary-500);
   display: block;
 
   font-weight: lighter;
@@ -214,7 +214,7 @@ label.wrapper-label.required:after {
 
 .input-wrapper label.wrapper-label a {
   text-decoration: none;
-  color: var(--fs-brown);
+  color: var(--fs-color-primary-500);
 }
 
 .input-wrapper label.wrapper-label a:hover {
@@ -288,7 +288,7 @@ div.popbox h3 {
 }
 
 div.popbox a.link {
-  color: var(--fs-brown);
+  color: var(--fs-color-primary-500);
   text-decoration: none;
 }
 
@@ -375,7 +375,7 @@ div.msg-inside.error a:hover {
 
 div.msg-inside.success,
 div.msg-inside.success a {
-  background-color: var(--fs-green) !important;
+  background-color: var(--fs-color-secondary-500) !important;
   color: var(--white) !important;
 }
 
@@ -384,7 +384,7 @@ div.msg-inside.error i {
 }
 
 div#pulse-success {
-  background-color: var(--fs-green) !important;
+  background-color: var(--fs-color-secondary-500) !important;
   color: var(--white) !important;
 }
 
@@ -395,7 +395,7 @@ div#pulse-error {
 
 div#pulse-info {
   background-color: #f7e9cf !important;
-  color: var(--fs-brown) !important;
+  color: var(--fs-color-primary-500) !important;
 }
 
 div.pulse-msg p {
@@ -405,12 +405,12 @@ div.pulse-msg p {
 
 div.broadcast-message {
   border-radius: 0;
-  border-bottom: 1px solid var(--fs-brown);
+  border-bottom: 1px solid var(--fs-color-primary-500);
   padding: 15px;
   padding-top: 30px;
   padding-bottom: 10px;
   margin-top: -20px;
-  background-color: var(--fs-white);
+  background-color: var(--fs-color-secondary-100);
   text-align: center;
 }
 
@@ -437,7 +437,7 @@ div.foot {
   text-align: left;
   font-size: 11px;
   padding: 12px 0 5px 8px;
-  color: var(--fs-brown);
+  color: var(--fs-color-primary-500);
 }
 
 .foot span,
@@ -456,7 +456,7 @@ a.light {
 }
 
 a.light:hover {
-  color: var(--fs-brown);
+  color: var(--fs-color-primary-500);
 }
 
 select.childChanger {
@@ -512,7 +512,7 @@ div.welcome {
 }
 
 div.welcome a {
-  color: var(--fs-brown);
+  color: var(--fs-color-primary-500);
   text-decoration: none;
 }
 
@@ -543,7 +543,7 @@ div.welcome .welcome_profile_name {
 
 div.welcome .user_display_name {
   padding-top: 6px;
-  color: var(--fs-brown);
+  color: var(--fs-color-primary-500);
   font-weight: bold;
 }
 
@@ -600,7 +600,7 @@ ul.linklist li > a i.fa {
 .history li.title {
   font-size: 13px;
   font-weight: bold;
-  border-top: 1px solid var(--border);
+  border-top: 1px solid var(--fs-color-border);
   padding-top: 8px;
   margin-top: 8px;
 }
@@ -636,7 +636,7 @@ ul.linklist li span.i img {
 }
 
 ul.linklist li > a.more {
-  background-color: var(--fs-green);
+  background-color: var(--fs-color-secondary-500);
   border-bottom-left-radius: 6px;
   border-bottom-right-radius: 6px;
   color: var(--white);
@@ -659,25 +659,25 @@ ul.linklist li > a span {
 ul.linklist li > a {
   padding: 6px;
   text-decoration: none !important;
-  color: var(--fs-brown);
+  color: var(--fs-color-primary-500);
   font-weight: lighter;
   position: relative;
 }
 
 ul.linklist li > a span.title {
   text-decoration: none !important;
-  color: var(--fs-brown);
+  color: var(--fs-color-primary-500);
   font-weight: bold;
 }
 
 ul.linklist li > a.active {
-  color: var(--fs-brown);
+  color: var(--fs-color-primary-500);
   font-weight: bold;
 }
 
 ul.linklist li > a:hover,
 ul.linklist li > a:hover span {
-  background-color: var(--fs-green);
+  background-color: var(--fs-color-secondary-500);
   color: var(--white);
 }
 
@@ -692,7 +692,7 @@ ul.linklist li > a:hover span {
 }
 
 .post a {
-  color: var(--fs-green);
+  color: var(--fs-color-secondary-500);
   text-decoration: none;
 }
 
@@ -705,7 +705,7 @@ ul.linklist li > a:hover span {
 }
 
 .ui-widget-header {
-  background: none repeat scroll 0 0 var(--fs-brown);
+  background: none repeat scroll 0 0 var(--fs-color-primary-500);
   color: var(--white);
   font-weight: bold;
   border: 0;
@@ -754,7 +754,7 @@ span.verified {
 
 .scroller .thumb .end,
 .scroller .thumb {
-  background-color: var(--fs-brown);
+  background-color: var(--fs-color-primary-500);
   border-radius: 4px;
 }
 
@@ -794,7 +794,7 @@ span.verified {
 
 .ui-tooltip,
 .arrow:after {
-  background: var(--fs-brown);
+  background: var(--fs-color-primary-500);
   border: 2px solid white;
 }
 
@@ -841,7 +841,7 @@ span.verified {
 }
 
 a.light {
-  color: var(--fs-brown);
+  color: var(--fs-color-primary-500);
 }
 
 ul.linklist li > a:hover span.day {
@@ -854,7 +854,7 @@ a.expand-collapse-link {
   text-align: center;
   color: var(--white);
   font-weight: bold;
-  background-color: var(--fs-green);
+  background-color: var(--fs-color-secondary-500);
   text-decoration: none;
   border-bottom-right-radius: 6px;
   border-bottom-left-radius: 6px;
@@ -863,7 +863,7 @@ a.expand-collapse-link {
 }
 
 a.expand-collapse-link:hover {
-  background-color: var(--fs-green);
+  background-color: var(--fs-color-secondary-500);
   text-decoration: none;
 }
 
@@ -891,7 +891,7 @@ a.preview-thumb {
 }
 
 a.preview-thumb:hover {
-  border: 3px solid var(--fs-brown);
+  border: 3px solid var(--fs-color-primary-500);
 }
 
 .attach-load {
@@ -931,7 +931,7 @@ td.load {
 .ui-button,
 .button {
   color: var(--white) !important;
-  background-color: var(--fs-green);
+  background-color: var(--fs-color-secondary-500);
   border-radius: 6px;
   border: 0 none;
   text-decoration: none;
@@ -953,7 +953,7 @@ td.load {
 
 .ui-button:hover,
 .button:hover {
-  background-color: var(--fs-green);
+  background-color: var(--fs-color-secondary-500);
   opacity: 0.8;
   text-decoration: none !important;
 }
@@ -1035,7 +1035,7 @@ ul.linklist li > a .avatar span.bubble,
 ul.linklist li > a:hover .avatar span.bubble {
   margin-left: 37px !important;
   margin-top: -40px !important;
-  color: var(--fs-brown) !important;
+  color: var(--fs-color-primary-500) !important;
 }
 
 .slimScrollDiv .avatar .bubble {
@@ -1056,7 +1056,7 @@ ul.linklist li > a:hover .avatar span.bubble {
 }
 
 .vidlink:hover img {
-  border: 10px solid var(--fs-green);
+  border: 10px solid var(--fs-color-secondary-500);
 }
 
 .vmap {
@@ -1066,7 +1066,7 @@ ul.linklist li > a:hover .avatar span.bubble {
 }
 
 .bottom_bar {
-  border-top: 1px solid var(--border) !important;
+  border-top: 1px solid var(--fs-color-border) !important;
   padding-top: 7px;
 }
 
@@ -1107,5 +1107,5 @@ div.bottom_bar .button-interactions {
 }
 
 .bootstrap input.form-control::placeholder {
-  color: var(--fs-light-grey);
+  color: var(--fs-color-gray-500);
 }

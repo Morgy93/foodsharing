@@ -28,22 +28,22 @@ a.button {
   display: inline-block;
   padding: 6px 16px;
   border: 1px solid #ffffff;
-  background-color: var(--fs-brown);
+  background-color: var(--fs-color-primary-500);
   color: #ffffff !important;
   font-weight: bold;
   border-radius: 8px;
 }
 
 a.button:hover {
-  border: 1px solid var(--fs-brown);
+  border: 1px solid var(--fs-color-primary-500);
   background-color: #ffffff;
-  color: var(--fs-brown) !important;
+  color: var(--fs-color-primary-500) !important;
   text-decoration: none !important;
 }
 
 .border {
   padding: 10px;
-  border-top: 1px solid var(--fs-brown);
-  border-bottom: 1px solid var(--fs-brown);
+  border-top: 1px solid var(--fs-color-primary-500);
+  border-bottom: 1px solid var(--fs-color-primary-500);
   background-color: #ffffff;
 }

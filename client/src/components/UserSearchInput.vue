@@ -127,8 +127,8 @@ export default {
   }
 
   .suggest-item.hover {
-    border: 1px solid var(--fs-green);
-    background-color: var(--fs-green);
+    border: 1px solid var(--fs-color-secondary-500);
+    background-color: var(--fs-color-secondary-500);
     color: white;
   }
 }

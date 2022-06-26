@@ -71,12 +71,12 @@ export default {
 
 <style lang="scss" scoped>
 .team-ava {
-  --fetchcount-bg: var(--fs-beige);
-  --fetchcount-fg: var(--fs-brown);
-  --fetchcount-border: var(--fs-brown);
-  --role-may-manage-store: var(--fs-green);
+  --fetchcount-bg: var(--fs-color-primary-200);
+  --fetchcount-fg: var(--fs-color-primary-500);
+  --fetchcount-border: var(--fs-color-primary-500);
+  --role-may-manage-store: var(--fs-color-secondary-500);
   --role-may-ambassador: var(--warning);
-  --role-other: var(--fs-beige);
+  --role-other: var(--fs-color-primary-200);
 }
 
 a {

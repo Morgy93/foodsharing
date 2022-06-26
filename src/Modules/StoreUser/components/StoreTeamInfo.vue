@@ -79,7 +79,7 @@ export default {
 
   &:hover, &:focus {
     text-decoration: none;
-    outline-color: var(--fs-brown);
+    outline-color: var(--fs-color-primary-500);
   }
 
   .member-name {

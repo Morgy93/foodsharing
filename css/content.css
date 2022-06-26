@@ -77,7 +77,7 @@ ul.linklist li a,
 .activity_feed_content_info p,
 input, textarea, select, option {
   font-size: 12px;
-  color: var(--fs-brown);
+  color: var(--fs-color-primary-500);
   line-height: 1.28;
 }
 
@@ -347,7 +347,7 @@ i {
 }
 
 .page h1, .page h2, .page h3, .page h4 {
-  color: var(--fs-brown);
+  color: var(--fs-color-primary-500);
 }
 
 .page h1,
@@ -356,7 +356,7 @@ i {
   font-family: 'Alfa Slab One', serif;
   font-weight: normal;
   font-size: 20px;
-  color: var(--fs-brown);
+  color: var(--fs-color-primary-500);
   margin-bottom: 30px;
 }
 
@@ -365,7 +365,7 @@ i {
 }
 
 .page .h1 small, .page .h1 small p {
-  color: var(--fs-brown);
+  color: var(--fs-color-primary-500);
   font-size: 12px;
 }
 
@@ -390,7 +390,7 @@ i {
 
 .page p {
   margin-bottom: 30px;
-  color: var(--fs-brown);
+  color: var(--fs-color-primary-500);
 }
 
 .page ul {
@@ -398,14 +398,14 @@ i {
 }
 
 .page li {
-  color: var(--fs-brown);
+  color: var(--fs-color-primary-500);
 }
 
 .reddot h5 {
   font-family: 'Alfa Slab One', serif;
   font-weight: normal;
   font-size: 17px;
-  color: var(--fs-brown);
+  color: var(--fs-color-primary-500);
 }
 
 .reddot h5 span {

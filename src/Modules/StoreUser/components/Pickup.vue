@@ -310,7 +310,7 @@ export default {
   .pickup-text {
     margin-bottom: 0.5rem;
     padding-bottom: 0.5rem;
-    border-bottom: 1px solid var(--border);
+    border-bottom: 1px solid var(--fs-color-border);
   }
 }
 
@@ -350,13 +350,13 @@ export default {
       margin-left: 1px;
       width: 50px;
       height: 50px;
-      color: rgba(var(--fs-brown-rgb), 0.75);
-      background-color: rgba(var(--fs-white-rgb), 0.5);
-      border-color: var(--fs-beige);
+      color: var(--fs-color-primary-alpha-70);
+      background-color: var(--fs-color-primary-alpha-20);
+      border-color: var(--fs-color-primary-200);
       border-width: 2px;
 
       &:hover {
-        border-color: var(--fs-brown);
+        border-color: var(--fs-color-primary-500);
       }
       &:focus {
         box-shadow: none;
@@ -366,13 +366,13 @@ export default {
         border-width: 0;
       }
       &.btn-secondary {
-        background-color: var(--fs-beige);
+        background-color: var(--fs-color-primary-200);
       }
       &[disabled] {
         opacity: 1;
       }
       &[disabled]:hover {
-        border-color: var(--fs-beige);
+        border-color: var(--fs-color-primary-200);
         cursor: default;
       }
     }
@@ -384,7 +384,7 @@ export default {
     position: absolute;
     top: -4px;
     right: -9px;
-    color: var(--fs-brown);
+    color: var(--fs-color-primary-500);
     background-color: var(--white);
     opacity: 0.9;
 
@@ -407,7 +407,7 @@ export default {
   blockquote {
     margin: 0;
     padding-left: 0.5rem;
-    border-left: 3px solid var(--border);
+    border-left: 3px solid var(--fs-color-border);
 
     div {
       margin: 0.25rem;

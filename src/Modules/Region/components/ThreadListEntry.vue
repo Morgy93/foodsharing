@@ -106,7 +106,7 @@ export default {
     @media screen and (min-width: 576px) {
       .last-post {
         &, .info, .time {
-          color: var(--fs-brown);
+          color: var(--fs-color-primary-500);
           background-color: var(--white);
         }
       }

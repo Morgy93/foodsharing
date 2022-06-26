@@ -245,10 +245,10 @@ export default {
     color: var(--danger);
   }
   &.confirmed {
-    color: var(--fs-green);
+    color: var(--fs-color-secondary-500);
   }
   &.option {
-    color: var(--fs-brown);
+    color: var(--fs-color-primary-500);
   }
 }
 
@@ -274,7 +274,7 @@ export default {
 }
 
 .tooltip-link {
-  color: var(--fs-white);
+  color: var(--fs-color-secondary-100);
 }
 
 .table-footer-container {

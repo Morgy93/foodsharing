@@ -250,7 +250,7 @@ export default {
   font-size: 0.7rem;
   margin-top: .25rem;
   margin-bottom: .25rem;
-  color: var(--fs-color-primary-500);
+  color: var(--fs-color-gray-500);
 
   & .nav-link {
     padding: 0.25rem 1rem;
@@ -339,7 +339,8 @@ export default {
         width: 100%;
         text-align: left;
         pointer-events: none;
-        color: var(--lt-color-gray-500)
+        font-weight: 600;
+        color: var(--fs-color-primary-400)
       }
 
       & .nav-text {

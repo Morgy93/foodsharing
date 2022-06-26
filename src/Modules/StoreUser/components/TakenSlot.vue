@@ -157,14 +157,14 @@ export default {
   z-index: 3;
   transform: rotate(45deg);
   opacity: 0.9;
-  background-color: var(--fs-beige);
-  box-shadow: 0 0 3px 0px var(--fs-brown);
+  background-color: var(--fs-color-primary-200);
+  box-shadow: 0 0 3px 0px var(--fs-color-primary-500);
 
   &.pending {
     color: var(--danger);
   }
   &.confirmed {
-    color: var(--fs-green);
+    color: var(--fs-color-secondary-500);
   }
 
   // Check / Clock inside the statuspatch

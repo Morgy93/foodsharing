@@ -13,7 +13,7 @@
 }
 
 .chatboxhead {
-  background-color: var(--fs-brown);
+  background-color: var(--fs-color-primary-500);
   padding: 0;
   color: #ffffff;
 
@@ -62,7 +62,7 @@
 }
 
 .chatboxhead .settings li .optinput i {
-  color: var(--fs-brown);
+  color: var(--fs-color-primary-500);
   cursor: pointer;
   font-size: 20px;
   position: relative;
@@ -70,7 +70,7 @@
 }
 
 .chatboxhead .settings li .optinput i:hover {
-  color: var(--fs-green);
+  color: var(--fs-color-secondary-500);
 }
 
 .chatboxhead .settings li input {
@@ -94,7 +94,7 @@
 
 #msg-conversation a,
 .chatboxmessagecontent a {
-  color: var(--fs-green);
+  color: var(--fs-color-secondary-500);
   text-decoration: none;
 }
 
@@ -132,8 +132,8 @@
   border-radius: 6px;
   position: absolute;
   bottom: 4px;
-  box-shadow: 0 -2px 1px 1px var(--border);
-  outline-color: var(--fs-brown);
+  box-shadow: 0 -2px 1px 1px var(--fs-color-border);
+  outline-color: var(--fs-color-primary-500);
 }
 
 .chatboxtextareaselected {
@@ -149,7 +149,7 @@
 
 .chatboxinfo {
   margin-left: -1em;
-  color: var(--fs-brown);
+  color: var(--fs-color-primary-500);
   font-size: 12px;
 }
 
@@ -173,8 +173,8 @@
 }
 
 .chatboxmessage.my-message .chatboxmessagecontent {
-  background: none repeat scroll 0 0 var(--fs-beige);
-  color: var(--fs-brown);
+  background: none repeat scroll 0 0 var(--fs-color-primary-200);
+  color: var(--fs-color-primary-500);
   word-break: break-word;
 }
 
@@ -192,7 +192,7 @@
 
 .chatboxmessagecontent {
   background: none repeat scroll 0 0 #e1e1db;
-  color: var(--fs-brown);
+  color: var(--fs-color-primary-500);
   display: block;
   font-size: 12px;
   line-height: 1.28;
@@ -202,12 +202,12 @@
 
 .chatboxmessagecontent .time {
   display: block;
-  color: var(--fs-brown);
+  color: var(--fs-color-primary-500);
   font-size: 11px;
 }
 
 .chatboxmessage.my-message .chatboxmessagecontent .time {
-  color: var(--fs-brown);
+  color: var(--fs-color-primary-500);
 }
 
 .chatboxoptions {
@@ -217,7 +217,7 @@
 
 .chatboxoptions a {
   background-color: transparent;
-  color: var(--fs-white) !important;
+  color: var(--fs-color-secondary-100) !important;
   display: inline-block;
   font-weight: bold;
   margin: 0;
@@ -228,12 +228,12 @@
 }
 
 .chatboxoptions a:hover {
-  color: var(--fs-beige) !important;
+  color: var(--fs-color-primary-200) !important;
 }
 
 .chatboxtitle {
   padding: 7px;
-  color: var(--fs-white) !important;
+  color: var(--fs-color-secondary-100) !important;
   display: block;
   float: left;
   width: 205px;
@@ -244,19 +244,19 @@
 }
 
 .chatboxtitle a {
-  color: var(--fs-beige) !important;
+  color: var(--fs-color-primary-200) !important;
 }
 
 .chatboxtitle a:hover {
   text-decoration: none;
-  color: var(--fs-green) !important;
+  color: var(--fs-color-secondary-500) !important;
 }
 
 .chatboxtitle i {
   margin-right: 3px;
   position: relative;
   top: -1px;
-  color: var(--fs-beige) !important;
+  color: var(--fs-color-primary-200) !important;
 }
 
 .conversation-list .pics {
@@ -297,7 +297,7 @@
 }
 
 .conversation-list .icon .img.brown {
-  background-color: var(--fs-brown);
+  background-color: var(--fs-color-primary-500);
 }
 
 .conversation-list .icon .img.orange {
@@ -309,7 +309,7 @@
 }
 
 .conversation-list .icon .img.green {
-  background-color: var(--fs-green);
+  background-color: var(--fs-color-secondary-500);
 }
 
 .conversation-list li > a {
@@ -366,13 +366,13 @@ ul.conversation-list li.unread-1 > a::before {
   height: 10px;
   width: 10px;
   padding: 2px;
-  border: 3px solid var(--fs-white);
+  border: 3px solid var(--fs-color-secondary-100);
   border-radius: 10px;
   display: flex;
   content: " ";
   justify-content: center;
   background: var(--danger);
-  color: var(--fs-beige);
+  color: var(--fs-color-primary-200);
   font-family: 'Open Sans', sans-serif;
   z-index: 1;
 }

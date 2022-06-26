@@ -142,7 +142,7 @@ export default {
   font-family: 'Alfa Slab One', serif;
   font-weight: normal;
   font-size: 1rem;
-  color: var(--fs-brown);
+  color: var(--fs-color-primary-500);
 }
 
 .webcal {

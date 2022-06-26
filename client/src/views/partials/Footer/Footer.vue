@@ -467,7 +467,7 @@ export default {
 }
 
 .social_icons {
-  color: var(--fs-light-grey);
+  color: var(--fs-color-gray-500);
   font-size: 1.2rem;
   padding: .25rem;
 
@@ -486,17 +486,17 @@ h2 {
   font-style: normal;
   font-weight: normal;
   font-size: 1.1rem;
-  color: var(--fs-dark-grey);
+  color: var(--fs-color-gray-600);
 }
 
 .line {
-  border-bottom: 1px solid var(--fs-dark-grey);
+  border-bottom: 1px solid var(--fs-color-gray-600);
 }
 
 a, p, li {
   font-size: 1rem;
   line-height: 2rem;
-  color: var(--fs-black);
+  color: var(--fs-color-gray-900);
 }
 
 p {
