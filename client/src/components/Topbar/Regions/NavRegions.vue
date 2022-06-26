@@ -37,6 +37,8 @@
 </template>
 <script>
 // Store
+// Store
+import DataUser from '@/stores/user'
 import { getters } from '@/stores/regions'
 // Components
 import Dropdown from '../_NavItems/NavDropdown'
@@ -48,7 +50,12 @@ export default {
   components: { Dropdown, RegionsEntry },
   computed: {
     regions () {
-      return getters.get()
+      const homeRegion = DataUser.getters.getHomeRegion()
+      return getters.get().slice().sort((a, b) => {
+        if (a.id === homeRegion) return -1
+        if (b.id === homeRegion) return 1
+        else return a.name.localeCompare(b.name)
+      })
     },
   },
   methods: {

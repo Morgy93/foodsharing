@@ -7,8 +7,14 @@
       class="dropdown-header dropdown-item text-truncate"
       target="_self"
       @click.stop
-      v-html="entry.name"
-    />
+    >
+      <i
+        v-if="isHomeRegion"
+        v-b-tooltip="$i18n('dashboard.homeRegion', {region: entry.name})"
+        class="icon-subnav fas fa-home"
+      />
+      <span v-html="entry.name" />
+    </button>
     <h6
       v-if="isAlone"
       role="menuitem"
@@ -19,6 +25,7 @@
       :id="toggleId(entry.id)"
       class="dropdown-submenu"
       accordion="region"
+      :visible="isHomeRegion"
     >
       <a
         v-for="(menu,key) in menuEntries"
@@ -38,6 +45,8 @@
   </div>
 </template>
 <script>
+// Store
+import DataUser from '@/stores/user'
 // Mixins
 import ConferenceOpener from '@/mixins/ConferenceOpenerMixin'
 
@@ -55,6 +64,9 @@ export default {
     },
   },
   computed: {
+    isHomeRegion () {
+      return this.entry.id === DataUser.getters.getHomeRegion()
+    },
     menuEntries () {
       const menu = [
         {

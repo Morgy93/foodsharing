@@ -24,6 +24,9 @@ export const getters = {
   getUserId () {
     return store.user?.id
   },
+  getHomeRegion () {
+    return store.user?.regionId
+  },
   hasCalendarToken () {
     return store.user?.hasCalendarToken !== null || false
   },
