@@ -39,6 +39,9 @@ final class PassportGeneratorGateway extends BaseGateway
 						fs.verified,
 						fs.last_pass,
 						fs.photo,
+				       	fs.rolle,
+						fs.last_login,
+
 						UNIX_TIMESTAMP(fs.last_pass) AS last_pass_ts,
 						b.name AS bezirk_name,
 						b.id AS bezirk_id
