@@ -21,12 +21,6 @@
           v-html="$i18n(entry.title)"
         />
       </template>
-      <template
-        #actions
-        :hidden="true"
-      >
-        <span />
-      </template>
     </Dropdown>
 
     <Link

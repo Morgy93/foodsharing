@@ -1,5 +1,5 @@
 <template>
-  <div class="nav-item py-3 px-4">
+  <div class="py-3 px-4">
     <form
       @submit.prevent
     >

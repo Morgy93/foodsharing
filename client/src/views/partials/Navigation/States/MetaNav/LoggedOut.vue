@@ -9,6 +9,9 @@
         :key="idx"
         :title="$i18n(link.title)"
         :href="$url(link.url)"
+        :class="{
+          'text-warning font-weight-bold': link.highlight,
+        }"
       />
     </ul>
   </ul>

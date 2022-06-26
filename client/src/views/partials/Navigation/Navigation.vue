@@ -1,6 +1,6 @@
 <template>
-  <div class="bootstrap nav">
-    <nav class="fixed-top nav navbar navbar-expand-md">
+  <div class="bootstrap nav sticky">
+    <nav class="nav navbar navbar-expand-md">
       <MetaNavLoggedIn v-if="isLoggedIn" />
       <MetaNavLoggedOut v-else />
       <ul class="container nav-container">
@@ -16,8 +16,6 @@
         </div>
       </ul>
     </nav>
-    <LanguageChooser />
-    <SearchBarModal />
   </div>
 </template>
 
@@ -37,17 +35,12 @@ import MainNavLoggedIn from './States/MainNav/LoggedIn.vue'
 import MainNavLoggedOut from './States/MainNav/LoggedOut.vue'
 import SideNavLoggedIn from './States/SideNav/LoggedIn.vue'
 import SideNavLoggedOut from './States/SideNav/LoggedOut.vue'
-// Hidden Elements
-import LanguageChooser from '@/components/Navigation/LanguageChooser'
-import SearchBarModal from '@/components/SearchBar/SearchBarModal'
 // Mixins
 import MediaQueryMixin from '@/mixins/MediaQueryMixin'
 
 export default {
   name: 'Navigation',
   components: {
-    LanguageChooser,
-    SearchBarModal,
     MetaNavLoggedIn,
     MetaNavLoggedOut,
     MainNavLoggedIn,

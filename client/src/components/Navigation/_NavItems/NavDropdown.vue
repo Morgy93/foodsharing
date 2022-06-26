@@ -68,30 +68,7 @@
         </slot>
       </li>
       <li class="actions">
-        <slot
-          name="actions"
-          :hidden="false"
-        >
-          <a
-            class="dropdown-item dropdown-action"
-            href="#"
-          >
-            Action
-          </a>
-          <a
-            class="dropdown-item dropdown-action"
-            href="#"
-          >
-            Another action
-          </a>
-          <div class="dropdown-divider" />
-          <a
-            class="dropdown-item dropdown-action"
-            href="#"
-          >
-            Something else here
-          </a>
-        </slot>
+        <slot name="actions" />
       </li>
     </div>
   </li>
@@ -131,6 +108,10 @@ export default {
   margin-top: .5rem;
   padding-top: .5rem;
   border-top: 1px solid var(--fs-color-primary-100);
+
+  &:empty {
+    display: none;
+  }
 }
 
 .dropdown {
