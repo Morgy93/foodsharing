@@ -18,6 +18,12 @@ export const getters = {
   getUser () {
     return store.user
   },
+  getUserName () {
+    return store.user?.firstname
+  },
+  getUserId () {
+    return store.user?.id
+  },
   hasCalendarToken () {
     return store.user?.hasCalendarToken !== null || false
   },

@@ -20,9 +20,9 @@ export const getters = {
     return managing.length > 0 ? managing : []
   },
 
-  getWaiting () {
-    const waiting = store.stores.filter(s => s.isWaiting)
-    return waiting.length > 0 ? waiting : []
+  getJumping () {
+    const jumping = store.stores.filter(s => !s.isManaging)
+    return jumping.length > 0 ? jumping : []
   },
 
   has (id) {

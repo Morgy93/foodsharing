@@ -777,6 +777,7 @@ store:
   short_tooltip_orange: "Offene Abholungen in 3 Tagen"
   short_tooltip_red: "Offene Abholungen heute oder morgen"
   tooltip_managing: "Du bist verantwortlich für diesen Betrieb"
+  tooltip_jumping: "Du bist Springer für diesen Betrieb"
   allStoresOfRegion: "Alle Betriebe aus dem Bezirk"
   addNewStoresButton: "Neuen Betrieb eintragen"
   noStores: "Es sind noch keine Betriebe eingetragen"
@@ -1940,7 +1941,7 @@ dashboard:
     groups: "Deine Gruppen" #also in searchindexgenerator
     stores: "Deine Betriebe"
     managing_stores: "Deine verantwortlichen Betriebe"
-    waiting_stores: "Deine Springer Betriebe"
+    jumping_stores: "Deine Springer Betriebe"
     events: "Events"
     baskets: "Essenskörbe"
     pending: "Anfragen gestellt bei"

@@ -2211,7 +2211,7 @@ dashboard:
     pending: Requests have been made to
     stores: Your stores
     managing_stores: Your responsible stores
-    waiting_stores: Your jumping list stores
+    jumping_stores: Your jumping list stores
     buddies: People you know
     users: foodsavers
   options:

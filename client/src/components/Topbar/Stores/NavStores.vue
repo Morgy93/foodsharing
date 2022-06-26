@@ -105,15 +105,15 @@ export default {
           list: DataStores.getters.getManaging(),
         },
         {
+          icon: 'fa-people-carry',
+          tooltip: 'store.tooltip_jumping',
+          name: 'dashboard.my.jumping_stores',
+          list: DataStores.getters.getJumping(),
+        },
+        {
           icon: 'fa-shopping-cart',
           name: 'dashboard.my.stores',
           list: DataStores.getters.getOthers(),
-        },
-        {
-          icon: 'dashboard.my.managing_stores',
-          tooltip: 'store.isJumper',
-          name: 'dashboard.my.waiting_stores',
-          list: DataStores.getters.getWaiting(),
         },
       ].filter(e => e.list.length > 0)
     },

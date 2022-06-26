@@ -1,5 +1,6 @@
 <template>
   <Dropdown
+    v-if="hasAdminPermissions"
     title="Admin"
     direction="right"
   >
@@ -87,6 +88,9 @@ export default {
   computed: {
     permissions () {
       return DataUser.getters.getPermissions()
+    },
+    hasAdminPermissions () {
+      return DataUser.getters.hasAdminPermissions()
     },
   },
 }

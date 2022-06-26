@@ -1,6 +1,6 @@
 <template>
   <Dropdown
-    title="User"
+    :title="$i18n('dashboard.greeting_short', {name: getUserName})"
     direction="right"
     :badge="getMailUnreadCount"
   >
@@ -97,8 +97,11 @@ export default {
   },
   mixins: [RouteCheckMixin],
   computed: {
+    getUserName () {
+      return DataUser.getters.getUserName()
+    },
     getUserId () {
-      return DataUser.getters.getUser()?.id
+      return DataUser.getters.getUserId()
     },
     getMailUnreadCount () {
       return DataUser.getters.getMailUnreadCount()

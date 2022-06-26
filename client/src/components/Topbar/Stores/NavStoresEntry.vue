@@ -2,7 +2,7 @@
   <a
     :href="$url('store', entry.id)"
     role="menuitem"
-    class="dropdown-item dropdown-action"
+    class="dropdown-item"
   >
     <i
       v-b-tooltip="pickupStringStatus"
