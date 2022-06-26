@@ -11,7 +11,7 @@
             }"
           />
           <span
-            class="hide-for-users"
+            class="sr-only"
             v-html="$i18n('search.placeholder')"
           />
         </b-input-group-text>

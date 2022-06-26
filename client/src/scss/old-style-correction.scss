@@ -1,0 +1,5 @@
+.welcome.ui-padding,
+:not(.ui-widget + .ui-widget) .ui-widget-content.ui-padding,
+:not(.ui-widget) + .ui-widget.ui-widget-content {
+    border: 1px solid var(--fs-color-border);
+}

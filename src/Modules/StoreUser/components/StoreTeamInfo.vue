@@ -75,7 +75,7 @@ export default {
   flex-direction: column;
   justify-content: center;
   font-size: smaller;
-  color: var(--fs-color-light);
+  color: var(--fs-color-dark);
 
   &:hover, &:focus {
     text-decoration: none;

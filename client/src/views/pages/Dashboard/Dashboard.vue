@@ -85,7 +85,7 @@
             }"
           />
           <span
-            class="hide-for-users"
+            class="sr-only"
             v-html="$i18n(`dashboard.options.grid_toggle.${state ? 3 : 2}_columns`)"
           />
         </button>

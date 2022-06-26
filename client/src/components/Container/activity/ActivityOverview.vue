@@ -28,7 +28,7 @@
             v-html="$i18n(filter.text)"
           />
           <span
-            class="hide-for-users"
+            class="sr-only"
             v-html="$i18n(filter.text)"
           />
         </button>
@@ -41,7 +41,7 @@
         @click="toggleOptionListings"
       >
         <span
-          class="hide-for-users"
+          class="sr-only"
           v-html="$i18n('dashboard.settings')"
         />
         <i

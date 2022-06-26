@@ -57,7 +57,7 @@
           :class="[icon]"
         />
         <span
-          class="hide-for-users"
+          class="sr-only"
           v-html="fs_id ? fs_name : sender_email"
         />
       </a>
@@ -341,7 +341,6 @@ export default {
 }
 
 ::v-deep.markdown {
-
   p {
     font-size: 15px;
     color: var(--fs-color-dark);
@@ -350,11 +349,6 @@ export default {
 
   p:last-child {
     margin-bottom: 0;
-  }
-
-  a[href]{
-    font-weight: bold;
-    text-decoration: underline;
   }
 }
 

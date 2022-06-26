@@ -136,30 +136,6 @@
   margin: 0 auto;
 }
 
-/* a,
-.bootstrap a,
-.markdown a[href],
-.bootstrap .markdown a,
-.ui-widget-content a {
-  color: var(--fs-color-secondary-500);
-  text-decoration: none;
-}
-
-a:hover,
-.bootstrap a:hover,
-.markdown a[href]:hover,
-.bootstrap .markdown a:hover,
-.ui-widget-content a:hover {
-  color: var(--fs-color-secondary-500);
-  text-decoration: underline;
-}
-
-.markdown a[href],
-.bootstrap .markdown a {
-  font-weight: bold;
-} */
-
-
 .ui-dialog,
 .ui-shadow {
   box-shadow: 0 0 7px rgba(0, 0, 0, 0.3);

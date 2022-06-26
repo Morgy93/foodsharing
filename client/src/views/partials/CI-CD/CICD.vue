@@ -17,6 +17,20 @@
       </div>
     </div>
     <div class="mb-5">
+      <h3>Icons</h3>
+      <hr>
+      <div class="flex">
+        <i
+          v-for="(rule, idx) in ['fa-spinner', 'fa-spinner fa-spin']"
+          :key="idx"
+          v-b-tooltip="rule"
+          class="fas"
+          :class="rule"
+          @click="copyToClipBoard(rule)"
+        />
+      </div>
+    </div>
+    <div class="mb-5">
       <h3>Fonts</h3>
       <hr>
       <div>
@@ -46,6 +60,7 @@
           :key="`btn-${style}`"
           class="btn"
           :class="`btn-${style}`"
+          @click="copyToClipBoard(`btn btn-${style}`)"
           v-html="`btn-${style}`"
         />
       </div>
@@ -55,6 +70,7 @@
           :key="`btn-outline-${style}`"
           class="btn"
           :class="`btn-outline-${style}`"
+          @click="copyToClipBoard(`btn btn-outline-${style}`)"
           v-html="`btn-outline-${style}`"
         />
       </div>
@@ -64,6 +80,7 @@
           :key="`btn-sm-${style}`"
           class="btn btn-sm"
           :class="`btn-${style}`"
+          @click="copyToClipBoard(`btn btn-sm btn-${style}`)"
           v-html="`btn-sm btn-${style}`"
         />
       </div>
@@ -73,6 +90,7 @@
           :key="`btn-sm-outline-${style}`"
           class="btn btn-sm"
           :class="`btn-outline-${style}`"
+          @click="copyToClipBoard(`btn btn-sm btn-outline-${style}`)"
           v-html="`btn-sm btn-outline-${style}`"
         />
       </div>
@@ -129,6 +147,11 @@ $size: 3rem;
   display: grid;
   grid-template-columns: repeat(auto-fit,minmax($size,1fr));
   grid-gap: 2px;
+
+  &-small {
+    grid-template-columns: repeat(auto-fit, 1rem);
+    grid-template-rows: repeat(auto-fit, 1rem);
+  }
 }
 
 .flex {

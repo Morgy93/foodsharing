@@ -24,7 +24,7 @@
           <i
             v-if="store.icon"
             v-b-tooltip="store.tooltip ? $i18n(store.tooltip) : null"
-            class="icon icon--small-container mr-2 fas text-muted"
+            class="icon-subnav icon--small-container fas"
             :class="[store.icon, {'icon--help': store.tooltip}]"
           />
           <span
