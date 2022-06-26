@@ -22,7 +22,7 @@
     </template>
 
     <template #cell(date)="entry">
-      <span class="no-wrap">{{ entry.value }}</span>
+      <span>{{ entry.value }}</span>
     </template>
 
     <template #cell(store)="entry">
@@ -36,7 +36,6 @@
         :registered-users="entry.item.slots.occupied"
         :total-slots="entry.item.slots.max"
         :max-width="offsetWidth / 4"
-        :min-width="95"
       />
     </template>
 
@@ -257,7 +256,7 @@ export default {
 }
 
 .shadow-registered .registered td > * {
-  opacity: 0.3;
+  // opacity: 0.3;
 }
 
 .pickup-table .unlined th {
@@ -292,14 +291,6 @@ export default {
 
 .pickup-table .table tbody td {
   vertical-align: middle;
-}
-
-.no-wrap {
-  white-space: nowrap;
-}
-
-::v-deep *[aria-colindex="4"] {
-  min-width: 200px
 }
 
 </style>

@@ -88,8 +88,8 @@ export async function listRegisteredPickups (fsId) {
   return await get('/pickup/registered')
 }
 
-export async function listPickupOptions (page) {
-  return await get(`/pickup/options?pageSize=${page}`)
+export async function listPickupOptions (_, page) {
+  return await get(`/pickup/options?page=${page}`)
 }
 
 export async function listPastPickups (fsId, page) {
