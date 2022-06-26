@@ -82,7 +82,7 @@ export default {
     line-height: var(--calendar-line-height);
     font-weight: bold;
     background-color: var(--calendar-highlight-bg);
-    color: var(--white);
+    color: var(--fs-color-light);
     text-shadow: 1px 1px 1px rgba(0, 0, 0, 0.75);
   }
 

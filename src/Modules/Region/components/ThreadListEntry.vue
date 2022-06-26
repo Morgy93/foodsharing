@@ -96,18 +96,18 @@ export default {
   &:hover {
     .user-picture,
     .thread-title {
-      color: var(--white);
+      color: var(--fs-color-light);
     }
 
     .user-picture .avatar ::v-deep img {
-      box-shadow: 0 0 0 1px var(--white);
+      box-shadow: 0 0 0 1px var(--fs-color-light);
     }
 
     @media screen and (min-width: 576px) {
       .last-post {
         &, .info, .time {
           color: var(--fs-color-primary-500);
-          background-color: var(--white);
+          background-color: var(--fs-color-light);
         }
       }
     }

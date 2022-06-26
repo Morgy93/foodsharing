@@ -242,7 +242,7 @@ export default {
 .slotstatus-icon {
   font-size: 14px;
   &.pending {
-    color: var(--danger);
+    color: var(--fs-color-danger-500);
   }
   &.confirmed {
     color: var(--fs-color-secondary-500);

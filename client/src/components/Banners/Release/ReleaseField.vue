@@ -107,7 +107,7 @@ export default {
   cursor: pointer;
 
   &:hover {
-    color: var(--primary);
+    color: var(--fs-color-primary-500);
   }
 }
 

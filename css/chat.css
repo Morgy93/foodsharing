@@ -353,10 +353,10 @@
 }
 
 .conversation-list .unread-1 .pics {
-  border: 1px solid var(--dark);
+  border: 1px solid var(--fs-color-dark);
 }
 .conversation-list .unread-1 .time {
-  color: var(--dark);
+  color: var(--fs-color-dark);
 }
 
 ul.conversation-list li.unread-1 > a::before {
@@ -371,7 +371,7 @@ ul.conversation-list li.unread-1 > a::before {
   display: flex;
   content: " ";
   justify-content: center;
-  background: var(--danger);
+  background: var(--fs-color-danger-500);
   color: var(--fs-color-primary-200);
   font-family: 'Open Sans', sans-serif;
   z-index: 1;

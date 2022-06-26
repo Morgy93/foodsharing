@@ -142,7 +142,7 @@ export default {
   .free-slots {
     background-color: var(--fs-color-secondary-500);
     border-color: #4e871c;
-    color: var(--white);
+    color: var(--fs-color-light);
   }
 
   .hidden-users {

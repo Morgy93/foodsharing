@@ -71,7 +71,7 @@
 }
 
 .content-top {
-  background-color: var(--white);
+  background-color: var(--fs-color-light);
   color: var(--fs-color-primary-500);
   padding: 15px;
   margin-bottom: 15px;
@@ -95,7 +95,7 @@
 }
 
 .bubble {
-  background-color: var(--white) !important;
+  background-color: var(--fs-color-light) !important;
   padding: 8px !important;
   position: absolute !important;
   width: 250px !important;
@@ -106,7 +106,7 @@
 }
 
 .bubble-right:after {
-  border-color: transparent var(--white) !important;
+  border-color: transparent var(--fs-color-light) !important;
   border-style: solid !important;
   border-width: 7px 7px 7px 0 !important;
   content: "" !important;
@@ -223,7 +223,7 @@ label.wrapper-label.required:after {
 
 select {
   padding: 7px;
-  background-color: var(--white);
+  background-color: var(--fs-color-light);
 }
 
 .margin-bottom {
@@ -362,7 +362,7 @@ div.msg-inside i {
 div.msg-inside.error,
 div.msg-inside.error a {
   background-color: #e74955;
-  color: var(--white);
+  color: var(--fs-color-light);
 }
 
 div.msg-inside.error a {
@@ -376,21 +376,21 @@ div.msg-inside.error a:hover {
 div.msg-inside.success,
 div.msg-inside.success a {
   background-color: var(--fs-color-secondary-500) !important;
-  color: var(--white) !important;
+  color: var(--fs-color-light) !important;
 }
 
 div.msg-inside.error i {
-  color: var(--white);
+  color: var(--fs-color-light);
 }
 
 div#pulse-success {
   background-color: var(--fs-color-secondary-500) !important;
-  color: var(--white) !important;
+  color: var(--fs-color-light) !important;
 }
 
 div#pulse-error {
   background-color: #e74955 !important;
-  color: var(--white) !important;
+  color: var(--fs-color-light) !important;
 }
 
 div#pulse-info {
@@ -473,7 +473,7 @@ div.popbox div.desc {
 }
 
 div.input-wrapper.today {
-  background-color: var(--white);
+  background-color: var(--fs-color-light);
   margin-left: -10px;
   margin-right: -10px;
   padding-left: 10px;
@@ -639,7 +639,7 @@ ul.linklist li > a.more {
   background-color: var(--fs-color-secondary-500);
   border-bottom-left-radius: 6px;
   border-bottom-right-radius: 6px;
-  color: var(--white);
+  color: var(--fs-color-light);
   display: block;
   font-size: 12px;
   font-weight: bold;
@@ -678,7 +678,7 @@ ul.linklist li > a.active {
 ul.linklist li > a:hover,
 ul.linklist li > a:hover span {
   background-color: var(--fs-color-secondary-500);
-  color: var(--white);
+  color: var(--fs-color-light);
 }
 
 .activity_feed_content_info {
@@ -706,7 +706,7 @@ ul.linklist li > a:hover span {
 
 .ui-widget-header {
   background: none repeat scroll 0 0 var(--fs-color-primary-500);
-  color: var(--white);
+  color: var(--fs-color-light);
   font-weight: bold;
   border: 0;
   border-radius: 6px;
@@ -765,7 +765,7 @@ span.verified {
 }
 
 .scroller .track {
-  background-color: var(--white);
+  background-color: var(--fs-color-light);
   height: 100%;
   width: 8px;
   position: relative;
@@ -852,7 +852,7 @@ a.expand-collapse-link {
   display: block;
   padding: 3px;
   text-align: center;
-  color: var(--white);
+  color: var(--fs-color-light);
   font-weight: bold;
   background-color: var(--fs-color-secondary-500);
   text-decoration: none;
@@ -870,7 +870,7 @@ a.expand-collapse-link:hover {
 a.preview-thumb {
   display: block;
   float: left;
-  border: 3px solid var(--white);
+  border: 3px solid var(--fs-color-light);
   margin: 3px;
   width: 60px;
   height: 60px;
@@ -930,7 +930,7 @@ td.load {
 
 .ui-button,
 .button {
-  color: var(--white) !important;
+  color: var(--fs-color-light) !important;
   background-color: var(--fs-color-secondary-500);
   border-radius: 6px;
   border: 0 none;
@@ -976,7 +976,7 @@ ul.bread li,
 ul.bread li a {
   font-size: 10px;
   font-weight: normal;
-  color: var(--primary);
+  color: var(--fs-color-primary-500);
 }
 
 ul.bread li:before {
@@ -1049,7 +1049,7 @@ ul.linklist li > a:hover .avatar span.bubble {
 
 .vidlink img {
   padding: 0;
-  border: 10px solid var(--white);
+  border: 10px solid var(--fs-color-light);
   width: 100%;
   box-sizing: border-box;
   height: auto;
@@ -1062,7 +1062,7 @@ ul.linklist li > a:hover .avatar span.bubble {
 .vmap {
   width: 100%;
   height: 450px;
-  background-color: var(--white);
+  background-color: var(--fs-color-light);
 }
 
 .bottom_bar {

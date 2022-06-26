@@ -161,7 +161,7 @@ export default {
   box-shadow: 0 0 3px 0px var(--fs-color-primary-500);
 
   &.pending {
-    color: var(--danger);
+    color: var(--fs-color-danger-500);
   }
   &.confirmed {
     color: var(--fs-color-secondary-500);

@@ -296,10 +296,10 @@ export default {
     content: "\f12a"; // fa-exclamation
     font-family: "Font Awesome 5 Free";
     font-weight: 900;
-    color: var(--warning);
+    color: var(--fs-color-warning-500);
   }
   &.coord.soon.empty.today::after {
-    color: var(--danger);
+    color: var(--fs-color-danger-500);
   }
   &.coord.past::after {
     content: "" !important;
@@ -385,7 +385,7 @@ export default {
     top: -4px;
     right: -9px;
     color: var(--fs-color-primary-500);
-    background-color: var(--white);
+    background-color: var(--fs-color-light);
     opacity: 0.9;
 
     .btn {

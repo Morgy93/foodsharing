@@ -113,7 +113,7 @@ export default {
   & > small {
     float: right;
     margin: 0.1rem 0;
-    color: var(--gray);
+    color: var(--fs-color-gray-500);
   }
 }
 </style>

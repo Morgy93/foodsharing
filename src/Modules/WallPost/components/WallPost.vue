@@ -179,7 +179,7 @@ export default {
     margin-top: calc(-1 * var(--storewall-padding));
     margin-bottom: calc(var(--storewall-padding) / 2);
     font-size: smaller;
-    color: var(--dark);
+    color: var(--fs-color-dark);
 
     .author {
       &.with-padding {
@@ -191,7 +191,7 @@ export default {
       }
 
       a {
-        color: var(--secondary);
+        color: var(--fs-color-secondary-500);
       }
 
       .is-manager {
@@ -209,7 +209,7 @@ export default {
     right: 0;
 
     .delete:hover {
-      color: var(--danger) !important;
+      color: var(--fs-color-danger-500) !important;
     }
   }
 }

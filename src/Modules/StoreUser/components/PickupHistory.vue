@@ -202,7 +202,7 @@ export default {
 
 <style lang="scss" scoped>
 .bootstrap.pickup-history {
-  background: var(--white);
+  background: var(--fs-color-light);
 
   ::v-deep .form-inline .form-control.b-calendar-grid {
     width: 100%;

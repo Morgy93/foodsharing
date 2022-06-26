@@ -51,7 +51,7 @@ div.event {
   background-color: #e07a0b !important;
   border-top-left-radius: 6px;
   border-top-right-radius: 6px;
-  color: var(--white) !important;
+  color: var(--fs-color-light) !important;
   display: block;
   font-size: 13px;
   font-weight: bold;

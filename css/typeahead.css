@@ -116,7 +116,7 @@ span.twitter-typeahead {
   text-rendering: auto;
   font-size: 1.5em;
   color: var(--fs-color-secondary-500);
-  background-color: var(--white);
+  background-color: var(--fs-color-light);
   border: 5px solid var(--fs-color-secondary-500);
   border-left: 0;
   border-radius: 5px;

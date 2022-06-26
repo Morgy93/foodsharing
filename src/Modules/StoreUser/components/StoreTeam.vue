@@ -440,7 +440,7 @@ export default {
 
 <style lang="scss" scoped>
 .store-team .team-management {
-  border-bottom: 2px solid var(--warning);
+  border-bottom: 2px solid var(--fs-color-warning-500);
 }
 
 .store-team .team-list {
@@ -465,7 +465,7 @@ export default {
 
       &.table-warning {
         border-bottom-width: 2px;
-        border-bottom-color: var(--warning);
+        border-bottom-color: var(--fs-color-warning-500);
         padding-bottom: 1px;
       }
 
@@ -515,7 +515,7 @@ export default {
 
         &:hover {
           background-color: var(--fs-color-secondary-500);
-          color: var(--white);
+          color: var(--fs-color-light);
         }
         &:focus {
           outline: 2px solid var(--fs-color-secondary-500);

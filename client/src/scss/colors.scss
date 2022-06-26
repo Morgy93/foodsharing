@@ -62,29 +62,8 @@ $colorlist: (
     --fs-color-transparent: transparent;
     --fs-color-border: var(--fs-color-primary-200);
 
-
-    /**
-        OLD STYLES
-    */
-
-    --border: var(--fs-color-primary-200);
-
-    --warning-rgb: 255, 193,  7; /* bootstrap default, #ffc107 */
-    --danger-rgb:  220,  53, 69; /* bootstrap default, #dc3545 */
-
-    --fs-brown-rgb:  83,  58,  32;
-    --fs-green-rgb: 100, 174,  36;
-    --fs-beige-rgb: 241, 231, 201;
-    --fs-white-rgb: 249, 245, 224;
-    --fs-black-rgb: 51, 51, 51;
-    --fs-dark-grey-rgb: 85, 85, 85;
-    --fs-light-grey-rgb: 156, 156, 156;
-
-    --fs-brown: var(--fs-color-primary-500); /* #533a20 */
-    --fs-green: var(--fs-color-secondary-500); /* #64ae24 */
-    --fs-beige: var(--fs-color-primary-200); /* #f1e7c9 */
-    --fs-white: var(--fs-color-secondary-100); /* #f9f5e0 */
-    --fs-dark-grey: var(--lt-color-gray-600); /* #9C9C9C */
-    --fs-black: var(--lt-color-gray-900); /*#333333 */
-    --fs-light-grey: var(--lt-color-gray-500); /* #555555 */
+    --fs-color-role-ambassador: var(--fs-color-danger-500);
+    --fs-color-role-storemanager: var(--fs-color-warning-500);
+    --fs-color-role-foodsaver: var(--fs-color-secondary-500);
+    --fs-color-role-foodsharer: var(--fs-color-primary-500);
 }

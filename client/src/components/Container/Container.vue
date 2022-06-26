@@ -160,7 +160,7 @@ export default {
   margin-right: 0.5rem;
 
   &--muted {
-    color: var(--gray);
+    color: var(--fs-color-gray-500);
   }
 }
 </style>

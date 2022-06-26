@@ -75,7 +75,7 @@ export default {
   --fetchcount-fg: var(--fs-color-primary-500);
   --fetchcount-border: var(--fs-color-primary-500);
   --role-may-manage-store: var(--fs-color-secondary-500);
-  --role-may-ambassador: var(--warning);
+  --role-may-ambassador: var(--fs-color-warning-500);
   --role-other: var(--fs-color-primary-200);
 }
 

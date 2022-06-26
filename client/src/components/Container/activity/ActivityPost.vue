@@ -335,7 +335,7 @@ export default {
     text-decoration: none;
 
     & .img-thumbnail {
-      background-color: var(--light);
+      background-color: var(--fs-color-light);
     }
   }
 }
@@ -344,7 +344,7 @@ export default {
 
   p {
     font-size: 15px;
-    color: var(--dark);
+    color: var(--fs-color-dark);
     line-height: 1.5;
   }
 
