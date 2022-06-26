@@ -36,7 +36,7 @@
                   <td>{{ user.displayed_data.last_login_date }}</td>
                   <td>
                     <i v-if="user.is_verified" class="fas fa-check-circle fa-2x text-success" />
-                    <i v-if="!user.is_verified" class="fas fa-times-circle fa-2x text-warning" />
+                    <i v-if="!user.is_verified" class="fas fa-times-circle fa-2x text-danger" />
                   </td>
                   <td>
                     <button
