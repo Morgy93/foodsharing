@@ -36,10 +36,11 @@ final class PassportGeneratorGateway extends BaseGateway
 		$stm = '
 				SELECT 	fs.`id`,
 						CONCAT(fs.`name`," ",fs.`nachname`) AS `name`,
+				       	fs.geschlecht as gender_id,
 						fs.verified,
 						fs.last_pass,
 						fs.photo,
-				       	fs.rolle,
+				       	fs.rolle as role_id,
 						fs.last_login,
 
 						UNIX_TIMESTAMP(fs.last_pass) AS last_pass_ts,
