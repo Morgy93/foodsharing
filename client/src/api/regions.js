@@ -36,6 +36,10 @@ export function listRegionMembers (regionId) {
   return get(`/region/${regionId}/members`)
 }
 
+export function listRegionMembersDetailed (regionId) {
+  return get(`/region/${regionId}/members/detailed`)
+}
+
 export function removeMember (regionId, memberId) {
   return remove(`/region/${regionId}/members/${memberId}`)
 }
