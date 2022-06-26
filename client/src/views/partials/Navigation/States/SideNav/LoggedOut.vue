@@ -1,36 +1,42 @@
 <template>
-  <ul class="metanav-container container">
+  <ul class="navbar-navside">
     <ul
-      v-if="!viewIsMobile"
+      v-if="viewIsMobile"
       class="metanav"
     >
       <Link
         v-for="(link, idx) of metaNav"
         :key="idx"
-        :title="$i18n(link.title)"
+        :title="link.title"
         :href="$url(link.url)"
       />
+    </ul>
+    <ul class="mainnav">
+      <NavLogin />
     </ul>
   </ul>
 </template>
 
 <script>
-// Data
-import MetaNavData from './MetaNavData.json'
+// Store
+import MetaNavData from '../../MetaNavData.json'
 //
 import Link from '@/components/Navigation/_NavItems/NavLink'
+import NavLogin from '@/components/Navigation/Login/NavLogin.vue'
+
 //
 // Mixins
 import MediaQueryMixin from '@/mixins/MediaQueryMixin'
+import ScrollMixin from '@/mixins/ScrollMixin'
 
 export default {
   components: {
     Link,
+    NavLogin,
   },
-  mixins: [MediaQueryMixin],
+  mixins: [MediaQueryMixin, ScrollMixin],
   data () {
     return {
-      navIsSmall: false,
       metaNav: MetaNavData,
     }
   },

@@ -1,93 +1,18 @@
 <template>
   <div class="bootstrap">
     <nav class="sticky nav navbar navbar-expand-md">
-      <!-- <ul class="metanav-container container">
-        <ul
-          v-if="!viewIsMobile"
-          class="metanav"
-        >
-          <Link
-            v-for="(link, idx) of metaNav"
-            :key="idx"
-            :title="link.title"
-            :href="$url(link.url)"
-          />
-          <NavAdmin />
-        </ul>
-      </ul> -->
-      <MetaNavDesktopLoggedIn v-if="isLoggedIn" />
-      <MetaNavDesktopLoggedOut v-else />
+      <MetaNavLoggedIn v-if="isLoggedIn" />
+      <MetaNavLoggedOut v-else />
       <ul class="container nav-container">
-        <ul class="mainnav">
-          <Link
-            :href="homeHref"
-          >
-            <template #text>
-              <Logo small />
-            </template>
-          </Link>
-          <NavRegions v-if="!viewIsMobile" />
-          <NavGroups v-if="!viewIsMobile" />
-          <NavStores />
-          <NavBaskets />
-
-          <NavConversations v-if="viewIsMobile" />
-          <NavBells v-if="viewIsMobile" />
-
-          <Link
-            v-if="viewIsMobile"
-            data-toggle="collapse"
-            data-target="#sidebar"
-            aria-controls="sidebar"
-            aria-expanded="false"
-            aria-label="Toggle navigation"
-          >
-            <template #text>
-              <i class="fas fa-bars" />
-            </template>
-          </Link>
-        </ul>
+        <MainNavLoggedIn v-if="isLoggedIn" />
+        <MainNavLoggedOut v-else />
 
         <div
           id="sidebar"
           class="collapse navbar-collapse"
         >
-          <ul class="navbar-navside">
-            <ul
-              v-if="viewIsMobile"
-              class="metanav"
-            >
-              <Link
-                v-for="(link, idx) of metaNav"
-                :key="idx"
-                :title="link.title"
-                :href="$url(link.url)"
-              />
-              <NavAdmin />
-            </ul>
-            <ul class="sidenav">
-              <Link
-                icon="fa-search"
-                title="Suche"
-                data-toggle="modal"
-                data-target="#searchBarModal"
-              />
-              <Link
-                v-if="viewIsMobile"
-                icon="fa-globe"
-                title="Bezirke"
-              />
-              <Link
-                v-if="viewIsMobile"
-                :href="$url('workingGroups')"
-                icon="fa-users"
-                :title="$i18n('menu.entry.groups')"
-              />
-              <NavConversations v-if="!viewIsMobile" />
-              <NavBells v-if="!viewIsMobile" />
-              <NavUser />
-            </ul>
-          </ul>
+          <SideNavLoggedIn v-if="isLoggedIn" />
+          <SideNavLoggedOut v-else />
         </div>
       </ul>
     </nav>
@@ -105,21 +30,13 @@ import DataBaskets from '@/stores/baskets.js'
 import DataGroups from '@/stores/groups.js'
 import DataConversations from '@/stores/conversations.js'
 import DataRegions from '@/stores/regions.js'
-//
-import Link from '@/components/Navigation/_NavItems/NavLink'
-import Logo from '@/components/Navigation/Logo'
 // States
-import MetaNavDesktopLoggedIn from './States/MetaNav/LoggedInDesktop.vue'
-import MetaNavDesktopLoggedOut from './States/MetaNav/LoggedOutDesktop.vue'
-//
-import NavAdmin from '@/components/Navigation/Admin/NavAdmin'
-import NavUser from '@/components/Navigation/User/NavUser'
-import NavBells from '@/components/Navigation/Bells/NavBells'
-import NavConversations from '@/components/Navigation/Conversations/NavConversations'
-import NavBaskets from '@/components/Navigation/Baskets/NavBaskets'
-import NavStores from '@/components/Navigation/Stores/NavStores'
-import NavGroups from '@/components/Navigation/Groups/NavGroups'
-import NavRegions from '@/components/Navigation/Regions/NavRegions'
+import MetaNavLoggedIn from './States/MetaNav/LoggedIn.vue'
+import MetaNavLoggedOut from './States/MetaNav/LoggedOut.vue'
+import MainNavLoggedIn from './States/MainNav/LoggedIn.vue'
+import MainNavLoggedOut from './States/MainNav/LoggedOut.vue'
+import SideNavLoggedIn from './States/SideNav/LoggedIn.vue'
+import SideNavLoggedOut from './States/SideNav/LoggedOut.vue'
 // Hidden Elements
 import LanguageChooser from '@/components/Navigation/LanguageChooser'
 import SearchBarModal from '@/components/SearchBar/SearchBarModal'
@@ -130,20 +47,14 @@ import ScrollMixin from '@/mixins/ScrollMixin'
 export default {
   name: 'Navigation',
   components: {
-    Logo,
     LanguageChooser,
     SearchBarModal,
-    MetaNavDesktopLoggedIn,
-    MetaNavDesktopLoggedOut,
-    Link,
-    NavAdmin,
-    NavUser,
-    NavBells,
-    NavConversations,
-    NavBaskets,
-    NavStores,
-    NavGroups,
-    NavRegions,
+    MetaNavLoggedIn,
+    MetaNavLoggedOut,
+    MainNavLoggedIn,
+    MainNavLoggedOut,
+    SideNavLoggedIn,
+    SideNavLoggedOut,
   },
   mixins: [MediaQueryMixin, ScrollMixin],
   props: {
@@ -163,24 +74,6 @@ export default {
   data () {
     return {
       navIsSmall: false,
-      metaNav: [
-        {
-          title: 'Karte',
-          url: 'map',
-        },
-        {
-          title: 'IT\'ler? Wir brauchen dich!',
-          url: 'devdocsItTasks',
-        },
-        {
-          title: 'Kontakt',
-          url: 'contact',
-        },
-        {
-          title: 'Hilfe',
-          url: 'wiki',
-        },
-      ],
     }
   },
   computed: {
@@ -195,12 +88,6 @@ export default {
     },
   },
   watch: {
-    // scrollPosition: {
-    //   handler (newPos) {
-    //     this.navIsSmall = newPos.y > 550
-    //   },
-    //   deep: true,
-    // },
     hasMailbox: {
       async handler (newValue) {
         if (newValue) {
@@ -231,11 +118,6 @@ export default {
       await DataBells.mutations.fetch()
       await DataConversations.mutations.fetchConversations()
     }
-  },
-  methods: {
-    hide (e) {
-      console.log(e)
-    },
   },
 }
 </script>

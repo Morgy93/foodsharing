@@ -16,7 +16,7 @@
 
 <script>
 // Data
-import MetaNavData from './MetaNavData.json'
+import MetaNavData from '../../MetaNavData.json'
 //
 import Link from '@/components/Navigation/_NavItems/NavLink'
 //

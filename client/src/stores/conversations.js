@@ -24,7 +24,7 @@ export const getters = {
   },
 
   getUnreadCount () {
-    const count = store.conversations.length
+    const count = store.conversations.filter(c => c.hasUnreadMessages).length
     if (count > 0) {
       return count < 99 ? count : '99+'
     }
@@ -38,8 +38,8 @@ export const mutations = {
     const res = await getConversationList(limit)
     ProfileStore.updateFrom(res.profiles)
     for (const conversation of res.conversations) {
-      const c = this.conversations[conversation.id] ?? { messages: {} }
-      Vue.set(this.conversations, conversation.id, {
+      const c = store.conversations[conversation.id] ?? { messages: {} }
+      Vue.set(store.conversations, conversation.id, {
         ...conversation,
         messages: Object.assign({}, c.messages),
         lastMessage: convertMessage(conversation.lastMessage),
@@ -74,28 +74,28 @@ export const mutations = {
 
   async updateFromPush (data) {
     const cid = data.cid
-    if (!(cid in this.conversations)) {
-      await this.loadConversation(cid)
+    if (!(cid in store.conversations)) {
+      await mutations.loadConversation(cid)
       /* likely, when loading the conversation after the push message appeared, we don't need to add the push message.
       Still, I think it shouldn't harm...
        */
     }
     const message = data.message
-    Vue.set(this.conversations[cid].messages, message.id, message)
-    Vue.set(this.conversations[cid], 'lastMessage', message)
+    Vue.set(store.conversations[cid].messages, message.id, message)
+    Vue.set(store.conversations[cid], 'lastMessage', message)
     if (message.authorId !== serverData.user.id) {
-      Vue.set(this.conversations[cid], 'hasUnreadMessages', true)
+      Vue.set(store.conversations[cid], 'hasUnreadMessages', true)
     }
   },
   async markAsRead (cid) {
-    if (cid in this.conversations && this.conversations[cid].hasUnreadMessages) {
-      Vue.set(this.conversations[cid], 'hasUnreadMessages', false)
+    if (cid in store.conversations && store.conversations[cid].hasUnreadMessages) {
+      Vue.set(store.conversations[cid], 'hasUnreadMessages', false)
       await markConversationRead(cid)
     }
   },
   async markUnreadMessagesAsRead () {
-    for (const cid in this.conversations) {
-      await this.markAsRead(cid)
+    for (const cid in store.conversations) {
+      await mutations.markAsRead(cid)
     }
   },
 }
