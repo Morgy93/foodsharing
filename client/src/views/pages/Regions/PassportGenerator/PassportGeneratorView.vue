@@ -61,7 +61,7 @@
 <script>
 import Container from '@/components/Container/Container.vue'
 import Avatar from '@/components/Avatar.vue'
-import { listRegionMembers } from '@/api/regions'
+import { listRegionMembersDetailed } from '@/api/regions'
 import { pulseError } from '@/script'
 import i18n from '@/i18n'
 
