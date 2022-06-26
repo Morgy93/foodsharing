@@ -324,5 +324,15 @@ class PassportGeneratorTransaction extends AbstractController
 	public function getPassportMemberListOfRegion(int $regionId = 0): array
 	{
 		return $this->passportGeneratorGateway->getPassFoodsaver($regionId);
+	private function convertMemberListForApiClient(array $passportMemberList, int $regionId): array
+	{
+		$rawFoodsaver = $passportMemberList[$regionId]["foodsaver"];
+
+		$passportMemberList[$regionId]["foodsaver"] = array_map(function ($foodsaver) {
+			$foodsaver["role_name"] = $this->getRole($foodsaver["gender_id"], $foodsaver["role_id"]);
+			return $foodsaver;
+		}, $rawFoodsaver);
+		
+		return $passportMemberList;
 	}
 }
