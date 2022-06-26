@@ -788,7 +788,7 @@ class StoreGateway extends BaseGateway
 
 			WHERE   bt.`foodsaver_id` = :fsId
 			AND 	b.betrieb_status_id NOT IN (:doesNotWantToWorkWithUs, :givesToOtherCharity)
-			ORDER BY bt.verantwortlich DESC, b.name ASC
+			ORDER BY bt.verantwortlich DESC, membershipstatus ASC, b.name ASC
 		', [
 			':fsId' => $fsId,
 			':doesNotWantToWorkWithUs' => CooperationStatus::DOES_NOT_WANT_TO_WORK_WITH_US,
