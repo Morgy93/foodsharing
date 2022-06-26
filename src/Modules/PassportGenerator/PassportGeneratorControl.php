@@ -75,7 +75,9 @@ final class PassportGeneratorControl extends Control
 			'</div>');
 		}
 
-		$this->pageHelper->addContent($this->view->vueComponent("passport-generator-view", "PassportGeneratorView"));
+		$this->pageHelper->addContent($this->view->vueComponent("passport-generator-view", "PassportGeneratorView", [
+			"regionId" => $this->regionId
+		]));
 
 
 		if (isset($_GET['dl1'])) {

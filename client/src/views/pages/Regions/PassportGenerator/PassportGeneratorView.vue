@@ -71,6 +71,12 @@ export default {
     Container,
     Avatar,
   },
+  props: {
+    regionId: {
+      type: Number,
+      required: true,
+    },
+  },
   data () {
     return {
       test: 123,
@@ -78,12 +84,12 @@ export default {
     }
   },
   mounted: function () {
-    this.fetchFoodsaverFromRegion(3883)
+    this.fetchFoodsaverFromRegion(this.regionId)
   },
   methods: {
     async fetchFoodsaverFromRegion (regionId) {
       try {
-        this.foodsaver = await listRegionMembers(regionId)
+        this.foodsaver = await listRegionMembersDetailed(regionId)
         console.log(this.foodsaver)
       } catch (e) {
         pulseError(i18n('error_unexpected'))
