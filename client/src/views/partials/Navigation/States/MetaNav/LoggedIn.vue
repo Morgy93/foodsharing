@@ -5,6 +5,12 @@
       class="metanav"
     >
       <Link
+        icon="fa-brush"
+        title="STYLEGUIDE"
+        data-toggle="modal"
+        data-target="#styleGuideModal"
+      />
+      <Link
         v-for="(link, idx) of metaNav"
         :key="idx"
         :title="$i18n(link.title)"
