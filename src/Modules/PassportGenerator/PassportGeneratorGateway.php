@@ -37,13 +37,12 @@ final class PassportGeneratorGateway extends BaseGateway
 				SELECT 	fs.`id`,
 						CONCAT(fs.`name`," ",fs.`nachname`) AS `name`,
 				       	fs.geschlecht as gender_id,
-						fs.verified,
-						fs.last_pass,
+						fs.verified as is_verified,
+						fs.last_pass as last_pass_datetime,
 						fs.photo,
 				       	fs.rolle as role_id,
-						fs.last_login,
+						fs.last_login as last_login_datetime,
 
-						UNIX_TIMESTAMP(fs.last_pass) AS last_pass_ts,
 						b.name AS bezirk_name,
 						b.id AS bezirk_id
 
