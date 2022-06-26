@@ -23,7 +23,7 @@
                   :key="user.id"
                 >
                   <td>
-                    <input type="checkbox">
+                    <input type="checkbox" :checked="user.checked"/>
                   </td>
                   <td>
                     <Avatar
@@ -55,10 +55,10 @@
       <div class="col-3">
         <Container title="Aktionen">
           <div class="card-body bg-white">
-            <button class="btn btn-sm btn-block btn-primary">
+            <button class="btn btn-sm btn-block btn-primary" @click="() => {this.foodsaver.forEach(foodsaver => foodsaver.checked = true)}">
               Alle markieren
             </button>
-            <button class="btn btn-sm btn-block btn-primary">
+            <button class="btn btn-sm btn-block btn-primary" @click="() => {this.foodsaver.forEach(foodsaver => foodsaver.checked = false)}">
               Alle unmarkieren
             </button>
             <button class="btn btn-sm btn-block btn-success">
