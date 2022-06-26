@@ -320,4 +320,9 @@ class PassportGeneratorTransaction extends AbstractController
 
 		return $roles[$role_id];
 	}
+
+	public function getPassportMemberListOfRegion(int $regionId = 0): array
+	{
+		return $this->passportGeneratorGateway->getPassFoodsaver($regionId);
+	}
 }
