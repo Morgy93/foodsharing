@@ -6,4 +6,4 @@ messages:
 
 NelmioApiDocBundle:
   resource: "@NelmioApiDocBundle/Resources/config/routing/swaggerui.xml"
-  prefix:   /api/doc
+  prefix:   /api/doc/

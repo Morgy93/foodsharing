@@ -73,6 +73,7 @@
               <a
                 v-b-tooltip="$i18n('footer.hosting_tooltip')"
                 :href="$url('hosting')"
+                class="hide-external"
                 target="_blank"
                 :rel="externalLink"
               >
@@ -131,6 +132,7 @@
               <a
                 v-b-tooltip="$i18n('footer.hosting_tooltip')"
                 :href="$url('hosting')"
+                class="hide-external"
                 target="_blank"
                 :rel="externalLink"
               >
@@ -314,7 +316,7 @@
               :key="index"
               v-b-tooltip="social.name"
               :href="$url(social.url + '_'+ (isDotAt ? 'at' : 'de'))"
-              class="social_icons"
+              class="social_icons hide-external"
               :rel="externalLink"
             >
               <i :class="social.icon" />

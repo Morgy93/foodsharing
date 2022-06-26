@@ -18,14 +18,14 @@
         class="mb-2"
       >
         <b>{{ $i18n('profile.infos.privateMail') }}:</b>
-        <p><a :href="getMailboxUrl(privateMail)">{{ privateMail }}</a></p>
+        <p><a :href="getMailboxUrl(privateMail)">{{ splitMail(privateMail)[0] }}@<wbr>{{ splitMail(privateMail)[1] }}</a></p>
       </li>
       <li
         v-if="fsMail"
         class="mb-2"
       >
         <b>{{ $i18n('profile.infos.fsMail') }}:</b>
-        <p><a :href="getMailboxUrl(fsMail)">{{ fsMail }}</a></p>
+        <p><a :href="getMailboxUrl(fsMail)">{{ splitMail(fsMail)[0] }}@<wbr>{{ splitMail(fsMail)[1] }}</a></p>
       </li>
       <li class="mb-2">
         <b>{{ $i18n('profile.infos.buddies') }}:</b>
@@ -54,27 +54,24 @@ export default {
   },
   computed: {
     getFsIdTranslation () {
-      let value = this.$i18n('profile.infos.foodsaverId')
-      if (!this.isfoodsaver) {
-        value = this.$i18n('profile.infos.foodsharerId')
-      }
-      return value
+      return !this.isfoodsaver ? this.$i18n('profile.infos.foodsharerId') : this.$i18n('profile.infos.foodsaverId')
     },
     buddycountTranslation () {
-      let value = this.$i18n('profile.infos.buddycount1', { name: this.name, count: this.buddyCount })
-      if (this.buddyCount > 1) {
-        value = this.$i18n('profile.infos.buddycount', { name: this.name, count: this.buddyCount })
-      }
-      return value
+      const knownBuddycount = this.$i18n('profile.infos.buddycount_known', { name: this.name, count: this.buddyCount })
+      const followedBuddycount = this.$i18n('profile.infos.buddycount_followed', { name: this.name, count: this.buddyCount })
+      return this.buddyCount > 1 ? knownBuddycount : followedBuddycount
     },
   },
   methods: {
-    async getMailboxUrl (mail) {
+    getMailboxUrl (mail) {
       let mailboxUrl = this.$url('mailboxMailto', mail)
       if (this.fsIdSession === this.fsId && mail.includes('foodsharing.network')) {
         mailboxUrl = this.$url('mailbox')
       }
       return mailboxUrl
+    },
+    splitMail (mail) {
+      return mail.split('@')
     },
   },
 }

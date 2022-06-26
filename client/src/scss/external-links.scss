@@ -1,0 +1,28 @@
+a[href]:not(:where(
+  /* exclude hash only links */
+  [href^="#"],
+  /* exclude relative but not double slash only links */
+  [href^="/"]:not([href^="//"]),
+  /* domains to exclude */
+  [href*="//localhost"], /* dev test */
+  [href*="//foodsharing.de"],
+  [href*="//foodsharing.at"],
+  [href*="//foodsharing.network"],
+  /* subdomains to exclude */
+  [href*="//www.foodsharing.de"],
+  [href*="//www.foodsharing.at"],
+  [href*="//www.foodsharing.network"],
+  [href*="//beta.foodsharing.de"],
+  [href*="//beta.foodsharing.at"],
+  [href*="//beta.foodsharing.network"],
+  /* classes to exclude */
+  .hide-external,
+)):after {
+    content: "\f35d";
+    font-family: "Font Awesome 5 Free";
+    font-size: 0.8em;
+    font-weight: 900;
+    margin-left: 0.3rem;
+    position: relative;
+    top: -1px;
+}
