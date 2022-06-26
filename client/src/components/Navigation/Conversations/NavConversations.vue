@@ -1,6 +1,6 @@
 <template>
   <Dropdown
-    title="menu.entry.messages"
+    :title="$i18n('navigation.conversations')"
     icon="fa-comments"
     :badge="unread"
     direction="right"

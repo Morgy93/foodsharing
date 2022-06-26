@@ -76,15 +76,23 @@
 .nav-text {
   display: unset;
 
-  @media (max-width: 1000px) {
+  .mainnav &,
+  .sidenav & {
+    font-weight: 600;
+  }
+
+  :not(.nav-visible) .sidenav & {
     display: none;
+  }
+
+
+  @media (max-width: 1000px) {
+    .icon-nav + & {
+      display: none;
+    }
   }
 
   .metanav & {
     display: unset;
-  }
-
-  .sidenav & {
-    display: none;
   }
 }

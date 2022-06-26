@@ -10,7 +10,7 @@
     <NavStores />
     <NavBaskets />
     <NavConversations v-if="viewIsMobile" />
-    <NavBells v-if="viewIsMobile" />
+    <NavNotifications v-if="viewIsMobile" />
     <Link
       v-if="viewIsMobile"
       data-toggle="collapse"
@@ -31,7 +31,7 @@
 import Link from '@/components/Navigation/_NavItems/NavLink'
 import Logo from '@/components/Navigation/Logo'
 //
-import NavBells from '@/components/Navigation/Bells/NavBells'
+import NavNotifications from '@/components/Navigation/Notifications/NavNotifications'
 import NavConversations from '@/components/Navigation/Conversations/NavConversations'
 import NavBaskets from '@/components/Navigation/Baskets/NavBaskets'
 import NavStores from '@/components/Navigation/Stores/NavStores'
@@ -44,7 +44,7 @@ export default {
   components: {
     Logo,
     Link,
-    NavBells,
+    NavNotifications,
     NavConversations,
     NavBaskets,
     NavStores,

@@ -1,22 +1,23 @@
 <template>
   <li class="nav-item">
     <a
+      v-b-tooltip="title"
       class="nav-link"
       :href="href"
       role="button"
     >
-      <slot name="icon">
-        <i
-          v-if="icon"
-          class="icon-nav fas"
-          :class="icon"
-        />
-      </slot>
       <slot name="badge">
         <span
           v-if="badge"
           class="badge badge-danger"
           v-html="badge"
+        />
+      </slot>
+      <slot name="icon">
+        <i
+          v-if="icon"
+          class="icon-nav fas"
+          :class="icon"
         />
       </slot>
       <slot name="text">

@@ -7,7 +7,7 @@
       <Link
         v-for="(link, idx) of metaNav"
         :key="idx"
-        :title="link.title"
+        :title="$i18n(link.title)"
         :href="$url(link.url)"
       />
       <NavAdmin />
@@ -31,7 +31,7 @@
         :title="$i18n('menu.entry.groups')"
       />
       <NavConversations v-if="!viewIsMobile" />
-      <NavBells v-if="!viewIsMobile" />
+      <NavNotifications v-if="!viewIsMobile" />
       <NavUser />
     </ul>
   </ul>
@@ -43,7 +43,7 @@ import MetaNavData from '../../MetaNavData.json'
 //
 import Link from '@/components/Navigation/_NavItems/NavLink'
 import NavConversations from '@/components/Navigation/Conversations/NavConversations'
-import NavBells from '@/components/Navigation/Bells/NavBells'
+import NavNotifications from '@/components/Navigation/Notifications/NavNotifications'
 import NavUser from '@/components/Navigation/User/NavUser'
 import NavAdmin from '@/components/Navigation/Admin/NavAdmin'
 //
@@ -54,7 +54,7 @@ export default {
   components: {
     Link,
     NavConversations,
-    NavBells,
+    NavNotifications,
     NavUser,
     NavAdmin,
   },

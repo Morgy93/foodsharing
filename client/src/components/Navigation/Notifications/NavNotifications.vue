@@ -1,6 +1,6 @@
 <template>
   <Dropdown
-    title="menu.entry.notifications"
+    :title="$i18n('navigation.notifications')"
     icon="fa-bell"
     :badge="unread"
     direction="right"
@@ -10,7 +10,7 @@
       v-if="bells.length > 0"
       #content
     >
-      <BellsEntry
+      <NotificationsEntry
         v-for="bell in bells"
         :key="bell.id"
         :bell="bell"
@@ -46,13 +46,13 @@
 import DataBell from '@/stores/bells'
 // Components
 import Dropdown from '../_NavItems/NavDropdown'
-import BellsEntry from './NavBellsEntry'
+import NotificationsEntry from './NavNotificationsEntry'
 // Mixins
 import { pulseError } from '@/script'
 
 export default {
   components: {
-    BellsEntry,
+    NotificationsEntry,
     Dropdown,
   },
   computed: {

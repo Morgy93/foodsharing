@@ -7,11 +7,11 @@
       <Link
         v-for="(link, idx) of metaNav"
         :key="idx"
-        :title="link.title"
+        :title="$i18n(link.title)"
         :href="$url(link.url)"
       />
     </ul>
-    <ul class="mainnav">
+    <ul class="sidenav">
       <Link
         :href="$url('joininfo')"
         :title="$i18n('register.topbar')"

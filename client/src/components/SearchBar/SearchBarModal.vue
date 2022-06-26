@@ -1,5 +1,4 @@
 <template>
-  <!-- eslint-disable -->
   <div
     id="searchBarModal"
     tabindex="-1"
@@ -13,7 +12,10 @@
           class="modal-header"
           :class="{'border-0': !isOpen}"
         >
-          <label class="sr-only" for="inlineFormInputGroup">{{ $i18n('search.placeholder') }}</label>
+          <label
+            class="sr-only"
+            for="inlineFormInputGroup"
+          >{{ $i18n('search.placeholder') }}</label>
           <div class="input-group">
             <div class="input-group-prepend">
               <div class="input-group-text">
@@ -26,7 +28,13 @@
                 />
               </div>
             </div>
-            <input v-model="query" type="text" class="form-control" id="inlineFormInputGroup" :placeholder="$i18n('search.placeholder')">
+            <input
+              id="inlineFormInputGroup"
+              v-model="query"
+              type="text"
+              class="form-control"
+              :placeholder="$i18n('search.placeholder')"
+            >
             <div class="input-group-append">
               <div
                 class="input-group-text is-clickable"
@@ -60,7 +68,11 @@
           />
         </div>
         <div class="modal-footer">
-          <button type="button" class="btn btn-sm btn-light" data-dismiss="modal">
+          <button
+            type="button"
+            class="btn btn-sm btn-light"
+            data-dismiss="modal"
+          >
             You can use the <code class="key">ESC</code> hotkey or click here to close this modal.
           </button>
         </div>

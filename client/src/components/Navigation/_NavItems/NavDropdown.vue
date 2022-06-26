@@ -2,18 +2,12 @@
   <li class="nav-item dropdown">
     <button
       :id="title"
+      v-b-tooltip="title"
       class="nav-link dropdown-toggle"
       role="button"
       data-toggle="dropdown"
       aria-expanded="false"
     >
-      <slot name="icon">
-        <i
-          v-if="icon"
-          class="icon-nav fas"
-          :class="icon"
-        />
-      </slot>
       <slot name="badge">
         <span
           v-if="badge"
@@ -25,9 +19,20 @@
           v-html="badge"
         />
       </slot>
+      <slot name="icon">
+        <i
+          v-if="icon"
+          class="icon-nav fas"
+          :class="icon"
+        />
+      </slot>
       <slot name="text">
         <span
           class="nav-text"
+          v-html="title"
+        />
+        <span
+          class="sr-only"
           v-html="title"
         />
       </slot>

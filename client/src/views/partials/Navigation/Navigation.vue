@@ -1,6 +1,12 @@
 <template>
-  <div class="bootstrap nav sticky">
-    <nav class="nav navbar navbar-expand-md">
+  <div
+    class="bootstrap"
+    :class="{ 'sticky': viewIsMD }"
+  >
+    <nav
+      class="nav navbar navbar-expand-md"
+      :class="{'nav-visible': isLoggedIn}"
+    >
       <MetaNavLoggedIn v-if="isLoggedIn" />
       <MetaNavLoggedOut v-else />
       <ul class="container nav-container">
@@ -164,9 +170,6 @@ export default {
 }
 
 ::v-deep .mainnav {
-  & .nav-link {
-    font-weight: 600;
-  }
   @media(max-width: 768px) {
     justify-content: space-between;
   }
