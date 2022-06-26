@@ -1,39 +1,61 @@
 <template>
-  <ul class="">
-    <li
-      v-for="(item, idx) of menu(entry)"
-      :key="idx"
+  <div class="group text-truncate">
+    <button
+      v-if="!isAlone"
+      v-b-toggle="toggleId(entry.id)"
+      role="menuitem"
+      class="dropdown-header dropdown-item text-truncate"
+      target="_self"
+      @click.stop
+      v-html="entry.name"
+    />
+    <h6
+      v-if="isAlone"
+      role="menuitem"
+      class="dropdown-header text-truncate"
+      v-html="entry.name"
+    />
+    <b-collapse
+      :id="toggleId(entry.id)"
+      class="dropdown-submenu"
+      accordion="region"
     >
       <a
-        :href="item.href ? $url(item.href, entry.id, item.special) : '#'"
+        v-for="(menu,key) in menuEntries"
+        :key="key"
+        :href="menu.href ? $url(menu.href, entry.id, menu.special) : '#'"
         role="menuitem"
         class="dropdown-item dropdown-action"
-        @click="item.func ? item.func() : null"
+        @click="menu.func ? menu.func() : null"
       >
         <i
-          class="fas"
-          :class="item.icon"
+          class="icon-subnav fas"
+          :class="menu.icon"
         />
-        {{ $i18n(item.text) }}
+        {{ $i18n(menu.text) }}
       </a>
-    </li>
-  </ul>
+    </b-collapse>
+  </div>
 </template>
 <script>
 // Mixins
 import ConferenceOpener from '@/mixins/ConferenceOpenerMixin'
 
 export default {
-  name: 'MenuRegion',
+  name: 'MenuGroupsEntry',
   mixins: [ConferenceOpener],
   props: {
+    isAlone: {
+      type: Boolean,
+      default: false,
+    },
     entry: {
       type: Object,
-      default: () => ({}),
+      default: () => {},
     },
   },
-  methods: {
-    menu (region) {
+  computed: {
+    menuEntries () {
       const menu = [
         {
           href: 'forum', icon: 'fa-comments', text: 'menu.entry.forum',
@@ -61,40 +83,40 @@ export default {
         },
       ]
 
-      if (region.hasConference) {
+      if (this.entry.hasConference) {
         menu.push({
-          icon: 'fa-users', text: 'menu.entry.conference', func: () => this.showConferencePopup(region.id),
+          icon: 'fa-users', text: 'menu.entry.conference', func: () => this.showConferencePopup(this.entry.id),
         })
       }
 
-      if (region.mayHandleFoodsaverRegionMenu) {
+      if (this.entry.mayHandleFoodsaverRegionMenu) {
         menu.push({
           href: 'foodsaverList', icon: 'fa-user', text: 'menu.entry.fs',
         })
       }
 
-      if (region.maySetRegionOptions) {
+      if (this.entry.maySetRegionOptions) {
         menu.push({
           href: 'options', icon: 'fa-tools', text: 'menu.entry.options',
         })
       }
-      if (region.maySetRegionPin) {
+      if (this.entry.maySetRegionPin) {
         menu.push({
           href: 'pin', icon: 'fa-users', text: 'menu.entry.pin',
         })
       }
-      if (region.mayAccessReportGroupReports) {
+      if (this.entry.mayAccessReportGroupReports) {
         menu.push({
           href: 'reports', icon: 'fa-poo', text: 'terminology.reports',
         })
       }
-      if (region.mayAccessArbitrationGroupReports) {
+      if (this.entry.mayAccessArbitrationGroupReports) {
         menu.push({
           href: 'reports', icon: 'fa-poo', text: 'terminology.arbitration',
         })
       }
 
-      if (region.isAdmin) {
+      if (this.entry.isAdmin) {
         menu.push({
           href: 'forum', special: 1, icon: 'fa-comment-dots', text: 'menu.entry.BOTforum',
         })
@@ -106,5 +128,14 @@ export default {
       return menu
     },
   },
+  methods: {
+    toggleId (id) {
+      return this.$options.name + '_' + id
+    },
+  },
 }
 </script>
+
+<style lang="scss" scoped>
+@import '../../../scss/icon-sizes.scss';
+</style>

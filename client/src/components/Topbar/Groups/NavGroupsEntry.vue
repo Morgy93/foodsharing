@@ -18,7 +18,7 @@
     <b-collapse
       :id="toggleId(entry.id)"
       class="dropdown-submenu"
-      :accordion="'groups'"
+      accordion="groups"
     >
       <a
         v-for="(menu,key) in menuEntries"

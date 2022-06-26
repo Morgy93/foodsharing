@@ -1,16 +1,14 @@
 <template>
-  <!-- eslint-disable -->
-  <NavDropdown
+  <Dropdown
     :title="$i18n('terminology.regions')"
     icon="fa-globe"
-    id="regions"
   >
     <template
       v-if="regions.length > 0"
       #content
     >
-      <MenuRegionEntry
-       v-for="region in regions"
+      <RegionsEntry
+        v-for="region in regions"
         :key="region.id"
         :entry="region"
       />
@@ -35,22 +33,19 @@
         {{ $i18n('menu.entry.joinregion') }}
       </button>
     </template>
-  </NavDropdown>
+  </Dropdown>
 </template>
 <script>
 // Store
 import { getters } from '@/stores/regions'
 // Components
-import NavDropdown from '../_NavItems/NavDropdown'
-import MenuRegionEntry from './MenuRegionEntry'
+import Dropdown from '../_NavItems/NavDropdown'
+import RegionsEntry from './NavRegionsEntry'
 import { becomeBezirk } from '@/script'
-// Mixins
-import ConferenceOpener from '@/mixins/ConferenceOpenerMixin'
 
 export default {
   name: 'MenuRegions',
-  components: { NavDropdown, MenuRegionEntry },
-  mixins: [ConferenceOpener],
+  components: { Dropdown, RegionsEntry },
   computed: {
     regions () {
       return getters.get()

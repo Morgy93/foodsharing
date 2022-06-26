@@ -26,7 +26,7 @@
             <Logo small/>
           </template>
         </Link>
-        <Dropdown v-if="!viewIsMobile" icon="fa-globe" title="Regions"/>
+        <NavRegions v-if="!viewIsMobile" />
         <NavGroups v-if="!viewIsMobile" />
         <NavStores />
         <NavBaskets />
@@ -88,7 +88,6 @@ import DataBaskets from '@/stores/baskets'
 import DataGroups from '@/stores/groups.js'
 import DataRegions from '@/stores/regions.js'
 //
-import Dropdown from '@/components/Topbar/_NavItems/NavDropdown'
 import Link from '@/components/Topbar/_NavItems/NavLink'
 import Logo from '@/components/Topbar/Logo'
 //
@@ -99,6 +98,7 @@ import NavConversations from '@/components/Topbar/Conversations/NavConversations
 import NavBaskets from '@/components/Topbar/Baskets/NavBaskets'
 import NavStores from '@/components/Topbar/Stores/NavStores'
 import NavGroups from '@/components/Topbar/Groups/NavGroups'
+import NavRegions from '@/components/Topbar/Regions/NavRegions'
 // Hidden Elements
 import LanguageChooser from '@/components/Topbar/LanguageChooser'
 import SearchBarModal from '@/components/SearchBar/SearchBarModal'
@@ -111,7 +111,6 @@ export default {
     Logo,
     LanguageChooser,
     SearchBarModal,
-    Dropdown,
     Link,
     NavAdmin,
     NavUser,
@@ -120,6 +119,7 @@ export default {
     NavBaskets,
     NavStores,
     NavGroups,
+    NavRegions,
   },
   mixins: [MediaQueryMixin, ScrollMixin],
   props: {
