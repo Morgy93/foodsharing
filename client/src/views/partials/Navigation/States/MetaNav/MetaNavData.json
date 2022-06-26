@@ -1,0 +1,18 @@
+[
+    {
+        "title": "navigation.metanav.map",
+        "url": "map"
+    },
+    {
+        "title": "navigation.metanav.it_promotion",
+        "url": "devdocsItTasks"
+    },
+    {
+        "title": "navigation.metanav.contact",
+        "url": "contact"
+    },
+    {
+        "title": "navigation.metanav.help",
+        "url": "wiki"
+    }
+]

@@ -78,6 +78,10 @@ export const mutations = {
   async fetchMailUnreadCount () {
     store.mailUnreadCount = await getMailUnreadCount()
   },
+
+  setLoggedIn (status) {
+    store.isLoggedIn = status
+  },
 }
 
 export default { store, getters, mutations }

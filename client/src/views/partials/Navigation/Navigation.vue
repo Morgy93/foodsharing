@@ -1,116 +1,140 @@
 <template>
-  <!-- eslint-disable -->
   <div class="bootstrap">
-  <nav class="sticky nav navbar navbar-expand-md">
-    <ul class="metanav-container container">
-      <ul
-        v-if="!viewIsMobile"
-        class="metanav"
-      >
-        <Link
-          v-for="(link, idx) of metaNav"
-          :key="idx"
-          :title="link.title"
-          :href="$url(link.url)"
-        />
-        <NavAdmin />
-      </ul>
-    </ul>
-    <ul class="container nav-container">
-
-      <ul class="mainnav">
-        <Link
-          :href="homeHref"
+    <nav class="sticky nav navbar navbar-expand-md">
+      <!-- <ul class="metanav-container container">
+        <ul
+          v-if="!viewIsMobile"
+          class="metanav"
         >
-          <template #text>
-            <Logo small/>
-          </template>
-        </Link>
-        <NavRegions v-if="!viewIsMobile" />
-        <NavGroups v-if="!viewIsMobile" />
-        <NavStores />
-        <NavBaskets />
-
-        <NavConversations v-if="viewIsMobile" />
-        <NavBells v-if="viewIsMobile" />
-
-        <Link
-          v-if="viewIsMobile"
-          data-toggle="collapse"
-          data-target="#navbarSupportedContent"
-          aria-controls="navbarSupportedContent"
-          aria-expanded="false"
-          aria-label="Toggle navigation"
-        >
-          <template #text>
-            <i class="fas fa-bars" />
-          </template>
-        </Link>
-      </ul>
-
-      <div class="collapse navbar-collapse" id="navbarSupportedContent">
-        <ul class="navbar-navside">
-          <ul
-            v-if="viewIsMobile"
-            class="metanav"
-          >
-            <Link
-              v-for="(link, idx) of metaNav"
-              :key="idx"
-              :title="link.title"
-              :href="$url(link.url)"
-            />
-            <NavAdmin />
-          </ul>
-          <ul class="sidenav">
-            <Link icon="fa-search" title="Suche" data-toggle="modal" data-target="#searchBarModal"/>
-            <Link v-if="viewIsMobile" icon="fa-globe" title="Bezirke"/>
-            <Link v-if="viewIsMobile" :href="$url('workingGroups')" icon="fa-users" :title="$i18n('menu.entry.groups')"/>
-            <NavConversations v-if="!viewIsMobile"/>
-            <NavBells v-if="!viewIsMobile"/>
-            <NavUser />
-          </ul>
+          <Link
+            v-for="(link, idx) of metaNav"
+            :key="idx"
+            :title="link.title"
+            :href="$url(link.url)"
+          />
+          <NavAdmin />
         </ul>
-      </div>
-    </ul>
-  </nav>
-  <LanguageChooser />
-  <SearchBarModal />
+      </ul> -->
+      <MetaNavDesktopLoggedIn v-if="isLoggedIn" />
+      <MetaNavDesktopLoggedOut v-else />
+      <ul class="container nav-container">
+        <ul class="mainnav">
+          <Link
+            :href="homeHref"
+          >
+            <template #text>
+              <Logo small />
+            </template>
+          </Link>
+          <NavRegions v-if="!viewIsMobile" />
+          <NavGroups v-if="!viewIsMobile" />
+          <NavStores />
+          <NavBaskets />
+
+          <NavConversations v-if="viewIsMobile" />
+          <NavBells v-if="viewIsMobile" />
+
+          <Link
+            v-if="viewIsMobile"
+            data-toggle="collapse"
+            data-target="#sidebar"
+            aria-controls="sidebar"
+            aria-expanded="false"
+            aria-label="Toggle navigation"
+          >
+            <template #text>
+              <i class="fas fa-bars" />
+            </template>
+          </Link>
+        </ul>
+
+        <div
+          id="sidebar"
+          class="collapse navbar-collapse"
+        >
+          <ul class="navbar-navside">
+            <ul
+              v-if="viewIsMobile"
+              class="metanav"
+            >
+              <Link
+                v-for="(link, idx) of metaNav"
+                :key="idx"
+                :title="link.title"
+                :href="$url(link.url)"
+              />
+              <NavAdmin />
+            </ul>
+            <ul class="sidenav">
+              <Link
+                icon="fa-search"
+                title="Suche"
+                data-toggle="modal"
+                data-target="#searchBarModal"
+              />
+              <Link
+                v-if="viewIsMobile"
+                icon="fa-globe"
+                title="Bezirke"
+              />
+              <Link
+                v-if="viewIsMobile"
+                :href="$url('workingGroups')"
+                icon="fa-users"
+                :title="$i18n('menu.entry.groups')"
+              />
+              <NavConversations v-if="!viewIsMobile" />
+              <NavBells v-if="!viewIsMobile" />
+              <NavUser />
+            </ul>
+          </ul>
+        </div>
+      </ul>
+    </nav>
+    <LanguageChooser />
+    <SearchBarModal />
   </div>
 </template>
 
 <script>
 // Store
-import DataUser from '@/stores/user'
-import DataBells from '@/stores/bells'
-import DataStores from '@/stores/stores'
-import DataBaskets from '@/stores/baskets'
+import DataUser from '@/stores/user.js'
+import DataBells from '@/stores/bells.js'
+import DataStores from '@/stores/stores.js'
+import DataBaskets from '@/stores/baskets.js'
 import DataGroups from '@/stores/groups.js'
+import DataConversations from '@/stores/conversations.js'
 import DataRegions from '@/stores/regions.js'
 //
-import Link from '@/components/Topbar/_NavItems/NavLink'
-import Logo from '@/components/Topbar/Logo'
+import Link from '@/components/Navigation/_NavItems/NavLink'
+import Logo from '@/components/Navigation/Logo'
+// States
+import MetaNavDesktopLoggedIn from './States/MetaNav/LoggedInDesktop.vue'
+import MetaNavDesktopLoggedOut from './States/MetaNav/LoggedOutDesktop.vue'
 //
-import NavAdmin from '@/components/Topbar/Admin/NavAdmin'
-import NavUser from '@/components/Topbar/User/NavUser'
-import NavBells from '@/components/Topbar/Bells/NavBells'
-import NavConversations from '@/components/Topbar/Conversations/NavConversations'
-import NavBaskets from '@/components/Topbar/Baskets/NavBaskets'
-import NavStores from '@/components/Topbar/Stores/NavStores'
-import NavGroups from '@/components/Topbar/Groups/NavGroups'
-import NavRegions from '@/components/Topbar/Regions/NavRegions'
+import NavAdmin from '@/components/Navigation/Admin/NavAdmin'
+import NavUser from '@/components/Navigation/User/NavUser'
+import NavBells from '@/components/Navigation/Bells/NavBells'
+import NavConversations from '@/components/Navigation/Conversations/NavConversations'
+import NavBaskets from '@/components/Navigation/Baskets/NavBaskets'
+import NavStores from '@/components/Navigation/Stores/NavStores'
+import NavGroups from '@/components/Navigation/Groups/NavGroups'
+import NavRegions from '@/components/Navigation/Regions/NavRegions'
 // Hidden Elements
-import LanguageChooser from '@/components/Topbar/LanguageChooser'
+import LanguageChooser from '@/components/Navigation/LanguageChooser'
 import SearchBarModal from '@/components/SearchBar/SearchBarModal'
 // Mixins
 import MediaQueryMixin from '@/mixins/MediaQueryMixin'
 import ScrollMixin from '@/mixins/ScrollMixin'
 
 export default {
+  name: 'Navigation',
   components: {
     Logo,
     LanguageChooser,
     SearchBarModal,
+    MetaNavDesktopLoggedIn,
+    MetaNavDesktopLoggedOut,
     Link,
     NavAdmin,
     NavUser,
@@ -130,6 +154,10 @@ export default {
     groups: {
       type: Array,
       default: () => [],
+    },
+    isLoggedIn: {
+      type: Boolean,
+      default: false,
     },
   },
   data () {
@@ -156,9 +184,6 @@ export default {
     }
   },
   computed: {
-    isLoggedIn () {
-      return DataUser.getters.isLoggedIn()
-    },
     isFoodsaver () {
       return DataUser.getters.isFoodsaver()
     },
@@ -194,6 +219,7 @@ export default {
     },
   },
   async created () {
+    DataUser.mutations.setLoggedIn(this.isLoggedIn)
     // TODO: NO APIS :(
     DataGroups.mutations.set(this.groups)
     DataRegions.mutations.set(this.regions)
@@ -203,6 +229,7 @@ export default {
       await DataUser.mutations.fetchDetails()
       await DataBaskets.mutations.fetchOwn()
       await DataBells.mutations.fetch()
+      await DataConversations.mutations.fetchConversations()
     }
   },
   methods: {
@@ -230,9 +257,9 @@ export default {
   background-color: var(--fs-color-primary-100);
 }
 
-.metanav,
-.mainnav,
-.sidenav {
+::v-deep .metanav,
+::v-deep .mainnav,
+::v-deep .sidenav {
   display: flex;
   align-items: center;
   width: 100%;
@@ -241,16 +268,20 @@ export default {
   color: var(--fs-color-primary-600);
 }
 
-.metanav,
-.sidenav {
+::v-deep .metanav,
+::v-deep .sidenav {
   justify-content: end;
 }
 
-::v-deep .metanav {
-  font-size: 0.7rem;
-  margin-top: .25rem;
-  margin-bottom: .25rem;
-  color: var(--fs-color-gray-500);
+::v-deep .metanav-container {
+  border-bottom: 1px solid var(--fs-color-primary-alpha-10);
+
+  & .metanav {
+    font-size: 0.7rem;
+    margin-top: .25rem;
+    margin-bottom: .25rem;
+    color: var(--fs-color-gray-500);
+  }
 
   & .nav-link {
     padding: 0.25rem 1rem;
@@ -266,8 +297,8 @@ export default {
   }
 }
 
-.nav .metanav-container,
-.nav .nav-container {
+::v-deep .nav .metanav-container,
+::v-deep .nav .nav-container {
   align-items: flex-end;
   padding-bottom: 0;
   margin-bottom: 0.25rem;
@@ -278,10 +309,6 @@ export default {
   @media(max-width: 768px ) {
     align-items: center;
   }
-}
-
-.metanav-container {
-  border-bottom: 1px solid var(--fs-color-gray-200)
 }
 
 ::v-deep .navbar-collapse {

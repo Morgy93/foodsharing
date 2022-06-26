@@ -2657,3 +2657,10 @@ information:
     title: "Kennst du die Kalender Synchronisation für deine Abholungen?"
     info: "Damit kannst du deine nächsten Abholtermine mit einem Kalenderprogramm deiner Wahl sehen."
     link: "Jetzt abonnieren"
+
+navigation:
+  metanav:
+    map: Karte
+    it_promotion: IT'ler? Wir brauchen dich!
+    contact: Kontakt
+    help: Hilfe

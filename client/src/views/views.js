@@ -1,5 +1,5 @@
 import './partials/Footer/footer'
-import './partials/Topbar/topbar'
+import './partials/Navigation/topbar'
 
 /**
  * The Javascript loader is at `src/Modules` located.

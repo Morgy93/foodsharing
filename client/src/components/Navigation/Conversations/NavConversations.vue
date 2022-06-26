@@ -49,7 +49,7 @@
 </template>
 <script>
 // Stores
-import conversationStore from '@/stores/conversations'
+import DataConversations from '@/stores/conversations'
 // Components
 import Dropdown from '../_NavItems/NavDropdown'
 import ConversationsEntry from './NavConversationsEntry'
@@ -59,23 +59,15 @@ export default {
   components: { ConversationsEntry, Dropdown },
   computed: {
     conversations () {
-      return Object.values(conversationStore.conversations).filter((a) => (a.lastMessage != null)).sort(
-        (a, b) => (a.hasUnreadMessages === b.hasUnreadMessages) ? ((a.lastMessage.sentAt < b.lastMessage.sentAt) ? 1 : -1) : (a.hasUnreadMessages ? -1 : 1),
-      )
+      return DataConversations.getters.getSorted()
     },
     unread () {
-      if (conversationStore.unreadCount) {
-        return conversationStore.unreadCount < 99 ? conversationStore.unreadCount : '99+'
-      }
-      return null
+      return DataConversations.getters.getUnreadCount()
     },
-  },
-  created () {
-    return conversationStore.loadConversations()
   },
   methods: {
     markUnreadMessagesAsRead () {
-      conversationStore.markUnreadMessagesAsRead()
+      DataConversations.mutations.markUnreadMessagesAsRead()
     },
   },
 }
