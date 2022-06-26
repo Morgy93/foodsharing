@@ -1,4 +1,5 @@
 <template>
+  <!-- eslint-disable -->
   <section class="bootstrap container-fluid">
     <div class="row">
       <div class="col-9">
@@ -9,9 +10,11 @@
                 <tr>
                   <td>Ausgewählt</td>
                   <td>Bild</td>
-                  <td>Name</td>
+                  <td>Name (Rolle)</td>
+                  <td>Letzte Passgeneration</td>
                   <td>Letzter Login</td>
                   <td>Verifiziert</td>
+                  <td>Aktion</td>
                 </tr>
               </thead>
               <tbody>
@@ -23,12 +26,25 @@
                     <input type="checkbox">
                   </td>
                   <td>
-                    <Avatar :is-sleeping="user.sleepStatus" />
+                    <Avatar
+                      :is-sleeping="user.sleepStatus"
+                      :url="user.photo"
+                    />
                   </td>
-                  <td>{{ user.name }}</td>
-                  <td>{{ user.avatar }}</td>
-                  <td>{{ user.verified }}</td>
-                  <td>{{ user.role }}</td>
+                  <td>{{ user.name }} ({{ user.role_name }})</td>
+                  <td>{{ user.displayed_data.last_pass_date }}</td>
+                  <td>{{ user.displayed_data.last_login_date }}</td>
+                  <td>{{ user.is_verified }}</td>
+                  <td>
+                    <button
+                      type="button"
+                      class="btn btn-sm btn-block btn-secondary"
+                      data-toggle="modal"
+                      data-target="#foodsaver-details-modal"
+                    >
+                      <i class="fa fa-eye" />
+                    </button>
+                  </td>
                 </tr>
               </tbody>
             </table>
@@ -89,11 +105,21 @@ export default {
   methods: {
     async fetchFoodsaverFromRegion (regionId) {
       try {
-        this.foodsaver = await listRegionMembersDetailed(regionId)
-        console.log(this.foodsaver)
+        const foodsaver = await listRegionMembersDetailed(regionId)
+        this.foodsaver = foodsaver.map(this.addAttributesToFoodsaver)
       } catch (e) {
         pulseError(i18n('error_unexpected'))
       }
+    },
+    addAttributesToFoodsaver (foodsaver) {
+      const newAttributes = {
+        checked: false,
+        displayed_data: {
+          last_login_date: new Date(foodsaver.last_login_datetime).toLocaleString(),
+          last_pass_date: new Date(foodsaver.last_pass_datetime).toLocaleString(),
+        },
+      }
+      return Object.assign(foodsaver, newAttributes)
     },
   },
 }
