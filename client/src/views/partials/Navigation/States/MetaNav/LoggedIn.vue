@@ -10,6 +10,7 @@
         :title="$i18n(link.title)"
         :href="$url(link.url)"
       />
+      <NavAdmin />
     </ul>
   </ul>
 </template>
@@ -19,6 +20,7 @@
 import MetaNavData from '../../MetaNavData.json'
 //
 import Link from '@/components/Navigation/_NavItems/NavLink'
+import NavAdmin from '@/components/Navigation/Admin/NavAdmin'
 //
 // Mixins
 import MediaQueryMixin from '@/mixins/MediaQueryMixin'
@@ -26,6 +28,7 @@ import MediaQueryMixin from '@/mixins/MediaQueryMixin'
 export default {
   components: {
     Link,
+    NavAdmin,
   },
   mixins: [MediaQueryMixin],
   data () {
