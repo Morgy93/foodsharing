@@ -140,6 +140,7 @@ export default {
       {
         key: 'slots',
         label: i18n('pickup.overview.cols.slots'),
+        class: 'slot-col',
       },
     ]
     if (this.allowSlotCancelation) {
@@ -223,8 +224,8 @@ export default {
      * Returns the css class each row is assigned
      */
     rowClass (item) {
-      if (item.confirmed === null) return 'option'
-      return 'registered'
+      if (item.confirmed === null) return ['option', 'pickup']
+      return ['registered', 'pickup']
     },
     /**
      * Gets the new width of the table.
@@ -256,7 +257,7 @@ export default {
 }
 
 .shadow-registered .registered td > * {
-  // opacity: 0.3;
+  opacity: 0.3;
 }
 
 .pickup-table .unlined th {
@@ -289,8 +290,16 @@ export default {
   -webkit-box-orient: vertical;
 }
 
-.pickup-table .table tbody td {
+::v-deep .pickup td {
   vertical-align: middle;
 }
 
+::v-deep .unlined > th{
+  border-top: 0;
+}
+
+::v-deep td.slot-col {
+  padding-top: 4px;
+  padding-bottom: 4px;
+}
 </style>
