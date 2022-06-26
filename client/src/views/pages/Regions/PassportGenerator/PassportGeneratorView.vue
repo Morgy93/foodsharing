@@ -34,7 +34,10 @@
                   <td>{{ user.name }} ({{ user.role_name }})</td>
                   <td>{{ user.displayed_data.last_pass_date }}</td>
                   <td>{{ user.displayed_data.last_login_date }}</td>
-                  <td>{{ user.is_verified }}</td>
+                  <td>
+                    <i v-if="user.is_verified" class="fas fa-check-circle fa-2x text-success" />
+                    <i v-if="!user.is_verified" class="fas fa-times-circle fa-2x text-warning" />
+                  </td>
                   <td>
                     <button
                       type="button"
