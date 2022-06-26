@@ -13,6 +13,7 @@ use Foodsharing\Modules\Core\DBConstants\Region\Type;
 use Foodsharing\Modules\Core\DBConstants\Region\WorkgroupFunction;
 use Foodsharing\Modules\Foodsaver\FoodsaverGateway;
 use Foodsharing\Modules\Group\GroupFunctionGateway;
+use Foodsharing\Modules\PassportGenerator\PassportGeneratorTransaction;
 use Foodsharing\Modules\Region\RegionGateway;
 use Foodsharing\Modules\Region\RegionTransactions;
 use Foodsharing\Modules\Settings\SettingsGateway;
@@ -43,6 +44,7 @@ class RegionRestController extends AbstractFOSRestController
 	private RegionTransactions $regionTransactions;
 	private WorkGroupPermissions $workGroupPermissions;
 	private WorkGroupTransactions $workGroupTransactions;
+	private PassportGeneratorTransaction $passportGeneratorTransaction;
 
 	// literal constants
 	private const LAT = 'lat';
@@ -62,7 +64,8 @@ class RegionRestController extends AbstractFOSRestController
 		GroupFunctionGateway $groupFunctionGateway,
 		RegionTransactions $regionTransactions,
 		WorkGroupPermissions $workGroupPermissions,
-		WorkGroupTransactions $workGroupTransactions
+		WorkGroupTransactions $workGroupTransactions,
+		PassportGeneratorTransaction $passportGeneratorTransaction
 	) {
 		$this->settingsGateway = $settingsGateway;
 		$this->bellGateway = $bellGateway;
@@ -76,6 +79,7 @@ class RegionRestController extends AbstractFOSRestController
 		$this->regionTransactions = $regionTransactions;
 		$this->workGroupPermissions = $workGroupPermissions;
 		$this->workGroupTransactions = $workGroupTransactions;
+		$this->passportGeneratorTransaction = $passportGeneratorTransaction;
 	}
 
 	/**
@@ -318,6 +322,31 @@ class RegionRestController extends AbstractFOSRestController
 		}
 
 		$response = $this->foodsaverGateway->listActiveFoodsaversByRegion($regionId);
+
+		return $this->handleView($this->view($response, 200));
+	}
+
+	/**
+	 * Returns a list of all members for a region with role and last login.
+	 *
+	 * @OA\Tag(name="region")
+	 * @OA\Parameter(name="regionId", in="path", @OA\Schema(type="integer"), description="ID of the region or 0 for the root region")
+	 * @OA\Response(response="200", description="success")
+	 * @OA\Response(response="401", description="Not logged in")
+	 * @OA\Response(response="403", description="Not in this region")
+	 * @Rest\Get("region/{regionId}/members/detailed", requirements={"regionId" = "\d+"})
+	 */
+	public function listMembersDetailedAction(int $regionId): Response
+	{
+		if (!$this->session->may()) {
+			throw new HttpException(401);
+		}
+
+		if (!$this->regionPermissions->maySeeRegionMembers($regionId)) {
+			throw new HttpException(403);
+		}
+
+		$response = $this->passportGeneratorTransaction->getPassportMemberListOfRegion($regionId);
 
 		return $this->handleView($this->view($response, 200));
 	}
