@@ -1,6 +1,6 @@
 <template>
   <!-- eslint-disable -->
-  <div class="bootstrap">
+  <div class="bootstrap sticky">
   <nav class="nav navbar navbar-expand-md">
     <ul class="metanav-container container">
       <ul
@@ -28,7 +28,8 @@
         </Link>
         <Dropdown v-if="!viewIsMobile" icon="fa-globe" title="Regions"/>
         <Dropdown v-if="!viewIsMobile" icon="fa-users" title="Gruppen"/>
-        <Dropdown icon="fa-shopping-cart" title="Stores"/>
+        <!-- <Dropdown icon="fa-shopping-cart" title="Stores"/> -->
+        <NavStores />
         <!-- <Dropdown badge="99+" icon="fa-shopping-basket" title="Essenskörbe"/> -->
         <NavBaskets />
 
@@ -100,11 +101,13 @@ import NavUser from '@/components/Topbar/User/NavUser'
 import NavBells from '@/components/Topbar/Bells/NavBells'
 import NavConversations from '@/components/Topbar/Conversations/NavConversations'
 import NavBaskets from '@/components/Topbar/Baskets/NavBaskets'
+import NavStores from '@/components/Topbar/Stores/NavStores'
 // Hidden Elements
 import LanguageChooser from '@/components/Topbar/LanguageChooser'
 import SearchBarModal from '@/components/SearchBar/SearchBarModal'
 // Mixins
 import MediaQueryMixin from '@/mixins/MediaQueryMixin'
+import ScrollMixin from '@/mixins/ScrollMixin'
 
 export default {
   components: {
@@ -118,8 +121,9 @@ export default {
     NavBells,
     NavConversations,
     NavBaskets,
+    NavStores,
   },
-  mixins: [MediaQueryMixin],
+  mixins: [MediaQueryMixin, ScrollMixin],
   props: {
     regions: {
       type: Array,
@@ -132,6 +136,7 @@ export default {
   },
   data () {
     return {
+      navIsSmall: false,
       metaNav: [
         {
           title: 'Karte',
@@ -167,6 +172,12 @@ export default {
     },
   },
   watch: {
+    // scrollPosition: {
+    //   handler (newPos) {
+    //     this.navIsSmall = newPos.y > 550
+    //   },
+    //   deep: true,
+    // },
     hasMailbox: {
       async handler (newValue) {
         if (newValue) {
@@ -196,9 +207,19 @@ export default {
       await DataBells.mutations.fetch()
     }
   },
+  methods: {
+    hide (e) {
+      console.log(e)
+    },
+  },
 }
 </script>
 <style lang="scss" scoped>
+.sticky {
+  position: sticky;
+  top: 0;
+  z-index: 1020;
+}
 .nav {
   box-shadow:
     0px 1.9px 1px -10px rgba(0, 0, 0, 0.022),
@@ -207,9 +228,6 @@ export default {
     0px 20.1px 11px -10px rgba(0, 0, 0, 0.048),
     0px 55px 30px -10px rgba(0, 0, 0, 0.07);
   display: block;
-  position: sticky;
-  top: 0;
-  z-index: 1020;
   color: var(--fs-color-primary-500);
   background-color: var(--fs-color-primary-100);
   border-bottom: 1px solid var(--fs-color-primary-200);

@@ -1,6 +1,6 @@
 <template>
   <Dropdown
-    :title="$i18n('menu.entry.your_baskets')"
+    :title="$i18n('menu.entry.baskets')"
     icon="fa-shopping-basket"
     :badge="basketsSorted.length "
   >

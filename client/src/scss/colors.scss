@@ -19,6 +19,9 @@ $colorlist: (
 );
 
 :root {
+
+    --fs-color-transparent: transparent;
+
     @each $name, $color in $colorlist {
         $step: 100%;
         @for $i from 1 through 9 {
