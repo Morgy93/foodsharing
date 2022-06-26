@@ -10,7 +10,7 @@
           v-for="(rule, idx) in rules"
           :key="idx"
           v-b-tooltip="rule"
-          class="box"
+          class="box copy"
           :style="`background-color: var(${rule})`"
           @click="copyToClipBoard(rule)"
         />
@@ -18,13 +18,14 @@
     </div>
     <div class="mb-5">
       <h3>Icons</h3>
+      <a href="https://fontawesome.com/v5/search?m=free&s=solid%2Cbrands">Font Awesome V5 (FREE)</a>
       <hr>
       <div class="flex">
         <i
           v-for="(rule, idx) in ['fa-spinner', 'fa-spinner fa-spin']"
           :key="idx"
           v-b-tooltip="rule"
-          class="fas"
+          class="fas copy"
           :class="rule"
           @click="copyToClipBoard(rule)"
         />
@@ -53,12 +54,13 @@
     </div>
     <div class="mb-5">
       <h3>Components</h3>
+      <a href="https://getbootstrap.com/docs/4.6/getting-started/introduction/">Bootstrap V4.6</a>
       <hr>
       <div class="flex">
         <button
           v-for="style in ['primary', 'link', 'secondary', 'danger', 'info']"
           :key="`btn-${style}`"
-          class="btn"
+          class="copy btn"
           :class="`btn-${style}`"
           @click="copyToClipBoard(`btn btn-${style}`)"
           v-html="`btn-${style}`"
@@ -68,7 +70,7 @@
         <button
           v-for="style in ['primary', 'link', 'secondary', 'danger', 'info']"
           :key="`btn-outline-${style}`"
-          class="btn"
+          class="copy btn"
           :class="`btn-outline-${style}`"
           @click="copyToClipBoard(`btn btn-outline-${style}`)"
           v-html="`btn-outline-${style}`"
@@ -78,7 +80,7 @@
         <button
           v-for="style in ['primary', 'link', 'secondary', 'danger', 'info']"
           :key="`btn-sm-${style}`"
-          class="btn btn-sm"
+          class="copy btn btn-sm"
           :class="`btn-${style}`"
           @click="copyToClipBoard(`btn btn-sm btn-${style}`)"
           v-html="`btn-sm btn-${style}`"
@@ -88,7 +90,7 @@
         <button
           v-for="style in ['primary', 'link', 'secondary', 'danger', 'info']"
           :key="`btn-sm-outline-${style}`"
-          class="btn btn-sm"
+          class="copy btn btn-sm"
           :class="`btn-outline-${style}`"
           @click="copyToClipBoard(`btn btn-sm btn-outline-${style}`)"
           v-html="`btn-sm btn-outline-${style}`"
@@ -136,6 +138,10 @@ $size: 3rem;
   &:hover {
     outline: 2px solid goldenrod;
   }
+}
+
+.copy {
+  cursor: copy;
 }
 
 .cicd {
