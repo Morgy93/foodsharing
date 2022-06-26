@@ -1,8 +1,6 @@
 <template>
   <ul class="mainnav">
-    <Link
-      :href="homeHref"
-    >
+    <Link :href="$url('home')">
       <template #text>
         <Logo />
       </template>

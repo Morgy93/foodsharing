@@ -40,21 +40,17 @@
 </template>
 <script>
 // Store
-import { getters } from '@/stores/groups'
+import DataGroups from '@/stores/groups'
 // Components
 import Dropdown from '../_NavItems/NavDropdown'
 import GroupsEntry from './NavGroupsEntry'
-// Mixins
-import ConferenceOpener from '@/mixins/ConferenceOpenerMixin'
-import MediaQueryMixin from '@/mixins/MediaQueryMixin'
 
 export default {
   name: 'MenuGroups',
   components: { Dropdown, GroupsEntry },
-  mixins: [ConferenceOpener, MediaQueryMixin],
   computed: {
     groups () {
-      return getters.get()
+      return DataGroups.getters.get()
     },
   },
 }

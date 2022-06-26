@@ -22,7 +22,6 @@ import MetaNavData from '../../MetaNavData.json'
 import Link from '@/components/Navigation/_NavItems/NavLink'
 import NavAdmin from '@/components/Navigation/Admin/NavAdmin'
 //
-// Mixins
 import MediaQueryMixin from '@/mixins/MediaQueryMixin'
 
 export default {
@@ -33,7 +32,6 @@ export default {
   mixins: [MediaQueryMixin],
   data () {
     return {
-      navIsSmall: false,
       metaNav: MetaNavData,
     }
   },

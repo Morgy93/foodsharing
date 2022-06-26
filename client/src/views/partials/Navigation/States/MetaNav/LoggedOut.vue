@@ -30,7 +30,6 @@ export default {
   mixins: [MediaQueryMixin],
   data () {
     return {
-      navIsSmall: false,
       metaNav: MetaNavData,
     }
   },

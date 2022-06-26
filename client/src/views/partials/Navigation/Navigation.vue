@@ -1,6 +1,6 @@
 <template>
-  <div class="bootstrap">
-    <nav class="sticky nav navbar navbar-expand-md">
+  <div class="bootstrap nav">
+    <nav class="fixed-top nav navbar navbar-expand-md">
       <MetaNavLoggedIn v-if="isLoggedIn" />
       <MetaNavLoggedOut v-else />
       <ul class="container nav-container">
@@ -27,8 +27,8 @@ import DataUser from '@/stores/user.js'
 import DataBells from '@/stores/bells.js'
 import DataStores from '@/stores/stores.js'
 import DataBaskets from '@/stores/baskets.js'
-import DataGroups from '@/stores/groups.js'
 import DataConversations from '@/stores/conversations.js'
+import DataGroups from '@/stores/groups.js'
 import DataRegions from '@/stores/regions.js'
 // States
 import MetaNavLoggedIn from './States/MetaNav/LoggedIn.vue'
@@ -42,7 +42,6 @@ import LanguageChooser from '@/components/Navigation/LanguageChooser'
 import SearchBarModal from '@/components/SearchBar/SearchBarModal'
 // Mixins
 import MediaQueryMixin from '@/mixins/MediaQueryMixin'
-import ScrollMixin from '@/mixins/ScrollMixin'
 
 export default {
   name: 'Navigation',
@@ -56,7 +55,7 @@ export default {
     SideNavLoggedIn,
     SideNavLoggedOut,
   },
-  mixins: [MediaQueryMixin, ScrollMixin],
+  mixins: [MediaQueryMixin],
   props: {
     regions: {
       type: Array,
@@ -107,12 +106,12 @@ export default {
   },
   async created () {
     DataUser.mutations.setLoggedIn(this.isLoggedIn)
-    // TODO: NO APIS :(
-    DataGroups.mutations.set(this.groups)
-    DataRegions.mutations.set(this.regions)
 
     // Load data
     if (this.isLoggedIn) {
+      // TODO: NO APIS :(
+      DataGroups.mutations.set(this.groups)
+      DataRegions.mutations.set(this.regions)
       await DataUser.mutations.fetchDetails()
       await DataBaskets.mutations.fetchOwn()
       await DataBells.mutations.fetch()
@@ -137,6 +136,7 @@ export default {
   display: block;
   color: var(--fs-color-primary-500);
   background-color: var(--fs-color-primary-100);
+  min-height: 80px;
 }
 
 ::v-deep .metanav,
@@ -181,7 +181,7 @@ export default {
 
 ::v-deep .nav .metanav-container,
 ::v-deep .nav .nav-container {
-  align-items: flex-end;
+  align-items: center;
   padding-bottom: 0;
   margin-bottom: 0.25rem;
 
