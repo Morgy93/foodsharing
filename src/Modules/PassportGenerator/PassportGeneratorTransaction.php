@@ -333,9 +333,12 @@ class PassportGeneratorTransaction extends AbstractController
 
 		$passportMemberList[$regionId]["foodsaver"] = array_map(function ($foodsaver) {
 			$foodsaver["role_name"] = $this->getRole($foodsaver["gender_id"], $foodsaver["role_id"]);
+			unset($foodsaver["gender_id"]);
+			unset($foodsaver["role_id"]);
+			$foodsaver["verified"] = (bool)$foodsaver["verified"];
 			return $foodsaver;
 		}, $rawFoodsaver);
-		
-		return $passportMemberList;
+
+		return $passportMemberList[$regionId]["foodsaver"];
 	}
 }
