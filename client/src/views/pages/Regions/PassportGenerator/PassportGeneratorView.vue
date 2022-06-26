@@ -3,17 +3,17 @@
   <section class="bootstrap container-fluid">
     <div class="row">
       <div class="col-9">
-        <Container title="Foodsaver">
+        <Container :title="this.main_container_title">
           <div class="card-body bg-white">
             <table class="table">
               <thead>
                 <tr>
-                  <td>Ausgewählt</td>
-                  <td>Bild</td>
-                  <td>Name (Rolle)</td>
-                  <td>Letzte Passgeneration</td>
+                  <td></td>
+                  <td>{{ $i18n('pass.photo') }}</td>
+                  <td>{{ $i18n('pass.name') }}</td>
+                  <td>{{ $i18n('pass.date') }}</td>
                   <td>Letzter Login</td>
-                  <td>Verifiziert</td>
+                  <td>{{ $i18n('pass.verified') }}</td>
                   <td>Aktion</td>
                 </tr>
               </thead>
@@ -53,16 +53,16 @@
       </div>
 
       <div class="col-3">
-        <Container title="Aktionen">
+        <Container :title="options_container_title">
           <div class="card-body bg-white">
             <button class="btn btn-sm btn-block btn-primary" @click="() => {this.foodsaver.forEach(foodsaver => foodsaver.checked = true)}">
-              Alle markieren
+              {{ $i18n('pass.nav.select') }}
             </button>
             <button class="btn btn-sm btn-block btn-primary" @click="() => {this.foodsaver.forEach(foodsaver => foodsaver.checked = false)}">
-              Alle unmarkieren
+              {{ $i18n('pass.nav.deselect') }}
             </button>
             <button class="btn btn-sm btn-block btn-success">
-              Pass erstellen
+              {{ $i18n('pass.nav.generate') }}
             </button>
             <button class="btn btn-sm btn-block btn-danger">
               Aus Bezirk entfernen
@@ -95,7 +95,8 @@ export default {
   },
   data () {
     return {
-      test: 123,
+      main_container_title: 'Foodsaver',
+      options_container_title: i18n('pass.nav.options'),
       foodsaver: [],
     }
   },
@@ -106,17 +107,17 @@ export default {
     async fetchFoodsaverFromRegion (regionId) {
       try {
         const foodsaver = await listRegionMembersDetailed(regionId)
-        this.foodsaver = foodsaver.map(this.addAttributesToFoodsaver)
+        this.foodsaver = foodsaver.map(this.addNonApiAttributesToOneFoodsaver)
       } catch (e) {
         pulseError(i18n('error_unexpected'))
       }
     },
-    addAttributesToFoodsaver (foodsaver) {
+    addNonApiAttributesToOneFoodsaver (foodsaver) {
       const newAttributes = {
         checked: false,
         displayed_data: {
           last_login_date: new Date(foodsaver.last_login_datetime).toLocaleString(),
-          last_pass_date: new Date(foodsaver.last_pass_datetime).toLocaleString(),
+          last_pass_date: (foodsaver.last_pass_datetime === null) ? i18n('pass.none') : new Date(foodsaver.last_pass_datetime).toLocaleString(),
         },
       }
       return Object.assign(foodsaver, newAttributes)
