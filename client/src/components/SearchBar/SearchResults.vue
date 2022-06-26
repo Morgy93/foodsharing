@@ -103,7 +103,10 @@
         :image="user.image"
       />
     </div>
-    <div v-if="filtered.stores.length">
+    <div
+      v-if="filtered.stores.length"
+      class="entry"
+    >
       <h3 class="dropdown-header">
         <i class="icon-subnav fas fa-shopping-cart" /> {{ $i18n('menu.entry.stores') }}
       </h3>
@@ -116,7 +119,10 @@
         :image="store.image"
       />
     </div>
-    <div v-if="filtered.foodSharePoints.length">
+    <div
+      v-if="filtered.foodSharePoints.length"
+      class="entry"
+    >
       <h3 class="dropdown-header">
         <i class="icon-subnav fas fa-recycle" /> {{ $i18n('terminology.fsps') }}
       </h3>
@@ -129,7 +135,10 @@
         :image="foodSharePoint.image"
       />
     </div>
-    <div v-if="filtered.regions.length">
+    <div
+      v-if="filtered.regions.length"
+      class="entry"
+    >
       <h3 class="dropdown-header">
         <i class="icon-subnav fas fa-home" /> {{ $i18n('terminology.regions') }}
       </h3>
@@ -266,6 +275,6 @@ export default {
 .entry:not(:last-child) {
   padding-bottom: 1rem;
   margin-bottom: 1rem;
-  border-bottom: 1px solid var(--fs-color-gray-300);
+  border-bottom: 1px solid var(--fs-color-border);
 }
 </style>
