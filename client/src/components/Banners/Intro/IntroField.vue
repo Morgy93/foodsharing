@@ -5,7 +5,7 @@
   >
     <a
       v-if="user"
-      :href="'profile/' + user.id"
+      :href="$url('profile', user.id)"
       class="img-thumbnail position-relative"
     >
       <Avatar

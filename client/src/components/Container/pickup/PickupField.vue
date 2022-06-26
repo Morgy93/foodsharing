@@ -74,7 +74,7 @@
     >
       <i class="fas fa-clock mr-2" />
       <span
-        v-if="getHourDifferenceToNow(date) < 24"
+        v-if="getHourDifferenceToNow(date) < 4"
         v-b-tooltip="dateFormat(date)"
         v-html="dateDistanceInWords(date)"
       />

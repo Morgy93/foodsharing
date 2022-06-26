@@ -12,6 +12,7 @@
 - In the footer of the website, "For developers" is added under "Participate" to create an easier way to IT. !2241 @NINI1988
 - On the login page, "Stay logged in for one day" is saved in local storage for the next logins. !2249 @NINI1988
 - Food-share-points are listed in the topbar search #1251 !2260 @alex.simm 
+- On all external links is now a visible indicator !2280 @sefn
 
 ## Changes
 - Checks in the id card creation function if only one foodsaver is selected and then reduces the 
@@ -75,6 +76,7 @@
 - Added missing indices to the store database table !2232 @alex.simm 
 - bump mocha to versio 10 !2255 @peter.toennies
 - Add how to connect other device with local development website to dev docs !2259 @NINI1988
+- Fix the url to api doc for dev env !2290 @chriswalg
 
 # Release "Heidelbeere", 2022-05-01
 
