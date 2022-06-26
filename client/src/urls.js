@@ -37,7 +37,7 @@ const urls = {
   support: () => 'https://foodsharing.freshdesk.com/support/home',
   festival: () => '/?page=content&sub=festival',
   foodsaverList: (regionId) => `/?page=foodsaver&bid=${regionId}`,
-  foodsharepoint: (fspId) => `?page=fairteiler&sub=ft&id=${fspId}`,
+  foodsharepoint: (fspId) => `/?page=fairteiler&sub=ft&id=${fspId}`,
   foodsharepoints: (regionId) => `/?page=bezirk&bid=${regionId}&sub=fairteiler`,
   fsstaedte: () => '/?page=content&sub=fsstaedte',
   grundsaetze: () => 'https://wiki.foodsharing.de/Grundsätze',
