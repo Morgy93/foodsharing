@@ -265,7 +265,7 @@
         <p>
           <b-link
             class="link"
-            :href="$url('devdocsItTasks')"
+            :href="$url('devdocs_it_tasks')"
           >
             {{ $i18n('startpage.more_infos') }}
           </b-link>

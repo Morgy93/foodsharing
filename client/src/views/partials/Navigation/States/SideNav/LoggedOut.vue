@@ -12,6 +12,10 @@
       />
     </ul>
     <ul class="mainnav">
+      <Link
+        :href="$url('joininfo')"
+        :title="$i18n('register.topbar')"
+      />
       <NavLogin />
     </ul>
   </ul>

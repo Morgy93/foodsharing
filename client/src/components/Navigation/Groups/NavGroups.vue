@@ -32,8 +32,8 @@
         role="menuitem"
         class="dropdown-item dropdown-action"
       >
-        <i class="fas fa-users" />
-        {{ $i18n('menu.entry.groups') }}
+        <i class="icon-subnav fas fa-users" />
+        {{ $i18n('menu.entry.group_overview') }}
       </a>
     </template>
   </Dropdown>

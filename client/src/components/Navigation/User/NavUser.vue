@@ -1,13 +1,13 @@
 <template>
   <Dropdown
-    :title="$i18n('dashboard.greeting_short', {name: getUserName})"
+    :title="$i18n('navigation.profil', {name: getUserName})"
     direction="right"
     :badge="getMailUnreadCount"
   >
     <template #icon>
       <Avatar
         :size="16"
-        class="nav-icon"
+        class="icon-subnav"
       />
     </template>
     <template #content>
@@ -17,7 +17,7 @@
         role="menuitem"
         class="dropdown-item dropdown-action list-group-item-warning"
       >
-        <i class="nav-icon fas fa-info-circle" /> {{ $i18n('menu.entry.release-notes') }}
+        <i class="icon-subnav fas fa-info-circle" /> {{ $i18n('menu.entry.release-notes') }}
       </a>
       <a
         v-if="isBeta || isDev"
@@ -25,7 +25,7 @@
         role="menuitem"
         class="dropdown-item dropdown-action list-group-item-danger"
       >
-        <i class="nav-icon fas fa-info-circle" /> {{ $i18n('content.changelog') }}
+        <i class="icon-subnav fas fa-info-circle" /> {{ $i18n('content.changelog') }}
       </a>
       <div
         v-if="isBeta || isDev"
@@ -38,7 +38,7 @@
         role="menuitem"
         class="dropdown-item dropdown-action position-relative"
       >
-        <i class="nav-icon fas fa-envelope" />
+        <i class="icon-subnav fas fa-envelope" />
         {{ $i18n('menu.entry.mailbox') }}
         <div class="badge badge-danger badge-user-inline">{{ getMailUnreadCount }}</div>
       </a>
@@ -51,14 +51,14 @@
         role="menuitem"
         class="dropdown-item dropdown-action"
       >
-        <i class="nav-icon fas fa-address-card" /> {{ $i18n('profile.title') }}
+        <i class="icon-subnav fas fa-address-card" /> {{ $i18n('profile.title') }}
       </a>
       <a
         :href="$url('settings')"
         role="menuitem"
         class="dropdown-item dropdown-action"
       >
-        <i class="nav-icon fas fa-cog" /> {{ $i18n('settings.header') }}
+        <i class="icon-subnav fas fa-cog" /> {{ $i18n('settings.header') }}
       </a>
       <div class="dropdown-divider" />
       <button
@@ -66,7 +66,7 @@
         class="dropdown-item dropdown-action"
         @click.prevent="showLanguageChooser()"
       >
-        <i class="fas fa-language" /> {{ $i18n('menu.entry.language') }}
+        <i class="icon-subnav fas fa-language" /> {{ $i18n('menu.entry.language') }}
       </button>
     </template>
     <template #actions>
@@ -75,7 +75,7 @@
         role="menuitem"
         class="dropdown-item dropdown-action"
       >
-        <i class="nav-icon fas fa-power-off" /> {{ $i18n('login.logout') }}
+        <i class="icon-subnav fas fa-power-off" /> {{ $i18n('login.logout') }}
       </a>
     </template>
   </Dropdown>

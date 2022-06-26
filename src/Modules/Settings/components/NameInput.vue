@@ -45,7 +45,7 @@
       />
       <div
         v-else
-        v-html="$i18n('settings.name_change.foodsharer_info', { link: `href=${$url('support')}` })"
+        v-html="$i18n('settings.name_change.foodsharer_info', { link: `href=${$url('freshdesk')}` })"
       />
     </b-modal>
   </div>

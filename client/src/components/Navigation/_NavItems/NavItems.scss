@@ -1,6 +1,6 @@
 @import '../../../scss/icon-sizes.scss';
 
-.nav-link {
+.nav-item {
     margin-right: 0.25rem;
     color: currentColor;
 
@@ -42,6 +42,7 @@
 .nav-link {
   align-items: center;
   background-color: transparent;
+  color: currentColor;
   border: 0;
   display: flex;
   position: relative;

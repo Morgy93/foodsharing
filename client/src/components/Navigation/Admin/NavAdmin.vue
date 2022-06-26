@@ -1,7 +1,7 @@
 <template>
   <Dropdown
     v-if="hasAdminPermissions"
-    title="Admin"
+    :title="$i18n('navigation.system_administration')"
     direction="right"
   >
     <template #content>
@@ -11,15 +11,15 @@
         role="menuitem"
         class="dropdown-item dropdown-action"
       >
-        <i class="nav-icon fas fa-newspaper" /> {{ $i18n('menu.blog') }}
+        <i class="icon-subnav fas fa-newspaper" /> {{ $i18n('system_administration.blog') }}
       </a>
       <a
         v-if="permissions.editQuiz"
-        :href="$url('quizEdit')"
+        :href="$url('quiz_admin_edit')"
         role="menuitem"
         class="dropdown-item dropdown-action"
       >
-        <i class="nav-icon fas fa-question-circle" /> {{ $i18n('menu.quiz') }}
+        <i class="icon-subnav fas fa-question-circle" /> {{ $i18n('system_administration.quiz') }}
       </a>
       <a
         v-if="permissions.handleReports"
@@ -27,7 +27,7 @@
         role="menuitem"
         class="dropdown-item dropdown-action"
       >
-        <i class="nav-icon fas fa-exclamation" /> {{ $i18n('menu.reports') }}
+        <i class="icon-subnav fas fa-exclamation" /> {{ $i18n('system_administration.reports') }}
       </a>
       <a
         v-if="permissions.administrateRegions"
@@ -35,7 +35,7 @@
         role="menuitem"
         class="dropdown-item dropdown-action"
       >
-        <i class="nav-icon fas fa-map" /> {{ $i18n('menu.manage_regions') }}
+        <i class="icon-subnav fas fa-map" /> {{ $i18n('system_administration.regions') }}
       </a>
       <a
         v-if="permissions.administrateNewsletterEmail"
@@ -43,7 +43,7 @@
         role="menuitem"
         class="dropdown-item dropdown-action"
       >
-        <i class="nav-icon fas fa-envelope" /> {{ $i18n('menu.email') }}
+        <i class="icon-subnav fas fa-envelope" /> {{ $i18n('system_administration.email') }}
       </a>
       <a
         v-if="permissions.manageMailboxes"
@@ -51,7 +51,7 @@
         role="menuitem"
         class="dropdown-item dropdown-action"
       >
-        <i class="nav-icon fas fa-envelope" /> {{ $i18n('menu.manage_mailboxes') }}
+        <i class="icon-subnav fas fa-envelope" /> {{ $i18n('system_administration.mailboxes') }}
       </a>
       <a
         v-if="permissions.editContent"
@@ -59,7 +59,7 @@
         role="menuitem"
         class="dropdown-item dropdown-action"
       >
-        <i class="nav-icon fas fa-file-alt" /> {{ $i18n('menu.content') }}
+        <i class="icon-subnav fas fa-file-alt" /> {{ $i18n('system_administration.content') }}
       </a>
     </template>
     <template #actions>

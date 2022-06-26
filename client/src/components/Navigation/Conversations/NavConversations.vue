@@ -41,7 +41,7 @@
         role="menuitem"
         class="dropdown-item dropdown-action"
       >
-        <i class="fas fa-comments" />
+        <i class="icon-subnav fas fa-comments" />
         {{ $i18n('menu.entry.all_messages') }}
       </a>
     </template>

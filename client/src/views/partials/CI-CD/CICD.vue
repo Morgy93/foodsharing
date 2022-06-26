@@ -68,7 +68,7 @@
       </div>
       <div class="flex">
         <button
-          v-for="style in ['primary', 'link', 'secondary', 'danger', 'info']"
+          v-for="style in ['primary', 'secondary', 'danger', 'info']"
           :key="`btn-outline-${style}`"
           class="copy btn"
           :class="`btn-outline-${style}`"
@@ -88,7 +88,7 @@
       </div>
       <div class="flex">
         <button
-          v-for="style in ['primary', 'link', 'secondary', 'danger', 'info']"
+          v-for="style in ['primary', 'secondary', 'danger', 'info']"
           :key="`btn-sm-outline-${style}`"
           class="copy btn btn-sm"
           :class="`btn-outline-${style}`"

@@ -1,6 +1,6 @@
 <template>
   <Dropdown
-    :title="$i18n('menu.entry.stores')"
+    :title="$i18n('navigation.stores')"
     icon="fa-shopping-cart"
     scrollbar
   >
@@ -64,7 +64,7 @@
         role="menuitem"
         class="dropdown-item dropdown-action"
       >
-        <i class="fas fa-plus" />
+        <i class="icon-subnav fas fa-plus" />
         {{ $i18n('storeedit.add-new') }}
       </a>
       <a
@@ -72,7 +72,7 @@
         role="menuitem"
         class="dropdown-item dropdown-action"
       >
-        <i class="fas fa-list" />
+        <i class="icon-subnav fas fa-list" />
         {{ $i18n('store.all_of_my_stores') }}
       </a>
     </template>

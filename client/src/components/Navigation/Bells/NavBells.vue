@@ -35,7 +35,7 @@
         :class="{ 'disabled': !unread }"
         @click="markNewBellsAsRead()"
       >
-        <i class="fas fa-check-double" />
+        <i class="icon-subnav fas fa-check-double" />
         {{ $i18n('menu.entry.mark_as_read') }}
       </button>
     </template>

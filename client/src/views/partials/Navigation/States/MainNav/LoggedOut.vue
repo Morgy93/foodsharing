@@ -6,6 +6,29 @@
       </template>
     </Link>
 
+    <Dropdown
+      v-for="(category, idx) in mainNav"
+      :key="idx"
+      :title="$i18n(category.title)"
+    >
+      <template #content>
+        <a
+          v-for="(entry, key) in category.items"
+          :key="key"
+          :href="$url(entry.url)"
+          role="menuitem"
+          class="dropdown-item dropdown-action"
+          v-html="$i18n(entry.title)"
+        />
+      </template>
+      <template
+        #actions
+        :hidden="true"
+      >
+        <span />
+      </template>
+    </Dropdown>
+
     <Link
       v-if="viewIsMobile"
       data-toggle="collapse"
@@ -23,6 +46,9 @@
 
 <script>
 //
+import MainNavData from '../../MainNavData.json'
+//
+import Dropdown from '@/components/Navigation/_NavItems/NavDropdown'
 import Link from '@/components/Navigation/_NavItems/NavLink'
 import Logo from '@/components/Navigation/Logo'
 // Mixins
@@ -32,7 +58,13 @@ export default {
   components: {
     Logo,
     Link,
+    Dropdown,
   },
   mixins: [MediaQueryMixin],
+  data () {
+    return {
+      mainNav: MainNavData,
+    }
+  },
 }
 </script>

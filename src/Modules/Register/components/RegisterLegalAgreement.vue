@@ -21,7 +21,7 @@
     >
       {{ $i18n('register.have_read_the_legal_stuff1') }}
       <a
-        :href="$url('legal_agreement')"
+        :href="$url('wiki_legal_agreement')"
         target="_blank"
         rel="noopener noreferrer nofollow"
       >{{ $i18n('legal.legal_agreement') }}</a> {{ $i18n('register.have_read_the_legal_stuff2') }}

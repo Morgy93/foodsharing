@@ -40,6 +40,7 @@
       :aria-labelledby="title"
     >
       <li
+        class="content"
         :class="{
           'dropdown-menu-scrollable': scrollable
         }"
@@ -67,7 +68,10 @@
         </slot>
       </li>
       <li class="actions">
-        <slot name="actions">
+        <slot
+          name="actions"
+          :hidden="false"
+        >
           <a
             class="dropdown-item dropdown-action"
             href="#"
@@ -162,9 +166,8 @@ export default {
   display: flex;
   align-items: center;
 
-  & i {
-    @extend .icon-subnav;
-  }
+  padding-top: 0.35rem;
+  padding-bottom: 0.35rem;
 }
 
 .dropdown-menu-scrollable {

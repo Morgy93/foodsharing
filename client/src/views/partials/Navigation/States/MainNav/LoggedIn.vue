@@ -9,10 +9,8 @@
     <NavGroups v-if="!viewIsMobile" />
     <NavStores />
     <NavBaskets />
-
     <NavConversations v-if="viewIsMobile" />
     <NavBells v-if="viewIsMobile" />
-
     <Link
       v-if="viewIsMobile"
       data-toggle="collapse"

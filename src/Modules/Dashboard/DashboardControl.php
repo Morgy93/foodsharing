@@ -153,7 +153,7 @@ class DashboardControl extends Control
 						'text' => 'error.mail_bounce.link_1',
 					],
 					[
-						'urlShortHand' => 'guideLockedEmail',
+						'urlShortHand' => 'freshdesk_locked_email',
 						'text' => 'error.mail_bounce.link_2',
 					]
 				],
@@ -187,11 +187,11 @@ class DashboardControl extends Control
 			$cnt['closeable'] = false;
 			$cnt['links'] = [
 				(object)[
-					'urlShortHand' => 'quizFs',
+					'urlShortHand' => 'quiz_foodsaver',
 					'text' => 'foodsaver.upgrade.to_fs',
 				],
 				(object)[
-					'urlShortHand' => 'quizLearning',
+					'urlShortHand' => 'quiz_learning_video',
 					'text' => 'foodsaver.upgrade.learning',
 				]
 			];

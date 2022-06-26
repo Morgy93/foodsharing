@@ -126,6 +126,7 @@ export default {
   top: 0;
   z-index: 1020;
 }
+
 .nav {
   box-shadow:
     0px 1.9px 1px -10px rgba(0, 0, 0, 0.022),
@@ -136,7 +137,6 @@ export default {
   display: block;
   color: var(--fs-color-primary-500);
   background-color: var(--fs-color-primary-100);
-  min-height: 80px;
 }
 
 ::v-deep .metanav,

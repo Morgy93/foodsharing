@@ -39,7 +39,7 @@
         role="menuitem"
         class="dropdown-item dropdown-action"
       >
-        <i class="fas fa-list" />
+        <i class="icon-subnav fas fa-list" />
         {{ $i18n('basket.all') }}
       </a>
     </template>

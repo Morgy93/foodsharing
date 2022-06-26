@@ -1,6 +1,6 @@
 <template>
   <Dropdown
-    :title="$i18n('terminology.regions')"
+    :title="$i18n('navigation.regions')"
     icon="fa-globe"
   >
     <template
@@ -29,7 +29,7 @@
         class="dropdown-item dropdown-action"
         @click="becomeBezirk()"
       >
-        <i class="fas fa-plus" />
+        <i class="icon-subnav fas fa-plus" />
         {{ $i18n('menu.entry.joinregion') }}
       </button>
     </template>

@@ -18,7 +18,6 @@ const urls = {
   blogAdd: () => '/?page=blog&sub=add',
   blogEdit: (blogId) => `/?page=blog&sub=edit&id=${blogId}`,
   blogList: () => '/?page=blog&sub=manage',
-  calendarHints: () => 'https://wiki.foodsharing.de/Kalenderexport',
   changelog: () => '/?page=content&sub=changelog',
   claims: () => '/?page=content&sub=forderungen',
   communitiesAustria: () => '/?page=content&sub=communitiesAustria',
@@ -34,15 +33,11 @@ const urls = {
   event: (eventId) => `/?page=event&id=${eventId}`,
   eventEdit: (eventId) => `/?page=event&id=${eventId}&sub=edit`,
   events: (regionId) => `/?page=bezirk&bid=${regionId}&sub=events`,
-  support: () => 'https://foodsharing.freshdesk.com/support/home',
   festival: () => '/?page=content&sub=festival',
   foodsaverList: (regionId) => `/?page=foodsaver&bid=${regionId}`,
   foodsharepoint: (fspId) => `/?page=fairteiler&sub=ft&id=${fspId}`,
   foodsharepoints: (regionId) => `/?page=bezirk&bid=${regionId}&sub=fairteiler`,
   fsstaedte: () => '/?page=content&sub=fsstaedte',
-  grundsaetze: () => 'https://wiki.foodsharing.de/Grundsätze',
-  guide: () => 'https://wiki.foodsharing.de/Hygiene-Ratgeber_f%C3%BCr_Lebensmittel',
-  guideLockedEmail: () => 'https://foodsharing.freshdesk.com/support/solutions/articles/77000299947-e-mail-sperre-im-profil',
   home: () => '/',
   imprint: () => '/impressum',
   infos: () => '/?page=content&sub=infohub',
@@ -50,7 +45,6 @@ const urls = {
   international: () => '/?page=content&sub=international',
   joininfo: () => '/?page=content&sub=joininfo',
   leeretonne: () => '/?page=content&sub=leeretonne',
-  legal_agreement: () => 'https://wiki.foodsharing.de/Rechtsvereinbarung',
   login: () => '/?page=login',
   logout: () => '/?page=logout',
   mailbox: (mailboxId = null) => `/?page=mailbox${mailboxId ? `&show=${mailboxId}` : ''}`,
@@ -85,8 +79,7 @@ const urls = {
   team: () => '/team',
   transparency: () => '/?page=content&sub=transparency',
   wall: (regionId) => `/?page=bezirk&bid=${regionId}&sub=wall`,
-  wiki: () => 'https://wiki.foodsharing.de/',
-  wiki_voting: () => 'https://wiki.foodsharing.de/Abstimmungs-Modul',
+
   workingGroupEdit: (groupId) => `/?page=groups&sub=edit&id=${groupId}`,
   workingGroups: (regionId = null) => regionId ? `/?page=groups&p=${regionId}` : '/?page=groups',
   workshops: () => '/?page=content&sub=workshops',
@@ -96,20 +89,34 @@ const urls = {
   selfservice: () => 'https://spenden.foodsharing.de/selfservice',
   resendActivationMail: () => '/?page=login&a=resendActivationMail',
 
+  // freshdesk
+  freshdesk: () => 'https://foodsharing.freshdesk.com/support/home',
+  freshdesk_locked_email: () => 'https://foodsharing.freshdesk.com/support/solutions/articles/77000299947-e-mail-sperre-im-profil',
+
+  // wiki
+  wiki: () => 'https://wiki.foodsharing.de/',
+  wiki_guide: () => 'https://wiki.foodsharing.de/Hygiene-Ratgeber_f%C3%BCr_Lebensmittel',
+  wiki_voting: () => 'https://wiki.foodsharing.de/Abstimmungs-Modul',
+  wiki_calendar: () => 'https://wiki.foodsharing.de/Kalenderexport',
+  wiki_grundsaetze: () => 'https://wiki.foodsharing.de/Grundsätze',
+  wiki_legal_agreement: () => 'https://wiki.foodsharing.de/Rechtsvereinbarung',
+
   //
-  quizEdit: () => '/?page=quiz',
-  quizLearning: () => 'https://youtu.be/9Fk6MHC-M1o',
-  quizFs: () => '/?page=settings&sub=up_fs',
-  quizBip: () => '/?page=settings&sub=up_bip',
-  quizBot: () => '/?page=settings&sub=up_bot',
+  quiz_admin_edit: () => '/?page=quiz',
+  quiz_learning_video: () => 'https://youtu.be/9Fk6MHC-M1o',
+  quiz_foodsaver: () => '/?page=settings&sub=up_fs',
+  quiz_store_manager: () => '/?page=settings&sub=up_bip',
+  quiz_ambassador: () => '/?page=settings&sub=up_bot',
 
   // Footer Links
   hosting: () => 'https://manitu.de',
   wiener_tafel: () => 'https://www.wienertafel.at',
   bmlfuw: () => 'https://www.bmlrt.gv.at',
   denns: () => 'https://www.denns-biomarkt.at',
+
+  // Devdocs
   devdocs: () => 'https://devdocs.foodsharing.network',
-  devdocsItTasks: () => 'https://devdocs.foodsharing.network/it-tasks.html',
+  devdocs_it_tasks: () => 'https://devdocs.foodsharing.network/it-tasks.html',
 
   // Beta Testing
   beta: () => 'https://beta.foodsharing.de',

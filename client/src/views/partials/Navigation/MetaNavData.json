@@ -1,18 +1,23 @@
 [
     {
-        "title": "navigation.metanav.map",
+        "title": "navigation.map",
         "url": "map"
     },
     {
-        "title": "navigation.metanav.it_promotion",
-        "url": "devdocsItTasks"
+        "highlight": true,
+        "title": "navigation.promotion",
+        "url": "devdocs_it_tasks"
     },
     {
-        "title": "navigation.metanav.contact",
+        "title": "navigation.contact",
         "url": "contact"
     },
     {
-        "title": "navigation.metanav.help",
+        "title": "navigation.wiki",
         "url": "wiki"
+    },
+    {
+        "title": "navigation.help",
+        "url": "freshdesk"
     }
 ]

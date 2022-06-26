@@ -2094,23 +2094,17 @@ personal_data:
   landline: "Festnetztelefon"
 
 menu:
-  manage_regions: "Bezirke verwalten"
-  blog: "Blogbeiträge bearbeiten"
-  quiz: "Quiz verwalten"
-  reports: "Meldungen" #also in ReportControl
-  email: "Newsletter versenden"
-  manage_mailboxes: "Mailboxen verwalten"
-  content: "Inhalte bearbeiten"
   entry:
     activities: "Aktionen"
-    infos: "Infos"
+    infos: "Informationen"
     mark_as_read: "Alle als gelesen markieren"
     all_messages: "Alle Nachrichten"
     messages: "Nachrichten"
     your_groups: "Deine Gruppen"
     your_baskets: "Deine Essenskörbe"
     baskets: "Essenskörbe"
-    groups: "Gruppenübersicht"
+    groups: "Gruppen"
+    group_overview: "Gruppenübersicht"
     your_account: "Dein Account"
     your_stores: "Deine Betriebe" #also in searchindexgenerator
     administration: "Administration"
@@ -2658,9 +2652,32 @@ information:
     info: "Damit kannst du deine nächsten Abholtermine mit einem Kalenderprogramm deiner Wahl sehen."
     link: "Jetzt abonnieren"
 
+account:
+  signup: Mitmachen
+  signin: Anmelden
+  signout: Abmelden
+
+system_administration:
+  regions: "Bezirke verwalten"
+  blog: "Blogbeiträge bearbeiten"
+  quiz: "Quiz verwalten"
+  reports: "Meldungen einsehen"
+  email: "Newsletter versenden"
+  mailboxes: "Mailboxen verwalten"
+  content: "Inhalte bearbeiten"
+
 navigation:
-  metanav:
-    map: Karte
-    it_promotion: IT'ler? Wir brauchen dich!
-    contact: Kontakt
-    help: Hilfe
+  map: Karte
+  promotion: IT'ler? Wir brauchen dich!
+  contact: Kontakt
+  help: Hilfe
+  wiki: Wiki
+  regions: Bezirke
+  groups: Gruppen
+  stores: Betriebe
+  basket: Essenskörbe
+  search: Suche
+  conversations: Nachrichten
+  notifications: Benachrichtigungen
+  profil: 👋 Hallo {name}!
+  system_administration: System Administration
