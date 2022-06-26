@@ -302,7 +302,7 @@ class StoreGateway extends BaseGateway
 			$already_in[$b['id']] = true;
 
 			if ($sortByOwnTeamStatus) {
-				if ($b['verantwortlich'] == Responsible::MANAGER) {
+				if ($b['verantwortlich'] != Responsible::MANAGER) {
 					if ($b['active'] == MembershipStatus::APPLIED_FOR_TEAM) {
 						$result['requested'][] = $b;
 					} elseif ($b['active'] == MembershipStatus::MEMBER) {
@@ -680,7 +680,7 @@ class StoreGateway extends BaseGateway
 		]);
 
 		if ($result) {
-			if ($result['verantwortlich'] != Responsible::MANAGER
+			if ($result['verantwortlich'] == Responsible::MANAGER
 				&& $result['active'] == MembershipStatus::MEMBER) {
 				return TeamStatus::Coordinator;
 			} else {
