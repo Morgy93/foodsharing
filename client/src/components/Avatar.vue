@@ -15,7 +15,6 @@
         'rounded-circle': round
       }"
       style="height: 100%"
-      :style="imgStyle"
       loading="lazy"
     >
   </div>
