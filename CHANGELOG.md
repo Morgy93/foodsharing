@@ -6,7 +6,7 @@
 - Past events are shown now below current and upcoming events within the overview !2162 @merhoc
 - Commitment statistics on profile !2208 !2217 @fs_k
 - Allow the foodsaver, which is verifiable, to create itself in the profile settings (without cut markers) !2198 #chriswalg
-- The profile page now contains one unified pickup section. Future pickup options are now visible in that section. !2211 !2226 @AntonBallmaier
+- The profile page now contains one unified pickup section. Future pickup options are now visible in that section. !2211 !2226 !2291 @AntonBallmaier
 - Pickup statistics on profile !2208 @fs_k
 - Dashboard revamped, shines in a new style and new features !2227 !2245 !2248 !2252 !2254 !2261 !2262 !2263 !2264 !2265 !2267 !2266 !2268 @sefn
 - In the footer of the website, "For developers" is added under "Participate" to create an easier way to IT. !2241 @NINI1988
