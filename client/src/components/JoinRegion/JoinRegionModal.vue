@@ -133,7 +133,8 @@ export default {
       return regions.find(region => region.id === last)
     },
     regionsList () {
-      return this.regions.filter(region => this.selectedRegionList.includes(region.id) && region.list.length > 0)
+      return this.regions
+        .filter(region => this.selectedRegionList.includes(region.id) && region.list.length > 0)
     },
   },
   watch: {
@@ -142,7 +143,8 @@ export default {
         for (const [index, id] of ids.entries()) {
           const region = this.regions.find(r => r.id === id)
           if (id && !region) {
-            const list = await DataRegions.mutations.fetchChoosedRegionChildren(id)
+            let list = await DataRegions.mutations.fetchChoosedRegionChildren(id)
+            list = list.filter(r => r.type !== 7) // removes all arbeitsgruppen
             if (list.length > 0) {
               this.regions.push({ id, list })
             }
