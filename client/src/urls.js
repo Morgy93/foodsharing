@@ -89,6 +89,10 @@ const urls = {
   selfservice: () => 'https://spenden.foodsharing.de/selfservice',
   resendActivationMail: () => '/?page=login&a=resendActivationMail',
 
+  // mailto
+  mail_foodsharing_network: (mail) => `${mail}@foodsharing.network`,
+  mailto_mail_foodsharing_network: (mail) => `mailto:${mail}@foodsharing.network`,
+
   // freshdesk
   freshdesk: () => 'https://foodsharing.freshdesk.com/support/home',
   freshdesk_locked_email: () => 'https://foodsharing.freshdesk.com/support/solutions/articles/77000299947-e-mail-sperre-im-profil',
@@ -96,6 +100,7 @@ const urls = {
   // wiki
   wiki: () => 'https://wiki.foodsharing.de/',
   wiki_guide: () => 'https://wiki.foodsharing.de/Hygiene-Ratgeber_f%C3%BCr_Lebensmittel',
+  wiki_create_region: () => 'https://wiki.foodsharing.de/Bezirk_gr%C3%BCnden_oder_reaktivieren',
   wiki_voting: () => 'https://wiki.foodsharing.de/Abstimmungs-Modul',
   wiki_calendar: () => 'https://wiki.foodsharing.de/Kalenderexport',
   wiki_grundsaetze: () => 'https://wiki.foodsharing.de/Grundsätze',
