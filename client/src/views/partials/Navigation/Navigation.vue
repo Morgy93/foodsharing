@@ -232,6 +232,12 @@ export default {
       border-top: 1px solid var(--fs-color-primary-200);
     }
 
+    & .nav-link {
+      & .icon-subnav {
+        display: none;
+      }
+    }
+
     & .nav-item {
       width: 100%;
 

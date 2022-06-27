@@ -5,7 +5,7 @@
         <Logo small />
       </template>
     </Link>
-    <NavRegions v-if="!viewIsMobile" />
+    <NavRegions />
     <NavGroups v-if="!viewIsMobile" />
     <NavStores />
     <NavBaskets />

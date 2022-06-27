@@ -40,7 +40,7 @@
 
 <script>
 //
-import MainNavData from '../../MainNavData.json'
+import MainNavData from '../../Data/MainNavData.json'
 //
 import Dropdown from '@/components/Navigation/_NavItems/NavDropdown'
 import Link from '@/components/Navigation/_NavItems/NavLink'

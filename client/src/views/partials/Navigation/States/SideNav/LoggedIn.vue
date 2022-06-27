@@ -18,11 +18,7 @@
         title="Suche"
         data-toggle="modal"
         data-target="#searchBarModal"
-      />
-      <Link
-        v-if="viewIsMobile"
-        icon="fa-globe"
-        title="Bezirke"
+        class="mb-3"
       />
       <Link
         v-if="viewIsMobile"
@@ -39,7 +35,7 @@
 
 <script>
 // Store
-import MetaNavData from '../../MetaNavData.json'
+import MetaNavData from '../../Data/MetaNavData.json'
 //
 import Link from '@/components/Navigation/_NavItems/NavLink'
 import NavConversations from '@/components/Navigation/Conversations/NavConversations'

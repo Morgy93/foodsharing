@@ -23,7 +23,7 @@
 
 <script>
 // Store
-import MetaNavData from '../../MetaNavData.json'
+import MetaNavData from '../../Data/MetaNavData.json'
 //
 import Link from '@/components/Navigation/_NavItems/NavLink'
 import NavLogin from '@/components/Navigation/Login/NavLogin.vue'

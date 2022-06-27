@@ -1,7 +1,7 @@
 @import '../../../scss/icon-sizes.scss';
 
-.nav-item {
-    margin-right: 0.25rem;
+.nav-item,
+.nav-link {
     color: currentColor;
 
     &::after {
