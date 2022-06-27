@@ -13,8 +13,11 @@
         :alt="title"
       >
     </div>
-    <div>
-      <h6 class="m-0">{{ title }}</h6>
+    <div class="text-truncate">
+      <h6
+        class="m-0 text-truncate"
+        v-html="title"
+      />
       <small
         v-if="teaser"
         class="text-muted text-truncate"

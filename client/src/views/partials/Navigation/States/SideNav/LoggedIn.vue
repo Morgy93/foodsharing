@@ -18,7 +18,6 @@
         title="Suche"
         data-toggle="modal"
         data-target="#searchBarModal"
-        class="mb-3"
       />
       <Link
         v-if="viewIsMobile"
