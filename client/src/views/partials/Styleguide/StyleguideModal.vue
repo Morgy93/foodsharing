@@ -42,7 +42,10 @@
           </div>
           <div class="col-12 col-sm-6">
             <div class="mb-5">
-              <h2>Icons <a href="https://fontawesome.com/v5/search?m=free&s=solid%2Cbrands">(Font Awesome V5 [FREE])</a></h2>
+              <h2>
+                Icons
+                <a href="https://fontawesome.com/v5/search?m=free&s=solid%2Cbrands">(Font Awesome V5 [FREE])</a>
+              </h2>
               <hr>
               <div class="flex">
                 <i
@@ -56,52 +59,37 @@
             </div>
             <div class="mb-5">
               <h2>
+                Components
                 <a
                   href="https://getbootstrap.com/docs/4.6/getting-started/introduction/"
                   v-html="'Bootstrap 4.6'"
                 />
               </h2>
               <hr>
-              <div class="flex">
+              <div
+                v-for="main in bootstrapMainRules"
+                :key="main"
+                class="flex"
+              >
                 <button
-                  v-for="style in ['primary','light', 'link', 'secondary', 'danger', 'info']"
-                  :key="`btn-${style}`"
-                  class="copy btn"
-                  :class="`btn-${style}`"
-                  @click="copyToClipBoard(`btn btn-${style}`)"
-                  v-html="`btn-${style}`"
+                  v-for="style in bootstrapButtonStyles"
+                  :key="style"
+                  class="copy btn-block"
+                  :class="style+main"
+                  @click="copyToClipBoard(style+main)"
+                  v-html="style+main"
                 />
               </div>
-              <div class="flex">
-                <button
-                  v-for="style in ['primary', 'secondary', 'danger', 'info']"
-                  :key="`btn-outline-${style}`"
-                  class="copy btn"
-                  :class="`btn-outline-${style}`"
-                  @click="copyToClipBoard(`btn btn-outline-${style}`)"
-                  v-html="`btn-outline-${style}`"
-                />
-              </div>
-              <div class="flex">
-                <button
-                  v-for="style in ['primary','light', 'link', 'secondary', 'danger', 'info']"
-                  :key="`btn-sm-${style}`"
-                  class="copy btn btn-sm"
-                  :class="`btn-${style}`"
-                  @click="copyToClipBoard(`btn btn-sm btn-${style}`)"
-                  v-html="`btn-sm btn-${style}`"
-                />
-              </div>
-              <div class="flex">
-                <button
-                  v-for="style in ['primary', 'secondary', 'danger', 'info']"
-                  :key="`btn-sm-outline-${style}`"
-                  class="copy btn btn-sm"
-                  :class="`btn-outline-${style}`"
-                  @click="copyToClipBoard(`btn btn-sm btn-outline-${style}`)"
-                  v-html="`btn-sm btn-outline-${style}`"
-                />
-              </div>
+              <button
+                class="copy btn btn-link"
+                @click="copyToClipBoard('btn btn-link')"
+                v-html="'btn btn-link'"
+              />
+              <button
+                class="copy btn btn-sm btn-link"
+                @click="copyToClipBoard('btn btn-sm btn-link')"
+                v-html="'btn btn-sm btn-link'"
+              />
             </div>
           </div>
           <div class="col-12 col-sm-6">
@@ -129,6 +117,8 @@
 export default {
   data () {
     return {
+      bootstrapMainRules: ['primary', 'light', 'secondary', 'danger', 'warning', 'info'],
+      bootstrapButtonStyles: ['btn btn-', 'btn btn-outline-', 'btn btn-sm btn-', 'btn btn-sm btn-outline-'],
       cssColorRules: [],
       cssFontRules: [
         'h1',
@@ -182,17 +172,17 @@ export default {
           }
 
           if (['ul', 'ol'].includes(font)) {
-            str.push(`<li>${font} li, The quick brown fox jumps over ...</li>`)
-            str.push(`<li>${font} li, The quick brown fox jumps over ...</li>`)
-            str.push(`<li>${font} li, The quick brown fox jumps over ...</li>`)
-            str.push(`<li>${font} li, The quick brown fox jumps over ...</li>`)
+            str.push(`<li>(${font}) li, The quick brown fox jumps over ...</li>`)
+            str.push(`<li>(${font}) li, The quick brown fox jumps over ...</li>`)
+            str.push(`<li>(${font}) li, The quick brown fox jumps over ...</li>`)
+            str.push(`<li>(${font}) li, The quick brown fox jumps over ...</li>`)
           } else if (font === 'dl') {
-            str.push(`<dt>${font} dt, The quick brown fox jumps over ...</dt>`)
-            str.push(`<dd>${font} dd, The quick brown fox jumps over ...</dd>`)
-            str.push(`<dt>${font} dt, The quick brown fox jumps over ...</dd>`)
-            str.push(`<dd>${font} dd, The quick brown fox jumps over ...</dd>`)
+            str.push(`<dt>(${font}) dt, The quick brown fox jumps over ...</dt>`)
+            str.push(`<dd>(${font}) dd, The quick brown fox jumps over ...</dd>`)
+            str.push(`<dt>(${font}) dt, The quick brown fox jumps over ...</dd>`)
+            str.push(`<dd>(${font}) dd, The quick brown fox jumps over ...</dd>`)
           } else {
-            str.push(`${font}, The quick brown fox jumps over ...`)
+            str.push(`(${font}), The quick brown fox jumps over ...`)
           }
           str.push(`</${font}>`)
           str.push('</div>')
@@ -226,7 +216,7 @@ export default {
 </script>
 <style lang="scss" scoped>
 .box {
-  width: 30%;
+  width: calc(calc(100% / 3) - 8px);
   height: 1.25rem;
   border-radius: var(--border-radius);
   margin: 4px;
@@ -245,10 +235,6 @@ export default {
   &:hover {
     outline: 2px solid var(--fs-color-dark);
   }
-}
-
-.btn {
-  margin: .1rem;
 }
 
 .col:not(:last-child) {
