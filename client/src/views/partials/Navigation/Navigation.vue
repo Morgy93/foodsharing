@@ -213,16 +213,6 @@ export default {
 
       & .nav-link {
         padding: 0.5rem 1rem;
-
-        & .badge {
-          @media(max-width: 768px) {
-            right: 0;
-
-            &.overNinetyNine {
-              right: 0;
-            }
-          }
-        }
       }
     }
 
@@ -247,11 +237,7 @@ export default {
       }
 
       & .dropdown-toggle {
-        width: 100%;
-        text-align: left;
-        pointer-events: none;
-        font-weight: 600;
-        color: var(--fs-color-primary-400)
+        display: none;
       }
 
       & .nav-text {
