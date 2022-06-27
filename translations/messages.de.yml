@@ -1878,21 +1878,6 @@ profile:
   cantdeletethis: "Du kannst keine Einzeltermine löschen!"
   choosestore: "Bitte den betroffenen Betrieb auswählen" #in ProfileView
 
-search:
-  title: "Suche"
-  placeholder: "Suche Personen, Gruppen, Betriebe, …"
-  forum: "Nach Titel suchen…"
-  thread-title-only: "Es werden nur Titel durchsucht, nicht der Text von Beiträgen."
-  noresults: "Es konnten keine Ergebnisse gefunden werden"
-  mybuddies: "Meine Buddies"
-  mygroups: "Meine Gruppen"
-  mystores: "Meine Betriebe"
-  myregions: "Meine Bezirke"
-  groups: "Gruppen"
-  persons: "Personen"
-  user_search:
-    placeholder: "Name oder ID"
-
 dashboard:
   title: "Dashboard"
   updates_title_all: "Updates-Übersicht"
@@ -2583,12 +2568,7 @@ startpage:
     link: foodsharing unterstützen
 
 contentmanagement: "Inhaltsverwaltung" #contentControl
-activitypost:
-  Response: "Antworten"
-  response: "antworten"
-  write: "Schreibe eine Antwort …"
-  quickreply_info: "<b>Umschalttaste + Eingabetaste</b> zum Hinzufügen einer neuen Zeile."
-  quickreply_button: Jetzt Senden<br>oder <b>Eingabetaste</b> drücken.
+
 deletefromregion: "Wirklich aus dem Bezirk löschen?"
 savewithus: "Rette mit!"
 logincontrol:
@@ -2682,5 +2662,31 @@ globals:
     signup: Mitmachen
     signin: Anmelden
     signout: Abmelden
-  save: "Speichern"
-  close: "Schliessen"
+  save: Speichern
+  close: Schliessen
+  modal:
+    close: Schliessen oder <code class="key">ESC</code> nutzen
+
+search:
+  title: Suche
+  placeholder: Suche Personen, Gruppen, Betriebe, …
+  forum: Nach Titel suchen…
+  noresults: Es konnten keine Ergebnisse gefunden werden
+  modal:
+  type:
+    buddies: Buddies
+    stores: Betriebe
+    regions: Bezirke
+    foodshare_points: Fairtailer
+    groups: Gruppen
+    persons: Personen
+  thread-title-only: Es werden nur Titel durchsucht, nicht der Text von Beiträgen.
+  user_search:
+    placeholder: Name oder ID
+
+activitypost:
+  Response: Antworten
+  response: antworten
+  write: Schreibe eine Antwort …
+  quickreply_info: <code class="key">Umschalttaste + Eingabetaste</code> zum Hinzufügen einer neuen Zeile.
+  quickreply_button: Jetzt Senden<br>oder <code class="key">Eingabetaste</code> drücken.

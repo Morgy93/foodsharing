@@ -15,7 +15,8 @@
           <label
             class="sr-only"
             for="inlineFormInputGroup"
-          >{{ $i18n('search.placeholder') }}</label>
+            v-html="$i18n('search.placeholder')"
+          />
           <div class="input-group">
             <div class="input-group-prepend">
               <div class="input-group-text">
@@ -72,9 +73,8 @@
             type="button"
             class="btn btn-sm btn-light"
             data-dismiss="modal"
-          >
-            You can use the <code class="key">ESC</code> hotkey or click here to close this modal.
-          </button>
+            v-html="$i18n('globals.modal.close')"
+          />
         </div>
       </div>
     </div>
@@ -165,14 +165,5 @@ export default {
 <style lang="scss" scoped>
 .is-clickable {
   cursor: pointer;
-}
-
-.key {
-  padding: 0.05rem 0.3rem;
-  border-radius: calc(var(--border-radius) / 2);
-  border: 1px solid var(--fs-color-secondary-500);
-  background-color: var(--fs-color-secondary-200);
-  color: var(--fs-color-secondary-700);
-  font-weight: 600;
 }
 </style>

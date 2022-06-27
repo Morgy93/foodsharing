@@ -149,9 +149,9 @@
         </div>
         <small
           v-if="!viewIsMobile"
-          class="d-inline-block mt-2 text-muted"
+          class="d-inline-flex align-items-center mt-2 text-muted"
         >
-          <i class="fas fa-info-circle" />
+          <i class="fas fa-info-circle mr-1" />
           <span v-html="$i18n('activitypost.quickreply_info')" />
         </small>
       </div>

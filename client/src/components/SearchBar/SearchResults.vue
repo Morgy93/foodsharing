@@ -11,7 +11,7 @@
       class="entry"
     >
       <h3 class="dropdown-header">
-        <i class="icon-subnav fas fa-user" /> {{ $i18n('search.mybuddies') }}
+        <i class="icon-subnav fas fa-user" /> {{ $i18n('search.type.buddies') }}
       </h3>
       <search-result-entry
         v-for="buddy in filtered.myBuddies"
@@ -27,7 +27,7 @@
       class="entry"
     >
       <h3 class="dropdown-header">
-        <i class="icon-subnav fas fa-users" /> {{ $i18n('search.mygroups') }}
+        <i class="icon-subnav fas fa-users" /> {{ $i18n('search.type.groups') }}
       </h3>
       <search-result-entry
         v-for="group in filtered.myGroups"
@@ -43,7 +43,7 @@
       class="entry"
     >
       <h3 class="dropdown-header">
-        <i class="icon-subnav fas fa-shopping-cart" /> {{ $i18n('search.mystores') }}
+        <i class="icon-subnav fas fa-shopping-cart" /> {{ $i18n('search.type.stores') }}
       </h3>
       <search-result-entry
         v-for="store in filtered.myStores"
@@ -59,7 +59,7 @@
       class="entry"
     >
       <h3 class="dropdown-header">
-        <i class="icon-subnav fas fa-home" /> {{ $i18n('search.myregions') }}
+        <i class="icon-subnav fas fa-home" /> {{ $i18n('search.type.regions') }}
       </h3>
       <search-result-entry
         v-for="region in filtered.myRegions"
@@ -76,7 +76,7 @@
       class="entry"
     >
       <h3 class="dropdown-header">
-        <i class="icon-subnav fas fa-users" /> {{ $i18n('search.groups') }}
+        <i class="icon-subnav fas fa-users" /> {{ $i18n('search.type.groups') }}
       </h3>
       <search-result-entry
         v-for="group in filtered.groups"
@@ -92,7 +92,7 @@
       class="entry"
     >
       <h3 class="dropdown-header">
-        <i class="icon-subnav fas fa-child" /> {{ $i18n('search.persons') }}
+        <i class="icon-subnav fas fa-child" /> {{ $i18n('search.type.persons') }}
       </h3>
       <search-result-entry
         v-for="user in filtered.users"
@@ -108,7 +108,7 @@
       class="entry"
     >
       <h3 class="dropdown-header">
-        <i class="icon-subnav fas fa-shopping-cart" /> {{ $i18n('menu.entry.stores') }}
+        <i class="icon-subnav fas fa-shopping-cart" /> {{ $i18n('search.type.stores') }}
       </h3>
       <search-result-entry
         v-for="store in filtered.stores"
@@ -124,7 +124,7 @@
       class="entry"
     >
       <h3 class="dropdown-header">
-        <i class="icon-subnav fas fa-recycle" /> {{ $i18n('terminology.fsps') }}
+        <i class="icon-subnav fas fa-recycle" /> {{ $i18n('search.type.foodshare_points') }}
       </h3>
       <search-result-entry
         v-for="foodSharePoint in filtered.foodSharePoints"
@@ -140,7 +140,7 @@
       class="entry"
     >
       <h3 class="dropdown-header">
-        <i class="icon-subnav fas fa-home" /> {{ $i18n('terminology.regions') }}
+        <i class="icon-subnav fas fa-home" /> {{ $i18n('search.type.regions') }}
       </h3>
       <search-result-entry
         v-for="region in filtered.regions"

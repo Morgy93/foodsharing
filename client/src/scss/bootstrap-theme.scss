@@ -168,3 +168,12 @@ $navbar-dark-hover-color: rgba(#ffffff, 1) ;
 .ui-front.ui-autocomplete {
     z-index: #{$zindex-tooltip+1};
 }
+
+code.key {
+    padding: 0.05rem 0.3rem;
+    border-radius: var(--border-radius);
+    border: 1px solid var(--fs-color-secondary-500);
+    background-color: var(--fs-color-secondary-200);
+    color: var(--fs-color-secondary-800);
+    font-weight: 600;
+}
