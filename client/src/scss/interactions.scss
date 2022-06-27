@@ -21,3 +21,7 @@ html a[href]:not(:where(
         color: var(--fs-color-secondary-800);
     }
 }
+
+html a.icon:hover {
+    text-decoration: unset;
+}
