@@ -3,7 +3,7 @@
     <LanguageChooser />
     <div v-if="isLoggedIn">
       <SearchBarModal />
-      <CICDModal />
+      <StyleguideModal />
       <JoinRegionModal /> <!--INCOMPLETE-->
     </div>
   </div>
@@ -13,17 +13,17 @@
 // Stores
 import DataUser from '@/stores/user'
 // Hidden Elements
-import LanguageChooser from '@/components/Navigation/LanguageChooser'
-import SearchBarModal from '@/components/SearchBar/SearchBarModal'
-import CICDModal from '@/views/partials/CI-CD/CICDModal.vue'
-import JoinRegionModal from '@/components/JoinRegion/JoinRegionModal'
+import LanguageChooser from '@/components/Navigation/LanguageChooser.vue'
+import SearchBarModal from '@/components/SearchBar/SearchBarModal.vue'
+import StyleguideModal from '@/views/partials/Styleguide/StyleguideModal.vue'
+import JoinRegionModal from '@/components/JoinRegion/JoinRegionModal.vue'
 
 export default {
   name: 'ModalPlaceholder',
   components: {
     LanguageChooser,
     SearchBarModal,
-    CICDModal,
+    StyleguideModal,
     JoinRegionModal,
   },
   computed: {
