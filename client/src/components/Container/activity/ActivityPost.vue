@@ -53,8 +53,7 @@
         <i
           v-else
           class="d-flex text-secondary img-thumbnail w-100 h-100 align-items-center justify-content-center"
-          style="min-width: 50px;"
-          :class="[icon]"
+          :class="icon"
         />
         <span
           class="sr-only"
@@ -323,21 +322,6 @@ export default {
   min-height: 6rem;
   overflow: hidden;
   cursor: text;
-}
-
-.icon {
-  height: 50px;
-  width: 50px;
-  line-height: 0.7em;
-  font-size: 1.5rem;
-
-  &:hover {
-    text-decoration: none;
-
-    & .img-thumbnail {
-      background-color: var(--fs-color-light);
-    }
-  }
 }
 
 ::v-deep.markdown {

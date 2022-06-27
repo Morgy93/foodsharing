@@ -10,7 +10,7 @@
       class="mr-2"
     >
       <div
-        class="icon avatars img-thumbnail"
+        class="icon icon--big avatars img-thumbnail"
         :class="[`avatars_${avatars.length}`]"
       >
         <Avatar

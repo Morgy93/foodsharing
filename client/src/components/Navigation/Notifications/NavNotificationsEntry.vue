@@ -11,7 +11,7 @@
     @mouseout="!isTouch && toggleState()"
   >
     <div
-      class="icon icon--rounded mr-2 d-flex text-center justifiy-content-center align-items-center"
+      class="icon icon--big icon--rounded mr-2 d-flex text-center justifiy-content-center align-items-center"
       @click.stop.prevent="toggleState()"
     >
       <i
@@ -21,7 +21,7 @@
       />
       <Avatar
         v-else-if="bell.image && !state"
-        class="icon icon--rounded img-thumbnail"
+        class="icon icon--big icon--rounded img-thumbnail"
         :url="bell.image"
         :size="35"
       />
