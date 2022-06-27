@@ -218,8 +218,10 @@ export default {
       },
     },
     getCoordinates: {
-      async handler (newVal) {
-        await DataBaskets.mutations.fetchNearby(newVal)
+      async handler (coords) {
+        if (coords.lat && coords.lon) {
+          await DataBaskets.mutations.fetchNearby(coords)
+        }
       },
       deep: true,
     },
