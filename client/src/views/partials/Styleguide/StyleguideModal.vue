@@ -162,7 +162,6 @@ export default {
 .box {
   width: 100%;
   height: 1rem;
-  border-radius: var(--border-radius);
 
   &:hover {
     outline: 2px solid goldenrod;
