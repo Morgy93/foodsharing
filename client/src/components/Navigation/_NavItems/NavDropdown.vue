@@ -1,15 +1,13 @@
 <template>
-  <li
-    data-show-as="tooltip"
-    data-placement="bottom"
-    :data-original-title="title"
-    :aria-label="title"
-    class="nav-item dropdown"
-  >
+  <li class="nav-item dropdown">
     <button
       :id="title"
       class="nav-link dropdown-toggle"
       role="button"
+      data-show-as="tooltip"
+      data-placement="bottom"
+      :data-original-title="title"
+      :aria-label="title"
       data-toggle="dropdown"
       aria-expanded="false"
     >
