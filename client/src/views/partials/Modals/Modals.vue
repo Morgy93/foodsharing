@@ -3,6 +3,7 @@
     <LanguageChooser />
     <SearchBarModal />
     <CICDModal />
+    <JoinRegionModal /> <!--INCOMPLETE-->
   </div>
 </template>
 
@@ -11,6 +12,7 @@
 import LanguageChooser from '@/components/Navigation/LanguageChooser'
 import SearchBarModal from '@/components/SearchBar/SearchBarModal'
 import CICDModal from '@/views/partials/CI-CD/CICDModal.vue'
+import JoinRegionModal from '@/components/JoinRegion/JoinRegionModal'
 
 export default {
   name: 'ModalPlaceholder',
@@ -18,6 +20,7 @@ export default {
     LanguageChooser,
     SearchBarModal,
     CICDModal,
+    JoinRegionModal,
   },
 }
 </script>

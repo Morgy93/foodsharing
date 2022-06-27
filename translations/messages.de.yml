@@ -2354,15 +2354,6 @@ sidenav:
   countryspecific: "Länderspezifische Gruppen"
   yourgroups: "Deine Gruppen"
 
-becomeregion:
-  chooseregion: "Wähle den Bezirk aus, in dem du aktiv werden möchtest."
-  enterregion:
-    main: "Deinem ersten Bezirk kannst du beitreten, indem du dich über die Auswahl 'Europa' bis zu deinem Bezirk durchklickst.<br> Solltest du keinen Bezirk für dich finden, wähle ein Level höher oder tritt dem nächstgelegenen Bezirk bei. Solltest du keine Möglichkeit haben, dich in der Umgebung zum Foodsaver ausbilden zu lassen, dann kannst du dir überlegen einen eigenen Bezirk zu starten. Lies dir in diesem Fall bitte das Wiki und insbesondere den Artikel zu"
-    region_link_text: "Bezirke gründen oder reaktivieren"
-    text1: "gut durch. Wenn du den Bezirk starten möchtest oder explizite Fragen hast, die das Wiki nicht beantwortet, schreib uns eine E-Mail an"
-    text2: "Wir sind nicht die zentrale Anlaufstelle für allgemeine Fragen, können dir aber bei Fragen zu Bezirken weiterhelfen."
-  save: "Speichern"
-
 base:
   whatfor: "Auf foodsharing.de kannst du deine Lebensmittel vor dem Verfall an soziale Einrichtungen oder andere Personen abgeben"
   keywords: "foodsharing, essen, lebensmittel, ablaufdatum, Lebensmittelverschwendung, essen wegschmeissen, spenden, lebensmitteltausch"
@@ -2652,11 +2643,6 @@ information:
     info: "Damit kannst du deine nächsten Abholtermine mit einem Kalenderprogramm deiner Wahl sehen."
     link: "Jetzt abonnieren"
 
-account:
-  signup: Mitmachen
-  signin: Anmelden
-  signout: Abmelden
-
 system_administration:
   regions: "Bezirke verwalten"
   blog: "Blogbeiträge bearbeiten"
@@ -2681,3 +2667,20 @@ navigation:
   notifications: Benachrichtigungen
   profil: 👋 Hallo {name}!
   system_administration: System Administration
+
+join_region:
+  headline: Wähle den Bezirk aus,<br> in dem du aktiv werden möchtest.
+  description: Deinem ersten Bezirk kannst du beitreten, indem du dich über die Auswahl <em>Europa</em> bis zu deinem Bezirk durchklickst.Solltest du keinen Bezirk für dich finden, wähle ein Level höher oder tritt dem nächstgelegenen Bezirk bei. Solltest du keine Möglichkeit haben, dich in der Umgebung zum Foodsaver ausbilden zu lassen, dann kannst du dir überlegen einen eigenen Bezirk zu starten. Lies dir in diesem Fall bitte das Wiki und insbesondere den <a href="{href}">Artikel zu Bezirke gründen oder reaktivieren<a> gut durch. Wenn du den Bezirk starten möchtest oder explizite Fragen hast, die das Wiki nicht beantwortet, schreib uns <a href="{mail}">eine E-Mail</a>. Wir sind nicht die zentrale Anlaufstelle für allgemeine Fragen, können dir aber bei Fragen zu Bezirken weiterhelfen.
+  error:
+    not_allowed: In diesen Bezirk kannst Du Dich nicht eintragen.
+    is_state: <strong>Das ist ein Bundesland.</strong><br> Wähle bitte eine Stadt, eine Region oder einen Bezirk aus!
+    is_country: <strong>Das ist ein Land.</strong><br> Wähle bitte eine Stadt, eine Region oder einen Bezirk aus!
+    is_big_city: <strong>Das ist eine Großstadt.</strong><br> Wähle bitte eine Stadt, eine Region oder einen Bezirk aus!
+
+globals:
+  account:
+    signup: Mitmachen
+    signin: Anmelden
+    signout: Abmelden
+  save: "Speichern"
+  close: "Schliessen"
