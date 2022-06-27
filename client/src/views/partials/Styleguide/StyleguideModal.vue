@@ -161,8 +161,7 @@ export default {
 <style lang="scss" scoped>
 .box {
   width: 100%;
-  height: 2rem;
-  margin: 10px;
+  height: 1rem;
   border-radius: var(--border-radius);
 
   &:hover {
@@ -180,7 +179,6 @@ export default {
 
   & > * {
     flex: 1 1 auto;
-    margin: 0.5rem;
   }
 }
 </style>
