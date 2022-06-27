@@ -1,7 +1,6 @@
 <template>
   <li class="nav-item">
     <a
-      v-b-tooltip="title"
       class="nav-link"
       :href="href"
       role="button"

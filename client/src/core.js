@@ -31,6 +31,13 @@ if (serverData.user.may) {
   socket.connect()
 }
 
+// JQUERY is required for bootstrap 4.6 tooltips
+// [data-toggle="tooltip"] -> [data-show-as="tooltip"]
+// to prevent double data-toggle attributes
+$(function () {
+  $('[data-show-as="tooltip"]').tooltip()
+})
+
 // add CSRF-Token to all jquery requests
 $.ajaxPrefilter(function (options) {
   if (!options.beforeSend) {

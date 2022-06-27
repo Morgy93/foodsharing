@@ -1,8 +1,13 @@
 <template>
-  <li class="nav-item dropdown">
+  <li
+    data-show-as="tooltip"
+    data-placement="bottom"
+    :data-original-title="title"
+    :aria-label="title"
+    class="nav-item dropdown"
+  >
     <button
       :id="title"
-      v-b-tooltip="title"
       class="nav-link dropdown-toggle"
       role="button"
       data-toggle="dropdown"
