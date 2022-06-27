@@ -1,5 +1,5 @@
 <template>
-  <ul class="navbar-navside">
+  <div class="navbar-navside">
     <ul
       v-if="viewIsMobile"
       class="metanav"
@@ -29,7 +29,7 @@
       <NavNotifications v-if="!viewIsMobile" />
       <NavUser />
     </ul>
-  </ul>
+  </div>
 </template>
 
 <script>

@@ -16,7 +16,6 @@ import './scss/index.scss'
 import 'bootstrap'
 import './scss/bootstrap-theme.scss'
 
-import '@/becomeBezirk'
 import '@/views/views'
 
 import serverData from '@/server-data'

@@ -9,7 +9,7 @@
     >
       <MetaNavLoggedIn v-if="isLoggedIn" />
       <MetaNavLoggedOut v-else />
-      <ul class="container nav-container">
+      <div class="container nav-container">
         <MainNavLoggedIn v-if="isLoggedIn" />
         <MainNavLoggedOut v-else />
 
@@ -20,7 +20,7 @@
           <SideNavLoggedIn v-if="isLoggedIn" />
           <SideNavLoggedOut v-else />
         </div>
-      </ul>
+      </div>
     </nav>
   </div>
 </template>

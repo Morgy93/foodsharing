@@ -1,13 +1,22 @@
 <template>
   <ul class="mainnav">
-    <Link :href="$url('dashboard')">
+    <Link
+      title="Foodsharing"
+      :href="$url('dashboard')"
+    >
       <template #text>
         <Logo small />
       </template>
     </Link>
-    <NavRegions />
-    <NavGroups v-if="!viewIsMobile" />
-    <NavStores />
+    <Link
+      v-if="!isFoodsaver"
+      :title="$i18n('foodsaver.upgrade.to_fs')"
+      icon="fa-hands-helping"
+      :href="$url('quiz_foodsaver')"
+    />
+    <NavRegions v-if="isFoodsaver" />
+    <NavGroups v-if="isFoodsaver && !viewIsMobile" />
+    <NavStores v-if="isFoodsaver" />
     <NavBaskets />
     <NavConversations v-if="viewIsMobile" />
     <NavNotifications v-if="viewIsMobile" />
@@ -27,6 +36,8 @@
 </template>
 
 <script>
+// Store
+import DataUser from '@/stores/user'
 //
 import Link from '@/components/Navigation/_NavItems/NavLink'
 import Logo from '@/components/Navigation/Logo'
@@ -52,5 +63,10 @@ export default {
     NavRegions,
   },
   mixins: [MediaQueryMixin],
+  computed: {
+    isFoodsaver () {
+      return DataUser.getters.isFoodsaver()
+    },
+  },
 }
 </script>

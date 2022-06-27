@@ -27,14 +27,6 @@
       <button
         role="menuitem"
         class="dropdown-item dropdown-action"
-        @click="becomeBezirk()"
-      >
-        <i class="icon-subnav fas fa-plus" />
-        {{ $i18n('menu.entry.joinregion') }}
-      </button>
-      <button
-        role="menuitem"
-        class="dropdown-item dropdown-action"
         data-toggle="modal"
         data-target="#joinRegionModal"
       >
@@ -52,7 +44,6 @@ import { getters } from '@/stores/regions'
 // Components
 import Dropdown from '../_NavItems/NavDropdown'
 import RegionsEntry from './NavRegionsEntry'
-import { becomeBezirk } from '@/script'
 
 export default {
   name: 'MenuRegions',
@@ -66,9 +57,6 @@ export default {
         else return a.name.localeCompare(b.name)
       })
     },
-  },
-  methods: {
-    becomeBezirk,
   },
 }
 </script>

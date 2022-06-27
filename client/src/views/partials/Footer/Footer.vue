@@ -321,6 +321,10 @@
               :rel="externalLink"
             >
               <i :class="social.icon" />
+              <span
+                class="sr-only"
+                v-html="social.name"
+              />
             </a>
           </b-row>
         </b-col>

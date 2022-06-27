@@ -1,5 +1,5 @@
 <template>
-  <ul class="metanav-container container">
+  <div class="metanav-container container">
     <ul
       v-if="!viewIsMobile"
       class="metanav"
@@ -22,7 +22,7 @@
       />
       <NavAdmin />
     </ul>
-  </ul>
+  </div>
 </template>
 
 <script>

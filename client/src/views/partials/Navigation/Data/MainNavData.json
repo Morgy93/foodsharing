@@ -1,6 +1,7 @@
 {
     "education":{
        "title":"menu.entry.education",
+       "icon":"fa-graduation-cap",
        "items":[
           {
              "url":"academy",
@@ -18,6 +19,7 @@
     },
     "fundraising":{
         "title":"menu.entry.fundraising",
+        "icon":"fa-link",
         "items":[
            {
               "url":"donations",
@@ -39,6 +41,7 @@
      },
     "aboutUs":{
        "title":"menu.entry.aboutUs",
+       "icon":"fa-users",
        "items":[
           {
              "url":"mission",
@@ -64,6 +67,7 @@
     },
     "politics":{
       "title":"menu.entry.politics",
+      "icon":"fa-landmark",
       "items":[
          {
             "url":"fsstaedte",

@@ -1,6 +1,9 @@
 <template>
   <ul class="mainnav">
-    <Link :href="$url('home')">
+    <Link
+      title="Foodsharing"
+      :href="$url('home')"
+    >
       <template #text>
         <Logo />
       </template>
@@ -10,6 +13,7 @@
       v-for="(category, idx) in mainNav"
       :key="idx"
       :title="$i18n(category.title)"
+      :icon="category.icon"
     >
       <template #content>
         <a
