@@ -46,7 +46,7 @@
     >
       <li>
         <span
-          v-if="!viewIsLG"
+          v-if="!viewIsMD"
           class="dropdown-header"
           v-html="title"
         />

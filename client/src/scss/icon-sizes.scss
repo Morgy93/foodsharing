@@ -22,7 +22,10 @@
 .icon-nav {
     @include icon;
     --size: 1em;
-    margin-right: 0.25rem;
+
+    + .nav-text {
+        margin-left: 0.5rem;
+    }
 }
 
 .icon-subnav {

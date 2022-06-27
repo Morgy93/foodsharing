@@ -74,6 +74,7 @@
             type="button"
             class="btn btn-light"
             data-dismiss="modal"
+            @click="close"
             v-html="$i18n('globals.close')"
           />
           <button
@@ -173,6 +174,9 @@ export default {
       } finally {
         hideLoader()
       }
+    },
+    async close () {
+      this.selected = [0]
     },
   },
 }

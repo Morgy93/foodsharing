@@ -33,7 +33,11 @@
       flex-direction: row;
     }
 
+    .navbar-collapse.collapsing &.dropdown,
     .navbar-collapse.collapse.show &.dropdown {
+      & .dropdown-toggle {
+        display: none;
+      }
       &:hover,
       &:focus {
         background-color: unset;
