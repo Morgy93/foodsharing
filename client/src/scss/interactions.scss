@@ -1,11 +1,16 @@
-.bootstrap a[href]:not(:where(
+// html to be strong!
+// and override .bootstrap a
+html a[href]:not(:where(
     .nav-link,
     .btn,
     .dropdown-action,
     .dropdown-item,
     .list-group-item,
     .icon,
+    .card-footer a,
     footer a,
+    /* corrections to disable old styles */
+    .team-memberinfo a,
 )) {
     text-decoration: underline;
     font-weight: 600;

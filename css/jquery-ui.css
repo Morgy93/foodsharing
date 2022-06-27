@@ -891,10 +891,6 @@ body .ui-tooltip {
   overflow: auto;
 }
 
-.ui-widget-content a {
-    color: #1e1b1d
-}
-
 .ui-widget-header {
     border: 1px solid #4A3522;
     background: #4A3522 url(/css/gen/img/ui-bg_highlight-soft_25_4A3522_1x100.png) 50% 50% repeat-x;
