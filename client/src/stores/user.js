@@ -5,7 +5,7 @@ import { getDetails } from '@/api/user'
 export const store = Vue.observable({
   mailUnreadCount: 0,
   user: null,
-  isLoggedIn: document.cookie.split(';').some(cookie => cookie.trim().startsWith('CSRF_TOKEN=')),
+  isLoggedIn: false,
 })
 
 export const getters = {
