@@ -4,7 +4,7 @@
       class="nav-link"
       :href="href"
       role="button"
-      @aria-label="title"
+      :aria-label="title"
     >
       <slot name="badge">
         <span

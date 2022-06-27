@@ -4,9 +4,6 @@
       :id="title"
       class="nav-link dropdown-toggle"
       role="button"
-      data-show-as="tooltip"
-      data-placement="bottom"
-      :data-original-title="title"
       :aria-label="title"
       data-toggle="dropdown"
       aria-expanded="false"
@@ -47,6 +44,13 @@
       }"
       :aria-labelledby="title"
     >
+      <li>
+        <span
+          v-if="!viewIsLG"
+          class="dropdown-header"
+          v-html="title"
+        />
+      </li>
       <li
         class="content"
         :class="{
@@ -83,7 +87,9 @@
 </template>
 
 <script>
+import MediaQueryMixin from '@/mixins/MediaQueryMixin'
 export default {
+  mixins: [MediaQueryMixin],
   props: {
     title: {
       type: String,
@@ -140,6 +146,7 @@ export default {
       width: 100%;
       min-width: unset;
       max-width: unset;
+      top: 2rem;
     }
   }
 
