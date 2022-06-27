@@ -31,7 +31,7 @@
         class="food-basket-create-test-class dropdown-item dropdown-action"
         @click="openBasketCreationForm"
       >
-        <i class="fas fa-plus" />
+        <i class="icon-subnav fas fa-plus" />
         {{ $i18n('basket.add') }}
       </button>
       <a
