@@ -28,8 +28,8 @@ html a.icon:hover {
 
 html input:disabled {
     cursor: not-allowed;
-    opacity: .85;
-    color: var(--fs-color-gray-500);
+    opacity: 1;
+    color: var(--fs-color-gray-700);
     background-color: var(--fs-color-gray-100);
     border-color: var(--fs-color-gray-200);
 }
