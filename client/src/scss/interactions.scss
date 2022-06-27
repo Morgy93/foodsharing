@@ -25,3 +25,11 @@ html a[href]:not(:where(
 html a.icon:hover {
     text-decoration: unset;
 }
+
+html input:disabled {
+    cursor: not-allowed;
+    opacity: .85;
+    color: var(--fs-color-gray-500);
+    background-color: var(--fs-color-gray-100);
+    border-color: var(--fs-color-gray-200);
+}

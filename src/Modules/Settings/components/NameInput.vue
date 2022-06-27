@@ -72,11 +72,6 @@ export default {
 </script>
 
 <style lang="scss">
-input[disabled]{
-  color: var(--fs-color-gray-500);
-  background-color: var(--fs-color-gray-alpha-20);
-}
-
 .element-wrapper{
   --first-input-width: 35%;
   #name{
