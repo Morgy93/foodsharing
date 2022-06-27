@@ -172,6 +172,10 @@ export default {
   cursor: copy;
 }
 
+.btn {
+  margin: .1rem;
+}
+
 .flex {
   display: flex;
   flex-flow: wrap;
