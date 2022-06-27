@@ -36,6 +36,9 @@ if (serverData.user.may) {
 // to prevent double data-toggle attributes
 $(function () {
   $('[data-show-as="tooltip"]').tooltip()
+  $('[data-show-as="tooltip"]').on('click', function () {
+    $(this).tooltip('hide')
+  })
 })
 
 // add CSRF-Token to all jquery requests
