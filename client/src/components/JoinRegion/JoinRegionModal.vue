@@ -92,6 +92,7 @@
 <script>
 // Stores
 import DataRegions from '@/stores/regions'
+import DataUser from '@/stores/user'
 // Others
 import { pulseError, showLoader, hideLoader } from '@/script'
 export default {
@@ -113,6 +114,9 @@ export default {
     9: Stadtteil
   */
   computed: {
+    isLoggedIn () {
+      return DataUser.getters.isLoggedIn()
+    },
     regionIsInValid () {
       return ![1, 9, 2, 3].includes(this.selectedRegionType)
     },
@@ -151,7 +155,9 @@ export default {
     },
   },
   async created () {
-    this.base = await DataRegions.mutations.fetchChoosedRegionChildren(0)
+    if (this.isLoggedIn) {
+      this.base = await DataRegions.mutations.fetchChoosedRegionChildren(0)
+    }
   },
 
   methods: {

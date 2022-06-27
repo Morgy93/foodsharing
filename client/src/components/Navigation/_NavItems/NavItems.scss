@@ -32,6 +32,13 @@
       align-items: center;
       flex-direction: row;
     }
+
+    .navbar-collapse.collapse.show &.dropdown {
+      &:hover,
+      &:focus {
+        background-color: unset;
+      }
+    }
 }
 
 .nav-button {
@@ -81,7 +88,7 @@
     font-weight: 600;
   }
 
-  nav.nav-visible .sidenav & {
+  .nav-visible .sidenav & {
     display: none;
   }
 

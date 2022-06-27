@@ -21,7 +21,10 @@
               <div
                 v-for="(rule, idx) in rules"
                 :key="idx"
-                v-b-tooltip="rule"
+                data-show-as="tooltip"
+                data-placement="bottom"
+                :data-original-title="rule"
+                :aria-label="rule"
                 class="box copy"
                 :style="`background-color: var(${rule})`"
                 @click="copyToClipBoard(rule)"
@@ -36,7 +39,6 @@
               <i
                 v-for="(rule, idx) in ['fa-spinner', 'fa-spinner fa-spin']"
                 :key="idx"
-                v-b-tooltip="rule"
                 class="fas copy"
                 :class="rule"
                 @click="copyToClipBoard(rule)"

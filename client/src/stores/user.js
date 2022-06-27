@@ -10,7 +10,8 @@ export const store = Vue.observable({
 
 export const getters = {
   isLoggedIn () {
-    return store.isLoggedIn || document.cookie.split(';').some(cookie => cookie.trim().startsWith('CSRF_TOKEN='))
+    return store.isLoggedIn
+    // document.cookie.split(';').some(cookie => cookie.trim().startsWith('CSRF_TOKEN=')) DOES NOT WORK BECAUSE IT GET NOT DELETED
   },
   isFoodsaver () {
     return store.user?.foodsaver

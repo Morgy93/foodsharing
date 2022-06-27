@@ -1,13 +1,17 @@
 <template>
   <div class="modals">
     <LanguageChooser />
-    <SearchBarModal />
-    <CICDModal />
-    <JoinRegionModal /> <!--INCOMPLETE-->
+    <div v-if="isLoggedIn">
+      <SearchBarModal />
+      <CICDModal />
+      <JoinRegionModal /> <!--INCOMPLETE-->
+    </div>
   </div>
 </template>
 
 <script>
+// Stores
+import DataUser from '@/stores/user'
 // Hidden Elements
 import LanguageChooser from '@/components/Navigation/LanguageChooser'
 import SearchBarModal from '@/components/SearchBar/SearchBarModal'
@@ -21,6 +25,11 @@ export default {
     SearchBarModal,
     CICDModal,
     JoinRegionModal,
+  },
+  computed: {
+    isLoggedIn () {
+      return DataUser.getters.isLoggedIn()
+    },
   },
 }
 </script>
