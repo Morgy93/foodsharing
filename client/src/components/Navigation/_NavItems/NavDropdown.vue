@@ -146,7 +146,7 @@ export default {
       width: 100%;
       min-width: unset;
       max-width: unset;
-      top: 2rem;
+      top: 3rem;
     }
   }
 
