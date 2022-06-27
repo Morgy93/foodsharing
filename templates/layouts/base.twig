@@ -54,7 +54,6 @@
         <style type="text/css">{{ head.css | raw }}</style>
     </head>
     <body class="{{ bodyClasses|join(' ') }}">
-        {% include 'partials/becomeBezirk.twig' %}
         {{ menu | raw }}
         {% block overtop %}
             {{ content.overtop.html | raw }}
