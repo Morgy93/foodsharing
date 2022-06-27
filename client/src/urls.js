@@ -80,6 +80,8 @@ const urls = {
   circle_of_friends: () => 'https://spenden.foodsharing.de/freundeskreis',
   selfservice: () => 'https://spenden.foodsharing.de/selfservice',
   resendActivationMail: () => '/?page=login&a=resendActivationMail',
+  // Relogin
+  relogin_and_redirect_to_url: (url) => '/?page=relogin&url=' + encodeURIComponent(url),
 
   // region
   region_forum: (regionId) => `/?page=bezirk&bid=${regionId}&sub=forum`,

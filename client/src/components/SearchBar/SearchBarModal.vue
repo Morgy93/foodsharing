@@ -71,7 +71,7 @@
         <div class="modal-footer">
           <button
             type="button"
-            class="btn btn-sm btn-light"
+            class="btn btn-sm btn-outline-primary"
             data-dismiss="modal"
             v-html="$i18n('globals.modal.close')"
           />

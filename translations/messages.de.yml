@@ -2663,23 +2663,30 @@ globals:
     signin: Anmelden
     signout: Abmelden
   save: Speichern
-  close: Schliessen
+  close: Schließen
   modal:
-    close: Schliessen oder <code class="key">ESC</code> nutzen
+    close: Schließen oder <code class="key">ESC</code> benutzen
+  type:
+    mailboxes: Mailboxen
+    my_mailboxes: Meine Mailboxen
+    buddies: Buddies
+    my_buddies: Meine Buddies
+    stores: Betriebe
+    my_stores: Meine Betriebe
+    regions: Bezirke
+    my_regions: Meine Bezirke
+    foodshare_points: Fairtailer
+    my_foodshare_points: Meine Fairtailer
+    groups: Gruppen
+    my_groups: Meine Gruppen
+    persons: Personen
+    my_persons: Meine Personen
 
 search:
   title: Suche
   placeholder: Suche Personen, Gruppen, Betriebe, …
   forum: Nach Titel suchen…
   noresults: Es konnten keine Ergebnisse gefunden werden
-  modal:
-  type:
-    buddies: Buddies
-    stores: Betriebe
-    regions: Bezirke
-    foodshare_points: Fairtailer
-    groups: Gruppen
-    persons: Personen
   thread-title-only: Es werden nur Titel durchsucht, nicht der Text von Beiträgen.
   user_search:
     placeholder: Name oder ID

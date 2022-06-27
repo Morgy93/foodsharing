@@ -29,7 +29,7 @@ export const mutations = {
 
   async joinRegion (regionId) {
     await joinRegion(regionId)
-    document.location.href = url('region_forum', regionId)
+    document.location.href = url('relogin_and_redirect_to_url', url('region_forum', regionId))
   },
 }
 
