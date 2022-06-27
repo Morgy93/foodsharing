@@ -43,6 +43,7 @@ html a.trafficlight,
     All Buttons should now imitate the Bootstrap Button Style
 */
 
+.popbox .button,
 .inside .button,
 .inside button,
 .inside input[type="submit"],
@@ -51,8 +52,8 @@ html a.trafficlight,
 #work_group_form_photo-opener,
 #wall-submit {
     display: inline-block;
-    font-weight: 400;
-    color: var(--fs-color-secondary-100);
+    font-weight: normal !important;
+    color: var(--fs-color-secondary-100) !important;
     cursor: pointer;
     text-decoration: none;
     text-align: center;
