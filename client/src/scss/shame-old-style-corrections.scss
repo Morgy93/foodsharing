@@ -1,0 +1,17 @@
+.welcome.ui-padding,
+.inside > .container > .card > .card-body,
+.inside > .bootstrap .card.rounded .card-body,
+.inside > .bootstrap .card .rounded,
+.inside > .bootstrap div .card ,
+.inside > #foodsaverlist > .field .ui-widget-content,
+.inside > #inactivefoodsaverlist > .field .ui-widget-content,
+.inside .content-top.corner-all,
+.inside > .field > .ui-widget-content,
+.inside > div > .ui-widget-content {
+    border: 1px solid var(--fs-color-border);
+}
+
+html a.trafficlight,
+.profile.statdisplay a {
+    text-decoration: none;
+}

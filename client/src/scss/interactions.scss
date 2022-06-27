@@ -12,6 +12,7 @@ html a[href]:not(:where(
     footer a,
     /* corrections to disable old styles */
     .team-memberinfo a,
+    .author a,
 )) {
     text-decoration: underline;
     font-weight: 600;

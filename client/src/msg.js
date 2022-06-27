@@ -11,7 +11,7 @@ import serverData from '@/server-data'
 import autosize from 'autosize'
 import timeformat from '@/timeformat'
 import * as api from '@/api/conversations'
-import conversationStore from '@/stores/conversations'
+import conversationStore from '@/stores/OLD_conversations'
 import profileStore from '@/stores/profiles'
 
 import {
