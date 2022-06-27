@@ -117,8 +117,6 @@ final class PageHelper
 			$bodyClasses[] = 'bootstrap';
 		}
 
-		$footer = $this->getFooter();
-
 		return [
 			'head' => $this->getHeadData(),
 			'bread' => $this->bread,
@@ -129,7 +127,8 @@ final class PageHelper
 			'dev' => FS_ENV == 'dev',
 			'hidden' => $this->hidden,
 			'isMob' => $this->session->isMob(),
-			'footer' => $footer,
+			'modals' => $this->getModalWrapper(),
+			'footer' => $this->getFooter(),
 			'HTTP_HOST' => $_SERVER['HTTP_HOST'] ?? BASE_URL,
 			'content' => [
 				'main' => [
@@ -209,6 +208,18 @@ final class PageHelper
 			'isDev' => getenv('FS_ENV') === 'dev',
 			'locale' => $this->session->getLocale()
 		]);
+	}
+
+	private function getModalWrapper(): string
+	{
+		return $this->twig->render(
+			'partials/vue-wrapper.twig',
+			[
+				'id' => 'vue-modals',
+				'component' => 'modals',
+				'props' => ''
+			]
+		);
 	}
 
 	private function getMenu(): string

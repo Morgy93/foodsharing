@@ -153,6 +153,10 @@
             {% endif %}
         {% endblock full %}
 
+        {% block modals %}
+            {{ modals | raw }}
+        {% endblock %}
+
         {% block footer %}
             <footer>
                 {{ footer | raw }}

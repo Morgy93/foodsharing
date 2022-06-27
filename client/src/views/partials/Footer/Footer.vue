@@ -4,7 +4,6 @@
     fluid
     class="bootstrap bg-white pt-5 pb-5"
   >
-    <ModalPlaceholder />
     <b-container>
       <b-row class="mb-5">
         <b-col
@@ -361,13 +360,9 @@
 </template>
 
 <script>
-import ModalPlaceholder from '@/views/partials/Modals/Modals.vue'
 import RouteCheckMixin from '@/mixins/RouteAndDeviceCheckMixin'
 
 export default {
-  components: {
-    ModalPlaceholder,
-  },
   mixins: [RouteCheckMixin],
   props: {
     version: {
