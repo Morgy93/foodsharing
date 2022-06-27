@@ -118,6 +118,10 @@ export default {
       type: String,
       default: () => '',
     },
+    offsetWidth: {
+      type: Number,
+      default: () => 0,
+    },
   },
   data () {
     const fields = [
@@ -154,7 +158,6 @@ export default {
     return {
       fields, // table column definition
       tableId: Math.random(), // a random (and therefor unique) value used to generate unique element ids
-      offsetWidth: 0,
     }
   },
   computed: {
@@ -164,10 +167,6 @@ export default {
     narrow () {
       return this.offsetWidth < MIN_WIDTH_FOR_WIDE_LAYOUT
     },
-  },
-  mounted () {
-    window.addEventListener('resize', this.resizeHandler)
-    this.resizeHandler()
   },
   methods: {
     /**
@@ -226,12 +225,6 @@ export default {
     rowClass (item) {
       if (item.confirmed === null) return ['option', 'pickup']
       return ['registered', 'pickup']
-    },
-    /**
-     * Gets the new width of the table.
-     */
-    resizeHandler () {
-      this.offsetWidth = this.$refs.table.$el.clientWidth
     },
   },
 }

@@ -22,12 +22,14 @@
     </p>
     <div v-else class="table-visible-wrapper">
       <PickupTable
+        ref="table"
         :data="displayedTableData"
         :class="tableClass"
         :fs-id="fsId"
         :allow-slot-cancelation="allowSlotCancelation"
         :paginated="paginated"
         :no-more-pages="nextPage === -1"
+        :offset-width="offsetWidth"
         @load-more="fetchData"
         @cancel-slot="deleteSlot"
       />
@@ -83,6 +85,8 @@ import PickupTable from './PickupTable.vue'
 import { pulseError } from '@/script'
 import { leavePickup, leaveAllPickups } from '@/api/pickups'
 
+const ENTRIES_PER_PAGE = 50
+
 export default {
   components: { BTab, PickupTable, BFormCheckbox, BDropdown, BDropdownForm, BDropdownItemButton },
   props: {
@@ -133,6 +137,7 @@ export default {
       tableData: null, // (possibly empty) Array if data is fetched, null otherwise
       isFetching: false, // whether table data is currently beeing fetched
       nextPage: 0, // The next page that needs to be fetched. -1 if no more pages should be fetched. Only used if paginated
+      offsetWidth: 0,
     }
   },
   computed: {
@@ -158,10 +163,13 @@ export default {
     }
   },
   methods: {
-    initialize () {
+    async initialize () {
       if (!this.tableData) {
         this.fetchData()
+        window.addEventListener('resize', this.resizeHandler)
       }
+      await this.$nextTick()
+      this.resizeHandler()
     },
     /**
      * Fetches the tabs data from the defined api endpoint.
@@ -175,10 +183,10 @@ export default {
       const page = this.paginated ? this.nextPage++ : undefined
       let data = await this.dataEndpoint(this.fsId, page)
 
+      if (data.length < ENTRIES_PER_PAGE) {
+        this.nextPage = -1
+      }
       if (this.tableData && this.paginated) {
-        if (data.length === 0) {
-          this.nextPage = -1
-        }
         data = this.tableData.concat(data)
       }
 
@@ -228,6 +236,12 @@ export default {
         this.nextPage = 0
         this.fetchData()
       }
+    },
+    /**
+     * Gets the new width of the tab.
+     */
+    resizeHandler () {
+      this.offsetWidth = this.$refs.tab.$el.clientWidth
     },
   },
 }

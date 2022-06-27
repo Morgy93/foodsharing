@@ -15,12 +15,12 @@
       </span>
     </div>
 
-    <div v-if="hiddenUsersNum" :id="'hidden-fetcher-'+uniqueId" class="hidden-users">
+    <div v-if="hiddenUsers.length" :id="'hidden-fetcher-'+uniqueId" class="hidden-users">
       <span>
-        +{{ hiddenUsersNum }}
+        +{{ hiddenUsers.length }}
       </span>
     </div>
-    <b-tooltip v-if="hiddenUsersNum" :target="'hidden-fetcher-'+uniqueId" triggers="hover">
+    <b-tooltip v-if="hiddenUsers.length" :target="'hidden-fetcher-'+uniqueId" triggers="hover">
       <span v-for="(user, index) in hiddenUsers" :key="user.id">
         <span v-if="index != 0">, </span>
         <a :href="$url('profile', user.id)" class="tooltip-link">{{ user.name }}</a>
@@ -89,15 +89,12 @@ export default {
       // The free slots add-on needs 43px
 
       const width = this.maxWidth - (this.freeSlots ? 43 : 0)
-      const maxCircles = Math.floor((width - this.overlap) / (this.height - this.overlap))
+      const maxCircles = Math.max(1, Math.floor((width - this.overlap) / (this.height - this.overlap)))
       if (this.registeredUsers.length <= maxCircles) {
         return this.registeredUsers.length
       } else {
         return maxCircles - 1
       }
-    },
-    hiddenUsersNum () {
-      return Math.max(0, this.registeredUsers.length - this.shownUsersNum)
     },
     shownUsers () {
       return this.registeredUsers.slice(0, this.shownUsersNum).reverse()
