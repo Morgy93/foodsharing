@@ -6,7 +6,8 @@
 .inside > .container > .card > .card-body,
 .inside > .bootstrap .card.rounded .card-body,
 .inside > .bootstrap .card .rounded,
-.inside > .bootstrap div .card ,
+.inside > .bootstrap div .card,
+.inside > .ui-widget-content,
 .inside > #foodsaverlist > .field .ui-widget-content,
 .inside > #inactivefoodsaverlist > .field .ui-widget-content,
 .inside .content-top.corner-all,
@@ -37,6 +38,12 @@ html a.trafficlight,
 */
 #wallpost-attach-trigger {
     display: none;
+}
+
+.ui-dialog .ui-dialog-titlebar-close {
+    border: transparent;
+    color: white;
+    margin-right: 5px;
 }
 
 /*
