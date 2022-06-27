@@ -1,3 +1,7 @@
+/*
+    Adds a border around all elements with the class "border"
+    so it pops more on the light background
+*/
 .welcome.ui-padding,
 .inside > .container > .card > .card-body,
 .inside > .bootstrap .card.rounded .card-body,
@@ -11,14 +15,33 @@
     border: 1px solid var(--fs-color-border);
 }
 
+/*
+    Overflow on main div
+*/
+div#main {
+    overflow-x: auto;
+}
+
+
+/*
+    Removes the border below a link
+*/
 html a.trafficlight,
 .profile.statdisplay a {
     text-decoration: none;
 }
 
+/*
+    Hide unwanted elements
+    Like input[type=file] which is not hidden
+*/
 #wallpost-attach-trigger {
     display: none;
 }
+
+/*
+    All Buttons should now imitate the Bootstrap Button Style
+*/
 
 .inside .button,
 .inside button,
