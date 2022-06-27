@@ -1,13 +1,19 @@
 <template>
   <div
     class="avatar"
-    :class="[{'sleeping': isSleeping}, `sleep${size}`]"
-    :style="wrapperStyle"
+    :class="[`sleep${size}`, {
+      'sleeping': isSleeping,
+      'auto-scale': autoScale && ![16, 24].includes(size),
+      'avatar--small': size === 16,
+    }]"
   >
     <img
       :alt="$i18n('terminology.profile_picture')"
       :src="avatarUrl"
-      :class="imgClass"
+      :class="{
+        'rounded': !round,
+        'rounded-circle': round
+      }"
       style="height: 100%"
       :style="imgStyle"
       loading="lazy"
@@ -31,10 +37,6 @@ export default {
       type: [Number, Boolean],
       default: 0,
     },
-    imgClass: {
-      type: String,
-      default: '',
-    },
     round: {
       type: Boolean,
       default: false,
@@ -56,11 +58,9 @@ export default {
 
       if (this.url) {
         if (this.url.startsWith('/api/uploads/')) {
-          // path for pictures uploaded with the new API
-          return this.url + `?w=${this.size}&h=${this.size}`
+          return this.url + `?w=${this.size}&h=${this.size}` // path for pictures uploaded with the new API
         } else {
-          // backward compatible path for old pictures
-          return '/images/' + prefix + this.url
+          return '/images/' + prefix + this.url // backward compatible path for old pictures
         }
       } else {
         return '/img/' + prefix + 'avatar.png'
@@ -70,18 +70,7 @@ export default {
       const styles = {
         height: `${this.size}px`,
         width: `${this.size}px`,
-        display: this.size === 16 ? 'inline-flex' : null,
       }
-      if (this.autoScale && ![16, 24].includes(this.size)) {
-        styles.height = '100%'
-        styles.width = 'auto'
-      }
-
-      return styles
-    },
-    imgStyle () {
-      const styles = {}
-      styles['border-radius'] = this.round ? '50%' : 'var(--border-radius)'
       return styles
     },
   },
@@ -89,10 +78,19 @@ export default {
 </script>
 
 <style lang="scss" scoped>
+.auto-scale {
+  height: 100%;
+  width: auto;
+}
+
 .avatar {
   position: relative;
   display: inline-block;
   background-size: cover;
+}
+
+.avatar--small {
+  display: inline-flex;
 }
 
 .sleeping::after {
