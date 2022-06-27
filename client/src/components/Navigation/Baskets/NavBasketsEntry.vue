@@ -45,14 +45,14 @@
     <button
       v-for="(entry, key) in basket.requests"
       :key="key"
-      class="requests  w-100 img-thumbnail mt-1 d-flex align-items-center justify-content-between truncated"
+      class="requests w-100 img-thumbnail mt-1 d-flex align-items-center justify-content-between truncated"
       @click.prevent="openChat(entry.user.id, $event)"
     >
-      <div class="d-flex">
-        <avatar
-          class="mx-2"
+      <div class="d-flex align-items-center">
+        <Avatar
+          class="mr-2"
           :url="entry.user.avatar"
-          :size="16"
+          :size="24"
           :is-sleeping="entry.user.sleepStatus"
           :auto-scale="false"
         />

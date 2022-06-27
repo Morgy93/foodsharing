@@ -1,10 +1,9 @@
 <template>
   <div
     class="avatar"
-    :class="[`sleep${size}`, {
+    :class="[`sleep--${size}`, `avatar--${size}`, {
       'sleeping': isSleeping,
       'auto-scale': autoScale && ![16, 24].includes(size),
-      'avatar--small': size === 16,
     }]"
   >
     <img
@@ -88,8 +87,16 @@ export default {
   background-size: cover;
 }
 
-.avatar--small {
+.avatar--16 {
   display: inline-flex;
+  width: 16px;
+  height: 16px;
+}
+
+.avatar--24 {
+  display: inline-flex;
+  width: 24px;
+  height: 24px;
 }
 
 .sleeping::after {
@@ -104,25 +111,31 @@ export default {
   left: 0;
 }
 
-.sleep16::after {
+.sleep--16::after {
   background-image: url('/img/sleep35x35.png');
   top: -4px;
   left: -7px;
 }
 
-.sleep35::after {
+.sleep--24::after {
+  background-image: url('/img/sleep35x35.png');
+  top: -4px;
+  left: -7px;
+}
+
+.sleep--35::after {
   background-image: url('/img/sleep35x35.png');
   top: -8px;
   left: -12px;
 }
 
-.sleep50::after {
+.sleep--50::after {
   background-image: url('/img/sleep50x50.png');
   top: -10px;
   left: -22px;
 }
 
-.sleep130::after {
+.sleep--130::after {
   background-image: url('/img/sleep130x130.png');
   top: -15px;
   left: -25px;
