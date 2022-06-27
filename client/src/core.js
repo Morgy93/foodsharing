@@ -14,7 +14,6 @@ import './scss/index.scss'
 
 // Bootstrap
 import 'bootstrap'
-import './scss/bootstrap-theme.scss'
 
 import '@/views/views'
 

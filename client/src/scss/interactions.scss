@@ -13,6 +13,7 @@ html a[href]:not(:where(
     /* corrections to disable old styles */
     .team-memberinfo a,
     .author a,
+    .leaflet-control-zoom a,
 )) {
     text-decoration: underline;
     font-weight: 600;

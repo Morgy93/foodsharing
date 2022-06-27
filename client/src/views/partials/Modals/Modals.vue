@@ -1,5 +1,5 @@
 <template>
-  <div class="modals">
+  <div class="bootstrap modals">
     <LanguageChooser />
     <div v-if="isLoggedIn">
       <SearchBarModal />
