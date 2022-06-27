@@ -181,4 +181,10 @@ export default {
   pointer-events: none;
   user-select: none;
 }
+
+.btn-icon {
+  @media (min-width: 768px) and (max-width: 992px) {
+    padding: 0.5rem 0.35rem;
+  }
+}
 </style>
