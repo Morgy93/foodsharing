@@ -53,8 +53,8 @@ class LoginCest
 		$I->amOnPage('/?page=logout');
 
 		$I->amOnPage('/');
-		$I->click('#login');
-		$I->waitForElement('#login-email');
-		$I->seeInField('#login-rememberme', true);
+		$I->click('.testing-login-dropdown');
+		$I->fillField('.testing-login-input-email', $this->foodsaver['email']);
+		$I->seeInField('.testing-login-input-remember', true);
 	}
 }
