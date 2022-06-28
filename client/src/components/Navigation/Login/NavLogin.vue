@@ -12,7 +12,7 @@
       <a
         :href="$url('passwordReset')"
         role="menuitem"
-        class="dropdown-item dropdown-action"
+        class="testing-login-click-password-reset dropdown-item dropdown-action"
         v-html="$i18n('login.forgotten_password_label')"
       />
       <a

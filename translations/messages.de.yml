@@ -2669,6 +2669,7 @@ globals:
     signout: Abmelden
   save: Speichern
   close: Schließen
+  select: Bitte auswählen...
   modal:
     close: Schließen oder <code class="key">ESC</code> benutzen
   type:
