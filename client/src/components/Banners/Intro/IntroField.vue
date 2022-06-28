@@ -16,7 +16,10 @@
       />
     </a>
     <div class="ml-3 d-flex flex-column">
-      <h1 v-html="$i18n('dashboard.greeting', {name: user.firstname})" />
+      <h1
+        class="testing-intro-field"
+        v-html="$i18n('dashboard.greeting', {name: user.firstname})"
+      />
       <p
         v-if="!isFoodsaver || !user.regionName"
         class="mb-0"

@@ -15,7 +15,7 @@
           :aria-label="$i18n('login.email_address')"
           type="email"
           name="login-email"
-          class="form-control"
+          class="testing-login-input-email form-control"
           autocomplete="email"
           autofocus
           @keydown.enter="submit"
@@ -33,7 +33,7 @@
           :aria-label="$i18n('login.password')"
           type="password"
           name="login-password"
-          class="form-control"
+          class="testing-login-input-password form-control"
           autocomplete="current-password"
           @keydown.enter="submit"
         >
@@ -57,7 +57,7 @@
           :aria-label="$i18n('login.login_button_label')"
           type="submit"
           secondary
-          class="btn btn-block"
+          class="testing-login-submit btn btn-block"
           @click="submit"
         >
           <span>
