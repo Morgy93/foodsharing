@@ -59,7 +59,8 @@
 - Extract some redundant permission checks into one function. !2203 @AntonBallmaier
 - The TopBarNavigation is now unified !2238 !2245 !2248 !2252 !2254 !2279 @sefn
 - Rebuild store options to vue #2231 @chriswalg
-- Changed deleting wall posts to the API #798 !2253 @alex.simm  
+- Changed deleting wall posts to the API #798 !2253 @alex.simm
+- Rebuild profile infos to vue !2276 !2287 @chriswalg
 
 ## Dev/Test/CI stuff
 - bump node to version 16 !2135 @peter.toennies
