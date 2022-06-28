@@ -41,7 +41,7 @@
       <label class="d-flex align-items-center mt-3 mb-3">
         <input
           v-model="rememberMe"
-          class="mr-2"
+          class="testing-login-input-remember mr-2"
           type="checkbox"
           name="login-remember"
           @keydown.enter="submit"
@@ -57,7 +57,7 @@
           :aria-label="$i18n('login.login_button_label')"
           type="submit"
           secondary
-          class="testing-login-submit btn btn-block"
+          class="testing-login-click-submit btn btn-block"
           @click="submit"
         >
           <span>
