@@ -25,7 +25,7 @@ export default {
         const obj = data.o
         const message = convertMessage(obj.message)
         obj.message = message
-        await conversationStore.updateFromPush(obj)
+        await conversationStore.mutations.updateFromPush(obj)
         if (GET('page') === 'msg') {
           msg.push(obj)
         } else {

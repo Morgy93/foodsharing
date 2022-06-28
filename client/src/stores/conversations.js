@@ -75,7 +75,7 @@ export const mutations = {
   async updateFromPush (data) {
     const cid = data.cid
     if (!(cid in store.conversations)) {
-      await mutations.loadConversation(cid)
+      await mutations.fetchConversation(cid)
       /* likely, when loading the conversation after the push message appeared, we don't need to add the push message.
       Still, I think it shouldn't harm...
        */

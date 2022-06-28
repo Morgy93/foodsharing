@@ -2,7 +2,7 @@
   <Dropdown
     :title="$i18n('menu.entry.baskets')"
     icon="fa-shopping-basket"
-    :badge="basketsSorted.length "
+    :badge="basketsRequestCount"
     is-fixed-size
     is-scrollable
   >
@@ -65,6 +65,9 @@ export default {
     },
     basketsSorted () {
       return this.baskets.slice().sort((a, b) => dateFnsCompareDesc(a.updatedAt, b.updatedAt))
+    },
+    basketsRequestCount () {
+      return getters.getRequestdCount()
     },
   },
   methods: {
