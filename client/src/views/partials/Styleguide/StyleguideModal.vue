@@ -42,59 +42,50 @@
           </div>
           <div class="col-12 col-sm-6">
             <div class="mb-5">
+              <div class="mb-5">
+                <h2>
+                  Fonts
+                </h2>
+                <hr>
+                <p>
+                  <strong>Headlines:</strong>
+                  <br>
+                  <a
+                    href="https://fonts.google.com/specimen/Alfa+Slab+One"
+                    v-html="'Alfa Slab One'"
+                  />
+                </p>
+                <p>
+                  <strong>Body:</strong>
+                  <br>
+                  <span>Helvetica, Arial, "lucida grande", tahoma, verdana, arial, sans-serif</span>
+                </p>
+              </div>
               <h2>
                 Icons
-                <a href="https://fontawesome.com/v5/search?m=free&s=solid%2Cbrands">(Font Awesome V5 [FREE])</a>
               </h2>
               <hr>
-              <div class="flex">
-                <i
-                  v-for="(rule, idx) in ['fa-spinner', 'fa-spinner fa-spin']"
-                  :key="idx"
-                  class="icon fas copy"
-                  :class="rule"
-                  @click="copyToClipBoard(rule)"
-                />
-              </div>
+              <a
+                href="https://fontawesome.com/v5/search?m=free&s=solid%2Cbrands"
+                v-html="'Font Awesome V5 [FREE]'"
+              />
             </div>
             <div class="mb-5">
               <h2>
                 Components
-                <a
-                  href="https://getbootstrap.com/docs/4.6/getting-started/introduction/"
-                  v-html="'Bootstrap 4.6'"
-                />
               </h2>
               <hr>
-              <div
-                v-for="main in bootstrapMainRules"
-                :key="main"
-                class="flex"
-              >
-                <button
-                  v-for="style in bootstrapButtonStyles"
-                  :key="style"
-                  class="copy btn-block"
-                  :class="style+main"
-                  @click="copyToClipBoard(style+main)"
-                  v-html="style+main"
-                />
-              </div>
-              <button
-                class="copy btn btn-link"
-                @click="copyToClipBoard('btn btn-link')"
-                v-html="'btn btn-link'"
-              />
-              <button
-                class="copy btn btn-sm btn-link"
-                @click="copyToClipBoard('btn btn-sm btn-link')"
-                v-html="'btn btn-sm btn-link'"
+              <a
+                href="https://getbootstrap.com/docs/4.6/getting-started/introduction/"
+                v-html="'Bootstrap 4.6'"
               />
             </div>
           </div>
           <div class="col-12 col-sm-6">
             <div class="mb-5">
-              <h2>Fonts</h2>
+              <h2>
+                Font Preview
+              </h2>
               <hr>
               <div v-html="generateFontRules()" />
             </div>
