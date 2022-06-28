@@ -2634,10 +2634,12 @@ system_administration:
 
 navigation:
   map: Karte
-  promotion: IT'ler? Wir brauchen dich!
+  promotion: In der IT? Wir brauchen dich!
   contact: Kontakt
   whats_new: Was ist neu?
+  styleguide: Styleguide
   support: Support
+  help_needed: Hilfe nötig?
   help: Hilfe
   wiki: Wiki
   regions: Bezirke

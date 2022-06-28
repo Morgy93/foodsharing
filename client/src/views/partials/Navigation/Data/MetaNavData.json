@@ -4,21 +4,22 @@
         "url": "map"
     },
     {
-        "highlight": true,
         "title": "navigation.promotion",
-        "url": "devdocs_it_tasks"
+        "url": "devdocs_it_tasks",
+        "isHighlighted": true
     },
     {
-        "title": "navigation.help",
+        "title": "navigation.help_needed",
         "icon": "fas fa-question-circle",
         "direction": "right",
+        "isInternal": true,
         "items": [
             {
                 "title": "navigation.whats_new",
                 "url": "release_notes"
             },
             {
-                "divider": true
+                "isDivider": true
             },
             {
                 "title": "navigation.help",
@@ -29,8 +30,12 @@
                 "url": "freshdesk"
             },
             {
+                "title": "navigation.contact",
+                "url": "kontakt"
+            },
+            {
                 "isInternal": true,
-                "divider": true
+                "isDivider": true
             },
             {
                 "isInternal": true,

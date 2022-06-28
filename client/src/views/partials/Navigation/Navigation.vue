@@ -7,8 +7,10 @@
       class="nav navbar navbar-expand-md"
       :class="{'nav-visible': isLoggedIn}"
     >
-      <MetaNavLoggedIn v-if="isLoggedIn" />
-      <MetaNavLoggedOut v-else />
+      <div class="metanav-container container">
+        <MetaNavLoggedIn v-if="!viewIsMobile && isLoggedIn" />
+        <MetaNavLoggedOut v-else-if="!viewIsMobile" />
+      </div>
       <div class="container nav-container">
         <MainNavLoggedIn v-if="isLoggedIn" />
         <MainNavLoggedOut v-else />

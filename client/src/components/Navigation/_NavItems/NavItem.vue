@@ -1,6 +1,16 @@
 <template>
+  <Link
+    v-if="!isDropdown"
+    :title="$i18n(entry.title)"
+    :icon="entry.icon"
+    :badge="entry.badge"
+    :href="$url(entry.url)"
+    :class="{
+      'text-warning font-weight-bold': entry.isHighlighted,
+    }"
+  />
   <Dropdown
-    v-if="entry.items"
+    v-else
     :title="$i18n(entry.title)"
     :icon="entry.icon"
     :badge="entry.badge"
@@ -10,11 +20,11 @@
   >
     <template #content>
       <span
-        v-for="item in filteredItems"
-        :key="item.href"
+        v-for="(item, idx) in entry.items"
+        :key="idx"
       >
         <div
-          v-if="item.divider"
+          v-if="item.isDivider"
           class="dropdown-divider"
         />
         <a
@@ -33,21 +43,9 @@
       </span>
     </template>
   </Dropdown>
-  <Link
-    v-else
-    :title="$i18n(entry.title)"
-    :icon="entry.icon"
-    :badge="entry.badge"
-    :href="$url(entry.url)"
-    :class="{
-      'text-warning font-weight-bold': entry.highlight,
-    }"
-  />
 </template>
 
 <script>
-// Stores
-import DataUser from '@/stores/user'
 // Components
 import Dropdown from './NavDropdown.vue'
 import Link from './NavLink.vue'
@@ -61,25 +59,25 @@ export default {
   mixins: [MediaQueryMixin],
   props: {
     entry: {
-      type: {},
+      type: Object,
       default: () => ({
         title: '',
-        url: '',
+        url: undefined,
         icon: '',
         direction: '',
         badge: '',
         isScrollable: false,
         isFixedSize: false,
+        isInternal: false,
+        isHighlighted: false,
         items: [],
       }),
     },
   },
+
   computed: {
-    isLoggedIn () {
-      return DataUser.getters.isLoggedIn()
-    },
-    filteredItems () {
-      return this.entry.items.filter(item => !item.isInternal)
+    isDropdown () {
+      return !this.entry.url && this.entry.items
     },
   },
 }

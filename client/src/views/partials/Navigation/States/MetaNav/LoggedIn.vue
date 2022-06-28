@@ -1,17 +1,12 @@
 <template>
-  <div class="metanav-container container">
-    <ul
-      v-if="!viewIsMobile"
-      class="metanav"
-    >
-      <NavItem
-        v-for="(entry, idx) of metaNav"
-        :key="idx"
-        :entry="entry"
-      />
-      <NavAdmin />
-    </ul>
-  </div>
+  <ul class="metanav">
+    <NavItem
+      v-for="(entry, idx) of metaNav"
+      :key="idx"
+      :entry="entry"
+    />
+    <NavAdmin />
+  </ul>
 </template>
 
 <script>

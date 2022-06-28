@@ -1,16 +1,6 @@
 <template>
   <div class="navbar-navside">
-    <ul
-      v-if="viewIsMobile"
-      class="metanav"
-    >
-      <Link
-        v-for="(link, idx) of metaNav"
-        :key="idx"
-        :title="$i18n(link.title)"
-        :href="$url(link.url)"
-      />
-    </ul>
+    <MetaNavLoggedOut v-if="viewIsMobile" />
     <ul class="sidenav">
       <Link
         :href="$url('joininfo')"
@@ -27,8 +17,8 @@ import MetaNavData from '../../Data/MetaNavData.json'
 //
 import Link from '@/components/Navigation/_NavItems/NavLink'
 import NavLogin from '@/components/Navigation/Login/NavLogin.vue'
-
-//
+// State
+import MetaNavLoggedOut from '../MetaNav/LoggedOut.vue'
 // Mixins
 import MediaQueryMixin from '@/mixins/MediaQueryMixin'
 import ScrollMixin from '@/mixins/ScrollMixin'
@@ -37,6 +27,7 @@ export default {
   components: {
     Link,
     NavLogin,
+    MetaNavLoggedOut,
   },
   mixins: [MediaQueryMixin, ScrollMixin],
   data () {

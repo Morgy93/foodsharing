@@ -1,16 +1,11 @@
 <template>
-  <div class="metanav-container container">
-    <ul
-      v-if="!viewIsMobile"
-      class="metanav"
-    >
-      <NavItem
-        v-for="(entry, idx) of metaNav"
-        :key="idx"
-        :entry="entry"
-      />
-    </ul>
-  </div>
+  <ul class="metanav">
+    <NavItem
+      v-for="(entry, idx) of metaNav"
+      :key="idx"
+      :entry="entry"
+    />
+  </ul>
 </template>
 
 <script>
@@ -29,7 +24,7 @@ export default {
   mixins: [MediaQueryMixin],
   data () {
     return {
-      metaNav: MetaNavData.filter(entry => !entry.internal),
+      metaNav: MetaNavData.filter(m => !m.isInternal),
     }
   },
 }

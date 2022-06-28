@@ -1,17 +1,6 @@
 <template>
   <div class="navbar-navside">
-    <ul
-      v-if="viewIsMobile"
-      class="metanav"
-    >
-      <Link
-        v-for="(link, idx) of metaNav"
-        :key="idx"
-        :title="$i18n(link.title)"
-        :href="$url(link.url)"
-      />
-      <NavAdmin />
-    </ul>
+    <MetaNavLoggedIn v-if="viewIsMobile" />
     <ul class="sidenav">
       <Link
         icon="fa-search"
@@ -40,7 +29,8 @@ import Link from '@/components/Navigation/_NavItems/NavLink'
 import NavConversations from '@/components/Navigation/Conversations/NavConversations'
 import NavNotifications from '@/components/Navigation/Notifications/NavNotifications'
 import NavUser from '@/components/Navigation/User/NavUser'
-import NavAdmin from '@/components/Navigation/Admin/NavAdmin'
+// State
+import MetaNavLoggedIn from '../MetaNav/LoggedIn.vue'
 //
 // Mixins
 import MediaQueryMixin from '@/mixins/MediaQueryMixin'
@@ -51,7 +41,7 @@ export default {
     NavConversations,
     NavNotifications,
     NavUser,
-    NavAdmin,
+    MetaNavLoggedIn,
   },
   mixins: [MediaQueryMixin],
   data () {
