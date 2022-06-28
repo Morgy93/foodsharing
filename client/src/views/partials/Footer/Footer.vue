@@ -500,8 +500,8 @@ h2 {
 }
 
 a, p, li {
-  font-size: 1rem;
-  line-height: 2rem;
+  font-size: .8rem;
+  line-height: 1.8em;
   color: var(--fs-color-gray-900);
 }
 
