@@ -11,7 +11,7 @@
       class="entry"
     >
       <h3 class="dropdown-header">
-        <i class="icon-subnav fas fa-user" /> {{ $i18n('globalss.type.my_buddies') }}
+        <i class="icon-subnav fas fa-user" /> {{ $i18n('globals.type.my_buddies') }}
       </h3>
       <search-result-entry
         v-for="buddy in filtered.myBuddies"
