@@ -12,26 +12,6 @@
     </template>
     <template #content>
       <a
-        v-if="isBeta"
-        :href="$url('releaseNotes')"
-        role="menuitem"
-        class="dropdown-item dropdown-action list-group-item-warning"
-      >
-        <i class="icon-subnav fas fa-info-circle" /> {{ $i18n('menu.entry.release-notes') }}
-      </a>
-      <a
-        v-if="isBeta || isDev"
-        :href="$url('changelog')"
-        role="menuitem"
-        class="dropdown-item dropdown-action list-group-item-danger"
-      >
-        <i class="icon-subnav fas fa-info-circle" /> {{ $i18n('content.changelog') }}
-      </a>
-      <div
-        v-if="isBeta || isDev"
-        class="dropdown-divider"
-      />
-      <a
         v-if="hasMailBox"
         :title="$i18n('menu.entry.mailbox')"
         :href="$url('mailbox')"

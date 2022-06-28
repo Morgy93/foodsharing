@@ -3,7 +3,8 @@
     id="dropdown-groups"
     :title="$i18n('menu.entry.groups')"
     icon="fa-users"
-    scrollable
+    is-fixed-size
+    is-scollable
   >
     <template
       v-if="groups.length > 0"

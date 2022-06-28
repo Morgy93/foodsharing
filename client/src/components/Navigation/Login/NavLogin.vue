@@ -2,6 +2,7 @@
   <Dropdown
     :title="$i18n('login.topbar')"
     direction="right"
+    is-fixed-size
   >
     <template #content>
       <LoginEntry />

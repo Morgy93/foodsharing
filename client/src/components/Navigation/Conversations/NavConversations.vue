@@ -4,7 +4,8 @@
     icon="fa-comments"
     :badge="unread"
     direction="right"
-    scrollable
+    is-fixed-size
+    is-scrollable
   >
     <template
       v-if="conversations.length > 0"

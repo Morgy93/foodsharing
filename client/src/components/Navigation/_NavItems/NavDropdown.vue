@@ -40,6 +40,7 @@
     <div
       class="dropdown-menu"
       :class="{
+        'dropdown-menu-fixed-size': isFixedSize,
         'dropdown-menu-right': direction === 'right'
       }"
       :aria-labelledby="title"
@@ -54,7 +55,7 @@
       <li
         class="content"
         :class="{
-          'dropdown-menu-scrollable': scrollable
+          'dropdown-menu-scrollable': isScrollable
         }"
       >
         <slot name="content">
@@ -107,7 +108,11 @@ export default {
       type: [String, Number],
       default: 0,
     },
-    scrollable: {
+    isScrollable: {
+      type: Boolean,
+      default: false,
+    },
+    isFixedSize: {
       type: Boolean,
       default: false,
     },
@@ -138,18 +143,6 @@ export default {
     width: 100%;
   }
 
-  .dropdown-menu {
-    min-width: 420px;
-    max-width: 420px;
-
-    @media (max-width: 768px) {
-      width: 100%;
-      min-width: unset;
-      max-width: unset;
-      top: 3rem;
-    }
-  }
-
   .dropdown-toggle::after {
     @media (max-width: 768px) {
       display: none;
@@ -169,5 +162,20 @@ export default {
 .dropdown-menu-scrollable {
   max-height: 65vh;
   overflow-y: auto;
+}
+
+.dropdown-menu-fixed-size {
+  min-width: 420px;
+  max-width: 420px;
+
+}
+.dropdown-menu,
+.dropdown-menu-fixed-size {
+  @media (max-width: 768px) {
+    width: 100%;
+    min-width: unset;
+    max-width: unset;
+    top: 3rem;
+  }
 }
 </style>

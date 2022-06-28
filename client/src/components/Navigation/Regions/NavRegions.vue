@@ -2,6 +2,8 @@
   <Dropdown
     :title="$i18n('navigation.regions')"
     icon="fa-globe"
+    is-fixed-size
+    is-scrollable
   >
     <template
       v-if="regions.length > 0"

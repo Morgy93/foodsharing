@@ -18,7 +18,6 @@ const urls = {
   blogAdd: () => '/?page=blog&sub=add',
   blogEdit: (blogId) => `/?page=blog&sub=edit&id=${blogId}`,
   blogList: () => '/?page=blog&sub=manage',
-  changelog: () => '/?page=content&sub=changelog',
   claims: () => '/?page=content&sub=forderungen',
   communitiesAustria: () => '/?page=content&sub=communitiesAustria',
   communitiesGermany: () => '/?page=content&sub=communitiesGermany',
@@ -58,7 +57,6 @@ const urls = {
   pollNew: (regionId) => `/?page=poll&bid=${regionId}&sub=new`,
   press: () => '/?page=content&sub=presse',
   region: () => '/?page=region',
-  releaseNotes: () => '/?page=content&sub=releaseNotes',
   reports: (regionId = null) => regionId ? `/?page=report&bid=${regionId}` : '/?page=report',
   settings: () => '/?page=settings',
   settingsCalendar: () => '/?page=settings&sub=calendar',
@@ -80,6 +78,14 @@ const urls = {
   circle_of_friends: () => 'https://spenden.foodsharing.de/freundeskreis',
   selfservice: () => 'https://spenden.foodsharing.de/selfservice',
   resendActivationMail: () => '/?page=login&a=resendActivationMail',
+
+  // javascript
+  javascript: (js) => `javascript:${js}`,
+
+  // whats new & changelog
+  changelog: () => '/?page=content&sub=changelog',
+  release_notes: () => '/?page=content&sub=releaseNotes',
+
   // Relogin
   relogin_and_redirect_to_url: (url) => '/?page=relogin&url=' + encodeURIComponent(url),
 
@@ -98,7 +104,7 @@ const urls = {
   mail_foodsharing_network: (mail) => `${mail}@foodsharing.network`,
   mailto_mail_foodsharing_network: (mail) => `mailto:${mail}@foodsharing.network`,
 
-  // freshdesk
+  // freshdesk support
   freshdesk: () => 'https://foodsharing.freshdesk.com/support/home',
   freshdesk_locked_email: () => 'https://foodsharing.freshdesk.com/support/solutions/articles/77000299947-e-mail-sperre-im-profil',
 

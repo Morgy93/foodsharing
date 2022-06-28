@@ -9,15 +9,34 @@
         "url": "devdocs_it_tasks"
     },
     {
-        "title": "navigation.contact",
-        "url": "contact"
-    },
-    {
-        "title": "navigation.wiki",
-        "url": "wiki"
-    },
-    {
         "title": "navigation.help",
-        "url": "freshdesk"
+        "icon": "fas fa-question-circle",
+        "direction": "right",
+        "items": [
+            {
+                "title": "navigation.whats_new",
+                "url": "release_notes"
+            },
+            {
+                "divider": true
+            },
+            {
+                "title": "navigation.help",
+                "url": "wiki"
+            },
+            {
+                "title": "navigation.support",
+                "url": "freshdesk"
+            },
+            {
+                "isInternal": true,
+                "divider": true
+            },
+            {
+                "isInternal": true,
+                "title": "navigation.styleguide",
+                "func": "$('#styleGuideModal').modal('show')"
+            }
+        ]
     }
 ]

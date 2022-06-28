@@ -2,7 +2,8 @@
   <Dropdown
     :title="$i18n('navigation.stores')"
     icon="fa-shopping-cart"
-    scrollbar
+    is-fixed-size
+    is-scrollable
   >
     <template
       v-if="getAllStores.length > 0 "

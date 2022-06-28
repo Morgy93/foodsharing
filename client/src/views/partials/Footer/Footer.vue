@@ -340,7 +340,7 @@
           </a>
           <a
             v-else
-            :href="$url('releaseNotes')"
+            :href="$url('release_notes')"
             v-html="$i18n('releases.2022-05')"
           />
           <a
@@ -433,7 +433,7 @@ export default {
             { url: 'wiki', title: 'menu.entry.wiki' },
             { url: 'wiki_guide', title: 'menu.entry.guide', target: '_blank' },
             { url: 'statistics', title: 'menu.entry.statistics' },
-            { url: 'releaseNotes', title: 'menu.entry.release-notes' },
+            { url: 'release_notes', title: 'menu.entry.release-notes' },
           ],
         },
         {

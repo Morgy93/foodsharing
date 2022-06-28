@@ -4,14 +4,10 @@
       v-if="!viewIsMobile"
       class="metanav"
     >
-      <Link
-        v-for="(link, idx) of metaNav"
+      <NavItem
+        v-for="(entry, idx) of metaNav"
         :key="idx"
-        :title="$i18n(link.title)"
-        :href="$url(link.url)"
-        :class="{
-          'text-warning font-weight-bold': link.highlight,
-        }"
+        :entry="entry"
       />
     </ul>
   </div>
@@ -21,19 +17,19 @@
 // Data
 import MetaNavData from '../../Data/MetaNavData.json'
 //
-import Link from '@/components/Navigation/_NavItems/NavLink'
+import NavItem from '@/components/Navigation/_NavItems/NavItem'
 //
 // Mixins
 import MediaQueryMixin from '@/mixins/MediaQueryMixin'
 
 export default {
   components: {
-    Link,
+    NavItem,
   },
   mixins: [MediaQueryMixin],
   data () {
     return {
-      metaNav: MetaNavData,
+      metaNav: MetaNavData.filter(entry => !entry.internal),
     }
   },
 }

@@ -4,21 +4,10 @@
       v-if="!viewIsMobile"
       class="metanav"
     >
-      <Link
-        v-if="isBeta || isDev"
-        icon="fa-brush"
-        title="STYLEGUIDE"
-        data-toggle="modal"
-        data-target="#styleGuideModal"
-      />
-      <Link
-        v-for="(link, idx) of metaNav"
+      <NavItem
+        v-for="(entry, idx) of metaNav"
         :key="idx"
-        :title="$i18n(link.title)"
-        :href="$url(link.url)"
-        :class="{
-          'text-warning font-weight-bold': link.highlight,
-        }"
+        :entry="entry"
       />
       <NavAdmin />
     </ul>
@@ -29,7 +18,7 @@
 // Data
 import MetaNavData from '../../Data/MetaNavData.json'
 //
-import Link from '@/components/Navigation/_NavItems/NavLink'
+import NavItem from '@/components/Navigation/_NavItems/NavItem'
 import NavAdmin from '@/components/Navigation/Admin/NavAdmin'
 //
 import RouteAndDeviceCheckMixin from '@/mixins/RouteAndDeviceCheckMixin'
@@ -37,7 +26,7 @@ import MediaQueryMixin from '@/mixins/MediaQueryMixin'
 
 export default {
   components: {
-    Link,
+    NavItem,
     NavAdmin,
   },
   mixins: [MediaQueryMixin, RouteAndDeviceCheckMixin],

@@ -3,6 +3,8 @@
     :title="$i18n('menu.entry.baskets')"
     icon="fa-shopping-basket"
     :badge="basketsSorted.length "
+    is-fixed-size
+    is-scrollable
   >
     <template
       v-if="basketsSorted.length > 0"
