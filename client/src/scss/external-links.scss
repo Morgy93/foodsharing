@@ -15,6 +15,10 @@ a[href]:not(:where(
   [href*="//beta.foodsharing.de"],
   [href*="//beta.foodsharing.at"],
   [href*="//beta.foodsharing.network"],
+  /* exclude javascript*/
+  [href^="javascript:"],
+  /* exclude javascript*/
+  [href^="javascript:"],
   /* classes to exclude */
   .hide-external,
 )):after {
