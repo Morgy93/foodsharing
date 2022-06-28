@@ -72,7 +72,7 @@
         <div class="modal-footer">
           <button
             type="button"
-            class="btn btn-light"
+            class="testing-region-join-close btn btn-light"
             data-dismiss="modal"
             @click="close"
             v-html="$i18n('globals.close')"
