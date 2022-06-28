@@ -2,7 +2,7 @@
   <div
     id="joinRegionModal"
     tabindex="-1"
-    class="modal fade"
+    class="testing-region-join modal fade"
     aria-labelledby="joinRegionModal"
     aria-hidden="true"
   >
@@ -19,11 +19,11 @@
           <div class="selector">
             <select
               v-model="selected[0]"
-              class="custom-select"
+              class="testing-region-join-select custom-select"
             >
               <option
                 :value="0"
-                v-html="'Auswählen ...'"
+                v-html="$i18n('globals.select')"
               />
               <option
                 v-for="(entry, key) in base"
@@ -40,7 +40,7 @@
             >
               <option
                 :value="null"
-                v-html="'Auswählen ...'"
+                v-html="$i18n('globals.select')"
               />
               <option
                 v-for="(entry, key) in region.list"
@@ -80,7 +80,7 @@
           <button
             type="button"
             :disabled="regionIsInValid"
-            class="btn btn-secondary"
+            class="testing-region-join-submit btn btn-secondary"
             data-dismiss="modal"
             @click="joinRegion"
             v-html="$i18n('globals.save')"
