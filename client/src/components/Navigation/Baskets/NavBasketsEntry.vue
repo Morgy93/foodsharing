@@ -37,7 +37,7 @@
         />
         <small
           v-if="basket.requests.length > 0"
-          class="mb-1 text-truncate"
+          class="testing-basket-requested-by mb-1 text-truncate"
           v-html="$i18n('basket.requested_by', { name: basket.requests.map(r => r.user.name).join(', ') })"
         />
       </span>
@@ -45,7 +45,7 @@
     <button
       v-for="(entry, key) in basket.requests"
       :key="key"
-      class="requests w-100 img-thumbnail mt-1 d-flex align-items-center justify-content-between truncated"
+      class="testing-basket-requests w-100 img-thumbnail mt-1 d-flex align-items-center justify-content-between truncated"
       @click.prevent="openChat(entry.user.id, $event)"
     >
       <div class="d-flex align-items-center">
@@ -66,7 +66,7 @@
       <button
         v-b-tooltip="$i18n('basket.request_close')"
         :title="$i18n('basket.request_close')"
-        class="btn btn-sm btn-outline-danger"
+        class="testing-basket-requests-close btn btn-sm btn-outline-danger"
         @click.prevent.stop="openRemoveDialog(entry.user.id, $event)"
       >
         <i class="fas fa-times" />

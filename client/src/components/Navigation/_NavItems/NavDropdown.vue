@@ -159,6 +159,13 @@ export default {
   padding-bottom: 0.35rem;
 }
 
+::v-deep .dropdown-item:active,
+::v-deep .dropdown-item:focus {
+  & .icon {
+    color: var(--fs-color-primary-500);
+  }
+}
+
 .dropdown-menu-scrollable {
   max-height: 65vh;
   overflow-y: auto;

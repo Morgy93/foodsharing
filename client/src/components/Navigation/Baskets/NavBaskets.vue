@@ -5,6 +5,7 @@
     :badge="basketsRequestCount"
     is-fixed-size
     is-scrollable
+    class="testing-basket-dropdown"
   >
     <template
       v-if="basketsSorted.length > 0"
@@ -30,7 +31,7 @@
     <template #actions>
       <button
         role="menuitem"
-        class="food-basket-create-test-class dropdown-item dropdown-action"
+        class="testing-basket-create dropdown-item dropdown-action"
         @click="openBasketCreationForm"
       >
         <i class="icon-subnav fas fa-plus" />
