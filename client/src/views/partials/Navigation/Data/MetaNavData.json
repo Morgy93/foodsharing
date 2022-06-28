@@ -22,11 +22,11 @@
                 "isDivider": true
             },
             {
-                "title": "navigation.help",
+                "title": "navigation.wiki",
                 "url": "wiki"
             },
             {
-                "title": "navigation.support",
+                "title": "navigation.help_and_support",
                 "url": "freshdesk"
             },
             {
