@@ -5,6 +5,7 @@
       <Link
         :href="$url('joininfo')"
         :title="$i18n('register.topbar')"
+        class="testing-register-link"
       />
       <NavLogin />
     </ul>
