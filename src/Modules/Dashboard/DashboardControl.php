@@ -99,7 +99,7 @@ class DashboardControl extends Control
 			}
 
 			if (!$this->session->getCurrentRegionId()) {
-				$this->pageHelper->addJs('$("#joinRegionModal").modal("show")');
+				$this->pageHelper->addJs('$("#JoinRegionModal").modal("show")');
 
 				$errors[] = (object)[
 					'type' => 'danger',
@@ -110,7 +110,7 @@ class DashboardControl extends Control
 					'isCloseable' => false,
 					'links' => [
 						[
-							'href' => 'javascript:$("#joinRegionModal").modal("show")',
+							'href' => 'javascript:$("#JoinRegionModal").modal("show")',
 							'text' => 'error.choose_home_region.link'
 						]
 					],

@@ -7,7 +7,10 @@
     aria-hidden="true"
   >
     <div class="modal-dialog">
-      <div class="modal-content">
+      <div
+        v-if="isVisible"
+        class="modal-content"
+      >
         <div
           class="modal-header"
           :class="{'border-0': !isOpen}"
@@ -82,12 +85,15 @@
 </template>
 
 <script>
+// Components
 import SearchResults from './SearchResults'
-
+// Others
 import { instantSearch, instantSearchIndex } from '@/api/search'
-
+// Mixins
+import ModalHiderMixin from '@/mixins/ModalHiderMixin'
 export default {
   components: { SearchResults },
+  mixins: [ModalHiderMixin],
   data () {
     return {
       query: '',

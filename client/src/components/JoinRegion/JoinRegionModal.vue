@@ -1,13 +1,16 @@
 <template>
   <div
-    id="joinRegionModal"
+    :id="$options.name"
     tabindex="-1"
     class="testing-region-join modal fade"
-    aria-labelledby="joinRegionModal"
+    :aria-labelledby="$options.name"
     aria-hidden="true"
   >
     <div class="modal-dialog modal-md">
-      <div class="modal-content">
+      <div
+        v-if="isVisible"
+        class="modal-content"
+      >
         <div class="modal-header">
           <h3 v-html="$i18n('join_region.headline')" />
         </div>
@@ -96,7 +99,11 @@ import DataRegions from '@/stores/regions'
 import DataUser from '@/stores/user'
 // Others
 import { pulseError, showLoader, hideLoader } from '@/script'
+// Mixins
+import ModalHiderMixin from '@/mixins/ModalHiderMixin'
 export default {
+  name: 'JoinRegionModal',
+  mixins: [ModalHiderMixin],
   data () {
     return {
       selected: [0],
@@ -139,6 +146,14 @@ export default {
     },
   },
   watch: {
+    isVisible: {
+      async handler (val) {
+        if (val && this.isLoggedIn) {
+          this.base = await DataRegions.mutations.fetchChoosedRegionChildren(0)
+        }
+      },
+      deep: true,
+    },
     selected: {
       async handler (ids) {
         for (const [index, id] of ids.entries()) {
@@ -157,12 +172,6 @@ export default {
       deep: true,
     },
   },
-  async created () {
-    if (this.isLoggedIn) {
-      this.base = await DataRegions.mutations.fetchChoosedRegionChildren(0)
-    }
-  },
-
   methods: {
     async joinRegion () {
       try {

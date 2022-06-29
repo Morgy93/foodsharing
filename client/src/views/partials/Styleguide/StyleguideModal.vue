@@ -1,13 +1,16 @@
 <template>
   <div
-    id="styleGuideModal"
+    :id="$options.name"
     tabindex="-1"
     class="modal fade"
-    aria-labelledby="styleGuideModal"
+    :aria-labelledby="$options.name"
     aria-hidden="true"
   >
     <div class="modal-dialog modal-xl">
-      <div class="modal-content">
+      <div
+        v-if="isVisible"
+        class="modal-content"
+      >
         <div class="modal-header">
           <h1>Styleguide</h1>
         </div>
@@ -105,7 +108,10 @@
 </template>
 
 <script>
+import ModalHiderMixin from '@/mixins/ModalHiderMixin'
 export default {
+  name: 'StyleGuideModal',
+  mixins: [ModalHiderMixin],
   data () {
     return {
       bootstrapMainRules: ['primary', 'light', 'secondary', 'danger', 'warning', 'info'],

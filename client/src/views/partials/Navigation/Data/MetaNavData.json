@@ -40,7 +40,7 @@
             {
                 "isInternal": true,
                 "title": "navigation.styleguide",
-                "func": "$('#styleGuideModal').modal('show')"
+                "func": "$('#StyleGuideModal').modal('show')"
             }
         ]
     }

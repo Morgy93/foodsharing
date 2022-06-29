@@ -30,7 +30,7 @@
         role="menuitem"
         class="dropdown-item dropdown-action"
         data-toggle="modal"
-        data-target="#joinRegionModal"
+        data-target="#JoinRegionModal"
       >
         <i class="icon-subnav fas fa-plus" />
         {{ $i18n('menu.entry.joinregion') }}
