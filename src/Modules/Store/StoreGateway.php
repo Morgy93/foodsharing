@@ -779,7 +779,7 @@ class StoreGateway extends BaseGateway
 
 		$result = $this->db->fetchAll('
 			SELECT 	bt.betrieb_id,
-					b.name,
+					b.name as betrieb_name,
 					bt.verantwortlich AS managing,
 					bt.active as membershipstatus
 			FROM 	`fs_betrieb_team` bt

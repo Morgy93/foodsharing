@@ -17,6 +17,7 @@ use Foodsharing\Modules\Region\RegionGateway;
 use Foodsharing\Modules\Store\DTO\CreateStoreData;
 use Foodsharing\Modules\Store\DTO\PickUpStatus;
 use Foodsharing\Modules\Store\DTO\Store;
+use Foodsharing\Modules\Store\DTO\StoreViewDTO;
 use Foodsharing\Modules\Store\DTO\StoreStatusforMemberDTO;
 use Symfony\Contracts\Translation\TranslatorInterface;
 
@@ -288,7 +289,7 @@ class StoreTransactions
 		$storeStatusList = [];
 		foreach ($store_team_memberships as $membership) {
 			$storeStatus = new StoreStatusforMemberDTO();
-			$storeStatus->id = $membership['betrieb_id'];
+			$storeStatus->store = StoreViewDTO::createFromArray($membership, 'betrieb_');
 			$storeStatus->name = $membership['name'];
 			$storeStatus->isManaging = $membership['managing'];
 			$storeStatus->membershipStatus = $membership['membershipstatus'];

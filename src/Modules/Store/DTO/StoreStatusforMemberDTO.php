@@ -4,8 +4,7 @@ namespace Foodsharing\Modules\Store\DTO;
 
 class StoreStatusforMemberDTO
 {
-	public int $id;
-	public string $name;
+	public StoreViewDTO $store;
 	public bool $isManaging;
 	public int $membershipStatus;
 	public int $pickupStatus;
