@@ -31,12 +31,17 @@
                       :url="user.photo"
                     />
                   </td>
-                  <td>{{ user.name }} ({{ user.role_name }})</td>
+                  <td>
+                    <a :href="getProfilUrl(user.id)">{{ user.name }}</a> ({{ user.role_name }})
+                  </td>
                   <td>{{ user.displayed_data.last_pass_date }}</td>
                   <td>{{ user.displayed_data.last_login_date }}</td>
                   <td>
-                    <i v-if="user.is_verified" class="fas fa-check-circle fa-2x text-success" />
-                    <i v-if="!user.is_verified" class="fas fa-times-circle fa-2x text-danger" />
+                    <i v-if="user.is_verified" class="fas fa-check-circle fa-2x text-success"
+                       v-b-modal.deverification-modal
+                       @click="foodsaverIdForDeverification = user.id"
+                    />
+                    <i v-if="!user.is_verified" class="fas fa-times-circle fa-2x text-danger"/>
                   </td>
                   <td>
                     <button
@@ -74,15 +79,22 @@
         </Container>
       </div>
     </div>
+
+
+    <b-modal id="deverification-modal" title="Deverification" ok-title="Yes" @ok="() => deverificate(this.foodsaverIdForDeverification)" >
+      <p>Do you want remove the verification status?</p>
+    </b-modal>
   </section>
 </template>
 
 <script>
+
 import Container from '@/components/Container/Container.vue'
 import Avatar from '@/components/Avatar.vue'
 import { listRegionMembersDetailed } from '@/api/regions'
 import { pulseError } from '@/script'
 import i18n from '@/i18n'
+import { deverifyUser, verifyUser } from '@/api/verification'
 
 export default {
   name: 'PassportGeneratorView',
@@ -101,12 +113,16 @@ export default {
       main_container_title: 'Foodsaver',
       options_container_title: i18n('pass.nav.options'),
       foodsaver: [],
+      foodsaverIdForDeverification: null,
     }
   },
   mounted: function () {
     this.fetchFoodsaverFromRegion(this.regionId)
   },
   methods: {
+    getProfilUrl (userId) {
+      return `/profile/${userId}`
+    },
     async fetchFoodsaverFromRegion (regionId) {
       try {
         const foodsaver = await listRegionMembersDetailed(regionId)
@@ -124,6 +140,31 @@ export default {
         },
       }
       return Object.assign(foodsaver, newAttributes)
+    },
+    deverificate (foodsaverId) {
+      try {
+        deverifyUser(foodsaverId)
+        this.updateVerificationOfFoodsaverInTable(foodsaverId, false)
+      } catch (e) {
+        pulseError(e.message)
+      }
+    },
+    verificate (foodsaverId) {
+      try {
+        verifyUser(foodsaverId)
+        this.updateVerificationOfFoodsaverInTable(foodsaverId, true)
+      } catch (e) {
+        pulseError(e)
+      }
+    },
+    updateVerificationOfFoodsaverInTable (foodsaverId, newVerificationStatus) {
+      for (const foodsaver of this.foodsaver) {
+        if (foodsaver.id === foodsaverId) {
+          foodsaver.is_verified = newVerificationStatus
+          foodsaver.displayed_data.last_pass_date = new Date().toLocaleString()
+          break
+        }
+      }
     },
   },
 }
