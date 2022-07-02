@@ -30,15 +30,10 @@ import {
   u_loadCoords,
   showLoader,
   hideLoader,
-  becomeBezirk,
   wantToHelpStore,
   withdrawStoreRequest,
   error,
 } from '@/script'
-
-import {
-  u_printChildBezirke,
-} from '@/becomeBezirk'
 
 expose({
   $,
@@ -55,10 +50,8 @@ expose({
   u_loadCoords,
   showLoader,
   hideLoader,
-  becomeBezirk,
   wantToHelpStore,
   withdrawStoreRequest,
-  u_printChildBezirke,
   conv,
   error,
   sock: socket,

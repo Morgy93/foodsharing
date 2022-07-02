@@ -13,7 +13,10 @@ use FOS\RestBundle\Controller\Annotations as Rest;
 use FOS\RestBundle\Request\ParamFetcher;
 use OpenApi\Annotations as OA;
 use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\HttpKernel\Exception\AccessDeniedHttpException;
+use Symfony\Component\HttpKernel\Exception\ConflictHttpException;
 use Symfony\Component\HttpKernel\Exception\HttpException;
+use Symfony\Component\HttpKernel\Exception\UnauthorizedHttpException;
 
 class GroupRestController extends AbstractFOSRestController
 {
@@ -46,13 +49,16 @@ class GroupRestController extends AbstractFOSRestController
 	 */
 	public function deleteGroupAction(int $groupId): Response
 	{
+		if (!$this->session->id()) {
+			throw new UnauthorizedHttpException('', 'not logged in');
+		}
 		if (!$this->regionPermissions->mayAdministrateRegions()) {
-			throw new HttpException(403);
+			throw new AccessDeniedHttpException();
 		}
 
 		// check if the group still contains elements
 		if ($this->groupTransactions->hasSubElements($groupId)) {
-			throw new HttpException(409);
+			throw new ConflictHttpException();
 		}
 
 		$this->groupGateway->deleteGroup($groupId);
@@ -71,14 +77,14 @@ class GroupRestController extends AbstractFOSRestController
 	public function joinConferenceAction(RegionGateway $regionGateway, RegionPermissions $regionPermissions, BigBlueButton $bbb, int $groupId, ParamFetcher $paramFetcher): Response
 	{
 		if (!$this->session->may()) {
-			throw new HttpException(401);
+			throw new UnauthorizedHttpException('');
 		}
 		if (!in_array($groupId, $this->session->listRegionIDs())) {
-			throw new HttpException(403);
+			throw new AccessDeniedHttpException();
 		}
 		$group = $regionGateway->getRegion($groupId);
 		if (!$regionPermissions->hasConference($group['type'])) {
-			throw new HttpException(403, 'This region does not support conferences');
+			throw new AccessDeniedHttpException('This region does not support conferences');
 		}
 		$key = 'region-' . $groupId;
 		$conference = $bbb->createRoom($group['name'], $key);

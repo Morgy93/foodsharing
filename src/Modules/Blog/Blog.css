@@ -1,7 +1,7 @@
 .news-post {
   padding: 20px;
   margin-bottom: 20px;
-  border-bottom: 5px solid var(--fs-beige);
+  border-bottom: 5px solid var(--fs-color-primary-300);
 }
 
 .news-post img {
@@ -30,16 +30,16 @@
   font-size: 25px;
   margin: 0;
   padding: 0;
-  color: var(--fs-green);
+  color: var(--fs-color-secondary-500);
 }
 
 .news-post h2 a:hover {
   text-decoration: none;
-  color: #7dac5f;
+  color: var(--fs-color-secondary-600);
 }
 
 .news-post .small {
-  color: var(--fs-brown);
+  color: var(--fs-color-primary-500);
   font-size: 12px;
   padding: 0;
   margin: 0 0 15px;

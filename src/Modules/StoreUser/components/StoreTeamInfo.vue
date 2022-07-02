@@ -75,11 +75,11 @@ export default {
   flex-direction: column;
   justify-content: center;
   font-size: smaller;
-  color: var(--dark);
+  color: var(--fs-color-dark);
 
   &:hover, &:focus {
     text-decoration: none;
-    outline-color: var(--fs-brown);
+    outline-color: var(--fs-color-primary-500);
   }
 
   .member-name {

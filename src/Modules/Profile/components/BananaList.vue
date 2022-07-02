@@ -76,7 +76,7 @@ import $ from 'jquery'
 import { sendBanana } from '@/api/profile'
 import i18n from '@/i18n'
 import { pulseError, pulseInfo } from '@/script'
-import serverData from '@/server-data'
+import serverData from '@/scripts/server-data'
 
 import BananaListEntry from './BananaListEntry'
 

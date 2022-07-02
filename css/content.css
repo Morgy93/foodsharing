@@ -77,7 +77,7 @@ ul.linklist li a,
 .activity_feed_content_info p,
 input, textarea, select, option {
   font-size: 12px;
-  color: var(--fs-brown);
+  color: var(--fs-color-primary-500);
   line-height: 1.28;
 }
 
@@ -170,19 +170,8 @@ p {
   margin-top: 5px;
 }
 
-.text,
-input[type=text],
-input[type=email],
-input[type=password],
-input[type=number] {
-  width: 90%;
-  border: 1px solid #c9bcaf;
-  padding: 7px;
-  border-radius: 6px;
-}
-
 select {
-  border: 1px solid #c9bcaf;
+  border: 1px solid var(--fs-color-border);
   border-radius: 6px;
   margin-right: 7px;
 }
@@ -198,7 +187,7 @@ select {
 textarea {
   width: 90%;
   height: 180px;
-  border: 1px solid #c9bcaf;
+  border: 1px solid var(--fs-color-border);
   padding: 7px;
   border-radius: 6px; /* CSS3 */
 }
@@ -211,18 +200,18 @@ textarea {
 }
 
 .focus {
-  background-color: #f5f5b5;
-  border: 1px solid #3f942f;
+  background-color: var(--fs-color-secondary-100);
+  border: 1px solid var(--fs-color-secondary-500);
 }
 
 .input-error {
-  border: 1px solid #e17984;
-  background-color: #f8dbdd;
+  border: 1px solid var(--fs-color-danger-500);
+  background-color: var(--fs-color-danger-200);
 }
 
 a.linkrow:hover {
-  background: url(/css/images/ui-bg_highlight-soft_40_407B35_1x100.png) repeat-x scroll 50% 50% #407b35;
-  color: #ffffff;
+  background: url(/css/images/ui-bg_highlight-soft_40_407B35_1x100.png) repeat-x scroll 50% 50% var(--fs-color-secondary-400);
+  color: var(--fs-color-light);
 }
 
 a.linkrow {
@@ -335,7 +324,7 @@ ul.toolbar span.ui-icon {
 }
 
 input.swap {
-  color: #666666;
+  color: var(--fs-color-gray-300);
 }
 
 b {
@@ -347,7 +336,7 @@ i {
 }
 
 .page h1, .page h2, .page h3, .page h4 {
-  color: var(--fs-brown);
+  color: var(--fs-color-primary-500);
 }
 
 .page h1,
@@ -356,7 +345,7 @@ i {
   font-family: 'Alfa Slab One', serif;
   font-weight: normal;
   font-size: 20px;
-  color: var(--fs-brown);
+  color: var(--fs-color-primary-500);
   margin-bottom: 30px;
 }
 
@@ -365,7 +354,7 @@ i {
 }
 
 .page .h1 small, .page .h1 small p {
-  color: var(--fs-brown);
+  color: var(--fs-color-primary-500);
   font-size: 12px;
 }
 
@@ -390,7 +379,7 @@ i {
 
 .page p {
   margin-bottom: 30px;
-  color: var(--fs-brown);
+  color: var(--fs-color-primary-500);
 }
 
 .page ul {
@@ -398,21 +387,21 @@ i {
 }
 
 .page li {
-  color: var(--fs-brown);
+  color: var(--fs-color-primary-500);
 }
 
 .reddot h5 {
   font-family: 'Alfa Slab One', serif;
   font-weight: normal;
   font-size: 17px;
-  color: var(--fs-brown);
+  color: var(--fs-color-primary-500);
 }
 
 .reddot h5 span {
   display: inline-block;
-  background-color: #cd071e;
+  background-color: var(--fs-color-danger-500);
   text-align: center;
-  color: #ffffff;
+  color: var(--fs-color-light);
   width: 24px;
   height: 24px;
   line-height: 24px;
@@ -428,7 +417,7 @@ i {
   font-family: 'Alfa Slab One', serif;
   font-weight: normal;
   font-size: 17px;
-  color: #fff;
+  color: var(--fs-color-light);
 }
 
 .page-fsbetrieb .element-wrapper {

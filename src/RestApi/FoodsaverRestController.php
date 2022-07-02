@@ -12,7 +12,9 @@ use FOS\RestBundle\Controller\AbstractFOSRestController;
 use FOS\RestBundle\Controller\Annotations as Rest;
 use OpenApi\Annotations as OA;
 use Symfony\Component\HttpFoundation\Response;
-use Symfony\Component\HttpKernel\Exception\HttpException;
+use Symfony\Component\HttpKernel\Exception\AccessDeniedHttpException;
+use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
+use Symfony\Component\HttpKernel\Exception\UnauthorizedHttpException;
 
 final class FoodsaverRestController extends AbstractFOSRestController
 {
@@ -46,14 +48,17 @@ final class FoodsaverRestController extends AbstractFOSRestController
 	 */
 	public function listSameDayPickupsAction(int $fsId, string $onDate): Response
 	{
-		if (!$this->session->id() || !$this->profilePermissions->maySeePickups($fsId)) {
-			throw new HttpException(403);
+		if (!$this->session->id()) {
+			throw new UnauthorizedHttpException('');
+		}
+		if (!$this->profilePermissions->maySeePickups($fsId)) {
+			throw new AccessDeniedHttpException();
 		}
 
 		// convert date string into datetime object
 		$day = TimeHelper::parsePickupDate($onDate);
 		if (is_null($day)) {
-			throw new HttpException(400, 'Invalid date format');
+			throw new BadRequestHttpException('Invalid date format');
 		}
 		$pickups = $this->pickupGateway->getSameDayPickupsForUser($fsId, $day);
 

@@ -20,7 +20,7 @@ class BuddyApiCest
 	public function canOnlySendBuddyRequestWhenLoggedIn(ApiTester $I)
 	{
 		$I->sendPUT('api/buddy/' . $this->user2['id']);
-		$I->seeResponseCodeIs(HttpCode::FORBIDDEN);
+		$I->seeResponseCodeIs(HttpCode::UNAUTHORIZED);
 
 		$I->login($this->user1['email']);
 		$I->sendPUT('api/buddy/' . $this->user2['id']);

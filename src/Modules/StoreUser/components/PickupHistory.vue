@@ -10,7 +10,7 @@
         {{ $i18n('pickup.history.title') }}
       </span>
       <a
-        class="float-right pl-2 pr-1"
+        class="text-light float-right pl-2 pr-1"
         href="#"
         @click.prevent.stop="toggleDisplay"
       >
@@ -202,14 +202,14 @@ export default {
 
 <style lang="scss" scoped>
 .bootstrap.pickup-history {
-  background: var(--white);
+  background: var(--fs-color-light);
 
   ::v-deep .form-inline .form-control.b-calendar-grid {
     width: 100%;
   }
 
   .date-separator {
-    border-top-color: var(--border);
+    border-top-color: var(--fs-color-border);
   }
   .date-separator::after {
     content: '->';

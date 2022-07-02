@@ -108,7 +108,7 @@
 <script>
 import differenceInMonths from 'date-fns/differenceInMonths'
 import differenceInCalendarYears from 'date-fns/differenceInCalendarYears'
-import serverData from '@/server-data'
+import serverData from '@/scripts/server-data'
 import Avatar from '@/components/Avatar'
 import Markdown from '@/components/Markdown/Markdown'
 import MediaQueryMixin from '@/mixins/MediaQueryMixin'
@@ -168,7 +168,7 @@ export default {
   vertical-align: top;
   padding: calc(2 * var(--storewall-padding)) var(--storewall-padding);
   position: relative;
-  border-top: 1px solid var(--border);
+  border-top: 1px solid var(--fs-color-border);
 
   .member-pic ::v-deep img {
     width: 50px;
@@ -179,7 +179,7 @@ export default {
     margin-top: calc(-1 * var(--storewall-padding));
     margin-bottom: calc(var(--storewall-padding) / 2);
     font-size: smaller;
-    color: var(--dark);
+    color: var(--fs-color-dark);
 
     .author {
       &.with-padding {
@@ -191,11 +191,11 @@ export default {
       }
 
       a {
-        color: var(--secondary);
+        color: var(--fs-color-secondary-500);
       }
 
       .is-manager {
-        color: rgba(var(--warning-rgb), 0.75);
+        color: var(--fs-color-warning-alpha-70);
         font-size: 0.75rem;
         transform: scale(0.75);
         margin-left: 0;
@@ -209,7 +209,7 @@ export default {
     right: 0;
 
     .delete:hover {
-      color: var(--danger) !important;
+      color: var(--fs-color-danger-500) !important;
     }
   }
 }
@@ -230,7 +230,7 @@ export default {
     margin: 0.5rem;
     margin-left: 0;
     padding-left: 0.5rem;
-    border-left: 3px solid var(--border);
+    border-left: 3px solid var(--fs-color-border);
   }
 }
 
@@ -266,7 +266,7 @@ export default {
 
   // Display quotes as more distinct
   ::v-deep blockquote {
-    border-left: 3px solid var(--border);
+    border-left: 3px solid var(--fs-color-border);
     padding-left: 1rem;
     padding-top: 0.5rem;
     padding-bottom: 0.5rem;

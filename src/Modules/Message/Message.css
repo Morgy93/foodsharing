@@ -18,11 +18,11 @@
 #msg-conversation {
   height: 100px;
   overflow: auto;
-  background-color: #fff;
+  background-color: var(--fs-color-light);
 }
 
 #conversation-list li.active {
-  background-color: #dbd7d1;
+  background-color: var(--fs-color-warning-100);
   border-radius: 4px;
 }
 
@@ -41,7 +41,7 @@
 }
 
 #msg-conversation div.loader i {
-  color: var(--fs-brown);
+  color: var(--fs-color-primary-500);
   font-size: 20px;
 }
 
@@ -51,29 +51,29 @@
 
 #msg-conversation span.time {
   font-size: 13px;
-  color: #533a20;
+  color: var(--fs-color-primary-500);
   margin-top: 4px;
 }
 
 #msg-conversation li.my-message span.time {
-  color: var(--fs-brown);
+  color: var(--fs-color-primary-500);
 }
 
 #msg-conversation span.body {
   border-radius: 6px;
-  background: none repeat scroll 0 0 #e1e1db;
+  background: none repeat scroll 0 0 var(--fs-color-warning-100);
   margin-left: 50px;
   min-height: 35px;
   padding: 6px;
   position: relative;
-  color: var(--fs-brown);
+  color: var(--fs-color-primary-500);
 }
 
 #msg-conversation li.my-message span.body {
-  background: none repeat scroll 0 0 var(--fs-beige);
+  background: none repeat scroll 0 0 var(--fs-color-primary-300);
   margin-left: 0px;
   margin-right: 50px;
-  color: var(--fs-brown);
+  color: var(--fs-color-primary-500);
 }
 
 #msg-conversation li.my-message span.img {
@@ -85,7 +85,7 @@
   position: absolute;
   border-style: solid;
   border-width: 8px 9px 8px 0;
-  border-color: transparent #e1e1db;
+  border-color: var(--fs-color-transparent) var(--fs-color-warning-100);
   display: block;
   width: 0;
   z-index: 1;
@@ -95,7 +95,7 @@
 
 #msg-conversation li.my-message span.body:after {
   border-width: 8px 0 8px 9px;
-  border-color: transparent var(--fs-beige);
+  border-color: var(--fs-color-transparent) var(--fs-color-primary-300);
   left: unset;
   right: -9px;
 }
@@ -135,12 +135,12 @@
 }
 
 #msg-conversation-title, #msg-conversation-title i {
-  color: #fff;
+  color: var(--fs-color-light);
 }
 
 ul.conversation-list > li.unread-1 {
-    background-color: #dbd7d1;
-    border: 1px solid #533a20;
+    background-color: var(--fs-color-warning-100);
+    border: 1px solid var(--fs-color-primary-500);
     border-radius: 4px;
 }
 
@@ -203,7 +203,7 @@ ul.conversation-list > li.unread-1 {
     width: 100vw;
     z-index: 11;
     border-radius: 0;
-    box-shadow: 0 0 5px 0 rgba(0, 0, 0, 0.45);
+    box-shadow: 0 0 5px 0 var(--fs-color-gray-alpha-50);
     padding: 1rem 0 0.5rem 0;
   }
 

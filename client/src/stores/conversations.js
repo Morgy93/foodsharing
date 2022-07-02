@@ -1,7 +1,7 @@
 import Vue from 'vue'
 import { getConversationList, getConversation, getMessages, markConversationRead } from '@/api/conversations'
 import ProfileStore from '@/stores/profiles'
-import serverData from '@/server-data'
+import serverData from '@/scripts/server-data'
 
 export default new Vue({
   data: {

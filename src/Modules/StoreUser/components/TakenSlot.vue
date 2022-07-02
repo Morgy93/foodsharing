@@ -77,7 +77,7 @@ import { pulseSuccess } from '@/script'
 import { callableNumber } from '@/utils'
 import conv from '@/conv'
 import i18n from '@/i18n'
-import serverData from '@/server-data'
+import serverData from '@/scripts/server-data'
 import { v4 as uuidv4 } from 'uuid'
 
 export default {
@@ -157,14 +157,14 @@ export default {
   z-index: 3;
   transform: rotate(45deg);
   opacity: 0.9;
-  background-color: var(--fs-beige);
-  box-shadow: 0 0 3px 0px var(--fs-brown);
+  background-color: var(--fs-color-primary-300);
+  box-shadow: 0 0 3px 0px var(--fs-color-primary-500);
 
   &.pending {
-    color: var(--danger);
+    color: var(--fs-color-danger-500);
   }
   &.confirmed {
-    color: var(--fs-green);
+    color: var(--fs-color-secondary-500);
   }
 
   // Check / Clock inside the statuspatch

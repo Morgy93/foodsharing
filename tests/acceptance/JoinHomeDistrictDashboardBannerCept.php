@@ -10,7 +10,11 @@ This foodsaver has bezirk_id 0, so no home district
 $foodsaver = $I->createFoodsaver();
 
 $I->login($foodsaver['email']);
+
 $I->amOnPage('/?page=dashboard');
-$I->executeJS("$('button:contains(Schließen)').trigger('click')");
+$I->waitForActiveAPICalls();
+$I->waitForElement('.testing-region-join');
+$I->see('Bitte auswählen...', ['css' => '.testing-region-join-select']);
+$I->click('.testing-region-join .btn.btn-secondary');
 $I->click('Jetzt Stammbezirk auswählen');
-$I->see('Wähle den Bezirk aus, in dem du aktiv werden möchtest');
+$I->waitForElement('.testing-region-join');

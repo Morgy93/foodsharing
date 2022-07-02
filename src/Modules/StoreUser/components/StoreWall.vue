@@ -141,8 +141,8 @@ ul.posts {
   margin: 0;
 
   &.has-more-posts {
-    -webkit-mask-image: linear-gradient(to bottom, black 65%, transparent 100%);
-    mask-image: linear-gradient(to bottom, black 65%, transparent 100%);
+    -webkit-mask-image: linear-gradient(to bottom, black 65%, var(--fs-color-transparent) 100%);
+    mask-image: linear-gradient(to bottom, black 65%, var(--fs-color-transparent) 100%);
   }
 }
 </style>

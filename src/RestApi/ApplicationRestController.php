@@ -11,7 +11,9 @@ use FOS\RestBundle\Controller\AbstractFOSRestController;
 use FOS\RestBundle\Controller\Annotations as Rest;
 use OpenApi\Annotations as OA;
 use Symfony\Component\HttpFoundation\Response;
-use Symfony\Component\HttpKernel\Exception\HttpException;
+use Symfony\Component\HttpKernel\Exception\AccessDeniedHttpException;
+use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
+use Symfony\Component\HttpKernel\Exception\UnauthorizedHttpException;
 
 class ApplicationRestController extends AbstractFOSRestController
 {
@@ -46,17 +48,17 @@ class ApplicationRestController extends AbstractFOSRestController
 	public function acceptApplicationAction(int $groupId, int $userId): Response
 	{
 		if (!$this->session->id()) {
-			throw new HttpException(401);
+			throw new UnauthorizedHttpException('');
 		}
 
 		try {
 			$group = $this->regionGateway->getRegion($groupId);
 		} catch (Exception $e) {
-			throw new HttpException(404);
+			throw new NotFoundHttpException();
 		}
 
 		if (!$this->workGroupPermissions->mayEdit($group)) {
-			throw new HttpException(403);
+			throw new AccessDeniedHttpException();
 		}
 
 		$this->applicationTransactions->acceptApplication($group, $userId);
@@ -78,17 +80,17 @@ class ApplicationRestController extends AbstractFOSRestController
 	public function declineApplicationAction(int $groupId, int $userId): Response
 	{
 		if (!$this->session->id()) {
-			throw new HttpException(401);
+			throw new UnauthorizedHttpException('');
 		}
 
 		try {
 			$group = $this->regionGateway->getRegion($groupId);
 		} catch (Exception $e) {
-			throw new HttpException(404);
+			throw new NotFoundHttpException();
 		}
 
 		if (!$this->workGroupPermissions->mayEdit($group)) {
-			throw new HttpException(403);
+			throw new AccessDeniedHttpException();
 		}
 
 		$this->applicationTransactions->declineApplication($group, $userId);

@@ -1,0 +1,47 @@
+[
+    {
+        "title": "navigation.map",
+        "url": "map"
+    },
+    {
+        "title": "navigation.promotion",
+        "url": "devdocs_it_tasks",
+        "isHighlighted": true
+    },
+    {
+        "title": "navigation.help_needed",
+        "icon": "fas fa-question-circle",
+        "direction": "right",
+        "isInternal": true,
+        "items": [
+            {
+                "title": "navigation.whats_new",
+                "url": "release_notes"
+            },
+            {
+                "isDivider": true
+            },
+            {
+                "title": "navigation.wiki",
+                "url": "wiki"
+            },
+            {
+                "title": "navigation.help_and_support",
+                "url": "freshdesk"
+            },
+            {
+                "title": "navigation.contact",
+                "url": "contact"
+            },
+            {
+                "isInternal": true,
+                "isDivider": true
+            },
+            {
+                "isInternal": true,
+                "title": "navigation.styleguide",
+                "modal": "styleGuideModal"
+            }
+        ]
+    }
+]

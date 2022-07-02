@@ -21,7 +21,7 @@
               v-if="mayEditStore"
               v-b-tooltip.hover.top
               :title="$i18n(managementModeEnabled ? 'store.sm.managementToggleOff' : 'store.sm.managementToggleOn')"
-              :class="[managementModeEnabled ? ['text-warning', 'active'] : 'text-light', 'btn', 'btn-secondary', 'btn-sm']"
+              :class="[managementModeEnabled ? ['text-warning', 'active'] : 'text-light', 'btn', 'btn-primary', 'btn-sm']"
               href="#"
               @click.prevent="toggleManageControls"
             >
@@ -440,7 +440,7 @@ export default {
 
 <style lang="scss" scoped>
 .store-team .team-management {
-  border-bottom: 2px solid var(--warning);
+  border-bottom: 2px solid var(--fs-color-warning-500);
 }
 
 .store-team .team-list {
@@ -457,7 +457,7 @@ export default {
 
     tr {
       display: flex;
-      border-bottom: 1px solid var(--border);
+      border-bottom: 1px solid var(--fs-color-border);
 
       &.b-table-details {
         justify-content: center;
@@ -465,7 +465,7 @@ export default {
 
       &.table-warning {
         border-bottom-width: 2px;
-        border-bottom-color: var(--warning);
+        border-bottom-color: var(--fs-color-warning-500);
         padding-bottom: 1px;
       }
 
@@ -482,7 +482,7 @@ export default {
 
   tr td {
     padding: 3px;
-    border-top-color: var(--border);
+    border-top-color: var(--fs-color-border);
     vertical-align: middle;
     cursor: default;
     display: inline-block;
@@ -509,19 +509,19 @@ export default {
       .member-call {
         padding: 10px;
         align-self: center;
-        color: var(--fs-green);
+        color: var(--fs-color-secondary-500);
 
         &.copy-clipboard { opacity: 0.7; }
 
         &:hover {
-          background-color: var(--fs-green);
-          color: var(--white);
+          background-color: var(--fs-color-secondary-500);
+          color: var(--fs-color-light);
         }
         &:focus {
-          outline: 2px solid var(--fs-green);
+          outline: 2px solid var(--fs-color-secondary-500);
         }
         &:disabled {
-          color: var(--fs-beige);
+          color: var(--fs-color-primary-300);
         }
       }
     }

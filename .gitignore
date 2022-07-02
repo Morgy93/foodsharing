@@ -20,8 +20,7 @@ chat/.npm
 chat/.yarnrc
 chat/dist
 api/**
-.php_cs.cache
-.php_cs_cache_local
+.php-cs-fixer.cache
 revision.inc.php
 .vagrant
 .DS_Store

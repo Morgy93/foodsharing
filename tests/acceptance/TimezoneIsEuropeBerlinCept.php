@@ -9,13 +9,12 @@ $description = 'test foodbasket with bananas';
 
 $I->login($foodsaver['email'], 'password');
 $I->amOnPage('/');
-
-$I->click('.topbar-baskets > a');
+$I->see('Essenskörbe', ['css' => '.testing-basket-dropdown']);
+$I->click('.testing-basket-dropdown > .nav-link');
 $I->waitForText('Essenskorb anlegen');
+$I->click('.testing-basket-create');
 
-$I->click('Essenskorb anlegen');
 $I->waitForText('Wie lange soll dein Essenskorb gültig sein?');
-
 $I->fillField('description', $description);
 
 $min_time = new DateTime('-1 second', new DateTimeZone('Europe/Berlin')); /* microsends in PHP7.1+ make it fail because of rounding otherwise */

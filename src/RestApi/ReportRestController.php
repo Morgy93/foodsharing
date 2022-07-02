@@ -17,7 +17,8 @@ use FOS\RestBundle\Controller\Annotations as Rest;
 use FOS\RestBundle\Request\ParamFetcher;
 use OpenApi\Annotations as OA;
 use Symfony\Component\HttpFoundation\Response;
-use Symfony\Component\HttpKernel\Exception\HttpException;
+use Symfony\Component\HttpKernel\Exception\AccessDeniedHttpException;
+use Symfony\Component\HttpKernel\Exception\UnauthorizedHttpException;
 
 class ReportRestController extends AbstractFOSRestController
 {
@@ -67,11 +68,11 @@ class ReportRestController extends AbstractFOSRestController
 	public function listReportsForRegionAction(int $regionId): Response
 	{
 		if (!$this->session->may()) {
-			throw new HttpException(401, self::NOT_LOGGED_IN);
+			throw new UnauthorizedHttpException('', self::NOT_LOGGED_IN);
 		}
 
 		if (!$this->reportPermissions->mayAccessReportsForRegion($regionId)) {
-			throw new HttpException(403);
+			throw new AccessDeniedHttpException();
 		}
 
 		$regions = [$regionId];
@@ -102,7 +103,7 @@ class ReportRestController extends AbstractFOSRestController
 			!empty($arbitrationGroup)) {
 			if (in_array($this->session->id(), $arbitrationAdminIDs) &&
 				in_array($this->session->id(), $reportAdminIDs)) {
-				throw new HttpException(403);
+				throw new AccessDeniedHttpException();
 			}
 		}
 
@@ -127,7 +128,7 @@ class ReportRestController extends AbstractFOSRestController
 	public function addReportAction(ParamFetcher $paramFetcher): Response
 	{
 		if (!$this->session->may()) {
-			throw new HttpException(401, self::NOT_LOGGED_IN);
+			throw new UnauthorizedHttpException('', self::NOT_LOGGED_IN);
 		}
 		$this->reportGateway->addBetriebReport(
 			$paramFetcher->get('reportedId'),

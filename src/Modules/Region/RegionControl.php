@@ -127,7 +127,7 @@ final class RegionControl extends Control
 		}
 
 		if ($isWorkGroup) {
-			$menu['wall'] = ['name' => 'menu.entry.wall', 'href' => '?page=bezirk&bid=' . $regionId . '&sub=wall'];
+			$menu['wall'] = ['name' => 'menu.entry.wall', 'href' => '/?page=bezirk&bid=' . $regionId . '&sub=wall'];
 			if ($region['has_children'] === 1) {
 				$menu['subgroups'] = ['name' => 'terminology.subgroups', 'href' => '/?page=groups&p=' . $regionId];
 			}
@@ -139,11 +139,11 @@ final class RegionControl extends Control
 			$menu['groups'] = ['name' => 'terminology.groups', 'href' => '/?page=groups&p=' . $regionId];
 			$menu['statistic'] = ['name' => 'terminology.statistic', 'href' => '/?page=bezirk&bid=' . $regionId . '&sub=statistic'];
 
-			$menu['stores'] = ['name' => 'menu.entry.stores', 'href' => '?page=betrieb&bid=' . $regionId];
+			$menu['stores'] = ['name' => 'menu.entry.stores', 'href' => '/?page=betrieb&bid=' . $regionId];
 
 			if ($this->session->isAdminFor($regionId)) {
-				$menu['fsList'] = ['name' => 'menu.entry.fs', 'href' => '?page=foodsaver&bid=' . $regionId];
-				$menu['passports'] = ['name' => 'menu.entry.ids', 'href' => '?page=passgen&bid=' . $regionId];
+				$menu['fsList'] = ['name' => 'menu.entry.fs', 'href' => '/?page=foodsaver&bid=' . $regionId];
+				$menu['passports'] = ['name' => 'menu.entry.ids', 'href' => '/?page=passgen&bid=' . $regionId];
 			}
 
 			if ($this->reportPermissions->mayAccessReportGroupReports($regionId)) {

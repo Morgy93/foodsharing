@@ -30,7 +30,7 @@
 #fancybox-thumbs ul li.active {
 	opacity: 0.75;
 	padding: 0;
-	border: 1px solid #fff;
+	border: 1px solid var(--fs-color-light);
 }
 
 #fancybox-thumbs ul li:hover {
@@ -41,8 +41,8 @@
 	display: block;
 	position: relative;
 	overflow: hidden;
-	border: 1px solid #222;
-	background: #111;
+	border: 1px solid var(--fs-color-dark);
+	background: var(--fs-color-dark);
 	outline: none;
 }
 

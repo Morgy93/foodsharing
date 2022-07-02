@@ -1,0 +1,62 @@
+<template>
+  <Dropdown
+    id="dropdown-groups"
+    :title="$i18n('menu.entry.groups')"
+    icon="fa-users"
+    is-fixed-size
+    is-scollable
+  >
+    <template
+      v-if="groups.length > 0"
+      #content
+    >
+      <GroupsEntry
+        v-for="(group, idx) in groups"
+        :key="idx"
+        :entry="group"
+        :is-alone="groups.length === 1"
+      />
+    </template>
+    <template
+      v-else
+      #content
+    >
+      <small
+        role="menuitem"
+        class="disabled dropdown-item"
+        v-html="$i18n('groups.empty')"
+      />
+    </template>
+    <template #actions>
+      <a
+        :href="$url('workingGroups')"
+        role="menuitem"
+        class="dropdown-item dropdown-action"
+      >
+        <i class="icon-subnav fas fa-users" />
+        {{ $i18n('menu.entry.group_overview') }}
+      </a>
+    </template>
+  </Dropdown>
+</template>
+<script>
+// Store
+import DataGroups from '@/stores/groups'
+// Components
+import Dropdown from '../_NavItems/NavDropdown'
+import GroupsEntry from './NavGroupsEntry'
+
+export default {
+  name: 'MenuGroups',
+  components: { Dropdown, GroupsEntry },
+  computed: {
+    groups () {
+      return DataGroups.getters.get()
+    },
+  },
+}
+</script>
+
+<style lang="scss" scoped>
+@import '../../../scss/icon-sizes.scss';
+</style>

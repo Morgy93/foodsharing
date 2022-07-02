@@ -21,7 +21,7 @@ ul.food-share-point-list li a span.image {
 }
 
 ul.food-share-point-list li a span.image.noimage {
-  background-color: #ffffff;
+  background-color: var(--fs-color-light);
 }
 
 ul.food-share-point-list li a span.clear {
@@ -48,10 +48,10 @@ div.event {
 }
 
 .calendar .month {
-  background-color: #e07a0b !important;
+  background-color: var(--fs-color-warning-500) !important;
   border-top-left-radius: 6px;
   border-top-right-radius: 6px;
-  color: var(--white) !important;
+  color: var(--fs-color-light) !important;
   display: block;
   font-size: 13px;
   font-weight: bold;
@@ -60,15 +60,15 @@ div.event {
   margin: 0;
   padding: 0;
   text-align: center;
-  text-shadow: 1px 1px 1px rgba(0, 0, 0, 0.6);
+  text-shadow: 1px 1px 1px var(--fs-color-gray-alpha-60);
   text-decoration: none;
 }
 
 .calendar .day {
-  background-color: #eae2cb !important;
+  background-color: var(--fs-color-warning-200) !important;
   border-bottom-left-radius: 6px;
   border-bottom-right-radius: 6px;
-  color: #2f291e !important;
+  color: var(--fs-color-warning-800) !important;
   display: block;
   font-size: 17px;
   font-weight: bold;

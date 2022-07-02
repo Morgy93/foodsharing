@@ -28,7 +28,7 @@
             v-html="$i18n(filter.text)"
           />
           <span
-            class="hide-for-users"
+            class="sr-only"
             v-html="$i18n(filter.text)"
           />
         </button>
@@ -36,12 +36,12 @@
       <button
         id="activity-option"
         v-b-tooltip="$i18n('dashboard.settings_tooltip')"
-        :class="{'btn-secondary': showListings}"
+        :class="{'btn-primary': showListings}"
         class="btn btn-sm btn-icon"
         @click="toggleOptionListings"
       >
         <span
-          class="hide-for-users"
+          class="sr-only"
           v-html="$i18n('dashboard.settings')"
         />
         <i
@@ -180,5 +180,11 @@ export default {
   opacity: 0.5;
   pointer-events: none;
   user-select: none;
+}
+
+.btn-icon {
+  @media (min-width: 768px) and (max-width: 992px) {
+    padding: 0.5rem 0.35rem;
+  }
 }
 </style>

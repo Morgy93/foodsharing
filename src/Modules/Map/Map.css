@@ -21,13 +21,6 @@ body.page-map #topbar {
   overflow: hidden;
 }
 
-#map {
-  position: absolute;
-  top: 37px;
-  left: 0;
-  width: 100%;
-  height: calc(100% - 37px);
-}
 
 div#main {
   position: absolute;
@@ -39,7 +32,7 @@ div#main {
 }
 
 .ajax-loader {
-  background-color: #ffffff;
+  background-color: var(--fs-color-light);
   border-radius: 10px 10px 10px 10px;
   left: 50%;
   margin-left: -21px;
@@ -81,10 +74,6 @@ div#main {
   opacity: 1;
 }
 
-#map-control-wrapper .ui-dialog-content {
-  max-width: 10em;
-}
-
 #map-options {
   margin: 0.2em -0.5em;
 }
@@ -114,15 +103,6 @@ div#main {
   visibility: hidden;
   opacity: 0;
   transition: visibility 0s 0.2s, opacity 0.2s ease-in-out;
-}
-
-#map-control-wrapper {
-  position: absolute;
-  right: 16px;
-  margin: 0;
-  top: 80px;
-  z-index: 800 !important;
-  height: 0;
 }
 
 #map-control-wrapper > div {

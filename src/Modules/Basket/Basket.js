@@ -53,7 +53,7 @@ const mapsearch = {
     $.each(baskets, function (i, basket) {
       mapsearch.appendList(basket)
     })
-    this.$basketList.show('highlight', { color: '#F5F5B5' })
+    this.$basketList.show('highlight', { color: 'var(--fs-color-warning-200)' })
   },
   appendList: function (basket) {
     let img = '/img/basket.png'

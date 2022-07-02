@@ -9,14 +9,17 @@
       class="img-thumbnail position-relative"
     >
       <Avatar
-        :url="user.photo"
+        :url="getAvatar"
         :is-sleeping="user.sleeping"
         :size="50"
         style="max-width: 50px;"
       />
     </a>
     <div class="ml-3 d-flex flex-column">
-      <h1 v-html="$i18n('dashboard.greeting', {name: user.firstname})" />
+      <h1
+        class="testing-intro-field"
+        v-html="viewIsMD ? $i18n('dashboard.greeting', {name: user.firstname}) : $i18n('dashboard.greeting_short', {name: user.firstname})"
+      />
       <p
         v-if="!isFoodsaver || !user.regionName"
         class="mb-0"
@@ -41,12 +44,15 @@
 import { getters } from '@/stores/user'
 // Components
 import Avatar from '@/components/Avatar'
+// Mixins
+import MediaQueryMixin from '@/mixins/MediaQueryMixin'
 
 export default {
   name: 'IntroField',
   components: {
     Avatar,
   },
+  mixins: [MediaQueryMixin],
   props: {
     title: { type: String, default: 'dashboard.my.regions' },
   },
@@ -56,6 +62,9 @@ export default {
     },
     stats () {
       return getters.getStats()
+    },
+    getAvatar () {
+      return getters.getAvatar()
     },
     isFoodsaver () {
       return getters.isFoodsaver()

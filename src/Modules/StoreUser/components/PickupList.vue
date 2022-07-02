@@ -15,7 +15,7 @@
                 v-if="isCoordinator"
                 v-b-tooltip
                 :title="$i18n('pickup.edit_recurring_pickups')"
-                class="btn btn-secondary btn-sm"
+                class="btn btn-primary btn-sm"
                 @click="loadEditRecurringPickupModal"
               >
                 <i class="fas fa-pen" />
@@ -24,7 +24,7 @@
                 v-if="isCoordinator"
                 v-b-tooltip
                 :title="$i18n('pickup.add_onetime_pickup')"
-                class="btn btn-secondary btn-sm"
+                class="btn btn-primary btn-sm"
                 @click="loadAddPickupModal"
               >
                 <i class="fas fa-plus" />
@@ -65,7 +65,7 @@ import { VBTooltip } from 'bootstrap-vue'
 import Pickup from './Pickup'
 import { setPickupSlots, confirmPickup, joinPickup, leavePickup, listPickups } from '@/api/pickups'
 import { sendMessage } from '@/api/conversations'
-import { user } from '@/server-data'
+import { user } from '@/scripts/server-data'
 import { ajreq, pulseError, pulseSuccess } from '@/script'
 import $ from 'jquery'
 import i18n from '@/i18n'

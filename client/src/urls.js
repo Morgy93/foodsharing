@@ -3,14 +3,6 @@
 
 const urls = {
   profile: (id) => `/profile/${id}`,
-  forum: (regionId, subforumId = 0, threadId = null, postId = null, newThread = false) => {
-    return (`/?page=bezirk&bid=${regionId}` +
-      `&sub=${(subforumId === 1) ? 'botforum' : 'forum'}` +
-      (threadId === null ? '' : `&tid=${threadId}`) +
-      (postId === null ? '' : `&pid=${postId}#post-${postId}`) +
-      (newThread ? '&newthread=1' : '')
-    )
-  },
   academy: () => '/?page=content&sub=academy',
   basket: (basketId) => `/essenskoerbe/${basketId}`,
   baskets: () => '/essenskoerbe',
@@ -18,8 +10,6 @@ const urls = {
   blogAdd: () => '/?page=blog&sub=add',
   blogEdit: (blogId) => `/?page=blog&sub=edit&id=${blogId}`,
   blogList: () => '/?page=blog&sub=manage',
-  calendarHints: () => 'https://wiki.foodsharing.de/Kalenderexport',
-  changelog: () => '/?page=content&sub=changelog',
   claims: () => '/?page=content&sub=forderungen',
   communitiesAustria: () => '/?page=content&sub=communitiesAustria',
   communitiesGermany: () => '/?page=content&sub=communitiesGermany',
@@ -33,16 +23,9 @@ const urls = {
   email: () => '/?page=email',
   event: (eventId) => `/?page=event&id=${eventId}`,
   eventEdit: (eventId) => `/?page=event&id=${eventId}&sub=edit`,
-  events: (regionId) => `/?page=bezirk&bid=${regionId}&sub=events`,
-  support: () => 'https://foodsharing.freshdesk.com/support/home',
   festival: () => '/?page=content&sub=festival',
-  foodsaverList: (regionId) => `/?page=foodsaver&bid=${regionId}`,
-  foodsharepoint: (fspId) => `?page=fairteiler&sub=ft&id=${fspId}`,
-  foodsharepoints: (regionId) => `/?page=bezirk&bid=${regionId}&sub=fairteiler`,
+  foodsharepoint: (fspId) => `/?page=fairteiler&sub=ft&id=${fspId}`,
   fsstaedte: () => '/?page=content&sub=fsstaedte',
-  grundsaetze: () => 'https://wiki.foodsharing.de/Grundsätze',
-  guide: () => 'https://wiki.foodsharing.de/Hygiene-Ratgeber_f%C3%BCr_Lebensmittel',
-  guideLockedEmail: () => 'https://foodsharing.freshdesk.com/support/solutions/articles/77000299947-e-mail-sperre-im-profil',
   home: () => '/',
   imprint: () => '/impressum',
   infos: () => '/?page=content&sub=infohub',
@@ -50,45 +33,30 @@ const urls = {
   international: () => '/?page=content&sub=international',
   joininfo: () => '/?page=content&sub=joininfo',
   leeretonne: () => '/?page=content&sub=leeretonne',
-  legal_agreement: () => 'https://wiki.foodsharing.de/Rechtsvereinbarung',
   login: () => '/?page=login',
   logout: () => '/?page=logout',
   mailbox: (mailboxId = null) => `/?page=mailbox${mailboxId ? `&show=${mailboxId}` : ''}`,
   mailboxManage: () => '/?page=mailbox&a=manage',
   mailboxMailto: (email) => `/?page=mailbox&mailto=${email}`,
   map: () => '/karte',
-  members: (regionId) => `/?page=bezirk&bid=${regionId}&sub=members`,
   mission: () => '/ueber-uns',
-  options: (regionId) => `/?page=bezirk&bid=${regionId}&sub=options`,
   partner: () => '/partner',
-  passports: (regionId) => `/?page=passgen&bid=${regionId}`,
   passwordReset: () => '/?page=login&sub=passwordReset',
-  pin: (regionId) => `/?page=bezirk&bid=${regionId}&sub=pin`,
   poll: (pollId) => `/?page=poll&id=${pollId}`,
   pollEdit: (pollId) => `/?page=poll&id=${pollId}&sub=edit`,
-  pollNew: (regionId) => `/?page=poll&bid=${regionId}&sub=new`,
-  polls: (regionId) => `/?page=bezirk&bid=${regionId}&sub=polls`,
   press: () => '/?page=content&sub=presse',
   region: () => '/?page=region',
-  releaseNotes: () => '/?page=content&sub=releaseNotes',
-  reports: (regionId = null) => regionId ? `/?page=report&bid=${regionId}` : '/?page=report',
   settings: () => '/?page=settings',
   settingsCalendar: () => '/?page=settings&sub=calendar',
   settingsNotifications: () => '/?page=settings&sub=info',
-  statistic: (regionId) => `/?page=bezirk&bid=${regionId}&sub=statistic`,
   statistics: () => '/statistik',
   store: (storeId) => `/?page=fsbetrieb&id=${storeId}`,
-  storeAdd: (regionId = null) => regionId ? `/?page=betrieb&a=new&bid=${regionId}` : '/?page=betrieb&a=new',
   storeList: () => '/?page=fsbetrieb',
-  stores: (regionId) => `/?page=betrieb&bid=${regionId}`,
-  storeEdit: (storeId) => `/?page=betrieb&a=edit&id=${storeId}`,
+
   team: () => '/team',
   transparency: () => '/?page=content&sub=transparency',
-  wall: (regionId) => `/?page=bezirk&bid=${regionId}&sub=wall`,
-  wiki: () => 'https://wiki.foodsharing.de/',
-  wiki_voting: () => 'https://wiki.foodsharing.de/Abstimmungs-Modul',
+
   workingGroupEdit: (groupId) => `/?page=groups&sub=edit&id=${groupId}`,
-  workingGroups: (regionId = null) => regionId ? `/?page=groups&p=${regionId}` : '/?page=groups',
   workshops: () => '/?page=content&sub=workshops',
   urlencode: (url) => encodeURIComponent(`${url}`),
   donations: () => 'https://spenden.foodsharing.de',
@@ -96,20 +64,86 @@ const urls = {
   selfservice: () => 'https://spenden.foodsharing.de/selfservice',
   resendActivationMail: () => '/?page=login&a=resendActivationMail',
 
+  // javascript
+  javascript: (js) => `javascript:${js}`,
+
+  // Relogin
+  relogin_and_redirect_to_url: (url) => '/?page=relogin&url=' + encodeURIComponent(url),
+
+  // region id
+  forum: (regionId, subforumId = 0, threadId = null, postId = null, newThread = false) => {
+    const str = [`/?page=bezirk&bid=${regionId}`]
+    if (subforumId === 1) {
+      str.push('&sub=botforum')
+    } else {
+      str.push('&sub=forum')
+    }
+    if (threadId) {
+      str.push(`&tid=${threadId}`)
+    }
+    if (postId) {
+      str.push(`&pid=${postId}#post-${postId}`)
+    }
+    if (newThread) {
+      str.push('&newthread=1')
+    }
+    return str.join('')
+  },
+  events: (regionId) => `/?page=bezirk&bid=${regionId}&sub=events`,
+  foodsaverList: (regionId) => `/?page=foodsaver&bid=${regionId}`,
+  foodsharepoints: (regionId) => `/?page=bezirk&bid=${regionId}&sub=fairteiler`,
+  members: (regionId) => `/?page=bezirk&bid=${regionId}&sub=members`,
+  options: (regionId) => `/?page=bezirk&bid=${regionId}&sub=options`,
+  passports: (regionId) => `/?page=passgen&bid=${regionId}`,
+  pin: (regionId) => `/?page=bezirk&bid=${regionId}&sub=pin`,
+  pollNew: (regionId) => `/?page=poll&bid=${regionId}&sub=new`,
+  polls: (regionId) => `/?page=bezirk&bid=${regionId}&sub=polls`,
+  region_forum: (regionId) => `/?page=bezirk&bid=${regionId}&sub=forum`,
+  reports: (regionId = null) => regionId ? `/?page=report&bid=${regionId}` : '/?page=report',
+  statistic: (regionId) => `/?page=bezirk&bid=${regionId}&sub=statistic`,
+  storeAdd: (regionId = null) => regionId ? `/?page=betrieb&a=new&bid=${regionId}` : '/?page=betrieb&a=new',
+  storeEdit: (storeId) => `/?page=betrieb&a=edit&id=${storeId}`,
+  stores: (regionId) => `/?page=betrieb&bid=${regionId}`,
+  wall: (regionId) => `/?page=bezirk&bid=${regionId}&sub=wall`,
+  workingGroups: (regionId = null) => regionId ? `/?page=groups&p=${regionId}` : '/?page=groups',
+
+  // whats new & changelog
+  changelog: () => '/?page=content&sub=changelog',
+  release_notes: () => '/?page=content&sub=releaseNotes',
+
+  // mailto
+  mail_foodsharing_network: (mail) => `${mail}@foodsharing.network`,
+  mailto_mail_foodsharing_network: (mail) => `mailto:${mail}@foodsharing.network`,
+
+  // freshdesk support
+  freshdesk: () => 'https://foodsharing.freshdesk.com/support/home',
+  freshdesk_locked_email: () => 'https://foodsharing.freshdesk.com/support/solutions/articles/77000299947-e-mail-sperre-im-profil',
+
+  // wiki
+  wiki: () => 'https://wiki.foodsharing.de/',
+  wiki_guide: () => 'https://wiki.foodsharing.de/Hygiene-Ratgeber_f%C3%BCr_Lebensmittel',
+  wiki_create_region: () => 'https://wiki.foodsharing.de/Bezirk_gr%C3%BCnden_oder_reaktivieren',
+  wiki_voting: () => 'https://wiki.foodsharing.de/Abstimmungs-Modul',
+  wiki_calendar: () => 'https://wiki.foodsharing.de/Kalenderexport',
+  wiki_grundsaetze: () => 'https://wiki.foodsharing.de/Grundsätze',
+  wiki_legal_agreement: () => 'https://wiki.foodsharing.de/Rechtsvereinbarung',
+
   //
-  quizEdit: () => '/?page=quiz',
-  quizLearning: () => 'https://youtu.be/9Fk6MHC-M1o',
-  quizFs: () => '/?page=settings&sub=up_fs',
-  quizBip: () => '/?page=settings&sub=up_bip',
-  quizBot: () => '/?page=settings&sub=up_bot',
+  quiz_admin_edit: () => '/?page=quiz',
+  quiz_learning_video: () => 'https://youtu.be/9Fk6MHC-M1o',
+  quiz_foodsaver: () => '/?page=settings&sub=up_fs',
+  quiz_store_manager: () => '/?page=settings&sub=up_bip',
+  quiz_ambassador: () => '/?page=settings&sub=up_bot',
 
   // Footer Links
   hosting: () => 'https://manitu.de',
   wiener_tafel: () => 'https://www.wienertafel.at',
   bmlfuw: () => 'https://www.bmlrt.gv.at',
   denns: () => 'https://www.denns-biomarkt.at',
+
+  // Devdocs
   devdocs: () => 'https://devdocs.foodsharing.network',
-  devdocsItTasks: () => 'https://devdocs.foodsharing.network/it-tasks.html',
+  devdocs_it_tasks: () => 'https://devdocs.foodsharing.network/it-tasks.html',
 
   // Beta Testing
   beta: () => 'https://beta.foodsharing.de',

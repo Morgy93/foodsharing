@@ -1,9 +1,9 @@
 import Vue from 'vue'
 import i18n from '@/i18n'
 import { url } from '@/urls'
+import serverData from '@/scripts/server-data'
 import { dateFormat, dateDistanceInWords } from '@/utils'
 import BootstrapVue from 'bootstrap-vue'
-import 'bootstrap-vue/dist/bootstrap-vue.css'
 import Vuelidate from 'vuelidate'
 
 Vue.use(BootstrapVue)
@@ -15,6 +15,7 @@ Vue.prototype.$i18n = (key, variables = {}) => {
 Vue.prototype.$url = url
 Vue.prototype.$dateFormat = dateFormat
 Vue.prototype.$dateDistanceInWords = dateDistanceInWords
+Vue.prototype.$serverData = serverData
 
 export function vueRegister (components) {
   for (const key in components) {

@@ -645,6 +645,8 @@ forum:
     close: "Close thread"
     open: "Reopen thread"
     closed: Closed thread
+    navigate_to_newest_post: "jump to latest post"
+    navigate_to_oldest_post: "jump to first post"
   post:
     delete: Delete post
     body: Message
@@ -2139,7 +2141,7 @@ register:
   lastname_minLength: The last name must consist of at least 2 characters.
   firstname_minLength: The first name must consist of at least 2 characters.
   confirmPassword_sameAsPassword: The password must match.
-  birthdate_hint: You can find more information in the <a href="?page=legal" target="_blank">
+  birthdate_hint: You can find more information in the <a href="/?page=legal" target="_blank">
     privacy policy </a> in point 2d) when registering as a foodsharer or foodsaver.
   mail_hint: 'Important: pay attention to the correct spelling!'
   landline_example: Example +49 30 123456789
@@ -2174,6 +2176,8 @@ weight: Estimated weight
 about_me_intern: Short description
 about_me_public: Public short description
 regions: Regions
+groups:
+  empty: You're not in any working groups yet
 daterange: Time period
 ort: City/municipality (automatically from the map above)
 stadt: Your city or town
@@ -2207,8 +2211,9 @@ dashboard:
     no-stores: You are not in any team yet.
     managing: You are responsible for
     pending: Requests have been made to
-    stores: You pick up groceries from
-    waiting: You are on the jumper list at
+    stores: Your stores
+    managing_stores: Your responsible stores
+    jumping_stores: Your jumping list stores
     buddies: People you know
     users: foodsavers
   options:

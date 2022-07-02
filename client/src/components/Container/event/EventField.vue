@@ -141,15 +141,15 @@ export default {
   }
 
   &.accept {
-    border-color: var(--secondary);
+    border-color: var(--fs-color-secondary-500);
   }
 
   &.maybe {
-    border-color: var(--warning);
+    border-color: var(--fs-color-warning-500);
   }
 
   &.decline  {
-    border-color: var(--gray);
+    border-color: var(--fs-color-gray-500);
   }
 }
 
@@ -168,29 +168,29 @@ export default {
 
 .default {
   z-index: 1;
-  color: var(--white);
-  background-color: var(--gray);
-  border: 1px solid var(--gray);
+  color: var(--fs-color-light);
+  background-color: var(--fs-color-gray-500);
+  border: 1px solid var(--fs-color-gray-500);
 }
 
 .accept,
 .accept:focus {
   z-index: 2;
-  color: var(--white);
-  background-color: var(--secondary);
+  color: var(--fs-color-light);
+  background-color: var(--fs-color-secondary-500);
 }
 
 .maybe,
 .maybe:focus {
   z-index: 3;
-  color: var(--dark);
-  background-color: var(--warning);
+  color: var(--fs-color-dark);
+  background-color: var(--fs-color-warning-500);
 }
 
 .decline,
 .decline:focus {
   z-index: 1;
-  background-color: var(--gray);
+  background-color: var(--fs-color-gray-500);
 }
 
 .truncated {

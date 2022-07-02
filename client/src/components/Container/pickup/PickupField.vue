@@ -49,7 +49,7 @@
               :auto-scale="false"
               class="slot-user"
               :class="{
-                'slot-user--danger': !entry.confirmed,
+                'slot-user--fs-color-danger-500': !entry.confirmed,
                 'slot-user--success': entry.confirmed,
               }"
             />
@@ -57,7 +57,7 @@
               v-else
               class="slot-free fas fa-question"
               :class="{
-                'slot-free--danger': !entry.confirmed,
+                'slot-free--fs-color-danger-500': !entry.confirmed,
                 'slot-free--success': entry.confirmed,
               }"
             />
@@ -136,7 +136,7 @@ export default {
   overflow: hidden;
   border: 2px currentColor solid;
 
-    &--danger {
+    &--fs-color-danger-500 {
     border-color: $danger;
   }
   &--success {
@@ -155,7 +155,7 @@ export default {
   justify-content: center;
   border: 2px currentColor solid;
 
-  &--danger {
+  &--fs-color-danger-500 {
     background-color: darken($danger, 10%);
     color: $danger;
   }

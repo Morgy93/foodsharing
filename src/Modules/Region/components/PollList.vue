@@ -17,7 +17,7 @@
       >
         <b-link
           :href="$url('pollNew', regionId)"
-          class="btn btn-sm btn-secondary btn-block"
+          class="btn btn-sm btn-primary btn-block"
         >
           {{ $i18n('polls.new_poll') }}
         </b-link>

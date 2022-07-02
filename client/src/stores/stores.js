@@ -10,6 +10,21 @@ export const getters = {
     return store.stores.length > 0 ? store.stores : []
   },
 
+  getOthers () {
+    const others = store.stores.filter(s => !s.isManaging && !s.isJumping)
+    return others.length > 0 ? others : []
+  },
+
+  getManaging () {
+    const managing = store.stores.filter(s => s.isManaging)
+    return managing.length > 0 ? managing : []
+  },
+
+  getJumping () {
+    const jumping = store.stores.filter(s => s.isJumping)
+    return jumping.length > 0 ? jumping : []
+  },
+
   has (id) {
     return store.stores.find(store => store.id === id)
   },

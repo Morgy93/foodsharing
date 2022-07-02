@@ -24,16 +24,16 @@
             class="fas fa-search"
           />
         </label>
-        <input
-          id="forum-searchfield"
-          v-model="query"
-          :placeholder="$i18n('search.forum')"
-          type="text"
-          class="form-control text-primary"
-          aria-labelledby="forum-searchfield-label"
-          aria-placeholder=""
-        >
       </span>
+      <input
+        id="forum-searchfield"
+        v-model="query"
+        :placeholder="$i18n('search.forum')"
+        type="text"
+        class="form-control text-primary"
+        aria-labelledby="forum-searchfield-label"
+        aria-placeholder=""
+      >
     </div>
     <div
       v-if="isOpen"

@@ -4,7 +4,7 @@ import $ from 'jquery'
 
 import storage from '@/storage'
 import { GET, goTo, isMob, pulseError, img } from '@/script'
-import serverData from '@/server-data'
+import serverData from '@/scripts/server-data'
 import { dateFormat } from '@/./utils'
 import msg from '@/msg'
 import conversationStore from '@/stores/conversations'

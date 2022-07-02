@@ -1,0 +1,63 @@
+@import "bootstrap-theme.scss";
+
+// html to be strong!
+// and override .bootstrap a
+html a[href]:not(:where(
+    /* exclude */
+    .brand,
+    .nav-link,
+    .btn,
+    .dropdown-action,
+    .dropdown-item,
+    .list-group-item,
+    .icon,
+    .card-footer a,
+    footer a,
+    /* corrections to disable old styles */
+    .team-memberinfo a,
+    .author a,
+    .leaflet-control-zoom a,
+)) {
+    text-decoration: underline;
+    font-weight: 600;
+    color: var(--fs-color-secondary-700);
+
+    &:hover {
+        color: var(--fs-color-secondary-800);
+    }
+}
+
+html a.icon:hover {
+    text-decoration: unset;
+}
+
+html input:disabled {
+    cursor: not-allowed;
+    opacity: 1;
+    color: var(--fs-color-gray-700);
+    background-color: var(--fs-color-gray-100);
+    border-color: var(--fs-color-gray-200);
+}
+
+
+/*
+    Overrides the bootstrap-vue's default button styles
+*/
+.btn.btn-primary {
+    @include button-variant($secondary, $secondary);
+}
+
+.btn.btn-secondary {
+    @include button-variant($primary, $primary);
+}
+
+.btn.btn-light {
+    @include button-variant($gray, white);
+}
+
+.modal-footer {
+    /*button-variant($background, $border, $hover-background: darken($background, 7.5%), $hover-border: darken($border, 10%), $active-background: darken($background, 10%), $active-border: darken($border, 12.5%))*/
+    & .btn.btn-secondary {
+        @include button-variant(white,lighten($gray, 40%), #e6e6e6, lighten($gray, 40%), #e6e6e6, $gray);
+    }
+}

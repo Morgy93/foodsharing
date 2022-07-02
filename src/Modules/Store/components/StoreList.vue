@@ -52,7 +52,7 @@
           >
             <a
               :href="$url('storeAdd', regionId)"
-              class="btn btn-sm btn-secondary btn-block"
+              class="btn btn-sm btn-primary btn-block"
             >
               {{ $i18n('store.addNewStoresButton') }}
             </a>
@@ -140,7 +140,7 @@
         >
           <a
             :href="$url('storeAdd', regionId)"
-            class="btn btn-sm btn-secondary btn-block"
+            class="btn btn-sm btn-primary btn-block"
           >
             {{ $i18n('store.addNewStoresButton') }}
           </a>

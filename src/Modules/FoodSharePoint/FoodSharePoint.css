@@ -22,7 +22,7 @@ ul.food-share-point-list li a span.image {
 }
 
 ul.food-share-point-list li a span.image.noimage {
-  background-color: #ffffff;
+  background-color: var(--fs-color-light);
 }
 
 span.clear {

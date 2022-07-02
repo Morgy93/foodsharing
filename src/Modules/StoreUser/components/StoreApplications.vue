@@ -129,7 +129,7 @@ export default {
 }
 
 .name a {
-  color: var(--secondary);
+  color: var(--fs-color-secondary-500);
   font-size: 0.875rem;
 }
 </style>

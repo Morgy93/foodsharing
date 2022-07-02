@@ -140,15 +140,15 @@ export default {
   }
 
   .free-slots {
-    background-color: var(--fs-green);
-    border-color: #4e871c;
-    color: var(--white);
+    background-color: var(--fs-color-secondary-500);
+    border-color: var(--fs-color-secondary-600);
+    color: var(--fs-color-light);
   }
 
   .hidden-users {
-    background-color: #fcfaee;
-    border-color: var(--fs-beige);
-    color: rgba(var(--fs-brown-rgb), 0.75);
+    border-color: var(--fs-color-primary-100);
+    border-color: var(--fs-color-primary-300);
+    color: var(--fs-color-primary-alpha-70);
   }
 
   .free-slots + .hidden-users {

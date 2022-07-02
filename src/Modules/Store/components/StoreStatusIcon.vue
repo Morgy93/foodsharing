@@ -51,25 +51,25 @@ export default {
     text-align: center;
 
     &[data-status="1"] {
-        color: grey;
+        color: var(--fs-color-gray-500);
     }
 
     &[data-status="2"] {
-        color: #f6e257;
+        color: var(--fs-color-warning-500);
     }
 
     &[data-status="3"],
     &[data-status="5"] {
-        color: #79aa51;
+        color: var(--fs-color-secondary-500);
     }
 
     &[data-status="4"],
     &[data-status="7"] {
-        color: #df4b4d;
+        color: var(--fs-color-danger-500);
     }
 
     &[data-status="6"] {
-        color: #4765f3;
+        color: var(--fs-color-info-500);
     }
 }
 </style>

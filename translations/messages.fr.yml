@@ -873,7 +873,7 @@ register:
   password_required: Il faut renseigner un mot de passe.
   login_passwd2: nouvelle saisie du mot de passe
   login_passwd1: Mot de passe (minimum 8 caractères)
-  birthdate_hint: Tu trouveras plus d'informations dans la rubrique <a href="?page=legal"
+  birthdate_hint: Tu trouveras plus d'informations dans la rubrique <a href="/?page=legal"
     target="_blank">Datenschutzerklärung</a> au point 2d) Bei der Anmeldung als Foodsharer
     bzw. Foodsaver.
   requiredFields: saisie obligatoire
@@ -2334,7 +2334,7 @@ regionPin:
     Ceci sera affiché dans la fenêtre contextuelle de l'épingle de la carte…
   pin_visible: Épingle visible sur la carte
 numbers:
-  thousands_separator:  
+  thousands_separator:
   decimal_separator: ','
   million_abbreviation: ' M'
   billion_abbreviation: ' Mrd'

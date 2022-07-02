@@ -70,7 +70,7 @@ class RegionApiCest
 	public function canNotLeaveRegionWithoutLogin(ApiTester $I)
 	{
 		$I->sendPOST('api/region/' . $this->region['id'] . '/leave');
-		$I->seeResponseCodeIs(\Codeception\Util\HttpCode::FORBIDDEN);
+		$I->seeResponseCodeIs(\Codeception\Util\HttpCode::UNAUTHORIZED);
 		$I->seeResponseIsJson();
 		// cannot test whether leaving did not change database since
 		// there is no user to look at

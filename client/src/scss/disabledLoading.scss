@@ -8,7 +8,7 @@
     left: 0;
     right: 0;
     bottom: 0;
-    background-color: rgba(255,255,255,0.8);
+    background-color: var(--fs-color-gray-alpha-10);
 }
 .disabledLoading::before {
     position: absolute;
@@ -17,7 +17,7 @@
     width: 40px;
     background: white url('/img/469.gif') no-repeat center center;
     border-radius: 20px;
-    border: 1px solid grey;
+    border: 1px solid var(--fs-color-gray-500);
     top: 50%;
     left: 50%;
     margin-top: -20px;

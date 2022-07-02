@@ -14,14 +14,14 @@ export default {
   computed: {
     user: () => DataUser.getters.getUser(),
     isFoodsaver: () => DataUser.getters.isFoodsaver(),
-    hasMailBox: () => DataUser.getters.getMailBox() > 0,
-    getUnreadCount: () => DataUser.getters.getMailUnreadCount(),
+    // hasMailBox: () => DataUser.getters.getMailBox() > 0,
+    // getUnreadCount: () => DataUser.getters.getMailUnreadCount(),
     isVisibleOnMobile () {
       return !this.viewIsXL
     },
-    homeHref () {
-      return (this.user) ? this.$url('dashboard') : this.$url('home')
-    },
+    // homeHref () {
+    //   return (this.user) ? this.$url('dashboard') : this.$url('home')
+    // },
     loginReferrerHref () {
       return this.$url('login') + '&ref=' + encodeURIComponent(this.loginReferrer())
     },

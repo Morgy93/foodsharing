@@ -25,8 +25,8 @@
   width: calc(100% - 8px);
   margin: 10px 0;
   border-radius: 6px;
-  background-color: #ffffff;
-  border: 1px solid var(--border);
+  background-color: var(--fs-color-light);
+  border: 1px solid var(--fs-color-border);
 }
 
 .fbasket-desc {

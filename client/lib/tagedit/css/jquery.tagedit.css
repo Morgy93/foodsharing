@@ -13,18 +13,18 @@
 /**
  * Styles of the tagedit inputsforms
  */
-.tagedit-list {margin: 0; padding: 5px 5px 0 5px; border:1px solid #C9BCAF;-moz-border-radius:6px; /* Firefox */
+.tagedit-list {margin: 0; padding: 5px 5px 0 5px; border:1px solid var(--fs-color-border);-moz-border-radius:6px; /* Firefox */
 	-webkit-border-radius:6px; /* Safari, Chrome */
 	-khtml-border-radius:6px; /* Konqueror */
-	border-radius:6px; /* CSS3 */background-color:#FFFFFF;cursor:text; width: 91%; overflow: auto; font-size: 1em;min-height:23px; }
+	border-radius:6px; /* CSS3 */background-color:var(--fs-color-light);cursor:text; width: 91%; overflow: auto; font-size: 1em;min-height:23px; }
 .tagedit-list li.tagedit-listelement {list-style-type: none; float: left; margin: 0 5px 5px 0; padding: 0; }
 /* New Item input */
-.tagedit-list li.tagedit-listelement-new input {border: 0; height: 100%; padding: 2px 5px; width: 15px; background: transparent;}
+.tagedit-list li.tagedit-listelement-new input {border: 0; height: 100%; padding: 2px 5px; width: 15px; background: var(--fs-color-transparent);}
 .tagedit-list li.tagedit-listelement-new input:focus {outline: none;}
 .tagedit-list li.tagedit-listelement-new input.tagedit-input-disabled {display: none;}
 /* Item that is put to the List */
-.tagedit-list li.tagedit-listelement-old {font-size:12px;background-color: #4A3520; border: 1px solid #4A3520; padding: 2px 0px 2px 6px; -moz-border-radius: 4px 4px 4px 4px; -webkit-border-radius: 4px 4px 4px 4px; border-radius: 4px 4px 4px 4px; height:16px;color:#FFFFFF;}
-.tagedit-list li.tagedit-listelement-old:hover {background-color: #FFFFFF; color:#4A3520;cursor:pointer;}
+.tagedit-list li.tagedit-listelement-old {font-size:12px;background-color: var(--fs-color-primary-500); border: 1px solid var(--fs-color-primary-500); padding: 2px 0px 2px 6px; -moz-border-radius: 4px 4px 4px 4px; -webkit-border-radius: 4px 4px 4px 4px; border-radius: 4px 4px 4px 4px; height:16px;color:var(--fs-color-light);}
+.tagedit-list li.tagedit-listelement-old:hover {background-color: var(--fs-color-light); color:var(--fs-color-primary-500);cursor:pointer;}
 .tagedit-list li.tagedit-listelement-old a.tagedit-close,
 .tagedit-list li.tagedit-listelement-old a.tagedit-break,
 .tagedit-list li.tagedit-listelement-old a.tagedit-delete,
@@ -33,7 +33,7 @@
 .tagedit-list li.tagedit-listelement-old a.tagedit-break {background-image: url(/img/undo.png); margin-right: 0;}
 .tagedit-list li.tagedit-listelement-old a.tagedit-delete {background-image: url(/img/delete.png); margin: 0 5px 0 2px; background-position: right center;}
 /* Items that are edited */
-.tagedit-list li.tagedit-listelement-edit input.tagedit-edit-input {border: 0; background: transparent; font-size: 11px; color: #666; padding: 0;}
+.tagedit-list li.tagedit-listelement-edit input.tagedit-edit-input {border: 0; background: var(--fs-color-transparent); font-size: 11px; color: var(--fs-color-gray-300); padding: 0;}
 .tagedit-list li.tagedit-listelement-edit input:focus {outline: none;}
 .tagedit-list li.tagedit-listelement-edit a.tagedit-break {border: 0; margin-left: 0;}
 .tagedit-list li.tagedit-listelement-edit a.tagedit-close,
@@ -44,8 +44,8 @@
 .tagedit-list li.tagedit-listelement-deleted span {text-decoration: line-through;}
 .tagedit-list li.tagedit-listelement-deleted a.tagedit-close {margin-right: 0;}
 .ui-autocomplete {
-    background: none repeat scroll 0 0 #4A3520;
-    color: #FFFFFF;
+    background: none repeat scroll 0 0 var(--fs-color-primary-500);
+    color: var(--fs-color-light);
     font-size: 12px;
     border:0;
     border-radius:4px;
@@ -53,5 +53,5 @@
 }
 .ui-autocomplete li a
 {
-	color: #FFFFFF;
+	color: var(--fs-color-light);
 }

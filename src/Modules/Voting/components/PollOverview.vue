@@ -17,12 +17,12 @@
         >
           <b-link
             :href="$url('pollEdit', poll.id)"
-            class="btn btn-sm btn-secondary mb-3"
+            class="btn btn-sm btn-primary mb-3"
           >
             {{ $i18n('poll.edit.title') }}
           </b-link>
           <b-link
-            class="btn btn-sm btn-secondary mb-3"
+            class="btn btn-sm btn-primary mb-3"
             @click="showCancelConfirmDialog"
           >
             {{ $i18n('poll.cancel.title') }}

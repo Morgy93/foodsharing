@@ -130,7 +130,7 @@ export default {
 <style lang="scss" scoped>
 .bootstrap {
   ::v-deep .form-control {
-      background-color: var(--fs-white);
+      background-color: var(--fs-color-light);
   }
 
   .invalid-feedback {
@@ -144,7 +144,7 @@ export default {
     }
 
     .input-group-text {
-      background-color: var(--fs-beige);
+      background-color: var(--fs-color-primary-300);
       padding-left: 12px;
     }
   }
@@ -158,7 +158,7 @@ export default {
 
   .card ::v-deep a[href] {
     font-weight: bolder;
-    color: var(--fs-green);
+    color: var(--fs-color-secondary-500);
   }
 }
 

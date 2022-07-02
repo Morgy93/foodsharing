@@ -77,7 +77,7 @@ class RegionAdminControl extends Control
 	{
 		return '<button
 			id="deletebezirk"
-			class="btn btn-secondary btn-sm"
+			class="btn btn-primary"
 			style="visibility: hidden;"
 			onclick="deleteActiveGroup()">'
 				. $this->translator->trans('region.delete') .

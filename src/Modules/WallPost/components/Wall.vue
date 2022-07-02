@@ -15,7 +15,7 @@
         class="text-right"
       >
         <button
-          class="btn btn-secondary btn-sm"
+          class="btn btn-primary btn-sm"
           @click="addPost"
         >
           {{ i18n('button.send') }}

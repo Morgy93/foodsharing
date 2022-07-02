@@ -25,14 +25,14 @@
     </div>
     <div class="col-sm-auto">
       <button
-        class="btn btn-secondary mt-3"
+        class="btn btn-primary mt-3"
         type="button"
         @click="$emit('prev')"
       >
         {{ $i18n('register.prev') }}
       </button>
       <button
-        class="btn btn-secondary mt-3"
+        class="btn btn-primary mt-3"
         type="submit"
         @click.prevent="redirect()"
       >
@@ -88,7 +88,7 @@ export default {
 </script>
 <style lang="scss" scoped>
 .is-invalid {
-    outline: red auto 1px;
+    outline: var(--fs-color-danger-500) auto 1px;
 }
 .invalid-feedback {
   font-size: 100%;

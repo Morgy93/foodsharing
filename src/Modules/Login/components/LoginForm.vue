@@ -109,7 +109,7 @@ import { login } from '@/api/user'
 
 import { pulseError, pulseSuccess } from '@/script'
 import i18n from '@/i18n'
-import serverData from '@/server-data'
+import serverData from '@/scripts/server-data'
 
 export default {
   data () {

@@ -24,8 +24,8 @@ table.pintable tr td.img img {
 }
 
 table.pintable tr.milestone {
-  background-color: #f5f5b5;
-  border: 1px solid #d9bb73;
+  background-color: var(--fs-color-warning-200);
+  border: 1px solid var(--fs-color-warning-300);
   margin-top: 10px;
   margin-bottom: 10px;
 }
@@ -33,13 +33,13 @@ table.pintable tr.milestone {
 table.pintable tr.milestone td {
   vertical-align: middle;
   text-align: center;
-  color: var(--fs-brown);
+  color: var(--fs-color-primary-500);
   padding-top: 10px;
   padding-bottom: 10px;
 }
 
 table.pintable tr.milestone td a {
-  color: #cb672b;
+  color: var(--fs-color-warning-600);
   text-decoration: none;
 }
 

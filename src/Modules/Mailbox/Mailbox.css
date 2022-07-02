@@ -9,7 +9,7 @@
 }
 
 .records-table {
-  border: 1px solid #d7cdbd;
+  border: 1px solid var(--fs-color-border);
   border-collapse: collapse;
   border-spacing: 0;
   display: table;
@@ -22,8 +22,8 @@
 }
 
 .records-table thead td {
-  border-left: 1px solid #d7cdbd;
-  color: #a58d6a;
+  border-left: 1px solid var(--fs-color-border);
+  color: var(--fs-color-primary-400);
   font-size: 11px;
   font-weight: bold;
   overflow: hidden;
@@ -37,7 +37,7 @@
 }
 
 .records-table thead td a, .records-table thead td span {
-  color: #a58d6a;
+  color: var(--fs-color-primary-400);
   display: block;
   overflow: hidden;
   padding: 7px;
@@ -46,9 +46,9 @@
 }
 
 .records-table tbody td {
-  background-color: #ffffff;
-  border-bottom: 1px solid #dddddd;
-  border-left: 1px dotted #d7cdbd;
+  background-color: var(--fs-color-light);
+  border-bottom: 1px solid var(--fs-color-gray-200);
+  border-left: 1px dotted var(--fs-color-border);
   cursor: default;
   overflow: hidden;
   padding: 2px 7px;
@@ -61,25 +61,25 @@
 }
 
 .records-table tr.selected td {
-  background-color: var(--fs-brown);
-  color: #ffffff !important;
+  background-color: var(--fs-color-primary-500);
+  color: var(--fs-color-light) !important;
 }
 
 .records-table tr.selected td a, .records-table tr.selected td span {
-  color: #ffffff !important;
+  color: var(--fs-color-light) !important;
 }
 
 .records-table tr.unfocused td {
-  background: none repeat scroll 0 0 #4db0d2 !important;
-  color: #ffffff !important;
+  background: none repeat scroll 0 0 var(--fs-color-info-300) !important;
+  color: var(--fs-color-light) !important;
 }
 
 .records-table tr.unfocused td a, .records-table tr.unfocused td span {
-  color: #ffffff !important;
+  color: var(--fs-color-light) !important;
 }
 
 .records-table tr.deleted td, .records-table tr.deleted td a {
-  color: #cccccc !important;
+  color: var(--fs-color-gray-200) !important;
 }
 
 .records-table td.status {
@@ -118,7 +118,7 @@
   overflow: auto;
   margin-top: 10px;
   padding: 5px;
-  box-shadow: inset 0 0 3px var(--fs-brown);
+  box-shadow: inset 0 0 3px var(--fs-color-primary-500);
   background-image: url(/img/icon-mail/attach-loader.gif);
   background-repeat: no-repeat;
   background-position: center;
@@ -128,27 +128,27 @@
 }
 
 .edit-body {
-  background-color: #ffffff;
+  background-color: var(--fs-color-light);
   margin-top: 10px;
   padding: 5px;
   border: 0;
-  box-shadow: inset 0 0 3px var(--fs-brown);
+  box-shadow: inset 0 0 3px var(--fs-color-primary-500);
   font-size: 14px;
 }
 
 .von-select {
   width: 407px;
   padding: 3px;
-  background-color: #fff;
-  border: 1px solid #ebe6de;
+  background-color: var(--fs-color-light);
+  border: 1px solid var(--fs-color-border);
 }
 
 td.data input.data {
   width: 400px;
   padding: 3px;
   margin-top: 3px;
-  background-color: #fff;
-  border: 1px solid #ebe6de;
+  background-color: var(--fs-color-light);
+  border: 1px solid var(--fs-color-border);
 }
 
 .message.read-0 td {
@@ -177,12 +177,12 @@ span.status.answer-1 {
 }
 
 #mailattch {
-  background-color: #ffffff;
+  background-color: var(--fs-color-light);
   overflow: auto;
   margin-top: 10px;
   height: 23px;
   padding: 5px;
-  box-shadow: inset 0 0 3px var(--fs-brown);
+  box-shadow: inset 0 0 3px var(--fs-color-primary-500);
 }
 
 #mailattch ul {
@@ -212,8 +212,8 @@ span.status.answer-1 {
 }
 
 #mailattch ul li a:hover {
-  background-color: var(--fs-brown);
-  color: #ffffff;
+  background-color: var(--fs-color-primary-500);
+  color: var(--fs-color-light);
 }
 
 table.edit-table {

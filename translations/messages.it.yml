@@ -508,7 +508,7 @@ register:
   email_invalid: L'indirizzo e-mail non è valido.
   login_email: Indirizzo e-mail
   email_required: È richiesto un indirizzo e-mail.
-  birthdate_hint: Puoi trovare ulteriori informazioni nella <a href="?page=legal"
+  birthdate_hint: Puoi trovare ulteriori informazioni nella <a href="/?page=legal"
     target="_blank">Protezione dati</a> al punto 2d) quando ti registri come foodsharer
     o foodsaver.
   requiredFields: Informazione obbligatoria

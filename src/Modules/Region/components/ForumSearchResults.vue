@@ -33,7 +33,7 @@
 </template>
 
 <script>
-import SearchResultEntry from '@/components/Topbar/Items/Search/SearchResultEntry'
+import SearchResultEntry from '@/components/SearchBar/SearchResultEntry'
 import differenceInCalendarYears from 'date-fns/differenceInCalendarYears'
 import parseISO from 'date-fns/parseISO'
 
@@ -113,7 +113,7 @@ export default {
   & > small {
     float: right;
     margin: 0.1rem 0;
-    color: var(--gray);
+    color: var(--fs-color-gray-500);
   }
 }
 </style>

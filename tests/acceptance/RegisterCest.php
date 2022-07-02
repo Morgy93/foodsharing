@@ -38,7 +38,7 @@ class RegisterCest
 
 		// click signup, then press next on the first dialog
 
-		$I->click('Mitmachen');
+		$I->click('.testing-register-link');
 		$I->click('Jetzt registrieren');
 		$I->waitForElementVisible('#step1', 4);
 		$I->fillField('#email', $this->email);
@@ -80,12 +80,16 @@ class RegisterCest
 
 		$I->amOnPage('/');
 
-		$I->click('#login');
-		$I->waitForElement('#login-email');
-		$I->fillField('#login-email', $this->email);
-		$I->fillField('#login-password', $this->password);
-		$I->click('#login-btn');
-		$I->waitForElement('#pulse-success');
+		$I->waitForElement('.testing-login-dropdown');
+		$I->click('.testing-login-dropdown');
+		$I->fillField('.testing-login-input-email', $this->email);
+		$I->fillField('.testing-login-input-password', $this->password);
+		$I->click('.testing-login-click-submit');
+		$I->waitForActiveAPICalls();
+		$I->waitForElementNotVisible('#pulse-success');
+		$I->waitForPageBody();
+		$I->waitForElement('.testing-intro-field');
+		$I->see('Hallo', '.testing-intro-field');
 
 		$I->seeInDatabase('fs_foodsaver', [
 			'email' => $this->stripped_email,
@@ -106,7 +110,7 @@ class RegisterCest
 
 		// click signup, then press next on the first dialog
 
-		$I->click('Mitmachen');
+		$I->click('.testing-register-link');
 		$I->click('Jetzt registrieren');
 		$I->waitForElementVisible('#step1', 4);
 		$I->fillField('#email', $this->email);
@@ -147,12 +151,16 @@ class RegisterCest
 
 		$I->amOnPage('/');
 
-		$I->click('#login');
-		$I->waitForElement('#login-email');
-		$I->fillField('#login-email', $this->email);
-		$I->fillField('#login-password', $this->password);
-		$I->click('#login-btn');
-		$I->waitForElement('#pulse-success');
+		$I->waitForElement('.testing-login-dropdown');
+		$I->click('.testing-login-dropdown');
+		$I->fillField('.testing-login-input-email', $this->email);
+		$I->fillField('.testing-login-input-password', $this->password);
+		$I->click('.testing-login-click-submit');
+		$I->waitForActiveAPICalls();
+		$I->waitForElementNotVisible('#pulse-success');
+		$I->waitForPageBody();
+		$I->waitForElement('.testing-intro-field');
+		$I->see('Hallo', '.testing-intro-field');
 
 		$I->seeInDatabase('fs_foodsaver', [
 			'email' => $this->stripped_email,
@@ -169,7 +177,7 @@ class RegisterCest
 		$I->wantTo('get an error when trying to register with a blacklisted email address');
 
 		$I->amOnPage('/');
-		$I->click('Mitmachen');
+		$I->click('.testing-register-link');
 		$I->click('Jetzt registrieren');
 		$I->waitForElementVisible('#step1', 4);
 		$blacklistedEmailDomain = $I->grabFromDatabase('fs_email_blacklist', 'email', ['email like' => '%']);

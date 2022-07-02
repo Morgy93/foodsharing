@@ -36,17 +36,16 @@ class AcceptanceTester extends Codeception\Actor
 		$I = $this;
 		$I->amOnPage('/');
 		$I->executeJS('window.localStorage.clear();');
-		$I->waitForElement('#login');
-		$I->click('#login');
-		$I->waitForElement('#login-email');
-		$I->fillField('#login-email', $email);
-		$I->fillField('#login-password', $password);
-		$I->click('#login-btn');
+		$I->waitForElement('.testing-login-dropdown');
+		$I->click('.testing-login-dropdown');
+		$I->fillField('.testing-login-input-email', $email);
+		$I->fillField('.testing-login-input-password', $password);
+		$I->click('.testing-login-click-submit');
 		$I->waitForActiveAPICalls();
 		$I->waitForElementNotVisible('#pulse-success');
 		$I->waitForPageBody();
-		$I->waitForElement('.intro');
-		$I->see('Hallo', 'h1');
+		$I->waitForElement('.testing-intro-field');
+		$I->see('Hallo', '.testing-intro-field');
 	}
 
 	public function logMeOut()

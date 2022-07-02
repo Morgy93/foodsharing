@@ -97,25 +97,6 @@ class DashboardControl extends Control
 					],
 				];
 			}
-
-			if (!$this->session->getCurrentRegionId()) {
-				$this->pageHelper->addJs('becomeBezirk();');
-
-				$errors[] = (object)[
-					'type' => 'danger',
-					'tag' => 'error.choose_home_region',
-					'icon' => 'fa-map-marker-alt',
-					'title' => $this->translator->trans('error.choose_home_region.title'),
-					'description' => $this->translator->trans('error.choose_home_region.info'),
-					'isCloseable' => false,
-					'links' => [
-						[
-							'href' => 'javascript:becomeBezirk();',
-							'text' => 'error.choose_home_region.link'
-						]
-					],
-				];
-			}
 		}
 
 		if (!$this->session->get('email_is_activated')) {
@@ -153,7 +134,7 @@ class DashboardControl extends Control
 						'text' => 'error.mail_bounce.link_1',
 					],
 					[
-						'urlShortHand' => 'guideLockedEmail',
+						'urlShortHand' => 'freshdesk_locked_email',
 						'text' => 'error.mail_bounce.link_2',
 					]
 				],
@@ -187,11 +168,11 @@ class DashboardControl extends Control
 			$cnt['closeable'] = false;
 			$cnt['links'] = [
 				(object)[
-					'urlShortHand' => 'quizFs',
+					'urlShortHand' => 'quiz_foodsaver',
 					'text' => 'foodsaver.upgrade.to_fs',
 				],
 				(object)[
-					'urlShortHand' => 'quizLearning',
+					'urlShortHand' => 'quiz_learning_video',
 					'text' => 'foodsaver.upgrade.learning',
 				]
 			];

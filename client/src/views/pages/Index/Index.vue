@@ -21,14 +21,18 @@
               class="text-center mt-md-5"
             >
               <b-card-title class="mt-4 mt-md-0">
-                <h1>{{ $i18n('startpage.welcome_text') }}</h1>
+                <h1 class="text-dark">
+                  {{ $i18n('startpage.welcome_text') }}
+                </h1>
               </b-card-title>
               <b-card-text class="mt-4">
-                <h3>{{ $i18n('startpage.slogan_1') }}</h3>
+                <h3 class="text-dark">
+                  {{ $i18n('startpage.slogan_1') }}
+                </h3>
               </b-card-text>
               <b-card-text class="mt-5 text-center">
                 <b-button
-                  variant="secondary"
+                  variant="primary"
                   class="pl-5 pr-5"
                   :href="$url('joininfo')"
                 >
@@ -36,7 +40,7 @@
                 </b-button>
               </b-card-text>
               <h4
-                class="d-none d-sm-block"
+                class="text-dark d-none d-sm-block"
               >
                 <b>{{ $i18n('startpage.slogan_2') }}</b><br>
                 {{ $i18n('startpage.slogan_3') }}
@@ -180,7 +184,7 @@
                   {{ $i18n('startpage.member.text') }}
                   <b-link
                     class="link"
-                    href="?page=content&sub=joininfo"
+                    href="/?page=content&sub=joininfo"
                   >
                     {{ $i18n('startpage.more_infos') }}
                   </b-link>
@@ -265,7 +269,7 @@
         <p>
           <b-link
             class="link"
-            :href="$url('devdocsItTasks')"
+            :href="$url('devdocs_it_tasks')"
           >
             {{ $i18n('startpage.more_infos') }}
           </b-link>
@@ -355,7 +359,7 @@
             {{ $i18n('startpage.demands.text') }}
             <b-link
               class="link"
-              href="?page=content&sub=forderungen"
+              href="/?page=content&sub=forderungen"
             >
               {{ $i18n('startpage.more_infos') }}
             </b-link>
@@ -495,12 +499,12 @@ export default {
 }
 
 ::v-deep .link {
-  color: var(--fs-green);
+  color: var(--fs-color-secondary-500);
   font-weight: bold;
 }
 
 .line {
-  border-bottom: 1px solid var(--fs-light-grey);
+  border-bottom: 1px solid var(--fs-color-gray-500);
   width: 90%;
   margin: 0 auto;
 }
@@ -520,38 +524,33 @@ svg {
 }
 
 .teaser-background {
-  background-color: var(--fs-beige);
+  background-color: var(--fs-color-primary-200);
   max-width: 805px;
   max-height: 451px;
 }
 
 h5 {
   font-family: "Alfa Slab One", serif;
-  color: #333333;
   font-size: 1.375rem;
   letter-spacing: 0.05em;
 }
 
 ::v-deep h4 {
-  color: #333333;
   font-size: 1rem;
 }
 
 ::v-deep h3 {
-  color: #333333;
   font-weight: bold;
 }
 
 ::v-deep h2 {
   font-family: "Alfa Slab One", serif;
-  color: #333333;
   font-weight: normal;
   letter-spacing: 0.05em;
 }
 
 ::v-deep h1 {
   font-family: "Alfa Slab One", serif;
-  color: #333333;
   font-weight: normal;
   letter-spacing: 0.05em;
 }
@@ -565,27 +564,27 @@ No media query since this is the default in Bootstrap because it is "mobile firs
 ::v-deep h3 {font-size:1rem;} /*1rem = 16px*/
 
 .call-to-action-image {
-  background: #fff url(/img/startpage/mach-mit-desktop-544@1.5.png) center center no-repeat;
+  background: var(--fs-color-light) url(/img/startpage/mach-mit-desktop-544@1.5.png) center center no-repeat;
   height: 47rem;
 }
 
 .header-desktop {
-  background: #fff url(/img/startpage/header-desktop-544.png) center center no-repeat;
+  background: var(--fs-color-light) url(/img/startpage/header-desktop-544.png) center center no-repeat;
   min-height: 23rem;
 }
 
 .teaser-map {
-  background: #fff url(/img/startpage/karte-544@1.5.png) center center no-repeat;
+  background: var(--fs-color-light) url(/img/startpage/karte-544@1.5.png) center center no-repeat;
   height: 32rem;
 }
 
 .teaser-donate {
-  background: #fff url(/img/startpage/spenden-544.png) center center no-repeat;
+  background: var(--fs-color-light) url(/img/startpage/spenden-544.png) center center no-repeat;
   min-height: 22rem;
 }
 
 .map-copyright {
-  color: #333333;
+  color: var(--fs-color-dark);
   text-align: center;
   z-index: 1;
 }
@@ -606,22 +605,22 @@ Bootstrap 4 breakpoints
   ::v-deep h3 {font-size:1.25rem;} /*1rem = 16px*/
 
   .call-to-action-image {
-    background: #fff url(/img/startpage/mach-mit-desktop-786.png) center center no-repeat;
+    background: var(--fs-color-light) url(/img/startpage/mach-mit-desktop-786.png) center center no-repeat;
     height: 36rem;
   }
 
   .header-desktop {
-    background: #fff url(/img/startpage/header-desktop-789.png) center center no-repeat;
+    background: var(--fs-color-light) url(/img/startpage/header-desktop-789.png) center center no-repeat;
     min-height: 23rem;
   }
 
   .teaser-map {
-    background: #fff url(/img/startpage/karte-786.png) center center no-repeat;
+    background: var(--fs-color-light) url(/img/startpage/karte-786.png) center center no-repeat;
     height: 32rem;
   }
 
   .teaser-donate {
-    background: #fff url(/img/startpage/spenden-786.png) center center no-repeat;
+    background: var(--fs-color-light) url(/img/startpage/spenden-786.png) center center no-repeat;
     min-height: 22rem;
   }
 }
@@ -633,22 +632,22 @@ Bootstrap 4 breakpoints
   ::v-deep h3 {font-size:1.5rem;} /*1rem = 16px*/
 
   .call-to-action-image {
-    background: #fff url(/img/startpage/mach-mit-desktop-992@1.5.png) center center no-repeat;
+    background: var(--fs-color-light) url(/img/startpage/mach-mit-desktop-992@1.5.png) center center no-repeat;
     height: 33.5rem;
   }
 
   .header-desktop {
-    background: #fff url(/img/startpage/header-desktop-992.png) center center no-repeat;
+    background: var(--fs-color-light) url(/img/startpage/header-desktop-992.png) center center no-repeat;
     min-height: 23rem;
   }
 
   .teaser-map {
-    background: #fff url(/img/startpage/karte-992.png) center center;
+    background: var(--fs-color-light) url(/img/startpage/karte-992.png) center center;
     height: 25rem;
   }
 
   .teaser-donate {
-    background: #fff url(/img/startpage/spenden-992.png) center center no-repeat;
+    background: var(--fs-color-light) url(/img/startpage/spenden-992.png) center center no-repeat;
     max-height: 14rem;
   }
 
@@ -664,48 +663,46 @@ Bootstrap 4 breakpoints
   ::v-deep h3 {font-size:1.75rem;} /*1rem = 16px*/
 
   .call-to-action-image {
-    background: #fff url(/img/startpage/mach-mit-desktop-1200@1.5.png) center center no-repeat;
+    background: var(--fs-color-light) url(/img/startpage/mach-mit-desktop-1200@1.5.png) center center no-repeat;
     height: 30rem;
   }
 
   .header-desktop {
-    background: #fff url(/img/startpage/header-desktop-1200.png) center center no-repeat;
+    background: var(--fs-color-light) url(/img/startpage/header-desktop-1200.png) center center no-repeat;
     min-height: 23rem;
   }
 
   .teaser-map {
-    background: #fff url(/img/startpage/karte-1200.png) center center;
+    background: var(--fs-color-light) url(/img/startpage/karte-1200.png) center center;
     height: 25rem;
   }
 
   .teaser-donate {
-    background: #fff url(/img/startpage/spenden-1200.png) center center no-repeat;
+    background: var(--fs-color-light) url(/img/startpage/spenden-1200.png) center center no-repeat;
     max-height: 14rem;
   }
 }
 
 /* Extra large devices (large desktops, 1200px and up) */
 @media (min-width: 1200px) {
-  ::v-deep h1 {font-size:2.25rem;} /*1rem = 16px*/
-  ::v-deep h2 {font-size:2rem;} /*1rem = 16px*/
 
   .call-to-action-image {
-    background: #fff url(/img/startpage/mach-mit-desktop-1200@2x.png) center center no-repeat;
+    background: var(--fs-color-light) url(/img/startpage/mach-mit-desktop-1200@2x.png) center center no-repeat;
     height: 25rem;
   }
 
   .header-desktop {
-    background: #fff url(/img/startpage/header-desktop-1200@2x.png) center center no-repeat;
+    background: var(--fs-color-light) url(/img/startpage/header-desktop-1200@2x.png) center center no-repeat;
     min-height: 23rem;
   }
 
   .teaser-map {
-    background: #fff url(/img/startpage/karte-1200@2x.png) center center;
+    background: var(--fs-color-light) url(/img/startpage/karte-1200@2x.png) center center;
     height: 25rem;
   }
 
   .teaser-donate {
-    background: #fff url(/img/startpage/spenden-1200@2x.png) center center no-repeat;
+    background: var(--fs-color-light) url(/img/startpage/spenden-1200@2x.png) center center no-repeat;
     max-height: 23rem;
   }
 }

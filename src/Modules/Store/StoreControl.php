@@ -100,7 +100,7 @@ class StoreControl extends Control
 				]), $this->translator->trans('storeedit.actions')), CNT_RIGHT);
 			} else {
 				$this->flashMessageHelper->info($this->translator->trans('store.smneeded'));
-				$this->routeHelper->go('?page=settings&sub=up_bip');
+				$this->routeHelper->go('/?page=settings&sub=up_bip');
 			}
 		} elseif ($id = $this->identificationHelper->getActionId('delete')) {
 		} elseif ($id = $this->identificationHelper->getActionId('edit')) {

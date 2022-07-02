@@ -23,7 +23,7 @@ class BellsApiCest
 	public function canRequestBells(ApiTester $I)
 	{
 		$I->sendGET('api/bells');
-		$I->seeResponseCodeIs(HttpCode::FORBIDDEN);
+		$I->seeResponseCodeIs(HttpCode::UNAUTHORIZED);
 
 		$I->login($this->user['email']);
 		$I->sendGET('api/bells');
@@ -35,7 +35,7 @@ class BellsApiCest
 		$bellIds = array_slice($this->bells, 0, 3);
 
 		$I->sendPATCH('api/bells', ['ids' => $bellIds]);
-		$I->seeResponseCodeIs(HttpCode::FORBIDDEN);
+		$I->seeResponseCodeIs(HttpCode::UNAUTHORIZED);
 
 		$I->login($this->user['email']);
 		$I->sendPATCH('api/bells', ['ids' => $bellIds]);
@@ -60,7 +60,7 @@ class BellsApiCest
 	public function canDeleteBell(ApiTester $I)
 	{
 		$I->sendDELETE('api/bells/' . $this->bells[0]);
-		$I->seeResponseCodeIs(HttpCode::FORBIDDEN);
+		$I->seeResponseCodeIs(HttpCode::UNAUTHORIZED);
 
 		$I->seeInDatabase('fs_foodsaver_has_bell', [
 			'foodsaver_id' => $this->user['id'],

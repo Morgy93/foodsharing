@@ -3,7 +3,7 @@
 }
 
 .profile-infos {
-  color: var(--fs-brown);
+  color: var(--fs-color-primary-500);
   margin-bottom: -5px;
 }
 .profile-infos.profile-main {
@@ -22,19 +22,19 @@
 
 .verify,
 .unverify {
-  color: #ffffff;
+  color: var(--fs-color-light);
   font-weight: bold;
 }
 .verify {
-  background-color: var(--fs-green);
+  background-color: var(--fs-color-secondary-500);
 }
 .unverify {
-  background-color: red;
+  background-color: var(--fs-color-danger-500);
 }
 
 .profile.statdisplay {
-  margin: -20px auto 10px auto;
-  padding-bottom: 5px;
+  margin-bottom: 5rem;
+  padding-bottom: 2rem;
 }
 
 @media screen and (min-width: 500px) {
@@ -44,24 +44,27 @@
     float: right;
     display: block;
     width: 100%;
-    margin: 0 0 -60px 0;
-    padding-bottom: 5px;
+    margin-bottom: -5rem;
+    padding-bottom: 2rem;
   }
 }
 
 .profile.statdisplay .item {
   float: right;
-  display: block;
-  padding: 0 5px 0 5px;
+  display: flex;
   margin-right: 8px;
   border-radius: 50%;
-  background-color: var(--fs-green);
+  background-color: var(--fs-color-secondary-500);
   text-align: center;
-  width: 62px;
+  min-width: 85px;
+  min-height: 85px;
+  align-items: center;
+  justify-content: center;
+  flex-direction: column;
 }
 
 .profile.statdisplay .item span {
-  color: #fafafc;
+  color: var(--fs-color-light);
   letter-spacing: normal;
 }
 
@@ -84,7 +87,7 @@ div.statdisplay a.item:hover {
 }
 
 .stat_bananacount {
-  background: url("/img/banana.png") no-repeat center 22px;
+  background: url("/img/banana.png") no-repeat center 2rem;
 }
 
 .stat_bananacount.bouched {
@@ -113,7 +116,7 @@ div.pickup > div.pickup-title > div.store-title {
 
 .disabled {
   pointer-events: none;
-  background-color: #858789;
+  background-color: var(--fs-color-gray-400);
 }
 
 #disabledreports-link {
@@ -121,5 +124,5 @@ div.pickup > div.pickup-title > div.store-title {
 }
 #disabledreports a {
   font-weight: bolder;
-  color: var(--fs-green);
+  color: var(--fs-color-secondary-500);
 }

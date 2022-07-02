@@ -1,7 +1,7 @@
 <template>
   <Container
-    :tag="hasCoords ? 'basket.nearby' : 'basket.recent'"
-    :title="$i18n(hasCoords ? 'basket.nearby' : 'basket.recent')"
+    :tag="hasCoordinates ? 'basket.nearby' : 'basket.recent'"
+    :title="$i18n(hasCoordinates ? 'basket.nearby' : 'basket.recent')"
     :toggle-visiblity="data.length > defaultAmount"
     @show-full-list="showFullList"
     @reduce-list="reduceList"
@@ -29,7 +29,6 @@ import BasketField from './BasketField'
 import ListToggleMixin from '@/mixins/ContainerToggleMixin'
 
 export default {
-  name: 'BasketList',
   components: {
     Container,
     BasketField,
@@ -42,8 +41,8 @@ export default {
     radius () {
       return getters.getRadius()
     },
-    hasCoords () {
-      return DataUser.getters.getCoordinates()
+    hasCoordinates () {
+      return DataUser.getters.hasCoordinates()
     },
     data () {
       const data = getters.getNearby()

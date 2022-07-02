@@ -1,4 +1,4 @@
-import serverData from '@/server-data'
+import serverData from '@/scripts/server-data'
 import de from '@translations/messages.de.yml'
 import en from '@translations/messages.en.yml'
 import fr from '@translations/messages.fr.yml'

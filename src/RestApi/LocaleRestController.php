@@ -2,7 +2,7 @@
 
 namespace Foodsharing\RestApi;
 
-use Foodsharing\Lib\Session as Session;
+use Foodsharing\Lib\Session;
 use Foodsharing\Modules\Core\DBConstants\Foodsaver\UserOptionType;
 use Foodsharing\Modules\Settings\SettingsGateway;
 use FOS\RestBundle\Controller\AbstractFOSRestController;
@@ -10,7 +10,7 @@ use FOS\RestBundle\Controller\Annotations as Rest;
 use FOS\RestBundle\Request\ParamFetcher;
 use OpenApi\Annotations as OA;
 use Symfony\Component\HttpFoundation\Response;
-use Symfony\Component\HttpKernel\Exception\HttpException;
+use Symfony\Component\HttpKernel\Exception\UnauthorizedHttpException;
 
 class LocaleRestController extends AbstractFOSRestController
 {
@@ -35,7 +35,7 @@ class LocaleRestController extends AbstractFOSRestController
 	public function getLocaleAction(): Response
 	{
 		if (!$this->session->may()) {
-			throw new HttpException(401);
+			throw new UnauthorizedHttpException('');
 		}
 
 		$locale = $this->session->getLocale();
@@ -54,7 +54,7 @@ class LocaleRestController extends AbstractFOSRestController
 	public function setLocaleAction(ParamFetcher $paramFetcher): Response
 	{
 		if (!$this->session->may()) {
-			throw new HttpException(401);
+			throw new UnauthorizedHttpException('');
 		}
 
 		$locale = $paramFetcher->get('locale');

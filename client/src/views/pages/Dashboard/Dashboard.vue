@@ -84,7 +84,7 @@
             }"
           />
           <span
-            class="hide-for-users"
+            class="sr-only"
             v-html="$i18n(`dashboard.options.grid_toggle.${state ? 3 : 2}_columns`)"
           />
         </button>
@@ -197,7 +197,6 @@ export default {
     hasRightColumn () {
       return (this.hasPickups && this.visible.pickups) || (this.hasStores && this.visible.stores)
     },
-    hasCoordinates: () => DataUser.getters.hasCoordinates(),
     getCoordinates: () => DataUser.getters.getCoordinates(),
   },
   watch: {
@@ -216,11 +215,16 @@ export default {
           DataEvents.mutations.setInvited(this.events.invites)
         }
       },
+      immediate: true,
+      deep: true,
     },
     getCoordinates: {
-      async handler (newVal) {
-        await DataBaskets.mutations.fetchNearby(newVal)
+      async handler (coords) {
+        if (coords.lat && coords.lon) {
+          await DataBaskets.mutations.fetchNearby(coords)
+        }
       },
+      immediate: true,
       deep: true,
     },
   },

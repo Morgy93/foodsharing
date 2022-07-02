@@ -37,14 +37,14 @@
       </div>
     </div>
     <button
-      class="btn btn-secondary ml-3 mt-3"
+      class="btn btn-primary ml-3 mt-3"
       type="button"
       @click="$emit('prev')"
     >
       {{ $i18n('register.prev') }}
     </button>
     <button
-      class="btn btn-secondary mt-3"
+      class="btn btn-primary mt-3"
       type="submit"
       @click.prevent="redirect()"
     >
@@ -90,10 +90,10 @@ export default {
 </script>
 <style scoped>
 .datepickerClass {
-  border: 1px solid var(--border) !important;
+  border: 1px solid var(--fs-color-border) !important;
 }
 .datepicker ::v-deep .input-group-text{
-  background-color: var(--fs-green);
+  background-color: var(--fs-color-secondary-500);
   color: white;
 }
 </style>

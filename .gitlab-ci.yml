@@ -173,7 +173,7 @@ build:backend:
     - composer validate --no-check-all --no-check-publish
     - composer install --verbose --prefer-dist --no-progress --no-interaction --no-scripts --ignore-platform-reqs
     - (cd phinx && composer install --no-progress --no-interaction --no-scripts --ignore-platform-reqs)
-    - vendor/bin/php-cs-fixer fix --dry-run --diff --diff-format udiff --verbose --ansi
+    - vendor/bin/php-cs-fixer fix --dry-run --diff --verbose --ansi
     - vendor/bin/parallel-lint --no-progress --exclude vendor .
     - FS_ENV=dev vendor/bin/phpstan analyse --memory-limit=768M --no-progress
     - composer install --verbose --prefer-dist --no-progress --no-interaction --no-dev --classmap-authoritative --no-scripts --ignore-platform-reqs
@@ -184,7 +184,7 @@ build:backend:
     key: backend:build:v1
     paths:
     - vendor
-    - .php_cs.cache
+    - .php-cs-fixer.php.cache
   artifacts:
     expire_in: 1 week
     paths:

@@ -8,6 +8,7 @@ use Foodsharing\Permissions\BlogPermissions;
 use Foodsharing\Permissions\ContentPermissions;
 use Foodsharing\Permissions\MailboxPermissions;
 use Foodsharing\Permissions\NewsletterEmailPermissions;
+use Foodsharing\Permissions\ProfilePermissions;
 use Foodsharing\Permissions\QuizPermissions;
 use Foodsharing\Permissions\RegionPermissions;
 use Foodsharing\Permissions\ReportPermissions;
@@ -51,6 +52,7 @@ final class PageHelper
 	private ReportPermissions $reportPermissions;
 	private StorePermissions $storePermissions;
 	private WorkGroupPermissions $workGroupPermissions;
+	private ProfilePermissions $profilePermissions;
 	private Environment $twig;
 
 	public function __construct(
@@ -67,7 +69,8 @@ final class PageHelper
 		BlogPermissions $blogPermissions,
 		RegionPermissions $regionPermissions,
 		NewsletterEmailPermissions $newsletterEmailPermissions,
-		WorkGroupPermissions $workGroupPermissions
+		WorkGroupPermissions $workGroupPermissions,
+		ProfilePermissions $profilePermissions
 	) {
 		$this->twig = $twig;
 		$this->imageService = $imageService;
@@ -83,6 +86,7 @@ final class PageHelper
 		$this->reportPermissions = $reportPermissions;
 		$this->storePermissions = $storePermissions;
 		$this->workGroupPermissions = $workGroupPermissions;
+		$this->profilePermissions = $profilePermissions;
 	}
 
 	public function generateAndGetGlobalViewData(): array
@@ -113,12 +117,6 @@ final class PageHelper
 
 		$bodyClasses[] = 'page-' . $this->routeHelper->getPage();
 
-		if (in_array($this->routeHelper->getPage(), ['dashboard', 'index'])) {
-			$bodyClasses[] = 'bootstrap';
-		}
-
-		$footer = $this->getFooter();
-
 		return [
 			'head' => $this->getHeadData(),
 			'bread' => $this->bread,
@@ -129,7 +127,7 @@ final class PageHelper
 			'dev' => FS_ENV == 'dev',
 			'hidden' => $this->hidden,
 			'isMob' => $this->session->isMob(),
-			'footer' => $footer,
+			'footer' => $this->getFooter(),
 			'HTTP_HOST' => $_SERVER['HTTP_HOST'] ?? BASE_URL,
 			'content' => [
 				'main' => [
@@ -173,22 +171,22 @@ final class PageHelper
 			'firstname' => $user['name'] ?? '',
 			'lastname' => $user['nachname'] ?? '',
 			'may' => $this->session->may(),
+			'homeRegionId' => $user['bezirk_id'] ?? null,
+			'mailBoxId' => $user['mailbox_id'] ?? null,
+			'isFoodsaver' => $this->session->may('fs') ? true : false,
 			'verified' => $this->session->isVerified(),
-			'avatar' => [
-				'mini' => $this->imageService->img($user['photo'] ?? '', 'mini'),
-				'50' => $this->imageService->img($user['photo'] ?? '', '50'),
-				'130' => $this->imageService->img($user['photo'] ?? '', '130')
-			]
+			'avatar' => $user['photo'] ?? null,
 		];
 
+		$permissions = null;
 		if ($this->session->may()) {
 			$userData['token'] = $this->session->user('token');
+			$permissions = $this->getPermissions();
 		}
 
-		$location = null;
-
-		if ($pos = $this->session->get('blocation')) {
-			$location = [
+		$coordinates = null;
+		if ($pos = $this->session->getLocation()) {
+			$coordinates = [
 				'lat' => (float)$pos['lat'],
 				'lon' => (float)$pos['lon'],
 			];
@@ -202,13 +200,32 @@ final class PageHelper
 
 		return array_merge($this->jsData, [
 			'user' => $userData,
+			'permissions' => $permissions,
 			'page' => $this->routeHelper->getPage(),
 			'subPage' => $this->routeHelper->getSubPage(),
-			'location' => $location,
+			'coordinates' => $coordinates,
 			'ravenConfig' => $sentryConfig,
 			'isDev' => getenv('FS_ENV') === 'dev',
 			'locale' => $this->session->getLocale()
 		]);
+	}
+
+	private function getPermissions(): array
+	{
+		$data = $this->session->get('user');
+
+		return [
+			'mayEditUserProfile' => $this->profilePermissions->mayEditUserProfile($this->session->id()),
+			'mayAdministrateUserProfile' => $this->profilePermissions->mayAdministrateUserProfile($this->session->id(), $data['bezirk_id']),
+			'administrateBlog' => $this->blogPermissions->mayAdministrateBlog(),
+			'editQuiz' => $this->quizPermissions->mayEditQuiz(),
+			'handleReports' => $this->reportPermissions->mayHandleReports(),
+			'addStore' => $this->storePermissions->mayCreateStore(),
+			'manageMailboxes' => $this->mailboxPermissions->mayManageMailboxes(),
+			'editContent' => $this->contentPermissions->mayEditContent(),
+			'administrateNewsletterEmail' => $this->newsletterEmailPermissions->mayAdministrateNewsletterEmail(),
+			'administrateRegions' => $this->regionPermissions->mayAdministrateRegions(),
+		];
 	}
 
 	private function getMenu(): string
@@ -240,7 +257,6 @@ final class PageHelper
 
 		$params = array_merge(
 			[
-				'isLoggedIn' => $this->session->id() !== null,
 				'regions' => $regions,
 				'groups' => $workingGroups,
 			]

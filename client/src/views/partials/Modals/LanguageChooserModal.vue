@@ -1,0 +1,68 @@
+<template>
+  <b-modal
+    id="languageChooserModal"
+    ref="languageChooserModal"
+    :title="$i18n('language_chooser.title')"
+    :cancel-title="$i18n('button.cancel')"
+    :ok-title="$i18n('language_chooser.choose_button')"
+
+    @show="fetchLanguages"
+    @ok="changeLanguage"
+  >
+    {{ $i18n('language_chooser.content') }}
+    <div
+      v-if="loading"
+      class="loader-container mx-auto"
+    >
+      <i class="fas fa-spinner fa-spin" />
+    </div>
+    <b-form-select
+      v-else
+      v-model="language"
+      :options="languages"
+      text="Dropdown Button"
+    />
+  </b-modal>
+</template>
+
+<script>
+import { pulseError } from '@/script'
+import { getLocale, setLocale } from '@/api/locale'
+
+export default {
+  name: 'LanguageChooserModal',
+  data () {
+    return {
+      language: null,
+      languages: [
+        { value: 'de', text: 'Deutsch' },
+        { value: 'en', text: 'English' },
+        { value: 'fr', text: 'Français' },
+        { value: 'it', text: 'Italiano' },
+        { value: 'nb_NO', text: 'Norsk (Bokmål)' },
+      ],
+      loading: true,
+    }
+  },
+  methods: {
+    async fetchLanguages () {
+      this.loading = true
+      try {
+        this.language = await getLocale()
+      } catch (e) {
+        pulseError(this.$i18n('error_unexpected'))
+      }
+
+      this.loading = false
+    },
+    async changeLanguage () {
+      try {
+        await setLocale(this.language)
+        location.reload()
+      } catch (e) {
+        pulseError(this.$i18n('error_unexpected'))
+      }
+    },
+  },
+}
+</script>

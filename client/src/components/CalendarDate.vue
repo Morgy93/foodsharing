@@ -65,8 +65,8 @@ export default {
 
 <style lang="scss" scoped>
 .datebox {
-  --calendar-highlight-bg: #ff8746; // new orange
-  --calendar-highlight-text: #45a045; // modified kale
+  --calendar-highlight-bg: var(--fs-color-warning-500); // new orange
+  --calendar-highlight-text: var(--fs-color-secondary-500); // modified kale
   --calendar-font-size: 1rem;
   --calendar-line-height: 1.2;
   --calendar-border-radius: 6px;
@@ -82,12 +82,12 @@ export default {
     line-height: var(--calendar-line-height);
     font-weight: bold;
     background-color: var(--calendar-highlight-bg);
-    color: var(--white);
-    text-shadow: 1px 1px 1px rgba(0, 0, 0, 0.75);
+    color: var(--fs-color-light);
+    text-shadow: 1px 1px 1px var(--fs-color-gray-alpha-80);
   }
 
   .day {
-    border: 2px solid var(--border);
+    border: 2px solid var(--fs-color-border);
     border-radius: var(--calendar-border-radius);
     border-top: 0;
     border-top-left-radius: 0;

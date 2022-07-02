@@ -62,8 +62,11 @@ class StoreRestController extends AbstractFOSRestController
 	 */
 	public function getStoreAction(int $storeId): Response
 	{
+		if (!$this->session->id()) {
+			throw new UnauthorizedHttpException('', self::NOT_LOGGED_IN);
+		}
 		if (!$this->session->may('fs')) {
-			throw new UnauthorizedHttpException(self::NOT_LOGGED_IN);
+			throw new AccessDeniedHttpException('invalid permissions');
 		}
 		$maySeeDetails = $this->storePermissions->mayAccessStore($storeId);
 
@@ -86,7 +89,7 @@ class StoreRestController extends AbstractFOSRestController
 	public function getFilteredStoresForUserAction(): Response
 	{
 		if (!$this->session->may()) {
-			throw new UnauthorizedHttpException(self::NOT_LOGGED_IN);
+			throw new UnauthorizedHttpException('', self::NOT_LOGGED_IN);
 		}
 
 		$filteredStoresForUser = $this->storeTransactions->getFilteredStoresForUser($this->session->id());
@@ -109,7 +112,7 @@ class StoreRestController extends AbstractFOSRestController
 	public function getStorePosts(int $storeId): Response
 	{
 		if (!$this->session->may()) {
-			throw new UnauthorizedHttpException(self::NOT_LOGGED_IN);
+			throw new UnauthorizedHttpException('', self::NOT_LOGGED_IN);
 		}
 		if (!$this->storePermissions->mayReadStoreWall($storeId)) {
 			throw new AccessDeniedHttpException();
@@ -135,7 +138,7 @@ class StoreRestController extends AbstractFOSRestController
 	public function addStorePostAction(int $storeId, ParamFetcher $paramFetcher): Response
 	{
 		if (!$this->session->may()) {
-			throw new UnauthorizedHttpException(self::NOT_LOGGED_IN);
+			throw new UnauthorizedHttpException('', self::NOT_LOGGED_IN);
 		}
 		if (!$this->storePermissions->mayWriteStoreWall($storeId)) {
 			throw new AccessDeniedHttpException();
@@ -195,7 +198,7 @@ class StoreRestController extends AbstractFOSRestController
 	public function deleteStorePostAction(int $storeId, int $postId): Response
 	{
 		if (!$this->session->may()) {
-			throw new UnauthorizedHttpException(self::NOT_LOGGED_IN);
+			throw new UnauthorizedHttpException('', self::NOT_LOGGED_IN);
 		}
 		if (!$this->storePermissions->mayDeleteStoreWallPost($storeId, $postId)) {
 			throw new AccessDeniedHttpException();
@@ -226,7 +229,7 @@ class StoreRestController extends AbstractFOSRestController
 	public function requestStoreTeamMembershipAction(int $storeId, int $userId): Response
 	{
 		if (!$this->session->id()) {
-			throw new UnauthorizedHttpException(self::NOT_LOGGED_IN);
+			throw new UnauthorizedHttpException('', self::NOT_LOGGED_IN);
 		}
 		if (!$this->storeGateway->storeExists($storeId)) {
 			throw new NotFoundHttpException('Store does not exist.');
@@ -426,7 +429,7 @@ class StoreRestController extends AbstractFOSRestController
 	public function moveMemberToStandbyTeamAction(int $storeId, int $userId): Response
 	{
 		if (!$this->session->id()) {
-			throw new UnauthorizedHttpException(self::NOT_LOGGED_IN);
+			throw new UnauthorizedHttpException('', self::NOT_LOGGED_IN);
 		}
 		if (!$this->storePermissions->mayEditStoreTeam($storeId)) {
 			throw new AccessDeniedHttpException();
@@ -457,7 +460,7 @@ class StoreRestController extends AbstractFOSRestController
 	public function moveUserToRegularTeamAction(int $storeId, int $userId): Response
 	{
 		if (!$this->session->id()) {
-			throw new UnauthorizedHttpException(self::NOT_LOGGED_IN);
+			throw new UnauthorizedHttpException('', self::NOT_LOGGED_IN);
 		}
 		if (!$this->storePermissions->mayEditStoreTeam($storeId)) {
 			throw new AccessDeniedHttpException();
@@ -491,7 +494,7 @@ class StoreRestController extends AbstractFOSRestController
 	{
 		$sessionId = $this->session->id();
 		if (!$sessionId) {
-			throw new UnauthorizedHttpException(self::NOT_LOGGED_IN);
+			throw new UnauthorizedHttpException('', self::NOT_LOGGED_IN);
 		}
 		if (!$this->storeGateway->storeExists($storeId)) {
 			throw new NotFoundHttpException('Store does not exist.');

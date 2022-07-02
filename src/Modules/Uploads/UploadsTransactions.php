@@ -48,25 +48,25 @@ class UploadsTransactions
 				$img->flopImage();
 				break;
 			case Imagick::ORIENTATION_BOTTOMRIGHT:
-				$img->rotateImage('#000', 180);
+				$img->rotateImage('var(--fs-color-dark)', 180);
 				break;
 			case Imagick::ORIENTATION_BOTTOMLEFT:
 				$img->flopImage();
-				$img->rotateImage('#000', 180);
+				$img->rotateImage('var(--fs-color-dark)', 180);
 				break;
 			case Imagick::ORIENTATION_LEFTTOP:
 				$img->flopImage();
-				$img->rotateImage('#000', -90);
+				$img->rotateImage('var(--fs-color-dark)', -90);
 				break;
 			case Imagick::ORIENTATION_RIGHTTOP:
-				$img->rotateImage('#000', 90);
+				$img->rotateImage('var(--fs-color-dark)', 90);
 				break;
 			case Imagick::ORIENTATION_RIGHTBOTTOM:
 				$img->flopImage();
-				$img->rotateImage('#000', 90);
+				$img->rotateImage('var(--fs-color-dark)', 90);
 				break;
 			case Imagick::ORIENTATION_LEFTBOTTOM:
-				$img->rotateImage('#000', -90);
+				$img->rotateImage('var(--fs-color-dark)', -90);
 				break;
 			default: // Invalid orientation
 				break;

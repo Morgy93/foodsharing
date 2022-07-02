@@ -122,7 +122,7 @@ class QuizControl extends Control
 	{
 		return $this->view->topbar(
 			'Quizfrage  #' . (int)$question['id'],
-			'<a style="float:right;color:#FFF;font-size:13px;margin-top:-20px;" href="#" class="button" onclick="ajreq(\'editquest\',{id:' . (int)$question['id'] . ',qid:' . (int)$question['quiz_id'] . '});return false;">Frage bearbeiten</a>' . $question['text'] . '<p><strong>' . $question['fp'] . ' Fehlerpunkte, ' . $question['duration'] . ' Sekunden zum Antworten</strong></p>',
+			'<a style="float:right;color:var(--fs-color-light);font-size:13px;margin-top:-20px;" href="#" class="button" onclick="ajreq(\'editquest\',{id:' . (int)$question['id'] . ',qid:' . (int)$question['quiz_id'] . '});return false;">Frage bearbeiten</a>' . $question['text'] . '<p><strong>' . $question['fp'] . ' Fehlerpunkte, ' . $question['duration'] . ' Sekunden zum Antworten</strong></p>',
 			'<img src="/img/quiz.png" />'
 		);
 	}

@@ -104,7 +104,7 @@ hr {
 
 mark {
     background: #ff0;
-    color: #000
+    color: var(--fs-color-dark)
 }
 
 p, pre {
@@ -534,23 +534,23 @@ table {
     *font-size: 90%;
     *overflow: visible;
     padding: .5em 1em;
-    color: #444;
-    color: rgba(0, 0, 0, .8);
-    *color: #444;
+    color: var(--fs-color-dark);
+    color: var(--fs-color-gray-alpha-80);
+    *color: var(--fs-color-dark);
     border: 1px solid #999;
-    border: 0 rgba(0, 0, 0, 0);
+    border: 0 var(--fs-color-transparent);
     background-color: #E6E6E6;
     text-decoration: none;
     border-radius: 2px
 }
 
 .pure-button-hover, .pure-button:hover, .pure-button:focus {
-    filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='#00000000', endColorstr='#1a000000', GradientType=0);
-    background-image: -webkit-gradient(linear, 0 0, 0 100%, from(transparent), color-stop(40%, rgba(0, 0, 0, .05)), to(rgba(0, 0, 0, .1)));
-    background-image: -webkit-linear-gradient(transparent, rgba(0, 0, 0, .05) 40%, rgba(0, 0, 0, .1));
-    background-image: -moz-linear-gradient(top, rgba(0, 0, 0, .05) 0, rgba(0, 0, 0, .1));
-    background-image: -o-linear-gradient(transparent, rgba(0, 0, 0, .05) 40%, rgba(0, 0, 0, .1));
-    background-image: linear-gradient(transparent, rgba(0, 0, 0, .05) 40%, rgba(0, 0, 0, .1))
+    filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='var(--fs-color-dark)00', endColorstr='#1a000000', GradientType=0);
+    background-image: -webkit-gradient(linear, 0 0, 0 100%, from(transparent), color-stop(40%, rgba(0, 0, 0, .05)), to(var(--fs-color-gray-alpha-10)));
+    background-image: -webkit-linear-gradient(transparent, rgba(0, 0, 0, .05) 40%, var(--fs-color-gray-alpha-10));
+    background-image: -moz-linear-gradient(top, rgba(0, 0, 0, .05) 0, var(--fs-color-gray-alpha-10));
+    background-image: -o-linear-gradient(transparent, rgba(0, 0, 0, .05) 40%, var(--fs-color-gray-alpha-10));
+    background-image: linear-gradient(transparent, rgba(0, 0, 0, .05) 40%, var(--fs-color-gray-alpha-10))
 }
 
 .pure-button:focus {
@@ -558,7 +558,7 @@ table {
 }
 
 .pure-button-active, .pure-button:active {
-    box-shadow: 0 0 0 1px rgba(0, 0, 0, .15) inset, 0 0 6px rgba(0, 0, 0, .2) inset
+    box-shadow: 0 0 0 1px var(--fs-color-gray-alpha-20) inset, 0 0 6px var(--fs-color-gray-alpha-20) inset
 }
 
 .pure-button[disabled], .pure-button-disabled, .pure-button-disabled:hover, .pure-button-disabled:focus, .pure-button-disabled:active {
@@ -584,14 +584,14 @@ table {
 
 .pure-button-primary, .pure-button-selected, a.pure-button-primary, a.pure-button-selected {
     background-color: #0078e7;
-    color: #fff
+    color: var(--fs-color-light)
 }
 
 .pure-form input[type=text], .pure-form input[type=password], .pure-form input[type=email], .pure-form input[type=url], .pure-form input[type=date], .pure-form input[type=month], .pure-form input[type=time], .pure-form input[type=datetime], .pure-form input[type=datetime-local], .pure-form input[type=week], .pure-form input[type=number], .pure-form input[type=search], .pure-form input[type=tel], .pure-form input[type=color], .pure-form select, .pure-form textarea {
     padding: .5em .6em;
     display: inline-block;
-    border: 1px solid #ccc;
-    box-shadow: inset 0 1px 3px #ddd;
+    border: 1px solid var(--fs-color-gray-200);
+    box-shadow: inset 0 1px 3px var(--fs-color-gray-200);
     border-radius: 4px;
     -webkit-box-sizing: border-box;
     -moz-box-sizing: border-box;
@@ -601,8 +601,8 @@ table {
 .pure-form input:not([type]) {
     padding: .5em .6em;
     display: inline-block;
-    border: 1px solid #ccc;
-    box-shadow: inset 0 1px 3px #ddd;
+    border: 1px solid var(--fs-color-gray-200);
+    box-shadow: inset 0 1px 3px var(--fs-color-gray-200);
     border-radius: 4px;
     -webkit-box-sizing: border-box;
     -moz-box-sizing: border-box;
@@ -626,7 +626,7 @@ table {
 }
 
 .pure-form input[type=file]:focus, .pure-form input[type=radio]:focus, .pure-form input[type=checkbox]:focus {
-    outline: thin dotted #333;
+    outline: thin dotted var(--fs-color-dark);
     outline: 1px auto #129FEA
 }
 
@@ -648,9 +648,9 @@ table {
 }
 
 .pure-form input[readonly], .pure-form select[readonly], .pure-form textarea[readonly] {
-    background: #eee;
+    background: var(--fs-color-border);
     color: #777;
-    border-color: #ccc
+    border-color: var(--fs-color-gray-200)
 }
 
 .pure-form input:focus:invalid, .pure-form textarea:focus:invalid, .pure-form select:focus:invalid {
@@ -667,8 +667,8 @@ table {
 }
 
 .pure-form select {
-    border: 1px solid #ccc;
-    background-color: #fff
+    border: 1px solid var(--fs-color-gray-200);
+    background-color: var(--fs-color-light)
 }
 
 .pure-form select[multiple] {
@@ -690,7 +690,7 @@ table {
     width: 100%;
     padding: .3em 0;
     margin-bottom: .3em;
-    color: #333;
+    color: var(--fs-color-dark);
     border-bottom: 1px solid #e5e5e5
 }
 
@@ -790,14 +790,14 @@ table {
 .pure-form .pure-help-inline, .pure-form-message-inline {
     display: inline-block;
     padding-left: .3em;
-    color: #666;
+    color: var(--fs-color-gray-300);
     vertical-align: middle;
     font-size: .875em
 }
 
 .pure-form-message {
     display: block;
-    color: #666;
+    color: var(--fs-color-gray-300);
     font-size: .875em
 }
 
@@ -963,7 +963,7 @@ table {
 }
 
 .pure-menu.pure-menu-open, .pure-menu.pure-menu-horizontal li .pure-menu-children {
-    background: #fff;
+    background: var(--fs-color-light);
     border: 1px solid #b7b7b7
 }
 
@@ -972,7 +972,7 @@ table {
 }
 
 .pure-menu a {
-    border: 1px solid transparent;
+    border: 1px solid var(--fs-color-transparent);
     border-left: 0;
     border-right: 0
 }
@@ -982,7 +982,7 @@ table {
 }
 
 .pure-menu .pure-menu-can-have-children > li:hover:after {
-    color: #fff
+    color: var(--fs-color-light)
 }
 
 .pure-menu .pure-menu-open {
@@ -990,17 +990,17 @@ table {
 }
 
 .pure-menu li a:hover, .pure-menu li a:focus {
-    background: #eee
+    background: var(--fs-color-border)
 }
 
 .pure-menu li.pure-menu-disabled a:hover, .pure-menu li.pure-menu-disabled a:focus {
-    background: #fff;
+    background: var(--fs-color-light);
     color: #bfbfbf
 }
 
 .pure-menu .pure-menu-disabled > a {
     background-image: none;
-    border-color: transparent;
+    border-color: var(--fs-color-transparent);
     cursor: default
 }
 
@@ -1019,7 +1019,7 @@ table {
 }
 
 .pure-menu .pure-menu-selected a {
-    color: #000
+    color: var(--fs-color-dark)
 }
 
 .pure-menu.pure-menu-open.pure-menu-fixed {
@@ -1064,7 +1064,7 @@ table {
 
 .pure-paginator .prev, .pure-paginator .next {
     color: #C0C1C3;
-    text-shadow: 0 -1px 0 rgba(0, 0, 0, .45)
+    text-shadow: 0 -1px 0 var(--fs-color-gray-alpha-40)
 }
 
 .pure-paginator .prev {
@@ -1082,7 +1082,7 @@ table {
 
     .pure-menu-children li {
         display: block;
-        border-bottom: 1px solid #000
+        border-bottom: 1px solid var(--fs-color-dark)
     }
 }
 
@@ -1094,7 +1094,7 @@ table {
 }
 
 .pure-table caption {
-    color: #000;
+    color: var(--fs-color-dark);
     font: italic 85%/1 arial, sans-serif;
     padding: 1em 0;
     text-align: center
@@ -1115,13 +1115,13 @@ table {
 
 .pure-table thead {
     background: #e0e0e0;
-    color: #000;
+    color: var(--fs-color-dark);
     text-align: left;
     vertical-align: bottom
 }
 
 .pure-table td {
-    background-color: transparent
+    background-color: var(--fs-color-transparent)
 }
 
 .pure-table-odd td {

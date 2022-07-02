@@ -9,7 +9,7 @@ import PhoneNumber from 'awesome-phonenumber'
 
 import { ajreq } from '@/script'
 
-import serverData from '@/server-data'
+import serverData from '@/scripts/server-data'
 import i18n from '@/i18n'
 // this last call imports the text in the respective languages
 

@@ -66,7 +66,7 @@ class EventControl extends Control
 		}
 
 		$regionId = $event['bezirk_id'];
-		$regionLink = '?page=bezirk&bid=' . $regionId;
+		$regionLink = '/?page=bezirk&bid=' . $regionId;
 		$regionEventsLink = $regionLink . '&sub=events';
 		$regionName = $this->regionGateway->getRegionName($regionId) ?? '';
 
@@ -112,7 +112,7 @@ class EventControl extends Control
 			return $this->routeHelper->go('/?page=event&id=' . $eventId);
 		}
 
-		$regionEventsLink = '?page=bezirk&sub=events&bid=' . $event['bezirk_id'];
+		$regionEventsLink = '/?page=bezirk&sub=events&bid=' . $event['bezirk_id'];
 		$this->pageHelper->addBread($this->translator->trans('events.bread'), $regionEventsLink);
 		$this->pageHelper->addBread($event['name'], '/?page=event&id=' . $eventId);
 		$this->pageHelper->addBread($this->translator->trans('events.edit'));

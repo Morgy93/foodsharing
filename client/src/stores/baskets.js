@@ -17,6 +17,9 @@ export const getters = {
   getRadius () {
     return store.radius
   },
+  getRequestdCount () {
+    return store.own.map(basket => basket.requests.length).reduce((a, b) => a + b, 0)
+  },
 }
 
 export const mutations = {

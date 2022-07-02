@@ -78,7 +78,7 @@
               v-if="mayEditMembers"
               v-b-tooltip.hover.top
               :title="$i18n(managementModeEnabled ? 'group.member_list.admin_mode_off' : 'group.member_list.admin_mode_on')"
-              :class="[managementModeEnabled ? ['text-warning', 'active'] : 'text-light', 'btn', 'btn-secondary', 'btn-sm']"
+              :class="[managementModeEnabled ? ['text-warning', 'active'] : 'text-light', 'btn', 'btn-primary', 'btn-sm']"
               @click.prevent="toggleManageControls"
             >
               <i class="fas fa-fw fa-cog" />

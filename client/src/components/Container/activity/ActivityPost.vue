@@ -53,11 +53,10 @@
         <i
           v-else
           class="d-flex text-secondary img-thumbnail w-100 h-100 align-items-center justify-content-center"
-          style="min-width: 50px;"
-          :class="[icon]"
+          :class="icon"
         />
         <span
-          class="hide-for-users"
+          class="sr-only"
           v-html="fs_id ? fs_name : sender_email"
         />
       </a>
@@ -150,9 +149,9 @@
         </div>
         <small
           v-if="!viewIsMobile"
-          class="d-inline-block mt-2 text-muted"
+          class="d-inline-flex align-items-center mt-2 text-muted"
         >
-          <i class="fas fa-info-circle" />
+          <i class="fas fa-info-circle mr-1" />
           <span v-html="$i18n('activitypost.quickreply_info')" />
         </small>
       </div>
@@ -186,7 +185,6 @@ import StateTogglerMixin from '@/mixins/StateTogglerMixin'
 import MediaQueryMixin from '@/mixins/MediaQueryMixin'
 import AutoResizeTextareaMixin from '@/mixins/AutoResizeTextareaMixin'
 
-import serverData from '@/server-data'
 import { sendQuickreply } from '@/api/dashboard'
 import { pulseInfo } from '@/script'
 import { url } from '@/urls'
@@ -231,8 +229,6 @@ export default {
       truncatedLength: 280,
       isTruncatedText: true,
       qrLoading: false,
-      user_id: serverData.user.id,
-      user_avatar: serverData.user.avatar.mini,
       quickreplyValue: '',
     }
   },
@@ -313,6 +309,7 @@ export default {
 .activity-item:not(:first-child) {
   border-radius: var(--border-radius);
   margin-bottom: .5rem;
+  border-top-width: 1px;
 }
 
 .clickable {
@@ -325,36 +322,15 @@ export default {
   cursor: text;
 }
 
-.icon {
-  height: 50px;
-  width: 50px;
-  line-height: 0.7em;
-  font-size: 1.5rem;
-
-  &:hover {
-    text-decoration: none;
-
-    & .img-thumbnail {
-      background-color: var(--light);
-    }
-  }
-}
-
 ::v-deep.markdown {
-
   p {
     font-size: 15px;
-    color: var(--dark);
+    color: var(--fs-color-dark);
     line-height: 1.5;
   }
 
   p:last-child {
     margin-bottom: 0;
-  }
-
-  a[href]{
-    font-weight: bold;
-    text-decoration: underline;
   }
 }
 

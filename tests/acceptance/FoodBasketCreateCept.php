@@ -13,11 +13,10 @@ $I->wantTo('Ensure I can create a food basket');
 $I->login($foodsaver['email'], $pass);
 
 $I->amOnPage('/');
-
-$I->click('.topbar-baskets > a');
+$I->see('Essenskörbe', ['css' => '.testing-basket-dropdown']);
+$I->click('.testing-basket-dropdown > .nav-link');
 $I->waitForText('Essenskorb anlegen');
-
-$I->click('Essenskorb anlegen');
+$I->click('.testing-basket-create');
 $I->waitForText('Wie lange soll dein Essenskorb gültig sein?');
 /*
  * Check for default options on the foodbasket create form.
@@ -90,14 +89,16 @@ $I->amOnPage($I->foodBasketInfoUrl($id));
 $I->waitForActiveAPICalls();
 $I->waitForElementNotVisible('#fancybox-loading');
 $I->waitForText('Anfragen (1)');
-$I->click('.topbar-baskets > a');
-$I->waitForText('angefragt von');
-$I->click('.topbar-baskets .requests');
-$I->waitForText('Hi friend, can I have');
-$I->click('.topbar-baskets > a');
-$I->waitForText('angefragt von');
-$I->moveMouseOver(['css' => '.topbar-baskets .food-basket-create-test-class']);
-$I->click('button[title="Essenskorbanfrage abschließen"]');
+// Open the dropdown menu
+$I->see('Essenskörbe', ['css' => '.testing-basket-dropdown']);
+$I->click('.testing-basket-dropdown > .nav-link');
+$I->see('Essenskorb anlegen', ['css' => '.testing-basket-create']);
+// Open chat
+$I->click('.testing-basket-requests');
+$I->see('Hi friend, can I have', ['css' => '.chatboxmessage']);
+// Reject request
+$I->click('.testing-basket-dropdown > .nav-link');
+$I->click('.testing-basket-requests-close');
 $I->waitForText('Essenskorbanfrage von ' . $picker['name'] . ' abschließen');
 $I->see('Hat alles gut geklappt?');
 $I->seeOptionIsSelected('#fetchstate-wrapper input[name=fetchstate]', '2');

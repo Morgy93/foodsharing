@@ -47,10 +47,10 @@ class VotingApiCest
 	public function canSeePolls(ApiTester $I)
 	{
 		$I->sendGET(self::POLLS_API . '/' . $this->poll['id']);
-		$I->seeResponseCodeIs(Http::FORBIDDEN);
+		$I->seeResponseCodeIs(Http::UNAUTHORIZED);
 
 		$I->sendGET(self::GROUPS_API . '/' . $this->region['id'] . '/polls');
-		$I->seeResponseCodeIs(Http::FORBIDDEN);
+		$I->seeResponseCodeIs(Http::UNAUTHORIZED);
 
 		$I->login($this->userFoodsaver['email']);
 		$I->sendGET(self::POLLS_API . '/' . $this->poll['id']);

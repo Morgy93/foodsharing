@@ -52,7 +52,7 @@ class MapRestController extends AbstractFOSRestController
 		}
 		if (in_array('betriebe', $types)) {
 			if (!$this->session->id()) {
-				throw new UnauthorizedHttpException('Not logged in.');
+				throw new UnauthorizedHttpException('', 'Not logged in.');
 			}
 
 			$excludedStoreTypes = [];

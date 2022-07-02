@@ -3,6 +3,7 @@
     class="informations-wrapper position-relative"
     :class="{'multiply': count > 1 && !allVisible, 'single': allVisible}"
   >
+    <ErrorFieldMissingRegion />
     <ErrorField
       v-for="(prompt, key) in list"
       :key="key"
@@ -22,10 +23,12 @@
 
 <script>
 import ErrorField from './ErrorField.vue'
+import ErrorFieldMissingRegion from './ErrorFieldMissingRegion.vue'
 
 export default {
   components: {
     ErrorField,
+    ErrorFieldMissingRegion,
   },
   props: {
     allVisible: { type: Boolean, default: false },

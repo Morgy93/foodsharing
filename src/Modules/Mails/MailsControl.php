@@ -8,12 +8,15 @@ use Foodsharing\Modules\Core\Database;
 use Foodsharing\Modules\Core\InfluxMetrics;
 use Foodsharing\Utility\EmailHelper;
 use Foodsharing\Utility\RouteHelper;
+use Symfony\Component\Mailer\MailerInterface;
+use Symfony\Component\Mime\Address;
+use Symfony\Component\Mime\Email;
 
 class MailsControl extends ConsoleControl
 {
 	private MailsGateway $mailsGateway;
 	private Database $database;
-	private \Swift_Mailer $mailer;
+	private MailerInterface $mailer;
 	private InfluxMetrics $metrics;
 	private RouteHelper $routeHelper;
 	private EmailHelper $emailHelper;
@@ -29,7 +32,7 @@ class MailsControl extends ConsoleControl
 		MailsGateway $mailsGateway,
 		Database $database,
 		InfluxMetrics $metrics,
-		\Swift_Mailer $mailer,
+		MailerInterface $mailer,
 		RouteHelper $routeHelper,
 		EmailHelper $emailHelper
 	) {
@@ -307,34 +310,33 @@ class MailsControl extends ConsoleControl
 	public function handleEmailRateLimited($data)
 	{
 		self::info('Mail from: ' . $data['from'][0] . ' (' . $data['from'][1] . ')');
-		$email = new \Swift_Message();
+		$email = new Email();
 
 		$mailParts = explode('@', $data['from'][0]);
 		$fromDomain = end($mailParts);
 
 		if (in_array($fromDomain, MAILBOX_OWN_DOMAINS, true)) {
-			$email->setFrom($data['from'][0], $data['from'][1]);
+			$email->from(new Address($data['from'][0], $data['from'][1] ?? ''));
 		} else {
-			$email->setFrom(DEFAULT_EMAIL, $data['from'][1]);
-			$email->setReplyTo($data['from'][0], $data['from'][1]);
+			$email->from(new Address(DEFAULT_EMAIL, $data['from'][1] ?? ''));
+			$email->replyTo(new Address($data['from'][0], $data['from'][1] ?? ''));
 		}
 
 		$subject = preg_replace('/\s+/', ' ', trim($data['subject']));
 		if (!$subject) {
 			$subject = '[Leerer Betreff]';
 		}
-		$email->setSubject($subject);
-		$email->setBody($data['html'], 'text/html');
-		$email->addPart($data['body'], 'text/plain');
+		$email->subject($subject);
+		$email->html($data['html'], 'text/html');
+		$email->text($data['body'], 'text/plain');
 
 		if (!empty($data['attachments'])) {
 			foreach ($data['attachments'] as $a) {
-				$attachment = \Swift_Attachment::fromPath($a[0]);
-				$attachment->setFilename($a[1]);
-				$email->attach($attachment);
+				$email->attachFromPath($a[0], $a[1]);
 			}
 		}
 		$mailCount = 0;
+		$recipients = [];
 		foreach ($data['recipients'] as $r) {
 			$r[0] = strtolower($r[0]);
 			self::info('To: ' . $r[0]);
@@ -344,12 +346,17 @@ class MailsControl extends ConsoleControl
 				continue;
 			}
 			if (!$this->mailsGateway->emailIsBouncing($r[0])) {
-				$email->addTo($r[0], $r[1]);
+				if (!empty($r[1])) {
+					$recipients[] = new Address($r[0], $r[1]);
+				} else {
+					$recipients[] = new Address($r[0]);
+				}
 				++$mailCount;
 			} else {
 				self::error('bouncing address');
 			}
 		}
+		$email->to(...$recipients);
 		if ($mailCount < 1) {
 			return true;
 		}
@@ -357,7 +364,6 @@ class MailsControl extends ConsoleControl
 		for ($max_try = 2; $max_try > 0; --$max_try) {
 			try {
 				self::info('send email tries remaining ' . ($max_try));
-				$this->mailer->getTransport()->ping();
 				$this->mailer->send($email);
 				self::success('email send OK');
 
@@ -369,7 +375,7 @@ class MailsControl extends ConsoleControl
 				}
 
 				break;
-			} catch (\Exception $e) {
+			} catch (\Throwable $e) {
 				self::error('email send error: ' . $e->getMessage());
 				self::error(print_r($data, true));
 			}

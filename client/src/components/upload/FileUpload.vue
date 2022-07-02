@@ -33,7 +33,7 @@
           {{ $i18n('upload.no_image_yet') }}
         </div>
         <button
-          class="btn btn-sm btn-secondary"
+          class="btn btn-sm btn-primary"
           :class="{'disabledLoading': isLoading}"
           @click.prevent="openUploadDialog"
         >
@@ -53,7 +53,7 @@
         {{ $i18n('upload.no_image_chosen') }}
       </div>
       <button
-        class="btn btn-sm btn-secondary"
+        class="btn btn-sm btn-primary"
         :class="{'disabledLoading': isLoading}"
         @click.prevent="openUploadDialog"
       >
@@ -214,7 +214,7 @@ export default {
 <style lang="scss" scoped>
 
 .preview {
-  background-color: #eee;
+  background-color: var(--fs-color-gray-500);
   padding: 0;
   img {
     width: 100%;

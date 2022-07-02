@@ -1,0 +1,42 @@
+// adds a background color to the body {
+html body {
+    background-color: var(--fs-color-background);
+}
+
+// removes the line below navtabs
+.nav.nav-tabs {
+    border-bottom: 0;
+}
+
+// sometimes modals are created inside a different aligned element
+.modal {
+    text-align: left;
+}
+
+// bring jquery-ui 'ui-front' elements in front of bootstrap elements
+.ui-front {
+    z-index: $zindex-tooltip;
+}
+.ui-front.ui-autocomplete {
+    z-index: #{$zindex-tooltip+1};
+}
+
+
+.hide-for-users {
+    @extend .sr-only;
+}
+
+// adds a keyboard key look to the code
+code.key {
+    padding: 0.05rem 0.3rem;
+    border-radius: var(--border-radius);
+    border: 1px solid var(--fs-color-secondary-500);
+    background-color: var(--fs-color-secondary-200);
+    color: var(--fs-color-secondary-800);
+    font-weight: 600;
+}
+
+// in lists brings back the spacer lines
+.list-group .list-group-item + .list-group-item {
+    border-top-width: 1px;
+}
