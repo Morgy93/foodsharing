@@ -14,7 +14,7 @@
                   <td>{{ $i18n('pass.date') }}</td>
                   <td>Letzter Login</td>
                   <td>{{ $i18n('pass.verified') }}</td>
-                  <td>Aktion</td>
+                  <td>Actions</td>
                 </tr>
               </thead>
               <tbody>
@@ -41,16 +41,16 @@
                        v-b-modal.deverification-modal
                        @click="foodsaverIdForDeverification = user.id"
                     />
-                    <i v-if="!user.is_verified" class="fas fa-times-circle fa-2x text-danger"/>
+                    <i v-if="!user.is_verified" class="fas fa-times-circle fa-2x text-danger"
+                       v-b-modal.verification-modal
+                       @click="foodsaverIdForVerification = user.id"
+                    />
                   </td>
                   <td>
-                    <button
-                      type="button"
-                      class="btn btn-sm btn-block btn-secondary"
-                      data-toggle="modal"
-                      data-target="#foodsaver-details-modal"
+                    <button class="btn btn-block btn-danger" v-b-modal.remove-from-region-modal
+                            @click="foodsaverIdForRemoving = user.id"
                     >
-                      <i class="fa fa-eye" />
+                      <i class="fas fa-sign-out-alt"></i>
                     </button>
                   </td>
                 </tr>
@@ -72,17 +72,21 @@
             <button class="btn btn-sm btn-block btn-success">
               {{ $i18n('pass.nav.generate') }}
             </button>
-            <button class="btn btn-sm btn-block btn-danger">
-              Aus Bezirk entfernen
-            </button>
           </div>
         </Container>
       </div>
     </div>
 
+    <b-modal id="verification-modal" title="Verification" ok-title="Yes" @ok="() => verificate(this.foodsaverIdForVerification)" >
+      <p>{{ $i18n('pass.verify.confirm') }} {{ $i18n('pass.verify.text') }}</p>
+    </b-modal>
 
     <b-modal id="deverification-modal" title="Deverification" ok-title="Yes" @ok="() => deverificate(this.foodsaverIdForDeverification)" >
       <p>Do you want remove the verification status?</p>
+    </b-modal>
+
+    <b-modal id="remove-from-region-modal" title="Remove from region" ok-title="Yes" @ok="() => removeFromRegion(this.foodsaverIdForRemoving)" >
+      <p>Do you want remove the foodsaver?</p>
     </b-modal>
   </section>
 </template>
@@ -91,7 +95,7 @@
 
 import Container from '@/components/Container/Container.vue'
 import Avatar from '@/components/Avatar.vue'
-import { listRegionMembersDetailed } from '@/api/regions'
+import { listRegionMembersDetailed, removeMember } from '@/api/regions'
 import { pulseError } from '@/script'
 import i18n from '@/i18n'
 import { deverifyUser, verifyUser } from '@/api/verification'
@@ -114,6 +118,8 @@ export default {
       options_container_title: i18n('pass.nav.options'),
       foodsaver: [],
       foodsaverIdForDeverification: null,
+      foodsaverIdForVerification: null,
+      foodsaverIdForRemoving: null,
     }
   },
   mounted: function () {
@@ -154,7 +160,7 @@ export default {
         verifyUser(foodsaverId)
         this.updateVerificationOfFoodsaverInTable(foodsaverId, true)
       } catch (e) {
-        pulseError(e)
+        pulseError(e.message)
       }
     },
     updateVerificationOfFoodsaverInTable (foodsaverId, newVerificationStatus) {
@@ -164,6 +170,13 @@ export default {
           foodsaver.displayed_data.last_pass_date = new Date().toLocaleString()
           break
         }
+      }
+    },
+    removeFromRegion (foodsaverId) {
+      try {
+        removeMember(this.regionId, foodsaverId)
+      } catch (e) {
+        pulseError(e.message)
       }
     },
   },
