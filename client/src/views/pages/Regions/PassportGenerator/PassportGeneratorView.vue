@@ -14,7 +14,7 @@
                   <td>{{ $i18n('pass.date') }}</td>
                   <td>Letzter Login</td>
                   <td>{{ $i18n('pass.verified') }}</td>
-                  <td>Actions</td>
+                  <td></td>
                 </tr>
               </thead>
               <tbody>
@@ -47,7 +47,7 @@
                     />
                   </td>
                   <td>
-                    <button class="btn btn-block btn-danger" v-b-modal.remove-from-region-modal
+                    <button class="btn btn-block btn-outline-danger" v-b-modal.remove-from-region-modal
                             @click="foodsaverIdForRemoving = user.id"
                     >
                       <i class="fas fa-sign-out-alt"></i>
