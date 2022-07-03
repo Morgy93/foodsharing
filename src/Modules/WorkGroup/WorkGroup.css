@@ -1,26 +1,16 @@
-@media (min-width: 800px) {
-  .members {
-    width: 18%;
-    float: left;
-  }
-
-  .groups .teaser {
-    margin-left: 18%;
-  }
+.teaser {
+  margin-top: 1rem;
 }
 
-.teaser {
-  padding-top: 30px;
+.members .member {
+  margin-bottom: 1rem;
+  display: inline-block;
 }
 
 .groups .photo {
   float: right;
-  margin-left: 10px;
+  margin-left: 1.2rem;
   width: auto;
-}
-
-.groups .bottom_bar {
-  margin-top: 15px;
 }
 
 #apply-form textarea {

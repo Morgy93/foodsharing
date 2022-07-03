@@ -4,6 +4,8 @@
     ref="searchBarModal"
     button-size="sm"
     size="lg"
+
+    @shown="focusSearchbar"
   >
     <template #modal-header>
       <label
@@ -117,6 +119,9 @@ export default {
     },
   },
   methods: {
+    focusSearchbar () {
+      this.$refs.searchField.focus()
+    },
     delayedFetch () {
       if (this.timeout) {
         clearTimeout(this.timeout)

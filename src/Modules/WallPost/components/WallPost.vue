@@ -169,7 +169,7 @@ export default {
   vertical-align: top;
   padding: calc(2 * var(--storewall-padding)) var(--storewall-padding);
   position: relative;
-  border-top: 1px solid var(--fs-color-border);
+  border-top: 1px solid var(--fs-border-default);
 
   .member-pic ::v-deep img {
     width: 50px;
@@ -231,7 +231,7 @@ export default {
     margin: 0.5rem;
     margin-left: 0;
     padding-left: 0.5rem;
-    border-left: 3px solid var(--fs-color-border);
+    border-left: 3px solid var(--fs-border-default);
   }
 }
 
@@ -267,7 +267,7 @@ export default {
 
   // Display quotes as more distinct
   ::v-deep blockquote {
-    border-left: 3px solid var(--fs-color-border);
+    border-left: 3px solid var(--fs-border-default);
     padding-left: 1rem;
     padding-top: 0.5rem;
     padding-bottom: 0.5rem;

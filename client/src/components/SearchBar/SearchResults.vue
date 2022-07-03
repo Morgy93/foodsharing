@@ -275,6 +275,6 @@ export default {
 .entry:not(:last-child) {
   padding-bottom: 1rem;
   margin-bottom: 1rem;
-  border-bottom: 1px solid var(--fs-color-border);
+  border-bottom: 1px solid var(--fs-border-default);
 }
 </style>

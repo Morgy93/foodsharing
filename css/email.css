@@ -1,15 +1,15 @@
 body {
-  background-color: var(--fs-color-warning-100);
+  background-color: #faf7e5;
 }
 
 body, p, div, td, th {
   font-size: 13px;
   font-family: Arial, sans-serif;
-  color: var(--fs-color-warning-800);
+  color: #31210c;
 }
 
 a {
-  color: var(--fs-color-secondary-500);
+  color: #f36933;
 }
 
 li {
@@ -27,23 +27,23 @@ a:hover {
 a.button {
   display: inline-block;
   padding: 6px 16px;
-  border: 1px solid var(--fs-color-light);
-  background-color: var(--fs-color-primary-500);
-  color: var(--fs-color-light) !important;
+  border: 1px solid #ffffff;
+  background-color: var(--fs-brown);
+  color: #ffffff !important;
   font-weight: bold;
   border-radius: 8px;
 }
 
 a.button:hover {
-  border: 1px solid var(--fs-color-primary-500);
-  background-color: var(--fs-color-light);
-  color: var(--fs-color-primary-500) !important;
+  border: 1px solid var(--fs-brown);
+  background-color: #ffffff;
+  color: var(--fs-brown) !important;
   text-decoration: none !important;
 }
 
 .border {
   padding: 10px;
-  border-top: 1px solid var(--fs-color-primary-500);
-  border-bottom: 1px solid var(--fs-color-primary-500);
-  background-color: var(--fs-color-light);
+  border-top: 1px solid var(--fs-brown);
+  border-bottom: 1px solid var(--fs-brown);
+  background-color: #ffffff;
 }

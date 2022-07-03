@@ -3,6 +3,17 @@ html body {
     background-color: var(--fs-color-background);
 }
 
+p {
+    word-break: break-word;
+}
+
+.page-container {
+    @extend .container;
+    @extend .card;
+    @extend .border;
+    @extend .p-4;
+}
+
 // removes the line below navtabs
 .nav.nav-tabs {
     border-bottom: 0;
@@ -40,3 +51,4 @@ code.key {
 .list-group .list-group-item + .list-group-item {
     border-top-width: 1px;
 }
+

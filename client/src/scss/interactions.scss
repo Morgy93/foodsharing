@@ -2,6 +2,7 @@
 // and override .bootstrap a
 html a[href]:not(:where(
     /* exclude */
+    a.alert,
     .navbar-brand,
     .nav-link,
     .btn,
@@ -15,11 +16,12 @@ html a[href]:not(:where(
     .author a,
     .leaflet-control-zoom a,
 )) {
-    text-decoration: underline;
+    text-decoration: none;
     font-weight: 600;
-    color: var(--fs-color-secondary-700);
+    color: var(--fs-color-secondary-800);
 
     &:hover {
+        text-decoration: underline;
         color: var(--fs-color-secondary-800);
     }
 }

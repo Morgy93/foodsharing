@@ -648,7 +648,7 @@ table {
 }
 
 .pure-form input[readonly], .pure-form select[readonly], .pure-form textarea[readonly] {
-    background: var(--fs-color-border);
+    background: var(--fs-border-default);
     color: #777;
     border-color: var(--fs-color-gray-200)
 }
@@ -990,7 +990,7 @@ table {
 }
 
 .pure-menu li a:hover, .pure-menu li a:focus {
-    background: var(--fs-color-border)
+    background: var(--fs-border-default)
 }
 
 .pure-menu li.pure-menu-disabled a:hover, .pure-menu li.pure-menu-disabled a:focus {

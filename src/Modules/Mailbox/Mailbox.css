@@ -9,7 +9,7 @@
 }
 
 .records-table {
-  border: 1px solid var(--fs-color-border);
+  border: 1px solid var(--fs-border-default);
   border-collapse: collapse;
   border-spacing: 0;
   display: table;
@@ -22,7 +22,7 @@
 }
 
 .records-table thead td {
-  border-left: 1px solid var(--fs-color-border);
+  border-left: 1px solid var(--fs-border-default);
   color: var(--fs-color-primary-400);
   font-size: 11px;
   font-weight: bold;
@@ -48,7 +48,7 @@
 .records-table tbody td {
   background-color: var(--fs-color-light);
   border-bottom: 1px solid var(--fs-color-gray-200);
-  border-left: 1px dotted var(--fs-color-border);
+  border-left: 1px dotted var(--fs-border-default);
   cursor: default;
   overflow: hidden;
   padding: 2px 7px;
@@ -140,7 +140,7 @@
   width: 407px;
   padding: 3px;
   background-color: var(--fs-color-light);
-  border: 1px solid var(--fs-color-border);
+  border: 1px solid var(--fs-border-default);
 }
 
 td.data input.data {
@@ -148,7 +148,7 @@ td.data input.data {
   padding: 3px;
   margin-top: 3px;
   background-color: var(--fs-color-light);
-  border: 1px solid var(--fs-color-border);
+  border: 1px solid var(--fs-border-default);
 }
 
 .message.read-0 td {

@@ -1,7 +1,10 @@
 .news-post {
   padding: 20px;
-  margin-bottom: 20px;
-  border-bottom: 5px solid var(--fs-color-primary-300);
+  border-bottom: 1px solid var(--fs-border-default);
+}
+
+.news-post h2 a {
+  font-weight: unset;
 }
 
 .news-post img {
@@ -20,29 +23,7 @@
 }
 
 .news-post a.button {
-  margin-top: 15px;
   float: right;
-}
-
-.news-post h2 a {
-  font-family: "Alfa Slab One", serif;
-  font-weight: normal;
-  font-size: 25px;
-  margin: 0;
-  padding: 0;
-  color: var(--fs-color-secondary-500);
-}
-
-.news-post h2 a:hover {
-  text-decoration: none;
-  color: var(--fs-color-secondary-600);
-}
-
-.news-post .small {
-  color: var(--fs-color-primary-500);
-  font-size: 12px;
-  padding: 0;
-  margin: 0 0 15px;
 }
 
 .pager {

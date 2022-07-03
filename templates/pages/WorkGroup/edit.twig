@@ -26,7 +26,7 @@
         {% endblock %}
     {% endembed %}
 
-    <div class="msg-inside ' . $type . '">
+    <div class="alert alert-' . $type . '">
         <i class="fas fa-info-circle"></i>
         {{ 'group.member_list.old_edit_hint'|trans }}
         <a href="/?page=bezirk&sub=members&bid={{ group.id }}">{{ 'group.member_list.old_edit_hint_link'|trans }}</a>

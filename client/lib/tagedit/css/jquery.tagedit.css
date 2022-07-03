@@ -13,7 +13,7 @@
 /**
  * Styles of the tagedit inputsforms
  */
-.tagedit-list {margin: 0; padding: 5px 5px 0 5px; border:1px solid var(--fs-color-border);-moz-border-radius:6px; /* Firefox */
+.tagedit-list {margin: 0; padding: 5px 5px 0 5px; border:1px solid var(--fs-border-default);-moz-border-radius:6px; /* Firefox */
 	-webkit-border-radius:6px; /* Safari, Chrome */
 	-khtml-border-radius:6px; /* Konqueror */
 	border-radius:6px; /* CSS3 */background-color:var(--fs-color-light);cursor:text; width: 91%; overflow: auto; font-size: 1em;min-height:23px; }

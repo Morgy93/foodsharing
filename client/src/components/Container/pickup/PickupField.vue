@@ -10,7 +10,7 @@
         v-html="entry.store.name"
       />
       <span
-        class="badge badge-pill d-flex p-1 align-items-center"
+        class="pickup-status badge badge-pill d-flex p-1 align-items-center"
         :class="{
           'badge-danger': !entry.confirmed,
           'badge-success': entry.confirmed,
@@ -33,6 +33,7 @@
         </span>
         <span
           v-else-if="entry.slots.max !== 1"
+          v-b-tooltip="entry.slots.occupied.map(e=> e.name).join(', ')"
           class="slots"
         >
           <span
@@ -43,13 +44,12 @@
             <Avatar
               v-if="slot"
               :key="key"
-              v-b-tooltip="slot.name"
               :url="slot.avatar"
-              :size="16"
+              :size="24"
               :auto-scale="false"
               class="slot-user"
               :class="{
-                'slot-user--fs-color-danger-500': !entry.confirmed,
+                'slot-user--need-confirm': !entry.confirmed,
                 'slot-user--success': entry.confirmed,
               }"
             />
@@ -57,7 +57,7 @@
               v-else
               class="slot-free fas fa-question"
               :class="{
-                'slot-free--fs-color-danger-500': !entry.confirmed,
+                'slot-free--need-confirm': !entry.confirmed,
                 'slot-free--success': entry.confirmed,
               }"
             />
@@ -68,8 +68,7 @@
     <h6
       class="field-headline field-headline--big"
       :class="{
-        'text-danger': getHourDifferenceToNow(date) < 24,
-        'text-black-50': !getHourDifferenceToNow(date) > 24
+        'text-danger': getHourDifferenceToNow(date) < 4
       }"
     >
       <i class="fas fa-clock mr-2" />
@@ -115,14 +114,19 @@ export default {
 <style lang="scss" scoped>
 @import '../../../scss/colors.scss';
 
+.pickup-status {
+  font-size: 1rem;
+}
 .slots {
   margin: 0 0.25rem;
   display: inline-flex;
   flex-direction: row-reverse;
 }
+
+$size: 1.25rem;
 .slot {
-  width: 16px;
-  height: 10px;
+  width: $size;
+  height: 1rem;
   display: flex;
   align-items: center;
 
@@ -132,11 +136,13 @@ export default {
 }
 
 ::v-deep.slot-user {
+  width: $size;
+  height: $size;
   border-radius: 50%;
   overflow: hidden;
   border: 2px currentColor solid;
 
-    &--fs-color-danger-500 {
+  &--need-confirm {
     border-color: $danger;
   }
   &--success {
@@ -145,8 +151,8 @@ export default {
 }
 
 .slot-free {
-  width: 16px;
-  height: 16px;
+  width: $size;
+  height: $size;
   font-size: .5rem;
   border-radius: 50%;
   overflow: hidden;
@@ -155,13 +161,13 @@ export default {
   justify-content: center;
   border: 2px currentColor solid;
 
-  &--fs-color-danger-500 {
-    background-color: darken($danger, 10%);
-    color: $danger;
+  &--need-confirm {
+    background-color: var(--fs-color-danger-300);
+    color: var(--fs-color-danger-500);
   }
   &--success {
-    background-color: darken($success, 10%);
-    color: $success;
+    background-color: var(--fs-color-success-300);
+    color: var(--fs-color-success-500);
   }
 }
 

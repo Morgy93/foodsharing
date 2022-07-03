@@ -16,6 +16,9 @@ export const getters = {
   isLoggedIn () {
     return store.isLoggedIn
   },
+  isSleeping () {
+    return store.details?.sleeping
+  },
   isFoodsaver () {
     return store.user?.isFoodsaver
   },
@@ -43,6 +46,9 @@ export const getters = {
   getHomeRegion () {
     return store.user?.homeRegionId
   },
+  getHomeRegionName () {
+    return store.details?.regionName
+  },
   hasCalendarToken () {
     return store.user?.hasCalendarToken !== null || false
   },
@@ -59,7 +65,7 @@ export const getters = {
     return null
   },
   getStats () {
-    return store.user?.stats || {}
+    return store.details?.stats || {}
   },
   hasLocations () {
     return store.locations.lat !== 0 && store.locations.lng !== 0
@@ -72,16 +78,16 @@ export const getters = {
   },
   hasAdminPermissions () {
     const permissions = Object.entries(store.permissions)
-    return permissions.some(([key, value]) => key !== 'mayEditUserProfile' && value)
+    return permissions.some(([key, value]) => !['mayAdministrateUserProfile', 'mayEditUserProfile', 'addStore'].includes(key) && value)
   },
 }
 
 export const mutations = {
   async fetchDetails () {
     try {
-      store.userDetails = await getDetails()
+      store.details = await getDetails()
     } catch (e) {
-      store.userDetails = null
+      store.details = null
     }
   },
 

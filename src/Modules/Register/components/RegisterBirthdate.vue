@@ -31,7 +31,7 @@
       </div>
     </div>
     <div class="mt-3 col-sm-auto">
-      <div class="msg-inside info">
+      <div class="alert alert-info">
         <i class="fas fa-info-circle" />
         <span v-html="$i18n('register.birthdate_hint')" />
       </div>
@@ -90,7 +90,7 @@ export default {
 </script>
 <style scoped>
 .datepickerClass {
-  border: 1px solid var(--fs-color-border) !important;
+  border: 1px solid var(--fs-border-default) !important;
 }
 .datepicker ::v-deep .input-group-text{
   background-color: var(--fs-color-secondary-500);

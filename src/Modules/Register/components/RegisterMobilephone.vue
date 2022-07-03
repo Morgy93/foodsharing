@@ -19,7 +19,7 @@
       <span>{{ $i18n('register.phone_not_valid') }}</span>
     </div>
     <div class="mt-3 col-sm-auto">
-      <div class="msg-inside info">
+      <div class="alert alert-info">
         <i class="fas fa-info-circle" /> {{ $i18n('register.login_phone_info') }}
       </div>
     </div>

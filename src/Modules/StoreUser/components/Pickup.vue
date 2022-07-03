@@ -310,7 +310,7 @@ export default {
   .pickup-text {
     margin-bottom: 0.5rem;
     padding-bottom: 0.5rem;
-    border-bottom: 1px solid var(--fs-color-border);
+    border-bottom: 1px solid var(--fs-border-default);
   }
 }
 
@@ -344,16 +344,15 @@ export default {
     }
 
     /deep/ .btn {
-      position: initial;
+      // position: relative;
       display: inline-block;
       margin: 2px;
       margin-left: 1px;
       width: 50px;
       height: 50px;
-      color: var(--fs-color-primary-500);
-      background-color: var(--fs-color-primary-200);
-      border-color: var(--fs-color-primary-300);
-      border-width: 2px;
+      color: var(--fs-color-primary-400);
+      background-color: var(--fs-color-primary-100);
+      border: 2px solid  var(--fs-color-primary-300);
 
       &:hover {
         border-color: var(--fs-color-primary-500);
@@ -363,7 +362,6 @@ export default {
       }
       &.filled {
         overflow: hidden;
-        border-width: 0;
       }
       &.btn-primary {
         background-color: var(--fs-color-primary-300);
@@ -407,7 +405,7 @@ export default {
   blockquote {
     margin: 0;
     padding-left: 0.5rem;
-    border-left: 3px solid var(--fs-color-border);
+    border-left: 3px solid var(--fs-color-info-200);
 
     div {
       margin: 0.25rem;

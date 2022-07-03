@@ -136,7 +136,7 @@ class Utils
 	{
 		$title = $title ? '<strong>' . $title . '</strong> ' : '';
 
-		return '<div class="msg-inside ' . $type . '">' . $icon . ' ' . $title . $msg . '</div>';
+		return '<div class="alert alert-' . $type . '">' . $icon . ' ' . $title . $msg . '</div>';
 	}
 
 	/**

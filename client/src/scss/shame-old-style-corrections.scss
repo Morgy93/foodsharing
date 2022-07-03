@@ -1,3 +1,8 @@
+body:not(.page-index) #main {
+    margin-top: 3rem;
+    margin-bottom: 3rem;
+}
+
 /*
     Adds a border around all elements with the class "border"
     so it pops more on the light background
@@ -5,7 +10,7 @@
 .welcome.ui-padding,
 .inside > .container > .card > .card-body,
 .inside > .bootstrap .card.rounded .card-body,
-.inside > .bootstrap .card .rounded,
+.inside > .bootstrap .card :not(img).rounded,
 .inside > .bootstrap div .card,
 .inside > .ui-widget-content,
 .inside > #foodsaverlist > .field .ui-widget-content,
@@ -13,7 +18,8 @@
 .inside .content-top.corner-all,
 .inside > .field > .ui-widget-content,
 .inside > div > .ui-widget-content {
-    border: 1px solid var(--fs-color-border);
+    border: 1px solid var(--fs-border-default);
+    // background-color: var(--fs-color-gray-100);
 }
 
 /*
@@ -91,18 +97,17 @@ html a.trafficlight,
     }
 }
 
-/*
-    Breadcrumb
-*/
-.bread {
-    margin-top: 1rem;
+.ui-dialog .ui-dialog-titlebar-close {
+    border: var(--fs-color-transparent) !important;
 }
 
 /*
     All text inputs should now imitate the Bootstrap input Style
 */
 textarea,
-input[type="text"] {
+input[type="text"],
+input[type="email"],
+select {
     @extend .form-control;
 }
 
@@ -122,6 +127,14 @@ input[type="text"] {
     width: 100%;
     height: calc(100vh - 112px);
     position: relative;
+}
+
+.lat-lon-picker #map {
+    height: 20rem;
+}
+
+.page-basket #map {
+    height: 20rem;
 }
 
 #map-control-colapse {
@@ -299,9 +312,4 @@ input[type="text"] {
     #msg-conversation {
         max-height: 50vh;
     }
-
-    .slimScrollDiv {
-        margin-bottom: 0.25rem;
-    }
 }
-

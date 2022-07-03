@@ -201,7 +201,7 @@ export default {
 </script>
 
 <style lang="scss" scoped>
-.bootstrap.pickup-history {
+.pickup-history {
   background: var(--fs-color-light);
 
   ::v-deep .form-inline .form-control.b-calendar-grid {
@@ -209,7 +209,7 @@ export default {
   }
 
   .date-separator {
-    border-top-color: var(--fs-color-border);
+    border-top-color: var(--fs-border-default);
   }
   .date-separator::after {
     content: '->';

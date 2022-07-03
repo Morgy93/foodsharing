@@ -116,7 +116,7 @@
 
 .chatboxinput {
   padding: 5px;
-  background-color: var(--fs-color-light);
+  background-color: var(--fs-color-primary-100);
   height: 50px;
 }
 
@@ -124,7 +124,7 @@
   width: 255px;
   height: 44px;
   padding: 3px 0 3px 3px;
-  border: 1px solid var(--fs-color-border);
+  border: 1px solid var(--fs-border-default);
   margin: 1px;
   max-height: 250px;
   overflow-x: hidden;
@@ -132,7 +132,6 @@
   border-radius: 6px;
   position: absolute;
   bottom: 4px;
-  box-shadow: 0 -2px 1px 1px var(--fs-color-border);
   outline-color: var(--fs-color-primary-500);
 }
 
@@ -172,12 +171,6 @@
   margin: -5px -25px 0 0px;
 }
 
-.chatboxmessage.my-message .chatboxmessagecontent {
-  background: none repeat scroll 0 0 var(--fs-color-primary-300);
-  color: var(--fs-color-primary-500);
-  word-break: break-word;
-}
-
 .chatboxmessagefrom .photo {
   display: block;
   margin-right: 4px;
@@ -191,23 +184,27 @@
 }
 
 .chatboxmessagecontent {
-  background: none repeat scroll 0 0 var(--fs-color-warning-100);
-  color: var(--fs-color-primary-500);
+  background-color: var(--fs-color-gray-200);
+  color: var(--fs-color-gray-900);
   display: block;
-  font-size: 12px;
+  font-size: 0.8rem;
   line-height: 1.28;
   padding: 5px;
   width: 236px;
 }
 
-.chatboxmessagecontent .time {
-  display: block;
-  color: var(--fs-color-primary-500);
-  font-size: 11px;
+.chatboxmessage.my-message .chatboxmessagecontent {
+  background-color: var(--fs-color-secondary-200);
+  color: var(--fs-color-secondary-900);
+  word-break: break-word;
 }
 
-.chatboxmessage.my-message .chatboxmessagecontent .time {
-  color: var(--fs-color-primary-500);
+
+.chatboxmessagecontent .time {
+  margin-top: 4px;
+  display: block;
+  color: var(--fs-color-dark);
+  font-size: 0.7rem;
 }
 
 .chatboxoptions {
@@ -244,19 +241,19 @@
 }
 
 .chatboxtitle a {
-  color: var(--fs-color-primary-300) !important;
+  color: currentColor !important;
 }
 
 .chatboxtitle a:hover {
   text-decoration: none;
-  color: var(--fs-color-secondary-500) !important;
+  color: currentColor !important;
 }
 
 .chatboxtitle i {
   margin-right: 3px;
   position: relative;
   top: -1px;
-  color: var(--fs-color-primary-300) !important;
+  color: currentColor !important;
 }
 
 .conversation-list .pics {

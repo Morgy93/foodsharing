@@ -42,7 +42,7 @@
 
         <b-button-group class="request-actions my-1" size="sm">
           <b-button
-            variant="secondary"
+            variant="primary"
             @click="acceptRequest(storeId, r.id, false, index)"
           >
             <i class="fas fa-user-check" /> {{ $i18n('store.request.to-team') }}

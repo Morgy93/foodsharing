@@ -74,9 +74,6 @@ export default {
   --fetchcount-bg: var(--fs-color-primary-200);
   --fetchcount-fg: var(--fs-color-primary-500);
   --fetchcount-border: var(--fs-color-primary-500);
-  --role-may-manage-store: var(--fs-color-secondary-500);
-  --role-may-ambassador: var(--fs-color-warning-500);
-  --role-other: var(--fs-color-primary-200);
 }
 
 a {
@@ -89,22 +86,25 @@ a {
 
 .member-fetchcount {
   position: absolute;
-  top: 0;
-  right: -10px;
-  border: 2px solid var(--fs-color-primary-500);
+  top: 5px;
+  right: -5px;
   min-width: 1.5rem;
-  opacity: 0.9;
+  border: 1px solid var(--fs-border-default);
   background-color: var(--fs-color-primary-300);
   color: var(--fs-color-primary-500);
 
   &.maysm {
+    color: var(--fs-color-light);
+    background-color: var(--fs-color-role-storemanager);
     border-color: var(--fs-color-role-storemanager);
   }
   // &.mayamb {
-  //   border-color: var(--fs-color-role-ambassador);
+    //   border-color: var(--fs-color-role-ambassador);
   // }
   &.waiting {
-    border-color: var(--fs-color-gray-500);
+    color: var(--fs-color-light);
+    background-color: var(--fs-color-role-jumper);
+    border-color: var(--fs-color-role-jumper);
   }
 }
 </style>

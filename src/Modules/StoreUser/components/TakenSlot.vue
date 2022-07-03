@@ -152,14 +152,12 @@ export default {
 .slotstatus {
   position: absolute;
   top: -2px;
-  right: 0;
-  height: 16px;
-  width: 16px;
+  right: -2px;
+  height: 1.5rem;
+  width: 1.5rem;
   z-index: 3;
-  transform: rotate(45deg);
-  opacity: 0.9;
-  background-color: var(--fs-color-primary-300);
-  box-shadow: 0 0 3px 0px var(--fs-color-primary-500);
+  border-radius: 50%;
+  background-color: var(--fs-color-light);
 
   &.pending {
     color: var(--fs-color-danger-500);
@@ -171,15 +169,14 @@ export default {
   // Check / Clock inside the statuspatch
   .slotstatus-icon {
     position: absolute;
-    display: inline-block;
-    bottom: 1px;
-    right: 1px;
-    transform: rotate(-45deg);
-    font-size: 14px;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    font-size: 1rem;
   }
 }
 
 .avatar.pending {
-  opacity: 0.33;
+  opacity: 0.45;
 }
 </style>

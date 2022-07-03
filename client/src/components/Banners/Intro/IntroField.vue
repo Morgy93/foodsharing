@@ -10,7 +10,7 @@
     >
       <Avatar
         :url="getAvatar"
-        :is-sleeping="user.sleeping"
+        :is-sleeping="isSleeping"
         :size="50"
         style="max-width: 50px;"
       />
@@ -21,19 +21,24 @@
         v-html="viewIsMD ? $i18n('dashboard.greeting', {name: user.firstname}) : $i18n('dashboard.greeting_short', {name: user.firstname})"
       />
       <p
-        v-if="!isFoodsaver || !user.regionName"
+        v-if="!isFoodsaver && !getHomeRegionName"
         class="mb-0"
         v-html="$i18n('dashboard.foodsharer')"
       />
       <p
-        v-else-if="stats.count > 0 && stats.weight > 0"
+        v-if="!getHomeRegionName && stats.count > 0 && stats.weight > 0"
         class="mb-0"
         v-html="$i18n('dashboard.foodsaver_amount', {pickups: stats.count, weight: stats.weight})"
       />
       <p
-        v-else
+        v-if="getHomeRegionName && stats.count > 0 && stats.weight > 0"
         class="mb-0"
-        v-html="$i18n('dashboard.homeRegion', {region: user.regionName})"
+        v-html="$i18n('dashboard.full_subline', {pickups: stats.count, weight: stats.weight, region: getHomeRegionName})"
+      />
+      <p
+        v-else-if="isFoodsaver && getHomeRegionName"
+        class="mb-0"
+        v-html="$i18n('dashboard.homeRegion', {region: getHomeRegionName})"
       />
     </div>
   </div>
@@ -41,7 +46,7 @@
 
 <script>
 // Stores
-import { getters } from '@/stores/user'
+import { mutations, getters } from '@/stores/user'
 // Components
 import Avatar from '@/components/Avatar'
 // Mixins
@@ -60,8 +65,18 @@ export default {
     user () {
       return getters.getUser()
     },
+    isSleeping () {
+      return getters.isSleeping()
+    },
     stats () {
       return getters.getStats()
+    },
+    getHomeRegionName () {
+      const regionHome = getters.getHomeRegionName()
+      if (regionHome?.length > 0) {
+        return regionHome
+      }
+      return null
     },
     getAvatar () {
       return getters.getAvatar()
@@ -69,6 +84,9 @@ export default {
     isFoodsaver () {
       return getters.isFoodsaver()
     },
+  },
+  async mounted () {
+    await mutations.fetchDetails()
   },
 }
 </script>

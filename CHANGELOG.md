@@ -28,7 +28,7 @@
 - Renamed the button to update displayed language !1232 @martincodes-de
 - Improved nightly maintenance runtime !2176 @AntonBallmaier
 - On mobile devices the forum profile image is smaller !2237 @sefn
-- Color set is unified and removed vanilla bootstrap !2293 @sefn
+- Color set is unified and removed vanilla bootstrap !2293 !2303 @sefn
 - The content of the footer is now dynamic !2297 @sefn
 
 ## Bugfixes

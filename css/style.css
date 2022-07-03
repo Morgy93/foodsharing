@@ -185,7 +185,7 @@ body{
 
 .odd {
   background-color: var(--fs-color-light);
-  border-bottom: 1px solid var(--fs-color-border);
+  border-bottom: 1px solid var(--fs-border-default);
 }
 
 .v-form {
@@ -194,7 +194,7 @@ body{
 }
 
 .input-wrapper {
-  border-bottom: 1px solid var(--fs-color-border);
+  border-bottom: 1px solid var(--fs-border-default);
   padding-bottom: 15px;
   padding-top: 15px;
   margin-top: 0;
@@ -296,7 +296,7 @@ div.popbox a.link:hover {
 }
 
 div.popbox p.subtitle {
-  border-bottom: 1px solid var(--fs-color-border);
+  border-bottom: 1px solid var(--fs-border-default);
   color: var(--fs-color-gray-300);
   font-size: 11px;
   margin-bottom: 20px;
@@ -306,7 +306,7 @@ div.popbox p.subtitle {
 
 div.popbox p.bottom {
   width: 100%;
-  border-top: 1px solid var(--fs-color-border);
+  border-top: 1px solid var(--fs-border-default);
   padding-top: 10px;
   text-align: right;
 }
@@ -383,7 +383,7 @@ div.msg-inside.error i {
 }
 
 div#pulse-success {
-  background-color: var(--fs-color-secondary-500) !important;
+  background-color: var(--fs-color-success-500) !important;
   color: var(--fs-color-light) !important;
 }
 
@@ -393,8 +393,8 @@ div#pulse-error {
 }
 
 div#pulse-info {
-  background-color: var(--fs-color-warning-200) !important;
-  color: var(--fs-color-primary-500) !important;
+  background-color: var(--fs-color-info-200) !important;
+  color: var(--fs-color-info-500) !important;
 }
 
 div.pulse-msg p {
@@ -599,7 +599,7 @@ ul.linklist li > a i.fa {
 .history li.title {
   font-size: 13px;
   font-weight: bold;
-  border-top: 1px solid var(--fs-color-border);
+  border-top: 1px solid var(--fs-border-default);
   padding-top: 8px;
   margin-top: 8px;
 }
@@ -971,12 +971,12 @@ td.load {
 }
 */
 
-ul.bread li,
+/* ul.bread li,
 ul.bread li a {
   font-size: 10px;
   font-weight: normal;
   color: var(--fs-color-primary-500);
-}
+} */
 
 ul.bread li:before {
   font-family: "Font Awesome 5 Free", monospace;
@@ -998,9 +998,6 @@ ul.bread li {
   margin-right: 10px;
   font-size: 10px;
 }
-
-ul.bread li a { text-decoration: none; }
-ul.bread li a:hover { text-decoration: underline; }
 
 .ui-dialog .ui-dialog-titlebar-close {
   background-image: none;
@@ -1065,7 +1062,7 @@ ul.linklist li > a:hover .avatar span.bubble {
 }
 
 .bottom_bar {
-  border-top: 1px solid var(--fs-color-border) !important;
+  border-top: 1px solid var(--fs-border-default) !important;
   padding-top: 7px;
 }
 

@@ -87,7 +87,7 @@ export default {
   }
 
   .day {
-    border: 2px solid var(--fs-color-border);
+    border: 2px solid var(--fs-border-default);
     border-radius: var(--calendar-border-radius);
     border-top: 0;
     border-top-left-radius: 0;

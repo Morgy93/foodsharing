@@ -176,26 +176,13 @@ export default {
         margin-bottom: 0;
         font-size: inherit;
       }
-
-      hr {
-        margin: 0.5rem 0;
-        border: 0;
-        border-top: 1px solid var(--fs-color-border);
-      }
-
-      blockquote {
-        margin: 0.5rem 0;
-        padding: 0.5rem;
-        border-left: 2px solid var(--fs-color-border);
-        background-color: var(--fs-color-light);
-      }
     }
   }
 
   .desc-block-title {
-    background-color: var(--fs-color-primary-200);
+    background-color: var(--fs-color-info-200);
     border-radius: var(--border-radius);
-    color: var(--fs-color-primary-500);
+    color: var(--fs-color-info-600);
     font-weight: bolder;
     text-align: center;
   }

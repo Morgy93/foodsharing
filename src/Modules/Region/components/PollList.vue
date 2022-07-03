@@ -1,6 +1,6 @@
 <template>
-  <div class="container bootstrap">
-    <div class="msg-inside info mb-3">
+  <div class="container">
+    <div class="alert alert-info mb-3">
       <i class="fas fa-info-circle" />
       {{ $i18n('polls.hint') }}<br>
       {{ $i18n('polls.hint_2') }}: <a :href="$url('wiki_voting')">{{ $url('wiki_voting') }}</a>

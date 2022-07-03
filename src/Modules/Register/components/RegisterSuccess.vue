@@ -1,7 +1,7 @@
 <template>
   <div class="my-1">
     <div class="col-sm-auto">
-      <div class="msg-inside info">
+      <div class="alert alert-info">
         <i class="fas fa-info-circle" /> {{ $i18n('register.join_success_message') }}
       </div>
       <b-button

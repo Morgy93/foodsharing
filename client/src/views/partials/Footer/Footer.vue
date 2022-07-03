@@ -235,13 +235,10 @@ h2 {
 }
 
 .line {
-  border-bottom: 1px solid var(--fs-color-border);
+  border-bottom: 1px solid var(--fs-border-default);
 }
 
 footer {
-  .links:hover {
-    text-decoration: underline;
-  }
   a, p, li {
     font-size: .8rem;
     line-height: 1.8em;

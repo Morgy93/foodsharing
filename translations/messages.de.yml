@@ -1750,11 +1750,7 @@ profile:
   notes:
     bread: "Notizen"
     title: "Notizen über {name}"
-    info: |
-      Bitte gehe gewissenhaft mit dieser Funktion um.
-      Sie soll helfen, Vorgänge sichbar zu machen um uns Arbeit zu ersparen.
-      Persönliches oder Wertendes zu einer Person hat hier nichts verloren.
-      Bleibe sachlich."
+    info: Bitte gehe gewissenhaft mit dieser Funktion um. Sie soll helfen, Vorgänge sichbar zu machen um uns Arbeit zu ersparen. Persönliches oder Wertendes zu einer Person hat hier nichts verloren. Bleibe sachlich.
   online: "{name} ist online."
   infos:
     title: "Infos"
@@ -1920,9 +1916,9 @@ dashboard:
   greeting: "Hallo {name}! Schön, dass du hier bist."
   foodsharer: "Viel Spaß beim Retten!"
   foodsharer_amount: "Du hast schon {weight} Kilos gerettet!"
-  foodsaver_amount: |
-      Du hast <strong style="white-space:nowrap">{pickups}&thinsp;x</strong> Lebensmittel abgeholt
-      und damit <strong style="white-space:nowrap">{weight}&thinsp;kg</strong> gerettet.
+  foodsaver_amount: Du hast <b>{pickups} x</b> Lebensmittel abgeholt und damit <b>{weight} kg</b> gerettet.
+  full_subline: Du hast <b>{pickups} x</b> Lebensmittel abgeholt und damit <b>{weight} kg</b> gerettet. Dein Stammbezirk ist <b>{region}</b>.
+
   my:
     regions: "Deine Bezirke" #also in searchindexgenerator
     groups: "Deine Gruppen" #also in searchindexgenerator
@@ -1937,8 +1933,8 @@ dashboard:
     buddies: "Menschen, die Du kennst"
   options:
     hide:
-      text: "Ausblenden"
-      tooltip: "Hier kannst du Informationen auf dem Dashboard ausblenden"
+      text: "Anzeige verwalten"
+      tooltip: "Hier kannst du einzelne Bereiche auf dem Dashboard aus und einblenden."
     reset: Zurücksetzen
     grid_toggle:
       2_columns: "Zur 2-Spalten-Ansicht wechseln"

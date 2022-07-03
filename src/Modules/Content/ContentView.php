@@ -9,7 +9,7 @@ class ContentView extends View
 	public function simple(array $cnt): string
 	{
 		return '
-		<div class="page ui-padding ui-widget-content corner-all">
+		<div class="page-container page-simple">
 			<h1>' . $cnt['title'] . '</h1>
 			' . $cnt['body'] . '
 		</div>';
@@ -18,7 +18,7 @@ class ContentView extends View
 	public function joininfo(): string
 	{
 		return '
-		<div class="page ui-padding ui-widget-content corner-all">
+		<div class="page-container page-joininfo">
 			<h1> ' . $this->translator->trans('startpage.join_rules') . ' </h1>
 			<h3> ' . $this->translator->trans('startpage.join_welcome') . ' </h3>
 			<p> ' . $this->translator->trans('startpage.respect') . ' <br><b>' . $this->translator->trans('startpage.register') . '</b></p>

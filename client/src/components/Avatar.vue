@@ -54,7 +54,7 @@ export default {
         130: '130_q_',
       }[this.size] || ''
 
-      if (this.url) {
+      if (this.url && !this.url.includes('/img/50_q_avatar.png')) {
         if (this.url.startsWith('/api/uploads/')) {
           return this.url + `?w=${this.size}&h=${this.size}` // path for pictures uploaded with the new API
         } else {

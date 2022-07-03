@@ -86,7 +86,7 @@ export default {
 
 <style lang="scss" scoped>
 .banana-container {
-  border-top: 1px solid var(--fs-color-border);
+  border-top: 1px solid var(--fs-border-default);
 
   .member-pic ::v-deep img {
     width: 50px;
@@ -95,7 +95,7 @@ export default {
 
   .msg {
     white-space: pre-line;
-    border-left: 3px solid var(--fs-color-border);
+    border-left: 3px solid var(--fs-border-default);
   }
 
   .time a {

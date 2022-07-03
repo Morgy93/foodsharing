@@ -457,7 +457,7 @@ export default {
 
     tr {
       display: flex;
-      border-bottom: 1px solid var(--fs-color-border);
+      border-bottom: 1px solid var(--fs-border-default);
 
       &.b-table-details {
         justify-content: center;
@@ -482,7 +482,7 @@ export default {
 
   tr td {
     padding: 3px;
-    border-top-color: var(--fs-color-border);
+    border-top-color: var(--fs-border-default);
     vertical-align: middle;
     cursor: default;
     display: inline-block;

@@ -7,24 +7,29 @@
     }"
     :href="bell.href"
     @click="$emit('read', bell)"
-    @mouseover="!isTouch && toggleState()"
-    @mouseout="!isTouch && toggleState()"
+    @mouseenter="!isTouch && toggleState()"
+    @mouseleave="!isTouch && toggleState()"
   >
     <div
       class="icon icon--big icon--rounded mr-2 d-flex text-center justifiy-content-center align-items-center"
-      @click.stop.prevent="toggleState()"
+      @click.stop.prevent="isTouch && toggleState()"
     >
-      <i
-        v-if="bell.icon && !state"
-        class="icon icon--big icon--rounded d-flex img-thumbnail align-items-center justify-content-center"
-        :class="bell.icon"
-      />
-      <Avatar
-        v-else-if="bell.image && !state"
-        class="icon icon--big icon--rounded img-thumbnail"
-        :url="bell.image"
-        :size="35"
-      />
+      <div
+        v-if="!state"
+        class="icon"
+      >
+        <Avatar
+          v-if="bell.image"
+          class="icon icon--big icon--rounded img-thumbnail"
+          :url="bell.image"
+          :size="35"
+        />
+        <i
+          v-else
+          class="icon icon--big icon--rounded d-flex img-thumbnail align-items-center justify-content-center"
+          :class="bell.icon"
+        />
+      </div>
       <i
         v-else
         class="icon icon--big img-thumbnail d-flex align-items-center justify-content-center"

@@ -21,12 +21,13 @@
 }
 
 #conversation-list li.active {
-  background-color: var(--fs-color-warning-100);
-  border-radius: 4px;
+  background-color: var(--fs-color-secondary-300);
+  color: var(--fs-color-secondary-900);
 }
 
 #conversation-list li.active a, #conversation-list li.active a:active, #conversation-list li.active a:focus {
   outline: 0 !important;
+  color: currentColor;
 }
 
 #msg-conversation ul {
@@ -50,29 +51,29 @@
 
 #msg-conversation span.time {
   font-size: 13px;
-  color: var(--fs-color-primary-500);
+  color: var(--fs-color-dark);
   margin-top: 4px;
 }
 
 #msg-conversation li.my-message span.time {
-  color: var(--fs-color-primary-500);
+  color: var(--fs-color-dark);
 }
 
 #msg-conversation span.body {
   border-radius: 6px;
-  background: none repeat scroll 0 0 var(--fs-color-warning-100);
   margin-left: 50px;
   min-height: 35px;
   padding: 6px;
   position: relative;
-  color: var(--fs-color-primary-500);
+  background-color: var(--fs-color-gray-200);
+  color: var(--fs-color-gray-900);
 }
 
 #msg-conversation li.my-message span.body {
-  background: none repeat scroll 0 0 var(--fs-color-primary-300);
   margin-left: 0px;
   margin-right: 50px;
-  color: var(--fs-color-primary-500);
+  background-color: var(--fs-color-secondary-200);
+  color: var(--fs-color-secondary-900);
 }
 
 #msg-conversation li.my-message span.img {
@@ -84,7 +85,7 @@
   position: absolute;
   border-style: solid;
   border-width: 8px 9px 8px 0;
-  border-color: var(--fs-color-transparent) var(--fs-color-warning-100);
+  border-color: transparent var(--fs-color-gray-200);
   display: block;
   width: 0;
   z-index: 1;
@@ -94,7 +95,7 @@
 
 #msg-conversation li.my-message span.body:after {
   border-width: 8px 0 8px 9px;
-  border-color: var(--fs-color-transparent) var(--fs-color-primary-300);
+  border-color: transparent var(--fs-color-secondary-200);
   left: unset;
   right: -9px;
 }

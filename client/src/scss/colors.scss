@@ -21,6 +21,7 @@ $colorlist: (
   "primary": $primary,
   "secondary": $secondary,
   "gray": $gray,
+  "success": $success,
   "danger": $danger,
   "warning": $warning,
   "info": $info,
@@ -67,20 +68,21 @@ $colorlist: (
     --fs-color-light: var(--fs-color-gray-100);
     --fs-color-dark: var(--fs-color-gray-600);
     --fs-color-transparent: transparent;
-    --fs-color-border: var(--fs-color-primary-200);
 
     --fs-color-calendar: var(--fs-color-info-400);
 
-    --fs-color-role-ambassador: var(--fs-color-danger-500);
-    --fs-color-role-storemanager: var(--fs-color-warning-500);
-    --fs-color-role-foodsaver: var(--fs-color-secondary-500);
+    --fs-color-role-ambassador: var(--fs-color-warning-500);
+    --fs-color-role-storemanager: var(--fs-color-secondary-500);
+    --fs-color-role-foodsaver: var(--fs-color-primary-500);
     --fs-color-role-foodsharer: var(--fs-color-primary-500);
+    --fs-color-role-jumper: var(--fs-color-primary-500);
 
     --fs-color-type-stores: var(--fs-color-danger-500);
     --fs-color-type-baskets: var(--fs-color-secondary-500);
     --fs-color-type-foodshare-points: var(--fs-color-warning-500);
     --fs-color-type-communities: var(--fs-color-info-500);
 
+    --fs-border-default: var(--fs-color-primary-200);
     /**
         Shadow
         https://shadows.brumm.af/
