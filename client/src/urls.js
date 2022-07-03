@@ -67,7 +67,8 @@ const urls = {
   // javascript
   javascript: (js) => `javascript:${js}`,
 
-  // Relogin
+  // Redirect
+  redirect_to_url: (url) => '/?page=relogin&url=' + encodeURIComponent(url),
   relogin_and_redirect_to_url: (url) => '/?page=relogin&url=' + encodeURIComponent(url),
 
   // region id

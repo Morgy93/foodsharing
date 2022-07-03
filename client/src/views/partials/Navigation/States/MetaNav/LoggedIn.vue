@@ -1,6 +1,6 @@
 <template>
   <ul class="metanav">
-    <Logo v-if="viewIsMD" />
+    <Logo v-if="!viewIsMobile" />
     <NavItem
       v-for="(entry, idx) of metaNav"
       :key="idx"

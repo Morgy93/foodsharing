@@ -63,9 +63,10 @@ h1, h2 { font-family: "Alfa Slab One", serif; }
 h3, h4 { font-weight: 500; }
 h1, h2, h3, h4, h5, h6 { margin: 0.25rem 0; }
 
-@media (min-width: 1350px) {
-    .container {
-        max-width: 1440px;
+// Custom breakpoints
+.container {
+    @media (min-width: 1440px) {
+        max-width: 1410px;
     }
 }
 

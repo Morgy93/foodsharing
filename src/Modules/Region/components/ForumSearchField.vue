@@ -38,8 +38,6 @@
     <div
       v-if="isOpen"
       id="forum-search-results"
-      :style="resultsStyle"
-      class="dropdown-menu"
     >
       <forum-search-results
         :threads="threads || []"
@@ -55,12 +53,9 @@
 <script>
 import ForumSearchResults from './ForumSearchResults'
 import { searchForum } from '@/api/search'
-import clickOutMixin from 'bootstrap-vue/esm/mixins/click-out'
-import listenOnRootMixin from 'bootstrap-vue/esm/mixins/listen-on-root'
 
 export default {
   components: { ForumSearchResults },
-  mixins: [clickOutMixin, listenOnRootMixin],
   props: {
     groupId: {
       type: Number,
@@ -73,20 +68,11 @@ export default {
   },
   data () {
     return {
-      posX: 0,
-      width: 0,
       query: '',
       isOpen: false,
       isLoading: false,
       threads: [],
     }
-  },
-  computed: {
-    resultsStyle () {
-      return {
-        left: `${this.posX}px`,
-      }
-    },
   },
   watch: {
     query (query) {
@@ -104,14 +90,8 @@ export default {
       }
     },
   },
-  mounted () {
-    // close the result box if another dropdown menu gets opened
-    this.listenOnRoot('bv::dropdown::shown', this.close)
-  },
   methods: {
     open () {
-      this.posX = this.$refs.foruminputgroup.getBoundingClientRect().left
-      this.width = this.$refs.foruminputgroup.getBoundingClientRect().width
       this.isOpen = true
     },
     delayedFetch () {

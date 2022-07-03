@@ -1,7 +1,7 @@
 <template>
   <Dropdown
-    class="nav-user"
-    :title="$i18n('navigation.profil', {name: getUserName})"
+    class="nav-user is-open-on-mobile"
+    :title="$i18n('navigation.profil', {name: getUserFirstName})"
     direction="right"
     :badge="getMailUnreadCount"
   >
@@ -81,8 +81,8 @@ export default {
     getAvatar () {
       return DataUser.getters.getAvatar()
     },
-    getUserName () {
-      return DataUser.getters.getUserName()
+    getUserFirstName () {
+      return DataUser.getters.getUserFirstName()
     },
     getUserId () {
       return DataUser.getters.getUserId()

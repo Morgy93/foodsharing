@@ -167,7 +167,7 @@ export default {
       this.base = await DataRegions.mutations.fetchChoosedRegionChildren(0)
     },
     async resetModal () {
-      console.log('reset')
+      // console.log('reset')
       this.selected = [0]
       DataRegions.mutations.joinRegionModal.close()
     },

@@ -207,7 +207,7 @@ export default {
      * The user is not informed via chat.
      */
     async cancelAllSlots () {
-      console.log('delete all slots')
+      // console.log('delete all slots')
       try {
         await leaveAllPickups(this.fsId, 'Removed all slot entries through user Profile.')
         if (this.tableData) {

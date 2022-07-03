@@ -7,7 +7,7 @@
 import $ from 'jquery'
 import conv from '@/conv'
 import i18n from '@/i18n'
-import serverData from '@/scripts/server-data'
+import DataUser from '@/stores/user'
 import autosize from 'autosize'
 import timeformat from '@/timeformat'
 import * as api from '@/api/conversations'
@@ -54,22 +54,26 @@ const msg = {
      */
     this.initComposer()
 
-    if (!msg.isMob()) {
-      const height = `${$(window).height() - 200}px`
-      this.$conversation.css('height', height)
+    // if (!msg.isMob()) {
+    const height = `${$(window).height() - 200}px`
+    // this.$conversation.css('height', height)
 
-      this.$conversation.slimScroll({
-        height: height,
-      })
-    } else {
-      this.$conversation.css({
-        height: 'auto',
-        overflow: 'hidden',
-        padding: '0',
-        margin: '0',
-      })
-      msg.scrollBottom()
-    }
+    this.$conversation.slimScroll({
+      height: height,
+    })
+
+    // $(window).scrollTop($(document).height())
+    // msg.$conversation.slimScroll({ scrollTo: `${msg.$conversation.prop('scrollHeight')}px` })
+
+    // } else {
+    msg.scrollBottom()
+    //   this.$conversation.css({
+    //     height: 'auto',
+    //     overflow: 'hidden',
+    //     padding: '0',
+    //     margin: '0',
+    //   })
+    // }
 
     /*
      * make the message windows as big as possible
@@ -77,8 +81,8 @@ const msg = {
     $(window).on('resize', function () {
       if (!msg.isMob()) {
         const height = `${$(window).height() - 200}px`
-        msg.$conversation.css('height', height)
-        msg.$conversation.parent('.slimScrollDiv').css('height', height)
+        // msg.$conversation.css('height', height)
+        // msg.$conversation.parent('.slimScrollDiv').css('height', height)
         msg.$conversation.slimScroll({
           height: height,
           scrollTo: `${msg.$conversation.prop('scrollHeight')}px`,
@@ -218,7 +222,7 @@ const msg = {
 
   msgTpl: function (message) {
     const author = profileStore.profiles[message.authorId]
-    const ownMessageClass = (message.authorId === serverData.user.id) ? 'my-message' : ''
+    const ownMessageClass = (message.authorId === DataUser.getters.getUserId()) ? 'my-message' : ''
 
     return $(`
       <li id="msg-${message.id}" class="${ownMessageClass}" style="display: none;">
@@ -373,7 +377,7 @@ const msg = {
   scrollTrigger: function () {
     const fun = function () {
       const $conv = $(this)
-      if ($conv.scrollTop() == 0) {
+      if ($conv.scrollTop() === 0) {
         msg.loadMore()
       }
     }
@@ -433,11 +437,11 @@ const msg = {
     $('#compose_body').val('')
   },
   scrollBottom: function () {
-    if (!msg.isMob()) {
-      msg.$conversation.slimScroll({ scrollTo: `${msg.$conversation.prop('scrollHeight')}px` })
-    } else {
-      $(window).scrollTop($(document).height())
-    }
+    // if (!msg.isMob()) {
+    msg.$conversation.slimScroll({ scrollTo: `${msg.$conversation.prop('scrollHeight')}px` })
+    // } else {
+    // $(window).scrollTop($(document).height())
+    // }
   },
 }
 

@@ -197,7 +197,7 @@ export default {
     hasRightColumn () {
       return (this.hasPickups && this.visible.pickups) || (this.hasStores && this.visible.stores)
     },
-    getCoordinates: () => DataUser.getters.getCoordinates(),
+    getLocations: () => DataUser.getters.getLocations(),
   },
   watch: {
     visible: {
@@ -218,7 +218,7 @@ export default {
       immediate: true,
       deep: true,
     },
-    getCoordinates: {
+    getLocations: {
       async handler (coords) {
         if (coords.lat && coords.lon) {
           await DataBaskets.mutations.fetchNearby(coords)

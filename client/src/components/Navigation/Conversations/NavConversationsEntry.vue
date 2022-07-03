@@ -39,7 +39,7 @@
   </button>
 </template>
 <script>
-import serverData from '@/scripts/server-data'
+import DataUser from '@/stores/user'
 import conv from '@/conv'
 import profileStore from '@/stores/profiles'
 
@@ -81,7 +81,7 @@ export default {
         .map(m => profileStore.profiles[m].avatar)
     },
     loggedinUser () {
-      return serverData.user
+      return DataUser.getters.getUser()
     },
   },
   methods: {

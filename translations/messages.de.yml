@@ -2167,19 +2167,20 @@ footer:
   wiki: "Wiki"
   blog: "Blog"
   statistics: "Statistik"
-  hosting_info: "CO2-neutral gehostet auf"
-  hosting_tooltip: "CO2-neutral gehostet auf manitu."
-  donate: "Unterstützen"
-  version: "Version: {version}"
-  call_to_donate: |
-    Du möchtest foodsharing
-    unterstützen?
-  donate_now: "Jetzt spenden"
-  beta_testing_issues: "Test-Aufgaben der Beta-Version"
-  it_devdocs: "by foodsharing IT"
-  wiener_tafel_alt_text: "Wiener Tafel"
-  lebensministerium_alt_text: "Bundesministerium für Landwirtschaft, Regionen und Tourismus"
-  denns_at_alt_text: "Denn's Biomarkt"
+  meta:
+    beta_testing_issues: Test-Aufgaben der Beta-Version
+    it_devdocs: "by foodsharing IT"
+    version: "Version: {version}"
+  donate:
+    call_to: Du möchtest foodsharing unterstützen?
+    cta: Jetzt spenden
+  hosting:
+    info: CO2-neutral gehostet
+    tooltip: CO2-neutral gehostet auf manitu
+  partner_names:
+    wiener_tafel: Wiener Tafel
+    lebensministerium: Bundesministerium für Landwirtschaft, Regionen und Tourismus
+    denns: Denn's Biomarkt
 
 releases:
   "2022-05": "Release \"Heidelbeere\" 🍇 (Mai 2022)"
@@ -2681,8 +2682,8 @@ globals:
     my_stores: Meine Betriebe
     regions: Bezirke
     my_regions: Meine Bezirke
-    foodshare_points: Fairtailer
-    my_foodshare_points: Meine Fairtailer
+    foodshare_points: Fairteiler
+    my_foodshare_points: Meine Fairteiler
     groups: Gruppen
     my_groups: Meine Gruppen
     persons: Personen

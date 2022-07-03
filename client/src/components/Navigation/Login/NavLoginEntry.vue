@@ -71,6 +71,7 @@
 </template>
 
 <script>
+import { isDev } from '@/scripts/server-data'
 import { login } from '@/api/user'
 
 import { pulseError, pulseSuccess } from '@/script'
@@ -79,8 +80,8 @@ export default {
   name: 'MenuLogin',
   data () {
     return {
-      email: this.$serverData.isDev ? 'userbot@example.com' : '',
-      password: this.$serverData.isDev ? 'user' : '',
+      email: isDev ? 'userbot@example.com' : '',
+      password: isDev ? 'user' : '',
       rememberMe: false,
       isLoading: false,
       error: null,

@@ -1,10 +1,8 @@
-@import "bootstrap-theme.scss";
-
 // html to be strong!
 // and override .bootstrap a
 html a[href]:not(:where(
     /* exclude */
-    .brand,
+    .navbar-brand,
     .nav-link,
     .btn,
     .dropdown-action,
@@ -12,7 +10,6 @@ html a[href]:not(:where(
     .list-group-item,
     .icon,
     .card-footer a,
-    footer a,
     /* corrections to disable old styles */
     .team-memberinfo a,
     .author a,

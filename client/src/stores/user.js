@@ -2,14 +2,14 @@ import Vue from 'vue'
 import { getMailUnreadCount } from '@/api/mailbox'
 import { getDetails } from '@/api/user'
 import serverData from '@/scripts/server-data'
-console.log(serverData)
+
 export const store = Vue.observable({
   mailUnreadCount: 0,
   details: {},
-  coordinates: serverData.coordinates || {},
+  locations: serverData.locations || {},
   user: serverData.user,
   permissions: serverData.permissions,
-  isLoggedIn: serverData.user.id !== null,
+  isLoggedIn: serverData.user?.id !== null,
 })
 
 export const getters = {
@@ -22,17 +22,20 @@ export const getters = {
   getUser () {
     return store.user
   },
+  getUserId () {
+    return store.user?.id
+  },
   getUserDetails () {
     return store.details
   },
   getAvatar () {
     return store.user?.avatar
   },
-  getUserName () {
+  getUserFirstName  () {
     return store.user?.firstname
   },
-  getUserId () {
-    return store.user?.id
+  getUserLastName () {
+    return store.user?.lastname || ''
   },
   hasHomeRegion () {
     return store.user?.homeRegionId > 0
@@ -58,11 +61,11 @@ export const getters = {
   getStats () {
     return store.user?.stats || {}
   },
-  hasCoordinates () {
-    return store.coordinates.lat !== 0 && store.coordinates.lng !== 0
+  hasLocations () {
+    return store.locations.lat !== 0 && store.locations.lng !== 0
   },
-  getCoordinates () {
-    return store.coordinates || { lat: 0, lng: 0 }
+  getLocations () {
+    return store.locations || { lat: 0, lng: 0 }
   },
   getPermissions () {
     return store.permissions || {}
@@ -70,9 +73,6 @@ export const getters = {
   hasAdminPermissions () {
     const permissions = Object.entries(store.permissions)
     return permissions.some(([key, value]) => key !== 'mayEditUserProfile' && value)
-  },
-  hasRegion () {
-    return store.user?.regionId > 0 && store.user?.regionName.length > 0
   },
 }
 

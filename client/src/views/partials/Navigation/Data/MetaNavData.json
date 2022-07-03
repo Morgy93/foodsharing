@@ -12,6 +12,7 @@
         "title": "navigation.help_needed",
         "icon": "fas fa-question-circle",
         "direction": "right",
+        "isOpen": true,
         "isInternal": true,
         "items": [
             {

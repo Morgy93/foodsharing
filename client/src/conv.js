@@ -4,7 +4,7 @@ import $ from 'jquery'
 
 import storage from '@/storage'
 import { GET, goTo, isMob, pulseError, img } from '@/script'
-import serverData from '@/scripts/server-data'
+import DataUser from '@/stores/user'
 import { dateFormat } from '@/./utils'
 import msg from '@/msg'
 import conversationStore from '@/stores/conversations'
@@ -284,7 +284,7 @@ const conv = {
    * append an chat message to chat window with given array index attention not conversation id ;)
    */
   append: function (key, message) {
-    const msgclass = (message.authorId === serverData.user.id) ? 'chatboxmessage my-message' : 'chatboxmessage'
+    const msgclass = (message.authorId === DataUser.getters.getUserId()) ? 'chatboxmessage my-message' : 'chatboxmessage'
 
     if (key >= 0 && conv.chatboxes[key] !== undefined) {
       conv.chatboxes[key].last_mid = parseInt(message.id)
@@ -328,7 +328,7 @@ const conv = {
       if (title == null) {
         title = []
         for (const memberId of conversation.members) {
-          if (memberId === serverData.user.id || profileStore.profiles[memberId].name === null) {
+          if (memberId === DataUser.getters.getUserId() || profileStore.profiles[memberId].name === null) {
             continue
           }
           title.push(`
@@ -382,7 +382,7 @@ const conv = {
   },
 
   leaveConversation: async function (cid) {
-    await api.removeUserFromConversation(cid, serverData.user.id)
+    await api.removeUserFromConversation(cid, DataUser.getters.getUserId())
     conv.close(cid)
     conversationStore.loadConversations()
   },

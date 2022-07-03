@@ -25,13 +25,20 @@ $breaking-viewport: 767px;
   }
 
   & .metanav {
-    // padding-top: 0.5rem;
-    // padding-bottom: 0.5rem;
-
     .foodsharing {
       margin-right: auto;
     }
   }
+}
+
+@media (min-width: $breaking-viewport) {
+  .nav-foodsharer .mainnav .nav-item .nav-text {
+    display: unset;
+  }
+}
+
+.nav-not-visible .navbar-collapse .nav-text {
+  display: none;
 }
 
 .metanav-container {
@@ -54,7 +61,6 @@ $breaking-viewport: 767px;
 }
 
 .mainnav {
-
   .navbar-toggler {
     color: var(--fs-color-primary-500);
 
@@ -93,36 +99,32 @@ $breaking-viewport: 767px;
   }
 }
 
-.navbar-collapse {
-  display: flex;
-  flex-direction: column;
-  @media (max-width: $breaking-viewport) {
-    & .navbar-navside {
+@media (max-width: $breaking-viewport) {
+  .navbar-collapse {
+    margin-bottom: 3rem;
+
+    & .metanav,
+    & .sidenav {
+      flex-direction: column;
+    }
+
+    & .nav-item {
       width: 100%;
-      display: flex;
-      flex-direction: column-reverse;
-      margin: 1rem 0;
+    }
 
-      .metanav,
-      .sidenav {
+    & .navbar-navside .nav-item .nav-text  {
+      display: unset;
+      width: 100%;
+    }
+
+    & .is-open-on-mobile {
+      & .dropdown-menu {
+        position: unset;
         display: block;
+      }
 
-        & .nav-item {
-          width: 100%;
-
-          & .dropdown-menu {
-            position: unset;
-            display: block;
-          }
-
-          & .dropdown-toggle {
-            display: none;
-          }
-
-          & .nav-text {
-            display: unset;
-          }
-        }
+      & .dropdown-toggle {
+        display: none;
       }
     }
   }
@@ -145,22 +147,10 @@ $breaking-viewport: 767px;
   display: flex;
   position: relative;
 
+  font-weight: 600;
 
   @media (max-width: 465px) {
     padding: 0.5rem;
-  }
-
-  .nav-text {
-    display: unset;
-
-    .mainnav &,
-    .sidenav & {
-      font-weight: 600;
-    }
-
-    .nav-visible .sidenav & {
-      display: none;
-    }
   }
 
   &::after {
@@ -232,6 +222,18 @@ $breaking-viewport: 767px;
 
 .dropdown-header {
   font-weight: 600;
+
+  @media (max-width: $breaking-viewport) {
+    .for-mobile & {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .is-open-on-mobile & button.btn {
+      display: none;
+    }
+  }
 }
 
 .dropdown {
@@ -265,7 +267,7 @@ $breaking-viewport: 767px;
   }
 
   & .dropdown-menu-scrollable {
-    max-height: 65vh;
+    max-height: 45vh;
     display: block;
     overflow-y: auto;
   }
@@ -280,8 +282,4 @@ $breaking-viewport: 767px;
       top: 3rem;
     }
   }
-}
-
-.dropdown-item {
-
 }

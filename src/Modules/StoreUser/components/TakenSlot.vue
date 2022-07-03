@@ -77,7 +77,8 @@ import { pulseSuccess } from '@/script'
 import { callableNumber } from '@/utils'
 import conv from '@/conv'
 import i18n from '@/i18n'
-import serverData from '@/scripts/server-data'
+import DataUser from '@/stores/user'
+
 import { v4 as uuidv4 } from 'uuid'
 
 export default {
@@ -126,7 +127,7 @@ export default {
       return !!navigator.clipboard
     },
     isMe () {
-      return serverData.user.id === this.profile.id
+      return DataUser.getters.getUserId() === this.profile.id
     },
   },
   mounted () {

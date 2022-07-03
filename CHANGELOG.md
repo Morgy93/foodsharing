@@ -29,6 +29,7 @@
 - Improved nightly maintenance runtime !2176 @AntonBallmaier
 - On mobile devices the forum profile image is smaller !2237 @sefn
 - Color set is unified and removed vanilla bootstrap !2293 @sefn
+- The content of the footer is now dynamic !2297 @sefn
 
 ## Bugfixes
 - When going back during registration, email and password are unchanged. !2184 @AntonBallmaier

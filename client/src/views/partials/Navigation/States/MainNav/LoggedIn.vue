@@ -1,14 +1,14 @@
 <template>
   <ul class="mainnav">
-    <Logo v-if="!viewIsMD" />
+    <Logo v-if="viewIsMobile" />
     <Link
       v-if="!isFoodsaver"
       :title="$i18n('foodsaver.upgrade.to_fs')"
       icon="fa-hands-helping"
       :href="$url('quiz_foodsaver')"
     />
-    <NavRegions v-if="isFoodsaver" />
-    <NavGroups v-if="isFoodsaver && !viewIsXXS" />
+    <NavRegions v-if="isFoodsaver && !viewIsMobile" />
+    <NavGroups v-if="isFoodsaver && !viewIsMobile" />
     <NavStores v-if="isFoodsaver" />
     <NavBaskets />
     <NavConversations v-if="viewIsMobile" />

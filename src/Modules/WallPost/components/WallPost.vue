@@ -108,7 +108,8 @@
 <script>
 import differenceInMonths from 'date-fns/differenceInMonths'
 import differenceInCalendarYears from 'date-fns/differenceInCalendarYears'
-import serverData from '@/scripts/server-data'
+import DataUser from '@/stores/user'
+
 import Avatar from '@/components/Avatar'
 import Markdown from '@/components/Markdown/Markdown'
 import MediaQueryMixin from '@/mixins/MediaQueryMixin'
@@ -131,14 +132,14 @@ export default {
       }
     },
     canDelete () {
-      if (!serverData.user.id) return false
+      if (!DataUser.getters.getUserId()) return false
       // orga can remove problematic content, see StorePermissions:mayDeleteStoreWallPost
       if (this.mayDeleteEverything) return true
       // own posts can always be removed, see StorePermissions:mayDeleteStoreWallPost
       if (this.isOwn(this.post)) return true
 
       // managers can clean up posts older than 1 month, see StorePermissions:mayDeleteStoreWallPost
-      if (this.isManager(serverData.user.id)) {
+      if (this.isManager(DataUser.getters.getUserId())) {
         return differenceInMonths(new Date(), this.post.createdAt) >= 1
       } else {
         return false
@@ -151,7 +152,7 @@ export default {
       return (this.managers.indexOf(userId) > -1) // no IE: this.managers.includes(userId)
     },
     isOwn (post) {
-      return (post.foodsaverId === serverData.user.id)
+      return (post.foodsaverId === DataUser.getters.getUserId())
     },
     isImportant (post) {
       if (!post || !post.author || !post.author.id) return false

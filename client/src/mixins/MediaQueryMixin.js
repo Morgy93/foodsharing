@@ -32,8 +32,8 @@ export default {
     }
   },
   mounted () {
+    window.addEventListener('resize', this.getWindowWidth)
     this.$nextTick(function () {
-      window.addEventListener('resize', this.getWindowWidth)
       this.getWindowWidth()
     })
   },

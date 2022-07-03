@@ -1,7 +1,7 @@
 <template>
   <Container
-    :tag="hasCoordinates ? 'basket.nearby' : 'basket.recent'"
-    :title="$i18n(hasCoordinates ? 'basket.nearby' : 'basket.recent')"
+    :tag="hasLocations ? 'basket.nearby' : 'basket.recent'"
+    :title="$i18n(hasLocations ? 'basket.nearby' : 'basket.recent')"
     :toggle-visiblity="data.length > defaultAmount"
     @show-full-list="showFullList"
     @reduce-list="reduceList"
@@ -41,8 +41,8 @@ export default {
     radius () {
       return getters.getRadius()
     },
-    hasCoordinates () {
-      return DataUser.getters.hasCoordinates()
+    hasLocations () {
+      return DataUser.getters.hasLocations()
     },
     data () {
       const data = getters.getNearby()

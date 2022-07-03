@@ -1,5 +1,6 @@
 <template>
   <b-nav-item-dropdown
+    ref="dropdown"
     class="nav-item"
     :right="direction === 'right'"
     :class="{
@@ -36,8 +37,17 @@
         />
       </slot>
     </template>
-    <b-dropdown-header v-if="!viewIsMD">
-      {{ title }}
+    <b-dropdown-header
+      v-if="viewIsMobile"
+      class="for-mobile"
+    >
+      <span>{{ title }}</span>
+      <button
+        class="btn btn-link"
+        @click="hide()"
+      >
+        <i class="fas fa-times" />
+      </button>
     </b-dropdown-header>
     <span
       class="content"
@@ -85,6 +95,11 @@ export default {
   computed: {
     hasActionsSlot () {
       return this.$slots.actions
+    },
+  },
+  methods: {
+    hide () {
+      this.$refs.dropdown.hide()
     },
   },
 }

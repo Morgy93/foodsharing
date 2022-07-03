@@ -56,7 +56,7 @@ export default {
   },
   methods: {
     open () {
-      console.log('open', DataRegions.getters.joinRegionModal.isShown())
+      // console.log('open', DataRegions.getters.joinRegionModal.isShown())
       DataRegions.mutations.joinRegionModal.show()
     },
   },

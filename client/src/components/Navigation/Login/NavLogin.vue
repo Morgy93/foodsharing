@@ -3,7 +3,7 @@
     :title="$i18n('login.topbar')"
     direction="right"
     is-fixed-size
-    class="testing-login-dropdown"
+    class="testing-login-dropdown is-open-on-mobile"
   >
     <template #content>
       <LoginEntry />

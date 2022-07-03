@@ -76,7 +76,7 @@ import $ from 'jquery'
 import { sendBanana } from '@/api/profile'
 import i18n from '@/i18n'
 import { pulseError, pulseInfo } from '@/script'
-import serverData from '@/scripts/server-data'
+import DataUser from '@/stores/user'
 
 import BananaListEntry from './BananaListEntry'
 
@@ -138,17 +138,10 @@ export default {
       $.fancybox.update()
     },
     getFakeBanana () {
-      let profilePic = serverData.user.avatar['50']
-      if (profilePic === '/img/50_q_avatar.png') {
-        profilePic = null
-      } else if (profilePic.startsWith('/images/50_q_')) {
-        profilePic = profilePic.substr('/images/50_q_'.length)
-      }
-
       return {
         createdAt: new Date().toISOString(),
-        id: serverData.user.id,
-        photo: profilePic,
+        id: DataUser.getters.getUserId(),
+        photo: DataUser.getters.getAvatar(),
         msg: this.bananaText.trim(),
       }
     },

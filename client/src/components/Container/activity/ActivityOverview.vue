@@ -171,8 +171,8 @@ export default {
 .activity-options {
   display: flex;
 
-  @media (max-width: 320px) {
-    display: none;
+  .btn:not(:first-child) {
+    padding: 0.15rem 0.25rem;
   }
 }
 

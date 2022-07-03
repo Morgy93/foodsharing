@@ -184,9 +184,9 @@ final class PageHelper
 			$permissions = $this->getPermissions();
 		}
 
-		$coordinates = null;
+		$locations = null;
 		if ($pos = $this->session->getLocation()) {
-			$coordinates = [
+			$locations = [
 				'lat' => (float)$pos['lat'],
 				'lon' => (float)$pos['lon'],
 			];
@@ -203,7 +203,7 @@ final class PageHelper
 			'permissions' => $permissions,
 			'page' => $this->routeHelper->getPage(),
 			'subPage' => $this->routeHelper->getSubPage(),
-			'coordinates' => $coordinates,
+			'locations' => $locations,
 			'ravenConfig' => $sentryConfig,
 			'isDev' => getenv('FS_ENV') === 'dev',
 			'locale' => $this->session->getLocale()

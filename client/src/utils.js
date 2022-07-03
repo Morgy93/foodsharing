@@ -9,12 +9,12 @@ import PhoneNumber from 'awesome-phonenumber'
 
 import { ajreq } from '@/script'
 
-import serverData from '@/scripts/server-data'
+import DataUser from '@/stores/user'
 import i18n from '@/i18n'
 // this last call imports the text in the respective languages
 
 export function getBrowserLocation (success) {
-  if (serverData.location) return success(serverData.location)
+  if (DataUser.getters.getLocation()) return success(DataUser.getters.getLocation())
   if (navigator.geolocation) {
     navigator.geolocation.getCurrentPosition(pos => {
       ajreq('savebpos', {

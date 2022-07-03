@@ -1,5 +1,5 @@
 <template>
-  <div class="bootstrap">
+  <div class="mt-3">
     <div
       v-if="isEmpty && !isLoading"
       class="dropdown-header alert alert-warning"

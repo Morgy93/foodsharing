@@ -180,7 +180,7 @@ function mb_send_message () {
   $('.edit-an').each(function () {
     an = `${an};${$(this).val()}`
   })
-  console.log(an, $('.edit-an'))
+  // console.log(an, $('.edit-an'))
   if (an.indexOf('@') == -1) {
     $('.edit-an')[0].focus()
     pulseInfo(i18n('chat.receivermissing'))

@@ -1,11 +1,12 @@
 <template>
   <b-navbar
     toggleable="md"
-    type="dark"
-    variant="light"
     :sticky="viewIsMD"
     class="nav"
-    :class="{'nav-visible': isLoggedIn}"
+    :class="{
+      'nav-not-visible': isLoggedIn,
+      'nav-foodsharer': !isFoodsaver,
+    }"
   >
     <div class="metanav-container container">
       <MetaNavLoggedIn v-if="!viewIsMobile && isLoggedIn" />

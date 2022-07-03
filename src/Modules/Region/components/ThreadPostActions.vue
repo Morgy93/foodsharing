@@ -97,7 +97,7 @@ import { BDropdown, BModal, VBTooltip, BLink } from 'bootstrap-vue'
 
 import Emoji from '@/components/Emoji'
 import emojiList from '@/emojiList.json'
-import { user } from '@/scripts/server-data'
+import DataUser from '@/stores/user'
 
 export default {
   components: { BDropdown, Emoji, BModal, BLink },
@@ -150,10 +150,10 @@ export default {
       if (!this.reactions[key]) {
         return false
       }
-      return !!this.reactions[key].find(r => r.id === user.id)
+      return !!this.reactions[key].find(r => r.id === DataUser.getters.getUserId())
     },
     concatUsers (users) {
-      const names = users.map(u => u.id === user.id ? 'Du' : u.name)
+      const names = users.map(u => u.id === DataUser.getters.getUserId() ? 'Du' : u.name)
       if (names.length === 1) {
         return names[0]
       }

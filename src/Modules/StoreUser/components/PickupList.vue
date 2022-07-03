@@ -65,7 +65,7 @@ import { VBTooltip } from 'bootstrap-vue'
 import Pickup from './Pickup'
 import { setPickupSlots, confirmPickup, joinPickup, leavePickup, listPickups } from '@/api/pickups'
 import { sendMessage } from '@/api/conversations'
-import { user } from '@/scripts/server-data'
+import DataUser from '@/stores/user'
 import { ajreq, pulseError, pulseSuccess } from '@/script'
 import $ from 'jquery'
 import i18n from '@/i18n'
@@ -95,7 +95,7 @@ export default {
     return {
       pickups: [],
       isLoading: false,
-      user: user,
+      user: DataUser.getters.getUser(),
     }
   },
   _interval: null,
@@ -124,7 +124,7 @@ export default {
     async join (date) {
       this.isLoading = true
       try {
-        await joinPickup(this.storeId, date, this.user.id)
+        await joinPickup(this.storeId, date, DataUser.getters.getUserId())
       } catch (e) {
         console.error(e)
         pulseError(i18n('pickuplist.tooslow') + '<br /><br />' + i18n('pickuplist.tryagain'))
@@ -134,7 +134,7 @@ export default {
     async leave (date) {
       this.isLoading = true
       try {
-        await leavePickup(this.storeId, date, this.user.id)
+        await leavePickup(this.storeId, date, DataUser.getters.getUserId())
       } catch (e) {
         pulseError(i18n('pickuplist.error_leave') + e)
       }

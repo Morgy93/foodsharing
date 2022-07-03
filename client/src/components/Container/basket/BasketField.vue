@@ -85,7 +85,7 @@ export default {
     },
     getDistanceNumber (lat, lon) {
       const deg2rad = (degrees) => degrees * (Math.PI / 180)
-      const uC = getters.getCoordinates()
+      const uC = getters.getLocations()
       const R = 6371 // Radius of the earth in km
       const dLat = deg2rad(uC.lat - lat) // deg2rad below
       const dLon = deg2rad(uC.lon - lon)

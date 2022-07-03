@@ -17,6 +17,9 @@
     :direction="entry.direction"
     :is-fixed-size="entry.isFixedSize"
     :is-scrollable="entry.isScrollable"
+    :class="{
+      'is-open-on-mobile': entry.isOpen,
+    }"
   >
     <template #content>
       <span
@@ -29,7 +32,7 @@
         <b-dropdown-item
           v-else
           :href="item.url ? $url(item.url) : null"
-          @click.prevent="item.modal ? $bvModal.show(item.modal) : null"
+          @click="item.modal ? $bvModal.show(item.modal) : null"
         >
           <i
             v-if="item.icon"
@@ -67,6 +70,7 @@ export default {
         isScrollable: false,
         isFixedSize: false,
         isInternal: false,
+        isOpen: false,
         isHighlighted: false,
         items: [],
       }),

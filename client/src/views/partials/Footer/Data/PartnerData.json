@@ -1,0 +1,38 @@
+{
+  "de": {
+    "title": "footer.our_partner",
+    "items": [
+      {
+        "url": "infosCompany",
+        "info": "footer.hosting.info",
+        "title": "footer.hosting.tooltip",
+        "img": "/img/footer/manitu_logo.svg"
+      }
+    ]
+  },
+  "at": {
+    "title": "footer.our_partner",
+    "items": [
+      {
+        "url": "hosting",
+        "title": "footer.hosting.tooltip",
+        "img": "/img/footer/manitu_logo.svg"
+      },
+      {
+        "url": "denns",
+        "title": "footer.partner_names.denns",
+        "img": "/img/footer/Denns_Biomarkt_logo.svg"
+      },
+      {
+        "url": "bmlfuw",
+        "title": "footer.partner_names.lebensministerium",
+        "img": "/img/footer/BMLRT_Logo.svg"
+      },
+      {
+        "url": "wiener_tafel",
+        "title": "footer.partner_names.wiener_tafel",
+        "img": "/img/footer/Wiener_Tafel_logo.svg"
+      }
+    ]
+  }
+}

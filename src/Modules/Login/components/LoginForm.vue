@@ -1,5 +1,5 @@
 <template>
-  <div class="bootstrap">
+  <div class="login">
     <div class="card rounded">
       <div class="card-header text-white bg-primary">
         {{ $i18n('login.form_title') }}
@@ -81,7 +81,7 @@
             id="login-btn"
             :aria-label="$i18n('login.login_button_label')"
             type="submit"
-            secondary
+            variant="primary"
             class="login-btn"
             @click="submit"
           >
@@ -92,12 +92,9 @@
           </b-button>
         </b-overlay>
         <div class="password-reset">
-          <b-link
-            :href="$url('passwordReset')"
-            class="b-link"
-          >
+          <a :href="$url('passwordReset')">
             {{ $i18n('login.forgotten_password_label') }}
-          </b-link>
+          </a>
         </div>
       </form>
     </div>
@@ -159,7 +156,7 @@ export default {
         const urlParams = new URLSearchParams(window.location.search)
 
         if (urlParams.has('ref')) {
-          window.location.href = decodeURIComponent(urlParams.get('ref'))
+          window.location.href = this.$url('redirect_to_url', { ref: urlParams.get('ref') })
         } else {
           window.location.href = this.$url('dashboard')
         }
@@ -191,12 +188,14 @@ export default {
 </script>
 
 <style lang="scss" scoped>
+.login {
+  margin-top: 10rem;
+  margin-bottom: 10rem;
+}
   .card.rounded {
     max-width: 500px;
     margin: auto;
-  }
-  .b-link {
-    color: rgb(100, 174, 036);
+    box-shadow: var(--fs-shadow);
   }
   .loadingButton {
     img {
@@ -227,6 +226,6 @@ export default {
   }
   .password-reset {
     font-size: 0.7rem;
-    margin-top: 10px;
+    margin-top: 1rem;
   }
 </style>

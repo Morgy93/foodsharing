@@ -156,7 +156,7 @@ import ThreadFastnavigationButton from './ThreadFastnavigationButton'
 import * as api from '@/api/forum'
 import { pulseError } from '@/script'
 import i18n from '@/i18n'
-import { user } from '@/scripts/server-data'
+import DataUser from '@/stores/user'
 import { GET } from '@/browser'
 import { setThreadStatus } from '@/api/forum'
 import ThreadStatus from './ThreadStatus'
@@ -192,7 +192,10 @@ export default {
   },
   computed: {
     userId () {
-      return user.id
+      return DataUser.getters.getUserId()
+    },
+    userFirstName () {
+      return DataUser.getters.getUserFirstName()
     },
     isOpen () {
       return this.status === ThreadStatus.THREAD_OPEN
@@ -317,11 +320,11 @@ export default {
     async reactionAdd (post, key, onlyLocally = false) {
       if (post.reactions[key]) {
         // reaction alrready in list, increase count by 1
-        if (post.reactions[key].find(r => r.id === user.id)) return // already given - abort
-        post.reactions[key].push({ id: user.id, name: user.firstname })
+        if (post.reactions[key].find(r => r.id === this.userId)) return // already given - abort
+        post.reactions[key].push({ id: this.userId, name: this.userName })
       } else {
         // reaction not in the list yet, append it
-        this.$set(post.reactions, key, [{ id: user.id, name: user.firstname }])
+        this.$set(post.reactions, key, [{ id: this.userId, name: this.userName }])
       }
 
       if (!onlyLocally) {
@@ -335,7 +338,7 @@ export default {
       }
     },
     async reactionRemove (post, key, onlyLocally = false) {
-      const reactionUser = post.reactions[key].find(r => r.id === user.id)
+      const reactionUser = post.reactions[key].find(r => r.id === this.userId)
 
       if (!reactionUser) return
 
@@ -359,8 +362,8 @@ export default {
         body: body,
         reactions: {},
         author: {
-          name: `${user.firstname} ${user.lastname}`,
-          avatar: user.avatar['130'].replace(/^(\/images\/130_q_)/, ''),
+          name: `${this.userFirstName} ${DataUser.getters.getUserLastName()}`,
+          avatar: DataUser.getters.getAvatar(),
         },
       }
       this.loadingPosts.push(-1)

@@ -17,6 +17,13 @@
 }
 
 /*
+    Fontawesome forced to solid
+*/
+.btn.fas {
+    font-weight: 900 !important;
+}
+
+/*
     Overflow on main div
 */
 div#main {
@@ -82,6 +89,13 @@ html a.trafficlight,
         background-color: var(--fs-color-secondary-600) !important;
         border-color: var(--fs-color-secondary-500) !important;
     }
+}
+
+/*
+    Breadcrumb
+*/
+.bread {
+    margin-top: 1rem;
 }
 
 /*
@@ -263,4 +277,31 @@ input[type="text"] {
     }
 }
 
+
+/**
+    pure-g adjustments for the message area on mobile
+*/
+
+#msg-control form {
+    display: flex;
+}
+
+#msg-control .input-wrapper {
+    border: 0;
+    padding: 0;
+    width: 100%;
+}
+
+
+@media (min-width: 575px) {
+
+    .slimScrollDiv,
+    #msg-conversation {
+        max-height: 50vh;
+    }
+
+    .slimScrollDiv {
+        margin-bottom: 0.25rem;
+    }
+}
 

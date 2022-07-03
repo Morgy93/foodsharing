@@ -1,6 +1,6 @@
 <template>
   <ul class="mainnav">
-    <Logo v-if="!viewIsMD" />
+    <Logo v-if="viewIsMobile" />
     <Dropdown
       v-for="(category, idx) in mainNav"
       :key="idx"
