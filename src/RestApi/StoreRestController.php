@@ -12,11 +12,15 @@ use Foodsharing\Modules\Foodsaver\FoodsaverGateway;
 use Foodsharing\Modules\Store\StoreGateway;
 use Foodsharing\Modules\Store\StoreTransactions;
 use Foodsharing\Modules\Store\TeamStatus as TeamMembershipStatus;
+use Foodsharing\RestApi\Models\Store\StoreStatusForMemberModel;
 use Foodsharing\Permissions\StorePermissions;
+use Foodsharing\RestApi\Models\Store\MinimalStoreModel;
+use Foodsharing\RestApi\Models\Store\StoreMembershipStatusModel;
 use FOS\RestBundle\Controller\AbstractFOSRestController;
 use FOS\RestBundle\Controller\Annotations as Rest;
 use FOS\RestBundle\Request\ParamFetcher;
 use OpenApi\Annotations as OA;
+use Nelmio\ApiDocBundle\Annotation\Model;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\Exception\AccessDeniedHttpException;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
@@ -79,23 +83,36 @@ class StoreRestController extends AbstractFOSRestController
 	}
 
 	/**
-	 * @OA\Tag(name="stores")
-	 *
 	 * Provides a list of all user related stores and the possible picks
+	 * 
+	 * @OA\Tag(name="stores")
+	 * @OA\Tag(name="user")
 	 *
-	 * @Rest\Get("user/current/stores")
+	 * @OA\Response(
+	 * 		response="200",
+	 * 		description="Success.",
+	 *      @OA\JsonContent(
+     *        type="array",
+     *        @OA\Items(ref=@Model(type=StoreStatusForMemberModel::class))
+	 *      )
+     * )
+	 * @OA\Response(response="204", description="No store status found.")
+	 * @OA\Response(response="401", description="Not logged in")
+	 * 
+	 * @Rest\Get("/user/current/stores")
 	 */
 	public function getListOfStoreStatusForCurrentFoodsaver(): Response
 	{
 		if (!$this->session->may()) {
 			throw new UnauthorizedHttpException(self::NOT_LOGGED_IN);
 		}
-		$listOfStoreStatus = $this->storeTransactions->listAllStoreStatusForFoodsaver($this->session->id());
+		$items = $this->storeTransactions->listAllStoreStatusForFoodsaver($this->session->id());
+		$listOfStoreStatus = StoreStatusForMemberModel::transform($items);
 
 		if ($listOfStoreStatus === []) {
 			return $this->handleView($this->view([], 204));
 		}
-
+		
 		return $this->handleView($this->view($listOfStoreStatus, 200));
 	}
 
@@ -509,3 +526,4 @@ class StoreRestController extends AbstractFOSRestController
 		}
 	}
 }
+

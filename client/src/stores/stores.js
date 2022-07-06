@@ -11,7 +11,7 @@ export const getters = {
   },
 
   has (id) {
-    return store.stores.find(store => store.id === id)
+    return store.stores.find(store => store.store.id === id)
   },
 }
 

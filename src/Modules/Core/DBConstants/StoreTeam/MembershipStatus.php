@@ -19,11 +19,11 @@ class MembershipStatus
 	{
 		switch ($status) {
 			case MembershipStatus::APPLIED_FOR_TEAM:
-				return 'REQUESTED';
+				return 'APPLIED_FOR_TEAM';
 			case MembershipStatus::MEMBER:
 				return 'MEMBER';
 			case MembershipStatus::JUMPER:
-				return 'WAITING';
+				return 'JUMPER';
 		}
 
 		return 'UNKNOWN';
