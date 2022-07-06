@@ -29,6 +29,9 @@ export default {
         this.saveState()
       }
     },
+    setState (state) {
+      this.state = state
+    },
     close (e) {
       if (this.stateHasAutoClose && !this.$el.contains(e.target)) {
         this.state = false

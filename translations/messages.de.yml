@@ -2671,6 +2671,7 @@ globals:
   select: Bitte auswählen...
   show_more: Mehr anzeigen
   show_less: Weniger anzeigen
+  edit: Bearbeiten
   preview: Vorschau
   type:
     mailboxes: Mailboxen
@@ -2688,6 +2689,19 @@ globals:
     persons: Personen
     my_persons: Meine Personen
   you: Du
+
+markdown:
+  bold: Fett
+  italic: Kursiv
+  heading-1: Headline 1
+  heading-2: Headline 2
+  quote: Zitat
+  list-unordered: Unsortiere Liste
+  list-ordered: Sortierte Liste
+  code: Code
+  code-block: Codeblock
+  divider: Trennlinie
+  link: Verlinkung
 
 search:
   title: Suche
