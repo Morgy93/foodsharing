@@ -137,18 +137,18 @@ class StoreGatewayTest extends \Codeception\Test\Unit
 		$this->tester->addStoreTeam($store4['id'], $this->foodsaver['id'], false, false, false); // Test open request confirmed (Pending request)
 		$this->tester->addStoreTeam($store2['id'], $this->foodsaver['id'] + 1, false, false, false); // Test open request confirmed (Pending request)
 
-		$expectation = [['betrieb_id' => $store1['id'], 'name' => $store1['name'], 'managing' => 1, 'membershipstatus' => 1],
-						['betrieb_id' => $store2['id'], 'name' => $store2['name'], 'managing' => 0, 'membershipstatus' => 2],
-						['betrieb_id' => $store3['id'], 'name' => $store3['name'], 'managing' => 0, 'membershipstatus' => 1],
-						['betrieb_id' => $store4['id'], 'name' => $store4['name'], 'managing' => 0, 'membershipstatus' => 0]
+		$expectation = [['betrieb_id' => $store1['id'], 'betrieb_name' => $store1['name'], 'managing' => 1, 'membershipstatus' => 1],
+						['betrieb_id' => $store2['id'], 'betrieb_name' => $store2['name'], 'managing' => 0, 'membershipstatus' => 2],
+						['betrieb_id' => $store3['id'], 'betrieb_name' => $store3['name'], 'managing' => 0, 'membershipstatus' => 1],
+						['betrieb_id' => $store4['id'], 'betrieb_name' => $store4['name'], 'managing' => 0, 'membershipstatus' => 0]
 		];
 		usort($expectation, function ($a, $b) {
 			if ($a['managing'] == $b['managing']) {
 				if ($a['membershipstatus'] == $b['membershipstatus']) {
-					if ($a['name'] == $b['name']) {
+					if ($a['betrieb_name'] == $b['betrieb_name']) {
 						return 0;
 					}
-					if ($a['name'] < $b['name']) {
+					if ($a['betrieb_name'] < $b['betrieb_name']) {
 						return -1;
 					} else {
 						return 1;

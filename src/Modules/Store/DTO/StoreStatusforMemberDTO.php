@@ -11,8 +11,7 @@ class StoreStatusforMemberDTO
 
 	public function __construct()
 	{
-		$this->id = 0;
-		$this->name = '';
+		$this->store = new StoreViewDTO();
 		$this->isManaging = false;
 		$this->membershipStatus = 0;
 		$this->pickupStatus = 0;

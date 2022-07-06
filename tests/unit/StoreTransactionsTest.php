@@ -262,19 +262,21 @@ class StoreTransactionsTest extends \Codeception\Test\Unit
 		$store_coord = $this->tester->createStore($this->region_id, null, null, ['betrieb_status_id' => CooperationStatus::COOPERATION_ESTABLISHED]);
 		$this->tester->addStoreTeam($store_coord['id'], $this->foodsaver['id'], true);
 		$time = '16:40:00';
-		$dayOfWeek = 3; 
-		$this->tester->addRecurringPickup($this->store['id'],
+		$dayOfWeek = 3;
+		$this->tester->addRecurringPickup($store_coord['id'],
 			['time' => $time, 'dow' => $dayOfWeek, 'fetcher' => 1]
 		);
-		$regularSlots = $this->gateway->getRegularPickups($this->store['id']);
-
+		$regularSlots = $this->gateway->getRegularPickups($store_coord['id']);
 
 		// Create store membership
 		$store_member = $this->tester->createStore($this->region_id, null, null, ['betrieb_status_id' => CooperationStatus::COOPERATION_ESTABLISHED]);
 		$this->tester->addStoreTeam($store_member['id'], $this->foodsaver['id'], true);
 
-		// Create store request
+		// Create store jumper
 		$store_request = $this->tester->createStore($this->region_id, null, null, ['betrieb_status_id' => CooperationStatus::COOPERATION_ESTABLISHED]);
 		$this->tester->addStoreTeam($store_request['id'], $this->foodsaver['id'], true);
+
+		$result = $this->transactions->listAllStoreStatusForFoodsaver($this->foodsaver['id']);
+		$this->assertEquals(count($result), 3);
 	}
 }
