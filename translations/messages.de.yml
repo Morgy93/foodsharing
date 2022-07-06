@@ -2664,12 +2664,14 @@ globals:
     signup: Mitmachen
     signin: Anmelden
     signout: Abmelden
+  send: Abschicken
   save: Speichern
   close: Schließen
   reset: Zurücksetzen
   select: Bitte auswählen...
   show_more: Mehr anzeigen
   show_less: Weniger anzeigen
+  preview: Vorschau
   type:
     mailboxes: Mailboxen
     my_mailboxes: Meine Mailboxen

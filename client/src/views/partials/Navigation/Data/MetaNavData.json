@@ -42,6 +42,11 @@
                 "isInternal": true,
                 "title": "navigation.styleguide",
                 "modal": "styleGuideModal"
+            },
+            {
+                "isInternal": true,
+                "title": "globals.preview",
+                "modal": "markdownPreviewModal"
             }
         ]
     }
