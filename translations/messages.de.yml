@@ -2673,6 +2673,8 @@ globals:
   show_less: Weniger anzeigen
   edit: Bearbeiten
   preview: Vorschau
+  placeholder:
+    write_something: "Schreibe etwas ..."
   type:
     mailboxes: Mailboxen
     my_mailboxes: Meine Mailboxen
@@ -2691,6 +2693,7 @@ globals:
   you: Du
 
 markdown:
+  title: Markdown Bearbeiten & Vorschau
   bold: Fett
   italic: Kursiv
   heading-1: Headline 1

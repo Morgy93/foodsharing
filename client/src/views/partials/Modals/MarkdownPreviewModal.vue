@@ -3,11 +3,14 @@
     id="markdownPreviewModal"
     ref="markdownPreviewModal"
     modal-class="testing-markdown-preview-Modal"
-    :title="$i18n('globals.preview')"
+    :title="$i18n('markdown.title')"
     :cancel-title="$i18n('globals.close')"
-    :ok-title="$i18n('globals.send')"
+    :ok-title="$i18n('globals.save')"
     size="xl"
     scrollable
+
+    @shown="updateText"
+    @ok="onOk"
   >
     <div class="markdown-container">
       <div
@@ -21,8 +24,7 @@
             v-b-tooltip="$i18n('markdown.'+ option.style)"
             class="btn btn-sm"
             :class="{
-              'btn-primary': !state,
-              'btn-light': state
+              'btn-light': !state
             }"
             :disabled="state"
             @click="insert(option.code, option.settings)"
@@ -63,7 +65,7 @@
           id="textarea"
           ref="textarea"
           v-model="text"
-          placeholder="Enter something..."
+          :placeholder="$i18n('globals.placeholder.write_something')"
           rows="3"
           :max-rows="rowCount"
         />
@@ -134,24 +136,18 @@ export default {
           style: 'bold',
           icon: 'fa-bold',
           code: (s) => `**${s}**`,
-          settings: {
-            after: true,
-          },
         },
         {
           style: 'italic',
           icon: 'fa-italic',
           code: (s) => `_${s}_`,
-          settings: {
-            after: true,
-          },
         },
         {
           style: 'heading-1',
           icon: 'fa-heading',
           code: (s) => `# ${s}`,
           settings: {
-            after: false,
+            forceFirstLine: true,
           },
         },
         {
@@ -159,7 +155,7 @@ export default {
           icon: 'fa-heading',
           code: (s) => `## ${s}`,
           settings: {
-            after: false,
+            forceFirstLine: true,
           },
         },
         {
@@ -167,7 +163,7 @@ export default {
           icon: 'fa-quote-right',
           code: (s) => `> ${s}`,
           settings: {
-            after: false,
+            forceFirstLine: true,
           },
         },
         {
@@ -175,7 +171,7 @@ export default {
           icon: 'fa-list-ul',
           code: (s) => `* ${s}`,
           settings: {
-            after: false,
+            forceFirstLine: true,
           },
         },
         {
@@ -183,41 +179,31 @@ export default {
           icon: 'fa-list-ol',
           code: (s) => `1. ${s}`,
           settings: {
-            after: false,
+            forceFirstLine: true,
           },
         },
         {
           style: 'code',
           icon: 'fa-code',
           code: (s) => `\`${s}\``,
-          settings: {
-            after: true,
-          },
         },
         {
           style: 'code-block',
           icon: 'fa-stream',
           code: (s) => '```\n' + s + '\n```',
-          settings: {
-            above: true,
-            below: true,
-          },
         },
         {
           style: 'divider',
           icon: 'fa-grip-lines',
           code: (s) => s + '\n---\n',
           settings: {
-            below: true,
+            forceFirstLine: true,
           },
         },
         {
           style: 'link',
           icon: 'fa-link',
           code: (s) => `[Link Text](${s})`,
-          settings: {
-            below: true,
-          },
         },
       ],
     }
@@ -231,9 +217,9 @@ export default {
     },
   },
   methods: {
-    insert (style = (s) => `**${s}**`) {
+    insert (style = (s) => `**${s}**`, { forceFirstLine = false } = {}) {
       const input = this.$refs.textarea
-      if (input.selectionStart === input.selectionEnd) {
+      if (input.selectionStart === input.selectionEnd && !forceFirstLine) {
         return
       }
       const end = input.selectionEnd
@@ -241,9 +227,16 @@ export default {
       const newTest = style(selected)
       input.setRangeText(style(selected))
       setTimeout(() => {
-        input.selectionStart = input.selectionEnd = end + (selected.length - newTest.length)
+        input.selectionStart = input.selectionEnd = end + (newTest.length - selected.length)
       })
       input.focus()
+    },
+    updateText () {
+      this.text = this.input
+    },
+    onOk () {
+      this.$emit('input', this.text)
+      this.setState(false)
     },
   },
 }
@@ -252,6 +245,17 @@ export default {
 <style lang="scss" scoped>
 .markdown-toolbar {
   display: flex;
+  @media (max-width: 990px) {
+    flex-direction: column;
+  }
+
+  .btn-group {
+    @media (max-width: 990px) {
+      &:not(:last-child) {
+        margin-bottom: 1rem;
+      }
+    }
+  }
 }
 
 .markdown-editor {
