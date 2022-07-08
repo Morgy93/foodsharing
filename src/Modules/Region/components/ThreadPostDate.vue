@@ -1,6 +1,7 @@
 <template>
   <div :class="classes">
     <a
+      v-b-tooltip="$dateFormatter.dateTimeTooltip(date)"
       :href="link"
       @click.prevent="$emit('scroll')"
     >
