@@ -203,7 +203,13 @@ export default {
         {
           style: 'link',
           icon: 'fa-link',
-          code: (s) => `[Link Text](${s})`,
+          code: (s) => {
+            if (s.includes('http')) {
+              return `[${s}](${s})`
+            } else {
+              return `[${s}]()`
+            }
+          },
         },
       ],
     }

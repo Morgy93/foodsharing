@@ -18,8 +18,7 @@ html a[href]:not(:where(
     #msg-conversation-title a,
 )) {
     text-decoration: none;
-    font-weight: 600;
-    color: var(--fs-color-secondary-800);
+    color: var(--fs-color-secondary-600);
 
     &:hover {
         text-decoration: underline;
