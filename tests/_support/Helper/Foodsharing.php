@@ -105,8 +105,8 @@ class Foodsharing extends \Codeception\Module\Db
 			'rolle' => 0,
 			'plz' => $this->faker->postcode(),
 			'stadt' => $this->faker->city(),
-			'lat' => $this->faker->latitude(),
-			'lon' => $this->faker->longitude(),
+			'lat' => $this->faker->latitude(55, 46),
+			'lon' => $this->faker->longitude(4, 16),
 			'anmeldedatum' => $this->faker->dateTimeBetween('-5 years', '-5 days'),
 			'geb_datum' => $this->faker->dateTimeBetween('-80 years', '-18 years'),
 			'last_login' => $this->faker->dateTimeBetween('-1 years', '-1 hours'),
@@ -334,8 +334,8 @@ class Foodsharing extends \Codeception\Module\Db
 			'stadt' => $this->faker->city(),
 			'str' => $this->faker->streetAddress(),
 			'hsnr' => $this->faker->numberBetween(0, 1000),
-			'lat' => $this->faker->latitude(),
-			'lon' => $this->faker->longitude(),
+			'lat' => $this->faker->latitude(55, 46),
+			'lon' => $this->faker->longitude(4, 16),
 			'name' => 'betrieb_' . $this->faker->company(),
 			'status_date' => $this->faker->dateTime(),
 			'ansprechpartner' => $this->faker->name(),
@@ -789,8 +789,8 @@ class Foodsharing extends \Codeception\Module\Db
 			'anschrift' => $this->faker->address(),
 			'plz' => $this->faker->postcode(),
 			'ort' => $this->faker->city(),
-			'lat' => $this->faker->latitude(),
-			'lon' => $this->faker->longitude(),
+			'lat' => $this->faker->latitude(55, 46),
+			'lon' => $this->faker->longitude(4, 16),
 			'add_date' => $this->faker->dateTime(),
 			'add_foodsaver' => $user,
 		], $extra_params);
@@ -854,8 +854,8 @@ class Foodsharing extends \Codeception\Module\Db
 	{
 		$params = array_merge([
 			'region_id' => $region_id,
-			'lat' => $this->faker->latitude(),
-			'lon' => $this->faker->longitude(),
+			'lat' => $this->faker->latitude(55, 46),
+			'lon' => $this->faker->longitude(4, 16),
 			'desc' => $this->faker->realText(200),
 			'status' => RegionPinStatus::ACTIVE
 		], $extra_params);
@@ -871,8 +871,8 @@ class Foodsharing extends \Codeception\Module\Db
 	{
 		$paramsLocation = [
 			'name' => $this->faker->text,
-			'lat' => $this->faker->latitude(),
-			'lon' => $this->faker->longitude(),
+			'lat' => $this->faker->latitude(55, 46),
+			'lon' => $this->faker->longitude(4, 16),
 		];
 
 		$location_id = $this->haveInDatabase('fs_location', $paramsLocation);
@@ -931,8 +931,8 @@ class Foodsharing extends \Codeception\Module\Db
 			'contact_type' => 1,
 			'location_type' => 0,
 			'weight' => $this->faker->numberBetween(1, 100),
-			'lat' => $this->faker->latitude(),
-			'lon' => $this->faker->longitude(),
+			'lat' => $this->faker->latitude(55, 46),
+			'lon' => $this->faker->longitude(4, 16),
 			'bezirk_id' => 0,
 		], $extra_params);
 		$params['time'] = $this->toDateTime($params['time']);
