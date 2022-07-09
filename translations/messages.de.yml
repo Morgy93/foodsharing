@@ -2694,17 +2694,19 @@ globals:
 
 markdown:
   title: Markdown Bearbeiten & Vorschau
-  bold: Fett
-  italic: Kursiv
-  heading-1: Headline 1
-  heading-2: Headline 2
-  quote: Zitat
-  list-unordered: Unsortiere Liste
-  list-ordered: Sortierte Liste
-  code: Code
-  code-block: Codeblock
-  divider: Trennlinie
-  link: Verlinkung
+  bold: Text in Fettdruck formatieren
+  italic: Text in Kursiv formatieren
+  strikethrough: Text durschstreichen
+  heading-1: Text als Headline 1 formatieren
+  heading-2: Text als Headline 2 formatieren
+  quote: Text als Zitat
+  list-unordered: Aufzählungsliste hinzufügen
+  list-ordered: Eine nummerierte Liste hinzufügen
+  code: Code einfgen
+  code-block: Codeblock einfügen
+  divider: Trennlinie einfügen
+  link: Verlinkung einfügen
+  image: Bild verlinkung einfügen
 
 search:
   title: Suche
