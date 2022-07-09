@@ -18,53 +18,7 @@ class MapControl extends Control
 
 	public function index()
 	{
-		$this->pageHelper->addTitle($this->translator->trans('map.title'));
 		$this->setTemplate('map');
-
-		if ($this->session->may()) {
-			$center = $this->mapGateway->getFoodsaverLocation($this->session->id());
-		}
-
-		if (!empty($center)) {
-			if ($center['lat'] == 0 && $center['lon'] == 0) {
-				//	$this->pageHelper->addJs('u_map.fitBounds([[46.0, 4.0],[55.0, 17.0]]);');
-				$center['lat'] = '46.0, 4.0';
-				$center['lon'] = '55.0, 17.0';
-			}
-		}
-
-		$this->pageHelper->addContent(
-			$this->view->lMap($center)
-		);
-		//	$this->pageHelper->addContent($this->view->mapControl(), CNT_TOP);
-
-		/*	$jsarr = '';
-			if (isset($_GET['load']) && $_GET['load'] == 'baskets') {
-				$jsarr = '["baskets"]';
-			} elseif (isset($_GET['load']) && $_GET['load'] == 'fairteiler') {
-				$jsarr = '["fairteiler"]';
-			}
-
-			$this->pageHelper->addContent(
-				$this->view->lMap()
-			);
-
-			if ($this->session->may('fs') && isset($_GET['bid'])) {
-				$storeId = intval($_GET['bid']);
-				$center = $this->mapGateway->getStoreLocation($storeId);
-				$this->pageHelper->addJs('ajreq(\'bubble\', { app: \'store\', id: ' . $storeId . ' });');
-			}
-
-			$this->pageHelper->addJs('u_init_map();');
-
-			if (!empty($center)) {
-				if ($center['lat'] == 0 && $center['lon'] == 0) {
-					$this->pageHelper->addJs('u_map.fitBounds([[46.0, 4.0],[55.0, 17.0]]);');
-				} else {
-					$this->pageHelper->addJs('u_map.setView([' . $center['lat'] . ',' . $center['lon'] . '],15);');
-				}
-			}
-
-			$this->pageHelper->addJs('map.initMarker(' . $jsarr . ');'); */
+		$this->pageHelper->addContent($this->view->index(), CNT_MAIN);
 	}
 }

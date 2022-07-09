@@ -1,8 +1,10 @@
 import { get } from './base'
 
-export function getMapMarkers (types, status) {
-  const typeParams = types.map(t => 'types[]=' + t)
-  const statusParams = status.map(t => 'status[]=' + t)
-  const params = typeParams.concat(statusParams).join('&')
+export function getMapMarkers (types = ['baskets'], status) {
+  const params = new URLSearchParams()
+  types.forEach(t => params.append('types[]=', t))
+  if (status) {
+    status.forEach(s => params.append('status[]=', s))
+  }
   return get(`/map/markers?${params}`)
 }
