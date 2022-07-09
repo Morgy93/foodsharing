@@ -7,79 +7,71 @@
     :cancel-title="$i18n('globals.close')"
     :ok-title="$i18n('globals.save')"
     size="xl"
-    scrollable
 
     @shown="updateText"
     @ok="onOk"
   >
-    <div class="markdown-container">
-      <div
-        class="markdown-toolbar btn-toolbar mb-3"
-        role="toolbar"
-      >
-        <div class="btn-group">
-          <button
-            v-for="option in options"
-            :key="option.style"
-            v-b-tooltip="$i18n('markdown.'+ option.style)"
-            class="btn btn-sm"
-            :class="{
-              'btn-light': !state
-            }"
-            :disabled="state"
-            @click="insert(option.code, option.settings)"
-          >
-            <i
-              class="fas"
-              :class="option.icon"
-            />
-          </button>
-        </div>
-        <div class="btn-group ml-auto">
-          <button
-            class="btn btn-sm"
-            :class="{
-              'btn-primary': !state,
-              'btn-light': state
-            }"
-            @click="setState(false)"
-            v-html="$i18n('globals.edit')"
+    <div
+      class="markdown-toolbar btn-toolbar mb-3"
+      role="toolbar"
+    >
+      <div class="btn-group">
+        <button
+          v-for="option in options"
+          :key="option.style"
+          v-b-tooltip="$i18n('markdown.'+ option.style)"
+          class="btn btn-sm"
+          :class="{
+            'btn-light': !state
+          }"
+          :disabled="state"
+          @click="insert(option.code, option.settings)"
+        >
+          <i
+            class="fas"
+            :class="option.icon"
           />
-
-          <button
-            class="btn btn-sm"
-            :class="{
-              'btn-primary': state,
-              'btn-light': !state
-            }"
-            @click="setState(true)"
-            v-html="$i18n('globals.preview')"
-          />
-        </div>
+        </button>
       </div>
-      <div
-        v-if="!state"
-        class="markdown-editor"
-      >
-        <b-form-textarea
-          id="textarea"
-          ref="textarea"
-          v-model="text"
-          :placeholder="$i18n('globals.placeholder.write_something')"
-          rows="3"
-          :max-rows="rowCount"
+      <div class="btn-group ml-auto">
+        <button
+          class="btn btn-sm"
+          :class="{
+            'btn-primary': !state,
+            'btn-light': state
+          }"
+          @click="setState(false)"
+          v-html="$i18n('globals.edit')"
         />
-      </div>
-      <div
-        v-else
-        class="card border markdown-content"
-      >
-        <div
-          class="card-body"
-          v-html="renderedText"
+
+        <button
+          class="btn btn-sm"
+          :class="{
+            'btn-primary': state,
+            'btn-light': !state
+          }"
+          @click="setState(true)"
+          v-html="$i18n('globals.preview')"
         />
       </div>
     </div>
+    <div
+      v-if="!state"
+      class="markdown-editor"
+    >
+      <textarea
+        id="textarea"
+        ref="textarea"
+        v-model="text"
+        :placeholder="$i18n('globals.placeholder.write_something')"
+        :rows="rowCount"
+      />
+    </div>
+    <div
+      v-else
+      class="card border markdown-content"
+      v-html="renderedText"
+    />
   </b-modal>
 </template>
 
@@ -141,6 +133,11 @@ export default {
           style: 'italic',
           icon: 'fa-italic',
           code: (s) => `_${s}_`,
+        },
+        {
+          style: 'strikethrough',
+          icon: 'fa-strikethrough',
+          code: (s) => `~~${s}~~`,
         },
         {
           style: 'heading-1',
@@ -211,12 +208,18 @@ export default {
             }
           },
         },
+        {
+          style: 'image',
+          icon: 'fa-image',
+          code: (s) => `![image](${s})`,
+        },
       ],
     }
   },
   computed: {
     rowCount () {
-      return this.text.split('\n').length
+      const count = this.text.split('\n').length
+      return Math.min(Math.max(count, 10), 30)
     },
     renderedText () {
       return md.render(this.text)
@@ -251,6 +254,7 @@ export default {
 <style lang="scss" scoped>
 .markdown-toolbar {
   display: flex;
+
   @media (max-width: 990px) {
     flex-direction: column;
   }
@@ -264,11 +268,16 @@ export default {
   }
 }
 
-.markdown-editor {
-  flex: 1;
-}
-
+.markdown-editor,
 .markdown-content {
   flex: 1;
+}
+.markdown-content {
+  padding: 1rem;
+}
+
+::v-deep svg,
+::v-deep img {
+  max-width: 100%;
 }
 </style>
