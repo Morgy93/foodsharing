@@ -66,6 +66,7 @@ export default {
       map: null,
       loading: false,
       progress: 0,
+      bounds: null,
       cluster: null,
       markers: [],
       filters: [
@@ -122,11 +123,21 @@ export default {
     async selectedFilters (val) {
       await this.fetchMarkers(val)
     },
+    bounds: {
+      handler (val) {
+        console.log(val)
+        this.renderMarkers()
+      },
+    },
   },
   async mounted () {
     Promise.all([await this.setInitialMap(), await this.fetchMarkers()])
     await this.setInitialView()
     setTimeout(() => this.map.invalidateSize(true), 100)
+
+    this.map.on('moveend', (e) => {
+      this.bounds = this.map.getBounds()
+    })
   },
   methods: {
     async setInitialView () {
@@ -144,6 +155,7 @@ export default {
           this.moveViewToPosition(latLng(this.options.center), 5)
         }
       }
+      this.bounds = this.map.getBounds()
     },
     async moveViewToPosition (val, zoom = 12) {
       this.map.setView(val, zoom, { animation: true })
@@ -159,16 +171,18 @@ export default {
       }
       return L.AwesomeMarkers.icon({ icon: 'question', markerColor: 'black' })
     },
-    async fetchMarkers (type, states = []) {
+    async renderMarkers () {
+      let markers = []
       try {
-        this.progress = 0
-        if (!type) return this.markers
-        this.loading = true
-        this.markers = await DataMap.mutations.fetchByType(type)
-        console.log(this.markers)
-        this.markers = this.markers.map((marker) => L.marker(latLng(marker), {
+        markers = this.markers || []
+        console.log('loaded', markers, this.bounds)
+        markers = markers.filter(marker => this.bounds.contains(latLng(marker.lat, marker.lon)))
+        markers = markers.map((marker) => L.marker(latLng(marker.lat, marker.lon), {
           icon: this.getMarkerIcon(marker.type),
         }))
+
+        console.log('renderMarkers', markers)
+        console.log('renderMarkers', markers)
         if (!this.cluster) {
           this.cluster = L.markerClusterGroup({
             chunkedLoading: true,
@@ -176,18 +190,35 @@ export default {
             chunkInterval: 100,
             maxClusterRadius: 100,
           })
-          this.cluster.addLayers(this.markers)
+          this.cluster.addLayers(markers)
           this.map.addLayer(this.cluster)
         }
       } catch (e) {
         console.error(e)
       } finally {
-        if (this.cluster) {
+        console.log('aa', markers.length)
+        if (markers.length > 0 && this.cluster) {
           this.cluster.clearLayers()
         }
-        if (this.markers.length > 0) {
-          this.cluster.addLayers(this.markers)
+
+        if (markers.length > 0) {
+          this.cluster.addLayers(markers)
         }
+
+        if (markers.length === 0) {
+          this.loading = false
+        }
+      }
+    },
+    async fetchMarkers (type, states = []) {
+      try {
+        this.progress = 0
+        this.loading = true
+        await DataMap.mutations.fetchByType(type, states)
+        this.markers = await DataMap.getters.getMarkers(type, states)
+        this.renderMarkers()
+      } catch (e) {
+        console.error(e)
       }
     },
     updateProgressBar (processed, total, elapsed) {

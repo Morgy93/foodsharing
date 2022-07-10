@@ -59,7 +59,6 @@ export const mutations = {
         await mutations.fetchFoodsharePoints()
         break
     }
-    return getters.getMarkers(type)
   },
   async fetchBaskets () {
     if (store.baskets.length > 0) return
