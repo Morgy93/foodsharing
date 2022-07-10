@@ -1,27 +1,41 @@
 <template>
   <div class="map-container">
     <div class="toolbar">
-      <h2>{{ checkedFilters }}</h2>
-      <label
-        v-for="(filter, index) in filters"
+      <div
+        v-for="(filter, index) in filteredFilters"
         :key="index"
       >
         <input
-          v-model="checkedFilters"
-          type="checkbox"
+          :id="filter.name"
+          v-model="selectedFilters"
+          class="toolbar-item-input"
+          type="radio"
           :value=" filter.filter || filter.name"
         >
-        <i
-          class="fas"
-          :class="filter.icon"
-        />
-        {{ $i18n(`globals.type.${filter.name}`) }}
-      </label>
+        <label
+          :for="filter.name"
+          class="toolbar-item"
+          :class="filter.name"
+        >
+          <i
+            class="toolbar-item-icon fas"
+            :class="filter.icon"
+          />
+          <span
+            class="toolbar-item-text"
+            v-html="$i18n(`globals.type.${filter.name}`)"
+          />
+        </label>
+      </div>
     </div>
     <div
       v-if="loading"
       class="progress"
     >
+      <h3
+        v-if="progress > 10"
+        v-html="progress"
+      />
       <i class="fas fa-spinner fa-spin" />
     </div>
     <div
@@ -39,8 +53,9 @@ import 'leaflet.awesome-markers'
 import 'leaflet.markercluster'
 import 'leaflet.markercluster/dist/MarkerCluster.css'
 import 'leaflet.markercluster/dist/MarkerCluster.Default.css'
-// API
-import { getMapMarkers } from '@/api/map'
+// Store
+import DataStore from '@/stores/user'
+import DataMap from '@/stores/map'
 
 L.AwesomeMarkers.Icon.prototype.options.prefix = 'fa'
 // DEFAULTS
@@ -53,52 +68,88 @@ export default {
       progress: 0,
       cluster: null,
       markers: [],
-      filters: [{
-        name: 'baskets',
-        icon: 'fa-shopping-basket',
-        color: 'green',
-      }, {
-        name: 'communities',
-        icon: 'fa-users',
-        color: 'blue',
-      }, {
-        name: 'foodshare_points',
-        filter: 'fairteiler',
-        icon: 'fa-recycle',
-        color: 'orange',
-      }, {
-        name: 'stores',
-        filter: 'betriebe',
-        icon: 'fa-shopping-cart',
-        color: 'red',
-      }],
-      checkedFilters: [],
+      filters: [
+        {
+          name: 'baskets',
+          icon: 'fa-shopping-basket',
+          color: 'green',
+        },
+        {
+          name: 'communities',
+          icon: 'fa-users',
+          color: 'blue',
+        },
+        {
+          name: 'foodshare_points',
+          filter: 'fairteiler',
+          icon: 'fa-recycle',
+          color: 'orange',
+        },
+        {
+          name: 'stores',
+          filter: 'betriebe',
+          icon: 'fa-shopping-cart',
+          color: 'red',
+          isForFoodsaver: true,
+        },
+      ],
+      selectedFilters: null,
       options: {
-        center: [52.519325, 13.392709],
+        center: [51, 10],
         zoom: 12,
         minZoom: 6,
         zoomSnap: 0.5,
         zoomControl: false,
       },
       tiles: {
+        // http://leaflet-extras.github.io/leaflet-providers/preview/index.html
+        // url: 'https://server.arcgisonline.com/ArcGIS/rest/services/World_Topo_Map/MapServer/tile/{z}/{y}/{x}',
+        // attribution: 'Tiles &copy; Esri &mdash; Esri, DeLorme, NAVTEQ, TomTom, Intermap, iPC, USGS, FAO, NPS, NRCAN, GeoBase, Kadaster NL, Ordnance Survey, Esri Japan, METI, Esri China (Hong Kong), and the GIS User Community',
         url: 'https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',
-        attribution: '&copy; <a target="_blank" href="http://osm.org/copyright">OpenStreetMap</a> contributors',
+        attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',
       },
     }
   },
+  computed: {
+    filteredFilters () {
+      return this.filters.filter(filter => {
+        if (filter?.isForFoodsaver) {
+          return DataStore.getters.isFoodsaver()
+        }
+        return true
+      })
+    },
+  },
   watch: {
-    async checkedFilters (val) {
+    async selectedFilters (val) {
       await this.fetchMarkers(val)
-      // console.log('checkedFilters', val, this.markers.length)
     },
   },
   async mounted () {
     Promise.all([await this.initMap(), await this.fetchMarkers()])
-    setTimeout(() => {
-      this.map.invalidateSize(true)
-    }, 100)
+    await this.setInitialView()
+    setTimeout(() => this.map.invalidateSize(true), 100)
   },
   methods: {
+    async setInitialView () {
+      const userPosition = DataStore.getters.getLocations()
+      if (userPosition) {
+        this.moveViewToPosition(latLng(userPosition))
+      } else {
+        try {
+          if (navigator.geolocation) {
+            this.moveViewToPosition(latLng(await DataStore.getters.getBrowserLocations()))
+          } else {
+            this.moveViewToPosition(latLng(this.options.center), 5)
+          }
+        } catch (_) {
+          this.moveViewToPosition(latLng(this.options.center), 5)
+        }
+      }
+    },
+    async moveViewToPosition (val, zoom = 12) {
+      this.map.setView(val, zoom, { animation: true })
+    },
     async initMap () {
       this.map = L.map('map-wrapper', this.options)
       L.tileLayer(this.tiles.url, { attribution: this.tiles.attribution }).addTo(this.map)
@@ -110,16 +161,14 @@ export default {
       }
       return L.AwesomeMarkers.icon({ icon: 'question', markerColor: 'black' })
     },
-    async fetchMarkers (filters = [], states = []) {
-      const temp = this.markers
+    async fetchMarkers (type, states = []) {
       try {
         this.markers = []
-        if (filters.length === 0) return this.markers
+        this.progress = 0
+        if (!type) return this.markers
         this.loading = true
-        const markers = await getMapMarkers(filters, states)
-        Object.keys(markers).forEach(key => {
-          this.markers.push(...markers[key].map(item => ({ ...item, type: key })))
-        })
+        this.markers = await DataMap.mutations.fetchByType(type)
+        console.log(this.markers)
         this.markers = this.markers.map((marker) => L.marker(latLng(marker), {
           icon: this.getMarkerIcon(marker.type),
         }))
@@ -136,20 +185,18 @@ export default {
       } catch (e) {
         console.error(e)
       } finally {
-        if (this.markers.length > 0 && this.checkedFilters.length > 0) {
-          this.cluster.clearLayers(this.markers)
-          this.cluster.addLayers(this.markers)
-        } else if (temp.length > 0) {
-          this.cluster.clearLayers(temp)
+        if (this.cluster) {
+          this.cluster.clearLayers()
         }
-        this.loading = false
+        if (this.markers.length > 0 && this.selectedFilters.length > 0) {
+          this.cluster.addLayers(this.markers)
+        }
       }
     },
-    updateProgressBar (processed, total, elapsed, layersArray) {
-      console.log(processed, total, elapsed, layersArray)
-      if (elapsed > 1000) {
+    updateProgressBar (processed, total, elapsed) {
+      this.progress = Math.round(processed / total * 100)
+      if (elapsed > 1) {
         this.loading = true
-        this.progress = Math.round(processed / total * 100)
       }
       if (processed === total) {
         this.loading = false
@@ -171,15 +218,122 @@ export default {
 }
 
 .toolbar {
-  flex: 0;
+  display: block;
   position: absolute;
   top: 10rem;
   right: 1rem;
-  z-index: 1030;
-  padding: 2rem;
+  z-index: 1020;
+  padding: 0.85rem 0.8rem;
   background: var(--fs-color-background);
   border-radius: var(--border-radius);
   box-shadow: var(--fs-shadow);
+}
+
+.toolbar-item-input {
+  display: none;
+}
+
+  .toolbar-item-icon {
+    color: currentColor;
+    font-size: 1rem;
+    margin-left: .5rem;
+    margin-right: 1rem;
+    position: relative;
+
+    &::before {
+      position: relative;
+      z-index: 2;
+    }
+
+    &::after {
+      content: '';
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      width: var(--size);
+      height: var(--size);
+      background-color: var(--fs-color-white);
+      border-radius: 50%;
+      z-index: 1;
+      transform: translate(-50%, -50%);
+  }
+}
+
+.toolbar-item  {
+  display: flex;
+  padding: 0.75rem 0.5rem;
+  margin: 0.25rem;
+  align-items: center;
+  min-width: 12rem;
+  font-weight: 600;
+  font-size: 1rem;
+  background-color: var(--fs-color-light);
+  border-radius: var(--border-radius);
+  border: 2px solid var(--fs-border-default);
+
+  &:hover {
+      &.baskets {
+        border-color: var(--fs-color-secondary-400);
+        background-color: var(--fs-color-secondary-200);
+        color: var(--fs-color-type-baskets);
+      }
+      &.stores {
+        border-color: var(--fs-color-danger-400);
+        background-color: var(--fs-color-danger-200);
+        color: var(--fs-color-type-stores);
+      }
+      &.foodshare_points {
+        border-color: var(--fs-color-warning-400);
+        background-color: var(--fs-color-warning-200);
+        color: var(--fs-color-type-foodshare-points);
+      }
+      &.communities {
+        border-color: var(--fs-color-info-400);
+        background-color: var(--fs-color-info-200);
+        color: var(--fs-color-type-communities);
+      }
+  }
+
+  .toolbar-item-input:checked + &.baskets {
+    background-color: var(--fs-color-type-baskets);
+    border-color: var(--fs-color-secondary-600);
+    color: var(--fs-color-light);
+    &:hover {
+      border-color: var(--fs-color-secondary-400);
+      background-color: var(--fs-color-secondary-200);
+      color: var(--fs-color-type-baskets);
+    }
+  }
+  .toolbar-item-input:checked + &.stores {
+    background-color: var(--fs-color-type-stores);
+    border-color: var(--fs-color-danger-600);
+    color: var(--fs-color-light);
+    &:hover {
+      border-color: var(--fs-color-danger-400);
+      background-color: var(--fs-color-danger-200);
+      color: var(--fs-color-type-stores);
+    }
+  }
+  .toolbar-item-input:checked + &.foodshare_points {
+    background-color: var(--fs-color-type-foodshare-points);
+    border-color: var(--fs-color-warning-600);
+    color: var(--fs-color-light);
+    &:hover {
+      border-color: var(--fs-color-warning-400);
+      background-color: var(--fs-color-warning-200);
+      color: var(--fs-color-type-foodshare-points);
+    }
+  }
+  .toolbar-item-input:checked + &.communities {
+    background-color: var(--fs-color-type-communities);
+    border-color: var(--fs-color-info-600);
+    color: var(--fs-color-light);
+    &:hover {
+      border-color: var(--fs-color-info-400);
+      background-color: var(--fs-color-info-200);
+      color: var(--fs-color-type-communities);
+    }
+  }
 }
 
 .progress {
