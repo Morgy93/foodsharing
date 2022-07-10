@@ -125,7 +125,6 @@ export default {
     },
     bounds: {
       handler (val) {
-        console.log(val)
         this.renderMarkers()
       },
     },
@@ -175,14 +174,11 @@ export default {
       let markers = []
       try {
         markers = this.markers || []
-        console.log('loaded', markers, this.bounds)
         markers = markers.filter(marker => this.bounds.contains(latLng(marker.lat, marker.lon)))
         markers = markers.map((marker) => L.marker(latLng(marker.lat, marker.lon), {
           icon: this.getMarkerIcon(marker.type),
         }))
 
-        console.log('renderMarkers', markers)
-        console.log('renderMarkers', markers)
         if (!this.cluster) {
           this.cluster = L.markerClusterGroup({
             chunkedLoading: true,
@@ -196,7 +192,6 @@ export default {
       } catch (e) {
         console.error(e)
       } finally {
-        console.log('aa', markers.length)
         if (markers.length > 0 && this.cluster) {
           this.cluster.clearLayers()
         }

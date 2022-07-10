@@ -44,7 +44,6 @@ export const getters = {
 
 export const mutations = {
   async fetchByType (type) {
-    console.log(type)
     switch (type) {
       case 'baskets':
         await mutations.fetchBaskets()
