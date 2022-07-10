@@ -6,6 +6,7 @@ export const store = Vue.observable({
   stores: [],
   communities: [],
   foodshare_points: [],
+  modal: {},
 })
 
 function formatMarkerWithType (marker, type) {
@@ -16,6 +17,9 @@ function formatMarkerWithType (marker, type) {
 }
 
 export const getters = {
+  getMarkerModalData () {
+    return store.modal
+  },
   getBaskets () {
     return store.baskets
   },
@@ -43,6 +47,9 @@ export const getters = {
 }
 
 export const mutations = {
+  setMarkerModalData (data) {
+    store.modal = data
+  },
   async fetchByType (type) {
     switch (type) {
       case 'baskets':

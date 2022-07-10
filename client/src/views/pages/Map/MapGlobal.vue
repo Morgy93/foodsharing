@@ -1,5 +1,6 @@
 <template>
   <div class="map-container">
+    <MapDetailsModal />
     <div class="toolbar">
       <div
         v-for="(filter, index) in filteredFilters"
@@ -46,6 +47,9 @@
 </template>
 
 <script>
+// Components
+import MapDetailsModal from '@/views/partials/Modals/MapDetailsModal.vue'
+// iOthers
 import L, { latLng } from 'leaflet'
 import 'leaflet/dist/leaflet.css'
 // Custom marker icons and cluster
@@ -61,6 +65,9 @@ L.AwesomeMarkers.Icon.prototype.options.prefix = 'fa'
 // DEFAULTS
 export default {
   name: 'Map',
+  components: {
+    MapDetailsModal,
+  },
   data () {
     return {
       map: null,
@@ -139,6 +146,11 @@ export default {
     })
   },
   methods: {
+    openModal (data) {
+      DataMap.mutations.setMarkerModalData(data)
+      // this.$refs.mapDetailsModal.sh()
+      this.$bvModal.show('mapDetailsModal')
+    },
     async setInitialView () {
       const userPosition = DataStore.getters.getLocations()
       if (userPosition) {
@@ -175,10 +187,15 @@ export default {
       try {
         markers = this.markers || []
         markers = markers.filter(marker => this.bounds.contains(latLng(marker.lat, marker.lon)))
-        markers = markers.map((marker) => L.marker(latLng(marker.lat, marker.lon), {
-          icon: this.getMarkerIcon(marker.type),
-        }))
-
+        markers = markers.map((marker) => {
+          const m = L.marker(latLng(marker.lat, marker.lon), {
+            icon: this.getMarkerIcon(marker.type),
+          })
+          m.on('click', (e) => {
+            this.openModal(marker)
+          })
+          return m
+        })
         if (!this.cluster) {
           this.cluster = L.markerClusterGroup({
             chunkedLoading: true,
