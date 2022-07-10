@@ -47,6 +47,7 @@
 </template>
 
 <script>
+import { MAP_RASTER_TILES_URL, MAP_ATTRIBUTION } from '@/consts'
 // Components
 import MapDetailsModal from '@/views/partials/Modals/MapDetailsModal.vue'
 // iOthers
@@ -111,8 +112,8 @@ export default {
         // http://leaflet-extras.github.io/leaflet-providers/preview/index.html
         // url: 'https://server.arcgisonline.com/ArcGIS/rest/services/World_Topo_Map/MapServer/tile/{z}/{y}/{x}',
         // attribution: 'Tiles &copy; Esri &mdash; Esri, DeLorme, NAVTEQ, TomTom, Intermap, iPC, USGS, FAO, NPS, NRCAN, GeoBase, Kadaster NL, Ordnance Survey, Esri Japan, METI, Esri China (Hong Kong), and the GIS User Community',
-        url: 'https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',
-        attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',
+        url: MAP_RASTER_TILES_URL,
+        attribution: MAP_ATTRIBUTION,
       },
     }
   },
