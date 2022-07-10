@@ -17,26 +17,26 @@ function formatMarkerWithType (marker, type) {
 
 export const getters = {
   getBaskets () {
-    return formatMarkerWithType(store.baskets, 'baskets')
+    return store.baskets
   },
   getStores () {
-    return formatMarkerWithType(store.stores, 'stores')
+    return store.stores
   },
   getCommunities () {
-    return formatMarkerWithType(store.communities, 'communities')
+    return store.communities
   },
   getFoodsharePoints () {
-    return formatMarkerWithType(store.foodshare_points, 'foodshare_points')
+    return store.foodshare_points
   },
-  getMarkers (type) {
+  getMarkers (type, state) {
     switch (type) {
       case 'baskets':
         return getters.getBaskets()
       case 'stores':
-        return getters.getStores()
+        return getters.getStores(state)
       case 'communities':
         return getters.getCommunities()
-      case 'fairteiler':
+      case 'foodshare_points':
         return getters.getFoodsharePoints()
     }
   },
@@ -55,7 +55,7 @@ export const mutations = {
       case 'communities':
         await mutations.fetchCommunities()
         break
-      case 'fairteiler':
+      case 'foodshare_points':
         await mutations.fetchFoodsharePoints()
         break
     }
@@ -64,28 +64,22 @@ export const mutations = {
   async fetchBaskets () {
     if (store.baskets.length > 0) return
     const fetch = await getMapMarkers(['baskets'])
-    store.baskets = fetch.baskets
+    store.baskets = formatMarkerWithType(fetch.baskets, 'baskets')
   },
   async fetchCommunities () {
     if (store.communities.length > 0) return
     const fetch = await getMapMarkers(['communities'])
-    store.communities = fetch.communities
+    store.communities = formatMarkerWithType(fetch.communities, 'communities')
   },
   async fetchFoodsharePoints () {
     if (store.foodshare_points.length > 0) return
     const fetch = await getMapMarkers(['fairteiler'])
-    store.foodshare_points = fetch.fairteiler
+    store.foodshare_points = formatMarkerWithType(fetch.fairteiler, 'foodshare_points')
   },
   async fetchStores () {
-    if (store.betriebe.length > 0) return
+    if (store.stores.length > 0) return
     const fetch = await getMapMarkers(['betriebe'])
-    const stores = fetch.betriebe
-    for (const store of stores) {
-      const find = store.stores.find(s => s.id === store.id)
-      if (!find) {
-        store.stores.push(store)
-      }
-    }
+    store.stores = formatMarkerWithType(fetch.betriebe, 'stores')
   },
 }
 

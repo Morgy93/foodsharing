@@ -10,7 +10,7 @@
           v-model="selectedFilters"
           class="toolbar-item-input"
           type="radio"
-          :value=" filter.filter || filter.name"
+          :value=" filter.name"
         >
         <label
           :for="filter.name"
@@ -81,13 +81,11 @@ export default {
         },
         {
           name: 'foodshare_points',
-          filter: 'fairteiler',
           icon: 'fa-recycle',
           color: 'orange',
         },
         {
           name: 'stores',
-          filter: 'betriebe',
           icon: 'fa-shopping-cart',
           color: 'red',
           isForFoodsaver: true,
@@ -126,7 +124,7 @@ export default {
     },
   },
   async mounted () {
-    Promise.all([await this.initMap(), await this.fetchMarkers()])
+    Promise.all([await this.setInitialMap(), await this.fetchMarkers()])
     await this.setInitialView()
     setTimeout(() => this.map.invalidateSize(true), 100)
   },
@@ -150,7 +148,7 @@ export default {
     async moveViewToPosition (val, zoom = 12) {
       this.map.setView(val, zoom, { animation: true })
     },
-    async initMap () {
+    async setInitialMap () {
       this.map = L.map('map-wrapper', this.options)
       L.tileLayer(this.tiles.url, { attribution: this.tiles.attribution }).addTo(this.map)
     },
@@ -163,7 +161,6 @@ export default {
     },
     async fetchMarkers (type, states = []) {
       try {
-        this.markers = []
         this.progress = 0
         if (!type) return this.markers
         this.loading = true
@@ -188,7 +185,7 @@ export default {
         if (this.cluster) {
           this.cluster.clearLayers()
         }
-        if (this.markers.length > 0 && this.selectedFilters.length > 0) {
+        if (this.markers.length > 0) {
           this.cluster.addLayers(this.markers)
         }
       }
