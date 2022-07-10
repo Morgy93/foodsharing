@@ -1,138 +1,165 @@
-<!-- Leaflet map component that can display vector or tile maps.
-  The slot allows adding child components like markers. -->
 <template>
   <div class="map-container">
     <div class="toolbar">
-      <span>Center: {{ center }}</span>
-      <span>Zoom: {{ zoom }}</span>
-      <span>Bounds: {{ bounds }}</span>
-    </div>
-    <LMap
-      ref="map"
-      style="height: 100vh; width: 100%"
-      :zoom="zoom"
-      :min-zoom="5"
-      :marker-zoom-animation="true"
-      :fade-animation="true"
-      :world-copy-jump="true"
-      :center="center"
-      @update:zoom="zoomUpdated"
-      @update:center="centerUpdated"
-      @update:bounds="boundsUpdated"
-    >
-      <LTileLayer
-        :url="tiles.url"
-        :attribution="tiles.attribution"
-      />
-      <LMarkerCluster>
-        <LMarker
-          v-for="(marker, index) in markersInBounds"
-          :key="index"
-          :lat-lng="getMarkerPosition(marker)"
-          :icon="getMarkerIcon(marker.type)"
-          :draggable="false"
+      <h2>{{ checkedFilters }}</h2>
+      <label
+        v-for="(filter, index) in filters"
+        :key="index"
+      >
+        <input
+          v-model="checkedFilters"
+          type="checkbox"
+          :value=" filter.filter || filter.name"
+        >
+        <i
+          class="fas"
+          :class="filter.icon"
         />
-      </LMarkerCluster>
-    </LMap>
+        {{ $i18n(`globals.type.${filter.name}`) }}
+      </label>
+    </div>
+    <div
+      v-if="loading"
+      class="progress"
+    >
+      <i class="fas fa-spinner fa-spin" />
+    </div>
+    <div
+      id="map-wrapper"
+      class="map-wrapper"
+    />
   </div>
 </template>
 
 <script>
-import L from 'leaflet'
+import L, { latLng } from 'leaflet'
 import 'leaflet/dist/leaflet.css'
+// Custom marker icons and cluster
 import 'leaflet.awesome-markers'
-import { MAP_ATTRIBUTION, MAP_RASTER_TILES_URL } from '@/consts'
+import 'leaflet.markercluster'
+import 'leaflet.markercluster/dist/MarkerCluster.css'
+import 'leaflet.markercluster/dist/MarkerCluster.Default.css'
+// API
 import { getMapMarkers } from '@/api/map'
 
 L.AwesomeMarkers.Icon.prototype.options.prefix = 'fa'
-
+// DEFAULTS
 export default {
-  props: {
-    options: {
-      type: Object,
-      default: () => ({
-        zoom: 10,
-        center: [52.519325, 13.392709],
-        bounds: null,
-      }),
-    },
-  },
+  name: 'Map',
   data () {
     return {
-      items: [],
-      zoom: this.options.zoom,
-      center: this.options.center,
-      bounds: this.options.bounds,
-      tiles: {
-        attribution: MAP_ATTRIBUTION,
-        url: MAP_RASTER_TILES_URL,
-      },
-      mapOptions: {
+      map: null,
+      loading: false,
+      progress: 0,
+      cluster: null,
+      markers: [],
+      filters: [{
+        name: 'baskets',
+        icon: 'fa-shopping-basket',
+        color: 'green',
+      }, {
+        name: 'communities',
+        icon: 'fa-users',
+        color: 'blue',
+      }, {
+        name: 'foodshare_points',
+        filter: 'fairteiler',
+        icon: 'fa-recycle',
+        color: 'orange',
+      }, {
+        name: 'stores',
+        filter: 'betriebe',
+        icon: 'fa-shopping-cart',
+        color: 'red',
+      }],
+      checkedFilters: [],
+      options: {
+        center: [52.519325, 13.392709],
+        zoom: 12,
+        minZoom: 6,
         zoomSnap: 0.5,
-        preferCanvas: true,
+        zoomControl: false,
+      },
+      tiles: {
+        url: 'https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',
+        attribution: '&copy; <a target="_blank" href="http://osm.org/copyright">OpenStreetMap</a> contributors',
       },
     }
   },
-  computed: {
-    markersInBounds () {
-      return this.items?.filter(item => this.bounds?.contains(this.getMarkerPosition(item)))
+  watch: {
+    async checkedFilters (val) {
+      await this.fetchMarkers(val)
+      // console.log('checkedFilters', val, this.markers.length)
     },
   },
   async mounted () {
-    const map = this.getMapObject()
+    Promise.all([await this.initMap(), await this.fetchMarkers()])
     setTimeout(() => {
-      map.invalidateSize(true)
+      this.map.invalidateSize(true)
     }, 100)
-
-    await this.fetchObjects()
   },
   methods: {
-    /**
-     * https://github.com/lennardv2/Leaflet.awesome-markers
-     */
+    async initMap () {
+      this.map = L.map('map-wrapper', this.options)
+      L.tileLayer(this.tiles.url, { attribution: this.tiles.attribution }).addTo(this.map)
+    },
     getMarkerIcon (type) {
-      switch (type) {
-        case 'baskets':
-          return L.AwesomeMarkers.icon({ icon: 'shopping-basket', markerColor: 'green' })
-        case 'communities':
-          return L.AwesomeMarkers.icon({ icon: 'users', markerColor: 'blue' })
-        case 'fairteiler':
-          return L.AwesomeMarkers.icon({ icon: 'recycle', markerColor: 'orange' })
-        case 'betriebe':
-          return L.AwesomeMarkers.icon({ icon: 'shopping-cart', markerColor: 'red' })
-        default:
-          return L.AwesomeMarkers.icon({ icon: 'question', markerColor: 'cadetblue' })
+      const filter = this.filters.find(filter => [filter.name, filter.filter].includes(type))
+      if (filter) {
+        return L.AwesomeMarkers.icon({ icon: filter.icon, markerColor: filter.color })
+      }
+      return L.AwesomeMarkers.icon({ icon: 'question', markerColor: 'black' })
+    },
+    async fetchMarkers (filters = [], states = []) {
+      const temp = this.markers
+      try {
+        this.markers = []
+        if (filters.length === 0) return this.markers
+        this.loading = true
+        const markers = await getMapMarkers(filters, states)
+        Object.keys(markers).forEach(key => {
+          this.markers.push(...markers[key].map(item => ({ ...item, type: key })))
+        })
+        this.markers = this.markers.map((marker) => L.marker(latLng(marker), {
+          icon: this.getMarkerIcon(marker.type),
+        }))
+        if (!this.cluster) {
+          this.cluster = L.markerClusterGroup({
+            chunkedLoading: true,
+            chunkProgress: this.updateProgressBar,
+            chunkInterval: 100,
+            maxClusterRadius: 100,
+          })
+          this.cluster.addLayers(this.markers)
+          this.map.addLayer(this.cluster)
+        }
+      } catch (e) {
+        console.error(e)
+      } finally {
+        if (this.markers.length > 0 && this.checkedFilters.length > 0) {
+          this.cluster.clearLayers(this.markers)
+          this.cluster.addLayers(this.markers)
+        } else if (temp.length > 0) {
+          this.cluster.clearLayers(temp)
+        }
+        this.loading = false
       }
     },
-    async fetchObjects (filters = ['baskets', 'communities', 'fairteiler', 'betriebe'], states = ['allebetriebe']) {
-      const markers = await getMapMarkers(filters, states)
-      Object.keys(markers).forEach(key => {
-        this.items.push(...markers[key].map(item => ({
-          ...item,
-          type: key,
-        })))
-      })
-    },
-    getMarkerPosition (marker) {
-      return [marker?.lat, marker?.lon]
-    },
-    getMapObject () {
-      return this.$refs.map.mapObject
-    },
-    zoomUpdated (zoom) {
-      this.zoom = zoom
-    },
-    centerUpdated (center) {
-      this.center = center
-    },
-    boundsUpdated (bounds) {
-      this.bounds = bounds
+    updateProgressBar (processed, total, elapsed, layersArray) {
+      console.log(processed, total, elapsed, layersArray)
+      if (elapsed > 1000) {
+        this.loading = true
+        this.progress = Math.round(processed / total * 100)
+      }
+      if (processed === total) {
+        this.loading = false
+      }
     },
   },
 }
 </script>
 
-<style>
+<style lang="scss">
 .page-map {
   height: 100vh;
 }
@@ -146,11 +173,29 @@ export default {
 .toolbar {
   flex: 0;
   position: absolute;
-  top: 150px;
+  top: 10rem;
+  right: 1rem;
   z-index: 1030;
+  padding: 2rem;
+  background: var(--fs-color-background);
+  border-radius: var(--border-radius);
+  box-shadow: var(--fs-shadow);
 }
 
-.mapwrapper {
+.progress {
+  font-size: 4rem;
+  color: var(--fs-color-light);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 100vh;
+  width: 100%;
+  position: absolute;
+  z-index: 1020;
+  background-color: var(--fs-color-gray-alpha-50);
+}
+
+.map-wrapper {
   flex: 1;
   height: 100%;
 }

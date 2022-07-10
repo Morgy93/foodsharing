@@ -4,17 +4,6 @@ import dateFormatter from '@/helper/date-formatter'
 import { url } from '@/helper/urls'
 import BootstrapVue from 'bootstrap-vue'
 import Vuelidate from 'vuelidate'
-import { LMap, LTileLayer, LMarker, LFeatureGroup, LLayerGroup } from 'vue2-leaflet'
-import Vue2LeafletMarkerCluster from 'vue2-leaflet-markercluster'
-import 'leaflet/dist/leaflet.css'
-import 'leaflet.markercluster/dist/MarkerCluster.css'
-
-Vue.component('LMarkerCluster', Vue2LeafletMarkerCluster)
-Vue.component('LMap', LMap)
-Vue.component('LTileLayer', LTileLayer)
-Vue.component('LMarker', LMarker)
-Vue.component('LFeatureGroup', LFeatureGroup)
-Vue.component('LLayerGroup', LLayerGroup)
 
 Vue.use(BootstrapVue)
 Vue.use(Vuelidate)

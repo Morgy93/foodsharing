@@ -2671,6 +2671,10 @@ globals:
   show_more: Mehr anzeigen
   show_less: Weniger anzeigen
   type:
+    baskets: Essenskörbe
+    my_baskets: Meine Essenskörbe
+    communities: Ortsgruppen
+    my_communities: Meine Ortsgruppen
     mailboxes: Mailboxen
     my_mailboxes: Meine Mailboxen
     buddies: Buddies
