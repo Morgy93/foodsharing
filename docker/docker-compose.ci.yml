@@ -145,7 +145,7 @@ services:
         --web 80
         --smtp 25
         --hide-extensions STARTTLS
-    image: djfarrelly/maildev
+    image: maildev/maildev
     container_name: foodsharing_ci_maildev
 
   influxdb:
