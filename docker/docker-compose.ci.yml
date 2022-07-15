@@ -140,11 +140,6 @@ services:
   #------------------------------------
 
   maildev:
-    command: >
-      bin/maildev
-        --web 1080
-        --smtp 25
-        --hide-extensions STARTTLS
     image: maildev/maildev
     container_name: foodsharing_ci_maildev
 
