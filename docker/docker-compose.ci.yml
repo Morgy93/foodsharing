@@ -142,7 +142,7 @@ services:
   maildev:
     command: >
       bin/maildev
-        --disable-web
+        --web 1080
         --smtp 25
         --hide-extensions STARTTLS
     image: maildev/maildev
