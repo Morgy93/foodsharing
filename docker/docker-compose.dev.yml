@@ -152,7 +152,7 @@ services:
         --web 80
         --smtp 25
         --hide-extensions STARTTLS
-    image: maildev/maildev
+    image: maildev/maildev:2.0.5
     container_name: foodsharing_dev_maildev
     ports:
       - "127.0.0.1:18084:80"

@@ -140,7 +140,7 @@ services:
   #------------------------------------
 
   maildev:
-    image: maildev/maildev
+    image: maildev/maildev:2.0.5
     container_name: foodsharing_ci_maildev
 
   influxdb:
@@ -160,4 +160,3 @@ volumes:
   vendor_cache:
   client_node_modules_cache:
   chat_node_modules_cache:
-

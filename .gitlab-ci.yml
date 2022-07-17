@@ -227,7 +227,7 @@ test:backend:
       alias: db
     - name: selenium/standalone-chrome:3.141.59-20200515
       alias: selenium
-    - name: maildev/maildev
+    - name: maildev/maildev:2.0.5
       alias: maildev
     - name: node:16.13.2-alpine3.14
       alias: chat
