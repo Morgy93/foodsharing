@@ -5,6 +5,41 @@
       <div class="col-9">
         <Container :title="this.main_container_title">
           <div class="card-body bg-white">
+            <b-table :items="foodsaver" :fields="table.fields" :responsive="true" selectable select-mode="multi">
+              <template #cell(name)="data">
+                <a :href="getProfilUrl(data.item.id)">{{ data.item.name }}</a> <i>({{ data.item.role_name }})</i>
+              </template>
+
+
+              <template #cell(photo)="data">
+                <Avatar
+                  :is-sleeping="data.item.sleepStatus"
+                  :url="data.item.photo"
+                />
+              </template>
+
+              <template #cell(is_verified)="data">
+                <i v-if="data.item.is_verified" class="fas fa-check-circle fa-2x text-success"
+                   v-b-modal.deverification-modal
+                   @click="foodsaverIdForDeverification = data.item.id"
+                />
+                <i v-if="!data.item.is_verified" class="fas fa-times-circle fa-2x text-danger"
+                   v-b-modal.verification-modal
+                   @click="foodsaverIdForVerification = data.item.id"
+                />
+              </template>
+
+              <template #cell(remove)="data">
+                <button class="btn btn-block btn-outline-danger" v-b-modal.remove-from-region-modal
+                        @click="foodsaverIdForRemoving = data.item.id"
+                >
+                  <i class="fas fa-sign-out-alt"></i>
+                </button>
+              </template>
+            </b-table>
+
+            <hr class="my-5 bg-success">
+
             <table class="table">
               <thead>
                 <tr>
@@ -120,6 +155,36 @@ export default {
       foodsaverIdForDeverification: null,
       foodsaverIdForVerification: null,
       foodsaverIdForRemoving: null,
+      table: {
+        fields: [
+          {
+            key: 'photo',
+            label: i18n('pass.photo'),
+            sortable: false,
+          },
+          {
+            key: 'name',
+            label: i18n('pass.name'),
+            sortable: true,
+          },
+          {
+            key: 'displayed_data.last_pass_date',
+            label: i18n('pass.date'),
+            sortable: true,
+          },
+          {
+            key: 'displayed_data.last_login_date',
+            label: 'Last login',
+            sortable: true,
+          },
+          {
+            key: 'is_verified',
+            label: i18n('pass.verified'),
+            sortable: true,
+          },
+          { key: 'remove', label: 'Remove' },
+        ],
+      },
     }
   },
   mounted: function () {
