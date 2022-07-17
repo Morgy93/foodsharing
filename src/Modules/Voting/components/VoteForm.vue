@@ -81,7 +81,7 @@ import SingleSelectionVotingComponent from './SingleSelectionVotingComponent'
 import MultiSelectionVotingComponent from './MultiSelectionVotingComponent'
 import { vote } from '@/api/voting'
 import { pulseError, pulseSuccess, shuffle } from '@/script'
-import i18n from '@/i18n'
+import i18n from '@/helper/i18n'
 
 export default {
   components: {

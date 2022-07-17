@@ -44,12 +44,12 @@ export default {
 }
 </script>
 <style lang="scss" scoped>
-::v-deep a {
-  all: unset;
+::v-deep.foodsharing a {
+  font-weight: unset;
   cursor: pointer;
 }
 ::v-deep.foodsharing {
-  font-family: "Alfa Slab One", serif;
+  font-family: var(--fs-font-family-headline);
   color: var(--fs-color-primary-500);
   font-size: 1.1rem;
   font-weight: normal;

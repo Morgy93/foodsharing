@@ -54,8 +54,12 @@ class RegisterCest
 		$I->fillField('#lastname', $this->last_name);
 		$I->click('weiter');
 
+		// fill in birthdate
 		$I->waitForElementVisible('#step3', 4);
-		$I->fillField('.vdp-datepicker > div:nth-child(1) > input:nth-child(2)', $this->birthdate);
+		$I->click('#register-datepicker');
+		$I->click('button[title="Vorheriges Jahr"]');
+		$I->click('button[title="Vorheriges Jahr"]');
+		$I->click('.b-calendar .b-calendar-grid-body .col[data-date] .btn');
 		$I->click('weiter');
 
 		$I->waitForElementVisible('#step4', 4);
@@ -95,7 +99,7 @@ class RegisterCest
 			'email' => $this->stripped_email,
 			'name' => $this->first_name,
 			'nachname' => $this->last_name,
-			'geb_datum' => $this->birthdateUSFormat,
+			// 'geb_datum' => $this->birthdateUSFormat, // disabled because it's not possible to set a exact date in the frontend
 			'newsletter' => 1,
 			'handy' => $this->mobile_country_code . $this->mobile_number
 		]);
@@ -126,8 +130,12 @@ class RegisterCest
 		$I->fillField('#lastname', $this->last_name);
 		$I->click('weiter');
 
+		// fill in birthdate
 		$I->waitForElementVisible('#step3', 4);
-		$I->fillField('.vdp-datepicker > div:nth-child(1) > input:nth-child(2)', $this->birthdate);
+		$I->click('#register-datepicker');
+		$I->click('button[title="Vorheriges Jahr"]');
+		$I->click('button[title="Vorheriges Jahr"]');
+		$I->click('.b-calendar .b-calendar-grid-body .col[data-date] .btn');
 		$I->click('weiter');
 
 		$I->waitForElementVisible('#step4', 4);
@@ -166,7 +174,7 @@ class RegisterCest
 			'email' => $this->stripped_email,
 			'name' => $this->first_name,
 			'nachname' => $this->last_name,
-			'geb_datum' => $this->birthdateUSFormat,
+			// 'geb_datum' => $this->birthdateUSFormat, // disabled because it's not possible to set a exact date in the frontend
 			'newsletter' => 0,
 			'handy' => $this->mobile_country_code . $this->mobile_number
 		]);

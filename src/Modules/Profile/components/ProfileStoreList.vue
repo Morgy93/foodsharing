@@ -1,5 +1,5 @@
 <template>
-  <div class="infos store-list bootstrap">
+  <div class="infos store-list">
     <b-card
       :header="$i18n('profile.nav.storelist', { count: stores.length })"
       header-class="font-weight-bold"

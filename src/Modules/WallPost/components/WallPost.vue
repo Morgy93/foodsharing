@@ -20,11 +20,11 @@
       </span>
 
       <span
-        v-b-tooltip="$dateFormat(post.createdAt, 'full-long')"
+        v-b-tooltip="$dateFormatter.dateTimeTooltip(post.createdAt, { isShown: $dateFormatter.isToday(post.createdAt) })"
         class="datetime text-right flex-grow-0 flex-shrink-1"
       >
         <i class="far fa-fw fa-clock" />
-        {{ displayedDate }}
+        {{ $dateFormatter.base(post.createdAt) }}
       </span>
     </div>
 
@@ -106,8 +106,6 @@
 </template>
 
 <script>
-import differenceInMonths from 'date-fns/differenceInMonths'
-import differenceInCalendarYears from 'date-fns/differenceInCalendarYears'
 import DataUser from '@/stores/user'
 
 import Avatar from '@/components/Avatar'
@@ -124,12 +122,7 @@ export default {
   },
   computed: {
     displayedDate () {
-      const createdAt = this.post.createdAt
-      if (differenceInCalendarYears(new Date(), createdAt) >= 1) {
-        return this.$dateFormat(createdAt, 'full-long')
-      } else {
-        return this.$dateDistanceInWords(createdAt)
-      }
+      return this.$dateFormatter.base(this.post.createdAt)
     },
     canDelete () {
       if (!DataUser.getters.getUserId()) return false
@@ -140,7 +133,7 @@ export default {
 
       // managers can clean up posts older than 1 month, see StorePermissions:mayDeleteStoreWallPost
       if (this.isManager(DataUser.getters.getUserId())) {
-        return differenceInMonths(new Date(), this.post.createdAt) >= 1
+        return this.$dateFormatter.getDifferenceToNowInMonths(this.post.createdAt) >= 1
       } else {
         return false
       }

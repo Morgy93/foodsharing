@@ -57,7 +57,7 @@
 <script>
 import { hideLoader, pulseError, showLoader } from '@/script'
 import { createApiToken, getApiToken, removeApiToken } from '@/api/calendar'
-import i18n from '@/i18n'
+import i18n from '@/helper/i18n'
 import { BAlert, BButton } from 'bootstrap-vue'
 
 export default {

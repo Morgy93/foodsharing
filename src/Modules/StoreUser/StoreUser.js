@@ -7,7 +7,7 @@ import $ from 'jquery'
 import 'jquery-tagedit'
 import 'jquery-tagedit-auto-grow-input'
 
-import i18n from '@/i18n'
+import i18n from '@/helper/i18n'
 import { expose } from '@/utils'
 import './StoreUser.css'
 

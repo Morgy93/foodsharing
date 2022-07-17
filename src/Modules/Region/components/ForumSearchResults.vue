@@ -34,8 +34,6 @@
 
 <script>
 import SearchResultEntry from '@/components/SearchBar/SearchResultEntry'
-import differenceInCalendarYears from 'date-fns/differenceInCalendarYears'
-import parseISO from 'date-fns/parseISO'
 
 function match (word, e) {
   if (e.name && e.name.toLowerCase().indexOf(word) !== -1) return true
@@ -89,12 +87,8 @@ export default {
   },
   methods: {
     getThreadDate (thread) {
-      const lastUpdated = parseISO(thread.teaser)
-      if (differenceInCalendarYears(new Date(), lastUpdated) >= 1) {
-        return this.$dateFormat(lastUpdated, 'full-long')
-      } else {
-        return this.$dateDistanceInWords(lastUpdated) + ` (${this.$dateFormat(lastUpdated, 'full-short')})`
-      }
+      const lastUpdated = new Date(Date.parse(thread.teaser))
+      return this.$dateFormatter.base(lastUpdated)
     },
   },
 }

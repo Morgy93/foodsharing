@@ -32,7 +32,7 @@ startpage:
     title: Delta
     text: Vi ble grunnlagt i 2012, og nå er vi en internasjonal bevegelse med over
       200 000 brukere i Tyskland, Østerrike, Sveits og andre europeiske land.
-  mission:
+  vision:
     title: Oppdrag
     text: Vårt langsiktige mål er å redusere kastkulturen av mat og andre ressurser.
       Vi sparer mat i private husholdninger og bedrifter – kollektivt, bærekraftig
@@ -333,7 +333,6 @@ menu:
     team: Team
     blog: Blogg
     fundamentals: Prinsipper
-    mission: Oppdrag
     aboutUs: Om oss
     members: Medlemmer
     events: Arrangementer

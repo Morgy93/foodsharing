@@ -73,19 +73,13 @@
 </template>
 
 <script>
+import DataUser from '@/stores/user'
 import Container from '../Container.vue'
 import ActivityThread from './ActivityThread'
 import ActivityOptionListings from './ActivityOptionListings'
 
 export default {
-  name: 'ActivitiyList',
   components: { Container, ActivityThread, ActivityOptionListings },
-  props: {
-    isFoodsaver: {
-      type: Boolean,
-      default: false,
-    },
-  },
   data () {
     return {
       filters: [
@@ -130,6 +124,9 @@ export default {
     }
   },
   computed: {
+    isFoodsaver () {
+      return DataUser.getters.isFoodsaver()
+    },
     activeFilters () {
       if (!this.isFoodsaver) {
         return this.filters.filter(filter => filter.onlyForFoodsharer)
@@ -152,7 +149,6 @@ export default {
     setFilter (filter) {
       localStorage.setItem('activity-selected-type', filter)
       this.filtering(filter)
-      this.$refs.thread.resetInfinity()
     },
     filtering (category) {
       this.selectedType = category

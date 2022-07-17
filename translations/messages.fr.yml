@@ -1128,7 +1128,6 @@ menu:
     team: Équipe
     blog: Blog
     fundamentals: Principes
-    mission: Mission
     aboutUs: À propos de nous
     workingGroupEdit: gérer le groupe
     members: Membres
@@ -2059,13 +2058,13 @@ startpage:
       plus de 200 000 utilisateur.ice.s en Allemagne, Autriche, Suisse et dans bien
       d'autres pays européens.
     title: Agis à nos côtés !
-  mission:
+  vision:
+    title: Mission
     text: Notre but à l'avenir est de réduire voire déconstruire cette culture de
       consommation irresponsable de nos ressources alimentaires si précieuses. Nous
       collectons et par là-même sauvons les denrées dans le cadre privé mais aussi
       auprès des magasins, ensemble pour un monde plus durable et plus respectueux.
       Nous sommes un mouvement qui s'inscrit dans la mouvance de la politique de l'éducation.
-    title: Mission
   this_is_how_it_works: Comment ça fonctionne ?
   more_infos: Plus d'infos
   call_to_action_button: Rejoindre

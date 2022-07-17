@@ -41,8 +41,8 @@
        "title":"menu.entry.aboutUs",
        "items":[
           {
-             "url":"mission",
-             "title":"menu.entry.mission"
+             "url":"vision",
+             "title":"startpage.vision.title"
           },
           {
              "url":"wiki_grundsaetze",

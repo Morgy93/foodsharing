@@ -25,21 +25,14 @@
         v-for="(users, key) in reactionsWithUsers"
         :key="key"
       >
-        <span
-          v-b-tooltip.hover
-          :title="concatUsers(users)"
+        <b-link
+          v-b-tooltip="concatUsers(users)"
+          class="btn btn-sm"
+          :class="[gaveIThisReaction(key) ? 'btn-primary' : 'btn-primary']"
+          @click="toggleReaction(key)"
         >
-          <b-link
-            v-b-tooltip.hover
-            :title="concatUsers(users)"
-            class="btn btn-sm"
-            :class="[gaveIThisReaction(key) ? 'btn-primary' : 'btn-primary']"
-            :disabled="!canGiveEmoji"
-            @click="toggleReaction(key)"
-          >
-            {{ users.length }}x <Emoji :name="key" />
-          </b-link>
-        </span>
+          {{ users.length }}x <Emoji :name="key" />
+        </b-link>
       </span>
     </div>
 
@@ -64,16 +57,6 @@
       <i class="fas fa-trash-alt" />
     </a>
 
-    <!-- <a
-      v-if="mayEdit"
-      v-b-tooltip.hover
-      title="Beitrag bearbeiten"
-      class="btn btn-sm btn-primary"
-      @click="$emit('edit')">
-      <i class="fas fa-pencil-alt" />
-    </a> -->
-
-    <!-- delete confirm modal -->
     <b-modal
       v-if="mayDelete"
       ref="confirmDelete"
@@ -91,8 +74,6 @@
 </template>
 
 <script>
-import pickBy from 'lodash.pickby'
-
 import { BDropdown, BModal, VBTooltip, BLink } from 'bootstrap-vue'
 
 import Emoji from '@/components/Emoji'
@@ -123,13 +104,19 @@ export default {
   },
   computed: {
     reactionsWithUsers () {
-      return pickBy(this.reactions, users => users.length > 0)
+      // https://github.com/you-dont-need/You-Dont-Need-Lodash-Underscore#_pickby
+      const reactArr = Object.entries(this.reactions)
+      const filtered = reactArr.filter(([_, reaction]) => reaction.length > 0)
+      return Object.fromEntries(filtered)
     },
     canGiveEmoji () {
       return this.mayReply && Object.keys(this.emojisToGive).length > 0
     },
     emojisToGive () {
-      return pickBy(this.emojis, (symbol, key) => !this.gaveIThisReaction(key))
+      // https://github.com/you-dont-need/You-Dont-Need-Lodash-Underscore#_pickby
+      const emojisArr = Object.entries(this.emojis)
+      const filtered = emojisArr.filter(([emoji]) => !this.gaveIThisReaction(emoji))
+      return Object.fromEntries(filtered)
     },
   },
   methods: {
@@ -153,7 +140,7 @@ export default {
       return !!this.reactions[key].find(r => r.id === DataUser.getters.getUserId())
     },
     concatUsers (users) {
-      const names = users.map(u => u.id === DataUser.getters.getUserId() ? 'Du' : u.name)
+      const names = users.map(u => u.id === DataUser.getters.getUserId() ? this.$i18n('globals.you') : u.name)
       if (names.length === 1) {
         return names[0]
       }

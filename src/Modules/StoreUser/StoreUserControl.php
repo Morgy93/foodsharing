@@ -80,7 +80,8 @@ class StoreUserControl extends Control
 				'name' => $store['name'],
 				'bezirk_id' => (int)$store['bezirk_id'],
 				'verantwortlich' => $store['verantwortlich'],
-				'prefetchtime' => $store['prefetchtime']
+				'prefetchtime' => $store['prefetchtime'],
+				'isJumper' => $store['jumper']
 			];
 
 			$this->pageHelper->addTitle($store['name']);
@@ -139,8 +140,10 @@ class StoreUserControl extends Control
 							'teamConversionId' => $teamConversionId,
 							'springerConversationId' => $springerConversationId,
 							'mayEditStore' => $this->storePermissions->mayEditStore($storeId),
-							'mayLeaveStoreTeam' => $userIsInStore && $this->storePermissions->mayLeaveStoreTeam($storeId, $this->session->id()),
+							'userIsInStore' => $userIsInStore,
+							'mayLeaveStoreTeam' => $this->storePermissions->mayLeaveStoreTeam($storeId, $this->session->id()),
 							'storeId' => $storeId,
+							'isJumper' => $store['jumper'],
 							'fsId' => $this->session->id()
 						]),
 					CNT_LEFT

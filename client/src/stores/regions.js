@@ -1,6 +1,6 @@
 import Vue from 'vue'
 import { joinRegion, listRegionChildren } from '@/api/regions'
-import { url } from '@/urls'
+import { url } from '@/helper/urls'
 
 export const store = Vue.observable({
   regions: [],

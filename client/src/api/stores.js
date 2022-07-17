@@ -1,8 +1,7 @@
 import { get, patch, post, remove } from './base'
-import dateFnsParseISO from 'date-fns/parseISO'
 
 function normalizeStoreWallPost (post) {
-  post.createdAt = dateFnsParseISO(post.createdAt)
+  post.createdAt = new Date(Date.parse(post.createdAt))
   post.body = post.text
   delete post.text
   return post

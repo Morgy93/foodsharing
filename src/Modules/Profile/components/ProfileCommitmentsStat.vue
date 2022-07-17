@@ -1,75 +1,73 @@
 <template>
-  <div class="container bootstrap">
-    <div class="card mb-3 rounded">
-      <div v-if="commitmentsStats[0].respActStores > 0">
-        {{ $i18n('profile.commitments_stat.respActStores', { count: commitmentsStats[0].respActStores }) }} <i class="fas fa-shopping-cart" />
-        <p />
-      </div>
-      <b-tabs>
-        <template
-          v-for="(item,index) in commitmentsStats"
+  <div class="card mb-3 rounded">
+    <div v-if="commitmentsStats[0].respActStores > 0">
+      {{ $i18n('profile.commitments_stat.respActStores', { count: commitmentsStats[0].respActStores }) }} <i class="fas fa-shopping-cart" />
+      <p />
+    </div>
+    <b-tabs>
+      <template
+        v-for="(item,index) in commitmentsStats"
+      >
+        <b-tab
+          v-if="DisplayTab(item)"
+          :key="index"
+          :title="$i18n('profile.commitments_stat.week_' + index)"
         >
-          <b-tab
-            v-if="DisplayTab(item)"
-            :key="index"
-            :title="$i18n('profile.commitments_stat.week_' + index)"
+          <div>
+            <p /> {{ $i18n('profile.commitments_stat.weekDesc', { week: item.week, weekStart:item.beginWeek, weekEnd:item.endWeek }) }}
+            <p />
+          </div>
+          <template
+            v-if="item.data.length > 0"
           >
-            <div>
-              <p /> {{ $i18n('profile.commitments_stat.weekDesc', { week: item.week, weekStart:item.beginWeek, weekEnd:item.endWeek }) }}
-              <p />
-            </div>
-            <template
-              v-if="item.data.length > 0"
-            >
-              <b-pagination
-                v-if="item.data.length > perPage"
-                v-model="currentPage"
-                :total-rows="item.length"
-                :per-page="perPage"
-                aria-controls="`item-table${index}`"
-              />
-              <b-table
-                :id="`item-table${index}`"
-                :key="index"
-                :current-page="currentPage"
-                :per-page="perPage"
-                :fields="fields"
-                :items="item.data"
-                :sort-by="sortBy"
-                :sort-desc="sortDesc"
-                striped
-                hover
-                small
-                bordered
-                responsive
-              />
-            </template>
-            <div v-if="item.securePickupWeek > 0 ">
-              <i class="fas fa-leaf" />
-              {{ $i18n('profile.commitments_stat.securePickupWeek', { count: item.securePickupWeek }) }}
-            </div>
-            <div v-if="item.eventsCreated > 0 ">
-              <i class="fas fa-calendar-day" />
-              {{ $i18n('profile.commitments_stat.eventsCreatedWeek', { count: item.eventsCreated }) }}
-            </div>
-            <div v-if="item.eventsParticipated[0].count > 0 ">
-              <i class="fas fa-calendar-check" />
-              {{ $i18n('profile.commitments_stat.eventsParticipatedWeek', { count: item.eventsParticipated[0].count, hour: item.eventsParticipated[0].duration_hours, minute: item.eventsParticipated[0].duration_minutes }) }}
-            </div>
-            <div v-if="item.baskets.offered[0].count > 0 ">
-              <i class="fas fa-shopping-basket" />
-              {{ $i18n('profile.commitments_stat.basketsOfferedWeek', { count: item.baskets.offered[0].count, weight: item.baskets.offered[0].weight} ) }}
-            </div>
-            <div v-if="item.baskets.shared > 0 ">
-              <i class="fas fa-handshake-o" />
-              {{ $i18n('profile.commitments_stat.basketsSharedWeek', { count: item.baskets.shared } ) }}
-            </div>
-          </b-tab>
-        </template>
-      </b-tabs>
-      <div>
-        <p />
-      </div>
+            <b-pagination
+              v-if="item.data.length > perPage"
+              v-model="currentPage"
+              :total-rows="item.length"
+              :per-page="perPage"
+              aria-controls="`item-table${index}`"
+            />
+            <b-table
+              :id="`item-table${index}`"
+              :key="index"
+              :current-page="currentPage"
+              :per-page="perPage"
+              :fields="fields"
+              :items="item.data"
+              :sort-by="sortBy"
+              :sort-desc="sortDesc"
+              striped
+              hover
+              small
+              bordered
+              responsive
+            />
+          </template>
+          <div v-if="item.securePickupWeek > 0 ">
+            <i class="fas fa-leaf" />
+            {{ $i18n('profile.commitments_stat.securePickupWeek', { count: item.securePickupWeek }) }}
+          </div>
+          <div v-if="item.eventsCreated > 0 ">
+            <i class="fas fa-calendar-day" />
+            {{ $i18n('profile.commitments_stat.eventsCreatedWeek', { count: item.eventsCreated }) }}
+          </div>
+          <div v-if="item.eventsParticipated[0].count > 0 ">
+            <i class="fas fa-calendar-check" />
+            {{ $i18n('profile.commitments_stat.eventsParticipatedWeek', { count: item.eventsParticipated[0].count, hour: item.eventsParticipated[0].duration_hours, minute: item.eventsParticipated[0].duration_minutes }) }}
+          </div>
+          <div v-if="item.baskets.offered[0].count > 0 ">
+            <i class="fas fa-shopping-basket" />
+            {{ $i18n('profile.commitments_stat.basketsOfferedWeek', { count: item.baskets.offered[0].count, weight: item.baskets.offered[0].weight} ) }}
+          </div>
+          <div v-if="item.baskets.shared > 0 ">
+            <i class="fas fa-handshake-o" />
+            {{ $i18n('profile.commitments_stat.basketsSharedWeek', { count: item.baskets.shared } ) }}
+          </div>
+        </b-tab>
+      </template>
+    </b-tabs>
+    <div>
+      <p />
     </div>
   </div>
 </template>

@@ -1,7 +1,7 @@
 import '@/core'
 import '@/globals'
 import $ from 'jquery'
-import i18n from '@/i18n'
+import i18n from '@/helper/i18n'
 
 const noticeId = '#legal_form_privacyNoticeAcknowledged'
 const $form = $('form[name="legal_form"]')

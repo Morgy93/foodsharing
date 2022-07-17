@@ -12,7 +12,7 @@
             <a
               v-for="(item) in partnerData.items"
               :key="item.infosCompany"
-              v-b-tooltip="$i18n(item.title)"
+              v-b-tooltip.html="$i18n(item.title)"
               class="partner hide-external"
               :class="{
                 'alone': partnerData.items.length === 1,

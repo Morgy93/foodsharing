@@ -117,12 +117,8 @@ export default {
 }
 
 ::v-deep .avatar {
-  width: 1rem;
-
-  img {
-    border: 1px solid white;
-    border-width: 1px 2px 1px 0;
-  }
+  border: 2px solid var(--fs-color-light);
+  border-radius: 50%;
 }
 
 .hidden-users, .free-slots {

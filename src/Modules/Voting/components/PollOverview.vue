@@ -31,7 +31,7 @@
         <ul class="poll-properties">
           <li class="poll-date">
             <b>{{ $i18n('poll.time_period') }}:</b>
-            {{ $dateFormat(startDate) }} - {{ $dateFormat(endDate) }}
+            {{ $dateFormatter.dateTime(startDate) }} - {{ $dateFormatter.dateTime(endDate) }}
             <b-badge v-if="isPollInPast" pill variant="info">
               {{ $i18n('poll.in_past') }}
             </b-badge>
@@ -61,7 +61,7 @@
             show
             variant="dark"
           >
-            {{ $i18n('poll.already_voted') }}: {{ $dateFormat(displayedVoteDate) }}
+            {{ $i18n('poll.already_voted') }}: {{ $dateFormatter.date(displayedVoteDate) }}
           </b-alert>
         </div>
         <div
@@ -117,15 +117,13 @@
 </template>
 
 <script>
-import { isBefore, isAfter } from 'date-fns'
-import dateFnsParseISO from 'date-fns/parseISO'
 import VoteForm from './VoteForm'
 import ResultsTable from './ResultsTable'
 import Markdown from '@/components/Markdown/Markdown'
 import { BAlert, BLink, BBadge } from 'bootstrap-vue'
 import { deletePoll } from '@/api/voting'
 import { hideLoader, pulseError, showLoader } from '@/script'
-import i18n from '@/i18n'
+import i18n from '@/helper/i18n'
 
 export default {
   components: { ResultsTable, VoteForm, Markdown, BAlert, BLink, BBadge },
@@ -159,21 +157,21 @@ export default {
     return {
       userMayVote: this.mayVote,
       userAlreadyVoted: this.userVoteDate !== null,
-      displayedVoteDate: this.userVoteDate ? dateFnsParseISO(this.userVoteDate.date) : new Date(),
+      displayedVoteDate: this.userVoteDate ? new Date(Date.parse(this.userVoteDate.date)) : new Date(),
     }
   },
   computed: {
     startDate () {
-      return dateFnsParseISO(this.poll.startDate.date)
+      return new Date(Date.parse(this.poll.startDate.date))
     },
     endDate () {
-      return dateFnsParseISO(this.poll.endDate.date)
+      return new Date(Date.parse(this.poll.endDate.date))
     },
     isPollInPast () {
-      return isBefore(this.endDate, new Date())
+      return this.endDate < new Date()
     },
     isPollInFuture () {
-      return isAfter(this.startDate, new Date())
+      return this.startDate > new Date()
     },
   },
   methods: {

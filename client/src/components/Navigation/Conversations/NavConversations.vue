@@ -32,7 +32,7 @@
         role="menuitem"
         class="dropdown-item dropdown-action"
         :class="{ 'disabled': !unread }"
-        @click="markUnreadMessagesAsRead(); hide();"
+        @click="markUnreadMessagesAsRead"
       >
         <i class="icon-subnav fas fa-check-double" />
         {{ $i18n('menu.entry.mark_as_read') }}

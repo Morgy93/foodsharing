@@ -3,7 +3,7 @@
     "title": "footer.our_partner",
     "items": [
       {
-        "url": "infosCompany",
+        "url": "hosting",
         "info": "footer.hosting.info",
         "title": "footer.hosting.tooltip",
         "img": "/img/footer/manitu_logo.svg"

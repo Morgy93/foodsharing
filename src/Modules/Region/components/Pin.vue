@@ -58,7 +58,7 @@
 import { BButton, BFormTextarea } from 'bootstrap-vue'
 import { setRegionPin } from '@/api/regions'
 import { pulseError, pulseInfo } from '@/script'
-import i18n from '@/i18n'
+import i18n from '@/helper/i18n'
 import L from 'leaflet'
 import LeafletLocationPicker from '@/components/map/LeafletLocationPicker'
 import 'leaflet.awesome-markers'

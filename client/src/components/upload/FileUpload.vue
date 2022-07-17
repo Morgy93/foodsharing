@@ -161,7 +161,7 @@ export default {
           this.$refs.croppie.destroy()
         } catch (err) {
           // If already destroyed, error will be thrown. Can't be checked before. :(
-          console.log('possible already destroyed')
+          // console.log('possible already destroyed')
         }
         reader.onload = (res) => {
           this.isLoading = false

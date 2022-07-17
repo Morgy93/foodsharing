@@ -111,7 +111,7 @@
           v-if="isFoodsaver && visible.events"
           title="dashboard.event"
         />
-        <ActivityContainer :is-foodsaver="isFoodsaver" />
+        <ActivityContainer />
       </div>
       <div
         v-if="isFoodsaver && !state && hasRightColumn"

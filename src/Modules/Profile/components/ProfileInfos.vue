@@ -1,5 +1,5 @@
 <template>
-  <div class="infos bootstrap">
+  <div class="infos">
     <ul>
       <li
         v-if="lastLogin"

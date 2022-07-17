@@ -83,24 +83,24 @@
           </template>
 
           <template #cell(call)="data">
-            <b-button
-              v-if="data.item.callable || !data.item.copyNumber"
-              variant="link"
-              class="member-call"
-              :href="data.item.callable"
-              :disabled="!data.item.callable"
-            >
-              <i class="fas fa-fw fa-phone" />
-            </b-button>
-            <b-button
-              v-else-if="data.item.copyNumber && canCopy"
-              variant="link"
-              class="member-call copy-clipboard"
-              href="#"
-              @click.prevent="copyIntoClipboard(data.item.copyNumber)"
-            >
-              <i class="fas fa-fw fa-clone" />
-            </b-button>
+            <div v-if="data.item.phoneNumberIsValid">
+              <b-button
+                variant="link"
+                class="member-call"
+                :href="$url('phone_number', data.item.phoneNumber)"
+                :disabled="!data.item.phoneNumberIsValid"
+              >
+                <i class="fas fa-fw fa-phone" />
+              </b-button>
+              <b-button
+                variant="link"
+                class="member-call copy-clipboard"
+                href="#"
+                @click.prevent="copyIntoClipboard(data.item.phoneNumber)"
+              >
+                <i class="fas fa-fw fa-clone" />
+              </b-button>
+            </div>
           </template>
 
           <template #row-details="data">
@@ -195,21 +195,15 @@
 </template>
 
 <script>
-import _ from 'underscore'
-import fromUnixTime from 'date-fns/fromUnixTime'
-import compareAsc from 'date-fns/compareAsc'
-
 import {
   demoteAsStoreManager, promoteToStoreManager,
-  moveMemberToStandbyTeam, moveMemberToRegularTeam,
+  moveMemberToStandbyTeam, moveMemberToRegularTeam, removeStoreMember,
 } from '@/api/stores'
-import i18n from '@/i18n'
-import { callableNumber } from '@/utils'
+import phoneNumber from '@/helper/phone-numbers'
 import { chat, pulseSuccess, pulseError } from '@/script'
 import MediaQueryMixin from '@/mixins/MediaQueryMixin'
 
 import { legacyXhrCall } from './legacy'
-import { removeFromTeam } from '../../Store/Store'
 import StoreManagementPanel from './StoreManagementPanel'
 import StoreTeamAvatar from './StoreTeamAvatar'
 import StoreTeamInfo from './StoreTeamInfo'
@@ -228,7 +222,7 @@ export default {
   },
   data () {
     return {
-      foodsaver: _.map(this.team, this.foodsaverData),
+      foodsaver: this.team?.map(fs => this.foodsaverData(fs)),
       sortfun: this.tableSortFunction,
       sortdesc: true,
       managementModeEnabled: false,
@@ -265,7 +259,7 @@ export default {
     copyIntoClipboard (text) {
       if (navigator.clipboard) {
         navigator.clipboard.writeText(text).then(() => {
-          pulseSuccess(i18n('pickup.copiedNumber', { number: text }))
+          pulseSuccess(this.$i18n('pickup.copiedNumber', { number: text }))
         })
       }
     },
@@ -305,7 +299,7 @@ export default {
           await moveMemberToRegularTeam(this.storeId, fsId)
         }
       } catch (e) {
-        pulseError(i18n('error_unexpected'))
+        pulseError(this.$i18n('error_unexpected'))
         this.isBusy = false
         return
       }
@@ -328,7 +322,7 @@ export default {
       try {
         await promoteToStoreManager(this.storeId, fsId)
       } catch (e) {
-        pulseError(i18n('error_unexpected'))
+        pulseError(this.$i18n('error_unexpected'))
         this.isBusy = false
         return
       }
@@ -346,14 +340,14 @@ export default {
       if (!fsId) {
         return
       }
-      if (!confirm(i18n('store.sm.reallyDemote', { name: fsName }))) {
+      if (!confirm(this.$i18n('store.sm.reallyDemote', { name: fsName }))) {
         return
       }
       this.isBusy = true
       try {
         await demoteAsStoreManager(this.storeId, fsId)
       } catch (e) {
-        pulseError(i18n('error_unexpected'))
+        pulseError(this.$i18n('error_unexpected'))
         this.isBusy = false
         return
       }
@@ -374,11 +368,17 @@ export default {
       // isManager (verantwortlich) DESC
       if (a.isManager !== b.isManager) { return direction * (a.isManager - b.isManager) }
       // lastPickup (last_fetch) DESC
-      if (a.lastPickup && b.lastPickup) { return direction * compareAsc(a.lastPickup, b.lastPickup) }
+      if (a.lastPickup && b.lastPickup) {
+        if (a.lastPickup.getTime() === b.lastPickup.getTime()) return 0
+        return (a.lastPickup > b.lastPickup ? 1 : -1) * direction
+      }
       else if (a.lastPickup) { return direction }
       else if (b.lastPickup) { return -1 * direction }
       // joinDate (add_date) DESC
-      if (a.joinDate && b.joinDate) { return direction * compareAsc(a.joinDate, b.joinDate) }
+      if (a.joinDate && b.joinDate) {
+        if (a.joinDate.getTime() === b.joinDate.getTime()) return 0
+        return (a.joinDate > b.joinDate ? 1 : -1) * direction
+      }
       else if (a.joinDate) { return direction }
       else if (b.joinDate) { return -1 * direction }
       // name ASC
@@ -399,9 +399,15 @@ export default {
       // fetchCount (stat_fetchcount) DESC
       if (a.fetchCount !== b.fetchCount) { return direction * (a.fetchCount - b.fetchCount) }
       // lastPickup (last_fetch) DESC
-      if (a.lastPickup && b.lastPickup) { return direction * compareAsc(a.lastPickup, b.lastPickup) }
+      if (a.lastPickup && b.lastPickup) {
+        if (a.lastPickup.getTime() === b.lastPickup.getTime()) return 0
+        return (a.lastPickup > b.lastPickup ? 1 : -1) * direction
+      }
       // joinDate (add_date) DESC
-      if (a.joinDate && b.joinDate) { return direction * compareAsc(a.joinDate, b.joinDate) }
+      if (a.joinDate && b.joinDate) {
+        if (a.joinDate.getTime() === b.joinDate.getTime()) return 0
+        return (a.joinDate > b.joinDate ? 1 : -1) * direction
+      }
       // name ASC
       return -1 * direction * a.name.localeCompare(b.name)
     },
@@ -409,7 +415,7 @@ export default {
       if (!fs) {
         return {}
       }
-
+      const validPhoneNumber = phoneNumber.callableNumber(fs.handy || fs.telefon)
       return {
         id: fs.id,
         isActive: fs.team_active === 1, // MembershipStatus::MEMBER
@@ -423,17 +429,32 @@ export default {
         isWaiting: fs.team_active === 2 || fs.verified < 1, // MembershipStatus::JUMPER or unverified
         sleepStatus: fs.sleep_status,
         name: fs.name,
-        number: fs.handy || fs.telefon || '',
-        callable: callableNumber(fs.handy) || callableNumber(fs.telefon) || '',
-        copyNumber: callableNumber(fs.handy, true) || callableNumber(fs.telefon, true) || '',
-        phone: fs.telefon,
-        joinDate: fs.add_date ? fromUnixTime(fs.add_date) : null,
-        lastPickup: fs.last_fetch ? fromUnixTime(fs.last_fetch) : null,
+        phoneNumber: validPhoneNumber,
+        phoneNumberIsValid: !!validPhoneNumber,
+        joinDate: fs.add_date ? new Date(fs.add_date * 1000) : null, // unix time
+        lastPickup: fs.last_fetch ? new Date(fs.last_fetch * 1000) : null, // unix time
         fetchCount: fs.stat_fetchcount,
       }
     },
     legacyXhrCall,
-    removeFromTeam,
+    async removeFromTeam (fsId, fsName) {
+      if (!fsId) {
+        return
+      }
+      if (!confirm(this.$i18n('store.sm.reallyRemove', { name: fsName }))) {
+        return
+      }
+      this.isBusy = true
+      try {
+        await removeStoreMember(this.storeId, fsId)
+        window.location.reload()
+      } catch (e) {
+        pulseError(this.$i18n('error_unexpected'))
+        this.isBusy = false
+        return
+      }
+      this.isBusy = false
+    },
   },
 }
 </script>

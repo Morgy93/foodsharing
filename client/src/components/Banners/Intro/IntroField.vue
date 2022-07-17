@@ -16,7 +16,7 @@
       />
     </a>
     <div class="ml-3 d-flex flex-column">
-      <h1
+      <h3
         class="testing-intro-field"
         v-html="viewIsMD ? $i18n('dashboard.greeting', {name: user.firstname}) : $i18n('dashboard.greeting_short', {name: user.firstname})"
       />

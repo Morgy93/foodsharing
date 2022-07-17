@@ -1,7 +1,7 @@
 import Vue from 'vue'
 import { getMailUnreadCount } from '@/api/mailbox'
 import { getDetails } from '@/api/user'
-import serverData from '@/scripts/server-data'
+import serverData from '@/helper/server-data'
 
 export const store = Vue.observable({
   mailUnreadCount: 0,

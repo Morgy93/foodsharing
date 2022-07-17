@@ -44,7 +44,7 @@
           v-html="$i18n(`bell.${bell.title}`, bell.payload)"
         />
         <small class="text-muted text-right nowrap">
-          {{ relativeTime(new Date(bell.createdAt)) }}
+          {{ $dateFormatter.relativeTime(new Date(bell.createdAt)) }}
         </small>
       </span>
       <small
@@ -60,13 +60,12 @@ import Avatar from '@/components/Avatar'
 
 import StateTogglerMixin from '@/mixins/StateTogglerMixin'
 import MediaQueryMixin from '@/mixins/MediaQueryMixin'
-import DateFormatterMixin from '@/mixins/DateFormatterMixin'
 
 export default {
   components: {
     Avatar,
   },
-  mixins: [StateTogglerMixin, MediaQueryMixin, DateFormatterMixin],
+  mixins: [StateTogglerMixin, MediaQueryMixin],
   props: {
     bell: {
       type: Object,

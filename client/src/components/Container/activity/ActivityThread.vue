@@ -1,43 +1,44 @@
 <template>
   <ul class="p-0 m-0">
     <ActivityPost
-      v-for="(post, index) in hideUnwanted(updates)"
+      v-for="(post, index) in showActivePosts"
       :key="index"
+      class="activity-item"
       v-bind="post"
     />
-    <infinite-loading
-      ref="infiniteLoading"
-      spinner="waveDots"
-      @infinite="infiniteHandler"
+    <button
+      v-if="!loading && !end && showActivePosts !== 0"
+      class="list-group-item small activity-item list-group-item-secondary list-group-item-action font-weight-bold text-center"
+      @click="loadMore"
+      v-html="$i18n('globals.show_more')"
+    />
+    <li
+      v-if="loading"
+      slot="no-results"
+      class="list-group-item activity-item list-group-item-warning text-center"
     >
-      <li
-        slot="no-results"
-        class="list-group-item"
-      >
-        <span>
-          {{ $i18n('dashboard.no_updates') }}
-        </span>
-      </li>
-      <li
-        slot="no-more"
-        class="list-group-item"
-      >
-        <span>
-          {{ $i18n('dashboard.no_more_updates_' + activeType) }}
-        </span>
-      </li>
-    </infinite-loading>
+      <i class="fas fa-spinner fa-spin" />
+    </li>
+    <li
+      v-if="showActivePosts.length === 0"
+      slot="no-results"
+      class="list-group-item activity-item list-group-item-warning text-center"
+      v-html="$i18n('dashboard.no_updates')"
+    />
+    <li
+      v-if="end && showActivePosts.length !== 0"
+      class="list-group-item activity-item list-group-item-info text-center"
+      v-html="$i18n('dashboard.no_more_updates_' + activeType)"
+    />
   </ul>
 </template>
 
 <script>
-import { getUpdates } from '@/api/dashboard'
+import DataUpdates from '@/stores/updates'
 import ActivityPost from './ActivityPost'
-import InfiniteLoading from 'vue-infinite-loading'
-import { parseISO, compareDesc } from 'date-fns'
 
 export default {
-  components: { ActivityPost, InfiniteLoading },
+  components: { ActivityPost },
   props: {
     displayedType: {
       type: String,
@@ -48,49 +49,73 @@ export default {
     return {
       updates: [],
       page: 0,
+      loading: false,
+      end: false,
     }
   },
   computed: {
+    showActivePosts () {
+      if (this.activeType === 'all') {
+        return this.updates
+      }
+      return this.updates.filter(a => this.activeType === a.type)
+    },
     activeType () {
       return this.displayedType
     },
   },
-
+  created () {
+    this.loadMore()
+  },
   methods: {
-    resetInfinity () {
-      // from https://github.com/PeachScript/vue-infinite-loading/issues/123#issuecomment-357129636
-      // this causes the loader to start looking for data again, when in completed state
-      this.$refs.infiniteLoading.stateChanger.reset()
-    },
-    hideUnwanted (updates) {
-      if (this.activeType === 'all') {
-        return updates
-      }
-      return updates.filter(a => this.activeType === a.type)
-    },
-    async infiniteHandler ($state) {
-      const updates = await getUpdates(this.page)
-      updates.forEach(function (u, index, array) {
-        array[index].time = parseISO(array[index].time)
-      })
-      const filtered = this.hideUnwanted(updates)
-      if (filtered.length) {
-        this.page += 1
-        updates.sort((a, b) => {
-          return compareDesc(a.time, b.time)
+    async loadMore () {
+      try {
+        this.loading = true
+        const updates = await DataUpdates.mutations.fetch(this.page)
+        updates.forEach(update => {
+          update.time = new Date(Date.parse(update.time))
         })
-        this.updates.push(...updates)
-        $state.loaded()
-      } else {
-        $state.loaded()
-        $state.complete()
+        updates.sort((a, b) => {
+          return b.time > a.time ? 1 : -1
+        })
+
+        if (updates.length > 0) {
+          this.updates.push(...updates)
+          this.page++
+          this.end = false
+        } else {
+          this.end = true
+        }
+      } catch (e) {
+        this.page--
+        console.log(e)
+      } finally {
+        this.loading = false
       }
     },
     async reloadData () {
-      this.resetInfinity()
       this.page = 0
       this.updates = []
+      this.end = false
     },
   },
 }
 </script>
+
+<style lang="scss" scoped>
+::v-deep.activity-item:first-child {
+  border-bottom-right-radius: var(--border-radius);
+  border-bottom-left-radius: var(--border-radius);
+  margin-bottom: .5rem;
+}
+
+::v-deep.activity-item:not(:first-child) {
+  border-radius: var(--border-radius);
+  margin-bottom: .5rem;
+  border-top-width: 1px;
+}
+
+::v-deep.clickable {
+  cursor: pointer;
+}
+</style>

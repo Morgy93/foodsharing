@@ -5,12 +5,12 @@ import $ from 'jquery'
 import storage from '@/storage'
 import { GET, goTo, isMob, pulseError, img } from '@/script'
 import DataUser from '@/stores/user'
-import { dateFormat } from '@/./utils'
+import dateFormatter from '@/helper/date-formatter'
 import msg from '@/msg'
 import conversationStore from '@/stores/conversations'
 import profileStore from '@/stores/profiles'
 import * as api from '@/api/conversations'
-import { url } from '@/urls'
+import { url } from '@/helper/urls'
 import {
   plainToHtml,
 } from '@/utils'
@@ -298,7 +298,7 @@ const conv = {
         <span class="chatboxmessagecontent">
           ${plainToHtml(message.body)}
           <span class="time" title="${message.sentAt}">
-            ${dateFormat(message.sentAt)}
+            ${dateFormatter.base(message.sentAt)}
           </span>
         </span>
         <div class="clear"></div>

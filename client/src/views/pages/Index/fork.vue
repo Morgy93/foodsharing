@@ -10,8 +10,6 @@
     xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
     version="1.1"
     viewBox="0 0 2523.6475 4540.6831"
-    height="4540.6831"
-    width="2523.6475"
     inkscape:version="0.91 r"
     sodipodi:docname="FS_Gabel_gb_RGB_transp.svg"
   >

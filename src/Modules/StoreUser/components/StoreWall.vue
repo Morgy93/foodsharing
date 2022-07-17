@@ -55,7 +55,6 @@
 import { getStoreWall, deleteStorePost, writeStorePost } from '@/api/stores'
 import WallPost from '../../WallPost/components/WallPost'
 import { showLoader, hideLoader, pulseError } from '@/script'
-import i18n from '@/i18n'
 
 const COMPACT_LENGTH = 3
 
@@ -103,7 +102,7 @@ export default {
         this.posts.unshift(newPost)
       } catch (e) {
         console.error(e)
-        pulseError(i18n('wall.error-create'))
+        pulseError(this.$i18n('wall.error-create'))
         this.newPostText = text
       } finally {
         hideLoader()
@@ -119,9 +118,9 @@ export default {
         }
       } catch (e) {
         if (e.code === 403) {
-          pulseError(i18n('wall.error-delete'))
+          pulseError(this.$i18n('wall.error-delete'))
         } else {
-          pulseError(i18n('error_unexpected'))
+          pulseError(this.$i18n('error_unexpected'))
           console.error(e.code)
         }
       } finally {

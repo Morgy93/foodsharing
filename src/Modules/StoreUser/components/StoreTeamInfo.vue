@@ -6,10 +6,10 @@
         {{ $i18n('store.isManager') }}
       </div>
       <div v-if="user.joinDate">
-        {{ $i18n('store.memberSince', { date: $dateFormat(user.joinDate, 'day') }) }}
+        {{ $i18n('store.memberSince', { date: $dateFormatter.date(user.joinDate, { short: true}) }) }}
       </div>
       <div v-if="user.fetchCount && user.lastPickup">
-        {{ $i18n('store.lastPickup', { date: $dateFormat(user.lastPickup, 'day') }) }}
+        {{ $i18n('store.lastPickup', { date: $dateFormatter.date(user.lastPickup, { short: true}) }) }}
       </div>
       <div v-else-if="!user.fetchCount">
         {{ $i18n('store.noPickup') }}
@@ -31,28 +31,25 @@
       <span class="member-name">
         {{ user.name }}
       </span>
-      <span class="member-phone">
-        {{ user.number }}
-      </span>
       <span
-        v-if="user.phone && (user.phone !== user.number)"
+        v-if="user.phoneNumberIsValid"
         class="member-phone"
       >
-        {{ user.phone }}
+        {{ user.phoneNumber }}
       </span>
       <span
         v-if="user.fetchCount && user.lastPickup"
         :class="[storeManagerView ? 'font-weight-bolder text-black-50' : 'text-muted']"
       >
         {{ storeManagerView ?
-          $i18n('store.lastPickup', { date: $dateFormat(user.lastPickup, 'day') }) :
-          $i18n('store.lastPickupShort', { date: $dateDistanceInWords(user.lastPickup) }) }}
+          $i18n('store.lastPickup', { date: $dateFormatter.dateBasic(user.lastPickup) }) :
+          $i18n('store.lastPickupShort', { date: $dateFormatter.relativeTime(user.lastPickup) }) }}
       </span>
       <span
         v-else-if="user.joinDate && storeManagerView"
         class="text-muted"
       >
-        {{ $i18n('store.memberSince', { date: $dateFormat(user.joinDate, 'day') }) }}
+        {{ $i18n('store.memberSince', { date: $dateFormatter.dateBasic(user.joinDate) }) }}
       </span>
     </a>
   </div>

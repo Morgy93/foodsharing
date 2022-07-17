@@ -51,7 +51,7 @@
               <li>
                 <strong>Body:</strong>
                 <span>
-                  Helvetica, Arial, "lucida grande", tahoma, verdana, arial, sans-serif
+                  sans-serif
                 </span>
               </li>
             </ul>
@@ -60,10 +60,20 @@
             Icons
           </h2>
           <hr>
-          <a
-            href="https://fontawesome.com/v5/search?m=free&s=solid%2Cbrands"
-            v-html="'Font Awesome V5 [FREE]'"
-          />
+          <ul>
+            <li>
+              <a
+                href="https://fontawesome.com/v5/search?m=free&s=solid%2Cbrands"
+                v-html="'Font Awesome V5 [FREE]'"
+              />
+            </li>
+            <li>
+              <a
+                href="https://fontawesome.com/v5/docs/web/style/animate#contentHeader"
+                v-html="'Animated Icons'"
+              />
+            </li>
+          </ul>
         </div>
         <div class="mb-5">
           <h2>

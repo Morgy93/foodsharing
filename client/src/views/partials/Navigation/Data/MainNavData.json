@@ -44,8 +44,8 @@
        "icon":"fa-users",
        "items":[
           {
-             "url":"mission",
-             "title":"menu.entry.mission"
+             "url":"vision",
+             "title":"startpage.vision.title"
           },
           {
              "url":"blog",

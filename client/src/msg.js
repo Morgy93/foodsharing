@@ -6,13 +6,14 @@
  */
 import $ from 'jquery'
 import conv from '@/conv'
-import i18n from '@/i18n'
+import i18n from '@/helper/i18n'
 import DataUser from '@/stores/user'
 import autosize from 'autosize'
 import timeformat from '@/timeformat'
 import * as api from '@/api/conversations'
 import conversationStore from '@/stores/conversations'
 import profileStore from '@/stores/profiles'
+import dateFormatter from '@/helper/date-formatter'
 
 import {
   img,
@@ -21,9 +22,8 @@ import {
   pulseError,
   shuffle,
 } from '@/script'
-import { url } from '@/urls'
+import { url } from '@/helper/urls'
 import {
-  dateDistanceInWords, dateFormat,
   plainToHtml,
   plainToHtmlAttribute,
 } from '@/utils'
@@ -155,7 +155,7 @@ const msg = {
     const $itemLink = $item.children('a')
     if ($item.length > 0) {
       $itemLink.children('.msg').text(message.message.body)
-      $itemLink.children('.time').text(dateDistanceInWords(message.message.sentAt))
+      $itemLink.children('.time').text(dateFormatter.relativeTime(message.message.sentAt))
       $item.hide()
       $item.prependTo('#conversation-list ul:first')
       $item.show('highlight', { color: 'var(--fs-color-warning-200)' })
@@ -233,7 +233,7 @@ const msg = {
         </span>
         <span class="body">
           ${plainToHtml(message.body)}
-          <span class="time">${dateFormat(message.sentAt)}</span>
+          <span class="time">${dateFormatter.base(message.sentAt)}</span>
         </span>
         <span class="clear"></span>
       </li>

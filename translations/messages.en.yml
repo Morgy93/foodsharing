@@ -317,7 +317,6 @@ menu:
     members: Members
     workingGroupEdit: Manage group
     aboutUs: About us
-    mission: Mission
     fundamentals: Fundamentals
     blog: Blog
     team: Team
@@ -2471,8 +2470,8 @@ startpage:
     title: Join
     text: We newly formed in 2012, by now we are an international movement existing
       of over 200.000 users in Germany, Austia,  Switzerland and other European countries.
-  mission:
-    title: Mission
+  vision:
+    title: Vision
     text: Our long-term goal is to reduce the throw-away culture of food and other
       resources. We save food in private households and businesses - collectively,
       sustainably and respectfully. We see ourselves as both a political and an educational

@@ -1,7 +1,6 @@
 /* eslint-disable eqeqeq,camelcase */
 
 import $ from 'jquery'
-import _ from 'underscore'
 
 import 'jquery-slimscroll'
 import 'jquery-fancybox'
@@ -10,7 +9,7 @@ import 'jquery-ui-addons'
 import { GET, goTo, isMob } from '@/browser'
 import conv from '@/conv'
 import { requestStoreTeamMembership, declineStoreRequest } from '@/api/stores'
-import i18n from '@/i18n'
+import i18n from '@/helper/i18n'
 
 export { goTo, isMob, GET }
 
@@ -414,44 +413,6 @@ export function checkAllCb (sel) {
 export function shuffle (o) {
   for (let j, x, i = o.length; i; j = Math.floor(Math.random() * i), x = o[--i], o[i] = o[j], o[j] = x);
   return o
-}
-
-/**
- * Merges two object-like arrays based on a key property and also merges its array-like attributes specified in objectPropertiesToMerge.
- * It also removes falsy values after merging object properties.
- *
- * @param firstArray The original object-like array.
- * @param secondArray An object-like array to add to the firstArray.
- * @param keyProperty The object property that will be used to check if objects from different arrays are the same or not.
- * @param objectPropertiesToMerge The list of object properties that you want to merge. It all must be arrays.
- * @returns The updated original array.
- */
-export function merge (firstArray, secondArray, keyProperty, objectPropertiesToMerge) {
-  function mergeObjectProperties (object, otherObject, objectPropertiesToMerge) {
-    _.each(objectPropertiesToMerge, function (eachProperty) {
-      object[eachProperty] = _.chain(object[eachProperty]).union(otherObject[eachProperty]).compact().value()
-    })
-  }
-
-  if (firstArray.length === 0) {
-    _.each(secondArray, function (each) {
-      firstArray.push(each)
-    })
-  } else {
-    _.each(secondArray, function (itemFromSecond) {
-      const itemFromFirst = _.find(firstArray, function (item) {
-        return item[keyProperty] === itemFromSecond[keyProperty]
-      })
-
-      if (itemFromFirst) {
-        mergeObjectProperties(itemFromFirst, itemFromSecond, objectPropertiesToMerge)
-      } else {
-        firstArray.push(itemFromSecond)
-      }
-    })
-  }
-
-  return firstArray
 }
 
 export function session_id () {

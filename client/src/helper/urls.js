@@ -1,8 +1,10 @@
+import phoneNumbers from './phone-numbers'
 // these are used for generating link-paths inside vue
 // e.g. $url('profile', 15)
 
 const urls = {
   profile: (id) => `/profile/${id}`,
+  profileNotes: (fsId) => `/profile/${fsId}/notes`,
   academy: () => '/?page=content&sub=academy',
   basket: (basketId) => `/essenskoerbe/${basketId}`,
   baskets: () => '/essenskoerbe',
@@ -25,6 +27,7 @@ const urls = {
   eventEdit: (eventId) => `/?page=event&id=${eventId}&sub=edit`,
   festival: () => '/?page=content&sub=festival',
   foodsharepoint: (fspId) => `/?page=fairteiler&sub=ft&id=${fspId}`,
+  foodsaverEdit: (fsId) => `/?page=foodsaver&a=edit&id=${fsId}`,
   fsstaedte: () => '/?page=content&sub=fsstaedte',
   home: () => '/',
   imprint: () => '/impressum',
@@ -39,13 +42,15 @@ const urls = {
   mailboxManage: () => '/?page=mailbox&a=manage',
   mailboxMailto: (email) => `/?page=mailbox&mailto=${email}`,
   map: () => '/karte',
-  mission: () => '/ueber-uns',
+  vision: () => '/ueber-uns',
   partner: () => '/partner',
   passwordReset: () => '/?page=login&sub=passwordReset',
   poll: (pollId) => `/?page=poll&id=${pollId}`,
   pollEdit: (pollId) => `/?page=poll&id=${pollId}&sub=edit`,
   press: () => '/?page=content&sub=presse',
   region: () => '/?page=region',
+  releaseNotes: () => '/?page=content&sub=releaseNotes',
+  violations: (fsId) => `/?page=report&sub=foodsaver&id=${fsId}`,
   settings: () => '/?page=settings',
   settingsCalendar: () => '/?page=settings&sub=calendar',
   settingsNotifications: () => '/?page=settings&sub=info',
@@ -68,7 +73,6 @@ const urls = {
   javascript: (js) => `javascript:${js}`,
 
   // Redirect
-  redirect_to_url: (url) => '/?page=relogin&url=' + encodeURIComponent(url),
   relogin_and_redirect_to_url: (url) => '/?page=relogin&url=' + encodeURIComponent(url),
 
   // region id
@@ -112,6 +116,8 @@ const urls = {
   changelog: () => '/?page=content&sub=changelog',
   release_notes: () => '/?page=content&sub=releaseNotes',
 
+  // phone
+  phone_number: (phoneNumber, allowInvalid) => `tel:${phoneNumbers.callableNumber(phoneNumber, allowInvalid)}`,
   // mailto
   mail_foodsharing_network: (mail) => `${mail}@foodsharing.network`,
   mailto_mail_foodsharing_network: (mail) => `mailto:${mail}@foodsharing.network`,
@@ -137,7 +143,7 @@ const urls = {
   quiz_ambassador: () => '/?page=settings&sub=up_bot',
 
   // Footer Links
-  hosting: () => 'https://manitu.de',
+  hosting: () => 'https://www.manitu.de/webhosting/',
   wiener_tafel: () => 'https://www.wienertafel.at',
   bmlfuw: () => 'https://www.bmlrt.gv.at',
   denns: () => 'https://www.denns-biomarkt.at',

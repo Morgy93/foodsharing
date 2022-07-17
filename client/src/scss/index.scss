@@ -1,7 +1,13 @@
 /*
-    Overrides some old styles to match bootstrap
+    Customize all colors to match the CD
 */
 @import "colors.scss";
+
+/*
+    Adds some cool fonts
+*/
+@import "fonts.scss";
+
 
 /*
 Loads bootstrap css from bootstrap-vue,

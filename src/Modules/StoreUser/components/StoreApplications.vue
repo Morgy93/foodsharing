@@ -69,7 +69,6 @@
 <script>
 import { acceptStoreRequest, declineStoreRequest } from '@/api/stores'
 import Avatar from '@/components/Avatar'
-import i18n from '@/i18n'
 import { hideLoader, showLoader, pulseError, reload } from '@/script'
 
 export default {
@@ -92,7 +91,7 @@ export default {
         await acceptStoreRequest(storeId, userId, moveToStandby)
         this.$delete(this.requests, index)
       } catch (e) {
-        pulseError(i18n('error_unexpected'))
+        pulseError(this.$i18n('error_unexpected'))
       } finally {
         hideLoader()
       }
@@ -103,7 +102,7 @@ export default {
         await declineStoreRequest(storeId, userId)
         this.$delete(this.requests, index)
       } catch (e) {
-        pulseError(i18n('error_unexpected'))
+        pulseError(this.$i18n('error_unexpected'))
       } finally {
         hideLoader()
       }

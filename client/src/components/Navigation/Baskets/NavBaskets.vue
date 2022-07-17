@@ -56,7 +56,6 @@ import Dropdown from '../_NavItems/NavDropdown'
 import BasketsEntry from './NavBasketsEntry'
 // Others
 import { ajreq } from '@/script'
-import dateFnsCompareDesc from 'date-fns/compareDesc'
 
 export default {
   components: { BasketsEntry, Dropdown },
@@ -65,7 +64,12 @@ export default {
       return getters.getOwn()
     },
     basketsSorted () {
-      return this.baskets.slice().sort((a, b) => dateFnsCompareDesc(a.updatedAt, b.updatedAt))
+      return this.baskets.slice().sort((a, b) => {
+        const aD = new Date(a.updatedAt)
+        const bD = new Date(b.updatedAt)
+        if (aD.getTime() === bD.getTime()) return 0
+        return bD > aD ? 1 : -1
+      })
     },
     basketsRequestCount () {
       return getters.getRequestdCount()

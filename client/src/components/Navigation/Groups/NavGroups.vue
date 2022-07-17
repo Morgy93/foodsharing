@@ -4,7 +4,7 @@
     :title="$i18n('menu.entry.groups')"
     icon="fa-users"
     is-fixed-size
-    is-scollable
+    is-scrollable
   >
     <template
       v-if="groups.length > 0"
@@ -56,7 +56,3 @@ export default {
   },
 }
 </script>
-
-<style lang="scss" scoped>
-@import '../../../scss/icon-sizes.scss';
-</style>

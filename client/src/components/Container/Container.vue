@@ -9,7 +9,7 @@
         v-html="title"
       />
       <i
-        :alt="isExpanded ? $i18n('dashboard.showmore') : $i18n('dashboard.showless')"
+        :alt="isExpanded ? $i18n('globals.show_more') : $i18n('globals.show_less')"
         class="fas fa-angle-down"
         :class="{ 'fa-rotate-180': isExpanded }"
       />
@@ -19,13 +19,13 @@
       v-if="isExpanded && isToggleVisible && !isToggled"
       class="list-group-item small list-group-item-secondary list-group-item-action list-group-item-action-toggle font-weight-bold text-center"
       @click="showFullList"
-      v-html="$i18n('dashboard.showmore')"
+      v-html="$i18n('globals.show_more')"
     />
     <button
       v-else-if="isExpanded && isToggled"
       class="list-group-item small list-group-item-action list-group-item-action-toggle font-weight-bold text-center"
       @click="reduceList"
-      v-html="$i18n('dashboard.showless')"
+      v-html="$i18n('globals.show_less')"
     />
   </div>
 </template>

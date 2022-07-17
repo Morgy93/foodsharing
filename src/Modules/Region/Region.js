@@ -7,7 +7,7 @@ import {
   GET,
   pulseError,
 } from '@/script'
-import i18n from '@/i18n'
+import i18n from '@/helper/i18n'
 import './Region.css'
 import { vueRegister, vueApply } from '@/vue'
 import Thread from './components/Thread'

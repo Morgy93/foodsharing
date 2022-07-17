@@ -68,19 +68,22 @@
     <h6
       class="field-headline field-headline--big"
       :class="{
-        'text-danger': getHourDifferenceToNow(date) < 4
+        'text-danger': isSoon
       }"
     >
       <i class="fas fa-clock mr-2" />
       <span
-        v-if="getHourDifferenceToNow(date) < 4"
-        v-b-tooltip="dateFormat(date)"
-        v-html="dateDistanceInWords(date)"
-      />
+        v-b-tooltip="$dateFormatter.dateTimeTooltip(date, { isShown: isSoon })"
+      >
+        {{ $dateFormatter.base(date, { isRelativeTime: isSoon }) }}
+
+      </span>
       <span
-        v-else
-        v-html="dateFormat(date, 'full-short')"
-      />
+        v-if="isSoon"
+        class="pickup-status-time"
+      >
+        ({{ $dateFormatter.time(date) }})
+      </span>
     </h6>
   </a>
 </template>
@@ -89,17 +92,18 @@
 // Components
 import Avatar from '@/components/Avatar'
 // Mixin
-import DateFormatterMixin from '@/mixins/DateFormatterMixin'
 
 export default {
   components: {
     Avatar,
   },
-  mixins: [DateFormatterMixin],
   props: {
     entry: { type: Object, default: () => {} },
   },
   computed: {
+    isSoon () {
+      return this.$dateFormatter.getDifferenceToNowInHours(this.date) < 4
+    },
     team () {
       const freeSlots = this.entry.slots.max - this.entry.slots.occupied.length
       return [...this.entry.slots.occupied, ...new Array(freeSlots).fill(null)].reverse()
@@ -117,6 +121,11 @@ export default {
 .pickup-status {
   font-size: 1rem;
 }
+
+.pickup-status-time {
+  font-size: 0.9rem;
+}
+
 .slots {
   margin: 0 0.25rem;
   display: inline-flex;

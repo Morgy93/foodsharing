@@ -38,8 +38,6 @@ class RegionAdminControl extends Control
 		$this->pageHelper->addBread($this->translator->trans('region.bread'), '/?page=region');
 		$this->pageHelper->addTitle($this->translator->trans('region.bread'));
 
-		$this->pageHelper->addStyle('#bezirk-buttons {left: 50%; margin-left: 5px; position: absolute; top: 77px;}');
-
 		$regions = $this->regionGateway->getBasics_bezirk();
 
 		array_unshift($regions, [

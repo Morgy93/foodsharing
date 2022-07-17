@@ -878,7 +878,7 @@ startpage:
       \ felici di qualsiasi supporto.\"\n"
   welcome_text: Benvenuti a foodsharing
   more_infos: Scopri di più
-  mission:
+  vision:
     title: Missione
     text: Il nostro obiettivo a lungo termine è quello di ridurre la cultura dello
       spreco del cibo e di altre risorse. Salviamo il cibo sia nelle famiglie che
@@ -1548,7 +1548,6 @@ menu:
     team: Team
     blog: Blog
     fundamentals: Principi
-    mission: Missione
     aboutUs: Su di noi
     workingGroupEdit: Gestisci gruppo
     members: Membri

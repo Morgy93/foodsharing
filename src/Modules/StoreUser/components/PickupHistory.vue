@@ -84,7 +84,6 @@
             :store-id="pickupDate[0].storeId"
             :store-title="pickupDate[0].storeTitle"
             :occupied-slots="pickupDate"
-            :show-relative-date="true"
             class="pickup-block"
           />
         </div>
@@ -94,14 +93,8 @@
 </template>
 
 <script>
-import parseISO from 'date-fns/parseISO'
-import startOfDay from 'date-fns/startOfDay'
-import endOfDay from 'date-fns/endOfDay'
-import min from 'date-fns/min'
-import max from 'date-fns/max'
-import sub from 'date-fns/sub'
 import { listPastPickupsForUser, listPickupHistory } from '@/api/pickups'
-import i18n from '@/i18n'
+import i18n from '@/helper/i18n'
 import { pulseError } from '@/script'
 import Pickup from './Pickup'
 
@@ -128,9 +121,19 @@ export default {
     coopStart: { type: String, default: '' },
   },
   data () {
-    const fromDate = this.fsId ? sub(new Date(), { weeks: 2 }) : null
+    let fromDate = null
+    if (this.fsID) {
+      fromDate = new Date()
+      fromDate.setDate(fromDate.getDate() - 2 * 7) // subtract 2 weeks
+    }
     const maxDate = new Date()
-    const minDate = sub(new Date(), this.fsId ? { months: 1 } : { years: 10, months: 1, days: 1 })
+    let minDate = new Date()
+    if (this.fsID) {
+      minDate = new Date()
+      minDate.setDate(minDate.getDate() - 4 * 7) // subtract 4 weeks
+    } else {
+      minDate.setDate(minDate.getDate() - (54 * 7) * 10) // subtract 54 * 10 weeks, around 10 years
+    }
 
     const dateFormatOptions = {
       year: 'numeric',
@@ -146,7 +149,7 @@ export default {
       toDate: maxDate,
       dateFormatOptions,
       maxDateTo: maxDate,
-      minDateFrom: this.coopStart ? max([minDate, parseISO(this.coopStart)]) : minDate,
+      minDateFrom: this.coopStart ? new Date(Math.max(...[minDate, new Date(Date.parse(this.coopStart))].map(date => date.getTime()))) : minDate,
       pickupList: [],
       calendarLabels,
     }
@@ -174,18 +177,22 @@ export default {
         return
       }
       this.isLoading = true
+
       try {
+        const startDate = new Date(this.fromDate)
+        startDate.setHours(0, 0, 0, 0)
+
         if (this.fsId) {
           this.pickupList = await listPastPickupsForUser(
             this.fsId,
-            startOfDay(this.fromDate),
-            min([new Date(), endOfDay(this.toDate)]),
+            startDate,
+            new Date(Math.min(...[new Date(), this.toDate].map(date => date.getTime()))),
           )
         } else {
           this.pickupList = await listPickupHistory(
             this.storeId,
-            startOfDay(this.fromDate),
-            min([new Date(), endOfDay(this.toDate)]),
+            startDate,
+            new Date(Math.min(...[new Date(), this.toDate].map(date => date.getTime()))),
           )
         }
       } catch (e) {
@@ -194,7 +201,7 @@ export default {
       this.isLoading = false
     },
     when (dt) {
-      return parseISO(dt)
+      return new Date(Date.parse(dt))
     },
   },
 }

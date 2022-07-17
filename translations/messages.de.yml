@@ -1576,7 +1576,7 @@ mailbox:
   fromto: "Von/An"
 settings:
   title: "Einstellungen"
-  header: "Deine Daten/Einstellungen"
+  header: "Profil Einstellungen"
   notifications: "Benachrichtigungen"
   follow:
     thread: "Über das Forenthema \"{thread}\" auf dem Laufenden bleiben?"
@@ -1737,7 +1737,7 @@ profile:
   nav:
     edit: "Profil bearbeiten"
     buddy: "Ich kenne {name}"
-    history: "Passhistorie" #also in ProfileXhr
+    history: "Ausweishistorie" #also in ProfileXhr
     verificationHistory: "Verifizierungshistorie" #also in ProfileXhr
     notes: "Notizen <strong>({count})</strong>"
     violations: "Meldungen <strong>({count})</strong>"
@@ -1939,8 +1939,6 @@ dashboard:
     grid_toggle:
       2_columns: "Zur 2-Spalten-Ansicht wechseln"
       3_columns: "Zur 3-Spalten-Ansicht wechseln"
-  showmore: "Mehr anzeigen"
-  showless: "Weniger anzeigen"
   invitation: "Du wurdest eingeladen"
   invitationCount: "Du wurdest eingeladen ({count})"
   event: "Nächstes Event"
@@ -2117,7 +2115,6 @@ menu:
     members: "Mitglieder"
     workingGroupEdit: "Gruppe verwalten"
     aboutUs: "Über uns"
-    mission: "Mission"
     fundamentals: "Grundsätze"
     blog: "Blog"
     team: "Team"
@@ -2171,8 +2168,8 @@ footer:
     call_to: Du möchtest foodsharing unterstützen?
     cta: Jetzt spenden
   hosting:
-    info: CO2-neutral gehostet
-    tooltip: CO2-neutral gehostet auf manitu
+    info: CO2-neutral <a href="https://www.manitu.de/webhosting/" title="Webhosting">gehostet</a>
+    tooltip: CO2-neutral <a href="https://www.manitu.de/webhosting/" title="Webhosting">gehostet</a> auf manitu
   partner_names:
     wiener_tafel: Wiener Tafel
     lebensministerium: Bundesministerium für Landwirtschaft, Regionen und Tourismus
@@ -2505,11 +2502,12 @@ startpage:
   registernow: "Jetzt registrieren"
   more_infos: Erfahre mehr
   this_is_how_it_works: So funktioniert's
-  mission:
-    title: "Mission"
-    text: "Unser langfristiges Ziel ist es, die Wegwerfkultur von Lebensmitteln und anderen Ressourcen zu vermindern.
-      Wir retten Lebensmittel in privaten Haushalten sowie von Betrieben - gemeinschaftlich, nachhaltig & wertschätzend.
-      Wir verstehen uns als bildungspolitische Bewegung."
+  vision:
+    title: "Vision"
+    text: "Wir verstehen uns als umwelt- und bildungspolitische Bewegung, die sich gegen den achtlosen Umgang mit
+     Ressourcen und für ein nachhaltiges Ernährungssystem einsetzt. Unser langfristiges Ziel ist es, die Verschwendung
+     von genießbaren Lebensmitteln zu beenden. Darum werden wir vor Ort aktiv: Wir retten Lebensmittel in privaten
+     Haushalten sowie von Betrieben, stehen im Dialog mit der Politik und tragen unsere Vision in die Welt hinaus."
   call_to_action:
     title: "Mach mit"
     text: "Wir entstanden 2012, mittlerweile sind wir eine internationale Bewegung  mit über 200.000 Nutzer*innen
@@ -2668,7 +2666,10 @@ globals:
     signout: Abmelden
   save: Speichern
   close: Schließen
+  reset: Zurücksetzen
   select: Bitte auswählen...
+  show_more: Mehr anzeigen
+  show_less: Weniger anzeigen
   type:
     mailboxes: Mailboxen
     my_mailboxes: Meine Mailboxen
@@ -2684,6 +2685,7 @@ globals:
     my_groups: Meine Gruppen
     persons: Personen
     my_persons: Meine Personen
+  you: Du
 
 search:
   title: Suche
@@ -2701,3 +2703,18 @@ activitypost:
   write: Schreibe eine Antwort …
   quickreply_info: <code class="key">Umschalttaste + Eingabetaste</code> zum Hinzufügen einer neuen Zeile.
   quickreply_button: Jetzt Senden<br>oder <code class="key">Eingabetaste</code> drücken.
+
+bootstrap-datepicker:
+  labelPrevDecade: 'Vorheriges Jahrzehnt'
+  labelPrevYear: 'Vorheriges Jahr'
+  labelPrevMonth: 'Vorheriger Monat'
+  labelCurrentMonth: 'Aktueller Monat'
+  labelNextMonth: 'Nächster Monat'
+  labelNextYear: 'Nächstes Jahr'
+  labelNextDecade: 'Nächstes Jahrzehnt'
+  labelToday: 'Heute'
+  labelSelected: 'Ausgewähltes Datum'
+  labelNoDateSelected: 'Kein Datum gewählt'
+  labelCalendar: 'Kalender'
+  labelNav: 'Kalendernavigation'
+  labelHelp: 'Mit den Pfeiltasten durch den Kalender navigieren'

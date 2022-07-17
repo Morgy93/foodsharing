@@ -6,3 +6,7 @@ export function getMapMarkers (types, status) {
   const params = typeParams.concat(statusParams).join('&')
   return get(`/map/markers?${params}`)
 }
+
+export function getCommunityBubbleContent (regionId) {
+  return get(`/map/regions/${regionId}`)
+}

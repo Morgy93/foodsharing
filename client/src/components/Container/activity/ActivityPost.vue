@@ -1,6 +1,6 @@
 <template>
   <li
-    class="list-group-item activity-item"
+    class="list-group-item activity-post"
     :class="{
       'list-group-item-action clickable': canQuickreply || isTruncatable,
     }"
@@ -88,7 +88,7 @@
         >
           <span
             v-if="isTruncatable"
-            v-html="!state ? $i18n('dashboard.showmore') : $i18n('dashboard.showless')"
+            v-html="!state ? $i18n('globals.show_more') : $i18n('globals.show_less')"
           />
           <span
             v-if="isTruncatable && canQuickreply"
@@ -100,7 +100,7 @@
           />
           <span
             v-if="canQuickreply && !isTruncatable"
-            v-html="!state ? $i18n('activitypost.Response') : $i18n('dashboard.showless')"
+            v-html="!state ? $i18n('activitypost.Response') : $i18n('globals.show_less')"
           />
           <i
             :class="{ 'fa-rotate-180': state }"
@@ -166,7 +166,7 @@
     <div class="d-flex flex-column flex-sm-row justify-content-between align-items-sm-center mt-2">
       <small class="text-muted order-2 order-sm-1">
         <i class="far fa-fw fa-clock" />
-        <span v-b-tooltip="dateFormat(time, 'full-short')"> {{ dateDistanceInWords(time) }} </span>
+        <span v-b-tooltip="$dateFormatter.dateTimeTooltip(time)"> {{ $dateFormatter.base(time) }} </span>
       </small>
       <small
         v-if="source"
@@ -179,15 +179,12 @@
 </template>
 
 <script>
-import DateFormatterMixin from '@/mixins/DateFormatterMixin'
-import TruncateMixin from '@/mixins/TruncateMixin'
 import StateTogglerMixin from '@/mixins/StateTogglerMixin'
 import MediaQueryMixin from '@/mixins/MediaQueryMixin'
 import AutoResizeTextareaMixin from '@/mixins/AutoResizeTextareaMixin'
 
 import { sendQuickreply } from '@/api/dashboard'
 import { pulseInfo } from '@/script'
-import { url } from '@/urls'
 import { createPost } from '@/api/forum'
 
 import Markdown from '@/components/Markdown/Markdown'
@@ -195,7 +192,7 @@ import Avatar from '@/components/Avatar'
 
 export default {
   components: { Markdown, Avatar },
-  mixins: [DateFormatterMixin, TruncateMixin, StateTogglerMixin, MediaQueryMixin, AutoResizeTextareaMixin],
+  mixins: [StateTogglerMixin, MediaQueryMixin, AutoResizeTextareaMixin],
   /* eslint-disable vue/prop-name-casing */
   props: {
     // Shared properties
@@ -236,17 +233,17 @@ export default {
     dashboardContentLink () {
       switch (this.type) {
         case 'event':
-          return url('event', this.entity_id)
+          return this.$url('event', this.entity_id)
         case 'foodsharepoint':
-          return url('foodsharepoint', this.entity_id)
+          return this.$url('foodsharepoint', this.entity_id)
         case 'friendWall':
-          return url('profile', this.fs_id)
+          return this.$url('profile', this.fs_id)
         case 'forum':
-          return url('forum', this.region_id, (this.forum_type === 'botforum'), this.entity_id, this.forum_post)
+          return this.$url('forum', this.region_id, (this.forum_type === 'botforum'), this.entity_id, this.forum_post)
         case 'mailbox':
-          return url('mailbox', this.entity_id)
+          return this.$url('mailbox', this.entity_id)
         case 'store':
-          return url('store', this.entity_id)
+          return this.$url('store', this.entity_id)
         default:
           return '#'
       }
@@ -269,6 +266,12 @@ export default {
     },
   },
   methods: {
+    truncate (str, maxLength = 30) {
+      if (str.length > maxLength) {
+        return str.substring(0, maxLength) + '...'
+      }
+      return str
+    },
     newLine () {
       this.quickreplyValue += '\n'
     },
@@ -300,22 +303,6 @@ export default {
 </script>
 
 <style lang="scss" scoped>
-.activity-item:first-child {
-  border-bottom-right-radius: var(--border-radius);
-  border-bottom-left-radius: var(--border-radius);
-  margin-bottom: .5rem;
-}
-
-.activity-item:not(:first-child) {
-  border-radius: var(--border-radius);
-  margin-bottom: .5rem;
-  border-top-width: 1px;
-}
-
-.clickable {
-  cursor: pointer;
-}
-
 .form-control {
   min-height: 6rem;
   overflow: hidden;

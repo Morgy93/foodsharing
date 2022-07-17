@@ -18,7 +18,7 @@ import './scss/index.scss'
 
 import '@/views/views'
 
-import serverData from '@/scripts/server-data'
+import serverData from '@/helper/server-data'
 
 import socket from '@/socket'
 import { getCsrfToken } from '@/api/base'

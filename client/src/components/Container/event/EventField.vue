@@ -5,32 +5,32 @@
   >
     <div class="d-flex">
       <div
-        v-b-tooltip.hover="getDistanceTooltip(startDate)"
+        v-b-tooltip.hover="dateTooltip"
         class="event-item-date flex-column mr-2 text-center rounded default"
         :class="{'accept': status === 1, 'maybe': status === 2}"
       >
         <span
           class="font-weight-bold"
-          v-html="dateFormat(startDate, 'month-long')"
+          v-html="displayedMonth"
         />
         <div class="event-item-date-container d-flex flex-column bg-white justify-content-center text-dark">
           <span
-            v-if="isToday(startDate)"
+            v-if="isEventToday"
             v-html="$i18n('date.Today')"
           />
           <span
-            v-else-if="isTomorrow(startDate)"
+            v-else-if="isEventTomorrow"
             class="small"
             v-html="$i18n('date.-- Tomorrow')"
           />
           <span
-            v-else-if="getDayDifferenceToNow(startDate) < 3"
-            v-html="dateFormat(startDate, 'weekday-short')"
+            v-else-if="$dateFormatter.getDifferenceToNowInDays(startDate) < 3"
+            v-html="displayedDay"
           />
           <span
             v-else
             class="small"
-            v-html="dateFormat(startDate, 'day-weekday-short')"
+            v-html="displayedBothDay"
           />
         </div>
       </div>
@@ -51,8 +51,7 @@
           <div class="text-muted mt-auto">
             <i class="fas fa-clock" />
             <span
-              v-b-tooltip.hover="$i18n('events.duration', getDurationToolTip(startDate, endDate))"
-              v-html="$i18n('events.span', getTimeSpanToolTip(startDate, endDate))"
+              v-html="$i18n('events.span', { from: displayedStart, until: displayedEnd })"
             />
           </div>
           <a
@@ -101,10 +100,8 @@
 
 <script>
 import { acceptInvitation, declineInvitation, maybeInvitation } from '@/api/events'
-import DateFormatterMixin from '@/mixins/DateFormatterMixin'
 
 export default {
-  mixins: [DateFormatterMixin],
   props: {
     entry: { type: Object, default: () => {} },
     options: { type: Boolean, default: false },
@@ -115,6 +112,54 @@ export default {
       endDate: new Date(this.entry.end_ts * 1000),
       status: this.entry.status,
     }
+  },
+  computed: {
+    displayedDay () {
+      return this.$dateFormatter.format(this.startDate, {
+        weekday: 'short',
+      })
+    },
+    displayedBothDay () {
+      return this.$dateFormatter.format(this.startDate, {
+        day: 'numeric',
+        weekday: 'short',
+      })
+    },
+    displayedMonth () {
+      return this.$dateFormatter.format(this.startDate, {
+        month: 'long',
+      })
+    },
+    isEventToday () {
+      return this.$dateFormatter.isToday(this.startDate)
+    },
+    isEventTomorrow () {
+      return this.$dateFormatter.isTomorrow(this.startDate)
+    },
+    dateTooltip () {
+      return `${this.$dateFormatter.dateTime(this.startDate)} (${this.$dateFormatter.relativeTime(this.startDate)}`
+    },
+    displayedStart () {
+      return this.$dateFormatter.format(this.startDate, {
+        hour: 'numeric',
+        minute: 'numeric',
+      })
+    },
+    displayedEnd () {
+      if (this.$dateFormatter.isSame(this.endDate, this.startDate)) {
+        return this.$dateFormatter.format(this.endDate, {
+          hour: 'numeric',
+          minute: 'numeric',
+        })
+      } else {
+        return this.$dateFormatter.format(this.endDate, {
+          day: 'numeric',
+          month: 'numeric',
+          hour: 'numeric',
+          minute: 'numeric',
+        })
+      }
+    },
   },
   methods: {
     acceptInvitation,
@@ -129,7 +174,7 @@ export default {
   border-radius: 0 0 var(--border-radius) var(--border-radius);
   min-height: 3rem;
   font-size: 1.15rem;
-  font-family: 'Alfa Slab One', serif;
+  font-family: var(--fs-font-family-headline);
 }
 
 .event-item-date {

@@ -1,98 +1,96 @@
 <template>
-  <div class="container bootstrap">
-    <div class="card mb-3 rounded">
-      <div class="card-header text-white bg-primary">
-        {{ $i18n('reports.all_reports') }} <span v-if="reports.length">
-          ({{ reports.length }})
-        </span>
-      </div>
-      <div
-        card-body
-        v-html="$i18n('profile.report.readup')"
-      />
-      <div
-        v-if="reports.length"
-        class="card-body p-0"
+  <div class="card mb-3 rounded">
+    <div class="card-header text-white bg-primary">
+      {{ $i18n('reports.all_reports') }} <span v-if="reports.length">
+        ({{ reports.length }})
+      </span>
+    </div>
+    <div
+      card-body
+      v-html="$i18n('profile.report.readup')"
+    />
+    <div
+      v-if="reports.length"
+      class="card-body p-0"
+    >
+      <b-table
+        :fields="fields"
+        :items="reports"
+        :current-page="currentPage"
+        :per-page="perPage"
+        responsive
       >
-        <b-table
-          :fields="fields"
-          :items="reports"
-          :current-page="currentPage"
-          :per-page="perPage"
-          responsive
+        <template
+          slot="avatar"
+          slot-scope="row"
         >
-          <template
-            slot="avatar"
-            slot-scope="row"
-          >
-            <div class="avatars">
-              <a :href="`/profile/${row.item.fs_id}`">
-                <Avatar
-                  :url="row.item.fs_photo"
-                  :is-sleeping="0"
-                  :size="35"
-                />
-              </a>
-              <a :href="`/profile/${row.item.rp_id}`">
-                <Avatar
-                  :url="row.item.rp_photo"
-                  :is-sleeping="0"
-                  :size="35"
-                />
-              </a>
-            </div>
-          </template>
+          <div class="avatars">
+            <a :href="`/profile/${row.item.fs_id}`">
+              <Avatar
+                :url="row.item.fs_photo"
+                :is-sleeping="0"
+                :size="35"
+              />
+            </a>
+            <a :href="`/profile/${row.item.rp_id}`">
+              <Avatar
+                :url="row.item.rp_photo"
+                :is-sleeping="0"
+                :size="35"
+              />
+            </a>
+          </div>
+        </template>
 
-          <template
-            #cell(actions)="row"
+        <template
+          #cell(actions)="row"
+        >
+          <b-button
+            size="sm"
+            @click.stop="row.toggleDetails"
           >
-            <b-button
-              size="sm"
-              @click.stop="row.toggleDetails"
-            >
-              {{ row.detailsShowing ? 'x' : 'Details' }}
-            </b-button>
-          </template>
-          <template
-            #row-details="row"
-          >
-            <div class="report">
-              <p><strong>{{ $i18n('reports.report_id') }}</strong>: {{ row.item.id }}</p>
-              <p><strong>{{ $i18n('reports.time') }}</strong>: {{ row.item.time }}</p>
-              <p v-if="row.item.betrieb_id !== 0">
-                <strong>{{ $i18n('reports.store') }}</strong>: <a :href="`/?page=fsbetrieb&id=${row.item.betrieb_id}`">
-                  {{ row.item.betrieb_name }}</a> ({{ row.item.betrieb_id }})
-              </p>
-              <p>
-                <strong>{{ $i18n('reports.about') }}</strong>:<a :href="`/profile/${row.item.fs_id}`">
-                  {{ row.item.fs_name }} {{ row.item.fs_nachname }}
-                </a> ({{ row.item.fs_id }})
-              </p>
-              <p>
-                <strong>{{ $i18n('reports.from') }}</strong>:<a :href="`/profile/${row.item.rp_id}`">
-                  {{ row.item.rp_name }} {{ row.item.rp_nachname }}
-                </a> ({{ row.item.rp_id }})
-              </p>
-              <p><strong>{{ $i18n('reports.reason') }}</strong>: {{ row.item.tvalue }}</p>
-              <p><strong>{{ $i18n('reports.message') }}</strong>: {{ row.item.msg }}</p>
-            </div>
-          </template>
-        </b-table>
-        <div class="float-right p-1 pr-3">
-          <b-pagination
-            v-model="currentPage"
-            :total-rows="reports.length"
-            :per-page="perPage"
-            class="my-0"
-          />
-        </div>
+            {{ row.detailsShowing ? 'x' : 'Details' }}
+          </b-button>
+        </template>
+        <template
+          #row-details="row"
+        >
+          <div class="report">
+            <p><strong>{{ $i18n('reports.report_id') }}</strong>: {{ row.item.id }}</p>
+            <p><strong>{{ $i18n('reports.time') }}</strong>: {{ row.item.time }}</p>
+            <p v-if="row.item.betrieb_id !== 0">
+              <strong>{{ $i18n('reports.store') }}</strong>: <a :href="`/?page=fsbetrieb&id=${row.item.betrieb_id}`">
+                {{ row.item.betrieb_name }}</a> ({{ row.item.betrieb_id }})
+            </p>
+            <p>
+              <strong>{{ $i18n('reports.about') }}</strong>:<a :href="`/profile/${row.item.fs_id}`">
+                {{ row.item.fs_name }} {{ row.item.fs_nachname }}
+              </a> ({{ row.item.fs_id }})
+            </p>
+            <p>
+              <strong>{{ $i18n('reports.from') }}</strong>:<a :href="`/profile/${row.item.rp_id}`">
+                {{ row.item.rp_name }} {{ row.item.rp_nachname }}
+              </a> ({{ row.item.rp_id }})
+            </p>
+            <p><strong>{{ $i18n('reports.reason') }}</strong>: {{ row.item.tvalue }}</p>
+            <p><strong>{{ $i18n('reports.message') }}</strong>: {{ row.item.msg }}</p>
+          </div>
+        </template>
+      </b-table>
+      <div class="float-right p-1 pr-3">
+        <b-pagination
+          v-model="currentPage"
+          :total-rows="reports.length"
+          :per-page="perPage"
+          class="my-0"
+        />
       </div>
-      <div
-        v-else
-        class="card-body"
-      >
-        {{ $i18n('reports.no_reports_fallback') }}
-      </div>
+    </div>
+    <div
+      v-else
+      class="card-body"
+    >
+      {{ $i18n('reports.no_reports_fallback') }}
     </div>
   </div>
 </template>

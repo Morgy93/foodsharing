@@ -4,31 +4,26 @@
       <label>{{ $i18n('register.geb_datum') }}<sup><i class="fas fa-asterisk" /></sup></label>
     </div>
     <div class="mt-2 col-sm-auto">
-      <DatePicker
-        :value="$v.birthdate.$model"
-        format="dd.MM.yyyy"
-        :bootstrap-styling="true"
-        :language="de"
-        open-date="2000-01-01"
-        placeholder="25.03.2001 (DD.MM.JJJJ)"
-        initial-view="year"
-        :typeable="true"
-        :show-calendar-on-button-click="true"
-        :calendar-button="true"
-        input-class="datepickerClass pl-3"
-        :class="{ 'is-invalid': $v.birthdate.$error }"
-        class="datepicker"
-        calendar-button-icon="fa fa-calendar"
-        @selected="$emit('update:birthdate', $event)"
-        @input="$emit('update:birthdate', $event)"
+      <b-form-datepicker
+        id="register-datepicker"
+        v-model="dateString"
+        v-bind="trans || {}"
+        :state="isValid"
+        :show-decade-nav="showDecadeNav"
+        :start-weekday="weekday"
+        :date-format-options="{ year: 'numeric', month: '2-digit', day: '2-digit' }"
+        :min="minDate"
+        :max="maxDate"
+        :label-reset-button="$i18n('globals.reset')"
+        :label-close-button="$i18n('globals.close')"
+        reset-button
+        close-button
       />
       <div
-        v-if="$v.birthdate.$error"
-        class="invalid-feedback"
-      >
-        <span v-if="!$v.birthdate.ageCheck">{{ $i18n('register.error_birthdate') }}</span>
-        <span v-if="!$v.birthdate.required">{{ $i18n('register.error_birthdate') }}</span>
-      </div>
+        v-if="!isValid"
+        class="alert alert-danger mt-2"
+        v-html="$i18n('register.error_birthdate')"
+      />
     </div>
     <div class="mt-3 col-sm-auto">
       <div class="alert alert-info">
@@ -46,6 +41,7 @@
     <button
       class="btn btn-primary mt-3"
       type="submit"
+      :disabled="!isValid"
       @click.prevent="redirect()"
     >
       {{ $i18n('register.next') }}
@@ -55,52 +51,55 @@
 </template>
 
 <script>
-import DatePicker from '@sum.cumo/vue-datepicker/dist/Datepicker.js'
-import '@sum.cumo/vue-datepicker/dist/Datepicker.css'
-import { de } from '@sum.cumo/vue-datepicker/dist/locale'
-import { ageCheck, dateValid } from './birthdateValidation'
-import { required } from 'vuelidate/lib/validators'
-
 export default {
-  components: {
-    DatePicker,
+  props: {
+    birthdate: {
+      type: Date,
+      default: null,
+    },
   },
-  props: { birthdate: { type: Date, default: null } },
   data () {
+    const date = new Date()
     return {
-      de: de,
+      dateString: this.birthdate,
+      showDecadeNav: true,
+      local: 'de',
+      minDate: new Date(date.getFullYear() - 125, date.getMonth(), date.getDate()),
+      maxDate: new Date(date.getFullYear() - 18, date.getMonth(), date.getDate()),
+      weekday: 1,
+      trans: {
+        labelPrevDecade: this.$i18n('bootstrap-datepicker.labelPrevDecade'),
+        labelPrevYear: this.$i18n('bootstrap-datepicker.labelPrevYear'),
+        labelPrevMonth: this.$i18n('bootstrap-datepicker.labelPrevMonth'),
+        labelCurrentMonth: this.$i18n('bootstrap-datepicker.labelCurrentMonth'),
+        labelNextMonth: this.$i18n('bootstrap-datepicker.labelNextMonth'),
+        labelNextYear: this.$i18n('bootstrap-datepicker.labelNextYear'),
+        labelNextDecade: this.$i18n('bootstrap-datepicker.labelNextDecade'),
+        labelToday: this.$i18n('bootstrap-datepicker.labelToday'),
+        labelSelected: this.$i18n('bootstrap-datepicker.labelSelected'),
+        labelNoDateSelected: this.$i18n('bootstrap-datepicker.labelNoDateSelected'),
+        labelCalendar: this.$i18n('bootstrap-datepicker.labelCalendar'),
+        labelNav: this.$i18n('bootstrap-datepicker.labelNav'),
+        labelHelp: this.$i18n('bootstrap-datepicker.labelHelp'),
+      },
     }
   },
-  validations: {
-    birthdate: {
-      required,
-      dateValid,
-      ageCheck,
+  computed: {
+    date () {
+      return new Date(this.dateString)
+    },
+    isValid () {
+      const age = this.$dateFormatter.getDifferenceToNowInYears(this.date)
+      return age >= 18 && age <= 125 && !!this.dateString
     },
   },
   methods: {
     redirect () {
-      this.$v.$touch()
-      if (!this.$v.$invalid) {
+      if (this.isValid) {
+        this.$emit('save', this.date)
         this.$emit('next')
       }
     },
   },
 }
 </script>
-<style scoped>
-.datepickerClass {
-  border: 1px solid var(--fs-border-default) !important;
-}
-.datepicker ::v-deep .input-group-text{
-  background-color: var(--fs-color-secondary-500);
-  color: white;
-}
-</style>
-
-<style lang="scss" scoped>
-.invalid-feedback {
-  font-size: 100%;
-  display: unset;
-}
-</style>

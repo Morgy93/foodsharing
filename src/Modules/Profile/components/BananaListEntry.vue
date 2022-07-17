@@ -17,7 +17,7 @@
           {{ authorName }}
         </a>
         <i class="fas fa-fw fa-angle-right" />
-        {{ $dateFormat(when, 'full-long') }}
+        {{ $dateFormatter.date(when) }}
         <a
           v-if="canRemove"
           href="#"
@@ -34,12 +34,10 @@
 </template>
 
 <script>
-import dateFnsParseISO from 'date-fns/parseISO'
-
 import Avatar from '@/components/Avatar'
 import { deleteBanana } from '@/api/profile'
 import { hideLoader, pulseError, showLoader } from '@/script'
-import i18n from '@/i18n'
+import i18n from '@/helper/i18n'
 
 export default {
   components: { Avatar },
@@ -54,7 +52,7 @@ export default {
   },
   data () {
     return {
-      when: dateFnsParseISO(this.createdAt),
+      when: new Date(Date.parse(this.createdAt)),
     }
   },
   methods: {

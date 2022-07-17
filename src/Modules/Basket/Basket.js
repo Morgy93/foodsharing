@@ -11,7 +11,7 @@ import { addMarker, clearCluster, commitCluster } from '@php/Lib/View/vMap'
 
 import { vueApply, vueRegister } from '@/vue'
 import RequestForm from './components/RequestForm'
-import i18n from '@/i18n'
+import i18n from '@/helper/i18n'
 import { expose } from '@/utils'
 import { removeBasket, listBasketCoordinates } from '@/api/baskets'
 import basketStore from '@/stores/baskets'
@@ -86,7 +86,7 @@ if ($('#mapsearch').length > 0) {
   }).catch()
 
   $('#map-latLng').on('change', function () {
-    console.log()
+    // console.log()
 
     ajax.req('basket', 'nearbyBaskets', {
       data: {

@@ -250,7 +250,6 @@
 
 <script>
 
-import { parse, format } from 'date-fns'
 import {
   BForm,
   BFormGroup,
@@ -269,7 +268,8 @@ import {
 } from 'bootstrap-vue'
 import { createPoll } from '@/api/voting'
 import { pulseError } from '@/script'
-import i18n, { locale } from '@/i18n'
+import dataFormatter from '@/helper/date-formatter'
+import i18n, { locale } from '@/helper/i18n'
 import { required, minLength } from 'vuelidate/lib/validators'
 
 const EDIT_TIME_HOURS = 1
@@ -373,10 +373,10 @@ export default {
   },
   computed: {
     startDateTime () {
-      return parse(this.startDate + ' ' + this.startTime, 'yyyy-MM-dd HH:mm:ss', new Date())
+      return new Date(Date.parse(this.startDate + ' ' + this.startTime))
     },
     endDateTime () {
-      return parse(this.endDate + ' ' + this.endTime, 'yyyy-MM-dd HH:mm:ss', new Date())
+      return new Date(Date.parse(this.endDate + ' ' + this.endTime))
     },
     possibleScopes () {
       if (this.isWorkGroup) {
@@ -388,13 +388,13 @@ export default {
     },
     formattedEditTime () {
       const editDate = new Date(new Date().getTime() + EDIT_TIME_HOURS * 60 * 60 * 1000)
-      return format(editDate, 'HH:mm')
+      return dataFormatter.time(editDate)
     },
   },
   mounted () {
     const defaultStart = new Date(new Date().getTime() + DEFAULT_START_TIME_HOURS * 60 * 60 * 1000)
-    this.startDate = format(defaultStart, 'yyyy-MM-dd')
-    this.startTime = format(defaultStart, 'HH:mm:ss')
+    this.startDate = defaultStart.toISOString().split('T')[0]
+    this.startTime = dataFormatter.time(defaultStart)
   },
   methods: {
     updateDateStartTimes () {

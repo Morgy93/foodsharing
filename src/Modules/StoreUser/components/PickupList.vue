@@ -68,7 +68,6 @@ import { sendMessage } from '@/api/conversations'
 import DataUser from '@/stores/user'
 import { ajreq, pulseError, pulseSuccess } from '@/script'
 import $ from 'jquery'
-import i18n from '@/i18n'
 
 export default {
   components: { Pickup },
@@ -116,7 +115,7 @@ export default {
       try {
         this.pickups = await listPickups(this.storeId)
       } catch (e) {
-        pulseError(i18n('pickuplist.error_loadingPickup') + e)
+        pulseError(this.$i18n('pickuplist.error_loadingPickup') + e)
       }
 
       if (!silent) this.isLoading = false
@@ -127,7 +126,7 @@ export default {
         await joinPickup(this.storeId, date, DataUser.getters.getUserId())
       } catch (e) {
         console.error(e)
-        pulseError(i18n('pickuplist.tooslow') + '<br /><br />' + i18n('pickuplist.tryagain'))
+        pulseError(this.$i18n('pickuplist.tooslow') + '<br /><br />' + this.$i18n('pickuplist.tryagain'))
       }
       this.reload()
     },
@@ -136,7 +135,7 @@ export default {
       try {
         await leavePickup(this.storeId, date, DataUser.getters.getUserId())
       } catch (e) {
-        pulseError(i18n('pickuplist.error_leave') + e)
+        pulseError(this.$i18n('pickuplist.error_leave') + e)
       }
       this.reload()
     },
@@ -145,7 +144,7 @@ export default {
       try {
         await leavePickup(this.storeId, data.date, data.fsId, data.message)
       } catch (e) {
-        pulseError(i18n('pickuplist.error_kick') + e)
+        pulseError(this.$i18n('pickuplist.error_kick') + e)
       }
       this.reload()
     },
@@ -154,7 +153,7 @@ export default {
       try {
         await confirmPickup(this.storeId, data.date, data.fsId)
       } catch (e) {
-        pulseError(i18n('pickuplist.error_confirm') + e)
+        pulseError(this.$i18n('pickuplist.error_confirm') + e)
       }
       this.reload()
     },
@@ -163,7 +162,7 @@ export default {
       try {
         await setPickupSlots(this.storeId, date, totalSlots)
       } catch (e) {
-        pulseError(i18n('pickuplist.error_changeSlotCount') + e)
+        pulseError(this.$i18n('pickuplist.error_changeSlotCount') + e)
       }
       this.reload()
     },
@@ -173,7 +172,7 @@ export default {
         pulseSuccess(this.$i18n('pickup.team_message_success'))
       } catch (e) {
         console.error(e)
-        pulseError(i18n('pickuplist.error_whileSending'))
+        pulseError(this.$i18n('pickuplist.error_whileSending'))
       }
     },
     loadAddPickupModal () {

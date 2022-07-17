@@ -3,15 +3,15 @@ import $ from 'jquery'
 import L from 'leaflet'
 import 'leaflet.awesome-markers'
 import 'leaflet.markercluster'
-import 'mapbox-gl-leaflet'
+// import 'mapbox-gl-leaflet'
 
-import 'mapbox-gl/dist/mapbox-gl.css'
+// import 'mapbox-gl/dist/mapbox-gl.css'
 
 import 'corejs-typeahead'
 import 'typeahead-address-photon'
 
 import { initMap } from '@/mapUtils'
-import { locale } from '@/i18n'
+import { locale } from '@/helper/i18n'
 
 export let map
 export let clusterGroup

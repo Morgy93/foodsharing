@@ -2,7 +2,7 @@ import '@/core'
 import '@/globals'
 import { acceptApplication, declineApplication } from '@/api/applications'
 import { pulseError, pulseInfo, goTo } from '@/script'
-import i18n from '@/i18n'
+import i18n from '@/helper/i18n'
 import { expose } from '@/utils'
 // Wallpost
 import { GET } from '@/browser'

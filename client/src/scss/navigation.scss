@@ -1,6 +1,6 @@
 $breaking-viewport: 767px;
 
-.nav.navbar {
+.navigation.navbar {
   box-shadow: var(--fs-shadow);
   display: block;
   color: var(--fs-color-primary-500);
@@ -84,8 +84,8 @@ $breaking-viewport: 767px;
   }
 }
 
-.nav .metanav-container,
-.nav .nav-container {
+.navigation .metanav-container,
+.navigation .nav-container {
   align-items: center;
   padding-bottom: 0;
   margin-bottom: 0.25rem;
@@ -99,7 +99,7 @@ $breaking-viewport: 767px;
 }
 
 @media (max-width: $breaking-viewport) {
-  .navbar-collapse {
+  .navigation .navbar-collapse {
     margin-bottom: 3rem;
 
     & .metanav,
@@ -129,16 +129,16 @@ $breaking-viewport: 767px;
   }
 }
 
-.nav-item {
+.navigation .nav-item {
   margin: 0;
 }
 
-.nav-user .nav-link {
+.navigation .nav-user .nav-link {
   padding: 0.25rem 1rem;
   max-height: 30px;
 }
 
-.nav-link {
+.navigation .nav-link {
   align-items: center;
   background-color: transparent;
   color: currentColor;
@@ -194,7 +194,7 @@ $breaking-viewport: 767px;
   }
 }
 
-.navbar-toggler {
+.navigation .navbar-toggler {
   position: relative;
 
   &.not-collapsed .badge {
@@ -219,29 +219,29 @@ $breaking-viewport: 767px;
   }
 }
 
-.dropdown-header {
+.navigation .dropdown-header {
   font-weight: 600;
+}
 
-  @media (max-width: $breaking-viewport) {
-    .for-mobile & {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-    }
+@media (max-width: $breaking-viewport) {
+  .navigation .dropdown:not(.is-open-on-mobile) .for-mobile .dropdown-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
 
-    .is-open-on-mobile & button.btn {
-      display: none;
-    }
+  .navigation .is-open-on-mobile .for-mobile .dropdown-header .btn {
+    display: none;
   }
 }
 
-.dropdown {
+.navigation .dropdown {
   @media (max-width: $breaking-viewport) {
     position: unset;
   }
 }
 
-.dropdown-menu {
+.navigation .dropdown-menu {
   @media (max-width: $breaking-viewport) {
     min-width: 100%;
     max-width: 100%;
@@ -251,7 +251,7 @@ $breaking-viewport: 767px;
     width: 100%;
   }
 
-  .dropdown-item {
+  & .dropdown-item {
     &:not(.dropdown-header) {
         font-size: 0.75rem;
         position: relative;
@@ -270,15 +270,16 @@ $breaking-viewport: 767px;
     display: block;
     overflow-y: auto;
   }
-  .dropdown-menu-fixed-size & {
-    min-width: 420px;
-    max-width: 420px;
+}
 
-    @media (max-width: $breaking-viewport) {
-      width: 100%;
-      min-width: unset;
-      max-width: unset;
-      top: 3rem;
-    }
+.navigation .dropdown-menu-fixed-size .dropdown-menu {
+  min-width: 420px;
+  max-width: 420px;
+
+  @media (max-width: $breaking-viewport) {
+    width: 100%;
+    min-width: unset;
+    max-width: unset;
+    top: 3rem;
   }
 }

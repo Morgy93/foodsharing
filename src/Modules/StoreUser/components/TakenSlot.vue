@@ -35,19 +35,19 @@
       <i class="fas fa-fw fa-comment" /> {{ $i18n('chat.open_chat') }}
     </b-dropdown-item>
     <b-dropdown-item
-      v-if="callLink && !isMe"
-      :href="callLink"
+      v-if="phoneNumber && !isMe"
+      :href="$url('phone_number', phoneNumber)"
     >
       <i class="fas fa-fw fa-phone" /> {{ $i18n('pickup.call') }}
     </b-dropdown-item>
     <b-dropdown-item
-      v-else-if="callText && !isMe"
-      @click="copyIntoClipboard(callText)"
+      v-if="phoneNumber && !isMe"
+      @click="copyIntoClipboard(phoneNumber)"
     >
       <!-- eslint-disable-next-line vue/max-attributes-per-line -->
       <i class="fas fa-fw" :class="[canCopy ? 'fa-clone' : 'fa-phone-slash']" />
       <span v-if="canCopy">{{ $i18n('pickup.copyNumber') }}</span>
-      <span v-else>{{ callText }}</span>
+      <span v-else>{{ phoneNumber }}</span>
     </b-dropdown-item>
     <b-dropdown-item
       v-if="!confirmed && allowConfirm"
@@ -74,9 +74,8 @@
 import Avatar from '@/components/Avatar'
 import { BDropdown, BDropdownItem } from 'bootstrap-vue'
 import { pulseSuccess } from '@/script'
-import { callableNumber } from '@/utils'
+import PhoneNumbers from '@/helper/phone-numbers'
 import conv from '@/conv'
-import i18n from '@/i18n'
 import DataUser from '@/stores/user'
 
 import { v4 as uuidv4 } from 'uuid'
@@ -115,13 +114,8 @@ export default {
     }
   },
   computed: {
-    callLink () {
-      const number = callableNumber(this.profile.mobile) || callableNumber(this.profile.landline)
-      return number || ''
-    },
-    callText () {
-      const number = callableNumber(this.profile.mobile, true) || callableNumber(this.profile.landline, true)
-      return number || ''
+    phoneNumber () {
+      return PhoneNumbers.callableNumber(this.profile.mobile || this.profile.landline)
     },
     canCopy () {
       return !!navigator.clipboard
@@ -137,7 +131,7 @@ export default {
     copyIntoClipboard (text) {
       if (navigator.clipboard) {
         navigator.clipboard.writeText(text).then(() => {
-          pulseSuccess(i18n('pickup.copiedNumber', { number: text }))
+          pulseSuccess(this.$i18n('pickup.copiedNumber', { number: text }))
         })
       }
     },

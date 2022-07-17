@@ -1,138 +1,49 @@
 <template>
-  <div class="container bootstrap">
-    <div class="card mb-3 rounded">
-      <div class="card-header text-white bg-primary">
-        {{ $i18n('store.allStoresOfRegion') }} {{ regionName }}
-        <span>
-          {{ $i18n('memberlist.some_in_all', {some: storesFiltered.length, all: stores.length}) }}
-        </span>
-      </div>
-      <div
-        v-if="stores.length"
-        class="card-body p-0"
-      >
-        <div class="form-row p-1 ">
-          <div class="col-2 text-center">
-            <label class=" col-form-label col-form-label-sm">
-              {{ $i18n('store.filter') }}
-            </label>
-          </div>
-          <div class="col-4">
-            <label>
-              <input
-                v-model="filterText"
-                type="text"
-                class="form-control form-control-sm"
-                placeholder="Name/Adresse"
-              >
-            </label>
-          </div>
-          <div class="col-3">
-            <b-form-select
-              v-model="filterStatus"
-              :options="statusOptions"
-              size="sm"
-            />
-          </div>
-          <div class="col">
-            <button
-              v-b-tooltip.hover
-              type="button"
-              class="btn btn-sm"
-              :title="$i18n('storelist.emptyfilters')"
-              @click="clearFilter"
-            >
-              <i class="fas fa-times" />
-            </button>
-          </div>
-          <div
-            v-if="showCreateStore"
-            :regionId="regionId"
-            class="col"
-          >
-            <a
-              :href="$url('storeAdd', regionId)"
-              class="btn btn-sm btn-primary btn-block"
-            >
-              {{ $i18n('store.addNewStoresButton') }}
-            </a>
-          </div>
+  <div class="card mb-3 rounded">
+    <div class="card-header text-white bg-primary">
+      {{ $i18n('store.allStoresOfRegion') }} {{ regionName }}
+      <span>
+        {{ $i18n('memberlist.some_in_all', {some: storesFiltered.length, all: stores.length}) }}
+      </span>
+    </div>
+    <div
+      v-if="stores.length"
+      class="card-body p-0"
+    >
+      <div class="form-row p-1 ">
+        <div class="col-2 text-center">
+          <label class=" col-form-label col-form-label-sm">
+            {{ $i18n('store.filter') }}
+          </label>
         </div>
-        <b-table
-          id="store-list"
-          :fields="fieldsFiltered"
-          :current-page="currentPage"
-          :per-page="perPage"
-          :sort-by.sync="sortBy"
-          :sort-desc.sync="sortDesc"
-          :items="storesFiltered"
-          small
-          hover
-          responsive
-        >
-          <template
-            #cell(status)="row"
-            :v-if="isMobile"
-          >
-            <div class="text-center">
-              <StoreStatusIcon :status="row.value" />
-            </div>
-          </template>
-          <template
-            #cell(name)="row"
-          >
-            <a
-              :href="$url('store', row.item.id)"
-              class="ui-corner-all"
+        <div class="col-4">
+          <label>
+            <input
+              v-model="filterText"
+              type="text"
+              class="form-control form-control-sm"
+              placeholder="Name/Adresse"
             >
-              {{ row.value }}
-            </a>
-          </template>
-          <template
-            #cell(actions)="row"
-          >
-            <b-button
-              size="sm"
-              @click.stop="row.toggleDetails"
-            >
-              {{ row.detailsShowing ? 'x' : 'Details' }}
-            </b-button>
-          </template>
-          <template
-            #row-details="row"
-          >
-            <b-card>
-              <div class="details">
-                <p>
-                  <strong>{{ $i18n('storelist.addressdata') }}</strong><br>
-                  {{ row.item.address }} <a
-                    :href="mapLink(row.item)"
-                    class="nav-link details-nav"
-                    :title="$i18n('storelist.map')"
-                  >
-                    <i class="fas fa-map-marker-alt" />
-                  </a><br> {{ row.item.zipcode }} {{ row.item.city }}
-                </p>
-                <p><strong>{{ $i18n('storelist.entered') }}</strong> {{ row.item.added }}</p>
-              </div>
-            </b-card>
-          </template>
-        </b-table>
-        <div class="float-right p-1 pr-3">
-          <b-pagination
-            v-model="currentPage"
-            :total-rows="storesFiltered.length"
-            :per-page="perPage"
-            aria-controls="store-list"
-            class="my-0"
+          </label>
+        </div>
+        <div class="col-3">
+          <b-form-select
+            v-model="filterStatus"
+            :options="statusOptions"
+            size="sm"
           />
         </div>
-      </div>
-      <div
-        v-else
-        class="card-body d-flex justify-content-center"
-      >
-        {{ $i18n('store.noStores') }}
+        <div class="col">
+          <button
+            v-b-tooltip.hover
+            type="button"
+            class="btn btn-sm"
+            :title="$i18n('storelist.emptyfilters')"
+            @click="clearFilter"
+          >
+            <i class="fas fa-times" />
+          </button>
+        </div>
         <div
           v-if="showCreateStore"
           :regionId="regionId"
@@ -145,6 +56,93 @@
             {{ $i18n('store.addNewStoresButton') }}
           </a>
         </div>
+      </div>
+      <b-table
+        id="store-list"
+        :fields="fieldsFiltered"
+        :current-page="currentPage"
+        :per-page="perPage"
+        :sort-by.sync="sortBy"
+        :sort-desc.sync="sortDesc"
+        :items="storesFiltered"
+        small
+        hover
+        responsive
+      >
+        <template
+          #cell(status)="row"
+          :v-if="isMobile"
+        >
+          <div class="text-center">
+            <StoreStatusIcon :status="row.value" />
+          </div>
+        </template>
+        <template
+          #cell(name)="row"
+        >
+          <a
+            :href="$url('store', row.item.id)"
+            class="ui-corner-all"
+          >
+            {{ row.value }}
+          </a>
+        </template>
+        <template
+          #cell(actions)="row"
+        >
+          <b-button
+            size="sm"
+            @click.stop="row.toggleDetails"
+          >
+            {{ row.detailsShowing ? 'x' : 'Details' }}
+          </b-button>
+        </template>
+        <template
+          #row-details="row"
+        >
+          <b-card>
+            <div class="details">
+              <p>
+                <strong>{{ $i18n('storelist.addressdata') }}</strong><br>
+                {{ row.item.address }} <a
+                  :href="mapLink(row.item)"
+                  class="nav-link details-nav"
+                  :title="$i18n('storelist.map')"
+                >
+                  <i class="fas fa-map-marker-alt" />
+                </a><br> {{ row.item.zipcode }} {{ row.item.city }}
+              </p>
+              <p><strong>{{ $i18n('storelist.entered') }}</strong> {{ row.item.added }}</p>
+            </div>
+          </b-card>
+        </template>
+      </b-table>
+      <div class="float-right p-1 pr-3">
+        <b-pagination
+          v-model="currentPage"
+          :total-rows="storesFiltered.length"
+          :per-page="perPage"
+          aria-controls="store-list"
+          class="my-0"
+        />
+      </div>
+    </div>
+    <div
+      v-else
+      class="card-body d-flex justify-content-center"
+    >
+      {{ $i18n('store.noStores') }}
+      <div
+        v-if="showCreateStore"
+        :regionId="regionId"
+        class="col"
+      >
+        <a
+          :href="$url('storeAdd', regionId)"
+          class="btn btn-sm btn-primary btn-block"
+        >
+          {{ $i18n('store.addNewStoresButton') }}
+        </a>
       </div>
     </div>
   </div>
@@ -160,7 +158,7 @@ import {
   BCard,
 } from 'bootstrap-vue'
 import StoreStatusIcon from './StoreStatusIcon.vue'
-import i18n from '@/i18n'
+import i18n from '@/helper/i18n'
 
 export default {
   components: { BCard, BTable, BButton, BPagination, BFormSelect, StoreStatusIcon },

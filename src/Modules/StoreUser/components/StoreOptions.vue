@@ -5,24 +5,24 @@
       v-html="$i18n('store.actions')"
     />
     <button
-      v-if="teamConversionId != null"
+      v-if="teamConversionId != null && userIsInStore"
       type="button"
       class="list-group-item list-group-item-action"
       @click="openChat(teamConversionId)"
       v-html="$i18n('store.chat.team')"
     />
     <button
-      v-if="springerConversationId != null"
+      v-if="springerConversationId != null && userIsInStore || isJumper"
       type="button"
       class="list-group-item list-group-item-action"
       @click="openChat(springerConversationId)"
       v-html="$i18n('store.chat.jumper')"
     />
-    <a
+    <button
       v-if="mayEditStore"
       type="button"
       class="list-group-item list-group-item-action"
-      :href="$url('storeEdit',storeId)"
+      @click="goToStoreEdit"
       v-html="$i18n('storeedit.bread')"
     />
     <button
@@ -34,7 +34,7 @@
       v-html="$i18n('pickup.edit.bread')"
     />
     <button
-      v-if="mayLeaveStoreTeam"
+      v-if="mayLeaveStoreTeam && userIsInStore || isJumper"
       type="button"
       class="list-group-item list-group-item-action"
       href="#"
@@ -47,7 +47,9 @@
 <script>
 import conv from '@/conv'
 import $ from 'jquery'
-import { removeFromTeam } from '../../Store/Store'
+import { pulseError } from '@/script'
+import DataUser from '@/stores/user'
+import { removeStoreMember } from '@/api/stores'
 
 export default {
   props: {
@@ -69,6 +71,8 @@ export default {
       type: Number,
       default: null,
     },
+    userIsInStore: { type: Boolean, default: false },
+    isJumper: { type: Boolean, default: false },
   },
   methods: {
     openChat (fsId) {
@@ -78,7 +82,27 @@ export default {
       $('#bid').val(this.storeId)
       $('#editpickups').dialog('open')
     },
-    removeFromTeam,
+    goToStoreEdit () {
+      window.location.href = this.$url('storeEdit', this.storeId)
+    },
+    async removeFromTeam (fsId, fsName) {
+      if (!fsId) {
+        return
+      }
+      if (!confirm(this.$i18n('store.sm.reallyRemove', { name: fsName }))) {
+        return
+      }
+      this.isBusy = true
+      try {
+        await removeStoreMember(this.storeId, DataUser.getters.getUserId())
+        window.location.href = this.$url('dashboard')
+      } catch (e) {
+        pulseError(this.$i18n('error_unexpected'))
+        this.isBusy = false
+        return
+      }
+      this.isBusy = false
+    },
   },
 }
 </script>

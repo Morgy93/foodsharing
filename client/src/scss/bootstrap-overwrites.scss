@@ -12,6 +12,10 @@ p {
     @extend .card;
     @extend .border;
     @extend .p-4;
+
+    &:not(:last-child) {
+        margin-bottom: 1rem;
+    }
 }
 
 // removes the line below navtabs
@@ -51,4 +55,10 @@ code.key {
 .list-group .list-group-item + .list-group-item {
     border-top-width: 1px;
 }
+
+// boostrap-vue fix
+// https://github.com/bootstrap-vue/bootstrap-vue/issues/6961
+.b-table-sticky-header > .table.b-table > thead > tr > th {
+    position: sticky !important;
+  }
 

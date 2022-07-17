@@ -38,7 +38,7 @@
             <b>{{ poll.name }}</b>
           </div>
           <div class="mt-2">
-            {{ $dateFormat(convertDate(poll.startDate.date)) }} - {{ $dateFormat(convertDate(poll.endDate.date)) }}
+            {{ $dateFormatter.dateTime(convertDate(poll.startDate.date)) }} - {{ $dateFormatter.dateTime(convertDate(poll.endDate.date)) }}
           </div>
           <span class="clear" />
         </b-link>
@@ -63,7 +63,7 @@
               :href="$url('poll', poll.id)"
             >
               <b>{{ poll.name }}</b>
-              <div>{{ $i18n('poll.begins_at') }}: {{ $dateFormat(convertDate(poll.startDate.date)) }}</div>
+              <div>{{ $i18n('poll.begins_at') }}: {{ $dateFormatter.date(convertDate(poll.startDate.date)) }}</div>
             </b-link>
           </li>
         </ul>
@@ -100,7 +100,7 @@
               :href="$url('poll', poll.id)"
             >
               <b>{{ poll.name }}</b>
-              <div>{{ $i18n('poll.ended_at') }} {{ $dateFormat(convertDate(poll.endDate.date)) }}</div>
+              <div>{{ $i18n('poll.ended_at') }} {{ $dateFormatter.date(convertDate(poll.endDate.date)) }}</div>
             </b-link>
           </li>
         </ul>
@@ -112,8 +112,6 @@
 <script>
 import { BLink, BFormInput } from 'bootstrap-vue'
 import { optimizedCompare } from '@/utils'
-import { isBefore, isAfter, format, compareAsc } from 'date-fns'
-import dateFnsParseISO from 'date-fns/parseISO'
 
 export default {
   components: { BLink, BFormInput },
@@ -155,23 +153,26 @@ export default {
       }
 
       return filtered.sort((a, b) => {
-        return compareAsc(this.convertDate(b.endDate.date), this.convertDate(a.endDate.date))
+        const aD = this.convertDate(a.endDate.date)
+        const bD = this.convertDate(b.endDate.date)
+        if (aD.getTime() === bD.getTime()) return 0
+        return aD > bD ? 1 : -1
       })
     },
   },
   methods: {
     compare: optimizedCompare,
     isPollInPast (poll) {
-      return isBefore(this.convertDate(poll.endDate.date), new Date())
+      return this.convertDate(poll.endDate.date) < new Date()
     },
     isPollInFuture (poll) {
-      return isAfter(this.convertDate(poll.startDate.date), new Date())
+      return this.convertDate(poll.startDate.date) > new Date()
     },
     convertDate (date) {
-      return dateFnsParseISO(date)
+      return new Date(Date.parse(date))
     },
     formatDate (date, formatStr) {
-      return format(date, formatStr)
+      return formatStr
     },
   },
 }

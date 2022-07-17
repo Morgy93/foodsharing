@@ -13,6 +13,7 @@
     <div class="col-sm-auto">
       <input
         id="email"
+        autocomplete="username"
         :value="email"
         :class="{ 'is-invalid': $v.email.$error }"
         type="email"
@@ -42,6 +43,7 @@
         <input
           id="password"
           v-model.lazy="$v.password.$model"
+          autocomplete="new-password"
           :class="{ 'is-invalid': $v.password.$error }"
           type="password"
           name="password"
@@ -69,6 +71,7 @@
           <input
             id="confirmPassword"
             v-model.lazy="$v.confirmPassword.$model"
+            autocomplete="new-password"
             :class="{ 'is-invalid': $v.confirmPassword.$error }"
             type="password"
             name="confirmPassword"

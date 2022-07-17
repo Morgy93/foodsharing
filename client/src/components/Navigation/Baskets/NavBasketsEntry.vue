@@ -27,7 +27,7 @@
             v-html="basket.description"
           />
           <small class="time-ago text-right nowrap">
-            {{ relativeTime(basket.createdAt) }}
+            {{ $dateFormatter.relativeTime(basket.createdAt) }}
           </small>
         </span>
         <small
@@ -56,11 +56,9 @@
           :is-sleeping="entry.user.sleepStatus"
           :auto-scale="false"
         />
-        <small
-          v-b-tooltip="entry.user.name.length > 15 ? entry.user.name : null"
-        >
-          {{ truncate(entry.user.name, 15) }}
-          {{ $dateDistanceInWords(entry.time) }}
+        <small>
+          {{ entry.user.name }}
+          {{ $dateFormatter.relativeTime(entry.time) }}
         </small>
       </div>
       <button
@@ -79,13 +77,9 @@
 // Others
 import Avatar from '@/components/Avatar'
 import conv from '@/conv'
-// Mixins
-import TruncateMixin from '@/mixins/TruncateMixin'
-import DateFormatterMixin from '@/mixins/DateFormatterMixin'
 
 export default {
   components: { Avatar },
-  mixins: [TruncateMixin, DateFormatterMixin],
   props: {
     basket: {
       type: Object,

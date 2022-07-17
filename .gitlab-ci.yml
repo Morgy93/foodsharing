@@ -38,6 +38,7 @@ variables:
   # run it on our foodsharing ci server
   tags:
   - non-shared
+  - foodsharing
   <<: *ssh
   stage: deploy
   dependencies:
@@ -115,6 +116,7 @@ outdated:
   tags:
   # run on our server where we likely have the image already
   - non-shared
+  - foodsharing
 
 build:backend-chat:
   <<: *defaults

@@ -54,6 +54,7 @@
 - Force content which is too broad to scroll, so the the Topbar will never leave the screen width !2258 @NINI1988
 - A wall post with multiple lines will use the complete available size to display its text !2277 @NINI1988
 - Restrictions on the view of the store list in profile !2273 @chriswalg
+- Show only chat link if user is member in store !2304 @chriswalg
 
 ## Refactoring
 - Currently running events are shown within the event overview until their end !2162 @merhoc
@@ -66,6 +67,10 @@
 - Changed deleting wall posts to the API #798 !2253 @alex.simm
 - Rebuild profile infos to vue !2276 !2287 @chriswalg
 - Rebuild join region to vue !2294 @sefn
+- Rebuild profile menu to vue !2281 @chriswalg
+- Let the community bubble on the map fetch its own content !2311 @alex.simm
+- Changed deleting wall posts to the API #798 !2253 @alex.simm  
+- Use REST API for setting the user's sleep status #798 !2282 @alex.simm
 
 ## Dev/Test/CI stuff
 - bump node to version 16 !2135 @peter.toennies

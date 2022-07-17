@@ -2,7 +2,7 @@
   <b-navbar
     toggleable="md"
     :sticky="viewIsMD"
-    class="nav"
+    class="navigation"
     :class="{
       'nav-not-visible': isLoggedIn,
       'nav-foodsharer': !isFoodsaver,

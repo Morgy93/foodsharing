@@ -71,11 +71,9 @@
             {{ $i18n('store.my_last_pickup') }}
           </div>
           <span>
-            {{ formatLastFetchDate() }}
+            {{ $dateFormatter.dateBasic(lastFetchDate) }}
           </span>
-          <span v-if="distanceInDays() > 1">
-            ({{ $i18n('store.days_before') }} {{ distanceInDays() }} {{ $i18n('store.days') }})
-          </span>
+          ({{ $dateFormatter.relativeTime(lastFetchDate) }})
         </div>
       </div>
     </div>
@@ -83,8 +81,6 @@
 </template>
 
 <script>
-import { format } from 'date-fns'
-import differenceInCalendarDays from 'date-fns/differenceInCalendarDays'
 import Markdown from '@/components/Markdown/Markdown'
 
 export default {
@@ -119,7 +115,7 @@ export default {
       default: '',
     },
     lastFetchDate: {
-      type: Date,
+      type: [Date, String],
       default: null,
     },
     press: {
@@ -138,14 +134,6 @@ export default {
     },
   },
   methods: {
-    formatLastFetchDate () {
-      return format(new Date(this.lastFetchDate), 'dd.MM.yyyy')
-    },
-
-    distanceInDays () {
-      return differenceInCalendarDays(new Date(), new Date(this.lastFetchDate))
-    },
-
     toggleInfoDisplay () {
       this.displayInfos = !this.displayInfos
     },

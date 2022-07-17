@@ -4,11 +4,8 @@
     <template #title>
       <div
         v-b-tooltip:hover.window="$i18n(`pickup.overview.tab.${tabName}.tooltip.${isOwnProfile ? 'own' : 'other'}`)"
-        class="tab-title"
       >
-        <div>
-          {{ $i18n(`pickup.overview.tab.${tabName}.name`) }}
-        </div>
+        {{ $i18n(`pickup.overview.tab.${tabName}.name`) }}
       </div>
     </template>
 
@@ -235,12 +232,6 @@ export default {
 </script>
 
 <style lang="scss">
-.tab-title {
-  margin: -0.5rem -1rem;
-  padding: 0.5rem 1rem;
-  font-weight: bolder;
-}
-
 .tab-link {
   font-weight: bolder;
   margin-left: 3px;

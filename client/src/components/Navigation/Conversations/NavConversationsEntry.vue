@@ -28,7 +28,7 @@
           v-html="title"
         />
         <small class="text-muted text-right nowrap">
-          {{ relativeTime(conversation.lastMessage.sentAt) }}
+          {{ $dateFormatter.relativeTime(conversation.lastMessage.sentAt) }}
         </small>
       </span>
       <small
@@ -44,15 +44,11 @@ import conv from '@/conv'
 import profileStore from '@/stores/profiles'
 
 import Avatar from '@/components/Avatar'
-import DateFormatterMixin from '@/mixins/DateFormatterMixin'
 
 export default {
   components: {
     Avatar,
   },
-  mixins: [
-    DateFormatterMixin,
-  ],
   props: {
     conversation: {
       type: Object,

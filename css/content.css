@@ -335,27 +335,8 @@ i {
   font-style: italic;
 }
 
-.page h1, .page h2, .page h3, .page h4 {
-  color: var(--fs-color-primary-500);
-}
-
-.page h1,
-.page h2,
-.page h3 {
-  font-family: 'Alfa Slab One', serif;
-  font-weight: normal;
-  font-size: 20px;
-  color: var(--fs-color-primary-500);
-  margin-bottom: 30px;
-}
-
 .page .h1 h1 {
   margin-bottom: 0;
-}
-
-.page .h1 small, .page .h1 small p {
-  color: var(--fs-color-primary-500);
-  font-size: 12px;
 }
 
 .page .h1 small p {
@@ -390,13 +371,6 @@ i {
   color: var(--fs-color-primary-500);
 }
 
-.reddot h5 {
-  font-family: 'Alfa Slab One', serif;
-  font-weight: normal;
-  font-size: 17px;
-  color: var(--fs-color-primary-500);
-}
-
 .reddot h5 span {
   display: inline-block;
   background-color: var(--fs-color-danger-500);
@@ -410,14 +384,6 @@ i {
 
 .reddot p {
   margin-bottom: 20px;
-}
-
-/* TODO check if I'm used anywhere */
-.page .ui-accordion h3 {
-  font-family: 'Alfa Slab One', serif;
-  font-weight: normal;
-  font-size: 17px;
-  color: var(--fs-color-light);
 }
 
 .page-fsbetrieb .element-wrapper {

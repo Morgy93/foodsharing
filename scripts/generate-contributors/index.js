@@ -77,7 +77,7 @@ for (const file of files) {
   const previousContent = readFileSync(join(basedir, file), 'utf8')
   const newContent = injectListBetweenTags(previousContent, html)
   writeFileSync(join(basedir, file), newContent)
-  console.log('updated', file)
+  // console.log('updated', file)
 }
 
 function chunk (array, n) {
