@@ -140,12 +140,10 @@ services:
   #------------------------------------
 
   maildev:
-    command: >
-      bin/maildev
-        --web 80
-        --smtp 25
-        --hide-extensions STARTTLS
-    image: djfarrelly/maildev
+    image: maildev/maildev
+    expose:
+      - 1080
+      - 1025
     container_name: foodsharing_ci_maildev
 
   influxdb:
