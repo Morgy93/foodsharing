@@ -225,7 +225,7 @@ test:backend:
       alias: redis
     - name: registry.gitlab.com/foodsharing-dev/images/db/test:2
       alias: db
-    - name: selenium/standalone-chrome:3.141.59-20200515
+    - name: selenium/standalone-chrome:4.3.0-20220706
       alias: selenium
     - name: maildev/maildev:2.0.5
       alias: maildev
