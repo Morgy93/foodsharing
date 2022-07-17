@@ -125,7 +125,7 @@ services:
   selenium:
     container_name: foodsharing_test_selenium
     image: registry.gitlab.com/foodsharing-dev/images/selenium:1.4
-    shm_size: 512M
+    shm_size: 1024M
     depends_on:
       - web
     expose:
