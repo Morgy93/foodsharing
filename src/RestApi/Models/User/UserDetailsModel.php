@@ -18,12 +18,14 @@ class UserDetailsModel
 	/** 
 	 * The foodsharer identifier
 	 *
-	 * @OA\Property(format="int64", example=1)
+	 * @OA\Property(format="int32", example=1)
 	 */
 	public int $id;
 
 	/**
 	 * UNCLEAR USAGE: API caller is logged in.
+	 * 
+	 * @OA\Property(type="Boolean", example=true)
 	 */
     public bool $loggedIn;
 
@@ -32,7 +34,7 @@ class UserDetailsModel
 	 *
 	 * @OA\Property(type="Boolean", example=true)
 	 */
-	public string $foodsaver;
+	public bool $foodsaver;
 
 	/**
 	 * The foodsaver is verified by a ambassador to a foodsharer. The status of verification is related to the home region.
@@ -45,14 +47,14 @@ class UserDetailsModel
 	/**
 	 * Home region id of the user. The user have only one home region which.
 	 *
-	 * @OA\Property(type="int", example=1)
+	 * @OA\Property(type="int32", example=1)
 	 */
 	public ?int $regionId = null;
 
 	/**
 	 * Home region name of the user. The user have only a home region of the foodsharing quiz is finished successful.
 	 *
-	 * @OA\Property(type="int", example="Hamburg")
+	 * @OA\Property(type="string", example="Hamburg", maxLength=120)
 	 */
     public ?string $regionName = "";
 
@@ -64,10 +66,44 @@ class UserDetailsModel
 	public bool $isRegionQuizDone;
 	
 	/**
-	 *
-	 * @OA\Property(type="string", example=true)
+	 * Public text to describe the user by it self
+	 * 
+	 * @OA\Property(type="string", example=true, maxLength=16777215)
 	 */
     public string $aboutMePublic = "";
+
+	/**
+	 * Foodsharing internal text to describe the user by it self
+	 * 
+	 * @OA\Property(type="string", example="", maxLength=16777215)
+	 */
+	public string $aboutMeIntern = "";
+
+	/**
+	 * First name of the user
+	 * 
+	 * @OA\Property(type="string", example=true, maxLength=120)
+	 */
+	public ?string $firstname = "";
+
+	/**
+	 * Last name of the user
+	 *
+	 * @OA\Property(type="string", example=true, maxLength=120)
+	 */
+	public ?string $lastname = "";
+
+	/**
+	 * Gender of the user
+	 * 
+	 * 	- 0: NOT_SELECTED
+	 * 	- 1: MALE
+	 * 	- 2: FEMALE
+	 *  - 3: DIVERSE
+	 * 
+	 * @OA\Property(type="int", enum=[0, 1, 2, 3])
+	 */
+	public ?int $gender = 0;
 
 	/**
 	 *
@@ -80,24 +116,6 @@ class UserDetailsModel
 	 * @OA\Property(type="string", example=true)
 	 */
 	public ?string $hasCalendarToken = "";
-
-	/**
-	 *
-	 * @OA\Property(type="string", example=true)
-	 */
-	public ?string $firstname = "";
-
-	/**
-	 *
-	 * @OA\Property(type="string", example=true)
-	 */
-	public ?string $lastname = "";
-	
-	/**
-	 *
-	 * @OA\Property(type="string", example=true)
-	 */
-	public ?string $gender = "";
 	
 	/**
 	 *
