@@ -28,10 +28,12 @@ use Foodsharing\Permissions\StorePermissions;
 use Foodsharing\Permissions\UserPermissions;
 use Foodsharing\Permissions\WorkGroupPermissions;
 use Foodsharing\Utility\EmailHelper;
+use Foodsharing\RestApi\Models\User\UserDetailsModel;
 use FOS\RestBundle\Controller\AbstractFOSRestController;
 use FOS\RestBundle\Controller\Annotations as Rest;
 use FOS\RestBundle\Request\ParamFetcher;
 use Mobile_Detect;
+use Nelmio\ApiDocBundle\Annotation\Model;
 use OpenApi\Annotations as OA;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\Exception\AccessDeniedHttpException;
@@ -240,6 +242,11 @@ class UserRestController extends AbstractFOSRestController
 	 * @OA\Tag(name="user")
 	 *
 	 * @Rest\Get("user/{id}/details", requirements={"id" = "\d+"})
+	 * @OA\Response(
+	 * 		response="200",
+	 * 		description="Success.",
+	 *      @Model(type=UserDetailsModel::class)
+	 * )
 	 */
 	public function userDetailsAction(int $id): Response
 	{
@@ -255,8 +262,14 @@ class UserRestController extends AbstractFOSRestController
 	 * Lists the detailed profile of the current user. Returns 401 if not logged in or 200 and the data.
 	 *
 	 * @OA\Tag(name="user")
+	 * @OA\Tag(name="my")
 	 *
 	 * @Rest\Get("user/current/details")
+	 * @OA\Response(
+	 * 		response="200",
+	 * 		description="Success.",
+	 *      @Model(type=UserDetailsModel::class)
+	 * )
 	 */
 	public function currentUserDetailsAction(): Response
 	{
