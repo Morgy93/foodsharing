@@ -2,21 +2,18 @@
 
 namespace Foodsharing\RestApi\Models\User;
 
-use Foodsharing\RestApi\Models\User\CoordinatesModel;
-use Foodsharing\RestApi\Models\User\UserPermissionsModel;
-use Foodsharing\RestApi\Models\User\UserStatisticsModel;
-
+use Nelmio\ApiDocBundle\Annotation\Model;
 use OpenApi\Annotations as OA;
 
 /**
- * Desribes foodsharing user and this information
+ * Desribes foodsharing user and this information.
  *
  * @OA\Schema(required={"id", "loggedIn", "foodsaver", "isVerified"})
  */
 class UserDetailsModel
 {
-	/** 
-	 * The foodsharer identifier
+	/**
+	 * The foodsharer identifier of user.
 	 *
 	 * @OA\Property(format="int32", example=1)
 	 */
@@ -24,10 +21,10 @@ class UserDetailsModel
 
 	/**
 	 * UNCLEAR USAGE: API caller is logged in.
-	 * 
+	 *
 	 * @OA\Property(type="Boolean", example=true)
 	 */
-    public bool $loggedIn;
+	public bool $loggedIn;
 
 	/**
 	 * UNCLEAR USAGE: API caller role in system  is the role foodsaver ("fs").
@@ -37,8 +34,8 @@ class UserDetailsModel
 	public bool $foodsaver;
 
 	/**
-	 * The foodsaver is verified by a ambassador to a foodsharer. The status of verification is related to the home region.
-	 * If the user change his home region then the verification status is lost.
+	 * The user is verified by a ambassador to a foodsharer. The status of verification is related to the home region.
+	 * If the user change the home region then the verification status is lost.
 	 *
 	 * @OA\Property(type="Boolean", example=true)
 	 */
@@ -56,7 +53,7 @@ class UserDetailsModel
 	 *
 	 * @OA\Property(type="string", example="Hamburg", maxLength=120)
 	 */
-    public ?string $regionName = "";
+	public ?string $regionName = '';
 
 	/**
 	 * NEW: The user have finished the quiz to choice a home region.
@@ -64,141 +61,143 @@ class UserDetailsModel
 	 * @OA\Property(type="Boolean", example=true)
 	 */
 	public bool $isRegionQuizDone;
-	
+
 	/**
-	 * Public text to describe the user by it self
-	 * 
+	 * Public text to describe the user by it self.
+	 *
 	 * @OA\Property(type="string", example=true, maxLength=16777215)
 	 */
-    public string $aboutMePublic = "";
+	public string $aboutMePublic = '';
 
 	/**
-	 * Foodsharing internal text to describe the user by it self
-	 * 
+	 * Foodsharing internal text to describe the user by it self.
+	 *
 	 * @OA\Property(type="string", example="", maxLength=16777215)
 	 */
-	public string $aboutMeIntern = "";
+	public string $aboutMeIntern = '';
 
 	/**
-	 * First name of the user
-	 * 
-	 * @OA\Property(type="string", example=true, maxLength=120)
-	 */
-	public ?string $firstname = "";
-
-	/**
-	 * Last name of the user
+	 * First name of the user.
 	 *
 	 * @OA\Property(type="string", example=true, maxLength=120)
 	 */
-	public ?string $lastname = "";
+	public ?string $firstname = '';
 
 	/**
-	 * Gender of the user
-	 * 
+	 * Last name of the user.
+	 *
+	 * @OA\Property(type="string", example=true, maxLength=120)
+	 */
+	public ?string $lastname = '';
+
+	/**
+	 * Gender of the user.
+	 *
 	 * 	- 0: NOT_SELECTED
 	 * 	- 1: MALE
 	 * 	- 2: FEMALE
 	 *  - 3: DIVERSE
-	 * 
-	 * @OA\Property(type="int", enum=[0, 1, 2, 3])
+	 *
+	 * @OA\Property(type="int", enum={0, 1, 2, 3})
 	 */
-	public ?int $gender = 0;
+	public int $gender = 0;
 
 	/**
-	 *
 	 * @OA\Property(type="string", example=true)
 	 */
-    public ?string $mailboxId = "";
+	public ?string $mailboxId = '';
 
 	/**
-	 *
 	 * @OA\Property(type="string", example=true)
 	 */
-	public ?string $hasCalendarToken = "";
-	
-	/**
-	 *
-	 * @OA\Property(type="string", example=true)
-	 */
-	public ?string $photo = "";
+	public ?string $hasCalendarToken = '';
 
 	/**
+	 * Path to user picture.
 	 *
-	 * @OA\Property(type="string", example=true)
+	 * @OA\Property(type="string", format="uri",example="/upload/d87ce740-0985-11ed-861d-0242ac120002", maxLength=50)
 	 */
-	public ?string $sleeping = "";
+	public ?string $photo = '';
 
 	/**
-	 *
 	 * @OA\Property(type="string", example=true)
 	 */
-	public ?string $address = "";
+	public ?string $sleeping = '';
 
 	/**
+	 * Living address of user.
 	 *
-	 * @OA\Property(type="string", example=true)
+	 * @OA\Property(type="string", example=true, maxLength=120)
 	 */
-	public ?string $postcode = "";
+	public ?string $address = '';
 
 	/**
+	 * Living city of user.
 	 *
-	 * @OA\Property(type="string", example=true)
+	 * @OA\Property(type="string", example=true, maxLength=100)
 	 */
-	public ?string $email = "";
+	public ?string $city = '';
 
 	/**
+	 * Living address zip code of user.
 	 *
-	 * @OA\Property(type="string", example=true)
+	 * @OA\Property(type="string", example="69123", maxLength=10)
 	 */
-	public ?string $landline = ""; // Telefon
+	public ?string $postcode = '';
 
 	/**
+	 * E-Mail address of the user which is used for user account verification ewsletter subscribtions.
 	 *
-	 * @OA\Property(type="string", example=true)
+	 * @OA\Property(type="email", example="no-response@foodsharing.de", maxLength=120)
 	 */
-	public ?string $mobile = "";
+	public ?string $email = '';
 
 	/**
+	 * Contact number to call user.
 	 *
-	 * @OA\Property(type="string", example=true)
+	 * @OA\Property(type="string", example="+49 30 123456789", maxLength=50)
 	 */
-	public ?string $birthday = "";
+	public ?string $landline = ''; // Telefon
 
 	/**
+	 * Mobile contact number to call user.
 	 *
-	 * @OA\Property(type="string", example=true)
+	 * @OA\Property(type="string", example="+49 179 12345678", maxLength=50)
+	 */
+	public ?string $mobile = '';
+
+	/**
+	 * Birthday of the user.
+	 *
+	 * @OA\Property(type="string", format="date", example="1983-04-15")
+	 */
+	public ?string $birthday = '';
+
+	/**
+	 * @Model(type=CoordinatesModel::class)
 	 */
 	public ?CoordinatesModel $coordinates = null;
-    
 
 	/**
-	 *
 	 * @OA\Property(type="string", example=true)
 	 */
-	public ?string $role = "";
- 
+	public ?string $role = '';
+
 	/**
-	 *
 	 * @OA\Property(type="string", example=true)
 	 */
-	public ?string $position = "";
-
+	public ?string $position = '';
 
 	/**
-	 *
-	 * @OA\Property(type="string", example=true)
+	 * @Model(type=UserStatisticsModel::class)
 	 */
 	public ?UserStatisticsModel $stats = null;
 
 	/**
-	 *
-	 * @OA\Property(type="string", example=true)
+	 * @Model(type=UserPermissionsModel::class)
 	 */
 	public ?UserPermissionsModel $permissions = null;
 }
-
-
 
 /*
 $loggedIn = $this->session->may();
@@ -263,4 +262,4 @@ $loggedIn = $this->session->may();
 			$response['role'] = $data['rolle'];
 			$response['position'] = $data['position'];
 		}
-        */
+		*/
