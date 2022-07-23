@@ -5,19 +5,23 @@ namespace Foodsharing\RestApi\Models\User;
 use OpenApi\Annotations as OA;
 
 /**
- * Desribes foodsharing user and this information.
+ * Describes the geogrpahic coordinates for visualization on maps.
  *
  * @OA\Schema(required={"lat", "lon"})
  */
 class CoordinatesModel
 {
 	/**
-	 * @OA\Property(type="string", example="Govinda Natur GmbH")
+	 * Latitude.
+	 *
+	 * @OA\Property(type="string", example="2.520007")
 	 */
 	public float $lat;
 
 	/**
-	 * @OA\Property(type="string", example="Govinda Natur GmbH")
+	 * Longitude.
+	 *
+	 *  @OA\Property(type="string", example="13.404954")
 	 */
 	public int $lon;
 }

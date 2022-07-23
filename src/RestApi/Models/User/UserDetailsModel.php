@@ -93,9 +93,9 @@ class UserDetailsModel
 	/**
 	 * Gender of the user.
 	 *
-	 * 	- 0: NOT_SELECTED
-	 * 	- 1: MALE
-	 * 	- 2: FEMALE
+	 *  - 0: NOT_SELECTED
+	 *  - 1: MALE
+	 *  - 2: FEMALE
 	 *  - 3: DIVERSE
 	 *
 	 * @OA\Property(type="int", enum={0, 1, 2, 3})
@@ -120,9 +120,15 @@ class UserDetailsModel
 	public ?string $photo = '';
 
 	/**
-	 * @OA\Property(type="string", example=true)
+	 * UNCLEAR Meaning of values.
+	 *
+	 * 	- 0: NONE
+	 *  - 1: TEMP
+	 *  - 2: FULL
+	 *
+	 * @OA\Property(type="int", example=0)
 	 */
-	public ?string $sleeping = '';
+	public ?int $sleeping = 0;
 
 	/**
 	 * Living address of user.
@@ -134,14 +140,14 @@ class UserDetailsModel
 	/**
 	 * Living city of user.
 	 *
-	 * @OA\Property(type="string", example=true, maxLength=100)
+	 * @OA\Property(type="string", example="Berlin", maxLength=100)
 	 */
 	public ?string $city = '';
 
 	/**
 	 * Living address zip code of user.
 	 *
-	 * @OA\Property(type="string", example="69123", maxLength=10)
+	 * @OA\Property(type="string", example="10115", maxLength=10)
 	 */
 	public ?string $postcode = '';
 
@@ -157,7 +163,7 @@ class UserDetailsModel
 	 *
 	 * @OA\Property(type="string", example="+49 30 123456789", maxLength=50)
 	 */
-	public ?string $landline = ''; // Telefon
+	public ?string $landline = '';
 
 	/**
 	 * Mobile contact number to call user.
@@ -174,17 +180,30 @@ class UserDetailsModel
 	public ?string $birthday = '';
 
 	/**
+	 * Living home position of user.
+	 *
 	 * @Model(type=CoordinatesModel::class)
 	 */
 	public ?CoordinatesModel $coordinates = null;
 
 	/**
-	 * @OA\Property(type="string", example=true)
+	 *  Role of the user in the foodsharing system.
+	 *
+	 * 	- 0: FOODSHARER
+	 *  - 1: FOODSAVER
+	 *  - 2: STORE_MANAGER
+	 *  - 3: AMBASSADOR
+	 *  - 4: ORGA
+	 *  - 5: SITE_ADMIN
+	 *
+	 * @OA\Property(type="int", example=1)
 	 */
-	public ?string $role = '';
+	public ?int $role = '';
 
 	/**
-	 * @OA\Property(type="string", example=true)
+	 * UNCLEAR Meaning of the field waht is the difference between role and position?
+	 *
+	 * @OA\Property(type="string", example="", maxLength=255)
 	 */
 	public ?string $position = '';
 
