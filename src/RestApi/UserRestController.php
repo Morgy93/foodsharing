@@ -283,8 +283,6 @@ class UserRestController extends AbstractFOSRestController
 	 * 		response="200",
 	 * 		description="Success.",
 	 * 		@OA\JsonContent(oneOf={
-	 *               @OA\Schema(type="object",ref=@Model(type=PublicUserModel::class)),
-	 *               @OA\Schema(type="object",ref=@Model(type=LoggedInUserModel::class)),
 	 *               @OA\Schema(type="object",ref=@Model(type=EditableUserModel::class)),
 	 *               @OA\Schema(type="object",ref=@Model(type=AdminUserDetailsModel::class))
 	 *           }
