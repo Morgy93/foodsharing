@@ -86,7 +86,6 @@ class StoreRestController extends AbstractFOSRestController
 	/**
 	 * Provides a list of all foodsaver related stores and the next picks status.
 	 *
-	 * @OA\Tag(name="stores")
 	 * @OA\Tag(name="my")
 	 *
 	 * @OA\Response(

@@ -2,34 +2,21 @@
 
 namespace Foodsharing\RestApi\Models\User;
 
+use Foodsharing\RestApi\Models\Profile\ProfileModel;
 use Nelmio\ApiDocBundle\Annotation\Model;
 use OpenApi\Annotations as OA;
 
 /**
- * Desribes foodsharing user and this information.
+ * Describe user information for a user which is allowed to edit the user (for example user it self, ambassador for region).
  *
- * @OA\Schema(required={"id", "loggedIn", "foodsaver", "isVerified"})
+ * @OA\Schema()
  */
-class UserDetailsModel
+class EditableUserModel extends ProfileModel
 {
-	/**
-	 * The foodsharer identifier of user.
-	 *
-	 * @OA\Property(format="int32", example=1)
-	 */
-	public int $id;
-
-	/**
-	 * UNCLEAR USAGE: API caller is logged in.
-	 *
-	 * @OA\Property(type="Boolean", example=true)
-	 */
-	public bool $loggedIn;
-
 	/**
 	 * UNCLEAR USAGE: API caller role in system  is the role foodsaver ("fs").
 	 *
-	 * @OA\Property(type="Boolean", example=true)
+	 * @OA\Property(example=true)
 	 */
 	public bool $foodsaver;
 
@@ -37,173 +24,61 @@ class UserDetailsModel
 	 * The user is verified by a ambassador to a foodsharer. The status of verification is related to the home region.
 	 * If the user change the home region then the verification status is lost.
 	 *
-	 * @OA\Property(type="Boolean", example=true)
+	 * @OA\Property(example=true)
 	 */
 	public bool $isVerified;
 
 	/**
 	 * Home region id of the user. The user have only one home region which.
 	 *
-	 * @OA\Property(type="int32", example=1)
+	 * @OA\Property(example=1)
 	 */
 	public ?int $regionId = null;
 
 	/**
 	 * Home region name of the user. The user have only a home region of the foodsharing quiz is finished successful.
 	 *
-	 * @OA\Property(type="string", example="Hamburg", maxLength=120)
+	 * @OA\Property(example="Hamburg", maxLength=120)
 	 */
 	public ?string $regionName = '';
 
 	/**
-	 * NEW: The user have finished the quiz to choice a home region.
+	 * Related mailbox of the user.
 	 *
-	 * @OA\Property(type="Boolean", example=true)
-	 */
-	public bool $isRegionQuizDone;
-
-	/**
-	 * Public text to describe the user by it self.
-	 *
-	 * @OA\Property(type="string", example=true, maxLength=16777215)
-	 */
-	public string $aboutMePublic = '';
-
-	/**
-	 * Foodsharing internal text to describe the user by it self.
-	 *
-	 * @OA\Property(type="string", example="", maxLength=16777215)
-	 */
-	public string $aboutMeIntern = '';
-
-	/**
-	 * First name of the user.
-	 *
-	 * @OA\Property(type="string", example=true, maxLength=120)
-	 */
-	public ?string $firstname = '';
-
-	/**
-	 * Last name of the user.
-	 *
-	 * @OA\Property(type="string", example=true, maxLength=120)
-	 */
-	public ?string $lastname = '';
-
-	/**
-	 * Gender of the user.
-	 *
-	 *  - 0: NOT_SELECTED
-	 *  - 1: MALE
-	 *  - 2: FEMALE
-	 *  - 3: DIVERSE
-	 *
-	 * @OA\Property(type="int", enum={0, 1, 2, 3})
-	 */
-	public int $gender = 0;
-
-	/**
-	 * @OA\Property(type="string", example=true)
+	 * @OA\Property(example=true)
 	 */
 	public ?string $mailboxId = '';
 
 	/**
-	 * @OA\Property(type="string", example=true)
+	 * @OA\Property(example=true)
 	 */
 	public ?string $hasCalendarToken = '';
 
 	/**
-	 * Path to user picture.
+	 * User is not available for community.
 	 *
-	 * @OA\Property(type="string", format="uri",example="/upload/d87ce740-0985-11ed-861d-0242ac120002", maxLength=50)
+	 * @OA\Property(example=false)
 	 */
-	public ?string $photo = '';
-
-	/**
-	 * UNCLEAR Meaning of values.
-	 *
-	 * 	- 0: NONE
-	 *  - 1: TEMP
-	 *  - 2: FULL
-	 *
-	 * @OA\Property(type="int", example=0)
-	 */
-	public ?int $sleeping = 0;
-
-	/**
-	 * Living address of user.
-	 *
-	 * @OA\Property(type="string", example=true, maxLength=120)
-	 */
-	public ?string $address = '';
-
-	/**
-	 * Living city of user.
-	 *
-	 * @OA\Property(type="string", example="Berlin", maxLength=100)
-	 */
-	public ?string $city = '';
-
-	/**
-	 * Living address zip code of user.
-	 *
-	 * @OA\Property(type="string", example="10115", maxLength=10)
-	 */
-	public ?string $postcode = '';
-
-	/**
-	 * E-Mail address of the user which is used for user account verification ewsletter subscribtions.
-	 *
-	 * @OA\Property(type="email", example="no-response@foodsharing.de", maxLength=120)
-	 */
-	public ?string $email = '';
-
-	/**
-	 * Contact number to call user.
-	 *
-	 * @OA\Property(type="string", example="+49 30 123456789", maxLength=50)
-	 */
-	public ?string $landline = '';
-
-	/**
-	 * Mobile contact number to call user.
-	 *
-	 * @OA\Property(type="string", example="+49 179 12345678", maxLength=50)
-	 */
-	public ?string $mobile = '';
-
-	/**
-	 * Birthday of the user.
-	 *
-	 * @OA\Property(type="string", format="date", example="1983-04-15")
-	 */
-	public ?string $birthday = '';
-
-	/**
-	 * Living home position of user.
-	 *
-	 * @Model(type=CoordinatesModel::class)
-	 */
-	public ?CoordinatesModel $coordinates = null;
+	public ?bool $sleeping = false;
 
 	/**
 	 *  Role of the user in the foodsharing system.
 	 *
-	 * 	- 0: FOODSHARER
+	 *  - 0: FOODSHARER
 	 *  - 1: FOODSAVER
 	 *  - 2: STORE_MANAGER
 	 *  - 3: AMBASSADOR
 	 *  - 4: ORGA
 	 *  - 5: SITE_ADMIN
 	 *
-	 * @OA\Property(type="int", example=1)
+	 * @OA\Property(example=1, enum={0, 1, 2, 3, 4, 5})
 	 */
-	public ?int $role = '';
+	public ?int $role = 0;
 
 	/**
 	 * UNCLEAR Meaning of the field waht is the difference between role and position?
 	 *
-	 * @OA\Property(type="string", example="", maxLength=255)
+	 * @OA\Property(example="", maxLength=255)
 	 */
 	public ?string $position = '';
 

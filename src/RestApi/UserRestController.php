@@ -27,7 +27,10 @@ use Foodsharing\Permissions\ReportPermissions;
 use Foodsharing\Permissions\StorePermissions;
 use Foodsharing\Permissions\UserPermissions;
 use Foodsharing\Permissions\WorkGroupPermissions;
-use Foodsharing\RestApi\Models\User\UserDetailsModel;
+use Foodsharing\RestApi\Models\User\AdminUserDetailsModel;
+use Foodsharing\RestApi\Models\User\EditableUserModel;
+use Foodsharing\RestApi\Models\User\LoggedInUserModel;
+use Foodsharing\RestApi\Models\User\PublicUserModel;
 use Foodsharing\Utility\EmailHelper;
 use FOS\RestBundle\Controller\AbstractFOSRestController;
 use FOS\RestBundle\Controller\Annotations as Rest;
@@ -150,7 +153,7 @@ class UserRestController extends AbstractFOSRestController
 	 * Checks if the user is logged in  and lists the basic user information. Returns 401 if not logged in or 200 and
 	 * the user data.
 	 *
-	 * @OA\Tag(name="user")
+	 * @OA\Tag(name="my")
 	 *
 	 * @Rest\Get("user/current")
 	 */
@@ -239,13 +242,25 @@ class UserRestController extends AbstractFOSRestController
 	/**
 	 * Lists the detailed profile of a user. Only returns basic information if not logged inor 200 and the data.
 	 *
+	 * The information details depend on the user access rights.
+	 *  - PublicUserModel: Public available
+	 *  - LoggedInUserModel: Available to communicaty
+	 *  - EditableUserModel: Avaiable to user it self, ambassador or simular rights
+	 *  - AdminUserDetailsModel: ambassador or simular rights
+	 *
 	 * @OA\Tag(name="user")
 	 *
 	 * @Rest\Get("user/{id}/details", requirements={"id" = "\d+"})
 	 * @OA\Response(
 	 * 		response="200",
 	 * 		description="Success.",
-	 *      @Model(type=UserDetailsModel::class)
+	 * 		@OA\JsonContent(oneOf={
+	 *               @OA\Schema(type="object",ref=@Model(type=PublicUserModel::class)),
+	 *               @OA\Schema(type="object",ref=@Model(type=LoggedInUserModel::class)),
+	 *               @OA\Schema(type="object",ref=@Model(type=EditableUserModel::class)),
+	 *               @OA\Schema(type="object",ref=@Model(type=AdminUserDetailsModel::class))
+	 *           }
+	 *      )
 	 * )
 	 */
 	public function userDetailsAction(int $id): Response
@@ -261,14 +276,19 @@ class UserRestController extends AbstractFOSRestController
 	/**
 	 * Lists the detailed profile of the current user. Returns 401 if not logged in or 200 and the data.
 	 *
-	 * @OA\Tag(name="user")
 	 * @OA\Tag(name="my")
 	 *
 	 * @Rest\Get("user/current/details")
 	 * @OA\Response(
 	 * 		response="200",
 	 * 		description="Success.",
-	 *      @Model(type=UserDetailsModel::class)
+	 * 		@OA\JsonContent(oneOf={
+	 *               @OA\Schema(type="object",ref=@Model(type=PublicUserModel::class)),
+	 *               @OA\Schema(type="object",ref=@Model(type=LoggedInUserModel::class)),
+	 *               @OA\Schema(type="object",ref=@Model(type=EditableUserModel::class)),
+	 *               @OA\Schema(type="object",ref=@Model(type=AdminUserDetailsModel::class))
+	 *           }
+	 *      )
 	 * )
 	 */
 	public function currentUserDetailsAction(): Response

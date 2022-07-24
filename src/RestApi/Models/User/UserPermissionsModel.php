@@ -5,9 +5,9 @@ namespace Foodsharing\RestApi\Models\User;
 use OpenApi\Annotations as OA;
 
 /**
- * Desribes foodsharing user and this information.
+ * Describes the management permissions of the user.
  *
- * @OA\Schema(required={"weight", "count"})
+ * @OA\Schema()
  */
 class UserPermissionsModel
 {
@@ -15,52 +15,52 @@ class UserPermissionsModel
 	 * Represent the permission to edit this profile (My user profil or admin user)
 	 * Rated to ProfilePermissions.
 	 *
-	 * @OA\Property(format="boolean", example=false)
+	 * @OA\Property(example=false)
 	 */
 	public bool $mayEditUserProfile;
 
 	/**
-	 * @OA\Property(type="string", example="Govinda Natur GmbH")
+	 * @OA\Property(example=false)
 	 */
 	public bool $mayAdministrateUserProfile;
 
 	/**
-	 * @OA\Property(type="string", example="Govinda Natur GmbH")
+	 * @OA\Property(example=false)
 	 */
 	public bool $administrateBlog;
 
 	/**
-	 * @OA\Property(type="string", example="Govinda Natur GmbH")
+	 * @OA\Property(example=false)
 	 */
 	public bool $editQuiz;
 
 	/**
-	 * @OA\Property(type="string", example="Govinda Natur GmbH")
+	 * @OA\Property(example=false)
 	 */
 	public bool $handleReports;
 
 	/**
-	 * @OA\Property(type="string", example="Govinda Natur GmbH")
+	 * @OA\Property(example=false)
 	 */
 	public bool $addStore;
 
 	/**
-	 * @OA\Property(type="string", example="Govinda Natur GmbH")
+	 * @OA\Property(example=false)
 	 */
 	public bool $manageMailboxes;
 
 	/**
-	 * @OA\Property(type="string", example="Govinda Natur GmbH")
+	 * @OA\Property(example=false)
 	 */
 	public bool $editContent;
 
 	/**
-	 * @OA\Property(type="string", example="Govinda Natur GmbH")
+	 * @OA\Property(example=false)
 	 */
 	public bool $administrateNewsletterEmail;
 
 	/**
-	 * @OA\Property(type="string", example="Govinda Natur GmbH")
+	 * @OA\Property(example=false)
 	 */
 	public bool $administrateRegions;
 }

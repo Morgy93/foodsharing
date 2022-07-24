@@ -5,21 +5,23 @@ namespace Foodsharing\RestApi\Models\User;
 use OpenApi\Annotations as OA;
 
 /**
- * Desribes foodsharing user and this information.
+ * Describes statistical information about the user.
  *
- * @OA\Schema(required={"weight", "count"})
+ * @OA\Schema(})
  */
 class UserStatisticsModel
 {
 	/**
-	 * @OA\Property(type="string", example="Govinda Natur GmbH")
+	 * saved food in kg.
+	 *
+	 * @OA\Property(example=420)
 	 */
 	public float $weight;
 
 	/**
-	 * ?
+	 * Count of picked up.
 	 *
-	 * @OA\Property(type="string", example="Govinda Natur GmbH")
+	 * @OA\Property(example=42)
 	 */
 	public int $count;
 }
