@@ -7,7 +7,7 @@ use OpenApi\Annotations as OA;
 /**
  * Describes statistical information about the user.
  *
- * @OA\Schema(})
+ * @OA\Schema()
  */
 class UserStatisticsModel
 {
