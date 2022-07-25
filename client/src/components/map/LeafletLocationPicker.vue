@@ -10,7 +10,6 @@
       ref="marker"
       :lat-lng="coordinates"
       :icon="icon"
-      :draggable="false"
     />
   </leaflet-map>
 </template>
