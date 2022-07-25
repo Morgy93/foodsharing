@@ -487,7 +487,7 @@ svg {
 }
 
 .call-to-action-image {
-  background-image: url(/img/startpage/mach-mit.png);
+  background-image: url(img/startpage/mach-mit.png);
   background-size: cover;
 
   & .container {
@@ -511,7 +511,7 @@ svg {
 }
 
 .teaser-map {
-  background-image: url(/img/startpage/karte.jpg);
+  background-image: url(img/startpage/karte.jpg);
   background-size: cover;
   min-height: 40rem;
 }

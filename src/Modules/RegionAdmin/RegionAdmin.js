@@ -1,7 +1,7 @@
 import '@/core'
 import '@/globals'
 import $ from 'jquery'
-import i18n from '@/i18n'
+import i18n from '@/helper/i18n.js'
 import 'js/tageditWrapper'
 import 'js/dynatree/jquery.dynatree'
 import 'js/dynatree/skin/ui.dynatree.css'
