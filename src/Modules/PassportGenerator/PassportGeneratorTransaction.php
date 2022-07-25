@@ -47,7 +47,7 @@ class PassportGeneratorTransaction extends AbstractController
 		$this->translator = $translator;
 	}
 
-	public function generate(array $foodsavers, bool $cutMarkers = true, $region = null): void
+	public function generate(array $foodsavers, bool $cutMarkers = true, bool $protectPDF = false, $region = null): void
 	{
 		$tmp = [];
 		foreach ($foodsavers as $foodsaver) {
@@ -57,6 +57,10 @@ class PassportGeneratorTransaction extends AbstractController
 		$is_generated = [];
 
 		$pdf = new Fpdi();
+
+		if ($protectPDF) {
+			$pdf->SetProtection(['print', 'copy', 'modify', 'assemble'], '', null, 0, null);
+		}
 
 		if (count($tmp) === 1) {
 			$pdf->AddPage('L', [53.3, 83]);

@@ -121,18 +121,7 @@ class SettingsView extends View
 						return;
 					}
 				}
-				ajax.req("settings", "sleepmode", {
-					method: "post",
-					data: {
-						status: $("#sleep_status").val(),
-						from: $("#sleeprange_from").val(),
-						until: $("#sleeprange_to").val(),
-						msg: $("#sleep_msg").val()
-					},
-					success: function () {
-						pulseSuccess("' . $this->translator->trans('settings.sleep.saved') . '");
-					}
-				});
+				trySetSleepMode()
 			});
 			$("#formwrapper").show();
 		');

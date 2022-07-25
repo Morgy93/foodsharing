@@ -34,7 +34,7 @@ class Session
 
 	// update this whenever adding new fields to the session!!!
 	// this should be a unix timestamp, together with a human readable date in a comment.
-	const LAST_SESSION_SCHEMA_CHANGE = 1608472800; // 2020-12-20 14:00:00 UTC
+	private const LAST_SESSION_SCHEMA_CHANGE = 1608472800; // 2020-12-20 14:00:00 UTC
 
 	private const SESSION_TIMESTAMP_FIELD_NAME = 'last_updated_ts';
 
@@ -47,11 +47,11 @@ class Session
 		Role::SITE_ADMIN => 'admin',
 	];
 
-	const DEFAULT_LOCALE = 'de';
+	public const DEFAULT_LOCALE = 'de';
 
-	const DEFAULT_NORMAL_SESSION_TIMESPAN = '24 hours';
+	private const DEFAULT_NORMAL_SESSION_TIMESPAN = '24 hours';
 
-	const DEFAULT_PERSISTENT_SESSION_TIMESPAN = '1 day';
+	private const DEFAULT_PERSISTENT_SESSION_TIMESPAN = '1 day';
 
 	public function __construct(
 		Mem $mem,

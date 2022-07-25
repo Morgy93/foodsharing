@@ -8,6 +8,7 @@ use Foodsharing\Modules\Core\Database;
 use Foodsharing\Modules\Core\DBConstants\Foodsaver\Role;
 use Foodsharing\Modules\Core\DBConstants\Region\RegionIDs;
 use Foodsharing\Modules\Core\DBConstants\Region\Type;
+use Foodsharing\Modules\Core\DBConstants\StoreTeam\MembershipStatus;
 use Foodsharing\Modules\Region\ForumFollowerGateway;
 use Foodsharing\Utility\DataHelper;
 use Foodsharing\Utility\ImageHelper;
@@ -145,6 +146,30 @@ class FoodsaverGateway extends BaseGateway
 			], [
 			'id' => $fsId
 		]);
+	}
+
+	public function getCountCommonStores(int $fs_viewer, int $fs_viewed): int
+	{
+		$stm = '
+				SELECT COUNT(*) as count
+				FROM (
+					SELECT betrieb_id
+						FROM fs_betrieb_team
+					WHERE foodsaver_id = :fs_viewer
+						AND ACTIVE = :member_status_viewer
+						INTERSECT
+					SELECT betrieb_id
+							FROM fs_betrieb_team
+					WHERE foodsaver_id = :fs_viewed) a
+		';
+
+		$res = $this->db->fetchAll($stm, [
+			':fs_viewer' => $fs_viewer,
+			':fs_viewed' => $fs_viewed,
+			'member_status_viewer' => MembershipStatus::MEMBER
+		]);
+
+		return $res['0']['count'];
 	}
 
 	public function getFoodsaverBasics(int $fsId): array

@@ -11,7 +11,9 @@ use FOS\RestBundle\Controller\Annotations as Rest;
 use FOS\RestBundle\Request\ParamFetcher;
 use OpenApi\Annotations as OA;
 use Symfony\Component\HttpFoundation\Response;
-use Symfony\Component\HttpKernel\Exception\HttpException;
+use Symfony\Component\HttpKernel\Exception\AccessDeniedHttpException;
+use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
+use Symfony\Component\HttpKernel\Exception\UnauthorizedHttpException;
 
 /**
  * Rest controller for newsletter functions.
@@ -40,7 +42,7 @@ final class NewsletterRestController extends AbstractFOSRestController
 
 	/**
 	 * Sends a test newsletter email to the given address. Returns 200 on success, 401 if the current user may not
-	 * send newsletters, or 500 if the email address is invalid.
+	 * send newsletters, or 400 if the email address is invalid.
 	 *
 	 * @OA\Tag(name="newsletter")
 	 *
@@ -51,13 +53,16 @@ final class NewsletterRestController extends AbstractFOSRestController
 	 */
 	public function sendTestEmailAction(ParamFetcher $paramFetcher): Response
 	{
+		if (!$this->session->id()) {
+			throw new UnauthorizedHttpException('', self::NOT_ALLOWED);
+		}
 		if (!$this->newsletterEmailPermissions->mayAdministrateNewsletterEmail()) {
-			throw new HttpException(401, self::NOT_ALLOWED);
+			throw new AccessDeniedHttpException(self::NOT_ALLOWED);
 		}
 
 		$address = $paramFetcher->get('address');
 		if (!$this->emailHelper->validEmail($address)) {
-			throw new HttpException(500, self::INVALID_ADDRESS);
+			throw new BadRequestHttpException(self::INVALID_ADDRESS);
 		}
 
 		$this->emailHelper->libmail(false, $address, $paramFetcher->get('subject'), $paramFetcher->get('message'));

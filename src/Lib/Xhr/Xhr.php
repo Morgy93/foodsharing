@@ -30,18 +30,6 @@ class Xhr
 	}
 
 	/**
-	 * Method to set the status code returned to the client.
-	 *
-	 * @param int $code
-	 *
-	 * @deprecated Only SettingsXhr is still using this, do not add new usage!
-	 */
-	public function setStatus($code): void
-	{
-		$this->status = (int)$code;
-	}
-
-	/**
 	 * Add data accessible by client side js code.
 	 *
 	 * example:

@@ -6,7 +6,7 @@ import $ from 'jquery'
 
 import 'js/tageditWrapper'
 
-import i18n from '@/i18n'
+import i18n from '@/helper/i18n'
 import { expose } from '@/utils'
 import './StoreUser.css'
 
@@ -24,6 +24,7 @@ import Store from './components/Store'
 import StoreApplications from './components/StoreApplications'
 import StoreInfos from './components/StoreInfos'
 import StoreTeam from './components/StoreTeam'
+import StoreOptions from './components/StoreOptions'
 
 expose({
   u_betrieb_sign_out,
@@ -114,6 +115,7 @@ $(document).ready(() => {
     StoreApplications,
     StoreInfos,
     StoreTeam,
+    StoreOptions,
   })
   vueApply('#vue-pickup-history', true) // PickupHistory
   vueApply('#vue-pickuplist', true) // PickupList
@@ -121,4 +123,5 @@ $(document).ready(() => {
   vueApply('#vue-store-applications', true) // StoreApplications
   vueApply('#vue-storeinfos', true) // StoreInfos
   vueApply('#vue-storeteam', true) // StoreTeam
+  vueApply('#vue-storeoptions', true) // StoreOptions
 })

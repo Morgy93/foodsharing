@@ -23,13 +23,6 @@ final class RegionXhr extends Control
 	public function bubble(): array
 	{
 		$region_id = $_GET['id'];
-		$pin = $this->regionGateway->getRegionPin($region_id);
-		if (!$pin) {
-			return [
-				'status' => 1,
-				'script' => 'pulseError("' . $this->translator->trans('pin.error') . '");',
-			];
-		}
 		$region = $this->regionGateway->getRegionDetails($region_id);
 
 		$dia = new XhrDialog();
@@ -40,8 +33,6 @@ final class RegionXhr extends Control
 			'component' => 'CommunityBubble',
 			'props' => [
 				'regionId' => $region['id'],
-				'name' => $region['name'],
-				'desc' => $pin['desc']
 			],
 			'initialData' => [],
 		]));

@@ -1,6 +1,6 @@
 <template>
   <!-- eslint-disable vue/max-attributes-per-line -->
-  <div class="profile-container bootstrap">
+  <div class="profile-container">
     <b-jumbotron
       class="w-100 mx-auto my-4 position-relative"
       lead-tag="h2"

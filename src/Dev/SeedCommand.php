@@ -99,6 +99,61 @@ class SeedCommand extends Command implements CustomCommandInterface
 		return [];
 	}
 
+	protected function createEngagementsStat(int $region1, $eventid = 0)
+	{
+		$I = $this->helper;
+		$password = 'user';
+		$user = $I->createStoreCoordinator($password, ['email' => 'userengagement@example.com', 'bezirk_id' => $region1]);
+		$I->addRegionMember($region1, $user['id']);
+
+		$I->createEvents($region1, $user['id']);
+
+		$store = $I->createStore($region1, null, null, ['betrieb_status_id' => '5', 'betrieb_kategorie_id' => '1']);
+		$I->addStoreTeam($store['id'], $user['id'], true);
+		$I->addRecurringPickup($store['id']);
+		for ($i = 1; $i < 3; ++$i) {
+			$this->helper->addCollector($user['id'], $store['id'], ['date' => Carbon::today()->add('minute', 60 * $i)->toDateTimeString()]);
+		}
+
+		$storeEinAb = $I->createStore($region1, null, null, ['betrieb_status_id' => '5', 'betrieb_kategorie_id' => '6', 'abholmenge' => '0']);
+		$I->addStoreTeam($storeEinAb['id'], $user['id'], false);
+		$this->helper->addCollector($user['id'], $storeEinAb['id'], ['date' => Carbon::now()->toDateTimeString()]);
+
+		$storepr = $I->createStore($region1, null, null, ['betrieb_status_id' => '5', 'betrieb_kategorie_id' => '11', 'abholmenge' => '0']);
+		$I->addStoreTeam($storepr['id'], $user['id'], false);
+		$this->helper->addCollector($user['id'], $storepr['id'], ['date' => Carbon::now()->toDateTimeString()]);
+
+		$storesuper = $I->createStore($region1, null, null, ['betrieb_status_id' => '5', 'betrieb_kategorie_id' => '14']);
+		$I->addStoreTeam($storesuper['id'], $user['id'], true);
+		for ($i = 1; $i < 3; ++$i) {
+			$this->helper->addCollector($user['id'], $storesuper['id'], ['date' => Carbon::today()->add('minute', 50 * $i)->toDateTimeString()]);
+		}
+
+		for ($i = 0; $i < 3; ++$i) {
+			$I->createFoodbasket($user['id'], ['time' => Carbon::now()->toDateString()]);
+		}
+
+		for ($i = 0; $i < 5; ++$i) {
+			$I->createFoodbasket($user['id'], ['time' => Carbon::now()->addWeek()->toDateString()]);
+		}
+
+		for ($i = 0; $i < 1; ++$i) {
+			$I->createFoodbasket($user['id'], ['time' => Carbon::now()->addWeek()->addWeek()->toDateString()]);
+		}
+
+		for ($i = 0; $i < 2; ++$i) {
+			$I->createFoodbasket($user['id'], ['time' => Carbon::now()->subWeek()->toDateString()]);
+		}
+
+		for ($i = 0; $i < 2; ++$i) {
+			$I->createFoodbasket($user['id'], ['time' => Carbon::now()->subWeek()->subWeek()->toDateString()]);
+		}
+
+		if ($eventid > 0) {
+			$I->addEventInvitation($eventid, $user['id'], ['status' => 1]);
+		}
+	}
+
 	protected function createFunctionWorkgroups(int $region1)
 	{
 		$I = $this->helper;
@@ -363,9 +418,15 @@ class SeedCommand extends Command implements CustomCommandInterface
 			$I->addRegionMember($id, $userbot['id']);
 			$I->addRegionAdmin($id, $userbot['id']);
 		}
+		// create event
+		$this->output->writeln('- create event');
+		$event = $I->createEvents($region1, $userbot['id']);
+
+		$this->output->writeln('- create engagement statistik user');
+		$this->createEngagementsStat($region1, $event['id']);
 
 		// create Community Pin
-		$this->output->writeln('Create community pin');
+		$this->output->writeln('- create community pin');
 		$I->createCommunityPin($region1);
 
 		// Create store team conversations
@@ -427,6 +488,7 @@ class SeedCommand extends Command implements CustomCommandInterface
 			$I->addStoreNotiz($user['id'], $store['id']);
 			$I->addForumThreadPost($thread['id'], $user['id']);
 			$this->addVerificationAndPassHistory($I, $user['id'], $userbot['id']);
+			$I->addEventInvitation($event['id'], $user['id']);
 			$this->output->write('.');
 		}
 		$this->output->writeln(' done');

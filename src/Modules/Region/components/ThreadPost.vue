@@ -1,26 +1,48 @@
 <template>
-  <!-- eslint-disable-next-line vue/max-attributes-per-line -->
-  <div :id="`post-${id}`" class="bootstrap">
-    <!-- eslint-disable-next-line vue/max-attributes-per-line -->
-    <div class="card mb-2" :class="{'disabledLoading': isLoading}">
-      <div class="card-header d-flex">
-        <span class="author">
-          {{ author.name }}
-        </span>
+  <div
+    :id="`post-${id}`"
+    class="thread"
+  >
+    <div
+      class="card mb-2"
+      :class="{'disabledLoading': isLoading}"
+    >
+      <div class="card-header d-flex align-items-center justify-content-between">
+        <a
+          class="d-flex align-items-center"
+          :href="$url('profile', author.id)"
+        >
+          <Avatar
+            v-if="wXS"
+            :url="author.avatar"
+            :is-sleeping="author.sleepStatus"
+            :size="35"
+            class="mr-2"
+          />
+          <strong class="author">
+            {{ author.name }}
+          </strong>
+        </a>
         <ThreadPostDate
           v-if="wXS"
           :link="deepLink"
           :date="createdAt"
-          classes="ml-auto"
           @scroll="$emit('scroll', $event)"
         />
       </div>
-      <div class="card-body row">
-        <div class="col-sm-3 avatarSide text-center">
-          <a :href="$url('profile', author.id)">
+      <div class="d-flex m-2">
+        <div
+          v-if="!wXS"
+          class="mr-2 pr-2 border-right border-light text-center"
+          style="min-width: 150px"
+        >
+          <a
+            :href="$url('profile', author.id)"
+            class="d-block"
+          >
             <Avatar
               :url="author.avatar"
-              :sleep-status="author.sleepStatus"
+              :is-sleeping="author.sleepStatus"
               :size="130"
               class="mb-2"
               :auto-scale="false"
@@ -31,35 +53,34 @@
             class="btn btn-sm btn-outline-primary"
             @click="openChat"
           >
-            <i class="fas fa-fw fa-comments" /> {{ $i18n('chat.open_chat') }}
+            <i class="fas fa-fw fa-comments" />
+            {{ $i18n('chat.open_chat') }}
           </a>
         </div>
         <div
-          class="col-sm-9"
+          class="body m-2 mr-md-5"
           v-html="body"
         />
       </div>
       <div class="card-footer">
-        <div class="row">
+        <div class="d-flex align-items-center justify-content-end justify-content-sm-between">
           <ThreadPostDate
             v-if="!wXS"
             :link="deepLink"
             :date="createdAt"
-            classes="col-auto text-muted pt-1 pl-3"
+            classes="text-muted"
             @scroll="$emit('scroll', $event)"
           />
-          <div class="col text-right">
-            <ThreadPostActions
-              :reactions="reactions"
-              :may-delete="mayReply && mayDelete"
-              :may-edit="mayEdit"
-              :may-reply="mayReply"
-              @delete="$emit('delete')"
-              @reaction-add="$emit('reaction-add', $event)"
-              @reaction-remove="$emit('reaction-remove', $event)"
-              @reply="$emit('reply', body)"
-            />
-          </div>
+          <ThreadPostActions
+            :reactions="reactions"
+            :may-delete="mayReply && mayDelete"
+            :may-edit="mayEdit"
+            :may-reply="mayReply"
+            @delete="$emit('delete')"
+            @reaction-add="$emit('reaction-add', $event)"
+            @reaction-remove="$emit('reaction-remove', $event)"
+            @reply="$emit('reply', body)"
+          />
         </div>
       </div>
     </div>
@@ -101,9 +122,3 @@ export default {
   },
 }
 </script>
-
-<style lang="scss" scoped>
-    .avatarSide {
-        border-right: 1px solid #eee;
-    }
-</style>

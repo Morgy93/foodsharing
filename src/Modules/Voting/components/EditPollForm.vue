@@ -143,7 +143,7 @@ import {
 } from 'bootstrap-vue'
 import { editPoll } from '@/api/voting'
 import { pulseError } from '@/script'
-import i18n from '@/i18n'
+import i18n from '@/helper/i18n'
 import { required, minLength } from 'vuelidate/lib/validators'
 
 export default {

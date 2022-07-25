@@ -3,7 +3,7 @@ import $ from 'jquery'
 import '@/core'
 import '@/globals'
 import '@/tablesorter'
-import i18n from '@/i18n'
+import i18n from '@/helper/i18n'
 import { verifyUser, deverifyUser } from '@/api/verification'
 import {
   showLoader,

@@ -17,7 +17,7 @@ import { initMap } from '@/mapUtils'
 import L from 'leaflet'
 import 'js/leafletWrapper'
 
-import 'mapbox-gl/dist/mapbox-gl.css'
+// import 'mapbox-gl/dist/mapbox-gl.css'
 import './Map.css'
 import { getMapMarkers } from '@/api/map'
 import { vueApply, vueRegister } from '@/vue'

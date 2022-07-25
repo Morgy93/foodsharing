@@ -85,9 +85,10 @@ class ProfileView extends View
 		$this->reportPermissions = $reportPermissions;
 		$this->groupFunctionGateway = $groupFunctionGateway;
 		$this->groupGateway = $groupGateway;
+		$this->imageService = $imageService;
 	}
 
-	public function profile(string $wallPosts, array $userStores = [], array $pickupsStat = []): void
+	public function profile(string $wallPosts, array $userStores = [], array $commitmentsStats = []): void
 	{
 		$page = new vPage($this->foodsaver['name'], $this->infos());
 		$fsId = $this->foodsaver['id'];
@@ -99,7 +100,76 @@ class ProfileView extends View
 		$maySeeBounceWarning = $this->profilePermissions->maySeeBounceWarning($fsId);
 		$maySeePickups = $this->profilePermissions->maySeePickups($fsId);
 		$maySeeStores = $this->profilePermissions->maySeeStores($fsId);
-		$maySeePickupsStat = $this->profilePermissions->maySeePickupsStat($fsId);
+		$maySeeCommitmentsStat = $this->profilePermissions->maySeeCommitmentsStat($fsId);
+
+		if ($this->foodsaver['rolle'] > Role::FOODSHARER) {
+			// MediationRequest
+			if ($this->regionGateway->getRegionOption($regionId, RegionOptionType::ENABLE_MEDIATION_BUTTON)) {
+				$mediationGroupEmail = $this->renderMediationRequest($regionId);
+			}
+
+			// ReportRequest
+			$isReportButtonEnabled = intval($this->regionGateway->getRegionOption($regionId, RegionOptionType::ENABLE_REPORT_BUTTON)) === 1;
+
+			if ($this->regionGateway->getRegionOption($regionId, RegionOptionType::ENABLE_REPORT_BUTTON)) {
+				$storeListOptions = [['value' => null, 'text' => $this->translator->trans('profile.choosestore')]];
+				foreach ($userStores as $store) {
+					$storeListOptions[] = ['value' => $store['id'], 'text' => $store['name']];
+				}
+				$isReportedIdReportAdmin = $this->groupFunctionGateway->isRegionFunctionGroupAdmin($regionId, WorkgroupFunction::REPORT, $this->foodsaver['id']);
+				$isReporterIdReportAdmin = $this->groupFunctionGateway->isRegionFunctionGroupAdmin($regionId, WorkgroupFunction::REPORT, $this->session->id());
+				$isReportedIdArbitrationAdmin = $this->groupFunctionGateway->isRegionFunctionGroupAdmin($regionId, WorkgroupFunction::ARBITRATION, $this->foodsaver['id']);
+				$isReporterIdArbitrationAdmin = $this->groupFunctionGateway->isRegionFunctionGroupAdmin($regionId, WorkgroupFunction::ARBITRATION, $this->session->id());
+
+				$hasReportGroup = $this->groupFunctionGateway->existRegionFunctionGroup($regionId, WorkgroupFunction::REPORT);
+				$reporterHasReportGroup = $hasReportGroup;
+
+				if ($hasReportGroup) {
+					$reportGroupId = $this->groupFunctionGateway->getRegionFunctionGroupId($regionId, WorkgroupFunction::REPORT);
+					$reportGroupDetails = $this->groupGateway->getGroupLegacy($reportGroupId);
+					$MailboxNameReportRequest = $this->mailboxGateway->getMailboxname($reportGroupDetails['mailbox_id']) ?? '';
+				}
+
+				$hasArbitrationGroup = $this->groupFunctionGateway->existRegionFunctionGroup($regionId, WorkgroupFunction::ARBITRATION);
+
+				if ($regionId != $this->session->getCurrentRegionId()) {
+					$reporterHasReportGroup = $this->groupFunctionGateway->existRegionFunctionGroup($this->session->getCurrentRegionId(), WorkgroupFunction::REPORT);
+				}
+
+				$buttonNameReportRequest = $this->translator->trans('profile.reportRequest');
+			}
+		}
+
+		$page->addSectionLeft(
+			$this->vueComponent('vue-profile-menu', 'ProfileMenu', [
+				'isOnline' => $this->foodsaver['online'],
+				'foodSaverName' => $this->foodsaver['name'],
+				'photo' => $this->foodsaver['photo'],
+				'fsId' => $this->foodsaver['id'],
+				'fsIdSession' => $this->session->id(),
+				'isSleeping' => $this->foodsaver['sleep_status'],
+				'isNoBuddy' => $this->foodsaver['buddy'] === BuddyId::NO_BUDDY,
+				'mayAdmin' => $mayAdmin,
+				'mayHistory' => $maySeeHistory,
+				'noteCount' => $this->foodsaver['note_count'] ?? 0,
+				'mayNotes' => $this->reportPermissions->mayHandleReports(),
+				'violationCount' => $this->foodsaver['violation_count'] ?? 0,
+				'mayViolation' => $this->reportPermissions->mayHandleReports(),
+				'hasLocalMediationGroup' => $this->groupFunctionGateway->existRegionFunctionGroup($regionId, WorkgroupFunction::MEDIATION),
+				'mediationGroupEmail' => $mediationGroupEmail ?? '',
+				'storeListOptions' => $storeListOptions ?? [],
+				'isReportedIdReportAdmin' => $isReportedIdReportAdmin ?? false,
+				'hasReportGroup' => $hasReportGroup ?? false,
+				'hasArbitrationGroup' => $hasArbitrationGroup ?? false,
+				'isReporterIdReportAdmin' => $isReporterIdReportAdmin ?? false,
+				'isReporterIdArbitrationAdmin' => $isReporterIdArbitrationAdmin ?? false,
+				'isReportedIdArbitrationAdmin' => $isReportedIdArbitrationAdmin ?? false,
+				'isReportButtonEnabled' => $isReportButtonEnabled ?? false,
+				'reporterHasReportGroup' => $reporterHasReportGroup ?? false,
+				'mailboxNameReportRequest' => $MailboxNameReportRequest ?? '',
+				'buttonNameReportRequest' => $buttonNameReportRequest ?? $this->translator->trans('profile.report.oldReportButton')
+			])
+		);
 
 		if ($maySeeBounceWarning && $this->foodsaver['emailIsBouncing']) {
 			$mayRemove = $this->profilePermissions->mayRemoveFromBounceList($this->foodsaver['id']);
@@ -124,10 +194,13 @@ class ProfileView extends View
 				$this->translator->trans('pickup.overview.header')
 			);
 		}
-		if ($maySeePickupsStat && $pickupsStat) {
-			$page->addSection($this->vueComponent('profile-pickups-stat', 'ProfilePickupsStat', [
-				'pickupsStatData' => $pickupsStat
-			]));
+
+		if ($maySeeCommitmentsStat && $commitmentsStats) {
+			$page->addSection($this->vueComponent('profile-commitments-stat', 'ProfileCommitmentsStat', [
+				'commitmentsStats' => $commitmentsStats,
+			]),
+				$this->translator->trans('profile.commitments_stat.title')
+			);
 		}
 
 		$wallTitle = $this->translator->trans('profile.pinboard', ['{name}' => $this->foodsaver['name']]);
@@ -138,12 +211,21 @@ class ProfileView extends View
 		}
 
 		$page->addSectionLeft(
-			$this->photo($mayAdmin, $maySeeHistory, $userStores)
+			$this->vueComponent('vue-profile-infos', 'ProfileInfos', [
+				'isfoodsaver' => $this->foodsaver['rolle'] > Role::FOODSHARER,
+				'fsMail' => isset($this->foodsaver['mailbox']) ?? $this->profilePermissions->maySeeEmailAddress($fsId) ? $this->foodsaver['mailbox'] : '',
+				'privateMail' => $this->profilePermissions->maySeePrivateEmail($fsId) ? $this->foodsaver['email'] : '',
+				'registrationDate' => $this->profilePermissions->maySeeRegistrationDate($fsId) ? Carbon::parse($this->foodsaver['anmeldedatum'])->format('d.m.Y') : '',
+				'lastLogin' => $this->profilePermissions->maySeeLastLogin($fsId) ? Carbon::parse($this->foodsaver['last_login'])->format('d.m.Y') : '',
+				'buddyCount' => $this->foodsaver['stat_buddycount'],
+				'name' => $this->foodsaver['name'],
+				'fsId' => $this->foodsaver['id'],
+				'fsIdSession' => $this->session->id()
+			]),
+			$this->translator->trans('profile.infos.title')
 		);
 
-		$page->addSectionLeft($this->sideInfos(), $this->translator->trans('profile.infos.title'));
-
-		if ($maySeeStores) {
+		if ($maySeeStores && count($userStores) > 0) {
 			$page->addSectionLeft(
 				$this->vueComponent('vue-profile-storelist', 'ProfileStoreList', [
 					'stores' => $userStores,
@@ -170,176 +252,6 @@ class ProfileView extends View
 			</div>';
 	}
 
-	private function photo(bool $profileVisitorMayAdminThisFoodsharer, bool $profileVisitorMaySeeHistory, array $userStores = []): string
-	{
-		$online = '';
-		if ($this->foodsaver['online']) {
-			$online = '<div class="mt-2">' . $this->v_utils->v_info(
-				$this->translator->trans('profile.online', ['{name}' => $this->foodsaver['name']]),
-				'',
-				'<i class="fas fa-circle text-secondary"></i>'
-			) . '</div>';
-		}
-		$menu = $this->profileMenu($profileVisitorMayAdminThisFoodsharer, $profileVisitorMaySeeHistory, $userStores);
-
-		return '<div class="text-center">'
-			. $this->imageService->avatar($this->foodsaver, 130) . '
-		</div>' . $online . $menu;
-	}
-
-	private function profileMenu(bool $profileVisitorMayAdminThisFoodsharer, bool $profileVisitorMaySeeHistory, array $userStores = []): string
-	{
-		$fsId = intval($this->foodsaver['id']);
-		$opt = '';
-
-		if ($this->session->id() == $fsId) {
-			$opt .= '<li><a href="/?page=settings">'
-				. '<i class="fas fa-pencil-alt fa-fw"></i>' . $this->translator->trans('settings.header')
-				. '</a></li>';
-		}
-
-		if ($profileVisitorMayAdminThisFoodsharer) {
-			$opt .= '<li><a href="/?page=foodsaver&a=edit&id=' . $fsId . '">'
-				. '<i class="fas fa-pencil-alt fa-fw"></i>' . $this->translator->trans('profile.nav.edit')
-				. '</a></li>';
-		}
-		if ($this->foodsaver['buddy'] === BuddyId::NO_BUDDY && $fsId != $this->session->id()) {
-			$name = explode(' ', $this->foodsaver['name']);
-			$name = $name[0];
-			$opt .= '<li class="buddyRequest"><a onclick="trySendBuddyRequest(' . $fsId . '); return false;" href="#">'
-				. '<i class="fas fa-user fa-fw"></i>' . $this->translator->trans('profile.nav.buddy', ['{name}' => $name])
-				. '</a></li>';
-		}
-		if ($profileVisitorMaySeeHistory) {
-			$opt .= '<li><a href="#" onclick="ajreq(\'history\',{app:\'profile\',fsid:' . $fsId . ',type:1});">'
-				. '<i class="fas fa-file-alt fa-fw"></i>' . $this->translator->trans('profile.nav.history')
-				. '</a></li>';
-			$opt .= '<li><a href="#" onclick="ajreq(\'history\',{app:\'profile\',fsid:' . $fsId . ',type:0});">'
-				. '<i class="fas fa-file-alt fa-fw"></i>' . $this->translator->trans('profile.nav.verificationHistory')
-				. '</a></li>';
-		}
-
-		$showNotes = isset($this->foodsaver['note_count']);
-		if ($this->reportPermissions->mayHandleReports() && $showNotes) {
-			$opt .= '<li><a href="/profile/' . $fsId . '/notes">'
-				. '<i class="far fa-file-alt fa-fw"></i>' . $this->translator->trans('profile.nav.notes', [
-					'{count}' => $this->foodsaver['note_count'],
-				]) . '</a></li>';
-		}
-
-		$hasViolations = isset($this->foodsaver['violation_count']) && $this->foodsaver['violation_count'] > 0;
-		if ($this->reportPermissions->mayHandleReports() && $hasViolations) {
-			$opt .= '<li><a href="/?page=report&sub=foodsaver&id=' . $fsId . '">'
-				. '<i class="far fa-meh fa-fw"></i>' . $this->translator->trans('profile.nav.violations', [
-					'{count}' => $this->foodsaver['violation_count'],
-				]) . '</a></li>';
-		}
-
-		$opt .= $this->renderReportRequest($this->foodsaver['bezirk_id'], $this->foodsaver['id'], $userStores);
-
-		if ($this->regionGateway->getRegionOption($this->foodsaver['bezirk_id'], RegionOptionType::ENABLE_MEDIATION_BUTTON)) {
-			$opt .= $this->renderMediationRequest($this->foodsaver['bezirk_id']);
-		}
-		$writeMessage = '';
-		if ($fsId != $this->session->id()) {
-			$writeMessage = '<li><a href="#" onclick="chat(' . $fsId . ');return false;">'
-				. '<i class="fas fa-comment fa-fw"></i>' . $this->translator->trans('chat.open_chat')
-				. '</a></li>';
-		}
-
-		return '
-		<ul class="linklist">
-			' . $writeMessage . $opt . '
-		</ul>';
-	}
-
-	private function sideInfos(): string
-	{
-		$fsId = $this->foodsaver['id'];
-		$infos = [];
-
-		if ($this->profilePermissions->maySeeLastLogin($fsId)) {
-			if (isset($this->foodsaver['last_login'])) {
-				$last_login = Carbon::parse($this->foodsaver['last_login'])->format('d.m.Y');
-			} else {
-				$last_login = $this->translator->trans('profile.infos.never');
-			}
-			$infos[] = [
-				'name' => $this->translator->trans('profile.infos.lastLogin'),
-				'val' => $last_login,
-			];
-		}
-
-		if ($this->profilePermissions->maySeeRegistrationDate($fsId)) {
-			if (isset($this->foodsaver['anmeldedatum'])) {
-				$registration_date = Carbon::parse($this->foodsaver['anmeldedatum'])->format('d.m.Y');
-			} else {
-				$registration_date = $this->translator->trans('profile.infos.never');
-			}
-			$infos[] = [
-				'name' => $this->translator->trans('profile.infos.registrationDate'),
-				'val' => $registration_date,
-			];
-		}
-
-		$privateMail = $this->foodsaver['email'] ?? '';
-		if ($privateMail && $this->profilePermissions->maySeePrivateEmail($fsId)) {
-			$url = '/?page=mailbox&mailto=' . urlencode($privateMail);
-			$splitMail = implode('<wbr>@', explode('@', $privateMail));
-			$infos[] = [
-				'name' => $this->translator->trans('profile.infos.privateMail'),
-				'val' => '<a href="' . $url . '">' . $splitMail . '</a>',
-			];
-		}
-
-		$fsMail = $this->foodsaver['mailbox'] ?? '';
-		if ($fsMail && $this->profilePermissions->maySeeEmailAddress($fsId)) {
-			if ($this->session->id() == $fsId) {
-				$url = '/?page=mailbox';
-			} else {
-				$url = '/?page=mailbox&mailto=' . urlencode($fsMail);
-			}
-			$splitMail = implode('<wbr>@', explode('@', $fsMail));
-			$infos[] = [
-				'name' => $this->translator->trans('profile.infos.fsMail'),
-				'val' => '<a href="' . $url . '">' . $splitMail . '</a>',
-			];
-		}
-
-		$buddycount = $this->foodsaver['stat_buddycount'];
-		if ($buddycount > 0) {
-			$infos[] = [
-				'name' => $this->translator->trans('profile.infos.buddies'),
-				'val' => $this->translator->trans('profile.infos.buddycount' . ($buddycount == 1 ? '1' : ''), [
-					'{count}' => $buddycount,
-					'{name}' => $this->foodsaver['name'],
-				]),
-			];
-		}
-
-		if ($this->foodsaver['stat_fetchcount'] > 0 && $this->profilePermissions->maySeeFetchRate($fsId)) {
-			$infos[] = [
-				'name' => $this->translator->trans('profile.infos.fetchrate'),
-				'val' => $this->foodsaver['stat_fetchrate'] . '&thinsp;%',
-			];
-		}
-
-		$isFoodsaver = $this->foodsaver['rolle'] > Role::FOODSHARER;
-		$infos[] = [
-			'name' => $this->translator->trans($isFoodsaver ? 'profile.infos.foodsaverId' : 'profile.infos.foodsharerId'),
-			'val' => $fsId,
-		];
-
-		$out = '<dl class="profile-infos profile-side">';
-		foreach ($infos as $info) {
-			$out .= '<dt>' . $info['name'] . ':</dt>';
-			$out .= '<dd>' . $info['val'] . '</dd>';
-		}
-		$out .= '</dl>';
-
-		return $out;
-	}
-
 	public function userNotes(string $notes, array $userStores): void
 	{
 		$fsId = $this->foodsaver['id'];
@@ -356,8 +268,7 @@ class ProfileView extends View
 		$maySeeHistory = $this->profilePermissions->maySeeHistory($fsId);
 		$maySeeStores = $this->profilePermissions->maySeeStores($fsId);
 
-		$page->addSectionLeft($this->photo($mayAdmin, $maySeeHistory));
-		$page->addSectionLeft($this->sideInfos(), $this->translator->trans('profile.infos.title'));
+		$page->addSectionLeft($this->imageService->img($this->foodsaver['photo'], 130));
 
 		if ($maySeeStores) {
 			$page->addSectionLeft(
@@ -481,107 +392,20 @@ class ProfileView extends View
 		';
 	}
 
-	private function renderMediationRequest(int $bezirk_id): string
+	private function renderMediationRequest(int $regionId): string
 	{
 		if (($this->foodsaver['rolle'] < Role::FOODSAVER) || ($this->foodsaver['id'] === $this->session->id())) {
 			return '';
 		}
 
-		$mbName = '';
-		if ($this->groupFunctionGateway->existRegionFunctionGroup($bezirk_id, WorkgroupFunction::MEDIATION)) {
-			$mediationGroupId = $this->groupFunctionGateway->getRegionFunctionGroupId($bezirk_id, WorkgroupFunction::MEDIATION);
+		$mailboxName = '';
+		if ($this->groupFunctionGateway->existRegionFunctionGroup($regionId, WorkgroupFunction::MEDIATION)) {
+			$mediationGroupId = $this->groupFunctionGateway->getRegionFunctionGroupId($regionId, WorkgroupFunction::MEDIATION);
 			$mediationGroupDetails = $this->groupGateway->getGroupLegacy($mediationGroupId);
-			$mbName = $this->mailboxGateway->getMailboxname($mediationGroupDetails['mailbox_id']);
+			$mailboxName = $this->mailboxGateway->getMailboxname($mediationGroupDetails['mailbox_id']);
 		}
 
-		$this->pageHelper->addJs('
-			$(".mediation_request").fancybox({
-				closeClick: false,
-				closeBtn: true,
-			});
-		');
-
-		$this->pageHelper->addHidden(
-			$this->vueComponent('mediation-Request', 'MediationRequest', [
-				'foodSaverName' => $this->foodsaver['name'],
-				'mediationGroupEmail' => $mbName,
-				'hasLocalMediationGroup' => $this->groupFunctionGateway->existRegionFunctionGroup($bezirk_id, WorkgroupFunction::MEDIATION),
-			])
-		);
-
-		return '
-			<li><a href="#mediation_request" onclick="return false;" class="item mediation_request">
-				<i class="far fa-handshake fa-fw"></i> ' . $this->translator->trans('profile.mediationRequest') . '</a></li>
-		';
-	}
-
-	private function renderReportRequest(int $bezirk_id, int $fs_id, array $userStores = []): string
-	{
-		if ($this->foodsaver['rolle'] < Role::FOODSAVER) {
-			return '';
-		}
-
-		$storeListOptions = [['value' => null, 'text' => $this->translator->trans('profile.choosestore')]];
-		foreach ($userStores as $store) {
-			$storeListOptions[] = ['value' => $store['id'], 'text' => $store['name']];
-		}
-
-		$isReportedIdReportAdmin = $this->groupFunctionGateway->isRegionFunctionGroupAdmin($bezirk_id, WorkgroupFunction::REPORT, $this->foodsaver['id']);
-		$isReporterIdReportAdmin = $this->groupFunctionGateway->isRegionFunctionGroupAdmin($bezirk_id, WorkgroupFunction::REPORT, $this->session->id());
-		$isReportedIdArbitrationAdmin = $this->groupFunctionGateway->isRegionFunctionGroupAdmin($bezirk_id, WorkgroupFunction::ARBITRATION, $this->foodsaver['id']);
-		$isReporterIdArbitrationAdmin = $this->groupFunctionGateway->isRegionFunctionGroupAdmin($bezirk_id, WorkgroupFunction::ARBITRATION, $this->session->id());
-
-		$hasReportGroup = $this->groupFunctionGateway->existRegionFunctionGroup($bezirk_id, WorkgroupFunction::REPORT);
-		$reporterHasReportGroup = $hasReportGroup;
-
-		if ($bezirk_id != $this->session->getCurrentRegionId()) {
-			$reporterHasReportGroup = $this->groupFunctionGateway->existRegionFunctionGroup($this->session->getCurrentRegionId(), WorkgroupFunction::REPORT);
-		}
-
-		$mbName = '';
-		if ($hasReportGroup) {
-			$reportGroupId = $this->groupFunctionGateway->getRegionFunctionGroupId($bezirk_id, WorkgroupFunction::REPORT);
-			$reportGroupDetails = $this->groupGateway->getGroupLegacy($reportGroupId);
-			$mbName = $this->mailboxGateway->getMailboxname($reportGroupDetails['mailbox_id']);
-		}
-
-		$hasArbitrationGroup = $this->groupFunctionGateway->existRegionFunctionGroup($bezirk_id, WorkgroupFunction::ARBITRATION);
-
-		$this->pageHelper->addJs('
-			$(".report_request").fancybox({
-				closeClick: false,
-				closeBtn: true,
-			});
-		');
-
-		$isReportButtonEnabled = intval($this->regionGateway->getRegionOption($this->foodsaver['bezirk_id'], RegionOptionType::ENABLE_REPORT_BUTTON)) === 1;
-
-		$this->pageHelper->addHidden(
-			$this->vueComponent('report-Request', 'ReportRequest', [
-				'foodSaverName' => $this->foodsaver['name'],
-				'reportedId' => $this->foodsaver['id'],
-				'reporterId' => $this->session->id(),
-				'storeListOptions' => $storeListOptions,
-				'isReportedIdReportAdmin' => $isReportedIdReportAdmin,
-				'hasReportGroup' => $hasReportGroup,
-				'hasArbitrationGroup' => $hasArbitrationGroup,
-				'isReporterIdReportAdmin' => $isReporterIdReportAdmin,
-				'isReportedIdArbitrationAdmin' => $isReportedIdArbitrationAdmin,
-				'isReporterIdArbitrationAdmin' => $isReporterIdArbitrationAdmin,
-				'isReportButtonEnabled' => $isReportButtonEnabled,
-				'reporterHasReportGroup' => $reporterHasReportGroup,
-				'mbName' => $mbName,
-			])
-		);
-
-		$buttonName = $this->translator->trans('profile.report.oldReportButton');
-		if ($this->regionGateway->getRegionOption($this->foodsaver['bezirk_id'], RegionOptionType::ENABLE_REPORT_BUTTON)) {
-			$buttonName = $this->translator->trans('profile.reportRequest');
-		}
-
-		return '
-			<li><a href="#report_request" onclick="return false;" class="item report_request">
-			<i class="far fa-life-ring fa-fw"></i>' . $buttonName . '</a></li>';
+		return $mailboxName;
 	}
 
 	private function renderInformation(): string

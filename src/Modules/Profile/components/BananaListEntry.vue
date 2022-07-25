@@ -17,7 +17,7 @@
           {{ authorName }}
         </a>
         <i class="fas fa-fw fa-angle-right" />
-        {{ $dateFormat(when, 'full-long') }}
+        {{ $dateFormatter.date(when) }}
         <a
           v-if="canRemove"
           href="#"
@@ -34,12 +34,10 @@
 </template>
 
 <script>
-import dateFnsParseISO from 'date-fns/parseISO'
-
 import Avatar from '@/components/Avatar'
 import { deleteBanana } from '@/api/profile'
 import { hideLoader, pulseError, showLoader } from '@/script'
-import i18n from '@/i18n'
+import i18n from '@/helper/i18n'
 
 export default {
   components: { Avatar },
@@ -54,7 +52,7 @@ export default {
   },
   data () {
     return {
-      when: dateFnsParseISO(this.createdAt),
+      when: new Date(Date.parse(this.createdAt)),
     }
   },
   methods: {
@@ -86,7 +84,7 @@ export default {
 
 <style lang="scss" scoped>
 .banana-container {
-  border-top: 1px solid var(--border);
+  border-top: 1px solid var(--fs-border-default);
 
   .member-pic ::v-deep img {
     width: 50px;
@@ -95,11 +93,11 @@ export default {
 
   .msg {
     white-space: pre-line;
-    border-left: 3px solid var(--border);
+    border-left: 3px solid var(--fs-border-default);
   }
 
   .time a {
-    color: var(--secondary);
+    color: var(--fs-color-secondary-500);
     font-weight: bolder;
   }
 }

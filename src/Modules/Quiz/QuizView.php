@@ -259,7 +259,7 @@ class QuizView extends View
 	{
 		$out = '
 				<div style="float:right;width:150px;margin-left:50px;margin-bottom:10px;" id="countdown"></div>
-			<div style="border-radius:10px;font-size:16px;color:#4A3520;padding:10px;background:#F5F5B5;margin-bottom:15px;line-height:20px;">' . $question['text'] . '</div>
+			<div style="border-radius:10px;font-size:16px;color:var(--fs-color-primary-500);padding:10px;background:var(--fs-color-warning-200);margin-bottom:15px;line-height:20px;">' . $question['text'] . '</div>
 		';
 
 		$out .= '<div id="qanswers"><ul style="display:block;list-style:none;">';
@@ -268,7 +268,7 @@ class QuizView extends View
 			++$i;
 			$cb[] = ['id' => $a['id'], 'name' => $a['text']];
 			$out .= '
-			<li id="qanswer-' . $a['id'] . '" class="answer" onmouseout="$(this).css(\'background-color\',\'transparent\');" onmouseover="$(this).css(\'background-color\',\'#FFFFFF\');" style="cursor:pointer;border-radius:10px;display:block;list-style:none;padding:10px 10px;font-size:14px;color:#4A3520">
+			<li id="qanswer-' . $a['id'] . '" class="answer" onmouseout="$(this).css(\'background-color\',\'transparent\');" onmouseover="$(this).css(\'background-color\',\'var(--fs-color-light)\');" style="cursor:pointer;border-radius:10px;display:block;list-style:none;padding:10px 10px;font-size:14px;color:var(--fs-color-primary-500)">
 				<label>
 					<span style="cursor:pointer;user-select:none;float:left">' . ($k + 1) . '. &nbsp;</span>
 					<input id="qacb-' . $a['id'] . '" style="cursor:pointer;float:left;" type="checkbox" class="qanswers" name="qanswers[]" value="' . $a['id'] . '" />
@@ -279,11 +279,11 @@ class QuizView extends View
 		}
 		++$i;
 		$out .= '
-		<li class="noanswer" onmouseout="$(this).css(\'background-color\',\'transparent\');" onmouseover="$(this).css(\'background-color\',\'#FFFFFF\');" style="cursor:pointer;-moz-user-select:none;border-radius:10px;display:block;list-style:none;padding:10px 10px;font-size:14px;">
+		<li class="noanswer" onmouseout="$(this).css(\'background-color\',\'transparent\');" onmouseover="$(this).css(\'background-color\',\'var(--fs-color-light)\');" style="cursor:pointer;-moz-user-select:none;border-radius:10px;display:block;list-style:none;padding:10px 10px;font-size:14px;">
 			<label>
 				<span style="cursor:pointer;user-select:none;float:left">' . ($i) . '. &nbsp;</span>
 				<input class="nocheck" style="float:left;" type="checkbox" name="none" value="0" />
-				<span style="cursor:pointer;wouser-select:none;display:block;margin-left:43px;color:#4A3520;">Es ist keine Antwort richtig!</span>
+				<span style="cursor:pointer;wouser-select:none;display:block;margin-left:43px;color:var(--fs-color-primary-500);">Es ist keine Antwort richtig!</span>
 				<span class="clear"></span>
 			</label>
 		</li>
@@ -294,7 +294,7 @@ class QuizView extends View
 				' . $out . '
 			</div>
 			<table id="quizbreath" width="100%" height="95%">
-				<tr><td style="vertical-align: middle;text-align:center;font-size:16px;font-weight:bold;color:#4A3520">
+				<tr><td style="vertical-align: middle;text-align:center;font-size:16px;font-weight:bold;color:var(--fs-color-primary-500)">
 				<img src="/img/cuploader.gif" style="margin-bottom:20px;" /><br />
 				<span>Verschnaufpause... </span>
 				</td></tr>
@@ -317,13 +317,13 @@ class QuizView extends View
 	public function result($explains, $failurePoints, $maxFailurePoints): string
 	{
 		$valid = 'Sorry, diesmal hat es nicht geklappt.';
-		$bg = '#ED563D';
+		$bg = 'var(--fs-color-danger-500)';
 		if ($failurePoints < $maxFailurePoints) {
 			$valid = 'Herzlichen Glückwunsch! Bestanden.';
-			$bg = '#48A21C';
+			$bg = 'var(--fs-color-secondary-500)';
 		}
 		$out = '
-		<div style="font-size:16px;font-weight:bold;margin-bottom:15px;background-color:' . $bg . ';padding:15px;border-radius:10px;line-height:30px;text-align:center;color:#fff;">
+		<div style="font-size:16px;font-weight:bold;margin-bottom:15px;background-color:' . $bg . ';padding:15px;border-radius:10px;line-height:30px;text-align:center;color:var(--fs-color-light);">
 		' . $valid . '<br />
 		<span style="font-size:13px;">' . $failurePoints . ' von maximal ' . $maxFailurePoints . ' Fehlerpunkten</span>
 		</div>';
@@ -336,7 +336,7 @@ class QuizView extends View
 			foreach ($e['explains'] as $ex) {
 				$right = 'Auch diese Antwort wäre <strong style="color: green; font-weight: bold;">richtig</strong> gewesen!';
 				if ($ex['right'] == 0) {
-					$right = 'Diese Antwort ist <strong style="color: red; font-weight: bold;">nicht richtig</strong>!';
+					$right = 'Diese Antwort ist <strong style="color: var(--fs-color-danger-500); font-weight: bold;">nicht richtig</strong>!';
 				} elseif ($ex['right'] != 1) {
 					$right = 'Diese Antwort wurde nicht gewertet.';
 				}
@@ -351,7 +351,7 @@ class QuizView extends View
 
 			$out .= '
 				<h3><strong>Frage ' . (int)$e['number'] . ' ' . (100 - $e['percent']) . ' % richtig</strong> - ' . $e['userfp'] . '/' . $e['fp'] . ' Fehlerpunkten</h3>
-				<div style="background-color:#FFFFFF;">
+				<div style="background-color:var(--fs-color-light);">
 					<p style="font-style:italic;padding:15px;">&bdquo;' . ($e['text']) . '&ldquo;</p>
 					' . $exp . '
 				</div>';

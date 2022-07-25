@@ -9,7 +9,7 @@ ul.dynatree-container
 	padding: 3px;
 	margin: 0; /* issue 201 */
 	background-color: white;
-	border: 1px dotted gray;
+	border: 1px dotted var(--fs-color-gray-500);
 	overflow: auto;
 /*	height: 100%; /* issue 263, 470 */
 	min-height: 0%;
@@ -30,7 +30,7 @@ ul.dynatree-container li
 	-moz-background-inline-policy: continuous;
 	-moz-background-origin: padding;
 	background-attachment: scroll;
-	background-color: transparent;
+	background-color: var(--fs-color-transparent);
 	background-repeat: repeat-y;
 	background-image: url("vline.gif");
 	background-position: 0 0;
@@ -304,7 +304,7 @@ span.dynatree-folder a
 ul.dynatree-container a:focus,
 span.dynatree-focused a:link  /* @IE */
 {
-	background-color: #EFEBDE; /* gray */
+	background-color: #EFEBDE; /* var(--fs-color-gray-500) */
 }
 
 span.dynatree-has-children a
@@ -337,7 +337,7 @@ div.dynatree-drag-helper
 }
 div.dynatree-drag-helper a
 {
-	border: 1px solid gray;
+	border: 1px solid var(--fs-color-gray-500);
 	background-color: white;
 	padding-left: 5px;
 	padding-right: 5px;
@@ -354,7 +354,7 @@ div.dynatree-drag-helper /*.dynatree-drop-accept*/
 {
 
 /*    border-color: green;
-	background-color: red;*/
+	background-color: var(--fs-color-danger-500);*/
 }
 div.dynatree-drop-accept span.dynatree-drag-helper-img
 {
@@ -362,7 +362,7 @@ div.dynatree-drop-accept span.dynatree-drag-helper-img
 }
 div.dynatree-drag-helper.dynatree-drop-reject
 {
-	border-color: red;
+	border-color: var(--fs-color-danger-500);
 }
 div.dynatree-drop-reject span.dynatree-drag-helper-img
 {
@@ -377,7 +377,7 @@ div.dynatree-drop-reject span.dynatree-drag-helper-img
 	position: absolute;
 	background-position: 0 -128px;
 	margin: 0;
-/*	border: 1px solid red; */
+/*	border: 1px solid var(--fs-color-danger-500); */
 }
 #dynatree-drop-marker.dynatree-drop-after,
 #dynatree-drop-marker.dynatree-drop-before
@@ -398,19 +398,19 @@ div.dynatree-drop-reject span.dynatree-drag-helper-img
 
 span.dynatree-drag-source
 {
-	/* border: 1px dotted gray; */
+	/* border: 1px dotted var(--fs-color-gray-500); */
 	background-color: #e0e0e0;
 }
 span.dynatree-drag-source a
 {
-	color: gray;
+	color: var(--fs-color-gray-500);
 }
 
 /*** Target node while dragging cursor is over it *****************************/
 
 span.dynatree-drop-target
 {
-	/*border: 1px solid gray;*/
+	/*border: 1px solid var(--fs-color-gray-500);*/
 }
 span.dynatree-drop-target a
 {
@@ -424,7 +424,7 @@ span.dynatree-drop-target.dynatree-drop-accept a
 }
 span.dynatree-drop-target.dynatree-drop-reject
 {
-	/*border: 1px solid red;*/
+	/*border: 1px solid var(--fs-color-danger-500);*/
 }
 span.dynatree-drop-target.dynatree-drop-after a
 {

@@ -55,7 +55,7 @@ class StoreApiCest
 
 		$I->login($this->foodsharer[self::EMAIL]);
 		$I->sendGET(self::API_STORES . '/' . $this->store[self::ID]);
-		$I->seeResponseCodeIs(Http::UNAUTHORIZED);
+		$I->seeResponseCodeIs(Http::FORBIDDEN);
 	}
 
 	public function canOnlySeeStoreDetailsAsMember(ApiTester $I)

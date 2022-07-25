@@ -5,7 +5,7 @@ import { expose } from '@/utils'
 import $ from 'jquery'
 import 'js/dynatree/jquery.dynatree'
 import 'js/dynatree/skin/ui.dynatree.css'
-import i18n from '@/i18n'
+import i18n from '@/helper/i18n'
 import { deleteUser } from '@/api/user'
 import './Foodsaver.css'
 import { attachAddressPicker } from '@/addressPicker'
@@ -73,4 +73,6 @@ expose({
   confirmDeleteSelf,
 })
 
-attachAddressPicker()
+if (document.querySelector('#map')) {
+  attachAddressPicker()
+}

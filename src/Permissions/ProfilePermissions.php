@@ -80,21 +80,34 @@ class ProfilePermissions
 
 	public function maySeeStores(int $fsId): bool
 	{
+		if (!$this->session->may('fs')) {
+			return false;
+		}
+
 		return $this->session->id() == $fsId || $this->mayAdministrateUserProfile($fsId);
 	}
 
-	public function maySeePickupsStat(int $fsId): bool
+	public function maySeeCommitmentsStat(int $fsId): bool
 	{
+		if ($this->session->id() == $fsId) {
+			return true;
+		}
+
 		if ($this->mayAdministrateUserProfile($fsId)) {
 			return true;
 		}
 
-		$getFsID = $this->foodsaverGateway->getFoodsaverBasics($fsId);
-		if ($getFsID['bezirk_id'] != $this->session->getCurrentRegionId()) {
-			return false;
+		if ($this->session->may('bieb')) {
+			if ($this->foodsaverGateway->getCountCommonStores($this->session->id(), $fsId) > 0) {
+				return true;
+			}
+			$getFsID = $this->foodsaverGateway->getFoodsaverBasics($fsId);
+			if ($getFsID['bezirk_id'] == $this->session->getCurrentRegionId()) {
+				return true;
+			}
 		}
 
-		return $this->session->id() == $fsId || $this->session->may('bieb');
+		return false;
 	}
 
 	public function maySeeEmailAddress(int $fsId): bool
@@ -119,11 +132,6 @@ class ProfilePermissions
 	public function maySeeRegistrationDate(int $userId): bool
 	{
 		return $this->session->id() === $userId || $this->session->may('orga');
-	}
-
-	public function maySeeFetchRate(int $fsId): bool
-	{
-		return false;
 	}
 
 	public function mayDeleteUser(int $userId): bool

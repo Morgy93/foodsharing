@@ -27,7 +27,10 @@ use FOS\RestBundle\Request\ParamFetcher;
 use OpenApi\Annotations as OA;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\Exception\AccessDeniedHttpException;
-use Symfony\Component\HttpKernel\Exception\HttpException;
+use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
+use Symfony\Component\HttpKernel\Exception\ConflictHttpException;
+use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
+use Symfony\Component\HttpKernel\Exception\UnauthorizedHttpException;
 
 class RegionRestController extends AbstractFOSRestController
 {
@@ -87,15 +90,15 @@ class RegionRestController extends AbstractFOSRestController
 	{
 		$sessionId = $this->session->id();
 		if ($sessionId === null) {
-			throw new AccessDeniedHttpException();
+			throw new UnauthorizedHttpException('');
 		}
 
 		$region = $this->regionGateway->getRegion($regionId);
 		if (!$region) {
-			throw new HttpException(404);
+			throw new NotFoundHttpException();
 		}
 		if (!$this->regionPermissions->mayJoinRegion($regionId)) {
-			throw new HttpException(403);
+			throw new AccessDeniedHttpException();
 		}
 
 		$this->regionGateway->linkBezirk($sessionId, $regionId);
@@ -148,15 +151,15 @@ class RegionRestController extends AbstractFOSRestController
 	public function leaveRegionAction(int $regionId): Response
 	{
 		if (!$this->session->may()) {
-			throw new AccessDeniedHttpException();
+			throw new UnauthorizedHttpException('');
 		}
 
 		if (empty($this->regionGateway->getRegion($regionId))) {
-			throw new HttpException(400, 'region does not exist or is root region.');
+			throw new BadRequestHttpException('region does not exist or is root region.');
 		}
 
 		if (in_array($this->session->id(), $this->storeGateway->getStoreManagersOf($regionId))) {
-			throw new HttpException(409, 'still an active store manager in that region');
+			throw new ConflictHttpException('still an active store manager in that region');
 		}
 
 		$this->foodsaverGateway->deleteFromRegion($regionId, $this->session->id(), $this->session->id());
@@ -175,8 +178,11 @@ class RegionRestController extends AbstractFOSRestController
 	 */
 	public function masterUpdateAction(int $regionId): Response
 	{
+		if (!$this->session->id()) {
+			throw new UnauthorizedHttpException('');
+		}
 		if (!$this->regionPermissions->mayAdministrateRegions()) {
-			throw new HttpException(403);
+			throw new AccessDeniedHttpException();
 		}
 
 		if ($regions = $this->regionGateway->listIdsForDescendantsAndSelf($regionId)) {
@@ -201,10 +207,10 @@ class RegionRestController extends AbstractFOSRestController
 	public function setRegionOptions(ParamFetcher $paramFetcher, int $regionId): Response
 	{
 		if (!$this->session->may()) {
-			throw new HttpException(401);
+			throw new UnauthorizedHttpException('');
 		}
 		if (!$this->regionPermissions->maySetRegionOptions($regionId)) {
-			throw new HttpException(403);
+			throw new AccessDeniedHttpException();
 		}
 
 		$params = $paramFetcher->all();
@@ -241,15 +247,15 @@ class RegionRestController extends AbstractFOSRestController
 	public function setRegionPin(ParamFetcher $paramFetcher, int $regionId): Response
 	{
 		if (!$this->session->may()) {
-			throw new HttpException(401);
+			throw new UnauthorizedHttpException('');
 		}
 
 		if ($regionId < 0) {
-			throw new HttpException(403);
+			throw new AccessDeniedHttpException();
 		}
 
 		if (!$this->regionPermissions->maySetRegionPin($regionId)) {
-			throw new HttpException(403);
+			throw new AccessDeniedHttpException();
 		}
 
 		$lat = $paramFetcher->get(self::LAT);
@@ -257,10 +263,10 @@ class RegionRestController extends AbstractFOSRestController
 		$desc = $paramFetcher->get(self::DESC);
 		$status = $paramFetcher->get(self::STATUS);
 		if (!$this->isValidNumber($lat, -90.0, 90.0) || !$this->isValidNumber($lon, -180.0, 180.0)) {
-			throw new HttpException(400, 'Invalid Latitude or Longitude');
+			throw new BadRequestHttpException('Invalid Latitude or Longitude');
 		}
 		if (!RegionPinStatus::isValid($status)) {
-			throw new HttpException(400, 'Invalid status');
+			throw new BadRequestHttpException('Invalid status');
 		}
 
 		$this->regionGateway->setRegionPin($regionId, $lat, $lon, $desc, $status);
@@ -281,7 +287,7 @@ class RegionRestController extends AbstractFOSRestController
 	public function listRegionChildrenAction(int $regionId): Response
 	{
 		if (!$this->session->may()) {
-			throw new HttpException(401);
+			throw new UnauthorizedHttpException('');
 		}
 
 		$children = $this->regionGateway->getBezirkByParent($regionId, false);
@@ -310,11 +316,11 @@ class RegionRestController extends AbstractFOSRestController
 	public function listMembersAction(int $regionId): Response
 	{
 		if (!$this->session->may()) {
-			throw new HttpException(401);
+			throw new UnauthorizedHttpException('');
 		}
 
 		if (!$this->regionPermissions->maySeeRegionMembers($regionId)) {
-			throw new HttpException(403);
+			throw new AccessDeniedHttpException();
 		}
 
 		$response = $this->foodsaverGateway->listActiveFoodsaversByRegion($regionId);
@@ -336,24 +342,24 @@ class RegionRestController extends AbstractFOSRestController
 	public function removeMember(int $regionId, int $memberId): Response
 	{
 		if (!$this->session->may()) {
-			throw new HttpException(401);
+			throw new UnauthorizedHttpException('');
 		}
 
 		$region = $this->regionGateway->getRegion($regionId);
 
 		if (empty($region)) {
-			throw new HttpException(404);
+			throw new NotFoundHttpException();
 		}
 
 		if ($region['type'] == Type::WORKING_GROUP) {
 			if (!$this->workGroupPermissions->mayEdit($region)) {
-				throw new HttpException(403);
+				throw new AccessDeniedHttpException();
 			}
 			$this->regionGateway->removeRegionAdmin($regionId, $memberId);
 			$this->workGroupTransactions->removeMemberFromGroup($regionId, $memberId);
 		} else {
 			if (!$this->regionPermissions->mayDeleteFoodsaverFromRegion($regionId)) {
-				throw new HttpException(403);
+				throw new AccessDeniedHttpException();
 			}
 			$this->foodsaverGateway->deleteFromRegion($regionId, $memberId, $this->session->id());
 		}
@@ -374,25 +380,25 @@ class RegionRestController extends AbstractFOSRestController
 	public function setAdminOrAmbassador(int $regionId, int $memberId): Response
 	{
 		if (!$this->session->may()) {
-			throw new HttpException(401);
+			throw new UnauthorizedHttpException('');
 		}
 
 		$region = $this->regionGateway->getRegion($regionId);
 
 		if (empty($region)) {
-			throw new HttpException(404);
+			throw new NotFoundHttpException();
 		}
 
 		if ($region['type'] == Type::WORKING_GROUP) {
 			if (!$this->workGroupPermissions->mayEdit($region)) {
-				throw new HttpException(403);
+				throw new AccessDeniedHttpException();
 			}
 		} else {
 			if (!$this->regionPermissions->maySetRegionAdmin()) {
-				throw new HttpException(403);
+				throw new AccessDeniedHttpException();
 			}
 			if (!$this->foodsaverGateway->getRole($memberId) >= Role::AMBASSADOR) {
-				throw new HttpException(403);
+				throw new AccessDeniedHttpException();
 			}
 		}
 
@@ -414,25 +420,25 @@ class RegionRestController extends AbstractFOSRestController
 	public function removeAdminOrAmbassador(int $regionId, int $memberId): Response
 	{
 		if (!$this->session->may()) {
-			throw new HttpException(401);
+			throw new UnauthorizedHttpException('');
 		}
 
 		$region = $this->regionGateway->getRegion($regionId);
 
 		if (empty($region)) {
-			throw new HttpException(404);
+			throw new NotFoundHttpException();
 		}
 
 		if ($region['type'] == Type::WORKING_GROUP) {
 			if (!$this->workGroupPermissions->mayEdit($region)) {
-				throw new HttpException(403);
+				throw new AccessDeniedHttpException();
 			}
 		} else {
 			if (!$this->regionPermissions->mayRemoveRegionAdmin()) {
-				throw new HttpException(403);
+				throw new AccessDeniedHttpException();
 			}
 			if (!$this->foodsaverGateway->getRole($memberId) >= Role::AMBASSADOR) {
-				throw new HttpException(403);
+				throw new AccessDeniedHttpException();
 			}
 		}
 

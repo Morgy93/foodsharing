@@ -222,7 +222,6 @@ class BasketXhr extends Control
 			'status' => 1,
 			'script' => '
 				pulseInfo("' . $this->translator->trans('basket.published') . '");
-				basketStore.loadBaskets();
 				$(".xhrDialog").dialog("close");
 				$(".xhrDialog").dialog("destroy");
 				$(".xhrDialog").remove();',
@@ -476,7 +475,6 @@ class BasketXhr extends Control
 				'status' => 1,
 				'script' => '
 					pulseInfo("' . $this->translator->trans('basket.published') . '");
-					basketStore.loadBaskets();
 					$(".xhrDialog").dialog("close");
 					$(".xhrDialog").dialog("destroy");
 					$(".xhrDialog").remove();

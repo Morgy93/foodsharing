@@ -15,7 +15,10 @@ use FOS\RestBundle\Controller\AbstractFOSRestController;
 use FOS\RestBundle\Controller\Annotations as Rest;
 use OpenApi\Annotations as OA;
 use Symfony\Component\HttpFoundation\Response;
-use Symfony\Component\HttpKernel\Exception\HttpException;
+use Symfony\Component\HttpKernel\Exception\AccessDeniedHttpException;
+use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
+use Symfony\Component\HttpKernel\Exception\UnauthorizedHttpException;
+use Symfony\Component\HttpKernel\Exception\UnprocessableEntityHttpException;
 use Symfony\Contracts\Translation\TranslatorInterface;
 
 class VerificationRestController extends AbstractFOSRestController
@@ -66,36 +69,37 @@ class VerificationRestController extends AbstractFOSRestController
 	{
 		$sessionId = $this->session->id();
 		if (!$sessionId) {
-			throw new HttpException(401);
+			throw new UnauthorizedHttpException('');
 		}
 
 		if (!$this->profilePermissions->mayChangeUserVerification($userId)) {
-			throw new HttpException(403);
+			throw new AccessDeniedHttpException();
 		}
 
 		if ($this->profileGateway->isUserVerified($userId)) {
-			throw new HttpException(422, 'User is already verified');
+			throw new UnprocessableEntityHttpException('User is already verified');
 		}
 
 		$this->foodsaverGateway->changeUserVerification($userId, $sessionId, true);
 		$this->bellGateway->delBellsByIdentifier(BellType::createIdentifier(BellType::NEW_FOODSAVER_IN_REGION, $userId));
 
-		$passportGenLink = '?page=settings&sub=passport';
+		$passportGenLink = '/?page=settings&sub=passport';
 		$bellData = Bell::create(
 			'foodsaver_verified_title',
 			'foodsaver_verified',
 			'fas fa-camera',
 			['href' => $passportGenLink],
 			['user' => $this->session->user('name')],
-			BellType::createIdentifier(BellType::FOODSAVER_VERIFIED, $userId));
+			BellType::createIdentifier(BellType::FOODSAVER_VERIFIED, $userId)
+		);
 		$this->bellGateway->addBell($userId, $bellData);
 
 		$passportMailLink = 'https://foodsharing.de/' . $passportGenLink;
 		$fs = $this->foodsaverGateway->getFoodsaver($userId);
 		$this->emailHelper->tplMail('user/verification', $fs['email'], [
-				'name' => $fs['name'],
-				'link' => $passportMailLink,
-				'anrede' => $this->translator->trans('salutation.' . $fs['geschlecht']),
+			'name' => $fs['name'],
+			'link' => $passportMailLink,
+			'anrede' => $this->translator->trans('salutation.' . $fs['geschlecht']),
 		], false, true);
 
 		return $this->handleView($this->view([], 200));
@@ -119,20 +123,20 @@ class VerificationRestController extends AbstractFOSRestController
 	{
 		$sessionId = $this->session->id();
 		if (!$sessionId) {
-			throw new HttpException(401);
+			throw new UnauthorizedHttpException('');
 		}
 
 		if (!$this->profilePermissions->mayChangeUserVerification($userId)) {
-			throw new HttpException(403);
+			throw new AccessDeniedHttpException();
 		}
 
 		if (!$this->profileGateway->isUserVerified($userId)) {
-			throw new HttpException(422, 'User is already deverified');
+			throw new UnprocessableEntityHttpException('User is already deverified');
 		}
 
 		$hasPlannedPickups = $this->pickupGateway->getNextPickups($userId, 1);
 		if ($hasPlannedPickups) {
-			throw new HttpException(400, 'This user must not be signed up for any future pickups.');
+			throw new BadRequestHttpException('This user must not be signed up for any future pickups.');
 		}
 
 		$this->foodsaverGateway->changeUserVerification($userId, $sessionId, false);

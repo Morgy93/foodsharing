@@ -51,7 +51,7 @@ class FoodsaverControl extends Control
 	}
 
 	/*
-	 * Default Method for ?page=foodsaver
+	 * Default Method for /?page=foodsaver
 	 *
 	 * There are two very different cases handled here: editing a user, or viewing all users in a region.
 	 */

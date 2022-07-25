@@ -11,6 +11,7 @@
 - [Setting things up](setting-things-up.md)
   - [IDE setup](ide-setup.md)
   - [User roles](learn-user-roles.md)
+  - [Test on other devices](test-on-other-devices.md)
 
 # Getting started (others)
 - [Information on the app setup and others: useful links](useful-links.md)

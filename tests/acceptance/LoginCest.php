@@ -15,38 +15,46 @@ class LoginCest
 	{
 		$I->wantTo('ensure you can login');
 		$I->amOnPage('/');
-		$I->click('#login');
-		$I->waitForElement('#login-email');
-		$I->fillField('#login-email', $this->foodsaver['email']);
-		$I->fillField('#login-password', $this->pass);
-		$I->click('#login-btn');
+		$I->executeJS('window.localStorage.clear();');
+		$I->waitForElement('.testing-login-dropdown');
+		$I->click('.testing-login-dropdown');
+		$I->fillField('.testing-login-input-email', $this->foodsaver['email']);
+		$I->fillField('.testing-login-input-password', $this->pass);
+		$I->click('.testing-login-click-submit');
 		$I->waitForActiveAPICalls();
 		$I->waitForElementNotVisible('#pulse-success');
 		$I->waitForPageBody();
-		$I->waitForText('Hallo ' . $this->foodsaver['name'] . '!');
+		$I->waitForElement('.testing-intro-field');
+		$I->see('Hallo ' . $this->foodsaver['name'], '.testing-intro-field');
 		$I->seeCookieHasSessionExpiry('PHPSESSID');
+
+		$I = $this;
 	}
 
 	public function testRememberLogin(AcceptanceTester $I)
 	{
-		$I->wantTo('ensure you can login and be remembered');
 		$I->amOnPage('/');
-		$I->click('#login');
-		$I->waitForElement('#login-email');
-		$I->fillField('#login-email', $this->foodsaver['email']);
-		$I->fillField('#login-password', $this->pass);
-		$I->seeInField('#login-rememberme', false);
-		$I->click('.login-rememberme');
-		$I->seeInField('#login-rememberme', true);
-		$I->click('#login-btn');
+		$I->executeJS('window.localStorage.clear();');
+		$I->waitForElement('.testing-login-dropdown');
+		$I->click('.testing-login-dropdown');
+		$I->fillField('.testing-login-input-email', $this->foodsaver['email']);
+		$I->fillField('.testing-login-input-password', $this->pass);
+		$I->seeInField('.testing-login-input-remember', false);
+		$I->click('.testing-login-input-remember');
+		$I->seeInField('.testing-login-input-remember', true);
+		$I->click('.testing-login-click-submit');
 		$I->waitForActiveAPICalls();
+		$I->waitForElementNotVisible('#pulse-success');
+		$I->waitForPageBody();
+		$I->waitForElement('.testing-intro-field');
+		$I->see('Hallo ' . $this->foodsaver['name'], '.testing-intro-field');
 		$I->seeCookieHasNoSessionExpiry('PHPSESSID');
 
 		$I->amOnPage('/?page=logout');
 
 		$I->amOnPage('/');
-		$I->click('#login');
-		$I->waitForElement('#login-email');
-		$I->seeInField('#login-rememberme', true);
+		$I->click('.testing-login-dropdown');
+		$I->fillField('.testing-login-input-email', $this->foodsaver['email']);
+		$I->seeInField('.testing-login-input-remember', true);
 	}
 }

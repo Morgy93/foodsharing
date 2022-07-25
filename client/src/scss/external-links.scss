@@ -1,0 +1,25 @@
+a[href]:not(:where(
+  /* exclude hash only links */
+  [href^="#"],
+  /* exclude relative but not double slash only links */
+  [href^="/"]:not([href^="//"]),
+  /* domains to exclude */
+  [href*="//foodsharing."]:not([href*="//foodsharing.freshdesk"]),
+  [href*="//www.foodsharing."],
+  [href*="//beta.foodsharing."],
+  /* exclude mailto and phone numbers*/
+  [href*="mailto:"],
+  [href*="tel:"],
+  /* exclude javascript*/
+  [href^="javascript:"],
+  /* classes to exclude */
+  .hide-external,
+)):after {
+    content: "\f35d";
+    font-family: "Font Awesome 5 Free";
+    font-size: 0.8em;
+    font-weight: 900;
+    margin-left: 0.3rem;
+    position: relative;
+    top: -1px;
+}

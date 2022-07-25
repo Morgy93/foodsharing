@@ -42,6 +42,8 @@ photo: "Foto"
 ort: "Stadt/Gemeinde (automatisch aus Karte oben)"
 daterange: "Zeitraum"
 regions: "Bezirke" # TODO check if used anywhere else
+groups:
+  empty: "Du bist noch in keinen Arbeitsgruppen"
 message_text_to_group_admin_workgroup: "Die Region/Arbeitsgruppe <b>{groupName}</b> hat <b>keine*n</b> Botschafter*in/Administrator*in mehr.<br><br><br>Sie besitzt folgende ID-Struktur:<br>{idStructureList}<br><br>Die ID lautet: {groupId}<br><br>URL: \"<a href=\"https://foodsharing.de/?page=bezirk&bid={groupId}&sub=forum\" target=\"_blank\">Klicke hier um zur Region/Arbeitsgruppe zu gehen</a>"
 #
 # FORM DATA KEYS: SettingsView
@@ -541,7 +543,7 @@ register:
   register_button_label: "Registrieren"
   mail_hint: "Wichtig: Achte auf korrekte Schreibweise!"
   requiredFields: "Pflichteingabe"
-  birthdate_hint: "Nähere Information findest du in der <a href=\"?page=legal\" target=\"_blank\">Datenschutzerklärung</a> in Punkt 2d) Bei der Anmeldung als Foodsharer beziehungsweise Foodsaver."
+  birthdate_hint: "Nähere Information findest du in der <a href=\"/?page=legal\" target=\"_blank\">Datenschutzerklärung</a> in Punkt 2d) Bei der Anmeldung als Foodsharer beziehungsweise Foodsaver."
   login_email: "E-Mail-Adresse"
   email_required: "Eine E-Mail-Adresse wird benötigt."
   email_invalid: "Die E-Mail-Adresse ist ungültig."
@@ -638,6 +640,7 @@ terminology:
   reports: "Meldungsansicht (LMG)"
   arbitration: "Meldungsansicht (LS)"
   fsp: "Fairteiler" #also in MapView
+  fsps: "Fairteiler"
   basket: "Essenskorb"
   baskets: "Essenskörbe" #also in MapView
   community: "Ortsgruppe {name}"
@@ -774,6 +777,7 @@ store:
   short_tooltip_orange: "Offene Abholungen in 3 Tagen"
   short_tooltip_red: "Offene Abholungen heute oder morgen"
   tooltip_managing: "Du bist verantwortlich für diesen Betrieb"
+  tooltip_jumping: "Du bist Springer für diesen Betrieb"
   allStoresOfRegion: "Alle Betriebe aus dem Bezirk"
   addNewStoresButton: "Neuen Betrieb eintragen"
   noStores: "Es sind noch keine Betriebe eingetragen"
@@ -876,6 +880,7 @@ storeedit:
     bread: "Team bearbeiten"
     foodsaver: "Foodsaver"
     leave: "Aus Betrieb austragen"
+    leave_myself: "Dich selbst"
     cannot-leave: "Du bist noch verantwortlich für diesen Betrieb und kannst ihn daher nicht verlassen."
     empty: "Das Team darf nicht leer sein"
     need-sm: "Es muss mindestens eine verantwortliche Person für den Betrieb geben."
@@ -1071,6 +1076,8 @@ forum:
     close: "Thema schließen"
     open: "Thema wieder öffnen"
     closed: "geschlossenes Thema"
+    navigate_to_newest_post: "zum neuesten Beitrag springen"
+    navigate_to_oldest_post: "zum ersten Beitrag springen"
   hold_back_for_moderation: "Das Thema wurde gespeichert und wird veröffentlicht sobald ein*e Botschafter*in/Moderator*in es bestätigt."
   no_posts: "Bisher keine Beiträge vorhanden"
   no_threads: "Noch keine Themen gepostet"
@@ -1435,8 +1442,8 @@ regionOptions:
   header_page: "Optionen für {bezirk}"
   success: "Optionen erfolgreich gespeichert"
   save: "Optionen speichern"
-  enableReportButton: "Technische Unterstützung für Meldungen durch einen Meldungsknopf auf den Profilen der Stammfoodsaver des Bezirkes aktivieren."
-  enableMediationButton: "Technische Unterstützung für Mediationen durch einen Medationsknopf auf den Profilen der Stammfoodsaver des Bezirkes aktivieren."
+  enableReportButton: "Technische Unterstützung für Meldungen durch einen Meldungs-Link auf den Profilen der Stammfoodsaver des Bezirkes aktivieren."
+  enableMediationButton: "Technische Unterstützung für Mediationen durch einen Mediations-Link auf den Profilen der Stammfoodsaver des Bezirkes aktivieren."
 
 regionPin:
   header_page: "Öffentliche Ortsgruppenbeschreibung für {bezirk}"
@@ -1478,6 +1485,7 @@ foodsaver:
     Diese Kurzbeschreibung wird auf deiner Profilseite angezeigt
     und ist dort für alle in der foodsharing-Community sichtbar.
   upgrade:
+    learning: "Jetzt Erklärvideo anschauen"
     ad_fs: "Ich möchte jetzt das Foodsaver-Quiz machen und Foodsaver*in werden!"
     to_fs: "Werde Foodsaver*in"
     needs_fs: "Du musst erst Foodsaver werden"
@@ -1568,7 +1576,7 @@ mailbox:
   fromto: "Von/An"
 settings:
   title: "Einstellungen"
-  header: "Deine Daten/Einstellungen"
+  header: "Profil Einstellungen"
   notifications: "Benachrichtigungen"
   follow:
     thread: "Über das Forenthema \"{thread}\" auf dem Laufenden bleiben?"
@@ -1689,13 +1697,25 @@ profile:
     warning_4: "diesem Support-Artikel."
     warning_others: "Die E-Mail-Adresse {email} diese*r Benutzer*in ist für foodsharing-Mails und -Kommunikation gesperrt. Über den Button kannst du diese Sperre entfernen."
     remove_button: "Von der Bounce-Liste entfernen"
-  pickups_stat:
-    title: "Engagementstatistik (ab letzten 4 Wochen)"
-    calenderWeek: "Kalenderwoche"
+  commitments_stat:
+    title: "Engagementstatistik"
+    respActStores: "Danke für das Koordinieren von {count} aktiven "
+    securePickupWeek: "Danke für das {count}-malige kurzfristige Einspringen und Sicherstellen von Abholungen!"
+    eventsCreatedWeek: "Danke für das {count}-malige Erstellen von Events in dieser Woche. "
+    eventsParticipatedWeek: "Danke für das {count}-malige Teilnehmen an Events in dieser Woche. Gesamtzeit: {hour}:{minute} "
+    basketsOfferedWeek: "Danke für das {count}-malige Anbieten von Essenskörben in dieser Woche. Insgesamt wurden {weight} kg geteilt."
+    basketsSharedWeek: "Die Essenskörbe wurden mit {count} Person geteilt. "
+    weekDesc: "Kalenderwoche {week}, vom {weekStart} bis {weekEnd}"
+    calenderWeek: "KW"
     districtName: "Bezirk"
     categorieName: "Kategorie"
-    pickupAmount: "Abholmenge"
-    pickupCount: "Abholanzahl"
+    pickupAmount: "Menge"
+    pickupCount: "Häufigkeit"
+    week_0: "Übernächste Woche"
+    week_1: "Nächste Woche"
+    week_2: "Aktuelle Woche"
+    week_3: "Letzte Woche"
+    week_4: "Vorletzte Woche"
   banana:
     title: "{count} Vertrauensbananen"
     none: "{name} hat bislang noch keine Vertrauensbanane erhalten."
@@ -1717,7 +1737,7 @@ profile:
   nav:
     edit: "Profil bearbeiten"
     buddy: "Ich kenne {name}"
-    history: "Passhistorie" #also in ProfileXhr
+    history: "Ausweishistorie" #also in ProfileXhr
     verificationHistory: "Verifizierungshistorie" #also in ProfileXhr
     notes: "Notizen <strong>({count})</strong>"
     violations: "Meldungen <strong>({count})</strong>"
@@ -1730,11 +1750,7 @@ profile:
   notes:
     bread: "Notizen"
     title: "Notizen über {name}"
-    info: |
-      Bitte gehe gewissenhaft mit dieser Funktion um.
-      Sie soll helfen, Vorgänge sichbar zu machen um uns Arbeit zu ersparen.
-      Persönliches oder Wertendes zu einer Person hat hier nichts verloren.
-      Bleibe sachlich."
+    info: Bitte gehe gewissenhaft mit dieser Funktion um. Sie soll helfen, Vorgänge sichbar zu machen um uns Arbeit zu ersparen. Persönliches oder Wertendes zu einer Person hat hier nichts verloren. Bleibe sachlich.
   online: "{name} ist online."
   infos:
     title: "Infos"
@@ -1744,8 +1760,8 @@ profile:
     privateMail: "Private E-Mail-Adresse"
     fsMail: "Interne Mailbox"
     buddies: "Bekannte"
-    buddycount: "{name} kennen {count} Foodsaver"
-    buddycount1: "{name} kennt {count} Foodsaver"
+    buddycount_followed: "{name} kennen {count} Foodsaver"
+    buddycount_known: "{name} kennt {count} Foodsaver"
     fetchrate: "Abholquote"
     foodsaverId: "Foodsaver-ID"
     foodsharerId: "Foodsharer-ID"
@@ -1860,26 +1876,12 @@ profile:
   cantdeletethis: "Du kannst keine Einzeltermine löschen!"
   choosestore: "Bitte den betroffenen Betrieb auswählen" #in ProfileView
 
-search:
-  title: "Suche"
-  placeholder: "Suche Personen, Gruppen, Betriebe, …"
-  forum: "Nach Titel suchen…"
-  thread-title-only: "Es werden nur Titel durchsucht, nicht der Text von Beiträgen."
-  noresults: "Es konnten keine Ergebnisse gefunden werden"
-  mybuddies: "Meine Buddies"
-  mygroups: "Meine Gruppen"
-  mystores: "Meine Betriebe"
-  myregions: "Meine Bezirke"
-  groups: "Gruppen"
-  persons: "Personen"
-  user_search:
-    placeholder: "Name oder ID"
-
 dashboard:
   title: "Dashboard"
   updates_title_all: "Updates-Übersicht"
   updates_title_some: "Updates-Übersicht ({0})"
   display_all: "Alle"
+  settings: "Einstellungen"
   settings_tooltip: "Übersichts-Einstellungen"
   no_updates: "Keine Updates"
   no_more_updates_all: "Das war's!"
@@ -1910,33 +1912,33 @@ dashboard:
   mail_activation_error_title: "E-Mail-Adresse nicht bestätigt"
   homeRegion: "Dein Stammbezirk ist {region}."
   chooseHomeRegion: "Bitte wähle einen Stammbezirk aus."
+  greeting_short: "Hallo {name}!"
   greeting: "Hallo {name}! Schön, dass du hier bist."
   foodsharer: "Viel Spaß beim Retten!"
   foodsharer_amount: "Du hast schon {weight} Kilos gerettet!"
-  foodsaver_amount: |
-      Du hast <strong style="white-space:nowrap">{pickups}&thinsp;x</strong> Lebensmittel abgeholt
-      und damit <strong style="white-space:nowrap">{weight}&thinsp;kg</strong> gerettet.
+  foodsaver_amount: Du hast <b>{pickups} x</b> Lebensmittel abgeholt und damit <b>{weight} kg</b> gerettet.
+  full_subline: Du hast <b>{pickups} x</b> Lebensmittel abgeholt und damit <b>{weight} kg</b> gerettet. Dein Stammbezirk ist <b>{region}</b>.
+
   my:
     regions: "Deine Bezirke" #also in searchindexgenerator
     groups: "Deine Gruppen" #also in searchindexgenerator
     stores: "Deine Betriebe"
+    managing_stores: "Deine verantwortlichen Betriebe"
+    jumping_stores: "Deine Springer Betriebe"
     events: "Events"
     baskets: "Essenskörbe"
     pending: "Anfragen gestellt bei"
-    waiting: "Du bist auf der Springerliste bei"
     no-stores: "Du bist bis jetzt in keinem Betriebsteam."
     users: "Foodsaver*innen"
     buddies: "Menschen, die Du kennst"
   options:
     hide:
-      text: "Ausblenden"
-      tooltip: "Hier kannst du Informationen auf dem Dashboard ausblenden"
+      text: "Anzeige verwalten"
+      tooltip: "Hier kannst du einzelne Bereiche auf dem Dashboard aus und einblenden."
     reset: Zurücksetzen
     grid_toggle:
       2_columns: "Zur 2-Spalten-Ansicht wechseln"
       3_columns: "Zur 3-Spalten-Ansicht wechseln"
-  showmore: "Mehr anzeigen"
-  showless: "Weniger anzeigen"
   invitation: "Du wurdest eingeladen"
   invitationCount: "Du wurdest eingeladen ({count})"
   event: "Nächstes Event"
@@ -2073,22 +2075,17 @@ personal_data:
   landline: "Festnetztelefon"
 
 menu:
-  manage_regions: "Bezirke verwalten"
-  blog: "Blogbeiträge bearbeiten"
-  quiz: "Quiz verwalten"
-  reports: "Meldungen" #also in ReportControl
-  email: "Newsletter versenden"
-  manage_mailboxes: "Mailboxen verwalten"
-  content: "Inhalte bearbeiten"
   entry:
     activities: "Aktionen"
-    infos: "Infos"
+    infos: "Informationen"
     mark_as_read: "Alle als gelesen markieren"
     all_messages: "Alle Nachrichten"
     messages: "Nachrichten"
     your_groups: "Deine Gruppen"
     your_baskets: "Deine Essenskörbe"
-    groups: "Gruppenübersicht"
+    baskets: "Essenskörbe"
+    groups: "Gruppen"
+    group_overview: "Gruppenübersicht"
     your_account: "Dein Account"
     your_stores: "Deine Betriebe" #also in searchindexgenerator
     administration: "Administration"
@@ -2118,7 +2115,6 @@ menu:
     members: "Mitglieder"
     workingGroupEdit: "Gruppe verwalten"
     aboutUs: "Über uns"
-    mission: "Mission"
     fundamentals: "Grundsätze"
     blog: "Blog"
     team: "Team"
@@ -2164,19 +2160,20 @@ footer:
   wiki: "Wiki"
   blog: "Blog"
   statistics: "Statistik"
-  hosting_info: "CO2-neutral gehostet auf"
-  hosting_tooltip: "CO2-neutral gehostet auf manitu."
-  donate: "Unterstützen"
-  version: "Version: {version}"
-  call_to_donate: |
-    Du möchtest foodsharing
-    unterstützen?
-  donate_now: "Jetzt spenden"
-  beta_testing_issues: "Test-Aufgaben der Beta-Version"
-  it_devdocs: "by foodsharing IT"
-  wiener_tafel_alt_text: "Wiener Tafel"
-  lebensministerium_alt_text: "Bundesministerium für Landwirtschaft, Regionen und Tourismus"
-  denns_at_alt_text: "Denn's Biomarkt"
+  meta:
+    beta_testing_issues: Test-Aufgaben der Beta-Version
+    it_devdocs: "by foodsharing IT"
+    version: "Version: {version}"
+  donate:
+    call_to: Du möchtest foodsharing unterstützen?
+    cta: Jetzt spenden
+  hosting:
+    info: CO2-neutral <a href="https://www.manitu.de/webhosting/" title="Webhosting">gehostet</a>
+    tooltip: CO2-neutral <a href="https://www.manitu.de/webhosting/" title="Webhosting">gehostet</a> auf manitu
+  partner_names:
+    wiener_tafel: Wiener Tafel
+    lebensministerium: Bundesministerium für Landwirtschaft, Regionen und Tourismus
+    denns: Denn's Biomarkt
 
 releases:
   "2022-05": "Release \"Heidelbeere\" 🍇 (Mai 2022)"
@@ -2337,15 +2334,6 @@ sidenav:
   localgroups: "Lokalgruppen"
   countryspecific: "Länderspezifische Gruppen"
   yourgroups: "Deine Gruppen"
-
-becomeregion:
-  chooseregion: "Wähle den Bezirk aus, in dem du aktiv werden möchtest."
-  enterregion:
-    main: "Deinem ersten Bezirk kannst du beitreten, indem du dich über die Auswahl 'Europa' bis zu deinem Bezirk durchklickst.<br> Solltest du keinen Bezirk für dich finden, wähle ein Level höher oder tritt dem nächstgelegenen Bezirk bei. Solltest du keine Möglichkeit haben, dich in der Umgebung zum Foodsaver ausbilden zu lassen, dann kannst du dir überlegen einen eigenen Bezirk zu starten. Lies dir in diesem Fall bitte das Wiki und insbesondere den Artikel zu"
-    region_link_text: "Bezirke gründen oder reaktivieren"
-    text1: "gut durch. Wenn du den Bezirk starten möchtest oder explizite Fragen hast, die das Wiki nicht beantwortet, schreib uns eine E-Mail an"
-    text2: "Wir sind nicht die zentrale Anlaufstelle für allgemeine Fragen, können dir aber bei Fragen zu Bezirken weiterhelfen."
-  save: "Speichern"
 
 base:
   whatfor: "Auf foodsharing.de kannst du deine Lebensmittel vor dem Verfall an soziale Einrichtungen oder andere Personen abgeben"
@@ -2514,11 +2502,12 @@ startpage:
   registernow: "Jetzt registrieren"
   more_infos: Erfahre mehr
   this_is_how_it_works: So funktioniert's
-  mission:
-    title: "Mission"
-    text: "Unser langfristiges Ziel ist es, die Wegwerfkultur von Lebensmitteln und anderen Ressourcen zu vermindern.
-      Wir retten Lebensmittel in privaten Haushalten sowie von Betrieben - gemeinschaftlich, nachhaltig & wertschätzend.
-      Wir verstehen uns als bildungspolitische Bewegung."
+  vision:
+    title: "Vision"
+    text: "Wir verstehen uns als umwelt- und bildungspolitische Bewegung, die sich gegen den achtlosen Umgang mit
+     Ressourcen und für ein nachhaltiges Ernährungssystem einsetzt. Unser langfristiges Ziel ist es, die Verschwendung
+     von genießbaren Lebensmitteln zu beenden. Darum werden wir vor Ort aktiv: Wir retten Lebensmittel in privaten
+     Haushalten sowie von Betrieben, stehen im Dialog mit der Politik und tragen unsere Vision in die Welt hinaus."
   call_to_action:
     title: "Mach mit"
     text: "Wir entstanden 2012, mittlerweile sind wir eine internationale Bewegung  mit über 200.000 Nutzer*innen
@@ -2576,12 +2565,7 @@ startpage:
     link: foodsharing unterstützen
 
 contentmanagement: "Inhaltsverwaltung" #contentControl
-activitypost:
-  Response: "Antworten"
-  response: "antworten"
-  write: "Schreibe eine Antwort …"
-  quickreply_info: "<b>Umschalttaste + Eingabetaste</b> zum Hinzufügen einer neuen Zeile."
-  quickreply_button: Jetzt Senden<br>oder <b>Eingabetaste</b> drücken.
+
 deletefromregion: "Wirklich aus dem Bezirk löschen?"
 savewithus: "Rette mit!"
 logincontrol:
@@ -2635,3 +2619,102 @@ information:
     title: "Kennst du die Kalender Synchronisation für deine Abholungen?"
     info: "Damit kannst du deine nächsten Abholtermine mit einem Kalenderprogramm deiner Wahl sehen."
     link: "Jetzt abonnieren"
+
+system_administration:
+  regions: "Bezirke verwalten"
+  blog: "Blogbeiträge bearbeiten"
+  quiz: "Quiz verwalten"
+  reports: "Meldungen einsehen"
+  email: "Newsletter versenden"
+  mailboxes: "Mailboxen verwalten"
+  content: "Inhalte bearbeiten"
+
+navigation:
+  map: Karte
+  promotion: In der IT? Wir brauchen dich!
+  contact: Kontakt
+  whats_new: Was ist neu?
+  styleguide: Styleguide
+  support: Support
+  help_needed: Hilfe nötig?
+  help: Hilfe
+  help_and_support: Hilfe & Support
+  wiki: Wiki
+  regions: Bezirke
+  groups: Gruppen
+  stores: Betriebe
+  basket: Essenskörbe
+  search: Suche
+  conversations: Nachrichten
+  notifications: Benachrichtigungen
+  profil: 👋 Hallo {name}!
+  system_administration: System Administration
+
+join_region:
+  headline: Wähle den Bezirk aus, in dem du aktiv werden möchtest.
+  description: Deinem ersten Bezirk kannst du beitreten, indem du dich über die Auswahl <em>Europa</em> bis zu deinem Bezirk durchklickst.Solltest du keinen Bezirk für dich finden, wähle ein Level höher oder tritt dem nächstgelegenen Bezirk bei. Solltest du keine Möglichkeit haben, dich in der Umgebung zum Foodsaver ausbilden zu lassen, dann kannst du dir überlegen einen eigenen Bezirk zu starten. Lies dir in diesem Fall bitte das Wiki und insbesondere den <a href="{href}">Artikel zu Bezirke gründen oder reaktivieren<a> gut durch. Wenn du den Bezirk starten möchtest oder explizite Fragen hast, die das Wiki nicht beantwortet, schreib uns <a href="{mail}">eine E-Mail</a>. Wir sind nicht die zentrale Anlaufstelle für allgemeine Fragen, können dir aber bei Fragen zu Bezirken weiterhelfen.
+  error:
+    not_allowed: In diesen Bezirk kannst Du Dich nicht eintragen.
+    is_state: <strong>Das ist ein Bundesland.</strong><br> Wähle bitte eine Stadt, eine Region oder einen Bezirk aus!
+    is_country: <strong>Das ist ein Land.</strong><br> Wähle bitte eine Stadt, eine Region oder einen Bezirk aus!
+    is_big_city: <strong>Das ist eine Großstadt.</strong><br> Wähle bitte eine Stadt, eine Region oder einen Bezirk aus!
+
+globals:
+  account:
+    signup: Mitmachen
+    signin: Anmelden
+    signout: Abmelden
+  save: Speichern
+  close: Schließen
+  reset: Zurücksetzen
+  select: Bitte auswählen...
+  show_more: Mehr anzeigen
+  show_less: Weniger anzeigen
+  type:
+    mailboxes: Mailboxen
+    my_mailboxes: Meine Mailboxen
+    buddies: Buddies
+    my_buddies: Meine Buddies
+    stores: Betriebe
+    my_stores: Meine Betriebe
+    regions: Bezirke
+    my_regions: Meine Bezirke
+    foodshare_points: Fairteiler
+    my_foodshare_points: Meine Fairteiler
+    groups: Gruppen
+    my_groups: Meine Gruppen
+    persons: Personen
+    my_persons: Meine Personen
+  you: Du
+
+search:
+  title: Suche
+  placeholder: Jetzt suche starten ...
+  informations: Du kannst nach Personen, Gruppen, Betriebe, Bezirke und Fairteiler suchen.
+  forum: Nach Titel suchen…
+  noresults: Es konnten keine Ergebnisse gefunden werden
+  thread-title-only: Es werden nur Titel durchsucht, nicht der Text von Beiträgen.
+  user_search:
+    placeholder: Name oder ID
+
+activitypost:
+  Response: Antworten
+  response: antworten
+  write: Schreibe eine Antwort …
+  quickreply_info: <code class="key">Umschalttaste + Eingabetaste</code> zum Hinzufügen einer neuen Zeile.
+  quickreply_button: Jetzt Senden<br>oder <code class="key">Eingabetaste</code> drücken.
+
+bootstrap-datepicker:
+  labelPrevDecade: 'Vorheriges Jahrzehnt'
+  labelPrevYear: 'Vorheriges Jahr'
+  labelPrevMonth: 'Vorheriger Monat'
+  labelCurrentMonth: 'Aktueller Monat'
+  labelNextMonth: 'Nächster Monat'
+  labelNextYear: 'Nächstes Jahr'
+  labelNextDecade: 'Nächstes Jahrzehnt'
+  labelToday: 'Heute'
+  labelSelected: 'Ausgewähltes Datum'
+  labelNoDateSelected: 'Kein Datum gewählt'
+  labelCalendar: 'Kalender'
+  labelNav: 'Kalendernavigation'
+  labelHelp: 'Mit den Pfeiltasten durch den Kalender navigieren'

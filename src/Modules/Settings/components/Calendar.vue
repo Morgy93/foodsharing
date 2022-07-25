@@ -11,7 +11,7 @@
         {{ $i18n('settings.calendar.link_title') }}
       </h3>
       <div class="bootstrap">
-        <p> {{ $i18n('settings.calendar.teaser') }} <a :href="$url('calendarHints')" target="_blank">{{ $url('calendarHints') }}</a></p>
+        <p> {{ $i18n('settings.calendar.teaser') }} <a :href="$url('wiki_calendar')" target="_blank">{{ $url('wiki_calendar') }}</a></p>
         <b-button
           class="my-2"
           @click="createToken"
@@ -57,7 +57,7 @@
 <script>
 import { hideLoader, pulseError, showLoader } from '@/script'
 import { createApiToken, getApiToken, removeApiToken } from '@/api/calendar'
-import i18n from '@/i18n'
+import i18n from '@/helper/i18n'
 import { BAlert, BButton } from 'bootstrap-vue'
 
 export default {
@@ -142,7 +142,7 @@ export default {
   font-family: 'Alfa Slab One', serif;
   font-weight: normal;
   font-size: 1rem;
-  color: var(--fs-brown);
+  color: var(--fs-color-primary-500);
 }
 
 .webcal {
@@ -155,7 +155,7 @@ export default {
   }
 
   li a {
-    color: var(--secondary);
+    color: var(--fs-color-secondary-500);
   }
 }
 </style>

@@ -1,2 +1,49 @@
+/*
+    Customize all colors to match the CD
+*/
+@import "colors.scss";
+
+/*
+    Adds some cool fonts
+*/
+@import "fonts.scss";
+
+
+/*
+Loads bootstrap css from bootstrap-vue,
+which allows us to use the bootstrap theme without using the bootstrap-vue components
+*/
+@import "bootstrap-theme";
+@import "bootstrap-overwrites";
+
+/*
+    Adds an symbol to all links that are external
+*/
+@import "external-links";
+
+/*
+    Predefined icon sizes, to generate a unified look
+    1rem = 14px based on the default bootstrap font size
+    - big: 2.5rem (35px)
+    - default: 1em (based on the font size)
+    - small: 1rem (14px)
+*/
+@import "icon-sizes";
+
+/*
+    Others
+*/
 @import "disabledLoading";
 @import "nojs";
+
+/*
+    All interactions like a, buttons, etc.
+    or the Navigation
+*/
+@import "interactions";
+@import "navigation";
+
+/*
+    Overrides some old styles to match bootstrap
+*/
+@import "shame-old-style-corrections";

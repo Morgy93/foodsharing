@@ -9,7 +9,7 @@ import {
   goTo,
 } from '@/script'
 import './Team.css'
-import i18n from '@/i18n'
+import i18n from '@/helper/i18n'
 
 const $form = $('#contactform-form')
 if ($form.length > 0) {

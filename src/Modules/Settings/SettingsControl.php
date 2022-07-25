@@ -392,7 +392,7 @@ class SettingsControl extends Control
 	public function passport()
 	{
 		if ($this->settingsPermissions->mayUsePassportGeneration()) {
-			$this->passportGeneratorTransaction->generate([$this->session->id()], false);
+			$this->passportGeneratorTransaction->generate([$this->session->id()], false, true);
 		} else {
 			$this->routeHelper->go('/?page=settings');
 		}

@@ -2,6 +2,7 @@
 
 namespace Foodsharing\Modules\Profile;
 
+use Carbon\Carbon;
 use Foodsharing\Modules\Basket\BasketGateway;
 use Foodsharing\Modules\Core\Control;
 use Foodsharing\Modules\Mailbox\MailboxGateway;
@@ -110,13 +111,30 @@ final class ProfileControl extends Control
 		$fsId = $this->foodsaver['id'];
 
 		$maySeeStores = $this->profilePermissions->maySeeStores($fsId);
-		$maySeePickupsStat = $this->profilePermissions->maySeePickupsStat($fsId);
+		$maySeeCommitmentsStat = $this->profilePermissions->maySeeCommitmentsStat($fsId);
 
 		$wallPosts = $this->wallposts('foodsaver', $fsId);
 		$userStores = $maySeeStores ? $this->profileGateway->listStoresOfFoodsaver($fsId) : [];
-		$profilePickupsStat = $maySeePickupsStat ? $this->profileGateway->getPickupsStat($fsId) : [];
 
-		$this->view->profile($wallPosts, $userStores, $profilePickupsStat);
+		$profileCommitmentsStat[0]['respActStores'] = $maySeeCommitmentsStat ? $this->profileGateway->getResponsibleActiveStoresCount($fsId) : 0;
+		$pos = 0;
+		for ($i = 2; $i >= -2; --$i) {
+			$date = Carbon::now()->addWeeks($i);
+			$profileCommitmentsStat[$pos]['beginWeek'] = $date->startOfWeek()->format('d.m.y');
+			$profileCommitmentsStat[$pos]['endWeek'] = $date->endOfWeek()->format('d.m.y');
+			$profileCommitmentsStat[$pos]['week'] = $date->isoWeek();
+			$profileCommitmentsStat[$pos]['data'] = $maySeeCommitmentsStat ? $this->profileGateway->getPickupsStat($fsId, $i) : [];
+			$profileCommitmentsStat[$pos]['eventsCreated'] = $maySeeCommitmentsStat ? $this->profileGateway->getEventsCreatedCount($fsId, $i) : 0;
+			$profileCommitmentsStat[$pos]['eventsParticipated'] = $maySeeCommitmentsStat ? $this->profileGateway->getEventsParticipatedCount($fsId, $i) : [];
+			$profileCommitmentsStat[$pos]['baskets']['offered'] = $maySeeCommitmentsStat ? $this->profileGateway->getBasketsOfferedStat($fsId, $i) : [];
+			if ($i <= 0) {
+				$profileCommitmentsStat[$pos]['securePickupWeek'] = $maySeeCommitmentsStat ? $this->profileGateway->getSecuredPickups($fsId, $i) : 0;
+				$profileCommitmentsStat[$pos]['baskets']['shared'] = $maySeeCommitmentsStat ? $this->profileGateway->getBasketsShared($fsId, $i) : 0;
+			}
+			++$pos;
+		}
+
+		$this->view->profile($wallPosts, $userStores, $profileCommitmentsStat);
 	}
 
 	private function profilePublic(array $profileData): void

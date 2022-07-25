@@ -136,7 +136,7 @@ class StoreXhr extends Control
 
 	public function bubble(): array
 	{
-		$storeId = $_GET['id'];
+		$storeId = intval($_GET['id']);
 		if ($store = $this->storeGateway->getMyStore($this->session->id(), $storeId)) {
 			$dia = $this->buildBubbleDialog($store, $storeId);
 

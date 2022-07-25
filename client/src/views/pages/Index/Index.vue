@@ -1,13 +1,12 @@
 <template>
   <b-container
     fluid
-    class="bootstrap bg-white"
+    class="bg-white p-0"
   >
-    <div class="card text-white pb-5">
-      <div class="header-desktop" />
-      <div class="card-img-overlay">
+    <div class="card text-white mb-5">
+      <div class="header-desktop d-flex align-items-center">
         <b-container>
-          <b-row>
+          <b-row class="d-flex align-content-center justify-content-center">
             <b-col
               lg="2"
               class="d-none d-lg-block"
@@ -18,29 +17,33 @@
               xl="8"
               lg="10"
               cols="12"
-              class="text-center mt-md-5"
+              class="text-center mt-5"
             >
-              <b-card-title class="mt-4 mt-md-0">
-                <h1>{{ $i18n('startpage.welcome_text') }}</h1>
+              <b-card-title class="mt-4">
+                <h1 class="text-dark">
+                  {{ $i18n('startpage.welcome_text') }}
+                </h1>
               </b-card-title>
               <b-card-text class="mt-4">
-                <h3>{{ $i18n('startpage.slogan_1') }}</h3>
+                <h3 class="text-dark">
+                  {{ $i18n('startpage.slogan_1') }}
+                </h3>
               </b-card-text>
-              <b-card-text class="mt-5 text-center">
+              <b-card-text class="mt-5 mb-5 text-center">
                 <b-button
-                  variant="secondary"
+                  variant="primary"
                   class="pl-5 pr-5"
                   :href="$url('joininfo')"
                 >
                   {{ $i18n('startpage.call_to_action_button') }}
                 </b-button>
               </b-card-text>
-              <h4
-                class="d-none d-lg-block"
+              <h6
+                class="text-dark d-none d-sm-block mb-sm-5"
               >
                 <b>{{ $i18n('startpage.slogan_2') }}</b><br>
                 {{ $i18n('startpage.slogan_3') }}
-              </h4>
+              </h6>
             </b-col>
           </b-row>
         </b-container>
@@ -48,7 +51,7 @@
     </div>
     <b-row
       v-if="contentBlockVisible"
-      class="ml-3 ml-md-5"
+      class="container m-auto"
     >
       <b-col
         cols="12"
@@ -77,20 +80,20 @@
       v-if="contentBlockVisible"
       class="line pt-3 pt-xl-5"
     />
-    <b-row class="mt-3 ml-3 ml-md-5">
+    <b-row class="container mt-5 ml-auto mr-auto">
       <b-col
         cols="12"
         xl="3"
         class="text-xl-right"
       >
-        <h2>{{ $i18n('startpage.mission.title') }}</h2>
+        <h2>{{ $i18n('startpage.vision.title') }}</h2>
       </b-col>
       <b-col
         cols="12"
         xl="6"
       >
         <p>
-          {{ $i18n('startpage.mission.text') }}
+          {{ $i18n('startpage.vision.text') }}
         </p>
         <p>
           <b-link
@@ -102,7 +105,7 @@
         </p>
       </b-col>
     </b-row>
-    <b-row class="ml-3 ml-md-5 mr-5 mt-5">
+    <b-row class="container mt-5 ml-auto mr-auto">
       <b-col
         xl="4"
         class="text-xl-right"
@@ -118,6 +121,7 @@
           controls
           allowfullscreen
           poster="/img/startpage/Video-1200.png"
+          loading="lazy"
         >
           <source
             src="/img/startpage/intro.webm"
@@ -130,7 +134,7 @@
         </b-embed>
       </b-col>
     </b-row>
-    <b-row class="mt-3 ml-3 ml-md-5 mt-5">
+    <b-row class="container mt-5 ml-auto mr-auto">
       <b-col
         cols="12"
         xl="4"
@@ -148,105 +152,61 @@
         </p>
       </b-col>
     </b-row>
-    <div class="card text-white pb-5 mt-5">
-      <div class="call-to-action-image" />
-      <div class="card-img-overlay p-xl-5">
-        <b-row class="p-xl-5">
-          <b-col
-            cols="12"
-            xl="4"
-            class="mb-md-4"
+    <div class="card text-white mb-5 mt-5">
+      <div class="call-to-action-image">
+        <b-row class="container ml-auto mr-auto pb-5 pt-5 row">
+          <b-card
+            bg-variant="bg-white"
+            text-variant="dark"
+            class="p-4"
           >
-            <b-card-group
-              deck
-            >
-              <b-card
-                bg-variant="bg-white"
-                text-variant="dark"
-                class="p-4"
+            <b-card-text>
+              <h5>{{ $i18n('startpage.member.title') }}</h5>
+            </b-card-text>
+            <b-card-text>
+              {{ $i18n('startpage.member.text') }}
+              <b-link
+                class="link"
+                href="/?page=content&sub=joininfo"
               >
-                <b-row class="mb-3">
-                  <b-col
-                    cols="10"
-                    md="11"
-                    xl="10"
-                    class="pl-0"
-                  >
-                    <h5>{{ $i18n('startpage.member.title') }}</h5>
-                  </b-col>
-                </b-row>
-                <b-card-text>
-                  {{ $i18n('startpage.member.text') }}
-                  <b-link
-                    class="link"
-                    href="?page=content&sub=joininfo"
-                  >
-                    {{ $i18n('startpage.more_infos') }}
-                  </b-link>
-                </b-card-text>
-              </b-card>
-            </b-card-group>
-          </b-col>
-          <b-col
-            cols="12"
-            xl="4"
-            class="mb-md-4"
+                {{ $i18n('startpage.more_infos') }}
+              </b-link>
+            </b-card-text>
+          </b-card>
+          <b-card
+            bg-variant="bg-white"
+            text-variant="dark"
+            class="p-4"
           >
-            <b-card-group
-              deck
-            >
-              <b-card
-                bg-variant="bg-white"
-                text-variant="dark"
-                class="p-4"
-              >
-                <b-card-text>
-                  <h5>{{ $i18n('startpage.private.title') }}</h5>
-                </b-card-text>
-                <b-card-text>
-                  {{ $i18n('startpage.private.text') }}
-                </b-card-text>
-              </b-card>
-            </b-card-group>
-          </b-col>
-          <b-col
-            cols="12"
-            xl="4"
+            <b-card-text>
+              <h5>{{ $i18n('startpage.private.title') }}</h5>
+            </b-card-text>
+            <b-card-text>
+              {{ $i18n('startpage.private.text') }}
+            </b-card-text>
+          </b-card>
+          <b-card
+            bg-variant="bg-white"
+            text-variant="dark"
+            class="p-4"
           >
-            <b-card-group
-              deck
-            >
-              <b-card
-                bg-variant="bg-white"
-                text-variant="dark"
-                class="p-4"
+            <b-card-text>
+              <h5>{{ $i18n('startpage.store.title') }}</h5>
+            </b-card-text>
+            <b-card-text>
+              {{ $i18n('startpage.store.text') }}
+              <b-link
+                class="link"
+                href="fuer-unternehmen"
               >
-                <b-row class="mb-3">
-                  <b-col
-                    cols="10"
-                    md="11"
-                    xl="10"
-                    class="pl-0"
-                  >
-                    <h5>{{ $i18n('startpage.store.title') }}</h5>
-                  </b-col>
-                </b-row>
-                <b-card-text>
-                  {{ $i18n('startpage.store.text') }}
-                  <b-link
-                    class="link"
-                    href="fuer-unternehmen"
-                  >
-                    {{ $i18n('startpage.more_infos') }}
-                  </b-link>
-                </b-card-text>
-              </b-card>
-            </b-card-group>
-          </b-col>
+                {{ $i18n('startpage.more_infos') }}
+              </b-link>
+            </b-card-text>
+          </b-card>
         </b-row>
       </div>
     </div>
-    <b-row class="mt-3 ml-3 ml-md-5 mt-5">
+    <b-row class="container mt-5 ml-auto mr-auto">
       <b-col
         cols="12"
         xl="3"
@@ -264,7 +224,7 @@
         <p>
           <b-link
             class="link"
-            href="https://devdocs.foodsharing.network"
+            :href="$url('devdocs_it_tasks')"
           >
             {{ $i18n('startpage.more_infos') }}
           </b-link>
@@ -272,11 +232,10 @@
       </b-col>
     </b-row>
     <div class="card text-white pb-5 mt-5">
-      <div class="teaser-map" />
-      <div class="card-img-overlay p-xl-5">
+      <div class="teaser-map p-5">
         <b-row
           align-h="end"
-          class="p-xl-5"
+          class="container mt-5 ml-auto mr-auto"
         >
           <b-col
             xl="6"
@@ -336,10 +295,16 @@
       </div>
       <div class="map-copyright">
         <span v-html="MapAttribution" />
+        <span class="ml-2">
+          Image by
+          <a href="https://de.freepik.com/freie-psd/laptop-mockup-design_11653801.htm">
+            Freepik, xvector
+          </a>
+        </span>
       </div>
     </div>
     <b-row
-      class="ml-md-5"
+      class="container mt-5 ml-auto mr-auto"
       align-v="center"
     >
       <b-col
@@ -354,7 +319,7 @@
             {{ $i18n('startpage.demands.text') }}
             <b-link
               class="link"
-              href="?page=content&sub=forderungen"
+              href="/?page=content&sub=forderungen"
             >
               {{ $i18n('startpage.more_infos') }}
             </b-link>
@@ -366,14 +331,14 @@
         md="8"
         class="mt-3 align-self-end"
       >
-        <b-img
+        <b-img-lazy
           fluid
           src="/img/startpage/picture-forderungen.png"
         />
       </b-col>
     </b-row>
     <b-row
-      class="ml-md-5 mt-5"
+      class="container mt-5 ml-auto mr-auto"
       align-v="center"
     >
       <b-col
@@ -385,6 +350,7 @@
           class="card-img teaser-towns"
           src="/img/startpage/foodsharing-staedte.png"
           alt="Card image"
+          loading="lazy"
           fluid
         >
       </b-col>
@@ -405,10 +371,11 @@
         </p>
       </b-col>
     </b-row>
-    <div class="card text-white pb-5 mt-5">
-      <div class="teaser-donate" />
-      <div class="card-img-overlay p-xl-5">
-        <b-row class="p-xl-5">
+    <div class="card text-white mb-5 mt-5">
+      <div class="teaser-donate p-5">
+        <b-row
+          class="container ml-auto mr-auto"
+        >
           <b-col
             xl="6"
             cols="12"
@@ -484,19 +451,17 @@ export default {
 </script>
 
 <style lang="scss" scoped>
-
 .row {
   margin-left: 0px;
   margin-right: 0px;
 }
 
-::v-deep .link {
-  color: var(--fs-green);
-  font-weight: bold;
+h5 {
+  font-family: var(--fs-font-family-headline);
 }
 
 .line {
-  border-bottom: 1px solid var(--fs-light-grey);
+  border-bottom: 1px solid var(--fs-border-default);
   width: 90%;
   margin: 0 auto;
 }
@@ -516,205 +481,49 @@ svg {
 }
 
 .teaser-background {
-  background-color: var(--fs-beige);
+  background-color: var(--fs-color-primary-200);
   max-width: 805px;
   max-height: 451px;
 }
 
-h5 {
-  font-family: "Alfa Slab One", serif;
-  color: #333333;
-  font-size: 1.375rem;
-  letter-spacing: 0.05em;
-}
-
-::v-deep h4 {
-  color: #333333;
-  font-size: 1rem;
-}
-
-::v-deep h3 {
-  color: #333333;
-  font-weight: bold;
-}
-
-::v-deep h2 {
-  font-family: "Alfa Slab One", serif;
-  color: #333333;
-  font-weight: normal;
-  letter-spacing: 0.05em;
-}
-
-::v-deep h1 {
-  font-family: "Alfa Slab One", serif;
-  color: #333333;
-  font-weight: normal;
-  letter-spacing: 0.05em;
-}
-
-/*
-Extra small devices (portrait phones, less than 544px)
-No media query since this is the default in Bootstrap because it is "mobile first"
-*/
-::v-deep h1 {font-size:1.6rem;} /*1rem = 16px*/
-::v-deep h2 {font-size:1.4rem;} /*1rem = 16px*/
-::v-deep h3 {font-size:1rem;} /*1rem = 16px*/
-
 .call-to-action-image {
-  background: #fff url(img/startpage/mach-mit-desktop-544@1.5.png) center center no-repeat;
-  height: 47rem;
+  background-image: url(/img/startpage/mach-mit.png);
+  background-size: cover;
+
+  & .container {
+    flex-wrap: wrap;
+
+    .card {
+      flex: 1;
+      margin: 0.5rem;
+    }
+
+    @media screen and (max-width: 767px) {
+      flex-wrap: unset;
+      flex-direction: column;
+    }
+  }
 }
 
 .header-desktop {
-  background: #fff url(img/startpage/header-desktop-544.png) center center no-repeat;
-  min-height: 23rem;
+  background-image: url(img/startpage/header.png);
+  background-size: cover;
 }
 
 .teaser-map {
-  background: #fff url(img/startpage/karte-544@1.5.png) center center no-repeat;
-  height: 32rem;
+  background-image: url(/img/startpage/karte.jpg);
+  background-size: cover;
+  min-height: 40rem;
 }
 
 .teaser-donate {
-  background: #fff url(img/startpage/spenden-544.png) center center no-repeat;
-  min-height: 22rem;
+  background-image: url(img/startpage/spenden.png);
+  background-size: cover;
 }
 
 .map-copyright {
-  color: #333333;
+  color: var(--fs-color-dark);
   text-align: center;
   z-index: 1;
-}
-/*
-####################################################
-M E D I A  Q U E R I E S
-####################################################
-*/
-
-/*
-::::::::::::::::::::::::::::::::::::::::::::::::::::
-Bootstrap 4 breakpoints
-*/
-/* Small devices (landscape phones, 544px and up) */
-@media (min-width: 544px) {
-  ::v-deep h1 {font-size:1.5rem;} /*1rem = 16px*/
-  ::v-deep h2 {font-size:1.35rem;} /*1rem = 16px*/
-  ::v-deep h3 {font-size:1.25rem;} /*1rem = 16px*/
-
-  .call-to-action-image {
-    background: #fff url(img/startpage/mach-mit-desktop-786.png) center center no-repeat;
-    height: 36rem;
-  }
-
-  .header-desktop {
-    background: #fff url(img/startpage/header-desktop-789.png) center center no-repeat;
-    min-height: 23rem;
-  }
-
-  .teaser-map {
-    background: #fff url(img/startpage/karte-786.png) center center no-repeat;
-    height: 32rem;
-  }
-
-  .teaser-donate {
-    background: #fff url(img/startpage/spenden-786.png) center center no-repeat;
-    min-height: 22rem;
-  }
-}
-
-/* Medium devices (tablets, 768px and up) The navbar toggle appears at this breakpoint */
-@media (min-width: 768px) {
-  ::v-deep h1 {font-size:2rem;} /*1rem = 16px*/
-  ::v-deep h2 {font-size:1.75rem;} /*1rem = 16px*/
-  ::v-deep h3 {font-size:1.5rem;} /*1rem = 16px*/
-
-  .call-to-action-image {
-    background: #fff url(img/startpage/mach-mit-desktop-992@1.5.png) center center no-repeat;
-    height: 33.5rem;
-  }
-
-  .header-desktop {
-    background: #fff url(img/startpage/header-desktop-992.png) center center no-repeat;
-    min-height: 23rem;
-  }
-
-  .teaser-map {
-    background: #fff url(img/startpage/karte-992.png) center center;
-    height: 25rem;
-  }
-
-  .teaser-donate {
-    background: #fff url(img/startpage/spenden-992.png) center center no-repeat;
-    max-height: 14rem;
-  }
-
-  .map-copyright {
-    text-align: right;
-  }
-}
-
-/* Large devices (desktops, 992px and up) */
-@media (min-width: 992px) {
-  ::v-deep h1 {font-size:2.5rem;} /*1rem = 16px*/
-  ::v-deep h2 {font-size:2rem;} /*1rem = 16px*/
-  ::v-deep h3 {font-size:1.75rem;} /*1rem = 16px*/
-
-  .call-to-action-image {
-    background: #fff url(img/startpage/mach-mit-desktop-1200@1.5.png) center center no-repeat;
-    height: 30rem;
-  }
-
-  .header-desktop {
-    background: #fff url(img/startpage/header-desktop-1200.png) center center no-repeat;
-    min-height: 23rem;
-  }
-
-  .teaser-map {
-    background: #fff url(img/startpage/karte-1200.png) center center;
-    height: 25rem;
-  }
-
-  .teaser-donate {
-    background: #fff url(img/startpage/spenden-1200.png) center center no-repeat;
-    max-height: 14rem;
-  }
-}
-
-/* Extra large devices (large desktops, 1200px and up) */
-@media (min-width: 1200px) {
-  ::v-deep h1 {font-size:2.25rem;} /*1rem = 16px*/
-  ::v-deep h2 {font-size:2rem;} /*1rem = 16px*/
-
-  .call-to-action-image {
-    background: #fff url(img/startpage/mach-mit-desktop-1200@2x.png) center center no-repeat;
-    height: 25rem;
-  }
-
-  .header-desktop {
-    background: #fff url(img/startpage/header-desktop-1200@2x.png) center center no-repeat;
-    min-height: 23rem;
-  }
-
-  .teaser-map {
-    background: #fff url(img/startpage/karte-1200@2x.png) center center;
-    height: 25rem;
-  }
-
-  .teaser-donate {
-    background: #fff url(img/startpage/spenden-1200@2x.png) center center no-repeat;
-    max-height: 23rem;
-  }
-}
-</style>
-
-<style>
-.bootstrap .img-news {
-  max-width: 55%;
-  height: auto;
-}
-
-div#main {
-  min-height: unset !important;
-  padding-bottom: unset !important;
 }
 </style>

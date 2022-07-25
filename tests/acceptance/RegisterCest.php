@@ -38,7 +38,7 @@ class RegisterCest
 
 		// click signup, then press next on the first dialog
 
-		$I->click('Mitmachen');
+		$I->click('.testing-register-link');
 		$I->click('Jetzt registrieren');
 		$I->waitForElementVisible('#step1', 4);
 		$I->fillField('#email', $this->email);
@@ -54,8 +54,12 @@ class RegisterCest
 		$I->fillField('#lastname', $this->last_name);
 		$I->click('weiter');
 
+		// fill in birthdate
 		$I->waitForElementVisible('#step3', 4);
-		$I->fillField('.vdp-datepicker > div:nth-child(1) > input:nth-child(2)', $this->birthdate);
+		$I->click('#register-datepicker');
+		$I->click('button[title="Vorheriges Jahr"]');
+		$I->click('button[title="Vorheriges Jahr"]');
+		$I->click('.b-calendar .b-calendar-grid-body .col[data-date] .btn');
 		$I->click('weiter');
 
 		$I->waitForElementVisible('#step4', 4);
@@ -80,18 +84,22 @@ class RegisterCest
 
 		$I->amOnPage('/');
 
-		$I->click('#login');
-		$I->waitForElement('#login-email');
-		$I->fillField('#login-email', $this->email);
-		$I->fillField('#login-password', $this->password);
-		$I->click('#login-btn');
-		$I->waitForElement('#pulse-success');
+		$I->waitForElement('.testing-login-dropdown');
+		$I->click('.testing-login-dropdown');
+		$I->fillField('.testing-login-input-email', $this->email);
+		$I->fillField('.testing-login-input-password', $this->password);
+		$I->click('.testing-login-click-submit');
+		$I->waitForActiveAPICalls();
+		$I->waitForElementNotVisible('#pulse-success');
+		$I->waitForPageBody();
+		$I->waitForElement('.testing-intro-field');
+		$I->see('Hallo', '.testing-intro-field');
 
 		$I->seeInDatabase('fs_foodsaver', [
 			'email' => $this->stripped_email,
 			'name' => $this->first_name,
 			'nachname' => $this->last_name,
-			'geb_datum' => $this->birthdateUSFormat,
+			// 'geb_datum' => $this->birthdateUSFormat, // disabled because it's not possible to set a exact date in the frontend
 			'newsletter' => 1,
 			'handy' => $this->mobile_country_code . $this->mobile_number
 		]);
@@ -106,7 +114,7 @@ class RegisterCest
 
 		// click signup, then press next on the first dialog
 
-		$I->click('Mitmachen');
+		$I->click('.testing-register-link');
 		$I->click('Jetzt registrieren');
 		$I->waitForElementVisible('#step1', 4);
 		$I->fillField('#email', $this->email);
@@ -122,8 +130,12 @@ class RegisterCest
 		$I->fillField('#lastname', $this->last_name);
 		$I->click('weiter');
 
+		// fill in birthdate
 		$I->waitForElementVisible('#step3', 4);
-		$I->fillField('.vdp-datepicker > div:nth-child(1) > input:nth-child(2)', $this->birthdate);
+		$I->click('#register-datepicker');
+		$I->click('button[title="Vorheriges Jahr"]');
+		$I->click('button[title="Vorheriges Jahr"]');
+		$I->click('.b-calendar .b-calendar-grid-body .col[data-date] .btn');
 		$I->click('weiter');
 
 		$I->waitForElementVisible('#step4', 4);
@@ -147,18 +159,22 @@ class RegisterCest
 
 		$I->amOnPage('/');
 
-		$I->click('#login');
-		$I->waitForElement('#login-email');
-		$I->fillField('#login-email', $this->email);
-		$I->fillField('#login-password', $this->password);
-		$I->click('#login-btn');
-		$I->waitForElement('#pulse-success');
+		$I->waitForElement('.testing-login-dropdown');
+		$I->click('.testing-login-dropdown');
+		$I->fillField('.testing-login-input-email', $this->email);
+		$I->fillField('.testing-login-input-password', $this->password);
+		$I->click('.testing-login-click-submit');
+		$I->waitForActiveAPICalls();
+		$I->waitForElementNotVisible('#pulse-success');
+		$I->waitForPageBody();
+		$I->waitForElement('.testing-intro-field');
+		$I->see('Hallo', '.testing-intro-field');
 
 		$I->seeInDatabase('fs_foodsaver', [
 			'email' => $this->stripped_email,
 			'name' => $this->first_name,
 			'nachname' => $this->last_name,
-			'geb_datum' => $this->birthdateUSFormat,
+			// 'geb_datum' => $this->birthdateUSFormat, // disabled because it's not possible to set a exact date in the frontend
 			'newsletter' => 0,
 			'handy' => $this->mobile_country_code . $this->mobile_number
 		]);
@@ -169,7 +185,7 @@ class RegisterCest
 		$I->wantTo('get an error when trying to register with a blacklisted email address');
 
 		$I->amOnPage('/');
-		$I->click('Mitmachen');
+		$I->click('.testing-register-link');
 		$I->click('Jetzt registrieren');
 		$I->waitForElementVisible('#step1', 4);
 		$blacklistedEmailDomain = $I->grabFromDatabase('fs_email_blacklist', 'email', ['email like' => '%']);

@@ -1,6 +1,6 @@
 <template>
   <!-- eslint-disable vue/max-attributes-per-line -->
-  <div id="report_request" class="popbox bootstrap m-2">
+  <div id="report_request" class="popbox m-2">
     <div
       v-if="!isReportButtonEnabled"
     >
@@ -92,7 +92,9 @@
       />
       <b-alert variant="info" show>
         <div>{{ $i18n('profile.report.mail') }}</div>
-        <a :href="'mailto:' + emailAddress">{{ emailAddress }}</a>
+        <a :href="$url('mailto_mail_foodsharing_network', mailboxName)">
+          {{ $url('mail_foodsharing_network', mailboxName) }}
+        </a>
       </b-alert>
       <b-button
         class="text-right"
@@ -111,7 +113,7 @@ import $ from 'jquery'
 
 import { addReport } from '@/api/report'
 import { pulseError, pulseInfo } from '@/script'
-import i18n from '@/i18n'
+import i18n from '@/helper/i18n'
 
 export default {
   props: {
@@ -127,7 +129,7 @@ export default {
     isReporterIdArbitrationAdmin: { type: Boolean, required: true },
     isReportButtonEnabled: { type: Boolean, required: true },
     reporterHasReportGroup: { type: Boolean, required: true },
-    mbName: { type: String, required: true },
+    mailboxName: { type: String, required: true },
   },
   data () {
     return {
@@ -142,11 +144,6 @@ export default {
         { value: '15', text: this.$i18n('profile.report.sells') },
       ],
     }
-  },
-  computed: {
-    emailAddress () {
-      return this.mbName + '@foodsharing.network'
-    },
   },
   methods: {
     async trySendReport () {

@@ -7,8 +7,11 @@ $newpass = 'TEEEEST';
 
 $user = $I->createFoodsaver();
 
-$I->amOnPage('/?page=login');
-$I->click('Passwort vergessen?');
+$I->amOnPage('/');
+$I->see('Einloggen', ['css' => '.testing-login-dropdown']);
+$I->click('.testing-login-dropdown > .nav-link');
+$I->waitForText('Passwort vergessen?');
+$I->click('.testing-login-click-password-reset');
 
 $I->see('Gib deine E-Mail-Adresse ein');
 $I->fillField('#email', $user['email']);

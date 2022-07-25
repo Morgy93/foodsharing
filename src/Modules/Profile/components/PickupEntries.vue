@@ -117,12 +117,8 @@ export default {
 }
 
 ::v-deep .avatar {
-  width: 1rem;
-
-  img {
-    border: 1px solid white;
-    border-width: 1px 2px 1px 0;
-  }
+  border: 2px solid var(--fs-color-light);
+  border-radius: 50%;
 }
 
 .hidden-users, .free-slots {
@@ -140,15 +136,15 @@ export default {
   }
 
   .free-slots {
-    background-color: var(--fs-green);
-    border-color: #4e871c;
-    color: var(--white);
+    background-color: var(--fs-color-secondary-500);
+    border-color: var(--fs-color-secondary-600);
+    color: var(--fs-color-light);
   }
 
   .hidden-users {
-    background-color: #fcfaee;
-    border-color: var(--fs-beige);
-    color: rgba(var(--fs-brown-rgb), 0.75);
+    border-color: var(--fs-color-primary-100);
+    border-color: var(--fs-color-primary-300);
+    color: var(--fs-color-primary-alpha-70);
   }
 
   .free-slots + .hidden-users {

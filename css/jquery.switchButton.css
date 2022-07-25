@@ -6,11 +6,11 @@
 }
 
 .switch-button-label.off {
-    color: #adadad;
+    color: var(--fs-color-gray-300);
 }
 
 .switch-button-label.on {
-    color: #64AE27;
+    color: var(--fs-color-secondary-500);
     font-weight: bold;
 }
 
@@ -18,7 +18,7 @@
     float: left;
     position: relative;
 
-    background: #ccc;
+    background: var(--fs-color-gray-200);
     border: 0;
 
     margin: 4px 10px;
@@ -36,8 +36,8 @@
     left: -1px;
     top: -1px;
 
-    background: #FAFAFA;
-    border: 1px solid #aaa;
+    background: var(--fs-color-gray-100);
+    border: 1px solid var(--fs-color-gray-300);
 
     -webkit-border-radius: 4px;
     -moz-border-radius: 4px;
@@ -45,5 +45,5 @@
 }
 
 .switch-button-background.checked {
-    background-color: #64AE27;
+    background-color: var(--fs-color-secondary-500);
 }

@@ -14,11 +14,19 @@ use Foodsharing\Modules\Profile\ProfileTransactions;
 use Foodsharing\Modules\Region\RegionGateway;
 use Foodsharing\Modules\Register\DTO\RegisterData;
 use Foodsharing\Modules\Register\RegisterTransactions;
-use Foodsharing\Modules\Store\PickupGateway;
+use Foodsharing\Modules\Settings\SettingsGateway;
 use Foodsharing\Modules\Uploads\UploadsGateway;
+use Foodsharing\Permissions\BlogPermissions;
+use Foodsharing\Permissions\ContentPermissions;
+use Foodsharing\Permissions\MailboxPermissions;
+use Foodsharing\Permissions\NewsletterEmailPermissions;
 use Foodsharing\Permissions\ProfilePermissions;
+use Foodsharing\Permissions\QuizPermissions;
+use Foodsharing\Permissions\RegionPermissions;
 use Foodsharing\Permissions\ReportPermissions;
+use Foodsharing\Permissions\StorePermissions;
 use Foodsharing\Permissions\UserPermissions;
+use Foodsharing\Permissions\WorkGroupPermissions;
 use Foodsharing\Utility\EmailHelper;
 use FOS\RestBundle\Controller\AbstractFOSRestController;
 use FOS\RestBundle\Controller\Annotations as Rest;
@@ -26,7 +34,11 @@ use FOS\RestBundle\Request\ParamFetcher;
 use Mobile_Detect;
 use OpenApi\Annotations as OA;
 use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\HttpKernel\Exception\AccessDeniedHttpException;
+use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
 use Symfony\Component\HttpKernel\Exception\HttpException;
+use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
+use Symfony\Component\HttpKernel\Exception\UnauthorizedHttpException;
 
 class UserRestController extends AbstractFOSRestController
 {
@@ -36,10 +48,20 @@ class UserRestController extends AbstractFOSRestController
 	private ProfileGateway $profileGateway;
 	private UploadsGateway $uploadsGateway;
 	private RegionGateway $regionGateway;
-	private PickupGateway $pickupGateway;
-	private ReportPermissions $reportPermissions;
+	private SettingsGateway $settingsGateway;
+
 	private UserPermissions $userPermissions;
 	private ProfilePermissions $profilePermissions;
+	private BlogPermissions $blogPermissions;
+	private ContentPermissions $contentPermissions;
+	private MailboxPermissions $mailboxPermissions;
+	private NewsletterEmailPermissions $newsletterEmailPermissions;
+	private QuizPermissions $quizPermissions;
+	private RegionPermissions $regionPermissions;
+	private ReportPermissions $reportPermissions;
+	private StorePermissions $storePermissions;
+	private WorkGroupPermissions $workGroupPermissions;
+
 	private EmailHelper $emailHelper;
 	private RegisterTransactions $registerTransactions;
 	private ProfileTransactions $profileTransactions;
@@ -57,14 +79,23 @@ class UserRestController extends AbstractFOSRestController
 		ProfileGateway $profileGateway,
 		UploadsGateway $uploadsGateway,
 		RegionGateway $regionGateway,
-		ReportPermissions $reportPermissions,
-		UserPermissions $userPermissions,
-		ProfilePermissions $profilePermissions,
 		EmailHelper $emailHelper,
 		RegisterTransactions $registerTransactions,
 		ProfileTransactions $profileTransactions,
 		FoodsaverTransactions $foodsaverTransactions,
-		PickupGateway $pickupGateway
+		SettingsGateway $settingsGateway,
+
+		UserPermissions $userPermissions,
+		ProfilePermissions $profilePermissions,
+		MailboxPermissions $mailboxPermissions,
+		QuizPermissions $quizPermissions,
+		ReportPermissions $reportPermissions,
+		StorePermissions $storePermissions,
+		ContentPermissions $contentPermissions,
+		BlogPermissions $blogPermissions,
+		RegionPermissions $regionPermissions,
+		NewsletterEmailPermissions $newsletterEmailPermissions,
+		WorkGroupPermissions $workGroupPermissions
 	) {
 		$this->session = $session;
 		$this->loginGateway = $loginGateway;
@@ -72,14 +103,23 @@ class UserRestController extends AbstractFOSRestController
 		$this->profileGateway = $profileGateway;
 		$this->uploadsGateway = $uploadsGateway;
 		$this->regionGateway = $regionGateway;
-		$this->reportPermissions = $reportPermissions;
-		$this->userPermissions = $userPermissions;
-		$this->profilePermissions = $profilePermissions;
 		$this->emailHelper = $emailHelper;
 		$this->registerTransactions = $registerTransactions;
 		$this->profileTransactions = $profileTransactions;
 		$this->foodsaverTransactions = $foodsaverTransactions;
-		$this->pickupGateway = $pickupGateway;
+		$this->settingsGateway = $settingsGateway;
+
+		$this->userPermissions = $userPermissions;
+		$this->profilePermissions = $profilePermissions;
+		$this->mailboxPermissions = $mailboxPermissions;
+		$this->quizPermissions = $quizPermissions;
+		$this->reportPermissions = $reportPermissions;
+		$this->storePermissions = $storePermissions;
+		$this->contentPermissions = $contentPermissions;
+		$this->blogPermissions = $blogPermissions;
+		$this->regionPermissions = $regionPermissions;
+		$this->newsletterEmailPermissions = $newsletterEmailPermissions;
+		$this->workGroupPermissions = $workGroupPermissions;
 	}
 
 	/**
@@ -93,12 +133,12 @@ class UserRestController extends AbstractFOSRestController
 	public function userAction(int $id): Response
 	{
 		if (!$this->session->may()) {
-			throw new HttpException(401);
+			throw new UnauthorizedHttpException('');
 		}
 
 		$data = $this->foodsaverGateway->getFoodsaverBasics($id);
 		if (!$data || empty($data)) {
-			throw new HttpException(404, 'User does not exist.');
+			throw new NotFoundHttpException('User does not exist.');
 		}
 
 		return $this->handleView($this->view(RestNormalization::normalizeUser($data), 200));
@@ -115,7 +155,7 @@ class UserRestController extends AbstractFOSRestController
 	public function currentUserAction(): Response
 	{
 		if (!$this->session->may()) {
-			throw new HttpException(401);
+			throw new UnauthorizedHttpException('');
 		}
 
 		return $this->userAction($this->session->id());
@@ -134,46 +174,68 @@ class UserRestController extends AbstractFOSRestController
 
 		$response = [];
 		$response['id'] = $data['id'];
-		$response['verified'] = ($data['verified'] === 1) ? true : false;
-		$response['region_id'] = $data['bezirk_id'];
-		$response['region_name'] = ($data['bezirk_id'] === null) ? null : $this->regionGateway->getRegionName($data['bezirk_id']);
+		$response['foodsaver'] = ($this->session->may('fs')) ? true : false;
+		$response['isVerified'] = ($data['verified'] === 1) ? true : false;
+		$response['regionId'] = $data['bezirk_id'];
+		$response['regionName'] = ($data['bezirk_id'] === null) ? null : $this->regionGateway->getRegionName($data['bezirk_id']);
+		$response['aboutMePublic'] = $data['about_me_public'];
 
 		if ($loggedIn) {
+			$infos = $this->foodsaverGateway->getFoodsaverBasics($this->session->id());
+
+			$response['mailboxId'] = $data['mailbox_id'];
+			$response['hasCalendarToken'] = $this->settingsGateway->getApiToken($this->session->id());
 			$response['firstname'] = $data['name'];
 			$response['lastname'] = $data['nachname'];
-			$response['about_me_public'] = $data['about_me_public'];
+			$response['gender'] = $data['geschlecht'];
+			$response['photo'] = $data['photo'];
+			$response['sleeping'] = boolval($data['sleep_status']);
 			$response['homepage'] = $data['homepage'];
+
+			$response['stats']['weight'] = floatval($infos['stat_fetchweight']);
+			$response['stats']['count'] = $infos['stat_fetchcount'];
+
+			$response['permissions'] = [
+				'mayEditUserProfile' => $mayEditUserProfile,
+				'mayAdministrateUserProfile' => $mayAdministrateUserProfile,
+				'administrateBlog' => $this->blogPermissions->mayAdministrateBlog(),
+				'editQuiz' => $this->quizPermissions->mayEditQuiz(),
+				'handleReports' => $this->reportPermissions->mayHandleReports(),
+				'addStore' => $this->storePermissions->mayCreateStore(),
+				'manageMailboxes' => $this->mailboxPermissions->mayManageMailboxes(),
+				'editContent' => $this->contentPermissions->mayEditContent(),
+				'administrateNewsletterEmail' => $this->newsletterEmailPermissions->mayAdministrateNewsletterEmail(),
+				'administrateRegions' => $this->regionPermissions->mayAdministrateRegions(),
+			];
 		} else {
 			$response['firstname'] = ($data['name'] === null) ? null : $data['name'][0]; // Only return first character
 		}
 
 		if ($mayEditUserProfile) {
+			$response['coordinates'] = [
+				'lat' => floatval($data['lat']),
+				'lon' => floatval($data['lon'])
+			];
 			$response['address'] = $data['anschrift'];
 			$response['city'] = $data['stadt'];
 			$response['postcode'] = $data['plz'];
-			$response['lat'] = $data['lat'];
-			$response['lon'] = $data['lon'];
 			$response['email'] = $data['email'];
 			$response['landline'] = $data['telefon'];
 			$response['mobile'] = $data['handy'];
-			$response['geb_datum'] = $data['geb_datum'];
-			$response['about_me_intern'] = $data['about_me_intern'];
+			$response['birthday'] = $data['geb_datum'];
+			$response['aboutMeIntern'] = $data['about_me_intern'];
 		}
 
 		if ($mayAdministrateUserProfile) {
-			$response['rolle'] = $data['rolle'];
+			$response['role'] = $data['rolle'];
 			$response['position'] = $data['position'];
-			$response['geschlecht'] = $data['geschlecht'];
 		}
-
-		$response['mayEditUserProfile'] = $mayEditUserProfile;
-		$response['mayAdministrateUserProfile'] = $mayAdministrateUserProfile;
 
 		return $response;
 	}
 
 	/**
-	 * Lists the detailed profile of a user. Returns 403 if not allowed or 200 and the data.
+	 * Lists the detailed profile of a user. Only returns basic information if not logged inor 200 and the data.
 	 *
 	 * @OA\Tag(name="user")
 	 *
@@ -182,8 +244,8 @@ class UserRestController extends AbstractFOSRestController
 	public function userDetailsAction(int $id): Response
 	{
 		$data = $this->profileGateway->getData($id, -1, $this->reportPermissions->mayHandleReports());
-		if (!$data || empty($data)) {
-			throw new HttpException(404, 'User does not exist.');
+		if (empty($data)) {
+			throw new NotFoundHttpException('User does not exist.');
 		}
 
 		return $this->handleView($this->view($this->normalizeUserDetails($data), 200));
@@ -199,7 +261,7 @@ class UserRestController extends AbstractFOSRestController
 	public function currentUserDetailsAction(): Response
 	{
 		if (!$this->session->may()) {
-			throw new HttpException(401);
+			throw new UnauthorizedHttpException('');
 		}
 
 		return $this->userDetailsAction($this->session->id());
@@ -230,14 +292,14 @@ class UserRestController extends AbstractFOSRestController
 			// retrieve user data and normalise it
 			$user = $this->foodsaverGateway->getFoodsaverBasics($fs_id);
 			if (!$user || empty($user)) {
-				throw new HttpException(404, 'User does not exist.');
+				throw new NotFoundHttpException('User does not exist.');
 			}
 			$normalizedUser = RestNormalization::normalizeUser($user);
 
 			return $this->handleView($this->view($normalizedUser, 200));
 		}
 
-		throw new HttpException(401, 'email or password are invalid');
+		throw new UnauthorizedHttpException('', 'email or password are invalid');
 	}
 
 	/**
@@ -269,7 +331,7 @@ class UserRestController extends AbstractFOSRestController
 			|| !$this->emailHelper->validEmail($email)
 			|| $this->foodsaverGateway->emailDomainIsBlacklisted($email)
 		) {
-			throw new HttpException(400, 'email is not valid');
+			throw new BadRequestHttpException('email is not valid');
 		}
 
 		return $this->handleView($this->view([
@@ -299,7 +361,7 @@ class UserRestController extends AbstractFOSRestController
 		$data->firstName = trim(strip_tags($paramFetcher->get('firstname')));
 		$data->lastName = trim(strip_tags($paramFetcher->get('lastname')));
 		if (empty($data->firstName) || empty($data->lastName)) {
-			throw new HttpException(400, 'names must not be empty');
+			throw new BadRequestHttpException('names must not be empty');
 		}
 
 		$data->email = trim($paramFetcher->get('email'));
@@ -308,12 +370,12 @@ class UserRestController extends AbstractFOSRestController
 			|| !$this->isEmailValidForRegistration($data->email)
 			|| $this->foodsaverGateway->emailDomainIsBlacklisted($data->email)
 		) {
-			throw new HttpException(400, 'email is not valid or already used');
+			throw new BadRequestHttpException('email is not valid or already used');
 		}
 
 		$data->password = trim($paramFetcher->get('password'));
 		if (strlen($data->password) < self::MIN_PASSWORD_LENGTH) {
-			throw new HttpException(400, 'password is too short');
+			throw new BadRequestHttpException('password is too short');
 		}
 
 		$data->gender = (int)$paramFetcher->get('gender');
@@ -323,11 +385,11 @@ class UserRestController extends AbstractFOSRestController
 
 		$birthdate = Carbon::createFromFormat('Y-m-d', $paramFetcher->get('birthdate'));
 		if (empty($birthdate)) {
-			throw new HttpException(400, 'invalid birthdate');
+			throw new BadRequestHttpException('invalid birthdate');
 		}
 		$minBirthdate = Carbon::today()->subYears(self::MIN_AGE_YEARS);
 		if ($birthdate > $minBirthdate) {
-			throw new HttpException(400, 'you are not old enough');
+			throw new BadRequestHttpException('you are not old enough');
 		}
 		$data->birthday = $birthdate;
 
@@ -343,7 +405,7 @@ class UserRestController extends AbstractFOSRestController
 
 			return $this->handleView($this->view($user, 200));
 		} catch (\Exception $e) {
-			throw new HttpException(500, 'could not register user');
+			throw new HttpException(500, 'could not register user', $e);
 		}
 	}
 
@@ -361,13 +423,16 @@ class UserRestController extends AbstractFOSRestController
 	 */
 	public function deleteUserAction(int $userId, ParamFetcher $paramFetcher): Response
 	{
+		if (!$this->session->id()) {
+			throw new UnauthorizedHttpException('');
+		}
 		if (!$this->profilePermissions->mayDeleteUser($userId)) {
-			throw new HttpException(403);
+			throw new AccessDeniedHttpException();
 		}
 
 		$reason = trim($paramFetcher->get('reason'));
 		if (strlen($reason) > self::DELETE_USER_MAX_REASON_LEN) {
-			throw new HttpException(400, 'reason text is too long: must be at most ' . self::DELETE_USER_MAX_REASON_LEN . ' characters');
+			throw new BadRequestHttpException('reason text is too long: must be at most ' . self::DELETE_USER_MAX_REASON_LEN . ' characters');
 		}
 
 		// needs the session ID, so we can't log out just yet
@@ -396,25 +461,28 @@ class UserRestController extends AbstractFOSRestController
 	 */
 	public function addBanana(int $userId, ParamFetcher $paramFetcher): Response
 	{
+		if (!$this->session->id()) {
+			throw new UnauthorizedHttpException('');
+		}
 		// make sure that users may not give themselves bananas
-		if (!$this->session->may() || $this->session->id() === $userId) {
-			throw new HttpException(403);
+		if ($this->session->id() === $userId) {
+			throw new AccessDeniedHttpException();
 		}
 
 		// check if the user exists
 		if (!$this->foodsaverGateway->foodsaverExists($userId)) {
-			throw new HttpException(404);
+			throw new NotFoundHttpException();
 		}
 
 		// do not allow giving bananas twice
 		if ($this->profileGateway->hasGivenBanana($this->session->id(), $userId)) {
-			throw new HttpException(403);
+			throw new AccessDeniedHttpException();
 		}
 
 		// check length of message
 		$message = trim($paramFetcher->get('message'));
 		if (strlen($message) < self::MIN_RATING_MESSAGE_LENGTH) {
-			throw new HttpException(400, 'text too short: ' . strlen($message) . ' < ' . self::MIN_RATING_MESSAGE_LENGTH);
+			throw new BadRequestHttpException('text too short: ' . strlen($message) . ' < ' . self::MIN_RATING_MESSAGE_LENGTH);
 		}
 
 		$this->profileTransactions->giveBanana($userId, $message, $this->session->id());
@@ -438,11 +506,11 @@ class UserRestController extends AbstractFOSRestController
 	public function deleteBanana(int $userId, int $senderId): Response
 	{
 		if (!$this->session->may()) {
-			throw new HttpException(401);
+			throw new UnauthorizedHttpException('');
 		}
 
 		if (!$this->profilePermissions->mayDeleteBanana($userId)) {
-			throw new HttpException(403);
+			throw new AccessDeniedHttpException();
 		}
 
 		$isDeleted = $this->profileGateway->removeBanana($userId, $senderId);
@@ -467,17 +535,17 @@ class UserRestController extends AbstractFOSRestController
 	{
 		$userId = $this->session->id();
 		if (!$userId) {
-			throw new HttpException(401);
+			throw new UnauthorizedHttpException('');
 		}
 
 		// check if the photo exists and was uploaded by this user
 		$uuid = trim($paramFetcher->get('uuid'));
 		try {
 			if ($this->uploadsGateway->getUser($uuid) !== $userId) {
-				throw new HttpException(403);
+				throw new AccessDeniedHttpException();
 			}
 		} catch (Exception $e) {
-			throw new HttpException(400);
+			throw new BadRequestHttpException();
 		}
 
 		$this->foodsaverGateway->updatePhoto($this->session->id(), '/api/uploads/' . $uuid);
@@ -509,8 +577,11 @@ class UserRestController extends AbstractFOSRestController
 	 */
 	public function removeFromBounceListAction(int $userId): Response
 	{
-		if (!$this->session->may() || !$this->profilePermissions->mayRemoveFromBounceList($userId)) {
-			throw new HttpException(403);
+		if (!$this->session->id()) {
+			throw new UnauthorizedHttpException('');
+		}
+		if (!$this->profilePermissions->mayRemoveFromBounceList($userId)) {
+			throw new AccessDeniedHttpException();
 		}
 
 		$this->profileTransactions->removeUserFromBounceList($userId);

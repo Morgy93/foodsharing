@@ -2,12 +2,8 @@
 
 namespace Foodsharing\Modules\Settings;
 
-use DateTime;
-use DateTimeZone;
-use Foodsharing\Lib\Xhr\Xhr;
 use Foodsharing\Lib\Xhr\XhrDialog;
 use Foodsharing\Modules\Core\Control;
-use Foodsharing\Modules\Core\DBConstants\Foodsaver\SleepStatus;
 use Foodsharing\Modules\Foodsaver\FoodsaverGateway;
 use Foodsharing\Modules\Login\LoginGateway;
 use Foodsharing\Modules\Mails\MailsGateway;
@@ -171,45 +167,5 @@ class SettingsXhr extends Control
 				$("#' . $dialogId . '").dialog("close");
 			',
 		];
-	}
-
-	public function sleepmode(): void
-	{
-		$xhr = new Xhr();
-		$xhr->setStatus(0);
-		if (!isset($_POST['status'])) {
-			$xhr->send();
-
-			return;
-		}
-		$status = (int)$_POST['status'];
-
-		$from = '';
-		$until = '';
-		$msg = $this->getPostString('msg') ?: '';
-		if ($status == 0) {
-			$msg = '';
-		}
-
-		if ($status == SleepStatus::TEMP) {
-			if (!isset($_POST['from']) || !isset($_POST['until'])) {
-				$xhr->send();
-
-				return;
-			}
-			$date_from = DateTime::createFromFormat('d.m.Y', $_POST['from']);
-			$from = $date_from->format('Y-m-d H:i:s');
-			$date_until = DateTime::createFromFormat('d.m.Y', $_POST['until']);
-			$until = $date_until->format('Y-m-d H:i:s');
-			$now = new DateTime('now', new DateTimeZone('Europe/Prague'));
-			if ($date_from > $now) { // Sleep after today, not yet sleeping
-				$status = 0;
-			}
-		}
-
-		$this->settingsGateway->updateSleepMode($this->session->id(), $status, $from, $until, $msg);
-
-		$xhr->setStatus(1);
-		$xhr->send();
 	}
 }

@@ -10,15 +10,9 @@
           class="pickup-date"
           :class="{'today': isToday, 'past': isInPast, 'soon': isSoon, 'empty': emptySlots > 0, 'coord': isCoordinator}"
         >
-          <span>
-            {{ $dateFormat(date, 'full-long') }}
-          </span>
           <span
-            v-if="showRelativeDate"
-            class="text-muted"
-          >
-            ({{ $dateDistanceInWords(date) }})
-          </span>
+            v-html="$dateFormatter.dateTime(date)"
+          />
           <div
             v-if="isCoordinator && !isInPast"
             class="delete-pickup"
@@ -74,7 +68,7 @@
     <b-modal
       ref="modal_join"
       v-model="showJoinModal"
-      :title="$i18n('pickup.join_title_date', slotDate)"
+      :title="$i18n('pickup.join_title_date', $dateFormatter.dateTime(date))"
       :cancel-title="$i18n('pickup.join_cancel')"
       :ok-title="$i18n('pickup.join_agree')"
       :ok-disabled="!loadedUserPickups"
@@ -88,7 +82,7 @@
 
       <div v-if="loadedUserPickups && sameDayPickups && sameDayPickups.length">
         <b-alert variant="warning" show>
-          {{ $i18n('pickup.same_day_hint', { day: $dateFormat(date, 'day') } ) }}
+          {{ $i18n('pickup.same_day_hint', { day: $dateFormatter.date(date) } ) }}
         </b-alert>
         <b-list-group>
           <b-list-group-item
@@ -101,7 +95,7 @@
             <i class="fas fa-fw" :class="[pickup.isConfirmed ? 'fa-check-circle text-secondary' : 'fa-clock text-danger']" />
             {{
               $i18n('pickup.same_day_entry', {
-                when: $dateFormat(pickup.date, 'time'),
+                when: $dateFormatter.time(pickup.date),
                 name: pickup.storeName,
               })
             }}
@@ -117,7 +111,7 @@
 
     <b-modal
       ref="modal_leave"
-      :title="$i18n('pickup.really_leave_date_title', slotDate)"
+      :title="$i18n('pickup.really_leave_date_title', { date: $dateFormatter.dateTime(date) })"
       :cancel-title="$i18n('pickup.leave_pickup_message_team')"
       :ok-title="$i18n('pickup.leave_pickup_ok')"
       :hide-header-close="true"
@@ -126,7 +120,7 @@
       @ok="$emit('leave', date)"
       @cancel="$refs.modal_team_message.show()"
     >
-      <p>{{ $i18n('pickup.really_leave_date', slotDate) }}</p>
+      <p>{{ $i18n('pickup.really_leave_date', { date: $dateFormatter.dateTime(date) }) }}</p>
     </b-modal>
 
     <b-modal
@@ -194,9 +188,6 @@
 <script>
 
 import { BFormTextarea, BModal, VBTooltip } from 'bootstrap-vue'
-import differenceInDays from 'date-fns/differenceInDays'
-import differenceInHours from 'date-fns/differenceInHours'
-import isPast from 'date-fns/isPast'
 
 import { listSameDayPickupsForUser } from '@/api/pickups'
 
@@ -229,19 +220,19 @@ export default {
       loadedUserPickups: false,
       sameDayPickups: [],
       // cannot use slotDate here since it's computed and needs to avoid circular data references:
-      teamMessage: this.$i18n('pickup.leave_team_message_template', { date: this.$dateFormat(this.date, 'full-long') }),
+      teamMessage: this.$i18n('pickup.leave_team_message_template', { date: this.$dateFormatter.dateTime(this.date) }),
       kickMessage: '',
     }
   },
   computed: {
     slotDate () {
       return {
-        date: this.$dateFormat(this.date, 'full-long'),
+        date: this.$dateFormatter.dateTime(this.date),
       }
     },
     slotInfo () {
       return {
-        date: this.$dateFormat(this.date, 'full-long'),
+        date: this.$dateFormatter.dateTime(this.date),
         storeName: this.storeTitle,
         name: this.activeSlot.profile.name,
       }
@@ -252,13 +243,16 @@ export default {
       }) !== -1
     },
     isInPast () {
-      return isPast(this.date)
+      return this.$dateFormatter.isPast(this.date)
+    },
+    isInFewHours () {
+      return this.$dateFormatter.getDifferenceToNowInHours(this.date) < 4
     },
     isSoon () {
-      return differenceInDays(this.date, new Date()) <= 3
+      return this.$dateFormatter.getDifferenceToNowInDays(this.date) <= 3
     },
     isToday () {
-      return differenceInHours(this.date, new Date()) <= 24
+      return this.$dateFormatter.isToday(this.date)
     },
     emptySlots () {
       return Math.max(this.totalSlots - this.occupiedSlots.length, 0)
@@ -296,10 +290,10 @@ export default {
     content: "\f12a"; // fa-exclamation
     font-family: "Font Awesome 5 Free";
     font-weight: 900;
-    color: var(--warning);
+    color: var(--fs-color-warning-500);
   }
   &.coord.soon.empty.today::after {
-    color: var(--danger);
+    color: var(--fs-color-danger-500);
   }
   &.coord.past::after {
     content: "" !important;
@@ -310,7 +304,7 @@ export default {
   .pickup-text {
     margin-bottom: 0.5rem;
     padding-bottom: 0.5rem;
-    border-bottom: 1px solid var(--border);
+    border-bottom: 1px solid var(--fs-border-default);
   }
 }
 
@@ -344,35 +338,33 @@ export default {
     }
 
     /deep/ .btn {
-      position: initial;
+      // position: relative;
       display: inline-block;
       margin: 2px;
       margin-left: 1px;
       width: 50px;
       height: 50px;
-      color: rgba(var(--fs-brown-rgb), 0.75);
-      background-color: rgba(var(--fs-white-rgb), 0.5);
-      border-color: var(--fs-beige);
-      border-width: 2px;
+      color: var(--fs-color-primary-400);
+      background-color: var(--fs-color-primary-100);
+      border: 2px solid  var(--fs-color-primary-300);
 
       &:hover {
-        border-color: var(--fs-brown);
+        border-color: var(--fs-color-primary-500);
       }
       &:focus {
         box-shadow: none;
       }
       &.filled {
         overflow: hidden;
-        border-width: 0;
       }
-      &.btn-secondary {
-        background-color: var(--fs-beige);
+      &.btn-primary {
+        background-color: var(--fs-color-primary-300);
       }
       &[disabled] {
         opacity: 1;
       }
       &[disabled]:hover {
-        border-color: var(--fs-beige);
+        border-color: var(--fs-color-primary-300);
         cursor: default;
       }
     }
@@ -384,8 +376,8 @@ export default {
     position: absolute;
     top: -4px;
     right: -9px;
-    color: var(--fs-brown);
-    background-color: var(--white);
+    color: var(--fs-color-primary-500);
+    background-color: var(--fs-color-light);
     opacity: 0.9;
 
     .btn {
@@ -407,7 +399,7 @@ export default {
   blockquote {
     margin: 0;
     padding-left: 0.5rem;
-    border-left: 3px solid var(--border);
+    border-left: 3px solid var(--fs-color-info-200);
 
     div {
       margin: 0.25rem;

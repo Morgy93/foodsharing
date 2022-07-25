@@ -184,14 +184,6 @@ class Db
 	}
 
 	/**
-	 * @deprecated not needed when passing data as prepared statement
-	 */
-	public function dateval($val)
-	{
-		return '"' . $this->safe($val) . '"';
-	}
-
-	/**
 	 * @deprecated use strip_tags() until the frontend can escape properly!
 	 * (The string escaping part is not needed anymore with prepared statements)
 	 */

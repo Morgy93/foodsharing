@@ -5,14 +5,14 @@ import { session_id, GET } from '@/script'
 
 import msg from '@/msg'
 import conv from '@/conv'
-import bellsStore from '@/stores/bells'
+import DataBells from '@/stores/bells'
 import conversationStore, { convertMessage } from '@/stores/conversations'
 
 export default {
   connect: function () {
     const socket = io.connect(window.location.host, { path: '/chat/socket.io' })
     socket.on('connect', function () {
-      console.log('WebSocket connected.')
+      // console.log('WebSocket connected.')
       socket.emit('register', session_id())
 
       document.addEventListener('visibilitychange', () => {
@@ -42,7 +42,7 @@ export default {
 
     socket.on('bell', function (data) {
       if (data.m === 'update') {
-        bellsStore.loadBells()
+        DataBells.mutations.fetch()
       }
     })
   },

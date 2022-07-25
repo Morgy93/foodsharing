@@ -926,14 +926,14 @@ class QuizXhr extends Control
 				foreach ($answers as $a) {
 					// schwerzfrageoder
 					if ($joke) {
-						$bg = '#F5F5B5';
+						$bg = 'var(--fs-color-warning-200)';
 						$atext = '';
-						$color = '#4A3520';
+						$color = 'var(--fs-color-primary-500)';
 					} //neutraleantwort
 					elseif ($a['right'] == AnswerRating::NEUTRAL) {
 						$atext = 'Neutrale Antwort wird nicht gewertet';
-						$bg = '#F5F5B5';
-						$color = '#4A3520';
+						$bg = 'var(--fs-color-warning-200)';
+						$color = 'var(--fs-color-primary-500)';
 					} // Antwort richtig angeklickt
 					elseif ((isset($uanswers[$a['id']]) && $a['right'] == AnswerRating::CORRECT) || (!isset($uanswers[$a['id']]) && $a['right'] == AnswerRating::WRONG)) {
 						if ($a['right'] == AnswerRating::WRONG) {
@@ -941,8 +941,8 @@ class QuizXhr extends Control
 						} else {
 							$atext = 'Richtig! Diese Antwort stimmt.';
 						}
-						$bg = 'var(--fs-green)';
-						$color = '#ffffff';
+						$bg = 'var(--fs-color-secondary-500)';
+						$color = 'var(--fs-color-light)';
 					} // Antwort richtig, weil nicht angeklickt
 					else {
 						if ($a['right'] == AnswerRating::WRONG) {
@@ -950,8 +950,8 @@ class QuizXhr extends Control
 						} else {
 							$atext = 'Auch diese Antwort wäre richtig gewesen.';
 						}
-						$bg = '#E74955';
-						$color = '#ffffff';
+						$bg = 'var(--fs-color-danger-500)';
+						$color = 'var(--fs-color-light)';
 					}
 
 					$out[] = [

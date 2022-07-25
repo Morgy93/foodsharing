@@ -37,7 +37,7 @@ class WallPostCest
 			$I->see($wallPostText);
 			$I->seeInDatabase('fs_wallpost', ['body' => $wallPostText, 'foodsaver_id' => $this->{$example[0]}['id']]);
 		} else {
-			$I->dontSee('Pinnwand');
+			$I->dontSee('Pinnwand', '.head.ui-widget-header.ui-corner-top');
 		}
 	}
 

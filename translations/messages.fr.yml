@@ -873,7 +873,7 @@ register:
   password_required: Il faut renseigner un mot de passe.
   login_passwd2: nouvelle saisie du mot de passe
   login_passwd1: Mot de passe (minimum 8 caractères)
-  birthdate_hint: Tu trouveras plus d'informations dans la rubrique <a href="?page=legal"
+  birthdate_hint: Tu trouveras plus d'informations dans la rubrique <a href="/?page=legal"
     target="_blank">Datenschutzerklärung</a> au point 2d) Bei der Anmeldung als Foodsharer
     bzw. Foodsaver.
   requiredFields: saisie obligatoire
@@ -1128,7 +1128,6 @@ menu:
     team: Équipe
     blog: Blog
     fundamentals: Principes
-    mission: Mission
     aboutUs: À propos de nous
     workingGroupEdit: gérer le groupe
     members: Membres
@@ -1196,9 +1195,8 @@ dashboard:
     stores: Tu collectes des denrées à
     groups: Tes groupes
     regions: Tes secteurs géographiques
-  foodsaver_amount: "Tu as fait <strong style=\"white-space:nowrap\">{pickups}&thinsp;x</strong>\
-    \ collectes et a\nsauvé <strong style=\"white-space:nowrap\">{weight}&thinsp;kg</strong>\
-    \ de denrées.\n"
+  foodsaver_amount: "Tu as fait <b>{pickups} x</b> collectes et a sauvé <b>{weight}\
+    \ kg</b> de denrées."
   foodsharer_amount: Tu as déjà collecté {weight} kg !
   foodsharer: Bonne collecte !
   greeting: Bonjour {name}, contents de te voir ici !
@@ -1322,7 +1320,7 @@ profile:
   notes:
     info: "Utilise cette fonction consciencieusement.\nElle est là rendre le processus\
       \ plus clair, de le simplifier pour la communauté.\nReste objectif.ve et raconte\
-      \ les faits, sans jugement et clairement s'il-te-plaît.\n"
+      \ les faits, sans jugement et clairement s'il-te-plaît."
     title: Notes sur {name}
     bread: Notes
   history:
@@ -1678,7 +1676,7 @@ basket:
   send_request: Envoyer la demande
   n_requests: 'Demandes à ce jour : <strong>{count}</strong>'
   withdraw_request: Retirer ma demande
-  requested_by: demandé par
+  requested_by: demandé par {name}
   no_requests: Aucune demande
   login: "Pour plus d'infos, connecte-toi.\nTu n'es pas encore enregistré en tant\
     \ que partageur.se ?\nClique en haut sur <b>Rejoins-nous !</b> pour partager des\
@@ -2059,13 +2057,13 @@ startpage:
       plus de 200 000 utilisateur.ice.s en Allemagne, Autriche, Suisse et dans bien
       d'autres pays européens.
     title: Agis à nos côtés !
-  mission:
+  vision:
+    title: Mission
     text: Notre but à l'avenir est de réduire voire déconstruire cette culture de
       consommation irresponsable de nos ressources alimentaires si précieuses. Nous
       collectons et par là-même sauvons les denrées dans le cadre privé mais aussi
       auprès des magasins, ensemble pour un monde plus durable et plus respectueux.
       Nous sommes un mouvement qui s'inscrit dans la mouvance de la politique de l'éducation.
-    title: Mission
   this_is_how_it_works: Comment ça fonctionne ?
   more_infos: Plus d'infos
   call_to_action_button: Rejoindre
@@ -2334,7 +2332,7 @@ regionPin:
     Ceci sera affiché dans la fenêtre contextuelle de l'épingle de la carte…
   pin_visible: Épingle visible sur la carte
 numbers:
-  thousands_separator:  
+  thousands_separator:
   decimal_separator: ','
   million_abbreviation: ' M'
   billion_abbreviation: ' Mrd'

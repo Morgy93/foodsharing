@@ -163,6 +163,7 @@ group:
     remove_ambassador_text: Are you sure you want to remove {name} ({id}) as an ambassador?
     remove_admin_text: Are you sure you want to remove {name} ({id}) as an admin?
     remove_admin_title: remove as admin
+    old_edit_hint_link: Members
   application_from: by
   entermotivation: 'Motivation:'
   enterskills: 'Skills:'
@@ -171,7 +172,7 @@ group:
   enterxp: 'Experience:'
   motivation: motivation text
 settings:
-  header: Your data and settings
+  header: Profile settings
   name_change:
     title: Name (first & last name)
     desc: You cannot change your name yourself. You can however <a {link}">request
@@ -180,6 +181,7 @@ settings:
     info: To get your name changed you have to contact an ambassador of your home
       region. He*She can change your name for you.<hr/>You can find out who the ambassadors
       of you region are in the left sidebar of your <a {link}>home regions forum page</a>.
+    foodsharer_info: For changing your name, please create a request in our <a {link}>support-form<a>.
   push:
     not-supported: Your browser does not support push notifications.
     title: Push notifications
@@ -286,7 +288,7 @@ menu:
     messages: Messages
     your_groups: Your groups
     your_baskets: Your baskets
-    groups: Group overview
+    groups: Groups
     your_account: Your account
     your_stores: Your stores
     administration: Administration
@@ -317,7 +319,6 @@ menu:
     members: Members
     workingGroupEdit: Manage group
     aboutUs: About us
-    mission: Mission
     fundamentals: Fundamentals
     blog: Blog
     team: Team
@@ -348,6 +349,8 @@ menu:
     helpwanted: Help wanted
     helpneeded: Help wanted urgently
     in_negotiation: In negotiation
+    group_overview: Group overview
+    baskets: Baskets
 profile:
   banana:
     by: ' by '
@@ -397,6 +400,8 @@ profile:
     privateMail: Private email address
     buddycount1: '{name} is buddy with {count} foodsavers'
     buddycount: '{count} foodsavers are buddies with {name}'
+    buddycount_followed: '{name} is known by {count} foodsavers'
+    buddycount_known: '{name} knows {count} foodsavers'
   report:
     sent: Report was sent
     send: Send report
@@ -471,7 +476,7 @@ profile:
     bread: Notes
     info: "Please use this function carefully.\nIt should help to make processes visible\
       \ in order to save us work.\nPersonal or judgmental about a person has no place\
-      \ here.\nBe factual.\"\n"
+      \ here.\nBe factual.\""
     title: Notes about {name}
   warning: Warning
   title: Profile
@@ -520,6 +525,15 @@ profile:
     pickupCount: Number of pickups
     calenderWeek: Week number
     categorieName: Category
+  commitments_stat:
+    pickupAmount: Amount
+    week_1: Next week
+    districtName: Region
+    categorieName: Category
+    week_2: This week
+    week_3: Last week
+    week_4: Two weeks ago
+    calenderWeek: CW
 test:
   plain: This is a nice translation
   vars: 'My name is {NAME} and I am {AGE} years old'
@@ -645,6 +659,8 @@ forum:
     close: "Close thread"
     open: "Reopen thread"
     closed: Closed thread
+    navigate_to_newest_post: "jump to latest post"
+    navigate_to_oldest_post: "jump to first post"
   post:
     delete: Delete post
     body: Message
@@ -880,6 +896,7 @@ terminology:
   votingAdmins: Voting team
   welcomeAdmins: Welcome team
   fsp: FoodSharePoint
+  fsps: FoodSharePoints
   mailboxes: Mailboxes
   moderationAdmins: Moderation team
   prAdmins: Public relations team
@@ -939,7 +956,7 @@ button:
   edit: Edit
   upload: Upload
   rotate_right: rotate clockwise
-  attach_image: Attach picture
+  attach_image: Attach picture (png or jpg-format)
   change_picture: Change picture
   next: Next
   save: Save
@@ -998,6 +1015,7 @@ bell:
   store_request_accept_wait: You were added to the jumper/waiting list.
   store_request_imposed: You were added to the store team.
   store_request_imposed_title: '{name}'
+  foodsaver_verified_title: You are now verified!
 reports:
   time: Time
   region: Home region
@@ -1382,7 +1400,8 @@ footer:
   it_devdocs: by foodsharing IT
   donate_now: Donate now
   version: 'Version: {version}'
-  donate: Donate
+  donate:
+    cta: Donate now
   statistics: Statistics
   blog: Blog
   wiki: Wiki
@@ -1406,6 +1425,17 @@ footer:
   hosting_info: hosted carbon-neutral at
   call_to_action: Participate
   beta_testing_issues: Testing tasks of the beta version
+  meta:
+    it_devdocs: by foodsharint IT
+    version: 'Version: {version}'
+  hosting:
+    info: Carbon-neutrally <a href="https://www.manitu.de/webhosting/" title="Webhosting">hosted</a>
+    tooltip: Carbon-neutrally <a href="https://www.manitu.de/webhosting/" title="Webhosting">hosted</a>
+      at manitu
+  partner_names:
+    wiener_tafel: Food bank Wien
+    denns: Denn’s Biomarkt
+    lebensministerium: Ministry of Agriculture, Regions and Tourism
 basket:
   is:
     gf: are gluten-free
@@ -1501,6 +1531,7 @@ basket:
   on: food basket from {platform}
   go: to the food basket
   my_list_empty: You have not entered any food baskets
+  not_withdrawn: 'The request for the food basket could not be withdrawn: '
 map:
   title: Map
   donates: company donates
@@ -1524,6 +1555,7 @@ foodsaver:
     summary: '{count} foodsavers in {region}'
     inactive: 'who have not logged in for 6 months:'
   upgrade:
+    learning: "Watch now explanation video"
     to_sm: Become a store manager
     needs_sm: You need to become a store manager first
     needs_fs: You need to become a foodsaver first
@@ -1688,12 +1720,13 @@ store:
   complete: complete database
   peoplecame: It has often happened that people went to a store unsolicited.
   smneeded: To set up a business, you must be a store manager.
+  tooltip_jumping: ''
 search:
   mygroups: My groups
   mybuddies: My buddies
   title: Search
   forum: Search for a title…
-  placeholder: Search persons, groups, companies, …
+  placeholder: Search now ...
   persons: Persons
   groups: Groups
   myregions: My regions
@@ -1702,6 +1735,7 @@ search:
   thread-title-only: Only titles are searched, not the content of the threads.
   user_search:
     placeholder: Name or ID
+  informations: You can search for people, groups, stores, regions, and FoodSharePoints.
 month:
   short:
     "12": Dec.
@@ -2137,7 +2171,7 @@ register:
   lastname_minLength: The last name must consist of at least 2 characters.
   firstname_minLength: The first name must consist of at least 2 characters.
   confirmPassword_sameAsPassword: The password must match.
-  birthdate_hint: You can find more information in the <a href="?page=legal" target="_blank">
+  birthdate_hint: You can find more information in the <a href="/?page=legal" target="_blank">
     privacy policy </a> in point 2d) when registering as a foodsharer or foodsaver.
   mail_hint: 'Important: pay attention to the correct spelling!'
   landline_example: Example +49 30 123456789
@@ -2172,6 +2206,8 @@ weight: Estimated weight
 about_me_intern: Short description
 about_me_public: Public short description
 regions: Regions
+groups:
+  empty: You're not in any working groups yet
 daterange: Time period
 ort: City/municipality (automatically from the map above)
 stadt: Your city or town
@@ -2205,14 +2241,15 @@ dashboard:
     no-stores: You are not in any team yet.
     managing: You are responsible for
     pending: Requests have been made to
-    stores: You pick up groceries from
-    waiting: You are on the jumper list at
+    stores: Your stores
+    managing_stores: Your responsible stores
+    jumping_stores: Your jumping list stores
     buddies: People you know
     users: foodsavers
   options:
     hide:
-      text: Hide
-      tooltip: Here can you hide information on the dashboard
+      text: Change view
+      tooltip: Here can you hide information on the dashboard.
     reset: Reset
     grid_toggle:
       2_columns: Go to 2 columns view
@@ -2238,6 +2275,7 @@ dashboard:
   no_more_updates_all: That's it!
   no_updates: No updates
   settings_tooltip: Overview settings
+  settings: Settings
   display_all: All
   updates_title_some: Updates overview ({0})
   updates_title_all: Updates overview
@@ -2259,6 +2297,7 @@ dashboard:
     read: continue reading
     go: Go to the quiz
     ack: I have read the notice, do not show again
+  greeting_short: "Hello {name}!"
   greeting: Hello {name}! Nice to have you there.
   source_store: Stores {0}
   pickupdates: Next pickups
@@ -2266,9 +2305,8 @@ dashboard:
   invitationCount: You were invited ({count})
   event: Next event
   eventCount: Next events ({count})
-  foodsaver_amount: "You have picked up groceries <strong style=\"white-space:nowrap\"\
-    >{pickups}&thinsp;&times;</strong>\nand saved <strong style=\"white-space:nowrap\"\
-    >{weight}&thinsp;kg</strong>.\n"
+  foodsaver_amount: "You have picked up groceries <b>{pickups} x</b> and saved <b>{weight}\
+    \ kg</b>."
   foodsharer_amount: You have already saved {weight} kilos!
   foodsharer: Have fun saving!
   chooseHomeRegion: Please select a home district.
@@ -2278,6 +2316,8 @@ dashboard:
   mail_activation_error_title: Email address not confirmed
   activation_mail_failure: A new activation link could not be sent
   activation_mail_sent: Activation link sent - please check your emails
+  full_subline: You have picked up food <b>{pickups} </b> times and saved <b>{weight}
+    kg</b>. Your home region is <b>{region}</b>.
 pronoun:
   "3": he*she
   "2": she
@@ -2411,9 +2451,9 @@ mail:
   noreply_addresses_not_allowed: Emails to "noreply@…" cannot be delivered.<br Please
     check the recipient address.
 regionOptions:
-  enableMediationButton: Enable mediation request button on the profiles of the home
+  enableMediationButton: Enable mediation request link on the profiles of the home
     users of this district.
-  enableReportButton: Enable report button on the profiles of the home users of this
+  enableReportButton: Enable report link on the profiles of the home users of this
     district.
   save: Save options
   success: Options saved successfully
@@ -2462,8 +2502,8 @@ startpage:
     title: Join
     text: We newly formed in 2012, by now we are an international movement existing
       of over 200.000 users in Germany, Austia,  Switzerland and other European countries.
-  mission:
-    title: Mission
+  vision:
+    title: Vision
     text: Our long-term goal is to reduce the throw-away culture of food and other
       resources. We save food in private households and businesses - collectively,
       sustainably and respectfully. We see ourselves as both a political and an educational
@@ -2585,6 +2625,8 @@ quiz:
   failedbeforebut: " times you didn't pass the quiz. This amount of tries are left\
     \ for you:"
   quizleft: " - now all that's left to do is pass the quiz!"
+  session_deleted: The results of this quiz were deleted because the quiz was finished
+    more than two weeks ago.
 nofp: no error points (not a serious question)
 fpsingular: Error point
 request_time: 'Time of request:'
@@ -2592,6 +2634,8 @@ deletefromregion: Really remove from the region?
 logincontrol:
   nomorenewsletter: You won't receive any more newletters from us
   success: Success!
+  title: Newsletter sign-out
+  bread: Newsletter sign-out
 addreaction: Add a reaction
 sig:
   buddies: People you know
@@ -2602,8 +2646,8 @@ activitypost:
   Response: "Answer"
   response: "answer"
   write: Write an answer …
-  quickreply_info: <b>Shift + Return</b> to add a new line.
-  quickreply_button: Send now<br>or press<b>Return</b>.
+  quickreply_info: <code class="key">Shift + Return</code> to add a new line.
+  quickreply_button: Send now<br>or press<code class="key">Return</code>.
 deletelow: delete
 
 error:
@@ -2614,7 +2658,8 @@ error:
     link_2: "I need help"
   mail_activation:
     title: "Email address not confirmed!"
-    description: "Please confirm your email address by clicking on the link in the activation email."
+    description: "Please confirm your email address by clicking on the link in the\
+      \ activation email."
     link_1: "Request a new activation email"
     link_2: "Change email address"
   adress:
@@ -2629,9 +2674,79 @@ error:
 information:
   push:
     title: "You can now receive push notifications from foodsharing."
-    info: "If you no longer want to receive push notifications, you can deactivate them at any time in the settings."
+    info: "If you no longer want to receive push notifications, you can deactivate\
+      \ them at any time in the settings."
     link: "To the settings"
   calendar_sync:
     title: "Do you know the calendar synchronization for your pickups?"
-    info: "This will allow you to see your next pickup dates using a calendar program of your choice."
+    info: "This will allow you to see your next pickup dates using a calendar program\
+      \ of your choice."
     link: "Subscribe now"
+globals:
+  reset: Reset
+  you: You
+  type:
+    mailboxes: Mailboxes
+    my_mailboxes: My mailboxes
+    buddies: Buddies
+    my_buddies: My buddies
+    stores: Stores
+    my_stores: My stores
+    regions: Regions
+    my_regions: My regions
+    foodshare_points: FoodSharePoints
+    my_foodshare_points: My FoodSharePoints
+    groups: Groups
+    my_groups: My groups
+  save: Save
+  close: Close
+  select: Please select...
+  show_more: Show more
+  show_less: Show less
+bootstrap-datepicker:
+  labelPrevDecade: Previous decade
+  labelPrevYear: Previous year
+  labelNextYear: Next year
+  labelCalendar: Calendar
+  labelCurrentMonth: Current month
+  labelNoDateSelected: No date selected
+  labelNextDecade: Next decade
+  labelPrevMonth: Previous month
+  labelNextMonth: Next month
+  labelToday: Today
+  labelSelected: Selected date
+  labelNav: Calendar navigation
+  labelHelp: Navigate the calendar using arrow keys
+system_administration:
+  regions: Administrate regions
+  email: Send newsletter
+  blog: Administrate blog entries
+  quiz: Administrate quiz
+  mailboxes: Administrate mailboxes
+  content: Administrate content
+  reports: Show reports
+join_region:
+  error:
+    is_country: <strong>This is a country.</strong><br> Please choose a city or region.
+    is_state: <strong>This is a state.</strong><br> Please choose a city or a region.
+    not_allowed: You cannot join this region.
+    is_big_city: <strong>This is a large city.</strong><br> Please choose a city or
+      a region.
+  headline: Please choose the region in which you want to become active.
+navigation:
+  map: Map
+  contact: Contact
+  whats_new: What is new?
+  support: Support
+  help: Help
+  wiki: Wiki
+  regions: Regions
+  groups: Groups
+  stores: Stores
+  basket: Food baskets
+  search: Search
+  conversations: 'Conversations'
+  notifications: Notifications
+  system_administration: System administration
+  help_needed: Help needed?
+  profil: 👋 Hello {name}!

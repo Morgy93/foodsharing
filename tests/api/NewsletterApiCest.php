@@ -21,7 +21,7 @@ class NewsletterApiCest
 			'subject' => 'Subject',
 			'message' => 'Message'
 		]);
-		$I->seeResponseCodeIs(\Codeception\Util\HttpCode::UNAUTHORIZED);
+		$I->seeResponseCodeIs(\Codeception\Util\HttpCode::FORBIDDEN);
 	}
 
 	public function invalidEmailAddressIsRejected(ApiTester $I): void
@@ -32,7 +32,7 @@ class NewsletterApiCest
 			'subject' => 'Subject',
 			'message' => 'Message'
 		]);
-		$I->seeResponseCodeIs(\Codeception\Util\HttpCode::INTERNAL_SERVER_ERROR);
+		$I->seeResponseCodeIs(\Codeception\Util\HttpCode::BAD_REQUEST);
 	}
 
 	public function validEmailAddressIsAccepted(ApiTester $I): void

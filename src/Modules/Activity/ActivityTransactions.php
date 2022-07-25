@@ -90,14 +90,14 @@ class ActivityTransactions
 		}
 
 		return [
-			ActivityFilterCategory::create('bezirk', $this->translator->trans('search.mygroups'),
-				$this->translator->trans('terminology.groups'), $groupOptions),
-			ActivityFilterCategory::create('bezirk', $this->translator->trans('search.myregions'),
-				$this->translator->trans('terminology.regions'), $regionOptions),
-			ActivityFilterCategory::create('mailbox', $this->translator->trans('terminology.mailboxes'),
-				$this->translator->trans('terminology.mailboxes'), $mailboxOptions),
-			ActivityFilterCategory::create('buddywall', $this->translator->trans('search.mybuddies'),
-				$this->translator->trans('terminology.buddies'), $buddyOptions)
+			ActivityFilterCategory::create('bezirk', $this->translator->trans('globals.type.my_groups'),
+				$this->translator->trans('globals.type.groups'), $groupOptions),
+			ActivityFilterCategory::create('bezirk', $this->translator->trans('globals.type.my_regions'),
+				$this->translator->trans('globals.type.regions'), $regionOptions),
+			ActivityFilterCategory::create('mailbox', $this->translator->trans('globals.type.my_mailboxes'),
+				$this->translator->trans('globals.type.mailboxes'), $mailboxOptions),
+			ActivityFilterCategory::create('buddywall', $this->translator->trans('globals.type.my_buddies'),
+				$this->translator->trans('globals.type.buddies'), $buddyOptions)
 		];
 	}
 

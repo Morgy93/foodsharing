@@ -1,57 +1,55 @@
 <template>
-  <div class="container bootstrap">
-    <div class="card mb-3 rounded">
-      <div
-        class="card-header text-white bg-primary"
-      >
-        {{ $i18n('genderlist.header_for_district', {bezirk: regionName}) }}
-      </div>
-      <div>
-        <b-card no-body>
-          <b-tabs
-            pills
-            card
+  <div class="card mb-3 rounded">
+    <div
+      class="card-header text-white bg-primary"
+    >
+      {{ $i18n('genderlist.header_for_district', {bezirk: regionName}) }}
+    </div>
+    <div>
+      <b-card no-body>
+        <b-tabs
+          pills
+          card
+        >
+          <b-tab
+            :title="$i18n('genderlist.district_tab')"
+            active
           >
-            <b-tab
-              :title="$i18n('genderlist.district_tab')"
-              active
+            <b-table
+              :fields="fields"
+              :items="genderDataTab"
+              :sort-by="sortBy"
+              :sort-desc="sortDesc"
+              striped
+              hover
+              small
+              caption-top
             >
-              <b-table
-                :fields="fields"
-                :items="genderDataTab"
-                :sort-by="sortBy"
-                :sort-desc="sortDesc"
-                striped
-                hover
-                small
-                caption-top
-              >
-                <template slot="table-caption">
-                  {{ $i18n('genderlist.gender_district_table_caption') }}
-                </template>
-              </b-table>
-            </b-tab>
-            <b-tab
-              :title="$i18n('genderlist.home_district_tab')"
+              <template slot="table-caption">
+                {{ $i18n('genderlist.gender_district_table_caption') }}
+              </template>
+            </b-table>
+          </b-tab>
+          <b-tab
+            :title="$i18n('genderlist.home_district_tab')"
+          >
+            <b-table
+              :fields="fields"
+              :items="genderDataHomeDistrictTab"
+              :sort-by="sortBy"
+              :sort-desc="sortDesc"
+              striped
+              hover
+              small
+              caption-top
             >
-              <b-table
-                :fields="fields"
-                :items="genderDataHomeDistrictTab"
-                :sort-by="sortBy"
-                :sort-desc="sortDesc"
-                striped
-                hover
-                small
-                caption-top
-              >
-                <template slot="table-caption">
-                  {{ $i18n('genderlist.gender_home_district_table_caption') }}
-                </template>
-              </b-table>
-            </b-tab>
-          </b-tabs>
-        </b-card>
-      </div>
+              <template slot="table-caption">
+                {{ $i18n('genderlist.gender_home_district_table_caption') }}
+              </template>
+            </b-table>
+          </b-tab>
+        </b-tabs>
+      </b-card>
     </div>
   </div>
 </template>

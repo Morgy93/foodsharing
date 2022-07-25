@@ -2,10 +2,10 @@
   <!-- eslint-disable-next-line vue/max-attributes-per-line -->
   <div class="infowrapper" :class="classes">
     <div v-if="member.joinDate">
-      {{ $i18n('store.memberSince', { date: $dateFormat(member.joinDate, 'day') }) }}
+      {{ $i18n('store.memberSince', { date: $dateFormatter.dateTime(member.joinDate) }) }}
     </div>
     <div v-if="member.fetchCount && member.lastPickup">
-      {{ $i18n('store.lastPickup', { date: $dateFormat(member.lastPickup, 'day') }) }}
+      {{ $i18n('store.lastPickup', { date: $dateFormatter.dateTime(member.lastPickup) }) }}
     </div>
     <div v-else-if="mayEditStore">
       {{ $i18n('store.noPickup') }}

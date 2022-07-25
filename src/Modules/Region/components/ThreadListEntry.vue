@@ -5,7 +5,7 @@
       <span class="user-picture mr-2">
         <Avatar
           :url="thread.lastPost.author.avatar"
-          :sleep-status="thread.lastPost.author.sleepStatus"
+          :is-sleeping="thread.lastPost.author.sleepStatus"
           :size="50"
         />
       </span>
@@ -20,14 +20,14 @@
           </span>
         </div>
         <div
-          v-b-tooltip="$dateFormat(lastPostDate, 'full-long')"
+          v-b-tooltip="$dateFormatter.dateTime(lastPostDate)"
           class="last-post p-1 ui-corner-all align-self-center"
         >
           <span class="info d-inline d-sm-block">
             {{ $i18n('forum.from', { name: thread.lastPost.author.name || '' }) }}
           </span>
           <span class="time d-inline d-sm-block">
-            {{ $dateDistanceInWords(lastPostDate) }}
+            {{ $dateFormatter.relativeTime(lastPostDate) }}
           </span>
         </div>
       </div>
@@ -37,9 +37,6 @@
 
 <script>
 import Avatar from '@/components/Avatar'
-
-import dateFnsParseISO from 'date-fns/parseISO'
-import { url } from '@/urls'
 import ThreadStatus from './ThreadStatus'
 
 export default {
@@ -49,10 +46,10 @@ export default {
   },
   computed: {
     threadUrl () {
-      return url('forum', this.thread.regionId, this.thread.regionSubId, this.thread.id)
+      return this.$url('forum', this.thread.regionId, this.thread.regionSubId, this.thread.id)
     },
     lastPostDate () {
-      return dateFnsParseISO(this.thread.lastPost.createdAt)
+      return new Date(Date.parse(this.thread.lastPost.createdAt))
     },
     isClosed () {
       return this.thread.status === ThreadStatus.THREAD_CLOSED
@@ -78,7 +75,7 @@ export default {
     font-size: 1.1em;
   }
   .thread-title-closed {
-    color: gray;
+    color: var(--fs-color-gray-500);
   }
 
   .last-post {
@@ -96,18 +93,18 @@ export default {
   &:hover {
     .user-picture,
     .thread-title {
-      color: var(--white);
+      color: var(--fs-color-light);
     }
 
     .user-picture .avatar ::v-deep img {
-      box-shadow: 0 0 0 1px var(--white);
+      box-shadow: 0 0 0 1px var(--fs-color-light);
     }
 
     @media screen and (min-width: 576px) {
       .last-post {
         &, .info, .time {
-          color: var(--fs-brown);
-          background-color: var(--white);
+          color: var(--fs-color-primary-500);
+          background-color: var(--fs-color-light);
         }
       }
     }

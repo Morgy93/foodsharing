@@ -5,9 +5,7 @@ import 'js/dynatree/skin/ui.dynatree.css'
 import { vueRegister, vueApply } from '@/vue'
 import StoreList from './components/StoreList.vue'
 import { attachAddressPicker } from '@/addressPicker'
-import {
-  GET,
-} from '@/script'
+import { GET } from '@/script'
 
 if (GET('a') === undefined) {
   vueRegister({

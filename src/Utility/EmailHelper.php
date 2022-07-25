@@ -41,7 +41,7 @@ final class EmailHelper
 		$message = preg_replace('/(<[^>]+) style=".*?"/i', '$1', $message);
 
 		$search = ['<a', '<td', '<li'];
-		$replace = ['<a style="color:#F36933"', '<td style="font-size:13px;font-family:Arial;color:#31210C;"', '<li style="margin-bottom:11px"'];
+		$replace = ['<a style="color:var(--fs-color-secondary-500)"', '<td style="font-size:13px;font-family:Arial;color:var(--fs-color-warning-800);"', '<li style="margin-bottom:11px"'];
 		$message = str_replace($search, $replace, $message);
 
 		return $this->twig->render('emailTemplates/general/body.html.twig', ['MESSAGE' => $message, 'UNSUBSCRIBE' => $unsubscribe]);
