@@ -44,3 +44,6 @@ var/**
 builds
 /chat/yarn-error.log
 /chat/test.js
+docs/build
+docs/src/database-tables-columns.md
+docs/src/mdbook-plantuml-img/

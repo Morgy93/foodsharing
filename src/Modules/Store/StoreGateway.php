@@ -346,7 +346,7 @@ class StoreGateway extends BaseGateway
 		return $result;
 	}
 
-	public function getMyStore($fs_id, $storeId): array
+	public function getMyStore(int $fs_id, int $storeId): array
 	{
 		$result = $this->db->fetch('
 			SELECT

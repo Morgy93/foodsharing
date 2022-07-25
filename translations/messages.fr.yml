@@ -1195,9 +1195,8 @@ dashboard:
     stores: Tu collectes des denrées à
     groups: Tes groupes
     regions: Tes secteurs géographiques
-  foodsaver_amount: "Tu as fait <strong style=\"white-space:nowrap\">{pickups}&thinsp;x</strong>\
-    \ collectes et a\nsauvé <strong style=\"white-space:nowrap\">{weight}&thinsp;kg</strong>\
-    \ de denrées.\n"
+  foodsaver_amount: "Tu as fait <b>{pickups} x</b> collectes et a sauvé <b>{weight}\
+    \ kg</b> de denrées."
   foodsharer_amount: Tu as déjà collecté {weight} kg !
   foodsharer: Bonne collecte !
   greeting: Bonjour {name}, contents de te voir ici !
@@ -1321,7 +1320,7 @@ profile:
   notes:
     info: "Utilise cette fonction consciencieusement.\nElle est là rendre le processus\
       \ plus clair, de le simplifier pour la communauté.\nReste objectif.ve et raconte\
-      \ les faits, sans jugement et clairement s'il-te-plaît.\n"
+      \ les faits, sans jugement et clairement s'il-te-plaît."
     title: Notes sur {name}
     bread: Notes
   history:
@@ -1677,7 +1676,7 @@ basket:
   send_request: Envoyer la demande
   n_requests: 'Demandes à ce jour : <strong>{count}</strong>'
   withdraw_request: Retirer ma demande
-  requested_by: demandé par
+  requested_by: demandé par {name}
   no_requests: Aucune demande
   login: "Pour plus d'infos, connecte-toi.\nTu n'es pas encore enregistré en tant\
     \ que partageur.se ?\nClique en haut sur <b>Rejoins-nous !</b> pour partager des\

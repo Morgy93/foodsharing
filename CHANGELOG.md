@@ -93,6 +93,9 @@
 - Replace SwiftMailer with Symfony mailer #1188 !2247 @alex.simm
 - Updated php-cs-fixer to 3.8 !2274 @alex.simm
 
+## Development documetation
+- Add generator for database documentation !2275 @KoeMai
+
 # Release "Heidelbeere", 2022-05-01
 
 ## Features

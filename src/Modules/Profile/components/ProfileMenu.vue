@@ -3,10 +3,12 @@
     <div
       class="mb-2 text-center"
     >
-      <img
-        class="rounded"
-        :src="photo"
-      >
+      <Avatar
+        :url="photo"
+        :is-sleeping="isSleeping"
+        :size="130"
+        :auto-scale="true"
+      />
     </div>
     <div
       v-if="isOnline"
@@ -143,6 +145,7 @@
 </template>
 
 <script>
+import Avatar from '@/components/Avatar.vue'
 import { ajreq, pulseError, pulseInfo } from '@/script'
 import conv from '@/conv'
 import MediationRequest from './MediationRequest'
@@ -151,11 +154,12 @@ import { sendBuddyRequest } from '@/api/buddy'
 import i18n from '@/helper/i18n'
 
 export default {
-  components: { ReportRequest, MediationRequest },
+  components: { Avatar, ReportRequest, MediationRequest },
   props: {
     fsId: { type: Number, required: true },
     fsIdSession: { type: Number, required: true },
     photo: { type: String, default: '' },
+    isSleeping: { type: Boolean, default: false },
     isOnline: { type: Boolean, default: false },
     foodSaverName: { type: String, default: '' },
     isNoBuddy: { type: Boolean, default: false },

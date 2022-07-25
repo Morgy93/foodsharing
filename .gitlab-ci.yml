@@ -45,6 +45,7 @@ variables:
   - build:frontend
   - build:backend
   - build:backend-chat
+  - build:docs
   script:
   - chmod -R 750 ./
   - (cd deployer && composer install)
@@ -174,7 +175,6 @@ build:backend:
   script:
     - composer validate --no-check-all --no-check-publish
     - composer install --verbose --prefer-dist --no-progress --no-interaction --no-scripts --ignore-platform-reqs
-    - (cd phinx && composer install --no-progress --no-interaction --no-scripts --ignore-platform-reqs)
     - vendor/bin/php-cs-fixer fix --dry-run --diff --verbose --ansi
     - vendor/bin/parallel-lint --no-progress --exclude vendor .
     - FS_ENV=dev vendor/bin/phpstan analyse --memory-limit=768M --no-progress
@@ -196,19 +196,28 @@ build:backend:
 build:docs:
   <<: *defaults
   image:
-    name: peaceiris/mdbook:v0.4.18
-    entrypoint: [ "" ]
+    name: registry.gitlab.com/foodsharing-dev/images/mdbook_ci:1.0
+  rules:
+  - if: $CI_COMMIT_BRANCH == 'master' || $CI_COMMIT_BRANCH == 'production'
+  - if: $CI_MERGE_REQUEST_ID
+  - if: $CI_PIPELINE_SOURCE == "schedule"
+    when: never
+  variables:
+    MYSQL_ROOT_PASSWORD: root
+    MYSQL_INITDB_SKIP_TZINFO: 1
+  services:
+  # Note: Gitlab runner will mark a lot of service healthchecks as failed. This is a bug that will partly be addressed with the upcoming release of the gitlab-runner. It is also due to our configuration, e.g. the chat container not exposing ports but listed as a service. Unfortunately, health check cannot be disabled.
+    - name: registry.gitlab.com/foodsharing-dev/images/db/test:2
+      alias: db
   stage: build
   script:
-    - mdbook build docs
+    - composer validate --no-check-all --no-check-publish
+    - composer install --verbose --prefer-dist --no-progress --no-interaction --no-scripts --ignore-platform-reqs
+    - ./scripts/ci.build_doc
   artifacts:
     expire_in: 1 week
     paths:
-    - docs/dist
-  rules:
-  - if: $CI_COMMIT_BRANCH == 'master'
-  - if: $CI_PIPELINE_SOURCE == "schedule"
-    when: never
+    - docs
 
 test:backend:
   <<: *defaults

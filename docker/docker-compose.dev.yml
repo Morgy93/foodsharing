@@ -174,16 +174,22 @@ services:
       - ./conf/influxdb/influxdb.toml:/etc/influxdb/influxdb.toml:cached
 
   mdbook:
-    container_name: foodsharing_dev_devdocs
-    image: peaceiris/mdbook:v0.4.18
-    command: serve --hostname '0.0.0.0'
+    container_name: foodsharing_doc_dev
+    image: registry.gitlab.com/foodsharing-dev/images/mdbook_ci:1.0
+    depends_on:
+      - db
+    command: mdbook serve --hostname '0.0.0.0'
+    working_dir: /app/docs
+    environment:
+      BUILD_DIR: /app/docs/build/db
+
     stdin_open: true
     tty: true
     ports:
       - "3000:3000"
       - "3001:3001"
     volumes:
-      - ../docs:/book
+      - ../:/app
 
 volumes:
   client-node-modules:

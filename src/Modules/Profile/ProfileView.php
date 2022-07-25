@@ -102,56 +102,52 @@ class ProfileView extends View
 		$maySeeStores = $this->profilePermissions->maySeeStores($fsId);
 		$maySeeCommitmentsStat = $this->profilePermissions->maySeeCommitmentsStat($fsId);
 
-		// ReportRequest
-		if ($this->regionGateway->getRegionOption($this->foodsaver['bezirk_id'], RegionOptionType::ENABLE_MEDIATION_BUTTON)) {
-			if (!$this->foodsaver['rolle'] < Role::FOODSAVER) {
-				$bezirk_id = $this->foodsaver['bezirk_id'];
+		if ($this->foodsaver['rolle'] > Role::FOODSHARER) {
+			// MediationRequest
+			if ($this->regionGateway->getRegionOption($regionId, RegionOptionType::ENABLE_MEDIATION_BUTTON)) {
+				$mediationGroupEmail = $this->renderMediationRequest($regionId);
+			}
+
+			// ReportRequest
+			$isReportButtonEnabled = intval($this->regionGateway->getRegionOption($regionId, RegionOptionType::ENABLE_REPORT_BUTTON)) === 1;
+
+			if ($this->regionGateway->getRegionOption($regionId, RegionOptionType::ENABLE_REPORT_BUTTON)) {
 				$storeListOptions = [['value' => null, 'text' => $this->translator->trans('profile.choosestore')]];
 				foreach ($userStores as $store) {
 					$storeListOptions[] = ['value' => $store['id'], 'text' => $store['name']];
 				}
-				$isReportedIdReportAdmin = $this->groupFunctionGateway->isRegionFunctionGroupAdmin($bezirk_id, WorkgroupFunction::REPORT, $this->foodsaver['id']);
-				$isReporterIdReportAdmin = $this->groupFunctionGateway->isRegionFunctionGroupAdmin($bezirk_id, WorkgroupFunction::REPORT, $this->session->id());
-				$isReportedIdArbitrationAdmin = $this->groupFunctionGateway->isRegionFunctionGroupAdmin($bezirk_id, WorkgroupFunction::ARBITRATION, $this->foodsaver['id']);
-				$isReporterIdArbitrationAdmin = $this->groupFunctionGateway->isRegionFunctionGroupAdmin($bezirk_id, WorkgroupFunction::ARBITRATION, $this->session->id());
+				$isReportedIdReportAdmin = $this->groupFunctionGateway->isRegionFunctionGroupAdmin($regionId, WorkgroupFunction::REPORT, $this->foodsaver['id']);
+				$isReporterIdReportAdmin = $this->groupFunctionGateway->isRegionFunctionGroupAdmin($regionId, WorkgroupFunction::REPORT, $this->session->id());
+				$isReportedIdArbitrationAdmin = $this->groupFunctionGateway->isRegionFunctionGroupAdmin($regionId, WorkgroupFunction::ARBITRATION, $this->foodsaver['id']);
+				$isReporterIdArbitrationAdmin = $this->groupFunctionGateway->isRegionFunctionGroupAdmin($regionId, WorkgroupFunction::ARBITRATION, $this->session->id());
 
-				$hasReportGroup = $this->groupFunctionGateway->existRegionFunctionGroup($bezirk_id, WorkgroupFunction::REPORT);
+				$hasReportGroup = $this->groupFunctionGateway->existRegionFunctionGroup($regionId, WorkgroupFunction::REPORT);
 				$reporterHasReportGroup = $hasReportGroup;
 
-				if ($bezirk_id != $this->session->getCurrentRegionId()) {
+				if ($hasReportGroup) {
+					$reportGroupId = $this->groupFunctionGateway->getRegionFunctionGroupId($regionId, WorkgroupFunction::REPORT);
+					$reportGroupDetails = $this->groupGateway->getGroupLegacy($reportGroupId);
+					$MailboxNameReportRequest = $this->mailboxGateway->getMailboxname($reportGroupDetails['mailbox_id']) ?? '';
+				}
+
+				$hasArbitrationGroup = $this->groupFunctionGateway->existRegionFunctionGroup($regionId, WorkgroupFunction::ARBITRATION);
+
+				if ($regionId != $this->session->getCurrentRegionId()) {
 					$reporterHasReportGroup = $this->groupFunctionGateway->existRegionFunctionGroup($this->session->getCurrentRegionId(), WorkgroupFunction::REPORT);
 				}
 
-				$MailboxNameReportRequest = '';
-				if ($hasReportGroup) {
-					$reportGroupId = $this->groupFunctionGateway->getRegionFunctionGroupId($bezirk_id, WorkgroupFunction::REPORT);
-					$reportGroupDetails = $this->groupGateway->getGroupLegacy($reportGroupId);
-					$MailboxNameReportRequest = $this->mailboxGateway->getMailboxname($reportGroupDetails['mailbox_id']);
-				}
-
-				$hasArbitrationGroup = $this->groupFunctionGateway->existRegionFunctionGroup($bezirk_id, WorkgroupFunction::ARBITRATION);
-
-				$isReportButtonEnabled = intval($this->regionGateway->getRegionOption($this->foodsaver['bezirk_id'], RegionOptionType::ENABLE_REPORT_BUTTON)) === 1;
-
-				$buttonNameReportRequest = $this->translator->trans('profile.report.oldReportButton');
-				if ($this->regionGateway->getRegionOption($this->foodsaver['bezirk_id'], RegionOptionType::ENABLE_REPORT_BUTTON)) {
-					$buttonNameReportRequest = $this->translator->trans('profile.reportRequest');
-				}
+				$buttonNameReportRequest = $this->translator->trans('profile.reportRequest');
 			}
-		}
-
-		// MediationRequest
-		if ($this->regionGateway->getRegionOption($this->foodsaver['bezirk_id'], RegionOptionType::ENABLE_MEDIATION_BUTTON)) {
-			$mediationGroupEmail = $this->renderMediationRequest($this->foodsaver['bezirk_id']);
 		}
 
 		$page->addSectionLeft(
 			$this->vueComponent('vue-profile-menu', 'ProfileMenu', [
 				'isOnline' => $this->foodsaver['online'],
 				'foodSaverName' => $this->foodsaver['name'],
-				'photo' => $this->imageService->img($this->foodsaver['photo'], 130),
+				'photo' => $this->foodsaver['photo'],
 				'fsId' => $this->foodsaver['id'],
 				'fsIdSession' => $this->session->id(),
+				'isSleeping' => $this->foodsaver['sleep_status'],
 				'isNoBuddy' => $this->foodsaver['buddy'] === BuddyId::NO_BUDDY,
 				'mayAdmin' => $mayAdmin,
 				'mayHistory' => $maySeeHistory,
@@ -159,7 +155,7 @@ class ProfileView extends View
 				'mayNotes' => $this->reportPermissions->mayHandleReports(),
 				'violationCount' => $this->foodsaver['violation_count'] ?? 0,
 				'mayViolation' => $this->reportPermissions->mayHandleReports(),
-				'hasLocalMediationGroup' => $this->groupFunctionGateway->existRegionFunctionGroup($this->foodsaver['bezirk_id'], WorkgroupFunction::MEDIATION),
+				'hasLocalMediationGroup' => $this->groupFunctionGateway->existRegionFunctionGroup($regionId, WorkgroupFunction::MEDIATION),
 				'mediationGroupEmail' => $mediationGroupEmail ?? '',
 				'storeListOptions' => $storeListOptions ?? [],
 				'isReportedIdReportAdmin' => $isReportedIdReportAdmin ?? false,
@@ -171,7 +167,7 @@ class ProfileView extends View
 				'isReportButtonEnabled' => $isReportButtonEnabled ?? false,
 				'reporterHasReportGroup' => $reporterHasReportGroup ?? false,
 				'mailboxNameReportRequest' => $MailboxNameReportRequest ?? '',
-				'buttonNameReportRequest' => $buttonNameReportRequest ?? ''
+				'buttonNameReportRequest' => $buttonNameReportRequest ?? $this->translator->trans('profile.report.oldReportButton')
 			])
 		);
 
@@ -396,15 +392,15 @@ class ProfileView extends View
 		';
 	}
 
-	private function renderMediationRequest(int $bezirk_id): string
+	private function renderMediationRequest(int $regionId): string
 	{
 		if (($this->foodsaver['rolle'] < Role::FOODSAVER) || ($this->foodsaver['id'] === $this->session->id())) {
 			return '';
 		}
 
 		$mailboxName = '';
-		if ($this->groupFunctionGateway->existRegionFunctionGroup($bezirk_id, WorkgroupFunction::MEDIATION)) {
-			$mediationGroupId = $this->groupFunctionGateway->getRegionFunctionGroupId($bezirk_id, WorkgroupFunction::MEDIATION);
+		if ($this->groupFunctionGateway->existRegionFunctionGroup($regionId, WorkgroupFunction::MEDIATION)) {
+			$mediationGroupId = $this->groupFunctionGateway->getRegionFunctionGroupId($regionId, WorkgroupFunction::MEDIATION);
 			$mediationGroupDetails = $this->groupGateway->getGroupLegacy($mediationGroupId);
 			$mailboxName = $this->mailboxGateway->getMailboxname($mediationGroupDetails['mailbox_id']);
 		}
