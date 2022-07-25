@@ -16,7 +16,7 @@ class UserProfileRestController extends AbstractFOSRestController
 	}
 
 	/**
-	 * Provides the user profile information for an user.
+	 * DRAFT: Provides the user profile information for an user.
 	 *
 	 * @OA\Tag(name="user")
 	 *
@@ -33,7 +33,7 @@ class UserProfileRestController extends AbstractFOSRestController
 	}
 
 	/**
-	 * Provides my user profile information.
+	 * DRAFT: Provides my user profile information.
 	 *
 	 * @OA\Tag(name="my")
 	 *
@@ -50,7 +50,7 @@ class UserProfileRestController extends AbstractFOSRestController
 	}
 
 	/**
-	 * Modifies the profile of user.
+	 * DRAFT: Modifies the profile of user.
 	 *
 	 * @OA\Tag(name="user")
 	 *
@@ -67,7 +67,7 @@ class UserProfileRestController extends AbstractFOSRestController
 	}
 
 	/**
-	 * Modifies my user profile.
+	 * DRAFT: Modifies my user profile.
 	 *
 	 * @OA\Tag(name="my")
 	 *

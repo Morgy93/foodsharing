@@ -2,42 +2,37 @@
 
 namespace Foodsharing\RestApi\Models\User;
 
-use Foodsharing\RestApi\Models\Profile\PublicProfileModel;
 use OpenApi\Annotations as OA;
 
 /**
  * Describes user information which are public visible.
  *
- * @OA\Schema(required={"id", "loggedIn", "foodsaver", "isVerified"})
+ * @OA\Schema()
  */
-class PublicUserModel extends PublicProfileModel
+class PublicUserModel
 {
 	/**
-	 * UNCLEAR USAGE: API caller role in system  is the role foodsaver ("fs").
+	 * The foodsharer identifier of user.
 	 *
-	 * @OA\Property(type="Boolean", example=true)
+	 * @OA\Property(format="int32", example=1)
 	 */
-	public bool $foodsaver;
+	public ?int $id;
 
 	/**
-	 * The user is verified by a ambassador to a foodsharer. The status of verification is related to the home region.
-	 * If the user change the home region then the verification status is lost.
+	 * First name of the user.
 	 *
-	 * @OA\Property(type="Boolean", example=true)
+	 * @OA\Property(example="Peter", maxLength=120)
 	 */
-	public bool $isVerified;
+	public string $firstname = '';
 
 	/**
-	 * Home region id of the user. The user have only one home region which.
+	 * Provides the sleep status of the user.
 	 *
-	 * @OA\Property(type="int32", example=1)
-	 */
-	public int $regionId = 0;
-
-	/**
-	 * Home region name of the user. The user have only a home region of the foodsharing quiz is finished successful.
+	 * 	- 0: NONE User is available for community
+	 *  - 1: TEMP User is temporarly away (known timespace) and not accessable by community
+	 *  - 2: FULL User is unkown away and not accessable by community
 	 *
-	 * @OA\Property(type="string", example="Hamburg", maxLength=120)
+	 * @OA\Property(example=0)
 	 */
-	public ?string $regionName = '';
+	public int $sleepStatus = 0;
 }

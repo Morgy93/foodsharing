@@ -20,10 +20,12 @@ use Foodsharing\Modules\Store\StoreGateway;
 use Foodsharing\Modules\WorkGroup\WorkGroupTransactions;
 use Foodsharing\Permissions\RegionPermissions;
 use Foodsharing\Permissions\WorkGroupPermissions;
+use Foodsharing\RestApi\Models\Region\UserRegionModel;
 use Foodsharing\Utility\ImageHelper;
 use FOS\RestBundle\Controller\AbstractFOSRestController;
 use FOS\RestBundle\Controller\Annotations as Rest;
 use FOS\RestBundle\Request\ParamFetcher;
+use Nelmio\ApiDocBundle\Annotation\Model;
 use OpenApi\Annotations as OA;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\Exception\AccessDeniedHttpException;
@@ -84,7 +86,7 @@ class RegionRestController extends AbstractFOSRestController
 	/**
 	 * @OA\Tag(name="region")
 	 *
-	 * @Rest\Post("region/{regionId}/join", requirements={"regionId" = "\d+"})
+	 * @Rest\Get("region/{regionId}/join", requirements={"regionId" = "\d+"})
 	 */
 	public function joinRegionAction(int $regionId): Response
 	{
@@ -131,6 +133,28 @@ class RegionRestController extends AbstractFOSRestController
 		);
 		$this->bellGateway->addBell($welcomeBellRecipients, $bellData);
 
+		return $this->handleView($this->view([], 200));
+	}
+
+	/**
+	 * DRAFT: Returns a list of all region of the user.
+	 *
+	 * @OA\Tag(name="region")
+	 * @OA\Tag(name="my")
+	 *
+	 * @Rest\Get("user/current/region")
+	 * @OA\Response(
+	 * 		response="200",
+	 * 		description="Success.",
+	 *      @OA\JsonContent(
+	 *        type="array",
+	 *        @OA\Items(ref=@Model(type=UserRegionModel::class))
+	 *      )
+	 * )
+	 * @OA\Response(response="401", description="Not logged in.")
+	 */
+	public function listMyRegion(): Response
+	{
 		return $this->handleView($this->view([], 200));
 	}
 

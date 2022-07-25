@@ -30,6 +30,7 @@ use Foodsharing\Permissions\WorkGroupPermissions;
 use Foodsharing\RestApi\Models\User\AdminUserDetailsModel;
 use Foodsharing\RestApi\Models\User\EditableUserModel;
 use Foodsharing\RestApi\Models\User\LoggedInUserModel;
+use Foodsharing\RestApi\Models\User\PublicUserDetailsModel;
 use Foodsharing\RestApi\Models\User\PublicUserModel;
 use Foodsharing\Utility\EmailHelper;
 use FOS\RestBundle\Controller\AbstractFOSRestController;
@@ -134,6 +135,15 @@ class UserRestController extends AbstractFOSRestController
 	 * @OA\Tag(name="user")
 	 *
 	 * @Rest\Get("user/{id}", requirements={"id" = "\d+"})
+	 * @OA\Response(
+	 * 		response="200",
+	 * 		description="Success.",
+	 * 		@Model(type=PublicUserModel::class)))
+	 * )
+	 * @OA\Response(
+	 * 		response="401",
+	 * 		description="Not logged in."
+	 * )
 	 */
 	public function userAction(int $id): Response
 	{
@@ -150,12 +160,20 @@ class UserRestController extends AbstractFOSRestController
 	}
 
 	/**
-	 * Checks if the user is logged in  and lists the basic user information. Returns 401 if not logged in or 200 and
-	 * the user data.
+	 * Checks if the user is logged in  and lists the basic user information.
 	 *
 	 * @OA\Tag(name="my")
 	 *
 	 * @Rest\Get("user/current")
+	 * @OA\Response(
+	 * 		response="200",
+	 * 		description="Success.",
+	 * 		@Model(type=PublicUserModel::class)))
+	 * )
+	 * @OA\Response(
+	 * 		response="401",
+	 * 		description="Not logged in."
+	 * )
 	 */
 	public function currentUserAction(): Response
 	{
@@ -240,10 +258,10 @@ class UserRestController extends AbstractFOSRestController
 	}
 
 	/**
-	 * Lists the detailed profile of a user. Only returns basic information if not logged inor 200 and the data.
+	 * Lists the detailed profile of a user.
 	 *
 	 * The information details depend on the user access rights.
-	 *  - PublicUserModel: Public available
+	 *  - PublicUserDetailsModel: Public available
 	 *  - LoggedInUserModel: Available to communicaty
 	 *  - EditableUserModel: Avaiable to user it self, ambassador or simular rights
 	 *  - AdminUserDetailsModel: ambassador or simular rights
@@ -255,7 +273,7 @@ class UserRestController extends AbstractFOSRestController
 	 * 		response="200",
 	 * 		description="Success.",
 	 * 		@OA\JsonContent(oneOf={
-	 *               @OA\Schema(type="object",ref=@Model(type=PublicUserModel::class)),
+	 *               @OA\Schema(type="object",ref=@Model(type=PublicUserDetailsModel::class)),
 	 *               @OA\Schema(type="object",ref=@Model(type=LoggedInUserModel::class)),
 	 *               @OA\Schema(type="object",ref=@Model(type=EditableUserModel::class)),
 	 *               @OA\Schema(type="object",ref=@Model(type=AdminUserDetailsModel::class))
@@ -274,7 +292,13 @@ class UserRestController extends AbstractFOSRestController
 	}
 
 	/**
-	 * Lists the detailed profile of the current user. Returns 401 if not logged in or 200 and the data.
+	 * Lists the detailed profile of the current user.
+	 *
+	 * 	The information details depend on the user access rights.
+	 *  - PublicUserDetailsModel: Public available
+	 *  - LoggedInUserModel: Available to communicaty
+	 *  - EditableUserModel: Avaiable to user it self, ambassador or simular rights
+	 *  - AdminUserDetailsModel: ambassador or simular rights
 	 *
 	 * @OA\Tag(name="my")
 	 *
@@ -287,6 +311,10 @@ class UserRestController extends AbstractFOSRestController
 	 *               @OA\Schema(type="object",ref=@Model(type=AdminUserDetailsModel::class))
 	 *           }
 	 *      )
+	 * )
+	 * @OA\Response(
+	 * 		response="401",
+	 * 		description="Not logged in."
 	 * )
 	 */
 	public function currentUserDetailsAction(): Response

@@ -17,7 +17,7 @@ class CurrentUserProfileRestController extends AbstractFOSRestController
 	}
 
 	/**
-	 * Provides my user profile information.
+	 * DRAFT: Provides my user profile information.
 	 *
 	 * @OA\Tag(name="my")
 	 *
@@ -34,7 +34,7 @@ class CurrentUserProfileRestController extends AbstractFOSRestController
 	}
 
 	/**
-	 * Provides my user profile information.
+	 * DRAFT: Provides my user profile information.
 	 *
 	 * @OA\Tag(name="my")
 	 *
