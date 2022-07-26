@@ -2461,6 +2461,7 @@ poll:
   may_not_yet_vote: "Diese Abstimmung hat noch nicht begonnen."
   results:
     number_of_votes: "Abgegebene Stimmen"
+    voter_turnout: "Wahlbeteiligung"
     votes: "Stimmen"
     option_text: "Option"
     sum: "Summe"

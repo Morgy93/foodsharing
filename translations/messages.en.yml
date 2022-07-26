@@ -1094,6 +1094,7 @@ poll:
     sum: Sum
     votes: Votes
     number_of_votes: Submitted votes
+    voter_turnout: Voter turnout
     option_text: Option
   new_poll:
     submit_question: The poll can be changed within one hour (until {date}). Do you

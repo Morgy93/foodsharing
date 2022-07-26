@@ -108,8 +108,7 @@
 
         <ResultsTable
           v-if="isPollInPast"
-          :options="poll.options"
-          :num-votes="poll.votes"
+          :poll="poll"
         />
       </div>
     </div>

@@ -1,13 +1,16 @@
 <template>
   <div class="bootstrap">
     <div class="my-1 mb-2">
-      <b>{{ $i18n('poll.results.number_of_votes') }}</b>: {{ numVotes }}
+      <b>{{ $i18n('poll.results.number_of_votes') }}</b>: {{ poll.votes }}
+    </div>
+    <div class="my-1 mb-2">
+      <b>{{ $i18n('poll.results.voter_turnout') }}</b>: {{ voterTurnout }} %
     </div>
 
     <b-table
       v-if="numValues===1"
       :fields="tableFields"
-      :items="options"
+      :items="poll.options"
       primary-key="optionIndex"
       small
       hover
@@ -24,7 +27,7 @@
     <b-table
       v-else-if="numValues===3"
       :fields="tableFields"
-      :items="options"
+      :items="poll.options"
       small
       hover
       responsive
@@ -47,7 +50,7 @@
     <b-table
       v-else-if="numValues===7"
       :fields="tableFields"
-      :items="options"
+      :items="poll.options"
       small
       hover
       responsive
@@ -63,18 +66,14 @@ import { BTable } from 'bootstrap-vue'
 export default {
   components: { BTable },
   props: {
-    options: {
-      type: Array,
-      required: true,
-    },
-    numVotes: {
-      type: Number,
+    poll: {
+      type: Object,
       required: true,
     },
   },
   computed: {
     numValues () {
-      return Object.entries(this.options[0].values).length
+      return Object.entries(this.poll.options[0].values).length
     },
     tableFields () {
       const result = [
@@ -87,7 +86,7 @@ export default {
         },
       ]
 
-      const entries = Object.entries(this.options[0].values).sort(function (a, b) {
+      const entries = Object.entries(this.poll.options[0].values).sort(function (a, b) {
         return b[0] - a[0]
       })
       entries.forEach(v => {
@@ -115,6 +114,10 @@ export default {
         })
       }
       return result
+    },
+    voterTurnout () {
+      const percent = this.poll.votes * 100.0 / this.poll.eligibleVotesCount
+      return Math.round(percent * 100) / 100
     },
   },
   methods: {
