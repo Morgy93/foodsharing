@@ -1,6 +1,6 @@
 <?php
 
-namespace Foodsharing\RestApi\Models\Region;
+namespace Foodsharing\RestApi\Models\Group;
 
 use Foodsharing\Modules\Region\DTO\UserUnit;
 use OpenApi\Annotations as OA;
@@ -10,7 +10,7 @@ use OpenApi\Annotations as OA;
  *
  * @OA\Schema()
  */
-class UserRegionModel
+class UserGroupModel
 {
 	/**
 	 *  Identifier of region or group.
@@ -22,30 +22,15 @@ class UserRegionModel
 	/**
 	 * Name of region or group.
 	 *
-	 * @OA\Property(example="Sinsheim")
+	 * @OA\Property(example="Öffentlichkeitsarbeit - Startseite")
 	 */
 	public string $name = '';
-
-	/**
-	 * Kind of region.
-	 *
-	 * - 1: CITY
-	 * - 2: DISTRICT
-	 * - 3: REGION
-	 * - 5: FEDERAL_STATE
-	 * - 6: COUNTRY
-	 * - 8: BIG_CITY
-	 * - 9: PART_OF_TOWN
-	 *
-	 * @OA\Property()
-	 */
-	public int $classification = 0;
 
 	/**
 	 * Is responsible user.
 	 *
 	 * - False: Normal member
-	 * - True: Is ambassador
+	 * - True: Is admin of group
 	 *
 	 * @OA\Property()
 	 */
@@ -53,10 +38,9 @@ class UserRegionModel
 
 	public static function createFrom(UserUnit $UserUnit)
 	{
-		$obj = new UserRegionModel();
+		$obj = new UserGroupModel();
 		$obj->id = $UserUnit->region->id;
 		$obj->name = $UserUnit->region->name;
-		$obj->classification = $UserUnit->region->type;
 		$obj->isResponsible = $UserUnit->isResponsible;
 
 		return $obj;

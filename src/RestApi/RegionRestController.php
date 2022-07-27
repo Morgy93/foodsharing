@@ -145,7 +145,7 @@ class RegionRestController extends AbstractFOSRestController
 	 * @Rest\Get("user/current/region")
 	 * @OA\Response(
 	 * 		response="200",
-	 * 		description="Success.",
+	 * 		description="Success returns list of related regions of user",
 	 *      @OA\JsonContent(
 	 *        type="array",
 	 *        @OA\Items(ref=@Model(type=UserRegionModel::class))
@@ -155,7 +155,19 @@ class RegionRestController extends AbstractFOSRestController
 	 */
 	public function listMyRegion(): Response
 	{
-		return $this->handleView($this->view([], 200));
+		if (!$this->session->may()) {
+			throw new UnauthorizedHttpException('');
+		}
+		$fs_id = $this->session->id();
+
+		$regions = $this->regionTransactions->getUserRegions($fs_id);
+
+		$rsp_regions = [];
+		foreach ($regions as $region) {
+			$rsp_regions[] = UserRegionModel::createFrom($region);
+		}
+
+		return $this->handleView($this->view($rsp_regions, 200));
 	}
 
 	/**

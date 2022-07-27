@@ -8,9 +8,11 @@ use Foodsharing\Modules\Group\GroupGateway;
 use Foodsharing\Modules\Group\GroupTransactions;
 use Foodsharing\Modules\Region\RegionGateway;
 use Foodsharing\Permissions\RegionPermissions;
+use Foodsharing\RestApi\Models\Group\UserGroupModel;
 use FOS\RestBundle\Controller\AbstractFOSRestController;
 use FOS\RestBundle\Controller\Annotations as Rest;
 use FOS\RestBundle\Request\ParamFetcher;
+use Nelmio\ApiDocBundle\Annotation\Model;
 use OpenApi\Annotations as OA;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\Exception\AccessDeniedHttpException;
@@ -101,5 +103,39 @@ class GroupRestController extends AbstractFOSRestController
 		}
 		/* Without the redirect, we return information about the conference */
 		return $this->handleView($this->view($data, 200));
+	}
+
+	/**
+	 * DRAFT: Returns a list of all groups of the user.
+	 *
+	 * @OA\Tag(name="groups")
+	 * @OA\Tag(name="my")
+	 *
+	 * @Rest\Get("user/current/groups")
+	 * @OA\Response(
+	 * 		response="200",
+	 * 		description="Success returns list of related groups of user",
+	 *      @OA\JsonContent(
+	 *        type="array",
+	 *        @OA\Items(ref=@Model(type=UserGroupModel::class))
+	 *      )
+	 * )
+	 * @OA\Response(response="401", description="Not logged in.")
+	 */
+	public function listMyWorkingGroups(): Response
+	{
+		if (!$this->session->may()) {
+			throw new UnauthorizedHttpException('');
+		}
+		$fs_id = $this->session->id();
+
+		$regions = $this->groupTransactions->getUserGroups($fs_id);
+
+		$rsp_regions = [];
+		foreach ($regions as $region) {
+			$rsp_regions[] = UserGroupModel::createFrom($region);
+		}
+
+		return $this->handleView($this->view($rsp_regions, 200));
 	}
 }

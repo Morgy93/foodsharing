@@ -51,4 +51,31 @@ class Type
 	{
 		return $type != self::WORKING_GROUP;
 	}
+
+	public static function getRegionTypes(): array
+	{
+		return [self::PART_OF_TOWN, self::CITY, self::REGION, self::DISTRICT, self::FEDERAL_STATE, self::COUNTRY, self::BIG_CITY];
+	}
+
+	public static function getGroupTypes(): array
+	{
+		return [self::WORKING_GROUP];
+	}
+
+	public static function isValid(int $value): bool
+	{
+		switch ($value) {
+			case self::PART_OF_TOWN:
+			case self::BIG_CITY:
+			case self::WORKING_GROUP:
+			case self::COUNTRY:
+			case self::FEDERAL_STATE:
+				case self::REGION:
+					case self::DISTRICT:
+							case self::CITY:
+								return true;
+									default:
+									return false;
+		}
+	}
 }
