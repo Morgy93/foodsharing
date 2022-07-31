@@ -12,6 +12,7 @@ use Foodsharing\Modules\Core\DBConstants\StoreTeam\MembershipStatus;
 use Foodsharing\Modules\Region\ForumFollowerGateway;
 use Foodsharing\Utility\DataHelper;
 use Foodsharing\Utility\ImageHelper;
+use Foodsharing\Modules\Foodsaver\DTO\EditableProfileDTO;
 
 class FoodsaverGateway extends BaseGateway
 {
@@ -117,6 +118,40 @@ class FoodsaverGateway extends BaseGateway
 		', [
 			':regionId' => $regionId
 		]);
+	}
+
+	/**
+	 * Provides all information for the user to edit the profile
+	 * 
+	 * @param int $fsId foodsaver identifer
+	 * @return EditableProfileDTO All editable information
+	 */
+	public function getFoodsaverEditableProfile(int $fsId): EditableProfileDTO
+	{
+		$result =  $this->db->fetchByCriteria(
+			'fs_foodsaver',
+			[
+				'id',
+				'name',
+				'about_me_public',
+				'nachname',
+				'homepage',
+				'photo',
+				'geschlecht',
+				'email',
+				'geb_datum',
+				'handy',
+				'telefon',
+				'lat',
+				'lon',
+				'anschrift',
+				'plz',
+				'stadt',
+				'about_me_intern'
+			], [
+			'id' => $fsId
+		]);
+		return EditableProfileDTO::createFromArray($result);
 	}
 
 	public function getFoodsaverDetails(int $fsId): array
