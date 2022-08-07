@@ -15,7 +15,6 @@ class UnitGatewayTest extends \Codeception\Test\Unit
 	private array $bigCity;
 	private array $city;
 	private array $city2;
-	private array $region;
 	private array $group;
 	private array $group2;
 

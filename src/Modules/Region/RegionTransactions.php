@@ -4,6 +4,7 @@ namespace Foodsharing\Modules\Region;
 
 use Foodsharing\Modules\Core\DBConstants\Unit\UnitType;
 use Foodsharing\Modules\Foodsaver\FoodsaverGateway;
+use Foodsharing\Modules\Unit\DTO\UserUnit;
 use Foodsharing\Modules\Unit\UnitGateway;
 
 class RegionTransactions
@@ -38,6 +39,10 @@ class RegionTransactions
 
 	/**
 	 * Returns a list of region which the user is directly related (not the indirect parents).
+	 *
+	 * @param int $fs_id foodsaver identifier of user
+	 *
+	 * @return UserUnit[] List of regions where the use is part
 	 */
 	public function getUserRegions(int $fs_id): array
 	{

@@ -86,7 +86,7 @@ class RegionRestController extends AbstractFOSRestController
 	/**
 	 * @OA\Tag(name="region")
 	 *
-	 * @Rest\Get("region/{regionId}/join", requirements={"regionId" = "\d+"})
+	 * @Rest\Post("region/{regionId}/join", requirements={"regionId" = "\d+"})
 	 */
 	public function joinRegionAction(int $regionId): Response
 	{
@@ -142,7 +142,7 @@ class RegionRestController extends AbstractFOSRestController
 	 * @OA\Tag(name="region")
 	 * @OA\Tag(name="my")
 	 *
-	 * @Rest\Get("user/current/region")
+	 * @Rest\Get("user/current/regions")
 	 * @OA\Response(
 	 * 		response="200",
 	 * 		description="Success returns list of related regions of user",
