@@ -83,9 +83,9 @@ class UserProfileRestController extends AbstractFOSRestController
 		return $this->handleView($this->view(new ProfileModel(), 200));
 	}
 
-		/**
-	 * DRAFT: Allow user to request a change of essential user information
-	 * 
+	/**
+	 * DRAFT: Allow user to request a change of essential user information.
+	 *
 	 * Name
 	 * Firstname
 	 * Gender? (Why?)
@@ -104,5 +104,4 @@ class UserProfileRestController extends AbstractFOSRestController
 	{
 		return $this->handleView($this->view(new ProfileModel(), 200));
 	}
-
 }
