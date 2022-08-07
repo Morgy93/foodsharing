@@ -82,4 +82,27 @@ class UserProfileRestController extends AbstractFOSRestController
 	{
 		return $this->handleView($this->view(new ProfileModel(), 200));
 	}
+
+		/**
+	 * DRAFT: Allow user to request a change of essential user information
+	 * 
+	 * Name
+	 * Firstname
+	 * Gender? (Why?)
+	 * E-Mail?
+	 *
+	 * @OA\Tag(name="my")
+	 *
+	 * @Rest\Patch("user/current/profile/changeEssentialIdentifier")
+	 * @OA\Response(
+	 * 		response="200",
+	 * 		description="Success.",
+	 *      @Model(type=ProfileModel::class)
+	 * )
+	 */
+	public function postChangeEssentialSettings(): Response
+	{
+		return $this->handleView($this->view(new ProfileModel(), 200));
+	}
+
 }
