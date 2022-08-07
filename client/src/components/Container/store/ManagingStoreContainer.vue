@@ -35,11 +35,11 @@ export default {
   },
   mixins: [ListToggleMixin],
   props: {
-    title: { type: String, default: 'dashboard.my.stores' },
+    title: { type: String, default: 'dashboard.my.managing_stores' },
   },
   computed: {
     data () {
-      const data = getters.getOthers()
+      const data = getters.getManaging()
       this.setList(data)
       return data
     },

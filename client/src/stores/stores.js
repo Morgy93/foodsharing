@@ -6,12 +6,12 @@ export const store = Vue.observable({
 })
 
 export const getters = {
-  get () {
+  getAll () {
     return store.stores.length > 0 ? store.stores : []
   },
 
   getOthers () {
-    const others = store.stores.filter(s => !s.isManaging && !s.isJumping)
+    const others = store.stores.filter(s => !s.isManaging && s.membershipStatus === 1)
     return others.length > 0 ? others : []
   },
 
@@ -21,8 +21,12 @@ export const getters = {
   },
 
   getJumping () {
-    const jumping = store.stores.filter(s => s.isJumping)
+    const jumping = store.stores.filter(s => s.membershipStatus === 2)
     return jumping.length > 0 ? jumping : []
+  },
+
+  hasStores () {
+    return store.stores.length > 0
   },
 
   has (id) {

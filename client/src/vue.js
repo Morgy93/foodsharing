@@ -1,6 +1,7 @@
 import Vue from 'vue'
 import i18n from '@/helper/i18n'
 import dateFormatter from '@/helper/date-formatter'
+import { isValidPhoneNumber } from '@/helper/phone-numbers'
 import { url } from '@/helper/urls'
 import BootstrapVue from 'bootstrap-vue'
 import Vuelidate from 'vuelidate'
@@ -12,6 +13,7 @@ Vue.prototype.$i18n = (key, variables = {}) => {
   return i18n(key, variables)
 }
 Vue.prototype.$url = url
+Vue.prototype.$isValidPhoneNumber = isValidPhoneNumber
 Vue.prototype.$dateFormatter = dateFormatter
 
 export function vueRegister (components) {

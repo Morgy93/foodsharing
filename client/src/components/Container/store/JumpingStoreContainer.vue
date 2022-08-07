@@ -35,11 +35,11 @@ export default {
   },
   mixins: [ListToggleMixin],
   props: {
-    title: { type: String, default: 'dashboard.my.stores' },
+    title: { type: String, default: 'dashboard.my.jumping_stores' },
   },
   computed: {
     data () {
-      const data = getters.getOthers()
+      const data = getters.getJumping()
       this.setList(data)
       return data
     },

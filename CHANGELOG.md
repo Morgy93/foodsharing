@@ -56,6 +56,7 @@
 - A wall post with multiple lines will use the complete available size to display its text !2277 @NINI1988
 - Restrictions on the view of the store list in profile !2273 @chriswalg
 - Show only chat link if user is member in store !2304 @chriswalg
+- Fix XSS Vulnerability at login page !2351 #1252 @stcz
 
 ## Refactoring
 - Currently running events are shown within the event overview until their end !2162 @merhoc

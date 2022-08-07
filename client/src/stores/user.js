@@ -31,6 +31,12 @@ export const getters = {
   getUserDetails () {
     return store.details
   },
+  getMobilePhoneNumber () {
+    return store.details?.mobile
+  },
+  getPhoneNumber () {
+    return store.details?.landline
+  },
   getAvatar () {
     return store.user?.avatar
   },
@@ -68,7 +74,7 @@ export const getters = {
     return store.details?.stats || {}
   },
   hasLocations () {
-    return store.locations.lat !== 0 && store.locations.lng !== 0
+    return store.locations.lat !== null && store.locations.lng !== null
   },
   getLocations () {
     return store.locations || { lat: 0, lng: 0 }
@@ -79,6 +85,14 @@ export const getters = {
   hasAdminPermissions () {
     const permissions = Object.entries(store.permissions)
     return permissions.some(([key, value]) => !['mayAdministrateUserProfile', 'mayEditUserProfile', 'addStore'].includes(key) && value)
+  },
+  hasBouncingEmail () {
+    return false
+    // return store.user?.bouncingEmail
+  },
+  hasActiveEmail () {
+    return true
+    // return store.user?.email_is_activated
   },
 }
 

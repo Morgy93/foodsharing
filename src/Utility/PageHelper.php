@@ -187,8 +187,8 @@ final class PageHelper
 		$locations = null;
 		if ($pos = $this->session->getLocation()) {
 			$locations = [
-				'lat' => (float)$pos['lat'],
-				'lon' => (float)$pos['lon'],
+				'lat' => $pos['lat'],
+				'lon' => $pos['lon'],
 			];
 		}
 

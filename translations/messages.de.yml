@@ -2601,23 +2601,35 @@ error:
     description: "Bitte bestätige deine E-Mail-Adresse, indem du auf den Link in der Aktivierungsmail klickst."
     link_1: "Eine neue Aktivierungsmail anfordern"
     link_2: "E-Mail-Adresse ändern"
-  adress:
+  missing_geolocation:
     title: "Es gab einen Fehler mit deiner Adresse."
-    info: "Bitte überprüfe deine Adresse. Die Koordinaten konnten nicht ermittelt werden."
+    description: "Bitte überprüfe deine Adresse. Die Koordinaten konnten nicht ermittelt werden."
     link: "Zur Adressen Eingabe"
-  choose_home_region:
+  invalid_mobile_phonenumber:
+    title: "Es gibt ein Problem, mit deiner Mobilen Telefonnummer."
+    description: "Deine Mobile Telefonnummer hat leider ein Format, das nicht anrufbar ist."
+    link: "Jetzt Mobile Telefonnummer korrigieren"
+  old_user_avatar:
+    title: "Es gibt ein Problem, mit deinem Profilbild."
+    description: "Dein Profilbild scheint sehr alt zu sein, bitte aktualisiere es."
+    link: "Jetzt Profilbild erneuern"
+  missing_user_avatar:
+    title: "Du hast noch kein Profilbild hochgeladen."
+    description: "Zeige den Mitgliedern von Foodsharing, wer du bist!"
+    link: "Jetzt Profilbild hochladen"
+  missing_home_region:
     title: "Wähle einen Stammbezirk aus."
-    info: "Damit du Weitermachen kannst, wird ein Stammbezirk benötigt."
+    description: "Damit du Weitermachen kannst, wird ein Stammbezirk benötigt."
     link: "Jetzt Stammbezirk auswählen"
 
 information:
   push:
     title: "Du kannst jetzt Push-Benachrichtigungen von foodsharing empfangen."
-    info: "Wenn du keine Push-Benachrichtigungen mehr empfangen willst, kannst du sie jederzeit in den Einstellungen wieder deaktivieren."
+    description: "Wenn du keine Push-Benachrichtigungen mehr empfangen willst, kannst du sie jederzeit in den Einstellungen wieder deaktivieren."
     link: "Zu den Einstellungen"
   calendar_sync:
     title: "Kennst du die Kalender Synchronisation für deine Abholungen?"
-    info: "Damit kannst du deine nächsten Abholtermine mit einem Kalenderprogramm deiner Wahl sehen."
+    description: "Damit kannst du deine nächsten Abholtermine mit einem Kalenderprogramm deiner Wahl sehen."
     link: "Jetzt abonnieren"
 
 system_administration:

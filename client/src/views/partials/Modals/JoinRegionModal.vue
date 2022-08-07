@@ -96,9 +96,6 @@ export default {
     9: Stadtteil
   */
   computed: {
-    isShown () {
-      return DataRegions.getters.joinRegionModal.isShown()
-    },
     isLoggedIn () {
       return DataUser.getters.isLoggedIn()
     },
@@ -123,14 +120,6 @@ export default {
     },
   },
   watch: {
-    isShown: {
-      handler: function (val) {
-        if (val) {
-          this.showModal()
-        }
-      },
-      deep: true,
-    },
     selected: {
       async handler (ids) {
         for (const [index, id] of ids.entries()) {
@@ -162,14 +151,11 @@ export default {
       }
     },
     async showModal () {
-      this.$bvModal.show('joinRegionModal')
       this.selected = [0]
       this.base = await DataRegions.mutations.fetchChoosedRegionChildren(0)
     },
     async resetModal () {
-      // console.log('reset')
       this.selected = [0]
-      DataRegions.mutations.joinRegionModal.close()
     },
   },
 }

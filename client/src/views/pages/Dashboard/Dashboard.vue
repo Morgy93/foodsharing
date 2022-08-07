@@ -4,31 +4,10 @@
     class="container my-3 my-sm-5"
   >
     <div class="mb-1 mb-sm-3">
-      <Release
-        v-if="!isBeta"
-        :version="release.version"
-        :time="release.time"
-      />
-      <Error
-        v-if="broadcast.body.length > 0"
-        type="broadcast"
-        tag="broadcast"
-        :title="broadcast.title"
-        :description="broadcast.body"
-        :time="broadcast.last_mod"
-        :is-time-based="true"
-        :is-closeable="true"
-      />
-      <ErrorContainer
-        v-if="errors"
-        :all-visible="true"
-        :list="errors"
-      />
+      <Release v-if="!isBeta" />
+      <ErrorContainer />
       <Intro />
-      <Informations
-        v-if="informations"
-        :list="informations"
-      />
+      <InformationsContainer />
       <Quiz
         v-if="quiz"
         tag="foodsaver.upgrade.ad_fs"
@@ -98,6 +77,8 @@
         <PickupContainer v-if="isFoodsaver && (visible.stores && (state || !viewIsXL) || !visible.stores && hasPickups)" />
         <BasketContainer />
         <StoreContainer v-if="isFoodsaver && (state && visible.stores || !viewIsXL && visible.stores)" />
+        <ManagingStoreContainer v-if="isFoodsaver && (state && visible.managing_stores || !viewIsXL && visible.managing_stores)" />
+        <JumpingStoreContainer v-if="isFoodsaver && (state && visible.jumping_stores || !viewIsXL && visible.jumping_stores)" />
         <GroupContainer v-if="isFoodsaver && visible.groups" />
         <RegionContainer v-if="isFoodsaver && visible.regions" />
       </div>
@@ -118,6 +99,8 @@
         class="grid-item grid-item--right"
       >
         <PickupContainer v-if="isFoodsaver" />
+        <ManagingStoreContainer v-if="isFoodsaver && visible.managing_stores" />
+        <JumpingStoreContainer v-if="isFoodsaver && visible.jumping_stores" />
         <StoreContainer v-if="isFoodsaver && visible.stores" />
       </div>
     </div>
@@ -131,16 +114,16 @@ import DataPickups from '@/stores/pickups.js'
 import DataBaskets from '@/stores/baskets.js'
 import DataUser from '@/stores/user.js'
 import DataEvents from '@/stores/events.js'
-import DataBanners from './Banners.json'
 // Components
 import Intro from '@/components/Banners/Intro/IntroField.vue'
 import Release from '@/components/Banners/Release/ReleaseField.vue'
 import Quiz from '@/components/Banners/Quiz/QuizField.vue'
-import Error from '@/components/Banners/Errors/ErrorField.vue'
 import ErrorContainer from '@/components/Banners/Errors/ErrorContainer.vue'
-import Informations from '@/components/Banners/Informations/InformationContainer.vue'
+import InformationsContainer from '@/components/Banners/Informations/InformationContainer.vue'
 import ActivityContainer from '@/components/Container/activity/ActivityOverview.vue'
 import StoreContainer from '@/components/Container/store/StoreContainer.vue'
+import ManagingStoreContainer from '@/components/Container/store/ManagingStoreContainer.vue'
+import JumpingStoreContainer from '@/components/Container/store/JumpingStoreContainer.vue'
 import PickupContainer from '@/components/Container/pickup/PickupContainer.vue'
 import EventContainer from '@/components/Container/event/EventContainer.vue'
 import BasketContainer from '@/components/Container/basket/BasketContainer.vue'
@@ -156,11 +139,12 @@ export default {
     Intro,
     Release,
     Quiz,
-    Error,
     ErrorContainer,
-    Informations,
+    InformationsContainer,
     ActivityContainer,
     StoreContainer,
+    ManagingStoreContainer,
+    JumpingStoreContainer,
     PickupContainer,
     EventContainer,
     BasketContainer,
@@ -171,19 +155,18 @@ export default {
   props: {
     broadcast: { type: Object, default: () => null },
     quiz: { type: Object, default: () => null },
-    errors: { type: Array, default: () => null },
     events: { type: Object, default: () => ({ accepted: null, invites: null }) },
   },
   data () {
     return {
-      release: DataBanners.release,
-      informations: DataBanners.informations,
       stateHasAutoSave: true,
       stateTag: 'dashboard.grid',
       visible: {
         groups: true,
         regions: true,
         events: true,
+        managing_stores: true,
+        jumping_stores: true,
         stores: true,
       },
     }
@@ -192,10 +175,13 @@ export default {
     user: () => DataUser.getters.getUser(),
     isLoggedIn: () => DataUser.getters.isLoggedIn(),
     isFoodsaver: () => DataUser.getters.isFoodsaver(),
-    hasStores: () => DataStores.getters.get(),
+    hasStores: () => DataStores.getters.hasStores(),
     hasPickups: () => DataPickups.getters.getRegistered(),
+    isStoresVisible () {
+      return this.visible.stores || this.visible.managing_stores || this.visible.jumping_stores
+    },
     hasRightColumn () {
-      return (this.hasPickups && this.visible.pickups) || (this.hasStores && this.visible.stores)
+      return (this.hasPickups && this.visible.pickups) || (this.hasStores && this.isStoresVisible)
     },
     getLocations: () => DataUser.getters.getLocations(),
   },
@@ -237,6 +223,8 @@ export default {
         groups: true,
         regions: true,
         events: true,
+        managing_stores: true,
+        jumping_stores: true,
         stores: true,
       }
     },

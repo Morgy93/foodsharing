@@ -22,7 +22,6 @@ import NavLogin from '@/components/Navigation/Login/NavLogin.vue'
 import MetaNavLoggedOut from '../MetaNav/LoggedOut.vue'
 // Mixins
 import MediaQueryMixin from '@/mixins/MediaQueryMixin'
-import ScrollMixin from '@/mixins/ScrollMixin'
 
 export default {
   components: {
@@ -30,7 +29,7 @@ export default {
     NavLogin,
     MetaNavLoggedOut,
   },
-  mixins: [MediaQueryMixin, ScrollMixin],
+  mixins: [MediaQueryMixin],
   data () {
     return {
       metaNav: MetaNavData,

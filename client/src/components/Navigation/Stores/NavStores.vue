@@ -6,7 +6,7 @@
     is-scrollable
   >
     <template
-      v-if="getAllStores.length > 0 "
+      v-if="hasStores"
       #content
     >
       <div
@@ -93,8 +93,8 @@ export default {
     permissions () {
       return DataUser.getters.getPermissions()
     },
-    getAllStores () {
-      return DataStores.getters.get()
+    hasStores () {
+      return DataStores.getters.hasStores()
     },
     getStores () {
       return [

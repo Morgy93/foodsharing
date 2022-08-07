@@ -1,27 +1,19 @@
 <template>
   <div
     class="informations-wrapper position-relative"
-    :class="{ 'multiply': count > 1, 'single': count <= 1 }"
+    :class="{ 'multiply': list.length > 1 }"
   >
     <InformationField
-      v-for="(prompt, key) in filteredList"
+      v-for="(entry, key) in list"
       :key="key"
-      :type="prompt.type"
-      :tag="prompt.tag"
-      :icon="prompt.icon"
-      :title="prompt.title"
-      :description="prompt.description"
-      :is-time-based="prompt.isTimeBased"
-      :time="prompt.time"
-      :is-closeable="prompt.isCloseable"
-      :links="prompt.links"
+      :entry="entry"
     />
   </div>
 </template>
 
 <script>
 // Stores
-import { getters } from '@/stores/user'
+import DataUser from '@/stores/user'
 // Components
 import InformationField from './InformationField.vue'
 // Mixin
@@ -32,20 +24,39 @@ export default {
     InformationField,
   },
   mixins: [RouteAndDeviceCheckMixin],
-  props: {
-    allVisible: { type: Boolean, default: false },
-    list: { type: Array, default: () => [] },
+  data () {
+    return {
+      list: [],
+    }
   },
-  computed: {
-    filteredList () {
-      return this.list.filter(prompt =>
-        (prompt.type === 'calendar' && getters.isFoodsaver() && !this.hasCalendarToken) ||
-        (prompt.type === 'push' && !this.isSafari))
-    },
-    count () {
-      return this.filteredList.length
-    },
-    hasCalendarToken: () => getters.hasCalendarToken(),
+  async mounted () {
+    /**
+     * Checks if the foodsaver has already an calendar token
+     */
+    if (DataUser.getters.isFoodsaver() && !DataUser.getters.hasCalendarToken()) {
+      this.list.push({
+        icon: 'fa-calendar-alt',
+        field: 'calendar_sync',
+        links: [{
+          text: 'information.calendar_sync.link',
+          urlShortHand: 'settingsCalendar',
+        }],
+      })
+    }
+
+    /**
+     * Checks if the user is a foodsaver and does not use an safari browser
+     */
+    if (DataUser.getters.isFoodsaver() && !this.isSafari) {
+      this.list.push({
+        icon: 'fa-info-circle',
+        field: 'push',
+        links: [{
+          text: 'information.push.link',
+          urlShortHand: 'settingsNotifications',
+        }],
+      })
+    }
   },
 }
 </script>
