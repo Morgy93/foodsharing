@@ -10,12 +10,12 @@ use Foodsharing\Modules\Core\DBConstants\Unit\UnitType;
 class Unit
 {
 	/**
-	 * Identifer of the unit
+	 * Identifer of the unit.
 	 */
 	public int $id;
 
 	/**
-	 * Label for a unit
+	 * Label for a unit.
 	 */
 	public string $name;
 
@@ -23,7 +23,6 @@ class Unit
 	 * @see UnitType
 	 */
 	public ?int $type;
-
 
 	public function __construct()
 	{
@@ -33,7 +32,7 @@ class Unit
 	}
 
 	/**
-	 * Creates a unit out of an array representation like the Database select
+	 * Creates a unit out of an array representation like the Database select.
 	 */
 	public static function createFromArray($query_result, $prefix = ''): Unit
 	{

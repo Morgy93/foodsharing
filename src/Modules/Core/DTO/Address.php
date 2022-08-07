@@ -4,15 +4,13 @@ namespace Foodsharing\Modules\Core\DTO;
 
 /**
  * Describes the geogrpahic coordinates for visualization on maps.
- *
  */
 class Address
 {
 	/**
-	 * Street and street number
+	 * Street and street number.
 	 */
 	public string $address = '';
-	
 
 	/**
 	 * zip code.
@@ -20,12 +18,12 @@ class Address
 	public string $zip = '';
 
 	/**
-	 * Name of city
+	 * Name of city.
 	 */
 	public string $city = '';
 
 	/**
-	 * Generates from an array like a DB result
+	 * Generates from an array like a DB result.
 	 */
 	public static function createFromArray($query_result, $prefix = ''): Address
 	{

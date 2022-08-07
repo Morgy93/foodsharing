@@ -14,7 +14,7 @@ class UnitType
 {
 	/* Undefined variable */
 	public const UNDEFINED = 0;
-	
+
 	/* fourth layer or lower */
 	public const CITY = 1; // default
 	/**
@@ -89,7 +89,8 @@ class UnitType
 		}
 	}
 
-	public static function throwIfInvalid(int $value) {
+	public static function throwIfInvalid(int $value)
+	{
 		if (!UnitType::isValid($value)) {
 			throw new UnexpectedValueException('Unit type is not valid.');
 		}

@@ -3,20 +3,19 @@
 namespace Foodsharing\Modules\Unit\DTO;
 
 /**
- * Provides information about the user relation to an unit
+ * Provides information about the user relation to an unit.
  */
 class UserUnit
 {
 	/**
-	 * Identifier object of the unit
+	 * Identifier object of the unit.
 	 */
 	public Unit $unit;
 
 	/**
-	 * User has a responsiblity for the unit
+	 * User has a responsiblity for the unit.
 	 */
 	public bool $isResponsible;
-
 
 	public function __construct()
 	{
@@ -25,7 +24,7 @@ class UserUnit
 	}
 
 	/**
-	 * Creates a user unit out of an array representation like the database select
+	 * Creates a user unit out of an array representation like the database select.
 	 */
 	public static function createFromArray($query_result, $prefix = ''): UserUnit
 	{

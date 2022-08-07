@@ -4,7 +4,6 @@ namespace Foodsharing\Modules\Core\DTO;
 
 /**
  * Describes the geogrpahic coordinates for visualization on maps.
- *
  */
 class GeoCoordinate
 {
@@ -19,7 +18,7 @@ class GeoCoordinate
 	public float $lon = 0;
 
 	/**
-	 * Generates from an array like a DB result
+	 * Generates from an array like a DB result.
 	 */
 	public static function createFromArray($query_result, $prefix = ''): GeoCoordinate
 	{

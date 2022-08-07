@@ -3,8 +3,8 @@
 namespace Foodsharing\Modules\Region;
 
 use Foodsharing\Modules\Core\DBConstants\Unit\UnitType;
-use Foodsharing\Modules\Unit\UnitGateway;
 use Foodsharing\Modules\Foodsaver\FoodsaverGateway;
+use Foodsharing\Modules\Unit\UnitGateway;
 
 class RegionTransactions
 {
@@ -36,8 +36,8 @@ class RegionTransactions
 		return $verifiedBefore ? self::NEW_FOODSAVER_NEEDS_VERIFICATION : self::NEW_FOODSAVER_NEEDS_INTRODUCTION;
 	}
 
-	/** 
-	 * Returns a list of region which the user is directly related (not the indirect parents)
+	/**
+	 * Returns a list of region which the user is directly related (not the indirect parents).
 	 */
 	public function getUserRegions(int $fs_id): array
 	{

@@ -8,12 +8,10 @@ use Foodsharing\Modules\Core\DBConstants\Unit\UnitType;
 use Foodsharing\Modules\Unit\DTO\UserUnit;
 
 /**
- * The gateway is a CRUD helper to do stuff on the database table which represents a unit like (regions or groups)
- *  
+ * The gateway is a CRUD helper to do stuff on the database table which represents a unit like (regions or groups).
  */
 class UnitGateway extends BaseGateway
 {
-
 	public function __construct(
 		Database $db
 	) {
@@ -22,8 +20,7 @@ class UnitGateway extends BaseGateway
 
 	/**
 	 * Fetch all units of the foodsaver with information about the responsibility of the user.
-	 * This can be filtered by the unit types @see UnitType
-	 * 
+	 * This can be filtered by the unit types @see UnitType.
 	 *
 	 * @param int $foodsaverId Identifier of the foodsaver user
 	 * @param int[] $unitTypes List of unit types should be provided if present (@See UnitType)

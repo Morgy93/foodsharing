@@ -1,8 +1,8 @@
 <?php
 
-use Foodsharing\Modules\Unit\UnitGateway;
 use Foodsharing\Modules\Core\DBConstants\Region\RegionIDs;
 use Foodsharing\Modules\Core\DBConstants\Unit\UnitType;
+use Foodsharing\Modules\Unit\UnitGateway;
 
 class UnitGatewayTest extends \Codeception\Test\Unit
 {
@@ -35,7 +35,7 @@ class UnitGatewayTest extends \Codeception\Test\Unit
 		// Group
 		$this->group = $this->tester->createWorkingGroup('Unit test AG');
 		$this->group2 = $this->tester->createWorkingGroup('Teaching AG');
-		
+
 		// Allocate users to region and groups
 		$this->tester->addRegionMember($this->bigCity['id'], $this->foodsaver['id']);
 		$this->tester->addRegionMember($this->city['id'], $this->foodsaver['id']);

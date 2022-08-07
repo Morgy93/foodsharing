@@ -4,8 +4,8 @@ namespace Foodsharing\Modules\Stats;
 
 use Foodsharing\Modules\Core\BaseGateway;
 use Foodsharing\Modules\Core\Database;
-use Foodsharing\Modules\Core\DBConstants\Unit\UnitType;
 use Foodsharing\Modules\Core\DBConstants\Store\CooperationStatus;
+use Foodsharing\Modules\Core\DBConstants\Unit\UnitType;
 
 /**
  * Statistics update operations for foodsaver, store team and region stats.
