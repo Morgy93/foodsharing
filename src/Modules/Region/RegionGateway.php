@@ -7,11 +7,10 @@ use Foodsharing\Modules\Core\BaseGateway;
 use Foodsharing\Modules\Core\Database;
 use Foodsharing\Modules\Core\DBConstants\Foodsaver\Role;
 use Foodsharing\Modules\Core\DBConstants\Region\RegionIDs;
-use Foodsharing\Modules\Core\DBConstants\Region\Type;
+use Foodsharing\Modules\Core\DBConstants\Unit\UnitType;
 use Foodsharing\Modules\Core\DBConstants\Region\WorkgroupFunction;
 use Foodsharing\Modules\Foodsaver\FoodsaverGateway;
 use Foodsharing\Modules\Group\GroupFunctionGateway;
-use Foodsharing\Modules\Region\DTO\UserUnit;
 use UnexpectedValueException;
 
 class RegionGateway extends BaseGateway
@@ -60,7 +59,7 @@ class RegionGateway extends BaseGateway
 
 	public function getBezirkByParent(int $parentId, bool $includeOrga = false): array
 	{
-		$sql = 'AND 		`type` != ' . Type::WORKING_GROUP;
+		$sql = 'AND 		`type` != ' . UnitType::WORKING_GROUP;
 		if ($includeOrga) {
 			$sql = '';
 		}
@@ -188,7 +187,7 @@ class RegionGateway extends BaseGateway
 						fbc.ancestor_id = :regionId
 					AND fbc.depth >= :min_depth
 					and reg.type <> :regionTypeWorkGroup',
-				['regionId' => $regionId, 'min_depth' => $minDepth, 'regionTypeWorkGroup' => Type::WORKING_GROUP]
+				['regionId' => $regionId, 'min_depth' => $minDepth, 'regionTypeWorkGroup' => UnitType::WORKING_GROUP]
 			);
 		}
 	}
@@ -219,7 +218,7 @@ class RegionGateway extends BaseGateway
 				b.`name`
 		', [
 			':foodsaverId' => $foodsaverId,
-			':workGroupType' => Type::WORKING_GROUP
+			':workGroupType' => UnitType::WORKING_GROUP
 		]);
 	}
 
@@ -511,43 +510,6 @@ class RegionGateway extends BaseGateway
 			AND 	`fs_botschafter`.`foodsaver_id` = :id',
 			[':id' => $foodsaverId]
 		);
-	}
-
-	/**
-	 * Return all units (destrict, regions and groups) of the foodsaver with information about the responsibility of the user.
-	 *
-	 * @param int $foodsaverId
-	 * 	Foodsaver identifier
-	 * @param int[] $unitTypes
-	 *  List of unit types which should be return (@See Foodsharing\Modules\Core\DBConstants\Region\Type)
-	 *
-	 * @return UserUnit[] List of all region where user is related to
-	 */
-	public function listAllUnitsAndResponsibilitiesOfFoodsaver(int $foodsaverId, array $unitTypes): array
-	{
-		$validValues = true;
-		foreach ($unitTypes as $unittype) {
-			$validValues &= Type::isValid($unittype);
-		}
-		if (!$validValues) {
-			throw new UnexpectedValueException('Store cooperation state is not valid.');
-		}
-
-		$inPlaceHolder = implode(', ', array_fill(0, count($unitTypes), '?'));
-		$rows = $this->db->fetchAll(
-			'SELECT unit.id, unit.name, unit.type, responsible.bezirk_id is not null as isResponsible from fs_foodsaver_has_bezirk as foodsaver
-			INNER JOIN fs_bezirk as unit ON foodsaver.bezirk_id = unit.id
-			LEFT JOIN fs_botschafter as responsible ON foodsaver.bezirk_id = responsible.bezirk_id and foodsaver.foodsaver_id = responsible.foodsaver_id
-			WHERE foodsaver.foodsaver_id = ? 
-			      AND unit.type in (' . $inPlaceHolder . ') ORDER BY type, isResponsible DESC, name',
-			[$foodsaverId, $unitTypes]
-		);
-		$results = [];
-		foreach ($rows as $row) {
-			$results[] = UserUnit::createFromArray($row);
-		}
-
-		return $results;
 	}
 
 	public function addOrUpdateMember(int $foodsaverId, int $regionId): bool

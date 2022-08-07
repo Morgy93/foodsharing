@@ -2,7 +2,8 @@
 
 namespace Foodsharing\Modules\Region;
 
-use Foodsharing\Modules\Core\DBConstants\Region\Type;
+use Foodsharing\Modules\Core\DBConstants\Unit\UnitType;
+use Foodsharing\Modules\Unit\UnitGateway;
 use Foodsharing\Modules\Foodsaver\FoodsaverGateway;
 
 class RegionTransactions
@@ -12,12 +13,12 @@ class RegionTransactions
 	public const NEW_FOODSAVER_NEEDS_INTRODUCTION = 'new_foodsaver_needs_introduction';
 
 	private FoodsaverGateway $foodsaverGateway;
-	private RegionGateway $regionGateway;
+	private UnitGateway $unitGateway;
 
-	public function __construct(FoodsaverGateway $foodsaverGateway, RegionGateway $regionGateway)
+	public function __construct(FoodsaverGateway $foodsaverGateway, UnitGateway $unitGateway)
 	{
 		$this->foodsaverGateway = $foodsaverGateway;
-		$this->regionGateway = $regionGateway;
+		$this->unitGateway = $unitGateway;
 	}
 
 	public function getJoinMessage(array $userData): string
@@ -35,8 +36,11 @@ class RegionTransactions
 		return $verifiedBefore ? self::NEW_FOODSAVER_NEEDS_VERIFICATION : self::NEW_FOODSAVER_NEEDS_INTRODUCTION;
 	}
 
+	/** 
+	 * Returns a list of region which the user is directly related (not the indirect parents)
+	 */
 	public function getUserRegions(int $fs_id): array
 	{
-		return $this->regionGateway->listAllUnitsAndResponsibilitiesOfFoodsaver($fs_id, Type::getRegionTypes());
+		return $this->unitGateway->listAllDirectReleatedUnitsAndResponsibilitiesOfFoodsaver($fs_id, UnitType::getRegionTypes());
 	}
 }

@@ -2,14 +2,19 @@
 
 // table fs_bezirk
 
-namespace Foodsharing\Modules\Core\DBConstants\Region;
+namespace Foodsharing\Modules\Core\DBConstants\Unit;
+
+use UnexpectedValueException;
 
 /**
  * the different regions types. First layer are continents
  * TINYINT(4) | NOT NULL DEFAULT '1'.
  */
-class Type
+class UnitType
 {
+	/* Undefined variable */
+	public const UNDEFINED = 0;
+	
 	/* fourth layer or lower */
 	public const CITY = 1; // default
 	/**
@@ -44,12 +49,17 @@ class Type
 
 	public static function isAccessibleRegion(int $type): bool
 	{
-		return in_array($type, [self::PART_OF_TOWN, self::CITY, self::REGION, self::DISTRICT]);
+		return in_array($type, UnitType::getAccessibleRegionTypes());
 	}
 
 	public static function isRegion(int $type): bool
 	{
 		return $type != self::WORKING_GROUP;
+	}
+
+	public static function getAccessibleRegionTypes(): array
+	{
+		return [self::PART_OF_TOWN, self::CITY, self::REGION, self::DISTRICT];
 	}
 
 	public static function getRegionTypes(): array
@@ -70,12 +80,18 @@ class Type
 			case self::WORKING_GROUP:
 			case self::COUNTRY:
 			case self::FEDERAL_STATE:
-				case self::REGION:
-					case self::DISTRICT:
-							case self::CITY:
-								return true;
-									default:
-									return false;
+			case self::REGION:
+			case self::DISTRICT:
+			case self::CITY:
+				return true;
+			default:
+				return false;
+		}
+	}
+
+	public static function throwIfInvalid(int $value) {
+		if (!UnitType::isValid($value)) {
+			throw new UnexpectedValueException('Unit type is not valid.');
 		}
 	}
 }

@@ -5,7 +5,7 @@ namespace Foodsharing\Modules\Voting;
 use DateTime;
 use Exception;
 use Foodsharing\Modules\Core\BaseGateway;
-use Foodsharing\Modules\Core\DBConstants\Region\Type;
+use Foodsharing\Modules\Core\DBConstants\Unit\UnitType;
 use Foodsharing\Modules\Core\DBConstants\Voting\VotingType;
 use Foodsharing\Modules\Voting\DTO\Poll;
 use Foodsharing\Modules\Voting\DTO\PollOption;
@@ -332,7 +332,7 @@ class VotingGateway extends BaseGateway
 			AND fs.deleted_at IS NULL
 			AND b.type <> :workingGroupType',
 			[':regionId' => $groupId,
-			 ':workingGroupType' => Type::WORKING_GROUP]
+			 ':workingGroupType' => UnitType::WORKING_GROUP]
 		);
 	}
 

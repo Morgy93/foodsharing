@@ -18,9 +18,16 @@ class EditableProfileDTO
 	public string $birthday='';
 	public string $mobile='';
 	public string $phone='';
-	public GeoCoordinate $coordinate = new GeoCoordinate();
-	public Address $location = new Address();
-	public string $aboutMeInternal;
+	public Address $location;
+	public GeoCoordinate $coordinate;
+	public string $aboutMeInternal='';
+
+	public function __construct()
+	{
+		$this->location = new Address();
+	    $this->coordinate = new GeoCoordinate();
+	}
+
 
 	public static function createFromArray($query_result, $prefix = ''): EditableProfileDTO
 	{

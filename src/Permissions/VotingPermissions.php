@@ -8,7 +8,7 @@ use DateInterval;
 use DateTime;
 use Exception;
 use Foodsharing\Lib\Session;
-use Foodsharing\Modules\Core\DBConstants\Region\Type;
+use Foodsharing\Modules\Core\DBConstants\Unit\UnitType;
 use Foodsharing\Modules\Core\DBConstants\Region\WorkgroupFunction;
 use Foodsharing\Modules\Group\GroupFunctionGateway;
 use Foodsharing\Modules\Region\RegionGateway;
@@ -81,7 +81,7 @@ final class VotingPermissions
 		}
 
 		$type = $this->regionGateway->getType($regionId);
-		if ($type == Type::WORKING_GROUP) {
+		if ($type == UnitType::WORKING_GROUP) {
 			return $this->session->isAdminFor($regionId);
 		} else {
 			$votingGroup = $this->groupFunctionGateway->getRegionFunctionGroupId($regionId, WorkgroupFunction::VOTING);

@@ -27,9 +27,9 @@ class Address
 	/**
 	 * Generates from an array like a DB result
 	 */
-	public static function createFromArray($query_result, $prefix = ''): GeoCoordinate
+	public static function createFromArray($query_result, $prefix = ''): Address
 	{
-		$obj = new GeoCoordinate();
+		$obj = new Address();
 		$obj->address = $query_result["{$prefix}anschrift"];
 		$obj->zip = $query_result["{$prefix}plz"];
 		$obj->city = $query_result["{$prefix}stadt"];

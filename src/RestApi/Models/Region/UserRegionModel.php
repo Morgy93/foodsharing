@@ -2,25 +2,25 @@
 
 namespace Foodsharing\RestApi\Models\Region;
 
-use Foodsharing\Modules\Region\DTO\UserUnit;
+use Foodsharing\Modules\Unit\DTO\UserUnit;
 use OpenApi\Annotations as OA;
 
 /**
- * Provides information about the region and groups of an user.
+ * Provides information about the region of an user.
  *
  * @OA\Schema()
  */
 class UserRegionModel
 {
 	/**
-	 *  Identifier of region or group.
+	 *  Identifier of region.
 	 *
 	 * @OA\Property(example="1"))
 	 */
 	public int $id = 0;
 
 	/**
-	 * Name of region or group.
+	 * Name of region.
 	 *
 	 * @OA\Property(example="Sinsheim")
 	 */
@@ -54,9 +54,9 @@ class UserRegionModel
 	public static function createFrom(UserUnit $UserUnit)
 	{
 		$obj = new UserRegionModel();
-		$obj->id = $UserUnit->region->id;
-		$obj->name = $UserUnit->region->name;
-		$obj->classification = $UserUnit->region->type;
+		$obj->id = $UserUnit->unit->id;
+		$obj->name = $UserUnit->unit->name;
+		$obj->classification = $UserUnit->unit->type;
 		$obj->isResponsible = $UserUnit->isResponsible;
 
 		return $obj;

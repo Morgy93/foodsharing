@@ -16,7 +16,7 @@ class GeoCoordinate
 	/**
 	 * Longitude.
 	 */
-	public int $lon = 0;
+	public float $lon = 0;
 
 	/**
 	 * Generates from an array like a DB result

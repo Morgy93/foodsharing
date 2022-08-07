@@ -9,7 +9,7 @@ use Foodsharing\Modules\Core\DBConstants\Bell\BellType;
 use Foodsharing\Modules\Core\DBConstants\Foodsaver\Role;
 use Foodsharing\Modules\Core\DBConstants\Region\RegionOptionType;
 use Foodsharing\Modules\Core\DBConstants\Region\RegionPinStatus;
-use Foodsharing\Modules\Core\DBConstants\Region\Type;
+use Foodsharing\Modules\Core\DBConstants\Unit\UnitType;
 use Foodsharing\Modules\Core\DBConstants\Region\WorkgroupFunction;
 use Foodsharing\Modules\Foodsaver\FoodsaverGateway;
 use Foodsharing\Modules\Group\GroupFunctionGateway;
@@ -387,7 +387,7 @@ class RegionRestController extends AbstractFOSRestController
 			throw new NotFoundHttpException();
 		}
 
-		if ($region['type'] == Type::WORKING_GROUP) {
+		if ($region['type'] == UnitType::WORKING_GROUP) {
 			if (!$this->workGroupPermissions->mayEdit($region)) {
 				throw new AccessDeniedHttpException();
 			}
@@ -425,7 +425,7 @@ class RegionRestController extends AbstractFOSRestController
 			throw new NotFoundHttpException();
 		}
 
-		if ($region['type'] == Type::WORKING_GROUP) {
+		if ($region['type'] == UnitType::WORKING_GROUP) {
 			if (!$this->workGroupPermissions->mayEdit($region)) {
 				throw new AccessDeniedHttpException();
 			}
@@ -465,7 +465,7 @@ class RegionRestController extends AbstractFOSRestController
 			throw new NotFoundHttpException();
 		}
 
-		if ($region['type'] == Type::WORKING_GROUP) {
+		if ($region['type'] == UnitType::WORKING_GROUP) {
 			if (!$this->workGroupPermissions->mayEdit($region)) {
 				throw new AccessDeniedHttpException();
 			}

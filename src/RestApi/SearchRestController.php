@@ -4,7 +4,7 @@ namespace Foodsharing\RestApi;
 
 use Foodsharing\Lib\Session;
 use Foodsharing\Modules\Core\DBConstants\Region\RegionIDs;
-use Foodsharing\Modules\Core\DBConstants\Region\Type;
+use Foodsharing\Modules\Core\DBConstants\Unit\UnitType;
 use Foodsharing\Modules\Foodsaver\FoodsaverGateway;
 use Foodsharing\Modules\Region\RegionGateway;
 use Foodsharing\Modules\Search\SearchGateway;
@@ -91,7 +91,7 @@ class SearchRestController extends AbstractFOSRestController
 				$regions = array_column(array_filter(
 					$regionGateway->listForFoodsaver($session->id()),
 					function ($v) {
-						return in_array($v['type'], [Type::WORKING_GROUP, Type::CITY, Type::REGION, TYPE::BIG_CITY, TYPE::DISTRICT, Type::PART_OF_TOWN]);
+						return in_array($v['type'], [UnitType::WORKING_GROUP, UnitType::CITY, UnitType::REGION, UnitType::BIG_CITY, UnitType::DISTRICT, UnitType::PART_OF_TOWN]);
 					}
 				), 'id');
 				$ambassador = $regionGateway->getFsAmbassadorIds($session->id());
