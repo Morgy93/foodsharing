@@ -33,23 +33,6 @@ class UserProfileRestController extends AbstractFOSRestController
 	}
 
 	/**
-	 * DRAFT: Provides my user profile information.
-	 *
-	 * @OA\Tag(name="my")
-	 *
-	 * @Rest\Get("user/current/profile", requirements={"id" = "\d+"})
-	 * @OA\Response(
-	 * 		response="200",
-	 * 		description="Success.",
-	 *      @Model(type=ProfileModel::class)
-	 * )
-	 */
-	public function getMyUserProfile(): Response
-	{
-		return $this->handleView($this->view(new ProfileModel(), 200));
-	}
-
-	/**
 	 * DRAFT: Modifies the profile of user.
 	 *
 	 * @OA\Tag(name="user")
@@ -62,45 +45,6 @@ class UserProfileRestController extends AbstractFOSRestController
 	 * )
 	 */
 	public function patchUserProfile(int $id): Response
-	{
-		return $this->handleView($this->view(new ProfileModel(), 200));
-	}
-
-	/**
-	 * DRAFT: Modifies my user profile.
-	 *
-	 * @OA\Tag(name="my")
-	 *
-	 * @Rest\Patch("user/current/profile")
-	 * @OA\Response(
-	 * 		response="200",
-	 * 		description="Success.",
-	 *      @Model(type=ProfileModel::class)
-	 * )
-	 */
-	public function patchMyUserProfile(): Response
-	{
-		return $this->handleView($this->view(new ProfileModel(), 200));
-	}
-
-	/**
-	 * DRAFT: Allow user to request a change of essential user information.
-	 *
-	 * Name
-	 * Firstname
-	 * Gender? (Why?)
-	 * E-Mail?
-	 *
-	 * @OA\Tag(name="my")
-	 *
-	 * @Rest\Patch("user/current/profile/changeEssentialIdentifier")
-	 * @OA\Response(
-	 * 		response="200",
-	 * 		description="Success.",
-	 *      @Model(type=ProfileModel::class)
-	 * )
-	 */
-	public function postChangeEssentialSettings(): Response
 	{
 		return $this->handleView($this->view(new ProfileModel(), 200));
 	}

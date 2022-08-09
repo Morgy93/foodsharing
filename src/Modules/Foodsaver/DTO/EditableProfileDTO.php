@@ -2,18 +2,39 @@
 
 namespace Foodsharing\Modules\Foodsaver\DTO;
 
+use OpenApi\Annotations as OA;
+
 use Foodsharing\Modules\Core\DTO\Address;
 use Foodsharing\Modules\Core\DTO\GeoCoordinate;
+use Symfony\Component\Validator\Constraints as Assert;
+
 
 class EditableProfileDTO
 {
+	/**
+	 * User identifier in foodsharing
+	 */
 	public int $id = 0;
+
+	/**
+	 * First name of the user
+	 *
+	 * @OA\Property(example="Peter", maxLength=120)
+	 */
 	public string $firstname = '';
 	public string $aboutMePublic = '';
 	public string $lastname = '';
 	public string $homepage = '';
 	public string $photo = '';
 	public string $gender = '';
+
+	/**
+	 * Contact E-Mail address of foodsaver for notifications
+	 * 
+     * @Assert\Email(
+     *     message = "The email '{{ value }}' is not a valid email."
+     * )
+     */
 	public string $email = '';
 	public string $birthday = '';
 	public string $mobile = '';
