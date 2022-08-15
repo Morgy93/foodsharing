@@ -13,6 +13,7 @@
 Q: The architecture is not clear to me. Could you explain the basic layout?
 
 A: The main architecture goals came from this book "[Modernizing Legacy Applications In PHP](https://leanpub.com/mlaphp)", although we deviate in some place. There is also a great [1h video](https://www.youtube.com/watch?v=65NrzJ_5j58) describing rough details about what the book is talking about.
+May be the [Architecture pattern](system-architecture-pattern.md) can help.
 
 A few current architecture goals would be:
 

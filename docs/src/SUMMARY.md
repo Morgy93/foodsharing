@@ -29,6 +29,8 @@
   - [Beta Testing (DE)](beta-testing-de.md)
 
 # PHP Reference
+- [System architecture pattern](system-architecture-pattern.md)
+- [Permission and Roles](backend-permissions-roles.md)
 - [Modern PHP](php.md)
   - [PHP Structure](php-structure.md)
 - [Legacy PHP](php-legacy.md)
