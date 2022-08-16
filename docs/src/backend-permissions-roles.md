@@ -146,9 +146,27 @@ Examples:
 | Mailbox | [Update Mailbox members](https://gitlab.com/foodsharing-dev/foodsharing/-/blob/master/src/Permissions/MailboxPermissions.php#L45) | |
 | Mailbox | [Create new mailbox](https://gitlab.com/foodsharing-dev/foodsharing/-/blob/master/src/Permissions/MailboxPermissions.php#L50) | |
 | Mailbox | [View mailbox](https://gitlab.com/foodsharing-dev/foodsharing/-/blob/master/src/Permissions/MailboxPermissions.php#L55) | |
-| Forum | [??](https://gitlab.com/foodsharing-dev/foodsharing/-/blob/master/src/Permissions/ForumPermissions.php#L110) | |
-| FoodSharePoint | [??](https://gitlab.com/foodsharing-dev/foodsharing/-/blob/master/src/Permissions/FoodSharePointPermissions.php#L110) | |
-| Event | [??](https://gitlab.com/foodsharing-dev/foodsharing/-/blob/master/src/Permissions/EventPointPermissions.php#L110) | |
+| Forum | [Create new thread](https://gitlab.com/foodsharing-dev/foodsharing/-/blob/master/src/Permissions/ForumPermissions.php#L31) | |
+| Forum | [Create post to region](https://gitlab.com/foodsharing-dev/foodsharing/-/blob/master/src/Permissions/ForumPermissions.php#L55) | |
+| Forum | [View forum](https://gitlab.com/foodsharing-dev/foodsharing/-/blob/master/src/Permissions/ForumPermissions.php#L71) | |
+| Forum | [Create post to thread](https://gitlab.com/foodsharing-dev/foodsharing/-/blob/master/src/Permissions/ForumPermissions.php#L80) | |
+| Forum | [Administrate forum](https://gitlab.com/foodsharing-dev/foodsharing/-/blob/master/src/Permissions/ForumPermissions.php#L89) | |
+| Forum | [View thread](https://gitlab.com/foodsharing-dev/foodsharing/-/blob/master/src/Permissions/ForumPermissions.php#L110) | |
+| Forum | [View ambassador board](https://gitlab.com/foodsharing-dev/foodsharing/-/blob/master/src/Permissions/ForumPermissions.php#L126) | |
+| Forum | [**Unused**](https://gitlab.com/foodsharing-dev/foodsharing/-/blob/master/src/Permissions/ForumPermissions.php#L131) | |
+| Forum | [Delete post](https://gitlab.com/foodsharing-dev/foodsharing/-/blob/master/src/Permissions/ForumPermissions.php#L150) | |
+| Forum | [Delete thread](https://gitlab.com/foodsharing-dev/foodsharing/-/blob/master/src/Permissions/ForumPermissions.php#L162) | |
+| FoodSharePoint | [Allow follow foodsharepoint](https://gitlab.com/foodsharing-dev/foodsharing/-/blob/master/src/Permissions/FoodSharePointPermissions.php#L26) | |
+| FoodSharePoint | [Allow unfollow foodsharepoint](https://gitlab.com/foodsharing-dev/foodsharing/-/blob/master/src/Permissions/FoodSharePointPermissions.php#L31) | |
+| FoodSharePoint | [Create new foodsharepoint](https://gitlab.com/foodsharing-dev/foodsharing/-/blob/master/src/Permissions/FoodSharePointPermissions.php#L37) | |
+| FoodSharePoint | [Modify foodsharepoint](https://gitlab.com/foodsharing-dev/foodsharing/-/blob/master/src/Permissions/FoodSharePointPermissions.php#L51) | |
+| FoodSharePoint | [Delete foodsharepoint](https://gitlab.com/foodsharing-dev/foodsharing/-/blob/master/src/Permissions/FoodSharePointPermissions.php#L63) | |
+| FoodSharePoint | [Accept new foodsharepoint](https://gitlab.com/foodsharing-dev/foodsharing/-/blob/master/src/Permissions/FoodSharePointPermissions.php#L68) | |
+| FoodSharePoint | [Delete foodsharepoint wall post](https://gitlab.com/foodsharing-dev/foodsharing/-/blob/master/src/Permissions/FoodSharePointPermissions.php#L73) | |
+| Event | [Edit event](https://gitlab.com/foodsharing-dev/foodsharing/-/blob/master/src/Permissions/EventPermissions.php#L16) | |
+| Event | [View event](https://gitlab.com/foodsharing-dev/foodsharing/-/blob/master/src/Permissions/EventPermissions.php#L28) | |
+| Event | [Join event](https://gitlab.com/foodsharing-dev/foodsharing/-/blob/master/src/Permissions/EventPermissions.php#L40) | |
+| Event | [Create event wall post](https://gitlab.com/foodsharing-dev/foodsharing/-/blob/master/src/Permissions/EventPermissions.php#L45) | |
 | Content | [??](https://gitlab.com/foodsharing-dev/foodsharing/-/blob/master/src/Permissions/ContentPermissions.php#L110) | |
 | Blog | [??](https://gitlab.com/foodsharing-dev/foodsharing/-/blob/master/src/Permissions/BlogPermissions.php#L110) | |
 | Basket | [??](https://gitlab.com/foodsharing-dev/foodsharing/-/blob/master/src/Permissions/BasketPermissions.php#L110) | |
