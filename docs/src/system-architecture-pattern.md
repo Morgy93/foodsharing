@@ -78,27 +78,34 @@ The software is structured by following pattern.
 
 #### RestAPI
 
-The RestAPI maps the internal business logic to a self describing API, so that the other developer and the web interface can use it.
+The RestAPI maps the business logic to a self describing API, so that the other API users like android app developer and the web interface developer understand the meaning.
+
 [] Add link to guideline for RestAPI expectations (OpenAPI doc, resource, and actions via HTTP methods)
+
+The implementation details can be found in [chapter controllers](php-controllers.md)
 
 #### Transactions
 
 A transaction service is a part of the system which maps user input data into the representation like the database requires. Therefore, it may use gateways or other services to combine them into a business logic.
 A transaction does not check the permissions, so that other services can use it with users which may do not have the permissions.
 
+For details about gateways can be found in the [section](php-transactions.md).
+
 #### Gateways
 
 A gateway is the abstraction for the database table. It is used to CRUD related methods. 
 The gateway should encapsulate all database-specific parts, so that a replacement by another database is possible or that the developer knows that all SQL statements are inside these classes.
+
+For details about gateways can be found in the [section](php-gateways.md).
 
 [] Provide examples for DTO or selects with data from different tables.
 [] Add relation between Insert/Update/delete in Gateway (it should be only one owner and one gateway should not represent multiply tables)
 
 #### Permissions
 
-A permission class provides functions to check current user permission for an RestAPI action.
+A permission class provides functions to check current user permission for an RestAPI action or other controllers.
 It ensures that the user is restricted to the possibilities the user role or group should have.
-The permission can use services or the session to access imported information.
+The permission are a kind of transaction class and can use services, gateways or the session to access imported information.
 The [chapter roles and permissions](Permissions-and-Roles) gives an overview about the existing permissions.
 
 #### Sessions

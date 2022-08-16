@@ -19,6 +19,5 @@ If you are looking for a general description of our PHP setup, please check [PHP
 {{ #include php-transactions.md }}
 {{ #include php-dto.md }}
 {{ #include php-controllers.md }}
-{{ #include php-services.md }}
 {{ #include php-helpers.md }}
 {{ #include php-routing.md }}
