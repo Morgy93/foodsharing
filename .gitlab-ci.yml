@@ -170,7 +170,7 @@ build:backend:
   - if: $CI_PIPELINE_SOURCE == "schedule"
     when: never
   interruptible: true
-  image: registry.gitlab.com/foodsharing-dev/images/php:8.0.13
+  image: registry.gitlab.com/foodsharing-dev/images/php:8.1.8
   stage: build
   script:
     - composer validate --no-check-all --no-check-publish
@@ -229,7 +229,7 @@ test:backend:
     FF_NETWORK_PER_BUILD: 1
     REDIS_HOST: redis
     FS_ENV: test
-  image: registry.gitlab.com/foodsharing-dev/images/php:8.0.13
+  image: registry.gitlab.com/foodsharing-dev/images/php:8.1.8
   services:
 # Note: Gitlab runner will mark a lot of service healthchecks as failed. This is a bug that will partly be addressed with the upcoming release of the gitlab-runner. It is also due to our configuration, e.g. the chat container not exposing ports but listed as a service. Unfortunately, health check cannot be disabled.
     - name: redis:6.0.8-alpine
