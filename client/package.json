@@ -14,7 +14,7 @@
   },
   "dependencies": {
     "@fortawesome/fontawesome-free": "^5.15.3",
-    "@sentry/vue": "~5.30.0",
+    "@sentry/vue": "~6.19.7",
     "autosize": "^4.0.2",
     "bootstrap-vue": "^2.20.1",
     "copy-webpack-plugin": "^6.4.1",
