@@ -48,7 +48,7 @@
       </a>
       <a
         v-if="permissions.manageMailboxes"
-        :href="$url('email')"
+        :href="$url('mailboxManage')"
         role="menuitem"
         class="dropdown-item dropdown-action"
       >

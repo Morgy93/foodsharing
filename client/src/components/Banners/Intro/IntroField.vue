@@ -1,12 +1,12 @@
 <template>
   <div
     v-if="user"
-    class="intro alert alert-primary d-flex align-items-center"
+    class="introfield"
   >
     <a
       v-if="user"
       :href="$url('profile', user.id)"
-      class="img-thumbnail position-relative"
+      class="introfield__avatar"
     >
       <Avatar
         :url="getAvatar"
@@ -15,29 +15,29 @@
         style="max-width: 50px;"
       />
     </a>
-    <div class="ml-3 d-flex flex-column">
+    <div class="introfield__content">
       <h3
-        class="testing-intro-field"
+        class="introfield__title testing-intro-field"
         v-html="viewIsMD ? $i18n('dashboard.greeting', {name: user.firstname}) : $i18n('dashboard.greeting_short', {name: user.firstname})"
       />
       <p
         v-if="!isFoodsaver && !getHomeRegionName"
-        class="mb-0"
+        class="introfield__description"
         v-html="$i18n('dashboard.foodsharer')"
       />
       <p
         v-if="!getHomeRegionName && stats.count > 0 && stats.weight > 0"
-        class="mb-0"
+        class="introfield__description"
         v-html="$i18n('dashboard.foodsaver_amount', {pickups: stats.count, weight: stats.weight})"
       />
       <p
         v-if="getHomeRegionName && stats.count > 0 && stats.weight > 0"
-        class="mb-0"
+        class="introfield__description"
         v-html="$i18n('dashboard.full_subline', {pickups: stats.count, weight: stats.weight, region: getHomeRegionName})"
       />
       <p
         v-else-if="isFoodsaver && getHomeRegionName"
-        class="mb-0"
+        class="introfield__description"
         v-html="$i18n('dashboard.homeRegion', {region: getHomeRegionName})"
       />
     </div>
@@ -53,7 +53,6 @@ import Avatar from '@/components/Avatar'
 import MediaQueryMixin from '@/mixins/MediaQueryMixin'
 
 export default {
-  name: 'IntroField',
   components: {
     Avatar,
   },
@@ -90,3 +89,47 @@ export default {
   },
 }
 </script>
+
+<style lang="scss" scoped>
+@import "@/scss/bootstrap-theme.scss";
+
+.introfield {
+  @extend .alert;
+
+  color: var(--fs-color-primary-500);
+  background-color: var(--fs-color-primary-200);
+  border-color: var(--fs-color-primary-300);
+
+  display: flex;
+  align-items: center;
+}
+
+.introfield__avatar {
+  @extend .img-thumbnail;
+  margin-right: 1rem;
+}
+
+.introfield__title {
+  margin-top: 0;
+  margin-bottom: .25rem;
+}
+
+.introfield__description {
+  margin-bottom: 0;
+  @media (max-width: 576px) {
+    display: none;
+  }
+}
+
+.errorfield__link {
+  @extend .btn;
+  @extend .btn-sm;
+  @extend .btn-danger;
+
+  font-weight: 600;
+
+  &:not(:last-child) {
+    margin-right: .5rem;
+  }
+}
+</style>

@@ -34,7 +34,7 @@ class Caching
 				header('Content-Type: application/json');
 			}
 			echo $page;
-			exit();
+			exit;
 		} else {
 			$this->metrics->addPageStatData(['cached' => 0]);
 		}

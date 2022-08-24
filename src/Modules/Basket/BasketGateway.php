@@ -140,9 +140,9 @@ class BasketGateway extends BaseGateway
 					fs.id = :foodsaver_id
 			';
 		if ('0' === $basket['fsf_id'] && $fs = $this->db->fetch(
-				$stm,
-				[':foodsaver_id' => $basket['foodsaver_id']]
-			)) {
+			$stm,
+			[':foodsaver_id' => $basket['foodsaver_id']]
+		)) {
 			$basket = array_merge($basket, $fs);
 		}
 

@@ -65,7 +65,7 @@ services:
             mailboxPassword: !php/const BOUNCE_IMAP_PASS
             port: !php/const BOUNCE_IMAP_PORT
             service: 'imap'
-            serviceOption: 'tls'
+            serviceOption: !php/const BOUNCE_IMAP_SERVICE_OPTION
             boxname: 'INBOX'
             maxMessages: 10000
             verbose: 0

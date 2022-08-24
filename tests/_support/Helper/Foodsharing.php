@@ -490,6 +490,27 @@ class Foodsharing extends \Codeception\Module\Db
 		return $params;
 	}
 
+	public function addStoreLog($store_id, $foodsaverId_a, $foodsaverId_p, $action, $extra_params = [])
+	{
+		$date = $this->faker->date('Y-m-d H:i:s');
+
+		$params = array_merge([
+			'store_id' => $store_id,
+			'fs_id_a' => $foodsaverId_a,
+			'fs_id_p' => $foodsaverId_p,
+			'action' => $action,
+			'date_activity' => $date
+		], $extra_params);
+
+		$params['date_reference'] = $this->toDateTime($params['date_reference']);
+		$params['date_activity'] = $this->toDateTime($params['date_activity']);
+
+		$id = $this->haveInDatabase('fs_store_log', $params);
+		$params['id'] = $id;
+
+		return $params;
+	}
+
 	public function addStoreFoodType($extra_params = [])
 	{
 		$params = array_merge([
@@ -779,7 +800,7 @@ class Foodsharing extends \Codeception\Module\Db
 	public function createFoodSharePoint($user, $bezirk = null, $extra_params = [])
 	{
 		if ($bezirk === null) {
-			$bezirk = ($this->createRegion())['id'];
+			$bezirk = $this->createRegion()['id'];
 		}
 		$params = array_merge([
 			'bezirk_id' => $bezirk,

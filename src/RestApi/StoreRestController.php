@@ -13,9 +13,11 @@ use Foodsharing\Modules\Store\StoreGateway;
 use Foodsharing\Modules\Store\StoreTransactions;
 use Foodsharing\Modules\Store\TeamStatus as TeamMembershipStatus;
 use Foodsharing\Permissions\StorePermissions;
+use Foodsharing\RestApi\Models\Store\StoreStatusForMemberModel;
 use FOS\RestBundle\Controller\AbstractFOSRestController;
 use FOS\RestBundle\Controller\Annotations as Rest;
 use FOS\RestBundle\Request\ParamFetcher;
+use Nelmio\ApiDocBundle\Annotation\Model;
 use OpenApi\Annotations as OA;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\Exception\AccessDeniedHttpException;
@@ -82,23 +84,42 @@ class StoreRestController extends AbstractFOSRestController
 	}
 
 	/**
+	 * Provides a list of all foodsaver related stores and the next picks status.
+	 *
 	 * @OA\Tag(name="stores")
+	 * @OA\Tag(name="user")
+	 *
+	 * @OA\Response(
+	 * 		response="200",
+	 * 		description="Success.",
+	 *      @OA\JsonContent(
+	 *        type="array",
+	 *        @OA\Items(ref=@Model(type=StoreStatusForMemberModel::class))
+	 *      )
+	 * )
+	 * @OA\Response(response="204", description="No foodsaver related stores found.")
+	 * @OA\Response(response="401", description="Not logged in")
 	 *
 	 * @Rest\Get("user/current/stores")
 	 */
-	public function getFilteredStoresForUserAction(): Response
+	public function getListOfStoreStatusForCurrentFoodsaver(): Response
 	{
 		if (!$this->session->may()) {
 			throw new UnauthorizedHttpException('', self::NOT_LOGGED_IN);
 		}
 
-		$filteredStoresForUser = $this->storeTransactions->getFilteredStoresForUser($this->session->id());
+		$listOfStoreStatus = $this->storeTransactions->listAllStoreStatusForFoodsaver($this->session->id());
 
-		if ($filteredStoresForUser === []) {
+		if ($listOfStoreStatus === []) {
 			return $this->handleView($this->view([], 204));
 		}
 
-		return $this->handleView($this->view($filteredStoresForUser, 200));
+		$store_team_memberships = [];
+		foreach ($listOfStoreStatus as $storeStatus) {
+			$store_team_memberships[] = new StoreStatusForMemberModel($storeStatus);
+		}
+
+		return $this->handleView($this->view($store_team_memberships, 200));
 	}
 
 	/**

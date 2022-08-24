@@ -39,7 +39,7 @@ class SettingsXhr extends Control
 	{
 		if (!$this->session->may()) {
 			echo '0';
-			exit();
+			exit;
 		}
 
 		$dia = new XhrDialog();

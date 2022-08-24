@@ -74,23 +74,23 @@ class WallPostXhr extends Control
 		$message = trim(strip_tags($data['msg'] ?? ''));
 
 		if (!empty($message) && $post_id = $this->wallPostGateway->addPost(
-				$message,
-				$this->session->id(),
-				$this->table,
-				$this->id
-			)) {
+			$message,
+			$this->session->id(),
+			$this->table,
+			$this->id
+		)) {
 			echo json_encode([
 				'status' => 1,
 				'message' => $this->translator->trans('wall.created'),
 			]);
-			exit();
+			exit;
 		}
 
 		echo json_encode([
 			'status' => 0,
 			'message' => $this->translator->trans('wall.error-create'),
 		]);
-		exit();
+		exit;
 	}
 
 	public function post()
@@ -194,7 +194,7 @@ class WallPostXhr extends Control
 
 		</head><body onload="init();"></body></html>';
 
-		exit();
+		exit;
 	}
 
 	public function attach_allow(string $filename): bool

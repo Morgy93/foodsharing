@@ -50,6 +50,7 @@ define('BOUNCE_IMAP_HOST', null);
 define('BOUNCE_IMAP_USER', null);
 define('BOUNCE_IMAP_PASS', null);
 define('BOUNCE_IMAP_PORT', null);
+define('BOUNCE_IMAP_SERVICE_OPTION', null);
 
 if (!defined('ROOT_DIR')) {
 	define('ROOT_DIR', './');

@@ -30,6 +30,7 @@
 - On mobile devices the forum profile image is smaller !2237 @sefn
 - Color set is unified and removed vanilla bootstrap !2293 !2303 @sefn
 - The content of the footer is now dynamic !2297 @sefn
+- RestAPI `/api/user/current/stores` Provides memberstatus and all related stores of user !2318 @KoeMai
 
 ## Bugfixes
 - When going back during registration, email and password are unchanged. !2184 @AntonBallmaier
@@ -55,6 +56,8 @@
 - A wall post with multiple lines will use the complete available size to display its text !2277 @NINI1988
 - Restrictions on the view of the store list in profile !2273 @chriswalg
 - Show only chat link if user is member in store !2304 @chriswalg
+- Fix XSS Vulnerability at login page !2351 #1252 @stcz
+- Commitmentstat correctly counts short term sign ups and shows handshake symbol for shared food baskets. Fix Speed. !2353 !2359 @fs_k 
 
 ## Refactoring
 - Currently running events are shown within the event overview until their end !2162 @merhoc
@@ -91,6 +94,11 @@
 - Add a workaround to upload files to the startpage. #1245 !2233 @stcz
 - Replace SwiftMailer with Symfony mailer #1188 !2247 @alex.simm
 - Updated php-cs-fixer to 3.8 !2274 @alex.simm
+- Add a variable to set the connection method for bounce mail processing !2350 @stcz
+- Some small code cleanup surrounding `Mem` @\_fridtjof_ !2357
+
+## Development documetation
+- Add generator for database documentation !2275 @KoeMai
 
 # Release "Heidelbeere", 2022-05-01
 

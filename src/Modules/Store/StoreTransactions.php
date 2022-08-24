@@ -8,6 +8,7 @@ use Foodsharing\Lib\Session;
 use Foodsharing\Modules\Bell\BellGateway;
 use Foodsharing\Modules\Bell\DTO\Bell;
 use Foodsharing\Modules\Core\DBConstants\Bell\BellType;
+use Foodsharing\Modules\Core\DBConstants\Store\CooperationStatus;
 use Foodsharing\Modules\Core\DBConstants\Store\Milestone;
 use Foodsharing\Modules\Core\DBConstants\Store\StoreLogAction;
 use Foodsharing\Modules\Core\DBConstants\StoreTeam\MembershipStatus;
@@ -16,11 +17,13 @@ use Foodsharing\Modules\Message\MessageGateway;
 use Foodsharing\Modules\Region\RegionGateway;
 use Foodsharing\Modules\Store\DTO\CreateStoreData;
 use Foodsharing\Modules\Store\DTO\Store;
-use Foodsharing\Modules\Store\DTO\StoreForTopbarMenu;
+use Foodsharing\Modules\Store\DTO\StoreStatusForMember;
 use Symfony\Contracts\Translation\TranslatorInterface;
 
 class StoreTransactions
 {
+	public const DEFAULT_USER_SHOWN_STORE_COOPERATION_STATE = [CooperationStatus::UNCLEAR, CooperationStatus::NO_CONTACT, CooperationStatus::IN_NEGOTIATION, CooperationStatus::COOPERATION_STARTING, CooperationStatus::COOPERATION_ESTABLISHED, CooperationStatus::PERMANENTLY_CLOSED];
+
 	private MessageGateway $messageGateway;
 	private PickupGateway $pickupGateway;
 	private StoreGateway $storeGateway;
@@ -279,21 +282,29 @@ class StoreTransactions
 	}
 
 	/**
-	 * @return StoreForTopbarMenu[]
+	 * @return StoreStatusForMember[]
 	 */
-	public function getFilteredStoresForUser(?int $userId): array
+	public function listAllStoreStatusForFoodsaver(?int $foodsaverId): array
 	{
-		if ($userId === null) {
+		if ($foodsaverId === null) {
 			return [];
 		}
-		$filteredStoresForUser = $this->storeGateway->listFilteredStoresForFoodsaver($userId);
+		$results = $this->storeGateway->listAllStoreTeamMembershipsForFoodsaver($foodsaverId, StoreTransactions::DEFAULT_USER_SHOWN_STORE_COOPERATION_STATE);
+		$storeTeamMemberships = [];
+		foreach ($results as $resultRow) {
+			$item = new StoreStatusforMember();
+			$item->store = $resultRow->store;
+			$item->isManaging = $resultRow->isManaging;
+			$item->membershipStatus = $resultRow->membershipStatus;
+			if ($item->membershipStatus == MembershipStatus::MEMBER) {
+				// add info about the next free pickup slot to the store
+				$item->pickupStatus = $this->getAvailablePickupStatus($item->store->id);
+			}
 
-		foreach ($filteredStoresForUser as $store) {
-			// add info about the next free pickup slot to the store
-			$store->pickupStatus = $this->getAvailablePickupStatus($store->id);
+			$storeTeamMemberships[] = $item;
 		}
 
-		return $filteredStoresForUser;
+		return $storeTeamMemberships;
 	}
 
 	public function requestStoreTeamMembership(int $storeId, int $userId): void

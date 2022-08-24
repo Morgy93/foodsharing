@@ -27,7 +27,7 @@ class BasketTransactions
 	 * @param int $lifetime lifetime in days
 	 */
 	public function addBasket(string $description, string $photo, ?array $contactTypes, ?string $tel, ?string $handy,
-			?int $weight, ?float $lat, ?float $lon, ?int $lifetime): array
+		?int $weight, ?float $lat, ?float $lon, ?int $lifetime): array
 	{
 		// parse contact types and phone numbers
 		$contactString = '1';
@@ -55,8 +55,8 @@ class BasketTransactions
 
 		// create basket
 		$basketId = $this->basketGateway->addBasket($description, '', $phone, $contactString,
-				$weight, 0, $lat, $lon, $lifetime * 60 * 60 * 24,
-				$this->session->user('bezirk_id'), $this->session->id()
+			$weight, 0, $lat, $lon, $lifetime * 60 * 60 * 24,
+			$this->session->user('bezirk_id'), $this->session->id()
 		);
 		if ($basketId === 0) {
 			return [];

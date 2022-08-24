@@ -91,12 +91,12 @@ class BlogView extends View
 	public function newsListItem(array $news): string
 	{
 		return '<div class="news-post"><h2><a href="/?page=blog&sub=read&id=' . $news['id'] . '">' . $news['name'] . '</a></h2><p class="small"><span class="time">' . $this->timeHelper->niceDate(
-				$news['time_ts']
-			) . '</span><span class="name"> von ' . $news['fs_name'] . '</span></p>' . $this->getImage(
-				$news, [self::PICTURE_PREVIEW_WIDTH, self::PICTURE_PREVIEW_HEIGHT]
-			) . '<p>' . $this->routeHelper->autolink(
-				$news['teaser']
-			) . '</p><p><a class="button" href="/?page=blog&sub=read&id=' . $news['id'] . '">
+			$news['time_ts']
+		) . '</span><span class="name"> von ' . $news['fs_name'] . '</span></p>' . $this->getImage(
+			$news, [self::PICTURE_PREVIEW_WIDTH, self::PICTURE_PREVIEW_HEIGHT]
+		) . '<p>' . $this->routeHelper->autolink(
+			$news['teaser']
+		) . '</p><p><a class="button" href="/?page=blog&sub=read&id=' . $news['id'] . '">
 			' . $this->translator->trans('blog.read') . '
 			</a></p><div class="clear"></div></div>';
 	}

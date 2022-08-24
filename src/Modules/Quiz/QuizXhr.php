@@ -505,25 +505,25 @@ class QuizXhr extends Control
 				 * store params in the quiz array to save users answers
 				 */
 				if (isset($params['qanswers'])) {
-					$questions[($quizIndex - 1)]['answers'] = $params['qanswers'];
+					$questions[$quizIndex - 1]['answers'] = $params['qanswers'];
 				}
 
 				/*
 				 * check if there are 0 point for the questions its a joke
 				 */
-				if ($questions[($quizIndex - 1)]['fp'] == 0) {
+				if ($questions[$quizIndex - 1]['fp'] == 0) {
 					$was_a_joke = true;
 				}
 
 				/*
 				 * store the time how much time has the user need
 				 */
-				$questions[($quizIndex - 1)]['userduration'] = (time() - (int)$this->session->get('quiz-quest-start'));
+				$questions[$quizIndex - 1]['userduration'] = (time() - (int)$this->session->get('quiz-quest-start'));
 
 				/*
 				 * has store noco ;) its the value when the user marked that no answer is correct
 				 */
-				$questions[($quizIndex - 1)]['noco'] = (int)$_GET['noco'];
+				$questions[$quizIndex - 1]['noco'] = (int)$_GET['noco'];
 
 				/*
 				 * And store it all back to the session
@@ -555,7 +555,7 @@ class QuizXhr extends Control
 				if ($_GET['special'] == 'result') {
 					$this->quizSessionGateway->updateQuizSession($this->session->get('quiz-session'), $questions, $quizIndex);
 
-					return $this->resultNew($questions[($quizIndex - 1)], $dia->getId());
+					return $this->resultNew($questions[$quizIndex - 1], $dia->getId());
 				}
 			}
 
@@ -595,7 +595,7 @@ class QuizXhr extends Control
 						$dia->addOpt('width', 1000);
 						$dia->addOpt('height', '($(window).height()-40)', false);
 						$dia->addOpt('position', 'center');
-						$dia->setTitle('Frage ' . ($quizIndex) . ' / ' . count($questions));
+						$dia->setTitle('Frage ' . $quizIndex . ' / ' . count($questions));
 
 						$dia->addContent($this->view->quizQuestion($question, $answers));
 

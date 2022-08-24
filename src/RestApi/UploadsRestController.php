@@ -72,7 +72,7 @@ class UploadsRestController extends AbstractFOSRestController
 
 		if ($request->headers->get('if_modified_since')) {
 			http_response_code(304);
-			exit();
+			exit;
 		}
 
 		// check parameters
@@ -149,7 +149,7 @@ class UploadsRestController extends AbstractFOSRestController
 				header('Content-Type: application/octet-stream');
 		}
 		readfile($filename);
-		exit();
+		exit;
 	}
 
 	/**

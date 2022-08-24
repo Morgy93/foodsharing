@@ -154,7 +154,17 @@ export default {
 
         const urlParams = new URLSearchParams(window.location.search)
         if (urlParams.has('ref')) {
-          window.location.href = urlParams.get('ref')
+          try {
+            const url = new URL(urlParams.get('ref'), window.location.origin)
+            if (url.protocol === window.location.protocol && url.host === window.location.host) {
+              window.location.href = url
+            } else {
+              throw new Error('Invalid ref parameter provided')
+            }
+          } catch (err) {
+            console.error('Invalid ref parameter provided')
+            window.location.href = this.$url('dashboard')
+          }
         } else {
           window.location.href = this.$url('dashboard')
         }

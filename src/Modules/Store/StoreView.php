@@ -71,7 +71,7 @@ class StoreView extends View
 			]]);
 	}
 
-	public function betrieb_form($region = false, $page = '', $lebensmittel_values, $chains, $categories, $status, $weightArray)
+	public function betrieb_form($lebensmittel_values, $chains, $categories, $status, $weightArray, $region = false, $page = '')
 	{
 		global $g_data;
 

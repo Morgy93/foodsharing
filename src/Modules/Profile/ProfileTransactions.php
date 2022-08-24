@@ -47,7 +47,7 @@ class ProfileTransactions
 		);
 		$this->bellGateway->addBell($receiverId, $bell);
 
-		return $this->profileGateway->giveBanana($receiverId, $message, $giverId);
+		return $this->profileGateway->giveBanana($receiverId, $giverId, $message);
 	}
 
 	/**

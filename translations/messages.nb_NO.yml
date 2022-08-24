@@ -433,7 +433,7 @@ basket:
   publish: Publisere matkurv
   add: Legg til matkurven
   created: Publisert <strong>{date}</strong>
-  requested_by: forespurt av
+  requested_by: forespurt av {name}
   no_requests: Ingen henvendelser så langt
   request: Be om matkurv
   request-fs: Be om matkurv på vår hjemmeside for foodsharing
@@ -551,9 +551,8 @@ dashboard:
     info: Hvis du ikke lenger ønsker å motta push-varsler, kan du når som helst deaktivere
       dem i innstillingene.
   deleted_user: slettet bruker
-  foodsaver_amount: "Du hentet dagligvarer <strong style=\"white-space:nowrap\">{pickups}</strong>\
-    \ ganger\nog dermed spart <strong style=\"white-space:nowrap\">{weight}&thinsp;kg</strong>\
-    \ mat.\n"
+  foodsaver_amount: "Du hentet dagligvarer <b>{pickups}</b> ganger og dermed spart\
+    \ <b>{weight} kg</b> mat."
   event: Neste arrangement
   no_more_updates_mailbox: Ingen flere postboksmeldinger
   no_more_updates_friendWall: Ingen flere statusmeldinger
@@ -609,9 +608,9 @@ profile:
   notes:
     title: Notater om {name}
     bread: Merknader
-    info: "Bruk denne funksjonen nøye.\nDet skal bidra til å synliggjøre prosesser\
-      \ for å spare oss for arbeid.\nPersonlig eller dømmende informasjon om en person\
-      \ har ingen plass her.\nVær saklig.\n"
+    info: "Bruk denne funksjonen nøye. Det skal bidra til å synliggjøre prosesser\
+      \ for å spare oss for arbeid. Personlig eller dømmende informasjon om en person\
+      \ har ingen plass her. Vær saklig."
   history:
     lostVerification: de-verifisert
     wasVerified: verifisert

@@ -168,10 +168,10 @@ export default {
   /**
    * Calcucates the difference between two dates in months
    * @param {Date} date
-   * @returns {Number} difference between date and now in months
+   * @returns {Number} difference between now and a date in months
    */
   getDifferenceToNowInMonths (date = new Date()) {
-    return Math.trunc((new Date(date) - new Date()) / this.MonthsToMs())
+    return Math.trunc((new Date() - new Date(date)) / this.MonthsToMs())
   },
 
   /**

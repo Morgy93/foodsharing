@@ -76,7 +76,7 @@ class QuizControl extends Control
 	private function goBack()
 	{
 		header('Location: ' . $_SERVER['HTTP_REFERER']);
-		exit();
+		exit;
 	}
 
 	private function listQuiz($quizId): void

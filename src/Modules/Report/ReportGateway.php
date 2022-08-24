@@ -193,9 +193,9 @@ class ReportGateway extends BaseGateway
 
 		$stm = 'SELECT id, name FROM fs_betrieb WHERE id = :store_id';
 		if ($report['betrieb_id'] > 0 && $betrieb = $this->db->fetch(
-				$stm,
-				[':store_id' => (int)$report['betrieb_id']]
-			)) {
+			$stm,
+			[':store_id' => (int)$report['betrieb_id']]
+		)) {
 			$report['betrieb'] = $betrieb;
 		}
 

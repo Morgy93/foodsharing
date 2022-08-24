@@ -34,7 +34,7 @@ class StoreXhr extends Control
 		parent::__construct();
 
 		if (!$this->session->may('fs')) {
-			exit();
+			exit;
 		}
 	}
 
@@ -136,7 +136,7 @@ class StoreXhr extends Control
 
 	public function bubble(): array
 	{
-		$storeId = $_GET['id'];
+		$storeId = intval($_GET['id']);
 		if ($store = $this->storeGateway->getMyStore($this->session->id(), $storeId)) {
 			$dia = $this->buildBubbleDialog($store, $storeId);
 
@@ -157,12 +157,12 @@ class StoreXhr extends Control
 		$dia = new XhrDialog();
 		$dia->setTitle($store['name']);
 		$dia->addContent($this->view->bubble($store));
-		if (($store['inTeam']) || $this->storePermissions->mayEditStore($storeId)) {
+		if ($store['inTeam'] || $this->storePermissions->mayEditStore($storeId)) {
 			$dia->addButton($this->translator->trans('store.go'), 'goTo(\'/?page=fsbetrieb&id=' . (int)$store['id'] . '\');');
 		}
 		if ($store['team_status'] != 0 && (!$store['inTeam'] && (!$store['pendingRequest']))) {
 			$dia->addButton($this->translator->trans('store.request.request'), 'wantToHelpStore(' . (int)$store['id'] . ',' . (int)$this->session->id() . ');return false;');
-		} elseif ($store['team_status'] != 0 && (!$store['inTeam'] && ($store['pendingRequest']))) {
+		} elseif ($store['team_status'] != 0 && (!$store['inTeam'] && $store['pendingRequest'])) {
 			$dia->addButton($this->translator->trans('store.request.withdraw'), 'withdrawStoreRequest(' . (int)$store['id'] . ',' . (int)$this->session->id() . ');return false;');
 		}
 		$modal = false;

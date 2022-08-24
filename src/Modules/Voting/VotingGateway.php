@@ -264,7 +264,7 @@ class VotingGateway extends BaseGateway
 	 * @throws Exception
 	 */
 	public function listActiveRegionMemberIds(int $regionId, int $minRole, bool $onlyVerified = true, bool $restrict_homeDistrict = false,
-											  bool $includeSubregions = true): array
+		bool $includeSubregions = true): array
 	{
 		$verifiedCondition = $onlyVerified ? 'AND fs.verified = 1' : '';
 

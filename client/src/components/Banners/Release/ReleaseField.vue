@@ -1,49 +1,43 @@
 <template>
   <div
     v-if="!isSet || isNew"
-    class="information-field alert alert-danger d-flex justify-content-between"
+    class="releasefield"
   >
-    <div class="flex-grow-1 d-flex flex-column justify-content-between">
-      <div class="alignt-self-start">
+    <i
+      class="releasefield__icon fas fa-magic"
+    />
+    <div class="releasefield__content">
+      <div class="releasefield__content-wrapper">
         <h4
-          v-if="version"
-          v-html="$i18n(`releases.${version}`)"
+          v-if="ReleaseData.version"
+          class="releasefield__title"
+          v-html="$i18n(`releases.${ReleaseData.version}`)"
         />
       </div>
-      <div
-        v-if="links.length > 0"
-        class="d-flex align-items-center my-2"
-      >
+      <div class="releasefield__links">
         <a
-          v-for="(link, key) in links"
-          :key="key"
-          class="btn btn-sm btn-danger font-weight-bold align-self-start mr-2"
-          :href="link.urlShortHand ? $url(link.urlShortHand) : link.href"
-          v-html="$i18n(link.text)"
+          class="releasefield__link"
+          :href="$url('release_notes')"
+          v-html="$i18n('menu.entry.release-notes')"
         />
       </div>
     </div>
     <i
-      v-if="isCloseable"
-      class="close-interaction fas fa-times"
+      class="releasefield__close fas fa-times"
       @click="close"
     />
   </div>
 </template>
 
 <script>
+import ReleaseData from './Release.json'
+
 export default {
-  props: {
-    type: { type: String, default: 'error' },
-    tag: { type: String, default: 'release_notes' },
-    version: { type: String, default: '' },
-    isTimeBased: { type: Boolean, default: true },
-    time: { type: String, default: '' },
-    isCloseable: { type: Boolean, default: true },
-    links: { type: Array, default: () => [{ urlShortHand: 'release_notes', text: 'menu.entry.release-notes' }] },
-  },
   data () {
-    return {}
+    return {
+      ReleaseData,
+      tag: 'release_notes',
+    }
   },
   computed: {
     isSet () {
@@ -68,13 +62,8 @@ export default {
   },
   methods: {
     setSeen () {
-      if (this.isCloseable) {
-        localStorage.setItem(this.tag, JSON.stringify(true))
-
-        if (this.isTimeBased) {
-          localStorage.setItem(`${this.tag}_time`, JSON.stringify(new Date()))
-        }
-      }
+      localStorage.setItem(this.tag, JSON.stringify(true))
+      localStorage.setItem(`${this.tag}_time`, JSON.stringify(new Date()))
     },
     close () {
       this.setSeen()
@@ -90,32 +79,57 @@ export default {
 </script>
 
 <style lang="scss" scoped>
-.information-field {
-  min-height: 100px;
+@import "@/scss/bootstrap-theme.scss";
+
+.releasefield {
+  @extend .alert;
+
+  color: var(--fs-color-info-700);
+  background-color: var(--fs-color-info-200);
+  border-color: var(--fs-color-info-300);
+
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
 }
 
-.alert-broadcast {
-  min-height: 0;
-  align-content: center;
+.releasefield__icon {
+  font-size: 2.25rem;
+  min-width: 3rem;
+  margin-right: 1rem;
+  text-align: center;
 }
 
-.info-icon {
-  font-size: 3rem;
+.releasefield__content {
+  margin-right: auto;
 }
 
-.close-interaction {
-  cursor: pointer;
+.releasefield__title {
+  margin-top: 0;
+  margin-bottom: .25rem;
+}
+
+.releasefield__link {
+  @extend .btn;
+  @extend .btn-sm;
+
+  color: var(--fs-color-info-100);
+  background-color: var(--fs-color-info-500);
+
+  font-weight: 600;
+
+  &:not(:last-child) {
+    margin-right: .5rem;
+  }
 
   &:hover {
-    color: var(--fs-color-primary-500);
+    color: var(--fs-color-info-100);
+    background-color: var(--fs-color-info-600);
   }
 }
 
-.list-group-item-action {
+.releasefield__close  {
   cursor: pointer;
-}
-
-::v-deep.description a {
-  text-decoration: underline;
+  align-self: flex-start;
 }
 </style>

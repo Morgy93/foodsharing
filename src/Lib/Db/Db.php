@@ -21,11 +21,6 @@ class Db
 	private $debug;
 
 	/**
-	 * @var Mem
-	 */
-	protected $mem;
-
-	/**
 	 * @var Session
 	 */
 	protected $session;
@@ -41,14 +36,6 @@ class Db
 	public function setDebug(DebugBar $debug)
 	{
 		$this->debug = $debug;
-	}
-
-	/**
-	 * @required
-	 */
-	public function setMem(Mem $mem)
-	{
-		$this->mem = $mem;
 	}
 
 	/**
@@ -109,21 +96,6 @@ class Db
 		}
 
 		return false;
-	}
-
-	/**
-	 * @deprecated use db->fetchAllValues
-	 */
-	public function qCol($sql)
-	{
-		$out = [];
-		if ($res = $this->sql($sql)) {
-			while ($row = $res->fetch_array()) {
-				$out[] = $row[0];
-			}
-		}
-
-		return $out;
 	}
 
 	/**

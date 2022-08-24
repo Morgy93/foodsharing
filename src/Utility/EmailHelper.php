@@ -131,7 +131,7 @@ final class EmailHelper
 	}
 
 	public function libmail($bezirk, $email, $subject, $message, $attach = false, $token = false,
-							bool $highPriority = false)
+		bool $highPriority = false)
 	{
 		if ($bezirk === false) {
 			$bezirk = [

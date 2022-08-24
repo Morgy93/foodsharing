@@ -363,7 +363,7 @@ class MailsControl extends ConsoleControl
 
 		for ($max_try = 2; $max_try > 0; --$max_try) {
 			try {
-				self::info('send email tries remaining ' . ($max_try));
+				self::info('send email tries remaining ' . $max_try);
 				$this->mailer->send($email);
 				self::success('email send OK');
 

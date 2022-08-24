@@ -8,7 +8,7 @@
       v-b-tooltip="pickupStringStatus"
       class="icon-subnav fas fa-circle"
       :class="{
-        'text-transparent': entry.pickupStatus === 0,
+        'text-transparent': !entry.pickupStatus,
         'text-primary': entry.pickupStatus === 1,
         'text-warning': entry.pickupStatus === 2,
         'text-danger': entry.pickupStatus === 3,

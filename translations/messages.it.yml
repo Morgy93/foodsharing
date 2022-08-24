@@ -654,7 +654,7 @@ fsp:
   reject: rifiutare il divisore
   accept: Sbloccare il divisore
 formatting:
-  md: Puoi utilizzare <a href="http://markdown.de/"> Markdown </a> per la formattazione.
+  md: Puoi utilizzare <a href="https://markdown.de/">Markdown </a> per la formattazione.
 day: Giorno
 time: Orario
 select: Selezionare pregho
@@ -1573,7 +1573,7 @@ menu:
     administration: Amministrazione
     your_stores: Le tue agenzie
     your_account: Il tuo account
-    groups: Panoramica dei gruppi
+    groups: Gruppi
     your_groups: I tuoi gruppi
     messages: Messaggi
     all_messages: Tutti i messaggi
@@ -1637,7 +1637,7 @@ basket:
   request-fs: Richiesta di cesto alimentare sulla nostra homepage di foodsharing
   request: Richiedere il cesto di cibo
   request_close: Chiudere richiesta per cesto di cibo
-  requested_by: richiesto da
+  requested_by: richiesto da {name}
   no_requests: Nessuna richiesta finora
   taken: "<b>Purtroppo, questo cesto alimentare non è più disponibile</b>.\n<br><br>\n\
     Non ti sei ancora registrato come Foodsharer?\nPoi clicca <b>partecipare</b> qui\
@@ -1764,8 +1764,8 @@ dashboard:
   save_selection: Salva impostazioni
   no_updates: Nessun aggiornamento
   display_all: Tutti
-  foodsaver_amount: "Hai raccolto <strong style=\"white-space:nowrap\">{pickups}&thinsp;x</strong>\
-    \ generi alimentari.\ne salvato <strong style=\"white-space:nowrap\">{weight}&thinsp;kg</strong>.\n"
+  foodsaver_amount: "Hai raccolto <b>{pickups} x</b> generi alimentari e salvato <b>{weight}\
+    \ kg</b>."
 search:
   mystores: Le mie aziende
   mybuddies: I miei Buddies
@@ -1895,10 +1895,9 @@ profile:
     title: Informazioni
   online: '{nome} è online.'
   notes:
-    info: "Si prega di utilizzare questa funzione in modo coscienzioso.\nDovrebbe\
-      \ aiutare a rendere visibili i processi per risparmiarci del lavoro.\nI commenti\
-      \ personali o di giudizio su una persona non hanno posto qui.\nRimani obiettivo\"\
-      .\n"
+    info: "Si prega di utilizzare questa funzione in modo coscienzioso. Dovrebbe aiutare\
+      \ a rendere visibili i processi per risparmiarci del lavoro. I commenti personali\
+      \ o di giudizio su una persona non hanno posto qui. Rimani obiettivo."
     title: Notizie su {name}
     bread: Notizie
   history:

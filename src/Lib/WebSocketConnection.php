@@ -4,6 +4,7 @@ namespace Foodsharing\Lib;
 
 use GuzzleHttp\Client;
 use GuzzleHttp\RequestOptions;
+
 use function Sentry\captureException;
 
 /**
