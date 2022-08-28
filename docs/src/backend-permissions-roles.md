@@ -170,3 +170,15 @@ Examples:
 | Content | [??](https://gitlab.com/foodsharing-dev/foodsharing/-/blob/master/src/Permissions/ContentPermissions.php#L110) | |
 | Blog | [??](https://gitlab.com/foodsharing-dev/foodsharing/-/blob/master/src/Permissions/BlogPermissions.php#L110) | |
 | Basket | [??](https://gitlab.com/foodsharing-dev/foodsharing/-/blob/master/src/Permissions/BasketPermissions.php#L110) | |
+| Basket | [Request the basket](https://gitlab.com/foodsharing-dev/foodsharing/-/blob/master/src/Permissions/BasketPermissions.php#L17) | |
+| Basket | [Create basket](https://gitlab.com/foodsharing-dev/foodsharing/-/blob/master/src/Permissions/BasketPermissions.php#L26) | |
+| Basket | [Modify basket](https://gitlab.com/foodsharing-dev/foodsharing/-/blob/master/src/Permissions/BasketPermissions.php#L31) | |
+| Basket | [Delete basket](https://gitlab.com/foodsharing-dev/foodsharing/-/blob/master/src/Permissions/BasketPermissions.php#L40) | |
+| Blog | [Create blog](https://gitlab.com/foodsharing-dev/foodsharing/-/blob/master/src/Permissions/BlogPermissions.php#L17) | |
+| Blog | [Publish blog](https://gitlab.com/foodsharing-dev/foodsharing/-/blob/master/src/Permissions/BlogPermissions.php#L22) | |
+| Blog | [Modify blog](https://gitlab.com/foodsharing-dev/foodsharing/-/blob/master/src/Permissions/BlogPermissions.php#L27) | |
+| Blog | [Delete blog](https://gitlab.com/foodsharing-dev/foodsharing/-/blob/master/src/Permissions/BlogPermissions.php#L32) | |
+| Blog | [Administrate blog](https://gitlab.com/foodsharing-dev/foodsharing/-/blob/master/src/Permissions/BlogPermissions.php#L37) | |
+| Content | [Modify content](https://gitlab.com/foodsharing-dev/foodsharing/-/blob/master/src/Permissions/ContentPermissions.php#L64) | |
+| Content | [modify content by type responsible (quiz, partner/teak or PR starz)](https://gitlab.com/foodsharing-dev/foodsharing/-/blob/master/src/Permissions/ContentPermissions.php#L92) | |
+| Content | [Create content](https://gitlab.com/foodsharing-dev/foodsharing/-/blob/master/src/Permissions/ContentPermissions.php#L113) | |
