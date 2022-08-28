@@ -6,7 +6,7 @@ The foodsharing platform have different type of user management. The combination
 
 ### User roles
 
-The user role is an account level. The account levels enable access to a set of possibilities. The user can arrive the next account level by a qualification via quiz.
+The user role is an account level. The account levels enable access to a set of possibilities. The user can arrive the next account level by a qualification via quiz and a responsible in a higher level.
 
 ```plantuml
 @startuml
@@ -19,10 +19,11 @@ actor Orga
 
 Anonymous --> Foodsaver : Registration
 Foodsaver --> Foodsharer : "foodsaver Quiz"
-Foodsaver <-- Foodsharer: "downgrad by Ambassador"
+Foodsaver <-- Foodsharer: "downgrade by Ambassador/Orga"
 Foodsharer --> "Store Manager" : "Store Manager Quiz"
-"Store Manager" --> Ambassador : "Ambassador Quiz*
-Ambassador --> Orga : "Orga Quiz"
+"Store Manager" --> Ambassador : "Ambassador Quiz"
+Ambassador --> Orga : "Orga Quiz / Assigned"
+Foodsharer --> Orga : "Assigned"
 @enduml
 ```
 
@@ -55,15 +56,19 @@ Examples:
 
 ## Permission role mapping
 
-| Module | Permission | unexpected behavior |
-|--------|------------|---------------------|
-| User | [View User Details](https://gitlab.com/foodsharing-dev/foodsharing/-/blob/master/src/Permissions/UserPermissions.php#L16) |  |
-| Store | [Send Join request](https://gitlab.com/foodsharing-dev/foodsharing/-/blob/master/src/Permissions/StorePermissions.php#L37) |  |
-| Store | [Add User to Store team](https://gitlab.com/foodsharing-dev/foodsharing/-/blob/master/src/Permissions/StorePermissions.php#L59) |  |
-| Store | [Edit store team](https://gitlab.com/foodsharing-dev/foodsharing/-/blob/master/src/Permissions/StorePermissions.php#L212) |  |
-| Store | [Edit store](https://gitlab.com/foodsharing-dev/foodsharing/-/blob/master/src/Permissions/StorePermissions.php#L182) |  |
-| Store | [Leave store team](https://gitlab.com/foodsharing-dev/foodsharing/-/blob/master/src/Permissions/StorePermissions.php#L75) | | 
-| Store | [View store](https://gitlab.com/foodsharing-dev/foodsharing/-/blob/master/src/Permissions/StorePermissions.php#L83) |  |
+| Module | Permission | Anonym | Foodsaver | Foodsharer | Store Manager (same) | Store Manager (other) | Orga |
+|--------|------------|---------------------|----| ----- | ----- | ----- | ----- |
+| Basket | [Request the basket](https://gitlab.com/foodsharing-dev/foodsharing/-/blob/master/src/Permissions/BasketPermissions.php#L17) | | X | X | X | X | X |
+| Basket | [Create basket](https://gitlab.com/foodsharing-dev/foodsharing/-/blob/master/src/Permissions/BasketPermissions.php#L26) | | X | X | X | X | X |
+| Basket | [Modify basket](https://gitlab.com/foodsharing-dev/foodsharing/-/blob/master/src/Permissions/BasketPermissions.php#L31) | | X | X | X | X | X |
+| Basket | [Delete basket](https://gitlab.com/foodsharing-dev/foodsharing/-/blob/master/src/Permissions/BasketPermissions.php#L40) | | X | X | X | X | X |
+| User | [View User Details](https://gitlab.com/foodsharing-dev/foodsharing/-/blob/master/src/Permissions/UserPermissions.php#L16) | X | X | X | X | X | X |
+| Store | [Send Join request](https://gitlab.com/foodsharing-dev/foodsharing/-/blob/master/src/Permissions/StorePermissions.php#L37) |  |   | X | X | X | X |
+| Store | [Add User to Store team](https://gitlab.com/foodsharing-dev/foodsharing/-/blob/master/src/Permissions/StorePermissions.php#L59) | | | | X | | X |
+| Store | [Edit store team](https://gitlab.com/foodsharing-dev/foodsharing/-/blob/master/src/Permissions/StorePermissions.php#L212) | | | | X |  | X |
+| Store | [Edit store](https://gitlab.com/foodsharing-dev/foodsharing/-/blob/master/src/Permissions/StorePermissions.php#L182) | | | | X | | X |
+| Store | [Leave store team](https://gitlab.com/foodsharing-dev/foodsharing/-/blob/master/src/Permissions/StorePermissions.php#L75) | | X | X | X | X | X | 
+| Store | [View store](https://gitlab.com/foodsharing-dev/foodsharing/-/blob/master/src/Permissions/StorePermissions.php#L83) | | X | X | X | X | X |
 | Store Wall | [View store wall](https://gitlab.com/foodsharing-dev/foodsharing/-/blob/master/src/Permissions/StorePermissions.php#L110) |  |
 | Store Wall | [Write to store wall](https://gitlab.com/foodsharing-dev/foodsharing/-/blob/master/src/Permissions/StorePermissions.php#L137) |  |
 | Store wall | [force delete store wall post](https://gitlab.com/foodsharing-dev/foodsharing/-/blob/master/src/Permissions/StorePermissions.php#L145) |  |
@@ -167,18 +172,23 @@ Examples:
 | Event | [View event](https://gitlab.com/foodsharing-dev/foodsharing/-/blob/master/src/Permissions/EventPermissions.php#L28) | |
 | Event | [Join event](https://gitlab.com/foodsharing-dev/foodsharing/-/blob/master/src/Permissions/EventPermissions.php#L40) | |
 | Event | [Create event wall post](https://gitlab.com/foodsharing-dev/foodsharing/-/blob/master/src/Permissions/EventPermissions.php#L45) | |
-| Content | [??](https://gitlab.com/foodsharing-dev/foodsharing/-/blob/master/src/Permissions/ContentPermissions.php#L110) | |
-| Blog | [??](https://gitlab.com/foodsharing-dev/foodsharing/-/blob/master/src/Permissions/BlogPermissions.php#L110) | |
-| Basket | [??](https://gitlab.com/foodsharing-dev/foodsharing/-/blob/master/src/Permissions/BasketPermissions.php#L110) | |
-| Basket | [Request the basket](https://gitlab.com/foodsharing-dev/foodsharing/-/blob/master/src/Permissions/BasketPermissions.php#L17) | |
-| Basket | [Create basket](https://gitlab.com/foodsharing-dev/foodsharing/-/blob/master/src/Permissions/BasketPermissions.php#L26) | |
-| Basket | [Modify basket](https://gitlab.com/foodsharing-dev/foodsharing/-/blob/master/src/Permissions/BasketPermissions.php#L31) | |
-| Basket | [Delete basket](https://gitlab.com/foodsharing-dev/foodsharing/-/blob/master/src/Permissions/BasketPermissions.php#L40) | |
+| Content | [Modify content](https://gitlab.com/foodsharing-dev/foodsharing/-/blob/master/src/Permissions/ContentPermissions.php#L64) | |
+| Content | [modify content by type responsible (quiz, partner/teak or PR starz)](https://gitlab.com/foodsharing-dev/foodsharing/-/blob/master/src/Permissions/ContentPermissions.php#L92) | |
+| Content | [Create content](https://gitlab.com/foodsharing-dev/foodsharing/-/blob/master/src/Permissions/ContentPermissions.php#L113) | |
 | Blog | [Create blog](https://gitlab.com/foodsharing-dev/foodsharing/-/blob/master/src/Permissions/BlogPermissions.php#L17) | |
 | Blog | [Publish blog](https://gitlab.com/foodsharing-dev/foodsharing/-/blob/master/src/Permissions/BlogPermissions.php#L22) | |
 | Blog | [Modify blog](https://gitlab.com/foodsharing-dev/foodsharing/-/blob/master/src/Permissions/BlogPermissions.php#L27) | |
 | Blog | [Delete blog](https://gitlab.com/foodsharing-dev/foodsharing/-/blob/master/src/Permissions/BlogPermissions.php#L32) | |
 | Blog | [Administrate blog](https://gitlab.com/foodsharing-dev/foodsharing/-/blob/master/src/Permissions/BlogPermissions.php#L37) | |
-| Content | [Modify content](https://gitlab.com/foodsharing-dev/foodsharing/-/blob/master/src/Permissions/ContentPermissions.php#L64) | |
-| Content | [modify content by type responsible (quiz, partner/teak or PR starz)](https://gitlab.com/foodsharing-dev/foodsharing/-/blob/master/src/Permissions/ContentPermissions.php#L92) | |
-| Content | [Create content](https://gitlab.com/foodsharing-dev/foodsharing/-/blob/master/src/Permissions/ContentPermissions.php#L113) | |
+
+
+## Workflow for change between groups
+
+The users can change between user groups to get more premissions, this is done by a process.
+
+[] Add link to user documentation about user premission change process.
+
+
+# Open points before Merge
+
+[] Add goal concept and update permissions with GOAL group

@@ -35,7 +35,10 @@ node [php] {
 [Gateway]
 }
 database DB
-database redis
+node redis {
+    database Cache
+    database Queue
+}
 node [nodejs] {
 [chat]
 }
@@ -43,8 +46,8 @@ node [nodejs] {
 
 [Frontend] -d-> [RestAPI]
 [Frontend] -d-> [chat]
-[chat] -d-> [redis]
-[Transactions] -d-> [redis]
+[chat] -d-> [Cache]
+[Transactions] -d-> [Cache]
 
 [RestAPI] -> [Transactions]
 [Transactions] -d-> [Gateway]
@@ -116,8 +119,12 @@ The old system uses a very central component to manage user related information.
 
 ### Database
 
-The database is the man storage for the permanent required information.
+The database is the main storage for the permanent required information.
 The description of it can found in the dev documentation
 
 - [Use of database with codebase](https://devdocs.foodsharing.network/database.html)
 - [Description of all tables](https://devdocs.foodsharing.network/database-tables-columns.html)
+
+
+### Cache (Redis)
+
