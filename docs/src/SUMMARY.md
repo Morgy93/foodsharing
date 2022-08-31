@@ -28,6 +28,9 @@
   - [Troubleshooting](troubleshooting.md)
   - [Beta Testing (DE)](beta-testing-de.md)
 
+# Platform description
+  - [Introduction](requirements.md)
+
 # PHP Reference
 - [System architecture pattern](system-architecture-pattern.md)
 - [Permission and Roles](backend-permissions-roles.md)
