@@ -93,8 +93,6 @@ Examples:
 | User Profile | [Modify Profile and User role ](https://gitlab.com/foodsharing-dev/foodsharing/-/blob/master/src/Permissions/ProfilePermissions.php#23) | | 
 | User Profile | [Modify Profile](https://gitlab.com/foodsharing-dev/foodsharing/-/blob/master/src/Permissions/ProfilePermissions.php#42) | | 
 | User Profile | [Allow to remove/kick User from Pickup slot](https://gitlab.com/foodsharing-dev/foodsharing/-/blob/master/src/Permissions/ProfilePermissions.php#47) | | 
-| User Profile | [Modify Profile](https://gitlab.com/foodsharing-dev/foodsharing/-/blob/master/src/Permissions/ProfilePermissions.php#42) | | 
-| User Profile | [Allow to kick/remove user from pickup slot](https://gitlab.com/foodsharing-dev/foodsharing/-/blob/master/src/Permissions/ProfilePermissions.php#47) | | 
 | User Profile | [Change Verifikation Status of user](https://gitlab.com/foodsharing-dev/foodsharing/-/blob/master/src/Permissions/ProfilePermissions.php#52) | | 
 | User Profile | [View change history of User profile](https://gitlab.com/foodsharing-dev/foodsharing/-/blob/master/src/Permissions/ProfilePermissions.php#57) | | 
 | User Profile | [View notes about user](https://gitlab.com/foodsharing-dev/foodsharing/-/blob/master/src/Permissions/ProfilePermissions.php#62) | | 
