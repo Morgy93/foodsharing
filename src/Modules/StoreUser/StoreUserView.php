@@ -124,11 +124,12 @@ class StoreUserView extends View
 				<th class="ui-padding">' . $this->translator->trans('day') . '</th>
 				<th class="ui-padding">' . $this->translator->trans('time') . '</th>
 				<th class="ui-padding">' . $this->translator->trans('pickup.edit.slotcount') . '</th>
+				<th class="ui-padding"></th>
 			</tr>
 		</thead>
 		<tfoot>
 			<tr>
-				<td colspan="3" class="ui-padding">
+				<td colspan="4" class="ui-padding">
 					<span id="nft-add">' . $this->translator->trans('pickup.edit.more') . '</span>
 				</td>
 			</tr>
@@ -157,7 +158,11 @@ class StoreUserView extends View
 					</select>
 				</td>
 				<td class="ui-padding">
-					<input class="fetchercount" type="text" name="nft-count[]" value="' . $date['fetcher'] . '"/>
+					<select class="fetchercount" name="nft-count[]">
+						' . $this->prepareOptionRange(range(0, 20), $date['fetcher']) . '
+					</select>
+				</td>
+				<td class="ui-pading">
 					<button class="nft-remove"></button>
 				</td>
 			</tr>';
@@ -178,9 +183,14 @@ class StoreUserView extends View
 					</select>
 					<select class="nfttime-min" name="nfttime[min][]">
 						' . $this->prepareOptionRange(range(0, 55, 5)) . '
-					</select></td>
+					</select>
+				</td>
 				<td class="ui-padding">
-					<input class="fetchercount" type="text" name="nft-count[]" value="2" />
+					<select class="fetchercount" name="nft-count[]">
+						' . $this->prepareOptionRange(range(0, 20), 2) . '
+					</select>
+				</td>
+				<td class="ui-pading">
 					<button class="nft-remove"></button>
 				</td>
 			</tr>

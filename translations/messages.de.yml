@@ -961,17 +961,8 @@ pickup:
     bread: "Abholzeiten bearbeiten"
     add: "Abholzeiten eintragen"
     more: "Termin hinzufügen"
-    slotcount: "1 Abholer*in"
+    slotcount: "Anzahl Abholer*innen"
     slotscount: "{count} Abholer*innen"
-    many-people: |
-      Du hast mehr als zwei Personen zum Abholen angegeben.
-      <br />
-      Bitte schick <strong>nur so viele Abholer*innen wie nötig</strong> in den Betrieb.
-      Zu viele Abholer*innen führten schon oft zum Ende einer Kooperation.
-      <br />
-      Kläre die maximale Zahl möglicher Abholer*innen mit dem Betrieb ab.
-      Zusätzlich benötigte Helfer*innen können mit Fahrradanhänger oder ähnlichem
-      außer Sichtweite des Betriebes warten.
     added: "Abholtermin wurde eingetragen."
   overview:
     header: Abholtermine

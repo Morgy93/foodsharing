@@ -14,7 +14,6 @@ import './StoreUser.css'
 import {
   ajax,
   pulseError,
-  pulseInfo,
   GET,
 } from '@/script'
 import '@/tablesorter' // Remove after replacing u_storeList
@@ -78,20 +77,6 @@ $(document).ready(() => {
   }).on('click', function () {
     const $this = $(this)
     $this.parent().parent().remove()
-  })
-
-  $('.timetable').on('keyup', '.fetchercount', function () {
-    if (this.value != '') {
-      let val = parseInt(`0${this.value}`, 10)
-      if (val == 0) {
-        val = 1
-      } else if (val > 2) {
-        pulseInfo(i18n('pickup.edit.many-people'), {
-          sticky: true,
-        })
-      }
-      this.value = val
-    }
   })
 
   $('#nft-add').button({
