@@ -123,7 +123,7 @@ class StoreUserView extends View
 			<tr>
 				<th class="ui-padding">' . $this->translator->trans('day') . '</th>
 				<th class="ui-padding">' . $this->translator->trans('time') . '</th>
-				<th class="ui-padding">' . $this->translator->trans('pickup.edit.slotcount') . '</th>
+				<th class="ui-padding">' . $this->translator->trans('pickup.edit.slot_count_title') . '</th>
 				<th class="ui-padding"></th>
 			</tr>
 		</thead>
