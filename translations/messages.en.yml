@@ -741,12 +741,6 @@ pickup:
     more: Add date
     add: Add pickup dates
     bread: Edit pickup dates
-    many-people: "You specified more than two foodsavers to pick up.\n<br />\nPlease\
-      \ <strong>only send as many foodsavers as necessary</strong> to the company.\n\
-      Too many foodsavers have often led to the end of a cooperation.\n<br />\nClarify\
-      \ the maximum number of possible foodsavers with the company!\nAny additional\
-      \ helpers required can wait with bicycle trailers or the like\nout of sight\
-      \ of the store.\n"
     added: Pickup date was added.
   slot_remove: Delete slot
   slot_add: Add slot

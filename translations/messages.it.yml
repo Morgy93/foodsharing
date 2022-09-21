@@ -666,12 +666,6 @@ pickup:
     add: inserire orari di ritiro
     bread: modificare gli orari di ritiro
     added: Data di ritiro è stata inserita.
-    many-people: "Hai specificato più di due persone per il ritiro.\n<br />\nSi prega\
-      \ di <strong> inviare all'agenzia solo il numero di raccoglitori necessari </strong>.\n\
-      Troppi raccoglitori spesso hanno portato la fine di una collaborazione.\n<br\
-      \ />\nChiarire con l'agenzia il numero massimo di raccoglitori possibili.\n\
-      Gli aiutanti aggiuntivi necessari possono utilizzare un rimorchio per biciclette\
-      \ o qualcosa di simile\naspettare fuori dagli occhi dell´agenzia.\n"
     slotscount: '{count} Raccoglitore'
     slotcount: un raccoglitore
     more: Aggiungere appuntamento

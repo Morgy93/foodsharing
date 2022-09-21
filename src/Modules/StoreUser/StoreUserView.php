@@ -187,7 +187,7 @@ class StoreUserView extends View
 				</td>
 				<td class="ui-padding">
 					<select class="fetchercount" name="nft-count[]">
-						' . $this->prepareOptionRange(range(0, 20), '2') . '
+						' . $this->prepareOptionRange(range(0, 10), '2') . '
 					</select>
 				</td>
 				<td class="ui-pading">

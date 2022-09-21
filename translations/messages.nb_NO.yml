@@ -1734,11 +1734,6 @@ pickup:
     slotscount: '{count} plukkere'
     add: Skriv inn hentetider
     added: Hentingsdatoen er lagt inn.
-    many-people: "Du har planlagt å hente mer enn to personer.\n<br />\nSend <strong>kun\
-      \ så mange samlere som nødvendig</strong> til selskapet.\nFor mange samlere\
-      \ førte ofte til slutten på et samarbeid.\n<br />\nAvklar maksimalt antall mulige\
-      \ samlere med selskapet.\nI tillegg kan nødvendige hjelpere vente med sykkelhengere\
-      \ eller lignende\nutenfor selskapets syn.\n"
   history:
     search: Vis pickups
     title: Samlingshistorie
