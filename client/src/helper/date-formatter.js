@@ -257,16 +257,22 @@ export default {
    * @param {Date} date a date to format
    * @returns {string} the formated date with time
    */
-  dateTime (date = new Date()) {
+  dateTime (date = new Date(), options = { short: false }) {
     const d = new Date(date)
-    const options = {
+    if (options.short) {
+      options = Object.assign({
+        weekday: !this.isToday(d) ? 'short' : undefined,
+        month: 'numeric',
+      }, options)
+    }
+    options = Object.assign({
       weekday: !this.isToday(d) ? 'long' : undefined,
       year: !this.isSameYear(d) ? 'numeric' : undefined,
       month: 'short',
       day: 'numeric',
       hour: '2-digit',
       minute: '2-digit',
-    }
+    }, options)
     if (this.isToday(d)) {
       const rtf = new Intl.RelativeTimeFormat(locale, { numeric: 'auto' })
       return `${toCapitalize(rtf.format(0, 'day'))}, ${d.toLocaleString(locale, options)}`

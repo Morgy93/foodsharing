@@ -121,14 +121,11 @@ export default {
 }
 
 ::v-deep .avatar {
-  // TODO
   img {
     // box-sizing: content-box;
     border: 1px solid var(--border-color);
     border-width: 1px 2px 1px 0;
   }
-  border: 2px solid var(--fs-color-light);
-  border-radius: 50%;
 }
 
 .hidden-users, .free-slots {

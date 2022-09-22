@@ -5,7 +5,7 @@
     hover
     thead-tr-class="unlined"
     sort-icon-left
-    sticky-header
+    sticky-header="400px"
     no-border-collapse
     class="pickup-table"
     :items="data"
@@ -188,7 +188,7 @@ export default {
      * Used strings are translated.
      */
     formatDate (date) {
-      return this.$dateFormatter.date(date)
+      return this.$dateFormatter.dateTime(date, { short: true })
     },
     /**
      * Returns the correct icon tooltip text based on the slot status.
