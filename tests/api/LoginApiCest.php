@@ -43,7 +43,7 @@ class LoginApiCest
 			'password' => 'WROOOONG'
 		]);
 
-		$I->seeResponseCodeIs(401);
+		$I->seeResponseCodeIs(\Codeception\Util\HttpCode::UNAUTHORIZED);
 		$I->seeResponseContains('email or password are invalid');
 	}
 }

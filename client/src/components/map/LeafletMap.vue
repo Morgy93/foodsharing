@@ -25,14 +25,14 @@
 <script>
 import L from 'leaflet'
 import { LMap, LTileLayer } from 'vue2-leaflet'
-import mapboxgl from 'mapbox-gl'
-import 'mapbox-gl-leaflet'
-import 'mapbox-gl/dist/mapbox-gl.css'
+// import mapboxgl from 'mapbox-gl'
+// import 'mapbox-gl-leaflet'
+// import 'mapbox-gl/dist/mapbox-gl.css'
 import 'leaflet/dist/leaflet.css'
 import { MAP_ATTRIBUTION, MAP_RASTER_TILES_URL, MAP_TILES_URL } from '@/consts'
 import { isWebGLSupported } from '@/utils'
 
-window.mapboxgl = mapboxgl // mapbox-gl-leaflet expects this to be global
+// window.mapboxgl = mapboxgl // mapbox-gl-leaflet expects this to be global
 
 export default {
   name: 'LeafletMap',

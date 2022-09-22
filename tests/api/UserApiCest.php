@@ -2,6 +2,7 @@
 
 namespace api;
 
+use ApiTester;
 use Carbon\Carbon;
 use Codeception\Example;
 use Codeception\Util\HttpCode as Http;
@@ -21,7 +22,7 @@ class UserApiCest
 	private const API_USER = 'api/user';
 	private const ID = 'id';
 
-	public function _before(\ApiTester $I)
+	public function _before(ApiTester $I)
 	{
 		$this->user = $I->createFoodsaver();
 		$this->userOrga = $I->createOrga();
@@ -33,7 +34,7 @@ class UserApiCest
 		$this->faker = Faker\Factory::create('de_DE');
 	}
 
-	public function getUser(\ApiTester $I)
+	public function getUser(ApiTester $I)
 	{
 		$testUser = $I->createFoodsaver();
 		$I->login($this->user[self::EMAIL]);
@@ -61,7 +62,7 @@ class UserApiCest
 	/**
 	 * Get also own user details with 'current' instead of ID.
 	 */
-	public function getUserDetailsCurrentWithoutId(\ApiTester $I)
+	public function getUserDetailsCurrentWithoutId(ApiTester $I)
 	{
 		$I->login($this->user[self::EMAIL]);
 
@@ -78,7 +79,7 @@ class UserApiCest
 	/**
 	 * Do not see details of non-existing user.
 	 */
-	public function getUserDetailsNoneExistingUser(\ApiTester $I)
+	public function getUserDetailsNoneExistingUser(ApiTester $I)
 	{
 		$I->login($this->user[self::EMAIL]);
 
@@ -90,7 +91,7 @@ class UserApiCest
 	/**
 	 * Check that only limited fields are returned for a none logged in user.
 	 */
-	public function getUserDetailsNoUser(\ApiTester $I)
+	public function getUserDetailsNoUser(ApiTester $I)
 	{
 		// no login
 
@@ -139,7 +140,7 @@ class UserApiCest
 	/**
 	 * Check that only allowed fields for another user are return in the response.
 	 */
-	public function getUserDetailsOfOtherUser(\ApiTester $I)
+	public function getUserDetailsOfOtherUser(ApiTester $I)
 	{
 		$testUser = $I->createFoodsaver();
 		$I->login($this->user[self::EMAIL]);
@@ -173,12 +174,7 @@ class UserApiCest
 			]
 		]);
 
-		$I->seeResponseMatchesJsonType([
-			'coordinates' => [
-				'lat' => 'string|float|integer',
-				'lon' => 'string|float|integer',
-			]
-		]);
+		$I->dontSeeResponseContains('coordinates');
 
 		$I->seeResponseMatchesJsonType([
 			'permissions' => [
@@ -189,9 +185,9 @@ class UserApiCest
 	}
 
 	/**
-	 * Check that only allowed fields of the current user are return in the response.
+	 * Check that only allowed fields of the current user are returned in the response.
 	 */
-	public function getUserDetailsFromCurrentUser(\ApiTester $I)
+	public function getUserDetailsFromCurrentUser(ApiTester $I)
 	{
 		$I->login($this->user[self::EMAIL]);
 
@@ -243,7 +239,7 @@ class UserApiCest
 	/**
 	 * Check that all fields of a user are returned for an orga user.
 	 */
-	public function getUserDetailsAsOrgaUser(\ApiTester $I)
+	public function getUserDetailsAsOrgaUser(ApiTester $I)
 	{
 		$I->login($this->userOrga[self::EMAIL]);
 
@@ -298,7 +294,7 @@ class UserApiCest
 	 * @example["abcd@efgh.com"]
 	 * @example["test123@somedomain.de"]
 	 */
-	public function canUseEmailForRegistration(\ApiTester $I, Example $example): void
+	public function canUseEmailForRegistration(ApiTester $I, Example $example): void
 	{
 		$I->sendPOST(self::API_USER . '/isvalidemail', ['email' => $example[0]]);
 		$I->seeResponseCodeIs(Http::OK);
@@ -309,7 +305,7 @@ class UserApiCest
 	 * @example["abcd@efgh"]
 	 * @example["abcd@-efgh"]
 	 */
-	public function canNotUseInvalidMailForRegistration(\ApiTester $I, Example $example): void
+	public function canNotUseInvalidMailForRegistration(ApiTester $I, Example $example): void
 	{
 		$I->sendPOST(self::API_USER . '/isvalidemail', ['email' => $example[0]]);
 		$I->seeResponseCodeIs(Http::BAD_REQUEST);
@@ -323,7 +319,7 @@ class UserApiCest
 	 * @example["abcd@foodsharing.de"]
 	 * @example["abcd@foodsharing.network"]
 	 */
-	public function canNotUseFoodsharingEmailForRegistration(\ApiTester $I, Example $example): void
+	public function canNotUseFoodsharingEmailForRegistration(ApiTester $I, Example $example): void
 	{
 		$I->sendPOST(self::API_USER . '/isvalidemail', ['email' => $example[0]]);
 		$I->seeResponseCodeIs(Http::OK);
@@ -333,7 +329,7 @@ class UserApiCest
 		]);
 	}
 
-	public function canNotUseExistingEmailForRegistration(\ApiTester $I): void
+	public function canNotUseExistingEmailForRegistration(ApiTester $I): void
 	{
 		// already existing email
 		$I->sendPOST(self::API_USER . '/isvalidemail', ['email' => $this->user['email']]);
@@ -361,7 +357,7 @@ class UserApiCest
 		]);
 	}
 
-	public function canGiveBanana(\ApiTester $I): void
+	public function canGiveBanana(ApiTester $I): void
 	{
 		$testUser = $I->createFoodsaver();
 		$I->login($this->user[self::EMAIL]);
@@ -379,7 +375,7 @@ class UserApiCest
 		$I->seeResponseCodeIs(Http::OK);
 	}
 
-	public function canNotGiveBananaWithShortMessage(\ApiTester $I): void
+	public function canNotGiveBananaWithShortMessage(ApiTester $I): void
 	{
 		$testUser = $I->createFoodsaver();
 		$I->login($this->user[self::EMAIL]);
@@ -387,7 +383,7 @@ class UserApiCest
 		$I->seeResponseCodeIs(Http::BAD_REQUEST);
 	}
 
-	public function canNotGiveBananaTwice(\ApiTester $I): void
+	public function canNotGiveBananaTwice(ApiTester $I): void
 	{
 		$testUser = $I->createFoodsaver();
 		$I->login($this->user[self::EMAIL]);
@@ -397,7 +393,7 @@ class UserApiCest
 		$I->seeResponseCodeIs(Http::FORBIDDEN);
 	}
 
-	public function canNotGiveBananaToMyself(\ApiTester $I): void
+	public function canNotGiveBananaToMyself(ApiTester $I): void
 	{
 		$I->login($this->user[self::EMAIL]);
 		$I->sendPUT(self::API_USER . '/' . $this->user['id'] . '/banana', ['message' => $this->createRandomText(100, 150)]);
@@ -414,7 +410,7 @@ class UserApiCest
 		return $text;
 	}
 
-	public function canDeleteUser(\ApiTester $I): void
+	public function canDeleteUser(ApiTester $I): void
 	{
 		// add user to a pickup slots
 		$I->addPicker($this->store['id'], $this->user['id']);

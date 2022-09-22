@@ -27,19 +27,41 @@ In the [issue #511](https://gitlab.com/foodsharing-dev/foodsharing/issues/511) s
 For general explanation about REST, see [request types](requests.md).
 
 1. english only
-1. use "normalizer" methods to transform gateway/db data into api responses
-1. **camel case** for keys (`regionId` instead of `region_id`)
-1. **prefixes** for booleans (`isPublic` instead of `public`)
-1. `GET` requests should never change data
-1. use *Permission* classes for permission checks
-1. never use *Model* classes
-1. regions and working groups are both 'groups'
-1. name keys always as specific as possible (`createdAt` instead of `time`,  `author` instead of `user`)
-1. integers should also be send as an integer, not as a string
-1. Standardize date and time: [ISO 8601](https://en.wikipedia.org/wiki/ISO_8601). Use the `DATE_ATOM` PHP DateTime formatter.
-1. Add a message to exceptions. (e.g. `throw new HttpException(404, 'This region with id ' . $regionId . ' does not exist.');`)
+2. For the response, use DTOs that will be transformed to JSON by Symfony. If there is no DTO yet, use "normalizer" methods to transform gateway/db data into api responses
+3. **camel case** for keys (`regionId` instead of `region_id`)
+4. **prefixes** for booleans (`isPublic` instead of `public`)
+5. `GET` requests should never change data
+6. use *Permission* classes for permission checks
+7. never use *Model* classes, use *Gateway* classes instead
+8. Apart from checking permissions and parameters the REST controllers should not contain too much logic. Put those code blocks into *Transaction* classes instead. 
+9. regions and working groups are both 'groups'
+10. name keys always as specific as possible (`createdAt` instead of `time`,  `author` instead of `user`)
+11. integers and booleans should also be sent as an integer or boolean, not as a string
+12. Standardize date and time: [ISO 8601](https://en.wikipedia.org/wiki/ISO_8601). Use the `DATE_ATOM` PHP DateTime formatter.
+13. Add a message to exceptions. (e.g. `throw new NotFoundHttpException('This region with id ' . $regionId . ' does not exist.');`)
+14. use response codes consistently (see below)
 
 More not-yet-implemented ideas include:
 1. Add API versioning (to allow introducing breaking api changes in the future without immediately breaking the apps) ([not yet](https://gitlab.com/foodsharing-dev/foodsharing/issues/511#note_173339753), hopefully coming at some point)
 1. Standardize pagination (e.g. fixed query param names, return total number of items, either via envelope or header)
 1. [Automatically generated documentation](https://gitlab.com/foodsharing-dev/foodsharing/issues/511#note_173339753) for REST API
+
+### Response status codes
+Please use the following status codes consistently in REST responses. More detailled explanations are listed at https://restfulapi.net/http-status-codes/.
+
+**Valid request:**
+- 200: The request was valid and contains a response body.
+- 204: The request was valid but does not contain a response body. This indicates that the client is not required to update the frontend.
+
+**User status error:**
+- 401: The user is not logged in. This should indicate to redirect the client to a login page.
+- 403: The user is logged in, but is not allowed to do the particular action. This should trigger an error message in the client.
+ 
+**Parameter error:**
+- 400: Invalid request. This means that required parameters are missing, not correctly formatted, or out of a reasonable range.
+- 404: All parameters are valid but the resource does not exist.
+- 409: There is a conflict between the 
+
+For example, requesting `/api/user/{id}` should return a 400 if the id is not given or is not a number. It should return 404 if id is a number but the user with that id does not exist.
+
+Other status codes can be used but should be well documented in that function. The REST endpoints should never return 5xx codes deliberately. Those codes are use by Symfony to indicate syntax errors in the backend.

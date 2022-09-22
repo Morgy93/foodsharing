@@ -49,7 +49,7 @@
         </div>
         <div>
           <button
-            class="btn btn-secondary btn-sm"
+            class="btn btn-primary btn-sm"
             @click="activateThread"
           >
             <i class="fas fa-check" /> {{ $i18n('forum.thread.activate') }}
@@ -63,6 +63,8 @@
         </div>
       </div>
     </div>
+
+    <ThreadFastnavigationButton v-if="isFastNavigationVisible" :label="$i18n('forum.thread.navigate_to_newest_post')" @navigate="navigateToNewestPost" />
 
     <div
       v-for="post in posts"
@@ -87,6 +89,8 @@
         @scroll="scrollToPost(post.id)"
       />
     </div>
+
+    <ThreadFastnavigationButton v-if="isFastNavigationVisible" :label="$i18n('forum.thread.navigate_to_oldest_post')" @navigate="navigateToOldestPost" />
 
     <div
       v-if="regionId"
@@ -148,16 +152,17 @@ import { BModal } from 'bootstrap-vue'
 import ThreadActions from './ThreadActions'
 import ThreadForm from './ThreadForm'
 import ThreadPost from './ThreadPost'
+import ThreadFastnavigationButton from './ThreadFastnavigationButton'
 import * as api from '@/api/forum'
 import { pulseError } from '@/script'
-import i18n from '@/i18n'
-import { user } from '@/server-data'
+import i18n from '@/helper/i18n'
+import DataUser from '@/stores/user'
 import { GET } from '@/browser'
 import { setThreadStatus } from '@/api/forum'
 import ThreadStatus from './ThreadStatus'
 
 export default {
-  components: { BModal, ThreadActions, ThreadForm, ThreadPost },
+  components: { BModal, ThreadActions, ThreadForm, ThreadPost, ThreadFastnavigationButton },
   props: {
     id: {
       type: Number,
@@ -187,10 +192,22 @@ export default {
   },
   computed: {
     userId () {
-      return user.id
+      return DataUser.getters.getUserId()
+    },
+    userFirstName () {
+      return DataUser.getters.getUserFirstName()
     },
     isOpen () {
       return this.status === ThreadStatus.THREAD_OPEN
+    },
+    newestPostId () {
+      return this.posts[this.posts.length - 1].id
+    },
+    oldestPostId () {
+      return this.posts[0].id
+    },
+    isFastNavigationVisible () {
+      return this.posts.length > 2
     },
   },
   async created () {
@@ -210,6 +227,12 @@ export default {
       if (p) {
         p.scrollIntoView({ behavior: 'smooth', block: 'center' })
       }
+    },
+    navigateToNewestPost () {
+      this.scrollToPost(this.newestPostId)
+    },
+    navigateToOldestPost () {
+      this.scrollToPost(this.oldestPostId)
     },
     reply (body) {
       // this.$refs.form.text = `> ${body.split('\n').join('\n> ')}\n\n${this.$refs.form.text}`
@@ -297,11 +320,11 @@ export default {
     async reactionAdd (post, key, onlyLocally = false) {
       if (post.reactions[key]) {
         // reaction alrready in list, increase count by 1
-        if (post.reactions[key].find(r => r.id === user.id)) return // already given - abort
-        post.reactions[key].push({ id: user.id, name: user.firstname })
+        if (post.reactions[key].find(r => r.id === this.userId)) return // already given - abort
+        post.reactions[key].push({ id: this.userId, name: this.userName })
       } else {
         // reaction not in the list yet, append it
-        this.$set(post.reactions, key, [{ id: user.id, name: user.firstname }])
+        this.$set(post.reactions, key, [{ id: this.userId, name: this.userName }])
       }
 
       if (!onlyLocally) {
@@ -315,7 +338,7 @@ export default {
       }
     },
     async reactionRemove (post, key, onlyLocally = false) {
-      const reactionUser = post.reactions[key].find(r => r.id === user.id)
+      const reactionUser = post.reactions[key].find(r => r.id === this.userId)
 
       if (!reactionUser) return
 
@@ -339,8 +362,8 @@ export default {
         body: body,
         reactions: {},
         author: {
-          name: `${user.firstname} ${user.lastname}`,
-          avatar: user.avatar['130'].replace(/^(\/images\/130_q_)/, ''),
+          name: `${this.userFirstName} ${DataUser.getters.getUserLastName()}`,
+          avatar: DataUser.getters.getAvatar(),
         },
       }
       this.loadingPosts.push(-1)

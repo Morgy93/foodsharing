@@ -635,7 +635,7 @@ class SeedCommand extends Command implements CustomCommandInterface
 	}
 
 	private function createPoll(int $regionId, int $authorId, int $type, array $voterIds,
-								?Carbon $startDate = null, ?Carbon $endDate = null)
+		?Carbon $startDate = null, ?Carbon $endDate = null)
 	{
 		$possibleValues = [];
 		switch ($type) {

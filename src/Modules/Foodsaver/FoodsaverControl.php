@@ -51,7 +51,7 @@ class FoodsaverControl extends Control
 	}
 
 	/*
-	 * Default Method for ?page=foodsaver
+	 * Default Method for /?page=foodsaver
 	 *
 	 * There are two very different cases handled here: editing a user, or viewing all users in a region.
 	 */
@@ -92,7 +92,7 @@ class FoodsaverControl extends Control
 					CNT_RIGHT
 				);
 			}
-			// end region-view
+		// end region-view
 		} elseif ($fsId && $this->profilePermissions->mayAdministrateUserProfile($fsId)) {
 			// begin user-edit
 			if (!$fs = $this->foodsaverGateway->getFoodsaver($fsId)) {

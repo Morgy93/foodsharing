@@ -1,5 +1,4 @@
 import 'whatwg-fetch'
-
 import '@/sentry'
 
 import '@/style'
@@ -11,13 +10,15 @@ import { initialize } from '@/script'
 
 import 'jquery-ui'
 import registerServiceWorker from '@/registerServiceWorker'
-import './scss/bootstrap-theme.scss'
+
+/*
+  Loads a lot of CSS stylings
+*/
 import './scss/index.scss'
 
-import '@/becomeBezirk'
 import '@/views/views'
 
-import serverData from '@/server-data'
+import serverData from '@/helper/server-data'
 
 import socket from '@/socket'
 import { getCsrfToken } from '@/api/base'

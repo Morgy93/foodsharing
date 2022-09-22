@@ -102,7 +102,7 @@ class vPage
 		}
 
 		$this->pageHelper->addContent('
-		<div class="page ui-padding ui-widget-content corner-all">
+		<div class="page-container render">
 			<div class="h1">
 				<h1>' . $this->title . '</h1>
 				' . $subtitle . '
@@ -117,7 +117,7 @@ class vPage
 				';
 			}
 			$this->pageHelper->addContent('
-		<div class="page page-section ui-padding ui-widget-content corner-all">
+		<div class="page-container render">
 			' . $title . $s['cnt'] . '
 		</div>');
 		}
@@ -137,7 +137,7 @@ class vPage
 
 			if ($s['option']['wrapper']) {
 				$s['cnt'] = '
-			<div class="page' . $class . ' ui-padding ui-widget-content corner-all">
+			<div class="page-container page' . $class . ' render">
 				' . $title . $s['cnt'] . '
 			</div>';
 			} else {
@@ -162,7 +162,7 @@ class vPage
 
 			if ($s['option']['wrapper']) {
 				$s['cnt'] = '
-			<div class="page' . $class . ' ui-padding ui-widget-content corner-all">
+			<div class="page-container page' . $class . ' render">
 				' . $title . $s['cnt'] . '
 			</div>';
 			} else {

@@ -57,7 +57,6 @@ class DashboardControl extends Control
 	public function index(): void
 	{
 		$this->params['broadcast'] = $this->getBroadcast();
-		$this->params['errors'] = $this->getErrors();
 		$this->params['quiz'] = $this->getQuiz();
 
 		if ($this->session->may('fs')) {
@@ -71,96 +70,6 @@ class DashboardControl extends Control
 	private function getBroadcast(): array
 	{
 		return $this->contentGateway->getDetail(ContentId::BROADCAST_MESSAGE);
-	}
-
-	/**
-	 * @throws Exception
-	 */
-	private function getErrors(): array
-	{
-		$errors = [];
-		if ($this->session->may('fs')) {
-			$address = $this->foodsaverGateway->getFoodsaverAddress($this->session->id());
-			if (empty($address['lat']) || empty($address['lon'])) {
-				$errors[] = (object)[
-					'type' => 'danger',
-					'tag' => 'error.adress',
-					'icon' => 'fa-map-marker-alt',
-					'title' => $this->translator->trans('error.adress.title'),
-					'description' => $this->translator->trans('error.adress.info'),
-					'isCloseable' => false,
-					'links' => [
-						[
-							'urlShortHand' => 'settings',
-							'text' => 'error.adress.link'
-						]
-					],
-				];
-			}
-
-			if (!$this->session->getCurrentRegionId()) {
-				$this->pageHelper->addJs('becomeBezirk();');
-
-				$errors[] = (object)[
-					'type' => 'danger',
-					'tag' => 'error.choose_home_region',
-					'icon' => 'fa-map-marker-alt',
-					'title' => $this->translator->trans('error.choose_home_region.title'),
-					'description' => $this->translator->trans('error.choose_home_region.info'),
-					'isCloseable' => false,
-					'links' => [
-						[
-							'href' => 'javascript:becomeBezirk();',
-							'text' => 'error.choose_home_region.link'
-						]
-					],
-				];
-			}
-		}
-
-		if (!$this->session->get('email_is_activated')) {
-			$errors[] = (object)[
-				'type' => 'danger',
-				'tag' => 'error.mail_activation',
-				'icon' => 'fa-exclamation-triangle',
-				'title' => $this->translator->trans('error.mail_activation.title'),
-				'description' => $this->translator->trans('error.mail_activation.description'),
-				'isCloseable' => false,
-				'links' => [
-					[
-						'urlShortHand' => 'resendActivationMail',
-						'text' => 'error.mail_activation.link_1',
-					],
-					[
-						'urlShortHand' => 'settings',
-						'text' => 'error.mail_activation.link_2',
-					]
-				],
-			];
-		}
-
-		if ($this->session->get('email_is_bouncing')) {
-			$errors[] = (object)[
-				'type' => 'danger',
-				'tag' => 'error.mail_bounce',
-				'icon' => 'fa-exclamation-triangle',
-				'title' => $this->translator->trans('error.mail_bounce.title'),
-				'description' => $this->translator->trans('error.mail_bounce.description'),
-				'isCloseable' => false,
-				'links' => [
-					[
-						'urlShortHand' => 'settings',
-						'text' => 'error.mail_bounce.link_1',
-					],
-					[
-						'urlShortHand' => 'guideLockedEmail',
-						'text' => 'error.mail_bounce.link_2',
-					]
-				],
-			];
-		}
-
-		return $errors;
 	}
 
 	private function getEvents(): object
@@ -187,11 +96,11 @@ class DashboardControl extends Control
 			$cnt['closeable'] = false;
 			$cnt['links'] = [
 				(object)[
-					'urlShortHand' => 'quizFs',
+					'urlShortHand' => 'quiz_foodsaver',
 					'text' => 'foodsaver.upgrade.to_fs',
 				],
 				(object)[
-					'urlShortHand' => 'quizLearning',
+					'urlShortHand' => 'quiz_learning_video',
 					'text' => 'foodsaver.upgrade.learning',
 				]
 			];

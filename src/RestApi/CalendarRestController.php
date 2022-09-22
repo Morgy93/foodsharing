@@ -18,7 +18,9 @@ use Jsvrcek\ICS\Model\Description\Location;
 use Jsvrcek\ICS\Utility\Formatter;
 use OpenApi\Annotations as OA;
 use Symfony\Component\HttpFoundation\Response;
-use Symfony\Component\HttpKernel\Exception\HttpException;
+use Symfony\Component\HttpKernel\Exception\AccessDeniedHttpException;
+use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
+use Symfony\Component\HttpKernel\Exception\UnauthorizedHttpException;
 use Symfony\Contracts\Translation\TranslatorInterface;
 
 /**
@@ -62,12 +64,12 @@ class CalendarRestController extends AbstractFOSRestController
 	{
 		$userId = $this->session->id();
 		if (!$userId) {
-			throw new HttpException(401);
+			throw new UnauthorizedHttpException('');
 		}
 
 		$token = $this->settingsGateway->getApiToken($userId);
 		if (empty($token)) {
-			throw new HttpException(404);
+			throw new NotFoundHttpException();
 		}
 
 		return $this->handleView($this->view(['token' => $token]));
@@ -87,7 +89,7 @@ class CalendarRestController extends AbstractFOSRestController
 	{
 		$userId = $this->session->id();
 		if (!$userId) {
-			throw new HttpException(401);
+			throw new UnauthorizedHttpException('');
 		}
 
 		$token = bin2hex(openssl_random_pseudo_bytes(self::TOKEN_LENGTH_IN_BYTES));
@@ -110,7 +112,7 @@ class CalendarRestController extends AbstractFOSRestController
 	{
 		$userId = $this->session->id();
 		if (!$userId) {
-			throw new HttpException(401);
+			throw new UnauthorizedHttpException('');
 		}
 
 		$this->settingsGateway->removeApiToken($userId);
@@ -135,7 +137,7 @@ class CalendarRestController extends AbstractFOSRestController
 		// check access token
 		$userId = $this->settingsGateway->getUserForToken($token);
 		if (!$userId) {
-			throw new HttpException(403);
+			throw new AccessDeniedHttpException();
 		}
 
 		// add all future pickup dates

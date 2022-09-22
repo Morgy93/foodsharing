@@ -494,7 +494,7 @@ class RegionGateway extends BaseGateway
 	public function listRegionsForBotschafter(int $foodsaverId): array
 	{
 		return $this->db->fetchAll(
-	'SELECT 	`fs_botschafter`.`bezirk_id`,
+			'SELECT 	`fs_botschafter`.`bezirk_id`,
 					`fs_bezirk`.`has_children`,
 					`fs_bezirk`.`parent_id`,
 					`fs_bezirk`.name,

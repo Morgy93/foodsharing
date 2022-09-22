@@ -91,9 +91,9 @@ class TeamGateway extends BaseGateway
 		$context = strip_tags($context);
 
 		if (($block = $this->db->fetch(
-				'SELECT UNIX_TIMESTAMP(`start`) AS `start`,`duration` FROM fs_ipblock WHERE ip = :ip AND context = :context',
-				[[':ip' => $ip], [':context' => $context]]
-			)) && time() < ((int)$block['start'] + (int)$block['duration'])) {
+			'SELECT UNIX_TIMESTAMP(`start`) AS `start`,`duration` FROM fs_ipblock WHERE ip = :ip AND context = :context',
+			[[':ip' => $ip], [':context' => $context]]
+		)) && time() < ((int)$block['start'] + (int)$block['duration'])) {
 			return true;
 		}
 

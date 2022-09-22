@@ -10,7 +10,7 @@
             <b-button
               v-b-tooltip
               :title="$i18n('mailbox.write')"
-              class="btn btn-secondary btn-sm write-new ml-1"
+              class="btn btn-primary btn-sm write-new ml-1"
               @click="mailboxWrite"
             >
               <i class="fas faw fa-plus" />

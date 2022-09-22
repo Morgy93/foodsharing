@@ -14,7 +14,7 @@ $container = initializeContainer();
 */
 if (!isset($argv)) {
 	header('Location: ' . BASE_URL);
-	exit();
+	exit;
 }
 
 $app = 'Console';

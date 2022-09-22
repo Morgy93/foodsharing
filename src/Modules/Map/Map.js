@@ -18,9 +18,9 @@ import L from 'leaflet'
 
 import 'leaflet.awesome-markers'
 import 'leaflet.markercluster'
-import 'mapbox-gl-leaflet'
+// import 'mapbox-gl-leaflet'
 
-import 'mapbox-gl/dist/mapbox-gl.css'
+// import 'mapbox-gl/dist/mapbox-gl.css'
 import './Map.css'
 import { getMapMarkers } from '@/api/map'
 import { vueApply, vueRegister } from '@/vue'

@@ -34,7 +34,7 @@ define('PLATFORM_MAILBOX_HOST', 'foodsharing.network');
 
 define('MAILBOX_OWN_DOMAINS', ['foodsharing.network', 'lebensmittelretten.de', 'foodsharing.de']);
 
-define('MAILER_HOST', 'maildev');
+define('MAILER_HOST', 'smtp://maildev:25');
 
 define('MEM_ENABLED', true);
 
@@ -50,6 +50,7 @@ define('BOUNCE_IMAP_HOST', null);
 define('BOUNCE_IMAP_USER', null);
 define('BOUNCE_IMAP_PASS', null);
 define('BOUNCE_IMAP_PORT', null);
+define('BOUNCE_IMAP_SERVICE_OPTION', null);
 
 if (!defined('ROOT_DIR')) {
 	define('ROOT_DIR', './');

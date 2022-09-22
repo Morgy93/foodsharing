@@ -21,15 +21,16 @@ $I->login($user['email']);
  * As the user does not have a home region, it gets to select one by default. Maybe this behaviour changes and we need
  * to open the choser?
  */
-/*$I->moveMouseOver('//*[contains(@id, "mainMenu")]/li[contains(. ,"Bezirke")]');
-$I->click('Bezirk beitreten');
-*/
 $I->amOnPage('/?page=dashboard');
-$I->see('Bitte auswählen...');
-$I->selectOption('#xv-childbezirk-0', $region['name']);
-$I->click('#becomebezirkchooser-button');
+$I->waitForActiveAPICalls();
+$I->waitForElement('.testing-region-join');
+$I->see('Bitte auswählen...', ['css' => '.testing-region-join-select']);
+$I->selectOption('.testing-region-join-select', $region['name']);
+$I->click('.testing-region-join .btn.btn-primary');
+$I->waitForActiveAPICalls();
 $I->amOnPage('/?page=bezirk');
-$I->waitForElementVisible('//a[contains(text(), "Neues Thema")]');
+$I->waitForElement('.user_display_name');
+$I->see('Neues Thema verfassen', ['css' => '.button']);
 $I->dontSeeInDatabase('fs_foodsaver_has_bell', ['foodsaver_id' => $ambassador['id']]);
 $I->seeInDatabase('fs_foodsaver_has_bell', ['foodsaver_id' => $welcomeAdmin['id']]);
 $I->seeInDatabase('fs_foodsaver_has_bezirk', ['foodsaver_id' => $user['id'], 'bezirk_id' => $region['id']]);

@@ -29,7 +29,6 @@ import StoreField from './StoreField'
 import ListToggleMixin from '@/mixins/ContainerToggleMixin'
 
 export default {
-  name: 'StoreList',
   components: {
     Container,
     StoreField,
@@ -40,7 +39,7 @@ export default {
   },
   computed: {
     data () {
-      const data = getters.get()
+      const data = getters.getOthers()
       this.setList(data)
       return data
     },

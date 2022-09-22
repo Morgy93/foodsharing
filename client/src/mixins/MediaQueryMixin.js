@@ -32,15 +32,21 @@ export default {
     }
   },
   mounted () {
+    window.addEventListener('resize', this.getWindowWidth)
     this.$nextTick(function () {
-      window.addEventListener('resize', this.getWindowWidth)
       this.getWindowWidth()
     })
   },
   // https://getbootstrap.com/docs/5.0/layout/breakpoints/
   computed: {
+    isTouch () {
+      return 'ontouchstart' in window || navigator.maxTouchPoints > 0 || navigator.msMaxTouchPoints > 0
+    },
     viewIsMobile () {
       return (this.viewIsXS || this.viewIsSM) && !this.viewIsMD
+    },
+    viewIsXXS () {
+      return this.windowWidth < 375
     },
     viewIsXS () {
       return this.windowWidth < 576

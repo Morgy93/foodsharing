@@ -71,6 +71,5 @@ class StoreCest
 		$I->waitForActiveAPICalls();
 		$I->waitForElement('.pickup-date', 5);
 		$I->see($this->foodsaver['name'] . ' ' . $this->foodsaver['nachname']);
-		$I->waitForText('vor etwa 3 Jahren');
 	}
 }

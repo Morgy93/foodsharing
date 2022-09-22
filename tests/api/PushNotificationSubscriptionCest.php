@@ -36,6 +36,6 @@ class PushNotificationSubscriptionCest
 	{
 		$I->sendPOST('api/pushnotification/webpush/subscription', $this->testSubscription);
 
-		$I->seeResponseCodeIs(HttpCode::FORBIDDEN);
+		$I->seeResponseCodeIs(HttpCode::UNAUTHORIZED);
 	}
 }

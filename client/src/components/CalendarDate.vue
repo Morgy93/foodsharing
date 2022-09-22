@@ -8,7 +8,7 @@
       v-if="!isEventToday && !isEventTomorrow"
       class="px-1 day"
     >
-      {{ displayedWeekday }} {{ displayedDay }}
+      {{ displayedDay }}
     </div>
     <div
       v-else-if="isEventToday"
@@ -28,10 +28,6 @@
 </template>
 
 <script>
-import formatDate from 'date-fns/format'
-import isToday from 'date-fns/isToday'
-import isTomorrow from 'date-fns/isTomorrow'
-
 export default {
   props: {
     dateObject: { type: Date, required: true },
@@ -39,19 +35,21 @@ export default {
   },
   computed: {
     displayedDay () {
-      return formatDate(this.dateObject, 'dd')
-    },
-    displayedWeekday () {
-      return this.$i18n('date_short.' + formatDate(this.dateObject, 'EEEE'))
+      return this.$dateFormatter.format(this.dateObject, {
+        day: 'numeric',
+        weekday: 'short',
+      })
     },
     displayedMonth () {
-      return this.$i18n('month.' + formatDate(this.dateObject, 'M'))
+      return this.$dateFormatter.format(this.dateObject, {
+        month: 'long',
+      })
     },
     isEventToday () {
-      return isToday(this.dateObject)
+      return this.$dateFormatter.isToday(this.dateObject)
     },
     isEventTomorrow () {
-      return isTomorrow(this.dateObject)
+      return this.$dateFormatter.isTomorrow(this.dateObject)
     },
     today () {
       return this.$i18n('date.Today')
@@ -65,8 +63,8 @@ export default {
 
 <style lang="scss" scoped>
 .datebox {
-  --calendar-highlight-bg: #ff8746; // new orange
-  --calendar-highlight-text: #45a045; // modified kale
+  --calendar-highlight-bg: var(--fs-color-warning-500); // new orange
+  --calendar-highlight-text: var(--fs-color-secondary-500); // modified kale
   --calendar-font-size: 1rem;
   --calendar-line-height: 1.2;
   --calendar-border-radius: 6px;
@@ -82,18 +80,18 @@ export default {
     line-height: var(--calendar-line-height);
     font-weight: bold;
     background-color: var(--calendar-highlight-bg);
-    color: var(--white);
-    text-shadow: 1px 1px 1px rgba(0, 0, 0, 0.75);
+    color: var(--fs-color-light);
+    text-shadow: 1px 1px 1px var(--fs-color-gray-alpha-80);
   }
 
   .day {
-    border: 2px solid var(--border);
+    border: 2px solid var(--fs-border-default);
     border-radius: var(--calendar-border-radius);
     border-top: 0;
     border-top-left-radius: 0;
     border-top-right-radius: 0;
     color: var(--calendar-highlight-text);
-    font-family: 'Alfa Slab One', serif;
+    font-family: var(--fs-font-family-headline);
     font-size: calc(1.57 * var(--calendar-font-size));
     line-height: var(--calendar-line-height);
 

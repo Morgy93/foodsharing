@@ -1,6 +1,6 @@
 /* eslint-disable eqeqeq */
 import $ from 'jquery'
-import i18n from '@/i18n'
+import i18n from '@/helper/i18n'
 import { expose } from '@/utils'
 import { pulseError } from '@/script'
 import { deletePost } from '@/api/wall'

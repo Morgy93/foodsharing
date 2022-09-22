@@ -255,4 +255,33 @@ class StoreTransactionsTest extends \Codeception\Test\Unit
 		$this->tester->addCollector($this->foodsaver['id'], $store['id'], ['date' => $date]);
 		$this->assertEquals($this->transactions->getAvailablePickupStatus($store['id']), 0);
 	}
+
+	public function testListAllStoreStatusForFoodsaver()
+	{
+		// Create store coordinator
+		$date = Carbon::now()->add('2 days')->hours(16)->minutes(30)->seconds(0)->microseconds(0);
+		$dow = $date->weekday();
+
+		$store_coord = $this->tester->createStore($this->region_id, null, null, ['betrieb_status_id' => CooperationStatus::COOPERATION_ESTABLISHED]);
+		$this->tester->addStoreTeam($store_coord['id'], $this->foodsaver['id'], true);
+		$this->tester->addRecurringPickup($store_coord['id'], ['time' => '16:30:00', 'dow' => $dow, 'fetcher' => 1]);
+		$regularSlots = $this->gateway->getRegularPickups($store_coord['id']);
+
+		// Create store membership
+		$store_member = $this->tester->createStore($this->region_id, null, null, ['betrieb_status_id' => CooperationStatus::COOPERATION_ESTABLISHED]);
+		$this->tester->addStoreTeam($store_member['id'], $this->foodsaver['id'], false);
+
+		$result = $this->transactions->listAllStoreStatusForFoodsaver($this->foodsaver['id']);
+		$this->assertEquals(count($result), 2);
+
+		$this->assertEquals($result[0]->store->id, $store_coord['id']);
+		$this->assertTrue($result[0]->isManaging);
+		$this->assertEquals($result[0]->membershipStatus, 1);
+		$this->assertEquals($result[0]->pickupStatus, 2);
+
+		$this->assertEquals($result[1]->store->id, $store_member['id']);
+		$this->assertFalse($result[1]->isManaging);
+		$this->assertEquals($result[1]->membershipStatus, 1);
+		$this->assertEquals($result[1]->pickupStatus, 0);
+	}
 }

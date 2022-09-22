@@ -177,10 +177,10 @@ final class MessageView extends View
 		$out .= '<div id="msg-control">
 			<form>'
 			. $this->v_utils->v_form_textarea('msg_answer', [
-				'style' => 'width: 88%;',
+				'class' => 'formcontrol',
 				'nolabel' => true,
 				'placeholder' => $this->translator->trans('chat.placeholder'),
-			]) . '<input id="conv_submit" type="submit" class="button" name="submit" value="&#xf0a9;" />
+			]) . '<input id="conv_submit" type="submit" class="fas btn btn-primary" value="" />
 			</form>
 		</div>';
 

@@ -115,7 +115,6 @@
 <script>
 import { addStoreMember } from '@/api/stores'
 import { reload, pulseError, showLoader, hideLoader } from '@/script'
-import i18n from '@/i18n'
 import UserSearchInput from '@/components/UserSearchInput'
 
 export default {
@@ -140,7 +139,7 @@ export default {
       try {
         await addStoreMember(this.storeId, userId)
       } catch (e) {
-        pulseError(i18n('error_unexpected'))
+        pulseError(this.$i18n('error_unexpected'))
       }
       hideLoader()
       // convince user to trigger page reload for server refresh of teamlist

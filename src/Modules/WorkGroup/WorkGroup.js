@@ -60,7 +60,7 @@ $('#work_group_form_photo-link').fancybox({
   closeClick: false,
   beforeClose: () => {
     onAfterClose.forEach(fn => fn())
-    console.log('afterclose')
+    // console.log('afterclose')
   },
   afterLoad: () => {
     const image = document.getElementById('work_group_form_photo-image')
@@ -113,7 +113,7 @@ $('#work_group_form_photo-link').fancybox({
         height: 500,
         maxWidth: 2000,
         maxHeight: 2000,
-        fillColor: '#ffffff',
+        fillColor: 'var(--fs-color-light)',
         imageSmoothingQuality: 'high',
       }).toBlob((blob) => {
         const formData = new window.FormData()

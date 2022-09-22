@@ -35,7 +35,7 @@
 <script>
 import { setRegionOptions } from '@/api/regions'
 import { hideLoader, pulseError, pulseInfo, showLoader } from '@/script'
-import i18n from '@/i18n'
+import i18n from '@/helper/i18n'
 
 export default {
   props: {

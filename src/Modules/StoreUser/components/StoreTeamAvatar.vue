@@ -71,12 +71,9 @@ export default {
 
 <style lang="scss" scoped>
 .team-ava {
-  --fetchcount-bg: var(--fs-beige);
-  --fetchcount-fg: var(--fs-brown);
-  --fetchcount-border: var(--fs-brown);
-  --role-may-manage-store: var(--fs-green);
-  --role-may-ambassador: var(--warning);
-  --role-other: var(--fs-beige);
+  --fetchcount-bg: var(--fs-color-primary-200);
+  --fetchcount-fg: var(--fs-color-primary-500);
+  --fetchcount-border: var(--fs-color-primary-500);
 }
 
 a {
@@ -89,22 +86,25 @@ a {
 
 .member-fetchcount {
   position: absolute;
-  top: 0;
-  right: -10px;
-  border: 2px solid var(--fetchcount-border);
+  top: 5px;
+  right: -5px;
   min-width: 1.5rem;
-  opacity: 0.9;
-  background-color: var(--fetchcount-bg);
-  color: var(--fetchcount-fg);
+  border: 1px solid var(--fs-border-default);
+  background-color: var(--fs-color-primary-300);
+  color: var(--fs-color-primary-500);
 
   &.maysm {
-    border-color: var(--role-may-manage-store);
+    color: var(--fs-color-light);
+    background-color: var(--fs-color-role-storemanager);
+    border-color: var(--fs-color-role-storemanager);
   }
   // &.mayamb {
-  //   border-color: var(--role-may-ambassador);
+    //   border-color: var(--fs-color-role-ambassador);
   // }
   &.waiting {
-    border-color: var(--role-other);
+    color: var(--fs-color-light);
+    background-color: var(--fs-color-role-jumper);
+    border-color: var(--fs-color-role-jumper);
   }
 }
 </style>

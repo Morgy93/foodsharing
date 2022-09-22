@@ -2,6 +2,7 @@
 
 namespace Foodsharing\RestApi;
 
+use DateTime;
 use Foodsharing\Lib\Session;
 use Foodsharing\Modules\Bell\BellGateway;
 use Foodsharing\Modules\Bell\DTO\Bell;
@@ -13,9 +14,11 @@ use Foodsharing\Modules\Store\StoreGateway;
 use Foodsharing\Modules\Store\StoreTransactions;
 use Foodsharing\Modules\Store\TeamStatus as TeamMembershipStatus;
 use Foodsharing\Permissions\StorePermissions;
+use Foodsharing\RestApi\Models\Store\StoreStatusForMemberModel;
 use FOS\RestBundle\Controller\AbstractFOSRestController;
 use FOS\RestBundle\Controller\Annotations as Rest;
 use FOS\RestBundle\Request\ParamFetcher;
+use Nelmio\ApiDocBundle\Annotation\Model;
 use OpenApi\Annotations as OA;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\Exception\AccessDeniedHttpException;
@@ -62,8 +65,11 @@ class StoreRestController extends AbstractFOSRestController
 	 */
 	public function getStoreAction(int $storeId): Response
 	{
+		if (!$this->session->id()) {
+			throw new UnauthorizedHttpException('', self::NOT_LOGGED_IN);
+		}
 		if (!$this->session->may('fs')) {
-			throw new UnauthorizedHttpException(self::NOT_LOGGED_IN);
+			throw new AccessDeniedHttpException('invalid permissions');
 		}
 		$maySeeDetails = $this->storePermissions->mayAccessStore($storeId);
 
@@ -79,23 +85,42 @@ class StoreRestController extends AbstractFOSRestController
 	}
 
 	/**
+	 * Provides a list of all foodsaver related stores and the next picks status.
+	 *
 	 * @OA\Tag(name="stores")
+	 * @OA\Tag(name="user")
+	 *
+	 * @OA\Response(
+	 * 		response="200",
+	 * 		description="Success.",
+	 *      @OA\JsonContent(
+	 *        type="array",
+	 *        @OA\Items(ref=@Model(type=StoreStatusForMemberModel::class))
+	 *      )
+	 * )
+	 * @OA\Response(response="204", description="No foodsaver related stores found.")
+	 * @OA\Response(response="401", description="Not logged in")
 	 *
 	 * @Rest\Get("user/current/stores")
 	 */
-	public function getFilteredStoresForUserAction(): Response
+	public function getListOfStoreStatusForCurrentFoodsaver(): Response
 	{
 		if (!$this->session->may()) {
-			throw new UnauthorizedHttpException(self::NOT_LOGGED_IN);
+			throw new UnauthorizedHttpException('', self::NOT_LOGGED_IN);
 		}
 
-		$filteredStoresForUser = $this->storeTransactions->getFilteredStoresForUser($this->session->id());
+		$listOfStoreStatus = $this->storeTransactions->listAllStoreStatusForFoodsaver($this->session->id());
 
-		if ($filteredStoresForUser === []) {
+		if ($listOfStoreStatus === []) {
 			return $this->handleView($this->view([], 204));
 		}
 
-		return $this->handleView($this->view($filteredStoresForUser, 200));
+		$store_team_memberships = [];
+		foreach ($listOfStoreStatus as $storeStatus) {
+			$store_team_memberships[] = new StoreStatusForMemberModel($storeStatus);
+		}
+
+		return $this->handleView($this->view($store_team_memberships, 200));
 	}
 
 	/**
@@ -109,7 +134,7 @@ class StoreRestController extends AbstractFOSRestController
 	public function getStorePosts(int $storeId): Response
 	{
 		if (!$this->session->may()) {
-			throw new UnauthorizedHttpException(self::NOT_LOGGED_IN);
+			throw new UnauthorizedHttpException('', self::NOT_LOGGED_IN);
 		}
 		if (!$this->storePermissions->mayReadStoreWall($storeId)) {
 			throw new AccessDeniedHttpException();
@@ -135,7 +160,7 @@ class StoreRestController extends AbstractFOSRestController
 	public function addStorePostAction(int $storeId, ParamFetcher $paramFetcher): Response
 	{
 		if (!$this->session->may()) {
-			throw new UnauthorizedHttpException(self::NOT_LOGGED_IN);
+			throw new UnauthorizedHttpException('', self::NOT_LOGGED_IN);
 		}
 		if (!$this->storePermissions->mayWriteStoreWall($storeId)) {
 			throw new AccessDeniedHttpException();
@@ -195,14 +220,14 @@ class StoreRestController extends AbstractFOSRestController
 	public function deleteStorePostAction(int $storeId, int $postId): Response
 	{
 		if (!$this->session->may()) {
-			throw new UnauthorizedHttpException(self::NOT_LOGGED_IN);
+			throw new UnauthorizedHttpException('', self::NOT_LOGGED_IN);
 		}
 		if (!$this->storePermissions->mayDeleteStoreWallPost($storeId, $postId)) {
 			throw new AccessDeniedHttpException();
 		}
 		$result = $this->storeGateway->getStoreWallpost($storeId, $postId);
 
-		$this->storeGateway->addStoreLog($result['betrieb_id'], $this->session->id(), $result['foodsaver_id'], new \DateTime($result['zeit']), StoreLogAction::DELETED_FROM_WALL, $result['text']);
+		$this->storeGateway->addStoreLog($result['betrieb_id'], $this->session->id(), $result['foodsaver_id'], new DateTime($result['zeit']), StoreLogAction::DELETED_FROM_WALL, $result['text']);
 
 		$this->storeGateway->deleteStoreWallpost($storeId, $postId);
 
@@ -226,7 +251,7 @@ class StoreRestController extends AbstractFOSRestController
 	public function requestStoreTeamMembershipAction(int $storeId, int $userId): Response
 	{
 		if (!$this->session->id()) {
-			throw new UnauthorizedHttpException(self::NOT_LOGGED_IN);
+			throw new UnauthorizedHttpException('', self::NOT_LOGGED_IN);
 		}
 		if (!$this->storeGateway->storeExists($storeId)) {
 			throw new NotFoundHttpException('Store does not exist.');
@@ -426,7 +451,7 @@ class StoreRestController extends AbstractFOSRestController
 	public function moveMemberToStandbyTeamAction(int $storeId, int $userId): Response
 	{
 		if (!$this->session->id()) {
-			throw new UnauthorizedHttpException(self::NOT_LOGGED_IN);
+			throw new UnauthorizedHttpException('', self::NOT_LOGGED_IN);
 		}
 		if (!$this->storePermissions->mayEditStoreTeam($storeId)) {
 			throw new AccessDeniedHttpException();
@@ -457,7 +482,7 @@ class StoreRestController extends AbstractFOSRestController
 	public function moveUserToRegularTeamAction(int $storeId, int $userId): Response
 	{
 		if (!$this->session->id()) {
-			throw new UnauthorizedHttpException(self::NOT_LOGGED_IN);
+			throw new UnauthorizedHttpException('', self::NOT_LOGGED_IN);
 		}
 		if (!$this->storePermissions->mayEditStoreTeam($storeId)) {
 			throw new AccessDeniedHttpException();
@@ -470,6 +495,83 @@ class StoreRestController extends AbstractFOSRestController
 		$this->storeTransactions->moveMemberToRegularTeam($storeId, $userId);
 
 		return $this->handleView($this->view([], 200));
+	}
+
+	/**
+	 * Returns an array of log entries with foodsaver and log information.
+	 * The log contains only entries from the past 7 days.
+	 *
+	 * @OA\Parameter(name="storeId", in="path", @OA\Schema(type="integer"))
+	 * @OA\Parameter(name="storeLogActionIds", in="path", @OA\Schema(type="string"), description="The ids of the actions, seperated by commas like: 1,2,3")
+	 *
+	 * @OA\Tag(name="stores")
+	 *
+	 * @Rest\Get("stores/{storeId}/log/{storeLogActionIds}")
+	 */
+	public function showStoreLogHistoryAction(int $storeId, string $storeLogActionIds): Response
+	{
+		if (!$this->session->id()) {
+			throw new UnauthorizedHttpException('', self::NOT_LOGGED_IN);
+		}
+
+		if (!$this->storePermissions->maySeePickupHistory($storeId)) {
+			throw new AccessDeniedHttpException();
+		}
+
+		$storeLogActions = explode(',', $storeLogActionIds);
+		$storeLogEntries = $this->storeGateway->getStoreLogsByActionType($storeId, $storeLogActions);
+
+		$storeLogEntriesFromLastSevenDays = array_filter($storeLogEntries, function ($logEntry) {
+			$performedAt = new DateTime($logEntry['performed_at']);
+			$performedAtTimestamp = $performedAt->getTimestamp();
+			$dateBeforeSevenDays = new DateTime('-7 days');
+			$dateBeforeSevenDays = $dateBeforeSevenDays->setTime(0, 0, 0, 0);
+			$dateBeforeSevenDaysTimestamp = $dateBeforeSevenDays->getTimestamp();
+
+			return $performedAtTimestamp >= $dateBeforeSevenDaysTimestamp;
+		});
+
+		$storeLogEntriesFromLastSevenDays = array_map(function ($logEntry) {
+			$correctedDate = new DateTime($logEntry['date_reference']);
+			$correctedDate->add(new \DateInterval('PT2H'));
+			$logEntry['date_reference'] = $correctedDate->format('Y-m-d H:i:s');
+
+			return $logEntry;
+		}, $storeLogEntriesFromLastSevenDays);
+
+		$extendedLogEntries = $this->extendStoreLogWithFoodsaverProfilData($storeId, $storeLogEntriesFromLastSevenDays);
+
+		return $this->handleView($this->view($extendedLogEntries, 200));
+	}
+
+	private function extendStoreLogWithFoodsaverProfilData(int $storeId, array $storeLogEntries): array
+	{
+		$storeTeam = [];
+		foreach ($this->storeGateway->getStoreTeam($storeId) as $teamMember) {
+			$foodsaverId = $teamMember['id'];
+			$storeTeam[$foodsaverId] = RestNormalization::normalizeStoreUser($teamMember);
+		}
+
+		$mergedStoreLogEntries = [];
+
+		foreach ($storeLogEntries as $entry) {
+			$affectedFoodsaverId = $entry['affected_foodsaver_id'];
+			$performedFoodsaverId = $entry['performed_foodsaver_id'];
+
+			$affectedFoodsaverModel = $storeTeam[$affectedFoodsaverId] ?? RestNormalization::normalizeStoreUser($this->foodsaverGateway->getFoodsaver($affectedFoodsaverId));
+			$performedFoodsaverModel = null;
+
+			if (!is_null($performedFoodsaverId)) {
+				$performedFoodsaverModel = $storeTeam[$performedFoodsaverId] ?? RestNormalization::normalizeStoreUser($this->foodsaverGateway->getFoodsaver($performedFoodsaverId));
+			}
+
+			$entry['affected_foodsaver'] = $affectedFoodsaverModel;
+			$entry['performed_foodsaver'] = $performedFoodsaverModel;
+
+			$mergedStoreLogEntries[] = $entry;
+		}
+
+		return $mergedStoreLogEntries;
 	}
 
 	/**
@@ -491,7 +593,7 @@ class StoreRestController extends AbstractFOSRestController
 	{
 		$sessionId = $this->session->id();
 		if (!$sessionId) {
-			throw new UnauthorizedHttpException(self::NOT_LOGGED_IN);
+			throw new UnauthorizedHttpException('', self::NOT_LOGGED_IN);
 		}
 		if (!$this->storeGateway->storeExists($storeId)) {
 			throw new NotFoundHttpException('Store does not exist.');

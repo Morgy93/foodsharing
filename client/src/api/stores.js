@@ -1,8 +1,7 @@
 import { get, patch, post, remove } from './base'
-import dateFnsParseISO from 'date-fns/parseISO'
 
 function normalizeStoreWallPost (post) {
-  post.createdAt = dateFnsParseISO(post.createdAt)
+  post.createdAt = new Date(Date.parse(post.createdAt))
   post.body = post.text
   delete post.text
   return post
@@ -60,4 +59,8 @@ export async function moveMemberToStandbyTeam (storeId, userId) {
 
 export async function moveMemberToRegularTeam (storeId, userId) {
   return remove(`/stores/${storeId}/members/${userId}/standby`)
+}
+
+export async function getStoreLog (storeId, storeActionLogsAsArray) {
+  return get(`/stores/${storeId}/log/${storeActionLogsAsArray.join(',')}`)
 }

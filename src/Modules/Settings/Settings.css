@@ -21,38 +21,38 @@
 }
 
 .answer label {
-  color: #ffffff !important;
+  color: var(--fs-color-light) !important;
 }
 
 #quizwrapper .answer label {
-  color: #000000 !important;
+  color: var(--fs-color-dark) !important;
 }
 
 .q-green {
-  background-color: #488e1c;
-  color: #ffffe8;
+  background-color: var(--fs-color-secondary-500);
+  color: var(--fs-color-light);
 }
 
 .q-red {
-  background-color: #e74955;
-  color: #fff !important;
+  background-color: var(--fs-color-danger-500);
+  color: var(--fs-color-light) !important;
 }
 
 .q-neutral {
-  background-color: #f5f5b5;
-  color: var(--fs-brown);
+  background-color: var(--fs-color-warning-200);
+  color: var(--fs-color-primary-500);
 }
 
 .q-neutral label.wrapper-label {
-  color: var(--fs-brown) !important;
+  color: var(--fs-color-primary-500) !important;
 }
 
 .question {
-  color: #ffffff;
+  color: var(--fs-color-light);
   font-weight: bold;
   position: relative;
   width: 96%;
-  background: var(--fs-brown);
+  background: var(--fs-color-primary-500);
   border-radius: 10px;
   padding: 15px;
 }
@@ -62,7 +62,7 @@
   position: absolute;
   border-style: solid;
   border-width: 10px 10px 10px 0;
-  border-color: transparent var(--fs-brown);
+  border-color: var(--fs-color-transparent) var(--fs-color-primary-500);
   display: block;
   width: 0;
   z-index: 1;

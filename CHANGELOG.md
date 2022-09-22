@@ -8,11 +8,14 @@
 - Allow the foodsaver, which is verifiable, to create itself in the profile settings (without cut markers) !2198 #chriswalg
 - The profile page now contains one unified pickup section. Future pickup options are now visible in that section. !2211 !2226 !2291 @AntonBallmaier
 - Pickup statistics on profile !2208 @fs_k
+- Allow the foodsaver, which is verifiable, to create itself in the profile settings (without cut markers) !2198 @chriswalg
+- Added buttons to thread view to navigate faster to the first and last post in this thread - the thread has to be min. 3 posts !1250 @martincodes-de
 - Dashboard revamped, shines in a new style and new features !2227 !2245 !2248 !2252 !2254 !2261 !2262 !2263 !2264 !2265 !2267 !2266 !2268 @sefn
 - In the footer of the website, "For developers" is added under "Participate" to create an easier way to IT. !2241 @NINI1988
 - On the login page, "Stay logged in for one day" is saved in local storage for the next logins. !2249 @NINI1988
-- Food-share-points are listed in the topbar search #1251 !2260 @alex.simm 
+- Food-share-points are listed in the topbar search #1251 !2260 @alex.simm
 - On all external links is now a visible indicator !2280 @sefn
+- At stores under pickup history, storemanagers can now see the signed out foodsavers from pickup slots from past 7 days with the signout date. !2363 @martincodes-de
 
 ## Changes
 - Checks in the id card creation function if only one foodsaver is selected and then reduces the 
@@ -25,8 +28,11 @@
 - Info for foodsharer how can change the name !2240 @chriswalg
 - Renamed the button to update displayed language !1232 @martincodes-de
 - Improved nightly maintenance runtime !2176 @AntonBallmaier
-
 - On mobile devices the forum profile image is smaller !2237 @sefn
+- Color set is unified and removed vanilla bootstrap !2293 !2303 @sefn
+- The content of the footer is now dynamic !2297 @sefn
+- RestAPI `/api/user/current/stores` Provides memberstatus and all related stores of user !2318 @KoeMai
+
 ## Bugfixes
 - When going back during registration, email and password are unchanged. !2184 @AntonBallmaier
 - Push notifications can be (de-)activated in the settings again #1239 @alex.simm
@@ -50,6 +56,10 @@
 - Force content which is too broad to scroll, so the the Topbar will never leave the screen width !2258 @NINI1988
 - A wall post with multiple lines will use the complete available size to display its text !2277 @NINI1988
 - Restrictions on the view of the store list in profile !2273 @chriswalg
+- Show only chat link if user is member in store !2304 @chriswalg
+- Fix XSS Vulnerability at login page !2351 #1252 @stcz
+- Commitmentstat correctly counts short term sign ups and shows handshake symbol for shared food baskets. Fix Speed. !2353 !2359 @fs_k 
+- Logging from removal of store managers. Corrected logging use for appointing store manager. !2365 @fs_k
 
 ## Refactoring
 - Currently running events are shown within the event overview until their end !2162 @merhoc
@@ -57,10 +67,15 @@
 - Simplify code in the content module @alex.simm
 - Use a REST endpoint for quickreplying to forum threads #798 @alex.simm
 - Extract some redundant permission checks into one function. !2203 @AntonBallmaier
-- The TopBarNavigation is now unified !2238 !2245 !2248 !2252 !2254 !2279 @sefn
+- The Navigation is reworked !2296 @sefn
 - Rebuild store options to vue #2231 @chriswalg
 - Changed deleting wall posts to the API #798 !2253 @alex.simm
 - Rebuild profile infos to vue !2276 !2287 @chriswalg
+- Rebuild join region to vue !2294 @sefn
+- Rebuild profile menu to vue !2281 @chriswalg
+- Let the community bubble on the map fetch its own content !2311 @alex.simm
+- Changed deleting wall posts to the API #798 !2253 @alex.simm  
+- Use REST API for setting the user's sleep status #798 !2282 @alex.simm
 
 ## Dev/Test/CI stuff
 - bump node to version 16 !2135 @peter.toennies
@@ -78,6 +93,14 @@
 - bump mocha to versio 10 !2255 @peter.toennies
 - Add how to connect other device with local development website to dev docs !2259 @NINI1988
 - Fix the url to api doc for dev env !2290 @chriswalg
+- Add a workaround to upload files to the startpage. #1245 !2233 @stcz
+- Replace SwiftMailer with Symfony mailer #1188 !2247 @alex.simm
+- Updated php-cs-fixer to 3.8 !2274 @alex.simm
+- Add a variable to set the connection method for bounce mail processing !2350 @stcz
+- Some small code cleanup surrounding `Mem` @\_fridtjof_ !2357
+
+## Development documetation
+- Add generator for database documentation !2275 @KoeMai
 
 # Release "Heidelbeere", 2022-05-01
 

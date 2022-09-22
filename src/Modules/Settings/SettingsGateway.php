@@ -2,6 +2,7 @@
 
 namespace Foodsharing\Modules\Settings;
 
+use DateTime;
 use Exception;
 use Foodsharing\Modules\Core\BaseGateway;
 use Foodsharing\Modules\Core\DBConstants\Foodsaver\UserOptionType;
@@ -62,7 +63,7 @@ class SettingsGateway extends BaseGateway
 		);
 	}
 
-	public function updateSleepMode(int $fsId, int $status, string $from, string $to, string $msg): int
+	public function updateSleepMode(int $fsId, int $status, ?DateTime $from, ?DateTime $to, ?string $msg): int
 	{
 		$from = $from ?: null;
 		$to = $to ?: null;
@@ -71,9 +72,9 @@ class SettingsGateway extends BaseGateway
 			'fs_foodsaver',
 			[
 				'sleep_status' => $status,
-				'sleep_from' => $from,
-				'sleep_until' => $to,
-				'sleep_msg' => strip_tags($msg)
+				'sleep_from' => $from ? $from->format('Y-m-d H:i:s') : null,
+				'sleep_until' => $to ? $to->format('Y-m-d H:i:s') : null,
+				'sleep_msg' => $msg ? strip_tags($msg) : null
 			],
 			['id' => $fsId]
 		);

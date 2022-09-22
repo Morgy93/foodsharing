@@ -14,7 +14,9 @@ use FOS\RestBundle\Controller\Annotations as Rest;
 use FOS\RestBundle\Request\ParamFetcher;
 use OpenApi\Annotations as OA;
 use Symfony\Component\HttpFoundation\Response as SymfonyResponse;
-use Symfony\Component\HttpKernel\Exception\HttpException;
+use Symfony\Component\HttpKernel\Exception\AccessDeniedHttpException;
+use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
+use Symfony\Component\HttpKernel\Exception\UnauthorizedHttpException;
 
 class ForumRestController extends AbstractFOSRestController
 {
@@ -119,10 +121,10 @@ class ForumRestController extends AbstractFOSRestController
 	public function listThreadsAction(int $forumId, int $forumSubId, ParamFetcher $paramFetcher): SymfonyResponse
 	{
 		if (!$this->session->id()) {
-			throw new HttpException(401);
+			throw new UnauthorizedHttpException('');
 		}
 		if (!$this->forumPermissions->mayAccessForum($forumId, $forumSubId)) {
-			throw new HttpException(403);
+			throw new AccessDeniedHttpException();
 		}
 
 		$limit = intval($paramFetcher->get('limit'));
@@ -163,17 +165,17 @@ class ForumRestController extends AbstractFOSRestController
 	public function getThreadAction(int $threadId): SymfonyResponse
 	{
 		if (!$this->session->id()) {
-			throw new HttpException(401);
+			throw new UnauthorizedHttpException('');
 		}
 
 		$thread = $this->forumGateway->getThread($threadId);
 
 		if (!$thread) {
-			throw new HttpException(404);
+			throw new NotFoundHttpException();
 		}
 
 		if (!$this->forumPermissions->mayAccessThread($threadId)) {
-			throw new HttpException(403);
+			throw new AccessDeniedHttpException();
 		}
 
 		$thread = $this->normalizeThread($thread);
@@ -206,10 +208,10 @@ class ForumRestController extends AbstractFOSRestController
 	public function createPostAction(int $threadId, ParamFetcher $paramFetcher): SymfonyResponse
 	{
 		if (!$this->session->id()) {
-			throw new HttpException(401);
+			throw new UnauthorizedHttpException('');
 		}
 		if (!$this->forumPermissions->mayPostToThread($threadId)) {
-			throw new HttpException(403);
+			throw new AccessDeniedHttpException();
 		}
 
 		$body = $paramFetcher->get('body');
@@ -232,10 +234,10 @@ class ForumRestController extends AbstractFOSRestController
 	public function createThreadAction(int $forumId, int $forumSubId, ParamFetcher $paramFetcher): SymfonyResponse
 	{
 		if (!$this->session->id()) {
-			throw new HttpException(401);
+			throw new UnauthorizedHttpException('');
 		}
 		if (!$this->forumPermissions->mayAccessForum($forumId, $forumSubId)) {
-			throw new HttpException(403);
+			throw new AccessDeniedHttpException();
 		}
 
 		$body = $paramFetcher->get('body');
@@ -263,10 +265,10 @@ class ForumRestController extends AbstractFOSRestController
 	public function patchThreadAction(int $threadId, ParamFetcher $paramFetcher): SymfonyResponse
 	{
 		if (!$this->session->id()) {
-			throw new HttpException(401);
+			throw new UnauthorizedHttpException('');
 		}
 		if (!$this->forumPermissions->mayModerate($threadId)) {
-			throw new HttpException(403);
+			throw new AccessDeniedHttpException();
 		}
 
 		$isSticky = $paramFetcher->get('isSticky');
@@ -301,10 +303,10 @@ class ForumRestController extends AbstractFOSRestController
 	public function followThreadByEmailAction(int $threadId): SymfonyResponse
 	{
 		if (!$this->session->id()) {
-			throw new HttpException(401);
+			throw new UnauthorizedHttpException('');
 		}
 		if (!$this->forumPermissions->mayAccessThread($threadId)) {
-			throw new HttpException(403);
+			throw new AccessDeniedHttpException();
 		}
 		$this->forumFollowerGateway->followThreadByEmail($this->session->id(), $threadId);
 
@@ -323,10 +325,10 @@ class ForumRestController extends AbstractFOSRestController
 	public function followThreadByBellAction(int $threadId): SymfonyResponse
 	{
 		if (!$this->session->id()) {
-			throw new HttpException(401);
+			throw new UnauthorizedHttpException('');
 		}
 		if (!$this->forumPermissions->mayAccessThread($threadId)) {
-			throw new HttpException(403);
+			throw new AccessDeniedHttpException();
 		}
 
 		$this->forumFollowerGateway->followThreadByBell($this->session->id(), $threadId);
@@ -346,10 +348,10 @@ class ForumRestController extends AbstractFOSRestController
 	public function unfollowThreadByEmailAction(int $threadId): SymfonyResponse
 	{
 		if (!$this->session->id()) {
-			throw new HttpException(401);
+			throw new UnauthorizedHttpException('');
 		}
 		if (!$this->forumPermissions->mayAccessThread($threadId)) {
-			throw new HttpException(403);
+			throw new AccessDeniedHttpException();
 		}
 
 		$this->forumFollowerGateway->unfollowThreadByEmail($this->session->id(), $threadId);
@@ -369,10 +371,10 @@ class ForumRestController extends AbstractFOSRestController
 	public function unfollowThreadByBellAction(int $threadId): SymfonyResponse
 	{
 		if (!$this->session->id()) {
-			throw new HttpException(401);
+			throw new UnauthorizedHttpException('');
 		}
 		if (!$this->forumPermissions->mayAccessThread($threadId)) {
-			throw new HttpException(403);
+			throw new AccessDeniedHttpException();
 		}
 
 		$this->forumFollowerGateway->unfollowThreadByBell($this->session->id(), $threadId);
@@ -393,15 +395,15 @@ class ForumRestController extends AbstractFOSRestController
 	public function deletePostAction(int $postId): SymfonyResponse
 	{
 		if (!$this->session->id()) {
-			throw new HttpException(401);
+			throw new UnauthorizedHttpException('');
 		}
 
 		$post = $this->forumGateway->getPost($postId);
 		if (!$post) {
-			throw new HttpException(404);
+			throw new NotFoundHttpException();
 		}
 		if (!$this->forumPermissions->mayDeletePost($post)) {
-			throw new HttpException(403);
+			throw new AccessDeniedHttpException();
 		}
 
 		$this->forumGateway->deletePost($postId);
@@ -423,15 +425,15 @@ class ForumRestController extends AbstractFOSRestController
 	public function deleteThreadAction(int $threadId): SymfonyResponse
 	{
 		if (!$this->session->id()) {
-			throw new HttpException(401);
+			throw new UnauthorizedHttpException('');
 		}
 
 		$thread = $this->forumGateway->getThread($threadId);
 		if (!$thread) {
-			throw new HttpException(404);
+			throw new NotFoundHttpException();
 		}
 		if (!$this->forumPermissions->mayDeleteThread($thread)) {
-			throw new HttpException(403);
+			throw new AccessDeniedHttpException();
 		}
 
 		$this->forumGateway->deleteThread($threadId);
@@ -453,16 +455,16 @@ class ForumRestController extends AbstractFOSRestController
 	public function addReactionAction(int $postId, string $emoji): SymfonyResponse
 	{
 		if (!$this->session->id()) {
-			throw new HttpException(401);
+			throw new UnauthorizedHttpException('');
 		}
 
 		$threadId = $this->forumGateway->getThreadForPost($postId);
 
 		if (is_null($threadId)) {
-			throw new HttpException(404);
+			throw new NotFoundHttpException();
 		}
 		if (!$this->forumPermissions->mayAccessThread($threadId)) {
-			throw new HttpException(403);
+			throw new AccessDeniedHttpException();
 		}
 
 		$this->forumTransactions->addReaction($this->session->id(), $postId, $emoji);
@@ -484,16 +486,16 @@ class ForumRestController extends AbstractFOSRestController
 	public function deleteReactionAction(int $postId, string $emoji): SymfonyResponse
 	{
 		if (!$this->session->id()) {
-			throw new HttpException(401);
+			throw new UnauthorizedHttpException('');
 		}
 
 		$threadId = $this->forumGateway->getThreadForPost($postId);
 
 		if (is_null($threadId)) {
-			throw new HttpException(404);
+			throw new NotFoundHttpException();
 		}
 		if (!$this->forumPermissions->mayAccessThread($threadId)) {
-			throw new HttpException(403);
+			throw new AccessDeniedHttpException();
 		}
 
 		$this->forumTransactions->removeReaction($this->session->id(), $postId, $emoji);

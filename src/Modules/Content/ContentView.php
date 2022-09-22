@@ -9,7 +9,7 @@ class ContentView extends View
 	public function simple(array $cnt): string
 	{
 		return '
-		<div class="page ui-padding ui-widget-content corner-all">
+		<div class="page-container page-simple">
 			<h1>' . $cnt['title'] . '</h1>
 			' . $cnt['body'] . '
 		</div>';
@@ -18,7 +18,7 @@ class ContentView extends View
 	public function joininfo(): string
 	{
 		return '
-		<div class="page ui-padding ui-widget-content corner-all">
+		<div class="page-container page-joininfo">
 			<h1> ' . $this->translator->trans('startpage.join_rules') . ' </h1>
 			<h3> ' . $this->translator->trans('startpage.join_welcome') . ' </h3>
 			<p> ' . $this->translator->trans('startpage.respect') . ' <br><b>' . $this->translator->trans('startpage.register') . '</b></p>
@@ -40,7 +40,7 @@ class ContentView extends View
 			<h5><span>5</span> ' . $this->translator->trans('startpage.makeproposals') . '</h5>
 			<p>' . $this->translator->trans('startpage.proposals') . '</p>
 			</div>', $this->translator->trans('startpage.etiquette'), ['class' => 'ui-padding']) . '
-			<p class="buttons"><br><a href="?page=register" style="font-size:180%;" class="button">' . $this->translator->trans('startpage.registernow') . '</a><br></p>
+			<p class="buttons"><br><a href="/?page=register" style="font-size:180%;" class="button">' . $this->translator->trans('startpage.registernow') . '</a><br></p>
 		</div>
 		';
 	}

@@ -17,7 +17,7 @@ import {
 import { vueRegister, vueApply } from '@/vue'
 import './Mailbox.css'
 import Mailbox from './components/Mailbox.vue'
-import i18n from '@/i18n'
+import i18n from '@/helper/i18n'
 import { deleteEmail, setEmailStatus } from '@/api/mailbox'
 
 expose({
@@ -180,7 +180,7 @@ function mb_send_message () {
   $('.edit-an').each(function () {
     an = `${an};${$(this).val()}`
   })
-  console.log(an, $('.edit-an'))
+  // console.log(an, $('.edit-an'))
   if (an.indexOf('@') == -1) {
     $('.edit-an')[0].focus()
     pulseInfo(i18n('chat.receivermissing'))

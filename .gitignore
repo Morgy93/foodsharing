@@ -20,8 +20,7 @@ chat/.npm
 chat/.yarnrc
 chat/dist
 api/**
-.php_cs.cache
-.php_cs_cache_local
+.php-cs-fixer.cache
 revision.inc.php
 .vagrant
 .DS_Store
@@ -45,3 +44,6 @@ var/**
 builds
 /chat/yarn-error.log
 /chat/test.js
+docs/build
+docs/src/database-tables-columns.md
+docs/src/mdbook-plantuml-img/

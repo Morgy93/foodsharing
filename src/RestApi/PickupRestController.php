@@ -20,7 +20,9 @@ use FOS\RestBundle\Controller\Annotations\RequestParam;
 use FOS\RestBundle\Request\ParamFetcher;
 use OpenApi\Annotations as OA;
 use Symfony\Component\HttpFoundation\Response;
-use Symfony\Component\HttpKernel\Exception\HttpException;
+use Symfony\Component\HttpKernel\Exception\AccessDeniedHttpException;
+use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
+use Symfony\Component\HttpKernel\Exception\UnauthorizedHttpException;
 
 final class PickupRestController extends AbstractFOSRestController
 {
@@ -60,17 +62,20 @@ final class PickupRestController extends AbstractFOSRestController
 	 */
 	public function joinPickupAction(int $storeId, string $pickupDate, int $fsId): Response
 	{
+		if (!$this->session->id()) {
+			throw new UnauthorizedHttpException('');
+		}
 		if ($fsId != $this->session->id()) {
 			/* currently it is forbidden to add other users to a pickup */
-			throw new HttpException(403);
+			throw new AccessDeniedHttpException();
 		}
 		if (!$this->storePermissions->mayDoPickup($storeId)) {
-			throw new HttpException(403);
+			throw new AccessDeniedHttpException();
 		}
 
 		$date = TimeHelper::parsePickupDate($pickupDate);
 		if (is_null($date)) {
-			throw new HttpException(400, 'Invalid date format');
+			throw new BadRequestHttpException('Invalid date format');
 		}
 
 		$isConfirmed = $this->storeTransactions->joinPickup($storeId, $date, $fsId, $this->session->id());
@@ -93,8 +98,11 @@ final class PickupRestController extends AbstractFOSRestController
 	 */
 	public function leavePickupAction(int $storeId, string $pickupDate, int $fsId, ParamFetcher $paramFetcher): Response
 	{
+		if (!$this->session->id()) {
+			throw new UnauthorizedHttpException('');
+		}
 		if (!$this->storePermissions->mayRemovePickupUser($storeId, $fsId)) {
-			throw new HttpException(403);
+			throw new AccessDeniedHttpException();
 		}
 
 		$message = trim($paramFetcher->get('message'));
@@ -115,8 +123,11 @@ final class PickupRestController extends AbstractFOSRestController
 	 */
 	public function leaveAllPickupsAction(int $fsId, ParamFetcher $paramFetcher)
 	{
+		if (!$this->session->id()) {
+			throw new UnauthorizedHttpException('');
+		}
 		if (!$this->profilePermissions->mayCancelSlotsFromProfile($fsId)) {
-			throw new HttpException(403);
+			throw new AccessDeniedHttpException();
 		}
 		$pickups = $this->pickupGateway->getNextPickups($fsId);
 		$message = trim($paramFetcher->get('message'));
@@ -133,15 +144,15 @@ final class PickupRestController extends AbstractFOSRestController
 	{
 		$date = TimeHelper::parsePickupDate($pickupDate);
 		if (is_null($date)) {
-			throw new HttpException(400, 'Invalid date format');
+			throw new BadRequestHttpException('Invalid date format');
 		}
 
 		if ($date < Carbon::now()) {
-			throw new HttpException(400, 'Cannot modify pickup in the past.');
+			throw new BadRequestHttpException('Cannot modify pickup in the past.');
 		}
 
 		if (!$this->pickupGateway->removeFetcher($fsId, $storeId, $date)) {
-			throw new HttpException(400, 'Failed to remove user from pickup');
+			throw new BadRequestHttpException('Failed to remove user from pickup');
 		}
 
 		if ($this->session->id() === $fsId) {
@@ -179,18 +190,21 @@ final class PickupRestController extends AbstractFOSRestController
 	 */
 	public function editPickupSlotAction(int $storeId, string $pickupDate, int $fsId, ParamFetcher $paramFetcher): Response
 	{
+		if (!$this->session->id()) {
+			throw new UnauthorizedHttpException('');
+		}
 		if (!$this->storePermissions->mayConfirmPickup($storeId)) {
-			throw new HttpException(403);
+			throw new AccessDeniedHttpException();
 		}
 
 		$date = TimeHelper::parsePickupDate($pickupDate);
 		if (is_null($date)) {
-			throw new HttpException(400, 'Invalid date format');
+			throw new BadRequestHttpException('Invalid date format');
 		}
 
 		if ($paramFetcher->get('isConfirmed')) {
 			if (!$this->pickupGateway->confirmFetcher($fsId, $storeId, $date)) {
-				throw new HttpException(400);
+				throw new BadRequestHttpException();
 			}
 			$this->storeGateway->addStoreLog(
 				$storeId,
@@ -212,23 +226,26 @@ final class PickupRestController extends AbstractFOSRestController
 	 */
 	public function editPickupAction(int $storeId, string $pickupDate, ParamFetcher $paramFetcher): Response
 	{
+		if (!$this->session->id()) {
+			throw new UnauthorizedHttpException('');
+		}
 		if (!$this->storePermissions->mayEditPickups($storeId)) {
-			throw new HttpException(403);
+			throw new AccessDeniedHttpException();
 		}
 
 		$date = TimeHelper::parsePickupDate($pickupDate);
 		if (is_null($date)) {
-			throw new HttpException(400, 'Invalid date format');
+			throw new BadRequestHttpException('Invalid date format');
 		}
 
 		if ($date < Carbon::now()) {
-			throw new HttpException(400, 'Cannot modify pickup in the past.');
+			throw new BadRequestHttpException('Cannot modify pickup in the past.');
 		}
 
 		$totalSlots = $paramFetcher->get('totalSlots');
 		if (!is_null($totalSlots)) {
 			if (!$this->storeTransactions->changePickupSlots($storeId, $date, $totalSlots)) {
-				throw new HttpException(400);
+				throw new BadRequestHttpException();
 			}
 		}
 
@@ -242,8 +259,11 @@ final class PickupRestController extends AbstractFOSRestController
 	 */
 	public function listPickupsAction(int $storeId): Response
 	{
+		if (!$this->session->id()) {
+			throw new UnauthorizedHttpException('');
+		}
 		if (!$this->storePermissions->maySeePickups($storeId)) {
-			throw new HttpException(403);
+			throw new AccessDeniedHttpException();
 		}
 		if (CarbonInterval::hours(Carbon::today()->diffInHours(Carbon::now()))->greaterThanOrEqualTo(CarbonInterval::hours(6))) {
 			$fromTime = Carbon::today();
@@ -265,14 +285,17 @@ final class PickupRestController extends AbstractFOSRestController
 	 */
 	public function listPickupHistoryAction(int $storeId, string $fromDate, string $toDate): Response
 	{
+		if (!$this->session->id()) {
+			throw new UnauthorizedHttpException('');
+		}
 		if (!$this->storePermissions->maySeePickupHistory($storeId)) {
-			throw new HttpException(403);
+			throw new AccessDeniedHttpException();
 		}
 		// convert date strings into datetime objects
 		$from = TimeHelper::parsePickupDate($fromDate);
 		$to = TimeHelper::parsePickupDate($toDate);
 		if (is_null($from) || is_null($to)) {
-			throw new HttpException(400, 'Invalid date format');
+			throw new BadRequestHttpException('Invalid date format');
 		}
 		$from = $from->min(Carbon::now());
 		$to = $to->min(Carbon::now());
@@ -324,12 +347,16 @@ final class PickupRestController extends AbstractFOSRestController
 	 */
 	public function listPastPickupsAction(ParamFetcher $paramFetcher): Response
 	{
+		if (!$this->session->id()) {
+			throw new UnauthorizedHttpException('');
+		}
+
 		$fsId = (int)($paramFetcher->get('fsId') ?? $this->session->id());
 		$page = (int)$paramFetcher->get('page');
 		$pageSize = (int)$paramFetcher->get('pageSize');
 
 		if (!$this->session->id() || !$this->profilePermissions->maySeePickups($fsId)) {
-			throw new HttpException(403);
+			throw new AccessDeniedHttpException();
 		}
 
 		$maySeeFullHistory = $this->profilePermissions->maySeeAllPickups($fsId);
@@ -372,10 +399,14 @@ final class PickupRestController extends AbstractFOSRestController
 	 */
 	public function listRegisteredPickupsAction(ParamFetcher $paramFetcher): Response
 	{
+		if (!$this->session->id()) {
+			throw new UnauthorizedHttpException('');
+		}
+
 		$fsId = (int)($paramFetcher->get('fsId') ?? $this->session->id());
 
 		if (!$this->session->id() || !$this->profilePermissions->maySeePickups($fsId)) {
-			throw new HttpException(403);
+			throw new AccessDeniedHttpException();
 		}
 
 		$pickups = $this->pickupGateway->getNextPickups($fsId);
@@ -420,11 +451,15 @@ final class PickupRestController extends AbstractFOSRestController
 	 */
 	public function listPickupOptionsAction(ParamFetcher $paramFetcher): Response
 	{
+		if (!$this->session->id()) {
+			throw new UnauthorizedHttpException('');
+		}
+
 		$page = (int)$paramFetcher->get('page');
 		$pageSize = (int)$paramFetcher->get('pageSize');
 		$id = $this->session->id();
 		if (!$this->session->may() || !$this->storePermissions->maySeePickupOptions($id)) {
-			throw new HttpException(403);
+			throw new AccessDeniedHttpException();
 		}
 
 		//fetch stores and pickup slots:

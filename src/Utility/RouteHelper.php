@@ -26,7 +26,7 @@ final class RouteHelper
 	public function go(string $url)
 	{
 		header('Location: ' . $url);
-		exit();
+		exit;
 	}
 
 	public function goSelf(): void

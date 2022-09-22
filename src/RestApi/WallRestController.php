@@ -10,7 +10,8 @@ use FOS\RestBundle\Controller\Annotations as Rest;
 use FOS\RestBundle\Request\ParamFetcher;
 use OpenApi\Annotations as OA;
 use Symfony\Component\HttpFoundation\Response;
-use Symfony\Component\HttpKernel\Exception\HttpException;
+use Symfony\Component\HttpKernel\Exception\AccessDeniedHttpException;
+use Symfony\Component\HttpKernel\Exception\UnauthorizedHttpException;
 
 class WallRestController extends AbstractFOSRestController
 {
@@ -50,8 +51,11 @@ class WallRestController extends AbstractFOSRestController
 	 */
 	public function getPostsAction(string $target, int $targetId): Response
 	{
-		if ($this->session->id() === null || !$this->wallPostPermissions->mayReadWall($this->session->id(), $target, $targetId)) {
-			throw new HttpException(403);
+		if (!$this->session->id()) {
+			throw new UnauthorizedHttpException('');
+		}
+		if (!$this->wallPostPermissions->mayReadWall($this->session->id(), $target, $targetId)) {
+			throw new AccessDeniedHttpException();
 		}
 
 		$posts = $this->getNormalizedPosts($target, $targetId);
@@ -86,8 +90,11 @@ class WallRestController extends AbstractFOSRestController
 	 */
 	public function addPostAction(string $target, int $targetId, ParamFetcher $paramFetcher): Response
 	{
-		if ($this->session->id() === null || !$this->wallPostPermissions->mayWriteWall($this->session->id(), $target, $targetId)) {
-			throw new HttpException(403);
+		if (!$this->session->id()) {
+			throw new UnauthorizedHttpException('');
+		}
+		if (!$this->wallPostPermissions->mayWriteWall($this->session->id(), $target, $targetId)) {
+			throw new AccessDeniedHttpException();
 		}
 
 		$body = $paramFetcher->get('body');
@@ -105,14 +112,17 @@ class WallRestController extends AbstractFOSRestController
 	 */
 	public function delPostAction(string $target, int $targetId, int $id): Response
 	{
+		if (!$this->session->id()) {
+			throw new UnauthorizedHttpException('');
+		}
 		if (!$this->wallPostGateway->isLinkedToTarget($id, $target, $targetId)) {
-			throw new HttpException(403);
+			throw new AccessDeniedHttpException();
 		}
 		$sessionId = $this->session->id();
 		if ($this->wallPostGateway->getFsByPost($id) != $sessionId
 			&& !$this->wallPostPermissions->mayDeleteFromWall($sessionId, $target, $targetId)
 		) {
-			throw new HttpException(403);
+			throw new AccessDeniedHttpException();
 		}
 
 		$this->wallPostGateway->unlinkPost($id, $target);

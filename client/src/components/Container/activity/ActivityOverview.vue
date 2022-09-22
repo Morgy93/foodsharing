@@ -28,7 +28,7 @@
             v-html="$i18n(filter.text)"
           />
           <span
-            class="hide-for-users"
+            class="sr-only"
             v-html="$i18n(filter.text)"
           />
         </button>
@@ -36,12 +36,12 @@
       <button
         id="activity-option"
         v-b-tooltip="$i18n('dashboard.settings_tooltip')"
-        :class="{'btn-secondary': showListings}"
+        :class="{'btn-primary': showListings}"
         class="btn btn-sm btn-icon"
         @click="toggleOptionListings"
       >
         <span
-          class="hide-for-users"
+          class="sr-only"
           v-html="$i18n('dashboard.settings')"
         />
         <i
@@ -73,19 +73,13 @@
 </template>
 
 <script>
+import DataUser from '@/stores/user'
 import Container from '../Container.vue'
 import ActivityThread from './ActivityThread'
 import ActivityOptionListings from './ActivityOptionListings'
 
 export default {
-  name: 'ActivitiyList',
   components: { Container, ActivityThread, ActivityOptionListings },
-  props: {
-    isFoodsaver: {
-      type: Boolean,
-      default: false,
-    },
-  },
   data () {
     return {
       filters: [
@@ -130,6 +124,9 @@ export default {
     }
   },
   computed: {
+    isFoodsaver () {
+      return DataUser.getters.isFoodsaver()
+    },
     activeFilters () {
       if (!this.isFoodsaver) {
         return this.filters.filter(filter => filter.onlyForFoodsharer)
@@ -152,7 +149,6 @@ export default {
     setFilter (filter) {
       localStorage.setItem('activity-selected-type', filter)
       this.filtering(filter)
-      this.$refs.thread.resetInfinity()
     },
     filtering (category) {
       this.selectedType = category
@@ -171,8 +167,8 @@ export default {
 .activity-options {
   display: flex;
 
-  @media (max-width: 320px) {
-    display: none;
+  .btn:not(:first-child) {
+    padding: 0.15rem 0.25rem;
   }
 }
 
@@ -180,5 +176,11 @@ export default {
   opacity: 0.5;
   pointer-events: none;
   user-select: none;
+}
+
+.btn-icon {
+  @media (min-width: 768px) and (max-width: 992px) {
+    padding: 0.5rem 0.35rem;
+  }
 }
 </style>

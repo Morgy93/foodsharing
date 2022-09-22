@@ -4,17 +4,14 @@ a[href]:not(:where(
   /* exclude relative but not double slash only links */
   [href^="/"]:not([href^="//"]),
   /* domains to exclude */
-  [href*="//localhost"], /* dev test */
-  [href*="//foodsharing.de"],
-  [href*="//foodsharing.at"],
-  [href*="//foodsharing.network"],
-  /* subdomains to exclude */
-  [href*="//www.foodsharing.de"],
-  [href*="//www.foodsharing.at"],
-  [href*="//www.foodsharing.network"],
-  [href*="//beta.foodsharing.de"],
-  [href*="//beta.foodsharing.at"],
-  [href*="//beta.foodsharing.network"],
+  [href*="//foodsharing."]:not([href*="//foodsharing.freshdesk"]),
+  [href*="//www.foodsharing."],
+  [href*="//beta.foodsharing."],
+  /* exclude mailto and phone numbers*/
+  [href*="mailto:"],
+  [href*="tel:"],
+  /* exclude javascript*/
+  [href^="javascript:"],
   /* classes to exclude */
   .hide-external,
 )):after {

@@ -1,5 +1,5 @@
 <template>
-  <div class="bootstrap">
+  <div class="login">
     <div class="card rounded">
       <div class="card-header text-white bg-primary">
         {{ $i18n('login.form_title') }}
@@ -32,7 +32,6 @@
             class="form-control text-primary"
             autocomplete="email"
             autofocus
-            @keydown.enter="submit"
             @focus="focusLogin=true"
           >
         </div>
@@ -57,7 +56,6 @@
             name="login-password"
             class="form-control text-primary"
             autocomplete="current-password"
-            @keydown.enter="submit"
           >
         </div>
         <div>
@@ -81,9 +79,10 @@
             id="login-btn"
             :aria-label="$i18n('login.login_button_label')"
             type="submit"
-            secondary
+            variant="primary"
             class="login-btn"
             @click="submit"
+            @keydown.enter="submit"
           >
             <span>
               {{ $i18n('login.submit_btn') }}
@@ -92,12 +91,9 @@
           </b-button>
         </b-overlay>
         <div class="password-reset">
-          <b-link
-            :href="$url('passwordReset')"
-            class="b-link"
-          >
+          <a :href="$url('passwordReset')">
             {{ $i18n('login.forgotten_password_label') }}
-          </b-link>
+          </a>
         </div>
       </form>
     </div>
@@ -108,8 +104,8 @@
 import { login } from '@/api/user'
 
 import { pulseError, pulseSuccess } from '@/script'
-import i18n from '@/i18n'
-import serverData from '@/server-data'
+import i18n from '@/helper/i18n'
+import serverData from '@/helper/server-data'
 
 export default {
   data () {
@@ -157,9 +153,18 @@ export default {
         pulseSuccess(i18n('login.success', { user_name: user.name }))
 
         const urlParams = new URLSearchParams(window.location.search)
-
         if (urlParams.has('ref')) {
-          window.location.href = decodeURIComponent(urlParams.get('ref'))
+          try {
+            const url = new URL(urlParams.get('ref'), window.location.origin)
+            if (url.protocol === window.location.protocol && url.host === window.location.host) {
+              window.location.href = url
+            } else {
+              throw new Error('Invalid ref parameter provided')
+            }
+          } catch (err) {
+            console.error('Invalid ref parameter provided')
+            window.location.href = this.$url('dashboard')
+          }
         } else {
           window.location.href = this.$url('dashboard')
         }
@@ -191,12 +196,14 @@ export default {
 </script>
 
 <style lang="scss" scoped>
+.login {
+  margin-top: 10rem;
+  margin-bottom: 10rem;
+}
   .card.rounded {
     max-width: 500px;
     margin: auto;
-  }
-  .b-link {
-    color: rgb(100, 174, 036);
+    box-shadow: var(--fs-shadow);
   }
   .loadingButton {
     img {
@@ -227,6 +234,6 @@ export default {
   }
   .password-reset {
     font-size: 0.7rem;
-    margin-top: 10px;
+    margin-top: 1rem;
   }
 </style>

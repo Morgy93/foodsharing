@@ -32,7 +32,7 @@ class SearchApiCest
 	public function canOnlySearchWhenLoggedIn(ApiTester $I)
 	{
 		$I->sendGET('api/search/user?q=test');
-		$I->seeResponseCodeIs(HttpCode::FORBIDDEN);
+		$I->seeResponseCodeIs(HttpCode::UNAUTHORIZED);
 
 		$I->login($this->user['email']);
 		$I->sendGET('api/search/user?q=test');

@@ -11,7 +11,7 @@ import { addMarker, clearCluster, commitCluster } from '@php/Lib/View/vMap'
 
 import { vueApply, vueRegister } from '@/vue'
 import RequestForm from './components/RequestForm'
-import i18n from '@/i18n'
+import i18n from '@/helper/i18n'
 import { expose } from '@/utils'
 import { removeBasket, listBasketCoordinates } from '@/api/baskets'
 import basketStore from '@/stores/baskets'
@@ -53,7 +53,7 @@ const mapsearch = {
     $.each(baskets, function (i, basket) {
       mapsearch.appendList(basket)
     })
-    this.$basketList.show('highlight', { color: '#F5F5B5' })
+    this.$basketList.show('highlight', { color: 'var(--fs-color-warning-200)' })
   },
   appendList: function (basket) {
     let img = '/img/basket.png'
@@ -86,7 +86,7 @@ if ($('#mapsearch').length > 0) {
   }).catch()
 
   $('#map-latLng').on('change', function () {
-    console.log()
+    // console.log()
 
     ajax.req('basket', 'nearbyBaskets', {
       data: {

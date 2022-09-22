@@ -505,25 +505,25 @@ class QuizXhr extends Control
 				 * store params in the quiz array to save users answers
 				 */
 				if (isset($params['qanswers'])) {
-					$questions[($quizIndex - 1)]['answers'] = $params['qanswers'];
+					$questions[$quizIndex - 1]['answers'] = $params['qanswers'];
 				}
 
 				/*
 				 * check if there are 0 point for the questions its a joke
 				 */
-				if ($questions[($quizIndex - 1)]['fp'] == 0) {
+				if ($questions[$quizIndex - 1]['fp'] == 0) {
 					$was_a_joke = true;
 				}
 
 				/*
 				 * store the time how much time has the user need
 				 */
-				$questions[($quizIndex - 1)]['userduration'] = (time() - (int)$this->session->get('quiz-quest-start'));
+				$questions[$quizIndex - 1]['userduration'] = (time() - (int)$this->session->get('quiz-quest-start'));
 
 				/*
 				 * has store noco ;) its the value when the user marked that no answer is correct
 				 */
-				$questions[($quizIndex - 1)]['noco'] = (int)$_GET['noco'];
+				$questions[$quizIndex - 1]['noco'] = (int)$_GET['noco'];
 
 				/*
 				 * And store it all back to the session
@@ -555,7 +555,7 @@ class QuizXhr extends Control
 				if ($_GET['special'] == 'result') {
 					$this->quizSessionGateway->updateQuizSession($this->session->get('quiz-session'), $questions, $quizIndex);
 
-					return $this->resultNew($questions[($quizIndex - 1)], $dia->getId());
+					return $this->resultNew($questions[$quizIndex - 1], $dia->getId());
 				}
 			}
 
@@ -595,7 +595,7 @@ class QuizXhr extends Control
 						$dia->addOpt('width', 1000);
 						$dia->addOpt('height', '($(window).height()-40)', false);
 						$dia->addOpt('position', 'center');
-						$dia->setTitle('Frage ' . ($quizIndex) . ' / ' . count($questions));
+						$dia->setTitle('Frage ' . $quizIndex . ' / ' . count($questions));
 
 						$dia->addContent($this->view->quizQuestion($question, $answers));
 
@@ -926,14 +926,14 @@ class QuizXhr extends Control
 				foreach ($answers as $a) {
 					// schwerzfrageoder
 					if ($joke) {
-						$bg = '#F5F5B5';
+						$bg = 'var(--fs-color-warning-200)';
 						$atext = '';
-						$color = '#4A3520';
+						$color = 'var(--fs-color-primary-500)';
 					} //neutraleantwort
 					elseif ($a['right'] == AnswerRating::NEUTRAL) {
 						$atext = 'Neutrale Antwort wird nicht gewertet';
-						$bg = '#F5F5B5';
-						$color = '#4A3520';
+						$bg = 'var(--fs-color-warning-200)';
+						$color = 'var(--fs-color-primary-500)';
 					} // Antwort richtig angeklickt
 					elseif ((isset($uanswers[$a['id']]) && $a['right'] == AnswerRating::CORRECT) || (!isset($uanswers[$a['id']]) && $a['right'] == AnswerRating::WRONG)) {
 						if ($a['right'] == AnswerRating::WRONG) {
@@ -941,8 +941,8 @@ class QuizXhr extends Control
 						} else {
 							$atext = 'Richtig! Diese Antwort stimmt.';
 						}
-						$bg = 'var(--fs-green)';
-						$color = '#ffffff';
+						$bg = 'var(--fs-color-secondary-500)';
+						$color = 'var(--fs-color-light)';
 					} // Antwort richtig, weil nicht angeklickt
 					else {
 						if ($a['right'] == AnswerRating::WRONG) {
@@ -950,8 +950,8 @@ class QuizXhr extends Control
 						} else {
 							$atext = 'Auch diese Antwort wäre richtig gewesen.';
 						}
-						$bg = '#E74955';
-						$color = '#ffffff';
+						$bg = 'var(--fs-color-danger-500)';
+						$color = 'var(--fs-color-light)';
 					}
 
 					$out[] = [

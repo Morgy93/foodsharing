@@ -21,7 +21,7 @@ set('http_user', 'fs-php');
 set('http_group', 'www-data');
 set('remote_user', 'deploy');
 set('deploy_path', '/var/www/{{alias}}');
-set('cachetool', '/run/php7.4-fpm-{{alias}}.sock');
+set('cachetool', '/run/php8.0-fpm-{{alias}}.sock');
 
 // default timeout of 300 was failing sometimes
 set('default_timeout', 600);

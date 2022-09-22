@@ -20,7 +20,7 @@
           v-for="event in bounceEvents"
           :key="event.date"
         >
-          {{ $dateFormat(convertDate(event.date)) }}: "{{ event.category }}"
+          {{ $dateFormatter.date(convertDate(event.date)) }}: "{{ event.category }}"
         </li>
       </ul>
       <b-button @click.prevent="removeBounces()">
@@ -34,8 +34,7 @@
 import { BAlert, BButton } from 'bootstrap-vue'
 import { hideLoader, pulseError, reload, showLoader } from '@/script'
 import { removeUserFromBounceList } from '@/api/profile'
-import i18n from '@/i18n'
-import dateFnsParseISO from 'date-fns/parseISO'
+import i18n from '@/helper/i18n'
 
 export default {
   components: { BAlert, BButton },
@@ -50,7 +49,7 @@ export default {
   },
   methods: {
     convertDate (date) {
-      return dateFnsParseISO(date)
+      return new Date(Date.parse(date))
     },
     async removeBounces () {
       showLoader()

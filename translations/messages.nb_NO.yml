@@ -32,7 +32,7 @@ startpage:
     title: Delta
     text: Vi ble grunnlagt i 2012, og nå er vi en internasjonal bevegelse med over
       200 000 brukere i Tyskland, Østerrike, Sveits og andre europeiske land.
-  mission:
+  vision:
     title: Oppdrag
     text: Vårt langsiktige mål er å redusere kastkulturen av mat og andre ressurser.
       Vi sparer mat i private husholdninger og bedrifter – kollektivt, bærekraftig
@@ -333,7 +333,6 @@ menu:
     team: Team
     blog: Blogg
     fundamentals: Prinsipper
-    mission: Oppdrag
     aboutUs: Om oss
     members: Medlemmer
     events: Arrangementer
@@ -434,7 +433,7 @@ basket:
   publish: Publisere matkurv
   add: Legg til matkurven
   created: Publisert <strong>{date}</strong>
-  requested_by: forespurt av
+  requested_by: forespurt av {name}
   no_requests: Ingen henvendelser så langt
   request: Be om matkurv
   request-fs: Be om matkurv på vår hjemmeside for foodsharing
@@ -552,9 +551,8 @@ dashboard:
     info: Hvis du ikke lenger ønsker å motta push-varsler, kan du når som helst deaktivere
       dem i innstillingene.
   deleted_user: slettet bruker
-  foodsaver_amount: "Du hentet dagligvarer <strong style=\"white-space:nowrap\">{pickups}</strong>\
-    \ ganger\nog dermed spart <strong style=\"white-space:nowrap\">{weight}&thinsp;kg</strong>\
-    \ mat.\n"
+  foodsaver_amount: "Du hentet dagligvarer <b>{pickups}</b> ganger og dermed spart\
+    \ <b>{weight} kg</b> mat."
   event: Neste arrangement
   no_more_updates_mailbox: Ingen flere postboksmeldinger
   no_more_updates_friendWall: Ingen flere statusmeldinger
@@ -610,9 +608,9 @@ profile:
   notes:
     title: Notater om {name}
     bread: Merknader
-    info: "Bruk denne funksjonen nøye.\nDet skal bidra til å synliggjøre prosesser\
-      \ for å spare oss for arbeid.\nPersonlig eller dømmende informasjon om en person\
-      \ har ingen plass her.\nVær saklig.\n"
+    info: "Bruk denne funksjonen nøye. Det skal bidra til å synliggjøre prosesser\
+      \ for å spare oss for arbeid. Personlig eller dømmende informasjon om en person\
+      \ har ingen plass her. Vær saklig."
   history:
     lostVerification: de-verifisert
     wasVerified: verifisert
@@ -1114,7 +1112,7 @@ register:
   error: Det har oppstått en feil
   account-exists: Du er allerede registrert. Logg ut hvis du vil registrere deg på
     nytt.
-  birthdate_hint: Du kan finne mer informasjon i <a href="?page=legal" target="_blank">personvernreglene</a>
+  birthdate_hint: Du kan finne mer informasjon i <a href="/?page=legal" target="_blank">personvernreglene</a>
     i punkt 2d) når du registrerer deg som matdeler eller matredder.
 geb_datum: Fødselsdato (ÅÅÅÅ-MM-DD)
 login:

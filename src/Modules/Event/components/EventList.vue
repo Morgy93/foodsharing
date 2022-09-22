@@ -1,5 +1,5 @@
 <template>
-  <div class="container bootstrap">
+  <div>
     <div class="card mb-3">
       <div class="card-header text-white bg-primary">
         {{ $i18n('events.bread') }}
@@ -57,8 +57,6 @@
 
 <script>
 import { optimizedCompare } from '@/utils'
-import { isBefore, compareAsc } from 'date-fns'
-import dateFnsParseISO from 'date-fns/parseISO'
 import EventPanel from './EventPanel'
 
 export default {
@@ -90,17 +88,20 @@ export default {
       }
 
       return filtered.sort((a, b) => {
-        return compareAsc(this.convertDate(b.end), this.convertDate(a.end))
+        const aD = this.convertDate(a.start)
+        const bD = this.convertDate(b.start)
+        if (aD.getTime() === bD.getTime()) return 0
+        return aD > bD ? 1 : -1
       })
     },
   },
   methods: {
     compare: optimizedCompare,
     isEventInPast (event) {
-      return isBefore(this.convertDate(event.end), new Date())
+      return this.convertDate(event.end) < new Date()
     },
     convertDate (date) {
-      return dateFnsParseISO(date)
+      return new Date(Date.parse(date))
     },
   },
 }

@@ -1,4 +1,4 @@
-import { urls } from '@/urls'
+import { urls } from '@/helper/urls'
 import { subscribeForPushNotifications } from '@/pushNotifications'
 
 self.addEventListener('push', function (event) {

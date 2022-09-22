@@ -94,7 +94,7 @@ class EmailView extends View
 
 		$style = '';
 		if (count($recipients) > 50) {
-			$style = ' style="height: 100px; overflow: auto; font-size: 10px; background-color: #fff; color: #333; padding: 5px;"';
+			$style = ' style="height: 100px; overflow: auto; font-size: 10px; background-color: var(--fs-color-light); color: var(--fs-color-dark); padding: 5px;"';
 		}
 
 		$this->pageHelper->addHidden('

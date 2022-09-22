@@ -27,7 +27,7 @@
           class="field-subline field-subline--muted"
           v-html="
             $i18n('basket.expires', {
-              date: dateFormat(new Date(entry.until * 1000), 'full-short'),
+              date: $dateFormatter.dateTime(new Date(entry.until * 1000)),
             })
           "
         />
@@ -49,11 +49,8 @@
 <script>
 // Stores
 import { getters } from '@/stores/user'
-// Mixins
-import DateFormatterMixin from '@/mixins/DateFormatterMixin'
 
 export default {
-  mixins: [DateFormatterMixin],
   props: {
     entry: { type: Object, default: () => {} },
   },
@@ -85,7 +82,7 @@ export default {
     },
     getDistanceNumber (lat, lon) {
       const deg2rad = (degrees) => degrees * (Math.PI / 180)
-      const uC = getters.getCoordinates()
+      const uC = getters.getLocations()
       const R = 6371 // Radius of the earth in km
       const dLat = deg2rad(uC.lat - lat) // deg2rad below
       const dLon = deg2rad(uC.lon - lon)

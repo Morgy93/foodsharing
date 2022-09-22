@@ -5,7 +5,7 @@
     hover
     thead-tr-class="unlined"
     sort-icon-left
-    sticky-header="30rem"
+    sticky-header
     no-border-collapse
     class="pickup-table"
     :items="data"
@@ -51,7 +51,6 @@
       <b-modal
         :id="'cancelSlotModal-'+entry.index+tableId"
         :title="$i18n('pickup.overview.modals.signOff.title')"
-        modal-class="bootstrap"
         header-class="d-flex"
         content-class="pr-3 pt-3"
         centered
@@ -81,7 +80,7 @@
 <script>
 import { BTable } from 'bootstrap-vue'
 import PickupEntries from './PickupEntries.vue'
-import i18n from '@/i18n'
+import i18n from '@/helper/i18n'
 
 const MIN_WIDTH_FOR_WIDE_LAYOUT = 600
 
@@ -128,6 +127,7 @@ export default {
       {
         key: 'confirmed',
         label: '',
+        sortable: false,
         class: 'status-col',
       },
       {
@@ -143,6 +143,7 @@ export default {
       },
       {
         key: 'slots',
+        sortable: false,
         label: i18n('pickup.overview.cols.slots'),
         class: 'slot-col',
       },
@@ -187,9 +188,7 @@ export default {
      * Used strings are translated.
      */
     formatDate (date) {
-      date = new Date(date)
-      const type = this.narrow ? 'full-short' : 'full-long'
-      return this.$dateFormat(date, type)
+      return this.$dateFormatter.date(date)
     },
     /**
      * Returns the correct icon tooltip text based on the slot status.
@@ -235,13 +234,13 @@ export default {
 .slotstatus-icon {
   font-size: 14px;
   &.pending {
-    color: var(--danger);
+    color: var(--fs-color-danger-500);
   }
   &.confirmed {
-    color: var(--fs-green);
+    color: var(--fs-color-secondary-500);
   }
   &.option {
-    color: var(--fs-brown);
+    color: var(--fs-color-primary-500);
   }
 }
 
@@ -267,7 +266,7 @@ export default {
 }
 
 .tooltip-link {
-  color: var(--fs-white);
+  color: var(--fs-color-light);
 }
 
 .table-footer-container {

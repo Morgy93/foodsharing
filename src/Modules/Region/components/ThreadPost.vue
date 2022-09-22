@@ -1,7 +1,7 @@
 <template>
   <div
     :id="`post-${id}`"
-    class="bootstrap"
+    class="thread"
   >
     <div
       class="card mb-2"
@@ -58,7 +58,7 @@
           </a>
         </div>
         <div
-          class="m-2 mr-md-5"
+          class="body m-2 mr-md-5"
           v-html="body"
         />
       </div>

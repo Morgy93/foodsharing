@@ -14,11 +14,9 @@
       </b-link>
     </div>
     <div
-      v-b-tooltip.hover
       class="text-muted mx-1"
-      :title="$dateDistanceInWords(when)"
     >
-      {{ $dateFormat(when, 'dd.MM.yyyy') }}
+      {{ $dateFormatter.date(when) }}
     </div>
     <div class="mx-1 flex-shrink-0">
       <b-link
@@ -68,10 +66,8 @@
 </template>
 
 <script>
-import dateFnsParseISO from 'date-fns/parseISO'
-
 import { publishBlogpost, deleteBlogpost } from '@/api/blog'
-import i18n from '@/i18n'
+import i18n from '@/helper/i18n'
 import { showLoader, hideLoader, pulseSuccess, pulseError } from '@/script'
 
 export default {
@@ -89,7 +85,7 @@ export default {
   data () {
     return {
       isPublished: this.published,
-      when: dateFnsParseISO(this.createdAt.replace(' ', 'T')),
+      when: new Date(Date.parse(this.createdAt.replace(' ', 'T'))),
       mayPublish: this.mayEdit,
       mayDelete: this.mayEdit,
     }

@@ -99,7 +99,7 @@ class AndroidPushHandler implements PushNotificationHandlerInterface
 			$resultJson = json_decode($result, true);
 			if ($resultJson['failure'] === 1 && in_array($resultJson['results'][0]['error'], [
 						'NotRegistered', 'InvalidRegistration', 'MismatchSenderId', 'InvalidApnsCredential']
-				)) {
+			)) {
 				$deadSubscriptions[] = $subscriptionId;
 			}
 		}

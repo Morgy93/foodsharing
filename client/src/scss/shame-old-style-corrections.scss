@@ -1,0 +1,315 @@
+body:not(.page-index) #main {
+    margin-top: 3rem;
+    margin-bottom: 3rem;
+}
+
+/*
+    Adds a border around all elements with the class "border"
+    so it pops more on the light background
+*/
+.welcome.ui-padding,
+.inside > .container > .card > .card-body,
+.inside > .bootstrap .card.rounded .card-body,
+.inside > .bootstrap .card :not(img).rounded,
+.inside > .bootstrap div .card,
+.inside > .ui-widget-content,
+.inside > #foodsaverlist > .field .ui-widget-content,
+.inside > #inactivefoodsaverlist > .field .ui-widget-content,
+.inside .content-top.corner-all,
+.inside > .field > .ui-widget-content,
+.inside > div > .ui-widget-content {
+    border: 1px solid var(--fs-border-default);
+    // background-color: var(--fs-color-gray-100);
+}
+
+/*
+    Fontawesome forced to solid
+*/
+.btn.fas {
+    font-weight: 900 !important;
+}
+
+/*
+    Overflow on main div
+*/
+div#main {
+    overflow-x: auto;
+}
+
+
+/*
+    Removes the border below a link
+*/
+html a.trafficlight,
+.profile.statdisplay a {
+    text-decoration: none;
+}
+
+/*
+    Hide unwanted elements
+    Like input[type=file] which is not hidden
+*/
+#wallpost-attach-trigger {
+    display: none;
+}
+
+.ui-dialog .ui-dialog-titlebar-close {
+    border: var(--fs-color-transparent);
+    color: white;
+    margin-right: 5px;
+}
+
+/*
+    All Buttons should now imitate the Bootstrap Button Style
+*/
+:not(.boootstrap):where(
+    .ui-button,
+    a.button,
+    .button,
+    .popbox .button,
+    .inside :not(.boootstrap) .button,
+    .inside input[type="submit"],
+    .ui-dialog-buttonset button,
+    #wallpost-attach-image,
+    #work_group_form_photo-opener,
+    #wall-submit
+) {
+    display: inline-block;
+    font-weight: normal !important;
+    color: var(--fs-color-secondary-100) !important;
+    cursor: pointer;
+    text-decoration: none !important;
+    text-align: center;
+    vertical-align: middle;
+    user-select: none;
+    background-color: var(--fs-color-secondary-500) !important;
+    border: 1px solid var(--fs-color-secondary-500) !important;
+    padding: 0.375rem 0.75rem;
+    font-size: 1rem !important;
+    line-height: 1.5;
+    border-radius: 0.25rem;
+    transition: color 0.15s ease-in-out, background-color 0.15s ease-in-out, border-color 0.15s ease-in-out, box-shadow 0.15s ease-in-out;
+
+    &:hover {
+        opacity: 1;
+        background-color: var(--fs-color-secondary-600) !important;
+        border-color: var(--fs-color-secondary-500) !important;
+    }
+}
+
+.ui-dialog .ui-dialog-titlebar-close {
+    border: var(--fs-color-transparent) !important;
+}
+
+/*
+    All text inputs should now imitate the Bootstrap input Style
+*/
+textarea,
+input[type="text"],
+input[type="email"],
+select {
+    @extend .form-control;
+}
+
+.comment.textarea,
+.comment textarea {
+    display: block;
+    min-height: 3rem;
+    margin-bottom: 1rem;
+    margin-right: 0 !important;
+}
+
+/**
+    Map
+*/
+
+#map {
+    width: 100%;
+    height: calc(100vh - 112px);
+    position: relative;
+}
+
+.lat-lon-picker #map {
+    height: 20rem;
+}
+
+.page-basket #map {
+    height: 20rem;
+}
+
+#map-control-colapse {
+    cursor: pointer;
+    background-color: var(--fs-color-secondary-500);
+    color: var(--fs-color-light);
+}
+
+#map-control-wrapper {
+    height: 0;
+    margin: 0;
+    position: absolute;
+    right: 16px;
+    top: 160px;
+    z-index: 450;
+
+    @media (max-width: 575px) {
+        top: 94px;
+    }
+}
+
+#map-legend {
+    --size: 2rem;
+
+    .ui-dialog-content {
+        padding: .5rem;
+        min-width: 280px;
+    }
+
+    .map-legend-entry {
+        display: flex;
+        padding: 0.25rem 0.5rem;
+        margin: 0.25rem;
+        align-items: center;
+        min-height: calc(var(--size) * 1.5);
+        border: 0;
+        font-weight: 600;
+        font-size: 1rem;
+
+        i {
+            color: var(--fs-color-light);
+        }
+
+        &.baskets {
+            i::after {
+                background-color: var(--fs-color-type-baskets);
+            }
+        }
+        &.stores {
+            i::after {
+                background-color: var(--fs-color-type-stores);
+            }
+        }
+        &.foodshare-points {
+            i::after {
+                background-color: var(--fs-color-type-foodshare-points);
+            }
+        }
+        &.communities {
+            i::after {
+                background-color: var(--fs-color-type-communities);
+            }
+        }
+
+        &:hover {
+            background-color: var(--fs-color-primary-100);
+            &.baskets {
+                color: var(--fs-color-type-baskets);
+            }
+            &.stores {
+                color: var(--fs-color-type-stores);
+            }
+            &.foodshare-points {
+                color: var(--fs-color-type-foodshare-points);
+            }
+            &.communities {
+                color: var(--fs-color-type-communities);
+            }
+        }
+
+        i {
+            font-size: 1rem;
+            margin-left: .5rem;
+            margin-right: 1rem;
+            position: relative;
+
+            &::before {
+                position: relative;
+                z-index: 2;
+            }
+
+            &::after {
+                content: '';
+                position: absolute;
+                top: 50%;
+                left: 50%;
+                width: var(--size);
+                height: var(--size);
+                background-color: var(--fs-color-white);
+                border-radius: 50%;
+                z-index: 1;
+                transform: translate(-50%, -50%);
+            }
+        }
+
+        &:not(.active) + .map-legend-selection {
+            display: none;
+        }
+
+        &.active {
+            i::after {
+                background-color: var(--fs-color-white);
+            }
+            &.baskets {
+                color: var(--fs-color-light);
+                background-color: var(--fs-color-type-baskets);
+                i {
+                    color: var(--fs-color-type-baskets);
+                }
+            }
+            &.stores {
+                color: var(--fs-color-light);
+                background-color: var(--fs-color-type-stores);
+                i {
+                    color: var(--fs-color-type-stores);
+                }
+            }
+            &.foodshare-points {
+                color: var(--fs-color-light);
+                background-color: var(--fs-color-type-foodshare-points);
+                i {
+                    color: var(--fs-color-type-foodshare-points);
+                }
+            }
+            &.communities {
+                color: var(--fs-color-light);
+                background-color: var(--fs-color-type-communities);
+                i {
+                    color: var(--fs-color-type-communities);
+                }
+            }
+        }
+    }
+
+    .map-legend-selection {
+        margin: 0;
+        padding: 0.5rem;
+
+        label {
+            width: 100%;
+            cursor: pointer;
+        }
+    }
+}
+
+
+/**
+    pure-g adjustments for the message area on mobile
+*/
+
+#msg-control form {
+    display: flex;
+}
+
+#msg-control .input-wrapper {
+    border: 0;
+    padding: 0;
+    width: 100%;
+}
+
+
+@media (min-width: 575px) {
+
+    .slimScrollDiv,
+    #msg-conversation {
+        max-height: 50vh;
+    }
+}

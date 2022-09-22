@@ -1,12 +1,10 @@
 <template>
   <!-- eslint-disable vue/max-attributes-per-line -->
-  <div class="container bootstrap">
-    <b-tabs content-class="mt-3" align="left" nav-class="tabs-wrapper" nav-wrapper-class="scroll-nav-wrapper">
-      <PickupTab v-if="showRegisteredTab" tab-name="registered" :data-endpoint="listRegisteredPickups" :fs-id="fsId" :allow-slot-cancelation="allowSlotCancelation" init :is-own-profile="isOwnProfile" />
-      <PickupTab v-if="showOptionsTab" tab-name="options" :data-endpoint="listPickupOptions" table-class="shadow-registered" paginated :is-own-profile="isOwnProfile" />
-      <PickupTab v-if="showHistoryTab" tab-name="history" :data-endpoint="listPastPickups" :fs-id="fsId" paginated :is-own-profile="isOwnProfile" />
-    </b-tabs>
-  </div>
+  <b-tabs content-class="mt-3" align="left" nav-class="tabs-wrapper" nav-wrapper-class="scroll-nav-wrapper">
+    <PickupTab v-if="showRegisteredTab" tab-name="registered" :data-endpoint="listRegisteredPickups" :fs-id="fsId" :allow-slot-cancelation="allowSlotCancelation" init :is-own-profile="isOwnProfile" />
+    <PickupTab v-if="showOptionsTab" tab-name="options" :data-endpoint="listPickupOptions" table-class="shadow-registered" paginated :is-own-profile="isOwnProfile" />
+    <PickupTab v-if="showHistoryTab" tab-name="history" :data-endpoint="listPastPickups" :fs-id="fsId" paginated :is-own-profile="isOwnProfile" />
+  </b-tabs>
 </template>
 
 <script>

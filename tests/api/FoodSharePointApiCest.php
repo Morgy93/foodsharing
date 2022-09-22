@@ -2,6 +2,7 @@
 
 namespace api;
 
+use ApiTester;
 use Codeception\Util\HttpCode as Http;
 use Faker;
 
@@ -18,13 +19,13 @@ class FoodSharePointApiCest
 	private const ID = 'id';
 	private const TEST_PICTURE = 'iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAAAAAA6fptVAAAACklEQVR4nGNiAAAABgADNjd8qAAAAABJRU5ErkJggg==';
 
-	public function _before(\ApiTester $I)
+	public function _before(ApiTester $I)
 	{
 		$this->user = $I->createFoodsaver();
 		$this->faker = Faker\Factory::create('de_DE');
 	}
 
-	public function getFoodSharePoint(\ApiTester $I)
+	public function getFoodSharePoint(ApiTester $I)
 	{
 		$fsp = $I->createFoodSharePoint($this->user[self::ID]);
 
@@ -34,7 +35,7 @@ class FoodSharePointApiCest
 		$I->seeResponseIsJson();
 	}
 
-	public function listNearbyFoodSharePoints(\ApiTester $I)
+	public function listNearbyFoodSharePoints(ApiTester $I)
 	{
 		$I->createFoodSharePoint($this->user[self::ID]);
 

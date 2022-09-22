@@ -86,13 +86,6 @@ class EventView extends View
 		}
 
 		$title = $this->translator->trans('events.create.title');
-		$this->pageHelper->addStyle('
-			label.addend {
-				display: inline-block;
-				margin-left: 15px;
-				cursor: pointer;
-			}
-		');
 		$this->pageHelper->addJs('
 			$("#online_type").on("change", function () {
 				if ($(this).val() == 1) {

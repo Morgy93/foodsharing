@@ -71,7 +71,7 @@ class StoreView extends View
 			]]);
 	}
 
-	public function betrieb_form($region = false, $page = '', $lebensmittel_values, $chains, $categories, $status, $weightArray)
+	public function betrieb_form($lebensmittel_values, $chains, $categories, $status, $weightArray, $region = false, $page = '')
 	{
 		global $g_data;
 
@@ -183,7 +183,7 @@ class StoreView extends View
 		foreach ($store['foodsaver'] as $fs) {
 			if ($fs['verantwortlich'] == 1) {
 				$managers .= '<li>' .
-					'<a style="background-color: transparent;" href="/profile/' . intval($fs['id']) . '">'
+					'<a style="background-color: var(--fs-color-transparent);" href="/profile/' . intval($fs['id']) . '">'
 					. $this->imageService->avatar($fs, 50) .
 					'</a></li>';
 			}

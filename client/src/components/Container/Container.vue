@@ -9,7 +9,7 @@
         v-html="title"
       />
       <i
-        :alt="isExpanded ? $i18n('dashboard.showmore') : $i18n('dashboard.showless')"
+        :alt="isExpanded ? $i18n('globals.show_more') : $i18n('globals.show_less')"
         class="fas fa-angle-down"
         :class="{ 'fa-rotate-180': isExpanded }"
       />
@@ -17,15 +17,15 @@
     <slot v-if="isExpanded" />
     <button
       v-if="isExpanded && isToggleVisible && !isToggled"
-      class="list-group-item list-group-item-secondary small font-weight-bold list-group-item-action text-center"
+      class="list-group-item small list-group-item-secondary list-group-item-action list-group-item-action-toggle font-weight-bold text-center"
       @click="showFullList"
-      v-html="$i18n('dashboard.showmore')"
+      v-html="$i18n('globals.show_more')"
     />
     <button
       v-else-if="isExpanded && isToggled"
-      class="list-group-item small list-group-item-action font-weight-bold text-center"
+      class="list-group-item small list-group-item-action list-group-item-action-toggle font-weight-bold text-center"
       @click="reduceList"
-      v-html="$i18n('dashboard.showless')"
+      v-html="$i18n('globals.show_less')"
     />
   </div>
 </template>
@@ -88,19 +88,19 @@ export default {
   }
 }
 
-.list-group-header,
-.list-group-expand {
-  cursor: pointer;
-  padding: 0 1rem;
-  display: flex;
-  align-items: center;
-  min-height: 40px;
-}
-
 .list-group-header {
-  background-color: var(--primary);
-  color: var(--white);
+  align-items: center;
+  background-color: var(--fs-color-primary-500);
+  color: var(--fs-color-primary-100);
+  cursor: pointer;
+  display: flex;
   justify-content: space-between;
+  min-height: 40px;
+  padding: 0 1rem;
+
+  &:hover {
+    background-color: var(--fs-color-primary-600);
+  }
 
   h5 {
     font-size: 0.8rem;
@@ -138,14 +138,10 @@ export default {
 }
 
 ::v-deep .field-headline {
-  // flex: 1;
   overflow: hidden;
   text-overflow: ellipsis;
   font-weight: bold;
   font-size: 0.9rem;
-  // white-space: nowrap;
-  // display: flex;
-  // align-items: center;
 
   &--big {
     font-size: 1rem;
@@ -160,7 +156,11 @@ export default {
   margin-right: 0.5rem;
 
   &--muted {
-    color: var(--gray);
+    color: var(--fs-color-gray-500);
   }
+}
+
+.list-group-item-action-toggle {
+  border-top-width: 1px;
 }
 </style>

@@ -3,7 +3,6 @@
 namespace Foodsharing\Lib\Xhr;
 
 use Foodsharing\Lib\Db\Db;
-use Foodsharing\Lib\Db\Mem;
 use Foodsharing\Lib\Session;
 use Foodsharing\Lib\View\Utils;
 use Foodsharing\Modules\Bell\BellGateway;
@@ -18,17 +17,12 @@ use Foodsharing\Modules\Foodsaver\FoodsaverGateway;
 use Foodsharing\Modules\Group\GroupFunctionGateway;
 use Foodsharing\Modules\Group\GroupGateway;
 use Foodsharing\Modules\Mailbox\MailboxGateway;
-use Foodsharing\Modules\Message\MessageGateway;
-use Foodsharing\Modules\Region\ForumGateway;
 use Foodsharing\Modules\Region\RegionGateway;
 use Foodsharing\Modules\Store\StoreGateway;
 use Foodsharing\Permissions\NewsletterEmailPermissions;
 use Foodsharing\Permissions\RegionPermissions;
 use Foodsharing\Permissions\StorePermissions;
-use Foodsharing\Utility\DataHelper;
 use Foodsharing\Utility\EmailHelper;
-use Foodsharing\Utility\IdentificationHelper;
-use Foodsharing\Utility\ImageHelper;
 use Foodsharing\Utility\Sanitizer;
 use Intervention\Image\ImageManager;
 use Symfony\Component\HttpFoundation\JsonResponse;
@@ -38,15 +32,12 @@ use Symfony\Contracts\Translation\TranslatorInterface;
 class XhrMethods
 {
 	private Db $model;
-	private Mem $mem;
 	private Session $session;
 	private Utils $v_utils;
 	private GroupFunctionGateway $groupFunctionGateway;
 	private GroupGateway $groupGateway;
-	private MessageGateway $messageGateway;
 	private RegionGateway $regionGateway;
 	private StorePermissions $storePermissions;
-	private ForumGateway $forumGateway;
 	private BellGateway $bellGateway;
 	private StoreGateway $storeGateway;
 	private FoodsaverGateway $foodsaverGateway;
@@ -55,23 +46,17 @@ class XhrMethods
 	private ImageManager $imageManager;
 	private Sanitizer $sanitizerService;
 	private EmailHelper $emailHelper;
-	private ImageHelper $imageService;
-	private IdentificationHelper $identificationHelper;
-	private DataHelper $dataHelper;
 	private NewsletterEmailPermissions $newsletterEmailPermissions;
 	private RegionPermissions $regionPermissions;
 	private TranslatorInterface $translator;
 
 	public function __construct(
-		Mem $mem,
 		Session $session,
 		Db $model,
 		Utils $viewUtils,
 		GroupFunctionGateway $groupFunctionGateway,
 		GroupGateway $groupGateway,
-		MessageGateway $messageGateway,
 		RegionGateway $regionGateway,
-		ForumGateway $forumGateway,
 		BellGateway $bellGateway,
 		StoreGateway $storeGateway,
 		StorePermissions $storePermissions,
@@ -81,22 +66,16 @@ class XhrMethods
 		ImageManager $imageManager,
 		Sanitizer $sanitizerService,
 		EmailHelper $emailHelper,
-		ImageHelper $imageService,
-		IdentificationHelper $identificationHelper,
-		DataHelper $dataHelper,
 		NewsletterEmailPermissions $newsletterEmailPermissions,
 		RegionPermissions $regionPermission,
 		TranslatorInterface $translator
 	) {
-		$this->mem = $mem;
 		$this->session = $session;
 		$this->model = $model;
 		$this->v_utils = $viewUtils;
 		$this->groupFunctionGateway = $groupFunctionGateway;
 		$this->groupGateway = $groupGateway;
-		$this->messageGateway = $messageGateway;
 		$this->regionGateway = $regionGateway;
-		$this->forumGateway = $forumGateway;
 		$this->bellGateway = $bellGateway;
 		$this->storeGateway = $storeGateway;
 		$this->storePermissions = $storePermissions;
@@ -106,9 +85,6 @@ class XhrMethods
 		$this->imageManager = $imageManager;
 		$this->sanitizerService = $sanitizerService;
 		$this->emailHelper = $emailHelper;
-		$this->imageService = $imageService;
-		$this->identificationHelper = $identificationHelper;
-		$this->dataHelper = $dataHelper;
 		$this->newsletterEmailPermissions = $newsletterEmailPermissions;
 		$this->regionPermissions = $regionPermission;
 		$this->translator = $translator;

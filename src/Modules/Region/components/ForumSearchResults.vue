@@ -1,5 +1,5 @@
 <template>
-  <div class="bootstrap">
+  <div class="mt-3">
     <div
       v-if="isEmpty && !isLoading"
       class="dropdown-header alert alert-warning"
@@ -33,9 +33,7 @@
 </template>
 
 <script>
-import SearchResultEntry from '@/components/Topbar/Items/Search/SearchResultEntry'
-import differenceInCalendarYears from 'date-fns/differenceInCalendarYears'
-import parseISO from 'date-fns/parseISO'
+import SearchResultEntry from '@/components/SearchBar/SearchResultEntry'
 
 function match (word, e) {
   if (e.name && e.name.toLowerCase().indexOf(word) !== -1) return true
@@ -89,12 +87,8 @@ export default {
   },
   methods: {
     getThreadDate (thread) {
-      const lastUpdated = parseISO(thread.teaser)
-      if (differenceInCalendarYears(new Date(), lastUpdated) >= 1) {
-        return this.$dateFormat(lastUpdated, 'full-long')
-      } else {
-        return this.$dateDistanceInWords(lastUpdated) + ` (${this.$dateFormat(lastUpdated, 'full-short')})`
-      }
+      const lastUpdated = new Date(Date.parse(thread.teaser))
+      return this.$dateFormatter.base(lastUpdated)
     },
   },
 }
@@ -113,7 +107,7 @@ export default {
   & > small {
     float: right;
     margin: 0.1rem 0;
-    color: var(--gray);
+    color: var(--fs-color-gray-500);
   }
 }
 </style>

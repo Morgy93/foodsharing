@@ -6,9 +6,9 @@ use Foodsharing\Modules\Foodsaver\FoodsaverGateway;
 
 class RegionTransactions
 {
-	const NEW_FOODSAVER_VERIFIED = 'new_foodsaver_verified';
-	const NEW_FOODSAVER_NEEDS_VERIFICATION = 'new_foodsaver_needs_verification';
-	const NEW_FOODSAVER_NEEDS_INTRODUCTION = 'new_foodsaver_needs_introduction';
+	public const NEW_FOODSAVER_VERIFIED = 'new_foodsaver_verified';
+	public const NEW_FOODSAVER_NEEDS_VERIFICATION = 'new_foodsaver_needs_verification';
+	public const NEW_FOODSAVER_NEEDS_INTRODUCTION = 'new_foodsaver_needs_introduction';
 
 	private FoodsaverGateway $foodsaverGateway;
 

@@ -1,50 +1,68 @@
 import Vue from 'vue'
 import { getMailUnreadCount } from '@/api/mailbox'
 import { getDetails } from '@/api/user'
+import serverData from '@/helper/server-data'
 
 export const store = Vue.observable({
   mailUnreadCount: 0,
-  user: null,
-  isLoggedIn: false,
+  details: {},
+  locations: serverData.locations || {},
+  user: serverData.user,
+  permissions: serverData.permissions,
+  isLoggedIn: serverData.user?.id !== null,
 })
 
 export const getters = {
   isLoggedIn () {
     return store.isLoggedIn
   },
+  isSleeping () {
+    return store.details?.sleeping
+  },
   isFoodsaver () {
-    return store.user?.foodsaver
+    return store.user?.isFoodsaver
   },
   getUser () {
     return store.user
+  },
+  getUserId () {
+    return store.user?.id
+  },
+  getUserDetails () {
+    return store.details
+  },
+  getMobilePhoneNumber () {
+    return store.details?.mobile
+  },
+  getPhoneNumber () {
+    return store.details?.landline
+  },
+  getAvatar () {
+    return store.user?.avatar
+  },
+  getUserFirstName  () {
+    return store.user?.firstname
+  },
+  getUserLastName () {
+    return store.user?.lastname || ''
+  },
+  hasHomeRegion () {
+    return store.user?.homeRegionId > 0
+  },
+  getHomeRegion () {
+    return store.user?.homeRegionId
+  },
+  getHomeRegionName () {
+    return store.details?.regionName
   },
   hasCalendarToken () {
     return store.user?.hasCalendarToken !== null || false
   },
   getMailBox () {
-    return store.user?.mailboxId
+    return store.user?.mailBoxId
   },
-  getStats () {
-    return store.user?.stats || {}
-  },
-  hasCoordinates () {
-    return store.user?.coordinates.lat !== 0 && store.user?.coordinates.lng !== 0
-  },
-  getCoordinates () {
-    return store.user?.coordinates || {}
-  },
-  getPermissions () {
-    return store.user?.permissions || {}
-  },
-  hasPermissions () {
-    return store.user?.permissions &&
-            (store.user.permissions.administrateBlog ||
-            store.user.permissions.editQuiz ||
-            store.user.permissions.handleReports ||
-            store.user.permissions.editContent ||
-            store.user.permissions.manageMailboxes ||
-            store.user.permissions.administrateNewsletterEmail ||
-            store.user.permissions.administrateRegions)
+  hasMailBox () {
+    return store.user?.mailBoxId > 0 || false
   },
   getMailUnreadCount () {
     if (store.mailUnreadCount > 0) {
@@ -52,23 +70,43 @@ export const getters = {
     }
     return null
   },
+  getStats () {
+    return store.details?.stats || {}
+  },
+  hasLocations () {
+    return store.locations.lat !== null && store.locations.lng !== null
+  },
+  getLocations () {
+    return store.locations || { lat: 0, lng: 0 }
+  },
+  getPermissions () {
+    return store.permissions || {}
+  },
+  hasAdminPermissions () {
+    const permissions = Object.entries(store.permissions)
+    return permissions.some(([key, value]) => !['mayAdministrateUserProfile', 'mayEditUserProfile', 'addStore'].includes(key) && value)
+  },
+  hasBouncingEmail () {
+    return false
+    // return store.user?.bouncingEmail
+  },
+  hasActiveEmail () {
+    return true
+    // return store.user?.email_is_activated
+  },
 }
 
 export const mutations = {
   async fetchDetails () {
     try {
-      store.user = await getDetails()
+      store.details = await getDetails()
     } catch (e) {
-      store.user = null
+      store.details = null
     }
   },
 
   async fetchMailUnreadCount () {
     store.mailUnreadCount = await getMailUnreadCount()
-  },
-
-  setLoggedIn (status) {
-    store.isLoggedIn = status
   },
 }
 

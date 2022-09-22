@@ -40,7 +40,6 @@
 import VueSimpleSuggest from 'vue-simple-suggest'
 import { searchUser } from '@/api/search'
 import { pulseError } from '@/script'
-import i18n from '@/i18n'
 
 export default {
   components: { VueSimpleSuggest },
@@ -87,7 +86,7 @@ export default {
             users = users.filter(x => filteredIds.includes(x.id))
           }
         } catch (e) {
-          pulseError(i18n('error_unexpected'))
+          pulseError(this.$i18n('error_unexpected'))
         }
       } else {
         this.user = null
@@ -127,8 +126,8 @@ export default {
   }
 
   .suggest-item.hover {
-    border: 1px solid var(--fs-green);
-    background-color: var(--fs-green);
+    border: 1px solid var(--fs-color-secondary-500);
+    background-color: var(--fs-color-secondary-500);
     color: white;
   }
 }

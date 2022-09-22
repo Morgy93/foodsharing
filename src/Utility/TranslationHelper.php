@@ -31,9 +31,9 @@ final class TranslationHelper
 		][$role] ?? 'foodsharer';
 
 		return $this->genderWord($gender,
-			('terminology.' . $role . '.m'),
-			('terminology.' . $role . '.f'),
-			('terminology.' . $role . '.d')
+			'terminology.' . $role . '.m',
+			'terminology.' . $role . '.f',
+			'terminology.' . $role . '.d'
 		);
 	}
 }

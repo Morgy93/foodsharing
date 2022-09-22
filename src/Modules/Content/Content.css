@@ -11,7 +11,7 @@ div.partner img {
 }
 
 div.partner h4 {
-  color: #ded9cd;
+  color: var(--fs-color-warning-200);
   font-size: 15px;
   font-weight: normal;
   line-height: 16px;
@@ -47,7 +47,7 @@ div.partner h4 {
 
   .shortcode-spacer-1 {
     display: block;
-    border-bottom: 1px solid var(--fs-beige);
+    border-bottom: 1px solid var(--fs-color-primary-300);
   }
 
   .news-post img {
