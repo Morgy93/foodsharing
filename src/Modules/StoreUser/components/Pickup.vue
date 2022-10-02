@@ -112,13 +112,12 @@
     <b-modal
       ref="modal_leave"
       :title="$i18n('pickup.really_leave_date_title', { date: $dateFormatter.dateTime(date) })"
-      :cancel-title="$i18n('pickup.leave_pickup_message_team')"
-      :ok-title="$i18n('pickup.leave_pickup_ok')"
+      :cancel-title="$i18n('button.cancel')"
+      :ok-title="$i18n('pickup.leave_pickup_message_team')"
       :hide-header-close="true"
       modal-class="bootstrap"
       header-class="d-flex"
-      @ok="$emit('leave', date)"
-      @cancel="$refs.modal_team_message.show()"
+      @ok="$refs.modal_team_message.show()"
     >
       <p>{{ $i18n('pickup.really_leave_date', { date: $dateFormatter.dateTime(date) }) }}</p>
     </b-modal>

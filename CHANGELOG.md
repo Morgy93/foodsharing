@@ -37,6 +37,7 @@
 - RestAPI `/api/user/current/stores` Provides memberstatus and all related stores of user !2318 @KoeMai
 - RestAPI `​/api​/user​/{id}​/details` extended with regions and groups !2352 @KoeMai user/current/groups
 - RestAPI `​/api​/user/current/groups` & `​/api​/user/current/regions` add endpoint for regions and groups !2352 @KoeMai 
+- Removed store slot kickout without a message !2382 @chriswalg
 
 ## Bugfixes
 - When going back during registration, email and password are unchanged. !2184 @AntonBallmaier
