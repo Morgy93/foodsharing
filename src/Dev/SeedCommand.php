@@ -616,10 +616,15 @@ class SeedCommand extends Command implements CustomCommandInterface
 			);
 			$this->output->write('.');
 		}
-		$this->createPoll($region1, $userbot['id'], VotingType::SELECT_ONE_CHOICE,
-			[$user2['id'], $userStoreManager['id'], $userStoreManager2['id'], $userbot['id'], $userorga['id']],
-			Carbon::now('-14 days'), Carbon::now('-7 days')
-		);
+		foreach (range(0, 30) as $_) {
+			$startDate = Carbon::now()->subDays(random_int(7, 3 * 365));
+			$type = random_int(VotingType::SELECT_ONE_CHOICE, VotingType::SCORE_VOTING);
+			$this->createPoll($region1, $userbot['id'], $type,
+				[$user2['id'], $userStoreManager['id'], $userStoreManager2['id'], $userbot['id'], $userorga['id']],
+				$startDate, $startDate->addDays(6)
+			);
+			$this->output->write('.');
+		}
 		$this->output->write('.');
 
 		$this->output->writeln(' done');
