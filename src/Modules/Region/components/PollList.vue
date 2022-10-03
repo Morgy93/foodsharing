@@ -156,7 +156,7 @@ export default {
         const aD = this.convertDate(a.endDate.date)
         const bD = this.convertDate(b.endDate.date)
         if (aD.getTime() === bD.getTime()) return 0
-        return aD > bD ? 1 : -1
+        return aD > bD ? -1 : 1
       })
     },
   },
