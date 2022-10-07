@@ -1,6 +1,6 @@
 <?php
 
-use Foodsharing\Modules\Core\DBConstants\Region\Type;
+use Foodsharing\Modules\Core\DBConstants\Unit\UnitType;
 
 class ForumApiCest
 {
@@ -25,7 +25,7 @@ class ForumApiCest
 		$I->addRegionMember($this->region['id'], $this->user['id']);
 		$this->thread = $I->addForumThread($this->region['id'], $this->user['id']);
 
-		$this->moderatedRegion = $I->createRegion(null, ['type' => Type::CITY, 'moderated' => true]);
+		$this->moderatedRegion = $I->createRegion(null, ['type' => UnitType::CITY, 'moderated' => true]);
 		$I->addRegionMember($this->moderatedRegion['id'], $this->user['id']);
 		$I->addRegionAdmin($this->moderatedRegion['id'], $this->ambassador['id']);
 		$this->inactiveThread = $I->addForumThread($this->moderatedRegion['id'], $this->user['id'], false, ['active' => false]);

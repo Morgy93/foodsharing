@@ -111,12 +111,12 @@ class BusinessCardControl extends Control
 		if (mb_strlen($data['anschrift']) > self::MAX_CHAR_PER_LINE) {
 			$street_number_pos = $this->index_of_first_number($data['anschrift']);
 			$length_street_number = mb_strlen($data['anschrift']) - $street_number_pos;
-			$data['anschrift'] = mb_substr($data['anschrift'], 0, (self::MAX_CHAR_PER_LINE - $length_street_number - 4)) . '... ' .
+			$data['anschrift'] = mb_substr($data['anschrift'], 0, self::MAX_CHAR_PER_LINE - $length_street_number - 4) . '... ' .
 				mb_substr($data['anschrift'], $street_number_pos, $length_street_number);
 		}
 
 		if (mb_strlen($data['plz'] . ' ' . $data['stadt']) >= self::MAX_CHAR_PER_LINE) {
-			$data['stadt'] = mb_substr($data['stadt'], 0, (self::MAX_CHAR_PER_LINE - strlen($data['plz']) - 4)) . '...';
+			$data['stadt'] = mb_substr($data['stadt'], 0, self::MAX_CHAR_PER_LINE - strlen($data['plz']) - 4) . '...';
 		}
 
 		$this->generatePdf($data, $role);

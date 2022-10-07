@@ -113,7 +113,6 @@ class StoreUserControl extends Control
 					'particularitiesDescription' => $store['besonderheiten'] ?? '',
 					'lastFetchDate' => $lastFetchDate,
 					'street' => $store['str'],
-					'housenumber' => $store['hsnr'],
 					'postcode' => $store['plz'],
 					'city' => $store['stadt'],
 					'storeTitle' => $store['name'],
@@ -136,18 +135,18 @@ class StoreUserControl extends Control
 				}
 
 				$this->pageHelper->addContent(
-						$this->view->vueComponent('vue-storeoptions', 'storeOptions', [
-							'teamConversionId' => $teamConversionId,
-							'springerConversationId' => $springerConversationId,
-							'mayEditStore' => $this->storePermissions->mayEditStore($storeId),
-							'userIsInStore' => $userIsInStore,
-							'mayLeaveStoreTeam' => $this->storePermissions->mayLeaveStoreTeam($storeId, $this->session->id()),
-							'storeId' => $storeId,
-							'isJumper' => $store['jumper'],
-							'fsId' => $this->session->id()
-						]),
+					$this->view->vueComponent('vue-storeoptions', 'storeOptions', [
+						'teamConversionId' => $teamConversionId,
+						'springerConversationId' => $springerConversationId,
+						'mayEditStore' => $this->storePermissions->mayEditStore($storeId),
+						'userIsInStore' => $userIsInStore,
+						'mayLeaveStoreTeam' => $this->storePermissions->mayLeaveStoreTeam($storeId, $this->session->id()),
+						'storeId' => $storeId,
+						'isJumper' => $store['jumper'],
+						'fsId' => $this->session->id()
+					]),
 					CNT_LEFT
-					);
+				);
 
 				/* team list */
 				$this->pageHelper->addContent(

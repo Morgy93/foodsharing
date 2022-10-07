@@ -2,14 +2,20 @@
 
 namespace Foodsharing\Modules\Group;
 
+use Foodsharing\Modules\Core\DBConstants\Unit\UnitType;
+use Foodsharing\Modules\Unit\UnitGateway;
+
 class GroupTransactions
 {
 	private GroupGateway $groupGateway;
+	private UnitGateway $unitGateway;
 
 	public function __construct(
-		GroupGateway $groupGateway
+		GroupGateway $groupGateway,
+		UnitGateway $unitGateway
 	) {
 		$this->groupGateway = $groupGateway;
+		$this->unitGateway = $unitGateway;
 	}
 
 	/**
@@ -28,5 +34,10 @@ class GroupTransactions
 		}
 
 		return $this->groupGateway->hasStores($groupId);
+	}
+
+	public function getUserGroups(int $fs_id): array
+	{
+		return $this->unitGateway->listAllDirectReleatedUnitsAndResponsibilitiesOfFoodsaver($fs_id, UnitType::getGroupTypes());
 	}
 }

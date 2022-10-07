@@ -4,7 +4,7 @@ namespace Foodsharing\Modules\Event;
 
 use Foodsharing\Lib\Session;
 use Foodsharing\Lib\View\Utils;
-use Foodsharing\Modules\Core\DBConstants\Region\Type;
+use Foodsharing\Modules\Core\DBConstants\Unit\UnitType;
 use Foodsharing\Modules\Core\View;
 use Foodsharing\Permissions\EventPermissions;
 use Foodsharing\Utility\DataHelper;
@@ -153,7 +153,7 @@ class EventView extends View
 					$sel = ' selected="selected"';
 				}
 
-				if ($b['type'] == Type::WORKING_GROUP) {
+				if (UnitType::isGroup($b['type'])) {
 					$groups .= '<option value="' . $b['id'] . '"' . $sel . '>' . $b['name'] . '</option>';
 				} else {
 					$regions .= '<option value="' . $b['id'] . '"' . $sel . '>' . $b['name'] . '</option>';

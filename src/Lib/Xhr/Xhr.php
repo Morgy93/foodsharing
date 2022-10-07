@@ -84,6 +84,6 @@ class Xhr
 		}
 
 		echo json_encode($out, JSON_PARTIAL_OUTPUT_ON_ERROR);
-		exit();
+		exit;
 	}
 }

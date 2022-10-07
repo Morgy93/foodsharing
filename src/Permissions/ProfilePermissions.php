@@ -152,6 +152,6 @@ class ProfilePermissions
 
 	public function mayRemoveFromBounceList(int $userId): bool
 	{
-		return $this->session->may('orga') || $this->session->isAdminFor(RegionIDs::IT_SUPPORT_GROUP);
+		return $this->session->id() == $userId || $this->session->may('orga') || $this->session->isAdminFor(RegionIDs::IT_SUPPORT_GROUP);
 	}
 }

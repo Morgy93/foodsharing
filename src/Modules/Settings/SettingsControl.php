@@ -266,7 +266,7 @@ class SettingsControl extends Control
 				break;
 
 			default:
-		}
+			}
 	}
 
 	private function confirm_fs()
@@ -418,7 +418,7 @@ class SettingsControl extends Control
 				$newsletter = 0;
 			}
 			$infomail = 1;
-			if ($_POST['infomail_message'] != 1) {
+			if (isset($_POST['infomail_message']) && $_POST['infomail_message'] != 1) {
 				$infomail = 0;
 			}
 			$fspIdsToUnfollow = [];

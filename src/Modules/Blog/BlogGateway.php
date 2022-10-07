@@ -92,7 +92,7 @@ final class BlogGateway extends BaseGateway
 				b.`active` = 1
 			AND
 				b.id = :fs_id',
-		[':fs_id' => $id]);
+			[':fs_id' => $id]);
 	}
 
 	public function listNews(int $page): array

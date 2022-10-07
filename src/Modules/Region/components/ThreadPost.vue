@@ -58,7 +58,7 @@
           </a>
         </div>
         <div
-          class="body m-2 mr-md-5"
+          class="body m-2 mr-md-5 text-break"
           v-html="body"
         />
       </div>

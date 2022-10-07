@@ -2,6 +2,8 @@
 
 ## Features
 - The number of unread mails is now displayed as a red badge. !2188 !2230 @AntonBallmaier
+- The housenumber of companys shouldn't be saved seperately anymore. !1146 @martincodes-de
+- The number of unread mails is now displayed as a red badge. !2188 @AntonBallmaier
 - Improved Calendar exports. Events are now included and pickup descriptions contain links. !2182 @AntonBallmaier
 - Past events are shown now below current and upcoming events within the overview !2162 @merhoc
 - Commitment statistics on profile !2208 !2217 @fs_k
@@ -15,6 +17,8 @@
 - On the login page, "Stay logged in for one day" is saved in local storage for the next logins. !2249 @NINI1988
 - Food-share-points are listed in the topbar search #1251 !2260 @alex.simm
 - On all external links is now a visible indicator !2280 @sefn
+- At stores under pickup history, storemanagers can now see the signed out foodsavers from pickup slots from past 7 days with the signout date. !2363 @martincodes-de
+- Voter Turnout Percentage can be seen if the poll has completed !2377 @viveknshah
 
 ## Changes
 - Checks in the id card creation function if only one foodsaver is selected and then reduces the 
@@ -31,6 +35,23 @@
 - Color set is unified and removed vanilla bootstrap !2293 !2303 @sefn
 - The content of the footer is now dynamic !2297 @sefn
 - RestAPI `/api/user/current/stores` Provides memberstatus and all related stores of user !2318 @KoeMai
+- RestAPI `​/api​/user​/{id}​/details` extended with regions and groups !2352 @KoeMai user/current/groups
+- RestAPI `​/api​/user/current/groups` & `​/api​/user/current/regions` add endpoint for regions and groups !2352 @KoeMai 
+- Display of the number of members in the header for working groups adjusted analogously to the districts !2374 @BibaltiK
+- RestAPI `​/api​/user/current/groups` & `​/api​/user/current/regions` add endpoint for regions and groups !2352 @KoeMai
+- Display "No pickup slots available" if there are no pickup slots !2375 @BlackScorp
+- Fix Console error !2376 @BlackScorp
+- Phone Numbers are displayed even if they are invalid (e.g. do not start with +49) !2378 @BlackScorp
+
+- Phone Numbers are displayed even if they are invalid (e.g. do not start with +49)
+- Phone numbers are validated in profile settings 
+
+- Phone Numbers are displayed even if they are invalid (e.g. do not start with +49)
+
+- Phone Numbers are displayed even if they are invalid (e.g. do not start with +49)
+- Phone numbers are validated in profile settings 
+
+- Phone Numbers are displayed even if they are invalid (e.g. do not start with +49)
 
 ## Bugfixes
 - When going back during registration, email and password are unchanged. !2184 @AntonBallmaier
@@ -56,6 +77,12 @@
 - A wall post with multiple lines will use the complete available size to display its text !2277 @NINI1988
 - Restrictions on the view of the store list in profile !2273 @chriswalg
 - Show only chat link if user is member in store !2304 @chriswalg
+- Fix XSS Vulnerability at login page !2351 #1252 @stcz
+- Commitmentstat correctly counts short term sign ups and shows handshake symbol for shared food baskets. Fix Speed. !2353 !2359 @fs_k 
+- Logging from removal of store managers. Corrected logging use for appointing store manager. !2365 @fs_k
+- The tooltip from foodbasked enquiry edit button blocked the clicking if only 1 enquiry was active. !2368 @martincodes-de
+- Reaction button hasn't different color if already reacted !2373 @martincodes-de
+- polyfill added @sefn
 
 ## Refactoring
 - Currently running events are shown within the event overview until their end !2162 @merhoc
@@ -72,6 +99,7 @@
 - Let the community bubble on the map fetch its own content !2311 @alex.simm
 - Changed deleting wall posts to the API #798 !2253 @alex.simm  
 - Use REST API for setting the user's sleep status #798 !2282 @alex.simm
+- Renmae Region\Type -> Unit\UnitType to make it search able and clear !2352 @KoeMai
 
 ## Dev/Test/CI stuff
 - bump node to version 16 !2135 @peter.toennies
@@ -92,6 +120,10 @@
 - Add a workaround to upload files to the startpage. #1245 !2233 @stcz
 - Replace SwiftMailer with Symfony mailer #1188 !2247 @alex.simm
 - Updated php-cs-fixer to 3.8 !2274 @alex.simm
+- Add a variable to set the connection method for bounce mail processing !2350 @stcz
+- Some small code cleanup surrounding `Mem` @\_fridtjof_ !2357
+- Run maintenance daily and generate stats in new stats script and added them to seed script !2379 @chriswalg
+- Moved variable DELAY_MICRO_SECONDS_BETWEEN_MAILS to config file #1389 !2383 @chriswalg
 
 ## Development documetation
 - Add generator for database documentation !2275 @KoeMai
@@ -125,6 +157,7 @@
 - Fix typos in forum markdown hints. !2167 @NINI1988
 - Fixed the user search pointing to a non-existing path !2170 @alex.simm
 - The visibility of the StoreWall can be toggled again !2177 @nudin
+- Prevent text-overflow in thread posts in forum !2392 @FlorianMaak 
 
 ## Refactoring
 - move even more hardcoded language to language files !2109 !2183 @jonathan_b

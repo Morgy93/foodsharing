@@ -18,7 +18,8 @@ class ContentSecurityPolicy
 			'script-src' => [
 				$self,
 				$unsafeInline,
-				$unsafeEval // lots of `$.globalEval` still ... 😢
+				$unsafeEval, // lots of `$.globalEval` still ... 😢
+				'https://polyfill.io/' // used for a polyfill loader in the base.twig file
 			],
 			'connect-src' => [
 				$self,

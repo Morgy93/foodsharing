@@ -11,3 +11,10 @@ dir=$(dirname "$0")
 source "$dir"/inc.sh
 
 exec-in-container app vendor/bin/codecept foodsharing:seed "$@"
+
+dc run --rm --no-deps app php -f run.php Maintenance daily
+dc run --rm --no-deps app php -f run.php Stats foodsaver
+dc run --rm --no-deps app php -f run.php Stats betriebe
+dc run --rm --no-deps app php -f run.php Stats bezirke
+
+echo "All done"

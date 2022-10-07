@@ -902,9 +902,9 @@ storeedit:
     status: "Status" #also in QuizView
   fetch:
     teamStatus: "Teamstatus"
-    teamStatus0: "Dieses Team ist voll und sucht zurzeit keine weiteren Helfer"
-    teamStatus1: "Es werden noch Helfer gesucht"
-    teamStatus2: "Es werden dringend noch Helfer gesucht"
+    teamStatus0: "Dieses Team ist voll und sucht zurzeit keine weiteren Helfer*innen"
+    teamStatus1: "Es werden noch Helfer*innen gesucht"
+    teamStatus2: "Es werden dringend noch Helfer*innen gesucht"
   add_success: "Kooperationsbetrieb wurde eingetragen"
   edit_success: "Änderungen wurden gespeichert"
   milestone:
@@ -954,9 +954,18 @@ pickup:
   add_onetime_pickup: "Zusatztermin eintragen"
   slot_add: "Slot hinzufügen"
   slot_remove: "Slot entfernen"
+  no_slots_available: "Keine Slots verfügbar"
   history:
     title: "Abholungshistorie"
     search: "Abholungen anzeigen"
+  signout_history:
+    title: "Historie ausgetragener Foodsaver der letzten 7 Tage"
+    reload: "Neuladen"
+    no_signouts_found: "Es wurden keine Austragungen gefunden."
+    slot: "Abholung"
+    signout_via_responsible_person:
+      via: "durch"
+      remove_reason: "(Grund: {reason})"
   edit:
     bread: "Abholzeiten bearbeiten"
     add: "Abholzeiten eintragen"
@@ -2128,8 +2137,8 @@ menu:
     dataprivacy: "Datenschutz"
     release-notes: "Was ist neu?"
     stores: "Betriebe" #also in MapView
-    helpwanted: "HelferInnen gesucht" #MapView
-    helpneeded: "HelferInnen dringend gesucht" #MapView
+    helpwanted: "Helfer*innen gesucht" #MapView
+    helpneeded: "Helfer*innen dringend gesucht" #MapView
     other_stores: "Andere Betriebe" #MapView
     fs: "Foodsaver"
     ids: "Ausweise"
@@ -2455,6 +2464,7 @@ poll:
     number_of_votes: "Abgegebene Stimmen"
     votes: "Stimmen"
     option_text: "Option"
+    percentage_of_votes: "Wahlbeteiligung"
     sum: "Summe"
   submit_vote_question: "Wirklich jetzt abstimmen? Deine Auswahl kann danach nicht mehr geändert werden."
   eligible_votes_count: "Anzahl der Stimmberechtigten"
@@ -2601,23 +2611,35 @@ error:
     description: "Bitte bestätige deine E-Mail-Adresse, indem du auf den Link in der Aktivierungsmail klickst."
     link_1: "Eine neue Aktivierungsmail anfordern"
     link_2: "E-Mail-Adresse ändern"
-  adress:
+  missing_geolocation:
     title: "Es gab einen Fehler mit deiner Adresse."
-    info: "Bitte überprüfe deine Adresse. Die Koordinaten konnten nicht ermittelt werden."
+    description: "Bitte überprüfe deine Adresse. Die Koordinaten konnten nicht ermittelt werden."
     link: "Zur Adressen Eingabe"
-  choose_home_region:
+  invalid_mobile_phonenumber:
+    title: "Es gibt ein Problem, mit deiner Mobilen Telefonnummer."
+    description: "Deine Mobile Telefonnummer hat leider ein Format, das nicht anrufbar ist."
+    link: "Jetzt Mobile Telefonnummer korrigieren"
+  old_user_avatar:
+    title: "Es gibt ein Problem, mit deinem Profilbild."
+    description: "Im September 2021 haben wir eine technische Umstellung vorgenommen, welche die Profilbilder betrifft. Daher bitten wir dich dein Profilbild erneut hochzuladen oder zu erneuern. Wenn du dein aktuelles Bild wiederverwenden willst, kannst du es <a href=\"{link}\" download>hier</a> herunterladen. Entschuldige bitte die Umstände."
+    link: "Jetzt Profilbild erneuern"
+  missing_user_avatar:
+    title: "Du hast noch kein Profilbild hochgeladen."
+    description: "Zeige den Mitgliedern von Foodsharing, wer du bist!"
+    link: "Jetzt Profilbild hochladen"
+  missing_home_region:
     title: "Wähle einen Stammbezirk aus."
-    info: "Damit du Weitermachen kannst, wird ein Stammbezirk benötigt."
+    description: "Damit du Weitermachen kannst, wird ein Stammbezirk benötigt."
     link: "Jetzt Stammbezirk auswählen"
 
 information:
   push:
     title: "Du kannst jetzt Push-Benachrichtigungen von foodsharing empfangen."
-    info: "Wenn du keine Push-Benachrichtigungen mehr empfangen willst, kannst du sie jederzeit in den Einstellungen wieder deaktivieren."
+    description: "Wenn du keine Push-Benachrichtigungen mehr empfangen willst, kannst du sie jederzeit in den Einstellungen wieder deaktivieren."
     link: "Zu den Einstellungen"
   calendar_sync:
     title: "Kennst du die Kalender Synchronisation für deine Abholungen?"
-    info: "Damit kannst du deine nächsten Abholtermine mit einem Kalenderprogramm deiner Wahl sehen."
+    description: "Damit kannst du deine nächsten Abholtermine mit einem Kalenderprogramm deiner Wahl sehen."
     link: "Jetzt abonnieren"
 
 system_administration:

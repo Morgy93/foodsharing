@@ -1,41 +1,39 @@
 <template>
   <div
     v-if="!isSet"
-    class="information-field alert alert-info d-flex justify-content-between"
+    class="informationfield"
   >
     <i
-      v-if="icon"
-      class="fas info-icon align-self-center mr-3 d-none d-md-block "
-      :class="icon"
+      v-if="entry.icon"
+      class="informationfield__icon fas"
+      :class="entry.icon"
     />
-    <div class="flex-grow-1 d-flex flex-column justify-content-between">
-      <div class="alignt-self-start">
+    <div class="informationfield__content">
+      <div class="informationfield__content-wrapper">
         <h4
-          v-if="title"
-          v-html="$i18n(title)"
+          class="informationfield__title"
+          v-html="$i18n(`information.${entry.field}.title`)"
         />
         <p
-          v-if="description"
-          class="description mb-1 w-md-50"
-          v-html="$i18n(description)"
+          class="informationfield__description"
+          v-html="$i18n(`information.${entry.field}.description`)"
         />
       </div>
       <div
-        v-if="links.length > 0"
-        class="d-flex align-items-center my-2"
+        v-if="entry.links.length > 0"
+        class="informationfield__links"
       >
         <a
-          v-for="(link, key) in links"
+          v-for="(link, key) in entry.links"
           :key="key"
-          class="btn btn-sm btn-info font-weight-bold align-self-start mr-2"
+          class="informationfield__link"
           :href="link.urlShortHand ? $url(link.urlShortHand) : link.href"
           v-html="$i18n(link.text)"
         />
       </div>
     </div>
     <i
-      v-if="isCloseable"
-      class="close-interaction fas fa-times"
+      class="informationfield__close fas fa-times"
       @click.prevent="close"
     />
   </div>
@@ -44,18 +42,22 @@
 <script>
 export default {
   props: {
-    type: { type: String, default: 'info' },
-    tag: { type: String, default: '' },
-    icon: { type: String, default: '' },
-    title: { type: String, default: '' },
-    description: { type: String, default: '' },
-    isCloseable: { type: Boolean, default: true },
-    links: { type: Array, default: () => [] },
+    entry: {
+      type: Object,
+      default: () => ({
+        icon: '',
+        field: '',
+        links: [],
+      }),
+    },
   },
   data () {
     return {}
   },
   computed: {
+    tag () {
+      return this.entry.field
+    },
     isSet () {
       return JSON.parse(localStorage.getItem(this.tag)) || false
     },
@@ -67,9 +69,7 @@ export default {
   },
   methods: {
     setSeen () {
-      if (this.isCloseable) {
-        localStorage.setItem(this.tag, JSON.stringify(true))
-      }
+      localStorage.setItem(this.tag, JSON.stringify(true))
     },
     close () {
       this.setSeen()
@@ -87,32 +87,63 @@ export default {
 </script>
 
 <style lang="scss" scoped>
-.information-field {
+@import "@/scss/bootstrap-theme.scss";
+
+.informationfield {
+  @extend .alert;
+
+  color: var(--fs-color-info-700);
+  background-color: var(--fs-color-info-200);
+  border-color: var(--fs-color-info-300);
+
   min-height: 100px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
 }
 
-.alert-broadcast {
-  min-height: 0;
-  align-content: center;
+.informationfield__content {
+  margin-right: auto;
 }
 
-.info-icon {
+.informationfield__icon {
   font-size: 3rem;
+  margin-right: 1rem;
 }
 
-.close-interaction {
-  cursor: pointer;
+.informationfield__title {
+  margin-top: 0;
+  margin-bottom: .25rem;
+}
 
-  &:hover {
-    color: var(--fs-color-primary-500);
+.informationfield__description {
+  margin-bottom: .5rem;
+  a {
+    text-decoration: underline;
   }
 }
 
-.list-group-item-action {
-  cursor: pointer;
+.informationfield__link {
+  @extend .btn;
+  @extend .btn-sm;
+
+  color: var(--fs-color-info-100);
+  background-color: var(--fs-color-info-500);
+
+  font-weight: 600;
+
+  &:not(:last-child) {
+    margin-right: .5rem;
+  }
+
+  &:hover {
+    color: var(--fs-color-info-100);
+    background-color: var(--fs-color-info-600);
+  }
 }
 
-::v-deep.description a {
-  text-decoration: underline;
+.informationfield__close  {
+  cursor: pointer;
+  align-self: flex-start;
 }
 </style>

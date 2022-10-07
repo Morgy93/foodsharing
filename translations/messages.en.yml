@@ -732,6 +732,14 @@ pickup:
   history:
     title: Pick-up history
     search: Show pickups
+  signout_history:
+    title: "History of logged out food savers from pickups for the last 7 days"
+    reload: "Reload"
+    no_signouts_found: "No signouts found."
+    slot: "Pickup"
+    signout_via_responsible_person:
+      via: "by"
+      remove_reason: "(Reason: {reason})"
   join_title_date: Sure?
   dates: Pick-up dates
   team_message_send_and_leave: Send and leave
@@ -750,6 +758,7 @@ pickup:
     added: Pickup date was added.
   slot_remove: Delete slot
   slot_add: Add slot
+  no_slots_available: No pickup slots available
   add_onetime_pickup: Add additional date
   edit_recurring_pickups: Edit regular pickup dates
   really_delete_date: Do you really want to delete the pickup on {date}?
@@ -1087,6 +1096,7 @@ poll:
     votes: Votes
     number_of_votes: Submitted votes
     option_text: Option
+    percentage_of_votes: Voter turnout
   new_poll:
     submit_question: The poll can be changed within one hour (until {date}). Do you
       really want to create it now?

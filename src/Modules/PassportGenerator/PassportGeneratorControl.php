@@ -114,6 +114,6 @@ final class PassportGeneratorControl extends Control
 		header("Content-Length: $size");
 		readfile($file);
 
-		exit();
+		exit;
 	}
 }

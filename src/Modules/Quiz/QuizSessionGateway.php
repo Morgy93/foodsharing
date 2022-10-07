@@ -35,7 +35,7 @@ class QuizSessionGateway extends BaseGateway
 				'quest_count' => $questionCount,
 				'easymode' => $easyMode
 			]
-	  );
+		);
 	}
 
 	public function finishQuizSession(int $sessionId, array $questions, array $quizResult, float $failurePoints, int $maxFailurePoints): int
@@ -308,7 +308,7 @@ class QuizSessionGateway extends BaseGateway
 						++$out['failed'];
 						break;
 					default:
-				}
+					}
 			}
 		}
 

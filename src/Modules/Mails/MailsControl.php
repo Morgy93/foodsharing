@@ -26,7 +26,6 @@ class MailsControl extends ConsoleControl
 	 * until then we need to be able to configure this rather flexible in here
 	 * 45,11 mails/minute = 1330 milli seconds between mails
 	 * */
-	private int $DELAY_MICRO_SECONDS_BETWEEN_MAILS = 1330000;
 
 	public function __construct(
 		MailsGateway $mailsGateway,
@@ -363,7 +362,7 @@ class MailsControl extends ConsoleControl
 
 		for ($max_try = 2; $max_try > 0; --$max_try) {
 			try {
-				self::info('send email tries remaining ' . ($max_try));
+				self::info('send email tries remaining ' . $max_try);
 				$this->mailer->send($email);
 				self::success('email send OK');
 
@@ -385,7 +384,7 @@ class MailsControl extends ConsoleControl
 			}
 		}
 		// rate limiting
-		usleep($mailCount * $this->DELAY_MICRO_SECONDS_BETWEEN_MAILS);
+		usleep($mailCount * DELAY_MICRO_SECONDS_BETWEEN_MAILS);
 
 		return true;
 	}

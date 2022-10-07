@@ -60,7 +60,7 @@
             {{ $i18n('profile.commitments_stat.basketsOfferedWeek', { count: item.baskets.offered[0].count, weight: item.baskets.offered[0].weight} ) }}
           </div>
           <div v-if="item.baskets.shared > 0 ">
-            <i class="fas fa-handshake-o" />
+            <i class="fas fa-handshake" />
             {{ $i18n('profile.commitments_stat.basketsSharedWeek', { count: item.baskets.shared } ) }}
           </div>
         </b-tab>

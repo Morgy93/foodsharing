@@ -281,7 +281,7 @@ class QuizView extends View
 		$out .= '
 		<li class="noanswer" onmouseout="$(this).css(\'background-color\',\'transparent\');" onmouseover="$(this).css(\'background-color\',\'var(--fs-color-light)\');" style="cursor:pointer;-moz-user-select:none;border-radius:10px;display:block;list-style:none;padding:10px 10px;font-size:14px;">
 			<label>
-				<span style="cursor:pointer;user-select:none;float:left">' . ($i) . '. &nbsp;</span>
+				<span style="cursor:pointer;user-select:none;float:left">' . $i . '. &nbsp;</span>
 				<input class="nocheck" style="float:left;" type="checkbox" name="none" value="0" />
 				<span style="cursor:pointer;wouser-select:none;display:block;margin-left:43px;color:var(--fs-color-primary-500);">Es ist keine Antwort richtig!</span>
 				<span class="clear"></span>
@@ -352,7 +352,7 @@ class QuizView extends View
 			$out .= '
 				<h3><strong>Frage ' . (int)$e['number'] . ' ' . (100 - $e['percent']) . ' % richtig</strong> - ' . $e['userfp'] . '/' . $e['fp'] . ' Fehlerpunkten</h3>
 				<div style="background-color:var(--fs-color-light);">
-					<p style="font-style:italic;padding:15px;">&bdquo;' . ($e['text']) . '&ldquo;</p>
+					<p style="font-style:italic;padding:15px;">&bdquo;' . $e['text'] . '&ldquo;</p>
 					' . $exp . '
 				</div>';
 		}

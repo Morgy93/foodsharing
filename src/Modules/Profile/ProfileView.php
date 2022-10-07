@@ -147,7 +147,7 @@ class ProfileView extends View
 				'photo' => $this->foodsaver['photo'],
 				'fsId' => $this->foodsaver['id'],
 				'fsIdSession' => $this->session->id(),
-				'isSleeping' => $this->foodsaver['sleep_status'],
+				'isSleeping' => (bool)$this->foodsaver['sleep_status'],
 				'isNoBuddy' => $this->foodsaver['buddy'] === BuddyId::NO_BUDDY,
 				'mayAdmin' => $mayAdmin,
 				'mayHistory' => $maySeeHistory,
@@ -254,9 +254,7 @@ class ProfileView extends View
 
 	public function userNotes(string $notes, array $userStores): void
 	{
-		$fsId = $this->foodsaver['id'];
 		$fsName = $this->foodsaver['name'];
-		$regionId = $this->foodsaver['bezirk_id'];
 
 		$page = new vPage(
 			$this->translator->trans('profile.notes.title', ['{name}' => $fsName]),
@@ -264,19 +262,7 @@ class ProfileView extends View
 		);
 		$page->setBread($this->translator->trans('profile.notes.bread'));
 
-		$mayAdmin = $this->profilePermissions->mayAdministrateUserProfile($fsId, $regionId);
-		$maySeeHistory = $this->profilePermissions->maySeeHistory($fsId);
-		$maySeeStores = $this->profilePermissions->maySeeStores($fsId);
-
-		$page->addSectionLeft($this->imageService->img($this->foodsaver['photo'], 130));
-
-		if ($maySeeStores) {
-			$page->addSectionLeft(
-				$this->vueComponent('vue-profile-storelist', 'ProfileStoreList', [
-					'stores' => $userStores,
-				])
-			);
-		}
+		$page->addSectionLeft('<a href="#"><img src="' . $this->imageService->img($this->foodsaver['photo'], 130) . '" /></a>');
 
 		$page->render();
 	}

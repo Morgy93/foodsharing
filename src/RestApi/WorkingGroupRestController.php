@@ -3,7 +3,7 @@
 namespace Foodsharing\RestApi;
 
 use Foodsharing\Lib\Session;
-use Foodsharing\Modules\Core\DBConstants\Region\Type;
+use Foodsharing\Modules\Core\DBConstants\Unit\UnitType;
 use Foodsharing\Modules\Foodsaver\FoodsaverGateway;
 use Foodsharing\Modules\WorkGroup\WorkGroupGateway;
 use Foodsharing\Modules\WorkGroup\WorkGroupTransactions;
@@ -56,7 +56,7 @@ class WorkingGroupRestController extends AbstractFOSRestController
 		}
 
 		$group = $this->workGroupGateway->getGroup($groupId);
-		if (empty($group) || $group['type'] !== Type::WORKING_GROUP) {
+		if (empty($group) || !UnitType::isGroup($group['type'])) {
 			throw new NotFoundHttpException();
 		}
 

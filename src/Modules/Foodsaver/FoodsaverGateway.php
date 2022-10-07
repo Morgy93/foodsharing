@@ -7,8 +7,8 @@ use Foodsharing\Modules\Core\BaseGateway;
 use Foodsharing\Modules\Core\Database;
 use Foodsharing\Modules\Core\DBConstants\Foodsaver\Role;
 use Foodsharing\Modules\Core\DBConstants\Region\RegionIDs;
-use Foodsharing\Modules\Core\DBConstants\Region\Type;
 use Foodsharing\Modules\Core\DBConstants\StoreTeam\MembershipStatus;
+use Foodsharing\Modules\Core\DBConstants\Unit\UnitType;
 use Foodsharing\Modules\Region\ForumFollowerGateway;
 use Foodsharing\Utility\DataHelper;
 use Foodsharing\Utility\ImageHelper;
@@ -324,7 +324,7 @@ class FoodsaverGateway extends BaseGateway
 			AND     fs.deleted_at IS NULL
             AND     fs.`active` = 1
         ', [
-			':excludedRegionType' => Type::WORKING_GROUP
+			':excludedRegionType' => UnitType::WORKING_GROUP
 		]);
 	}
 
@@ -536,9 +536,9 @@ class FoodsaverGateway extends BaseGateway
 		';
 
 		if (!$includeRegionAmbassador) {
-			$sql .= ' AND reg.type = ' . Type::WORKING_GROUP;
+			$sql .= ' AND reg.type = ' . UnitType::WORKING_GROUP;
 		} elseif (!$includeGroupAmbassador) {
-			$sql .= ' AND reg.type != ' . Type::WORKING_GROUP;
+			$sql .= ' AND reg.type != ' . UnitType::WORKING_GROUP;
 		}
 
 		return $this->db->fetchAllValues(

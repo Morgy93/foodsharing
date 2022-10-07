@@ -15,6 +15,12 @@
         class="fas fa-users-cog text-muted"
         style="cursor: help;"
       />
+      <i
+        v-if="entry.membershipStatus === 2"
+        v-b-tooltip="$i18n('store.tooltip_jumping')"
+        class="fas fa-people-carry text-muted"
+        style="cursor: help;"
+      />
     </div>
     <div
       v-if="entry.pickupStatus > 0"

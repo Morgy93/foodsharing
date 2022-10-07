@@ -90,7 +90,7 @@ class StoreUserView extends View
 
 			$storeRows[$i] = [
 				['cnt' => '<a class="linkrow ui-corner-all" href="/?page=fsbetrieb&id=' . $store['id'] . '">' . $store['name'] . '</a>'],
-				['cnt' => $store['str'] . ' ' . $store['hsnr']],
+				['cnt' => $store['str']],
 				['cnt' => $store['plz']],
 				['cnt' => $status]
 			];

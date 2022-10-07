@@ -70,6 +70,6 @@ class MainXhr extends Control
 			}
 		</script>
 		</head><body onload="' . $function . '"></body></html>';
-		exit();
+		exit;
 	}
 }

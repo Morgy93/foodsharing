@@ -8,10 +8,12 @@ use Foodsharing\Lib\Session;
 use Foodsharing\Modules\Core\DBConstants\Foodsaver\Gender;
 use Foodsharing\Modules\Foodsaver\FoodsaverGateway;
 use Foodsharing\Modules\Foodsaver\FoodsaverTransactions;
+use Foodsharing\Modules\Group\GroupTransactions;
 use Foodsharing\Modules\Login\LoginGateway;
 use Foodsharing\Modules\Profile\ProfileGateway;
 use Foodsharing\Modules\Profile\ProfileTransactions;
 use Foodsharing\Modules\Region\RegionGateway;
+use Foodsharing\Modules\Region\RegionTransactions;
 use Foodsharing\Modules\Register\DTO\RegisterData;
 use Foodsharing\Modules\Register\RegisterTransactions;
 use Foodsharing\Modules\Settings\SettingsGateway;
@@ -27,6 +29,8 @@ use Foodsharing\Permissions\ReportPermissions;
 use Foodsharing\Permissions\StorePermissions;
 use Foodsharing\Permissions\UserPermissions;
 use Foodsharing\Permissions\WorkGroupPermissions;
+use Foodsharing\RestApi\Models\Group\UserGroupModel;
+use Foodsharing\RestApi\Models\Region\UserRegionModel;
 use Foodsharing\Utility\EmailHelper;
 use FOS\RestBundle\Controller\AbstractFOSRestController;
 use FOS\RestBundle\Controller\Annotations as Rest;
@@ -49,6 +53,8 @@ class UserRestController extends AbstractFOSRestController
 	private UploadsGateway $uploadsGateway;
 	private RegionGateway $regionGateway;
 	private SettingsGateway $settingsGateway;
+	private RegionTransactions $regionTransactions;
+	private GroupTransactions $groupTransactions;
 
 	private UserPermissions $userPermissions;
 	private ProfilePermissions $profilePermissions;
@@ -95,7 +101,9 @@ class UserRestController extends AbstractFOSRestController
 		BlogPermissions $blogPermissions,
 		RegionPermissions $regionPermissions,
 		NewsletterEmailPermissions $newsletterEmailPermissions,
-		WorkGroupPermissions $workGroupPermissions
+		WorkGroupPermissions $workGroupPermissions,
+		RegionTransactions $regionTransactions,
+		GroupTransactions $groupTransactions
 	) {
 		$this->session = $session;
 		$this->loginGateway = $loginGateway;
@@ -108,6 +116,8 @@ class UserRestController extends AbstractFOSRestController
 		$this->profileTransactions = $profileTransactions;
 		$this->foodsaverTransactions = $foodsaverTransactions;
 		$this->settingsGateway = $settingsGateway;
+		$this->regionTransactions = $regionTransactions;
+		$this->groupTransactions = $groupTransactions;
 
 		$this->userPermissions = $userPermissions;
 		$this->profilePermissions = $profilePermissions;
@@ -224,6 +234,23 @@ class UserRestController extends AbstractFOSRestController
 			$response['mobile'] = $data['handy'];
 			$response['birthday'] = $data['geb_datum'];
 			$response['aboutMeIntern'] = $data['about_me_intern'];
+
+			// load region
+			$regions = $this->regionTransactions->getUserRegions($this->session->id());
+
+			$rsp_regions = [];
+			foreach ($regions as $region) {
+				$rsp_regions[] = UserRegionModel::createFrom($region);
+			}
+			$response['regions'] = $rsp_regions;
+
+			// load groups
+			$groups = $this->groupTransactions->getUserGroups($this->session->id());
+			$rsp_groups = [];
+			foreach ($groups as $group) {
+				$rsp_groups[] = UserGroupModel::createFrom($group);
+			}
+			$response['groups'] = $rsp_groups;
 		}
 
 		if ($mayAdministrateUserProfile) {

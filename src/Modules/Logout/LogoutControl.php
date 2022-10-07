@@ -15,6 +15,6 @@ class LogoutControl extends Control
 	{
 		$this->session->logout();
 		header('Location: /');
-		exit();
+		exit;
 	}
 }

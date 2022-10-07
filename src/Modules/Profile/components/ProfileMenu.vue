@@ -70,7 +70,7 @@
         <i class="fas fa-file-alt fa-fw" /> {{ $i18n('profile.nav.verificationHistory') }}
       </b-list-group-item>
       <b-list-group-item
-        v-if="mayNotes && noteCount > 0"
+        v-if="mayNotes"
         type="button"
         class="list-group-item list-group-item-action"
         :href="$url('profileNotes', fsId)"

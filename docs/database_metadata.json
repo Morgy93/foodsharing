@@ -88,17 +88,30 @@
             "todos": [
                 "Remove unused columns email_pass, conversation_id",
                 "Clarify: Field description",
-                "Clarify: Extract typs from `src\\Modules\\Core\\DBConstants\\Region\\Type`"
-            ]
-        },
-        {
-            "identifier": "fs_foodsaver",
-            "description": "User",
-            "todos": [
-                "add deleted_at column",
-                "bezirk_id ('home district') is 0 for a lot of users. Should be NULL. As we don't need this soon in new backend, care later.",
-                "Document: Add to database as column (deleted_at) comment: `deleted_at`: deletion day of account, if `NULL`, account is active"
-            ]
+                "Clarify: Extract typs from `src\\Modules\\Core\\DBConstants\\Region\\Type`",
+                "Cöarify: Use of moderated? $region['moderated'] || in_array($region['type'], [Type::BIG_CITY, Type::FEDERAL_STATE, Type::COUNTRY]);"
+            ],
+            "columns": {
+                "has_children": {
+                    "description": "Is set when ID is set in parent_id of other row"
+                },
+                "mailbox_id": {
+                    "description": "Id of user related mailbox",
+                    "weakForeignKey": {
+                        "table": "fs_mailbox",
+                        "column": "id"
+                    }
+                },
+                "apply_type": {
+                    "description": "Defines join conditions for Working-Groups (@Region::ApplyType)"
+                },
+                "conversation_id": {
+                    "description": "**Unused**"
+                },
+                "moderated": {
+                    "description": "**Unused? Only select found no insert or update ***"
+                }
+            }
         },
         {
             "identifier": "fs_foodsaver_has_bezirk",
@@ -106,7 +119,18 @@
             "todos": [
                 "Remove broken data",
                 "Add foreign key relationships to *fs_foodsaver* and *fs_bezirk*"
-            ]
+            ],
+            "columns": {
+                "added": {
+                    "description": "Date of insert"
+                },
+                "active": {
+                    "description": "*Unused? No code found which write '0'*"
+                },
+                "application": {
+                    "description": "Addition information about the foodsaver (like skills, possible time, ...)"
+                }
+            }
         },
         {
             "identifier": "fs_theme",
@@ -114,6 +138,193 @@
             "todos": [
                 "nothing as threads from deleted users should be kept"
             ]
+        },
+        {
+            "identifier": "fs_foodsaver",
+            "description": "Describes the user in the foodsharing system. Therefore it contains profile, role and statistics.",
+            "todos": [
+                "bezirk_id ('home district') is 0 for a lot of users. Should be NULL. As we don't need this soon in new backend, care later.",
+                "Document: Add to database as column (deleted_at) comment: `deleted_at`: deletion day of account, if `NULL`, account is active",
+                "new_bezirk: Could be removed? Currently no usage found. (unset in SettingsControl and initial_migration)",
+                "want_new: Could be removed? Currently no usage found. (initial_migration)",
+                "Clarify: Is it possible that a community member is in the role ogra or site_admin and not part of the orga team?",
+                "Drop unused columns from database and remove rests from codebase"
+            ],
+            "columns": {
+                "new_bezirk": {
+                    "description": "**Unused**"
+                },
+                "want_new": {
+                    "description": "**Unused**"
+                },
+                "admin": {
+                    "description": "**Unused? I think replaced by SITE_ADMIN role. Found it only in SELECT but no write and Foodsharing Test helper createOrga sets two fields with simular values.**"
+                },
+                "active": {
+                    "description": "E-Mail activation after registration is completed (True: E-Mail is verified, False: verification e-mail feedback is pending)"
+                },
+                "anmeldedatum": {
+                    "description": "Date of registaration"
+                },
+                "privacy_notice_accepted_date": {
+                    "description": "Documentation modification date of privacy notice which the user accetped "
+                },
+                "privacy_policy_accepted_date": {
+                    "description": "Documentation modification date of privacy policy which the user accetped "
+                },
+                "newsletter": {
+                    "description": "User subscribes the newsletter"
+                },
+                "orgateam": {
+                    "description": "Unused? Defines which member is part of the orga team (meaning orgateam is unclear)"
+                },
+                "rolle": {
+                    "description": "Describes the type of member in the foodsharing community system @Foodsaver::Role"
+                }, 
+                "verified": {
+                    "description": "User is verified to by part of the foodsharing community (True: Verified, False: Not verified or lost verification)"
+                },
+                "last_pass": {
+                    "description": "Last generation of passport"
+                },
+                "position": {
+                    "description": "Free text description of position in foodsharing community (public visible)"
+                }, 
+                "type": {
+                    "description": "**Unused? I only found one SELECT but no write**"
+                },
+                "id": {
+                    "description": "Unique id of user in foodsharing community"
+                },
+                "bezirk_id": {
+                    "description": "Id of home destrict",
+                    "weakForeignKey": {
+                        "table": "fs_bezirk",
+                        "column": "id"
+                    }
+                },
+                "mailbox_id": {
+                    "description": "Id of user related mailbox",
+                    "weakForeignKey": {
+                        "table": "fs_mailbox",
+                        "column": "id"
+                    }
+                },
+                "password": {
+                    "description": "User login password hash"
+                },
+                "homepage": {
+                    "description":  "URL to user own homepage"
+                },
+                "geb_datum": {
+                    "description": "birthday of user"
+                },
+                "photo": {
+                    "description": "URL to user image ('/api/uploads' '/images/) Path is different depending on upload way"
+                },
+                "geschlecht": {
+                    "description": "Gender of user (@Foodsaver::Gender)"
+                },
+                "lat": {
+                    "description": "Geo position latitude of user home"
+                },
+                "lon": {
+                    "description": "Geo position longitude of user home"
+                },
+                "plz": {
+                    "description": "Zip code of user home"
+                },
+                "stadt": {
+                    "description": "City name of user home"
+                },
+                "anschrift": {
+                    "description": "Address (street and house number) of user home"
+                },
+                "telefon": {
+                    "description": "phone number of user"
+                },
+                "handy": {
+                    "description": "mobile phone number of user"
+                },
+                "name": {
+                    "description": "First name of user"
+                },
+                "nachname": {
+                    "description": "Last name of user"
+                },
+                "about_me_public": {
+                    "description": "User provided description text for public accessable parts."
+                },
+                "about_me_intern": {
+                    "description": "User provided description text for community internal accessable parts."
+                },
+                "email": {
+                    "description": "E-Mail address which is used for registration and newsletter"
+                },
+                "token": {
+                    "description": "Verification code which is send to user during registration"
+                },
+                "infomail_message": {
+                    "description": "True if the user have subscription for info mails like chat notifications."
+                },
+                "last_login": {
+                    "description": "Timestamp of the last successful login."
+                },
+                "contact_public": {
+                    "description": "**Unused (Hidden feature) User can be contacted public via mail form.**"
+                },
+                "option": {
+                    "description": "key value store (deactivated activity-listings)"
+                },
+                "beta": {
+                    "description": "**Unused? NO referene in code found.**"
+                },
+                "deleted_at": {
+                    "description": "Date of accounts was deleted."
+                },
+                "sleep_msg": {
+                    "description": "Message about the reason of sleeping."
+                }, 
+                "sleep_status": {
+                    "description": "Kind of sleeping (@Foodsaver::SleepStatus)"
+                },
+                "sleep_from": {
+                    "description": "Date of sleep will begin"
+                },
+                "sleep_until": {
+                    "description": "Date of expected sleeping ends."
+                },
+                "stat_fetchweight": {
+                    "description": "Fetch weight in kg"
+                },
+                "stat_fetchcount": {
+                    "description": "Count of fetches the user have confirmed in total."
+                },
+                "stat_ratecount": {
+                    "description": "**Unused**"
+                }, 
+                "stat_rating": {
+                    "description": "**Unused**"
+                },
+                "stat_postcount": {
+                    "description": "Count of total post fs_theme_post, fs_wallpost and fs_betrieb_notiz the user created"
+                },
+                "stat_buddycount": {
+                    "description": "Statistic count of the confirmed buddies"
+                },
+                "stat_bananacount": {
+                    "description": "Count of recived bananas the user have."
+                },
+                "stat_fetchrate": {
+                    "description": "(1 - 'confirmed but missed fetchs' / 'confirmed fetches') * 100 in procent "
+                },
+                "data": {
+                    "description": "**Unused??**"
+                },
+                "quiz_rolle": {
+                    "description": "@Foodsaver::Role of quiz that the user have already successful done. (Hard coded levels exist: Role::AMBASSADOR, Role::STORE_MANAGER, Role::FOODSAVER)"
+                }
+            }
         },
         {
             "identifier": "fs_basket",

@@ -466,7 +466,7 @@ class PickupGateway extends BaseGateway implements BellUpdaterInterface
 		$stm = 'SELECT
 				s.id AS store_id,
 				s.name AS store_name,
-				CONCAT(s.str, " ", s.hsnr, ", ", s.plz, " ", s.stadt) AS `address`,
+				CONCAT(s.str, ", ", s.plz, " ", s.stadt) AS `address`,
 				UNIX_TIMESTAMP(a.`date`) AS `timestamp`,
 				a.confirmed,
 				GROUP_CONCAT(f.id) AS fs_ids,

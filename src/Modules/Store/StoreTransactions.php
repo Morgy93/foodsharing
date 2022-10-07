@@ -92,9 +92,6 @@ class StoreTransactions
 		$store->regionId = intval($legacyGlobalData['bezirk_id']);
 
 		$address = $legacyGlobalData['str'];
-		if ($legacyGlobalData['hsnr'] ?? '') {
-			$address .= ' ' . $legacyGlobalData['hsnr'];
-		}
 		$store->lat = floatval($legacyGlobalData['lat']);
 		$store->lon = floatval($legacyGlobalData['lon']);
 		$store->str = $address;
@@ -450,6 +447,7 @@ class StoreTransactions
 	{
 		/* check if other managers exist (cannot leave as last manager) */
 		$this->storeGateway->removeStoreManager($storeId, $userId);
+		$this->storeGateway->addStoreLog($storeId, $this->session->id(), $userId, null, StoreLogAction::REMOVED_AS_STORE_MANAGER);
 
 		$standbyTeamChatId = $this->storeGateway->getBetriebConversation($storeId, true);
 		if ($standbyTeamChatId) {
