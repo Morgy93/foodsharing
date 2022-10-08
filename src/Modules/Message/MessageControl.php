@@ -41,7 +41,7 @@ final class MessageControl extends Control
 			$this->pageHelper->addContent($this->view->leftMenu(), CNT_RIGHT);
 		}
 
-		$data = $this->messageTransactions->listConversationsWithProfilesForUser($this->session->id());
+		$data = $this->messageTransactions->listConversationsWithProfilesForUser($this->session->id(), 999);
 		$this->pageHelper->addContent($this->view->conversationListWrapper(
 			$this->view->conversationList($data['conversations'], $data['profiles'])
 		), CNT_RIGHT);
