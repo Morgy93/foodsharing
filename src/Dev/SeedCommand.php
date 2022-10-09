@@ -436,6 +436,13 @@ class SeedCommand extends Command implements CustomCommandInterface
 		$I->addConversationMessage($userbot['id'], $conv1['id']);
 		$I->addConversationMessage($userbot['id'], $conv2['id']);
 
+		// Create 1050 conversations for bot user
+		$this->output->writeln('- create 1050 conversations for bot user');
+		foreach (range(0, 1050) as $_) {
+			$conv1 = $I->createConversation([$userbot['id'], $user2['id']]);
+			$I->addConversationMessage($userbot['id'], $conv1['id']);
+		}
+
 		// Create a store and add team members
 		$this->output->writeln('- create store and add team members');
 		$store = $I->createStore($region1, $conv1['id'], $conv2['id'], ['betrieb_status_id' => 5]);
