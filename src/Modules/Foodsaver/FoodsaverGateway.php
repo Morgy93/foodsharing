@@ -944,7 +944,10 @@ class FoodsaverGateway extends BaseGateway
 		WHERE id IN ({$foodsaverProfileIdsToSearch})
 		";
 
-		$res = $this->db->fetchAll($query);
+		try {
+			$res = $this->db->fetchAll($query);
+		} catch (\Exception $e) {
+		}
 
 		$profiles = [];
 		foreach ($res as $p) {
