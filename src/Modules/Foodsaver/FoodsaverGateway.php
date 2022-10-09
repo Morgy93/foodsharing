@@ -933,11 +933,6 @@ class FoodsaverGateway extends BaseGateway
 
 	public function getProfileForUsers(array $fsIds): array
 	{
-		/* $res = $this->db->fetchAllByCriteria(
-			'fs_foodsaver',
-			['id', 'name', 'photo', 'sleep_status'],
-			['id' => $fsIds]);
-		*/
 		$fsIds = implode(',', $fsIds);
 
 		// if the $fsIds has no foodsharerIds, we search for all values with id null, because we can't find them
