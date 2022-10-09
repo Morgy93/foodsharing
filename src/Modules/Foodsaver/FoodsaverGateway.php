@@ -938,7 +938,7 @@ class FoodsaverGateway extends BaseGateway
 			['id', 'name', 'photo', 'sleep_status'],
 			['id' => $fsIds]);
 		*/
-		$fsIds = implode(",", $fsIds);
+		$fsIds = implode(',', $fsIds);
 
 		// if the $fsIds has no foodsharerIds, we search for all values with id null, because we can't find them
 		$foodsaverProfileIdsToSearch = empty($fsIds) ? null : $fsIds;
