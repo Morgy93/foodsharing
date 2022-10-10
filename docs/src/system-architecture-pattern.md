@@ -3,23 +3,18 @@
 ## Introduction
 
 The foodsharing platform is a old system, which have different migrations running.
-This section tries to describe my understanding of the provided architecture and tries to filter the old found stuff.
+This chapter describes the architecture of the PHP backend.
 
 ## Overview
 
-The system provide a web interface which is communicating with the backend via RestAPI and websockets.
-The backend provides a RestAPI which use transactions (services) for realization of buisness logic.
-The websockets are managed by a chat server, this server exchange important information via RestAPI and redis (cache). (The chat server stuff is not verified yet).
+The foodsharing platform provide a web interface which is communicating with the backend via RestAPI and websockets.
+The backend provides a RestAPI which use transactions (services) for realization of business logic.
+The websockets are managed by a "chat" server, this server exchange important information via RestAPI and redis.
 
 The RestAPI use [permissions](backend-permissions-roles.md) to check rights of a user to execute actions or get information.
 The permission check basic information came from session instances or transactions.
 
 The transaction use gateways to get information from the database and can store them into the session.
-
-### Old stuff
-
-The old basic system used a MVC-pattern to separate visualization from the data and the control. This is visable by Xhr, control, view or model classes.
-In some migrated modules with RestAPI are Gateways directly. Other parts use the permissions to check states which belong to the buisness logic.
 
 ~~~plantuml
 @startuml
@@ -68,41 +63,33 @@ node [nodejs] {
 
 ### Frontend
 
-The frontend is a web interface, this web interface should use the RestAPI to fetch information or run actions. This allows to replace the web interface by native apps or to build other services on top.
-
-[] Add technologies
+The frontend is a web interface. This web interface should use the RestAPI to fetch information or run actions. This allows to replace the web interface by native apps or to build other services on top.
 
 ### Backend
 
-The backend is a monolithic application which manages all business logic. The system use therefore Symfony as base framework and added many dependencies which should help to reduce development effort.
+The backend is a monolithic application which manages all business logic. The system use therefore Symfony as base framework and added many dependencies which help to reduce development effort.
 The software is structured by following pattern.
-
-[] Add more details about the used technologies.
 
 #### RestAPI
 
-The RestAPI maps the business logic to a self describing API, so that the other API users like android app developer and the web interface developer understand the meaning.
-
-[] Add link to guideline for RestAPI expectations (OpenAPI doc, resource, and actions via HTTP methods)
+The RestAPI maps the business logic to an self describing API, so that the other API users like iOS, android app developer and the web interface developer can use it in the same way and kann understand it.
 
 The implementation details can be found in [chapter controllers](php-controllers.md)
 
 #### Transactions
 
-A transaction service is a part of the system which maps user input data into the representation like the database requires. Therefore, it may use gateways or other services to combine them into a business logic.
+A transaction/service is a part of the foodsharing platform which maps user input data into the representation like the database requires.
+The transaction implement the core business logic. Therefore, it may use gateways or other services to realize it.
 A transaction does not check the permissions, so that other services can use it with users which may do not have the permissions.
 
-For details about gateways can be found in the [section](php-transactions.md).
+For details about transaction can be found in the [chapter transactions](php-transactions.md).
 
 #### Gateways
 
 A gateway is the abstraction for the database table. It is used to CRUD related methods. 
 The gateway should encapsulate all database-specific parts, so that a replacement by another database is possible or that the developer knows that all SQL statements are inside these classes.
 
-For details about gateways can be found in the [section](php-gateways.md).
-
-[] Provide examples for DTO or selects with data from different tables.
-[] Add relation between Insert/Update/delete in Gateway (it should be only one owner and one gateway should not represent multiply tables)
+For details about gateways can be found in the [chapter gateways](php-gateways.md).
 
 #### Permissions
 
@@ -113,9 +100,8 @@ The [chapter roles and permissions](Permissions-and-Roles) gives an overview abo
 
 #### Sessions
 
-The old system uses a very central component to manage user related information. The session of the current user contains often used information to increase performance of the request handling.
+The foodsharing plattform uses a very central component to manage user related information. The session of the current user contains often used information to increase performance of the request handling.
 
-[] Need to discuss the future of this. It is not stateless like a RestAPI typical is.
 
 ### Database
 
@@ -127,4 +113,14 @@ The description of it can found in the dev documentation
 
 
 ### Cache (Redis)
+
+Is used by php Session handler and some other parts Mem + DB.
+
+### Old stuff
+
+- The old basic system used a MVC-pattern to separate visualization from the data and the control. This is visable by Xhr, control, view or model classes.
+- In some foodsharing platform modules are already RestAPI use, many of them use Gateways directly without transactions.
+- Other parts use the permissions to check states which belong to the business logic.
+- Gateway sometime contain business logic which belong into services.
+- Different Gateways contain same code to provide information.
 
