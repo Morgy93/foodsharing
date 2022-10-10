@@ -7,7 +7,7 @@
     "lint:markdown": "yarn run lint-markdown",
     "lint-markdown": "markdownlint --config ../.markdownlint.json",
     "fix": "bin/eslint -c package.json --fix",
-    "clean-assets": "shx rm -rf ../assets",
+    "clean-assets": "shx rm -rf ../assets/*",
     "build": "yarn clean-assets && NODE_ENV=production webpack",
     "dev": "yarn clean-assets && webpack serve --hot --config serve.config.js",
     "test": "node test"

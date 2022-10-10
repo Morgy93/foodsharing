@@ -11,6 +11,7 @@ use Foodsharing\Modules\Core\DBConstants\Region\RegionOptionType;
 use Foodsharing\Modules\Core\DBConstants\Region\RegionPinStatus;
 use Foodsharing\Modules\Core\DBConstants\Region\WorkgroupFunction;
 use Foodsharing\Modules\Core\DBConstants\Unit\UnitType;
+use Foodsharing\Modules\Event\EventGateway;
 use Foodsharing\Modules\Foodsaver\FoodsaverGateway;
 use Foodsharing\Modules\Group\GroupFunctionGateway;
 use Foodsharing\Modules\Region\RegionGateway;
@@ -48,6 +49,7 @@ class RegionRestController extends AbstractFOSRestController
 	private RegionTransactions $regionTransactions;
 	private WorkGroupPermissions $workGroupPermissions;
 	private WorkGroupTransactions $workGroupTransactions;
+	private EventGateway $eventGateway;
 
 	// literal constants
 	private const LAT = 'lat';
@@ -67,7 +69,8 @@ class RegionRestController extends AbstractFOSRestController
 		GroupFunctionGateway $groupFunctionGateway,
 		RegionTransactions $regionTransactions,
 		WorkGroupPermissions $workGroupPermissions,
-		WorkGroupTransactions $workGroupTransactions
+		WorkGroupTransactions $workGroupTransactions,
+		EventGateway $eventGateway
 	) {
 		$this->settingsGateway = $settingsGateway;
 		$this->bellGateway = $bellGateway;
@@ -81,6 +84,7 @@ class RegionRestController extends AbstractFOSRestController
 		$this->regionTransactions = $regionTransactions;
 		$this->workGroupPermissions = $workGroupPermissions;
 		$this->workGroupTransactions = $workGroupTransactions;
+		$this->eventGateway = $eventGateway;
 	}
 
 	/**
@@ -189,7 +193,8 @@ class RegionRestController extends AbstractFOSRestController
 		if (!$this->session->may()) {
 			throw new UnauthorizedHttpException('');
 		}
-
+		/** @var int $sessionId */
+		$sessionId = $this->session->id();
 		if (empty($this->regionGateway->getRegion($regionId))) {
 			throw new BadRequestHttpException('region does not exist or is root region.');
 		}
@@ -198,7 +203,8 @@ class RegionRestController extends AbstractFOSRestController
 			throw new ConflictHttpException('still an active store manager in that region');
 		}
 
-		$this->foodsaverGateway->deleteFromRegion($regionId, $this->session->id(), $this->session->id());
+		$this->eventGateway->deleteInvitesForFoodSaver($regionId, $sessionId);
+		$this->foodsaverGateway->deleteFromRegion($regionId, $sessionId, $sessionId);
 
 		return $this->handleView($this->view([], 200));
 	}

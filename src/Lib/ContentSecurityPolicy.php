@@ -18,7 +18,8 @@ class ContentSecurityPolicy
 			'script-src' => [
 				$self,
 				$unsafeInline,
-				$unsafeEval // lots of `$.globalEval` still ... 😢
+				$unsafeEval, // lots of `$.globalEval` still ... 😢
+				'https://polyfill.io/' // used for a polyfill loader in the base.twig file
 			],
 			'connect-src' => [
 				$self,
@@ -30,6 +31,7 @@ class ContentSecurityPolicy
 				'https://maps02.geoapify.com',
 				'https://maps03.geoapify.com',
 				'https://search.mapzen.com', // only used in u_loadCoords, gets hopefully replaces soon
+				'https://gitpod.io',
 				'blob:',
 				'ws:'
 			],

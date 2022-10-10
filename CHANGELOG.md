@@ -36,11 +36,13 @@
 - The content of the footer is now dynamic !2297 @sefn
 - RestAPI `/api/user/current/stores` Provides memberstatus and all related stores of user !2318 @KoeMai
 - RestAPI `​/api​/user​/{id}​/details` extended with regions and groups !2352 @KoeMai user/current/groups
-- RestAPI `​/api​/user/current/groups` & `​/api​/user/current/regions` add endpoint for regions and groups !2352 @KoeMai 
-- Display of the number of members in the header for working groups adjusted analogously to the districts !2374 @BibaltiK
 - RestAPI `​/api​/user/current/groups` & `​/api​/user/current/regions` add endpoint for regions and groups !2352 @KoeMai
+- Display of the number of members in the header for working groups adjusted analogously to the districts !2374 @BibaltiK
 - Display "No pickup slots available" if there are no pickup slots !2375 @BlackScorp
 - Fix Console error !2376 @BlackScorp
+- Delete events when leaving region !2381 @BlackScorp
+- Phone Numbers are displayed even if they are invalid (e.g. do not start with +49) !2378 @BlackScorp
+- After logging out, you remain on the current web page, if it is publicly accessible. !2388 @BibaltiK
 
 ## Bugfixes
 - When going back during registration, email and password are unchanged. !2184 @AntonBallmaier
@@ -71,6 +73,7 @@
 - Logging from removal of store managers. Corrected logging use for appointing store manager. !2365 @fs_k
 - The tooltip from foodbasked enquiry edit button blocked the clicking if only 1 enquiry was active. !2368 @martincodes-de
 - Reaction button hasn't different color if already reacted !2373 @martincodes-de
+- polyfill added @sefn
 
 ## Refactoring
 - Currently running events are shown within the event overview until their end !2162 @merhoc
@@ -88,6 +91,7 @@
 - Changed deleting wall posts to the API #798 !2253 @alex.simm  
 - Use REST API for setting the user's sleep status #798 !2282 @alex.simm
 - Renmae Region\Type -> Unit\UnitType to make it search able and clear !2352 @KoeMai
+- Added Gitpod and refactored permissions !2386 !2399 @sefn @chriswalg
 
 ## Dev/Test/CI stuff
 - bump node to version 16 !2135 @peter.toennies
@@ -145,6 +149,9 @@
 - Fix typos in forum markdown hints. !2167 @NINI1988
 - Fixed the user search pointing to a non-existing path !2170 @alex.simm
 - The visibility of the StoreWall can be toggled again !2177 @nudin
+- Prevent text-overflow in thread posts in forum !2392 @FlorianMaak 
+- The visibility of mobile submit-button on fairteiler page !1392 @FlorianMaakg
+- The visibility of mobile submit-button on fairteiler page !1392 @FlorianMaak 
 
 ## Refactoring
 - move even more hardcoded language to language files !2109 !2183 @jonathan_b

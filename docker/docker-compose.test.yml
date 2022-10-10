@@ -23,6 +23,7 @@ services:
   #------------------------------------
 
   app:
+    user: ${CURRENT_USER}
     container_name: foodsharing_test_app
     image: registry.gitlab.com/foodsharing-dev/images/php:8.0.13
     working_dir: /app
@@ -51,7 +52,7 @@ services:
     # We don't run anything long running in here yet - build is run via ./scripts/build-assets
     command: 'true'
     working_dir: /app/client
-    user: "${UID}"
+    user: ${CURRENT_USER}
     volumes:
       - ../:/app:delegated
 
@@ -75,10 +76,10 @@ services:
       REDIS_HOST: redis
 
   chat:
+    user: ${CURRENT_USER}
     container_name: foodsharing_test_chat
     image: node:16.13.2-alpine3.14
     command: sh -c "yarn && yarn ts-node src/index.ts 0.0.0.0"
-    user: "node"
     working_dir: /app/chat
     depends_on:
       - redis
@@ -123,6 +124,7 @@ services:
   # for running browser-based tests
 
   selenium:
+    user: ${CURRENT_USER}
     container_name: foodsharing_test_selenium
     image: registry.gitlab.com/foodsharing-dev/images/selenium:1.4
     shm_size: 512M
@@ -177,7 +179,6 @@ services:
     volumes:
     - influxdb:/var/lib/influxdb:cached
     - ./conf/influxdb/influxdb.toml:/etc/influxdb/influxdb.toml:cached
-
 
 volumes:
   selenium_downloads:

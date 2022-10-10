@@ -2363,4 +2363,5 @@ quiz:
   not_passed_details: Malheureusement tu n'as pas passé. Tu as {points}, mais tu aurais
     dû avoir moins que {maxpoints} points d'erreur !
   congrats_details: Félicitations ! Passé avec {points} de {max_points} points d'erreur !
+  type: -Questionnaire
 fpsingular: Point d'erreur

@@ -1,6 +1,7 @@
 #!/bin/bash
 
 export FS_ENV=dev
+export CURRENT_USER=$(id -u):$(id -g)
 
 # set -o errexit tells the shell to exit as soon as a command exits with non-zero status, i.e. fails
 set -o errexit
@@ -12,50 +13,52 @@ dir=$(dirname "$0")
 # shellcheck source=./inc.sh
 source "$dir"/inc.sh
 
-# volume is created as root-owned
-run-in-container-asroot client "chown -R node:node /home/node/app/client/node_modules"
-run-in-container-asroot chat "chown -R node:node node_modules"
-
-echo "Bringing up containers"
+echo "---------------------"
+echo ">>> Bringing up containers ..."
 # dc is defined in inc.sh and starts docker-compose with following arguments
 # up starts the container, -d: run in background as a deamon
 dc up -d
+
+echo "---------------------"
+echo ">>> Create folder structur ..."
 "$dir"/mkdirs
 
-echo "Running composer install"
+echo "---------------------"
+echo ">>> Create Volumes ..."
+run-in-container-asroot client "chown -R $CURRENT_USER /home/node/app/client/node_modules"
+run-in-container-asroot chat "chown -R $CURRENT_USER node_modules"
+
+echo "---------------------"
+echo ">>> Running composer install ..."
 # exec-in-container is defined in inc.sh
 exec-in-container app composer install
-exec-in-container-asroot app rm --recursive --force cache/.views-cache cache/di-cache.php
+exec-in-container app rm --recursive --force cache/.views-cache cache/di-cache.php
 
-echo "Waiting for database"
+echo "---------------------"
+echo ">>> Waiting for database ..."
 wait-for-mysql
 
-# Creating db
+echo "---------------------"
+echo ">>> Creating DB ..."
 createdb foodsharing
 
-# Migrating db
+echo "---------------------"
+echo ">>> Migrating DB ..."
 migratedb
 
-echo "Waiting for assets to be generated..."
+echo "---------------------"
+echo ">>> Reset (clear) cache ..."
+# this helps to reduce some cache permissions errors
+exec-in-container app bin/console cache:clear
+
+echo "---------------------"
+echo ">>> Waiting for assets to be generated ..."
 wait-for-assets
 exec-in-container app bin/console assets:install
 
+echo "---------------------"
 echo
-echo "  Go visit http://localhost:18080 now!"
 echo
-echo "  ...on your first run will take some time"
+echo " Before you run the full Webpage, run ./scripts/seed to initialize the database with some fake data."
 echo
-echo "  Or view logs with:"
-echo
-echo "    ./scripts/docker-compose logs -f"
-echo
-echo "  Or seed the db with some data:"
-echo
-echo "    ./scripts/seed"
-echo
-echo "  Or go to http://localhost:18080/api/doc/ to see the API docs"
-echo
-echo "  You can find more useful information at:"
-echo
-echo "    https://devdocs.foodsharing.network/setting-things-up.html"
-echo
+output-message

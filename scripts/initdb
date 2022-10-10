@@ -1,6 +1,7 @@
 #!/bin/bash
 
 export FS_ENV=dev
+export CURRENT_USER=$(id -u):$(id -g)
 
 set -o errexit
 

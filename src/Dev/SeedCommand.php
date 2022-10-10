@@ -284,7 +284,8 @@ class SeedCommand extends Command implements CustomCommandInterface
 			$store_id = $this->getRandomIDOfArray($this->stores);
 			for ($i = 0; $i <= 10; ++$i) {
 				$pickupDate = Carbon::create(2022, 4, random_int(1, 30), random_int(1, 24), random_int(1, 59));
-				for ($k = 0; $k <= 2; ++$k) {
+				$maxFoodsavers = count($this->foodsavers) > 2 ? 2 : count($this->foodsavers);
+				for ($k = 0; $k <= $maxFoodsavers; ++$k) {
 					$foodSaver_id = $this->getRandomIDOfArray($this->foodsavers);
 					$this->helper->addCollector($foodSaver_id, $store_id, ['date' => $pickupDate->toDateTimeString()]);
 					$this->helper->addStoreTeam($store_id, $foodSaver_id);

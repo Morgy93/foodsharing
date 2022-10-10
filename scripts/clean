@@ -1,6 +1,7 @@
 #!/bin/bash
 
 export FS_ENV=dev
+export CURRENT_USER=$(id -u):$(id -g)
 
 set -o errexit
 
@@ -11,23 +12,24 @@ base_dir=$(cd "$dir/.." && pwd)
 # shellcheck source=./inc.sh
 source "$dir"/inc.sh
 
-echo "Removing local node_modules"
+echo "---------------------"
+echo ">>> Removing local node_modules"
 (cd "$dir" && rm -rf node_modules)
 
-echo "Removing containers"
+echo "---------------------"
+echo ">>> Removing containers"
 "$dir"/rm
 FS_ENV="test" "$dir"/rm
 
-echo "Removing directories"
+echo "---------------------"
+echo ">>> Removing directories"
 
 rm -rf \
-  "$base_dir"/images/basket \
-  "$base_dir"/data/attach \
-  "$base_dir"/data/mailattach \
-  "$base_dir"/data/pass \
-  "$base_dir"/data/uploads \
-  "$base_dir"/data/visite \
-  "$base_dir"/cache/searchindex \
+  "$base_dir"/assets \
+  "$base_dir"/images \
+  "$base_dir"/data \
+  "$base_dir"/cache \
+  "$base_dir"/var \
   "$base_dir"/tmp
 
 echo "All clean!"

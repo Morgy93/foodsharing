@@ -902,9 +902,9 @@ storeedit:
     status: "Status" #also in QuizView
   fetch:
     teamStatus: "Teamstatus"
-    teamStatus0: "Dieses Team ist voll und sucht zurzeit keine weiteren Helfer"
-    teamStatus1: "Es werden noch Helfer gesucht"
-    teamStatus2: "Es werden dringend noch Helfer gesucht"
+    teamStatus0: "Dieses Team ist voll und sucht zurzeit keine weiteren Helfer*innen"
+    teamStatus1: "Es werden noch Helfer*innen gesucht"
+    teamStatus2: "Es werden dringend noch Helfer*innen gesucht"
   add_success: "Kooperationsbetrieb wurde eingetragen"
   edit_success: "Änderungen wurden gespeichert"
   milestone:
@@ -2137,8 +2137,8 @@ menu:
     dataprivacy: "Datenschutz"
     release-notes: "Was ist neu?"
     stores: "Betriebe" #also in MapView
-    helpwanted: "HelferInnen gesucht" #MapView
-    helpneeded: "HelferInnen dringend gesucht" #MapView
+    helpwanted: "Helfer*innen gesucht" #MapView
+    helpneeded: "Helfer*innen dringend gesucht" #MapView
     other_stores: "Andere Betriebe" #MapView
     fs: "Foodsaver"
     ids: "Ausweise"

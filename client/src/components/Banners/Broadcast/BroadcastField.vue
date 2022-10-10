@@ -1,15 +1,17 @@
 <template>
   <div
-    v-if="!isSet || isNew"
+    v-if="entry.body && (!isSet || isNew)"
     class="broadcastfield"
   >
     <div class="broadcastfield__content">
       <div class="broadcastfield__content-wrapper">
         <h4
+          v-if="entry.title"
           class="broadcastfield__title"
           v-html="entry.title"
         />
         <div
+          v-if="entry.body"
           class="broadcastfield__description"
           v-html="entry.body"
         />

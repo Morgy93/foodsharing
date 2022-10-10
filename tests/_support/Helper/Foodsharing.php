@@ -97,10 +97,10 @@ class Foodsharing extends \Codeception\Module\Db
 			$pass = 'password';
 		}
 		$params = array_merge([
-			'email' => ($this->email_counter++) . '.' . $this->faker->email(),
+			'email' => $this->faker->unique()->email(),
 			'bezirk_id' => 0,
-			'name' => $this->faker->firstName(),
-			'nachname' => $this->faker->lastName(),
+			'name' => $this->faker->unique()->firstName(),
+			'nachname' => $this->faker->unique()->lastName(),
 			'verified' => 0,
 			'rolle' => 0,
 			'plz' => $this->faker->postcode(),
@@ -337,10 +337,10 @@ class Foodsharing extends \Codeception\Module\Db
 			'lon' => $this->faker->longitude(4, 16),
 			'name' => 'betrieb_' . $this->faker->company(),
 			'status_date' => $this->faker->dateTime(),
-			'ansprechpartner' => $this->faker->name(),
+			'ansprechpartner' => $this->faker->unique()->name(),
 			'telefon' => $this->faker->phoneNumber(),
 			'fax' => $this->faker->phoneNumber(),
-			'email' => $this->faker->email(),
+			'email' => $this->faker->unique()->email(),
 			'begin' => $this->faker->date(),
 			'besonderheiten' => '',
 			'public_info' => '',
@@ -384,7 +384,12 @@ class Foodsharing extends \Codeception\Module\Db
 				'active' => $is_confirmed ? ($is_waiting ? STATUS::JUMPER : STATUS::MEMBER) : STATUS::APPLIED_FOR_TEAM,
 				'verantwortlich' => $is_coordinator ? 1 : 0,
 			];
-			$res = $this->countInDatabase('fs_betrieb_team', $v);
+
+			$conditions = [
+				'betrieb_id' => $store_id,
+				'foodsaver_id' => $fs_id
+			];
+			$res = $this->countInDatabase('fs_betrieb_team', $conditions);
 			if ($res < 1) {
 				$this->haveInDatabase('fs_betrieb_team', $v);
 			}
@@ -554,7 +559,7 @@ class Foodsharing extends \Codeception\Module\Db
 	public function createMailbox($name = null)
 	{
 		if ($name == null) {
-			$name = $this->faker->userName();
+			$name = $this->faker->unique()->userName();
 		}
 		$mb['name'] = $name;
 		$mb['id'] = $this->haveInDatabase('fs_mailbox', $mb);

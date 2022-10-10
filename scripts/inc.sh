@@ -7,7 +7,7 @@ set -o errexit
 export FS_ENV=${FS_ENV:-dev}
 
 # user identification number of the current user
-export UID
+export CURRENT_USER=$(id -u):$(id -g)
 
 
 MYSQL_USERNAME=${MYSQL_USERNAME:-root}
@@ -127,5 +127,41 @@ function wait-for-mysql() {
 }
 
 function wait-for-assets() {
-  while ! [ -d "assets" ]; do sleep 1; done
+  while ! [ "$(ls -A assets)" ];
+  do
+    sleep 1;
+    echo -ne ".";
+  done
+  echo
 }
+
+function output-message() {
+if [ $USER == "gitpod" ]
+  then
+    page_url=`gp url 18090`
+    api_url="$page_url/api/doc/"
+    devdocs_url=`gp url 3000`
+    phpmyadmin_url=`gp url 18081`
+  else
+    page_url="http://localhost:18090"
+    api_url="http://localhost:18090/api/doc/"
+    devdocs_url="http://localhost:3000"
+    phpmyadmin_url="http://localhost:18081"
+fi
+
+  echo
+  echo
+  echo " To visit the Webpage: $page_url"
+  echo "  * PHPMyAdmin: $phpmyadmin_url"
+  echo "  * API-DOCS: $api_url"
+  echo "  * DEV-DOCS: $devdocs_url"
+  echo "  * DEV-WIKI: https://gitlab.com/foodsharing-dev/foodsharing/-/wikis/home"
+  echo
+  echo
+  echo " Want to discuss with us, or help with some translations?"
+  echo "  * Slack: https://slackin.yunity.org/"
+  echo "  * Weblate: https://hosted.weblate.org/projects/foodsharing/"
+  echo
+  echo
+}
+

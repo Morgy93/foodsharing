@@ -3,6 +3,7 @@
 
 # use dev if not specified yet
 export FS_ENV=${FS_ENV:-dev}
+export CURRENT_USER=${CURRENT_USER:-$(id -u):$(id -g)}
 
 set -o errexit
 
@@ -14,11 +15,13 @@ source "$dir"/inc.sh
 # directories used by the application
 
 dirs="\
+  assets \
   images \
   images/basket \
   images/wallpost \
   images/picture \
   images/workgroup \
+  data\
   data/attach \
   data/mailattach \
   data/mailattach/tmp \
@@ -28,12 +31,17 @@ dirs="\
   cache \
   cache/searchindex \
   var \
+  var/cache \
+  var/cache/dev \
+  var/cache/test \
+  var/cache/nginx/client_temp \
+  var/log \
   tmp \
 "
 
 echo "Creating directories"
 
 exec-in-container-asroot app \
-  "mkdir --parents $dirs && chmod 777 $dirs && chown --recursive www-data:www-data $dirs"
+  "mkdir --parents $dirs && chmod 777 $dirs && chown --recursive $CURRENT_USER $dirs"
 
 echo "Done"

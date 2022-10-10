@@ -87,7 +87,7 @@
               <b-button
                 variant="link"
                 class="member-call"
-                :href="$url('phone_number', data.item.phoneNumber)"
+                :href="$url('phone_number', data.item.phoneNumber,true)"
                 :disabled="!data.item.phoneNumberIsValid"
               >
                 <i class="fas fa-fw fa-phone" />
@@ -415,7 +415,7 @@ export default {
       if (!fs) {
         return {}
       }
-      const validPhoneNumber = phoneNumber.callableNumber(fs.handy || fs.telefon)
+      const validPhoneNumber = phoneNumber.callableNumber(fs.handy || fs.telefon, true)
       return {
         id: fs.id,
         isActive: fs.team_active === 1, // MembershipStatus::MEMBER
