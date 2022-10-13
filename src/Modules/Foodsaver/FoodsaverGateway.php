@@ -933,21 +933,15 @@ class FoodsaverGateway extends BaseGateway
 
 	public function getProfileForUsers(array $fsIds): array
 	{
-		$fsIds = implode(',', $fsIds);
-
-		// if the $fsIds has no foodsharerIds, we search for all values with id null, because we can't find them
-		$foodsaverProfileIdsToSearch = empty($fsIds) ? null : $fsIds;
-
-		$query = "
-		SELECT id, name, photo, sleep_status
-		FROM fs_foodsaver
-		WHERE id IN ({$foodsaverProfileIdsToSearch})
-		";
-
-		try {
-			$res = $this->db->fetchAll($query);
-		} catch (\Exception $e) {
+		$criteria = [];
+		if (!empty($fsIds)) {
+			$criteria = ['id' => $fsIds];
 		}
+
+		$res = $this->db->fetchAllByCriteria(
+			'fs_foodsaver',
+			['id', 'name', 'photo', 'sleep_status'],
+			$criteria);
 
 		$profiles = [];
 		foreach ($res as $p) {
