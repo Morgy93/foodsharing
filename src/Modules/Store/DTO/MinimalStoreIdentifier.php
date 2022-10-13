@@ -13,11 +13,11 @@ class MinimalStoreIdentifier
 		$this->name = '';
 	}
 
-	public static function createFromArray($query_result, $prefix = '')
+	public static function createFromArray($queryResult, $prefix = '')
 	{
 		$obj = new MinimalStoreIdentifier();
-		$obj->id = $query_result["{$prefix}id"];
-		$obj->name = $query_result["{$prefix}name"];
+		$obj->id = $queryResult["{$prefix}id"];
+		$obj->name = $queryResult["{$prefix}name"];
 
 		return $obj;
 	}

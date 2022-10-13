@@ -284,7 +284,8 @@ class SeedCommand extends Command implements CustomCommandInterface
 			$store_id = $this->getRandomIDOfArray($this->stores);
 			for ($i = 0; $i <= 10; ++$i) {
 				$pickupDate = Carbon::create(2022, 4, random_int(1, 30), random_int(1, 24), random_int(1, 59));
-				for ($k = 0; $k <= 2; ++$k) {
+				$maxFoodsavers = count($this->foodsavers) > 2 ? 2 : count($this->foodsavers);
+				for ($k = 0; $k <= $maxFoodsavers; ++$k) {
 					$foodSaver_id = $this->getRandomIDOfArray($this->foodsavers);
 					$this->helper->addCollector($foodSaver_id, $store_id, ['date' => $pickupDate->toDateTimeString()]);
 					$this->helper->addStoreTeam($store_id, $foodSaver_id);
@@ -623,10 +624,15 @@ class SeedCommand extends Command implements CustomCommandInterface
 			);
 			$this->output->write('.');
 		}
-		$this->createPoll($region1, $userbot['id'], VotingType::SELECT_ONE_CHOICE,
-			[$user2['id'], $userStoreManager['id'], $userStoreManager2['id'], $userbot['id'], $userorga['id']],
-			Carbon::now('-14 days'), Carbon::now('-7 days')
-		);
+		foreach (range(0, 30) as $_) {
+			$startDate = Carbon::now()->subDays(random_int(7, 3 * 365));
+			$type = random_int(VotingType::SELECT_ONE_CHOICE, VotingType::SCORE_VOTING);
+			$this->createPoll($region1, $userbot['id'], $type,
+				[$user2['id'], $userStoreManager['id'], $userStoreManager2['id'], $userbot['id'], $userorga['id']],
+				$startDate, $startDate->addDays(6)
+			);
+			$this->output->write('.');
+		}
 		$this->output->write('.');
 
 		$this->output->writeln(' done');

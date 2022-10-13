@@ -14,6 +14,7 @@ use Foodsharing\Modules\Store\StoreGateway;
 use Foodsharing\Modules\Store\StoreTransactions;
 use Foodsharing\Modules\Store\TeamStatus as TeamMembershipStatus;
 use Foodsharing\Permissions\StorePermissions;
+use Foodsharing\RestApi\Models\Store\CommonStoreMetadataModel;
 use Foodsharing\RestApi\Models\Store\StoreStatusForMemberModel;
 use FOS\RestBundle\Controller\AbstractFOSRestController;
 use FOS\RestBundle\Controller\Annotations as Rest;
@@ -53,6 +54,33 @@ class StoreRestController extends AbstractFOSRestController
 		$this->storeTransactions = $storeTransactions;
 		$this->storePermissions = $storePermissions;
 		$this->bellGateway = $bellGateway;
+	}
+
+	/**
+	 * Returns all common metadata which are required to manage stores.
+	 *
+	 * Some system parts have limits or options which needs to be checked in the frontend.
+	 * This endpoint provides the information about the limits and options,
+	 * so that the frontend can use them but the backend is responsible for the values.
+	 *
+	 * @OA\Tag(name="stores")
+	 *
+	 * @OA\Response(
+	 * 		response="200",
+	 * 		description="Success.",
+	 *      @Model(type=CommonStoreMetadataModel::class)
+	 * )
+	 * @OA\Response(response="401", description="Not logged in")
+
+	 * @Rest\Get("stores/meta-data")
+	 */
+	public function getCommonStoreMetadata(): Response
+	{
+		if (!$this->session->may()) {
+			throw new UnauthorizedHttpException('', self::NOT_LOGGED_IN);
+		}
+
+		return $this->handleView($this->view(new CommonStoreMetadataModel(), 200));
 	}
 
 	/**

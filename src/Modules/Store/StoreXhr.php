@@ -9,27 +9,23 @@ use Foodsharing\Lib\Xhr\XhrResponses;
 use Foodsharing\Modules\Core\Control;
 use Foodsharing\Modules\Core\DBConstants\Store\StoreLogAction;
 use Foodsharing\Permissions\StorePermissions;
-use Foodsharing\Utility\Sanitizer;
 
 class StoreXhr extends Control
 {
 	private $storeGateway;
 	private $storePermissions;
 	private $storeTransactions;
-	private $sanitizerService;
 
 	public function __construct(
 		StoreView $view,
 		StoreGateway $storeGateway,
 		StorePermissions $storePermissions,
-		StoreTransactions $storeTransactions,
-		Sanitizer $sanitizerService
+		StoreTransactions $storeTransactions
 	) {
 		$this->view = $view;
 		$this->storeGateway = $storeGateway;
 		$this->storePermissions = $storePermissions;
 		$this->storeTransactions = $storeTransactions;
-		$this->sanitizerService = $sanitizerService;
 
 		parent::__construct();
 
@@ -45,21 +41,25 @@ class StoreXhr extends Control
 			return XhrResponses::PERMISSION_DENIED;
 		}
 
-		if (strtotime($_GET['time']) > 0 && $_GET['fetchercount'] >= 0) {
-			$fetchercount = (int)$_GET['fetchercount'];
-			$time = $_GET['time'];
-			if ($fetchercount > 8) {
-				$fetchercount = 8;
-			}
+		if (strtotime($_GET['time']) == false) {
+			return;
+		}
+		$date = Carbon::createFromTimeString($_GET['time']);
 
-			if ($this->storeTransactions->changePickupSlots($storeId, Carbon::createFromTimeString($time), $fetchercount)) {
-				$this->flashMessageHelper->success($this->translator->trans('pickup.edit.added'));
+		$totalSlots = $_GET['fetchercount'];
+		if (!is_numeric($totalSlots)) {
+			return;
+		}
 
-				return [
-					'status' => 1,
-					'script' => 'reload();'
-				];
-			}
+		try {
+			$this->storeTransactions->createOrUpdatePickup($storeId, $date, $totalSlots);
+			$this->flashMessageHelper->success($this->translator->trans('pickup.edit.added'));
+
+			return [
+				'status' => 1,
+				'script' => 'reload();'
+			];
+		} catch (PickupValidationException $ex) {
 		}
 	}
 

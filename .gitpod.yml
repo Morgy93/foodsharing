@@ -1,0 +1,75 @@
+tasks:
+  - init: ./scripts/start && ./scripts/seed
+ports:
+  - port: 18080
+    name: webpack
+    description: Webpack (Mostly used for the development preview)
+    visibility: public
+    onOpen: open-browser
+  - port: 18081
+    name: phpMyAdmin
+    description: MySQL Database
+    visibility: public
+    onOpen: ignore
+  - port: 18090
+    name: Nginx
+    description: Webserver (Routing)
+    visibility: public
+    onOpen: ignore
+  - port: 18084
+    name: MailDev
+    description: Mail server
+    visibility: private
+    onOpen: ignore
+  - port: 8083
+    name: InfluxDB
+    description: Usage unknow
+    visibility: private
+    onOpen: ignore
+  - port: 18086
+    name: InfluxDB
+    description: Usage unknow
+    visibility: private
+    onOpen: ignore
+  - port: 3000
+    name: mdBook
+    description: DevDocs
+    visibility: public
+    onOpen: ignore
+  - port: 3001
+    name: mdBook
+    description: Websocket server, which is used to trigger a DevDocs hotreload
+    visibility: private
+    onOpen: ignore
+  - port: 16379
+    name: Redis
+    description: Redis Caching
+    visibility: private
+    onOpen: ignore
+  - port: 11337
+    name: Socket.IO
+    description: Used for the chat and notifications
+    visibility: private
+    onOpen: ignore
+  - port: 11338
+    name: Socket.IO
+    description: Used for the chat and notifications
+    visibility: private
+    onOpen: ignore
+  - port: 13306
+    name: MySQL
+    description: Foodsharing Database
+    visibility: public
+    onOpen: ignore
+  - port: 9003
+    name: Xdebug
+    description: PHP Debugging (php.dev.default.ini)
+    visibility: private
+    onOpen: ignore
+vscode:
+  extensions:
+    - EditorConfig.EditorConfig
+    - octref.vetur
+    - bmewburn.vscode-intelephense-client
+    - eamodio.gitlens
+    - felixfbecker.php-debug

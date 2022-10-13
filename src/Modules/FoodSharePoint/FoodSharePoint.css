@@ -45,8 +45,6 @@ span#wallpost-loader img {
 
 #wallpost-submit {
   text-align: right;
-  height: 48px;
-  overflow: hidden;
 }
 
 #wallpost-attach-trigger {
@@ -65,5 +63,13 @@ span#wallpost-loader img {
 @media all and (max-width: 500px) {
   textarea.comment {
     width: 94% !important;
+  }
+}
+
+@media (max-width: 992px) {
+  #wall-submit,
+  #wallpost-attach-image {
+    width: 100%;
+    margin-top: 10px;
   }
 }

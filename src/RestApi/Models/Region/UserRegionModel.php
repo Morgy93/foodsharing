@@ -51,14 +51,14 @@ class UserRegionModel
 	 */
 	public bool $isResponsible = false;
 
-	public static function createFrom(UserUnit $UserUnit)
+	public static function createFrom(UserUnit $userUnit)
 	{
-		$obj = new UserRegionModel();
-		$obj->id = $UserUnit->unit->id;
-		$obj->name = $UserUnit->unit->name;
-		$obj->classification = $UserUnit->unit->type;
-		$obj->isResponsible = $UserUnit->isResponsible;
+		$userRegionModel = new UserRegionModel();
+		$userRegionModel->id = $userUnit->unit->id;
+		$userRegionModel->name = $userUnit->unit->name;
+		$userRegionModel->classification = $userUnit->unit->type;
+		$userRegionModel->isResponsible = $userUnit->isResponsible;
 
-		return $obj;
+		return $userRegionModel;
 	}
 }

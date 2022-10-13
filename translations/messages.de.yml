@@ -1119,7 +1119,7 @@ chat:
 wall:
   name: "Pinnwand"
   message_placeholder: "Nachricht schreiben…"
-  see-more: "Mehr Beiträge anzeigen"
+  see-more: "Alle Beiträge anzeigen"
   delete: "Eintrag löschen"
   confirm-deletion: "Soll der folgende Pinnwand-Eintrag von {name} wirklich entfernt werden?"
   info-somebody-else: "Dieser Eintrag ist älter als ein Monat, daher kannst du ihn als Verantwortliche*r bei Bedarf entfernen."

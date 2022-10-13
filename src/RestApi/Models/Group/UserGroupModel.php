@@ -38,11 +38,11 @@ class UserGroupModel
 
 	public static function createFrom(UserUnit $UserUnit)
 	{
-		$obj = new UserGroupModel();
-		$obj->id = $UserUnit->unit->id;
-		$obj->name = $UserUnit->unit->name;
-		$obj->isResponsible = $UserUnit->isResponsible;
+		$userGroupModel = new UserGroupModel();
+		$userGroupModel->id = $UserUnit->unit->id;
+		$userGroupModel->name = $UserUnit->unit->name;
+		$userGroupModel->isResponsible = $UserUnit->isResponsible;
 
-		return $obj;
+		return $userGroupModel;
 	}
 }

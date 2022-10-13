@@ -171,7 +171,7 @@ class FoodSharePointControl extends Control
 
 	public function getRealRegions(): array
 	{
-		return array_filter($this->session->getRegions(), function ($r) { return UnitType::isAccessibleRegion($r['type']); });
+		return array_filter($this->session->getRegions(), function ($region) { return UnitType::isAccessibleRegion($region['type']); });
 	}
 
 	public function edit(Request $request): void

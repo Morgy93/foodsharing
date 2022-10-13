@@ -7,15 +7,10 @@ use Foodsharing\Modules\Unit\UnitGateway;
 
 class GroupTransactions
 {
-	private GroupGateway $groupGateway;
-	private UnitGateway $unitGateway;
-
 	public function __construct(
-		GroupGateway $groupGateway,
-		UnitGateway $unitGateway
+		private GroupGateway $groupGateway,
+		private UnitGateway $unitGateway
 	) {
-		$this->groupGateway = $groupGateway;
-		$this->unitGateway = $unitGateway;
 	}
 
 	/**
@@ -36,8 +31,8 @@ class GroupTransactions
 		return $this->groupGateway->hasStores($groupId);
 	}
 
-	public function getUserGroups(int $fs_id): array
+	public function getUserGroups(int $fsId): array
 	{
-		return $this->unitGateway->listAllDirectReleatedUnitsAndResponsibilitiesOfFoodsaver($fs_id, UnitType::getGroupTypes());
+		return $this->unitGateway->listAllDirectReleatedUnitsAndResponsibilitiesOfFoodsaver($fsId, UnitType::getGroupTypes());
 	}
 }

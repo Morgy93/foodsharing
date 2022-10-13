@@ -38,6 +38,21 @@ class StoreApiCest
 		$this->faker = Faker\Factory::create('de_DE');
 	}
 
+	public function canNotGetAccessToCommonStoreMetadataAsUnknownUser(ApiTester $I)
+	{
+		$I->sendGET(self::API_STORES . '/meta-data');
+		$I->seeResponseCodeIs(Http::UNAUTHORIZED);
+	}
+
+	public function getCommonStoreMetadataLikeMaxPickupSlotsAsFoodsaver(ApiTester $I)
+	{
+		$I->login($this->user[self::EMAIL]);
+		$I->sendGET(self::API_STORES . '/meta-data');
+		$I->seeResponseCodeIs(Http::OK);
+		$I->seeResponseIsJson();
+		$I->seeResponseContainsJson(['maxCountPickupSlot' => 10]);
+	}
+
 	public function getStore(ApiTester $I)
 	{
 		$I->login($this->teamMember[self::EMAIL]);

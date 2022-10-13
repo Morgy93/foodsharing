@@ -13,13 +13,8 @@ class RegionTransactions
 	public const NEW_FOODSAVER_NEEDS_VERIFICATION = 'new_foodsaver_needs_verification';
 	public const NEW_FOODSAVER_NEEDS_INTRODUCTION = 'new_foodsaver_needs_introduction';
 
-	private FoodsaverGateway $foodsaverGateway;
-	private UnitGateway $unitGateway;
-
-	public function __construct(FoodsaverGateway $foodsaverGateway, UnitGateway $unitGateway)
+	public function __construct(private FoodsaverGateway $foodsaverGateway, private UnitGateway $unitGateway)
 	{
-		$this->foodsaverGateway = $foodsaverGateway;
-		$this->unitGateway = $unitGateway;
 	}
 
 	public function getJoinMessage(array $userData): string
@@ -40,12 +35,12 @@ class RegionTransactions
 	/**
 	 * Returns a list of region which the user is directly related (not the indirect parents).
 	 *
-	 * @param int $fs_id foodsaver identifier of user
+	 * @param int $fsId foodsaver identifier of user
 	 *
 	 * @return UserUnit[] List of regions where the use is part
 	 */
-	public function getUserRegions(int $fs_id): array
+	public function getUserRegions(int $fsId): array
 	{
-		return $this->unitGateway->listAllDirectReleatedUnitsAndResponsibilitiesOfFoodsaver($fs_id, UnitType::getRegionTypes());
+		return $this->unitGateway->listAllDirectReleatedUnitsAndResponsibilitiesOfFoodsaver($fsId, UnitType::getRegionTypes());
 	}
 }

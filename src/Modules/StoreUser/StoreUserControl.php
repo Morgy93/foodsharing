@@ -200,7 +200,6 @@ class StoreUserControl extends Control
 							'storeManagers' => $this->storeGateway->getStoreManagers($storeId),
 							'mayWritePost' => $this->storePermissions->mayWriteStoreWall($storeId),
 							'mayDeleteEverything' => $this->storePermissions->mayDeleteStoreWall($storeId),
-							'expandWallByDefault' => !$this->session->isMob(),
 						])
 					);
 				} else {

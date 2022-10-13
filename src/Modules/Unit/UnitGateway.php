@@ -41,7 +41,10 @@ class UnitGateway extends BaseGateway
 			  WHERE foodsaver.foodsaver_id = ? 
 			    AND unit.type in (' . $inPlaceHolder . ')
 			  ORDER BY type, isResponsible DESC, name',
-			[$foodsaverId, $unitTypes]
+			[
+				$foodsaverId,
+				$unitTypes
+			]
 		);
 
 		$results = [];

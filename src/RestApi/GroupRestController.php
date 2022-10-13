@@ -7,6 +7,7 @@ use Foodsharing\Lib\Session;
 use Foodsharing\Modules\Group\GroupGateway;
 use Foodsharing\Modules\Group\GroupTransactions;
 use Foodsharing\Modules\Region\RegionGateway;
+use Foodsharing\Modules\Unit\DTO\UserUnit;
 use Foodsharing\Permissions\RegionPermissions;
 use Foodsharing\RestApi\Models\Group\UserGroupModel;
 use FOS\RestBundle\Controller\AbstractFOSRestController;
@@ -22,21 +23,12 @@ use Symfony\Component\HttpKernel\Exception\UnauthorizedHttpException;
 
 class GroupRestController extends AbstractFOSRestController
 {
-	private GroupGateway $groupGateway;
-	private Session $session;
-	private RegionPermissions $regionPermissions;
-	private GroupTransactions $groupTransactions;
-
 	public function __construct(
-		GroupGateway $groupGateway,
-		Session $session,
-		RegionPermissions $regionPermissions,
-		GroupTransactions $groupTransactions
+		private GroupGateway $groupGateway,
+		private Session $session,
+		private RegionPermissions $regionPermissions,
+		private GroupTransactions $groupTransactions
 	) {
-		$this->groupGateway = $groupGateway;
-		$this->session = $session;
-		$this->regionPermissions = $regionPermissions;
-		$this->groupTransactions = $groupTransactions;
 	}
 
 	/**
@@ -127,15 +119,12 @@ class GroupRestController extends AbstractFOSRestController
 		if (!$this->session->may()) {
 			throw new UnauthorizedHttpException('');
 		}
-		$fs_id = $this->session->id();
+		$fsId = $this->session->id();
 
-		$groups = $this->groupTransactions->getUserGroups($fs_id);
+		$groups = $this->groupTransactions->getUserGroups($fsId);
 
-		$rsp_groups = [];
-		foreach ($groups as $group) {
-			$rsp_groups[] = UserGroupModel::createFrom($group);
-		}
+		$rspGroups = array_map(fn (UserUnit $group): UserGroupModel => UserGroupModel::createFrom($group), $groups);
 
-		return $this->handleView($this->view($rsp_groups, 200));
+		return $this->handleView($this->view($rspGroups, 200));
 	}
 }

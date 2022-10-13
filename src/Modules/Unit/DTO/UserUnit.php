@@ -26,12 +26,12 @@ class UserUnit
 	/**
 	 * Creates a user unit out of an array representation like the database select.
 	 */
-	public static function createFromArray($query_result, $prefix = ''): UserUnit
+	public static function createFromArray($queryResult, $prefix = ''): UserUnit
 	{
-		$obj = new UserUnit();
-		$obj->unit = Unit::createFromArray($query_result, $prefix);
-		$obj->isResponsible = $query_result["{$prefix}isResponsible"];
+		$unitObj = new UserUnit();
+		$unitObj->unit = Unit::createFromArray($queryResult, $prefix);
+		$unitObj->isResponsible = $queryResult["{$prefix}isResponsible"];
 
-		return $obj;
+		return $unitObj;
 	}
 }

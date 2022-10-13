@@ -18,6 +18,7 @@ use Foodsharing\Modules\Quiz\QuizHelper;
 use Foodsharing\Modules\Region\RegionGateway;
 use Foodsharing\Modules\Settings\SettingsGateway;
 use Foodsharing\Modules\Store\StoreGateway;
+use Foodsharing\Modules\Store\TeamStatus;
 
 class Session
 {
@@ -450,10 +451,12 @@ class Session
 			$_SESSION['client']['bezirke'] = $this->regionGateway->listForFoodsaver($fs['id']) ?? [];
 		}
 
+		$_SESSION['client']['verantwortlich'] = [];
 		if ($responsibleStoreIds = $this->storeGateway->listStoreIdsWhereResponsible($fs['id'])) {
 			$_SESSION['client']['verantwortlich'] = $responsibleStoreIds;
 			$mailbox = true;
 		}
+
 		$this->set('mailbox', $mailbox);
 
 		$this->set('email_is_activated', $this->loginGateway->isActivated($fs['id']));
@@ -469,6 +472,11 @@ class Session
 	public function mayBezirk($regionId): bool
 	{
 		return isset($_SESSION['client']['bezirke'][$regionId]) || $this->isAdminFor($regionId) || $this->may('orga');
+	}
+
+	public function mayIsStoreResponsible($storeId)
+	{
+		return $this->storeGateway->getUserTeamStatus($this->id(), $storeId) === TeamStatus::Coordinator;
 	}
 
 	public function isAdminForAWorkGroup()

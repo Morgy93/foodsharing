@@ -1,7 +1,7 @@
 const mkdirp = require('mkdirp')
 const { merge } = require('webpack-merge')
 const webpackBase = require('./webpack.base')
-const { writeFileSync } = require('fs')
+const { existsSync, writeFileSync } = require('fs')
 const BundleAnalyzePlugin = require('webpack-bundle-analyzer').BundleAnalyzerPlugin
 const TerserPlugin = require('terser-webpack-plugin')
 const CopyWebpackPlugin = require('copy-webpack-plugin')
@@ -42,9 +42,11 @@ plugins.push(
           data[entryName] = assets.map(asset => join(stats.publicPath, asset))
         }
         // We do not emit the data like a proper plugin as we want to create the file when running the dev server too
-        const json = `${JSON.stringify(data, null, 2)}
-`
-        mkdirp.sync(assetsPath)
+        const json = `${JSON.stringify(data, null, 2)}`
+
+        if (!existsSync(assetsPath)) {
+          mkdirp.sync(assetsPath)
+        }
         writeFileSync(modulesJsonPath, json)
         return Promise.resolve()
       })

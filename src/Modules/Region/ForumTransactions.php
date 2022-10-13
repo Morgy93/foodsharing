@@ -17,42 +17,19 @@ use Symfony\Contracts\Translation\TranslatorInterface;
 
 class ForumTransactions
 {
-	private BellGateway $bellGateway;
-	private FoodsaverGateway $foodsaverGateway;
-	private ForumGateway $forumGateway;
-	private ForumFollowerGateway $forumFollowerGateway;
-	private Session $session;
-	private RegionGateway $regionGateway;
-	private Sanitizer $sanitizerService;
-	private EmailHelper $emailHelper;
-	private FlashMessageHelper $flashMessageHelper;
-	private TranslatorInterface $translator;
-	private GroupFunctionGateway $groupFunctionGateway;
-
 	public function __construct(
-		BellGateway $bellGateway,
-		FoodsaverGateway $foodsaverGateway,
-		ForumGateway $forumGateway,
-		ForumFollowerGateway $forumFollowerGateway,
-		Session $session,
-		RegionGateway $regionGateway,
-		Sanitizer $sanitizerService,
-		EmailHelper $emailHelper,
-		FlashMessageHelper $flashMessageHelper,
-		TranslatorInterface $translator,
-		GroupFunctionGateway $groupFunctionGateway
+		private BellGateway $bellGateway,
+		private FoodsaverGateway $foodsaverGateway,
+		private ForumGateway $forumGateway,
+		private ForumFollowerGateway $forumFollowerGateway,
+		private Session $session,
+		private RegionGateway $regionGateway,
+		private Sanitizer $sanitizerService,
+		private EmailHelper $emailHelper,
+		private FlashMessageHelper $flashMessageHelper,
+		private TranslatorInterface $translator,
+		private GroupFunctionGateway $groupFunctionGateway
 	) {
-		$this->bellGateway = $bellGateway;
-		$this->foodsaverGateway = $foodsaverGateway;
-		$this->forumGateway = $forumGateway;
-		$this->forumFollowerGateway = $forumFollowerGateway;
-		$this->session = $session;
-		$this->regionGateway = $regionGateway;
-		$this->sanitizerService = $sanitizerService;
-		$this->emailHelper = $emailHelper;
-		$this->flashMessageHelper = $flashMessageHelper;
-		$this->translator = $translator;
-		$this->groupFunctionGateway = $groupFunctionGateway;
 	}
 
 	public function url($regionId, $ambassadorForum, $threadId = null, $postId = null): string
