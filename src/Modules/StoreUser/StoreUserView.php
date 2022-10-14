@@ -5,6 +5,7 @@ namespace Foodsharing\Modules\StoreUser;
 use Foodsharing\Lib\Session;
 use Foodsharing\Lib\View\Utils;
 use Foodsharing\Modules\Core\View;
+use Foodsharing\Modules\Store\StoreTransactions;
 use Foodsharing\Utility\DataHelper;
 use Foodsharing\Utility\IdentificationHelper;
 use Foodsharing\Utility\ImageHelper;
@@ -162,7 +163,7 @@ class StoreUserView extends View
 				</td>
 				<td class="ui-padding">
 					<select class="fetchercount" name="nft-count[]">
-						' . $this->prepareOptionRange(range(0, 20), $date['fetcher']) . '
+						' . $this->prepareOptionRange(range(0, StoreTransactions::MAX_SLOTS_PER_PICKUP), $date['fetcher']) . '
 					</select>
 				</td>
 				<td class="ui-pading">
