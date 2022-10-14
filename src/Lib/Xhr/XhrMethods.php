@@ -9,9 +9,8 @@ use Foodsharing\Modules\Bell\BellGateway;
 use Foodsharing\Modules\Bell\DTO\Bell;
 use Foodsharing\Modules\Core\DBConstants\Bell\BellType;
 use Foodsharing\Modules\Core\DBConstants\Email\EmailStatus;
-use Foodsharing\Modules\Core\DBConstants\Region\Type;
 use Foodsharing\Modules\Core\DBConstants\Region\WorkgroupFunction;
-use Foodsharing\Modules\Core\DBConstants\Store\TeamStatus;
+use Foodsharing\Modules\Core\DBConstants\Unit\UnitType;
 use Foodsharing\Modules\Email\EmailGateway;
 use Foodsharing\Modules\Foodsaver\FoodsaverGateway;
 use Foodsharing\Modules\Group\GroupFunctionGateway;
@@ -387,18 +386,6 @@ class XhrMethods
 		return json_encode($out);
 	}
 
-	public function xhr_bteamstatus($data)
-	{
-		$teamStatus = (int)$_GET['status'];
-		$storeId = (int)$_GET['bid'];
-		if ($this->storePermissions->mayEditStore($storeId) && TeamStatus::isValidStatus($teamStatus)) {
-			$this->storeGateway->setStoreTeamStatus($storeId, $teamStatus);
-		}
-		$out = ['status' => 0];
-
-		return json_encode($out);
-	}
-
 	public function xhr_getBezirk($data)
 	{
 		global $g_data;
@@ -447,14 +434,14 @@ class XhrMethods
 			$this->v_utils->v_form_select('type', [
 				'label' => $this->translator->trans('region.type.title'),
 				'values' => [
-					['id' => Type::CITY, 'name' => $this->translator->trans('region.type.city')],
-					['id' => Type::BIG_CITY, 'name' => $this->translator->trans('region.type.bigcity')],
-					['id' => Type::PART_OF_TOWN, 'name' => $this->translator->trans('region.type.townpart')],
-					['id' => Type::DISTRICT, 'name' => $this->translator->trans('region.type.district')],
-					['id' => Type::REGION, 'name' => $this->translator->trans('region.type.region')],
-					['id' => Type::FEDERAL_STATE, 'name' => $this->translator->trans('region.type.state')],
-					['id' => Type::COUNTRY, 'name' => $this->translator->trans('region.type.country')],
-					['id' => Type::WORKING_GROUP, 'name' => $this->translator->trans('region.type.workgroup')],
+					['id' => UnitType::CITY, 'name' => $this->translator->trans('region.type.city')],
+					['id' => UnitType::BIG_CITY, 'name' => $this->translator->trans('region.type.bigcity')],
+					['id' => UnitType::PART_OF_TOWN, 'name' => $this->translator->trans('region.type.townpart')],
+					['id' => UnitType::DISTRICT, 'name' => $this->translator->trans('region.type.district')],
+					['id' => UnitType::REGION, 'name' => $this->translator->trans('region.type.region')],
+					['id' => UnitType::FEDERAL_STATE, 'name' => $this->translator->trans('region.type.state')],
+					['id' => UnitType::COUNTRY, 'name' => $this->translator->trans('region.type.country')],
+					['id' => UnitType::WORKING_GROUP, 'name' => $this->translator->trans('region.type.workgroup')],
 				],
 			]),
 			$this->v_utils->v_form_select('workgroup_function', [
@@ -567,7 +554,7 @@ class XhrMethods
 						. $this->sanitizerService->jsSafe($b['name'])
 						. '</a>'
 					. '</h1>'
-					. '<p>' . $this->sanitizerService->jsSafe($b['str'] . ' ' . $b['hsnr']) . '</p>'
+					. '<p>' . $this->sanitizerService->jsSafe($b['str']) . '</p>'
 					. '<p>' . $this->sanitizerService->jsSafe($b['plz'] . ' ' . $b['stadt']) . '</p>'
 				. '</div><div class="clear"></div>';
 			}
@@ -605,7 +592,7 @@ class XhrMethods
 
 		// Check for: Only a workgroup can have a function.
 		// If the workgroup is set to welcome Team - make sure there can be only one Welcome Team in a region.
-		if ($data['type'] != Type::WORKING_GROUP && $data['workgroup_function']) {
+		if (!UnitType::isGroup($data['type']) && $data['workgroup_function']) {
 			return json_encode([
 				'status' => 1,
 				'script' => 'pulseError("' . $this->translator->trans('group.function.invalid') . '");',
@@ -710,7 +697,7 @@ class XhrMethods
 		// If the workgroup is moved it loses the old functions.
 		// else a region is moved, all workgroups loose their related targets
 		if ($oldRegionData['parent_id'] != $parentId) {
-			if ($oldRegionData['type'] == Type::WORKING_GROUP) {
+			if (UnitType::isGroup($oldRegionData['type'])) {
 				if ($oldRegionData['workgroup_function']) {
 					$this->groupFunctionGateway->deleteRegionFunction($regionId, $oldRegionData['workgroup_function']);
 				}

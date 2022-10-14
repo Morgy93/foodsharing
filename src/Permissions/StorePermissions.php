@@ -185,17 +185,22 @@ class StorePermissions
 		if (!$fsId) {
 			return false;
 		}
-
 		if (!$this->session->may('bieb')) {
 			return false;
 		}
-
 		if ($this->session->may('orga')) {
 			return true;
 		}
-		if ($this->storeGateway->getUserTeamStatus($fsId, $storeId) === UserTeamStatus::Coordinator) {
+
+		if (!$this->storeGateway->storeExists($storeId)) {
+			return false;
+		}
+
+		if ($this->session->mayIsStoreResponsible($storeId)) {
 			return true;
 		}
+
+		// Check store mannager role by group of region
 		$storeRegion = $this->storeGateway->getStoreRegionId($storeId);
 		$storeGroup = $this->groupFunctionGateway->getRegionFunctionGroupId($storeRegion, WorkgroupFunction::STORES_COORDINATION);
 		if (empty($storeGroup)) {

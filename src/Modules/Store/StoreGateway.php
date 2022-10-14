@@ -36,9 +36,9 @@ class StoreGateway extends BaseGateway
 			'lat' => $store->lat,
 			'lon' => $store->lon,
 			'str' => $store->str,
-			'hsnr' => $store->hsnr, // deprecated
 			'plz' => $store->zip,
 			'stadt' => $store->city,
+			'public_info' => $store->publicInfo,
 			'added' => $store->createdAt,
 			'status_date' => $store->updatedAt,
 		]);
@@ -59,11 +59,10 @@ class StoreGateway extends BaseGateway
 					`fs_betrieb`.betrieb_kategorie_id,
 					`fs_betrieb`.name,
 					`fs_betrieb`.str,
-					`fs_betrieb`.hsnr,
 					`fs_betrieb`.stadt,
 					`fs_betrieb`.lat,
 					`fs_betrieb`.lon,
-					CONCAT(`fs_betrieb`.str, " ",`fs_betrieb`.hsnr) AS anschrift,
+					`fs_betrieb`.str AS anschrift,
 					`fs_betrieb`.`betrieb_status_id`,
 					`fs_betrieb`.status_date,
 					`fs_betrieb`.ansprechpartner,
@@ -109,7 +108,6 @@ class StoreGateway extends BaseGateway
 					`betrieb_kategorie_id`,
 					`name`,
 					`str`,
-					`hsnr`,
 					`status_date`,
 					`status`,
 					`ansprechpartner`,
@@ -149,7 +147,6 @@ class StoreGateway extends BaseGateway
 			'lat' => $store->lat,
 			'lon' => $store->lon,
 			'str' => $store->str,
-			'hsnr' => $store->hsnr, // deprecated
 			'plz' => $store->zip,
 			'stadt' => $store->city,
 
@@ -192,9 +189,7 @@ class StoreGateway extends BaseGateway
 					b.kette_id,
 					b.betrieb_kategorie_id,
 					b.name,
-					CONCAT(b.str," ",b.hsnr) AS anschrift,
 					b.str,
-					b.hsnr,
 					b.`betrieb_status_id`,
 					k.logo
 
@@ -217,8 +212,7 @@ class StoreGateway extends BaseGateway
 					b.name,
 					b.plz,
 					b.stadt,
-					b.str,
-					b.hsnr
+					b.str
 
 			FROM	fs_betrieb b
 					INNER JOIN fs_betrieb_team t
@@ -249,9 +243,8 @@ class StoreGateway extends BaseGateway
 					s.telefon,
 					s.email,
 
-					CONCAT(s.str," ",s.hsnr) AS anschrift,
+					s.str AS anschrift,
 					s.str,
-					s.hsnr,
 					s.plz,
 					s.stadt,
 					CONCAT(s.lat,", ",s.lon) AS geo,
@@ -361,7 +354,6 @@ class StoreGateway extends BaseGateway
         			b.`betrieb_kategorie_id`,
         			b.`name`,
         			b.`str`,
-        			b.`hsnr`,
         			b.`status_date`,
         			b.`status`,
         			b.`ansprechpartner`,
@@ -1042,9 +1034,8 @@ class StoreGateway extends BaseGateway
 						fs_betrieb.kette_id,
 						fs_betrieb.betrieb_kategorie_id,
 						fs_betrieb.name,
-						CONCAT(fs_betrieb.str," ",fs_betrieb.hsnr) AS anschrift,
+						fs_betrieb.str AS anschrift,
 						fs_betrieb.str,
-						fs_betrieb.hsnr,
 						CONCAT(fs_betrieb.lat,", ",fs_betrieb.lon) AS geo,
 						fs_betrieb.`betrieb_status_id`,
 						fs_bezirk.name AS bezirk_name
@@ -1060,10 +1051,38 @@ class StoreGateway extends BaseGateway
 	public function listStoresWithoutRegion(array $storeIds): array
 	{
 		return $this->db->fetchAll(
-			'SELECT id,name,bezirk_id,str,hsnr
+			'SELECT id,name,bezirk_id,str
 			FROM fs_betrieb
 			WHERE id IN(' . implode(',', $storeIds) . ')
 			AND ( bezirk_id = 0 OR bezirk_id IS NULL)'
 		);
+	}
+
+	public function getStoreLogsByActionType(int $storeId, array $storeActions): array
+	{
+		$logEntries = $this->db->fetchAll('
+			SELECT
+				date_activity as performed_at,
+				action as action_id,
+				fs_id_a as affected_foodsaver_id,
+				fs_id_p as performed_foodsaver_id,
+				date_reference,
+				content,
+				reason
+
+			FROM
+				fs_store_log
+
+			WHERE
+				store_id = :storeId
+		', [
+			'storeId' => $storeId,
+		]);
+
+		$logEntriesWithRequiredStoreActions = array_filter($logEntries, function ($logEntry) use ($storeActions) {
+			return in_array($logEntry['action_id'], $storeActions);
+		});
+
+		return $logEntriesWithRequiredStoreActions;
 	}
 }

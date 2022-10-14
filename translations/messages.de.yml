@@ -902,9 +902,9 @@ storeedit:
     status: "Status" #also in QuizView
   fetch:
     teamStatus: "Teamstatus"
-    teamStatus0: "Dieses Team ist voll und sucht zurzeit keine weiteren Helfer"
-    teamStatus1: "Es werden noch Helfer gesucht"
-    teamStatus2: "Es werden dringend noch Helfer gesucht"
+    teamStatus0: "Dieses Team ist voll und sucht zurzeit keine weiteren Helfer*innen"
+    teamStatus1: "Es werden noch Helfer*innen gesucht"
+    teamStatus2: "Es werden dringend noch Helfer*innen gesucht"
   add_success: "Kooperationsbetrieb wurde eingetragen"
   edit_success: "Änderungen wurden gespeichert"
   milestone:
@@ -954,9 +954,18 @@ pickup:
   add_onetime_pickup: "Zusatztermin eintragen"
   slot_add: "Slot hinzufügen"
   slot_remove: "Slot entfernen"
+  no_slots_available: "Keine Slots verfügbar"
   history:
     title: "Abholungshistorie"
     search: "Abholungen anzeigen"
+  signout_history:
+    title: "Historie ausgetragener Foodsaver der letzten 7 Tage"
+    reload: "Neuladen"
+    no_signouts_found: "Es wurden keine Austragungen gefunden."
+    slot: "Abholung"
+    signout_via_responsible_person:
+      via: "durch"
+      remove_reason: "(Grund: {reason})"
   edit:
     bread: "Abholzeiten bearbeiten"
     add: "Abholzeiten eintragen"
@@ -1102,7 +1111,7 @@ chat:
 wall:
   name: "Pinnwand"
   message_placeholder: "Nachricht schreiben…"
-  see-more: "Mehr Beiträge anzeigen"
+  see-more: "Alle Beiträge anzeigen"
   delete: "Eintrag löschen"
   confirm-deletion: "Soll der folgende Pinnwand-Eintrag von {name} wirklich entfernt werden?"
   info-somebody-else: "Dieser Eintrag ist älter als ein Monat, daher kannst du ihn als Verantwortliche*r bei Bedarf entfernen."
@@ -2120,8 +2129,8 @@ menu:
     dataprivacy: "Datenschutz"
     release-notes: "Was ist neu?"
     stores: "Betriebe" #also in MapView
-    helpwanted: "HelferInnen gesucht" #MapView
-    helpneeded: "HelferInnen dringend gesucht" #MapView
+    helpwanted: "Helfer*innen gesucht" #MapView
+    helpneeded: "Helfer*innen dringend gesucht" #MapView
     other_stores: "Andere Betriebe" #MapView
     fs: "Foodsaver"
     ids: "Ausweise"
@@ -2447,6 +2456,7 @@ poll:
     number_of_votes: "Abgegebene Stimmen"
     votes: "Stimmen"
     option_text: "Option"
+    percentage_of_votes: "Wahlbeteiligung"
     sum: "Summe"
   submit_vote_question: "Wirklich jetzt abstimmen? Deine Auswahl kann danach nicht mehr geändert werden."
   eligible_votes_count: "Anzahl der Stimmberechtigten"

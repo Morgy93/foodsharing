@@ -4,7 +4,7 @@ namespace Foodsharing\Modules\Statistics;
 
 use Foodsharing\Modules\Core\BaseGateway;
 use Foodsharing\Modules\Core\DBConstants\Region\RegionIDs;
-use Foodsharing\Modules\Core\DBConstants\Region\Type;
+use Foodsharing\Modules\Core\DBConstants\Unit\UnitType;
 
 class StatisticsGateway extends BaseGateway
 {
@@ -43,7 +43,7 @@ class StatisticsGateway extends BaseGateway
 			LIMIT 10
 		';
 
-		return $this->db->fetchAll($stm, [':city' => Type::CITY, ':bigCity' => Type::BIG_CITY]);
+		return $this->db->fetchAll($stm, [':city' => UnitType::CITY, ':bigCity' => UnitType::BIG_CITY]);
 	}
 
 	public function listStatFoodsaver(): array

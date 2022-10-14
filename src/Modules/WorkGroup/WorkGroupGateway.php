@@ -5,7 +5,7 @@ namespace Foodsharing\Modules\WorkGroup;
 use Exception;
 use Foodsharing\Modules\Core\BaseGateway;
 use Foodsharing\Modules\Core\Database;
-use Foodsharing\Modules\Core\DBConstants\Region\Type;
+use Foodsharing\Modules\Core\DBConstants\Unit\UnitType;
 
 class WorkGroupGateway extends BaseGateway
 {
@@ -127,7 +127,7 @@ class WorkGroupGateway extends BaseGateway
 			AND			b.`type` = :bezirk_type
 			AND			hb.active = :active
 			ORDER BY	b.`name`
-		', [':foodsaver_id' => $fsId, ':bezirk_type' => Type::WORKING_GROUP, ':active' => 1]);
+		', [':foodsaver_id' => $fsId, ':bezirk_type' => UnitType::WORKING_GROUP, ':active' => 1]);
 	}
 
 	public function listGroups(int $parentId): array
@@ -149,7 +149,7 @@ class WorkGroupGateway extends BaseGateway
 			WHERE		b.`parent_id` = :parent_id
 			AND			b.`type` = :bezirk_type
 			ORDER BY	`name`
-		', [':parent_id' => $parentId, ':bezirk_type' => Type::WORKING_GROUP]);
+		', [':parent_id' => $parentId, ':bezirk_type' => UnitType::WORKING_GROUP]);
 		if ($groups) {
 			foreach ($groups as $i => $g) {
 				$members = $this->db->fetchAll('
@@ -273,6 +273,6 @@ class WorkGroupGateway extends BaseGateway
 					`parent_id`
 			FROM	`fs_bezirk`
 			WHERE	`type` = :type
-		', [':type' => Type::COUNTRY]);
+		', [':type' => UnitType::COUNTRY]);
 	}
 }

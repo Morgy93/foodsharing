@@ -1,5 +1,7 @@
 <?php
 
+use Foodsharing\Modules\Core\DBConstants\Unit\UnitType;
+
 class ForumPostCest
 {
 	private $ambassador;
@@ -14,8 +16,8 @@ class ForumPostCest
 	public function _before(AcceptanceTester $I)
 	{
 		$this->testBezirk = $I->createRegion();
-		$this->bigTestBezirk = $I->createRegion(null, ['type' => \Foodsharing\Modules\Core\DBConstants\Region\Type::BIG_CITY]);
-		$this->moderatedTestBezirk = $I->createRegion(null, ['type' => \Foodsharing\Modules\Core\DBConstants\Region\Type::CITY, 'moderated' => true]);
+		$this->bigTestBezirk = $I->createRegion(null, ['type' => UnitType::BIG_CITY]);
+		$this->moderatedTestBezirk = $I->createRegion(null, ['type' => UnitType::CITY, 'moderated' => true]);
 		$this->createUsers($I);
 		$this->createPosts($I);
 	}

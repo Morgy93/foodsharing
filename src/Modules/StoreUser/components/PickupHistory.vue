@@ -76,6 +76,8 @@
         </div>
 
         <div class="p-1 pickup-table">
+          <SignoutHistory :store-id="storeId" />
+
           <Pickup
             v-for="pickupDate in pickupList"
             :key="`${pickupDate[0].storeId}-${pickupDate[0].date_ts}`"
@@ -97,6 +99,7 @@ import { listPastPickupsForUser, listPickupHistory } from '@/api/pickups'
 import i18n from '@/helper/i18n'
 import { pulseError } from '@/script'
 import Pickup from './Pickup'
+import SignoutHistory from '@/components/Stores/SignoutHistory/SignoutHistory'
 
 const calendarLabels = {
   labelPrevYear: i18n('calendar.labelPrevYear'),
@@ -113,7 +116,7 @@ const calendarLabels = {
 }
 
 export default {
-  components: { Pickup },
+  components: { SignoutHistory, Pickup },
   props: {
     collapsedAtFirst: { type: Boolean, default: true },
     fsId: { type: Number, default: null },
@@ -181,18 +184,19 @@ export default {
       try {
         const startDate = new Date(this.fromDate)
         startDate.setHours(0, 0, 0, 0)
+        const toDate = new Date(Math.min(...[new Date(), this.toDate].map(date => date.getTime())))
 
         if (this.fsId) {
           this.pickupList = await listPastPickupsForUser(
             this.fsId,
             startDate,
-            new Date(Math.min(...[new Date(), this.toDate].map(date => date.getTime()))),
+            toDate,
           )
         } else {
           this.pickupList = await listPickupHistory(
             this.storeId,
             startDate,
-            new Date(Math.min(...[new Date(), this.toDate].map(date => date.getTime()))),
+            toDate,
           )
         }
       } catch (e) {

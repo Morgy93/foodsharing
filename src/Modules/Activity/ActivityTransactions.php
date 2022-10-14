@@ -9,7 +9,7 @@ use Foodsharing\Modules\Activity\DTO\ActivityFilterCategory;
 use Foodsharing\Modules\Activity\DTO\ActivityUpdate;
 use Foodsharing\Modules\Activity\DTO\ActivityUpdateMailbox as MailboxUpdate;
 use Foodsharing\Modules\Activity\DTO\ImageActivityFilter;
-use Foodsharing\Modules\Core\DBConstants\Region\Type;
+use Foodsharing\Modules\Core\DBConstants\Unit\UnitType;
 use Foodsharing\Modules\Mailbox\MailboxGateway;
 use Foodsharing\Utility\ImageHelper;
 use Symfony\Contracts\Translation\TranslatorInterface;
@@ -54,7 +54,7 @@ class ActivityTransactions
 				$option = ActivityFilter::create($b['name'], $b['id'],
 					!isset($excluded['bezirk-' . $b['id']])
 				);
-				if ($b['type'] == Type::WORKING_GROUP) {
+				if (UnitType::isGroup($b['type'])) {
 					$groupOptions[] = $option;
 				} else {
 					$regionOptions[] = $option;

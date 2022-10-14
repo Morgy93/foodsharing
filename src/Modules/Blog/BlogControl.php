@@ -3,7 +3,7 @@
 namespace Foodsharing\Modules\Blog;
 
 use Foodsharing\Modules\Core\Control;
-use Foodsharing\Modules\Core\DBConstants\Region\Type;
+use Foodsharing\Modules\Core\DBConstants\Unit\UnitType;
 use Foodsharing\Permissions\BlogPermissions;
 use Foodsharing\Utility\DataHelper;
 use Foodsharing\Utility\IdentificationHelper;
@@ -130,7 +130,7 @@ class BlogControl extends Control
 			if (!$this->session->may('orga')) {
 				$bot_ids = $this->session->getMyAmbassadorRegionIds();
 				foreach ($regions as $k => $v) {
-					if ($v['type'] != Type::WORKING_GROUP || !in_array($v['id'], $bot_ids)) {
+					if (!UnitType::isGroup($v['type']) || !in_array($v['id'], $bot_ids)) {
 						unset($regions[$k]);
 					}
 				}

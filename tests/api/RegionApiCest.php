@@ -1,6 +1,7 @@
 <?php
 
 use Foodsharing\Modules\Core\DBConstants\Region\RegionIDs;
+use Foodsharing\Modules\Core\DBConstants\Unit\UnitType;
 
 class RegionApiCest
 {
@@ -172,5 +173,42 @@ class RegionApiCest
 		$I->sendGET('api/region/' . $this->region['id'] . '/members');
 		$I->seeResponseCodeIs(\Codeception\Util\HttpCode::OK);
 		$I->seeResponseIsJson();
+	}
+
+	public function listOwnRegions(ApiTester $I)
+	{
+		// Create region hierarchies
+		$city1 = $I->createRegion('Ladenburg', ['type' => UnitType::CITY]);
+		$city2 = $I->createRegion('Mannheim', ['type' => UnitType::BIG_CITY]);
+
+		// Allocate users to region and groups
+		$I->addRegionMember($city1['id'], $this->user['id']);
+		$I->addRegionMember($city2['id'], $this->user['id']);
+		$I->addRegionAdmin($city1['id'], $this->user['id']);
+
+		$I->login($this->user['email']);
+		$I->sendGET('api/user/current/regions');
+		$I->seeResponseCodeIs(\Codeception\Util\HttpCode::OK);
+		$I->seeResponseIsJson();
+
+		$responseItems = $I->grabDataFromResponseByJsonPath('$[*].id');
+		$I->assertEquals(2, count($responseItems));
+		$I->assertEquals($city1['id'], $responseItems[0]);
+		$I->assertEquals($city2['id'], $responseItems[1]);
+
+		$responseItems = $I->grabDataFromResponseByJsonPath('$[*].name');
+		$I->assertEquals(2, count($responseItems));
+		$I->assertEquals($city1['name'], $responseItems[0]);
+		$I->assertEquals($city2['name'], $responseItems[1]);
+
+		$responseItems = $I->grabDataFromResponseByJsonPath('$[*].classification');
+		$I->assertEquals(2, count($responseItems));
+		$I->assertEquals($city1['type'], $responseItems[0]);
+		$I->assertEquals($city2['type'], $responseItems[1]);
+
+		$responseItems = $I->grabDataFromResponseByJsonPath('$[*].isResponsible');
+		$I->assertEquals(2, count($responseItems));
+		$I->assertTrue($responseItems[0]);
+		$I->assertFalse($responseItems[1]);
 	}
 }

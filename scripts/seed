@@ -1,6 +1,7 @@
 #!/bin/bash
 
 export FS_ENV=dev
+export CURRENT_USER=$(id -u):$(id -g)
 
 # set -o errexit tells the shell to exit as soon as a command exits with non-zero status, i.e. fails
 set -o errexit
@@ -11,3 +12,12 @@ dir=$(dirname "$0")
 source "$dir"/inc.sh
 
 exec-in-container app vendor/bin/codecept foodsharing:seed "$@"
+
+dc run --rm --no-deps app php -f run.php Maintenance daily
+dc run --rm --no-deps app php -f run.php Stats foodsaver
+dc run --rm --no-deps app php -f run.php Stats betriebe
+dc run --rm --no-deps app php -f run.php Stats bezirke
+
+echo "All done"
+echo "---------------------"
+output-message

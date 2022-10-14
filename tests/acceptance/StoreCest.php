@@ -1,22 +1,25 @@
 <?php
 
 use Carbon\Carbon;
+use Facebook\WebDriver\WebDriverKeys;
 use Foodsharing\Modules\Core\DBConstants\Store\CooperationStatus;
 
 class StoreCest
 {
-	private $region;
-	private $store;
+	private array $region;
+	private array $store;
 
-	private $foodsaver;
-	private $storeCoordinator;
+	private array $foodsaver;
+	private array $storeCoordinator;
 
-	public function _before(AcceptanceTester $I)
+	public function _before(AcceptanceTester $I): void
 	{
 		$this->region = $I->createRegion();
 		$regionId = $this->region['id'];
 
-		$this->store = $I->createStore($regionId, null, null, ['betrieb_status_id' => CooperationStatus::COOPERATION_ESTABLISHED]);
+		$this->store = $I->createStore(
+			$regionId, null, null, ['betrieb_status_id' => CooperationStatus::COOPERATION_ESTABLISHED]
+		);
 
 		$this->foodsaver = $I->createFoodsaver();
 		$I->addRegionMember($regionId, $this->foodsaver['id']);
@@ -27,7 +30,37 @@ class StoreCest
 		$I->addStoreTeam($this->store['id'], $this->storeCoordinator['id'], true);
 	}
 
-	public function willKeepApproxPickupTime(AcceptanceTester $I)
+	public function canAddStore(AcceptanceTester $I): void
+	{
+		$I->wantTo('Add a new store');
+		$I->login($this->storeCoordinator['email']);
+		$I->amOnPage('/?page=betrieb&a=new');
+		$I->unlockAllInputFields();
+
+		$I->fillField('first_post', 'Testeintrag');
+		$I->fillField('name', 'Testbetrieb');
+		$I->fillField('#addresspicker', 'Göttingen Bahnhofsplatz 1 37073 Göttingen Deutschland');
+		$I->wait(1);
+
+		$I->pressKey('#addresspicker', WebDriverKeys::ARROW_DOWN);
+		$I->pressKey('#addresspicker', WebDriverKeys::RETURN_KEY);
+		$I->wait(1);
+
+		$I->fillField('public_info', 'Testeintrag im Feld öffentliche Information');
+		$I->click('Senden');
+		$I->waitForPageBody();
+
+		$I->canSee('Kooperationsbetrieb wurde eingetragen', ['css' => '#pulse-success p']);
+		$I->canSeeInDatabase('fs_betrieb', [
+			'name' => 'Testbetrieb',
+			'str' => 'Bahnhofsplatz 1',
+			'plz' => '37073',
+			'stadt' => 'Göttingen',
+			'public_info' => 'Testeintrag im Feld öffentliche Information',
+		]);
+	}
+
+	public function willKeepApproxPickupTime(AcceptanceTester $I): void
 	{
 		$I->login($this->storeCoordinator['email']);
 
@@ -44,7 +77,7 @@ class StoreCest
 		$I->see('morgens', '#public_time option[selected]');
 	}
 
-	public function seePickupHistory(AcceptanceTester $I)
+	public function seePickupHistory(AcceptanceTester $I): void
 	{
 		$I->haveInDatabase('fs_abholer', [
 			'betrieb_id' => $this->store['id'],

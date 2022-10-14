@@ -10,7 +10,7 @@ use Foodsharing\Lib\Db\Mem;
 use Foodsharing\Modules\Buddy\BuddyGateway;
 use Foodsharing\Modules\Core\DBConstants\Foodsaver\Role;
 use Foodsharing\Modules\Core\DBConstants\Foodsaver\UserOptionType;
-use Foodsharing\Modules\Core\DBConstants\Region\Type;
+use Foodsharing\Modules\Core\DBConstants\Unit\UnitType;
 use Foodsharing\Modules\Foodsaver\FoodsaverGateway;
 use Foodsharing\Modules\Login\LoginGateway;
 use Foodsharing\Modules\Mails\MailsGateway;
@@ -18,6 +18,7 @@ use Foodsharing\Modules\Quiz\QuizHelper;
 use Foodsharing\Modules\Region\RegionGateway;
 use Foodsharing\Modules\Settings\SettingsGateway;
 use Foodsharing\Modules\Store\StoreGateway;
+use Foodsharing\Modules\Store\TeamStatus;
 
 class Session
 {
@@ -450,10 +451,12 @@ class Session
 			$_SESSION['client']['bezirke'] = $this->regionGateway->listForFoodsaver($fs['id']) ?? [];
 		}
 
+		$_SESSION['client']['verantwortlich'] = [];
 		if ($responsibleStoreIds = $this->storeGateway->listStoreIdsWhereResponsible($fs['id'])) {
 			$_SESSION['client']['verantwortlich'] = $responsibleStoreIds;
 			$mailbox = true;
 		}
+
 		$this->set('mailbox', $mailbox);
 
 		$this->set('email_is_activated', $this->loginGateway->isActivated($fs['id']));
@@ -469,6 +472,11 @@ class Session
 	public function mayBezirk($regionId): bool
 	{
 		return isset($_SESSION['client']['bezirke'][$regionId]) || $this->isAdminFor($regionId) || $this->may('orga');
+	}
+
+	public function mayIsStoreResponsible($storeId)
+	{
+		return $this->storeGateway->getUserTeamStatus($this->id(), $storeId) === TeamStatus::Coordinator;
 	}
 
 	public function isAdminForAWorkGroup()
@@ -509,7 +517,7 @@ class Session
 			$managedRegions = $this->getManagedRegions();
 			foreach ($managedRegions as $region) {
 				foreach ($regionIds as $regId) {
-					$consider = $include_groups || Type::isRegion($region['type']);
+					$consider = $include_groups || UnitType::isRegion($region['type']);
 					if ($consider && $region['bezirk_id'] == $regId) {
 						return true;
 					}

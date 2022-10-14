@@ -337,7 +337,7 @@ export function closeBox () {
 export function u_loadCoords (addressdata, func) {
   let anschrift = ''
   if (addressdata.str != undefined) {
-    anschrift = `${addressdata.str} ${addressdata.hsnr}`
+    anschrift = `${addressdata.str}`
   } else {
     const tmp = addressdata.anschrift.split('/')
     anschrift = tmp[0]

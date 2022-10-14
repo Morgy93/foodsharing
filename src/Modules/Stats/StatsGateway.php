@@ -4,8 +4,8 @@ namespace Foodsharing\Modules\Stats;
 
 use Foodsharing\Modules\Core\BaseGateway;
 use Foodsharing\Modules\Core\Database;
-use Foodsharing\Modules\Core\DBConstants\Region\Type;
 use Foodsharing\Modules\Core\DBConstants\Store\CooperationStatus;
+use Foodsharing\Modules\Core\DBConstants\Unit\UnitType;
 
 /**
  * Statistics update operations for foodsaver, store team and region stats.
@@ -246,7 +246,7 @@ class StatsGateway extends BaseGateway
 				region.stat_betriebcount = IFNULL(stores.stores, 0),
 				region.stat_korpcount = IFNULL(stores.coops, 0)
 		', [
-			'type_working_group' => TYPE::WORKING_GROUP,
+			'type_working_group' => UnitType::WORKING_GROUP,
 			'coop_starting' => CooperationStatus::COOPERATION_STARTING,
 			'coop_established' => CooperationStatus::COOPERATION_ESTABLISHED,
 		]);

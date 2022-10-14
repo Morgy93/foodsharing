@@ -3,7 +3,7 @@
 namespace Foodsharing\Utility;
 
 use Foodsharing\Lib\Session;
-use Foodsharing\Modules\Core\DBConstants\Region\Type;
+use Foodsharing\Modules\Core\DBConstants\Unit\UnitType;
 use Foodsharing\Permissions\BlogPermissions;
 use Foodsharing\Permissions\ContentPermissions;
 use Foodsharing\Permissions\MailboxPermissions;
@@ -242,7 +242,7 @@ final class PageHelper
 				'mayHandleFoodsaverRegionMenu' => $this->regionPermissions->mayHandleFoodsaverRegionMenu($groupId),
 				'hasConference' => $this->regionPermissions->hasConference($groupType)
 			]);
-			if (Type::isRegion($groupType)) {
+			if (UnitType::isRegion($groupType)) {
 				$group['isAdmin'] = $this->session->isAdminFor($groupId);
 				$group['mayAccessReportGroupReports'] = $this->reportPermissions->mayAccessReportGroupReports($groupId);
 				$group['mayAccessArbitrationGroupReports'] = $this->reportPermissions->mayAccessArbitrationReports($groupId);

@@ -164,6 +164,7 @@ group:
     remove_admin_text: Are you sure you want to remove {name} ({id}) as an admin?
     remove_admin_title: remove as admin
     old_edit_hint_link: Members
+    old_edit_hint: You can now find the member administration on the tab
   application_from: by
   entermotivation: 'Motivation:'
   enterskills: 'Skills:'
@@ -182,6 +183,10 @@ settings:
       region. He*She can change your name for you.<hr/>You can find out who the ambassadors
       of you region are in the left sidebar of your <a {link}>home regions forum page</a>.
     foodsharer_info: For changing your name, please create a request in our <a {link}>support-form<a>.
+    foodsaver_info: To change your name, you must contact an ambassador from your
+      home district. This person can then change the name for you.<hr/>You can see
+      who is the ambassador in your home district in the <a {link}>forum of your district</a>
+      in the left sidebar.
   push:
     not-supported: Your browser does not support push notifications.
     title: Push notifications
@@ -272,6 +277,8 @@ settings:
     mail: Yes, I would like to be informed about new posts by email.
   newsletter: "About once a month we send out current information\nabout the food\
     \ saving movement in a newsletter.\nDo you want to receive these emails?\n"
+  passport:
+    menu: ID card
 menu:
   manage_regions: Manage regions
   blog: Manage blog content
@@ -534,6 +541,17 @@ profile:
     week_3: Last week
     week_4: Two weeks ago
     calenderWeek: CW
+    title: Engagement stats
+    securePickupWeek: Thanks for {count} stepping in and securing pickups on short
+      notice!
+    pickupCount: Frequency
+    week_0: The week after next
+    eventsCreatedWeek: 'Thanks for creating events {count} times this week. '
+    eventsParticipatedWeek: 'Thanks for participating in {count} events this week.
+      Total time: {hour}:{minute} '
+    basketsOfferedWeek: Thanks for offering food baskets {count} times this week.
+      A total of {weight} kg was shared.
+    respActStores: 'Thanks for coordinating {count} active '
 test:
   plain: This is a nice translation
   vars: 'My name is {NAME} and I am {AGE} years old'
@@ -707,7 +725,7 @@ calendar:
   export:
     pickup:
       name: "{store} Pickup"
-      unconfirmed: (not confirmed)
+      unconfirmed: not confirmed
       description: 'Foodsharing pickup at <a href="{url}">{store}</a>'
     event:
       statusUnspecified: You have not stated whether you would like to participate
@@ -732,6 +750,14 @@ pickup:
   history:
     title: Pick-up history
     search: Show pickups
+  signout_history:
+    title: "History of logged out food savers from pickups for the last 7 days"
+    reload: "Reload"
+    no_signouts_found: "No signouts found."
+    slot: "Pickup"
+    signout_via_responsible_person:
+      via: "by"
+      remove_reason: "(Reason: {reason})"
   join_title_date: Sure?
   dates: Pick-up dates
   team_message_send_and_leave: Send and leave
@@ -744,6 +770,7 @@ pickup:
     added: Pickup date was added.
   slot_remove: Delete slot
   slot_add: Add slot
+  no_slots_available: No pickup slots available
   add_onetime_pickup: Add additional date
   edit_recurring_pickups: Edit regular pickup dates
   really_delete_date: Do you really want to delete the pickup on {date}?
@@ -780,7 +807,7 @@ pickup:
         name: Pickup Options
         tooltip:
           own: Future pickups, for which you could sign up
-        empty: Currently there are now free pickups slots in any of your teams.
+        empty: Currently there are no available pickup slots in any of your teams.
       history:
         name: History
         tooltip:
@@ -1010,6 +1037,7 @@ bell:
   store_request_imposed: You were added to the store team.
   store_request_imposed_title: '{name}'
   foodsaver_verified_title: You are now verified!
+  foodsaver_verified: check your ID at...
 reports:
   time: Time
   region: Home region
@@ -1081,6 +1109,7 @@ poll:
     votes: Votes
     number_of_votes: Submitted votes
     option_text: Option
+    percentage_of_votes: Voter turnout
   new_poll:
     submit_question: The poll can be changed within one hour (until {date}). Do you
       really want to create it now?
@@ -1420,7 +1449,7 @@ footer:
   call_to_action: Participate
   beta_testing_issues: Testing tasks of the beta version
   meta:
-    it_devdocs: by foodsharint IT
+    it_devdocs: by foodsharing IT
     version: 'Version: {version}'
   hosting:
     info: Carbon-neutrally <a href="https://www.manitu.de/webhosting/" title="Webhosting">hosted</a>
@@ -1600,6 +1629,9 @@ foodsaver:
   delete_account_sure: Are you sure you want to delete your account?
   edit_failure: Nothing was changed or changes were not saved
   edit_success: Changes have been saved
+  delete_account_sure_reason: "Do you really want to delete {name}'s account? You\
+    \ can optionally enter a reason here that can later be used to understand why\
+    \ the account was deleted:"
 store:
   addNewStoresButton: Add new store
   allStoresOfRegion: All stores in the region
@@ -1714,7 +1746,7 @@ store:
   complete: complete database
   peoplecame: It has often happened that people went to a store unsolicited.
   smneeded: To set up a business, you must be a store manager.
-  tooltip_jumping: ''
+  tooltip_jumping: 'You are a jumper in this store'
 search:
   mygroups: My groups
   mybuddies: My buddies
@@ -1773,12 +1805,13 @@ date:
   to: to
   from: from
   time: "{time} o'clock"
+  clock: clock
 wall:
   error-create: Your wall post could not be saved.
   created: Great! Your wall post was saved.
   error-delete: You can not remove this post.
   delete: Delete post
-  see-more: Show more posts
+  see-more: Show all posts
   message_placeholder: Write a message…
   name: Wall
   info-somebody-else: This entry is older than a month. As a store manager you can
@@ -1884,6 +1917,7 @@ storeedit:
       \ extensive rights.\n"
     coordinator: "You are not responsible for this store.\nHowever, as part of the\
       \ store management team you have extensive rights.\n"
+    leave_myself: Yourself
   add-new: Add new store
   milestone:
     dropped: '{user} is not part of the team anymore'
@@ -1945,6 +1979,7 @@ legal:
     this_doesnt_get_deleted: 'The following information is no longer available in
       the active system, but is archived separately based on Article 17 paragraph
       3 sentence 1 letter b GDPR:'
+    legal_2: Thank you.
 answers: Which answers are correct?
 name: Name
 bcard:

@@ -26,7 +26,6 @@ class MailsControl extends ConsoleControl
 	 * until then we need to be able to configure this rather flexible in here
 	 * 45,11 mails/minute = 1330 milli seconds between mails
 	 * */
-	private int $DELAY_MICRO_SECONDS_BETWEEN_MAILS = 1330000;
 
 	public function __construct(
 		MailsGateway $mailsGateway,
@@ -385,7 +384,7 @@ class MailsControl extends ConsoleControl
 			}
 		}
 		// rate limiting
-		usleep($mailCount * $this->DELAY_MICRO_SECONDS_BETWEEN_MAILS);
+		usleep($mailCount * DELAY_MICRO_SECONDS_BETWEEN_MAILS);
 
 		return true;
 	}

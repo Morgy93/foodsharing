@@ -37,7 +37,10 @@ const urls = {
   joininfo: () => '/?page=content&sub=joininfo',
   leeretonne: () => '/?page=content&sub=leeretonne',
   login: () => '/?page=login',
-  logout: () => '/?page=logout',
+  logout: () => {
+    const url = new URL(window.location.href)
+    return '/?page=logout&ref=' + encodeURIComponent(url.pathname + url.search)
+  },
   mailbox: (mailboxId = null) => `/?page=mailbox${mailboxId ? `&show=${mailboxId}` : ''}`,
   mailboxManage: () => '/?page=mailbox&a=manage',
   mailboxMailto: (email) => `/?page=mailbox&mailto=${email}`,

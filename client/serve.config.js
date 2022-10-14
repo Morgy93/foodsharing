@@ -12,6 +12,7 @@ module.exports = {
     index: '',
     contentBase: false,
     publicPath: '/assets/',
+    disableHostCheck: true,
     overlay: {
       warnings: true,
       errors: true,

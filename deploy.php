@@ -28,10 +28,10 @@ set('default_timeout', 600);
 
 // Hosts
 host('beta')
-	->setHostname('dragonfruit.foodsharing.network');
+	->setHostname('foodsharing.network');
 
 host('production')
-	->setHostname('dragonfruit.foodsharing.network');
+	->setHostname('foodsharing.network');
 
 // Tasks
 desc('Create the revision information');
@@ -52,12 +52,12 @@ task('deploy:update_code', function () {
 });
 
 task('deploy:cache:warmup', function () {
-	run('FS_ENV=prod {{release_path}}/bin/console cache:warmup -e prod');
+	run('sudo -u {{http_user}} -g {{http_group}} FS_ENV=prod {{release_path}}/bin/console cache:warmup -e prod');
 })->desc('Warmup symfony cache');
 
 task('deploy:permissions', function () {
 	run('
-		chgrp -R {{http_group}} {{release_path}};
+		sudo chgrp -R {{http_group}} {{release_path}};
 		chmod 750 {{release_path}};
 	');
 })->desc('Allow only www-data to access the files');

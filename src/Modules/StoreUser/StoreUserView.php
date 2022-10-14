@@ -57,8 +57,11 @@ class StoreUserView extends View
 				var val = $(this).val();
 				showLoader();
 				$.ajax({
-					url: "/xhr.php?f=bteamstatus&bid=' . (int)$storeData['id'] . '&status=" + val,
-					success: function() { hideLoader(); }
+					method: "PATCH",
+					url: "/api/stores/' . $storeData['id'] . '",
+					data:  { \'teamStatus\': val},
+					success: function() { hideLoader(); },
+					error: function(xhr) { hideLoader(); pulseError("Error during status update (" + xhr.status + ")"); }
 				});
 			});
 		');
@@ -90,7 +93,7 @@ class StoreUserView extends View
 
 			$storeRows[$i] = [
 				['cnt' => '<a class="linkrow ui-corner-all" href="/?page=fsbetrieb&id=' . $store['id'] . '">' . $store['name'] . '</a>'],
-				['cnt' => $store['str'] . ' ' . $store['hsnr']],
+				['cnt' => $store['str']],
 				['cnt' => $store['plz']],
 				['cnt' => $status]
 			];

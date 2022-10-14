@@ -28,7 +28,7 @@
         <b-link
           v-b-tooltip="concatUsers(users)"
           class="btn btn-sm"
-          :class="[gaveIThisReaction(key) ? 'btn-primary' : 'btn-primary']"
+          :class="[gaveIThisReaction(key) ? 'btn-secondary' : 'btn-primary']"
           @click="toggleReaction(key)"
         >
           {{ users.length }}x <Emoji :name="key" />

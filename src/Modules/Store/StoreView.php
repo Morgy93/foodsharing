@@ -83,10 +83,6 @@ class StoreView extends View
 		if (isset($g_data['str'])) {
 			$g_data['anschrift'] = $g_data['str'];
 		}
-		if (isset($g_data['hsnr'])) {
-			$g_data['anschrift'] .= ' ' . $g_data['hsnr'];
-			$g_data['hsnr'] = '';
-		}
 
 		$this->pageHelper->addJs('$("textarea").css("height","70px");$("textarea").autosize();');
 

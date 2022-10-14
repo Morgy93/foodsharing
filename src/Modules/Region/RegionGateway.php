@@ -7,8 +7,8 @@ use Foodsharing\Modules\Core\BaseGateway;
 use Foodsharing\Modules\Core\Database;
 use Foodsharing\Modules\Core\DBConstants\Foodsaver\Role;
 use Foodsharing\Modules\Core\DBConstants\Region\RegionIDs;
-use Foodsharing\Modules\Core\DBConstants\Region\Type;
 use Foodsharing\Modules\Core\DBConstants\Region\WorkgroupFunction;
+use Foodsharing\Modules\Core\DBConstants\Unit\UnitType;
 use Foodsharing\Modules\Foodsaver\FoodsaverGateway;
 use Foodsharing\Modules\Group\GroupFunctionGateway;
 
@@ -58,7 +58,7 @@ class RegionGateway extends BaseGateway
 
 	public function getBezirkByParent(int $parentId, bool $includeOrga = false): array
 	{
-		$sql = 'AND 		`type` != ' . Type::WORKING_GROUP;
+		$sql = 'AND 		`type` != ' . UnitType::WORKING_GROUP;
 		if ($includeOrga) {
 			$sql = '';
 		}
@@ -186,7 +186,7 @@ class RegionGateway extends BaseGateway
 						fbc.ancestor_id = :regionId
 					AND fbc.depth >= :min_depth
 					and reg.type <> :regionTypeWorkGroup',
-				['regionId' => $regionId, 'min_depth' => $minDepth, 'regionTypeWorkGroup' => Type::WORKING_GROUP]
+				['regionId' => $regionId, 'min_depth' => $minDepth, 'regionTypeWorkGroup' => UnitType::WORKING_GROUP]
 			);
 		}
 	}
@@ -217,7 +217,7 @@ class RegionGateway extends BaseGateway
 				b.`name`
 		', [
 			':foodsaverId' => $foodsaverId,
-			':workGroupType' => Type::WORKING_GROUP
+			':workGroupType' => UnitType::WORKING_GROUP
 		]);
 	}
 

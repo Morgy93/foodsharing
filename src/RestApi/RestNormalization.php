@@ -148,7 +148,6 @@ class RestNormalization
 	{
 		return [
 			'street' => $data['str'],
-			'houseNumber' => (int)$data['hsnr'],
 			'city' => $data['stadt'],
 			'postalCode' => (int)$data['plz']
 		];

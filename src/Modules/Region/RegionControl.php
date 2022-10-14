@@ -5,7 +5,7 @@ namespace Foodsharing\Modules\Region;
 use Foodsharing\Modules\Core\Control;
 use Foodsharing\Modules\Core\DBConstants\Map\MapConstants;
 use Foodsharing\Modules\Core\DBConstants\Region\RegionOptionType;
-use Foodsharing\Modules\Core\DBConstants\Region\Type;
+use Foodsharing\Modules\Core\DBConstants\Unit\UnitType;
 use Foodsharing\Modules\Event\EventGateway;
 use Foodsharing\Modules\Foodsaver\FoodsaverGateway;
 use Foodsharing\Modules\FoodSharePoint\FoodSharePointGateway;
@@ -103,7 +103,7 @@ final class RegionControl extends Control
 
 	private function regionViewData(array $region, ?string $activeSubpage): array
 	{
-		$isWorkGroup = $this->isWorkGroup($region);
+		$isWorkGroup = UnitType::isGroup($region['type']);
 		$regionId = (int)$region['id'];
 		$isHomeDistrict = $this->isHomeDistrict($region);
 
@@ -258,11 +258,6 @@ final class RegionControl extends Control
 		return $orderedMenu;
 	}
 
-	private function isWorkGroup(array $region): bool
-	{
-		return $region['type'] == Type::WORKING_GROUP;
-	}
-
 	public function index(Request $request, Response $response)
 	{
 		if (!$this->session->may()) {
@@ -272,7 +267,7 @@ final class RegionControl extends Control
 		$region_id = $request->query->getInt('bid', $_SESSION['client']['bezirk_id']);
 
 		if ($this->session->mayBezirk($region_id) && ($region = $this->gateway->getRegionDetails($region_id))) {
-			$big = [Type::BIG_CITY, Type::FEDERAL_STATE, Type::COUNTRY];
+			$big = [UnitType::BIG_CITY, UnitType::FEDERAL_STATE, UnitType::COUNTRY];
 			$region['moderated'] = $region['moderated'] || in_array($region['type'], $big);
 			$this->region = $region;
 		} else {
@@ -296,7 +291,7 @@ final class RegionControl extends Control
 				$this->forum($request, $response, $region, false);
 				break;
 			case 'wall':
-				if (!$this->isWorkGroup($region)) {
+				if (!UnitType::isGroup($region['type'])) {
 					$this->flashMessageHelper->info($this->translator->trans('region.forum-redirect'));
 					$this->routeHelper->go('/?page=bezirk&bid=' . $region_id . '&sub=forum');
 				} else {
@@ -322,21 +317,21 @@ final class RegionControl extends Control
 				$this->polls($request, $response, $region);
 				break;
 			case 'options':
-				if (!$this->regionPermissions->maySetRegionOptions($region_id) || $this->isWorkGroup($region)) {
+				if (!$this->regionPermissions->maySetRegionOptions($region_id) || UnitType::isGroup($region['type'])) {
 					$this->flashMessageHelper->info($this->translator->trans('region.restricted'));
 					$this->routeHelper->go($this->forumTransactions->url($region_id, false));
 				}
 				$this->options($request, $response, $region);
 				break;
 			case 'pin':
-				if (!$this->regionPermissions->maySetRegionPin($region_id) || $this->isWorkGroup($region)) {
+				if (!$this->regionPermissions->maySetRegionPin($region_id) || UnitType::isGroup($region['type'])) {
 					$this->flashMessageHelper->info($this->translator->trans('region.restricted'));
 					$this->routeHelper->go($this->forumTransactions->url($region_id, false));
 				}
 				$this->pin($request, $response, $region);
 				break;
 			default:
-				if ($this->isWorkGroup($region)) {
+				if (UnitType::isGroup($region['type'])) {
 					$this->routeHelper->go('/?page=bezirk&bid=' . $region_id . '&sub=wall');
 				} else {
 					$this->routeHelper->go($this->forumTransactions->url($region_id, false));
@@ -440,7 +435,7 @@ final class RegionControl extends Control
 		$sub = $request->query->get('sub');
 		$viewdata = $this->regionViewData($region, $sub);
 
-		if ($region['type'] === Type::WORKING_GROUP) {
+		if ($region['type'] === UnitType::WORKING_GROUP) {
 			$mayEditMembers = $this->workGroupPermission->mayEdit($region);
 			$maySetAdminOrAmbassador = $mayEditMembers;
 			$mayRemoveAdminOrAmbassador = $mayEditMembers;
@@ -475,7 +470,7 @@ final class RegionControl extends Control
 		$viewData['ageBand']['district'] = $this->gateway->AgeBandDistrict((int)$region['id']);
 		$viewData['ageBand']['homeDistrict'] = $this->gateway->AgeBandHomeDistrict((int)$region['id']);
 
-		if ($region['type'] !== Type::COUNTRY || $this->regionPermissions->mayAccessStatisticCountry()) {
+		if ($region['type'] !== UnitType::COUNTRY || $this->regionPermissions->mayAccessStatisticCountry()) {
 			$viewData['pickupData']['daily'] = $this->gateway->listRegionPickupsByDate((int)$region['id'], '%Y-%m-%d');
 			$viewData['pickupData']['weekly'] = $this->gateway->listRegionPickupsByDate((int)$region['id'], '%Y/%v');
 			$viewData['pickupData']['monthly'] = $this->gateway->listRegionPickupsByDate((int)$region['id'], '%Y-%m');

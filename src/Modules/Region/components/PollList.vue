@@ -90,9 +90,9 @@
             :placeholder="$i18n('name')"
           />
         </div>
-        <ul>
+        <ul id="endedPollsList">
           <li
-            v-for="poll in endedPolls"
+            v-for="poll in endedPollsPaginated"
             :key="poll.id"
             class="mb-2"
           >
@@ -104,17 +104,24 @@
             </b-link>
           </li>
         </ul>
+        <b-pagination
+          v-model="currentPage"
+          :total-rows="endedPolls.length"
+          :per-page="perPage"
+          aria-controls="endedPollsList"
+          class="my-0"
+        />
       </div>
     </div>
   </div>
 </template>
 
 <script>
-import { BLink, BFormInput } from 'bootstrap-vue'
+import { BLink, BFormInput, BPagination } from 'bootstrap-vue'
 import { optimizedCompare } from '@/utils'
 
 export default {
-  components: { BLink, BFormInput },
+  components: { BLink, BFormInput, BPagination },
   props: {
     regionId: {
       type: Number,
@@ -156,8 +163,14 @@ export default {
         const aD = this.convertDate(a.endDate.date)
         const bD = this.convertDate(b.endDate.date)
         if (aD.getTime() === bD.getTime()) return 0
-        return aD > bD ? 1 : -1
+        return aD > bD ? -1 : 1
       })
+    },
+    endedPollsPaginated: function () {
+      return this.endedPolls.slice(
+        (this.currentPage - 1) * this.perPage,
+        this.currentPage * this.perPage,
+      )
     },
   },
   methods: {

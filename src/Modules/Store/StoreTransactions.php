@@ -32,7 +32,7 @@ class StoreTransactions
 	private FoodsaverGateway $foodsaverGateway;
 	private RegionGateway $regionGateway;
 	private Session $session;
-	private const MAX_SLOTS_PER_PICKUP = 10;
+	public const MAX_SLOTS_PER_PICKUP = 10;
 	// status constants for getAvailablePickupStatus
 	private const STATUS_RED_TODAY_TOMORROW = 3;
 	private const STATUS_ORANGE_3_DAYS = 2;
@@ -69,6 +69,7 @@ class StoreTransactions
 		$store->str = $legacyGlobalData['str'];
 		$store->zip = $legacyGlobalData['plz'];
 		$store->city = $legacyGlobalData['stadt'];
+		$store->publicInfo = $legacyGlobalData['public_info'];
 		$store->createdAt = Carbon::now();
 		$store->updatedAt = $store->createdAt;
 
@@ -92,9 +93,6 @@ class StoreTransactions
 		$store->regionId = intval($legacyGlobalData['bezirk_id']);
 
 		$address = $legacyGlobalData['str'];
-		if ($legacyGlobalData['hsnr'] ?? '') {
-			$address .= ' ' . $legacyGlobalData['hsnr'];
-		}
 		$store->lat = floatval($legacyGlobalData['lat']);
 		$store->lon = floatval($legacyGlobalData['lon']);
 		$store->str = $address;
@@ -132,33 +130,45 @@ class StoreTransactions
 	}
 
 	/**
-	 * Changes the number of total slots for a pickup. Implements the logic to take care to
-	 *   * not remove a slot where somebody is signed up for
-	 *   * handle transition between regular and onetime pickup
-	 *   * (does not convert additional back to regular as the gain is little).
+	 * Creates or updates a manual pick up.
+	 *
+	 * @param int $storeId Store to update
+	 * @param \DateTimeInterface $date Date of manual pick up
+	 * @param int $newTotalSlots count of total slots which should be set
+	 *
+	 * @return bool true if a new one is created, false if it is updated
+	 *
+	 * @throws PickupValidationException Exception if input is invalid
 	 */
-	public function changePickupSlots(int $storeId, \DateTimeInterface $date, int $newTotalSlots): bool
+	public function createOrUpdatePickup(int $storeId, \DateTimeInterface $date, int $newTotalSlots): bool
 	{
+		if ($date < Carbon::now()) {
+			throw new PickupValidationException(PickupValidationException::PICK_UP_DATE_IN_THE_PAST);
+		}
+
 		if ($newTotalSlots < 0 || $newTotalSlots > self::MAX_SLOTS_PER_PICKUP) {
-			return false;
+			throw new PickupValidationException(PickupValidationException::SLOT_COUNT_OUT_OF_RANGE);
 		}
 
 		$occupiedSlots = count($this->pickupGateway->getPickupSignupsForDate($storeId, $date));
-
-		// cannot remove excess slots if people are signed into them
 		if ($newTotalSlots < $occupiedSlots) {
-			return false;
+			throw new PickupValidationException(PickupValidationException::MORE_OCCUPIED_SLOTS);
+		}
+
+		if (!$this->storeGateway->storeExists($storeId)) {
+			throw new PickupValidationException(PickupValidationException::INVALID_STORE);
 		}
 
 		$filledOnetimeSlots = $this->pickupGateway->getOnetimePickups($storeId, $date);
-
 		if ($filledOnetimeSlots) {
 			$this->pickupGateway->updateOnetimePickupTotalSlots($storeId, $date, $newTotalSlots);
+
+			return false;
 		} else {
 			$this->pickupGateway->addOnetimePickup($storeId, $date, $newTotalSlots);
-		}
 
-		return true;
+			return true;
+		}
 	}
 
 	/**
@@ -252,7 +262,7 @@ class StoreTransactions
 		if ($totalSlots = $this->totalSlotsIfPickupSlotAvailable($storeId, $date, $fsId)) {
 			$this->pickupGateway->addFetcher($fsId, $storeId, $date, $confirmed);
 			// [#860] convert to manual slot, so they don't vanish when changing the schedule
-			$this->changePickupSlots($storeId, $date, $totalSlots);
+			$this->createOrUpdatePickup($storeId, $date, $totalSlots);
 		} else {
 			throw new \DomainException('No pickup slot available');
 		}
@@ -450,6 +460,7 @@ class StoreTransactions
 	{
 		/* check if other managers exist (cannot leave as last manager) */
 		$this->storeGateway->removeStoreManager($storeId, $userId);
+		$this->storeGateway->addStoreLog($storeId, $this->session->id(), $userId, null, StoreLogAction::REMOVED_AS_STORE_MANAGER);
 
 		$standbyTeamChatId = $this->storeGateway->getBetriebConversation($storeId, true);
 		if ($standbyTeamChatId) {

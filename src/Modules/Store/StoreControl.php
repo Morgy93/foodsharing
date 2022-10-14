@@ -6,9 +6,9 @@ use Foodsharing\Modules\Bell\BellGateway;
 use Foodsharing\Modules\Bell\DTO\Bell;
 use Foodsharing\Modules\Core\Control;
 use Foodsharing\Modules\Core\DBConstants\Bell\BellType;
-use Foodsharing\Modules\Core\DBConstants\Region\Type;
 use Foodsharing\Modules\Core\DBConstants\Store\CooperationStatus;
 use Foodsharing\Modules\Core\DBConstants\Store\Milestone;
+use Foodsharing\Modules\Core\DBConstants\Unit\UnitType;
 use Foodsharing\Modules\Foodsaver\FoodsaverGateway;
 use Foodsharing\Modules\Region\RegionGateway;
 use Foodsharing\Permissions\StorePermissions;
@@ -84,7 +84,7 @@ class StoreControl extends Control
 				$this->pageHelper->addBread($this->translator->trans('store.bread'), '/?page=fsbetrieb');
 				$this->pageHelper->addBread($this->translator->trans('storeedit.add-new'));
 
-				$chosenRegion = ($regionId > 0 && Type::isAccessibleRegion($this->regionGateway->getType($regionId))) ? $region : null;
+				$chosenRegion = ($regionId > 0 && UnitType::isAccessibleRegion($this->regionGateway->getType($regionId))) ? $region : null;
 				$this->pageHelper->addContent($this->view->betrieb_form(
 					$this->storeGateway->getBasics_groceries(),
 					$this->storeGateway->getBasics_chain(),

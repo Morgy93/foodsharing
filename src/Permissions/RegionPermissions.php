@@ -4,8 +4,8 @@ namespace Foodsharing\Permissions;
 
 use Foodsharing\Lib\Session;
 use Foodsharing\Modules\Core\DBConstants\Region\RegionIDs;
-use Foodsharing\Modules\Core\DBConstants\Region\Type;
 use Foodsharing\Modules\Core\DBConstants\Region\WorkgroupFunction;
+use Foodsharing\Modules\Core\DBConstants\Unit\UnitType;
 use Foodsharing\Modules\Group\GroupFunctionGateway;
 use Foodsharing\Modules\Region\RegionGateway;
 
@@ -26,7 +26,7 @@ final class RegionPermissions
 	{
 		$type = $this->regionGateway->getType($regionId);
 
-		return $this->session->may('fs') && Type::isAccessibleRegion($type);
+		return $this->session->may('fs') && UnitType::isAccessibleRegion($type);
 	}
 
 	public function mayAdministrateRegions(): bool
@@ -99,7 +99,7 @@ final class RegionPermissions
 
 	public function hasConference(int $regionType): bool
 	{
-		return in_array($regionType, [Type::COUNTRY, Type::FEDERAL_STATE, Type::CITY, TYPE::WORKING_GROUP, Type::PART_OF_TOWN, Type::DISTRICT, Type::REGION, Type::BIG_CITY]);
+		return in_array($regionType, [UnitType::COUNTRY, UnitType::FEDERAL_STATE, UnitType::CITY, UnitType::WORKING_GROUP, UnitType::PART_OF_TOWN, UnitType::DISTRICT, UnitType::REGION, UnitType::BIG_CITY]);
 	}
 
 	public function mayDeleteFoodsaverFromRegion(int $regionId): bool

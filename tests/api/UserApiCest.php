@@ -27,7 +27,14 @@ class UserApiCest
 		$this->user = $I->createFoodsaver();
 		$this->userOrga = $I->createOrga();
 
+		$group = $I->createWorkingGroup('WG');
+		$I->addRegionMember($group['id'], $this->user['id']);
+		$I->addRegionMember($group['id'], $this->userOrga['id']);
+
 		$region = $I->createRegion();
+		$I->addRegionMember($region['id'], $this->user['id']);
+		$I->addRegionMember($region['id'], $this->userOrga['id']);
+
 		$this->store = $I->createStore($region['id']);
 		$I->addStoreTeam($this->store['id'], $this->user['id']);
 
@@ -114,6 +121,8 @@ class UserApiCest
 		$I->dontSeeResponseContains('mobile');
 		$I->dontSeeResponseContains('birthday');
 		$I->dontSeeResponseContains('aboutMeIntern');
+		$I->dontSeeResponseContains('regions');
+		$I->dontSeeResponseContains('groups');
 
 		$I->dontSeeResponseContainsJson([
 			'stats' => [
@@ -158,6 +167,7 @@ class UserApiCest
 			'homepage' => 'string|null',
 			'aboutMePublic' => 'string|null',
 		]);
+
 		$I->dontSeeResponseContains('address');
 		$I->dontSeeResponseContains('city');
 		$I->dontSeeResponseContains('postcode');
@@ -166,6 +176,8 @@ class UserApiCest
 		$I->dontSeeResponseContains('mobile');
 		$I->dontSeeResponseContains('birthday');
 		$I->dontSeeResponseContains('aboutMeIntern');
+		$I->dontSeeResponseContains('regions');
+		$I->dontSeeResponseContains('groups');
 
 		$I->seeResponseMatchesJsonType([
 			'stats' => [
@@ -211,8 +223,23 @@ class UserApiCest
 			'homepage' => 'string|null',
 			'aboutMeIntern' => 'string|null',
 			'aboutMePublic' => 'string|null',
-			'gender' => 'integer'
+			'gender' => 'integer',
+			'regions' => 'array',
+			'groups' => 'array'
 		]);
+
+		$I->seeResponseMatchesJsonType([
+			'id' => 'integer',
+			'name' => 'string',
+			'classification' => 'integer',
+			'isResponsible' => 'boolean'
+		], '$.regions.*');
+
+		$I->seeResponseMatchesJsonType([
+			'id' => 'integer',
+			'name' => 'string',
+			'isResponsible' => 'boolean'
+		], '$.groups.*');
 
 		$I->seeResponseMatchesJsonType([
 			'stats' => [
@@ -266,7 +293,22 @@ class UserApiCest
 			'role' => 'integer',
 			'position' => 'string|null',
 			'gender' => 'integer',
+			'regions' => 'array',
+			'groups' => 'array'
 		]);
+
+		$I->seeResponseMatchesJsonType([
+			'id' => 'integer',
+			'name' => 'string',
+			'classification' => 'integer',
+			'isResponsible' => 'boolean'
+		], '$.regions.*');
+
+		$I->seeResponseMatchesJsonType([
+			'id' => 'integer',
+			'name' => 'string',
+			'isResponsible' => 'boolean'
+		], '$.groups.*');
 
 		$I->seeResponseMatchesJsonType([
 			'stats' => [

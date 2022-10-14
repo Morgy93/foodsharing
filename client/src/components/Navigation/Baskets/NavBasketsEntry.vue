@@ -62,7 +62,7 @@
         </small>
       </div>
       <button
-        v-b-tooltip="$i18n('basket.request_close')"
+        v-b-tooltip.left="$i18n('basket.request_close')"
         :title="$i18n('basket.request_close')"
         class="testing-basket-requests-close btn btn-sm btn-outline-danger"
         @click.prevent.stop="openRemoveDialog(entry.user.id, $event)"

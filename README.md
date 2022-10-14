@@ -21,7 +21,13 @@ This is the code that powers
 
 ## 💻 Development
 
-Visit [devdocs.foodsharing.network](https://devdocs.foodsharing.network) to get started with development.
+Visit our [old DevDocs](https://devdocs.foodsharing.network) or our [GitLab Wiki](https://gitlab.com/foodsharing-dev/foodsharing/-/wikis/home) to get started with development.
+
+### Quickstart 
+
+[![Open in Gitpod](https://gitpod.io/button/open-in-gitpod.svg)](https://gitpod.io/#https://gitlab.com/foodsharing-dev/foodsharing/-/tree/master/)
+
+Gitpod is a fast development environment in your browser. 
 
 ## 💒 Community
 
