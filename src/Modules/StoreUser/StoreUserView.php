@@ -164,7 +164,7 @@ class StoreUserView extends View
 				</td>
 				<td class="ui-padding">
 					<select class="fetchercount" name="nft-count[]">
-						' . $this->prepareOptionRange(range(0, $StoreMetadataModel->maxCountPickupSlot, $date['fetcher']) . '
+						' . $this->prepareOptionRange(range(0, $StoreMetadataModel->maxCountPickupSlot), $date['fetcher']) . '
 					</select>
 				</td>
 				<td class="ui-pading">
