@@ -16,6 +16,7 @@ use Foodsharing\Utility\Sanitizer;
 use Foodsharing\Utility\TimeHelper;
 use Foodsharing\Utility\TranslationHelper;
 use Symfony\Contracts\Translation\TranslatorInterface;
+use Foodsharing\RestApi\Models\Store\CommonStoreMetadataModel;
 
 class StoreUserView extends View
 {
@@ -32,7 +33,7 @@ class StoreUserView extends View
 		Sanitizer $sanitizerService,
 		TimeHelper $timeHelper,
 		TranslationHelper $translationHelper,
-		TranslatorInterface $translator
+		TranslatorInterface $translator,
 	) {
 		parent::__construct(
 			$twig,
@@ -47,7 +48,7 @@ class StoreUserView extends View
 			$sanitizerService,
 			$timeHelper,
 			$translationHelper,
-			$translator
+			$translator,
 		);
 	}
 
@@ -142,7 +143,7 @@ class StoreUserView extends View
 
 		$dows = range(1, 6);
 		$dows[] = 0;
-
+		$StoreMetadataModel = new CommonStoreMetadataModel();
 		foreach ($allDates as $date) {
 			$time = explode(':', $date['time']);
 
@@ -163,7 +164,7 @@ class StoreUserView extends View
 				</td>
 				<td class="ui-padding">
 					<select class="fetchercount" name="nft-count[]">
-						' . $this->prepareOptionRange(range(0, StoreTransactions::MAX_SLOTS_PER_PICKUP), $date['fetcher']) . '
+						' . $this->prepareOptionRange(range(0, $StoreMetadataModel->maxCountPickupSlot, $date['fetcher']) . '
 					</select>
 				</td>
 				<td class="ui-pading">
