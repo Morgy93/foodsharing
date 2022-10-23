@@ -30,12 +30,12 @@ class EventGatewayTest extends \Codeception\Test\Unit
 
 	public function testAddLocation()
 	{
-		$name = $this->faker->company;
-		$lat = $this->faker->latitude;
-		$lon = $this->faker->longitude;
-		$address = $this->faker->streetAddress;
-		$zip = $this->faker->postcode;
-		$city = $this->faker->city;
+		$name = $this->faker->company();
+		$lat = $this->faker->latitude();
+		$lon = $this->faker->longitude();
+		$address = $this->faker->streetAddress();
+		$zip = $this->faker->postcode();
+		$city = $this->faker->city();
 		$id = $this->gateway->addLocation($name, $lat, $lon, $address, $zip, $city);
 		$this->assertGreaterThan(0, $id);
 		$this->tester->seeInDatabase('fs_location', ['id' => $id, 'name' => $name, 'lat' => $lat, 'lon' => $lon, 'street' => $address, 'zip' => $zip, 'city' => $city]);
@@ -94,6 +94,64 @@ class EventGatewayTest extends \Codeception\Test\Unit
 		$this->gateway->inviteFullRegion($this->region['id'], $eventid, true);
 		foreach ($usersInRegion as $fsid) {
 			$this->tester->seeInDatabase('fs_foodsaver_has_event', ['foodsaver_id' => $fsid, 'event_id' => $eventid, 'status' => 0]);
+		}
+	}
+
+	public function testListEvents()
+	{
+		$dateFormat = 'Y-m-d H:i';
+
+		$dateMinusTwoHours = date($dateFormat, time() - (2 * 60 * 60));
+		$dateMinusOneHour = date($dateFormat, time() - (60 * 60));
+		$datePlusOneHour = date($dateFormat, time() + (60 * 60));
+		$datePlusTwoHours = date($dateFormat, time() + (2 * 60 * 60));
+		$events = [
+			[
+				'bezirk_id' => $this->region['id'],
+				'location_id' => null,
+				'public' => 0,
+				'name' => 'EventInPast',
+				'start' => $dateMinusTwoHours,
+				'end' => $dateMinusOneHour,
+				'description' => 'd',
+				'bot' => 0,
+				'online' => 0,
+			],
+			[
+				'bezirk_id' => $this->region['id'],
+				'location_id' => null,
+				'public' => 0,
+				'name' => 'EventRunning',
+				'start' => $dateMinusOneHour,
+				'end' => $datePlusOneHour,
+				'description' => 'd',
+				'bot' => 0,
+				'online' => 0,
+			],
+			[
+				'bezirk_id' => $this->region['id'],
+				'location_id' => null,
+				'public' => 0,
+				'name' => 'EventInFuture',
+				'start' => $datePlusOneHour,
+				'end' => $datePlusTwoHours,
+				'description' => 'd',
+				'bot' => 0,
+				'online' => 0,
+			],
+		];
+		foreach ($events as $event) {
+			$eventid = $this->gateway->addEvent($this->foodsaver['id'], $event);
+			$this->assertGreaterThan(0, $eventid);
+		}
+		$listedEvents = $this->gateway->listForRegion($this->region['id']);
+
+		$this->assertEquals(sizeof($events), sizeof($listedEvents), 'All events of a region should be listed');
+
+		foreach ($events as $event) {
+			$this->assertNotEmpty(array_filter($listedEvents, function ($listedEvent) use ($event) {
+				return $listedEvent['name'] == $event['name'];
+			}));
 		}
 	}
 }

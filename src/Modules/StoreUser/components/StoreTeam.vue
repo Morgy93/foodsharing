@@ -10,27 +10,31 @@
   -->
   <div :class="['bootstrap store-team w-100', `team-${storeId}`]">
     <div class="card rounded mb-2">
-      <div class="card-header text-white bg-primary d-flex justify-content-between">
-        <span>{{ $i18n('store.teamName', { storeTitle }) }}</span>
+      <div class="card-header text-white bg-primary">
+        <div class="row align-items-center">
+          <div class="col font-weight-bold">
+            {{ $i18n('store.teamName', { storeTitle }) }}
+          </div>
 
-        <div class="align-self-center">
-          <a
-            v-if="mayEditStore"
-            v-b-tooltip.hover.top
-            :title="$i18n(managementModeEnabled ? 'store.sm.managementToggleOff' : 'store.sm.managementToggleOn')"
-            :class="['px-1', managementModeEnabled ? 'text-warning' : 'text-light']"
-            href="#"
-            @click.prevent="toggleManageControls"
-          >
-            <i class="fas fa-fw fa-cog" />
-          </a>
-          <a
-            class="px-1 d-md-none text-light"
-            href="#"
-            @click.prevent="toggleTeamDisplay"
-          >
-            <i :class="['fas fa-fw', `fa-chevron-${displayMembers ? 'down' : 'left'}`]" />
-          </a>
+          <div class="col col-4 text-right">
+            <button
+              v-if="mayEditStore"
+              v-b-tooltip.hover.top
+              :title="$i18n(managementModeEnabled ? 'store.sm.managementToggleOff' : 'store.sm.managementToggleOn')"
+              :class="[managementModeEnabled ? ['text-warning', 'active'] : 'text-light', 'btn', 'btn-primary', 'btn-sm']"
+              href="#"
+              @click.prevent="toggleManageControls"
+            >
+              <i class="fas fa-fw fa-cog" />
+            </button>
+            <button
+              class="px-1 d-md-none text-light btn btn-sm"
+              href="#"
+              @click.prevent="toggleTeamDisplay"
+            >
+              <i :class="['fas fa-fw', `fa-chevron-${displayMembers ? 'down' : 'left'}`]" />
+            </button>
+          </div>
         </div>
       </div>
 
@@ -38,7 +42,9 @@
       <StoreManagementPanel
         v-if="managementModeEnabled"
         :store-id="storeId"
+        :team="team"
         classes="p-2 team-management"
+        :region-id="regionId"
       />
 
       <div class="card-body team-list">
@@ -77,24 +83,24 @@
           </template>
 
           <template #cell(call)="data">
-            <b-button
-              v-if="data.item.callable || !data.item.copyNumber"
-              variant="link"
-              class="member-call"
-              :href="data.item.callable"
-              :disabled="!data.item.callable"
-            >
-              <i class="fas fa-fw fa-phone" />
-            </b-button>
-            <b-button
-              v-else-if="data.item.copyNumber && canCopy"
-              variant="link"
-              class="member-call copy-clipboard"
-              href="#"
-              @click.prevent="copyIntoClipboard(data.item.copyNumber)"
-            >
-              <i class="fas fa-fw fa-clone" />
-            </b-button>
+            <div v-if="data.item.phoneNumberIsValid">
+              <b-button
+                variant="link"
+                class="member-call"
+                :href="$url('phone_number', data.item.phoneNumber,true)"
+                :disabled="!data.item.phoneNumberIsValid"
+              >
+                <i class="fas fa-fw fa-phone" />
+              </b-button>
+              <b-button
+                variant="link"
+                class="member-call copy-clipboard"
+                href="#"
+                @click.prevent="copyIntoClipboard(data.item.phoneNumber)"
+              >
+                <i class="fas fa-fw fa-clone" />
+              </b-button>
+            </div>
           </template>
 
           <template #row-details="data">
@@ -189,19 +195,13 @@
 </template>
 
 <script>
-import _ from 'underscore'
-import fromUnixTime from 'date-fns/fromUnixTime'
-import compareAsc from 'date-fns/compareAsc'
-
 import {
   demoteAsStoreManager, promoteToStoreManager,
-  moveMemberToStandbyTeam, moveMemberToRegularTeam,
-  removeStoreMember,
+  moveMemberToStandbyTeam, moveMemberToRegularTeam, removeStoreMember,
 } from '@/api/stores'
-import i18n from '@/i18n'
-import { callableNumber } from '@/utils'
+import phoneNumber from '@/helper/phone-numbers'
 import { chat, pulseSuccess, pulseError } from '@/script'
-import MediaQueryMixin from '@/utils/VueMediaQueryMixin'
+import MediaQueryMixin from '@/mixins/MediaQueryMixin'
 
 import { legacyXhrCall } from './legacy'
 import StoreManagementPanel from './StoreManagementPanel'
@@ -218,10 +218,11 @@ export default {
     team: { type: Array, required: true },
     storeId: { type: Number, required: true },
     storeTitle: { type: String, default: '' },
+    regionId: { type: Number, required: true },
   },
   data () {
     return {
-      foodsaver: _.map(this.team, this.foodsaverData),
+      foodsaver: this.team?.map(fs => this.foodsaverData(fs)),
       sortfun: this.tableSortFunction,
       sortdesc: true,
       managementModeEnabled: false,
@@ -258,7 +259,7 @@ export default {
     copyIntoClipboard (text) {
       if (navigator.clipboard) {
         navigator.clipboard.writeText(text).then(() => {
-          pulseSuccess(i18n('pickup.copiedNumber', { number: text }))
+          pulseSuccess(this.$i18n('pickup.copiedNumber', { number: text }))
         })
       }
     },
@@ -298,7 +299,7 @@ export default {
           await moveMemberToRegularTeam(this.storeId, fsId)
         }
       } catch (e) {
-        pulseError(i18n('error_unexpected'))
+        pulseError(this.$i18n('error_unexpected'))
         this.isBusy = false
         return
       }
@@ -313,28 +314,6 @@ export default {
       }
       this.isBusy = false
     },
-    async removeFromTeam (fsId, fsName) {
-      if (!fsId) {
-        return
-      }
-      if (!confirm(i18n('store.sm.reallyRemove', { name: fsName }))) {
-        return
-      }
-
-      this.isBusy = true
-      try {
-        await removeStoreMember(this.storeId, fsId)
-      } catch (e) {
-        pulseError(i18n('error_unexpected'))
-        this.isBusy = false
-        return
-      }
-      const index = this.foodsaver.findIndex(member => member.id === fsId)
-      if (index >= 0) {
-        this.foodsaver.splice(index, 1)
-      }
-      this.isBusy = false
-    },
     async promoteToManager (fsId) {
       if (!fsId) {
         return
@@ -343,7 +322,7 @@ export default {
       try {
         await promoteToStoreManager(this.storeId, fsId)
       } catch (e) {
-        pulseError(i18n('error_unexpected'))
+        pulseError(this.$i18n('error_unexpected'))
         this.isBusy = false
         return
       }
@@ -361,14 +340,14 @@ export default {
       if (!fsId) {
         return
       }
-      if (!confirm(i18n('store.sm.reallyDemote', { name: fsName }))) {
+      if (!confirm(this.$i18n('store.sm.reallyDemote', { name: fsName }))) {
         return
       }
       this.isBusy = true
       try {
         await demoteAsStoreManager(this.storeId, fsId)
       } catch (e) {
-        pulseError(i18n('error_unexpected'))
+        pulseError(this.$i18n('error_unexpected'))
         this.isBusy = false
         return
       }
@@ -389,11 +368,17 @@ export default {
       // isManager (verantwortlich) DESC
       if (a.isManager !== b.isManager) { return direction * (a.isManager - b.isManager) }
       // lastPickup (last_fetch) DESC
-      if (a.lastPickup && b.lastPickup) { return direction * compareAsc(a.lastPickup, b.lastPickup) }
+      if (a.lastPickup && b.lastPickup) {
+        if (a.lastPickup.getTime() === b.lastPickup.getTime()) return 0
+        return (a.lastPickup > b.lastPickup ? 1 : -1) * direction
+      }
       else if (a.lastPickup) { return direction }
       else if (b.lastPickup) { return -1 * direction }
       // joinDate (add_date) DESC
-      if (a.joinDate && b.joinDate) { return direction * compareAsc(a.joinDate, b.joinDate) }
+      if (a.joinDate && b.joinDate) {
+        if (a.joinDate.getTime() === b.joinDate.getTime()) return 0
+        return (a.joinDate > b.joinDate ? 1 : -1) * direction
+      }
       else if (a.joinDate) { return direction }
       else if (b.joinDate) { return -1 * direction }
       // name ASC
@@ -414,9 +399,15 @@ export default {
       // fetchCount (stat_fetchcount) DESC
       if (a.fetchCount !== b.fetchCount) { return direction * (a.fetchCount - b.fetchCount) }
       // lastPickup (last_fetch) DESC
-      if (a.lastPickup && b.lastPickup) { return direction * compareAsc(a.lastPickup, b.lastPickup) }
+      if (a.lastPickup && b.lastPickup) {
+        if (a.lastPickup.getTime() === b.lastPickup.getTime()) return 0
+        return (a.lastPickup > b.lastPickup ? 1 : -1) * direction
+      }
       // joinDate (add_date) DESC
-      if (a.joinDate && b.joinDate) { return direction * compareAsc(a.joinDate, b.joinDate) }
+      if (a.joinDate && b.joinDate) {
+        if (a.joinDate.getTime() === b.joinDate.getTime()) return 0
+        return (a.joinDate > b.joinDate ? 1 : -1) * direction
+      }
       // name ASC
       return -1 * direction * a.name.localeCompare(b.name)
     },
@@ -424,7 +415,7 @@ export default {
       if (!fs) {
         return {}
       }
-
+      const validPhoneNumber = phoneNumber.callableNumber(fs.handy || fs.telefon, true)
       return {
         id: fs.id,
         isActive: fs.team_active === 1, // MembershipStatus::MEMBER
@@ -438,23 +429,39 @@ export default {
         isWaiting: fs.team_active === 2 || fs.verified < 1, // MembershipStatus::JUMPER or unverified
         sleepStatus: fs.sleep_status,
         name: fs.name,
-        number: fs.handy || fs.telefon || '',
-        callable: callableNumber(fs.handy) || callableNumber(fs.telefon) || '',
-        copyNumber: callableNumber(fs.handy, true) || callableNumber(fs.telefon, true) || '',
-        phone: fs.telefon,
-        joinDate: fs.add_date ? fromUnixTime(fs.add_date) : null,
-        lastPickup: fs.last_fetch ? fromUnixTime(fs.last_fetch) : null,
+        phoneNumber: validPhoneNumber,
+        phoneNumberIsValid: !!validPhoneNumber,
+        joinDate: fs.add_date ? new Date(fs.add_date * 1000) : null, // unix time
+        lastPickup: fs.last_fetch ? new Date(fs.last_fetch * 1000) : null, // unix time
         fetchCount: fs.stat_fetchcount,
       }
     },
     legacyXhrCall,
+    async removeFromTeam (fsId, fsName) {
+      if (!fsId) {
+        return
+      }
+      if (!confirm(this.$i18n('store.sm.reallyRemove', { name: fsName }))) {
+        return
+      }
+      this.isBusy = true
+      try {
+        await removeStoreMember(this.storeId, fsId)
+        window.location.reload()
+      } catch (e) {
+        pulseError(this.$i18n('error_unexpected'))
+        this.isBusy = false
+        return
+      }
+      this.isBusy = false
+    },
   },
 }
 </script>
 
 <style lang="scss" scoped>
 .store-team .team-management {
-  border-bottom: 2px solid var(--warning);
+  border-bottom: 2px solid var(--fs-color-warning-500);
 }
 
 .store-team .team-list {
@@ -471,7 +478,7 @@ export default {
 
     tr {
       display: flex;
-      border-bottom: 1px solid var(--border);
+      border-bottom: 1px solid var(--fs-border-default);
 
       &.b-table-details {
         justify-content: center;
@@ -479,7 +486,7 @@ export default {
 
       &.table-warning {
         border-bottom-width: 2px;
-        border-bottom-color: var(--warning);
+        border-bottom-color: var(--fs-color-warning-500);
         padding-bottom: 1px;
       }
 
@@ -496,7 +503,7 @@ export default {
 
   tr td {
     padding: 3px;
-    border-top-color: var(--border);
+    border-top-color: var(--fs-border-default);
     vertical-align: middle;
     cursor: default;
     display: inline-block;
@@ -523,19 +530,19 @@ export default {
       .member-call {
         padding: 10px;
         align-self: center;
-        color: var(--fs-green);
+        color: var(--fs-color-secondary-500);
 
         &.copy-clipboard { opacity: 0.7; }
 
         &:hover {
-          background-color: var(--fs-green);
-          color: var(--white);
+          background-color: var(--fs-color-secondary-500);
+          color: var(--fs-color-light);
         }
         &:focus {
-          outline: 2px solid var(--fs-green);
+          outline: 2px solid var(--fs-color-secondary-500);
         }
         &:disabled {
-          color: var(--fs-beige);
+          color: var(--fs-color-primary-300);
         }
       }
     }

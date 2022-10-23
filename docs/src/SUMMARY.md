@@ -4,12 +4,17 @@
 - [Aufruf zur Unterstützung (DE)](it-tasks.md)
 - [Call for contribution (EN)](it-tasks_EN.md)
 
-# Getting started
-- [Getting the code](getting-the-code.md)
-- [Running the code: Docker](running-the-code.md)
+# Getting started (homepage)
+- [Tools installation (EN)](tools-installation.md)
+- [Installation der nötigen Software (DE)](tools-installation_DE.md)
+- [Getting & running the code](running-the-code.md)
 - [Setting things up](setting-things-up.md)
   - [IDE setup](ide-setup.md)
   - [User roles](learn-user-roles.md)
+  - [Test on other devices](test-on-other-devices.md)
+
+# Getting started (others)
+- [Information on the app setup and others: useful links](useful-links.md)
 
 # Contributing
   - [Einführung in Git und unser Arbeiten](contributing_DE.md)
@@ -18,6 +23,7 @@
   - [Code style](codestyle.md)
   - [Testing](testing.md)
   - [Code quality and review](code-review.md)
+  - [Documentation](documentation.md)
   - [Rebase](rebase.md)
   - [Troubleshooting](troubleshooting.md)
   - [Beta Testing (DE)](beta-testing-de.md)
@@ -45,7 +51,7 @@
   - [Release](release.md)
     - [Hotfix](hotfix.md)
   - [Update Dependencies](update-dependencies.md)
-  - [Glossary](GLOSSARY.md)
+  - [IT Glossary](IT-GLOSSARY.md)
+ - [foodsharing Glossary](FS-GLOSSARY.md)
 
 - [About the devdocs](about-devdocs.md)
-- [Contributors](contributors.md)

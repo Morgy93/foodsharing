@@ -4,6 +4,7 @@ namespace Foodsharing\Modules\Region;
 
 use Foodsharing\Modules\Core\BaseGateway;
 use Foodsharing\Modules\Core\Database;
+use Foodsharing\Modules\Core\DBConstants\Region\ThreadStatus;
 
 class ForumGateway extends BaseGateway
 {
@@ -40,7 +41,8 @@ class ForumGateway extends BaseGateway
 						creator.id as creator_id,
 						creator.name as creator_name,
 						creator.photo as creator_photo,
-						creator.sleep_status as creator_sleep_status
+						creator.sleep_status as creator_sleep_status,
+						t.status
 
 			FROM 		fs_theme t
 						INNER JOIN
@@ -98,7 +100,8 @@ class ForumGateway extends BaseGateway
 						t.last_post_id,
 						t.`active`,
 						t.`sticky`,
-						t.foodsaver_id as creator_id
+						t.foodsaver_id as creator_id,
+						t.status
 
 			FROM 		fs_theme t
 
@@ -119,6 +122,7 @@ class ForumGateway extends BaseGateway
 			'name' => $title,
 			'time' => date('Y-m-d H:i:s'),
 			'active' => $isActive,
+			'status' => ThreadStatus::OPEN,
 		]);
 
 		$this->forumFollowerGateway->followThreadByBell($foodsaverId, $threadId);
@@ -172,6 +176,22 @@ class ForumGateway extends BaseGateway
 			['sticky' => 0],
 			['id' => $thread_id]
 		);
+	}
+
+	/**
+	 * Returns the {@see ThreadStatus} of a thread. Throws an exception if the thread does not exist.
+	 */
+	public function getThreadStatus(int $threadId): int
+	{
+		return $this->db->fetchValueByCriteria('fs_theme', 'status', ['id' => $threadId]);
+	}
+
+	/**
+	 * Sets the status of a thread and returns whether the status was set successfully, see {@see ThreadStatus}.
+	 */
+	public function setThreadStatus(int $threadId, int $status): bool
+	{
+		return $this->db->update('fs_theme', ['status' => $status], ['id' => $threadId]) > 0;
 	}
 
 	// Post-related

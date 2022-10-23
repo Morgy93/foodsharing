@@ -1,13 +1,14 @@
 #!/bin/bash
 
 export FS_ENV=dev
+export CURRENT_USER=$(id -u):$(id -g)
 
 set -o errexit
 
 dir=$(dirname "$0")
 
-# shellcheck source=./inc.sh
-source "$dir"/inc.sh
+# shellcheck source=./__helping-functions.sh
+source "$dir"/__helping-functions.sh
 
 echo "Linting client js"
 run-in-container client yarn lint

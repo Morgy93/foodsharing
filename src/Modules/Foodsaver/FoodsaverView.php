@@ -8,6 +8,7 @@ use Foodsharing\Modules\Core\View;
 use Foodsharing\Utility\DataHelper;
 use Foodsharing\Utility\IdentificationHelper;
 use Foodsharing\Utility\ImageHelper;
+use Foodsharing\Utility\NumberHelper;
 use Foodsharing\Utility\PageHelper;
 use Foodsharing\Utility\RouteHelper;
 use Foodsharing\Utility\Sanitizer;
@@ -24,6 +25,7 @@ class FoodsaverView extends View
 		DataHelper $dataHelper,
 		IdentificationHelper $identificationHelper,
 		ImageHelper $imageService,
+		NumberHelper $numberHelper,
 		PageHelper $pageHelper,
 		RouteHelper $routeHelper,
 		Sanitizer $sanitizer,
@@ -38,6 +40,7 @@ class FoodsaverView extends View
 			$dataHelper,
 			$identificationHelper,
 			$imageService,
+			$numberHelper,
 			$pageHelper,
 			$routeHelper,
 			$sanitizer,
@@ -157,27 +160,20 @@ class FoodsaverView extends View
 		$regionPicker = $this->v_utils->v_regionPicker($regionDetails ?: [], $this->translator->trans('terminology.homeRegion'));
 		$link = '<a href="/?page=settings&sub=general">' . $this->translator->trans('terminology.settings') . '</a>';
 
+		$g_data['ort'] = $g_data['stadt'];
+		foreach (['anschrift', 'plz', 'ort', 'lat', 'lon'] as $i) {
+			$latLonOptions[$i] = $g_data[$i];
+		}
+		$latLonOptions['location'] = ['lat' => $g_data['lat'], 'lon' => $g_data['lon']];
+
 		return $this->v_utils->v_quickform($title, [
-			$regionPicker,
-			$orga,
 			$this->v_utils->v_form_text('name', ['required' => true]),
 			$this->v_utils->v_form_text('nachname', ['required' => true]),
-
-			$position,
-
-			$this->v_utils->v_info(
-				'<b>' . $this->translator->trans('foodsaver.addresschange.title') . '</b>'
-				. '<br>'
-				. $this->translator->trans('foodsaver.addresschange.text', ['{settings}' => $link])
-			),
-			$this->v_utils->v_form_text('stadt', ['required' => true]),
-			$this->v_utils->v_form_text('plz', ['required' => true]),
-			$this->v_utils->v_form_text('anschrift', ['required' => true]),
-			$this->v_utils->v_form_text('lat'),
-			$this->v_utils->v_form_text('lon'),
-			$this->v_utils->v_form_text('email', ['required' => true, 'disabled' => true]),
-			$this->v_utils->v_form_text('telefon'),
-			$this->v_utils->v_form_text('handy'),
+			$this->v_utils->v_form_date('geb_datum', [
+				'required' => true,
+				'yearRangeFrom' => ((int)date('Y') - 111),
+				'yearRangeTo' => date('Y'),
+			]),
 			$this->v_utils->v_form_select('geschlecht', ['values' => [
 				['id' => 2, 'name' => $this->translator->trans('gender.f')],
 				['id' => 1, 'name' => $this->translator->trans('gender.m')],
@@ -185,13 +181,14 @@ class FoodsaverView extends View
 			],
 				['required' => true]
 			]),
-
-			$this->v_utils->v_form_date('geb_datum', [
-				'required' => true,
-				'yearRangeFrom' => ((int)date('Y') - 111),
-				'yearRangeTo' => date('Y'),
-			])
-		]);
+			$this->v_utils->v_form_text('handy', ['placeholder' => $this->translator->trans('register.phone_example')]),
+			$this->v_utils->v_form_text('telefon', ['placeholder' => $this->translator->trans('register.landline_example')]),
+			$regionPicker,
+			$orga,
+			$this->latLonPicker('LatLng', $latLonOptions, '_profile'),
+			$position,
+			$this->v_utils->v_form_text('email', ['required' => true, 'disabled' => true]),
+		], ['submit' => $this->translator->trans('button.save')]);
 	}
 
 	public function u_delete_account(): string
@@ -202,6 +199,6 @@ class FoodsaverView extends View
 	</div>
 	';
 
-		return $this->v_utils->v_field($content, $this->translator->trans('foodsaver.delete_account'), ['class' => 'ui-padding']);
+		return $this->v_utils->v_field($content, '⚠️ ' . $this->translator->trans('foodsaver.delete_account'), ['class' => 'ui-padding']);
 	}
 }

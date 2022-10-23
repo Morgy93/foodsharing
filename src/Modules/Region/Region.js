@@ -7,7 +7,7 @@ import {
   GET,
   pulseError,
 } from '@/script'
-import i18n from '@/i18n'
+import i18n from '@/helper/i18n'
 import './Region.css'
 import { vueRegister, vueApply } from '@/vue'
 import Thread from './components/Thread'
@@ -18,6 +18,8 @@ import AgeBandList from './components/AgeBandList'
 import ThreadList from './components/ThreadList'
 import PollList from './components/PollList'
 import Options from './components/Options'
+import Pin from './components/Pin'
+import EventList from '../Event/components/EventList'
 import { leaveRegion } from '@/api/regions'
 // Wallpost
 import '../WallPost/WallPost.css'
@@ -62,7 +64,7 @@ $(document).ready(() => {
       MemberList,
     })
     vueApply('#vue-memberlist')
-  } else if (GET('sub') == 'statistic') {
+  } else if (GET('sub') === 'statistic') {
     vueRegister({
       GenderList,
       PickupList,
@@ -93,5 +95,15 @@ $(document).ready(() => {
       Options,
     })
     vueApply('#vue-options')
+  } else if (GET('sub') === 'pin') {
+    vueRegister({
+      Pin,
+    })
+    vueApply('#vue-pin')
+  } else if (GET('sub') === 'events') {
+    vueRegister({
+      EventList,
+    })
+    vueApply('#vue-eventlist')
   }
 })

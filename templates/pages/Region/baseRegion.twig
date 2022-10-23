@@ -9,11 +9,15 @@
     {% if isRegion %}
         {% include 'pages/Region/regionTop.twig' %}
     {% else %}
+        {% set subtitleGroup %}
+            {{ 'group.member_count'|trans({'%count%': region.stat.num_fs}) }}, {{ 'terminology.n_sleeping'|trans({'%count%': region.stat.num_sleeping}) }}
+        {% endset %}
         {% include 'partials/topbar.twig' with {
             'title': 'terminology.group'|trans ~ ' - ' ~ region.name,
-            'subtitle': 'group.member_count'|trans({'%count%': region.stat.num_fs}),
+            'subtitle': subtitleGroup,
             'img': '/img/groups.png',
         } %}
+
     {% endif %}
 {% endblock %}
 {% block bottom %}

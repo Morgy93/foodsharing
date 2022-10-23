@@ -17,14 +17,14 @@ import {
 import { vueRegister, vueApply } from '@/vue'
 import './Mailbox.css'
 import Mailbox from './components/Mailbox.vue'
-import i18n from '@/i18n'
-import { setEmailStatus } from '@/api/mailbox'
+import i18n from '@/helper/i18n'
+import { deleteEmail, setEmailStatus } from '@/api/mailbox'
 
 expose({
   mb_finishFile,
   mb_removeLast,
   mb_mailto,
-  mb_moveto,
+  mb_deleteEmail,
   mb_reset,
   mb_answer,
   mb_forward,
@@ -82,13 +82,14 @@ function mb_mailto (email) {
   }
 }
 
-function mb_moveto (folder) {
-  folder = parseInt(folder)
-  if (folder > 0) {
-    ajreq('move', {
-      mid: $('#mb-hidden-id').val(),
-      f: folder,
-    })
+async function mb_deleteEmail () {
+  const emailId = $('#mb-hidden-id').val()
+  try {
+    await deleteEmail(emailId)
+    $(`tr#message-${emailId}`).remove()
+    $('#message-body').dialog('close')
+  } catch (e) {
+    pulseError(i18n('error_unexpected'))
   }
 }
 
@@ -149,7 +150,7 @@ function mb_clearEditor () {
   $('#edit-body').val('')
   $('#edit-reply').val('0')
   $('#message-editor').dialog('option', {
-    title: 'Neue Nachricht',
+    title: i18n('chat.new_message'),
   })
   mb_reset()
 }
@@ -179,10 +180,10 @@ function mb_send_message () {
   $('.edit-an').each(function () {
     an = `${an};${$(this).val()}`
   })
-  console.log(an, $('.edit-an'))
+  // console.log(an, $('.edit-an'))
   if (an.indexOf('@') == -1) {
     $('.edit-an')[0].focus()
-    pulseInfo('Du musst einen Empfänger angeben')
+    pulseInfo(i18n('chat.receivermissing'))
   } else if (an.indexOf('noreply') !== -1) {
     $('.edit-an')[0].focus()
     pulseInfo(i18n('mail.noreply_addresses_not_allowed'))
@@ -249,7 +250,7 @@ function u_addTypeHead () {
   }).on('blur', function () {
     const $this = this
     if ($this.value != '' && !checkEmail($this.value)) {
-      pulseError('Diese E-Mail-Adresse ist nicht korrekt')
+      pulseError(i18n('chat.incorrect_address'))
       $this.focus()
     } else if ($this.value != '') {
       window.setTimeout(() => (u_handleNewEmail(this.value, $(this))), 100)

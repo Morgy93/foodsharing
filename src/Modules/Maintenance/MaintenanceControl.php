@@ -6,6 +6,7 @@ use Foodsharing\Modules\Bell\BellGateway;
 use Foodsharing\Modules\Bell\BellUpdateTrigger;
 use Foodsharing\Modules\Console\ConsoleControl;
 use Foodsharing\Modules\Core\DBConstants\Region\RegionIDs;
+use Foodsharing\Modules\Core\DBConstants\Region\WorkgroupFunction;
 use Foodsharing\Modules\Foodsaver\FoodsaverGateway;
 use Foodsharing\Modules\Group\GroupGateway;
 use Foodsharing\Modules\Quiz\QuizHelper;
@@ -112,9 +113,16 @@ class MaintenanceControl extends ConsoleControl
 		$this->wakeupSleepingUsers();
 
 		/*
+		* put users to sleep whose sleeping period begins
+		*/
+		$this->putUsersToSleep();
+
+		/*
 		 * updates outdated bells with passed expiration date
 		 */
 		$this->bellUpdateTrigger->triggerUpdate();
+
+		$this->updateFinishedQuizSessions();
 	}
 
 	public function rebuildRegionClosure()
@@ -165,6 +173,16 @@ class MaintenanceControl extends ConsoleControl
 		self::info('updating Graz BIEB group');
 		$graz_biebs = $this->storeGateway->getStoreManagersOf(149);
 		$counts = $this->foodsaverGateway->updateGroupMembers(1655, $graz_biebs, true);
+		self::info('+' . $counts['inserts'] . ', -' . $counts['deletions']);
+
+		self::info('updating Voting Admin group');
+		$votingAdmins = $this->foodsaverGateway->getWorkgroupFunctionAdminIds(WorkgroupFunction::VOTING);
+		$counts = $this->foodsaverGateway->updateGroupMembers(RegionIDs::VOTING_ADMIN_GROUP, $votingAdmins, true);
+		self::info('+' . $counts['inserts'] . ', -' . $counts['deletions']);
+
+		self::info('updating orga Admin group');
+		$orga = $this->foodsaverGateway->getOrgaTeamId();
+		$counts = $this->foodsaverGateway->updateGroupMembers(RegionIDs::ORGA_COORDINATION_GROUP, array_column($orga, 'id'), true);
 		self::info('+' . $counts['inserts'] . ', -' . $counts['deletions']);
 	}
 
@@ -271,10 +289,24 @@ class MaintenanceControl extends ConsoleControl
 		self::success($count . ' users woken up');
 	}
 
+	private function putUsersToSleep()
+	{
+		self::info('put to sleep users...');
+		$count = $this->maintenanceGateway->putUsersToSleep();
+		self::success($count . ' users put to sleep');
+	}
+
 	private function deleteOldIpBlocks()
 	{
 		self::info('deleting old blocked IPs...');
 		$count = $this->maintenanceGateway->deleteOldIpBlocks();
 		self::success($count . ' entries deleted');
+	}
+
+	private function updateFinishedQuizSessions()
+	{
+		self::info('removing questions from finished quiz sessions...');
+		$count = $this->maintenanceGateway->updateFinishedQuizSessions();
+		self::success($count . ' sessions updated');
 	}
 }

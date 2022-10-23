@@ -3,7 +3,7 @@
 namespace Foodsharing\Modules\Blog;
 
 use Foodsharing\Modules\Core\Control;
-use Foodsharing\Modules\Core\DBConstants\Region\Type;
+use Foodsharing\Modules\Core\DBConstants\Unit\UnitType;
 use Foodsharing\Permissions\BlogPermissions;
 use Foodsharing\Utility\DataHelper;
 use Foodsharing\Utility\IdentificationHelper;
@@ -80,7 +80,7 @@ class BlogControl extends Control
 
 	public function read(): void
 	{
-		if ($news = $this->blogGateway->getPost($_GET['id'])) {
+		if (isset($_GET['id']) && is_numeric($_GET['id']) && $news = $this->blogGateway->getPost($_GET['id'])) {
 			$this->pageHelper->addBread($news['name']);
 			$this->pageHelper->addContent($this->view->newsPost($news));
 		}
@@ -130,13 +130,13 @@ class BlogControl extends Control
 			if (!$this->session->may('orga')) {
 				$bot_ids = $this->session->getMyAmbassadorRegionIds();
 				foreach ($regions as $k => $v) {
-					if ($v['type'] != Type::WORKING_GROUP || !in_array($v['id'], $bot_ids)) {
+					if (!UnitType::isGroup($v['type']) || !in_array($v['id'], $bot_ids)) {
 						unset($regions[$k]);
 					}
 				}
 			}
 
-			$this->pageHelper->addContent($this->view->blog_entry_form($regions, true));
+			$this->pageHelper->addContent($this->view->blog_entry_form($regions));
 
 			$this->pageHelper->addContent($this->v_utils->v_field($this->v_utils->v_menu([
 				$this->routeHelper->pageLink('blog')
@@ -173,10 +173,9 @@ class BlogControl extends Control
 			$this->pageHelper->addBread($this->translator->trans('blog.all'), '/?page=blog&sub=manage');
 			$this->pageHelper->addBread($this->translator->trans('blog.edit'));
 
-			$this->dataHelper->setEditData($data);
 			$regions = $this->session->getRegions();
 
-			$this->pageHelper->addContent($this->view->blog_entry_form($regions));
+			$this->pageHelper->addContent($this->view->blog_entry_form($regions, $data));
 		} else {
 			$this->flashMessageHelper->info($this->translator->trans('blog.permissions.edit'));
 			$this->routeHelper->goPage();

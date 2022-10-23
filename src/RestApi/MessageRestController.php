@@ -9,8 +9,11 @@ use Foodsharing\Modules\Message\MessageTransactions;
 use FOS\RestBundle\Controller\AbstractFOSRestController;
 use FOS\RestBundle\Controller\Annotations as Rest;
 use FOS\RestBundle\Request\ParamFetcher;
+use OpenApi\Annotations as OA;
 use Symfony\Component\HttpFoundation\Response;
-use Symfony\Component\HttpKernel\Exception\HttpException;
+use Symfony\Component\HttpKernel\Exception\AccessDeniedHttpException;
+use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
+use Symfony\Component\HttpKernel\Exception\UnauthorizedHttpException;
 
 class MessageRestController extends AbstractFOSRestController
 {
@@ -32,12 +35,17 @@ class MessageRestController extends AbstractFOSRestController
 	}
 
 	/**
+	 * @OA\Tag(name="conversation")
+	 *
 	 * @Rest\Post("conversations/{conversationId}/read", requirements={"conversationId" = "\d+"})
 	 */
 	public function markConversationReadAction(int $conversationId): Response
 	{
-		if (!$this->session->may() || !$this->messageGateway->mayConversation($this->session->id(), $conversationId)) {
-			throw new HttpException(401);
+		if (!$this->session->may()) {
+			throw new UnauthorizedHttpException('');
+		}
+		if (!$this->messageGateway->mayConversation($this->session->id(), $conversationId)) {
+			throw new AccessDeniedHttpException();
 		}
 
 		$this->messageGateway->markAsRead($conversationId, $this->session->id());
@@ -46,14 +54,19 @@ class MessageRestController extends AbstractFOSRestController
 	}
 
 	/**
+	 * @OA\Tag(name="conversation")
+	 *
 	 * @Rest\Get("conversations/{conversationId}/messages", requirements={"conversationId" = "\d+"})
 	 * @Rest\QueryParam(name="olderThanId", requirements="\d+", nullable=true, default=null, description="ID of oldest already known message")
 	 * @Rest\QueryParam(name="limit", requirements="\d+", default="20", description="Number of messages to return")
 	 */
 	public function getConversationMessagesAction(int $conversationId, ParamFetcher $paramFetcher): Response
 	{
-		if (!$this->session->may() || !$this->messageGateway->mayConversation($this->session->id(), $conversationId)) {
-			throw new HttpException(401);
+		if (!$this->session->may()) {
+			throw new UnauthorizedHttpException('');
+		}
+		if (!$this->messageGateway->mayConversation($this->session->id(), $conversationId)) {
+			throw new AccessDeniedHttpException();
 		}
 
 		$limit = (int)$paramFetcher->get('limit');
@@ -76,13 +89,18 @@ class MessageRestController extends AbstractFOSRestController
 	}
 
 	/**
+	 * @OA\Tag(name="conversation")
+	 *
 	 * @Rest\Get("conversations/{conversationId}", requirements={"conversationId" = "\d+"})
 	 * @Rest\QueryParam(name="messagesLimit", requirements="\d+", default="20", description="How many messages to return.")
 	 */
 	public function getConversationAction(int $conversationId, ParamFetcher $paramFetcher): Response
 	{
-		if (!$this->session->may() || !$this->messageGateway->mayConversation($this->session->id(), $conversationId)) {
-			throw new HttpException(401);
+		if (!$this->session->may()) {
+			throw new UnauthorizedHttpException('');
+		}
+		if (!$this->messageGateway->mayConversation($this->session->id(), $conversationId)) {
+			throw new AccessDeniedHttpException();
 		}
 
 		$messagesLimit = $paramFetcher->get('messagesLimit');
@@ -121,20 +139,22 @@ class MessageRestController extends AbstractFOSRestController
 	}
 
 	/**
+	 * @OA\Tag(name="conversation")
+	 *
 	 * @Rest\Post("conversations")
 	 * @Rest\RequestParam(name="members", map=true, requirements="\d+", description="User ids of people to include in the conversation.")
 	 */
 	public function createConversationAction(ParamFetcher $paramFetcher): Response
 	{
 		if (!$this->session->may()) {
-			throw new HttpException(401);
+			throw new UnauthorizedHttpException('');
 		}
 
 		$members = $paramFetcher->get('members');
 		$members[] = $this->session->id();
 		$members = array_unique($members);
 		if (!$this->foodsaverGateway->foodsaversExist($members)) {
-			throw new HttpException(404, 'At least one of the members could not be found');
+			throw new NotFoundHttpException('At least one of the members could not be found');
 		}
 
 		$conversationId = $this->messageGateway->getOrCreateConversation($members);
@@ -145,6 +165,8 @@ class MessageRestController extends AbstractFOSRestController
 	}
 
 	/**
+	 * @OA\Tag(name="conversation")
+	 *
 	 * @Rest\Get("conversations")
 	 * @Rest\QueryParam(name="limit", requirements="\d+", default="20", description="How many conversations to return.")
 	 * @Rest\QueryParam(name="offset", requirements="\d+", default="0", description="Offset returned conversations.")
@@ -152,7 +174,7 @@ class MessageRestController extends AbstractFOSRestController
 	public function getConversationsAction(ParamFetcher $paramFetcher): Response
 	{
 		if (!$this->session->may()) {
-			throw new HttpException(401);
+			throw new UnauthorizedHttpException('');
 		}
 
 		$limit = $paramFetcher->get('limit');
@@ -167,13 +189,18 @@ class MessageRestController extends AbstractFOSRestController
 	}
 
 	/**
+	 * @OA\Tag(name="conversation")
+	 *
 	 * @Rest\Post("conversations/{conversationId}/messages", requirements={"conversationId" = "\d+"})
 	 * @Rest\RequestParam(name="body", nullable=false)
 	 */
 	public function sendMessageAction(int $conversationId, ParamFetcher $paramFetcher): Response
 	{
-		if (!$this->session->may() || !$this->messageGateway->mayConversation($this->session->id(), $conversationId)) {
-			throw new HttpException(401);
+		if (!$this->session->may()) {
+			throw new UnauthorizedHttpException('');
+		}
+		if (!$this->messageGateway->mayConversation($this->session->id(), $conversationId)) {
+			throw new AccessDeniedHttpException();
 		}
 		$body = $paramFetcher->get('body');
 		$this->messageTransactions->sendMessage($conversationId, $this->session->id(), $body);
@@ -182,16 +209,18 @@ class MessageRestController extends AbstractFOSRestController
 	}
 
 	/**
+	 * @OA\Tag(name="conversation")
+	 *
 	 * @Rest\Patch("conversations/{conversationId}", requirements={"conversationId" = "\d+"})
 	 * @Rest\RequestParam(name="name", nullable=true, default=null)
 	 */
 	public function patchConversationAction(int $conversationId, ParamFetcher $paramFetcher): Response
 	{
 		if (!$this->session->may() || !$this->messageGateway->mayConversation($this->session->id(), $conversationId)) {
-			throw new HttpException(401);
+			throw new UnauthorizedHttpException('');
 		}
 		if ($this->messageGateway->isConversationLocked($conversationId)) {
-			throw new HttpException(403);
+			throw new AccessDeniedHttpException();
 		}
 
 		if ($name = $paramFetcher->get('name')) {
@@ -203,19 +232,21 @@ class MessageRestController extends AbstractFOSRestController
 	}
 
 	/**
+	 * @OA\Tag(name="conversation")
+	 *
 	 * @Rest\Delete("conversations/{conversationId}/members/{userId}", requirements={"conversationId" = "\d+", "userId" = "\d+"})
 	 */
 	public function removeMemberFromConversationAction(int $conversationId, int $userId): Response
 	{
 		/* disable functionality for now */
 		/* only allow users to remove themselves from conversations */
-		throw new HttpException(403);
+		throw new AccessDeniedHttpException();
 		/*
 		if (!$this->session->may() || $userId !== $this->session->id()) {
-			throw new HttpException(403);
+			throw new AccessDeniedHttpException();
 		}
 		if (!$this->messageTransactions->deleteUserFromConversation($conversationId, $userId)) {
-			throw new HttpException(400);
+			throw new BadRequestHttpException();
 		}
 
 		return $this->handleView($this->view([], 200));
@@ -223,16 +254,21 @@ class MessageRestController extends AbstractFOSRestController
 	}
 
 	/**
+	 * @OA\Tag(name="conversation")
+	 *
 	 * @Rest\Get("user/{userId}/conversation", requirements={"userId" = "\d+"})
 	 */
 	public function getUserConversationAction(int $userId): Response
 	{
-		if (!$this->session->may() || $userId == $this->session->id()) {
-			throw new HttpException(401);
+		if (!$this->session->may()) {
+			throw new UnauthorizedHttpException('');
+		}
+		if ($userId == $this->session->id()) {
+			throw new AccessDeniedHttpException();
 		}
 
 		if (!$this->foodsaverGateway->foodsaverExists($userId)) {
-			throw new HttpException(404);
+			throw new NotFoundHttpException();
 		}
 
 		$conversationId = $this->messageGateway->getOrCreateConversation([$this->session->id(), $userId]);

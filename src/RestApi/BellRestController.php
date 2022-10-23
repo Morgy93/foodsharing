@@ -9,7 +9,8 @@ use FOS\RestBundle\Controller\Annotations as Rest;
 use FOS\RestBundle\Request\ParamFetcher;
 use OpenApi\Annotations as OA;
 use Symfony\Component\HttpFoundation\Response;
-use Symfony\Component\HttpKernel\Exception\HttpException;
+use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
+use Symfony\Component\HttpKernel\Exception\UnauthorizedHttpException;
 
 class BellRestController extends AbstractFOSRestController
 {
@@ -39,7 +40,7 @@ class BellRestController extends AbstractFOSRestController
 	{
 		$id = $this->session->id();
 		if (!$id) {
-			throw new HttpException(403);
+			throw new UnauthorizedHttpException('');
 		}
 
 		$limit = $paramFetcher->get('limit');
@@ -65,12 +66,12 @@ class BellRestController extends AbstractFOSRestController
 	{
 		$id = $this->session->id();
 		if (!$id) {
-			throw new HttpException(403);
+			throw new UnauthorizedHttpException('');
 		}
 
 		$bellIds = $paramFetcher->get('ids');
 		if (!is_array($bellIds) || empty($bellIds)) {
-			throw new HttpException(400);
+			throw new BadRequestHttpException();
 		}
 
 		$changed = $this->bellGateway->setBellsAsSeen($bellIds, $id);
@@ -99,7 +100,7 @@ class BellRestController extends AbstractFOSRestController
 	{
 		$id = $this->session->id();
 		if (!$id) {
-			throw new HttpException(403);
+			throw new UnauthorizedHttpException('');
 		}
 
 		$deleted = $this->bellGateway->delBellForFoodsaver($bellId, $id);

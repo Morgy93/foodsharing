@@ -13,11 +13,10 @@ $I->wantTo('Ensure I can create a food basket');
 $I->login($foodsaver['email'], $pass);
 
 $I->amOnPage('/');
-
-$I->click('.topbar-baskets > a');
-$I->see('Essenskorb anlegen');
-
-$I->click('Essenskorb anlegen');
+$I->see('Essenskörbe', ['css' => '.testing-basket-dropdown']);
+$I->click('.testing-basket-dropdown > .nav-link');
+$I->waitForText('Essenskorb anlegen');
+$I->click('.testing-basket-create');
 $I->waitForText('Wie lange soll dein Essenskorb gültig sein?');
 /*
  * Check for default options on the foodbasket create form.
@@ -39,7 +38,7 @@ $I->fillField('description', $description);
 $I->click('Essenskorb veröffentlichen');
 
 $I->waitForElementVisible('#pulse-info', 4);
-$I->see('Danke Dir! Der Essenskorb wurde veröffentlicht!');
+$I->see('Danke dir, der Essenskorb wurde veröffentlicht');
 
 $I->seeInDatabase('fs_basket', [
 	'description' => $description,
@@ -60,6 +59,7 @@ $I->waitForText('Essenskorb veröffentlichen', 3);
 $I->waitForElement('#description');
 $I->fillField('description', $description . $updateDescription);
 $I->click('Essenskorb veröffentlichen');
+$I->waitForActiveAPICalls();
 $I->waitForText('Aktualisiert am');
 
 $I->see($updateDescription);
@@ -81,7 +81,7 @@ $nick->does(
 		$I->waitForText('Anfrage absenden');
 		$I->fillField('#contactmessage', 'Hi friend, can I have the basket please?');
 		$I->click('Anfrage absenden');
-
+		$I->waitForActiveAPICalls();
 		$I->waitForText('Anfrage wurde versendet');
 	});
 
@@ -89,16 +89,18 @@ $I->amOnPage($I->foodBasketInfoUrl($id));
 $I->waitForActiveAPICalls();
 $I->waitForElementNotVisible('#fancybox-loading');
 $I->waitForText('Anfragen (1)');
-$I->click('.topbar-baskets > a');
-$I->waitForText('angefragt von');
-$I->click('.topbar-baskets .requests > a');
-$I->waitForText('Hi friend, can I have');
-$I->click('.topbar-baskets > a');
-$I->waitForText('angefragt von');
-$I->moveMouseOver(['css' => '.topbar-baskets .food-basket-create-test-class']);
-$I->click('button[title="Essenskorbanfrage abschließen"]');
+// Open the dropdown menu
+$I->see('Essenskörbe', ['css' => '.testing-basket-dropdown']);
+$I->click('.testing-basket-dropdown > .nav-link');
+$I->see('Essenskorb anlegen', ['css' => '.testing-basket-create']);
+// Open chat
+$I->click('.testing-basket-requests');
+$I->see('Hi friend, can I have', ['css' => '.chatboxmessage']);
+// Reject request
+$I->click('.testing-basket-dropdown > .nav-link');
+$I->click('.testing-basket-requests-close');
 $I->waitForText('Essenskorbanfrage von ' . $picker['name'] . ' abschließen');
 $I->see('Hat alles gut geklappt?');
-$I->seeOptionIsSelected('#fetchstate-wrapper input[name=fetchstate]', 2);
+$I->seeOptionIsSelected('#fetchstate-wrapper input[name=fetchstate]', '2');
 $I->click('Weiter');
 $I->waitForText('Danke');

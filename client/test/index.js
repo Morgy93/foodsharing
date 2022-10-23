@@ -37,7 +37,7 @@ function run (fn) {
 function rerun (abortCurrent = false) {
   if (runner) {
     if (abortCurrent) {
-      console.log('aborting existing run!')
+      // console.log('aborting existing run!')
       runner.abort()
     }
     runAgain = true
@@ -71,10 +71,10 @@ function handleErrors (err, stats, exit) {
   }
 
   if (stats.hasErrors() || stats.hasWarnings()) {
-    console.log(stats.toString({
-      chunks: false,
-      colors: true,
-    }))
+    // console.log(stats.toString({
+    //   chunks: false,
+    //   colors: true,
+    // }))
   }
 
   if (stats.hasErrors() && exit) process.exit(1)

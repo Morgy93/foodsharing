@@ -7,8 +7,8 @@ use Foodsharing\Modules\Core\BaseGateway;
 use Foodsharing\Modules\Core\Database;
 use Foodsharing\Modules\Core\DBConstants\Foodsaver\Role;
 use Foodsharing\Modules\Core\DBConstants\Region\RegionIDs;
-use Foodsharing\Modules\Core\DBConstants\Region\Type;
 use Foodsharing\Modules\Core\DBConstants\Region\WorkgroupFunction;
+use Foodsharing\Modules\Core\DBConstants\Unit\UnitType;
 use Foodsharing\Modules\Foodsaver\FoodsaverGateway;
 use Foodsharing\Modules\Group\GroupFunctionGateway;
 
@@ -58,7 +58,7 @@ class RegionGateway extends BaseGateway
 
 	public function getBezirkByParent(int $parentId, bool $includeOrga = false): array
 	{
-		$sql = 'AND 		`type` != ' . Type::WORKING_GROUP;
+		$sql = 'AND 		`type` != ' . UnitType::WORKING_GROUP;
 		if ($includeOrga) {
 			$sql = '';
 		}
@@ -186,7 +186,7 @@ class RegionGateway extends BaseGateway
 						fbc.ancestor_id = :regionId
 					AND fbc.depth >= :min_depth
 					and reg.type <> :regionTypeWorkGroup',
-				['regionId' => $regionId, 'min_depth' => $minDepth, 'regionTypeWorkGroup' => Type::WORKING_GROUP]
+				['regionId' => $regionId, 'min_depth' => $minDepth, 'regionTypeWorkGroup' => UnitType::WORKING_GROUP]
 			);
 		}
 	}
@@ -217,7 +217,7 @@ class RegionGateway extends BaseGateway
 				b.`name`
 		', [
 			':foodsaverId' => $foodsaverId,
-			':workGroupType' => Type::WORKING_GROUP
+			':workGroupType' => UnitType::WORKING_GROUP
 		]);
 	}
 
@@ -226,6 +226,7 @@ class RegionGateway extends BaseGateway
 		$region = $this->db->fetch('
 			SELECT
 				b.`id`,
+			    b.parent_id,
 				b.`name`,
 				b.`email`,
 				b.`email_name`,
@@ -376,6 +377,22 @@ class RegionGateway extends BaseGateway
 		]);
 	}
 
+	public function setRegionAdmin(int $regionId, int $fs_id)
+	{
+		$this->db->insert('fs_botschafter', [
+			'bezirk_id' => $regionId,
+			'foodsaver_id' => $fs_id
+		]);
+	}
+
+	public function removeRegionAdmin(int $regionId, int $fs_id)
+	{
+		$this->db->delete('fs_botschafter', [
+			'bezirk_id' => $regionId,
+			'foodsaver_id' => $fs_id
+		]);
+	}
+
 	public function update_bezirkNew(int $regionId, array $data)
 	{
 		if (isset($data['botschafter']) && is_array($data['botschafter'])) {
@@ -477,7 +494,7 @@ class RegionGateway extends BaseGateway
 	public function listRegionsForBotschafter(int $foodsaverId): array
 	{
 		return $this->db->fetchAll(
-	'SELECT 	`fs_botschafter`.`bezirk_id`,
+			'SELECT 	`fs_botschafter`.`bezirk_id`,
 					`fs_bezirk`.`has_children`,
 					`fs_bezirk`.`parent_id`,
 					`fs_bezirk`.name,
@@ -652,5 +669,42 @@ class RegionGateway extends BaseGateway
 			'option_type' => $optionType,
 			'option_value' => $value,
 		]);
+	}
+
+	public function getRegionPin(int $regionId): ?array
+	{
+		try {
+			return $this->db->fetchByCriteria('fs_region_pin', ['desc', 'lat', 'lon', 'status'], ['region_id' => $regionId]);
+		} catch (Exception $e) {
+			return null;
+		}
+	}
+
+	/**
+	 * Updates the values of a region's map marker.
+	 *
+	 * @param int $status see {@link RegionPinStatus}
+	 */
+	public function setRegionPin(int $regionId, string $lat, string $lon, string $desc, int $status): void
+	{
+		$this->db->insertOrUpdate('fs_region_pin', [
+			'region_id' => $regionId,
+			'lat' => $lat,
+			'lon' => $lon,
+			'desc' => $desc,
+			'status' => $status
+		]);
+	}
+
+	public function hasSubgroups(int $regionId): bool
+	{
+		$parentalStatus = $this->db->fetchByCriteria('fs_bezirk', ['has_children'], ['id' => $regionId]);
+		if (empty($parentalStatus)) {
+			return false;
+		}
+
+		$hasSubgroup = (bool)$parentalStatus['has_children'];
+
+		return $hasSubgroup;
 	}
 }

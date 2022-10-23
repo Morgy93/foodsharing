@@ -19,7 +19,7 @@
 import FileUpload from '@/components/upload/FileUpload'
 import { setProfilePhoto } from '@/api/settings'
 import { hideLoader, pulseError, showLoader } from '@/script'
-import i18n from '@/i18n'
+import i18n from '@/helper/i18n'
 
 export default {
   components: { FileUpload },
@@ -44,7 +44,7 @@ export default {
   },
   methods: {
     onFileChange (file) {
-      console.log(file)
+      // console.log(file)
       this.value = file.url
 
       showLoader()

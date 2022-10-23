@@ -4,23 +4,19 @@ namespace Foodsharing\Modules\Foodsaver;
 
 class Profile
 {
-	/**
-	 * @var int
-	 */
-	public $id;
+	public int $id;
 
-	/**
-	 * @var string
-	 */
-	public $name;
+	public ?string $name;
 
-	/**
-	 * @var string
-	 */
-	public $avatar;
+	public ?string $avatar;
 
-	/**
-	 * @var int
-	 */
-	public $sleepStatus;
+	public int $sleepStatus;
+
+	public function __construct(int $id, ?string $name, ?string $avatar, int $sleepStatus)
+	{
+		$this->id = $id;
+		$this->name = $name;
+		$this->avatar = $avatar;
+		$this->sleepStatus = $sleepStatus;
+	}
 }

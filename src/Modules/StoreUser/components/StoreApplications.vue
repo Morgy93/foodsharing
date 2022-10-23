@@ -25,7 +25,7 @@
             :url="r.photo"
             :size="50"
             class="member-pic"
-            :sleep-status="r.sleep_status"
+            :is-sleeping="r.sleep_status"
           />
         </a>
 
@@ -42,7 +42,7 @@
 
         <b-button-group class="request-actions my-1" size="sm">
           <b-button
-            variant="secondary"
+            variant="primary"
             @click="acceptRequest(storeId, r.id, false, index)"
           >
             <i class="fas fa-user-check" /> {{ $i18n('store.request.to-team') }}
@@ -69,7 +69,6 @@
 <script>
 import { acceptStoreRequest, declineStoreRequest } from '@/api/stores'
 import Avatar from '@/components/Avatar'
-import i18n from '@/i18n'
 import { hideLoader, showLoader, pulseError, reload } from '@/script'
 
 export default {
@@ -92,7 +91,7 @@ export default {
         await acceptStoreRequest(storeId, userId, moveToStandby)
         this.$delete(this.requests, index)
       } catch (e) {
-        pulseError(i18n('error_unexpected'))
+        pulseError(this.$i18n('error_unexpected'))
       } finally {
         hideLoader()
       }
@@ -103,7 +102,7 @@ export default {
         await declineStoreRequest(storeId, userId)
         this.$delete(this.requests, index)
       } catch (e) {
-        pulseError(i18n('error_unexpected'))
+        pulseError(this.$i18n('error_unexpected'))
       } finally {
         hideLoader()
       }
@@ -129,7 +128,7 @@ export default {
 }
 
 .name a {
-  color: var(--secondary);
+  color: var(--fs-color-secondary-500);
   font-size: 0.875rem;
 }
 </style>

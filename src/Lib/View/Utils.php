@@ -122,12 +122,13 @@ class Utils
 		});');
 		$this->pageHelper->addHidden('<div id="' . $id . '-dialog"><div id="' . $id . '-tree"></div></div>');
 
-		return $this->v_input_wrapper($label,
+		return $this->v_input_wrapper(
+			$label,
 			'<span id="' . $id . '-preview">' . $region['name'] . '</span> '
-			. '<span id="' . $id . '-button">' . $this->translator->trans('region.change') . '</span>'
-			. '<input type="hidden" name="' . $id . '" id="' . $id . '" value="' . $region['id'] . '" />'
-			. '<input type="hidden" name="' . $id . '-hName" id="' . $id . '-hName" value="' . $region['id'] . '" />'
-			. '<input type="hidden" name="' . $id . 'hId" id="' . $id . '-hId" value="' . $region['id'] . '" />'
+				. '<span id="' . $id . '-button">' . $this->translator->trans('region.change') . '</span>'
+				. '<input type="hidden" name="' . $id . '" id="' . $id . '" value="' . $region['id'] . '" />'
+				. '<input type="hidden" name="' . $id . '-hName" id="' . $id . '-hName" value="' . $region['id'] . '" />'
+				. '<input type="hidden" name="' . $id . 'hId" id="' . $id . '-hId" value="' . $region['id'] . '" />'
 		);
 	}
 
@@ -135,7 +136,7 @@ class Utils
 	{
 		$title = $title ? '<strong>' . $title . '</strong> ' : '';
 
-		return '<div class="msg-inside ' . $type . '">' . $icon . ' ' . $title . $msg . '</div>';
+		return '<div class="alert alert-' . $type . '">' . $icon . ' ' . $title . $msg . '</div>';
 	}
 
 	/**
@@ -260,119 +261,6 @@ class Utils
 		$id = $this->identificationHelper->id($name);
 
 		return '<input type="hidden" id="' . $id . '" name="' . $name . '" value="' . $value . '" />';
-	}
-
-	public function v_photo_edit($src, $fsid = false): string
-	{
-		if (!$fsid) {
-			$fsid = (int)$this->session->id();
-		}
-		$id = $this->identificationHelper->id('fotoupload');
-
-		$original = explode('_', $src);
-		$original = end($original);
-
-		$this->pageHelper->addJs('
-			$("#' . $id . '-link").fancybox({
-				minWidth: 600,
-				scrolling: "auto",
-				closeClick: false,
-				helpers: {
-					overlay: {closeClick: false}
-				}
-			});
-
-			$("a[href=\'#edit\']").on("click", function () {
-
-				$("#' . $id . '-placeholder").html(\'<img src="images/' . $original . '" />\');
-				$("#' . $id . '-link").trigger("click");
-				$.fancybox.reposition();
-				jcrop = $("#' . $id . '-placeholder img").Jcrop({
-					setSelect: [100, 0, 400, 400],
-					aspectRatio: 35 / 45,
-					onSelect: function (c) {
-						$("#' . $id . '-x").val(c.x);
-						$("#' . $id . '-y").val(c.y);
-						$("#' . $id . '-w").val(c.w);
-						$("#' . $id . '-h").val(c.h);
-					}
-				});
-
-				$("#' . $id . '-save").show();
-				$("#' . $id . '-save").button().on("click", function () {
-					showLoader();
-					$("#' . $id . '-action").val("crop");
-					$.ajax({
-						url: "/xhr.php?f=cropagain",
-						data: {
-							x: parseInt($("#' . $id . '-x").val()),
-							y: parseInt($("#' . $id . '-y").val()),
-							w: parseInt($("#' . $id . '-w").val()),
-							h: parseInt($("#' . $id . '-h").val()),
-							fsid: ' . (int)$fsid . '
-						},
-						success: function (data) {
-							if (data == 1) {
-								reload();
-							}
-						},
-						complete: function () {
-							hideLoader();
-						}
-					});
-					return false;
-				});
-
-				$("#' . $id . '-placeholder").css("height", "auto");
-				hideLoader();
-				setTimeout(function () {
-					$.fancybox.update();
-					$.fancybox.reposition();
-					$.fancybox.toggle();
-				}, 200);
-			});
-
-			$("a[href=\'#new\']").on("click", function () {
-				$("#' . $id . '-link").trigger("click");
-				return false;
-			});');
-
-		$this->pageHelper->addHidden('
-			<div class="fotoupload popbox" style="display: none;" id="' . $id . '">
-				<h3>' . $this->translator->trans('picture_upload_widget.picture_upload') . '</h3>
-				<p class="subtitle">' . $this->translator->trans('picture_upload_widget.choose_picture') . '</p>
-				<form id="' . $id . '-form" method="post" enctype="multipart/form-data" target="' . $id . '-frame" action="/xhr.php?f=uploadPhoto">
-					<input type="file" name="uploadpic" onchange="showLoader(); $(\'#' . $id . '-form\')[0].submit();" />
-					<input type="hidden" id="' . $id . '-action" name="action" value="upload" />
-					<input type="hidden" id="' . $id . '-x" name="x" value="0" />
-					<input type="hidden" id="' . $id . '-y" name="y" value="0" />
-					<input type="hidden" id="' . $id . '-w" name="w" value="0" />
-					<input type="hidden" id="' . $id . '-h" name="h" value="0" />
-					<input type="hidden" id="' . $id . '-file" name="file" value="0" />
-					<input type="hidden" name="pic_id" value="' . $id . '" />
-				</form>
-				<div id="' . $id . '-placeholder" style="margin-top: 15px; margin-bottom: 15px; background-repeat: no-repeat; background-position: center center;">
-				</div>
-				<a href="#" style="display: none;" id="' . $id . '-save">' . $this->translator->trans('button.save') . '</a>
-				<iframe name="' . $id . '-frame" src="" width="1" height="1" style="visibility: hidden;"></iframe>
-			</div>');
-
-		if (isset($_GET['pinit'])) {
-			$this->pageHelper->addJs('$("#' . $id . '-link").trigger("click");');
-		}
-
-		$this->pageHelper->addHidden('<a id="' . $id . '-link" href="#' . $id . '">&nbsp;</a>');
-
-		$menu = [['name' => $this->translator->trans('upload.edit_image'), 'href' => '#edit']];
-		if ($_GET['page'] == 'settings') {
-			$menu[] = ['name' => $this->translator->trans('upload.new_image'), 'href' => '#new'];
-		}
-
-		return '
-			<div align="center"><img src="' . $src . '" /></div>
-			<div>
-			' . $this->v_menu($menu) . '
-			</div>';
 	}
 
 	public function v_form(string $name, array $elements, array $option = []): string
@@ -650,7 +538,8 @@ class Utils
 			$val = substr($val['name'], 0, 30);
 		}
 
-		$this->pageHelper->addJs('
+		$this->pageHelper->addJs(
+			'
 			$("#' . $id . '-button").button().on("click", function () {
 				$("#' . $id . '").trigger("click");
 			});
@@ -847,9 +736,9 @@ class Utils
 		return $this->v_input_wrapper(
 			$label,
 			'<input placeholder="' . $this->translator->trans('date.from') . '" class="input text date value"'
-			. ' type="text" id="' . $id . '_from" name="' . $id . '[from]">
+				. ' type="text" id="' . $id . '_from" name="' . $id . '[from]">
 			<input placeholder="' . $this->translator->trans('date.to') . '" class="input text date value"'
-			. ' type="text" id="' . $id . '_to" name="' . $id . '[to]">',
+				. ' type="text" id="' . $id . '_to" name="' . $id . '[to]">',
 			$id,
 			[]
 		);
@@ -967,15 +856,19 @@ class Utils
 		$color = 'light';
 		switch ($status) {
 			case 2:
-				$color = 'warn'; break;
+				$color = 'warn';
+				break;
 			case 3:
 			case 5:
-				$color = 'success'; break;
+				$color = 'success';
+				break;
 			case 4:
 			case 7:
-				$color = 'danger'; break;
+				$color = 'danger';
+				break;
 			case 6:
-				$color = 'info'; break;
+				$color = 'info';
+				break;
 		}
 
 		return '<a href="#" onclick="return false;" title="'

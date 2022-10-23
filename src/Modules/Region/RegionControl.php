@@ -3,8 +3,9 @@
 namespace Foodsharing\Modules\Region;
 
 use Foodsharing\Modules\Core\Control;
+use Foodsharing\Modules\Core\DBConstants\Map\MapConstants;
 use Foodsharing\Modules\Core\DBConstants\Region\RegionOptionType;
-use Foodsharing\Modules\Core\DBConstants\Region\Type;
+use Foodsharing\Modules\Core\DBConstants\Unit\UnitType;
 use Foodsharing\Modules\Event\EventGateway;
 use Foodsharing\Modules\Foodsaver\FoodsaverGateway;
 use Foodsharing\Modules\FoodSharePoint\FoodSharePointGateway;
@@ -14,8 +15,8 @@ use Foodsharing\Permissions\ForumPermissions;
 use Foodsharing\Permissions\RegionPermissions;
 use Foodsharing\Permissions\ReportPermissions;
 use Foodsharing\Permissions\VotingPermissions;
+use Foodsharing\Permissions\WorkGroupPermissions;
 use Foodsharing\Utility\ImageHelper;
-use phpDocumentor\Reflection\Types\This;
 use Symfony\Component\Form\FormFactoryInterface;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -38,6 +39,7 @@ final class RegionControl extends Control
 	private MailboxGateway $mailboxGateway;
 	private VotingGateway $votingGateway;
 	private VotingPermissions $votingPermissions;
+	private WorkGroupPermissions $workGroupPermission;
 
 	private const DisplayAvatarListEntries = 30;
 
@@ -63,7 +65,8 @@ final class RegionControl extends Control
 		ImageHelper $imageService,
 		MailboxGateway $mailboxGateway,
 		VotingGateway $votingGateway,
-		VotingPermissions $votingPermissions
+		VotingPermissions $votingPermissions,
+		WorkGroupPermissions $workGroupPermissions
 	) {
 		$this->gateway = $gateway;
 		$this->eventGateway = $eventGateway;
@@ -79,6 +82,7 @@ final class RegionControl extends Control
 		$this->mailboxGateway = $mailboxGateway;
 		$this->votingGateway = $votingGateway;
 		$this->votingPermissions = $votingPermissions;
+		$this->workGroupPermission = $workGroupPermissions;
 
 		parent::__construct();
 	}
@@ -99,42 +103,54 @@ final class RegionControl extends Control
 
 	private function regionViewData(array $region, ?string $activeSubpage): array
 	{
-		$isWorkGroup = $this->isWorkGroup($region);
+		$isWorkGroup = UnitType::isGroup($region['type']);
 		$regionId = (int)$region['id'];
 		$isHomeDistrict = $this->isHomeDistrict($region);
 
 		$menu = [
-			['name' => 'terminology.forum', 'href' => '/?page=bezirk&bid=' . $regionId . '&sub=forum'],
-			['name' => 'terminology.events', 'href' => '/?page=bezirk&bid=' . $regionId . '&sub=events'],
-			['name' => 'group.members', 'href' => '/?page=bezirk&bid=' . $regionId . '&sub=members'],
-			['name' => 'terminology.polls', 'href' => '/?page=bezirk&bid=' . $regionId . '&sub=polls'],
+			'forum' => ['name' => 'terminology.forum', 'href' => '/?page=bezirk&bid=' . $regionId . '&sub=forum'],
+			'events' => ['name' => 'terminology.events', 'href' => '/?page=bezirk&bid=' . $regionId . '&sub=events'],
+			'polls' => ['name' => 'terminology.polls', 'href' => '/?page=bezirk&bid=' . $regionId . '&sub=polls'],
+			'members' => ['name' => 'group.members', 'href' => '/?page=bezirk&bid=' . $regionId . '&sub=members'],
 		];
 
 		if (!$isWorkGroup && $this->forumPermissions->mayAccessAmbassadorBoard($regionId)) {
-			$menu[] = ['name' => 'terminology.ambassador_forum', 'href' => '/?page=bezirk&bid=' . $regionId . '&sub=botforum'];
+			$menu['ambassador_forum'] = ['name' => 'terminology.ambassador_forum', 'href' => '/?page=bezirk&bid=' . $regionId . '&sub=botforum'];
 		}
 
 		if (!$isWorkGroup && $this->regionPermissions->maySetRegionOptions($regionId)) {
-			$menu[] = ['name' => 'terminology.options', 'href' => '/?page=bezirk&bid=' . $regionId . '&sub=options'];
+			$menu['options'] = ['name' => 'terminology.options', 'href' => '/?page=bezirk&bid=' . $regionId . '&sub=options'];
+		}
+
+		if (!$isWorkGroup && $this->regionPermissions->maySetRegionPin($regionId)) {
+			$menu['options'] = ['name' => 'terminology.pin', 'href' => '/?page=bezirk&bid=' . $regionId . '&sub=pin'];
 		}
 
 		if ($isWorkGroup) {
-			$menu[] = ['name' => 'terminology.wall', 'href' => '/?page=bezirk&bid=' . $regionId . '&sub=wall'];
+			$menu['wall'] = ['name' => 'menu.entry.wall', 'href' => '/?page=bezirk&bid=' . $regionId . '&sub=wall'];
 			if ($region['has_children'] === 1) {
-				$menu[] = ['name' => 'terminology.subgroups', 'href' => '/?page=groups&p=' . $regionId];
+				$menu['subgroups'] = ['name' => 'terminology.subgroups', 'href' => '/?page=groups&p=' . $regionId];
 			}
 			if ($this->session->isAdminFor($regionId) || $this->session->may('orga')) {
-				$menu[] = ['name' => 'Gruppe verwalten', 'href' => '/?page=groups&sub=edit&id=' . $regionId];
+				$menu['workingGroupEdit'] = ['name' => 'menu.entry.workingGroupEdit', 'href' => '/?page=groups&sub=edit&id=' . $regionId];
 			}
 		} else {
-			$menu[] = ['name' => 'terminology.fsp', 'href' => '/?page=bezirk&bid=' . $regionId . '&sub=fairteiler'];
-			$menu[] = ['name' => 'terminology.groups', 'href' => '/?page=groups&p=' . $regionId];
-			$menu[] = ['name' => 'terminology.statistic', 'href' => '/?page=bezirk&bid=' . $regionId . '&sub=statistic'];
+			$menu['fsp'] = ['name' => 'terminology.fsp', 'href' => '/?page=bezirk&bid=' . $regionId . '&sub=fairteiler'];
+			$menu['groups'] = ['name' => 'terminology.groups', 'href' => '/?page=groups&p=' . $regionId];
+			$menu['statistic'] = ['name' => 'terminology.statistic', 'href' => '/?page=bezirk&bid=' . $regionId . '&sub=statistic'];
+
+			$menu['stores'] = ['name' => 'menu.entry.stores', 'href' => '/?page=betrieb&bid=' . $regionId];
+
+			if ($this->session->isAdminFor($regionId)) {
+				$menu['fsList'] = ['name' => 'menu.entry.fs', 'href' => '/?page=foodsaver&bid=' . $regionId];
+				$menu['passports'] = ['name' => 'menu.entry.ids', 'href' => '/?page=passgen&bid=' . $regionId];
+			}
+
 			if ($this->reportPermissions->mayAccessReportGroupReports($regionId)) {
-				$menu[] = ['name' => 'terminology.reports', 'href' => '/?page=report&bid=' . $regionId];
+				$menu['reports'] = ['name' => 'terminology.reports', 'href' => '/?page=report&bid=' . $regionId];
 			}
 			if ($this->reportPermissions->mayAccessArbitrationReports($regionId)) {
-				$menu[] = ['name' => 'terminology.arbitration', 'href' => '/?page=report&bid=' . $regionId];
+				$menu['arbitration'] = ['name' => 'terminology.arbitration', 'href' => '/?page=report&bid=' . $regionId];
 			}
 		}
 
@@ -144,12 +160,12 @@ final class RegionControl extends Control
 				$regionOrGroupString .= ' (' . $regionMailInfo[0]['count'] . ')';
 			}
 
-			$menu[] = ['name' => $regionOrGroupString, 'href' => '/?page=mailbox'];
+			$menu['mailbox'] = ['name' => $regionOrGroupString, 'href' => '/?page=mailbox'];
 		}
 
 		if ($this->mayAccessApplications($regionId)) {
 			if ($requests = $this->gateway->listRequests($regionId)) {
-				$menu[] = ['name' => $this->translator->trans('group.applications') . ' (' . count($requests) . ')', 'href' => '/?page=bezirk&bid=' . $regionId . '&sub=applications'];
+				$menu['applications'] = ['name' => $this->translator->trans('group.applications') . ' (' . count($requests) . ')', 'href' => '/?page=bezirk&bid=' . $regionId . '&sub=applications'];
 			}
 		}
 
@@ -165,6 +181,8 @@ final class RegionControl extends Control
 			];
 		};
 
+		$menu = $this->sortMenuItems($menu);
+
 		$viewdata['isRegion'] = !$isWorkGroup;
 		$stat = [
 			'num_fs' => $this->region['fs_count'],
@@ -178,6 +196,7 @@ final class RegionControl extends Control
 
 		$viewdata['region'] = [
 			'id' => $this->region['id'],
+			'parent_id' => $this->region['parent_id'],
 			'name' => $this->region['name'],
 			'isWorkGroup' => $isWorkGroup,
 			'isHomeDistrict' => $isHomeDistrict,
@@ -202,9 +221,41 @@ final class RegionControl extends Control
 		return $viewdata;
 	}
 
-	private function isWorkGroup(array $region): bool
+	private function sortMenuItems(array $menu): array
 	{
-		return $region['type'] == Type::WORKING_GROUP;
+		$menuOrderMaster = [
+			['key' => 'wall', 'position' => 0],
+			['key' => 'forum', 'position' => 1],
+			['key' => 'ambassador_forum', 'position' => 2],
+			['key' => 'stores', 'position' => 3],
+			['key' => 'groups', 'position' => 4],
+			['key' => 'events', 'position' => 5],
+			['key' => 'fsp', 'position' => 6],
+			['key' => 'conferences', 'position' => 7],
+			['key' => 'polls', 'position' => 8],
+			['key' => 'members', 'position' => 9],
+			['key' => 'statistic', 'position' => 10],
+			['key' => 'fsList', 'position' => 11],
+			['key' => 'passports', 'position' => 12],
+			['key' => 'mailbox', 'position' => 13],
+			['key' => 'workingGroupEdit', 'position' => 14],
+			['key' => 'reports', 'position' => 15],
+			['key' => 'applications', 'position' => 16],
+			['key' => 'arbitration', 'position' => 17],
+			['key' => 'subgroups', 'position' => 18],
+			['key' => 'options', 'position' => 19],
+			['key' => 'pin', 'position' => 20],
+		];
+
+		$orderedMenu = [];
+
+		foreach ($menuOrderMaster as $value) {
+			if (array_key_exists($value['key'], $menu)) {
+				$orderedMenu[] = $menu[$value['key']];
+			}
+		}
+
+		return $orderedMenu;
 	}
 
 	public function index(Request $request, Response $response)
@@ -216,7 +267,7 @@ final class RegionControl extends Control
 		$region_id = $request->query->getInt('bid', $_SESSION['client']['bezirk_id']);
 
 		if ($this->session->mayBezirk($region_id) && ($region = $this->gateway->getRegionDetails($region_id))) {
-			$big = [Type::BIG_CITY, Type::FEDERAL_STATE, Type::COUNTRY];
+			$big = [UnitType::BIG_CITY, UnitType::FEDERAL_STATE, UnitType::COUNTRY];
 			$region['moderated'] = $region['moderated'] || in_array($region['type'], $big);
 			$this->region = $region;
 		} else {
@@ -240,7 +291,7 @@ final class RegionControl extends Control
 				$this->forum($request, $response, $region, false);
 				break;
 			case 'wall':
-				if (!$this->isWorkGroup($region)) {
+				if (!UnitType::isGroup($region['type'])) {
 					$this->flashMessageHelper->info($this->translator->trans('region.forum-redirect'));
 					$this->routeHelper->go('/?page=bezirk&bid=' . $region_id . '&sub=forum');
 				} else {
@@ -266,14 +317,21 @@ final class RegionControl extends Control
 				$this->polls($request, $response, $region);
 				break;
 			case 'options':
-				if (!$this->regionPermissions->maySetRegionOptions($region_id)) {
+				if (!$this->regionPermissions->maySetRegionOptions($region_id) || UnitType::isGroup($region['type'])) {
 					$this->flashMessageHelper->info($this->translator->trans('region.restricted'));
 					$this->routeHelper->go($this->forumTransactions->url($region_id, false));
 				}
 				$this->options($request, $response, $region);
 				break;
+			case 'pin':
+				if (!$this->regionPermissions->maySetRegionPin($region_id) || UnitType::isGroup($region['type'])) {
+					$this->flashMessageHelper->info($this->translator->trans('region.restricted'));
+					$this->routeHelper->go($this->forumTransactions->url($region_id, false));
+				}
+				$this->pin($request, $response, $region);
+				break;
 			default:
-				if ($this->isWorkGroup($region)) {
+				if (UnitType::isGroup($region['type'])) {
 					$this->routeHelper->go('/?page=bezirk&bid=' . $region_id . '&sub=wall');
 				} else {
 					$this->routeHelper->go($this->forumTransactions->url($region_id, false));
@@ -376,7 +434,20 @@ final class RegionControl extends Control
 		$this->pageHelper->addTitle($this->translator->trans('group.members'));
 		$sub = $request->query->get('sub');
 		$viewdata = $this->regionViewData($region, $sub);
-		$viewdata['region']['members'] = $this->foodsaverGateway->listActiveFoodsaversByRegion($region['id']);
+
+		if ($region['type'] === UnitType::WORKING_GROUP) {
+			$mayEditMembers = $this->workGroupPermission->mayEdit($region);
+			$maySetAdminOrAmbassador = $mayEditMembers;
+			$mayRemoveAdminOrAmbassador = $mayEditMembers;
+		} else {
+			$mayEditMembers = $this->regionPermissions->mayDeleteFoodsaverFromRegion((int)$region['id']);
+			$maySetAdminOrAmbassador = $this->regionPermissions->maySetRegionAdmin();
+			$mayRemoveAdminOrAmbassador = $this->regionPermissions->mayRemoveRegionAdmin();
+		}
+		$viewdata['mayEditMembers'] = $mayEditMembers;
+		$viewdata['maySetAdminOrAmbassador'] = $maySetAdminOrAmbassador;
+		$viewdata['mayRemoveAdminOrAmbassador'] = $mayRemoveAdminOrAmbassador;
+		$viewdata['userId'] = $this->session->id();
 		$response->setContent($this->render('pages/Region/members.twig', $viewdata));
 	}
 
@@ -399,7 +470,7 @@ final class RegionControl extends Control
 		$viewData['ageBand']['district'] = $this->gateway->AgeBandDistrict((int)$region['id']);
 		$viewData['ageBand']['homeDistrict'] = $this->gateway->AgeBandHomeDistrict((int)$region['id']);
 
-		if ($region['type'] !== Type::COUNTRY || $this->regionPermissions->mayAccessStatisticCountry()) {
+		if ($region['type'] !== UnitType::COUNTRY || $this->regionPermissions->mayAccessStatisticCountry()) {
 			$viewData['pickupData']['daily'] = $this->gateway->listRegionPickupsByDate((int)$region['id'], '%Y-%m-%d');
 			$viewData['pickupData']['weekly'] = $this->gateway->listRegionPickupsByDate((int)$region['id'], '%Y/%v');
 			$viewData['pickupData']['monthly'] = $this->gateway->listRegionPickupsByDate((int)$region['id'], '%Y-%m');
@@ -424,10 +495,21 @@ final class RegionControl extends Control
 		$this->pageHelper->addBread($this->translator->trans('terminology.options'), '/?page=bezirk&bid=' . $region['id'] . '&sub=options');
 		$this->pageHelper->addTitle($this->translator->trans('terminology.options'));
 		$viewdata = $this->regionViewData($region, $request->query->get('sub'));
-		$isReportButtonEnabled = intval($this->gateway->getRegionOption($region['id'], RegionOptionType::ENABLE_REPORT_BUTTON)) === 1;
-		$isMediationButtonEnabled = intval($this->gateway->getRegionOption($region['id'], RegionOptionType::ENABLE_MEDIATION_BUTTON)) === 1;
-		$viewdata['isReportButtonEnabled'] = empty($isReportButtonEnabled) ? false : true;
-		$viewdata['isMediationButtonEnabled'] = empty($isMediationButtonEnabled) ? false : true;
+		$viewdata['isReportButtonEnabled'] = intval($this->gateway->getRegionOption($region['id'], RegionOptionType::ENABLE_REPORT_BUTTON)) === 1;
+		$viewdata['isMediationButtonEnabled'] = intval($this->gateway->getRegionOption($region['id'], RegionOptionType::ENABLE_MEDIATION_BUTTON)) === 1;
 		$response->setContent($this->render('pages/Region/options.twig', $viewdata));
+	}
+
+	private function pin(Request $request, Response $response, array $region): void
+	{
+		$this->pageHelper->addBread($this->translator->trans('terminology.pin'), '/?page=bezirk&bid=' . $region['id'] . '&sub=pin');
+		$this->pageHelper->addTitle($this->translator->trans('terminology.pin'));
+		$viewdata = $this->regionViewData($region, $request->query->get('sub'));
+		$result = $this->gateway->getRegionPin($region['id']);
+		$viewdata['lat'] = $result['lat'] ?? MapConstants::CENTER_GERMANY_LAT;
+		$viewdata['lon'] = $result['lon'] ?? MapConstants::CENTER_GERMANY_LON;
+		$viewdata['desc'] = $result['desc'] ?? null;
+		$viewdata['status'] = $result['status'] ?? null;
+		$response->setContent($this->render('pages/Region/pin.twig', $viewdata));
 	}
 }

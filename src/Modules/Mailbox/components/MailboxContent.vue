@@ -73,6 +73,6 @@ export default {
 }
 .mailbox-name,
 .mailbox-folders ::v-deep a {
-  color: var(--black);
+  color: var(--fs-color-dark);
 }
 </style>

@@ -1,6 +1,6 @@
 <?php
 
-use Foodsharing\Modules\Core\DBConstants\Region\Type;
+use Foodsharing\Modules\Core\DBConstants\Unit\UnitType;
 
 class ForumApiCest
 {
@@ -9,6 +9,7 @@ class ForumApiCest
 	private $region;
 	private $thread;
 	private $ambassador;
+	private $orga;
 	private $moderatedRegion;
 	private $inactiveThread;
 	private $faker;
@@ -18,15 +19,16 @@ class ForumApiCest
 		$this->tester = $I;
 		$this->user = $I->createFoodsaver();
 		$this->ambassador = $I->createAmbassador();
+		$this->orga = $I->createOrga();
 
 		$this->region = $I->createRegion();
 		$I->addRegionMember($this->region['id'], $this->user['id']);
 		$this->thread = $I->addForumThread($this->region['id'], $this->user['id']);
 
-		$this->moderatedRegion = $I->createRegion(null, ['type' => Type::CITY, 'moderated' => true]);
+		$this->moderatedRegion = $I->createRegion(null, ['type' => UnitType::CITY, 'moderated' => true]);
 		$I->addRegionMember($this->moderatedRegion['id'], $this->user['id']);
 		$I->addRegionAdmin($this->moderatedRegion['id'], $this->ambassador['id']);
-		$this->inactiveThread = $I->addForumThread($this->moderatedRegion['id'], $this->user['id'], null, ['active' => false]);
+		$this->inactiveThread = $I->addForumThread($this->moderatedRegion['id'], $this->user['id'], false, ['active' => false]);
 
 		$this->faker = Faker\Factory::create('de_DE');
 	}
@@ -97,6 +99,52 @@ class ForumApiCest
 			'isActive' => true
 		]);
 		$I->sendDELETE('api/forum/thread/' . $this->thread['id']);
+		$I->seeResponseCodeIs(\Codeception\Util\HttpCode::FORBIDDEN);
+	}
+
+	public function canCloseThreads(ApiTester $I): void
+	{
+		$I->login($this->orga['email']);
+		$I->sendPatch('api/forum/thread/' . $this->thread['id'], [
+			'status' => 1
+		]);
+		$I->seeResponseCodeIs(\Codeception\Util\HttpCode::OK);
+		$I->seeInDatabase('fs_theme', [
+			'id' => $this->thread['id'],
+			'status' => 1
+		]);
+
+		$I->sendPatch('api/forum/thread/' . $this->thread['id'], [
+			'status' => 0
+		]);
+		$I->seeResponseCodeIs(\Codeception\Util\HttpCode::OK);
+		$I->seeInDatabase('fs_theme', [
+			'id' => $this->thread['id'],
+			'status' => 0
+		]);
+	}
+
+	public function canNotCloseThreadsAsFoodsaver(ApiTester $I): void
+	{
+		$I->login($this->user['email']);
+		$I->sendPatch('api/forum/thread/' . $this->thread['id'], [
+			'status' => 1
+		]);
+		$I->seeResponseCodeIs(\Codeception\Util\HttpCode::FORBIDDEN);
+		$I->seeInDatabase('fs_theme', [
+			'id' => $this->thread['id'],
+			'status' => 0
+		]);
+	}
+
+	public function canNotPostToClosedThreads(ApiTester $I): void
+	{
+		$I->updateInDatabase('fs_theme', ['status' => 1], ['id' => $this->thread['id']]);
+
+		$I->login($this->user['email']);
+		$I->sendPost('api/forum/thread/' . $this->thread['id'] . '/posts', [
+			'body' => $this->faker->text(100)
+		]);
 		$I->seeResponseCodeIs(\Codeception\Util\HttpCode::FORBIDDEN);
 	}
 }

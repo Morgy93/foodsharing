@@ -4,7 +4,6 @@ import '@/globals'
 import './Settings.css'
 import 'jquery-jcrop'
 import 'jquery-dynatree'
-import { attachAddressPicker } from '@/addressPicker'
 import {
   pulseSuccess,
   pulseError,
@@ -12,12 +11,15 @@ import {
   GET,
 } from '@/script'
 import { expose } from '@/utils'
-import i18n from '@/i18n'
+import i18n from '@/helper/i18n'
 import { subscribeForPushNotifications, unsubscribeFromPushNotifications } from '@/pushNotifications'
 import { confirmDeleteUser } from '../Foodsaver/Foodsaver'
 import { vueApply, vueRegister } from '@/vue'
+import { setSleepStatus } from '@/api/user'
+import $ from 'jquery'
 import Calendar from './components/Calendar'
 import ProfilePicture from './components/ProfilePicture'
+import NameInput from './components/NameInput'
 
 if (GET('sub') === 'calendar') {
   vueRegister({
@@ -27,18 +29,17 @@ if (GET('sub') === 'calendar') {
 } else if (GET('sub') === 'general') {
   vueRegister({
     ProfilePicture,
+    NameInput,
   })
   vueApply('#image-upload')
+  vueApply('#name-input')
 }
 
 expose({
   confirmDeleteUser,
   collapse_wrapper,
+  trySetSleepMode,
 })
-
-if (GET('sub') === 'general') {
-  attachAddressPicker()
-}
 
 // Fill the Push Notifications module with life
 refreshPushNotificationSettings()
@@ -95,4 +96,18 @@ async function refreshPushNotificationSettings () {
       throw error
     }
   }, { once: true })
+}
+
+async function trySetSleepMode () {
+  try {
+    const status = parseInt($('#sleep_status').val())
+    const from = $('#sleeprange_from').val()
+    const to = $('#sleeprange_to').val()
+    const message = $('#sleep_msg').val()
+
+    await setSleepStatus(status, from, to, message)
+    pulseSuccess(i18n('settings.sleep.saved'))
+  } catch (e) {
+    pulseError(i18n('error_unexpected'))
+  }
 }

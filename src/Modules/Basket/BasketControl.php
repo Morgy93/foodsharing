@@ -17,7 +17,7 @@ class BasketControl extends Control
 
 		parent::__construct();
 
-		$this->pageHelper->addBread('Essenskörbe');
+		$this->pageHelper->addBread($this->translator->trans('terminology.baskets'));
 	}
 
 	public function index(): void
@@ -42,7 +42,7 @@ class BasketControl extends Control
 	public function find(): void
 	{
 		$loc = $this->session->getLocation();
-		if (!$loc || ($loc['lat']) === 0 && ($loc['lon']) === 0) {
+		if (!$loc || $loc['lat'] === 0 && $loc['lon'] === 0) {
 			$loc = ['lat' => MapConstants::CENTER_GERMANY_LAT, 'lon' => MapConstants::CENTER_GERMANY_LON];
 		}
 		$baskets = $this->basketGateway->listNearbyBasketsByDistance($this->session->id(), $loc);

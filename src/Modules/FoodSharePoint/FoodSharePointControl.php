@@ -4,7 +4,7 @@ namespace Foodsharing\Modules\FoodSharePoint;
 
 use Foodsharing\Modules\Core\Control;
 use Foodsharing\Modules\Core\DBConstants\Info\InfoType;
-use Foodsharing\Modules\Core\DBConstants\Region\Type;
+use Foodsharing\Modules\Core\DBConstants\Unit\UnitType;
 use Foodsharing\Modules\Foodsaver\FoodsaverGateway;
 use Foodsharing\Modules\Mailbox\MailboxGateway;
 use Foodsharing\Modules\Region\RegionGateway;
@@ -109,8 +109,11 @@ class FoodSharePointControl extends Control
 			$regionId = $this->foodSharePoint['bezirk_id'];
 		}
 
-		if ((isset($regionId) || $regionId = $request->query->get('bid'))
-				&& $region = $this->regionGateway->getRegion($regionId)) {
+		if (!isset($regionId)) {
+			$regionId = intval($request->query->get('bid'));
+		}
+
+		if (!empty($regionId) && is_int($regionId) && $region = $this->regionGateway->getRegion($regionId)) {
 			$this->regionId = $regionId;
 			$this->region = $region;
 			if ((int)$region['mailbox_id'] > 0) {
@@ -168,7 +171,7 @@ class FoodSharePointControl extends Control
 
 	public function getRealRegions(): array
 	{
-		return array_filter($this->session->getRegions(), function ($r) { return Type::isAccessibleRegion($r['type']); });
+		return array_filter($this->session->getRegions(), function ($region) { return UnitType::isAccessibleRegion($region['type']); });
 	}
 
 	public function edit(Request $request): void
@@ -271,7 +274,7 @@ class FoodSharePointControl extends Control
 		}
 	}
 
-	public function ft(Request $request): void
+	public function ft(): void
 	{
 		$this->pageHelper->addBread($this->foodSharePoint['name']);
 		$this->pageHelper->addTitle($this->foodSharePoint['name']);
@@ -360,7 +363,7 @@ class FoodSharePointControl extends Control
 			return false;
 		}
 
-		$fspManager = $this->sanitizerService->tagSelectIds($request->request->get('fspmanagers'));
+		$fspManager = $this->sanitizerService->tagSelectIds((array)$request->request->get('fspmanagers'));
 		$this->foodSharePointGateway->updateFSPManagers($this->foodSharePoint['id'], $fspManager);
 
 		return $this->foodSharePointGateway->updateFoodSharePoint($this->foodSharePoint['id'], $data);

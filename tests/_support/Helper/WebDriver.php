@@ -64,12 +64,26 @@ class WebDriver extends \Codeception\Module\WebDriver
 	public function fillFieldJs($selector, $value)
 	{
 		$this->executeJS(
-		'document.querySelectorAll(\'' . $selector . '\').forEach(el => el.value = \'' . $value . '\')'
+			'document.querySelectorAll(\'' . $selector . '\').forEach(el => el.value = \'' . $value . '\')'
 		);
 	}
 
 	private function waitFor($condition, $timeout)
 	{
 		$this->webDriver->wait($timeout)->until($condition);
+	}
+
+	public function seeCookieHasSessionExpiry($cookieName)
+	{
+		$cookie = $this->webDriver->manage()->getCookieNamed($cookieName);
+		codecept_debug($cookie);
+		$this->assertNull($cookie['expiry']);
+	}
+
+	public function seeCookieHasNoSessionExpiry($cookieName)
+	{
+		$cookie = $this->webDriver->manage()->getCookieNamed($cookieName);
+		codecept_debug($cookie);
+		$this->assertNotNull($cookie['expiry']);
 	}
 }

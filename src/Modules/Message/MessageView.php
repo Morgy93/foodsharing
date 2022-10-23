@@ -3,6 +3,7 @@
 namespace Foodsharing\Modules\Message;
 
 use Foodsharing\Modules\Core\View;
+use Foodsharing\Modules\Foodsaver\Profile;
 
 final class MessageView extends View
 {
@@ -25,7 +26,7 @@ final class MessageView extends View
 			tstring = ""+date.getYear() + ""+date.getMonth() + ""+date.getDate() + ""+date.getHours();
 			var localsource = [];
 			$.ajax({
-				url: "/api/search/legacyindex",
+				url: "/api/search/index",
 				dataType: "json",
 				success: function (json) {
 					if (json.length > 0 && json[0] != undefined && json[0].key == "buddies") {
@@ -95,6 +96,7 @@ final class MessageView extends View
 
 	/**
 	 * @param Conversation[] $conversations
+	 * @param Profile[] $profiles
 	 */
 	public function conversationList(array $conversations, array $profiles): string
 	{
@@ -131,7 +133,9 @@ final class MessageView extends View
 					continue;
 				}
 				$pics .= '<img src="' . $this->imageService->img($profiles[$m]->avatar, $size) . '" width="' . $pictureWidth . '" />';
-				$title .= ', ' . $profiles[$m]->name;
+				if ($profiles[$m]->name) {
+					$title .= ', ' . $profiles[$m]->name;
+				}
 			}
 
 			$title = $c->title ?? substr($title, 2);
@@ -173,10 +177,10 @@ final class MessageView extends View
 		$out .= '<div id="msg-control">
 			<form>'
 			. $this->v_utils->v_form_textarea('msg_answer', [
-				'style' => 'width: 88%;',
+				'class' => 'formcontrol',
 				'nolabel' => true,
 				'placeholder' => $this->translator->trans('chat.placeholder'),
-			]) . '<input id="conv_submit" type="submit" class="button" name="submit" value="&#xf0a9;" />
+			]) . '<input id="conv_submit" type="submit" class="fas btn btn-primary" value="" />
 			</form>
 		</div>';
 

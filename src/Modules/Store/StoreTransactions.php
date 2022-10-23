@@ -8,6 +8,7 @@ use Foodsharing\Lib\Session;
 use Foodsharing\Modules\Bell\BellGateway;
 use Foodsharing\Modules\Bell\DTO\Bell;
 use Foodsharing\Modules\Core\DBConstants\Bell\BellType;
+use Foodsharing\Modules\Core\DBConstants\Store\CooperationStatus;
 use Foodsharing\Modules\Core\DBConstants\Store\Milestone;
 use Foodsharing\Modules\Core\DBConstants\Store\StoreLogAction;
 use Foodsharing\Modules\Core\DBConstants\StoreTeam\MembershipStatus;
@@ -15,11 +16,14 @@ use Foodsharing\Modules\Foodsaver\FoodsaverGateway;
 use Foodsharing\Modules\Message\MessageGateway;
 use Foodsharing\Modules\Region\RegionGateway;
 use Foodsharing\Modules\Store\DTO\CreateStoreData;
-use Foodsharing\Modules\Store\DTO\StoreForTopbarMenu;
+use Foodsharing\Modules\Store\DTO\Store;
+use Foodsharing\Modules\Store\DTO\StoreStatusForMember;
 use Symfony\Contracts\Translation\TranslatorInterface;
 
 class StoreTransactions
 {
+	public const DEFAULT_USER_SHOWN_STORE_COOPERATION_STATE = [CooperationStatus::UNCLEAR, CooperationStatus::NO_CONTACT, CooperationStatus::IN_NEGOTIATION, CooperationStatus::COOPERATION_STARTING, CooperationStatus::COOPERATION_ESTABLISHED, CooperationStatus::PERMANENTLY_CLOSED];
+
 	private MessageGateway $messageGateway;
 	private PickupGateway $pickupGateway;
 	private StoreGateway $storeGateway;
@@ -28,12 +32,12 @@ class StoreTransactions
 	private FoodsaverGateway $foodsaverGateway;
 	private RegionGateway $regionGateway;
 	private Session $session;
-	const MAX_SLOTS_PER_PICKUP = 10;
+	public const MAX_SLOTS_PER_PICKUP = 10;
 	// status constants for getAvailablePickupStatus
-	const STATUS_RED_TODAY_TOMORROW = 3;
-	const STATUS_ORANGE_3_DAYS = 2;
-	const STATUS_YELLOW_5_DAYS = 1;
-	const STATUS_GREEN = 0;
+	private const STATUS_RED_TODAY_TOMORROW = 3;
+	private const STATUS_ORANGE_3_DAYS = 2;
+	private const STATUS_YELLOW_5_DAYS = 1;
+	private const STATUS_GREEN = 0;
 
 	public function __construct(
 		MessageGateway $messageGateway,
@@ -60,13 +64,14 @@ class StoreTransactions
 		$store = new CreateStoreData();
 		$store->name = $legacyGlobalData['name'];
 		$store->regionId = $legacyGlobalData['bezirk_id'];
-		$store->lat = $legacyGlobalData['lat'];
-		$store->lon = $legacyGlobalData['lon'];
+		$store->lat = floatval($legacyGlobalData['lat']);
+		$store->lon = floatval($legacyGlobalData['lon']);
 		$store->str = $legacyGlobalData['str'];
-		$store->hsnr = $legacyGlobalData['hsnr'];
-		$store->plz = $legacyGlobalData['plz'];
-		$store->stadt = $legacyGlobalData['stadt'];
+		$store->zip = $legacyGlobalData['plz'];
+		$store->city = $legacyGlobalData['stadt'];
+		$store->publicInfo = $legacyGlobalData['public_info'];
 		$store->createdAt = Carbon::now();
+		$store->updatedAt = $store->createdAt;
 
 		$storeId = $this->storeGateway->addStore($store);
 		$managerId = $this->session->id();
@@ -77,55 +82,132 @@ class StoreTransactions
 		return $storeId;
 	}
 
-	/**
-	 * Changes the number of total slots for a pickup. Implements the logic to take care to
-	 *   * not remove a slot where somebody is signed up for
-	 *   * handle transition between regular and onetime pickup
-	 *   * (does not convert additional back to regular as the gain is little).
-	 */
-	public function changePickupSlots(int $storeId, \DateTimeInterface $date, int $newTotalSlots): bool
+	public function updateAllStoreData(int $storeId, array $legacyGlobalData): bool
 	{
-		$occupiedSlots = count($this->pickupGateway->getPickupSignupsForDate($storeId, $date));
-		$pickups = $this->pickupGateway->getOnetimePickupsForRange($storeId, $date, $date);
-		if (!$pickups) {
-			if ($newTotalSlots >= 0 && $newTotalSlots <= self::MAX_SLOTS_PER_PICKUP && $newTotalSlots >= $occupiedSlots) {
-				$this->pickupGateway->addOnetimePickup($storeId, $date, $newTotalSlots);
-			} else {
-				return false;
-			}
-		} else {
-			if ($newTotalSlots >= 0 && $newTotalSlots <= self::MAX_SLOTS_PER_PICKUP && $newTotalSlots >= $occupiedSlots) {
-				$this->pickupGateway->updateOnetimePickupTotalSlots($storeId, $date, $newTotalSlots);
-			} else {
-				return false;
-			}
+		$this->storeGateway->setGroceries($storeId, $legacyGlobalData['lebensmittel'] ?? []);
+
+		$store = new Store();
+
+		$store->id = $storeId;
+		$store->name = $legacyGlobalData['name'];
+		$store->regionId = intval($legacyGlobalData['bezirk_id']);
+
+		$address = $legacyGlobalData['str'];
+		$store->lat = floatval($legacyGlobalData['lat']);
+		$store->lon = floatval($legacyGlobalData['lon']);
+		$store->str = $address;
+		$store->zip = $legacyGlobalData['plz'];
+		$store->city = $legacyGlobalData['stadt'];
+
+		$store->publicInfo = $legacyGlobalData['public_info'];
+		$store->publicTime = intval($legacyGlobalData['public_time']);
+
+		$store->categoryId = intval($legacyGlobalData['betrieb_kategorie_id']);
+		$store->chainId = intval($legacyGlobalData['kette_id']);
+		$store->cooperationStatus = intval($legacyGlobalData['betrieb_status_id']);
+
+		$store->description = $legacyGlobalData['besonderheiten'];
+
+		$store->contactName = $legacyGlobalData['ansprechpartner'];
+		$store->contactPhone = $legacyGlobalData['telefon'];
+		$store->contactFax = $legacyGlobalData['fax'];
+		$store->contactEmail = $legacyGlobalData['email'];
+		$store->cooperationStart = null;
+		if (!empty($legacyGlobalData['begin'])) {
+			$store->cooperationStart = Carbon::createFromFormat('Y-m-d', $legacyGlobalData['begin']);
 		}
+		$store->calendarInterval = intval($legacyGlobalData['prefetchtime']);
+		$store->weight = intval($legacyGlobalData['abholmenge']);
+		$store->effort = intval($legacyGlobalData['ueberzeugungsarbeit']);
+		$store->publicity = intval($legacyGlobalData['presse']);
+		$store->sticker = intval($legacyGlobalData['sticker']);
+
+		$store->updatedAt = Carbon::now();
+
+		$this->storeGateway->updateStoreData($store->id, $store);
 
 		return true;
 	}
 
-	public function pickupSlotAvailable(int $storeId, Carbon $pickupDate, int $fsId = null): bool
+	/**
+	 * Creates or updates a manual pick up.
+	 *
+	 * @param int $storeId Store to update
+	 * @param \DateTimeInterface $date Date of manual pick up
+	 * @param int $newTotalSlots count of total slots which should be set
+	 *
+	 * @return bool true if a new one is created, false if it is updated
+	 *
+	 * @throws PickupValidationException Exception if input is invalid
+	 */
+	public function createOrUpdatePickup(int $storeId, \DateTimeInterface $date, int $newTotalSlots): bool
 	{
-		if ($pickupDate < Carbon::now()) {
-			/* do not allow signing up for past pickups */
-			return false;
+		if ($date < Carbon::now()) {
+			throw new PickupValidationException(PickupValidationException::PICK_UP_DATE_IN_THE_PAST);
 		}
 
-		$pickupSlots = $this->pickupGateway->getPickupSlots($storeId, $pickupDate, $pickupDate, $pickupDate);
-		if (count($pickupSlots) == 1 && $pickupSlots[0]['isAvailable']) {
-			/* expect a free slot */
-			if ($fsId) {
-				if (!empty(array_filter($pickupSlots[0]['occupiedSlots'],
-					function ($e) use ($fsId) { return $e['foodsaverId'] === $fsId; }))) {
-					/* when a user is provided, that user must not already be signed up */
-					return false;
-				}
-			}
+		if ($newTotalSlots < 0 || $newTotalSlots > self::MAX_SLOTS_PER_PICKUP) {
+			throw new PickupValidationException(PickupValidationException::SLOT_COUNT_OUT_OF_RANGE);
+		}
+
+		$occupiedSlots = count($this->pickupGateway->getPickupSignupsForDate($storeId, $date));
+		if ($newTotalSlots < $occupiedSlots) {
+			throw new PickupValidationException(PickupValidationException::MORE_OCCUPIED_SLOTS);
+		}
+
+		if (!$this->storeGateway->storeExists($storeId)) {
+			throw new PickupValidationException(PickupValidationException::INVALID_STORE);
+		}
+
+		$filledOnetimeSlots = $this->pickupGateway->getOnetimePickups($storeId, $date);
+		if ($filledOnetimeSlots) {
+			$this->pickupGateway->updateOnetimePickupTotalSlots($storeId, $date, $newTotalSlots);
+
+			return false;
+		} else {
+			$this->pickupGateway->addOnetimePickup($storeId, $date, $newTotalSlots);
 
 			return true;
 		}
+	}
 
-		return false;
+	/**
+	 * Checks whether there are slots available to sign into for one specific pickupDate in a store.
+	 *
+	 * @param ?int $fsId Check whether this specific user could sign into a slot for this date
+	 *
+	 * @return int 0 if no available slot, else the number of *total* slots (NOT available slots) for this date
+	 */
+	public function totalSlotsIfPickupSlotAvailable(int $storeId, Carbon $pickupDate, ?int $fsId = null): int
+	{
+		// do not allow signing up for past pickups
+		if ($pickupDate < Carbon::now()) {
+			return 0;
+		}
+
+		$pickupSlots = $this->pickupGateway->getPickupSlots($storeId, $pickupDate, $pickupDate, $pickupDate);
+
+		// expect exactly one pickup for this "range" query
+		if (count($pickupSlots) === 1) {
+			$pickup = $pickupSlots[0];
+		} else {
+			return 0;
+		}
+
+		// check if there are any free slots
+		if (!$pickup['isAvailable']) {
+			return 0;
+		}
+
+		// when a user is provided, that user must not already be signed up
+		if ($fsId) {
+			$signedUpFoodsaverIds = array_column($pickup['occupiedSlots'], 'foodsaverId');
+			if (in_array($fsId, $signedUpFoodsaverIds)) {
+				return 0;
+			}
+		}
+
+		return $pickup['totalSlots'];
 	}
 
 	/**
@@ -177,11 +259,13 @@ class StoreTransactions
 		$confirmed = $this->pickupIsPreconfirmed($storeId, $issuerId);
 
 		/* Never occupy more slots than available */
-		if (!$this->pickupSlotAvailable($storeId, $date, $fsId)) {
+		if ($totalSlots = $this->totalSlotsIfPickupSlotAvailable($storeId, $date, $fsId)) {
+			$this->pickupGateway->addFetcher($fsId, $storeId, $date, $confirmed);
+			// [#860] convert to manual slot, so they don't vanish when changing the schedule
+			$this->createOrUpdatePickup($storeId, $date, $totalSlots);
+		} else {
 			throw new \DomainException('No pickup slot available');
 		}
-
-		$this->pickupGateway->addFetcher($fsId, $storeId, $date, $confirmed);
 
 		return $confirmed;
 	}
@@ -208,21 +292,29 @@ class StoreTransactions
 	}
 
 	/**
-	 * @return StoreForTopbarMenu[]
+	 * @return StoreStatusForMember[]
 	 */
-	public function getFilteredStoresForUser(?int $userId): array
+	public function listAllStoreStatusForFoodsaver(?int $foodsaverId): array
 	{
-		if ($userId === null) {
+		if ($foodsaverId === null) {
 			return [];
 		}
-		$filteredStoresForUser = $this->storeGateway->listFilteredStoresForFoodsaver($userId);
+		$results = $this->storeGateway->listAllStoreTeamMembershipsForFoodsaver($foodsaverId, StoreTransactions::DEFAULT_USER_SHOWN_STORE_COOPERATION_STATE);
+		$storeTeamMemberships = [];
+		foreach ($results as $resultRow) {
+			$item = new StoreStatusforMember();
+			$item->store = $resultRow->store;
+			$item->isManaging = $resultRow->isManaging;
+			$item->membershipStatus = $resultRow->membershipStatus;
+			if ($item->membershipStatus == MembershipStatus::MEMBER) {
+				// add info about the next free pickup slot to the store
+				$item->pickupStatus = $this->getAvailablePickupStatus($item->store->id);
+			}
 
-		foreach ($filteredStoresForUser as $store) {
-			// add info about the next free pickup slot to the store
-			$store->pickupStatus = $this->getAvailablePickupStatus($store->id);
+			$storeTeamMemberships[] = $item;
 		}
 
-		return $filteredStoresForUser;
+		return $storeTeamMemberships;
 	}
 
 	public function requestStoreTeamMembership(int $storeId, int $userId): void
@@ -235,7 +327,7 @@ class StoreTransactions
 	}
 
 	/**
-	 * Accepts a user's request to join a store, and moves the user to the standby team.
+	 * Accepts a user's request to join a store, and moves the user to the standby team if desired.
 	 * This creates a bell notification for that user, adds an entry to the store log,
 	 * and makes sure the user is in the store's region.
 	 *
@@ -368,6 +460,7 @@ class StoreTransactions
 	{
 		/* check if other managers exist (cannot leave as last manager) */
 		$this->storeGateway->removeStoreManager($storeId, $userId);
+		$this->storeGateway->addStoreLog($storeId, $this->session->id(), $userId, null, StoreLogAction::REMOVED_AS_STORE_MANAGER);
 
 		$standbyTeamChatId = $this->storeGateway->getBetriebConversation($storeId, true);
 		if ($standbyTeamChatId) {
@@ -377,18 +470,14 @@ class StoreTransactions
 
 	private function addUserToStore(int $storeId, int $userId, bool $moveToStandby): void
 	{
-		// add user to the team
 		$this->storeGateway->addUserToTeam($storeId, $userId);
 
-		// and user to the team's conversation (the standby case is handled by its own transaction)
-		if (!$moveToStandby) {
-			$teamChatConversationId = $this->storeGateway->getBetriebConversation($storeId);
-			if ($teamChatConversationId) {
-				$this->messageGateway->addUserToConversation($teamChatConversationId, $userId);
-			}
+		if ($moveToStandby) {
+			$this->moveMemberToStandbyTeam($storeId, $userId);
+		} else {
+			$this->moveMemberToRegularTeam($storeId, $userId);
 		}
 
-		// add a note the store wall
 		$this->storeGateway->add_betrieb_notiz([
 			'foodsaver_id' => $userId,
 			'betrieb_id' => $storeId,
@@ -396,10 +485,6 @@ class StoreTransactions
 			'zeit' => date('Y-m-d H:i:s'),
 			'milestone' => Milestone::ACCEPTED,
 		]);
-
-		if ($moveToStandby) {
-			$this->moveMemberToStandbyTeam($storeId, $userId);
-		}
 	}
 
 	/**

@@ -47,7 +47,7 @@ class BlogpostController extends AbstractFOSRestController
 	{
 		$sessionId = $this->session->id();
 		if (!$sessionId) {
-			throw new UnauthorizedHttpException('Not logged in.');
+			throw new UnauthorizedHttpException('', 'Not logged in.');
 		}
 
 		$author = $this->blogGateway->getAuthorOfPost($blogId);
@@ -80,7 +80,7 @@ class BlogpostController extends AbstractFOSRestController
 	{
 		$sessionId = $this->session->id();
 		if (!$sessionId) {
-			throw new UnauthorizedHttpException('Not logged in.');
+			throw new UnauthorizedHttpException('', 'Not logged in.');
 		}
 
 		$author = $this->blogGateway->getAuthorOfPost($blogId);

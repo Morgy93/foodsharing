@@ -77,16 +77,17 @@ ul.linklist li a,
 .activity_feed_content_info p,
 input, textarea, select, option {
   font-size: 12px;
-  color: var(--fs-brown);
+  color: var(--fs-color-primary-500);
   line-height: 1.28;
 }
 
-.ui-widget input, .ui-widget select, .ui-widget textarea, .ui-widget button {
+/* .ui-widget input, .ui-widget select, .ui-widget textarea, .ui-widget button {
   line-height: normal;
   font-size: 13px;
-}
+} */
 
 .event-description,
+.event-location,
 .activity_feed_content_info p {
   margin: 0;
   overflow-wrap: break-word;
@@ -169,19 +170,8 @@ p {
   margin-top: 5px;
 }
 
-.text,
-input[type=text],
-input[type=email],
-input[type=password],
-input[type=number] {
-  width: 90%;
-  border: 1px solid #c9bcaf;
-  padding: 7px;
-  border-radius: 6px;
-}
-
 select {
-  border: 1px solid #c9bcaf;
+  border: 1px solid var(--fs-border-default);
   border-radius: 6px;
   margin-right: 7px;
 }
@@ -197,7 +187,7 @@ select {
 textarea {
   width: 90%;
   height: 180px;
-  border: 1px solid #c9bcaf;
+  border: 1px solid var(--fs-border-default);
   padding: 7px;
   border-radius: 6px; /* CSS3 */
 }
@@ -210,18 +200,18 @@ textarea {
 }
 
 .focus {
-  background-color: #f5f5b5;
-  border: 1px solid #3f942f;
+  background-color: var(--fs-color-secondary-100);
+  border: 1px solid var(--fs-color-secondary-500);
 }
 
 .input-error {
-  border: 1px solid #e17984;
-  background-color: #f8dbdd;
+  border: 1px solid var(--fs-color-danger-500);
+  background-color: var(--fs-color-danger-200);
 }
 
 a.linkrow:hover {
-  background: url(/css/images/ui-bg_highlight-soft_40_407B35_1x100.png) repeat-x scroll 50% 50% #407b35;
-  color: #ffffff;
+  background: url(/css/images/ui-bg_highlight-soft_40_407B35_1x100.png) repeat-x scroll 50% 50% var(--fs-color-secondary-400);
+  color: var(--fs-color-light);
 }
 
 a.linkrow {
@@ -334,7 +324,7 @@ ul.toolbar span.ui-icon {
 }
 
 input.swap {
-  color: #666666;
+  color: var(--fs-color-gray-300);
 }
 
 b {
@@ -345,27 +335,8 @@ i {
   font-style: italic;
 }
 
-.page h1, .page h2, .page h3, .page h4 {
-  color: var(--fs-brown);
-}
-
-.page h1,
-.page h2,
-.page h3 {
-  font-family: 'Alfa Slab One', serif;
-  font-weight: normal;
-  font-size: 20px;
-  color: var(--fs-brown);
-  margin-bottom: 30px;
-}
-
 .page .h1 h1 {
   margin-bottom: 0;
-}
-
-.page .h1 small, .page .h1 small p {
-  color: var(--fs-brown);
-  font-size: 12px;
 }
 
 .page .h1 small p {
@@ -389,7 +360,7 @@ i {
 
 .page p {
   margin-bottom: 30px;
-  color: var(--fs-brown);
+  color: var(--fs-color-primary-500);
 }
 
 .page ul {
@@ -397,21 +368,14 @@ i {
 }
 
 .page li {
-  color: var(--fs-brown);
-}
-
-.reddot h5 {
-  font-family: 'Alfa Slab One', serif;
-  font-weight: normal;
-  font-size: 17px;
-  color: var(--fs-brown);
+  color: var(--fs-color-primary-500);
 }
 
 .reddot h5 span {
   display: inline-block;
-  background-color: #cd071e;
+  background-color: var(--fs-color-danger-500);
   text-align: center;
-  color: #ffffff;
+  color: var(--fs-color-light);
   width: 24px;
   height: 24px;
   line-height: 24px;
@@ -420,14 +384,6 @@ i {
 
 .reddot p {
   margin-bottom: 20px;
-}
-
-/* TODO check if I'm used anywhere */
-.page .ui-accordion h3 {
-  font-family: 'Alfa Slab One', serif;
-  font-weight: normal;
-  font-size: 17px;
-  color: #fff;
 }
 
 .page-fsbetrieb .element-wrapper {

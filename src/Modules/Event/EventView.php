@@ -4,12 +4,13 @@ namespace Foodsharing\Modules\Event;
 
 use Foodsharing\Lib\Session;
 use Foodsharing\Lib\View\Utils;
-use Foodsharing\Modules\Core\DBConstants\Region\Type;
+use Foodsharing\Modules\Core\DBConstants\Unit\UnitType;
 use Foodsharing\Modules\Core\View;
 use Foodsharing\Permissions\EventPermissions;
 use Foodsharing\Utility\DataHelper;
 use Foodsharing\Utility\IdentificationHelper;
 use Foodsharing\Utility\ImageHelper;
+use Foodsharing\Utility\NumberHelper;
 use Foodsharing\Utility\PageHelper;
 use Foodsharing\Utility\RouteHelper;
 use Foodsharing\Utility\Sanitizer;
@@ -29,6 +30,7 @@ class EventView extends View
 		DataHelper $dataHelper,
 		IdentificationHelper $identificationHelper,
 		ImageHelper $imageService,
+		NumberHelper $numberHelper,
 		PageHelper $pageHelper,
 		RouteHelper $routeHelper,
 		Sanitizer $sanitizerService,
@@ -43,6 +45,7 @@ class EventView extends View
 			$dataHelper,
 			$identificationHelper,
 			$imageService,
+			$numberHelper,
 			$pageHelper,
 			$routeHelper,
 			$sanitizerService,
@@ -83,13 +86,6 @@ class EventView extends View
 		}
 
 		$title = $this->translator->trans('events.create.title');
-		$this->pageHelper->addStyle('
-			label.addend {
-				display: inline-block;
-				margin-left: 15px;
-				cursor: pointer;
-			}
-		');
 		$this->pageHelper->addJs('
 			$("#online_type").on("change", function () {
 				if ($(this).val() == 1) {
@@ -106,29 +102,29 @@ class EventView extends View
 					$("#anschrift-wrapper, #plz-wrapper, #ort-wrapper").hide();
 				}
 			});
-			
-			var dateend_wrapper = document.getElementById("dateend-wrapper");	
-			
+
+			var dateend_wrapper = document.getElementById("dateend-wrapper");
+
 			$("#date").after(
 				\'<label class="addend"><input type="checkbox" name="addend" id="addend" value="1" /> '
-				. $this->translator->trans('events.create.multiday') .
-				'</label>\'
+			. $this->translator->trans('events.create.multiday') .
+			'</label>\'
 			);
-               
+
             dateend_wrapper.style.display = "none";
 
             var dateend = new Date(document.getElementById("dateend").value.split(" ")[0]);
 			var datestart = new Date(document.getElementById("date").value.split(" ")[0]);
 			datestart.setDate(datestart.getDate() + 1);
-			
+
 			if (dateend >= datestart)
 			{
                 document.getElementById("addend").checked = true;
                 dateend_wrapper.style.display = "block";
 			}
-			
+
 			dateend_wrapper.classList.remove("required");
-			
+
 			$("#addend").on("change", function () {
 				if ($("#addend:checked").length > 0) {
 					dateend_wrapper.style.display = "block";
@@ -138,7 +134,7 @@ class EventView extends View
 					dateend_wrapper.classList.remove("required");
 				}
 			});
-	
+
 			');
 
 		$regions = '';
@@ -157,7 +153,7 @@ class EventView extends View
 					$sel = ' selected="selected"';
 				}
 
-				if ($b['type'] == Type::WORKING_GROUP) {
+				if (UnitType::isGroup($b['type'])) {
 					$groups .= '<option value="' . $b['id'] . '"' . $sel . '>' . $b['name'] . '</option>';
 				} else {
 					$regions .= '<option value="' . $b['id'] . '"' . $sel . '>' . $b['name'] . '</option>';
@@ -179,7 +175,7 @@ class EventView extends View
 				} else {
 					$("#input-wrapper").show();
 				}
-			});		
+			});
 		');
 
 		$delinvites = '';
@@ -191,7 +187,8 @@ class EventView extends View
 				. '</label>';
 		}
 
-		$bezirkchoose = $this->v_utils->v_input_wrapper($this->translator->trans('events.create.who'),
+		$bezirkchoose = $this->v_utils->v_input_wrapper(
+			$this->translator->trans('events.create.who'),
 			'<select class="input select value" name="bezirk_id" id="bezirk_id">
 				' . $groups . '
 				' . $regions . '
@@ -206,7 +203,8 @@ class EventView extends View
 				'</label>
 				' . $delinvites . '
 			</p>
-		');
+		'
+		);
 
 		$public_el = '';
 
@@ -216,10 +214,12 @@ class EventView extends View
 				$chk = ' checked="checked"';
 				$this->pageHelper->addJs('$("#input-wrapper").hide();');
 			}
-			$public_el = $this->v_utils->v_input_wrapper($this->translator->trans('events.create.public'),
+			$public_el = $this->v_utils->v_input_wrapper(
+				$this->translator->trans('events.create.public'),
 				'<label><input id="public" type="checkbox" name="public" value="1"' . $chk . ' /> '
-				. $this->translator->trans('events.create.isPublic') .
-				'</label>');
+					. $this->translator->trans('events.create.isPublic') .
+					'</label>'
+			);
 		}
 
 		foreach (['anschrift', 'plz', 'ort', 'lat', 'lon'] as $i) {
@@ -262,24 +262,6 @@ class EventView extends View
 			$this->latLonPicker('latLng', $latLonOptions),
 			$this->v_utils->v_info($this->translator->trans('events.create.info'))
 		], ['submit' => $this->translator->trans('button.save')]), $title, ['class' => 'ui-padding']);
-	}
-
-	public function dashboardEventPanels(array $events, bool $invitationsTitle = false): string
-	{
-		$out = '';
-		foreach ($events as $e) {
-			$out .= $this->eventPanel($e);
-		}
-
-		if ($invitationsTitle) {
-			$eventTitle = $this->translator->trans('dashboard.invitations');
-		} elseif (count($events) > 1) {
-			$eventTitle = $this->translator->trans('dashboard.events', ['{count}' => count($events)]);
-		} else {
-			$eventTitle = $this->translator->trans('dashboard.event');
-		}
-
-		return $this->v_utils->v_field($out, $eventTitle, ['class' => 'truncate-content truncate-height-160']);
 	}
 
 	public function eventPanel(array $event, bool $mayEdit = false): string
@@ -376,11 +358,12 @@ class EventView extends View
 
 	public function locationMumble()
 	{
-		return $this->v_utils->v_field('
+		return $this->v_utils->v_field(
+			'
 		<p style="text-align: center;">
 			<a target="_blank" href="https://wiki.foodsharing.de/Mumble">'
-			. '<img src="/img/mlogo.png" alt="Mumble" />' .
-			'</a>
+				. '<img src="/img/mlogo.png" alt="Mumble" />' .
+				'</a>
 		</p>
 		<p> ' . $this->translator->trans('events.mumble.text') . '</p>
 		<p> ' . $this->translator->trans('events.mumble.location') . '</p>

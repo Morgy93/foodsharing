@@ -8,7 +8,7 @@ use PDO;
 
 class Database
 {
-	private $pdo;
+	private PDO $pdo;
 	private $fluent;
 	private $influxMetrics;
 
@@ -235,13 +235,47 @@ class Database
 	 * @param array $data names of the columns and the row's entries as key-value pairs
 	 * @param array $options {@see Database::insertMultiple()}
 	 *
-	 * @return int the number of inserted or updated rows
+	 * @return int the primary key of the inserted row
 	 *
 	 * @throws \Exception
 	 */
 	public function insert(string $table, array $data, array $options = []): int
 	{
-		return $this->insertMultiple($table, [$data], $options);
+		$options = array_merge([
+			'update' => false,
+			'ignore' => false,
+		], $options);
+
+		if ($options['ignore'] && $options['update']) {
+			throw new \Exception('Can not handle ignore and update at the same time, choose one');
+		}
+
+		$columns = array_map(
+			[$this, 'getQuotedName'],
+			array_keys($data)
+		);
+
+		$updateStatement = '';
+		if ($options['update']) {
+			$updateValues = array_map(function ($name) {
+				return sprintf('%s = VALUES (%s)', $name, $name);
+			}, $columns);
+			$updateValues = implode(', ', $updateValues);
+			$updateStatement = sprintf('ON DUPLICATE KEY UPDATE %s', $updateValues);
+		}
+
+		$query = sprintf(
+			'INSERT %s INTO %s (%s) VALUES (%s) %s',
+			$options['ignore'] ? 'IGNORE' : '',
+			$this->getQuotedName($table),
+			implode(', ', $columns),
+			implode(', ', array_fill(0, count($data), '?')),
+			$updateStatement
+		);
+
+		$this->preparedQuery($query, array_values($data));
+
+		return (int)$this->pdo->lastInsertId();
 	}
 
 	/**
@@ -315,9 +349,9 @@ class Database
 
 		// flatten values array
 		$flattened = $this->flattenArray($fullData, false);
-		$this->preparedQuery($query, array_values($flattened));
+		$statement = $this->preparedQuery($query, array_values($flattened));
 
-		return (int)$this->pdo->lastInsertId();
+		return (int)$statement->rowCount();
 	}
 
 	/**
@@ -513,11 +547,24 @@ class Database
 	}
 
 	/**
+	 * Use this where you would normally use CURDATE() in an SQL query.
+	 *
+	 * @return string the current day
+	 */
+	public function curdate(): string
+	{
+		return date('Y-m-d');
+	}
+
+	/**
 	 * @param Carbon|\DateTime $date
 	 */
-	public function date($date): string
+	public function date($date, $includeTime = true): string
 	{
-		return (clone $date)->setTimezone(new \DateTimeZone('Europe/Berlin'))->format('Y-m-d H:i:s');
+		return (clone $date)
+			->setTimezone(new \DateTimeZone('Europe/Berlin'))
+			->format($includeTime ? 'Y-m-d H:i:s' : 'Y-m-d')
+		;
 	}
 
 	public function parseDate(string $date): Carbon
@@ -590,7 +637,7 @@ class Database
 		} catch (\PDOException $exception) {
 			throw new \Exception("Query '$query' can't be prepared.", $exception->getCode());
 		}
-		if ($statement === false) {
+		if (empty($statement)) {
 			// PDO did not throw an exception, but returned false.
 			// For consistency, we throw one ourselves.
 			$errorInfo = $this->pdo->errorInfo();

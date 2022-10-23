@@ -1,0 +1,16 @@
+#!/bin/bash
+
+export FS_ENV=test
+
+set -o errexit
+
+dir=$(dirname "$0")
+
+# shellcheck source=./__helping-functions.sh
+source "$dir"/__helping-functions.sh
+
+echo "Running websocket tests"
+run-in-container websocket 'yarn && yarn lint && yarn test'
+
+echo "Done!"
+

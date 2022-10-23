@@ -2,15 +2,20 @@
 
 namespace Foodsharing\Modules\Store\DTO;
 
+use DateTime;
+
 class CreateStoreData
 {
 	public string $name;
 	public int $regionId;
-	public string $lat;
-	public string $lon;
+
+	public float $lat;
+	public float $lon;
 	public string $str;
-	public string $hsnr;
-	public string $plz;
-	public string $stadt;
-	public \DateTime $createdAt;
+	public string $zip;
+	public string $city;
+	public string $publicInfo;
+
+	public DateTime $createdAt;
+	public DateTime $updatedAt;
 }

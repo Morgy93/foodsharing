@@ -45,12 +45,12 @@ export default {
     },
   },
   watch: {
-    isValidSelection () { this.$emit('updateValidSelection', this.isValidSelection) },
-    votingRequestValues () { this.$emit('updateVotingRequestValues', this.votingRequestValues) },
+    isValidSelection () { this.$emit('update-valid-selection', this.isValidSelection) },
+    votingRequestValues () { this.$emit('update-voting-request-values', this.votingRequestValues) },
   },
   created () {
-    this.$emit('updateValidSelection', this.isValidSelection)
-    this.$emit('updateVotingRequestValues', this.votingRequestValues)
+    this.$emit('update-valid-selection', this.isValidSelection)
+    this.$emit('update-voting-request-values', this.votingRequestValues)
   },
 }
 </script>

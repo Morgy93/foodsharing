@@ -4,6 +4,7 @@
       @submit="showConfirmDialog"
     >
       <b-alert
+        v-if="poll.shuffleOptions"
         show
         variant="dark"
         class="mt-5"
@@ -14,29 +15,29 @@
         v-if="poll.type===0"
         :options="shuffledOptions"
         :enabled="mayVote"
-        @updateValidSelection="updateValidSelection"
-        @updateVotingRequestValues="updateVotingRequestValues"
+        @update-valid-selection="updateValidSelection"
+        @update-voting-request-values="updateVotingRequestValues"
       />
       <MultiSelectionVotingComponent
         v-else-if="poll.type===1"
         :options="shuffledOptions"
         :enabled="mayVote"
-        @updateValidSelection="updateValidSelection"
-        @updateVotingRequestValues="updateVotingRequestValues"
+        @update-valid-selection="updateValidSelection"
+        @update-voting-request-values="updateVotingRequestValues"
       />
       <ThumbVotingComponent
         v-else-if="poll.type===2"
         :options="shuffledOptions"
         :enabled="mayVote"
-        @updateValidSelection="updateValidSelection"
-        @updateVotingRequestValues="updateVotingRequestValues"
+        @update-valid-selection="updateValidSelection"
+        @update-voting-request-values="updateVotingRequestValues"
       />
       <ScoreVotingComponent
         v-else-if="poll.type===3"
         :options="shuffledOptions"
         :enabled="mayVote"
-        @updateValidSelection="updateValidSelection"
-        @updateVotingRequestValues="updateVotingRequestValues"
+        @update-valid-selection="updateValidSelection"
+        @update-voting-request-values="updateVotingRequestValues"
       />
 
       <b-alert
@@ -80,7 +81,7 @@ import SingleSelectionVotingComponent from './SingleSelectionVotingComponent'
 import MultiSelectionVotingComponent from './MultiSelectionVotingComponent'
 import { vote } from '@/api/voting'
 import { pulseError, pulseSuccess, shuffle } from '@/script'
-import i18n from '@/i18n'
+import i18n from '@/helper/i18n'
 
 export default {
   components: {
@@ -111,7 +112,7 @@ export default {
   },
   computed: {
     shuffledOptions: function () {
-      return shuffle(this.poll.options)
+      return this.poll.shuffleOptions ? shuffle(this.poll.options) : this.poll.options
     },
   },
   methods: {

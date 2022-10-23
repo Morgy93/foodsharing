@@ -32,7 +32,6 @@
           </div>
 
           <div
-            v-b-tooltip.hover="$i18n('events.duration', { duration: displayedDuration })"
             class="my-1 d-inline-block event-date"
           >
             <i class="far fa-fw fa-clock" />
@@ -40,7 +39,7 @@
           </div>
           <br>
 
-          <b-button-group size="sm">
+          <b-button-group v-if="statusAvailable()" size="sm">
             <b-button
               :variant="statusVariant(1)"
               @click="acceptInvitation(eventId); currentStatus = 1"
@@ -75,11 +74,6 @@
 </template>
 
 <script>
-import dateFnsLocaleDE from 'date-fns/locale/de'
-import isSameDay from 'date-fns/isSameDay'
-import formatDate from 'date-fns/format'
-import formatDistanceStrict from 'date-fns/formatDistanceStrict'
-import parseISO from 'date-fns/parseISO'
 import { acceptInvitation, declineInvitation, maybeInvitation } from '@/api/events'
 import CalendarDate from '@/components/CalendarDate'
 
@@ -96,40 +90,44 @@ export default {
   },
   data () {
     return {
-      startDate: parseISO(this.start),
-      endDate: parseISO(this.end),
+      startDate: new Date(Date.parse(this.start)),
+      endDate: new Date(Date.parse(this.end)),
       currentStatus: this.status,
     }
   },
   computed: {
-    displayedDay () {
-      return formatDate(this.startDate, 'dd')
-    },
-    displayedMonth () {
-      return this.$i18n('month.' + formatDate(this.startDate, 'M'))
-    },
     dateTooltip () {
-      return formatDate(this.startDate, 'dd.MM.yyyy HH:mm') + ' (' + this.$dateDistanceInWords(this.startDate) + ')'
+      return `${this.$dateFormatter.dateTime(this.startDate)} (${this.$dateFormatter.relativeTime(this.startDate)}`
     },
     displayedStart () {
-      return formatDate(this.startDate, 'HH:mm')
-    },
-    displayedDuration () {
-      return formatDistanceStrict(this.endDate, this.startDate, { locale: dateFnsLocaleDE })
+      return this.$dateFormatter.format(this.startDate, {
+        hour: 'numeric',
+        minute: 'numeric',
+      })
     },
     displayedEnd () {
-      if (isSameDay(this.endDate, this.startDate)) {
-        return formatDate(this.endDate, 'HH:mm')
+      if (this.$dateFormatter.isSame(this.endDate, this.startDate)) {
+        return this.$dateFormatter.format(this.endDate, {
+          hour: 'numeric',
+          minute: 'numeric',
+        })
       } else {
-        return formatDate(this.endDate, '[d.MM.] HH:mm')
+        return this.$dateFormatter.format(this.endDate, {
+          day: 'numeric',
+          month: 'numeric',
+          hour: 'numeric',
+          minute: 'numeric',
+        })
       }
     },
   },
   methods: {
-    formatDate,
     acceptInvitation,
     maybeInvitation,
     declineInvitation,
+    statusAvailable: function () {
+      return this.currentStatus >= 0
+    },
     statusVariant: function (s) {
       if (s === this.currentStatus) {
         return 'secondary'

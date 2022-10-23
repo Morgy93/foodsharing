@@ -30,3 +30,10 @@ export async function removeBasket (basketId) {
 export async function listBasketCoordinates () {
   return (await get('/baskets?type=coordinates')).baskets
 }
+
+export async function getBasketsNearby (lat, lon, distance = 30) {
+  if (lat && lon) {
+    return (await get(`/baskets/nearby?lat=${lat}&lon=${lon}&distance=${distance}`)).baskets
+  }
+  throw new Error('Missing lat or lon')
+}

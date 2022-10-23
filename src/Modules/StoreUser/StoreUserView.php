@@ -8,6 +8,7 @@ use Foodsharing\Modules\Core\View;
 use Foodsharing\Utility\DataHelper;
 use Foodsharing\Utility\IdentificationHelper;
 use Foodsharing\Utility\ImageHelper;
+use Foodsharing\Utility\NumberHelper;
 use Foodsharing\Utility\PageHelper;
 use Foodsharing\Utility\RouteHelper;
 use Foodsharing\Utility\Sanitizer;
@@ -24,6 +25,7 @@ class StoreUserView extends View
 		DataHelper $dataHelper,
 		IdentificationHelper $identificationHelper,
 		ImageHelper $imageService,
+		NumberHelper $numberHelper,
 		PageHelper $pageHelper,
 		RouteHelper $routeHelper,
 		Sanitizer $sanitizerService,
@@ -38,6 +40,7 @@ class StoreUserView extends View
 			$dataHelper,
 			$identificationHelper,
 			$imageService,
+			$numberHelper,
 			$pageHelper,
 			$routeHelper,
 			$sanitizerService,
@@ -47,18 +50,6 @@ class StoreUserView extends View
 		);
 	}
 
-	public function u_getVerantwortlicher($storeData)
-	{
-		$out = [];
-		foreach ($storeData['foodsaver'] as $fs) {
-			if ($fs['verantwortlich'] == 1) {
-				$out[] = $fs;
-			}
-		}
-
-		return $out;
-	}
-
 	public function u_legacyStoreTeamStatus(array $storeData): string
 	{
 		$this->pageHelper->addJs('
@@ -66,8 +57,11 @@ class StoreUserView extends View
 				var val = $(this).val();
 				showLoader();
 				$.ajax({
-					url: "/xhr.php?f=bteamstatus&bid=' . (int)$storeData['id'] . '&status=" + val,
-					success: function() { hideLoader(); }
+					method: "PATCH",
+					url: "/api/stores/' . $storeData['id'] . '",
+					data:  { \'teamStatus\': val},
+					success: function() { hideLoader(); },
+					error: function(xhr) { hideLoader(); pulseError("Error during status update (" + xhr.status + ")"); }
 				});
 			});
 		');
@@ -77,9 +71,9 @@ class StoreUserView extends View
 
 		$out = $this->v_utils->v_form_select('team_status', [
 			'values' => [
-				['id' => 0, 'name' => 'Team ist voll'],
-				['id' => 1, 'name' => 'HelferInnen gesucht'],
-				['id' => 2, 'name' => 'Es werden dringend HelferInnen gesucht!']
+				['id' => 0, 'name' => $this->translator->trans('store.team.isfull')],
+				['id' => 1, 'name' => $this->translator->trans('menu.entry.helpwanted')],
+				['id' => 2, 'name' => $this->translator->trans('menu.entry.helpneeded')]
 			]
 		]);
 
@@ -99,7 +93,7 @@ class StoreUserView extends View
 
 			$storeRows[$i] = [
 				['cnt' => '<a class="linkrow ui-corner-all" href="/?page=fsbetrieb&id=' . $store['id'] . '">' . $store['name'] . '</a>'],
-				['cnt' => $store['str'] . ' ' . $store['hsnr']],
+				['cnt' => $store['str']],
 				['cnt' => $store['plz']],
 				['cnt' => $status]
 			];
@@ -111,12 +105,13 @@ class StoreUserView extends View
 		}
 
 		$head = [
-			['name' => 'Name', 'width' => 180],
-			['name' => 'Anschrift'],
-			['name' => 'Postleitzahl', 'width' => 90],
-			['name' => 'Status', 'width' => 50]];
+			['name' => $this->translator->trans('storelist.name'), 'width' => 180],
+			['name' => $this->translator->trans('storelist.addressdata')],
+			['name' => $this->translator->trans('storelist.zipcode'), 'width' => 90],
+			['name' => $this->translator->trans('storelist.status'), 'width' => 50]
+		];
 		if ($isRegion) {
-			$head[] = ['name' => 'Region'];
+			$head[] = ['name' => $this->translator->trans('region.type.region')];
 		}
 
 		$table = $this->v_utils->v_tablesorter($head, $storeRows);

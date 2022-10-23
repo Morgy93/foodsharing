@@ -1,5 +1,0 @@
-#!/bin/bash
-
-echo "This command does not work right now, it needs reimplementing now we use webpack."
-
-exit 1

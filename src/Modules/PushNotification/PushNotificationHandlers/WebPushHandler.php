@@ -28,6 +28,7 @@ class WebPushHandler implements PushNotificationHandlerInterface
 		];
 
 		$this->webpush = new WebPush($auth);
+		$this->webpush->setAutomaticPadding(0);
 		$this->translator = $translator;
 	}
 
@@ -40,14 +41,14 @@ class WebPushHandler implements PushNotificationHandlerInterface
 	}
 
 	/**
-	 * @param string[] $subscriptionData an array with subscription strings in JSON format
+	 * @param string[] $subscriptionData an map of ID to subscription data in JSON format
 	 */
 	public function sendPushNotificationsToClients(array $subscriptionData, PushNotification $notification): array
 	{
 		$payload = $this->makePayload($notification);
 		$deadSubscriptions = [];
 
-		foreach ($subscriptionData as $subscriptionAsJson) {
+		foreach ($subscriptionData as $subscriptionId => $subscriptionAsJson) {
 			$subscriptionArray = json_decode($subscriptionAsJson, true);
 
 			// Fix inconsistent definition of encoding by some clients
@@ -60,7 +61,7 @@ class WebPushHandler implements PushNotificationHandlerInterface
 			$endpoint = $messageSentReport->getEndpoint();
 
 			if ($messageSentReport->isSubscriptionExpired()) {
-				$deadSubscriptions[] = $subscriptionAsJson;
+				$deadSubscriptions[] = $subscriptionId;
 			}
 
 			// logging
@@ -86,21 +87,22 @@ class WebPushHandler implements PushNotificationHandlerInterface
 
 		if ($notification instanceof MessagePushNotification) {
 			// set body
-			$payloadArray['options']['body'] = $notification->getBody();
+			$payloadArray['options']['body'] = $notification->getMessage()->body;
 			// set time stamp
-			$payloadArray['options']['timestamp'] = $notification->getTime()->getTimestamp() * 1000; // timestamp needs to be in milliseconds
+			$payloadArray['options']['timestamp'] = $notification->getMessage()->sentAt->getTimestamp() * 1000; // timestamp needs to be in milliseconds
 			// set action
 			$payloadArray['options']['data']['action'] = ['page' => 'conversations', 'params' => [$notification->getConversationId()]]; // this thing will be resolved to a url by urls.js on client side
 			// Set title
+			$userName = $notification->getAuthor()->name ?? $this->translator->trans('dashboard.deleted_user');
 			if ($notification->getConversationName() !== null) {
 				$payloadArray['title'] = $this->translator->trans(
 					'chat.notification_named_conversation',
-					['{foodsaver}' => $notification->getSender(), '{conversation}' => $notification->getConversationName()]
+					['{foodsaver}' => $userName, '{conversation}' => $notification->getConversationName()]
 				);
 			} else {
 				$payloadArray['title'] = $this->translator->trans(
 					'chat.notification_unnamed_conversation',
-					['{foodsaver}' => $notification->getSender()]
+					['{foodsaver}' => $userName]
 				);
 			}
 		} else {

@@ -53,7 +53,7 @@ class BasketXhr extends Control
 				],
 				JSON_THROW_ON_ERROR
 			);
-			exit();
+			exit;
 		}
 	}
 
@@ -222,7 +222,6 @@ class BasketXhr extends Control
 			'status' => 1,
 			'script' => '
 				pulseInfo("' . $this->translator->trans('basket.published') . '");
-				basketStore.loadBaskets();
 				$(".xhrDialog").dialog("close");
 				$(".xhrDialog").dialog("destroy");
 				$(".xhrDialog").remove();',
@@ -270,12 +269,12 @@ class BasketXhr extends Control
 		$xhr = new Xhr();
 
 		if (isset($_GET['coordinates']) && $basket = $this->basketGateway->listNearbyBasketsByDistance(
-				$this->session->id(),
-				[
-					'lat' => $_GET['coordinates'][0],
-					'lon' => $_GET['coordinates'][1],
-				]
-			)) {
+			$this->session->id(),
+			[
+				'lat' => $_GET['coordinates'][0],
+				'lon' => $_GET['coordinates'][1],
+			]
+		)) {
 			$xhr->addData('baskets', $basket);
 		}
 
@@ -362,9 +361,9 @@ class BasketXhr extends Control
 		$dia->addContent(
 			'<div>
 				<img src="' . $this->imageService->img($request['fs_photo']) . '" style="float: left; margin-right: 10px;">
-				<p>' . $this->translator->trans('Anfragezeitpunkt:', [
-					'{time}' => $this->timeHelper->niceDate($request['time_ts']),
-				]) . '</p>
+				<p>' . $this->translator->trans('request_time') . ' '
+				. $this->timeHelper->niceDate($request['time_ts'])
+				. '</p>
 				<div class="clear"></div>
 			</div>'
 			. $this->v_utils->v_form_radio('fetchstate', [
@@ -476,7 +475,6 @@ class BasketXhr extends Control
 				'status' => 1,
 				'script' => '
 					pulseInfo("' . $this->translator->trans('basket.published') . '");
-					basketStore.loadBaskets();
 					$(".xhrDialog").dialog("close");
 					$(".xhrDialog").dialog("destroy");
 					$(".xhrDialog").remove();

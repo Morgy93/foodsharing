@@ -4,51 +4,55 @@ namespace Foodsharing\RestApi;
 
 use Foodsharing\Lib\Session;
 use Foodsharing\Modules\Core\DBConstants\Region\RegionIDs;
-use Foodsharing\Modules\Core\DBConstants\Region\Type;
+use Foodsharing\Modules\Core\DBConstants\Unit\UnitType;
 use Foodsharing\Modules\Foodsaver\FoodsaverGateway;
 use Foodsharing\Modules\Region\RegionGateway;
 use Foodsharing\Modules\Search\SearchGateway;
-use Foodsharing\Modules\Search\SearchHelper;
-use Foodsharing\Modules\Search\SearchIndexGenerator;
+use Foodsharing\Modules\Search\SearchTransactions;
 use Foodsharing\Permissions\ForumPermissions;
+use Foodsharing\Permissions\SearchPermissions;
 use FOS\RestBundle\Controller\AbstractFOSRestController;
 use FOS\RestBundle\Controller\Annotations as Rest;
 use FOS\RestBundle\Request\ParamFetcher;
 use OpenApi\Annotations as OA;
 use Symfony\Component\HttpFoundation\Response;
-use Symfony\Component\HttpKernel\Exception\HttpException;
+use Symfony\Component\HttpKernel\Exception\AccessDeniedHttpException;
+use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
+use Symfony\Component\HttpKernel\Exception\UnauthorizedHttpException;
 
 class SearchRestController extends AbstractFOSRestController
 {
 	private Session $session;
 	private SearchGateway $searchGateway;
-	private SearchIndexGenerator $searchIndexGenerator;
-	private SearchHelper $searchHelper;
+	private SearchTransactions $searchTransactions;
 	private ForumPermissions $forumPermissions;
+	private SearchPermissions $searchPermissions;
 
 	public function __construct(
 		Session $session,
 		SearchGateway $searchGateway,
-		SearchIndexGenerator $searchIndexGenerator,
-		SearchHelper $searchHelper,
-		ForumPermissions $forumPermissions
+		SearchTransactions $searchTransactions,
+		ForumPermissions $forumPermissions,
+		SearchPermissions $searchPermissions
 	) {
 		$this->session = $session;
 		$this->searchGateway = $searchGateway;
-		$this->searchIndexGenerator = $searchIndexGenerator;
-		$this->searchHelper = $searchHelper;
+		$this->searchTransactions = $searchTransactions;
 		$this->forumPermissions = $forumPermissions;
+		$this->searchPermissions = $searchPermissions;
 	}
 
 	/**
-	 * @Rest\Get("search/legacyindex")
+	 * @OA\Tag(name="search")
+	 *
+	 * @Rest\Get("search/index")
 	 */
 	public function getSearchLegacyIndexAction(): Response
 	{
 		if (!$this->session->may()) {
-			throw new HttpException(403);
+			throw new AccessDeniedHttpException();
 		}
-		$data = $this->searchIndexGenerator->generateIndex($this->session->id());
+		$data = $this->searchTransactions->generateIndex();
 
 		$view = $this->view($data, 200);
 
@@ -56,29 +60,38 @@ class SearchRestController extends AbstractFOSRestController
 	}
 
 	/**
+	 * @OA\Tag(name="search")
+	 *
 	 * @Rest\Get("search/user")
 	 * @Rest\QueryParam(name="q", description="Search query.")
+	 * @Rest\QueryParam(name="regionId", requirements="\d+", nullable=true, description="Restricts the search to a region")
 	 */
 	public function listUserResultsAction(ParamFetcher $paramFetcher, Session $session, FoodsaverGateway $foodsaverGateway, RegionGateway $regionGateway): Response
 	{
 		if (!$session->id()) {
-			throw new HttpException(403);
+			throw new UnauthorizedHttpException('', 'not logged in');
 		}
 
 		$q = $paramFetcher->get('q');
+		$regionId = $paramFetcher->get('regionId');
+		if (!empty($regionId) && !$this->searchPermissions->maySearchInRegion($regionId)) {
+			throw new AccessDeniedHttpException('insufficient permissions to search in that region');
+		}
 
 		if (preg_match('/^[0-9]+$/', $q) && $foodsaverGateway->foodsaverExists((int)$q)) {
 			$user = $foodsaverGateway->getFoodsaverName((int)$q);
 			$results = [['id' => (int)$q, 'value' => $user . ' (' . (int)$q . ')']];
 		} else {
-			if (in_array(RegionIDs::EUROPE_WELCOME_TEAM, $this->session->listRegionIDs(), true) ||
+			if (!empty($regionId)) {
+				$regions = [$regionId];
+			} elseif (in_array(RegionIDs::EUROPE_WELCOME_TEAM, $this->session->listRegionIDs(), true) ||
 				$this->session->may('orga')) {
 				$regions = null;
 			} else {
 				$regions = array_column(array_filter(
 					$regionGateway->listForFoodsaver($session->id()),
 					function ($v) {
-						return in_array($v['type'], [Type::WORKING_GROUP, Type::CITY, Type::REGION, TYPE::BIG_CITY, TYPE::DISTRICT, Type::PART_OF_TOWN]);
+						return in_array($v['type'], UnitType::getSearchableUnitTypes());
 					}
 				), 'id');
 				$ambassador = $regionGateway->getFsAmbassadorIds($session->id());
@@ -109,21 +122,23 @@ class SearchRestController extends AbstractFOSRestController
 	/**
 	 * General search endpoint that returns foodsavers, stores, and regions.
 	 *
+	 * @OA\Tag(name="search")
+	 *
 	 * @Rest\Get("search/all")
 	 * @Rest\QueryParam(name="q", description="Search query.")
 	 */
 	public function searchAction(ParamFetcher $paramFetcher): Response
 	{
 		if (!$this->session->may()) {
-			throw new HttpException(403);
+			throw new UnauthorizedHttpException('');
 		}
 
 		$q = $paramFetcher->get('q');
 		if (empty($q)) {
-			throw new HttpException(400);
+			throw new BadRequestHttpException();
 		}
 
-		$results = $this->searchHelper->search($q);
+		$results = $this->searchTransactions->search($q);
 
 		return $this->handleView($this->view($results, 200));
 	}
@@ -151,13 +166,16 @@ class SearchRestController extends AbstractFOSRestController
 	 */
 	public function searchForumTitleAction(int $groupId, int $subforumId, ParamFetcher $paramFetcher): Response
 	{
-		if (!$this->session->may() || !$this->forumPermissions->mayAccessForum($groupId, $subforumId)) {
-			throw new HttpException(403);
+		if (!$this->session->id()) {
+			throw new UnauthorizedHttpException('');
+		}
+		if (!$this->forumPermissions->mayAccessForum($groupId, $subforumId)) {
+			throw new AccessDeniedHttpException();
 		}
 
 		$q = $paramFetcher->get('q');
 		if (empty($q)) {
-			throw new HttpException(400);
+			throw new BadRequestHttpException();
 		}
 
 		$results = $this->searchGateway->searchForumTitle($q, $groupId, $subforumId);

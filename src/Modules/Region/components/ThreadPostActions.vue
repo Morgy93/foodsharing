@@ -5,7 +5,7 @@
         v-if="canGiveEmoji"
         ref="emojiSelector"
         v-b-tooltip.hover
-        title="Eine Reaktion hinzufügen"
+        :title="$i18n('addreaction')"
         text="+"
         class="emoji-dropdown"
         size="sm"
@@ -25,22 +25,24 @@
         v-for="(users, key) in reactionsWithUsers"
         :key="key"
       >
-        <a
-          v-b-tooltip.hover
-          :title="concatUsers(users)"
+        <b-link
+          v-b-tooltip="concatUsers(users)"
           class="btn btn-sm"
-          :class="[gaveIThisReaction(key) ? 'btn-primary' : 'btn-secondary']"
+          :class="[gaveIThisReaction(key) ? 'btn-secondary' : 'btn-primary']"
           @click="toggleReaction(key)"
         >
           {{ users.length }}x <Emoji :name="key" />
-        </a>
+        </b-link>
       </span>
     </div>
 
-    <span class="divider text-black-50 mx-1" />
-
+    <span
+      v-if="mayReply || mayDelete"
+      class="divider text-black-50 mx-1"
+    />
     <a
-      class="btn btn-sm btn-secondary"
+      v-if="mayReply"
+      class="btn btn-sm btn-primary"
       @click="$emit('reply')"
     >
       {{ $i18n('button.answer') }}
@@ -48,23 +50,13 @@
     <a
       v-if="mayDelete"
       v-b-tooltip.hover
-      title="Beitrag löschen"
+      :title="$i18n('forum.post.delete')"
       class="btn btn-sm btn-danger"
       @click="$refs.confirmDelete.show()"
     >
       <i class="fas fa-trash-alt" />
     </a>
 
-    <!-- <a
-      v-if="mayEdit"
-      v-b-tooltip.hover
-      title="Beitrag bearbeiten"
-      class="btn btn-sm btn-secondary"
-      @click="$emit('edit')">
-      <i class="fas fa-pencil-alt" />
-    </a> -->
-
-    <!-- delete confirm modal -->
     <b-modal
       v-if="mayDelete"
       ref="confirmDelete"
@@ -82,16 +74,14 @@
 </template>
 
 <script>
-import pickBy from 'lodash.pickby'
-
-import { BDropdown, BModal, VBTooltip } from 'bootstrap-vue'
+import { BDropdown, BModal, VBTooltip, BLink } from 'bootstrap-vue'
 
 import Emoji from '@/components/Emoji'
 import emojiList from '@/emojiList.json'
-import { user } from '@/server-data'
+import DataUser from '@/stores/user'
 
 export default {
-  components: { BDropdown, Emoji, BModal },
+  components: { BDropdown, Emoji, BModal, BLink },
   directives: { VBTooltip },
   props: {
     reactions: {
@@ -102,6 +92,10 @@ export default {
       type: Boolean,
       default: false,
     },
+    /**
+     * Whether the user can write a reply or send emoji reactions. This is disabled in closed threads.
+     */
+    mayReply: { type: Boolean, default: true },
   },
   data () {
     return {
@@ -110,23 +104,29 @@ export default {
   },
   computed: {
     reactionsWithUsers () {
-      return pickBy(this.reactions, users => users.length > 0)
+      // https://github.com/you-dont-need/You-Dont-Need-Lodash-Underscore#_pickby
+      const reactArr = Object.entries(this.reactions)
+      const filtered = reactArr.filter(([_, reaction]) => reaction.length > 0)
+      return Object.fromEntries(filtered)
     },
     canGiveEmoji () {
-      return Object.keys(this.emojisToGive).length > 0
+      return this.mayReply && Object.keys(this.emojisToGive).length > 0
     },
     emojisToGive () {
-      return pickBy(this.emojis, (symbol, key) => !this.gaveIThisReaction(key))
+      // https://github.com/you-dont-need/You-Dont-Need-Lodash-Underscore#_pickby
+      const emojisArr = Object.entries(this.emojis)
+      const filtered = emojisArr.filter(([emoji]) => !this.gaveIThisReaction(emoji))
+      return Object.fromEntries(filtered)
     },
   },
   methods: {
     toggleReaction (key, dontRemove = false) {
       if (this.gaveIThisReaction(key)) {
         if (!dontRemove) {
-          this.$emit('reactionRemove', key)
+          this.$emit('reaction-remove', key)
         }
       } else {
-        this.$emit('reactionAdd', key)
+        this.$emit('reaction-add', key)
       }
     },
     giveEmoji (key) {
@@ -137,10 +137,10 @@ export default {
       if (!this.reactions[key]) {
         return false
       }
-      return !!this.reactions[key].find(r => r.id === user.id)
+      return !!this.reactions[key].find(r => r.id === DataUser.getters.getUserId())
     },
     concatUsers (users) {
-      const names = users.map(u => u.id === user.id ? 'Du' : u.name)
+      const names = users.map(u => u.id === DataUser.getters.getUserId() ? this.$i18n('globals.you') : u.name)
       if (names.length === 1) {
         return names[0]
       }

@@ -5,28 +5,29 @@
       <span class="user-picture mr-2">
         <Avatar
           :url="thread.lastPost.author.avatar"
-          :sleep-status="thread.lastPost.author.sleepStatus"
+          :is-sleeping="thread.lastPost.author.sleepStatus"
           :size="50"
         />
       </span>
-      <div class="flex-grow-1 d-flex flex-wrap-reverse flex-sm-nowrap">
+      <div class="text-truncate flex-grow-1 d-flex flex-wrap-reverse flex-sm-nowrap">
         <div
-          class="thread-main px-1 mr-1 align-self-center flex-grow-1 flex-shrink-1 flex-sm-noshrink"
+          class="text-truncate thread-main px-1 mr-1 align-self-center flex-grow-1 flex-shrink-1 flex-sm-noshrink"
           :class="{'font-weight-bold': thread.isSticky}"
         >
-          <span class="thread-title d-inline">
+          <span class="thread-title d-inline" :class="titleClass">
+            <i v-if="isClosed" class="fas fa-lock" :title="$i18n('forum.thread.closed')" />
             {{ thread.title }}
           </span>
         </div>
         <div
-          v-b-tooltip="$dateFormat(lastPostDate, 'full-long')"
+          v-b-tooltip="$dateFormatter.dateTime(lastPostDate)"
           class="last-post p-1 ui-corner-all align-self-center"
         >
           <span class="info d-inline d-sm-block">
             {{ $i18n('forum.from', { name: thread.lastPost.author.name || '' }) }}
           </span>
           <span class="time d-inline d-sm-block">
-            {{ $dateDistanceInWords(lastPostDate) }}
+            {{ $dateFormatter.relativeTime(lastPostDate) }}
           </span>
         </div>
       </div>
@@ -36,9 +37,7 @@
 
 <script>
 import Avatar from '@/components/Avatar'
-
-import dateFnsParseISO from 'date-fns/parseISO'
-import { url } from '@/urls'
+import ThreadStatus from './ThreadStatus'
 
 export default {
   components: { Avatar },
@@ -47,10 +46,16 @@ export default {
   },
   computed: {
     threadUrl () {
-      return url('forum', this.thread.regionId, this.thread.regionSubId, this.thread.id)
+      return this.$url('forum', this.thread.regionId, this.thread.regionSubId, this.thread.id)
     },
     lastPostDate () {
-      return dateFnsParseISO(this.thread.lastPost.createdAt)
+      return new Date(Date.parse(this.thread.lastPost.createdAt))
+    },
+    isClosed () {
+      return this.thread.status === ThreadStatus.THREAD_CLOSED
+    },
+    titleClass () {
+      return this.isClosed ? 'thread-title-closed' : ''
     },
   },
 }
@@ -69,6 +74,9 @@ export default {
   .thread-title {
     font-size: 1.1em;
   }
+  .thread-title-closed {
+    color: var(--fs-color-gray-500);
+  }
 
   .last-post {
     min-width: 150px;
@@ -85,18 +93,18 @@ export default {
   &:hover {
     .user-picture,
     .thread-title {
-      color: var(--white);
+      color: var(--fs-color-light);
     }
 
     .user-picture .avatar ::v-deep img {
-      box-shadow: 0 0 0 1px var(--white);
+      box-shadow: 0 0 0 1px var(--fs-color-light);
     }
 
     @media screen and (min-width: 576px) {
       .last-post {
         &, .info, .time {
-          color: var(--fs-brown);
-          background-color: var(--white);
+          color: var(--fs-color-primary-500);
+          background-color: var(--fs-color-light);
         }
       }
     }

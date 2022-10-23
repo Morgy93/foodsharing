@@ -9,7 +9,7 @@ use Foodsharing\Modules\Activity\DTO\ActivityFilterCategory;
 use Foodsharing\Modules\Activity\DTO\ActivityUpdate;
 use Foodsharing\Modules\Activity\DTO\ActivityUpdateMailbox as MailboxUpdate;
 use Foodsharing\Modules\Activity\DTO\ImageActivityFilter;
-use Foodsharing\Modules\Core\DBConstants\Region\Type;
+use Foodsharing\Modules\Core\DBConstants\Unit\UnitType;
 use Foodsharing\Modules\Mailbox\MailboxGateway;
 use Foodsharing\Utility\ImageHelper;
 use Symfony\Contracts\Translation\TranslatorInterface;
@@ -54,7 +54,7 @@ class ActivityTransactions
 				$option = ActivityFilter::create($b['name'], $b['id'],
 					!isset($excluded['bezirk-' . $b['id']])
 				);
-				if ($b['type'] == Type::WORKING_GROUP) {
+				if (UnitType::isGroup($b['type'])) {
 					$groupOptions[] = $option;
 				} else {
 					$regionOptions[] = $option;
@@ -90,14 +90,14 @@ class ActivityTransactions
 		}
 
 		return [
-			ActivityFilterCategory::create('bezirk', $this->translator->trans('search.mygroups'),
-				$this->translator->trans('terminology.groups'), $groupOptions),
-			ActivityFilterCategory::create('bezirk', $this->translator->trans('search.myregions'),
-				$this->translator->trans('terminology.regions'), $regionOptions),
-			ActivityFilterCategory::create('mailbox', $this->translator->trans('terminology.mailboxes'),
-				$this->translator->trans('terminology.mailboxes'), $mailboxOptions),
-			ActivityFilterCategory::create('buddywall', $this->translator->trans('search.mybuddies'),
-				$this->translator->trans('terminology.buddies'), $buddyOptions)
+			ActivityFilterCategory::create('bezirk', $this->translator->trans('globals.type.my_groups'),
+				$this->translator->trans('globals.type.groups'), $groupOptions),
+			ActivityFilterCategory::create('bezirk', $this->translator->trans('globals.type.my_regions'),
+				$this->translator->trans('globals.type.regions'), $regionOptions),
+			ActivityFilterCategory::create('mailbox', $this->translator->trans('globals.type.my_mailboxes'),
+				$this->translator->trans('globals.type.mailboxes'), $mailboxOptions),
+			ActivityFilterCategory::create('buddywall', $this->translator->trans('globals.type.my_buddies'),
+				$this->translator->trans('globals.type.buddies'), $buddyOptions)
 		];
 	}
 
@@ -169,7 +169,7 @@ class ActivityTransactions
 				$u['body'] ?? '',
 				$u['event_region'],
 				'',
-				$this->imageHelper->img($u['fs_photo'], 50),
+				$u['fs_photo'] ?? '',
 				$u['gallery'] ?? [],
 				$replyUrl,
 				$u['fs_id'],
@@ -194,7 +194,7 @@ class ActivityTransactions
 				$u['body'] ?? '',
 				$u['fsp_location'],
 				'',
-				$this->imageHelper->img($u['fs_photo'], 50),
+				$u['fs_photo'] ?? '',
 				$u['gallery'] ?? [],
 				null,
 				$u['fs_id'],
@@ -240,7 +240,7 @@ class ActivityTransactions
 				$u['body'] ?? '',
 				$u['fs_name'],
 				$is_own ? '_own' : '',
-				$this->imageHelper->img($u['fs_photo'], 50),
+				$u['fs_photo'] ?? '',
 				$u['gallery'] ?? [],
 				null,
 				$u['fs_id'],
@@ -334,11 +334,6 @@ class ActivityTransactions
 
 			$forumTypeString = $is_bot ? 'botforum' : 'forum';
 
-			$replyUrl = '/xhrapp.php?app=bezirk&m=quickreply&bid=' . (int)$u['bezirk_id']
-				. '&tid=' . (int)$u['id']
-				. '&pid=' . (int)$u['last_post_id']
-				. '&sub=' . $forumTypeString;
-
 			$out[] = ActivityUpdate::create(
 				'forum',
 				Carbon::createFromTimestamp($u['update_time_ts']),
@@ -346,9 +341,9 @@ class ActivityTransactions
 				$u['post_body'] ?? '',
 				$u['bezirk_name'],
 				$is_bot ? '_bot' : '',
-				$this->imageHelper->img($u['foodsaver_photo'], 50),
+				$u['foodsaver_photo'] ?? '',
 				[],
-				$replyUrl,
+				null,
 				(int)$u['foodsaver_id'],
 				$u['foodsaver_name'],
 				(int)$u['id'],
@@ -377,7 +372,7 @@ class ActivityTransactions
 				$u['text'] ?? '',
 				$u['region_name'],
 				'',
-				$this->imageHelper->img($u['foodsaver_photo'], 50),
+				$u['foodsaver_photo'] ?? '',
 				null,
 				null,
 				$u['foodsaver_id'],

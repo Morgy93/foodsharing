@@ -17,7 +17,10 @@ use FOS\RestBundle\Controller\Annotations as Rest;
 use FOS\RestBundle\Request\ParamFetcher;
 use OpenApi\Annotations as OA;
 use Symfony\Component\HttpFoundation\Response;
-use Symfony\Component\HttpKernel\Exception\HttpException;
+use Symfony\Component\HttpKernel\Exception\AccessDeniedHttpException;
+use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
+use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
+use Symfony\Component\HttpKernel\Exception\UnauthorizedHttpException;
 
 class VotingRestController extends AbstractFOSRestController
 {
@@ -50,13 +53,16 @@ class VotingRestController extends AbstractFOSRestController
 	 */
 	public function getPoll(int $pollId): Response
 	{
+		if (!$this->session->id()) {
+			throw new UnauthorizedHttpException('');
+		}
 		$poll = $this->votingTransactions->getPoll($pollId, true);
 		if (is_null($poll)) {
-			throw new HttpException(404);
+			throw new NotFoundHttpException();
 		}
 
 		if (!$this->votingPermissions->maySeePoll($poll)) {
-			throw new HttpException(403);
+			throw new AccessDeniedHttpException();
 		}
 
 		return $this->handleView($this->view($poll, 200));
@@ -73,8 +79,11 @@ class VotingRestController extends AbstractFOSRestController
 	 */
 	public function listPolls(int $groupId): Response
 	{
+		if (!$this->session->id()) {
+			throw new UnauthorizedHttpException('');
+		}
 		if (!$this->votingPermissions->mayListPolls($groupId)) {
-			throw new HttpException(403);
+			throw new AccessDeniedHttpException();
 		}
 
 		$polls = $this->votingGateway->listPolls($groupId);
@@ -98,14 +107,17 @@ class VotingRestController extends AbstractFOSRestController
 	 */
 	public function voteAction(int $pollId, ParamFetcher $paramFetcher): Response
 	{
+		if (!$this->session->id()) {
+			throw new UnauthorizedHttpException('');
+		}
 		// check if poll exists and user may vote
 		$poll = $this->votingGateway->getPoll($pollId, false);
 		if (is_null($poll)) {
-			throw new HttpException(404);
+			throw new NotFoundHttpException();
 		}
 
 		if (!$this->votingPermissions->mayVote($poll)) {
-			throw new HttpException(403);
+			throw new AccessDeniedHttpException();
 		}
 
 		// convert option indices to integers to avoid type problems
@@ -115,7 +127,7 @@ class VotingRestController extends AbstractFOSRestController
 
 		// check if voting options are valid
 		if (!$this->votingTransactions->vote($poll, $options)) {
-			throw new HttpException(400);
+			throw new BadRequestHttpException();
 		}
 
 		return $this->handleView($this->view([], 200));
@@ -141,11 +153,12 @@ class VotingRestController extends AbstractFOSRestController
 	 * @Rest\RequestParam(name="type", nullable=false, requirements="\d+")
 	 * @Rest\RequestParam(name="options", nullable=false)
 	 * @Rest\RequestParam(name="notifyVoters", nullable=false)
+	 * @Rest\RequestParam(name="shuffleOptions", default=true)
 	 */
 	public function createPollAction(ParamFetcher $paramFetcher): Response
 	{
 		if (!$this->session->id()) {
-			throw new HttpException(401);
+			throw new UnauthorizedHttpException('');
 		}
 
 		// parse and check parameters
@@ -153,34 +166,35 @@ class VotingRestController extends AbstractFOSRestController
 		$poll->name = trim($paramFetcher->get('name'));
 		$poll->description = trim($paramFetcher->get('description'));
 		if (empty($poll->name) || empty($poll->description)) {
-			throw new HttpException(400, 'empty name or description: ' . $poll->name . ', ' . $poll->description);
+			throw new BadRequestHttpException('empty name or description: ' . $poll->name . ', ' . $poll->description);
 		}
 
 		$poll->startDate = DateTime::createFromFormat(DateTime::ISO8601, $paramFetcher->get('startDate'));
 		$poll->endDate = DateTime::createFromFormat(DateTime::ISO8601, $paramFetcher->get('endDate'));
 		if (!$poll->startDate || !$poll->endDate || $poll->startDate >= $poll->endDate
 		|| Carbon::now()->add($this->votingPermissions->editTimeAfterPollCreation()) >= $poll->startDate) {
-			throw new HttpException(400, 'invalid start or end date');
+			throw new BadRequestHttpException('invalid start or end date');
 		}
 
 		$poll->scope = (int)$paramFetcher->get('scope');
 		if (!VotingScope::isValidScope($poll->scope)) {
-			throw new HttpException(400, 'invalid scope');
+			throw new BadRequestHttpException('invalid scope');
 		}
 		$poll->type = (int)$paramFetcher->get('type');
 		if (!VotingType::isValidType($poll->type)) {
-			throw new HttpException(400, 'invalid poll type');
+			throw new BadRequestHttpException('invalid poll type');
 		}
 
 		$poll->regionId = (int)$paramFetcher->get('regionId');
 		if (!$this->votingPermissions->mayCreatePoll($poll->regionId)) {
-			throw new HttpException(403);
+			throw new AccessDeniedHttpException();
 		}
 
 		$poll->authorId = $this->session->id();
 
 		// parse options and check that they are not empty
 		$poll->options = $this->parseOptions($paramFetcher->get('options'));
+		$poll->shuffleOptions = boolval($paramFetcher->get('shuffleOptions'));
 
 		// create poll
 		$this->votingTransactions->createPoll($poll, $paramFetcher->get('notifyVoters'));
@@ -209,16 +223,16 @@ class VotingRestController extends AbstractFOSRestController
 		// check permissions and get poll
 		$userId = $this->session->id();
 		if (!$userId) {
-			throw new HttpException(401);
+			throw new UnauthorizedHttpException('');
 		}
 
 		$poll = $this->votingGateway->getPoll($pollId, false);
 		if (is_null($poll)) {
-			throw new HttpException(404);
+			throw new NotFoundHttpException();
 		}
 
 		if (!$this->votingPermissions->mayEditPoll($poll)) {
-			throw new HttpException(403);
+			throw new AccessDeniedHttpException();
 		}
 
 		// check name and description
@@ -252,19 +266,26 @@ class VotingRestController extends AbstractFOSRestController
 		$options = array_map(function ($x) {
 			$o = new PollOption();
 			$o->text = trim($x);
-			if (empty($o->text)) {
-				throw new HttpException(400, 'option text must not be empty');
-			}
 
 			return $o;
 		}, $data);
 		if (empty($options)) {
-			throw new HttpException(400, 'poll does not have any options');
+			throw new BadRequestHttpException('poll does not have any options');
 		}
+
+		// check that no option text is empty
 		foreach ($options as $option) {
 			if (empty($option->text)) {
-				throw new HttpException(400, 'option text must not be empty');
+				throw new BadRequestHttpException('option text must not be empty');
 			}
+		}
+
+		// check that no two option texts are equal
+		$texts = array_map(function ($o) {
+			return $o->text;
+		}, $options);
+		if (sizeof(array_unique($texts)) != sizeof($texts)) {
+			throw new BadRequestHttpException('poll options must not have the same text');
 		}
 
 		return $options;
@@ -282,13 +303,16 @@ class VotingRestController extends AbstractFOSRestController
 	 */
 	public function deletePollAction(int $pollId): Response
 	{
+		if (!$this->session->id()) {
+			throw new UnauthorizedHttpException('');
+		}
 		$poll = $this->votingGateway->getPoll($pollId, false);
 		if (is_null($poll)) {
-			throw new HttpException(404);
+			throw new NotFoundHttpException();
 		}
 
 		if (!$this->votingPermissions->mayEditPoll($poll)) {
-			throw new HttpException(403);
+			throw new AccessDeniedHttpException();
 		}
 
 		$this->votingTransactions->deletePoll($pollId);

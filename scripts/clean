@@ -1,6 +1,6 @@
 #!/bin/bash
 
-export FS_ENV=dev
+export CURRENT_USER=$(id -u):$(id -g)
 
 set -o errexit
 
@@ -8,26 +8,28 @@ dir=$(dirname "$0")
 
 base_dir=$(cd "$dir/.." && pwd)
 
-# shellcheck source=./inc.sh
-source "$dir"/inc.sh
+# shellcheck source=./__helping-functions.sh
+source "$dir"/__helping-functions.sh
 
-echo "Removing local node_modules"
-(cd "$dir" && rm -rf node_modules)
+# Remove docker dev containers
+FS_ENV=dev
+"$dir"/containers-remove
+# Remove docker test containers
+FS_ENV="test"
+"$dir"/containers-remove
 
-echo "Removing containers"
-"$dir"/rm
-FS_ENV="test" "$dir"/rm
+log-header "Removing local node_modules"
+find $base_dir -name "node_modules" -type d -prune | xargs du -chs # prints the folders
+find $base_dir -name "node_modules" -type d -prune -exec rm -rf '{}' + # removes the folders
 
-echo "Removing directories"
+log-header "Removing directories"
+rm -vrf \
+  "$base_dir"/assets \
+  "$base_dir"/images \
+  "$base_dir"/data \
+  "$base_dir"/cache \
+  "$base_dir"/var \
+  "$base_dir"/tmp \
+  "$base_dir"/tests/_output
 
-rm -rf \
-  "$base_dir"/images/basket \
-  "$base_dir"/data/attach \
-  "$base_dir"/data/mailattach \
-  "$base_dir"/data/pass \
-  "$base_dir"/data/uploads \
-  "$base_dir"/data/visite \
-  "$base_dir"/cache/searchindex \
-  "$base_dir"/tmp
-
-echo "All clean!"
+log-header "All clean!"

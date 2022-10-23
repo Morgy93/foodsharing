@@ -11,7 +11,7 @@ if (isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] == 'on') {
 	$protocol = 'https';
 }
 
-$base_domain = '://lmr.local/';
+$host = 'lmr.local/';
 
 define('PROTOCOL', $protocol);
 define('DB_HOST', 'db');
@@ -20,8 +20,8 @@ define('DB_PASS', 'root');
 define('DB_DB', 'foodsharing');
 define('INFLUX_DSN', 'udp+influxdb://influxdb:8089/foodsharing');
 define('ERROR_REPORT', E_ALL);
-define('BASE_URL', $protocol . $base_domain);
-define('WEBCAL_URL', 'webcal' . $base_domain);
+define('BASE_URL', $protocol . '://' . $host);
+define('WEBCAL_URL', 'webcal://' . $host);
 define('DEFAULT_EMAIL', 'noreply@foodsharing.de');
 define('SUPPORT_EMAIL', 'it@foodsharing.network');
 define('DEFAULT_EMAIL_NAME', 'foodsharing-Freiwillige');
@@ -33,17 +33,20 @@ define('PLATFORM_MAILBOX_HOST', 'foodsharing.network');
 
 define('MAILBOX_OWN_DOMAINS', ['foodsharing.network', 'lebensmittelretten.de', 'foodsharing.de']);
 
-define('MAILER_HOST', 'maildev');
+define('MAILER_HOST', 'smtp://maildev:25');
 define('MEM_ENABLED', true);
 
-define('SOCK_URL', 'http://chat:1338/');
+define('SOCK_URL', 'http://websocket:1338/');
 define('REDIS_HOST', 'redis');
 define('REDIS_PORT', 6379);
+
+define('DELAY_MICRO_SECONDS_BETWEEN_MAILS', 1330000);
 
 define('BOUNCE_IMAP_HOST', null);
 define('BOUNCE_IMAP_USER', null);
 define('BOUNCE_IMAP_PASS', null);
 define('BOUNCE_IMAP_PORT', null);
+define('BOUNCE_IMAP_SERVICE_OPTION', null);
 
 define('IMAP', []);
 
@@ -55,3 +58,6 @@ define('CSRF_TEST_TOKEN', '__TESTTOKEN__');
 
 define('WEBPUSH_PUBLIC_KEY', 'BGBBW8RtRe4LpGT+6Q7BJGGSbgcULM/w9BrxBLva2AVf85Pj7t4xrViT3lsxn8Dp0fpJ1SPoDbwP1n6gt3/R7ps='); // test public key
 define('WEBPUSH_PRIVATE_KEY', 'z5g0ssYryhDhQnwVAZ2Q2oOiqF3ZngJzkLXMrww8gDU='); // test private key
+
+// Test key for firebase cloud messaging
+define('FCM_KEY', '');

@@ -18,7 +18,7 @@ $this->translator->trans('fsp.acceptName', ['{name}' => $foodSharePoint['name']]
 In `client/src/i18n.js` we build a basic replacement function that imports translation resources, replaces variables if needed, and returns the translated value if one exists. Fallbacks are implemented for English and German, which are currently the only languages for which we bundle translations.  
 To use this function elsewhere, import the module like so:
 ```
-import i18n from '@/i18n'
+import i18n from '@/helper/i18n'
 pulseInfo(i18n('basket.not_active'))
 ```
 - As part of Vue templates

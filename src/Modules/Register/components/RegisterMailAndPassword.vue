@@ -1,7 +1,7 @@
 <template>
   <form class="my-1">
     <div class="col-sm-auto">
-      <div class="msg-inside info">
+      <div class="alert alert-info">
         <i class="fas fa-info-circle" />
         {{ $i18n('register.mail_hint') }}
       </div>
@@ -13,6 +13,7 @@
     <div class="col-sm-auto">
       <input
         id="email"
+        autocomplete="username"
         :value="email"
         :class="{ 'is-invalid': $v.email.$error }"
         type="email"
@@ -42,6 +43,7 @@
         <input
           id="password"
           v-model.lazy="$v.password.$model"
+          autocomplete="new-password"
           :class="{ 'is-invalid': $v.password.$error }"
           type="password"
           name="password"
@@ -69,6 +71,7 @@
           <input
             id="confirmPassword"
             v-model.lazy="$v.confirmPassword.$model"
+            autocomplete="new-password"
             :class="{ 'is-invalid': $v.confirmPassword.$error }"
             type="password"
             name="confirmPassword"
@@ -87,7 +90,7 @@
           </div>
         </div>
         <button
-          class="btn btn-secondary ml-3 mt-3"
+          class="btn btn-primary ml-3 mt-3"
           type="submit"
           @click.prevent="redirect()"
         >
@@ -129,6 +132,10 @@ export default {
     isValid () {
       return this.isMailValidForRegistration && !this.$v.$invalid && !this.isMailInvalid
     },
+  },
+  mounted () {
+    this.confirmPassword = this.password
+    this.isMailValidForRegistration = true
   },
   methods: {
     redirect () {

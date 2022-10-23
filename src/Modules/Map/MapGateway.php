@@ -4,6 +4,7 @@ namespace Foodsharing\Modules\Map;
 
 use Foodsharing\Modules\Core\BaseGateway;
 use Foodsharing\Modules\Core\Database;
+use Foodsharing\Modules\Core\DBConstants\Region\RegionPinStatus;
 use Foodsharing\Modules\Map\DTO\MapMarker;
 
 class MapGateway extends BaseGateway
@@ -44,6 +45,18 @@ class MapGateway extends BaseGateway
 
 		return array_map(function ($x) {
 			return MapMarker::create($x['id'], $x['lat'], $x['lon'], $x['bezirk_id']);
+		}, $markers);
+	}
+
+	public function getCommunityMarkers(): array
+	{
+		$markers = $this->db->fetchAllByCriteria('fs_region_pin', ['region_id', 'lat', 'lon'], [
+			'lat !=' => '',
+			'status' => RegionPinStatus::ACTIVE
+		]);
+
+		return array_map(function ($x) {
+			return MapMarker::create($x['region_id'], $x['lat'], $x['lon']);
 		}, $markers);
 	}
 

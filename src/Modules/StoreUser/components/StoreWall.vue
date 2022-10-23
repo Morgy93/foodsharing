@@ -38,13 +38,13 @@
         :managers="managers"
         :may-delete-everything="mayDeleteEverything"
         class="wallpost"
-        @deletePost="deletePost"
+        @delete-post="deletePost"
       />
     </ul>
     <b-link
       v-if="hasMorePosts"
       class="d-block text-muted text-center py-2"
-      @click="$emit('toggle-compact')"
+      @click="isExcerptListExpanded = true"
     >
       {{ $i18n('wall.see-more') }}
     </b-link>
@@ -55,23 +55,22 @@
 import { getStoreWall, deleteStorePost, writeStorePost } from '@/api/stores'
 import WallPost from '../../WallPost/components/WallPost'
 import { showLoader, hideLoader, pulseError } from '@/script'
-import i18n from '@/i18n'
-
-const COMPACT_LENGTH = 3
 
 export default {
   components: { WallPost },
   props: {
     storeId: { type: Number, required: true },
-    compact: { type: Boolean, default: false },
+    showOnlyExcerpt: { type: Boolean, default: false },
     managers: { type: Array, default: () => [] },
     mayWritePost: { type: Boolean, required: true },
     mayDeleteEverything: { type: Boolean, required: true },
+    numberOfVisiblePostsPerExcerptIteration: { type: Number, default: 3 },
   },
   data () {
     return {
       posts: undefined,
       newPostText: '',
+      isExcerptListExpanded: false,
     }
   },
   computed: {
@@ -79,10 +78,10 @@ export default {
       return this.newPostText.trim().length > 0
     },
     displayedPosts () {
-      return this.compact ? (this.posts || []).slice(0, COMPACT_LENGTH) : this.posts
+      return (this.showOnlyExcerpt && !this.isExcerptListExpanded) ? (this.posts || []).slice(0, this.numberOfVisiblePostsPerExcerptIteration) : this.posts
     },
     hasMorePosts () {
-      return this.compact ? (this.posts && this.posts.length > COMPACT_LENGTH) : false
+      return (this.showOnlyExcerpt && !this.isExcerptListExpanded) ? (this.posts && this.posts.length > this.numberOfVisiblePostsPerExcerptIteration) : false
     },
   },
   async created () {
@@ -103,7 +102,7 @@ export default {
         this.posts.unshift(newPost)
       } catch (e) {
         console.error(e)
-        pulseError(i18n('wall.error-create'))
+        pulseError(this.$i18n('wall.error-create'))
         this.newPostText = text
       } finally {
         hideLoader()
@@ -119,9 +118,9 @@ export default {
         }
       } catch (e) {
         if (e.code === 403) {
-          pulseError(i18n('wall.error-delete'))
+          pulseError(this.$i18n('wall.error-delete'))
         } else {
-          pulseError(i18n('error_unexpected'))
+          pulseError(this.$i18n('error_unexpected'))
           console.error(e.code)
         }
       } finally {
@@ -141,8 +140,8 @@ ul.posts {
   margin: 0;
 
   &.has-more-posts {
-    -webkit-mask-image: linear-gradient(to bottom, black 65%, transparent 100%);
-    mask-image: linear-gradient(to bottom, black 65%, transparent 100%);
+    -webkit-mask-image: linear-gradient(to bottom, black 65%, var(--fs-color-transparent) 100%);
+    mask-image: linear-gradient(to bottom, black 65%, var(--fs-color-transparent) 100%);
   }
 }
 </style>

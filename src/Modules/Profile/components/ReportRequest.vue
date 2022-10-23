@@ -1,6 +1,6 @@
 <template>
   <!-- eslint-disable vue/max-attributes-per-line -->
-  <div id="report_request" class="popbox bootstrap m-2">
+  <div id="report_request" class="popbox m-2">
     <div
       v-if="!isReportButtonEnabled"
     >
@@ -13,7 +13,7 @@
         </p>
         <p>
           {{ $i18n('profile.report.oldReportButtonTextPart3') }}
-          <a href="https://foodsharing.de/?page=blog&amp;sub=read&amp;id=255">in diesem Blogeintrag</a>
+          <a href="https://foodsharing.de/?page=blog&amp;sub=read&amp;id=255">{{ $i18n('profile.report.inthisblog') }}</a>
         </p>
       </div>
     </div>
@@ -92,7 +92,9 @@
       />
       <b-alert variant="info" show>
         <div>{{ $i18n('profile.report.mail') }}</div>
-        <a :href="'mailto:' + emailAddress">{{ emailAddress }}</a>
+        <a :href="$url('mailto_mail_foodsharing_network', mailboxName)">
+          {{ $url('mail_foodsharing_network', mailboxName) }}
+        </a>
       </b-alert>
       <b-button
         class="text-right"
@@ -111,7 +113,7 @@ import $ from 'jquery'
 
 import { addReport } from '@/api/report'
 import { pulseError, pulseInfo } from '@/script'
-import i18n from '@/i18n'
+import i18n from '@/helper/i18n'
 
 export default {
   props: {
@@ -127,7 +129,7 @@ export default {
     isReporterIdArbitrationAdmin: { type: Boolean, required: true },
     isReportButtonEnabled: { type: Boolean, required: true },
     reporterHasReportGroup: { type: Boolean, required: true },
-    mbName: { type: String, required: true },
+    mailboxName: { type: String, required: true },
   },
   data () {
     return {
@@ -135,18 +137,13 @@ export default {
       reportReason: null,
       storeList: null,
       reportReasonOptions: [
-        { value: null, text: 'Bitte wähle die Art der Meldung' },
-        { value: '1', text: 'Ist zu spät gekommen' },
-        { value: '2', text: 'Ist nicht zum abholen erschienen' },
-        { value: '10', text: 'Häufiges kurzfristiges Absagen der Abholungen ohne Ersatzsuche' },
-        { value: '15', text: 'Verkauft gerettete Lebensmittel' },
+        { value: null, text: this.$i18n('profile.report.kindofreport') },
+        { value: '1', text: this.$i18n('profile.report.late') },
+        { value: '2', text: this.$i18n('profile.report.noshow') },
+        { value: '10', text: this.$i18n('profile.report.cancellation') },
+        { value: '15', text: this.$i18n('profile.report.sells') },
       ],
     }
-  },
-  computed: {
-    emailAddress () {
-      return this.mbName + '@foodsharing.network'
-    },
   },
   methods: {
     async trySendReport () {

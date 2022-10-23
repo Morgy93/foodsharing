@@ -65,7 +65,7 @@ services:
             mailboxPassword: !php/const BOUNCE_IMAP_PASS
             port: !php/const BOUNCE_IMAP_PORT
             service: 'imap'
-            serviceOption: 'tls'
+            serviceOption: !php/const BOUNCE_IMAP_SERVICE_OPTION
             boxname: 'INBOX'
             maxMessages: 10000
             verbose: 0
@@ -84,17 +84,10 @@ services:
         arguments:
             - "@annotation_reader"
 
-    mailer.transport:
-        class: Swift_SmtpTransport
-        arguments:
-            - !php/const MAILER_HOST
-
-    Swift_Mailer:
-        class: Swift_Mailer
-        arguments:
-            - '@mailer.transport'
-
     Foodsharing\Modules\Message\Message:
+        autowire: false
+
+    Foodsharing\Modules\Foodsaver\Profile:
         autowire: false
 
     GuzzleHttp\Client:

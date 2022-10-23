@@ -1,3 +1,4 @@
+<!-- eslint-disable vue/max-attributes-per-line -->
 <template>
   <div
     :class="{disabledLoading: isLoading}"
@@ -17,6 +18,7 @@
       <div class="card-header text-white bg-primary">
         <div class="row m-1">
           <h4 class="text-truncate">
+            <i v-if="!isOpen" class="fas fa-lock mr-1" :title="$i18n('forum.thread.closed')" />
             {{ title }}
           </h4>
         </div>
@@ -25,10 +27,13 @@
         :is-following-bell.sync="isFollowingBell"
         :is-following-email.sync="isFollowingEmail"
         :is-sticky.sync="isSticky"
-        :show-sticky="mayModerate"
-        @toggle:follow-bell="updateFollowBell"
-        @toggle:follow-email="updateFollowEmail"
-        @toggle:sticky="updateStickyness"
+        :may-moderate="mayModerate"
+        :status="status"
+        @update:follow-bell="updateFollowBell"
+        @update:follow-email="updateFollowEmail"
+        @update:sticky="updateStickyness"
+        @close="close"
+        @open="open"
       />
       <div
         v-if="!isActive && mayModerate"
@@ -44,7 +49,7 @@
         </div>
         <div>
           <button
-            class="btn btn-secondary btn-sm"
+            class="btn btn-primary btn-sm"
             @click="activateThread"
           >
             <i class="fas fa-check" /> {{ $i18n('forum.thread.activate') }}
@@ -58,6 +63,8 @@
         </div>
       </div>
     </div>
+
+    <ThreadFastnavigationButton v-if="isFastNavigationVisible" :label="$i18n('forum.thread.navigate_to_newest_post')" @navigate="navigateToNewestPost" />
 
     <div
       v-for="post in posts"
@@ -74,13 +81,16 @@
         :may-edit="false"
         :is-loading="loadingPosts.indexOf(post.id) != -1"
         :created-at="new Date(post.createdAt)"
+        :may-reply="isOpen"
         @delete="deletePost(post)"
-        @reactionAdd="reactionAdd(post, arguments[0])"
-        @reactionRemove="reactionRemove(post, arguments[0])"
+        @reaction-add="reactionAdd(post, arguments[0])"
+        @reaction-remove="reactionRemove(post, arguments[0])"
         @reply="reply"
         @scroll="scrollToPost(post.id)"
       />
     </div>
+
+    <ThreadFastnavigationButton v-if="isFastNavigationVisible" :label="$i18n('forum.thread.navigate_to_oldest_post')" @navigate="navigateToOldestPost" />
 
     <div
       v-if="regionId"
@@ -90,9 +100,13 @@
         :is-following-bell="isFollowingBell"
         :is-following-email="isFollowingEmail"
         :is-sticky="isSticky"
-        @toggle:follow-bell="updateFollowBell"
-        @toggle:follow-email="updateFollowEmail"
-        @toggle:sticky="updateStickyness"
+        :may-moderate="mayModerate"
+        :status="status"
+        @update:follow-bell="updateFollowBell"
+        @update:follow-email="updateFollowEmail"
+        @update:sticky="updateStickyness"
+        @close="close"
+        @open="open"
       />
     </div>
 
@@ -111,6 +125,7 @@
       <strong>{{ $i18n('error_unexpected') }}:</strong> {{ errorMessage }}
     </div>
     <ThreadForm
+      v-if="isOpen"
       ref="form"
       :error-message="errorMessage"
       @submit="createPost"
@@ -137,14 +152,17 @@ import { BModal } from 'bootstrap-vue'
 import ThreadActions from './ThreadActions'
 import ThreadForm from './ThreadForm'
 import ThreadPost from './ThreadPost'
+import ThreadFastnavigationButton from './ThreadFastnavigationButton'
 import * as api from '@/api/forum'
 import { pulseError } from '@/script'
-import i18n from '@/i18n'
-import { user } from '@/server-data'
+import i18n from '@/helper/i18n'
+import DataUser from '@/stores/user'
 import { GET } from '@/browser'
+import { setThreadStatus } from '@/api/forum'
+import ThreadStatus from './ThreadStatus'
 
 export default {
-  components: { BModal, ThreadActions, ThreadForm, ThreadPost },
+  components: { BModal, ThreadActions, ThreadForm, ThreadPost, ThreadFastnavigationButton },
   props: {
     id: {
       type: Number,
@@ -168,11 +186,28 @@ export default {
       isLoading: false,
       loadingPosts: [],
       errorMessage: null,
+
+      status: ThreadStatus.THREAD_OPEN,
     }
   },
   computed: {
     userId () {
-      return user.id
+      return DataUser.getters.getUserId()
+    },
+    userFirstName () {
+      return DataUser.getters.getUserFirstName()
+    },
+    isOpen () {
+      return this.status === ThreadStatus.THREAD_OPEN
+    },
+    newestPostId () {
+      return this.posts[this.posts.length - 1].id
+    },
+    oldestPostId () {
+      return this.posts[0].id
+    },
+    isFastNavigationVisible () {
+      return this.posts.length > 2
     },
   },
   async created () {
@@ -193,6 +228,12 @@ export default {
         p.scrollIntoView({ behavior: 'smooth', block: 'center' })
       }
     },
+    navigateToNewestPost () {
+      this.scrollToPost(this.newestPostId)
+    },
+    navigateToOldestPost () {
+      this.scrollToPost(this.oldestPostId)
+    },
     reply (body) {
       // this.$refs.form.text = `> ${body.split('\n').join('\n> ')}\n\n${this.$refs.form.text}`
       this.$refs.form.focus()
@@ -211,6 +252,7 @@ export default {
           mayDelete: res.mayDelete,
           isFollowingEmail: res.isFollowingEmail,
           isFollowingBell: res.isFollowingBell,
+          status: res.status,
         })
         this.isLoading = false
       } catch (err) {
@@ -278,11 +320,11 @@ export default {
     async reactionAdd (post, key, onlyLocally = false) {
       if (post.reactions[key]) {
         // reaction alrready in list, increase count by 1
-        if (post.reactions[key].find(r => r.id === user.id)) return // already given - abort
-        post.reactions[key].push({ id: user.id, name: user.firstname })
+        if (post.reactions[key].find(r => r.id === this.userId)) return // already given - abort
+        post.reactions[key].push({ id: this.userId, name: this.userName })
       } else {
         // reaction not in the list yet, append it
-        this.$set(post.reactions, key, [{ id: user.id, name: user.firstname }])
+        this.$set(post.reactions, key, [{ id: this.userId, name: this.userName }])
       }
 
       if (!onlyLocally) {
@@ -296,7 +338,7 @@ export default {
       }
     },
     async reactionRemove (post, key, onlyLocally = false) {
-      const reactionUser = post.reactions[key].find(r => r.id === user.id)
+      const reactionUser = post.reactions[key].find(r => r.id === this.userId)
 
       if (!reactionUser) return
 
@@ -320,8 +362,8 @@ export default {
         body: body,
         reactions: {},
         author: {
-          name: `${user.firstname} ${user.lastname}`,
-          avatar: user.avatar['130'].replace(/^(\/images\/130_q_)/, ''),
+          name: `${this.userFirstName} ${DataUser.getters.getUserLastName()}`,
+          avatar: DataUser.getters.getAvatar(),
         },
       }
       this.loadingPosts.push(-1)
@@ -360,6 +402,22 @@ export default {
         this.isLoading = false
         pulseError(i18n('error_unexpected'))
       }
+    },
+    async close () {
+      await this.setStatus(ThreadStatus.THREAD_CLOSED)
+    },
+    async open () {
+      await this.setStatus(ThreadStatus.THREAD_OPEN)
+    },
+    async setStatus (status) {
+      this.isLoading = true
+      try {
+        await setThreadStatus(this.id, status)
+        this.status = status
+      } catch (err) {
+        pulseError(i18n('error_unexpected'))
+      }
+      this.isLoading = false
     },
   },
 }

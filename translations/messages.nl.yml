@@ -1,0 +1,15 @@
+geb_datum: Geboortedatum (JJJJ-MM-DD)
+nachname: Familienaam
+address: Adres
+email: e-mailadres
+lat: breedtegraad
+lon: lengtegraad
+quiz:
+  question: kwestie
+group:
+  photo: Foto
+  description: Beschrijving
+  name: Naam
+  function:
+    welcome: Begroeting
+fax: fax

@@ -14,17 +14,11 @@ class Db
 	 * @var mysqli
 	 */
 	private $mysqli;
-	private $values;
 
 	/**
 	 * @var DebugBar
 	 */
 	private $debug;
-
-	/**
-	 * @var Mem
-	 */
-	protected $mem;
 
 	/**
 	 * @var Session
@@ -36,25 +30,12 @@ class Db
 	 */
 	protected $influxMetrics;
 
-	public function __construct()
-	{
-		$this->values = [];
-	}
-
 	/**
 	 * @required
 	 */
 	public function setDebug(DebugBar $debug)
 	{
 		$this->debug = $debug;
-	}
-
-	/**
-	 * @required
-	 */
-	public function setMem(Mem $mem)
-	{
-		$this->mem = $mem;
 	}
 
 	/**
@@ -118,21 +99,6 @@ class Db
 	}
 
 	/**
-	 * @deprecated use db->fetchAllValues
-	 */
-	public function qCol($sql)
-	{
-		$out = [];
-		if ($res = $this->sql($sql)) {
-			while ($row = $res->fetch_array()) {
-				$out[] = $row[0];
-			}
-		}
-
-		return $out;
-	}
-
-	/**
 	 * @deprecated use db->fetch
 	 */
 	public function qRow($sql)
@@ -190,14 +156,6 @@ class Db
 	}
 
 	/**
-	 * @deprecated not needed when passing data as prepared statement
-	 */
-	public function dateval($val)
-	{
-		return '"' . $this->safe($val) . '"';
-	}
-
-	/**
 	 * @deprecated use strip_tags() until the frontend can escape properly!
 	 * (The string escaping part is not needed anymore with prepared statements)
 	 */
@@ -252,21 +210,5 @@ class Db
 			FROM 	`fs_' . $table . '`
 			WHERE 	`id` = ' . (int)$id . '
 		');
-	}
-
-	/**
-	 * @deprecated use db->fetchValueByCriteria instead if value is expected to exist, use db->fetchByCriteria instead
-	 */
-	public function getVal($field, $table, $id)
-	{
-		if (!isset($this->values[$field . '-' . $table . '-' . $id])) {
-			$this->values[$field . '-' . $table . '-' . $id] = $this->qOne('
-			SELECT 	`' . $field . '`
-			FROM 	`fs_' . $table . '`
-			WHERE 	`id` = ' . (int)$id . '
-		');
-		}
-
-		return $this->values[$field . '-' . $table . '-' . $id];
 	}
 }

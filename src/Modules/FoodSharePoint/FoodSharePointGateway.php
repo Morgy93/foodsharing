@@ -169,7 +169,7 @@ class FoodSharePointGateway extends BaseGateway
 	public function listFoodSharePointsNested(array $regionIds = []): array
 	{
 		if (!empty($regionIds) && ($foodSharePoint = $this->db->fetchAll(
-				'
+			'
 			SELECT 	ft.`id`,
 					ft.`name`,
 					ft.`picture`,
@@ -184,7 +184,7 @@ class FoodSharePointGateway extends BaseGateway
 			AND 	ft.`status` = 1
 			ORDER BY ft.`name`
 		'
-			))
+		))
 		) {
 			$out = [];
 
@@ -491,7 +491,7 @@ class FoodSharePointGateway extends BaseGateway
 		return [
 			'thumb' => 'images/' . str_replace('/', '/crop_1_60_', $picture),
 			'head' => 'images/' . str_replace('/', '/crop_0_528_', $picture),
-			'orig' => 'images/' . ($picture),
+			'orig' => 'images/' . $picture,
 		];
 	}
 }

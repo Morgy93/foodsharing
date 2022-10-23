@@ -1,5 +1,5 @@
 <template>
-  <div class="container bootstrap">
+  <div>
     <div v-if="mayPost">
       <div class="form-group">
         <textarea
@@ -15,7 +15,7 @@
         class="text-right"
       >
         <button
-          class="btn btn-secondary btn-sm"
+          class="btn btn-primary btn-sm"
           @click="addPost"
         >
           {{ i18n('button.send') }}
@@ -25,7 +25,7 @@
         Sending...
       </span>
       <span v-if="error">
-        Es ist ein Fehler aufgetreten
+        {{ $i18n('error_unexpected') }}
       </span>
     </div>
     <div class="wall-posts">
@@ -54,7 +54,7 @@
               </span>
               <div class="foot">
                 <span class="time">
-                  {{ post.createdAt }} Uhr von {{ post.author.name }}
+                  {{ post.createdAt }} {{ $i18n('time_from') }} {{ post.author.name }}
                 </span>
                 <button
                   v-if="mayDelete"
@@ -72,7 +72,7 @@
 </template>
 
 <script>
-import i18n from '@/i18n'
+import i18n from '@/helper/i18n'
 import { getWallPosts, addPost, deletePost } from '@/api/wall'
 
 export default {

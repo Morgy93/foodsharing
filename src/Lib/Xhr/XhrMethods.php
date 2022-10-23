@@ -2,35 +2,26 @@
 
 namespace Foodsharing\Lib\Xhr;
 
-use Exception;
-use Flourish\fImage;
 use Foodsharing\Lib\Db\Db;
-use Foodsharing\Lib\Db\Mem;
 use Foodsharing\Lib\Session;
 use Foodsharing\Lib\View\Utils;
 use Foodsharing\Modules\Bell\BellGateway;
 use Foodsharing\Modules\Bell\DTO\Bell;
 use Foodsharing\Modules\Core\DBConstants\Bell\BellType;
 use Foodsharing\Modules\Core\DBConstants\Email\EmailStatus;
-use Foodsharing\Modules\Core\DBConstants\Region\Type;
 use Foodsharing\Modules\Core\DBConstants\Region\WorkgroupFunction;
-use Foodsharing\Modules\Core\DBConstants\Store\TeamStatus;
+use Foodsharing\Modules\Core\DBConstants\Unit\UnitType;
 use Foodsharing\Modules\Email\EmailGateway;
 use Foodsharing\Modules\Foodsaver\FoodsaverGateway;
 use Foodsharing\Modules\Group\GroupFunctionGateway;
 use Foodsharing\Modules\Group\GroupGateway;
 use Foodsharing\Modules\Mailbox\MailboxGateway;
-use Foodsharing\Modules\Message\MessageGateway;
-use Foodsharing\Modules\Region\ForumGateway;
 use Foodsharing\Modules\Region\RegionGateway;
 use Foodsharing\Modules\Store\StoreGateway;
 use Foodsharing\Permissions\NewsletterEmailPermissions;
 use Foodsharing\Permissions\RegionPermissions;
 use Foodsharing\Permissions\StorePermissions;
-use Foodsharing\Utility\DataHelper;
 use Foodsharing\Utility\EmailHelper;
-use Foodsharing\Utility\IdentificationHelper;
-use Foodsharing\Utility\ImageHelper;
 use Foodsharing\Utility\Sanitizer;
 use Intervention\Image\ImageManager;
 use Symfony\Component\HttpFoundation\JsonResponse;
@@ -40,15 +31,12 @@ use Symfony\Contracts\Translation\TranslatorInterface;
 class XhrMethods
 {
 	private Db $model;
-	private Mem $mem;
 	private Session $session;
 	private Utils $v_utils;
 	private GroupFunctionGateway $groupFunctionGateway;
 	private GroupGateway $groupGateway;
-	private MessageGateway $messageGateway;
 	private RegionGateway $regionGateway;
 	private StorePermissions $storePermissions;
-	private ForumGateway $forumGateway;
 	private BellGateway $bellGateway;
 	private StoreGateway $storeGateway;
 	private FoodsaverGateway $foodsaverGateway;
@@ -57,23 +45,17 @@ class XhrMethods
 	private ImageManager $imageManager;
 	private Sanitizer $sanitizerService;
 	private EmailHelper $emailHelper;
-	private ImageHelper $imageService;
-	private IdentificationHelper $identificationHelper;
-	private DataHelper $dataHelper;
 	private NewsletterEmailPermissions $newsletterEmailPermissions;
 	private RegionPermissions $regionPermissions;
 	private TranslatorInterface $translator;
 
 	public function __construct(
-		Mem $mem,
 		Session $session,
 		Db $model,
 		Utils $viewUtils,
 		GroupFunctionGateway $groupFunctionGateway,
 		GroupGateway $groupGateway,
-		MessageGateway $messageGateway,
 		RegionGateway $regionGateway,
-		ForumGateway $forumGateway,
 		BellGateway $bellGateway,
 		StoreGateway $storeGateway,
 		StorePermissions $storePermissions,
@@ -83,22 +65,16 @@ class XhrMethods
 		ImageManager $imageManager,
 		Sanitizer $sanitizerService,
 		EmailHelper $emailHelper,
-		ImageHelper $imageService,
-		IdentificationHelper $identificationHelper,
-		DataHelper $dataHelper,
 		NewsletterEmailPermissions $newsletterEmailPermissions,
 		RegionPermissions $regionPermission,
 		TranslatorInterface $translator
 	) {
-		$this->mem = $mem;
 		$this->session = $session;
 		$this->model = $model;
 		$this->v_utils = $viewUtils;
 		$this->groupFunctionGateway = $groupFunctionGateway;
 		$this->groupGateway = $groupGateway;
-		$this->messageGateway = $messageGateway;
 		$this->regionGateway = $regionGateway;
-		$this->forumGateway = $forumGateway;
 		$this->bellGateway = $bellGateway;
 		$this->storeGateway = $storeGateway;
 		$this->storePermissions = $storePermissions;
@@ -108,9 +84,6 @@ class XhrMethods
 		$this->imageManager = $imageManager;
 		$this->sanitizerService = $sanitizerService;
 		$this->emailHelper = $emailHelper;
-		$this->imageService = $imageService;
-		$this->identificationHelper = $identificationHelper;
-		$this->dataHelper = $dataHelper;
 		$this->newsletterEmailPermissions = $newsletterEmailPermissions;
 		$this->regionPermissions = $regionPermission;
 		$this->translator = $translator;
@@ -170,167 +143,6 @@ class XhrMethods
 		$response->send();
 	}
 
-	public function xhr_uploadPicture($data)
-	{
-		$func = '';
-		$id = strtolower($data['id']);
-		$id = preg_replace('/[^a-z0-9_]/', '', $id);
-		if (isset($_FILES['uploadpic'])) {
-			if ($this->is_allowed($_FILES['uploadpic'])) {
-				$filename = str_replace('.jpeg', '.jpg', strtolower($_FILES['uploadpic']['name']));
-				$extension = strtolower(substr($filename, strlen($filename) - 4, 4));
-
-				$path = ROOT_DIR . 'images/' . $id;
-
-				if (!is_dir($path)) {
-					mkdir($path);
-				}
-
-				$newname = uniqid() . $extension;
-
-				move_uploaded_file($_FILES['uploadpic']['tmp_name'], $path . '/orig_' . $newname);
-
-				copy($path . '/orig_' . $newname, $path . '/' . $newname);
-				$image = new fImage($path . '/' . $newname);
-				$image->resize(600, 0);
-
-				$image->saveChanges();
-
-				if ($_GET['crop'] == 1) {
-					$func = 'pictureCrop';
-				} elseif (isset($_POST['resize'])) {
-					return $this->pictureResize([
-						'img' => $newname,
-						'id' => $id,
-						'resize' => $_POST['resize']
-					]);
-				}
-
-				return '<html><head></head><body onload="parent.' . $func . '(\'' . $id . '\',\'' . $newname . '\');"></body></html>';
-			}
-		}
-	}
-
-	public function xhr_cropagain($data)
-	{
-		$id = $this->session->id();
-		if ($photo = $this->model->getVal('photo', 'foodsaver', $id)) {
-			$path = ROOT_DIR . 'images';
-			$img = $photo;
-
-			$targ_w = $data['w'];
-			$targ_h = $data['h'];
-			$jpeg_quality = 100;
-
-			$ext = explode('.', $img);
-			$ext = end($ext);
-			$ext = strtolower($ext);
-
-			switch ($ext) {
-				case 'gif':
-					$img_r = imagecreatefromgif($path . '/' . $img);
-					break;
-				case 'jpg':
-					$img_r = imagecreatefromjpeg($path . '/' . $img);
-					break;
-				case 'png':
-					$img_r = imagecreatefrompng($path . '/' . $img);
-					break;
-				default:
-					$img_r = null;
-			}
-
-			$dst_r = @imagecreatetruecolor($targ_w, $targ_h);
-
-			if (!$dst_r) {
-				return '0';
-			}
-
-			imagecopyresampled($dst_r, $img_r, 0, 0, $data['x'], $data['y'], $targ_w, $targ_h, $data['w'], $data['h']);
-
-			$new_path = $path . '/crop_' . $img;
-
-			@unlink($new_path);
-
-			switch ($ext) {
-				case 'gif':
-					imagegif($dst_r, $new_path);
-					break;
-				case 'jpg':
-					imagejpeg($dst_r, $new_path, $jpeg_quality);
-					break;
-				case 'png':
-					imagepng($dst_r, $new_path, 0);
-					break;
-			}
-
-			copy($path . '/' . $img, $path . '/thumb_' . $img);
-			$image = new fImage($path . '/thumb_' . $img);
-			$image->resize(150, 0);
-			$image->saveChanges();
-
-			copy($path . '/' . $img, $path . '/thumb_crop_' . $img);
-			$image = new fImage($path . '/thumb_crop_' . $img);
-			$image->resize(200, 0);
-			$image->saveChanges();
-
-			return '1';
-		}
-
-		return '0';
-	}
-
-	public function xhr_pictureCrop($data)
-	{
-		/*
-		 * [ratio-val] => [{"x":37,"y":87,"w":500,"h":281},{"x":64,"y":0,"w":450,"h":450}]
-		 * [resize] => [250,528]
-		 */
-
-		$ratio = json_decode($_POST['ratio-val'], true);
-		$resize = json_decode($_POST['resize']);
-
-		// prevent path traversal
-		$data['id'] = preg_replace('/[^a-z0-9\-_]/', '', $data['id']);
-		$data['img'] = preg_replace('/[^a-z0-9\-_\.]/', '', $data['img']);
-
-		if (is_array($ratio) && is_array($resize) && count($resize) < 5) {
-			foreach ($ratio as $i => $r) {
-				$i = preg_replace('/%/', '', $i);
-				$i = preg_replace('/\.+/', '.', $i);
-				$this->cropImg(
-					ROOT_DIR . 'images/' . $data['id'],
-					$data['img'],
-					// @phpstan-ignore-next-line ($i = expects int, string|null given)
-					$i,
-					$r['x'], $r['y'],
-					$r['w'], $r['h']
-				);
-
-				foreach ($resize as $r) {
-					if ($r < 1000) {
-						$oldPath = ROOT_DIR . 'images/' . $data['id'] . '/crop_' . $i . '_' . $data['img'];
-						$newPath = ROOT_DIR . 'images/' . $data['id'] . '/crop_' . $i . '_' . $r . '_' . $data['img'];
-						copy($oldPath, $newPath);
-						$image = new fImage($newPath);
-						$image->resize($r, 0);
-						$image->saveChanges();
-					}
-				}
-			}
-
-			$oldPath = ROOT_DIR . 'images/' . $data['id'] . '/' . $data['img'];
-			$newPath = ROOT_DIR . 'images/' . $data['id'] . '/thumb_' . $data['img'];
-			copy($oldPath, $newPath);
-
-			$image = new fImage($newPath);
-			$image->resize(150, 0);
-			$image->saveChanges();
-
-			return '<html><head></head><body onload="parent.pictureReady(\'' . $data['id'] . '\',\'' . $data['img'] . '\');"></body></html>';
-		}
-	}
-
 	private function cropImg($path, $img, int $i, int $x, int $y, int $w, int $h)
 	{
 		if ($w > 2000) {
@@ -381,97 +193,6 @@ class XhrMethods
 				imagepng($dst_r, $new_path, 0);
 				break;
 		}
-	}
-
-	private function pictureResize($data)
-	{
-		$id = preg_replace('/[^a-z0-9\-_]/', '', $data['id']);
-		$img = preg_replace('/[^a-z0-9\-_\.]/', '', $data['img']);
-
-		$resize = json_decode($data['resize'], true);
-
-		if (is_array($resize) && count($resize) < 5) {
-			foreach ($resize as $r) {
-				if ($r < 1000) {
-					$r = (int)$r;
-					copy(ROOT_DIR . 'images/' . $id . '/' . $img, ROOT_DIR . 'images/' . $id . '/' . $r . '_' . $img);
-					$image = new fImage(ROOT_DIR . 'images/' . $id . '/' . $r . '_' . $img);
-					$image->resize($r, 0);
-					$image->saveChanges();
-				}
-			}
-		}
-
-		copy(ROOT_DIR . 'images/' . $id . '/' . $img, ROOT_DIR . 'images/' . $id . '/thumb_' . $img);
-		$image = new fImage(ROOT_DIR . 'images/' . $id . '/thumb_' . $img);
-		$image->resize(150, 0);
-		$image->saveChanges();
-
-		return '<html><head></head><body onload="parent.pictureReady(\'' . $id . '\',\'' . $img . '\');"></body></html>';
-	}
-
-	public function xhr_addPhoto($data)
-	{
-		if (!$this->session->may()) {
-			return XhrResponses::PERMISSION_DENIED;
-		}
-
-		$data = $this->dataHelper->getPostData();
-
-		if (isset($data['fs_id'])) {
-			$user_id = (int)$data['fs_id'];
-
-			if (isset($_FILES['photo']) && (int)$_FILES['photo']['size'] > 0) {
-				$ext = explode('.', $_FILES['photo']['name']);
-				$ext = strtolower(end($ext));
-
-				@unlink('./images/' . $user_id . '.' . $ext);
-
-				$file = $this->makeUnique() . '.' . $ext;
-				if (move_uploaded_file($_FILES['photo']['tmp_name'], './images/' . $file)) {
-					$image = new fImage('./images/' . $file);
-					$image->resize(800, 800);
-					$image->saveChanges();
-
-					copy('./images/' . $file, './images/thumb_crop_' . $file);
-					copy('./images/' . $file, './images/crop_' . $file);
-
-					$image = new fImage('./images/thumb_crop_' . $file);
-					$image->cropToRatio(35, 45);
-					$image->resize(200, 200);
-					$image->saveChanges();
-
-					$image = new fImage('./images/crop_' . $file);
-					$image->cropToRatio(35, 45);
-					$image->resize(600, 600);
-					$image->saveChanges();
-
-					copy('./images/thumb_crop_' . $file, './images/mini_q_' . $file);
-					$image = new fImage('./images/mini_q_' . $file);
-					$image->cropToRatio(1, 1);
-					$image->resize(35, 35);
-					$image->saveChanges();
-
-					copy('./images/thumb_crop_' . $file, './images/130_q_' . $file);
-					$image = new fImage('./images/130_q_' . $file);
-					$image->cropToRatio(1, 1);
-					$image->resize(130, 130);
-					$image->saveChanges();
-
-					@unlink('./tmp/tmp_' . $file);
-
-					$this->foodsaverGateway->updatePhoto($user_id, str_replace('/', '', $file));
-					$this->session->setPhoto($file);
-
-					return '<html><head></head><body onload="parent.uploadPhotoReady(' . $user_id . ',\'./images/mini_q_' . $file . '\');"></body></html>';
-				}
-			}
-		}
-	}
-
-	private function makeUnique()
-	{
-		return md5(date('Y-m-d H:i:s') . ':' . uniqid());
 	}
 
 	public function xhr_continueMail($data)
@@ -539,72 +260,6 @@ class XhrMethods
 		return 0;
 	}
 
-	public function xhr_uploadPhoto($data)
-	{
-		$func = '';
-
-		if (isset($_POST['action']) && $_POST['action'] == 'upload') {
-			$id = strip_tags($_POST['pic_id']);
-			if (isset($_FILES['uploadpic'])) {
-				$error = 0;
-				$uploaded = $_FILES['uploadpic']['tmp_name'];
-				// prevent path traversal
-				$uploaded = preg_replace('/%/', '', $uploaded);
-				$uploaded = preg_replace('/\.+/', '.', $uploaded);
-
-				$filename = $_FILES['uploadpic']['name'];
-				$filename = strtolower($filename);
-				$filename = str_replace('.jpeg', '.jpg', $filename);
-				$extension = strtolower(substr($filename, strlen($filename) - 4, 4));
-				if ($this->is_allowed($_FILES['uploadpic'])) {
-					try {
-						$file = $this->makeUnique() . $extension;
-						move_uploaded_file($uploaded, './tmp/' . $file);
-						$image = new fImage('./tmp/' . $file);
-						$image->resize(550, 0);
-						$image->saveChanges();
-						$func = 'parent.fotoupload(\'' . $file . '\',\'' . $id . '\');';
-					} catch (Exception $e) {
-						$func = 'parent.pic_error(\'' . $this->translator->trans('upload.image-problem') . '\',\'' . $id . '\');';
-					}
-				} else {
-					$func = 'parent.pic_error(\'' . $this->translator->trans('error_unexpected') . '\',\'' . $id . '\');';
-				}
-			}
-		} elseif (isset($_POST['action']) && $_POST['action'] == 'crop') {
-			$file = str_replace('/', '', $_POST['file']);
-
-			if ($img = $this->cropImage($file, $_POST['x'], $_POST['y'], $_POST['w'], $_POST['h'])) {
-				$id = strip_tags($_POST['pic_id']);
-
-				@unlink('images/' . $file);
-				@unlink('images/crop_' . $file);
-				@unlink('images/thumb_crop_' . $file);
-
-				copy('tmp/' . $file, 'images/' . $file);
-				copy('tmp/crop_' . $file, 'images/crop_' . $file);
-				copy('tmp/thumb_crop_' . $file, 'images/thumb_crop_' . $file);
-
-				@unlink('tmp/' . $file);
-				@unlink('tmp/crop_' . $file);
-				@unlink('tmp/thumb_crop_' . $file);
-
-				$this->makeThumbs($file);
-
-				$this->foodsaverGateway->updatePhoto($this->session->id(), $file);
-
-				$func = 'parent.picFinish(\'' . $img . '\',\'' . $id . '\');';
-			} else {
-				$func = 'alert(\'' . $this->translator->trans('error_unexpected') . '\');';
-			}
-		}
-
-		echo '<html>
-		<head><title>' . $this->translator->trans('picture_upload_widget.picture_upload') . '</title></head>
-		<body onload="' . $func . '"></body>
-		</html>';
-	}
-
 	private function is_allowed($img)
 	{
 		$img['name'] = strtolower($img['name']);
@@ -621,96 +276,6 @@ class XhrMethods
 		}
 
 		return false;
-	}
-
-	private function cropImage($image, $x, $y, $w, $h)
-	{
-		if ($w > 2000 || $h > 2000) {
-			return false;
-		}
-
-		$targ_w = 467;
-		$targ_h = 600;
-		$jpeg_quality = 100;
-
-		$ext = explode('.', $image);
-		$ext = end($ext);
-		$ext = strtolower($ext);
-
-		$img_r = null;
-
-		switch ($ext) {
-			case 'gif':
-				$img_r = imagecreatefromgif('./tmp/' . $image);
-				break;
-			case 'jpg':
-				$img_r = imagecreatefromjpeg('./tmp/' . $image);
-				break;
-			case 'png':
-				$img_r = imagecreatefrompng('./tmp/' . $image);
-				break;
-		}
-
-		if ($img_r === null) {
-			return false;
-		}
-
-		$dst_r = imagecreatetruecolor($targ_w, $targ_h);
-
-		imagecopyresampled($dst_r, $img_r, 0, 0, $x, $y, $targ_w, $targ_h, $w, $h);
-
-		@unlink('../tmp/crop_' . $image);
-
-		switch ($ext) {
-			case 'gif':
-				imagegif($dst_r, './tmp/crop_' . $image);
-				break;
-			case 'jpg':
-				imagejpeg($dst_r, './tmp/crop_' . $image, $jpeg_quality);
-				break;
-			case 'png':
-				imagepng($dst_r, './tmp/crop_' . $image, 0);
-				break;
-		}
-
-		if (file_exists('./tmp/crop_' . $image)) {
-			try {
-				copy('./tmp/crop_' . $image, './tmp/thumb_crop_' . $image);
-				$img = new fImage('./tmp/thumb_crop_' . $image);
-				$img->resize(200, 0);
-				$img->saveChanges();
-
-				return 'thumb_crop_' . $image;
-			} catch (Exception $e) {
-				return false;
-			}
-		}
-
-		return false;
-	}
-
-	private function makeThumbs($pic)
-	{
-		if (!file_exists(ROOT_DIR . 'images/mini_q_' . $pic) && file_exists(ROOT_DIR . 'images/' . $pic)) {
-			copy(ROOT_DIR . 'images/' . $pic, ROOT_DIR . 'images/mini_q_' . $pic);
-			copy(ROOT_DIR . 'images/' . $pic, ROOT_DIR . 'images/med_q_' . $pic);
-			copy(ROOT_DIR . 'images/' . $pic, ROOT_DIR . 'images/q_' . $pic);
-
-			$image = new fImage(ROOT_DIR . 'images/mini_q_' . $pic);
-			$image->cropToRatio(1, 1);
-			$image->resize(35, 35);
-			$image->saveChanges();
-
-			$image = new fImage(ROOT_DIR . 'images/med_q_' . $pic);
-			$image->cropToRatio(1, 1);
-			$image->resize(75, 75);
-			$image->saveChanges();
-
-			$image = new fImage(ROOT_DIR . 'images/q_' . $pic);
-			$image->cropToRatio(1, 1);
-			$image->resize(150, 150);
-			$image->saveChanges();
-		}
 	}
 
 	public function xhr_newregion($data)
@@ -795,7 +360,10 @@ class XhrMethods
 
 	public function xhr_bezirkTree($data)
 	{
-		$region = $this->regionGateway->getBezirkByParent($data['p'], $this->session->may('orga'));
+		$region = $this->regionGateway->getBezirkByParent($data['p'],
+			$this->regionPermissions->mayAdministrateRegions()
+			|| $this->newsletterEmailPermissions->mayAdministrateNewsletterEmail()
+		);
 		if (!$region) {
 			$out = ['status' => 0];
 		} else {
@@ -816,15 +384,6 @@ class XhrMethods
 		}
 
 		return json_encode($out);
-	}
-
-	public function xhr_bteamstatus($data)
-	{
-		$teamStatus = (int)$_GET['status'];
-		$storeId = (int)$_GET['bid'];
-		if ($this->storePermissions->mayEditStore($storeId) && TeamStatus::isValidStatus($teamStatus)) {
-			$this->storeGateway->setStoreTeamStatus($storeId, $teamStatus);
-		}
 	}
 
 	public function xhr_getBezirk($data)
@@ -875,14 +434,14 @@ class XhrMethods
 			$this->v_utils->v_form_select('type', [
 				'label' => $this->translator->trans('region.type.title'),
 				'values' => [
-					['id' => Type::CITY, 'name' => $this->translator->trans('region.type.city')],
-					['id' => Type::BIG_CITY, 'name' => $this->translator->trans('region.type.bigcity')],
-					['id' => Type::PART_OF_TOWN, 'name' => $this->translator->trans('region.type.townpart')],
-					['id' => Type::DISTRICT, 'name' => $this->translator->trans('region.type.district')],
-					['id' => Type::REGION, 'name' => $this->translator->trans('region.type.region')],
-					['id' => Type::FEDERAL_STATE, 'name' => $this->translator->trans('region.type.state')],
-					['id' => Type::COUNTRY, 'name' => $this->translator->trans('region.type.country')],
-					['id' => Type::WORKING_GROUP, 'name' => $this->translator->trans('region.type.workgroup')],
+					['id' => UnitType::CITY, 'name' => $this->translator->trans('region.type.city')],
+					['id' => UnitType::BIG_CITY, 'name' => $this->translator->trans('region.type.bigcity')],
+					['id' => UnitType::PART_OF_TOWN, 'name' => $this->translator->trans('region.type.townpart')],
+					['id' => UnitType::DISTRICT, 'name' => $this->translator->trans('region.type.district')],
+					['id' => UnitType::REGION, 'name' => $this->translator->trans('region.type.region')],
+					['id' => UnitType::FEDERAL_STATE, 'name' => $this->translator->trans('region.type.state')],
+					['id' => UnitType::COUNTRY, 'name' => $this->translator->trans('region.type.country')],
+					['id' => UnitType::WORKING_GROUP, 'name' => $this->translator->trans('region.type.workgroup')],
 				],
 			]),
 			$this->v_utils->v_form_select('workgroup_function', [
@@ -995,7 +554,7 @@ class XhrMethods
 						. $this->sanitizerService->jsSafe($b['name'])
 						. '</a>'
 					. '</h1>'
-					. '<p>' . $this->sanitizerService->jsSafe($b['str'] . ' ' . $b['hsnr']) . '</p>'
+					. '<p>' . $this->sanitizerService->jsSafe($b['str']) . '</p>'
 					. '<p>' . $this->sanitizerService->jsSafe($b['plz'] . ' ' . $b['stadt']) . '</p>'
 				. '</div><div class="clear"></div>';
 			}
@@ -1033,7 +592,7 @@ class XhrMethods
 
 		// Check for: Only a workgroup can have a function.
 		// If the workgroup is set to welcome Team - make sure there can be only one Welcome Team in a region.
-		if ($data['type'] != Type::WORKING_GROUP && $data['workgroup_function']) {
+		if (!UnitType::isGroup($data['type']) && $data['workgroup_function']) {
 			return json_encode([
 				'status' => 1,
 				'script' => 'pulseError("' . $this->translator->trans('group.function.invalid') . '");',
@@ -1138,7 +697,7 @@ class XhrMethods
 		// If the workgroup is moved it loses the old functions.
 		// else a region is moved, all workgroups loose their related targets
 		if ($oldRegionData['parent_id'] != $parentId) {
-			if ($oldRegionData['type'] == Type::WORKING_GROUP) {
+			if (UnitType::isGroup($oldRegionData['type'])) {
 				if ($oldRegionData['workgroup_function']) {
 					$this->groupFunctionGateway->deleteRegionFunction($regionId, $oldRegionData['workgroup_function']);
 				}

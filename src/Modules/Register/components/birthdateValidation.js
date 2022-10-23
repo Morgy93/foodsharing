@@ -1,11 +1,10 @@
-import differenceInCalendarYears from 'date-fns/differenceInCalendarYears'
-import isValid from 'date-fns/isValid'
+import dateFormatter from '@/helper/date-formatter'
 
 export function ageCheck (value) {
-  const age = differenceInCalendarYears(new Date(), new Date(value))
+  const age = dateFormatter.getDifferenceToNowInYears(value)
   return age >= 18 && age < 125
 }
 
 export function dateValid (value) {
-  return isValid(new Date(value))
+  return !isNaN((value instanceof Date ? value : new Date(value)).getTime())
 }

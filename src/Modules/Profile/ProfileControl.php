@@ -2,11 +2,13 @@
 
 namespace Foodsharing\Modules\Profile;
 
+use Carbon\Carbon;
 use Foodsharing\Modules\Basket\BasketGateway;
 use Foodsharing\Modules\Core\Control;
 use Foodsharing\Modules\Mailbox\MailboxGateway;
 use Foodsharing\Modules\Mails\MailsGateway;
 use Foodsharing\Modules\Region\RegionGateway;
+use Foodsharing\Modules\Store\PickupGateway;
 use Foodsharing\Permissions\ProfilePermissions;
 use Foodsharing\Permissions\ReportPermissions;
 
@@ -20,6 +22,7 @@ final class ProfileControl extends Control
 	private MailboxGateway $mailboxGateway;
 	private ReportPermissions $reportPermissions;
 	private ProfilePermissions $profilePermissions;
+	private PickupGateway $pickupGateway;
 
 	public function __construct(
 		MailsGateway $mailsGateway,
@@ -29,7 +32,8 @@ final class ProfileControl extends Control
 		BasketGateway $basketGateway,
 		MailboxGateway $mailboxGateway,
 		ReportPermissions $reportPermissions,
-		ProfilePermissions $profilePermissions
+		ProfilePermissions $profilePermissions,
+		PickupGateway $pickupGateway
 	) {
 		$this->view = $view;
 		$this->mailsGateway = $mailsGateway;
@@ -39,6 +43,7 @@ final class ProfileControl extends Control
 		$this->mailboxGateway = $mailboxGateway;
 		$this->reportPermissions = $reportPermissions;
 		$this->profilePermissions = $profilePermissions;
+		$this->pickupGateway = $pickupGateway;
 
 		parent::__construct();
 
@@ -104,23 +109,38 @@ final class ProfileControl extends Control
 	public function profile(): void
 	{
 		$fsId = $this->foodsaver['id'];
-		$regionId = $this->foodsaver['bezirk_id'];
 
-		$mayAdmin = $this->profilePermissions->mayAdministrateUserProfile($fsId, $regionId);
-		$maySeePickups = $this->profilePermissions->maySeePickups($fsId);
 		$maySeeStores = $this->profilePermissions->maySeeStores($fsId);
+		$maySeeCommitmentsStat = $this->profilePermissions->maySeeCommitmentsStat($fsId);
 
 		$wallPosts = $this->wallposts('foodsaver', $fsId);
 		$userStores = $maySeeStores ? $this->profileGateway->listStoresOfFoodsaver($fsId) : [];
-		$fetchDates = $maySeePickups ? $this->profileGateway->getNextDates($fsId, 50) : [];
 
-		$this->view->profile($wallPosts, $userStores, $fetchDates);
+		$profileCommitmentsStat[0]['respActStores'] = $maySeeCommitmentsStat ? $this->profileGateway->getResponsibleActiveStoresCount($fsId) : 0;
+		$pos = 0;
+		for ($i = 2; $i >= -2; --$i) {
+			$date = Carbon::now()->addWeeks($i);
+			$profileCommitmentsStat[$pos]['beginWeek'] = $date->startOfWeek()->format('d.m.y');
+			$profileCommitmentsStat[$pos]['endWeek'] = $date->endOfWeek()->format('d.m.y');
+			$profileCommitmentsStat[$pos]['week'] = $date->isoWeek();
+			$profileCommitmentsStat[$pos]['data'] = $maySeeCommitmentsStat ? $this->profileGateway->getPickupsStat($fsId, $i) : [];
+			$profileCommitmentsStat[$pos]['eventsCreated'] = $maySeeCommitmentsStat ? $this->profileGateway->getEventsCreatedCount($fsId, $i) : 0;
+			$profileCommitmentsStat[$pos]['eventsParticipated'] = $maySeeCommitmentsStat ? $this->profileGateway->getEventsParticipatedCount($fsId, $i) : [];
+			$profileCommitmentsStat[$pos]['baskets']['offered'] = $maySeeCommitmentsStat ? $this->profileGateway->getBasketsOfferedStat($fsId, $i) : [];
+			if ($i <= 0) {
+				$profileCommitmentsStat[$pos]['securePickupWeek'] = $maySeeCommitmentsStat ? $this->profileGateway->getSecuredPickupsCount($fsId, $i) : 0;
+				$profileCommitmentsStat[$pos]['baskets']['shared'] = $maySeeCommitmentsStat ? $this->profileGateway->getBasketsShared($fsId, $i) : 0;
+			}
+			++$pos;
+		}
+
+		$this->view->profile($wallPosts, $userStores, $profileCommitmentsStat);
 	}
 
 	private function profilePublic(array $profileData): void
 	{
 		$isVerified = $profileData['verified'] ?? 0;
-		$initials = ($profileData['name'] ?? '?')[0] . '.';
+		$initials = mb_substr($profileData['name'] ?? '?', 0, 1) . '.';
 		$regionId = $profileData['bezirk_id'] ?? null;
 		$regionName = ($regionId === null) ? '?' : $this->regionGateway->getRegionName($regionId);
 		$this->pageHelper->addContent(

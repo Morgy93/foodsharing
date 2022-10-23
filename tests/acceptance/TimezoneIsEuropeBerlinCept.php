@@ -9,13 +9,12 @@ $description = 'test foodbasket with bananas';
 
 $I->login($foodsaver['email'], 'password');
 $I->amOnPage('/');
-
-$I->click('.topbar-baskets > a');
+$I->see('Essenskörbe', ['css' => '.testing-basket-dropdown']);
+$I->click('.testing-basket-dropdown > .nav-link');
 $I->waitForText('Essenskorb anlegen');
+$I->click('.testing-basket-create');
 
-$I->click('Essenskorb anlegen');
 $I->waitForText('Wie lange soll dein Essenskorb gültig sein?');
-
 $I->fillField('description', $description);
 
 $min_time = new DateTime('-1 second', new DateTimeZone('Europe/Berlin')); /* microsends in PHP7.1+ make it fail because of rounding otherwise */
@@ -23,7 +22,7 @@ $min_time = new DateTime('-1 second', new DateTimeZone('Europe/Berlin')); /* mic
 $I->click('Essenskorb veröffentlichen');
 
 $I->waitForElementVisible('#pulse-info', 4);
-$I->see('Danke Dir! Der Essenskorb wurde veröffentlicht!');
+$I->see('Danke Dir, der Essenskorb wurde veröffentlicht');
 $max_time = new DateTime('+1 second', new DateTimeZone('Europe/Berlin'));
 
 $id = $I->grabFromDatabase('fs_basket', 'id', ['foodsaver_id' => $foodsaver['id'], 'description' => $description]);

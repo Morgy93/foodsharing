@@ -5,6 +5,7 @@ namespace Foodsharing\Modules\PushNotification;
 use Foodsharing\Modules\Core\BaseGateway;
 use Foodsharing\Modules\Core\Database;
 use Foodsharing\Modules\PushNotification\Notification\PushNotification;
+use Foodsharing\Modules\PushNotification\PushNotificationHandlers\AndroidPushHandler;
 use Foodsharing\Modules\PushNotification\PushNotificationHandlers\WebPushHandler;
 
 class PushNotificationGateway extends BaseGateway
@@ -14,9 +15,10 @@ class PushNotificationGateway extends BaseGateway
 	 */
 	private $pushNotificationHandlers = [];
 
-	public function __construct(Database $db, WebPushHandler $webPushHandler)
+	public function __construct(Database $db, WebPushHandler $webPushHandler, AndroidPushHandler $androidPushHandler)
 	{
 		parent::__construct($db);
+		$this->addHandler($androidPushHandler);
 		$this->addHandler($webPushHandler);
 	}
 
@@ -33,12 +35,24 @@ class PushNotificationGateway extends BaseGateway
 		]);
 	}
 
-	/**
-	 * @param string[] $subscriptionData - array of subscription data to be removed
-	 */
-	private function deleteSubscriptionsByData(array $subscriptionData)
+	public function deleteSubscription(int $foodsaverId, int $subscriptionId, string $type)
 	{
-		return $this->db->delete('fs_push_notification_subscription', ['data' => $subscriptionData]);
+		if (!$this->hasHandlerFor($type)) {
+			throw new \InvalidArgumentException("There is no handler registered to handle {$type}.");
+		}
+
+		return $this->db->delete('fs_push_notification_subscription', [
+			'foodsaver_id' => $foodsaverId,
+			'id' => $subscriptionId
+		]);
+	}
+
+	/**
+	 * @param int[] $subscriptionIds - array of subscription IDs to be removed
+	 */
+	private function deleteSubscriptions(array $subscriptionIds)
+	{
+		return $this->db->delete('fs_push_notification_subscription', ['id' => $subscriptionIds]);
 	}
 
 	public function addHandler(PushNotificationHandlerInterface $handler)
@@ -50,7 +64,7 @@ class PushNotificationGateway extends BaseGateway
 	{
 		$subscriptions = $this->db->fetchAllByCriteria(
 			'fs_push_notification_subscription',
-			['data', 'type'],
+			['id', 'data', 'type'],
 			['foodsaver_id' => $foodsaverId]
 		);
 
@@ -59,13 +73,16 @@ class PushNotificationGateway extends BaseGateway
 
 			foreach ($subscriptions as $subscription) {
 				if ($subscription['type'] === $handler::getTypeIdentifier()) {
-					$subscriptionDataForThisHandler[] = $subscription['data'];
+					$subscriptionDataForThisHandler[$subscription['id']] = $subscription['data'];
 				}
 			}
 
 			if (!empty($subscriptionDataForThisHandler)) {
 				$deadSubscriptions = $handler->sendPushNotificationsToClients($subscriptionDataForThisHandler, $notification);
-				$this->deleteSubscriptionsByData($deadSubscriptions);
+
+				// safety check: only remove dead subscriptions that were in the array for this handler
+				$subscriptionsToRemove = array_intersect($deadSubscriptions, array_keys($subscriptionDataForThisHandler));
+				$this->deleteSubscriptions($subscriptionsToRemove);
 			}
 		}
 	}

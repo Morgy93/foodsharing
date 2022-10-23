@@ -33,11 +33,11 @@ class LoginControl extends Control
 
 	public function unsubscribe()
 	{
-		$this->pageHelper->addTitle('Newsletter Abmeldung');
-		$this->pageHelper->addBread('Newsletter Abmeldung');
+		$this->pageHelper->addTitle($this->translator->trans('logincontrol.title'));
+		$this->pageHelper->addBread($this->translator->trans('logincontrol.bread'));
 		if (isset($_GET['e']) && $this->emailHelper->validEmail($_GET['e'])) {
 			$this->settingsGateway->unsubscribeNewsletter($_GET['e']);
-			$this->pageHelper->addContent($this->v_utils->v_info('Du wirst nun keine weiteren Newsletter von uns erhalten', 'Erfolg!'));
+			$this->pageHelper->addContent($this->v_utils->v_info($this->translator->trans('logincontrol.nomorenewsletter'), $this->translator->trans('logincontrol.success')));
 		}
 	}
 
@@ -59,6 +59,10 @@ class LoginControl extends Control
 	{
 		$fsId = $this->session->id();
 
+		if (is_null($fsId)) {
+			$this->routeHelper->goPage('login');
+		}
+
 		if ($this->loginService->newMailActivation($fsId)) {
 			$this->flashMessageHelper->info($this->translator->trans('dashboard.activation_mail_sent'));
 		} else {
@@ -70,7 +74,7 @@ class LoginControl extends Control
 
 	public function activate()
 	{
-		if ($this->loginGateway->activate($_GET['e'], $_GET['t'])) {
+		if (!empty($_GET['e']) && !empty($_GET['t']) && $this->loginGateway->activate($_GET['e'], $_GET['t'])) {
 			$this->session->set('email_is_activated', true);
 			$this->flashMessageHelper->success($this->translator->trans('register.activation_success'));
 			$this->routeHelper->goPage('login');
@@ -109,7 +113,7 @@ class LoginControl extends Control
 			}
 		}
 
-		if ($k !== false && $this->loginGateway->checkResetKey($k)) {
+		if ($k !== false) {
 			if ($this->loginGateway->checkResetKey($k)) {
 				if (isset($_POST['pass1'], $_POST['pass2'])) {
 					if ($_POST['pass1'] == $_POST['pass2']) {

@@ -1,7 +1,6 @@
 /* eslint-disable eqeqeq,camelcase */
 
 import $ from 'jquery'
-import _ from 'underscore'
 
 import 'jquery-slimscroll'
 import 'jquery-fancybox'
@@ -10,8 +9,7 @@ import 'jquery-ui-addons'
 import { GET, goTo, isMob } from '@/browser'
 import conv from '@/conv'
 import { requestStoreTeamMembership, declineStoreRequest } from '@/api/stores'
-import i18n from '@/i18n'
-import { u_printChildBezirke } from '@/becomeBezirk'
+import i18n from '@/helper/i18n'
 
 export { goTo, isMob, GET }
 
@@ -162,16 +160,6 @@ export function initialize () {
       if (el.val() != '') {
         el.removeClass('input-error')
       }
-    })
-
-    $('#uploadPhoto').dialog({
-      autoOpen: false,
-      modal: true,
-      buttons: {
-        [i18n('upload.image')]: function () {
-          uploadPhoto()
-        },
-      },
     })
   })
 }
@@ -330,16 +318,6 @@ export function reload () {
   window.location.reload()
 }
 
-export function uploadPhoto () {
-  $('#uploadPhoto form').trigger('submit')
-}
-
-export function uploadPhotoReady (id, file) {
-  $(`#miniq-${id}`).attr('src', file)
-  $('#uploadPhoto').dialog('close')
-  pulseInfo('Foto erfolgreich hochgeladen!')
-}
-
 export function ifconfirm (url, question, title) {
   if (question != undefined) {
     $('#dialog-confirm-msg').html(question)
@@ -352,113 +330,14 @@ export function ifconfirm (url, question, title) {
   $('#dialog-confirm').dialog('open')
 }
 
-export function picFinish (img, id) {
-  $(`#${id}-action`).val('upload')
-  $.fancybox.close()
-  const d = new Date()
-  const imgp = `${img}?${d.getTime()}`
-  $(`#${id}-open`).html(`<img src="images/${imgp}" /><input type="hidden" name="photo" value="${img}" />`)
-  hideLoader()
-  reload()
-}
-export function pic_error (msg, id) {
-  msg = `<div class="ui-widget"><div style="padding: 15px;" class="ui-state-error ui-corner-all"><p><span style="float: left; margin-right: .3em;" class="ui-icon ui-icon-alert"></span><strong>Fehler:</strong> ${msg}</p></div></div>`
-  $(`#${id}-placeholder`).html(msg)
-  hideLoader()
-}
-export function fotoupload (file, id) {
-  $(`#${id}-file`).val(file)
-  const d = new Date()
-  const img = `${file}?${d.getTime()}`
-
-  $(`#${id}-placeholder`).html(`<img src="./tmp/${img}" />`)
-  $(`#${id}-placeholder img`).Jcrop({
-    setSelect: [100, 0, 400, 400],
-    aspectRatio: 35 / 45,
-    onSelect: function (c) {
-      $(`#${id}-x`).val(c.x)
-      $(`#${id}-y`).val(c.y)
-      $(`#${id}-w`).val(c.w)
-      $(`#${id}-h`).val(c.h)
-    },
-  })
-  $(`#${id}-save`).show()
-  $(`#${id}-save`).button().on('click', function () {
-    showLoader()
-    $(`#${id}-action`).val('crop')
-    $(`#${id}-form`)[0].submit()
-    return false
-  })
-
-  $(`#${id}-placeholder`).css('height', 'auto')
-  hideLoader()
-  setTimeout(function () {
-    $.fancybox.update()
-    $.fancybox.reposition()
-    $.fancybox.toggle()
-  }, 200)
-}
-
 export function closeBox () {
   $.fancybox.close()
-}
-
-export function pictureReady (id, img) {
-  $(`#${id}-preview`).html(`<img src="images/${id}/thumb_${img}" />`)
-  $(`#${id}`).val(`${id}/${img}`)
-
-  $.fancybox.close()
-  hideLoader()
-}
-
-export function pictureCrop (id, img) {
-  const ratio = $.parseJSON($(`#${id}-ratio`).val())
-  const ratio_val = $.parseJSON($(`#${id}-ratio-val`).val())
-
-  const ratio_i = parseInt($(`#${id}-ratio-i`).val())
-
-  if (ratio[ratio_i] != undefined) {
-    $(`#${id}-ratio-i`).val((ratio_i + 1))
-    $(`#${id}-crop`).html(`<img src="images/${id}/${img}" /><br /><span id="${id}-crop-save">Speichern</span>`)
-    $(`#${id}-crop img`).Jcrop({
-      setSelect: [100, 0, 400, 400],
-      aspectRatio: ratio[ratio_i],
-      onSelect: function (c) {
-        $(`#${id}-x`).val(c.x)
-        $(`#${id}-y`).val(c.y)
-        $(`#${id}-w`).val(c.w)
-        $(`#${id}-h`).val(c.h)
-      },
-    })
-    hideLoader()
-    setTimeout(function () {
-      $.fancybox.update()
-      $.fancybox.reposition()
-      $.fancybox.toggle()
-    }, 200)
-
-    $(`#${id}-crop-save`).button().on('click', function () {
-      ratio_val[ratio_val.length] = {
-        x: Math.round($(`#${id}-x`).val()),
-        y: Math.round($('#' + id + '-y').val()),
-        w: Math.round($('#' + id + '-w').val()),
-        h: Math.round($('#' + id + '-h').val()),
-      }
-      $(`#${id}-ratio-val`).val(JSON.stringify(ratio_val))
-
-      pictureCrop(id, img)
-    })
-  } else {
-    showLoader()
-    $(`#${id}-form`).attr('action', `/xhr.php?f=pictureCrop&id=${id}&img=${img}`)
-    $(`#${id}-form`).trigger('submit')
-  }
 }
 
 export function u_loadCoords (addressdata, func) {
   let anschrift = ''
   if (addressdata.str != undefined) {
-    anschrift = `${addressdata.str} ${addressdata.hsnr}`
+    anschrift = `${addressdata.str}`
   } else {
     const tmp = addressdata.anschrift.split('/')
     anschrift = tmp[0]
@@ -531,60 +410,9 @@ export function checkAllCb (sel) {
   $("input[type='checkbox']").prop('checked', sel)
 }
 
-/**
- * Opens the region picker popup.
- */
-export function becomeBezirk () {
-  $('#becomeBezirk-link').fancybox({
-    minWidth: 390,
-    maxWidth: 400,
-  })
-  $('#becomeBezirk-link').trigger('click')
-
-  u_printChildBezirke({ value: '0:0' })
-}
-
 export function shuffle (o) {
   for (let j, x, i = o.length; i; j = Math.floor(Math.random() * i), x = o[--i], o[i] = o[j], o[j] = x);
   return o
-}
-
-/**
- * Merges two object-like arrays based on a key property and also merges its array-like attributes specified in objectPropertiesToMerge.
- * It also removes falsy values after merging object properties.
- *
- * @param firstArray The original object-like array.
- * @param secondArray An object-like array to add to the firstArray.
- * @param keyProperty The object property that will be used to check if objects from different arrays are the same or not.
- * @param objectPropertiesToMerge The list of object properties that you want to merge. It all must be arrays.
- * @returns The updated original array.
- */
-export function merge (firstArray, secondArray, keyProperty, objectPropertiesToMerge) {
-  function mergeObjectProperties (object, otherObject, objectPropertiesToMerge) {
-    _.each(objectPropertiesToMerge, function (eachProperty) {
-      object[eachProperty] = _.chain(object[eachProperty]).union(otherObject[eachProperty]).compact().value()
-    })
-  }
-
-  if (firstArray.length === 0) {
-    _.each(secondArray, function (each) {
-      firstArray.push(each)
-    })
-  } else {
-    _.each(secondArray, function (itemFromSecond) {
-      const itemFromFirst = _.find(firstArray, function (item) {
-        return item[keyProperty] === itemFromSecond[keyProperty]
-      })
-
-      if (itemFromFirst) {
-        mergeObjectProperties(itemFromFirst, itemFromSecond, objectPropertiesToMerge)
-      } else {
-        firstArray.push(itemFromSecond)
-      }
-    })
-  }
-
-  return firstArray
 }
 
 export function session_id () {

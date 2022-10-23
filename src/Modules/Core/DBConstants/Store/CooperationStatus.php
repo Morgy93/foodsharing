@@ -19,4 +19,21 @@ class CooperationStatus
 	public const COOPERATION_ESTABLISHED = 5; // "Betrieb kooperiert bereits" (mit uns)
 	public const GIVES_TO_OTHER_CHARITY = 6; // "Spendet an Tafel etc. und wirft nichts weg"
 	public const PERMANENTLY_CLOSED = 7; // "Betrieb existiert nicht mehr"
+
+	public static function isValidStatus(int $status): bool
+	{
+		switch ($status) {
+			case CooperationStatus::UNCLEAR:
+			case CooperationStatus::NO_CONTACT:
+			case CooperationStatus::IN_NEGOTIATION:
+			case CooperationStatus::COOPERATION_STARTING:
+			case CooperationStatus::DOES_NOT_WANT_TO_WORK_WITH_US:
+			case CooperationStatus::COOPERATION_ESTABLISHED:
+			case CooperationStatus::GIVES_TO_OTHER_CHARITY:
+			case CooperationStatus::PERMANENTLY_CLOSED:
+				return true;
+			default:
+				return false;
+		}
+	}
 }

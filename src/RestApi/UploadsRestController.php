@@ -9,9 +9,13 @@ use Foodsharing\Modules\Uploads\UploadsTransactions;
 use FOS\RestBundle\Controller\AbstractFOSRestController;
 use FOS\RestBundle\Controller\Annotations as Rest;
 use FOS\RestBundle\Request\ParamFetcher;
+use OpenApi\Annotations as OA;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
 use Symfony\Component\HttpKernel\Exception\HttpException;
+use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
+use Symfony\Component\HttpKernel\Exception\UnauthorizedHttpException;
 
 class UploadsRestController extends AbstractFOSRestController
 {
@@ -52,6 +56,8 @@ class UploadsRestController extends AbstractFOSRestController
 	 * Returns the file with the requested UUID. Width and height must both be given or can be set both to 0 to
 	 * indicate no resizing.
 	 *
+	 * @OA\Tag(name="upload")
+	 *
 	 * @Rest\Get("uploads/{uuid}", requirements={"uuid"="[0-9a-f\-]+"})
 	 * @Rest\QueryParam(name="w", requirements="\d+", default=0, description="Max image width")
 	 * @Rest\QueryParam(name="h", requirements="\d+", default=0, description="Max image height")
@@ -66,38 +72,38 @@ class UploadsRestController extends AbstractFOSRestController
 
 		if ($request->headers->get('if_modified_since')) {
 			http_response_code(304);
-			exit();
+			exit;
 		}
 
 		// check parameters
 		if ($height && $height < self::MIN_HEIGHT) {
-			throw new HttpException(400, 'minium height is ' . self::MIN_HEIGHT . ' pixel');
+			throw new BadRequestHttpException('minium height is ' . self::MIN_HEIGHT . ' pixel');
 		}
 		if ($height && $height > self::MAX_HEIGHT) {
-			throw new HttpException(400, 'maximum height is ' . self::MAX_HEIGHT . ' pixel');
+			throw new BadRequestHttpException('maximum height is ' . self::MAX_HEIGHT . ' pixel');
 		}
 		if ($width && $width < self::MIN_WIDTH) {
-			throw new HttpException(400, 'minium width is ' . self::MIN_WIDTH . ' pixel');
+			throw new BadRequestHttpException('minium width is ' . self::MIN_WIDTH . ' pixel');
 		}
 		if ($width && $width > self::MAX_WIDTH) {
-			throw new HttpException(400, 'maximum width is ' . self::MAX_WIDTH . ' pixel');
+			throw new BadRequestHttpException('maximum width is ' . self::MAX_WIDTH . ' pixel');
 		}
 
 		if (($height && !$width) || ($width && !$height)) {
-			throw new HttpException(400, 'resizing requires both, height and width');
+			throw new BadRequestHttpException('resizing requires both, height and width');
 		}
 
 		if ($quality && !$doResize) {
-			throw new HttpException(400, 'quality parameter only allowed while resizing');
+			throw new BadRequestHttpException('quality parameter only allowed while resizing');
 		}
 		if ($quality && ($quality < self::MIN_QUALITY || $quality > self::MAX_QUALITY)) {
-			throw new HttpException(400, 'quality needs to be between ' . self::MIN_QUALITY . ' and ' . self::MAX_QUALITY);
+			throw new BadRequestHttpException('quality needs to be between ' . self::MIN_QUALITY . ' and ' . self::MAX_QUALITY);
 		}
 
 		try {
 			$mimetype = $this->uploadsGateway->getMimeType($uuid);
 		} catch (Exception $e) {
-			throw new HttpException(404, 'file not found');
+			throw new NotFoundHttpException('file not found');
 		}
 
 		// update lastAccess timestamp
@@ -108,7 +114,7 @@ class UploadsRestController extends AbstractFOSRestController
 		// resizing of images
 		if ($doResize) {
 			if (strpos($mimetype, 'image/') !== 0) {
-				throw new HttpException(400, 'resizing only possible with images');
+				throw new BadRequestHttpException('resizing only possible with images');
 			}
 
 			if (!$quality) {
@@ -143,10 +149,12 @@ class UploadsRestController extends AbstractFOSRestController
 				header('Content-Type: application/octet-stream');
 		}
 		readfile($filename);
-		exit();
+		exit;
 	}
 
 	/**
+	 * @OA\Tag(name="upload")
+	 *
 	 * @Rest\Post("uploads")
 	 * @Rest\RequestParam(name="filename")
 	 * @Rest\RequestParam(name="body")
@@ -154,7 +162,7 @@ class UploadsRestController extends AbstractFOSRestController
 	public function uploadFileAction(ParamFetcher $paramFetcher): Response
 	{
 		if (!$this->session->id()) {
-			throw new HttpException(401);
+			throw new UnauthorizedHttpException('');
 		}
 
 		$filename = $paramFetcher->get('filename');
@@ -162,10 +170,10 @@ class UploadsRestController extends AbstractFOSRestController
 
 		// check uploaded body
 		if (!$filename) {
-			throw new HttpException(400, 'no filename provided');
+			throw new BadRequestHttpException('no filename provided');
 		}
 		if (!$bodyEncoded) {
-			throw new HttpException(400, 'no body provided');
+			throw new BadRequestHttpException('no body provided');
 		}
 
 		$maxSize = $this->session->id() ? self::MAX_UPLOAD_FILE_SIZE_LOGGED_IN : self::MAX_UPLOAD_FILE_SIZE;
@@ -176,7 +184,7 @@ class UploadsRestController extends AbstractFOSRestController
 
 		$body = base64_decode($bodyEncoded, true);
 		if (!$body) {
-			throw new HttpException(400, 'invalid body');
+			throw new BadRequestHttpException('invalid body');
 		}
 
 		// save to temp file
@@ -189,13 +197,13 @@ class UploadsRestController extends AbstractFOSRestController
 
 		if (!$this->session->id() && strpos($mimeType, 'image/') !== 0) {
 			unlink($tempfile);
-			throw new HttpException(400, 'only images allowed for non loggedin users');
+			throw new BadRequestHttpException('only images allowed for non loggedin users');
 		}
 
 		// image? check whether its valid
 		if ((strpos($mimeType, 'image/') === 0) && !$this->uploadsTransactions->isValidImage($tempfile)) {
 			unlink($tempfile);
-			throw new HttpException(400, 'invalid image provided');
+			throw new BadRequestHttpException('invalid image provided');
 		}
 
 		$file = $this->uploadsGateway->addFile($this->session->id(), $hash, $size, $mimeType);
@@ -205,7 +213,7 @@ class UploadsRestController extends AbstractFOSRestController
 			$dir = dirname($path);
 
 			// create parent directories if they don't exist yeted
-			if (!mkdir($dir, 0775, true) && !is_dir($dir)) {
+			if (!file_exists($dir) && !mkdir($dir, 0775, true) && !is_dir($dir)) {
 				throw new \RuntimeException(sprintf('Directory "%s" was not created', $dir));
 			}
 

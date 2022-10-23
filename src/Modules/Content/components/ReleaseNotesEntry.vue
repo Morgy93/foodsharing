@@ -73,6 +73,18 @@ export default {
   border-width: 0.5rem;
   font-weight: bolder;
 
+  // Heidelbeere
+  &[data-id="2022-05"] { border-color: #5780a9; }
+
+  // Grapefruit
+  &[data-id="2022-01"] { border-color: #CC4D46; }
+
+  // Feige
+  &[data-id="2021-09"] { border-color: #c2d8bc; }
+
+  // Erdbeere
+  &[data-id="2021-03"] { border-color: #fc6c85; }
+
   // Dragonfruit
   &[data-id="2020-12"] { border-color: #f35d8b; }
 

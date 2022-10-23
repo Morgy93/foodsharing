@@ -5,26 +5,16 @@
   >
     <span class="text-muted">{{ $i18n('store.sm.makeRegularTeamMember') }}</span>
 
-    <b-input-group class="m-1 add-to-team">
-      <b-form-input
-        id="new-foodsaver-id"
-        v-model="newUserId"
-        class="with-border"
-        :placeholder="$i18n('profile.infos.foodsaverId')"
-      />
-      <b-input-group-append>
-        <b-button
-          v-b-tooltip="$i18n('store.sm.makeRegularTeamMember')"
-          :disabled="!newUserId.trim()"
-          variant="secondary"
-          type="submit"
-          size="sm"
-          @click.prevent="addNewTeamMember"
-        >
-          <i class="fas fa-fw fa-user-plus" />
-        </b-button>
-      </b-input-group-append>
-    </b-input-group>
+    <user-search-input
+      id="new-foodsaver-search"
+      class="m-1"
+      :placeholder="$i18n('store.sm.searchPlaceholder')"
+      button-icon="fa-user-plus"
+      :button-tooltip="$i18n('store.sm.makeRegularTeamMember')"
+      :filter="filterNotInTeam"
+      :region-id="regionId"
+      @user-selected="addNewTeamMember"
+    />
 
     <div v-if="requireReload">
       <span class="text-muted d-inline-block py-2">{{ $i18n('store.sm.reloadRequired') }}</span>
@@ -124,17 +114,19 @@
 
 <script>
 import { addStoreMember } from '@/api/stores'
-import { reload, pulseError } from '@/script'
-import i18n from '@/i18n'
+import { reload, pulseError, showLoader, hideLoader } from '@/script'
+import UserSearchInput from '@/components/UserSearchInput'
 
 export default {
+  components: { UserSearchInput },
   props: {
     classes: { type: String, default: '' },
     storeId: { type: Number, required: true },
+    team: { type: Array, required: true },
+    regionId: { type: Number, required: true },
   },
   data () {
     return {
-      newUserId: '',
       // active sorting controls
       // active filtering controls
       requireReload: false,
@@ -142,16 +134,19 @@ export default {
   },
   methods: {
     reload,
-    async addNewTeamMember () {
-      const userId = parseInt(this.newUserId)
+    async addNewTeamMember (userId) {
+      showLoader()
       try {
         await addStoreMember(this.storeId, userId)
-        this.newUserId = ''
       } catch (e) {
-        pulseError(i18n('error_unexpected'))
+        pulseError(this.$i18n('error_unexpected'))
       }
+      hideLoader()
       // convince user to trigger page reload for server refresh of teamlist
       this.requireReload = true
+    },
+    filterNotInTeam (userId) {
+      return !this.team.some(x => x.id === userId)
     },
   },
 }

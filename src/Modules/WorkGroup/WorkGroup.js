@@ -2,12 +2,9 @@
 import '@/core'
 import '@/globals'
 import $ from 'jquery'
-import 'jquery-tagedit'
-import 'jquery-tagedit-auto-grow-input'
 import Cropper from 'cropperjs'
 import 'cropperjs/dist/cropper.css'
 import './WorkGroup.css'
-import { searchUser } from '@/api/search'
 
 const $groups = $('.groups .field')
 if ($groups.length > 3) {
@@ -63,7 +60,7 @@ $('#work_group_form_photo-link').fancybox({
   closeClick: false,
   beforeClose: () => {
     onAfterClose.forEach(fn => fn())
-    console.log('afterclose')
+    // console.log('afterclose')
   },
   afterLoad: () => {
     const image = document.getElementById('work_group_form_photo-image')
@@ -116,7 +113,7 @@ $('#work_group_form_photo-link').fancybox({
         height: 500,
         maxWidth: 2000,
         maxHeight: 2000,
-        fillColor: '#ffffff',
+        fillColor: 'var(--fs-color-light)',
         imageSmoothingQuality: 'high',
       }).toBlob((blob) => {
         const formData = new window.FormData()
@@ -150,24 +147,5 @@ $('#work_group_form_photo-link').fancybox({
 $('#work_group_form_photo-opener').button().on('click', function () {
   $('#work_group_form_photo-link').trigger('click')
 })
-
-const tageditOptions = {
-  autocompleteURL: async function (request, response) {
-    let data = null
-    try {
-      data = await searchUser(request.term)
-    } catch (e) {
-    }
-    response(data)
-  },
-  deleteEmptyItems: true,
-  allowEdit: false,
-  allowAdd: false,
-  animSpeed: 100,
-}
-
-$('#work_group_form_members input.tag').tagedit(tageditOptions)
-
-$('#work_group_form_administrators input.tag').tagedit(tageditOptions)
 
 $('.fancybox').fancybox()

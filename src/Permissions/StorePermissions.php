@@ -8,7 +8,6 @@ use Foodsharing\Modules\Core\DBConstants\Foodsaver\Role;
 use Foodsharing\Modules\Core\DBConstants\Region\WorkgroupFunction;
 use Foodsharing\Modules\Core\DBConstants\Store\TeamStatus as StoreTeamStatus;
 use Foodsharing\Modules\Group\GroupFunctionGateway;
-use Foodsharing\Modules\Region\RegionGateway;
 use Foodsharing\Modules\Store\StoreGateway;
 use Foodsharing\Modules\Store\TeamStatus as UserTeamStatus;
 
@@ -16,19 +15,19 @@ class StorePermissions
 {
 	private StoreGateway $storeGateway;
 	private Session $session;
-	private RegionGateway $regionGateway;
 	private GroupFunctionGateway $groupFunctionGateway;
+	private ProfilePermissions $profilePermissions;
 
 	public function __construct(
 		StoreGateway $storeGateway,
 		Session $session,
-		RegionGateway $regionGateway,
-		GroupFunctionGateway $groupFunctionGateway
+		GroupFunctionGateway $groupFunctionGateway,
+		ProfilePermissions $profilePermissions
 	) {
 		$this->storeGateway = $storeGateway;
 		$this->session = $session;
-		$this->regionGateway = $regionGateway;
 		$this->groupFunctionGateway = $groupFunctionGateway;
+		$this->profilePermissions = $profilePermissions;
 	}
 
 	/**
@@ -186,17 +185,22 @@ class StorePermissions
 		if (!$fsId) {
 			return false;
 		}
-
 		if (!$this->session->may('bieb')) {
 			return false;
 		}
-
 		if ($this->session->may('orga')) {
 			return true;
 		}
-		if ($this->storeGateway->getUserTeamStatus($fsId, $storeId) === UserTeamStatus::Coordinator) {
+
+		if (!$this->storeGateway->storeExists($storeId)) {
+			return false;
+		}
+
+		if ($this->session->mayIsStoreResponsible($storeId)) {
 			return true;
 		}
+
+		// Check store mannager role by group of region
 		$storeRegion = $this->storeGateway->getStoreRegionId($storeId);
 		$storeGroup = $this->groupFunctionGateway->getRegionFunctionGroupId($storeRegion, WorkgroupFunction::STORES_COORDINATION);
 		if (empty($storeGroup)) {
@@ -222,6 +226,10 @@ class StorePermissions
 		}
 
 		if ($this->mayEditPickups($storeId)) {
+			return true;
+		}
+
+		if ($this->profilePermissions->mayAdministrateUserProfile($fsId)) {
 			return true;
 		}
 
@@ -286,16 +294,13 @@ class StorePermissions
 		if ($store['jumper']) {
 			return false;
 		}
-		if (!$store['verantwortlich']) {
-			return false;
-		}
 
 		return $store['team_conversation_id'] !== null;
 	}
 
 	public function mayChatWithJumperWaitingTeam(array $store): bool
 	{
-		return $store['verantwortlich'] && $store['springer_conversation_id'] !== null;
+		return ($store['verantwortlich'] || $store['jumper']) && $store['springer_conversation_id'] !== null;
 	}
 
 	/**
@@ -333,5 +338,10 @@ class StorePermissions
 		}
 
 		return true;
+	}
+
+	public function maySeePickupOptions(int $userId): bool
+	{
+		return $this->session->may('fs') && $this->session->id() == $userId;
 	}
 }

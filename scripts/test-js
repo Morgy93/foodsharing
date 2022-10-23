@@ -6,8 +6,8 @@ set -o errexit
 
 dir=$(dirname "$0")
 
-# shellcheck source=./inc.sh
-source "$dir"/inc.sh
+# shellcheck source=./__helping-functions.sh
+source "$dir"/__helping-functions.sh
 
 echo "Running client js tests"
 run-in-container client 'yarn && yarn lint && yarn test'

@@ -250,7 +250,7 @@ class FoodsaverGatewayTest extends \Codeception\Test\Unit
 		$this->tester->assertFalse($this->gateway->foodsaverExists($randomNotExistingFsId));
 		$fs = $this->tester->createFoodsaver();
 		$this->tester->assertTrue($this->gateway->foodsaverExists($fs['id']));
-		$this->gateway->deleteFoodsaver($fs['id']);
+		$this->gateway->deleteFoodsaver($fs['id'], null, null);
 		$this->tester->assertFalse($this->gateway->foodsaverExists($fs['id']));
 	}
 

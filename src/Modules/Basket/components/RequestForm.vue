@@ -87,7 +87,7 @@ import { BFormTextarea, BModal } from 'bootstrap-vue'
 
 import { requestBasket, withdrawBasketRequest } from '@/api/baskets'
 import { pulseSuccess, pulseError } from '@/script'
-import i18n from '@/i18n'
+import i18n from '@/helper/i18n'
 import conv from '@/conv'
 
 export default {
@@ -167,7 +167,7 @@ export default {
         if (e.code === 404) {
           pulseError(i18n('basket.not_found'))
         } else {
-          pulseError('Withdrawing basket request failed: ' + e)
+          pulseError(i18n('basket.not_withdrawn') + e)
         }
       }
       this.isLoading = false

@@ -3,14 +3,15 @@ import $ from 'jquery'
 import L from 'leaflet'
 import 'leaflet.awesome-markers'
 import 'leaflet.markercluster'
-import 'mapbox-gl-leaflet'
+// import 'mapbox-gl-leaflet'
 
-import 'mapbox-gl/dist/mapbox-gl.css'
+// import 'mapbox-gl/dist/mapbox-gl.css'
 
 import 'corejs-typeahead'
 import 'typeahead-address-photon'
 
 import { initMap } from '@/mapUtils'
+import { locale } from '@/helper/i18n'
 
 export let map
 export let clusterGroup
@@ -70,7 +71,7 @@ function initializeSearchpanel (searchpanel, cb = null) {
         const formatted = [prop.name || '', prop.street, prop.housenumber || '', prop.postcode, prop.city, prop.country].filter(Boolean).join(' ')
         return formatted
       },
-      lang: 'de',
+      lang: locale,
     },
   )
 

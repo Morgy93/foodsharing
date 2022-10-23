@@ -71,28 +71,6 @@ class RestNormalization
 	}
 
 	/**
-	 * Normalises the detailed profile of a user.
-	 *
-	 * @param array $data user profile data
-	 */
-	public static function normaliseUserDetails(array $data): array
-	{
-		return [
-			'id' => $data['id'],
-			'firstname' => $data['name'],
-			'lastname' => $data['nachname'],
-			'address' => $data['anschrift'],
-			'city' => $data['stadt'],
-			'postcode' => $data['plz'],
-			'lat' => $data['lat'],
-			'lon' => $data['lon'],
-			'email' => $data['email'],
-			'landline' => $data['telefon'],
-			'mobile' => $data['handy'],
-		];
-	}
-
-	/**
 	 * @return ?SleepStatus
 	 */
 	private static function getSleepStatus(array $data, string $prefix = '')
@@ -136,7 +114,7 @@ class RestNormalization
 		}
 		if (isset($data['verantwortlicher']) && is_array($data['verantwortlicher'])) {
 			$store['responsibleUserIds'] = array_map(function ($u) {
-				return (int)$u;
+				return (int)$u['id'];
 			}, $data['verantwortlicher']);
 		}
 
@@ -170,7 +148,6 @@ class RestNormalization
 	{
 		return [
 			'street' => $data['str'],
-			'houseNumber' => (int)$data['hsnr'],
 			'city' => $data['stadt'],
 			'postalCode' => (int)$data['plz']
 		];

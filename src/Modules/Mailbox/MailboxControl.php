@@ -56,7 +56,7 @@ class MailboxControl extends Control
 							header('Content-Disposition: attachment; filename="' . $filename . '"');
 							header('Content-Length: $size');
 							readfile($file);
-							exit();
+							exit;
 						}
 					}
 				}

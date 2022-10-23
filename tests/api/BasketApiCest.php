@@ -2,6 +2,7 @@
 
 namespace api;
 
+use ApiTester;
 use Codeception\Util\HttpCode as Http;
 use Faker;
 
@@ -19,14 +20,14 @@ class BasketApiCest
 	private const ID = 'id';
 	private const TEST_PICTURE = 'iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAAAAAA6fptVAAAACklEQVR4nGNiAAAABgADNjd8qAAAAABJRU5ErkJggg==';
 
-	public function _before(\ApiTester $I)
+	public function _before(ApiTester $I)
 	{
 		$this->user = $I->createFoodsaver();
 		$this->userOrga = $I->createOrga();
 		$this->faker = Faker\Factory::create('de_DE');
 	}
 
-	public function getBasket(\ApiTester $I)
+	public function getBasket(ApiTester $I)
 	{
 		$basket = $I->createFoodbasket($this->user[self::ID]);
 
@@ -36,7 +37,7 @@ class BasketApiCest
 		$I->seeResponseIsJson();
 	}
 
-	public function getOutdatedBasket(\ApiTester $I)
+	public function getOutdatedBasket(ApiTester $I)
 	{
 		$basket = $I->createFoodbasket($this->user[self::ID], [
 			'time' => $this->faker->dateTime($max = '-2 days'),
@@ -48,7 +49,7 @@ class BasketApiCest
 		$I->seeResponseCodeIs(Http::NOT_FOUND);
 	}
 
-	public function removeExistingBasket(\ApiTester $I)
+	public function removeExistingBasket(ApiTester $I)
 	{
 		$basket = $I->createFoodbasket($this->user[self::ID]);
 
@@ -67,14 +68,14 @@ class BasketApiCest
 		$I->seeResponseCodeIs(Http::NOT_FOUND);
 	}
 
-	public function removeNonExistingBasket(\ApiTester $I)
+	public function removeNonExistingBasket(ApiTester $I)
 	{
 		$I->login($this->user[self::EMAIL]);
 		$I->sendDELETE(self::API_BASKETS . '/999999');
 		$I->seeResponseCodeIs(Http::NOT_FOUND);
 	}
 
-	public function listMyBaskets(\ApiTester $I)
+	public function listMyBaskets(ApiTester $I)
 	{
 		$I->createFoodbasket($this->user[self::ID]);
 
@@ -84,7 +85,7 @@ class BasketApiCest
 		$I->seeResponseIsJson();
 	}
 
-	public function listBasketCoordinates(\ApiTester $I)
+	public function listBasketCoordinates(ApiTester $I)
 	{
 		$I->createFoodbasket($this->user[self::ID]);
 
@@ -93,25 +94,36 @@ class BasketApiCest
 		$I->seeResponseIsJson();
 	}
 
-	public function listNearbyBaskets(\ApiTester $I)
+	public function listNearbyBaskets(ApiTester $I)
 	{
-		$I->createFoodbasket($this->user[self::ID]);
+		// create a basket owned by userorga close to user's location
+		$basket = $I->createFoodbasket($this->userOrga[self::ID], [
+			'lat' => $this->user['lat'],
+			'lon' => $this->user['lon']
+		]);
 
+		// check that the user can see the nearby basket
 		$I->login($this->user[self::EMAIL]);
 		$I->sendGET(self::API_BASKETS . '/nearby?distance=30');
 		$I->seeResponseCodeIs(Http::OK);
 		$I->seeResponseIsJson();
+		$I->seeResponseContainsJson(['id' => $basket['id']]);
 
-		$I->sendGET(self::API_BASKETS . '/nearby?lat=50&lon=9&distance=30');
+		// select a location far away from the basket and check that the user cannot see the basket there
+		$newLat = $basket['lat'] + 5;
+		$newLon = $basket['lon'] + 5;
+		$I->sendGET(self::API_BASKETS . "/nearby?lat=$newLat&lon=$newLon&distance=30");
 		$I->seeResponseCodeIs(Http::OK);
 		$I->seeResponseIsJson();
+		$I->cantSeeResponseContainsJson(['id' => $basket['id']]);
 
+		// an invalid distance should not work
 		$I->sendGET(self::API_BASKETS . '/nearby?lat=50&lon=9&distance=51');
 		$I->seeResponseCodeIs(Http::BAD_REQUEST);
 		$I->seeResponseIsJson();
 	}
 
-	public function addBasket(\ApiTester $I)
+	public function addBasket(ApiTester $I)
 	{
 		$I->login($this->user[self::EMAIL]);
 		$I->sendPOST(self::API_BASKETS, ['description' => 'test description']);
@@ -119,7 +131,7 @@ class BasketApiCest
 		$I->seeResponseIsJson();
 	}
 
-	public function noUnauthorizedActions(\ApiTester $I)
+	public function noUnauthorizedActions(ApiTester $I)
 	{
 		$basket = $I->createFoodbasket($this->user[self::ID]);
 
@@ -133,7 +145,7 @@ class BasketApiCest
 		$I->seeResponseCodeIs(Http::UNAUTHORIZED);
 	}
 
-	public function setEmptyPicture(\ApiTester $I)
+	public function setEmptyPicture(ApiTester $I)
 	{
 		$basket = $I->createFoodbasket($this->user[self::ID]);
 
@@ -142,7 +154,7 @@ class BasketApiCest
 		$I->seeResponseCodeIs(Http::BAD_REQUEST);
 	}
 
-	public function setValidPicture(\ApiTester $I)
+	public function setValidPicture(ApiTester $I)
 	{
 		$basket = $I->createFoodbasket($this->user[self::ID]);
 
@@ -151,7 +163,7 @@ class BasketApiCest
 		$I->seeResponseCodeIs(Http::OK);
 	}
 
-	public function setInvalidPicture(\ApiTester $I)
+	public function setInvalidPicture(ApiTester $I)
 	{
 		$basket = $I->createFoodbasket($this->user[self::ID]);
 
@@ -160,7 +172,7 @@ class BasketApiCest
 		$I->seeResponseCodeIs(Http::BAD_REQUEST);
 	}
 
-	public function removePicture(\ApiTester $I)
+	public function removePicture(ApiTester $I)
 	{
 		$basket = $I->createFoodbasket($this->user[self::ID]);
 
@@ -169,7 +181,7 @@ class BasketApiCest
 		$I->seeResponseCodeIs(\Codeception\Util\HttpCode::OK);
 	}
 
-	public function editBasket(\ApiTester $I)
+	public function editBasket(ApiTester $I)
 	{
 		$testDescription = 'lorem ipsum';
 		$lat = 12.34;

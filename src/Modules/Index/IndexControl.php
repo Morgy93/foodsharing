@@ -19,7 +19,7 @@ class IndexControl extends Control
 
 	public function index()
 	{
-		$this->pageHelper->addTitle('Rette mit!');
+		$this->pageHelper->addTitle($this->translator->trans('savewithus'));
 
 		$host = $_SERVER['HTTP_HOST'] ?? BASE_URL;
 		if (strpos($host, 'foodsharing.at') !== false) {
@@ -41,7 +41,7 @@ class IndexControl extends Control
 			$page_content_blocks[0]['body'],
 			$page_content_blocks[1]['body'],
 			$page_content_blocks[2]['body'],
-			$country), CNT_OVERTOP
+			$country), CNT_MAIN
 		);
 	}
 }

@@ -2,6 +2,19 @@
 
 use Foodsharing\Modules\Core\DBConstants\StoreTeam\MembershipStatus;
 
+/**
+ * Uses the search field in the store management panel to add a user to the team.
+ */
+function addToTeam(AcceptanceTester $I, array $user)
+{
+	$I->fillField('#new-foodsaver-search input', $user['name']);
+	$I->waitForActiveAPICalls();
+	$I->waitForElement('#new-foodsaver-search li.suggest-item');
+	$I->click('#new-foodsaver-search li.suggest-item');
+	$I->click('#new-foodsaver-search button[type="submit"]');
+	$I->waitForActiveAPICalls();
+}
+
 $I = new AcceptanceTester($scenario);
 
 $I->wantTo('create a store and manage it and my team');
@@ -42,9 +55,9 @@ $I->fillField('#first_post', 'A first wallpost entry on the store');
 $I->click('Senden');
 
 /* See my mobile number because I am responsible */
-$I->waitForText($storeStreet, null, '#inputAdress');
-$I->waitForText($storePostcode, null, '#inputAdress');
-$I->waitForText($storeCity, null, '#inputAdress');
+$I->waitForText($storeStreet, 10, '#inputAdress');
+$I->waitForText($storePostcode, 10, '#inputAdress');
+$I->waitForText($storeCity, 10, '#inputAdress');
 $I->see($bibA['handy']);
 
 $teamConversationId = $I->grabFromDatabase('fs_betrieb', 'team_conversation_id', ['name' => $storeName]);
@@ -71,20 +84,13 @@ $I->see($newStoreName . '-Team');
 $I->amOnPage($I->storeUrl($storeId));
 
 /* Add more Users */
-$I->click('BV-Ansicht aktivieren');
-$I->waitForElement('#new-foodsaver-id', 5);
+$I->click('Ansicht für Betriebsverantwortliche aktivieren');
+$I->waitForElement('#new-foodsaver-search', 5);
 
-$I->fillField('#new-foodsaver-id', $bibC['id']);
-$I->click('button[type="submit"]', '.add-to-team');
-
-$I->fillField('#new-foodsaver-id', $foodsaverD['id']);
-$I->click('button[type="submit"]', '.add-to-team');
-
-$I->fillField('#new-foodsaver-id', $foodsaverE['id']);
-$I->click('button[type="submit"]', '.add-to-team');
-
-$I->fillField('#new-foodsaver-id', $foodsaverF['id']);
-$I->click('button[type="submit"]', '.add-to-team');
+addToTeam($I, $bibC);
+addToTeam($I, $foodsaverD);
+addToTeam($I, $foodsaverE);
+addToTeam($I, $foodsaverF);
 
 $I->waitForActiveAPICalls();
 $I->seeInDatabase('fs_betrieb_team', [
@@ -103,7 +109,7 @@ $I->waitForElement('button.reload-page', 5);
 $I->click('button.reload-page');
 
 /* Promote another store manager */
-$I->click('BV-Ansicht aktivieren');
+$I->click('Ansicht für Betriebsverantwortliche aktivieren');
 $I->click($bibC['name'] . ' ' . $bibC['nachname'], '.store-team');
 $I->click('Verantwortlich machen', '.member-actions');
 $I->waitForActiveAPICalls();
@@ -131,9 +137,9 @@ $I->see($foodsaverE['name'] . ' ' . $foodsaverE['nachname'], '.store-team');
 $I->see($foodsaverF['name'] . ' ' . $foodsaverF['nachname'], '.store-team');
 
 /* Demote store manager to regular team member */
-$I->click('BV-Ansicht aktivieren');
+$I->click('Ansicht für Betriebsverantwortliche aktivieren');
 $I->click($bibC['name'] . ' ' . $bibC['nachname'], '.store-team');
-$I->click('Als BV entfernen', '.member-actions');
+$I->click('Als Betriebsverantwortliche*n entfernen', '.member-actions');
 $I->seeInPopup('die Verantwortung für diesen Betrieb entziehen?');
 $I->cancelPopup();
 $I->seeInDatabase('fs_betrieb_team', [
@@ -142,7 +148,7 @@ $I->seeInDatabase('fs_betrieb_team', [
 	'verantwortlich' => 1,
 ]);
 $I->waitForElement('.store-team tr.table-warning[data-pk="' . $bibC['id'] . '"]', 2);
-$I->click('Als BV entfernen', '.member-actions');
+$I->click('Als Betriebsverantwortliche*n entfernen', '.member-actions');
 $I->seeInPopup('die Verantwortung für diesen Betrieb entziehen?');
 $I->acceptPopup();
 $I->waitForActiveAPICalls();

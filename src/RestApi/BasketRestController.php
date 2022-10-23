@@ -2,6 +2,7 @@
 
 namespace Foodsharing\RestApi;
 
+use Exception;
 use Foodsharing\Lib\Session;
 use Foodsharing\Modules\Basket\BasketGateway;
 use Foodsharing\Modules\Basket\BasketTransactions;
@@ -13,9 +14,13 @@ use Foodsharing\Utility\ImageHelper;
 use FOS\RestBundle\Controller\AbstractFOSRestController;
 use FOS\RestBundle\Controller\Annotations as Rest;
 use FOS\RestBundle\Request\ParamFetcher;
+use OpenApi\Annotations as OA;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
-use Symfony\Component\HttpKernel\Exception\HttpException;
+use Symfony\Component\HttpKernel\Exception\AccessDeniedHttpException;
+use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
+use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
+use Symfony\Component\HttpKernel\Exception\UnauthorizedHttpException;
 
 /**
  * Rest controller for food baskets.
@@ -74,6 +79,8 @@ final class BasketRestController extends AbstractFOSRestController
 	 *
 	 * Returns 200 and a list of baskets or 401 if not logged in.
 	 *
+	 * @OA\Tag(name="basket")
+	 *
 	 * @Rest\Get("baskets")
 	 * @Rest\QueryParam(name="type", requirements="(mine|coordinates)", default="mine")
 	 */
@@ -83,7 +90,7 @@ final class BasketRestController extends AbstractFOSRestController
 		switch ($paramFetcher->get('type')) {
 			case 'mine':
 				if (!$this->session->may()) {
-					throw new HttpException(401, self::NOT_LOGGED_IN);
+					throw new UnauthorizedHttpException('', self::NOT_LOGGED_IN);
 				}
 				$baskets = $this->getCurrentUsersBaskets();
 				break;
@@ -102,6 +109,8 @@ final class BasketRestController extends AbstractFOSRestController
 	 *
 	 * Returns 200 and a list of baskets, 400 if the distance is out of range, or 401 if not logged in.
 	 *
+	 * @OA\Tag(name="basket")
+	 *
 	 * @Rest\Get("baskets/nearby")
 	 * @Rest\QueryParam(name="lat", nullable=true)
 	 * @Rest\QueryParam(name="lon", nullable=true)
@@ -110,13 +119,13 @@ final class BasketRestController extends AbstractFOSRestController
 	public function listNearbyBasketsAction(ParamFetcher $paramFetcher): Response
 	{
 		if (!$this->session->may()) {
-			throw new HttpException(401, self::NOT_LOGGED_IN);
+			throw new UnauthorizedHttpException('', self::NOT_LOGGED_IN);
 		}
 
 		$location = $this->fetchLocationOrUserHome($paramFetcher);
 		$distance = $paramFetcher->get('distance');
 		if ($distance < 1 || $distance > self::MAX_BASKET_DISTANCE) {
-			throw new HttpException(400, 'distance must be positive and <= ' . self::MAX_BASKET_DISTANCE);
+			throw new BadRequestHttpException('distance must be positive and <= ' . self::MAX_BASKET_DISTANCE);
 		}
 
 		$baskets = $this->gateway->listNearbyBasketsByDistance($this->session->id(), $location, $distance);
@@ -190,12 +199,14 @@ final class BasketRestController extends AbstractFOSRestController
 	 * Returns details of the basket with the given ID. Returns 200 and the
 	 * basket, 500 if the basket does not exist, or 401 if not logged in.
 	 *
+	 * @OA\Tag(name="basket")
+	 *
 	 * @Rest\Get("baskets/{basketId}", requirements={"basketId" = "\d+"})
 	 */
 	public function getBasketAction(int $basketId): Response
 	{
 		if (!$this->session->may()) {
-			throw new HttpException(401, self::NOT_LOGGED_IN);
+			throw new UnauthorizedHttpException('', self::NOT_LOGGED_IN);
 		}
 
 		$basket = $this->gateway->getBasket($basketId);
@@ -264,6 +275,8 @@ final class BasketRestController extends AbstractFOSRestController
 	 * Adds a new basket. The description must not be empty. All other
 	 * parameters are optional. Returns the created basket.
 	 *
+	 * @OA\Tag(name="basket")
+	 *
 	 * @Rest\Post("baskets")
 	 * @Rest\RequestParam(name="description", nullable=false)
 	 * @Rest\RequestParam(name="contactTypes", nullable=true)
@@ -277,13 +290,13 @@ final class BasketRestController extends AbstractFOSRestController
 	public function addBasketAction(ParamFetcher $paramFetcher): Response
 	{
 		if (!$this->session->may()) {
-			throw new HttpException(401, self::NOT_LOGGED_IN);
+			throw new UnauthorizedHttpException('', self::NOT_LOGGED_IN);
 		}
 
 		// prepare and check description
 		$description = trim(strip_tags($paramFetcher->get(self::DESCRIPTION)));
 		if (empty($description)) {
-			throw new HttpException(400, 'The description must not be empty.');
+			throw new BadRequestHttpException('The description must not be empty.');
 		}
 
 		$location = $this->fetchLocationOrUserHome($paramFetcher);
@@ -306,7 +319,7 @@ final class BasketRestController extends AbstractFOSRestController
 		);
 
 		if (!$basket) {
-			throw new HttpException(400, 'Unable to create the basket.');
+			throw new BadRequestHttpException('Unable to create the basket.');
 		}
 
 		return $this->getBasketAction($basket[self::ID]);
@@ -327,26 +340,28 @@ final class BasketRestController extends AbstractFOSRestController
 	 * of the user was found and deleted, 404 if no such basket was found, or
 	 * 401 if not logged in.
 	 *
+	 * @OA\Tag(name="basket")
+	 *
 	 * @Rest\Delete("baskets/{basketId}", requirements={"basketId" = "\d+"})
 	 */
 	public function removeBasketAction(int $basketId): ?Response
 	{
 		if (!$this->session->may()) {
-			throw new HttpException(401, self::NOT_LOGGED_IN);
+			throw new UnauthorizedHttpException('', self::NOT_LOGGED_IN);
 		}
 		$basket = $this->gateway->getBasket($basketId);
 		if (empty($basket)) {
-			throw new HttpException(404, 'Basket was not found or cannot be deleted.');
+			throw new NotFoundHttpException('Basket was not found or cannot be deleted.');
 		}
 
 		if (!$this->basketPermissions->mayDelete($basket)) {
-			throw new HttpException(401, 'you are not allowed to delete this basket.');
+			throw new AccessDeniedHttpException('you are not allowed to delete this basket.');
 		}
 
 		$status = $this->gateway->removeBasket($basketId);
 
 		if ($status === 0) {
-			throw new HttpException(404, 'Basket was not found or cannot be deleted.');
+			throw new NotFoundHttpException('Basket was not found or cannot be deleted.');
 		}
 
 		return $this->handleView($this->view([], 200));
@@ -355,6 +370,8 @@ final class BasketRestController extends AbstractFOSRestController
 	/**
 	 * Updates the description of an existing basket. The description must not be empty. If the location
 	 * is not given or invalid it falls back to the user's home. Returns the updated basket.
+	 *
+	 * @OA\Tag(name="basket")
 	 *
 	 * @Rest\Put("baskets/{basketId}", requirements={"basketId" = "\d+"})
 	 * @Rest\RequestParam(name="description", nullable=false)
@@ -366,7 +383,7 @@ final class BasketRestController extends AbstractFOSRestController
 	public function editBasketAction(int $basketId, ParamFetcher $paramFetcher): Response
 	{
 		if (!$this->session->may()) {
-			throw new HttpException(401, self::NOT_LOGGED_IN);
+			throw new UnauthorizedHttpException('', self::NOT_LOGGED_IN);
 		}
 
 		$basket = $this->findEditableBasket($basketId);
@@ -374,20 +391,28 @@ final class BasketRestController extends AbstractFOSRestController
 		// prepare and check description
 		$description = trim(strip_tags($paramFetcher->get(self::DESCRIPTION)));
 		if (empty($description)) {
-			throw new HttpException(400, 'The description must not be empty.');
+			throw new BadRequestHttpException('The description must not be empty.');
 		}
 
 		$location = $this->fetchLocationOrUserHome($paramFetcher, [self::LAT => $basket[self::LAT], self::LON => $basket[self::LON]]);
 
 		//update basket
-		$this->gateway->editBasket($basketId, $description, $basket[self::PICTURE], $location[self::LAT],
-			$location[self::LON], $this->session->id());
+		$this->gateway->editBasket(
+			$basketId,
+			$description,
+			$basket[self::PICTURE],
+			$location[self::LAT],
+			$location[self::LON],
+			$this->session->id()
+		);
 
 		return $this->getBasketAction($basketId);
 	}
 
 	/**
 	 * Sets a new picture for this basket.
+	 *
+	 * @OA\Tag(name="basket")
 	 *
 	 * @Rest\Put("baskets/{basketId}/picture", requirements={"basketId" = "\d+"})
 	 *
@@ -396,18 +421,18 @@ final class BasketRestController extends AbstractFOSRestController
 	public function setPictureAction(int $basketId, Request $request): Response
 	{
 		if (!$this->session->may()) {
-			throw new HttpException(401, self::NOT_LOGGED_IN);
+			throw new UnauthorizedHttpException('', self::NOT_LOGGED_IN);
 		}
 
 		$basket = $this->findEditableBasket($basketId);
 
 		$data = $request->getContent();
 		if ($data === '') {
-			throw new HttpException(400, 'The picture data must not be empty.');
+			throw new BadRequestHttpException('The picture data must not be empty.');
 		}
 		if (strlen($data) > self::MAX_PICTURE_SIZE_BYTES) {
 			$maxPictureSizeMegabytes = self::MAX_PICTURE_SIZE_BYTES / (self::KILOBYTES_PER_MEGABYTE * self::BYTES_PER_KILOBYTE);
-			throw new HttpException(400, 'The picture data must not exceed ' . $maxPictureSizeMegabytes . ' MB.');
+			throw new BadRequestHttpException('The picture data must not exceed ' . $maxPictureSizeMegabytes . ' MB.');
 		}
 
 		//save and resize image
@@ -416,8 +441,8 @@ final class BasketRestController extends AbstractFOSRestController
 		try {
 			$picname = $this->imageHelper->createResizedPictures($tmp, 'images/basket/', self::SIZES);
 			unlink($tmp);
-		} catch (\Exception $e) {
-			throw new HttpException(400, 'Picture could not be resized: ' . $e->getMessage());
+		} catch (Exception $e) {
+			throw new BadRequestHttpException('Picture could not be resized: ' . $e->getMessage());
 		}
 
 		//remove old images
@@ -435,6 +460,8 @@ final class BasketRestController extends AbstractFOSRestController
 	/**
 	 * Sets a new picture for this basket.
 	 *
+	 * @OA\Tag(name="basket")
+	 *
 	 * @Rest\Delete("baskets/{basketId}/picture", requirements={"basketId" = "\d+"})
 	 *
 	 * @param int $basketId ID of an existing basket
@@ -442,7 +469,7 @@ final class BasketRestController extends AbstractFOSRestController
 	public function removePictureAction(int $basketId): Response
 	{
 		if (!$this->session->may()) {
-			throw new HttpException(401, self::NOT_LOGGED_IN);
+			throw new UnauthorizedHttpException('', self::NOT_LOGGED_IN);
 		}
 
 		//update basket
@@ -459,6 +486,8 @@ final class BasketRestController extends AbstractFOSRestController
 	/**
 	 * Requests a basket.
 	 *
+	 * @OA\Tag(name="basket")
+	 *
 	 * @Rest\Post("baskets/{basketId}/request", requirements={"basketId" = "\d+"})
 	 * @Rest\RequestParam(name="message", nullable=false)
 	 *
@@ -467,13 +496,13 @@ final class BasketRestController extends AbstractFOSRestController
 	public function requestBasketAction(int $basketId, ParamFetcher $paramFetcher): Response
 	{
 		if (!$this->session->may()) {
-			throw new HttpException(401, self::NOT_LOGGED_IN);
+			throw new UnauthorizedHttpException('', self::NOT_LOGGED_IN);
 		}
 
 		$message = trim(strip_tags($paramFetcher->get('message')));
 
 		if (empty($message)) {
-			throw new HttpException(400, 'The request message should not be empty.');
+			throw new BadRequestHttpException('The request message should not be empty.');
 		}
 
 		$basket = $this->gateway->getBasket($basketId);
@@ -484,7 +513,7 @@ final class BasketRestController extends AbstractFOSRestController
 		// check for existing request
 		$requestStatus = $this->gateway->getRequestStatus($basketId, $this->session->id(), $basketCreatorId);
 		if ($requestStatus && $requestStatus[self::STATUS] === RequestStatus::DENIED) {
-			throw new HttpException(403, 'Your request was denied by the basket creator.');
+			throw new AccessDeniedHttpException('Your request was denied by the basket creator.');
 		}
 
 		// Send the message to the creator
@@ -497,6 +526,8 @@ final class BasketRestController extends AbstractFOSRestController
 	/**
 	 * Withdraw a basket request.
 	 *
+	 * @OA\Tag(name="basket")
+	 *
 	 * @Rest\Post("baskets/{basketId}/withdraw", requirements={"basketId" = "\d+"})
 	 *
 	 * @param int $basketId ID of an existing basket
@@ -504,7 +535,7 @@ final class BasketRestController extends AbstractFOSRestController
 	public function withdrawBasketRequestAction(int $basketId): Response
 	{
 		if (!$this->session->may()) {
-			throw new HttpException(401, self::NOT_LOGGED_IN);
+			throw new UnauthorizedHttpException('', self::NOT_LOGGED_IN);
 		}
 
 		$basket = $this->gateway->getBasket($basketId);
@@ -535,7 +566,7 @@ final class BasketRestController extends AbstractFOSRestController
 
 		$this->verifyBasketIsAvailable($basket);
 		if ($basket['fs_id'] !== $this->session->id()) {
-			throw new HttpException(401, 'You are not the owner of the basket.');
+			throw new UnauthorizedHttpException('', 'You are not the owner of the basket.');
 		}
 
 		return $basket;
@@ -548,15 +579,15 @@ final class BasketRestController extends AbstractFOSRestController
 	private function verifyBasketIsAvailable(array $basket): void
 	{
 		if (!$basket || $basket[self::STATUS] === BasketStatus::DELETED_OTHER_REASON) {
-			throw new HttpException(404, 'Basket does not exist.');
+			throw new NotFoundHttpException('Basket does not exist.');
 		}
 
 		if ($basket[self::STATUS] === BasketStatus::DELETED_PICKED_UP) {
-			throw new HttpException(404, 'Basket was already picked up.');
+			throw new NotFoundHttpException('Basket was already picked up.');
 		}
 
 		if ($basket['until_ts'] < time()) {
-			throw new HttpException(404, 'Basket is expired.');
+			throw new NotFoundHttpException('Basket is expired.');
 		}
 	}
 
@@ -569,7 +600,7 @@ final class BasketRestController extends AbstractFOSRestController
 	 *
 	 * @return array the location
 	 *
-	 * @throws \HttpException if no location and no default location were given and the user's
+	 * @throws BadRequestHttpException if no location and no default location were given and the user's
 	 * home address is not set
 	 */
 	private function fetchLocationOrUserHome(ParamFetcher $paramFetcher, array $defaultLocation = null): array
@@ -582,9 +613,11 @@ final class BasketRestController extends AbstractFOSRestController
 			} else {
 				// find user's location
 				$loc = $this->session->getLocation();
-				if (!$loc || (($lat = $loc[self::LAT]) === 0 && ($lon = $loc[self::LON]) === 0)) {
-					throw new HttpException(400, 'The user profile has no address.');
+				if (!$loc || ($loc[self::LAT] === 0 && $loc[self::LON] === 0)) {
+					throw new BadRequestHttpException('The user profile has no address.');
 				}
+				$lat = $loc[self::LAT];
+				$lon = $loc[self::LON];
 			}
 		}
 

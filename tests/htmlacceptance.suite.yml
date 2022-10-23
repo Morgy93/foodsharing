@@ -2,7 +2,7 @@ class_name: HtmlAcceptanceTester
 modules:
     enabled:
         - PhpBrowser:
-            url: http://web:8080/
+            url: http://nginx:8080/
         - Sequence
         - Db
         - \Helper\HtmlAcceptance

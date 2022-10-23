@@ -29,6 +29,10 @@ class EventControl extends Control
 		$this->eventPermissions = $eventPermissions;
 
 		parent::__construct();
+
+		if (!$this->session->may()) {
+			$this->routeHelper->goLogin();
+		}
 	}
 
 	public function index()
@@ -62,7 +66,7 @@ class EventControl extends Control
 		}
 
 		$regionId = $event['bezirk_id'];
-		$regionLink = '?page=bezirk&bid=' . $regionId;
+		$regionLink = '/?page=bezirk&bid=' . $regionId;
 		$regionEventsLink = $regionLink . '&sub=events';
 		$regionName = $this->regionGateway->getRegionName($regionId) ?? '';
 
@@ -108,7 +112,7 @@ class EventControl extends Control
 			return $this->routeHelper->go('/?page=event&id=' . $eventId);
 		}
 
-		$regionEventsLink = '?page=bezirk&sub=events&bid=' . $event['bezirk_id'];
+		$regionEventsLink = '/?page=bezirk&sub=events&bid=' . $event['bezirk_id'];
 		$this->pageHelper->addBread($this->translator->trans('events.bread'), $regionEventsLink);
 		$this->pageHelper->addBread($event['name'], '/?page=event&id=' . $eventId);
 		$this->pageHelper->addBread($this->translator->trans('events.edit'));
@@ -192,19 +196,19 @@ class EventControl extends Control
 		if (($start_date = $this->getPostDate('date')) && $start_time = $this->getPostTime('time_start')) {
 			if ($end_time = $this->getPostTime('time_end')) {
 				$out['start'] = date('Y-m-d', $start_date) . ' ' . sprintf('%02d', $start_time['hour']) . ':' . sprintf(
-						'%02d',
-						$start_time['min']
-					) . ':00';
+					'%02d',
+					$start_time['min']
+				) . ':00';
 				$out['end'] = date('Y-m-d', $start_date) . ' ' . sprintf('%02d', $end_time['hour']) . ':' . sprintf(
-						'%02d',
-						$end_time['min']
-					) . ':00';
+					'%02d',
+					$end_time['min']
+				) . ':00';
 
 				if ((int)$this->getPostInt('addend') == 1 && ($ed = $this->getPostDate('dateend'))) {
 					$out['end'] = date('Y-m-d', $ed) . ' ' . sprintf('%02d', $end_time['hour']) . ':' . sprintf(
-							'%02d',
-							$end_time['min']
-						) . ':00';
+						'%02d',
+						$end_time['min']
+					) . ':00';
 				}
 			}
 		}

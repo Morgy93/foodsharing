@@ -24,7 +24,7 @@ class LookupControl extends ConsoleControl
 		$filename = $argv[3];
 		if (!file_exists($filename)) {
 			self::error('Could not load file ' . $filename);
-			exit();
+			exit;
 		}
 
 		$this->info('Loading emails from ' . $filename);
@@ -60,7 +60,7 @@ class LookupControl extends ConsoleControl
 			$olderThan->sub(new \DateInterval('P6M'));
 			if ($date < $olderThan) {
 				$this->info('Deleted user ' . $fs['id']);
-				$this->foodsaverGateway->deleteFoodsaver($fs['id']);
+				$this->foodsaverGateway->deleteFoodsaver($fs['id'], null, null);
 			}
 		}
 	}

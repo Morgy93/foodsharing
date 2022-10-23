@@ -32,6 +32,10 @@ class BellType
 	 */
 	public const NEW_FOODSAVER_IN_REGION = 'new-fs-%d';
 	/**
+	 * Notification to user for the verification status. Argument: the foodsaver's ID.
+	 */
+	public const FOODSAVER_VERIFIED = 'fs-verified-%d';
+	/**
 	 * The creation of the foodsaver's pass has failed.
 	 */
 	public const PASS_CREATION_FAILED = 'pass-fail-%d';

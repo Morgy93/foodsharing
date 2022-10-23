@@ -1,6 +1,6 @@
 <template>
-  <div class="container bootstrap">
-    <div class="msg-inside info mb-3">
+  <div class="container">
+    <div class="alert alert-info mb-3">
       <i class="fas fa-info-circle" />
       {{ $i18n('polls.hint') }}<br>
       {{ $i18n('polls.hint_2') }}: <a :href="$url('wiki_voting')">{{ $url('wiki_voting') }}</a>
@@ -17,7 +17,7 @@
       >
         <b-link
           :href="$url('pollNew', regionId)"
-          class="btn btn-sm btn-secondary btn-block"
+          class="btn btn-sm btn-primary btn-block"
         >
           {{ $i18n('polls.new_poll') }}
         </b-link>
@@ -38,7 +38,7 @@
             <b>{{ poll.name }}</b>
           </div>
           <div class="mt-2">
-            {{ $dateFormat(convertDate(poll.startDate.date)) }} - {{ $dateFormat(convertDate(poll.endDate.date)) }}
+            {{ $dateFormatter.dateTime(convertDate(poll.startDate.date)) }} - {{ $dateFormatter.dateTime(convertDate(poll.endDate.date)) }}
           </div>
           <span class="clear" />
         </b-link>
@@ -63,7 +63,7 @@
               :href="$url('poll', poll.id)"
             >
               <b>{{ poll.name }}</b>
-              <div>{{ $i18n('poll.begins_at') }}: {{ $dateFormat(convertDate(poll.startDate.date)) }}</div>
+              <div>{{ $i18n('poll.begins_at') }}: {{ $dateFormatter.date(convertDate(poll.startDate.date)) }}</div>
             </b-link>
           </li>
         </ul>
@@ -80,7 +80,7 @@
             for="filter-input"
             class="col-form-label col-form-label-sm"
           >
-            {{ $i18n('polls.filter_by') }}
+            {{ $i18n('filter_by') }}
           </label>
           <b-form-input
             id="filter-input"
@@ -90,9 +90,9 @@
             :placeholder="$i18n('name')"
           />
         </div>
-        <ul>
+        <ul id="endedPollsList">
           <li
-            v-for="poll in endedPolls"
+            v-for="poll in endedPollsPaginated"
             :key="poll.id"
             class="mb-2"
           >
@@ -100,23 +100,28 @@
               :href="$url('poll', poll.id)"
             >
               <b>{{ poll.name }}</b>
-              <div>{{ $i18n('poll.ended_at') }} {{ $dateFormat(convertDate(poll.endDate.date)) }}</div>
+              <div>{{ $i18n('poll.ended_at') }} {{ $dateFormatter.date(convertDate(poll.endDate.date)) }}</div>
             </b-link>
           </li>
         </ul>
+        <b-pagination
+          v-model="currentPage"
+          :total-rows="endedPolls.length"
+          :per-page="perPage"
+          aria-controls="endedPollsList"
+          class="my-0"
+        />
       </div>
     </div>
   </div>
 </template>
 
 <script>
-import { BLink, BFormInput } from 'bootstrap-vue'
+import { BLink, BFormInput, BPagination } from 'bootstrap-vue'
 import { optimizedCompare } from '@/utils'
-import { isBefore, isAfter, format, compareAsc } from 'date-fns'
-import dateFnsParseISO from 'date-fns/parseISO'
 
 export default {
-  components: { BLink, BFormInput },
+  components: { BLink, BFormInput, BPagination },
   props: {
     regionId: {
       type: Number,
@@ -155,23 +160,36 @@ export default {
       }
 
       return filtered.sort((a, b) => {
-        return compareAsc(this.convertDate(b.endDate.date), this.convertDate(a.endDate.date))
+        const aD = this.convertDate(a.endDate.date)
+        const bD = this.convertDate(b.endDate.date)
+        if (aD.getTime() === bD.getTime()) return 0
+        return aD > bD ? -1 : 1
       })
+    },
+    endedPollsPaginated: function () {
+      return this.endedPolls.slice(
+        (this.currentPage - 1) * this.perPage,
+        this.currentPage * this.perPage,
+      )
     },
   },
   methods: {
     compare: optimizedCompare,
     isPollInPast (poll) {
-      return isBefore(this.convertDate(poll.endDate.date), new Date())
+      return this.convertDate(poll.endDate.date) < new Date()
     },
     isPollInFuture (poll) {
-      return isAfter(this.convertDate(poll.startDate.date), new Date())
+      return this.convertDate(poll.startDate.date) > new Date()
     },
     convertDate (date) {
-      return dateFnsParseISO(date)
+      return new Date(Date.parse(date))
     },
     formatDate (date, formatStr) {
-      return format(date, formatStr)
+      if (formatStr === 'MMMM') {
+        return this.$dateFormatter.format(date, { month: 'long' })
+      }
+
+      return date.getDate()
     },
   },
 }

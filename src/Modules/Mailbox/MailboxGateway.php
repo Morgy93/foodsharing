@@ -3,6 +3,7 @@
 namespace Foodsharing\Modules\Mailbox;
 
 use Exception;
+use Foodsharing\Lib\Session;
 use Foodsharing\Modules\Core\BaseGateway;
 
 class MailboxGateway extends BaseGateway
@@ -59,8 +60,7 @@ class MailboxGateway extends BaseGateway
 			AND 	fc.foodsaver_id = :fs_id
 		',
 			[':fs_id' => $fsId]
-		)
-		) {
+		)) {
 			$mails = array_merge($mails, $contacts);
 		}
 
@@ -87,6 +87,31 @@ class MailboxGateway extends BaseGateway
 
 			WHERE	mb.id IN(' . implode(',', $mailboxIds) . ');
 		');
+	}
+
+	public function getUnreadMailCount(Session $session): int
+	{
+		return $this->db->fetchValue(
+			'SELECT COUNT(*) FROM `fs_mailbox_message` m WHERE m.`read` = 0 AND m.`mailbox_id` IN (
+				SELECT r.`mailbox_id`
+				FROM fs_bezirk r 
+				JOIN fs_botschafter a
+				ON a.`foodsaver_id` = :fs_id1 AND r.`id` = a.`bezirk_id` AND r.`mailbox_id` IS NOT NULL
+			UNION
+				SELECT f.`mailbox_id`
+				FROM fs_foodsaver f
+				WHERE f.`id` = :fs_id2 AND f.`mailbox_id` IS NOT NULL
+			UNION
+				SELECT m.`mailbox_id`
+				FROM `fs_mailbox_member` m 
+				WHERE m.`foodsaver_id` = :fs_id3
+			)',
+			[
+				':fs_id1' => $session->id(),
+				':fs_id2' => $session->id(),
+				':fs_id3' => $session->id()
+			]
+		);
 	}
 
 	public function setAnswered(int $message_id): int
@@ -242,8 +267,7 @@ class MailboxGateway extends BaseGateway
 
 	public function getMemberBoxes()
 	{
-		if ($boxes = $this->db->fetchAllByCriteria('fs_mailbox', ['name', 'id'], ['member' => 1])
-		) {
+		if ($boxes = $this->db->fetchAllByCriteria('fs_mailbox', ['name', 'id'], ['member' => 1])) {
 			foreach ($boxes as $key => $b) {
 				$boxes[$key]['email_name'] = '';
 				if ($boxes[$key]['member'] = $this->db->fetchAll(
@@ -257,8 +281,7 @@ class MailboxGateway extends BaseGateway
 					AND 	mm.mailbox_id = :b_id
 				',
 					[':b_id' => (int)$b['id']]
-				)
-				) {
+				)) {
 					foreach ($boxes[$key]['member'] as $mm) {
 						if (!empty($mm['email_name'])) {
 							$boxes[$key]['email_name'] = $mm['email_name'];
@@ -374,7 +397,8 @@ class MailboxGateway extends BaseGateway
 							`fs_mailbox` m
 					WHERE 	b.mailbox_id = m.id
 					AND 	b.`id` IN (' . implode(',', array_map('intval', $selectedRegions)) . ')
-				');
+				'
+				);
 
 				foreach ($mailboxAdminRegions as $region) {
 					if (empty($region['email_name'])) {
@@ -397,10 +421,10 @@ class MailboxGateway extends BaseGateway
 		$me = [];
 		try {
 			$me = $this->db->fetchByCriteria(
-			'fs_foodsaver',
-			['mailbox_id', 'name', 'nachname'],
-			['id' => $fsId]
-		);
+				'fs_foodsaver',
+				['mailbox_id', 'name', 'nachname'],
+				['id' => $fsId]
+			);
 		} catch (\Exception $e) {
 			// until now it does nothing, if no value is found
 		}
@@ -436,8 +460,7 @@ class MailboxGateway extends BaseGateway
 			AND 	mm.foodsaver_id = :fs_id
 		',
 			[':fs_id' => $fsId]
-		)
-		) {
+		)) {
 			foreach ($memberb as $m) {
 				if (empty($m['email_name'])) {
 					$m['email_name'] = $m['name'] . '@' . PLATFORM_MAILBOX_HOST;
@@ -466,8 +489,7 @@ class MailboxGateway extends BaseGateway
 				AND 		fs.id = :fs_id
 			',
 			[':fs_id' => $fsId]
-		)
-		) {
+		)) {
 			$mBoxes[] = [
 				'id' => $mebox['id'],
 				'name' => $mebox['name'],

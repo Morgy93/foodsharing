@@ -11,7 +11,6 @@ use Foodsharing\Modules\Group\GroupFunctionGateway;
 use Foodsharing\Modules\Region\RegionGateway;
 use Foodsharing\Modules\Store\PickupGateway;
 use Foodsharing\Modules\Store\StoreGateway;
-use Foodsharing\Modules\Store\StoreModel;
 use Foodsharing\Permissions\StorePermissions;
 use Foodsharing\Utility\DataHelper;
 use Foodsharing\Utility\Sanitizer;
@@ -23,7 +22,6 @@ class StoreUserControl extends Control
 	private $regionGateway;
 	private $pickupGateway;
 	private $storeGateway;
-	private $storeModel;
 	private $storePermissions;
 	private $foodsaverGateway;
 	private $dataHelper;
@@ -37,7 +35,6 @@ class StoreUserControl extends Control
 		RegionGateway $regionGateway,
 		PickupGateway $pickupGateway,
 		StoreGateway $storeGateway,
-		StoreModel $model,
 		StorePermissions $storePermissions,
 		FoodsaverGateway $foodsaverGateway,
 		DataHelper $dataHelper,
@@ -50,7 +47,6 @@ class StoreUserControl extends Control
 		$this->regionGateway = $regionGateway;
 		$this->pickupGateway = $pickupGateway;
 		$this->storeGateway = $storeGateway;
-		$this->storeModel = $model;
 		$this->storePermissions = $storePermissions;
 		$this->foodsaverGateway = $foodsaverGateway;
 		$this->dataHelper = $dataHelper;
@@ -84,7 +80,8 @@ class StoreUserControl extends Control
 				'name' => $store['name'],
 				'bezirk_id' => (int)$store['bezirk_id'],
 				'verantwortlich' => $store['verantwortlich'],
-				'prefetchtime' => $store['prefetchtime']
+				'prefetchtime' => $store['prefetchtime'],
+				'isJumper' => $store['jumper']
 			];
 
 			$this->pageHelper->addTitle($store['name']);
@@ -100,10 +97,14 @@ class StoreUserControl extends Control
 
 				/* find yourself in the pickup list and show your last pickup date in store info */
 				$lastFetchDate = null;
+				$userIsInStore = false;
 				foreach ($store['foodsaver'] as $fs) {
-					if ($fs['id'] === $this->session->id() && $fs['last_fetch'] != null) {
-						$lastFetchDate = Carbon::createFromTimestamp($fs['last_fetch']);
-						break;
+					if ($fs['id'] === $this->session->id()) {
+						$userIsInStore = true;
+						if ($fs['last_fetch'] != null) {
+							$lastFetchDate = Carbon::createFromTimestamp($fs['last_fetch']);
+							break;
+						}
 					}
 				}
 
@@ -112,7 +113,6 @@ class StoreUserControl extends Control
 					'particularitiesDescription' => $store['besonderheiten'] ?? '',
 					'lastFetchDate' => $lastFetchDate,
 					'street' => $store['str'],
-					'housenumber' => $store['hsnr'],
 					'postcode' => $store['plz'],
 					'city' => $store['stadt'],
 					'storeTitle' => $store['name'],
@@ -123,45 +123,30 @@ class StoreUserControl extends Control
 				/* options menu */
 				$menu = [];
 
+				/* store options */
+				$teamConversionId = null;
 				if ($this->storePermissions->mayChatWithRegularTeam($store)) {
-					$menu[] = [
-						'name' => $this->translator->trans('store.chat.team'),
-						'click' => 'conv.chat(' . $store['team_conversation_id'] . ');',
-					];
+					$teamConversionId = $store['team_conversation_id'];
 				}
 
+				$springerConversationId = null;
 				if ($this->storePermissions->mayChatWithJumperWaitingTeam($store)) {
-					$menu[] = [
-						'name' => $this->translator->trans('store.chat.jumper'),
-						'click' => 'conv.chat(' . $store['springer_conversation_id'] . ');',
-					];
-				}
-				if ($this->storePermissions->mayEditStore($storeId)) {
-					$menu[] = [
-						'name' => $this->translator->trans('storeedit.bread'),
-						'href' => '/?page=betrieb&a=edit&id=' . $storeId,
-					];
-					$menu[] = [
-						'name' => $this->translator->trans('pickup.edit.bread'),
-						'click' => '$(\'#bid\').val(' . $storeId . ');'
-							. '$(\'#editpickups\').dialog(\'open\');'
-							. 'return false;',
-					];
+					$springerConversationId = $store['springer_conversation_id'];
 				}
 
-				if (!$store['verantwortlich'] || $this->session->isAmbassador() || $this->session->may('orga')) {
-					$menu[] = [
-						'name' => $this->translator->trans('storeedit.team.leave'),
-						'click' => 'u_betrieb_sign_out(' . $storeId . '); return false;',
-					];
-					$this->addStoreLeaveModal();
-				}
-
-				if (!empty($menu)) {
-					$this->pageHelper->addContent($this->v_utils->v_menu(
-						$menu, $this->translator->trans('store.actions')
-					), CNT_LEFT);
-				}
+				$this->pageHelper->addContent(
+					$this->view->vueComponent('vue-storeoptions', 'storeOptions', [
+						'teamConversionId' => $teamConversionId,
+						'springerConversationId' => $springerConversationId,
+						'mayEditStore' => $this->storePermissions->mayEditStore($storeId),
+						'userIsInStore' => $userIsInStore,
+						'mayLeaveStoreTeam' => $this->storePermissions->mayLeaveStoreTeam($storeId, $this->session->id()),
+						'storeId' => $storeId,
+						'isJumper' => $store['jumper'],
+						'fsId' => $this->session->id()
+					]),
+					CNT_LEFT
+				);
 
 				/* team list */
 				$this->pageHelper->addContent(
@@ -171,6 +156,7 @@ class StoreUserControl extends Control
 						'team' => $this->getDisplayedStoreTeam($store),
 						'storeId' => $storeId,
 						'storeTitle' => $store['name'],
+						'regionId' => $store['bezirk_id'],
 					]),
 					CNT_LEFT
 				);
@@ -214,11 +200,10 @@ class StoreUserControl extends Control
 							'storeManagers' => $this->storeGateway->getStoreManagers($storeId),
 							'mayWritePost' => $this->storePermissions->mayWriteStoreWall($storeId),
 							'mayDeleteEverything' => $this->storePermissions->mayDeleteStoreWall($storeId),
-							'expandWallByDefault' => !$this->session->isMob(),
 						])
 					);
 				} else {
-					$this->pageHelper->addContent($this->v_utils->v_info('Du bist momentan auf der Springerliste. Sobald Hilfe benötigt wird, wirst Du kontaktiert.'));
+					$this->pageHelper->addContent($this->v_utils->v_info($this->translator->trans('store.willgetcontacted')));
 				}
 				/* end of pinboard */
 
@@ -231,7 +216,8 @@ class StoreUserControl extends Control
 							'isCoordinator' => $store['verantwortlich'],
 							'teamConversationId' => $store['team_conversation_id'],
 						]),
-						CNT_RIGHT);
+						CNT_RIGHT
+					);
 				}
 
 				/* change regular fetchdates */
@@ -239,7 +225,8 @@ class StoreUserControl extends Control
 					$width = $this->session->isMob() ? '$(window).width() * 0.96' : '$(window).width() / 2';
 					$pickup_dates = $this->pickupGateway->getAbholzeiten($storeId);
 
-					$this->pageHelper->hiddenDialog('editpickups',
+					$this->pageHelper->hiddenDialog(
+						'editpickups',
 						[
 							$this->view->u_editPickups($pickup_dates),
 							$this->v_utils->v_form_hidden('bid', 0)
@@ -280,7 +267,8 @@ class StoreUserControl extends Control
 					[
 						['href' => '/?page=betrieb&a=new', 'name' => $this->translator->trans('storeedit.add-new')]
 					],
-					$this->translator->trans('storeedit.actions')), CNT_RIGHT);
+					$this->translator->trans('storeedit.actions')
+				), CNT_RIGHT);
 			}
 
 			$region = $this->regionGateway->getRegion($this->session->getCurrentRegionId());
@@ -328,9 +316,11 @@ class StoreUserControl extends Control
 
 	private function addStoreLeaveModal(): void
 	{
-		$this->pageHelper->addHidden('
+		$this->pageHelper->addHidden(
+			'
 		<div id="signout_shure" title="' . $this->translator->trans('pickup.signout_confirm') . '">
-			' . $this->v_utils->v_info('
+			' . $this->v_utils->v_info(
+				'
 				<strong>' . $this->translator->trans('pickup.signout_sure') . '</strong>
 				<p>' . $this->translator->trans('pickup.signout_info') . '</p>'
 			) . '
@@ -346,7 +336,10 @@ class StoreUserControl extends Control
 	 */
 	private function isResponsibleForThisStoreAnyways($storeId): bool
 	{
-		if ($this->storePermissions->mayEditStore($storeId)) {
+		if ($this->session->may('orga')) {
+			$extraResponsibility = true;
+			$extraMessageKey = 'storeedit.team.orga';
+		} elseif ($this->storePermissions->mayEditStore($storeId)) {
 			$extraResponsibility = true;
 			$extraMessageKey = '';
 
@@ -362,9 +355,6 @@ class StoreUserControl extends Control
 			} elseif ($this->session->isAdminFor($storeGroup)) {
 				$extraMessageKey = 'storeedit.team.coordinator';
 			}
-		} elseif ($this->session->may('orga')) {
-			$extraResponsibility = true;
-			$extraMessageKey = 'storeedit.team.orga';
 		} else {
 			$extraResponsibility = false;
 			$extraMessageKey = '';
@@ -374,7 +364,8 @@ class StoreUserControl extends Control
 			$store['verantwortlich'] = true;
 			$this->flashMessageHelper->info(
 				'<strong>' . $this->translator->trans('storeedit.team.note') . '</strong> '
-				. $this->translator->trans($extraMessageKey));
+					. $this->translator->trans($extraMessageKey)
+			);
 		}
 
 		return $extraResponsibility;

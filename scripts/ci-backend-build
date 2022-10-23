@@ -1,0 +1,24 @@
+#!/bin/bash
+
+export FS_ENV=dev
+
+set -o errexit
+
+dir=$(dirname "$0")
+
+# shellcheck source=./__helping-functions.sh
+source "$dir"/__helping-functions.sh
+
+composer validate --no-check-all --no-check-publish
+composer install --verbose --prefer-dist --no-progress --no-interaction --no-scripts --ignore-platform-reqs
+vendor/bin/php-cs-fixer fix --dry-run --diff --verbose --ansi
+vendor/bin/parallel-lint --no-progress --exclude vendor .
+FS_ENV=dev vendor/bin/phpstan analyse --memory-limit=768M --no-progress
+composer install --verbose --prefer-dist --no-progress --no-interaction --no-dev --classmap-authoritative --no-scripts --ignore-platform-reqs
+composer dump-autoload --classmap-authoritative
+
+log-header "Create folder structur ..."
+mkdir "assets"
+
+log-header "Installing assets ..."
+FS_ENV=dev bin/console assets:install

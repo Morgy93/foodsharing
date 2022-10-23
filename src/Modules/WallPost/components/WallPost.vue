@@ -20,11 +20,11 @@
       </span>
 
       <span
-        v-b-tooltip="$dateFormat(post.createdAt, 'full-long')"
+        v-b-tooltip="$dateFormatter.dateTimeTooltip(post.createdAt, { isShown: $dateFormatter.isToday(post.createdAt) })"
         class="datetime text-right flex-grow-0 flex-shrink-1"
       >
         <i class="far fa-fw fa-clock" />
-        {{ displayedDate }}
+        {{ $dateFormatter.base(post.createdAt) }}
       </span>
     </div>
 
@@ -37,14 +37,13 @@
           <Avatar
             :url="post.author.avatar"
             :size="50"
-            :rounded="true"
             class="member-pic img"
-            :sleep-status="post.author.sleepStatus"
+            :is-sleeping="post.author.sleepStatus"
           />
         </a>
       </div>
 
-      <div class="msg ml-1">
+      <div class="msg ml-1 flex-grow-1">
         <Markdown :source="post.body" />
       </div>
     </div>
@@ -76,7 +75,7 @@
       ok-variant="outline-danger"
       centered
       hide-header-close
-      @ok="$emit('deletePost', post.id)"
+      @ok="$emit('delete-post', post.id)"
     >
       <template #modal-header>
         <div v-if="!isOwn(post)" class="alert alert-warning" role="alert">
@@ -107,12 +106,11 @@
 </template>
 
 <script>
-import differenceInMonths from 'date-fns/differenceInMonths'
-import differenceInCalendarYears from 'date-fns/differenceInCalendarYears'
-import serverData from '@/server-data'
+import DataUser from '@/stores/user'
+
 import Avatar from '@/components/Avatar'
 import Markdown from '@/components/Markdown/Markdown'
-import MediaQueryMixin from '@/utils/VueMediaQueryMixin'
+import MediaQueryMixin from '@/mixins/MediaQueryMixin'
 
 export default {
   components: { Avatar, Markdown },
@@ -124,23 +122,18 @@ export default {
   },
   computed: {
     displayedDate () {
-      const createdAt = this.post.createdAt
-      if (differenceInCalendarYears(new Date(), createdAt) >= 1) {
-        return this.$dateFormat(createdAt, 'full-long')
-      } else {
-        return this.$dateDistanceInWords(createdAt)
-      }
+      return this.$dateFormatter.base(this.post.createdAt)
     },
     canDelete () {
-      if (!serverData.user.id) return false
+      if (!DataUser.getters.getUserId()) return false
       // orga can remove problematic content, see StorePermissions:mayDeleteStoreWallPost
       if (this.mayDeleteEverything) return true
       // own posts can always be removed, see StorePermissions:mayDeleteStoreWallPost
       if (this.isOwn(this.post)) return true
 
       // managers can clean up posts older than 1 month, see StorePermissions:mayDeleteStoreWallPost
-      if (this.isManager(serverData.user.id)) {
-        return differenceInMonths(new Date(), this.post.createdAt) >= 1
+      if (this.isManager(DataUser.getters.getUserId())) {
+        return this.$dateFormatter.getDifferenceToNowInMonths(this.post.createdAt) >= 1
       } else {
         return false
       }
@@ -152,7 +145,7 @@ export default {
       return (this.managers.indexOf(userId) > -1) // no IE: this.managers.includes(userId)
     },
     isOwn (post) {
-      return (post.foodsaverId === serverData.user.id)
+      return (post.foodsaverId === DataUser.getters.getUserId())
     },
     isImportant (post) {
       if (!post || !post.author || !post.author.id) return false
@@ -169,7 +162,7 @@ export default {
   vertical-align: top;
   padding: calc(2 * var(--storewall-padding)) var(--storewall-padding);
   position: relative;
-  border-top: 1px solid var(--border);
+  border-top: 1px solid var(--fs-border-default);
 
   .member-pic ::v-deep img {
     width: 50px;
@@ -180,7 +173,7 @@ export default {
     margin-top: calc(-1 * var(--storewall-padding));
     margin-bottom: calc(var(--storewall-padding) / 2);
     font-size: smaller;
-    color: var(--dark);
+    color: var(--fs-color-dark);
 
     .author {
       &.with-padding {
@@ -192,11 +185,11 @@ export default {
       }
 
       a {
-        color: var(--secondary);
+        color: var(--fs-color-secondary-500);
       }
 
       .is-manager {
-        color: rgba(var(--warning-rgb), 0.75);
+        color: var(--fs-color-warning-alpha-70);
         font-size: 0.75rem;
         transform: scale(0.75);
         margin-left: 0;
@@ -210,7 +203,7 @@ export default {
     right: 0;
 
     .delete:hover {
-      color: var(--danger) !important;
+      color: var(--fs-color-danger-500) !important;
     }
   }
 }
@@ -231,7 +224,7 @@ export default {
     margin: 0.5rem;
     margin-left: 0;
     padding-left: 0.5rem;
-    border-left: 3px solid var(--border);
+    border-left: 3px solid var(--fs-border-default);
   }
 }
 
@@ -267,7 +260,7 @@ export default {
 
   // Display quotes as more distinct
   ::v-deep blockquote {
-    border-left: 3px solid var(--border);
+    border-left: 3px solid var(--fs-border-default);
     padding-left: 1rem;
     padding-top: 0.5rem;
     padding-bottom: 0.5rem;

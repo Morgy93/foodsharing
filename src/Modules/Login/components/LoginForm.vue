@@ -1,5 +1,5 @@
 <template>
-  <div class="bootstrap">
+  <div class="login">
     <div class="card rounded">
       <div class="card-header text-white bg-primary">
         {{ $i18n('login.form_title') }}
@@ -30,7 +30,9 @@
             type="email"
             name="login-email"
             class="form-control text-primary"
-            @keydown.enter="submit"
+            autocomplete="email"
+            autofocus
+            @focus="focusLogin=true"
           >
         </div>
         <div
@@ -53,11 +55,9 @@
             type="password"
             name="login-password"
             class="form-control text-primary"
-            autocomplete="on"
-            @keydown.enter="submit"
+            autocomplete="current-password"
           >
         </div>
-        <!-- TODO: Disabled until there is a solution in issue 956.
         <div>
           <b-checkbox
             id="login-rememberme"
@@ -69,7 +69,6 @@
             {{ $i18n('login.steady_login') }}
           </b-checkbox>
         </div>
-        -->
         <b-overlay
           :show="isLoading"
         >
@@ -79,9 +78,11 @@
           <b-button
             id="login-btn"
             :aria-label="$i18n('login.login_button_label')"
-            secondary
+            type="submit"
+            variant="primary"
             class="login-btn"
             @click="submit"
+            @keydown.enter="submit"
           >
             <span>
               {{ $i18n('login.submit_btn') }}
@@ -90,12 +91,9 @@
           </b-button>
         </b-overlay>
         <div class="password-reset">
-          <b-link
-            :href="$url('passwordReset')"
-            class="b-link"
-          >
+          <a :href="$url('passwordReset')">
             {{ $i18n('login.forgotten_password_label') }}
-          </b-link>
+          </a>
         </div>
       </form>
     </div>
@@ -106,8 +104,8 @@
 import { login } from '@/api/user'
 
 import { pulseError, pulseSuccess } from '@/script'
-import i18n from '@/i18n'
-import serverData from '@/server-data'
+import i18n from '@/helper/i18n'
+import serverData from '@/helper/server-data'
 
 export default {
   data () {
@@ -128,9 +126,19 @@ export default {
       }
     },
   },
+  created () {
+    if (localStorage.getItem('login-rememberme')) {
+      this.rememberMe = true
+    }
+  },
   methods: {
 
     async submit () {
+      if (this.rememberMe) {
+        localStorage.setItem('login-rememberme', 'true')
+      } else {
+        localStorage.removeItem('login-rememberme')
+      }
       if (!this.email) {
         pulseError(i18n('login.error_no_email'))
         return
@@ -145,9 +153,18 @@ export default {
         pulseSuccess(i18n('login.success', { user_name: user.name }))
 
         const urlParams = new URLSearchParams(window.location.search)
-
         if (urlParams.has('ref')) {
-          window.location.href = decodeURIComponent(urlParams.get('ref'))
+          try {
+            const url = new URL(urlParams.get('ref'), window.location.origin)
+            if (url.protocol === window.location.protocol && url.host === window.location.host) {
+              window.location.href = url
+            } else {
+              throw new Error('Invalid ref parameter provided')
+            }
+          } catch (err) {
+            console.error('Invalid ref parameter provided')
+            window.location.href = this.$url('dashboard')
+          }
         } else {
           window.location.href = this.$url('dashboard')
         }
@@ -179,12 +196,14 @@ export default {
 </script>
 
 <style lang="scss" scoped>
+.login {
+  margin-top: 10rem;
+  margin-bottom: 10rem;
+}
   .card.rounded {
     max-width: 500px;
     margin: auto;
-  }
-  .b-link {
-    color: rgb(100, 174, 036);
+    box-shadow: var(--fs-shadow);
   }
   .loadingButton {
     img {
@@ -215,6 +234,6 @@ export default {
   }
   .password-reset {
     font-size: 0.7rem;
-    margin-top: 10px;
+    margin-top: 1rem;
   }
 </style>

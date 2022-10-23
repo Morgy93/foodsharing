@@ -1,9 +1,12 @@
-.markdown-section table td,
-.markdown-section table th {
-  border: none;
+:root {
+  --content-max-width: 1220px;
 }
 
-.markdown-section table tr {
-  border: none;
-  background: none !important;
+hr {
+  margin-top: 10rem;
+  margin-bottom: 10rem;
+}
+
+table {
+  width: 100%;
 }

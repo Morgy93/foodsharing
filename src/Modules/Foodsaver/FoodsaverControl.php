@@ -51,7 +51,7 @@ class FoodsaverControl extends Control
 	}
 
 	/*
-	 * Default Method for ?page=foodsaver
+	 * Default Method for /?page=foodsaver
 	 *
 	 * There are two very different cases handled here: editing a user, or viewing all users in a region.
 	 */
@@ -92,7 +92,7 @@ class FoodsaverControl extends Control
 					CNT_RIGHT
 				);
 			}
-			// end region-view
+		// end region-view
 		} elseif ($fsId && $this->profilePermissions->mayAdministrateUserProfile($fsId)) {
 			// begin user-edit
 			if (!$fs = $this->foodsaverGateway->getFoodsaver($fsId)) {
@@ -129,8 +129,10 @@ class FoodsaverControl extends Control
 			}
 			if ($this->profilePermissions->mayDeleteUser($fs['id'])) {
 				$actions[] = [
-					'click' => 'confirmDeleteUser(' . $fs['id'] . ',\'' . $name . '\')',
-					'name' => $this->translator->trans('foodsaver.delete_account'),
+					'click' => ($fsId == $this->session->id())
+						? 'confirmDeleteSelf(' . $fs['id'] . ')'
+						: 'confirmDeleteUser(' . $fs['id'] . ',\'' . $name . '\')',
+					'name' => '⚠️ ' . $this->translator->trans('foodsaver.delete_account'),
 				];
 			}
 			$this->pageHelper->addContent($this->v_utils->v_field(
@@ -149,6 +151,7 @@ class FoodsaverControl extends Control
 		global $g_data;
 
 		if ($this->submitted()) {
+			$g_data['stadt'] = $g_data['ort'];
 			if ($this->session->may('orga')) {
 				if (isset($g_data['orgateam']) && is_array($g_data['orgateam']) && $g_data['orgateam'][0] == 1) {
 					$g_data['orgateam'] = 1;
@@ -192,19 +195,5 @@ class FoodsaverControl extends Control
 		$updatedRows = $this->foodsaverGateway->updateFoodsaver($fs['id'], $data);
 
 		return $downgradedRows > 0 || $updatedRows > 0;
-	}
-
-	private function picture_box(): string
-	{
-		$photo = $this->foodsaverGateway->getPhotoFileName($_GET['id']);
-
-		if (!(file_exists('images/thumb_crop_' . $photo))) {
-			$p_cnt = $this->v_utils->v_photo_edit('img/portrait.png', (int)$_GET['id']);
-		} else {
-			$p_cnt = $this->v_utils->v_photo_edit('images/thumb_crop_' . $photo, (int)$_GET['id']);
-			//$p_cnt = $this->v_utils->v_photo_edit('img/portrait.png');
-		}
-
-		return $this->v_utils->v_field($p_cnt, 'Dein Foto');
 	}
 }

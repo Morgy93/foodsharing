@@ -4,13 +4,12 @@ namespace Foodsharing\Lib;
 
 use Exception;
 use Flourish\fAuthorization;
-use Flourish\fImage;
 use Flourish\fSession;
 use Foodsharing\Lib\Db\Mem;
 use Foodsharing\Modules\Buddy\BuddyGateway;
 use Foodsharing\Modules\Core\DBConstants\Foodsaver\Role;
 use Foodsharing\Modules\Core\DBConstants\Foodsaver\UserOptionType;
-use Foodsharing\Modules\Core\DBConstants\Region\Type;
+use Foodsharing\Modules\Core\DBConstants\Unit\UnitType;
 use Foodsharing\Modules\Foodsaver\FoodsaverGateway;
 use Foodsharing\Modules\Login\LoginGateway;
 use Foodsharing\Modules\Mails\MailsGateway;
@@ -18,23 +17,13 @@ use Foodsharing\Modules\Quiz\QuizHelper;
 use Foodsharing\Modules\Region\RegionGateway;
 use Foodsharing\Modules\Settings\SettingsGateway;
 use Foodsharing\Modules\Store\StoreGateway;
+use Foodsharing\Modules\Store\TeamStatus;
 
 class Session
 {
-	private $mem;
-	private $buddyGateway;
-	private $foodsaverGateway;
-	private $quizHelper;
-	private $regionGateway;
-	private $storeGateway;
-	private $mailsGateway;
-	private $loginGateway;
-	private SettingsGateway $settingsGateway;
-	private $initialized = false;
-
 	// update this whenever adding new fields to the session!!!
 	// this should be a unix timestamp, together with a human readable date in a comment.
-	const LAST_SESSION_SCHEMA_CHANGE = 1608472800; // 2020-12-20 14:00:00 UTC
+	private const LAST_SESSION_SCHEMA_CHANGE = 1664920800; // 2022-10-05 00:00:00 UTC
 
 	private const SESSION_TIMESTAMP_FIELD_NAME = 'last_updated_ts';
 
@@ -47,28 +36,27 @@ class Session
 		Role::SITE_ADMIN => 'admin',
 	];
 
-	const DEFAULT_LOCALE = 'de';
+	private array $roleKeysInverse;
+
+	public const DEFAULT_LOCALE = 'de';
+
+	private const DEFAULT_NORMAL_SESSION_TIMESPAN = '24 hours';
+
+	private const DEFAULT_PERSISTENT_SESSION_TIMESPAN = '1 day';
 
 	public function __construct(
-		Mem $mem,
-		BuddyGateway $buddyGateway,
-		FoodsaverGateway $foodsaverGateway,
-		QuizHelper $quizHelper,
-		RegionGateway $regionGateway,
-		StoreGateway $storeGateway,
-		MailsGateway $mailsGateway,
-		LoginGateway $loginGateway,
-		SettingsGateway $settingsGateway
+		private Mem $mem,
+		private BuddyGateway $buddyGateway,
+		private FoodsaverGateway $foodsaverGateway,
+		private QuizHelper $quizHelper,
+		private RegionGateway $regionGateway,
+		private StoreGateway $storeGateway,
+		private MailsGateway $mailsGateway,
+		private LoginGateway $loginGateway,
+		private SettingsGateway $settingsGateway,
+		private bool $initialized = false
 	) {
-		$this->mem = $mem;
-		$this->buddyGateway = $buddyGateway;
-		$this->foodsaverGateway = $foodsaverGateway;
-		$this->quizHelper = $quizHelper;
-		$this->regionGateway = $regionGateway;
-		$this->storeGateway = $storeGateway;
-		$this->mailsGateway = $mailsGateway;
-		$this->loginGateway = $loginGateway;
-		$this->settingsGateway = $settingsGateway;
+		$this->roleKeysInverse = array_flip(self::ROLE_KEYS);
 	}
 
 	public function initIfCookieExists()
@@ -93,7 +81,7 @@ class Session
 		}
 	}
 
-	public function checkInitialized()
+	private function checkInitialized()
 	{
 		if (!$this->initialized) {
 			throw new Exception('Session not initialized');
@@ -111,38 +99,24 @@ class Session
 		ini_set('session.save_handler', 'redis');
 		ini_set('session.save_path', 'tcp://' . REDIS_HOST . ':' . REDIS_PORT);
 
-		fSession::setLength('24 hours', '2 weeks');
+		fSession::setLength(
+			static::DEFAULT_NORMAL_SESSION_TIMESPAN,
+			static::DEFAULT_PERSISTENT_SESSION_TIMESPAN
+		);
 
 		if ($rememberMe) {
 			// This regenerates the session id even if it's already persistent, we want to only set it when logging in
 			fSession::enablePersistence();
 		}
 
-		fAuthorization::setAuthLevels(
-			[
-				'admin' => 100,
-				'orga' => 70,
-				'bot' => 60,
-				'bieb' => 45,
-				'fs' => 40,
-				'user' => 30,
-				'user_unauth' => 20,
-				'presse' => 15,
-				'guest' => 10
-			]
-		);
+		fAuthorization::setAuthLevels($this->roleKeysInverse);
 
 		fSession::open();
 
-		$cookieExpires = $this->isPersistent() ? strtotime('2 weeks') : 0;
+		$cookieExpires = $this->isPersistent() ? strtotime(static::DEFAULT_PERSISTENT_SESSION_TIMESPAN) : 0;
 		if (!isset($_COOKIE['CSRF_TOKEN']) || !$_COOKIE['CSRF_TOKEN'] || !$this->isValidCsrfToken('cookie', $_COOKIE['CSRF_TOKEN'])) {
 			setcookie('CSRF_TOKEN', $this->generateCrsfToken('cookie'), $cookieExpires, '/');
-		} /* TODO: Disabled until there is a solution in issue 956
-			 elseif ($this->isPersistent() && isset($_COOKIE['CSRF_TOKEN']) && isset($_COOKIE['PHPSESSID'])) {
-			// Extend the duration of the cookies in every request
-			setcookie('CSRF_TOKEN', $_COOKIE['CSRF_TOKEN'], $cookieExpires, '/');
-			setcookie('PHPSESSID', $_COOKIE['PHPSESSID'], $cookieExpires, '/');
-		} */
+		}
 	}
 
 	private function isPersistent(): bool
@@ -150,7 +124,7 @@ class Session
 		return $_SESSION['fSession::type'] === 'persistent';
 	}
 
-	public function setAuthLevel($role)
+	private function setAuthLevel($role)
 	{
 		fAuthorization::setUserAuthLevel($role);
 		fAuthorization::setUserACLs(
@@ -169,7 +143,7 @@ class Session
 			$this->mem->logout($this->id());
 			$this->set('user', false);
 			fAuthorization::destroyUserInfo();
-			$this->setAuthLevel('guest');
+			$this->setAuthLevel(null);
 			$this->destroy();
 		}
 	}
@@ -190,16 +164,26 @@ class Session
 		return fAuthorization::getUserToken();
 	}
 
-	public function may($role = 'user')
+	/**
+	 * @deprecated use [mayRole] instead
+	 */
+	public function may(string $role = 'user')
+	{
+		return $this->mayRole($this->roleKeysInverse[$role]);
+	}
+
+	/**
+	 * Checks if the current user has at least the specified role.
+	 *
+	 * @param int $role a {@see Role} constant
+	 */
+	public function mayRole(int $role = Role::FOODSHARER): bool
 	{
 		if (!$this->initialized) {
 			return false;
 		}
-		if (fAuthorization::checkAuthLevel($role)) {
-			return true;
-		}
 
-		return false;
+		return fAuthorization::checkAuthLevel(self::ROLE_KEYS[$role]);
 	}
 
 	public function getLocation(): ?array
@@ -217,7 +201,7 @@ class Session
 		return $loc;
 	}
 
-	public function destroy()
+	private function destroy()
 	{
 		$this->checkInitialized();
 		fSession::destroy();
@@ -380,19 +364,10 @@ class Session
 			$this->regionGateway->addMember($fs_id, $master);
 		}
 
-		if ($fs['photo'] != '' && file_exists('images/mini_q_' . $fs['photo'])) {
-			$image1 = new fImage('images/mini_q_' . $fs['photo']);
-			if ($image1->getWidth() > 36) {
-				$image1->cropToRatio(1, 1);
-				$image1->resize(35, 35);
-				$image1->saveChanges();
-			}
-		}
-
 		$fs['buddys'] = $this->buddyGateway->listBuddyIds($fs_id);
 
 		fAuthorization::setUserToken($fs['id']);
-		$this->setAuthLevel($this->rolleWrapInt($fs['rolle']));
+		$this->setAuthLevel(self::ROLE_KEYS[$fs['rolle']]);
 
 		$this->set('user', [
 			'name' => $fs['name'],
@@ -448,10 +423,12 @@ class Session
 			$_SESSION['client']['bezirke'] = $this->regionGateway->listForFoodsaver($fs['id']) ?? [];
 		}
 
+		$_SESSION['client']['verantwortlich'] = [];
 		if ($responsibleStoreIds = $this->storeGateway->listStoreIdsWhereResponsible($fs['id'])) {
 			$_SESSION['client']['verantwortlich'] = $responsibleStoreIds;
 			$mailbox = true;
 		}
+
 		$this->set('mailbox', $mailbox);
 
 		$this->set('email_is_activated', $this->loginGateway->isActivated($fs['id']));
@@ -459,14 +436,14 @@ class Session
 		$this->set('locale', $this->settingsGateway->getUserOption($fs['id'], UserOptionType::LOCALE));
 	}
 
-	private function rolleWrapInt($roleInt)
-	{
-		return self::ROLE_KEYS[$roleInt];
-	}
-
 	public function mayBezirk($regionId): bool
 	{
 		return isset($_SESSION['client']['bezirke'][$regionId]) || $this->isAdminFor($regionId) || $this->may('orga');
+	}
+
+	public function mayIsStoreResponsible($storeId)
+	{
+		return $this->storeGateway->getUserTeamStatus($this->id(), $storeId) === TeamStatus::Coordinator;
 	}
 
 	public function isAdminForAWorkGroup()
@@ -507,7 +484,7 @@ class Session
 			$managedRegions = $this->getManagedRegions();
 			foreach ($managedRegions as $region) {
 				foreach ($regionIds as $regId) {
-					$consider = $include_groups || Type::isRegion($region['type']);
+					$consider = $include_groups || UnitType::isRegion($region['type']);
 					if ($consider && $region['bezirk_id'] == $regId) {
 						return true;
 					}

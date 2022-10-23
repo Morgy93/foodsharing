@@ -133,6 +133,7 @@ class InitialMigration extends Phinx\Migration\AbstractMigration
 			])
 			->addColumn('appost', 'integer', [
 				'null' => false,
+				'default' => '0',
 				'limit' => MysqlAdapter::INT_TINY,
 				'after' => 'fs_id',
 			])
@@ -935,6 +936,9 @@ class InitialMigration extends Phinx\Migration\AbstractMigration
 				'name' => 'expiration',
 				'unique' => false,
 			])
+			->addIndex(['identifier'], [
+				'name' => 'identifier'
+			])
 			->create();
 		$this->table('fs_faq', [
 			'id' => false,
@@ -1317,6 +1321,7 @@ class InitialMigration extends Phinx\Migration\AbstractMigration
 			])
 			->addColumn('has_children', 'integer', [
 				'null' => false,
+				'default' => '0',
 				'limit' => MysqlAdapter::INT_TINY,
 				'after' => 'parent_id',
 			])
@@ -1328,6 +1333,7 @@ class InitialMigration extends Phinx\Migration\AbstractMigration
 			])
 			->addColumn('teaser', 'text', [
 				'null' => false,
+				'default' => '',
 				'limit' => MysqlAdapter::TEXT_MEDIUM,
 				'collation' => 'utf8mb4_unicode_ci',
 				'encoding' => 'utf8mb4',
@@ -1335,6 +1341,7 @@ class InitialMigration extends Phinx\Migration\AbstractMigration
 			])
 			->addColumn('desc', 'text', [
 				'null' => false,
+				'default' => '',
 				'limit' => MysqlAdapter::TEXT_MEDIUM,
 				'collation' => 'utf8mb4_unicode_ci',
 				'encoding' => 'utf8mb4',
@@ -1342,6 +1349,7 @@ class InitialMigration extends Phinx\Migration\AbstractMigration
 			])
 			->addColumn('photo', 'string', [
 				'null' => false,
+				'default' => '',
 				'limit' => 200,
 				'collation' => 'utf8mb4_unicode_ci',
 				'encoding' => 'utf8mb4',
@@ -1371,6 +1379,7 @@ class InitialMigration extends Phinx\Migration\AbstractMigration
 			])
 			->addColumn('email', 'string', [
 				'null' => false,
+				'default' => '',
 				'limit' => 120,
 				'collation' => 'utf8mb4_unicode_ci',
 				'encoding' => 'utf8mb4',
@@ -1378,6 +1387,7 @@ class InitialMigration extends Phinx\Migration\AbstractMigration
 			])
 			->addColumn('email_pass', 'string', [
 				'null' => false,
+				'default' => '',
 				'limit' => 50,
 				'collation' => 'utf8mb4_unicode_ci',
 				'encoding' => 'utf8mb4',
@@ -1385,6 +1395,7 @@ class InitialMigration extends Phinx\Migration\AbstractMigration
 			])
 			->addColumn('email_name', 'string', [
 				'null' => false,
+				'default' => '',
 				'limit' => 100,
 				'collation' => 'utf8mb4_unicode_ci',
 				'encoding' => 'utf8mb4',
@@ -1416,15 +1427,18 @@ class InitialMigration extends Phinx\Migration\AbstractMigration
 			])
 			->addColumn('report_num', 'integer', [
 				'null' => false,
+				'default' => '0',
 				'limit' => MysqlAdapter::INT_TINY,
 				'after' => 'week_num',
 			])
 			->addColumn('stat_last_update', 'datetime', [
 				'null' => false,
+				'default' => 'CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP',
 				'after' => 'report_num',
 			])
 			->addColumn('stat_fetchweight', 'decimal', [
 				'null' => false,
+				'default' => '0',
 				'precision' => 10,
 				'signed' => false,
 				'scale' => 2,
@@ -1432,42 +1446,49 @@ class InitialMigration extends Phinx\Migration\AbstractMigration
 			])
 			->addColumn('stat_fetchcount', 'integer', [
 				'null' => false,
+				'default' => '0',
 				'limit' => '10',
 				'signed' => false,
 				'after' => 'stat_fetchweight',
 			])
 			->addColumn('stat_postcount', 'integer', [
 				'null' => false,
+				'default' => '0',
 				'limit' => '10',
 				'signed' => false,
 				'after' => 'stat_fetchcount',
 			])
 			->addColumn('stat_betriebcount', 'integer', [
 				'null' => false,
+				'default' => '0',
 				'limit' => '7',
 				'signed' => false,
 				'after' => 'stat_postcount',
 			])
 			->addColumn('stat_korpcount', 'integer', [
 				'null' => false,
+				'default' => '0',
 				'limit' => '7',
 				'signed' => false,
 				'after' => 'stat_betriebcount',
 			])
 			->addColumn('stat_botcount', 'integer', [
 				'null' => false,
+				'default' => '0',
 				'limit' => '7',
 				'signed' => false,
 				'after' => 'stat_korpcount',
 			])
 			->addColumn('stat_fscount', 'integer', [
 				'null' => false,
+				'default' => '0',
 				'limit' => '7',
 				'signed' => false,
 				'after' => 'stat_botcount',
 			])
 			->addColumn('stat_fairteilercount', 'integer', [
 				'null' => false,
+				'default' => '0',
 				'limit' => '7',
 				'signed' => false,
 				'after' => 'stat_fscount',
@@ -1659,6 +1680,7 @@ class InitialMigration extends Phinx\Migration\AbstractMigration
 			])
 			->addColumn('last_access', 'datetime', [
 				'null' => false,
+				'default' => 'CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP',
 				'after' => 'member',
 			])
 			->addIndex(['name'], [
@@ -2286,6 +2308,7 @@ class InitialMigration extends Phinx\Migration\AbstractMigration
 			])
 			->addColumn('stat_fetchcount', 'integer', [
 				'null' => false,
+				'default' => '0',
 				'limit' => '10',
 				'signed' => false,
 				'after' => 'stat_last_update',
@@ -2377,6 +2400,7 @@ class InitialMigration extends Phinx\Migration\AbstractMigration
 			])
 			->addColumn('logo', 'string', [
 				'null' => false,
+				'default' => '',
 				'limit' => 30,
 				'collation' => 'utf8mb4_unicode_ci',
 				'encoding' => 'utf8mb4',
@@ -2437,6 +2461,7 @@ class InitialMigration extends Phinx\Migration\AbstractMigration
 			])
 			->addColumn('picture', 'string', [
 				'null' => false,
+				'default' => '',
 				'limit' => 100,
 				'collation' => 'utf8mb4_unicode_ci',
 				'encoding' => 'utf8mb4',
@@ -2550,7 +2575,7 @@ class InitialMigration extends Phinx\Migration\AbstractMigration
 			])
 			->create();
 		$this->table('fs_push_notification_subscription', [
-			'id' => false,
+			'id' => true,
 			'engine' => 'InnoDB',
 			'encoding' => 'utf8mb4',
 			'collation' => 'utf8mb4_unicode_ci',
@@ -2754,10 +2779,12 @@ class InitialMigration extends Phinx\Migration\AbstractMigration
 			])
 			->addColumn('added', 'datetime', [
 				'null' => false,
+				'default' => 'CURRENT_TIMESTAMP',
 				'after' => 'active',
 			])
 			->addColumn('application', 'text', [
 				'null' => false,
+				'default' => '',
 				'limit' => MysqlAdapter::TEXT_MEDIUM,
 				'collation' => 'utf8mb4_unicode_ci',
 				'encoding' => 'utf8mb4',
@@ -3404,6 +3431,7 @@ class InitialMigration extends Phinx\Migration\AbstractMigration
 			])
 			->addColumn('new_bezirk', 'string', [
 				'null' => false,
+				'default' => '',
 				'limit' => 120,
 				'collation' => 'utf8mb4_unicode_ci',
 				'encoding' => 'utf8mb4',
@@ -3587,6 +3615,7 @@ class InitialMigration extends Phinx\Migration\AbstractMigration
 			])
 			->addColumn('data', 'text', [
 				'null' => false,
+				'default' => '',
 				'limit' => MysqlAdapter::TEXT_MEDIUM,
 				'collation' => 'utf8mb4_unicode_ci',
 				'encoding' => 'utf8mb4',
@@ -3594,6 +3623,7 @@ class InitialMigration extends Phinx\Migration\AbstractMigration
 			])
 			->addColumn('about_me_public', 'text', [
 				'null' => false,
+				'default' => '',
 				'limit' => MysqlAdapter::TEXT_MEDIUM,
 				'collation' => 'utf8mb4_unicode_ci',
 				'encoding' => 'utf8mb4',
@@ -3661,6 +3691,7 @@ class InitialMigration extends Phinx\Migration\AbstractMigration
 			])
 			->addColumn('stat_buddycount', 'integer', [
 				'null' => false,
+				'default' => '0',
 				'limit' => '7',
 				'signed' => false,
 				'after' => 'stat_postcount',
@@ -3706,6 +3737,7 @@ class InitialMigration extends Phinx\Migration\AbstractMigration
 			])
 			->addColumn('option', 'text', [
 				'null' => false,
+				'default' => '',
 				'limit' => MysqlAdapter::TEXT_MEDIUM,
 				'collation' => 'utf8mb4_unicode_ci',
 				'encoding' => 'utf8mb4',
@@ -3726,6 +3758,7 @@ class InitialMigration extends Phinx\Migration\AbstractMigration
 			])
 			->addColumn('contact_public', 'integer', [
 				'null' => false,
+				'default' => '0',
 				'limit' => MysqlAdapter::INT_TINY,
 				'after' => 'quiz_rolle',
 			])

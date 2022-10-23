@@ -6,13 +6,14 @@
  */
 import $ from 'jquery'
 import conv from '@/conv'
-import i18n from '@/i18n'
-import serverData from '@/server-data'
+import i18n from '@/helper/i18n'
+import DataUser from '@/stores/user'
 import autosize from 'autosize'
 import timeformat from '@/timeformat'
 import * as api from '@/api/conversations'
 import conversationStore from '@/stores/conversations'
 import profileStore from '@/stores/profiles'
+import dateFormatter from '@/helper/date-formatter'
 
 import {
   img,
@@ -21,9 +22,8 @@ import {
   pulseError,
   shuffle,
 } from '@/script'
-
+import { url } from '@/helper/urls'
 import {
-  dateDistanceInWords, dateFormat,
   plainToHtml,
   plainToHtmlAttribute,
 } from '@/utils'
@@ -54,22 +54,26 @@ const msg = {
      */
     this.initComposer()
 
-    if (!msg.isMob()) {
-      const height = `${$(window).height() - 200}px`
-      this.$conversation.css('height', height)
+    // if (!msg.isMob()) {
+    const height = `${$(window).height() - 200}px`
+    // this.$conversation.css('height', height)
 
-      this.$conversation.slimScroll({
-        height: height,
-      })
-    } else {
-      this.$conversation.css({
-        height: 'auto',
-        overflow: 'hidden',
-        padding: '0',
-        margin: '0',
-      })
-      msg.scrollBottom()
-    }
+    this.$conversation.slimScroll({
+      height: height,
+    })
+
+    // $(window).scrollTop($(document).height())
+    // msg.$conversation.slimScroll({ scrollTo: `${msg.$conversation.prop('scrollHeight')}px` })
+
+    // } else {
+    msg.scrollBottom()
+    //   this.$conversation.css({
+    //     height: 'auto',
+    //     overflow: 'hidden',
+    //     padding: '0',
+    //     margin: '0',
+    //   })
+    // }
 
     /*
      * make the message windows as big as possible
@@ -77,8 +81,8 @@ const msg = {
     $(window).on('resize', function () {
       if (!msg.isMob()) {
         const height = `${$(window).height() - 200}px`
-        msg.$conversation.css('height', height)
-        msg.$conversation.parent('.slimScrollDiv').css('height', height)
+        // msg.$conversation.css('height', height)
+        // msg.$conversation.parent('.slimScrollDiv').css('height', height)
         msg.$conversation.slimScroll({
           height: height,
           scrollTo: `${msg.$conversation.prop('scrollHeight')}px`,
@@ -151,10 +155,10 @@ const msg = {
     const $itemLink = $item.children('a')
     if ($item.length > 0) {
       $itemLink.children('.msg').text(message.message.body)
-      $itemLink.children('.time').text(dateDistanceInWords(message.message.sentAt))
+      $itemLink.children('.time').text(dateFormatter.relativeTime(message.message.sentAt))
       $item.hide()
       $item.prependTo('#conversation-list ul:first')
-      $item.show('highlight', { color: '#F5F5B5' })
+      $item.show('highlight', { color: 'var(--fs-color-warning-200)' })
     }
   },
 
@@ -199,7 +203,7 @@ const msg = {
 
     msg.$conversation.children('ul:first').prepend($el)
 
-    $el.show('highlight', { color: '#F5F5B5' })
+    $el.show('highlight', { color: 'var(--fs-color-warning-200)' })
   },
 
   appendMsg: function (message) {
@@ -211,19 +215,29 @@ const msg = {
 
     msg.$conversation.children('ul:first').append($el)
 
-    $el.show('highlight', { color: '#F5F5B5' })
+    $el.show('highlight', { color: 'var(--fs-color-warning-200)' })
 
     this.last_message_id = message.id
   },
 
   msgTpl: function (message) {
-    /*
-     * set a class 'my-message' to active user's own messages
-     */
-    let ownMessageClass = ''
     const author = profileStore.profiles[message.authorId]
-    if (message.authorId === serverData.user.id) { ownMessageClass = ' class="my-message" ' }
-    return $(`<li id="msg-${message.id}" ${ownMessageClass} style="display:none;"><span class="img"><a title="${plainToHtmlAttribute(author.name)}" href="/profile/${message.authorId}"><img height="35" src="${img(author.avatar, 'mini')}" /></a></span><span class="body">${plainToHtml(message.body)}<span class="time">${dateFormat(message.sentAt)}</span></span><span class="clear"></span></li>`)
+    const ownMessageClass = (message.authorId === DataUser.getters.getUserId()) ? 'my-message' : ''
+
+    return $(`
+      <li id="msg-${message.id}" class="${ownMessageClass}" style="display: none;">
+        <span class="img">
+          <a title="${plainToHtmlAttribute(author.name)}" href="${url('profile', message.authorId)}">
+            <img height="35" src="${img(author.avatar, 'mini')}" />
+          </a>
+        </span>
+        <span class="body">
+          ${plainToHtml(message.body)}
+          <span class="time">${dateFormatter.base(message.sentAt)}</span>
+        </span>
+        <span class="clear"></span>
+      </li>
+    `)
   },
 
   getRecipients: function () {
@@ -276,17 +290,26 @@ const msg = {
 
     const otherMembers = conversation.members.filter(m => m != msg.fsid)
 
-    const titleText = conversation.title || `Unterhaltung mit ${otherMembers.map(member => profileStore.profiles[member].name).join(', ')}`
+    const conversationTitle = conversation.title || `Unterhaltung mit ${otherMembers.map(member => profileStore.profiles[member].name).join(', ')}`
+
+    let titleText = plainToHtml(conversationTitle)
+    if (conversation.storeId) {
+      titleText = `<a href="${url('store', conversation.storeId)}">${titleText}</a>`
+    }
 
     const title = `
       &nbsp;<div class="images">
         ${otherMembers.map(member => `
-          <a title="${plainToHtmlAttribute(profileStore.profiles[member].name)}" href="/profile/${profileStore.profiles[member].id}">
+          <a
+            class="member-img"
+            title="${plainToHtmlAttribute(profileStore.profiles[member].name)}"
+            href="${url('profile', profileStore.profiles[member].id)}"
+          >
             <img src="${img(profileStore.profiles[member].avatar, 'mini')}" width="22" alt="${plainToHtmlAttribute(profileStore.profiles[member].name)}" />
           </a>
         `).slice(0, 25).join('')}
       </div>
-      ${plainToHtml(titleText)}
+      ${titleText}
       <div class="clear"></div>
     `
 
@@ -354,7 +377,7 @@ const msg = {
   scrollTrigger: function () {
     const fun = function () {
       const $conv = $(this)
-      if ($conv.scrollTop() == 0) {
+      if ($conv.scrollTop() === 0) {
         msg.loadMore()
       }
     }
@@ -405,7 +428,7 @@ const msg = {
       msg.$convs.append($el)
     }
 
-    $el.show('highlight', { color: '#F5F5B5' })
+    $el.show('highlight', { color: 'var(--fs-color-warning-200)' })
 
     msg.$convs.children('.noconv').remove()
   },
@@ -414,11 +437,11 @@ const msg = {
     $('#compose_body').val('')
   },
   scrollBottom: function () {
-    if (!msg.isMob()) {
-      msg.$conversation.slimScroll({ scrollTo: `${msg.$conversation.prop('scrollHeight')}px` })
-    } else {
-      $(window).scrollTop($(document).height())
-    }
+    // if (!msg.isMob()) {
+    msg.$conversation.slimScroll({ scrollTo: `${msg.$conversation.prop('scrollHeight')}px` })
+    // } else {
+    // $(window).scrollTop($(document).height())
+    // }
   },
 }
 

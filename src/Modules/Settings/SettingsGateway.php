@@ -2,6 +2,7 @@
 
 namespace Foodsharing\Modules\Settings;
 
+use DateTime;
 use Exception;
 use Foodsharing\Modules\Core\BaseGateway;
 use Foodsharing\Modules\Core\DBConstants\Foodsaver\UserOptionType;
@@ -62,15 +63,18 @@ class SettingsGateway extends BaseGateway
 		);
 	}
 
-	public function updateSleepMode(int $fsId, int $status, string $from, string $to, string $msg): int
+	public function updateSleepMode(int $fsId, int $status, ?DateTime $from, ?DateTime $to, ?string $msg): int
 	{
+		$from = $from ?: null;
+		$to = $to ?: null;
+
 		return $this->db->update(
 			'fs_foodsaver',
 			[
 				'sleep_status' => $status,
-				'sleep_from' => $from,
-				'sleep_until' => $to,
-				'sleep_msg' => strip_tags($msg)
+				'sleep_from' => $from ? $from->format('Y-m-d H:i:s') : null,
+				'sleep_until' => $to ? $to->format('Y-m-d H:i:s') : null,
+				'sleep_msg' => $msg ? strip_tags($msg) : null
 			],
 			['id' => $fsId]
 		);
@@ -140,7 +144,7 @@ class SettingsGateway extends BaseGateway
 
 	public function saveApiToken(int $fsId, string $token): void
 	{
-		$this->db->insert(
+		$this->db->insertOrUpdate(
 			'fs_apitoken',
 			[
 				'foodsaver_id' => $fsId,
@@ -176,5 +180,37 @@ class SettingsGateway extends BaseGateway
 			'option_type' => $optionType,
 			'option_value' => $value,
 		]);
+	}
+
+	/**
+	 * Returns the user's token for the iCal API, or null if the user does not have a token.
+	 */
+	public function getApiToken(int $userId): ?string
+	{
+		try {
+			return $this->db->fetchValueByCriteria('fs_apitoken', 'token', ['foodsaver_id' => $userId]);
+		} catch (Exception $e) {
+			return null;
+		}
+	}
+
+	/**
+	 * Deletes the user's token for the iCal API.
+	 */
+	public function removeApiToken(int $userId): void
+	{
+		$this->db->delete('fs_apitoken', ['foodsaver_id' => $userId]);
+	}
+
+	/**
+	 * Returns the user to whom the token belongs, or null if the token does not exist.
+	 */
+	public function getUserForToken(string $token): ?int
+	{
+		try {
+			return $this->db->fetchValueByCriteria('fs_apitoken', 'foodsaver_id', ['token' => $token]);
+		} catch (Exception $e) {
+			return null;
+		}
 	}
 }

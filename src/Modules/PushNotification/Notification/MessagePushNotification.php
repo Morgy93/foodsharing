@@ -2,6 +2,8 @@
 
 namespace Foodsharing\Modules\PushNotification\Notification;
 
+use Foodsharing\Modules\Foodsaver\Profile;
+use Foodsharing\Modules\Message\Message;
 use Symfony\Contracts\Translation\TranslatorInterface;
 
 /**
@@ -11,57 +13,41 @@ use Symfony\Contracts\Translation\TranslatorInterface;
 class MessagePushNotification extends PushNotification
 {
 	/**
-	 * @var string
-	 *
+	 * The message to which this notification refers.
+	 */
+	private Message $message;
+
+	/**
 	 * This is the author of the message. It's a foodsaver's user name, not a conversation title or anything.
 	 */
-	private $sender;
+	private Profile $author;
 
 	/**
-	 * @var string
-	 *
-	 * The actual text of the message
+	 * The conversation id will be needed to enable the user to reply to the message this notification resembles.
 	 */
-	private $body;
+	private int $conversationId;
 
 	/**
-	 * @var \DateTime
-	 *
-	 * This is the time the message has been sent
-	 */
-	private $time;
-
-	/**
-	 * @var int
-	 *
-	 * The conversation id will be needed to enable the user to reply to the message this notification resembles
-	 */
-	private $conversationId;
-
-	/**
-	 * @var string|null
-	 *
 	 * Optional. This is the name of the conversation, if the conversation has one.
 	 */
-	private $conversationName;
+	private ?string $conversationName;
 
-	public function __construct(string $sender, string $body, \DateTime $time, int $conversationId, ?string $conversationName = null)
+	public function __construct(Message $message, Profile $author, int $conversationId, ?string $conversationName = null)
 	{
-		$this->sender = $sender;
-		$this->body = $body;
-		$this->time = $time;
+		$this->message = $message;
+		$this->author = $author;
 		$this->conversationId = $conversationId;
 		$this->conversationName = $conversationName;
 	}
 
-	public function getSender(): string
+	public function getMessage(): Message
 	{
-		return $this->sender;
+		return $this->message;
 	}
 
-	public function getTime(): \DateTime
+	public function getAuthor(): Profile
 	{
-		return $this->time;
+		return $this->author;
 	}
 
 	public function getConversationId(): int
@@ -80,7 +66,7 @@ class MessagePushNotification extends PushNotification
 	 */
 	public function getBody(TranslatorInterface $translator = null): string
 	{
-		return $this->body;
+		return $this->message->body;
 	}
 
 	/**
@@ -88,16 +74,17 @@ class MessagePushNotification extends PushNotification
 	 */
 	public function getTitle(TranslatorInterface $translator): string
 	{
+		$userName = $this->author->name ?? $translator->trans('dashboard.deleted_user');
 		if ($this->getConversationName() !== null) {
 			return $translator->trans(
 				'chat.notification_named_conversation',
-				['{foodsaver}' => $this->getSender(), '{conversation}' => $this->getConversationName()]
+				['{foodsaver}' => $userName, '{conversation}' => $this->getConversationName()]
 			);
 		}
 
 		return $translator->trans(
 			'chat.notification_unnamed_conversation',
-			['{foodsaver}' => $this->getSender()]
+			['{foodsaver}' => $userName]
 		);
 	}
 }

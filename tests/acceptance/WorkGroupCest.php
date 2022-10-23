@@ -79,25 +79,6 @@ class WorkGroupCest
 		$I->see('Noch keine Themen gepostet');
 	}
 
-	public function canEditTeamList(AcceptanceTester $I)
-	{
-		$user = $I->createFoodsaver();
-		$admin = $I->createFoodsaver();
-		$I->login($this->groupAdmin['email']);
-		$I->amOnPage($I->groupEditUrl($this->testGroup['id']));
-		$I->addInTagSelect($admin['id'], '#work_group_form_administrators');
-		$I->addInTagSelect($user['id'], '#work_group_form_members');
-		$I->click('Änderungen speichern');
-		$I->waitForText('Änderungen wurden gespeichert');
-		$I->see($user['name'], '#work_group_form_members');
-		$I->see($admin['name'], '#work_group_form_administrators');
-		$I->removeFromTagSelect($user['name'], 'work_group_form_members');
-		$I->click('Änderungen speichern');
-		$I->see('Änderungen wurden gespeichert');
-		$I->dontSee($user['name'], '#work_group_form_members');
-		$I->see($admin['name'], '#work_group_form_administrators');
-	}
-
 	/**
 	 * @example["unconnectedFoodsaver"]
 	 * @example["regionMember"]
@@ -124,7 +105,7 @@ class WorkGroupCest
 		$I->fillField('#erfahrung', 'My Experience');
 		$I->selectOption('#zeit', '1-2 Stunden');
 		$I->click('Bewerbung absenden');
-		$I->waitForText('Bewerbung wurde abgeschickt!');
+		$I->waitForText('Bewerbung wurde abgeschickt');
 		$I->seeInDatabase('fs_foodsaver_has_bezirk', ['foodsaver_id' => $this->regionMember['id'], 'bezirk_id' => $this->testGroupApply['id']]);
 		$admin = $I->haveFriend('admin');
 		$admin->does(function (AcceptanceTester $I) {
@@ -137,7 +118,7 @@ class WorkGroupCest
 			$I->see('Bewerbung annehmen');
 			$I->click('Ja');
 		});
-		$I->logout();
+		$I->logMeOut();
 		$I->login($this->regionMember['email']);
 		$I->amOnPage($I->forumUrl($this->testGroupApply['id']));
 		$I->see($this->testGroupApply['name']);

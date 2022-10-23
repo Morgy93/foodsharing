@@ -5,15 +5,22 @@ namespace Foodsharing\Modules\Profile;
 use Foodsharing\Lib\WebSocketConnection;
 use Foodsharing\Modules\Core\BaseGateway;
 use Foodsharing\Modules\Core\Database;
+use Foodsharing\Modules\Core\DBConstants\BasketRequests\Status as RequestStatus;
+use Foodsharing\Modules\Core\DBConstants\Store\CooperationStatus;
+use Foodsharing\Modules\Core\DBConstants\Store\StoreLogAction;
+use Foodsharing\Modules\Core\DBConstants\Unit\UnitType;
+use Foodsharing\Utility\WeightHelper;
 
 final class ProfileGateway extends BaseGateway
 {
 	private WebSocketConnection $webSocketConnection;
+	private $weightHelper;
 
-	public function __construct(Database $db, WebSocketConnection $webSocketConnection)
+	public function __construct(Database $db, WebSocketConnection $webSocketConnection, WeightHelper $weightHelper)
 	{
 		parent::__construct($db);
 		$this->webSocketConnection = $webSocketConnection;
+		$this->weightHelper = $weightHelper;
 	}
 
 	/**
@@ -26,6 +33,7 @@ final class ProfileGateway extends BaseGateway
 		$stm = '
 			SELECT 	fs.`id`,
 					fs.`bezirk_id`,
+					fs.`position`,
 					fs.`plz`,
 					fs.`stadt`,
 					fs.`lat`,
@@ -35,6 +43,7 @@ final class ProfileGateway extends BaseGateway
 					fs.`nachname`,
 					fs.`anschrift`,
 					fs.`telefon`,
+					fs.`homepage`,
 					fs.`handy`,
 					fs.`geschlecht`,
 					fs.`geb_datum`,
@@ -108,23 +117,45 @@ final class ProfileGateway extends BaseGateway
 			AND 	b.foodsaver_id = :fs_id
 			AND 	bz.type != 7
 		';
-		if ($bot = $this->db->fetchAll($stm, [':fs_id' => $fsId])
-		) {
+		if ($bot = $this->db->fetchAll($stm, [':fs_id' => $fsId])) {
 			$data['botschafter'] = $bot;
 		}
 
 		$stm = '
 			SELECT 	bz.`name`,
-					bz.`id`
+					bz.`id`,
+			        bz.type
 			FROM 	`fs_bezirk` bz,
 					fs_foodsaver_has_bezirk b
 			WHERE 	b.`bezirk_id` = bz.`id`
 			AND 	b.foodsaver_id = :fs_id
-			AND 	bz.type != 7
+			AND		bz.type != :type
 		';
-		if ($fs = $this->db->fetchAll($stm, [':fs_id' => $fsId])
-		) {
+		if ($fs = $this->db->fetchAll($stm, [':fs_id' => $fsId, ':type' => UnitType::WORKING_GROUP])) {
 			$data['foodsaver'] = $fs;
+		}
+
+		// find all working groups in which both the foodsaver and the viewer of the profile are active members
+		$stm = '
+			SELECT 	bz.name,
+					bz.id
+			FROM 	fs_bezirk bz
+			JOIN    fs_foodsaver_has_bezirk b1
+			ON      b1.bezirk_id = bz.id
+			LEFT JOIN fs_foodsaver_has_bezirk b2
+			ON    	b1.bezirk_id = b2.bezirk_id
+			WHERE 	b1.foodsaver_id = :fs_id
+			AND     b1.active = 1
+			AND 	b2.foodsaver_id = :viewerId
+			AND     b2.active = 1
+			AND     bz.type = :type
+		';
+		if ($fs = $this->db->fetchAll($stm, [
+			':fs_id' => $fsId,
+			':viewerId' => $viewerId,
+			':type' => UnitType::WORKING_GROUP
+		])) {
+			$data['working_groups'] = $fs;
 		}
 
 		$stm = '
@@ -136,8 +167,7 @@ final class ProfileGateway extends BaseGateway
 			AND 	b.foodsaver_id = :fs_id
 			AND 	bz.type = 7
 		';
-		if ($orga = $this->db->fetchAll($stm, [':fs_id' => $fsId])
-		) {
+		if ($orga = $this->db->fetchAll($stm, [':fs_id' => $fsId])) {
 			$data['orga'] = $orga;
 		}
 
@@ -232,7 +262,7 @@ final class ProfileGateway extends BaseGateway
 		return (int)$this->db->fetchValue($stm, [':fs_id' => $fsId]);
 	}
 
-	public function giveBanana(int $fsId, string $message = '', ?int $sessionId): int
+	public function giveBanana(int $fsId, ?int $sessionId, string $message = ''): int
 	{
 		if ($sessionId === null) {
 			throw new \UnexpectedValueException('Must be logged in to give banana.');
@@ -268,58 +298,168 @@ final class ProfileGateway extends BaseGateway
 		return $this->db->delete('fs_rating', ['foodsaver_id' => $userId, 'rater_id' => $raterId]) > 0;
 	}
 
-	public function getNextDates(int $fsId, int $limit = 10): array
+	/**
+	 * Counts how many pickups were done that the foodsaver signed up for 20 hours before pickup time therefore
+	 * securing the pickup during a week.
+	 *
+	 *  int $fsId FoodsaverId
+	 *  int $week Number of weeks to be added as interval to current date
+	 */
+	public function getSecuredPickupsCount(int $fsId, int $week): int
 	{
-		$stm = '
-			SELECT 	a.`date`,
-					UNIX_TIMESTAMP(a.`date`) AS date_ts,
-					b.name AS betrieb_name,
-					b.id AS betrieb_id,
-					b.bezirk_id AS bezirk_id,
-					confirmed AS confirmed
-			FROM   `fs_abholer` a,
-			       `fs_betrieb` b
+		$stm = 'SELECT
+                    COUNT(*) as Anzahl
+                FROM
+                    (SELECT
+                        a.foodsaver_id, a.betrieb_id, a.date
+                     FROM
+                        `fs_abholer` a
+                        left outer join `fs_store_log` b on a.betrieb_id = b.store_id and a.date = b.date_reference + INTERVAL 2 HOUR
+                     WHERE a.foodsaver_id = :fs_id
+                        AND b.action = :action
+                        AND DATE_FORMAT(a.date,\'%Y-%v\') = DATE_FORMAT(CURRENT_DATE() + INTERVAL :week WEEK,\'%Y-%v\')
+                        AND TIMESTAMPDIFF(HOUR, b.date_activity, b.date_reference) < 20
+                     GROUP BY
+                        a.foodsaver_id, a.betrieb_id, a.date
+                    ) z';
 
-			WHERE a.betrieb_id = b.id
-			AND   a.foodsaver_id = :fs_id
-			AND   a.`date` > NOW()
+		$res = $this->db->fetchAll($stm, [
+			':fs_id' => $fsId,
+			':action' => StoreLogAction::SIGN_UP_SLOT,
+			':week' => $week
+		]);
 
-			ORDER BY a.`date`
-
-			LIMIT :limit
-		';
-
-		return $this->db->fetchAll($stm, [':fs_id' => $fsId, ':limit' => $limit]);
+		return $res['0']['Anzahl'];
 	}
 
-	public function getRecentPickups(int $fsId, \DateTime $from, \DateTime $to): array
+	public function getBasketsShared(int $fsId, int $week): int
 	{
-		$stm = '
-			SELECT 	p1.id,
-			        p1.date,
-			        UNIX_TIMESTAMP(p1.date) AS date_ts,
-			        p1.foodsaver_id as foodsaverId,
-			        p1.betrieb_id AS storeId,
-			        b.name AS storeTitle
+		$stm = 'SELECT
+       				 COUNT(DISTINCT a.foodsaver_id) as count
+				FROM `fs_basket` b
+				left outer join fs_basket_anfrage a on b.id = a.basket_id
+				WHERE b.foodsaver_id = :fs_id
+				  AND DATE_FORMAT(b.`time`,\'%Y-%v\') = DATE_FORMAT(CURRENT_DATE() + INTERVAL :week WEEK,\'%Y-%v\')
+				  AND a.status = :basket_status
+		';
+		$res = $this->db->fetchAll($stm, [
+			':fs_id' => $fsId,
+			':week' => $week,
+			':basket_status' => RequestStatus::DELETED_PICKED_UP
+		]);
 
-			FROM      fs_abholer p1
-			LEFT JOIN fs_abholer p2
-			    ON    p1.betrieb_id = p2.betrieb_id
-			    AND   p1.date = p2.date
-			LEFT JOIN fs_betrieb b
-			    ON    p1.betrieb_id = b.id
+		return $res['0']['count'];
+	}
 
-			WHERE p2.foodsaver_id = :fs_id
-			  AND p2.date > :date_from
-			  AND p2.date < :date_to
-
-			ORDER BY p1.date DESC
+	public function getBasketsOfferedStat(int $fsId, int $week): array
+	{
+		$stm = 'SELECT
+       				COUNT(*) as count,
+       				SUM(weight) as weight
+				FROM `fs_basket` a
+				WHERE a.foodsaver_id = :fs_id
+				  AND DATE_FORMAT(a.`time`,\'%Y-%v\') = DATE_FORMAT(CURRENT_DATE() + INTERVAL :week WEEK,\'%Y-%v\')
 		';
 
 		return $this->db->fetchAll($stm, [
 			':fs_id' => $fsId,
-			':date_from' => $this->db->date($from),
-			':date_to' => $this->db->date($to),
+			':week' => $week
+		]);
+	}
+
+	public function getResponsibleActiveStoresCount(int $fsId): int
+	{
+		$stm = '
+			SELECT 	COUNT(*) as count
+			FROM             fs_betrieb_team st
+			LEFT OUTER JOIN  fs_betrieb s  ON  s.id = st.betrieb_id
+
+			WHERE  st.foodsaver_id = :fs_id
+			AND    s.betrieb_status_id in (:stat_start, :stat_est)
+			AND    st.verantwortlich = 1
+		';
+
+		$res = $this->db->fetchAll($stm, [
+			':fs_id' => $fsId,
+			':stat_start' => CooperationStatus::COOPERATION_STARTING,
+			':stat_est' => CooperationStatus::COOPERATION_ESTABLISHED
+		]);
+
+		return $res['0']['count'];
+	}
+
+	public function getEventsCreatedCount(int $fsId, int $week): int
+	{
+		$stm = 'SELECT
+					COUNT(*) AS count
+				FROM `fs_event` a
+				WHERE a.foodsaver_id = :fs_id
+				  	AND DATE_FORMAT(a.`start`,\'%Y-%v\') = DATE_FORMAT(CURRENT_DATE() + INTERVAL :week WEEK,\'%Y-%v\')
+		';
+
+		$res = $this->db->fetchAll($stm, [
+			':fs_id' => $fsId,
+			':week' => $week
+		]);
+
+		return $res['0']['count'];
+	}
+
+	public function getEventsParticipatedCount(int $fsId, int $week): array
+	{
+		$stm = 'SELECT
+					COUNT(*) AS count,
+					SUM(TIMESTAMPDIFF(MINUTE,start,end))DIV 60 as duration_hours,
+					LPAD(SUM(TIMESTAMPDIFF(MINUTE,start,end))%60,2,0) as duration_minutes
+				FROM `fs_foodsaver_has_event` a
+					LEFT OUTER JOIN fs_event e on a.event_id = e.id
+				WHERE a.foodsaver_id = :fs_id
+				  	AND a.status = :part_status
+				  	AND DATE_FORMAT(e.start,\'%Y-%v\') = DATE_FORMAT(CURRENT_DATE() + INTERVAL :week WEEK,\'%Y-%v\')
+		';
+
+		return $this->db->fetchAll($stm, [
+			':fs_id' => $fsId,
+			':week' => $week,
+			':part_status' => 1
+		]);
+	}
+
+	public function getPickupsStat(int $fsId, int $week): array
+	{
+		$stm = 'SELECT 	bez.name AS districtName,
+						kat.name AS categorieName,
+						CASE b.abholmenge
+							WHEN 0 THEN \'' . $this->weightHelper->getFetchWeightName(0) . '\'
+							WHEN 1 THEN \'' . $this->weightHelper->getFetchWeightName(1) . '\'
+							WHEN 2 THEN \'' . $this->weightHelper->getFetchWeightName(2) . '\'
+							WHEN 3 THEN \'' . $this->weightHelper->getFetchWeightName(3) . '\'
+							WHEN 4 THEN \'' . $this->weightHelper->getFetchWeightName(4) . '\'
+							WHEN 5 THEN \'' . $this->weightHelper->getFetchWeightName(5) . '\'
+							WHEN 6 THEN \'' . $this->weightHelper->getFetchWeightName(6) . '\'
+							WHEN 7 THEN \'' . $this->weightHelper->getFetchWeightName(7) . '\'
+						END AS pickupAmount,
+						COUNT(*) AS pickupCount
+				FROM `fs_abholer` a
+					LEFT OUTER JOIN fs_betrieb b ON a.betrieb_id = b.id
+					LEFT OUTER JOIN fs_betrieb_kategorie kat ON b.betrieb_kategorie_id = kat.id
+					LEFT OUTER JOIN fs_bezirk bez ON b.bezirk_id = bez.id
+				WHERE a.foodsaver_id = :fs_id
+				  AND DATE_FORMAT(date,\'%Y-%v\') = DATE_FORMAT(CURRENT_DATE() + INTERVAL :week WEEK,\'%Y-%v\')
+				GROUP BY DATE_FORMAT(date,\'%Y-%v\'),
+						 bez.name,
+						 kat.id,
+						 b.abholmenge
+				ORDER BY
+						a.`date` DESC,
+						bez.name ASC,
+						kat.id   ASC,
+						b.abholmenge ASC
+		';
+
+		return $this->db->fetchAll($stm, [
+			':fs_id' => $fsId,
+			':week' => $week
 		]);
 	}
 
@@ -401,10 +541,10 @@ final class ProfileGateway extends BaseGateway
 	{
 		try {
 			if (($status = $this->db->fetchValueByCriteria(
-					'fs_buddy',
-					'confirmed',
-					['foodsaver_id' => $sessionId, 'buddy_id' => $fsId]
-				)) !== []) {
+				'fs_buddy',
+				'confirmed',
+				['foodsaver_id' => $sessionId, 'buddy_id' => $fsId]
+			)) !== []) {
 				return $status;
 			}
 		} catch (\Exception $e) {

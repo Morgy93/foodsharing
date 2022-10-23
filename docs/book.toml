@@ -21,3 +21,6 @@ create-missing = false
 limit-results = 15
 use-boolean-and = true
 heading-split-level = 4
+
+[preprocessor.plantuml]
+plantuml-cmd="/usr/bin/plantuml"

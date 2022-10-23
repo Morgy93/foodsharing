@@ -75,7 +75,7 @@ class MailboxXhr extends Control
 
 		</head><body onload="init();"></body></html>';
 
-		exit();
+		exit;
 	}
 
 	public function loadmails()
@@ -126,9 +126,9 @@ class MailboxXhr extends Control
 			}
 
 			$fromToTitles = [
-				MailboxFolder::FOLDER_INBOX => 'Von',
-				MailboxFolder::FOLDER_SENT => 'An',
-				MailboxFolder::FOLDER_TRASH => 'Von/An'
+				MailboxFolder::FOLDER_INBOX => $this->translator->trans('mailbox.from'),
+				MailboxFolder::FOLDER_SENT => $this->translator->trans('mailbox.to'),
+				MailboxFolder::FOLDER_TRASH => $this->translator->trans('mailbox.fromto')
 			];
 			$mailbox = $this->mailboxGateway->getMailbox($mb_id);
 			$currentMailboxName = isset($mailbox['email_name']) ? $mailbox['email_name'] : $mailbox['name'];
@@ -155,25 +155,6 @@ class MailboxXhr extends Control
 				',
 			];
 		}
-	}
-
-	public function move()
-	{
-		if (!$this->mailboxPermissions->mayMessage($_GET['mid'])) {
-			return XhrResponses::PERMISSION_DENIED;
-		}
-		$folder = $this->mailboxGateway->getMailFolderId($_GET['mid']);
-
-		if ($folder == MailboxFolder::FOLDER_TRASH) {
-			$this->mailboxGateway->deleteMessage($_GET['mid']);
-		} else {
-			$this->mailboxGateway->move($_GET['mid'], $_GET['f']);
-		}
-
-		return [
-			'status' => 1,
-			'script' => '$("tr#message-' . (int)$_GET['mid'] . '").remove();$("#message-body").dialog("close");'
-		];
 	}
 
 	public function quickreply()
@@ -233,7 +214,7 @@ class MailboxXhr extends Control
 					'status' => 1,
 					'message' => $this->translator->trans('mailbox.okay'),
 				]);
-				exit();
+				exit;
 			}
 		}
 
@@ -241,7 +222,7 @@ class MailboxXhr extends Control
 			'status' => 0,
 			'message' => $this->translator->trans('mailbox.failed'),
 		]);
-		exit();
+		exit;
 	}
 
 	public function send_message()
@@ -375,7 +356,7 @@ class MailboxXhr extends Control
 		}
 
 		echo $html;
-		exit();
+		exit;
 	}
 
 	public function loadMail()

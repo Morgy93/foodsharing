@@ -12,7 +12,7 @@ class ActivityUpdateMailbox
 	public string $desc;
 	public string $title;
 
-	public string $icon = '/img/mailbox-50x50.png';
+	public string $icon = 'fas fa-envelope';
 	public string $source;
 	public ?string $quickreply;
 

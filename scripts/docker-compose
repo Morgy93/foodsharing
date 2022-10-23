@@ -14,10 +14,17 @@ case "${unameOut}" in
     *)          export FS_PLATFORM=default;;
 esac
 
-# shellcheck source=./inc.sh
-source "$dir"/inc.sh
+# check if gp is there
+if [[ $(type -t gp) == file ]];
+then
+    FS_PLATFORM=gitpod
+fi
+
+# shellcheck source=./__helping-functions.sh
+source "$dir"/__helping-functions.sh
 
 docker-compose \
+  --file "$dir"/../docker/docker-compose.yml \
   --file "$dir"/../docker/docker-compose."$FS_ENV".yml \
   --project-name foodsharing_"$FS_ENV" \
   "$@"

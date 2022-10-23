@@ -4,17 +4,20 @@ namespace Foodsharing\Permissions;
 
 use Foodsharing\Lib\Session;
 use Foodsharing\Modules\Core\DBConstants\Region\RegionIDs;
+use Foodsharing\Modules\Foodsaver\FoodsaverGateway;
 use Foodsharing\Modules\Region\RegionGateway;
 
 class ProfilePermissions
 {
 	private Session $session;
 	private RegionGateway $regionGateway;
+	private FoodsaverGateway $foodsaverGateway;
 
-	public function __construct(Session $session, RegionGateway $regionGateway)
+	public function __construct(Session $session, RegionGateway $regionGateway, FoodsaverGateway $foodsaverGateway)
 	{
 		$this->session = $session;
 		$this->regionGateway = $regionGateway;
+		$this->foodsaverGateway = $foodsaverGateway;
 	}
 
 	public function mayAdministrateUserProfile(int $userId, ?int $regionId = null): bool
@@ -36,6 +39,16 @@ class ProfilePermissions
 		return $this->session->isAmbassadorForRegion($regionIds, false, true);
 	}
 
+	public function mayEditUserProfile(int $userId): bool
+	{
+		return $this->session->id() === $userId || $this->mayAdministrateUserProfile($userId);
+	}
+
+	public function mayCancelSlotsFromProfile(int $userId): bool
+	{
+		return $this->session->id() != $userId && $this->mayAdministrateUserProfile($userId);
+	}
+
 	public function mayChangeUserVerification(int $userId): bool
 	{
 		return $this->mayAdministrateUserProfile($userId);
@@ -53,12 +66,48 @@ class ProfilePermissions
 
 	public function maySeePickups(int $fsId): bool
 	{
-		return $this->session->id() == $fsId || $this->mayAdministrateUserProfile($fsId);
+		if (!$this->session->may('fs')) {
+			return false;
+		}
+
+		return $this->maySeeAllPickups($fsId) || $this->mayAdministrateUserProfile($fsId);
+	}
+
+	public function maySeeAllPickups(int $fsId): bool
+	{
+		return $this->session->id() == $fsId;
 	}
 
 	public function maySeeStores(int $fsId): bool
 	{
+		if (!$this->session->may('fs')) {
+			return false;
+		}
+
 		return $this->session->id() == $fsId || $this->mayAdministrateUserProfile($fsId);
+	}
+
+	public function maySeeCommitmentsStat(int $fsId): bool
+	{
+		if ($this->session->id() == $fsId) {
+			return true;
+		}
+
+		if ($this->mayAdministrateUserProfile($fsId)) {
+			return true;
+		}
+
+		if ($this->session->may('bieb')) {
+			if ($this->foodsaverGateway->getCountCommonStores($this->session->id(), $fsId) > 0) {
+				return true;
+			}
+			$getFsID = $this->foodsaverGateway->getFoodsaverBasics($fsId);
+			if ($getFsID['bezirk_id'] == $this->session->getCurrentRegionId()) {
+				return true;
+			}
+		}
+
+		return false;
 	}
 
 	public function maySeeEmailAddress(int $fsId): bool
@@ -72,7 +121,7 @@ class ProfilePermissions
 
 	public function maySeePrivateEmail(int $userId): bool
 	{
-		return $this->session->may('orga');
+		return $this->session->id() === $userId || $this->session->may('orga');
 	}
 
 	public function maySeeLastLogin(int $userId): bool
@@ -83,11 +132,6 @@ class ProfilePermissions
 	public function maySeeRegistrationDate(int $userId): bool
 	{
 		return $this->session->id() === $userId || $this->session->may('orga');
-	}
-
-	public function maySeeFetchRate(int $fsId): bool
-	{
-		return false;
 	}
 
 	public function mayDeleteUser(int $userId): bool
@@ -102,12 +146,12 @@ class ProfilePermissions
 
 	public function mayDeleteBanana(int $recipientId): bool
 	{
-		// users can delete bananas that were given to them by someone else
-		return $this->session->id() == $recipientId;
+		// users , orga and admin of IT-Support can delete bananas that were given to them by someone else
+		return $this->session->isAdminFor(RegionIDs::IT_SUPPORT_GROUP) || $this->session->id() == $recipientId;
 	}
 
 	public function mayRemoveFromBounceList(int $userId): bool
 	{
-		return $this->session->may('orga') || $this->session->isAdminFor(RegionIDs::IT_SUPPORT_GROUP);
+		return $this->session->id() == $userId || $this->session->may('orga') || $this->session->isAdminFor(RegionIDs::IT_SUPPORT_GROUP);
 	}
 }

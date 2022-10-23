@@ -1,14 +1,20 @@
 <template>
   <div
     class="avatar"
-    :class="[{'sleeping': sleepStatus}, `sleep${size}`]"
-    :style="wrapperStyle"
+    :class="[`sleep--${size}`, `avatar--${size}`, {
+      'sleeping': isSleeping,
+      'auto-scale': autoScale && ![16, 24].includes(size),
+    }]"
   >
     <img
+      :alt="$i18n('terminology.profile_picture')"
       :src="avatarUrl"
-      :class="imgClass"
+      :class="{
+        'rounded': !round,
+        'rounded-circle': round
+      }"
       style="height: 100%"
-      :style="imgStyle"
+      loading="lazy"
     >
   </div>
 </template>
@@ -25,17 +31,13 @@ export default {
       type: Number,
       default: 35,
     },
-    sleepStatus: {
-      type: Number,
+    isSleeping: {
+      type: [Number, Boolean],
       default: 0,
     },
-    imgClass: {
-      type: String,
-      default: '',
-    },
-    rounded: {
+    round: {
       type: Boolean,
-      default: true,
+      default: false,
     },
     autoScale: {
       type: Boolean,
@@ -45,34 +47,27 @@ export default {
   computed: {
     avatarUrl () {
       const prefix = {
+        16: 'mini_q_',
+        24: 'mini_q_',
         35: 'mini_q_',
         50: '50_q_',
         130: '130_q_',
       }[this.size] || ''
-      if (this.url) {
+
+      if (this.url && !this.url.includes('q_avatar.png')) {
         if (this.url.startsWith('/api/uploads/')) {
-          // path for pictures uploaded with the new API
-          return this.url + `?w=${this.size}&h=${this.size}`
+          return this.url + `?w=${this.size}&h=${this.size}` // path for pictures uploaded with the new API
         } else {
-          // backward compatible path for old pictures
-          return '/images/' + prefix + this.url
+          return '/images/' + prefix + this.url // backward compatible path for old pictures
         }
       } else {
         return '/img/' + prefix + 'avatar.png'
       }
     },
     wrapperStyle () {
-      const styles = {}
-      if (this.autoScale) {
-        styles.height = '100%'
-        styles.width = 'auto'
-      }
-      return styles
-    },
-    imgStyle () {
-      const styles = {}
-      if (this.rounded) {
-        styles['border-radius'] = '5px'
+      const styles = {
+        height: `${this.size}px`,
+        width: `${this.size}px`,
       }
       return styles
     },
@@ -81,29 +76,68 @@ export default {
 </script>
 
 <style lang="scss" scoped>
+.auto-scale {
+  height: 100%;
+  width: auto;
+}
+
 .avatar {
   position: relative;
   display: inline-block;
   background-size: cover;
 }
+
+.avatar--16 {
+  display: inline-flex;
+  width: 16px;
+  height: 16px;
+}
+
+.avatar--24 {
+  display: inline-flex;
+  width: 24px;
+  height: 24px;
+}
+
 .sleeping::after {
   content: '';
   display: block;
   height: 100%;
   width: 100%;
   background-repeat: no-repeat;
-  background-size: cover;
+  background-size: contain;
   position: absolute;
-  top: -10%;
-  left: -10%;
+  top: 0;
+  left: 0;
 }
-.sleep35::after {
+
+.sleep--16::after {
   background-image: url('/img/sleep35x35.png');
+  top: -4px;
+  left: -7px;
 }
-.sleep50::after {
+
+.sleep--24::after {
+  background-image: url('/img/sleep35x35.png');
+  top: -4px;
+  left: -7px;
+}
+
+.sleep--35::after {
+  background-image: url('/img/sleep35x35.png');
+  top: -8px;
+  left: -12px;
+}
+
+.sleep--50::after {
   background-image: url('/img/sleep50x50.png');
+  top: -10px;
+  left: -22px;
 }
-.sleep130::after {
+
+.sleep--130::after {
   background-image: url('/img/sleep130x130.png');
+  top: -15px;
+  left: -25px;
 }
 </style>

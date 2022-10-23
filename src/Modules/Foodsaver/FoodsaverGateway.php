@@ -7,12 +7,13 @@ use Foodsharing\Modules\Core\BaseGateway;
 use Foodsharing\Modules\Core\Database;
 use Foodsharing\Modules\Core\DBConstants\Foodsaver\Role;
 use Foodsharing\Modules\Core\DBConstants\Region\RegionIDs;
-use Foodsharing\Modules\Core\DBConstants\Region\Type;
+use Foodsharing\Modules\Core\DBConstants\StoreTeam\MembershipStatus;
+use Foodsharing\Modules\Core\DBConstants\Unit\UnitType;
 use Foodsharing\Modules\Region\ForumFollowerGateway;
 use Foodsharing\Utility\DataHelper;
 use Foodsharing\Utility\ImageHelper;
 
-final class FoodsaverGateway extends BaseGateway
+class FoodsaverGateway extends BaseGateway
 {
 	private DataHelper $dataHelper;
 	private ForumFollowerGateway $forumFollowerGateway;
@@ -64,17 +65,24 @@ final class FoodsaverGateway extends BaseGateway
 		]);
 	}
 
+	/**
+	 * @return RegionGroupMemberEntry[]
+	 */
 	public function listActiveFoodsaversByRegion(int $regionId): array
 	{
 		$res = $this->db->fetchAll('
 			SELECT 	fs.`id`,
 					fs.`photo`,
 					fs.`name`,
-					fs.sleep_status
+					fs.sleep_status,
+					fs.rolle as role,
+                    if (isnull(fsbot.`bezirk_id`) , false, true) as isAdminOrAmbassadorOfRegion
 
 		    FROM	fs_foodsaver fs
 					INNER JOIN fs_foodsaver_has_bezirk fsreg
 					ON fs.id = fsreg.foodsaver_id
+				    left outer join fs_botschafter fsbot
+					on fsreg.foodsaver_id = fsbot.foodsaver_id and fsreg.bezirk_id = fsbot.bezirk_id
 
 			WHERE   fs.deleted_at IS NULL
 			AND 	fsreg.active = 1
@@ -86,17 +94,7 @@ final class FoodsaverGateway extends BaseGateway
 		]);
 
 		return array_map(function ($fs) {
-			$image = $this->imageHelper->img($fs['photo'], '50', 'q');
-
-			return [
-				'user' => [
-					'id' => $fs['id'],
-					'name' => $fs['name'],
-					'sleep_status' => $fs['sleep_status']
-				],
-				'size' => 50,
-				'imageUrl' => $image
-			];
+			return RegionGroupMemberEntry::create($fs['id'], $fs['name'], $fs['photo'], $fs['sleep_status'], $fs['role'], $fs['isAdminOrAmbassadorOfRegion']);
 		}, $res);
 	}
 
@@ -148,6 +146,30 @@ final class FoodsaverGateway extends BaseGateway
 			], [
 			'id' => $fsId
 		]);
+	}
+
+	public function getCountCommonStores(int $fs_viewer, int $fs_viewed): int
+	{
+		$stm = '
+				SELECT COUNT(*) as count
+				FROM (
+					SELECT betrieb_id
+						FROM fs_betrieb_team
+					WHERE foodsaver_id = :fs_viewer
+						AND ACTIVE = :member_status_viewer
+						INTERSECT
+					SELECT betrieb_id
+							FROM fs_betrieb_team
+					WHERE foodsaver_id = :fs_viewed) a
+		';
+
+		$res = $this->db->fetchAll($stm, [
+			':fs_viewer' => $fs_viewer,
+			':fs_viewed' => $fs_viewed,
+			'member_status_viewer' => MembershipStatus::MEMBER
+		]);
+
+		return $res['0']['count'];
 	}
 
 	public function getFoodsaverBasics(int $fsId): array
@@ -302,7 +324,7 @@ final class FoodsaverGateway extends BaseGateway
 			AND     fs.deleted_at IS NULL
             AND     fs.`active` = 1
         ', [
-			':excludedRegionType' => Type::WORKING_GROUP
+			':excludedRegionType' => UnitType::WORKING_GROUP
 		]);
 	}
 
@@ -320,7 +342,18 @@ final class FoodsaverGateway extends BaseGateway
 			'geschlecht',
 			'email'
 		], [
-			'orgateam' => 1
+			'orgateam' => 1,
+			'rolle' => ROLE::ORGA
+		]);
+	}
+
+	public function getOrgaTeamId(): array
+	{
+		return $this->db->fetchAllByCriteria('fs_foodsaver', [
+			'id'
+		], [
+			'orgateam' => 1,
+			'rolle' => ROLE::ORGA
 		]);
 	}
 
@@ -503,9 +536,9 @@ final class FoodsaverGateway extends BaseGateway
 		';
 
 		if (!$includeRegionAmbassador) {
-			$sql .= ' AND reg.type = ' . Type::WORKING_GROUP;
+			$sql .= ' AND reg.type = ' . UnitType::WORKING_GROUP;
 		} elseif (!$includeGroupAmbassador) {
-			$sql .= ' AND reg.type != ' . Type::WORKING_GROUP;
+			$sql .= ' AND reg.type != ' . UnitType::WORKING_GROUP;
 		}
 
 		return $this->db->fetchAllValues(
@@ -515,7 +548,36 @@ final class FoodsaverGateway extends BaseGateway
 		]);
 	}
 
-	public function deleteFoodsaver(int $fsId): void
+	/**
+	 * Retrieves the list of all admins for all existing workgroup function.
+	 *
+	 * Because the region data model holds both, <i>regions</i> <b>and</b> <i>work groups</i>,
+	 * one can decide which one to query via flag parameters.
+	 *
+	 * Testdistricts are excluded (343 Streuobstwiese,3113 Apfelbaum)
+	 *
+	 * @param int $wgFunction The workgroup function ID
+	 */
+	public function getWorkgroupFunctionAdminIds(int $wgFunction): array
+	{
+		$sql = '
+			select
+			    distinct b.foodsaver_id
+			from fs_botschafter b
+				left outer join fs_region_function rf on b.bezirk_id = rf.region_id
+			where
+				rf.function_id = :wgFunctionId
+			and rf.target_id not in (:excludedRegions)
+		';
+
+		return $this->db->fetchAllValues(
+			$sql, [
+			':wgFunctionId' => $wgFunction,
+			':excludedRegions' => join(',', RegionIDs::getTestRegions())
+		]);
+	}
+
+	public function deleteFoodsaver(int $fsId, ?int $deletingUser, ?string $reason): void
 	{
 		$this->db->update('fs_foodsaver', ['password' => null, 'deleted_at' => $this->db->now()], ['id' => $fsId]);
 
@@ -562,7 +624,9 @@ final class FoodsaverGateway extends BaseGateway
 				'telefon' => null,
 				'handy' => null,
 				'geb_datum' => null,
-				'deleted_at' => $this->db->now()
+				'deleted_at' => $this->db->now(),
+				'deleted_by' => $deletingUser,
+				'deleted_reason' => $reason
 			], [
 			'id' => $fsId
 		]);
@@ -687,6 +751,16 @@ final class FoodsaverGateway extends BaseGateway
 		], [
 			'id' => $fsId
 		]);
+	}
+
+	/**
+	 * @throws \Exception
+	 */
+	public function emailDomainIsBlacklisted(string $email): bool
+	{
+		$emailDomain = strtolower(explode('@', $email)[1]);
+
+		return $this->db->exists('fs_email_blacklist', ['email' => $emailDomain]);
 	}
 
 	/**
@@ -866,11 +940,12 @@ final class FoodsaverGateway extends BaseGateway
 
 		$profiles = [];
 		foreach ($res as $p) {
-			$profile = new Profile();
-			$profile->id = $p['id'];
-			$profile->name = $p['name'];
-			$profile->avatar = $p['photo'];
-			$profile->sleepStatus = $p['sleep_status'];
+			$profile = new Profile(
+				$p['id'],
+				$p['name'],
+				$p['photo'],
+				$p['sleep_status']
+			);
 			$profiles[$p['id']] = $profile;
 		}
 
@@ -900,17 +975,24 @@ final class FoodsaverGateway extends BaseGateway
 
 	public function changeUserVerification(int $userId, int $actorId, bool $newStatus): void
 	{
-		$this->db->update('fs_foodsaver', ['verified' => intval($newStatus)], [
+		$updated = $this->db->update('fs_foodsaver', ['verified' => intval($newStatus)], [
 			'id' => $userId,
 		]);
 
-		$verificationChange = [
-			'fs_id' => $userId,
-			'date' => $this->db->now(),
-			'bot_id' => $actorId,
-			'change_status' => intval($newStatus),
-		];
+		if ($updated > 0) {
+			$verificationChange = [
+				'fs_id' => $userId,
+				'date' => $this->db->now(),
+				'bot_id' => $actorId,
+				'change_status' => intval($newStatus),
+			];
 
-		$this->db->insert('fs_verify_history', $verificationChange);
+			$this->db->insert('fs_verify_history', $verificationChange);
+		}
+	}
+
+	public function foodsaverWasVerifiedBefore(int $userId): bool
+	{
+		return $this->db->exists('fs_verify_history', ['fs_id' => $userId]);
 	}
 }

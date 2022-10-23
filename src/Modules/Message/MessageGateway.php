@@ -38,9 +38,8 @@ final class MessageGateway extends BaseGateway
 		$this->db->beginTransaction();
 
 		$conversationId = $this->db->insert('fs_conversation', [
-			'locked' => $locked ? 1 : 0,
+			'locked' => $locked ? 1 : 0
 		]);
-
 		foreach ($fsIds as $fsId) {
 			$this->db->insert('fs_foodsaver_has_conversation', [
 				'foodsaver_id' => $fsId,
@@ -182,6 +181,7 @@ final class MessageGateway extends BaseGateway
 	 */
 	private function listConversationsForUserWithoutMembers(int $fsId, int $limit = null, int $offset = 0, int $cid = null): array
 	{
+		// prepare the query
 		$params = [':fsId' => $fsId];
 		$query = '
 			SELECT
@@ -192,16 +192,16 @@ final class MessageGateway extends BaseGateway
 				c.`last_message_id`,
 				hc.unread as has_unread_messages,
 				c.name,
-				c.last_message_is_htmlentity_encoded
+				c.last_message_is_htmlentity_encoded,
+                ifnull(cstore.id, cjumpstore.id) as store_id
 
 			FROM
-				fs_conversation c,
-				`fs_foodsaver_has_conversation` hc
+            	fs_foodsaver_has_conversation hc
+                left outer join fs_conversation c on hc.conversation_id = c.id
+                left outer join fs_betrieb cstore on c.id = cstore.team_conversation_id
+                left outer join fs_betrieb cjumpstore on c.id = cjumpstore.springer_conversation_id
 
 			WHERE
-				hc.conversation_id = c.id
-
-			AND
 				hc.foodsaver_id = :fsId';
 		if (!is_null($cid)) {
 			$query .= '
@@ -222,14 +222,20 @@ final class MessageGateway extends BaseGateway
 				':limit' => $limit
 			]);
 		}
+
+		// fetch the data
 		$conversations = $this->db->fetchAll($query, $params);
 
+		// convert the raw data to an array of DTOs
 		$res = [];
 		foreach ($conversations as $c) {
 			$conversation = new Conversation();
-			$conversation->title = $c['name'];
 			$conversation->id = $c['id'];
+			$conversation->title = $c['name'];
 			$conversation->hasUnreadMessages = (bool)$c['has_unread_messages'];
+
+			// add the storeId, if this is the team conversation of a store
+			$conversation->storeId = $c['store_id'] ?? null;
 
 			if ($c['last_message_id']) {
 				$message = new Message(

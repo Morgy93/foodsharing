@@ -2,11 +2,8 @@
 
 namespace Foodsharing\Modules\Settings;
 
-use DateTime;
-use Foodsharing\Lib\Xhr\Xhr;
 use Foodsharing\Lib\Xhr\XhrDialog;
 use Foodsharing\Modules\Core\Control;
-use Foodsharing\Modules\Core\DBConstants\Foodsaver\SleepStatus;
 use Foodsharing\Modules\Foodsaver\FoodsaverGateway;
 use Foodsharing\Modules\Login\LoginGateway;
 use Foodsharing\Modules\Mails\MailsGateway;
@@ -42,7 +39,7 @@ class SettingsXhr extends Control
 	{
 		if (!$this->session->may()) {
 			echo '0';
-			exit();
+			exit;
 		}
 
 		$dia = new XhrDialog();
@@ -155,7 +152,8 @@ class SettingsXhr extends Control
 			];
 		}
 
-		$this->settingsGateway->logChangedSetting($fsId,
+		$this->settingsGateway->logChangedSetting(
+			$fsId,
 			['email' => $this->session->user('email')],
 			['email' => $newEmail],
 			['email']
@@ -169,45 +167,5 @@ class SettingsXhr extends Control
 				$("#' . $dialogId . '").dialog("close");
 			',
 		];
-	}
-
-	public function sleepmode(): void
-	{
-		/**
-		 * from
-		 * until
-		 * msg
-		 * status.
-		 */
-		$from = '';
-		$to = '';
-		$msg = '';
-
-		$states = [
-			SleepStatus::NONE => true,
-			SleepStatus::TEMP => true,
-			SleepStatus::FULL => true
-		];
-
-		if (isset($_POST['from']) && $date = DateTime::createFromFormat('d.m.Y', $_POST['from'])) {
-			$from = $date->format('Y-m-d H:i:s');
-		}
-		if (isset($_POST['until']) && $date = DateTime::createFromFormat('d.m.Y', $_POST['until'])) {
-			$to = $date->format('Y-m-d H:i:s');
-		}
-		if ($txt = $this->getPostString('msg')) {
-			$msg = $txt;
-		}
-		$xhr = new Xhr();
-		$xhr->setStatus(0);
-		if (isset($states[$_POST['status']])) {
-			$status = (int)$_POST['status'];
-
-			$this->settingsGateway->updateSleepMode($this->session->id(), $status, $from, $to, $msg);
-
-			$xhr->setStatus(1);
-		}
-
-		$xhr->send();
 	}
 }

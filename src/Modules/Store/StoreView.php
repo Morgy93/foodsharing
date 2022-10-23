@@ -8,6 +8,7 @@ use Foodsharing\Modules\Core\View;
 use Foodsharing\Utility\DataHelper;
 use Foodsharing\Utility\IdentificationHelper;
 use Foodsharing\Utility\ImageHelper;
+use Foodsharing\Utility\NumberHelper;
 use Foodsharing\Utility\PageHelper;
 use Foodsharing\Utility\RouteHelper;
 use Foodsharing\Utility\Sanitizer;
@@ -27,6 +28,7 @@ class StoreView extends View
 		DataHelper $dataHelper,
 		IdentificationHelper $identificationHelper,
 		ImageHelper $imageService,
+		NumberHelper $numberHelper,
 		PageHelper $pageHelper,
 		RouteHelper $routeHelper,
 		Sanitizer $sanitizerService,
@@ -43,6 +45,7 @@ class StoreView extends View
 			$dataHelper,
 			$identificationHelper,
 			$imageService,
+			$numberHelper,
 			$pageHelper,
 			$routeHelper,
 			$sanitizerService,
@@ -68,24 +71,17 @@ class StoreView extends View
 			]]);
 	}
 
-	public function betrieb_form($region = false, $page = '', $lebensmittel_values, $chains, $categories, $status, $weightArray)
+	public function betrieb_form($lebensmittel_values, $chains, $categories, $status, $weightArray, $region = false, $page = '')
 	{
 		global $g_data;
 
 		$regionPicker = $this->v_utils->v_regionPicker($region ?: [], $this->translator->trans('terminology.region'));
-
-		if (!isset($g_data['foodsaver'])) {
-			$g_data['foodsaver'] = [$this->session->id()];
-		}
 
 		if (isset($g_data['stadt'])) {
 			$g_data['ort'] = $g_data['stadt'];
 		}
 		if (isset($g_data['str'])) {
 			$g_data['anschrift'] = $g_data['str'];
-		}
-		if (isset($g_data['hsnr'])) {
-			$g_data['anschrift'] .= ' ' . $g_data['hsnr'];
 		}
 
 		$this->pageHelper->addJs('$("textarea").css("height","70px");$("textarea").autosize();');
@@ -114,17 +110,17 @@ class StoreView extends View
 			$this->v_utils->v_form_text('name', ['required' => true]),
 			$regionPicker,
 			$this->latLonPicker('LatLng', $latLonOptions),
-
+/*the next lines give the max number of chars for the info to be entered and a warning not to give too many details*/
 			$this->v_utils->v_form_textarea('public_info', [
 				'maxlength' => 180,
-				'desc' => 'Hier kannst Du einige Infos für die Foodsaver angeben, die sich für das Team bewerben möchten. <br />(max. 180 Zeichen)<div>' . $this->v_utils->v_info('<strong>Wichtig:</strong> Gib hier keine genauen Abholzeiten an.<br />Es ist des Öfteren vorgekommen, dass Leute unabgesprochen zum Laden gegangen sind.') . '</div>',
+				'desc' => $this->translator->trans('store.leaveinfo') . '<br />' . $this->translator->trans('store.maxchar') . '<div>' . $this->v_utils->v_info('<strong> ' . $this->translator->trans('store.important') . '</strong>' . $this->translator->trans('store.nodetails') . '<br />' . $this->translator->trans('store.peoplecame')) . '</div>',
 			]),
 		], $editExisting ? [
 			/* elements that are only present when editing */
 			$this->v_utils->v_form_select('betrieb_kategorie_id', ['values' => $categories]),
 			$this->v_utils->v_form_select('kette_id', [
 				'values' => $chains,
-				'desc' => 'Bitte nur inhabergeführte Betriebe bis maximal 3 Filialen ansprechen, niemals Filialen einer größeren Kette ansprechen! Betriebskettenregeln beachten!',
+				'desc' => $this->translator->trans('store.nochains'),
 			]),
 			$this->v_utils->v_form_select('betrieb_status_id', [
 				'values' => $status,
@@ -144,33 +140,33 @@ class StoreView extends View
 			$this->v_utils->v_form_date('begin'),
 
 			$this->v_utils->v_form_select('public_time', ['values' => [
-				['id' => 0, 'name' => 'Keine Angabe'],
-				['id' => 1, 'name' => 'morgens'],
-				['id' => 2, 'name' => 'mittags/nachmittags'],
-				['id' => 3, 'name' => 'abends'],
-				['id' => 4, 'name' => 'nachts']
+				['id' => 0, 'name' => $this->translator->trans('store.nodeclaration')],
+				['id' => 1, 'name' => $this->translator->trans('storeview.frequency1')],
+				['id' => 2, 'name' => $this->translator->trans('storeview.frequency2')],
+				['id' => 3, 'name' => $this->translator->trans('storeview.frequency3')],
+				['id' => 4, 'name' => $this->translator->trans('storeview.frequency4')]
 			]]),
 			$this->v_utils->v_form_select('prefetchtime', ['values' => [
-				['id' => 604800, 'name' => '1 Woche'],
-				['id' => 1209600, 'name' => '2 Wochen'],
-				['id' => 1814400, 'name' => '3 Wochen'],
-				['id' => 2419200, 'name' => '4 Wochen']
+				['id' => 604800, 'name' => $this->translator->trans('store.prefetchone')],
+				['id' => 1209600, 'name' => $this->translator->trans('store.prefetchtwo')],
+				['id' => 1814400, 'name' => $this->translator->trans('store.prefetchthree')],
+				['id' => 2419200, 'name' => $this->translator->trans('store.prefetchfour')]
 			]]),
 			$this->v_utils->v_form_select('abholmenge', ['values' => $weightArray]),
 
 			$this->v_utils->v_form_select('ueberzeugungsarbeit', ['values' => [
-				['id' => 1, 'name' => 'Überhaupt kein Problem, er/sie war/en sofort begeistert!'],
-				['id' => 2, 'name' => 'Nach Überzeugungsarbeit erklärte er/sie sich bereit mitzumachen '],
-				['id' => 3, 'name' => 'Ganz schwierig, aber am Ende hat er/sie eingewilligt'],
-				['id' => 4, 'name' => 'Zuerst sah es schlecht aus, dann hat er/sie sich aber doch gemeldet']
+				['id' => 1, 'name' => $this->translator->trans('store.convince.none')],
+				['id' => 2, 'name' => $this->translator->trans('store.convince.some')],
+				['id' => 3, 'name' => $this->translator->trans('store.convince.much')],
+				['id' => 4, 'name' => $this->translator->trans('store.convince.final')]
 			]]),
 			$this->v_utils->v_form_select('presse', ['values' => [
-				['id' => 1, 'name' => 'Ja'],
-				['id' => 0, 'name' => 'Nein']
+				['id' => 1, 'name' => $this->translator->trans('yes')],
+				['id' => 0, 'name' => $this->translator->trans('no')]
 			]]),
 			$this->v_utils->v_form_select('sticker', ['values' => [
-				['id' => 1, 'name' => 'Ja'],
-				['id' => 0, 'name' => 'Nein']
+				['id' => 1, 'name' => $this->translator->trans('yes')],
+				['id' => 0, 'name' => $this->translator->trans('no')]
 			]]),
 		] : []);
 
@@ -183,7 +179,7 @@ class StoreView extends View
 		foreach ($store['foodsaver'] as $fs) {
 			if ($fs['verantwortlich'] == 1) {
 				$managers .= '<li>' .
-					'<a style="background-color: transparent;" href="/profile/' . intval($fs['id']) . '">'
+					'<a style="background-color: var(--fs-color-transparent);" href="/profile/' . intval($fs['id']) . '">'
 					. $this->imageService->avatar($fs, 50) .
 					'</a></li>';
 			}

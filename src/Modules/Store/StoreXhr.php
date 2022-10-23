@@ -7,38 +7,30 @@ use Foodsharing\Lib\Xhr\Xhr;
 use Foodsharing\Lib\Xhr\XhrDialog;
 use Foodsharing\Lib\Xhr\XhrResponses;
 use Foodsharing\Modules\Core\Control;
-use Foodsharing\Modules\Core\DBConstants\Region\Type;
 use Foodsharing\Modules\Core\DBConstants\Store\StoreLogAction;
 use Foodsharing\Permissions\StorePermissions;
-use Foodsharing\Utility\Sanitizer;
 
 class StoreXhr extends Control
 {
-	private $storeModel;
 	private $storeGateway;
 	private $storePermissions;
 	private $storeTransactions;
-	private $sanitizerService;
 
 	public function __construct(
-		StoreModel $model,
 		StoreView $view,
 		StoreGateway $storeGateway,
 		StorePermissions $storePermissions,
-		StoreTransactions $storeTransactions,
-		Sanitizer $sanitizerService
+		StoreTransactions $storeTransactions
 	) {
-		$this->storeModel = $model;
 		$this->view = $view;
 		$this->storeGateway = $storeGateway;
 		$this->storePermissions = $storePermissions;
 		$this->storeTransactions = $storeTransactions;
-		$this->sanitizerService = $sanitizerService;
 
 		parent::__construct();
 
 		if (!$this->session->may('fs')) {
-			exit();
+			exit;
 		}
 	}
 
@@ -49,21 +41,25 @@ class StoreXhr extends Control
 			return XhrResponses::PERMISSION_DENIED;
 		}
 
-		if (strtotime($_GET['time']) > 0 && $_GET['fetchercount'] >= 0) {
-			$fetchercount = (int)$_GET['fetchercount'];
-			$time = $_GET['time'];
-			if ($fetchercount > 8) {
-				$fetchercount = 8;
-			}
+		if (strtotime($_GET['time']) == false) {
+			return;
+		}
+		$date = Carbon::createFromTimeString($_GET['time']);
 
-			if ($this->storeTransactions->changePickupSlots($storeId, Carbon::createFromTimeString($time), $fetchercount)) {
-				$this->flashMessageHelper->success($this->translator->trans('pickup.edit.added'));
+		$totalSlots = $_GET['fetchercount'];
+		if (!is_numeric($totalSlots)) {
+			return;
+		}
 
-				return [
-					'status' => 1,
-					'script' => 'reload();'
-				];
-			}
+		try {
+			$this->storeTransactions->createOrUpdatePickup($storeId, $date, $totalSlots);
+			$this->flashMessageHelper->success($this->translator->trans('pickup.edit.added'));
+
+			return [
+				'status' => 1,
+				'script' => 'reload();'
+			];
+		} catch (PickupValidationException $ex) {
 		}
 	}
 
@@ -75,12 +71,12 @@ class StoreXhr extends Control
 		}
 
 		$dia = new XhrDialog();
-		$dia->setTitle('Abholtermin eintragen');
+		$dia->setTitle($this->translator->trans('store.enterdate'));
 		$dia->addContent($this->view->dateForm());
 		$dia->addOpt('width', 280);
 		$dia->setResizeable(false);
 		$dia->addAbortButton();
-		$dia->addButton('Speichern', 'saveDate();');
+		$dia->addButton($this->translator->trans('button.save'), 'saveDate();');
 
 		$dia->addJs('
 
@@ -105,7 +101,7 @@ class StoreXhr extends Control
 				}
 				else
 				{
-					pulseError("Du musst noch die Anzahl der Abholer/innen auswählen");
+					pulseError("' . $this->translator->trans('store.enternumber') . '");
 				}
 			}
 
@@ -115,95 +111,6 @@ class StoreXhr extends Control
 		');
 
 		return $dia->xhrout();
-	}
-
-	public function savebezirkids()
-	{
-		if (isset($_GET['ids']) && is_array($_GET['ids']) && count($_GET['ids']) > 0) {
-			foreach ($_GET['ids'] as $b) {
-				if ($this->storePermissions->mayEditStore($b['id']) && (int)$b['v'] > 0) {
-					$this->storeGateway->updateStoreRegion($b['id'], $b['v']);
-				}
-			}
-		}
-
-		return ['status' => 1];
-	}
-
-	// see https://gitlab.com/foodsharing-dev/foodsharing/-/issues/885
-	public function setbezirkids()
-	{
-		if (isset($_SESSION['client']['verantwortlich']) && is_array($_SESSION['client']['verantwortlich'])) {
-			$ids = [];
-			foreach ($_SESSION['client']['verantwortlich'] as $b) {
-				$ids[] = (int)$b['betrieb_id'];
-			}
-			if (!empty($ids)) {
-				if ($betriebe = $this->storeModel->q('SELECT id,name,bezirk_id,str,hsnr FROM fs_betrieb WHERE id IN(' . implode(',', $ids) . ') AND ( bezirk_id = 0 OR bezirk_id IS NULL)')) {
-					$dia = new XhrDialog();
-
-					$dia->setTitle('Fehlende Zuordnung');
-					$dia->addContent($this->v_utils->v_info('Für folgende Betriebe wurde noch kein Bezirk zugeordnet. Bitte gib einen Bezirk an!'));
-					$dia->addOpt('width', '650px');
-					$dia->noOverflow();
-
-					$bezirks = $this->session->getRegions();
-
-					foreach ($bezirks as $key => $b) {
-						if (!Type::isAccessibleRegion($b['type'])) {
-							unset($bezirks[$key]);
-						}
-					}
-
-					$cnt = '
-					<div id="betriebetoselect">';
-					foreach ($betriebe as $b) {
-						$cnt .= $this->v_utils->v_form_select('b_' . $b['id'], [
-							'label' => $b['name'] . ', ' . $b['str'] . ' ' . $b['hsnr'],
-							'values' => $bezirks
-						]);
-					}
-					$cnt .= '
-					</div>';
-					$dia->addJs('
-						$("#savebetriebetoselect").on("click", function(ev){
-							ev.preventDefault();
-
-							var saveArr = new Array();
-
-							$("#betriebetoselect select.input.select").each(function(){
-								var $this = $(this);
-								var value = parseInt($this.val());
-								var id = parseInt($this.attr("id").split("b_")[1]);
-
-								if(id > 0 && value > 0)
-								{
-									saveArr.push({
-										id:id,
-										v:value
-									});
-								}
-							});
-
-							if(saveArr.length > 0)
-							{
-								ajax.req("betrieb","savebezirkids",{
-									data: {ids: saveArr},
-									success: function(){
-										pulseInfo("Erfolgreich gespeichert!");
-										$("#' . $dia->getId() . '").dialog("close");
-									}
-								});
-							}
-						});
-					');
-					$dia->addContent($cnt);
-					$dia->addContent($this->v_utils->v_input_wrapper('', '<a class="button" id="savebetriebetoselect" href="#">' . $this->translator->trans('button.save') . '</a>'));
-
-					return $dia->xhrout();
-				}
-			}
-		}
 	}
 
 	public function signout()
@@ -229,7 +136,7 @@ class StoreXhr extends Control
 
 	public function bubble(): array
 	{
-		$storeId = $_GET['id'];
+		$storeId = intval($_GET['id']);
 		if ($store = $this->storeGateway->getMyStore($this->session->id(), $storeId)) {
 			$dia = $this->buildBubbleDialog($store, $storeId);
 
@@ -250,12 +157,12 @@ class StoreXhr extends Control
 		$dia = new XhrDialog();
 		$dia->setTitle($store['name']);
 		$dia->addContent($this->view->bubble($store));
-		if (($store['inTeam']) || $this->storePermissions->mayEditStore($storeId)) {
+		if ($store['inTeam'] || $this->storePermissions->mayEditStore($storeId)) {
 			$dia->addButton($this->translator->trans('store.go'), 'goTo(\'/?page=fsbetrieb&id=' . (int)$store['id'] . '\');');
 		}
 		if ($store['team_status'] != 0 && (!$store['inTeam'] && (!$store['pendingRequest']))) {
 			$dia->addButton($this->translator->trans('store.request.request'), 'wantToHelpStore(' . (int)$store['id'] . ',' . (int)$this->session->id() . ');return false;');
-		} elseif ($store['team_status'] != 0 && (!$store['inTeam'] && ($store['pendingRequest']))) {
+		} elseif ($store['team_status'] != 0 && (!$store['inTeam'] && $store['pendingRequest'])) {
 			$dia->addButton($this->translator->trans('store.request.withdraw'), 'withdrawStoreRequest(' . (int)$store['id'] . ',' . (int)$this->session->id() . ');return false;');
 		}
 		$modal = false;
