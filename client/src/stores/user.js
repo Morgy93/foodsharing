@@ -6,7 +6,7 @@ import serverData from '@/helper/server-data'
 export const store = Vue.observable({
   mailUnreadCount: 0,
   details: {},
-  locations: serverData.locations,
+  locations: serverData.locations || {},
   user: serverData.user,
   permissions: serverData.permissions,
   isLoggedIn: serverData.user?.id !== null,
@@ -77,9 +77,8 @@ export const getters = {
     return store.locations.lat !== null && store.locations.lng !== null
   },
   getLocations () {
-    return store.locations
+    return store.locations || { lat: 0, lng: 0 }
   },
-
   async getBrowserLocations () {
     if (navigator.geolocation) {
       return new Promise((resolve, reject) => {
