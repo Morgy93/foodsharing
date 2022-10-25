@@ -2,6 +2,7 @@
   <b-modal
     id="mapDetailsModal"
     ref="mapDetailsModal"
+    centered
     :title="title"
   >
     {{ body }}
