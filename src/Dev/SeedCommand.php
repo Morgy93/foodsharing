@@ -560,7 +560,7 @@ class SeedCommand extends Command implements CustomCommandInterface
 		// create more stores and collect their ids in a list
 		$this->output->writeln('Create some stores');
 		$this->stores = [$store['id']];
-		foreach (range(0, 5000) as $_) {
+		foreach (range(0, 40) as $_) {
 			// TODO conversations are missing the other store members
 			$conv1 = $I->createConversation([$userbot['id']], ['name' => 'team', 'locked' => 1]);
 			$conv2 = $I->createConversation([$userbot['id']], ['name' => 'springer', 'locked' => 1]);
@@ -580,7 +580,7 @@ class SeedCommand extends Command implements CustomCommandInterface
 
 		// create foodbaskets
 		$this->output->writeln('Create foodbaskets');
-		foreach (range(0, 50000) as $_) {
+		foreach (range(0, 500) as $_) {
 			$user = $this->getRandomIDOfArray($this->foodsavers);
 			$I->createFoodbasket($user);
 			$this->output->write('.');
