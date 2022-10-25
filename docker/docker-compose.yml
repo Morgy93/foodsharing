@@ -108,7 +108,6 @@ services:
   #------------------------------------
   db:
     container_name: foodsharing_db
-    # image: mariadb:10.5.15
     # Prebuild custom image, with pinned version (https://gitlab.com/foodsharing-dev/images/-/blob/master/db/dev/Dockerfile)
     # To edit the database configuration (https://gitlab.com/foodsharing-dev/images/-/blob/master/db/dev/)
     image: registry.gitlab.com/foodsharing-dev/images/db/dev:1.4
