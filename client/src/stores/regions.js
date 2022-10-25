@@ -5,9 +5,7 @@ import { url } from '@/helper/urls'
 export const store = Vue.observable({
   regions: [],
   choosedRegionChildren: [],
-  joinRegionModal: {
-    isShown: false,
-  },
+
 })
 
 export const getters = {
@@ -17,12 +15,6 @@ export const getters = {
 
   getChoosedRegionChildren () {
     return store.choosedRegionChildren
-  },
-
-  joinRegionModal: {
-    isShown () {
-      return store.joinRegionModal.isShown
-    },
   },
 }
 
@@ -39,15 +31,6 @@ export const mutations = {
   async joinRegion (regionId) {
     await joinRegion(regionId)
     document.location.href = url('relogin_and_redirect_to_url', url('region_forum', regionId))
-  },
-
-  joinRegionModal: {
-    show () {
-      store.joinRegionModal.isShown = true
-    },
-    close () {
-      store.joinRegionModal.isShown = false
-    },
   },
 }
 

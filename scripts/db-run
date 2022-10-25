@@ -1,0 +1,11 @@
+#!/bin/bash
+
+set -o errexit
+
+dir=$(dirname "$0")
+
+# shellcheck source=./__helping-functions.sh
+source "$dir"/__helping-functions.sh
+
+db=$1; shift;
+exec-in-container-asroot db mysql -p"$MYSQL_PASSWORD" "$db" -e "$@"

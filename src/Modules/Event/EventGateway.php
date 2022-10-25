@@ -168,12 +168,12 @@ class EventGateway extends BaseGateway
 			l.street,
 			l.zip,
 			l.city
-		FROM fs_event e 
+		FROM fs_event e
 		JOIN fs_foodsaver_has_event fhe ON e.id = fhe.event_id
 		LEFT JOIN fs_location l ON e.location_id = l.id
 		LEFT JOIN fs_bezirk r ON e.bezirk_id = r.id
 		WHERE
-			fhe.foodsaver_id = :fs_id	
+			fhe.foodsaver_id = :fs_id
 			AND e.end > NOW()
 			AND STATUS IN (' . implode(',', $statuses) . ')
 		ORDER BY e.start
@@ -220,6 +220,13 @@ class EventGateway extends BaseGateway
 	public function deleteInvites(int $eventId): int
 	{
 		return $this->db->delete('fs_foodsaver_has_event', ['event_id' => $eventId]);
+	}
+
+	public function deleteInvitesForFoodSaver(int $regionId, int $foodsaverId): int
+	{
+		$eventIds = $this->db->fetchAllValuesByCriteria('fs_event', 'id', ['foodsaver_id' => $foodsaverId, 'bezirk_id' => $regionId]);
+
+		return $this->db->delete('fs_foodsaver_has_event', ['foodsaver_id' => $foodsaverId, 'event_id' => $eventIds]);
 	}
 
 	public function getInviteStatus(int $eventId, int $foodsaverId): int

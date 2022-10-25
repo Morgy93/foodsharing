@@ -3,7 +3,7 @@
 namespace Foodsharing\Modules\Voting;
 
 use DateTime;
-use Foodsharing\Modules\Core\DBConstants\Region\Type;
+use Foodsharing\Modules\Core\DBConstants\Unit\UnitType;
 use Foodsharing\Modules\Core\View;
 use Foodsharing\Modules\Voting\DTO\Poll;
 
@@ -14,7 +14,7 @@ class VotingView extends View
 		return $this->vueComponent('poll-overview', 'pollOverview', [
 			'poll' => $poll,
 			'regionName' => $region['name'],
-			'isWorkGroup' => $region['type'] === Type::WORKING_GROUP,
+			'isWorkGroup' => UnitType::isGroup($region['type']),
 			'mayVote' => $mayVote,
 			'userVoteDate' => $userVoteDate,
 			'mayEdit' => $mayEdit
@@ -25,7 +25,7 @@ class VotingView extends View
 	{
 		return $this->vueComponent('new-poll-form', 'newPollForm', [
 			'region' => $region,
-			'isWorkGroup' => $region['type'] == Type::WORKING_GROUP
+			'isWorkGroup' => UnitType::isGroup($region['type'])
 		]);
 	}
 

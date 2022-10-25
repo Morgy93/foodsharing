@@ -113,7 +113,6 @@ class StoreUserControl extends Control
 					'particularitiesDescription' => $store['besonderheiten'] ?? '',
 					'lastFetchDate' => $lastFetchDate,
 					'street' => $store['str'],
-					'housenumber' => $store['hsnr'],
 					'postcode' => $store['plz'],
 					'city' => $store['stadt'],
 					'storeTitle' => $store['name'],
@@ -136,18 +135,18 @@ class StoreUserControl extends Control
 				}
 
 				$this->pageHelper->addContent(
-						$this->view->vueComponent('vue-storeoptions', 'storeOptions', [
-							'teamConversionId' => $teamConversionId,
-							'springerConversationId' => $springerConversationId,
-							'mayEditStore' => $this->storePermissions->mayEditStore($storeId),
-							'userIsInStore' => $userIsInStore,
-							'mayLeaveStoreTeam' => $this->storePermissions->mayLeaveStoreTeam($storeId, $this->session->id()),
-							'storeId' => $storeId,
-							'isJumper' => $store['jumper'],
-							'fsId' => $this->session->id()
-						]),
+					$this->view->vueComponent('vue-storeoptions', 'storeOptions', [
+						'teamConversionId' => $teamConversionId,
+						'springerConversationId' => $springerConversationId,
+						'mayEditStore' => $this->storePermissions->mayEditStore($storeId),
+						'userIsInStore' => $userIsInStore,
+						'mayLeaveStoreTeam' => $this->storePermissions->mayLeaveStoreTeam($storeId, $this->session->id()),
+						'storeId' => $storeId,
+						'isJumper' => $store['jumper'],
+						'fsId' => $this->session->id()
+					]),
 					CNT_LEFT
-					);
+				);
 
 				/* team list */
 				$this->pageHelper->addContent(
@@ -201,7 +200,6 @@ class StoreUserControl extends Control
 							'storeManagers' => $this->storeGateway->getStoreManagers($storeId),
 							'mayWritePost' => $this->storePermissions->mayWriteStoreWall($storeId),
 							'mayDeleteEverything' => $this->storePermissions->mayDeleteStoreWall($storeId),
-							'expandWallByDefault' => !$this->session->isMob(),
 						])
 					);
 				} else {
@@ -313,20 +311,6 @@ class StoreUserControl extends Control
 				}, ARRAY_FILTER_USE_KEY);
 			},
 			array_merge($store['foodsaver'], $store['springer']),
-		);
-	}
-
-	private function addStoreLeaveModal(): void
-	{
-		$this->pageHelper->addHidden(
-			'
-		<div id="signout_shure" title="' . $this->translator->trans('pickup.signout_confirm') . '">
-			' . $this->v_utils->v_info(
-				'
-				<strong>' . $this->translator->trans('pickup.signout_sure') . '</strong>
-				<p>' . $this->translator->trans('pickup.signout_info') . '</p>'
-			) . '
-		</div>'
 		);
 	}
 

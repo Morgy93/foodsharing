@@ -6,9 +6,9 @@ use Foodsharing\Lib\WebSocketConnection;
 use Foodsharing\Modules\Core\BaseGateway;
 use Foodsharing\Modules\Core\Database;
 use Foodsharing\Modules\Core\DBConstants\BasketRequests\Status as RequestStatus;
-use Foodsharing\Modules\Core\DBConstants\Region\Type;
 use Foodsharing\Modules\Core\DBConstants\Store\CooperationStatus;
 use Foodsharing\Modules\Core\DBConstants\Store\StoreLogAction;
+use Foodsharing\Modules\Core\DBConstants\Unit\UnitType;
 use Foodsharing\Utility\WeightHelper;
 
 final class ProfileGateway extends BaseGateway
@@ -131,7 +131,7 @@ final class ProfileGateway extends BaseGateway
 			AND 	b.foodsaver_id = :fs_id
 			AND		bz.type != :type
 		';
-		if ($fs = $this->db->fetchAll($stm, [':fs_id' => $fsId, ':type' => Type::WORKING_GROUP])) {
+		if ($fs = $this->db->fetchAll($stm, [':fs_id' => $fsId, ':type' => UnitType::WORKING_GROUP])) {
 			$data['foodsaver'] = $fs;
 		}
 
@@ -153,7 +153,7 @@ final class ProfileGateway extends BaseGateway
 		if ($fs = $this->db->fetchAll($stm, [
 			':fs_id' => $fsId,
 			':viewerId' => $viewerId,
-			':type' => Type::WORKING_GROUP
+			':type' => UnitType::WORKING_GROUP
 		])) {
 			$data['working_groups'] = $fs;
 		}
@@ -262,7 +262,7 @@ final class ProfileGateway extends BaseGateway
 		return (int)$this->db->fetchValue($stm, [':fs_id' => $fsId]);
 	}
 
-	public function giveBanana(int $fsId, string $message = '', ?int $sessionId): int
+	public function giveBanana(int $fsId, ?int $sessionId, string $message = ''): int
 	{
 		if ($sessionId === null) {
 			throw new \UnexpectedValueException('Must be logged in to give banana.');
@@ -298,16 +298,31 @@ final class ProfileGateway extends BaseGateway
 		return $this->db->delete('fs_rating', ['foodsaver_id' => $userId, 'rater_id' => $raterId]) > 0;
 	}
 
-	public function getSecuredPickups(int $fsId, int $week): int
+	/**
+	 * Counts how many pickups were done that the foodsaver signed up for 20 hours before pickup time therefore
+	 * securing the pickup during a week.
+	 *
+	 *  int $fsId FoodsaverId
+	 *  int $week Number of weeks to be added as interval to current date
+	 */
+	public function getSecuredPickupsCount(int $fsId, int $week): int
 	{
 		$stm = 'SELECT
-       				count(*) as Anzahl
-				FROM `fs_store_log` a
-				WHERE a.fs_id_a = :fs_id
-				  AND `action` = :action
-				  AND DATE_FORMAT(date_reference,\'%Y-%v\') = DATE_FORMAT(CURRENT_DATE() + INTERVAL :week WEEK,\'%Y-%v\')
-				  AND TIMESTAMPDIFF(HOUR, date_activity, date_reference) < 20
-		';
+                    COUNT(*) as Anzahl
+                FROM
+                    (SELECT
+                        a.foodsaver_id, a.betrieb_id, a.date
+                     FROM
+                        `fs_abholer` a
+                        left outer join `fs_store_log` b on a.betrieb_id = b.store_id and a.date = b.date_reference + INTERVAL 2 HOUR
+                     WHERE a.foodsaver_id = :fs_id
+                        AND b.action = :action
+                        AND DATE_FORMAT(a.date,\'%Y-%v\') = DATE_FORMAT(CURRENT_DATE() + INTERVAL :week WEEK,\'%Y-%v\')
+                        AND TIMESTAMPDIFF(HOUR, b.date_activity, b.date_reference) < 20
+                     GROUP BY
+                        a.foodsaver_id, a.betrieb_id, a.date
+                    ) z';
+
 		$res = $this->db->fetchAll($stm, [
 			':fs_id' => $fsId,
 			':action' => StoreLogAction::SIGN_UP_SLOT,

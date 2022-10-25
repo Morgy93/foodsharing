@@ -217,13 +217,13 @@ class View
 
 		$out = $this->v_utils->v_input_wrapper(
 			$this->translator->trans('addresspicker.label'),
-	'<div class="lat-lon-picker">' .
-			$this->v_utils->v_info(
-				$this->translator->trans('addresspicker.infobox')
-				. ($context ? '<hr>' . $this->translator->trans('addresspicker.infobox' . $context) : '')
-			) .
-		'<input placeholder="' . $this->translator->trans('addresspicker.placeholder') . '" '
-			. 'type="text" value="" id="addresspicker" type="text" class="input text value ui-corner-top" />
+			'<div class="lat-lon-picker">' .
+					$this->v_utils->v_info(
+						$this->translator->trans('addresspicker.infobox')
+						. ($context ? '<hr>' . $this->translator->trans('addresspicker.infobox' . $context) : '')
+					) .
+				'<input placeholder="' . $this->translator->trans('addresspicker.placeholder') . '" '
+					. 'type="text" value="" id="addresspicker" type="text" class="input text value ui-corner-top" />
 		<div id="map" class="pickermap"></div>
 	</div>');
 		$out .=

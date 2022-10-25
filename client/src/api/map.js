@@ -8,3 +8,7 @@ export function getMapMarkers (types = ['baskets'], status) {
   }
   return get(`/map/markers?${params}`)
 }
+
+export function getCommunityBubbleContent (regionId) {
+  return get(`/map/regions/${regionId}`)
+}

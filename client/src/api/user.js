@@ -1,4 +1,4 @@
-import { get, post, remove } from './base'
+import { get, patch, post, remove } from './base'
 
 export function login (email, password, rememberMe) {
   return post('/user/login', { email, password, remember_me: rememberMe })
@@ -33,4 +33,13 @@ export function registerUser (firstName, lastName, email, password, gender, birt
 
 export function testRegisterEmail (email) {
   return post('/user/isvalidemail', { email: email })
+}
+
+export function setSleepStatus (mode, from, to, message) {
+  return patch('/user/sleepmode', {
+    mode: mode,
+    from: from,
+    to: to,
+    message: message,
+  })
 }

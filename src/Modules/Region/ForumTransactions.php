@@ -6,8 +6,8 @@ use Foodsharing\Lib\Session;
 use Foodsharing\Modules\Bell\BellGateway;
 use Foodsharing\Modules\Bell\DTO\Bell;
 use Foodsharing\Modules\Core\DBConstants\Bell\BellType;
-use Foodsharing\Modules\Core\DBConstants\Region\Type;
 use Foodsharing\Modules\Core\DBConstants\Region\WorkgroupFunction;
+use Foodsharing\Modules\Core\DBConstants\Unit\UnitType;
 use Foodsharing\Modules\Foodsaver\FoodsaverGateway;
 use Foodsharing\Modules\Group\GroupFunctionGateway;
 use Foodsharing\Utility\EmailHelper;
@@ -17,42 +17,19 @@ use Symfony\Contracts\Translation\TranslatorInterface;
 
 class ForumTransactions
 {
-	private BellGateway $bellGateway;
-	private FoodsaverGateway $foodsaverGateway;
-	private ForumGateway $forumGateway;
-	private ForumFollowerGateway $forumFollowerGateway;
-	private Session $session;
-	private RegionGateway $regionGateway;
-	private Sanitizer $sanitizerService;
-	private EmailHelper $emailHelper;
-	private FlashMessageHelper $flashMessageHelper;
-	private TranslatorInterface $translator;
-	private GroupFunctionGateway $groupFunctionGateway;
-
 	public function __construct(
-		BellGateway $bellGateway,
-		FoodsaverGateway $foodsaverGateway,
-		ForumGateway $forumGateway,
-		ForumFollowerGateway $forumFollowerGateway,
-		Session $session,
-		RegionGateway $regionGateway,
-		Sanitizer $sanitizerService,
-		EmailHelper $emailHelper,
-		FlashMessageHelper $flashMessageHelper,
-		TranslatorInterface $translator,
-		GroupFunctionGateway $groupFunctionGateway
+		private BellGateway $bellGateway,
+		private FoodsaverGateway $foodsaverGateway,
+		private ForumGateway $forumGateway,
+		private ForumFollowerGateway $forumFollowerGateway,
+		private Session $session,
+		private RegionGateway $regionGateway,
+		private Sanitizer $sanitizerService,
+		private EmailHelper $emailHelper,
+		private FlashMessageHelper $flashMessageHelper,
+		private TranslatorInterface $translator,
+		private GroupFunctionGateway $groupFunctionGateway
 	) {
-		$this->bellGateway = $bellGateway;
-		$this->foodsaverGateway = $foodsaverGateway;
-		$this->forumGateway = $forumGateway;
-		$this->forumFollowerGateway = $forumFollowerGateway;
-		$this->session = $session;
-		$this->regionGateway = $regionGateway;
-		$this->sanitizerService = $sanitizerService;
-		$this->emailHelper = $emailHelper;
-		$this->flashMessageHelper = $flashMessageHelper;
-		$this->translator = $translator;
-		$this->groupFunctionGateway = $groupFunctionGateway;
 	}
 
 	public function url($regionId, $ambassadorForum, $threadId = null, $postId = null): string
@@ -180,7 +157,7 @@ class ForumTransactions
 	private function notifyMembersOfForumAboutNewThreadViaMail(array $regionData, int $threadId, bool $isAmbassadorForum): void
 	{
 		$regionType = $this->regionGateway->getType($regionData['id']);
-		if (!$isAmbassadorForum && in_array($regionType, [Type::COUNTRY, Type::FEDERAL_STATE])) {
+		if (!$isAmbassadorForum && in_array($regionType, [UnitType::COUNTRY, UnitType::FEDERAL_STATE])) {
 			$this->flashMessageHelper->info($this->translator->trans('forum.thread.too_big_to_mail'));
 
 			return;

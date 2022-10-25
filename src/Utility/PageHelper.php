@@ -3,7 +3,8 @@
 namespace Foodsharing\Utility;
 
 use Foodsharing\Lib\Session;
-use Foodsharing\Modules\Core\DBConstants\Region\Type;
+use Foodsharing\Modules\Core\DBConstants\Unit\UnitType;
+use Foodsharing\Modules\Region\RegionGateway;
 use Foodsharing\Permissions\BlogPermissions;
 use Foodsharing\Permissions\ContentPermissions;
 use Foodsharing\Permissions\MailboxPermissions;
@@ -54,6 +55,7 @@ final class PageHelper
 	private WorkGroupPermissions $workGroupPermissions;
 	private ProfilePermissions $profilePermissions;
 	private Environment $twig;
+	private RegionGateway $regionGateway;
 
 	public function __construct(
 		Session $session,
@@ -70,7 +72,8 @@ final class PageHelper
 		RegionPermissions $regionPermissions,
 		NewsletterEmailPermissions $newsletterEmailPermissions,
 		WorkGroupPermissions $workGroupPermissions,
-		ProfilePermissions $profilePermissions
+		ProfilePermissions $profilePermissions,
+		RegionGateway $regionGateway
 	) {
 		$this->twig = $twig;
 		$this->imageService = $imageService;
@@ -87,6 +90,7 @@ final class PageHelper
 		$this->storePermissions = $storePermissions;
 		$this->workGroupPermissions = $workGroupPermissions;
 		$this->profilePermissions = $profilePermissions;
+		$this->regionGateway = $regionGateway;
 	}
 
 	public function generateAndGetGlobalViewData(): array
@@ -187,8 +191,8 @@ final class PageHelper
 		$locations = null;
 		if ($pos = $this->session->getLocation()) {
 			$locations = [
-				'lat' => (float)$pos['lat'],
-				'lon' => (float)$pos['lon'],
+				'lat' => $pos['lat'],
+				'lon' => $pos['lon'],
 			];
 		}
 
@@ -242,7 +246,7 @@ final class PageHelper
 				'mayHandleFoodsaverRegionMenu' => $this->regionPermissions->mayHandleFoodsaverRegionMenu($groupId),
 				'hasConference' => $this->regionPermissions->hasConference($groupType)
 			]);
-			if (Type::isRegion($groupType)) {
+			if (UnitType::isRegion($groupType)) {
 				$group['isAdmin'] = $this->session->isAdminFor($groupId);
 				$group['mayAccessReportGroupReports'] = $this->reportPermissions->mayAccessReportGroupReports($groupId);
 				$group['mayAccessArbitrationGroupReports'] = $this->reportPermissions->mayAccessArbitrationReports($groupId);
@@ -251,6 +255,7 @@ final class PageHelper
 				$regions[] = $group;
 			} else {
 				$group['isAdmin'] = $this->workGroupPermissions->mayEdit($group);
+				$group['hasSubgroups'] = $this->regionGateway->hasSubgroups($groupId);
 				$workingGroups[] = $group;
 			}
 		}

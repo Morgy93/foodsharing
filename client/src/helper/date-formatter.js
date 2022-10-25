@@ -168,10 +168,10 @@ export default {
   /**
    * Calcucates the difference between two dates in months
    * @param {Date} date
-   * @returns {Number} difference between date and now in months
+   * @returns {Number} difference between now and a date in months
    */
   getDifferenceToNowInMonths (date = new Date()) {
-    return Math.trunc((new Date(date) - new Date()) / this.MonthsToMs())
+    return Math.trunc((new Date() - new Date(date)) / this.MonthsToMs())
   },
 
   /**
@@ -209,7 +209,9 @@ export default {
       style: short ? 'narrow' : 'long',
     })
 
-    const format = (unit) => rtf.format(Math.round(isInFuture ? step : -step), unit)
+    const format = (unit) => {
+      return rtf.format(Math.round(isInFuture ? step : -step), unit)
+    }
 
     // Time years step
     let step = intervalCalc(this.YearsToMs())
@@ -223,7 +225,7 @@ export default {
     }
     // Time weeks step
     step = intervalCalc(this.WeeksToMs())
-    if (step > 1) {
+    if (step > 2) {
       return format('week')
     }
     // Time days step

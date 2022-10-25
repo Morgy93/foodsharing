@@ -10,8 +10,6 @@ You can use the Docker Compose setup, if you are using one of the following syst
 - OSX Yosemite 10.10.3 or higher
 - Windows 10 Pro or higher
 
-If you are not using one of those, then try the Vagrant + Docker Compose setup.
-
 Descriptions for the different operating system follow:
 
 - [Linux](#linux)
@@ -24,8 +22,6 @@ Descriptions for the different operating system follow:
     - [git trouble (on WSL1)](#git-trouble-on-wsl1)
     - [yarn lint](#yarn-lint)
     - [Changes in js, vue etc. aren't showing up](#changes-in-js-vue-etc-arent-showing-up)
-- [Vagrant](#vagrant)
-  - [Daily work](#daily-work)
 
 ### Linux
 
@@ -153,38 +149,3 @@ module.exports = {
 ```
 
 Note: Please make sure not to commit this file afterwards with your changes.
-
-### Vagrant
-
-If you cannot use any of the above methods, then this should work with every common operation system.
-
-However, we are less familiar with this solution, so we may be less able to support you.
-
-Install
-[VirtualBox](https://www.virtualbox.org/wiki/Downloads) and
-[Vagrant](https://www.vagrantup.com/downloads.html).
-
-Then:
-
-```
-git clone git@gitlab.com:foodsharing-dev/foodsharing.git foodsharing
-cd foodsharing
-vagrant up
-```
-
-#### Daily work
-
-`vagrant up` starts the machine and foodsharing project.
-
-`vagrant halt` stops the virtual machine.
-
-`vagrant ssh` connects to the virtual machine.
-
-Once connected to the virtual machine, go to /vagrant with `cd /vagrant`.
-This is where the foodsharing folder is mounted in the VM.
-From there on, you can run all scripts with `./scripts/NAME`.
-
-Note:
-`./scripts/start` will always be executed, when you start the virtual machine with `vagrant up`.
-
-There is a known bug when running VirtualBox + nginx that nginx serves files from a memory cache. If you encounter this problem, then it can probably be fixed by emptying the memory cache with ``sync; sudo sh -c "/bin/echo 3 > /proc/sys/vm/drop_caches"`` or even running this every second with ``watch -n 1 'sync; sudo sh -c "/bin/echo 3 > /proc/sys/vm/drop_caches"'``.

@@ -8,13 +8,16 @@ use Foodsharing\Lib\Session;
 use Foodsharing\Modules\Core\DBConstants\Foodsaver\Gender;
 use Foodsharing\Modules\Foodsaver\FoodsaverGateway;
 use Foodsharing\Modules\Foodsaver\FoodsaverTransactions;
+use Foodsharing\Modules\Group\GroupTransactions;
 use Foodsharing\Modules\Login\LoginGateway;
 use Foodsharing\Modules\Profile\ProfileGateway;
 use Foodsharing\Modules\Profile\ProfileTransactions;
 use Foodsharing\Modules\Region\RegionGateway;
+use Foodsharing\Modules\Region\RegionTransactions;
 use Foodsharing\Modules\Register\DTO\RegisterData;
 use Foodsharing\Modules\Register\RegisterTransactions;
 use Foodsharing\Modules\Settings\SettingsGateway;
+use Foodsharing\Modules\Unit\DTO\UserUnit;
 use Foodsharing\Modules\Uploads\UploadsGateway;
 use Foodsharing\Permissions\BlogPermissions;
 use Foodsharing\Permissions\ContentPermissions;
@@ -27,6 +30,8 @@ use Foodsharing\Permissions\ReportPermissions;
 use Foodsharing\Permissions\StorePermissions;
 use Foodsharing\Permissions\UserPermissions;
 use Foodsharing\Permissions\WorkGroupPermissions;
+use Foodsharing\RestApi\Models\Group\UserGroupModel;
+use Foodsharing\RestApi\Models\Region\UserRegionModel;
 use Foodsharing\Utility\EmailHelper;
 use FOS\RestBundle\Controller\AbstractFOSRestController;
 use FOS\RestBundle\Controller\Annotations as Rest;
@@ -42,84 +47,38 @@ use Symfony\Component\HttpKernel\Exception\UnauthorizedHttpException;
 
 class UserRestController extends AbstractFOSRestController
 {
-	private Session $session;
-	private LoginGateway $loginGateway;
-	private FoodsaverGateway $foodsaverGateway;
-	private ProfileGateway $profileGateway;
-	private UploadsGateway $uploadsGateway;
-	private RegionGateway $regionGateway;
-	private SettingsGateway $settingsGateway;
-
-	private UserPermissions $userPermissions;
-	private ProfilePermissions $profilePermissions;
-	private BlogPermissions $blogPermissions;
-	private ContentPermissions $contentPermissions;
-	private MailboxPermissions $mailboxPermissions;
-	private NewsletterEmailPermissions $newsletterEmailPermissions;
-	private QuizPermissions $quizPermissions;
-	private RegionPermissions $regionPermissions;
-	private ReportPermissions $reportPermissions;
-	private StorePermissions $storePermissions;
-	private WorkGroupPermissions $workGroupPermissions;
-
-	private EmailHelper $emailHelper;
-	private RegisterTransactions $registerTransactions;
-	private ProfileTransactions $profileTransactions;
-	private FoodsaverTransactions $foodsaverTransactions;
-
 	private const MIN_RATING_MESSAGE_LENGTH = 100;
 	private const MIN_PASSWORD_LENGTH = 8;
 	private const MIN_AGE_YEARS = 18;
 	private const DELETE_USER_MAX_REASON_LEN = 200;
 
 	public function __construct(
-		Session $session,
-		LoginGateway $loginGateway,
-		FoodsaverGateway $foodsaverGateway,
-		ProfileGateway $profileGateway,
-		UploadsGateway $uploadsGateway,
-		RegionGateway $regionGateway,
-		EmailHelper $emailHelper,
-		RegisterTransactions $registerTransactions,
-		ProfileTransactions $profileTransactions,
-		FoodsaverTransactions $foodsaverTransactions,
-		SettingsGateway $settingsGateway,
+		private Session $session,
+		private LoginGateway $loginGateway,
+		private FoodsaverGateway $foodsaverGateway,
+		private ProfileGateway $profileGateway,
+		private UploadsGateway $uploadsGateway,
+		private RegionGateway $regionGateway,
+		private EmailHelper $emailHelper,
+		private RegisterTransactions $registerTransactions,
+		private ProfileTransactions $profileTransactions,
+		private FoodsaverTransactions $foodsaverTransactions,
+		private SettingsGateway $settingsGateway,
 
-		UserPermissions $userPermissions,
-		ProfilePermissions $profilePermissions,
-		MailboxPermissions $mailboxPermissions,
-		QuizPermissions $quizPermissions,
-		ReportPermissions $reportPermissions,
-		StorePermissions $storePermissions,
-		ContentPermissions $contentPermissions,
-		BlogPermissions $blogPermissions,
-		RegionPermissions $regionPermissions,
-		NewsletterEmailPermissions $newsletterEmailPermissions,
-		WorkGroupPermissions $workGroupPermissions
+		private UserPermissions $userPermissions,
+		private ProfilePermissions $profilePermissions,
+		private MailboxPermissions $mailboxPermissions,
+		private QuizPermissions $quizPermissions,
+		private ReportPermissions $reportPermissions,
+		private StorePermissions $storePermissions,
+		private ContentPermissions $contentPermissions,
+		private BlogPermissions $blogPermissions,
+		private RegionPermissions $regionPermissions,
+		private NewsletterEmailPermissions $newsletterEmailPermissions,
+		private WorkGroupPermissions $workGroupPermissions,
+		private RegionTransactions $regionTransactions,
+		private GroupTransactions $groupTransactions
 	) {
-		$this->session = $session;
-		$this->loginGateway = $loginGateway;
-		$this->foodsaverGateway = $foodsaverGateway;
-		$this->profileGateway = $profileGateway;
-		$this->uploadsGateway = $uploadsGateway;
-		$this->regionGateway = $regionGateway;
-		$this->emailHelper = $emailHelper;
-		$this->registerTransactions = $registerTransactions;
-		$this->profileTransactions = $profileTransactions;
-		$this->foodsaverTransactions = $foodsaverTransactions;
-		$this->settingsGateway = $settingsGateway;
-
-		$this->userPermissions = $userPermissions;
-		$this->profilePermissions = $profilePermissions;
-		$this->mailboxPermissions = $mailboxPermissions;
-		$this->quizPermissions = $quizPermissions;
-		$this->reportPermissions = $reportPermissions;
-		$this->storePermissions = $storePermissions;
-		$this->contentPermissions = $contentPermissions;
-		$this->blogPermissions = $blogPermissions;
-		$this->regionPermissions = $regionPermissions;
-		$this->newsletterEmailPermissions = $newsletterEmailPermissions;
-		$this->workGroupPermissions = $workGroupPermissions;
 	}
 
 	/**
@@ -224,6 +183,14 @@ class UserRestController extends AbstractFOSRestController
 			$response['mobile'] = $data['handy'];
 			$response['birthday'] = $data['geb_datum'];
 			$response['aboutMeIntern'] = $data['about_me_intern'];
+
+			// load region
+			$regions = $this->regionTransactions->getUserRegions($this->session->id());
+			$response['regions'] = array_map(fn (UserUnit $region): UserRegionModel => UserRegionModel::createFrom($region), $regions);
+
+			// load groups
+			$groups = $this->groupTransactions->getUserGroups($this->session->id());
+			$response['groups'] = array_map(fn (UserUnit $group): UserGroupModel => UserGroupModel::createFrom($group), $groups);
 		}
 
 		if ($mayAdministrateUserProfile) {
@@ -552,16 +519,6 @@ class UserRestController extends AbstractFOSRestController
 		$this->session->refreshFromDatabase();
 
 		return $this->handleView($this->view([], 200));
-	}
-
-	private function handleUserView(): Response
-	{
-		$user = RestNormalization::normalizeUser([
-			'id' => $this->session->id(),
-			'name' => $this->session->get('user')['name']
-		]);
-
-		return $this->handleView($this->view($user, 200));
 	}
 
 	/**

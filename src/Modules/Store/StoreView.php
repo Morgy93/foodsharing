@@ -71,7 +71,7 @@ class StoreView extends View
 			]]);
 	}
 
-	public function betrieb_form($region = false, $page = '', $lebensmittel_values, $chains, $categories, $status, $weightArray)
+	public function betrieb_form($lebensmittel_values, $chains, $categories, $status, $weightArray, $region = false, $page = '')
 	{
 		global $g_data;
 
@@ -82,10 +82,6 @@ class StoreView extends View
 		}
 		if (isset($g_data['str'])) {
 			$g_data['anschrift'] = $g_data['str'];
-		}
-		if (isset($g_data['hsnr'])) {
-			$g_data['anschrift'] .= ' ' . $g_data['hsnr'];
-			$g_data['hsnr'] = '';
 		}
 
 		$this->pageHelper->addJs('$("textarea").css("height","70px");$("textarea").autosize();');

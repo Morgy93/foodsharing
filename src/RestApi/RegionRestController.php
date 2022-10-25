@@ -9,21 +9,25 @@ use Foodsharing\Modules\Core\DBConstants\Bell\BellType;
 use Foodsharing\Modules\Core\DBConstants\Foodsaver\Role;
 use Foodsharing\Modules\Core\DBConstants\Region\RegionOptionType;
 use Foodsharing\Modules\Core\DBConstants\Region\RegionPinStatus;
-use Foodsharing\Modules\Core\DBConstants\Region\Type;
 use Foodsharing\Modules\Core\DBConstants\Region\WorkgroupFunction;
+use Foodsharing\Modules\Core\DBConstants\Unit\UnitType;
+use Foodsharing\Modules\Event\EventGateway;
 use Foodsharing\Modules\Foodsaver\FoodsaverGateway;
 use Foodsharing\Modules\Group\GroupFunctionGateway;
 use Foodsharing\Modules\Region\RegionGateway;
 use Foodsharing\Modules\Region\RegionTransactions;
 use Foodsharing\Modules\Settings\SettingsGateway;
 use Foodsharing\Modules\Store\StoreGateway;
+use Foodsharing\Modules\Unit\DTO\UserUnit;
 use Foodsharing\Modules\WorkGroup\WorkGroupTransactions;
 use Foodsharing\Permissions\RegionPermissions;
 use Foodsharing\Permissions\WorkGroupPermissions;
+use Foodsharing\RestApi\Models\Region\UserRegionModel;
 use Foodsharing\Utility\ImageHelper;
 use FOS\RestBundle\Controller\AbstractFOSRestController;
 use FOS\RestBundle\Controller\Annotations as Rest;
 use FOS\RestBundle\Request\ParamFetcher;
+use Nelmio\ApiDocBundle\Annotation\Model;
 use OpenApi\Annotations as OA;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\Exception\AccessDeniedHttpException;
@@ -34,19 +38,6 @@ use Symfony\Component\HttpKernel\Exception\UnauthorizedHttpException;
 
 class RegionRestController extends AbstractFOSRestController
 {
-	private BellGateway $bellGateway;
-	private FoodsaverGateway $foodsaverGateway;
-	private RegionGateway $regionGateway;
-	private StoreGateway $storeGateway;
-	private RegionPermissions $regionPermissions;
-	private Session $session;
-	private ImageHelper $imageHelper;
-	private SettingsGateway $settingsGateway;
-	private GroupFunctionGateway $groupFunctionGateway;
-	private RegionTransactions $regionTransactions;
-	private WorkGroupPermissions $workGroupPermissions;
-	private WorkGroupTransactions $workGroupTransactions;
-
 	// literal constants
 	private const LAT = 'lat';
 	private const LON = 'lon';
@@ -54,31 +45,20 @@ class RegionRestController extends AbstractFOSRestController
 	private const STATUS = 'status';
 
 	public function __construct(
-		SettingsGateway $settingsGateway,
-		BellGateway $bellGateway,
-		FoodsaverGateway $foodsaverGateway,
-		RegionPermissions $regionPermissions,
-		RegionGateway $regionGateway,
-		StoreGateway $storeGateway,
-		Session $session,
-		ImageHelper $imageHelper,
-		GroupFunctionGateway $groupFunctionGateway,
-		RegionTransactions $regionTransactions,
-		WorkGroupPermissions $workGroupPermissions,
-		WorkGroupTransactions $workGroupTransactions
+		private SettingsGateway $settingsGateway,
+		private BellGateway $bellGateway,
+		private FoodsaverGateway $foodsaverGateway,
+		private RegionPermissions $regionPermissions,
+		private RegionGateway $regionGateway,
+		private StoreGateway $storeGateway,
+		private Session $session,
+		private ImageHelper $imageHelper,
+		private GroupFunctionGateway $groupFunctionGateway,
+		private RegionTransactions $regionTransactions,
+		private WorkGroupPermissions $workGroupPermissions,
+		private WorkGroupTransactions $workGroupTransactions,
+		private EventGateway $eventGateway
 	) {
-		$this->settingsGateway = $settingsGateway;
-		$this->bellGateway = $bellGateway;
-		$this->foodsaverGateway = $foodsaverGateway;
-		$this->regionPermissions = $regionPermissions;
-		$this->regionGateway = $regionGateway;
-		$this->storeGateway = $storeGateway;
-		$this->session = $session;
-		$this->imageHelper = $imageHelper;
-		$this->groupFunctionGateway = $groupFunctionGateway;
-		$this->regionTransactions = $regionTransactions;
-		$this->workGroupPermissions = $workGroupPermissions;
-		$this->workGroupTransactions = $workGroupTransactions;
 	}
 
 	/**
@@ -135,6 +115,37 @@ class RegionRestController extends AbstractFOSRestController
 	}
 
 	/**
+	 * Returns a list of all region of the user.
+	 *
+	 * @OA\Tag(name="region")
+	 * @OA\Tag(name="my")
+	 *
+	 * @Rest\Get("user/current/regions")
+	 * @OA\Response(
+	 * 		response="200",
+	 * 		description="Success returns list of related regions of user",
+	 *      @OA\JsonContent(
+	 *        type="array",
+	 *        @OA\Items(ref=@Model(type=UserRegionModel::class))
+	 *      )
+	 * )
+	 * @OA\Response(response="401", description="Not logged in.")
+	 */
+	public function listMyRegion(): Response
+	{
+		if (!$this->session->may()) {
+			throw new UnauthorizedHttpException('');
+		}
+		$fsId = $this->session->id();
+
+		$regions = $this->regionTransactions->getUserRegions($fsId);
+
+		$rspRegions = array_map(fn (UserUnit $region): UserRegionModel => UserRegionModel::createFrom($region), $regions);
+
+		return $this->handleView($this->view($rspRegions, 200));
+	}
+
+	/**
 	 * Removes the current user from a region. Returns 403 if not logged in, 400 if the region does not exist, 409 if
 	 * the user is still an active store manager in the region, or 200 if the user was removed from the region or was
 	 * not a member of that region. That means that after a 200 result the user will definitely not be a member of that
@@ -153,7 +164,8 @@ class RegionRestController extends AbstractFOSRestController
 		if (!$this->session->may()) {
 			throw new UnauthorizedHttpException('');
 		}
-
+		/** @var int $sessionId */
+		$sessionId = $this->session->id();
 		if (empty($this->regionGateway->getRegion($regionId))) {
 			throw new BadRequestHttpException('region does not exist or is root region.');
 		}
@@ -162,7 +174,8 @@ class RegionRestController extends AbstractFOSRestController
 			throw new ConflictHttpException('still an active store manager in that region');
 		}
 
-		$this->foodsaverGateway->deleteFromRegion($regionId, $this->session->id(), $this->session->id());
+		$this->eventGateway->deleteInvitesForFoodSaver($regionId, $sessionId);
+		$this->foodsaverGateway->deleteFromRegion($regionId, $sessionId, $sessionId);
 
 		return $this->handleView($this->view([], 200));
 	}
@@ -351,7 +364,7 @@ class RegionRestController extends AbstractFOSRestController
 			throw new NotFoundHttpException();
 		}
 
-		if ($region['type'] == Type::WORKING_GROUP) {
+		if (UnitType::isGroup($region['type'])) {
 			if (!$this->workGroupPermissions->mayEdit($region)) {
 				throw new AccessDeniedHttpException();
 			}
@@ -389,7 +402,7 @@ class RegionRestController extends AbstractFOSRestController
 			throw new NotFoundHttpException();
 		}
 
-		if ($region['type'] == Type::WORKING_GROUP) {
+		if (UnitType::isGroup($region['type'])) {
 			if (!$this->workGroupPermissions->mayEdit($region)) {
 				throw new AccessDeniedHttpException();
 			}
@@ -429,7 +442,7 @@ class RegionRestController extends AbstractFOSRestController
 			throw new NotFoundHttpException();
 		}
 
-		if ($region['type'] == Type::WORKING_GROUP) {
+		if (UnitType::isGroup($region['type'])) {
 			if (!$this->workGroupPermissions->mayEdit($region)) {
 				throw new AccessDeniedHttpException();
 			}

@@ -96,17 +96,28 @@ class BasketApiCest
 
 	public function listNearbyBaskets(ApiTester $I)
 	{
-		$I->createFoodbasket($this->user[self::ID]);
+		// create a basket owned by userorga close to user's location
+		$basket = $I->createFoodbasket($this->userOrga[self::ID], [
+			'lat' => $this->user['lat'],
+			'lon' => $this->user['lon']
+		]);
 
+		// check that the user can see the nearby basket
 		$I->login($this->user[self::EMAIL]);
 		$I->sendGET(self::API_BASKETS . '/nearby?distance=30');
 		$I->seeResponseCodeIs(Http::OK);
 		$I->seeResponseIsJson();
+		$I->seeResponseContainsJson(['id' => $basket['id']]);
 
-		$I->sendGET(self::API_BASKETS . '/nearby?lat=50&lon=9&distance=30');
+		// select a location far away from the basket and check that the user cannot see the basket there
+		$newLat = $basket['lat'] + 5;
+		$newLon = $basket['lon'] + 5;
+		$I->sendGET(self::API_BASKETS . "/nearby?lat=$newLat&lon=$newLon&distance=30");
 		$I->seeResponseCodeIs(Http::OK);
 		$I->seeResponseIsJson();
+		$I->cantSeeResponseContainsJson(['id' => $basket['id']]);
 
+		// an invalid distance should not work
 		$I->sendGET(self::API_BASKETS . '/nearby?lat=50&lon=9&distance=51');
 		$I->seeResponseCodeIs(Http::BAD_REQUEST);
 		$I->seeResponseIsJson();

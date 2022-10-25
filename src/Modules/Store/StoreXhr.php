@@ -9,32 +9,28 @@ use Foodsharing\Lib\Xhr\XhrResponses;
 use Foodsharing\Modules\Core\Control;
 use Foodsharing\Modules\Core\DBConstants\Store\StoreLogAction;
 use Foodsharing\Permissions\StorePermissions;
-use Foodsharing\Utility\Sanitizer;
 
 class StoreXhr extends Control
 {
 	private $storeGateway;
 	private $storePermissions;
 	private $storeTransactions;
-	private $sanitizerService;
 
 	public function __construct(
 		StoreView $view,
 		StoreGateway $storeGateway,
 		StorePermissions $storePermissions,
-		StoreTransactions $storeTransactions,
-		Sanitizer $sanitizerService
+		StoreTransactions $storeTransactions
 	) {
 		$this->view = $view;
 		$this->storeGateway = $storeGateway;
 		$this->storePermissions = $storePermissions;
 		$this->storeTransactions = $storeTransactions;
-		$this->sanitizerService = $sanitizerService;
 
 		parent::__construct();
 
 		if (!$this->session->may('fs')) {
-			exit();
+			exit;
 		}
 	}
 
@@ -45,21 +41,25 @@ class StoreXhr extends Control
 			return XhrResponses::PERMISSION_DENIED;
 		}
 
-		if (strtotime($_GET['time']) > 0 && $_GET['fetchercount'] >= 0) {
-			$fetchercount = (int)$_GET['fetchercount'];
-			$time = $_GET['time'];
-			if ($fetchercount > 8) {
-				$fetchercount = 8;
-			}
+		if (strtotime($_GET['time']) == false) {
+			return;
+		}
+		$date = Carbon::createFromTimeString($_GET['time']);
 
-			if ($this->storeTransactions->changePickupSlots($storeId, Carbon::createFromTimeString($time), $fetchercount)) {
-				$this->flashMessageHelper->success($this->translator->trans('pickup.edit.added'));
+		$totalSlots = $_GET['fetchercount'];
+		if (!is_numeric($totalSlots)) {
+			return;
+		}
 
-				return [
-					'status' => 1,
-					'script' => 'reload();'
-				];
-			}
+		try {
+			$this->storeTransactions->createOrUpdatePickup($storeId, $date, $totalSlots);
+			$this->flashMessageHelper->success($this->translator->trans('pickup.edit.added'));
+
+			return [
+				'status' => 1,
+				'script' => 'reload();'
+			];
+		} catch (PickupValidationException $ex) {
 		}
 	}
 
@@ -136,7 +136,7 @@ class StoreXhr extends Control
 
 	public function bubble(): array
 	{
-		$storeId = $_GET['id'];
+		$storeId = intval($_GET['id']);
 		if ($store = $this->storeGateway->getMyStore($this->session->id(), $storeId)) {
 			$dia = $this->buildBubbleDialog($store, $storeId);
 
@@ -157,12 +157,12 @@ class StoreXhr extends Control
 		$dia = new XhrDialog();
 		$dia->setTitle($store['name']);
 		$dia->addContent($this->view->bubble($store));
-		if (($store['inTeam']) || $this->storePermissions->mayEditStore($storeId)) {
+		if ($store['inTeam'] || $this->storePermissions->mayEditStore($storeId)) {
 			$dia->addButton($this->translator->trans('store.go'), 'goTo(\'/?page=fsbetrieb&id=' . (int)$store['id'] . '\');');
 		}
 		if ($store['team_status'] != 0 && (!$store['inTeam'] && (!$store['pendingRequest']))) {
 			$dia->addButton($this->translator->trans('store.request.request'), 'wantToHelpStore(' . (int)$store['id'] . ',' . (int)$this->session->id() . ');return false;');
-		} elseif ($store['team_status'] != 0 && (!$store['inTeam'] && ($store['pendingRequest']))) {
+		} elseif ($store['team_status'] != 0 && (!$store['inTeam'] && $store['pendingRequest'])) {
 			$dia->addButton($this->translator->trans('store.request.withdraw'), 'withdrawStoreRequest(' . (int)$store['id'] . ',' . (int)$this->session->id() . ');return false;');
 		}
 		$modal = false;

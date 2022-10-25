@@ -4,7 +4,7 @@ import DataUser from '@/stores/user'
 
 export function getBrowserLocation (success) {
   if (DataUser.getters.isLoggedIn()) {
-    return success(DataUser.getters.getLocation())
+    return success(DataUser.getters.getLocations())
   }
   if (navigator.geolocation) {
     navigator.geolocation.getCurrentPosition(pos => {

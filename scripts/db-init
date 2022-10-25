@@ -1,0 +1,39 @@
+#!/bin/bash
+
+export FS_ENV=dev
+export CURRENT_USER=$(id -u):$(id -g)
+
+# set -o errexit tells the shell to exit as soon as a command exits with non-zero status, i.e. fails
+set -o errexit
+
+dir=$(dirname "$0")
+
+# source runs the content of the argument as if it was here (without launching a subshell!)
+# __helping-functions.sh defines basic functions, mainly to run commands in containers
+# shellcheck source=./__helping-functions.sh
+source "$dir"/__helping-functions.sh
+
+log-header "Waiting for database ..."
+wait-for-mysql
+
+log-header "Drop DB ..."
+dropdb foodsharing
+
+log-header "Creating DB ..."
+createdb foodsharing
+
+log-header "Migrating DB ..."
+migratedb
+
+log-header "Seed DB ..."
+exec-in-container app vendor/bin/codecept foodsharing:seed "$@"
+
+log-header "Running maintenance ..."
+dc run --rm --no-deps app php -f run.php Maintenance daily
+
+log-header "Running stats ..."
+dc run --rm --no-deps app php -f run.php Stats foodsaver
+dc run --rm --no-deps app php -f run.php Stats betriebe
+dc run --rm --no-deps app php -f run.php Stats bezirke
+
+log-header "All done"

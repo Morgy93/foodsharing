@@ -2,9 +2,11 @@
 
 ## Features
 - The number of unread mails is now displayed as a red badge. !2188 !2230 @AntonBallmaier
+- The housenumber of companys shouldn't be saved seperately anymore. #1146 !2222 !2413 @martincodes-de
+- The number of unread mails is now displayed as a red badge. !2188 @AntonBallmaier
 - Improved Calendar exports. Events are now included and pickup descriptions contain links. !2182 @AntonBallmaier
 - Past events are shown now below current and upcoming events within the overview !2162 @merhoc
-- Commitment statistics on profile !2208 !2217 @fs_k
+- Commitment statistics on profile !2208 !2217 !2353 !2359 !2435 @fs_k
 - Allow the foodsaver, which is verifiable, to create itself in the profile settings (without cut markers) !2198 #chriswalg
 - The profile page now contains one unified pickup section. Future pickup options are now visible in that section. !2211 !2226 @AntonBallmaier
 - Pickup statistics on profile !2208 @fs_k
@@ -15,6 +17,11 @@
 - On the login page, "Stay logged in for one day" is saved in local storage for the next logins. !2249 @NINI1988
 - Food-share-points are listed in the topbar search #1251 !2260 @alex.simm
 - On all external links is now a visible indicator !2280 @sefn
+- At stores under pickup history, storemanagers can now see the signed out foodsavers from pickup slots from past 7 days with the signout date. !2363 @martincodes-de
+- Voter Turnout Percentage can be seen if the poll has completed !2377 @viveknshah
+- Provide RestAPI to get backend defined common meta information for stores like "max count of slots per pickup" !1373 @koemai
+- Provide RestAPI to change teamstatus of a store !2406
+- Added RestAPI for regular Pickup configuration !1373 @koemai
 
 ## Changes
 - Checks in the id card creation function if only one foodsaver is selected and then reduces the 
@@ -30,6 +37,23 @@
 - On mobile devices the forum profile image is smaller !2237 @sefn
 - Color set is unified and removed vanilla bootstrap !2293 !2303 @sefn
 - The content of the footer is now dynamic !2297 @sefn
+- RestAPI `/api/user/current/stores` Provides memberstatus and all related stores of user !2318 @KoeMai
+- RestAPI `​/api​/user​/{id}​/details` extended with regions and groups !2352 @KoeMai user/current/groups
+- RestAPI `​/api​/user/current/groups` & `​/api​/user/current/regions` add endpoint for regions and groups !2352 @KoeMai
+- Display of the number of members in the header for working groups adjusted analogously to the districts !2374 @BibaltiK
+- Display "No pickup slots available" if there are no pickup slots !2375 @BlackScorp
+- Fix Console error !2376 @BlackScorp
+- Delete events when leaving region !2381 @BlackScorp
+- Phone Numbers are displayed even if they are invalid (e.g. do not start with +49) !2378 @BlackScorp
+- After logging out, you remain on the current web page, if it is publicly accessible. !2388 @BibaltiK
+- Use pagination in the list of past polls #975 !2385 @alex.simm
+- Change show pickup time from date to datetime !2412 @BibaltiK
+- Added a link to translation progress page in language selection modal @Nickthenerd93
+- Fixed sending warnings to store managers about unoccupied pick-up slots !969 @rnoennig
+- added "Untergruppen" to  to top bar menue for workgroups with subgroups @Nickthenerd93
+- renamed "Gruppenübersicht" to "Gruppenübersicht globaler Arbeitsgruppen" #1393 !2391 @viper-kun
+- added icon to map menu item !2427 @martincodes-de
+- Added information how to remove recurring pick-up dates to get rid of warnings about unoccupied slots !891 @rnoennig
 
 ## Bugfixes
 - When going back during registration, email and password are unchanged. !2184 @AntonBallmaier
@@ -55,6 +79,18 @@
 - A wall post with multiple lines will use the complete available size to display its text !2277 @NINI1988
 - Restrictions on the view of the store list in profile !2273 @chriswalg
 - Show only chat link if user is member in store !2304 @chriswalg
+- Fix XSS Vulnerability at login page !2351 #1252 @stcz
+- Logging from removal of store managers. Corrected logging use for appointing store manager. !2365 @fs_k
+- The tooltip from foodbasked enquiry edit button blocked the clicking if only 1 enquiry was active. !2368 @martincodes-de
+- Reaction button hasn't different color if already reacted !2373 @martincodes-de
+- polyfill added @sefn
+- add public information when creating a new store !2397 @BibaltiK
+- The excerpt from the operating pinwall is displayed again on Mobile. !2393 @martincodes-de
+- Reduced the show-more functionality on activity posts !2401 @sefn
+- Fix the list of nearby baskets based on the user's home location !1908 @alex.simm
+- Show date inn preview of voting module !1408 @Friedrich-B
+- CreateEditStoreCept, should run smoother !2433 @sefn
+- Add margins to sendmail form buttons !2424 @diejani
 
 ## Refactoring
 - Currently running events are shown within the event overview until their end !2162 @merhoc
@@ -68,8 +104,18 @@
 - Rebuild profile infos to vue !2276 !2287 @chriswalg
 - Rebuild join region to vue !2294 @sefn
 - Rebuild profile menu to vue !2281 @chriswalg
+- Let the community bubble on the map fetch its own content !2311 @alex.simm
+- Changed deleting wall posts to the API #798 !2253 @alex.simm  
+- Use REST API for setting the user's sleep status #798 !2282 @alex.simm
+- Rename Region\Type -> Unit\UnitType to make it search able and clear !2352 @KoeMai
+- Improve quality/tests of manual pickup RestAPI !2369 @KoeMai
+- Renmae Region\Type -> Unit\UnitType to make it search able and clear !2352 @KoeMai
+- Removed unused private functions in the backend !2425 @alex.simm
+- Improve documentation tooling for OpenAPI RequestBody !2421 @KoeMai
 
 ## Dev/Test/CI stuff
+- Added Gitpod and refactored permissions !2386 !2399 !2402 !2428 @sefn @chriswalg
+- Scripts for Gitpod reworked and docker-compose cleanup !2405 @sefn
 - bump node to version 16 !2135 @peter.toennies
 - Update mdbook to 0.4.18 #1178 !2206 @alex.simm
 - Change all emitted Vue events to kebab-case and add linter rules #996 !2163 @alex.simm
@@ -88,6 +134,17 @@
 - Add a workaround to upload files to the startpage. #1245 !2233 @stcz
 - Replace SwiftMailer with Symfony mailer #1188 !2247 @alex.simm
 - Updated php-cs-fixer to 3.8 !2274 @alex.simm
+- Add a variable to set the connection method for bounce mail processing !2350 @stcz
+- Some small code cleanup surrounding `Mem` @\_fridtjof_ !2357
+- Run maintenance daily and generate stats in new stats script and added them to seed script !2379 @chriswalg
+- Moved variable DELAY_MICRO_SECONDS_BETWEEN_MAILS to config file #1389 !2383 @chriswalg
+- Replace `node-sass` with `sass` #1047 !2404 @schanso
+- Added mayRole function to Session class and made may function deprecated #1277 !2341 @alex.simm
+- Fix maintenance script test #1430 !2429 @rnoennig 
+
+
+## Development documetation
+- Add generator for database documentation !2275 @KoeMai
 
 # Release "Heidelbeere", 2022-05-01
 
@@ -118,6 +175,9 @@
 - Fix typos in forum markdown hints. !2167 @NINI1988
 - Fixed the user search pointing to a non-existing path !2170 @alex.simm
 - The visibility of the StoreWall can be toggled again !2177 @nudin
+- Prevent text-overflow in thread posts in forum !2392 @FlorianMaak 
+- The visibility of mobile submit-button on fairteiler page !1392 @FlorianMaakg
+- The visibility of mobile submit-button on fairteiler page !1392 @FlorianMaak 
 
 ## Refactoring
 - move even more hardcoded language to language files !2109 !2183 @jonathan_b

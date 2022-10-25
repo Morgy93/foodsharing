@@ -6,9 +6,9 @@ use Foodsharing\Modules\Bell\BellGateway;
 use Foodsharing\Modules\Bell\DTO\Bell;
 use Foodsharing\Modules\Core\Control;
 use Foodsharing\Modules\Core\DBConstants\Bell\BellType;
-use Foodsharing\Modules\Core\DBConstants\Region\Type;
 use Foodsharing\Modules\Core\DBConstants\Store\CooperationStatus;
 use Foodsharing\Modules\Core\DBConstants\Store\Milestone;
+use Foodsharing\Modules\Core\DBConstants\Unit\UnitType;
 use Foodsharing\Modules\Foodsaver\FoodsaverGateway;
 use Foodsharing\Modules\Region\RegionGateway;
 use Foodsharing\Permissions\StorePermissions;
@@ -84,15 +84,15 @@ class StoreControl extends Control
 				$this->pageHelper->addBread($this->translator->trans('store.bread'), '/?page=fsbetrieb');
 				$this->pageHelper->addBread($this->translator->trans('storeedit.add-new'));
 
-				$chosenRegion = ($regionId > 0 && Type::isAccessibleRegion($this->regionGateway->getType($regionId))) ? $region : null;
+				$chosenRegion = ($regionId > 0 && UnitType::isAccessibleRegion($this->regionGateway->getType($regionId))) ? $region : null;
 				$this->pageHelper->addContent($this->view->betrieb_form(
-					$chosenRegion,
-					'betrieb',
 					$this->storeGateway->getBasics_groceries(),
 					$this->storeGateway->getBasics_chain(),
 					$this->storeGateway->getStoreCategories(),
 					$this->getStoreStateList(),
-					$this->weightHelper->getWeightListEntries()
+					$this->weightHelper->getWeightListEntries(),
+					$chosenRegion,
+					'betrieb'
 				));
 
 				$this->pageHelper->addContent($this->v_utils->v_field($this->v_utils->v_menu([
@@ -120,13 +120,13 @@ class StoreControl extends Control
 				$regionName = $this->regionGateway->getRegionName($regionId);
 
 				$this->pageHelper->addContent($this->view->betrieb_form(
-					['id' => $regionId, 'name' => $regionName],
-					'',
 					$this->storeGateway->getBasics_groceries(),
 					$this->storeGateway->getBasics_chain(),
 					$this->storeGateway->getStoreCategories(),
 					$this->getStoreStateList(),
-					$this->weightHelper->getWeightListEntries()
+					$this->weightHelper->getWeightListEntries(),
+					['id' => $regionId, 'name' => $regionName],
+					'',
 				));
 			} else {
 				$this->flashMessageHelper->info($this->translator->trans('store.locked'));
@@ -232,7 +232,7 @@ class StoreControl extends Control
 			'foodsaver_id' => $this->session->id(),
 			'betrieb_id' => $storeId,
 			'text' => '{BETRIEB_ADDED}', // TODO Do we want to keep this?
-			'zeit' => date('Y-m-d H:i:s', (time() - 10)),
+			'zeit' => date('Y-m-d H:i:s', time() - 10),
 			'milestone' => Milestone::CREATED,
 		]);
 

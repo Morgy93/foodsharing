@@ -18,7 +18,6 @@ use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Contracts\Translation\TranslatorInterface;
-use Twig\Environment;
 
 /**
  * Compatibility layer to make porting old "Control" based controllers to new "Symfony" style controllers easier.
@@ -42,7 +41,6 @@ abstract class FoodsharingController extends AbstractController
 	protected Mem $mem;
 	protected Session $session;
 	protected Utils $v_utils;
-	private Environment $twig;
 	private FoodsaverGateway $foodsaverGateway;
 	private InfluxMetrics $metrics;
 	protected EmailHelper $emailHelper;

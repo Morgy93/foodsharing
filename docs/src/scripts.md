@@ -1,62 +1,78 @@
 # Helper scripts
+All scripts can be run with `./scripts/[script]`.
 
-There are a number of helper scripts available. Most of them obey the `FS_INT` env var. Default is `dev`, you can also set it to `test`.
+## Daily use `scripts`
+| Script                                      | ENV           | Description                                                                           |
+|---------------------------------------------|---------------|---------------------------------------------------------------------------------------|
+| `start` or `init`                           | dev           | Boots up docker-containers and initialize the database (shorthand `containers-init`)  |
+| `restart`                                   | dev           | Restarts the docker-containers and clears the assets-folder (shorthand `containers-restart`) |
+| `stop [env]`                                | (dev)         | Stops the docker-containers (shorthand `containers-stop`) |
+| `seed`                                      | dev           | Seeds the database with fake data and runs maintenance scripts (shorthand `db-seed`) |
+| `clean`                                     |               | Removes anything added by `start`/`test` scripts (expect docker-images) |
 
-## Script overview
+## Codestyle `scripts`
+| Script                                      | ENV           | Description                                                                           |
+|---------------------------------------------|---------------|---------------------------------------------------------------------------------------|
+| `lint`                                      | dev           | Full code linting |
+| `lint-js`                                   | dev           | `client`/`websocket` - Javascript code linting  |
+| `lint-php`                                  | dev           | `src` - PHP code linting |
+| `fix`                                       | dev           | Full code fixing |
+| `fix-js`                                    | dev           | `client`/`websocket` - Javascript code fixing  |
+| `fix-php`                                   | dev           | `src` - PHP code fixing |
 
-| Script                 | Purpose |
-|------------------------|---------|
-| ./scripts/ci.test      | |
-| ./scripts/clean        | Remove anything added by `start`/`test` commands |
-| ./scripts/codecept     | |
-| ./scripts/composer     | Run php composer |
-| ./scripts/deploy.notifyslack.sh | |
-| ./scripts/deploy.sh    | |
-| ./scripts/dev          | Run webpack dev server for doing js dev (obsolete, included in `./scripts/start`) |
-| ./scripts/docker-compose | Docker-compose with the correct options set for the environment |
-| ./scripts/dropdb       | Drop the database |
-| ./scripts/fix          | runs all fixing - code stuff (php) |
-| ./scripts/fix-codestyle-local | fix php code style, [see php Code style](setting-things-up.md#php-code-style) |
-| ./scripts/generate-revision.sh | |
-| ./scripts/inc.sh       | defines functions needed in other scripts |
-| ./scripts/initdb       | Create the database and run migrations |
-| ./scripts/lint         | runs all lintings scripts lint-... |
-| ./scripts/lint-js      | lints javascript and vue files: prints errors etc. |
-| ./scripts/lint-markdown [files\|directories\|globs] | lints markdown files: prints errors etc. NOTE: Custom args must originate from `client/` directory (e.g. `../README.md` for root file) |
-| ./scripts/lint-php     | lints php files: prints errors etc. |
-| ./scripts/mkdirs       | Create directories that need to be present (called by other scripts) |
-| ./scripts/mysql        | Run `mysql` command in correct context: `./scripts/mysql foodsharing "select * from fs_foodsaver"` |
-| ./scripts/mysqldump    | Run `mysqldump` command in correct context |
-| ./scripts/php-cs-fixer | |
-| ./scripts/php-cs-fixer.ci.sh | |
-| ./scripts/rebuild-all  | |
-| ./scripts/rebuild-container | |
-| ./scripts/rebuild-test-data | |
-| ./scripts/rm           | Shut down and clean up all containers |
-| ./scripts/run          | |
-| ./scripts/seed         | Run seed scripts in `scripts/seeds/*.sql` |
-| ./scripts/start        | Start everything, initializing anything if needed, see [Setting things up](setting-things-up.md) |
-| ./scripts/stop         | Stop everything, but leave it configured see [Setting things up](setting-things-up.md) |
-| ./scripts/test         | Run tests |
-| ./scripts/test-chat    | Run test for the chat |
-| ./scripts/test-js      | Run test for the client (JS) |
-| ./scripts/test-rerun   | Run tests without recreating db (faster that test) |
-| ./scripts/watch-assets | Builds the static assets on change |
+## Testing `scripts`
+| Script                                      | ENV           | Description                                                                           |
+|---------------------------------------------|---------------|---------------------------------------------------------------------------------------|
+| `test`                                      | test          | Without parameters, it runs all tests in the src folder and only initialize when no test container is running |
+| `test [suite] [test]`                       | test          | Runs a specific suite test example: `test api BasketApiCest` |
+| `test-js`                                   | test          | Runs all tests in the `client` folder |
+| `test-websocket`                            | test          | Runs all tests in the `websocket` folder |
 
-## Nightly maintenance
+## Container `scripts`
+| Script                                      | ENV           | Description                                                                           |
+|---------------------------------------------|---------------|---------------------------------------------------------------------------------------|
+| `containers-build`                          | dev           | Builds the docker-containers |
+| `containers-init`                           | dev           | Boots up docker-containers and initialize the database  |
+| `containers-start`                          | dev           | Start the docker-containers and clears assets |
+| `containers-restart`                        | dev           | Restarts the docker-containers and clears the assets-folder |
+| `containers-stop [env]`                     | (dev|test)    | Stops the docker-containers |
+| `containers-remove`                         |               | Removes anything added by `start`/`test` scripts |
 
-Using the `docker-compose` you can run various php-scripts, e.g.
-```
-./scripts/docker-compose run --rm --no-deps app php -f run.php Maintenance daily
-./scripts/docker-compose run --rm --no-deps app php -f run.php Stats foodsaver
-./scripts/docker-compose run --rm --no-deps app php -f run.php Stats betriebe
-./scripts/docker-compose run --rm --no-deps app php -f run.php Stats bezirke
-```
-This runs the maintenance and statistics scripts that are run nightly on the production server.
-More generally you can run a public php function using:
-```
-./scripts/docker-compose run --rm --no-deps app php -f run.php <Module> <public_function>
-```
-This can be necessary to test code concerning statistics since they are usually never run locally.
-`--rm` removes the containers afterwards, `--no-deps` lets docker not worry about any dependendent containers. This is often useful since they are often running already.
+## Database `scripts`
+| Script                                      | ENV           | Description                                                                           |
+|---------------------------------------------|---------------|---------------------------------------------------------------------------------------|
+| `db-init`                                   | dev           | Initialize the database, Seeds with fake data and runs maintenance scripts |
+| `db-seed`                                   | dev           | Seeds the database with fake data and runs maintenance scripts |
+| `db-drop`                                   | (dev)         | Drop the database |
+| `db-dump`                                   | (dev)         | Run a `mysqldump` command in correct context |
+| `db-run [command]`                          | (dev)         | Run a `mysql` command in correct context: `mysql foodsharing "select * from fs_foodsaver"` |
+| `db-doc-build`                              | (dev)         | Generates the data for [Tables, columns overview](database-tables-columns.md) |
 
+## Other helping `scripts`
+| Script                                      | ENV           | Description                                                                           |
+|---------------------------------------------|---------------|---------------------------------------------------------------------------------------|
+| `symfony-console [command]`                 |               |  |
+| `composer [command]`                        | (dev)         |  |
+| `docker-compose [command]`                  | (dev)         |  |
+| `run [command]`                             | dev           | Run a command inside the PHP docker  |
+| `run-daily-maintenance`                     | dev           | Runs the daily maintenance, which is used to calculate stats and some database stuff |
+
+
+---
+
+
+## CI `scripts`
+| Script                                      | ENV           | Description                                                                           |
+|---------------------------------------------|---------------|---------------------------------------------------------------------------------------|
+| `ci-backend-build`                          | CI            | |
+| `ci-backend-test`                           | CI            | |
+| `ci-doc-build`                              | CI            | |
+| `ci-notify-outdated`                        | CI            | |
+
+## DEPLOYMENT `scripts`
+| Script                                      | ENV           | Description                                                                           |
+|---------------------------------------------|---------------|---------------------------------------------------------------------------------------|
+| `deploy`                                    |               | |
+| `deploy-generate_revision`                  |               | |
+| `deploy-notify-slack`                       |               | |
+| `deploy-websocket-restart`                  |               | |

@@ -7,10 +7,13 @@ use Foodsharing\Lib\Session;
 use Foodsharing\Modules\Group\GroupGateway;
 use Foodsharing\Modules\Group\GroupTransactions;
 use Foodsharing\Modules\Region\RegionGateway;
+use Foodsharing\Modules\Unit\DTO\UserUnit;
 use Foodsharing\Permissions\RegionPermissions;
+use Foodsharing\RestApi\Models\Group\UserGroupModel;
 use FOS\RestBundle\Controller\AbstractFOSRestController;
 use FOS\RestBundle\Controller\Annotations as Rest;
 use FOS\RestBundle\Request\ParamFetcher;
+use Nelmio\ApiDocBundle\Annotation\Model;
 use OpenApi\Annotations as OA;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\Exception\AccessDeniedHttpException;
@@ -20,21 +23,12 @@ use Symfony\Component\HttpKernel\Exception\UnauthorizedHttpException;
 
 class GroupRestController extends AbstractFOSRestController
 {
-	private GroupGateway $groupGateway;
-	private Session $session;
-	private RegionPermissions $regionPermissions;
-	private GroupTransactions $groupTransactions;
-
 	public function __construct(
-		GroupGateway $groupGateway,
-		Session $session,
-		RegionPermissions $regionPermissions,
-		GroupTransactions $groupTransactions
+		private GroupGateway $groupGateway,
+		private Session $session,
+		private RegionPermissions $regionPermissions,
+		private GroupTransactions $groupTransactions
 	) {
-		$this->groupGateway = $groupGateway;
-		$this->session = $session;
-		$this->regionPermissions = $regionPermissions;
-		$this->groupTransactions = $groupTransactions;
 	}
 
 	/**
@@ -101,5 +95,36 @@ class GroupRestController extends AbstractFOSRestController
 		}
 		/* Without the redirect, we return information about the conference */
 		return $this->handleView($this->view($data, 200));
+	}
+
+	/**
+	 * Returns a list of all groups of the user.
+	 *
+	 * @OA\Tag(name="groups")
+	 * @OA\Tag(name="my")
+	 *
+	 * @Rest\Get("user/current/groups")
+	 * @OA\Response(
+	 * 		response="200",
+	 * 		description="Success returns list of related groups of user",
+	 *      @OA\JsonContent(
+	 *        type="array",
+	 *        @OA\Items(ref=@Model(type=UserGroupModel::class))
+	 *      )
+	 * )
+	 * @OA\Response(response="401", description="Not logged in.")
+	 */
+	public function listMyWorkingGroups(): Response
+	{
+		if (!$this->session->may()) {
+			throw new UnauthorizedHttpException('');
+		}
+		$fsId = $this->session->id();
+
+		$groups = $this->groupTransactions->getUserGroups($fsId);
+
+		$rspGroups = array_map(fn (UserUnit $group): UserGroupModel => UserGroupModel::createFrom($group), $groups);
+
+		return $this->handleView($this->view($rspGroups, 200));
 	}
 }

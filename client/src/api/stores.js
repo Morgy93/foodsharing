@@ -60,3 +60,7 @@ export async function moveMemberToStandbyTeam (storeId, userId) {
 export async function moveMemberToRegularTeam (storeId, userId) {
   return remove(`/stores/${storeId}/members/${userId}/standby`)
 }
+
+export async function getStoreLog (storeId, storeActionLogsAsArray) {
+  return get(`/stores/${storeId}/log/${storeActionLogsAsArray.join(',')}`)
+}

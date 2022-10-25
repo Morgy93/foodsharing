@@ -1,0 +1,215 @@
+# expose, ports are additive, means each environment requires a own port mapping instead of a global one.
+# Prebuild custom images are located at gitlab.com/foodsharing-dev/images/
+
+version: '2'
+services:
+  # nginx
+  #------------------------------------
+  nginx:
+    container_name: foodsharing_nginx
+    # Prebuild custom image, with pinned version (https://gitlab.com/foodsharing-dev/images/-/blob/master/web/Dockerfile)
+    # To edit the reverse proxy configuration (https://gitlab.com/foodsharing-dev/images/-/blob/master/web)
+    image: registry.gitlab.com/foodsharing-dev/images/web:1.12
+    depends_on:
+      - app
+      - websocket
+    volumes:
+      - ../:/app:delegated
+    # expose:
+    #   - 8080
+    # ports:
+    #   - 80:8080
+
+  # Customized PHP
+  #------------------------------------
+  app:
+    user: ${CURRENT_USER}
+    container_name: foodsharing_app
+    # Prebuild custom image, with pinned version (https://gitlab.com/foodsharing-dev/images/-/blob/master/php/Dockerfile)
+    image: registry.gitlab.com/foodsharing-dev/images/php:8.0.13
+    working_dir: /app
+    depends_on:
+      - db
+      - redis
+      - mailqueuerunner
+      - influxdb
+      - websocket
+    volumes:
+      - ../:/app:delegated
+      - ./conf/php/dev-config.${FS_PLATFORM}.ini:/usr/local/etc/php/conf.d/dev-config.ini:cached
+    # environment:
+    #   - FS_ENV=dev
+    # expose:
+    #   - 9000
+    # ports:
+    #   - 9000:9000
+
+  # Webpack client
+  #------------------------------------
+  client:
+    user: ${CURRENT_USER}
+    container_name: foodsharing_client
+    image: node:16.13.2-alpine3.14
+    # command: sh -c "yarn && yarn dev"
+    command: sh -c "yarn && yarn build"
+    working_dir: /home/node/app/client
+    volumes:
+      - ../:/home/node/app:delegated
+    environment:
+      - HOST=0.0.0.0 #https://github.com/webpack/webpack-dev-server/issues/416
+      - PROXY_TARGET=http://nginx:8080
+      - NPM_CONFIG_CACHE=/tmp/.npm-cache
+    # expose:
+    #   - 8080
+    # ports:
+    #   - 8080:8080
+
+  # PHP mail queue runner
+  #------------------------------------
+  mailqueuerunner:
+    user: ${CURRENT_USER}
+    container_name: foodsharing_mailqueuerunner
+    # Prebuild custom image, with pinned version (https://gitlab.com/foodsharing-dev/images/-/blob/master/php/Dockerfile)
+    image: registry.gitlab.com/foodsharing-dev/images/php:8.0.13
+    command: php run.php Mails queueWorker
+    restart: unless-stopped
+    depends_on:
+      - db
+      - redis
+      - maildev
+    working_dir: /app
+    volumes:
+      - ../:/app:delegated
+    # environment:
+    #   - FS_ENV=dev
+
+  # Socket.io server
+  #------------------------------------
+  websocket:
+    user: ${CURRENT_USER}
+    container_name: foodsharing_websocket
+    image: node:16.13.2-alpine3.14
+    working_dir: /app/websocket
+    command: sh -c "yarn && yarn ts-node-dev src/index.ts 0.0.0.0"
+    depends_on:
+      - redis
+    environment:
+      - REDIS_HOST=redis
+    volumes:
+      - ../:/app:delegated
+    # expose:
+    #   - 1337
+    #   - 1338
+    # ports:
+    #   - 1337:1337
+    #   - 1338:1338
+
+  # mysql
+  #------------------------------------
+  db:
+    container_name: foodsharing_db
+    # image: mariadb:10.5.15
+    # Prebuild custom image, with pinned version (https://gitlab.com/foodsharing-dev/images/-/blob/master/db/dev/Dockerfile)
+    # To edit the database configuration (https://gitlab.com/foodsharing-dev/images/-/blob/master/db/dev/)
+    image: registry.gitlab.com/foodsharing-dev/images/db/dev:1.4
+    environment:
+      # - MYSQL_ROOT_PASSWORD=root
+      - TZ=Europe/Berlin
+    volumes:
+      - database:/var/lib/mysql-tmpfs # based on the image configuration
+    # expose:
+    #   - 3306
+    # ports:
+    #   - 3306:3306
+
+  # redis
+  #------------------------------------
+  redis:
+    container_name: foodsharing_redis
+    image: redis:6.0.10-alpine
+    # expose:
+    #   - 6379
+    # ports:
+    #   - 6379:6379
+
+  # phpmyadmin
+  #------------------------------------
+  phpmyadmin:
+    container_name: foodsharing_phpmyadmin
+    image: phpmyadmin/phpmyadmin
+    environment:
+      - PMA_HOST=db
+      # - PMA_USER=root
+      # - PMA_PASSWORD=root
+    restart: unless-stopped
+    # expose:
+    #   - 80
+    # ports:
+    #   - 8081:80
+
+  # maildev
+  #------------------------------------
+  maildev:
+    container_name: foodsharing_maildev
+    image: djfarrelly/maildev
+    command: >
+      bin/maildev
+        --web 80
+        --smtp 25
+        --hide-extensions STARTTLS
+    # expose:
+    #   - 80
+    # ports:
+    #   - 8084:80
+
+  # influxdb
+  # used for mail sending tracking and server monitoring
+  #------------------------------------
+  influxdb:
+    container_name: foodsharing_influxdb
+    image: influxdb:1.8
+    command: >
+      influxd -config /etc/influxdb/influxdb.toml
+    environment:
+      - INFLUXDB_ADMIN_ENABLED=false
+      - INFLUXDB_DB=foodsharing
+    volumes:
+      - influxdb:/var/lib/influxdb:cached
+      - ./conf/influxdb/influxdb.toml:/etc/influxdb/influxdb.toml:cached
+    # expose:
+    #   - 8083
+    #   - 8089/udp
+    #   - 8086
+    # ports:
+    #   - 8083:8083
+    #   - 8089:8089/udp
+    #   - 8086:8086
+
+  # mdbook
+  # A plattform for the developer documentations
+  #------------------------------------
+  docs:
+    user: ${CURRENT_USER}
+    container_name: foodsharing_docs
+    # Prebuild custom image, with pinned version (https://gitlab.com/foodsharing-dev/images/-/blob/master/mdbook_ci/Dockerfile)
+    image: registry.gitlab.com/foodsharing-dev/images/mdbook_ci:1.1
+    depends_on:
+      - db
+    command: mdbook serve --hostname '0.0.0.0'
+    working_dir: /app/docs
+    environment:
+      - BUILD_DIR=/app/docs/build/db
+    stdin_open: true
+    tty: true
+    volumes:
+      - ../:/app
+    # expose:
+    #   - 3000
+    #   - 3001
+    # ports:
+    #   - 3000:3000
+    #   - 3001:3001
+
+volumes:
+  database:
+  influxdb:

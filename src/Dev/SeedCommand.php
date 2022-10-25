@@ -7,8 +7,8 @@ use Codeception\CustomCommandInterface;
 use Codeception\Lib\Di;
 use Codeception\Lib\ModuleContainer;
 use Foodsharing\Modules\Core\DBConstants\Region\RegionIDs;
-use Foodsharing\Modules\Core\DBConstants\Region\Type;
 use Foodsharing\Modules\Core\DBConstants\Region\WorkgroupFunction;
+use Foodsharing\Modules\Core\DBConstants\Unit\UnitType;
 use Foodsharing\Modules\Core\DBConstants\Voting\VotingScope;
 use Foodsharing\Modules\Core\DBConstants\Voting\VotingType;
 use Foodsharing\Modules\WorkGroup\WorkGroupGateway;
@@ -81,8 +81,6 @@ class SeedCommand extends Command implements CustomCommandInterface
 		$this->output->writeln('Seeding ' . FS_ENV . ' database');
 		$this->seed();
 
-		$this->output->writeln('All done!');
-
 		return 0;
 	}
 
@@ -108,25 +106,43 @@ class SeedCommand extends Command implements CustomCommandInterface
 
 		$I->createEvents($region1, $user['id']);
 
-		$store = $I->createStore($region1, null, null, ['betrieb_status_id' => '5', 'betrieb_kategorie_id' => '1']);
+		$store = $I->createStore($region1, null, null, ['betrieb_status_id' => CooperationStatus::COOPERATION_ESTABLISHED, 'betrieb_kategorie_id' => '1']);
 		$I->addStoreTeam($store['id'], $user['id'], true);
 		$I->addRecurringPickup($store['id']);
 		for ($i = 1; $i < 3; ++$i) {
 			$this->helper->addCollector($user['id'], $store['id'], ['date' => Carbon::today()->add('minute', 60 * $i)->toDateTimeString()]);
 		}
 
-		$storeEinAb = $I->createStore($region1, null, null, ['betrieb_status_id' => '5', 'betrieb_kategorie_id' => '6', 'abholmenge' => '0']);
+		$storeEinAb = $I->createStore($region1, null, null, ['betrieb_status_id' => CooperationStatus::COOPERATION_ESTABLISHED, 'betrieb_kategorie_id' => '6', 'abholmenge' => '0']);
 		$I->addStoreTeam($storeEinAb['id'], $user['id'], false);
 		$this->helper->addCollector($user['id'], $storeEinAb['id'], ['date' => Carbon::now()->toDateTimeString()]);
 
-		$storepr = $I->createStore($region1, null, null, ['betrieb_status_id' => '5', 'betrieb_kategorie_id' => '11', 'abholmenge' => '0']);
-		$I->addStoreTeam($storepr['id'], $user['id'], false);
-		$this->helper->addCollector($user['id'], $storepr['id'], ['date' => Carbon::now()->toDateTimeString()]);
+		$storePr = $I->createStore($region1, null, null, ['betrieb_status_id' => CooperationStatus::COOPERATION_ESTABLISHED, 'betrieb_kategorie_id' => '11', 'abholmenge' => '0']);
+		$I->addStoreTeam($storePr['id'], $user['id'], false);
+		$this->helper->addCollector($user['id'], $storePr['id'], ['date' => Carbon::now()->toDateTimeString()]);
 
-		$storesuper = $I->createStore($region1, null, null, ['betrieb_status_id' => '5', 'betrieb_kategorie_id' => '14']);
-		$I->addStoreTeam($storesuper['id'], $user['id'], true);
+		$storeSuper = $I->createStore($region1, null, null, ['betrieb_status_id' => CooperationStatus::COOPERATION_ESTABLISHED, 'betrieb_kategorie_id' => '14']);
+		$I->addStoreTeam($storeSuper['id'], $user['id'], true);
 		for ($i = 1; $i < 3; ++$i) {
-			$this->helper->addCollector($user['id'], $storesuper['id'], ['date' => Carbon::today()->add('minute', 50 * $i)->toDateTimeString()]);
+			$this->helper->addCollector($user['id'], $storeSuper['id'], ['date' => Carbon::today()->add('minute', 50 * $i)->toDateTimeString()]);
+		}
+
+		$storeBacery = $I->createStore($region1, null, null, ['betrieb_status_id' => CooperationStatus::COOPERATION_ESTABLISHED, 'betrieb_kategorie_id' => '1', 'abholmenge' => '1']);
+		$I->addStoreTeam($storeBacery['id'], $user['id'], false);
+		$this->helper->addCollector($user['id'], $storeBacery['id'], ['date' => Carbon::now()->toDateTimeString()]);
+
+		$storeBioBakery = $I->createStore($region1, null, null, ['betrieb_status_id' => CooperationStatus::COOPERATION_ESTABLISHED, 'betrieb_kategorie_id' => '2', 'abholmenge' => '1']);
+		$I->addStoreTeam($storeBioBakery['id'], $user['id'], false);
+		$this->helper->addCollector($user['id'], $storeBioBakery['id'], ['date' => Carbon::now()->toDateTimeString()]);
+
+		$storeBioGrocery = $I->createStore($region1, null, null, ['betrieb_status_id' => CooperationStatus::COOPERATION_ESTABLISHED, 'betrieb_kategorie_id' => '3', 'abholmenge' => '1']);
+		$I->addStoreTeam($storeBioGrocery['id'], $user['id'], false);
+		$this->helper->addCollector($user['id'], $storeBioGrocery['id'], ['date' => Carbon::now()->toDateTimeString()]);
+
+		$storeDrink = $I->createStore($region1, null, null, ['betrieb_status_id' => CooperationStatus::COOPERATION_ESTABLISHED, 'betrieb_kategorie_id' => '4', 'abholmenge' => '1']);
+		$I->addStoreTeam($storeDrink['id'], $user['id'], false);
+		for ($i = 1; $i < 3; ++$i) {
+			$this->helper->addCollector($user['id'], $storeDrink['id'], ['date' => Carbon::today()->add('minute', 50 * $i)->toDateTimeString()]);
 		}
 
 		for ($i = 0; $i < 3; ++$i) {
@@ -286,7 +302,8 @@ class SeedCommand extends Command implements CustomCommandInterface
 			$store_id = $this->getRandomIDOfArray($this->stores);
 			for ($i = 0; $i <= 10; ++$i) {
 				$pickupDate = Carbon::create(2022, 4, random_int(1, 30), random_int(1, 24), random_int(1, 59));
-				for ($k = 0; $k <= 2; ++$k) {
+				$maxFoodsavers = count($this->foodsavers) > 2 ? 2 : count($this->foodsavers);
+				for ($k = 0; $k <= $maxFoodsavers; ++$k) {
 					$foodSaver_id = $this->getRandomIDOfArray($this->foodsavers);
 					$this->helper->addCollector($foodSaver_id, $store_id, ['date' => $pickupDate->toDateTimeString()]);
 					$this->helper->addStoreTeam($store_id, $foodSaver_id);
@@ -329,7 +346,7 @@ class SeedCommand extends Command implements CustomCommandInterface
 		$I->createWorkingGroup('Orgarechte-Koordination', ['parent_id' => RegionIDs::GLOBAL_WORKING_GROUPS, 'id' => RegionIDs::ORGA_COORDINATION_GROUP]);
 		$I->createWorkingGroup('Redaktion', ['parent_id' => RegionIDs::GLOBAL_WORKING_GROUPS, 'id' => RegionIDs::EDITORIAL_GROUP]);
 
-		$region1Subregion = $I->createRegion('Stadtteil von Göttingen', ['type' => Type::PART_OF_TOWN, 'parent_id' => $region1]);
+		$region1Subregion = $I->createRegion('Stadtteil von Göttingen', ['type' => UnitType::PART_OF_TOWN, 'parent_id' => $region1]);
 
 		$this->output->writeln('Create store categories:');
 		$I->createStoreCategories();
@@ -413,7 +430,7 @@ class SeedCommand extends Command implements CustomCommandInterface
 
 		// Make ambassador responsible for all work groups in the region
 		$this->output->writeln('- make ambassador responsible for all work groups');
-		$workGroupsIds = $I->grabColumnFromDatabase('fs_bezirk', 'id', ['parent_id' => $region1, 'type' => Type::WORKING_GROUP]);
+		$workGroupsIds = $I->grabColumnFromDatabase('fs_bezirk', 'id', ['parent_id' => $region1, 'type' => UnitType::WORKING_GROUP]);
 		foreach ($workGroupsIds as $id) {
 			$I->addRegionMember($id, $userbot['id']);
 			$I->addRegionAdmin($id, $userbot['id']);
@@ -618,10 +635,15 @@ class SeedCommand extends Command implements CustomCommandInterface
 			);
 			$this->output->write('.');
 		}
-		$this->createPoll($region1, $userbot['id'], VotingType::SELECT_ONE_CHOICE,
-			[$user2['id'], $userStoreManager['id'], $userStoreManager2['id'], $userbot['id'], $userorga['id']],
-			Carbon::now('-14 days'), Carbon::now('-7 days')
-		);
+		foreach (range(0, 30) as $_) {
+			$startDate = Carbon::now()->subDays(random_int(7, 3 * 365));
+			$type = random_int(VotingType::SELECT_ONE_CHOICE, VotingType::SCORE_VOTING);
+			$this->createPoll($region1, $userbot['id'], $type,
+				[$user2['id'], $userStoreManager['id'], $userStoreManager2['id'], $userbot['id'], $userorga['id']],
+				$startDate, $startDate->addDays(6)
+			);
+			$this->output->write('.');
+		}
 		$this->output->write('.');
 
 		$this->output->writeln(' done');
@@ -635,7 +657,7 @@ class SeedCommand extends Command implements CustomCommandInterface
 	}
 
 	private function createPoll(int $regionId, int $authorId, int $type, array $voterIds,
-								?Carbon $startDate = null, ?Carbon $endDate = null)
+		?Carbon $startDate = null, ?Carbon $endDate = null)
 	{
 		$possibleValues = [];
 		switch ($type) {

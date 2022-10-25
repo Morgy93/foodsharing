@@ -47,7 +47,7 @@ class PassportGeneratorTransaction extends AbstractController
 		$this->translator = $translator;
 	}
 
-	public function generate(array $foodsavers, bool $cutMarkers = true, $region = null): void
+	public function generate(array $foodsavers, bool $cutMarkers = true, bool $protectPDF = false, $region = null): void
 	{
 		$tmp = [];
 		foreach ($foodsavers as $foodsaver) {
@@ -57,6 +57,10 @@ class PassportGeneratorTransaction extends AbstractController
 		$is_generated = [];
 
 		$pdf = new Fpdi();
+
+		if ($protectPDF) {
+			$pdf->SetProtection(['print', 'copy', 'modify', 'assemble'], '', null, 0, null);
+		}
 
 		if (count($tmp) === 1) {
 			$pdf->AddPage('L', [53.3, 83]);
@@ -174,14 +178,14 @@ class PassportGeneratorTransaction extends AbstractController
 				$pdf->SetFont('Ubuntu-L', '', 10);
 				$name = $foodsaver['name'] . ' ' . $foodsaver['nachname'];
 				$maxWidth = 49;
-				if ($pdf->GetStringWidth($name) > $maxWidth) {
+				if (round($pdf->GetStringWidth($name)) > $maxWidth) {
 					$pdf->SetFont('Ubuntu-L', '', 8);
-					if ($pdf->GetStringWidth($name) <= $maxWidth) {
+					if (round($pdf->GetStringWidth($name)) <= $maxWidth) {
 						$pdf->Text($nameMaxWidthMarginX + $x, $nameMaxWidthMarginY + $y, $name);
 					}
 					$size = 8;
-					while ($pdf->GetStringWidth($foodsaver['name']) > $maxWidth
-						|| $pdf->GetStringWidth($foodsaver['nachname']) > $maxWidth
+					while (round($pdf->GetStringWidth($foodsaver['name'])) > $maxWidth
+						|| round($pdf->GetStringWidth($foodsaver['nachname'])) > $maxWidth
 					) {
 						$size -= 0.5;
 						$pdf->SetFont('Ubuntu-L', '', $size);
@@ -280,7 +284,7 @@ class PassportGeneratorTransaction extends AbstractController
 			$name = $regionName;
 		}
 		$pdf->Output('foodsaver_pass_' . $name . '.pdf', 'D');
-		exit();
+		exit;
 	}
 
 	public function getRole(int $gender_id, int $role_id): string
@@ -306,7 +310,7 @@ class PassportGeneratorTransaction extends AbstractController
 				];
 				break;
 
-			// All others
+				// All others
 			default:
 				$roles = [
 					Role::FOODSHARER => $this->translator->trans('terminology.foodsharer.d'),

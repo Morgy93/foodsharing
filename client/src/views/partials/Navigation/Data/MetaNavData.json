@@ -1,6 +1,7 @@
 [
     {
         "title": "navigation.map",
+        "icon": "fas fa-map-marker-alt",
         "url": "map"
     },
     {

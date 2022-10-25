@@ -72,8 +72,13 @@ export default {
         {
           href: 'members', icon: 'fa-user', text: 'menu.entry.members',
         },
-
       ]
+
+      if (this.entry.hasSubgroups) {
+        menu.push({
+          href: 'subGroups', icon: 'fa-user-friends', text: 'terminology.subgroups',
+        })
+      }
 
       if (this.entry.hasConference) {
         menu.push({

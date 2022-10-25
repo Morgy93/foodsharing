@@ -15,9 +15,11 @@ class PickupApiCest
 	public function _before(\ApiTester $I)
 	{
 		$this->user = $I->createFoodsaver();
+		$this->storeCoordinator = $I->createStoreCoordinator();
 		$this->region = $I->createRegion();
 		$this->store = $I->createStore($this->region['id']);
 		$I->addStoreTeam($this->store['id'], $this->user['id']);
+		$I->addStoreTeam($this->store['id'], $this->storeCoordinator['id'], true);
 		$this->waiter = $I->createFoodsaver();
 		$I->addStoreTeam($this->store['id'], $this->waiter['id'], false, true);
 	}
@@ -112,7 +114,21 @@ class PickupApiCest
 		$I->addPicker($this->store['id'], $this->user['id'], ['date' => $pickupBaseDate]);
 
 		$I->login($this->user['email']);
+		$I->haveHttpHeader('Content-Type', 'application/json');
 		$I->sendDELETE('api/stores/' . $this->store['id'] . '/pickups/' . $pickupBaseDate->toIso8601String() . '/' . $this->user['id']);
 		$I->seeResponseCodeIs(\Codeception\Util\HttpCode::BAD_REQUEST);
+	}
+
+	public function canSignOutOfPickupWithMessage(\ApiTester $I)
+	{
+		$pickupBaseDate = Carbon::now()->add('2 days');
+		$pickupBaseDate->hours(14)->minutes(45)->seconds(0);
+		$I->addPickup($this->store['id'], ['time' => $pickupBaseDate, 'fetchercount' => 2]);
+		$I->addPicker($this->store['id'], $this->user['id'], ['date' => $pickupBaseDate]);
+
+		$I->login($this->storeCoordinator['email']);
+		$I->haveHttpHeader('Content-Type', 'application/json');
+		$I->sendDELETE('api/stores/' . $this->store['id'] . '/pickups/' . $pickupBaseDate->toIso8601String() . '/' . $this->user['id'], ['sendKickMessage' => true, 'message' => 'Hallo']);
+		$I->seeResponseCodeIs(\Codeception\Util\HttpCode::OK);
 	}
 }

@@ -22,7 +22,7 @@
       v-if="mayEditStore"
       type="button"
       class="list-group-item list-group-item-action"
-      :href="$url('storeEdit',storeId)"
+      @click="goToStoreEdit"
       v-html="$i18n('storeedit.bread')"
     />
     <button
@@ -81,6 +81,9 @@ export default {
     loadEditRecurringPickupModal () {
       $('#bid').val(this.storeId)
       $('#editpickups').dialog('open')
+    },
+    goToStoreEdit () {
+      window.location.href = this.$url('storeEdit', this.storeId)
     },
     async removeFromTeam (fsId, fsName) {
       if (!fsId) {

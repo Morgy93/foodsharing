@@ -53,7 +53,7 @@ class BasketXhr extends Control
 				],
 				JSON_THROW_ON_ERROR
 			);
-			exit();
+			exit;
 		}
 	}
 
@@ -269,12 +269,12 @@ class BasketXhr extends Control
 		$xhr = new Xhr();
 
 		if (isset($_GET['coordinates']) && $basket = $this->basketGateway->listNearbyBasketsByDistance(
-				$this->session->id(),
-				[
-					'lat' => $_GET['coordinates'][0],
-					'lon' => $_GET['coordinates'][1],
-				]
-			)) {
+			$this->session->id(),
+			[
+				'lat' => $_GET['coordinates'][0],
+				'lon' => $_GET['coordinates'][1],
+			]
+		)) {
 			$xhr->addData('baskets', $basket);
 		}
 

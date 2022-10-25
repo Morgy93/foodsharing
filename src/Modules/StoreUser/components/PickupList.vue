@@ -37,24 +37,29 @@
         :class="{disabledLoading: isLoading}"
         class="pickup-list card-body"
       >
-        <Pickup
-          v-for="pickup in pickups"
-          :key="pickup.date.valueOf()"
-          v-bind="pickup"
-          :store-id="storeId"
-          :store-title="storeTitle"
-          :is-coordinator="isCoordinator"
-          :user="user"
-          class="pickup-block"
-          @leave="leave"
-          @kick="kick"
-          @join="join"
-          @confirm="confirm"
-          @delete="setSlots(pickup.date, 0)"
-          @add-slot="setSlots(pickup.date, pickup.totalSlots + 1)"
-          @remove-slot="setSlots(pickup.date, pickup.totalSlots - 1)"
-          @team-message="sendTeamMessage"
-        />
+        <div v-if="!hasPickups">
+          {{ $i18n('pickup.no_slots_available') }}
+        </div>
+        <div v-if="hasPickups">
+          <Pickup
+            v-for="pickup in pickups"
+            :key="pickup.date.valueOf()"
+            v-bind="pickup"
+            :store-id="storeId"
+            :store-title="storeTitle"
+            :is-coordinator="isCoordinator"
+            :user="user"
+            class="pickup-block"
+            @leave="leave"
+            @kick="kick"
+            @join="join"
+            @confirm="confirm"
+            @delete="setSlots(pickup.date, 0)"
+            @add-slot="setSlots(pickup.date, pickup.totalSlots + 1)"
+            @remove-slot="setSlots(pickup.date, pickup.totalSlots - 1)"
+            @team-message="sendTeamMessage"
+          />
+        </div>
       </div>
     </div>
   </div>
@@ -93,6 +98,7 @@ export default {
   data () {
     return {
       pickups: [],
+      hasPickups: false,
       isLoading: false,
       user: DataUser.getters.getUser(),
     }
@@ -114,6 +120,7 @@ export default {
       if (!silent) this.isLoading = true
       try {
         this.pickups = await listPickups(this.storeId)
+        this.hasPickups = this.pickups.length > 0
       } catch (e) {
         pulseError(this.$i18n('pickuplist.error_loadingPickup') + e)
       }

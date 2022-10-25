@@ -134,7 +134,7 @@ class SearchTransactions
 		// load stores in which the user is a member
 		if ($betriebe = $this->storeGateway->listMyStores($userId)) {
 			$index['myStores'] = array_map(function ($b) {
-				return SearchIndexEntry::create($b['id'], $b['name'], $b['str'] . ' ' . $b['hsnr'] . ', ' . $b['plz'] . ' ' . $b['stadt'], null);
+				return SearchIndexEntry::create($b['id'], $b['name'], $b['str'] . ', ' . $b['plz'] . ' ' . $b['stadt'], null);
 			}, $betriebe);
 		}
 

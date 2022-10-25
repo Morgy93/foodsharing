@@ -1,0 +1,40 @@
+#!/bin/bash
+
+export FS_ENV=test
+
+set -o errexit
+
+dir=$(dirname "$0")
+
+# shellcheck source=./__helping-functions.sh
+source "$dir"/__helping-functions.sh
+echo $SECONDS seconds elapsed
+
+
+log-header "Preparing execution environment: Prepare PHP config, application & composer dev dependencies"
+SECONDS=0
+# configure path to application
+sed -i "s#/app#$CI_PROJECT_DIR#g" /usr/local/etc/php-fpm.d/fpm.conf
+# let PHP-FPM run as root
+sed -i "s#www-data#root#g" /usr/local/etc/php-fpm.d/fpm.conf
+# disable xdebug
+rm -f /usr/local/etc/php/conf.d/docker-php-ext-xdebug.ini
+bin/console foodsharing:setup
+# also install dev packages
+log-header "Prepare DB"
+composer install --prefer-dist --no-progress --no-interaction --no-scripts --ignore-platform-reqs && composer outdated --direct
+php-fpm -R 2> php_fpm_err.log &
+echo $SECONDS seconds elapsed
+
+log-header "Initializing database"
+SECONDS=0
+mysql -uroot -proot -hdb --execute="drop database if exists foodsharing; create database foodsharing"
+vendor/bin/phinx migrate
+echo $SECONDS seconds elapsed
+log-header "Build database documentation"
+
+/bin/bash "$dir"/generate-db-documenation/mysql_generate_documentation
+
+log-header "Build documentation"
+cd "$dir"/../docs
+mdbook build

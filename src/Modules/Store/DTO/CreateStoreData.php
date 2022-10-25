@@ -12,9 +12,9 @@ class CreateStoreData
 	public float $lat;
 	public float $lon;
 	public string $str;
-	public string $hsnr = '';
 	public string $zip;
 	public string $city;
+	public string $publicInfo;
 
 	public DateTime $createdAt;
 	public DateTime $updatedAt;

@@ -21,24 +21,24 @@ set('http_user', 'fs-php');
 set('http_group', 'www-data');
 set('remote_user', 'deploy');
 set('deploy_path', '/var/www/{{alias}}');
-set('cachetool', '/run/php7.4-fpm-{{alias}}.sock');
+set('cachetool', '/run/php-fpm-{{alias}}.sock');
 
 // default timeout of 300 was failing sometimes
 set('default_timeout', 600);
 
 // Hosts
 host('beta')
-	->setHostname('dragonfruit.foodsharing.network');
+	->setHostname('foodsharing.network');
 
 host('production')
-	->setHostname('dragonfruit.foodsharing.network');
+	->setHostname('foodsharing.network');
 
 // Tasks
 desc('Create the revision information');
 task('deploy:create_revision', function () {
 	$revision = input()->getOption('revision');
 	cd('{{release_path}}');
-	run("./scripts/generate-revision.sh $revision");
+	run("./scripts/deploy-generate_revision $revision");
 });
 
 task('deploy:update_code', function () {
@@ -52,12 +52,12 @@ task('deploy:update_code', function () {
 });
 
 task('deploy:cache:warmup', function () {
-	run('FS_ENV=prod {{release_path}}/bin/console cache:warmup -e prod');
+	run('sudo -u {{http_user}} -g {{http_group}} FS_ENV=prod php-{{alias}} {{release_path}}/bin/console cache:warmup -e prod');
 })->desc('Warmup symfony cache');
 
 task('deploy:permissions', function () {
 	run('
-		chgrp -R {{http_group}} {{release_path}};
+		sudo chgrp -R {{http_group}} {{release_path}};
 		chmod 750 {{release_path}};
 	');
 })->desc('Allow only www-data to access the files');

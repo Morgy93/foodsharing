@@ -4,8 +4,8 @@ namespace Foodsharing\Modules\WorkGroup;
 
 use Foodsharing\Modules\Core\Control;
 use Foodsharing\Modules\Core\DBConstants\Region\RegionIDs;
-use Foodsharing\Modules\Core\DBConstants\Region\Type;
 use Foodsharing\Modules\Core\DBConstants\Region\WorkgroupFunction;
+use Foodsharing\Modules\Core\DBConstants\Unit\UnitType;
 use Foodsharing\Permissions\WorkGroupPermissions;
 use Foodsharing\Utility\ImageHelper;
 use Symfony\Component\Form\FormFactoryInterface;
@@ -62,7 +62,7 @@ class WorkGroupControl extends Control
 		$bezirke = $this->session->getRegions();
 
 		$localRegions = array_filter($bezirke, function ($region) {
-			return !in_array($region['type'], [Type::COUNTRY, Type::WORKING_GROUP]);
+			return !in_array($region['type'], [UnitType::COUNTRY, UnitType::WORKING_GROUP]);
 		});
 
 		$regionToMenuItem = function ($region) {
@@ -78,7 +78,7 @@ class WorkGroupControl extends Control
 
 		$myRegions = $_SESSION['client']['bezirke'] ?? [];
 		$myGroups = array_filter($myRegions, function ($group) {
-			return $group['type'] == Type::WORKING_GROUP;
+			return UnitType::isGroup($group['type']);
 		});
 		$menuMyGroups = array_map(
 			function ($group) {
@@ -173,7 +173,7 @@ class WorkGroupControl extends Control
 		$group = $this->workGroupGateway->getGroup($groupId);
 		if (!$group) {
 			$this->routeHelper->go('/?page=groups');
-		} elseif ($group['type'] != Type::WORKING_GROUP || !$this->workGroupPermissions->mayEdit($group)) {
+		} elseif ($group['type'] != UnitType::WORKING_GROUP || !$this->workGroupPermissions->mayEdit($group)) {
 			$this->routeHelper->go('/?page=dashboard');
 		}
 

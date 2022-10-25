@@ -75,7 +75,7 @@ class MailboxXhr extends Control
 
 		</head><body onload="init();"></body></html>';
 
-		exit();
+		exit;
 	}
 
 	public function loadmails()
@@ -214,7 +214,7 @@ class MailboxXhr extends Control
 					'status' => 1,
 					'message' => $this->translator->trans('mailbox.okay'),
 				]);
-				exit();
+				exit;
 			}
 		}
 
@@ -222,7 +222,7 @@ class MailboxXhr extends Control
 			'status' => 0,
 			'message' => $this->translator->trans('mailbox.failed'),
 		]);
-		exit();
+		exit;
 	}
 
 	public function send_message()
@@ -356,7 +356,7 @@ class MailboxXhr extends Control
 		}
 
 		echo $html;
-		exit();
+		exit;
 	}
 
 	public function loadMail()

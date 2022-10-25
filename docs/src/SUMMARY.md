@@ -55,4 +55,3 @@
  - [foodsharing Glossary](FS-GLOSSARY.md)
 
 - [About the devdocs](about-devdocs.md)
-- [Contributors](contributors.md)

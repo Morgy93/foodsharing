@@ -14,7 +14,7 @@ class StoreLogAction
 	public const MOVED_TO_TEAM = 6;
 	public const REMOVED_FROM_STORE = 7;
 	public const LEFT_STORE = 8;
-	public const MADE_STORE_MANAGER = 9;
+	public const APPOINT_STORE_MANAGER = 9;
 	public const REMOVED_AS_STORE_MANAGER = 10;
 	public const SIGN_UP_SLOT = 11;
 	public const SIGN_OUT_SLOT = 12;
@@ -22,5 +22,4 @@ class StoreLogAction
 	public const SLOT_CONFIRMED = 14;
 	public const DELETED_FROM_WALL = 15;
 	public const REQUEST_CANCELLED = 16;
-	public const APPOINT_STORE_MANAGER = 17;
 }

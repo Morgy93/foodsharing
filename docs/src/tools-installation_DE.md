@@ -10,8 +10,6 @@ Du kannst das "Docker Compose"-Setup benutzen, falls du mit einemder folgenden S
 - OSX Yosemite 10.10.3 oder neuer
 - Windows 10 Pro oder neuer
 
-Falls du keins davon benutzt, probiere es mit dem "Vagrant + Docker Compose"-Setup.
-
 In den folgenden Abschnitten ist die Installation für die verschiedenen Systeme beschrieben:
 
 - [Linux](#linux)
@@ -25,8 +23,6 @@ In den folgenden Abschnitten ist die Installation für die verschiedenen Systeme
     - [```[RuntimeException]```](#runtimeexception)
     - [yarn lint](#yarn-lint)
     - [Veränderungen in js, vue etc. erscheinen nicht](#veränderungen-in-js-vue-etc-erscheinen-nicht)
-- [Vagrant](#vagrant)
-  - [Für's Tägliche Arbeiten](#fürs-tägliche-arbeiten)
 
 ## Linux
 
@@ -144,36 +140,3 @@ module.exports = {
 ```
 
 Hinweis: Bitte achte darauf, diese Datei nicht nachträglich mit Ihren Änderungen zu übertragen.
-
-## Vagrant
-
-Wenn Du keine der oben genannten Methoden verwenden kannst, dann sollte dies mit jedem gängigen Betriebssystem funktionieren. Allerdings sind wir mit dieser Lösung weniger vertraut, so dass wir Dich damit möglicherweise weniger gut unterstützen können:
-
-Installiere
-[VirtualBox](https://www.virtualbox.org/wiki/Downloads) und
-[Vagrant](https://www.vagrantup.com/downloads.html).
-
-Dann:
-
-```
-git clone git@gitlab.com:foodsharing-dev/foodsharing.git foodsharing
-cd foodsharing
-vagrant up
-```
-
-### Für's Tägliche Arbeiten
-`vagrant up` startet die Maschine und das Foodsharing-Projekt.
-
-`vagrant halt` stoppt die virtuelle Maschine.
-
-`vagrant ssh` verbindet sich mit der virtuellen Maschine.
-
-Sobald die Verbindung mit der virtuellen Maschine hergestellt ist, gehe mit `cd /vagrant` nach /vagrant.
-Dort wird der Foodsharing-Ordner in der VM gemountet.
-Von dort aus kannst Du alle Skripte mit `./scripts/NAME` ausführen.
-
-Notiz:
-`./Skripte/Start` wird immer ausgeführt, wenn Du die virtuelle Maschine mit `vagrant up` startest.
-
-Es gibt einen bekannten Fehler beim Ausführen von VirtualBox + nginx, dass nginx Dateien aus einem Speicher-Cache bedient. Wenn Du auf dieses Problem stößt, dann kann es wahrscheinlich behoben werden, indem Du den Speicher-Cache mit
-``sync; sudo sh -c "/bin/echo 3 > /proc/sys/vm/drop_caches"`` or even running this every second with ``watch -n 1 'sync; sudo sh -c "/bin/echo 3 > /proc/sys/vm/drop_caches"'`` ausführst.

@@ -2,7 +2,6 @@
 
 class LoginCest
 {
-	private $password;
 	private $foodsaver;
 
 	public function _before(AcceptanceTester $I)
@@ -39,9 +38,9 @@ class LoginCest
 		$I->click('.testing-login-dropdown');
 		$I->fillField('.testing-login-input-email', $this->foodsaver['email']);
 		$I->fillField('.testing-login-input-password', $this->pass);
-		$I->seeInField('.testing-login-input-remember', false);
+		$I->dontSeeCheckboxIsChecked('.testing-login-input-remember');
 		$I->click('.testing-login-input-remember');
-		$I->seeInField('.testing-login-input-remember', true);
+		$I->seeCheckboxIsChecked('.testing-login-input-remember');
 		$I->click('.testing-login-click-submit');
 		$I->waitForActiveAPICalls();
 		$I->waitForElementNotVisible('#pulse-success');
@@ -55,6 +54,6 @@ class LoginCest
 		$I->amOnPage('/');
 		$I->click('.testing-login-dropdown');
 		$I->fillField('.testing-login-input-email', $this->foodsaver['email']);
-		$I->seeInField('.testing-login-input-remember', true);
+		$I->seeCheckboxIsChecked('.testing-login-input-remember');
 	}
 }

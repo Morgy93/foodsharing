@@ -4,4 +4,4 @@
 /usr/bin/find /var/www/production/shared/data/mailattach/tmp/ -mtime +2 -type f -delete
 # daily maintenance
 cd /var/www/production/current/
-FS_ENV=prod php run.php Maintenance daily
+FS_ENV=prod php-production run.php Maintenance daily

@@ -113,14 +113,12 @@ class MaintenanceGateway extends BaseGateway
 				WHERE
 					a.confirmed = 1
 				AND
-					a.betrieb_id IN(:storeIds)
+					a.betrieb_id IN(' . implode(',', $storeIds) . ')
 				AND
 					a.date >= NOW()
 				AND
 					a.date <= CURRENT_DATE() + INTERVAL 2 DAY
-			', [
-				':storeIds' => implode(',', $storeIds)
-			]);
+			');
 
 			foreach ($storeWithFetcher as $s) {
 				unset($storeIds[$s['id']]);
@@ -155,9 +153,7 @@ class MaintenanceGateway extends BaseGateway
 						bt.verantwortlich = 1
 
 					AND
-						b.id IN(:storeIds)', [
-					':storeIds' => implode(',', $storeIds)
-				]);
+						b.id IN(' . implode(',', $storeIds) . ')');
 			}
 		}
 

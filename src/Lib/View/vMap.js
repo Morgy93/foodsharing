@@ -3,9 +3,9 @@ import $ from 'jquery'
 import L from 'leaflet'
 import 'leaflet.awesome-markers'
 import 'leaflet.markercluster'
-import 'mapbox-gl-leaflet'
+// import 'mapbox-gl-leaflet'
 
-import 'mapbox-gl/dist/mapbox-gl.css'
+// import 'mapbox-gl/dist/mapbox-gl.css'
 
 import 'corejs-typeahead'
 import 'typeahead-address-photon'

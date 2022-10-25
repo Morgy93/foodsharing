@@ -1,44 +1,53 @@
 #!/bin/bash
 
 export FS_ENV=test
+export CURRENT_USER=$(id -u):$(id -g)
 
+# set -o errexit tells the shell to exit as soon as a command exits with non-zero status, i.e. fails
 set -o errexit
 
 dir=$(dirname "$0")
 
-# shellcheck source=./inc.sh
-source "$dir"/inc.sh
+# source runs the content of the argument as if it was here (without launching a subshell!)
+# __helping-functions.sh defines basic functions, mainly to run commands in containers
+# shellcheck source=./__helping-functions.sh
+source "$dir"/__helping-functions.sh
 
-echo "Bring up containers"
-# up starts the container, -d: run in background as a deamon
-dc up -d
+if [[ ! $(dc ls --filter=name='foodsharing_test' | grep 'running') ]];
+then
+    log-header "Bringing up containers ..."
+    dc up -d
 
-"$dir"/mkdirs
+    log-header "Running composer install ..."
+    exec-in-container app 'composer install'
 
-echo "Waiting for database to start"
-wait-for-mysql
+    log-header "Create folder structur ..."
+    exec-in-container app bin/console foodsharing:setup
 
-echo "Flush redis"
-exec-in-container redis redis-cli flushall
+    log-header "Reset (clear) cache ..."
+    exec-in-container app "bin/console cache:clear"
+    exec-in-container app "rm --recursive --force cache/.views-cache cache/di-cache.php"
 
-echo "Initializing database"
-sql-query mysql 'drop database if exists foodsharing; create database foodsharing'
+    log-header "Initialize Database ..."
+    sql-query mysql "drop database if exists foodsharing; create database foodsharing"
 
-echo "Running migrations"
-migratedb
+    log-header "Running migrations"
+    migratedb
 
-echo "Running composer install"
-exec-in-container app 'composer install'
+    log-header "Waiting for assets to be generated ..."
+    wait-for-assets
+    exec-in-container app "bin/console assets:install"
+fi
 
-echo "Running tests"
+log-header "Running tests"
 exec-in-container selenium "find /home/seluser/Downloads -type f -print0 | xargs -r -n 1 -0 rm"
 exec-in-container-asroot app rm --recursive --force cache/.views-cache cache/di-cache.php
 exec-in-container app vendor/bin/codecept run "$@"
 
-echo "Running JS tests"
-run-in-container client 'yarn && yarn lint && yarn test'
+if [ $# -eq 0 ]; then
+    log-header "Running Client tests"
+    run-in-container client "yarn && yarn lint && yarn test"
 
-echo "Running chat tests"
-run-in-container chat 'yarn && yarn lint && yarn test'
-
-echo "Done!"
+    log-header "Running websocket tests"
+    run-in-container websocket "yarn && yarn lint && yarn test"
+fi

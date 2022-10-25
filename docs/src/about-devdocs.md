@@ -43,7 +43,7 @@ For more info please see [Documentation](/documentation.html).
 
 ### Local setup
 
-The current devdocs available via [`localhost:3000`](http://localhost:3000) in your browser.
+The current devdocs available via [`localhost:13000`](http://localhost:13000) in your browser.
 
 The devdocs are built at every change on the master branch and published [here](https://devdocs.foodsharing.network).
 

@@ -107,12 +107,12 @@ export default {
     },
     displayedEnd () {
       if (this.$dateFormatter.isSame(this.endDate, this.startDate)) {
-        return this.$dateFormatter.format(this.startDate, {
+        return this.$dateFormatter.format(this.endDate, {
           hour: 'numeric',
           minute: 'numeric',
         })
       } else {
-        return this.$dateFormatter.format(this.startDate, {
+        return this.$dateFormatter.format(this.endDate, {
           day: 'numeric',
           month: 'numeric',
           hour: 'numeric',

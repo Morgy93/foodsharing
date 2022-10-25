@@ -35,3 +35,54 @@ This json contains data. Errors use the [error codes of http-requests](https://e
 
 While reading and writing code a (basic) [manual](https://symfony.com/doc/master/bundles/FOSRestBundle/index.html)
 and an [annotation overview](https://symfony.com/doc/master/bundles/FOSRestBundle/annotations-reference.html) will help.
+
+
+# Handling of big request body
+
+The foodsharing plattform uses sometimes big request bodies (e.g  create/update Store, create and/or update region/working groups).
+
+For a better OpenAPI documentation and to reduce boring repeating (often error prone) conversion code or validation code the following parts can be used.
+
+## Introduction
+
+The implementation of an RestAPI endpoint action typically starts with a RestAPI description with annotations for (Swagger-php)[http://zircote.github.io/swagger-php/] integrated by (Symfony via NelmioApiDocBundle)[https://symfony.com/bundles/NelmioApiDocBundle/current/index.html] followed by FOSBundle endpoint type description.
+
+A typical endpoint follows the following steps.
+
+~~~plantuml
+@startuml
+Client -> EndpointAction: "POST create /api/store with request body"
+EndpointAction -> Request: "read content"
+Request --> EndpointAction
+EndpointAction -> EndpointAction: "Validate content"
+EndpointAction --> EndpointAction: "no errors"
+
+EndpointAction -> Transaction:"Run business logic"
+Transaction -> Gateway: "Get data from database"
+Gateway --> Transaction: "A value"
+Transaction -> Gateway: "Store new data to database"
+Transaction --> EndpointAction: "Business logic execution complete"
+EndpointAction --> Client: Response
+@enduml
+~~~
+
+## Request convertation
+
+The request body contains a typical JSON object with different elements.
+The extraction of this information can be done by `@RequestParam()`. For many JSON elements it is a lot of conversion code. 
+With the `@ParamConverter()` the elements are converted directly into an object.
+
+The `@ParamConverter()` requires therefor a class definition. The converter generates an object of the class and fills all fields with the information found in the request body.
+The nice benefit is that the class definition member phpdoc strings are used for the OpenAPI documentation.
+
+## Validation
+
+The conversion to the class does not mean that all restrictions of the values are fulfilled.
+This can be checked manually or by the [symfony validation libary](https://symfony.com/doc/current/validation.html). 
+
+The validation library uses the annotations to descibe rules for validation of the class members.
+The endpoint action only need to check if error are detected and can throw an bad request error.
+
+If the validation was succesful the business logic like an transaction can be used and the sanitation of the RestAPI RequestBody content is solved in a typical Symfony way.
+
+

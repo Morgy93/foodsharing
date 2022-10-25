@@ -337,7 +337,7 @@ export default {
       display: inline-block;
     }
 
-    /deep/ .btn {
+    ::v-deep .btn {
       // position: relative;
       display: inline-block;
       margin: 2px;

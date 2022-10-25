@@ -72,8 +72,8 @@ Access to the e-mails that are sent via the website can also be found.
 
 | | dev | test |
 --- | --- | --- |
-Website | [`localhost:18080`](localhost:18080) | |
-phpadmin (database access) | [`localhost:18081`](localhost:18081) | [`localhost:18080`](localhost:28081) |
+Website | [`localhost:18080`](localhost:18080) | [`localhost:28080`](localhost:28080) | 
+phpadmin (database access) | [`localhost:18081`](localhost:18081) | [`localhost:28081`](localhost:22081) |
 smtp (outgoing email) | [`localhost:18084`](localhost:18084) | [`localhost:28084`](localhost:28084)
 
 Those ports are configured in `/docker/docker-compose.*.yml`.

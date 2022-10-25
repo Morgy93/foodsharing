@@ -51,6 +51,9 @@
           <li class="poll-type">
             <b>{{ $i18n('poll.type') }}:</b> {{ $i18n('poll.type_description_'+poll.type) }}
           </li>
+          <li v-if="isPollInPast">
+            <b>{{ $i18n('poll.results.percentage_of_votes') }}:</b> {{ percentageTurnout }} %
+          </li>
         </ul>
 
         <div
@@ -172,6 +175,9 @@ export default {
     },
     isPollInFuture () {
       return this.startDate > new Date()
+    },
+    percentageTurnout () {
+      return parseFloat(this.poll.votes / this.poll.eligibleVotesCount * 100).toFixed(2).toLocaleString()
     },
   },
   methods: {

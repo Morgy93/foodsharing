@@ -10,6 +10,13 @@ class ContentSecurityPolicy
 		$self = "'self'";
 		$unsafeInline = "'unsafe-inline'";
 		$unsafeEval = "'unsafe-eval'";
+		$gitpod_config = 'config/gitpod';
+		$gitpod_url = '';
+		if (file_exists($gitpod_config)) {
+			$gitpod_file = file_get_contents($gitpod_config, true);
+			$gitpod_explode = explode(PHP_EOL, $gitpod_file);
+			$gitpod_url = $gitpod_explode[0];
+		}
 
 		$policy = [
 			'default-src' => [
@@ -18,11 +25,15 @@ class ContentSecurityPolicy
 			'script-src' => [
 				$self,
 				$unsafeInline,
-				$unsafeEval // lots of `$.globalEval` still ... 😢
+				$unsafeEval, // lots of `$.globalEval` still ... 😢
+				'https://polyfill.io/' // used for a polyfill loader in the base.twig file
 			],
 			'connect-src' => [
 				$self,
 				$this->websocketUrlFor($httpHost),
+				$gitpod_url,
+				'https://localhost:8080',
+				'https://nginx:8080',
 				'https://sentry.io',
 				'https://photon.komoot.io',
 				'https://maps.geoapify.com',
@@ -30,6 +41,7 @@ class ContentSecurityPolicy
 				'https://maps02.geoapify.com',
 				'https://maps03.geoapify.com',
 				'https://search.mapzen.com', // only used in u_loadCoords, gets hopefully replaces soon
+				'https://gitpod.io',
 				'blob:',
 				'ws:'
 			],

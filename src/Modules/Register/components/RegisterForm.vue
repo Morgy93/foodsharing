@@ -149,7 +149,7 @@ export default {
     }
   }
 
-  /deep/ .custom-control-label {
+  ::v-deep .custom-control-label {
     font-size: 1rem;
     &::before {
       top: .1rem;

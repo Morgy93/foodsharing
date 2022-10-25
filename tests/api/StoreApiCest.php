@@ -38,6 +38,21 @@ class StoreApiCest
 		$this->faker = Faker\Factory::create('de_DE');
 	}
 
+	public function canNotGetAccessToCommonStoreMetadataAsUnknownUser(ApiTester $I)
+	{
+		$I->sendGET(self::API_STORES . '/meta-data');
+		$I->seeResponseCodeIs(Http::UNAUTHORIZED);
+	}
+
+	public function getCommonStoreMetadataLikeMaxPickupSlotsAsFoodsaver(ApiTester $I)
+	{
+		$I->login($this->user[self::EMAIL]);
+		$I->sendGET(self::API_STORES . '/meta-data');
+		$I->seeResponseCodeIs(Http::OK);
+		$I->seeResponseIsJson();
+		$I->seeResponseContainsJson(['maxCountPickupSlot' => 10]);
+	}
+
 	public function getStore(ApiTester $I)
 	{
 		$I->login($this->teamMember[self::EMAIL]);
@@ -65,6 +80,48 @@ class StoreApiCest
 		$I->seeResponseCodeIs(Http::OK);
 		$I->seeResponseContainsJson(['id' => $this->store[self::ID]]);
 		$I->dontSeeResponseContainsJson(['phone' => $this->store['telefon']]);
+	}
+
+	public function patchStoreTeamStatusOk(ApiTester $I)
+	{
+		$I->login($this->manager[self::EMAIL]);
+		$I->sendPATCH(self::API_STORES . '/' . $this->store[self::ID], ['teamStatus' => 2]);
+		$I->seeResponseCodeIs(Http::OK);
+		$I->seeResponseIsJson();
+		$I->seeResponseContainsJson(['id' => $this->store[self::ID]]);
+		$I->seeResponseContainsJson(['phone' => $this->store['telefon']]);
+	}
+
+	public function patchStoreTeamStatusNotFound(ApiTester $I)
+	{
+		$I->login($this->manager[self::EMAIL]);
+		$I->sendPATCH(self::API_STORES . '/' . $this->store[self::ID] + 1, ['teamStatus' => 2]);
+		$I->seeResponseCodeIs(Http::NOT_FOUND);
+	}
+
+	public function patchStoreTeamStatusInvalid(ApiTester $I)
+	{
+		$I->login($this->manager[self::EMAIL]);
+		$I->sendPATCH(self::API_STORES . '/' . $this->store[self::ID], ['teamStatus' => 3]);
+		$I->seeResponseCodeIs(Http::BAD_REQUEST);
+
+		$I->login($this->manager[self::EMAIL]);
+		$I->sendPATCH(self::API_STORES . '/' . $this->store[self::ID], ['teamStatus' => 'a']);
+		$I->seeResponseCodeIs(Http::BAD_REQUEST);
+	}
+
+	public function canPatchOnlyAccessStoreAsFoodsaver(ApiTester $I)
+	{
+		$I->sendPATCH(self::API_STORES . '/' . $this->store[self::ID], ['teamStatus' => 2]);
+		$I->seeResponseCodeIs(Http::UNAUTHORIZED);
+
+		$I->login($this->foodsharer[self::EMAIL]);
+		$I->sendPATCH(self::API_STORES . '/' . $this->store[self::ID], ['teamStatus' => 2]);
+		$I->seeResponseCodeIs(Http::FORBIDDEN);
+
+		$I->login($this->teamMember[self::EMAIL]);
+		$I->sendPATCH(self::API_STORES . '/' . $this->store[self::ID], ['teamStatus' => 2]);
+		$I->seeResponseCodeIs(Http::FORBIDDEN);
 	}
 
 	public function canWriteStoreWallpostAndGetAllPosts(ApiTester $I): void

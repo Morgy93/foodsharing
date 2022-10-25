@@ -13,3 +13,8 @@ export default {
     return null
   },
 }
+
+export function isValidPhoneNumber (number) {
+  const phoneNumber = parsePhoneNumberFromString(number || '')
+  return phoneNumber?.isValid() === true // this condition check is required of libphonenumber-js because it sends undefined for invalid numbers
+}
