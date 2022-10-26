@@ -199,7 +199,7 @@ build:docs:
     MYSQL_INITDB_SKIP_TZINFO: 1
   services:
   # Note: Gitlab runner will mark a lot of service healthchecks as failed. This is a bug that will partly be addressed with the upcoming release of the gitlab-runner. It is also due to our configuration, e.g. the websocket container not exposing ports but listed as a service. Unfortunately, health check cannot be disabled.
-    - name: registry.gitlab.com/foodsharing-dev/images/db/test:2
+    - name: mariadb:10.9.3
       alias: db
   stage: build
   script:
@@ -226,7 +226,7 @@ test:backend:
 # Note: Gitlab runner will mark a lot of service healthchecks as failed. This is a bug that will partly be addressed with the upcoming release of the gitlab-runner. It is also due to our configuration, e.g. the websocket container not exposing ports but listed as a service. Unfortunately, health check cannot be disabled.
     - name: redis:6.0.8-alpine
       alias: redis
-    - name: registry.gitlab.com/foodsharing-dev/images/db/test:2
+    - name: mariadb:10.9.3
       alias: db
     - name: selenium/standalone-chrome:3.141.59-20200515
       alias: selenium
