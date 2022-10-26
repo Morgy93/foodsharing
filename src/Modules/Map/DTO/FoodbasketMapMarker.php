@@ -31,8 +31,8 @@ class FoodbasketMapMarker extends MapMarker
 		$marker->id = $queryResult['id'];
 		$marker->description = $queryResult['description'];
 
-		$marker->lat = $queryResult['lat'];
-		$marker->lon = $queryResult['lon'];
+		$marker->latitude = $queryResult['lat'];
+		$marker->longitude = $queryResult['lon'];
 
 		$marker->type = $type;
 

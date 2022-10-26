@@ -33,13 +33,14 @@ class MapMarker
 	 *
 	 * @OA\Property(example=50.89)
 	 */
-	public float $lat = 0.0;
+	public float $latitude = 0.0;
+
 	/**
 	 * Longitude for a marker.
 	 *
 	 * @OA\Property(example=10.13)
 	 */
-	public float $lon = 0.0;
+	public float $longitude = 0.0;
 
 	/**
 	 * Kind of marker.
@@ -66,8 +67,8 @@ class MapMarker
 		$marker->name = $queryResult['name'];
 		$marker->description = $queryResult['description'];
 
-		$marker->lat = $queryResult['lat'];
-		$marker->lon = $queryResult['lon'];
+		$marker->latitude = $queryResult['lat'];
+		$marker->longitude = $queryResult['lon'];
 
 		$marker->type = $type;
 

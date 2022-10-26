@@ -11,27 +11,36 @@ use Symfony\Component\Validator\Constraints as Assert;
  */
 class FilterModel
 {
-	/**
-	 * Latitude.
-	 *
-	 * @OA\Property(example=50.89)
-	 */
-	public float $lat = MapConstants::CENTER_GERMANY_LAT;
+	public function __construct(
+		/**
+		 * Latitude.
+		 *
+		 * @OA\Property(example=50.89)
+		 * @Assert\Type(type="float",
+		 *  message="The value {{ value }} is not a valid {{ type }}.",
+		 * )]
+		 */
+		public $latitude = MapConstants::CENTER_GERMANY_LAT,
 
-	/**
-	 * Longitude.
-	 *
-	 * @OA\Property(example=10.13)
-	 */
-	public float $lon = MapConstants::CENTER_GERMANY_LON;
+		/**
+		 * Longitude.
+		 *
+		 * @OA\Property(example=10.13)
+		 * @Assert\Type(type="float",
+		 *  message="The value {{ value }} is not a valid {{ type }}.",
+		 * )]
+		 */
+		public $longitude = MapConstants::CENTER_GERMANY_LON,
 
-	/**
-	 * Search distance in kilometers.
-	 *
-	 * @OA\Property(example=45)
-	 * @Assert\Range(min=1, max=150,
-	 *  notInRangeMessage="You must enter a search distance between {{ min }} km and {{ max }} km."
-	 * )
-	 */
-	public int $distanceInKm = MapConstants::DEFAULT_SEARCH_DISTANCE;
+		/**
+		 * Search distance in kilometers.
+		 *
+		 * @OA\Property(example=45)
+		 * @Assert\Range(min=1, max=150,
+		 *  notInRangeMessage="You must enter a search distance between {{ min }} km and {{ max }} km."
+		 * )
+		 */
+		public $distanceInKm = MapConstants::DEFAULT_SEARCH_DISTANCE,
+	) {
+	}
 }

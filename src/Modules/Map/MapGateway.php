@@ -33,12 +33,12 @@ class MapGateway extends BaseGateway
 			FROM
 				fs_basket
 			WHERE
-				ST_Distance_Sphere(point(lon, lat), POINT({$filter->lon}, {$filter->lat})) / 1000.0 <= {$filter->distanceInKm}
+				ST_Distance_Sphere(point(lat, lon), POINT({$filter->latitude}, {$filter->longitude})) / 1000.0 <= {$filter->distanceInKm}
 			AND
 				status = " . 1
 		;
 		$baskets = $this->db->fetchAll($query);
-		// return $baskets;
+
 		return array_map(fn ($row) => FoodbasketMapMarker::createFromArray($row), $baskets);
 	}
 
@@ -50,7 +50,7 @@ class MapGateway extends BaseGateway
 			FROM
 				fs_fairteiler
 			WHERE
-				ST_Distance_Sphere(point(lon, lat), POINT({$filter->lon}, {$filter->lat})) / 1000.0 <= {$filter->distanceInKm}
+				ST_Distance_Sphere(point(lat, lon), POINT({$filter->latitude}, {$filter->longitude})) / 1000.0 <= {$filter->distanceInKm}
 			AND
 				status = " . 1
 		;
@@ -73,7 +73,7 @@ class MapGateway extends BaseGateway
 				FROM
 					fs_region_pin
 				WHERE
-					ST_Distance_Sphere(point(lon, lat), POINT({$filter->lon}, {$filter->lat})) / 1000.0 <= {$filter->distanceInKm}
+					ST_Distance_Sphere(point(lat, lon), POINT({$filter->latitude}, {$filter->longitude})) / 1000.0 <= {$filter->distanceInKm}
 				AND
 					status = " . RegionPinStatus::ACTIVE
 		;
@@ -96,7 +96,7 @@ class MapGateway extends BaseGateway
 				FROM
 					fs_betrieb
 				WHERE
-					ST_Distance_Sphere(point(lon, lat), POINT({$filter->lon}, {$filter->lat})) / 1000.0 <= {$filter->distanceInKm}
+					ST_Distance_Sphere(point(lat, lon), POINT({$filter->latitude}, {$filter->longitude})) / 1000.0 <= {$filter->distanceInKm}
 		";
 
 		if (!empty($filter->cooperationStatus)) {
@@ -108,7 +108,6 @@ class MapGateway extends BaseGateway
 
 		$stores = $this->db->fetchAll($query);
 
-		// return $stores;
 		return array_map(fn ($row) => StoreMapMarker::createFromArray($row), $stores);
 	}
 }

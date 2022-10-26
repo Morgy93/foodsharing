@@ -16,8 +16,8 @@ class CommunityMapMarker extends MapMarker
 		$marker->name = $queryResult['name'];
 		$marker->description = $queryResult['desc'];
 
-		$marker->lat = $queryResult['lat'];
-		$marker->lon = $queryResult['lon'];
+		$marker->latitude = $queryResult['lat'];
+		$marker->longitude = $queryResult['lon'];
 
 		$marker->type = $type;
 

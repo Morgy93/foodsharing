@@ -30,6 +30,7 @@ class StoreMapMarker extends MapMarker
 	 * - 0 - CLOSED
 	 * - 1 - OPEN
 	 * - 2 - OPEN_SEARCHING
+	 *
 	 * @OA\Property(example=1)
 	 */
 	public int $teamStatus = 0;
@@ -44,8 +45,8 @@ class StoreMapMarker extends MapMarker
 		$marker->name = $queryResult['name'];
 		$marker->description = $queryResult['public_info'];
 
-		$marker->lat = $queryResult['lat'];
-		$marker->lon = $queryResult['lon'];
+		$marker->latitude = $queryResult['lat'];
+		$marker->longitude = $queryResult['lon'];
 
 		$marker->type = $type;
 
