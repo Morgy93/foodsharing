@@ -27,7 +27,6 @@ class StoreFilterModel extends FilterModel
 		 * - 5 - COOPERATION_ESTABLISHED
 		 * - 6 - GIVES_TO_OTHER_CHARITY
 		 * - 7 - PERMANENTLY_CLOSED
-		 * - 8 - INACTIVE
 		 *
 		 * @OA\Property(example="[1,3,2]")
 		 *
