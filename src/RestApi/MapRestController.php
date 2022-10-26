@@ -7,10 +7,10 @@ use Foodsharing\Lib\Session;
 use Foodsharing\Modules\Core\DBConstants\Foodsaver\Role;
 use Foodsharing\Modules\Core\DBConstants\Store\CooperationStatus;
 use Foodsharing\Modules\Core\DBConstants\Store\TeamStatus;
-use Foodsharing\Modules\Map\DTO\FoodbasketMapMarker;
-use Foodsharing\Modules\Map\DTO\StoreMapMarker;
-use Foodsharing\Modules\Map\DTO\FoodsharepointMapMarker;
 use Foodsharing\Modules\Map\DTO\CommunityMapMarker;
+use Foodsharing\Modules\Map\DTO\FoodbasketMapMarker;
+use Foodsharing\Modules\Map\DTO\FoodsharepointMapMarker;
+use Foodsharing\Modules\Map\DTO\StoreMapMarker;
 use Foodsharing\Modules\Map\MapGateway;
 use Foodsharing\Modules\Region\RegionGateway;
 use Foodsharing\Modules\Store\StoreGateway;
@@ -57,7 +57,6 @@ class MapRestController extends AbstractFOSRestController
 	 * @OA\Tag(name="map")
 	 * @Rest\Get("map/{latitude}/{longitude}/foodbaskets/{distanceInKm}")
 	 * @Rest\Get("map/{latitude}/{longitude}/foodbaskets")
-	 *
 	 */
 	public function getFoodBasketMarkers(float $latitude, float $longitude, int $distanceInKm = 45, ValidatorInterface $validator): Response
 	{
