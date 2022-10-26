@@ -20,14 +20,14 @@ class MapMarker
 		 *
 		 * @OA\Property(example="Betrieb ABC LEFT")
 		 */
-		public string $name = '',
+		public ?string $name = null,
 
 		/**
 		 * Description for a marker.
 		 *
 		 * @OA\Property(example="Der Betrieb hat häufig ...")
 		 */
-		public string $description = '',
+		public ?string $description = null,
 
 		/**
 		 * Latitude for a marker.
@@ -60,9 +60,14 @@ class MapMarker
 	) {
 	}
 
-	public function setType(int $type)
+	public function setDescription(string $value)
 	{
-		$this->type = MapMarkerType::getType($type);
+		$this->setDescription = $value ?? null;
+	}
+
+	public function setType(int $value)
+	{
+		$this->type = MapMarkerType::getType($value);
 	}
 
 	/**

@@ -30,7 +30,7 @@ class FoodbasketMapMarker extends MapMarker
 	{
 		$marker = new FoodbasketMapMarker();
 		$marker->id = $value['id'];
-		$marker->description = $value['description'];
+		$marker->setDescription($value['desc']);
 
 		$marker->latitude = $value['lat'];
 		$marker->longitude = $value['lon'];

@@ -16,7 +16,7 @@ class CommunityMapMarker extends MapMarker
 		$marker = new CommunityMapMarker();
 		$marker->id = $value['id'];
 		$marker->name = $value['name'];
-		$marker->description = $value['desc'];
+		$marker->setDescription($value['desc']);
 
 		$marker->latitude = $value['lat'];
 		$marker->longitude = $value['lon'];

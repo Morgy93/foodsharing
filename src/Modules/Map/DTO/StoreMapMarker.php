@@ -45,8 +45,8 @@ class StoreMapMarker extends MapMarker
 	{
 		$marker = new StoreMapMarker();
 		$marker->id = $value['id'];
-		$marker->name = $value['name'];
-		$marker->description = $value['description'];
+		$marker->name = $value['name'] ?? null;
+		$marker->setDescription($value['description']);
 
 		$marker->latitude = $value['lat'];
 		$marker->longitude = $value['lon'];

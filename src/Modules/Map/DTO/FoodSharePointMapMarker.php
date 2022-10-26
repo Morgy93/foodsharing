@@ -16,7 +16,7 @@ class FoodSharePointMapMarker extends MapMarker
 		$marker = new FoodSharePointMapMarker();
 		$marker->id = $value['id'];
 		$marker->name = $value['name'];
-		$marker->description = $value['desc'];
+		$marker->setDescription($value['desc']);
 
 		$marker->latitude = $value['lat'];
 		$marker->longitude = $value['lon'];
