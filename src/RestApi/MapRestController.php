@@ -52,7 +52,6 @@ class MapRestController extends AbstractFOSRestController
 	 *      )
 	 * )
 	 * @OA\Response(response=HttpCode::UNAUTHORIZED, description=HttpExceptionResponse::NOT_LOGGED_IN)
-	 * @OA\Response(response=HttpCode::FORBIDDEN, description=HttpExceptionResponse::ONLY_FOR_FOODSAVER)
 	 *
 	 * @Rest\QueryParam(
 	 *  name="distanceInKm",
@@ -96,7 +95,6 @@ class MapRestController extends AbstractFOSRestController
 	 *      )
 	 * )
 	 * @OA\Response(response=HttpCode::UNAUTHORIZED, description=HttpExceptionResponse::NOT_LOGGED_IN)
-	 * @OA\Response(response=HttpCode::FORBIDDEN, description=HttpExceptionResponse::ONLY_FOR_FOODSAVER)
 	 *
 	 * @Rest\QueryParam(
 	 *  name="distanceInKm",
@@ -140,7 +138,6 @@ class MapRestController extends AbstractFOSRestController
 	 *      )
 	 * )
 	 * @OA\Response(response=HttpCode::UNAUTHORIZED, description=HttpExceptionResponse::NOT_LOGGED_IN)
-	 * @OA\Response(response=HttpCode::FORBIDDEN, description=HttpExceptionResponse::ONLY_FOR_FOODSAVER)
 	 *
 	 * @Rest\QueryParam(
 	 *  name="distanceInKm",

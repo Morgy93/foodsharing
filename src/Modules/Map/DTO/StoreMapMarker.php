@@ -41,7 +41,7 @@ class StoreMapMarker extends MapMarker
 		parent::__construct();
 	}
 
-	public static function createFromArray(mixed $value, ?int $type = null): StoreMapMarker
+	public static function createFromArray(mixed $value): StoreMapMarker
 	{
 		$marker = new StoreMapMarker();
 		$marker->id = $value['id'];

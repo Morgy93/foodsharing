@@ -26,11 +26,11 @@ class FoodbasketMapMarker extends MapMarker
 		parent::__construct();
 	}
 
-	public static function createFromArray(mixed $value, ?int $type = null): FoodbasketMapMarker
+	public static function createFromArray(mixed $value): FoodbasketMapMarker
 	{
 		$marker = new FoodbasketMapMarker();
 		$marker->id = $value['id'];
-		$marker->setDescription($value['desc']);
+		$marker->setDescription($value['description']);
 
 		$marker->latitude = $value['lat'];
 		$marker->longitude = $value['lon'];

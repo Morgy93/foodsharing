@@ -62,7 +62,7 @@ class MapMarker
 
 	public function setDescription(string $value)
 	{
-		$this->setDescription = $value ?? null;
+		$this->description = $value ?? null;
 	}
 
 	public function setType(int $value)
@@ -73,7 +73,7 @@ class MapMarker
 	/**
 	 * Creates a marker out of an array representation like the Database select.
 	 */
-	public static function createFromArray(mixed $value, ?int $type = MapMarkerType::UNDEFINED): MapMarker
+	public static function createFromArray(mixed $value): MapMarker
 	{
 		$marker = new MapMarker();
 		$marker->id = $value['id'];
@@ -82,8 +82,6 @@ class MapMarker
 
 		$marker->latitude = $value['lat'];
 		$marker->longitude = $value['lon'];
-
-		$marker->type = MapMarkerType::getType($type);
 
 		return $marker;
 	}

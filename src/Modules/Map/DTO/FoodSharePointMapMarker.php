@@ -11,7 +11,7 @@ class FoodSharePointMapMarker extends MapMarker
 		parent::__construct();
 	}
 
-	public static function createFromArray(mixed $value, ?int $type = null): FoodSharePointMapMarker
+	public static function createFromArray(mixed $value): FoodSharePointMapMarker
 	{
 		$marker = new FoodSharePointMapMarker();
 		$marker->id = $value['id'];

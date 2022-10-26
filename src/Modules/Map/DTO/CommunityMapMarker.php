@@ -11,7 +11,7 @@ class CommunityMapMarker extends MapMarker
 		parent::__construct();
 	}
 
-	public static function createFromArray(mixed $value, ?int $type = null): CommunityMapMarker
+	public static function createFromArray(mixed $value): CommunityMapMarker
 	{
 		$marker = new CommunityMapMarker();
 		$marker->id = $value['id'];
