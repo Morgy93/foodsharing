@@ -7,6 +7,8 @@ use Foodsharing\Modules\Core\DBConstants\Foodsaver\Role;
 use Foodsharing\Modules\Core\DBConstants\Region\RegionPinStatus;
 use Foodsharing\Modules\Core\DBConstants\Store\CooperationStatus;
 use Foodsharing\Modules\Core\DBConstants\Store\TeamStatus;
+use Foodsharing\Modules\Map\DTO\CommunityMapMarker;
+use Foodsharing\Modules\Map\DTO\StoreMapMarker;
 use Foodsharing\Modules\Map\MapGateway;
 use Foodsharing\Modules\Region\RegionGateway;
 use Foodsharing\Modules\Store\StoreGateway;
@@ -41,14 +43,49 @@ class MapRestController extends AbstractFOSRestController
 	 * @OA\Response(response="401", description="Not logged in.")
 	 * @OA\Tag(name="map")
 	 *
-	 * @Rest\Get("map/markers/stores")
+	 * @Rest\Get("map/markers/communities")
+	 *
+	 * @OA\Response(
+	 * 		response="200",
+	 * 		description="Success returns list of related regions of user",
+	 *      @OA\JsonContent(
+	 *        type="array",
+	 *        @OA\Items(ref=@Model(type=CommunityMapMarker::class))
+	 *      )
+	 * )
 	 * @OA\RequestBody(@Model(type=FilterModel::class))
+	 * @ParamConverter("filter", class="Foodsharing\RestApi\Models\Map\filterModel", converter="fos_rest.request_body")
+	 */
+	public function getCommunityMarkers(FilterModel $filter): Response
+	{
+		$markers = $this->mapGateway->getCommunityMarkers($filter);
+
+		return $this->handleView($this->view($markers, 200));
+	}
+
+	/**
+	 * Returns the coordinates of filteres stores.
+	 *
+	 * @OA\Response(response="401", description="Not logged in.")
+	 * @OA\Tag(name="map")
+	 *
+	 * @Rest\Get("map/markers/stores")
+	 *
+	 * @OA\Response(
+	 * 		response="200",
+	 * 		description="Success returns list of related regions of user",
+	 *      @OA\JsonContent(
+	 *        type="array",
+	 *        @OA\Items(ref=@Model(type=StoreMapMarker::class))
+	 *      )
+	 * )
 	 * @OA\RequestBody(@Model(type=StoreFilterModel::class))
 	 * @ParamConverter("storeFilter", class="Foodsharing\RestApi\Models\Map\StoreFilterModel", converter="fos_rest.request_body")
 	 */
 	public function getStoreMarkers(StoreFilterModel $storeFilter): Response
 	{
 		$markers = $this->mapGateway->getStoreMarkers($storeFilter);
+
 		return $this->handleView($this->view($markers, 200));
 	}
 
@@ -160,29 +197,29 @@ class MapRestController extends AbstractFOSRestController
 	// 	return $this->handleView($this->view($markers, 200));
 	// }
 
-	// /**
-	//  * Returns the data for the bubble of a region marker on the map.
-	//  *
-	//  * @OA\Response(response="200", description="Success.")
-	//  * @OA\Response(response="404", description="The region does not exist or does not have a description.")
-	//  * @OA\Tag(name="map")
-	//  *
-	//  * @Rest\Get("map/regions/{regionId}")
-	//  * @Rest\QueryParam(name="regionId", requirements="\d+", nullable=true, description="Region for which to return the description")
-	//  */
-	// public function getRegionInformations(int $regionId): Response
-	// {
-	// 	$region = $this->regionGateway->getRegion($regionId);
-	// 	$pin = $this->regionGateway->getRegionPin($regionId);
-	// 	if (empty($pin) || $pin['status'] != RegionPinStatus::ACTIVE) {
-	// 		throw new NotFoundHttpException('region does not exist or the pin is not active');
-	// 	}
+	/**
+	 * Returns the data for the bubble of a region marker on the map.
+	 *
+	 * @OA\Response(response="200", description="Success.")
+	 * @OA\Response(response="404", description="The region does not exist or does not have a description.")
+	 * @OA\Tag(name="map")
+	 *
+	 * @Rest\Get("map/regions/{regionId}")
+	 * @Rest\QueryParam(name="regionId", requirements="\d+", nullable=true, description="Region for which to return the description")
+	 */
+	public function getRegionInformations(int $regionId): Response
+	{
+		$region = $this->regionGateway->getRegion($regionId);
+		$pin = $this->regionGateway->getRegionPin($regionId);
+		if (empty($pin) || $pin['status'] != RegionPinStatus::ACTIVE) {
+			throw new NotFoundHttpException('region does not exist or the pin is not active');
+		}
 
-	// 	return $this->handleView($this->view([
-	// 		'name' => $region['name'],
-	// 		'description' => $pin['desc']
-	// 	], 200));
-	// }
+		return $this->handleView($this->view([
+			'name' => $region['name'],
+			'description' => $pin['desc']
+		], 200));
+	}
 
 	// /**
 	//  * Returns the informations about a given store.

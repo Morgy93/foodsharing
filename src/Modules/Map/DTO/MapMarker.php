@@ -3,42 +3,70 @@
 namespace Foodsharing\Modules\Map\DTO;
 
 use Foodsharing\Modules\Core\DBConstants\Map\MapMarkerType;
+use OpenApi\Annotations as OA;
 
 class MapMarker
 {
 	/**
-	 * Identifer of the MapMarker.
+	 * Identifer of a marker.
+	 *
+	 * @OA\Property(example=12345)
 	 */
 	public int $id = 0;
 
 	/**
-	 * Label for a MapMarker.
+	 * Label for a marker.
+	 *
+	 * @OA\Property(example="Betrieb ABC LEFT")
 	 */
 	public string $name = '';
 
 	/**
-	 * Location for a MapMarker.
+	 * Description for a marker.
+	 *
+	 * @OA\Property(example="Der Betrieb hat häufig ...")
+	 */
+	public string $description = '';
+
+	/**
+	 * Latitude for a marker.
+	 *
+	 * @OA\Property(example=50.89)
 	 */
 	public float $lat = 0.0;
+	/**
+	 * Longitude for a marker.
+	 *
+	 * @OA\Property(example=10.13)
+	 */
 	public float $lon = 0.0;
 
 	/**
+	 * Kind of marker.
+	 *
+	 * - 0: UNDEFINED
+	 * - 1: STORE
+	 * - 2: COMMUNITY
+	 * - 3: FOODBASKET
+	 * - 4: FOODSHARINGPOINT
+	 *
+	 * @OA\Property(example=1)
+	 *
 	 * @see MapMarkerType
 	 */
-	public ?int $type = MapMarkerType::UNDEFINED;
+	public int $type = MapMarkerType::UNDEFINED;
 
 	/**
-	 * Creates a unit out of an array representation like the Database select.
+	 * Creates a marker out of an array representation like the Database select.
 	 */
 	public static function createFromArray($queryResult, $type): MapMarker
 	{
-		$unit = new MapMarker();
-		$unit->id = $queryResult['id'] || $queryResult['bezirk_id'];
-		$unit->name = $queryResult['name'];
-		$unit->lat = $queryResult['lat'];
-		$unit->lon = $queryResult['lon'];
-		$unit->type = $type;
+		$marker = new MapMarker();
+		$marker->name = $queryResult['name'];
+		$marker->lat = $queryResult['lat'];
+		$marker->lon = $queryResult['lon'];
+		$marker->type = $type;
 
-		return $unit;
+		return $marker;
 	}
 }

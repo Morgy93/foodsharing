@@ -6,7 +6,9 @@ use Foodsharing\Modules\Core\BaseGateway;
 use Foodsharing\Modules\Core\Database;
 use Foodsharing\Modules\Core\DBConstants\Map\MapMarkerType;
 use Foodsharing\Modules\Core\DBConstants\Region\RegionPinStatus;
+use Foodsharing\Modules\Map\DTO\CommunityMapMarker;
 use Foodsharing\Modules\Map\DTO\MapMarker;
+use Foodsharing\Modules\Map\DTO\StoreMapMarker;
 use Foodsharing\RestApi\Models\Map\FilterModel;
 use Foodsharing\RestApi\Models\Map\StoreFilterModel;
 
@@ -32,11 +34,28 @@ class MapGateway extends BaseGateway
 		return array_map(fn ($row) => MapMarker::createFromArray($row, MapMarkerType::FOODSHARINGPOINT), $foodSharingPoints);
 	}
 
-	public function getCommunityMarkers(): array
+	public function getCommunityMarkers(FilterModel $filter): array
 	{
-		$communities = $this->db->fetchAllByCriteria('fs_region_pin', ['region_id', 'lat', 'lon'], ['lat !=' => '', 'status' => RegionPinStatus::ACTIVE]);
+		$query = "
+				SELECT
+					*,
+					(SELECT
+						name
+					FROM
+						fs_bezirk
+					WHERE
+						id = region_id) as name
+				FROM
+					fs_region_pin
+				WHERE
+					ST_Distance_Sphere(point(lon, lat), POINT({$filter->lon}, {$filter->lat})) / 1000.0 <= {$filter->distance_in_km}
+				AND
+					status = " . RegionPinStatus::ACTIVE
+		;
 
-		return array_map(fn ($row) => MapMarker::createFromArray($row, MapMarkerType::COMMUNITY), $communities);
+		$communities = $this->db->fetchAll($query);
+
+		return array_map(fn ($row) => CommunityMapMarker::createFromArray($row, MapMarkerType::COMMUNITY), $communities);
 	}
 
 	public function getStoreMarkers(StoreFilterModel $filter): array
@@ -45,6 +64,7 @@ class MapGateway extends BaseGateway
 				SELECT
 					id,
 					name,
+					public_info,
 					lat,
 					lon
 				FROM
@@ -63,6 +83,6 @@ class MapGateway extends BaseGateway
 		$stores = $this->db->fetchAll($query);
 
 		// return $stores;
-		return array_map(fn ($row) => MapMarker::createFromArray($row, MapMarkerType::STORE), $stores);
+		return array_map(fn ($row) => StoreMapMarker::createFromArray($row, MapMarkerType::STORE), $stores);
 	}
 }

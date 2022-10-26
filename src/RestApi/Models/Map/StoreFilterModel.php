@@ -14,13 +14,12 @@ class StoreFilterModel extends FilterModel
 	 *
 	 * @OA\Property(example=1)
 	 */
-	public array $cooperationStatus = array();
+	public array $cooperationStatus = [];
 
 	/**
 	 * Team status.
 	 *
 	 * @OA\Property(example=1)
 	 */
-	public array $teamStatus = array();
-
+	public array $teamStatus = [];
 }
