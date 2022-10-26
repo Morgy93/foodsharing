@@ -10,22 +10,16 @@ class FoodbasketMapMarker extends MapMarker
 {
 	/**
 	 * Date until when the food basket is available.
+	 *
+	 * @OA\Property(example="2022-11-04T07:32:37+01:00")
 	 */
-	#[
-		OA\Property(
-			example: 'ABC'
-		),
-	]
-	public string $until;
+	public ?string $until;
 
 	/**
 	 * Picture path for a foodbasket.
+	 *
+	 * @OA\Property(example="path/to/image")
 	 */
-	#[
-		OA\Property(
-			example: 'ABC'
-		),
-	]
 	public ?string $picture;
 
 	/**

@@ -9,52 +9,36 @@ class MapMarker
 {
 	/**
 	 * Identifer of a marker.
+	 *
+	 * @OA\Property(example=12345)
 	 */
-	#[
-		OA\Property(
-			example: 12345
-		),
-	]
 	public int $id = 0;
 
 	/**
 	 * Label for a marker.
+	 *
+	 * @OA\Property(example="Betrieb ABC LEFT")
 	 */
-	#[
-		OA\Property(
-			example: 'Betrieb ABC LEFT'
-		),
-	]
-	public ?string $name = null;
+	public string $name = '';
 
 	/**
 	 * Description for a marker.
+	 *
+	 * @OA\Property(example="Der Betrieb hat häufig ...")
 	 */
-	#[
-		OA\Property(
-			example: 'Der Betrieb hat häufig ...'
-		),
-	]
-	public ?string $description = null;
+	public string $description = '';
 
 	/**
 	 * Latitude for a marker.
+	 *
+	 * @OA\Property(example=50.89)
 	 */
-	#[
-		OA\Property(
-			example: 50.89
-		),
-	]
 	public float $lat = 0.0;
-
 	/**
 	 * Longitude for a marker.
+	 *
+	 * @OA\Property(example=10.13)
 	 */
-	#[
-		OA\Property(
-			example: 10.13
-		),
-	]
 	public float $lon = 0.0;
 
 	/**
@@ -66,13 +50,10 @@ class MapMarker
 	 * - 3: FOODBASKET
 	 * - 4: FOODSHARINGPOINT
 	 *
+	 * @OA\Property(example=1)
+	 *
 	 * @see MapMarkerType
 	 */
-	#[
-		OA\Property(
-			example: 1
-		),
-	]
 	public int $type = MapMarkerType::UNDEFINED;
 
 	/**

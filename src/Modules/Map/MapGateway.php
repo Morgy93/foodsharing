@@ -90,7 +90,9 @@ class MapGateway extends BaseGateway
 					name,
 					public_info,
 					lat,
-					lon
+					lon,
+					betrieb_status_id,
+					team_status
 				FROM
 					fs_betrieb
 				WHERE
@@ -106,6 +108,7 @@ class MapGateway extends BaseGateway
 
 		$stores = $this->db->fetchAll($query);
 
+		// return $stores;
 		return array_map(fn ($row) => StoreMapMarker::createFromArray($row), $stores);
 	}
 }

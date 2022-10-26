@@ -133,20 +133,20 @@ class MapRestController extends AbstractFOSRestController
 	/**
 	 * Returns the coordinates of filteres stores.
 	 *
-	 * @OA\Tag(name="map")
-	 * @Rest\Get("map/markers/stores")
-	 *
 	 * @OA\Response(response="401", description="Not logged in.")
+	 * @OA\Tag(name="map")
+	 *
+	 * @Rest\Get("map/markers/stores")
 	 *
 	 * @OA\Response(
 	 * 		response="200",
 	 * 		description="Success returns list of related regions of user",
 	 *      @OA\JsonContent(
 	 *        type="array",
-	 *        @OA\Items(ref=@Model(type=StoreFilterModel::class))
+	 *        @OA\Items(ref=@Model(type=StoreMapMarker::class))
 	 *      )
 	 * )
-	 * @OA\RequestBody(@Model(type=StoreFilterModel::class))\
+	 * @OA\RequestBody(@Model(type=StoreFilterModel::class))
 	 * @ParamConverter("storeFilter", class="Foodsharing\RestApi\Models\Map\StoreFilterModel", converter="fos_rest.request_body")
 	 */
 	public function getStoreMarkers(StoreFilterModel $storeFilter, ValidatorInterface $validator): Response
@@ -159,8 +159,8 @@ class MapRestController extends AbstractFOSRestController
 		// 	throw new AccessDeniedHttpException(HttpExceptionResponse::ONLY_FOR_FOODSAVER);
 		// }
 
-		$errors = $validator->validate($storeFilter);
-		$this->throwBadRequestExceptionOnError($errors);
+		// $errors = $validator->validate($storeFilter);
+		// $this->throwBadRequestExceptionOnError($errors);
 
 		$markers = $this->mapGateway->getStoreMarkers($storeFilter);
 
