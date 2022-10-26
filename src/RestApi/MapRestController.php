@@ -32,6 +32,7 @@ use Symfony\Component\Validator\Validator\ValidatorInterface;
 
 class MapRestController extends AbstractFOSRestController
 {
+
 	public function __construct(
 		private MapGateway $mapGateway,
 		private RegionGateway $regionGateway,
@@ -60,7 +61,11 @@ class MapRestController extends AbstractFOSRestController
 	 * )
 	 *
 	 * @OA\Tag(name="map")
-	 * @Rest\Get("map/{latitude}/{longitude}/foodbaskets")
+	 * @Rest\Get("map/{latitude}/{longitude}/foodbaskets",
+	 *  requirements={
+	 *   "latitude" = "[+-]?((\d+\.?\d*)|(\.\d+))",
+	 *   "longitude" = "[+-]?((\d+\.?\d*)|(\.\d+))"
+	 *  })
 	 */
 	public function getFoodBasketMarkers(
 		float $latitude,
@@ -103,7 +108,11 @@ class MapRestController extends AbstractFOSRestController
 	 * )
 	 *
 	 * @OA\Tag(name="map")
-	 * @Rest\Get("map/{latitude}/{longitude}/foodsharepoints")
+	 * @Rest\Get("map/{latitude}/{longitude}/foodsharepoints",
+	 *  requirements={
+	 *   "latitude" = "[+-]?((\d+\.?\d*)|(\.\d+))",
+	 *   "longitude" = "[+-]?((\d+\.?\d*)|(\.\d+))"
+	 *  })
 	 */
 	public function getFoodSharePointMarkers(
 		float $latitude,
@@ -146,7 +155,11 @@ class MapRestController extends AbstractFOSRestController
 	 * )
 	 *
 	 * @OA\Tag(name="map")
-	 * @Rest\Get("map/{latitude}/{longitude}/communities")
+	 * @Rest\Get("map/{latitude}/{longitude}/communities",
+	 *  requirements={
+	 *   "latitude" = "[+-]?((\d+\.?\d*)|(\.\d+))",
+	 *   "longitude" = "[+-]?((\d+\.?\d*)|(\.\d+))"
+	 *  })
 	 */
 	public function getCommunityMarkers(
 		float $latitude,
@@ -203,7 +216,11 @@ class MapRestController extends AbstractFOSRestController
 	 * )
 	 *
 	 * @OA\Tag(name="map")
-	 * @Rest\Get("map/{latitude}/{longitude}/stores")
+	 * @Rest\Get("map/{latitude}/{longitude}/stores",
+	 *  requirements={
+	 *   "latitude" = "[+-]?((\d+\.?\d*)|(\.\d+))",
+	 *   "longitude" = "[+-]?((\d+\.?\d*)|(\.\d+))"
+	 *  })
 	 */
 	public function getStoreMarkers(
 		float $latitude,
