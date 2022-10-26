@@ -32,7 +32,6 @@ use Symfony\Component\Validator\Validator\ValidatorInterface;
 
 class MapRestController extends AbstractFOSRestController
 {
-
 	public function __construct(
 		private MapGateway $mapGateway,
 		private RegionGateway $regionGateway,
