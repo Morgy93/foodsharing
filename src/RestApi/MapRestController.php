@@ -205,7 +205,6 @@ class MapRestController extends AbstractFOSRestController
 	 *  description="Defines the search radius in kilometers."
 	 * )
 	 *
-	 *
 	 * @OA\Tag(name="map")
 	 * @Rest\Get("map/{latitude}/{longitude}/stores")
 	 */
