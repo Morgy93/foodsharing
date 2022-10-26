@@ -11,7 +11,7 @@ dir=$(dirname "$0")
 source "$dir"/__helping-functions.sh
 
 echo "Linting php with php-cs-fixer"
-run-in-container app vendor/bin/php-cs-fixer fix --dry-run --diff --diff-format udiff --verbose
+run-in-container app vendor/bin/php-cs-fixer fix --dry-run --diff --verbose
 
 echo "Linting php with parallel-lint"
 run-in-container app vendor/bin/parallel-lint --exclude vendor .

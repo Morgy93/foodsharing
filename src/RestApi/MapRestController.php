@@ -5,11 +5,12 @@ namespace Foodsharing\RestApi;
 use Codeception\Util\HttpCode;
 use Foodsharing\Lib\Session;
 use Foodsharing\Modules\Core\DBConstants\Foodsaver\Role;
+use Foodsharing\Modules\Core\DBConstants\Map\MapConstants;
 use Foodsharing\Modules\Core\DBConstants\Store\CooperationStatus;
 use Foodsharing\Modules\Core\DBConstants\Store\TeamStatus;
 use Foodsharing\Modules\Map\DTO\CommunityMapMarker;
 use Foodsharing\Modules\Map\DTO\FoodbasketMapMarker;
-use Foodsharing\Modules\Map\DTO\FoodsharepointMapMarker;
+use Foodsharing\Modules\Map\DTO\FoodSharePointMapMarker;
 use Foodsharing\Modules\Map\DTO\StoreMapMarker;
 use Foodsharing\Modules\Map\MapGateway;
 use Foodsharing\Modules\Region\RegionGateway;
@@ -41,7 +42,6 @@ class MapRestController extends AbstractFOSRestController
 
 	/**
 	 * Returns the coordinates of filteres stores.
-	 * When {distanceInKm} is missing the default of 45 is set.
 	 *
 	 * @OA\Response(
 	 * 		response=HttpCode::OK,
@@ -54,15 +54,26 @@ class MapRestController extends AbstractFOSRestController
 	 * @OA\Response(response=HttpCode::UNAUTHORIZED, description=HttpExceptionResponse::NOT_LOGGED_IN)
 	 * @OA\Response(response=HttpCode::FORBIDDEN, description=HttpExceptionResponse::ONLY_FOR_FOODSAVER)
 	 *
+	 * @Rest\QueryParam(
+	 *  name="distanceInKm",
+	 *  default=MapConstants::DEFAULT_SEARCH_DISTANCE,
+	 *  description="Defines the search radius in kilometers."
+	 * )
+	 *
 	 * @OA\Tag(name="map")
-	 * @Rest\Get("map/{latitude}/{longitude}/foodbaskets/{distanceInKm}")
 	 * @Rest\Get("map/{latitude}/{longitude}/foodbaskets")
 	 */
-	public function getFoodBasketMarkers(float $latitude, float $longitude, int $distanceInKm = 45, ValidatorInterface $validator): Response
-	{
+	public function getFoodBasketMarkers(
+		float $latitude,
+		float $longitude,
+		ValidatorInterface $validator,
+		ParamFetcher $paramFetcher,
+	): Response {
 		// if (!$this->session->id()) {
 		// 	throw new UnauthorizedHttpException('', HttpExceptionResponse::NOT_LOGGED_IN);
 		// }
+
+		$distanceInKm = json_decode($paramFetcher->get('distanceInKm')) ?? MapConstants::DEFAULT_SEARCH_DISTANCE;
 
 		$filter = new FilterModel($latitude, $longitude, $distanceInKm);
 		$errors = $validator->validate($filter);
@@ -75,28 +86,38 @@ class MapRestController extends AbstractFOSRestController
 
 	/**
 	 * Returns the coordinates of filteres stores.
-	 * When {distanceInKm} is missing the default of 45 is set.
 	 *
 	 * @OA\Response(
 	 * 		response=HttpCode::OK,
 	 * 		description=HttpExceptionResponse::SUCCESS,
 	 *      @OA\JsonContent(
 	 *        type="array",
-	 *        @OA\Items(ref=@Model(type=FoodsharepointMapMarker::class))
+	 *        @OA\Items(ref=@Model(type=FoodSharePointMapMarker::class))
 	 *      )
 	 * )
 	 * @OA\Response(response=HttpCode::UNAUTHORIZED, description=HttpExceptionResponse::NOT_LOGGED_IN)
 	 * @OA\Response(response=HttpCode::FORBIDDEN, description=HttpExceptionResponse::ONLY_FOR_FOODSAVER)
 	 *
+	 * @Rest\QueryParam(
+	 *  name="distanceInKm",
+	 *  default=MapConstants::DEFAULT_SEARCH_DISTANCE,
+	 *  description="Defines the search radius in kilometers."
+	 * )
+	 *
 	 * @OA\Tag(name="map")
-	 * @Rest\Get("map/{latitude}/{longitude}/foodsharepoints/{distanceInKm}")
 	 * @Rest\Get("map/{latitude}/{longitude}/foodsharepoints")
 	 */
-	public function getFoodSharePointMarkers(float $latitude, float $longitude, int $distanceInKm = 45, ValidatorInterface $validator): Response
-	{
+	public function getFoodSharePointMarkers(
+		float $latitude,
+		float $longitude,
+		ValidatorInterface $validator,
+		ParamFetcher $paramFetcher,
+	): Response {
 		// if (!$this->session->id()) {
 		// 	throw new UnauthorizedHttpException('', HttpExceptionResponse::NOT_LOGGED_IN);
 		// }
+
+		$distanceInKm = json_decode($paramFetcher->get('distanceInKm')) ?? MapConstants::DEFAULT_SEARCH_DISTANCE;
 
 		$filter = new FilterModel($latitude, $longitude, $distanceInKm);
 		$errors = $validator->validate($filter);
@@ -109,7 +130,6 @@ class MapRestController extends AbstractFOSRestController
 
 	/**
 	 * Returns the coordinates of filteres stores.
-	 * When {distanceInKm} is missing the default of 45 is set.
 	 *
 	 * @OA\Response(
 	 * 		response=HttpCode::OK,
@@ -122,15 +142,26 @@ class MapRestController extends AbstractFOSRestController
 	 * @OA\Response(response=HttpCode::UNAUTHORIZED, description=HttpExceptionResponse::NOT_LOGGED_IN)
 	 * @OA\Response(response=HttpCode::FORBIDDEN, description=HttpExceptionResponse::ONLY_FOR_FOODSAVER)
 	 *
+	 * @Rest\QueryParam(
+	 *  name="distanceInKm",
+	 *  default=MapConstants::DEFAULT_SEARCH_DISTANCE,
+	 *  description="Defines the search radius in kilometers."
+	 * )
+	 *
 	 * @OA\Tag(name="map")
-	 * @Rest\Get("map/{latitude}/{longitude}/communities/{distanceInKm}")
 	 * @Rest\Get("map/{latitude}/{longitude}/communities")
 	 */
-	public function getCommunityMarkers(float $latitude, float $longitude, int $distanceInKm = 45, ValidatorInterface $validator): Response
-	{
+	public function getCommunityMarkers(
+		float $latitude,
+		float $longitude,
+		ValidatorInterface $validator,
+		ParamFetcher $paramFetcher,
+	): Response {
 		// if (!$this->session->id()) {
 		// 	throw new UnauthorizedHttpException('', HttpExceptionResponse::NOT_LOGGED_IN);
 		// }
+
+		$distanceInKm = json_decode($paramFetcher->get('distanceInKm')) ?? MapConstants::DEFAULT_SEARCH_DISTANCE;
 
 		$filter = new FilterModel($latitude, $longitude, $distanceInKm);
 		$errors = $validator->validate($filter);
@@ -143,7 +174,6 @@ class MapRestController extends AbstractFOSRestController
 
 	/**
 	 * Returns the coordinates of filteres stores.
-	 * When {distanceInKm} is missing the default of 45 is set.
 	 *
 	 * @OA\Response(
 	 * 		response=HttpCode::OK,
@@ -156,15 +186,35 @@ class MapRestController extends AbstractFOSRestController
 	 * @OA\Response(response=HttpCode::UNAUTHORIZED, description=HttpExceptionResponse::NOT_LOGGED_IN)
 	 * @OA\Response(response=HttpCode::FORBIDDEN, description=HttpExceptionResponse::ONLY_FOR_FOODSAVER)
 	 *
-	 * @Rest\QueryParam(name="teamStatus")
-	 * @Rest\QueryParam(name="cooperationStatus")
+	 * @Rest\QueryParam(
+	 *  name="teamStatus",
+	 * 	default=[],
+	 *  description="An array with status numbers. See response schema."
+	 *
+	 * )
+	 * @Rest\QueryParam(
+	 *  name="cooperationStatus",
+	 * 	default=[],
+	 *  description="An array with status numbers. See response schema."
+	 *
+	 * )
+	 *
+	 * @Rest\QueryParam(
+	 *  name="distanceInKm",
+	 *  default=MapConstants::DEFAULT_SEARCH_DISTANCE,
+	 *  description="Defines the search radius in kilometers."
+	 * )
+	 *
 	 *
 	 * @OA\Tag(name="map")
-	 * @Rest\Get("map/{latitude}/{longitude}/stores/{distanceInKm}")
 	 * @Rest\Get("map/{latitude}/{longitude}/stores")
 	 */
-	public function getStoreMarkers(float $latitude, float $longitude, int $distanceInKm = 45, ValidatorInterface $validator, ParamFetcher $paramFetcher): Response
-	{
+	public function getStoreMarkers(
+		float $latitude,
+		float $longitude,
+		ValidatorInterface $validator,
+		ParamFetcher $paramFetcher,
+	): Response {
 		// if (!$this->session->id()) {
 		// 	throw new UnauthorizedHttpException('', HttpExceptionResponse::NOT_LOGGED_IN);
 		// }
@@ -173,6 +223,7 @@ class MapRestController extends AbstractFOSRestController
 		// 	throw new AccessDeniedHttpException(HttpExceptionResponse::ONLY_FOR_FOODSAVER);
 		// }
 
+		$distanceInKm = json_decode($paramFetcher->get('distanceInKm')) ?? MapConstants::DEFAULT_SEARCH_DISTANCE;
 		$teamStatus = json_decode($paramFetcher->get('teamStatus')) ?? [];
 		$cooperationStatus = json_decode($paramFetcher->get('cooperationStatus')) ?? [];
 

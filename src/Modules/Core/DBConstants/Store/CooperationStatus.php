@@ -47,4 +47,12 @@ class CooperationStatus
 
 		return $reflectionClass->getConstants();
 	}
+
+	public static function getStatus(int $value): string
+	{
+		$class = new ReflectionClass(__CLASS__);
+		$constants = array_flip($class->getConstants());
+
+		return $constants[$value];
+	}
 }

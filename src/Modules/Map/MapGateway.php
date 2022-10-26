@@ -4,10 +4,11 @@ namespace Foodsharing\Modules\Map;
 
 use Foodsharing\Modules\Core\BaseGateway;
 use Foodsharing\Modules\Core\Database;
+use Foodsharing\Modules\Core\DBConstants\Map\MapMarkerType;
 use Foodsharing\Modules\Core\DBConstants\Region\RegionPinStatus;
 use Foodsharing\Modules\Map\DTO\CommunityMapMarker;
-use Foodsharing\Modules\Map\DTO\FoodbasketMapMarker;
-use Foodsharing\Modules\Map\DTO\FoodsharepointMapMarker;
+use Foodsharing\Modules\Map\DTO\FoodSharePointMapMarker;
+use Foodsharing\Modules\Map\DTO\MapMarker;
 use Foodsharing\Modules\Map\DTO\StoreMapMarker;
 use Foodsharing\RestApi\Models\Map\FilterModel;
 use Foodsharing\RestApi\Models\Map\StoreFilterModel;
@@ -39,7 +40,7 @@ class MapGateway extends BaseGateway
 		;
 		$baskets = $this->db->fetchAll($query);
 
-		return array_map(fn ($row) => FoodbasketMapMarker::createFromArray($row), $baskets);
+		return array_map(fn ($row) => MapMarker::createFromArray($row, MapMarkerType::FOODBASKET), $baskets);
 	}
 
 	public function getFoodSharePointMarkers(FilterModel $filter): array
@@ -56,7 +57,7 @@ class MapGateway extends BaseGateway
 		;
 		$foodSharingPoints = $this->db->fetchAll($query);
 
-		return array_map(fn ($row) => FoodsharepointMapMarker::createFromArray($row), $foodSharingPoints);
+		return array_map(fn ($row) => FoodSharePointMapMarker::createFromArray($row, MapMarkerType::FOODSHAREPOINT), $foodSharingPoints);
 	}
 
 	public function getCommunityMarkers(FilterModel $filter): array
@@ -88,11 +89,11 @@ class MapGateway extends BaseGateway
 				SELECT
 					id,
 					name,
-					public_info,
+					public_info as description,
 					lat,
 					lon,
-					betrieb_status_id,
-					team_status
+					betrieb_status_id as cooperationStatus,
+					team_status as teamStatus
 				FROM
 					fs_betrieb
 				WHERE

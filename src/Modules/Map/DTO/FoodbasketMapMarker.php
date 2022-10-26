@@ -8,36 +8,37 @@ use OpenApi\Annotations as OA;
 
 class FoodbasketMapMarker extends MapMarker
 {
-	/**
-	 * Date until when the food basket is available.
-	 *
-	 * @OA\Property(example="2022-11-04T07:32:37+01:00")
-	 */
-	public ?string $until;
+	public function __construct(
+		/**
+		 * Date until when the food basket is available.
+		 *
+		 * @OA\Property(example="2022-11-04T07:32:37+01:00")
+		 */
+		public ?string $until = null,
 
-	/**
-	 * Picture path for a foodbasket.
-	 *
-	 * @OA\Property(example="path/to/image")
-	 */
-	public ?string $picture;
+		/**
+		 * Picture path for a foodbasket.
+		 *
+		 * @OA\Property(example="path/to/image")
+		 */
+		public ?string $picture = null,
+	) {
+		parent::__construct();
+	}
 
-	/**
-	 * Creates a marker out of an array representation like the Database select.
-	 */
-	public static function createFromArray($queryResult, $type = MapMarkerType::FOODBASKET): FoodbasketMapMarker
+	public static function createFromArray(mixed $value, ?int $type = null): FoodbasketMapMarker
 	{
-		$marker = new FoodbasketMapMarker($queryResult, $type);
-		$marker->id = $queryResult['id'];
-		$marker->description = $queryResult['description'];
+		$marker = new FoodbasketMapMarker();
+		$marker->id = $value['id'];
+		$marker->description = $value['description'];
 
-		$marker->latitude = $queryResult['lat'];
-		$marker->longitude = $queryResult['lon'];
+		$marker->latitude = $value['lat'];
+		$marker->longitude = $value['lon'];
 
-		$marker->type = $type;
+		$marker->setType(MapMarkerType::FOODBASKET);
 
-		$marker->until = Carbon::parse($queryResult['until'])->toIso8601String();
-		$marker->picture = $queryResult['picture'];
+		$marker->until = Carbon::parse($value['until'])->toIso8601String();
+		$marker->picture = $value['picture'];
 
 		return $marker;
 	}

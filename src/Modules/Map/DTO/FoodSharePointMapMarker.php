@@ -4,16 +4,16 @@ namespace Foodsharing\Modules\Map\DTO;
 
 use Foodsharing\Modules\Core\DBConstants\Map\MapMarkerType;
 
-class CommunityMapMarker extends MapMarker
+class FoodSharePointMapMarker extends MapMarker
 {
 	public function __construct()
 	{
 		parent::__construct();
 	}
 
-	public static function createFromArray(mixed $value, ?int $type = null): CommunityMapMarker
+	public static function createFromArray(mixed $value, ?int $type = null): FoodSharePointMapMarker
 	{
-		$marker = new CommunityMapMarker();
+		$marker = new FoodSharePointMapMarker();
 		$marker->id = $value['id'];
 		$marker->name = $value['name'];
 		$marker->description = $value['desc'];
@@ -21,7 +21,7 @@ class CommunityMapMarker extends MapMarker
 		$marker->latitude = $value['lat'];
 		$marker->longitude = $value['lon'];
 
-		$marker->setType(MapMarkerType::COMMUNITY);
+		$marker->setType(MapMarkerType::FOODSHAREPOINT);
 
 		return $marker;
 	}

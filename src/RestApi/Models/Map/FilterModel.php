@@ -15,32 +15,32 @@ class FilterModel
 		/**
 		 * Latitude.
 		 *
-		 * @OA\Property(example=50.89)
+		 * @OA\Property(example=MapConstants::CENTER_GERMANY_LAT)
 		 * @Assert\Type(type="float",
 		 *  message="The value {{ value }} is not a valid {{ type }}.",
 		 * )]
 		 */
-		public $latitude = MapConstants::CENTER_GERMANY_LAT,
+		public float $latitude = MapConstants::CENTER_GERMANY_LAT,
 
 		/**
 		 * Longitude.
 		 *
-		 * @OA\Property(example=10.13)
+		 * @OA\Property(example=MapConstants::CENTER_GERMANY_LON)
 		 * @Assert\Type(type="float",
 		 *  message="The value {{ value }} is not a valid {{ type }}.",
 		 * )]
 		 */
-		public $longitude = MapConstants::CENTER_GERMANY_LON,
+		public float $longitude = MapConstants::CENTER_GERMANY_LON,
 
 		/**
 		 * Search distance in kilometers.
 		 *
-		 * @OA\Property(example=45)
-		 * @Assert\Range(min=1, max=150,
+		 * @OA\Property(example=MapConstants::DEFAULT_SEARCH_DISTANCE)
+		 * @Assert\Range(min=MapConstants::MIN_SEARCH_DISTANCE, max=MapConstants::MAX_SEARCH_DISTANCE,
 		 *  notInRangeMessage="You must enter a search distance between {{ min }} km and {{ max }} km."
 		 * )
 		 */
-		public $distanceInKm = MapConstants::DEFAULT_SEARCH_DISTANCE,
+		public int $distanceInKm = MapConstants::DEFAULT_SEARCH_DISTANCE,
 	) {
 	}
 }
