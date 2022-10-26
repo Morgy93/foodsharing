@@ -43,11 +43,6 @@ class MapRestController extends AbstractFOSRestController
 	/**
 	 * Returns the coordinates of filteres stores.
 	 *
-	 * @OA\Response(response="401", description="Not logged in.")
-	 * @OA\Tag(name="map")
-	 *
-	 * @Rest\Get("map/markers/foodbaskets")
-	 *
 	 * @OA\Response(
 	 * 		response="200",
 	 * 		description="Success returns list of related regions of user",
@@ -56,8 +51,13 @@ class MapRestController extends AbstractFOSRestController
 	 *        @OA\Items(ref=@Model(type=CommunityMapMarker::class))
 	 *      )
 	 * )
+	 * @OA\Response(response="401", description="Not logged in.")
+	 *
 	 * @OA\RequestBody(@Model(type=FilterModel::class))
 	 * @ParamConverter("filter", class="Foodsharing\RestApi\Models\Map\filterModel", converter="fos_rest.request_body")
+	 *
+	 * @OA\Tag(name="map")
+	 * @Rest\Get("map/foodbaskets")
 	 */
 	public function getFoodBasketMarkers(FilterModel $filter): Response
 	{
@@ -73,11 +73,6 @@ class MapRestController extends AbstractFOSRestController
 	/**
 	 * Returns the coordinates of filteres stores.
 	 *
-	 * @OA\Response(response="401", description="Not logged in.")
-	 * @OA\Tag(name="map")
-	 *
-	 * @Rest\Get("map/markers/foodsharepoints")
-	 *
 	 * @OA\Response(
 	 * 		response="200",
 	 * 		description="Success returns list of related regions of user",
@@ -86,8 +81,13 @@ class MapRestController extends AbstractFOSRestController
 	 *        @OA\Items(ref=@Model(type=CommunityMapMarker::class))
 	 *      )
 	 * )
+	 * @OA\Response(response="401", description="Not logged in.")
+	 *
 	 * @OA\RequestBody(@Model(type=FilterModel::class))
 	 * @ParamConverter("filter", class="Foodsharing\RestApi\Models\Map\filterModel", converter="fos_rest.request_body")
+	 *
+	 * @OA\Tag(name="map")
+	 * @Rest\Get("map/foodsharepoints")
 	 */
 	public function getFoodSharePointMarkers(FilterModel $filter): Response
 	{
@@ -103,11 +103,6 @@ class MapRestController extends AbstractFOSRestController
 	/**
 	 * Returns the coordinates of filteres stores.
 	 *
-	 * @OA\Response(response="401", description="Not logged in.")
-	 * @OA\Tag(name="map")
-	 *
-	 * @Rest\Get("map/markers/communities")
-	 *
 	 * @OA\Response(
 	 * 		response="200",
 	 * 		description="Success returns list of related regions of user",
@@ -116,8 +111,13 @@ class MapRestController extends AbstractFOSRestController
 	 *        @OA\Items(ref=@Model(type=CommunityMapMarker::class))
 	 *      )
 	 * )
+	 * @OA\Response(response="401", description="Not logged in.")
+	 *
 	 * @OA\RequestBody(@Model(type=FilterModel::class))
 	 * @ParamConverter("filter", class="Foodsharing\RestApi\Models\Map\filterModel", converter="fos_rest.request_body")
+	 *
+	 * @OA\Tag(name="map")
+	 * @Rest\Get("map/communities")
 	 */
 	public function getCommunityMarkers(FilterModel $filter): Response
 	{
@@ -133,11 +133,6 @@ class MapRestController extends AbstractFOSRestController
 	/**
 	 * Returns the coordinates of filteres stores.
 	 *
-	 * @OA\Response(response="401", description="Not logged in.")
-	 * @OA\Tag(name="map")
-	 *
-	 * @Rest\Get("map/markers/stores")
-	 *
 	 * @OA\Response(
 	 * 		response="200",
 	 * 		description="Success returns list of related regions of user",
@@ -146,8 +141,13 @@ class MapRestController extends AbstractFOSRestController
 	 *        @OA\Items(ref=@Model(type=StoreMapMarker::class))
 	 *      )
 	 * )
+	 * @OA\Response(response="401", description="Not logged in.")
+	 *
 	 * @OA\RequestBody(@Model(type=StoreFilterModel::class))
 	 * @ParamConverter("storeFilter", class="Foodsharing\RestApi\Models\Map\StoreFilterModel", converter="fos_rest.request_body")
+	 *
+	 * @OA\Tag(name="map")
+	 * @Rest\Get("map/stores")
 	 */
 	public function getStoreMarkers(StoreFilterModel $storeFilter, ValidatorInterface $validator): Response
 	{
@@ -171,9 +171,9 @@ class MapRestController extends AbstractFOSRestController
 	 * Returns the store filters.
 	 *
 	 * @OA\Response(response="401", description="Not logged in.")
-	 * @OA\Tag(name="map")
 	 *
-	 * @Rest\Get("map/filters/store")
+	 * @OA\Tag(name="map")
+	 * @Rest\Get("map/store/filters")
 	 */
 	public function getStoreFilters(): Response
 	{
