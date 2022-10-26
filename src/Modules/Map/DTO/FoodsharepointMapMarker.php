@@ -4,15 +4,15 @@ namespace Foodsharing\Modules\Map\DTO;
 
 use Foodsharing\Modules\Core\DBConstants\Map\MapMarkerType;
 
-class CommunityMapMarker extends MapMarker
+class FoodsharepointMapMarker extends MapMarker
 {
 	/**
 	 * Creates a marker out of an array representation like the Database select.
 	 */
-	public static function createFromArray($queryResult, $type = MapMarkerType::COMMUNITY): MapMarker
+	public static function createFromArray($queryResult, $type = MapMarkerType::FOODSHARINGPOINT): MapMarker
 	{
 		$marker = new MapMarker($queryResult, $type);
-		$marker->id = $queryResult['region_id'];
+		$marker->id = $queryResult['id'];
 		$marker->name = $queryResult['name'];
 		$marker->description = $queryResult['desc'];
 

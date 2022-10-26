@@ -12,7 +12,7 @@ class StoreFilterModel extends FilterModel
 	/**
 	 * Cooperation status.
 	 *
-	 * @OA\Property(example=1)
+	 * @OA\Property(example=[1])
 	 */
 	public array $cooperationStatus = [];
 

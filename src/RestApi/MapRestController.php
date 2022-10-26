@@ -8,11 +8,11 @@ use Foodsharing\Modules\Core\DBConstants\Region\RegionPinStatus;
 use Foodsharing\Modules\Core\DBConstants\Store\CooperationStatus;
 use Foodsharing\Modules\Core\DBConstants\Store\TeamStatus;
 use Foodsharing\Modules\Map\DTO\CommunityMapMarker;
-use Foodsharing\Modules\Map\DTO\StoreMapMarker;
 use Foodsharing\Modules\Map\MapGateway;
 use Foodsharing\Modules\Region\RegionGateway;
 use Foodsharing\Modules\Store\StoreGateway;
 use Foodsharing\Permissions\StorePermissions;
+use Foodsharing\RestApi\Constants\HttpExceptionResponse;
 use Foodsharing\RestApi\Models\Map\FilterModel;
 use Foodsharing\RestApi\Models\Map\StoreFilterModel;
 use FOS\RestBundle\Controller\AbstractFOSRestController;
@@ -23,8 +23,11 @@ use OpenApi\Annotations as OA;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\ParamConverter;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\Exception\AccessDeniedHttpException;
+use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 use Symfony\Component\HttpKernel\Exception\UnauthorizedHttpException;
+use Symfony\Component\Validator\ConstraintViolationListInterface;
+use Symfony\Component\Validator\Validator\ValidatorInterface;
 
 class MapRestController extends AbstractFOSRestController
 {
@@ -35,6 +38,66 @@ class MapRestController extends AbstractFOSRestController
 		private StorePermissions $storePermissions,
 		private Session $session
 	) {
+	}
+
+	/**
+	 * Returns the coordinates of filteres stores.
+	 *
+	 * @OA\Response(response="401", description="Not logged in.")
+	 * @OA\Tag(name="map")
+	 *
+	 * @Rest\Get("map/markers/foodbaskets")
+	 *
+	 * @OA\Response(
+	 * 		response="200",
+	 * 		description="Success returns list of related regions of user",
+	 *      @OA\JsonContent(
+	 *        type="array",
+	 *        @OA\Items(ref=@Model(type=CommunityMapMarker::class))
+	 *      )
+	 * )
+	 * @OA\RequestBody(@Model(type=FilterModel::class))
+	 * @ParamConverter("filter", class="Foodsharing\RestApi\Models\Map\filterModel", converter="fos_rest.request_body")
+	 */
+	public function getFoodBasketMarkers(FilterModel $filter): Response
+	{
+		// if (!$this->session->id()) {
+		// 	throw new UnauthorizedHttpException('', HttpExceptionResponse::NOT_LOGGED_IN);
+		// }
+
+		$markers = $this->mapGateway->getFoodBasketMarkers($filter);
+
+		return $this->handleView($this->view($markers, 200));
+	}
+
+	/**
+	 * Returns the coordinates of filteres stores.
+	 *
+	 * @OA\Response(response="401", description="Not logged in.")
+	 * @OA\Tag(name="map")
+	 *
+	 * @Rest\Get("map/markers/foodsharepoints")
+	 *
+	 * @OA\Response(
+	 * 		response="200",
+	 * 		description="Success returns list of related regions of user",
+	 *      @OA\JsonContent(
+	 *        type="array",
+	 *        @OA\Items(ref=@Model(type=CommunityMapMarker::class))
+	 *      )
+	 * )
+	 * @OA\RequestBody(@Model(type=FilterModel::class))
+	 * @ParamConverter("filter", class="Foodsharing\RestApi\Models\Map\filterModel", converter="fos_rest.request_body")
+	 */
+	public function getFoodSharePointMarkers(FilterModel $filter): Response
+	{
+		// if (!$this->session->id()) {
+		// 	throw new UnauthorizedHttpException('', HttpExceptionResponse::NOT_LOGGED_IN);
+		// }
+
+		$markers = $this->mapGateway->getFoodSharePointMarkers($filter);
+
+		return $this->handleView($this->view($markers, 200));
 	}
 
 	/**
@@ -58,6 +121,10 @@ class MapRestController extends AbstractFOSRestController
 	 */
 	public function getCommunityMarkers(FilterModel $filter): Response
 	{
+		// if (!$this->session->id()) {
+		// 	throw new UnauthorizedHttpException('', HttpExceptionResponse::NOT_LOGGED_IN);
+		// }
+
 		$markers = $this->mapGateway->getCommunityMarkers($filter);
 
 		return $this->handleView($this->view($markers, 200));
@@ -66,27 +133,38 @@ class MapRestController extends AbstractFOSRestController
 	/**
 	 * Returns the coordinates of filteres stores.
 	 *
-	 * @OA\Response(response="401", description="Not logged in.")
 	 * @OA\Tag(name="map")
-	 *
 	 * @Rest\Get("map/markers/stores")
+	 *
+	 * @OA\Response(response="401", description="Not logged in.")
 	 *
 	 * @OA\Response(
 	 * 		response="200",
 	 * 		description="Success returns list of related regions of user",
 	 *      @OA\JsonContent(
 	 *        type="array",
-	 *        @OA\Items(ref=@Model(type=StoreMapMarker::class))
+	 *        @OA\Items(ref=@Model(type=StoreFilterModel::class))
 	 *      )
 	 * )
-	 * @OA\RequestBody(@Model(type=StoreFilterModel::class))
+	 * @OA\RequestBody(@Model(type=StoreFilterModel::class))\
 	 * @ParamConverter("storeFilter", class="Foodsharing\RestApi\Models\Map\StoreFilterModel", converter="fos_rest.request_body")
 	 */
-	public function getStoreMarkers(StoreFilterModel $storeFilter): Response
+	public function getStoreMarkers(StoreFilterModel $storeFilter, ValidatorInterface $validator): Response
 	{
+		// if (!$this->session->id()) {
+		// 	throw new UnauthorizedHttpException('', HttpExceptionResponse::NOT_LOGGED_IN);
+		// }
+
+		// if (!$this->session->mayRole(Role::FOODSAVER)) {
+		// 	throw new AccessDeniedHttpException(HttpExceptionResponse::ONLY_FOR_FOODSAVER);
+		// }
+
+		$errors = $validator->validate($storeFilter);
+		$this->throwBadRequestExceptionOnError($errors);
+
 		$markers = $this->mapGateway->getStoreMarkers($storeFilter);
 
-		return $this->handleView($this->view($markers, 200));
+		return $this->handleView($this->view([$storeFilter, $markers], 200));
 	}
 
 	/**
@@ -100,11 +178,11 @@ class MapRestController extends AbstractFOSRestController
 	public function getStoreFilters(): Response
 	{
 		// if (!$this->session->id()) {
-		// 	throw new UnauthorizedHttpException('', 'Not logged in.');
+		// 	throw new UnauthorizedHttpException('', HttpExceptionResponse::NOT_LOGGED_IN);
 		// }
 
 		// if (!$this->session->mayRole(Role::FOODSAVER)) {
-		// 	throw new AccessDeniedHttpException('Not allowed.');
+		// 	throw new AccessDeniedHttpException(HttpExceptionResponse::ONLY_FOR_FOODSAVER);
 		// }
 
 		$cooperationStatus = CooperationStatus::getConstants();
@@ -252,4 +330,19 @@ class MapRestController extends AbstractFOSRestController
 	// 		'description' => $pin['desc']
 	// 	], 200));
 	// }
+
+	/**
+	 * Check if a Constraint violation is found and if it exist it throws an BadRequestExeption.
+	 *
+	 * @param ConstraintViolationListInterface $errors Validation result
+	 *
+	 * @throws BadRequestHttpException if violation is detected
+	 */
+	private function throwBadRequestExceptionOnError(ConstraintViolationListInterface $errors): void
+	{
+		if ($errors->count() > 0) {
+			$firstError = $errors->get(0);
+			throw new BadRequestHttpException("{$firstError->getPropertyPath()}: {$firstError->getMessage()}");
+		}
+	}
 }

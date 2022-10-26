@@ -4,10 +4,10 @@ namespace Foodsharing\Modules\Map;
 
 use Foodsharing\Modules\Core\BaseGateway;
 use Foodsharing\Modules\Core\Database;
-use Foodsharing\Modules\Core\DBConstants\Map\MapMarkerType;
 use Foodsharing\Modules\Core\DBConstants\Region\RegionPinStatus;
 use Foodsharing\Modules\Map\DTO\CommunityMapMarker;
-use Foodsharing\Modules\Map\DTO\MapMarker;
+use Foodsharing\Modules\Map\DTO\FoodbasketMapMarker;
+use Foodsharing\Modules\Map\DTO\FoodsharepointMapMarker;
 use Foodsharing\Modules\Map\DTO\StoreMapMarker;
 use Foodsharing\RestApi\Models\Map\FilterModel;
 use Foodsharing\RestApi\Models\Map\StoreFilterModel;
@@ -20,18 +20,43 @@ class MapGateway extends BaseGateway
 		parent::__construct($db);
 	}
 
-	public function getBasketMarkers(): array
+	public function getFoodBasketMarkers(FilterModel $filter): array
 	{
-		$baskets = $this->db->fetchAllByCriteria('fs_basket', ['id', 'lat', 'lon'], ['status' => 1]);
-
-		return array_map(fn ($row) => MapMarker::createFromArray($row, MapMarkerType::FOODBASKET), $baskets);
+		$query = "
+			SELECT
+				id,
+				description,
+				picture,
+				until,
+				lat,
+				lon
+			FROM
+				fs_basket
+			WHERE
+				ST_Distance_Sphere(point(lon, lat), POINT({$filter->lon}, {$filter->lat})) / 1000.0 <= {$filter->distanceInKm}
+			AND
+				status = " . 1
+		;
+		$baskets = $this->db->fetchAll($query);
+		// return $baskets;
+		return array_map(fn ($row) => FoodbasketMapMarker::createFromArray($row), $baskets);
 	}
 
-	public function getFoodSharePointMarkers(): array
+	public function getFoodSharePointMarkers(FilterModel $filter): array
 	{
-		$foodSharingPoints = $this->db->fetchAllByCriteria('fs_fairteiler', ['id', 'lat', 'lon', 'bezirk_id'], ['status' => 1, 'lat !=' => '']);
+		$query = "
+			SELECT
+				*
+			FROM
+				fs_fairteiler
+			WHERE
+				ST_Distance_Sphere(point(lon, lat), POINT({$filter->lon}, {$filter->lat})) / 1000.0 <= {$filter->distanceInKm}
+			AND
+				status = " . 1
+		;
+		$foodSharingPoints = $this->db->fetchAll($query);
 
-		return array_map(fn ($row) => MapMarker::createFromArray($row, MapMarkerType::FOODSHARINGPOINT), $foodSharingPoints);
+		return array_map(fn ($row) => FoodsharepointMapMarker::createFromArray($row), $foodSharingPoints);
 	}
 
 	public function getCommunityMarkers(FilterModel $filter): array
@@ -48,14 +73,13 @@ class MapGateway extends BaseGateway
 				FROM
 					fs_region_pin
 				WHERE
-					ST_Distance_Sphere(point(lon, lat), POINT({$filter->lon}, {$filter->lat})) / 1000.0 <= {$filter->distance_in_km}
+					ST_Distance_Sphere(point(lon, lat), POINT({$filter->lon}, {$filter->lat})) / 1000.0 <= {$filter->distanceInKm}
 				AND
 					status = " . RegionPinStatus::ACTIVE
 		;
-
 		$communities = $this->db->fetchAll($query);
 
-		return array_map(fn ($row) => CommunityMapMarker::createFromArray($row, MapMarkerType::COMMUNITY), $communities);
+		return array_map(fn ($row) => CommunityMapMarker::createFromArray($row), $communities);
 	}
 
 	public function getStoreMarkers(StoreFilterModel $filter): array
@@ -70,7 +94,7 @@ class MapGateway extends BaseGateway
 				FROM
 					fs_betrieb
 				WHERE
-					ST_Distance_Sphere(point(lon, lat), POINT({$filter->lon}, {$filter->lat})) / 1000.0 <= {$filter->distance_in_km}
+					ST_Distance_Sphere(point(lon, lat), POINT({$filter->lon}, {$filter->lat})) / 1000.0 <= {$filter->distanceInKm}
 		";
 
 		if (!empty($filter->cooperationStatus)) {
@@ -82,7 +106,6 @@ class MapGateway extends BaseGateway
 
 		$stores = $this->db->fetchAll($query);
 
-		// return $stores;
-		return array_map(fn ($row) => StoreMapMarker::createFromArray($row, MapMarkerType::STORE), $stores);
+		return array_map(fn ($row) => StoreMapMarker::createFromArray($row), $stores);
 	}
 }
