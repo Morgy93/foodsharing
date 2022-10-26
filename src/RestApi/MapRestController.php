@@ -188,13 +188,13 @@ class MapRestController extends AbstractFOSRestController
 	 *
 	 * @Rest\QueryParam(
 	 *  name="teamStatus",
-	 * 	default=[],
+	 * 	default="[]",
 	 *  description="An array with status numbers. See response schema."
 	 *
 	 * )
 	 * @Rest\QueryParam(
 	 *  name="cooperationStatus",
-	 * 	default=[],
+	 * 	default="[]",
 	 *  description="An array with status numbers. See response schema."
 	 *
 	 * )
