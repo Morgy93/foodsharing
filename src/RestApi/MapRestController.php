@@ -2,10 +2,14 @@
 
 namespace Foodsharing\RestApi;
 
+use Codeception\Util\HttpCode;
 use Foodsharing\Lib\Session;
 use Foodsharing\Modules\Core\DBConstants\Foodsaver\Role;
 use Foodsharing\Modules\Core\DBConstants\Store\CooperationStatus;
 use Foodsharing\Modules\Core\DBConstants\Store\TeamStatus;
+use Foodsharing\Modules\Map\DTO\FoodbasketMapMarker;
+use Foodsharing\Modules\Map\DTO\StoreMapMarker;
+use Foodsharing\Modules\Map\DTO\FoodsharepointMapMarker;
 use Foodsharing\Modules\Map\DTO\CommunityMapMarker;
 use Foodsharing\Modules\Map\MapGateway;
 use Foodsharing\Modules\Region\RegionGateway;
@@ -37,20 +41,23 @@ class MapRestController extends AbstractFOSRestController
 
 	/**
 	 * Returns the coordinates of filteres stores.
+	 * When {distanceInKm} is missing the default of 45 is set.
 	 *
 	 * @OA\Response(
-	 * 		response="200",
-	 * 		description="Success returns list of related regions of user",
+	 * 		response=HttpCode::OK,
+	 * 		description=HttpExceptionResponse::SUCCESS,
 	 *      @OA\JsonContent(
 	 *        type="array",
-	 *        @OA\Items(ref=@Model(type=CommunityMapMarker::class))
+	 *        @OA\Items(ref=@Model(type=FoodbasketMapMarker::class))
 	 *      )
 	 * )
-	 * @OA\Response(response="401", description="Not logged in.")
+	 * @OA\Response(response=HttpCode::UNAUTHORIZED, description=HttpExceptionResponse::NOT_LOGGED_IN)
+	 * @OA\Response(response=HttpCode::FORBIDDEN, description=HttpExceptionResponse::ONLY_FOR_FOODSAVER)
 	 *
 	 * @OA\Tag(name="map")
 	 * @Rest\Get("map/{latitude}/{longitude}/foodbaskets/{distanceInKm}")
 	 * @Rest\Get("map/{latitude}/{longitude}/foodbaskets")
+	 *
 	 */
 	public function getFoodBasketMarkers(float $latitude, float $longitude, int $distanceInKm = 45, ValidatorInterface $validator): Response
 	{
@@ -69,16 +76,18 @@ class MapRestController extends AbstractFOSRestController
 
 	/**
 	 * Returns the coordinates of filteres stores.
+	 * When {distanceInKm} is missing the default of 45 is set.
 	 *
 	 * @OA\Response(
-	 * 		response="200",
-	 * 		description="Success returns list of related regions of user",
+	 * 		response=HttpCode::OK,
+	 * 		description=HttpExceptionResponse::SUCCESS,
 	 *      @OA\JsonContent(
 	 *        type="array",
-	 *        @OA\Items(ref=@Model(type=CommunityMapMarker::class))
+	 *        @OA\Items(ref=@Model(type=FoodsharepointMapMarker::class))
 	 *      )
 	 * )
-	 * @OA\Response(response="401", description="Not logged in.")
+	 * @OA\Response(response=HttpCode::UNAUTHORIZED, description=HttpExceptionResponse::NOT_LOGGED_IN)
+	 * @OA\Response(response=HttpCode::FORBIDDEN, description=HttpExceptionResponse::ONLY_FOR_FOODSAVER)
 	 *
 	 * @OA\Tag(name="map")
 	 * @Rest\Get("map/{latitude}/{longitude}/foodsharepoints/{distanceInKm}")
@@ -101,16 +110,18 @@ class MapRestController extends AbstractFOSRestController
 
 	/**
 	 * Returns the coordinates of filteres stores.
+	 * When {distanceInKm} is missing the default of 45 is set.
 	 *
 	 * @OA\Response(
-	 * 		response="200",
-	 * 		description="Success returns list of related regions of user",
+	 * 		response=HttpCode::OK,
+	 * 		description=HttpExceptionResponse::SUCCESS,
 	 *      @OA\JsonContent(
 	 *        type="array",
 	 *        @OA\Items(ref=@Model(type=CommunityMapMarker::class))
 	 *      )
 	 * )
-	 * @OA\Response(response="401", description="Not logged in.")
+	 * @OA\Response(response=HttpCode::UNAUTHORIZED, description=HttpExceptionResponse::NOT_LOGGED_IN)
+	 * @OA\Response(response=HttpCode::FORBIDDEN, description=HttpExceptionResponse::ONLY_FOR_FOODSAVER)
 	 *
 	 * @OA\Tag(name="map")
 	 * @Rest\Get("map/{latitude}/{longitude}/communities/{distanceInKm}")
@@ -133,16 +144,18 @@ class MapRestController extends AbstractFOSRestController
 
 	/**
 	 * Returns the coordinates of filteres stores.
+	 * When {distanceInKm} is missing the default of 45 is set.
 	 *
 	 * @OA\Response(
-	 * 		response="200",
-	 * 		description="Success returns list of related regions of user",
+	 * 		response=HttpCode::OK,
+	 * 		description=HttpExceptionResponse::SUCCESS,
 	 *      @OA\JsonContent(
 	 *        type="array",
 	 *        @OA\Items(ref=@Model(type=StoreMapMarker::class))
 	 *      )
 	 * )
-	 * @OA\Response(response="401", description="Not logged in.")
+	 * @OA\Response(response=HttpCode::UNAUTHORIZED, description=HttpExceptionResponse::NOT_LOGGED_IN)
+	 * @OA\Response(response=HttpCode::FORBIDDEN, description=HttpExceptionResponse::ONLY_FOR_FOODSAVER)
 	 *
 	 * @Rest\QueryParam(name="teamStatus")
 	 * @Rest\QueryParam(name="cooperationStatus")
@@ -176,7 +189,12 @@ class MapRestController extends AbstractFOSRestController
 	/**
 	 * Returns the store filters.
 	 *
-	 * @OA\Response(response="401", description="Not logged in.")
+	 * @OA\Response(
+	 * 		response=HttpCode::OK,
+	 * 		description=HttpExceptionResponse::SUCCESS
+	 * )
+	 * @OA\Response(response=HttpCode::UNAUTHORIZED, description=HttpExceptionResponse::NOT_LOGGED_IN)
+	 * @OA\Response(response=HttpCode::FORBIDDEN, description=HttpExceptionResponse::ONLY_FOR_FOODSAVER)
 	 *
 	 * @OA\Tag(name="map")
 	 * @Rest\Get("map/filters")

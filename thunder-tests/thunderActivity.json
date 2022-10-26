@@ -1,0 +1,58 @@
+[
+  {
+    "_id": "1294a8e1-c297-49f1-8885-d995c194dbf0",
+    "colId": "history",
+    "containerId": "",
+    "name": "https://18080-foodsharing-foodsharing-ix2xlwejrtq.ws-eu72.gitpod.io/api/map/50/10/stores",
+    "url": "https://18080-foodsharing-foodsharing-ix2xlwejrtq.ws-eu72.gitpod.io/api/map/50/10/stores",
+    "method": "GET",
+    "sortNum": 0,
+    "created": "2022-10-26T08:03:03.556Z",
+    "modified": "2022-10-26T08:47:13.291Z",
+    "headers": [],
+    "params": [],
+    "tests": []
+  },
+  {
+    "_id": "254ad97a-4065-4c71-80a2-ce5f55f97e76",
+    "colId": "history",
+    "containerId": "",
+    "name": "https://18080-foodsharing-foodsharing-ix2xlwejrtq.ws-eu72.gitpod.io/api/map/50/10/stores/1500",
+    "url": "https://18080-foodsharing-foodsharing-ix2xlwejrtq.ws-eu72.gitpod.io/api/map/50/10/stores/1500",
+    "method": "GET",
+    "sortNum": 0,
+    "created": "2022-10-26T08:47:15.889Z",
+    "modified": "2022-10-26T08:47:16.020Z",
+    "headers": [],
+    "params": [],
+    "tests": []
+  },
+  {
+    "_id": "0a77d4b8-621b-4538-878b-1a7448474a3c",
+    "colId": "history",
+    "containerId": "",
+    "name": "https://18080-foodsharing-foodsharing-ix2xlwejrtq.ws-eu72.gitpod.io/api/map/50/10/stores/100",
+    "url": "https://18080-foodsharing-foodsharing-ix2xlwejrtq.ws-eu72.gitpod.io/api/map/50/10/stores/100",
+    "method": "GET",
+    "sortNum": 0,
+    "created": "2022-10-26T08:47:18.881Z",
+    "modified": "2022-10-26T08:47:19.012Z",
+    "headers": [],
+    "params": [],
+    "tests": []
+  },
+  {
+    "_id": "c6b6c3f0-33c0-4ed8-8a9b-92c02bf63673",
+    "colId": "history",
+    "containerId": "",
+    "name": "https://18080-foodsharing-foodsharing-ix2xlwejrtq.ws-eu72.gitpod.io/api/map/50/10/stores/150",
+    "url": "https://18080-foodsharing-foodsharing-ix2xlwejrtq.ws-eu72.gitpod.io/api/map/50/10/stores/150",
+    "method": "GET",
+    "sortNum": 0,
+    "created": "2022-10-26T08:47:21.792Z",
+    "modified": "2022-10-26T08:47:21.892Z",
+    "headers": [],
+    "params": [],
+    "tests": []
+  }
+]
