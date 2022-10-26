@@ -4,8 +4,11 @@ namespace Foodsharing\Modules\Map;
 
 use Foodsharing\Modules\Core\BaseGateway;
 use Foodsharing\Modules\Core\Database;
+use Foodsharing\Modules\Core\DBConstants\Map\MapMarkerType;
 use Foodsharing\Modules\Core\DBConstants\Region\RegionPinStatus;
 use Foodsharing\Modules\Map\DTO\MapMarker;
+use Foodsharing\RestApi\Models\Map\FilterModel;
+use Foodsharing\RestApi\Models\Map\StoreFilterModel;
 
 class MapGateway extends BaseGateway
 {
@@ -15,65 +18,51 @@ class MapGateway extends BaseGateway
 		parent::__construct($db);
 	}
 
-	public function getStoreLocation(int $storeId): array
-	{
-		return $this->db->fetchByCriteria('fs_betrieb', ['lat', 'lon'], ['id' => $storeId]);
-	}
-
-	public function getFoodsaverLocation(int $foodsaverId): array
-	{
-		return $this->db->fetchByCriteria('fs_foodsaver', ['lat', 'lon'], ['id' => $foodsaverId]);
-	}
-
 	public function getBasketMarkers(): array
 	{
-		$markers = $this->db->fetchAllByCriteria('fs_basket', ['id', 'lat', 'lon'], [
-			'status' => 1
-		]);
+		$baskets = $this->db->fetchAllByCriteria('fs_basket', ['id', 'lat', 'lon'], ['status' => 1]);
 
-		return array_map(function ($x) {
-			return MapMarker::create($x['id'], $x['lat'], $x['lon']);
-		}, $markers);
+		return array_map(fn ($row) => MapMarker::createFromArray($row, MapMarkerType::FOODBASKET), $baskets);
 	}
 
 	public function getFoodSharePointMarkers(): array
 	{
-		$markers = $this->db->fetchAllByCriteria('fs_fairteiler', ['id', 'lat', 'lon', 'bezirk_id'], [
-			'status' => 1,
-			'lat !=' => ''
-		]);
+		$foodSharingPoints = $this->db->fetchAllByCriteria('fs_fairteiler', ['id', 'lat', 'lon', 'bezirk_id'], ['status' => 1, 'lat !=' => '']);
 
-		return array_map(function ($x) {
-			return MapMarker::create($x['id'], $x['lat'], $x['lon'], $x['bezirk_id']);
-		}, $markers);
+		return array_map(fn ($row) => MapMarker::createFromArray($row, MapMarkerType::FOODSHARINGPOINT), $foodSharingPoints);
 	}
 
 	public function getCommunityMarkers(): array
 	{
-		$markers = $this->db->fetchAllByCriteria('fs_region_pin', ['region_id', 'lat', 'lon'], [
-			'lat !=' => '',
-			'status' => RegionPinStatus::ACTIVE
-		]);
+		$communities = $this->db->fetchAllByCriteria('fs_region_pin', ['region_id', 'lat', 'lon'], ['lat !=' => '', 'status' => RegionPinStatus::ACTIVE]);
 
-		return array_map(function ($x) {
-			return MapMarker::create($x['region_id'], $x['lat'], $x['lon']);
-		}, $markers);
+		return array_map(fn ($row) => MapMarker::createFromArray($row, MapMarkerType::COMMUNITY), $communities);
 	}
 
-	public function getStoreMarkers(array $excludedStoreTypes, array $teamStatus): array
+	public function getStoreMarkers(StoreFilterModel $filter): array
 	{
-		$query = 'SELECT id, lat, lon FROM fs_betrieb WHERE lat != ""';
+		$query = "
+				SELECT
+					id,
+					name,
+					lat,
+					lon
+				FROM
+					fs_betrieb
+				WHERE
+					ST_Distance_Sphere(point(lon, lat), POINT({$filter->lon}, {$filter->lat})) / 1000.0 <= {$filter->distance_in_km}
+		";
 
-		if (!empty($excludedStoreTypes)) {
-			$query .= ' AND betrieb_status_id NOT IN(' . implode(',', $excludedStoreTypes) . ')';
+		if (!empty($filter->cooperationStatus)) {
+			$query .= ' AND betrieb_status_id IN(' . implode(',', $filter->cooperationStatus) . ')';
 		}
-		if (!empty($teamStatus)) {
-			$query .= ' AND team_status IN (' . implode(',', $teamStatus) . ')';
+		if (!empty($filter->teamStatus)) {
+			$query .= ' AND team_status IN (' . implode(',', $filter->teamStatus) . ')';
 		}
-		$markers = $this->db->fetchAll($query);
 
-		return array_map(function ($x) {
-			return MapMarker::create($x['id'], $x['lat'], $x['lon']);
-		}, $markers);
+		$stores = $this->db->fetchAll($query);
+
+		// return $stores;
+		return array_map(fn ($row) => MapMarker::createFromArray($row, MapMarkerType::STORE), $stores);
 	}
 }

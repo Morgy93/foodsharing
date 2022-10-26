@@ -84,3 +84,4 @@ vscode:
     - bmewburn.vscode-intelephense-client
     - eamodio.gitlens
     - felixfbecker.php-debug
+    - rangav.vscode-thunder-client

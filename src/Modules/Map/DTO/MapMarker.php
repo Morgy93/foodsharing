@@ -2,36 +2,43 @@
 
 namespace Foodsharing\Modules\Map\DTO;
 
+use Foodsharing\Modules\Core\DBConstants\Map\MapMarkerType;
+
 class MapMarker
 {
 	/**
-	 * ID of the object with which the marker is associated.
+	 * Identifer of the MapMarker.
 	 */
-	public int $id;
+	public int $id = 0;
 
 	/**
-	 * Coordinates of the marker.
+	 * Label for a MapMarker.
 	 */
-	public float $lat;
-	public float $lon;
+	public string $name = '';
 
 	/**
-	 * The region in which the object of this marker is.
+	 * Location for a MapMarker.
 	 */
-	public ?int $regionId;
+	public float $lat = 0.0;
+	public float $lon = 0.0;
 
-	public static function create(
-		int $id,
-		float $lat,
-		float $lon,
-		?int $regionId = null
-	): MapMarker {
-		$marker = new MapMarker();
-		$marker->id = $id;
-		$marker->lat = $lat;
-		$marker->lon = $lon;
-		$marker->regionId = $regionId;
+	/**
+	 * @see MapMarkerType
+	 */
+	public ?int $type = MapMarkerType::UNDEFINED;
 
-		return $marker;
+	/**
+	 * Creates a unit out of an array representation like the Database select.
+	 */
+	public static function createFromArray($queryResult, $type): MapMarker
+	{
+		$unit = new MapMarker();
+		$unit->id = $queryResult['id'] || $queryResult['bezirk_id'];
+		$unit->name = $queryResult['name'];
+		$unit->lat = $queryResult['lat'];
+		$unit->lon = $queryResult['lon'];
+		$unit->type = $type;
+
+		return $unit;
 	}
 }
