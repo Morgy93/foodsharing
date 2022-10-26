@@ -110,13 +110,12 @@ services:
     container_name: foodsharing_db
     # Prebuild custom image, with pinned version (https://gitlab.com/foodsharing-dev/images/-/blob/master/db/dev/Dockerfile)
     # To edit the database configuration (https://gitlab.com/foodsharing-dev/images/-/blob/master/db/dev/)
-    image: mariadb:10.9.3
+    image: registry.gitlab.com/foodsharing-dev/images/db/dev:10.9.3
     environment:
       # - MYSQL_ROOT_PASSWORD=root
       - TZ=Europe/Berlin
     volumes:
       - database:/var/lib/mysql-tmpfs # based on the image configuration
-      - ./conf/db/db.conf:/etc/mysql/mariadb.conf.d/dev.cnf
     # expose:
     #   - 3306
     # ports:
