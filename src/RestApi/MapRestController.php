@@ -56,7 +56,7 @@ class MapRestController extends AbstractFOSRestController
 	 * @Rest\QueryParam(
 	 *  name="distanceInKm",
 	 *  default=MapConstants::DEFAULT_SEARCH_DISTANCE,
-	 *  description="Defines the search radius in kilometers."
+	 *  description="Defines the search distance in kilometers."
 	 * )
 	 *
 	 * @OA\Tag(name="map")
@@ -99,7 +99,7 @@ class MapRestController extends AbstractFOSRestController
 	 * @Rest\QueryParam(
 	 *  name="distanceInKm",
 	 *  default=MapConstants::DEFAULT_SEARCH_DISTANCE,
-	 *  description="Defines the search radius in kilometers."
+	 *  description="Defines the search distance in kilometers."
 	 * )
 	 *
 	 * @OA\Tag(name="map")
@@ -142,7 +142,7 @@ class MapRestController extends AbstractFOSRestController
 	 * @Rest\QueryParam(
 	 *  name="distanceInKm",
 	 *  default=MapConstants::DEFAULT_SEARCH_DISTANCE,
-	 *  description="Defines the search radius in kilometers."
+	 *  description="Defines the search distance in kilometers."
 	 * )
 	 *
 	 * @OA\Tag(name="map")
@@ -199,7 +199,7 @@ class MapRestController extends AbstractFOSRestController
 	 * @Rest\QueryParam(
 	 *  name="distanceInKm",
 	 *  default=MapConstants::DEFAULT_SEARCH_DISTANCE,
-	 *  description="Defines the search radius in kilometers."
+	 *  description="Defines the search distance in kilometers."
 	 * )
 	 *
 	 * @OA\Tag(name="map")
