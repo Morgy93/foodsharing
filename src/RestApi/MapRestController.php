@@ -89,7 +89,7 @@ class MapRestController extends AbstractFOSRestController
 	}
 
 	/**
-	 * Returns the coordinates of filteres stores.
+	 * Returns a list with coordinates of foodsharing points.
 	 *
 	 * @OA\Response(
 	 * 		response=HttpCode::OK,
@@ -137,7 +137,7 @@ class MapRestController extends AbstractFOSRestController
 	}
 
 	/**
-	 * Returns the coordinates of filteres stores.
+	 * Returns a list with coordinates of communities.
 	 *
 	 * @OA\Response(
 	 * 		response=HttpCode::OK,
@@ -185,7 +185,7 @@ class MapRestController extends AbstractFOSRestController
 	}
 
 	/**
-	 * Returns the coordinates of filteres stores.
+	 * Returns the coordinates of stores or filtered stores.
 	 *
 	 * @OA\Response(
 	 * 		response=HttpCode::OK,
@@ -258,7 +258,7 @@ class MapRestController extends AbstractFOSRestController
 	}
 
 	/**
-	 * Returns the store filters.
+	 * Returns map filters.
 	 *
 	 * @OA\Response(
 	 * 		response=HttpCode::OK,
