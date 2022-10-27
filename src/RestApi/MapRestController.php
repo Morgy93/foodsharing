@@ -41,7 +41,7 @@ class MapRestController extends AbstractFOSRestController
 	}
 
 	/**
-	 * Returns a list with coordinates of foodbaskets.
+	 * Returns a list with coordinates of foodbaskets, limited by distance of coordinates.
 	 *
 	 * @OA\Response(
 	 * 		response=HttpCode::OK,
@@ -56,6 +56,7 @@ class MapRestController extends AbstractFOSRestController
 	 *  name="d",
 	 *  default=MapConstants::DEFAULT_SEARCH_DISTANCE,
 	 *  description="Defines the search distance in kilometers.",
+	 * 	requirements="\d+",
 	 *  nullable=true
 	 * )
 	 *
@@ -63,6 +64,7 @@ class MapRestController extends AbstractFOSRestController
 	 *  name="cp",
 	 *  default=MapConstants::CENTER_GERMANY,
 	 *  description="Defines the search center point with `[latitude, longitude]`.",
+	 * 	requirements="[+-]?((\d+\.?\d*)|(\.\d+)),[+-]?((\d+\.?\d*)|(\.\d+))",
 	 *  nullable=true
 	 * )
 	 *
@@ -89,7 +91,7 @@ class MapRestController extends AbstractFOSRestController
 	}
 
 	/**
-	 * Returns a list with coordinates of foodsharing points.
+	 * Returns a list with coordinates of foodsharing points, limited by distance of coordinates.
 	 *
 	 * @OA\Response(
 	 * 		response=HttpCode::OK,
@@ -104,6 +106,7 @@ class MapRestController extends AbstractFOSRestController
 	 *  name="d",
 	 *  default=MapConstants::DEFAULT_SEARCH_DISTANCE,
 	 *  description="Defines the search distance in kilometers.",
+	 * 	requirements="\d+",
 	 *  nullable=true
 	 * )
 	 *
@@ -111,6 +114,7 @@ class MapRestController extends AbstractFOSRestController
 	 *  name="cp",
 	 *  default=MapConstants::CENTER_GERMANY,
 	 *  description="Defines the search center point with `[latitude, longitude]`.",
+	 * 	requirements="[+-]?((\d+\.?\d*)|(\.\d+)),[+-]?((\d+\.?\d*)|(\.\d+))",
 	 *  nullable=true
 	 * )
 	 *
@@ -137,7 +141,7 @@ class MapRestController extends AbstractFOSRestController
 	}
 
 	/**
-	 * Returns a list with coordinates of communities.
+	 * Returns a list with coordinates of communities, limited by distance of coordinates.
 	 *
 	 * @OA\Response(
 	 * 		response=HttpCode::OK,
@@ -152,6 +156,7 @@ class MapRestController extends AbstractFOSRestController
 	 *  name="d",
 	 *  default=MapConstants::DEFAULT_SEARCH_DISTANCE,
 	 *  description="Defines the search distance in kilometers.",
+	 * 	requirements="\d+",
 	 *  nullable=true
 	 * )
 	 *
@@ -159,6 +164,7 @@ class MapRestController extends AbstractFOSRestController
 	 *  name="cp",
 	 *  default=MapConstants::CENTER_GERMANY,
 	 *  description="Defines the search center point with `[latitude, longitude]`.",
+	 * 	requirements="[+-]?((\d+\.?\d*)|(\.\d+)),[+-]?((\d+\.?\d*)|(\.\d+))",
 	 *  nullable=true
 	 * )
 	 *
@@ -185,7 +191,7 @@ class MapRestController extends AbstractFOSRestController
 	}
 
 	/**
-	 * Returns the coordinates of stores or filtered stores.
+	 * Returns the coordinates of stores or filtered stores based, limited by distance of coordinates.
 	 *
 	 * @OA\Response(
 	 * 		response=HttpCode::OK,
@@ -215,6 +221,7 @@ class MapRestController extends AbstractFOSRestController
 	 *  name="d",
 	 *  default=MapConstants::DEFAULT_SEARCH_DISTANCE,
 	 *  description="Defines the search distance in kilometers.",
+	 * 	requirements="\d+",
 	 *  nullable=true
 	 * )
 	 *
@@ -222,6 +229,7 @@ class MapRestController extends AbstractFOSRestController
 	 *  name="cp",
 	 *  default=MapConstants::CENTER_GERMANY,
 	 *  description="Defines the search center point with `[latitude, longitude]`.",
+	 * 	requirements="[+-]?((\d+\.?\d*)|(\.\d+)),[+-]?((\d+\.?\d*)|(\.\d+))",
 	 *  nullable=true
 	 * )
 	 *
@@ -232,16 +240,16 @@ class MapRestController extends AbstractFOSRestController
 		ValidatorInterface $validator,
 		ParamFetcher $paramFetcher,
 	): Response {
-		// if (!$this->session->id()) {
-		// 	throw new UnauthorizedHttpException('', HttpExceptionResponse::NOT_LOGGED_IN);
-		// }
+		if (!$this->session->id()) {
+			throw new UnauthorizedHttpException('', HttpExceptionResponse::NOT_LOGGED_IN);
+		}
 
-		// if (!$this->session->mayRole(Role::FOODSAVER)) {
-		// 	throw new AccessDeniedHttpException(HttpExceptionResponse::ONLY_FOR_FOODSAVER);
-		// }
+		if (!$this->session->mayRole(Role::FOODSAVER)) {
+			throw new AccessDeniedHttpException(HttpExceptionResponse::ONLY_FOR_FOODSAVER);
+		}
 
 		// QueryParams
-		[$latitude, $longitude] = explode(',', $paramFetcher->get('cp') ?? MapConstants::CENTER_GERMANY);
+		[$latitude, $longitude] = explode(',', $paramFetcher->get('cp'));
 		$distance = $paramFetcher->get('d') ?? MapConstants::DEFAULT_SEARCH_DISTANCE;
 		$teamStatus = json_decode($paramFetcher->get('teamStatus')) ?? [];
 		$cooperationStatus = json_decode($paramFetcher->get('cooperationStatus')) ?? [];
@@ -264,26 +272,21 @@ class MapRestController extends AbstractFOSRestController
 	 * 		response=HttpCode::OK,
 	 * 		description=HttpExceptionResponse::SUCCESS
 	 * )
-	 * @OA\Response(response=HttpCode::UNAUTHORIZED, description=HttpExceptionResponse::NOT_LOGGED_IN)
-	 * @OA\Response(response=HttpCode::FORBIDDEN, description=HttpExceptionResponse::ONLY_FOR_FOODSAVER)
 	 *
 	 * @OA\Tag(name="map")
 	 * @Rest\Get("map/filters")
 	 */
 	public function getFilters(): Response
 	{
-		// if (!$this->session->id()) {
-		// 	throw new UnauthorizedHttpException('', HttpExceptionResponse::NOT_LOGGED_IN);
-		// }
+		$filters = [];
+		if ($this->session->mayRole(Role::FOODSAVER)) {
+			array_push($filters, [
+				'cooperationStatus' => CooperationStatus::getConstants(),
+				'teamStatus' => TeamStatus::getConstants()
+			]);
+		}
 
-		// if (!$this->session->mayRole(Role::FOODSAVER)) {
-		// 	throw new AccessDeniedHttpException(HttpExceptionResponse::ONLY_FOR_FOODSAVER);
-		// }
-
-		return $this->handleView($this->view([
-			'cooperationStatus' => CooperationStatus::getConstants(),
-			'teamStatus' => TeamStatus::getConstants()
-		], 200));
+		return $this->handleView($this->view($filters, 200));
 	}
 
 	/**
