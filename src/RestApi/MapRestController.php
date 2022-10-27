@@ -41,7 +41,7 @@ class MapRestController extends AbstractFOSRestController
 	}
 
 	/**
-	 * Returns the coordinates of filteres stores.
+	 * Returns a list with coordinates of foodbaskets.
 	 *
 	 * @OA\Response(
 	 * 		response=HttpCode::OK,
@@ -51,37 +51,38 @@ class MapRestController extends AbstractFOSRestController
 	 *        @OA\Items(ref=@Model(type=FoodbasketMapMarker::class))
 	 *      )
 	 * )
-	 * @OA\Response(response=HttpCode::UNAUTHORIZED, description=HttpExceptionResponse::NOT_LOGGED_IN)
 	 *
 	 * @Rest\QueryParam(
-	 *  name="distanceInKm",
+	 *  name="d",
 	 *  default=MapConstants::DEFAULT_SEARCH_DISTANCE,
-	 *  description="Defines the search distance in kilometers."
+	 *  description="Defines the search distance in kilometers.",
+	 *  nullable=true
+	 * )
+	 *
+	 * @Rest\QueryParam(
+	 *  name="cp",
+	 *  default=MapConstants::CENTER_GERMANY,
+	 *  description="Defines the search center point with `[latitude, longitude]`.",
+	 *  nullable=true
 	 * )
 	 *
 	 * @OA\Tag(name="map")
-	 * @Rest\Get("map/{latitude}/{longitude}/foodbaskets",
-	 *  requirements={
-	 *   "latitude" = "[+-]?((\d+\.?\d*)|(\.\d+))",
-	 *   "longitude" = "[+-]?((\d+\.?\d*)|(\.\d+))"
-	 *  })
+	 * @Rest\Get("marker/foodbaskets")
 	 */
 	public function getFoodBasketMarkers(
-		float $latitude,
-		float $longitude,
 		ValidatorInterface $validator,
 		ParamFetcher $paramFetcher,
 	): Response {
-		// if (!$this->session->id()) {
-		// 	throw new UnauthorizedHttpException('', HttpExceptionResponse::NOT_LOGGED_IN);
-		// }
+		// QueryParams
+		[$latitude, $longitude] = explode(',', $paramFetcher->get('cp') ?? MapConstants::CENTER_GERMANY);
+		$distance = $paramFetcher->get('d') ?? MapConstants::DEFAULT_SEARCH_DISTANCE;
 
-		$distanceInKm = json_decode($paramFetcher->get('distanceInKm')) ?? MapConstants::DEFAULT_SEARCH_DISTANCE;
-
-		$filter = new FilterModel($latitude, $longitude, $distanceInKm);
+		// Filtering
+		$filter = new FilterModel($latitude, $longitude, $distance);
 		$errors = $validator->validate($filter);
 		$this->throwBadRequestExceptionOnError($errors);
 
+		// Get and send markers
 		$markers = $this->mapGateway->getFoodBasketMarkers($filter);
 
 		return $this->handleView($this->view([$filter, $markers], 200));
@@ -98,37 +99,38 @@ class MapRestController extends AbstractFOSRestController
 	 *        @OA\Items(ref=@Model(type=FoodSharePointMapMarker::class))
 	 *      )
 	 * )
-	 * @OA\Response(response=HttpCode::UNAUTHORIZED, description=HttpExceptionResponse::NOT_LOGGED_IN)
 	 *
 	 * @Rest\QueryParam(
-	 *  name="distanceInKm",
+	 *  name="d",
 	 *  default=MapConstants::DEFAULT_SEARCH_DISTANCE,
-	 *  description="Defines the search distance in kilometers."
+	 *  description="Defines the search distance in kilometers.",
+	 *  nullable=true
+	 * )
+	 *
+	 * @Rest\QueryParam(
+	 *  name="cp",
+	 *  default=MapConstants::CENTER_GERMANY,
+	 *  description="Defines the search center point with `[latitude, longitude]`.",
+	 *  nullable=true
 	 * )
 	 *
 	 * @OA\Tag(name="map")
-	 * @Rest\Get("map/{latitude}/{longitude}/foodsharepoints",
-	 *  requirements={
-	 *   "latitude" = "[+-]?((\d+\.?\d*)|(\.\d+))",
-	 *   "longitude" = "[+-]?((\d+\.?\d*)|(\.\d+))"
-	 *  })
+	 * @Rest\Get("marker/foodsharepoints")
 	 */
 	public function getFoodSharePointMarkers(
-		float $latitude,
-		float $longitude,
 		ValidatorInterface $validator,
 		ParamFetcher $paramFetcher,
 	): Response {
-		// if (!$this->session->id()) {
-		// 	throw new UnauthorizedHttpException('', HttpExceptionResponse::NOT_LOGGED_IN);
-		// }
+		// QueryParams
+		[$latitude, $longitude] = explode(',', $paramFetcher->get('cp') ?? MapConstants::CENTER_GERMANY);
+		$distance = $paramFetcher->get('d') ?? MapConstants::DEFAULT_SEARCH_DISTANCE;
 
-		$distanceInKm = json_decode($paramFetcher->get('distanceInKm')) ?? MapConstants::DEFAULT_SEARCH_DISTANCE;
-
-		$filter = new FilterModel($latitude, $longitude, $distanceInKm);
+		// Filtering
+		$filter = new FilterModel($latitude, $longitude, $distance);
 		$errors = $validator->validate($filter);
 		$this->throwBadRequestExceptionOnError($errors);
 
+		// Get and send markers
 		$markers = $this->mapGateway->getFoodSharePointMarkers($filter);
 
 		return $this->handleView($this->view([$filter, $markers], 200));
@@ -145,37 +147,38 @@ class MapRestController extends AbstractFOSRestController
 	 *        @OA\Items(ref=@Model(type=CommunityMapMarker::class))
 	 *      )
 	 * )
-	 * @OA\Response(response=HttpCode::UNAUTHORIZED, description=HttpExceptionResponse::NOT_LOGGED_IN)
 	 *
 	 * @Rest\QueryParam(
-	 *  name="distanceInKm",
+	 *  name="d",
 	 *  default=MapConstants::DEFAULT_SEARCH_DISTANCE,
-	 *  description="Defines the search distance in kilometers."
+	 *  description="Defines the search distance in kilometers.",
+	 *  nullable=true
+	 * )
+	 *
+	 * @Rest\QueryParam(
+	 *  name="cp",
+	 *  default=MapConstants::CENTER_GERMANY,
+	 *  description="Defines the search center point with `[latitude, longitude]`.",
+	 *  nullable=true
 	 * )
 	 *
 	 * @OA\Tag(name="map")
-	 * @Rest\Get("map/{latitude}/{longitude}/communities",
-	 *  requirements={
-	 *   "latitude" = "[+-]?((\d+\.?\d*)|(\.\d+))",
-	 *   "longitude" = "[+-]?((\d+\.?\d*)|(\.\d+))"
-	 *  })
+	 * @Rest\Get("marker/communities")
 	 */
 	public function getCommunityMarkers(
-		float $latitude,
-		float $longitude,
 		ValidatorInterface $validator,
 		ParamFetcher $paramFetcher,
 	): Response {
-		// if (!$this->session->id()) {
-		// 	throw new UnauthorizedHttpException('', HttpExceptionResponse::NOT_LOGGED_IN);
-		// }
+		// QueryParams
+		[$latitude, $longitude] = explode(',', $paramFetcher->get('cp') ?? MapConstants::CENTER_GERMANY);
+		$distance = $paramFetcher->get('d') ?? MapConstants::DEFAULT_SEARCH_DISTANCE;
 
-		$distanceInKm = json_decode($paramFetcher->get('distanceInKm')) ?? MapConstants::DEFAULT_SEARCH_DISTANCE;
-
-		$filter = new FilterModel($latitude, $longitude, $distanceInKm);
+		// Filtering
+		$filter = new FilterModel($latitude, $longitude, $distance);
 		$errors = $validator->validate($filter);
 		$this->throwBadRequestExceptionOnError($errors);
 
+		// Get and send markers
 		$markers = $this->mapGateway->getCommunityMarkers($filter);
 
 		return $this->handleView($this->view([$filter, $markers], 200));
@@ -209,21 +212,23 @@ class MapRestController extends AbstractFOSRestController
 	 * )
 	 *
 	 * @Rest\QueryParam(
-	 *  name="distanceInKm",
+	 *  name="d",
 	 *  default=MapConstants::DEFAULT_SEARCH_DISTANCE,
-	 *  description="Defines the search distance in kilometers."
+	 *  description="Defines the search distance in kilometers.",
+	 *  nullable=true
+	 * )
+	 *
+	 * @Rest\QueryParam(
+	 *  name="cp",
+	 *  default=MapConstants::CENTER_GERMANY,
+	 *  description="Defines the search center point with `[latitude, longitude]`.",
+	 *  nullable=true
 	 * )
 	 *
 	 * @OA\Tag(name="map")
-	 * @Rest\Get("map/{latitude}/{longitude}/stores",
-	 *  requirements={
-	 *   "latitude" = "[+-]?((\d+\.?\d*)|(\.\d+))",
-	 *   "longitude" = "[+-]?((\d+\.?\d*)|(\.\d+))"
-	 *  })
+	 * @Rest\Get("marker/stores")
 	 */
 	public function getStoreMarkers(
-		float $latitude,
-		float $longitude,
 		ValidatorInterface $validator,
 		ParamFetcher $paramFetcher,
 	): Response {
@@ -235,14 +240,18 @@ class MapRestController extends AbstractFOSRestController
 		// 	throw new AccessDeniedHttpException(HttpExceptionResponse::ONLY_FOR_FOODSAVER);
 		// }
 
-		$distanceInKm = json_decode($paramFetcher->get('distanceInKm')) ?? MapConstants::DEFAULT_SEARCH_DISTANCE;
+		// QueryParams
+		[$latitude, $longitude] = explode(',', $paramFetcher->get('cp') ?? MapConstants::CENTER_GERMANY);
+		$distance = $paramFetcher->get('d') ?? MapConstants::DEFAULT_SEARCH_DISTANCE;
 		$teamStatus = json_decode($paramFetcher->get('teamStatus')) ?? [];
 		$cooperationStatus = json_decode($paramFetcher->get('cooperationStatus')) ?? [];
 
-		$filter = new StoreFilterModel($latitude, $longitude, $distanceInKm, $teamStatus, $cooperationStatus);
+		// Filtering
+		$filter = new StoreFilterModel($latitude, $longitude, $distance, $teamStatus, $cooperationStatus);
 		$errors = $validator->validate($filter);
 		$this->throwBadRequestExceptionOnError($errors);
 
+		// Get and send markers
 		$markers = $this->mapGateway->getStoreMarkers($filter);
 
 		return $this->handleView($this->view([$filter, $markers], 200));
@@ -271,12 +280,9 @@ class MapRestController extends AbstractFOSRestController
 		// 	throw new AccessDeniedHttpException(HttpExceptionResponse::ONLY_FOR_FOODSAVER);
 		// }
 
-		$cooperationStatus = CooperationStatus::getConstants();
-		$teamStatus = TeamStatus::getConstants();
-
 		return $this->handleView($this->view([
-			'cooperationStatus' => $cooperationStatus,
-			'teamStatus' => $teamStatus
+			'cooperationStatus' => CooperationStatus::getConstants(),
+			'teamStatus' => TeamStatus::getConstants()
 		], 200));
 	}
 

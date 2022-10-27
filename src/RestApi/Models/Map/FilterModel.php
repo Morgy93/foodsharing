@@ -40,7 +40,7 @@ class FilterModel
 		 *  notInRangeMessage="You must enter a search distance between {{ min }} km and {{ max }} km."
 		 * )
 		 */
-		public int $distanceInKm = MapConstants::DEFAULT_SEARCH_DISTANCE,
+		public int $distance = MapConstants::DEFAULT_SEARCH_DISTANCE,
 	) {
 	}
 }

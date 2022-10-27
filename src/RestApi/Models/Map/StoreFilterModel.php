@@ -14,7 +14,7 @@ class StoreFilterModel extends FilterModel
 	public function __construct(
 		public float $latitude = MapConstants::CENTER_GERMANY_LAT,
 		public float $longitude = MapConstants::CENTER_GERMANY_LON,
-		public int $distanceInKm = MapConstants::DEFAULT_SEARCH_DISTANCE,
+		public int $distance = MapConstants::DEFAULT_SEARCH_DISTANCE,
 
 		/**
 		 * Cooperation status.
@@ -47,6 +47,6 @@ class StoreFilterModel extends FilterModel
 		 */
 		public array $teamStatus = [],
 	) {
-		parent::__construct($latitude, $longitude, $distanceInKm);
+		parent::__construct($latitude, $longitude, $distance);
 	}
 }

@@ -22,7 +22,7 @@ class MapGateway extends BaseGateway
 
 	private function isInRadius(FilterModel|StoreFilterModel $filter): string
 	{
-		return "ST_Distance_Sphere(point(lat, lon), POINT({$filter->latitude}, {$filter->longitude})) / 1000.0 <= {$filter->distanceInKm}";
+		return "ST_Distance_Sphere(point(lat, lon), POINT({$filter->latitude}, {$filter->longitude})) / 1000.0 <= {$filter->distance}";
 	}
 
 	public function getFoodBasketMarkers(FilterModel $filter): array
