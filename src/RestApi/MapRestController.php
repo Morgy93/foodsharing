@@ -205,19 +205,6 @@ class MapRestController extends AbstractFOSRestController
 	 * @OA\Response(response=HttpCode::FORBIDDEN, description=HttpExceptionResponse::ONLY_FOR_FOODSAVER)
 	 *
 	 * @Rest\QueryParam(
-	 *  name="teamStatus",
-	 * 	default="[]",
-	 *  description="An array with status numbers. See response schema."
-	 *
-	 * )
-	 * @Rest\QueryParam(
-	 *  name="cooperationStatus",
-	 * 	default="[]",
-	 *  description="An array with status numbers. See response schema."
-	 *
-	 * )
-	 *
-	 * @Rest\QueryParam(
 	 *  name="d",
 	 *  default=MapConstants::DEFAULT_SEARCH_DISTANCE,
 	 *  description="Defines the search distance in kilometers.",
@@ -231,6 +218,18 @@ class MapRestController extends AbstractFOSRestController
 	 *  description="Defines the search center point with `[latitude, longitude]`.",
 	 * 	requirements="[+-]?((\d+\.?\d*)|(\.\d+)),[+-]?((\d+\.?\d*)|(\.\d+))",
 	 *  nullable=true
+	 * )
+	 *
+	 * @Rest\QueryParam(
+	 *  name="teamStatus",
+	 * 	default="[]",
+	 *  description="An array with status numbers. See response schema."
+	 * )
+	 *
+	 * @Rest\QueryParam(
+	 *  name="cooperationStatus",
+	 * 	default="[]",
+	 *  description="An array with status numbers. See response schema."
 	 * )
 	 *
 	 * @OA\Tag(name="map")
