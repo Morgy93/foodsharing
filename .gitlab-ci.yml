@@ -189,6 +189,7 @@ test:backend:
       alias: selenium
     - name: maildev/maildev
       alias: maildev
+      command: ["bin/maildev",  "--web", "1080", "--smtp", "1025", "--hide-extensions", "STARTTLS"]
     - name: node:16.13.2-alpine3.14
       alias: websocket
       # websocket service runs with code that gets checked out later by the main build job. We use a file to synchronize that, so start websocket service only when that file has been recreated.
