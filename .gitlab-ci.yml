@@ -17,7 +17,7 @@ variables:
 
 .defaults: &defaults
   tags:
-    -saas-linux-large-amd64
+  - saas-linux-large-amd64
   image: registry.gitlab.com/foodsharing-dev/images/ci:8.0.13
 
 
