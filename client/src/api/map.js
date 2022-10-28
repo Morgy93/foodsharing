@@ -1,14 +1,39 @@
 import { get } from './base'
 
-export function getMapMarkers (types = ['baskets'], status) {
+function parametersBuilder ({ lat, lon, distance, teamStatus, cooperationStatus } = {}) {
   const params = new URLSearchParams()
-  types.forEach(t => params.append('types[]=', t))
-  if (status) {
-    status.forEach(s => params.append('status[]=', s))
+
+  if (lat && lon) {
+    params.append('cp', [lat, lon].join(','))
   }
-  return get(`/map/markers?${params}`)
+
+  if (distance) {
+    params.append('d', distance)
+  }
+
+  if (teamStatus) {
+    teamStatus.forEach(s => params.append('teamStatus', s))
+  }
+
+  if (cooperationStatus) {
+    cooperationStatus.forEach(s => params.append('cooperationStatus', s))
+  }
+
+  return params
 }
 
-export function getCommunityBubbleContent (regionId) {
-  return get(`/map/regions/${regionId}`)
+export function getStoreMarkers (args) {
+  return get(`/marker/stores?${parametersBuilder(args)}`)
+}
+
+export function getCommunitiesMarkers (args) {
+  return get(`/marker/communities?${parametersBuilder(args)}`)
+}
+
+export function getFoodbasketsMarkers (args) {
+  return get(`/marker/foodbaskets?${parametersBuilder(args)}`)
+}
+
+export function getFoodsharepointsMarkers (args) {
+  return get(`/marker/foodsharepoints?${parametersBuilder(args)}`)
 }
