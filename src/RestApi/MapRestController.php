@@ -87,7 +87,7 @@ class MapRestController extends AbstractFOSRestController
 		// Get and send markers
 		$markers = $this->mapGateway->getFoodBasketMarkers($filter);
 
-		return $this->handleView($this->view([$filter, $markers], 200));
+		return $this->handleView($this->view($markers, HttpCode::OK));
 	}
 
 	/**
@@ -137,7 +137,7 @@ class MapRestController extends AbstractFOSRestController
 		// Get and send markers
 		$markers = $this->mapGateway->getFoodSharePointMarkers($filter);
 
-		return $this->handleView($this->view([$filter, $markers], 200));
+		return $this->handleView($this->view($markers, HttpCode::OK));
 	}
 
 	/**
@@ -187,7 +187,7 @@ class MapRestController extends AbstractFOSRestController
 		// Get and send markers
 		$markers = $this->mapGateway->getCommunityMarkers($filter);
 
-		return $this->handleView($this->view([$filter, $markers], 200));
+		return $this->handleView($this->view($markers, HttpCode::OK));
 	}
 
 	/**
@@ -261,7 +261,7 @@ class MapRestController extends AbstractFOSRestController
 		// Get and send markers
 		$markers = $this->mapGateway->getStoreMarkers($filter);
 
-		return $this->handleView($this->view([$filter, $markers], 200));
+		return $this->handleView($this->view($markers, HttpCode::OK));
 	}
 
 	/**
@@ -285,7 +285,7 @@ class MapRestController extends AbstractFOSRestController
 			]);
 		}
 
-		return $this->handleView($this->view($filters, 200));
+		return $this->handleView($this->view($filters, HttpCode::OK));
 	}
 
 	/**
