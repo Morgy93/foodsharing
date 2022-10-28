@@ -1,47 +1,34 @@
 import Vue from 'vue'
-import { getMapMarkers } from '@/api/map'
+import { getStoreMarkers, getCommunitiesMarkers, getFoodbasketsMarkers, getFoodsharepointsMarkers } from '@/api/map'
 
 export const store = Vue.observable({
   baskets: [],
   stores: [],
+  store_filters: {},
   communities: [],
   foodshare_points: [],
   modal: {},
 })
 
-function formatMarkerWithType (marker, type) {
-  return marker.map(m => ({
-    ...m,
-    type: type,
-  }))
-}
-
 export const getters = {
   getMarkerModalData () {
     return store.modal
   },
-  getBaskets () {
-    return store.baskets
-  },
-  getStores () {
-    return store.stores
-  },
-  getCommunities () {
-    return store.communities
-  },
-  getFoodsharePoints () {
-    return store.foodshare_points
-  },
-  getMarkers (type, state) {
+  getMarkers (type) {
+    const markers = []
     switch (type) {
       case 'baskets':
-        return getters.getBaskets()
+        markers.push(...store.baskets)
+        break
       case 'stores':
-        return getters.getStores(state)
+        markers.push(...store.stores)
+        break
       case 'communities':
-        return getters.getCommunities()
+        markers.push(...store.communities)
+        break
       case 'foodshare_points':
-        return getters.getFoodsharePoints()
+        markers.push(...store.foodshare_points)
+        break
     }
   },
 }
@@ -50,41 +37,21 @@ export const mutations = {
   setMarkerModalData (data) {
     store.modal = data
   },
-  async fetchByType (type) {
+  async fetchByType (type, options) {
     switch (type) {
       case 'baskets':
-        await mutations.fetchBaskets()
+        store.baskets = await getFoodbasketsMarkers(options)
         break
       case 'stores':
-        await mutations.fetchStores()
+        store.baskets = await getStoreMarkers(options)
         break
       case 'communities':
-        await mutations.fetchCommunities()
+        store.baskets = await getCommunitiesMarkers(options)
         break
       case 'foodshare_points':
-        await mutations.fetchFoodsharePoints()
+        store.baskets = await getFoodsharepointsMarkers(options)
         break
     }
-  },
-  async fetchBaskets () {
-    if (store.baskets.length > 0) return
-    const fetch = await getMapMarkers(['baskets'])
-    store.baskets = formatMarkerWithType(fetch.baskets, 'baskets')
-  },
-  async fetchCommunities () {
-    if (store.communities.length > 0) return
-    const fetch = await getMapMarkers(['communities'])
-    store.communities = formatMarkerWithType(fetch.communities, 'communities')
-  },
-  async fetchFoodsharePoints () {
-    if (store.foodshare_points.length > 0) return
-    const fetch = await getMapMarkers(['fairteiler'])
-    store.foodshare_points = formatMarkerWithType(fetch.fairteiler, 'foodshare_points')
-  },
-  async fetchStores () {
-    if (store.stores.length > 0) return
-    const fetch = await getMapMarkers(['betriebe'])
-    store.stores = formatMarkerWithType(fetch.betriebe, 'stores')
   },
 }
 

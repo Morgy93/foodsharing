@@ -2,32 +2,28 @@
   <div class="map-container">
     <MapDetailsModal />
     <div class="toolbar">
-      <div
+      <label
         v-for="(filter, index) in filteredFilters"
         :key="index"
+        class="toolbar-item"
+        :class="filter.name"
       >
         <input
-          :id="filter.name"
           v-model="selectedFilters"
           class="toolbar-item-input"
-          type="radio"
+          type="checkbox"
           :value=" filter.name"
+          :checked="filter.isActive"
         >
-        <label
-          :for="filter.name"
-          class="toolbar-item"
-          :class="filter.name"
-        >
-          <i
-            class="toolbar-item-icon fas"
-            :class="filter.icon"
-          />
-          <span
-            class="toolbar-item-text"
-            v-html="$i18n(`globals.type.${filter.name}`)"
-          />
-        </label>
-      </div>
+        <i
+          class="toolbar-item-icon fas"
+          :class="filter.icon"
+        />
+        <span
+          class="toolbar-item-text"
+          v-html="$i18n(`globals.type.${filter.name}`)"
+        />
+      </label>
     </div>
     <div
       v-if="loading"
@@ -82,25 +78,29 @@ export default {
           name: 'baskets',
           icon: 'fa-shopping-basket',
           color: 'green',
+          isActive: false,
         },
         {
           name: 'communities',
           icon: 'fa-users',
           color: 'blue',
+          isActive: false,
         },
         {
           name: 'foodshare_points',
           icon: 'fa-recycle',
           color: 'orange',
+          isActive: false,
         },
         {
           name: 'stores',
           icon: 'fa-shopping-cart',
           color: 'red',
+          isActive: false,
           isForFoodsaver: true,
         },
       ],
-      selectedFilters: null,
+      selectedFilters: [],
       options: {
         center: [51, 10],
         zoom: 12,
@@ -132,17 +132,18 @@ export default {
       await this.fetchMarkers(val)
     },
     bounds: {
-      handler (val) {
+      handler () {
         this.renderMarkers()
       },
     },
   },
   async mounted () {
-    Promise.all([await this.setInitialMap(), await this.fetchMarkers()])
+    Promise.all([await this.setInitialMap()])
     await this.setInitialView()
+    L.control.scale().addTo(this.map)
     setTimeout(() => this.map.invalidateSize(true), 100)
 
-    this.map.on('moveend', (e) => {
+    this.map.on('moveend', async () => {
       this.bounds = this.map.getBounds()
     })
   },
@@ -227,8 +228,6 @@ export default {
       try {
         this.progress = 0
         this.loading = true
-        await DataMap.mutations.fetchByType(type, states)
-        this.markers = await DataMap.getters.getMarkers(type, states)
         this.renderMarkers()
       } catch (e) {
         console.error(e)
