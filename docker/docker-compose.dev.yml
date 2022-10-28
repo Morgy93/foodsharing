@@ -73,7 +73,7 @@ services:
   maildev:
     container_name: foodsharing_dev_maildev
     ports:
-      - 18084:80
+      - 18084:1080
 
   # influxdb
   # used for mail sending tracking and server monitoring
