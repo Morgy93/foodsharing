@@ -18,6 +18,7 @@ variables:
 .defaults: &defaults
   tags:
   - shared
+  - linux
   image: registry.gitlab.com/foodsharing-dev/images/ci:8.0.13
 
 
@@ -170,6 +171,7 @@ build:docs:
     - docs
 
 test:backend:
+  tags: [ saas-linux-large-amd64 ]
   interruptible: true
   variables:
     MYSQL_ROOT_PASSWORD: root
@@ -198,7 +200,6 @@ test:backend:
       alias: nginx
     - name: influxdb:1.8
       alias: influxdb
-    - tags: [ saas-linux-large-amd64 ]
 
   # only run tests for MR, not for the target branch. While this might show to be dangerous, it also allows us to
   # deploy without relying on potentially flaky tests
