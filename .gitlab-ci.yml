@@ -170,6 +170,7 @@ build:docs:
     - docs
 
 test:backend:
+  <<: *defaults
   interruptible: true
   variables:
     MYSQL_ROOT_PASSWORD: root
