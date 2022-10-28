@@ -16,9 +16,7 @@ variables:
 
 
 .defaults: &defaults
-  tags:
-  - shared
-  - linux
+  tags: [ saas-linux-large-amd64 ]
   image: registry.gitlab.com/foodsharing-dev/images/ci:8.0.13
 
 
@@ -171,7 +169,6 @@ build:docs:
     - docs
 
 test:backend:
-  tags: [ saas-linux-large-amd64 ]
   interruptible: true
   variables:
     MYSQL_ROOT_PASSWORD: root
