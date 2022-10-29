@@ -10,7 +10,6 @@ use Foodsharing\Utility\EmailHelper;
 use Foodsharing\Utility\FlashMessageHelper;
 use Foodsharing\Utility\PageHelper;
 use Foodsharing\Utility\RouteHelper;
-use Foodsharing\Utility\Sanitizer;
 use Foodsharing\Utility\TranslationHelper;
 use ReflectionClass;
 use Symfony\Contracts\Translation\TranslatorInterface;
@@ -34,9 +33,8 @@ abstract class Control
 	protected RouteHelper $routeHelper;
 	protected TranslationHelper $translationHelper;
 	protected TranslatorInterface $translator;
-	public Sanitizer $sanitizer;
 
-	public function __construct(Sanitizer $sanitizer)
+	public function __construct()
 	{
 		global $container;
 		$this->mem = $container->get(Mem::class);
@@ -50,7 +48,6 @@ abstract class Control
 		$this->flashMessageHelper = $container->get(FlashMessageHelper::class);
 		$this->translationHelper = $container->get(TranslationHelper::class);
 		$this->translator = $container->get('translator'); // TODO TranslatorInterface is an alias
-		$this->sanitizer = $sanitizer;
 
 		$reflection = new ReflectionClass($this);
 		$dir = dirname($reflection->getFileName()) . DIRECTORY_SEPARATOR;
@@ -180,7 +177,7 @@ abstract class Control
 	{
 		if ($date = $this->getPostString($name)) {
 			$date = explode(' ', $date);
-			$date = $this->sanitizer->custom_trim($date[0]);
+			$date = empty($date[0]) ? '' : trim($date[0]);
 			if (!empty($date)) {
 				$date = explode('-', $date);
 				if (count($date) == 3 && (int)$date[0] > 0 && (int)$date[1] > 0 && (int)$date[2] > 0) {
@@ -208,7 +205,7 @@ abstract class Control
 	{
 		if ($val = $this->getPost($name)) {
 			$val = strip_tags($val);
-			$val = $this->sanitizer->custom_trim($val);
+			$val = empty($val) ? '' : trim($val);
 
 			if (!empty($val)) {
 				return $val;
@@ -221,7 +218,7 @@ abstract class Control
 	public function getPostInt($name)
 	{
 		if ($val = $this->getPost($name)) {
-			$val = $this->sanitizer->custom_trim($val);
+			$val = empty($val) ? '' : trim($val);
 
 			return (int)$val;
 		}
