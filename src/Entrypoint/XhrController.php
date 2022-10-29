@@ -12,6 +12,7 @@ use Foodsharing\Modules\Core\InfluxMetrics;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
+use Foodsharing\Utility\Sanitizer;
 
 class XhrController extends AbstractController
 {
@@ -37,6 +38,7 @@ class XhrController extends AbstractController
 		// 'delPost',
 		// 'abortEmail',
 	];
+	private Sanitizer $sanitizer;
 
 	/**
 	 * @DisableCsrfProtection CSRF Protection (originally done for the REST API)
@@ -50,9 +52,11 @@ class XhrController extends AbstractController
 		Session $session,
 		Mem $mem,
 		InfluxMetrics $influxdb,
-		XhrMethods $xhr
+		XhrMethods $xhr,
+		Sanitizer $sanitizer
 	): Response {
 		$session->initIfCookieExists();
+		$this->sanitizer = $sanitizer;
 
 		// is this actually used anywhere? (prod?)
 		global $g_page_cache;
@@ -98,7 +102,7 @@ class XhrController extends AbstractController
 			return $response;
 		}
 
-		if (is_string($page) && (!trim($page) || $page[0] == '{' || $page[0] == '[')) {
+		if (is_string($page) && (!$this->sanitizer->custom_trim($page) || $page[0] == '{' || $page[0] == '[')) {
 			// just assume it's JSON, to prevent the browser from interpreting it as
 			// HTML, which could result in XSS possibilities
 			$response->headers->set('Content-Type', 'application/json');

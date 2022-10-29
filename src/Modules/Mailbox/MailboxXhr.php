@@ -47,7 +47,7 @@ class MailboxXhr extends Control
 			$ext = explode('.', $ext);
 			if (count($ext) > 1) {
 				$ext = end($ext);
-				$ext = trim($ext);
+				$ext = $this->sanitizer->custom_trim($ext);
 				$ext = '.' . preg_replace('/[^a-z0-9]/', '', $ext);
 			} else {
 				$ext = '';
@@ -167,7 +167,7 @@ class MailboxXhr extends Control
 			$message = $this->mailboxGateway->getMessage($_GET['mid']);
 			$sender = json_decode($message['sender'], true, 512, JSON_THROW_ON_ERROR + JSON_INVALID_UTF8_IGNORE);
 			if (isset($sender['mailbox'], $sender['host']) && $sender != null) {
-				$subject = 'Re: ' . trim(str_replace(['Re:', 'RE:', 're:', 'aw:', 'Aw:', 'AW:'], '', $message['subject']));
+				$subject = 'Re: ' . $this->sanitizer->custom_trim(str_replace(['Re:', 'RE:', 're:', 'aw:', 'Aw:', 'AW:'], '', $message['subject']));
 
 				$data = json_decode(file_get_contents('php://input'), true);
 				$body = strip_tags($data['msg'])
@@ -248,7 +248,7 @@ class MailboxXhr extends Control
 				$an = explode(';', $_POST['an']);
 				$tmp = [];
 				foreach ($an as $a) {
-					$trimmed = trim($a);
+					$trimmed = $this->sanitizer->custom_trim($a);
 					$tmp[$trimmed] = $trimmed;
 				}
 				$an = $tmp;
@@ -367,7 +367,7 @@ class MailboxXhr extends Control
 		if ($this->mailboxPermissions->mayMailbox($this->mailboxGateway->getMailboxId($_GET['id']))) {
 			$mail = $this->mailboxGateway->getMessage($_GET['id']);
 			$this->mailboxGateway->setRead($_GET['id'], 1);
-			$mail['attach'] = trim($mail['attach']);
+			$mail['attach'] = $this->sanitizer->custom_trim($mail['attach']);
 			if (!empty($mail['attach'])) {
 				$mail['attach'] = json_decode($mail['attach'], true);
 			}

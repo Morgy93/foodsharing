@@ -137,7 +137,7 @@ class EmailControl extends Control
 						$arr = explode(';', $fs);
 
 						foreach ($arr as $y => $a) {
-							$arr[$y] = trim($a);
+							$arr[$y] = $this->sanitizer->custom_trim($a);
 						}
 
 						$name = '';

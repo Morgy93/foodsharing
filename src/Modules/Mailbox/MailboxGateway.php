@@ -6,6 +6,7 @@ use Exception;
 use Foodsharing\Lib\Session;
 use Foodsharing\Modules\Core\BaseGateway;
 
+
 class MailboxGateway extends BaseGateway
 {
 	public function getMailboxname(int $mailbox_id)
@@ -94,7 +95,7 @@ class MailboxGateway extends BaseGateway
 		return $this->db->fetchValue(
 			'SELECT COUNT(*) FROM `fs_mailbox_message` m WHERE m.`read` = 0 AND m.`mailbox_id` IN (
 				SELECT r.`mailbox_id`
-				FROM fs_bezirk r 
+				FROM fs_bezirk r
 				JOIN fs_botschafter a
 				ON a.`foodsaver_id` = :fs_id1 AND r.`id` = a.`bezirk_id` AND r.`mailbox_id` IS NOT NULL
 			UNION
@@ -103,7 +104,7 @@ class MailboxGateway extends BaseGateway
 				WHERE f.`id` = :fs_id2 AND f.`mailbox_id` IS NOT NULL
 			UNION
 				SELECT m.`mailbox_id`
-				FROM `fs_mailbox_member` m 
+				FROM `fs_mailbox_member` m
 				WHERE m.`foodsaver_id` = :fs_id3
 			)',
 			[
@@ -323,7 +324,7 @@ class MailboxGateway extends BaseGateway
 	public function filterName(string $mb_name)
 	{
 		$mb_name = strtolower($mb_name);
-		$mb_name = trim($mb_name);
+		$mb_name = custom_trim($mb_name);
 		$mb_name = str_replace(
 			['ä', 'ö', 'ü', 'è', 'à', 'ß', ' ', '-', '/', '\\'],
 			['ae', 'oe', 'ue', 'e', 'a', 'ss', '.', '.', '.', '.'],
@@ -367,7 +368,7 @@ class MailboxGateway extends BaseGateway
 				foreach ($mailboxAdminRegions as $region) {
 					if ($region['mailbox_id'] == 0) {
 						$mb_name = strtolower($region['name']);
-						$mb_name = trim($mb_name);
+						$mb_name = custom_trim($mb_name);
 						$mb_name = str_replace(
 							['ä', 'ö', 'ü', 'è', 'à', 'ß', ' ', '-', '/', '\\'],
 							['ae', 'oe', 'ue', 'e', 'a', 'ss', '.', '.', '.', '.'],
@@ -436,7 +437,7 @@ class MailboxGateway extends BaseGateway
 			$me['nachname'] = $me['nachname'][0];
 
 			$mb_name = strtolower(substr($me['name'], 0, 1) . '.' . $me['nachname']);
-			$mb_name = trim($mb_name);
+			$mb_name = custom_trim($mb_name);
 			$mb_name = str_replace(['ä', 'ö', 'ü', 'è', 'ß', ' '], ['ae', 'oe', 'ue', 'e', 'ss', '.'], $mb_name);
 			$mb_name = preg_replace('/[^0-9a-z\.]/', '', $mb_name) ?? '';
 

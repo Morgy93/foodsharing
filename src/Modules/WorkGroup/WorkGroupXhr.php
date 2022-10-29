@@ -98,10 +98,10 @@ class WorkGroupXhr extends Control
 		$zeit = substr($zeit, 0, 300);
 
 		$content = [
-			$this->translator->trans('group.entermotivation') . "\n===========\n" . trim($motivation),
-			$this->translator->trans('group.enterskills') . "\n============\n" . trim($fahig),
-			$this->translator->trans('group.enterxp') . "\n==========\n" . trim($erfahrung),
-			$this->translator->trans('group.entertime') . "\n=====\n" . trim($zeit),
+			$this->translator->trans('group.entermotivation') . "\n===========\n" . $this->sanitizer->custom_trim($motivation),
+			$this->translator->trans('group.enterskills') . "\n============\n" . $this->sanitizer->custom_trim($fahig),
+			$this->translator->trans('group.enterxp') . "\n==========\n" . $this->sanitizer->custom_trim($erfahrung),
+			$this->translator->trans('group.entertime') . "\n=====\n" . $this->sanitizer->custom_trim($zeit),
 		];
 
 		$this->workGroupGateway->groupApply($groupId, $fsId, implode("\n\n", $content));

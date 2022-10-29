@@ -89,4 +89,9 @@ class Sanitizer
 
 		return $str;
 	}
+
+	public function custom_trim(?string $value): string
+	{
+		return trim($value ?? '');
+	}
 }

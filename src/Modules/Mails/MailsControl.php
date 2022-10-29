@@ -11,6 +11,7 @@ use Foodsharing\Utility\RouteHelper;
 use Symfony\Component\Mailer\MailerInterface;
 use Symfony\Component\Mime\Address;
 use Symfony\Component\Mime\Email;
+use Foodsharing\Utility\Sanitizer;
 
 class MailsControl extends ConsoleControl
 {
@@ -20,6 +21,7 @@ class MailsControl extends ConsoleControl
 	private InfluxMetrics $metrics;
 	private RouteHelper $routeHelper;
 	private EmailHelper $emailHelper;
+	private Sanitizer $sanitizer;
 
 	/*
 	 * todo move this to config file as a constant if this becomes a permanent solution
@@ -33,7 +35,8 @@ class MailsControl extends ConsoleControl
 		InfluxMetrics $metrics,
 		MailerInterface $mailer,
 		RouteHelper $routeHelper,
-		EmailHelper $emailHelper
+		EmailHelper $emailHelper,
+		Sanitizer $sanitizer
 	) {
 		error_reporting(E_ALL);
 		ini_set('display_errors', '1');
@@ -43,6 +46,7 @@ class MailsControl extends ConsoleControl
 		$this->metrics = $metrics;
 		$this->routeHelper = $routeHelper;
 		$this->emailHelper = $emailHelper;
+		$this->sanitizer = $sanitizer;
 		parent::__construct();
 	}
 
@@ -246,7 +250,7 @@ class MailsControl extends ConsoleControl
 
 	private function getMailAddressParts($str)
 	{
-		$parts = explode('@', trim($str));
+		$parts = explode('@', $this->sanitizer->custom_trim($str));
 		if (count($parts) != 2) {
 			throw new \Exception($str . ' is not a valid email address');
 		}
@@ -320,7 +324,7 @@ class MailsControl extends ConsoleControl
 			$email->replyTo(new Address($data['from'][0], $data['from'][1] ?? ''));
 		}
 
-		$subject = preg_replace('/\s+/', ' ', trim($data['subject']));
+		$subject = preg_replace('/\s+/', ' ', $this->sanitizer->custom_trim($data['subject']));
 		if (!$subject) {
 			$subject = '[Leerer Betreff]';
 		}

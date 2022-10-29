@@ -59,7 +59,7 @@ class ReportXhr extends Control
 			if (\is_array($reason)) {
 				$out = '<ul>';
 				foreach ($reason as $r) {
-					$out .= '<li>' . htmlspecialchars(trim($r)) . '</li>';
+					$out .= '<li>' . htmlspecialchars($this->sanitizer->custom_trim($r)) . '</li>';
 				}
 				$out .= '</ul>';
 

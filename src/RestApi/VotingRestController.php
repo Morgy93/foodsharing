@@ -21,6 +21,7 @@ use Symfony\Component\HttpKernel\Exception\AccessDeniedHttpException;
 use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 use Symfony\Component\HttpKernel\Exception\UnauthorizedHttpException;
+use Foodsharing\Utility\Sanitizer;
 
 class VotingRestController extends AbstractFOSRestController
 {
@@ -28,17 +29,21 @@ class VotingRestController extends AbstractFOSRestController
 	private VotingGateway $votingGateway;
 	private VotingPermissions $votingPermissions;
 	private VotingTransactions $votingTransactions;
+	private Sanitizer $sanitizer;
 
 	public function __construct(
 		Session $session,
 		VotingGateway $votingGateway,
 		VotingPermissions $votingPermissions,
-		VotingTransactions $votingTransactions)
+		VotingTransactions $votingTransactions,
+		Sanitizer $sanitizer
+	)
 	{
 		$this->session = $session;
 		$this->votingGateway = $votingGateway;
 		$this->votingPermissions = $votingPermissions;
 		$this->votingTransactions = $votingTransactions;
+		$this->sanitizer = $sanitizer;
 	}
 
 	/**
@@ -159,8 +164,8 @@ class VotingRestController extends AbstractFOSRestController
 
 		// parse and check parameters
 		$poll = new Poll();
-		$poll->name = trim($paramFetcher->get('name'));
-		$poll->description = trim($paramFetcher->get('description'));
+		$poll->name = $this->sanitizer->custom_trim($paramFetcher->get('name'));
+		$poll->description = $this->sanitizer->custom_trim($paramFetcher->get('description'));
 		if (empty($poll->name) || empty($poll->description)) {
 			throw new BadRequestHttpException('empty name or description: ' . $poll->name . ', ' . $poll->description);
 		}
@@ -233,9 +238,9 @@ class VotingRestController extends AbstractFOSRestController
 		// check name and description
 		$name = $paramFetcher->get('name');
 		if (!empty($name)) {
-			$poll->name = trim($name);
+			$poll->name = $this->sanitizer->custom_trim($name);
 		}
-		$description = trim($paramFetcher->get('description'));
+		$description = $this->sanitizer->custom_trim($paramFetcher->get('description'));
 		if (!empty($description)) {
 			$poll->description = $description;
 		}
@@ -260,7 +265,7 @@ class VotingRestController extends AbstractFOSRestController
 	{
 		$options = array_map(function ($x) {
 			$o = new PollOption();
-			$o->text = trim($x);
+			$o->text = $this->sanitizer->custom_trim($x);
 
 			return $o;
 		}, $data);

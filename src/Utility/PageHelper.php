@@ -16,6 +16,7 @@ use Foodsharing\Permissions\ReportPermissions;
 use Foodsharing\Permissions\StorePermissions;
 use Foodsharing\Permissions\WorkGroupPermissions;
 use Twig\Environment;
+use Foodsharing\Utility\Sanitizer;
 
 final class PageHelper
 {
@@ -55,6 +56,7 @@ final class PageHelper
 	private ProfilePermissions $profilePermissions;
 	private Environment $twig;
 	private RegionGateway $regionGateway;
+	private Sanitizer $sanitizer;
 
 	public function __construct(
 		Session $session,
@@ -71,7 +73,8 @@ final class PageHelper
 		NewsletterEmailPermissions $newsletterEmailPermissions,
 		WorkGroupPermissions $workGroupPermissions,
 		ProfilePermissions $profilePermissions,
-		RegionGateway $regionGateway
+		RegionGateway $regionGateway,
+		Sanitizer $sanitizer
 	) {
 		$this->twig = $twig;
 		$this->routeHelper = $routeHelper;
@@ -88,6 +91,7 @@ final class PageHelper
 		$this->workGroupPermissions = $workGroupPermissions;
 		$this->profilePermissions = $profilePermissions;
 		$this->regionGateway = $regionGateway;
+		$this->sanitizer = $sanitizer;
 	}
 
 	public function generateAndGetGlobalViewData(): array
@@ -407,7 +411,7 @@ final class PageHelper
 
 	public function addStyle(string $css): void
 	{
-		$this->add_css .= trim($css);
+		$this->add_css .= $this->sanitizer->custom_trim($css);
 	}
 
 	public function addJs(string $njs): void

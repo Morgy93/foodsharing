@@ -5,11 +5,16 @@ namespace Foodsharing\Modules\Search;
 use Foodsharing\Modules\Core\BaseGateway;
 use Foodsharing\Modules\Core\Database;
 use Foodsharing\Modules\Search\DTO\SearchResult;
+use Foodsharing\Utility\Sanitizer;
 
 class SearchGateway extends BaseGateway
 {
-	public function __construct(Database $db)
+	private Sanitizer $sanitizer;
+
+	public function __construct(Database $db, Sanitizer $sanitizer)
 	{
+		$this->sanitizer = $sanitizer;
+
 		parent::__construct($db);
 	}
 
@@ -73,7 +78,7 @@ class SearchGateway extends BaseGateway
 
 	private function searchTable(string $table, array $fields, string $query, array $show = [], array $regions_to_search = null): array
 	{
-		$q = trim($query);
+		$q = $this->sanitizer->custom_trim($query);
 
 		str_replace([',', ';', '+', '.'], ' ', $q);
 

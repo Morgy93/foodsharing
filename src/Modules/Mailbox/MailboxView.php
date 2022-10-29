@@ -4,6 +4,7 @@ namespace Foodsharing\Modules\Mailbox;
 
 use Foodsharing\Modules\Core\DBConstants\Mailbox\MailboxFolder;
 use Foodsharing\Modules\Core\View;
+use Foodsharing\Utility\Sanitizer;
 
 class MailboxView extends View
 {
@@ -73,7 +74,7 @@ class MailboxView extends View
 	 */
 	private function fixQuotation(string $json): string
 	{
-		$trimmed = trim($json, '"');
+		$trimmed = custom_trim($json, '"');
 
 		return str_replace('\"', '"', $trimmed);
 	}
@@ -149,7 +150,7 @@ class MailboxView extends View
 
 	public function message($mail)
 	{
-		$mail['body'] = trim($mail['body']);
+		$mail['body'] = custom_trim($mail['body']);
 		$von = json_decode($mail['sender'], true);
 
 		$sender = $von['mailbox'] . '@' . $von['host'];

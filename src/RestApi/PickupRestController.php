@@ -32,6 +32,7 @@ use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 use Symfony\Component\HttpKernel\Exception\UnauthorizedHttpException;
 use Symfony\Component\Validator\ConstraintViolationListInterface;
 use Symfony\Component\Validator\Validator\ValidatorInterface;
+use Foodsharing\Utility\Sanitizer;
 
 final class PickupRestController extends AbstractFOSRestController
 {
@@ -44,8 +45,10 @@ final class PickupRestController extends AbstractFOSRestController
 		private ProfilePermissions $profilePermissions,
 		private StoreTransactions $storeTransactions,
 		private MessageTransactions $messageTransactions,
-		private PickupTransactions $pickupTransactions
+		private PickupTransactions $pickupTransactions,
+		private Sanitizer $sanitizer
 	) {
+		$this->sanitizer = $this->sanitizer;
 	}
 
 	/**
@@ -137,7 +140,7 @@ final class PickupRestController extends AbstractFOSRestController
 
 	private function leavePickup(int $storeId, string $pickupDate, int $fsId, string $message = '', bool $sendKickMessage = true)
 	{
-		$message = trim($message);
+		$message = $this->sanitizer->custom_trim($message);
 		$date = TimeHelper::parsePickupDate($pickupDate);
 		if (is_null($date)) {
 			throw new BadRequestHttpException('Invalid date format');

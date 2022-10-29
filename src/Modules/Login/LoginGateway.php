@@ -8,29 +8,33 @@ use Foodsharing\Modules\Legal\LegalGateway;
 use Foodsharing\Modules\Register\DTO\RegisterData;
 use Foodsharing\Utility\EmailHelper;
 use Symfony\Contracts\Translation\TranslatorInterface;
+use Foodsharing\Utility\Sanitizer;
 
 class LoginGateway extends BaseGateway
 {
 	private LegalGateway $legalGateway;
 	private EmailHelper $emailHelper;
 	private TranslatorInterface $translator;
+	private Sanitizer $sanitizer;
 
 	public function __construct(
 		Database $db,
 		LegalGateway $legalGateway,
 		EmailHelper $emailHelper,
-		TranslatorInterface $translator
+		TranslatorInterface $translator,
+		Sanitizer $sanitizer
 	) {
 		$this->legalGateway = $legalGateway;
 		$this->emailHelper = $emailHelper;
 		$this->translator = $translator;
+		$this->sanitizer = $sanitizer;
 
 		parent::__construct($db);
 	}
 
 	public function login(string $email, string $pass)
 	{
-		$email = trim($email);
+		$email = $this->sanitizer->custom_trim($email);
 		if ($this->db->exists('fs_email_blacklist', ['email' => $email])) {
 			return null;
 		}
@@ -60,7 +64,7 @@ class LoginGateway extends BaseGateway
 	 */
 	public function checkClient(string $email, $pass = false)
 	{
-		$email = trim($email);
+		$email = $this->sanitizer->custom_trim($email);
 		if (strlen($email) < 2 || strlen($pass) < 1) {
 			return false;
 		}

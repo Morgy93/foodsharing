@@ -42,6 +42,7 @@ use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
 use Symfony\Component\HttpKernel\Exception\HttpException;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 use Symfony\Component\HttpKernel\Exception\UnauthorizedHttpException;
+use Foodsharing\Utility\Sanitizer;
 
 class UserRestController extends AbstractFOSRestController
 {
@@ -62,6 +63,7 @@ class UserRestController extends AbstractFOSRestController
 		private ProfileTransactions $profileTransactions,
 		private FoodsaverTransactions $foodsaverTransactions,
 		private SettingsGateway $settingsGateway,
+		private Sanitizer $sanitizer,
 
 		private ProfilePermissions $profilePermissions,
 		private MailboxPermissions $mailboxPermissions,
@@ -82,6 +84,7 @@ class UserRestController extends AbstractFOSRestController
 		$this->uploadsGateway = $uploadsGateway;
 		$this->regionGateway = $regionGateway;
 		$this->emailHelper = $emailHelper;
+		$this->sanitizer = $sanitizer;
 		$this->registerTransactions = $registerTransactions;
 		$this->profileTransactions = $profileTransactions;
 		$this->foodsaverTransactions = $foodsaverTransactions;
@@ -336,13 +339,13 @@ class UserRestController extends AbstractFOSRestController
 	{
 		// validate data
 		$data = new RegisterData();
-		$data->firstName = trim(strip_tags($paramFetcher->get('firstname')));
-		$data->lastName = trim(strip_tags($paramFetcher->get('lastname')));
+		$data->firstName = $this->sanitizer->custom_trim(strip_tags($paramFetcher->get('firstname')));
+		$data->lastName = $this->sanitizer->custom_trim(strip_tags($paramFetcher->get('lastname')));
 		if (empty($data->firstName) || empty($data->lastName)) {
 			throw new BadRequestHttpException('names must not be empty');
 		}
 
-		$data->email = trim($paramFetcher->get('email'));
+		$data->email = $this->sanitizer->custom_trim($paramFetcher->get('email'));
 		if (
 			empty($data->email) || !$this->emailHelper->validEmail($data->email)
 			|| !$this->isEmailValidForRegistration($data->email)
@@ -351,7 +354,7 @@ class UserRestController extends AbstractFOSRestController
 			throw new BadRequestHttpException('email is not valid or already used');
 		}
 
-		$data->password = trim($paramFetcher->get('password'));
+		$data->password = $this->sanitizer->custom_trim($paramFetcher->get('password'));
 		if (strlen($data->password) < self::MIN_PASSWORD_LENGTH) {
 			throw new BadRequestHttpException('password is too short');
 		}
@@ -407,7 +410,7 @@ class UserRestController extends AbstractFOSRestController
 			throw new AccessDeniedHttpException();
 		}
 
-		$reason = trim($paramFetcher->get('reason'));
+		$reason = $this->sanitizer->custom_trim($paramFetcher->get('reason'));
 		if (strlen($reason) > self::DELETE_USER_MAX_REASON_LEN) {
 			throw new BadRequestHttpException('reason text is too long: must be at most ' . self::DELETE_USER_MAX_REASON_LEN . ' characters');
 		}
@@ -456,7 +459,7 @@ class UserRestController extends AbstractFOSRestController
 		}
 
 		// check length of message
-		$message = trim($paramFetcher->get('message'));
+		$message = $this->sanitizer->custom_trim($paramFetcher->get('message'));
 		if (strlen($message) < self::MIN_RATING_MESSAGE_LENGTH) {
 			throw new BadRequestHttpException('text too short: ' . strlen($message) . ' < ' . self::MIN_RATING_MESSAGE_LENGTH);
 		}
@@ -513,7 +516,7 @@ class UserRestController extends AbstractFOSRestController
 		}
 
 		// check if the photo exists and was uploaded by this user
-		$uuid = trim($paramFetcher->get('uuid'));
+		$uuid = $this->sanitizer->custom_trim($paramFetcher->get('uuid'));
 		try {
 			if ($this->uploadsGateway->getUser($uuid) !== $userId) {
 				throw new AccessDeniedHttpException();

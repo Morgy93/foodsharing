@@ -8,6 +8,7 @@ use Foodsharing\Utility\IdentificationHelper;
 use Foodsharing\Utility\PageHelper;
 use Foodsharing\Utility\RouteHelper;
 use Symfony\Contracts\Translation\TranslatorInterface;
+use Foodsharing\Utility\Sanitizer;
 
 class Utils
 {
@@ -19,13 +20,15 @@ class Utils
 	private IdentificationHelper $identificationHelper;
 	private DataHelper $dataHelper;
 	private TranslatorInterface $translator;
+	private Sanitizer $sanitizer;
 
 	public function __construct(
 		PageHelper $pageHelper,
 		RouteHelper $routeHelper,
 		IdentificationHelper $identificationHelper,
 		DataHelper $dataHelper,
-		TranslatorInterface $translator
+		TranslatorInterface $translator,
+		Sanitizer $sanitizer
 	) {
 		$this->id = []; // TODO shouldn't this be a string?
 		$this->pageHelper = $pageHelper;
@@ -33,6 +36,7 @@ class Utils
 		$this->identificationHelper = $identificationHelper;
 		$this->dataHelper = $dataHelper;
 		$this->translator = $translator;
+		$this->sanitizer = $sanitizer;
 	}
 
 	/**
@@ -464,7 +468,7 @@ class Utils
 				if (isset($checked[$v['id']]) || isset($option['checkall'])) {
 					$sel = ' checked="checked"';
 				}
-				$v['name'] = trim($v['name']);
+				$v['name'] = $this->sanitizer->custom_trim($v['name']);
 				if (!empty($v['name'])) {
 					$out .= '
 					<label><input class="input cb-' . $id . '" type="checkbox" name="' . $id . '[]" value="' . $v['id'] . '"' . $sel . ' />&nbsp;' . $v['name'] . '</label><br />';

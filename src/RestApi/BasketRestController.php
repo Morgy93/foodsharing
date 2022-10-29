@@ -21,6 +21,7 @@ use Symfony\Component\HttpKernel\Exception\AccessDeniedHttpException;
 use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 use Symfony\Component\HttpKernel\Exception\UnauthorizedHttpException;
+use Foodsharing\Utility\Sanitizer;
 
 /**
  * Rest controller for food baskets.
@@ -33,6 +34,7 @@ final class BasketRestController extends AbstractFOSRestController
 	private MessageTransactions $messageTransactions;
 	private Session $session;
 	private BasketPermissions $basketPermissions;
+	private Sanitizer $sanitizer;
 
 	// literal constants
 	private const TIME_TS = 'time_ts';
@@ -62,7 +64,8 @@ final class BasketRestController extends AbstractFOSRestController
 		ImageHelper $imageHelper,
 		MessageTransactions $messageTransactions,
 		Session $session,
-		BasketPermissions $basketPermissions
+		BasketPermissions $basketPermissions,
+		Sanitizer $sanitizer
 	) {
 		$this->gateway = $gateway;
 		$this->basketTransactions = $basketTransactions;
@@ -70,6 +73,7 @@ final class BasketRestController extends AbstractFOSRestController
 		$this->messageTransactions = $messageTransactions;
 		$this->session = $session;
 		$this->basketPermissions = $basketPermissions;
+		$this->sanitizer = $sanitizer;
 	}
 
 	/**
@@ -290,7 +294,7 @@ final class BasketRestController extends AbstractFOSRestController
 		}
 
 		// prepare and check description
-		$description = trim(strip_tags($paramFetcher->get(self::DESCRIPTION)));
+		$description = $this->sanitizer->custom_trim(strip_tags($paramFetcher->get(self::DESCRIPTION)));
 		if (empty($description)) {
 			throw new BadRequestHttpException('The description must not be empty.');
 		}
@@ -383,7 +387,7 @@ final class BasketRestController extends AbstractFOSRestController
 		$basket = $this->findEditableBasket($basketId);
 
 		// prepare and check description
-		$description = trim(strip_tags($paramFetcher->get(self::DESCRIPTION)));
+		$description = $this->sanitizer->custom_trim(strip_tags($paramFetcher->get(self::DESCRIPTION)));
 		if (empty($description)) {
 			throw new BadRequestHttpException('The description must not be empty.');
 		}
@@ -490,7 +494,7 @@ final class BasketRestController extends AbstractFOSRestController
 			throw new UnauthorizedHttpException('', self::NOT_LOGGED_IN);
 		}
 
-		$message = trim(strip_tags($paramFetcher->get('message')));
+		$message = $this->sanitizer->custom_trim(strip_tags($paramFetcher->get('message')));
 
 		if (empty($message)) {
 			throw new BadRequestHttpException('The request message should not be empty.');

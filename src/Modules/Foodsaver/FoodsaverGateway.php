@@ -11,21 +11,25 @@ use Foodsharing\Modules\Core\DBConstants\StoreTeam\MembershipStatus;
 use Foodsharing\Modules\Core\DBConstants\Unit\UnitType;
 use Foodsharing\Modules\Region\ForumFollowerGateway;
 use Foodsharing\Utility\DataHelper;
+use Foodsharing\Utility\Sanitizer;
 
 class FoodsaverGateway extends BaseGateway
 {
 	private DataHelper $dataHelper;
 	private ForumFollowerGateway $forumFollowerGateway;
+	private Sanitizer $sanitizer;
 
 	public function __construct(
 		Database $db,
 		ForumFollowerGateway $forumFollowerGateway,
 		DataHelper $dataHelper,
+		Sanitizer $sanitizer
 	) {
 		parent::__construct($db);
 
 		$this->dataHelper = $dataHelper;
 		$this->forumFollowerGateway = $forumFollowerGateway;
+		$this->sanitizer = $sanitizer;
 	}
 
 	public function getFoodsaversByRegion(int $regionId, bool $hideRecentlyOnline = false): array
@@ -845,10 +849,10 @@ class FoodsaverGateway extends BaseGateway
 	{
 		$updateData = [
 			'bezirk_id' => $data['bezirk_id'],
-			'plz' => strip_tags(trim($data['plz'])),
-			'stadt' => strip_tags(trim($data['stadt'])),
-			'lat' => strip_tags(trim($data['lat'])),
-			'lon' => strip_tags(trim($data['lon'])),
+			'plz' => strip_tags($this->sanitizer->custom_trim($data['plz'])),
+			'stadt' => strip_tags($this->sanitizer->custom_trim($data['stadt'])),
+			'lat' => strip_tags($this->sanitizer->custom_trim($data['lat'])),
+			'lon' => strip_tags($this->sanitizer->custom_trim($data['lon'])),
 			'name' => strip_tags($data['name']),
 			'nachname' => strip_tags($data['nachname']),
 			'anschrift' => strip_tags($data['anschrift']),

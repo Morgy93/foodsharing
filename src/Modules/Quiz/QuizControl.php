@@ -8,6 +8,7 @@ use Foodsharing\Permissions\QuizPermissions;
 use Foodsharing\Utility\DataHelper;
 use Foodsharing\Utility\IdentificationHelper;
 use Foodsharing\Utility\ImageHelper;
+use Foodsharing\Utility\Sanitizer;
 
 class QuizControl extends Control
 {
@@ -18,6 +19,7 @@ class QuizControl extends Control
 	private IdentificationHelper $identificationHelper;
 	private DataHelper $dataHelper;
 	private QuizPermissions $quizPermissions;
+	public Sanitizer $sanitizer;
 
 	public function __construct(
 		QuizView $view,
@@ -27,7 +29,8 @@ class QuizControl extends Control
 		ImageHelper $imageTransactions,
 		IdentificationHelper $identificationHelper,
 		DataHelper $dataHelper,
-		QuizPermissions $quizPermissions
+		QuizPermissions $quizPermissions,
+		Sanitizer $sanitizer
 	) {
 		$this->view = $view;
 		$this->quizGateway = $quizGateway;
@@ -37,6 +40,7 @@ class QuizControl extends Control
 		$this->identificationHelper = $identificationHelper;
 		$this->dataHelper = $dataHelper;
 		$this->quizPermissions = $quizPermissions;
+		$this->sanitizer = $sanitizer;
 
 		parent::__construct();
 
@@ -132,9 +136,9 @@ class QuizControl extends Control
 		$quizId = (int)$_GET['qid'];
 		if ($quiz = $this->quizGateway->getQuiz($quizId)) {
 			if ($this->isSubmitted()) {
-				$name = trim(strip_tags($_POST['name']));
+				$name = $this->sanitizer->custom_trim(strip_tags($_POST['name']));
 				if (!empty($name)) {
-					$desc = trim($_POST['desc']);
+					$desc = $this->sanitizer->custom_trim($_POST['desc']);
 					$maxFailurePoints = (int)$_POST['maxfp'];
 					$questionCount = (int)$_POST['questcount'];
 
@@ -153,9 +157,9 @@ class QuizControl extends Control
 	public function newquiz(): void
 	{
 		if ($this->isSubmitted()) {
-			$name = trim(strip_tags($_POST['name']));
+			$name = $this->sanitizer->custom_trim(strip_tags($_POST['name']));
 			if (!empty($name)) {
-				$desc = trim($_POST['desc']);
+				$desc = $this->sanitizer->custom_trim($_POST['desc']);
 				$maxFailurePoints = (int)$_POST['maxfp'];
 				$questionCount = (int)$_POST['questcount'];
 

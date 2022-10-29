@@ -67,7 +67,7 @@ class WallPostXhr extends Control
 			return XhrResponses::PERMISSION_DENIED;
 		}
 		$data = json_decode(file_get_contents('php://input'), true);
-		$message = trim(strip_tags($data['msg'] ?? ''));
+		$message = $this->sanitizer->custom_trim(strip_tags($data['msg'] ?? ''));
 
 		if (!empty($message) && $post_id = $this->wallPostGateway->addPost(
 			$message,
@@ -145,7 +145,7 @@ class WallPostXhr extends Control
 			$ext = explode('.', $ext);
 			if (count($ext) > 1) {
 				$ext = end($ext);
-				$ext = trim($ext);
+				$ext = $this->sanitizer->custom_trim($ext);
 				$ext = '.' . preg_replace('/[^a-z0-9]/', '', $ext);
 			} else {
 				$ext = '';

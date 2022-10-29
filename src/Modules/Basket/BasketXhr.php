@@ -132,7 +132,7 @@ class BasketXhr extends Control
 
 		$desc = strip_tags($data['description']);
 
-		$desc = trim($desc);
+		$desc = $this->sanitizer->custom_trim($desc);
 
 		if (empty($desc)) {
 			return [
@@ -453,7 +453,7 @@ class BasketXhr extends Control
 		}
 
 		$desc = strip_tags($data['description']);
-		$desc = trim($desc);
+		$desc = $this->sanitizer->custom_trim($desc);
 		if (empty($desc)) {
 			return [
 				'status' => 1,
