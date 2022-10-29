@@ -151,12 +151,15 @@ services:
   #------------------------------------
   maildev:
     container_name: foodsharing_maildev
-    image: djfarrelly/maildev
-    command: >
-      bin/maildev
-        --web 80
-        --smtp 25
-        --hide-extensions STARTTLS
+    image: maildev/maildev
+    ports:
+      - "127.0.0.1:18084:1080"
+    environment:
+      - MAILDEV_WEB_PORT=1080
+      - MAILDEV_SMTP_PORT=1025
+    expose:
+      - 1080
+      - 1025
     # expose:
     #   - 80
     # ports:
