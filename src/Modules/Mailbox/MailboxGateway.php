@@ -323,7 +323,7 @@ class MailboxGateway extends BaseGateway
 	public function filterName(string $mb_name)
 	{
 		$mb_name = strtolower($mb_name);
-		$mb_name = custom_trim($mb_name);
+		$mb_name = empty($mb_name) ? '' : trim($mb_name);
 		$mb_name = str_replace(
 			['ä', 'ö', 'ü', 'è', 'à', 'ß', ' ', '-', '/', '\\'],
 			['ae', 'oe', 'ue', 'e', 'a', 'ss', '.', '.', '.', '.'],
@@ -367,7 +367,7 @@ class MailboxGateway extends BaseGateway
 				foreach ($mailboxAdminRegions as $region) {
 					if ($region['mailbox_id'] == 0) {
 						$mb_name = strtolower($region['name']);
-						$mb_name = custom_trim($mb_name);
+						$mb_name = empty($mb_name) ? '' : trim($mb_name);
 						$mb_name = str_replace(
 							['ä', 'ö', 'ü', 'è', 'à', 'ß', ' ', '-', '/', '\\'],
 							['ae', 'oe', 'ue', 'e', 'a', 'ss', '.', '.', '.', '.'],

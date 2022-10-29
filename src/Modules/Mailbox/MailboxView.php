@@ -73,7 +73,7 @@ class MailboxView extends View
 	 */
 	private function fixQuotation(string $json): string
 	{
-		$trimmed = custom_trim($json, '"');
+		$trimmed = empty($json) ? '' : trim($json, '"');
 
 		return str_replace('\"', '"', $trimmed);
 	}
