@@ -7,8 +7,8 @@ use Foodsharing\Utility\DataHelper;
 use Foodsharing\Utility\IdentificationHelper;
 use Foodsharing\Utility\PageHelper;
 use Foodsharing\Utility\RouteHelper;
-use Symfony\Contracts\Translation\TranslatorInterface;
 use Foodsharing\Utility\Sanitizer;
+use Symfony\Contracts\Translation\TranslatorInterface;
 
 class Utils
 {

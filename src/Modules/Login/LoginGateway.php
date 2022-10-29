@@ -7,8 +7,8 @@ use Foodsharing\Modules\Core\Database;
 use Foodsharing\Modules\Legal\LegalGateway;
 use Foodsharing\Modules\Register\DTO\RegisterData;
 use Foodsharing\Utility\EmailHelper;
-use Symfony\Contracts\Translation\TranslatorInterface;
 use Foodsharing\Utility\Sanitizer;
+use Symfony\Contracts\Translation\TranslatorInterface;
 
 class LoginGateway extends BaseGateway
 {

@@ -10,10 +10,10 @@ use Foodsharing\Utility\EmailHelper;
 use Foodsharing\Utility\FlashMessageHelper;
 use Foodsharing\Utility\PageHelper;
 use Foodsharing\Utility\RouteHelper;
+use Foodsharing\Utility\Sanitizer;
 use Foodsharing\Utility\TranslationHelper;
 use ReflectionClass;
 use Symfony\Contracts\Translation\TranslatorInterface;
-use Foodsharing\Utility\Sanitizer;
 
 abstract class Control
 {

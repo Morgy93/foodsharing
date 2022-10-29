@@ -11,8 +11,8 @@ use Foodsharing\Modules\PushNotification\Notification\MessagePushNotification;
 use Foodsharing\Modules\PushNotification\PushNotificationGateway;
 use Foodsharing\Modules\Store\StoreGateway;
 use Foodsharing\Utility\EmailHelper;
-use Symfony\Contracts\Translation\TranslatorInterface;
 use Foodsharing\Utility\Sanitizer;
+use Symfony\Contracts\Translation\TranslatorInterface;
 
 class MessageTransactions
 {

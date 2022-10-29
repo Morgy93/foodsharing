@@ -8,10 +8,10 @@ use Foodsharing\Modules\Core\Database;
 use Foodsharing\Modules\Core\InfluxMetrics;
 use Foodsharing\Utility\EmailHelper;
 use Foodsharing\Utility\RouteHelper;
+use Foodsharing\Utility\Sanitizer;
 use Symfony\Component\Mailer\MailerInterface;
 use Symfony\Component\Mime\Address;
 use Symfony\Component\Mime\Email;
-use Foodsharing\Utility\Sanitizer;
 
 class MailsControl extends ConsoleControl
 {

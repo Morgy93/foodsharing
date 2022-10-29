@@ -6,7 +6,6 @@ use Exception;
 use Foodsharing\Lib\Session;
 use Foodsharing\Modules\Core\BaseGateway;
 
-
 class MailboxGateway extends BaseGateway
 {
 	public function getMailboxname(int $mailbox_id)

@@ -17,6 +17,7 @@ use Foodsharing\Modules\Store\StoreTransactions;
 use Foodsharing\Permissions\ProfilePermissions;
 use Foodsharing\Permissions\StorePermissions;
 use Foodsharing\RestApi\Models\Store\PickupLeaveMessageOptions;
+use Foodsharing\Utility\Sanitizer;
 use Foodsharing\Utility\TimeHelper;
 use FOS\RestBundle\Controller\AbstractFOSRestController;
 use FOS\RestBundle\Controller\Annotations as Rest;
@@ -32,7 +33,6 @@ use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 use Symfony\Component\HttpKernel\Exception\UnauthorizedHttpException;
 use Symfony\Component\Validator\ConstraintViolationListInterface;
 use Symfony\Component\Validator\Validator\ValidatorInterface;
-use Foodsharing\Utility\Sanitizer;
 
 final class PickupRestController extends AbstractFOSRestController
 {

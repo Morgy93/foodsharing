@@ -4,7 +4,6 @@ namespace Foodsharing\Modules\Mailbox;
 
 use Foodsharing\Modules\Core\DBConstants\Mailbox\MailboxFolder;
 use Foodsharing\Modules\Core\View;
-use Foodsharing\Utility\Sanitizer;
 
 class MailboxView extends View
 {

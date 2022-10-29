@@ -9,10 +9,10 @@ use Foodsharing\Lib\Session;
 use Foodsharing\Lib\Xhr\XhrMethods;
 use Foodsharing\Lib\Xhr\XhrResponses;
 use Foodsharing\Modules\Core\InfluxMetrics;
+use Foodsharing\Utility\Sanitizer;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
-use Foodsharing\Utility\Sanitizer;
 
 class XhrController extends AbstractController
 {

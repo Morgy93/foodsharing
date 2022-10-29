@@ -16,7 +16,6 @@ use Foodsharing\Permissions\ReportPermissions;
 use Foodsharing\Permissions\StorePermissions;
 use Foodsharing\Permissions\WorkGroupPermissions;
 use Twig\Environment;
-use Foodsharing\Utility\Sanitizer;
 
 final class PageHelper
 {

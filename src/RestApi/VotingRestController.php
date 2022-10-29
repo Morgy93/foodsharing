@@ -12,6 +12,7 @@ use Foodsharing\Modules\Voting\DTO\PollOption;
 use Foodsharing\Modules\Voting\VotingGateway;
 use Foodsharing\Modules\Voting\VotingTransactions;
 use Foodsharing\Permissions\VotingPermissions;
+use Foodsharing\Utility\Sanitizer;
 use FOS\RestBundle\Controller\AbstractFOSRestController;
 use FOS\RestBundle\Controller\Annotations as Rest;
 use FOS\RestBundle\Request\ParamFetcher;
@@ -21,7 +22,6 @@ use Symfony\Component\HttpKernel\Exception\AccessDeniedHttpException;
 use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 use Symfony\Component\HttpKernel\Exception\UnauthorizedHttpException;
-use Foodsharing\Utility\Sanitizer;
 
 class VotingRestController extends AbstractFOSRestController
 {
@@ -37,8 +37,7 @@ class VotingRestController extends AbstractFOSRestController
 		VotingPermissions $votingPermissions,
 		VotingTransactions $votingTransactions,
 		Sanitizer $sanitizer
-	)
-	{
+	) {
 		$this->session = $session;
 		$this->votingGateway = $votingGateway;
 		$this->votingPermissions = $votingPermissions;
