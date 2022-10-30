@@ -43,7 +43,7 @@ echo
 log-header "Running tests"
 failed=0
 SECONDS=0
-vendor/bin/codecept run --xml=report-0.xml --html=report-0.html --coverage-text --coverage-cobertura=coverage-1.cobertura.xml || failed=1
+vendor/bin/codecept run --xml=report-0.xml --html=report-0.html --coverage-text --coverage-cobertura=coverage-0.cobertura.xml || failed=1
 echo $SECONDS seconds elapsed
 
 if [ $failed -eq 0 ] # first run succeeded, we can finish early
