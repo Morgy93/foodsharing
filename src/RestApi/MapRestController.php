@@ -22,17 +22,7 @@ class MapRestController extends AbstractFOSRestController
 	private RegionGateway $regionGateway;
 	private Session $session;
 
-	public function __construct(
-		MapGateway $mapGateway,
-		RegionGateway $regionGateway,
-		Session $session
-	) {
-		$this->mapGateway = $mapGateway;
-		$this->regionGateway = $regionGateway;
-		$this->session = $session;
-	}
-
-	/**
+/**
 	 * Returns the coordinates of all baskets.
 	 *
 	 * @OA\Response(response="200", description="Success.")
@@ -85,6 +75,17 @@ class MapRestController extends AbstractFOSRestController
 		}
 
 		return $this->handleView($this->view($markers, 200));
+	}
+
+
+	public function __construct(
+		MapGateway $mapGateway,
+		RegionGateway $regionGateway,
+		Session $session
+	) {
+		$this->mapGateway = $mapGateway;
+		$this->regionGateway = $regionGateway;
+		$this->session = $session;
 	}
 
 	/**
