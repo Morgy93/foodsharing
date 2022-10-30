@@ -29,5 +29,5 @@ log-header "Installing assets ..."
 FS_ENV=dev bin/console assets:install
 
 log-header "Waiting for assets to be generated ..."
-echo $(ls -A assets)
+echo $(ls -A)
 wait-for-assets

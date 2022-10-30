@@ -32,6 +32,13 @@ php run.php Mails queueWorker &
 vendor/bin/phinx migrate
 echo $SECONDS seconds elapsed
 
+log-header "Installing assets ..."
+FS_ENV=dev bin/console assets:install
+
+log-header "Waiting for assets to be generated ..."
+echo $(ls -A)
+wait-for-assets
+
 log-header "Running tests"
 failed=0
 SECONDS=0
