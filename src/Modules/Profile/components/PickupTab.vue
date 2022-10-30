@@ -71,6 +71,10 @@
         </b-dropdown>
       </div>
     </div>
+    <i
+      class="fas fa-light fa-glasses"
+      v-b-tooltip:hover.window="$i18n(`pickup.overview.tab.${tabName}.tooltip.visibility`)"
+    />
   </b-tab>
 </template>
 

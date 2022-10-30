@@ -1,11 +1,5 @@
 <template>
   <div class="card mb-3 rounded">
-    <div>
-      <i
-        class="fas fa-info-circle fa-fw"
-        :title="$i18n('profile.commitments_stat.tooltip_visibility')"
-      />
-    </div>
     <div v-if="commitmentsStats[0].respActStores > 0">
       {{ $i18n('profile.commitments_stat.respActStores', { count: commitmentsStats[0].respActStores }) }} <i class="fas fa-shopping-cart" />
       <p />
@@ -65,6 +59,12 @@
     </b-tabs>
     <div>
       <p />
+    </div>
+    <div>
+      <i
+        class="fas fa-light fa-glasses"
+        v-b-tooltip:hover.window="$i18n('profile.commitments_stat.tooltip_visibility')"
+      />
     </div>
   </div>
 </template>

@@ -990,17 +990,20 @@ pickup:
         tooltip:
           own: Zukünftige Abholtermine, für die du dich eingetragen hast
           other: Eingetragene zukünftige Abholtermine
+          visibility: Deine eingetragenen Abholtermine sind für dich und die Botschafter deiner Bezirke sichtbar.
         empty: Momentan sind keine Abholungen eingetragen.
       options:
         name: Abholoptionen
         tooltip:
           own: Zukünftige Abholtermine, für die du dich noch eintragen könntest
+          visibility: Deine Abholoptionen werden nur dir angezeigt.
         empty: Momentan sind in deinen Betrieben keine Slots frei.
       history:
         name: Abholhistorie
         tooltip:
           own: Vergangene Abholtermine, an denen du teilgenommen hast
           other: Vergangene Abholtermine des letzten Monats, an denen teilgenommen wurde
+          visibility: Die vergangenen Abholtermine der letzte 4 wochen sind auch für die Botschafter deiner Beirke sichtbar.
         empty: Es wurde noch an keinen Abholungen teilgenommen.
     cols:
       time: Zeitpunkt
