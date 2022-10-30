@@ -1003,7 +1003,7 @@ pickup:
         tooltip:
           own: Vergangene Abholtermine, an denen du teilgenommen hast
           other: Vergangene Abholtermine des letzten Monats, an denen teilgenommen wurde
-          visibility: Die vergangenen Abholtermine der letzte 4 wochen sind auch für die Botschafter deiner Beirke sichtbar.
+          visibility: Die vergangenen Abholtermine der letzte 4 Wochen sind auch für die Botschafter deiner Bezirke sichtbar.
         empty: Es wurde noch an keinen Abholungen teilgenommen.
     cols:
       time: Zeitpunkt
