@@ -33,12 +33,9 @@ vendor/bin/phinx migrate
 echo $SECONDS seconds elapsed
 
 log-header "Waiting for assets to be generated ..."
-while ! [ "$(ls -A assets)" ];
-do
-sleep 1;
-echo -ne ".";
-done
-echo
+echo $(ls -A assets)
+bin/console cache:clear
+wait-for-assets
 
 log-header "Running tests"
 failed=0
