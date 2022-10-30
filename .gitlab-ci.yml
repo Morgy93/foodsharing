@@ -225,7 +225,7 @@ test:backend:
       junit: tests/_output/report-*.xml
       coverage_report:
         coverage_format: cobertura
-        path: coverage-*.cobertura.xml
+        path: tests/_output/coverage-*.cobertura.xml
 
 test:backend-websocket:
   <<: *defaults
