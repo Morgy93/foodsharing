@@ -1,4 +1,11 @@
 actor: Tester
+coverage:
+    enabled: true
+    remote: true
+    include:
+        - /*
+    exclude:
+        - vendor/*
 paths:
     tests: tests
     log: tests/_output
@@ -7,7 +14,7 @@ paths:
     envs: tests/_envs
 settings:
     colors: true
-    memory_limit: 1024M
+    memory_limit: 2g
     backup_globals: false
 bootstrap: _bootstrap.php
 extensions:
