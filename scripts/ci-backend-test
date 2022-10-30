@@ -18,7 +18,7 @@ sed -i "s#/app#$CI_PROJECT_DIR#g" /usr/local/etc/php-fpm.d/fpm.conf
 # let PHP-FPM run as root
 sed -i "s#www-data#root#g" /usr/local/etc/php-fpm.d/fpm.conf
 # disable xdebug
-rm /usr/local/etc/php/conf.d/docker-php-ext-xdebug.ini
+# rm /usr/local/etc/php/conf.d/docker-php-ext-xdebug.ini
 bin/console foodsharing:setup
 # also install dev packages
 composer install --prefer-dist --no-progress --no-interaction --no-scripts --ignore-platform-reqs && composer outdated --direct
@@ -43,7 +43,7 @@ echo
 log-header "Running tests"
 failed=0
 SECONDS=0
-vendor/bin/codecept run --xml=report-0.xml --html=report-0.html || failed=1
+vendor/bin/codecept run --xml=report-0.xml --html=report-0.html --coverage-text --coverage-cobertura=coverage-1.cobertura.xml || failed=1
 echo $SECONDS seconds elapsed
 
 if [ $failed -eq 0 ] # first run succeeded, we can finish early
@@ -63,7 +63,7 @@ do
   log-header "Rerunning failed tests"
   SECONDS=0
   # create separate report files for each re-run so we don't overwrite the previous reports
-  if vendor/bin/codecept run --xml=report-$failed.xml --html=report-$failed.html -g failed;
+  if vendor/bin/codecept run --xml=report-$failed.xml --html=report-$failed.html -g --coverage-cobertura=coverage-$failed.cobertura.xml failed;
   then
     log-header "Done!"
     exit 0
