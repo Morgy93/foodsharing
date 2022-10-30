@@ -1,7 +1,6 @@
 actor: Tester
 coverage:
     enabled: true
-    remote: true
     include:
         - /*
     exclude:
