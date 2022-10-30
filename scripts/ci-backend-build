@@ -27,7 +27,3 @@ bin/console foodsharing:setup
 
 log-header "Installing assets ..."
 FS_ENV=dev bin/console assets:install
-
-log-header "Waiting for assets to be generated ..."
-echo $(ls -la assets/bundles)
-wait-for-assets
