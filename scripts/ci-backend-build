@@ -18,7 +18,10 @@ composer install --verbose --prefer-dist --no-progress --no-interaction --no-dev
 composer dump-autoload --classmap-authoritative
 
 log-header "Create folder structur ..."
-mkdir "assets"
+bin/console foodsharing:setup
 
 log-header "Installing assets ..."
 FS_ENV=dev bin/console assets:install
+
+log-header "Waiting for assets to be generated ..."
+wait-for-assets
