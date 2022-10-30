@@ -180,6 +180,7 @@ test:backend:
     FF_NETWORK_PER_BUILD: 1
     REDIS_HOST: redis
     FS_ENV: test
+    XDEBUG_MODE: coverage
   image: registry.gitlab.com/foodsharing-dev/images/php:8.1.8
   services:
   # Note: Gitlab runner will mark a lot of service healthchecks as failed. This is a bug that will partly be addressed with the upcoming release of the gitlab-runner. It is also due to our configuration, e.g. the websocket container not exposing ports but listed as a service. Unfortunately, health check cannot be disabled.
