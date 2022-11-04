@@ -62,7 +62,7 @@ class MapMarker
 
 	public function setDescription(string $value)
 	{
-		$this->description = $value ?? null;
+		$this->description = $value;
 	}
 
 	public function setType(int $value)

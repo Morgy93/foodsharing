@@ -13,8 +13,8 @@ use Foodsharing\Modules\Map\DTO\FoodbasketMapMarker;
 use Foodsharing\Modules\Map\DTO\FoodSharePointMapMarker;
 use Foodsharing\Modules\Map\DTO\StoreMapMarker;
 use Foodsharing\Modules\Map\MapGateway;
-use Foodsharing\Modules\Region\RegionGateway;
-use Foodsharing\Modules\Store\StoreGateway;
+// use Foodsharing\Modules\Region\RegionGateway;
+// use Foodsharing\Modules\Store\StoreGateway;
 use Foodsharing\RestApi\Constants\HttpExceptionResponse;
 use Foodsharing\RestApi\Models\Map\FilterModel;
 use Foodsharing\RestApi\Models\Map\StoreFilterModel;
@@ -34,8 +34,8 @@ class MapRestController extends AbstractFOSRestController
 {
 	public function __construct(
 		private MapGateway $mapGateway,
-		private RegionGateway $regionGateway,
-		private StoreGateway $storeGateway,
+		// private RegionGateway $regionGateway,
+		// private StoreGateway $storeGateway,
 		private Session $session
 	) {
 	}
@@ -77,7 +77,7 @@ class MapRestController extends AbstractFOSRestController
 		$distance = $paramFetcher->get('d') ?? MapConstants::DEFAULT_SEARCH_DISTANCE;
 
 		// Filtering
-		$filter = new FilterModel($latitude, $longitude, $distance);
+		$filter = new FilterModel((float)$latitude, (float)$longitude, $distance);
 		$errors = $validator->validate($filter);
 		$this->throwBadRequestExceptionOnError($errors);
 
@@ -124,7 +124,7 @@ class MapRestController extends AbstractFOSRestController
 		$distance = $paramFetcher->get('d') ?? MapConstants::DEFAULT_SEARCH_DISTANCE;
 
 		// Filtering
-		$filter = new FilterModel($latitude, $longitude, $distance);
+		$filter = new FilterModel((float)$latitude, (float)$longitude, $distance);
 		$errors = $validator->validate($filter);
 		$this->throwBadRequestExceptionOnError($errors);
 
@@ -171,7 +171,7 @@ class MapRestController extends AbstractFOSRestController
 		$distance = $paramFetcher->get('d') ?? MapConstants::DEFAULT_SEARCH_DISTANCE;
 
 		// Filtering
-		$filter = new FilterModel($latitude, $longitude, $distance);
+		$filter = new FilterModel((float)$latitude, (float)$longitude, $distance);
 		$errors = $validator->validate($filter);
 		$this->throwBadRequestExceptionOnError($errors);
 
@@ -240,7 +240,7 @@ class MapRestController extends AbstractFOSRestController
 		$cooperationStatus = json_decode($paramFetcher->get('cooperationStatus')) ?? [];
 
 		// Filtering
-		$filter = new StoreFilterModel($latitude, $longitude, $distance, $teamStatus, $cooperationStatus);
+		$filter = new StoreFilterModel((float)$latitude, (float)$longitude, $distance, $teamStatus, $cooperationStatus);
 		$errors = $validator->validate($filter);
 		$this->throwBadRequestExceptionOnError($errors);
 
