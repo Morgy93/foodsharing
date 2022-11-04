@@ -14,11 +14,13 @@ echo $SECONDS seconds elapsed
 log-header "Preparing execution environment: Prepare PHP config, application & composer dev dependencies"
 SECONDS=0
 # configure path to application
-sed -i "s#/app#$CI_PROJECT_DIR#g" /usr/local/etc/php-fpm.d/fpm.conf
+# *https://forums.docker.com/t/sed-couldnt-open-temporary-file-xyz-permission-denied-when-using-virtiofs/125473/2
+sed "s#/app#$CI_PROJECT_DIR#g" /usr/local/etc/php-fpm.d/fpm.conf > tmp; cat tmp > /usr/local/etc/php-fpm.d/fpm.conf; rm tmp
 # let PHP-FPM run as root
-sed -i "s#www-data#root#g" /usr/local/etc/php-fpm.d/fpm.conf
+# sed -i "s#www-data#root#g" /usr/local/etc/php-fpm.d/fpm.conf
 # disable xdebug
-rm /usr/local/etc/php/conf.d/docker-php-ext-xdebug.ini
+# rm /usr/local/etc/php/conf.d/docker-php-ext-xdebug.ini
+
 bin/console foodsharing:setup
 # also install dev packages
 composer install --prefer-dist --no-progress --no-interaction --no-scripts --ignore-platform-reqs && composer outdated --direct
@@ -43,7 +45,7 @@ echo
 log-header "Running tests"
 failed=0
 SECONDS=0
-vendor/bin/codecept run --xml=report-0.xml --html=report-0.html || failed=1
+vendor/bin/codecept run acceptance --xml=report-acceptance-0.xml --html=report-acceptance-0.html || failed=1
 echo $SECONDS seconds elapsed
 
 if [ $failed -eq 0 ] # first run succeeded, we can finish early
@@ -57,13 +59,13 @@ do
   log-header "Check for codeception errors"
   # check if codeception generated a report file that contains failed tests
   # Otherwise, codeception probably failed itself and the whole job should fail
-  grep -E '<error|<failure' tests/_output/report-$((failed - 1)).xml || \
+  grep -E '<error|<failure' tests/_output/report-acceptance-$((failed - 1)).xml || \
     (echo "report.xml is incomplete, aborting" && false)
 
   log-header "Rerunning failed tests"
   SECONDS=0
   # create separate report files for each re-run so we don't overwrite the previous reports
-  if vendor/bin/codecept run --xml=report-$failed.xml --html=report-$failed.html -g failed;
+  if vendor/bin/codecept run --xml=report-acceptance-$failed.xml --html=report-acceptance-$failed.html -g failed;
   then
     log-header "Done!"
     exit 0

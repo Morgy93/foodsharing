@@ -10,7 +10,15 @@ modules:
         - Sequence
         - Db
         - Asserts
-        - \Helper\WebDriver:
+        - \Helper\WebDriver
+        - \Helper\Foodsharing
+        - \Helper\FoodsharingUI
+        - \Helper\FoodsharingUrl
+        - \Helper\Maildev
+        - Asserts
+
+    config:
+        \Helper\WebDriver:
             url: http://nginx:8080/
             host: selenium
             port: 4444
@@ -19,8 +27,3 @@ modules:
             connection_timeout: 20
             request_timeout: 20
             wait: 5
-        - \Helper\Foodsharing
-        - \Helper\FoodsharingUI
-        - \Helper\FoodsharingUrl
-        - \Helper\Maildev
-        - Asserts

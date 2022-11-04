@@ -348,7 +348,7 @@ class SettingsView extends View
 						' . $this->v_utils->v_input_wrapper($this->translator->trans('explanation'), $a['explanation']) . '
 
 					</div>';
-				} elseif ($sort_right == 'false') {
+				} else {
 					$wrong_answers .= '
 					<div class="answer q-' . $right . '">
 						' . $this->v_utils->v_input_wrapper($this->translator->trans('quiz.choice.answer') . ' ' . $ai . $atext, $a['text']) . '

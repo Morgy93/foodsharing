@@ -6,16 +6,13 @@ use Foodsharing\Modules\Core\Control;
 
 final class MessageControl extends Control
 {
-	private MessageGateway $messageGateway;
 	private MessageTransactions $messageTransactions;
 
 	public function __construct(
-		MessageGateway $messageGateway,
 		MessageTransactions $messageTransactions,
 		MessageView $view
 	) {
 		$this->view = $view;
-		$this->messageGateway = $messageGateway;
 		$this->messageTransactions = $messageTransactions;
 
 		parent::__construct();

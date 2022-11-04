@@ -7,23 +7,19 @@ use Foodsharing\Modules\Core\DBConstants\Region\ThreadStatus;
 use Foodsharing\Modules\Core\DBConstants\Region\WorkgroupFunction;
 use Foodsharing\Modules\Group\GroupFunctionGateway;
 use Foodsharing\Modules\Region\ForumGateway;
-use Foodsharing\Modules\Region\RegionGateway;
 
 class ForumPermissions
 {
 	private ForumGateway $forumGateway;
 	private Session $session;
-	private RegionGateway $regionGateway;
 	private GroupFunctionGateway $groupFunctionGateway;
 
 	public function __construct(
 		ForumGateway $forumGateway,
-		RegionGateway $regionGateway,
 		Session $session,
 		GroupFunctionGateway $groupFunctionGateway
 	) {
 		$this->forumGateway = $forumGateway;
-		$this->regionGateway = $regionGateway;
 		$this->session = $session;
 		$this->groupFunctionGateway = $groupFunctionGateway;
 	}

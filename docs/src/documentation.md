@@ -39,10 +39,6 @@ All Markdown files SHOULD contain a table of contents. (For auto generation chec
 See the general [rules of markdownlint](https://github.com/DavidAnson/markdownlint/blob/main/doc/Rules.md).
 Custom rules are applied using a config file with the name [.markdownlint.json](https://gitlab.com/foodsharing-dev/foodsharing/-/blob/master/.markdownlint.json).
 
-### Using Docker
-
-Use [scripts/lint-markdown](/scripts.html#script-overview).
-
 ### Editor Extensions
 
 Please see the [related to markdownlint](https://github.com/DavidAnson/markdownlint#related) section.

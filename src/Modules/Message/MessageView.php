@@ -140,7 +140,7 @@ final class MessageView extends View
 
 			$title = $c->title ?? substr($title, 2);
 			$msg = $this->sanitizerService->plainToHtml($c->lastMessage->body);
-			$time = $this->timeHelper->niceDate($c->lastMessage->sentAt->getTimestamp());
+			$time = $this->timeHelper->niceDate(strtotime($c->lastMessage->sentAt));
 
 			$list .= '<li id="convlist-' . $c->id . '" class="unread-' . intval($c->hasUnreadMessages) . '">'
 				. '<a href="#" onclick="msg.loadConversation(' . $c->id . '); return false;">'

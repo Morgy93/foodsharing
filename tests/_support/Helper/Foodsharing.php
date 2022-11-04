@@ -11,6 +11,7 @@ use Foodsharing\Modules\Core\DBConstants\Info\InfoType;
 use Foodsharing\Modules\Core\DBConstants\Mailbox\MailboxFolder;
 use Foodsharing\Modules\Core\DBConstants\Quiz\SessionStatus;
 use Foodsharing\Modules\Core\DBConstants\Region\RegionIDs;
+use Foodsharing\Modules\Core\DBConstants\Region\RegionOptionType;
 use Foodsharing\Modules\Core\DBConstants\Region\RegionPinStatus;
 use Foodsharing\Modules\Core\DBConstants\StoreTeam\MembershipStatus as STATUS;
 use Foodsharing\Modules\Core\DBConstants\Unit\UnitType;
@@ -99,8 +100,8 @@ class Foodsharing extends \Codeception\Module\Db
 		$params = array_merge([
 			'email' => $this->faker->unique()->email(),
 			'bezirk_id' => 0,
-			'name' => $this->faker->unique()->firstName(),
-			'nachname' => $this->faker->unique()->lastName(),
+			'name' => $this->faker->firstName(),
+			'nachname' => $this->faker->lastName(),
 			'verified' => 0,
 			'rolle' => 0,
 			'plz' => $this->faker->postcode(),
@@ -337,7 +338,7 @@ class Foodsharing extends \Codeception\Module\Db
 			'lon' => $this->faker->longitude(4, 16),
 			'name' => 'betrieb_' . $this->faker->company(),
 			'status_date' => $this->faker->dateTime(),
-			'ansprechpartner' => $this->faker->unique()->name(),
+			'ansprechpartner' => $this->faker->name(),
 			'telefon' => $this->faker->phoneNumber(),
 			'fax' => $this->faker->phoneNumber(),
 			'email' => $this->faker->unique()->email(),
@@ -1130,6 +1131,15 @@ class Foodsharing extends \Codeception\Module\Db
 			'msg' => $message,
 			'time' => $this->faker->dateTime($max = 'now')->format('Y-m-d H:i:s')
 		]);
+	}
+
+	public function createDistrictPickupRule(int $region, $timeframe, $maxPickup, $maxPickupDay, $ignoreHours)
+	{
+		$this->haveInDatabase('fs_region_options', ['region_id' => $region, 'option_type' => RegionOptionType::REGION_PICKUP_RULE_ACTIVE, 'option_value' => '1']);
+		$this->haveInDatabase('fs_region_options', ['region_id' => $region, 'option_type' => RegionOptionType::REGION_PICKUP_RULE_TIMESPAN_DAYS, 'option_value' => $timeframe]);
+		$this->haveInDatabase('fs_region_options', ['region_id' => $region, 'option_type' => RegionOptionType::REGION_PICKUP_RULE_LIMIT_NUMBER, 'option_value' => $maxPickup]);
+		$this->haveInDatabase('fs_region_options', ['region_id' => $region, 'option_type' => RegionOptionType::REGION_PICKUP_RULE_LIMIT_DAY_NUMBER, 'option_value' => $maxPickupDay]);
+		$this->haveInDatabase('fs_region_options', ['region_id' => $region, 'option_type' => RegionOptionType::REGION_PICKUP_RULE_INACTIVE_HOURS, 'option_value' => $ignoreHours]);
 	}
 
 	// =================================================================================================================

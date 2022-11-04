@@ -11,25 +11,21 @@ use Foodsharing\Modules\Core\DBConstants\StoreTeam\MembershipStatus;
 use Foodsharing\Modules\Core\DBConstants\Unit\UnitType;
 use Foodsharing\Modules\Region\ForumFollowerGateway;
 use Foodsharing\Utility\DataHelper;
-use Foodsharing\Utility\ImageHelper;
 
 class FoodsaverGateway extends BaseGateway
 {
 	private DataHelper $dataHelper;
 	private ForumFollowerGateway $forumFollowerGateway;
-	private ImageHelper $imageHelper;
 
 	public function __construct(
 		Database $db,
 		ForumFollowerGateway $forumFollowerGateway,
 		DataHelper $dataHelper,
-		ImageHelper $imageHelper
 	) {
 		parent::__construct($db);
 
 		$this->dataHelper = $dataHelper;
 		$this->forumFollowerGateway = $forumFollowerGateway;
-		$this->imageHelper = $imageHelper;
 	}
 
 	public function getFoodsaversByRegion(int $regionId, bool $hideRecentlyOnline = false): array

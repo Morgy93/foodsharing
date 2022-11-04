@@ -5,6 +5,14 @@ paths:
     data: tests/_data
     support: tests/_support
     envs: tests/_envs
+coverage:
+    enabled: true
+    show_only_summary: true
+    work_dir: /app
+    include:
+        - src/*
+    exclude:
+        - src/lib/*
 settings:
     colors: true
     memory_limit: 1024M

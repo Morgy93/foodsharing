@@ -7,6 +7,7 @@ use Faker\Generator;
 use Foodsharing\Modules\Core\DBConstants\Bell\BellType;
 use Foodsharing\Modules\Core\DBConstants\Store\CooperationStatus;
 use Foodsharing\Modules\Store\PickupGateway;
+use Foodsharing\Modules\Store\StoreTransactionException;
 use Foodsharing\Modules\Store\StoreTransactions;
 
 class StoreTransactionsTest extends \Codeception\Test\Unit
@@ -79,10 +80,10 @@ class StoreTransactionsTest extends \Codeception\Test\Unit
 		$date2 = $date->copy()->addHours(1);
 		$this->tester->addPickup($store['id'], ['time' => $date2, 'fetchercount' => 1]);
 
-		$this->assertFalse($this->transactions->joinPickup($store['id'], $date, $this->foodsaver['id']));
-		$this->expectException(DomainException::class);
+		$this->assertFalse($this->transactions->joinPickup($store['id'], $date, $this->foodsaver['id'], $this->foodsaver['id']));
+		$this->expectException(StoreTransactionException::class);
 
-		$this->transactions->joinPickup($store['id'], $date, $user['id']);
+		$this->transactions->joinPickup($store['id'], $date, $user['id'], $user['id']);
 	}
 
 	public function testPickupSlotNotAvailableEmpty()
@@ -102,10 +103,67 @@ class StoreTransactionsTest extends \Codeception\Test\Unit
 
 		$this->tester->addRecurringPickup($store['id'], ['time' => '16:20:00', 'dow' => $dow, 'fetcher' => $fetcher]);
 
-		$this->assertFalse($this->transactions->joinPickup($store['id'], $date, $this->foodsaver['id']));
-		$this->expectException(DomainException::class);
+		$this->assertFalse($this->transactions->joinPickup($store['id'], $date, $this->foodsaver['id'], $this->foodsaver['id']));
+		$this->expectException(StoreTransactionException::class);
 
-		$this->transactions->joinPickup($store['id'], $date, $this->foodsaver['id']);
+		$this->transactions->joinPickup($store['id'], $date, $this->foodsaver['id'], $this->foodsaver['id']);
+	}
+
+	public function testUserCanOnlySignupForHimSelfOncePerSlot()
+	{
+		$store = $this->tester->createStore($this->region_id);
+		$date = Carbon::now()->add('4 days')->hours(16)->minutes(20)->seconds(0)->microseconds(0);
+		$dow = $date->format('w');
+		$fetcher = 2;
+
+		$this->tester->addRecurringPickup($store['id'], ['time' => '16:20:00', 'dow' => $dow, 'fetcher' => $fetcher]);
+		$this->transactions->joinPickup($store['id'], $date, $this->foodsaver['id'], $this->foodsaver['id']);
+
+		$this->expectException(StoreTransactionException::class);
+		$this->transactions->joinPickup($store['id'], $date, $this->foodsaver['id'], $this->foodsaver['id']);
+	}
+
+	public function testComfirmForStoreCoordinatorOfThisStoreOnSignupSelfSuccessful()
+	{
+		$coordinator = $this->tester->createStoreCoordinator();
+		$store = $this->tester->createStore($this->region_id);
+		$this->tester->addStoreTeam($store['id'], $coordinator['id'], true);
+		$date = Carbon::now()->add('4 days')->hours(16)->minutes(20)->seconds(0)->microseconds(0);
+		$dow = $date->format('w');
+		$fetcher = 2;
+
+		$this->tester->addRecurringPickup($store['id'], ['time' => '16:20:00', 'dow' => $dow, 'fetcher' => $fetcher]);
+
+		$this->assertTrue($this->transactions->joinPickup($store['id'], $date, $coordinator['id'], $coordinator['id']));
+	}
+
+	public function testNoComfirmForStoreTeamMemberOnSignup()
+	{
+		$store = $this->tester->createStore($this->region_id);
+		$date = Carbon::now()->add('4 days')->hours(16)->minutes(20)->seconds(0)->microseconds(0);
+		$dow = $date->format('w');
+		$fetcher = 2;
+
+		$this->tester->addRecurringPickup($store['id'], ['time' => '16:20:00', 'dow' => $dow, 'fetcher' => $fetcher]);
+
+		$this->assertFalse($this->transactions->joinPickup($store['id'], $date, $this->foodsaver['id'], $this->foodsaver['id']));
+	}
+
+	public function testComfirmForStoreCoordinatorOfOtherStoreOnSignupSelfUnsuccessful()
+	{
+		$coordinator1 = $this->tester->createStoreCoordinator();
+		$coordinator2 = $this->tester->createStoreCoordinator();
+		$store1 = $this->tester->createStore($this->region_id);
+		$store2 = $this->tester->createStore($this->region_id);
+		$this->tester->addStoreTeam($store1['id'], $coordinator1['id'], true);
+		$this->tester->addStoreTeam($store2['id'], $coordinator2['id'], true);
+
+		$date = Carbon::now()->add('4 days')->hours(16)->minutes(20)->seconds(0)->microseconds(0);
+		$dow = $date->format('w');
+		$fetcher = 2;
+
+		$this->tester->addRecurringPickup($store1['id'], ['time' => '16:20:00', 'dow' => $dow, 'fetcher' => $fetcher]);
+		$this->assertFalse($this->transactions->joinPickup($store1['id'], $date, $coordinator2['id'], $coordinator2['id']));
 	}
 
 	public function testUserCanOnlySignupForFuturePickups()
@@ -116,9 +174,9 @@ class StoreTransactionsTest extends \Codeception\Test\Unit
 
 		$this->tester->addPickup($store['id'], ['time' => $pickup, 'fetchercount' => $fetchercount]);
 
-		$this->expectException(DomainException::class);
+		$this->expectException(StoreTransactionException::class);
 
-		$this->transactions->joinPickup($store['id'], $pickup, $this->foodsaver['id']);
+		$this->transactions->joinPickup($store['id'], $pickup, $this->foodsaver['id'], $this->foodsaver['id']);
 	}
 
 	public function testUserCanOnlySignupForNotTooMuchInTheFuturePickups()
@@ -137,11 +195,11 @@ class StoreTransactionsTest extends \Codeception\Test\Unit
 			'fetcher' => $fetcher,
 		]);
 
-		$this->expectException(DomainException::class);
+		$this->expectException(StoreTransactionException::class);
 
-		$this->transactions->joinPickup($store['id'], $pickup, $this->foodsaver['id']);
+		$this->transactions->joinPickup($store['id'], $pickup, $this->foodsaver['id'], $this->foodsaver['id']);
 
-		$this->assertFalse($this->transactions->joinPickup($store['id'], $pickup->sub('1 week'), $this->foodsaver['id']));
+		$this->assertFalse($this->transactions->joinPickup($store['id'], $pickup->sub('1 week'), $this->foodsaver['id'], $this->foodsaver['id']));
 	}
 
 	public function testUserCanSignupForManualFarInTheFuturePickups()
@@ -155,7 +213,7 @@ class StoreTransactionsTest extends \Codeception\Test\Unit
 		/* use single pickup, which should work indefinitely */
 		$this->tester->addPickup($store['id'], ['time' => $pickup, 'fetchercount' => 1]);
 
-		$this->assertFalse($this->transactions->joinPickup($store['id'], $pickup, $this->foodsaver['id']));
+		$this->assertFalse($this->transactions->joinPickup($store['id'], $pickup, $this->foodsaver['id'], $this->foodsaver['id']));
 	}
 
 	public function testUpdateExpiredBellsUpdatesBellCountIfStillUnconfirmedFetchesAreInTheFuture()
@@ -166,8 +224,8 @@ class StoreTransactionsTest extends \Codeception\Test\Unit
 		$this->tester->addPickup($store['id'], ['time' => '2150-01-01 00:00:00', 'fetchercount' => 1]);
 		$this->tester->addPickup($store['id'], ['time' => '2150-01-02 00:00:00', 'fetchercount' => 1]);
 
-		$this->assertFalse($this->transactions->joinPickup($store['id'], new Carbon('2150-01-01 00:00:00'), $foodsaver['id']));
-		$this->assertFalse($this->transactions->joinPickup($store['id'], new Carbon('2150-01-02 00:00:00'), $foodsaver['id']));
+		$this->assertFalse($this->transactions->joinPickup($store['id'], new Carbon('2150-01-01 00:00:00'), $foodsaver['id'], $foodsaver['id']));
+		$this->assertFalse($this->transactions->joinPickup($store['id'], new Carbon('2150-01-02 00:00:00'), $foodsaver['id'], $foodsaver['id']));
 
 		// As we can't change the NOW() time in the database for the test, we have to move one fetch date to the past:
 		$this->tester->updateInDatabase(
@@ -212,8 +270,8 @@ class StoreTransactionsTest extends \Codeception\Test\Unit
 		$this->tester->addPickup($store['id'], ['time' => $futureDate, 'fetchercount' => 2]);
 
 		$this->gateway->addFetcher($user['id'], $store['id'], $pastDate);
-		$this->transactions->joinPickup($store['id'], $soonDate, $user['id']);
-		$this->transactions->joinPickup($store['id'], $futureDate, $user['id']);
+		$this->transactions->joinPickup($store['id'], $soonDate, $user['id'], $user['id']);
+		$this->transactions->joinPickup($store['id'], $futureDate, $user['id'], $user['id']);
 
 		$this->tester->seeNumRecords(3, 'fs_abholer');
 

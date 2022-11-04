@@ -66,7 +66,6 @@ class StoreRestController extends AbstractFOSRestController
 	 * so that the frontend can use them but the backend is responsible for the values.
 	 *
 	 * @OA\Tag(name="stores")
-	 *
 	 * @OA\Response(
 	 * 		response="200",
 	 * 		description="Success.",
@@ -90,7 +89,6 @@ class StoreRestController extends AbstractFOSRestController
 	 * store, 404 if the store does not exist, or 401 if not logged in.
 	 *
 	 * @OA\Tag(name="stores")
-	 *
 	 * @Rest\Get("stores/{storeId}", requirements={"storeId" = "\d+"})
 	 */
 	public function getStoreAction(int $storeId): Response
@@ -122,7 +120,6 @@ class StoreRestController extends AbstractFOSRestController
 	 * - OPEN_SEARCHING = 2 Requires new members
 	 *
 	 * @OA\Tag(name="stores")
-	 *
 	 * @Rest\Patch("stores/{storeId}", requirements={"storeId" = "\d+"})
 	 * @Rest\RequestParam(name="teamStatus", requirements="\d+")
 	 * @OA\Response(response="400", description="Invalid request data")
@@ -161,7 +158,6 @@ class StoreRestController extends AbstractFOSRestController
 	 *
 	 * @OA\Tag(name="stores")
 	 * @OA\Tag(name="user")
-	 *
 	 * @OA\Response(
 	 * 		response="200",
 	 * 		description="Success.",
@@ -172,7 +168,6 @@ class StoreRestController extends AbstractFOSRestController
 	 * )
 	 * @OA\Response(response="204", description="No foodsaver related stores found.")
 	 * @OA\Response(response="401", description="Not logged in")
-	 *
 	 * @Rest\Get("user/current/stores")
 	 */
 	public function getListOfStoreStatusForCurrentFoodsaver(): Response
@@ -200,7 +195,6 @@ class StoreRestController extends AbstractFOSRestController
 	 * 401 if not logged in, or 403 if you may not view this store.
 	 *
 	 * @OA\Tag(name="stores")
-	 *
 	 * @Rest\Get("stores/{storeId}/posts", requirements={"storeId" = "\d+"})
 	 */
 	public function getStorePosts(int $storeId): Response
@@ -212,7 +206,10 @@ class StoreRestController extends AbstractFOSRestController
 			throw new AccessDeniedHttpException();
 		}
 
-		$notes = $this->storeGateway->getStorePosts($storeId) ?? [];
+		$notes = $this->storeGateway->getStorePosts($storeId);
+		if (empty($notes)) {
+			$notes = [];
+		}
 		$notes = array_map(function ($n) {
 			return RestNormalization::normalizeStoreNote($n);
 		}, $notes);
@@ -225,7 +222,6 @@ class StoreRestController extends AbstractFOSRestController
 	 * 401 if not logged in, or 403 if you may not view this store.
 	 *
 	 * @OA\Tag(name="stores")
-	 *
 	 * @Rest\Post("stores/{storeId}/posts")
 	 * @Rest\RequestParam(name="text")
 	 */
@@ -286,7 +282,6 @@ class StoreRestController extends AbstractFOSRestController
 	 * 401 if not logged in, or 403 if you may not remove this particular "wallpost".
 	 *
 	 * @OA\Tag(name="stores")
-	 *
 	 * @Rest\Delete("stores/{storeId}/posts/{postId}")
 	 */
 	public function deleteStorePostAction(int $storeId, int $postId): Response
@@ -317,7 +312,6 @@ class StoreRestController extends AbstractFOSRestController
 	 * @OA\Response(response="404", description="Store does not exist")
 	 * @OA\Response(response="422", description="Already applied or already member of this store team")
 	 * @OA\Tag(name="stores")
-	 *
 	 * @Rest\Post("stores/{storeId}/requests/{userId}")
 	 */
 	public function requestStoreTeamMembershipAction(int $storeId, int $userId): Response
@@ -350,7 +344,6 @@ class StoreRestController extends AbstractFOSRestController
 	 * @OA\Response(response="403", description="Insufficient permissions to accept requests")
 	 * @OA\Response(response="404", description="Store or request does not exist")
 	 * @OA\Tag(name="stores")
-	 *
 	 * @Rest\Patch("stores/{storeId}/requests/{userId}")
 	 * @Rest\RequestParam(name="moveToStandby", nullable=true, description="whether the new member should become part of the standby team instead of the regular team")
 	 */
@@ -377,7 +370,6 @@ class StoreRestController extends AbstractFOSRestController
 	 * @OA\Response(response="403", description="Insufficient permissions to remove the request")
 	 * @OA\Response(response="404", description="Store or request does not exist")
 	 * @OA\Tag(name="stores")
-	 *
 	 * @Rest\Delete("stores/{storeId}/requests/{userId}")
 	 */
 	public function declineStoreRequestAction(int $storeId, int $userId): Response
@@ -411,7 +403,6 @@ class StoreRestController extends AbstractFOSRestController
 	 * @OA\Response(response="404", description="Store does not exist")
 	 * @OA\Response(response="422", description="User is already, or cannot be, part of this store team")
 	 * @OA\Tag(name="stores")
-	 *
 	 * @Rest\Post("stores/{storeId}/members/{userId}")
 	 */
 	public function addStoreMemberAction(int $storeId, int $userId): Response
@@ -438,7 +429,6 @@ class StoreRestController extends AbstractFOSRestController
 	 * @OA\Response(response="404", description="Store does not exists or user is not a member of it")
 	 * @OA\Response(response="422", description="User cannot currently leave this team")
 	 * @OA\Tag(name="stores")
-	 *
 	 * @Rest\Delete("stores/{storeId}/members/{userId}")
 	 */
 	public function removeStoreMemberAction(int $storeId, int $userId): Response
@@ -464,7 +454,6 @@ class StoreRestController extends AbstractFOSRestController
 	 * @OA\Response(response="404", description="Store does not exist")
 	 * @OA\Response(response="422", description="User cannot become manager of this store")
 	 * @OA\Tag(name="stores")
-	 *
 	 * @Rest\Patch("stores/{storeId}/managers/{userId}")
 	 */
 	public function addStoreManagerAction(int $storeId, int $userId): Response
@@ -491,7 +480,6 @@ class StoreRestController extends AbstractFOSRestController
 	 * @OA\Response(response="404", description="Store does not exists or user is not a member of it")
 	 * @OA\Response(response="422", description="User cannot lose responsibility for this store")
 	 * @OA\Tag(name="stores")
-	 *
 	 * @Rest\Delete("stores/{storeId}/managers/{userId}")
 	 */
 	public function removeStoreManagerAction(int $storeId, int $userId): Response
@@ -517,7 +505,6 @@ class StoreRestController extends AbstractFOSRestController
 	 * @OA\Response(response="403", description="Insufficient permissions to manage this store team")
 	 * @OA\Response(response="404", description="User is not a member of this store")
 	 * @OA\Tag(name="stores")
-	 *
 	 * @Rest\Patch("stores/{storeId}/members/{userId}/standby")
 	 */
 	public function moveMemberToStandbyTeamAction(int $storeId, int $userId): Response
@@ -548,7 +535,6 @@ class StoreRestController extends AbstractFOSRestController
 	 * @OA\Response(response="403", description="Insufficient permissions to manage this store team")
 	 * @OA\Response(response="404", description="User is not a member of this store")
 	 * @OA\Tag(name="stores")
-	 *
 	 * @Rest\Delete("stores/{storeId}/members/{userId}/standby")
 	 */
 	public function moveUserToRegularTeamAction(int $storeId, int $userId): Response
@@ -575,9 +561,7 @@ class StoreRestController extends AbstractFOSRestController
 	 *
 	 * @OA\Parameter(name="storeId", in="path", @OA\Schema(type="integer"))
 	 * @OA\Parameter(name="storeLogActionIds", in="path", @OA\Schema(type="string"), description="The ids of the actions, seperated by commas like: 1,2,3")
-	 *
 	 * @OA\Tag(name="stores")
-	 *
 	 * @Rest\Get("stores/{storeId}/log/{storeLogActionIds}")
 	 */
 	public function showStoreLogHistoryAction(int $storeId, string $storeLogActionIds): Response

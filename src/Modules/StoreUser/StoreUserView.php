@@ -50,36 +50,6 @@ class StoreUserView extends View
 		);
 	}
 
-	public function u_legacyStoreTeamStatus(array $storeData): string
-	{
-		$this->pageHelper->addJs('
-			$("#team_status").on("change", function(){
-				var val = $(this).val();
-				showLoader();
-				$.ajax({
-					method: "PATCH",
-					url: "/api/stores/' . $storeData['id'] . '",
-					data:  { \'teamStatus\': val},
-					success: function() { hideLoader(); },
-					error: function(xhr) { hideLoader(); pulseError("Error during status update (" + xhr.status + ")"); }
-				});
-			});
-		');
-
-		global $g_data;
-		$g_data['team_status'] = $storeData['team_status'];
-
-		$out = $this->v_utils->v_form_select('team_status', [
-			'values' => [
-				['id' => 0, 'name' => $this->translator->trans('store.team.isfull')],
-				['id' => 1, 'name' => $this->translator->trans('menu.entry.helpwanted')],
-				['id' => 2, 'name' => $this->translator->trans('menu.entry.helpneeded')]
-			]
-		]);
-
-		return $out;
-	}
-
 	public function u_storeList($storeData, $title)
 	{
 		if (empty($storeData)) {

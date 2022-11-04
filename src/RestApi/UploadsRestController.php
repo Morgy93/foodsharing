@@ -41,8 +41,7 @@ class UploadsRestController extends AbstractFOSRestController
 	private const MIN_QUALITY = 1;
 	private const MAX_QUALITY = 100;
 	private const DEFAULT_QUALITY = 80;
-	private const MAX_UPLOAD_FILE_SIZE_LOGGED_IN = 1.5 * 1024 * 1024;
-	private const MAX_UPLOAD_FILE_SIZE = 0.3 * 1024 * 1024;
+	private const MAX_UPLOAD_FILE_SIZE = 1.5 * 1024 * 1024;
 	private const EXPIRATION_TIME_SECONDS = 86400 * 7; // one week
 
 	public function __construct(UploadsGateway $uploadsGateway, UploadsTransactions $uploadsService, Session $session)
@@ -57,7 +56,6 @@ class UploadsRestController extends AbstractFOSRestController
 	 * indicate no resizing.
 	 *
 	 * @OA\Tag(name="upload")
-	 *
 	 * @Rest\Get("uploads/{uuid}", requirements={"uuid"="[0-9a-f\-]+"})
 	 * @Rest\QueryParam(name="w", requirements="\d+", default=0, description="Max image width")
 	 * @Rest\QueryParam(name="h", requirements="\d+", default=0, description="Max image height")
@@ -154,7 +152,6 @@ class UploadsRestController extends AbstractFOSRestController
 
 	/**
 	 * @OA\Tag(name="upload")
-	 *
 	 * @Rest\Post("uploads")
 	 * @Rest\RequestParam(name="filename")
 	 * @Rest\RequestParam(name="body")
@@ -176,10 +173,9 @@ class UploadsRestController extends AbstractFOSRestController
 			throw new BadRequestHttpException('no body provided');
 		}
 
-		$maxSize = $this->session->id() ? self::MAX_UPLOAD_FILE_SIZE_LOGGED_IN : self::MAX_UPLOAD_FILE_SIZE;
-		$maxBase64Size = 4 * ($maxSize / 3);
+		$maxBase64Size = 4 * (self::MAX_UPLOAD_FILE_SIZE / 3);
 		if (strlen($bodyEncoded) > $maxBase64Size) {
-			throw new HttpException(413, 'file is bigger than ' . round($maxSize / 1024 / 1024, 1) . ' MB');
+			throw new HttpException(413, 'file is bigger than ' . round(self::MAX_UPLOAD_FILE_SIZE / 1024 / 1024, 1) . ' MB');
 		}
 
 		$body = base64_decode($bodyEncoded, true);
@@ -195,7 +191,7 @@ class UploadsRestController extends AbstractFOSRestController
 		$size = filesize($tempfile);
 		$mimeType = mime_content_type($tempfile);
 
-		if (!$this->session->id() && strpos($mimeType, 'image/') !== 0) {
+		if (strpos($mimeType, 'image/') !== 0) {
 			unlink($tempfile);
 			throw new BadRequestHttpException('only images allowed for non loggedin users');
 		}

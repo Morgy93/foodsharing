@@ -20,6 +20,7 @@
 - At stores under pickup history, storemanagers can now see the signed out foodsavers from pickup slots from past 7 days with the signout date. !2363 @martincodes-de
 - Voter Turnout Percentage can be seen if the poll has completed !2377 @viveknshah
 - Provide RestAPI to get backend defined common meta information for stores like "max count of slots per pickup" !1373 @koemai
+- District rules for maximum number of pickups in a timeframe accross severall stores combined can be set !2414 @fs_k
 - Provide RestAPI to change teamstatus of a store !2406
 - Added RestAPI for regular Pickup configuration !1373 @koemai
 
@@ -91,6 +92,9 @@
 - Show date inn preview of voting module !1408 @Friedrich-B
 - CreateEditStoreCept, should run smoother !2433 @sefn
 - Add margins to sendmail form buttons !2424 @diejani
+- Clean up pickup endpoint and catch DomainException: No pickup slot available problems !1407 @KoeMai
+- StoreCest, improved and removed unnecessary elements !2434 @sefn
+- Fix the link in the notification regarding old profile photos #1424 !2459 @alex.simm  
 
 ## Refactoring
 - Currently running events are shown within the event overview until their end !2162 @merhoc
@@ -98,7 +102,7 @@
 - Simplify code in the content module @alex.simm
 - Use a REST endpoint for quickreplying to forum threads #798 @alex.simm
 - Extract some redundant permission checks into one function. !2203 @AntonBallmaier
-- The Navigation is reworked !2296 @sefn
+- The Navigation is reworked !2296 !2440 @sefn
 - Rebuild store options to vue #2231 @chriswalg
 - Changed deleting wall posts to the API #798 !2253 @alex.simm
 - Rebuild profile infos to vue !2276 !2287 @chriswalg
@@ -112,6 +116,7 @@
 - Renmae Region\Type -> Unit\UnitType to make it search able and clear !2352 @KoeMai
 - Removed unused private functions in the backend !2425 @alex.simm
 - Improve documentation tooling for OpenAPI RequestBody !2421 @KoeMai
+- Store TeamStatus moved to vue and REST API !2453 @chriswalg
 
 ## Dev/Test/CI stuff
 - Added Gitpod and refactored permissions !2386 !2399 !2402 !2428 @sefn @chriswalg
@@ -141,6 +146,10 @@
 - Replace `node-sass` with `sass` #1047 !2404 @schanso
 - Added mayRole function to Session class and made may function deprecated #1277 !2341 @alex.simm
 - Fix maintenance script test #1430 !2429 @rnoennig 
+- Update php to version 8.1 !2358 @chriswalg
+- Fix maintenance script test #1430 !2429 @rnoennig
+- Remove unused triage bot in CI !2444 @chriswalg
+- Update backend dependencies !2441 @chriswalg
 
 
 ## Development documetation

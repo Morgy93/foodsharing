@@ -1,28 +1,37 @@
 #!/bin/bash
-
-export CURRENT_USER=$(id -u):$(id -g)
-
-set -o errexit
-
 dir=$(dirname "$0")
-
-base_dir=$(cd "$dir/.." && pwd)
 
 # shellcheck source=./__helping-functions.sh
 source "$dir"/__helping-functions.sh
 
-# Remove docker dev containers
-FS_ENV=dev
-"$dir"/containers-remove
-# Remove docker test containers
-FS_ENV="test"
-"$dir"/containers-remove
+# ENVS
+export FS_ENV=dev
+export CURRENT_USER=$(id -u):$(id -g)
+
+# set -o errexit tells the shell to exit as soon as a command exits with non-zero status, i.e. fails
+set -o errexit
+
+# existsTestEnv=$($dir/docker-compose ls --filter=name='foodsharing' | grep 'foodsharing_test')
+# echo $($dir/docker-compose ls --filter=name='foodsharing_test' | grep 'foodsharing_test')
+
+log-header "Removing containers and images"
+if [[ ! $($dir/docker-compose ls --filter=name='foodsharing' --all | grep 'foodsharing_test') ]];
+then
+  "$dir"/docker-compose down --rmi all -v --remove-orphans
+else
+  FS_ENV="dev"
+  "$dir"/docker-compose down -v --remove-orphans
+  FS_ENV="test"
+  "$dir"/docker-compose down --rmi all -v --remove-orphans
+fi
 
 log-header "Removing local node_modules"
 find $base_dir -name "node_modules" -type d -prune | xargs du -chs # prints the folders
 find $base_dir -name "node_modules" -type d -prune -exec rm -rf '{}' + # removes the folders
 
 log-header "Removing directories"
+
+base_dir=$(cd "$dir/.." && pwd)
 rm -vrf \
   "$base_dir"/assets \
   "$base_dir"/images \

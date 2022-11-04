@@ -34,53 +34,49 @@ function log-header() {
   echo "============================================"
 }
 
-function dc() {
-  "$dir"/docker-compose "$@"
-}
-
 function sql-query() {
   local database=$1 query=$2;
-  dc exec -T db sh -c "mysql --password=$MYSQL_PASSWORD $database --execute=\"$query\""
+  "$dir"/docker-compose exec -T db sh -c "mysql --password=$MYSQL_PASSWORD $database --execute=\"$query\""
 }
 
 function sql-file() {
   local database=$1 filename=$2;
   echo "Executing sql file $FS_ENV/$database $filename"
-  dc exec -T db sh -c "mysql --password=$MYSQL_PASSWORD $database < /app/$filename"
+  "$dir"/docker-compose exec -T db sh -c "mysql --password=$MYSQL_PASSWORD $database < /app/$filename"
 }
 
 function sql-dump() {
-  dc exec -T db mysqldump --password="$MYSQL_PASSWORD" foodsharing "$@"
+  "$dir"/docker-compose exec -T db mysqldump --password="$MYSQL_PASSWORD" foodsharing "$@"
 }
 
 function exec-in-container() {
   local container=$1; shift;
   local command=$*;
-  dc exec -T --user "$(id -u)":"$(id -g)" "$container" sh -c "HOME=./ $command"
+  "$dir"/docker-compose exec -T --user "$(id -u)":"$(id -g)" "$container" sh -c "HOME=./ $command"
 }
 
 function exec-in-container-with-image-user() {
   local container=$1; shift;
   local command=$*;
-  dc exec -T "$container" sh -c "HOME=./ $command"
+  "$dir"/docker-compose exec -T "$container" sh -c "HOME=./ $command"
 }
 
 function run-in-container() {
   local container=$1; shift;
   local command=$*;
-  dc run --rm --no-deps --user "$(id -u)":"$(id -g)" "$container" sh -c "HOME=./ $command"
+  "$dir"/docker-compose run --rm --no-deps --user "$(id -u)":"$(id -g)" "$container" sh -c "HOME=./ $command"
 }
 
 function run-in-container-with-service-ports() {
   local container=$1; shift;
   local command=$*;
-  dc run --rm --no-deps --user "$(id -u)":"$(id -g)" --service-ports "$container" sh -c "HOME=./ $command"
+  "$dir"/docker-compose run --rm --no-deps --user "$(id -u)":"$(id -g)" --service-ports "$container" sh -c "HOME=./ $command"
 }
 
 function exec-in-container-asroot() {
   local container=$1; shift;
   local command=$*;
-  dc exec --user root -T "$container" sh -c "$command"
+  "$dir"/docker-compose exec --user root -T "$container" sh -c "$command"
 }
 
 function run-in-container-asroot() {
@@ -91,7 +87,7 @@ function run-in-container-asroot() {
   # --rm : remove the container after executing the command
   # sh -c "..." : what is executed in the container: a shell that
   # interprets "..."
-  dc run --rm --no-deps --user root "$container" sh -c "$command"
+  "$dir"/docker-compose run --rm --no-deps --user root "$container" sh -c "$command"
 }
 
 function dropdb() {

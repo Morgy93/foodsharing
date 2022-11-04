@@ -103,6 +103,58 @@ class PickupGateway extends BaseGateway implements BellUpdaterInterface
 	}
 
 	/**
+	 * @param int $fsId foodsaver ID
+	 * @param Carbon $from Date From
+	 * @param Carbon $to Date To
+	 *
+	 * This function counts how many pickups the user has in stores that
+	 * have set to use the region pickup rule. It considers from a certain pickupdate
+	 * into the future and into the past. It has on purpose no region restriction for the stores the user is in.
+	 */
+	public function getNumberOfPickupsForUserWithStoreRules(int $fsId, Carbon $from, Carbon $to): int
+	{
+		$result = $this->db->fetchAll('
+			SELECT 	count(*) as Anzahl
+			FROM            `fs_abholer` p
+			LEFT OUTER JOIN `fs_betrieb` s  ON  s.id = p.betrieb_id
+			WHERE    p.foodsaver_id = :fsId
+			AND      DATE(p.date) BETWEEN DATE(:from) and DATE(:to)
+			and 	 s.use_region_pickup_rule = 1
+		', [
+			':fsId' => $fsId,
+			':from' => $this->db->date($from, false),
+			':to' => $this->db->date($to, false),
+		]);
+
+		return $result[0]['Anzahl'];
+	}
+
+	/**
+	 * @param int $fsId foodsaver ID
+	 * @param Carbon $pickup Date of the pickup
+	 *
+	 * This function counts how many pickups the user has in stores that
+	 * have set to use the region pickup rule for the same day. It considers from a certain pickupdate
+	 * into the future and into the past. It has on purpose no region restriction for the stores the user is in.
+	 */
+	public function getNumberOfPickupsForUserWithStoreRulesSameDay(int $fsId, Carbon $pickup): int
+	{
+		$result = $this->db->fetchAll('
+			SELECT 	count(*) as Anzahl
+			FROM            `fs_abholer` p
+			LEFT OUTER JOIN `fs_betrieb` s  ON  s.id = p.betrieb_id
+			WHERE    p.foodsaver_id = :fsId
+			AND      DATE(p.date) = DATE(:pickup)
+			and 	 s.use_region_pickup_rule = 1
+		', [
+			':fsId' => $fsId,
+			':pickup' => $this->db->date($pickup, false),
+		]);
+
+		return $result[0]['Anzahl'];
+	}
+
+	/**
 	 * @param bool $markNotificationAsUnread:
 	 * if an older notification exists, that has already been marked as read,
 	 * it can be marked as unread again while updating it

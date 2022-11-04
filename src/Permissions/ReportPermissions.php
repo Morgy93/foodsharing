@@ -6,21 +6,17 @@ use Foodsharing\Lib\Session;
 use Foodsharing\Modules\Core\DBConstants\Region\RegionIDs;
 use Foodsharing\Modules\Core\DBConstants\Region\WorkgroupFunction;
 use Foodsharing\Modules\Group\GroupFunctionGateway;
-use Foodsharing\Modules\Region\RegionGateway;
 
 class ReportPermissions
 {
 	private Session $session;
-	private RegionGateway $regionGateway;
 	private GroupFunctionGateway $groupFunctionGateway;
 
 	public function __construct(
 		Session $session,
-		RegionGateway $regionGateway,
 		GroupFunctionGateway $groupFunctionGateway
 	) {
 		$this->session = $session;
-		$this->regionGateway = $regionGateway;
 		$this->groupFunctionGateway = $groupFunctionGateway;
 	}
 

@@ -33,6 +33,7 @@ class Store
 	public ?DateTime $cooperationStart;
 
 	public int $calendarInterval;
+	public int $useRegionPickupRule;
 	public int $weight;
 	public int $effort;
 	public int $publicity;

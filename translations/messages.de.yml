@@ -139,6 +139,7 @@ presse: "Ist der Betrieb/Laden/Verein bereit, bei der Presse und foodsharing.de 
 sticker: "Ist der Betrieb/Laden/Verein etc. gewillt, einen Sticker beim Eingang oder anderswo sichtbar anzubringen?"
 prefetchtime: "Wie viele Wochen im Voraus können sich Foodsaver mittels automatischer Slots eintragen?"
 abholmenge: "Wie viel Kilogramm werden pro Abholung ungefähr mitgenommen?"
+use_region_pickup_rule: "Soll für diesen Betrieb die Bezirks-ROSINEN-regel für Abholungen gelten?"
 #
 # FORM DATA KEYS: WorkGroup
 # --
@@ -808,6 +809,10 @@ store:
   days_before: "vor"
   team_conversation_name: "Team {name}"
   springer_conversation_name: "Springer {name}"
+  regionPickupRules: "zusätzliche ROSINEN-Regel"
+  useRegionPickupRules: "Zusätzlich zu den Betriebsregeln gilt folgende Bezirks-ROSINEN-Regel für Abholungen:"
+  regionPickupRulesInactive: "Die zusätzlichen Bezirksregeln für Abholungen sind nicht aktiv"
+  regionPickupRuleLong: "Innerhalb von {regionPickupRuleTimespan} Tagen dürfen nicht mehr als insgesamt {regionPickupRuleLimit} Abholungen unter Berücksichtigung aller Betrieber mit Bezirksregeln durchgeführt werden. Pro Tag darf höchstens insgesamt {regionPickupRuleLimitDay}-mal bei diesen Betrieben abgeholt werden. {regionPickupRuleInactive} Stunden vor der Abholung wird diese Regel nicht berücksichtigt."
   sm:
     managementToggleOn: "Ansicht für Betriebsverantwortliche aktivieren"
     managementToggleOff: "Zurück zur Standard-Ansicht"
@@ -941,6 +946,7 @@ pickup:
   team_message_success: "Nachricht ans Team wurde erfolgreich versendet"
   join_title_date: "Sicher?"
   same_day_hint: "Du bist am {day} für die folgenden Abholungen eingetragen:"
+  region_pickup_rule_failed: "Diese Eintragung erfüllt nicht die Bezirksregeln"
   same_day_entry: "[{when} Uhr] {name}"
   really_join_date: "Möchtest du dich verbindlich für die Abholung am {date} eintragen?"
   join_cancel: "Doch nicht"
@@ -1453,6 +1459,12 @@ regionOptions:
   save: "Optionen speichern"
   enableReportButton: "Technische Unterstützung für Meldungen durch einen Meldungs-Link auf den Profilen der Stammfoodsaver des Bezirkes aktivieren."
   enableMediationButton: "Technische Unterstützung für Mediationen durch einen Mediations-Link auf den Profilen der Stammfoodsaver des Bezirkes aktivieren."
+  regionPickupRuleActive: "Folgende Bezirksregel für Abholungen bei ROSINEN (Raren Oft Sagenhaften Inspesondere Nicht alltäglichen Extrem beliebten Nüztliche)-Betrieben aktivieren:"
+  regionPickupTimespan: "Bitte gib den Zeitraum in Tagen an, in denen die Regelung gültig ist"
+  regionPickupLimitNumber: "Bitte gib die maximale Anzahl der insgesamt möglichen Abholungen für diesen Zeitraum an:"
+  regionPickupLimitDayNumber: "Bitte gib die insgesamte maximale Anzzahl von Abholungen für EINEN TAG an:"
+  regionPickupInactiveHours: "Bitte gib die Anzahl Stunden vor einer Abholung an, in denen die Regel nicht mehr gilt:"
+  regionPickupRuleActiveStoreList: "Liste der Betriebe im Bezirk, die für die ROSINEN Regel Berücksichtigt werden. ACHTUNG: Alle Abholung der aufgelisteten Betriebe werden zusammengezählt und für die Regel berücksichtigt."
 
 regionPin:
   header_page: "Öffentliche Ortsgruppenbeschreibung für {bezirk}"

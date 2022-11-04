@@ -16,5 +16,5 @@ run-in-container app vendor/bin/php-cs-fixer fix
 log-header "Fixing js client code"
 run-in-container client yarn lint --fix
 
-log-header "Fixing js chat code"
-run-in-container chat yarn lint --fix
+log-header "Fixing js websocket code"
+run-in-container websocket yarn lint --fix

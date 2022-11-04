@@ -1,19 +1,19 @@
 const webpackConfig = require('./webpack.config')
 
 const host = process.env.HOST || 'localhost'
-const target = process.env.PROXY_TARGET || 'http://localhost:8080'
+const target = process.env.PROXY_TARGET || 'http://localhost:8082'
 
 module.exports = {
   ...webpackConfig,
   devServer: {
     host,
-    port: 8080,
+    port: 8082,
     hot: true,
     index: '',
     contentBase: false,
     publicPath: '/assets/',
+    public: host,
     disableHostCheck: true,
-    inline: false, // https://webpack.js.org/loaders/expose-loader/#inline to hide silly error message
     overlay: {
       warnings: true,
       errors: true,

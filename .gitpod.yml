@@ -7,9 +7,14 @@ tasks:
     command: >
       ./scripts/containers-start
 ports:
+  - port: 18080
+    name: Nginx
+    description: Routing/Reverse proxy (preview)
+    visibility: public
+    onOpen: open-browser
   - port: 18090
     name: webpack
-    description: Webpack (Mostly used for the development preview)
+    description: Webpack
     visibility: public
     onOpen: ignore
   - port: 18081
@@ -17,11 +22,6 @@ ports:
     description: MySQL Database
     visibility: public
     onOpen: ignore
-  - port: 18080
-    name: Nginx
-    description: Routing/Reverse proxy
-    visibility: public
-    onOpen: open-browser
   - port: 18084
     name: MailDev
     description: Mail server

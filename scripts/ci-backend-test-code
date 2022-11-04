@@ -16,30 +16,41 @@ SECONDS=0
 # configure path to application
 # *https://forums.docker.com/t/sed-couldnt-open-temporary-file-xyz-permission-denied-when-using-virtiofs/125473/2
 sed "s#/app#$CI_PROJECT_DIR#g" /usr/local/etc/php-fpm.d/fpm.conf > tmp; cat tmp > /usr/local/etc/php-fpm.d/fpm.conf; rm tmp
-
-# sed -i "s#/app#$CI_PROJECT_DIR#g" /usr/local/etc/php-fpm.d/fpm.conf
 # let PHP-FPM run as root
 # sed -i "s#www-data#root#g" /usr/local/etc/php-fpm.d/fpm.conf
 # disable xdebug
-# rm -f /usr/local/etc/php/conf.d/docker-php-ext-xdebug.ini
-
+# rm /usr/local/etc/php/conf.d/docker-php-ext-xdebug.ini
 
 bin/console foodsharing:setup
 # also install dev packages
-log-header "Prepare DB"
 composer install --prefer-dist --no-progress --no-interaction --no-scripts --ignore-platform-reqs && composer outdated --direct
 php-fpm -R 2> php_fpm_err.log &
 echo $SECONDS seconds elapsed
 
 log-header "Initializing database"
 SECONDS=0
-mysql -uroot -proot -hdb --execute="drop database if exists foodsharing; create database foodsharing"
+mysql -u root -proot -hdb --execute="drop database if exists foodsharing; create database foodsharing"
+php run.php Mails queueWorker &
 vendor/bin/phinx migrate
 echo $SECONDS seconds elapsed
-log-header "Build database documentation"
 
-/bin/bash "$dir"/generate-db-documenation/mysql_generate_documentation
+log-header "Waiting for assets to be generated ..."
+while ! [ "$(ls -A assets)" ];
+do
+sleep 1;
+echo -ne ".";
+done
+echo
 
-log-header "Build documentation"
-cd "$dir"/../docs
-mdbook build
+log-header "Running tests"
+failed=0
+SECONDS=0
+vendor/bin/codecept run -s acceptance --xml=report-code.xml --html=report-code.html --coverage-text --coverage-cobertura="code-cobertura.xml" || failed=1
+echo $SECONDS seconds elapsed
+
+if [ $failed -eq 0 ] # first run succeeded, we can finish early
+then
+    exit 0
+else
+    exit 1
+fi

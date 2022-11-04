@@ -11,4 +11,4 @@ dir=$(dirname "$0")
 source "$dir"/__helping-functions.sh
 
 PARAMS=( "$@" );
-dc exec -T --user 33:33 app sh -c "HOME=./ php -f run.php" "${PARAMS[@]}"
+"$dir"/docker-compose exec -T --user 33:33 app sh -c "HOME=./ php -f run.php" "${PARAMS[@]}"

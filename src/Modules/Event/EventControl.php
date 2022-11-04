@@ -68,8 +68,10 @@ class EventControl extends Control
 		$regionId = $event['bezirk_id'];
 		$regionLink = '/?page=bezirk&bid=' . $regionId;
 		$regionEventsLink = $regionLink . '&sub=events';
-		$regionName = $this->regionGateway->getRegionName($regionId) ?? '';
-
+		$regionName = $this->regionGateway->getRegionName($regionId);
+		if (empty($regionName)) {
+			$regionName = '';
+		}
 		$this->pageHelper->addBread($regionName, $regionLink);
 		$this->pageHelper->addBread($this->translator->trans('events.bread'), $regionEventsLink);
 		$this->pageHelper->addBread($event['name']);

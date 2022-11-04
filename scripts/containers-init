@@ -1,22 +1,21 @@
 #!/bin/bash
+dir=$(dirname "$0")
 
+# shellcheck source=./__helping-functions.sh
+source "$dir"/__helping-functions.sh
+
+# ENVS
 export FS_ENV=dev
 export CURRENT_USER=$(id -u):$(id -g)
 
 # set -o errexit tells the shell to exit as soon as a command exits with non-zero status, i.e. fails
 set -o errexit
 
-dir=$(dirname "$0")
-
-# source runs the content of the argument as if it was here (without launching a subshell!)
-# __helping-functions.sh defines basic functions, mainly to run commands in containers
-# shellcheck source=./__helping-functions.sh
-source "$dir"/__helping-functions.sh
+log-header "Check for new images ..."
+"$dir"/docker-compose build --pull
 
 log-header "Bringing up containers ..."
-# dc is defined in __helping-functions.sh
-dc build --parallel
-dc up -d
+"$dir"/docker-compose up -d
 
 log-header "Running composer install ..."
 exec-in-container app 'composer install'

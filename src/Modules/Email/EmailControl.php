@@ -13,8 +13,6 @@ use Foodsharing\Modules\Region\RegionGateway;
 use Foodsharing\Modules\Store\StoreGateway;
 use Foodsharing\Permissions\NewsletterEmailPermissions;
 use Foodsharing\Utility\DataHelper;
-use Foodsharing\Utility\IdentificationHelper;
-use Foodsharing\Utility\Sanitizer;
 
 class EmailControl extends Control
 {
@@ -22,9 +20,7 @@ class EmailControl extends Control
 	private FoodsaverGateway $foodsaverGateway;
 	private EmailGateway $emailGateway;
 	private RegionGateway $regionGateway;
-	private Sanitizer $sanitizerService;
 	private MailboxGateway $mailboxGateway;
-	private IdentificationHelper $identificationHelper;
 	private DataHelper $dataHelper;
 	private NewsletterEmailPermissions $newsletterEmailPermissions;
 
@@ -34,9 +30,7 @@ class EmailControl extends Control
 		FoodsaverGateway $foodsaverGateway,
 		EmailGateway $emailGateway,
 		RegionGateway $regionGateway,
-		Sanitizer $sanitizerTransactions,
 		MailboxGateway $mailboxGateway,
-		IdentificationHelper $identificationHelper,
 		DataHelper $dataHelper,
 		NewsletterEmailPermissions $newsletterEmailPermissions
 	) {
@@ -45,9 +39,7 @@ class EmailControl extends Control
 		$this->foodsaverGateway = $foodsaverGateway;
 		$this->emailGateway = $emailGateway;
 		$this->regionGateway = $regionGateway;
-		$this->sanitizerService = $sanitizerTransactions;
 		$this->mailboxGateway = $mailboxGateway;
-		$this->identificationHelper = $identificationHelper;
 		$this->dataHelper = $dataHelper;
 		$this->newsletterEmailPermissions = $newsletterEmailPermissions;
 

@@ -3,6 +3,7 @@
 namespace Foodsharing\Permissions;
 
 use Foodsharing\Lib\Session;
+use Foodsharing\Modules\Core\DBConstants\Foodsaver\Role;
 use Foodsharing\Modules\Core\DBConstants\Region\RegionIDs;
 use Foodsharing\Modules\Core\DBConstants\Region\WorkgroupFunction;
 use Foodsharing\Modules\Core\DBConstants\Unit\UnitType;
@@ -71,10 +72,27 @@ final class RegionPermissions
 		return $this->session->isAmbassadorForRegion([$regionId], false, false);
 	}
 
-	public function maySetRegionOptions(int $regionId): bool
+	public function maySetRegionOptionsReportButtons(int $regionId): bool
 	{
-		if ($this->session->may('orga')) {
+		if ($this->session->mayRole(Role::ORGA)) {
 			return true;
+		}
+
+		return $this->session->isAmbassadorForRegion([$regionId], false, false);
+	}
+
+	public function maySetRegionOptionsRegionPickupRule(int $regionId): bool
+	{
+		if ($this->session->mayRole(Role::ORGA)) {
+			return true;
+		}
+
+		if ($this->groupFunctionGateway->existRegionFunctionGroup($regionId, WorkgroupFunction::STORES_COORDINATION)) {
+			if ($this->groupFunctionGateway->isRegionFunctionGroupAdmin($regionId, WorkgroupFunction::STORES_COORDINATION, $this->session->id())) {
+				return true;
+			}
+
+			return false;
 		}
 
 		return $this->session->isAmbassadorForRegion([$regionId], false, false);

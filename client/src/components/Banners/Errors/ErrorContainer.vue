@@ -59,7 +59,7 @@ export default {
     if (DataUser.getters.getAvatar() && !DataUser.getters.getAvatar().startsWith('/api/uploads/')) {
       this.list.push({
         field: 'old_user_avatar',
-        link: DataUser.getters.getAvatar(),
+        link: 'images/' + DataUser.getters.getAvatar(),
         links: [{
           text: 'error.old_user_avatar.link',
           urlShortHand: 'settings',

@@ -1,5 +1,4 @@
 #!/bin/bash
-
 dir=$(dirname "$0")
 
 # shellcheck source=./__helping-functions.sh

@@ -7,9 +7,9 @@ use Foodsharing\Modules\Core\DBConstants\Map\MapConstants;
 use Foodsharing\Modules\Core\DBConstants\Region\RegionOptionType;
 use Foodsharing\Modules\Core\DBConstants\Unit\UnitType;
 use Foodsharing\Modules\Event\EventGateway;
-use Foodsharing\Modules\Foodsaver\FoodsaverGateway;
 use Foodsharing\Modules\FoodSharePoint\FoodSharePointGateway;
 use Foodsharing\Modules\Mailbox\MailboxGateway;
+use Foodsharing\Modules\Store\StoreGateway;
 use Foodsharing\Modules\Voting\VotingGateway;
 use Foodsharing\Permissions\ForumPermissions;
 use Foodsharing\Permissions\RegionPermissions;
@@ -26,14 +26,13 @@ final class RegionControl extends Control
 	private array $region;
 	private RegionGateway $gateway;
 	private EventGateway $eventGateway;
-	private ForumGateway $forumGateway;
 	private FoodSharePointGateway $foodSharePointGateway;
-	private FoodsaverGateway $foodsaverGateway;
 	private ForumFollowerGateway $forumFollowerGateway;
 	private FormFactoryInterface $formFactory;
 	private ForumTransactions $forumTransactions;
 	private ForumPermissions $forumPermissions;
 	private RegionPermissions $regionPermissions;
+	private StoreGateway $storeGateway;
 	private ImageHelper $imageService;
 	private ReportPermissions $reportPermissions;
 	private MailboxGateway $mailboxGateway;
@@ -54,8 +53,6 @@ final class RegionControl extends Control
 	public function __construct(
 		EventGateway $eventGateway,
 		FoodSharePointGateway $foodSharePointGateway,
-		FoodsaverGateway $foodsaverGateway,
-		ForumGateway $forumGateway,
 		ForumFollowerGateway $forumFollowerGateway,
 		ForumPermissions $forumPermissions,
 		RegionPermissions $regionPermissions,
@@ -66,15 +63,14 @@ final class RegionControl extends Control
 		MailboxGateway $mailboxGateway,
 		VotingGateway $votingGateway,
 		VotingPermissions $votingPermissions,
-		WorkGroupPermissions $workGroupPermissions
+		WorkGroupPermissions $workGroupPermissions,
+		StoreGateway $storeGateway
 	) {
 		$this->gateway = $gateway;
 		$this->eventGateway = $eventGateway;
 		$this->forumPermissions = $forumPermissions;
 		$this->regionPermissions = $regionPermissions;
-		$this->forumGateway = $forumGateway;
 		$this->foodSharePointGateway = $foodSharePointGateway;
-		$this->foodsaverGateway = $foodsaverGateway;
 		$this->forumFollowerGateway = $forumFollowerGateway;
 		$this->forumTransactions = $forumTransactions;
 		$this->reportPermissions = $reportPermissions;
@@ -83,7 +79,7 @@ final class RegionControl extends Control
 		$this->votingGateway = $votingGateway;
 		$this->votingPermissions = $votingPermissions;
 		$this->workGroupPermission = $workGroupPermissions;
-
+		$this->storeGateway = $storeGateway;
 		parent::__construct();
 	}
 
@@ -118,7 +114,7 @@ final class RegionControl extends Control
 			$menu['ambassador_forum'] = ['name' => 'terminology.ambassador_forum', 'href' => '/?page=bezirk&bid=' . $regionId . '&sub=botforum'];
 		}
 
-		if (!$isWorkGroup && $this->regionPermissions->maySetRegionOptions($regionId)) {
+		if (!$isWorkGroup) {
 			$menu['options'] = ['name' => 'terminology.options', 'href' => '/?page=bezirk&bid=' . $regionId . '&sub=options'];
 		}
 
@@ -317,10 +313,6 @@ final class RegionControl extends Control
 				$this->polls($request, $response, $region);
 				break;
 			case 'options':
-				if (!$this->regionPermissions->maySetRegionOptions($region_id) || UnitType::isGroup($region['type'])) {
-					$this->flashMessageHelper->info($this->translator->trans('region.restricted'));
-					$this->routeHelper->go($this->forumTransactions->url($region_id, false));
-				}
 				$this->options($request, $response, $region);
 				break;
 			case 'pin':
@@ -495,8 +487,18 @@ final class RegionControl extends Control
 		$this->pageHelper->addBread($this->translator->trans('terminology.options'), '/?page=bezirk&bid=' . $region['id'] . '&sub=options');
 		$this->pageHelper->addTitle($this->translator->trans('terminology.options'));
 		$viewdata = $this->regionViewData($region, $request->query->get('sub'));
-		$viewdata['isReportButtonEnabled'] = intval($this->gateway->getRegionOption($region['id'], RegionOptionType::ENABLE_REPORT_BUTTON)) === 1;
-		$viewdata['isMediationButtonEnabled'] = intval($this->gateway->getRegionOption($region['id'], RegionOptionType::ENABLE_MEDIATION_BUTTON)) === 1;
+		$regionOptions = $this->gateway->getAllRegionOptions($region['id']);
+		$viewdata['maySetRegionOptionsReportButtons'] = boolval($this->regionPermissions->maySetRegionOptionsReportButtons($region['id']));
+		$viewdata['maySetRegionOptionsRegionPickupRule'] = boolval($this->regionPermissions->maySetRegionOptionsRegionPickupRule($region['id']));
+		$viewdata['isReportButtonEnabled'] = boolval(array_key_exists(RegionOptionType::ENABLE_REPORT_BUTTON, $regionOptions) ? $regionOptions[RegionOptionType::ENABLE_REPORT_BUTTON] : 0);
+		$viewdata['isMediationButtonEnabled'] = boolval(array_key_exists(RegionOptionType::ENABLE_MEDIATION_BUTTON, $regionOptions) ? $regionOptions[RegionOptionType::ENABLE_MEDIATION_BUTTON] : 0);
+		$viewdata['isRegionPickupRuleActive'] = boolval(array_key_exists(RegionOptionType::REGION_PICKUP_RULE_ACTIVE, $regionOptions) ? $regionOptions[RegionOptionType::REGION_PICKUP_RULE_ACTIVE] : 0);
+		$viewdata['regionPickupRuleTimespanDays'] = intval(array_key_exists(RegionOptionType::REGION_PICKUP_RULE_TIMESPAN_DAYS, $regionOptions) ? $regionOptions[RegionOptionType::REGION_PICKUP_RULE_TIMESPAN_DAYS] : 0);
+		$viewdata['regionPickupRuleLimitNumber'] = intval(array_key_exists(RegionOptionType::REGION_PICKUP_RULE_LIMIT_NUMBER, $regionOptions) ? $regionOptions[RegionOptionType::REGION_PICKUP_RULE_LIMIT_NUMBER] : 0);
+		$viewdata['regionPickupRuleLimitDayNumber'] = intval(array_key_exists(RegionOptionType::REGION_PICKUP_RULE_LIMIT_DAY_NUMBER, $regionOptions) ? $regionOptions[RegionOptionType::REGION_PICKUP_RULE_LIMIT_DAY_NUMBER] : 0);
+		$viewdata['regionPickupRuleInactiveHours'] = intval(array_key_exists(RegionOptionType::REGION_PICKUP_RULE_INACTIVE_HOURS, $regionOptions) ? $regionOptions[RegionOptionType::REGION_PICKUP_RULE_INACTIVE_HOURS] : 0);
+		$viewdata['regionPickupRuleActiveStoreList'] = $this->storeGateway->listRegionStoresActivePickupRule($region['id']);
+
 		$response->setContent($this->render('pages/Region/options.twig', $viewdata));
 	}
 

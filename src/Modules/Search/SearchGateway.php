@@ -4,17 +4,13 @@ namespace Foodsharing\Modules\Search;
 
 use Foodsharing\Modules\Core\BaseGateway;
 use Foodsharing\Modules\Core\Database;
-use Foodsharing\Modules\Region\RegionGateway;
 use Foodsharing\Modules\Search\DTO\SearchResult;
 
 class SearchGateway extends BaseGateway
 {
-	private RegionGateway $regionGateway;
-
-	public function __construct(Database $db, RegionGateway $regionGateway)
+	public function __construct(Database $db)
 	{
 		parent::__construct($db);
-		$this->regionGateway = $regionGateway;
 	}
 
 	/**

@@ -5,7 +5,6 @@ namespace Foodsharing\Modules\Blog;
 use Foodsharing\Modules\Core\Control;
 use Foodsharing\Modules\Core\DBConstants\Unit\UnitType;
 use Foodsharing\Permissions\BlogPermissions;
-use Foodsharing\Utility\DataHelper;
 use Foodsharing\Utility\IdentificationHelper;
 use Foodsharing\Utility\TimeHelper;
 
@@ -13,7 +12,6 @@ class BlogControl extends Control
 {
 	private BlogGateway $blogGateway;
 	private BlogPermissions $blogPermissions;
-	private DataHelper $dataHelper;
 	private IdentificationHelper $identificationHelper;
 	private TimeHelper $timeHelper;
 
@@ -21,14 +19,12 @@ class BlogControl extends Control
 		BlogView $view,
 		BlogGateway $blogGateway,
 		BlogPermissions $blogPermissions,
-		DataHelper $dataHelper,
 		IdentificationHelper $identificationHelper,
 		TimeHelper $timeHelper
 	) {
 		$this->view = $view;
 		$this->blogGateway = $blogGateway;
 		$this->blogPermissions = $blogPermissions;
-		$this->dataHelper = $dataHelper;
 		$this->identificationHelper = $identificationHelper;
 		$this->timeHelper = $timeHelper;
 

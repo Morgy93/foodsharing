@@ -7,7 +7,6 @@ use Foodsharing\Utility\DataHelper;
 use Foodsharing\Utility\IdentificationHelper;
 use Foodsharing\Utility\PageHelper;
 use Foodsharing\Utility\RouteHelper;
-use Foodsharing\Utility\Sanitizer;
 use Symfony\Contracts\Translation\TranslatorInterface;
 
 class Utils
@@ -15,7 +14,6 @@ class Utils
 	private $id;
 	private Session $session;
 	private \Twig\Environment $twig;
-	private Sanitizer $sanitizerService;
 	private PageHelper $pageHelper;
 	private RouteHelper $routeHelper;
 	private IdentificationHelper $identificationHelper;
@@ -23,7 +21,6 @@ class Utils
 	private TranslatorInterface $translator;
 
 	public function __construct(
-		Sanitizer $sanitizerService,
 		PageHelper $pageHelper,
 		RouteHelper $routeHelper,
 		IdentificationHelper $identificationHelper,
@@ -31,7 +28,6 @@ class Utils
 		TranslatorInterface $translator
 	) {
 		$this->id = []; // TODO shouldn't this be a string?
-		$this->sanitizerService = $sanitizerService;
 		$this->pageHelper = $pageHelper;
 		$this->routeHelper = $routeHelper;
 		$this->identificationHelper = $identificationHelper;

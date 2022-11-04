@@ -91,6 +91,9 @@ export default {
           href: 'members', icon: 'fa-user', text: 'menu.entry.members',
         },
         {
+          href: 'options', icon: 'fa-tools', text: 'menu.entry.options',
+        },
+        {
           href: 'statistic', icon: 'fa-chart-bar', text: 'terminology.statistic',
         },
       ]
@@ -107,11 +110,6 @@ export default {
         })
       }
 
-      if (this.entry.maySetRegionOptions) {
-        menu.push({
-          href: 'options', icon: 'fa-tools', text: 'menu.entry.options',
-        })
-      }
       if (this.entry.maySetRegionPin) {
         menu.push({
           href: 'pin', icon: 'fa-users', text: 'menu.entry.pin',

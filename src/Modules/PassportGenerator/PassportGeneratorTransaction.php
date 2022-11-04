@@ -134,8 +134,8 @@ class PassportGeneratorTransaction extends AbstractController
 		$pdf->AddFont('Ubuntu-L', '', 'lib/font/ubuntul.php', true);
 		$pdf->AddFont('AcmeFont Regular', '', 'lib/font/acmefont.php', true);
 
-		$x = 0;
-		$y = 0;
+		$x = 0.0;
+		$y = 0.0;
 		$card = 0;
 
 		$noPhoto = [];

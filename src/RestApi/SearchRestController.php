@@ -44,7 +44,6 @@ class SearchRestController extends AbstractFOSRestController
 
 	/**
 	 * @OA\Tag(name="search")
-	 *
 	 * @Rest\Get("search/index")
 	 */
 	public function getSearchLegacyIndexAction(): Response
@@ -61,7 +60,6 @@ class SearchRestController extends AbstractFOSRestController
 
 	/**
 	 * @OA\Tag(name="search")
-	 *
 	 * @Rest\Get("search/user")
 	 * @Rest\QueryParam(name="q", description="Search query.")
 	 * @Rest\QueryParam(name="regionId", requirements="\d+", nullable=true, description="Restricts the search to a region")
@@ -123,7 +121,6 @@ class SearchRestController extends AbstractFOSRestController
 	 * General search endpoint that returns foodsavers, stores, and regions.
 	 *
 	 * @OA\Tag(name="search")
-	 *
 	 * @Rest\Get("search/all")
 	 * @Rest\QueryParam(name="q", description="Search query.")
 	 */
@@ -160,7 +157,6 @@ class SearchRestController extends AbstractFOSRestController
 	 * @OA\Response(response="400", description="Empty search query.")
 	 * @OA\Response(response="403", description="Insufficient permissions to search in that forum.")
 	 * @OA\Tag(name="search")
-	 *
 	 * @Rest\Get("search/forum/{groupId}/{subforumId}", requirements={"groupId" = "\d+", "subforumId" = "\d+"})
 	 * @Rest\QueryParam(name="q", description="Search query.", nullable=false)
 	 */

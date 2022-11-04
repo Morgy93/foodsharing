@@ -17,10 +17,10 @@ final class ImageHelper
 	 *
 	 * @param string $file the file
 	 *
+	 * @return string the guessed extension
+	 *
 	 * @throws UnexpectedValueException if the file does not exist or has an
 	 *                                  unknown image type
-	 *
-	 * @return string the guessed extension
 	 */
 	public function guessImageFileExtension(string $file): string
 	{
@@ -47,12 +47,12 @@ final class ImageHelper
 	 * @param string $dstDir destination directory
 	 * @param array $sizes key-value-pairs of size (int) and prefix (string)
 	 *
+	 * @return string the base name for the created files or null if the
+	 *                     original file does not exist or rescaling failed
+	 *
 	 * @throws UnexpectedValueException if the file does not exist or has an
 	 *                                  unknown image type
 	 * @throws fException if an error occures while resizing the image
-	 *
-	 * @return string the base name for the created files or null if the
-	 *                     original file does not exist or rescaling failed
 	 */
 	public function createResizedPictures(string $file, string $dstDir, array $sizes): string
 	{

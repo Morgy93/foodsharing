@@ -12,9 +12,9 @@ dir=$(dirname "$0")
 source "$dir"/__helping-functions.sh
 
 log-header "Calculating stats"
-dc run --rm --no-deps app php -f run.php Maintenance daily
-dc run --rm --no-deps app php -f run.php Stats foodsaver
-dc run --rm --no-deps app php -f run.php Stats betriebe
-dc run --rm --no-deps app php -f run.php Stats bezirke
+"$dir"/docker-compose run --rm --no-deps app php -f run.php Maintenance daily
+"$dir"/docker-compose run --rm --no-deps app php -f run.php Stats foodsaver
+"$dir"/docker-compose run --rm --no-deps app php -f run.php Stats betriebe
+"$dir"/docker-compose run --rm --no-deps app php -f run.php Stats bezirke
 
 log-header "All done"

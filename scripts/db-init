@@ -29,11 +29,11 @@ log-header "Seed DB ..."
 exec-in-container app vendor/bin/codecept foodsharing:seed "$@"
 
 log-header "Running maintenance ..."
-dc run --rm --no-deps app php -f run.php Maintenance daily
+"$dir"/docker-compose run --rm --no-deps app php -f run.php Maintenance daily
 
 log-header "Running stats ..."
-dc run --rm --no-deps app php -f run.php Stats foodsaver
-dc run --rm --no-deps app php -f run.php Stats betriebe
-dc run --rm --no-deps app php -f run.php Stats bezirke
+"$dir"/docker-compose run --rm --no-deps app php -f run.php Stats foodsaver
+"$dir"/docker-compose run --rm --no-deps app php -f run.php Stats betriebe
+"$dir"/docker-compose run --rm --no-deps app php -f run.php Stats bezirke
 
 log-header "All done"

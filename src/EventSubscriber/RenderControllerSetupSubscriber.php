@@ -2,7 +2,6 @@
 
 namespace Foodsharing\EventSubscriber;
 
-use Foodsharing\Debug\DebugBar;
 use Foodsharing\Entrypoint\IndexController;
 use Foodsharing\Lib\Cache\Caching;
 use Foodsharing\Lib\ContentSecurityPolicy;
@@ -151,11 +150,6 @@ class RenderControllerSetupSubscriber implements EventSubscriberInterface
 		$contentGateway = $this->get(ContentGateway::class);
 		global $g_broadcast_message;
 		$g_broadcast_message = $contentGateway->get(ContentId::BROADCAST_MESSAGE)['body'];
-
-		$debugBar = $this->get(DebugBar::class);
-		if ($debugBar->isEnabled()) {
-			$pageHelper->addHead($debugBar->renderHead());
-		}
 	}
 
 	public function onKernelResponse(ResponseEvent $event)
@@ -178,16 +172,6 @@ class RenderControllerSetupSubscriber implements EventSubscriberInterface
 		$cspString = $csp->generate($request->getSchemeAndHttpHost(), CSP_REPORT_URI, CSP_REPORT_ONLY);
 		$cspParts = explode(': ', $cspString, 2);
 		$response->headers->set($cspParts[0], $cspParts[1]);
-
-		$debugBar = $this->get(DebugBar::class);
-		if ($debugBar->isEnabled()) {
-			// append the debug bar at the very end of <body>
-			$response->setContent(str_replace(
-				'</body>',
-				$debugBar->renderContent() . '</body>',
-				$response->getContent()
-			));
-		}
 
 		if (isset($this->cache) && $this->cache->shouldCache()) {
 			$this->cache->cache($response->getContent());

@@ -3,7 +3,6 @@
 namespace Foodsharing\Lib\Db;
 
 use Exception;
-use Foodsharing\Debug\DebugBar;
 use Foodsharing\Lib\Session;
 use Foodsharing\Modules\Core\InfluxMetrics;
 use mysqli;
@@ -16,11 +15,6 @@ class Db
 	private $mysqli;
 
 	/**
-	 * @var DebugBar
-	 */
-	private $debug;
-
-	/**
 	 * @var Session
 	 */
 	protected $session;
@@ -29,14 +23,6 @@ class Db
 	 * @var InfluxMetrics
 	 */
 	protected $influxMetrics;
-
-	/**
-	 * @required
-	 */
-	public function setDebug(DebugBar $debug)
-	{
-		$this->debug = $debug;
-	}
 
 	/**
 	 * @required
@@ -73,9 +59,6 @@ class Db
 
 		if ($res == false) {
 			error_log('SQL QUERY ERROR URL ' . ($_SERVER['REQUEST_URI'] ?? $_SERVER['argv'][0]) . ' IN ' . $query . ' : ' . $this->mysqli->error);
-			$this->debug->addQuery($query, $duration, false, $this->mysqli->errno, $this->mysqli->error);
-		} else {
-			$this->debug->addQuery($query, $duration, true);
 		}
 		$this->influxMetrics->addDbQuery($duration);
 

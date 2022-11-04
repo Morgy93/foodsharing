@@ -13,5 +13,5 @@ source "$dir"/__helping-functions.sh
 echo "Linting client js"
 run-in-container client yarn lint
 
-echo "Linting chat js"
-run-in-container chat yarn lint
+echo "Linting websocket js"
+run-in-container websocket yarn lint

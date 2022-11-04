@@ -12,7 +12,6 @@ use Foodsharing\Modules\Core\DBConstants\Region\WorkgroupFunction;
 use Foodsharing\Modules\Core\DBConstants\Unit\UnitType;
 use Foodsharing\Modules\Group\GroupFunctionGateway;
 use Foodsharing\Modules\Region\RegionGateway;
-use Foodsharing\Modules\Store\StoreGateway;
 use Foodsharing\Modules\Voting\DTO\Poll;
 use Foodsharing\Modules\Voting\VotingGateway;
 
@@ -21,20 +20,17 @@ final class VotingPermissions
 	private Session $session;
 	private VotingGateway $votingGateway;
 	private RegionGateway $regionGateway;
-	private StoreGateway $storeGateway;
 	private GroupFunctionGateway $groupFunctionGateway;
 
 	public function __construct(
 		Session $session,
 		VotingGateway $votingGateway,
 		RegionGateway $regionGateway,
-		StoreGateway $storeGateway,
 		GroupFunctionGateway $groupFunctionGateway
 	) {
 		$this->session = $session;
 		$this->votingGateway = $votingGateway;
 		$this->regionGateway = $regionGateway;
-		$this->storeGateway = $storeGateway;
 		$this->groupFunctionGateway = $groupFunctionGateway;
 	}
 

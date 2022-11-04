@@ -35,15 +35,14 @@ All scripts can be run with `./scripts/[script]`.
 | `containers-init`                           | dev           | Boots up docker-containers and initialize the database  |
 | `containers-start`                          | dev           | Start the docker-containers and clears assets |
 | `containers-restart`                        | dev           | Restarts the docker-containers and clears the assets-folder |
-| `containers-stop [env]`                     | (dev|test)    | Stops the docker-containers |
-| `containers-remove`                         |               | Removes anything added by `start`/`test` scripts |
+| `containers-stop [env]`                     | dev|test      | Stops the docker-containers |
 
 ## Database `scripts`
 | Script                                      | ENV           | Description                                                                           |
 |---------------------------------------------|---------------|---------------------------------------------------------------------------------------|
 | `db-init`                                   | dev           | Initialize the database, Seeds with fake data and runs maintenance scripts |
 | `db-seed`                                   | dev           | Seeds the database with fake data and runs maintenance scripts |
-| `db-drop`                                   | (dev)         | Drop the database |
+| `db-drop [env]`                             | dev|test      | Drop the database |
 | `db-dump`                                   | (dev)         | Run a `mysqldump` command in correct context |
 | `db-run [command]`                          | (dev)         | Run a `mysql` command in correct context: `mysql foodsharing "select * from fs_foodsaver"` |
 | `db-doc-build`                              | (dev)         | Generates the data for [Tables, columns overview](database-tables-columns.md) |

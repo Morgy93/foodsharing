@@ -40,7 +40,6 @@ class MailboxRestController extends AbstractFOSRestController
 	 * @OA\Response(response="403", description="Insufficient permissions to modify the email.")
 	 * @OA\Response(response="404", description="Email does not exist.")
 	 * @OA\Tag(name="emails")
-	 *
 	 * @Rest\Patch("emails/{emailId}/{status}", requirements={"emailId" = "\d+", "status" = "[0-1]"})
 	 */
 	public function setEmailStatusAction(int $emailId, int $status): Response
@@ -64,7 +63,6 @@ class MailboxRestController extends AbstractFOSRestController
 	 * @OA\Response(response="200", description="Success")
 	 * @OA\Response(response="403", description="Insufficient permissions to delete the email")
 	 * @OA\Tag(name="emails")
-	 *
 	 * @Rest\Delete("emails/{emailId}", requirements={"emailId" = "\d+"})
 	 */
 	public function deleteEmailAction(int $emailId): Response
@@ -94,7 +92,6 @@ class MailboxRestController extends AbstractFOSRestController
 	 * @OA\Response(response="200", description="Success.")
 	 * @OA\Response(response="401", description="Not logged in.")
 	 * @OA\Tag(name="emails")
-	 *
 	 * @Rest\Get("emails/unread-count")
 	 */
 	public function getUnreadMailCountAction(): Response

@@ -37,7 +37,6 @@ class SettingsRestController extends AbstractFOSRestController
 	 * @OA\Response(response="200", description="Success")
 	 * @OA\Response(response="400", description="Invalid mode or parameters")
 	 * @OA\Response(response="401", description="Not logged in")
-	 *
 	 * @Rest\Patch("user/sleepmode")
 	 * @Rest\RequestParam(name="mode", nullable=false, allowBlank=false, requirements="\d+", description="sleep mode as an integer")
 	 * @Rest\RequestParam(name="from", nullable=true, description="start date of the sleep interval")

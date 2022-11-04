@@ -1,16 +1,15 @@
 #!/bin/bash
-
-export FS_ENV=test
-
-set -o errexit
-
 dir=$(dirname "$0")
 
 # shellcheck source=./__helping-functions.sh
 source "$dir"/__helping-functions.sh
 
-echo "Running client js tests"
+# ENVS
+export FS_ENV=test
+export CURRENT_USER=$(id -u):$(id -g)
+
+# set -o errexit tells the shell to exit as soon as a command exits with non-zero status, i.e. fails
+set -o errexit
+
+log-header "Running client js tests"
 run-in-container client 'yarn && yarn lint && yarn test'
-
-echo "Done!"
-

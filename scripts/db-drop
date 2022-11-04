@@ -1,5 +1,12 @@
 #!/bin/bash
 
+export FS_ENV=dev
+export CURRENT_USER=$(id -u):$(id -g)
+
+if [ $@ ]; then
+  FS_ENV=$@
+fi
+
 set -o errexit
 
 dir=$(dirname "$0")

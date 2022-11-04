@@ -48,7 +48,6 @@ class VotingRestController extends AbstractFOSRestController
 	 * @OA\Response(response="200", description="Success")
 	 * @OA\Response(response="404", description="Poll does not exist.")
 	 * @OA\Tag(name="polls")
-	 *
 	 * @Rest\Get("polls/{pollId}", requirements={"pollId" = "\d+"})
 	 */
 	public function getPoll(int $pollId): Response
@@ -74,7 +73,6 @@ class VotingRestController extends AbstractFOSRestController
 	 * @OA\Parameter(name="regionId", in="path", @OA\Schema(type="integer"), description="which region to list polls for")
 	 * @OA\Response(response="200", description="Success")
 	 * @OA\Tag(name="polls")
-	 *
 	 * @Rest\Get("groups/{groupId}/polls", requirements={"groupId" = "\d+"})
 	 */
 	public function listPolls(int $groupId): Response
@@ -101,7 +99,6 @@ class VotingRestController extends AbstractFOSRestController
 	 * @OA\Response(response="403", description="Insufficient permissions to vote in that polls.")
 	 * @OA\Response(response="404", description="Poll does not exist.")
 	 * @OA\Tag(name="polls")
-	 *
 	 * @Rest\Put("polls/{pollId}/vote", requirements={"pollId" = "\d+"})
 	 * @Rest\RequestParam(name="options", nullable=false)
 	 */
@@ -142,7 +139,6 @@ class VotingRestController extends AbstractFOSRestController
 	 * @OA\Response(response="400", description="Invalid parameters.")
 	 * @OA\Response(response="403", description="Insufficient permissions to create a poll in that region.")
 	 * @OA\Tag(name="polls")
-	 *
 	 * @Rest\Post("polls")
 	 * @Rest\RequestParam(name="name", nullable=false)
 	 * @Rest\RequestParam(name="description", nullable=false)
@@ -212,7 +208,6 @@ class VotingRestController extends AbstractFOSRestController
 	 * @OA\Response(response="403", description="Insufficient permissions to edit that poll")
 	 * @OA\Response(response="404", description="Poll does not exist")
 	 * @OA\Tag(name="polls")
-	 *
 	 * @Rest\Patch("polls/{pollId}", requirements={"pollId" = "\d+"})
 	 * @Rest\RequestParam(name="name", nullable=true, default=null)
 	 * @Rest\RequestParam(name="description", nullable=true, default=null)
@@ -298,7 +293,6 @@ class VotingRestController extends AbstractFOSRestController
 	 * @OA\Response(response="403", description="Insufficient permissions to delete that poll.")
 	 * @OA\Response(response="404", description="Poll does not exist.")
 	 * @OA\Tag(name="polls")
-	 *
 	 * @Rest\Delete("polls/{pollId}", requirements={"pollId" = "\d+"})
 	 */
 	public function deletePollAction(int $pollId): Response

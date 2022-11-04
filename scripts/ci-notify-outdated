@@ -53,4 +53,4 @@ yarn_outdated () {
 
 send_to_slack "Outdated PHP dependencies" "$(composer_outdated "$basedir")"
 send_to_slack "Outdated Javascript dependencies ($(client/))" "$(yarn_outdated "$basedir/client")"
-send_to_slack "Outdated Javascript dependencies ($(websocket/))" "$(yarn_outdated "$basedir/chat")"
+send_to_slack "Outdated Javascript dependencies ($(websocket/))" "$(yarn_outdated "$basedir/websocket")"

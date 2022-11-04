@@ -89,7 +89,7 @@ class WebPushHandler implements PushNotificationHandlerInterface
 			// set body
 			$payloadArray['options']['body'] = $notification->getMessage()->body;
 			// set time stamp
-			$payloadArray['options']['timestamp'] = $notification->getMessage()->sentAt->getTimestamp() * 1000; // timestamp needs to be in milliseconds
+			$payloadArray['options']['timestamp'] = strtotime($notification->getMessage()->sentAt) * 1000; // timestamp needs to be in milliseconds
 			// set action
 			$payloadArray['options']['data']['action'] = ['page' => 'conversations', 'params' => [$notification->getConversationId()]]; // this thing will be resolved to a url by urls.js on client side
 			// Set title

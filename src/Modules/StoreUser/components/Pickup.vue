@@ -48,7 +48,7 @@
             :key="n"
             :allow-join="!isUserParticipant && isAvailable && n == 1"
             :allow-remove="isCoordinator && n == emptySlots && !isInPast"
-            @join="$refs.modal_join.show(); fetchSameDayPickups()"
+            @join="$refs.modal_join.show(); fetchSameDayPickups(); checkPickupRule()"
             @remove="$emit('remove-slot', date)"
           />
           <div class="add-pickup-slot">
@@ -71,7 +71,8 @@
       :title="$i18n('pickup.join_title_date', $dateFormatter.dateTime(date))"
       :cancel-title="$i18n('pickup.join_cancel')"
       :ok-title="$i18n('pickup.join_agree')"
-      :ok-disabled="!loadedUserPickups"
+      :ok-disabled="!loadedUserPickups || !pickupRulePass"
+      :ok-variant="okVariant"
       :hide-header-close="true"
       modal-class="bootstrap"
       header-class="d-flex"
@@ -103,6 +104,16 @@
         </b-list-group>
       </div>
       <div v-else-if="!loadedUserPickups">
+        <b-alert variant="light" show>
+          <i class="fas fa-fw fa-sync fa-spin" />
+        </b-alert>
+      </div>
+      <div v-if="!pickupRulePass">
+        <b-alert variant="warning" show>
+          {{ $i18n('pickup.region_pickup_rule_failed') }}
+        </b-alert>
+      </div>
+      <div v-if="!loadedPickupRule">
         <b-alert variant="light" show>
           <i class="fas fa-fw fa-sync fa-spin" />
         </b-alert>
@@ -189,7 +200,7 @@
 
 import { BFormTextarea, BModal, VBTooltip } from 'bootstrap-vue'
 
-import { listSameDayPickupsForUser } from '@/api/pickups'
+import { listSameDayPickupsForUser, checkPickupRuleStore } from '@/api/pickups'
 
 import TakenSlot from './TakenSlot'
 import EmptySlot from './EmptySlot'
@@ -219,6 +230,9 @@ export default {
       },
       loadedUserPickups: false,
       sameDayPickups: [],
+      pickupRulePass: true,
+      loadedPickupRule: false,
+      okVariant: 'success',
       // cannot use slotDate here since it's computed and needs to avoid circular data references:
       teamMessage: this.$i18n('pickup.leave_team_message_template', { date: this.$dateFormatter.dateTime(this.date) }),
       kickMessage: '',
@@ -263,6 +277,12 @@ export default {
       this.sameDayPickups = await listSameDayPickupsForUser(this.user.id, this.date)
       this.loadedUserPickups = true
     },
+    async checkPickupRule () {
+      this.pickupRulePass = await checkPickupRuleStore(this.user.id, this.storeId, this.date)
+      this.okVariant = (!this.pickupRulePass) ? 'danger' : 'success'
+      this.loadedPickupRule = true
+    },
+
   },
 }
 </script>

@@ -2,7 +2,6 @@
 
 namespace Foodsharing\Modules\Foodsaver;
 
-use Foodsharing\Modules\Content\ContentGateway;
 use Foodsharing\Modules\Core\Control;
 use Foodsharing\Modules\Core\DBConstants\Foodsaver\Role;
 use Foodsharing\Modules\Region\RegionGateway;
@@ -16,7 +15,6 @@ class FoodsaverControl extends Control
 {
 	private FoodsaverGateway $foodsaverGateway;
 	private FoodsaverTransactions $foodsaverTransactions;
-	private ContentGateway $contentGateway;
 	private RegionGateway $regionGateway;
 	private SettingsGateway $settingsGateway;
 	private ProfilePermissions $profilePermissions;
@@ -28,7 +26,6 @@ class FoodsaverControl extends Control
 		FoodsaverView $view,
 		FoodsaverGateway $foodsaverGateway,
 		FoodsaverTransactions $foodsaverTransactions,
-		ContentGateway $contentGateway,
 		RegionGateway $regionGateway,
 		SettingsGateway $settingsGateway,
 		ProfilePermissions $profilePermissions,
@@ -39,7 +36,6 @@ class FoodsaverControl extends Control
 		$this->view = $view;
 		$this->foodsaverGateway = $foodsaverGateway;
 		$this->foodsaverTransactions = $foodsaverTransactions;
-		$this->contentGateway = $contentGateway;
 		$this->regionGateway = $regionGateway;
 		$this->settingsGateway = $settingsGateway;
 		$this->profilePermissions = $profilePermissions;

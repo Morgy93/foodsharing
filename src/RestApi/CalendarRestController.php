@@ -57,7 +57,6 @@ class CalendarRestController extends AbstractFOSRestController
 	 * @OA\Response(response="401", description="Not logged in")
 	 * @OA\Response(response="404", description="User does not have a token")
 	 * @OA\Tag(name="calendar")
-	 *
 	 * @Rest\Get("calendar/token")
 	 */
 	public function getTokenAction(): Response
@@ -82,7 +81,6 @@ class CalendarRestController extends AbstractFOSRestController
 	 * @OA\Response(response="200", description="Success")
 	 * @OA\Response(response="401", description="Not logged in")
 	 * @OA\Tag(name="calendar")
-	 *
 	 * @Rest\Put("calendar/token")
 	 */
 	public function createTokenAction(): Response
@@ -105,7 +103,6 @@ class CalendarRestController extends AbstractFOSRestController
 	 * @OA\Response(response="200", description="Success")
 	 * @OA\Response(response="401", description="Not logged in")
 	 * @OA\Tag(name="calendar")
-	 *
 	 * @Rest\Delete("calendar/token")
 	 */
 	public function deleteTokenAction(): Response
@@ -129,7 +126,6 @@ class CalendarRestController extends AbstractFOSRestController
 	 * @OA\Response(response="200", description="Success.")
 	 * @OA\Response(response="403", description="Insufficient permissions or invalid token.")
 	 * @OA\Tag(name="calendar")
-	 *
 	 * @Rest\Get("calendar/{token}")
 	 */
 	public function listAppointmentsAction(string $token): Response

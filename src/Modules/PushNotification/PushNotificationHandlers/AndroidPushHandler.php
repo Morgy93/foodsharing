@@ -52,13 +52,7 @@ class AndroidPushHandler implements PushNotificationHandlerInterface
 			$subscriptionArray = json_decode($subscriptionAsJson, true);
 
 			try {
-				$userPublicKey = $subscriptionArray['public_key']['public_key'];
-				$userAuthToken = $subscriptionArray['public_key']['auth_secret'];
-				$userFcmToken = $subscriptionArray['fcm_token'];
-				$contentEncoding = 'aes128gcm';
-
-				$keychainUniqueId = $subscriptionArray['public_key']['keychain_unique_id'] ?? '';
-				$serialNumber = $subscriptionArray['public_key']['serial_number'] ?? 0;
+				[$userPublicKey, $userAuthToken, $userFcmToken, $contentEncoding, $keychainUniqueId, $serialNumber] = $this->readData($subscriptionArray);
 			} catch (Exception $e) {
 				// Failed to read required elements from the subscription data
 				$deadSubscriptions[] = $subscriptionId;
@@ -165,5 +159,23 @@ class AndroidPushHandler implements PushNotificationHandlerInterface
 		}
 
 		return $payload;
+	}
+
+	/**
+	 * Own ErrorHandler that converts errors into exceptions so that the pipeline does not notice them.
+	 *
+	 * @throws Exception
+	 */
+	private function readData(mixed $subscriptionArray): array
+	{
+		$userPublicKey = $subscriptionArray['public_key']['public_key'];
+		$userAuthToken = $subscriptionArray['public_key']['auth_secret'];
+		$userFcmToken = $subscriptionArray['fcm_token'];
+		$contentEncoding = 'aes128gcm';
+
+		$keychainUniqueId = $subscriptionArray['public_key']['keychain_unique_id'] ?? '';
+		$serialNumber = $subscriptionArray['public_key']['serial_number'] ?? 0;
+
+		return [$userPublicKey, $userAuthToken, $userFcmToken, $contentEncoding, $keychainUniqueId, $serialNumber];
 	}
 }

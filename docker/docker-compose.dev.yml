@@ -24,7 +24,7 @@ services:
     container_name: foodsharing_dev_client
     command: sh -c "yarn && yarn dev"
     ports:
-      - 18090:8080
+      - 18090:8082
 
   # PHP mail queue runner
   #------------------------------------
@@ -61,10 +61,6 @@ services:
   #------------------------------------
   phpmyadmin:
     container_name: foodsharing_dev_phpmyadmin
-    environment:
-      - PMA_HOST=db
-      - PMA_USER=root
-      - PMA_PASSWORD=root
     ports:
       - 18081:80
 

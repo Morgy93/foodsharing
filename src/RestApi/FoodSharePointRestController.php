@@ -37,7 +37,6 @@ final class FoodSharePointRestController extends AbstractFOSRestController
 	 * Returns 200 and a list of food share points, 400 if the distance is out of range, or 401 if not logged in.
 	 *
 	 * @OA\Tag(name="foodsharepoint")
-	 *
 	 * @Rest\Get("foodSharePoints/nearby")
 	 * @Rest\QueryParam(name="lat", nullable=true)
 	 * @Rest\QueryParam(name="lon", nullable=true)
@@ -67,7 +66,6 @@ final class FoodSharePointRestController extends AbstractFOSRestController
 	 * DEPRECATED: Wrapper for listNearbyFoodSharePointsAction. Provides endpoint on old url.
 	 *
 	 * @OA\Tag(name="foodsharepoint")
-	 *
 	 * @Rest\Get("fairSharePoints/nearby")
 	 * @Rest\QueryParam(name="lat", nullable=true)
 	 * @Rest\QueryParam(name="lon", nullable=true)
@@ -85,7 +83,6 @@ final class FoodSharePointRestController extends AbstractFOSRestController
 	 * food share point, 404 if the food share point does not exist, or 401 if not logged in.
 	 *
 	 * @OA\Tag(name="foodsharepoint")
-	 *
 	 * @Rest\Get("foodSharePoints/{foodSharePointId}", requirements={"foodSharePointId" = "\d+"})
 	 */
 	public function getFoodSharePointAction(int $foodSharePointId): Response
@@ -108,7 +105,6 @@ final class FoodSharePointRestController extends AbstractFOSRestController
 	 * DEPRECATED: Wrapper for getFoodSharePointAction. Provides endpoint on old url.
 	 *
 	 * @OA\Tag(name="foodsharepoint")
-	 *
 	 * @Rest\Get("fairSharePoints/{foodSharePointId}", requirements={"foodSharePointId" = "\d+"})
 	 *
 	 * @deprecated Old naming scheme, remove this when all clients are updated

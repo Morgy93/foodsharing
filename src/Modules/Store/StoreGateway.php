@@ -122,7 +122,8 @@ class StoreGateway extends BaseGateway
 					`abholmenge`,
 					`prefetchtime`,
 					`public_info`,
-					`public_time`
+					`public_time`,
+					`use_region_pickup_rule`
 
 			FROM 	`fs_betrieb`
 
@@ -166,6 +167,7 @@ class StoreGateway extends BaseGateway
 			'begin' => $store->cooperationStart,
 
 			'prefetchtime' => $store->calendarInterval,
+			'use_region_pickup_rule' => $store->useRegionPickupRule,
 			'abholmenge' => $store->weight,
 			'ueberzeugungsarbeit' => $store->effort,
 			'presse' => $store->publicity,
@@ -372,6 +374,7 @@ class StoreGateway extends BaseGateway
         			b.`prefetchtime`,
         			b.`team_conversation_id`,
         			b.`springer_conversation_id`,
+        			b.`use_region_pickup_rule`,
         			count(DISTINCT(a.date)) AS pickup_count
 
 			FROM 	`fs_betrieb` b
@@ -648,6 +651,11 @@ class StoreGateway extends BaseGateway
 		}
 
 		return $result;
+	}
+
+	public function getUseRegionPickupRule(int $storeId)
+	{
+		return $this->db->fetchValueByCriteria('fs_betrieb', 'use_region_pickup_rule', ['id' => $storeId]);
 	}
 
 	public function getStoreCountForBieb($fs_id)
@@ -1084,5 +1092,17 @@ class StoreGateway extends BaseGateway
 		});
 
 		return $logEntriesWithRequiredStoreActions;
+	}
+
+	public function listRegionStoresActivePickupRule(int $regionId): array
+	{
+		return $this->db->fetchAll(
+			'select  id as storeId,
+        				   name as storeName
+					from fs_betrieb b
+					where b.bezirk_id = :regionId
+					  and b.use_region_pickup_rule',
+			[':regionId' => $regionId]
+		);
 	}
 }

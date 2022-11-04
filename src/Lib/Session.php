@@ -100,8 +100,8 @@ class Session
 		ini_set('session.save_path', 'tcp://' . REDIS_HOST . ':' . REDIS_PORT);
 
 		fSession::setLength(
-			static::DEFAULT_NORMAL_SESSION_TIMESPAN,
-			static::DEFAULT_PERSISTENT_SESSION_TIMESPAN
+			self::DEFAULT_NORMAL_SESSION_TIMESPAN,
+			self::DEFAULT_PERSISTENT_SESSION_TIMESPAN
 		);
 
 		if ($rememberMe) {
@@ -113,7 +113,7 @@ class Session
 
 		fSession::open();
 
-		$cookieExpires = $this->isPersistent() ? strtotime(static::DEFAULT_PERSISTENT_SESSION_TIMESPAN) : 0;
+		$cookieExpires = $this->isPersistent() ? strtotime(self::DEFAULT_PERSISTENT_SESSION_TIMESPAN) : 0;
 		if (!isset($_COOKIE['CSRF_TOKEN']) || !$_COOKIE['CSRF_TOKEN'] || !$this->isValidCsrfToken('cookie', $_COOKIE['CSRF_TOKEN'])) {
 			setcookie('CSRF_TOKEN', $this->generateCrsfToken('cookie'), $cookieExpires, '/');
 		}
@@ -420,7 +420,7 @@ class Session
 				}
 			}
 
-			$_SESSION['client']['bezirke'] = $this->regionGateway->listForFoodsaver($fs['id']) ?? [];
+			$_SESSION['client']['bezirke'] = $this->regionGateway->listForFoodsaver($fs['id']);
 		}
 
 		$_SESSION['client']['verantwortlich'] = [];

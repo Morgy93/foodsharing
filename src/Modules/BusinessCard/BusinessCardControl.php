@@ -149,8 +149,8 @@ class BusinessCardControl extends Control
 		$pdf->AddFont('Ubuntu-L', '', 'lib/font/ubuntul.php', true);
 		$pdf->AddFont('AcmeFont Regular', '', 'lib/font/acmefont.php', true);
 
-		$x = 0;
-		$y = 0;
+		$x = 0.0;
+		$y = 0.0;
 
 		for ($i = 0; $i < 8; ++$i) {
 			$pdf->Image('img/fsvisite.png', 10 + $x, 10 + $y, 91, 61);

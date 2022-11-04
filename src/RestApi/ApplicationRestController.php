@@ -42,7 +42,6 @@ class ApplicationRestController extends AbstractFOSRestController
 	 * @OA\Response(response="200", description="success")
 	 * @OA\Response(response="403", description="Insufficient permissions")
 	 * @OA\Response(response="404", description="Workgroup does not exist.")
-	 *
 	 * @Rest\Patch("applications/{groupId}/{userId}", requirements={"groupId" = "\d+", "userId" = "\d+"})
 	 */
 	public function acceptApplicationAction(int $groupId, int $userId): Response
@@ -74,7 +73,6 @@ class ApplicationRestController extends AbstractFOSRestController
 	 * @OA\Response(response="200", description="Success")
 	 * @OA\Response(response="403", description="Insufficient permissions")
 	 * @OA\Response(response="404", description="Workgroup does not exist.")
-	 *
 	 * @Rest\Delete("applications/{groupId}/{userId}", requirements={"groupId" = "\d+", "userId" = "\d+"})
 	 */
 	public function declineApplicationAction(int $groupId, int $userId): Response

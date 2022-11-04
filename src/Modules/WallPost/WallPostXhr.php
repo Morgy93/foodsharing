@@ -8,7 +8,6 @@ use Foodsharing\Lib\Xhr\XhrResponses;
 use Foodsharing\Modules\Core\Control;
 use Foodsharing\Modules\FoodSharePoint\FoodSharePointTransactions;
 use Foodsharing\Permissions\WallPostPermissions;
-use Foodsharing\Utility\Sanitizer;
 
 class WallPostXhr extends Control
 {
@@ -17,7 +16,6 @@ class WallPostXhr extends Control
 	private FoodSharePointTransactions $foodSharePointTransactions;
 	private WallPostGateway $wallPostGateway;
 	private WallPostPermissions $wallPostPermissions;
-	private Sanitizer $sanitizerService;
 
 	public function __construct(
 		FoodSharePointTransactions $foodSharePointTransactions,
@@ -25,14 +23,12 @@ class WallPostXhr extends Control
 		WallPostPermissions $wallPostPermissions,
 		WallPostView $view,
 		Session $session,
-		Sanitizer $sanitizerService
 	) {
 		$this->foodSharePointTransactions = $foodSharePointTransactions;
 		$this->wallPostGateway = $wallPostGateway;
 		$this->wallPostPermissions = $wallPostPermissions;
 		$this->view = $view;
 		$this->session = $session;
-		$this->sanitizerService = $sanitizerService;
 
 		parent::__construct();
 

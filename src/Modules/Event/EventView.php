@@ -6,7 +6,6 @@ use Foodsharing\Lib\Session;
 use Foodsharing\Lib\View\Utils;
 use Foodsharing\Modules\Core\DBConstants\Unit\UnitType;
 use Foodsharing\Modules\Core\View;
-use Foodsharing\Permissions\EventPermissions;
 use Foodsharing\Utility\DataHelper;
 use Foodsharing\Utility\IdentificationHelper;
 use Foodsharing\Utility\ImageHelper;
@@ -20,13 +19,10 @@ use Symfony\Contracts\Translation\TranslatorInterface;
 
 class EventView extends View
 {
-	private $eventPermissions;
-
 	public function __construct(
 		\Twig\Environment $twig,
 		Session $session,
 		Utils $viewUtils,
-		EventPermissions $eventPermissions,
 		DataHelper $dataHelper,
 		IdentificationHelper $identificationHelper,
 		ImageHelper $imageService,
@@ -53,7 +49,6 @@ class EventView extends View
 			$translationHelper,
 			$translator
 		);
-		$this->eventPermissions = $eventPermissions;
 	}
 
 	public function eventForm($bezirke)

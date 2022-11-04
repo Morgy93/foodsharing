@@ -3,12 +3,8 @@
 namespace Foodsharing\Modules\Report;
 
 use Foodsharing\Lib\Xhr\XhrDialog;
-use Foodsharing\Modules\Bell\BellGateway;
 use Foodsharing\Modules\Core\Control;
 use Foodsharing\Modules\Foodsaver\FoodsaverGateway;
-use Foodsharing\Modules\Group\GroupFunctionGateway;
-use Foodsharing\Modules\Mailbox\MailboxGateway;
-use Foodsharing\Modules\Region\RegionGateway;
 use Foodsharing\Permissions\ReportPermissions;
 use Foodsharing\Utility\Sanitizer;
 use Foodsharing\Utility\TimeHelper;
@@ -21,10 +17,6 @@ class ReportXhr extends Control
 	private $sanitizerService;
 	private $timeHelper;
 	private $reportPermissions;
-	private $bellGateway;
-	private $regionGateway;
-	private $mailboxGateway;
-	private $groupFunctionGateway;
 
 	public function __construct(
 		ReportGateway $reportGateway,
@@ -33,10 +25,6 @@ class ReportXhr extends Control
 		Sanitizer $sanitizerService,
 		TimeHelper $timeHelper,
 		ReportPermissions $reportPermissions,
-		BellGateway $bellGateway,
-		RegionGateway $regionGateway,
-		MailboxGateway $mailboxGateway,
-		GroupFunctionGateway $groupFunctionGateway
 	) {
 		$this->view = $view;
 		$this->reportGateway = $reportGateway;
@@ -44,10 +32,6 @@ class ReportXhr extends Control
 		$this->sanitizerService = $sanitizerService;
 		$this->timeHelper = $timeHelper;
 		$this->reportPermissions = $reportPermissions;
-		$this->bellGateway = $bellGateway;
-		$this->regionGateway = $regionGateway;
-		$this->mailboxGateway = $mailboxGateway;
-		$this->groupFunctionGateway = $groupFunctionGateway;
 
 		parent::__construct();
 

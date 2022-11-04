@@ -7,9 +7,7 @@ services:
   #------------------------------------
   nginx:
     container_name: foodsharing_nginx
-    # Prebuild custom image, with pinned version (https://gitlab.com/foodsharing-dev/images/-/blob/master/web/Dockerfile)
-    # To edit the reverse proxy configuration (https://gitlab.com/foodsharing-dev/images/-/blob/master/web)
-    image: registry.gitlab.com/foodsharing-dev/images/web:1.12
+    image: registry.gitlab.com/foodsharing-dev/images/nginx:latest
     depends_on:
       - app
       - websocket
@@ -25,8 +23,7 @@ services:
   app:
     user: ${CURRENT_USER}
     container_name: foodsharing_app
-    # Prebuild custom image, with pinned version (https://gitlab.com/foodsharing-dev/images/-/blob/master/php/Dockerfile)
-    image: registry.gitlab.com/foodsharing-dev/images/php:8.0.13
+    image: registry.gitlab.com/foodsharing-dev/images/php:latest
     working_dir: /app
     depends_on:
       - db
@@ -49,7 +46,7 @@ services:
   client:
     user: ${CURRENT_USER}
     container_name: foodsharing_client
-    image: node:16.13.2-alpine3.14
+    image: registry.gitlab.com/foodsharing-dev/images/node:latest
     # command: sh -c "yarn && yarn dev"
     command: sh -c "yarn && yarn build"
     working_dir: /home/node/app/client
@@ -57,20 +54,19 @@ services:
       - ../:/home/node/app:delegated
     environment:
       - HOST=0.0.0.0 #https://github.com/webpack/webpack-dev-server/issues/416
-      - PROXY_TARGET=http://nginx:8080
+      - PROXY_TARGET=http://nginx
       - NPM_CONFIG_CACHE=/tmp/.npm-cache
     # expose:
-    #   - 8080
+    #   - 8082
     # ports:
-    #   - 8080:8080
+    #   - 8080:8082
 
   # PHP mail queue runner
   #------------------------------------
   mailqueuerunner:
     user: ${CURRENT_USER}
     container_name: foodsharing_mailqueuerunner
-    # Prebuild custom image, with pinned version (https://gitlab.com/foodsharing-dev/images/-/blob/master/php/Dockerfile)
-    image: registry.gitlab.com/foodsharing-dev/images/php:8.0.13
+    image: registry.gitlab.com/foodsharing-dev/images/php:latest
     command: php run.php Mails queueWorker
     restart: unless-stopped
     depends_on:
@@ -88,7 +84,7 @@ services:
   websocket:
     user: ${CURRENT_USER}
     container_name: foodsharing_websocket
-    image: node:16.13.2-alpine3.14
+    image: registry.gitlab.com/foodsharing-dev/images/node:latest
     working_dir: /app/websocket
     command: sh -c "yarn && yarn ts-node-dev src/index.ts 0.0.0.0"
     depends_on:
@@ -108,10 +104,7 @@ services:
   #------------------------------------
   db:
     container_name: foodsharing_db
-    # Prebuild custom image, with pinned version (https://gitlab.com/foodsharing-dev/images/-/blob/master/db/dev/Dockerfile)
-    # To edit the database configuration (https://gitlab.com/foodsharing-dev/images/-/blob/master/db/dev/)
-    image: mariadb:10.6
-    # image: registry.gitlab.com/foodsharing-dev/images/db/dev:10.9.3
+    image: registry.gitlab.com/foodsharing-dev/images/mariadb:latest
     environment:
       # - MYSQL_ROOT_PASSWORD=root
       - TZ=Europe/Berlin
@@ -126,7 +119,7 @@ services:
   #------------------------------------
   redis:
     container_name: foodsharing_redis
-    image: redis:6.0.10-alpine
+    image: registry.gitlab.com/foodsharing-dev/images/redis:latest
     # expose:
     #   - 6379
     # ports:
@@ -136,11 +129,11 @@ services:
   #------------------------------------
   phpmyadmin:
     container_name: foodsharing_phpmyadmin
-    image: phpmyadmin/phpmyadmin
+    image: registry.gitlab.com/foodsharing-dev/images/phpmyadmin:latest
     environment:
       - PMA_HOST=db
-      # - PMA_USER=root
-      # - PMA_PASSWORD=root
+      - PMA_USER=root
+      - PMA_PASSWORD=root
     restart: unless-stopped
     # expose:
     #   - 80
@@ -151,7 +144,7 @@ services:
   #------------------------------------
   maildev:
     container_name: foodsharing_maildev
-    image: djfarrelly/maildev
+    image: registry.gitlab.com/foodsharing-dev/images/maildev:latest
     command: >
       bin/maildev
         --web 80
@@ -167,7 +160,7 @@ services:
   #------------------------------------
   influxdb:
     container_name: foodsharing_influxdb
-    image: influxdb:1.8
+    image: registry.gitlab.com/foodsharing-dev/images/influxdb:latest
     command: >
       influxd -config /etc/influxdb/influxdb.toml
     environment:
@@ -191,8 +184,7 @@ services:
   docs:
     user: ${CURRENT_USER}
     container_name: foodsharing_docs
-    # Prebuild custom image, with pinned version (https://gitlab.com/foodsharing-dev/images/-/blob/master/mdbook_ci/Dockerfile)
-    image: registry.gitlab.com/foodsharing-dev/images/mdbook_ci:1.1
+    image: registry.gitlab.com/foodsharing-dev/images/mdbook:latest
     depends_on:
       - db
     command: mdbook serve --hostname '0.0.0.0'

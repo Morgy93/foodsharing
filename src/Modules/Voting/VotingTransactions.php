@@ -10,7 +10,6 @@ use Foodsharing\Modules\Core\DBConstants\Bell\BellType;
 use Foodsharing\Modules\Core\DBConstants\Foodsaver\Role;
 use Foodsharing\Modules\Core\DBConstants\Voting\VotingScope;
 use Foodsharing\Modules\Core\DBConstants\Voting\VotingType;
-use Foodsharing\Modules\Foodsaver\FoodsaverGateway;
 use Foodsharing\Modules\Region\RegionGateway;
 use Foodsharing\Modules\Store\StoreGateway;
 use Foodsharing\Modules\Voting\DTO\Poll;
@@ -19,7 +18,6 @@ use Foodsharing\Permissions\VotingPermissions;
 class VotingTransactions
 {
 	private VotingGateway $votingGateway;
-	private FoodsaverGateway $foodsaverGateway;
 	private StoreGateway $storeGateway;
 	private RegionGateway $regionGateway;
 	private BellGateway $bellGateway;
@@ -28,7 +26,6 @@ class VotingTransactions
 
 	public function __construct(
 		VotingGateway $votingGateway,
-		FoodsaverGateway $foodsaverGateway,
 		StoreGateway $storeGateway,
 		RegionGateway $regionGateway,
 		BellGateway $bellGateway,
@@ -36,7 +33,6 @@ class VotingTransactions
 		Session $session
 	) {
 		$this->votingGateway = $votingGateway;
-		$this->foodsaverGateway = $foodsaverGateway;
 		$this->storeGateway = $storeGateway;
 		$this->regionGateway = $regionGateway;
 		$this->bellGateway = $bellGateway;
@@ -121,9 +117,9 @@ class VotingTransactions
 	 * @param int $regionId id of the poll's region
 	 * @param int $scope a poll's scope, see {@link VotingScope}
 	 *
-	 * @throws Exception if the scope is not a valid type
-	 *
 	 * @return array a list of user ids
+	 *
+	 * @throws Exception if the scope is not a valid type
 	 */
 	private function listUserIds(int $regionId, int $scope): array
 	{

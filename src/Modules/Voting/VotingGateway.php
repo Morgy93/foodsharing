@@ -141,7 +141,7 @@ class VotingGateway extends BaseGateway
 	 */
 	public function vote(int $pollId, int $userId, array $options): void
 	{
-		$this->db->execute('LOCK TABLES fs_poll WRITE, fs_foodsaver_has_poll WRITE, fs_poll_has_option WRITE');
+		$this->db->execute('LOCK TABLES fs_poll WRITE, fs_foodsaver_has_poll WRITE, fs_poll_has_options WRITE');
 		$this->db->beginTransaction();
 
 		// update vote counts for options

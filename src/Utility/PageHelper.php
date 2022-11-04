@@ -40,7 +40,6 @@ final class PageHelper
 
 	public array $jsData = [];
 
-	private ImageHelper $imageService;
 	private RouteHelper $routeHelper;
 	private Sanitizer $sanitizerService;
 	private Session $session;
@@ -60,7 +59,6 @@ final class PageHelper
 	public function __construct(
 		Session $session,
 		Sanitizer $sanitizerService,
-		ImageHelper $imageService,
 		Environment $twig,
 		RouteHelper $routeHelper,
 		MailboxPermissions $mailboxPermissions,
@@ -76,7 +74,6 @@ final class PageHelper
 		RegionGateway $regionGateway
 	) {
 		$this->twig = $twig;
-		$this->imageService = $imageService;
 		$this->routeHelper = $routeHelper;
 		$this->sanitizerService = $sanitizerService;
 		$this->session = $session;
@@ -250,7 +247,6 @@ final class PageHelper
 				$group['isAdmin'] = $this->session->isAdminFor($groupId);
 				$group['mayAccessReportGroupReports'] = $this->reportPermissions->mayAccessReportGroupReports($groupId);
 				$group['mayAccessArbitrationGroupReports'] = $this->reportPermissions->mayAccessArbitrationReports($groupId);
-				$group['maySetRegionOptions'] = $this->regionPermissions->maySetRegionOptions($groupId);
 				$group['maySetRegionPin'] = $this->regionPermissions->maySetRegionPin($groupId);
 				$regions[] = $group;
 			} else {

@@ -2,7 +2,6 @@
 
 namespace Foodsharing\Modules\Application;
 
-use Foodsharing\Lib\Session;
 use Foodsharing\Modules\Bell\BellGateway;
 use Foodsharing\Modules\Bell\DTO\Bell;
 use Foodsharing\Modules\Core\DBConstants\Bell\BellType;
@@ -11,16 +10,13 @@ class ApplicationTransactions
 {
 	private ApplicationGateway $applicationGateway;
 	private BellGateway $bellGateway;
-	private Session $session;
 
 	public function __construct(
 		ApplicationGateway $applicationGateway,
 		BellGateway $bellGateway,
-		Session $session
 	) {
 		$this->applicationGateway = $applicationGateway;
 		$this->bellGateway = $bellGateway;
-		$this->session = $session;
 	}
 
 	public function acceptApplication(array $group, int $userId): void

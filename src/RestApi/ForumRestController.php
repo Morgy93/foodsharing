@@ -154,7 +154,6 @@ class ForumRestController extends AbstractFOSRestController
 	 *
 	 * @OA\Parameter(name="threadId", in="path", @OA\Schema(type="integer"),
 	 *   description="which ID to return threads for")
-	 *
 	 * @OA\Response(response="200", description="Success")
 	 * @OA\Response(response="401", description="Not logged in.")
 	 * @OA\Response(response="403", description="Insufficient permissions to view that forum/thread")
@@ -449,7 +448,6 @@ class ForumRestController extends AbstractFOSRestController
 	 * @OA\Response(response="401", description="Not logged in")
 	 * @OA\Response(response="403", description="Insufficient permissions")
 	 * @OA\Response(response="404", description="Post does not exist")
-	 *
 	 * @Rest\Post("forum/post/{postId}/reaction/{emoji}", requirements={"postId" = "\d+", "emoji" = "\w+"})
 	 */
 	public function addReactionAction(int $postId, string $emoji): SymfonyResponse
@@ -480,7 +478,6 @@ class ForumRestController extends AbstractFOSRestController
 	 * @OA\Response(response="401", description="Not logged in")
 	 * @OA\Response(response="403", description="Insufficient permissions")
 	 * @OA\Response(response="404", description="Post does not exist")
-	 *
 	 * @Rest\Delete("forum/post/{postId}/reaction/{emoji}", requirements={"postId" = "\d+", "emoji" = "\w+"})
 	 */
 	public function deleteReactionAction(int $postId, string $emoji): SymfonyResponse

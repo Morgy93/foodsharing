@@ -8,16 +8,16 @@ Run the tests with:
 ./scripts/test
 ```
 
-You will need to have initialized everything once (with `./scripts/start`), but you do not need to have the main containers running to run the tests as it uses it's own cluster of docker containers.
+or 
 
-After running the test, you can stop it with ```FS_ENV=test ./scripts/stop```. If you don't, the docker containers keep running and need resources.
-With this, you can set the FS_ENV environment variable to test, so they operate on the test environment.
-Also it is possible to add this in the config file. Maybe some day this info gets added. :-)
+```
+./scripts/test acceptance LoginCest
+```
 
-After you have run the tests once, you can use `./scripts/test-rerun` which will run faster. It assumes that the containers have already been created and initialized, but otherwise is the same.
+To stop the Test containers run ```./scripts/stop test```.
 
 So far, end to end testing is working nicely (called acceptance tests in codeception).
-They run with a headless Firefox and Selenium inside the Docker setup, they are run on CI build too.
+They run with a headless Chrome and Selenium inside the Docker setup, they are run on CI build too.
 
 We are working on [restructing the code](https://gitlab.com/foodsharing-dev/foodsharing/issues/68) to enable unit testing.
 
@@ -27,20 +27,9 @@ The test contains stay around after running, and you can visit the test app
 
 If you want to run with debug mode turned on, then use: `./scripts/test --debug`.
 
-If you just want to run one test, then pass the path to that test as an argument, e.g. `./scripts/test tests/acceptance/LoginCept.php`.
-
 ## Writing unit tests
 
 CodeCeption uses PHPUnitTests under the hood and therefore the [PHPUnit test documentation](https://phpunit.readthedocs.io/en/8.0/) can be helpful.
-
-## Writing acceptance tests
-
-The `tests` directory has much stuff in it.
-
-You just need to care about 2 places:
-
-`tests/seed.sql` - add any data you want to be in the database when the tests are run
-`acceptance/` - copy an existing test and get started!
 
 http://codeception.com/docs/modules/WebDriver#Actions is a very useful page, showing all the things can call on`$I`.
 Please read the command descriptions carefully.

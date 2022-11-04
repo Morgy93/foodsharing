@@ -5,22 +5,13 @@ namespace Foodsharing\Modules\Message;
 use Carbon\Carbon;
 use Foodsharing\Modules\Core\BaseGateway;
 use Foodsharing\Modules\Core\Database;
-use Foodsharing\Modules\Foodsaver\FoodsaverGateway;
-use Foodsharing\Modules\Store\StoreGateway;
 
 final class MessageGateway extends BaseGateway
 {
-	private FoodsaverGateway $foodsaverGateway;
-	private StoreGateway $storeGateway;
-
 	public function __construct(
 		Database $db,
-		FoodsaverGateway $foodsaverGateway,
-		StoreGateway $storeGateway
 	) {
 		parent::__construct($db);
-		$this->foodsaverGateway = $foodsaverGateway;
-		$this->storeGateway = $storeGateway;
 	}
 
 	public function mayConversation(int $fsId, int $conversationId): bool

@@ -4,7 +4,9 @@ namespace Foodsharing\Modules\Store;
 
 use Foodsharing\Lib\Session;
 use Foodsharing\Lib\View\Utils;
+use Foodsharing\Modules\Core\DBConstants\Store\StoreSettings;
 use Foodsharing\Modules\Core\View;
+use Foodsharing\Modules\Store\DTO\Store;
 use Foodsharing\Utility\DataHelper;
 use Foodsharing\Utility\IdentificationHelper;
 use Foodsharing\Utility\ImageHelper;
@@ -152,8 +154,11 @@ class StoreView extends View
 				['id' => 1814400, 'name' => $this->translator->trans('store.prefetchthree')],
 				['id' => 2419200, 'name' => $this->translator->trans('store.prefetchfour')]
 			]]),
+			$this->v_utils->v_form_select('use_region_pickup_rule', ['values' => [
+				['id' => StoreSettings::USE_PICKUP_RULE_YES, 'name' => $this->translator->trans('yes')],
+				['id' => StoreSettings::USE_PICKUP_RULE_NO, 'name' => $this->translator->trans('no')]
+			]]),
 			$this->v_utils->v_form_select('abholmenge', ['values' => $weightArray]),
-
 			$this->v_utils->v_form_select('ueberzeugungsarbeit', ['values' => [
 				['id' => 1, 'name' => $this->translator->trans('store.convince.none')],
 				['id' => 2, 'name' => $this->translator->trans('store.convince.some')],
@@ -161,8 +166,8 @@ class StoreView extends View
 				['id' => 4, 'name' => $this->translator->trans('store.convince.final')]
 			]]),
 			$this->v_utils->v_form_select('presse', ['values' => [
-				['id' => 1, 'name' => $this->translator->trans('yes')],
-				['id' => 0, 'name' => $this->translator->trans('no')]
+				['id' => StoreSettings::PRESS_YES, 'name' => $this->translator->trans('yes')],
+				['id' => StoreSettings::PRESS_NO, 'name' => $this->translator->trans('no')]
 			]]),
 			$this->v_utils->v_form_select('sticker', ['values' => [
 				['id' => 1, 'name' => $this->translator->trans('yes')],
