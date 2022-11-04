@@ -29,7 +29,6 @@ class StoreFilterModel extends FilterModel
 		 * - 7 - PERMANENTLY_CLOSED
 		 *
 		 * @OA\Property(example="[1,3,2]")
-		 *
 		 * @Assert\Type (type="array")
 		 */
 		public array $cooperationStatus = [],
@@ -42,7 +41,6 @@ class StoreFilterModel extends FilterModel
 		 * - 2 - OPEN_SEARCHING
 		 *
 		 * @OA\Property(example="[1,3,4]")
-		 *
 		 * @Assert\Type (type="array")
 		 */
 		public array $teamStatus = [],

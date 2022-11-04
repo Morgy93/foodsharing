@@ -51,7 +51,6 @@ class MapRestController extends AbstractFOSRestController
 	 *        @OA\Items(ref=@Model(type=FoodbasketMapMarker::class))
 	 *      )
 	 * )
-	 *
 	 * @Rest\QueryParam(
 	 *  name="d",
 	 *  default=MapConstants::DEFAULT_SEARCH_DISTANCE,
@@ -59,7 +58,6 @@ class MapRestController extends AbstractFOSRestController
 	 * 	requirements="\d+",
 	 *  nullable=true
 	 * )
-	 *
 	 * @Rest\QueryParam(
 	 *  name="cp",
 	 *  default=MapConstants::CENTER_GERMANY,
@@ -67,7 +65,6 @@ class MapRestController extends AbstractFOSRestController
 	 * 	requirements="[+-]?((\d+\.?\d*)|(\.\d+)),[+-]?((\d+\.?\d*)|(\.\d+))",
 	 *  nullable=true
 	 * )
-	 *
 	 * @OA\Tag(name="map")
 	 * @Rest\Get("marker/foodbaskets")
 	 */
@@ -101,7 +98,6 @@ class MapRestController extends AbstractFOSRestController
 	 *        @OA\Items(ref=@Model(type=FoodSharePointMapMarker::class))
 	 *      )
 	 * )
-	 *
 	 * @Rest\QueryParam(
 	 *  name="d",
 	 *  default=MapConstants::DEFAULT_SEARCH_DISTANCE,
@@ -109,7 +105,6 @@ class MapRestController extends AbstractFOSRestController
 	 * 	requirements="\d+",
 	 *  nullable=true
 	 * )
-	 *
 	 * @Rest\QueryParam(
 	 *  name="cp",
 	 *  default=MapConstants::CENTER_GERMANY,
@@ -117,7 +112,6 @@ class MapRestController extends AbstractFOSRestController
 	 * 	requirements="[+-]?((\d+\.?\d*)|(\.\d+)),[+-]?((\d+\.?\d*)|(\.\d+))",
 	 *  nullable=true
 	 * )
-	 *
 	 * @OA\Tag(name="map")
 	 * @Rest\Get("marker/foodsharepoints")
 	 */
@@ -151,7 +145,6 @@ class MapRestController extends AbstractFOSRestController
 	 *        @OA\Items(ref=@Model(type=CommunityMapMarker::class))
 	 *      )
 	 * )
-	 *
 	 * @Rest\QueryParam(
 	 *  name="d",
 	 *  default=MapConstants::DEFAULT_SEARCH_DISTANCE,
@@ -159,7 +152,6 @@ class MapRestController extends AbstractFOSRestController
 	 * 	requirements="\d+",
 	 *  nullable=true
 	 * )
-	 *
 	 * @Rest\QueryParam(
 	 *  name="cp",
 	 *  default=MapConstants::CENTER_GERMANY,
@@ -167,7 +159,6 @@ class MapRestController extends AbstractFOSRestController
 	 * 	requirements="[+-]?((\d+\.?\d*)|(\.\d+)),[+-]?((\d+\.?\d*)|(\.\d+))",
 	 *  nullable=true
 	 * )
-	 *
 	 * @OA\Tag(name="map")
 	 * @Rest\Get("marker/communities")
 	 */
@@ -203,7 +194,6 @@ class MapRestController extends AbstractFOSRestController
 	 * )
 	 * @OA\Response(response=HttpCode::UNAUTHORIZED, description=HttpExceptionResponse::NOT_LOGGED_IN)
 	 * @OA\Response(response=HttpCode::FORBIDDEN, description=HttpExceptionResponse::ONLY_FOR_FOODSAVER)
-	 *
 	 * @Rest\QueryParam(
 	 *  name="d",
 	 *  default=MapConstants::DEFAULT_SEARCH_DISTANCE,
@@ -211,7 +201,6 @@ class MapRestController extends AbstractFOSRestController
 	 * 	requirements="\d+",
 	 *  nullable=true
 	 * )
-	 *
 	 * @Rest\QueryParam(
 	 *  name="cp",
 	 *  default=MapConstants::CENTER_GERMANY,
@@ -219,19 +208,16 @@ class MapRestController extends AbstractFOSRestController
 	 * 	requirements="[+-]?((\d+\.?\d*)|(\.\d+)),[+-]?((\d+\.?\d*)|(\.\d+))",
 	 *  nullable=true
 	 * )
-	 *
 	 * @Rest\QueryParam(
 	 *  name="teamStatus",
 	 * 	default="[]",
 	 *  description="An array with status numbers. See response schema."
 	 * )
-	 *
 	 * @Rest\QueryParam(
 	 *  name="cooperationStatus",
 	 * 	default="[]",
 	 *  description="An array with status numbers. See response schema."
 	 * )
-	 *
 	 * @OA\Tag(name="map")
 	 * @Rest\Get("marker/stores")
 	 */
@@ -271,7 +257,6 @@ class MapRestController extends AbstractFOSRestController
 	 * 		response=HttpCode::OK,
 	 * 		description=HttpExceptionResponse::SUCCESS
 	 * )
-	 *
 	 * @OA\Tag(name="map")
 	 * @Rest\Get("map/filters")
 	 */
