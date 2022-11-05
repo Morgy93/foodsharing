@@ -60,14 +60,3 @@ All scripts can be run with `./scripts/[script]`.
 | `run [command]`                             | dev           | Run a command inside the PHP docker  |
 | `run-daily-maintenance`                     | dev           | Runs the daily maintenance, which is used to calculate stats and some database stuff |
 
-
----
-
-
-## CI `scripts`
-| Script                                      | ENV           | Description                                                                           |
-|---------------------------------------------|---------------|---------------------------------------------------------------------------------------|
-| `ci/backend-build`                          | CI            | |
-| `ci/backend-test`                           | CI            | |
-| `ci/doc-build`                              | CI            | |
-| `ci/notify-outdated`                        | CI            | |
