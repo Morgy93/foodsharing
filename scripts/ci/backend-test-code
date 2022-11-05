@@ -4,7 +4,7 @@ export FS_ENV=test
 
 set -o errexit
 
-dir=$(dirname "$0")
+dir=$(dirname "$0"/..)
 
 # shellcheck source=./__helping-functions.sh
 source "$dir"/__helping-functions.sh
