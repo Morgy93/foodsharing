@@ -67,15 +67,7 @@ All scripts can be run with `./scripts/[script]`.
 ## CI `scripts`
 | Script                                      | ENV           | Description                                                                           |
 |---------------------------------------------|---------------|---------------------------------------------------------------------------------------|
-| `ci-backend-build`                          | CI            | |
-| `ci-backend-test`                           | CI            | |
-| `ci-doc-build`                              | CI            | |
-| `ci-notify-outdated`                        | CI            | |
-
-## DEPLOYMENT `scripts`
-| Script                                      | ENV           | Description                                                                           |
-|---------------------------------------------|---------------|---------------------------------------------------------------------------------------|
-| `deploy`                                    |               | |
-| `deploy-generate_revision`                  |               | |
-| `deploy-notify-slack`                       |               | |
-| `deploy-websocket-restart`                  |               | |
+| `ci/backend-build`                          | CI            | |
+| `ci/backend-test`                           | CI            | |
+| `ci/doc-build`                              | CI            | |
+| `ci/notify-outdated`                        | CI            | |

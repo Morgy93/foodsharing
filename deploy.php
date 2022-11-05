@@ -38,7 +38,7 @@ desc('Create the revision information');
 task('deploy:create_revision', function () {
 	$revision = input()->getOption('revision');
 	cd('{{release_path}}');
-	run("./scripts/deploy-generate_revision $revision");
+	run("./scripts/deploy/generate_revision $revision");
 });
 
 task('deploy:update_code', function () {
@@ -46,7 +46,7 @@ task('deploy:update_code', function () {
 		'--exclude=.git',
 		'--exclude=client',
 		'--exclude=migrations',
-		'--exclude=deployer',
+		'--exclude=scripts/deploy/',
 		'--compress-level=9'
 	]);
 });
