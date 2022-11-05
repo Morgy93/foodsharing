@@ -9,12 +9,19 @@ dir=$(dirname "$0")
 # shellcheck source=./__helping-functions.sh
 source "$dir"/../__helping-functions.sh
 
+log-header "Check composer file ..."
 composer validate --no-check-all --no-check-publish
+
+log-header "Install all from composer ..."
 composer install --verbose --prefer-dist --no-progress --no-interaction --no-scripts --ignore-platform-reqs
 
+
+log-header "Lint PHP ..."
 vendor/bin/php-cs-fixer fix --dry-run --diff --verbose --ansi
 vendor/bin/parallel-lint --no-progress --exclude vendor .
 vendor/bin/phpstan analyse --memory-limit=768M --no-progress
+
+log-header "Install all non dev composer ..."
 
 composer update
 composer install --verbose --prefer-dist --no-progress --no-interaction --no-dev --classmap-authoritative --no-scripts --ignore-platform-reqs
