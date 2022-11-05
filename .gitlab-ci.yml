@@ -194,7 +194,7 @@ test:backend-code:
     - name: registry.gitlab.com/foodsharing-dev/images/redis:latest
       alias: redis
     - name: registry.gitlab.com/foodsharing-dev/images/mariadb:latest
-      alias: mariadb
+      alias: db
     - name: registry.gitlab.com/foodsharing-dev/images/selenium:latest
       alias: selenium
     - name: registry.gitlab.com/foodsharing-dev/images/maildev:latest
@@ -261,7 +261,7 @@ test:backend-acceptance:
     - name: registry.gitlab.com/foodsharing-dev/images/redis:latest
       alias: redis
     - name: registry.gitlab.com/foodsharing-dev/images/mariadb:latest
-      alias: mariadb
+      alias: db
     - name: registry.gitlab.com/foodsharing-dev/images/selenium:latest
       alias: selenium
     - name: registry.gitlab.com/foodsharing-dev/images/maildev:latest
