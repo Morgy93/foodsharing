@@ -7,7 +7,7 @@ set -o errexit
 dir=$(dirname "$0"/..)
 
 # shellcheck source=./__helping-functions.sh
-source "$dir"/__helping-functions.sh
+source "$dir"/../__helping-functions.sh
 
 composer validate --no-check-all --no-check-publish
 composer install --verbose --prefer-dist --no-progress --no-interaction --no-scripts --ignore-platform-reqs
