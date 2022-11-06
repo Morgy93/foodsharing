@@ -51,7 +51,7 @@ stages:
   script:
     - chmod -R 750 ./
     - (cd ./scripts/deploy && composer install)
-    - scripts/deploy/vendor/bin/dep deploy $CI_ENVIRONMENT_NAME --revision $CI_COMMIT_SHA
+    - ./scripts/deploy/vendor/bin/dep deploy $CI_ENVIRONMENT_NAME --revision $CI_COMMIT_SHA
     - ./scripts/deploy/websocket-restart
     - ./scripts/deploy/notify-slack
 
