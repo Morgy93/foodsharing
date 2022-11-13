@@ -60,8 +60,9 @@ h4 { font-size: 1.2rem; }
 h5 { font-size: 1.1rem; }
 h6 { font-size: 1rem; }
 h1, h2, h3 { font-family: var(--fs-font-family-headline); }
-// h3, h4 { font-weight: 500; }
-h1, h2, h3, h4, h5, h6 { margin: 0.25rem 0; }
+h4, h5, h6 { font-family: var(--fs-font-family-body); }
+h1, h2, h3, h4, h5, h6 {
+    margin: 0.25rem 0; }
 
 body, div, p, ul, ol, th, td, label {
     font-family: var(--fs-font-family-body);
@@ -86,7 +87,7 @@ mark {
 }
 
 code {
-    font-family: "Source Code Pro", monospace;
+    font-family: monospace;
     font-size: 0.9rem;
     color: var(--fs-color-warning-800);
 }
