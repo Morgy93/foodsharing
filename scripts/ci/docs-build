@@ -1,7 +1,7 @@
 #!/bin/bash
 dir=$(dirname "$0")
 
-source "$dir"/__helping-functions.sh
+source "$dir"/../__helping-functions.sh
 set -o errexit
 
 # ENVS
