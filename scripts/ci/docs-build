@@ -41,5 +41,5 @@ log-header "Build database documentation"
 /bin/bash "$dir"/generate-db-documenation/mysql_generate_documentation
 
 log-header "Build documentation"
-cd "$dir"/../docs
+cd "$dir"/docs
 mdbook build
