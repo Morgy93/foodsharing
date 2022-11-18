@@ -72,13 +72,6 @@ outdated:
     key: outdated:cache
     paths:
       - vendor
-  rules:
-    - if: $CI_PIPELINE_SOURCE == "schedule" && $SCHEDULED_JOB == "outdated"
-      when: always
-  tags:
-  # run on our server where we likely have the image already
-    - non-shared
-    - foodsharing
 
 build:websocket:
   <<: *defaults
