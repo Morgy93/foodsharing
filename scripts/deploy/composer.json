@@ -1,7 +1,7 @@
 {
     "require-dev": {
         "deployer/deployer": "~v7.0.0"
-./scripts/deploy/generate_revision
+    },
     "config": {
         "platform": {
             "php": "8.1"

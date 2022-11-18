@@ -159,7 +159,6 @@ build:docs:
   services:
     - name: registry.gitlab.com/foodsharing-dev/images/mariadb:latest
       alias: db
-  stage: build
   script:
     - ./scripts/ci/docs-build
   artifacts:
