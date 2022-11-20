@@ -12,18 +12,6 @@ stages:
   tags:
     - saas-linux-medium-amd64
 
-
-.ssh: &ssh
-  before_script:
-    - eval $(ssh-agent -s)
-    - ssh-add <(echo "$DEPLOY_SSH_KEY")
-    - mkdir -p ~/.ssh
-    # For Docker builds disable host key checking. Be aware that by adding that
-    # you are suspectible to man-in-the-middle attacks.
-    # WARNING: Use this only with the Docker executor, if you use it with shell
-    # you will overwrite your user's SSH config.
-    - '[[ -f /.dockerenv ]] && echo -e "Host *\n\tStrictHostKeyChecking no\n\n" > ~/.ssh/config'
-
 build:websocket:
   <<: *defaults
   stage: build
@@ -32,7 +20,11 @@ build:websocket:
     - if: $CI_MERGE_REQUEST_ID
     - if: $CI_PIPELINE_SOURCE == "schedule"
       when: never
-  image: registry.gitlab.com/foodsharing-dev/images/node:latest
+  image:
+    name: registry.gitlab.com/foodsharing-dev/images/node:latest
+    # an incredibly ugly hack to ensure stuff has the right uid/gid for kanthaus,
+    # where we are forced to run as 33(www-data)
+    entrypoint: [ 'bash', '-c', 'exec su www-data -c bash' ]
   script:
     - (cd websocket && yarn && yarn lint)
   cache:
@@ -48,7 +40,11 @@ build:frontend:
     - if: $CI_MERGE_REQUEST_ID
     - if: $CI_PIPELINE_SOURCE == "schedule"
       when: never
-  image: registry.gitlab.com/foodsharing-dev/images/node:latest
+  image:
+    name: registry.gitlab.com/foodsharing-dev/images/node:latest
+    # an incredibly ugly hack to ensure stuff has the right uid/gid for kanthaus,
+    # where we are forced to run as 33(www-data)
+    entrypoint: [ 'bash', '-c', 'exec su www-data -c bash' ]
   script:
     - (cd client && yarn && yarn lint && yarn build)
   cache:
@@ -70,7 +66,11 @@ build:backend:
     - if: $CI_MERGE_REQUEST_ID
     - if: $CI_PIPELINE_SOURCE == "schedule"
       when: never
-  image: registry.gitlab.com/foodsharing-dev/images/php:latest
+  image:
+    name: registry.gitlab.com/foodsharing-dev/images/php:latest
+    # an incredibly ugly hack to ensure stuff has the right uid/gid for kanthaus,
+    # where we are forced to run as 33(www-data)
+    entrypoint: [ 'bash', '-c', 'exec su www-data -c bash' ]
   script:
     - ./scripts/ci-backend-build
   cache:
@@ -92,7 +92,11 @@ build:docs:
     - if: $CI_MERGE_REQUEST_ID
     - if: $CI_PIPELINE_SOURCE == "schedule"
       when: never
-  image: registry.gitlab.com/foodsharing-dev/images/docs:latest
+  image:
+    name: registry.gitlab.com/foodsharing-dev/images/docs:latest
+    # an incredibly ugly hack to ensure stuff has the right uid/gid for kanthaus,
+    # where we are forced to run as 33(www-data)
+    entrypoint: [ 'bash', '-c', 'exec su www-data -c bash' ]
   variables:
     MYSQL_ROOT_PASSWORD: root
     MYSQL_INITDB_SKIP_TZINFO: 1
@@ -115,7 +119,11 @@ test:backend-code:
     - if: $CI_MERGE_REQUEST_ID
     - if: $CI_PIPELINE_SOURCE == "schedule"
       when: never
-  image: registry.gitlab.com/foodsharing-dev/images/php:latest
+  image:
+    name: registry.gitlab.com/foodsharing-dev/images/php:latest
+    # an incredibly ugly hack to ensure stuff has the right uid/gid for kanthaus,
+    # where we are forced to run as 33(www-data)
+    entrypoint: [ 'bash', '-c', 'exec su www-data -c bash' ]
   variables:
     MYSQL_ROOT_PASSWORD: root
     MYSQL_INITDB_SKIP_TZINFO: 1
@@ -190,8 +198,9 @@ test:backend-acceptance:
     - shared
   image:
     name: registry.gitlab.com/foodsharing-dev/images/php:latest
-    # an incredibly ugly hack to ensure we have the right uid/gid on kanthaus (it seems to enforce 33=www-data normally)
-    entrypoint: ['bash', '-c', 'groupadd -g 1000 ci-php && useradd -u 1000 -g 1000 php-ci && exec su php-ci -c bash']
+    # an incredibly ugly hack to ensure stuff has the right uid/gid for kanthaus,
+    # where we are forced to run as 33(www-data)
+    entrypoint: ['bash', '-c', 'exec su www-data -c bash']
   variables:
     MYSQL_ROOT_PASSWORD: root
     MYSQL_INITDB_SKIP_TZINFO: 1
