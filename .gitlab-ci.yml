@@ -188,7 +188,10 @@ test:backend-acceptance:
   tags:
     - foodsharing
     - shared
-  image: registry.gitlab.com/foodsharing-dev/images/php:latest
+  image:
+    name: registry.gitlab.com/foodsharing-dev/images/php:latest
+    # an incredibly ugly hack to ensure we have the right uid/gid on kanthaus (it seems to enforce 33=www-data normally)
+    entrypoint: ['bash', '-c', 'groupadd -g 1000 ci-php && useradd -u 1000 -g 1000 php-ci && exec su php-ci -c bash']
   variables:
     MYSQL_ROOT_PASSWORD: root
     MYSQL_INITDB_SKIP_TZINFO: 1
