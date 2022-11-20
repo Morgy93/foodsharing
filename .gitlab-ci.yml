@@ -154,6 +154,7 @@ test:backend-code:
     - build:websocket
     - test:backend-acceptance
   script:
+    - id
     - ls -la
     - ls -la $CI_PROJECT_DIR
     - ls -lan
@@ -223,6 +224,7 @@ test:backend-acceptance:
     - build:backend
     - build:websocket
   script:
+    - id
     - ls -la
     - ls -la $CI_PROJECT_DIR
     - ls -lan
