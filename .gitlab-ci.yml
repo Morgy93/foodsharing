@@ -38,11 +38,7 @@ build:frontend:
       when: never
   image: registry.gitlab.com/foodsharing-dev/images/node:25
   script:
-    - id
-    - ls -lan assets
-    - (cd client && yarn && yarn lint)
-    - ls -lan assets
-    - yarn build
+    - (cd client && yarn && yarn lint && yarn build)
   cache:
     key: frontend:build:cache
     paths:
