@@ -38,6 +38,7 @@ build:frontend:
       when: never
   image: registry.gitlab.com/foodsharing-dev/images/node:25
   script:
+    - id
     - ls -lan assets
     - (cd client && yarn && yarn lint)
     - ls -lan assets
@@ -63,6 +64,8 @@ build:backend:
       when: never
   image: registry.gitlab.com/foodsharing-dev/images/php:25
   script:
+    - id
+    - ls -lan
     - ./scripts/ci-backend-build
   cache:
     key: backend:build:cache
