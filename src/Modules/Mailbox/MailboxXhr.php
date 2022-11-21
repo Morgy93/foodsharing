@@ -403,15 +403,7 @@ class MailboxXhr extends Control
 
 	private function libPlainMail($to, $from, $subject, $message, $attach = false)
 	{
-		if (is_array($to) && !isset($to['name'])) {
-			$email = $to;
-		} elseif (is_array($to) && isset($to['email'])) {
-			$email = $to['email'];
-			$name = $to['name'];
-		} else {
-			$email = $to;
-			$name = $to;
-		}
+		$email = !isset($to['email']) ? $to : $to['email'];
 
 		$from_email = $from;
 		$from_name = $from;
@@ -470,9 +462,8 @@ class MailboxXhr extends Control
 				'php2' => true,
 				'php1' => true
 			];
-			$notallowed_mime = [];
 
-			if (!isset($notallowed[$ext]) && !isset($notallowed_mime[$mime])) {
+			if (!isset($notallowed[$ext])) {
 				return true;
 			}
 		}

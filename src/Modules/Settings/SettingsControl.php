@@ -15,7 +15,6 @@ use Foodsharing\Modules\PassportGenerator\PassportGeneratorTransaction;
 use Foodsharing\Modules\Quiz\QuizGateway;
 use Foodsharing\Modules\Quiz\QuizSessionGateway;
 use Foodsharing\Modules\Region\ForumFollowerGateway;
-use Foodsharing\Modules\Region\RegionGateway;
 use Foodsharing\Permissions\SettingsPermissions;
 use Foodsharing\Utility\DataHelper;
 
@@ -30,7 +29,6 @@ class SettingsControl extends Control
 	private FoodSharePointGateway $foodSharePointGateway;
 	private DataHelper $dataHelper;
 	private ForumFollowerGateway $forumFollowerGateway;
-	private RegionGateway $regionGateway;
 	private SettingsPermissions $settingsPermissions;
 	private PassportGeneratorTransaction $passportGeneratorTransaction;
 
@@ -44,7 +42,6 @@ class SettingsControl extends Control
 		FoodSharePointGateway $foodSharePointGateway,
 		DataHelper $dataHelper,
 		ForumFollowerGateway $forumFollowerGateway,
-		RegionGateway $regionGateway,
 		SettingsPermissions $settingsPermissions,
 		PassportGeneratorTransaction $passportGeneratorTransaction
 	) {
@@ -57,13 +54,12 @@ class SettingsControl extends Control
 		$this->foodSharePointGateway = $foodSharePointGateway;
 		$this->dataHelper = $dataHelper;
 		$this->forumFollowerGateway = $forumFollowerGateway;
-		$this->regionGateway = $regionGateway;
 		$this->settingsPermissions = $settingsPermissions;
 		$this->passportGeneratorTransaction = $passportGeneratorTransaction;
 
 		parent::__construct();
 
-		if (!$this->session->may()) {
+		if (!$this->session->mayRole()) {
 			$this->routeHelper->goLogin();
 		}
 
@@ -146,7 +142,7 @@ class SettingsControl extends Control
 	public function up_fs()
 	{
 		$quizRole = Role::FOODSAVER;
-		if ($this->session->may()) {
+		if ($this->session->mayRole()) {
 			if ($quiz = $this->quizGateway->getQuiz($quizRole)) {
 				$this->handleQuizStatus($quiz, $quizRole);
 			}
@@ -156,7 +152,7 @@ class SettingsControl extends Control
 	public function up_bip()
 	{
 		$quizRole = Role::STORE_MANAGER;
-		if ($this->session->may() && $this->foodsaver['rolle'] > Role::FOODSHARER) {
+		if ($this->session->mayRole() && $this->foodsaver['rolle'] > Role::FOODSHARER) {
 			if (!$this->foodsaver['verified']) {
 				$content = $this->contentGateway->get(ContentId::QUIZ_MESSAGE_SM_UNVERIFIED_PAGE_45);
 				$this->pageHelper->addContent($this->v_utils->v_field(
@@ -181,7 +177,7 @@ class SettingsControl extends Control
 	public function up_bot()
 	{
 		$quizRole = Role::AMBASSADOR;
-		if ($this->session->may() && $this->foodsaver['rolle'] >= Role::STORE_MANAGER) {
+		if ($this->session->mayRole() && $this->foodsaver['rolle'] >= Role::STORE_MANAGER) {
 			if ($quiz = $this->quizGateway->getQuiz($quizRole)) {
 				$this->handleQuizStatus($quiz, $quizRole);
 			} else {
@@ -266,7 +262,7 @@ class SettingsControl extends Control
 				break;
 
 			default:
-			}
+		}
 	}
 
 	private function confirm_fs()
@@ -280,7 +276,7 @@ class SettingsControl extends Control
 				} else {
 					$this->session->set('hastodoquiz', false);
 					$this->mem->delPageCache('/?page=dashboard', $fsId);
-					if (!$this->session->may('fs')) {
+					if (!$this->session->mayRole(Role::FOODSAVER)) {
 						$this->foodsaverGateway->riseRole($fsId, Role::FOODSAVER);
 					}
 					$this->flashMessageHelper->success($this->translator->trans('foodsaver.upgrade.fs_success'));

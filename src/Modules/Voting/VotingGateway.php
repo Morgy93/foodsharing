@@ -124,10 +124,14 @@ class VotingGateway extends BaseGateway
 			'poll_id' => $pollId,
 			'foodsaver_id' => $userId
 		]);
-		$format = 'Y-m-d H:i:s';
-		$date = DateTime::createFromFormat($format, $value);
 
-		return $date ?: null;
+		if ($value !== null) {
+			$date = DateTime::createFromFormat('Y-m-d H:i:s', $value);
+		} else {
+			$date = null;
+		}
+
+		return $date;
 	}
 
 	/**
@@ -141,7 +145,7 @@ class VotingGateway extends BaseGateway
 	 */
 	public function vote(int $pollId, int $userId, array $options): void
 	{
-		$this->db->execute('LOCK TABLES fs_poll WRITE, fs_foodsaver_has_poll WRITE, fs_poll_has_option WRITE');
+		$this->db->execute('LOCK TABLES fs_poll WRITE, fs_foodsaver_has_poll WRITE, fs_poll_has_options WRITE');
 		$this->db->beginTransaction();
 
 		// update vote counts for options

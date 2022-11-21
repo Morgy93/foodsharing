@@ -3,10 +3,8 @@
 import $ from 'jquery'
 
 import storage from '@/storage'
-import { GET, goTo, isMob, pulseError, img } from '@/script'
+import { GET, isMob, pulseError } from '@/script'
 import DataUser from '@/stores/user'
-import dateFormatter from '@/helper/date-formatter'
-import msg from '@/msg'
 import conversationStore from '@/stores/conversations'
 import profileStore from '@/stores/profiles'
 import * as api from '@/api/conversations'
@@ -15,28 +13,15 @@ import {
   plainToHtml,
 } from '@/utils'
 
+import Vue from 'vue'
+
+import ChatComponent from '@/views/pages/Message/ChatComponent.vue'
+
 const conv = {
 
   initiated: false,
 
   chatboxes: null,
-
-  /*
-   * here we want catch all the chat dom elements
-   */
-  $chat: null,
-
-  /*
-   * current count of active chat message
-   */
-  chatCount: 0,
-
-  /*
-   * mark an active chatbox while writing
-   */
-  activeBox: 0,
-
-  user2Conv: null,
 
   isBigPageMode: false,
 
@@ -50,10 +35,13 @@ const conv = {
       }
       this.initiated = true
       this.chatboxes = []
-      this.$chat = []
-      this.user2Conv = []
 
       const chats = storage.get('msg-chats')
+
+      if (!isMob()) {
+        // On desktop register opening chats in popup dialogs
+        conversationStore.messagePopupOpenChatListener = chatId => { this.appendChatbox(chatId) }
+      }
 
       if (chats != undefined) {
         for (let i = 0; i < chats.length; i++) {
@@ -61,47 +49,6 @@ const conv = {
             conv.appendChatbox(chats[i].id, chats[i].min)
           }
         }
-      }
-    }
-  },
-  userChat: async function (fsid) {
-    if (!this.initiated) {
-      this.init()
-    }
-    try {
-      const conversation = await api.getConversationIdForConversationWithUser(fsid)
-      conv.chat(conversation.id)
-    } catch (e) {
-      pulseError('Fehler beim Starten der Unterhaltung')
-      console.error(e)
-    }
-  },
-
-  getConvByFs: function (fsid) {
-    for (let i = 0; i < conv.user2Conv.length; i++) {
-      if (conv.user2Conv[i].fsid == fsid) {
-        return conv.user2Conv[i].cid
-      }
-    }
-    return false
-  },
-
-  chat: function (cid) {
-    if (isMob()) {
-      if (GET('page') == 'msg') {
-        msg.loadConversation(cid)
-      } else {
-        goTo(`/?page=msg&cid=${cid}`)
-      }
-    } else {
-      if (GET('page') == 'msg') {
-        msg.loadConversation(cid)
-      } else {
-        if (!this.initiated) {
-          this.init()
-        }
-
-        this.appendChatbox(cid)
       }
     }
   },
@@ -117,27 +64,14 @@ const conv = {
     }
   },
 
-  /**
-   * push retrieve function on recieved data by polling will execute this here
-   */
-  push: function (data) {
-    const key = conv.getKey(data.cid)
-    if (key >= 0) {
-      conv.maxbox(data.cid)
-      conv.append(key, data.message)
-      conv.scrollBottom(data.cid)
-    }
-  },
-
   // minimize or maximize the chatbox
   togglebox: function (cid) {
     const key = conv.getKey(cid)
 
-    conv.chatboxes[key].el.children('.slimScrollDiv, .chatboxinput').toggle()
-    if ($(`#chat-${cid} .chatboxinput`).is(':visible')) {
-      conv.chatboxes[key].minimized = false
+    if (conv.chatboxes[key].minimized) {
+      conv.maxbox(cid)
     } else {
-      conv.chatboxes[key].minimized = true
+      conv.minbox(cid)
     }
 
     conv.storeOpenedChatWindows()
@@ -146,55 +80,19 @@ const conv = {
   // maximoze mini box
   maxbox: function (cid) {
     const key = conv.getKey(cid)
-    conv.chatboxes[key].el.children('.slimScrollDiv, .chatboxinput').show()
+    conv.chatboxes[key].el.children('.chatboxcontent').show()
     conv.chatboxes[key].minimized = false
   },
 
   // minimize a box
   minbox: function (cid) {
     const key = conv.getKey(cid)
-    conv.chatboxes[key].el.children('.slimScrollDiv, .chatboxinput').hide()
+    conv.chatboxes[key].el.children('.chatboxcontent').hide()
     conv.chatboxes[key].minimized = true
   },
 
-  checkInputKey: async function (event, chatboxtextarea, cid) {
-    const $ta = $(chatboxtextarea)
-    let val = $ta.val().trim()
-
-    if (event.keyCode == 13 && event.shiftKey == 0 && val != '') {
-      conv.showLoader(cid)
-
-      setTimeout(function () {
-        $ta.val('')
-        $ta.css('height', '40px')
-        $ta[0].focus()
-      }, 100)
-
-      // replace to many line breaks
-      // eslint-disable-next-line no-control-regex
-      val = val.replace(/(\n){3,}/gim, '\n\n')
-
-      try {
-        await api.sendMessage(cid, val)
-      } catch (e) {
-        pulseError('Fehler beim Senden der Nachricht')
-        console.error(e)
-      } finally {
-        /* we intentionally don't reload conversation here as we will be updated via websocket */
-        conv.hideLoader(cid)
-      }
-    }
-  },
-
   /**
-   * scroll to bottom after appending messages
-   */
-  scrollBottom: function (cid) {
-    $(`#chat-${cid} .chatboxcontent`).slimScroll({ scrollTo: `${$('#chat-' + cid + ' .chatboxcontent').prop('scrollHeight')}px` })
-  },
-
-  /**
-   * close the chatbox to thr given cid
+   * close the chatbox to the given chatId
    */
   close: function (cid) {
     const tmp = []
@@ -211,22 +109,19 @@ const conv = {
 
     this.chatboxes = tmp
 
-    this.chatCount--
-
     // re register polling service
     this.storeOpenedChatWindows()
   },
 
-  showLoader: function (cid) {
-    const key = this.getKey(cid)
-    this.chatboxes[key].el.children('.chatboxhead').children('.chatboxtitle').children('i').removeClass('fa-comment fa-flip-horizontal').addClass('fa-spinner fa-spin')
-  },
-
-  hideLoader: function (cid) {
-    const key = this.getKey(cid)
-    if (key >= 0 && this.chatboxes[key] !== undefined) {
-      this.chatboxes[key].el.children('.chatboxhead').children('.chatboxtitle').children('i').removeClass('fa-spinner fa-spin').addClass('fa-comment fa-flip-horizontal')
+  closeAll: function () {
+    for (let i = 0; i < conv.chatboxes.length; i++) {
+      conv.chatboxes[i].el.remove()
     }
+
+    this.chatboxes = []
+
+    // re register polling service
+    this.storeOpenedChatWindows()
   },
 
   /**
@@ -252,7 +147,6 @@ const conv = {
       tmp.push({
         id: parseInt(conv.chatboxes[i].id),
         min: conv.chatboxes[i].minimized,
-        lmid: conv.chatboxes[i].last_mid,
       })
     }
 
@@ -281,38 +175,9 @@ const conv = {
   },
 
   /**
-   * append an chat message to chat window with given array index attention not conversation id ;)
-   */
-  append: function (key, message) {
-    const msgclass = (message.authorId === DataUser.getters.getUserId()) ? 'chatboxmessage my-message' : 'chatboxmessage'
-
-    if (key >= 0 && conv.chatboxes[key] !== undefined) {
-      conv.chatboxes[key].last_mid = parseInt(message.id)
-      conv.chatboxes[key].el.children('.slimScrollDiv').children('.chatboxcontent').append(`
-        <div title="${profileStore.profiles[message.authorId].name}" class="${msgclass}">
-        <span class="chatboxmessagefrom">
-          <a class="photo" href="${url('profile', message.authorId)}">
-            <img src="${img(profileStore.profiles[message.authorId].avatar, 'mini')}">
-          </a>
-        </span>
-        <span class="chatboxmessagecontent">
-          ${plainToHtml(message.body)}
-          <span class="time" title="${message.sentAt}">
-            ${dateFormatter.base(message.sentAt)}
-          </span>
-        </span>
-        <div class="clear"></div>
-      </div>
-      `)
-    }
-  },
-
-  /**
    * load the first content for one chatbox
    */
   initChat: async function (cid) {
-    conv.showLoader(cid)
-
     const key = this.getKey(cid)
 
     try {
@@ -321,8 +186,9 @@ const conv = {
       /* disable leaving chats as it currently leads to undefined logical behaviour that breaks other behaviour :D
         conv.addChatOption(cid, `<a href="#" onclick="if(confirm('Bist Du Dir sicher, dass Du den Chat verlassen möchtest? Dadurch verlierst du unwiderruflich Zugriff auf alle Nachrichten in dieser Unterhaltung.')){conv.leaveConversation(${cid});}return false;">Chat verlassen</a>`)
       */
-      conv.addChatOption(cid, `<span class="optinput"><input placeholder="Chat umbenennen..." type="text" name="chatname" value="" maxlength="30" /><i onclick="conv.rename(${cid}, $(this).prev().val())" class="fas fa-arrow-circle-right"></i></span>`)
-
+      if (conversation.storeId === null) { // stores can't be renamed
+        conv.addChatOption(cid, `<span class="optinput"><input placeholder="Chat umbenennen..." type="text" name="chatname" value="" maxlength="30" /><i onclick="conv.rename(${cid}, $(this).prev().val())" class="fas fa-arrow-circle-right"></i></span>`)
+      }
       // first build a title from all the usernames
       let title = conversation.title
       if (title == null) {
@@ -354,15 +220,10 @@ const conv = {
         ${title}
       `)
       }
-
-      // now append all arrived messages
-      Object.values(conversation.messages).forEach((m) => conv.append(key, m))
-      conv.scrollBottom(cid)
     } catch (e) {
       pulseError('Fehler beim Laden der Unterhaltung')
       console.error(e)
     } finally {
-      conv.hideLoader(cid)
       conv.storeOpenedChatWindows()
     }
   },
@@ -396,7 +257,7 @@ const conv = {
       min = false
     }
     if (conv.getKey(cid) === -1) {
-      const right = 20 + (this.chatCount * 285)
+      const right = 20 + (this.chatboxes.length * 285)
 
       const $el = $(`
         <div id="chat-${cid}" class="chatbox ui-corner-top" style="bottom: 0px; right: ${right}px; display: block;"></div>
@@ -410,6 +271,9 @@ const conv = {
             <li>
               <a href="${url('conversations', cid)}">Alle Nachrichten</a>
             </li>
+            <li>
+              <a href="#" onclick="conv.closeAll();return false;">Alle Chats schließen</a>
+            </li>
           </ul>
           <div class="chatboxoptions">
             <a href="#" title="Einstellungen" onclick="conv.settings(${cid});return false;">
@@ -422,37 +286,25 @@ const conv = {
           <br clear="all"/>
         </div>
         <div class="chatboxcontent"></div>
-        <div class="chatboxinput">
-          <textarea placeholder="Schreibe etwas..." class="chatboxtextarea" onkeydown="conv.checkInputKey(event,this,'${cid}');"></textarea>
-        </div>
       `)
 
-      $el.children('.chatboxcontent').slimScroll()
-      $el.children('.chatboxinput').children('textarea').autosize()
-
-      $el.children('.chatboxinput').children('textarea').on('focus', function () {
-        conversationStore.markAsRead(cid)
-        conv.activeBox = cid
+      const ComponentClass = Vue.extend(ChatComponent)
+      const instance = new ComponentClass({
+        propsData: { popupMode: true, chatId: cid },
       })
+      instance.$mount() // pass nothing
+      $el.children('.chatboxcontent').append(instance.$el)
 
       this.chatboxes.push({
         el: $el,
         id: cid,
         minimized: false,
-        last_mid: 0,
       })
-
-      this.chatCount++
 
       /*
        * do the init ajax call
        */
       this.initChat(cid)
-
-      /*
-       * focus textarea
-       */
-      $el.children('.chatboxinput').children('textarea').trigger('select')
 
       /*
        * register service new

@@ -1,5 +1,11 @@
 <template>
   <div class="card mb-3 rounded">
+    <div>
+      <i
+        class="fas fa-info-circle fa-fw"
+        :title="$i18n('profile.commitments_stat.tooltip_visibility')"
+      />
+    </div>
     <div v-if="commitmentsStats[0].respActStores > 0">
       {{ $i18n('profile.commitments_stat.respActStores', { count: commitmentsStats[0].respActStores }) }} <i class="fas fa-shopping-cart" />
       <p />
@@ -20,18 +26,9 @@
           <template
             v-if="item.data.length > 0"
           >
-            <b-pagination
-              v-if="item.data.length > perPage"
-              v-model="currentPage"
-              :total-rows="item.length"
-              :per-page="perPage"
-              aria-controls="`item-table${index}`"
-            />
             <b-table
               :id="`item-table${index}`"
               :key="index"
-              :current-page="currentPage"
-              :per-page="perPage"
               :fields="fields"
               :items="item.data"
               :sort-by="sortBy"
@@ -85,8 +82,6 @@ export default {
     return {
       sortBy: 'time',
       sortDesc: true,
-      currentPage: 1,
-      perPage: 5,
       fields: [
         {
           key: 'districtName',

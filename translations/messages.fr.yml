@@ -328,7 +328,6 @@ about_me_public: Brève description publique
 daterange: Période
 ort: Ville/Village (automatiquement complété par la carte ci-dessus)
 status: Statut actuel
-last_login: Dernière connexion
 rolle: Rôle de l'utilisateur·ice
 mailbox_name: Nom de la messagerie
 betrieb: Coopérative·s
@@ -591,7 +590,7 @@ foodsaver:
     orga: Fait partie de l'équipe organisation nationale
     remove: Supprimer du secteur géographique
     actions: Options
-    last-login: Dernière connection
+    last-activity: Dernière connection
     role: Rôle
     name: Nom
     photo: Photo
@@ -902,7 +901,6 @@ login:
   logout: Se déconnecter
   success: <b>Une merveilleuse journée à toi, {user_name} !</b>
   error_no_password: Entre ton mot de passe.
-  steady_login: Restez connecté pendant une journée (utilise des cookies)
   save_password: Enregistrer le mot de passe
   login_button_label: Se connecter
   forgotten_password_label: Mot de passe oublié ?
@@ -1070,11 +1068,11 @@ storeview:
   specials: Particularités
   managers: Foodsaver responsable
   status: Statut actuel
-  frequency4: la nuit
-  frequency3: le soir
-  frequency2: le midi/l'après-midi
-  frequency1: le matin
-  frequency: Les interventions ont lieu tous les {freq}. N'interviens JAMAIS dans
+  public_time_at_night: la nuit
+  public_time_in_the_evening: le soir
+  public_time_at_noon_or_afternoon: le midi/l'après-midi
+  public_time_in_the_morning: le matin
+  public_time: Les interventions ont lieu tous les {freq}. N'interviens JAMAIS dans
     le magasin sans accord !
   cooperation: Coopère depuis le {startTime}.
   pickupWeight: Il y a eu {pickupWeight} de repêchés.
@@ -1314,7 +1312,7 @@ profile:
     privateMail: Adresse courriel privée
     never: Jamais
     registrationDate: Date d'inscription
-    lastLogin: Dernière connexion
+    lastActivity: Dernière connexion
     title: Infos
   online: '{name} est en ligne.'
   notes:

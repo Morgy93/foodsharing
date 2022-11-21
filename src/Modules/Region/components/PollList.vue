@@ -185,7 +185,11 @@ export default {
       return new Date(Date.parse(date))
     },
     formatDate (date, formatStr) {
-      return formatStr
+      if (formatStr === 'MMMM') {
+        return this.$dateFormatter.format(date, { month: 'long' })
+      }
+
+      return date.getDate()
     },
   },
 }

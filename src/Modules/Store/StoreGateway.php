@@ -13,7 +13,6 @@ use Foodsharing\Modules\Region\RegionGateway;
 use Foodsharing\Modules\Store\DTO\CreateStoreData;
 use Foodsharing\Modules\Store\DTO\Store;
 use Foodsharing\Modules\Store\DTO\StoreTeamMembership;
-use UnexpectedValueException;
 
 class StoreGateway extends BaseGateway
 {
@@ -38,6 +37,7 @@ class StoreGateway extends BaseGateway
 			'str' => $store->str,
 			'plz' => $store->zip,
 			'stadt' => $store->city,
+			'public_info' => $store->publicInfo,
 			'added' => $store->createdAt,
 			'status_date' => $store->updatedAt,
 		]);
@@ -121,7 +121,8 @@ class StoreGateway extends BaseGateway
 					`abholmenge`,
 					`prefetchtime`,
 					`public_info`,
-					`public_time`
+					`public_time`,
+					`use_region_pickup_rule`
 
 			FROM 	`fs_betrieb`
 
@@ -143,9 +144,9 @@ class StoreGateway extends BaseGateway
 			'name' => $store->name,
 			'bezirk_id' => $store->regionId,
 
-			'lat' => $store->lat,
-			'lon' => $store->lon,
-			'str' => $store->str,
+			'lat' => $store->location->lat,
+			'lon' => $store->location->lon,
+			'str' => $store->street,
 			'plz' => $store->zip,
 			'stadt' => $store->city,
 
@@ -154,7 +155,7 @@ class StoreGateway extends BaseGateway
 
 			'betrieb_kategorie_id' => $store->categoryId,
 			'kette_id' => $store->chainId,
-			'betrieb_status_id' => $store->cooperationStatus,
+			'betrieb_status_id' => $store->cooperationStatus->value,
 
 			'besonderheiten' => $store->description,
 
@@ -165,6 +166,7 @@ class StoreGateway extends BaseGateway
 			'begin' => $store->cooperationStart,
 
 			'prefetchtime' => $store->calendarInterval,
+			'use_region_pickup_rule' => $store->useRegionPickupRule,
 			'abholmenge' => $store->weight,
 			'ueberzeugungsarbeit' => $store->effort,
 			'presse' => $store->publicity,
@@ -188,7 +190,6 @@ class StoreGateway extends BaseGateway
 					b.kette_id,
 					b.betrieb_kategorie_id,
 					b.name,
-					`b.str` AS anschrift,
 					b.str,
 					b.`betrieb_status_id`,
 					k.logo
@@ -201,7 +202,7 @@ class StoreGateway extends BaseGateway
 			  AND	b.`lat` != ""
 		', [
 			':regionId' => $regionId,
-			':permanentlyClosed' => CooperationStatus::PERMANENTLY_CLOSED,
+			':permanentlyClosed' => CooperationStatus::PERMANENTLY_CLOSED->value,
 		]);
 	}
 
@@ -372,6 +373,7 @@ class StoreGateway extends BaseGateway
         			b.`prefetchtime`,
         			b.`team_conversation_id`,
         			b.`springer_conversation_id`,
+        			b.`use_region_pickup_rule`,
         			count(DISTINCT(a.date)) AS pickup_count
 
 			FROM 	`fs_betrieb` b
@@ -650,6 +652,11 @@ class StoreGateway extends BaseGateway
 		return $result;
 	}
 
+	public function getUseRegionPickupRule(int $storeId)
+	{
+		return $this->db->fetchValueByCriteria('fs_betrieb', 'use_region_pickup_rule', ['id' => $storeId]);
+	}
+
 	public function getStoreCountForBieb($fs_id)
 	{
 		return $this->db->count('fs_betrieb_team', ['foodsaver_id' => $fs_id, 'verantwortlich' => 1]);
@@ -761,7 +768,7 @@ class StoreGateway extends BaseGateway
 	 * Returns a list with all store memberships of the foodsaver.
 	 *
 	 * @param int $fsId Foodsharer Id
-	 * @param int[] $storeCooperationStates All store state should should be contained @see CooperationStatus
+	 * @param CooperationStatus[] $storeCooperationStates All store state should should be contained @see CooperationStatus
 	 *
 	 * @return StoreTeamMembership[] Returns a array of memberships
 	 */
@@ -769,13 +776,6 @@ class StoreGateway extends BaseGateway
 	{
 		if ($fsId == 0) {
 			return [];
-		}
-
-		// last check of CooperationStatus content before DB
-		foreach ($storeCooperationStates as $storeState) {
-			if (!CooperationStatus::isValidStatus($storeState)) {
-				throw new UnexpectedValueException('Store cooperation state is not valid.');
-			}
 		}
 
 		$inPlaceHolder = implode(', ', array_fill(0, count($storeCooperationStates), '?'));
@@ -792,7 +792,8 @@ class StoreGateway extends BaseGateway
 			ORDER BY bt.verantwortlich DESC, membership_status ASC, b.name ASC
 		', [
 			$fsId,
-			$storeCooperationStates
+			array_map(function (CooperationStatus $state) { return $state->value; },
+				$storeCooperationStates)
 		]);
 
 		$results = [];
@@ -948,8 +949,8 @@ class StoreGateway extends BaseGateway
 			', [
 				'fs_id' => $fs_id,
 				'membership_status' => MembershipStatus::MEMBER,
-				':established' => CooperationStatus::COOPERATION_ESTABLISHED,
-				':starting' => CooperationStatus::COOPERATION_STARTING
+				':established' => CooperationStatus::COOPERATION_ESTABLISHED->value,
+				':starting' => CooperationStatus::COOPERATION_STARTING->value
 			]);
 		} else {
 			return $this->db->fetchAllByCriteria('fs_betrieb', ['id', 'name']);
@@ -1018,6 +1019,11 @@ class StoreGateway extends BaseGateway
 		]);
 	}
 
+	/**
+	 * Returns a list of stores which belong to regions.
+	 *
+	 *  @return array<Store>
+	 */
 	public function listStoresInRegion(int $regionId, bool $includeSubregions = false): array
 	{
 		$regionIds = [$regionId];
@@ -1025,27 +1031,39 @@ class StoreGateway extends BaseGateway
 			$regionIds = array_merge($regionIds, $this->regionGateway->listIdsForDescendantsAndSelf($regionId));
 		}
 
-		return $this->db->fetchAll('
-				SELECT 	fs_betrieb.id,
-						`fs_betrieb`.betrieb_status_id,
-						fs_betrieb.plz,
-						fs_betrieb.added,
-						`stadt`,
-						fs_betrieb.kette_id,
-						fs_betrieb.betrieb_kategorie_id,
+		$placeholders = implode(',', array_fill(0, count($regionIds), '?'));
+		$results = $this->db->fetchAll('SELECT fs_betrieb.id,
 						fs_betrieb.name,
-						fs_betrieb.str AS anschrift,
-						fs_betrieb.str,
-						CONCAT(fs_betrieb.lat,", ",fs_betrieb.lon) AS geo,
-						fs_betrieb.`betrieb_status_id`,
-						fs_bezirk.name AS bezirk_name
+						fs_betrieb.bezirk_id as region_id,
+						fs_betrieb.lat,
+						fs_betrieb.lon,
 
+						fs_betrieb.str AS street,
+						fs_betrieb.plz as zip,
+						fs_betrieb.stadt as city,
+
+						fs_betrieb.public_info,
+						fs_betrieb.public_time,
+
+						fs_betrieb.kette_id as chainId,
+						fs_betrieb.betrieb_kategorie_id as categoryId,
+						fs_betrieb.betrieb_status_id as cooperationStatus,
+						fs_betrieb.besonderheiten as "description",
+
+						fs_betrieb.presse as publicity,
+						fs_betrieb.sticker,
+
+						fs_betrieb.added as createdAt,
+						fs_betrieb.status_date as updatedAt
 				FROM 	fs_betrieb,
 						fs_bezirk
-
 				WHERE 	fs_betrieb.bezirk_id = fs_bezirk.id
-				AND 	fs_betrieb.bezirk_id IN(' . implode(',', $regionIds) . ')
-		');
+				AND 	fs_betrieb.bezirk_id IN(' . $placeholders . ')
+		', $regionIds);
+
+		return array_map(function ($store) {
+			return Store::createFromArray($store);
+		}, $results);
 	}
 
 	public function listStoresWithoutRegion(array $storeIds): array
@@ -1084,5 +1102,17 @@ class StoreGateway extends BaseGateway
 		});
 
 		return $logEntriesWithRequiredStoreActions;
+	}
+
+	public function listRegionStoresActivePickupRule(int $regionId): array
+	{
+		return $this->db->fetchAll(
+			'select  id as storeId,
+        				   name as storeName
+					from fs_betrieb b
+					where b.bezirk_id = :regionId
+					  and b.use_region_pickup_rule',
+			[':regionId' => $regionId]
+		);
 	}
 }

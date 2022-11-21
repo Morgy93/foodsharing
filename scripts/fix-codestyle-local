@@ -1,4 +1,0 @@
-#!/bin/sh
-# --no-php-ini: no php.ini file will be used
-# --file file: execute file
-php --no-php-ini --file vendor/bin/php-cs-fixer fix --cache-file .php_cs_cache_local 

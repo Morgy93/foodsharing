@@ -7,7 +7,7 @@ import 'jquery-fancybox'
 import 'jquery-ui-addons'
 
 import { GET, goTo, isMob } from '@/browser'
-import conv from '@/conv'
+import conversationStore from '@/stores/conversations'
 import { requestStoreTeamMembership, declineStoreRequest } from '@/api/stores'
 import i18n from '@/helper/i18n'
 
@@ -165,7 +165,7 @@ export function initialize () {
 }
 
 export function chat (fsid) {
-  conv.userChat(fsid)
+  conversationStore.openChatWithUser(fsid)
 }
 
 export function profile (id) {

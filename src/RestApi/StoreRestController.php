@@ -7,14 +7,17 @@ use Foodsharing\Lib\Session;
 use Foodsharing\Modules\Bell\BellGateway;
 use Foodsharing\Modules\Bell\DTO\Bell;
 use Foodsharing\Modules\Core\DBConstants\Bell\BellType;
+use Foodsharing\Modules\Core\DBConstants\Foodsaver\Role;
 use Foodsharing\Modules\Core\DBConstants\Store\Milestone;
 use Foodsharing\Modules\Core\DBConstants\Store\StoreLogAction;
+use Foodsharing\Modules\Core\DBConstants\Store\TeamStatus;
 use Foodsharing\Modules\Foodsaver\FoodsaverGateway;
+use Foodsharing\Modules\Store\DTO\CommonStoreMetadata;
 use Foodsharing\Modules\Store\StoreGateway;
 use Foodsharing\Modules\Store\StoreTransactions;
 use Foodsharing\Modules\Store\TeamStatus as TeamMembershipStatus;
 use Foodsharing\Permissions\StorePermissions;
-use Foodsharing\RestApi\Models\Store\CommonStoreMetadataModel;
+use Foodsharing\RestApi\Models\Store\StorePaginationResult;
 use Foodsharing\RestApi\Models\Store\StoreStatusForMemberModel;
 use FOS\RestBundle\Controller\AbstractFOSRestController;
 use FOS\RestBundle\Controller\Annotations as Rest;
@@ -23,37 +26,25 @@ use Nelmio\ApiDocBundle\Annotation\Model;
 use OpenApi\Annotations as OA;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\Exception\AccessDeniedHttpException;
+use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 use Symfony\Component\HttpKernel\Exception\UnauthorizedHttpException;
 use Symfony\Component\HttpKernel\Exception\UnprocessableEntityHttpException;
 
 class StoreRestController extends AbstractFOSRestController
 {
-	private Session $session;
-	private FoodsaverGateway $foodsaverGateway;
-	private StoreGateway $storeGateway;
-	private StoreTransactions $storeTransactions;
-	private StorePermissions $storePermissions;
-	private BellGateway $bellGateway;
-
 	// literal constants
 	private const NOT_LOGGED_IN = 'not logged in';
 	private const ID = 'id';
 
 	public function __construct(
-		Session $session,
-		FoodsaverGateway $foodsaverGateway,
-		StoreGateway $storeGateway,
-		StoreTransactions $storeTransactions,
-		StorePermissions $storePermissions,
-		BellGateway $bellGateway
+		private Session $session,
+		private FoodsaverGateway $foodsaverGateway,
+		private StoreGateway $storeGateway,
+		private StoreTransactions $storeTransactions,
+		private StorePermissions $storePermissions,
+		private BellGateway $bellGateway
 	) {
-		$this->session = $session;
-		$this->foodsaverGateway = $foodsaverGateway;
-		$this->storeGateway = $storeGateway;
-		$this->storeTransactions = $storeTransactions;
-		$this->storePermissions = $storePermissions;
-		$this->bellGateway = $bellGateway;
 	}
 
 	/**
@@ -64,11 +55,10 @@ class StoreRestController extends AbstractFOSRestController
 	 * so that the frontend can use them but the backend is responsible for the values.
 	 *
 	 * @OA\Tag(name="stores")
-	 *
 	 * @OA\Response(
 	 * 		response="200",
 	 * 		description="Success.",
-	 *      @Model(type=CommonStoreMetadataModel::class)
+	 *      @Model(type=CommonStoreMetadata::class)
 	 * )
 	 * @OA\Response(response="401", description="Not logged in")
 
@@ -76,11 +66,49 @@ class StoreRestController extends AbstractFOSRestController
 	 */
 	public function getCommonStoreMetadata(): Response
 	{
-		if (!$this->session->may()) {
+		if (!$this->session->mayRole()) {
 			throw new UnauthorizedHttpException('', self::NOT_LOGGED_IN);
 		}
 
-		return $this->handleView($this->view(new CommonStoreMetadataModel(), 200));
+		$result = $this->storeTransactions->getCommonStoreMetadata(
+			!$this->storePermissions->mayCreateStore());
+
+		return $this->handleView($this->view($result, 200));
+	}
+
+	/**
+	 * Provides store identifiers for stores of a region.
+	 *
+	 * @OA\Tag(name="stores")
+	 * @OA\Tag(name="region")
+	 * @OA\Response(
+	 * 		response="200",
+	 * 		description="Success.",
+	 *      @Model(type=StorePaginationResult::class)
+	 * )
+	 * @OA\Response(response="401", description="Not logged in")
+	 * @OA\Response(response="403", description="Forbidden to access store list")
+	 * @Rest\Get("region/{regionId}/stores", requirements={"regionId" = "\d+"})
+	 * @Rest\QueryParam(name="expand", requirements="\d+", default="0", description="Expand information for store and region")
+	 */
+	public function getStoresOfRegion(int $regionId, ParamFetcher $paramFetcher): Response
+	{
+		if (!$this->session->mayRole()) {
+			throw new UnauthorizedHttpException('', self::NOT_LOGGED_IN);
+		}
+
+		if (!$this->storePermissions->mayListStores()) {
+			throw new AccessDeniedHttpException('No permission see store list');
+		}
+
+		$expand = boolval($paramFetcher->get('expand'));
+
+		$stores = $this->storeTransactions->listOverviewInformationsOfStoresInRegion($regionId, $expand);
+		$result = new StorePaginationResult();
+		$result->total = count($stores);
+		$result->stores = $stores;
+
+		return $this->handleView($this->view($result, 200));
 	}
 
 	/**
@@ -88,7 +116,6 @@ class StoreRestController extends AbstractFOSRestController
 	 * store, 404 if the store does not exist, or 401 if not logged in.
 	 *
 	 * @OA\Tag(name="stores")
-	 *
 	 * @Rest\Get("stores/{storeId}", requirements={"storeId" = "\d+"})
 	 */
 	public function getStoreAction(int $storeId): Response
@@ -96,7 +123,7 @@ class StoreRestController extends AbstractFOSRestController
 		if (!$this->session->id()) {
 			throw new UnauthorizedHttpException('', self::NOT_LOGGED_IN);
 		}
-		if (!$this->session->may('fs')) {
+		if (!$this->session->mayRole(Role::FOODSAVER)) {
 			throw new AccessDeniedHttpException('invalid permissions');
 		}
 		$maySeeDetails = $this->storePermissions->mayAccessStore($storeId);
@@ -113,11 +140,51 @@ class StoreRestController extends AbstractFOSRestController
 	}
 
 	/**
+	 * Allows to patch the store with information like the store team status.
+	 *
+	 * - CLOSED = 0 No new members accepted
+	 * - OPEN = 1 Open for members
+	 * - OPEN_SEARCHING = 2 Requires new members
+	 *
+	 * @OA\Tag(name="stores")
+	 * @Rest\Patch("stores/{storeId}", requirements={"storeId" = "\d+"})
+	 * @Rest\RequestParam(name="teamStatus", requirements="\d+")
+	 * @OA\Response(response="400", description="Invalid request data")
+	 * @OA\Response(response="401", description="Not logged in")
+	 * @OA\Response(response="403", description="No permission to store")
+	 * @OA\Response(response="404", description="Store not found")
+	 * @OA\Response(response="200", description="Store information")
+	 */
+	public function setStoreTeamStatus(int $storeId, ParamFetcher $paramFetcher)
+	{
+		if (!$this->session->id()) {
+			throw new UnauthorizedHttpException('', self::NOT_LOGGED_IN);
+		}
+
+		if (!$this->storePermissions->mayEditStore($storeId)) {
+			if ($this->storeGateway->storeExists($storeId)) {
+				throw new AccessDeniedHttpException('invalid permissions');
+			} else {
+				throw new NotFoundHttpException('Store not found');
+			}
+		}
+
+		$teamStatus = $paramFetcher->get('teamStatus');
+
+		if (!TeamStatus::isValidStatus($teamStatus)) {
+			throw new BadRequestHttpException('Team status is invalid');
+		}
+
+		$this->storeGateway->setStoreTeamStatus($storeId, $teamStatus);
+
+		return $this->getStoreAction($storeId);
+	}
+
+	/**
 	 * Provides a list of all foodsaver related stores and the next picks status.
 	 *
 	 * @OA\Tag(name="stores")
 	 * @OA\Tag(name="user")
-	 *
 	 * @OA\Response(
 	 * 		response="200",
 	 * 		description="Success.",
@@ -128,12 +195,11 @@ class StoreRestController extends AbstractFOSRestController
 	 * )
 	 * @OA\Response(response="204", description="No foodsaver related stores found.")
 	 * @OA\Response(response="401", description="Not logged in")
-	 *
 	 * @Rest\Get("user/current/stores")
 	 */
 	public function getListOfStoreStatusForCurrentFoodsaver(): Response
 	{
-		if (!$this->session->may()) {
+		if (!$this->session->mayRole()) {
 			throw new UnauthorizedHttpException('', self::NOT_LOGGED_IN);
 		}
 
@@ -156,19 +222,21 @@ class StoreRestController extends AbstractFOSRestController
 	 * 401 if not logged in, or 403 if you may not view this store.
 	 *
 	 * @OA\Tag(name="stores")
-	 *
 	 * @Rest\Get("stores/{storeId}/posts", requirements={"storeId" = "\d+"})
 	 */
 	public function getStorePosts(int $storeId): Response
 	{
-		if (!$this->session->may()) {
+		if (!$this->session->mayRole()) {
 			throw new UnauthorizedHttpException('', self::NOT_LOGGED_IN);
 		}
 		if (!$this->storePermissions->mayReadStoreWall($storeId)) {
 			throw new AccessDeniedHttpException();
 		}
 
-		$notes = $this->storeGateway->getStorePosts($storeId) ?? [];
+		$notes = $this->storeGateway->getStorePosts($storeId);
+		if (empty($notes)) {
+			$notes = [];
+		}
 		$notes = array_map(function ($n) {
 			return RestNormalization::normalizeStoreNote($n);
 		}, $notes);
@@ -181,13 +249,12 @@ class StoreRestController extends AbstractFOSRestController
 	 * 401 if not logged in, or 403 if you may not view this store.
 	 *
 	 * @OA\Tag(name="stores")
-	 *
 	 * @Rest\Post("stores/{storeId}/posts")
 	 * @Rest\RequestParam(name="text")
 	 */
 	public function addStorePostAction(int $storeId, ParamFetcher $paramFetcher): Response
 	{
-		if (!$this->session->may()) {
+		if (!$this->session->mayRole()) {
 			throw new UnauthorizedHttpException('', self::NOT_LOGGED_IN);
 		}
 		if (!$this->storePermissions->mayWriteStoreWall($storeId)) {
@@ -242,12 +309,11 @@ class StoreRestController extends AbstractFOSRestController
 	 * 401 if not logged in, or 403 if you may not remove this particular "wallpost".
 	 *
 	 * @OA\Tag(name="stores")
-	 *
 	 * @Rest\Delete("stores/{storeId}/posts/{postId}")
 	 */
 	public function deleteStorePostAction(int $storeId, int $postId): Response
 	{
-		if (!$this->session->may()) {
+		if (!$this->session->mayRole()) {
 			throw new UnauthorizedHttpException('', self::NOT_LOGGED_IN);
 		}
 		if (!$this->storePermissions->mayDeleteStoreWallPost($storeId, $postId)) {
@@ -273,7 +339,6 @@ class StoreRestController extends AbstractFOSRestController
 	 * @OA\Response(response="404", description="Store does not exist")
 	 * @OA\Response(response="422", description="Already applied or already member of this store team")
 	 * @OA\Tag(name="stores")
-	 *
 	 * @Rest\Post("stores/{storeId}/requests/{userId}")
 	 */
 	public function requestStoreTeamMembershipAction(int $storeId, int $userId): Response
@@ -306,7 +371,6 @@ class StoreRestController extends AbstractFOSRestController
 	 * @OA\Response(response="403", description="Insufficient permissions to accept requests")
 	 * @OA\Response(response="404", description="Store or request does not exist")
 	 * @OA\Tag(name="stores")
-	 *
 	 * @Rest\Patch("stores/{storeId}/requests/{userId}")
 	 * @Rest\RequestParam(name="moveToStandby", nullable=true, description="whether the new member should become part of the standby team instead of the regular team")
 	 */
@@ -333,7 +397,6 @@ class StoreRestController extends AbstractFOSRestController
 	 * @OA\Response(response="403", description="Insufficient permissions to remove the request")
 	 * @OA\Response(response="404", description="Store or request does not exist")
 	 * @OA\Tag(name="stores")
-	 *
 	 * @Rest\Delete("stores/{storeId}/requests/{userId}")
 	 */
 	public function declineStoreRequestAction(int $storeId, int $userId): Response
@@ -367,7 +430,6 @@ class StoreRestController extends AbstractFOSRestController
 	 * @OA\Response(response="404", description="Store does not exist")
 	 * @OA\Response(response="422", description="User is already, or cannot be, part of this store team")
 	 * @OA\Tag(name="stores")
-	 *
 	 * @Rest\Post("stores/{storeId}/members/{userId}")
 	 */
 	public function addStoreMemberAction(int $storeId, int $userId): Response
@@ -394,7 +456,6 @@ class StoreRestController extends AbstractFOSRestController
 	 * @OA\Response(response="404", description="Store does not exists or user is not a member of it")
 	 * @OA\Response(response="422", description="User cannot currently leave this team")
 	 * @OA\Tag(name="stores")
-	 *
 	 * @Rest\Delete("stores/{storeId}/members/{userId}")
 	 */
 	public function removeStoreMemberAction(int $storeId, int $userId): Response
@@ -420,7 +481,6 @@ class StoreRestController extends AbstractFOSRestController
 	 * @OA\Response(response="404", description="Store does not exist")
 	 * @OA\Response(response="422", description="User cannot become manager of this store")
 	 * @OA\Tag(name="stores")
-	 *
 	 * @Rest\Patch("stores/{storeId}/managers/{userId}")
 	 */
 	public function addStoreManagerAction(int $storeId, int $userId): Response
@@ -447,7 +507,6 @@ class StoreRestController extends AbstractFOSRestController
 	 * @OA\Response(response="404", description="Store does not exists or user is not a member of it")
 	 * @OA\Response(response="422", description="User cannot lose responsibility for this store")
 	 * @OA\Tag(name="stores")
-	 *
 	 * @Rest\Delete("stores/{storeId}/managers/{userId}")
 	 */
 	public function removeStoreManagerAction(int $storeId, int $userId): Response
@@ -473,7 +532,6 @@ class StoreRestController extends AbstractFOSRestController
 	 * @OA\Response(response="403", description="Insufficient permissions to manage this store team")
 	 * @OA\Response(response="404", description="User is not a member of this store")
 	 * @OA\Tag(name="stores")
-	 *
 	 * @Rest\Patch("stores/{storeId}/members/{userId}/standby")
 	 */
 	public function moveMemberToStandbyTeamAction(int $storeId, int $userId): Response
@@ -504,7 +562,6 @@ class StoreRestController extends AbstractFOSRestController
 	 * @OA\Response(response="403", description="Insufficient permissions to manage this store team")
 	 * @OA\Response(response="404", description="User is not a member of this store")
 	 * @OA\Tag(name="stores")
-	 *
 	 * @Rest\Delete("stores/{storeId}/members/{userId}/standby")
 	 */
 	public function moveUserToRegularTeamAction(int $storeId, int $userId): Response
@@ -531,9 +588,7 @@ class StoreRestController extends AbstractFOSRestController
 	 *
 	 * @OA\Parameter(name="storeId", in="path", @OA\Schema(type="integer"))
 	 * @OA\Parameter(name="storeLogActionIds", in="path", @OA\Schema(type="string"), description="The ids of the actions, seperated by commas like: 1,2,3")
-	 *
 	 * @OA\Tag(name="stores")
-	 *
 	 * @Rest\Get("stores/{storeId}/log/{storeLogActionIds}")
 	 */
 	public function showStoreLogHistoryAction(int $storeId, string $storeLogActionIds): Response
@@ -559,15 +614,18 @@ class StoreRestController extends AbstractFOSRestController
 			return $performedAtTimestamp >= $dateBeforeSevenDaysTimestamp;
 		});
 
-		$storeLogEntriesFromLastSevenDays = array_map(function ($logEntry) {
-			$correctedDate = new DateTime($logEntry['date_reference']);
-			$correctedDate->add(new \DateInterval('PT2H'));
-			$logEntry['date_reference'] = $correctedDate->format('Y-m-d H:i:s');
+		$storeLogEntriesFromLastSevenDaysWithCorrectedDateFormat = array_map(function ($logEntry) {
+			$correctedSlotDate = new DateTime($logEntry['date_reference']);
+			$correctedSlotDate->add(new \DateInterval('PT2H'));
+			$logEntry['date_reference'] = $correctedSlotDate->format(DATE_ATOM);
+
+			$correctedPerformedAtDate = new DateTime($logEntry['performed_at']);
+			$logEntry['performed_at'] = $correctedPerformedAtDate->format(DATE_ATOM);
 
 			return $logEntry;
 		}, $storeLogEntriesFromLastSevenDays);
 
-		$extendedLogEntries = $this->extendStoreLogWithFoodsaverProfilData($storeId, $storeLogEntriesFromLastSevenDays);
+		$extendedLogEntries = $this->extendStoreLogWithFoodsaverProfilData($storeId, $storeLogEntriesFromLastSevenDaysWithCorrectedDateFormat);
 
 		return $this->handleView($this->view($extendedLogEntries, 200));
 	}

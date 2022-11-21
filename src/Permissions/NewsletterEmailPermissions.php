@@ -3,6 +3,7 @@
 namespace Foodsharing\Permissions;
 
 use Foodsharing\Lib\Session;
+use Foodsharing\Modules\Core\DBConstants\Foodsaver\Role;
 use Foodsharing\Modules\Core\DBConstants\Region\RegionIDs;
 
 class NewsletterEmailPermissions
@@ -17,6 +18,6 @@ class NewsletterEmailPermissions
 
 	public function mayAdministrateNewsletterEmail(): bool
 	{
-		return $this->session->may('orga') || $this->session->isAdminFor(RegionIDs::NEWSLETTER_WORK_GROUP);
+		return $this->session->mayRole(Role::ORGA) || $this->session->isAdminFor(RegionIDs::NEWSLETTER_WORK_GROUP);
 	}
 }

@@ -8,6 +8,7 @@ import { attachAddressPicker } from '@/addressPicker'
 import { vueApply, vueRegister } from '@/vue'
 import FileUploadVForm from '@/components/upload/FileUploadVForm'
 import { GET } from '@/browser'
+import AvatarList from '@/components/AvatarList'
 
 import './FoodSharePoint.css'
 
@@ -16,7 +17,7 @@ import '../WallPost/WallPost.css'
 import { initWall } from '@/wall'
 
 vueRegister({
-  FileUploadVForm,
+  FileUploadVForm, AvatarList,
 })
 
 const sub = GET('sub')
@@ -25,4 +26,6 @@ if (sub === 'add' || sub === 'edit') {
   vueApply('#image-upload')
 } else if (sub === 'ft') {
   initWall('fairteiler', GET('id'))
+  vueApply('#fsp-followers')
+  vueApply('#fsp-managers')
 }

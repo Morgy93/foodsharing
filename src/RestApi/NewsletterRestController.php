@@ -3,7 +3,6 @@
 namespace Foodsharing\RestApi;
 
 use Foodsharing\Lib\Session;
-use Foodsharing\Modules\Email\EmailGateway;
 use Foodsharing\Permissions\NewsletterEmailPermissions;
 use Foodsharing\Utility\EmailHelper;
 use FOS\RestBundle\Controller\AbstractFOSRestController;
@@ -20,7 +19,6 @@ use Symfony\Component\HttpKernel\Exception\UnauthorizedHttpException;
  */
 final class NewsletterRestController extends AbstractFOSRestController
 {
-	private EmailGateway $emailGateway;
 	private NewsletterEmailPermissions $newsletterEmailPermissions;
 	private Session $session;
 	private EmailHelper $emailHelper;
@@ -29,12 +27,10 @@ final class NewsletterRestController extends AbstractFOSRestController
 	private const INVALID_ADDRESS = 'invalid address';
 
 	public function __construct(
-		EmailGateway $emailGateway,
 		NewsletterEmailPermissions $newsletterEmailPermissions,
 		Session $session,
 		EmailHelper $emailHelper
 	) {
-		$this->emailGateway = $emailGateway;
 		$this->newsletterEmailPermissions = $newsletterEmailPermissions;
 		$this->session = $session;
 		$this->emailHelper = $emailHelper;
@@ -45,7 +41,6 @@ final class NewsletterRestController extends AbstractFOSRestController
 	 * send newsletters, or 400 if the email address is invalid.
 	 *
 	 * @OA\Tag(name="newsletter")
-	 *
 	 * @Rest\Post("newsletter/test")
 	 * @Rest\RequestParam(name="address")
 	 * @Rest\RequestParam(name="subject")

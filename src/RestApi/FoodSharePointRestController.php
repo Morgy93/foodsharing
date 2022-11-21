@@ -37,7 +37,6 @@ final class FoodSharePointRestController extends AbstractFOSRestController
 	 * Returns 200 and a list of food share points, 400 if the distance is out of range, or 401 if not logged in.
 	 *
 	 * @OA\Tag(name="foodsharepoint")
-	 *
 	 * @Rest\Get("foodSharePoints/nearby")
 	 * @Rest\QueryParam(name="lat", nullable=true)
 	 * @Rest\QueryParam(name="lon", nullable=true)
@@ -45,7 +44,7 @@ final class FoodSharePointRestController extends AbstractFOSRestController
 	 */
 	public function listNearbyFoodSharePointsAction(ParamFetcher $paramFetcher): Response
 	{
-		if (!$this->session->may()) {
+		if (!$this->session->mayRole()) {
 			throw new UnauthorizedHttpException('', self::NOT_LOGGED_IN);
 		}
 
@@ -64,33 +63,15 @@ final class FoodSharePointRestController extends AbstractFOSRestController
 	}
 
 	/**
-	 * DEPRECATED: Wrapper for listNearbyFoodSharePointsAction. Provides endpoint on old url.
-	 *
-	 * @OA\Tag(name="foodsharepoint")
-	 *
-	 * @Rest\Get("fairSharePoints/nearby")
-	 * @Rest\QueryParam(name="lat", nullable=true)
-	 * @Rest\QueryParam(name="lon", nullable=true)
-	 * @Rest\QueryParam(name="distance", nullable=false, requirements="\d+")
-	 *
-	 * @deprecated Old naming scheme, remove this when all clients are updated
-	 */
-	public function oldListNearbyFoodSharePointsAction(ParamFetcher $paramFetcher): Response
-	{
-		return $this->listNearbyFoodSharePointsAction($paramFetcher);
-	}
-
-	/**
 	 * Returns details of the food share point with the given ID. Returns 200 and the
 	 * food share point, 404 if the food share point does not exist, or 401 if not logged in.
 	 *
 	 * @OA\Tag(name="foodsharepoint")
-	 *
 	 * @Rest\Get("foodSharePoints/{foodSharePointId}", requirements={"foodSharePointId" = "\d+"})
 	 */
 	public function getFoodSharePointAction(int $foodSharePointId): Response
 	{
-		if (!$this->session->may()) {
+		if (!$this->session->mayRole()) {
 			throw new UnauthorizedHttpException('', self::NOT_LOGGED_IN);
 		}
 
@@ -102,20 +83,6 @@ final class FoodSharePointRestController extends AbstractFOSRestController
 		$foodSharePoint = $this->normalizeFoodSharePoint($foodSharePoint);
 
 		return $this->handleView($this->view($foodSharePoint, 200));
-	}
-
-	/**
-	 * DEPRECATED: Wrapper for getFoodSharePointAction. Provides endpoint on old url.
-	 *
-	 * @OA\Tag(name="foodsharepoint")
-	 *
-	 * @Rest\Get("fairSharePoints/{foodSharePointId}", requirements={"foodSharePointId" = "\d+"})
-	 *
-	 * @deprecated Old naming scheme, remove this when all clients are updated
-	 */
-	public function oldGetFoodSharePointAction(int $foodSharePointId): Response
-	{
-		return $this->getFoodSharePointAction($foodSharePointId);
 	}
 
 	private function fetchLocationOrUserHome(ParamFetcher $paramFetcher): array

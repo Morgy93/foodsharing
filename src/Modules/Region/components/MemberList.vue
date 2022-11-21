@@ -401,11 +401,11 @@ export default {
 </script>
 
 <style lang="scss" scoped>
-.foto-table /deep/ .foto-column {
+.foto-table ::v-deep .foto-column {
   width: 60px;
 }
 
-.foto-table /deep/ .button-column {
+.foto-table ::v-deep .button-column {
   width: 50px;
   vertical-align: middle;
   text-align: center;

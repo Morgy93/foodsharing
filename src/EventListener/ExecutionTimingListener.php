@@ -9,7 +9,6 @@ use Symfony\Component\HttpKernel\KernelEvents;
 
 class ExecutionTimingListener implements EventSubscriberInterface
 {
-	private $tokens;
 	private $influxMetrics;
 
 	public function __construct(InfluxMetrics $influxMetrics)

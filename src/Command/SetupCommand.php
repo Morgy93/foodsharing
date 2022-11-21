@@ -3,6 +3,7 @@
 namespace Foodsharing\Command;
 
 use Symfony\Component\Console\Command\Command;
+use Symfony\Component\Console\Helper\ProgressBar;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 
@@ -18,19 +19,39 @@ class SetupCommand extends Command
 
 	protected function execute(InputInterface $input, OutputInterface $output): int
 	{
-		$this->mkdirs();
-
-		return 0;
-	}
-
-	private function mkdirs(): void
-	{
-		$dirs = ['images', 'images/basket', 'images/wallpost', 'images/picture', 'images/workgroup', 'data/attach', 'data/mailattach', 'data/mailattach/tmp', 'data/pass', 'data/visite', 'cache/searchindex', 'tmp'];
 		umask(0);
-		foreach ($dirs as $dir) {
-			if (!file_exists($dir)) {
-				mkdir($dir, 0770, true);
+		$progressBar = new ProgressBar($output);
+		$dirs = [
+			'assets',
+			'images',
+			'images/basket',
+			'images/wallpost',
+			'images/picture',
+			'images/workgroup',
+			'data',
+			'data/attach',
+			'data/mailattach',
+			'data/mailattach/tmp',
+			'data/pass',
+			'data/uploads',
+			'data/visite',
+			'cache',
+			'cache/searchindex',
+			'var',
+			'var/cache',
+			'var/cache/dev',
+			'var/cache/test',
+			'var/cache/nginx/client_temp',
+			'var/log',
+			'tmp'
+		];
+
+		foreach ($progressBar->iterate($dirs) as $dir) {
+			if (!is_dir($dir)) {
+				mkdir($dir, 0777, true);
 			}
 		}
+
+		return Command::SUCCESS;
 	}
 }

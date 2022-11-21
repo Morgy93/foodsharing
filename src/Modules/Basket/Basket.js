@@ -15,6 +15,7 @@ import i18n from '@/helper/i18n'
 import { expose } from '@/utils'
 import { removeBasket, listBasketCoordinates } from '@/api/baskets'
 import basketStore from '@/stores/baskets'
+import AvatarList from '@/components/AvatarList'
 
 expose({
   tryRemoveBasket,
@@ -110,6 +111,9 @@ $(document).ready(() => {
     })
     vueApply('#' + requestFormContainerId)
   }
+
+  vueRegister({ AvatarList })
+  vueApply('#basket-creator')
 })
 
 async function tryRemoveBasket (basketId) {

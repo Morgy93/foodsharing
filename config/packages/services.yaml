@@ -51,7 +51,6 @@ services:
         - !php/const DB_PASS
         calls:
         - [ setAttribute, [!php/const PDO::ATTR_EMULATE_PREPARES, false]]
-        - [ setAttribute, [!php/const PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION]]
 
     InfluxDB\Database:
         factory: ['InfluxDB\Client', 'fromdsn']

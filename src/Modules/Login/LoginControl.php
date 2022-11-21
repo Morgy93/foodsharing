@@ -2,7 +2,6 @@
 
 namespace Foodsharing\Modules\Login;
 
-use Foodsharing\Modules\Content\ContentGateway;
 use Foodsharing\Modules\Core\Control;
 use Foodsharing\Modules\Settings\SettingsGateway;
 use Symfony\Component\HttpFoundation\Request;
@@ -12,20 +11,17 @@ class LoginControl extends Control
 {
 	private LoginGateway $loginGateway;
 	private SettingsGateway $settingsGateway;
-	private ContentGateway $contentGateway;
 	private LoginService $loginService;
 
 	public function __construct(
 		LoginView $view,
 		LoginGateway $loginGateway,
-		ContentGateway $contentGateway,
 		SettingsGateway $settingsGateway,
 		LoginService $loginService
 	) {
 		$this->view = $view;
 		$this->loginGateway = $loginGateway;
 		$this->settingsGateway = $settingsGateway;
-		$this->contentGateway = $contentGateway;
 		$this->loginService = $loginService;
 
 		parent::__construct();
@@ -43,10 +39,10 @@ class LoginControl extends Control
 
 	public function index(Request $request, Response $response)
 	{
-		if (!$this->session->may()) {
+		if (!$this->session->mayRole()) {
 			$has_subpage = $request->query->has('sub');
 			if (!$has_subpage) {
-				$this->pageHelper->addContent($this->view->loginForm());
+				$this->pageHelper->addContent($this->view->loginPage());
 			}
 		} else {
 			if (!isset($_GET['sub']) || $_GET['sub'] != 'unsubscribe') {

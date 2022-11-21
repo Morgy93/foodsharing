@@ -53,7 +53,7 @@ class BasketControl extends Control
 	{
 		$requests = false;
 
-		if ($this->session->may()) {
+		if ($this->session->mayRole()) {
 			if ($basket['fs_id'] == $this->session->id()) {
 				$requests = $this->basketGateway->listRequests($basket['id'], $this->session->id());
 			} else {

@@ -45,7 +45,6 @@ class WebDriver extends \Codeception\Module\WebDriver
 	/**
 	 * Wait until the open URL equals given one.
 	 *
-	 * @param $url
 	 * @param int $timeout
 	 */
 	public function waitUrlEquals($url, $timeout = 4)

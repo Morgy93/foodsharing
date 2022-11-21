@@ -4,17 +4,16 @@ namespace Foodsharing\Modules\StoreUser;
 
 use Carbon\Carbon;
 use Foodsharing\Modules\Core\Control;
+use Foodsharing\Modules\Core\DBConstants\Foodsaver\Role;
+use Foodsharing\Modules\Core\DBConstants\Region\RegionOptionType;
 use Foodsharing\Modules\Core\DBConstants\Region\WorkgroupFunction;
 use Foodsharing\Modules\Core\DBConstants\Store\CooperationStatus;
-use Foodsharing\Modules\Foodsaver\FoodsaverGateway;
 use Foodsharing\Modules\Group\GroupFunctionGateway;
 use Foodsharing\Modules\Region\RegionGateway;
 use Foodsharing\Modules\Store\PickupGateway;
 use Foodsharing\Modules\Store\StoreGateway;
 use Foodsharing\Permissions\StorePermissions;
 use Foodsharing\Utility\DataHelper;
-use Foodsharing\Utility\Sanitizer;
-use Foodsharing\Utility\TimeHelper;
 use Foodsharing\Utility\WeightHelper;
 
 class StoreUserControl extends Control
@@ -23,10 +22,7 @@ class StoreUserControl extends Control
 	private $pickupGateway;
 	private $storeGateway;
 	private $storePermissions;
-	private $foodsaverGateway;
 	private $dataHelper;
-	private $sanitizerService;
-	private $timeHelper;
 	private $weightHelper;
 	private $groupFunctionGateway;
 
@@ -36,10 +32,7 @@ class StoreUserControl extends Control
 		PickupGateway $pickupGateway,
 		StoreGateway $storeGateway,
 		StorePermissions $storePermissions,
-		FoodsaverGateway $foodsaverGateway,
 		DataHelper $dataHelper,
-		Sanitizer $sanitizerService,
-		TimeHelper $timeHelper,
 		WeightHelper $weightHelper,
 		GroupFunctionGateway $groupFunctionGateway
 	) {
@@ -48,16 +41,13 @@ class StoreUserControl extends Control
 		$this->pickupGateway = $pickupGateway;
 		$this->storeGateway = $storeGateway;
 		$this->storePermissions = $storePermissions;
-		$this->foodsaverGateway = $foodsaverGateway;
 		$this->dataHelper = $dataHelper;
-		$this->sanitizerService = $sanitizerService;
-		$this->timeHelper = $timeHelper;
 		$this->weightHelper = $weightHelper;
 		$this->groupFunctionGateway = $groupFunctionGateway;
 
 		parent::__construct();
 
-		if (!$this->session->may()) {
+		if (!$this->session->mayRole()) {
 			$this->routeHelper->goLogin();
 		}
 	}
@@ -118,6 +108,12 @@ class StoreUserControl extends Control
 					'storeTitle' => $store['name'],
 					'collectionQuantity' => $this->weightHelper->getFetchWeightName($store['abholmenge']),
 					'press' => $store['presse'],
+					'regionPickupRules' => (bool)$store['use_region_pickup_rule'],
+					'regionPickupRuleActive' => (bool)$this->regionGateway->getRegionOption((int)$store['bezirk_id'], RegionOptionType::REGION_PICKUP_RULE_ACTIVE),
+					'regionPickupRuleTimespan' => $this->regionGateway->getRegionOption((int)$store['bezirk_id'], RegionOptionType::REGION_PICKUP_RULE_TIMESPAN_DAYS),
+					'regionPickupRuleLimit' => $this->regionGateway->getRegionOption((int)$store['bezirk_id'], RegionOptionType::REGION_PICKUP_RULE_LIMIT_NUMBER),
+					'regionPickupRuleLimitDay' => $this->regionGateway->getRegionOption((int)$store['bezirk_id'], RegionOptionType::REGION_PICKUP_RULE_LIMIT_DAY_NUMBER),
+					'regionPickupRuleInactive' => $this->regionGateway->getRegionOption((int)$store['bezirk_id'], RegionOptionType::REGION_PICKUP_RULE_INACTIVE_HOURS),
 				]), CNT_RIGHT);
 
 				/* options menu */
@@ -164,11 +160,9 @@ class StoreUserControl extends Control
 				/* team status */
 				if ($this->storePermissions->mayEditStore($storeId)) {
 					$this->pageHelper->addContent(
-						$this->v_utils->v_field(
-							$this->view->u_legacyStoreTeamStatus($store),
-							$this->translator->trans('status'),
-							['class' => 'ui-padding']
-						),
+						$this->view->vueComponent('vue-store-teamstatus', 'StoreTeamStatus', [
+							'storeId' => $storeId,
+						]),
 						CNT_LEFT
 					);
 				}
@@ -208,7 +202,7 @@ class StoreUserControl extends Control
 				/* end of pinboard */
 
 				/* fetchdates */
-				if ($this->storePermissions->maySeePickups($storeId) && ($store['betrieb_status_id'] === CooperationStatus::COOPERATION_STARTING || $store['betrieb_status_id'] === CooperationStatus::COOPERATION_ESTABLISHED)) {
+				if ($this->storePermissions->maySeePickups($storeId) && ($store['betrieb_status_id'] === CooperationStatus::COOPERATION_STARTING->value || $store['betrieb_status_id'] === CooperationStatus::COOPERATION_ESTABLISHED->value)) {
 					$this->pageHelper->addContent(
 						$this->view->vueComponent('vue-pickuplist', 'pickup-list', [
 							'storeId' => $storeId,
@@ -239,8 +233,8 @@ class StoreUserControl extends Control
 
 				if (!$store['jumper']) {
 					if (!in_array($store['betrieb_status_id'], [
-						CooperationStatus::COOPERATION_STARTING,
-						CooperationStatus::COOPERATION_ESTABLISHED,
+						CooperationStatus::COOPERATION_STARTING->value,
+						CooperationStatus::COOPERATION_ESTABLISHED->value,
 					])) {
 						$icon = $this->v_utils->v_getStatusAmpel($store['betrieb_status_id']);
 						$this->pageHelper->addContent($this->v_utils->v_field(
@@ -314,20 +308,6 @@ class StoreUserControl extends Control
 		);
 	}
 
-	private function addStoreLeaveModal(): void
-	{
-		$this->pageHelper->addHidden(
-			'
-		<div id="signout_shure" title="' . $this->translator->trans('pickup.signout_confirm') . '">
-			' . $this->v_utils->v_info(
-				'
-				<strong>' . $this->translator->trans('pickup.signout_sure') . '</strong>
-				<p>' . $this->translator->trans('pickup.signout_info') . '</p>'
-			) . '
-		</div>'
-		);
-	}
-
 	/**
 	 * Certain users will be able to manage a store even if not explicitly listed as manager:
 	 * - all members of the 'store coordination' workgroup of the store's region
@@ -336,7 +316,7 @@ class StoreUserControl extends Control
 	 */
 	private function isResponsibleForThisStoreAnyways($storeId): bool
 	{
-		if ($this->session->may('orga')) {
+		if ($this->session->mayRole(Role::ORGA)) {
 			$extraResponsibility = true;
 			$extraMessageKey = 'storeedit.team.orga';
 		} elseif ($this->storePermissions->mayEditStore($storeId)) {

@@ -3,6 +3,7 @@
 namespace Foodsharing\Modules\Application;
 
 use Foodsharing\Modules\Core\Control;
+use Foodsharing\Modules\Core\DBConstants\Foodsaver\Role;
 use Foodsharing\Utility\IdentificationHelper;
 
 class ApplicationControl extends Control
@@ -28,7 +29,7 @@ class ApplicationControl extends Control
 			$this->bezirk_id = $this->session->getCurrentRegionId();
 		}
 
-		$mayManageApplications = ($this->session->isAdminFor($this->bezirk_id) || $this->session->may('orga'));
+		$mayManageApplications = ($this->session->isAdminFor($this->bezirk_id) || $this->session->mayRole(Role::ORGA));
 		if (!$mayManageApplications) {
 			$this->routeHelper->go('/');
 		}

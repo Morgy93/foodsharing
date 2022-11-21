@@ -16,7 +16,7 @@ class RegisterControl extends Control
 
 	public function index()
 	{
-		if ($this->session->may()) {
+		if ($this->session->mayRole()) {
 			$this->flashMessageHelper->info($this->translator->trans('register.account-exists'));
 			$this->routeHelper->go('/?page=dashboard');
 		} else {

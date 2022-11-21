@@ -22,6 +22,17 @@
       :options="languages"
       text="Dropdown Button"
     />
+
+    <p class="mt-2">
+      <a
+        href="https://hosted.weblate.org/projects/foodsharing/#languages"
+        target="_blank"
+        rel="noopener noreferrer"
+      >{{ $i18n('language_chooser.translation_help') }}
+      </a>.
+      <br>
+      <small><i class="fas fa-info-circle" /> {{ $i18n('language_chooser.translation_help_info_text') }}</small>
+    </p>
   </b-modal>
 </template>
 

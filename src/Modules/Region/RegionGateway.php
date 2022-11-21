@@ -671,6 +671,39 @@ class RegionGateway extends BaseGateway
 		]);
 	}
 
+	/**
+	 * Returns all option for the region
+	 * See {@see RegionOptionType}.
+	 *
+	 * @param int $regionId ID of region
+	 *
+	 * @return array|null value of option or null if not found
+	 *
+	 * @throws \Exception
+	 */
+	public function getAllRegionOptions(int $regionId): ?array
+	{
+		try {
+			$result = $this->db->fetchAll('
+			SELECT 	region_id as regionId,
+			        option_type,
+			        option_value
+			FROM            `fs_region_options` ro
+			WHERE    region_id = :regionId
+		', [
+				':regionId' => $regionId,
+			]);
+		} catch (Exception $e) {
+			return null;
+		}
+		$optionTypeMap = [];
+		foreach ($result as $key => $value) {
+			$optionTypeMap[$value['option_type']] = $value['option_value'];
+		}
+
+		return $optionTypeMap;
+	}
+
 	public function getRegionPin(int $regionId): ?array
 	{
 		try {
@@ -694,5 +727,17 @@ class RegionGateway extends BaseGateway
 			'desc' => $desc,
 			'status' => $status
 		]);
+	}
+
+	public function hasSubgroups(int $regionId): bool
+	{
+		$parentalStatus = $this->db->fetchByCriteria('fs_bezirk', ['has_children'], ['id' => $regionId]);
+		if (empty($parentalStatus)) {
+			return false;
+		}
+
+		$hasSubgroup = (bool)$parentalStatus['has_children'];
+
+		return $hasSubgroup;
 	}
 }

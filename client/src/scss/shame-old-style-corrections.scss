@@ -1,4 +1,4 @@
-body:not(.page-index) #main {
+body:not(.page-index):not(.page-msg) #main {
     margin-top: 3rem;
     margin-bottom: 3rem;
 }
@@ -308,8 +308,7 @@ select {
 
 @media (min-width: 575px) {
 
-    .slimScrollDiv,
-    #msg-conversation {
+    .slimScrollDiv {
         max-height: 50vh;
     }
 }

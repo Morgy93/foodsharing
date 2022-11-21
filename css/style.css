@@ -201,7 +201,7 @@ body{
   color: var(--fs-color-primary-500);
   display: block;
 
-  font-weight: lighter;
+  font-weight: 500;
   padding-top: 5px;
 }
 
@@ -438,7 +438,7 @@ div.foot {
 
 .foot span,
 .foot a {
-  font-weight: lighter;
+  /* font-weight: lighter; */
   font-size: 12px;
 }
 
@@ -656,19 +656,19 @@ ul.linklist li > a {
   padding: 6px;
   text-decoration: none !important;
   color: var(--fs-color-primary-500);
-  font-weight: lighter;
+  font-weight: 500;
   position: relative;
 }
 
 ul.linklist li > a span.title {
   text-decoration: none !important;
   color: var(--fs-color-primary-500);
-  font-weight: bold;
+  font-weight: 500;
 }
 
 ul.linklist li > a.active {
-  color: var(--fs-color-primary-500);
-  font-weight: bold;
+  background-color: var(--fs-color-gray-200);
+  color: var(--fs-color-primary-900);
 }
 
 ul.linklist li > a:hover,
@@ -679,7 +679,7 @@ ul.linklist li > a:hover span {
 
 .activity_feed_content_info {
   font-size: 13px;
-  font-weight: lighter;
+  /* font-weight: lighter; */
 }
 
 .post .foot {

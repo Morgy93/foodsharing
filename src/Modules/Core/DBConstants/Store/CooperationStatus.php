@@ -9,31 +9,19 @@ namespace Foodsharing\Modules\Core\DBConstants\Store;
  * status of the cooperation between foodsharing and a store
  * INT(10)          UNSIGNED NOT NULL.
  */
-class CooperationStatus
+enum CooperationStatus: int
 {
-	public const UNCLEAR = 0; // "Status unklar"
-	public const NO_CONTACT = 1; // "Es besteht noch kein Kontakt"
-	public const IN_NEGOTIATION = 2; // "Verhandlungen laufen"
-	public const COOPERATION_STARTING = 3; // "Betrieb ist bereit zu spenden :)"
-	public const DOES_NOT_WANT_TO_WORK_WITH_US = 4; // "Will nicht kooperieren"
-	public const COOPERATION_ESTABLISHED = 5; // "Betrieb kooperiert bereits" (mit uns)
-	public const GIVES_TO_OTHER_CHARITY = 6; // "Spendet an Tafel etc. und wirft nichts weg"
-	public const PERMANENTLY_CLOSED = 7; // "Betrieb existiert nicht mehr"
+	case UNCLEAR = 0;
+	case NO_CONTACT = 1;
+	case IN_NEGOTIATION = 2;
+	case COOPERATION_STARTING = 3;
+	case DOES_NOT_WANT_TO_WORK_WITH_US = 4;
+	case COOPERATION_ESTABLISHED = 5;
+	case GIVES_TO_OTHER_CHARITY = 6;
+	case PERMANENTLY_CLOSED = 7;
 
 	public static function isValidStatus(int $status): bool
 	{
-		switch ($status) {
-			case CooperationStatus::UNCLEAR:
-			case CooperationStatus::NO_CONTACT:
-			case CooperationStatus::IN_NEGOTIATION:
-			case CooperationStatus::COOPERATION_STARTING:
-			case CooperationStatus::DOES_NOT_WANT_TO_WORK_WITH_US:
-			case CooperationStatus::COOPERATION_ESTABLISHED:
-			case CooperationStatus::GIVES_TO_OTHER_CHARITY:
-			case CooperationStatus::PERMANENTLY_CLOSED:
-				return true;
-			default:
-				return false;
-		}
+		return CooperationStatus::tryFrom($status) != null;
 	}
 }

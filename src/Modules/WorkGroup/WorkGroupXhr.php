@@ -5,6 +5,7 @@ namespace Foodsharing\Modules\WorkGroup;
 use Foodsharing\Lib\Xhr\XhrDialog;
 use Foodsharing\Lib\Xhr\XhrResponses;
 use Foodsharing\Modules\Core\Control;
+use Foodsharing\Modules\Core\DBConstants\Foodsaver\Role;
 use Foodsharing\Modules\Core\DBConstants\Region\ApplyType;
 
 class WorkGroupXhr extends Control
@@ -51,7 +52,7 @@ class WorkGroupXhr extends Control
 
 	public function addtogroup(): array
 	{
-		if (!$this->session->may('fs')) {
+		if (!$this->session->mayRole(Role::FOODSAVER)) {
 			return $this->responses->fail_generic();
 		}
 
@@ -131,7 +132,7 @@ class WorkGroupXhr extends Control
 	 */
 	public function sendtogroup()
 	{
-		if (!$this->session->may()) {
+		if (!$this->session->mayRole()) {
 			return XhrResponses::PERMISSION_DENIED;
 		}
 

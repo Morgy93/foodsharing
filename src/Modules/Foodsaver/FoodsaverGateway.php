@@ -11,27 +11,26 @@ use Foodsharing\Modules\Core\DBConstants\StoreTeam\MembershipStatus;
 use Foodsharing\Modules\Core\DBConstants\Unit\UnitType;
 use Foodsharing\Modules\Region\ForumFollowerGateway;
 use Foodsharing\Utility\DataHelper;
-use Foodsharing\Utility\ImageHelper;
 
 class FoodsaverGateway extends BaseGateway
 {
 	private DataHelper $dataHelper;
 	private ForumFollowerGateway $forumFollowerGateway;
-	private ImageHelper $imageHelper;
 
 	public function __construct(
 		Database $db,
 		ForumFollowerGateway $forumFollowerGateway,
 		DataHelper $dataHelper,
-		ImageHelper $imageHelper
 	) {
 		parent::__construct($db);
 
 		$this->dataHelper = $dataHelper;
 		$this->forumFollowerGateway = $forumFollowerGateway;
-		$this->imageHelper = $imageHelper;
 	}
 
+	/**
+	 * @return Profile[]
+	 */
 	public function getFoodsaversByRegion(int $regionId, bool $hideRecentlyOnline = false): array
 	{
 		$onlyInactiveClause = '';
@@ -43,7 +42,7 @@ class FoodsaverGateway extends BaseGateway
 			';
 		}
 
-		return $this->db->fetchAll('
+		$result = $this->db->fetchAll('
 		    SELECT	fs.id,
 					fs.name,
 					fs.nachname,
@@ -63,6 +62,10 @@ class FoodsaverGateway extends BaseGateway
 		', [
 			':regionId' => $regionId
 		]);
+
+		return array_map(function ($fs) {
+			return new Profile($fs['id'], $fs['name'], $fs['photo'], $fs['sleep_status']);
+		}, $result);
 	}
 
 	/**
@@ -121,31 +124,33 @@ class FoodsaverGateway extends BaseGateway
 
 	public function getFoodsaverDetails(int $fsId): array
 	{
-		return $this->db->fetchByCriteria(
-			'fs_foodsaver',
-			[
-				'id',
-				'admin',
-				'orgateam',
-				'bezirk_id',
-				'photo',
-				'rolle',
-				'type',
-				'verified',
-				'name',
-				'nachname',
-				'lat',
-				'lon',
-				'email',
-				'token',
-				'mailbox_id',
-				'option',
-				'geschlecht',
-				'privacy_policy_accepted_date',
-				'privacy_notice_accepted_date'
-			], [
-			'id' => $fsId
-		]);
+		return $this->db->fetch('
+		SELECT
+			fs.id,
+			fs.admin,
+			fs.orgateam,
+			fs.bezirk_id,
+			fs.photo,
+			fs.rolle,
+			fs.type,
+			fs.verified,
+			fs.name,
+			fs.nachname,
+			fs.lat,
+			fs.lon,
+			fs.email,
+			fs.token,
+			fs.mailbox_id,
+			fs.option,
+			fs.geschlecht,
+			fs.privacy_policy_accepted_date,
+			fs.privacy_notice_accepted_date,
+			fs.last_login as last_activity
+
+		FROM	fs_foodsaver fs
+
+		WHERE     fs.id = :id
+		', [':id' => $fsId]);
 	}
 
 	public function getCountCommonStores(int $fs_viewer, int $fs_viewed): int
@@ -831,18 +836,20 @@ class FoodsaverGateway extends BaseGateway
 
 	public function loadFoodsaver(int $foodsaverId): array
 	{
-		return $this->db->fetchByCriteria('fs_foodsaver', [
-			'id',
-			'name',
-			'nachname',
-			'photo',
-			'rolle',
-			'geschlecht',
-			'last_login'
-		], [
-			'id' => $foodsaverId,
-			'deleted_at' => null
-		]);
+		return $this->db->fetch('
+		SELECT	fs.id,
+				fs.name,
+				fs.nachname,
+				fs.photo,
+				fs.rolle
+				fs.geschlecht
+				fs.last_login as last_activity
+
+		FROM	fs_foodsaver fs
+
+		WHERE   fs.deleted_at_at IS NULL
+		AND     fs.id = :foodsaverId
+		', [':foodsaverId' => $foodsaverId]);
 	}
 
 	public function updateFoodsaver(int $fsId, array $data): int
@@ -999,5 +1006,27 @@ class FoodsaverGateway extends BaseGateway
 	public function foodsaverWasVerifiedBefore(int $userId): bool
 	{
 		return $this->db->exists('fs_verify_history', ['fs_id' => $userId]);
+	}
+
+	/**
+	 * Tests whether one user applied to any store of another user.
+	 *
+	 * @param int $userId User id of the possible applicant
+	 * @param int $storemanagerId User id of storemanager for whose ablicants to check
+	 *
+	 * @return bool true if the user with id userId is an applicant to any of the stores managed by the user with id storemanagerId, false otherwise
+	 */
+	public function isApplicant(int $userId, int $storemanagerId): bool
+	{
+		$applications = $this->db->fetchAll('
+			(SELECT betrieb_id from fs_betrieb_team WHERE :fsId = foodsaver_id AND active = 0)
+			INTERSECT
+			(SELECT betrieb_id from fs_betrieb_team WHERE :storemanagerId = foodsaver_id AND verantwortlich = 1);
+		', [
+			':fsId' => $userId,
+			':storemanagerId' => $storemanagerId
+		]);
+
+		return !empty($applications);
 	}
 }

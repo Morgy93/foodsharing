@@ -50,7 +50,6 @@ abstract class Control
 		$this->translator = $container->get('translator'); // TODO TranslatorInterface is an alias
 
 		$reflection = new ReflectionClass($this);
-		$dir = dirname($reflection->getFileName()) . DIRECTORY_SEPARATOR;
 		$className = $reflection->getShortName();
 
 		$this->sub = false;
@@ -69,15 +68,16 @@ abstract class Control
 		}
 
 		if ($this->isControl) {
-			$webpackModules = $dir . '../../../assets/modules.json';
+			$projectDir = $container->get('kernel')->getProjectDir();
+			$webpackModules = $projectDir . '/assets/modules.json';
 			$manifest = json_decode(file_get_contents($webpackModules), true);
 			$moduleName = substr($className, 0, $pos);
 			$entry = 'Modules/' . $moduleName;
 			if (isset($manifest[$entry])) {
 				foreach ($manifest[$entry] as $asset) {
-					if (substr($asset, -3) === '.js') {
+					if (str_ends_with($asset, '.js')) {
 						$this->pageHelper->addWebpackScript($asset);
-					} elseif (substr($asset, -4) === '.css') {
+					} elseif (str_ends_with($asset, '.css')) {
 						$this->pageHelper->addWebpackStylesheet($asset);
 					}
 				}
@@ -125,7 +125,7 @@ abstract class Control
 	public function wallposts($table, $id): string
 	{
 		$posthtml = '';
-		if ($this->session->may()) {
+		if ($this->session->mayRole()) {
 			$posthtml = '
 				<div class="tools ui-padding">
 				<textarea id="wallpost-text" name="text" placeholder="' . $this->translator->trans('wall.message_placeholder') . '" class="comment textarea"></textarea>

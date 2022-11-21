@@ -3,6 +3,7 @@
 namespace Foodsharing\Permissions;
 
 use Foodsharing\Lib\Session;
+use Foodsharing\Modules\Core\DBConstants\Foodsaver\Role;
 
 class SettingsPermissions
 {
@@ -16,11 +17,11 @@ class SettingsPermissions
 
 	public function mayUseCalendarExport(): bool
 	{
-		return $this->session->may('fs');
+		return $this->session->mayRole(Role::FOODSAVER);
 	}
 
 	public function mayUsePassportGeneration(): bool
 	{
-		return $this->session->may('fs') && $this->session->isVerified();
+		return $this->session->mayRole(Role::FOODSAVER) && $this->session->isVerified();
 	}
 }

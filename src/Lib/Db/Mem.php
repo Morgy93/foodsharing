@@ -113,7 +113,7 @@ class Mem
 	 *   > SADD php:user:20:sessions mysessionid
 	 *
 	 * This then provides a way to get all the active sessions for a user and expire old ones.
-	 * See `chat/session-ids.lua` for a redis lua script that does this.
+	 * See `websocket/session-ids.lua` for a redis lua script that does this.
 	 */
 	public function userAddSession($fs_id, $session_id)
 	{

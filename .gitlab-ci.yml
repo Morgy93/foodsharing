@@ -6,222 +6,169 @@ include:
 # to make the previous template work with kanthaus-runner, which expects these tags
 dependency_scanning:
   tags:
-  - shared
-  - linux
+    - saas-linux-medium-amd64
 
 variables:
   # https://docs.docker.com/engine/userguide/storagedriver/selectadriver/
   # https://gitlab.com/gitlab-org/gitlab-ce/issues/19971
   DOCKER_DRIVER: overlay
 
+stages:
+  - outdated
+  - build
+  - test
+  - deploy
 
 .defaults: &defaults
+  image: registry.gitlab.com/foodsharing-dev/images/ci/php:latest
   tags:
-  - shared
-  - linux
-  image: registry.gitlab.com/foodsharing-dev/images/ci:8.0.13
+    - saas-linux-medium-amd64
 
 
 .ssh: &ssh
   before_script:
-  - eval $(ssh-agent -s)
-  - ssh-add <(echo "$DEPLOY_SSH_KEY")
-  - mkdir -p ~/.ssh
-  # For Docker builds disable host key checking. Be aware that by adding that
-  # you are suspectible to man-in-the-middle attacks.
-  # WARNING: Use this only with the Docker executor, if you use it with shell
-  # you will overwrite your user's SSH config.
-  - '[[ -f /.dockerenv ]] && echo -e "Host *\n\tStrictHostKeyChecking no\n\n" > ~/.ssh/config'
+    - eval $(ssh-agent -s)
+    - ssh-add <(echo "$DEPLOY_SSH_KEY")
+    - mkdir -p ~/.ssh
+    # For Docker builds disable host key checking. Be aware that by adding that
+    # you are suspectible to man-in-the-middle attacks.
+    # WARNING: Use this only with the Docker executor, if you use it with shell
+    # you will overwrite your user's SSH config.
+    - '[[ -f /.dockerenv ]] && echo -e "Host *\n\tStrictHostKeyChecking no\n\n" > ~/.ssh/config'
 
 .deploy: &deploy
   <<: *defaults
-  # run it on our foodsharing ci server
-  tags:
-  - non-shared
-  - foodsharing
   <<: *ssh
   stage: deploy
+  tags:
+    - non-shared
+    - foodsharing # run it on our foodsharing ci server
   dependencies:
-  - build:frontend
-  - build:backend
-  - build:backend-chat
-  - build:docs
+    - build:frontend
+    - build:backend
+    - build:websocket
+    - build:docs
   script:
-  - chmod -R 750 ./
-  - (cd deployer && composer install)
-  - deployer/vendor/bin/dep deploy $CI_ENVIRONMENT_NAME --revision $CI_COMMIT_SHA
-  - ./scripts/deploy.restart-chatserver.sh
-  - ./scripts/deploy.notifyslack.sh
-
-stages:
-- triage
-- outdated
-- build
-- test
-- deploy
-
-triage:dry-run:
-  image: ruby:2.7.2-alpine3.12
-  stage: triage
-  script:
-  - gem install gitlab-triage
-  - gitlab-triage --help
-  - gitlab-triage --dry-run --token $API_TOKEN --source-id $CI_PROJECT_PATH
-  when: manual
-  except:
-    - schedules
-  tags:
-  - shared
-  - linux
-
-triage:manual:
-  image: ruby:2.7.2-alpine3.12
-  stage: triage
-  script:
-  - gem install gitlab-triage
-  - gitlab-triage --token $API_TOKEN --source-id $CI_PROJECT_PATH
-  when: manual
-  except:
-    - schedules
-  tags:
-  - shared
-  - linux
-
-triage:
-  image: ruby:2.7.2-alpine3.12
-  stage: triage
-  script:
-  - gem install gitlab-triage
-  - gitlab-triage --token $API_TOKEN --source-id $CI_PROJECT_PATH
-  rules:
-  - if: $CI_PIPELINE_SOURCE == "schedule" && $SCHEDULED_JOB == "triage"
-    when: always
-  tags:
-  - shared
-  - linux
+    - chmod -R 750 ./
+    - (cd deployer && composer install)
+    - deployer/vendor/bin/dep deploy $CI_ENVIRONMENT_NAME --revision $CI_COMMIT_SHA
+    - ./scripts/deploy-websocket-restart
+    - ./scripts/deploy-notify-slack
 
 outdated:
   <<: *defaults
   stage: outdated
-  script:
-  # unfortunately "composer outdated -D" only works if you have installed the dependencies :/
-  - composer install --verbose --prefer-dist --no-progress --no-interaction --classmap-authoritative --no-scripts --ignore-platform-reqs
-  - ./scripts/outdated-notify
-  cache:
-    key: outdated:v1
-    paths:
-    - vendor
   rules:
-  - if: $CI_PIPELINE_SOURCE == "schedule" && $SCHEDULED_JOB == "outdated"
-    when: always
+    - if: $CI_PIPELINE_SOURCE == "schedule" && $SCHEDULED_JOB == "outdated"
+      when: always
   tags:
-  # run on our server where we likely have the image already
-  - non-shared
-  - foodsharing
-
-build:backend-chat:
-  <<: *defaults
-  rules:
-  - if: $CI_COMMIT_BRANCH == 'master' || $CI_COMMIT_BRANCH == 'production'
-  - if: $CI_MERGE_REQUEST_ID
-  - if: $CI_PIPELINE_SOURCE == "schedule"
-    when: never
-  interruptible: true
-  image: node:16.13.2-alpine3.14
-  stage: build
+    - non-shared
+    - foodsharing
   script:
-  - (cd chat && yarn && yarn lint)
+    # unfortunately "composer outdated -D" only works if you have installed the dependencies :/
+    - composer install --verbose --prefer-dist --no-progress --no-interaction --classmap-authoritative --no-scripts --ignore-platform-reqs
+    - ./scripts/ci-notify-outdated
   cache:
-    key: chat:build:v2
+    key: outdated:cache
     paths:
-    - chat/node_modules
-  artifacts:
-    expire_in: 1 week
+      - vendor
+
+build:websocket:
+  <<: *defaults
+  stage: build
+  interruptible: true
+  rules:
+    - if: $CI_COMMIT_BRANCH == 'master' || $CI_COMMIT_BRANCH == 'production'
+    - if: $CI_MERGE_REQUEST_ID
+    - if: $CI_PIPELINE_SOURCE == "schedule"
+      when: never
+  image: registry.gitlab.com/foodsharing-dev/images/node:latest
+  script:
+    - (cd websocket && yarn && yarn lint)
+  cache:
+    key: websocket:build:cache
     paths:
-    - chat/node_modules
+      - websocket/node_modules
 
 build:frontend:
   <<: *defaults
-  rules:
-  - if: $CI_COMMIT_BRANCH == 'master' || $CI_COMMIT_BRANCH == 'production'
-  - if: $CI_MERGE_REQUEST_ID
-  - if: $CI_PIPELINE_SOURCE == "schedule"
-    when: never
-  interruptible: true
-  image: node:16.13.2-alpine3.14
   stage: build
+  interruptible: true
+  rules:
+    - if: $CI_COMMIT_BRANCH == 'master' || $CI_COMMIT_BRANCH == 'production'
+    - if: $CI_MERGE_REQUEST_ID
+    - if: $CI_PIPELINE_SOURCE == "schedule"
+      when: never
+  image: registry.gitlab.com/foodsharing-dev/images/node:latest
   script:
-  - (cd client && yarn && yarn lint && yarn test && yarn build)
+    - (cd client && yarn && yarn lint && yarn build)
   cache:
-    key: client:build:v2
+    key: frontend:build:cache
     paths:
-    - client/node_modules
+      - assets
+      - client/node_modules
   artifacts:
     expire_in: 1 week
     paths:
-    - assets
-    - sw.js
+      - assets
+      - sw.js
 
 build:backend:
   <<: *defaults
-  rules:
-  - if: $CI_COMMIT_BRANCH == 'master' || $CI_COMMIT_BRANCH == 'production'
-  - if: $CI_MERGE_REQUEST_ID
-  - if: $CI_PIPELINE_SOURCE == "schedule"
-    when: never
-  interruptible: true
-  image: registry.gitlab.com/foodsharing-dev/images/php:8.0.13
   stage: build
+  interruptible: true
+  rules:
+    - if: $CI_COMMIT_BRANCH == 'master' || $CI_COMMIT_BRANCH == 'production'
+    - if: $CI_MERGE_REQUEST_ID
+    - if: $CI_PIPELINE_SOURCE == "schedule"
+      when: never
+  image: registry.gitlab.com/foodsharing-dev/images/php:latest
   script:
-    - composer validate --no-check-all --no-check-publish
-    - composer install --verbose --prefer-dist --no-progress --no-interaction --no-scripts --ignore-platform-reqs
-    - vendor/bin/php-cs-fixer fix --dry-run --diff --verbose --ansi
-    - vendor/bin/parallel-lint --no-progress --exclude vendor .
-    - FS_ENV=dev vendor/bin/phpstan analyse --memory-limit=768M --no-progress
-    - composer install --verbose --prefer-dist --no-progress --no-interaction --no-dev --classmap-authoritative --no-scripts --ignore-platform-reqs
-    - composer dump-autoload --classmap-authoritative
-    - mkdir assets
-    - FS_ENV=dev bin/console assets:install
+    - ./scripts/ci-backend-build
   cache:
-    key: backend:build:v1
+    key: backend:build:cache
     paths:
-    - vendor
-    - .php-cs-fixer.php.cache
+      - vendor
+      - .php-cs-fixer.php.cache
   artifacts:
     expire_in: 1 week
     paths:
-    - assets
-    - vendor
+      - assets
+      - vendor
 
 build:docs:
   <<: *defaults
-  image:
-    name: registry.gitlab.com/foodsharing-dev/images/mdbook_ci:1.0
+  stage: build
+  interruptible: true
   rules:
-  - if: $CI_COMMIT_BRANCH == 'master' || $CI_COMMIT_BRANCH == 'production'
-  - if: $CI_MERGE_REQUEST_ID
-  - if: $CI_PIPELINE_SOURCE == "schedule"
-    when: never
+    - if: $CI_COMMIT_BRANCH == 'master' || $CI_COMMIT_BRANCH == 'production'
+    - if: $CI_MERGE_REQUEST_ID
+    - if: $CI_PIPELINE_SOURCE == "schedule"
+      when: never
+  image: registry.gitlab.com/foodsharing-dev/images/docs:latest
   variables:
     MYSQL_ROOT_PASSWORD: root
     MYSQL_INITDB_SKIP_TZINFO: 1
   services:
-  # Note: Gitlab runner will mark a lot of service healthchecks as failed. This is a bug that will partly be addressed with the upcoming release of the gitlab-runner. It is also due to our configuration, e.g. the chat container not exposing ports but listed as a service. Unfortunately, health check cannot be disabled.
-    - name: registry.gitlab.com/foodsharing-dev/images/db/test:2
+    - name: registry.gitlab.com/foodsharing-dev/images/mariadb:latest
       alias: db
-  stage: build
   script:
-    - composer validate --no-check-all --no-check-publish
-    - composer install --verbose --prefer-dist --no-progress --no-interaction --no-scripts --ignore-platform-reqs
-    - ./scripts/ci.build_doc
+    - ./scripts/ci-docs-build
   artifacts:
     expire_in: 1 week
     paths:
-    - docs
+      - docs
 
-test:backend:
+test:backend-code:
   <<: *defaults
+  stage: test
   interruptible: true
+  rules:
+    - if: $CI_COMMIT_BRANCH == 'master' || $CI_COMMIT_BRANCH == 'production'
+    - if: $CI_MERGE_REQUEST_ID
+    - if: $CI_PIPELINE_SOURCE == "schedule"
+      when: never
+  image: registry.gitlab.com/foodsharing-dev/images/php:latest
   variables:
     MYSQL_ROOT_PASSWORD: root
     MYSQL_INITDB_SKIP_TZINFO: 1
@@ -229,112 +176,191 @@ test:backend:
     FF_NETWORK_PER_BUILD: 1
     REDIS_HOST: redis
     FS_ENV: test
-  image: registry.gitlab.com/foodsharing-dev/images/php:8.0.13
+    XDEBUG_MODE: coverage
+  coverage: '/^\s*Lines:\s*(\d+\.\d+)\%/'
   services:
-# Note: Gitlab runner will mark a lot of service healthchecks as failed. This is a bug that will partly be addressed with the upcoming release of the gitlab-runner. It is also due to our configuration, e.g. the chat container not exposing ports but listed as a service. Unfortunately, health check cannot be disabled.
-    - name: redis:6.0.8-alpine
+    # Note: Gitlab runner will mark a lot of service healthchecks as failed.
+    # This is a bug that will partly be addressed with the upcoming release of the gitlab-runner.
+    # It is also due to our configuration, e.g. the websocket container not exposing ports but listed as a service.
+    # Unfortunately, health check cannot be disabled.
+    - name: registry.gitlab.com/foodsharing-dev/images/redis:latest
       alias: redis
-    - name: registry.gitlab.com/foodsharing-dev/images/db/test:2
+    - name: registry.gitlab.com/foodsharing-dev/images/mariadb:latest
       alias: db
-    - name: selenium/standalone-chrome:3.141.59-20200515
+    - name: registry.gitlab.com/foodsharing-dev/images/selenium:latest
       alias: selenium
-    - name: maildev/maildev
+    - name: registry.gitlab.com/foodsharing-dev/images/maildev:latest
       alias: maildev
-      command: ["bin/maildev",  "--web", "80", "--smtp", "25", "--hide-extensions", "STARTTLS"]
-    - name: node:16.13.2-alpine3.14
-      alias: chat
-      # Chat service runs with code that gets checked out later by the main build job. We use a file to synchronize that, so start chat service only when that file has been recreated.
-      command: ["/bin/sh", "-c", 'rm $CI_PROJECT_DIR/code_updated; while [ ! -e $CI_PROJECT_DIR/code_updated ]; do sleep 1; done; cd /builds/foodsharing-dev/foodsharing/chat && yarn ts-node src/index.ts 0.0.0.0']
-    - name: registry.gitlab.com/foodsharing-dev/images/web_ci:1.11
-      alias: web
-    - name: influxdb:1.8
+      command: ["bin/maildev",  "--web", "1080", "--smtp", "1025"]
+    - name: registry.gitlab.com/foodsharing-dev/images/node:latest
+      alias: websocket
+      command: ["/bin/sh", "-c", 'rm $CI_PROJECT_DIR/code_updated; while [ ! -e $CI_PROJECT_DIR/code_updated ]; do sleep 1; done; cd /builds/foodsharing-dev/foodsharing/websocket && yarn ts-node src/index.ts 0.0.0.0']
+      # websocket service runs with code that gets checked out later by the main build job.
+      # We use a file to synchronize that, so start websocket service only when that file has been recreated.
+    - name: registry.gitlab.com/foodsharing-dev/images/ci/nginx:latest
+      alias: nginx
+    - name: registry.gitlab.com/foodsharing-dev/images/influxdb:latest
       alias: influxdb
-
-  # only run tests for MR, not for the target branch. While this might show to be dangerous, it also allows us to
-  # deploy without relying on potentially flaky tests
-  rules:
-  - if: $CI_MERGE_REQUEST_ID
-  - if: $CI_PIPELINE_SOURCE == "schedule"
-    when: never
   dependencies:
     - build:frontend
     - build:backend
-    - build:backend-chat
-
+    - build:websocket
+    - test:backend-acceptance
   script:
-    # Create file to notify chat container that code is up to date
-    - touch $CI_PROJECT_DIR/code_updated
-    - ./scripts/ci.test
+    - touch $CI_PROJECT_DIR/code_updated # Create file to notify websocket container that code is up to date
+    - ./scripts/ci-backend-test-code
+  cache:
+    key: backend:build:cache
+    paths:
+      - vendor
+      - .php-cs-fixer.php.cache
   artifacts:
     expire_in: 1 month
     when: always
     paths:
-    - tests/_output
-    # make the report available in Gitlab UI. see https://docs.gitlab.com/ee/ci/unit_test_reports.html
-    reports:
-      junit: tests/_output/report-*.xml
+      - tests/_output
+    reports: # make the report available in Gitlab UI. see https://docs.gitlab.com/ee/ci/unit_test_reports.html
+      junit: tests/_output/report-code.xml
+      coverage_report:
+        coverage_format: cobertura
+        path: tests/_output/code-cobertura.xml
 
-test:backend-chat:
+test:backend-acceptance:
   <<: *defaults
+  stage: test
+  interruptible: true
   rules:
     - if: $CI_COMMIT_BRANCH == 'master' || $CI_COMMIT_BRANCH == 'production'
     - if: $CI_MERGE_REQUEST_ID
     - if: $CI_PIPELINE_SOURCE == "schedule"
       when: never
+  tags:
+    - foodsharing
+    - shared
+  image: registry.gitlab.com/foodsharing-dev/images/php:latest
+  variables:
+    MYSQL_ROOT_PASSWORD: root
+    MYSQL_INITDB_SKIP_TZINFO: 1
+    TZ: Europe/Berlin
+    FF_NETWORK_PER_BUILD: 1
+    REDIS_HOST: redis
+    FS_ENV: test
+  services:
+    # Note: Gitlab runner will mark a lot of service healthchecks as failed.
+    # This is a bug that will partly be addressed with the upcoming release of the gitlab-runner.
+    # It is also due to our configuration, e.g. the websocket container not exposing ports but listed as a service.
+    # Unfortunately, health check cannot be disabled.
+    - name: registry.gitlab.com/foodsharing-dev/images/redis:latest
+      alias: redis
+    - name: registry.gitlab.com/foodsharing-dev/images/mariadb:latest
+      alias: db
+    - name: registry.gitlab.com/foodsharing-dev/images/selenium:latest
+      alias: selenium
+    - name: registry.gitlab.com/foodsharing-dev/images/maildev:latest
+      alias: maildev
+      command: ["bin/maildev",  "--web", "1080", "--smtp", "1025"]
+    - name: registry.gitlab.com/foodsharing-dev/images/node:latest
+      alias: websocket
+      command: ["/bin/sh", "-c", 'rm $CI_PROJECT_DIR/code_updated; while [ ! -e $CI_PROJECT_DIR/code_updated ]; do sleep 1; done; cd /builds/foodsharing-dev/foodsharing/websocket && yarn ts-node src/index.ts 0.0.0.0']
+      # websocket service runs with code that gets checked out later by the main build job.
+      # We use a file to synchronize that, so start websocket service only when that file has been recreated.
+    - name: registry.gitlab.com/foodsharing-dev/images/ci/nginx:latest
+      alias: nginx
+    - name: registry.gitlab.com/foodsharing-dev/images/influxdb:latest
+      alias: influxdb
+  dependencies:
+    - build:frontend
+    - build:backend
+    - build:websocket
+  script:
+    - touch $CI_PROJECT_DIR/code_updated # Create file to notify websocket container that code is up to date
+    - ./scripts/ci-backend-test-acceptance
+  cache:
+    key: backend:build:cache
+    paths:
+      - vendor
+      - .php-cs-fixer.php.cache
+  artifacts:
+    expire_in: 1 month
+    when: always
+    paths:
+      - tests/_output
+    reports: # make the report available in Gitlab UI. see https://docs.gitlab.com/ee/ci/unit_test_reports.html
+      junit: tests/_output/report-*.xml
+
+test:frontend:
+  <<: *defaults
+  stage: test
   interruptible: true
+  rules:
+    - if: $CI_COMMIT_BRANCH == 'master' || $CI_COMMIT_BRANCH == 'production'
+    - if: $CI_MERGE_REQUEST_ID
+    - if: $CI_PIPELINE_SOURCE == "schedule"
+      when: never
+  image: registry.gitlab.com/foodsharing-dev/images/node:latest
   variables:
     REDIS_HOST: redis
-  image: node:16.13.2-alpine3.14
-  services:
-    - name: redis:6.0.8-alpine
-      alias: redis
-  stage: test
-  dependencies:
-    - build:backend-chat
   script:
-    - (cd chat && yarn test)
+    - (cd client && yarn && yarn test)
   cache:
-    key: chat:build:v2
+    key: frontend:build:cache
     paths:
-      - chat/node_modules
-  artifacts:
-    expire_in: 1 week
-    paths:
-      - chat/node_modules
+      - client/node_modules
 
+test:websocket:
+  <<: *defaults
+  stage: test
+  interruptible: true
+  rules:
+    - if: $CI_COMMIT_BRANCH == 'master' || $CI_COMMIT_BRANCH == 'production'
+    - if: $CI_MERGE_REQUEST_ID
+    - if: $CI_PIPELINE_SOURCE == "schedule"
+      when: never
+  image: registry.gitlab.com/foodsharing-dev/images/node:latest
+  variables:
+    REDIS_HOST: redis
+  services:
+    - name: registry.gitlab.com/foodsharing-dev/images/redis:latest
+      alias: redis
+  dependencies:
+    - build:websocket
+  script:
+    - (cd websocket && yarn && yarn test)
+  cache:
+    key: websocket:build:cache
+    paths:
+      - websocket/node_modules
 
 deploy:beta:
   <<: *deploy
+  rules:
+    - if: $CI_COMMIT_BRANCH == 'master'
+    - if: $CI_PIPELINE_SOURCE == "schedule"
+      when: never
   environment:
     name: beta
     url: https://beta.foodsharing.de
-  rules:
-  - if: $CI_COMMIT_BRANCH == 'master'
-  - if: $CI_PIPELINE_SOURCE == "schedule"
-    when: never
 
 deploy:production:
   <<: *deploy
+  rules:
+    - if: $CI_COMMIT_BRANCH == 'production'
+    - if: $CI_PIPELINE_SOURCE == "schedule"
+      when: never
   environment:
     name: production
     url: https://foodsharing.de
-  rules:
-  - if: $CI_COMMIT_BRANCH == 'production'
-  - if: $CI_PIPELINE_SOURCE == "schedule"
-    when: never
 
 deploy:docs:
-  <<: *defaults
-  <<: *ssh
-  stage: deploy
+  <<: *deploy
+  rules:
+    - if: $CI_COMMIT_BRANCH == 'master'
+    - if: $CI_PIPELINE_SOURCE == "schedule"
+      when: never
   dependencies:
-  - build:docs
+    - build:docs
   script:
-  - rsync -avz --delete docs/dist/ "deploy@devdocs.foodsharing.network:/var/www/devdocs/htdocs/"
+    - rsync -avz --delete docs/build/ "deploy@devdocs.foodsharing.network:/var/www/devdocs/htdocs/"
   environment:
     name: docs
     url: https://devdocs.foodsharing.network
-  rules:
-  - if: $CI_COMMIT_BRANCH == 'master'
-  - if: $CI_PIPELINE_SOURCE == "schedule"
-    when: never

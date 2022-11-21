@@ -147,7 +147,7 @@
 <script>
 import Avatar from '@/components/Avatar.vue'
 import { ajreq, pulseError, pulseInfo } from '@/script'
-import conv from '@/conv'
+import conversationStore from '@/stores/conversations'
 import MediationRequest from './MediationRequest'
 import ReportRequest from './ReportRequest'
 import { sendBuddyRequest } from '@/api/buddy'
@@ -190,7 +190,7 @@ export default {
   },
   methods: {
     openChat (fsId) {
-      conv.userChat(fsId)
+      conversationStore.openChatWithUser(fsId)
     },
     async trySendBuddyRequest (userId) {
       try {

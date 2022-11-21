@@ -62,6 +62,14 @@ plugins.push(
 )
 
 plugins.push(
+  new CopyWebpackPlugin({
+    patterns: [
+      { from: 'node_modules/emoji-picker-element-data/de/cldr/data.json', to: './emoji-picker-element-data/de/data.json' },
+    ],
+  }),
+)
+
+plugins.push(
   new ServiceWorkerWebpackPlugin({
     entry: path.join(__dirname, 'src/serviceWorker.js'),
     filename: '../sw.js',

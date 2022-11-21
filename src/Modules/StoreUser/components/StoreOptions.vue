@@ -45,7 +45,7 @@
 </template>
 
 <script>
-import conv from '@/conv'
+import conversationStore from '@/stores/conversations'
 import $ from 'jquery'
 import { pulseError } from '@/script'
 import DataUser from '@/stores/user'
@@ -75,8 +75,8 @@ export default {
     isJumper: { type: Boolean, default: false },
   },
   methods: {
-    openChat (fsId) {
-      conv.chat(fsId)
+    openChat (conversationId) {
+      conversationStore.openChat(conversationId)
     },
     loadEditRecurringPickupModal () {
       $('#bid').val(this.storeId)

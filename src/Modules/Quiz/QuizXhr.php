@@ -272,7 +272,7 @@ class QuizXhr extends Control
 
 	public function abort()
 	{
-		if ($this->session->may()) {
+		if ($this->session->mayRole()) {
 			$this->quizSessionGateway->abortSession($_GET['sid'], $this->session->id());
 
 			return [
@@ -287,7 +287,7 @@ class QuizXhr extends Control
 	 */
 	public function startquiz(): array
 	{
-		if (!$this->session->may()) {
+		if (!$this->session->mayRole()) {
 			return [];
 		}
 
@@ -413,7 +413,7 @@ class QuizXhr extends Control
 
 	public function quizpopup()
 	{
-		if ($this->session->may('fs')) {
+		if ($this->session->mayRole(Role::FOODSAVER)) {
 			$nextRole = $this->session->get('hastodoquiz-id');
 			if (!$this->quizSessionGateway->hasPassedQuiz($this->session->id(), $nextRole)) {
 				$dia = new XhrDialog();
@@ -443,7 +443,7 @@ class QuizXhr extends Control
 
 	public function addcomment()
 	{
-		if ($this->session->may() && !empty($_GET['comment']) && (int)$_GET['id'] > 0) {
+		if ($this->session->mayRole() && !empty($_GET['comment']) && (int)$_GET['id'] > 0) {
 			$this->quizGateway->addUserComment((int)$_GET['id'], $this->session->id(), $_GET['comment']);
 
 			return [
@@ -458,7 +458,7 @@ class QuizXhr extends Control
 	 */
 	public function next(): array
 	{
-		if (!$this->session->may()) {
+		if (!$this->session->mayRole()) {
 			return [];
 		}
 
@@ -868,7 +868,7 @@ class QuizXhr extends Control
 
 	private function quizResult()
 	{
-		if (!$this->session->may()) {
+		if (!$this->session->mayRole()) {
 			return false;
 		}
 

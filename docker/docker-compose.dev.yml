@@ -1,206 +1,91 @@
+# expose, ports are additive, means each environment requires a own port mapping instead of a global one.
+
 version: '2'
 services:
-
   # nginx
   #------------------------------------
-
-  # proxies connections to app/chat
-
-  web:
-    container_name: foodsharing_dev_web
-    image: registry.gitlab.com/foodsharing-dev/images/web:1.10
+  nginx:
+    container_name: foodsharing_dev_nginx
     ports:
-      - 18090:8080
-    depends_on:
-      - app
-      - chat
-    volumes:
-      - ../:/app:delegated
+      - 18080:8080
 
-  # main php app
+  # Customized PHP
   #------------------------------------
-
   app:
     container_name: foodsharing_dev_app
-    image: registry.gitlab.com/foodsharing-dev/images/php:8.0.13
-    working_dir: /app
-    expose:
-      - 9000
-    depends_on:
-      - db
-      - redis
-      - mailqueuerunner
-      - influxdb
-      - chat
-    volumes:
-      - ../:/app:delegated
-      - ./conf/app/php.dev.${FS_PLATFORM}.ini:/usr/local/etc/php/conf.d/dev-config.ini:cached
     environment:
       FS_ENV: dev
-
-  # webpack client javascript
-  #------------------------------------
-
-  client:
-    user: ${CURRENT_USER}
-    container_name: foodsharing_dev_client
-    image: node:16.13.2-alpine3.14
     ports:
-      - 18080:18080
-    command: sh -c "yarn && yarn dev"
-    working_dir: /home/node/app/client
-    volumes:
-      - ../:/home/node/app:delegated
-      - client-node-modules:/home/node/app/client/node_modules:cached
-    environment:
-      HOST: 0.0.0.0
-      PROXY_TARGET: http://web:8080
-      NPM_CONFIG_CACHE: "/tmp/.npm-cache"
+      - 19000:9000
 
-  # php mail queue runner
+  # Webpack client
   #------------------------------------
+  client:
+    container_name: foodsharing_dev_client
+    command: sh -c "yarn && yarn dev"
+    ports:
+      - 18090:8082
 
+  # PHP mail queue runner
+  #------------------------------------
   mailqueuerunner:
     container_name: foodsharing_dev_mailqueuerunner
-    image: registry.gitlab.com/foodsharing-dev/images/php:8.0.13
-    command: php run.php Mails queueWorker
-    restart: unless-stopped
-    depends_on:
-      - db
-      - redis
-      - maildev
-    working_dir: /app
-    volumes:
-      - ../:/app:delegated
     environment:
       FS_ENV: dev
 
-  # nodejs socket.io server
+  # Socket.io server
   #------------------------------------
-
-  chat:
-    user: ${CURRENT_USER}
-    container_name: foodsharing_dev_chat
-    image: node:16.13.2-alpine3.14
-    working_dir: /app/chat
-    command: sh -c "yarn && yarn ts-node-dev src/index.ts 0.0.0.0"
-    depends_on:
-      - redis
-    environment:
-      REDIS_HOST: redis
-    expose:
-      - 1337
-      - 1338
+  websocket:
+    container_name: foodsharing_dev_websocket
     ports:
-      - "127.0.0.1:11337:1337"
-      - "127.0.0.1:11338:1338"
-    volumes:
-      - ../:/app:delegated
-      - chat-node-modules:/app/chat/node_modules:cached
+      - 11337:1337
+      - 11338:1338
 
   # mysql
   #------------------------------------
-
   db:
     container_name: foodsharing_dev_db
-    image: registry.gitlab.com/foodsharing-dev/images/db/dev:1.4
-    expose:
-      - 3306
-    ports:
-      - "127.0.0.1:13306:3306"
     environment:
-      MYSQL_ROOT_PASSWORD: root
-      TZ: Europe/Berlin
-    volumes:
-      - ../:/app:delegated
+      - MYSQL_ROOT_PASSWORD=root
+    ports:
+      - 13306:3306
 
   # redis
   #------------------------------------
-
   redis:
     container_name: foodsharing_dev_redis
-    image: redis:6.0.10-alpine
     ports:
-      - "127.0.0.1:16379:6379"
-    expose:
-      - 6379
+      - 16379:6379
 
   # phpmyadmin
   #------------------------------------
-
   phpmyadmin:
     container_name: foodsharing_dev_phpmyadmin
-    image: phpmyadmin/phpmyadmin
-    environment:
-      PMA_HOST: db
-      PMA_USER: root
-      PMA_PASSWORD: root
-    restart: unless-stopped
     ports:
-      - "127.0.0.1:18081:80"
-    volumes:
-      - ${PWD}/docker/conf/phpmyadmin/config.user.inc.php:/etc/phpmyadmin/config.user.inc.php:cached
-      - /sessions
+      - 18081:80
 
   # maildev
-  # changed ports, since 18083 is used by virtualbox (vboxwebsrv)
   #------------------------------------
-
   maildev:
     container_name: foodsharing_dev_maildev
-    image: djfarrelly/maildev
-    command: >
-      bin/maildev
-        --web 80
-        --smtp 25
-        --hide-extensions STARTTLS
     ports:
-      - "127.0.0.1:18084:80"
+      - 18084:1080
 
   # influxdb
   # used for mail sending tracking and server monitoring
   #------------------------------------
-
   influxdb:
     container_name: foodsharing_dev_influxdb
-    image: influxdb:1.8
-    command: >
-      influxd -config /etc/influxdb/influxdb.toml
     ports:
-      - "127.0.0.1:8083:8083"
-      - "127.0.0.1:18089:8089/udp"
-      - "127.0.0.1:18086:8086"
-    environment:
-      INFLUXDB_ADMIN_ENABLED: "true"
-      INFLUXDB_DB: "foodsharing"
-    volumes:
-      - influxdb:/var/lib/influxdb:cached
-      - ./conf/influxdb/influxdb.toml:/etc/influxdb/influxdb.toml:cached
+      - 18083:8083
+      - 18089:8089/udp
+      - 18086:8086
 
-  # mdbook
+  # docs
   # A plattform for the developer documentations
   #------------------------------------
-
-  mdbook:
-    user: ${CURRENT_USER}
-    container_name: foodsharing_doc_dev
-    image: registry.gitlab.com/foodsharing-dev/images/mdbook_ci:1.0
-    depends_on:
-      - db
-    command: mdbook serve --hostname '0.0.0.0'
-    working_dir: /app/docs
-    environment:
-      BUILD_DIR: /app/docs/build/db
-
-    stdin_open: true
-    tty: true
+  docs:
+    container_name: foodsharing_dev_docs
+    command: sh -c "yarn && yarn start"
     ports:
-      - "3000:3000"
-      - "3001:3001"
-    volumes:
-      - ../:/app
-
-volumes:
-  client-node-modules:
-  chat-node-modules:
-  influxdb:
+      - 13000:3000

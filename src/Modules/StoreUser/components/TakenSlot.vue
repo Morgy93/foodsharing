@@ -75,7 +75,7 @@ import Avatar from '@/components/Avatar'
 import { BDropdown, BDropdownItem } from 'bootstrap-vue'
 import { pulseSuccess } from '@/script'
 import PhoneNumbers from '@/helper/phone-numbers'
-import conv from '@/conv'
+import conversationStore from '@/stores/conversations'
 import DataUser from '@/stores/user'
 
 import { v4 as uuidv4 } from 'uuid'
@@ -136,7 +136,7 @@ export default {
       }
     },
     openChat () {
-      conv.userChat(this.profile.id)
+      conversationStore.openChatWithUser(this.profile.id)
     },
   },
 }

@@ -53,7 +53,7 @@ final class ProfileGateway extends BaseGateway
 					fs.`about_me_public`,
 					fs.`orgateam`,
 					fs.`data`,
-					fs.`last_login`,
+					fs.`last_login` as last_activity,
 					fs.stat_fetchweight,
 					fs.stat_fetchcount,
 					fs.stat_ratecount,
@@ -381,8 +381,8 @@ final class ProfileGateway extends BaseGateway
 
 		$res = $this->db->fetchAll($stm, [
 			':fs_id' => $fsId,
-			':stat_start' => CooperationStatus::COOPERATION_STARTING,
-			':stat_est' => CooperationStatus::COOPERATION_ESTABLISHED
+			':stat_start' => CooperationStatus::COOPERATION_STARTING->value,
+			':stat_est' => CooperationStatus::COOPERATION_ESTABLISHED->value
 		]);
 
 		return $res['0']['count'];

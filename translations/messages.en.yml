@@ -164,6 +164,7 @@ group:
     remove_admin_text: Are you sure you want to remove {name} ({id}) as an admin?
     remove_admin_title: remove as admin
     old_edit_hint_link: Members
+    old_edit_hint: You can now find the member administration on the tab
   application_from: by
   entermotivation: 'Motivation:'
   enterskills: 'Skills:'
@@ -182,6 +183,10 @@ settings:
       region. He*She can change your name for you.<hr/>You can find out who the ambassadors
       of you region are in the left sidebar of your <a {link}>home regions forum page</a>.
     foodsharer_info: For changing your name, please create a request in our <a {link}>support-form<a>.
+    foodsaver_info: To change your name, you must contact an ambassador from your
+      home district. This person can then change the name for you.<hr/>You can see
+      who is the ambassador in your home district in the <a {link}>forum of your district</a>
+      in the left sidebar.
   push:
     not-supported: Your browser does not support push notifications.
     title: Push notifications
@@ -272,6 +277,8 @@ settings:
     mail: Yes, I would like to be informed about new posts by email.
   newsletter: "About once a month we send out current information\nabout the food\
     \ saving movement in a newsletter.\nDo you want to receive these emails?\n"
+  passport:
+    menu: ID card
 menu:
   manage_regions: Manage regions
   blog: Manage blog content
@@ -349,7 +356,7 @@ menu:
     helpwanted: Help wanted
     helpneeded: Help wanted urgently
     in_negotiation: In negotiation
-    group_overview: Group overview
+    group_overview: Group overview of global working groups
     baskets: Baskets
 profile:
   banana:
@@ -390,7 +397,7 @@ profile:
   infos:
     buddies: Buddies
     never: Never
-    lastLogin: Last login
+    lastActivity: Last activity
     fetchrate: Fetch rate
     registrationDate: Registration date
     title: Informations
@@ -441,6 +448,13 @@ profile:
       noshow: Did not come to the pickup
       respect: Behaved impolite or disrespectful
       dirty: Did not leave the pickup place tidy
+      what:
+        racist: racist remarks
+        sexist: sexist remarks
+        homophobe: homophobe remarks
+        brutal: Violence and threats
+        other: Other inappropriate statements and conduct
+      residence: FS place of residence
     control:
       total: total
       tot: total
@@ -454,6 +468,9 @@ profile:
       confirmed: Report was confirmed!
       plsconfirm: Really delete this report?
       reportee: Reported by
+      delivered: Report delivered
+      reportID: Report ID
+      allofthem: All reports about
     kindofreport: Please choose the type of report
     sells: Person sells rescued food
     noshow: The person didn't come
@@ -534,6 +551,17 @@ profile:
     week_3: Last week
     week_4: Two weeks ago
     calenderWeek: CW
+    title: Engagement stats
+    securePickupWeek: Thanks for {count} stepping in and securing pickups on short
+      notice!
+    pickupCount: public_time
+    week_0: The week after next
+    eventsCreatedWeek: 'Thanks for creating events {count} times this week. '
+    eventsParticipatedWeek: 'Thanks for participating in {count} events this week.
+      Total time: {hour}:{minute} '
+    basketsOfferedWeek: Thanks for offering food baskets {count} times this week.
+      A total of {weight} kg was shared.
+    respActStores: 'Thanks for coordinating {count} active '
 test:
   plain: This is a nice translation
   vars: 'My name is {NAME} and I am {AGE} years old'
@@ -707,7 +735,7 @@ calendar:
   export:
     pickup:
       name: "{store} Pickup"
-      unconfirmed: (not confirmed)
+      unconfirmed: not confirmed
       description: 'Foodsharing pickup at <a href="{url}">{store}</a>'
     event:
       statusUnspecified: You have not stated whether you would like to participate
@@ -795,7 +823,7 @@ pickup:
         name: Pickup Options
         tooltip:
           own: Future pickups, for which you could sign up
-        empty: Currently there are now free pickups slots in any of your teams.
+        empty: Currently there are no available pickup slots in any of your teams.
       history:
         name: History
         tooltip:
@@ -830,15 +858,15 @@ storeview:
   cooperation: Cooperation since {startTime}.
   store: Store
   want_to_fetch: I would like to help in this team.
-  frequency4: at night
-  frequency3: in the evening
-  frequency2: at noon/in the afternoon
-  frequency1: in the morning
+  public_time_at_night: at night
+  public_time_in_the_evening: in the evening
+  public_time_at_noon_or_afternoon: at noon/in the afternoon
+  public_time_in_the_morning: in the morning
   info: Information
   specials: Special features
   managers: Responsible foodsavers
   status: Current status
-  frequency: 'It will be picked up roughly {freq}. Please never go to the store without
+  public_time: 'It will be picked up roughly {freq}. Please never go to the store without
     prior consultation!'
   pickupWeight: '{pickupWeight} were saved.'
   counter: <strong>{count}<span style="white-space:nowrap"> </span>{suffix}</strong>
@@ -940,13 +968,13 @@ login:
   error_no_password: Please enter your password.
   error_no_email: Please enter your e-mail address.
   save_password: Save password
+  steady_login: "Stay logged in permanently"
   forgotten_password_label: Password forgotten?
   login_button_label: Login
   password: Password
   email_address: E-mail address
   form_title: Welcome back
   success: <b> Have a wonderful day, {user_name}! </b>
-  steady_login: Stay logged in for one day (uses cookies)
 salutation:
   "3": Dear
   "2": Dear
@@ -1025,6 +1053,7 @@ bell:
   store_request_imposed: You were added to the store team.
   store_request_imposed_title: '{name}'
   foodsaver_verified_title: You are now verified!
+  foodsaver_verified: check your ID at...
 reports:
   time: Time
   region: Home region
@@ -1196,9 +1225,12 @@ email_template:
   information: Information
   unknown_email2: The e-mail address %ADDRESS% is not known.
   unknown_email: Unkown e-mail address
-  manual_slots_get_ignored: Unfortunately, this notification is currently only sent
-    for automatic collection dates. Manually created, overwritten or deleted slots
-    are therefore not taken into account at the moment.
+  manual_slots_get_ignored: Unfortunately, this notification is currently only sent,
+    if no-one has signed up for regular pick-ups. Manually created, overwritten or
+    deleted slots are therefore not taken into account at the moment. In order to
+    cease receiving this notification, remove the regular pick-up slots from the company
+    page by clicking on the pen-icon near the pick-up slots and remove the unwanted
+    ones.
   find_someone: Please look for someone from the team as soon as possible so that
     the pick-up can take place. If you can't mobilise anyone, it would be nice if
     you could perform the pick-up. If this is not possible for you, please cancel
@@ -1412,6 +1444,7 @@ footer:
   version: 'Version: {version}'
   donate:
     cta: Donate now
+    call_to: You want to support foodsharing?
   statistics: Statistics
   blog: Blog
   wiki: Wiki
@@ -1436,8 +1469,9 @@ footer:
   call_to_action: Participate
   beta_testing_issues: Testing tasks of the beta version
   meta:
-    it_devdocs: by foodsharint IT
+    it_devdocs: by foodsharing IT
     version: 'Version: {version}'
+    beta_testing_issues: Test tasks of the Beta version
   hosting:
     info: Carbon-neutrally <a href="https://www.manitu.de/webhosting/" title="Webhosting">hosted</a>
     tooltip: Carbon-neutrally <a href="https://www.manitu.de/webhosting/" title="Webhosting">hosted</a>
@@ -1598,7 +1632,7 @@ foodsaver:
     name: Name
     photo: Photo
     remove: Remove from region
-    last-login: Last login
+    last-activity: Last activity
     orga: is part of the global orga-team
   your_account: your
   delete_own_account: You are about to delete your own account. Are you sure?
@@ -1616,6 +1650,9 @@ foodsaver:
   delete_account_sure: Are you sure you want to delete your account?
   edit_failure: Nothing was changed or changes were not saved
   edit_success: Changes have been saved
+  delete_account_sure_reason: "Do you really want to delete {name}'s account? You\
+    \ can optionally enter a reason here that can later be used to understand why\
+    \ the account was deleted:"
 store:
   addNewStoresButton: Add new store
   allStoresOfRegion: All stores in the region
@@ -1730,7 +1767,7 @@ store:
   complete: complete database
   peoplecame: It has often happened that people went to a store unsolicited.
   smneeded: To set up a business, you must be a store manager.
-  tooltip_jumping: ''
+  tooltip_jumping: 'You are a jumper in this store'
 search:
   mygroups: My groups
   mybuddies: My buddies
@@ -1789,12 +1826,13 @@ date:
   to: to
   from: from
   time: "{time} o'clock"
+  clock: clock
 wall:
   error-create: Your wall post could not be saved.
   created: Great! Your wall post was saved.
   error-delete: You can not remove this post.
   delete: Delete post
-  see-more: Show more posts
+  see-more: Show all posts
   message_placeholder: Write a message…
   name: Wall
   info-somebody-else: This entry is older than a month. As a store manager you can
@@ -1854,7 +1892,6 @@ upload:
 photo: Photo
 status: Current status
 title: Title
-last_login: Last login
 bezirk: Region
 lon: Longitude
 lat: Latitude
@@ -1900,6 +1937,7 @@ storeedit:
       \ extensive rights.\n"
     coordinator: "You are not responsible for this store.\nHowever, as part of the\
       \ store management team you have extensive rights.\n"
+    leave_myself: Yourself
   add-new: Add new store
   milestone:
     dropped: '{user} is not part of the team anymore'
@@ -1961,6 +1999,7 @@ legal:
     this_doesnt_get_deleted: 'The following information is no longer available in
       the active system, but is archived separately based on Article 17 paragraph
       3 sentence 1 letter b GDPR:'
+    legal_2: Thank you.
 answers: Which answers are correct?
 name: Name
 bcard:
@@ -2003,6 +2042,10 @@ language_chooser:
   title: "Choose language"
   content: "Please choose a language"
   choose_button: "Update"
+  translation_help: "You speak other languages? Foodsharing is always looking for\
+    \ helpers to translate"
+  translation_help_info_text: "This link leads to the translation portal, there click\
+    \ on the pen to get started"
 plz: Post code (automatically filled by the map above)
 fsp:
   twig:
@@ -2109,11 +2152,13 @@ memberlist:
 chat:
   conversations: Conversations
   new_message: New message
+  new_messages: New messages
   open_chat: Write a message
   notification_unnamed_conversation: '{foodsaver} has sent you a message.'
   placeholder: Write something.
   empty: No conversations yet
   empty_recipients: You still have to select recipients.
+  select_recipients: Select recipients
   empty_message: You need to enter a message first.
   error_sending_message: Sending the message failed.
   error_loading_messages: Reloading of messages failed.
@@ -2123,6 +2168,12 @@ chat:
     \ over into the new conversation instead.\n"
   incorrect_address: This email address is not valid
   receivermissing: Please enter a recipient
+  search: Search
+  no_messages: No messages
+  no_conversation: No conversation selected
+  start_of_conversation: "Conversation started on: "
+  display_all_messages: "Display all messages"
+
 delete: Delete
 error_unexpected: An error has occurred
 register:
@@ -2427,6 +2478,8 @@ storestatus:
   "3": Store is ready to cooperate
   "2": Negotiations are ongoing
   "1": There is no contact yet
+  "3a": Store is ready to donate. :-)
+  "5a": Store donates already
 formatting:
   md: You can use <a href="https://daringfireball.net/projects/markdown/syntax">Markdown</a>
     for formatting.
@@ -2468,6 +2521,8 @@ regionOptions:
   save: Save options
   success: Options saved successfully
   header_page: Settings for {bezirk}
+  regionPickupInactiveHours: 'Please indicate how many hours before the pick-up this
+    rule shall cease to be implemented:'
 list:
   filter_for: filter for …
 startpage:
@@ -2511,7 +2566,7 @@ startpage:
   call_to_action:
     title: Join
     text: We newly formed in 2012, by now we are an international movement existing
-      of over 200.000 users in Germany, Austia,  Switzerland and other European countries.
+      of over 200.000 users in Germany, Austria, Switzerland and other European countries.
   vision:
     title: Vision
     text: Our long-term goal is to reduce the throw-away culture of food and other
@@ -2552,6 +2607,8 @@ startpage:
   beresponsible: Be responsible
   bedependable: Be dependable
   makeproposals: Make proposals
+  proposals: We want to develop and consistently improve. Therefore we need you with
+    your many great ideas and tipps. Please send them to <a href='mailto:info@foodsharing.de'>info@foodsharing.de</a>
 date_short:
   Sunday: Sun
   Saturday: Sat
@@ -2651,6 +2708,7 @@ sig:
   buddies: People you know
 teamjs:
   wrongmail: There is something wrong with your email address.
+  entermail: Please enter a valid email-address so that we can get back to you!
 contentmanagement: Content management
 activitypost:
   Response: "Answer"
@@ -2681,12 +2739,28 @@ error:
     info: "In order for you to continue, a root district is required."
     link: "Select root district now"
 
+  invalid_mobile_phonenumber:
+    title: There is a problem with your mobile phone number.
+    link: Correct your mobile phone number
+  missing_geolocation:
+    description: Please check your address. The coordinates couldn't be determined.
+    title: There was an error with your address.
+  missing_home_region:
+    link: Choose your home region
+    description: To continue, you have to select a home region.
+    title: Choose a home region.
+  missing_user_avatar:
+    link: Upload your profile picture now
+    title: You haven't uploaded a profile picture yet.
+    description: Show the other members of Foodsharing who you are!
 information:
   push:
     title: "You can now receive push notifications from foodsharing."
     info: "If you no longer want to receive push notifications, you can deactivate\
       \ them at any time in the settings."
     link: "To the settings"
+    description: If you want to stop receiving push messsages, you can turn them off
+      anytime in the settings.
   calendar_sync:
     title: "Do you know the calendar synchronization for your pickups?"
     info: "This will allow you to see your next pickup dates using a calendar program\
@@ -2760,3 +2834,5 @@ navigation:
   system_administration: System administration
   help_needed: Help needed?
   profil: 👋 Hello {name}!
+  styleguide: Style guide
+  help_and_support: Help & Support

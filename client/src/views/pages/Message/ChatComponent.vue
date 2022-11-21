@@ -1,0 +1,497 @@
+<template>
+  <vue-advanced-chat
+    :current-user-id="String(currentUserId)"
+    :room-id="String(roomId)"
+    :rooms="JSON.stringify(getRooms)"
+    :loading-rooms="loadingRooms"
+    :rooms-loaded="roomsLoaded"
+    :messages="JSON.stringify(getMessages)"
+    :messages-loaded="messagesLoaded"
+    show-audio="false"
+    show-emojis="true"
+    show-reaction-emojis="false"
+    emojis-suggestion-enabled="true"
+    show-files="false"
+    user-tags-enabled="false"
+    :load-first-room="String(roomId !== null)"
+    :single-room="popupMode"
+    :text-messages="JSON.stringify(textMessages)"
+    emoji-data-source="/assets/emoji-picker-element-data/de/data.json"
+    @fetch-messages="fetchMessages($event.detail[0])"
+    @fetch-more-rooms="fetchMoreRooms"
+    @send-message="sendMessage($event.detail[0])"
+    @open-failed-message="clickFailedMessage($event.detail[0])"
+    @add-room="clickAddConversation"
+  >
+    <div slot="room-header-info">
+      <ChatTitleComponent :conversation-id="isNewConversation ? null : roomId" />
+    </div>
+
+    <div
+      v-for="conv in getConversations"
+      :key="'room-list-avatar_' + conv.id"
+      :slot="'room-list-avatar_' + conv.id"
+      class="mr-2"
+    >
+      <ConversationAvatar
+        :conversation="conv"
+      />
+    </div>
+
+    <div
+      slot="messages-empty"
+    >
+      <SelectUsersComponent
+        v-if="isNewConversation"
+        id="select-users"
+        ref="select-users"
+        :select-users="newConversationSelectedUsers"
+        @selected-users-changed="newConversationSelectedUsersChanged"
+      />
+      <span v-else>{{ textMessages.MESSAGES_EMPTY }}</span>
+    </div>
+
+    <div
+      v-for="msg in getMessages"
+      :key="'message-avatar_' + msg._id"
+      :slot="'message-avatar_' + msg._id"
+      style="height: 100%; align-self: flex-end;"
+    >
+      <Avatar
+        class="avatar"
+        :url="getAvatar(msg.senderId)"
+        :size="35"
+      />
+    </div>
+  </vue-advanced-chat>
+</template>
+
+<script>
+import { register } from 'vue-advanced-chat'
+
+import Avatar from '@/components/Avatar.vue'
+import ConversationAvatar from '@/components/ConversationAvatar'
+import { pulseError } from '@/script'
+import i18n from '@/helper/i18n'
+import storage from '@/storage'
+
+// Stores
+import conversationStore from '@/stores/conversations'
+import ProfileStore from '@/stores/profiles'
+import DataUser from '@/stores/user'
+import SelectUsersComponent from './SelectUsersComponent.vue'
+import ChatTitleComponent from './ChatTitleComponent.vue'
+
+register()
+
+const NEW_CONVERSATION_ID = Number.MAX_SAFE_INTEGER
+
+export default {
+  components: {
+    Avatar,
+    ConversationAvatar,
+    SelectUsersComponent,
+    ChatTitleComponent,
+  },
+  props: {
+    chatId: {
+      type: Number,
+      default: null,
+    },
+    // If this component is used as popup windows.
+    // So hide conversation list, hide header, adopt sizing, ...
+    popupMode: {
+      type: Boolean,
+      default: false,
+    },
+  },
+  data () {
+    return {
+      loadingRooms: true, // can be used to show/hide a spinner icon while rooms are loading the first time. Fetch more rooms don't need this boolean afterwards.
+      currentUserId: DataUser.getters.getUserId(),
+
+      roomId: this.chatId,
+      roomChanging: true, // This must be set to inform the chat component about changing messages.
+      newConversation: false, // true if a new conversation is currently starting. This displayes the selection of users for this conversation.
+      newConversationSelectedUsers: [], // an array of users with attributes id and value (name)
+      textMessages: {
+        ROOMS_EMPTY: i18n('chat.empty'),
+        ROOM_EMPTY: i18n('chat.no_conversation'),
+        NEW_MESSAGES: i18n('chat.new_messages'),
+        MESSAGES_EMPTY: i18n('chat.no_messages'),
+        CONVERSATION_STARTED: i18n('chat.start_of_conversation'),
+        TYPE_MESSAGE: i18n('chat.placeholder'),
+        SEARCH: i18n('chat.search'),
+        // The following messages could also be translated in the future when these features are implemented.
+        // MESSAGE_DELETED: i18n('This message was deleted'),
+        // IS_ONLINE: i18n('is online'),
+        // LAST_SEEN: i18n('last seen '),
+        // IS_TYPING: i18n('is writing...'),
+        // CANCEL_SELECT_MESSAGE: i18n('Cancel'),
+      },
+    }
+  },
+  computed: {
+    isNewConversation () {
+      return this.roomId === NEW_CONVERSATION_ID
+    },
+    getConversations () {
+      return conversationStore.conversations
+    },
+    getRooms () {
+      const rooms = this.convertRooms(conversationStore.conversations)
+      return rooms
+    },
+    roomsLoaded () {
+      return !conversationStore.hasMoreConversations
+    },
+    getMessages () {
+      if (this.roomChanging) { return [] }
+      const conversation = conversationStore.conversations[this.roomId]
+      if (!conversation) {
+        return [] // conversation has not been loaded, will be done in the background
+      }
+      const messages = this.convertMessages(conversation)
+      return messages
+    },
+    messagesLoaded () {
+      if (this.roomChanging) { return false }
+      if (this.roomId === NEW_CONVERSATION_ID) { return true }
+      return !conversationStore.conversations[this.roomId]?.hasMoreMessages
+    },
+  },
+  watch: {
+    async chatId (newChatId, oldChatId) {
+      await conversationStore.getConversation(newChatId)
+      this.roomId = newChatId
+    },
+  },
+  async created () {
+    await this.loadRooms()
+  },
+  async mounted () {
+    this.registerMessageTextEvents()
+
+    // Using global css is not possible anymore in web components
+    const style = document.createElement('style')
+
+    if (this.popupMode) {
+      style.innerHTML = `
+      .vac-card-window {
+        height: 325px !important;
+        box-shadow: unset !important;
+      }
+
+      .vac-room-header {
+        display: none !important;
+      }
+
+      .vac-col-messages .vac-container-scroll {
+        margin-top: 0 !important;
+      }
+
+      .vac-message-wrapper .vac-offset-current {
+        margin-left: 20% !important;
+      }
+      .vac-message-wrapper .vac-message-box {
+        max-width: 80% !important;
+      }
+      `
+    } else {
+      style.innerHTML = `
+      .vac-card-window {
+        height: 100% !important;
+      }
+
+      @media (min-width: 576px)
+      {
+        .vac-card-window {
+          height: calc(100% - 3px) !important; // required to see shadow around chat component
+        }
+      }
+      `
+    }
+    this.$el.shadowRoot.appendChild(style)
+  },
+  methods: {
+    openChat (chatId) {
+      this.roomId = chatId
+    },
+    getMessageTextComponent () {
+      return this.$el.shadowRoot.querySelector('#roomTextarea')
+    },
+    registerMessageTextEvents () {
+      setTimeout(() => {
+        // This timeout is required so that the chat component has initialized completely.
+
+        this.getMessageTextComponent().addEventListener('click', async () => {
+          await conversationStore.markAsRead(this.roomId)
+        })
+
+        this.getMessageTextComponent().addEventListener('input', async () => {
+          if (this.getMessageTextComponent().value !== '') {
+            storage.set(`chat-text-${this.roomId}`, this.getMessageTextComponent().value)
+          } else {
+            storage.del(`chat-text-${this.roomId}`)
+          }
+        })
+
+        if (this.popupMode) {
+          this.getMessageTextComponent().focus()
+        }
+      }, 1)
+    },
+    /**
+     * This is triggered every time a room is opened. If the room is opened for the first time, the options param will hold reset: true.
+     * This will also be triggered if the user has scrolled to top to load more messages.
+     */
+    async fetchMessages ({ room, options }) {
+      if (room === undefined) return
+      if (room.roomId === undefined) return
+      const roomId = Number(room.roomId)
+
+      if (options?.reset) {
+        this.roomChanging = true
+        this.roomId = roomId
+        await conversationStore.markAsRead(roomId)
+        const storedChatText = storage.get(`chat-text-${this.roomId}`)
+        if (storedChatText) {
+          this.setMessageText(storedChatText)
+        }
+      }
+
+      if (roomId !== NEW_CONVERSATION_ID) {
+        const conversation = await conversationStore.getConversation(roomId)
+        if ((options?.reset && Object.keys(conversation.messages).length <= 1) || (!options?.reset)) {
+          // Load only more messages when no messages have been loaded when opening the chat (Or a maximum of one message which was send when creating a new conversation).
+          // or when the user scrolls up, so options.reset will be undefined
+          if (conversation.hasMoreMessages) {
+            await conversationStore.loadMoreMessages(roomId) // this will update conversation variable
+          }
+        }
+      }
+
+      setTimeout(() => {
+        // This timeout is required so that the chat component works correctly.
+        this.roomChanging = false
+      }, 100)
+    },
+    getRoomName (conversation) {
+      if (conversation.title) { return conversation.title }
+      return conversation.members
+        .filter(m => m !== this.currentUserId)
+        .map(m => ProfileStore.profiles[m].name)
+        .join(', ')
+    },
+    async loadRooms () {
+      await conversationStore.initConversations()
+      this.loadingRooms = false // turn off loading spinner if rooms finished
+    },
+    convertMessages (conversation) {
+      const chatMessages = []
+      for (const message of Object.values(conversation.messages)) {
+        const chatMessage = {
+          _id: message.id,
+          indexId: message.id,
+          content: message.body,
+          senderId: String(message.authorId),
+          username: ProfileStore.profiles[message.authorId].name,
+          date: this.$dateFormatter.date(message.sentAt),
+          timestamp: this.$dateFormatter.time(message.sentAt),
+          system: false,
+          saved: !message.failure,
+          distributed: false,
+          seen: this.currentUserId !== message.authorId, // Setting the other users seen, will hide "New Messages" indicator in chat. TODO: https://gitlab.com/foodsharing-dev/foodsharing/-/issues/1484
+          deleted: false,
+          failure: message.failure,
+          disableActions: true,
+          disableReactions: true,
+        }
+        chatMessages.push(chatMessage)
+      }
+      return chatMessages
+    },
+    newConversationRoom () {
+      const room = {
+        roomId: String(NEW_CONVERSATION_ID),
+        roomName: i18n('chat.new_message'),
+        avatar: null,
+        unreadCount: 0,
+        index: Number.MAX_SAFE_INTEGER, // dispay at top of room list
+      }
+
+      room.users = []
+      const user = {
+        _id: this.currentUserId,
+        username: ProfileStore.profiles[this.currentUserId].name,
+        avatar: ProfileStore.profiles[this.currentUserId].avatar,
+        status: {
+        },
+      }
+      room.users.push(user)
+      return room
+    },
+    convertRooms (conversations) {
+      const convs = Object.values(conversations)
+
+      const rooms = []
+      for (const conv of convs) {
+        let room = {
+          roomId: String(conv.id),
+          roomName: this.getRoomName(conv),
+          avatar: null,
+          unreadCount: Number(conv.hasUnreadMessages),
+          index: Number.MAX_SAFE_INTEGER - 1, // order at top of room list, but after new conversation entry
+        }
+
+        if (conv.lastMessage) {
+          room = {
+            ...room,
+            avatar: null,
+            index: conv.lastMessage.sentAt.getTime(), // use unix timestamp
+            lastMessage: {
+              content: conv.lastMessage.body,
+              senderId: String(conv.lastMessage.authorId),
+              username: ProfileStore.profiles[conv.lastMessage.authorId].name,
+              timestamp: this.$dateFormatter.relativeTime(conv.lastMessage.sentAt, { short: true }),
+              saved: true,
+              distributed: false,
+              seen: false,
+              new: conv.hasUnreadMessages,
+            },
+          }
+        }
+
+        room.users = []
+        for (const userId of conv.members) {
+          const user = {
+            _id: userId,
+            username: ProfileStore.profiles[userId].name,
+            avatar: ProfileStore.profiles[userId].avatar,
+            status: {
+              // The following properties could also be used in the vue-advanced-chat component when these are implemented in the backend.
+              // state: 'offline',
+              // lastChanged: 'today, 14:30',
+            },
+          }
+          room.users.push(user)
+        }
+        rooms.push(room)
+      }
+      if (this.newConversation) {
+        rooms.push(this.newConversationRoom())
+      }
+      return rooms
+    },
+    fetchMoreRooms () {
+      conversationStore.loadConversations()
+    },
+    setMessageText (text) {
+      setTimeout(() => {
+        // This timeout is required so that the message text is changed after the chat component has changed the values
+        this.getMessageTextComponent().value = text
+        this.getMessageTextComponent().dispatchEvent(new Event('input')) // trigger component updates
+      }, 0)
+    },
+    async sendMessage ({ content, roomId, files, replyMessage }) {
+      if (this.roomId === NEW_CONVERSATION_ID) {
+        if (this.newConversationSelectedUsers.length === 0) {
+          this.setMessageText(content) // keep current message text
+          pulseError(i18n('chat.empty_recipients'))
+          return
+        }
+
+        try {
+          const newConversationId = await conversationStore.createConversation(this.newConversationSelectedUsers.map(user => user.id))
+          try {
+            await conversationStore.sendMessage(newConversationId, content)
+            setTimeout(() => {
+              // This timeout is required so that the chat component has updated its room list
+              this.newConversation = false
+              this.roomId = newConversationId
+            }, 0)
+            this.newConversationSelectedUsers = [] // clear selected users
+          } catch (e) {
+            pulseError(i18n('chat.error_sending_message'))
+            console.error(e)
+            return
+          }
+        } catch (e) {
+          this.setMessageText(content) // keep current message text
+          return
+        }
+      } else {
+        await conversationStore.sendMessage(roomId, content)
+      }
+      await conversationStore.markAsRead(this.roomId)
+      storage.del(`chat-text-${this.roomId}`)
+    },
+    /**
+     * Will be called when clicked on the failure icon next to a message
+     */
+    async clickFailedMessage ({ roomId, message }) {
+      console.error('clickFailedMessage', roomId, message)
+      await conversationStore.resendFailedMessage(roomId, message.indexId)
+    },
+    /**
+     * Will be called if the plus button was pressed next to the search bar
+     */
+    clickAddConversation () {
+      this.newConversation = true
+      setTimeout(() => {
+        // This timeout is required so that the chat component has updated its room list
+        this.roomId = NEW_CONVERSATION_ID
+      }, 0)
+    },
+    newConversationSelectedUsersChanged (users) {
+      this.newConversationSelectedUsers = users
+    },
+    getAvatar (authorId) {
+      return ProfileStore.profiles[authorId].avatar
+    },
+  },
+}
+</script>
+
+<style lang="scss" scoped>
+
+  ::v-deep .vac-container-scroll{
+    // Don't scroll main page when cursor is in chat window
+    overscroll-behavior: contain;
+  }
+
+  ::v-deep .vac-room-list {
+
+    .vac-text-last .vac-text-ellipsis,
+    .vac-room-name {
+      -webkit-line-clamp: 2;
+      display: -webkit-box;
+      -webkit-box-orient: vertical;
+      overflow: hidden;
+      white-space: initial;
+    }
+  }
+
+  ::v-deep .vac-box-search .vac-input{
+    /* Fix height of search bar in header of chat component */
+    padding-top: 0;
+    padding-bottom: 0;
+  }
+
+  ::v-deep {
+    #roomTextarea{
+      max-height: 100px;
+      overflow-y: auto;
+    }
+  }
+
+  ::v-deep #select-users {
+
+    position: absolute; // Otherwise the message scroll area has flickering at the bottom of the area when opening and closing user selection.
+    width: calc(100% - 10px); // vac-messages-container has 5px padding, so remove 2*padding of width.
+
+    input {
+      min-width: unset;
+    }
+  }
+</style>

@@ -264,7 +264,7 @@ class QuizSessionGateway extends BaseGateway
 			$result['status'] = QuizStatus::FAILED;
 		} elseif ($quizSessionStatus['failed'] == 3 && $now->isBefore($pauseEnd)) {
 			$result['status'] = QuizStatus::PAUSE;
-			$result['wait'] = $now->diffInDays($pauseEnd);
+			$result['wait'] = intval(round($now->floatDiffInDays($pauseEnd)));
 		} elseif ($quizSessionStatus['failed'] == 3 && $now->greaterThanOrEqualTo($pauseEnd)) {
 			$result['status'] = QuizStatus::PAUSE_ELAPSED;
 		} elseif ($quizSessionStatus['failed'] == 4) {
@@ -308,7 +308,7 @@ class QuizSessionGateway extends BaseGateway
 						++$out['failed'];
 						break;
 					default:
-					}
+				}
 			}
 		}
 

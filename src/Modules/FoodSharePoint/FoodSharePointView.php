@@ -6,6 +6,7 @@ use Foodsharing\Lib\Session;
 use Foodsharing\Lib\View\Utils;
 use Foodsharing\Modules\Core\DBConstants\Info\InfoType;
 use Foodsharing\Modules\Core\View;
+use Foodsharing\Modules\Foodsaver\Profile;
 use Foodsharing\Permissions\FoodSharePointPermissions;
 use Foodsharing\Utility\DataHelper;
 use Foodsharing\Utility\IdentificationHelper;
@@ -24,7 +25,14 @@ class FoodSharePointView extends View
 	private array $regions;
 
 	private array $foodSharePoint;
-	private array $follower;
+	/**
+	 * @var Profile[]
+	 */
+	private array $managers;
+	/**
+	 * @var Profile[]
+	 */
+	private array $followers;
 
 	private FoodSharePointPermissions $fspPermissions;
 
@@ -72,10 +80,15 @@ class FoodSharePointView extends View
 		$this->region = $region;
 	}
 
-	public function setFoodSharePoint(array $foodSharePoint, array $follower): void
+	/**
+	 * @param Profile[] $managers
+	 * @param Profile[] $followers
+	 */
+	public function setFoodSharePoint(array $foodSharePoint, array $managers, array $followers): void
 	{
 		$this->foodSharePoint = $foodSharePoint;
-		$this->follower = $follower;
+		$this->managers = $managers;
+		$this->followers = $followers;
 	}
 
 	public function foodSharePointHead(): string
@@ -246,15 +259,23 @@ class FoodSharePointView extends View
 	{
 		$out = '';
 
-		if (!empty($this->follower['fsp_manager'])) {
+		if (!empty($this->managers)) {
+			shuffle($this->managers);
 			$out .= $this->v_utils->v_field(
-				$this->fsAvatarList($this->follower['fsp_manager']),
+				$this->vueComponent('fsp-managers', 'AvatarList', [
+					'profiles' => $this->managers,
+					'maxVisibleAvatars' => 5,
+				]),
 				$this->translator->trans('fsp.managers')
 			);
 		}
-		if (!empty($this->follower['follow'])) {
+		if (!empty($this->followers)) {
+			shuffle($this->followers);
 			$out .= $this->v_utils->v_field(
-				$this->fsAvatarList($this->follower['follow'], 700, true),
+				$this->vueComponent('fsp-followers', 'AvatarList', [
+					'profiles' => $this->followers,
+					'maxVisibleAvatars' => 8,
+				]),
 				$this->translator->trans('fsp.followers')
 			);
 		}

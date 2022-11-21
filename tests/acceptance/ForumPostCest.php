@@ -1,5 +1,6 @@
 <?php
 
+use Codeception\Util\Locator;
 use Foodsharing\Modules\Core\DBConstants\Unit\UnitType;
 
 class ForumPostCest
@@ -185,6 +186,7 @@ class ForumPostCest
 	{
 		$I->amOnPage($I->forumUrl($regionId));
 		$I->click('Neues Thema verfassen');
+		$I->waitForPageBody();
 		$I->fillField('#forum_create_thread_form_title', $title);
 		$I->fillField('#forum_create_thread_form_body', 'TestThreadPost');
 		$I->deleteAllMails();
@@ -196,7 +198,7 @@ class ForumPostCest
 			$I->selectOption('#forum_create_thread_form_sendMail_0', 'Nein');
 		}
 		$I->click('Senden');
-		$I->waitForActiveAPICalls();
+		$I->waitForPageBody();
 	}
 
 	/**
@@ -316,8 +318,8 @@ class ForumPostCest
 		$I->deleteAllMails();
 		$this->_createThread($I, $this->{$example[1]}['id'], $title, false);
 		$I->amOnPage($I->forumUrl($this->{$example[1]}['id']));
+		$I->waitForActiveAPICalls();
 
-		$I->wait(2);
 		$mail = $I->getMails()[0];
 		preg_match('/http:\/\/.*?\/(.*?)"/', $mail->html, $matches);
 		$link = html_entity_decode($matches[1]);
@@ -330,24 +332,23 @@ class ForumPostCest
 			$I->see($title);
 			$I->click('Thema aktivieren');
 			$I->waitForActiveAPICalls();
+			$I->logMeOut();
 		});
 
 		$I->amOnPage($I->forumUrl($this->{$example[1]}['id']));
 		$I->waitForActiveAPICalls();
 		$I->canSee($title);
 		$I->click('.forum_threads a');
-		$I->waitForActiveAPICalls();
+		$I->waitForPageBody();
 
 		$I->seeCurrentUrlMatches('~' . $I->forumUrl($this->{$example[1]}['id']) . '&tid=(\d+)~');
 		$I->click('a[title="Beitrag löschen"]');
+		$I->wait(1);
 		$I->canSee('Beitrag löschen');
-		$confirmButton = \Codeception\Util\Locator::contains('.btn', 'Ja, ich bin mir sicher');
-		$I->waitForElementVisible($confirmButton);
-		$I->click($confirmButton);
-		$I->waitForElementNotVisible($confirmButton);
-		$I->wait(2); // avoiding yet another common race condition here
+		$I->click(Locator::contains('.btn', 'Ja, ich bin mir sicher'));
+		$I->wait(1); // avoiding yet another common race condition here
 		$I->seeCurrentUrlEquals($I->forumUrl($this->{$example[1]}['id']));
-		$I->waitForActiveAPICalls();
+		$I->waitForPageBody();
 		$I->cantSee($title);
 	}
 }

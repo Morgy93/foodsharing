@@ -24,7 +24,7 @@ $I->see('ambassador-a', '#foodsaverlist');
 // This one should show nowhere
 $I->dontSee('unrelated-fs');
 
-$I->see('die sich 6 Monate', '#inactivefoodsaverlist');
+$I->see('die in den letzten 6 Monaten', '#inactivefoodsaverlist');
 $I->see('fs-i', '#inactivefoodsaverlist');
 // That foodsaver never logged in, so is inactive as well. Actually this situation is hard to happen in real life as a not-logged-in user cannot have a region...
 $I->see('fs1', '#inactivefoodsaverlist');

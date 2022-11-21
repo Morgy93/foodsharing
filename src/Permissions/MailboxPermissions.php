@@ -3,6 +3,7 @@
 namespace Foodsharing\Permissions;
 
 use Foodsharing\Lib\Session;
+use Foodsharing\Modules\Core\DBConstants\Foodsaver\Role;
 use Foodsharing\Modules\Mailbox\MailboxGateway;
 
 class MailboxPermissions
@@ -31,7 +32,7 @@ class MailboxPermissions
 
 	public function mayMailbox(int $mailboxId): bool
 	{
-		$boxes = $this->mailboxGateway->getBoxes($this->session->isAmbassador(), $this->session->id(), $this->session->may('bieb'));
+		$boxes = $this->mailboxGateway->getBoxes($this->session->isAmbassador(), $this->session->id(), $this->session->mayRole(Role::STORE_MANAGER));
 
 		foreach ($boxes as $b) {
 			if ($b['id'] == $mailboxId) {
@@ -44,7 +45,7 @@ class MailboxPermissions
 
 	public function mayManageMailboxes(): bool
 	{
-		return $this->session->may('orga');
+		return $this->session->mayRole(Role::ORGA);
 	}
 
 	public function mayAddMailboxes(): bool
@@ -54,6 +55,6 @@ class MailboxPermissions
 
 	public function mayHaveMailbox(): bool
 	{
-		return $this->session->may('bieb');
+		return $this->session->mayRole(Role::STORE_MANAGER);
 	}
 }

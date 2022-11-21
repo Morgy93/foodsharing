@@ -4,6 +4,7 @@ namespace Foodsharing\Modules\Foodsaver;
 
 use Foodsharing\Lib\Session;
 use Foodsharing\Lib\View\Utils;
+use Foodsharing\Modules\Core\DBConstants\Foodsaver\Role;
 use Foodsharing\Modules\Core\View;
 use Foodsharing\Utility\DataHelper;
 use Foodsharing\Utility\IdentificationHelper;
@@ -72,8 +73,8 @@ class FoodsaverView extends View
 			)
 		);
 
-		$cnt .= $this->v_utils->v_input_wrapper($this->translator->trans('foodsaver.manage.last-login'),
-			$foodsaver['last_login']
+		$cnt .= $this->v_utils->v_input_wrapper($this->translator->trans('foodsaver.manage.last-activity'),
+			$foodsaver['last_activity']
 		);
 
 		$cnt .= $this->v_utils->v_input_wrapper($this->translator->trans('foodsaver.manage.actions'),
@@ -85,9 +86,15 @@ class FoodsaverView extends View
 		return $this->v_utils->v_field($cnt, $foodsaver['name'], ['class' => 'ui-padding']);
 	}
 
-	public function foodsaverList($foodsaver, $bezirk, $inactive = false): string
+	/**
+	 * @param Profile[] $foodsaver
+	 */
+	public function foodsaverList(array $foodsaver, $bezirk, $inactive = false): string
 	{
-		$avatars = $this->fsAvatarList($foodsaver, 600, true, false, 'fslist');
+		$avatars = $this->vueComponent('fslist', 'AvatarList', [
+			'profiles' => $foodsaver,
+			'maxVisibleAvatars' => 8,
+		]);
 		$name = $inactive ? 'inactive' : '';
 		$label = $this->translator->trans('foodsaver.list.summary', [
 			'{count}' => count($foodsaver),
@@ -106,7 +113,7 @@ class FoodsaverView extends View
 
 		$position = '';
 
-		if ($this->session->may('orga')) {
+		if ($this->session->mayRole(Role::ORGA)) {
 			$position = $this->v_utils->v_form_text('position');
 			$options = [
 				'values' => [

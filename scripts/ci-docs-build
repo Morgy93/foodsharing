@@ -1,0 +1,26 @@
+#!/bin/bash
+dir=$(dirname "$0")
+
+source "$dir"/__helping-functions.sh
+set -o errexit
+
+# ENVS
+export FS_ENV=test
+
+log-header "Preparing execution environment: Prepare PHP config, application & composer dev dependencies"
+composer install --prefer-dist --no-progress --no-interaction --no-scripts --ignore-platform-reqs
+
+sed "s#/app#$CI_PROJECT_DIR#g" /usr/local/etc/php-fpm.d/fpm.conf > /tmp/tmp; cat /tmp/tmp > /usr/local/etc/php-fpm.d/fpm.conf; rm /tmp/tmp
+
+bin/console foodsharing:setup
+
+log-header "Initializing database"
+mysql -u root -proot -hdb --execute="drop database if exists foodsharing; create database foodsharing"
+vendor/bin/phinx migrate
+
+log-header "Build database documentation"
+/bin/bash "$dir"/generate-db-documenation/mysql_generate_documentation
+
+log-header "Build documentation"
+cd "$dir"/../docs
+yarn && yarn build

@@ -3,6 +3,7 @@
 namespace Foodsharing\unit;
 
 use Foodsharing\Lib\Session;
+use Foodsharing\Modules\Core\DBConstants\Foodsaver\Role;
 use Foodsharing\Modules\Group\GroupFunctionGateway;
 use Foodsharing\Modules\Region\RegionGateway;
 use Foodsharing\Permissions\RegionPermissions;
@@ -15,7 +16,7 @@ final class RegionPermissionsTest extends \Codeception\Test\Unit
 
 	protected function _before()
 	{
-		$mock = $this->makeEmpty(Session::class, ['may' => function ($role) { return $role == 'fs'; }]);
+		$mock = $this->makeEmpty(Session::class, ['mayRole' => function ($role) { return $role == Role::FOODSAVER; }]);
 		$this->regionPermissions = new RegionPermissions($this->tester->get(RegionGateway::class), $mock, $this->tester->get(GroupFunctionGateway::class));
 	}
 

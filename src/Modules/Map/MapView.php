@@ -2,6 +2,7 @@
 
 namespace Foodsharing\Modules\Map;
 
+use Foodsharing\Modules\Core\DBConstants\Foodsaver\Role;
 use Foodsharing\Modules\Core\View;
 
 class MapView extends View
@@ -26,7 +27,7 @@ class MapView extends View
 	{
 		$betriebe = '';
 
-		if ($this->session->may('fs')) {
+		if ($this->session->mayRole(Role::FOODSAVER)) {
 			$betriebe = '<li>
 				<a name="betriebe" class="map-legend-entry stores">
 					<i class="fas fa-shopping-cart"></i>'

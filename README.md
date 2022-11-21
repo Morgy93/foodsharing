@@ -41,6 +41,9 @@ Translations are done via
 [weblate](https://hosted.weblate.org/projects/foodsharing/). If you can help translate the app into a
 new language, feel free to help!
 
+## Testing
+This project is tested with BrowserStack. Thank you!
+
 ## 👪 Contributors
 
 <!-- FOODSHARING-CONTRIBUTORS-LIST:START - Do not remove or modify this section -->

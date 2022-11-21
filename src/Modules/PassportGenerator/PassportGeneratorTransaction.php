@@ -14,37 +14,25 @@ use Foodsharing\Utility\FlashMessageHelper;
 use Foodsharing\Utility\TranslationHelper;
 use setasign\Fpdi\Tcpdf\Fpdi;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Symfony\Component\HttpKernel\KernelInterface;
 use Symfony\Contracts\Translation\TranslatorInterface;
 
 class PassportGeneratorTransaction extends AbstractController
 {
-	private FoodsaverGateway $foodsaverGateway;
-	private PassportGeneratorGateway $passportGeneratorGateway;
-	private Session $session;
-	private UploadsTransactions $uploadsTransactions;
-	private BellGateway $bellGateway;
-	protected TranslatorInterface $translator;
-	protected TranslationHelper $translationHelper;
-	protected FlashMessageHelper $flashMessageHelper;
+	private string $projectDir;
 
 	public function __construct(
-		FoodsaverGateway $foodsaverGateway,
-		PassportGeneratorGateway $passportGeneratorGateway,
-		Session $session,
-		UploadsTransactions $uploadsTransactions,
-		BellGateway $bellGateway,
-		FlashMessageHelper $flashMessageHelper,
-		TranslationHelper $translationHelper,
-		TranslatorInterface $translator
+		private readonly FoodsaverGateway $foodsaverGateway,
+		private readonly PassportGeneratorGateway $passportGeneratorGateway,
+		private readonly Session $session,
+		private readonly UploadsTransactions $uploadsTransactions,
+		private readonly BellGateway $bellGateway,
+		protected FlashMessageHelper $flashMessageHelper,
+		protected TranslationHelper $translationHelper,
+		protected TranslatorInterface $translator,
+		KernelInterface $kernel,
 	) {
-		$this->foodsaverGateway = $foodsaverGateway;
-		$this->passportGeneratorGateway = $passportGeneratorGateway;
-		$this->session = $session;
-		$this->uploadsTransactions = $uploadsTransactions;
-		$this->bellGateway = $bellGateway;
-		$this->flashMessageHelper = $flashMessageHelper;
-		$this->translationHelper = $translationHelper;
-		$this->translator = $translator;
+		$this->projectDir = $kernel->getProjectDir();
 	}
 
 	public function generate(array $foodsavers, bool $cutMarkers = true, bool $protectPDF = false, $region = null): void
@@ -131,18 +119,18 @@ class PassportGeneratorTransaction extends AbstractController
 		}
 
 		$pdf->SetTextColor(0, 0, 0);
-		$pdf->AddFont('Ubuntu-L', '', 'lib/font/ubuntul.php', true);
-		$pdf->AddFont('AcmeFont Regular', '', 'lib/font/acmefont.php', true);
+		$pdf->AddFont('Ubuntu-L', '', $this->projectDir . '/lib/font/ubuntul.php', true);
+		$pdf->AddFont('AcmeFont Regular', '', $this->projectDir . '/lib/font/acmefont.php', true);
 
-		$x = 0;
-		$y = 0;
+		$x = 0.0;
+		$y = 0.0;
 		$card = 0;
 
 		$noPhoto = [];
 
 		end($foodsavers);
 
-		$pdf->setSourceFile('img/foodsharing_logo.pdf');
+		$pdf->setSourceFile($this->projectDir . '/img/foodsharing_logo.pdf');
 		$fs_logo = $pdf->importPage(1);
 
 		foreach ($foodsavers as $fs_id) {
@@ -169,9 +157,9 @@ class PassportGeneratorTransaction extends AbstractController
 				$this->passportGeneratorGateway->passGen($this->session->id(), $foodsaver['id']);
 
 				if ($cutMarkers) {
-					$backgroundFile = 'img/pass_bg.png';
+					$backgroundFile = $this->projectDir . '/img/pass_bg.png';
 				} else {
-					$backgroundFile = 'img/pass_bg_cut.png';
+					$backgroundFile = $this->projectDir . '/img/pass_bg_cut.png';
 				}
 				$pdf->Image($backgroundFile, $backgroundMarginX + $x, $backgroundMarginY + $y, 83, 55);
 

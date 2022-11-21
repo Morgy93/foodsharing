@@ -2,47 +2,39 @@
 
 namespace Foodsharing\Modules\Maintenance;
 
-use Foodsharing\Modules\Bell\BellGateway;
 use Foodsharing\Modules\Bell\BellUpdateTrigger;
 use Foodsharing\Modules\Console\ConsoleControl;
 use Foodsharing\Modules\Core\DBConstants\Region\RegionIDs;
 use Foodsharing\Modules\Core\DBConstants\Region\WorkgroupFunction;
 use Foodsharing\Modules\Foodsaver\FoodsaverGateway;
 use Foodsharing\Modules\Group\GroupGateway;
-use Foodsharing\Modules\Quiz\QuizHelper;
 use Foodsharing\Modules\Store\StoreGateway;
 use Foodsharing\Utility\EmailHelper;
 use Symfony\Contracts\Translation\TranslatorInterface;
 
 class MaintenanceControl extends ConsoleControl
 {
-	private BellGateway $bellGateway;
 	private StoreGateway $storeGateway;
 	private FoodsaverGateway $foodsaverGateway;
 	private EmailHelper $emailHelper;
 	private MaintenanceGateway $maintenanceGateway;
-	private QuizHelper $quizHelper;
 	private BellUpdateTrigger $bellUpdateTrigger;
 	private GroupGateway $groupGateway;
 	private TranslatorInterface $translator;
 
 	public function __construct(
-		BellGateway $bellGateway,
 		StoreGateway $storeGateway,
 		FoodsaverGateway $foodsaverGateway,
 		EmailHelper $emailHelper,
 		MaintenanceGateway $maintenanceGateway,
-		QuizHelper $quizHelper,
 		BellUpdateTrigger $bellUpdateTrigger,
 		GroupGateway $groupGateway,
 		TranslatorInterface $translator
 	) {
-		$this->bellGateway = $bellGateway;
 		$this->storeGateway = $storeGateway;
 		$this->foodsaverGateway = $foodsaverGateway;
 		$this->emailHelper = $emailHelper;
 		$this->maintenanceGateway = $maintenanceGateway;
-		$this->quizHelper = $quizHelper;
 		$this->bellUpdateTrigger = $bellUpdateTrigger;
 		$this->groupGateway = $groupGateway;
 		$this->translator = $translator;

@@ -30,14 +30,14 @@ class SettingsXhr extends Control
 
 		parent::__construct();
 
-		if (!$this->session->may()) {
+		if (!$this->session->mayRole()) {
 			return;
 		}
 	}
 
 	public function changemail()
 	{
-		if (!$this->session->may()) {
+		if (!$this->session->mayRole()) {
 			echo '0';
 			exit;
 		}

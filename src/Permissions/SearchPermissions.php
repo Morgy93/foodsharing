@@ -3,6 +3,7 @@
 namespace Foodsharing\Permissions;
 
 use Foodsharing\Lib\Session;
+use Foodsharing\Modules\Core\DBConstants\Foodsaver\Role;
 
 class SearchPermissions
 {
@@ -15,7 +16,7 @@ class SearchPermissions
 
 	public function maySearchAllRegions(): bool
 	{
-		if ($this->session->may('orga')) {
+		if ($this->session->mayRole(Role::ORGA)) {
 			return true;
 		}
 
@@ -24,7 +25,7 @@ class SearchPermissions
 
 	public function maySearchInRegion(int $regionId): bool
 	{
-		if ($this->session->may('orga')) {
+		if ($this->session->mayRole(Role::ORGA)) {
 			return true;
 		}
 
@@ -33,6 +34,6 @@ class SearchPermissions
 
 	public function maySeeUserAddress(): bool
 	{
-		return $this->session->may('orga');
+		return $this->session->mayRole(Role::ORGA);
 	}
 }

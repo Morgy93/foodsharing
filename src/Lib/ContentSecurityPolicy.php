@@ -8,7 +8,6 @@ class ContentSecurityPolicy
 	{
 		$none = "'none'";
 		$self = "'self'";
-		$webpack = 'http://localhost:18080';
 		$unsafeInline = "'unsafe-inline'";
 		$unsafeEval = "'unsafe-eval'";
 		$gitpod_config = 'config/gitpod';
@@ -32,8 +31,9 @@ class ContentSecurityPolicy
 			'connect-src' => [
 				$self,
 				$this->websocketUrlFor($httpHost),
-				$webpack,
 				$gitpod_url,
+				'https://localhost',
+				'https://nginx',
 				'https://sentry.io',
 				'https://photon.komoot.io',
 				'https://maps.geoapify.com',

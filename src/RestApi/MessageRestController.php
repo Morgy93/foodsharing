@@ -36,12 +36,11 @@ class MessageRestController extends AbstractFOSRestController
 
 	/**
 	 * @OA\Tag(name="conversation")
-	 *
 	 * @Rest\Post("conversations/{conversationId}/read", requirements={"conversationId" = "\d+"})
 	 */
 	public function markConversationReadAction(int $conversationId): Response
 	{
-		if (!$this->session->may()) {
+		if (!$this->session->mayRole()) {
 			throw new UnauthorizedHttpException('');
 		}
 		if (!$this->messageGateway->mayConversation($this->session->id(), $conversationId)) {
@@ -55,14 +54,13 @@ class MessageRestController extends AbstractFOSRestController
 
 	/**
 	 * @OA\Tag(name="conversation")
-	 *
 	 * @Rest\Get("conversations/{conversationId}/messages", requirements={"conversationId" = "\d+"})
 	 * @Rest\QueryParam(name="olderThanId", requirements="\d+", nullable=true, default=null, description="ID of oldest already known message")
 	 * @Rest\QueryParam(name="limit", requirements="\d+", default="20", description="Number of messages to return")
 	 */
 	public function getConversationMessagesAction(int $conversationId, ParamFetcher $paramFetcher): Response
 	{
-		if (!$this->session->may()) {
+		if (!$this->session->mayRole()) {
 			throw new UnauthorizedHttpException('');
 		}
 		if (!$this->messageGateway->mayConversation($this->session->id(), $conversationId)) {
@@ -90,13 +88,12 @@ class MessageRestController extends AbstractFOSRestController
 
 	/**
 	 * @OA\Tag(name="conversation")
-	 *
 	 * @Rest\Get("conversations/{conversationId}", requirements={"conversationId" = "\d+"})
 	 * @Rest\QueryParam(name="messagesLimit", requirements="\d+", default="20", description="How many messages to return.")
 	 */
 	public function getConversationAction(int $conversationId, ParamFetcher $paramFetcher): Response
 	{
-		if (!$this->session->may()) {
+		if (!$this->session->mayRole()) {
 			throw new UnauthorizedHttpException('');
 		}
 		if (!$this->messageGateway->mayConversation($this->session->id(), $conversationId)) {
@@ -140,13 +137,12 @@ class MessageRestController extends AbstractFOSRestController
 
 	/**
 	 * @OA\Tag(name="conversation")
-	 *
 	 * @Rest\Post("conversations")
 	 * @Rest\RequestParam(name="members", map=true, requirements="\d+", description="User ids of people to include in the conversation.")
 	 */
 	public function createConversationAction(ParamFetcher $paramFetcher): Response
 	{
-		if (!$this->session->may()) {
+		if (!$this->session->mayRole()) {
 			throw new UnauthorizedHttpException('');
 		}
 
@@ -166,14 +162,13 @@ class MessageRestController extends AbstractFOSRestController
 
 	/**
 	 * @OA\Tag(name="conversation")
-	 *
 	 * @Rest\Get("conversations")
 	 * @Rest\QueryParam(name="limit", requirements="\d+", default="20", description="How many conversations to return.")
 	 * @Rest\QueryParam(name="offset", requirements="\d+", default="0", description="Offset returned conversations.")
 	 */
 	public function getConversationsAction(ParamFetcher $paramFetcher): Response
 	{
-		if (!$this->session->may()) {
+		if (!$this->session->mayRole()) {
 			throw new UnauthorizedHttpException('');
 		}
 
@@ -190,33 +185,31 @@ class MessageRestController extends AbstractFOSRestController
 
 	/**
 	 * @OA\Tag(name="conversation")
-	 *
 	 * @Rest\Post("conversations/{conversationId}/messages", requirements={"conversationId" = "\d+"})
 	 * @Rest\RequestParam(name="body", nullable=false)
 	 */
 	public function sendMessageAction(int $conversationId, ParamFetcher $paramFetcher): Response
 	{
-		if (!$this->session->may()) {
+		if (!$this->session->mayRole()) {
 			throw new UnauthorizedHttpException('');
 		}
 		if (!$this->messageGateway->mayConversation($this->session->id(), $conversationId)) {
 			throw new AccessDeniedHttpException();
 		}
 		$body = $paramFetcher->get('body');
-		$this->messageTransactions->sendMessage($conversationId, $this->session->id(), $body);
+		$message = $this->messageTransactions->sendMessage($conversationId, $this->session->id(), $body);
 
-		return $this->handleView($this->view([], 200));
+		return $this->handleView($this->view(['message' => $message], 200));
 	}
 
 	/**
 	 * @OA\Tag(name="conversation")
-	 *
 	 * @Rest\Patch("conversations/{conversationId}", requirements={"conversationId" = "\d+"})
 	 * @Rest\RequestParam(name="name", nullable=true, default=null)
 	 */
 	public function patchConversationAction(int $conversationId, ParamFetcher $paramFetcher): Response
 	{
-		if (!$this->session->may() || !$this->messageGateway->mayConversation($this->session->id(), $conversationId)) {
+		if (!$this->session->mayRole() || !$this->messageGateway->mayConversation($this->session->id(), $conversationId)) {
 			throw new UnauthorizedHttpException('');
 		}
 		if ($this->messageGateway->isConversationLocked($conversationId)) {
@@ -233,7 +226,6 @@ class MessageRestController extends AbstractFOSRestController
 
 	/**
 	 * @OA\Tag(name="conversation")
-	 *
 	 * @Rest\Delete("conversations/{conversationId}/members/{userId}", requirements={"conversationId" = "\d+", "userId" = "\d+"})
 	 */
 	public function removeMemberFromConversationAction(int $conversationId, int $userId): Response
@@ -242,7 +234,7 @@ class MessageRestController extends AbstractFOSRestController
 		/* only allow users to remove themselves from conversations */
 		throw new AccessDeniedHttpException();
 		/*
-		if (!$this->session->may() || $userId !== $this->session->id()) {
+		if (!$this->session->mayRole() || $userId !== $this->session->id()) {
 			throw new AccessDeniedHttpException();
 		}
 		if (!$this->messageTransactions->deleteUserFromConversation($conversationId, $userId)) {
@@ -255,12 +247,11 @@ class MessageRestController extends AbstractFOSRestController
 
 	/**
 	 * @OA\Tag(name="conversation")
-	 *
 	 * @Rest\Get("user/{userId}/conversation", requirements={"userId" = "\d+"})
 	 */
 	public function getUserConversationAction(int $userId): Response
 	{
-		if (!$this->session->may()) {
+		if (!$this->session->mayRole()) {
 			throw new UnauthorizedHttpException('');
 		}
 		if ($userId == $this->session->id()) {

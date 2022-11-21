@@ -41,12 +41,14 @@ class IndexController extends AbstractController
 		$app = $routeHelper->getPage();
 
 		$controller = $routeHelper->getLegalControlIfNecessary() ?? Routing::getClassName($app, 'Control');
+
 		try {
 			global $container;
 			$container = $this->fullServiceContainer;
-
-			/** @var Control $obj */
-			$obj = $container->get(ltrim($controller, '\\'));
+			if ($controller !== null) {
+				/** @var Control $obj */
+				$obj = $container->get(ltrim($controller, '\\'));
+			}
 		} catch (ServiceNotFoundException $e) {
 		}
 

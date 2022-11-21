@@ -3,6 +3,7 @@
 namespace Foodsharing\Permissions;
 
 use Foodsharing\Lib\Session;
+use Foodsharing\Modules\Core\DBConstants\Foodsaver\Role;
 
 class BasketPermissions
 {
@@ -25,7 +26,7 @@ class BasketPermissions
 
 	public function mayAdd(): bool
 	{
-		return $this->session->may();
+		return $this->session->mayRole();
 	}
 
 	public function mayEdit(int $basket_fs_id): bool
@@ -39,7 +40,7 @@ class BasketPermissions
 
 	public function mayDelete(array $basket): bool
 	{
-		if ($this->session->may('orga')) {
+		if ($this->session->mayRole(Role::ORGA)) {
 			return true;
 		}
 

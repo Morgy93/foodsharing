@@ -3,24 +3,21 @@
 namespace Foodsharing\Permissions;
 
 use Foodsharing\Lib\Session;
+use Foodsharing\Modules\Core\DBConstants\Foodsaver\Role;
 use Foodsharing\Modules\Core\DBConstants\Region\RegionIDs;
 use Foodsharing\Modules\Core\DBConstants\Region\WorkgroupFunction;
 use Foodsharing\Modules\Group\GroupFunctionGateway;
-use Foodsharing\Modules\Region\RegionGateway;
 
 class ReportPermissions
 {
 	private Session $session;
-	private RegionGateway $regionGateway;
 	private GroupFunctionGateway $groupFunctionGateway;
 
 	public function __construct(
 		Session $session,
-		RegionGateway $regionGateway,
 		GroupFunctionGateway $groupFunctionGateway
 	) {
 		$this->session = $session;
-		$this->regionGateway = $regionGateway;
 		$this->groupFunctionGateway = $groupFunctionGateway;
 	}
 
@@ -32,7 +29,7 @@ class ReportPermissions
 	 */
 	public function mayAccessReportsForRegion(int $regionId): bool
 	{
-		if ($this->session->may('orga')) {
+		if ($this->session->mayRole(Role::ORGA)) {
 			return true;
 		}
 
@@ -58,7 +55,7 @@ class ReportPermissions
 
 	public function mayAccessArbitrationReports(int $regionId): bool
 	{
-		if ($this->session->may('orga')) {
+		if ($this->session->mayRole(Role::ORGA)) {
 			return true;
 		}
 
@@ -76,7 +73,7 @@ class ReportPermissions
 
 	public function mayAccessReportGroupReports(int $regionId): bool
 	{
-		if ($this->session->may('orga')) {
+		if ($this->session->mayRole(Role::ORGA)) {
 			return true;
 		}
 
@@ -100,6 +97,6 @@ class ReportPermissions
 	public function mayHandleReports(): bool
 	{
 		// group "Regelverletzungen/Meldungen"
-		return $this->session->may('orga') || $this->session->isAdminFor(RegionIDs::EUROPE_REPORT_TEAM);
+		return $this->session->mayRole(Role::ORGA) || $this->session->isAdminFor(RegionIDs::EUROPE_REPORT_TEAM);
 	}
 }

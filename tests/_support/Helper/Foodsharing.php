@@ -11,6 +11,7 @@ use Foodsharing\Modules\Core\DBConstants\Info\InfoType;
 use Foodsharing\Modules\Core\DBConstants\Mailbox\MailboxFolder;
 use Foodsharing\Modules\Core\DBConstants\Quiz\SessionStatus;
 use Foodsharing\Modules\Core\DBConstants\Region\RegionIDs;
+use Foodsharing\Modules\Core\DBConstants\Region\RegionOptionType;
 use Foodsharing\Modules\Core\DBConstants\Region\RegionPinStatus;
 use Foodsharing\Modules\Core\DBConstants\StoreTeam\MembershipStatus as STATUS;
 use Foodsharing\Modules\Core\DBConstants\Unit\UnitType;
@@ -99,8 +100,8 @@ class Foodsharing extends \Codeception\Module\Db
 		$params = array_merge([
 			'email' => $this->faker->unique()->email(),
 			'bezirk_id' => 0,
-			'name' => $this->faker->unique()->firstName(),
-			'nachname' => $this->faker->unique()->lastName(),
+			'name' => $this->faker->firstName(),
+			'nachname' => $this->faker->lastName(),
 			'verified' => 0,
 			'rolle' => 0,
 			'plz' => $this->faker->postcode(),
@@ -111,7 +112,7 @@ class Foodsharing extends \Codeception\Module\Db
 			'geb_datum' => $this->faker->dateTimeBetween('-80 years', '-18 years'),
 			'last_login' => $this->faker->dateTimeBetween('-1 years', '-1 hours'),
 			'anschrift' => $this->faker->streetName(),
-			'handy' => '+494115781565',
+			'handy' => $this->faker->e164PhoneNumber(),
 			'active' => 1,
 			'privacy_policy_accepted_date' => '2020-05-16 00:09:33',
 			'privacy_notice_accepted_date' => '2018-05-24 18:25:28',
@@ -337,7 +338,7 @@ class Foodsharing extends \Codeception\Module\Db
 			'lon' => $this->faker->longitude(4, 16),
 			'name' => 'betrieb_' . $this->faker->company(),
 			'status_date' => $this->faker->dateTime(),
-			'ansprechpartner' => $this->faker->unique()->name(),
+			'ansprechpartner' => $this->faker->name(),
 			'telefon' => $this->faker->phoneNumber(),
 			'fax' => $this->faker->phoneNumber(),
 			'email' => $this->faker->unique()->email(),
@@ -947,7 +948,7 @@ class Foodsharing extends \Codeception\Module\Db
 			'foodsaver_id' => $user,
 			'status' => 1,
 			'time' => $this->faker->dateTime($max = 'now'),
-			'until' => $this->faker->dateTimeBetween('+5m', '+14 days'),
+			'until' => $this->faker->dateTimeBetween('+1 std', '+14 days'),
 			'fetchtime' => null,
 			'description' => $this->faker->realText(200),
 			'picture' => null,
@@ -1130,6 +1131,15 @@ class Foodsharing extends \Codeception\Module\Db
 			'msg' => $message,
 			'time' => $this->faker->dateTime($max = 'now')->format('Y-m-d H:i:s')
 		]);
+	}
+
+	public function createDistrictPickupRule(int $region, $timeframe, $maxPickup, $maxPickupDay, $ignoreHours)
+	{
+		$this->haveInDatabase('fs_region_options', ['region_id' => $region, 'option_type' => RegionOptionType::REGION_PICKUP_RULE_ACTIVE, 'option_value' => '1']);
+		$this->haveInDatabase('fs_region_options', ['region_id' => $region, 'option_type' => RegionOptionType::REGION_PICKUP_RULE_TIMESPAN_DAYS, 'option_value' => $timeframe]);
+		$this->haveInDatabase('fs_region_options', ['region_id' => $region, 'option_type' => RegionOptionType::REGION_PICKUP_RULE_LIMIT_NUMBER, 'option_value' => $maxPickup]);
+		$this->haveInDatabase('fs_region_options', ['region_id' => $region, 'option_type' => RegionOptionType::REGION_PICKUP_RULE_LIMIT_DAY_NUMBER, 'option_value' => $maxPickupDay]);
+		$this->haveInDatabase('fs_region_options', ['region_id' => $region, 'option_type' => RegionOptionType::REGION_PICKUP_RULE_INACTIVE_HOURS, 'option_value' => $ignoreHours]);
 	}
 
 	// =================================================================================================================

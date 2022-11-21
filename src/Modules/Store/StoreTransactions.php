@@ -8,16 +8,24 @@ use Foodsharing\Lib\Session;
 use Foodsharing\Modules\Bell\BellGateway;
 use Foodsharing\Modules\Bell\DTO\Bell;
 use Foodsharing\Modules\Core\DBConstants\Bell\BellType;
+use Foodsharing\Modules\Core\DBConstants\Region\RegionOptionType;
+use Foodsharing\Modules\Core\DBConstants\Store\ConvinceStatus;
 use Foodsharing\Modules\Core\DBConstants\Store\CooperationStatus;
 use Foodsharing\Modules\Core\DBConstants\Store\Milestone;
+use Foodsharing\Modules\Core\DBConstants\Store\PublicTimes;
 use Foodsharing\Modules\Core\DBConstants\Store\StoreLogAction;
 use Foodsharing\Modules\Core\DBConstants\StoreTeam\MembershipStatus;
+use Foodsharing\Modules\Core\DTO\GeoLocation;
 use Foodsharing\Modules\Foodsaver\FoodsaverGateway;
 use Foodsharing\Modules\Message\MessageGateway;
 use Foodsharing\Modules\Region\RegionGateway;
+use Foodsharing\Modules\Store\DTO\CommonLabel;
+use Foodsharing\Modules\Store\DTO\CommonStoreMetadata;
 use Foodsharing\Modules\Store\DTO\CreateStoreData;
 use Foodsharing\Modules\Store\DTO\Store;
+use Foodsharing\Modules\Store\DTO\StoreListInformation;
 use Foodsharing\Modules\Store\DTO\StoreStatusForMember;
+use Foodsharing\Utility\WeightHelper;
 use Symfony\Contracts\Translation\TranslatorInterface;
 
 class StoreTransactions
@@ -59,6 +67,93 @@ class StoreTransactions
 		$this->session = $session;
 	}
 
+	public function getCommonStoreMetadata($supressStoreChains = true): CommonStoreMetadata
+	{
+		$store = new CommonStoreMetadata();
+
+		$store->groceries = array_map(function ($row) {
+			return CommonLabel::createFromArray($row);
+		}, $this->storeGateway->getBasics_groceries());
+
+		$store->categories = array_map(function ($row) {
+			return CommonLabel::createFromArray($row);
+		}, $this->storeGateway->getStoreCategories());
+
+		$store->status = array_map(function ($row) {
+			return CommonLabel::createFromArray($row);
+		}, [
+			['id' => CooperationStatus::NO_CONTACT->value, 'name' => $this->translator->trans('storestatus.1')],
+			['id' => CooperationStatus::IN_NEGOTIATION->value, 'name' => $this->translator->trans('storestatus.2')],
+			['id' => CooperationStatus::COOPERATION_STARTING->value, 'name' => $this->translator->trans('storestatus.3a')],
+			['id' => CooperationStatus::DOES_NOT_WANT_TO_WORK_WITH_US->value, 'name' => $this->translator->trans('storestatus.4')],
+			['id' => CooperationStatus::COOPERATION_ESTABLISHED->value, 'name' => $this->translator->trans('storestatus.5')],
+			['id' => CooperationStatus::GIVES_TO_OTHER_CHARITY->value, 'name' => $this->translator->trans('storestatus.6')],
+			['id' => CooperationStatus::PERMANENTLY_CLOSED->value, 'name' => $this->translator->trans('storestatus.7')],
+		]);
+
+		$store->publicTimes = array_map(function ($row) {
+			return CommonLabel::createFromArray($row);
+		}, [
+			['id' => PublicTimes::IN_THE_MORNING->value, 'name' => $this->translator->trans('storeview.public_time_in_the_morning')],
+			['id' => PublicTimes::AT_NOON_IN_THE_AFTERNOON->value, 'name' => $this->translator->trans('storeview.public_time_at_noon_or_afternoon')],
+			['id' => PublicTimes::IN_THE_EVENING->value, 'name' => $this->translator->trans('storeview.public_time_in_the_evening')],
+			['id' => PublicTimes::AT_NIGHT->value, 'name' => $this->translator->trans('storeview.public_time_at_night')]
+		]);
+
+		$store->convinceStatus = array_map(function ($row) {
+			return CommonLabel::createFromArray($row);
+		}, [
+			['id' => ConvinceStatus::NO_PROBLEM_AT_ALL->value, 'name' => $this->translator->trans('store.convince.none')],
+			['id' => ConvinceStatus::AFTER_SOME_PERSUASION->value, 'name' => $this->translator->trans('store.convince.some')],
+			['id' => ConvinceStatus::DIFFICULT_NEGOTIATION->value, 'name' => $this->translator->trans('store.convince.much')],
+			['id' => ConvinceStatus::LOOKED_BAD_BUT_WORKED->value, 'name' => $this->translator->trans('store.convince.final')]
+		]);
+
+		if (!$supressStoreChains) {
+			$store->storeChains = array_map(function ($row) {
+				return CommonLabel::createFromArray($row);
+			}, $this->storeGateway->getBasics_chain());
+		}
+
+		$store->weight = array_map(function ($row) {
+			return CommonLabel::createFromArray($row);
+		}, (new WeightHelper())->getWeightListEntries());
+
+		return $store;
+	}
+
+	public function existStore($storeId)
+	{
+		return $this->storeGateway->storeExists($storeId);
+	}
+
+	/**
+	 * Return a list of store identifiers of reduced store information which belong to region.
+	 *
+	 * This list of stores contains all stores from sub regions.
+	 *
+	 * @param int $regionId Region identifier
+	 * @param bool $expand Expand information about store and region
+	 *
+	 * @return array<StoreListInformation> List of information
+	 */
+	public function listOverviewInformationsOfStoresInRegion(int $regionId, bool $expand): array
+	{
+		$stores = $this->storeGateway->listStoresInRegion($regionId, true);
+
+		$storesMapped = array_map(function (Store $store) use ($expand) {
+			$requiredStoreInformation = StoreListInformation::loadFrom($store, !$expand);
+			if ($expand) {
+				$regionName = $this->regionGateway->getRegionName($store->regionId);
+				$requiredStoreInformation->region->name = $regionName;
+			}
+
+			return $requiredStoreInformation;
+		}, $stores);
+
+		return $storesMapped;
+	}
+
 	public function createStore(array $legacyGlobalData): int
 	{
 		$store = new CreateStoreData();
@@ -69,6 +164,7 @@ class StoreTransactions
 		$store->str = $legacyGlobalData['str'];
 		$store->zip = $legacyGlobalData['plz'];
 		$store->city = $legacyGlobalData['stadt'];
+		$store->publicInfo = $legacyGlobalData['public_info'];
 		$store->createdAt = Carbon::now();
 		$store->updatedAt = $store->createdAt;
 
@@ -92,9 +188,10 @@ class StoreTransactions
 		$store->regionId = intval($legacyGlobalData['bezirk_id']);
 
 		$address = $legacyGlobalData['str'];
-		$store->lat = floatval($legacyGlobalData['lat']);
-		$store->lon = floatval($legacyGlobalData['lon']);
-		$store->str = $address;
+		$store->location = new GeoLocation();
+		$store->location->lat = floatval($legacyGlobalData['lat']);
+		$store->location->lon = floatval($legacyGlobalData['lon']);
+		$store->street = $address;
 		$store->zip = $legacyGlobalData['plz'];
 		$store->city = $legacyGlobalData['stadt'];
 
@@ -103,7 +200,7 @@ class StoreTransactions
 
 		$store->categoryId = intval($legacyGlobalData['betrieb_kategorie_id']);
 		$store->chainId = intval($legacyGlobalData['kette_id']);
-		$store->cooperationStatus = intval($legacyGlobalData['betrieb_status_id']);
+		$store->cooperationStatus = CooperationStatus::tryFrom($legacyGlobalData['betrieb_status_id']);
 
 		$store->description = $legacyGlobalData['besonderheiten'];
 
@@ -116,10 +213,11 @@ class StoreTransactions
 			$store->cooperationStart = Carbon::createFromFormat('Y-m-d', $legacyGlobalData['begin']);
 		}
 		$store->calendarInterval = intval($legacyGlobalData['prefetchtime']);
+		$store->useRegionPickupRule = intval($legacyGlobalData['use_region_pickup_rule']);
 		$store->weight = intval($legacyGlobalData['abholmenge']);
 		$store->effort = intval($legacyGlobalData['ueberzeugungsarbeit']);
-		$store->publicity = intval($legacyGlobalData['presse']);
-		$store->sticker = intval($legacyGlobalData['sticker']);
+		$store->publicity = boolval($legacyGlobalData['presse']);
+		$store->sticker = boolval($legacyGlobalData['sticker']);
 
 		$store->updatedAt = Carbon::now();
 
@@ -255,16 +353,27 @@ class StoreTransactions
 
 	public function joinPickup(int $storeId, Carbon $date, int $fsId, int $issuerId = null): bool
 	{
+		if ($fsId != $issuerId) {
+			/* currently it is forbidden to add other users to a pickup */
+			throw new StoreTransactionException(StoreTransactionException::NO_PICKUP_OTHER_USER);
+		}
+
 		$confirmed = $this->pickupIsPreconfirmed($storeId, $issuerId);
 
 		/* Never occupy more slots than available */
 		if ($totalSlots = $this->totalSlotsIfPickupSlotAvailable($storeId, $date, $fsId)) {
-			$this->pickupGateway->addFetcher($fsId, $storeId, $date, $confirmed);
-			// [#860] convert to manual slot, so they don't vanish when changing the schedule
-			$this->createOrUpdatePickup($storeId, $date, $totalSlots);
+			if ($this->checkPickupRule($storeId, $date, $fsId)) {
+				$this->pickupGateway->addFetcher($fsId, $storeId, $date, $confirmed);
+				// [#860] convert to manual slot, so they don't vanish when changing the schedule
+				$this->createOrUpdatePickup($storeId, $date, $totalSlots);
+			} else {
+				throw new \DomainException('District Pickup Rule violated');
+			}
 		} else {
-			throw new \DomainException('No pickup slot available');
+			throw new StoreTransactionException(StoreTransactionException::NO_PICKUP_SLOT_AVAILABLE);
 		}
+
+		$this->storeGateway->addStoreLog($storeId, $fsId, null, $date, StoreLogAction::SIGN_UP_SLOT);
 
 		return $confirmed;
 	}
@@ -562,6 +671,62 @@ class StoreTransactions
 			'user' => $this->session->user('name'),
 			'name' => $storeName,
 		], $bellId);
-		$this->bellGateway->addBell($userId, $bellData);
+		$this->bellGateway->addBell([$userId], $bellData);
+	}
+
+	public function triggerBellForRegularPickupChanged(int $storeId)
+	{
+		$storeName = $this->storeGateway->getStoreName($storeId);
+
+		$team = $this->storeGateway->getStoreTeam($storeId);
+		$team = array_map(function ($foodsaver) { return $foodsaver['id']; }, $team);
+		$bellData = Bell::create('store_cr_times_title', 'store_cr_times', 'fas fa-user-clock', [
+			'href' => '/?page=fsbetrieb&id=' . $storeId,
+		], [
+			'user' => $this->session->user('name'),
+			'name' => $storeName,
+		], BellType::createIdentifier(BellType::STORE_TIME_CHANGED, $storeId));
+		$this->bellGateway->addBell($team, $bellData);
+	}
+
+	/**
+	 * @param int $storeId Id of Store
+	 * @param Carbon $pickupDate Date of Pickup
+	 * @param int $fsId foodsaver ID
+	 *
+	 * @return bool true or false - true if no rule is violated, false if a rule is vialated
+	 *
+	 * @throws \Exception
+	 */
+	public function checkPickupRule(int $storeId, Carbon $pickupDate, int $fsId): bool
+	{
+		$response['result'] = true; //default response, rule is passed
+
+		// Does this store have a pickupRule ?
+		if ($this->storeGateway->getUseRegionPickupRule($storeId)) {
+			$regionId = $this->storeGateway->getStoreRegionId($storeId);
+			// Does the region of the store have a pickuprule and it is active?
+			if ((bool)$this->regionGateway->getRegionOption($regionId, RegionOptionType::REGION_PICKUP_RULE_ACTIVE)) {
+				// how many hours before a pickup can this rule be ignored ?
+				$ignoreRuleHours = (int)$this->regionGateway->getRegionOption($regionId, RegionOptionType::REGION_PICKUP_RULE_INACTIVE_HOURS);
+				$res = Carbon::now()->diffInHours($pickupDate);
+				if ($res > $ignoreRuleHours) {
+					// the allowed numbers of pickups in a timespan. Timespan is +/- from pickupdate
+					$NumberAllowedPickups = (int)$this->regionGateway->getRegionOption($regionId, RegionOptionType::REGION_PICKUP_RULE_LIMIT_NUMBER);
+					$intervall = (int)$this->regionGateway->getRegionOption($regionId, RegionOptionType::REGION_PICKUP_RULE_TIMESPAN_DAYS);
+					// if we have more or same amount of used slots occupied then allowed we return false
+					if ($this->pickupGateway->getNumberOfPickupsForUserWithStoreRules($fsId, $pickupDate->copy()->subDays($intervall), $pickupDate->copy()->addDays($intervall)) >= $NumberAllowedPickups) {
+						return false;
+					}
+					// if we have more then or same amount of allowed pickups per day we return false
+					$NumberAllowedPickupsPerDay = (int)$this->regionGateway->getRegionOption($regionId, RegionOptionType::REGION_PICKUP_RULE_LIMIT_DAY_NUMBER);
+					if ($this->pickupGateway->getNumberOfPickupsForUserWithStoreRulesSameDay($fsId, $pickupDate) >= $NumberAllowedPickupsPerDay) {
+						return false;
+					}
+				}
+			}
+		}
+
+		return true;
 	}
 }

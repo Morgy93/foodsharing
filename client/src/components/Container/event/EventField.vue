@@ -9,7 +9,7 @@
         class="event-item-date flex-column mr-2 text-center rounded default"
         :class="{'accept': status === 1, 'maybe': status === 2}"
       >
-        <span
+        <small
           class="font-weight-bold"
           v-html="displayedMonth"
         />

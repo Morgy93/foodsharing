@@ -33,7 +33,6 @@ class PushNotificationSubscriptionRestController extends AbstractFOSRestControll
 
 	/**
 	 * @OA\Tag(name="pushnotification")
-	 *
 	 * @Rest\Get("pushnotification/{type}/server-information")
 	 */
 	public function getServerInformationAction(string $type): Response
@@ -49,7 +48,6 @@ class PushNotificationSubscriptionRestController extends AbstractFOSRestControll
 
 	/**
 	 * @OA\Tag(name="pushnotification")
-	 *
 	 * @Rest\Post("pushnotification/{type}/subscription")
 	 */
 	public function subscribeAction(Request $request, string $type): Response
@@ -58,7 +56,7 @@ class PushNotificationSubscriptionRestController extends AbstractFOSRestControll
 			throw new NotFoundHttpException();
 		}
 
-		if (!$this->session->may()) {
+		if (!$this->session->mayRole()) {
 			throw new UnauthorizedHttpException('');
 		}
 
@@ -74,7 +72,6 @@ class PushNotificationSubscriptionRestController extends AbstractFOSRestControll
 
 	/**
 	 * @OA\Tag(name="pushnotification")
-	 *
 	 * @Rest\Delete("pushnotification/{type}/subscription/{subscriptionId}", requirements={"subscriptionId" = "\d+"})
 	 */
 	public function unsubscribeAction(string $type, int $subscriptionId): Response
@@ -83,7 +80,7 @@ class PushNotificationSubscriptionRestController extends AbstractFOSRestControll
 			throw new NotFoundHttpException();
 		}
 
-		if (!$this->session->may()) {
+		if (!$this->session->mayRole()) {
 			throw new UnauthorizedHttpException('');
 		}
 

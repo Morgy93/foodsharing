@@ -6,7 +6,7 @@ use Foodsharing\Modules\Bell\BellGateway;
 use Foodsharing\Modules\Bell\DTO\Bell;
 use Foodsharing\Modules\Core\Control;
 use Foodsharing\Modules\Core\DBConstants\Bell\BellType;
-use Foodsharing\Modules\Core\DBConstants\Store\CooperationStatus;
+use Foodsharing\Modules\Core\DBConstants\Foodsaver\Role;
 use Foodsharing\Modules\Core\DBConstants\Store\Milestone;
 use Foodsharing\Modules\Core\DBConstants\Unit\UnitType;
 use Foodsharing\Modules\Foodsaver\FoodsaverGateway;
@@ -14,7 +14,6 @@ use Foodsharing\Modules\Region\RegionGateway;
 use Foodsharing\Permissions\StorePermissions;
 use Foodsharing\Utility\DataHelper;
 use Foodsharing\Utility\IdentificationHelper;
-use Foodsharing\Utility\WeightHelper;
 
 class StoreControl extends Control
 {
@@ -26,7 +25,6 @@ class StoreControl extends Control
 	private $foodsaverGateway;
 	private $identificationHelper;
 	private $dataHelper;
-	private $weightHelper;
 
 	public function __construct(
 		StorePermissions $storePermissions,
@@ -37,8 +35,7 @@ class StoreControl extends Control
 		FoodsaverGateway $foodsaverGateway,
 		RegionGateway $regionGateway,
 		IdentificationHelper $identificationHelper,
-		DataHelper $dataHelper,
-		WeightHelper $weightHelper
+		DataHelper $dataHelper
 	) {
 		$this->view = $view;
 		$this->bellGateway = $bellGateway;
@@ -49,11 +46,10 @@ class StoreControl extends Control
 		$this->regionGateway = $regionGateway;
 		$this->identificationHelper = $identificationHelper;
 		$this->dataHelper = $dataHelper;
-		$this->weightHelper = $weightHelper;
 
 		parent::__construct();
 
-		if (!$this->session->may()) {
+		if (!$this->session->mayRole()) {
 			$this->routeHelper->goLogin();
 		}
 	}
@@ -69,7 +65,7 @@ class StoreControl extends Control
 			$regionId = $this->session->getCurrentRegionId();
 		}
 
-		if (!$this->session->may('orga') && $regionId == 0) {
+		if (!$this->session->mayRole(Role::ORGA) && $regionId == 0) {
 			$regionId = $this->session->getCurrentRegionId();
 		}
 		if ($regionId > 0) {
@@ -86,11 +82,7 @@ class StoreControl extends Control
 
 				$chosenRegion = ($regionId > 0 && UnitType::isAccessibleRegion($this->regionGateway->getType($regionId))) ? $region : null;
 				$this->pageHelper->addContent($this->view->betrieb_form(
-					$this->storeGateway->getBasics_groceries(),
-					$this->storeGateway->getBasics_chain(),
-					$this->storeGateway->getStoreCategories(),
-					$this->getStoreStateList(),
-					$this->weightHelper->getWeightListEntries(),
+					$this->storeTransactions->getCommonStoreMetadata(false),
 					$chosenRegion,
 					'betrieb'
 				));
@@ -120,11 +112,7 @@ class StoreControl extends Control
 				$regionName = $this->regionGateway->getRegionName($regionId);
 
 				$this->pageHelper->addContent($this->view->betrieb_form(
-					$this->storeGateway->getBasics_groceries(),
-					$this->storeGateway->getBasics_chain(),
-					$this->storeGateway->getStoreCategories(),
-					$this->getStoreStateList(),
-					$this->weightHelper->getWeightListEntries(),
+					$this->storeTransactions->getCommonStoreMetadata(false),
 					['id' => $regionId, 'name' => $regionName],
 					'',
 				));
@@ -138,24 +126,12 @@ class StoreControl extends Control
 		} elseif (isset($_GET['id'])) {
 			$this->routeHelper->go('/?page=fsbetrieb&id=' . (int)$_GET['id']);
 		} else {
+			if (!$this->session->mayRole() || !$this->storePermissions->mayListStores()) {
+				$this->routeHelper->go('/');
+			}
 			$this->pageHelper->addBread($this->translator->trans('store.bread'), '/?page=fsbetrieb');
 
-			$stores = $this->storeGateway->listStoresInRegion($regionId, true);
-
-			$storesMapped = array_map(function ($store) {
-				return [
-					'id' => (int)$store['id'],
-					'name' => $store['name'],
-					// status COOPERATION_STARTING and COOPERATION_ESTABLISHED are the same (in cooperation), always return COOPERATION_STARTING
-					'status' => $store['betrieb_status_id'] == CooperationStatus::COOPERATION_ESTABLISHED ? CooperationStatus::COOPERATION_STARTING : (int)$store['betrieb_status_id'],
-					'added' => $store['added'],
-					'region' => $store['bezirk_name'],
-					'address' => $store['anschrift'],
-					'city' => $store['stadt'],
-					'zipcode' => $store['plz'],
-					'geo' => $store['geo'],
-				];
-			}, $stores);
+			$storesMapped = $this->storeTransactions->listOverviewInformationsOfStoresInRegion($regionId, true);
 
 			$this->pageHelper->addContent($this->view->vueComponent('vue-storelist', 'store-list', [
 				'regionName' => $region['name'],
@@ -164,19 +140,6 @@ class StoreControl extends Control
 				'stores' => array_values($storesMapped),
 			]));
 		}
-	}
-
-	public function getStoreStateList(): array
-	{
-		return [
-			['id' => '1', 'name' => $this->translator->trans('storestatus.1')],
-			['id' => '2', 'name' => $this->translator->trans('storestatus.2')],
-			['id' => '3', 'name' => $this->translator->trans('storestatus.3a')],
-			['id' => '4', 'name' => $this->translator->trans('storestatus.4')],
-			['id' => '5', 'name' => $this->translator->trans('storestatus.5')],
-			['id' => '6', 'name' => $this->translator->trans('storestatus.6')],
-			['id' => '7', 'name' => $this->translator->trans('storestatus.7')],
-		];
 	}
 
 	private function handle_edit()
@@ -254,7 +217,9 @@ class StoreControl extends Control
 			'user' => $this->session->user('name'),
 			'name' => $g_data['name']
 		], BellType::createIdentifier(BellType::NEW_STORE, (int)$storeId));
-		$this->bellGateway->addBell($foodsaver, $bellData);
+		$this->bellGateway->addBell(array_map(function ($f) {
+			return $f->id;
+		}, $foodsaver), $bellData);
 
 		$this->flashMessageHelper->success($this->translator->trans('storeedit.add_success'));
 

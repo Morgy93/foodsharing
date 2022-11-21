@@ -110,7 +110,7 @@ final class RouteHelper
 
 	public function getLegalControlIfNecessary(): ?string
 	{
-		if ($this->session->may() && !$this->onSettingsOrLogoutPage() && !$this->legalRequirementsMetByUser()) {
+		if ($this->session->mayRole() && !$this->onSettingsOrLogoutPage() && !$this->legalRequirementsMetByUser()) {
 			return LegalControl::class;
 		}
 

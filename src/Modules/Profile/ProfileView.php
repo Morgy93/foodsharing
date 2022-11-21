@@ -210,13 +210,20 @@ class ProfileView extends View
 			$this->pageHelper->addStyle('#wallposts .tools {display:none;}');
 		}
 
+		$fsMail = '';
+		if ($this->foodsaver['rolle'] > Role::FOODSAVER) {
+			if ($this->profilePermissions->maySeeEmailAddress($fsId)) {
+				$fsMail = $this->foodsaver['mailbox'];
+			}
+		}
+
 		$page->addSectionLeft(
 			$this->vueComponent('vue-profile-infos', 'ProfileInfos', [
 				'isfoodsaver' => $this->foodsaver['rolle'] > Role::FOODSHARER,
-				'fsMail' => isset($this->foodsaver['mailbox']) ?? $this->profilePermissions->maySeeEmailAddress($fsId) ? $this->foodsaver['mailbox'] : '',
+				'fsMail' => $fsMail,
 				'privateMail' => $this->profilePermissions->maySeePrivateEmail($fsId) ? $this->foodsaver['email'] : '',
 				'registrationDate' => $this->profilePermissions->maySeeRegistrationDate($fsId) ? Carbon::parse($this->foodsaver['anmeldedatum'])->format('d.m.Y') : '',
-				'lastLogin' => $this->profilePermissions->maySeeLastLogin($fsId) ? Carbon::parse($this->foodsaver['last_login'])->format('d.m.Y') : '',
+				'lastActivity' => $this->profilePermissions->maySeelastActivity($fsId) ? Carbon::parse($this->foodsaver['last_activity'])->format('d.m.Y') : '',
 				'buddyCount' => $this->foodsaver['stat_buddycount'],
 				'name' => $this->foodsaver['name'],
 				'fsId' => $this->foodsaver['id'],
@@ -324,7 +331,7 @@ class ProfileView extends View
 				. '</a>';
 		}
 
-		if ($this->session->may('fs')) {
+		if ($this->session->mayRole(Role::FOODSAVER)) {
 			$label = $this->translator->trans('profile.stats.posts');
 			$stats[] = $this->renderStat($this->foodsaver['stat_postcount'], '', $label, 'stat_postcount');
 		}
@@ -344,7 +351,7 @@ class ProfileView extends View
 
 	private function renderBananas(): string
 	{
-		if (!$this->session->may('fs')) {
+		if (!$this->session->mayRole(Role::FOODSAVER)) {
 			return '';
 		}
 
@@ -403,7 +410,7 @@ class ProfileView extends View
 		if (
 			$this->foodsaver['id'] != $this->session->id()
 			&& $this->foodsaver['rolle'] > Role::FOODSHARER
-			&& $this->session->may('fs')
+			&& $this->session->mayRole(Role::FOODSAVER)
 		) {
 			$infos = $this->renderFoodsaverTeamMemberInformation($infos);
 		}
@@ -502,7 +509,7 @@ class ProfileView extends View
 		if ($this->foodsaver['orga']) {
 			$ambassador = [];
 			foreach ($this->foodsaver['orga'] as $foodsaver) {
-				if ($this->session->may('orga')) {
+				if ($this->session->mayRole(Role::FOODSAVER)) {
 					$ambassador[$foodsaver['id']] = '<a class="light" href="/?page=bezirk&bid=' . $foodsaver['id'] . '&sub=forum">' . $foodsaver['name'] . '</a>';
 				} else {
 					$ambassador[$foodsaver['id']] = $foodsaver['name'];
@@ -589,12 +596,12 @@ class ProfileView extends View
 				}
 				$out .= '<li class="title">'
 					. '<span class="' . $class . '">' . $typeOfChange . '</span>'
-					. ' am ' . $when . ' durch:' . '</li>';
+					. ' am ' . $when . ' durch:</li>';
 				break;
 			case 1:
 				$out = $h['bot_id'] === null
 					? $out . '<li class="title">' . $when . '</li>'
-					: $out . '<li class="title">' . $when . ' durch:' . '</li>';
+					: $out . '<li class="title">' . $when . ' durch:</li>';
 				break;
 			default:
 				break;

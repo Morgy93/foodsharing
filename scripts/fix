@@ -7,14 +7,14 @@ set -o errexit
 
 dir=$(dirname "$0")
 
-# shellcheck source=./inc.sh
-source "$dir"/inc.sh
+# shellcheck source=./__helping-functions.sh
+source "$dir"/__helping-functions.sh
 
-echo "Fixing php code"
+log-header "Fixing php code"
 run-in-container app vendor/bin/php-cs-fixer fix
 
-echo "Fixing js client code"
+log-header "Fixing js client code"
 run-in-container client yarn lint --fix
 
-echo "Fixing js chat code"
-run-in-container chat yarn lint --fix
+log-header "Fixing js websocket code"
+run-in-container websocket yarn lint --fix

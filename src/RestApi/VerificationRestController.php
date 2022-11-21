@@ -62,7 +62,6 @@ class VerificationRestController extends AbstractFOSRestController
 	 * @OA\Response(response="404", description="User not found.")
 	 * @OA\Response(response="422", description="Already verified.")
 	 * @OA\Tag(name="verification")
-	 *
 	 * @Rest\Patch("user/{userId}/verification", requirements={"userId" = "\d+"})
 	 */
 	public function verifyUserAction(int $userId): Response
@@ -116,7 +115,6 @@ class VerificationRestController extends AbstractFOSRestController
 	 * @OA\Response(response="404", description="User not found.")
 	 * @OA\Response(response="422", description="Already deverified.")
 	 * @OA\Tag(name="verification")
-	 *
 	 * @Rest\Delete("user/{userId}/verification", requirements={"userId" = "\d+"})
 	 */
 	public function deverifyUserAction(int $userId): Response

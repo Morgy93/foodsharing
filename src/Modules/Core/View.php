@@ -96,48 +96,6 @@ class View
 		return $out;
 	}
 
-	public function fsAvatarList(array $foodsaver, int $maxHeight = 185, bool $useScroller = false, bool $shuffle = true, ?string $id = null): string
-	{
-		$id ??= $this->identificationHelper->id('team');
-		if ($shuffle) {
-			shuffle($foodsaver);
-		}
-
-		$out = '
-		<div>
-			<ul id="' . $id . '" class="linklist">';
-		foreach ($foodsaver as $fs) {
-			$photo = $this->imageService->avatar($fs);
-
-			$click = ' onclick="profile(' . (int)$fs['id'] . '); return false;"';
-
-			$href = '#';
-			if (isset($fs['href'])) {
-				$click = '';
-				$href = $fs['href'];
-			}
-
-			$out .= '
-				<li>
-					<a href="' . $href . '"' . $click . ' class="ui-corner-all">
-						<span style="float:left;margin-right:7px;">' . $photo . '</span>
-						<span class="title">' . $fs['name'] . '</span>
-						<span class="clear"></span>
-					</a>
-				</li>';
-		}
-		$out .= '
-			</ul>
-			<div class="clear"></div>
-		</div>';
-
-		if ($useScroller) {
-			$out = $this->v_scroller($out, $maxHeight);
-		}
-
-		return $out;
-	}
-
 	public function menu(array $items, array $option = []): string
 	{
 		$title = false;
@@ -245,23 +203,5 @@ class View
 			'props' => $props,
 			'initialData' => $data,
 		]);
-	}
-
-	/**
-	 * @deprecated Use modern frontend code instead
-	 */
-	private function v_scroller(string $content, int $maxHeight): string
-	{
-		if ($this->session->isMob()) {
-			return $content;
-		}
-		$id = $this->identificationHelper->id('scroller');
-		$this->pageHelper->addJs('$("#' . $id . '").slimScroll({height: "auto"});');
-		$this->pageHelper->addStyle('
-			.scroller { margin: 0; max-height:' . $maxHeight . 'px; }
-			.scroller .overview { left: 0; }'
-		);
-
-		return '<div id="' . $id . '" class="scroller">' . $content . '</div>';
 	}
 }

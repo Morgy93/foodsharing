@@ -47,6 +47,17 @@ class LoginGateway extends BaseGateway
 		return null;
 	}
 
+	public function updateLastActivityInDatabase(int $fsid)
+	{
+		$this->db->update(
+			'fs_foodsaver',
+			['last_login' => $this->db->now()],
+			['id' => $fsid]
+		);
+
+		return $fsid;
+	}
+
 	public function isActivated(int $fsId): bool
 	{
 		$isActivated = $this->db->fetchValueByCriteria('fs_foodsaver', 'active', ['id' => $fsId]);

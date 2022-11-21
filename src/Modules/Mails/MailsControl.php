@@ -296,9 +296,8 @@ class MailsControl extends ConsoleControl
 				'php2' => true,
 				'php1' => true
 			];
-			$notallowed_mime = [];
 
-			if (!isset($notallowed[$ext]) && !isset($notallowed_mime[$mime])) {
+			if (!isset($notallowed[$ext])) {
 				return true;
 			}
 		}

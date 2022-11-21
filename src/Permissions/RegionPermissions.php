@@ -3,6 +3,7 @@
 namespace Foodsharing\Permissions;
 
 use Foodsharing\Lib\Session;
+use Foodsharing\Modules\Core\DBConstants\Foodsaver\Role;
 use Foodsharing\Modules\Core\DBConstants\Region\RegionIDs;
 use Foodsharing\Modules\Core\DBConstants\Region\WorkgroupFunction;
 use Foodsharing\Modules\Core\DBConstants\Unit\UnitType;
@@ -26,28 +27,28 @@ final class RegionPermissions
 	{
 		$type = $this->regionGateway->getType($regionId);
 
-		return $this->session->may('fs') && UnitType::isAccessibleRegion($type);
+		return $this->session->mayRole(Role::FOODSAVER) && UnitType::isAccessibleRegion($type);
 	}
 
 	public function mayAdministrateRegions(): bool
 	{
-		return $this->session->may('orga');
+		return $this->session->mayRole(Role::ORGA);
 	}
 
 	public function maySetRegionAdmin(): bool
 	{
-		return $this->session->may('orga');
+		return $this->session->mayRole(Role::ORGA);
 	}
 
 	public function mayRemoveRegionAdmin(): bool
 	{
-		return $this->session->may('orga');
+		return $this->session->mayRole(Role::ORGA);
 	}
 
 	public function mayAdministrateWorkgroupFunction(int $wgfunction): bool
 	{
 		if (WorkgroupFunction::isRestrictedWorkgroupFunction($wgfunction)) {
-			return $this->session->may('orga') && $this->session->isAdminFor(RegionIDs::CREATING_WORK_GROUPS_WORK_GROUP);
+			return $this->session->mayRole(Role::ORGA) && $this->session->isAdminFor(RegionIDs::CREATING_WORK_GROUPS_WORK_GROUP);
 		}
 
 		return true;
@@ -55,7 +56,7 @@ final class RegionPermissions
 
 	public function mayAccessStatisticCountry(): bool
 	{
-		if ($this->session->may('orga')) {
+		if ($this->session->mayRole(Role::ORGA)) {
 			return true;
 		}
 
@@ -64,17 +65,34 @@ final class RegionPermissions
 
 	public function mayHandleFoodsaverRegionMenu(int $regionId): bool
 	{
-		if ($this->session->may('orga')) {
+		if ($this->session->mayRole(Role::ORGA)) {
 			return true;
 		}
 
 		return $this->session->isAmbassadorForRegion([$regionId], false, false);
 	}
 
-	public function maySetRegionOptions(int $regionId): bool
+	public function maySetRegionOptionsReportButtons(int $regionId): bool
 	{
-		if ($this->session->may('orga')) {
+		if ($this->session->mayRole(Role::ORGA)) {
 			return true;
+		}
+
+		return $this->session->isAmbassadorForRegion([$regionId], false, false);
+	}
+
+	public function maySetRegionOptionsRegionPickupRule(int $regionId): bool
+	{
+		if ($this->session->mayRole(Role::ORGA)) {
+			return true;
+		}
+
+		if ($this->groupFunctionGateway->existRegionFunctionGroup($regionId, WorkgroupFunction::STORES_COORDINATION)) {
+			if ($this->groupFunctionGateway->isRegionFunctionGroupAdmin($regionId, WorkgroupFunction::STORES_COORDINATION, $this->session->id())) {
+				return true;
+			}
+
+			return false;
 		}
 
 		return $this->session->isAmbassadorForRegion([$regionId], false, false);
@@ -82,7 +100,7 @@ final class RegionPermissions
 
 	public function maySetRegionPin(int $regionId): bool
 	{
-		if ($this->session->may('orga')) {
+		if ($this->session->mayRole(Role::ORGA)) {
 			return true;
 		}
 
@@ -109,7 +127,7 @@ final class RegionPermissions
 
 	public function maySeeRegionMembers(int $regionId): bool
 	{
-		if ($this->session->may('orga')) {
+		if ($this->session->mayRole(Role::ORGA)) {
 			return true;
 		}
 

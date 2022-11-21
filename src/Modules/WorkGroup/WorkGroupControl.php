@@ -43,7 +43,7 @@ class WorkGroupControl extends Control
 
 	public function index(Request $request, Response $response): void
 	{
-		if (!$this->session->may()) {
+		if (!$this->session->mayRole()) {
 			$this->routeHelper->goLogin();
 		}
 

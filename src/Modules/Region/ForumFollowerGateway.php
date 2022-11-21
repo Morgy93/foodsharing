@@ -155,7 +155,7 @@ class ForumFollowerGateway extends BaseGateway
 		$foodsaverTableName = $useAmbassadors ? 'fs_botschafter' : 'fs_foodsaver_has_bezirk';
 		$threadIds = $this->db->fetchAllValuesByCriteria('fs_bezirk_has_theme', 'theme_id', ['bezirk_id' => $regionId]);
 
-		if ($threadIds && !empty($threadIds)) {
+		if (!empty($threadIds)) {
 			$query = '
 				DELETE	tf.*
 				FROM		`fs_theme_follower` tf
@@ -166,7 +166,7 @@ class ForumFollowerGateway extends BaseGateway
 				AND			b.`foodsaver_id` = tf.`foodsaver_id`
 				WHERE		tf.`theme_id` IN (' . implode(',', array_map('intval', $threadIds)) . ')
 			';
-			if ($remainingMemberIds && !empty($remainingMemberIds)) {
+			if (!empty($remainingMemberIds)) {
 				$query .= 'AND	tf.`foodsaver_id` NOT IN(' . implode(',', array_map('intval', $remainingMemberIds)) . ')';
 			}
 

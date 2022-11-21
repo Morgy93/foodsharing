@@ -3,6 +3,7 @@
 namespace Foodsharing\Permissions;
 
 use Foodsharing\Lib\Session;
+use Foodsharing\Modules\Core\DBConstants\Foodsaver\Role;
 use Foodsharing\Modules\Core\DBConstants\Region\RegionIDs;
 
 final class QuizPermissions
@@ -16,6 +17,6 @@ final class QuizPermissions
 
 	public function mayEditQuiz(): bool
 	{
-		return $this->session->may('orga') || $this->session->isAdminFor(RegionIDs::QUIZ_AND_REGISTRATION_WORK_GROUP);
+		return $this->session->mayRole(Role::ORGA) || $this->session->isAdminFor(RegionIDs::QUIZ_AND_REGISTRATION_WORK_GROUP);
 	}
 }

@@ -3,6 +3,7 @@
 namespace Foodsharing\Permissions;
 
 use Foodsharing\Lib\Session;
+use Foodsharing\Modules\Core\DBConstants\Foodsaver\Role;
 
 final class UserPermissions
 {
@@ -15,7 +16,7 @@ final class UserPermissions
 
 	public function maySeeUserDetails(int $userId): bool
 	{
-		if ($this->session->may('orga')) {
+		if ($this->session->mayRole(Role::ORGA)) {
 			return true;
 		}
 

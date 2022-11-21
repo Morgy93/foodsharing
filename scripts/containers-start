@@ -1,0 +1,27 @@
+#!/bin/bash
+dir=$(dirname "$0")
+
+# shellcheck source=./__helping-functions.sh
+source "$dir"/__helping-functions.sh
+
+# ENVS
+export FS_ENV=dev
+export CURRENT_USER=$(id -u):$(id -g)
+
+# set -o errexit tells the shell to exit as soon as a command exits with non-zero status, i.e. fails
+set -o errexit
+
+log-header "Clear assets ..."
+rm -rf "$(cd "$dir/.." && pwd)"/assets/*
+
+log-header "Check for new images ..."
+"$dir"/docker-compose build --pull
+
+log-header "Bringing up containers ..."
+"$dir"/docker-compose up -d
+
+log-header "Waiting for assets to be generated ..."
+wait-for-assets
+exec-in-container app bin/console assets:install
+
+"$dir"/__helping-print-intro.sh

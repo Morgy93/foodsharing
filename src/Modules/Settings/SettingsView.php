@@ -6,6 +6,7 @@ use DateTime;
 use Foodsharing\Lib\Session;
 use Foodsharing\Lib\View\Utils;
 use Foodsharing\Modules\Content\ContentGateway;
+use Foodsharing\Modules\Core\DBConstants\Foodsaver\Role;
 use Foodsharing\Modules\Core\DBConstants\Foodsaver\SleepStatus;
 use Foodsharing\Modules\Core\DBConstants\FoodSharePoint\FollowerType;
 use Foodsharing\Modules\Core\DBConstants\Info\InfoType;
@@ -348,7 +349,7 @@ class SettingsView extends View
 						' . $this->v_utils->v_input_wrapper($this->translator->trans('explanation'), $a['explanation']) . '
 
 					</div>';
-				} elseif ($sort_right == 'false') {
+				} else {
 					$wrong_answers .= '
 					<div class="answer q-' . $right . '">
 						' . $this->v_utils->v_input_wrapper($this->translator->trans('quiz.choice.answer') . ' ' . $ai . $atext, $a['text']) . '
@@ -466,7 +467,7 @@ class SettingsView extends View
 		$regionPicker = '';
 		$position = '';
 
-		if ($this->session->may('orga')) {
+		if ($this->session->mayRole(Role::ORGA)) {
 			$bezirk = ['id' => 0, 'name' => false];
 			if ($b = $this->regionGateway->getRegion($this->session->getCurrentRegionId())) {
 				$bezirk['id'] = $b['id'];

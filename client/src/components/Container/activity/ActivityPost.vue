@@ -1,6 +1,9 @@
 <template>
-  <li class="list-group-item activity-post">
-    <div class="d-flex align-items-center mb-2 font-weight-bold"
+  <li
+    class="list-group-item activity-post"
+  >
+    <div
+      class="d-flex align-items-center mb-2 font-weight-bold"
     >
       <a
         v-if="fs_id && fs_name"

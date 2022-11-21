@@ -15,8 +15,6 @@ class Api extends \Codeception\Module
 
 	/**
 	 * Checks is a regular expression is found in response content.
-	 *
-	 * @param $pattern
 	 */
 	public function seeRegExp($pattern)
 	{

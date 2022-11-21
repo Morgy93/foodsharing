@@ -9,7 +9,6 @@ use Foodsharing\Modules\Core\DBConstants\Bell\BellType;
 use Foodsharing\Modules\Core\DBConstants\Region\WorkgroupFunction;
 use Foodsharing\Modules\Foodsaver\FoodsaverGateway;
 use Foodsharing\Modules\Group\GroupFunctionGateway;
-use Foodsharing\Modules\Region\RegionGateway;
 use Foodsharing\Modules\Report\ReportGateway;
 use Foodsharing\Permissions\ReportPermissions;
 use FOS\RestBundle\Controller\AbstractFOSRestController;
@@ -25,7 +24,6 @@ class ReportRestController extends AbstractFOSRestController
 	private BellGateway $bellGateway;
 	private FoodsaverGateway $foodsaverGateway;
 	private Session $session;
-	private RegionGateway $regionGateway;
 	private ReportGateway $reportGateway;
 	private ReportPermissions $reportPermissions;
 	private GroupFunctionGateway $groupFunctionGateway;
@@ -36,7 +34,6 @@ class ReportRestController extends AbstractFOSRestController
 	public function __construct(
 		Session $session,
 		BellGateway $bellGateway,
-		RegionGateway $regionGateway,
 		FoodsaverGateway $foodsaverGateway,
 		ReportGateway $reportGateway,
 		ReportPermissions $reportPermissions,
@@ -44,7 +41,6 @@ class ReportRestController extends AbstractFOSRestController
 	) {
 		$this->session = $session;
 		$this->bellGateway = $bellGateway;
-		$this->regionGateway = $regionGateway;
 		$this->reportGateway = $reportGateway;
 		$this->reportPermissions = $reportPermissions;
 		$this->groupFunctionGateway = $groupFunctionGateway;
@@ -55,6 +51,7 @@ class ReportRestController extends AbstractFOSRestController
 	 * @OA\Tag(name="report")
 	 *
 	 * @param int $regionId for which region the reports should be returned
+	 *
 	 * @Rest\Get("report/region/{regionId}", requirements={"regionId" = "\d+"})
 	 *
 	 * An admin of a reportgroup gets all reports from the home district. Excluded are
@@ -67,7 +64,7 @@ class ReportRestController extends AbstractFOSRestController
 	 */
 	public function listReportsForRegionAction(int $regionId): Response
 	{
-		if (!$this->session->may()) {
+		if (!$this->session->mayRole()) {
 			throw new UnauthorizedHttpException('', self::NOT_LOGGED_IN);
 		}
 
@@ -116,7 +113,6 @@ class ReportRestController extends AbstractFOSRestController
 	 * Adds a new report. The reportedId must not be empty.
 	 *
 	 * @OA\Tag(name="report")
-	 *
 	 * @Rest\Post("report")
 	 * @Rest\RequestParam(name="reportedId", nullable=true)
 	 * @Rest\RequestParam(name="reporterId", nullable=true)
@@ -127,7 +123,7 @@ class ReportRestController extends AbstractFOSRestController
 	 */
 	public function addReportAction(ParamFetcher $paramFetcher): Response
 	{
-		if (!$this->session->may()) {
+		if (!$this->session->mayRole()) {
 			throw new UnauthorizedHttpException('', self::NOT_LOGGED_IN);
 		}
 		$this->reportGateway->addBetriebReport(

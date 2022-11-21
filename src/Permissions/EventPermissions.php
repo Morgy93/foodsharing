@@ -3,6 +3,7 @@
 namespace Foodsharing\Permissions;
 
 use Foodsharing\Lib\Session;
+use Foodsharing\Modules\Core\DBConstants\Foodsaver\Role;
 
 final class EventPermissions
 {
@@ -15,7 +16,7 @@ final class EventPermissions
 
 	public function mayEditEvent(array $event): bool
 	{
-		if ($this->session->may('orga')) {
+		if ($this->session->mayRole(Role::ORGA)) {
 			return true;
 		}
 		if ($this->session->isAdminFor($event['bezirk_id'])) {

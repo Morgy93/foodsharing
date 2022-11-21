@@ -43,11 +43,11 @@ class ChatCest
 		// view the other users profile and start a chat
 		$I->amOnPage('/profile/' . $this->foodsaver2['id']);
 		$I->click('Nachricht schreiben');
-		$I->waitForElementVisible('.chatboxtextarea', 15);
+		$I->waitForElementVisible('#roomTextarea', 15);
 
 		// write a message to them
-		$I->fillField('.chatboxtextarea', 'is anyone there?');
-		$I->pressKey('.chatboxtextarea', Facebook\WebDriver\WebDriverKeys::ENTER);
+		$I->fillField('#roomTextarea', 'is anyone there?');
+		$I->pressKey('#roomTextarea', Facebook\WebDriver\WebDriverKeys::ENTER);
 		$I->waitForText('is anyone there?', 20, '.chatboxcontent');
 
 		$I->seeInDatabase('fs_msg', [
@@ -73,11 +73,11 @@ class ChatCest
 			$I->click('.topbar-messages > a');
 			$I->waitForElementVisible('.topbar-messages .list-group-item-warning', 4);
 			$I->click('.topbar-messages .list-group-item-warning');
-			$I->waitForElementVisible('.chatboxtextarea', 4);
+			$I->waitForElementVisible('#roomTextarea', 4);
 
 			// write a nice reply
-			$I->fillField('.chatboxtextarea', 'yes! I am here!');
-			$I->pressKey('.chatboxtextarea', Facebook\WebDriver\WebDriverKeys::ENTER);
+			$I->fillField('#roomTextarea', 'yes! I am here!');
+			$I->pressKey('#roomTextarea', Facebook\WebDriver\WebDriverKeys::ENTER);
 		});
 
 		$I->waitForText('yes! I am here!', 10, '.chatboxcontent');

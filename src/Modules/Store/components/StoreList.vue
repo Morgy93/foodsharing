@@ -70,11 +70,11 @@
         responsive
       >
         <template
-          #cell(status)="row"
+          #cell(cooperationStatus)="row"
           :v-if="isMobile"
         >
           <div class="text-center">
-            <StoreStatusIcon :status="row.value" />
+            <StoreStatusIcon :cooperation-status="row.value" />
           </div>
         </template>
         <template
@@ -86,6 +86,11 @@
           >
             {{ row.value }}
           </a>
+        </template>
+        <template
+          #cell(region)="row"
+        >
+          {{ row.value.name }}
         </template>
         <template
           #cell(actions)="row"
@@ -104,15 +109,15 @@
             <div class="details">
               <p>
                 <strong>{{ $i18n('storelist.addressdata') }}</strong><br>
-                {{ row.item.address }} <a
+                {{ row.item.street }} <a
                   :href="mapLink(row.item)"
                   class="nav-link details-nav"
                   :title="$i18n('storelist.map')"
                 >
                   <i class="fas fa-map-marker-alt" />
-                </a><br> {{ row.item.zipcode }} {{ row.item.city }}
+                </a><br> {{ row.item.zip }} {{ row.item.city }}
               </p>
-              <p><strong>{{ $i18n('storelist.entered') }}</strong> {{ row.item.added }}</p>
+              <p><strong>{{ $i18n('storelist.entered') }}</strong> {{ row.item.createdAt }}</p>
             </div>
           </b-card>
         </template>
@@ -183,7 +188,7 @@ export default {
   },
   data () {
     return {
-      sortBy: 'added',
+      sortBy: 'createdAt',
       sortDesc: true,
       currentPage: 1,
       perPage: 20,
@@ -191,7 +196,7 @@ export default {
       filterStatus: null,
       fields: [
         {
-          key: 'status',
+          key: 'cooperationStatus',
           label: i18n('storelist.status'),
           tdClass: 'status',
           sortable: true,
@@ -202,12 +207,12 @@ export default {
           sortable: true,
         },
         {
-          key: 'address',
+          key: 'street',
           label: i18n('storelist.address'),
           sortable: true,
         },
         {
-          key: 'zipcode',
+          key: 'zip',
           label: i18n('storelist.zipcode'),
           sortable: true,
         },
@@ -217,7 +222,7 @@ export default {
           sortable: true,
         },
         {
-          key: 'added',
+          key: 'createdAt',
           label: i18n('storelist.added'),
           sortable: true,
         },
@@ -236,8 +241,9 @@ export default {
         { value: null, text: 'Status' },
         { value: 1, text: i18n('storestatus.1') }, // CooperationStatus::NO_CONTACT
         { value: 2, text: i18n('storestatus.2') }, // CooperationStatus::IN_NEGOTIATION
-        { value: 3, text: i18n('storestatus.3') }, // CooperationStatus::COOPERATION_STARTING or COOPERATION_ESTABLISHED
+        { value: 3, text: i18n('storestatus.3') }, // CooperationStatus::COOPERATION_STARTING
         { value: 4, text: i18n('storestatus.4') }, // CooperationStatus::DOES_NOT_WANT_TO_WORK_WITH_US
+        { value: 5, text: i18n('storestatus.5') }, // CooperationStatus::COOPERATION_ESTABLISHED
         { value: 6, text: i18n('storestatus.6') }, // CooperationStatus::GIVES_TO_OTHER_CHARITY
         { value: 7, text: i18n('storestatus.7') }, // CooperationStatus::PERMANENTLY_CLOSED
       ],
@@ -249,36 +255,36 @@ export default {
       const filterText = this.filterText ? this.filterText.toLowerCase() : null
       return Array.from(this.stores.filter((store) => {
         return (
-          (!this.filterStatus || store.status === this.filterStatus) &&
+          (!this.filterStatus || store.cooperationStatus === this.filterStatus) &&
           (!filterText || (
             store.name.toLowerCase().indexOf(filterText) !== -1 ||
-            store.address.toLowerCase().indexOf(filterText) !== -1 ||
-            store.region.toLowerCase().indexOf(filterText) !== -1 ||
+            store.street.toLowerCase().indexOf(filterText) !== -1 ||
+            store.region.name.toLowerCase().indexOf(filterText) !== -1 ||
             store.city.toLowerCase().indexOf(filterText) !== -1 ||
-            store.zipcode.toLowerCase().indexOf(filterText) !== -1
+            store.zip.toLowerCase().indexOf(filterText) !== -1
           ))
         )
       }))
     },
     fieldsFiltered: function () {
-      const fields = []
+      const outputFields = []
 
       const regions = [...new Set(this.stores.map(function (value) {
-        return value.region
+        return value.region.name
       }))]
 
       const displayableFields = (window.innerWidth > 800 && window.innerHeight > 600)
         ? ['region', 'actions']
-        : ['region', 'address', 'added', 'zipcode']
+        : ['region', 'street', 'createdAt', 'zip']
 
       this.fields.forEach(field => {
-        if ((field.key === 'region' && regions.length > 1) ||
+        if ((field.key === 'region' && regions.length > 0) ||
           !displayableFields.includes(field.key)) {
-          fields.push(field)
+          outputFields.push(field)
         }
       })
 
-      return fields
+      return outputFields
     },
   },
   methods: {
@@ -291,10 +297,10 @@ export default {
         navigator?.userAgentData?.platform ||
         navigator?.platform ||
         'unknown')) {
-        return `maps://?q=?q=${store.geo})`
+        return `maps://?q=?q=${store.location.lat},${store.location.lon})`
       }
 
-      return `geo:0,0?q=${store.geo}`
+      return `geo:0,0?q=${store.location.lat},${store.location.lon}`
     },
   },
 }

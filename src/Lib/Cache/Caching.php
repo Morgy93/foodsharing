@@ -19,7 +19,7 @@ class Caching
 		$this->session = $session;
 		$this->mem = $mem;
 		$this->cacheRules = $cache_rules;
-		$this->cacheMode = $this->session->may() ? 'u' : 'g';
+		$this->cacheMode = $this->session->mayRole() ? 'u' : 'g';
 		$this->metrics = $metrics;
 	}
 

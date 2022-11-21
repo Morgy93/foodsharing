@@ -6,7 +6,6 @@ use Foodsharing\Lib\Session;
 use Foodsharing\Modules\Core\DBConstants\Unit\UnitType;
 use Foodsharing\Modules\Foodsaver\FoodsaverGateway;
 use Foodsharing\Modules\WorkGroup\WorkGroupGateway;
-use Foodsharing\Modules\WorkGroup\WorkGroupTransactions;
 use Foodsharing\Permissions\WorkGroupPermissions;
 use FOS\RestBundle\Controller\AbstractFOSRestController;
 use FOS\RestBundle\Controller\Annotations as Rest;
@@ -22,20 +21,17 @@ class WorkingGroupRestController extends AbstractFOSRestController
 	private FoodsaverGateway $foodsaverGateway;
 	private Session $session;
 	private WorkGroupPermissions $workGroupPermissions;
-	private WorkGroupTransactions $workGroupTransactions;
 
 	public function __construct(
 		WorkGroupGateway $workGroupGateway,
 		FoodsaverGateway $foodsaverGateway,
 		Session $session,
 		WorkGroupPermissions $workGroupPermissions,
-		WorkGroupTransactions $workGroupTransactions
 	) {
 		$this->workGroupGateway = $workGroupGateway;
 		$this->foodsaverGateway = $foodsaverGateway;
 		$this->session = $session;
 		$this->workGroupPermissions = $workGroupPermissions;
-		$this->workGroupTransactions = $workGroupTransactions;
 	}
 
 	/**
@@ -46,12 +42,11 @@ class WorkingGroupRestController extends AbstractFOSRestController
 	 * @OA\Response(response="403", description="Insufficient permissions")
 	 * @OA\Response(response="404", description="Group not found")
 	 * @OA\Tag(name="groups")
-	 *
 	 * @Rest\Post  ("groups/{groupId}/members/{memberId}", requirements={"groupId" = "\d+", "memberId" = "\d+"})
 	 */
 	public function addMember(int $groupId, int $memberId): Response
 	{
-		if (!$this->session->may()) {
+		if (!$this->session->mayRole()) {
 			throw new UnauthorizedHttpException('');
 		}
 

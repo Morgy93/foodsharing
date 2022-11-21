@@ -8,26 +8,22 @@ use Foodsharing\Permissions\ContentPermissions;
 use Foodsharing\Utility\DataHelper;
 use Foodsharing\Utility\IdentificationHelper;
 use Parsedown;
+use Symfony\Component\HttpKernel\KernelInterface;
 
 class ContentControl extends Control
 {
-	private ContentGateway $contentGateway;
-	private IdentificationHelper $identificationHelper;
-	private DataHelper $dataHelper;
-	private ContentPermissions $contentPermissions;
+	private string $projectDir;
 
 	public function __construct(
 		ContentView $view,
-		ContentGateway $contentGateway,
-		IdentificationHelper $identificationHelper,
-		DataHelper $dataHelper,
-		ContentPermissions $contentPermissions
+		private readonly ContentGateway $contentGateway,
+		private readonly IdentificationHelper $identificationHelper,
+		private readonly DataHelper $dataHelper,
+		private readonly ContentPermissions $contentPermissions,
+		KernelInterface $kernelInterface,
 	) {
 		$this->view = $view;
-		$this->contentGateway = $contentGateway;
-		$this->identificationHelper = $identificationHelper;
-		$this->dataHelper = $dataHelper;
-		$this->contentPermissions = $contentPermissions;
+		$this->projectDir = $kernelInterface->getProjectDir();
 
 		parent::__construct();
 	}
@@ -216,7 +212,7 @@ class ContentControl extends Control
 
 	public function ratgeber(): void
 	{
-		header('Location: ' . 'https://wiki.foodsharing.de/Hygiene-Ratgeber_f%C3%BCr_Lebensmittel', true, 301);
+		header('Location: https://wiki.foodsharing.de/Hygiene-Ratgeber_f%C3%BCr_Lebensmittel', true, 301);
 	}
 
 	public function joininfo(): void
@@ -252,39 +248,39 @@ class ContentControl extends Control
 			[
 				'id' => '2022-05',
 				'title' => $this->translator->trans('releases.2022-05'),
-				'markdown' => $this->parseGitlabLinks(file_get_contents('release-notes/2022-05.md') ?: ''),
+				'markdown' => $this->parseGitlabLinks($this->getnotes('2022-05')),
 				'visible' => true,
 			],
 			[
 				'id' => '2022-01',
 				'title' => $this->translator->trans('releases.2022-01'),
-				'markdown' => $this->parseGitlabLinks(file_get_contents('release-notes/2022-01.md') ?: ''),
+				'markdown' => $this->parseGitlabLinks($this->getnotes('2022-01')),
 				'visible' => false,
 			],
 			[
 				'id' => '2021-09',
 				'title' => $this->translator->trans('releases.2021-09'),
-				'markdown' => $this->parseGitlabLinks(file_get_contents('release-notes/2021-09.md') ?: ''),
+				'markdown' => $this->parseGitlabLinks($this->getnotes('2021-09')),
 			], [
 				'id' => '2021-03',
 				'title' => $this->translator->trans('releases.2021-03'),
-				'markdown' => $this->parseGitlabLinks(file_get_contents('release-notes/2021-03.md') ?: ''),
+				'markdown' => $this->parseGitlabLinks($this->getnotes('2021-03')),
 			], [
 				'id' => '2020-12',
 				'title' => 'Release "Dragonfruit" (Dezember 2020)',
-				'markdown' => $this->parseGitlabLinks(file_get_contents('release-notes/2020-12.md') ?: ''),
+				'markdown' => $this->parseGitlabLinks($this->getnotes('2020-12')),
 			], [
 				'id' => '2020-10',
 				'title' => 'Release "Cranberry" (Oktober 2020)',
-				'markdown' => $this->parseGitlabLinks(file_get_contents('release-notes/2020-10.md') ?: ''),
+				'markdown' => $this->parseGitlabLinks($this->getnotes('2020-10')),
 			], [
 				'id' => '2020-08',
 				'title' => 'Release "Birne" (August 2020)',
-				'markdown' => $this->parseGitlabLinks(file_get_contents('release-notes/2020-08.md') ?: ''),
+				'markdown' => $this->parseGitlabLinks($this->getnotes('2020-08')),
 			], [
 				'id' => '2020-05',
 				'title' => 'Release "Apfelsine" (Mai 2020)',
-				'markdown' => $this->parseGitlabLinks(file_get_contents('release-notes/2020-05.md') ?: ''),
+				'markdown' => $this->parseGitlabLinks($this->getnotes('2020-05')),
 			],
 		];
 
@@ -297,7 +293,7 @@ class ContentControl extends Control
 	{
 		$this->pageHelper->addBread($this->translator->trans('content.changelog'));
 		$this->pageHelper->addTitle($this->translator->trans('content.changelog'));
-		$markdown = $this->parseGitlabLinks(file_get_contents('CHANGELOG.md') ?: '');
+		$markdown = $this->parseGitlabLinks(file_get_contents($this->projectDir . '/CHANGELOG.md') ?: '');
 		$Parsedown = new Parsedown();
 		$cl['title'] = $this->translator->trans('content.changelog');
 		$cl['body'] = $Parsedown->parse($markdown);
@@ -351,6 +347,11 @@ class ContentControl extends Control
 				$this->flashMessageHelper->error($this->translator->trans('error_unexpected'));
 			}
 		}
+	}
+
+	private function getnotes(string $filename): string
+	{
+		return file_get_contents($this->projectDir . '/release-notes/' . $filename . '.md') ?: '';
 	}
 
 	private function parseGitlabLinks($markdown)

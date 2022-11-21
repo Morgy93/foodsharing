@@ -1,11 +1,12 @@
 [
     {
         "title": "navigation.map",
+        "icon": "fas fa-map-marker-alt",
         "url": "map"
     },
     {
         "title": "navigation.promotion",
-        "url": "devdocs_it_tasks",
+        "url": "devdocs",
         "isHighlighted": true
     },
     {

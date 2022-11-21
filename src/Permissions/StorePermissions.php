@@ -87,7 +87,7 @@ class StorePermissions
 			return false;
 		}
 
-		if ($this->session->may('orga')) {
+		if ($this->session->mayRole(Role::ORGA)) {
 			return true;
 		}
 		if ($this->storeGateway->getUserTeamStatus($fsId, $storeId) >= UserTeamStatus::WaitingList) {
@@ -114,7 +114,7 @@ class StorePermissions
 			return false;
 		}
 
-		if ($this->session->may('orga')) {
+		if ($this->session->mayRole(Role::ORGA)) {
 			return true;
 		}
 		if ($this->storeGateway->getUserTeamStatus($fsId, $storeId) >= UserTeamStatus::Member) {
@@ -144,7 +144,7 @@ class StorePermissions
 	 */
 	public function mayDeleteStoreWall(int $storeId): bool
 	{
-		return $this->session->may('orga');
+		return $this->session->mayRole(Role::ORGA);
 	}
 
 	/**
@@ -152,7 +152,7 @@ class StorePermissions
 	 */
 	public function mayDeleteStoreWallPost(int $storeId, int $postId): bool
 	{
-		if (!$this->session->may()) {
+		if (!$this->session->mayRole()) {
 			return false;
 		}
 		if ($this->mayDeleteStoreWall($storeId)) {
@@ -176,7 +176,7 @@ class StorePermissions
 
 	public function mayCreateStore(): bool
 	{
-		return $this->session->may('bieb');
+		return $this->session->mayRole(Role::STORE_MANAGER);
 	}
 
 	public function mayEditStore(int $storeId): bool
@@ -185,10 +185,10 @@ class StorePermissions
 		if (!$fsId) {
 			return false;
 		}
-		if (!$this->session->may('bieb')) {
+		if (!$this->session->mayRole(Role::STORE_MANAGER)) {
 			return false;
 		}
-		if ($this->session->may('orga')) {
+		if ($this->session->mayRole(Role::ORGA)) {
 			return true;
 		}
 
@@ -342,6 +342,22 @@ class StorePermissions
 
 	public function maySeePickupOptions(int $userId): bool
 	{
-		return $this->session->may('fs') && $this->session->id() == $userId;
+		return $this->session->mayRole(Role::FOODSAVER) && $this->session->id() == $userId;
+	}
+
+	/**
+	 * Check is the user have the permission to view the list of stores.
+	 */
+	public function mayListStores(int $userId = null): bool
+	{
+		if ($userId == null) {
+			$userId = $this->session->id();
+		}
+
+		if (!$userId) {
+			return false;
+		}
+
+		return $this->session->mayRole(Role::FOODSAVER);
 	}
 }

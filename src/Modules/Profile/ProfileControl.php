@@ -8,7 +8,6 @@ use Foodsharing\Modules\Core\Control;
 use Foodsharing\Modules\Mailbox\MailboxGateway;
 use Foodsharing\Modules\Mails\MailsGateway;
 use Foodsharing\Modules\Region\RegionGateway;
-use Foodsharing\Modules\Store\PickupGateway;
 use Foodsharing\Permissions\ProfilePermissions;
 use Foodsharing\Permissions\ReportPermissions;
 
@@ -22,7 +21,6 @@ final class ProfileControl extends Control
 	private MailboxGateway $mailboxGateway;
 	private ReportPermissions $reportPermissions;
 	private ProfilePermissions $profilePermissions;
-	private PickupGateway $pickupGateway;
 
 	public function __construct(
 		MailsGateway $mailsGateway,
@@ -33,7 +31,6 @@ final class ProfileControl extends Control
 		MailboxGateway $mailboxGateway,
 		ReportPermissions $reportPermissions,
 		ProfilePermissions $profilePermissions,
-		PickupGateway $pickupGateway
 	) {
 		$this->view = $view;
 		$this->mailsGateway = $mailsGateway;
@@ -43,7 +40,6 @@ final class ProfileControl extends Control
 		$this->mailboxGateway = $mailboxGateway;
 		$this->reportPermissions = $reportPermissions;
 		$this->profilePermissions = $profilePermissions;
-		$this->pickupGateway = $pickupGateway;
 
 		parent::__construct();
 
@@ -55,7 +51,7 @@ final class ProfileControl extends Control
 		$data = $this->profileGateway->getData($profileId, $viewerId, $this->reportPermissions->mayHandleReports());
 		$isRemoved = (!$data) || isset($data['deleted_at']);
 
-		if (!$this->session->may()) {
+		if (!$this->session->mayRole()) {
 			$this->profilePublic($data);
 
 			return;

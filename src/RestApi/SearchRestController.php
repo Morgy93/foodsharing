@@ -3,6 +3,7 @@
 namespace Foodsharing\RestApi;
 
 use Foodsharing\Lib\Session;
+use Foodsharing\Modules\Core\DBConstants\Foodsaver\Role;
 use Foodsharing\Modules\Core\DBConstants\Region\RegionIDs;
 use Foodsharing\Modules\Core\DBConstants\Unit\UnitType;
 use Foodsharing\Modules\Foodsaver\FoodsaverGateway;
@@ -44,12 +45,11 @@ class SearchRestController extends AbstractFOSRestController
 
 	/**
 	 * @OA\Tag(name="search")
-	 *
 	 * @Rest\Get("search/index")
 	 */
 	public function getSearchLegacyIndexAction(): Response
 	{
-		if (!$this->session->may()) {
+		if (!$this->session->mayRole()) {
 			throw new AccessDeniedHttpException();
 		}
 		$data = $this->searchTransactions->generateIndex();
@@ -61,7 +61,6 @@ class SearchRestController extends AbstractFOSRestController
 
 	/**
 	 * @OA\Tag(name="search")
-	 *
 	 * @Rest\Get("search/user")
 	 * @Rest\QueryParam(name="q", description="Search query.")
 	 * @Rest\QueryParam(name="regionId", requirements="\d+", nullable=true, description="Restricts the search to a region")
@@ -85,7 +84,7 @@ class SearchRestController extends AbstractFOSRestController
 			if (!empty($regionId)) {
 				$regions = [$regionId];
 			} elseif (in_array(RegionIDs::EUROPE_WELCOME_TEAM, $this->session->listRegionIDs(), true) ||
-				$this->session->may('orga')) {
+				$this->session->mayRole(Role::ORGA)) {
 				$regions = null;
 			} else {
 				$regions = array_column(array_filter(
@@ -123,13 +122,12 @@ class SearchRestController extends AbstractFOSRestController
 	 * General search endpoint that returns foodsavers, stores, and regions.
 	 *
 	 * @OA\Tag(name="search")
-	 *
 	 * @Rest\Get("search/all")
 	 * @Rest\QueryParam(name="q", description="Search query.")
 	 */
 	public function searchAction(ParamFetcher $paramFetcher): Response
 	{
-		if (!$this->session->may()) {
+		if (!$this->session->mayRole()) {
 			throw new UnauthorizedHttpException('');
 		}
 
@@ -160,7 +158,6 @@ class SearchRestController extends AbstractFOSRestController
 	 * @OA\Response(response="400", description="Empty search query.")
 	 * @OA\Response(response="403", description="Insufficient permissions to search in that forum.")
 	 * @OA\Tag(name="search")
-	 *
 	 * @Rest\Get("search/forum/{groupId}/{subforumId}", requirements={"groupId" = "\d+", "subforumId" = "\d+"})
 	 * @Rest\QueryParam(name="q", description="Search query.", nullable=false)
 	 */

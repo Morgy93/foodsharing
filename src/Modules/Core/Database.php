@@ -488,7 +488,7 @@ class Database
 	public function fetchValue(string $query, array $params = [])
 	{
 		$out = $this->preparedQuery($query, $params)->fetchAll();
-		if ($out === false || count($out) === 0) {
+		if (empty($out)) {
 			throw new \Exception('Expected one or more results, but none was returned.');
 		}
 

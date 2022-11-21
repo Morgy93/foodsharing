@@ -3,6 +3,7 @@
 namespace Foodsharing\Modules\Map;
 
 use Foodsharing\Modules\Core\Control;
+use Foodsharing\Modules\Core\DBConstants\Foodsaver\Role;
 
 class MapControl extends Control
 {
@@ -21,7 +22,7 @@ class MapControl extends Control
 		$this->pageHelper->addTitle($this->translator->trans('map.title'));
 		$this->setTemplate('map');
 
-		if ($this->session->may()) {
+		if ($this->session->mayRole()) {
 			$center = $this->mapGateway->getFoodsaverLocation($this->session->id());
 		}
 		$this->pageHelper->addContent($this->view->mapControl(), CNT_TOP);
@@ -37,7 +38,7 @@ class MapControl extends Control
 			$this->view->lMap()
 		);
 
-		if ($this->session->may('fs') && isset($_GET['bid'])) {
+		if ($this->session->mayRole(Role::FOODSAVER) && isset($_GET['bid'])) {
 			$storeId = intval($_GET['bid']);
 			$center = $this->mapGateway->getStoreLocation($storeId);
 			$this->pageHelper->addJs('ajreq(\'bubble\', { app: \'store\', id: ' . $storeId . ' });');

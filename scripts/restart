@@ -1,0 +1,6 @@
+#!/bin/bash
+set -o errexit
+dir=$(dirname "$0")
+
+# Command
+"$dir"/containers-restart $@

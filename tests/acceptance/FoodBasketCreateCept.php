@@ -95,7 +95,7 @@ $I->click('.testing-basket-dropdown > .nav-link');
 $I->see('Essenskorb anlegen', ['css' => '.testing-basket-create']);
 // Open chat
 $I->click('.testing-basket-requests');
-$I->see('Hi friend, can I have', ['css' => '.chatboxmessage']);
+// TODO: https://gitlab.com/foodsharing-dev/foodsharing/-/issues/1466 $I->see('Hi friend, can I have', ['css' => 'vue-advanced-chat']);
 // Reject request
 $I->click('.testing-basket-dropdown > .nav-link');
 $I->click('.testing-basket-requests-close');

@@ -196,14 +196,12 @@ class MessageTransactions
 			$offset
 		);
 
-		$profileIDs = [];
-		array_walk($conversations, function ($v, $k) use (&$profileIDs) {
-			$profileIDs = array_merge($v->members, $profileIDs);
-			if ($v->lastMessage) {
-				$profileIDs[] = $v->lastMessage->authorId;
-			}
-		});
-		$profileIDs = array_unique($profileIDs);
+		$members = [];
+		foreach ($conversations as $conversation) {
+			$members = array_merge($conversation->members, $members);
+		}
+
+		$profileIDs = array_unique($members);
 		$profiles = $this->foodsaverGateway->getProfileForUsers($profileIDs);
 
 		return [

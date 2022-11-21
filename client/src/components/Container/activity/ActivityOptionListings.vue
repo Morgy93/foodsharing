@@ -43,12 +43,12 @@
       <div class="d-flex justify-content-between">
         <button
           class="btn btn-primary"
-          @click="saveOptionListings"
+          @click.prevent="saveOptionListings"
           v-html="$i18n('dashboard.save_selection')"
         />
         <button
           class="btn btn-outline-danger"
-          @click="$emit('close')"
+          @click.prevent="$emit('close')"
           v-html="$i18n('button.cancel')"
         />
       </div>

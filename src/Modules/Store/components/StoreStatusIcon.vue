@@ -1,7 +1,7 @@
 <template>
   <span
     v-b-tooltip.hover="description"
-    :data-status="status"
+    :data-status="cooperationStatus"
     class="status"
   >
     <i class="fas fa-circle" />
@@ -16,14 +16,14 @@ import i18n from '@/helper/i18n'
 export default {
   directives: { VBTooltip },
   props: {
-    status: {
+    cooperationStatus: {
       type: Number,
       required: true,
     },
   },
   computed: {
     description () {
-      switch (this.status) {
+      switch (this.cooperationStatus) {
         case 1: // CooperationStatus::NO_CONTACT
           return i18n('storestatus.1')
         case 2: // CooperationStatus::IN_NEGOTIATION

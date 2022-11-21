@@ -1,35 +1,53 @@
 #!/bin/bash
+dir=$(dirname "$0")
 
+# shellcheck source=./__helping-functions.sh
+source "$dir"/__helping-functions.sh
+
+# ENVS
 export FS_ENV=dev
 export CURRENT_USER=$(id -u):$(id -g)
 
+# set -o errexit tells the shell to exit as soon as a command exits with non-zero status, i.e. fails
 set -o errexit
 
-dir=$(dirname "$0")
+# existsTestEnv=$($dir/docker-compose ls --filter=name='foodsharing' | grep 'foodsharing_test')
+# echo $($dir/docker-compose ls --filter=name='foodsharing_test' | grep 'foodsharing_test')
+if [[ "$@" == "full" ]]; then
+  log-header "Removing containers and images"
+  if [[ ! $($dir/docker-compose ls --filter=name='foodsharing' --all | grep 'foodsharing_test') ]]; then
+    "$dir"/docker-compose down --rmi all -v --remove-orphans
+  else
+    FS_ENV="dev"
+    "$dir"/docker-compose down -v --remove-orphans
+    FS_ENV="test"
+    "$dir"/docker-compose down --rmi all -v --remove-orphans
+  fi
+else
+  log-header "Removing containers"
+  FS_ENV="dev"
+  "$dir"/docker-compose down -v --remove-orphans
+  FS_ENV="test"
+  "$dir"/docker-compose down -v --remove-orphans
+fi
 
-base_dir=$(cd "$dir/.." && pwd)
+if [[ "$@" == "full" ]]; then
+  log-header "Removing local node_modules"
+  find $base_dir -name "node_modules" -type d -prune | xargs du -chs # prints the folders
+  find $base_dir -name "node_modules" -type d -prune -exec rm -rf '{}' + # removes the folders
 
-# shellcheck source=./inc.sh
-source "$dir"/inc.sh
+  log-header "Removing directories"
 
-echo "---------------------"
-echo ">>> Removing local node_modules"
-(cd "$dir" && rm -rf node_modules)
+  base_dir=$(cd "$dir/.." && pwd)
+  rm -vrf \
+    "$base_dir"/assets \
+    "$base_dir"/images \
+    "$base_dir"/data \
+    "$base_dir"/cache \
+    "$base_dir"/var \
+    "$base_dir"/tmp \
+    "$base_dir"/tests/_output \
+    "$base_dir"/docs/build
+fi
 
-echo "---------------------"
-echo ">>> Removing containers"
-"$dir"/rm
-FS_ENV="test" "$dir"/rm
-
-echo "---------------------"
-echo ">>> Removing directories"
-
-rm -rf \
-  "$base_dir"/assets \
-  "$base_dir"/images \
-  "$base_dir"/data \
-  "$base_dir"/cache \
-  "$base_dir"/var \
-  "$base_dir"/tmp
-
-echo "All clean!"
+log-header "All clean!"

@@ -76,7 +76,7 @@
 <script>
 // Others
 import Avatar from '@/components/Avatar'
-import conv from '@/conv'
+import conversationStore from '@/stores/conversations'
 
 export default {
   components: { Avatar },
@@ -101,7 +101,7 @@ export default {
       }
     },
     openChat (userId) {
-      conv.userChat(userId)
+      conversationStore.openChatWithUser(userId)
     },
     openRemoveDialog (userId) {
       this.$emit('basket-remove', this.basket.id, userId)

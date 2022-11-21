@@ -6,6 +6,7 @@ use Carbon\Carbon;
 use Exception;
 use Foodsharing\Lib\Session;
 use Foodsharing\Modules\Core\DBConstants\Foodsaver\Gender;
+use Foodsharing\Modules\Core\DBConstants\Foodsaver\Role;
 use Foodsharing\Modules\Foodsaver\FoodsaverGateway;
 use Foodsharing\Modules\Foodsaver\FoodsaverTransactions;
 use Foodsharing\Modules\Group\GroupTransactions;
@@ -28,8 +29,6 @@ use Foodsharing\Permissions\QuizPermissions;
 use Foodsharing\Permissions\RegionPermissions;
 use Foodsharing\Permissions\ReportPermissions;
 use Foodsharing\Permissions\StorePermissions;
-use Foodsharing\Permissions\UserPermissions;
-use Foodsharing\Permissions\WorkGroupPermissions;
 use Foodsharing\RestApi\Models\Group\UserGroupModel;
 use Foodsharing\RestApi\Models\Region\UserRegionModel;
 use Foodsharing\Utility\EmailHelper;
@@ -65,7 +64,6 @@ class UserRestController extends AbstractFOSRestController
 		private FoodsaverTransactions $foodsaverTransactions,
 		private SettingsGateway $settingsGateway,
 
-		private UserPermissions $userPermissions,
 		private ProfilePermissions $profilePermissions,
 		private MailboxPermissions $mailboxPermissions,
 		private QuizPermissions $quizPermissions,
@@ -75,10 +73,32 @@ class UserRestController extends AbstractFOSRestController
 		private BlogPermissions $blogPermissions,
 		private RegionPermissions $regionPermissions,
 		private NewsletterEmailPermissions $newsletterEmailPermissions,
-		private WorkGroupPermissions $workGroupPermissions,
 		private RegionTransactions $regionTransactions,
 		private GroupTransactions $groupTransactions
 	) {
+		$this->session = $session;
+		$this->loginGateway = $loginGateway;
+		$this->foodsaverGateway = $foodsaverGateway;
+		$this->profileGateway = $profileGateway;
+		$this->uploadsGateway = $uploadsGateway;
+		$this->regionGateway = $regionGateway;
+		$this->emailHelper = $emailHelper;
+		$this->registerTransactions = $registerTransactions;
+		$this->profileTransactions = $profileTransactions;
+		$this->foodsaverTransactions = $foodsaverTransactions;
+		$this->settingsGateway = $settingsGateway;
+		$this->regionTransactions = $regionTransactions;
+		$this->groupTransactions = $groupTransactions;
+
+		$this->profilePermissions = $profilePermissions;
+		$this->mailboxPermissions = $mailboxPermissions;
+		$this->quizPermissions = $quizPermissions;
+		$this->reportPermissions = $reportPermissions;
+		$this->storePermissions = $storePermissions;
+		$this->contentPermissions = $contentPermissions;
+		$this->blogPermissions = $blogPermissions;
+		$this->regionPermissions = $regionPermissions;
+		$this->newsletterEmailPermissions = $newsletterEmailPermissions;
 	}
 
 	/**
@@ -86,17 +106,16 @@ class UserRestController extends AbstractFOSRestController
 	 * user does not exist, or 401 if not logged in.
 	 *
 	 * @OA\Tag(name="user")
-	 *
 	 * @Rest\Get("user/{id}", requirements={"id" = "\d+"})
 	 */
 	public function userAction(int $id): Response
 	{
-		if (!$this->session->may()) {
+		if (!$this->session->mayRole()) {
 			throw new UnauthorizedHttpException('');
 		}
 
 		$data = $this->foodsaverGateway->getFoodsaverBasics($id);
-		if (!$data || empty($data)) {
+		if (empty($data)) {
 			throw new NotFoundHttpException('User does not exist.');
 		}
 
@@ -108,12 +127,11 @@ class UserRestController extends AbstractFOSRestController
 	 * the user data.
 	 *
 	 * @OA\Tag(name="user")
-	 *
 	 * @Rest\Get("user/current")
 	 */
 	public function currentUserAction(): Response
 	{
-		if (!$this->session->may()) {
+		if (!$this->session->mayRole()) {
 			throw new UnauthorizedHttpException('');
 		}
 
@@ -127,13 +145,13 @@ class UserRestController extends AbstractFOSRestController
 	 */
 	private function normalizeUserDetails(array $data): array
 	{
-		$loggedIn = $this->session->may();
+		$loggedIn = $this->session->mayRole();
 		$mayEditUserProfile = $this->profilePermissions->mayEditUserProfile($data['id']);
 		$mayAdministrateUserProfile = $this->profilePermissions->mayAdministrateUserProfile($data['id'], $data['bezirk_id']);
 
 		$response = [];
 		$response['id'] = $data['id'];
-		$response['foodsaver'] = ($this->session->may('fs')) ? true : false;
+		$response['foodsaver'] = ($this->session->mayRole(Role::FOODSAVER)) ? true : false;
 		$response['isVerified'] = ($data['verified'] === 1) ? true : false;
 		$response['regionId'] = $data['bezirk_id'];
 		$response['regionName'] = ($data['bezirk_id'] === null) ? null : $this->regionGateway->getRegionName($data['bezirk_id']);
@@ -205,7 +223,6 @@ class UserRestController extends AbstractFOSRestController
 	 * Lists the detailed profile of a user. Only returns basic information if not logged inor 200 and the data.
 	 *
 	 * @OA\Tag(name="user")
-	 *
 	 * @Rest\Get("user/{id}/details", requirements={"id" = "\d+"})
 	 */
 	public function userDetailsAction(int $id): Response
@@ -222,12 +239,11 @@ class UserRestController extends AbstractFOSRestController
 	 * Lists the detailed profile of the current user. Returns 401 if not logged in or 200 and the data.
 	 *
 	 * @OA\Tag(name="user")
-	 *
 	 * @Rest\Get("user/current/details")
 	 */
 	public function currentUserDetailsAction(): Response
 	{
-		if (!$this->session->may()) {
+		if (!$this->session->mayRole()) {
 			throw new UnauthorizedHttpException('');
 		}
 
@@ -236,7 +252,6 @@ class UserRestController extends AbstractFOSRestController
 
 	/**
 	 * @OA\Tag(name="user")
-	 *
 	 * @Rest\Post("user/login")
 	 * @Rest\RequestParam(name="email")
 	 * @Rest\RequestParam(name="password")
@@ -258,7 +273,7 @@ class UserRestController extends AbstractFOSRestController
 
 			// retrieve user data and normalise it
 			$user = $this->foodsaverGateway->getFoodsaverBasics($fs_id);
-			if (!$user || empty($user)) {
+			if (empty($user)) {
 				throw new NotFoundHttpException('User does not exist.');
 			}
 			$normalizedUser = RestNormalization::normalizeUser($user);
@@ -271,7 +286,6 @@ class UserRestController extends AbstractFOSRestController
 
 	/**
 	 * @OA\Tag(name="user")
-	 *
 	 * @Rest\Post("user/logout")
 	 */
 	public function logoutAction(): Response
@@ -286,7 +300,6 @@ class UserRestController extends AbstractFOSRestController
 	 * and a 'valid' parameter that indicates if the email address can be used for registration.
 	 *
 	 * @OA\Tag(name="user")
-	 *
 	 * @Rest\Post("user/isvalidemail")
 	 * @Rest\RequestParam(name="email", nullable=false)
 	 */
@@ -310,7 +323,6 @@ class UserRestController extends AbstractFOSRestController
 	 * Registers a new user.
 	 *
 	 * @OA\Tag(name="user")
-	 *
 	 * @Rest\Post("user")
 	 * @Rest\RequestParam(name="firstname", nullable=false)
 	 * @Rest\RequestParam(name="lastname", nullable=false)
@@ -384,7 +396,6 @@ class UserRestController extends AbstractFOSRestController
 
 	/**
 	 * @OA\Tag(name="user")
-	 *
 	 * @Rest\Delete("user/{userId}", requirements={"userId" = "\d+"})
 	 * @Rest\RequestParam(name="reason", nullable=true, default="")
 	 */
@@ -422,7 +433,6 @@ class UserRestController extends AbstractFOSRestController
 	 * @OA\Response(response="403", description="Insufficient permissions to rate that user.")
 	 * @OA\Response(response="404", description="User to rate does not exist.")
 	 * @OA\Tag(name="user")
-	 *
 	 * @Rest\Put("user/{userId}/banana", requirements={"userId" = "\d+"})
 	 * @Rest\RequestParam(name="message", nullable=false)
 	 */
@@ -467,12 +477,11 @@ class UserRestController extends AbstractFOSRestController
 	 * @OA\Response(response="403", description="Insufficient permissions to delete that banana.")
 	 * @OA\Response(response="404", description="Banana does not exist.")
 	 * @OA\Tag(name="user")
-	 *
 	 * @Rest\Delete("user/{userId}/banana/{senderId}", requirements={"userId" = "\d+"})
 	 */
 	public function deleteBanana(int $userId, int $senderId): Response
 	{
-		if (!$this->session->may()) {
+		if (!$this->session->mayRole()) {
 			throw new UnauthorizedHttpException('');
 		}
 
@@ -494,7 +503,6 @@ class UserRestController extends AbstractFOSRestController
 	 * @OA\Response(response="401", description="Not logged in.")
 	 * @OA\Response(response="403", description="File was not uploaded by this user.")
 	 * @OA\Tag(name="user")
-	 *
 	 * @Rest\Patch("user/photo")
 	 * @Rest\RequestParam(name="uuid", nullable=false)
 	 */
@@ -521,16 +529,6 @@ class UserRestController extends AbstractFOSRestController
 		return $this->handleView($this->view([], 200));
 	}
 
-	private function handleUserView(): Response
-	{
-		$user = RestNormalization::normalizeUser([
-			'id' => $this->session->id(),
-			'name' => $this->session->get('user')['name']
-		]);
-
-		return $this->handleView($this->view($user, 200));
-	}
-
 	/**
 	 * Removes the user from the email bounce list. This will have no effect and return 200 if the user was
 	 * not on the bounce list.
@@ -539,7 +537,6 @@ class UserRestController extends AbstractFOSRestController
 	 * @OA\Response(response="200", description="Success")
 	 * @OA\Response(response="403", description="Insufficient permissions")
 	 * @OA\Tag(name="user")
-	 *
 	 * @Rest\Delete("user/{userId}/emailbounce", requirements={"userId" = "\d+"})
 	 */
 	public function removeFromBounceListAction(int $userId): Response

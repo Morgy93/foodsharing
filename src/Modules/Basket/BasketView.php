@@ -8,6 +8,7 @@ use Foodsharing\Lib\View\vMap;
 use Foodsharing\Lib\View\vPage;
 use Foodsharing\Modules\Core\DBConstants\Map\MapConstants;
 use Foodsharing\Modules\Core\View;
+use Foodsharing\Modules\Foodsaver\Profile;
 use Foodsharing\Permissions\BasketPermissions;
 use Foodsharing\Utility\DataHelper;
 use Foodsharing\Utility\IdentificationHelper;
@@ -145,7 +146,7 @@ class BasketView extends View
 
 		$page->setSubTitle($this->getSubtitle($basket));
 
-		if ($this->session->may()) {
+		if ($this->session->mayRole()) {
 			$page->addSection($this->v_utils->v_info($this->translator->trans('basket.howto')));
 
 			$label = $this->translator->trans('basket.provider');
@@ -269,14 +270,13 @@ class BasketView extends View
 				</div>';
 		}
 
-		$basketUser = [
-			'id' => $basket['fs_id'],
-			'name' => $basket['fs_name'],
-			'photo' => $basket['fs_photo'],
-			'sleep_status' => $basket['sleep_status'],
-		];
+		$basketUser = new Profile($basket['fs_id'], $basket['fs_name'], $basket['fs_photo'], $basket['sleep_status']);
+		$creator = $this->vueComponent('basket-creator', 'AvatarList', [
+			'profiles' => [$basketUser],
+			'maxVisibleAvatars' => 1,
+		]);
 
-		return $this->fsAvatarList([$basketUser], 600) . $request;
+		return $creator . $request;
 	}
 
 	private function pageImg(string $img): string

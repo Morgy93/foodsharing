@@ -7,6 +7,7 @@ use Foodsharing\Lib\Xhr\Xhr;
 use Foodsharing\Lib\Xhr\XhrDialog;
 use Foodsharing\Lib\Xhr\XhrResponses;
 use Foodsharing\Modules\Core\Control;
+use Foodsharing\Modules\Core\DBConstants\Foodsaver\Role;
 use Foodsharing\Modules\Core\DBConstants\Store\StoreLogAction;
 use Foodsharing\Permissions\StorePermissions;
 
@@ -29,7 +30,7 @@ class StoreXhr extends Control
 
 		parent::__construct();
 
-		if (!$this->session->may('fs')) {
+		if (!$this->session->mayRole(Role::FOODSAVER)) {
 			exit;
 		}
 	}

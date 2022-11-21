@@ -3,7 +3,9 @@
 namespace Foodsharing\Utility;
 
 use Foodsharing\Lib\Session;
+use Foodsharing\Modules\Core\DBConstants\Foodsaver\Role;
 use Foodsharing\Modules\Core\DBConstants\Unit\UnitType;
+use Foodsharing\Modules\Region\RegionGateway;
 use Foodsharing\Permissions\BlogPermissions;
 use Foodsharing\Permissions\ContentPermissions;
 use Foodsharing\Permissions\MailboxPermissions;
@@ -39,7 +41,6 @@ final class PageHelper
 
 	public array $jsData = [];
 
-	private ImageHelper $imageService;
 	private RouteHelper $routeHelper;
 	private Sanitizer $sanitizerService;
 	private Session $session;
@@ -54,11 +55,11 @@ final class PageHelper
 	private WorkGroupPermissions $workGroupPermissions;
 	private ProfilePermissions $profilePermissions;
 	private Environment $twig;
+	private RegionGateway $regionGateway;
 
 	public function __construct(
 		Session $session,
 		Sanitizer $sanitizerService,
-		ImageHelper $imageService,
 		Environment $twig,
 		RouteHelper $routeHelper,
 		MailboxPermissions $mailboxPermissions,
@@ -70,10 +71,10 @@ final class PageHelper
 		RegionPermissions $regionPermissions,
 		NewsletterEmailPermissions $newsletterEmailPermissions,
 		WorkGroupPermissions $workGroupPermissions,
-		ProfilePermissions $profilePermissions
+		ProfilePermissions $profilePermissions,
+		RegionGateway $regionGateway
 	) {
 		$this->twig = $twig;
-		$this->imageService = $imageService;
 		$this->routeHelper = $routeHelper;
 		$this->sanitizerService = $sanitizerService;
 		$this->session = $session;
@@ -87,6 +88,7 @@ final class PageHelper
 		$this->storePermissions = $storePermissions;
 		$this->workGroupPermissions = $workGroupPermissions;
 		$this->profilePermissions = $profilePermissions;
+		$this->regionGateway = $regionGateway;
 	}
 
 	public function generateAndGetGlobalViewData(): array
@@ -107,11 +109,11 @@ final class PageHelper
 
 		$bodyClasses = [];
 
-		if ($this->session->may()) {
+		if ($this->session->mayRole()) {
 			$bodyClasses[] = 'loggedin';
 		}
 
-		if ($this->session->may('fs')) {
+		if ($this->session->mayRole(Role::FOODSAVER)) {
 			$bodyClasses[] = 'fs';
 		}
 
@@ -170,16 +172,16 @@ final class PageHelper
 			'id' => $this->session->id(),
 			'firstname' => $user['name'] ?? '',
 			'lastname' => $user['nachname'] ?? '',
-			'may' => $this->session->may(),
+			'may' => $this->session->mayRole(),
 			'homeRegionId' => $user['bezirk_id'] ?? null,
 			'mailBoxId' => $user['mailbox_id'] ?? null,
-			'isFoodsaver' => $this->session->may('fs') ? true : false,
+			'isFoodsaver' => $this->session->mayRole(Role::FOODSAVER) ? true : false,
 			'verified' => $this->session->isVerified(),
 			'avatar' => $user['photo'] ?? null,
 		];
 
 		$permissions = null;
-		if ($this->session->may()) {
+		if ($this->session->mayRole()) {
 			$userData['token'] = $this->session->user('token');
 			$permissions = $this->getPermissions();
 		}
@@ -246,11 +248,11 @@ final class PageHelper
 				$group['isAdmin'] = $this->session->isAdminFor($groupId);
 				$group['mayAccessReportGroupReports'] = $this->reportPermissions->mayAccessReportGroupReports($groupId);
 				$group['mayAccessArbitrationGroupReports'] = $this->reportPermissions->mayAccessArbitrationReports($groupId);
-				$group['maySetRegionOptions'] = $this->regionPermissions->maySetRegionOptions($groupId);
 				$group['maySetRegionPin'] = $this->regionPermissions->maySetRegionPin($groupId);
 				$regions[] = $group;
 			} else {
 				$group['isAdmin'] = $this->workGroupPermissions->mayEdit($group);
+				$group['hasSubgroups'] = $this->regionGateway->hasSubgroups($groupId);
 				$workingGroups[] = $group;
 			}
 		}

@@ -3,6 +3,7 @@
 namespace Foodsharing\Modules\PassportGenerator;
 
 use Foodsharing\Modules\Core\Control;
+use Foodsharing\Modules\Core\DBConstants\Foodsaver\Role;
 use Foodsharing\Modules\Region\RegionGateway;
 use Foodsharing\Utility\IdentificationHelper;
 
@@ -35,7 +36,7 @@ final class PassportGeneratorControl extends Control
 			$this->regionId = $this->session->getCurrentRegionId();
 		}
 
-		if ($this->session->isAmbassadorForRegion([$this->regionId], false, true) || $this->session->may('orga')) {
+		if ($this->session->isAmbassadorForRegion([$this->regionId], false, true) || $this->session->mayRole(Role::ORGA)) {
 			$this->region = false;
 			if ($region = $this->regionGateway->getRegion($this->regionId)) {
 				$this->region = $region;

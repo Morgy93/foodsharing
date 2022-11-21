@@ -3,6 +3,7 @@
 namespace Foodsharing\Permissions;
 
 use Foodsharing\Lib\Session;
+use Foodsharing\Modules\Core\DBConstants\Foodsaver\Role;
 use Foodsharing\Modules\Core\DBConstants\Region\RegionIDs;
 use Foodsharing\Modules\Event\EventGateway;
 use Foodsharing\Modules\FoodSharePoint\FoodSharePointGateway;
@@ -54,7 +55,7 @@ class WallPostPermissions
 				break;
 			case 'usernotes':
 			case 'fsreport':
-				$result = $fsId && ($this->regionGateway->hasMember($fsId, RegionIDs::EUROPE_REPORT_TEAM) || $this->session->may('orga'));
+				$result = $fsId && ($this->regionGateway->hasMember($fsId, RegionIDs::EUROPE_REPORT_TEAM) || $this->session->mayRole(Role::ORGA));
 				break;
 			case 'application':
 				// Uses Session::isAdminForAWorkGroup() instead of the more appropriate and specific Session::isAdminFor() since

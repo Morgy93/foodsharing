@@ -3,6 +3,7 @@
 namespace Foodsharing\Modules\Mailbox;
 
 use Foodsharing\Modules\Core\Control;
+use Foodsharing\Modules\Core\DBConstants\Foodsaver\Role;
 use Foodsharing\Permissions\MailboxPermissions;
 use Foodsharing\Utility\Sanitizer;
 
@@ -25,7 +26,7 @@ class MailboxControl extends Control
 
 		parent::__construct();
 
-		if (!$this->session->may()) {
+		if (!$this->session->mayRole()) {
 			$this->routeHelper->goLogin();
 		}
 
@@ -74,7 +75,7 @@ class MailboxControl extends Control
 		$boxes = $this->mailboxGateway->getBoxes(
 			$this->session->isAmbassador(),
 			$this->session->id(),
-			$this->session->may('bieb')
+			$this->session->mayRole(Role::STORE_MANAGER)
 		);
 		if ($boxes) {
 			$messageId = $_GET['show'] ?? null;

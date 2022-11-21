@@ -1,185 +1,107 @@
+# expose, ports are additive, means each environment requires a own port mapping instead of a global one.
+
 version: '2'
 services:
-
   # nginx
   #------------------------------------
-
-  # proxies connections to app/chat
-
-  web:
-    container_name: foodsharing_test_web
-    image: registry.gitlab.com/foodsharing-dev/images/web:1.10
+  nginx:
+    container_name: foodsharing_test_nginx
     ports:
-      - "127.0.0.1:28080:8080"
-    expose:
-      - 8080
-    depends_on:
-      - app
-      - chat
-    volumes:
-      - ../:/app:delegated
+      - 28080:8080
 
-  # main php app
+  # Customized PHP
   #------------------------------------
-
   app:
-    user: ${CURRENT_USER}
     container_name: foodsharing_test_app
-    image: registry.gitlab.com/foodsharing-dev/images/php:8.0.13
-    working_dir: /app
-    expose:
-      - 9000
-    depends_on:
-      - db
-      - redis
-      - mailqueuerunner
-      - influxdb
-      - chat
-    volumes:
-      - ../:/app:delegated
-      - selenium_downloads:/downloads:cached
-      - /dev/null:/usr/local/etc/php/conf.d/docker-php-ext-xdebug.ini:delegated
     environment:
       FS_ENV: test
-      REDIS_HOST: redis
+    ports:
+      - 29000:9000
 
-  # webpack client javascript
+  # Webpack client
   #------------------------------------
-
   client:
     container_name: foodsharing_test_client
-    image: node:16.13.2-alpine3.14
-    # We don't run anything long running in here yet - build is run via ./scripts/build-assets
-    command: 'true'
-    working_dir: /app/client
-    user: ${CURRENT_USER}
-    volumes:
-      - ../:/app:delegated
+    command: sh -c "yarn && yarn dev"
+    ports:
+      - 28090:8082
 
-  # php mail queue runner
+  # PHP mail queue runner
   #------------------------------------
-
   mailqueuerunner:
     container_name: foodsharing_test_mailqueuerunner
-    image: registry.gitlab.com/foodsharing-dev/images/php:8.0.13
-    command: php run.php Mails queueWorker
-    working_dir: /app
-    restart: unless-stopped
-    depends_on:
-      - db
-      - redis
-      - maildev
-    volumes:
-      - ../:/app:delegated
     environment:
       FS_ENV: test
-      REDIS_HOST: redis
 
-  chat:
-    user: ${CURRENT_USER}
-    container_name: foodsharing_test_chat
-    image: node:16.13.2-alpine3.14
-    command: sh -c "yarn && yarn ts-node src/index.ts 0.0.0.0"
-    working_dir: /app/chat
-    depends_on:
-      - redis
-    environment:
-      REDIS_HOST: redis
-    expose:
-      - 1337
-      - 1338
-    volumes:
-      - ../:/app:delegated
+  # Socket.io server
+  #------------------------------------
+  websocket:
+    container_name: foodsharing_test_websocket
+    ports:
+      - 21337:1337
+      - 21338:1338
 
   # mysql
   #------------------------------------
-
   db:
     container_name: foodsharing_test_db
-    image: registry.gitlab.com/foodsharing-dev/images/db/test:1.4
-    expose:
-      - 3306
-    ports:
-      - "127.0.0.1:23306:3306"
     environment:
-      MYSQL_ROOT_PASSWORD: root
-      TZ: Europe/Berlin
-    tmpfs:
-      - /var/lib/mysql-tmpfs
-    volumes:
-      - ../:/app:delegated
+      - MYSQL_ROOT_PASSWORD=root
+    ports:
+      - 23306:3306
 
   # redis
   #------------------------------------
-
   redis:
     container_name: foodsharing_test_redis
-    image: redis:6.0.8-alpine
-    expose:
-      - 6379
-
-  # selenium
-  #------------------------------------
-
-  # for running browser-based tests
-
-  selenium:
-    user: ${CURRENT_USER}
-    container_name: foodsharing_test_selenium
-    image: registry.gitlab.com/foodsharing-dev/images/selenium:1.4
-    shm_size: 512M
-    depends_on:
-      - web
-    expose:
-      - 4444
-    volumes:
-      - selenium_downloads:/home/seluser/Downloads:cached
+    ports:
+      - 36379:6379
 
   # phpmyadmin
   #------------------------------------
-
   phpmyadmin:
-    image: phpmyadmin/phpmyadmin
     container_name: foodsharing_test_phpmyadmin
-    environment:
-      PMA_HOST: db
-      PMA_USER: root
-      PMA_PASSWORD: root
-    restart: unless-stopped
     ports:
-      - "127.0.0.1:28081:80"
-    volumes:
-      - /sessions
+      - 28081:80
 
   # maildev
   #------------------------------------
-
   maildev:
-    command: >
-      bin/maildev
-        --web 80
-        --smtp 25
-        --hide-extensions STARTTLS
-    image: djfarrelly/maildev
     container_name: foodsharing_test_maildev
     ports:
-      - "127.0.0.1:28084:80"
+      - 28084:1080
 
+  # influxdb
+  # used for mail sending tracking and server monitoring
+  #------------------------------------
   influxdb:
     container_name: foodsharing_test_influxdb
-    image: influxdb:1.8
-    command: >
-      influxd -config /etc/influxdb/influxdb.toml
     ports:
-    - "127.0.0.1:28086:8086"
-    - "127.0.0.1:28089:8089/udp"
-    environment:
-      INFLUXDB_ADMIN_ENABLED: "true"
-      INFLUXDB_DB: "foodsharing"
+      - 28083:8083
+      - 28089:8089/udp
+      - 28086:8086
+
+  # docs
+  # A plattform for the developer documentations
+  #------------------------------------
+  docs:
+    container_name: foodsharing_test_docs
+    command: sh -c "yarn && yarn serve"
+    ports:
+      - 26000:3000
+
+  # selenium
+  # for running browser-based tests
+  #------------------------------------
+  selenium:
+    user: ${CURRENT_USER}
+    container_name: foodsharing_test_selenium
+    image: registry.gitlab.com/foodsharing-dev/images/selenium:latest
+    shm_size: 2gb
+    depends_on:
+      - nginx
     volumes:
-    - influxdb:/var/lib/influxdb:cached
-    - ./conf/influxdb/influxdb.toml:/etc/influxdb/influxdb.toml:cached
+      - selenium_downloads:/home/seluser/Downloads:cached
 
 volumes:
   selenium_downloads:
-  influxdb:

@@ -14,6 +14,7 @@ class CreateStoreData
 	public string $str;
 	public string $zip;
 	public string $city;
+	public string $publicInfo;
 
 	public DateTime $createdAt;
 	public DateTime $updatedAt;

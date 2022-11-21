@@ -8,6 +8,7 @@ use Foodsharing\Modules\Bell\DTO\Bell;
 use Foodsharing\Modules\Core\BaseGateway;
 use Foodsharing\Modules\Core\Database;
 use Foodsharing\Modules\Core\DBConstants\Bell\BellType;
+use Foodsharing\Modules\Core\DBConstants\Foodsaver\Role;
 use Foodsharing\Modules\Foodsaver\FoodsaverGateway;
 use Foodsharing\Utility\Sanitizer;
 
@@ -127,7 +128,7 @@ final class BlogGateway extends BaseGateway
 
 	public function getBlogpostList(): array
 	{
-		if ($this->session->may('orga')) {
+		if ($this->session->mayRole(Role::ORGA)) {
 			$filter = '';
 		} else {
 			$ownRegionIds = implode(',', array_map('intval', $this->session->listRegionIDs()));
@@ -177,7 +178,7 @@ final class BlogGateway extends BaseGateway
 	public function add_blog_entry(array $data): int
 	{
 		$regionId = intval($data['bezirk_id']);
-		$active = intval($this->session->may('orga') || $this->session->isAdminFor($regionId));
+		$active = intval($this->session->mayRole(Role::ORGA) || $this->session->isAdminFor($regionId));
 
 		$id = $this->db->insert(
 			'fs_blog_entry',

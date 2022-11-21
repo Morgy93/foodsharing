@@ -7,11 +7,11 @@ set -o errexit
 
 dir=$(dirname "$0")
 
-# shellcheck source=./inc.sh
-source "$dir"/inc.sh
+# shellcheck source=./__helping-functions.sh
+source "$dir"/__helping-functions.sh
 
 echo "Linting client js"
 run-in-container client yarn lint
 
-echo "Linting chat js"
-run-in-container chat yarn lint
+echo "Linting websocket js"
+run-in-container websocket yarn lint

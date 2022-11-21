@@ -38,7 +38,6 @@ class MapRestController extends AbstractFOSRestController
 	 * @OA\Response(response="200", description="Success.")
 	 * @OA\Response(response="401", description="Not logged in.")
 	 * @OA\Tag(name="map")
-	 *
 	 * @Rest\Get("map/markers")
 	 * @Rest\QueryParam(name="types")
 	 * @Rest\QueryParam(name="status")
@@ -94,7 +93,6 @@ class MapRestController extends AbstractFOSRestController
 	 * @OA\Response(response="200", description="Success.")
 	 * @OA\Response(response="404", description="The region does not exist or does not have a community description.")
 	 * @OA\Tag(name="map")
-	 *
 	 * @Rest\Get("map/regions/{regionId}")
 	 * @Rest\QueryParam(name="regionId", requirements="\d+", nullable=true, description="Region for which to return the description")
 	 */

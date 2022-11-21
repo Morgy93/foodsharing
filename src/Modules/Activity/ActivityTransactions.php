@@ -9,6 +9,7 @@ use Foodsharing\Modules\Activity\DTO\ActivityFilterCategory;
 use Foodsharing\Modules\Activity\DTO\ActivityUpdate;
 use Foodsharing\Modules\Activity\DTO\ActivityUpdateMailbox as MailboxUpdate;
 use Foodsharing\Modules\Activity\DTO\ImageActivityFilter;
+use Foodsharing\Modules\Core\DBConstants\Foodsaver\Role;
 use Foodsharing\Modules\Core\DBConstants\Unit\UnitType;
 use Foodsharing\Modules\Mailbox\MailboxGateway;
 use Foodsharing\Utility\ImageHelper;
@@ -67,7 +68,7 @@ class ActivityTransactions
 		if ($boxes = $this->mailboxGateway->getBoxes(
 			$this->session->isAmbassador(),
 			$this->session->id(),
-			$this->session->may('bieb'))
+			$this->session->mayRole(Role::STORE_MANAGER))
 		) {
 			$mailboxOptions = array_map(function ($b) use ($excluded) {
 				return ActivityFilter::create(
@@ -257,7 +258,7 @@ class ActivityTransactions
 		$boxes = $this->mailboxGateway->getBoxes(
 			$this->session->isAmbassador(),
 			$this->session->id(),
-			$this->session->may('bieb')
+			$this->session->mayRole(Role::STORE_MANAGER)
 		);
 
 		if (empty($boxes)) {

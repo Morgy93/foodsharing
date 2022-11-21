@@ -10,7 +10,6 @@ use Foodsharing\Modules\Bell\DTO\Bell;
 use Foodsharing\Modules\Core\DBConstants\Bell\BellType;
 use Foodsharing\Modules\Core\DBConstants\Email\EmailStatus;
 use Foodsharing\Modules\Core\DBConstants\Region\WorkgroupFunction;
-use Foodsharing\Modules\Core\DBConstants\Store\TeamStatus;
 use Foodsharing\Modules\Core\DBConstants\Unit\UnitType;
 use Foodsharing\Modules\Email\EmailGateway;
 use Foodsharing\Modules\Foodsaver\FoodsaverGateway;
@@ -144,58 +143,6 @@ class XhrMethods
 		$response->send();
 	}
 
-	private function cropImg($path, $img, int $i, int $x, int $y, int $w, int $h)
-	{
-		if ($w > 2000) {
-			$w = 2000;
-		}
-		if ($h > 2000) {
-			$h = 2000;
-		}
-
-		$targ_w = $w;
-		$targ_h = $h;
-		$jpeg_quality = 100;
-
-		$ext = explode('.', $img);
-		$ext = end($ext);
-		$ext = strtolower($ext);
-
-		switch ($ext) {
-			case 'gif':
-				$img_r = imagecreatefromgif($path . '/' . $img);
-				break;
-			case 'jpg':
-				$img_r = imagecreatefromjpeg($path . '/' . $img);
-				break;
-			case 'png':
-				$img_r = imagecreatefrompng($path . '/' . $img);
-				break;
-			default:
-				$img_r = null;
-		}
-
-		$dst_r = imagecreatetruecolor($targ_w, $targ_h);
-
-		imagecopyresampled($dst_r, $img_r, 0, 0, $x, $y, $targ_w, $targ_h, $w, $h);
-
-		$new_path = $path . '/crop_' . $i . '_' . $img;
-
-		@unlink($new_path);
-
-		switch ($ext) {
-			case 'gif':
-				imagegif($dst_r, $new_path);
-				break;
-			case 'jpg':
-				imagejpeg($dst_r, $new_path, $jpeg_quality);
-				break;
-			case 'png':
-				imagepng($dst_r, $new_path, 0);
-				break;
-		}
-	}
-
 	public function xhr_continueMail($data)
 	{
 		if ($this->newsletterEmailPermissions->mayAdministrateNewsletterEmail()) {
@@ -259,24 +206,6 @@ class XhrMethods
 		}
 
 		return 0;
-	}
-
-	private function is_allowed($img)
-	{
-		$img['name'] = strtolower($img['name']);
-		$img['type'] = strtolower($img['type']);
-
-		$allowed = ['jpg' => true, 'jpeg' => true, 'png' => true, 'gif' => true];
-
-		$filename = $img['name'];
-		$parts = explode('.', $filename);
-		$ext = end($parts);
-
-		if (isset($allowed[$ext])) {
-			return true;
-		}
-
-		return false;
 	}
 
 	public function xhr_newregion($data)
@@ -383,18 +312,6 @@ class XhrMethods
 				];
 			}
 		}
-
-		return json_encode($out);
-	}
-
-	public function xhr_bteamstatus($data)
-	{
-		$teamStatus = (int)$_GET['status'];
-		$storeId = (int)$_GET['bid'];
-		if ($this->storePermissions->mayEditStore($storeId) && TeamStatus::isValidStatus($teamStatus)) {
-			$this->storeGateway->setStoreTeamStatus($storeId, $teamStatus);
-		}
-		$out = ['status' => 0];
 
 		return json_encode($out);
 	}

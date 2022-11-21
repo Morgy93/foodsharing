@@ -4,7 +4,10 @@ namespace Foodsharing\Modules\Store;
 
 use Foodsharing\Lib\Session;
 use Foodsharing\Lib\View\Utils;
+use Foodsharing\Modules\Core\DBConstants\Store\StoreSettings;
 use Foodsharing\Modules\Core\View;
+use Foodsharing\Modules\Store\DTO\CommonStoreMetadata;
+use Foodsharing\Modules\Store\DTO\Store;
 use Foodsharing\Utility\DataHelper;
 use Foodsharing\Utility\IdentificationHelper;
 use Foodsharing\Utility\ImageHelper;
@@ -71,7 +74,7 @@ class StoreView extends View
 			]]);
 	}
 
-	public function betrieb_form($lebensmittel_values, $chains, $categories, $status, $weightArray, $region = false, $page = '')
+	public function betrieb_form(CommonStoreMetadata $common, $region = false, $page = '')
 	{
 		global $g_data;
 
@@ -101,6 +104,25 @@ class StoreView extends View
 
 		$editExisting = !$this->identificationHelper->getAction('new');
 
+		$categoryValues = array_map(function ($row) {
+			return (array)$row;
+		}, $common->categories);
+		$storeChainsValues = $common->storeChains ? array_map(function ($row) {return (array)$row; }, $common->storeChains) : [];
+		$cooperationStatus = array_map(function ($row) {return (array)$row; }, $common->status);
+		$groceriesValues = array_map(function ($row) {return (array)$row; }, $common->groceries);
+		$weightValues = array_map(function ($row) {return (array)$row; }, $common->weight);
+		$publicTimesWithoutNotSelected = array_map(function ($row) {return (array)$row; }, $common->publicTimes);
+		$publicTimeNotSelected = ['id' => 0, 'name' => $this->translator->trans('store.nodeclaration')];
+		$publicTimesWithNoSelection = array_merge([$publicTimeNotSelected], $publicTimesWithoutNotSelected);
+
+		$convinceStatusValues = array_map(function ($row) {return (array)$row; }, $common->convinceStatus);
+		$prefetchTimeValues = [
+			['id' => 604800, 'name' => $this->translator->trans('store.prefetchone')],
+			['id' => 1209600, 'name' => $this->translator->trans('store.prefetchtwo')],
+			['id' => 1814400, 'name' => $this->translator->trans('store.prefetchthree')],
+			['id' => 2419200, 'name' => $this->translator->trans('store.prefetchfour')]
+		];
+
 		$fieldset = array_merge($editExisting ? [] : [
 			/* elements that are only present when creating */
 			$this->v_utils->v_form_textarea('first_post', ['required' => true]),
@@ -117,13 +139,13 @@ class StoreView extends View
 			]),
 		], $editExisting ? [
 			/* elements that are only present when editing */
-			$this->v_utils->v_form_select('betrieb_kategorie_id', ['values' => $categories]),
+			$this->v_utils->v_form_select('betrieb_kategorie_id', ['values' => $categoryValues]),
 			$this->v_utils->v_form_select('kette_id', [
-				'values' => $chains,
+				'values' => $storeChainsValues,
 				'desc' => $this->translator->trans('store.nochains'),
 			]),
 			$this->v_utils->v_form_select('betrieb_status_id', [
-				'values' => $status,
+				'values' => $cooperationStatus,
 				'desc' => $this->v_utils->v_info($this->translator->trans('store_status_impact_explanation')),
 			]),
 
@@ -131,38 +153,23 @@ class StoreView extends View
 				'desc' => $this->v_utils->v_info($this->translator->trans('formatting.md'), '', '<i class="fab fa-markdown fa-2x d-inline align-middle text-muted"></i>')
 			]),
 
-			$this->v_utils->v_form_checkbox('lebensmittel', ['values' => $lebensmittel_values]),
-
+			$this->v_utils->v_form_checkbox('lebensmittel', ['values' => $groceriesValues]),
 			$this->v_utils->v_form_text('ansprechpartner'),
 			$this->v_utils->v_form_text('telefon'),
 			$this->v_utils->v_form_text('fax'),
 			$this->v_utils->v_form_text('email'),
 			$this->v_utils->v_form_date('begin'),
-
-			$this->v_utils->v_form_select('public_time', ['values' => [
-				['id' => 0, 'name' => $this->translator->trans('store.nodeclaration')],
-				['id' => 1, 'name' => $this->translator->trans('storeview.frequency1')],
-				['id' => 2, 'name' => $this->translator->trans('storeview.frequency2')],
-				['id' => 3, 'name' => $this->translator->trans('storeview.frequency3')],
-				['id' => 4, 'name' => $this->translator->trans('storeview.frequency4')]
+			$this->v_utils->v_form_select('public_time', ['values' => $publicTimesWithNoSelection]),
+			$this->v_utils->v_form_select('prefetchtime', ['values' => $prefetchTimeValues]),
+			$this->v_utils->v_form_select('use_region_pickup_rule', ['values' => [
+				['id' => StoreSettings::USE_PICKUP_RULE_YES, 'name' => $this->translator->trans('yes')],
+				['id' => StoreSettings::USE_PICKUP_RULE_NO, 'name' => $this->translator->trans('no')]
 			]]),
-			$this->v_utils->v_form_select('prefetchtime', ['values' => [
-				['id' => 604800, 'name' => $this->translator->trans('store.prefetchone')],
-				['id' => 1209600, 'name' => $this->translator->trans('store.prefetchtwo')],
-				['id' => 1814400, 'name' => $this->translator->trans('store.prefetchthree')],
-				['id' => 2419200, 'name' => $this->translator->trans('store.prefetchfour')]
-			]]),
-			$this->v_utils->v_form_select('abholmenge', ['values' => $weightArray]),
-
-			$this->v_utils->v_form_select('ueberzeugungsarbeit', ['values' => [
-				['id' => 1, 'name' => $this->translator->trans('store.convince.none')],
-				['id' => 2, 'name' => $this->translator->trans('store.convince.some')],
-				['id' => 3, 'name' => $this->translator->trans('store.convince.much')],
-				['id' => 4, 'name' => $this->translator->trans('store.convince.final')]
-			]]),
+			$this->v_utils->v_form_select('abholmenge', ['values' => $weightValues]),
+			$this->v_utils->v_form_select('ueberzeugungsarbeit', ['values' => $convinceStatusValues]),
 			$this->v_utils->v_form_select('presse', ['values' => [
-				['id' => 1, 'name' => $this->translator->trans('yes')],
-				['id' => 0, 'name' => $this->translator->trans('no')]
+				['id' => StoreSettings::PRESS_YES, 'name' => $this->translator->trans('yes')],
+				['id' => StoreSettings::PRESS_NO, 'name' => $this->translator->trans('no')]
 			]]),
 			$this->v_utils->v_form_select('sticker', ['values' => [
 				['id' => 1, 'name' => $this->translator->trans('yes')],
@@ -221,8 +228,8 @@ class StoreView extends View
 
 		$fetchTime = intval($store['public_time']);
 		if ($fetchTime != 0) {
-			$count_info .= '<div>' . $this->translator->trans('storeview.frequency', [
-				'{freq}' => $this->translator->trans('storeview.frequency' . $fetchTime),
+			$count_info .= '<div>' . $this->translator->trans('storeview.public_time', [
+				'{freq}' => $this->translator->trans('storeview.public_time' . $fetchTime),
 			]) . '</div>';
 		}
 

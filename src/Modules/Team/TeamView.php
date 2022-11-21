@@ -58,10 +58,15 @@ class TeamView extends View
 				$socials .= '<i class="fas fa-globe"><span>' . $t['homepage'] . '</span></i>';
 			}
 
+			$photoFile = '/images/q_' . $t['photo'];
+			if (str_starts_with($t['photo'], '/api')) {
+				$photoFile = $t['photo'];
+			}
+
 			$out .= '
 			<li>
 				<a id="t-' . $t['id'] . '" href="/team/' . $t['id'] . '" class="corner-all" target="_self">
-					<span class="img" style="background-image:url(/images/q_' . $t['photo'] . ');"></span>
+					<span class="img" style="background-image:url(' . $photoFile . ');"></span>
 					<h3>' . $t['name'] . ' ' . $t['nachname'] . '</h3>
 					<span class="subtitle">' . $t['position'] . '</span>
 					<span class="desc">

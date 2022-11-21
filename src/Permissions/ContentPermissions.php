@@ -4,6 +4,7 @@ namespace Foodsharing\Permissions;
 
 use Foodsharing\Lib\Session;
 use Foodsharing\Modules\Core\DBConstants\Content\ContentId;
+use Foodsharing\Modules\Core\DBConstants\Foodsaver\Role;
 use Foodsharing\Modules\Core\DBConstants\Region\RegionIDs;
 
 final class ContentPermissions
@@ -63,7 +64,7 @@ final class ContentPermissions
 
 	public function mayEditContent(): bool
 	{
-		return $this->session->may('orga')
+		return $this->session->mayRole(Role::ORGA)
 			|| $this->session->isAdminFor(RegionIDs::QUIZ_AND_REGISTRATION_WORK_GROUP)
 			|| $this->session->isAdminFor(RegionIDs::PR_PARTNER_AND_TEAM_WORK_GROUP)
 			|| $this->session->isAdminFor(RegionIDs::PR_START_PAGE);
@@ -71,7 +72,7 @@ final class ContentPermissions
 
 	public function getEditableContentIds(): array
 	{
-		if ($this->session->may('orga')) {
+		if ($this->session->mayRole(Role::ORGA)) {
 			return [];
 		}
 
@@ -91,7 +92,7 @@ final class ContentPermissions
 
 	public function mayEditContentId(int $id): bool
 	{
-		if ($this->session->may('orga')) {
+		if ($this->session->mayRole(Role::ORGA)) {
 			return true;
 		}
 		if ($this->session->isAdminFor(RegionIDs::QUIZ_AND_REGISTRATION_WORK_GROUP)
@@ -112,6 +113,6 @@ final class ContentPermissions
 
 	public function mayCreateContent(): bool
 	{
-		return $this->session->may('orga');
+		return $this->session->mayRole(Role::ORGA);
 	}
 }

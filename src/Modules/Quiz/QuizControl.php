@@ -40,7 +40,7 @@ class QuizControl extends Control
 
 		parent::__construct();
 
-		if (!$this->session->may()) {
+		if (!$this->session->mayRole()) {
 			$this->routeHelper->goLogin();
 		} elseif (!$this->quizPermissions->mayEditQuiz()) {
 			$this->routeHelper->go('/');

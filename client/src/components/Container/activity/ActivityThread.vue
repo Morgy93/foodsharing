@@ -9,7 +9,7 @@
     <button
       v-if="!loading && !end && showActivePosts !== 0"
       class="list-group-item small activity-item list-group-item-secondary list-group-item-action font-weight-bold text-center"
-      @click="loadMore"
+      @click="fetchUpdates"
       v-html="$i18n('globals.show_more')"
     />
     <li
@@ -65,10 +65,10 @@ export default {
     },
   },
   created () {
-    this.loadMore()
+    this.fetchUpdates()
   },
   methods: {
-    async loadMore () {
+    async fetchUpdates () {
       try {
         this.loading = true
         const updates = await DataUpdates.mutations.fetch(this.page)
@@ -97,6 +97,7 @@ export default {
       this.page = 0
       this.updates = []
       this.end = false
+      this.fetchUpdates()
     },
   },
 }

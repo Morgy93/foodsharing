@@ -4,16 +4,15 @@ set -o errexit
 
 dir=$(dirname "$0")
 root="$dir/../.."
-# shellcheck source=./inc.sh
-source "$dir/../inc.sh"
+# shellcheck source=./__helping-functions.sh
+source "$dir/../__helping-functions.sh"
 
-BUILD_DIR="$root/docs/build/db"
-RESULT_FOLDER="$root/docs/src"
-META_DATA_FILE="$root/docs/database_metadata.json"
+BUILD_DIR="$root/docs/db/build"
+RESULT_FOLDER="$root/docs/docs/backend/database"
+META_DATA_FILE="$root/docs/db/database_metadata.json"
 
 # Set node module path to global modules
 export NODE_PATH=$(npm root -g)
-
 # prepare processing folder
 mkdir -p "$BUILD_DIR"
 

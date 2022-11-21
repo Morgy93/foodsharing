@@ -2,17 +2,19 @@ parameters:
   level: 5
   paths:
     - src
-  excludes_analyse:
+  excludePaths:
     - %currentWorkingDirectory%/src/Lib/Flourish
     - %currentWorkingDirectory%/src/Dev
   bootstrapFiles:
     - config.inc.php
+  treatPhpDocTypesAsCertain: false
   ignoreErrors:
     # Level 4+ see https://github.com/phpstan/phpstan/issues/3264
     - '#Comparison operation ">" between int<1, max> and 0 is always true#'
     # Level 4+ see https://github.com/phpstan/phpstan/issues/2889
     - '#Strict comparison using === between int<1, max> and 0 will always evaluate to false#'
     # LEVEL 4+ We include constant values for MEM_ENABLED from config.inc.*.php:
+
     -
       message: '#If condition is always true#'
       paths:
@@ -21,6 +23,16 @@ parameters:
       message: '#Unreachable statement - code above always terminates#'
       paths:
         - src/Lib/Db/Mem.php
+    -
+      message: '#Comparison operation ">" between 1|2 and 0 is always true#'
+      paths:
+        - src/Modules/Mails/MailsControl.php
+    -
+      message: '#Property [a-zA-Z0-9\\_]+::\$[a-zA-Z]+ is never read, only written.#'
+      paths:
+        - src/Lib/FoodsharingController.php
+        - src/Modules/Core/Control.php
+        - src/Modules/Dashboard/DashboardControl.php
     # LEVEL 5+ some legacy code calling legacy library code:
     -
       message: '#Parameter \#[0-9]+ \$[a-zA-Z_]+ of method Flourish\\fImage::[a-zA-Z]+\(\) expects int, string given#'

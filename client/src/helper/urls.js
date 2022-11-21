@@ -114,6 +114,7 @@ const urls = {
   stores: (regionId) => `/?page=betrieb&bid=${regionId}`,
   wall: (regionId) => `/?page=bezirk&bid=${regionId}&sub=wall`,
   workingGroups: (regionId = null) => regionId ? `/?page=groups&p=${regionId}` : '/?page=groups',
+  subGroups: (parentGroupId) => parentGroupId ? `/?page=groups&p=${parentGroupId}` : '/?page=groups',
 
   // whats new & changelog
   changelog: () => '/?page=content&sub=changelog',
@@ -153,7 +154,6 @@ const urls = {
 
   // Devdocs
   devdocs: () => 'https://devdocs.foodsharing.network',
-  devdocs_it_tasks: () => 'https://devdocs.foodsharing.network/it-tasks.html',
 
   // Beta Testing
   beta: () => 'https://beta.foodsharing.de',

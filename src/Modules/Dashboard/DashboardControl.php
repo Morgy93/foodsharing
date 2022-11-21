@@ -32,7 +32,7 @@ class DashboardControl extends Control
 		SettingsGateway $settingsGateway,
 		FoodsaverGateway $foodsaverGateway,
 		EventGateway $eventGateway,
-		QuizSessionGateway $quizSessionGateway
+		QuizSessionGateway $quizSessionGateway,
 	) {
 		$this->view = $view;
 		$this->contentGateway = $contentGateway;
@@ -43,7 +43,7 @@ class DashboardControl extends Control
 
 		parent::__construct();
 
-		if (!$this->session->may()) {
+		if (!$this->session->mayRole()) {
 			$this->routeHelper->go('/');
 		}
 
@@ -56,14 +56,15 @@ class DashboardControl extends Control
 	 */
 	public function index(): void
 	{
+		$this->session->updateLastActivity();
+
 		$this->params['broadcast'] = $this->getBroadcast();
 		$this->params['quiz'] = $this->getQuiz();
 
-		if ($this->session->may('fs')) {
+		if ($this->session->mayRole(Role::FOODSAVER)) {
 			$this->params['events'] = $this->getEvents();
 		}
 
-		// echo json_encode($_SESSION);
 		$this->pageHelper->addContent($this->view->index($this->params), CNT_MAIN);
 	}
 
@@ -82,7 +83,7 @@ class DashboardControl extends Control
 
 	private function getQuiz(): ?array
 	{
-		$is_foodsharer = !$this->session->may('fs') && !$this->quizSessionGateway->hasPassedQuiz($this->session->id(), Role::FOODSAVER);
+		$is_foodsharer = !$this->session->mayRole(Role::FOODSAVER) && !$this->quizSessionGateway->hasPassedQuiz($this->session->id(), Role::FOODSAVER);
 
 		if ($is_foodsharer) {
 			$cnt = $this->contentGateway->get(ContentId::QUIZ_REMARK_PAGE_33);

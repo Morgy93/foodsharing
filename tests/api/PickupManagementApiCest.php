@@ -58,7 +58,7 @@ class PickupManagementApiCest
 		$I->login($this->coordinator['email']);
 		$pickupBaseDate = Carbon::now()->add('2 days');
 		$pickupBaseDate->hours(14)->minutes(45)->seconds(0);
-		$I->sendPatch('api/stores/' . $this->store['id'] . '/pickups/' . '2001-12-12', ['totalSlots' => 5]);
+		$I->sendPatch('api/stores/' . $this->store['id'] . '/pickups/2001-12-12', ['totalSlots' => 5]);
 		$I->seeResponseIsJson();
 		$I->seeResponseCodeIs(\Codeception\Util\HttpCode::BAD_REQUEST);
 	}

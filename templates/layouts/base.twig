@@ -60,7 +60,7 @@
         {% endblock %}
 
         {% block full %}
-            {% if route in 'dashboard,index,content'|split(',') %}
+            {% if route in 'dashboard,index,content,msg'|split(',') %}
                 {# /*
                 * to keep the old page stable,
                 * cause of the different types of grid systems

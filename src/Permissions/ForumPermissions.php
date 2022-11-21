@@ -3,27 +3,24 @@
 namespace Foodsharing\Permissions;
 
 use Foodsharing\Lib\Session;
+use Foodsharing\Modules\Core\DBConstants\Foodsaver\Role;
 use Foodsharing\Modules\Core\DBConstants\Region\ThreadStatus;
 use Foodsharing\Modules\Core\DBConstants\Region\WorkgroupFunction;
 use Foodsharing\Modules\Group\GroupFunctionGateway;
 use Foodsharing\Modules\Region\ForumGateway;
-use Foodsharing\Modules\Region\RegionGateway;
 
 class ForumPermissions
 {
 	private ForumGateway $forumGateway;
 	private Session $session;
-	private RegionGateway $regionGateway;
 	private GroupFunctionGateway $groupFunctionGateway;
 
 	public function __construct(
 		ForumGateway $forumGateway,
-		RegionGateway $regionGateway,
 		Session $session,
 		GroupFunctionGateway $groupFunctionGateway
 	) {
 		$this->forumGateway = $forumGateway;
-		$this->regionGateway = $regionGateway;
 		$this->session = $session;
 		$this->groupFunctionGateway = $groupFunctionGateway;
 	}
@@ -54,7 +51,7 @@ class ForumPermissions
 
 	public function mayPostToRegion(int $regionId, $ambassadorForum): bool
 	{
-		if ($this->session->may('orga')) {
+		if ($this->session->mayRole(Role::ORGA)) {
 			return true;
 		}
 
@@ -88,7 +85,7 @@ class ForumPermissions
 
 	public function mayModerate(int $threadId): bool
 	{
-		if ($this->session->may('orga')) {
+		if ($this->session->mayRole(Role::ORGA)) {
 			return true;
 		}
 		$forums = $this->forumGateway->getForumsForThread($threadId);
@@ -109,7 +106,7 @@ class ForumPermissions
 
 	public function mayAccessThread(int $threadId): bool
 	{
-		if ($this->session->may('orga')) {
+		if ($this->session->mayRole(Role::ORGA)) {
 			return true;
 		}
 
@@ -130,7 +127,7 @@ class ForumPermissions
 
 	public function mayChangeStickiness(int $regionId): bool
 	{
-		if ($this->session->may('orga')) {
+		if ($this->session->mayRole(Role::ORGA)) {
 			return true;
 		}
 
@@ -149,7 +146,7 @@ class ForumPermissions
 
 	public function mayDeletePost(array $post): bool
 	{
-		if ($this->session->may('orga')) {
+		if ($this->session->mayRole(Role::ORGA)) {
 			return true;
 		}
 		if ($post['author_id'] == $this->session->id()) {

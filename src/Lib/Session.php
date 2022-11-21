@@ -4,7 +4,6 @@ namespace Foodsharing\Lib;
 
 use Exception;
 use Flourish\fAuthorization;
-use Flourish\fImage;
 use Flourish\fSession;
 use Foodsharing\Lib\Db\Mem;
 use Foodsharing\Modules\Buddy\BuddyGateway;
@@ -22,20 +21,9 @@ use Foodsharing\Modules\Store\TeamStatus;
 
 class Session
 {
-	private $mem;
-	private $buddyGateway;
-	private $foodsaverGateway;
-	private $quizHelper;
-	private $regionGateway;
-	private $storeGateway;
-	private $mailsGateway;
-	private $loginGateway;
-	private SettingsGateway $settingsGateway;
-	private $initialized = false;
-
 	// update this whenever adding new fields to the session!!!
 	// this should be a unix timestamp, together with a human readable date in a comment.
-	private const LAST_SESSION_SCHEMA_CHANGE = 1608472800; // 2020-12-20 14:00:00 UTC
+	private const LAST_SESSION_SCHEMA_CHANGE = 1668985200; // 2022-11-21 00:00:00 UTC
 
 	private const SESSION_TIMESTAMP_FIELD_NAME = 'last_updated_ts';
 
@@ -48,32 +36,27 @@ class Session
 		Role::SITE_ADMIN => 'admin',
 	];
 
+	private array $roleKeysInverse;
+
 	public const DEFAULT_LOCALE = 'de';
 
 	private const DEFAULT_NORMAL_SESSION_TIMESPAN = '24 hours';
 
-	private const DEFAULT_PERSISTENT_SESSION_TIMESPAN = '1 day';
+	private const DEFAULT_PERSISTENT_SESSION_TIMESPAN = '14 days';
 
 	public function __construct(
-		Mem $mem,
-		BuddyGateway $buddyGateway,
-		FoodsaverGateway $foodsaverGateway,
-		QuizHelper $quizHelper,
-		RegionGateway $regionGateway,
-		StoreGateway $storeGateway,
-		MailsGateway $mailsGateway,
-		LoginGateway $loginGateway,
-		SettingsGateway $settingsGateway
+		private Mem $mem,
+		private BuddyGateway $buddyGateway,
+		private FoodsaverGateway $foodsaverGateway,
+		private QuizHelper $quizHelper,
+		private RegionGateway $regionGateway,
+		private StoreGateway $storeGateway,
+		private MailsGateway $mailsGateway,
+		private LoginGateway $loginGateway,
+		private SettingsGateway $settingsGateway,
+		private bool $initialized = false
 	) {
-		$this->mem = $mem;
-		$this->buddyGateway = $buddyGateway;
-		$this->foodsaverGateway = $foodsaverGateway;
-		$this->quizHelper = $quizHelper;
-		$this->regionGateway = $regionGateway;
-		$this->storeGateway = $storeGateway;
-		$this->mailsGateway = $mailsGateway;
-		$this->loginGateway = $loginGateway;
-		$this->settingsGateway = $settingsGateway;
+		$this->roleKeysInverse = array_flip(self::ROLE_KEYS);
 	}
 
 	public function initIfCookieExists()
@@ -98,7 +81,7 @@ class Session
 		}
 	}
 
-	public function checkInitialized()
+	private function checkInitialized()
 	{
 		if (!$this->initialized) {
 			throw new Exception('Session not initialized');
@@ -117,8 +100,8 @@ class Session
 		ini_set('session.save_path', 'tcp://' . REDIS_HOST . ':' . REDIS_PORT);
 
 		fSession::setLength(
-			static::DEFAULT_NORMAL_SESSION_TIMESPAN,
-			static::DEFAULT_PERSISTENT_SESSION_TIMESPAN
+			self::DEFAULT_NORMAL_SESSION_TIMESPAN,
+			self::DEFAULT_PERSISTENT_SESSION_TIMESPAN
 		);
 
 		if ($rememberMe) {
@@ -126,23 +109,11 @@ class Session
 			fSession::enablePersistence();
 		}
 
-		fAuthorization::setAuthLevels(
-			[
-				'admin' => 100,
-				'orga' => 70,
-				'bot' => 60,
-				'bieb' => 45,
-				'fs' => 40,
-				'user' => 30,
-				'user_unauth' => 20,
-				'presse' => 15,
-				'guest' => 10
-			]
-		);
+		fAuthorization::setAuthLevels($this->roleKeysInverse);
 
 		fSession::open();
 
-		$cookieExpires = $this->isPersistent() ? strtotime(static::DEFAULT_PERSISTENT_SESSION_TIMESPAN) : 0;
+		$cookieExpires = $this->isPersistent() ? strtotime(self::DEFAULT_PERSISTENT_SESSION_TIMESPAN) : 0;
 		if (!isset($_COOKIE['CSRF_TOKEN']) || !$_COOKIE['CSRF_TOKEN'] || !$this->isValidCsrfToken('cookie', $_COOKIE['CSRF_TOKEN'])) {
 			setcookie('CSRF_TOKEN', $this->generateCrsfToken('cookie'), $cookieExpires, '/');
 		}
@@ -153,7 +124,7 @@ class Session
 		return $_SESSION['fSession::type'] === 'persistent';
 	}
 
-	public function setAuthLevel($role)
+	private function setAuthLevel($role)
 	{
 		fAuthorization::setUserAuthLevel($role);
 		fAuthorization::setUserACLs(
@@ -172,7 +143,7 @@ class Session
 			$this->mem->logout($this->id());
 			$this->set('user', false);
 			fAuthorization::destroyUserInfo();
-			$this->setAuthLevel('guest');
+			$this->setAuthLevel(null);
 			$this->destroy();
 		}
 	}
@@ -193,16 +164,18 @@ class Session
 		return fAuthorization::getUserToken();
 	}
 
-	public function may($role = 'user')
+	/**
+	 * Checks if the current user has at least the specified role.
+	 *
+	 * @param int $role a {@see Role} constant
+	 */
+	public function mayRole(int $role = Role::FOODSHARER): bool
 	{
 		if (!$this->initialized) {
 			return false;
 		}
-		if (fAuthorization::checkAuthLevel($role)) {
-			return true;
-		}
 
-		return false;
+		return fAuthorization::checkAuthLevel(self::ROLE_KEYS[$role]);
 	}
 
 	public function getLocation(): ?array
@@ -220,7 +193,7 @@ class Session
 		return $loc;
 	}
 
-	public function destroy()
+	private function destroy()
 	{
 		$this->checkInitialized();
 		fSession::destroy();
@@ -383,19 +356,10 @@ class Session
 			$this->regionGateway->addMember($fs_id, $master);
 		}
 
-		if ($fs['photo'] != '' && file_exists('images/mini_q_' . $fs['photo'])) {
-			$image1 = new fImage('images/mini_q_' . $fs['photo']);
-			if ($image1->getWidth() > 36) {
-				$image1->cropToRatio(1, 1);
-				$image1->resize(35, 35);
-				$image1->saveChanges();
-			}
-		}
-
 		$fs['buddys'] = $this->buddyGateway->listBuddyIds($fs_id);
 
 		fAuthorization::setUserToken($fs['id']);
-		$this->setAuthLevel($this->rolleWrapInt($fs['rolle']));
+		$this->setAuthLevel(self::ROLE_KEYS[$fs['rolle']]);
 
 		$this->set('user', [
 			'name' => $fs['name'],
@@ -410,7 +374,8 @@ class Session
 			'mailbox_id' => $fs['mailbox_id'],
 			'gender' => $fs['geschlecht'],
 			'privacy_policy_accepted_date' => $fs['privacy_policy_accepted_date'],
-			'privacy_notice_accepted_date' => $fs['privacy_notice_accepted_date']
+			'privacy_notice_accepted_date' => $fs['privacy_notice_accepted_date'],
+			'last_activity' => $fs['last_activity']
 		]);
 		$this->set('buddy-ids', $fs['buddys']);
 
@@ -436,7 +401,8 @@ class Session
 			'group' => ['member' => true],
 			'photo' => $fs['photo'],
 			'rolle' => (int)$fs['rolle'],
-			'verified' => (int)$fs['verified']
+			'verified' => (int)$fs['verified'],
+			'last_activity' => $fs['last_activity']
 		];
 		if ((int)$fs['rolle'] > 0) {
 			if ($r = $this->regionGateway->listRegionsForBotschafter($fs['id'])
@@ -448,7 +414,7 @@ class Session
 				}
 			}
 
-			$_SESSION['client']['bezirke'] = $this->regionGateway->listForFoodsaver($fs['id']) ?? [];
+			$_SESSION['client']['bezirke'] = $this->regionGateway->listForFoodsaver($fs['id']);
 		}
 
 		$_SESSION['client']['verantwortlich'] = [];
@@ -464,14 +430,9 @@ class Session
 		$this->set('locale', $this->settingsGateway->getUserOption($fs['id'], UserOptionType::LOCALE));
 	}
 
-	private function rolleWrapInt($roleInt)
-	{
-		return self::ROLE_KEYS[$roleInt];
-	}
-
 	public function mayBezirk($regionId): bool
 	{
-		return isset($_SESSION['client']['bezirke'][$regionId]) || $this->isAdminFor($regionId) || $this->may('orga');
+		return isset($_SESSION['client']['bezirke'][$regionId]) || $this->isAdminFor($regionId) || $this->mayRole(Role::ORGA);
 	}
 
 	public function mayIsStoreResponsible($storeId)
@@ -490,7 +451,7 @@ class Session
 
 	public function isVerified()
 	{
-		if ($this->may('orga')) {
+		if ($this->mayRole(Role::ORGA)) {
 			return true;
 		}
 
@@ -562,5 +523,21 @@ class Session
 	public function isMob(): bool
 	{
 		return isset($_SESSION['mob']) && $_SESSION['mob'] == 1;
+	}
+
+	public function updateLastActivity()
+	{
+		$session_last_activity = $_SESSION['client']['last_activity'];
+		if ($session_last_activity === null) {
+			$session_last_activity = date('Y-m-d');
+		}
+
+		$last_activity = date('Y-m-d', strtotime($session_last_activity));
+		$today = date('Y-m-d');
+
+		if ($this->isPersistent() && $today != $last_activity) {
+			$this->loginGateway->updateLastActivityInDatabase($this->id());
+			$this->refreshFromDatabase();
+		}
 	}
 }

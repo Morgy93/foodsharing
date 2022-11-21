@@ -247,8 +247,8 @@ class StatsGateway extends BaseGateway
 				region.stat_korpcount = IFNULL(stores.coops, 0)
 		', [
 			'type_working_group' => UnitType::WORKING_GROUP,
-			'coop_starting' => CooperationStatus::COOPERATION_STARTING,
-			'coop_established' => CooperationStatus::COOPERATION_ESTABLISHED,
+			'coop_starting' => CooperationStatus::COOPERATION_STARTING->value,
+			'coop_established' => CooperationStatus::COOPERATION_ESTABLISHED->value,
 		]);
 	}
 

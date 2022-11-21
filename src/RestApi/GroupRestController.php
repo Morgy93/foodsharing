@@ -38,7 +38,6 @@ class GroupRestController extends AbstractFOSRestController
 	 * @OA\Response(response="403", description="Insufficient permissions")
 	 * @OA\Response(response="409", description="Group still contains elements")
 	 * @OA\Tag(name="groups")
-	 *
 	 * @Rest\Delete("groups/{groupId}", requirements={"groupId" = "\d+"})
 	 */
 	public function deleteGroupAction(int $groupId): Response
@@ -64,13 +63,12 @@ class GroupRestController extends AbstractFOSRestController
 	 * Returns the join URL of a given groups conference.
 	 *
 	 * @OA\Tag(name="groups")
-	 *
 	 * @Rest\Get("groups/{groupId}/conference", requirements={"groupId" = "\d+"})
 	 * @Rest\QueryParam(name="redirect", default="false", description="Should the response perform a 301 redirect to the actual conference?")
 	 */
 	public function joinConferenceAction(RegionGateway $regionGateway, RegionPermissions $regionPermissions, BigBlueButton $bbb, int $groupId, ParamFetcher $paramFetcher): Response
 	{
-		if (!$this->session->may()) {
+		if (!$this->session->mayRole()) {
 			throw new UnauthorizedHttpException('');
 		}
 		if (!in_array($groupId, $this->session->listRegionIDs())) {
@@ -102,7 +100,6 @@ class GroupRestController extends AbstractFOSRestController
 	 *
 	 * @OA\Tag(name="groups")
 	 * @OA\Tag(name="my")
-	 *
 	 * @Rest\Get("user/current/groups")
 	 * @OA\Response(
 	 * 		response="200",
@@ -116,7 +113,7 @@ class GroupRestController extends AbstractFOSRestController
 	 */
 	public function listMyWorkingGroups(): Response
 	{
-		if (!$this->session->may()) {
+		if (!$this->session->mayRole()) {
 			throw new UnauthorizedHttpException('');
 		}
 		$fsId = $this->session->id();

@@ -16,7 +16,7 @@ class Message
 	public $body;
 
 	/**
-	 * @var Carbon
+	 * @var string
 	 */
 	public $sentAt;
 
@@ -28,7 +28,7 @@ class Message
 	public function __construct(string $body, int $authorId, Carbon $sentAt, int $messageId)
 	{
 		$this->authorId = $authorId;
-		$this->sentAt = $sentAt;
+		$this->sentAt = $sentAt->toIso8601String();
 		$this->body = $body;
 		$this->id = $messageId;
 	}
