@@ -213,6 +213,12 @@ class QuizControl extends Control
 	private function getSessionListContent(array $quiz): string
 	{
 		if ($sessions = $this->quizSessionGateway->listSessions($quiz['id'])) {
+			foreach ($sessions as $key => $item) {
+				if (!isset($item['time_start'])) {
+					unset($sessions[$key]);
+				}
+			}
+
 			return $this->view->sessionList($sessions, $quiz);
 		}
 
