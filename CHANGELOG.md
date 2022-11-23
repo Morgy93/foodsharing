@@ -106,6 +106,7 @@
 - Show all Photos on Team Page !2488 @BibaltiK
 - Before the object is created, it is checked whether the controller could be resolved beforehand. !2487 @BibaltiK
 - checks if user is logged in so that a businesscard can be created !2492 @BibaltiK
+- Fix list for quiz sessions !2503 @BibaltiK
 
 ## Refactoring
 - Currently running events are shown within the event overview until their end !2162 @merhoc
