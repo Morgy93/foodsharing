@@ -214,7 +214,7 @@ class QuizControl extends Control
 	{
 		if ($sessions = $this->quizSessionGateway->listSessions($quiz['id'])) {
 			foreach ($sessions as $key => $item) {
-				if (!isset($item['time_start'])) {
+				if (empty($item) || !isset($item['time_start'])) {
 					unset($sessions[$key]);
 				}
 			}
