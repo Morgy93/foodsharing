@@ -284,7 +284,7 @@ final class BasketRestController extends AbstractFOSRestController
 			return $this->normalizeBasket($basket, $request);
 		}, $baskets);
 
-		return $this->handleView($this->view(['baskets' => $baskets], Response::HTTP_BAD_REQUEST));
+		return $this->handleView($this->view(['baskets' => $baskets], Response::HTTP_OK));
 	}
 
 	/**
