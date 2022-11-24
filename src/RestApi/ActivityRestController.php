@@ -7,30 +7,28 @@ use Foodsharing\Modules\Activity\ActivityTransactions;
 use FOS\RestBundle\Controller\AbstractFOSRestController;
 use FOS\RestBundle\Controller\Annotations as Rest;
 use FOS\RestBundle\Request\ParamFetcher;
+
+use function intval;
+
 use OpenApi\Annotations as OA;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\Exception\UnauthorizedHttpException;
 
 class ActivityRestController extends AbstractFOSRestController
 {
-	private ActivityTransactions $activityTransactions;
-	private Session $session;
-
 	public function __construct(
-		ActivityTransactions $activityTransactions,
-		Session $session
+		private readonly ActivityTransactions $activityTransactions,
+		private readonly Session $session
 	) {
-		$this->activityTransactions = $activityTransactions;
-		$this->session = $session;
 	}
 
 	/**
 	 * Returns the filters for all dashboard activities for the current user.
 	 *
-	 * @OA\Response(response="200", description="Success.")
-	 * @OA\Response(response="403", description="Insufficient permissions to request filters.")
 	 * @OA\Tag(name="activities")
 	 * @Rest\Get("activities/filters")
+	 * @OA\Response(response=Response::HTTP_OK, description="Success.")
+	 * @OA\Response(response=Response::HTTP_UNAUTHORIZED, description="Not logged in.")
 	 */
 	public function getActivityFiltersAction(): Response
 	{
@@ -40,17 +38,17 @@ class ActivityRestController extends AbstractFOSRestController
 
 		$filters = $this->activityTransactions->getFilters();
 
-		return $this->handleView($this->view($filters, 200));
+		return $this->handleView($this->view($filters, Response::HTTP_OK));
 	}
 
 	/**
 	 * Sets which dashboard activities should be deactivated for the current user.
 	 *
-	 * @OA\Response(response="200", description="Success.")
-	 * @OA\Response(response="403", description="Insufficient permissions to set filters.")
 	 * @OA\Tag(name="activities")
 	 * @Rest\Patch("activities/filters")
 	 * @Rest\RequestParam(name="excluded")
+	 * @OA\Response(response=Response::HTTP_OK, description="Success.")
+	 * @OA\Response(response=Response::HTTP_UNAUTHORIZED, description="Not logged in.")
 	 */
 	public function setActivityFiltersAction(ParamFetcher $paramFetcher): Response
 	{
@@ -61,16 +59,17 @@ class ActivityRestController extends AbstractFOSRestController
 		$excluded = $paramFetcher->get('excluded');
 		$this->activityTransactions->setExcludedFilters($excluded);
 
-		return $this->handleView($this->view([], 200));
+		return $this->handleView($this->view([], Response::HTTP_OK));
 	}
 
 	/**
 	 * Returns the updates object for <ActivityOverview> to display on the dashboard.
 	 *
-	 * @OA\Response(response="200", description="Success.")
 	 * @OA\Tag(name="activities")
 	 * @Rest\Get("activities/updates")
 	 * @Rest\QueryParam(name="page", requirements="\d+", default="0", description="Which page of updates to return")
+	 * @OA\Response(response=Response::HTTP_OK, description="Success.")
+	 * @OA\Response(response=Response::HTTP_UNAUTHORIZED, description="Not logged in.")
 	 */
 	public function getActivityUpdatesAction(ParamFetcher $paramFetcher): Response
 	{
@@ -84,6 +83,6 @@ class ActivityRestController extends AbstractFOSRestController
 			'updates' => $this->activityTransactions->getUpdateData($page),
 		];
 
-		return $this->handleView($this->view($updates, 200));
+		return $this->handleView($this->view($updates, Response::HTTP_OK));
 	}
 }

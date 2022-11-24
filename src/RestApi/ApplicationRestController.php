@@ -17,32 +17,24 @@ use Symfony\Component\HttpKernel\Exception\UnauthorizedHttpException;
 
 class ApplicationRestController extends AbstractFOSRestController
 {
-	private RegionGateway $regionGateway;
-	private WorkGroupPermissions $workGroupPermissions;
-	private ApplicationTransactions $applicationTransactions;
-	private Session $session;
-
 	public function __construct(
-		WorkGroupPermissions $workGroupPermissions,
-		RegionGateway $regionGateway,
-		ApplicationTransactions $applicationTransactions,
-		Session $session
+		private readonly WorkGroupPermissions $workGroupPermissions,
+		private readonly RegionGateway $regionGateway,
+		private readonly ApplicationTransactions $applicationTransactions,
+		private readonly Session $session
 	) {
-		$this->workGroupPermissions = $workGroupPermissions;
-		$this->regionGateway = $regionGateway;
-		$this->applicationTransactions = $applicationTransactions;
-		$this->session = $session;
 	}
 
 	/**
 	 * Accepts an application for a work group.
 	 *
 	 * @OA\Tag(name="application")
-	 * @OA\Parameter(name="groupId", in="path", @OA\Schema(type="integer"), description="which work group the request is for")
-	 * @OA\Response(response="200", description="success")
-	 * @OA\Response(response="403", description="Insufficient permissions")
-	 * @OA\Response(response="404", description="Workgroup does not exist.")
 	 * @Rest\Patch("applications/{groupId}/{userId}", requirements={"groupId" = "\d+", "userId" = "\d+"})
+	 * @OA\Parameter(name="groupId", in="path", @OA\Schema(type="integer"), description="which work group the request is for")
+	 * @OA\Response(response=Response::HTTP_OK, description="Success.")
+	 * @OA\Response(response=Response::HTTP_UNAUTHORIZED, description="Not logged in.")
+	 * @OA\Response(response=Response::HTTP_FORBIDDEN, description="Insufficient permissions.")
+	 * @OA\Response(response=Response::HTTP_NOT_FOUND, description="Workgroup does not exist.")
 	 */
 	public function acceptApplicationAction(int $groupId, int $userId): Response
 	{
@@ -62,18 +54,19 @@ class ApplicationRestController extends AbstractFOSRestController
 
 		$this->applicationTransactions->acceptApplication($group, $userId);
 
-		return $this->handleView($this->view([], 200));
+		return $this->handleView($this->view([], Response::HTTP_FORBIDDEN));
 	}
 
 	/**
 	 * Declines an application for a work group.
 	 *
 	 * @OA\Tag(name="application")
-	 * @OA\Parameter(name="groupId", in="path", @OA\Schema(type="integer"), description="which work group the request is for")
-	 * @OA\Response(response="200", description="Success")
-	 * @OA\Response(response="403", description="Insufficient permissions")
-	 * @OA\Response(response="404", description="Workgroup does not exist.")
 	 * @Rest\Delete("applications/{groupId}/{userId}", requirements={"groupId" = "\d+", "userId" = "\d+"})
+	 * @OA\Parameter(name="groupId", in="path", @OA\Schema(type="integer"), description="which work group the request is for")
+	 * @OA\Response(response=Response::HTTP_OK, description="Success.")
+	 * @OA\Response(response=Response::HTTP_UNAUTHORIZED, description="Not logged in.")
+	 * @OA\Response(response=Response::HTTP_FORBIDDEN, description="Insufficient permissions.")
+	 * @OA\Response(response=Response::HTTP_NOT_FOUND, description="Workgroup does not exist.")
 	 */
 	public function declineApplicationAction(int $groupId, int $userId): Response
 	{
@@ -93,6 +86,6 @@ class ApplicationRestController extends AbstractFOSRestController
 
 		$this->applicationTransactions->declineApplication($group, $userId);
 
-		return $this->handleView($this->view([], 200));
+		return $this->handleView($this->view([], Response::HTTP_OK));
 	}
 }
