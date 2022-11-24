@@ -117,9 +117,10 @@ class EventView extends View
 			{
                 document.getElementById("addend").checked = true;
                 dateend_wrapper.style.display = "block";
+                dateend_wrapper.classList.remove("required");
+			} else {
+				document.getElementById("addend").checked = false;
 			}
-
-			dateend_wrapper.classList.remove("required");
 
 			$("#addend").on("change", function () {
 				if ($("#addend:checked").length > 0) {
