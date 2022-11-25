@@ -129,16 +129,21 @@ class StoreControl extends Control
 			if (!$this->session->mayRole() || !$this->storePermissions->mayListStores()) {
 				$this->routeHelper->go('/');
 			}
-			$this->pageHelper->addBread($this->translator->trans('store.bread'), '/?page=fsbetrieb');
 
-			$storesMapped = $this->storeTransactions->listOverviewInformationsOfStoresInRegion($regionId, true);
+			if (empty($region) || $regionId <= 0) {
+				$this->flashMessageHelper->info($this->translator->trans('store.error'));
+				$this->routeHelper->go('/');
+			} else {
+				$this->pageHelper->addBread($this->translator->trans('store.bread'), '/?page=fsbetrieb');
+				$storesMapped = $this->storeTransactions->listOverviewInformationsOfStoresInRegion($regionId, true);
 
-			$this->pageHelper->addContent($this->view->vueComponent('vue-storelist', 'store-list', [
-				'regionName' => $region['name'],
-				'regionId' => $regionId,
-				'showCreateStore' => $this->storePermissions->mayCreateStore(),
-				'stores' => array_values($storesMapped),
-			]));
+				$this->pageHelper->addContent($this->view->vueComponent('vue-storelist', 'store-list', [
+					'regionName' => $region['name'],
+					'regionId' => $regionId,
+					'showCreateStore' => $this->storePermissions->mayCreateStore(),
+					'stores' => array_values($storesMapped),
+				]));
+			}
 		}
 	}
 

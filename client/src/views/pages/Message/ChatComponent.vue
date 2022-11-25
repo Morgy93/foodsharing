@@ -57,11 +57,15 @@
       :slot="'message-avatar_' + msg._id"
       style="height: 100%; align-self: flex-end;"
     >
-      <Avatar
-        class="avatar"
-        :url="getAvatar(msg.senderId)"
-        :size="35"
-      />
+      <a
+        :href="$url('profile', msg.senderId)"
+      >
+        <Avatar
+          class="avatar"
+          :url="getAvatar(msg.senderId)"
+          :size="35"
+        />
+      </a>
     </div>
   </vue-advanced-chat>
 </template>

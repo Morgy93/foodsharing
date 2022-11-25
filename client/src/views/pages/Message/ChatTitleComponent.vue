@@ -41,6 +41,8 @@ import conversationStore from '@/stores/conversations'
 import ProfileStore from '@/stores/profiles'
 import DataUser from '@/stores/user'
 
+const LIMIT_DISPLAYED_USERS = 35
+
 export default {
   components: {
     Avatar,
@@ -78,7 +80,7 @@ export default {
         return
       }
       const conversation = await conversationStore.getConversation(this.conversationId)
-      const otherMembers = conversation.members.filter(m => m !== this.currentUserId)
+      const otherMembers = conversation.members.filter(m => m !== this.currentUserId).slice(0, LIMIT_DISPLAYED_USERS)
 
       const title = conversation.title || `${otherMembers.map(member => ProfileStore.profiles[member].name).join(', ')}`
 
@@ -116,6 +118,23 @@ export default {
 
 .avatar {
   vertical-align: middle;
+}
+
+#title {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  line-clamp: 2;
+  -webkit-box-orient: vertical;
+}
+
+.images {
+  overflow: hidden;
+  display: -webkit-box;
+  -webkit-line-clamp: 1;
+  line-clamp: 1;
+  -webkit-box-orient: vertical;
 }
 
 </style>

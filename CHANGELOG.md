@@ -20,12 +20,12 @@
 - At stores under pickup history, storemanagers can now see the signed out foodsavers from pickup slots from past 7 days with the signout date. !2363 @martincodes-de
 - Voter Turnout Percentage can be seen if the poll has completed !2377 @viveknshah
 - Provide RestAPI to get backend defined common meta information for stores like "max count of slots per pickup" !1373 @koemai
-- Provide RestApi zo list all dtores of anregion and expend details !2466 @KoeMai
+- Provide RestApi to list all stores of an region and expand details !2466 !2507 @KoeMai
 - Provide RestAPI to get backend defined common meta information for stores like "max count of slots per pickup", and store creation required informatio !1373 !2448 @koemai
 - District rules for maximum number of pickups in a timeframe accross severall stores combined can be set !2414 @fs_k
 - Provide RestAPI to change teamstatus of a store !2406
 - Added RestAPI for regular Pickup configuration !1373 @koemai
-- The chat has been modernised !2301 @NINI1988
+- The chat has been modernised !2301 !2498 @NINI1988
 - Added new body font !2426 @sefn
 
 ## Changes
@@ -133,7 +133,7 @@
 - LoginForm: Removed duplicated content and imported NavLoginEntry.vue !2471 @chriswalg
 - LoginForm: Removed duplicated content and moved to client/src !2471 @chriswalg
 - Remove unused Endpoints from RestAPI !2499 @BibaltiK
-- Changed store cooperation status to an enum !2473 !2496 @KoeMai
+- Changed store cooperation status to an enum !2473 !2496 !2505 @KoeMai
 
 ## Dev/Test/CI stuff
 - Added Gitpod and refactored permissions !2386 !2399 !2402 !2428 @sefn @chriswalg

@@ -200,7 +200,7 @@ class StoreTransactions
 
 		$store->categoryId = intval($legacyGlobalData['betrieb_kategorie_id']);
 		$store->chainId = intval($legacyGlobalData['kette_id']);
-		$store->cooperationStatus = CooperationStatus::tryFrom($legacyGlobalData['betrieb_status_id']);
+		$store->cooperationStatus = CooperationStatus::tryFrom(intval($legacyGlobalData['betrieb_status_id']));
 
 		$store->description = $legacyGlobalData['besonderheiten'];
 
