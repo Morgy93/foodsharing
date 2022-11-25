@@ -35,48 +35,6 @@ class ForumRestController extends AbstractFOSRestController
 	) {
 	}
 
-	private function normalizeThread(array $thread): array
-	{
-		$normalizedThread = [
-			'id' => $thread['id'],
-			'regionId' => $thread['regionId'],
-			'regionSubId' => $thread['regionSubId'],
-			'title' => $thread['title'],
-			'createdAt' => str_replace(' ', 'T', $thread['time']),
-			'isSticky' => boolval($thread['sticky'] ?? false),
-			'isActive' => boolval($thread['active'] ?? true),
-			'lastPost' => [
-				'id' => $thread['last_post_id'],
-			],
-			'creator' => [
-				'id' => $thread['creator_id'],
-			],
-			'status' => intval($thread['status'])
-		];
-		if (isset($thread['post_time'])) {
-			$normalizedThread['lastPost']['createdAt'] = str_replace(' ', 'T', $thread['post_time']);
-			$normalizedThread['lastPost']['body'] = $this->sanitizerService->markdownToHtml($thread['post_body']);
-			$normalizedThread['lastPost']['author'] = RestNormalization::normalizeUser($thread, 'foodsaver_');
-		}
-		if (isset($thread['creator_name'])) {
-			$normalizedThread['creator'] = RestNormalization::normalizeUser($thread, 'creator_');
-		}
-
-		return $normalizedThread;
-	}
-
-	private function normalizePost(array $post): array
-	{
-		return [
-			'id' => $post['id'],
-			'body' => $this->sanitizerService->markdownToHtml($post['body']),
-			'createdAt' => str_replace(' ', 'T', $post['time']),
-			'author' => RestNormalization::normalizeUser($post, 'author_'),
-			'reactions' => $post['reactions'] ?: new \ArrayObject(),
-			'mayDelete' => $this->forumPermissions->mayDeletePost($post)
-		];
-	}
-
 	/**
 	 * Gets available threads including their last post.
 	 *
@@ -122,15 +80,6 @@ class ForumRestController extends AbstractFOSRestController
 		$threads = $this->getNormalizedThreads($forumId, $forumSubId, $limit, $offset);
 
 		return $this->handleView($this->view(['data' => $threads], Response::HTTP_OK));
-	}
-
-	private function getNormalizedThreads(int $forumId, int $forumSubId, int $limit, int $offset): array
-	{
-		$threads = $this->forumGateway->listThreads($forumId, $forumSubId, $limit, $offset);
-
-		return array_map(function ($thread) {
-			return $this->normalizeThread($thread);
-		}, $threads);
 	}
 
 	/**
@@ -478,5 +427,56 @@ class ForumRestController extends AbstractFOSRestController
 		$this->forumTransactions->removeReaction($this->session->id(), $postId, $emoji);
 
 		return $this->handleView($this->view([], Response::HTTP_OK));
+	}
+
+	private function getNormalizedThreads(int $forumId, int $forumSubId, int $limit, int $offset): array
+	{
+		$threads = $this->forumGateway->listThreads($forumId, $forumSubId, $limit, $offset);
+
+		return array_map(function ($thread) {
+			return $this->normalizeThread($thread);
+		}, $threads);
+	}
+
+	private function normalizePost(array $post): array
+	{
+		return [
+			'id' => $post['id'],
+			'body' => $this->sanitizerService->markdownToHtml($post['body']),
+			'createdAt' => str_replace(' ', 'T', $post['time']),
+			'author' => RestNormalization::normalizeUser($post, 'author_'),
+			'reactions' => $post['reactions'] ?: new \ArrayObject(),
+			'mayDelete' => $this->forumPermissions->mayDeletePost($post)
+		];
+	}
+
+	private function normalizeThread(array $thread): array
+	{
+		$normalizedThread = [
+			'id' => $thread['id'],
+			'regionId' => $thread['regionId'],
+			'regionSubId' => $thread['regionSubId'],
+			'title' => $thread['title'],
+			'createdAt' => str_replace(' ', 'T', $thread['time']),
+			'isSticky' => boolval($thread['sticky'] ?? false),
+			'isActive' => boolval($thread['active'] ?? true),
+			'lastPost' => [
+				'id' => $thread['last_post_id'],
+			],
+			'creator' => [
+				'id' => $thread['creator_id'],
+			],
+			'status' => intval($thread['status'])
+		];
+		if (isset($thread['post_time'])) {
+			$normalizedThread['lastPost']['createdAt'] = str_replace(' ', 'T', $thread['post_time']);
+			$normalizedThread['lastPost']['body'] = $this->sanitizerService->markdownToHtml($thread['post_body']);
+			$normalizedThread['lastPost']['author'] = RestNormalization::normalizeUser($thread, 'foodsaver_');
+		}
+		if (isset($thread['creator_name'])) {
+			$normalizedThread['creator'] = RestNormalization::normalizeUser($thread, 'creator_');
+		}
+
+		return $normalizedThread;
 	}
 }
