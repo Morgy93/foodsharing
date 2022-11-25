@@ -129,7 +129,7 @@ class ForumRestController extends AbstractFOSRestController
 	 * @OA\Tag(name="forum")
 	 * @Rest\Post("forum/thread/{threadId}/posts", requirements={"threadId" = "\d+"})
 	 * @Rest\RequestParam(name="body", description="post message")
-	 * @OA\Response(response=Response::HTTP_OK, description="Success.")
+	 * @OA\Response(response=Response::NO_CONTENT, description="Empty Response.")
 	 * @OA\Response(response=Response::HTTP_UNAUTHORIZED, description="Not logged in.")
 	 * @OA\Response(response=Response::HTTP_FORBIDDEN, description="Insufficient permissions")
 	 */
