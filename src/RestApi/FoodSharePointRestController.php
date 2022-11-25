@@ -2,22 +2,20 @@
 
 namespace Foodsharing\RestApi;
 
-use function array_map;
-
 use Foodsharing\Lib\Session;
 use Foodsharing\Modules\FoodSharePoint\FoodSharePointGateway;
 use FOS\RestBundle\Controller\AbstractFOSRestController;
 use FOS\RestBundle\Controller\Annotations as Rest;
 use FOS\RestBundle\Request\ParamFetcher;
-
-use function is_nan;
-use function is_null;
-
 use OpenApi\Annotations as OA;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 use Symfony\Component\HttpKernel\Exception\UnauthorizedHttpException;
+
+use function array_map;
+use function is_nan;
+use function is_null;
 
 /**
  * Rest controller for food share points.

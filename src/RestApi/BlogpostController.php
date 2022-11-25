@@ -2,8 +2,6 @@
 
 namespace Foodsharing\RestApi;
 
-use function boolval;
-
 use Foodsharing\Lib\Session;
 use Foodsharing\Modules\Blog\BlogGateway;
 use Foodsharing\Permissions\BlogPermissions;
@@ -15,6 +13,8 @@ use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\Exception\AccessDeniedHttpException;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 use Symfony\Component\HttpKernel\Exception\UnauthorizedHttpException;
+
+use function boolval;
 
 class BlogpostController extends AbstractFOSRestController
 {

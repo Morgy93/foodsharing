@@ -2,13 +2,7 @@
 
 namespace Foodsharing\RestApi;
 
-use function array_map;
-
 use Exception;
-
-use function explode;
-use function file_put_contents;
-
 use Foodsharing\Lib\Session;
 use Foodsharing\Modules\Basket\BasketGateway;
 use Foodsharing\Modules\Basket\BasketTransactions;
@@ -20,19 +14,7 @@ use Foodsharing\Utility\ImageHelper;
 use FOS\RestBundle\Controller\AbstractFOSRestController;
 use FOS\RestBundle\Controller\Annotations as Rest;
 use FOS\RestBundle\Request\ParamFetcher;
-
-use function html_entity_decode;
-use function in_array;
-use function is_array;
-use function is_nan;
-use function is_null;
-use function max;
-
 use OpenApi\Annotations as OA;
-
-use function strip_tags;
-use function strlen;
-
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\Exception\AccessDeniedHttpException;
@@ -40,6 +22,17 @@ use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 use Symfony\Component\HttpKernel\Exception\UnauthorizedHttpException;
 
+use function array_map;
+use function explode;
+use function file_put_contents;
+use function html_entity_decode;
+use function in_array;
+use function is_array;
+use function is_nan;
+use function is_null;
+use function max;
+use function strip_tags;
+use function strlen;
 use function time;
 use function trim;
 use function uniqid;
