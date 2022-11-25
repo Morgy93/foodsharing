@@ -145,7 +145,7 @@ class ForumRestController extends AbstractFOSRestController
 		$body = $paramFetcher->get('body');
 		$this->forumTransactions->addPostToThread($this->session->id(), $threadId, $body);
 
-		return $this->handleView($this->view([], Response::HTTP_OK));
+		return $this->handleView($this->view());
 	}
 
 	/**
