@@ -7,12 +7,11 @@ use Foodsharing\Modules\Activity\ActivityTransactions;
 use FOS\RestBundle\Controller\AbstractFOSRestController;
 use FOS\RestBundle\Controller\Annotations as Rest;
 use FOS\RestBundle\Request\ParamFetcher;
-
-use function intval;
-
 use OpenApi\Annotations as OA;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\Exception\UnauthorizedHttpException;
+
+use function intval;
 
 class ActivityRestController extends AbstractFOSRestController
 {

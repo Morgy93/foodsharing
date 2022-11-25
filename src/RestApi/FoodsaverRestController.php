@@ -14,20 +14,15 @@ use Symfony\Component\HttpKernel\Exception\AccessDeniedHttpException;
 use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
 use Symfony\Component\HttpKernel\Exception\UnauthorizedHttpException;
 
+use function is_null;
+
 final class FoodsaverRestController extends AbstractFOSRestController
 {
-	private PickupGateway $pickupGateway;
-	private ProfilePermissions $profilePermissions;
-	private Session $session;
-
 	public function __construct(
-		PickupGateway $pickupGateway,
-		ProfilePermissions $profilePermissions,
-		Session $session
+		private readonly PickupGateway $pickupGateway,
+		private readonly ProfilePermissions $profilePermissions,
+		private readonly Session $session
 	) {
-		$this->pickupGateway = $pickupGateway;
-		$this->profilePermissions = $profilePermissions;
-		$this->session = $session;
 	}
 
 	/**
@@ -36,6 +31,9 @@ final class FoodsaverRestController extends AbstractFOSRestController
 	 *
 	 * @OA\Tag(name="foodsaver")
 	 * @Rest\Get("foodsaver/{fsId}/pickups/{onDate}", requirements={"fsId" = "\d+", "onDate" = "[^/]+"})
+	 * @OA\Response(response=Response::HTTP_OK, description="Success.")
+	 * @OA\Response(response=Response::HTTP_UNAUTHORIZED, description="Not logged in.")
+	 * @OA\Response(response=Response::HTTP_BAD_REQUEST, description="Incorrect data.")
 	 */
 	public function listSameDayPickupsAction(int $fsId, string $onDate): Response
 	{
@@ -53,6 +51,6 @@ final class FoodsaverRestController extends AbstractFOSRestController
 		}
 		$pickups = $this->pickupGateway->getSameDayPickupsForUser($fsId, $day);
 
-		return $this->handleView($this->view($pickups));
+		return $this->handleView($this->view($pickups, Response::HTTP_OK));
 	}
 }

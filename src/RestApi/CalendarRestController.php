@@ -3,6 +3,7 @@
 namespace Foodsharing\RestApi;
 
 use Carbon\Carbon;
+use DateTimeZone;
 use Foodsharing\Lib\Session;
 use Foodsharing\Modules\Event\EventGateway;
 use Foodsharing\Modules\Event\InvitationStatus;
@@ -23,41 +24,35 @@ use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 use Symfony\Component\HttpKernel\Exception\UnauthorizedHttpException;
 use Symfony\Contracts\Translation\TranslatorInterface;
 
+use function array_map;
+use function bin2hex;
+use function openssl_random_pseudo_bytes;
+use function str_replace;
+
 /**
  * Provides endpoints for exporting pickup dates and other events to iCal and managing access tokens.
  */
 class CalendarRestController extends AbstractFOSRestController
 {
-	private Session $session;
-	private SettingsGateway $settingsGateway;
-	private PickupGateway $pickupGateway;
-	private EventGateway $eventGateway;
-	private TranslatorInterface $translator;
-
 	private const TOKEN_LENGTH_IN_BYTES = 10;
 
 	public function __construct(
-		Session $session,
-		SettingsGateway $settingsGateway,
-		PickupGateway $pickupGateway,
-		EventGateway $eventGateway,
-		TranslatorInterface $translator
+		private readonly Session $session,
+		private readonly SettingsGateway $settingsGateway,
+		private readonly PickupGateway $pickupGateway,
+		private readonly EventGateway $eventGateway,
+		private readonly TranslatorInterface $translator
 	) {
-		$this->session = $session;
-		$this->settingsGateway = $settingsGateway;
-		$this->pickupGateway = $pickupGateway;
-		$this->eventGateway = $eventGateway;
-		$this->translator = $translator;
 	}
 
 	/**
 	 * Returns the user's current access token.
 	 *
-	 * @OA\Response(response="200", description="Success")
-	 * @OA\Response(response="401", description="Not logged in")
-	 * @OA\Response(response="404", description="User does not have a token")
 	 * @OA\Tag(name="calendar")
 	 * @Rest\Get("calendar/token")
+	 * @OA\Response(response=Response::HTTP_OK, description="Success.")
+	 * @OA\Response(response=Response::HTTP_UNAUTHORIZED, description="Not logged in.")
+	 * @OA\Response(response=Response::HTTP_NOT_FOUND, description="User does not have a token.")
 	 */
 	public function getTokenAction(): Response
 	{
@@ -71,17 +66,17 @@ class CalendarRestController extends AbstractFOSRestController
 			throw new NotFoundHttpException();
 		}
 
-		return $this->handleView($this->view(['token' => $token]));
+		return $this->handleView($this->view(['token' => $token], Response::HTTP_OK));
 	}
 
 	/**
 	 * Creates a new random access token for the user. An existing token will be overwritten. Returns
 	 * the created token.
 	 *
-	 * @OA\Response(response="200", description="Success")
-	 * @OA\Response(response="401", description="Not logged in")
 	 * @OA\Tag(name="calendar")
 	 * @Rest\Put("calendar/token")
+	 * @OA\Response(response=Response::HTTP_OK, description="Success.")
+	 * @OA\Response(response=Response::HTTP_UNAUTHORIZED, description="Not logged in.")
 	 */
 	public function createTokenAction(): Response
 	{
@@ -94,16 +89,16 @@ class CalendarRestController extends AbstractFOSRestController
 		$this->settingsGateway->removeApiToken($userId);
 		$this->settingsGateway->saveApiToken($userId, $token);
 
-		return $this->handleView($this->view(['token' => $token]));
+		return $this->handleView($this->view(['token' => $token], Response::HTTP_OK));
 	}
 
 	/**
 	 * Removes the user's token. If the user does not have a token nothing will happen.
 	 *
-	 * @OA\Response(response="200", description="Success")
-	 * @OA\Response(response="401", description="Not logged in")
 	 * @OA\Tag(name="calendar")
 	 * @Rest\Delete("calendar/token")
+	 * @OA\Response(response=Response::HTTP_OK, description="Success.")
+	 * @OA\Response(response=Response::HTTP_UNAUTHORIZED, description="Not logged in.")
 	 */
 	public function deleteTokenAction(): Response
 	{
@@ -114,7 +109,7 @@ class CalendarRestController extends AbstractFOSRestController
 
 		$this->settingsGateway->removeApiToken($userId);
 
-		return $this->handleView($this->view());
+		return $this->handleView($this->view([], Response::HTTP_OK));
 	}
 
 	/**
@@ -122,11 +117,11 @@ class CalendarRestController extends AbstractFOSRestController
 	 *
 	 * This includes pickups and meetings / events.
 	 *
-	 * @OA\Parameter(name="token", in="path", @OA\Schema(type="string"), description="Access token")
-	 * @OA\Response(response="200", description="Success.")
-	 * @OA\Response(response="403", description="Insufficient permissions or invalid token.")
 	 * @OA\Tag(name="calendar")
 	 * @Rest\Get("calendar/{token}")
+	 * @OA\Parameter(name="token", in="path", @OA\Schema(type="string"), description="Access token")
+	 * @OA\Response(response=Response::HTTP_OK, description="Success.")
+	 * @OA\Response(response=Response::HTTP_FORBIDDEN, description="Insufficient permissions or invalid token.")
 	 */
 	public function listAppointmentsAction(string $token): Response
 	{
@@ -151,7 +146,7 @@ class CalendarRestController extends AbstractFOSRestController
 			return $this->createMeetingEvent($meeting, $userId);
 		}, $meetings);
 
-		return new Response($this->formatCalendarResponse(array_merge($pickups, $events)), 200, [
+		return new Response($this->formatCalendarResponse(array_merge($pickups, $events)), Response::HTTP_OK, [
 			'content-type' => 'text/calendar',
 			'content-disposition' => 'attachment; filename="calendar.ics"'
 		]);
@@ -229,7 +224,7 @@ class CalendarRestController extends AbstractFOSRestController
 	private function formatCalendarResponse(array $events): string
 	{
 		$calendar = new Calendar();
-		$calendar->setTimezone(new \DateTimeZone('Europe/Berlin'));
+		$calendar->setTimezone(new DateTimeZone('Europe/Berlin'));
 		$calendar->setProdId('-//Foodsharing//Calendar//DE');
 
 		foreach ($events as $e) {

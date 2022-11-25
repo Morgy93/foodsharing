@@ -13,21 +13,23 @@ use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 use Symfony\Component\HttpKernel\Exception\UnauthorizedHttpException;
 
+use function array_map;
+use function is_nan;
+use function is_null;
+
 /**
  * Rest controller for food share points.
  */
 final class FoodSharePointRestController extends AbstractFOSRestController
 {
-	private FoodSharePointGateway $foodSharePointGateway;
-	private Session $session;
-
 	private const NOT_LOGGED_IN = 'not logged in';
 	private const MAX_FSP_DISTANCE = 50;
+	private const MIN_FSP_DISTANCE = 1;
 
-	public function __construct(FoodSharePointGateway $foodSharePointGateway, Session $session)
-	{
-		$this->foodSharePointGateway = $foodSharePointGateway;
-		$this->session = $session;
+	public function __construct(
+		private readonly FoodSharePointGateway $foodSharePointGateway,
+		private readonly Session $session
+	) {
 	}
 
 	/**
@@ -41,6 +43,9 @@ final class FoodSharePointRestController extends AbstractFOSRestController
 	 * @Rest\QueryParam(name="lat", nullable=true)
 	 * @Rest\QueryParam(name="lon", nullable=true)
 	 * @Rest\QueryParam(name="distance", nullable=false, requirements="\d+")
+	 * @OA\Response(response=Response::HTTP_OK, description="Success.")
+	 * @OA\Response(response=Response::HTTP_UNAUTHORIZED, description="Not logged in.")
+	 * @OA\Response(response=Response::HTTP_BAD_REQUEST, description="Incorrect data.")
 	 */
 	public function listNearbyFoodSharePointsAction(ParamFetcher $paramFetcher): Response
 	{
@@ -50,7 +55,7 @@ final class FoodSharePointRestController extends AbstractFOSRestController
 
 		$location = $this->fetchLocationOrUserHome($paramFetcher);
 		$distance = $paramFetcher->get('distance');
-		if ($distance < 1 || $distance > self::MAX_FSP_DISTANCE) {
+		if ($distance < self::MIN_FSP_DISTANCE || $distance > self::MAX_FSP_DISTANCE) {
 			throw new BadRequestHttpException('distance must be positive and <= ' . self::MAX_FSP_DISTANCE);
 		}
 
@@ -59,7 +64,7 @@ final class FoodSharePointRestController extends AbstractFOSRestController
 			return $this->normalizeFoodSharePoint($fsp);
 		}, $fsps);
 
-		return $this->handleView($this->view($fsps, 200));
+		return $this->handleView($this->view($fsps, Response::HTTP_OK));
 	}
 
 	/**
@@ -68,6 +73,9 @@ final class FoodSharePointRestController extends AbstractFOSRestController
 	 *
 	 * @OA\Tag(name="foodsharepoint")
 	 * @Rest\Get("foodSharePoints/{foodSharePointId}", requirements={"foodSharePointId" = "\d+"})
+	 * @OA\Response(response=Response::HTTP_OK, description="Success.")
+	 * @OA\Response(response=Response::HTTP_UNAUTHORIZED, description="Not logged in.")
+	 * @OA\Response(response=Response::HTTP_NOT_FOUND, description="Food share point does not exist.")
 	 */
 	public function getFoodSharePointAction(int $foodSharePointId): Response
 	{
@@ -82,7 +90,7 @@ final class FoodSharePointRestController extends AbstractFOSRestController
 
 		$foodSharePoint = $this->normalizeFoodSharePoint($foodSharePoint);
 
-		return $this->handleView($this->view($foodSharePoint, 200));
+		return $this->handleView($this->view($foodSharePoint, Response::HTTP_OK));
 	}
 
 	private function fetchLocationOrUserHome(ParamFetcher $paramFetcher): array
