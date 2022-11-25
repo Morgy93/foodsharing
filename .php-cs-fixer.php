@@ -31,6 +31,7 @@ $config->setRules([
 		'identical' => null,
 	],
 	'single_line_comment_spacing' => [],
+	'ordered_imports' => ['sort_algorithm' => 'alpha', 'imports_order' => ['class', 'function', 'const']]
 ])
 	->setIndent("\t")
 	->setFinder($finder);

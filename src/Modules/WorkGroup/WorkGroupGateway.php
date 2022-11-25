@@ -6,6 +6,7 @@ use Exception;
 use Foodsharing\Modules\Core\BaseGateway;
 use Foodsharing\Modules\Core\Database;
 use Foodsharing\Modules\Core\DBConstants\Unit\UnitType;
+use Foodsharing\RestApi\Models\Group\EditWorkGroupData;
 
 class WorkGroupGateway extends BaseGateway
 {
@@ -226,18 +227,21 @@ class WorkGroupGateway extends BaseGateway
 		', [':bezirk_id' => $regionId]);
 	}
 
-	public function updateGroup(int $regionId, array $data): int
+	public function updateGroup(int $regionId, EditWorkGroupData $group): int
 	{
+		$description = $group->description == null ? null : strip_tags($group->description);
+		$photo = $group->photo == null ? '' : strip_tags($group->photo);
+
 		return $this->db->update(
 			'fs_bezirk',
 			[
-				'name' => strip_tags($data['name']),
-				'teaser' => strip_tags($data['teaser']),
-				'photo' => strip_tags($data['photo']),
-				'apply_type' => $data['apply_type'],
-				'banana_count' => $data['banana_count'],
-				'fetch_count' => $data['fetch_count'],
-				'week_num' => $data['week_num']
+				'name' => strip_tags($group->name),
+				'teaser' => $description,
+				'photo' => $photo,
+				'apply_type' => $group->applyType,
+				'banana_count' => $group->requiredBananas,
+				'fetch_count' => $group->requiredPickups,
+				'week_num' => $group->requiredWeeks
 			],
 			['id' => $regionId]
 		);

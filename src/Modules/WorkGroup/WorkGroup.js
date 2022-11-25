@@ -2,9 +2,10 @@
 import '@/core'
 import '@/globals'
 import $ from 'jquery'
-import Cropper from 'cropperjs'
-import 'cropperjs/dist/cropper.css'
 import './WorkGroup.css'
+import { GET } from '@/browser'
+import { vueApply, vueRegister } from '@/vue'
+import WorkingGroupEditForm from '@/components/workinggroups/WorkingGroupEditForm'
 
 const $groups = $('.groups .field')
 if ($groups.length > 3) {
@@ -37,115 +38,9 @@ if ($groups.length > 3) {
   $groups.children('.ui-widget.ui-widget-content.corner-bottom').hide()
 }
 
-const selectEl = $('#work_group_form_applyType')
-
-function handleApplicationConstraintVisibility () {
-  if (selectEl.val() == 1) {
-    $('#addapply').show()
-  } else {
-    $('#addapply').hide()
-  }
+if (GET('sub') === 'edit') {
+  vueRegister({
+    WorkingGroupEditForm,
+  })
+  vueApply('#vue-group-edit-form')
 }
-
-selectEl.on('change', handleApplicationConstraintVisibility)
-handleApplicationConstraintVisibility()
-
-const onAfterClose = []
-let cropper = null
-
-$('#work_group_form_photo-link').fancybox({
-  autoSize: true,
-  maxWidth: '90%',
-  scrolling: 'auto',
-  closeClick: false,
-  beforeClose: () => {
-    onAfterClose.forEach(fn => fn())
-    // console.log('afterclose')
-  },
-  afterLoad: () => {
-    const image = document.getElementById('work_group_form_photo-image')
-    const input = document.getElementById('work_group_form_photo-upload')
-    const upload = document.getElementById('work_group_form_photo-save')
-    const rotate = document.getElementById('work_group_form_photo-rotate')
-    const target = document.getElementById('work_group_form_photo-preview')
-    const formTarget = document.getElementById('work_group_form_photo')
-    const uploadError = document.getElementById('work_group_form_photo-upload-error')
-    const cropperOptions = {
-      viewMode: 1,
-      autoCrop: true,
-    }
-    if (cropper === null) {
-      cropper = new Cropper(image, cropperOptions)
-    }
-
-    const onRotateClick = () => {
-      cropper.rotate(90)
-    }
-    rotate.addEventListener('click', onRotateClick)
-    onAfterClose.push(() => rotate.removeEventListener('click', onRotateClick))
-
-    const onFileChange = e => {
-      const files = e.target.files
-      const done = function (url) {
-        input.value = ''
-        image.src = url
-        cropper.replace(url)
-      }
-      if (files && files.length > 0) {
-        const file = files[0]
-        if (window.URL) {
-          done(window.URL.createObjectURL(file))
-        } else if (window.FileReader) {
-          const reader = new window.FileReader()
-          reader.onload = e => {
-            done(reader.result)
-          }
-          reader.readAsDataURL(file)
-        }
-      }
-    }
-    input.addEventListener('change', onFileChange)
-    onAfterClose.push(() => input.removeEventListener('change', onFileChange))
-
-    const onUploadClick = () => {
-      cropper.getCroppedCanvas({
-        width: 500,
-        height: 500,
-        maxWidth: 2000,
-        maxHeight: 2000,
-        fillColor: 'var(--fs-color-light)',
-        imageSmoothingQuality: 'high',
-      }).toBlob((blob) => {
-        const formData = new window.FormData()
-        formData.append('image', blob)
-        uploadError.innerHTML = 'Uploading...'
-        $.ajax('/xhr.php?f=uploadPictureRefactorMeSoon', {
-          method: 'POST',
-          data: formData,
-          processData: false,
-          contentType: false,
-          success: (data) => {
-            uploadError.innerHTML = 'Done'
-            target.src = data.fullPath
-            formTarget.value = data.fullPath
-            $.fancybox.close()
-          },
-          error: (data) => {
-            uploadError.innerHTML = `Upload failed: ${data}`
-          },
-        })
-      })
-    }
-    upload.addEventListener('click', onUploadClick)
-    onAfterClose.push(() => upload.removeEventListener('click', onUploadClick))
-  },
-  helpers: {
-    overlay: { closeClick: false },
-  },
-})
-
-$('#work_group_form_photo-opener').button().on('click', function () {
-  $('#work_group_form_photo-link').trigger('click')
-})
-
-$('.fancybox').fancybox()

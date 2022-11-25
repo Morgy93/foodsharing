@@ -336,7 +336,11 @@ group:
   enterskills: "Fähigkeiten:" #in WorkGroupXhr
   enterxp: "Erfahrung:" #in WorkGroupXhr
   entertime: "Zeit:" #in WorkGroupXhr
-  edit: "{group} bearbeiten"
+  edit:
+    title: "{group} bearbeiten"
+    name_required: "Bitte gib einen Namen ein."
+    description_required: "Bitte gib eine Beschreibung ein."
+    description_placeholder: "Beschreibung der Arbeitsgruppe"
   saved: "Änderungen wurden gespeichert"
   mail_link_title:
     workgroup: "Arbeitsgruppen-Postfach"
@@ -398,7 +402,7 @@ group:
     go: "Zur Gruppe"
     apply: "Für diese Arbeitsgruppe bewerben"
     join: "Dieser Arbeitsgruppe beitreten"
-    safe: "Änderungen speichern"
+    save: "Änderungen speichern"
   no_groups: "Hier gibt es noch keine Arbeitsgruppen"
   quit_name_workgroup: "Team %name% verlassen"
   quit_name_district: "Bezirk %name% verlassen"

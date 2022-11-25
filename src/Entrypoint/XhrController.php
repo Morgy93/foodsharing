@@ -22,7 +22,6 @@ class XhrController extends AbstractController
 	*/
 	private const csrf_whitelist = [
 		// 'bBubble',
-		// 'uploadPictureRefactorMeSoon',
 		// 'out',
 		// 'getRecip',
 		// 'continueMail',

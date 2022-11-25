@@ -8,7 +8,6 @@ use Foodsharing\Modules\Core\DBConstants\Region\WorkgroupFunction;
 use Foodsharing\Modules\Core\DBConstants\Unit\UnitType;
 use Foodsharing\Permissions\WorkGroupPermissions;
 use Foodsharing\Utility\ImageHelper;
-use Symfony\Component\Form\FormFactoryInterface;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 
@@ -17,7 +16,6 @@ class WorkGroupControl extends Control
 	private WorkGroupGateway $workGroupGateway;
 	private WorkGroupPermissions $workGroupPermissions;
 	private ImageHelper $imageService;
-	private FormFactoryInterface $formFactory;
 
 	public function __construct(
 		WorkGroupView $view,
@@ -31,14 +29,6 @@ class WorkGroupControl extends Control
 		$this->imageService = $imageService;
 
 		parent::__construct();
-	}
-
-	/**
-	 * @required
-	 */
-	public function setFormFactory(FormFactoryInterface $formFactory): void
-	{
-		$this->formFactory = $formFactory;
 	}
 
 	public function index(Request $request, Response $response): void
@@ -151,7 +141,7 @@ class WorkGroupControl extends Control
 
 			return array_merge($group, [
 				'leaders' => $leaders,
-				'image' => $group['photo'] ? 'images/' . $group['photo'] : null,
+				'image' => $this->fixPhotoPath($group['photo']),
 				'appliedFor' => in_array($group['id'], $applications),
 				'applyMinBananaCount' => $group['banana_count'],
 				'applyMinFetchCount' => $group['fetch_count'],
@@ -177,22 +167,29 @@ class WorkGroupControl extends Control
 			$this->routeHelper->go('/?page=dashboard');
 		}
 
-		$bread = $this->translator->trans('group.edit', ['{group}' => $group['name']]);
+		$bread = $this->translator->trans('group.edit.title', ['{group}' => $group['name']]);
 		$this->pageHelper->addBread($bread, '/?page=groups&sub=edit&id=' . (int)$group['id']);
 
-		$editWorkGroupRequest = EditWorkGroupData::fromGroup($group);
-		$form = $this->formFactory->create(WorkGroupForm::class, $editWorkGroupRequest);
-		$form->handleRequest($request);
-		if ($form->isSubmitted()) {
-			if ($form->isValid()) {
-				$data = $editWorkGroupRequest->toGroup();
-				$this->workGroupGateway->updateGroup($group['id'], $data);
-				$this->flashMessageHelper->success($this->translator->trans('group.saved'));
-				$this->routeHelper->goSelf();
-			}
-		}
+		$group['photo'] = $this->fixPhotoPath($group['photo']);
+
 		$response->setContent($this->render('pages/WorkGroup/edit.twig',
-			['nav' => $this->getSideMenuData(), 'group' => $group, 'form' => $form->createView()]
+			['nav' => $this->getSideMenuData(), 'group' => $group]
 		));
+	}
+
+	/**
+	 * Old photos that were uploaded by Xhr are named "workgroup/[uuid].jpg" and are in the /images/workgroup
+	 * directory. New ones that were uploaded with the REST API already contain the full path when stored in the
+	 * database. This function returns a valid path for all photos.
+	 *
+	 * @param string $photo the group's photo file from the database
+	 *
+	 * @return string the valid path that can be used in the frontend
+	 */
+	private function fixPhotoPath(string $photo): string
+	{
+		return (!empty($photo) && str_starts_with($photo, 'workgroup'))
+			? '/images/' . $photo
+			: $photo;
 	}
 }

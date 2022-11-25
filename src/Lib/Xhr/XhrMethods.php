@@ -23,9 +23,6 @@ use Foodsharing\Permissions\RegionPermissions;
 use Foodsharing\Permissions\StorePermissions;
 use Foodsharing\Utility\EmailHelper;
 use Foodsharing\Utility\Sanitizer;
-use Intervention\Image\ImageManager;
-use Symfony\Component\HttpFoundation\JsonResponse;
-use Symfony\Component\HttpFoundation\Request;
 use Symfony\Contracts\Translation\TranslatorInterface;
 
 class XhrMethods
@@ -42,7 +39,6 @@ class XhrMethods
 	private FoodsaverGateway $foodsaverGateway;
 	private EmailGateway $emailGateway;
 	private MailboxGateway $mailboxGateway;
-	private ImageManager $imageManager;
 	private Sanitizer $sanitizerService;
 	private EmailHelper $emailHelper;
 	private NewsletterEmailPermissions $newsletterEmailPermissions;
@@ -62,7 +58,6 @@ class XhrMethods
 		FoodsaverGateway $foodsaverGateway,
 		EmailGateway $emailGateway,
 		MailboxGateway $mailboxGateway,
-		ImageManager $imageManager,
 		Sanitizer $sanitizerService,
 		EmailHelper $emailHelper,
 		NewsletterEmailPermissions $newsletterEmailPermissions,
@@ -81,66 +76,11 @@ class XhrMethods
 		$this->foodsaverGateway = $foodsaverGateway;
 		$this->emailGateway = $emailGateway;
 		$this->mailboxGateway = $mailboxGateway;
-		$this->imageManager = $imageManager;
 		$this->sanitizerService = $sanitizerService;
 		$this->emailHelper = $emailHelper;
 		$this->newsletterEmailPermissions = $newsletterEmailPermissions;
 		$this->regionPermissions = $regionPermission;
 		$this->translator = $translator;
-	}
-
-	public function xhr_uploadPictureRefactorMeSoon($data)
-	{
-		$request = Request::createFromGlobals();
-		$response = JsonResponse::create([], 400);
-
-		$namespace = 'workgroup';
-		$width = 500;
-		$height = 500;
-
-		$file = $request->files->get('image');
-		if ($file->isValid()) {
-			try {
-				$img = $this->imageManager->make($file->getPathname());
-				if ($img->width() <= $width && $img->height() <= $height) {
-					// for now, we just check if the frontend did not want to betray us.
-					// later, we might want to have better resize / error handling
-					switch ($img->mime()) {
-						case 'image/jpeg':
-							$ext = 'jpg';
-							break;
-						case 'image/png':
-							$ext = 'png';
-							break;
-						case 'image/gif':
-							$ext = 'gif';
-							break;
-						default:
-							$ext = 'jpg';
-					}
-					$fullPath = sprintf('images/%s/%s.%s', $namespace, sha1_file($file->getPathname()), $ext);
-					$internalName = sprintf('%s/%s.%s', $namespace, sha1_file($file->getPathname()), $ext);
-
-					$img->save($fullPath);
-					$response->setStatusCode(200);
-					$response->setData([
-						'fullPath' => $fullPath,
-						'internalName' => $internalName,
-					]);
-				} else {
-					$response->setData([
-						'width' => $img->width(),
-						'height' => $img->height(),
-						'max_width' => $width,
-						'max_height' => $height,
-					]);
-				}
-			} catch (\Intervention\Image\Exception\NotReadableException $e) {
-				throw $e;
-			}
-		}
-
-		$response->send();
 	}
 
 	public function xhr_continueMail($data)
