@@ -2,6 +2,9 @@
 
 namespace Foodsharing\RestApi;
 
+use function array_map;
+use function bin2hex;
+
 use Carbon\Carbon;
 use DateTimeZone;
 use Foodsharing\Lib\Session;
@@ -18,16 +21,15 @@ use Jsvrcek\ICS\Model\CalendarEvent;
 use Jsvrcek\ICS\Model\Description\Location;
 use Jsvrcek\ICS\Utility\Formatter;
 use OpenApi\Annotations as OA;
+
+use function openssl_random_pseudo_bytes;
+use function str_replace;
+
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\Exception\AccessDeniedHttpException;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 use Symfony\Component\HttpKernel\Exception\UnauthorizedHttpException;
 use Symfony\Contracts\Translation\TranslatorInterface;
-
-use function array_map;
-use function bin2hex;
-use function openssl_random_pseudo_bytes;
-use function str_replace;
 
 /**
  * Provides endpoints for exporting pickup dates and other events to iCal and managing access tokens.

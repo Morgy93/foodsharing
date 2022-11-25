@@ -2,6 +2,8 @@
 
 namespace Foodsharing\RestApi;
 
+use function array_map;
+
 use Foodsharing\Lib\Session;
 use Foodsharing\Modules\Region\ForumFollowerGateway;
 use Foodsharing\Modules\Region\ForumGateway;
@@ -12,15 +14,15 @@ use Foodsharing\Utility\Sanitizer;
 use FOS\RestBundle\Controller\AbstractFOSRestController;
 use FOS\RestBundle\Controller\Annotations as Rest;
 use FOS\RestBundle\Request\ParamFetcher;
+
+use function intval;
+use function is_null;
+
 use OpenApi\Annotations as OA;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\Exception\AccessDeniedHttpException;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 use Symfony\Component\HttpKernel\Exception\UnauthorizedHttpException;
-
-use function array_map;
-use function intval;
-use function is_null;
 
 class ForumRestController extends AbstractFOSRestController
 {
