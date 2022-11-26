@@ -314,10 +314,10 @@ test:websocket:
   rules:
     - if: $CI_COMMIT_BRANCH == 'master' || $CI_COMMIT_BRANCH == 'production'
       changes:
-        - 'websocket/*'
+        - 'websocket/**/*'
     - if: $CI_MERGE_REQUEST_ID
       changes:
-        - 'websocket/*'
+        - 'websocket/**/*'
     - if: $CI_PIPELINE_SOURCE == "schedule"
       when: never
   image: registry.gitlab.com/foodsharing-dev/images/node:latest
