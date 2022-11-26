@@ -14,15 +14,10 @@ use Symfony\Component\HttpKernel\Exception\UnauthorizedHttpException;
 
 class LocaleRestController extends AbstractFOSRestController
 {
-	private SettingsGateway $settingsGateway;
-	private Session $session;
-
 	public function __construct(
-		SettingsGateway $settingsGateway,
-		Session $session
+		private readonly SettingsGateway $settingsGateway,
+		private readonly Session $session
 	) {
-		$this->settingsGateway = $settingsGateway;
-		$this->session = $session;
 	}
 
 	/**
@@ -30,6 +25,8 @@ class LocaleRestController extends AbstractFOSRestController
 	 *
 	 * @OA\Tag(name="locale")
 	 * @Rest\Get("locale")
+	 * @OA\Response(response=Response::HTTP_OK, description="Success.")
+	 * @OA\Response(response=Response::HTTP_UNAUTHORIZED, description="Not logged in.")
 	 */
 	public function getLocaleAction(): Response
 	{
@@ -39,7 +36,7 @@ class LocaleRestController extends AbstractFOSRestController
 
 		$locale = $this->session->getLocale();
 
-		return $this->handleView($this->view(['locale' => $locale], 200));
+		return $this->handleView($this->view(['locale' => $locale], Response::HTTP_OK));
 	}
 
 	/**
@@ -48,6 +45,8 @@ class LocaleRestController extends AbstractFOSRestController
 	 * @OA\Tag(name="locale")
 	 * @Rest\Post("locale")
 	 * @Rest\RequestParam(name="locale")
+	 * @OA\Response(response=Response::HTTP_OK, description="Success.")
+	 * @OA\Response(response=Response::HTTP_UNAUTHORIZED, description="Not logged in.")
 	 */
 	public function setLocaleAction(ParamFetcher $paramFetcher): Response
 	{

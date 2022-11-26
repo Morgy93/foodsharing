@@ -33,14 +33,15 @@ class MailboxRestController extends AbstractFOSRestController
 	 * Changes the unread status of an email. This does not care about the previous status, i.e. setting a
 	 * read email to read will still result in a 'success' response.
 	 *
-	 * @OA\Parameter(name="emailId", in="path", @OA\Schema(type="integer"), description="which email to modify")
-	 * @OA\Parameter(name="status", in="path", @OA\Schema(type="integer"), description="either 0 for unread or 1 for read")
-	 * @OA\Response(response="200", description="Success.")
-	 * @OA\Response(response="400", description="Invalid status.")
-	 * @OA\Response(response="403", description="Insufficient permissions to modify the email.")
-	 * @OA\Response(response="404", description="Email does not exist.")
 	 * @OA\Tag(name="emails")
 	 * @Rest\Patch("emails/{emailId}/{status}", requirements={"emailId" = "\d+", "status" = "[0-1]"})
+	 * @OA\Parameter(name="emailId", in="path", @OA\Schema(type="integer"), description="which email to modify")
+	 * @OA\Parameter(name="status", in="path", @OA\Schema(type="integer"), description="either 0 for unread or 1 for read")
+	 * @OA\Response(response=Response::HTTP_OK, description="Success.")
+	 * @OA\Response(response=Response::HTTP_UNAUTHORIZED, description="Not logged in.")
+	 * @OA\Response(response=Response::HTTP_BAD_REQUEST, description="Invalid status.")
+	 * @OA\Response(response=Response::HTTP_FORBIDDEN, description="Insufficient permissions to modify the email.")
+	 * @OA\Response(response=Response::HTTP_NOT_FOUND, description="Email does not exist.")
 	 */
 	public function setEmailStatusAction(int $emailId, int $status): Response
 	{
@@ -53,17 +54,18 @@ class MailboxRestController extends AbstractFOSRestController
 
 		$this->mailboxGateway->setRead($emailId, $status);
 
-		return $this->handleView($this->view([], 200));
+		return $this->handleView($this->view([], Response::HTTP_OK));
 	}
 
 	/**
 	 * Moves an email to the trash folder or deletes it, if it is already in the trash.
 	 *
-	 * @OA\Parameter(name="emailId", in="path", @OA\Schema(type="integer"), description="which email to delete")
-	 * @OA\Response(response="200", description="Success")
-	 * @OA\Response(response="403", description="Insufficient permissions to delete the email")
 	 * @OA\Tag(name="emails")
 	 * @Rest\Delete("emails/{emailId}", requirements={"emailId" = "\d+"})
+	 * @OA\Parameter(name="emailId", in="path", @OA\Schema(type="integer"), description="which email to delete")
+	 * @OA\Response(response=Response::HTTP_OK, description="Success.")
+	 * @OA\Response(response=Response::HTTP_UNAUTHORIZED, description="Not logged in.")
+	 * @OA\Response(response=Response::HTTP_FORBIDDEN, description="Insufficient permissions to delete the email.")
 	 */
 	public function deleteEmailAction(int $emailId): Response
 	{
@@ -83,16 +85,16 @@ class MailboxRestController extends AbstractFOSRestController
 			$this->mailboxGateway->move($emailId, MailboxFolder::FOLDER_TRASH);
 		}
 
-		return $this->handleView($this->view([], 200));
+		return $this->handleView($this->view([], Response::HTTP_OK));
 	}
 
 	/**
 	 * Returns the number of unread mails for the sending user.
 	 *
-	 * @OA\Response(response="200", description="Success.")
-	 * @OA\Response(response="401", description="Not logged in.")
 	 * @OA\Tag(name="emails")
 	 * @Rest\Get("emails/unread-count")
+	 * @OA\Response(response=Response::HTTP_OK, description="Success.")
+	 * @OA\Response(response=Response::HTTP_UNAUTHORIZED, description="Not logged in.")
 	 */
 	public function getUnreadMailCountAction(): Response
 	{
@@ -101,6 +103,6 @@ class MailboxRestController extends AbstractFOSRestController
 		}
 		$unread = $this->mailboxGateway->getUnreadMailCount($this->session);
 
-		return $this->handleView($this->view($unread, 200));
+		return $this->handleView($this->view($unread, Response::HTTP_OK));
 	}
 }
