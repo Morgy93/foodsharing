@@ -2769,3 +2769,8 @@ bootstrap-datepicker:
   labelCalendar: 'Kalender'
   labelNav: 'Kalendernavigation'
   labelHelp: 'Mit den Pfeiltasten durch den Kalender navigieren'
+
+hygieneLevel:
+  1: Hat eine Hygieneschulung
+  2: Hat eine aktuelle Hygieneschulung
+  3: Hat eine offizielle und aktuelle Hygieneschulung

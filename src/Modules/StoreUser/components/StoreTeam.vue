@@ -221,6 +221,7 @@ export default {
     regionId: { type: Number, required: true },
   },
   data () {
+    console.log(this.team)
     return {
       foodsaver: this.team?.map(fs => this.foodsaverData(fs)),
       sortfun: this.tableSortFunction,
@@ -434,6 +435,7 @@ export default {
         joinDate: fs.add_date ? new Date(fs.add_date * 1000) : null, // unix time
         lastPickup: fs.last_fetch ? new Date(fs.last_fetch * 1000) : null, // unix time
         fetchCount: fs.stat_fetchcount,
+        hygieneLevel: fs.hygiene_level,
       }
     },
     legacyXhrCall,

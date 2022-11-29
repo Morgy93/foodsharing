@@ -20,6 +20,9 @@
       <div v-else-if="!user.isVerified">
         {{ $i18n('store.isNotVerified') }}
       </div>
+      <div v-if="user.hygieneLevel">
+        {{ $i18n(`hygieneLevel.${user.hygieneLevel}`) }}
+      </div>
     </b-tooltip>
     <a
       :id="`member-${user.id}`"
@@ -30,6 +33,14 @@
     >
       <span class="member-name">
         {{ user.name }}
+        <i
+          v-if="user.hygieneLevel"
+          :class="[
+            'fas',
+            user.hygieneLevel < 3 ? 'fa-check-circle' : 'fa-shield-alt',
+            user.hygieneLevel < 2 ? 'hygiene-old' : 'hygiene-new',
+          ]"
+        />
       </span>
       <span
         v-if="user.phoneNumberIsValid"
@@ -85,5 +96,13 @@ export default {
     word-break: break-word;
     font-weight: bolder;
   }
+}
+
+.hygiene-old {
+  color: var(--fs-color-gray-alpha-30);
+}
+
+.hygiene-new {
+  color: var(--fs-color-secondary-500);
 }
 </style>

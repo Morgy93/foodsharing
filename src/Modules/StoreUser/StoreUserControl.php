@@ -290,7 +290,7 @@ class StoreUserControl extends Control
 	{
 		$allowedFields = [
 			// personal info
-			'id', 'name', 'photo', 'quiz_rolle', 'sleep_status', 'verified',
+			'id', 'name', 'photo', 'quiz_rolle', 'sleep_status', 'verified', 'hygiene_level',
 			// team-related info
 			'verantwortlich', 'team_active', 'stat_fetchcount', 'add_date',
 		];
