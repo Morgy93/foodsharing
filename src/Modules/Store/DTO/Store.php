@@ -94,6 +94,8 @@ class Store
 	public ?DateTime $createdAt = null;
 	public DateTime $updatedAt;
 
+	public int $hygieneRequirement;
+
 	public static function createFromArray($queryResult): Store
 	{
 		$obj = new Store();
@@ -133,6 +135,8 @@ class Store
 		} else {
 			$obj->updatedAt = $obj->createdAt;
 		}
+
+		$obj->hygieneRequirement = $queryResult['food_hygiene_requirement'];
 
 		return $obj;
 	}

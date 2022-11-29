@@ -144,7 +144,7 @@ hygiene_requirement_options:
   none: Keine
   any: Einmalige Schulung
   timely: Regelmäßige Schulung (alle 2 Jahre)
-  official: Schulung des Gesundheitsamts mit regelmäßigen Folgebelehrungen
+  official: Schulung beim Gesundheitsamt mit regelmäßigen Folgebelehrungen
 #
 # FORM DATA KEYS: WorkGroup
 # --

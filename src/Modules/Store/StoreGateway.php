@@ -1019,7 +1019,8 @@ class StoreGateway extends BaseGateway
 						fs_betrieb.sticker,
 
 						fs_betrieb.added as createdAt,
-						fs_betrieb.status_date as updatedAt
+						fs_betrieb.status_date as updatedAt,
+						fs_betrieb.food_hygiene_requirement
 				FROM 	fs_betrieb,
 						fs_bezirk
 				WHERE 	fs_betrieb.bezirk_id = fs_bezirk.id
