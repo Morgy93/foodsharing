@@ -139,6 +139,12 @@ sticker: "Ist der Betrieb/Laden/Verein etc. gewillt, einen Sticker beim Eingang 
 prefetchtime: "Wie viele Wochen im Voraus können sich Foodsaver mittels automatischer Slots eintragen?"
 abholmenge: "Wie viel Kilogramm werden pro Abholung ungefähr mitgenommen?"
 use_region_pickup_rule: "Soll für diesen Betrieb die Bezirks-ROSINEN-regel für Abholungen gelten?"
+hygiene_requirement: "Welche Hygieneanforderungen müssen Foodsaver*innen für die Abholungen erfüllen?"
+hygiene_requirement_options:
+  none: Keine
+  any: Einmalige Schulung
+  timely: Regelmäßige Schulung (alle 2 Jahre)
+  official: Schulung des Gesundheitsamts mit regelmäßigen Folgebelehrungen
 #
 # FORM DATA KEYS: WorkGroup
 # --

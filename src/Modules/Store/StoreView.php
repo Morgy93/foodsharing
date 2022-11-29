@@ -162,6 +162,12 @@ class StoreView extends View
 			$this->v_utils->v_form_date('begin'),
 			$this->v_utils->v_form_select('public_time', ['values' => $publicTimesWithNoSelection]),
 			$this->v_utils->v_form_select('prefetchtime', ['values' => $prefetchTimeValues]),
+			$this->v_utils->v_form_select('hygiene_requirement', ['values' => [
+				['id' => StoreSettings::HYGIENE_NONE, 'name' => $this->translator->trans('hygiene_requirement_options.none')],
+				['id' => StoreSettings::HYGIENE_ANY, 'name' => $this->translator->trans('hygiene_requirement_options.any')],
+				['id' => StoreSettings::HYGIENE_TIMELY, 'name' => $this->translator->trans('hygiene_requirement_options.timely')],
+				['id' => StoreSettings::HYGIENE_OFFICIAL, 'name' => $this->translator->trans('hygiene_requirement_options.official')],
+			]]),
 			$this->v_utils->v_form_select('use_region_pickup_rule', ['values' => [
 				['id' => StoreSettings::USE_PICKUP_RULE_YES, 'name' => $this->translator->trans('yes')],
 				['id' => StoreSettings::USE_PICKUP_RULE_NO, 'name' => $this->translator->trans('no')]
