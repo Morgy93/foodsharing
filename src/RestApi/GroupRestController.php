@@ -40,7 +40,7 @@ class GroupRestController extends AbstractFOSRestController
 	 * @Rest\Delete("groups/{groupId}", requirements={"groupId" = "\d+"})
 	 * @OA\Response(response=Response::HTTP_OK, description="Success.")
 	 * @OA\Response(response=Response::HTTP_FORBIDDEN, description="Insufficient permissions.")
-	 * @OA\Response(response=Response::HTTP_CONFLICT, description="Group still contains elements".)
+	 * @OA\Response(response=Response::HTTP_CONFLICT, description="Group still contains elements.")
 	 */
 	public function deleteGroupAction(int $groupId): Response
 	{
