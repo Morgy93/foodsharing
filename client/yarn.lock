@@ -7659,9 +7659,9 @@ vm-browserify@^1.0.1:
   resolved "https://registry.yarnpkg.com/vm-browserify/-/vm-browserify-1.1.2.tgz#78641c488b8e6ca91a75f511e7a3b32a86e5dda0"
   integrity sha512-2ham8XPWTONajOR0ohOKOHXkm3+gaBmGut3SRuu75xLd/RRaY6vqgh8NBYYk7+RW3u5AtzPQZG8F10LHkl0lAQ==
 
-"vue-advanced-chat@git+https://github.com/NINI1988/vue-advanced-chat.git#release":
+"vue-advanced-chat@git+https://github.com/NINI1988/vue-advanced-chat.git#v1.0.2":
   version "2.0.4"
-  resolved "git+https://github.com/NINI1988/vue-advanced-chat.git#0cf26cf98c775d49de975d075500eed816de2e1a"
+  resolved "git+https://github.com/NINI1988/vue-advanced-chat.git#c2518b9b1d71a4477995037ecc782235d654f1f7"
   dependencies:
     emoji-picker-element "1.12.1"
     linkifyjs "2.1.9"

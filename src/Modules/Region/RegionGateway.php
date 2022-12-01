@@ -339,6 +339,13 @@ class RegionGateway extends BaseGateway
 			$region['moderationAdmins'] = [];
 		}
 
+		if ($boardGroupId = $this->groupFunctionGateway->getRegionFunctionGroupId($regionId, WorkgroupFunction::BOARD)) {
+			$region['boardAdmins'] = $this->foodsaverGateway->getAdminsOrAmbassadors($boardGroupId);
+			shuffle($region['boardAdmins']);
+		} else {
+			$region['boardAdmins'] = [];
+		}
+
 		return $region;
 	}
 

@@ -209,6 +209,7 @@ final class RegionControl extends Control
 			'fsManagementAdmins' => array_map($avatarListEntry, array_slice($this->region['fsManagementAdmins'], 0, self::DisplayAvatarListEntries)),
 			'prAdmins' => array_map($avatarListEntry, array_slice($this->region['prAdmins'], 0, self::DisplayAvatarListEntries)),
 			'moderationAdmins' => array_map($avatarListEntry, array_slice($this->region['moderationAdmins'], 0, self::DisplayAvatarListEntries)),
+			'boardAdmins' => array_map($avatarListEntry, array_slice($this->region['boardAdmins'], 0, self::DisplayAvatarListEntries)),
 		];
 		$viewdata['nav'] = [
 			'menu' => $menu,

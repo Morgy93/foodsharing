@@ -26,6 +26,12 @@ if (sub === 'add' || sub === 'edit') {
   vueApply('#image-upload')
 } else if (sub === 'ft') {
   initWall('fairteiler', GET('id'))
-  vueApply('#fsp-followers')
-  vueApply('#fsp-managers')
+
+  // The lists of followers and managers are only included if they are not empty
+  if (document.getElementById('fsp-followers')) {
+    vueApply('#fsp-followers')
+  }
+  if (document.getElementById('fsp-managers')) {
+    vueApply('#fsp-managers')
+  }
 }

@@ -14,16 +14,17 @@ class WorkgroupFunction
 	public const FSMANAGEMENT = 8; //Foodsaververwaltung
 	public const PR = 9; // Öffentlichkeitsarbeit
 	public const MODERATION = 10; // Moderationsteam
+	public const BOARD = 11; // Vorstand
 
 	public static function isValidFunction(int $value): bool
 	{
-		return in_array($value, range(self::WELCOME, self::MODERATION));
+		return in_array($value, range(self::WELCOME, self::BOARD));
 	}
 
 	/**
 	 * This function determines if a workgroupfunction is a restricted function
 	 * meaning it should only be edited by the workgroup creation group to ensure
-	 * votes have been taking place.
+	 * votes or other non-programmable logic has been fullfilled.
 	 *
 	 * @param int $value Workgroup function value
 	 *
@@ -35,6 +36,7 @@ class WorkgroupFunction
 			self::REPORT,
 			self::ARBITRATION,
 			self::FSMANAGEMENT,
+			self::BOARD,
 		]);
 	}
 }

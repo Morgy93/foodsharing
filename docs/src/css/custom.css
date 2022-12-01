@@ -36,3 +36,5 @@ table {
 a:not(.menu__link) {
   font-weight: 700;
 }
+
+@import url("api.css");

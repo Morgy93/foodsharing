@@ -112,8 +112,11 @@ $(document).ready(() => {
     vueApply('#' + requestFormContainerId)
   }
 
-  vueRegister({ AvatarList })
-  vueApply('#basket-creator')
+  // Creator avatar is only visible on /essenskoerbe/{id}, not on /essenskoerbe/find
+  if (document.getElementById('basket-creator')) {
+    vueRegister({ AvatarList })
+    vueApply('#basket-creator')
+  }
 })
 
 async function tryRemoveBasket (basketId) {

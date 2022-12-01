@@ -56,6 +56,7 @@ group:
     arbitration: Arbitration board
     mediation: Mediation
     report: Reports
+    board: Board
     duplicate_moderation_team: Moderation team already created! There can only be
       one moderation team per district.
     duplicate_pr_team: Public relations team already created! There can only be one

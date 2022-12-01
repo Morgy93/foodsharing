@@ -27,12 +27,18 @@ class CalendarApiCest
 		$I->seeResponseCodeIs(HttpCode::UNAUTHORIZED);
 	}
 
-	public function canRequestExistingToken(ApiTester $I)
+	public function cannotRequestNonExistingToken(ApiTester $I)
 	{
 		$I->login($this->user['email']);
 
 		$I->sendGet('api/calendar/token');
-		$I->seeResponseCodeIs(HttpCode::NOT_FOUND);
+		$I->seeResponseCodeIs(HttpCode::OK);
+		$I->seeResponseContainsJson(['token' => null]);
+	}
+
+	public function canRequestExistingToken(ApiTester $I)
+	{
+		$I->login($this->user['email']);
 
 		$I->haveInDatabase('fs_apitoken', [
 			'foodsaver_id' => $this->user['id'],

@@ -182,7 +182,7 @@ export default {
     if (this.popupMode) {
       style.innerHTML = `
       .vac-card-window {
-        height: 325px !important;
+        height: 400px !important;
         box-shadow: unset !important;
       }
 
@@ -194,11 +194,20 @@ export default {
         margin-top: 0 !important;
       }
 
-      .vac-message-wrapper .vac-offset-current {
-        margin-left: 20% !important;
+      .vac-message-wrapper .vac-message-container {
+        padding: 2px 5px 0px 5px !important;
       }
+
+      .vac-message-wrapper .vac-offset-current {
+        margin-left: 0% !important;
+      }
+
       .vac-message-wrapper .vac-message-box {
-        max-width: 80% !important;
+        max-width: 100% !important;
+      }
+
+      .vac-message-wrapper .vac-format-message-wrapper {
+        font-size: 12px;
       }
       `
     } else {
@@ -207,14 +216,50 @@ export default {
         height: 100% !important;
       }
 
+      .vac-message-wrapper .vac-offset-current {
+        margin-left: 20% !important;
+      }
+
+      .vac-message-wrapper .vac-message-box {
+        max-width: 80% !important;
+      }
+
       @media (min-width: 576px)
       {
         .vac-card-window {
-          height: calc(100% - 3px) !important; // required to see shadow around chat component
+          height: calc(100% - 3px) !important; /* required to see shadow around chat component */
         }
       }
       `
     }
+    style.innerHTML += `
+    #roomTextarea {
+      max-height: 100px;
+      overflow-y: auto;
+    }
+
+    .vac-room-list .vac-text-last .vac-text-ellipsis,
+    .vac-room-list .vac-room-name {
+      -webkit-line-clamp: 2;
+      display: -webkit-box;
+      -webkit-box-orient: vertical;
+      overflow: hidden;
+      white-space: initial;
+    }
+
+    .vac-message-wrapper .vac-message-container {
+      padding-bottom: 0px !important;
+    }
+
+    .vac-message-wrapper {
+      margin-top: 5px;
+    }
+
+    .vac-container-scroll{
+      /* Don't scroll main page when cursor is in chat window */
+      overscroll-behavior: contain;
+    }
+    `
     this.$el.shadowRoot.appendChild(style)
   },
   methods: {
@@ -303,7 +348,7 @@ export default {
           date: this.$dateFormatter.date(message.sentAt),
           timestamp: this.$dateFormatter.time(message.sentAt),
           system: false,
-          saved: !message.failure,
+          // saved: !message.failure, // can be activated when 'distributed' is also implemented in backend. Will otherwise confuse users when only 1 check is displayed.
           distributed: false,
           seen: this.currentUserId !== message.authorId, // Setting the other users seen, will hide "New Messages" indicator in chat. TODO: https://gitlab.com/foodsharing-dev/foodsharing/-/issues/1484
           deleted: false,
@@ -358,7 +403,7 @@ export default {
               senderId: String(conv.lastMessage.authorId),
               username: ProfileStore.profiles[conv.lastMessage.authorId].name,
               timestamp: this.$dateFormatter.relativeTime(conv.lastMessage.sentAt, { short: true }),
-              saved: true,
+              // saved: true, // can be activated when 'distributed' is also implemented in backend. Will otherwise confuse users when only 1 check is displayed.
               distributed: false,
               seen: false,
               new: conv.hasUnreadMessages,
@@ -459,36 +504,6 @@ export default {
 
 <style lang="scss" scoped>
 
-  ::v-deep .vac-container-scroll{
-    // Don't scroll main page when cursor is in chat window
-    overscroll-behavior: contain;
-  }
-
-  ::v-deep .vac-room-list {
-
-    .vac-text-last .vac-text-ellipsis,
-    .vac-room-name {
-      -webkit-line-clamp: 2;
-      display: -webkit-box;
-      -webkit-box-orient: vertical;
-      overflow: hidden;
-      white-space: initial;
-    }
-  }
-
-  ::v-deep .vac-box-search .vac-input{
-    /* Fix height of search bar in header of chat component */
-    padding-top: 0;
-    padding-bottom: 0;
-  }
-
-  ::v-deep {
-    #roomTextarea{
-      max-height: 100px;
-      overflow-y: auto;
-    }
-  }
-
   ::v-deep #select-users {
 
     position: absolute; // Otherwise the message scroll area has flickering at the bottom of the area when opening and closing user selection.
@@ -498,4 +513,5 @@ export default {
       min-width: unset;
     }
   }
+
 </style>

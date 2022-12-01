@@ -62,7 +62,7 @@ class ActivityRestController extends AbstractFOSRestController
 	}
 
 	/**
-	 * Returns the updates object for <ActivityOverview> to display on the dashboard.
+	 * Returns the updates object for ActivityOverview to display on the dashboard.
 	 *
 	 * @OA\Tag(name="activities")
 	 * @Rest\Get("activities/updates")

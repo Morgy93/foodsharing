@@ -20,12 +20,15 @@
 - At stores under pickup history, storemanagers can now see the signed out foodsavers from pickup slots from past 7 days with the signout date. !2363 @martincodes-de
 - Voter Turnout Percentage can be seen if the poll has completed !2377 @viveknshah
 - Provide RestAPI to get backend defined common meta information for stores like "max count of slots per pickup" !1373 @koemai
+- GOALS-BOARD-Group added. Global Admin exchange group for local board members. !2295 @fs_k
 - Provide RestApi to list all stores of an region and expand details !2466 !2507 @KoeMai
+- Provide RestApi to list all stores of an region and expand details !2466 !2502 @KoeMai
+- Provide RestApi to list all stores of an region and expand details !2466 !2507 !2502 @KoeMai
 - Provide RestAPI to get backend defined common meta information for stores like "max count of slots per pickup", and store creation required informatio !1373 !2448 @koemai
 - District rules for maximum number of pickups in a timeframe accross severall stores combined can be set !2414 @fs_k
 - Provide RestAPI to change teamstatus of a store !2406
 - Added RestAPI for regular Pickup configuration !1373 @koemai
-- The chat has been modernised !2301 !2498 @NINI1988
+- The chat has been modernised !2301 !2498 !2508 !2514 @NINI1988
 - Added new body font !2426 @sefn
 
 ## Changes
@@ -60,6 +63,7 @@
 - added icon to map menu item !2427 @martincodes-de
 - Added information how to remove recurring pick-up dates to get rid of warnings about unoccupied slots !891 @rnoennig
 - Make store list of a user visible for store managers to whose store he/she applied. #1445 !2437 @AntonBallmaier
+- The link on a store edit page leads back to the store #1402 !2513 @tutNichts
 
 ## Bugfixes
 - When going back during registration, email and password are unchanged. !2184 @AntonBallmaier
@@ -106,6 +110,7 @@
 - Show all Photos on Team Page !2488 @BibaltiK
 - Before the object is created, it is checked whether the controller could be resolved beforehand. !2487 @BibaltiK
 - checks if user is logged in so that a businesscard can be created !2492 @BibaltiK
+- Prevent an unnecessary 404 error on the calendar page !2510 @alex.simm
 
 ## Refactoring
 - Currently running events are shown within the event overview until their end !2162 @merhoc
@@ -129,7 +134,7 @@
 - Improve documentation tooling for OpenAPI RequestBody !2421 @KoeMai
 - Store TeamStatus moved to vue and REST API !2453 @chriswalg
 - Replaced may() to mayRole() !2457 @chriswalg
-- Replace the user avatar lists with a vue component !2460 @alex.simm
+- Replace the user avatar lists with a vue component !2460 !2501 @alex.simm
 - LoginForm: Removed duplicated content and imported NavLoginEntry.vue !2471 @chriswalg
 - LoginForm: Removed duplicated content and moved to client/src !2471 @chriswalg
 - Remove unused Endpoints from RestAPI !2499 @BibaltiK
@@ -174,10 +179,11 @@
 - Fix use Statemen !2500 @BibaltiK
 - Added setting for the cs-fixer to sort the usage imports !2509 @BibaltiK
 
-
-## Development documetation
+## Development documentation
 - Add generator for database documentation !2275 @KoeMai
 - Moved DevDocs from mdbook to docusaurus !2465 @sefn
+- Improved Devdocs to include Rest API !2493 @sefn
+
 
 # Release "Heidelbeere", 2022-05-01
 

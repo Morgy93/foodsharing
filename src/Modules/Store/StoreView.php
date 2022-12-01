@@ -4,6 +4,7 @@ namespace Foodsharing\Modules\Store;
 
 use Foodsharing\Lib\Session;
 use Foodsharing\Lib\View\Utils;
+use Foodsharing\Modules\Core\DBConstants\Store\PublicTimes;
 use Foodsharing\Modules\Core\DBConstants\Store\StoreSettings;
 use Foodsharing\Modules\Core\View;
 use Foodsharing\Modules\Store\DTO\CommonStoreMetadata;
@@ -228,9 +229,19 @@ class StoreView extends View
 
 		$fetchTime = intval($store['public_time']);
 		if ($fetchTime != 0) {
-			$count_info .= '<div>' . $this->translator->trans('storeview.public_time', [
-				'{freq}' => $this->translator->trans('storeview.public_time' . $fetchTime),
-			]) . '</div>';
+			$meaning = match (PublicTimes::from($fetchTime)) {
+				PublicTimes::NOT_SET => '',
+				PublicTimes::IN_THE_MORNING => $this->translator->trans('storeview.public_time_in_the_morning'),
+				PublicTimes::AT_NOON_IN_THE_AFTERNOON => $this->translator->trans('storeview.public_time_at_noon_or_afternoon'),
+				PublicTimes::IN_THE_EVENING => $this->translator->trans('storeview.public_time_in_the_evening'),
+				PublicTimes::AT_NIGHT => $this->translator->trans('storeview.public_time_at_night')
+			};
+
+			if (!empty($meaning)) {
+				$count_info .= '<div>' . $this->translator->trans('storeview.public_time', [
+					'{freq}' => $meaning,
+				]) . '</div>';
+			}
 		}
 
 		$publicInfo = '';

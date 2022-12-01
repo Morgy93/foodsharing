@@ -313,7 +313,11 @@ test:websocket:
   interruptible: true
   rules:
     - if: $CI_COMMIT_BRANCH == 'master' || $CI_COMMIT_BRANCH == 'production'
+      changes:
+        - 'websocket/**/*'
     - if: $CI_MERGE_REQUEST_ID
+      changes:
+        - 'websocket/**/*'
     - if: $CI_PIPELINE_SOURCE == "schedule"
       when: never
   image: registry.gitlab.com/foodsharing-dev/images/node:latest

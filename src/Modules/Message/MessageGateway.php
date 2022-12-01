@@ -300,6 +300,10 @@ final class MessageGateway extends BaseGateway
 		$members = $this->getMembersForConversations($cids);
 		array_walk($conversations, function ($c) use ($members) {
 			$c->members = $members[$c->id];
+			if ($c->lastMessage && !in_array($c->lastMessage->authorId, $c->members)) {
+				// It can happen that the last message author has left the store, but it is still a member, so we add the foodsaverId to the members.
+				$c->members[] = $c->lastMessage->authorId;
+			}
 		});
 
 		return $conversations;

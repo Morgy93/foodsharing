@@ -48,7 +48,11 @@ docs/?
 docs/src/mdbook-plantuml-img
 docs/book
 docs/build
-docs/db/build
+docs/data/build
+docs/docs-api/*
+docs/docs/backend/database/database-tables-columns.md
+docs/data/api_dump.json
+docs/.config
 .docusaurus
 .cache-loader
 
@@ -66,5 +70,18 @@ am_cache
 npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
+
+
+# +----------------------------+
+# |    Keep .gitkeep files     |
+# +----------------------------+-------------------------------+
+# | To keep an empty directory, add a .gitkeep file to it      |
+# | and ignore the directory with a wildcard:                  |
+# |                                                            |
+# |     /path/to/dir/*                                         |
+# |                                                            |
+# | this will ignore the content but not the director itself.  |
+# +------------------------------------------------------------+
+!/**/.gitkeep
 
 

@@ -1,6 +1,6 @@
 .chatbox {
   position: fixed;
-  width: 275px;
+  width: 360px;
   display: none;
   box-shadow: 0 0 3px var(--fs-color-gray-alpha-30);
   z-index: 1000;
@@ -42,7 +42,7 @@
 }
 
 .chatboxhead .linklist {
-  left: 88px;
+  left: 174px;
   position: absolute;
   top: 30px;
   width: 180px;
@@ -54,12 +54,16 @@
   display: flex;
 }
 
+.chatboxhead .settings li .optinput input{
+  font-size: 12px;
+}
+
 .chatboxhead .settings li .optinput i {
   color: var(--fs-color-primary-500);
   cursor: pointer;
   font-size: 20px;
   position: relative;
-  top: 3px;
+  top: 6px;
 }
 
 .chatboxhead .settings li .optinput i:hover {

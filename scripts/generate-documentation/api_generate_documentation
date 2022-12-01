@@ -1,0 +1,18 @@
+#!/bin/bash
+
+set -o errexit
+
+dir=$(dirname "$0")
+root="$dir/../.."
+# shellcheck source=./__helping-functions.sh
+source "$dir"/../__helping-functions.sh
+
+log-header "Load API documentation"
+"$root"/bin/console nelmio:apidoc:dump --format=json > "$root"/docs/data/api_dump.json
+
+log-header "Build documentation"
+cd "$root"/docs
+yarn && yarn api:rebuild
+
+echo
+echo "GENERATION COMPLETE"

@@ -39,7 +39,7 @@
     "typeahead-address-photon": "^1.1.0",
     "typeahead-addresspicker": "^1.0.1",
     "vue": "~2.6.14",
-    "vue-advanced-chat": "git+https://github.com/NINI1988/vue-advanced-chat.git#release",
+    "vue-advanced-chat": "git+https://github.com/NINI1988/vue-advanced-chat.git#v1.0.2",
     "vue-croppie": "^2.0.1",
     "vue-infinite-loading": "^2.4.5",
     "vue-multiselect": "^2.1.6",

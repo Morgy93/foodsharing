@@ -1,5 +1,6 @@
 #!/bin/bash
 dir=$(dirname "$0")
+root="$dir/../.."
 
 source "$dir"/__helping-functions.sh
 set -o errexit
@@ -19,8 +20,10 @@ mysql -u root -proot -hdb --execute="drop database if exists foodsharing; create
 vendor/bin/phinx migrate
 
 log-header "Build database documentation"
-/bin/bash "$dir"/generate-db-documenation/mysql_generate_documentation
+"$dir"/generate-documentation/mysql_generate_documentation
+
+log-header "Load API Dump"
+bin/console nelmio:apidoc:dump --format=json > docs/data/api_dump.json
 
 log-header "Build documentation"
-cd "$dir"/../docs
-yarn && yarn build
+cd docs/ && yarn && yarn build:all

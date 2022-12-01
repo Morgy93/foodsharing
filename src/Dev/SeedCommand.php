@@ -43,6 +43,7 @@ class SeedCommand extends Command implements CustomCommandInterface
 	protected $fsManagementAdmins = [];
 	protected $prAdmins = [];
 	protected $moderationAdmins = [];
+	protected $boardAdmins = [];
 
 	/**
 	 * @var WorkGroupGateway
@@ -295,6 +296,18 @@ class SeedCommand extends Command implements CustomCommandInterface
 			$this->moderationAdmins[] = $user['id'];
 		}
 		$this->output->writeln(' done');
+
+		// Create BOARD Group
+		$this->output->writeln('- create board group');
+		$boardGroup = $I->createWorkingGroup('Vorstand Göttingen', ['parent_id' => $region1, 'email_name' => 'vorstand.Goettingen', 'teaser' => 'Hier ist der Vorstand für unseren Bezirk']);
+		$I->haveInDatabase('fs_region_function', ['region_id' => $boardGroup['id'], 'function_id' => WorkgroupFunction::BOARD, 'target_id' => $region1]);
+		foreach (range(1, 4) as $i) {
+			$user = $I->createStoreCoordinator($password, ['email' => 'userboard' . $i . '@example.com', 'bezirk_id' => $region1]);
+			$I->addRegionMember($boardGroup['id'], $user['id']);
+			$I->addRegionAdmin($boardGroup['id'], $user['id']);
+			$this->boardAdmins[] = $user['id'];
+		}
+		$this->output->writeln(' done');
 	}
 
 	protected function CreateMorePickups()
@@ -346,6 +359,7 @@ class SeedCommand extends Command implements CustomCommandInterface
 		$I->createWorkingGroup('Abstimmungs-AG Praxis', ['parent_id' => RegionIDs::GLOBAL_WORKING_GROUPS, 'id' => RegionIDs::VOTING_ADMIN_GROUP]);
 		$I->createWorkingGroup('Orgarechte-Koordination', ['parent_id' => RegionIDs::GLOBAL_WORKING_GROUPS, 'id' => RegionIDs::ORGA_COORDINATION_GROUP]);
 		$I->createWorkingGroup('Redaktion', ['parent_id' => RegionIDs::GLOBAL_WORKING_GROUPS, 'id' => RegionIDs::EDITORIAL_GROUP]);
+		$I->createWorkingGroup('foodsharing Vereins-Vorstände', ['parent_id' => RegionIDs::GLOBAL_WORKING_GROUPS, 'id' => RegionIDs::BOARD_ADMIN_GROUP]);
 
 		$region1Subregion = $I->createRegion('Stadtteil von Göttingen', ['type' => UnitType::PART_OF_TOWN, 'parent_id' => $region1]);
 
@@ -527,8 +541,13 @@ class SeedCommand extends Command implements CustomCommandInterface
 			foreach ($this->getRandomIDOfArray($this->foodsavers, 10) as $chatpartner) {
 				if ($user !== $chatpartner) {
 					$conv = $I->createConversation([$user, $chatpartner]);
-					$I->addConversationMessage($user, $conv['id']);
-					$I->addConversationMessage($chatpartner, $conv['id']);
+					for ($i = 1; $i <= rand(1, 10); ++$i) {
+						$userId = $user;
+						if (rand(0, 1)) {
+							$userId = $chatpartner;
+						}
+						$I->addConversationMessage($userId, $conv['id']);
+					}
 				}
 			}
 			$this->output->write('.');
