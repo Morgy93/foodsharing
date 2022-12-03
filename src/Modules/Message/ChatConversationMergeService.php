@@ -11,4 +11,15 @@ class ChatConversationMergeService
 		private readonly MessageGateway $messageGateway,
 		private readonly MessageTransactions $messageTransactions,
 	) {}
+
+	public function getNotManagedMessagesIds(int $amount = 20, array $alreadyManagedMessageIds = [0]): array
+	{
+		$alreadyManagedMessageIds = implode(',', $alreadyManagedMessageIds);
+		return $this->database->fetchAllValues(
+			"SELECT id FROM fs_msg WHERE id NOT IN ({$alreadyManagedMessageIds}) LIMIT :amount",
+			[
+				"amount" => $amount
+			]
+		);
+	}
 }
