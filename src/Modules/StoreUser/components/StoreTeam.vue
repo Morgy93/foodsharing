@@ -11,9 +11,10 @@
   <div :class="['bootstrap store-team w-100', `team-${storeId}`]">
     <div class="card rounded mb-2">
       <div
-        class="card-header text-white bg-primary"
+        class="card-header text-white bg-primary d-flex justify-content-between font-weight-bold"
         @click.prevent="toggleTeamDisplay"
       >
+        {{ $i18n('store.teamName', { storeTitle }) }}
         <a
           class="px-1 text-light"
           href="#"
@@ -21,12 +22,8 @@
         >
           <i :class="['fas fa-fw', `fa-chevron-${displayMembers ? 'down' : 'left'}`]" />
         </a>
-        <div class="row align-items-center">
-          <div class="col font-weight-bold">
-            {{ $i18n('store.teamName', { storeTitle }) }}
-          </div>
-
-          <div class="col col-4 text-right">
+        <div class="align-items-center">
+          <div class="text-right">
             <button
               v-if="mayEditStore"
               v-b-tooltip.hover.top
