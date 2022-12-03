@@ -16,7 +16,7 @@ use Symfony\Component\Console\Output\OutputInterface;
  * 1. Fetch all already-duplicate-checked messages
  * 2. Fetch an amount of messages after a defined date [yyyy-mm-dd] and excluded already-duplicate-checked messages
  * 3. For each message, ...
- * 		1. check if the conversation is between two foodsaver [2 rows with conversation_id existing]
+ * 		1. check if the conversation is between two foodsaver [2 rows with same conversation_id existing in fs_has_conversation]
  * 		if not --> save message in already-duplicate-checked messages and TERMINATE ITERATION
  *
  * 		2. check if the two foodsaver have more than 1 conversation between them

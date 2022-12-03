@@ -12,15 +12,12 @@ class ChatConversationMergeService
 		private readonly MessageTransactions $messageTransactions,
 	) {}
 
-	public function getNotManagedMessagesIds(int $amount = 20, array $alreadyManagedMessageIds = [0]): array
+	public function getMessagesIds(int $offset = 0, int $amount = 20): array
 	{
-		$alreadyManagedMessageIds = implode(',', $alreadyManagedMessageIds);
-		return $this->database->fetchAllValues(
-			"SELECT id FROM fs_msg WHERE id NOT IN ({$alreadyManagedMessageIds}) LIMIT :amount",
-			[
-				"amount" => $amount
-			]
-		);
+		return $this->database->fetchAllValues("SELECT id FROM fs_msg ORDER BY id LIMIT :amount OFFSET :offset", [
+			"amount" => $amount,
+			"offset" => $offset
+		]);
 	}
 
 	public function isConversationBetweenTwoMembers(int $conversationId): bool
