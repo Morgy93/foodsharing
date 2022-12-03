@@ -10,7 +10,17 @@
   -->
   <div :class="['bootstrap store-team w-100', `team-${storeId}`]">
     <div class="card rounded mb-2">
-      <div class="card-header text-white bg-primary">
+      <div
+        class="card-header text-white bg-primary"
+        @click.prevent="toggleTeamDisplay"
+      >
+        <a
+          class="px-1 text-light"
+          href="#"
+          @click.prevent.stop="toggleTeamDisplay"
+        >
+          <i :class="['fas fa-fw', `fa-chevron-${displayTeam ? 'down' : 'left'}`]" />
+        </a>
         <div class="row align-items-center">
           <div class="col font-weight-bold">
             {{ $i18n('store.teamName', { storeTitle }) }}
@@ -30,7 +40,7 @@
             <button
               class="px-1 d-md-none text-light btn btn-sm"
               href="#"
-              @click.prevent="toggleTeamDisplay"
+              @click.prevent="toggleTeamEditDisplay"
             >
               <i :class="['fas fa-fw', `fa-chevron-${displayMembers ? 'down' : 'left'}`]" />
             </button>
@@ -47,7 +57,10 @@
         :region-id="regionId"
       />
 
-      <div class="card-body team-list">
+      <div
+        v-show="displayTeam"
+        class="card-body team-list"
+      >
         <b-table
           ref="teamlist"
           :items="foodsaver"
@@ -219,6 +232,7 @@ export default {
     storeId: { type: Number, required: true },
     storeTitle: { type: String, default: '' },
     regionId: { type: Number, required: true },
+    expandTeamByDefault: { type: Boolean, default: true },
   },
   data () {
     return {
@@ -228,6 +242,7 @@ export default {
       managementModeEnabled: false,
       displayMembers: true,
       isBusy: false,
+      displayTeam: this.expandTeamByDefault,
     }
   },
   computed: {
@@ -250,8 +265,11 @@ export default {
       this.sortfun = this.managementModeEnabled ? this.tableSortFunction : this.pickupSortFunction
       this.managementModeEnabled = !this.managementModeEnabled
     },
-    toggleTeamDisplay () {
+    toggleTeamEditDisplay () {
       this.displayMembers = !this.displayMembers
+    },
+    toggleTeamDisplay () {
+      this.displayTeam = !this.displayTeam
     },
     canCopy () {
       return !!navigator.clipboard
