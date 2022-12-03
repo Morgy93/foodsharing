@@ -358,7 +358,13 @@ class RegionRestController extends AbstractFOSRestController
 			throw new AccessDeniedHttpException();
 		}
 
-		$response = $this->foodsaverGateway->listActiveFoodsaversByRegion($regionId);
+		$region = $this->regionGateway->getRegion($regionId);
+		if ($region['type'] === UnitType::WORKING_GROUP) {
+			$maySeeDetails = $this->workGroupPermissions->mayEdit($region);
+		} else {
+			$maySeeDetails = $this->regionPermissions->mayHandleFoodsaverRegionMenu($regionId);
+		}
+		$response = $this->foodsaverGateway->listActiveFoodsaversByRegion($regionId, $maySeeDetails);
 
 		return $this->handleView($this->view($response, 200));
 	}

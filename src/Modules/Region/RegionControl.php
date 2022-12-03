@@ -139,7 +139,6 @@ final class RegionControl extends Control
 			$menu['stores'] = ['name' => 'menu.entry.stores', 'href' => '/?page=betrieb&bid=' . $regionId];
 
 			if ($this->session->isAdminFor($regionId)) {
-				$menu['fsList'] = ['name' => 'menu.entry.fs', 'href' => '/?page=foodsaver&bid=' . $regionId];
 				$menu['passports'] = ['name' => 'menu.entry.ids', 'href' => '/?page=passgen&bid=' . $regionId];
 			}
 

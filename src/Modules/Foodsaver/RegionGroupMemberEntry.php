@@ -2,6 +2,8 @@
 
 namespace Foodsharing\Modules\Foodsaver;
 
+use DateTime;
+
 class RegionGroupMemberEntry
 {
 	public int $id;
@@ -12,7 +14,9 @@ class RegionGroupMemberEntry
 
 	public int $sleepStatus;
 
-	public int $role;
+	public ?int $role;
+
+	public ?DateTime $lastActivity;
 
 	public bool $isAdminOrAmbassadorOfRegion;
 
@@ -23,6 +27,7 @@ class RegionGroupMemberEntry
 		$this->avatar = null;
 		$this->sleepStatus = 0;
 		$this->role = 0;
+		$this->lastActivity = null;
 		$this->isAdminOrAmbassadorOfRegion = false;
 	}
 
@@ -31,7 +36,8 @@ class RegionGroupMemberEntry
 		?string $name,
 		?string $avatar,
 		int $sleepStatus,
-		int $role,
+		?int $role,
+		?DateTime $lastActivity,
 		bool $isAdminOrAmbassadorOfRegion): RegionGroupMemberEntry
 	{
 		$p = new RegionGroupMemberEntry();
@@ -40,6 +46,7 @@ class RegionGroupMemberEntry
 		$p->avatar = $avatar;
 		$p->sleepStatus = $sleepStatus;
 		$p->role = $role;
+		$p->lastActivity = $lastActivity;
 		$p->isAdminOrAmbassadorOfRegion = $isAdminOrAmbassadorOfRegion;
 
 		return $p;

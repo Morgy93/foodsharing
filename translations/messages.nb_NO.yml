@@ -119,6 +119,10 @@ language_chooser:
   title: Velg språk
   content: Vennligst velg et språk
   choose_button: Aktualisere
+  translation_help: Snakker du andre språk? Foodsharing leter alltid etter hjelpere
+    til å oversette
+  translation_help_info_text: Denne lenken fører til oversettelsesportalen, klikk
+    på blyanten der for å starte
 poll:
   results:
     sum: Total
@@ -250,9 +254,12 @@ email_template:
   withlove: Mye kjærlighet,
   unknown_email: Ukjent e-postadresse
   foodbasket_request: Matkurven din ble etterspurt av %SENDER%
-  manual_slots_get_ignored: Dessverre sendes denne varslingen foreløpig kun for automatiske
-    hentedatoer. Manuelt opprettede, overskrevne eller slettede hentedatoer tas derfor
-    ikke i betraktning.
+  manual_slots_get_ignored: Dessverre sendes denne meldingen foreløpig kun hvis ingen
+    har registrert seg for de vanlige hentetidene. Individuelle tilleggsavtaler samt
+    overskrevne eller slettede plasser er ennå ikke tatt i betraktning. For å ikke
+    lenger motta dette varselet, fjern de vanlige hentetidene på bedriftensider ved
+    å klikke på blyantikonet ved siden av hentedatoene og fjerne hentetidene som ikke
+    er nødvendige.
   find_someone: Ta vare på noen fra ditt driftsteam så snart som mulig slik at henting
     kan finne sted. Hvis du ikke kan mobilisere noen, ville det vært fint om du kunne
     hente dem. Dersom dette ikke er mulig for deg, vennligst avbestill avtalen med
@@ -426,7 +433,7 @@ menu:
     pastcampaigns: Tidligere kampanjer
     workingGroupEdit: Administrer gruppe
     other_stores: Andre butikker
-    group_overview: Gruppeoversikt
+    group_overview: Gruppeoversikt over globale arbeidsgrupper
     baskets: Kurver
     helpwanted: Hjelpere søkes
     helpneeded: Hjelpere er akutt nødvendig
@@ -867,6 +874,8 @@ profile:
     week_0: uken etter neste
     securePickupWeek: Takk for at du trådte inn på kort varsel {count} ganger og sørget
       for henting!
+    tooltip_visibility: Engasjementsstatistikken er synlig i rollen Samarbeidskoordinator.
+      Det er begrenset til et felles hjemdistrikt eller felles bedriften.
   alldatesdeleted: Alle avtaler er slettet
   cantdeleteall: Du kan ikke slette alle avtaler!
   cantdeletethis: Du kan ikke slette individuelle avtaler!
@@ -1072,7 +1081,7 @@ foodsaver:
   profileBack: Tilbake til profilen
   list:
     summary: '{count} matreddere i distrikt {region}'
-    inactive: 'som ikke har logget på de siste seks månedene:'
+    inactive: 'som ikke har vært aktive de siste seks månedene:'
   delete_account_sure: Er du sikker på at du vil slette kontoen din?
   restricted: Du er ikke autorisert til å se disse dataene.
   your_account: din
@@ -1335,6 +1344,7 @@ login:
   error_no_auth: Beklager, vi finner ikke denne e-postadressen eller passordet. Vær
     så snill, prøv på nytt.
   success: <b>Ha en flott dag, {user_name}!</b>
+  steady_login: Forbli pålogget permanent
 salutation:
   "3": Kjære
   "2": Kjære
@@ -1445,6 +1455,10 @@ group:
     tooltip_function_7: Administratorer for denne arbeidsgruppen får vist rapporter
       med deltakelse av lokale krenkelsesgruppen. Det vises ingen rapporter som administratorene
       er involvert i, disse sendes til krenkelsesgruppen
+    board: Borde
+    duplicate_board_team: Styret er allerede opprettet! Det kan kun være ett styre
+      per distrikt.
+    tooltip_function_11: Administratorer for denne arbeidsgruppen vises i distriktsoversikten.
   quit: Forlate
   quit_name_district: Forlate distriktet %name%
   quit_name_workgroup: Forlate team %name%
@@ -1455,6 +1469,7 @@ group:
     edit: Rediger gruppe
     contact: Kontakt gruppe
     apply: Søk til denne arbeidsgruppen
+    save: Lagre endringer
   image: Bilde for %name%
   administrators: Gruppeadministratorer
   members: Medlemmer
@@ -1506,7 +1521,11 @@ group:
     not_fulfilled: For å søke på denne arbeidsgruppen må du ha vært med foodsharing
       i %weeks% uker, allerede ha samlet %bananas% tilitsbananer og allerede ha deltatt
       i %fetches% innsamlinger.
-  edit: Rediger {group}
+  edit:
+    title: Rediger {group}
+    name_required: Vennligst skriv inn et navn.
+    description_required: Vennligst skriv inn en beskrivelse.
+    description_placeholder: Beskrivelse av arbeidsgruppen
   mail_link_title:
     region: Distriktspostkasse
     workgroup: Arbeidsgruppepostkasse
@@ -1896,6 +1915,13 @@ chat:
     \ tråden i stedet.\n"
   receivermissing: Du må spesifisere en mottaker
   incorrect_address: Denne e-postadressen er feil
+  start_of_conversation: 'Samtalen startet på:'
+  display_all_messages: Vis alle meldinger
+  new_messages: Nye meldinger
+  select_recipients: Velg mottakere
+  search: Søk
+  no_messages: Ingen meldinger
+  no_conversation: Ingen samtale er valgt
 forum:
   thread:
     title: Tittel
@@ -2082,6 +2108,7 @@ pickup:
       via: gjennom
       remove_reason: '(Årsak: {reason})'
   no_slots_available: Ingen henteplasser tilgjengelig
+  region_pickup_rule_failed: Denne oppføringen oppfyller ikke fylkesreglene
 storeedit:
   fetch:
     teamStatus: lagstatus
@@ -2229,6 +2256,10 @@ store:
     filialer til en større kjede! Følg driftskjedens regler!
   peoplecame: Det hendte ofte at folk gikk uoppfordret til bedriften.
   locked: Du kan ikke redigere dette selskapet.
+  regionPickupRulesInactive: De ekstra distriktsreglene for henting er ikke aktive
+  useRegionPickupRules: 'I tillegg til driftsreglene gjelder følgende distriktsdekkende
+    rettferdighetsregel for henting:'
+  regionPickupRules: ekstra rettferdighetsregel
 storeview:
   status: Nåværende status
   public_time_at_night: om natten
@@ -2385,6 +2416,7 @@ terminology:
   n_sleeping: E nattlue|%count% nattlue
   homepage: Hjemmeside
   fsps: Distribusjonsstasjoner
+  boardAdmins: Borde
 gender:
   d: mangfoldig
   f: Fru
@@ -2450,7 +2482,7 @@ wikilink: Lenke til wiki-side
 first_post: Første oppslagstavleoppføring
 wall:
   name: Oppslagstavle
-  see-more: Vis flere innlegg
+  see-more: Vis alle meldinger
   delete: Slett inngang
   message_placeholder: Skrive en melding…
   error-delete: Du kan ikke fjerne dette innlegget.
@@ -2476,6 +2508,9 @@ regionOptions:
     i dette distriktet.
   enableReportButton: Aktiver rapportknapp på profilene til hjemmebrukerne i dette
     distriktet.
+  regionPickupInactiveHours: 'Vennligst angi hvor mange timer før henting denne regelen
+    skal slutte å være implementert:'
+  regionPickupLimitNumber: 'Angi maksimalt antall mulige samlinger for denne perioden:'
 messages:
   bread: Meldinger
 list:
@@ -2790,3 +2825,5 @@ join_region:
     deg svaret på kan skrive oss <a href="{mail}">en e-post</a>. Vi er ikke førstelinjestøtte
     for generelle spørsmål, men vi kan hjelpe deg med spørsmål om områder.
 timefrom: Fra klokken
+use_region_pickup_rule: Bør den distriktsdekkende rettferdighetsregelen gjelde for
+  denne virksomheten?

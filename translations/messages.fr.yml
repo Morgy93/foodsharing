@@ -240,7 +240,7 @@ button:
   new: Nouveau
   upload: Téléverser
   rotate_right: Pivoter dans le sens horaire
-  attach_image: Joindre une image
+  attach_image: Joindre une image (png ou jpg)
   change_picture: Modifier l'image
   next: Suivant
   save: Enregistrer
@@ -599,7 +599,7 @@ foodsaver:
     décision ?
   your_account: toi
   delete_account_now: Supprimer le compte maintenant
-  delete_account_sure: Supprimer le compte de {name} ?
+  delete_account_sure: Supprimer ton compte ?
   delete_account: Supprimer le compte
   profileBack: Retour au profil
   edit_failure: Aucune modification / les modifications n'ont pas pu être enregistrées
@@ -1519,7 +1519,7 @@ wall:
     tu peux la supprimer si besoin est.
   confirm-deletion: La contribution de {name} doit-elle être supprimée ?
   delete: Supprimer la contribution
-  see-more: Voir plus de contributions
+  see-more: Voir toutes les contributions
   message_placeholder: Écrire un message…
   name: Mur
 chat:

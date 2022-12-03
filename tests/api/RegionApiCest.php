@@ -175,6 +175,19 @@ class RegionApiCest
 		$I->seeResponseIsJson();
 	}
 
+	public function listMemberAsUser(ApiTester $I)
+	{
+		$I->addRegionMember($this->region['id'], $this->user['id'], true);
+		$I->login($this->user['email']);
+		$I->sendGET('api/region/' . $this->region['id'] . '/members');
+		$I->seeResponseCodeIs(\Codeception\Util\HttpCode::OK);
+		$I->seeResponseIsJson();
+		$responseItem = $I->grabDataFromResponseByJsonPath('$[*].lastActivity');
+		$I->assertNotNull($responseItem);
+		$responseItem = $I->grabDataFromResponseByJsonPath('$[*].role');
+		$I->assertNotNull($responseItem);
+	}
+
 	public function listOwnRegions(ApiTester $I)
 	{
 		// Create region hierarchies

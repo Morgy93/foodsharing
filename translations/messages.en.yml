@@ -38,6 +38,7 @@ group:
     apply: Apply for this group
     join: Join this group
     safe: Save changes
+    save: Save changes
   no_groups: No groups exist in this category
   quit_name: Leave group %name%
   quit: Leave
@@ -100,6 +101,7 @@ group:
     tooltip_function_7: Administrators of this working group receive reports with
       the participation of the reporting team. No reports are displayed in which the
       administrators are involved; the reporting team receives them
+    tooltip_function_11: Administrators of this group are shown in the region's overview.
   apply:
     sent: The application was sent.
     send: Send application
@@ -132,7 +134,10 @@ group:
     disclaimer: "By sending a message to this workgroup\nall administrators of the\
       \ workgroup see your email address,\nwhich you have specified on your foodsharing\
       \ profile.\nYou will be emailed a copy of this message.\n"
-  edit: Edit {group}
+  edit:
+    title: Edit {group}
+    name_required: Please enter a name.
+    description_required: Please enter a description.
   quitting_home_district_warning: Do you really want to leave your home district %name%?
     You will lose your verification and have to contact the ambassador team of your
     new home district later.
@@ -493,8 +498,8 @@ profile:
   notes:
     bread: Notes
     info: "Please use this function carefully.\nIt should help to make processes visible\
-      \ in order to save us work.\nPersonal or judgmental about a person has no place\
-      \ here.\nBe factual.\""
+      \ in order to save us work.\nPersonal or judgmental statements about a person\
+      \ have no place here.\nBe factual."
     title: Notes about {name}
   warning: Warning
   title: Profile
@@ -563,6 +568,7 @@ profile:
     basketsOfferedWeek: Thanks for offering food baskets {count} times this week.
       A total of {weight} kg was shared.
     respActStores: 'Thanks for coordinating {count} active '
+    basketsSharedWeek: 'The baskets were shared with {count} persons. '
 test:
   plain: This is a nice translation
   vars: 'My name is {NAME} and I am {AGE} years old'
@@ -855,6 +861,7 @@ pickup:
     allLoaded: All entries are shown.
     freeSlots: "{slots} free"
 
+  region_pickup_rule_failed: This entry does not comply with district regulations
 storeview:
   cooperation: Cooperation since {startTime}.
   store: Store
@@ -867,8 +874,8 @@ storeview:
   specials: Special features
   managers: Responsible foodsavers
   status: Current status
-  public_time: 'It will be picked up roughly {freq}. Please never go to the store without
-    prior consultation!'
+  public_time: 'It will be picked up roughly {freq}. Please never go to the store
+    without prior consultation!'
   pickupWeight: '{pickupWeight} were saved.'
   counter: <strong>{count}<span style="white-space:nowrap"> </span>{suffix}</strong>
   teamInfo: There are <strong> {active} </strong> actives and <strong> {jumper} </strong>
@@ -879,7 +886,7 @@ day: Day
 time: Time
 select: Please select
 validate:
-  required: '{it} can not be empty'
+  required: '{it} cannot be blank'
 no: No
 yes: Yes
 are_you_sure: Are you sure?
@@ -951,6 +958,7 @@ terminology:
   arbitration: Reporting View (LS)
   pin: Description of the district
   homepage: Homepage
+  boardAdmins: Board
 login:
   pwreset:
     bread: Reset password
@@ -1598,7 +1606,7 @@ foodsaver:
   kicked: Foodsaver removed
   list:
     summary: '{count} foodsavers in {region}'
-    inactive: 'who have not logged in for 6 months:'
+    inactive: 'who haven''t been active in the last 6 months:'
   upgrade:
     learning: "Watch now explanation video"
     to_sm: Become a store manager
@@ -1769,6 +1777,9 @@ store:
   peoplecame: It has often happened that people went to a store unsolicited.
   smneeded: To set up a business, you must be a store manager.
   tooltip_jumping: 'You are a jumper in this store'
+  useRegionPickupRules: 'In addition to the rules for this store, the following district-wide
+    pickup fairness rule applies:'
+  regionPickupRulesInactive: The additional district rules for pickups are not active
 search:
   mygroups: My groups
   mybuddies: My buddies
@@ -2172,7 +2183,7 @@ chat:
   search: Search
   no_messages: No messages
   no_conversation: No conversation selected
-  start_of_conversation: "Conversation started on: "
+  start_of_conversation: "Conversation started on:"
   display_all_messages: "Display all messages"
 
 delete: Delete
@@ -2670,7 +2681,7 @@ quiz:
   continuenow: Continue the quiz now!
   congrats_details: Congratulations! You passed with {points} of {max_points} maximum
     error points!
-  type: -Quiz
+  type: -quiz
   threestrikes: You did not pass the quiz 3 times.
   days: days
   resultsbelow: You can find the results below.
@@ -2788,6 +2799,9 @@ globals:
   select: Please select...
   show_more: Show more
   show_less: Show less
+  account:
+    signin: Sign in
+    signout: Sign out
 bootstrap-datepicker:
   labelPrevDecade: Previous decade
   labelPrevYear: Previous year
@@ -2812,11 +2826,13 @@ system_administration:
   reports: Show reports
 join_region:
   error:
-    is_country: <strong>This is a country.</strong><br> Please choose a city or region.
-    is_state: <strong>This is a state.</strong><br> Please choose a city or a region.
+    is_country: <strong>This is a country.</strong><br> Please choose a city, a region
+      or a district.
+    is_state: <strong>This is a state.</strong><br> Please choose a city, a region
+      or a disctrict.
     not_allowed: You cannot join this region.
-    is_big_city: <strong>This is a large city.</strong><br> Please choose a city or
-      a region.
+    is_big_city: <strong>This is a large city.</strong><br> Please choose a city,
+      a region or a district.
   headline: Please choose the region in which you want to become active.
 navigation:
   map: Map
@@ -2837,3 +2853,4 @@ navigation:
   profil: 👋 Hello {name}!
   styleguide: Style guide
   help_and_support: Help & Support
+use_region_pickup_rule: Should the district-wide fairness rule apply to this establishment?

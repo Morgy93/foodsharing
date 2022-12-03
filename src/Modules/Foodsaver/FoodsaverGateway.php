@@ -3,6 +3,7 @@
 namespace Foodsharing\Modules\Foodsaver;
 
 use Carbon\Carbon;
+use DateTime;
 use Foodsharing\Modules\Core\BaseGateway;
 use Foodsharing\Modules\Core\Database;
 use Foodsharing\Modules\Core\DBConstants\Foodsaver\Role;
@@ -71,7 +72,7 @@ class FoodsaverGateway extends BaseGateway
 	/**
 	 * @return RegionGroupMemberEntry[]
 	 */
-	public function listActiveFoodsaversByRegion(int $regionId): array
+	public function listActiveFoodsaversByRegion(int $regionId, bool $includeAdminFields): array
 	{
 		$res = $this->db->fetchAll('
 			SELECT 	fs.`id`,
@@ -79,6 +80,7 @@ class FoodsaverGateway extends BaseGateway
 					fs.`name`,
 					fs.sleep_status,
 					fs.rolle as role,
+					fs.last_login as last_activity,
                     if (isnull(fsbot.`bezirk_id`) , false, true) as isAdminOrAmbassadorOfRegion
 
 		    FROM	fs_foodsaver fs
@@ -96,8 +98,11 @@ class FoodsaverGateway extends BaseGateway
 			':regionId' => $regionId
 		]);
 
-		return array_map(function ($fs) {
-			return RegionGroupMemberEntry::create($fs['id'], $fs['name'], $fs['photo'], $fs['sleep_status'], $fs['role'], $fs['isAdminOrAmbassadorOfRegion']);
+		return array_map(function ($fs) use ($includeAdminFields) {
+			return RegionGroupMemberEntry::create($fs['id'], $fs['name'], $fs['photo'], $fs['sleep_status'],
+				$includeAdminFields ? $fs['role'] : null,
+				$includeAdminFields ? new DateTime($fs['last_activity']) : null,
+				$fs['isAdminOrAmbassadorOfRegion']);
 		}, $res);
 	}
 

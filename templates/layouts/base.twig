@@ -158,8 +158,6 @@
             {{ footer | raw }}
         {% endblock %}
 
-        <script type="text/javascript" src="https://polyfill.io/v3/polyfill.js?features=Intl"></script>
-
         {% for script in head.scripts %}
             <script type="text/javascript" src="{{ script }}"></script>
         {% endfor %}

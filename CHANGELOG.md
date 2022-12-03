@@ -94,7 +94,7 @@
 - Logging from removal of store managers. Corrected logging use for appointing store manager. !2365 @fs_k
 - The tooltip from foodbasked enquiry edit button blocked the clicking if only 1 enquiry was active. !2368 @martincodes-de
 - Reaction button hasn't different color if already reacted !2373 @martincodes-de
-- polyfill added @sefn
+- polyfill added !2387 !2519 @sefn
 - add public information when creating a new store !2397 @BibaltiK
 - The excerpt from the operating pinwall is displayed again on Mobile. !2393 @martincodes-de
 - Reduced the show-more functionality on activity posts !2401 @sefn
@@ -143,6 +143,7 @@
 - Changed store cooperation status to an enum !2473 !2496 !2505 @KoeMai
 - Changed store cooperation status to an enum !2473 !2496 @KoeMai
 - Replaced the edit form for working groups with Vue #1409 !2439 @alex.simm
+- Removed links to foodsaver page and moved functions to member list !2512 @chriswalg
 
 ## Dev/Test/CI stuff
 - Added Gitpod and refactored permissions !2386 !2399 !2402 !2428 @sefn @chriswalg
@@ -180,6 +181,7 @@
 - Fix "bid" contains a number !2476 @BibaltiK
 - Fix use Statemen !2500 @BibaltiK
 - Added setting for the cs-fixer to sort the usage imports !2509 @BibaltiK
+- Fix FoodBasketCreateCept - added wait(2) !2523 @chriswalg
 
 ## Development documentation
 - Add generator for database documentation !2275 @KoeMai

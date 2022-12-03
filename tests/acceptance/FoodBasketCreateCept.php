@@ -97,6 +97,7 @@ $I->see('Essenskorb anlegen', ['css' => '.testing-basket-create']);
 $I->click('.testing-basket-requests');
 // TODO: https://gitlab.com/foodsharing-dev/foodsharing/-/issues/1466 $I->see('Hi friend, can I have', ['css' => 'vue-advanced-chat']);
 // Reject request
+$I->wait(2);
 $I->click('.testing-basket-dropdown > .nav-link');
 $I->click('.testing-basket-requests-close');
 $I->waitForText('Essenskorbanfrage von ' . $picker['name'] . ' abschließen');

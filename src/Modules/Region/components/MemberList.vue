@@ -23,13 +23,12 @@
       v-if="memberList.length"
       class="card-body p-0"
     >
-      <div class="form-row p-1">
+      <div class="row">
         <div
-          v-if="managementModeEnabled"
-          class="col-11"
+          v-if="isWorkGroup && mayEditMembers"
+          class="user-search-input"
         >
           <user-search-input
-            v-if="isWorkGroup"
             id="new-foodsaver-search"
             class="m-1"
             :placeholder="$i18n('search.user_search.placeholder')"
@@ -40,16 +39,52 @@
           />
         </div>
         <div
-          v-if="!managementModeEnabled"
-          class="col-2 text-center"
+          v-if="mayEditMembers"
+          class="filter-role"
+        >
+          <b-form-select
+            v-model="filterRole"
+            :options="roleOptions"
+            size="sm"
+          />
+        </div>
+        <div
+          v-if="mayEditMembers"
+          class="filter-activity-toggle"
+        >
+          <b-form-checkbox
+            v-model="filterLastActivity"
+            switch
+            size="sm"
+          >
+            {{ $i18n('group.filter_by_last_activity') }}
+          </b-form-checkbox>
+        </div>
+        <div
+          v-if="mayEditMembers"
+          class="filter-activity-chooser"
+        >
+          <b-form-spinbutton
+            v-model="lastActivityFilterMonths"
+            min="1"
+            max="12"
+            size="sm"
+            :disabled="!filterLastActivity"
+          />
+        </div>
+      </div>
+      <div
+        class="form-row"
+      >
+        <div
+          class="filter-for-label"
         >
           <label class=" col-form-label col-form-label-sm foo">
             {{ $i18n('list.filter_for') }}
           </label>
         </div>
         <div
-          v-if="!managementModeEnabled"
-          class="col-8"
+          class="filter-for-form"
         >
           <input
             v-model="filterText"
@@ -59,8 +94,7 @@
           >
         </div>
         <div
-          v-if="!managementModeEnabled"
-          class="col"
+          class="filter-for-delete"
         >
           <button
             v-b-tooltip.hover
@@ -72,109 +106,108 @@
             <i class="fas fa-times" />
           </button>
         </div>
-        <div class="col">
-          <button
-            v-if="mayEditMembers"
-            v-b-tooltip.hover.top
-            :title="$i18n(managementModeEnabled ? 'group.member_list.admin_mode_off' : 'group.member_list.admin_mode_on')"
-            :class="[managementModeEnabled ? ['text-warning', 'active'] : 'text-light', 'btn', 'btn-primary', 'btn-sm']"
-            @click.prevent="toggleManageControls"
-          >
-            <i class="fas fa-fw fa-cog" />
-          </button>
-        </div>
       </div>
+    </div>
 
-      <b-table
-        :fields="fields"
-        :items="membersFilteredSorted"
-        :current-page="currentPage"
-        :per-page="perPage"
-        :sort-compare="compare"
-        :busy="isBusy"
-        small
-        hover
-        responsive
-        class="foto-table"
+    <b-table
+      :fields="filteredFields"
+      :items="membersFilteredSorted"
+      :current-page="currentPage"
+      :per-page="perPage"
+      :sort-compare="compare"
+      :busy="isBusy"
+      small
+      hover
+      responsive
+      class="foto-table"
+    >
+      <template #cell(imageUrl)="row">
+        <div>
+          <avatar
+            :url="row.item.avatar"
+            :is-sleeping="row.item.sleepStatus"
+            :size="50"
+          />
+        </div>
+      </template>
+      <template #cell(userName)="row">
+        <a
+          :href="$url('profile', row.item.id)"
+          :title="row.item.id"
+        >
+          {{ row.item.name }}
+        </a>
+      </template>
+      <template #cell(lastActivity)="row">
+        {{ $dateFormatter.format(row.item.lastActivity, {
+          day: 'numeric',
+          month: 'numeric',
+          year: 'numeric',
+        }) }}
+      </template>
+      <template #cell(role)="row">
+        {{ $i18n('terminology.role.' + row.item.role) }}
+      </template>
+      <template
+        v-if="mayRemoveAdminOrAmbassador"
+        #cell(removeAdminButton)="row"
       >
-        <template #cell(imageUrl)="row">
-          <div>
-            <avatar
-              :url="row.item.avatar"
-              :is-sleeping="row.item.sleepStatus"
-              :size="50"
-            />
-          </div>
-        </template>
-        <template #cell(userName)="row">
-          <a
-            :href="$url('profile', row.item.id)"
-            :title="row.item.id"
-          >
-            {{ row.item.name }}
-          </a>
-        </template>
-        <template
-          v-if="mayRemoveAdminOrAmbassador && managementModeEnabled"
-          #cell(removeAdminButton)="row"
+        <b-button
+          v-if="rowItemisAdminOrAmbassadorOfRegion(row.item)"
+          v-b-tooltip="$i18n(isWorkGroup ? 'group.member_list.remove_admin_title' : 'group.member_list.remove_ambassador_title')"
+          size="sm"
+          variant="danger"
+          :disabled="isBusy"
+          @click="showRemoveAdminMemberConfirmation(row.item.id, row.item.name)"
         >
-          <b-button
-            v-if="rowItemisAdminOrAmbassadorOfRegion(row.item)"
-            v-b-tooltip="$i18n(isWorkGroup ? 'group.member_list.remove_admin_title' : 'group.member_list.remove_ambassador_title')"
-            size="sm"
-            variant="danger"
-            :disabled="isBusy"
-            @click="showRemoveAdminMemberConfirmation(row.item.id, row.item.name)"
-          >
-            <i class="fas fa-fw fa-user-slash" />
-          </b-button>
-        </template>
-        <template
-          v-if="maySetAdminOrAmbassador && managementModeEnabled"
-          #cell(setAdminButton)="row"
+          <i class="fas fa-fw fa-user-slash" />
+        </b-button>
+      </template>
+      <template
+        v-if="maySetAdminOrAmbassador && managementModeEnabled"
+        #cell(setAdminButton)="row"
+      >
+        <b-button
+          v-if="rowItemNotqualUserid(userId,row.item.id) && roleCheckForRegionAndWorkGroup(isWorkGroup,row.item.role) && !rowItemisAdminOrAmbassadorOfRegion(row.item)"
+          v-b-tooltip.left="$i18n(isWorkGroup ? 'group.member_list.set_admin_title' : 'group.member_list.set_ambassador_title')"
+          size="sm"
+          variant="warning"
+          :disabled="isBusy"
+          @click="showSetAdminMemberConfirmation(row.item.id, row.item.name)"
         >
-          <b-button
-            v-if="rowItemNotqualUserid(userId,row.item.id) && roleCheckForRegionAndWorkGroup(isWorkGroup,row.item.role) && !rowItemisAdminOrAmbassadorOfRegion(row.item)"
-            v-b-tooltip.left="$i18n(isWorkGroup ? 'group.member_list.set_admin_title' : 'group.member_list.set_ambassador_title')"
-            size="sm"
-            variant="warning"
-            :disabled="isBusy"
-            @click="showSetAdminMemberConfirmation(row.item.id, row.item.name)"
-          >
-            <i class="fas fa-fw fa-user-graduate" />
-          </b-button>
-        </template>
-        <template
-          v-if="mayEditMembers && managementModeEnabled"
-          #cell(removeButton)="row"
+          <i class="fas fa-fw fa-user-graduate" />
+        </b-button>
+      </template>
+      <template
+        v-if="mayEditMembers"
+        #cell(removeButton)="row"
+      >
+        <b-button
+          v-if="rowItemNotqualUserid(userId,row.item.id) && !rowItemisAdminOrAmbassadorOfRegion(row.item)"
+          v-b-tooltip="$i18n('group.member_list.remove_title')"
+          size="sm"
+          variant="danger"
+          :disabled="isBusy"
+          @click="showRemoveMemberConfirmation(row.item.id, row.item.name)"
         >
-          <b-button
-            v-if="rowItemNotqualUserid(userId,row.item.id) && !rowItemisAdminOrAmbassadorOfRegion(row.item)"
-            v-b-tooltip="$i18n('group.member_list.remove_title')"
-            size="sm"
-            variant="danger"
-            :disabled="isBusy"
-            @click="showRemoveMemberConfirmation(row.item.id, row.item.name)"
-          >
-            <i class="fas fa-fw fa-user-times" />
-          </b-button>
-        </template>
-      </b-table>
-      <div class="float-right p-1 pr-3">
-        <b-pagination
-          v-model="currentPage"
-          :total-rows="membersFiltered.length"
-          :per-page="perPage"
-          class="my-0"
-        />
-      </div>
+          <i class="fas fa-fw fa-user-times" />
+        </b-button>
+      </template>
+    </b-table>
+    <div class="float-right p-1 pr-3">
+      <b-pagination
+        v-model="currentPage"
+        :total-rows="membersFiltered.length"
+        :per-page="perPage"
+        class="my-0"
+      />
     </div>
   </div>
 </template>
 
 <script>
 import { optimizedCompare } from '@/utils'
-import { BButton, BTable, BPagination, VBTooltip } from 'bootstrap-vue'
+import { BButton, BFormSelect, BTable, BPagination, VBTooltip } from 'bootstrap-vue'
 import { addMember } from '@/api/groups'
 import { removeMember, listRegionMembers, setAdminOrAmbassador, removeAdminOrAmbassador } from '@/api/regions'
 import { hideLoader, pulseError, showLoader } from '@/script'
@@ -183,7 +216,7 @@ import UserSearchInput from '@/components/UserSearchInput'
 import Avatar from '@/components/Avatar'
 
 export default {
-  components: { Avatar, BButton, BTable, BPagination, UserSearchInput },
+  components: { Avatar, BButton, BFormSelect, BTable, BPagination, UserSearchInput },
   directives: { VBTooltip },
   props: {
     userId: { type: Number, default: null },
@@ -205,7 +238,47 @@ export default {
       currentPage: 1,
       perPage: 20,
       filterText: '',
-      fields: [
+      filterRole: null,
+      filterLastActivity: false,
+      lastActivityFilterMonths: 6,
+      memberList: [],
+      isBusy: false,
+      managementModeEnabled: false,
+      roleOptions: [
+        { value: null, text: i18n('group.role_name') },
+        { value: 1, text: i18n('terminology.role.1') },
+        { value: 2, text: i18n('terminology.role.2') },
+        { value: 3, text: i18n('terminology.role.3') },
+        { value: 4, text: i18n('terminology.role.4') },
+      ],
+    }
+  },
+  computed: {
+    dateBeforeMonths () {
+      return new Date(new Date().getTime() - this.lastActivityFilterMonths * 30 * 24 * 60 * 60 * 1000)
+    },
+    membersFiltered () {
+      if (!this.filterText.trim() && this.filterRole === null && !this.filterLastActivity) {
+        return this.memberList
+      }
+      const filterText = this.filterText ? this.filterText.toLowerCase() : null
+      return this.memberList.filter((member) => {
+        return (
+          (!filterText || (member.name.toLowerCase().indexOf(filterText) !== -1)) &&
+          (this.filterRole === null || (member.role === this.filterRole)) &&
+          (!this.filterLastActivity || (Date.parse(member.lastActivity) > this.dateBeforeMonths))
+        )
+      })
+    },
+    membersFilteredSorted () {
+      // sorts the member list alphabetically
+      const copy = this.membersFiltered
+      return copy.sort(function (a, b) {
+        return a.name.localeCompare(b.name)
+      })
+    },
+    filteredFields () {
+      const columns = [
         {
           key: 'imageUrl',
           sortable: false,
@@ -216,7 +289,23 @@ export default {
           label: this.$i18n('group.name'),
           sortable: false,
           class: 'align-middle',
+        },
+      ]
+      if (this.mayEditMembers) {
+        columns.push({
+          key: 'lastActivity',
+          label: this.$i18n('group.last_activity'),
+          sortable: true,
+          class: 'align-middle',
         }, {
+          key: 'role',
+          label: this.$i18n('group.role_name'),
+          sortable: true,
+          class: 'align-middle',
+        })
+      }
+      columns.push(
+        {
           key: 'setAdminButton',
           label: '',
           sortable: false,
@@ -232,31 +321,8 @@ export default {
           sortable: false,
           class: 'button-column',
         },
-      ],
-      memberList: [],
-      isBusy: false,
-      managementModeEnabled: false,
-    }
-  },
-  computed: {
-    membersFiltered () {
-      if (!this.filterText.trim()) {
-        return this.memberList
-      }
-      const filterText = this.filterText ? this.filterText.toLowerCase() : null
-      return this.memberList.filter((member) => {
-        return (
-          !filterText || (member.name.toLowerCase().indexOf(filterText) !== -1
-          )
-        )
-      })
-    },
-    membersFilteredSorted () {
-      // sorts the member list alphabetically
-      const copy = this.membersFiltered
-      return copy.sort(function (a, b) {
-        return a.name.localeCompare(b.name)
-      })
+      )
+      return columns
     },
   },
   async mounted () {
@@ -409,5 +475,98 @@ export default {
   width: 50px;
   vertical-align: middle;
   text-align: center;
+}
+
+.filter-activity-toggle {
+  margin:0.5rem;
+  margin-left:1.5rem;
+  @media (min-width: 375px) {
+    flex-basis: 50%;
+    order: 1;
+  }
+
+  @media (min-width: 1200px) {
+    flex-basis: 25%;
+    order: 1;
+  }
+}
+
+.filter-activity-chooser {
+  margin:0.5rem;
+  flex-basis: 25%;
+  order: 2;
+}
+
+.filter-role {
+  margin:0.5rem;
+  margin-left:1.5rem;
+  @media (min-width: 375px) {
+    flex-basis: 85%;
+    order: 3;
+  }
+
+  @media (min-width: 1200px) {
+    flex-basis: 40%;
+    order: 3;
+  }
+}
+
+.filter-for-label {
+  @media (min-width: 375px) {
+    flex-basis: 5%;
+    order: 1;
+    margin-left:1rem;
+  }
+
+  @media (min-width: 1200px) {
+    flex-basis: 10%;
+    order: 1;
+    margin-top:0.7rem
+  }
+}
+
+  .filter-for-form {
+  @media (min-width: 375px) {
+    flex-basis: 60%;
+    order: 2;
+    margin-left:1rem;
+    margin-top:0.5rem
+  }
+
+  @media (min-width: 1200px) {
+    flex-basis: 75%;
+    order: 2;
+    margin:0.5rem
+  }
+}
+
+  .filter-for-delete {
+  @media (min-width: 375px) {
+    flex-basis: 2%;
+    order: 3;
+    margin:0.5rem;
+  }
+
+  @media (min-width: 1200px) {
+    flex-basis: 5%;
+    order: 3;
+    margin:0.7rem;
+  }
+}
+
+.user-search-input {
+  @media (min-width: 375px) {
+    flex-basis: 88%;
+    order: 1;
+    margin:0.5rem;
+    margin-left:1.2rem
+  }
+
+  @media (min-width: 1200px) {
+    flex-basis: 90%;
+    order: 1;
+    margin:0.7rem;
+    margin-left:1.5rem
+  }
 }
 </style>
