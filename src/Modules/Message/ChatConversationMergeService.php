@@ -61,4 +61,9 @@ class ChatConversationMergeService
 			WHERE conversation_id IN ($conversationIds) GROUP BY conversation_id ASC"
 		);
 	}
+
+	public function updateMessagesFromOldToNewConversation(int $oldConversationId, int $newConversationId): void
+	{
+		$this->database->update("fs_msg", ["conversation_id" => $newConversationId], ["conversation_id" => $oldConversationId]);
+	}
 }
