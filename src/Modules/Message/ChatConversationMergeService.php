@@ -22,4 +22,15 @@ class ChatConversationMergeService
 			]
 		);
 	}
+
+	public function isConversationBetweenTwoMembers(int $conversationId): bool
+	{
+		$conversationMemberRecords = $this->database->fetchAll(
+			"SELECT id FROM fs_foodsaver_has_conversation WHERE conversation_id = :conversation_id",
+			["conversation_id" => $conversationId]
+		);
+
+		$amountOfMembers = count($conversationMemberRecords);
+		return $amountOfMembers === 2;
+	}
 }
