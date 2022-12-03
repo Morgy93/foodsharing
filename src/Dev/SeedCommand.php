@@ -547,15 +547,17 @@ class SeedCommand extends Command implements CustomCommandInterface
 		// create conversations between users
 		$this->output->writeln('Create conversations between users');
 		foreach ($this->foodsavers as $user) {
-			foreach ($this->getRandomIDOfArray($this->foodsavers, 10) as $chatpartner) {
+			foreach ($this->getRandomIDOfArray($this->foodsavers, 15) as $chatpartner) {
 				if ($user !== $chatpartner) {
-					$conv = $I->createConversation([$user, $chatpartner]);
-					for ($i = 1; $i <= rand(1, 10); ++$i) {
-						$userId = $user;
-						if (rand(0, 1)) {
-							$userId = $chatpartner;
+					for($x = 1; $x <= 10; ++$x) {
+						$conv = $I->createConversation([$user, $chatpartner]);
+						for ($i = 1; $i <= rand(1, 10); ++$i) {
+							$userId = $user;
+							if (rand(0, 1)) {
+								$userId = $chatpartner;
+							}
+							$I->addConversationMessage($userId, $conv['id']);
 						}
-						$I->addConversationMessage($userId, $conv['id']);
 					}
 				}
 			}
