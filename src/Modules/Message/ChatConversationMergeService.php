@@ -12,9 +12,9 @@ class ChatConversationMergeService
 		private readonly MessageTransactions $messageTransactions,
 	) {}
 
-	public function getMessagesIds(int $offset = 0, int $amount = 20): array
+	public function getMessages(int $offset = 0, int $amount = 20): array
 	{
-		return $this->database->fetchAllValues("SELECT id FROM fs_msg ORDER BY id LIMIT :amount OFFSET :offset", [
+		return $this->database->fetchAll("SELECT id, conversation_id FROM fs_msg ORDER BY id LIMIT :amount OFFSET :offset", [
 			"amount" => $amount,
 			"offset" => $offset
 		]);

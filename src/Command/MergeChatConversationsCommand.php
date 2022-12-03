@@ -3,8 +3,10 @@
 namespace Foodsharing\Command;
 
 use Foodsharing\Modules\Message\ChatConversationMergeService;
+use JetBrains\PhpStorm\Pure;
 use Symfony\Component\Console\Attribute\AsCommand;
 use Symfony\Component\Console\Command\Command;
+use Symfony\Component\Console\Helper\ProgressBar;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 
@@ -64,6 +66,22 @@ class MergeChatConversationsCommand extends Command
 
 	protected function execute(InputInterface $input, OutputInterface $output): int
 	{
+		$messagesToAnalyze = $this->chatConversationMergeService->getMessages(amount: 10);
+		$progressBar = new ProgressBar($output, count($messagesToAnalyze));
+
+		foreach ($messagesToAnalyze as $message) {
+			$messageId = $message["id"];
+			$messageConversationId = $message["conversation_id"];
+
+			if (!$this->chatConversationMergeService->isConversationBetweenTwoMembers($messageConversationId)) {
+				$progressBar->advance();
+				continue;
+			}
+
+
+
+			$progressBar->advance();
+		}
 
 		return Command::SUCCESS;
 	}
