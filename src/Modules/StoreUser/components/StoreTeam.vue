@@ -33,16 +33,9 @@
               :title="$i18n(managementModeEnabled ? 'store.sm.managementToggleOff' : 'store.sm.managementToggleOn')"
               :class="[managementModeEnabled ? ['text-warning', 'active'] : 'text-light', 'btn', 'btn-primary', 'btn-sm']"
               href="#"
-              @click.prevent="toggleManageControls"
+              @click.prevent.stop="toggleManageControls"
             >
               <i class="fas fa-fw fa-cog" />
-            </button>
-            <button
-              class="px-1 d-md-none text-light btn btn-sm"
-              href="#"
-              @click.prevent="toggleTeamEditDisplay"
-            >
-              <i :class="['fas fa-fw', `fa-chevron-${displayMembers ? 'down' : 'left'}`]" />
             </button>
           </div>
         </div>
@@ -57,10 +50,7 @@
         :region-id="regionId"
       />
 
-      <div
-        v-show="displayTeam"
-        class="card-body team-list"
-      >
+      <div class="card-body team-list">
         <b-table
           ref="teamlist"
           :items="foodsaver"
@@ -240,9 +230,8 @@ export default {
       sortfun: this.tableSortFunction,
       sortdesc: true,
       managementModeEnabled: false,
-      displayMembers: true,
+      displayMembers: this.expandTeamByDefault,
       isBusy: false,
-      displayTeam: this.expandTeamByDefault,
     }
   },
   computed: {
@@ -265,11 +254,8 @@ export default {
       this.sortfun = this.managementModeEnabled ? this.tableSortFunction : this.pickupSortFunction
       this.managementModeEnabled = !this.managementModeEnabled
     },
-    toggleTeamEditDisplay () {
-      this.displayMembers = !this.displayMembers
-    },
     toggleTeamDisplay () {
-      this.displayTeam = !this.displayTeam
+      this.displayMembers = !this.displayMembers
     },
     canCopy () {
       return !!navigator.clipboard
