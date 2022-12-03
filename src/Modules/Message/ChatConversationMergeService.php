@@ -41,7 +41,7 @@ class ChatConversationMergeService
 		$memberIds = implode(",", $memberIds);
 		$membersWithConversationLists = $this->database->fetchAll("
 			SELECT foodsaver_id, GROUP_CONCAT(conversation_id) AS conversation_ids FROM fs_foodsaver_has_conversation
-			WHERE foodsaver_id IN ({$memberIds}) GROUP BY foodsaver_id"
+			WHERE foodsaver_id IN ($memberIds) GROUP BY foodsaver_id"
 		);
 
 		$conversationIdsOfAllMembers = [];
@@ -51,5 +51,14 @@ class ChatConversationMergeService
 		}
 
 		return array_intersect(...$conversationIdsOfAllMembers);
+	}
+
+	public function getConversationIdsWithAmountOfMessages(array $conversationIds): array
+	{
+		$conversationIds = implode(",", $conversationIds);
+		return $this->database->fetchAll("
+			SELECT conversation_id, COUNT(body) AS amount_of_messages FROM fs_msg
+			WHERE conversation_id IN ($conversationIds) GROUP BY conversation_id ASC"
+		);
 	}
 }
