@@ -80,7 +80,13 @@ class MergeChatConversationsCommand extends Command
 			}
 
 			$commonConversationIds = $this->chatConversationMergeService->getCommonConversationIds($memberIds);
-			$commonConversationIdsWithAmountOfMessages = "";
+			$commonConversationIdsWithAmountOfMessages = $this->chatConversationMergeService->getConversationIdsWithAmountOfMessages($commonConversationIds);
+			$commonConversationWithMostMessages = array_shift($commonConversationIdsWithAmountOfMessages);
+
+			foreach ($commonConversationIdsWithAmountOfMessages as $conversationIdWithAmountOfMessage) {
+				$conversationId = $conversationIdWithAmountOfMessage["conversation_id"];
+				$this->chatConversationMergeService->updateMessagesFromOldToNewConversation($conversationId, $commonConversationWithMostMessages["conversation_id"]);
+			}
 
 			$progressBar->advance();
 		}
