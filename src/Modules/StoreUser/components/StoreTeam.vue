@@ -19,7 +19,7 @@
           href="#"
           @click.prevent.stop="toggleTeamDisplay"
         >
-          <i :class="['fas fa-fw', `fa-chevron-${displayTeam ? 'down' : 'left'}`]" />
+          <i :class="['fas fa-fw', `fa-chevron-${displayMembers ? 'down' : 'left'}`]" />
         </a>
         <div class="row align-items-center">
           <div class="col font-weight-bold">
