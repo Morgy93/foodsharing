@@ -71,14 +71,16 @@ class MergeChatConversationsCommand extends Command
 
 		foreach ($messagesToAnalyze as $message) {
 			$messageId = $message["id"];
-			$messageConversationId = $message["conversation_id"];
+			$conversationId = $message["conversation_id"];
 
-			if (!$this->chatConversationMergeService->isConversationBetweenTwoMembers($messageConversationId)) {
+			$memberIds = $this->chatConversationMergeService->getMemberIdsOfConversation($conversationId);
+			if (!$this->chatConversationMergeService->isConversationBetweenTwoMembers($memberIds)) {
 				$progressBar->advance();
 				continue;
 			}
 
-
+			$commonConversationIds = $this->chatConversationMergeService->getCommonConversationIds($memberIds);
+			$commonConversationIdsWithAmountOfMessages = "";
 
 			$progressBar->advance();
 		}

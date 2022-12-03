@@ -20,15 +20,9 @@ class ChatConversationMergeService
 		]);
 	}
 
-	public function isConversationBetweenTwoMembers(int $conversationId): bool
+	public function isConversationBetweenTwoMembers(array $memberIds): bool
 	{
-		$conversationMemberRecords = $this->database->fetchAll(
-			"SELECT id FROM fs_foodsaver_has_conversation WHERE conversation_id = :conversation_id",
-			["conversation_id" => $conversationId]
-		);
-
-		$amountOfMembers = count($conversationMemberRecords);
-		return $amountOfMembers === 2;
+		return count($memberIds) === 2;
 	}
 
 	public function getMemberIdsOfConversation(int $conversationId): array
@@ -40,5 +34,22 @@ class ChatConversationMergeService
 		);
 
 		return explode(",", $conversationWithMembers["foodsaver_ids"]);
+	}
+
+	public function getCommonConversationIds(array $memberIds): array
+	{
+		$memberIds = implode(",", $memberIds);
+		$membersWithConversationLists = $this->database->fetchAll("
+			SELECT foodsaver_id, GROUP_CONCAT(conversation_id) AS conversation_ids FROM fs_foodsaver_has_conversation
+			WHERE foodsaver_id IN ({$memberIds}) GROUP BY foodsaver_id"
+		);
+
+		$conversationIdsOfAllMembers = [];
+		foreach ($membersWithConversationLists as $memberWithConversationList) {
+			$conversationIds = explode(",", $memberWithConversationList["conversation_ids"]);
+			$conversationIdsOfAllMembers[] = $conversationIds;
+		}
+
+		return array_intersect(...$conversationIdsOfAllMembers);
 	}
 }
