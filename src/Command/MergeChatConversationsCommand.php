@@ -11,6 +11,8 @@ use Symfony\Component\Console\Output\OutputInterface;
 /**
  * How does the command work?
  * --------------------------
+ * START COMMAND EXECUTION
+ *
  * 1. Fetch all already-duplicate-checked messages
  * 2. Fetch an amount of messages after a defined date [yyyy-mm-dd] and excluded already-duplicate-checked messages
  * 3. For each message, ...
@@ -37,6 +39,8 @@ use Symfony\Component\Console\Output\OutputInterface;
  *
  * 		TERMINATE ITERATION
  * 4. save all already-duplicate-checked messages
+ *
+ * TERMINATE COMMAND EXECUTION
  */
 
 #[AsCommand(
