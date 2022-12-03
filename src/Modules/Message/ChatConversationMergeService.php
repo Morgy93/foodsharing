@@ -16,7 +16,7 @@ class ChatConversationMergeService
 	{
 		return $this->database->fetchAll("SELECT id, conversation_id FROM fs_msg ORDER BY id LIMIT :amount OFFSET :offset", [
 			"amount" => $amount,
-			"offset" => $offset
+			"offset" => $offset,
 		]);
 	}
 
@@ -29,5 +29,16 @@ class ChatConversationMergeService
 
 		$amountOfMembers = count($conversationMemberRecords);
 		return $amountOfMembers === 2;
+	}
+
+	public function getMemberIdsOfConversation(int $conversationId): array
+	{
+		$conversationWithMembers = $this->database->fetch("
+			SELECT GROUP_CONCAT(foodsaver_id) AS foodsaver_ids, conversation_id FROM fs_foodsaver_has_conversation
+			WHERE conversation_id = :conversation_id GROUP BY conversation_id",
+			["conversation_id" => $conversationId]
+		);
+
+		return explode(",", $conversationWithMembers["foodsaver_ids"]);
 	}
 }
