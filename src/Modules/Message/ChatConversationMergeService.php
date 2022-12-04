@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 
 namespace Foodsharing\Modules\Message;
 
@@ -27,13 +27,13 @@ class ChatConversationMergeService
 
 	public function getMemberIdsOfConversation(int $conversationId): array
 	{
-		$conversationWithMembers = $this->database->fetch("
-			SELECT GROUP_CONCAT(foodsaver_id) AS foodsaver_ids, conversation_id FROM fs_foodsaver_has_conversation
-			WHERE conversation_id = :conversation_id GROUP BY conversation_id",
+		$conversationMemberIds = $this->database->fetchAllValues("
+			SELECT foodsaver_id FROM fs_foodsaver_has_conversation
+			WHERE conversation_id = :conversation_id",
 			["conversation_id" => $conversationId]
 		);
 
-		return explode(",", $conversationWithMembers["foodsaver_ids"]);
+		return $conversationMemberIds;
 	}
 
 	public function getCommonConversationIds(array $memberIds): array

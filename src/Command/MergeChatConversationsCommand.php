@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 
 namespace Foodsharing\Command;
 
@@ -81,7 +81,7 @@ class MergeChatConversationsCommand extends Command
 
 			$commonConversationIds = $this->chatConversationMergeService->getCommonConversationIds($memberIds);
 			$commonConversationIds = array_filter($commonConversationIds, function ($conversationId) {
-				return !$this->chatConversationMergeService->isConversationAssociatedWithAStore($conversationId);
+				return !$this->chatConversationMergeService->isConversationAssociatedWithAStore((int)$conversationId);
 			});
 
 			$commonConversationIdsWithAmountOfMessages = $this->chatConversationMergeService->getConversationIdsWithAmountOfMessages($commonConversationIds);
