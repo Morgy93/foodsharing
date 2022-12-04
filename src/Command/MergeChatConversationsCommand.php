@@ -86,6 +86,7 @@ class MergeChatConversationsCommand extends Command
 			foreach ($commonConversationIdsWithAmountOfMessages as $conversationIdWithAmountOfMessage) {
 				$conversationId = $conversationIdWithAmountOfMessage["conversation_id"];
 				$this->chatConversationMergeService->updateMessagesFromOldToNewConversation($conversationId, $commonConversationWithMostMessages["conversation_id"]);
+				$this->messageGateway->deleteConversation($conversationId);
 			}
 
 			$progressBar->advance();
