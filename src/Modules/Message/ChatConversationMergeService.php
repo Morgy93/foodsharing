@@ -62,6 +62,16 @@ class ChatConversationMergeService
 		);
 	}
 
+	public function isConversationAssociatedWithAStore(int $conversationId): bool
+	{
+		$storesThatBelongsToTheConversationId = $this->database->fetchAll("
+			SELECT id FROM fs_betrieb
+			WHERE springer_conversation_id = $conversationId OR team_conversation_id = $conversationId
+		");
+
+		return !empty($storesThatBelongsToTheConversationId);
+	}
+
 	public function updateMessagesFromOldToNewConversation(int $oldConversationId, int $newConversationId): void
 	{
 		$this->database->update("fs_msg", ["conversation_id" => $newConversationId], ["conversation_id" => $oldConversationId]);

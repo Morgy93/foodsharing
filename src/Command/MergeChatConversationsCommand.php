@@ -3,7 +3,7 @@
 namespace Foodsharing\Command;
 
 use Foodsharing\Modules\Message\ChatConversationMergeService;
-use JetBrains\PhpStorm\Pure;
+use Foodsharing\Modules\Message\MessageGateway;
 use Symfony\Component\Console\Attribute\AsCommand;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Helper\ProgressBar;
@@ -54,6 +54,7 @@ class MergeChatConversationsCommand extends Command
 {
 	public function __construct(
 		private readonly ChatConversationMergeService $chatConversationMergeService,
+		private readonly MessageGateway $messageGateway,
 	)
 	{
 		parent::__construct();
@@ -70,7 +71,6 @@ class MergeChatConversationsCommand extends Command
 		$progressBar = new ProgressBar($output, count($messagesToAnalyze));
 
 		foreach ($messagesToAnalyze as $message) {
-			$messageId = $message["id"];
 			$conversationId = $message["conversation_id"];
 
 			$memberIds = $this->chatConversationMergeService->getMemberIdsOfConversation($conversationId);
@@ -80,6 +80,10 @@ class MergeChatConversationsCommand extends Command
 			}
 
 			$commonConversationIds = $this->chatConversationMergeService->getCommonConversationIds($memberIds);
+			$commonConversationIds = array_filter($commonConversationIds, function ($conversationId) {
+				return !$this->chatConversationMergeService->isConversationAssociatedWithAStore($conversationId);
+			});
+
 			$commonConversationIdsWithAmountOfMessages = $this->chatConversationMergeService->getConversationIdsWithAmountOfMessages($commonConversationIds);
 			$commonConversationWithMostMessages = array_shift($commonConversationIdsWithAmountOfMessages);
 
@@ -88,6 +92,8 @@ class MergeChatConversationsCommand extends Command
 				$this->chatConversationMergeService->updateMessagesFromOldToNewConversation($conversationId, $commonConversationWithMostMessages["conversation_id"]);
 				$this->messageGateway->deleteConversation($conversationId);
 			}
+
+			$mergedConversationId = &$commonConversationWithMostMessages["conversation_id"];
 
 			$progressBar->advance();
 		}
