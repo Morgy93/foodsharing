@@ -52,8 +52,11 @@ class EventView extends View
 		);
 	}
 
-	public function eventForm($bezirke)
+	public function eventForm($bezirke, $add)
 	{
+		return $this->vueComponent('event-edit-form', 'EventEditForm', [
+			'new' => $add,
+		]);
 		global $g_data;
 
 		$g_data = array_merge([

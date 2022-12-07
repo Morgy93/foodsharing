@@ -145,7 +145,7 @@ class EventControl extends Control
 
 		$this->dataHelper->setEditData($event);
 
-		$this->pageHelper->addContent($this->view->eventForm($regions));
+		$this->pageHelper->addContent($this->view->eventForm($regions, false));
 	}
 
 	public function add(): void
@@ -164,7 +164,7 @@ class EventControl extends Control
 		} else {
 			$regions = $this->session->getRegions();
 
-			$this->pageHelper->addContent($this->view->eventForm($regions));
+			$this->pageHelper->addContent($this->view->eventForm($regions, true));
 		}
 	}
 
