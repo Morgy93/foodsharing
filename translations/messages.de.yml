@@ -1164,7 +1164,8 @@ events:
   add_new_event: "Jetzt neuen Termin eintragen"
   add_event: "Neuer Termin"
   created: "Event wurde erfolgreich eingetragen."
-  edit: "Event bearbeiten"
+  edit:
+    title: "Event bearbeiten"
   edited: "Event wurde erfolgreich geändert."
   create:
     date: "Datum" #also in QuizView

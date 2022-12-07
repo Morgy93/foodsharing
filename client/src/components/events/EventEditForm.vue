@@ -1,9 +1,10 @@
 <template>
   <div class="container bootstrap">
     <div class="card mb-3 rounded">
-      <div class="card-header text-white bg-primary">
-        {{ $i18n('events.create.title') }}
-      </div>
+      <div
+        class="card-header text-white bg-primary"
+        :v-html="title"
+      />
       <div class="card-body">
         <b-form
           @submit="submit"
@@ -30,7 +31,7 @@ export default {
   },
   computed: {
     title () {
-      return this.i18n(`events.${this.new ? 'create' : 'edit'}.title`)
+      return this.$i18n(`events.${this.new ? 'create' : 'edit'}.title`)
     },
   },
   methods: {

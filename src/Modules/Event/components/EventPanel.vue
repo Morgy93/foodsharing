@@ -17,7 +17,7 @@
                 {{ title }}
                 <b-button
                   v-if="mayEdit"
-                  v-b-tooltip="$i18n('events.edit')"
+                  v-b-tooltip="$i18n('events.edit.title')"
                   :href="$url('eventEdit', eventId)"
                   size="sm"
                   variant="outline-secondary ml-2"
