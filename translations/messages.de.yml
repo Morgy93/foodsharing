@@ -1158,7 +1158,7 @@ wall:
   created: "Klasse, dein Pinnwandeintrag wurde gespeichert."
   error-create: "Dein Pinnwandeintrag konnte nicht gespeichert werden."
 
-events:
+events: #TODO: remove unused translations!
   bread: "Termine"
   past: "Vergangene Termine"
   add_new_event: "Jetzt neuen Termin eintragen"
@@ -1168,6 +1168,10 @@ events:
     title: "Event bearbeiten"
   edited: "Event wurde erfolgreich geändert."
   create:
+    name:
+      label:
+      error: 
+
     date: "Datum" #also in QuizView
     title: "Neue Veranstaltung eintragen"
     public: "Ist die Veranstaltung öffentlich?"
