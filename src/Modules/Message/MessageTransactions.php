@@ -10,6 +10,7 @@ use Foodsharing\Modules\Foodsaver\Profile;
 use Foodsharing\Modules\PushNotification\Notification\MessagePushNotification;
 use Foodsharing\Modules\PushNotification\PushNotificationGateway;
 use Foodsharing\Modules\Store\StoreGateway;
+use Foodsharing\Utility\Sanitizer;
 use Foodsharing\Utility\EmailHelper;
 use Symfony\Contracts\Translation\TranslatorInterface;
 
@@ -22,6 +23,8 @@ class MessageTransactions
 	private TranslatorInterface $translator;
 	private PushNotificationGateway $pushNotificationGateway;
 	private WebSocketConnection $webSocketConnection;
+	private $sanitizer;
+
 
 	public function __construct(
 		EmailHelper $emailHelper,
@@ -30,7 +33,8 @@ class MessageTransactions
 		StoreGateway $storeGateway,
 		TranslatorInterface $translator,
 		PushNotificationGateway $pushNotificationGateway,
-		WebSocketConnection $webSocketConnection
+		WebSocketConnection $webSocketConnection,
+		Sanitizer $sanitizerService,
 	) {
 		$this->emailHelper = $emailHelper;
 		$this->foodsaverGateway = $foodsaverGateway;
@@ -39,6 +43,7 @@ class MessageTransactions
 		$this->translator = $translator;
 		$this->pushNotificationGateway = $pushNotificationGateway;
 		$this->webSocketConnection = $webSocketConnection;
+		$this->sanitizer = $sanitizerService;
 	}
 
 	private function sendNewMessageNotificationEmail(array $recipient, array $templateData): void
@@ -158,7 +163,7 @@ class MessageTransactions
 
 	public function sendMessage(int $conversationId, int $senderId, string $body, string $notificationTemplate = null): ?Message
 	{
-		$body = trim($body);
+		$body = $this->sanitizer->purifyHtml(trim($body));
 		if (!empty($body)) {
 			$time = Carbon::now();
 			$message = $this->messageGateway->addMessage($conversationId, $senderId, $body, $time);

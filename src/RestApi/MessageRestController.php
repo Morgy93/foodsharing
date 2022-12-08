@@ -10,7 +10,6 @@ use FOS\RestBundle\Controller\AbstractFOSRestController;
 use FOS\RestBundle\Controller\Annotations as Rest;
 use FOS\RestBundle\Request\ParamFetcher;
 use OpenApi\Annotations as OA;
-use Foodsharing\Utility\Sanitizer;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\Exception\AccessDeniedHttpException;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
@@ -22,20 +21,17 @@ class MessageRestController extends AbstractFOSRestController
 	private MessageGateway $messageGateway;
 	private MessageTransactions $messageTransactions;
 	private Session $session;
-	private $sanitizer;
 
 	public function __construct(
 		FoodsaverGateway $foodsaverGateway,
 		MessageGateway $messageGateway,
 		MessageTransactions $messageTransactions,
 		Session $session,
-		Sanitizer $sanitizerService,
 	) {
 		$this->foodsaverGateway = $foodsaverGateway;
 		$this->messageGateway = $messageGateway;
 		$this->messageTransactions = $messageTransactions;
 		$this->session = $session;
-		$this->sanitizer = $sanitizerService;
 	}
 
 	/**
@@ -200,7 +196,7 @@ class MessageRestController extends AbstractFOSRestController
 		if (!$this->messageGateway->mayConversation($this->session->id(), $conversationId)) {
 			throw new AccessDeniedHttpException();
 		}
-		$body = $this->sanitizer->purifyHtml($paramFetcher->get('body'));
+		$body = $paramFetcher->get('body');
 		$message = $this->messageTransactions->sendMessage($conversationId, $this->session->id(), $body);
 
 		return $this->handleView($this->view(['message' => $message], 200));
