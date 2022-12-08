@@ -56,6 +56,7 @@ class EventView extends View
 	{
 		return $this->vueComponent('event-edit-form', 'EventEditForm', [
 			'new' => $add,
+			'regions' => $bezirke
 		]);
 		global $g_data;
 
