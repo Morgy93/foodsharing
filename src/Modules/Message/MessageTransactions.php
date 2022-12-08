@@ -10,8 +10,8 @@ use Foodsharing\Modules\Foodsaver\Profile;
 use Foodsharing\Modules\PushNotification\Notification\MessagePushNotification;
 use Foodsharing\Modules\PushNotification\PushNotificationGateway;
 use Foodsharing\Modules\Store\StoreGateway;
-use Foodsharing\Utility\Sanitizer;
 use Foodsharing\Utility\EmailHelper;
+use Foodsharing\Utility\Sanitizer;
 use Symfony\Contracts\Translation\TranslatorInterface;
 
 class MessageTransactions
@@ -24,7 +24,6 @@ class MessageTransactions
 	private PushNotificationGateway $pushNotificationGateway;
 	private WebSocketConnection $webSocketConnection;
 	private $sanitizer;
-
 
 	public function __construct(
 		EmailHelper $emailHelper,
