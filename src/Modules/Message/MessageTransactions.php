@@ -30,7 +30,7 @@ class MessageTransactions
 		StoreGateway $storeGateway,
 		TranslatorInterface $translator,
 		PushNotificationGateway $pushNotificationGateway,
-		WebSocketConnection $webSocketConnection,
+		WebSocketConnection $webSocketConnection
 	) {
 		$this->emailHelper = $emailHelper;
 		$this->foodsaverGateway = $foodsaverGateway;
