@@ -14,7 +14,6 @@ final class MessageGateway extends BaseGateway
 	public function __construct(
 		Database $db,
 		Sanitizer $sanitizer,
-
 	) {
 		parent::__construct($db);
 		$this->sanitizer = $sanitizer;
