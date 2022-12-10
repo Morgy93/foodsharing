@@ -1,0 +1,19 @@
+{
+  "compilerOptions": {
+    "module": "commonjs",
+    "target": "es6",
+    "baseUrl": ".",
+    "resolveJsonModule": true,
+    "allowSyntheticDefaultImports": true,
+    "paths": {
+      "@/*": ["./components/*"],
+      "stores/*": ["./stores/*"]
+    }
+  },
+  "include": [
+    "**/*"
+  ],
+  "exclude": [
+    "../dist"
+  ]
+}

@@ -7,9 +7,11 @@ services:
   #------------------------------------
   nginx:
     container_name: foodsharing_nginx
-    image: registry.gitlab.com/foodsharing-dev/images/nginx:latest
+    image: registry.gitlab.com/foodsharing-dev/images/nginx:26
+    # build: ./build/nginx
     depends_on:
       - app
+      - frontend
       - websocket
     volumes:
       - ../:/app:delegated
@@ -22,8 +24,8 @@ services:
   #------------------------------------
   app:
     user: ${CURRENT_USER}
-    container_name: foodsharing_app
-    image: registry.gitlab.com/foodsharing-dev/images/php:latest
+    container_name: foodsharing_backend
+    image: registry.gitlab.com/foodsharing-dev/images/php:26
     working_dir: /app
     depends_on:
       - db
@@ -41,32 +43,34 @@ services:
     # ports:
     #   - 9000:9000
 
-  # Webpack client
+  # Frontend
   #------------------------------------
-  client:
+  frontend:
     user: ${CURRENT_USER}
-    container_name: foodsharing_client
-    image: registry.gitlab.com/foodsharing-dev/images/node:latest
+    container_name: foodsharing_frontend
+    image: registry.gitlab.com/foodsharing-dev/images/node:26
     # command: sh -c "yarn && yarn dev"
     command: sh -c "yarn && yarn build"
-    working_dir: /app/client
+    working_dir: /app/frontend
     volumes:
       - ../:/app:delegated
     environment:
-      - HOST=0.0.0.0 #https://github.com/webpack/webpack-dev-server/issues/416
-      - PROXY_TARGET=http://nginx
-      - NPM_CONFIG_CACHE=/tmp/.npm-cache
+      - NUXT_HOST=0.0.0.0
+      - NUXT_PORT=3000
+      # - NPM_CONFIG_CACHE=/tmp/.npm-cache
     expose:
-      - 8082
+      - 3000
+      - 24678
     # ports:
-    #   - 8080:8082
+    #   - 8080:3000
+    #   - "24678:24678"
 
   # PHP mail queue runner
   #------------------------------------
   mailqueuerunner:
     user: ${CURRENT_USER}
     container_name: foodsharing_mailqueuerunner
-    image: registry.gitlab.com/foodsharing-dev/images/php:latest
+    image: registry.gitlab.com/foodsharing-dev/images/php:26
     command: php run.php Mails queueWorker
     restart: unless-stopped
     depends_on:
@@ -84,7 +88,7 @@ services:
   websocket:
     user: ${CURRENT_USER}
     container_name: foodsharing_websocket
-    image: registry.gitlab.com/foodsharing-dev/images/node:latest
+    image: registry.gitlab.com/foodsharing-dev/images/node:26
     working_dir: /app/websocket
     command: sh -c "yarn && yarn ts-node-dev src/index.ts 0.0.0.0"
     depends_on:
@@ -104,7 +108,7 @@ services:
   #------------------------------------
   db:
     container_name: foodsharing_db
-    image: registry.gitlab.com/foodsharing-dev/images/mariadb:latest
+    image: registry.gitlab.com/foodsharing-dev/images/mariadb:26
     environment:
       # - MYSQL_ROOT_PASSWORD=root
       - TZ=Europe/Berlin
@@ -119,7 +123,7 @@ services:
   #------------------------------------
   redis:
     container_name: foodsharing_redis
-    image: registry.gitlab.com/foodsharing-dev/images/redis:latest
+    image: registry.gitlab.com/foodsharing-dev/images/redis:26
     expose:
       - 6379
     # ports:
@@ -129,7 +133,7 @@ services:
   #------------------------------------
   phpmyadmin:
     container_name: foodsharing_phpmyadmin
-    image: registry.gitlab.com/foodsharing-dev/images/phpmyadmin:latest
+    image: registry.gitlab.com/foodsharing-dev/images/phpmyadmin:26
     environment:
       - PMA_HOST=db
       - PMA_USER=root
@@ -144,7 +148,7 @@ services:
   #------------------------------------
   maildev:
     container_name: foodsharing_maildev
-    image: registry.gitlab.com/foodsharing-dev/images/maildev:latest
+    image: registry.gitlab.com/foodsharing-dev/images/maildev:26
     environment:
       - MAILDEV_SMTP_PORT=1025
       - MAILDEV_WEB_PORT=1080
@@ -160,7 +164,7 @@ services:
   #------------------------------------
   influxdb:
     container_name: foodsharing_influxdb
-    image: registry.gitlab.com/foodsharing-dev/images/influxdb:latest
+    image: registry.gitlab.com/foodsharing-dev/images/influxdb:26
     command: >
       influxd -config /etc/influxdb/influxdb.toml
     environment:
@@ -178,20 +182,20 @@ services:
     #   - 8089:8089/udp
     #   - 8086:8086
 
-  # docs
-  # A plattform for the developer documentations
-  #------------------------------------
-  docs:
-    user: ${CURRENT_USER}
-    container_name: foodsharing_docs
-    image: registry.gitlab.com/foodsharing-dev/images/docs:latest
-    working_dir: /app/docs
-    volumes:
-      - ../:/app:delegated
-    expose:
-      - 3000
-    # ports:
-    #   - 3000:3000
+  # # docs
+  # # A plattform for the developer documentations
+  # #------------------------------------
+  # docs:
+  #   user: ${CURRENT_USER}
+  #   container_name: foodsharing_docs
+  #   image: registry.gitlab.com/foodsharing-dev/images/docs:26
+  #   working_dir: /app/docs
+  #   volumes:
+  #     - ../:/app:delegated
+  #   expose:
+  #     - 3000
+  #   # ports:
+  #   #   - 3000:3000
 
 volumes:
   database:

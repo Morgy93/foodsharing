@@ -12,19 +12,21 @@ services:
   # Customized PHP
   #------------------------------------
   app:
-    container_name: foodsharing_dev_app
+    container_name: foodsharing_dev_backend
     environment:
       FS_ENV: dev
     ports:
       - 19000:9000
 
-  # Webpack client
+  # frontend
   #------------------------------------
-  client:
-    container_name: foodsharing_dev_client
+  frontend:
+    container_name: foodsharing_dev_frontend
     command: sh -c "yarn && yarn dev"
     ports:
-      - 18090:8082
+      - 18090:3000
+      - "14678:24678"
+
 
   # PHP mail queue runner
   #------------------------------------
@@ -81,11 +83,11 @@ services:
       - 18089:8089/udp
       - 18086:8086
 
-  # docs
-  # A plattform for the developer documentations
-  #------------------------------------
-  docs:
-    container_name: foodsharing_dev_docs
-    command: sh -c "yarn && yarn api:build && yarn start"
-    ports:
-      - 13000:3000
+  # # docs
+  # # A plattform for the developer documentations
+  # #------------------------------------
+  # docs:
+  #   container_name: foodsharing_dev_docs
+  #   command: sh -c "yarn && yarn api:build && yarn start"
+  #   ports:
+  #     - 13000:3000
