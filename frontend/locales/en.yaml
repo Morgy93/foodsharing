@@ -1,0 +1,25 @@
+hello: Hello {name}!
+foodsharer: Foodsharer | One Foodsharer | {count} Foodsharer
+
+index:
+  headline: Welcome to foodsharing
+  subline: Together for more food appreciation
+
+account:
+  login_form:
+    headline: Sign in and test :)
+  login: Login
+  logout: Logout
+
+store:
+  pickups:
+    free: Free
+    signup: Sign up
+    signout: Sign out
+
+wallpost:
+  send: Send pinboard entry
+  delete: Delete pinboard entry
+
+placeholder:
+  wallposting: Write a pinboard entry

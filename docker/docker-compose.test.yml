@@ -73,14 +73,14 @@ services:
       - "28089:8089/udp"
       - "28086:8086"
 
-  # docs
-  # A plattform for the developer documentations
-  #------------------------------------
-  docs:
-    container_name: foodsharing_test_docs
-    command: sh -c "yarn && yarn api:build && yarn serve"
-    ports:
-      - "26000:3000"
+  # # docs
+  # # A plattform for the developer documentations
+  # #------------------------------------
+  # docs:
+  #   container_name: foodsharing_test_docs
+  #   command: sh -c "yarn && yarn api:build && yarn serve"
+  #   ports:
+  #     - 26000:3000
 
   # selenium
   # for running browser-based tests

@@ -75,7 +75,7 @@ ports:
 vscode:
   extensions:
     - EditorConfig.EditorConfig
-    - octref.vetur
     - bmewburn.vscode-intelephense-client
     - eamodio.gitlens
     - felixfbecker.php-debug
+    - Vue.volar

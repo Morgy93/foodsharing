@@ -1,0 +1,30 @@
+hello: Hallo {name}!
+foodsharer: Foodsharer | Ein Foodsharer | {count} Foodsharer
+status:
+  0: Kein Status
+  1: Kritisch
+  2: Was anders
+  3: Hops
+
+index:
+  headline: Willkommen bei foodsharing
+  subline: Gemeinsam für mehr Lebensmittelwertschätzung
+
+account:
+  login_form:
+    headline: Jetzt Anmelden und testen.
+  login: Einloggen
+  logout: Ausloggen
+
+store:
+  pickups:
+    free: Frei
+    signup: Eintragen
+    signout: Austragen
+
+wallpost:
+  send: Pinnwandeintrag abschicken
+  delete: Pinnwandeintrag löschen
+
+placeholder:
+  wallposting: Verfasse einen Pinnwandeintrag

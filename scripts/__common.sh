@@ -124,10 +124,11 @@ function wait-for-mysql() {
 }
 
 function wait-for-assets() {
-  while ! [ "$(ls -A assets)" ];
-  do
-    sleep 1;
-    echo -ne ".";
-  done
-  echo
+  echo "not implemented"
+  # while ! [ "$(ls -A assets)" ];
+  # do
+  #   sleep 1;
+  #   echo -ne ".";
+  # done
+  # echo
 }
