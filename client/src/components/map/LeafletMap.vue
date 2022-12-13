@@ -7,7 +7,6 @@
       :style="`height: ${mapHeight}px`"
       :zoom="zoom"
       :center="center"
-      @click="clickHandler"
     >
       <l-tile-layer
         :url="tileUrl"
@@ -48,11 +47,7 @@ export default {
       return this.$refs.map.mapObject
     },
     reloadMap () {
-      console.log('test')
       this.getMapObject().invalidateSize()
-    },
-    clickHandler (e) {
-      console.log(e)
     },
   },
 }
