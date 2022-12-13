@@ -45,11 +45,6 @@
         trim
         @input="emitChangeEvent"
       />
-      <div
-        class="invalid-feedback"
-      >
-        {{ $i18n('events.create.name.error') }}
-      </div>
     </b-form-group>
   </div>
 </template>
@@ -94,6 +89,7 @@ export default {
       mapCenter: this.center,
       mapZoom: this.zoom,
       address: '',
+      mapObj: null,
     }
   },
   computed: {
@@ -103,6 +99,7 @@ export default {
   },
   mounted () {
     this.bindTypeahead($('#addresspicker'))
+    this.mapObj = this.$refs.leafletMap.getMapObject()
   },
   methods: {
     bindTypeahead (element) {
@@ -143,7 +140,7 @@ export default {
       // Set map view to include the whole extent of the search result.
       // This way the map zoom is dependent on the size of the selected location.
       // Searching for an address results in a small sector, searching for a county in a larger one.
-      this.$refs.leafletMap.getMapObject().fitBounds([
+      this.mapObj?.fitBounds([
         extent.slice(0, 2).reverse(),
         extent.slice(2, 4).reverse(),
       ])
