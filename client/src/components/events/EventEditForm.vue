@@ -106,6 +106,10 @@
               ]"
             />
           </b-form-group>
+          <AddressPicker
+            :class="{'d-none': event.meetingType !== 1}"
+            @address-change="$v.event.location.$model = $event"
+          />
           <b-form-group
             v-if="event.meetingType !== 0"
             :label="$i18n(`events.create.location_name.label.${event.meetingType === 1 ? 'offline' : 'online'}`)"
@@ -118,9 +122,6 @@
               trim
             />
           </b-form-group>
-          <AdressPicker
-            @address-change="log"
-          />
         </b-form>
       </div>
     </div>
@@ -138,7 +139,7 @@ import {
 } from 'bootstrap-vue'
 import { required, minLength } from 'vuelidate/lib/validators'
 import TimeRange from '@/components/Form/TimeRange'
-import AdressPicker from '@/components/map/AdressPicker'
+import AddressPicker from '@/components/map/AddressPicker'
 
 const WORKING_GROUP_TYPE = 7
 
@@ -148,7 +149,7 @@ export default {
     BFormGroup,
     BFormInput,
     TimeRange,
-    AdressPicker,
+    AddressPicker,
   },
   props: {
     new: { type: Boolean, required: true },
@@ -160,7 +161,7 @@ export default {
         region: null,
         meetingType: 1,
         locationName: '',
-        latlng: null,
+        location: null,
       }),
     },
     regions: { type: Object, required: true },
@@ -172,7 +173,7 @@ export default {
       region: { required },
       meetingType: { },
       locationName: { },
-      latlng: { },
+      location: { },
     },
   },
   computed: {
