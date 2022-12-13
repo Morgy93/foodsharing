@@ -1057,6 +1057,7 @@ calendar:
   labelNextMonth: "Nächster Monat"
   labelNextYear: "Nächstes Jahr"
   labelToday: "Heute"
+  labelTodayButton: "Heute"
   labelSelected: "Ausgewähltes Datum"
   labelNoDateSelected: "Datum wählen"
   labelCalendar: "Kalender"
@@ -1079,7 +1080,7 @@ timepicker:
   labelIncrement: "Erhöhen"
   labelDecrement: "Verringern"
   labelSelected: "Ausgewählte Zeit"
-  labelNoTimeSelected: "Keine Zeit ausgewählt"
+  labelNoTimeSelected: "Zeit wählen"
   labelCloseButton: "Schließen"
   labelNowButton: "Jetzt"
 
@@ -1513,7 +1514,7 @@ regionPin:
   success: "Erfolgreich gespeichert"
   save: "speichern"
   text_desc: "Hier bitte eine Beschreibung des Ortsgruppe bzw. Kontaktmöglichkeit angeben. Diese wird in dem Popup des Pins von der Karte angezeigt…"
-  pin_visible: "Pin auf Karte sichtbar"
+  pin_visible: "Ortsgruppe auf der Karte anzeigen"
 
 foodsaver:
   bread: "Alle Foodsaver"
@@ -2796,3 +2797,9 @@ bootstrap-datepicker:
   labelCalendar: 'Kalender'
   labelNav: 'Kalendernavigation'
   labelHelp: 'Mit den Pfeiltasten durch den Kalender navigieren'
+
+timerange:
+  start_date: Beginn
+  start_date_error: Bitte wähle den Startzeitpunkt aus. Dieser muss {offset}in der Zukunft liegen.
+  end_date: Ende
+  end_date_error: Bitte wähle einen Endzeitpunkt aus, der nach dem Beginn liegt.

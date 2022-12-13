@@ -17,31 +17,31 @@
           >
             {{ $i18n('regionPin.pin_visible') }}
           </b-form-checkbox>
-
-          <LeafletLocationPicker
-            :zoom="6"
-            :coordinates="[lat, lon]"
-            :icon="locationPickerIcon"
-            @coordinates-change="updateCoordinates"
-          />
-
-          <b-form-group
-            id="input-group-lon"
-            class="mt-4"
-            :label="$i18n('regionPin.desc')"
-            label-for="text_description"
-          >
-            <div
-              class="mb-2 ml-2"
-              v-html="$i18n('forum.markdown_description')"
+          <div v-if="isActive">
+            <LocationPicker
+              :initial-coordinates="[lat, lon]"
+              :icon="{ icon: 'users', markerColor: 'blue' }"
+              @coordinates-change="updateCoordinates"
             />
-            <b-form-textarea
-              id="text_description"
-              v-model="tadesc"
-              :placeholder="$i18n('regionPin.text_desc')"
-              rows="12"
-            />
-          </b-form-group>
+
+            <b-form-group
+              id="input-group-lon"
+              class="mt-4"
+              :label="$i18n('regionPin.desc')"
+              label-for="text_description"
+            >
+              <div
+                class="mb-2 ml-2"
+                v-html="$i18n('forum.markdown_description')"
+              />
+              <b-form-textarea
+                id="text_description"
+                v-model="tadesc"
+                :placeholder="$i18n('regionPin.text_desc')"
+                rows="12"
+              />
+            </b-form-group>
+          </div>
 
           <b-button
             class="text-right mt-2"
@@ -59,16 +59,13 @@ import { BButton, BFormTextarea } from 'bootstrap-vue'
 import { setRegionPin } from '@/api/regions'
 import { pulseError, pulseInfo } from '@/script'
 import i18n from '@/helper/i18n'
-import L from 'leaflet'
-import LeafletLocationPicker from '@/components/map/LeafletLocationPicker'
-import 'leaflet.awesome-markers'
-L.AwesomeMarkers.Icon.prototype.options.prefix = 'fa'
+import LocationPicker from '@/components/map/LocationPicker'
 
 const STATUS_INACTIVE = 0
 const STATUS_ACTIVE = 1
 
 export default {
-  components: { BButton, BFormTextarea, LeafletLocationPicker },
+  components: { BButton, BFormTextarea, LocationPicker },
   props: {
     lat: {
       type: String,
@@ -96,7 +93,6 @@ export default {
       inlon: this.lon,
       tadesc: this.desc,
       isActive: this.status === STATUS_ACTIVE,
-      locationPickerIcon: L.AwesomeMarkers.icon({ icon: 'users', markerColor: 'green' }),
     }
   },
   methods: {

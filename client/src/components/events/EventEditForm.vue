@@ -90,6 +90,7 @@
               {{ $i18n('events.create.region.error') }}
             </div>
           </b-form-group>
+          <TimeRange />
           <b-form-group
             :label="$i18n('events.create.region.label')"
             label-for="input-region"
@@ -105,6 +106,23 @@
               ]"
             />
           </b-form-group>
+          <b-form-group
+            v-if="event.meetingType !== 0"
+            :label="$i18n(`events.create.location_name.label.${event.meetingType === 1 ? 'offline' : 'online'}`)"
+            label-for="input-location-name"
+            class="mb-4"
+          >
+            <b-form-input
+              id="input-location-name"
+              v-model="$v.event.locationName.$model"
+              trim
+            />
+          </b-form-group>
+          {{ $v.event.$model }}
+          <LocationPicker
+            :icon="{ icon: 'users', markerColor: 'red' }"
+            @coordinates-change="$v.event.latlng.$model = $event"
+          />
         </b-form>
       </div>
     </div>
@@ -121,8 +139,8 @@ import {
   BFormInput,
 } from 'bootstrap-vue'
 import { required, minLength } from 'vuelidate/lib/validators'
-// import Datepicker from '@vuepic/vue-datepicker'
-// import '@vuepic/vue-datepicker/dist/main.css'
+import TimeRange from '@/components/Form/TimeRange'
+import LocationPicker from '@/components/map/LocationPicker'
 
 const WORKING_GROUP_TYPE = 7
 
@@ -131,7 +149,8 @@ export default {
     BForm,
     BFormGroup,
     BFormInput,
-    // Datepicker,
+    TimeRange,
+    LocationPicker,
   },
   props: {
     new: { type: Boolean, required: true },
@@ -142,6 +161,8 @@ export default {
         description: '',
         region: null,
         meetingType: 1,
+        locationName: '',
+        latlng: null,
       }),
     },
     regions: { type: Object, required: true },
@@ -152,6 +173,8 @@ export default {
       description: { required, minLength: minLength(1) },
       region: { required },
       meetingType: { },
+      locationName: { },
+      latlng: { },
     },
   },
   computed: {
