@@ -5,7 +5,6 @@
         {{ title }}
       </div>
       <div class="card-body">
-        {{ event }}
         <b-form
           @submit="submit"
         >
@@ -90,7 +89,10 @@
               {{ $i18n('events.create.region.error') }}
             </div>
           </b-form-group>
-          <TimeRange />
+          <TimeRange
+            min-delay-minutes="60"
+            @time-range-change="$v.event.timeRange.$model = $event"
+          />
           <b-form-group
             :label="$i18n('events.create.region.label')"
             label-for="input-region"
@@ -122,6 +124,14 @@
               trim
             />
           </b-form-group>
+          <b-button
+            type="submit"
+            block
+            :variant="$v.$invalid ? 'outline-danger' : 'primary'"
+            :disabled="$v.$invalid"
+          >
+            {{ $v.$invalid ? 'Formular muss follständig und gültig ausgefüllt werden.' : 'Termin speichern' }}
+          </b-button>
         </b-form>
       </div>
     </div>
@@ -129,15 +139,13 @@
 </template>
 
 <script>
-// import { required, minLength } from 'vuelidate/lib/validators'
-// import i18n from '@/helper/i18n'
 // import { hideLoader, pulseError, pulseSuccess, showLoader } from '@/script'
 import {
   BForm,
   BFormGroup,
   BFormInput,
 } from 'bootstrap-vue'
-import { required, minLength } from 'vuelidate/lib/validators'
+import { required, requiredIf, minLength } from 'vuelidate/lib/validators'
 import TimeRange from '@/components/Form/TimeRange'
 import AddressPicker from '@/components/map/AddressPicker'
 
@@ -162,6 +170,7 @@ export default {
         meetingType: 1,
         locationName: '',
         location: null,
+        timeRange: null,
       }),
     },
     regions: { type: Object, required: true },
@@ -172,8 +181,13 @@ export default {
       description: { required, minLength: minLength(1) },
       region: { required },
       meetingType: { },
-      locationName: { },
-      location: { },
+      locationName: {
+        requiredIf: requiredIf((form) => form.meetingType === 2),
+      },
+      location: {
+        requiredIf: requiredIf((form) => form.meetingType === 1),
+      },
+      timeRange: { required },
     },
   },
   computed: {
@@ -207,5 +221,8 @@ export default {
 }
 </script>
 <style>
-
+.invalid-feedback {
+  font-size: 100%;
+  display: unset;
+}
 </style>
