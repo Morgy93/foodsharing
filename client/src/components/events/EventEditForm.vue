@@ -118,10 +118,8 @@
               trim
             />
           </b-form-group>
-          {{ $v.event.$model }}
-          <LocationPicker
-            :icon="{ icon: 'users', markerColor: 'red' }"
-            @coordinates-change="$v.event.latlng.$model = $event"
+          <AdressPicker
+            @address-change="log"
           />
         </b-form>
       </div>
@@ -140,7 +138,7 @@ import {
 } from 'bootstrap-vue'
 import { required, minLength } from 'vuelidate/lib/validators'
 import TimeRange from '@/components/Form/TimeRange'
-import LocationPicker from '@/components/map/LocationPicker'
+import AdressPicker from '@/components/map/AdressPicker'
 
 const WORKING_GROUP_TYPE = 7
 
@@ -150,7 +148,7 @@ export default {
     BFormGroup,
     BFormInput,
     TimeRange,
-    LocationPicker,
+    AdressPicker,
   },
   props: {
     new: { type: Boolean, required: true },
@@ -200,6 +198,9 @@ export default {
       //   pulseError(i18n('error_unexpected'))
       // }
       // hideLoader()
+    },
+    log (evt) {
+      console.log(evt)
     },
   },
 }
