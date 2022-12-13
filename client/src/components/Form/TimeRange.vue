@@ -13,7 +13,7 @@
             :locale="locale"
             :min="new Date()"
             :state="$v.startDateTime.$error ? false : null"
-            @input="moveAlongEndDate"
+            @input="handleStartDateInput"
           />
         </b-col>
         <b-col class="time-input">
@@ -32,7 +32,7 @@
         v-if="$v.startDateTime.$error"
         class="invalid-feedback"
       >
-        {{ $i18n('timerange.start_date_error') }}
+        {{ $i18n('timerange.start_date_error', {offset: delayString}) }}
       </div>
     </b-form-group>
     <b-form-group
@@ -49,7 +49,7 @@
             :locale="locale"
             :min="new Date()"
             :state="$v.endDateTime.$error ? false : null"
-            @input="moveAlongStartDate"
+            @input="handleEndDateInput"
           />
         </b-col>
         <b-col class="time-input">
@@ -82,14 +82,13 @@ import {
 import { required } from 'vuelidate/lib/validators'
 import i18n, { locale } from '@/helper/i18n'
 
-const EDIT_TIME_HOURS = 1
-
 function isAfterStart (dateTime) {
   return dateTime > this.startDateTime
 }
 
-function isAfterEditTime (dateTime) {
-  return dateTime > new Date(new Date().getTime() + EDIT_TIME_HOURS * 60 * 60 * 1000)
+function isAfterDelay (dateTime) {
+  const min = new Date(new Date().getTime() + this.minDelayMinutes * 60 * 1000)
+  return dateTime > min
 }
 
 export default {
@@ -99,11 +98,11 @@ export default {
     BFormTimepicker,
   },
   validations: {
-    startDateTime: { required, isAfterEditTime },
+    startDateTime: { required, isAfterDelay },
     endDateTime: { required, isAfterStart },
   },
   props: {
-    value: { type: Array, default: () => [null, null] },
+    minDelayMinutes: { type: Number, default: 0 },
   },
   data () {
     return {
@@ -125,15 +124,16 @@ export default {
     endDateTime () {
       return new Date(Date.parse(this.endDate + ' ' + this.endTime))
     },
+    delayString () {
+      if (!this.minDelayMinutes) return ''
+      let str = ''
+      if (this.minDelayMinutes % 60) str = (this.minDelayMinutes % 60) + 'm'
+      if (this.minDelayMinutes >= 60) str = Math.floor(this.minDelayMinutes / 60) + 'h' + str
+      return str + ' '
+    },
   },
   methods: {
-    moveAlongStartDate () {
-      if (this.endDate < this.startDate) {
-        this.startDate = this.endDate
-      }
-      this.handleInput()
-    },
-    moveAlongEndDate () {
+    handleStartDateInput () {
       if (!this.endDate || this.startDate > this.endDate) {
         this.endDate = this.startDate
       }
@@ -143,12 +143,18 @@ export default {
       this.$v.startDateTime.$touch()
       this.handleInput()
     },
+    handleEndDateInput () {
+      if (this.endDate < this.startDate) {
+        this.startDate = this.endDate
+      }
+      this.handleInput()
+    },
     handleEndTimeInput () {
       this.$v.endDateTime.$touch()
       this.handleInput()
     },
     handleInput () {
-      this.$emit('input', [this.startDateTime, this.endDateTime])
+      this.$emit('time-range-change', this.$v.$invalid ? null : [this.startDateTime, this.endDateTime])
     },
   },
 }
