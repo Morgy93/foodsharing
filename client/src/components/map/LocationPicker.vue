@@ -9,7 +9,7 @@
   >
     <l-marker
       ref="marker"
-      :class="{'d-none': positionSelected}"
+      :visible="positionSelected"
       :lat-lng="coordinates"
       :icon="leafletIcon"
     />
