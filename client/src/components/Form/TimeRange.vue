@@ -134,7 +134,7 @@ export default {
       this.handleInput()
     },
     moveAlongEndDate () {
-      if (this.startDate > this.endDate) {
+      if (!this.endDate || this.startDate > this.endDate) {
         this.endDate = this.startDate
       }
       this.handleInput()
