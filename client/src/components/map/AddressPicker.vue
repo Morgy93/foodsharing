@@ -1,5 +1,3 @@
-<!-- Extension of the LeafletMap that contains a single marker for choosing a location.
-The chosen coordinates are emitted in a "coordinates-change" event. -->
 <template>
   <div>
     <b-form-group
@@ -26,7 +24,7 @@ The chosen coordinates are emitted in a "coordinates-change" event. -->
       >
         <l-marker
           ref="marker"
-          :visible="positionSelected"
+          :visible="Boolean(positionSelected)"
           :lat-lng="coordinates"
           :icon="leafletIcon"
           draggable
@@ -43,9 +41,9 @@ The chosen coordinates are emitted in a "coordinates-change" event. -->
       }"
     >
       <b-form-input
-        id="input-address"
-        ref="inputAddress"
+        v-model="address"
         trim
+        @input="emitChangeEvent"
       />
       <div
         class="invalid-feedback"
@@ -79,7 +77,6 @@ const engine = new window.PhotonAddressEngine(
 )
 
 export default {
-  name: 'LeafletLocationPicker',
   components: { LeafletMap, LMarker },
   props: {
     zoom: { type: Number, default: undefined },
@@ -93,10 +90,10 @@ export default {
   data () {
     return {
       coordinates: [0, 0],
-      positionSelected: false,
-      position: null,
+      positionSelected: null,
       mapCenter: this.center,
       mapZoom: this.zoom,
+      address: '',
     }
   },
   computed: {
@@ -118,36 +115,38 @@ export default {
     },
     handleSelectPlace (event, selectedPlace) {
       document.querySelector('#addresspicker').value = selectedPlace.description
-
+      this.positionSelected = selectedPlace
       const prop = selectedPlace.properties
-      this.positionSelected = true
       this.coordinates = [...selectedPlace.geometry.coordinates].reverse()
-
-      // Set map view to include the whole extent of the search result.
-      // This way the map zoom is dependent on the size of the selected location.
-      // Searching for an address results in a small sector, searching for a county in a larger one.
-      this.$refs.leafletMap.getMapObject().fitBounds([
-        prop.extent.slice(0, 2).reverse(),
-        prop.extent.slice(2, 4).reverse(),
-      ])
-
-      let city = prop.city
-      if (!city && ['Wien', 'Vienna'].includes(prop.state)) {
-        city = prop.state
-      }
-      const address = [prop.street, prop.housenumber].filter(Boolean).join(' ')
-      this.$emit('address-change', {
-        coordinates: this.coordinates,
-        postcode: prop.postcode,
-        city,
-        address,
-      })
-
-      this.$refs.inputAddress.value = address
+      this.address = [prop.street, prop.housenumber].filter(Boolean).join(' ')
+      this.setMapBounds(prop.extent)
+      this.emitChangeEvent()
     },
     handleMarkerDragged (evt) {
       const pos = evt.target.getLatLng()
       engine.reverseGeocode([pos.lat, pos.lng])
+    },
+    emitChangeEvent () {
+      const prop = this.positionSelected.properties
+      let city = prop.city
+      if (!city && ['Wien', 'Vienna'].includes(prop.state)) {
+        city = prop.state
+      }
+      this.$emit('address-change', {
+        coordinates: this.coordinates,
+        zip: prop.postcode,
+        city,
+        address: this.address,
+      })
+    },
+    setMapBounds (extent) {
+      // Set map view to include the whole extent of the search result.
+      // This way the map zoom is dependent on the size of the selected location.
+      // Searching for an address results in a small sector, searching for a county in a larger one.
+      this.$refs.leafletMap.getMapObject().fitBounds([
+        extent.slice(0, 2).reverse(),
+        extent.slice(2, 4).reverse(),
+      ])
     },
   },
 }
