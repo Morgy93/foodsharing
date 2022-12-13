@@ -1182,7 +1182,10 @@ events: #TODO: remove unused translations!
       offline: In Präsenz
       online: Per Video- oder Telefonkonferenz
       mumble: Multilokal auf mumble.foodsharing.de
-
+    location_name:
+      label:
+        offline: Veranstaltungsort / Konferenzraum
+        online: Virtueller Veranstaltungsort
 
 
     date: "Datum" #also in QuizView
