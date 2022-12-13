@@ -25,6 +25,7 @@ use Foodsharing\Modules\Store\DTO\CreateStoreData;
 use Foodsharing\Modules\Store\DTO\Store;
 use Foodsharing\Modules\Store\DTO\StoreListInformation;
 use Foodsharing\Modules\Store\DTO\StoreStatusForMember;
+use Foodsharing\RestApi\Models\Store\StorePaginationResult;
 use Foodsharing\Utility\Sanitizer;
 use Foodsharing\Utility\WeightHelper;
 use Symfony\Contracts\Translation\TranslatorInterface;
@@ -138,12 +139,15 @@ class StoreTransactions
 	 *
 	 * @param int $regionId Region identifier
 	 * @param bool $expand Expand information about store and region
+	 * @param int $startOffset zero based index of result rows which will be skipped
+ 	 * @param int $limit Number of maximum rows to return
 	 *
-	 * @return array<StoreListInformation> List of information
+	 * @return StorePaginationResult List of pagination information
 	 */
-	public function listOverviewInformationsOfStoresInRegion(int $regionId, bool $expand): array
+	public function listOverviewInformationsOfStoresInRegion(int $regionId, bool $expand, int $startOffset, int $limit): StorePaginationResult
 	{
-		$stores = $this->storeGateway->listStoresInRegion($regionId, true);
+		$totalStoreCount = $this->storeGateway->countStoresInRegion($regionId, true);
+		$stores = $this->storeGateway->listStoresInRegion($regionId, true, $startOffset, $limit);
 
 		$storesMapped = array_map(function (Store $store) use ($expand) {
 			$requiredStoreInformation = StoreListInformation::loadFrom($store, !$expand);
@@ -154,8 +158,12 @@ class StoreTransactions
 
 			return $requiredStoreInformation;
 		}, $stores);
+		
+		$result = new StorePaginationResult();
+		$result->total = $totalStoreCount;
+		$result->stores = $storesMapped;
 
-		return $storesMapped;
+		return $result;
 	}
 
 	public function createStore(array $legacyGlobalData): int

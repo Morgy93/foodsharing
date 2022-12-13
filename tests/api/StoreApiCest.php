@@ -157,6 +157,30 @@ class StoreApiCest
 		}
 	}
 
+	public function testPaginationOfGetListOfStoresInRegion(ApiTester $I)
+	{
+		$regionTop = $I->createRegion(null, ['type' => UnitType::CITY]);
+		$I->addRegionMember($regionTop['id'], $this->user['id'], true);
+
+		$regionChild1 = $I->createRegion(null, ['parent_id' => $regionTop['id'], 'type' => UnitType::PART_OF_TOWN]);
+		foreach(range(1,9) as $index) {
+		   $I->createStore($regionChild1['id']);
+		}
+		
+		$regionChild2 = $I->createRegion(null, ['parent_id' => $regionTop['id'], 'type' => UnitType::PART_OF_TOWN]);
+		$store2 = $I->createStore($regionChild2['id']);
+
+		$I->login($this->user[self::EMAIL]);
+		$I->sendGET(self::API_REGIONS . '/' . $regionTop['id'] . '/stores', ['startOffset' => 5, 'limit' => 5]);
+		$I->seeResponseCodeIs(Http::OK);
+		$I->seeResponseIsJson();
+
+    $ids = $I->grabDataFromResponseByJsonPath('stores.*.id');
+		$I->assertEquals(5, count($ids));
+    $total = $I->grabDataFromResponseByJsonPath('total')[0];
+		$I->assertEquals(10, (int)$total);
+	}
+
 	public function testContentofGetListOfStoresInRegionExpanded(ApiTester $I)
 	{
 		$regionTop = $I->createRegion(null, ['type' => UnitType::CITY]);

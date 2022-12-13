@@ -90,6 +90,8 @@ class StoreRestController extends AbstractFOSRestController
 	 * @OA\Response(response="403", description="Forbidden to access store list")
 	 * @Rest\Get("region/{regionId}/stores", requirements={"regionId" = "\d+"})
 	 * @Rest\QueryParam(name="expand", requirements="\d+", default="0", description="Expand information for store and region")
+	 * @Rest\QueryParam(name="startOffset", requirements="\d+", default="0", description="Zero based index of result rows which will be skipped")
+	 * @Rest\QueryParam(name="limit", requirements="\d+", default="9999", description="Number of maximum rows to return")
 	 */
 	public function getStoresOfRegion(int $regionId, ParamFetcher $paramFetcher): Response
 	{
@@ -102,11 +104,10 @@ class StoreRestController extends AbstractFOSRestController
 		}
 
 		$expand = boolval($paramFetcher->get('expand'));
+		$startOffset = intval($paramFetcher->get('startOffset'));
+		$limit = intval($paramFetcher->get('limit'));
 
-		$stores = $this->storeTransactions->listOverviewInformationsOfStoresInRegion($regionId, $expand);
-		$result = new StorePaginationResult();
-		$result->total = count($stores);
-		$result->stores = $stores;
+		$result = $this->storeTransactions->listOverviewInformationsOfStoresInRegion($regionId, $expand, $startOffset, $limit);
 
 		return $this->handleView($this->view($result, 200));
 	}
