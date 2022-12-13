@@ -24,7 +24,6 @@ import 'leaflet.awesome-markers'
 L.AwesomeMarkers.Icon.prototype.options.prefix = 'fa'
 
 export default {
-  name: 'LeafletLocationPicker',
   components: { LeafletMap, LMarker },
   props: {
     zoom: { type: Number, default: undefined },
