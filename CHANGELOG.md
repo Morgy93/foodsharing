@@ -109,7 +109,7 @@
 - If session persistent and current date not equal to last_login, update last_login date on every dashboard reload !2450 !2495 @chriswalg
 - Prevent access to missing conversation member image
 - New AvatarList doesn't show avatar on foodsharepoints !2479 @alex.simm
-- Show all Photos on Team Page !2488 @BibaltiK
+- Show all Photos on Team Page #1512 !2488 !2544 @BibaltiK
 - Before the object is created, it is checked whether the controller could be resolved beforehand. !2487 @BibaltiK
 - checks if user is logged in so that a businesscard can be created !2492 @BibaltiK
 - Prevent an unnecessary 404 error on the calendar page !2510 @alex.simm

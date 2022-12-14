@@ -21,10 +21,11 @@ class TeamView extends View
 			</ul>';
 		}
 
+		$photo = $this->fixPhotoPath($user['photo'], '');
 		$out = '
 
 		<div id="team-user" class="corner-all">
-			<span class="img" style="background-image:url(/images/' . $user['photo'] . ');"></span>
+			<span class="img" style="background-image:url(' . $photo . ');"></span>
 			<h1>' . $user['name'] . '</h1>
 			<small>' . $user['position'] . '</small>
 			<p>' . nl2br($user['desc']) . '</p>
@@ -58,10 +59,7 @@ class TeamView extends View
 				$socials .= '<i class="fas fa-globe"><span>' . $t['homepage'] . '</span></i>';
 			}
 
-			$photoFile = '/images/q_' . $t['photo'];
-			if (str_starts_with($t['photo'], '/api')) {
-				$photoFile = $t['photo'];
-			}
+			$photoFile = $this->fixPhotoPath($t['photo'], 'q_');
 
 			$out .= '
 			<li>
@@ -83,5 +81,18 @@ class TeamView extends View
 		</ul>';
 
 		return $header['body'] . $out;
+	}
+
+	/**
+	 * Returns the correct path to a user's profile photo. The prefix is only used for old photos from the /images
+	 * directory.
+	 */
+	private function fixPhotoPath(?string $photo, string $prefix): string
+	{
+		if (empty($photo)) {
+			return '';
+		}
+
+		return !str_starts_with($photo, '/api') ? '/images/' . $prefix . $photo : $photo;
 	}
 }
