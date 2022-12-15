@@ -266,6 +266,7 @@ button:
 
 bread:
   backToOverview: "zurück zur Übersicht"
+  backToStore: "zurück zum Betrieb"
 
 ui:
   switch:

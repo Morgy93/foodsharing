@@ -64,7 +64,7 @@
 - added icon to map menu item !2427 @martincodes-de
 - Added information how to remove recurring pick-up dates to get rid of warnings about unoccupied slots !891 @rnoennig
 - Make store list of a user visible for store managers to whose store he/she applied. #1445 !2437 @AntonBallmaier
-- The link on a store edit page leads back to the store #1402 !2513 @tutNichts
+- The link on a store edit page leads back to the store #1402 !2513 !2553 @tutNichts
 - Self mentainend GOALSAdmin Exchange Groups. Postponed.  !2518 @fs_k
 
 ## Bugfixes

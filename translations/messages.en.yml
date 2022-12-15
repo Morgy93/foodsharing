@@ -2283,6 +2283,7 @@ register:
   landline_example: Example +49 30 123456789
 bread:
   backToOverview: back to overview
+  backToStore: back to the store
 duration: Time to answer
 explanation: Explanation
 fp: Failure points
