@@ -25,11 +25,11 @@ define('INFLUX_DSN', 'udp+influxdb://influxdb:8089/foodsharing');
 
 define('VERSION', '0.8.3');
 
-define('DEFAULT_EMAIL','no-reply@foodsharing.network');
+define('DEFAULT_EMAIL', 'no-reply@foodsharing.network');
 define('SUPPORT_EMAIL', 'it@foodsharing.network');
-define('DEFAULT_EMAIL_NAME','Foodsharing');
+define('DEFAULT_EMAIL_NAME', 'Foodsharing');
 define('EMAIL_PUBLIC', 'info@foodsharing.de');
-define('EMAIL_PUBLIC_NAME','Foodsharing');
+define('EMAIL_PUBLIC_NAME', 'Foodsharing');
 define('PLATFORM_MAILBOX_HOST', 'foodsharing.network');
 
 define('MAILBOX_OWN_DOMAINS', ['foodsharing.network', 'lebensmittelretten.de', 'foodsharing.de']);
