@@ -67,7 +67,7 @@ class EmailControl extends Control
 
 		$boxes = $this->mailboxGateway->getBoxes($this->session->isAmbassador(), $this->session->id(), $this->session->mayRole(Role::STORE_MANAGER));
 		foreach ($boxes as $key => $b) {
-			$boxes[$key]['name'] = $b['name'] . '@' . NOREPLY_EMAIL_HOST;
+			$boxes[$key]['name'] = $b['name'] . '@' . PLATFORM_MAILBOX_HOST;
 		}
 		$offerAllOptions = $this->newsletterEmailPermissions->mayAdministrateNewsletterEmail();
 		$this->pageHelper->addContent($this->view->v_email_compose($boxes, $offerAllOptions));
