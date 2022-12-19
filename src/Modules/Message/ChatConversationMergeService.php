@@ -15,6 +15,30 @@ class ChatConversationMergeService
 	) {
 	}
 
+	/**
+	 * @param int $conversationId1 destination conversation
+	 * @param int $conversationId2 other conversation
+	 * @param bool $deleteOldConversation delete other conversation after merge
+	 * @return void
+	 */
+	public function mergeTwoConversations(int $conversationId1, int $conversationId2, bool $deleteOldConversation): void
+	{
+		$memberIdsOfConversation1 = $this->getMemberIdsOfConversation($conversationId1);
+		$memberIdsOfConversation2 = $this->getMemberIdsOfConversation($conversationId2);
+
+		$this->updateMessagesFromOldToNewConversation($conversationId2, $conversationId1);
+
+		foreach ($memberIdsOfConversation2 as $memberId) {
+			if (!in_array($memberId, $memberIdsOfConversation1)) {
+				$this->messageGateway->addUserToConversation($conversationId1, $memberId);
+			}
+		}
+
+		if ($deleteOldConversation) {
+			$this->messageGateway->deleteConversation($conversationId2);
+		}
+	}
+
 	public function getMessages(int $offset = 0, int $amount = 20): array
 	{
 		return $this->database->fetchAll('SELECT id, conversation_id FROM fs_msg ORDER BY id LIMIT :amount OFFSET :offset', [

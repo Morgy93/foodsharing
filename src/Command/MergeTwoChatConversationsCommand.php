@@ -47,8 +47,6 @@ class MergeTwoChatConversationsCommand extends Command
 		$conversation1 = (int)$input->getArgument('conversation1');
 		$conversation2 = (int)$input->getArgument('conversation2');
 		$isDeletionRequired = $input->getOption('delete-old-conversation');
-		$foodsaverIdsOfConversation1 = $this->chatConversationMergeService->getMemberIdsOfConversation($conversation1);
-		$foodsaverIdsOfConversation2 = $this->chatConversationMergeService->getMemberIdsOfConversation($conversation2);
 
 		$isAnyConversationStoreConversation =
 			$this->chatConversationMergeService->isConversationAssociatedWithAStore($conversation1)
@@ -63,19 +61,13 @@ class MergeTwoChatConversationsCommand extends Command
 
 		$output->writeln('Start simple merging');
 		$output->writeln("Move messages from conversation2 ($conversation2) into conversation1 ($conversation1)");
-		$this->chatConversationMergeService->updateMessagesFromOldToNewConversation($conversation2, $conversation1);
-
 		$output->writeln("Move member from conversation2 ($conversation2) into conversation1 ($conversation1)");
-		foreach ($foodsaverIdsOfConversation2 as $foodsaverId) {
-			if (!in_array($foodsaverId, $foodsaverIdsOfConversation1)) {
-				$this->messageGateway->addUserToConversation($conversation1, $foodsaverId);
-			}
-		}
 
 		if ($isDeletionRequired) {
 			$output->writeln("Delete conversation2 ($conversation2)");
-			$this->messageGateway->deleteConversation($conversation2);
 		}
+
+		$this->chatConversationMergeService->mergeTwoConversations($conversation1, $conversation2, $isDeletionRequired);
 
 		$output->writeln('<info>Done</info>');
 
