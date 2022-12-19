@@ -18,7 +18,7 @@ use Symfony\Component\Console\Output\OutputInterface;
 	description: 'This command merges two chat conversations into one.',
 	hidden: false
 )]
-class SimpleMergeTwoChatConversationsCommand extends Command
+class MergeTwoChatConversationsCommand extends Command
 {
 	public function __construct(
 		private readonly ChatConversationMergeService $chatConversationMergeService,
