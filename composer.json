@@ -56,6 +56,7 @@
     "influxdb/influxdb-php": "1.15.2",
     "jms/serializer-bundle": "4.0.2",
     "jsvrcek/ics": "0.8.4",
+    "martincodes-de/php-yaml-changelog-generator": "^1.1",
     "minishlink/web-push": "7.0.0",
     "mobiledetect/mobiledetectlib": "2.8.39",
     "nelmio/api-doc-bundle": "v4.10.2",

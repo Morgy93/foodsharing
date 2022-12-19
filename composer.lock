@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "e5bfc9bcc8b9810bb763b5310bfebf5f",
+    "content-hash": "a1cdacd2c21e4136589bbccbc2aa8557",
     "packages": [
         {
             "name": "brick/math",
@@ -1918,6 +1918,56 @@
                 "source": "https://github.com/jasvrcek/ICS/tree/0.8.4"
             },
             "time": "2022-06-03T14:24:07+00:00"
+        },
+        {
+            "name": "martincodes-de/php-yaml-changelog-generator",
+            "version": "1.1.2",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/martincodes-de/php-yaml-changelog-generator.git",
+                "reference": "9474381000ed2e423ac86b72f12a9253983e1070"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/martincodes-de/php-yaml-changelog-generator/zipball/9474381000ed2e423ac86b72f12a9253983e1070",
+                "reference": "9474381000ed2e423ac86b72f12a9253983e1070",
+                "shasum": ""
+            },
+            "require": {
+                "php": ">=8.0.0",
+                "symfony/yaml": "v5.4.14|^6.2"
+            },
+            "require-dev": {
+                "phpstan/phpstan": "^1.8"
+            },
+            "type": "library",
+            "autoload": {
+                "psr-0": {
+                    "YamlChangelogGenerator": "src"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Martin Schneider",
+                    "email": "martin.schneider@techniknews.net",
+                    "homepage": "https://github.com/martincodes-de",
+                    "role": "Maintainer"
+                }
+            ],
+            "description": "Generate your changelog from yaml-files",
+            "homepage": "https://github.com/martincodes-de/php-yaml-changelog-generator",
+            "keywords": [
+                "changelog"
+            ],
+            "support": {
+                "issues": "https://github.com/martincodes-de/php-yaml-changelog-generator/issues",
+                "source": "https://github.com/martincodes-de/php-yaml-changelog-generator/tree/v1.1.2"
+            },
+            "time": "2022-12-19T23:48:26+00:00"
         },
         {
             "name": "minishlink/web-push",
@@ -4329,16 +4379,16 @@
         },
         {
             "name": "symfony/deprecation-contracts",
-            "version": "v3.1.1",
+            "version": "v3.2.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/symfony/deprecation-contracts.git",
-                "reference": "07f1b9cc2ffee6aaafcf4b710fbc38ff736bd918"
+                "reference": "1ee04c65529dea5d8744774d474e7cbd2f1206d3"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/symfony/deprecation-contracts/zipball/07f1b9cc2ffee6aaafcf4b710fbc38ff736bd918",
-                "reference": "07f1b9cc2ffee6aaafcf4b710fbc38ff736bd918",
+                "url": "https://api.github.com/repos/symfony/deprecation-contracts/zipball/1ee04c65529dea5d8744774d474e7cbd2f1206d3",
+                "reference": "1ee04c65529dea5d8744774d474e7cbd2f1206d3",
                 "shasum": ""
             },
             "require": {
@@ -4347,7 +4397,7 @@
             "type": "library",
             "extra": {
                 "branch-alias": {
-                    "dev-main": "3.1-dev"
+                    "dev-main": "3.3-dev"
                 },
                 "thanks": {
                     "name": "symfony/contracts",
@@ -4376,7 +4426,7 @@
             "description": "A generic function and convention to trigger deprecation notices",
             "homepage": "https://symfony.com",
             "support": {
-                "source": "https://github.com/symfony/deprecation-contracts/tree/v3.1.1"
+                "source": "https://github.com/symfony/deprecation-contracts/tree/v3.2.0"
             },
             "funding": [
                 {
@@ -4392,7 +4442,7 @@
                     "type": "tidelift"
                 }
             ],
-            "time": "2022-02-25T11:15:52+00:00"
+            "time": "2022-11-25T10:21:52+00:00"
         },
         {
             "name": "symfony/error-handler",
@@ -5804,16 +5854,16 @@
         },
         {
             "name": "symfony/polyfill-ctype",
-            "version": "v1.26.0",
+            "version": "v1.27.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/symfony/polyfill-ctype.git",
-                "reference": "6fd1b9a79f6e3cf65f9e679b23af304cd9e010d4"
+                "reference": "5bbc823adecdae860bb64756d639ecfec17b050a"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/symfony/polyfill-ctype/zipball/6fd1b9a79f6e3cf65f9e679b23af304cd9e010d4",
-                "reference": "6fd1b9a79f6e3cf65f9e679b23af304cd9e010d4",
+                "url": "https://api.github.com/repos/symfony/polyfill-ctype/zipball/5bbc823adecdae860bb64756d639ecfec17b050a",
+                "reference": "5bbc823adecdae860bb64756d639ecfec17b050a",
                 "shasum": ""
             },
             "require": {
@@ -5828,7 +5878,7 @@
             "type": "library",
             "extra": {
                 "branch-alias": {
-                    "dev-main": "1.26-dev"
+                    "dev-main": "1.27-dev"
                 },
                 "thanks": {
                     "name": "symfony/polyfill",
@@ -5866,7 +5916,7 @@
                 "portable"
             ],
             "support": {
-                "source": "https://github.com/symfony/polyfill-ctype/tree/v1.26.0"
+                "source": "https://github.com/symfony/polyfill-ctype/tree/v1.27.0"
             },
             "funding": [
                 {
@@ -5882,7 +5932,7 @@
                     "type": "tidelift"
                 }
             ],
-            "time": "2022-05-24T11:49:31+00:00"
+            "time": "2022-11-03T14:55:06+00:00"
         },
         {
             "name": "symfony/polyfill-intl-grapheme",
