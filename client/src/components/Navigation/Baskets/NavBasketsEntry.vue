@@ -33,12 +33,12 @@
         <small
           v-if="!basket.requests.length"
           class="mb-1 text-truncate"
-          v-html="$i18n('basket.no_requests')"
+          v-text="$i18n('basket.no_requests')"
         />
         <small
           v-if="basket.requests.length > 0"
           class="testing-basket-requested-by mb-1 text-truncate"
-          v-html="$i18n('basket.requested_by', { name: basket.requests.map(r => r.user.name).join(', ') })"
+          v-text="$i18n('basket.requested_by', { name: basket.requests.map(r => r.user.name).join(', ') })"
         />
       </span>
     </span>

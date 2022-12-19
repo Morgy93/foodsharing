@@ -45,7 +45,7 @@
                 <strong>Headlines:</strong>
                 <a
                   href="https://fonts.google.com/specimen/Alfa+Slab+One"
-                  v-html="'Alfa Slab One'"
+                  v-text="'Alfa Slab One'"
                 />
               </li>
               <li>
@@ -64,13 +64,13 @@
             <li>
               <a
                 href="https://fontawesome.com/v5/search?m=free&s=solid%2Cbrands"
-                v-html="'Font Awesome V5 [FREE]'"
+                v-text="'Font Awesome V5 [FREE]'"
               />
             </li>
             <li>
               <a
                 href="https://fontawesome.com/v5/docs/web/style/animate#contentHeader"
-                v-html="'Animated Icons'"
+                v-text="'Animated Icons'"
               />
             </li>
           </ul>
@@ -84,13 +84,13 @@
             <li>
               <a
                 href="https://getbootstrap.com/docs/4.6/getting-started/introduction/"
-                v-html="'Bootstrap 4.6'"
+                v-text="'Bootstrap 4.6'"
               />
             </li>
             <li>
               <a
                 href="https://www.bootstrap-vue.org/"
-                v-html="'Bootstrap-VUE 2.18.1'"
+                v-text="'Bootstrap-VUE 2.18.1'"
               />
             </li>
           </ul>

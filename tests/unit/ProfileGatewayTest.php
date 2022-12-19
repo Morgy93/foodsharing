@@ -25,7 +25,7 @@ class ProfileGatewayTest extends \Codeception\Test\Unit
 		$date_act->hours(10)->minutes(45)->seconds(0);
 
 		$date_ref = Carbon::now();
-		$date_ref->hours(12)->minutes(45)->seconds(0);
+		$date_ref->hours(13)->minutes(45)->seconds(0);
 
 		$this->tester->addPicker($this->store['id'], $this->foodsaver['id'], ['date' => $pickupBaseDate]);
 		$this->tester->addStoreLog($this->store['id'], $this->foodsaver['id'], $this->foodsaver['id'], StoreLogAction::SIGN_UP_SLOT, ['date_reference' => $date_ref, 'date_activity' => $date_act]);

@@ -226,6 +226,7 @@ ui:
     on: publié
 bread:
   backToOverview: Revenir à la vue d'ensemble
+  backToStore: Revenir au magasin
 button:
   clear_filter: Effacer les filtres
   create: Créer

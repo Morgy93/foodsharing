@@ -42,7 +42,7 @@
       >
         <span
           class="sr-only"
-          v-html="$i18n('dashboard.settings')"
+          v-text="$i18n('dashboard.settings')"
         />
         <i
           class="fas"

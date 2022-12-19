@@ -12,6 +12,7 @@ use FOS\RestBundle\Controller\AbstractFOSRestController;
 use FOS\RestBundle\Controller\Annotations as Rest;
 use Jsvrcek\ICS\CalendarExport;
 use Jsvrcek\ICS\CalendarStream;
+use Jsvrcek\ICS\Exception\CalendarEventException;
 use Jsvrcek\ICS\Model\Calendar;
 use Jsvrcek\ICS\Model\CalendarEvent;
 use Jsvrcek\ICS\Model\Description\Location;
@@ -200,7 +201,14 @@ class CalendarRestController extends AbstractFOSRestController
 
 		$event = new CalendarEvent();
 		$event->setStart(Carbon::createFromTimestamp($meeting['start_ts']));
-		$event->setEnd(Carbon::createFromTimestamp($meeting['end_ts']));
+		try {
+			$event->setEnd(Carbon::createFromTimestamp($meeting['end_ts']));
+		} catch (CalendarEventException $e) {
+			/* In some events the end date is before the start date because the event form accidentally allows this.
+			This workaround prevents errors and can be removed after the event form was updated. */
+			$newEnd = clone $event->getStart();
+			$event->setEnd($newEnd->modify('+1 hour'));
+		}
 		$event->setSummary($meeting['name']);
 		$event->setUid($userId . $meeting['id'] . '@meeting.foodsharing.de');
 		$event->setDescription($description);

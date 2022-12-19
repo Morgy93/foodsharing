@@ -25,6 +25,7 @@ use Foodsharing\Modules\Store\DTO\CreateStoreData;
 use Foodsharing\Modules\Store\DTO\Store;
 use Foodsharing\Modules\Store\DTO\StoreListInformation;
 use Foodsharing\Modules\Store\DTO\StoreStatusForMember;
+use Foodsharing\Utility\Sanitizer;
 use Foodsharing\Utility\WeightHelper;
 use Symfony\Contracts\Translation\TranslatorInterface;
 
@@ -40,6 +41,7 @@ class StoreTransactions
 	private FoodsaverGateway $foodsaverGateway;
 	private RegionGateway $regionGateway;
 	private Session $session;
+	private Sanitizer $sanitizer;
 	public const MAX_SLOTS_PER_PICKUP = 10;
 	// status constants for getAvailablePickupStatus
 	private const STATUS_RED_TODAY_TOMORROW = 3;
@@ -55,6 +57,7 @@ class StoreTransactions
 		BellGateway $bellGateway,
 		FoodsaverGateway $foodsaverGateway,
 		RegionGateway $regionGateway,
+		Sanitizer $sanitizerService,
 		Session $session
 	) {
 		$this->messageGateway = $messageGateway;
@@ -65,6 +68,7 @@ class StoreTransactions
 		$this->foodsaverGateway = $foodsaverGateway;
 		$this->regionGateway = $regionGateway;
 		$this->session = $session;
+		$this->sanitizer = $sanitizerService;
 	}
 
 	public function getCommonStoreMetadata($supressStoreChains = true): CommonStoreMetadata
@@ -195,7 +199,7 @@ class StoreTransactions
 		$store->zip = $legacyGlobalData['plz'];
 		$store->city = $legacyGlobalData['stadt'];
 
-		$store->publicInfo = $legacyGlobalData['public_info'];
+		$store->publicInfo = $this->sanitizer->purifyHtml($legacyGlobalData['public_info']);
 		$store->publicTime = intval($legacyGlobalData['public_time']);
 
 		$store->categoryId = intval($legacyGlobalData['betrieb_kategorie_id']);

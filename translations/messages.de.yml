@@ -266,6 +266,7 @@ button:
 
 bread:
   backToOverview: "zurück zur Übersicht"
+  backToStore: "zurück zum Betrieb"
 
 ui:
   switch:
@@ -328,7 +329,7 @@ group:
   description: "Beschreibung"
   photo: "Foto"
   last_activity: "Letzte Aktivität"
-  filter_by_last_activity: "Zuletzt aktiv in Monaten"
+  filter_by_last_activity: "Nicht aktiv in Monaten"
   role_name: "Rolle"
   applications: "Bewerbungen"
   applications_for: "Bewerbungen für %name%"
@@ -469,7 +470,8 @@ group:
     set_admin_text: "Möchtest du {name} ({id}) wirklich als Admin eintragen?"
     set_ambassador_text: "Möchtest du {name} ({id}) wirklich als Botschafter eintragen?"
     remove_title: "Mitglied entfernen"
-    remove_text: "Möchtest du {name} ({id}) wirklich aus der Arbeitsgruppe entfernen?"
+    remove_text_group: "Möchtest du {name} ({id}) wirklich aus der Arbeitsgruppe entfernen?"
+    remove_text_region: "Möchtest du {name} ({id}) wirklich aus der Region entfernen?"
     add_member: "In das Team aufnehmen"
     admin_mode_on: "Ansicht für Administrator*innen aktivieren"
     admin_mode_off: "Zurück zur Standard-Ansicht"
@@ -826,9 +828,9 @@ store:
   team_conversation_name: "Team {name}"
   springer_conversation_name: "Springer {name}"
   regionPickupRules: "zusätzliche ROSINEN-Regel"
-  useRegionPickupRules: "Zusätzlich zu den Betriebsregeln gilt folgende Bezirks-ROSINEN-Regel für Abholungen:"
+  useRegionPickupRules: "Dies ist ein ROSINEN-Betrieb. Zusätzlich zu den Betriebsregeln gilt folgende Bezirks-ROSINEN-Regel für Abholungen:"
   regionPickupRulesInactive: "Die zusätzlichen Bezirksregeln für Abholungen sind nicht aktiv"
-  regionPickupRuleLong: "Innerhalb von {regionPickupRuleTimespan} Tagen dürfen nicht mehr als insgesamt {regionPickupRuleLimit} Abholungen unter Berücksichtigung aller Betrieber mit Bezirksregeln durchgeführt werden. Pro Tag darf höchstens insgesamt {regionPickupRuleLimitDay}-mal bei diesen Betrieben abgeholt werden. {regionPickupRuleInactive} Stunden vor der Abholung wird diese Regel nicht berücksichtigt."
+  regionPickupRuleLong: "Innerhalb von {regionPickupRuleTimespan} Tagen dürfen nicht mehr als insgesamt {regionPickupRuleLimit} Abholungen unter Berücksichtigung aller Betriebe mit Bezirksregeln durchgeführt werden. Pro Tag darf höchstens insgesamt {regionPickupRuleLimitDay}-mal bei diesen Betrieben abgeholt werden. {regionPickupRuleInactive} Stunden vor der Abholung wird diese Regel nicht berücksichtigt."
   sm:
     managementToggleOn: "Ansicht für Betriebsverantwortliche aktivieren"
     managementToggleOff: "Zurück zur Standard-Ansicht"
@@ -1484,10 +1486,10 @@ regionOptions:
   enableMediationButton: "Technische Unterstützung für Mediationen durch einen Mediations-Link auf den Profilen der Stammfoodsaver des Bezirkes aktivieren."
   regionPickupRuleActive: "Folgende Bezirksregel für Abholungen bei ROSINEN (Raren Oft Sagenhaften Inspesondere Nicht alltäglichen Extrem beliebten Nüztliche)-Betrieben aktivieren:"
   regionPickupTimespan: "Bitte gib den Zeitraum in Tagen an, in denen die Regelung gültig ist"
-  regionPickupLimitNumber: "Bitte gib die maximale Anzahl der insgesamt möglichen Abholungen für diesen Zeitraum an:"
-  regionPickupLimitDayNumber: "Bitte gib die insgesamte maximale Anzzahl von Abholungen für EINEN TAG an:"
-  regionPickupInactiveHours: "Bitte gib die Anzahl Stunden vor einer Abholung an, in denen die Regel nicht mehr gilt:"
-  regionPickupRuleActiveStoreList: "Liste der Betriebe im Bezirk, die für die ROSINEN Regel Berücksichtigt werden. ACHTUNG: Alle Abholung der aufgelisteten Betriebe werden zusammengezählt und für die Regel berücksichtigt."
+  regionPickupLimitNumber: "Bitte gib die maximale Anzahl der insgesamt möglichen Abholungen für diesen Zeitraum an"
+  regionPickupLimitDayNumber: "Bitte gib die insgesamte maximale Anzahl von Abholungen für EINEN TAG an"
+  regionPickupInactiveHours: "Bitte gib die Anzahl Stunden vor einer Abholung an, in denen die Regel nicht mehr gilt"
+  regionPickupRuleActiveStoreList: "Liste der Betriebe im Bezirk, die für die ROSINEN Regel berücksichtigt werden. ACHTUNG: Alle Abholung der aufgelisteten Betriebe werden zusammengezählt und für die Regel berücksichtigt."
 
 regionPin:
   header_page: "Öffentliche Ortsgruppenbeschreibung für {bezirk}"
@@ -1976,6 +1978,7 @@ dashboard:
     no-stores: "Du bist bis jetzt in keinem Betriebsteam."
     users: "Foodsaver*innen"
     buddies: "Menschen, die Du kennst"
+    polls: Abstimmungen
   options:
     hide:
       text: "Anzeige verwalten"
@@ -1989,6 +1992,7 @@ dashboard:
   event: "Nächstes Event"
   eventCount: "Nächste Events ({count})"
   pickupdates: "Nächste Abholtermine"
+  polls: Deine laufenden Abstimmungen
   quiz:
     ack: "Hinweis gelesen und nicht mehr anzeigen"
     read: "weiterlesen"
@@ -2221,6 +2225,7 @@ footer:
     denns: Denn's Biomarkt
 
 releases:
+  "2022-12": "Release \"Icecream\" 🍇 (Dezember 2022)"
   "2022-05": "Release \"Heidelbeere\" 🍇 (Mai 2022)"
   "2022-01": "Release \"Grapefruit\" 🍋 (Januar 2022)"
   "2021-09": "Release \"Feige\" 🥧 (September 2021)"
@@ -2443,6 +2448,7 @@ polls:
   ongoing: "Laufende Abstimmungen"
   ended: "Vergangene Abstimmungen"
   future: "Zukünftige Abstimmungen"
+  until: "Möglich bis {until}"
 
 poll:
   not_available: "Diese Abstimmung existiert nicht oder du kannst nicht darauf zugreifen."

@@ -99,7 +99,7 @@ class XhrMethods
 			}
 
 			$mailbox = $this->mailboxGateway->getMailbox((int)$mail['mailbox_id']);
-			$mailbox['email'] = $mailbox['name'] . '@' . NOREPLY_EMAIL_HOST;
+			$mailbox['email'] = $mailbox['name'] . '@' . PLATFORM_MAILBOX_HOST;
 
 			$sender = $this->model->getValues(['geschlecht', 'name'], 'foodsaver', $this->session->id());
 

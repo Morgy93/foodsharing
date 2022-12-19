@@ -35,21 +35,21 @@ class MaintenanceGateway extends BaseGateway
 	}
 
 	/**
-	 * Removes the temporary sleep status including dates from users if it is outdated.
+	 * Removes sleep status from users if it was active since yesterday and the user is not endless inactive.
 	 *
 	 * @return int the number of users that were changed
 	 */
-	public function wakeupSleepingUsers()
+	public function wakeupSleepingUsers(): int
 	{
 		return $this->db->update(
 			'fs_foodsaver',
 			['sleep_status' => SleepStatus::NONE, 'sleep_from' => null, 'sleep_until' => null],
-			['sleep_status' => SleepStatus::TEMP, 'sleep_until >' => 0, 'sleep_until <' => $this->db->curdate()]
+			['sleep_until <' => $this->db->curdate(), 'sleep_status !=' => SleepStatus::FULL]
 		);
 	}
 
 	/**
-	 * Removes the temporary sleep status from users if it is outdated.
+	 * Sets sleep status if the sleep status is now and in the future active.
 	 *
 	 * @return int the number of users that were changed
 	 */
@@ -58,7 +58,7 @@ class MaintenanceGateway extends BaseGateway
 		return $this->db->update(
 			'fs_foodsaver',
 			['sleep_status' => SleepStatus::TEMP],
-			['sleep_status' => SleepStatus::NONE, 'sleep_from <=' => $this->db->curdate()]
+			['sleep_until >=' => $this->db->curdate()]
 		);
 	}
 

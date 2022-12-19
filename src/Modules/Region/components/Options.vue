@@ -33,7 +33,7 @@
         <b-container fluid>
           <b-row class="my-1">
             <b-col>
-              <label>{{ $i18n('regionOptions.regionPickupTimespan') }} : {{ pickupRuleTimespan }}</label>
+              <label>{{ $i18n('regionOptions.regionPickupTimespan') }}: {{ pickupRuleTimespan }}</label>
               <b-form-input
                 v-model="pickupRuleTimespan"
                 type="range"
@@ -45,7 +45,7 @@
           </b-row>
           <b-row class="my-1">
             <b-col>
-              <label>{{ $i18n('regionOptions.regionPickupLimitNumber') }} : {{ pickupRuleLimit }} </label>
+              <label>{{ $i18n('regionOptions.regionPickupLimitNumber') }}: {{ pickupRuleLimit }} </label>
               <b-form-input
                 v-model="pickupRuleLimit"
                 type="range"
@@ -58,7 +58,7 @@
           </b-row>
           <b-row class="my-1">
             <b-col>
-              <label>{{ $i18n('regionOptions.regionPickupLimitDayNumber') }} : {{ pickupRuleLimitDay }}</label>
+              <label>{{ $i18n('regionOptions.regionPickupLimitDayNumber') }}: {{ pickupRuleLimitDay }}</label>
               <b-form-input
                 v-model="pickupRuleLimitDay"
                 type="range"
@@ -70,7 +70,7 @@
           </b-row>
           <b-row class="my-1">
             <b-col>
-              <label>{{ $i18n('regionOptions.regionPickupInactiveHours') }}</label>
+              <label>{{ $i18n('regionOptions.regionPickupInactiveHours') }}:</label>
             </b-col>
             <b-col>
               <b-form-select

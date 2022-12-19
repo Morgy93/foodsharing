@@ -25,7 +25,7 @@
       <small
         role="menuitem"
         class="disabled dropdown-item"
-        v-html="$i18n('basket.my_list_empty')"
+        v-text="$i18n('basket.my_list_empty')"
       />
     </template>
     <template #actions>

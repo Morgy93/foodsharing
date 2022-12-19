@@ -5,13 +5,18 @@ namespace Foodsharing\Modules\Message;
 use Carbon\Carbon;
 use Foodsharing\Modules\Core\BaseGateway;
 use Foodsharing\Modules\Core\Database;
+use Foodsharing\Utility\Sanitizer;
 
 final class MessageGateway extends BaseGateway
 {
+	private Sanitizer $sanitizer;
+
 	public function __construct(
 		Database $db,
+		Sanitizer $sanitizer,
 	) {
 		parent::__construct($db);
+		$this->sanitizer = $sanitizer;
 	}
 
 	public function mayConversation(int $fsId, int $conversationId): bool
@@ -140,6 +145,7 @@ final class MessageGateway extends BaseGateway
 		', $queryParams);
 		$res = [];
 		foreach ($messages as $m) {
+			$m['body'] = $this->sanitizer->purifyHtml($m['body']);
 			$message = new Message(
 				$m['is_htmlentity_encoded'] ? html_entity_decode($m['body']) : $m['body'],
 				$m['foodsaver_id'],
@@ -229,6 +235,7 @@ final class MessageGateway extends BaseGateway
 			$conversation->storeId = $c['store_id'] ?? null;
 
 			if ($c['last_message_id']) {
+				$c['last_message'] = $this->sanitizer->purifyHtml($c['last_message']);
 				$message = new Message(
 					$c['last_message_is_htmlentity_encoded'] ?
 						html_entity_decode($c['last_message']) :

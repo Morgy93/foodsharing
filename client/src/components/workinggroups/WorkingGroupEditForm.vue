@@ -119,7 +119,7 @@
         <b-alert variant="info" show>
           <i class="fas fa-info-circle" />
           {{ $i18n('group.member_list.old_edit_hint') }}
-          <a :href="$url('members', {regionId: group.id})">{{ $i18n('group.member_list.old_edit_hint_link') }}</a>
+          <a :href="$url('members', group.id)">{{ $i18n('group.member_list.old_edit_hint_link') }}</a>
         </b-alert>
 
         <div>

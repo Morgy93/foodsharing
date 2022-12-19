@@ -206,8 +206,16 @@ export default {
         max-width: 100% !important;
       }
 
-      .vac-message-wrapper .vac-format-message-wrapper {
-        font-size: 12px;
+      #roomTextarea {
+        max-height: 120px;
+      }
+
+      .vac-icon-textarea svg {
+        margin: 0 3px !important;
+      }
+
+      .vac-box-footer {
+        padding: 5px 4px !important;
       }
       `
     } else {
@@ -224,7 +232,7 @@ export default {
         max-width: 80% !important;
       }
 
-      @media (min-width: 576px)
+      @media (min-width: 576px) and (min-height: 576px)
       {
         .vac-card-window {
           height: calc(100% - 3px) !important; /* required to see shadow around chat component */
@@ -234,8 +242,7 @@ export default {
     }
     style.innerHTML += `
     #roomTextarea {
-      max-height: 100px;
-      overflow-y: auto;
+      font-size: 12px;
     }
 
     .vac-room-list .vac-text-last .vac-text-ellipsis,
@@ -255,9 +262,22 @@ export default {
       margin-top: 5px;
     }
 
-    .vac-container-scroll{
+    .vac-container-scroll,
+    #roomTextarea,
+    .vac-room-list {
       /* Don't scroll main page when cursor is in chat window */
       overscroll-behavior: contain;
+    }
+
+    .vac-message-wrapper .vac-format-message-wrapper {
+      font-size: 12px;
+    }
+
+    .vac-room-list .vac-text-last .vac-text-ellipsis {
+      /* When last message contains a link, the text is splitted into multiple spans. So limit max text area to 2 lines. https://github.com/antoine92190/vue-advanced-chat/issues/408 */
+      overflow: hidden;
+      line-height: 19px;
+      max-height: calc(2 * 19px);
     }
     `
     this.$el.shadowRoot.appendChild(style)

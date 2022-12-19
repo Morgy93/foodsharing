@@ -2,12 +2,11 @@
 
 namespace Foodsharing\Modules\Voting;
 
-use DateTime;
-use Exception;
 use Foodsharing\Modules\Core\BaseGateway;
 use Foodsharing\Modules\Core\DBConstants\Unit\UnitType;
 use Foodsharing\Modules\Core\DBConstants\Voting\VotingType;
 use Foodsharing\Modules\Voting\DTO\Poll;
+use Foodsharing\Modules\Voting\DTO\PollForPreview;
 use Foodsharing\Modules\Voting\DTO\PollOption;
 
 class VotingGateway extends BaseGateway
@@ -33,9 +32,9 @@ class VotingGateway extends BaseGateway
 		$options = $this->getOptions($pollId, $includeResults);
 
 		return Poll::create($pollId, $data['name'], $data['description'],
-			new DateTime($data['start']), new DateTime($data['end']),
+			new \DateTime($data['start']), new \DateTime($data['end']),
 			$data['region_id'], $data['scope'], $data['type'], $data['author'],
-			new DateTime($data['creation_timestamp']),
+			new \DateTime($data['creation_timestamp']),
 			VotingType::getNumberOfValues($data['type']),
 			$includeResults ? $data['votes'] : null, $data['eligible_votes_count'], $options,
 			$data['shuffle_options']);
@@ -55,7 +54,7 @@ class VotingGateway extends BaseGateway
 		// meta-data of option
 		try {
 			$data = $this->db->fetchAllByCriteria('fs_poll_has_options', ['option', 'option_text'], ['poll_id' => $pollId]);
-		} catch (Exception $e) {
+		} catch (\Exception $e) {
 			$data = [];
 		}
 
@@ -99,10 +98,52 @@ class VotingGateway extends BaseGateway
 		foreach ($data as $d) {
 			$options = $this->getOptions($d['id'], false);
 			$polls[] = Poll::create($d['id'], $d['name'], $d['description'],
-				new DateTime($d['start']), new DateTime($d['end']),
-				$d['region_id'], $d['scope'], $d['type'], $d['author'], new DateTime($d['creation_timestamp']),
+				new \DateTime($d['start']), new \DateTime($d['end']),
+				$d['region_id'], $d['scope'], $d['type'], $d['author'], new \DateTime($d['creation_timestamp']),
 				VotingType::getNumberOfValues($d['type']), null, $d['eligible_votes_count'], $options,
 				$d['shuffle_options']);
+		}
+
+		return $polls;
+	}
+
+	/**
+	 * Returns all polls a user is invited to.
+	 *
+	 * @param int $fsId a valid ID of a foodsaver
+	 *
+	 * @return array multiple {@link PollForPreview} objects
+	 */
+	public function listCurrentPolls(int $fsId): array
+	{
+		$data = $this->db->fetchAll('SELECT
+				p.`id`, p.`name`, p.`start`, p.`end`, p.`region_id`, 
+				r.`name` as region_name, p.`scope`,
+				p.`start` > NOW() as in_future
+			FROM
+				`fs_poll` p
+			JOIN `fs_foodsaver_has_poll` f ON
+				f.poll_id = p.id
+            JOIN `fs_bezirk` r ON
+            	r.id = p.region_id
+			WHERE f.foodsaver_id = :fsId AND
+				p.`end` > NOW() AND
+				f.time IS NULL
+			ORDER BY p.`end`
+		', ['fsId' => $fsId]);
+
+		$polls = [];
+		foreach ($data as $d) {
+			$polls[] = PollForPreview::create(
+				$d['id'],
+				$d['name'],
+				new \DateTime($d['start']),
+				new \DateTime($d['end']),
+				$d['region_id'],
+				$d['region_name'],
+				$d['scope'],
+				$d['in_future']
+			);
 		}
 
 		return $polls;
@@ -114,11 +155,11 @@ class VotingGateway extends BaseGateway
 	 * @param int $pollId a valid id of a poll
 	 * @param int $userId a valid user id
 	 *
-	 * @return DateTime the date at which the user has voted or null if the user has not voted yet
+	 * @return \DateTime the date at which the user has voted or null if the user has not voted yet
 	 *
-	 * @throws Exception if the user is not allowed to vote in the poll
+	 * @throws \Exception if the user is not allowed to vote in the poll
 	 */
-	public function getVoteDatetime(int $pollId, int $userId): ?DateTime
+	public function getVoteDatetime(int $pollId, int $userId): ?\DateTime
 	{
 		$value = $this->db->fetchValueByCriteria('fs_foodsaver_has_poll', 'time', [
 			'poll_id' => $pollId,
@@ -126,7 +167,7 @@ class VotingGateway extends BaseGateway
 		]);
 
 		if ($value !== null) {
-			$date = DateTime::createFromFormat('Y-m-d H:i:s', $value);
+			$date = \DateTime::createFromFormat('Y-m-d H:i:s', $value);
 		} else {
 			$date = null;
 		}
@@ -141,7 +182,7 @@ class VotingGateway extends BaseGateway
 	 * @param int $userId a valid user id
 	 * @param array $options a map from option index to the vote value
 	 *
-	 * @throws Exception if the poll does not exist or if one of the chosen values for an option is invalid
+	 * @throws \Exception if the poll does not exist or if one of the chosen values for an option is invalid
 	 */
 	public function vote(int $pollId, int $userId, array $options): void
 	{
@@ -185,7 +226,7 @@ class VotingGateway extends BaseGateway
 	 *
 	 * @return int the id of the created poll
 	 *
-	 * @throws Exception
+	 * @throws \Exception
 	 */
 	public function insertPoll(Poll $poll, array $voterIds): int
 	{
@@ -246,7 +287,7 @@ class VotingGateway extends BaseGateway
 	 *
 	 * @param int $pollId a valid poll ID
 	 *
-	 * @throws Exception
+	 * @throws \Exception
 	 */
 	public function deletePoll(int $pollId): void
 	{
@@ -265,7 +306,7 @@ class VotingGateway extends BaseGateway
 	 *
 	 * @return array user IDs
 	 *
-	 * @throws Exception
+	 * @throws \Exception
 	 */
 	public function listActiveRegionMemberIds(int $regionId, int $minRole, bool $onlyVerified = true, bool $restrict_homeDistrict = false,
 		bool $includeSubregions = true): array
@@ -347,13 +388,13 @@ class VotingGateway extends BaseGateway
 	 * @param array $options array of {@see PollOption} objects
 	 * @param int $pollId ID of the poll
 	 *
-	 * @throws Exception
+	 * @throws \Exception
 	 */
 	private function insertOptions(array $options, int $pollId): void
 	{
 		foreach ($options as $index => $option) {
 			if (!($option instanceof PollOption)) {
-				throw new Exception('unexpected object type for the poll option');
+				throw new \Exception('unexpected object type for the poll option');
 			}
 
 			$this->db->insert('fs_poll_has_options', [

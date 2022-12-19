@@ -23,13 +23,13 @@ define('WEBCAL_URL', 'webcal://' . $host);
 
 define('INFLUX_DSN', 'udp+influxdb://influxdb:8089/foodsharing');
 
-define('DEFAULT_EMAIL', 'noreply@foodsharing.de');
-define('SUPPORT_EMAIL', 'it@foodsharing.network');
-define('DEFAULT_EMAIL_NAME', 'foodsharing-Freiwillige');
 define('VERSION', '0.8.3');
+
+define('DEFAULT_EMAIL', 'no-reply@foodsharing.network');
+define('SUPPORT_EMAIL', 'it@foodsharing.network');
+define('DEFAULT_EMAIL_NAME', 'Foodsharing');
 define('EMAIL_PUBLIC', 'info@foodsharing.de');
-define('EMAIL_PUBLIC_NAME', 'foodsharing-Freiwillige');
-define('NOREPLY_EMAIL_HOST', 'foodsharing.de');
+define('EMAIL_PUBLIC_NAME', 'Foodsharing');
 define('PLATFORM_MAILBOX_HOST', 'foodsharing.network');
 
 define('MAILBOX_OWN_DOMAINS', ['foodsharing.network', 'lebensmittelretten.de', 'foodsharing.de']);

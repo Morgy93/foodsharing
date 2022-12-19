@@ -36,7 +36,7 @@
         <label
           v-if="listing.items.length === 0"
           class="info-italic"
-          v-html="$i18n('dashboard.empty_section', {type: listing.shortName})"
+          v-text="$i18n('dashboard.empty_section', {type: listing.shortName})"
         />
       </fieldset>
       <hr>
@@ -44,12 +44,12 @@
         <button
           class="btn btn-primary"
           @click.prevent="saveOptionListings"
-          v-html="$i18n('dashboard.save_selection')"
+          v-text="$i18n('dashboard.save_selection')"
         />
         <button
           class="btn btn-outline-danger"
           @click.prevent="$emit('close')"
-          v-html="$i18n('button.cancel')"
+          v-text="$i18n('button.cancel')"
         />
       </div>
     </form>

@@ -3,7 +3,6 @@
 namespace Foodsharing\RestApi;
 
 use Carbon\Carbon;
-use DateTime;
 use Foodsharing\Lib\Session;
 use Foodsharing\Modules\Core\DBConstants\Voting\VotingScope;
 use Foodsharing\Modules\Core\DBConstants\Voting\VotingType;
@@ -90,6 +89,24 @@ class VotingRestController extends AbstractFOSRestController
 	}
 
 	/**
+	 * Lists all polls the user is invited to.
+	 *
+	 * @OA\Response(response="200", description="Success")
+	 * @OA\Tag(name="polls")
+	 * @Rest\Get("user/current/polls")
+	 */
+	public function listCurrentPolls(): Response
+	{
+		if (!$this->session->id()) {
+			throw new UnauthorizedHttpException('');
+		}
+
+		$polls = $this->votingGateway->listCurrentPolls($this->session->id());
+
+		return $this->handleView($this->view($polls, 200));
+	}
+
+	/**
 	 * Vote in a poll. The options need to be a list mapping option indices to the vote values (+1, 0, -1). Depending
 	 * on the voting type not all options need to be included.
 	 *
@@ -165,8 +182,8 @@ class VotingRestController extends AbstractFOSRestController
 			throw new BadRequestHttpException('empty name or description: ' . $poll->name . ', ' . $poll->description);
 		}
 
-		$poll->startDate = DateTime::createFromFormat(DateTime::ISO8601, $paramFetcher->get('startDate'));
-		$poll->endDate = DateTime::createFromFormat(DateTime::ISO8601, $paramFetcher->get('endDate'));
+		$poll->startDate = \DateTime::createFromFormat(\DateTime::ISO8601, $paramFetcher->get('startDate'));
+		$poll->endDate = \DateTime::createFromFormat(\DateTime::ISO8601, $paramFetcher->get('endDate'));
 		if (!$poll->startDate || !$poll->endDate || $poll->startDate >= $poll->endDate
 		|| Carbon::now()->add($this->votingPermissions->editTimeAfterPollCreation()) >= $poll->startDate) {
 			throw new BadRequestHttpException('invalid start or end date');

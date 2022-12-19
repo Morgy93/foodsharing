@@ -46,7 +46,7 @@
           <button
             class="dropdown-item small d-flex align-items-center"
             @click="resetHiding"
-            v-html="$i18n('dashboard.options.reset')"
+            v-text="$i18n('dashboard.options.reset')"
           />
         </b-dropdown>
         <button
@@ -65,7 +65,7 @@
           />
           <span
             class="sr-only"
-            v-html="$i18n(`dashboard.options.grid_toggle.${state ? 3 : 2}_columns`)"
+            v-text="$i18n(`dashboard.options.grid_toggle.${state ? 3 : 2}_columns`)"
           />
         </button>
       </div>
@@ -84,6 +84,7 @@
         <RegionContainer v-if="isFoodsaver && visible.regions" />
       </div>
       <div class="grid-item grid-item--middle">
+        <PollContainer v-if="visible.polls" />
         <EventContainer
           v-if="isFoodsaver && visible.events"
           title="dashboard.invitation"
@@ -131,6 +132,7 @@ import EventContainer from '@/components/Container/event/EventContainer.vue'
 import BasketContainer from '@/components/Container/basket/BasketContainer.vue'
 import RegionContainer from '@/components/Container/region/RegionContainer.vue'
 import GroupContainer from '@/components/Container/group/GroupContainer.vue'
+import PollContainer from '@/components/Container/poll/PollContainer.vue'
 // Mixins
 import MediaQueryMixin from '@/mixins/MediaQueryMixin'
 import StateTogglerMixin from '@/mixins/StateTogglerMixin'
@@ -153,6 +155,7 @@ export default {
     BasketContainer,
     RegionContainer,
     GroupContainer,
+    PollContainer,
   },
   mixins: [MediaQueryMixin, StateTogglerMixin, RouteAndDeviceCheckMixin],
   props: {
@@ -171,6 +174,7 @@ export default {
         managing_stores: true,
         jumping_stores: true,
         stores: true,
+        polls: true,
       },
     }
   },
@@ -229,6 +233,7 @@ export default {
         managing_stores: true,
         jumping_stores: true,
         stores: true,
+        polls: true,
       }
     },
   },

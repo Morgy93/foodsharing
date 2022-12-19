@@ -7,16 +7,12 @@
     }"
     :href="bell.href"
     @click="$emit('read', bell)"
-    @mouseenter="!isTouch && toggleState()"
-    @mouseleave="!isTouch && toggleState()"
   >
     <div
       class="icon icon--big icon--rounded mr-2 d-flex text-center justifiy-content-center align-items-center"
-      @click.stop.prevent="isTouch && toggleState()"
     >
       <div
-        v-if="!state"
-        class="icon"
+        class="icon icon-default"
       >
         <Avatar
           v-if="bell.image"
@@ -26,14 +22,12 @@
         />
         <i
           v-else
-          class="icon icon--big icon--rounded d-flex img-thumbnail align-items-center justify-content-center"
+          class="icon icon--big icon--rounded img-thumbnail align-items-center justify-content-center"
           :class="bell.icon"
         />
       </div>
       <i
-        v-else
-        class="icon icon--big img-thumbnail d-flex align-items-center justify-content-center"
-        :class="'fas fa-times'"
+        class="icon icon-close icon--big img-thumbnail align-items-center justify-content-center fas fa-times"
         @click.stop.prevent="closeBell()"
       />
     </div>
@@ -58,14 +52,13 @@
 <script>
 import Avatar from '@/components/Avatar'
 
-import StateTogglerMixin from '@/mixins/StateTogglerMixin'
 import MediaQueryMixin from '@/mixins/MediaQueryMixin'
 
 export default {
   components: {
     Avatar,
   },
-  mixins: [StateTogglerMixin, MediaQueryMixin],
+  mixins: [MediaQueryMixin],
   props: {
     bell: {
       type: Object,
@@ -97,4 +90,10 @@ export default {
 
 <style lang="scss" scoped>
 @import '../../../scss/icon-sizes.scss';
+
+a:hover .icon-default,
+a:not(:hover) .icon-close {
+  display: none;
+}
+
 </style>

@@ -14,7 +14,7 @@
     <small
       v-if="filteredList.length === 0"
       class="list-group-item text-muted"
-      v-html="$i18n('basket.no_nearby', {radius})"
+      v-text="$i18n('basket.no_nearby', {radius})"
     />
   </Container>
 </template>

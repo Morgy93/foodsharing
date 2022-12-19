@@ -167,36 +167,37 @@ class MaintenanceControl extends ConsoleControl
 		$counts = $this->foodsaverGateway->updateGroupMembers(1655, $graz_biebs, true);
 		self::info('+' . $counts['inserts'] . ', -' . $counts['deletions']);
 
-		self::info('updating Welcome Team Admin group');
-		$this->goalsAdminCommunicationGroups(WorkgroupFunction::WELCOME, RegionIDs::WELCOME_TEAM_ADMIN_GROUP);
-
+		/*
+				self::info('updating Welcome Team Admin group');
+				$this->goalsAdminCommunicationGroups(WorkgroupFunction::WELCOME, RegionIDs::WELCOME_TEAM_ADMIN_GROUP);
+		*/
 		self::info('updating Voting Admin group');
 		$this->goalsAdminCommunicationGroups(WorkgroupFunction::VOTING, RegionIDs::VOTING_ADMIN_GROUP);
 
-		self::info('updating Foodsharepoint Team Admin group');
-		$this->goalsAdminCommunicationGroups(WorkgroupFunction::FSP, RegionIDs::FSP_TEAM_ADMIN_GROUP);
+		/*		self::info('updating Foodsharepoint Team Admin group');
+				$this->goalsAdminCommunicationGroups(WorkgroupFunction::FSP, RegionIDs::FSP_TEAM_ADMIN_GROUP);
 
-		self::info('updating Store Coordination Team Admin group');
-		$this->goalsAdminCommunicationGroups(WorkgroupFunction::STORES_COORDINATION, RegionIDs::STORE_COORDINATION_TEAM_ADMIN_GROUP);
+				self::info('updating Store Coordination Team Admin group');
+				$this->goalsAdminCommunicationGroups(WorkgroupFunction::STORES_COORDINATION, RegionIDs::STORE_COORDINATION_TEAM_ADMIN_GROUP);
 
-		self::info('updating Report Team Admin group');
-		$this->goalsAdminCommunicationGroups(WorkgroupFunction::REPORT, RegionIDs::REPORT_TEAM_ADMIN_GROUP);
+				self::info('updating Report Team Admin group');
+				$this->goalsAdminCommunicationGroups(WorkgroupFunction::REPORT, RegionIDs::REPORT_TEAM_ADMIN_GROUP);
 
-		self::info('updating Mediation Team Admin group');
-		$this->goalsAdminCommunicationGroups(WorkgroupFunction::MEDIATION, RegionIDs::MEDIATION_TEAM_ADMIN_GROUP);
+				self::info('updating Mediation Team Admin group');
+				$this->goalsAdminCommunicationGroups(WorkgroupFunction::MEDIATION, RegionIDs::MEDIATION_TEAM_ADMIN_GROUP);
 
-		self::info('updating Arbitration Team Admin group');
-		$this->goalsAdminCommunicationGroups(WorkgroupFunction::ARBITRATION, RegionIDs::ARBITRATION_TEAM_ADMIN_GROUP);
+				self::info('updating Arbitration Team Admin group');
+				$this->goalsAdminCommunicationGroups(WorkgroupFunction::ARBITRATION, RegionIDs::ARBITRATION_TEAM_ADMIN_GROUP);
 
-		self::info('updating FSManagement Team Admin group');
-		$this->goalsAdminCommunicationGroups(WorkgroupFunction::FSMANAGEMENT, RegionIDs::FSMANAGEMENT_TEAM_ADMIN_GROUP);
+				self::info('updating FSManagement Team Admin group');
+				$this->goalsAdminCommunicationGroups(WorkgroupFunction::FSMANAGEMENT, RegionIDs::FSMANAGEMENT_TEAM_ADMIN_GROUP);
 
-		self::info('updating PR Team Admin group');
-		$this->goalsAdminCommunicationGroups(WorkgroupFunction::PR, RegionIDs::PR_TEAM_ADMIN_GROUP);
+				self::info('updating PR Team Admin group');
+				$this->goalsAdminCommunicationGroups(WorkgroupFunction::PR, RegionIDs::PR_TEAM_ADMIN_GROUP);
 
-		self::info('updating Moderation Team Admin group');
-		$this->goalsAdminCommunicationGroups(WorkgroupFunction::MODERATION, RegionIDs::MODERATION_TEAM_ADMIN_GROUP);
-
+				self::info('updating Moderation Team Admin group');
+				$this->goalsAdminCommunicationGroups(WorkgroupFunction::MODERATION, RegionIDs::MODERATION_TEAM_ADMIN_GROUP);
+		*/
 		self::info('updating Board Admin group');
 		$this->goalsAdminCommunicationGroups(WorkgroupFunction::BOARD, RegionIDs::BOARD_ADMIN_GROUP);
 
