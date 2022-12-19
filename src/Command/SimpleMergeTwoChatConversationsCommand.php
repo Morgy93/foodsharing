@@ -53,7 +53,6 @@ class SimpleMergeTwoChatConversationsCommand extends Command
 
 		if ($isAnyConversationStoreConversation) {
 			$output->writeln("<error>One of the conversations is associated with a store.</error>");
-			$output->writeln("<info>Only personal conversations can be merged.</info>");
 			$output->writeln("<info>Merging not executed.</info>");
 			return Command::FAILURE;
 		}
