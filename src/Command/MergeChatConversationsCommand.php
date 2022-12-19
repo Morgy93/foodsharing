@@ -1,4 +1,6 @@
-<?php declare(strict_types=1);
+<?php
+
+declare(strict_types=1);
 
 namespace Foodsharing\Command;
 
@@ -13,7 +15,7 @@ use Symfony\Component\Console\Output\OutputInterface;
 /**
  * How does the command work?
  * --------------------------
- * START COMMAND EXECUTION
+ * START COMMAND EXECUTION.
  *
  * 1. Fetch all already-duplicate-checked messages
  * 2. Fetch an amount of messages after a defined date [yyyy-mm-dd] and excluded already-duplicate-checked messages
@@ -44,7 +46,6 @@ use Symfony\Component\Console\Output\OutputInterface;
  *
  * TERMINATE COMMAND EXECUTION
  */
-
 #[AsCommand(
 	name: 'foodsharing:merge-chat-conversations',
 	description: '',
@@ -55,14 +56,12 @@ class MergeChatConversationsCommand extends Command
 	public function __construct(
 		private readonly ChatConversationMergeService $chatConversationMergeService,
 		private readonly MessageGateway $messageGateway,
-	)
-	{
+	) {
 		parent::__construct();
 	}
 
 	protected function configure()
 	{
-
 	}
 
 	protected function execute(InputInterface $input, OutputInterface $output): int
@@ -71,7 +70,7 @@ class MergeChatConversationsCommand extends Command
 		$progressBar = new ProgressBar($output, count($messagesToAnalyze));
 
 		foreach ($messagesToAnalyze as $message) {
-			$conversationId = $message["conversation_id"];
+			$conversationId = $message['conversation_id'];
 
 			$memberIds = $this->chatConversationMergeService->getMemberIdsOfConversation($conversationId);
 			if (!$this->chatConversationMergeService->isConversationBetweenTwoMembers($memberIds)) {
@@ -88,12 +87,12 @@ class MergeChatConversationsCommand extends Command
 			$commonConversationWithMostMessages = array_shift($commonConversationIdsWithAmountOfMessages);
 
 			foreach ($commonConversationIdsWithAmountOfMessages as $conversationIdWithAmountOfMessage) {
-				$conversationId = $conversationIdWithAmountOfMessage["conversation_id"];
-				$this->chatConversationMergeService->updateMessagesFromOldToNewConversation($conversationId, $commonConversationWithMostMessages["conversation_id"]);
+				$conversationId = $conversationIdWithAmountOfMessage['conversation_id'];
+				$this->chatConversationMergeService->updateMessagesFromOldToNewConversation($conversationId, $commonConversationWithMostMessages['conversation_id']);
 				$this->messageGateway->deleteConversation($conversationId);
 			}
 
-			$mergedConversationId = &$commonConversationWithMostMessages["conversation_id"];
+			$mergedConversationId = &$commonConversationWithMostMessages['conversation_id'];
 
 			$progressBar->advance();
 		}

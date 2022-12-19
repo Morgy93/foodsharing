@@ -1,4 +1,6 @@
-<?php declare(strict_types=1);
+<?php
+
+declare(strict_types=1);
 
 namespace Foodsharing\Modules\Message;
 
@@ -10,13 +12,14 @@ class ChatConversationMergeService
 		private readonly Database $database,
 		private readonly MessageGateway $messageGateway,
 		private readonly MessageTransactions $messageTransactions,
-	) {}
+	) {
+	}
 
 	public function getMessages(int $offset = 0, int $amount = 20): array
 	{
-		return $this->database->fetchAll("SELECT id, conversation_id FROM fs_msg ORDER BY id LIMIT :amount OFFSET :offset", [
-			"amount" => $amount,
-			"offset" => $offset,
+		return $this->database->fetchAll('SELECT id, conversation_id FROM fs_msg ORDER BY id LIMIT :amount OFFSET :offset', [
+			'amount' => $amount,
+			'offset' => $offset,
 		]);
 	}
 
@@ -27,10 +30,10 @@ class ChatConversationMergeService
 
 	public function getMemberIdsOfConversation(int $conversationId): array
 	{
-		$conversationMemberIds = $this->database->fetchAllValues("
+		$conversationMemberIds = $this->database->fetchAllValues('
 			SELECT foodsaver_id FROM fs_foodsaver_has_conversation
-			WHERE conversation_id = :conversation_id",
-			["conversation_id" => $conversationId]
+			WHERE conversation_id = :conversation_id',
+			['conversation_id' => $conversationId]
 		);
 
 		return $conversationMemberIds;
@@ -38,7 +41,7 @@ class ChatConversationMergeService
 
 	public function getCommonConversationIds(array $memberIds): array
 	{
-		$memberIds = implode(",", $memberIds);
+		$memberIds = implode(',', $memberIds);
 		$membersWithConversationLists = $this->database->fetchAll("
 			SELECT foodsaver_id, GROUP_CONCAT(conversation_id) AS conversation_ids FROM fs_foodsaver_has_conversation
 			WHERE foodsaver_id IN ($memberIds) GROUP BY foodsaver_id"
@@ -46,7 +49,7 @@ class ChatConversationMergeService
 
 		$conversationIdsOfAllMembers = [];
 		foreach ($membersWithConversationLists as $memberWithConversationList) {
-			$conversationIds = explode(",", $memberWithConversationList["conversation_ids"]);
+			$conversationIds = explode(',', $memberWithConversationList['conversation_ids']);
 			$conversationIdsOfAllMembers[] = $conversationIds;
 		}
 
@@ -55,7 +58,8 @@ class ChatConversationMergeService
 
 	public function getConversationIdsWithAmountOfMessages(array $conversationIds): array
 	{
-		$conversationIds = implode(",", $conversationIds);
+		$conversationIds = implode(',', $conversationIds);
+
 		return $this->database->fetchAll("
 			SELECT conversation_id, COUNT(body) AS amount_of_messages FROM fs_msg
 			WHERE conversation_id IN ($conversationIds) GROUP BY conversation_id ASC"
@@ -74,6 +78,6 @@ class ChatConversationMergeService
 
 	public function updateMessagesFromOldToNewConversation(int $oldConversationId, int $newConversationId): void
 	{
-		$this->database->update("fs_msg", ["conversation_id" => $newConversationId], ["conversation_id" => $oldConversationId]);
+		$this->database->update('fs_msg', ['conversation_id' => $newConversationId], ['conversation_id' => $oldConversationId]);
 	}
 }
