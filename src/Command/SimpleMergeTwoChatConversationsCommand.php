@@ -49,8 +49,6 @@ class SimpleMergeTwoChatConversationsCommand extends Command
 		$foodsaverIdsOfConversation1 = $this->chatConversationMergeService->getMemberIdsOfConversation($conversation1);
 		$foodsaverIdsOfConversation2 = $this->chatConversationMergeService->getMemberIdsOfConversation($conversation2);
 
-
-
 		$isAnyConversationStoreConversation =
 			$this->chatConversationMergeService->isConversationAssociatedWithAStore($conversation1)
 			|| $this->chatConversationMergeService->isConversationAssociatedWithAStore($conversation2);
