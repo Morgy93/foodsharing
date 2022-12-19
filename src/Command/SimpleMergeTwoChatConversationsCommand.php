@@ -14,7 +14,7 @@ use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
 
 #[AsCommand(
-	name: 'foodsharing:chat:simple-merge-two-conversations',
+	name: 'foodsharing:chat:merge-two-conversations',
 	description: 'This command merges two chat conversations into one.',
 	hidden: false
 )]
