@@ -34,6 +34,7 @@ final class ChangelogRestController extends AbstractFOSRestController
 				'release.yaml',
 				'-fs-release-'
 			);
+
 			return $this->handleView($this->view([
 				'changelog' => $changelogGenerator->getChangelog(),
 				'meta' => $changelogConfiguration,

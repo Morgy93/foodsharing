@@ -1,5 +1,5 @@
 ---
-type_of_changes:
+types_of_change:
   - New feature/s
   - Improvement of existing feature/s
   - Bugfix
@@ -8,3 +8,4 @@ type_of_changes:
   - Other
 
 active_release_name: Icecream
+changelog_subdirectory_for_new_entries: 1-fs-release-icecream
