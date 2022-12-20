@@ -4,7 +4,7 @@ namespace Foodsharing\RestApi;
 
 use FOS\RestBundle\Controller\AbstractFOSRestController;
 use FOS\RestBundle\Controller\Annotations\Get;
-use FOS\RestBundle\Controller\Annotations\Route;
+use Martincodes\YamlChangelogGenerator\YamlChangelogCreator;
 use OpenApi\Annotations as OA;
 use OpenApi\Attributes\Tag;
 use Symfony\Component\HttpFoundation\Response;
@@ -19,6 +19,13 @@ class ChangelogRestController extends AbstractFOSRestController
 	#[Tag('system')]
 	public function getChangelogAction(): Response
 	{
-		return $this->handleView($this->view([]));
+		$changelogGenerator = new YamlChangelogCreator(
+			__DIR__ . '/../../changelog/',
+			['release.yaml', 'readme.md'],
+			'release.yaml',
+			'-fs-release-'
+		);
+
+		return $this->handleView($this->view($changelogGenerator->getChangelog()));
 	}
 }

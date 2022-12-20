@@ -1921,16 +1921,16 @@
         },
         {
             "name": "martincodes-de/php-yaml-changelog-generator",
-            "version": "1.1.2",
+            "version": "1.1.5",
             "source": {
                 "type": "git",
                 "url": "https://github.com/martincodes-de/php-yaml-changelog-generator.git",
-                "reference": "9474381000ed2e423ac86b72f12a9253983e1070"
+                "reference": "123bce1d4631cc0f6c970925d4d15de3f7fc892b"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/martincodes-de/php-yaml-changelog-generator/zipball/9474381000ed2e423ac86b72f12a9253983e1070",
-                "reference": "9474381000ed2e423ac86b72f12a9253983e1070",
+                "url": "https://api.github.com/repos/martincodes-de/php-yaml-changelog-generator/zipball/123bce1d4631cc0f6c970925d4d15de3f7fc892b",
+                "reference": "123bce1d4631cc0f6c970925d4d15de3f7fc892b",
                 "shasum": ""
             },
             "require": {
@@ -1942,8 +1942,8 @@
             },
             "type": "library",
             "autoload": {
-                "psr-0": {
-                    "YamlChangelogGenerator": "src"
+                "psr-4": {
+                    "Martincodes\\YamlChangelogGenerator\\": "src"
                 }
             },
             "notification-url": "https://packagist.org/downloads/",
@@ -1965,9 +1965,9 @@
             ],
             "support": {
                 "issues": "https://github.com/martincodes-de/php-yaml-changelog-generator/issues",
-                "source": "https://github.com/martincodes-de/php-yaml-changelog-generator/tree/v1.1.2"
+                "source": "https://github.com/martincodes-de/php-yaml-changelog-generator/tree/v.1.1.5"
             },
-            "time": "2022-12-19T23:48:26+00:00"
+            "time": "2022-12-20T11:03:30+00:00"
         },
         {
             "name": "minishlink/web-push",
