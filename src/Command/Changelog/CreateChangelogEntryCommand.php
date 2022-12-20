@@ -12,8 +12,8 @@ use Symfony\Component\Console\Question\Question;
 use Symfony\Component\Yaml\Yaml;
 
 #[AsCommand(
-	name: "foodsharing:changelog:create-entry",
-	description: "Creates a changelog entry",
+	name: 'foodsharing:changelog:create-entry',
+	description: 'Creates a changelog entry',
 )]
 final class CreateChangelogEntryCommand extends Command
 {
@@ -24,7 +24,7 @@ final class CreateChangelogEntryCommand extends Command
 
 	protected function execute(InputInterface $input, OutputInterface $output): int
 	{
-		$changelogDirectory = __DIR__.'/../../../changelog/';
+		$changelogDirectory = __DIR__ . '/../../../changelog/';
 		$changelogConfig = Yaml::parseFile($changelogDirectory . 'config.yaml');
 		$changelogDirectoryForNewEntries = $changelogDirectory . $changelogConfig['changelog_subdirectory_for_new_entries'] . '/';
 		$questionHelper = $this->getHelper('question');
@@ -39,11 +39,11 @@ final class CreateChangelogEntryCommand extends Command
 		$formattedBlock = $formatter->formatBlock($commandStartedMessages, 'comment', true);
 		$output->writeln($formattedBlock);
 
-		$descriptionQuestion = new Question('<question>Describe your change</question>'.PHP_EOL, '');
+		$descriptionQuestion = new Question('<question>Describe your change</question>' . PHP_EOL, '');
 		$description = $questionHelper->ask($input, $output, $descriptionQuestion);
 
-		$typeOfChangeQuestionText = '<question>Select the type(s) of change</question>'.PHP_EOL.
-									'<comment>Multiselect allowed | Example: 1,2</comment>'.PHP_EOL;
+		$typeOfChangeQuestionText = '<question>Select the type(s) of change</question>' . PHP_EOL .
+									'<comment>Multiselect allowed | Example: 1,2</comment>' . PHP_EOL;
 		$typeOfChangeQuestion = new ChoiceQuestion(
 			$typeOfChangeQuestionText,
 			$typesOfChanges,
@@ -53,28 +53,28 @@ final class CreateChangelogEntryCommand extends Command
 		$typeOfChange = $questionHelper->ask($input, $output, $typeOfChangeQuestion);
 
 		$mergeRequestIdsQuestionText = '<question>Enter merge request id(s)</question>'
-			.PHP_EOL.'<comment>Without ! | Multiple allowed | Example: 1234 OR 1234,5543</comment>'.PHP_EOL;
+			. PHP_EOL . '<comment>Without ! | Multiple allowed | Example: 1234 OR 1234,5543</comment>' . PHP_EOL;
 
 		$mergeRequestIdsQuestion = new Question($mergeRequestIdsQuestionText, '');
 		$mergeRequestIds = $questionHelper->ask($input, $output, $mergeRequestIdsQuestion);
 		$mergeRequestIds = explode(',', $mergeRequestIds);
 
 		$issueIdsQuestionText = '<question>Enter gitlab issue-id(s)</question>'
-			.PHP_EOL.'<comment>Without # | Multiple allowed | Example: 4532 OR 3452,3222</comment>'.PHP_EOL;
+			. PHP_EOL . '<comment>Without # | Multiple allowed | Example: 4532 OR 3452,3222</comment>' . PHP_EOL;
 
 		$issueIdsQuestion = new Question($issueIdsQuestionText, '');
 		$issueIds = $questionHelper->ask($input, $output, $issueIdsQuestion);
 		$issueIds = explode(',', $issueIds);
 
 		$authorsQuestionText = '<question>Enter gitlab username(s) of authors</question>'
-			.PHP_EOL.'<comment>Without @ | Multiple allowed | Example: martincodes-de OR martincodes-de,chriswalg</comment>'.PHP_EOL;
+			. PHP_EOL . '<comment>Without @ | Multiple allowed | Example: martincodes-de OR martincodes-de,chriswalg</comment>' . PHP_EOL;
 
 		$authorsQuestion = new Question($authorsQuestionText, '');
 		$authors = $questionHelper->ask($input, $output, $authorsQuestion);
 		$authors = explode(',', $authors);
 
 		$fileNameQuestionText = '<question>Enter short filename for this entry</question>'
-			.PHP_EOL.'<comment>do not use spaces | Example: added-changelog-entry-command</comment>'.PHP_EOL;
+			. PHP_EOL . '<comment>do not use spaces | Example: added-changelog-entry-command</comment>' . PHP_EOL;
 		$fileNameQuestion = new Question($fileNameQuestionText, '');
 		$fileNameQuestion->setValidator(function ($filename) use ($changelogDirectoryForNewEntries) {
 			if (empty($filename)) {
@@ -82,7 +82,7 @@ final class CreateChangelogEntryCommand extends Command
 			}
 
 			$lowercaseFilename = strtolower($filename);
-			$filenameWithExtension =  $lowercaseFilename . '.yaml';
+			$filenameWithExtension = $lowercaseFilename . '.yaml';
 			if (file_exists($changelogDirectoryForNewEntries . $filenameWithExtension)) {
 				throw new RuntimeException($filenameWithExtension . ' exists already inside ' . $changelogDirectoryForNewEntries);
 			}

@@ -4,7 +4,6 @@ namespace Foodsharing\RestApi;
 
 use FOS\RestBundle\Controller\AbstractFOSRestController;
 use FOS\RestBundle\Controller\Annotations\Get;
-use Http\Client\Exception\HttpException;
 use Martincodes\YamlChangelogGenerator\YamlChangelogCreator;
 use OpenApi\Annotations as OA;
 use OpenApi\Attributes\Tag;
@@ -15,7 +14,8 @@ use Symfony\Component\Yaml\Yaml;
 final class ChangelogRestController extends AbstractFOSRestController
 {
 	/**
-	 * Returns the changelog since 2023
+	 * Returns the changelog since 2023.
+	 *
 	 * @OA\Response(response="200", description="Success")
 	 * @OA\Response(response="500", description="Error")
 	 */
