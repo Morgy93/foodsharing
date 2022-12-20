@@ -738,7 +738,6 @@ fsp:
   editName: "Fairteiler \"{name}\" bearbeiten"
   editSuccess: "Fairteiler wurde erfolgreich bearbeitet"
   address: "Adresse"
-  openMap: Navigation starten
   street: "Anschrift"
   pic: "Foto"
   addedOn: "Hinzugefügt am"
@@ -1577,10 +1576,6 @@ map:
 # used in FoodSharePointView.php
 smallMap:
   title: "Karte"
-  enlarge: "Karte vergrößern."
-  coordinates: "Breitengrad, Längengrad"
-  noCoordinatesAvailable: "Keine Koordinaten hinterlegt."
-  showOnGoogleMaps: "Extern auf Google Maps anzeigen."
 
 messages:
   bread: "Nachrichten"

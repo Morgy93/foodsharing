@@ -1624,10 +1624,6 @@ map:
 
 smallMap:
   title: "Map"
-  enlarge: "Enlarge map."
-  coordinates: "Latitude, Longitude"
-  noCoordinatesAvailable: "No coordinates available."
-  showOnGoogleMaps: "Show on Google Maps."
 
 content:
   content: Content
@@ -2111,7 +2107,6 @@ fsp:
   addedBy: Added by
   street: Street
   address: Address
-  openMap: Navigate to
   editName: Edit food-share-point ‘{name}’
   edit: Edit food-share-point
   new: New food-share-point

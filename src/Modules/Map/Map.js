@@ -203,12 +203,8 @@ async function loadMarker (types, loader) {
       } else if (type === 'b') {
         ajreq('bubble', { app: 'store', id: id })
       } else if (type === 'f') {
-        /* old behaviour: redirect to fairteiler on marker click */
+        /* redirect to fairteiler on marker click */
         const bid = (el.layer.options.bid)
-        const fsid = (el.layer.options.fsid)
-        goTo(`/?page=fairteiler&sub=ft&bid=${bid}&id=${fsid}`)
-        /* new behaviour: show fairteiler bubble on map */
-        /* ajreq('bubble', { app: 'fairteiler', id: fsid }) */
         goTo(`/?page=fairteiler&sub=ft&bid=${bid}&id=${id}`)
       } else if (type === 'c') {
         ajreq('bubble', { app: 'bezirk', id: id }).then(x => {
