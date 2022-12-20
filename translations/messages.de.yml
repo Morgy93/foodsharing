@@ -738,6 +738,7 @@ fsp:
   editName: "Fairteiler \"{name}\" bearbeiten"
   editSuccess: "Fairteiler wurde erfolgreich bearbeitet"
   address: "Adresse"
+  openMap: Navigation starten
   street: "Anschrift"
   pic: "Foto"
   addedOn: "Hinzugefügt am"

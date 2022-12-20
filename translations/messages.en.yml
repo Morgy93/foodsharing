@@ -2111,6 +2111,7 @@ fsp:
   addedBy: Added by
   street: Street
   address: Address
+  openMap: Navigate to
   editName: Edit food-share-point ‘{name}’
   edit: Edit food-share-point
   new: New food-share-point

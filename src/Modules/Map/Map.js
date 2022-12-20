@@ -205,6 +205,7 @@ async function loadMarker (types, loader) {
       } else if (type === 'f') {
         /* old behaviour: redirect to fairteiler on marker click */
         const bid = (el.layer.options.bid)
+        const fsid = (el.layer.options.fsid)
         goTo(`/?page=fairteiler&sub=ft&bid=${bid}&id=${fsid}`)
         /* new behaviour: show fairteiler bubble on map */
         /* ajreq('bubble', { app: 'fairteiler', id: fsid }) */

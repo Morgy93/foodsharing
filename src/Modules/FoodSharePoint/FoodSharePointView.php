@@ -115,6 +115,10 @@ class FoodSharePointView extends View
 			. $foodSharePoint['plz'] . ' ' . $foodSharePoint['ort']
 		);
 
+		$content .= $this->v_utils->v_input_wrapper($this->translator->trans('fsp.openMap'),
+			'<a href="geo:' . $foodSharePoint['lat'] . ',' . $foodSharePoint['lon'] . '";u=35">Geo</a>'
+		);
+
 		$content .= $this->v_utils->v_input_wrapper($this->translator->trans('fsp.description'),
 			$this->sanitizerService->markdownToHtml($foodSharePoint['desc'])
 		);
@@ -212,7 +216,7 @@ class FoodSharePointView extends View
 				. $this->foodSharePoint['lat']
 				. ', '
 				. $this->foodSharePoint['lon']
-				. '<br /><br /><a href="https://www.google.com/maps/search/?api=1&query='
+				. '<br /><br /><a href="maps:'
 				. $this->foodSharePoint['lat']
 				. ','
 				. $this->foodSharePoint['lon']
