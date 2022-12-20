@@ -115,10 +115,6 @@ class FoodSharePointView extends View
 			. $foodSharePoint['plz'] . ' ' . $foodSharePoint['ort']
 		);
 
-		$content .= $this->v_utils->v_input_wrapper($this->translator->trans('fsp.openMap'),
-			'<a href="geo:' . $foodSharePoint['lat'] . ',' . $foodSharePoint['lon'] . '";u=35">Geo</a>'
-		);
-
 		$content .= $this->v_utils->v_input_wrapper($this->translator->trans('fsp.description'),
 			$this->sanitizerService->markdownToHtml($foodSharePoint['desc'])
 		);
@@ -195,36 +191,6 @@ class FoodSharePointView extends View
 				. json_encode($this->foodSharePoint)
 				. ' ] } );'
 				. ' } ');
-			$mapHtml .= $this->v_utils->v_input_wrapper('', '<a id="enlargeMap" title="'
-				. $this->translator->trans('smallMap.enlarge')
-				. '" href="#" onclick="'
-				. 'enlargeMap();return false;'
-				. '">'
-
-//				'<a href="/?page=map&fspid='
-//				. $this->foodSharePoint['id']
-//				. '&lat='
-//				. $this->foodSharePoint['lat']
-//				. '&lon='
-//				. $this->foodSharePoint['lon']
-//				. '" target="_blank">'
-				. $this->translator->trans('smallMap.enlarge')
-				. '</a><br />'
-				. '<b>'
-				. $this->translator->trans('smallMap.coordinates')
-				. '</b><br />'
-				. $this->foodSharePoint['lat']
-				. ', '
-				. $this->foodSharePoint['lon']
-				. '<br /><br /><a href="maps:'
-				. $this->foodSharePoint['lat']
-				. ','
-				. $this->foodSharePoint['lon']
-				. '" target="_blank" rel="noreferrer">'
-				. $this->translator->trans('smallMap.showOnGoogleMaps')
-				. '</a>'
-			);
-
 		}
 
 		return $this->v_utils->v_field(
