@@ -1,6 +1,6 @@
 <?php
 
-namespace Foodsharing\Command;
+namespace Foodsharing\Command\Changelog;
 
 use Symfony\Component\Console\Attribute\AsCommand;
 use Symfony\Component\Console\Command\Command;
@@ -24,14 +24,23 @@ final class CreateChangelogEntryCommand extends Command
 
 	protected function execute(InputInterface $input, OutputInterface $output): int
 	{
-		$changelogDirectory = __DIR__.'/../../changelog/';
+		$changelogDirectory = __DIR__.'/../../../changelog/';
 		$changelogConfig = Yaml::parseFile($changelogDirectory . 'config.yaml');
 		$changelogDirectoryForNewEntries = $changelogDirectory . $changelogConfig['changelog_subdirectory_for_new_entries'] . '/';
-		$helper = $this->getHelper('question');
+		$questionHelper = $this->getHelper('question');
+		$formatter = $this->getHelper('formatter');
 		$typesOfChanges = $changelogConfig['types_of_change'] ?? [];
 
+		$commandStartedMessages = [
+			'Generate Changelog Entry File with me',
+			'If you wanna fill out the file by yourself, skip until you must enter the filename.',
+			'After that you have a yaml-safe and unified structure for this file. Don`t create it manually.',
+		];
+		$formattedBlock = $formatter->formatBlock($commandStartedMessages, 'comment', true);
+		$output->writeln($formattedBlock);
+
 		$descriptionQuestion = new Question('<question>Describe your change</question>'.PHP_EOL, '');
-		$description = $helper->ask($input, $output, $descriptionQuestion);
+		$description = $questionHelper->ask($input, $output, $descriptionQuestion);
 
 		$typeOfChangeQuestionText = '<question>Select the type(s) of change</question>'.PHP_EOL.
 									'<comment>Multiselect allowed | Example: 1,2</comment>'.PHP_EOL;
@@ -41,27 +50,27 @@ final class CreateChangelogEntryCommand extends Command
 			'uncategorized'
 		);
 		$typeOfChangeQuestion->setMultiselect(true);
-		$typeOfChange = $helper->ask($input, $output, $typeOfChangeQuestion);
+		$typeOfChange = $questionHelper->ask($input, $output, $typeOfChangeQuestion);
 
 		$mergeRequestIdsQuestionText = '<question>Enter merge request id(s)</question>'
 			.PHP_EOL.'<comment>Without ! | Multiple allowed | Example: 1234 OR 1234,5543</comment>'.PHP_EOL;
 
 		$mergeRequestIdsQuestion = new Question($mergeRequestIdsQuestionText, '');
-		$mergeRequestIds = $helper->ask($input, $output, $mergeRequestIdsQuestion);
+		$mergeRequestIds = $questionHelper->ask($input, $output, $mergeRequestIdsQuestion);
 		$mergeRequestIds = explode(',', $mergeRequestIds);
 
 		$issueIdsQuestionText = '<question>Enter gitlab issue-id(s)</question>'
 			.PHP_EOL.'<comment>Without # | Multiple allowed | Example: 4532 OR 3452,3222</comment>'.PHP_EOL;
 
 		$issueIdsQuestion = new Question($issueIdsQuestionText, '');
-		$issueIds = $helper->ask($input, $output, $issueIdsQuestion);
+		$issueIds = $questionHelper->ask($input, $output, $issueIdsQuestion);
 		$issueIds = explode(',', $issueIds);
 
 		$authorsQuestionText = '<question>Enter gitlab username(s) of authors</question>'
 			.PHP_EOL.'<comment>Without @ | Multiple allowed | Example: martincodes-de OR martincodes-de,chriswalg</comment>'.PHP_EOL;
 
 		$authorsQuestion = new Question($authorsQuestionText, '');
-		$authors = $helper->ask($input, $output, $authorsQuestion);
+		$authors = $questionHelper->ask($input, $output, $authorsQuestion);
 		$authors = explode(',', $authors);
 
 		$fileNameQuestionText = '<question>Enter short filename for this entry</question>'
@@ -80,7 +89,7 @@ final class CreateChangelogEntryCommand extends Command
 
 			return $filenameWithExtension;
 		});
-		$fileName = $helper->ask($input, $output, $fileNameQuestion);
+		$fileName = $questionHelper->ask($input, $output, $fileNameQuestion);
 		$fileContent = Yaml::dump([
 			'description' => $description,
 			'types_of_change' => $typeOfChange,
@@ -93,7 +102,7 @@ final class CreateChangelogEntryCommand extends Command
 
 		file_put_contents($pathForFile, $fileContent);
 
-		$formatter = $this->getHelper('formatter');
+
 		$fileCreatedMessages = ['Changelog Entry File created!', 'It is saved here: ' . $pathForFile];
 		$formattedBlock = $formatter->formatBlock($fileCreatedMessages, 'info', true);
 		$output->writeln($formattedBlock);
