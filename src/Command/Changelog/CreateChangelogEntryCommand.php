@@ -97,13 +97,18 @@ final class CreateChangelogEntryCommand extends Command
 			'issue_ids' => $issueIds,
 			'authors' => $authors,
 		]);
+		$filePath = $changelogDirectoryForNewEntries . $fileName;
 
-		$pathForFile = $changelogDirectoryForNewEntries . $fileName;
+		$isFileCreated = file_put_contents($filePath, $fileContent);
+		if (!$isFileCreated) {
+			$fileCreatedMessages = ['Error: Changelog Entry File not created!'];
+			$formattedBlock = $formatter->formatBlock($fileCreatedMessages, 'error', true);
+			$output->writeln($formattedBlock);
 
-		file_put_contents($pathForFile, $fileContent);
+			return Command::FAILURE;
+		}
 
-
-		$fileCreatedMessages = ['Changelog Entry File created!', 'It is saved here: ' . $pathForFile];
+		$fileCreatedMessages = ['Changelog Entry File created!', 'It is saved here: ' . $filePath];
 		$formattedBlock = $formatter->formatBlock($fileCreatedMessages, 'info', true);
 		$output->writeln($formattedBlock);
 
