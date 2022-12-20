@@ -138,12 +138,12 @@ class FoodSharePointView extends View
 	public function address(): string
 	{
 		$address = $this->v_utils->v_input_wrapper($this->translator->trans('fsp.street'),
-		   $this->foodSharePoint['anschrift']
-		   . '<br />'
-		   . $this->foodSharePoint['plz']
-		   . ' '
-		   . $this->foodSharePoint['ort']
-	    );
+			$this->foodSharePoint['anschrift']
+			. '<br />'
+			. $this->foodSharePoint['plz']
+			. ' '
+			. $this->foodSharePoint['ort']
+		);
 
 		return $this->v_utils->v_field(
 			$address,
@@ -210,9 +210,9 @@ class FoodSharePointView extends View
 		}
 
 		return $img . $this->v_utils->v_input_wrapper(
-				$this->translator->trans('fsp.description'),
-				nl2br($this->routeHelper->autolink($fairteiler['description']))
-			);
+			$this->translator->trans('fsp.description'),
+			nl2br($this->routeHelper->autolink($fairteiler['description']))
+		);
 	}
 
 	public function bubble(array $fairteiler): string
@@ -225,9 +225,9 @@ class FoodSharePointView extends View
 		}
 
 		return $img . $this->v_utils->v_input_wrapper(
-				$this->translator->trans('fsp.street'),
-				nl2br($this->routeHelper->autolink($fairteiler['description']))
-			);
+			$this->translator->trans('fsp.street'),
+			nl2br($this->routeHelper->autolink($fairteiler['description']))
+		);
 	}
 
 	public function foodSharePointForm(array $data = []): string
