@@ -11,6 +11,7 @@ import { vueRegister, vueApply } from '@/vue'
 
 import './Content.css'
 import ReleaseNotes from './components/ReleaseNotes.vue'
+import Changelog from '@/views/pages/Changelog/Changelog.vue'
 
 expose({
   ifconfirm,
@@ -21,4 +22,11 @@ if (GET('sub') === 'releaseNotes') {
     ReleaseNotes,
   })
   vueApply('#vue-release-notes')
+}
+
+if (GET('sub') === 'changelog') {
+  vueRegister({
+    Changelog,
+  })
+  vueApply('#vue-changelog')
 }

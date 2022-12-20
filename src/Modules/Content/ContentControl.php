@@ -301,9 +301,9 @@ class ContentControl extends Control
 		$this->pageHelper->addTitle($this->translator->trans('content.changelog'));
 		$markdown = $this->parseGitlabLinks(file_get_contents($this->projectDir . '/CHANGELOG.md') ?: '');
 		$Parsedown = new Parsedown();
-		$cl['title'] = $this->translator->trans('content.changelog');
-		$cl['body'] = $Parsedown->parse($markdown);
-		$this->pageHelper->addContent($this->view->simple($cl));
+		$this->pageHelper->addContent($this->view->vueComponent('vue-changelog', 'Changelog', [
+			'oldChangelog' => $Parsedown->parse($markdown),
+		]));
 	}
 
 	private function content_form($titleKey = 'contentmanagement')
