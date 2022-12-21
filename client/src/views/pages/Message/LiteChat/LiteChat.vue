@@ -3,7 +3,12 @@
     <div class="page-container page-simple">
       <div class="row">
         <div class="col-4">
-          <ConversationCard :class="['border']" />
+          <ConversationCard
+            v-for="conversation in conversations"
+            :key="conversation.id"
+            :class="['border']"
+            :title="conversation.title"
+          />
         </div>
 
         <div class="col-8">
@@ -16,11 +21,45 @@
 
 <script>
 import ConversationCard from '@/components/Message/LiteChat/ConversationCard.vue'
+import { getConversationList } from '@/api/conversations'
 
 export default {
   name: 'LiteChat',
   components: {
     ConversationCard,
+  },
+  data () {
+    return {
+      conversations: [],
+      profilesWithNames: {},
+    }
+  },
+  async mounted () {
+    await this.loadConversations()
+  },
+  methods: {
+    async loadConversations () {
+      const conversationList = await getConversationList('20', '0')
+      const profilesWithNames = {}
+
+      conversationList.profiles.forEach(profile => {
+        const name = profile.name
+        const id = profile.id
+
+        profilesWithNames[id] = name
+      })
+
+      conversationList.conversations.forEach(conversation => {
+        conversation.memberNames = conversation.members.map(memberId => {
+          return profilesWithNames[memberId]
+        })
+
+        conversation.title = conversation.title ?? conversation.memberNames.join(', ')
+      })
+
+      this.conversations = conversationList.conversations
+      this.profilesWithNames = conversationList.profiles
+    },
   },
 }
 </script>
