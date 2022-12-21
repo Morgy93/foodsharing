@@ -20,10 +20,20 @@ final class MessageControl extends Control
 
     public function index(): void
     {
+        if ($_GET['use_lite'] == true) {
+            $this->showLiteChat();
+            return;
+        }
+
         $this->setTemplate('msg');
 
         $this->pageHelper->addContent($this->view->index(), CNT_MAIN);
 
+        return;
+    }
+
+    public function showLiteChat(): void
+    {
         return;
     }
 }
