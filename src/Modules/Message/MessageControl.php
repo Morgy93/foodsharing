@@ -20,12 +20,12 @@ final class MessageControl extends Control
 
     public function index(): void
     {
-        if ($_GET['use_lite'] == true) {
+        $this->setTemplate('msg');
+
+        if (isset($_GET['use_lite'])) {
             $this->showLiteChat();
             return;
         }
-
-        $this->setTemplate('msg');
 
         $this->pageHelper->addContent($this->view->index(), CNT_MAIN);
 
@@ -34,6 +34,8 @@ final class MessageControl extends Control
 
     public function showLiteChat(): void
     {
-        return;
+        $this->pageHelper->addContent(
+            $this->view->vueComponent('message', 'LiteChat')
+        );
     }
 }
