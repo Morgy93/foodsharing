@@ -1,0 +1,11 @@
+description: 'Add command to create changelog file'
+types_of_change:
+    - 'New feature/s'
+    - 'Improvement of existing feature/s'
+    - 'Dev/Test/CI Stuff'
+merge_request_ids:
+    - ''
+issue_ids:
+    - ''
+authors:
+    - martincodes-de
