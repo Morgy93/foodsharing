@@ -8,6 +8,7 @@
 
 
 ## Bugfixes
+- Outgoing mails were sent out with an invalid charset !2572 @\_fridtjof_
 
 
 ## Refactoring
