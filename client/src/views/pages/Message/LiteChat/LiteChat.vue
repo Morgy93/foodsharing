@@ -8,6 +8,7 @@
             :key="conversation.id"
             :class="['border']"
             :title="conversation.title"
+            :preview-message="conversation.lastMessage.body"
           />
         </div>
 

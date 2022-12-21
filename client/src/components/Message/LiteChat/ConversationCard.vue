@@ -1,5 +1,5 @@
 <template>
-  <div class="card">
+  <div class="card mb-2">
     <div class="card-body">
       <a
         class="card-title text-decoration-none font-weight-bold text-truncate d-block"
