@@ -49,7 +49,7 @@ $I->seeCurrentUrlEquals('/?page=login');
 
 // password got replaced after login
 $I->seeInDatabase('fs_foodsaver', [
-	'email' => $user['email']
+    'email' => $user['email']
 ]);
 
 // new hash is valid

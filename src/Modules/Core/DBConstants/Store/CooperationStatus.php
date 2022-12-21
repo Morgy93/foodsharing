@@ -11,17 +11,17 @@ namespace Foodsharing\Modules\Core\DBConstants\Store;
  */
 enum CooperationStatus: int
 {
-	case UNCLEAR = 0;
-	case NO_CONTACT = 1;
-	case IN_NEGOTIATION = 2;
-	case COOPERATION_STARTING = 3;
-	case DOES_NOT_WANT_TO_WORK_WITH_US = 4;
-	case COOPERATION_ESTABLISHED = 5;
-	case GIVES_TO_OTHER_CHARITY = 6;
-	case PERMANENTLY_CLOSED = 7;
+    case UNCLEAR = 0;
+    case NO_CONTACT = 1;
+    case IN_NEGOTIATION = 2;
+    case COOPERATION_STARTING = 3;
+    case DOES_NOT_WANT_TO_WORK_WITH_US = 4;
+    case COOPERATION_ESTABLISHED = 5;
+    case GIVES_TO_OTHER_CHARITY = 6;
+    case PERMANENTLY_CLOSED = 7;
 
-	public static function isValidStatus(int $status): bool
-	{
-		return CooperationStatus::tryFrom($status) != null;
-	}
+    public static function isValidStatus(int $status): bool
+    {
+        return CooperationStatus::tryFrom($status) != null;
+    }
 }

@@ -15,118 +15,118 @@ use Symfony\Component\HttpKernel\Exception\UnauthorizedHttpException;
 
 class WallRestController extends AbstractFOSRestController
 {
-	private WallPostGateway $wallPostGateway;
-	private WallPostPermissions $wallPostPermissions;
-	private Session $session;
+    private WallPostGateway $wallPostGateway;
+    private WallPostPermissions $wallPostPermissions;
+    private Session $session;
 
-	public function __construct(
-		WallPostGateway $wallPostGateway,
-		WallPostPermissions $wallPostPermissions,
-		Session $session
-	) {
-		$this->wallPostGateway = $wallPostGateway;
-		$this->wallPostPermissions = $wallPostPermissions;
-		$this->session = $session;
-	}
+    public function __construct(
+        WallPostGateway $wallPostGateway,
+        WallPostPermissions $wallPostPermissions,
+        Session $session
+    ) {
+        $this->wallPostGateway = $wallPostGateway;
+        $this->wallPostPermissions = $wallPostPermissions;
+        $this->session = $session;
+    }
 
-	private function normalizePost(array $post): array
-	{
-		return [
-			'id' => $post['id'],
-			'body' => $post['body'],
-			'createdAt' => str_replace(' ', 'T', $post['time']),
-			'pictures' => $post['gallery'] ?? null,
-			'author' => [
-				'id' => $post['foodsaver_id'],
-				'name' => $post['name'],
-				'avatar' => $post['photo'] ?? null
-			]
-		];
-	}
+    private function normalizePost(array $post): array
+    {
+        return [
+            'id' => $post['id'],
+            'body' => $post['body'],
+            'createdAt' => str_replace(' ', 'T', $post['time']),
+            'pictures' => $post['gallery'] ?? null,
+            'author' => [
+                'id' => $post['foodsaver_id'],
+                'name' => $post['name'],
+                'avatar' => $post['photo'] ?? null
+            ]
+        ];
+    }
 
-	/**
-	 * @OA\Tag(name="wall")
-	 * @Rest\Get("wall/{target}/{targetId}", requirements={"targetId" = "\d+"})
-	 */
-	public function getPostsAction(string $target, int $targetId): Response
-	{
-		if (!$this->session->id()) {
-			throw new UnauthorizedHttpException('');
-		}
-		if (!$this->wallPostPermissions->mayReadWall($this->session->id(), $target, $targetId)) {
-			throw new AccessDeniedHttpException();
-		}
+    /**
+     * @OA\Tag(name="wall")
+     * @Rest\Get("wall/{target}/{targetId}", requirements={"targetId" = "\d+"})
+     */
+    public function getPostsAction(string $target, int $targetId): Response
+    {
+        if (!$this->session->id()) {
+            throw new UnauthorizedHttpException('');
+        }
+        if (!$this->wallPostPermissions->mayReadWall($this->session->id(), $target, $targetId)) {
+            throw new AccessDeniedHttpException();
+        }
 
-		$posts = $this->getNormalizedPosts($target, $targetId);
+        $posts = $this->getNormalizedPosts($target, $targetId);
 
-		$sessionId = $this->session->id();
+        $sessionId = $this->session->id();
 
-		$view = $this->view([
-			'results' => $posts,
-			'mayPost' => $this->wallPostPermissions->mayWriteWall($sessionId, $target, $targetId),
-			'mayDelete' => $this->wallPostPermissions->mayDeleteFromWall($sessionId, $target, $targetId)
-		], 200);
+        $view = $this->view([
+            'results' => $posts,
+            'mayPost' => $this->wallPostPermissions->mayWriteWall($sessionId, $target, $targetId),
+            'mayDelete' => $this->wallPostPermissions->mayDeleteFromWall($sessionId, $target, $targetId)
+        ], 200);
 
-		return $this->handleView($view);
-	}
+        return $this->handleView($view);
+    }
 
-	private function getNormalizedPosts(string $target, int $targetId): array
-	{
-		$posts = $this->wallPostGateway->getPosts($target, $targetId);
+    private function getNormalizedPosts(string $target, int $targetId): array
+    {
+        $posts = $this->wallPostGateway->getPosts($target, $targetId);
 
-		return array_map(function ($value) {
-			return $this->normalizePost($value);
-		}, $posts);
-	}
+        return array_map(function ($value) {
+            return $this->normalizePost($value);
+        }, $posts);
+    }
 
-	/**
-	 * @OA\Tag(name="wall")
-	 * @Rest\Post("wall/{target}/{targetId}", requirements={"targetId" = "\d+"})
-	 * @Rest\RequestParam(name="body", nullable=false)
-	 *
-	 * @throws \Exception
-	 */
-	public function addPostAction(string $target, int $targetId, ParamFetcher $paramFetcher): Response
-	{
-		if (!$this->session->id()) {
-			throw new UnauthorizedHttpException('');
-		}
-		if (!$this->wallPostPermissions->mayWriteWall($this->session->id(), $target, $targetId)) {
-			throw new AccessDeniedHttpException();
-		}
+    /**
+     * @OA\Tag(name="wall")
+     * @Rest\Post("wall/{target}/{targetId}", requirements={"targetId" = "\d+"})
+     * @Rest\RequestParam(name="body", nullable=false)
+     *
+     * @throws \Exception
+     */
+    public function addPostAction(string $target, int $targetId, ParamFetcher $paramFetcher): Response
+    {
+        if (!$this->session->id()) {
+            throw new UnauthorizedHttpException('');
+        }
+        if (!$this->wallPostPermissions->mayWriteWall($this->session->id(), $target, $targetId)) {
+            throw new AccessDeniedHttpException();
+        }
 
-		$body = $paramFetcher->get('body');
-		$postId = $this->wallPostGateway->addPost($body, $this->session->id(), $target, $targetId);
+        $body = $paramFetcher->get('body');
+        $postId = $this->wallPostGateway->addPost($body, $this->session->id(), $target, $targetId);
 
-		$view = $this->view(['post' => $this->normalizePost($this->wallPostGateway->getPost($postId))], 200);
+        $view = $this->view(['post' => $this->normalizePost($this->wallPostGateway->getPost($postId))], 200);
 
-		return $this->handleView($view);
-	}
+        return $this->handleView($view);
+    }
 
-	/**
-	 * @OA\Tag(name="wall")
-	 * @Rest\Delete("wall/{target}/{targetId}/{id}", requirements={"targetId" = "\d+", "id" = "\d+"})
-	 */
-	public function delPostAction(string $target, int $targetId, int $id): Response
-	{
-		if (!$this->session->id()) {
-			throw new UnauthorizedHttpException('');
-		}
-		if (!$this->wallPostGateway->isLinkedToTarget($id, $target, $targetId)) {
-			throw new AccessDeniedHttpException();
-		}
-		$sessionId = $this->session->id();
-		if ($this->wallPostGateway->getFsByPost($id) != $sessionId
-			&& !$this->wallPostPermissions->mayDeleteFromWall($sessionId, $target, $targetId)
-		) {
-			throw new AccessDeniedHttpException();
-		}
+    /**
+     * @OA\Tag(name="wall")
+     * @Rest\Delete("wall/{target}/{targetId}/{id}", requirements={"targetId" = "\d+", "id" = "\d+"})
+     */
+    public function delPostAction(string $target, int $targetId, int $id): Response
+    {
+        if (!$this->session->id()) {
+            throw new UnauthorizedHttpException('');
+        }
+        if (!$this->wallPostGateway->isLinkedToTarget($id, $target, $targetId)) {
+            throw new AccessDeniedHttpException();
+        }
+        $sessionId = $this->session->id();
+        if ($this->wallPostGateway->getFsByPost($id) != $sessionId
+            && !$this->wallPostPermissions->mayDeleteFromWall($sessionId, $target, $targetId)
+        ) {
+            throw new AccessDeniedHttpException();
+        }
 
-		$this->wallPostGateway->unlinkPost($id, $target);
-		$this->wallPostGateway->deletePost($id);
+        $this->wallPostGateway->unlinkPost($id, $target);
+        $this->wallPostGateway->deletePost($id);
 
-		$view = $this->view([], 200);
+        $view = $this->view([], 200);
 
-		return $this->handleView($view);
-	}
+        return $this->handleView($view);
+    }
 }

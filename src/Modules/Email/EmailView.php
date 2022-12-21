@@ -6,40 +6,40 @@ use Foodsharing\Modules\Core\View;
 
 class EmailView extends View
 {
-	public function v_email_compose(array $possibleSenders, bool $offerAllOptions): string
-	{
-		$recipientSelect = $offerAllOptions ? $this->v_form_recip_chooser() : '';
+    public function v_email_compose(array $possibleSenders, bool $offerAllOptions): string
+    {
+        $recipientSelect = $offerAllOptions ? $this->v_form_recip_chooser() : '';
 
-		$metadata = $recipientSelect
-			. $this->v_utils->v_form_select('mailbox_id', ['values' => $possibleSenders, 'required' => true])
-			. $this->v_utils->v_form_text('subject', ['required' => true])
-			. $this->v_utils->v_form_file('attachement');
+        $metadata = $recipientSelect
+            . $this->v_utils->v_form_select('mailbox_id', ['values' => $possibleSenders, 'required' => true])
+            . $this->v_utils->v_form_text('subject', ['required' => true])
+            . $this->v_utils->v_form_file('attachement');
 
-		$fields = [
-			$this->v_utils->v_field($metadata,
-				$this->translator->trans('recipients.bread'),
-				['class' => 'ui-padding']
-			),
-			$this->v_utils->v_field(
-				$this->v_utils->v_form_tinymce('message', ['nowrapper' => true, 'type' => 'email']),
-				$this->translator->trans('recipients.body')
-			),
-		];
+        $fields = [
+            $this->v_utils->v_field($metadata,
+                $this->translator->trans('recipients.bread'),
+                ['class' => 'ui-padding']
+            ),
+            $this->v_utils->v_field(
+                $this->v_utils->v_form_tinymce('message', ['nowrapper' => true, 'type' => 'email']),
+                $this->translator->trans('recipients.body')
+            ),
+        ];
 
-		return $this->v_utils->v_form(
-			$this->translator->trans('recipients.bread'),
-			$fields,
-			['submit' => $this->translator->trans('recipients.prepare')]
-		);
-	}
+        return $this->v_utils->v_form(
+            $this->translator->trans('recipients.bread'),
+            $fields,
+            ['submit' => $this->translator->trans('recipients.prepare')]
+        );
+    }
 
-	public function v_email_statusbox(array $recipients, array $mail): string
-	{
-		$out = '';
+    public function v_email_statusbox(array $recipients, array $mail): string
+    {
+        $out = '';
 
-		$id = $this->identificationHelper->id('mailtosend');
+        $id = $this->identificationHelper->id('mailtosend');
 
-		$this->pageHelper->addJs('
+        $this->pageHelper->addJs('
 			$("#' . $id . '-link").fancybox({
 				minWidth: 600,
 				scrolling: "auto",
@@ -67,9 +67,9 @@ class EmailView extends View
 					}
 				});
 			});'
-		);
+        );
 
-		$this->pageHelper->addJsFunc('
+        $this->pageHelper->addJsFunc('
 			function ' . $id . '_continue_xhr () {
 				showLoader();
 				$.ajax({
@@ -90,102 +90,102 @@ class EmailView extends View
 					}
 				});
 			}'
-		);
+        );
 
-		$style = '';
-		if (count($recipients) > 50) {
-			$style = ' style="height: 100px; overflow: auto; font-size: 10px; background-color: var(--fs-color-light); color: var(--fs-color-dark); padding: 5px;"';
-		}
+        $style = '';
+        if (count($recipients) > 50) {
+            $style = ' style="height: 100px; overflow: auto; font-size: 10px; background-color: var(--fs-color-light); color: var(--fs-color-dark); padding: 5px;"';
+        }
 
-		$this->pageHelper->addHidden('
+        $this->pageHelper->addHidden('
 			<a id="' . $id . '-link" href="#' . $id . '">&nbsp;</a>
 			<div class="popbox" id="' . $id . '">
 				<h3>' . $this->translator->trans('recipients.send') . '</h3>
 				<p class="subtitle">' . $this->translator->trans('recipients.pending', [
-					'{count}' => '<span id="' . $id . '-left">' . $mail['anz'] . '</span>',
-				]) . '</p>
+                    '{count}' => '<span id="' . $id . '-left">' . $mail['anz'] . '</span>',
+                ]) . '</p>
 
 				<div id="' . $id . '-comment">'
-					. $this->v_utils->v_input_wrapper($this->translator->trans('recipients.recipients'), '<div' . $style . '>' . implode(', ', $recipients) . '</div>')
-					. $this->v_utils->v_input_wrapper($this->translator->trans('mailbox.subject'), $mail['name'])
-					. $this->v_utils->v_input_wrapper($this->translator->trans('recipients.body'), nl2br($mail['message'])) . '
+                    . $this->v_utils->v_input_wrapper($this->translator->trans('recipients.recipients'), '<div' . $style . '>' . implode(', ', $recipients) . '</div>')
+                    . $this->v_utils->v_input_wrapper($this->translator->trans('mailbox.subject'), $mail['name'])
+                    . $this->v_utils->v_input_wrapper($this->translator->trans('recipients.body'), nl2br($mail['message'])) . '
 
 				</div>
 				<a id="' . $id . '-continue" href="#">' . $this->translator->trans('recipients.continue') . '</a> '
-				. '<a id="' . $id . '-abort" href="#">' . $this->translator->trans('recipients.abort') . '</a>
+                . '<a id="' . $id . '-abort" href="#">' . $this->translator->trans('recipients.abort') . '</a>
 			</div>'
-		);
+        );
 
-		return $out;
-	}
+        return $out;
+    }
 
-	public function v_email_test(): string
-	{
-		$this->pageHelper->addStyle('#testemail {width: 91%;}');
-		$button = '<a class="button" href="#" onclick="trySendTestEmail(); return false;">'
-				. $this->translator->trans('recipients.testmail')
-				. '</a>';
+    public function v_email_test(): string
+    {
+        $this->pageHelper->addStyle('#testemail {width: 91%;}');
+        $button = '<a class="button" href="#" onclick="trySendTestEmail(); return false;">'
+                . $this->translator->trans('recipients.testmail')
+                . '</a>';
 
-		return $this->v_utils->v_field(
-			$this->v_utils->v_form_text('testemail') . $this->v_utils->v_input_wrapper('', $button),
-			$this->translator->trans('recipients.test'),
-			['class' => 'ui-padding']
-		);
-	}
+        return $this->v_utils->v_field(
+            $this->v_utils->v_form_text('testemail') . $this->v_utils->v_input_wrapper('', $button),
+            $this->translator->trans('recipients.test'),
+            ['class' => 'ui-padding']
+        );
+    }
 
-	public function v_email_variables(): string
-	{
-		return $this->v_utils->v_field(
-			'<div class="ui-padding">' . $this->translator->trans('recipients.variable-info') . '</div>',
-			$this->translator->trans('recipients.variables')
-		);
-	}
+    public function v_email_variables(): string
+    {
+        return $this->v_utils->v_field(
+            '<div class="ui-padding">' . $this->translator->trans('recipients.variable-info') . '</div>',
+            $this->translator->trans('recipients.variables')
+        );
+    }
 
-	public function v_email_history(array $sentMails): string
-	{
-		$out = '
+    public function v_email_history(array $sentMails): string
+    {
+        $out = '
 	<div id="dialog-confirm" title="' . $this->translator->trans('recipients.confirm') . '" style="display: none;">
 		<p>
 			<span class="ui-icon ui-icon-alert" style="float: left; margin: 0 7px 20px 0;"></span>'
-			. $this->translator->trans('recipients.doublecheck') .
-		'</p>
+            . $this->translator->trans('recipients.doublecheck') .
+        '</p>
 	</div>
 	<h3 class="head ui-widget-header ui-corner-top">' . $this->translator->trans('recipients.history') . '</h3>
 	<div class="ui-widget ui-widget-content ui-corner-bottom margin-bottom">
 	<ul id="rightmenu">';
-		$i = 0;
-		$divs = '';
-		foreach ($sentMails as $m) {
-			++$i;
-			$out .= '
+        $i = 0;
+        $divs = '';
+        foreach ($sentMails as $m) {
+            ++$i;
+            $out .= '
 		<li>
 			<a href="#" onclick="$(\'#right-' . $i . '\').dialog(\'open\'); return false;">'
-				. date('d.m.', strtotime($m['zeit'])) . ' ' . $m['name']
-			. '</a>
+                . date('d.m.', strtotime($m['zeit'])) . ' ' . $m['name']
+            . '</a>
 		</li>';
 
-			$divs .= '<div id="right-' . $i . '" style="display: none;">' . nl2br($m['message']) . '</div>';
-			$this->pageHelper->addJs(
-				'$("#right-' . $i . '").dialog({autoOpen: false, title: "'
-				. $this->sanitizerService->jsSafe($m['name'], '"')
-				. '", modal: true});'
-			);
-		}
+            $divs .= '<div id="right-' . $i . '" style="display: none;">' . nl2br($m['message']) . '</div>';
+            $this->pageHelper->addJs(
+                '$("#right-' . $i . '").dialog({autoOpen: false, title: "'
+                . $this->sanitizerService->jsSafe($m['name'], '"')
+                . '", modal: true});'
+            );
+        }
 
-		$out .= '</ul></div>' . $divs;
+        $out .= '</ul></div>' . $divs;
 
-		return $out;
-	}
+        return $out;
+    }
 
-	/**
-	 * @deprecated this former view helper should not be used in any new code
-	 */
-	private function v_form_recip_chooser(): string
-	{
-		$id = 'recip_choose';
+    /**
+     * @deprecated this former view helper should not be used in any new code
+     */
+    private function v_form_recip_chooser(): string
+    {
+        $id = 'recip_choose';
 
-		$out = '<select class="select" name="' . $id . '" id="' . $id . '">';
-		$out .= '
+        $out = '<select class="select" name="' . $id . '" id="' . $id . '">';
+        $out .= '
 			<option value="all">' . $this->translator->trans('recipients.all') . '</option>
 			<option value="newsletter">' . $this->translator->trans('recipients.newsletter') . '</option>
 			<option value="newsletter_all">' . $this->translator->trans('recipients.newsletter_all') . '</option>
@@ -198,20 +198,20 @@ class EmailView extends View
 			<option value="choose">' . $this->translator->trans('recipients.choose') . '</option>
 			<option value="manual">' . $this->translator->trans('recipients.manual') . '</option>
 		';
-		$out .= '</select>';
+        $out .= '</select>';
 
-		$out .= '
+        $out .= '
 			<div id="' . $id . '-hidden" style="display: none;"></div>
 			<div id="' . $id . 'manual-wrapper" style="display: none;">
 				' . $this->v_utils->v_form_textarea($id . 'manual') . '
 			</div>
 			<div id="' . $id . '-tree-wrapper" style="display: none;">'
-				. $this->v_utils->v_info($this->translator->trans('recipients.region-hint'))
-				. '<div id="' . $id . '-tree"></div>
+                . $this->v_utils->v_info($this->translator->trans('recipients.region-hint'))
+                . '<div id="' . $id . '-tree"></div>
 			</div>
 		';
 
-		$this->pageHelper->addJs('
+        $this->pageHelper->addJs('
 			$(\'#' . $id . '\').on("change", function () {
 				if ($(this).val() == "choose") {
 					$("#' . $id . '-tree-wrapper").show();
@@ -253,6 +253,6 @@ class EmailView extends View
 			}
 		});');
 
-		return $this->v_utils->v_input_wrapper($this->translator->trans('recipients.recipients'), $out);
-	}
+        return $this->v_utils->v_input_wrapper($this->translator->trans('recipients.recipients'), $out);
+    }
 }

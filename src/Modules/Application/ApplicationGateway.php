@@ -6,11 +6,11 @@ use Foodsharing\Modules\Core\BaseGateway;
 
 class ApplicationGateway extends BaseGateway
 {
-	private const STATUS_ACTIVE = 1;
+    private const STATUS_ACTIVE = 1;
 
-	public function getApplication($regionId, $fsId)
-	{
-		$stm = '
+    public function getApplication($regionId, $fsId)
+    {
+        $stm = '
 			SELECT 	fs.`id`,
 					fs.`name`,
 					fs.`nachname`,
@@ -27,31 +27,31 @@ class ApplicationGateway extends BaseGateway
 			AND 	fb.foodsaver_id = :foodsaver_id
 		';
 
-		return $this->db->fetch($stm, [':region_id' => $regionId, ':foodsaver_id' => $fsId]);
-	}
+        return $this->db->fetch($stm, [':region_id' => $regionId, ':foodsaver_id' => $fsId]);
+    }
 
-	public function acceptApplication($regionId, $foodsaverId): void
-	{
-		$this->updateActivityStatus($regionId, $foodsaverId, self::STATUS_ACTIVE);
-	}
+    public function acceptApplication($regionId, $foodsaverId): void
+    {
+        $this->updateActivityStatus($regionId, $foodsaverId, self::STATUS_ACTIVE);
+    }
 
-	public function denyApplication($regionId, $foodsaverId): void
-	{
-		$this->db->delete('fs_foodsaver_has_bezirk', ['bezirk_id' => (int)$regionId, 'foodsaver_id' => (int)$foodsaverId]);
-	}
+    public function denyApplication($regionId, $foodsaverId): void
+    {
+        $this->db->delete('fs_foodsaver_has_bezirk', ['bezirk_id' => (int)$regionId, 'foodsaver_id' => (int)$foodsaverId]);
+    }
 
-	private function updateActivityStatus($regionId, $foodsaverId, $value): int
-	{
-		return $this->db->update(
-			'fs_foodsaver_has_bezirk',
-			['active' => $value],
-			['bezirk_id' => (int)$regionId, 'foodsaver_id' => (int)$foodsaverId]
-		);
-	}
+    private function updateActivityStatus($regionId, $foodsaverId, $value): int
+    {
+        return $this->db->update(
+            'fs_foodsaver_has_bezirk',
+            ['active' => $value],
+            ['bezirk_id' => (int)$regionId, 'foodsaver_id' => (int)$foodsaverId]
+        );
+    }
 
-	public function getRegion($id = false)
-	{
-		$stm = '
+    public function getRegion($id = false)
+    {
+        $stm = '
 			SELECT
 				`id`,
 				`name`,
@@ -72,9 +72,9 @@ class ApplicationGateway extends BaseGateway
 			LIMIT 1
 		';
 
-		$region = $this->db->fetch($stm, [':id' => $id]);
+        $region = $this->db->fetch($stm, [':id' => $id]);
 
-		$stm = '
+        $stm = '
 			SELECT 	fs.`id`,
 					fs.`photo`,
 					fs.`name`,
@@ -87,11 +87,11 @@ class ApplicationGateway extends BaseGateway
 			AND 	c.bezirk_id = :id
 			AND 	c.active = 1
 		';
-		$region['foodsaver'] = $this->db->fetchAll($stm, [':id' => $id]);
+        $region['foodsaver'] = $this->db->fetchAll($stm, [':id' => $id]);
 
-		$region['fs_count'] = \count($region['foodsaver']);
+        $region['fs_count'] = \count($region['foodsaver']);
 
-		$stm = '
+        $stm = '
 			SELECT 	fs.`id`,
 					fs.`photo`,
 					fs.`name`,
@@ -103,8 +103,8 @@ class ApplicationGateway extends BaseGateway
 			WHERE 	c.`foodsaver_id` = fs.id
 			AND 	c.bezirk_id = :id
 		';
-		$region['botschafter'] = $this->db->fetchAll($stm, [':id' => $id]);
+        $region['botschafter'] = $this->db->fetchAll($stm, [':id' => $id]);
 
-		return $region;
-	}
+        return $region;
+    }
 }

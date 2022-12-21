@@ -11,12 +11,12 @@ namespace Foodsharing\Modules\Core\DBConstants\Foodsaver;
  */
 class SleepStatus
 {
-	public const NONE = 0;
-	public const TEMP = 1;
-	public const FULL = 2;
+    public const NONE = 0;
+    public const TEMP = 1;
+    public const FULL = 2;
 
-	public static function isValid(int $mode): bool
-	{
-		return $mode >= self::NONE && $mode <= self::FULL;
-	}
+    public static function isValid(int $mode): bool
+    {
+        return $mode >= self::NONE && $mode <= self::FULL;
+    }
 }

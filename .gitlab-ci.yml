@@ -333,7 +333,7 @@ test:websocket:
   dependencies:
     - build:websocket
   script:
-    - (cd websocket && yarn && yarn test)
+    - (cd websocket && yarn test)
   cache:
     key: websocket:build:cache
     paths:

@@ -9,20 +9,20 @@ namespace Foodsharing\Modules\Bell;
  */
 class BellUpdateTrigger
 {
-	/**
-	 * @var BellUpdaterInterface[]
-	 */
-	private $subscribedBellUpdaters = [];
+    /**
+     * @var BellUpdaterInterface[]
+     */
+    private $subscribedBellUpdaters = [];
 
-	public function subscribe(BellUpdaterInterface $bellUpdater): void
-	{
-		$this->subscribedBellUpdaters[] = $bellUpdater;
-	}
+    public function subscribe(BellUpdaterInterface $bellUpdater): void
+    {
+        $this->subscribedBellUpdaters[] = $bellUpdater;
+    }
 
-	public function triggerUpdate(): void
-	{
-		foreach ($this->subscribedBellUpdaters as $bellUpdater) {
-			$bellUpdater->updateExpiredBells();
-		}
-	}
+    public function triggerUpdate(): void
+    {
+        foreach ($this->subscribedBellUpdaters as $bellUpdater) {
+            $bellUpdater->updateExpiredBells();
+        }
+    }
 }

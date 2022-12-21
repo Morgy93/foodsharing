@@ -4,23 +4,23 @@ $FS_ENV = getenv('FS_ENV');
 $env_filename = __DIR__ . '/config.inc.' . $FS_ENV . '.php';
 $private_env_filename = __DIR__ . '/.config.inc.' . $FS_ENV . '.php';
 if (defined('FS_ENV')) {
-	if (FS_ENV !== $FS_ENV) {
-		exit('different values of FS_ENV const (' . FS_ENV . ') and ENV var (' . $FS_ENV . ')');
-	}
+    if (FS_ENV !== $FS_ENV) {
+        exit('different values of FS_ENV const (' . FS_ENV . ') and ENV var (' . $FS_ENV . ')');
+    }
 } else {
-	define('FS_ENV', $FS_ENV);
+    define('FS_ENV', $FS_ENV);
 }
 
 if (file_exists($env_filename)) {
-	require_once $env_filename;
+    require_once $env_filename;
 } else {
-	exit('no config found for env [' . $FS_ENV . ']');
+    exit('no config found for env [' . $FS_ENV . ']');
 }
 if (file_exists($private_env_filename)) {
-	require_once $private_env_filename;
+    require_once $private_env_filename;
 }
 if (!defined('SOCK_URL')) {
-	define('SOCK_URL', 'http://127.0.0.1:1338/');
+    define('SOCK_URL', 'http://127.0.0.1:1338/');
 }
 
 date_default_timezone_set('Europe/Berlin');
@@ -31,27 +31,27 @@ locale_set_default('de-DE');
  */
 $revision_filename = __DIR__ . '/revision.inc.php';
 if (file_exists($revision_filename)) {
-	require_once $revision_filename;
+    require_once $revision_filename;
 }
 
 if (!defined('FCM_KEY')) {
-	define('FCM_KEY', '');
+    define('FCM_KEY', '');
 }
 
 if (!defined('RAVEN_JAVASCRIPT_CONFIG') && getenv('RAVEN_JAVASCRIPT_CONFIG')) {
-	define('RAVEN_JAVASCRIPT_CONFIG', getenv('RAVEN_JAVASCRIPT_CONFIG'));
+    define('RAVEN_JAVASCRIPT_CONFIG', getenv('RAVEN_JAVASCRIPT_CONFIG'));
 }
 
 if (!defined('SENTRY_TRACING_SAMPLE_RATE')) {
-	define('SENTRY_TRACING_SAMPLE_RATE', 0); // disables tracing
+    define('SENTRY_TRACING_SAMPLE_RATE', 0); // disables tracing
 }
 
 if (!defined('CSP_REPORT_URI')) {
-	define('CSP_REPORT_URI', null);
+    define('CSP_REPORT_URI', null);
 }
 
 if (!defined('CSP_REPORT_ONLY')) {
-	define('CSP_REPORT_ONLY', false);
+    define('CSP_REPORT_ONLY', false);
 }
 
 define('FPDF_FONTPATH', __DIR__ . '/lib/font/');
@@ -70,9 +70,9 @@ define('DSN', 'mysql:host=' . DB_HOST . ';dbname=' . DB_DB . ';charset=utf8mb4')
 // define('WEBPUSH_PRIVATE_KEY', 'TO CHANGE AT DEPLOYMENT');
 
 if (!defined('BBB_DOMAIN')) {
-	define('BBB_DOMAIN', \Foodsharing\Lib\BigBlueButton::DEFAULT_CLIENT);
-	define('BBB_SECRET', 'CHANGEME');
-	define('BBB_DIALIN', '+49xxxxx');
+    define('BBB_DOMAIN', \Foodsharing\Lib\BigBlueButton::DEFAULT_CLIENT);
+    define('BBB_SECRET', 'CHANGEME');
+    define('BBB_DIALIN', '+49xxxxx');
 }
 
 /*

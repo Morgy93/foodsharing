@@ -183,7 +183,7 @@ group:
   enterxp: 'Experience:'
   motivation: motivation text
   last_activity: Last activity
-  filter_by_last_activity: Last active in months
+  filter_by_last_activity: No activity in months
   role_name: Role
 settings:
   header: Profile settings
@@ -2568,10 +2568,10 @@ regionOptions:
   success: Options saved successfully
   header_page: Settings for {bezirk}
   regionPickupInactiveHours: 'Please indicate how many hours before the pick-up this
-    rule shall cease to be implemented:'
+    rule shall cease to be implemented'
   regionPickupLimitNumber: 'Indicate the maximum number of pick-ups for this period
-    of time:'
-  regionPickupLimitDayNumber: 'Indicate the maximum number of pick-ups PER DAY:'
+    of time'
+  regionPickupLimitDayNumber: 'Indicate the maximum number of pick-ups PER DAY'
 list:
   filter_for: filter for …
 startpage:
@@ -2804,6 +2804,9 @@ error:
     link: Upload your profile picture now
     title: You haven't uploaded a profile picture yet.
     description: Show the other members of Foodsharing who you are!
+  old_user_avatar:
+    title: There is a problem with your profile photo.
+    link: Update profile picture now
 information:
   push:
     title: "You can now receive push notifications from foodsharing."
@@ -2817,6 +2820,8 @@ information:
     info: "This will allow you to see your next pickup dates using a calendar program\
       \ of your choice."
     link: "Subscribe now"
+    description: You can use it to see your upcoming pickups in a calendar software
+      of your choice.
 globals:
   reset: Reset
   you: You

@@ -12,58 +12,58 @@ use Foodsharing\Modules\Core\DBConstants\Region\RegionOptionType;
  */
 class RegionOptionApiCest
 {
-	private $userBot;
-	private const EMAIL = 'email';
-	private const ID = 'id';
-	private $region;
+    private $userBot;
+    private const EMAIL = 'email';
+    private const ID = 'id';
+    private $region;
 
-	public function _before(ApiTester $I)
-	{
-		$this->region = $I->createRegion();
-		$this->userBot = $I->createAmbassador();
-		$I->addRegionAdmin($this->region['id'], $this->userBot['id']);
-	}
+    public function _before(ApiTester $I)
+    {
+        $this->region = $I->createRegion();
+        $this->userBot = $I->createAmbassador();
+        $I->addRegionAdmin($this->region['id'], $this->userBot['id']);
+    }
 
-	public function addRegionOption(ApiTester $I)
-	{
-		$I->login($this->userBot[self::EMAIL]);
-		$I->sendPOST('api/region/' . $this->region['id'] . '/options', ['enableReportButton' => true, 'enableMediationButton' => true, 'regionPickupRuleActive' => true, 'regionPickupRuleTimespan' => 7, 'regionPickupRuleLimit' => 4, 'regionPickupRuleLimitDay' => 2, 'regionPickupRuleInactive' => 12]);
-		$I->seeResponseCodeIs(Http::OK);
-		$I->seeResponseIsJson();
-		$I->seeInDatabase('fs_region_options', [
-			'region_id' => $this->region['id'],
-			'option_type' => RegionOptionType::ENABLE_REPORT_BUTTON,
-			'option_value' => '1'
-		]);
-		$I->seeInDatabase('fs_region_options', [
-			'region_id' => $this->region['id'],
-			'option_type' => RegionOptionType::ENABLE_MEDIATION_BUTTON,
-			'option_value' => '1'
-		]);
-		$I->seeInDatabase('fs_region_options', [
-			'region_id' => $this->region['id'],
-			'option_type' => RegionOptionType::REGION_PICKUP_RULE_ACTIVE,
-			'option_value' => '1'
-		]);
-		$I->seeInDatabase('fs_region_options', [
-			'region_id' => $this->region['id'],
-			'option_type' => RegionOptionType::REGION_PICKUP_RULE_TIMESPAN_DAYS,
-			'option_value' => '7'
-		]);
-		$I->seeInDatabase('fs_region_options', [
-			'region_id' => $this->region['id'],
-			'option_type' => RegionOptionType::REGION_PICKUP_RULE_LIMIT_NUMBER,
-			'option_value' => '4'
-		]);
-		$I->seeInDatabase('fs_region_options', [
-			'region_id' => $this->region['id'],
-			'option_type' => RegionOptionType::REGION_PICKUP_RULE_LIMIT_DAY_NUMBER,
-			'option_value' => '2'
-		]);
-		$I->seeInDatabase('fs_region_options', [
-			'region_id' => $this->region['id'],
-			'option_type' => RegionOptionType::REGION_PICKUP_RULE_INACTIVE_HOURS,
-			'option_value' => '12'
-		]);
-	}
+    public function addRegionOption(ApiTester $I)
+    {
+        $I->login($this->userBot[self::EMAIL]);
+        $I->sendPOST('api/region/' . $this->region['id'] . '/options', ['enableReportButton' => true, 'enableMediationButton' => true, 'regionPickupRuleActive' => true, 'regionPickupRuleTimespan' => 7, 'regionPickupRuleLimit' => 4, 'regionPickupRuleLimitDay' => 2, 'regionPickupRuleInactive' => 12]);
+        $I->seeResponseCodeIs(Http::OK);
+        $I->seeResponseIsJson();
+        $I->seeInDatabase('fs_region_options', [
+            'region_id' => $this->region['id'],
+            'option_type' => RegionOptionType::ENABLE_REPORT_BUTTON,
+            'option_value' => '1'
+        ]);
+        $I->seeInDatabase('fs_region_options', [
+            'region_id' => $this->region['id'],
+            'option_type' => RegionOptionType::ENABLE_MEDIATION_BUTTON,
+            'option_value' => '1'
+        ]);
+        $I->seeInDatabase('fs_region_options', [
+            'region_id' => $this->region['id'],
+            'option_type' => RegionOptionType::REGION_PICKUP_RULE_ACTIVE,
+            'option_value' => '1'
+        ]);
+        $I->seeInDatabase('fs_region_options', [
+            'region_id' => $this->region['id'],
+            'option_type' => RegionOptionType::REGION_PICKUP_RULE_TIMESPAN_DAYS,
+            'option_value' => '7'
+        ]);
+        $I->seeInDatabase('fs_region_options', [
+            'region_id' => $this->region['id'],
+            'option_type' => RegionOptionType::REGION_PICKUP_RULE_LIMIT_NUMBER,
+            'option_value' => '4'
+        ]);
+        $I->seeInDatabase('fs_region_options', [
+            'region_id' => $this->region['id'],
+            'option_type' => RegionOptionType::REGION_PICKUP_RULE_LIMIT_DAY_NUMBER,
+            'option_value' => '2'
+        ]);
+        $I->seeInDatabase('fs_region_options', [
+            'region_id' => $this->region['id'],
+            'option_type' => RegionOptionType::REGION_PICKUP_RULE_INACTIVE_HOURS,
+            'option_value' => '12'
+        ]);
+    }
 }

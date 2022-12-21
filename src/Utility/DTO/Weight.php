@@ -9,14 +9,14 @@ use OpenApi\Annotations as OA;
  */
 class Weight
 {
-	/**
-	 * Maximum count of slots per pickup.
-	 *
-	 * The count of slots are limited by the foodsharing platform.
-	 *
-	 * @OA\Property(format="int64", example=1)
-	 */
-	public int $id = 0;
+    /**
+     * Maximum count of slots per pickup.
+     *
+     * The count of slots are limited by the foodsharing platform.
+     *
+     * @OA\Property(format="int64", example=1)
+     */
+    public int $id = 0;
 
-	public string $label = '';
+    public string $label = '';
 }

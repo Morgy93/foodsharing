@@ -8,39 +8,39 @@ use Foodsharing\Modules\Core\DBConstants\Region\RegionIDs;
 
 final class BlogPermissions
 {
-	private Session $session;
+    private Session $session;
 
-	public function __construct(Session $session)
-	{
-		$this->session = $session;
-	}
+    public function __construct(Session $session)
+    {
+        $this->session = $session;
+    }
 
-	public function mayAdd(): bool
-	{
-		return $this->mayAdministrateBlog();
-	}
+    public function mayAdd(): bool
+    {
+        return $this->mayAdministrateBlog();
+    }
 
-	public function mayPublish(int $blogId): bool
-	{
-		return $this->mayAdd();
-	}
+    public function mayPublish(int $blogId): bool
+    {
+        return $this->mayAdd();
+    }
 
-	public function mayEdit(int $blogId): bool
-	{
-		return $this->mayAdministrateBlog();
-	}
+    public function mayEdit(int $blogId): bool
+    {
+        return $this->mayAdministrateBlog();
+    }
 
-	public function mayDelete(int $blogId): bool
-	{
-		return $this->mayEdit($blogId);
-	}
+    public function mayDelete(int $blogId): bool
+    {
+        return $this->mayEdit($blogId);
+    }
 
-	public function mayAdministrateBlog(): bool
-	{
-		if ($this->session->mayRole(Role::ORGA)) {
-			return true;
-		}
+    public function mayAdministrateBlog(): bool
+    {
+        if ($this->session->mayRole(Role::ORGA)) {
+            return true;
+        }
 
-		return $this->session->isAdminFor(RegionIDs::EDITORIAL_GROUP);
-	}
+        return $this->session->isAdminFor(RegionIDs::EDITORIAL_GROUP);
+    }
 }

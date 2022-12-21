@@ -260,14 +260,14 @@ upload:
   no_image: Le fichier téléversé n'est pas une photo. Sélectionne un autre fichier.
 picture_upload_widget:
   choose_picture: Sélectionne une image depuis ton ordinateur.
-  picture_upload: Téléversement d'image
+  picture_upload: Téléversement d'une photo
 image: Image
 quizusercomment: "Donnez-nous votre avis sur cette question.\nÉtait-ce trop facile,\
   \ trop difficile, incompréhensible ?\nOu certaines réponses ou explications sont-elles\
   \ incorrectes ?\n"
 wikilink: Lien vers le wiki
 questcount: Combien de questions doivent être posées pendant l'examen ?
-maxfp: Nombre maximum de points faibles à passer
+maxfp: Nombre maximum de points d'erreur pour réussir
 answers: Quelles réponses sont correctes ?
 duration: Il est temps de répondre
 explanation: Explication
@@ -909,6 +909,7 @@ login:
   form_title: Bienvenue
   topbar: Se connecter
   submit_btn: Se connecter
+  steady_login: Restez connecté
 legal:
   agree_privacy_notice: J'ai été informé·e de l'obligation de confidentialité des
     données personnelles et du comportement qui en résulte. Je recevrai une confirmation
@@ -1155,7 +1156,7 @@ menu:
     administration: Administration
     your_stores: Tes magasins
     your_account: Ton compte
-    groups: Vue d'ensemble des groupes
+    groups: Groupes
     your_groups: Tes groupes
     messages: Messages
     all_messages: Tous les messages
@@ -1194,6 +1195,12 @@ dashboard:
     stores: Tu collectes des denrées à
     groups: Tes groupes
     regions: Tes secteurs géographiques
+    buddies: Personnes que tu connais
+    managing_stores: Tes établissements où tu es responsable
+    users: Collecteur.ice
+    baskets: Paniers solidaires
+    jumping_stores: Tes établissements où tu es remplaçant-e
+    events: Événements
   foodsaver_amount: "Tu as fait <b>{pickups} x</b> collectes et a sauvé <b>{weight}\
     \ kg</b> de denrées."
   foodsharer_amount: Tu as déjà collecté {weight} kg !
@@ -1235,6 +1242,21 @@ dashboard:
   updates_title_some: Vue d'ensemble des mises à jour ({0})
   updates_title_all: Vue d'ensemble des mises à jour
   title: Tableau de bord
+  invitation: Tu as reçu une invitation
+  options:
+    hide:
+      text: Gérer une annonce
+      tooltip: Ici, tu peux masquer ou afficher des zones spécifiques sur le tableau
+        de bord.
+    grid_toggle:
+      2_columns: Passer à l'affichage en 2 colonnes
+      3_columns: Passer à l'affichage en 3 colonnes
+    reset: Réinitialiser
+  eventCount: Prochain événement ({count})
+  greeting_short: Salut {name} !
+  full_subline: Tu as récupéré des denrées alimentaires <b>{pickups} x</b> et sauvé
+    ainsi <b>{weight} kg</b>. Ton secteur géographique est <b>{region}6</b>.
+  invitationCount: Tu as reçu une invitation ({count})
 profile:
   report:
     arbAdminAgainstRepAdmin: Tu es admin dans un groupe d'arbitrage et tu essayes
@@ -1538,6 +1560,15 @@ chat:
   conversations: Discussions
   new_message: Nouveau message
   open_chat: Écrire un message
+  display_all_messages: Afficher tous les messages
+  no_conversation: Pas de conversation sélectionné
+  no_messages: Pas de message
+  search: Chercher
+  start_of_conversation: 'Conversation commencée le :'
+  receivermissing: Tu dois indiquer un destinataire
+  incorrect_address: Cette adresse e-mail n'est pas correcte
+  new_messages: Nouveaux messages
+  select_recipients: Sélectionner un ou une destinataire
 timepicker:
   labelNowButton: maintenant
   labelCloseButton: fermer
@@ -1561,6 +1592,16 @@ calendar:
   labelPrevMonth: Mois précédent
   labelPrevYear: Année précédente
   locale: de
+  export:
+    event:
+      linkTitle: Événement Foodsharing
+      statusUnspecified: Tu n'as pas encore indiqué si tu participais à ce rendez-vous.
+        Tu peux le faire sur la page en lien.
+      description: Description
+    pickup:
+      name: '{store} collecte'
+      unconfirmed: non confirmé
+      description: Collecte Foodsharing chez <a href="{url}">{store}</a>
 storeedit:
   milestone:
     dropped: "{user} ne fait désormais plus partie de l'équipe"
@@ -1696,6 +1737,8 @@ basket:
   my_list_empty: Tu n'as pas enregistré de paniers solidaires
   description: Description
   title: Paniers solidaires
+  not_withdrawn: "La demande de panier solidaire n'a pas pu être retirée : "
+  no_nearby: Il n'y a pas de paniers solidaires dans un rayon de {radius} kilomètres
 formatting:
   md: Tu peux utiliser Markdown pour formater <a href="https://www.markdownguide.org/">Markdown</a>
     à utiliser.
@@ -1850,6 +1893,8 @@ bell:
   no_bells: Tu n'as pas de notifications.
   store_request_imposed: Tu as été ajouté.e à l'équipe.
   store_request_imposed_title: '{name}'
+  foodsaver_verified_title: Tu es désormais vérifié !
+  new_foodsaver_needs_verification: Doit être vérifié
 personal_data:
   landline: Numéro de fixe
   mobile: Numéro de portable
@@ -2317,6 +2362,7 @@ blog:
   header: Nouvelles chez foodsharing
   go: aller au blog
   bread: Blog
+  read: lire la suite
 push_notifications:
   test_notification_body: Super, ça a fonctionné :)
   test_notification_title: activer les notifications push
@@ -2339,6 +2385,11 @@ edit_websites: Modifier les pages web publiques
 request_time: 'Heure de la demande :'
 activitypost:
   write: Écris une réponse…
+  quickreply_button: Envoyer maintenant <br›ou appuyer sur la touche <code class="key">"Entrée"</code>.
+  quickreply_info: <code class="key">Maj + Entrée</code> pour ajouter une nouvelle
+    ligne.
+  response: répondre
+  Response: Réponses
 contentmanagement: Gestion du contenu
 logincontrol:
   success: Réussite !
@@ -2363,4 +2414,70 @@ quiz:
     dû avoir moins que {maxpoints} points d'erreur !
   congrats_details: Félicitations ! Passé avec {points} de {max_points} points d'erreur !
   type: -Questionnaire
+  donecorrectly: tu as répondu entièrement correctement. C'est super !
+  heavysigh: Tu as réussi !
+  wikilink: Article wiki correspondant à ce sujet
+  choice:
+    koquestion: Malheureusement, cette question était particulièrement importante
+      et tu n'y as pas répondu correctement.
+    neut: est neutre et donc sans appréciation.
+    wrongb: n'est pas exact !
+    whatisko: Des questions comme celles-ci ont un poids particulièrement important
+      et conduisent malheureusement à l'échec si tu y réponds de manière erronée.
+    cresponses: Réponses correctes
+    nresponses: Réponses neutres
+    correctb: est incorrect. Tu as vu juste !
+    answer: Réponse
+    wronga: aurait également été correcte.
+    correcta: c'est correct!
+    fpsum: points d'erreur accumulés
+    sadlywrong: a malheureusement été mal répondu.
+    alsowrong: a malheureusement été considéré comme faux, car tu n'as rien choisi
+      ou le temps est écoulé.
+    percenta: tu n'as malheureusement que
+    percentb: '% de réponses correctes.'
+    responses: Réponses
+    wresponses: Réponses fausses
+    writecomment: Ecrire un commentaire sur cette question
+    send: Envoyer
+    joke: c'était juste une question pour rire et elle ne sera bien sûr pas évaluée
+  nownownow: Commencer le quiz maintenant
+  timedstart: Démarrer le quiz avec une limite de temps et 10 questions
+  finishnow:
+    fs: Terminez maintenant votre inscription Foodsaver.
+    bv: Terminer maintenant l'inscription du responsable de coopération.
+  learnbreak: Pause d'apprentissage
+  session_deleted: Les résultats de ce quiz ont été supprimés, car le quiz a été clôturé
+    il y a plus de deux semaines.
+  finished: Félicitations, tu as réussi !
+  resultsbelow: Tu trouveras l'évaluation ci-dessous.
+  threestrikes: Tu as échoué 3 fois au quiz.
+  waitxdays: Tu peux réessayer dans
+  days: Jours
+  notfinishedyet: Tu n'as pas encore terminé le quiz.
+  safeandsound: Mais pas de problème. Ta session a été enregistrée. Tu peux continuer
+    à répondre à tout moment.
+  continuenow: Répondre au quiz maintenant !
+  continuetype: -Continuer le quiz
+  trynumber: C'était la tentative numéro
+  failedbeforebut: " fois déjà, tu as échoué au quiz. C'est le nombre d'essais qu'il\
+    \ te reste à faire :"
+  goodluck: Bonne chance !
+  regstart: Démarrer le quiz sans limite de temps et 20 questions
+  quizleft: " - Il ne reste plus qu'à réussir le quiz !"
 fpsingular: Point d'erreur
+bootstrap-datepicker:
+  labelCurrentMonth: Mois actuel
+  labelHelp: Naviguer dans le calendrier à l'aide des touches fléchées
+  labelPrevMonth: Mois précédent
+  labelToday: Aujourd'hui
+  labelNextMonth: Mois suivant
+  labelNextDecade: Décennie suivante
+  labelPrevYear: Année précédente
+  labelSelected: Date sélectionnée
+  labelNextYear: Année suivante
+  labelPrevDecade: Décennie précédente
+  labelCalendar: Calendrier
+  labelNav: Navigation dans le calendrier
+  labelNoDateSelected: Pas de date sélectionnée
+filter_by: Filtrer par

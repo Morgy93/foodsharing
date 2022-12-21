@@ -9,13 +9,13 @@ namespace Foodsharing\Modules\Region\DTO;
  */
 class MinimalRegionIdentifier
 {
-	/**
-	 * Unique identifier of region.
-	 */
-	public int $id;
+    /**
+     * Unique identifier of region.
+     */
+    public int $id;
 
-	/**
-	 * Name of the region.
-	 */
-	public ?string $name = null;
+    /**
+     * Name of the region.
+     */
+    public ?string $name = null;
 }

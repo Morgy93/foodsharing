@@ -12,59 +12,59 @@ use Foodsharing\Utility\TimeHelper;
 
 class MailboxXhr extends Control
 {
-	private Sanitizer $sanitizerService;
-	private TimeHelper $timeHelper;
-	private MailboxGateway $mailboxGateway;
-	private MailboxPermissions $mailboxPermissions;
+    private Sanitizer $sanitizerService;
+    private TimeHelper $timeHelper;
+    private MailboxGateway $mailboxGateway;
+    private MailboxPermissions $mailboxPermissions;
 
-	public function __construct(
-		MailboxView $view,
-		Sanitizer $sanitizerService,
-		TimeHelper $timeHelper,
-		MailboxGateway $mailboxGateway,
-		MailboxPermissions $mailboxPermissions
-	) {
-		$this->view = $view;
-		$this->sanitizerService = $sanitizerService;
-		$this->timeHelper = $timeHelper;
-		$this->mailboxGateway = $mailboxGateway;
-		$this->mailboxPermissions = $mailboxPermissions;
+    public function __construct(
+        MailboxView $view,
+        Sanitizer $sanitizerService,
+        TimeHelper $timeHelper,
+        MailboxGateway $mailboxGateway,
+        MailboxPermissions $mailboxPermissions
+    ) {
+        $this->view = $view;
+        $this->sanitizerService = $sanitizerService;
+        $this->timeHelper = $timeHelper;
+        $this->mailboxGateway = $mailboxGateway;
+        $this->mailboxPermissions = $mailboxPermissions;
 
-		parent::__construct();
-	}
+        parent::__construct();
+    }
 
-	public function attach()
-	{
-		if (!$this->mailboxPermissions->mayHaveMailbox()) {
-			return XhrResponses::PERMISSION_DENIED;
-		}
-		// is filesize (10MB) and filetype allowed?
-		$attachmentIsAllowed = $this->attach_allow($_FILES['etattach']['name'], $_FILES['etattach']['type']);
-		if ($attachmentIsAllowed && isset($_FILES['etattach']['size']) && $_FILES['etattach']['size'] < 1310720) {
-			$new_filename = bin2hex(random_bytes(16));
+    public function attach()
+    {
+        if (!$this->mailboxPermissions->mayHaveMailbox()) {
+            return XhrResponses::PERMISSION_DENIED;
+        }
+        // is filesize (10MB) and filetype allowed?
+        $attachmentIsAllowed = $this->attach_allow($_FILES['etattach']['name'], $_FILES['etattach']['type']);
+        if ($attachmentIsAllowed && isset($_FILES['etattach']['size']) && $_FILES['etattach']['size'] < 1310720) {
+            $new_filename = bin2hex(random_bytes(16));
 
-			$ext = strtolower($_FILES['etattach']['name']);
-			$ext = explode('.', $ext);
-			if (count($ext) > 1) {
-				$ext = end($ext);
-				$ext = trim($ext);
-				$ext = '.' . preg_replace('/[^a-z0-9]/', '', $ext);
-			} else {
-				$ext = '';
-			}
+            $ext = strtolower($_FILES['etattach']['name']);
+            $ext = explode('.', $ext);
+            if (count($ext) > 1) {
+                $ext = end($ext);
+                $ext = trim($ext);
+                $ext = '.' . preg_replace('/[^a-z0-9]/', '', $ext);
+            } else {
+                $ext = '';
+            }
 
-			$new_filename = $new_filename . $ext;
+            $new_filename = $new_filename . $ext;
 
-			move_uploaded_file($_FILES['etattach']['tmp_name'], 'data/mailattach/tmp/' . $new_filename);
+            move_uploaded_file($_FILES['etattach']['tmp_name'], 'data/mailattach/tmp/' . $new_filename);
 
-			$init = 'window.parent.mb_finishFile("' . $new_filename . '");';
-		} elseif (!$attachmentIsAllowed) {
-			$init = 'window.parent.pulseInfo(\'' . $this->translator->trans('mailbox.filetype') . '\');window.parent.mb_removeLast();';
-		} else {
-			$init = 'window.parent.pulseInfo(\'' . $this->translator->trans('mailbox.filesize') . '\');window.parent.mb_removeLast();';
-		}
+            $init = 'window.parent.mb_finishFile("' . $new_filename . '");';
+        } elseif (!$attachmentIsAllowed) {
+            $init = 'window.parent.pulseInfo(\'' . $this->translator->trans('mailbox.filetype') . '\');window.parent.mb_removeLast();';
+        } else {
+            $init = 'window.parent.pulseInfo(\'' . $this->translator->trans('mailbox.filesize') . '\');window.parent.mb_removeLast();';
+        }
 
-		echo '<html><head>
+        echo '<html><head>
 
 		<script type="text/javascript">
 			function init()
@@ -75,69 +75,69 @@ class MailboxXhr extends Control
 
 		</head><body onload="init();"></body></html>';
 
-		exit;
-	}
+        exit;
+    }
 
-	public function loadmails()
-	{
-		if (!$this->mailboxPermissions->mayHaveMailbox()) {
-			return XhrResponses::PERMISSION_DENIED;
-		}
-		$last_refresh = (int)$this->mem->get('mailbox_refresh');
+    public function loadmails()
+    {
+        if (!$this->mailboxPermissions->mayHaveMailbox()) {
+            return XhrResponses::PERMISSION_DENIED;
+        }
+        $last_refresh = (int)$this->mem->get('mailbox_refresh');
 
-		$cur_time = (int)time();
+        $cur_time = (int)time();
 
-		if (
-			$last_refresh == 0
-			||
-			($cur_time - $last_refresh) > 30
-		) {
-			$this->mem->set('mailbox_refresh', $cur_time);
-		}
+        if (
+            $last_refresh == 0
+            ||
+            ($cur_time - $last_refresh) > 30
+        ) {
+            $this->mem->set('mailbox_refresh', $cur_time);
+        }
 
-		// convert folder string to int
-		$farray = [
-			'inbox' => MailboxFolder::FOLDER_INBOX,
-			'sent' => MailboxFolder::FOLDER_SENT,
-			'trash' => MailboxFolder::FOLDER_TRASH,
-		];
+        // convert folder string to int
+        $farray = [
+            'inbox' => MailboxFolder::FOLDER_INBOX,
+            'sent' => MailboxFolder::FOLDER_SENT,
+            'trash' => MailboxFolder::FOLDER_TRASH,
+        ];
 
-		if (!isset($farray[$_GET['folder']])) {
-			return [
-				'status' => 1,
-				'html' => $this->view->noMessage(),
-				'append' => '#messagelist tbody',
-				'script' => '$("#mb-messagelist-title").text("' . $this->translator->trans('mailbox.mail') . '");',
-			];
-		}
-		$folder = $farray[$_GET['folder']];
+        if (!isset($farray[$_GET['folder']])) {
+            return [
+                'status' => 1,
+                'html' => $this->view->noMessage(),
+                'append' => '#messagelist tbody',
+                'script' => '$("#mb-messagelist-title").text("' . $this->translator->trans('mailbox.mail') . '");',
+            ];
+        }
+        $folder = $farray[$_GET['folder']];
 
-		$mb_id = (int)$_GET['mb'];
-		if ($this->mailboxPermissions->mayMailbox($mb_id)) {
-			$this->mailboxGateway->mailboxActivity($mb_id);
-			$messages = $this->mailboxGateway->listMessages($mb_id, $folder);
-			if (!$messages) {
-				return [
-					'status' => 1,
-					'html' => $this->view->noMessage(),
-					'append' => '#messagelist tbody',
-					'script' => '$("#mb-messagelist-title").text("' . $this->translator->trans('mailbox.mail') . '");',
-				];
-			}
+        $mb_id = (int)$_GET['mb'];
+        if ($this->mailboxPermissions->mayMailbox($mb_id)) {
+            $this->mailboxGateway->mailboxActivity($mb_id);
+            $messages = $this->mailboxGateway->listMessages($mb_id, $folder);
+            if (!$messages) {
+                return [
+                    'status' => 1,
+                    'html' => $this->view->noMessage(),
+                    'append' => '#messagelist tbody',
+                    'script' => '$("#mb-messagelist-title").text("' . $this->translator->trans('mailbox.mail') . '");',
+                ];
+            }
 
-			$fromToTitles = [
-				MailboxFolder::FOLDER_INBOX => $this->translator->trans('mailbox.from'),
-				MailboxFolder::FOLDER_SENT => $this->translator->trans('mailbox.to'),
-				MailboxFolder::FOLDER_TRASH => $this->translator->trans('mailbox.fromto')
-			];
-			$mailbox = $this->mailboxGateway->getMailbox($mb_id);
-			$currentMailboxName = isset($mailbox['email_name']) ? $mailbox['email_name'] : $mailbox['name'];
+            $fromToTitles = [
+                MailboxFolder::FOLDER_INBOX => $this->translator->trans('mailbox.from'),
+                MailboxFolder::FOLDER_SENT => $this->translator->trans('mailbox.to'),
+                MailboxFolder::FOLDER_TRASH => $this->translator->trans('mailbox.fromto')
+            ];
+            $mailbox = $this->mailboxGateway->getMailbox($mb_id);
+            $currentMailboxName = isset($mailbox['email_name']) ? $mailbox['email_name'] : $mailbox['name'];
 
-			return [
-				'status' => 1,
-				'html' => $this->view->listMessages($messages, $folder, $currentMailboxName),
-				'append' => '#messagelist tbody',
-				'script' => '
+            return [
+                'status' => 1,
+                'html' => $this->view->listMessages($messages, $folder, $currentMailboxName),
+                'append' => '#messagelist tbody',
+                'script' => '
 					$("#mb-messagelist-title").text("' . $currentMailboxName . '");
 					$("#messagelist .from a:first").text("' . $fromToTitles[$folder] . '");
 					$("#messagelist tbody tr").on("mouseover", function () {
@@ -153,230 +153,230 @@ class MailboxXhr extends Control
 					});
 					$("#messagelist tbody td").disableSelection();
 				',
-			];
-		}
-	}
+            ];
+        }
+    }
 
-	public function quickreply()
-	{
-		if (!isset($_GET['mid']) || !$this->mailboxPermissions->mayMessage($_GET['mid'])) {
-			return XhrResponses::PERMISSION_DENIED;
-		}
-		$mailboxId = $this->mailboxGateway->getMailboxId($_GET['mid']);
-		if ($this->mailboxPermissions->mayMailbox($mailboxId)) {
-			$message = $this->mailboxGateway->getMessage($_GET['mid']);
-			$sender = json_decode($message['sender'], true, 512, JSON_THROW_ON_ERROR + JSON_INVALID_UTF8_IGNORE);
-			if (isset($sender['mailbox'], $sender['host']) && $sender != null) {
-				$subject = 'Re: ' . trim(str_replace(['Re:', 'RE:', 're:', 'aw:', 'Aw:', 'AW:'], '', $message['subject']));
+    public function quickreply()
+    {
+        if (!isset($_GET['mid']) || !$this->mailboxPermissions->mayMessage($_GET['mid'])) {
+            return XhrResponses::PERMISSION_DENIED;
+        }
+        $mailboxId = $this->mailboxGateway->getMailboxId($_GET['mid']);
+        if ($this->mailboxPermissions->mayMailbox($mailboxId)) {
+            $message = $this->mailboxGateway->getMessage($_GET['mid']);
+            $sender = json_decode($message['sender'], true, 512, JSON_THROW_ON_ERROR + JSON_INVALID_UTF8_IGNORE);
+            if (isset($sender['mailbox'], $sender['host']) && $sender != null) {
+                $subject = 'Re: ' . trim(str_replace(['Re:', 'RE:', 're:', 'aw:', 'Aw:', 'AW:'], '', $message['subject']));
 
-				$data = json_decode(file_get_contents('php://input'), true);
-				$body = strip_tags($data['msg'])
-					. "\n\n\n\n--------- "
-					. $this->translator->trans('mailbox.signature', ['{date}' => $this->timeHelper->niceDate($message['time_ts'])])
-					. " ---------\n\n>\t"
-					. str_replace("\n", "\n>\t", $message['body']);
+                $data = json_decode(file_get_contents('php://input'), true);
+                $body = strip_tags($data['msg'])
+                    . "\n\n\n\n--------- "
+                    . $this->translator->trans('mailbox.signature', ['{date}' => $this->timeHelper->niceDate($message['time_ts'])])
+                    . " ---------\n\n>\t"
+                    . str_replace("\n", "\n>\t", $message['body']);
 
-				$mail = new AsyncMail($this->mem);
-				$mail->setFrom($message['mailbox'] . '@' . PLATFORM_MAILBOX_HOST, $this->session->user('name'));
-				if (!empty($sender['personal'])) {
-					$mail->addRecipient($sender['mailbox'] . '@' . $sender['host'], $sender['personal']);
-				} else {
-					$mail->addRecipient($sender['mailbox'] . '@' . $sender['host']);
-				}
-				$mail->setSubject($subject);
-				$html = nl2br($body);
-				$mail->setHTMLBody($html);
-				$mail->setBody($body);
-				$mail->send();
+                $mail = new AsyncMail($this->mem);
+                $mail->setFrom($message['mailbox'] . '@' . PLATFORM_MAILBOX_HOST, $this->session->user('name'));
+                if (!empty($sender['personal'])) {
+                    $mail->addRecipient($sender['mailbox'] . '@' . $sender['host'], $sender['personal']);
+                } else {
+                    $mail->addRecipient($sender['mailbox'] . '@' . $sender['host']);
+                }
+                $mail->setSubject($subject);
+                $html = nl2br($body);
+                $mail->setHTMLBody($html);
+                $mail->setBody($body);
+                $mail->send();
 
-				// save message to sent folder
-				$this->mailboxGateway->saveMessage(
-					$mailboxId,
-					MailboxFolder::FOLDER_SENT,
-					json_encode([
-						'host' => PLATFORM_MAILBOX_HOST,
-						'mailbox' => $message['mailbox'],
-						'personal' => $this->session->user('name')
-					]),
-					json_encode([$sender]),
-					$subject,
-					$body,
-					$html,
-					date('Y-m-d H:i:s'),
-					'',
-					1 // mark read
-				);
+                // save message to sent folder
+                $this->mailboxGateway->saveMessage(
+                    $mailboxId,
+                    MailboxFolder::FOLDER_SENT,
+                    json_encode([
+                        'host' => PLATFORM_MAILBOX_HOST,
+                        'mailbox' => $message['mailbox'],
+                        'personal' => $this->session->user('name')
+                    ]),
+                    json_encode([$sender]),
+                    $subject,
+                    $body,
+                    $html,
+                    date('Y-m-d H:i:s'),
+                    '',
+                    1 // mark read
+                );
 
-				$this->mailboxGateway->setRead($message['id'], 1);
-				$this->mailboxGateway->setAnswered($message['id']);
+                $this->mailboxGateway->setRead($message['id'], 1);
+                $this->mailboxGateway->setAnswered($message['id']);
 
-				echo json_encode([
-					'status' => 1,
-					'message' => $this->translator->trans('mailbox.okay'),
-				]);
-				exit;
-			}
-		}
+                echo json_encode([
+                    'status' => 1,
+                    'message' => $this->translator->trans('mailbox.okay'),
+                ]);
+                exit;
+            }
+        }
 
-		echo json_encode([
-			'status' => 0,
-			'message' => $this->translator->trans('mailbox.failed'),
-		]);
-		exit;
-	}
+        echo json_encode([
+            'status' => 0,
+            'message' => $this->translator->trans('mailbox.failed'),
+        ]);
+        exit;
+    }
 
-	public function send_message()
-	{
-		if (!$this->mailboxPermissions->mayHaveMailbox()) {
-			return XhrResponses::PERMISSION_DENIED;
-		}
-		$mb_id = (int)$_POST['mb'];
+    public function send_message()
+    {
+        if (!$this->mailboxPermissions->mayHaveMailbox()) {
+            return XhrResponses::PERMISSION_DENIED;
+        }
+        $mb_id = (int)$_POST['mb'];
 
-		if ($last = (int)$this->mem->user($this->session->id(), 'mailbox-last')) {
-			if ((time() - $last) < 15) {
-				return [
-					'status' => 1,
-					'script' => 'pulseError("' . $this->translator->trans('mailbox.ratelimit') . '");',
-				];
-			}
-		}
+        if ($last = (int)$this->mem->user($this->session->id(), 'mailbox-last')) {
+            if ((time() - $last) < 15) {
+                return [
+                    'status' => 1,
+                    'script' => 'pulseError("' . $this->translator->trans('mailbox.ratelimit') . '");',
+                ];
+            }
+        }
 
-		$this->mem->userSet($this->session->id(), 'mailbox-last', time());
+        $this->mem->userSet($this->session->id(), 'mailbox-last', time());
 
-		if ($this->mailboxPermissions->mayMailbox($mb_id)) {
-			if ($mailbox = $this->mailboxGateway->getMailbox($mb_id)) {
-				$an = explode(';', $_POST['an']);
-				$tmp = [];
-				foreach ($an as $a) {
-					$trimmed = trim($a);
-					$tmp[$trimmed] = $trimmed;
-				}
-				$an = $tmp;
-				if (count($an) > 100) {
-					return [
-						'status' => 1,
-						'script' => 'pulseError("' . $this->translator->trans('mailbox.recipients') . '");'
-					];
-				}
-				$attach = false;
+        if ($this->mailboxPermissions->mayMailbox($mb_id)) {
+            if ($mailbox = $this->mailboxGateway->getMailbox($mb_id)) {
+                $an = explode(';', $_POST['an']);
+                $tmp = [];
+                foreach ($an as $a) {
+                    $trimmed = trim($a);
+                    $tmp[$trimmed] = $trimmed;
+                }
+                $an = $tmp;
+                if (count($an) > 100) {
+                    return [
+                        'status' => 1,
+                        'script' => 'pulseError("' . $this->translator->trans('mailbox.recipients') . '");'
+                    ];
+                }
+                $attach = false;
 
-				if (isset($_POST['attach']) && is_array($_POST['attach'])) {
-					$attach = [];
-					foreach ($_POST['attach'] as $a) {
-						if (isset($a['name'], $a['tmp'])) {
-							$tmp = str_replace(['/', '\\'], '', $a['tmp']);
-							$name = strtolower($a['name']);
-							str_replace(['ä', 'ö', 'ü', 'ß', ' '], ['ae', 'oe', 'ue', 'ss', '_'], $name);
-							$name = preg_replace('/[^a-z0-9\-\.]/', '', $name);
+                if (isset($_POST['attach']) && is_array($_POST['attach'])) {
+                    $attach = [];
+                    foreach ($_POST['attach'] as $a) {
+                        if (isset($a['name'], $a['tmp'])) {
+                            $tmp = str_replace(['/', '\\'], '', $a['tmp']);
+                            $name = strtolower($a['name']);
+                            str_replace(['ä', 'ö', 'ü', 'ß', ' '], ['ae', 'oe', 'ue', 'ss', '_'], $name);
+                            $name = preg_replace('/[^a-z0-9\-\.]/', '', $name);
 
-							if (file_exists('data/mailattach/tmp/' . $tmp)) {
-								$attach[] = [
-									'path' => 'data/mailattach/tmp/' . $tmp,
-									'name' => $name
-								];
-							}
-						}
-					}
-				}
+                            if (file_exists('data/mailattach/tmp/' . $tmp)) {
+                                $attach[] = [
+                                    'path' => 'data/mailattach/tmp/' . $tmp,
+                                    'name' => $name
+                                ];
+                            }
+                        }
+                    }
+                }
 
-				$this->libPlainMail(
-					$an,
-					[
-						'email' => $mailbox['name'] . '@' . PLATFORM_MAILBOX_HOST,
-						'name' => $mailbox['email_name']
-					],
-					$_POST['sub'],
-					$_POST['body'],
-					$attach
-				);
+                $this->libPlainMail(
+                    $an,
+                    [
+                        'email' => $mailbox['name'] . '@' . PLATFORM_MAILBOX_HOST,
+                        'name' => $mailbox['email_name']
+                    ],
+                    $_POST['sub'],
+                    $_POST['body'],
+                    $attach
+                );
 
-				$to = [];
-				foreach ($an as $a) {
-					if ($this->emailHelper->validEmail($a)) {
-						$t = explode('@', $a);
+                $to = [];
+                foreach ($an as $a) {
+                    if ($this->emailHelper->validEmail($a)) {
+                        $t = explode('@', $a);
 
-						$to[] = [
-							'personal' => $a,
-							'mailbox' => $t[0],
-							'host' => $t[1]
-						];
-					}
-				}
+                        $to[] = [
+                            'personal' => $a,
+                            'mailbox' => $t[0],
+                            'host' => $t[1]
+                        ];
+                    }
+                }
 
-				if ($this->mailboxGateway->saveMessage(
-					$mb_id,
-					MailboxFolder::FOLDER_SENT,
-					json_encode([
-						'host' => PLATFORM_MAILBOX_HOST,
-						'mailbox' => $mailbox['name'],
-						'personal' => $mailbox['email_name']
-					]),
-					json_encode($to),
-					$_POST['sub'],
-					$_POST['body'],
-					nl2br($_POST['body']),
-					date('Y-m-d H:i:s'),
-					'',
-					1
-				)) {
-					if (($mb_id = $this->mailboxGateway->getMailboxId($_POST['reply']))
-						&& $this->mailboxPermissions->mayMailbox($mb_id)
-					) {
-						$this->mailboxGateway->setAnswered($_POST['reply']);
-					}
+                if ($this->mailboxGateway->saveMessage(
+                    $mb_id,
+                    MailboxFolder::FOLDER_SENT,
+                    json_encode([
+                        'host' => PLATFORM_MAILBOX_HOST,
+                        'mailbox' => $mailbox['name'],
+                        'personal' => $mailbox['email_name']
+                    ]),
+                    json_encode($to),
+                    $_POST['sub'],
+                    $_POST['body'],
+                    nl2br($_POST['body']),
+                    date('Y-m-d H:i:s'),
+                    '',
+                    1
+                )) {
+                    if (($mb_id = $this->mailboxGateway->getMailboxId($_POST['reply']))
+                        && $this->mailboxPermissions->mayMailbox($mb_id)
+                    ) {
+                        $this->mailboxGateway->setAnswered($_POST['reply']);
+                    }
 
-					return [
-						'status' => 1,
-						'script' => '
+                    return [
+                        'status' => 1,
+                        'script' => '
 							pulseInfo("' . $this->translator->trans('mailbox.okay') . '");
 							mb_clearEditor();
 							mb_closeEditor();'
-					];
-				}
-			}
-		}
-	}
+                    ];
+                }
+            }
+        }
+    }
 
-	public function fmail()
-	{
-		if (!$this->mailboxPermissions->mayMessage($_GET['id'])) {
-			return XhrResponses::PERMISSION_DENIED;
-		}
-		$html = $this->mailboxGateway->getMessageHtmlBody($_GET['id']);
-		if ($html === strip_tags($html)) {
-			// Convert line breaks to brs only in non-html mails
-			$html = nl2br($html);
-		}
+    public function fmail()
+    {
+        if (!$this->mailboxPermissions->mayMessage($_GET['id'])) {
+            return XhrResponses::PERMISSION_DENIED;
+        }
+        $html = $this->mailboxGateway->getMessageHtmlBody($_GET['id']);
+        if ($html === strip_tags($html)) {
+            // Convert line breaks to brs only in non-html mails
+            $html = nl2br($html);
+        }
 
-		if (strpos(strtolower($html), '<body') === false) {
-			$html = '<html><head><style type="text/css">html{height:100%;background-color: white;}body,div,h1,h2,h3,h4,h5,h6,td,th,p{font-family:Arial,Helvetica,Verdana,sans-serif;}body,div,td,th,p{font-size:13px;}body{margin:0;padding:0;}</style></head><body>' . $html . '</body></html>';
-		} else {
-			$html = str_replace(['<body', '<BODY', '<Body'], '<body', $html);
-			$html = str_replace(['<head>', '<HEAD>', '<Head>'], '<head><style type="text/css">html{height:100%;background-color: white;}body,div,h1,h2,h3,h4,h5,h6,td,th,p{font-family:Arial,Helvetica,Verdana;}body,div,td,th,p{font-size:13px;}body{margin:0;padding:0;}</style>', $html);
-		}
+        if (strpos(strtolower($html), '<body') === false) {
+            $html = '<html><head><style type="text/css">html{height:100%;background-color: white;}body,div,h1,h2,h3,h4,h5,h6,td,th,p{font-family:Arial,Helvetica,Verdana,sans-serif;}body,div,td,th,p{font-size:13px;}body{margin:0;padding:0;}</style></head><body>' . $html . '</body></html>';
+        } else {
+            $html = str_replace(['<body', '<BODY', '<Body'], '<body', $html);
+            $html = str_replace(['<head>', '<HEAD>', '<Head>'], '<head><style type="text/css">html{height:100%;background-color: white;}body,div,h1,h2,h3,h4,h5,h6,td,th,p{font-family:Arial,Helvetica,Verdana;}body,div,td,th,p{font-size:13px;}body{margin:0;padding:0;}</style>', $html);
+        }
 
-		echo $html;
-		exit;
-	}
+        echo $html;
+        exit;
+    }
 
-	public function loadMail()
-	{
-		if (!$this->mailboxPermissions->mayMessage($_GET['id'])) {
-			return XhrResponses::PERMISSION_DENIED;
-		}
-		if ($this->mailboxPermissions->mayMailbox($this->mailboxGateway->getMailboxId($_GET['id']))) {
-			$mail = $this->mailboxGateway->getMessage($_GET['id']);
-			$this->mailboxGateway->setRead($_GET['id'], 1);
-			$mail['attach'] = trim($mail['attach']);
-			if (!empty($mail['attach'])) {
-				$mail['attach'] = json_decode($mail['attach'], true);
-			}
+    public function loadMail()
+    {
+        if (!$this->mailboxPermissions->mayMessage($_GET['id'])) {
+            return XhrResponses::PERMISSION_DENIED;
+        }
+        if ($this->mailboxPermissions->mayMailbox($this->mailboxGateway->getMailboxId($_GET['id']))) {
+            $mail = $this->mailboxGateway->getMessage($_GET['id']);
+            $this->mailboxGateway->setRead($_GET['id'], 1);
+            $mail['attach'] = trim($mail['attach']);
+            if (!empty($mail['attach'])) {
+                $mail['attach'] = json_decode($mail['attach'], true);
+            }
 
-			return [
-				'status' => 1,
-				'html' => $this->view->message($mail),
-				'append' => '#message-body',
-				'script' => '
+            return [
+                'status' => 1,
+                'html' => $this->view->message($mail),
+                'append' => '#message-body',
+                'script' => '
 					bodymin = 80;
 					if ($("#mailattch").length > 0) {
 						bodymin += 40;
@@ -397,77 +397,77 @@ class MailboxXhr extends Control
 					$("#message-body").dialog("open");
 					$("tr#message-' . (int)$_GET['id'] . ' .read-0, tr#message-' . (int)$_GET['id'] . '").addClass("read-1").removeClass("read-0");
 				',
-			];
-		}
-	}
+            ];
+        }
+    }
 
-	private function libPlainMail($to, $from, $subject, $message, $attach = false)
-	{
-		$email = !isset($to['email']) ? $to : $to['email'];
+    private function libPlainMail($to, $from, $subject, $message, $attach = false)
+    {
+        $email = !isset($to['email']) ? $to : $to['email'];
 
-		$from_email = $from;
-		$from_name = $from;
-		if (is_array($from)) {
-			$from_email = $from['email'];
-			$from_name = $from['name'];
-		}
+        $from_email = $from;
+        $from_name = $from;
+        if (is_array($from)) {
+            $from_email = $from['email'];
+            $from_name = $from['name'];
+        }
 
-		$mail = new AsyncMail($this->mem);
+        $mail = new AsyncMail($this->mem);
 
-		$mail->setFrom($from_email, $from_name);
+        $mail->setFrom($from_email, $from_name);
 
-		if (is_array($email)) {
-			foreach ($email as $e) {
-				if ($this->emailHelper->validEmail($e)) {
-					$this->mailboxGateway->addContact($e, $this->session->id());
-					$mail->addRecipient($e);
-				}
-			}
-		} else {
-			$mail->addRecipient($email);
-		}
+        if (is_array($email)) {
+            foreach ($email as $e) {
+                if ($this->emailHelper->validEmail($e)) {
+                    $this->mailboxGateway->addContact($e, $this->session->id());
+                    $mail->addRecipient($e);
+                }
+            }
+        } else {
+            $mail->addRecipient($email);
+        }
 
-		$mail->setSubject($subject);
+        $mail->setSubject($subject);
 
-		$message = str_replace(['<br>', '<br/>', '<br />', '<p>', '</p>', '</p>'], "\r\n", $message);
-		$message = strip_tags($message);
+        $message = str_replace(['<br>', '<br/>', '<br />', '<p>', '</p>', '</p>'], "\r\n", $message);
+        $message = strip_tags($message);
 
-		$html = nl2br($message);
-		$mail->setHTMLBody($html);
+        $html = nl2br($message);
+        $mail->setHTMLBody($html);
 
-		$plainBody = $this->sanitizerService->htmlToPlain($html);
-		$mail->setBody($plainBody);
+        $plainBody = $this->sanitizerService->htmlToPlain($html);
+        $mail->setBody($plainBody);
 
-		if ($attach !== false) {
-			foreach ($attach as $a) {
-				$mail->addAttachment($a['path'], $a['name']);
-			}
-		}
-		$mail->send();
-	}
+        if ($attach !== false) {
+            foreach ($attach as $a) {
+                $mail->addAttachment($a['path'], $a['name']);
+            }
+        }
+        $mail->send();
+    }
 
-	public function attach_allow($filename, $mime)
-	{
-		if (strlen($filename) < 300) {
-			$ext = explode('.', $filename);
-			$ext = end($ext);
-			$ext = strtolower($ext);
-			$notallowed = [
-				'php' => true,
-				'html' => true,
-				'htm' => true,
-				'php5' => true,
-				'php4' => true,
-				'php3' => true,
-				'php2' => true,
-				'php1' => true
-			];
+    public function attach_allow($filename, $mime)
+    {
+        if (strlen($filename) < 300) {
+            $ext = explode('.', $filename);
+            $ext = end($ext);
+            $ext = strtolower($ext);
+            $notallowed = [
+                'php' => true,
+                'html' => true,
+                'htm' => true,
+                'php5' => true,
+                'php4' => true,
+                'php3' => true,
+                'php2' => true,
+                'php1' => true
+            ];
 
-			if (!isset($notallowed[$ext])) {
-				return true;
-			}
-		}
+            if (!isset($notallowed[$ext])) {
+                return true;
+            }
+        }
 
-		return false;
-	}
+        return false;
+    }
 }

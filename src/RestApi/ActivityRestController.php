@@ -13,77 +13,77 @@ use Symfony\Component\HttpKernel\Exception\UnauthorizedHttpException;
 
 class ActivityRestController extends AbstractFOSRestController
 {
-	private ActivityTransactions $activityTransactions;
-	private Session $session;
+    private ActivityTransactions $activityTransactions;
+    private Session $session;
 
-	public function __construct(
-		ActivityTransactions $activityTransactions,
-		Session $session
-	) {
-		$this->activityTransactions = $activityTransactions;
-		$this->session = $session;
-	}
+    public function __construct(
+        ActivityTransactions $activityTransactions,
+        Session $session
+    ) {
+        $this->activityTransactions = $activityTransactions;
+        $this->session = $session;
+    }
 
-	/**
-	 * Returns the filters for all dashboard activities for the current user.
-	 *
-	 * @OA\Response(response="200", description="Success.")
-	 * @OA\Response(response="403", description="Insufficient permissions to request filters.")
-	 * @OA\Tag(name="activities")
-	 * @Rest\Get("activities/filters")
-	 */
-	public function getActivityFiltersAction(): Response
-	{
-		if (!$this->session->id()) {
-			throw new UnauthorizedHttpException('');
-		}
+    /**
+     * Returns the filters for all dashboard activities for the current user.
+     *
+     * @OA\Response(response="200", description="Success.")
+     * @OA\Response(response="403", description="Insufficient permissions to request filters.")
+     * @OA\Tag(name="activities")
+     * @Rest\Get("activities/filters")
+     */
+    public function getActivityFiltersAction(): Response
+    {
+        if (!$this->session->id()) {
+            throw new UnauthorizedHttpException('');
+        }
 
-		$filters = $this->activityTransactions->getFilters();
+        $filters = $this->activityTransactions->getFilters();
 
-		return $this->handleView($this->view($filters, 200));
-	}
+        return $this->handleView($this->view($filters, 200));
+    }
 
-	/**
-	 * Sets which dashboard activities should be deactivated for the current user.
-	 *
-	 * @OA\Response(response="200", description="Success.")
-	 * @OA\Response(response="403", description="Insufficient permissions to set filters.")
-	 * @OA\Tag(name="activities")
-	 * @Rest\Patch("activities/filters")
-	 * @Rest\RequestParam(name="excluded")
-	 */
-	public function setActivityFiltersAction(ParamFetcher $paramFetcher): Response
-	{
-		if (!$this->session->id()) {
-			throw new UnauthorizedHttpException('');
-		}
+    /**
+     * Sets which dashboard activities should be deactivated for the current user.
+     *
+     * @OA\Response(response="200", description="Success.")
+     * @OA\Response(response="403", description="Insufficient permissions to set filters.")
+     * @OA\Tag(name="activities")
+     * @Rest\Patch("activities/filters")
+     * @Rest\RequestParam(name="excluded")
+     */
+    public function setActivityFiltersAction(ParamFetcher $paramFetcher): Response
+    {
+        if (!$this->session->id()) {
+            throw new UnauthorizedHttpException('');
+        }
 
-		$excluded = $paramFetcher->get('excluded');
-		$this->activityTransactions->setExcludedFilters($excluded);
+        $excluded = $paramFetcher->get('excluded');
+        $this->activityTransactions->setExcludedFilters($excluded);
 
-		return $this->handleView($this->view([], 200));
-	}
+        return $this->handleView($this->view([], 200));
+    }
 
-	/**
-	 * Returns the updates object for ActivityOverview to display on the dashboard.
-	 *
-	 * @OA\Response(response="200", description="Success.")
-	 * @OA\Tag(name="activities")
-	 * @Rest\Get("activities/updates")
-	 * @Rest\QueryParam(name="page", requirements="\d+", default="0", description="Which page of updates to return")
-	 */
-	public function getActivityUpdatesAction(ParamFetcher $paramFetcher): Response
-	{
-		if (!$this->session->id()) {
-			throw new UnauthorizedHttpException('');
-		}
+    /**
+     * Returns the updates object for ActivityOverview to display on the dashboard.
+     *
+     * @OA\Response(response="200", description="Success.")
+     * @OA\Tag(name="activities")
+     * @Rest\Get("activities/updates")
+     * @Rest\QueryParam(name="page", requirements="\d+", default="0", description="Which page of updates to return")
+     */
+    public function getActivityUpdatesAction(ParamFetcher $paramFetcher): Response
+    {
+        if (!$this->session->id()) {
+            throw new UnauthorizedHttpException('');
+        }
 
-		$page = intval($paramFetcher->get('page'));
+        $page = intval($paramFetcher->get('page'));
 
-		$updates = [
-			'updates' => $this->activityTransactions->getUpdateData($page),
-		];
+        $updates = [
+            'updates' => $this->activityTransactions->getUpdateData($page),
+        ];
 
-		return $this->handleView($this->view($updates, 200));
-	}
+        return $this->handleView($this->view($updates, 200));
+    }
 }

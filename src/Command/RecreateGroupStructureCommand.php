@@ -9,20 +9,20 @@ use Symfony\Component\Console\Output\OutputInterface;
 
 class RecreateGroupStructureCommand extends Command
 {
-	protected static $defaultName = 'maintenance:recreateGroupStructure';
+    protected static $defaultName = 'maintenance:recreateGroupStructure';
 
-	protected GroupGateway $groupGateway;
+    protected GroupGateway $groupGateway;
 
-	public function __construct(GroupGateway $groupGateway)
-	{
-		$this->groupGateway = $groupGateway;
-		parent::__construct();
-	}
+    public function __construct(GroupGateway $groupGateway)
+    {
+        $this->groupGateway = $groupGateway;
+        parent::__construct();
+    }
 
-	protected function execute(InputInterface $input, OutputInterface $output): int
-	{
-		$this->groupGateway->recreateClosure();
+    protected function execute(InputInterface $input, OutputInterface $output): int
+    {
+        $this->groupGateway->recreateClosure();
 
-		return 0;
-	}
+        return 0;
+    }
 }

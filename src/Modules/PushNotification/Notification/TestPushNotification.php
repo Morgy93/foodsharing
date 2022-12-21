@@ -11,13 +11,13 @@ use Symfony\Contracts\Translation\TranslatorInterface;
  */
 class TestPushNotification extends PushNotification
 {
-	public function getTitle(TranslatorInterface $translator): string
-	{
-		return $translator->trans('push_notifications.test_notification_title');
-	}
+    public function getTitle(TranslatorInterface $translator): string
+    {
+        return $translator->trans('push_notifications.test_notification_title');
+    }
 
-	public function getBody(TranslatorInterface $translator): string
-	{
-		return $translator->trans('push_notifications.test_notification_body');
-	}
+    public function getBody(TranslatorInterface $translator): string
+    {
+        return $translator->trans('push_notifications.test_notification_body');
+    }
 }

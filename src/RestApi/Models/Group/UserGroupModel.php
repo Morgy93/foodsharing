@@ -12,37 +12,37 @@ use OpenApi\Annotations as OA;
  */
 class UserGroupModel
 {
-	/**
-	 *  Identifier of group.
-	 *
-	 * @OA\Property(example="1"))
-	 */
-	public int $id = 0;
+    /**
+     *  Identifier of group.
+     *
+     * @OA\Property(example="1"))
+     */
+    public int $id = 0;
 
-	/**
-	 * Name of group.
-	 *
-	 * @OA\Property(example="Öffentlichkeitsarbeit - Startseite")
-	 */
-	public string $name = '';
+    /**
+     * Name of group.
+     *
+     * @OA\Property(example="Öffentlichkeitsarbeit - Startseite")
+     */
+    public string $name = '';
 
-	/**
-	 * Is responsible user.
-	 *
-	 * - False: Normal member
-	 * - True: Is admin of group
-	 *
-	 * @OA\Property()
-	 */
-	public bool $isResponsible = false;
+    /**
+     * Is responsible user.
+     *
+     * - False: Normal member
+     * - True: Is admin of group
+     *
+     * @OA\Property()
+     */
+    public bool $isResponsible = false;
 
-	public static function createFrom(UserUnit $UserUnit)
-	{
-		$userGroupModel = new UserGroupModel();
-		$userGroupModel->id = $UserUnit->unit->id;
-		$userGroupModel->name = $UserUnit->unit->name;
-		$userGroupModel->isResponsible = $UserUnit->isResponsible;
+    public static function createFrom(UserUnit $UserUnit)
+    {
+        $userGroupModel = new UserGroupModel();
+        $userGroupModel->id = $UserUnit->unit->id;
+        $userGroupModel->name = $UserUnit->unit->name;
+        $userGroupModel->isResponsible = $UserUnit->isResponsible;
 
-		return $userGroupModel;
-	}
+        return $userGroupModel;
+    }
 }

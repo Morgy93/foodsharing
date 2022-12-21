@@ -21,22 +21,17 @@ $finder = PhpCsFixer\Finder::create()
 
 $config = new PhpCsFixer\Config();
 $config->setRules([
-	'@Symfony' => true,
-	'concat_space' => ['spacing' => 'one'],
-	'cast_spaces' => ['space' => 'none'],
-	'phpdoc_align' => ['tags' => []],
-	'trailing_comma_in_multiline' => false,
-	'yoda_style' => [
-		'equal' => null,
-		'identical' => null,
-	],
-	'single_line_comment_spacing' => [],
-	'ordered_imports' => ['sort_algorithm' => 'alpha', 'imports_order' => ['class', 'function', 'const']]
+    '@Symfony' => true,
+    'concat_space' => ['spacing' => 'one'],
+    'cast_spaces' => ['space' => 'none'],
+    'phpdoc_align' => ['tags' => []],
+    'trailing_comma_in_multiline' => false,
+    'yoda_style' => [
+        'equal' => null,
+        'identical' => null,
+    ],
+    'single_line_comment_spacing' => [],
+    'ordered_imports' => ['sort_algorithm' => 'alpha', 'imports_order' => ['class', 'function', 'const']]
 ])
-	->setIndent("\t")
-	->setFinder($finder);
+    ->setFinder($finder);
 return $config;
-?>
-
-
-

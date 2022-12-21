@@ -8,9 +8,9 @@ use Foodsharing\Modules\Core\DBConstants\Unit\UnitType;
 
 class StatisticsGateway extends BaseGateway
 {
-	public function listTotalStat(): array
-	{
-		$stm = '
+    public function listTotalStat(): array
+    {
+        $stm = '
 			SELECT
 				SUM(`stat_fetchweight`) AS fetchweight,
 				SUM(`stat_fetchcount`) AS fetchcount,
@@ -24,12 +24,12 @@ class StatisticsGateway extends BaseGateway
 				`id` = :region_id
 		';
 
-		return $this->db->fetch($stm, [':region_id' => RegionIDs::EUROPE]);
-	}
+        return $this->db->fetch($stm, [':region_id' => RegionIDs::EUROPE]);
+    }
 
-	public function listStatRegions(): array
-	{
-		$stm = '
+    public function listStatRegions(): array
+    {
+        $stm = '
 			SELECT
 				`name`,
 				`stat_fetchweight` AS fetchweight,
@@ -43,12 +43,12 @@ class StatisticsGateway extends BaseGateway
 			LIMIT 10
 		';
 
-		return $this->db->fetchAll($stm, [':city' => UnitType::CITY, ':bigCity' => UnitType::BIG_CITY]);
-	}
+        return $this->db->fetchAll($stm, [':city' => UnitType::CITY, ':bigCity' => UnitType::BIG_CITY]);
+    }
 
-	public function listStatFoodsaver(): array
-	{
-		$stm = '
+    public function listStatFoodsaver(): array
+    {
+        $stm = '
 			SELECT
 				`id`,
 				`name`,
@@ -63,18 +63,18 @@ class StatisticsGateway extends BaseGateway
 			LIMIT 10
 		';
 
-		return $this->db->fetchAll($stm);
-	}
+        return $this->db->fetchAll($stm);
+    }
 
-	public function countAllFoodsharers(): int
-	{
-		return $this->db->count('fs_foodsaver', ['active' => 1, 'deleted_at' => null]);
-	}
+    public function countAllFoodsharers(): int
+    {
+        return $this->db->count('fs_foodsaver', ['active' => 1, 'deleted_at' => null]);
+    }
 
-	public function avgDailyFetchCount(): int
-	{
-		// get number of all fetches within time range
-		$q = '
+    public function avgDailyFetchCount(): int
+    {
+        // get number of all fetches within time range
+        $q = '
 			SELECT
 				COUNT(*) as fetchCount
 			FROM
@@ -84,23 +84,23 @@ class StatisticsGateway extends BaseGateway
 				CAST(`date` as date) < CURDATE()
 				AND fs_abholer.confirmed = 1
 		';
-		$fetchCount = (int)$this->db->fetch($q)['fetchCount'];
-		// time range to average over in days
-		$diffDays = 99;
-		// divide number of fetches by time difference
-		return (int)($fetchCount / $diffDays);
-	}
+        $fetchCount = (int)$this->db->fetch($q)['fetchCount'];
+        // time range to average over in days
+        $diffDays = 99;
+        // divide number of fetches by time difference
+        return (int)($fetchCount / $diffDays);
+    }
 
-	public function countAllBaskets(): int
-	{
-		// Count all entries in fs_basket
-		return $this->db->count('fs_basket', []);
-	}
+    public function countAllBaskets(): int
+    {
+        // Count all entries in fs_basket
+        return $this->db->count('fs_basket', []);
+    }
 
-	public function avgWeeklyBaskets(int $diffWeeks = 4): int
-	{
-		// query
-		$q = '
+    public function avgWeeklyBaskets(int $diffWeeks = 4): int
+    {
+        // query
+        $q = '
 			SELECT
 				COUNT(*)
 			FROM
@@ -109,14 +109,14 @@ class StatisticsGateway extends BaseGateway
 				time > DATE_ADD(CURDATE(), INTERVAL - :diffWeeks*7-1 DAY) AND
 				time < CURDATE()
 		';
-		// get count from db
-		$basketCount = (int)$this->db->fetchValue($q, [':diffWeeks' => $diffWeeks]);
-		// divide number of fetches by time difference
-		return (int)($basketCount / $diffWeeks);
-	}
+        // get count from db
+        $basketCount = (int)$this->db->fetchValue($q, [':diffWeeks' => $diffWeeks]);
+        // divide number of fetches by time difference
+        return (int)($basketCount / $diffWeeks);
+    }
 
-	public function countActiveFoodSharePoints(): int
-	{
-		return $this->db->count('fs_fairteiler', ['status' => 1]);
-	}
+    public function countActiveFoodSharePoints(): int
+    {
+        return $this->db->count('fs_fairteiler', ['status' => 1]);
+    }
 }

@@ -23,122 +23,122 @@ use Symfony\Contracts\Translation\TranslatorInterface;
 
 class VerificationRestController extends AbstractFOSRestController
 {
-	private BellGateway $bellGateway;
-	private FoodsaverGateway $foodsaverGateway;
-	private ProfileGateway $profileGateway;
-	private PickupGateway $pickupGateway;
-	private ProfilePermissions $profilePermissions;
-	private Session $session;
-	private EmailHelper $emailHelper;
-	protected TranslatorInterface $translator;
+    private BellGateway $bellGateway;
+    private FoodsaverGateway $foodsaverGateway;
+    private ProfileGateway $profileGateway;
+    private PickupGateway $pickupGateway;
+    private ProfilePermissions $profilePermissions;
+    private Session $session;
+    private EmailHelper $emailHelper;
+    protected TranslatorInterface $translator;
 
-	public function __construct(
-		BellGateway $bellGateway,
-		FoodsaverGateway $foodsaverGateway,
-		ProfileGateway $profileGateway,
-		PickupGateway $pickupGateway,
-		ProfilePermissions $profilePermissions,
-		Session $session,
-		EmailHelper $emailHelper,
-		TranslatorInterface $translator
-	) {
-		$this->bellGateway = $bellGateway;
-		$this->foodsaverGateway = $foodsaverGateway;
-		$this->profileGateway = $profileGateway;
-		$this->pickupGateway = $pickupGateway;
-		$this->profilePermissions = $profilePermissions;
-		$this->session = $session;
-		$this->emailHelper = $emailHelper;
-		$this->translator = $translator;
-	}
+    public function __construct(
+        BellGateway $bellGateway,
+        FoodsaverGateway $foodsaverGateway,
+        ProfileGateway $profileGateway,
+        PickupGateway $pickupGateway,
+        ProfilePermissions $profilePermissions,
+        Session $session,
+        EmailHelper $emailHelper,
+        TranslatorInterface $translator
+    ) {
+        $this->bellGateway = $bellGateway;
+        $this->foodsaverGateway = $foodsaverGateway;
+        $this->profileGateway = $profileGateway;
+        $this->pickupGateway = $pickupGateway;
+        $this->profilePermissions = $profilePermissions;
+        $this->session = $session;
+        $this->emailHelper = $emailHelper;
+        $this->translator = $translator;
+    }
 
-	/**
-	 * Changes verification status of one user to 'verified'.
-	 *
-	 * @OA\Parameter(name="userId", in="path", @OA\Schema(type="integer"), description="which user to verify")
-	 * @OA\Response(response="200", description="Success.")
-	 * @OA\Response(response="401", description="Not logged in.")
-	 * @OA\Response(response="403", description="Insufficient permissions to verify this user.")
-	 * @OA\Response(response="404", description="User not found.")
-	 * @OA\Response(response="422", description="Already verified.")
-	 * @OA\Tag(name="verification")
-	 * @Rest\Patch("user/{userId}/verification", requirements={"userId" = "\d+"})
-	 */
-	public function verifyUserAction(int $userId): Response
-	{
-		$sessionId = $this->session->id();
-		if (!$sessionId) {
-			throw new UnauthorizedHttpException('');
-		}
+    /**
+     * Changes verification status of one user to 'verified'.
+     *
+     * @OA\Parameter(name="userId", in="path", @OA\Schema(type="integer"), description="which user to verify")
+     * @OA\Response(response="200", description="Success.")
+     * @OA\Response(response="401", description="Not logged in.")
+     * @OA\Response(response="403", description="Insufficient permissions to verify this user.")
+     * @OA\Response(response="404", description="User not found.")
+     * @OA\Response(response="422", description="Already verified.")
+     * @OA\Tag(name="verification")
+     * @Rest\Patch("user/{userId}/verification", requirements={"userId" = "\d+"})
+     */
+    public function verifyUserAction(int $userId): Response
+    {
+        $sessionId = $this->session->id();
+        if (!$sessionId) {
+            throw new UnauthorizedHttpException('');
+        }
 
-		if (!$this->profilePermissions->mayChangeUserVerification($userId)) {
-			throw new AccessDeniedHttpException();
-		}
+        if (!$this->profilePermissions->mayChangeUserVerification($userId)) {
+            throw new AccessDeniedHttpException();
+        }
 
-		if ($this->profileGateway->isUserVerified($userId)) {
-			throw new UnprocessableEntityHttpException('User is already verified');
-		}
+        if ($this->profileGateway->isUserVerified($userId)) {
+            throw new UnprocessableEntityHttpException('User is already verified');
+        }
 
-		$this->foodsaverGateway->changeUserVerification($userId, $sessionId, true);
-		$this->bellGateway->delBellsByIdentifier(BellType::createIdentifier(BellType::NEW_FOODSAVER_IN_REGION, $userId));
+        $this->foodsaverGateway->changeUserVerification($userId, $sessionId, true);
+        $this->bellGateway->delBellsByIdentifier(BellType::createIdentifier(BellType::NEW_FOODSAVER_IN_REGION, $userId));
 
-		$passportGenLink = '/?page=settings&sub=passport';
-		$bellData = Bell::create(
-			'foodsaver_verified_title',
-			'foodsaver_verified',
-			'fas fa-camera',
-			['href' => $passportGenLink],
-			['user' => $this->session->user('name')],
-			BellType::createIdentifier(BellType::FOODSAVER_VERIFIED, $userId)
-		);
-		$this->bellGateway->addBell($userId, $bellData);
+        $passportGenLink = '/?page=settings&sub=passport';
+        $bellData = Bell::create(
+            'foodsaver_verified_title',
+            'foodsaver_verified',
+            'fas fa-camera',
+            ['href' => $passportGenLink],
+            ['user' => $this->session->user('name')],
+            BellType::createIdentifier(BellType::FOODSAVER_VERIFIED, $userId)
+        );
+        $this->bellGateway->addBell($userId, $bellData);
 
-		$passportMailLink = 'https://foodsharing.de/' . $passportGenLink;
-		$fs = $this->foodsaverGateway->getFoodsaver($userId);
-		$this->emailHelper->tplMail('user/verification', $fs['email'], [
-			'name' => $fs['name'],
-			'link' => $passportMailLink,
-			'anrede' => $this->translator->trans('salutation.' . $fs['geschlecht']),
-		], false, true);
+        $passportMailLink = 'https://foodsharing.de/' . $passportGenLink;
+        $fs = $this->foodsaverGateway->getFoodsaver($userId);
+        $this->emailHelper->tplMail('user/verification', $fs['email'], [
+            'name' => $fs['name'],
+            'link' => $passportMailLink,
+            'anrede' => $this->translator->trans('salutation.' . $fs['geschlecht']),
+        ], false, true);
 
-		return $this->handleView($this->view([], 200));
-	}
+        return $this->handleView($this->view([], 200));
+    }
 
-	/**
-	 * Changes verification status of one user to 'deverified'.
-	 *
-	 * @OA\Parameter(name="userId", in="path", @OA\Schema(type="integer"), description="which user to deverify")
-	 * @OA\Response(response="200", description="Success.")
-	 * @OA\Response(response="400", description="Has future pickups.")
-	 * @OA\Response(response="401", description="Not logged in.")
-	 * @OA\Response(response="403", description="Insufficient permissions to deverify this user.")
-	 * @OA\Response(response="404", description="User not found.")
-	 * @OA\Response(response="422", description="Already deverified.")
-	 * @OA\Tag(name="verification")
-	 * @Rest\Delete("user/{userId}/verification", requirements={"userId" = "\d+"})
-	 */
-	public function deverifyUserAction(int $userId): Response
-	{
-		$sessionId = $this->session->id();
-		if (!$sessionId) {
-			throw new UnauthorizedHttpException('');
-		}
+    /**
+     * Changes verification status of one user to 'deverified'.
+     *
+     * @OA\Parameter(name="userId", in="path", @OA\Schema(type="integer"), description="which user to deverify")
+     * @OA\Response(response="200", description="Success.")
+     * @OA\Response(response="400", description="Has future pickups.")
+     * @OA\Response(response="401", description="Not logged in.")
+     * @OA\Response(response="403", description="Insufficient permissions to deverify this user.")
+     * @OA\Response(response="404", description="User not found.")
+     * @OA\Response(response="422", description="Already deverified.")
+     * @OA\Tag(name="verification")
+     * @Rest\Delete("user/{userId}/verification", requirements={"userId" = "\d+"})
+     */
+    public function deverifyUserAction(int $userId): Response
+    {
+        $sessionId = $this->session->id();
+        if (!$sessionId) {
+            throw new UnauthorizedHttpException('');
+        }
 
-		if (!$this->profilePermissions->mayChangeUserVerification($userId)) {
-			throw new AccessDeniedHttpException();
-		}
+        if (!$this->profilePermissions->mayChangeUserVerification($userId)) {
+            throw new AccessDeniedHttpException();
+        }
 
-		if (!$this->profileGateway->isUserVerified($userId)) {
-			throw new UnprocessableEntityHttpException('User is already deverified');
-		}
+        if (!$this->profileGateway->isUserVerified($userId)) {
+            throw new UnprocessableEntityHttpException('User is already deverified');
+        }
 
-		$hasPlannedPickups = $this->pickupGateway->getNextPickups($userId, 1);
-		if ($hasPlannedPickups) {
-			throw new BadRequestHttpException('This user must not be signed up for any future pickups.');
-		}
+        $hasPlannedPickups = $this->pickupGateway->getNextPickups($userId, 1);
+        if ($hasPlannedPickups) {
+            throw new BadRequestHttpException('This user must not be signed up for any future pickups.');
+        }
 
-		$this->foodsaverGateway->changeUserVerification($userId, $sessionId, false);
+        $this->foodsaverGateway->changeUserVerification($userId, $sessionId, false);
 
-		return $this->handleView($this->view([], 200));
-	}
+        return $this->handleView($this->view([], 200));
+    }
 }
