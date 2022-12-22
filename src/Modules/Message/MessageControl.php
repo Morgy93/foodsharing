@@ -24,6 +24,7 @@ final class MessageControl extends Control
 
         if (isset($_GET['use_lite'])) {
             $this->showLiteChat();
+
             return;
         }
 

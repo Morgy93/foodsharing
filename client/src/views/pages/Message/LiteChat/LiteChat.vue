@@ -14,7 +14,10 @@
         </div>
 
         <div class="col-8">
-          <p>1234131</p>
+          <ChatWindow
+            :title="'Test123'"
+            :class="['border']"
+          />
         </div>
       </div>
     </div>
@@ -24,10 +27,12 @@
 <script>
 import ConversationCard from '@/components/Message/LiteChat/ConversationCard.vue'
 import { getConversationList } from '@/api/conversations'
+import ChatWindow from '@/components/Message/LiteChat/ChatWindow.vue'
 
 export default {
   name: 'LiteChat',
   components: {
+    ChatWindow,
     ConversationCard,
   },
   data () {
