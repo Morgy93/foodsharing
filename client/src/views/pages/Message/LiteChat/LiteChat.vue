@@ -9,6 +9,7 @@
             :class="['border']"
             :title="conversation.title"
             :preview-message="conversation.lastMessage.body"
+            @click="() => { openConversation(conversation.id) }"
           />
         </div>
 
@@ -60,6 +61,9 @@ export default {
 
       this.conversations = conversationList.conversations
       this.profilesWithNames = conversationList.profiles
+    },
+    openConversation (conservationId) {
+
     },
   },
 }
