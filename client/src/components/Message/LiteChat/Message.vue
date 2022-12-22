@@ -1,9 +1,9 @@
 <template>
   <div>
-    <span><b>{{ authorName }}:</b></span>
+    <span><b><a :href="$url('profile', authorId)">{{ authorName }}:</a></b></span>
     <div>{{ message }}</div>
     <div>
-      <small class="text-muted">{{ sentAt.toLocaleString() }}</small>
+      <small class="text-muted">{{ $dateFormatter.dateTime(sentAt) }}</small>
     </div>
     <hr>
   </div>
