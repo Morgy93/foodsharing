@@ -4,6 +4,10 @@
       {{ title }}
     </h3>
     <div class="card-body">
+      <button class="btn btn-sm btn-outline-primary btn-block">
+        Ältere Nachrichten laden
+      </button>
+      <hr>
       <Message
         :author-name="'Martin'"
         :author-id="1"
@@ -16,7 +20,7 @@
         class="form-control mb-1"
       />
       <button
-        class="btn btn-primary btn-block"
+        class="btn btn-primary btn-sm btn-block"
         type="button"
       >
         Senden
