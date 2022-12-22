@@ -27,7 +27,7 @@
           :key="author"
         >
           <a
-            :href="getGitLabLinkForUser(author)"
+            :href="getGitLabProfilUrlForUser(author)"
             target="_blank"
           >{{ author }}</a>&nbsp;
         </span>
@@ -89,8 +89,8 @@ export default {
         })
       })
     },
-    getGitLabLinkForUser (username) {
-      return `https://github.com/${username}/`
+    getGitLabProfilUrlForUser (username) {
+      return `https://gitlab.com/${username}/`
     },
   },
 }
