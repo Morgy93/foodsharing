@@ -9,13 +9,17 @@
             :class="['border']"
             :title="conversation.title"
             :preview-message="conversation.lastMessage.body"
-            @click="() => { openConversation(conversation.id) }"
+            @click.native="() => { openConversation(conversation.id, conversation.title) }"
           />
         </div>
 
         <div class="col-8">
           <ChatWindow
-            :title="'Test123'"
+            v-if="chatWindow.isVisible"
+            :title="chatWindow.conversation.title"
+            :conversation-id="chatWindow.conversation.id"
+            :messages="chatWindow.conversation.messages"
+            :profiles-with-names="profilesWithNames"
             :class="['border']"
           />
         </div>
@@ -26,7 +30,7 @@
 
 <script>
 import ConversationCard from '@/components/Message/LiteChat/ConversationCard.vue'
-import { getConversationList } from '@/api/conversations'
+import { getConversationList, getMessages } from '@/api/conversations'
 import ChatWindow from '@/components/Message/LiteChat/ChatWindow.vue'
 
 export default {
@@ -39,6 +43,7 @@ export default {
     return {
       conversations: [],
       profilesWithNames: {},
+      chatWindow: { isVisible: false, messages: [], conversation: { id: null, title: null, messages: [] } },
     }
   },
   async mounted () {
@@ -46,7 +51,7 @@ export default {
   },
   methods: {
     async loadConversations () {
-      const conversationList = await getConversationList('20', '0')
+      const conversationList = await getConversationList('50', '0')
       const profilesWithNames = {}
 
       conversationList.profiles.forEach(profile => {
@@ -67,8 +72,23 @@ export default {
       this.conversations = conversationList.conversations
       this.profilesWithNames = conversationList.profiles
     },
-    openConversation (conservationId) {
+    async openConversation (conversationId, conversationTitle) {
+      this.chatWindow.conversation.id = conversationId
+      this.chatWindow.conversation.title = conversationTitle
 
+      const messagesAndProfiles = await getMessages(conversationId, null, '5')
+
+      this.chatWindow.conversation.messages = messagesAndProfiles.messages ?? []
+      messagesAndProfiles.profiles.forEach(profile => {
+        const name = profile.name
+        const id = profile.id
+
+        this.profilesWithNames[id] = name
+      })
+
+      console.log(messagesAndProfiles)
+
+      this.chatWindow.isVisible = true
     },
   },
 }

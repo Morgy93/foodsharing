@@ -9,19 +9,23 @@
       </button>
       <hr>
       <Message
-        :author-name="'Martin'"
-        :author-id="1"
-        :message="'daddasdad'"
-        :sent-at="new Date()"
+        v-for="message in messages"
+        :key="message.id"
+        :author-name="profilesWithNames[message.authorId]"
+        :author-id="message.authorId"
+        :message="message.body"
+        :sent-at="message.sentAt"
       />
     </div>
     <div class="card-footer">
       <textarea
+        v-model="newMessage"
         class="form-control mb-1"
       />
       <button
         class="btn btn-primary btn-sm btn-block"
         type="button"
+        :disabled="isMessageEmpty"
       >
         Senden
       </button>
@@ -37,7 +41,19 @@ export default {
   components: { Message },
   props: {
     title: { type: String, required: true },
-    conversationId: { type: String, default: null },
+    conversationId: { type: Number, default: null },
+    messages: { type: Array, required: true },
+    profilesWithNames: { type: Object, required: true },
+  },
+  data () {
+    return {
+      newMessage: '',
+    }
+  },
+  computed: {
+    isMessageEmpty () {
+      return this.newMessage === ''
+    },
   },
 }
 </script>

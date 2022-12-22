@@ -16,7 +16,7 @@ export default {
     authorName: { type: String, required: true },
     authorId: { type: Number, required: true },
     message: { type: String, required: true },
-    sentAt: { type: Date, required: true },
+    sentAt: { type: String, required: true },
   },
 }
 </script>
