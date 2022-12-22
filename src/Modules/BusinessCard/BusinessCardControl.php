@@ -34,6 +34,8 @@ class BusinessCardControl extends Control
         $this->pageHelper->addContent($this->view->top(), CNT_TOP);
 
         if ($data = $this->gateway->getMyData($this->session->id(), $this->session->mayRole(Role::STORE_MANAGER))) {
+            $data = array_map(fn ($value) => $value ?? '', $data);
+
             if (mb_strlen($data['anschrift']) >= self::MAX_CHAR_PER_LINE || mb_strlen($data['plz'] . ' ' . $data['stadt']) >= self::MAX_CHAR_PER_LINE) {
                 $this->flashMessageHelper->info($this->translator->trans('bcard.info.address_shortened'));
             }

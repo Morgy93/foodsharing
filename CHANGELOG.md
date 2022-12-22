@@ -8,12 +8,14 @@
 
 
 ## Bugfixes
+- Outgoing mails were sent out with an invalid charset !2572 @\_fridtjof_
 
 
 ## Refactoring
 - added poppins font in Styleguide !2564 @Niklas003 
 
 ## Dev/Test/CI stuff
+- Fix given null parameter !2550 @BibaltiK
 - Small Improving Changes on GitLab CI !2565
 - Change identity style from tab to space !2571 @BibaltiK
 

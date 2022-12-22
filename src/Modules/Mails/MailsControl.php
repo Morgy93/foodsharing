@@ -325,8 +325,8 @@ class MailsControl extends ConsoleControl
             $subject = '[Leerer Betreff]';
         }
         $email->subject($subject);
-        $email->html($data['html'], 'text/html');
-        $email->text($data['body'], 'text/plain');
+        $email->html($data['html']);
+        $email->text($data['body']);
 
         if (!empty($data['attachments'])) {
             foreach ($data['attachments'] as $a) {
