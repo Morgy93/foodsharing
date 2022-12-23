@@ -21,6 +21,7 @@
       <textarea
         v-model="newMessage"
         class="form-control mb-1"
+        :placeholder="$i18n('chat.placeholder')"
       />
       <button
         class="btn btn-primary btn-sm btn-block"
@@ -28,7 +29,7 @@
         :disabled="isMessageEmpty"
         @click="sendMessage"
       >
-        Senden
+        {{ $i18n('button.send') }}
       </button>
     </div>
   </div>
@@ -65,7 +66,7 @@ export default {
         this.newMessage = ''
         this.$emit('message-sent', response.message)
       } catch (e) {
-        pulseError('')
+        pulseError(this.$i18n('chat.error_sending_message'))
       }
     },
   },
