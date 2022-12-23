@@ -21,6 +21,7 @@
             :messages="chatWindow.conversation.messages"
             :profiles-with-names="profilesWithNames"
             :class="['border']"
+            @message-sent="addMessageToExistingMessages"
           />
         </div>
       </div>
@@ -41,6 +42,7 @@ export default {
   },
   data () {
     return {
+      AUTO_REFRESH_IN_MILLISECONDS: 60000,
       conversations: [],
       profilesWithNames: {},
       chatWindow: { isVisible: false, messages: [], conversation: { id: null, title: null, messages: [] } },
@@ -48,11 +50,19 @@ export default {
   },
   async mounted () {
     await this.loadConversations()
+
+    setInterval(() => {
+      this.loadConversations()
+
+      if (this.chatWindow.isVisible) {
+        this.openConversation(this.chatWindow.conversation.id, this.chatWindow.conversation.messages)
+      }
+    }, this.AUTO_REFRESH_IN_MILLISECONDS)
   },
   methods: {
     async loadConversations () {
       const conversationList = await getConversationList('50', '0')
-      const profilesWithNames = {}
+      const profilesWithNames = this.profilesWithNames ?? {}
 
       conversationList.profiles.forEach(profile => {
         const name = profile.name
@@ -78,7 +88,7 @@ export default {
 
       const messagesAndProfiles = await getMessages(conversationId, null, '5')
 
-      this.chatWindow.conversation.messages = messagesAndProfiles.messages ?? []
+      this.$set(this.chatWindow.conversation, 'messages', messagesAndProfiles.messages.reverse() ?? [])
       messagesAndProfiles.profiles.forEach(profile => {
         const name = profile.name
         const id = profile.id
@@ -86,9 +96,10 @@ export default {
         this.profilesWithNames[id] = name
       })
 
-      console.log(messagesAndProfiles)
-
       this.chatWindow.isVisible = true
+    },
+    addMessageToExistingMessages (sentMessage) {
+      this.chatWindow.conversation.messages.push(sentMessage)
     },
   },
 }

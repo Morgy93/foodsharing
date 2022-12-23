@@ -26,6 +26,7 @@
         class="btn btn-primary btn-sm btn-block"
         type="button"
         :disabled="isMessageEmpty"
+        @click="sendMessage"
       >
         Senden
       </button>
@@ -35,6 +36,8 @@
 
 <script>
 import Message from '@/components/Message/LiteChat/Message.vue'
+import { sendMessage } from '@/api/conversations'
+import { pulseError } from '@/script'
 
 export default {
   name: 'ChatWindow',
@@ -43,7 +46,7 @@ export default {
     title: { type: String, required: true },
     conversationId: { type: Number, default: null },
     messages: { type: Array, required: true },
-    profilesWithNames: { type: Object, required: true },
+    profilesWithNames: { type: Array, required: true },
   },
   data () {
     return {
@@ -53,6 +56,17 @@ export default {
   computed: {
     isMessageEmpty () {
       return this.newMessage === ''
+    },
+  },
+  methods: {
+    async sendMessage () {
+      try {
+        const response = await sendMessage(this.conversationId, this.newMessage)
+        this.newMessage = ''
+        this.$emit('message-sent', response.message)
+      } catch (e) {
+        pulseError('')
+      }
     },
   },
 }
