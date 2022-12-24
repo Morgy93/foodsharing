@@ -102,6 +102,12 @@ class ForumTransactions
     public function activateThread(int $threadId): void
     {
         $this->forumGateway->activateThread($threadId);
+
+        // remove the bell that was created to notify the moderators about the new thread
+        $identifier = BellType::createIdentifier(BellType::NOT_ACTIVATED_FORUM_THREAD, $threadId);
+        if ($this->bellGateway->bellWithIdentifierExists($identifier)) {
+            $this->bellGateway->delBellsByIdentifier($identifier);
+        }
     }
 
     public function notificationMail($recipients, $tpl, $data): void
@@ -144,8 +150,10 @@ class ForumTransactions
             $moderators = $this->foodsaverGateway->getAdminsOrAmbassadors($moderationGroup);
         }
         if ($moderators) {
+            // send notification e-mail
+            $link = BASE_URL . $this->url($region['id'], false, $threadId);
             $data = [
-                'link' => BASE_URL . $this->url($region['id'], false, $threadId),
+                'link' => $link,
                 'thread' => $thread['title'],
                 'post' => $this->sanitizerService->markdownToHtml($rawPostBody),
                 'poster' => $posterName,
@@ -153,6 +161,21 @@ class ForumTransactions
             ];
 
             $this->notificationMail($moderators, 'forum/activation', $data);
+
+            // create notification bell
+            $bellData = Bell::create(
+                'forum_not_activated_thread_title',
+                'forum_not_activated_thread',
+                'fas fa-comment-plus',
+                ['href' => $link],
+                [
+                    'user' => $this->session->user('name'),
+                    'forum' => $region['name'],
+                    'title' => $thread['title'],
+                ],
+                BellType::createIdentifier(BellType::NOT_ACTIVATED_FORUM_THREAD, $threadId)
+            );
+            $this->bellGateway->addBell(array_column($moderators, 'id'), $bellData);
         }
     }
 

@@ -1484,6 +1484,9 @@ bell:
   new_report_title: "Neue Meldung über {name}"
   report_reason: "{reason}"
 
+  forum_not_activated_thread: "{forum}"
+  forum_not_activated_thread_title: "Neues Thema in einem moderierten Forum"
+
 list:
   filter_for: "Filtern nach…"
 

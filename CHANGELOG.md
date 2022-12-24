@@ -10,6 +10,8 @@
 - Store chain information is visible on the store page !2742 @alex.simm
 - Add home district count to region top #79 !2692 @Morgy93
 - Storemanagers can set a description for pickup slots #1653 !2757 @AntonBallmaier
+- Store chains can now be manged from the website. The working group "Betriebsketten" contains a tabular overview of all chains. !2251 !2273 @AntonBallmaier
+- Moderators of moderated forums also receive bell notifications for new threads #289 @alex.simm
 
 ## Changes
 - Make menubar sticky on mobile !2411 @AntonBallmaier
