@@ -17,6 +17,8 @@ import Vue from 'vue'
 
 import ChatComponent from '@/views/pages/Message/ChatComponent.vue'
 
+const CHAT_BOX_WIDTH = 370
+
 const conv = {
 
   initiated: false,
@@ -101,7 +103,7 @@ const conv = {
       if (conv.chatboxes[i].id == cid) {
         conv.chatboxes[i].el.remove()
       } else {
-        conv.chatboxes[i].el.css('right', `${20 + (x * 285)}px`)
+        conv.chatboxes[i].el.css('right', `${20 + (x * CHAT_BOX_WIDTH)}px`)
         tmp.push(conv.chatboxes[i])
         x++
       }
@@ -257,7 +259,7 @@ const conv = {
       min = false
     }
     if (conv.getKey(cid) === -1) {
-      const right = 20 + (this.chatboxes.length * 285)
+      const right = 20 + (this.chatboxes.length * CHAT_BOX_WIDTH)
 
       const $el = $(`
         <div id="chat-${cid}" class="chatbox ui-corner-top" style="bottom: 0px; right: ${right}px; display: block;"></div>

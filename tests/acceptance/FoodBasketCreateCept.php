@@ -41,12 +41,12 @@ $I->waitForElementVisible('#pulse-info', 4);
 $I->see('Danke dir, der Essenskorb wurde veröffentlicht');
 
 $I->seeInDatabase('fs_basket', [
-	'description' => $description,
-	'foodsaver_id' => $foodsaver['id']
+    'description' => $description,
+    'foodsaver_id' => $foodsaver['id']
 ]);
 
 $id = $I->grabFromDatabase('fs_basket', 'id', ['description' => $description,
-	'foodsaver_id' => $foodsaver['id']]);
+    'foodsaver_id' => $foodsaver['id']]);
 
 //Check update of the foodbasket
 $I->amOnPage($I->foodBasketInfoUrl($id));
@@ -64,26 +64,26 @@ $I->waitForText('Aktualisiert am');
 
 $I->see($updateDescription);
 $I->seeInDatabase('fs_basket', [
-	'description' => $description . $updateDescription,
-	'foodsaver_id' => $foodsaver['id']
+    'description' => $description . $updateDescription,
+    'foodsaver_id' => $foodsaver['id']
 ]);
 
 $picker = $I->createFoodsaver();
 
 $nick = $I->haveFriend('nick');
 $nick->does(
-	static function (AcceptanceTester $I) use ($id, $picker) {
-		$I->login($picker['email']);
-		$I->amOnPage($I->foodBasketInfoUrl($id));
+    static function (AcceptanceTester $I) use ($id, $picker) {
+        $I->login($picker['email']);
+        $I->amOnPage($I->foodBasketInfoUrl($id));
 
-		$I->waitForText('Essenskorb anfragen');
-		$I->click('Essenskorb anfragen');
-		$I->waitForText('Anfrage absenden');
-		$I->fillField('#contactmessage', 'Hi friend, can I have the basket please?');
-		$I->click('Anfrage absenden');
-		$I->waitForActiveAPICalls();
-		$I->waitForText('Anfrage wurde versendet');
-	});
+        $I->waitForText('Essenskorb anfragen');
+        $I->click('Essenskorb anfragen');
+        $I->waitForText('Anfrage absenden');
+        $I->fillField('#contactmessage', 'Hi friend, can I have the basket please?');
+        $I->click('Anfrage absenden');
+        $I->waitForActiveAPICalls();
+        $I->waitForText('Anfrage wurde versendet');
+    });
 
 $I->amOnPage($I->foodBasketInfoUrl($id));
 $I->waitForActiveAPICalls();
@@ -97,6 +97,7 @@ $I->see('Essenskorb anlegen', ['css' => '.testing-basket-create']);
 $I->click('.testing-basket-requests');
 // TODO: https://gitlab.com/foodsharing-dev/foodsharing/-/issues/1466 $I->see('Hi friend, can I have', ['css' => 'vue-advanced-chat']);
 // Reject request
+$I->wait(2);
 $I->click('.testing-basket-dropdown > .nav-link');
 $I->click('.testing-basket-requests-close');
 $I->waitForText('Essenskorbanfrage von ' . $picker['name'] . ' abschließen');

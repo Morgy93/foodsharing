@@ -1,4 +1,9 @@
 import serverData from './server-data'
+import RelativeTimeFormat from 'relative-time-format'
+import de from 'relative-time-format/locale/de'
+import en from 'relative-time-format/locale/en'
+RelativeTimeFormat.addLocale(de)
+RelativeTimeFormat.addLocale(en)
 
 const locale = serverData.locale
 
@@ -203,7 +208,7 @@ export default {
     }
 
     const intervalCalc = (dur) => diffInMs / dur
-    const rtf = new Intl.RelativeTimeFormat(locale, {
+    const rtf = new RelativeTimeFormat(locale, {
       localeMatcher: 'best fit',
       numeric: 'auto',
       style: short ? 'narrow' : 'long',
@@ -268,7 +273,7 @@ export default {
       minute: '2-digit',
     }
     if (this.isToday(d)) {
-      const rtf = new Intl.RelativeTimeFormat(locale, { numeric: 'auto' })
+      const rtf = new RelativeTimeFormat(locale, { numeric: 'auto' })
       return `${toCapitalize(rtf.format(0, 'day'))}, ${d.toLocaleString(locale, options)}`
     }
 
@@ -339,7 +344,7 @@ export default {
     }
 
     if (this.isToday(d)) {
-      const rtf = new Intl.RelativeTimeFormat(locale, { numeric: 'auto' })
+      const rtf = new RelativeTimeFormat(locale, { numeric: 'auto' })
       return `${toCapitalize(rtf.format(0, 'day'))}, ${d.toLocaleDateString(locale, options)}`
     }
 

@@ -10,4 +10,4 @@ source "$dir/__helping-functions.sh"
 # Generate a SQL dump file which allows extraction of the important schema information
 # Tables, Columns, Primary Key, foreign keys
 #https://dev.mysql.com/doc/refman/8.0/en/mysqldump.html
-exec-in-container docs bash "/app/scripts/generate-db-documenation/mysql_generate_documentation"
+exec-in-container docs bash "/app/scripts/generate-documentation/mysql_generate_documentation"

@@ -43,148 +43,148 @@ use Symfony\Contracts\Translation\TranslatorInterface;
  */
 class RenderControllerSetupSubscriber implements EventSubscriberInterface
 {
-	/**
-	 * this attribute key is set by onKernelController if the request is handled by a render controller
-	 * (and therefore needs legacy postprocessing).
-	 */
-	private const NEEDS_POSTPROCESSING = 'fs_needs_postprocessing';
+    /**
+     * this attribute key is set by onKernelController if the request is handled by a render controller
+     * (and therefore needs legacy postprocessing).
+     */
+    private const NEEDS_POSTPROCESSING = 'fs_needs_postprocessing';
 
-	/**
-	 * @var ContainerInterface Kernel container needed to access any service,
-	 * instead of just the ones specified in AbstractController::getSubscribedServices
-	 */
-	private ContainerInterface $fullServiceContainer;
+    /**
+     * @var ContainerInterface Kernel container needed to access any service,
+     * instead of just the ones specified in AbstractController::getSubscribedServices
+     */
+    private ContainerInterface $fullServiceContainer;
 
-	// needs to be persisted between onKernelController and onKernelResponse
-	private Caching $cache;
+    // needs to be persisted between onKernelController and onKernelResponse
+    private Caching $cache;
 
-	// TODO: this can be removed once the 'dialog-confirm' in onKernelController is removed
-	private TranslatorInterface $translator;
+    // TODO: this can be removed once the 'dialog-confirm' in onKernelController is removed
+    private TranslatorInterface $translator;
 
-	public function __construct(ContainerInterface $container, TranslatorInterface $translator)
-	{
-		$this->fullServiceContainer = $container;
-		$this->translator = $translator;
-	}
+    public function __construct(ContainerInterface $container, TranslatorInterface $translator)
+    {
+        $this->fullServiceContainer = $container;
+        $this->translator = $translator;
+    }
 
-	public static function getSubscribedEvents()
-	{
-		return [
-			KernelEvents::CONTROLLER => 'onKernelController',
-			KernelEvents::RESPONSE => 'onKernelResponse',
-		];
-	}
+    public static function getSubscribedEvents()
+    {
+        return [
+            KernelEvents::CONTROLLER => 'onKernelController',
+            KernelEvents::RESPONSE => 'onKernelResponse',
+        ];
+    }
 
-	/**
-	 * This event is fired before the controller determined by routing is called.
-	 * Here, we first filter based on the controller, because
-	 * this should only do anything for render controllers.
-	 * Basically, this is for all non-REST/XHR code.
-	 */
-	public function onKernelController(ControllerEvent $event)
-	{
-		$controller = $event->getController();
+    /**
+     * This event is fired before the controller determined by routing is called.
+     * Here, we first filter based on the controller, because
+     * this should only do anything for render controllers.
+     * Basically, this is for all non-REST/XHR code.
+     */
+    public function onKernelController(ControllerEvent $event)
+    {
+        $controller = $event->getController();
 
-		// when a controller class defines multiple action methods, the controller
-		// is returned as [$controllerInstance, 'methodName']
-		if (is_array($controller)) {
-			$controller = $controller[0];
-		}
+        // when a controller class defines multiple action methods, the controller
+        // is returned as [$controllerInstance, 'methodName']
+        if (is_array($controller)) {
+            $controller = $controller[0];
+        }
 
-		if (!$this->isRenderController($controller)) {
-			return;
-		}
+        if (!$this->isRenderController($controller)) {
+            return;
+        }
 
-		$request = $event->getRequest();
+        $request = $event->getRequest();
 
-		// for post processing, mark this request so onKernelResponse knows it should act on the response
+        // for post processing, mark this request so onKernelResponse knows it should act on the response
 
-		$request->attributes->set(self::NEEDS_POSTPROCESSING, true);
+        $request->attributes->set(self::NEEDS_POSTPROCESSING, true);
 
-		// The actual work this does starts here!
+        // The actual work this does starts here!
 
-		/* @var Session $session */
-		$session = $this->get(Session::class);
-		$session->initIfCookieExists();
+        /* @var Session $session */
+        $session = $this->get(Session::class);
+        $session->initIfCookieExists();
 
-		// is this actually used anywhere? (prod?)
-		global $g_page_cache;
-		if (isset($g_page_cache) && strtolower($_SERVER['REQUEST_METHOD']) == 'get') {
-			/* @var Mem $mem */
-			$mem = $this->get(Mem::class);
-			/* @var InfluxMetrics $influxdb */
-			$influxdb = $this->get(InfluxMetrics::class);
-			$this->cache = new Caching($g_page_cache, $session, $mem, $influxdb);
-			$this->cache->lookup();
-		}
+        // is this actually used anywhere? (prod?)
+        global $g_page_cache;
+        if (isset($g_page_cache) && strtolower($_SERVER['REQUEST_METHOD']) == 'get') {
+            /* @var Mem $mem */
+            $mem = $this->get(Mem::class);
+            /* @var InfluxMetrics $influxdb */
+            $influxdb = $this->get(InfluxMetrics::class);
+            $this->cache = new Caching($g_page_cache, $session, $mem, $influxdb);
+            $this->cache->lookup();
+        }
 
-		$translator = $this->get('translator');
-		$translator->setLocale($session->getLocale());
+        $translator = $this->get('translator');
+        $translator->setLocale($session->getLocale());
 
-		error_reporting(E_ALL);
+        error_reporting(E_ALL);
 
-		if (isset($_GET['logout'])) {
-			$_SESSION['client'] = [];
-			unset($_SESSION['client']);
-		}
+        if (isset($_GET['logout'])) {
+            $_SESSION['client'] = [];
+            unset($_SESSION['client']);
+        }
 
-		global $content_left_width;
-		$content_left_width = 6;
-		global $content_right_width;
-		$content_right_width = 6;
+        global $content_left_width;
+        $content_left_width = 6;
+        global $content_right_width;
+        $content_right_width = 6;
 
-		global $g_template;
-		$g_template = 'default';
+        global $g_template;
+        $g_template = 'default';
 
-		global $g_data;
-		$g_data = $this->get(DataHelper::class)->getPostData();
+        global $g_data;
+        $g_data = $this->get(DataHelper::class)->getPostData();
 
-		// TODO check if all of these are actually needed anymore
-		$pageHelper = $this->get(PageHelper::class);
-		$pageHelper->addHidden('<ul id="hidden-info"></ul>');
-		$pageHelper->addHidden('<ul id="hidden-error"></ul>');
-		$pageHelper->addHidden('<div id="dialog-confirm" title='
-		. $this->translator->trans('really_delete')
-		. '><p><span class="ui-icon ui-icon-alert" style="float:left; margin:0 7px 20px 0;"></span><span id="dialog-confirm-msg"></span><input type="hidden" value="" id="dialog-confirm-url" /></p></div>');
+        // TODO check if all of these are actually needed anymore
+        $pageHelper = $this->get(PageHelper::class);
+        $pageHelper->addHidden('<ul id="hidden-info"></ul>');
+        $pageHelper->addHidden('<ul id="hidden-error"></ul>');
+        $pageHelper->addHidden('<div id="dialog-confirm" title='
+        . $this->translator->trans('really_delete')
+        . '><p><span class="ui-icon ui-icon-alert" style="float:left; margin:0 7px 20px 0;"></span><span id="dialog-confirm-msg"></span><input type="hidden" value="" id="dialog-confirm-url" /></p></div>');
 
-		$contentGateway = $this->get(ContentGateway::class);
-		global $g_broadcast_message;
-		$g_broadcast_message = $contentGateway->get(ContentId::BROADCAST_MESSAGE)['body'];
-	}
+        $contentGateway = $this->get(ContentGateway::class);
+        global $g_broadcast_message;
+        $g_broadcast_message = $contentGateway->get(ContentId::BROADCAST_MESSAGE)['body'];
+    }
 
-	public function onKernelResponse(ResponseEvent $event)
-	{
-		$request = $event->getRequest();
+    public function onKernelResponse(ResponseEvent $event)
+    {
+        $request = $event->getRequest();
 
-		// this attribute is set by onKernelController if the controller that handled the request is a render controller.
-		// we should not do anything if this request was not for a render controller,
-		// to maintain exactly the same behavior as before
-		if ($request->attributes->get(self::NEEDS_POSTPROCESSING) !== true) {
-			return;
-		}
+        // this attribute is set by onKernelController if the controller that handled the request is a render controller.
+        // we should not do anything if this request was not for a render controller,
+        // to maintain exactly the same behavior as before
+        if ($request->attributes->get(self::NEEDS_POSTPROCESSING) !== true) {
+            return;
+        }
 
-		$response = $event->getResponse();
+        $response = $event->getResponse();
 
-		$response->headers->set('X-Frame-Options', 'DENY');
-		$response->headers->set('X-Content-Type-Options', 'nosniff');
+        $response->headers->set('X-Frame-Options', 'DENY');
+        $response->headers->set('X-Content-Type-Options', 'nosniff');
 
-		$csp = $this->get(ContentSecurityPolicy::class);
-		$cspString = $csp->generate($request->getSchemeAndHttpHost(), CSP_REPORT_URI, CSP_REPORT_ONLY);
-		$cspParts = explode(': ', $cspString, 2);
-		$response->headers->set($cspParts[0], $cspParts[1]);
+        $csp = $this->get(ContentSecurityPolicy::class);
+        $cspString = $csp->generate($request->getSchemeAndHttpHost(), CSP_REPORT_URI, CSP_REPORT_ONLY);
+        $cspParts = explode(': ', $cspString, 2);
+        $response->headers->set($cspParts[0], $cspParts[1]);
 
-		if (isset($this->cache) && $this->cache->shouldCache()) {
-			$this->cache->cache($response->getContent());
-		}
-	}
+        if (isset($this->cache) && $this->cache->shouldCache()) {
+            $this->cache->cache($response->getContent());
+        }
+    }
 
-	private function isRenderController(object $controller): bool
-	{
-		return $controller instanceof IndexController || $controller instanceof FoodsharingController;
-	}
+    private function isRenderController(object $controller): bool
+    {
+        return $controller instanceof IndexController || $controller instanceof FoodsharingController;
+    }
 
-	private function get($id)
-	{
-		return $this->fullServiceContainer->get($id);
-	}
+    private function get($id)
+    {
+        return $this->fullServiceContainer->get($id);
+    }
 }

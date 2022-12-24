@@ -14,74 +14,74 @@ use Foodsharing\Modules\Core\DBConstants\Bell\BellType;
 
 class PickupGateway extends BaseGateway implements BellUpdaterInterface
 {
-	private BellGateway $bellGateway;
+    private BellGateway $bellGateway;
 
-	public function __construct(
-		Database $db,
-		BellGateway $bellGateway,
-		BellUpdateTrigger $bellUpdateTrigger
-	) {
-		parent::__construct($db);
+    public function __construct(
+        Database $db,
+        BellGateway $bellGateway,
+        BellUpdateTrigger $bellUpdateTrigger
+    ) {
+        parent::__construct($db);
 
-		$this->bellGateway = $bellGateway;
+        $this->bellGateway = $bellGateway;
 
-		$bellUpdateTrigger->subscribe($this);
-	}
+        $bellUpdateTrigger->subscribe($this);
+    }
 
-	public function addFetcher(int $fsId, int $storeId, \DateTime $date, bool $confirmed = false): int
-	{
-		$result = $this->db->insertIgnore('fs_abholer', [
-			'foodsaver_id' => $fsId,
-			'betrieb_id' => $storeId,
-			'date' => $this->db->date($date),
-			'confirmed' => $confirmed,
-		]);
+    public function addFetcher(int $fsId, int $storeId, \DateTime $date, bool $confirmed = false): int
+    {
+        $result = $this->db->insertIgnore('fs_abholer', [
+            'foodsaver_id' => $fsId,
+            'betrieb_id' => $storeId,
+            'date' => $this->db->date($date),
+            'confirmed' => $confirmed,
+        ]);
 
-		if (!$confirmed) {
-			$this->updateBellNotificationForStoreManagers($storeId, true);
-		}
+        if (!$confirmed) {
+            $this->updateBellNotificationForStoreManagers($storeId, true);
+        }
 
-		return $result;
-	}
+        return $result;
+    }
 
-	/**
-	 * @param ?int $storeId if set, only remove pickup dates for the user in this store
-	 */
-	public function deleteAllDatesFromAFoodsaver(int $userId, ?int $storeId = null)
-	{
-		$criteria = [
-			'foodsaver_id' => $userId,
-			'date >' => $this->db->now(),
-		];
-		if (!is_null($storeId)) {
-			$criteria['betrieb_id'] = $storeId;
-		}
+    /**
+     * @param ?int $storeId if set, only remove pickup dates for the user in this store
+     */
+    public function deleteAllDatesFromAFoodsaver(int $userId, ?int $storeId = null)
+    {
+        $criteria = [
+            'foodsaver_id' => $userId,
+            'date >' => $this->db->now(),
+        ];
+        if (!is_null($storeId)) {
+            $criteria['betrieb_id'] = $storeId;
+        }
 
-		$affectedStoreIds = $this->db->fetchAllValuesByCriteria('fs_abholer', 'betrieb_id', $criteria);
-		$result = $this->db->delete('fs_abholer', $criteria);
+        $affectedStoreIds = $this->db->fetchAllValuesByCriteria('fs_abholer', 'betrieb_id', $criteria);
+        $result = $this->db->delete('fs_abholer', $criteria);
 
-		foreach ($affectedStoreIds as $storeIdDel) {
-			$this->updateBellNotificationForStoreManagers($storeIdDel);
-		}
+        foreach ($affectedStoreIds as $storeIdDel) {
+            $this->updateBellNotificationForStoreManagers($storeIdDel);
+        }
 
-		return $result;
-	}
+        return $result;
+    }
 
-	public function removeFetcher(int $fsId, int $storeId, \DateTime $date)
-	{
-		$deletedRows = $this->db->delete('fs_abholer', [
-			'foodsaver_id' => $fsId,
-			'betrieb_id' => $storeId,
-			'date' => $this->db->date($date),
-		]);
-		$this->updateBellNotificationForStoreManagers($storeId);
+    public function removeFetcher(int $fsId, int $storeId, \DateTime $date)
+    {
+        $deletedRows = $this->db->delete('fs_abholer', [
+            'foodsaver_id' => $fsId,
+            'betrieb_id' => $storeId,
+            'date' => $this->db->date($date),
+        ]);
+        $this->updateBellNotificationForStoreManagers($storeId);
 
-		return $deletedRows;
-	}
+        return $deletedRows;
+    }
 
-	public function getSameDayPickupsForUser(int $fsId, \DateTime $day): array
-	{
-		return $this->db->fetchAll('
+    public function getSameDayPickupsForUser(int $fsId, \DateTime $day): array
+    {
+        return $this->db->fetchAll('
 			SELECT 	p.`date`,
 					p.confirmed AS isConfirmed,
 					s.name AS storeName,
@@ -96,24 +96,24 @@ class PickupGateway extends BaseGateway implements BellUpdaterInterface
 
 			ORDER BY p.`date`
 		', [
-			':fsId' => $fsId,
-			':pickupDay' => $this->db->date($day, false),
-			':now' => $this->db->now(),
-		]);
-	}
+            ':fsId' => $fsId,
+            ':pickupDay' => $this->db->date($day, false),
+            ':now' => $this->db->now(),
+        ]);
+    }
 
-	/**
-	 * @param int $fsId foodsaver ID
-	 * @param Carbon $from Date From
-	 * @param Carbon $to Date To
-	 *
-	 * This function counts how many pickups the user has in stores that
-	 * have set to use the region pickup rule. It considers from a certain pickupdate
-	 * into the future and into the past. It has on purpose no region restriction for the stores the user is in.
-	 */
-	public function getNumberOfPickupsForUserWithStoreRules(int $fsId, Carbon $from, Carbon $to): int
-	{
-		$result = $this->db->fetchAll('
+    /**
+     * @param int $fsId foodsaver ID
+     * @param Carbon $from Date From
+     * @param Carbon $to Date To
+     *
+     * This function counts how many pickups the user has in stores that
+     * have set to use the region pickup rule. It considers from a certain pickupdate
+     * into the future and into the past. It has on purpose no region restriction for the stores the user is in.
+     */
+    public function getNumberOfPickupsForUserWithStoreRules(int $fsId, Carbon $from, Carbon $to): int
+    {
+        $result = $this->db->fetchAll('
 			SELECT 	count(*) as Anzahl
 			FROM            `fs_abholer` p
 			LEFT OUTER JOIN `fs_betrieb` s  ON  s.id = p.betrieb_id
@@ -121,25 +121,25 @@ class PickupGateway extends BaseGateway implements BellUpdaterInterface
 			AND      DATE(p.date) BETWEEN DATE(:from) and DATE(:to)
 			and 	 s.use_region_pickup_rule = 1
 		', [
-			':fsId' => $fsId,
-			':from' => $this->db->date($from, false),
-			':to' => $this->db->date($to, false),
-		]);
+            ':fsId' => $fsId,
+            ':from' => $this->db->date($from, false),
+            ':to' => $this->db->date($to, false),
+        ]);
 
-		return $result[0]['Anzahl'];
-	}
+        return $result[0]['Anzahl'];
+    }
 
-	/**
-	 * @param int $fsId foodsaver ID
-	 * @param Carbon $pickup Date of the pickup
-	 *
-	 * This function counts how many pickups the user has in stores that
-	 * have set to use the region pickup rule for the same day. It considers from a certain pickupdate
-	 * into the future and into the past. It has on purpose no region restriction for the stores the user is in.
-	 */
-	public function getNumberOfPickupsForUserWithStoreRulesSameDay(int $fsId, Carbon $pickup): int
-	{
-		$result = $this->db->fetchAll('
+    /**
+     * @param int $fsId foodsaver ID
+     * @param Carbon $pickup Date of the pickup
+     *
+     * This function counts how many pickups the user has in stores that
+     * have set to use the region pickup rule for the same day. It considers from a certain pickupdate
+     * into the future and into the past. It has on purpose no region restriction for the stores the user is in.
+     */
+    public function getNumberOfPickupsForUserWithStoreRulesSameDay(int $fsId, Carbon $pickup): int
+    {
+        $result = $this->db->fetchAll('
 			SELECT 	count(*) as Anzahl
 			FROM            `fs_abholer` p
 			LEFT OUTER JOIN `fs_betrieb` s  ON  s.id = p.betrieb_id
@@ -147,131 +147,131 @@ class PickupGateway extends BaseGateway implements BellUpdaterInterface
 			AND      DATE(p.date) = DATE(:pickup)
 			and 	 s.use_region_pickup_rule = 1
 		', [
-			':fsId' => $fsId,
-			':pickup' => $this->db->date($pickup, false),
-		]);
+            ':fsId' => $fsId,
+            ':pickup' => $this->db->date($pickup, false),
+        ]);
 
-		return $result[0]['Anzahl'];
-	}
+        return $result[0]['Anzahl'];
+    }
 
-	/**
-	 * @param bool $markNotificationAsUnread:
-	 * if an older notification exists, that has already been marked as read,
-	 * it can be marked as unread again while updating it
-	 */
-	public function updateBellNotificationForStoreManagers(int $storeId, bool $markNotificationAsUnread = false): void
-	{
-		$storeName = $this->getStoreName($storeId);
-		$messageIdentifier = BellType::createIdentifier(BellType::STORE_UNCONFIRMED_PICKUP, $storeId);
-		$messageCount = $this->getUnconfirmedFetchesCount($storeId);
-		$messageVars = ['betrieb' => $storeName, 'count' => $messageCount];
-		$messageTimestamp = $this->getNextUnconfirmedFetchTime($storeId);
-		$messageExpiration = $messageTimestamp;
+    /**
+     * @param bool $markNotificationAsUnread:
+     * if an older notification exists, that has already been marked as read,
+     * it can be marked as unread again while updating it
+     */
+    public function updateBellNotificationForStoreManagers(int $storeId, bool $markNotificationAsUnread = false): void
+    {
+        $storeName = $this->getStoreName($storeId);
+        $messageIdentifier = BellType::createIdentifier(BellType::STORE_UNCONFIRMED_PICKUP, $storeId);
+        $messageCount = $this->getUnconfirmedFetchesCount($storeId);
+        $messageVars = ['betrieb' => $storeName, 'count' => $messageCount];
+        $messageTimestamp = $this->getNextUnconfirmedFetchTime($storeId);
+        $messageExpiration = $messageTimestamp;
 
-		$oldBellExists = $this->bellGateway->bellWithIdentifierExists($messageIdentifier);
+        $oldBellExists = $this->bellGateway->bellWithIdentifierExists($messageIdentifier);
 
-		if ($messageCount === 0 && $oldBellExists) {
-			$this->bellGateway->delBellsByIdentifier($messageIdentifier);
-		} elseif ($messageCount > 0 && $oldBellExists) {
-			$oldBellId = $this->bellGateway->getOneByIdentifier($messageIdentifier);
-			$data = [
-				'vars' => $messageVars,
-				'time' => $messageTimestamp,
-				'expiration' => $messageExpiration,
-			];
-			$this->bellGateway->updateBell($oldBellId, $data, $markNotificationAsUnread);
-		} elseif ($messageCount > 0 && !$oldBellExists) {
-			$bellData = Bell::create(
-				'betrieb_fetch_title',
-				'betrieb_fetch',
-				'fas fa-user-clock',
-				['href' => '/?page=fsbetrieb&id=' . $storeId],
-				$messageVars,
-				$messageIdentifier,
-				false,
-				$messageExpiration,
-				$messageTimestamp
-			);
-			$this->bellGateway->addBell($this->getResponsibleFoodsaverIds($storeId), $bellData);
-		}
-	}
+        if ($messageCount === 0 && $oldBellExists) {
+            $this->bellGateway->delBellsByIdentifier($messageIdentifier);
+        } elseif ($messageCount > 0 && $oldBellExists) {
+            $oldBellId = $this->bellGateway->getOneByIdentifier($messageIdentifier);
+            $data = [
+                'vars' => $messageVars,
+                'time' => $messageTimestamp,
+                'expiration' => $messageExpiration,
+            ];
+            $this->bellGateway->updateBell($oldBellId, $data, $markNotificationAsUnread);
+        } elseif ($messageCount > 0 && !$oldBellExists) {
+            $bellData = Bell::create(
+                'betrieb_fetch_title',
+                'betrieb_fetch',
+                'fas fa-user-clock',
+                ['href' => '/?page=fsbetrieb&id=' . $storeId],
+                $messageVars,
+                $messageIdentifier,
+                false,
+                $messageExpiration,
+                $messageTimestamp
+            );
+            $this->bellGateway->addBell($this->getResponsibleFoodsaverIds($storeId), $bellData);
+        }
+    }
 
-	public function updateExpiredBells(): void
-	{
-		$expiredBells = $this->bellGateway->getExpiredByIdentifier(str_replace('%d', '%', BellType::STORE_UNCONFIRMED_PICKUP));
+    public function updateExpiredBells(): void
+    {
+        $expiredBells = $this->bellGateway->getExpiredByIdentifier(str_replace('%d', '%', BellType::STORE_UNCONFIRMED_PICKUP));
 
-		foreach ($expiredBells as $bell) {
-			$storeId = substr($bell->identifier, strrpos($bell->identifier, '-') + 1);
-			$this->updateBellNotificationForStoreManagers(intval($storeId));
-		}
-	}
+        foreach ($expiredBells as $bell) {
+            $storeId = substr($bell->identifier, strrpos($bell->identifier, '-') + 1);
+            $this->updateBellNotificationForStoreManagers(intval($storeId));
+        }
+    }
 
-	public function confirmFetcher(int $fsid, int $storeId, \DateTime $date): int
-	{
-		$result = $this->db->update(
-			'fs_abholer',
-			['confirmed' => 1],
-			['foodsaver_id' => $fsid, 'betrieb_id' => $storeId, 'date' => $this->db->date($date)]
-		);
+    public function confirmFetcher(int $fsid, int $storeId, \DateTime $date): int
+    {
+        $result = $this->db->update(
+            'fs_abholer',
+            ['confirmed' => 1],
+            ['foodsaver_id' => $fsid, 'betrieb_id' => $storeId, 'date' => $this->db->date($date)]
+        );
 
-		$this->updateBellNotificationForStoreManagers($storeId);
+        $this->updateBellNotificationForStoreManagers($storeId);
 
-		return $result;
-	}
+        return $result;
+    }
 
-	public function getAbholzeiten(int $storeId): array
-	{
-		$times = $this->db->fetchAll('
+    public function getAbholzeiten(int $storeId): array
+    {
+        $times = $this->db->fetchAll('
 			SELECT `time`, `dow`, `fetcher`
 			FROM `fs_abholzeiten`
 			WHERE `betrieb_id` = :storeId
 		', [':storeId' => $storeId]);
 
-		if (!$times) {
-			return [];
-		}
+        if (!$times) {
+            return [];
+        }
 
-		$result = [];
-		foreach ($times as $r) {
-			$result[$r['dow'] . '-' . $r['time']] = [
-				'dow' => $r['dow'],
-				'time' => $r['time'],
-				'fetcher' => $r['fetcher'],
-			];
-		}
+        $result = [];
+        foreach ($times as $r) {
+            $result[$r['dow'] . '-' . $r['time']] = [
+                'dow' => $r['dow'],
+                'time' => $r['time'],
+                'fetcher' => $r['fetcher'],
+            ];
+        }
 
-		ksort($result);
+        ksort($result);
 
-		return $result;
-	}
+        return $result;
+    }
 
-	public function getPickupSignupsForDate(int $storeId, \DateTime $date)
-	{
-		return $this->getPickupSignupsForDateRange($storeId, $date, $date);
-	}
+    public function getPickupSignupsForDate(int $storeId, \DateTime $date)
+    {
+        return $this->getPickupSignupsForDateRange($storeId, $date, $date);
+    }
 
-	public function getPickupSignupsForDateRange(int $storeId, \DateTime $from, ?\DateTime $to = null)
-	{
-		$condition = ['date >=' => $this->db->date($from), 'betrieb_id' => $storeId];
-		if (!is_null($to)) {
-			$condition['date <='] = $this->db->date($to);
-		}
-		$result = $this->db->fetchAllByCriteria(
-			'fs_abholer',
-			['foodsaver_id', 'date', 'confirmed'],
-			$condition
-		);
+    public function getPickupSignupsForDateRange(int $storeId, \DateTime $from, ?\DateTime $to = null)
+    {
+        $condition = ['date >=' => $this->db->date($from), 'betrieb_id' => $storeId];
+        if (!is_null($to)) {
+            $condition['date <='] = $this->db->date($to);
+        }
+        $result = $this->db->fetchAllByCriteria(
+            'fs_abholer',
+            ['foodsaver_id', 'date', 'confirmed'],
+            $condition
+        );
 
-		return array_map(function ($e) {
-			$e['date'] = $this->db->parseDate($e['date']);
+        return array_map(function ($e) {
+            $e['date'] = $this->db->parseDate($e['date']);
 
-			return $e;
-		}, $result);
-	}
+            return $e;
+        }, $result);
+    }
 
-	public function getPickupHistory(int $storeId, \DateTime $from, \DateTime $to): array
-	{
-		return $this->db->fetchAll('
+    public function getPickupHistory(int $storeId, \DateTime $from, \DateTime $to): array
+    {
+        return $this->db->fetchAll('
 			SELECT	a.foodsaver_id AS foodsaverId,
 					a.confirmed,
 					a.date,
@@ -285,73 +285,73 @@ class PickupGateway extends BaseGateway implements BellUpdaterInterface
 
 			ORDER BY a.date
 		', [
-			':storeId' => $storeId,
-			':from' => $this->db->date($from),
-			':to' => $this->db->date($to),
-		]);
-	}
+            ':storeId' => $storeId,
+            ':from' => $this->db->date($from),
+            ':to' => $this->db->date($to),
+        ]);
+    }
 
-	public function getRegularPickups(int $storeId)
-	{
-		return $this->db->fetchAllByCriteria(
-			'fs_abholzeiten',
-			['time', 'dow', 'fetcher'],
-			['betrieb_id' => $storeId]
-		);
-	}
+    public function getRegularPickups(int $storeId)
+    {
+        return $this->db->fetchAllByCriteria(
+            'fs_abholzeiten',
+            ['time', 'dow', 'fetcher'],
+            ['betrieb_id' => $storeId]
+        );
+    }
 
-	public function getOnetimePickups(int $storeId, \DateTime $date)
-	{
-		return $this->getOnetimePickupsForRange($storeId, $date, $date);
-	}
+    public function getOnetimePickups(int $storeId, \DateTime $date)
+    {
+        return $this->getOnetimePickupsForRange($storeId, $date, $date);
+    }
 
-	private function getOnetimePickupsForRange(int $storeId, \DateTime $from, ?\DateTime $to)
-	{
-		$condition = [
-			'betrieb_id' => $storeId,
-			'time >=' => $this->db->date($from),
-		];
-		if ($to) {
-			$condition = array_merge($condition, ['time <=' => $this->db->date($to)]);
-		}
-		$result = $this->db->fetchAllByCriteria('fs_fetchdate', ['time', 'fetchercount'], $condition);
+    private function getOnetimePickupsForRange(int $storeId, \DateTime $from, ?\DateTime $to)
+    {
+        $condition = [
+            'betrieb_id' => $storeId,
+            'time >=' => $this->db->date($from),
+        ];
+        if ($to) {
+            $condition = array_merge($condition, ['time <=' => $this->db->date($to)]);
+        }
+        $result = $this->db->fetchAllByCriteria('fs_fetchdate', ['time', 'fetchercount'], $condition);
 
-		return array_map(function ($e) {
-			return [
-				'date' => $this->db->parseDate($e['time']),
-				'fetcher' => $e['fetchercount'],
-			];
-		}, $result);
-	}
+        return array_map(function ($e) {
+            return [
+                'date' => $this->db->parseDate($e['time']),
+                'fetcher' => $e['fetchercount'],
+            ];
+        }, $result);
+    }
 
-	public function addOnetimePickup(int $storeId, \DateTime $date, int $slots)
-	{
-		$this->db->insert('fs_fetchdate', [
-			'betrieb_id' => $storeId,
-			'time' => $this->db->date($date),
-			'fetchercount' => $slots,
-		]);
-	}
+    public function addOnetimePickup(int $storeId, \DateTime $date, int $slots)
+    {
+        $this->db->insert('fs_fetchdate', [
+            'betrieb_id' => $storeId,
+            'time' => $this->db->date($date),
+            'fetchercount' => $slots,
+        ]);
+    }
 
-	public function updateOnetimePickupTotalSlots(int $storeId, \DateTime $date, int $slots): bool
-	{
-		return $this->db->update(
-			'fs_fetchdate',
-			['fetchercount' => $slots],
-			['betrieb_id' => $storeId, 'time' => $this->db->date($date)]
-		) === 1;
-	}
+    public function updateOnetimePickupTotalSlots(int $storeId, \DateTime $date, int $slots): bool
+    {
+        return $this->db->update(
+            'fs_fetchdate',
+            ['fetchercount' => $slots],
+            ['betrieb_id' => $storeId, 'time' => $this->db->date($date)]
+        ) === 1;
+    }
 
-	private function getFutureRegularPickupInterval(int $storeId): CarbonInterval
-	{
-		$result = $this->db->fetchValueByCriteria('fs_betrieb', 'prefetchtime', ['id' => $storeId]);
+    private function getFutureRegularPickupInterval(int $storeId): CarbonInterval
+    {
+        $result = $this->db->fetchValueByCriteria('fs_betrieb', 'prefetchtime', ['id' => $storeId]);
 
-		return CarbonInterval::seconds($result);
-	}
+        return CarbonInterval::seconds($result);
+    }
 
-	private function getNextUnconfirmedFetchTime(int $storeId): \DateTime
-	{
-		$date = $this->db->fetchValue('
+    private function getNextUnconfirmedFetchTime(int $storeId): \DateTime
+    {
+        $date = $this->db->fetchValue('
 			SELECT  MIN(`date`)
 
 			FROM    `fs_abholer`
@@ -360,124 +360,124 @@ class PickupGateway extends BaseGateway implements BellUpdaterInterface
 			AND     `confirmed` = 0
 			AND     `date` > :date
 		', [
-			':storeId' => $storeId,
-			':date' => $this->db->now(),
-		]);
+            ':storeId' => $storeId,
+            ':date' => $this->db->now(),
+        ]);
 
-		return new \DateTime($date);
-	}
+        return new \DateTime($date);
+    }
 
-	private function getUnconfirmedFetchesCount(int $storeId)
-	{
-		return $this->db->count('fs_abholer', ['betrieb_id' => $storeId, 'confirmed' => 0, 'date >' => $this->db->now()]);
-	}
+    private function getUnconfirmedFetchesCount(int $storeId)
+    {
+        return $this->db->count('fs_abholer', ['betrieb_id' => $storeId, 'confirmed' => 0, 'date >' => $this->db->now()]);
+    }
 
-	/**
-	 * @param Carbon $from DateRange start for all slots. Now if empty.
-	 * @param Carbon $to DateRange for regular slots - future pickup interval if empty
-	 * @param Carbon $oneTimeSlotTo DateRange for onetime slots to be taken into account
-	 */
-	public function getPickupSlots(int $storeId, ?Carbon $from = null, ?Carbon $to = null, ?Carbon $oneTimeSlotTo = null): array
-	{
-		$intervalFuturePickupSignup = $this->getFutureRegularPickupInterval($storeId);
-		$from = $from ?? Carbon::now();
-		$extendedToDate = Carbon::now('Europe/Berlin')->add($intervalFuturePickupSignup);
-		$to = $to ?? $extendedToDate;
-		$regularSlots = $this->getRegularPickups($storeId);
-		$onetimeSlots = $this->getOnetimePickupsForRange($storeId, $from, $oneTimeSlotTo);
-		$signupsTo = is_null($oneTimeSlotTo) ? null : max($to, $oneTimeSlotTo);
-		$signups = $this->getPickupSignupsForDateRange($storeId, $from, $signupsTo);
+    /**
+     * @param Carbon $from DateRange start for all slots. Now if empty.
+     * @param Carbon $to DateRange for regular slots - future pickup interval if empty
+     * @param Carbon $oneTimeSlotTo DateRange for onetime slots to be taken into account
+     */
+    public function getPickupSlots(int $storeId, ?Carbon $from = null, ?Carbon $to = null, ?Carbon $oneTimeSlotTo = null): array
+    {
+        $intervalFuturePickupSignup = $this->getFutureRegularPickupInterval($storeId);
+        $from = $from ?? Carbon::now();
+        $extendedToDate = Carbon::now('Europe/Berlin')->add($intervalFuturePickupSignup);
+        $to = $to ?? $extendedToDate;
+        $regularSlots = $this->getRegularPickups($storeId);
+        $onetimeSlots = $this->getOnetimePickupsForRange($storeId, $from, $oneTimeSlotTo);
+        $signupsTo = is_null($oneTimeSlotTo) ? null : max($to, $oneTimeSlotTo);
+        $signups = $this->getPickupSignupsForDateRange($storeId, $from, $signupsTo);
 
-		$slots = [];
-		foreach ($regularSlots as $slot) {
-			$date = $from->copy();
-			$date->addDays($this->realMod($slot['dow'] - $date->format('w'), 7));
-			$date->setTimeFromTimeString($slot['time'])->shiftTimezone('Europe/Berlin');
-			if ($date < $from) {
-				/* setting time could shift it into past */
-				$date->addDays(7);
-			}
-			while ($date <= $to) {
-				if (empty(array_filter($onetimeSlots, function ($e) use ($date) {
-					return $date == $e['date'];
-				}))) {
-					/* only take this regular slot into account when there is no manual slot for the same time */
-					$occupiedSlots = array_map(
-						function ($e) {
-							return ['foodsaverId' => $e['foodsaver_id'], 'isConfirmed' => (bool)$e['confirmed']];
-						},
-						array_filter(
-							$signups,
-							function ($e) use ($date) {
-								return $date == $e['date'];
-							}
-						)
-					);
-					$isAvailable =
-						$date > Carbon::now() &&
-						$date <= $extendedToDate &&
-						$slot['fetcher'] > count($occupiedSlots);
-					$slots[] = [
-						'date' => $date,
-						'totalSlots' => $slot['fetcher'],
-						'occupiedSlots' => array_values($occupiedSlots),
-						'isAvailable' => $isAvailable,
-					];
-				}
+        $slots = [];
+        foreach ($regularSlots as $slot) {
+            $date = $from->copy();
+            $date->addDays($this->realMod($slot['dow'] - $date->format('w'), 7));
+            $date->setTimeFromTimeString($slot['time'])->shiftTimezone('Europe/Berlin');
+            if ($date < $from) {
+                /* setting time could shift it into past */
+                $date->addDays(7);
+            }
+            while ($date <= $to) {
+                if (empty(array_filter($onetimeSlots, function ($e) use ($date) {
+                    return $date == $e['date'];
+                }))) {
+                    /* only take this regular slot into account when there is no manual slot for the same time */
+                    $occupiedSlots = array_map(
+                        function ($e) {
+                            return ['foodsaverId' => $e['foodsaver_id'], 'isConfirmed' => (bool)$e['confirmed']];
+                        },
+                        array_filter(
+                            $signups,
+                            function ($e) use ($date) {
+                                return $date == $e['date'];
+                            }
+                        )
+                    );
+                    $isAvailable =
+                        $date > Carbon::now() &&
+                        $date <= $extendedToDate &&
+                        $slot['fetcher'] > count($occupiedSlots);
+                    $slots[] = [
+                        'date' => $date,
+                        'totalSlots' => $slot['fetcher'],
+                        'occupiedSlots' => array_values($occupiedSlots),
+                        'isAvailable' => $isAvailable,
+                    ];
+                }
 
-				$date = $date->copy()->addDays(7);
-			}
-		}
-		foreach ($onetimeSlots as $slot) {
-			$occupiedSlots = array_map(
-				function ($e) {
-					return ['foodsaverId' => $e['foodsaver_id'], 'isConfirmed' => (bool)$e['confirmed']];
-				},
-				array_filter(
-					$signups,
-					function ($e) use ($slot) {
-						return $slot['date'] == $e['date'];
-					}
-				)
-			);
-			if ($slot['fetcher'] === 0 && count($occupiedSlots) === 0) {
-				/* Do not display empty/cancelled pickups.
-				Do show them, when somebody is signed up (although this should not happen) */
-				continue;
-			}
-			/* Onetime slots are always in the future available for signups */
-			$isInFuture = $slot['date'] > Carbon::now();
-			$hasFree = $slot['fetcher'] > count($occupiedSlots);
+                $date = $date->copy()->addDays(7);
+            }
+        }
+        foreach ($onetimeSlots as $slot) {
+            $occupiedSlots = array_map(
+                function ($e) {
+                    return ['foodsaverId' => $e['foodsaver_id'], 'isConfirmed' => (bool)$e['confirmed']];
+                },
+                array_filter(
+                    $signups,
+                    function ($e) use ($slot) {
+                        return $slot['date'] == $e['date'];
+                    }
+                )
+            );
+            if ($slot['fetcher'] === 0 && count($occupiedSlots) === 0) {
+                /* Do not display empty/cancelled pickups.
+                Do show them, when somebody is signed up (although this should not happen) */
+                continue;
+            }
+            /* Onetime slots are always in the future available for signups */
+            $isInFuture = $slot['date'] > Carbon::now();
+            $hasFree = $slot['fetcher'] > count($occupiedSlots);
 
-			$slots[] = [
-				'date' => $slot['date'],
-				'totalSlots' => $slot['fetcher'],
-				'occupiedSlots' => array_values($occupiedSlots),
-				'isAvailable' => $isInFuture && $hasFree,
-			];
-		}
+            $slots[] = [
+                'date' => $slot['date'],
+                'totalSlots' => $slot['fetcher'],
+                'occupiedSlots' => array_values($occupiedSlots),
+                'isAvailable' => $isInFuture && $hasFree,
+            ];
+        }
 
-		return $slots;
-	}
+        return $slots;
+    }
 
-	/**
-	 * Returns past pickup dates to which the foodsaver signed in.
-	 * If either page or pageSize is set to -1 pagination is disabled and all entries are returned.
-	 *
-	 * @param int $fsId ID of the foodsaver
-	 * @param int $page the number of the page to be queried (for pagination)
-	 * @param int $pageSize the size of pages to be queried (for pagination)
-	 * @param bool $fullHistory whether to include entries older than a month
-	 *
-	 * @return array the fetched pickups including information about the other fs who took part and the store
-	 */
-	public function getPastPickups(int $fsId, int $page, int $pageSize, bool $fullHistory): array
-	{
-		$timeContraint = '';
-		if (!$fullHistory) {
-			$timeContraint = 'AND p1.date > NOW() - INTERVAL 1 MONTH ';
-		}
-		$query = 'SELECT
+    /**
+     * Returns past pickup dates to which the foodsaver signed in.
+     * If either page or pageSize is set to -1 pagination is disabled and all entries are returned.
+     *
+     * @param int $fsId ID of the foodsaver
+     * @param int $page the number of the page to be queried (for pagination)
+     * @param int $pageSize the size of pages to be queried (for pagination)
+     * @param bool $fullHistory whether to include entries older than a month
+     *
+     * @return array the fetched pickups including information about the other fs who took part and the store
+     */
+    public function getPastPickups(int $fsId, int $page, int $pageSize, bool $fullHistory): array
+    {
+        $timeContraint = '';
+        if (!$fullHistory) {
+            $timeContraint = 'AND p1.date > NOW() - INTERVAL 1 MONTH ';
+        }
+        $query = 'SELECT
 				s.id AS store_id,
 				s.name AS store_name,
 				UNIX_TIMESTAMP(p1.`date`) AS `timestamp`,
@@ -491,31 +491,31 @@ class PickupGateway extends BaseGateway implements BellUpdaterInterface
 			LEFT JOIN fs_foodsaver f ON f.id = p2.foodsaver_id
 			LEFT JOIN fs_betrieb s ON s.id = p1.betrieb_id
 			WHERE p1.foodsaver_id = :fs_id AND p1.date < NOW() '
-			. $timeContraint .
-			'GROUP BY p1.betrieb_id, p1.date
+            . $timeContraint .
+            'GROUP BY p1.betrieb_id, p1.date
 			ORDER BY p1.date DESC';
 
-		$params = ['fs_id' => $fsId];
-		if ($page != -1 && $pageSize != -1) {
-			$query .= ' LIMIT :page_size OFFSET :start_item_index';
-			$params['start_item_index'] = $page * $pageSize;
-			$params['page_size'] = $pageSize;
-		}
+        $params = ['fs_id' => $fsId];
+        if ($page != -1 && $pageSize != -1) {
+            $query .= ' LIMIT :page_size OFFSET :start_item_index';
+            $params['start_item_index'] = $page * $pageSize;
+            $params['page_size'] = $pageSize;
+        }
 
-		return $this->db->fetchAll($query, $params);
-	}
+        return $this->db->fetchAll($query, $params);
+    }
 
-	/**
-	 * Returns the next dates which the foodsaver signed into.
-	 *
-	 * @param int $fsId ID of the foodsaver
-	 * @param int|null $limit if not null, the result will be limited to a number of dates
-	 *
-	 * @throws \Exception
-	 */
-	public function getNextPickups(int $fsId, int $limit = null): array
-	{
-		$stm = 'SELECT
+    /**
+     * Returns the next dates which the foodsaver signed into.
+     *
+     * @param int $fsId ID of the foodsaver
+     * @param int|null $limit if not null, the result will be limited to a number of dates
+     *
+     * @throws \Exception
+     */
+    public function getNextPickups(int $fsId, int $limit = null): array
+    {
+        $stm = 'SELECT
 				s.id AS store_id,
 				s.name AS store_name,
 				CONCAT(s.str, ", ", s.plz, " ", s.stadt) AS `address`,
@@ -539,39 +539,39 @@ class PickupGateway extends BaseGateway implements BellUpdaterInterface
 			GROUP BY a.id
 			ORDER BY a.`date`';
 
-		$params = [':fs_id' => $fsId];
+        $params = [':fs_id' => $fsId];
 
-		if (!is_null($limit)) {
-			$stm .= ' LIMIT :limit';
-			$params[':limit'] = $limit;
-		}
+        if (!is_null($limit)) {
+            $stm .= ' LIMIT :limit';
+            $params[':limit'] = $limit;
+        }
 
-		return $this->db->fetchAll($stm, $params);
-	}
+        return $this->db->fetchAll($stm, $params);
+    }
 
-	private function realMod(int $a, int $b)
-	{
-		$res = $a % $b;
-		if ($res < 0) {
-			return $res += abs($b);
-		}
+    private function realMod(int $a, int $b)
+    {
+        $res = $a % $b;
+        if ($res < 0) {
+            return $res += abs($b);
+        }
 
-		return $res;
-	}
+        return $res;
+    }
 
-	private function getStoreName(int $storeId): string
-	{
-		return $this->db->fetchValueByCriteria('fs_betrieb', 'name', ['id' => $storeId]);
-	}
+    private function getStoreName(int $storeId): string
+    {
+        return $this->db->fetchValueByCriteria('fs_betrieb', 'name', ['id' => $storeId]);
+    }
 
-	/**
-	 * @return int[]
-	 */
-	private function getResponsibleFoodsaverIds(int $storeId): array
-	{
-		return $this->db->fetchAllValuesByCriteria('fs_betrieb_team', 'foodsaver_id', [
-			'betrieb_id' => $storeId,
-			'verantwortlich' => 1
-		]);
-	}
+    /**
+     * @return int[]
+     */
+    private function getResponsibleFoodsaverIds(int $storeId): array
+    {
+        return $this->db->fetchAllValuesByCriteria('fs_betrieb_team', 'foodsaver_id', [
+            'betrieb_id' => $storeId,
+            'verantwortlich' => 1
+        ]);
+    }
 }

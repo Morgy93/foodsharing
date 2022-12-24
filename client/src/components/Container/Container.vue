@@ -19,13 +19,13 @@
       v-if="isExpanded && isToggleVisible && !isToggled"
       class="list-group-item small list-group-item-secondary list-group-item-action list-group-item-action-toggle font-weight-bold text-center"
       @click="showFullList"
-      v-html="$i18n('globals.show_more')"
+      v-text="$i18n('globals.show_more')"
     />
     <button
       v-else-if="isExpanded && isToggled"
       class="list-group-item small list-group-item-action list-group-item-action-toggle font-weight-bold text-center"
       @click="reduceList"
-      v-html="$i18n('globals.show_less')"
+      v-text="$i18n('globals.show_less')"
     />
   </div>
 </template>

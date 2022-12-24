@@ -11,7 +11,7 @@
       <label
         class="sr-only"
         for="searchField"
-        v-html="$i18n('search.placeholder')"
+        v-text="$i18n('search.placeholder')"
       />
       <i
         class="icon fas"

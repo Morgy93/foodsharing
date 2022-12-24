@@ -2,7 +2,7 @@
   <!-- eslint-disable-next-line vue/max-attributes-per-line -->
   <div class="datebox corner-all" :class="classes">
     <div class="px-1 month">
-      {{ displayedMonth }}
+      {{ displayedMonthAndYear }}
     </div>
     <div
       v-if="!isEventToday && !isEventTomorrow"
@@ -40,9 +40,10 @@ export default {
         weekday: 'short',
       })
     },
-    displayedMonth () {
+    displayedMonthAndYear () {
       return this.$dateFormatter.format(this.dateObject, {
         month: 'long',
+        year: 'numeric',
       })
     },
     isEventToday () {

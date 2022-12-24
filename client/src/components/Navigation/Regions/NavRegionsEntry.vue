@@ -104,12 +104,6 @@ export default {
         })
       }
 
-      if (this.entry.mayHandleFoodsaverRegionMenu) {
-        menu.push({
-          href: 'foodsaverList', icon: 'fa-user', text: 'menu.entry.fs',
-        })
-      }
-
       if (this.entry.maySetRegionPin) {
         menu.push({
           href: 'pin', icon: 'fa-users', text: 'menu.entry.pin',

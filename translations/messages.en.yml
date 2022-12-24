@@ -38,6 +38,7 @@ group:
     apply: Apply for this group
     join: Join this group
     safe: Save changes
+    save: Save changes
   no_groups: No groups exist in this category
   quit_name: Leave group %name%
   quit: Leave
@@ -56,6 +57,7 @@ group:
     arbitration: Arbitration board
     mediation: Mediation
     report: Reports
+    board: Board
     duplicate_moderation_team: Moderation team already created! There can only be
       one moderation team per district.
     duplicate_pr_team: Public relations team already created! There can only be one
@@ -99,6 +101,8 @@ group:
     tooltip_function_7: Administrators of this working group receive reports with
       the participation of the reporting team. No reports are displayed in which the
       administrators are involved; the reporting team receives them
+    tooltip_function_11: Administrators of this group are shown in the region's overview.
+    duplicate_board_team: Board already created. There can only be one board per district.
   apply:
     sent: The application was sent.
     send: Send application
@@ -131,7 +135,11 @@ group:
     disclaimer: "By sending a message to this workgroup\nall administrators of the\
       \ workgroup see your email address,\nwhich you have specified on your foodsharing\
       \ profile.\nYou will be emailed a copy of this message.\n"
-  edit: Edit {group}
+  edit:
+    title: Edit {group}
+    name_required: Please enter a name.
+    description_required: Please enter a description.
+    description_placeholder: Description of working group
   quitting_home_district_warning: Do you really want to leave your home district %name%?
     You will lose your verification and have to contact the ambassador team of your
     new home district later.
@@ -165,6 +173,8 @@ group:
     remove_admin_title: remove as admin
     old_edit_hint_link: Members
     old_edit_hint: You can now find the member administration on the tab
+    remove_text_group: Do you really want to remove {name} ({id}) from this workgroup?
+    remove_text_region: Do you really want to remove {name} ({id}) from the region?
   application_from: by
   entermotivation: 'Motivation:'
   enterskills: 'Skills:'
@@ -172,6 +182,9 @@ group:
   application_region: 'Application for '
   enterxp: 'Experience:'
   motivation: motivation text
+  last_activity: Last activity
+  filter_by_last_activity: No activity in months
+  role_name: Role
 settings:
   header: Profile settings
   name_change:
@@ -444,22 +457,36 @@ profile:
       delivered: Delivered
       newreport: New reports
       why: Why are you reporting this person?
-      tardy: was late for a pickup
+      tardy: Was late for a pickup
       noshow: Did not come to the pickup
-      respect: Behaved impolite or disrespectful
-      dirty: Did not leave the pickup place tidy
+      respect: Behaved impolitely or disrespectfully
+      dirty: Did not leave the pickup place clean
       what:
         racist: racist remarks
         sexist: sexist remarks
         homophobe: homophobe remarks
         brutal: Violence and threats
         other: Other inappropriate statements and conduct
+        hurtful: insulting remarks
       residence: FS place of residence
+      returned: Did not return deposit bottles/boxes, etc.
+      unreliable: Frequent cancellation of pickups at short notice without finding
+        a replacement
+      social: Did not behave in a collaborative and social manner during pickup
+      thief: Took things that were not meant for him/her
+      trasher: Throws away saved food
+      picky: Does not take all food intended for pickup
+      complaints: Made allegations
+      additional: Took food or asked the company food to be saved outside his/her
+        pickup
+      other: Violated other rules of conduct (everything else)
+      vsfs: towards foodsavers
+      sells: Sells saved food
     control:
       total: total
       tot: total
       newreports: New reports
-      delivered: Delivered Complaints
+      delivered: Delivered reports
       from: Reports by
       notes: notes and decisions
     inthisblog: in this blog post
@@ -472,7 +499,7 @@ profile:
       reportID: Report ID
       allofthem: All reports about
     kindofreport: Please choose the type of report
-    sells: Person sells rescued food
+    sells: Sells rescued food
     noshow: The person didn't come
     late: The person was late
     cancellation: Frequent late cancellation of appointments without finding a replacement
@@ -492,8 +519,8 @@ profile:
   notes:
     bread: Notes
     info: "Please use this function carefully.\nIt should help to make processes visible\
-      \ in order to save us work.\nPersonal or judgmental about a person has no place\
-      \ here.\nBe factual.\""
+      \ in order to save us work.\nPersonal or judgmental statements about a person\
+      \ have no place here.\nBe factual."
     title: Notes about {name}
   warning: Warning
   title: Profile
@@ -562,6 +589,11 @@ profile:
     basketsOfferedWeek: Thanks for offering food baskets {count} times this week.
       A total of {weight} kg was shared.
     respActStores: 'Thanks for coordinating {count} active '
+    basketsSharedWeek: 'The baskets were shared with {count} persons. '
+    tooltip_visibility: The engagement statistic is visible from the role of store
+      manager upwards. It's limited to joint home districts or joint stores.
+    weekDesc: Calendar week {week}, from {weekStart} to {weekEnd}
+  deletesuccess: Single pickup slot deleted
 test:
   plain: This is a nice translation
   vars: 'My name is {NAME} and I am {AGE} years old'
@@ -854,6 +886,7 @@ pickup:
     allLoaded: All entries are shown.
     freeSlots: "{slots} free"
 
+  region_pickup_rule_failed: This entry does not comply with district regulations
 storeview:
   cooperation: Cooperation since {startTime}.
   store: Store
@@ -866,8 +899,8 @@ storeview:
   specials: Special features
   managers: Responsible foodsavers
   status: Current status
-  public_time: 'It will be picked up roughly {freq}. Please never go to the store without
-    prior consultation!'
+  public_time: 'It will be picked up roughly {freq}. Please never go to the store
+    without prior consultation!'
   pickupWeight: '{pickupWeight} were saved.'
   counter: <strong>{count}<span style="white-space:nowrap"> </span>{suffix}</strong>
   teamInfo: There are <strong> {active} </strong> actives and <strong> {jumper} </strong>
@@ -878,7 +911,7 @@ day: Day
 time: Time
 select: Please select
 validate:
-  required: '{it} can not be empty'
+  required: '{it} cannot be blank'
 no: No
 yes: Yes
 are_you_sure: Are you sure?
@@ -950,6 +983,13 @@ terminology:
   arbitration: Reporting View (LS)
   pin: Description of the district
   homepage: Homepage
+  boardAdmins: Board
+  role:
+    "1": Foodsaver
+    "0": Foodsharer
+    "2": Store manager
+    "3": Ambassador
+    "4": Orga person
 login:
   pwreset:
     bread: Reset password
@@ -1438,6 +1478,8 @@ releases:
   "2021-09": "Release \"fig\" \U0001F967 (September 2021)"
   "2022-01": Release "Grapefruit" 🍋 (January 2022)
   "2022-05": Release "Blueberry" 🍇 (May 2022)
+  "2022-12": "Release \"Icecream\" 🍇 (December 2022)"
+
 footer:
   it_devdocs: by foodsharing IT
   donate_now: Donate now
@@ -1597,7 +1639,7 @@ foodsaver:
   kicked: Foodsaver removed
   list:
     summary: '{count} foodsavers in {region}'
-    inactive: 'who have not logged in for 6 months:'
+    inactive: 'who haven''t been active in the last 6 months:'
   upgrade:
     learning: "Watch now explanation video"
     to_sm: Become a store manager
@@ -1768,6 +1810,9 @@ store:
   peoplecame: It has often happened that people went to a store unsolicited.
   smneeded: To set up a business, you must be a store manager.
   tooltip_jumping: 'You are a jumper in this store'
+  useRegionPickupRules: 'In addition to the rules for this store, the following district-wide
+    pickup fairness rule applies:'
+  regionPickupRulesInactive: The additional district rules for pickups are not active
 search:
   mygroups: My groups
   mybuddies: My buddies
@@ -2171,7 +2216,7 @@ chat:
   search: Search
   no_messages: No messages
   no_conversation: No conversation selected
-  start_of_conversation: "Conversation started on: "
+  start_of_conversation: "Conversation started on:"
   display_all_messages: "Display all messages"
 
 delete: Delete
@@ -2238,6 +2283,7 @@ register:
   landline_example: Example +49 30 123456789
 bread:
   backToOverview: back to overview
+  backToStore: back to the store
 duration: Time to answer
 explanation: Explanation
 fp: Failure points
@@ -2522,7 +2568,10 @@ regionOptions:
   success: Options saved successfully
   header_page: Settings for {bezirk}
   regionPickupInactiveHours: 'Please indicate how many hours before the pick-up this
-    rule shall cease to be implemented:'
+    rule shall cease to be implemented'
+  regionPickupLimitNumber: 'Indicate the maximum number of pick-ups for this period
+    of time'
+  regionPickupLimitDayNumber: 'Indicate the maximum number of pick-ups PER DAY'
 list:
   filter_for: filter for …
 startpage:
@@ -2609,6 +2658,8 @@ startpage:
   makeproposals: Make proposals
   proposals: We want to develop and consistently improve. Therefore we need you with
     your many great ideas and tipps. Please send them to <a href='mailto:info@foodsharing.de'>info@foodsharing.de</a>
+  join_welcome: Nice that you want to join foodsharing!
+  join_rules: Participate - Our Rules
 date_short:
   Sunday: Sun
   Saturday: Sat
@@ -2669,7 +2720,7 @@ quiz:
   continuenow: Continue the quiz now!
   congrats_details: Congratulations! You passed with {points} of {max_points} maximum
     error points!
-  type: -Quiz
+  type: -quiz
   threestrikes: You did not pass the quiz 3 times.
   days: days
   resultsbelow: You can find the results below.
@@ -2753,6 +2804,9 @@ error:
     link: Upload your profile picture now
     title: You haven't uploaded a profile picture yet.
     description: Show the other members of Foodsharing who you are!
+  old_user_avatar:
+    title: There is a problem with your profile photo.
+    link: Update profile picture now
 information:
   push:
     title: "You can now receive push notifications from foodsharing."
@@ -2766,6 +2820,8 @@ information:
     info: "This will allow you to see your next pickup dates using a calendar program\
       \ of your choice."
     link: "Subscribe now"
+    description: You can use it to see your upcoming pickups in a calendar software
+      of your choice.
 globals:
   reset: Reset
   you: You
@@ -2782,11 +2838,16 @@ globals:
     my_foodshare_points: My FoodSharePoints
     groups: Groups
     my_groups: My groups
+    persons: Persons
   save: Save
   close: Close
   select: Please select...
   show_more: Show more
   show_less: Show less
+  account:
+    signin: Sign in
+    signout: Sign out
+    signup: Participate
 bootstrap-datepicker:
   labelPrevDecade: Previous decade
   labelPrevYear: Previous year
@@ -2811,11 +2872,13 @@ system_administration:
   reports: Show reports
 join_region:
   error:
-    is_country: <strong>This is a country.</strong><br> Please choose a city or region.
-    is_state: <strong>This is a state.</strong><br> Please choose a city or a region.
+    is_country: <strong>This is a country.</strong><br> Please choose a city, a region
+      or a district.
+    is_state: <strong>This is a state.</strong><br> Please choose a city, a region
+      or a disctrict.
     not_allowed: You cannot join this region.
-    is_big_city: <strong>This is a large city.</strong><br> Please choose a city or
-      a region.
+    is_big_city: <strong>This is a large city.</strong><br> Please choose a city,
+      a region or a district.
   headline: Please choose the region in which you want to become active.
 navigation:
   map: Map
@@ -2836,3 +2899,4 @@ navigation:
   profil: 👋 Hello {name}!
   styleguide: Style guide
   help_and_support: Help & Support
+use_region_pickup_rule: Should the district-wide fairness rule apply to this establishment?

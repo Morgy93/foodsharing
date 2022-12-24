@@ -24,7 +24,7 @@
       <small
         role="menuitem"
         class="disabled dropdown-item"
-        v-html="$i18n('chat.empty')"
+        v-text="$i18n('chat.empty')"
       />
     </template>
     <template #actions>

@@ -10,18 +10,18 @@ use Symfony\Component\Validator\Constraints as Assert;
  */
 class PickupLeaveMessageOptions
 {
-	/**
-	 * Message why a user is removed from pickup.
-	 *
-	 * @OA\Property(example="We need a pick up slot for a new foodsaver")
-	 * @Assert\Length(max=255)
-	 */
-	public string $message = '';
+    /**
+     * Message why a user is removed from pickup.
+     *
+     * @OA\Property(example="We need a pick up slot for a new foodsaver")
+     * @Assert\Length(max=255)
+     */
+    public string $message = '';
 
-	/**
-	 * Inform removed user about removin.
-	 *
-	 * @OA\Property(example=true)
-	 */
-	public bool $sendKickMessage = true;
+    /**
+     * Inform removed user about removin.
+     *
+     * @OA\Property(example=true)
+     */
+    public bool $sendKickMessage = true;
 }

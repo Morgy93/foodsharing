@@ -108,7 +108,7 @@ The script supports different information extraction additional to the SQL `CREA
 
 ### PhpMyAdmin
 
-In the development enviroment [phpmyadmin](http://localhost:8081) is accessable on [http://localhost:8081](http://localhost:8081).
+In the development enviroment [phpmyadmin](http://localhost:18081) is accessable on [http://localhost:18081](http://localhost:18081).
 
 ## Guidelines and rules
 

@@ -266,6 +266,7 @@ button:
 
 bread:
   backToOverview: "zurück zur Übersicht"
+  backToStore: "zurück zum Betrieb"
 
 ui:
   switch:
@@ -327,6 +328,9 @@ group:
   name: "Name"
   description: "Beschreibung"
   photo: "Foto"
+  last_activity: "Letzte Aktivität"
+  filter_by_last_activity: "Nicht aktiv in Monaten"
+  role_name: "Rolle"
   applications: "Bewerbungen"
   applications_for: "Bewerbungen für %name%"
   application_region: "Bewerbung für "
@@ -336,7 +340,11 @@ group:
   enterskills: "Fähigkeiten:" #in WorkGroupXhr
   enterxp: "Erfahrung:" #in WorkGroupXhr
   entertime: "Zeit:" #in WorkGroupXhr
-  edit: "{group} bearbeiten"
+  edit:
+    title: "{group} bearbeiten"
+    name_required: "Bitte gib einen Namen ein."
+    description_required: "Bitte gib eine Beschreibung ein."
+    description_placeholder: "Beschreibung der Arbeitsgruppe"
   saved: "Änderungen wurden gespeichert"
   mail_link_title:
     workgroup: "Arbeitsgruppen-Postfach"
@@ -398,7 +406,7 @@ group:
     go: "Zur Gruppe"
     apply: "Für diese Arbeitsgruppe bewerben"
     join: "Dieser Arbeitsgruppe beitreten"
-    safe: "Änderungen speichern"
+    save: "Änderungen speichern"
   no_groups: "Hier gibt es noch keine Arbeitsgruppen"
   quit_name_workgroup: "Team %name% verlassen"
   quit_name_district: "Bezirk %name% verlassen"
@@ -419,6 +427,7 @@ group:
     fsmanagement: "Verwaltung"
     pr: "Öffentlichkeitsarbeit"
     moderation: "Moderation"
+    board: "Vorstand"
     invalid: "Ein Bezirk kann nicht mit einer Arbeitsgruppenfunktion versehen werden."
     duplicate_welcome_team: "Begrüßungsteam schon angelegt! Pro Bezirk kann es nur ein Begrüßungsteam geben."
     duplicate_voting_team: "Abstimmungsteam schon angelegt! Pro Bezirk kann es nur ein Abstimmungsteam geben."
@@ -430,6 +439,7 @@ group:
     duplicate_fsmanagement_team: 'Verwaltungsteam schon angelegt! Pro Bezirk kann es nur ein Verwaltungsteam geben.'
     duplicate_pr_team: 'Öffentlichkeitsarbeitsteam schon angelegt! Pro Bezirk kann es nur ein Öffentlichkeitsarbeitsteam geben.'
     duplicate_moderation_team: 'Moderationsteam schon angelegt! Pro Bezirk kann es nur ein Moderationsteam geben.'
+    duplicate_board_team: 'Vorstand schon angelegt! Pro Bezirk kann es nur einen Vorstand geben.'
     restricted_workgroup_function: 'Diese Arbeitsgruppenfunktion kann nur von der Überregionalen Arbeitsgruppe Anlegen bearbeitet werden'
     tooltip_function_1: "Administrator*innen dieser Arbeitsgruppe werden bei neuen Mitgliedern im Bezirk benachrichtigt"
     tooltip_function_2: "Administrator*innen dieser Arbeitsgruppe können Abstimmungen für den Bezirk anlegen"
@@ -440,6 +450,7 @@ group:
     tooltip_function_7: "Administrator*innen dieser Arbeitsgruppe bekommen Meldungen mit Beteiligung des Meldeteams angezeigt. Es werden keine Meldungen angezeigt, an denen die Administrator*innen beteiligt sind! Diese erhält das Meldeteam"
     tooltip_function_9: "Administrator*innen dieser Arbeitsgruppe können die Ortsgruppenbeschreibung für die Karte bearbeiten."
     tooltip_function_10: "Administrator*innen dieser Arbeitsgruppe können in moderierten Foren Beiträge freischalten."
+    tooltip_function_11: "Administrator*innen dieser Arbeitsgruppe werden in der Bezirksübersicht angezeigt."
   unique_function:
     tooltip_function_region331: "Administrator*innen dieser Arbeitsgruppe können Newsletter versenden"
     tooltip_function_region341: "Administrator*innen dieser Arbeitsgruppe können die Quizfragen verwalten"
@@ -459,7 +470,8 @@ group:
     set_admin_text: "Möchtest du {name} ({id}) wirklich als Admin eintragen?"
     set_ambassador_text: "Möchtest du {name} ({id}) wirklich als Botschafter eintragen?"
     remove_title: "Mitglied entfernen"
-    remove_text: "Möchtest du {name} ({id}) wirklich aus der Arbeitsgruppe entfernen?"
+    remove_text_group: "Möchtest du {name} ({id}) wirklich aus der Arbeitsgruppe entfernen?"
+    remove_text_region: "Möchtest du {name} ({id}) wirklich aus der Region entfernen?"
     add_member: "In das Team aufnehmen"
     admin_mode_on: "Ansicht für Administrator*innen aktivieren"
     admin_mode_off: "Zurück zur Standard-Ansicht"
@@ -622,6 +634,12 @@ terminology:
     m: "Orgamensch"
     f: "Orgamensch"
     d: "Orgamensch"
+  role:
+    "0": "Foodsharer*in"
+    "1": "Foodsaver*in"
+    "2": "Betriebsverantwortliche*r"
+    "3": "Botschafter*in"
+    "4": "Orgamensch"
   ambassadors: "Botschafter*innen"
   ambassador_forum: "Botschafter*innenforum"
   admins: "Administrator*innen"
@@ -635,6 +653,7 @@ terminology:
   fsManagementAdmins: "Verwaltung"
   prAdmins: "Öffentlichkeitsarbeitsteam"
   moderationAdmins: "Moderationsteam"
+  boardAdmins : "Vorstand"
   wall: "Pinnwand"
   statistic: "Statistik"
   reports: "Meldungsansicht (LMG)"
@@ -809,9 +828,9 @@ store:
   team_conversation_name: "Team {name}"
   springer_conversation_name: "Springer {name}"
   regionPickupRules: "zusätzliche ROSINEN-Regel"
-  useRegionPickupRules: "Zusätzlich zu den Betriebsregeln gilt folgende Bezirks-ROSINEN-Regel für Abholungen:"
+  useRegionPickupRules: "Dies ist ein ROSINEN-Betrieb. Zusätzlich zu den Betriebsregeln gilt folgende Bezirks-ROSINEN-Regel für Abholungen:"
   regionPickupRulesInactive: "Die zusätzlichen Bezirksregeln für Abholungen sind nicht aktiv"
-  regionPickupRuleLong: "Innerhalb von {regionPickupRuleTimespan} Tagen dürfen nicht mehr als insgesamt {regionPickupRuleLimit} Abholungen unter Berücksichtigung aller Betrieber mit Bezirksregeln durchgeführt werden. Pro Tag darf höchstens insgesamt {regionPickupRuleLimitDay}-mal bei diesen Betrieben abgeholt werden. {regionPickupRuleInactive} Stunden vor der Abholung wird diese Regel nicht berücksichtigt."
+  regionPickupRuleLong: "Innerhalb von {regionPickupRuleTimespan} Tagen dürfen nicht mehr als insgesamt {regionPickupRuleLimit} Abholungen unter Berücksichtigung aller Betriebe mit Bezirksregeln durchgeführt werden. Pro Tag darf höchstens insgesamt {regionPickupRuleLimitDay}-mal bei diesen Betrieben abgeholt werden. {regionPickupRuleInactive} Stunden vor der Abholung wird diese Regel nicht berücksichtigt."
   sm:
     managementToggleOn: "Ansicht für Betriebsverantwortliche aktivieren"
     managementToggleOff: "Zurück zur Standard-Ansicht"
@@ -1467,10 +1486,10 @@ regionOptions:
   enableMediationButton: "Technische Unterstützung für Mediationen durch einen Mediations-Link auf den Profilen der Stammfoodsaver des Bezirkes aktivieren."
   regionPickupRuleActive: "Folgende Bezirksregel für Abholungen bei ROSINEN (Raren Oft Sagenhaften Inspesondere Nicht alltäglichen Extrem beliebten Nüztliche)-Betrieben aktivieren:"
   regionPickupTimespan: "Bitte gib den Zeitraum in Tagen an, in denen die Regelung gültig ist"
-  regionPickupLimitNumber: "Bitte gib die maximale Anzahl der insgesamt möglichen Abholungen für diesen Zeitraum an:"
-  regionPickupLimitDayNumber: "Bitte gib die insgesamte maximale Anzzahl von Abholungen für EINEN TAG an:"
-  regionPickupInactiveHours: "Bitte gib die Anzahl Stunden vor einer Abholung an, in denen die Regel nicht mehr gilt:"
-  regionPickupRuleActiveStoreList: "Liste der Betriebe im Bezirk, die für die ROSINEN Regel Berücksichtigt werden. ACHTUNG: Alle Abholung der aufgelisteten Betriebe werden zusammengezählt und für die Regel berücksichtigt."
+  regionPickupLimitNumber: "Bitte gib die maximale Anzahl der insgesamt möglichen Abholungen für diesen Zeitraum an"
+  regionPickupLimitDayNumber: "Bitte gib die insgesamte maximale Anzahl von Abholungen für EINEN TAG an"
+  regionPickupInactiveHours: "Bitte gib die Anzahl Stunden vor einer Abholung an, in denen die Regel nicht mehr gilt"
+  regionPickupRuleActiveStoreList: "Liste der Betriebe im Bezirk, die für die ROSINEN Regel berücksichtigt werden. ACHTUNG: Alle Abholung der aufgelisteten Betriebe werden zusammengezählt und für die Regel berücksichtigt."
 
 regionPin:
   header_page: "Öffentliche Ortsgruppenbeschreibung für {bezirk}"
@@ -1959,6 +1978,7 @@ dashboard:
     no-stores: "Du bist bis jetzt in keinem Betriebsteam."
     users: "Foodsaver*innen"
     buddies: "Menschen, die Du kennst"
+    polls: Abstimmungen
   options:
     hide:
       text: "Anzeige verwalten"
@@ -1972,6 +1992,7 @@ dashboard:
   event: "Nächstes Event"
   eventCount: "Nächste Events ({count})"
   pickupdates: "Nächste Abholtermine"
+  polls: Deine laufenden Abstimmungen
   quiz:
     ack: "Hinweis gelesen und nicht mehr anzeigen"
     read: "weiterlesen"
@@ -2204,6 +2225,7 @@ footer:
     denns: Denn's Biomarkt
 
 releases:
+  "2022-12": "Release \"Icecream\" 🍇 (Dezember 2022)"
   "2022-05": "Release \"Heidelbeere\" 🍇 (Mai 2022)"
   "2022-01": "Release \"Grapefruit\" 🍋 (Januar 2022)"
   "2021-09": "Release \"Feige\" 🥧 (September 2021)"
@@ -2426,6 +2448,7 @@ polls:
   ongoing: "Laufende Abstimmungen"
   ended: "Vergangene Abstimmungen"
   future: "Zukünftige Abstimmungen"
+  until: "Möglich bis {until}"
 
 poll:
   not_available: "Diese Abstimmung existiert nicht oder du kannst nicht darauf zugreifen."

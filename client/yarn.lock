@@ -2565,11 +2565,6 @@ create-hmac@^1.1.0, create-hmac@^1.1.4, create-hmac@^1.1.7:
     safe-buffer "^5.0.1"
     sha.js "^2.4.8"
 
-cropperjs@^1.5.11:
-  version "1.5.12"
-  resolved "https://registry.yarnpkg.com/cropperjs/-/cropperjs-1.5.12.tgz#d9c0db2bfb8c0d769d51739e8f916bbc44e10f50"
-  integrity sha512-re7UdjE5UnwdrovyhNzZ6gathI4Rs3KGCBSc8HCIjUo5hO42CtzyblmWLj6QWVw7huHyDMfpKxhiO2II77nhDw==
-
 croppie@^2.6.4:
   version "2.6.5"
   resolved "https://registry.yarnpkg.com/croppie/-/croppie-2.6.5.tgz#67d76855b2983bdcd8aa348367398b2b8ef277cf"
@@ -6429,6 +6424,11 @@ regjsparser@^0.8.2:
   dependencies:
     jsesc "~0.5.0"
 
+relative-time-format@^1.1.6:
+  version "1.1.6"
+  resolved "https://registry.yarnpkg.com/relative-time-format/-/relative-time-format-1.1.6.tgz#724a5fbc3794b8e0471b6b61419af2ce699eb9f1"
+  integrity sha512-aCv3juQw4hT1/P/OrVltKWLlp15eW1GRcwP1XdxHrPdZE9MtgqFpegjnTjLhi2m2WI9MT/hQQtE+tjEWG1hgkQ==
+
 remove-trailing-separator@^1.0.1:
   version "1.1.0"
   resolved "https://registry.yarnpkg.com/remove-trailing-separator/-/remove-trailing-separator-1.1.0.tgz#c24bce2a283adad5bc3f58e0d48249b92379d8ef"
@@ -7664,9 +7664,10 @@ vm-browserify@^1.0.1:
   resolved "https://registry.yarnpkg.com/vm-browserify/-/vm-browserify-1.1.2.tgz#78641c488b8e6ca91a75f511e7a3b32a86e5dda0"
   integrity sha512-2ham8XPWTONajOR0ohOKOHXkm3+gaBmGut3SRuu75xLd/RRaY6vqgh8NBYYk7+RW3u5AtzPQZG8F10LHkl0lAQ==
 
-"vue-advanced-chat@git+https://github.com/NINI1988/vue-advanced-chat.git#release":
-  version "2.0.4"
-  resolved "git+https://github.com/NINI1988/vue-advanced-chat.git#0cf26cf98c775d49de975d075500eed816de2e1a"
+vue-advanced-chat@^2.0.6:
+  version "2.0.6"
+  resolved "https://registry.yarnpkg.com/vue-advanced-chat/-/vue-advanced-chat-2.0.6.tgz#4d117b7c0e483d3349ac55051342d12907ac8823"
+  integrity sha512-EU1WcJ+cSjJYRf5PBewFFbnhnmvRi/4Xk9OWbNuYBqw/B1bOHLBMABhwgAQjwtK8gItGm8dbQMI3Gj8aMjHlKQ==
   dependencies:
     emoji-picker-element "1.12.1"
     linkifyjs "2.1.9"

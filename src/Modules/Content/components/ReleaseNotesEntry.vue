@@ -73,6 +73,9 @@ export default {
   border-width: 0.5rem;
   font-weight: bolder;
 
+    // Icecream
+  &[data-id="2022-12"] { border-color: #76b5c5; }
+
   // Heidelbeere
   &[data-id="2022-05"] { border-color: #5780a9; }
 

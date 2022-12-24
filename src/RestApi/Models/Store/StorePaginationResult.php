@@ -11,20 +11,20 @@ use OpenApi\Annotations as OA;
  */
 class StorePaginationResult
 {
-	/**
-	 * Total count of stores.
-	 *
-	 * @OA\Property(format="int64", example=1)
-	 */
-	public int $total = 0;
+    /**
+     * Total count of stores.
+     *
+     * @OA\Property(format="int64", example=1)
+     */
+    public int $total = 0;
 
-	/**
-	 * @var array<StoreListInformation> Array of store information
-	 *
-	 * @OA\Property(
-	 *        type="array",
-	 *        @OA\Items(ref=@Model(type=StoreListInformation::class))
-	 *      )
-	 */
-	public array $stores = [];
+    /**
+     * @var array<StoreListInformation> Array of store information
+     *
+     * @OA\Property(
+     *        type="array",
+     *        @OA\Items(ref=@Model(type=StoreListInformation::class))
+     *      )
+     */
+    public array $stores = [];
 }

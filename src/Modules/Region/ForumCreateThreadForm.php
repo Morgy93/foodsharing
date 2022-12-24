@@ -11,29 +11,29 @@ use Symfony\Component\OptionsResolver\OptionsResolver;
 
 class ForumCreateThreadForm extends AbstractType
 {
-	public function buildForm(FormBuilderInterface $builder, array $options)
-	{
-		$builder
-			->add('title', TextType::class, ['label' => 'forum.thread.title'])
-			->add('body', TextareaType::class, ['label' => 'forum.post.body'])
-		;
-		if ($options['postActiveWithoutModeration']) {
-			$builder
-				->add('sendMail', ChoiceType::class, ['label' => 'forum.inform_per_email',
-					'choices' => [
-						'yes' => true,
-						'no' => false
-					],
-					'expanded' => true])
-			;
-		}
-	}
+    public function buildForm(FormBuilderInterface $builder, array $options)
+    {
+        $builder
+            ->add('title', TextType::class, ['label' => 'forum.thread.title'])
+            ->add('body', TextareaType::class, ['label' => 'forum.post.body'])
+        ;
+        if ($options['postActiveWithoutModeration']) {
+            $builder
+                ->add('sendMail', ChoiceType::class, ['label' => 'forum.inform_per_email',
+                    'choices' => [
+                        'yes' => true,
+                        'no' => false
+                    ],
+                    'expanded' => true])
+            ;
+        }
+    }
 
-	public function configureOptions(OptionsResolver $resolver)
-	{
-		$resolver->setDefaults([
-			'postActiveWithoutModeration' => true,
-		]);
-		$resolver->setAllowedTypes('postActiveWithoutModeration', 'bool');
-	}
+    public function configureOptions(OptionsResolver $resolver)
+    {
+        $resolver->setDefaults([
+            'postActiveWithoutModeration' => true,
+        ]);
+        $resolver->setAllowedTypes('postActiveWithoutModeration', 'bool');
+    }
 }

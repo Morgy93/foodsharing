@@ -8,53 +8,53 @@ use Foodsharing\Modules\Mailbox\MailboxGateway;
 
 class MailboxPermissions
 {
-	private Session $session;
-	private MailboxGateway $mailboxGateway;
+    private Session $session;
+    private MailboxGateway $mailboxGateway;
 
-	public function __construct(MailboxGateway $mailboxGateway, Session $session)
-	{
-		$this->mailboxGateway = $mailboxGateway;
-		$this->session = $session;
-	}
+    public function __construct(MailboxGateway $mailboxGateway, Session $session)
+    {
+        $this->mailboxGateway = $mailboxGateway;
+        $this->session = $session;
+    }
 
-	public function mayMessage(int $mid): bool
-	{
-		if (!$this->mayHaveMailbox()) {
-			return false;
-		}
+    public function mayMessage(int $mid): bool
+    {
+        if (!$this->mayHaveMailbox()) {
+            return false;
+        }
 
-		if ($mailbox_id = $this->mailboxGateway->getMailboxId($mid)) {
-			return $this->mayMailbox($mailbox_id);
-		}
+        if ($mailbox_id = $this->mailboxGateway->getMailboxId($mid)) {
+            return $this->mayMailbox($mailbox_id);
+        }
 
-		return false;
-	}
+        return false;
+    }
 
-	public function mayMailbox(int $mailboxId): bool
-	{
-		$boxes = $this->mailboxGateway->getBoxes($this->session->isAmbassador(), $this->session->id(), $this->session->mayRole(Role::STORE_MANAGER));
+    public function mayMailbox(int $mailboxId): bool
+    {
+        $boxes = $this->mailboxGateway->getBoxes($this->session->isAmbassador(), $this->session->id(), $this->session->mayRole(Role::STORE_MANAGER));
 
-		foreach ($boxes as $b) {
-			if ($b['id'] == $mailboxId) {
-				return true;
-			}
-		}
+        foreach ($boxes as $b) {
+            if ($b['id'] == $mailboxId) {
+                return true;
+            }
+        }
 
-		return false;
-	}
+        return false;
+    }
 
-	public function mayManageMailboxes(): bool
-	{
-		return $this->session->mayRole(Role::ORGA);
-	}
+    public function mayManageMailboxes(): bool
+    {
+        return $this->session->mayRole(Role::ORGA);
+    }
 
-	public function mayAddMailboxes(): bool
-	{
-		return $this->mayManageMailboxes();
-	}
+    public function mayAddMailboxes(): bool
+    {
+        return $this->mayManageMailboxes();
+    }
 
-	public function mayHaveMailbox(): bool
-	{
-		return $this->session->mayRole(Role::STORE_MANAGER);
-	}
+    public function mayHaveMailbox(): bool
+    {
+        return $this->session->mayRole(Role::STORE_MANAGER);
+    }
 }

@@ -23,10 +23,6 @@ services:
 
     HTMLPurifier: '@exercise_html_purifier.default'
 
-    Intervention\Image\ImageManager:
-        arguments:
-            - driver: 'imagick'
-
     mysqli:
       class: mysqli
       arguments:

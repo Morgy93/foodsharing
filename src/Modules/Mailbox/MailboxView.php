@@ -7,133 +7,133 @@ use Foodsharing\Modules\Core\View;
 
 class MailboxView extends View
 {
-	public function legacyMailfolderFields(): string
-	{
-		return $this->v_utils->v_field('
+    public function legacyMailfolderFields(): string
+    {
+        return $this->v_utils->v_field('
 			<input type="hidden" id="mbh-mailbox" value="" />
 			<input type="hidden" id="mbh-folder" value="" />
 		');
-	}
+    }
 
-	public function manageMemberBox($box)
-	{
-		return $this->v_utils->v_quickform($box['name'] . '@' . PLATFORM_MAILBOX_HOST, [
-			$this->v_utils->v_form_tagselect('foodsaver_' . $box['id'], $this->translator->trans('mailbox.member')),
-			$this->v_utils->v_input_wrapper(
-				$this->translator->trans('mailbox.name'),
-				'<input type="text" value="' . $box['email_name'] . '" name="email_name" class="input text value">'
-			),
-			$this->v_utils->v_form_hidden('mbid', $box['id'])
-		], ['submit' => $this->translator->trans('button.save')]);
-	}
+    public function manageMemberBox($box)
+    {
+        return $this->v_utils->v_quickform($box['name'] . '@' . PLATFORM_MAILBOX_HOST, [
+            $this->v_utils->v_form_tagselect('foodsaver_' . $box['id'], $this->translator->trans('mailbox.member')),
+            $this->v_utils->v_input_wrapper(
+                $this->translator->trans('mailbox.name'),
+                '<input type="text" value="' . $box['email_name'] . '" name="email_name" class="input text value">'
+            ),
+            $this->v_utils->v_form_hidden('mbid', $box['id'])
+        ], ['submit' => $this->translator->trans('button.save')]);
+    }
 
-	public function mailboxform()
-	{
-		$desc = $this->translator->trans('mailbox.hostinfo', ['{host}' => PLATFORM_MAILBOX_HOST]);
+    public function mailboxform()
+    {
+        $desc = $this->translator->trans('mailbox.hostinfo', ['{host}' => PLATFORM_MAILBOX_HOST]);
 
-		return $this->v_utils->v_quickform($this->translator->trans('mailbox.create'), [
-			$this->v_utils->v_form_text('name', ['desc' => $desc])
-		], ['submit' => $this->translator->trans('button.save')]);
-	}
+        return $this->v_utils->v_quickform($this->translator->trans('mailbox.create'), [
+            $this->v_utils->v_form_text('name', ['desc' => $desc])
+        ], ['submit' => $this->translator->trans('button.save')]);
+    }
 
-	public function manageOpt()
-	{
-		return $this->v_utils->v_menu([
-			['name' => $this->translator->trans('mailbox.create'), 'href' => '/?page=mailbox&a=newbox']
-		], $this->translator->trans('mailbox.actions'));
-	}
+    public function manageOpt()
+    {
+        return $this->v_utils->v_menu([
+            ['name' => $this->translator->trans('mailbox.create'), 'href' => '/?page=mailbox&a=newbox']
+        ], $this->translator->trans('mailbox.actions'));
+    }
 
-	public function noMessage()
-	{
-		return '
+    public function noMessage()
+    {
+        return '
 			<tr class="message">
 				<td colspan="4" align="center"><div class="ui-padding">'
-			. $this->v_utils->v_info($this->translator->trans('mailbox.empty'))
-			. '</div></td>
+            . $this->v_utils->v_info($this->translator->trans('mailbox.empty'))
+            . '</div></td>
 			</tr>
 		';
-	}
+    }
 
-	/**
-	 * Converts an array with a mail sender/recipient from the database to a string.
-	 */
-	private function createMailAddressString(array $mailAddress): string
-	{
-		if (isset($mailAddress['personal'])) {
-			return $mailAddress['personal'];
-		} elseif (isset($mailAddress['host'])) {
-			return $mailAddress['mailbox'] . '@' . $mailAddress['host'];
-		} else {
-			return $mailAddress['mailbox'];
-		}
-	}
+    /**
+     * Converts an array with a mail sender/recipient from the database to a string.
+     */
+    private function createMailAddressString(array $mailAddress): string
+    {
+        if (isset($mailAddress['personal'])) {
+            return $mailAddress['personal'];
+        } elseif (isset($mailAddress['host'])) {
+            return $mailAddress['mailbox'] . '@' . $mailAddress['host'];
+        } else {
+            return $mailAddress['mailbox'];
+        }
+    }
 
-	/**
-	 * Removes leading and trailing quotation marks and replaces escaped quotation marks.
-	 */
-	private function fixQuotation(string $json): string
-	{
-		$trimmed = trim($json, '"');
+    /**
+     * Removes leading and trailing quotation marks and replaces escaped quotation marks.
+     */
+    private function fixQuotation(string $json): string
+    {
+        $trimmed = trim($json, '"');
 
-		return str_replace('\"', '"', $trimmed);
-	}
+        return str_replace('\"', '"', $trimmed);
+    }
 
-	public function listMessages(array $messages, int $folder, string $currentMailboxName)
-	{
-		$out = '';
+    public function listMessages(array $messages, int $folder, string $currentMailboxName)
+    {
+        $out = '';
 
-		foreach ($messages as $m) {
-			// fix wrong quotation that can occur in some data sets
-			$m['sender'] = $this->fixQuotation($m['sender']);
-			$m['to'] = $this->fixQuotation($m['to']);
+        foreach ($messages as $m) {
+            // fix wrong quotation that can occur in some data sets
+            $m['sender'] = $this->fixQuotation($m['sender']);
+            $m['to'] = $this->fixQuotation($m['to']);
 
-			// create from/to text depending on the folder
-			$fromToAddresses = [];
-			switch ($folder) {
-				case MailboxFolder::FOLDER_INBOX:
-					$fromToAddresses = [json_decode($m['sender'], true)];
-					break;
-				case MailboxFolder::FOLDER_SENT:
-					$fromToAddresses = json_decode($m['to'], true);
-					break;
-				case MailboxFolder::FOLDER_TRASH:
-					$from = json_decode($m['sender'], true); // returns null or the input string if parsing fails
-					if (!is_null($from) && is_array($from)) {
-						if ($this->createMailAddressString($from) == $currentMailboxName) {
-							// mail was sent
-							$fromToAddresses = json_decode($m['to'], true);
-						} else {
-							// mail was received
-							$fromToAddresses = [$from];
-						}
-					}
-					break;
-			}
+            // create from/to text depending on the folder
+            $fromToAddresses = [];
+            switch ($folder) {
+                case MailboxFolder::FOLDER_INBOX:
+                    $fromToAddresses = [json_decode($m['sender'], true)];
+                    break;
+                case MailboxFolder::FOLDER_SENT:
+                    $fromToAddresses = json_decode($m['to'], true);
+                    break;
+                case MailboxFolder::FOLDER_TRASH:
+                    $from = json_decode($m['sender'], true); // returns null or the input string if parsing fails
+                    if (!is_null($from) && is_array($from)) {
+                        if ($this->createMailAddressString($from) == $currentMailboxName) {
+                            // mail was sent
+                            $fromToAddresses = json_decode($m['to'], true);
+                        } else {
+                            // mail was received
+                            $fromToAddresses = [$from];
+                        }
+                    }
+                    break;
+            }
 
-			// safety check: if json_decode fails it might return null or a string
-			if (!is_null($fromToAddresses) && is_array($fromToAddresses)) {
-				$mappedAddresses = array_map(function ($a) {
-					return $this->createMailAddressString($a);
-				}, array_filter($fromToAddresses));
+            // safety check: if json_decode fails it might return null or a string
+            if (!is_null($fromToAddresses) && is_array($fromToAddresses)) {
+                $mappedAddresses = array_map(function ($a) {
+                    return $this->createMailAddressString($a);
+                }, array_filter($fromToAddresses));
 
-				$fromToText = implode(', ', $mappedAddresses);
-			} else {
-				$fromToText = '';
-			}
+                $fromToText = implode(', ', $mappedAddresses);
+            } else {
+                $fromToText = '';
+            }
 
-			$attach_class = 'none';
-			if (!empty($m['attach']) && $m['attach'] !== '[]') {
-				$attach_class = 'check';
-			}
+            $attach_class = 'none';
+            if (!empty($m['attach']) && $m['attach'] !== '[]') {
+                $attach_class = 'check';
+            }
 
-			$status = 'read-0';
-			if ($m['answer'] == 1) {
-				$status = 'answer-1';
-			} elseif ($m['read'] == 1) {
-				$status = 'read-1';
-			}
+            $status = 'read-0';
+            if ($m['answer'] == 1) {
+                $status = 'answer-1';
+            } elseif ($m['read'] == 1) {
+                $status = 'read-1';
+            }
 
-			$out .= '
+            $out .= '
 				<tr id="message-' . $m['id'] . '" class="message ' . $status . '">
 					<td class="subject"><span id="message-' . $m['id'] . '-status" class="status ' . $status . '">&nbsp;</span> ' . $m['subject'] . '</td>
 					<td class="from"><a href="#" onclick="return false;" title="' . $fromToText . '">' . $fromToText . '</a></td>
@@ -142,69 +142,69 @@ class MailboxView extends View
 					<td class="attachment"><span class="status a-' . $attach_class . '">&nbsp;</span></td>
 				</tr>
 			';
-		}
+        }
 
-		return $out;
-	}
+        return $out;
+    }
 
-	public function message($mail)
-	{
-		$mail['body'] = trim($mail['body']);
-		$von = json_decode($mail['sender'], true);
+    public function message($mail)
+    {
+        $mail['body'] = trim($mail['body']);
+        $von = json_decode($mail['sender'], true);
 
-		$sender = $von['mailbox'] . '@' . $von['host'];
-		if (isset($von['personal'])) {
-			$von_str = $von['personal'];
-		} else {
-			$von_str = $sender;
-		}
+        $sender = $von['mailbox'] . '@' . $von['host'];
+        if (isset($von['personal'])) {
+            $von_str = $von['personal'];
+        } else {
+            $von_str = $sender;
+        }
 
-		$an = json_decode($mail['to'], true);
-		$an_str = [];
-		if (is_array($an)) {
-			foreach ($an as $a) {
-				$an_str[] = $a['mailbox'] . '@' . $a['host'];
-			}
-		}
+        $an = json_decode($mail['to'], true);
+        $an_str = [];
+        if (is_array($an)) {
+            foreach ($an as $a) {
+                $an_str[] = $a['mailbox'] . '@' . $a['host'];
+            }
+        }
 
-		$attach = '';
-		if (is_array($mail['attach']) && count($mail['attach']) > 0) {
-			$attach = '
+        $attach = '';
+        if (is_array($mail['attach']) && count($mail['attach']) > 0) {
+            $attach = '
 				<div id="mailattch">
 					<ul class="attach">';
-			foreach ($mail['attach'] as $i => $a) {
-				$attach .= '<li><a class="ui-corner-all" href="/?page=mailbox&a=dlattach&mid=' . (int)$mail['id'] . '&i=' . (int)$i . '">' . $a['origname'] . '</a></li>';
-			}
-			$attach .= '</ul></div>';
-		}
+            foreach ($mail['attach'] as $i => $a) {
+                $attach .= '<li><a class="ui-corner-all" href="/?page=mailbox&a=dlattach&mid=' . (int)$mail['id'] . '&i=' . (int)$i . '">' . $a['origname'] . '</a></li>';
+            }
+            $attach .= '</ul></div>';
+        }
 
-		if ($mail['time_ts'] > 1391338283) {
-			$body = '<iframe sandbox="" style="width:100%;height:100%;border:0;margin:0;padding:0;" frameborder="0" src="/xhrapp.php?app=mailbox&m=fmail&id=' . $mail['id'] . '"></iframe>';
-		} else {
-			$body = nl2br($mail['body']);
-		}
+        if ($mail['time_ts'] > 1391338283) {
+            $body = '<iframe sandbox="" style="width:100%;height:100%;border:0;margin:0;padding:0;" frameborder="0" src="/xhrapp.php?app=mailbox&m=fmail&id=' . $mail['id'] . '"></iframe>';
+        } else {
+            $body = nl2br($mail['body']);
+        }
 
-		$fullToString = implode(', ', $an_str);
-		$foldButton = '';
-		$shortToString = $fullToString;
-		if (strlen($fullToString) > 100) {
-			$shortToString = substr($fullToString, 0, 100) . ' ...';
-			$foldButton = '<a onclick="mb_foldRecipients(\'' . $fullToString . '\', \'' . $shortToString . '\');return false;" href="#"><i class="fas fa-sort-down fa-lg" id="mail-fold-icon"></i></a>';
-		}
+        $fullToString = implode(', ', $an_str);
+        $foldButton = '';
+        $shortToString = $fullToString;
+        if (strlen($fullToString) > 100) {
+            $shortToString = substr($fullToString, 0, 100) . ' ...';
+            $foldButton = '<a onclick="mb_foldRecipients(\'' . $fullToString . '\', \'' . $shortToString . '\');return false;" href="#"><i class="fas fa-sort-down fa-lg" id="mail-fold-icon"></i></a>';
+        }
 
-		return '
+        return '
 			<div class="popbox">
 				<div class="message-top">
 					<div class="buttonbar">
 						<a href="#" onclick="mb_deleteEmail();return false;" class="button">'
-			. $this->translator->trans('mailbox.delete')
-			. '</a> '
-			. '<a href="#" onclick="mb_answer();return false;" class="button">'
-			. $this->translator->trans('mailbox.reply')
-			. '</a> '
-			. '<a href="#" onclick="trySetEmailStatus(' . $mail['id'] . ', false);return false;" class="button">'
-			. $this->translator->trans('mailbox.mark_as_unread')
-			. '</a>
+            . $this->translator->trans('mailbox.delete')
+            . '</a> '
+            . '<a href="#" onclick="mb_answer();return false;" class="button">'
+            . $this->translator->trans('mailbox.reply')
+            . '</a> '
+            . '<a href="#" onclick="trySetEmailStatus(' . $mail['id'] . ', false);return false;" class="button">'
+            . $this->translator->trans('mailbox.mark_as_unread')
+            . '</a>
 					</div>
 					<table class="header">
 						<tr>
@@ -233,24 +233,24 @@ class MailboxView extends View
 
 				<textarea id="mailbox-body-plain" style="display:none;">' . $this->replyMail($mail['body'], $mail['time_ts']) . '</textarea>
 			</div>';
-	}
+    }
 
-	private function replyMail($plain, $ts)
-	{
-		return PHP_EOL . PHP_EOL . PHP_EOL
-			. '-- '
-			. PHP_EOL . $this->translator->trans('mailbox.claim')
-			. PHP_EOL . PHP_EOL . PHP_EOL . PHP_EOL
-			. '----------- '
-			. $this->translator->trans('mailbox.signature', ['{date}' => date('j.m.Y H:i', $ts)])
-			. ' -----------'
-			. PHP_EOL . PHP_EOL
-			. PHP_EOL . '> ' . str_replace(["\r", "\n"], ['', PHP_EOL . '> '], $plain);
-	}
+    private function replyMail($plain, $ts)
+    {
+        return PHP_EOL . PHP_EOL . PHP_EOL
+            . '-- '
+            . PHP_EOL . $this->translator->trans('mailbox.claim')
+            . PHP_EOL . PHP_EOL . PHP_EOL . PHP_EOL
+            . '----------- '
+            . $this->translator->trans('mailbox.signature', ['{date}' => date('j.m.Y H:i', $ts)])
+            . ' -----------'
+            . PHP_EOL . PHP_EOL
+            . PHP_EOL . '> ' . str_replace(["\r", "\n"], ['', PHP_EOL . '> '], $plain);
+    }
 
-	public function folderlist($mailboxes, $mailadresses)
-	{
-		$this->pageHelper->addJs('
+    public function folderlist($mailboxes, $mailadresses)
+    {
+        $this->pageHelper->addJs('
 		setAutocompleteAddresses(' . json_encode($mailadresses) . ');
 		$("#message-body").dialog({
 			autoOpen: false,
@@ -262,26 +262,26 @@ class MailboxView extends View
 				$("#message-body").css("overflow", "hidden"); // this line does the actual hiding
 			}
 		});');
-		$this->pageHelper->addHidden('<div id="message-body"></div>');
+        $this->pageHelper->addHidden('<div id="message-body"></div>');
 
-		/*
-		 * [id] => 1
-		 * [name] => deutschland
-		 */
-		if (count($mailboxes) == 1) {
-			$von = $mailboxes[0]['email_name'] . ' (' . $mailboxes[0]['name'] . '@' . PLATFORM_MAILBOX_HOST . ')<input type="hidden" id="h-edit-von" value="' . $mailboxes[0]['id'] . '" />';
-		} else {
-			$von = '
+        /*
+         * [id] => 1
+         * [name] => deutschland
+         */
+        if (count($mailboxes) == 1) {
+            $von = $mailboxes[0]['email_name'] . ' (' . $mailboxes[0]['name'] . '@' . PLATFORM_MAILBOX_HOST . ')<input type="hidden" id="h-edit-von" value="' . $mailboxes[0]['id'] . '" />';
+        } else {
+            $von = '
 			<select class="von-select ui-corner-all" id="edit-von">';
-			foreach ($mailboxes as $m) {
-				$von .= '
+            foreach ($mailboxes as $m) {
+                $von .= '
 				<option class="mb-' . $m['id'] . '" value="' . $m['id'] . '">' . $m['email_name'] . ' (' . $m['name'] . '@' . PLATFORM_MAILBOX_HOST . ')</option>';
-			}
-			$von .= '
+            }
+            $von .= '
 			</select>';
-		}
+        }
 
-		$this->pageHelper->addJs('
+        $this->pageHelper->addJs('
 		$("#message-editor").dialog({
 			autoOpen: false,
 			width: 980,
@@ -315,7 +315,7 @@ class MailboxView extends View
 		});
 		');
 
-		$this->pageHelper->addHidden('
+        $this->pageHelper->addHidden('
 		<div id="message-editor">
 			<div class="popbox">
 				<div class="message-top">
@@ -361,7 +361,7 @@ class MailboxView extends View
 		</div>
 		');
 
-		return $this->v_utils->v_field('
+        return $this->v_utils->v_field('
 	<table id="messagelist" class="records-table">
 		<thead>
 			<tr>
@@ -375,5 +375,5 @@ class MailboxView extends View
 
 		</tbody>
 	</table>', $this->translator->trans('mailbox.mail'), [], null, 'mb-messagelist-title');
-	}
+    }
 }

@@ -48,6 +48,7 @@ group:
     motivation: Quelle est votre motivation pour participer au groupe {group} ?
     summary: '{name} souhaite participer au groupe de travail {group].'
     title: Demandes pour {group}
+    accept: Accepter la candidature
   contact:
     sent: Le message a bien été envoyé.
     send: Envoyer le message
@@ -58,7 +59,11 @@ group:
     admins: '{count} personne(s) de contact :'
     title: Contacter {group}
   saved: Les modifications ont été enregistrées
-  edit: Modifier {group}
+  edit:
+    title: Modifier le {groupe}
+    description_required: Merci de saisir une description.
+    name_required: Merci de saisir un nom.
+    description_placeholder: Description du groupe de travail
   applications_for: Demandes pour %name%
   applications: Demandes
   photo: Photo
@@ -137,6 +142,11 @@ group:
     voting: Vote
     welcome: Souhaits de bienvenue
     title: Fonctions des groupes de travail
+    duplicate_board_team: Comité déjà créé ! Il ne peut y avoir qu'un seul comité
+      par secteur géographique.
+    tooltip_function_11: Les administrateurs-rices de ce groupe de travail sont affiché-e-s
+      dans la vue d'ensemble du district.
+    board: Comité
   delete_group_sure: Le groupe de travail/le district {groupName} doit-il réellement
     être supprimé ?
   quitting_home_district_warning: Souhaites-tu vraiment quitter ton district principal
@@ -155,6 +165,7 @@ group:
     go: Aller sur le groupe
     edit: Modifier le groupe
     contact: Contacter le groupe
+    save: Enregistrer les modifications
   already_applied: Tu as déjà candidaté pour ce groupe.
   image: Image principale pour %name%
   admin_count: "{0} pas d'admin|{1} un.e admin| [2, Inf[ %count% admins"
@@ -169,6 +180,31 @@ group:
     add_member: Intégrer dans l'équipe
     admin_mode_on: Activer la vue pour les administrateur·rice·s
     admin_mode_off: Retour à l'affichage standard
+    remove_ambassador_text: Veux-tu vraiment supprimer {name} ({id}) en tant qu'ambassadeur-rice
+      ?
+    remove_admin_text: Veux-tu vraiment supprimer {name} ({id}) en tant qu'admin ?
+    old_edit_hint_link: Membre
+    set_admin_title: Inscrire un-e membre en tant qu'admin
+    set_ambassador_title: Inscrire un-e membre en tant qu'ambassadeur-rice
+    set_admin_text: Veux-tu vraiment inscrire {name} ({id}) comme admin ?
+    remove_ambassador_title: Se désinscrire en tant qu'ambassadeur-rice
+    set_ambassador_text: Veux-tu vraiment inscrire {nom} ({id}) comme ambassadeur-rice
+      ?
+    remove_admin_title: Se désinscrire en tant qu'administrateur
+    remove_text_group: Veux-tu vraiment supprimer {name} ({id}) du groupe de travail
+      ?
+    remove_text_region: Veux-tu vraiment supprimer {name} ({id}) de la région ?
+    old_edit_hint: Tu trouveras désormais la gestion des membres sous l'onglet
+  last_activity: Dernière activité
+  role_name: Rôle
+  entertime: 'Temps :'
+  application_region: 'Candidature pour '
+  filter_by_last_activity: Inactif en mois
+  application_from: de
+  motivation: Texte de motivation
+  entermotivation: 'Motivation :'
+  enterxp: 'Expérience :'
+  enterskills: 'Compétences :'
 bcard:
   generate: Créer une carte de visite
   error:
@@ -226,6 +262,7 @@ ui:
     on: publié
 bread:
   backToOverview: Revenir à la vue d'ensemble
+  backToStore: Revenir au magasin
 button:
   clear_filter: Effacer les filtres
   create: Créer
@@ -240,7 +277,7 @@ button:
   new: Nouveau
   upload: Téléverser
   rotate_right: Pivoter dans le sens horaire
-  attach_image: Joindre une image
+  attach_image: Joindre une image (png ou jpg)
   change_picture: Modifier l'image
   next: Suivant
   save: Enregistrer
@@ -259,14 +296,14 @@ upload:
   no_image: Le fichier téléversé n'est pas une photo. Sélectionne un autre fichier.
 picture_upload_widget:
   choose_picture: Sélectionne une image depuis ton ordinateur.
-  picture_upload: Téléversement d'image
+  picture_upload: Téléversement d'une photo
 image: Image
 quizusercomment: "Donnez-nous votre avis sur cette question.\nÉtait-ce trop facile,\
   \ trop difficile, incompréhensible ?\nOu certaines réponses ou explications sont-elles\
   \ incorrectes ?\n"
 wikilink: Lien vers le wiki
 questcount: Combien de questions doivent être posées pendant l'examen ?
-maxfp: Nombre maximum de points faibles à passer
+maxfp: Nombre maximum de points d'erreur pour réussir
 answers: Quelles réponses sont correctes ?
 duration: Il est temps de répondre
 explanation: Explication
@@ -368,8 +405,9 @@ settings:
     mail: Oui, je souhaite être informé·e des nouvelles publications par courriel.
     thread: Recevoir les nouvelles du fil "{thread}" ?
   calendar:
-    sync: "Ton programme calendrier doit régulièrement être synchronisé avec ce calendrier\
-      \ afin d'actualiser tes évènements.\n"
+    sync: "Ton programme de calendrier doit régulièrement resynchroniser ce calendrier.\n\
+      Ce n'est qu'alors que les nouvelles dates de collecte apparaîtront ou que les\
+      \ rendez-vous annulés n'apparaîtront plus.\n"
     event_link_desc: (évènements inclus)
     link_title: 'ICS/ICAL/WebCal :'
     token-warning: "Important : garde absolument le lien secret.\nIl contient une\
@@ -393,19 +431,19 @@ settings:
   push:
     disabled: Les notifications push on été désactivées
     disable: Désactiver les notifications push
-    info-off: "Les notifications push sont activées pour le site de foodsharing.\n\
-      En désactivant les notif. push, tu ne recevras plus les messages du chat directement\
-      \ sur ton appareil.\nTu ne pourras voir les notifications et messages qu'en\
-      \ étant connecté.e directement sur le site.\n"
-    success: Les notifications push ont été activées avec succès.
+    info-off: "Sur cet appareil, les notifications push de foodsharing sont activées.\n\
+      Si tu désactives les notifications push, les messages de chat \nne seront plus\
+      \ envoyés directement sur ton appareil.\nTon appareil n'affichera plus de notifications\
+      \ si tu n'es pas connecté\net ne réagira plus non plus par un son ou une vibration.\n"
+    success: Les notifications push ont été activées avec succès
     enable: Activer les notifications push
-    info-on: "En activant les notifications push pour cet appareil, les notifications\
-      \ et messages seront directement envoyés sur celui-ci, même lorsque tu ne te\
-      \ trouves pas sur la page de foodsharing.\nTon appareil mentionnera une notification\
-      \ par vibreur ou son.\n"
+    info-on: "En activant les notifications push pour cet appareil, \nles notifications\
+      \ et messages seront directement envoyés sur celui-ci, \nmême lorsque tu ne\
+      \ te trouves pas sur la page de foodsharing.\nTon appareil mentionnera une notification\
+      \ \npar vibreur ou son.\n"
     denied: "Tu as refusé les notifications push sur ton moteur de recherche.\nPour\
       \ recevoir les notifications de foodsharing, active les notifications push sur\
-      \ ton moteur de recherche et recharge la page.\n"
+      \ ton moteur de recherche \net recharge la page.\n"
     not-supported: Ton moteur de recherche n'accepte pas les notifications push.
     title: Notifications Push
   photo:
@@ -425,17 +463,18 @@ settings:
     invalid: L'adresse courriel est incorrecte.
     passfail: Le mot de passe est faux, faute de frappe ?
     passcheck: Confirme les informations grâce au mot de passe
+    question: 'Devons-nous vraiment remplacer ton courriel par celui-ci :'
   email: Modifier l'adresse courriel
   sleep:
-    saved: Les paramètres ont été enregistrés.
+    saved: Les préférences ont été enregistrés
     range: 'Entre la période durant laquelle tu ne seras pas disponible (environ)
       :'
-    full: Je reviendrai sans pouvoir donner de date précise.
-    temp: 'Je ne suis pas disponible lors de la période qui suit :'
-    none: Je suis actif.ve et motivé.e !
+    full: Je reviendrai sans pouvoir donner de date précise
+    temp: 'Je ne suis pas disponible lors de la période qui suit'
+    none: Je suis actif.ve et motivé.e
     missing-date: Entre une date de début et de fin.
     tooltip: "{name} est indisponible pour le moment et s'est mis(e) en mode sommeil"
-    show: "En utilisant cette fonction, tu acceptes que ton statut, la durée de ton\
+    show: "En utilisant cette fonction, tu acceptes que ton statut,\nla durée de ton\
       \ absence ainsi que ton message soient rendus publics sur ton profil.\nLe symbole\
       \ d'un bonnet de nuit sera ajouté à ta photo de profil.\n"
     info: "Grâce à la fonction \"sommeil\" tu partages avec la communauté le fait\
@@ -453,8 +492,21 @@ settings:
   newsletter: "Notre lettre d'information sur les actions et évènements de foodsharing\n\
     est envoyée environ 1× par mois.\nSouhaites-tu t'abonner à la lettre d'information ?\n"
   notifications: Notifications
-  header: Tes données / paramètres
+  header: Paramètres du profil
   title: Paramètres
+  name_change:
+    desc: Il n'est pas possible de modifier son propre nom de manière autonome. Tu
+      peux toutefois demander un <a {link}">changement de nom</a>.
+    request: Demander un changement de nom
+    title: Nom (Prénom et nom)
+    foodsharer_info: Pour changer ton nom, tu dois nous faire une demande sous <a
+      {link}>formulaire de support</a>.
+    foodsaver_info: Pour changer ton nom, tu dois contacter un.e ambassadeur.trice
+      de ton secteur géographique de rattachement. <hr/>Pour savoir qui est l'ambassadeur.rice
+      de ton secteur géographique, consulte le <a {link}>forum de ton secteur géographique</a>
+      dans la barre latérale gauche.
+  passport:
+    menu: Carte de collecteur.rice
 email_template:
   newsletter:
     unsubscribe: Tu ne veux plus recevoir de lettres d'information ?
@@ -491,11 +543,14 @@ email_template:
       \ contenu d’après § 55 Abs. 2 RStV :\n  Frank Bowinkelmann"
     general_information_requirements: Mentions suivant l'article 5 de la loi sur les
       télémédias (Telemediengesetz)
-  manual_slots_get_ignored: Cette notification est envoyée que pour les collectes
-    régulières. Les collectes particulières ajoutées manuellement, modifiées ou supprimées
-    ne sont pas prises en compte.
+  manual_slots_get_ignored: Cette notification n'est malheureusement envoyée que si
+    personne ne s'est inscrit pour les heures de collecte régulières. Les collectes
+    particulières ajoutées manuellement, modifiées ou supprimées ne sont pas prises
+    en compte. Pour ne plus recevoir cette notification, supprime les heures de collectes
+    régulières sur la page de ton établissement en cliquant sur l'icône en forme de
+    crayon près des heures de collecte et en supprimant les heures de collecte inutiles.
   foodbasket_request: Ton panier solidaire vient de faire l'objet d'une requête de
-    la part de %SENDER%.
+    la part de %SENDER%
   find_someone: Il te faut trouver quelqu'un le plus rapidement possible dans ton
     équipe pour réaliser cette collecte. Si personne ne peut dans ton équipe, tu devras
     t'en occuper toi-même. Si personne ne peut réaliser cette collecte, il te faudra
@@ -551,6 +606,9 @@ mailbox:
   title: Messageries
   mail: Courriels
   delete: À la corbeille
+  from: De
+  to: À
+  fromto: De/À
 foodsaver:
   mailchange_error: L'activation de votre nouvelle adresse électronique a échoué.
     Veuillez réessayer.
@@ -580,9 +638,10 @@ foodsaver:
     to_fs: Devenir collecteur.ice
     ad_fs: Participer au Quiz et devenir collecteur.ice !
     needs_fs: Tu dois d'abord devenir collecteur.ice
+    learning: Regarder maintenant la vidéo explicative
   edit: Modifier le profil du collecteur / de la collectrice
-  about_me_intern: "Cette description sera visible sur ton profil par toute la communauté\
-    \ de foodsharing.\n"
+  about_me_intern: "Cette description sera affichée sur ta page de profil\net sera\
+    \ visible par toute la communauté de foodsharing.\n"
   about_me_public: "Cette description sera visible sur l'équipe <a href=\"https://foodsharing.de/team\"\
     >Team-</a>\net sur la page <a href=\"https://foodsharing.de/team/ehemalige\">Ehemaligenseite</a>\n\
     par tous leurs membres.\n"
@@ -599,7 +658,7 @@ foodsaver:
     décision ?
   your_account: toi
   delete_account_now: Supprimer le compte maintenant
-  delete_account_sure: Supprimer le compte de {name} ?
+  delete_account_sure: Supprimer ton compte ?
   delete_account: Supprimer le compte
   profileBack: Retour au profil
   edit_failure: Aucune modification / les modifications n'ont pas pu être enregistrées
@@ -608,6 +667,9 @@ foodsaver:
   actions: Actions
   title: Collecteur
   bread: Tous les foodsaver
+  delete_account_sure_reason: 'Le compte de {name} doit-il vraiment être supprimé
+    ? Tu peux éventuellement indiquer ici une raison qui permettra de comprendre plus
+    tard pourquoi le compte a été supprimé :'
 recipients:
   done: Tous les courriels ont été envoyés
   status: 'Envoyer des courriels… (adresse électronique actuelle : {courant})'
@@ -669,6 +731,8 @@ forum:
     closed: sujet fermé
     open: Rouvrir le sujet
     close: Fermer le sujet
+    navigate_to_newest_post: Aller au dernier article
+    navigate_to_oldest_post: Aller au premier article
   follow:
     email: comme courriel
     bell: par la cloche
@@ -816,6 +880,15 @@ terminology:
   homeRegion: Secteur géographique favori
   community: Groupe local {name}
   pin: Description du groupe local
+  boardAdmins: Comité
+  fsps: Frigo solidaire
+  homepage: Page d'accueil
+  role:
+    "0": Partageur.euse
+    "1": Collecteur.rice
+    "2": Responsable coopération
+    "3": Ambassadeur.rice
+    "4": Personne gérant l'organisation
 register:
   activation_success: <strong>Activation réussie.</strong> Connecte-toi maintenant
     avec ton adresse courriel et le mot de passe que tu as choisi.
@@ -908,6 +981,7 @@ login:
   form_title: Bienvenue
   topbar: Se connecter
   submit_btn: Se connecter
+  steady_login: Restez connecté
 legal:
   agree_privacy_notice: J'ai été informé·e de l'obligation de confidentialité des
     données personnelles et du comportement qui en résulte. Je recevrai une confirmation
@@ -951,6 +1025,11 @@ legal:
     this_doesnt_get_deleted_address: <ul><li>Ton adresse</ul></li>
     this_doesnt_get_deleted_history: <ul><li>Historique de ta vérification</ul></li>
     this_doesnt_get_deleted_name: <ul><li>Ton nom</ul></li>
+    this_gets_deleted_verify: <ul><li>Ta vérification sera supprimée.</ul></li>
+    this_gets_deleted_friendlist: <ul><li>Ta liste d'amis sera supprimée.</ul></li>
+    this_gets_deleted_quiz: <ul><li>Ton quiz collecteur.ice sera supprimé.</ul></li>
+    this_gets_deleted_trustbananas: <ul><li>Les bananes-confiance que tu as attribuées
+      sont supprimées.</ul></li>
 message_text_to_group_admin_workgroup: "La région/le groupe de travail<b>{groupName}</b>\
   \ n'a<b>plus</b> d'ambassadeur.rice/d'admin.<br><br><br>Elle possède la structure\
   \ ID ci-contre :<br>{idStructureList}<br><br>l'ID est : {groupId}<br><br>URL : \"\
@@ -1020,7 +1099,7 @@ store:
     managementToggleOff: Revenir à la version standard
     managementToggleOn: Voir en tant que responsable coopération
     reloadPage: Recharger
-    reloadRequired: "Aller à : modifier les infos de l'équipe"
+    reloadRequired: "Aller à : modifier les infos de l'équipe :"
     reallyDemote: Souhaites-tu réellement retirer {name} en tant que RM dans ce magasin ?
     demoteAsManager: Retirer en tant que responsable coopération
     promoteToManager: Rendre responsable
@@ -1041,12 +1120,12 @@ store:
   mayAmb: A réussi le test Ambassadeur·ice.
   fetchCount: a collecté {count}× ici.
   isNotVerified: N'est pas encore vérifié(e).
-  isJumper: Remplaçant(e)
+  isJumper: Est sur la liste des remplaçant.e.s.
   noPickup: Aucune collecte à ce jour.
   isManager: Responsable coopération pour ce magasin.
   unknownDate: inconnue
   lastPickupShort: dernière collecte le {date}
-  lastPickup: Dernière collecte le {date}
+  lastPickup: 'Dernière collecte : {date}'
   jumperSince: Remplaçant(e) depuis le {date}
   memberSince: Dans l'équipe depuis le {date}
   teamName: Équipe {storeTitle}
@@ -1063,6 +1142,54 @@ store:
   pickup_slot_unavailable: Cette collecte n'est pas disponible car les responsables
     coopération ne l'ont pas encore prévue. Réessaye plus tard.
   appliedFor: Demande envoyée
+  regionPickupRulesInactive: Les règles de secteur géographique supplémentaires pour
+    les collectes ne sont pas actives
+  convince:
+    much: C'était difficile, mais la personne a fini par accepter.
+    none: Pas de problème du tout, la personne a tout de suite été enthousiaste !
+    final: Au début, les choses semblaient mal engagées, mais la personne a fini par
+      se manifester.
+    some: Après un travail de persuasion, la personne a accepté de participer.
+  short_tooltip_yellow: Collectes ouvertes dans 5 jours
+  short_tooltip_orange: Collectes ouvertes dans 3 jours
+  nodeclaration: Aucune indication
+  tooltip_jumping: Tu es remplaçant(e) pour ces magasins
+  peoplecame: Il est arrivé plusieurs fois que des personnes se rendent au magasin
+    sans avoir prévenu.
+  willgetcontacted: Tu es actuellement sur la liste des remplaçant.e.s. Dès qu'une
+    aide est nécessaire, tu seras contacté.
+  enterdate: Inscrire une date de collecte
+  filter: Filtrer par …
+  enternumber: Tu dois encore choisir le nombre de personnes qui viendront faire la
+    collecte.
+  maxchar: (max. 180 caractères)
+  important: 'Important :'
+  prefetchone: 1 semaine
+  prefetchtwo: 2 semaines
+  prefetchthree: 3 semaines
+  complete: base de données complète
+  smneeded: Pour créer une collaboration, tu dois être responsable de coopération.
+  locked: Tu ne peux pas modifier cette collaboration.
+  regionPickupRuleLong: Sur une période de {regionPickupRuleTimespan} jours, il ne
+    peut y avoir plus de {regionPickupRuleLimit} collectes au total, en tenant compte
+    de tous les établissements ayant des règles de secteur géographique. Il ne peut
+    y avoir plus de {regionPickupRuleLimitDay} collectes par jour dans ces établissements.
+    {regionPickupRuleInactive} heures avant la collecte, cette règle n'est pas prise
+    en compte.
+  useRegionPickupRules: "Il s'agit d'un établissement ROSINEN. En plus des règles\
+    \ de fonctionnement de base, la règle de ROSINEN de secteur géographique suivante\
+    \ s'applique aux collectes :"
+  short_tooltip_red: Collectes ouvertes aujourd'hui et demain
+  regionPickupRules: règle supplémentaire ROSINEN
+  nodetails: N'indique pas d'heures de collecte précises ici.
+  nochains: Veuillez ne vous adresser qu'à des entreprises gérées par leur propriétaire,
+    jusqu'à 3 filiales au maximum, ne jamais s'adresser à des filiales d'une plus
+    grande chaîne ! Respecter les règles de la chaîne de magasins !
+  team:
+    isfull: L'équipe est pleine
+  leaveinfo: Ici, tu peux indiquer quelques informations pour les collecteurs.rices
+    qui souhaitent postuler pour faire partie de l'équipe.
+  prefetchfour: 4 semaines
 storeview:
   want_to_fetch: J'aimerais m'engager dans cette équipe.
   specials: Particularités
@@ -1082,6 +1209,7 @@ storeview:
   teamInfo: Il y a <strong>{active}</strong> actif·ve·s et <strong>{jumper}</strong>
     remplaçant·e·s dans l'équipe.
   info: Informations
+  status_notes: Notes de statut
 day: Balise
 time: Heure
 select: Veuillez choisir
@@ -1127,7 +1255,7 @@ menu:
     blog: Blog
     fundamentals: Principes
     aboutUs: À propos de nous
-    workingGroupEdit: gérer le groupe
+    workingGroupEdit: Gérer le groupe
     members: Membres
     wall: Mur
     BOTforum: Forum Ambassadeur.ice.s
@@ -1154,14 +1282,20 @@ menu:
     administration: Administration
     your_stores: Tes magasins
     your_account: Ton compte
-    groups: Vue d'ensemble des groupes
+    groups: Groupes
     your_groups: Tes groupes
     messages: Messages
     all_messages: Tous les messages
     mark_as_read: Marquer comme lus
-    infos: infos
+    infos: Informations
     activities: actions
     pin: Description du groupe local
+    other_stores: Autres magasins
+    helpneeded: Recherche de bénévoles urgente
+    helpwanted: Recherche de bénévoles
+    group_overview: Aperçu des groupes de travail globaux
+    baskets: Paniers solidaires
+    your_baskets: Tes paniers solidaires
   content: modifier les contenus
   manage_mailboxes: gérer les boîtes de réception
   email: envoyer la lettre d'information
@@ -1190,14 +1324,21 @@ dashboard:
     managing: Tu es responsable de
     waiting: Tu es sur la liste des remplaçant.e.s pour
     pending: Demande de
-    stores: Tu collectes des denrées à
+    stores: Tes magasins
     groups: Tes groupes
     regions: Tes secteurs géographiques
+    buddies: Personnes que tu connais
+    managing_stores: Tes établissements où tu es responsable
+    users: Collecteur.ice
+    baskets: Paniers solidaires
+    jumping_stores: Tes établissements où tu es remplaçant-e
+    events: Événements
+    polls: Votations
   foodsaver_amount: "Tu as fait <b>{pickups} x</b> collectes et a sauvé <b>{weight}\
     \ kg</b> de denrées."
   foodsharer_amount: Tu as déjà collecté {weight} kg !
   foodsharer: Bonne collecte !
-  greeting: Bonjour {name}, contents de te voir ici !
+  greeting: Bonjour {name}, content de te voir ici.
   chooseHomeRegion: Choisis ton secteur favori.
   homeRegion: Ton secteur favori est {region}.
   checkAddress: Vérifie ton adresse. Les coordonnées n'ont pas pu être transmises.
@@ -1234,6 +1375,23 @@ dashboard:
   updates_title_some: Vue d'ensemble des mises à jour ({0})
   updates_title_all: Vue d'ensemble des mises à jour
   title: Tableau de bord
+  invitation: Tu as reçu une invitation
+  options:
+    hide:
+      text: Gérer une annonce
+      tooltip: Ici, tu peux masquer ou afficher des zones spécifiques sur le tableau
+        de bord.
+    grid_toggle:
+      2_columns: Passer à l'affichage en 2 colonnes
+      3_columns: Passer à l'affichage en 3 colonnes
+    reset: Réinitialiser
+  eventCount: Prochain événement ({count})
+  greeting_short: Salut {name} !
+  full_subline: Tu as récupéré des denrées alimentaires <b>{pickups} x</b> et sauvé
+    ainsi <b>{weight} kg</b>. Ton secteur géographique est <b>{region}6</b>.
+  invitationCount: Tu as reçu une invitation ({count})
+  polls: Tes votations en cours
+  settings: Préférences
 profile:
   report:
     arbAdminAgainstRepAdmin: Tu es admin dans un groupe d'arbitrage et tu essayes
@@ -1268,6 +1426,70 @@ profile:
       directement avec la personne concernée. Communique la manière dont tu souhaites
       être recontacté.e pour d'éventuelles questions.
     title: Signalement à propos de {name}
+    control:
+      tot: total
+      notes: Notes et décisions
+      from: Signalement de
+      newreports: Nouveau signalement
+      total: au total
+      delivered: Signalements envoyés
+    view:
+      bossy: A eu un comportement exigeant/agressif
+      other: A enfreint d'autres règles de conduite (tout autre)
+      vsfs: envers les collecteur.rice.s
+      dirty: N'a pas laissé le lieu de collecte propre
+      tardy: Est arrivé.e en retard pour la collecte
+      noshow: N'est pas venu pour la collecte
+      respect: A eu un comportement impoli ou irrespectueux
+      social: Ne s'est pas comporté de manière collective et sociale lors de la collecte
+      complaints: A fait des reproches
+      what:
+        sexist: propos sexistes
+        homophobe: propos homophobes
+        brutal: Violence et menaces
+        hurtful: propos injurieux
+        racist: propos racistes
+        other: Autres propos et comportements inappropriés
+      ofstore: du personnel de l'entreprise
+      additional: A pris ou demandé des aliments à sauver en dehors de son temps de
+        collecte auprès de l'établissement
+      sells: Vend des aliments sauvés
+      nearstore: devant le personnel de l'entreprise
+      ofclients: de la clientèle
+      delivered: Mis à disposition
+      picky: Ne prend pas tous les aliments prévus pour la collecte
+      newreport: Nouveau signalement
+      vsclients: envers la clientèle
+      nearclients: devant la clientèle
+      thief: A pris des choses qui ne lui étaient pas destinées
+      returned: N'a pas rapporté les bouteilles/caisses consignées, etc
+      why: Pourquoi signales-tu cette personne ?
+      unreliable: Annulation fréquente des collectes à court terme sans recherche
+        de personne de remplacement
+      trasher: Jette les aliments sauvés
+      nearfs: devant des collecteur.rice.s
+      offs: de collecteur.rice.s
+      vsstore: envers le personnel du magasin
+      residence: Lieu de résidence du collecteur de la collectrice
+    noshow: N'est pas venu.e à la collecte
+    inthisblog: dans cet article de blog
+    cancellation: Annulation fréquente des collectes à court terme sans recherche
+      de personne de remplacement
+    sells: Vend des denrées alimentaires sauvées
+    xhr:
+      allofthem: Tous les signalements concernant
+      delivered: Signalement envoyé
+      reporting: Signalement sur
+      reportID: ID du rapport
+      reportee: Signalé par
+      plsconfirm: Supprimer définitivement ce signalement ?
+      confirmed: Signalement confirmé !
+      deleted: Le signalement a été supprimé !
+    kindofreport: Sélectionne le type de signalement
+    late: Est arrivé.e trop tard
+    readup: "Vous pouvez lire ici des indications sur le traitement d'un signalement\
+      \ : <a href='https://wiki.foodsharing.de/Regelverletzungen_-_Konsequenzen_und_Bearbeitung#D.29_Bearbeitung_einer_Meldung'>\
+      \ Traitement d'un signalement</a>"
   mediation:
     no_group: Il n'existe malheureusement pas encore de groupe local de médiation
       pour le secteur géographique choisi. Tu peux aborder ce thème lors d'un prochain
@@ -1314,10 +1536,12 @@ profile:
     registrationDate: Date d'inscription
     lastActivity: Dernière connexion
     title: Infos
+    buddycount_followed: '{name} connaissent {count} collecteur.rice.s'
+    buddycount_known: '{name} connait {count} collecteur.rice.s'
   online: '{name} est en ligne.'
   notes:
-    info: "Utilise cette fonction consciencieusement.\nElle est là rendre le processus\
-      \ plus clair, de le simplifier pour la communauté.\nReste objectif.ve et raconte\
+    info: "Utilise cette fonction consciencieusement. Elle est là rendre le processus\
+      \ plus clair, de le simplifier pour la communauté. Reste objectif.ve et raconte\
       \ les faits, sans jugement et clairement s'il-te-plaît."
     title: Notes sur {name}
     bread: Notes
@@ -1339,14 +1563,15 @@ profile:
       confirm_message: Souhaites-tu vraiment retirer la banane-confiance ?
       confirm_title: Retirer la banane-confiance
     alreadyGiven: '{name} a déjà reçu une banane-confiance de ta part.'
-    messageTooShort: Écris un texte de min. 100 caractères pour accompagner ta banane
-      ;)
+    messageTooShort: Écris un texte de minimum 100 caractères pour accompagner ta
+      banane.
     sent: Ta banane a été envoyée !
     details: "Écris au min. 100 caractères décrivant pourquoi {name} mérite une banane-confiance\
       \ de ta part.\n"
     placeholder: min. 100 caractères…
-    vouch: "Donc offre tes bananes-confiance uniquement à des personnes que tu connais\
-      \ bien,\nqui sont respectueuses, engagées, responsables et fiables.\n"
+    vouch: "Merci de n'attribuer la banane de confiance qu'à des personnes que tu\
+      \ connais personnellement,\nqui respectent les règles de conduite et l'accord\
+      \ juridique\net dont tu peux garantir la fiabilité et l'engagement.\n"
     undo: Les bananes-confiance ne peuvent pas être modifiées ou retirées.
     give: Offre une banane-confiance à {name}
     none: "{name} n'a pas de nouvelles bananes-confiance depuis un moment."
@@ -1374,6 +1599,36 @@ profile:
   no_common_workgroups: Tu n'es pas dans un groupe de travail commun avec {name}.
   workgroups_member: Tu es avec {name} dans les groupes de travail suivants
   workgroups_admin: "{name} s'est engagé·e comme personne de contact pour les groupes"
+  commitments_stat:
+    eventsCreatedWeek: "Merci d'avoir créé {count} fois des événements cette semaine. "
+    pickupCount: Fréquence
+    respActStores: "Merci d'avoir coordonné {count} actifs "
+    securePickupWeek: Merci d'être intervenu {count} fois à la dernière minute et
+      d'avoir assuré des collectes !
+    week_3: Semaine passée
+    districtName: Secteur géographique
+    basketsOfferedWeek: Merci d'avoir offert {count} fois des paniers solidaires cette
+      semaine. Au total, {weight} kg ont été partagés.
+    basketsSharedWeek: 'Les paniers solidaires ont été partagés avec {count} personne.s. '
+    week_1: Semaine suivante
+    eventsParticipatedWeek: "Merci d'avoir participé {count} fois aux événements de\
+      \ cette semaine. Temps total : {hour}:{minute} "
+    pickupAmount: Quantité
+    week_2: Semaine actuelle
+    tooltip_visibility: La statistique d'engagement est visible à partir du rôle de
+      responsable coopération. Il est limité au secteur géographique de base commun
+      ou aux magasins communs.
+    weekDesc: Semaine du calendrier {week}, de {weekStart} à {weekEnd}
+    categorieName: Catégorie
+    calenderWeek: Semaine du calendrier
+    week_0: Dans deux semaines
+    week_4: Il y a deux semaines
+    title: Statistiques d'engagement
+  deletesuccess: Rendez-vous unique effacé
+  cantdeleteall: Tu ne peux pas effacer tous les rendez-vous !
+  alldatesdeleted: Tous les rendez-vous effacés
+  choosestore: Veuillez sélectionner le magasin concerné
+  cantdeletethis: Tu ne peux pas effacer des rendez-vous individuels !
 pickuplist:
   NumberOfAppointments_table_header: Nombre d'évènements
   unclear: Statut confus
@@ -1403,7 +1658,7 @@ pickup:
       Plus il y a de collecteur.ice.s, plus il y a de chances de faire péricliter\
       \ la coopération.\n<br />\nClarifie la situation avec le magasin partenaire,\
       \ si besoin ajoutez des collectes.\nDes collecteur.ice.s peuvent aussi vous\
-      \ attendre à quelques mètres du magasin pour vous aider à porter.\n"
+      \ attendre à quelques mètres du magasin \npour vous aider à porter.\n"
     slotscount: '{count} collecteur.ice.s'
     slotcount: 1 collecteur.ice
     more: Ajouter un rendez-vous
@@ -1452,11 +1707,65 @@ pickup:
   to_be_confirmed: Cette collecte doit encore être validée par un·e Responsable magasin.
   same_day_entry: '[{when} h] {name}'
   same_day_hint: 'Tu es inscrit·e le {day} pour les collectes suivantes :'
+  overview:
+    menu:
+      signOffAll: Se désinscrire de tous
+      registeredSwitch: Collectes enregistrées
+      refresh: Actualiser
+      signOff: Se désinscrire
+      loadMore: Charger plus
+    header: Dates de collecte
+    cols:
+      slots: Slots
+      time: Moment
+      store: Magasin
+    status:
+      pending: Non confirmé
+      option: Slot disponible
+      confirmed: Confirmé
+    modals:
+      signOffAll:
+        message: Veux-tu vraiment supprimer l'utilisateur/utilisatrice* de tous les
+          slots inscrits ?
+        title: Se désinscrire de tous les slots ?
+      signOff:
+        title: Se désinscrire du slot ?
+        message: Veux-tu vraiment retirer l'utilisateur*rice de ce slot ?
+    freeSlots: '{slots} disponible.s'
+    tab:
+      registered:
+        name: Dates de collecte enregistrées
+        tooltip:
+          other: Futures dates de collecte enregistrées
+          own: Futures dates de collecte pour lesquelles tu t'es inscrit.e
+        empty: Pour le moment, aucune collecte n'est enregistrée.
+      options:
+        empty: Actuellement, il n'y a pas de slots disponibles dans tes établissements.
+        name: Options de collecte
+        tooltip:
+          own: Futures dates de collecte auxquelles tu pourrais encore t'inscrire
+      history:
+        name: Historique des collectes
+        tooltip:
+          own: Dates de collectes passées auxquelles tu as participé
+          other: Dates de collecte du mois dernier auxquelles tu as participé
+        empty: Aucune collecte n'a encore été effectuée.
+    allLoaded: Toutes les entrées sont déjà affichées.
+  signout_history:
+    slot: Collecte
+    signout_via_responsible_person:
+      via: par
+      remove_reason: '(Raison : {reason})'
+    reload: Recharger
+    no_signouts_found: Aucune désinscription n'a été trouvée.
+    title: Historique des collecteurs.rices désinscrits au cours des 7 derniers jours
+  no_slots_available: Aucun slot disponible
+  region_pickup_rule_failed: Cette entrée ne respecte pas les règles du secteur géographique
 events:
   bread: Évènements
   past: Évènements passés
   rsvp:
-    no: Tu seras noté·e comme « ne pouvant pas participer »
+    no: 'Statut modifié : Tu ne participes pas.'
     maybe: Cool que tu puisses peut-être trouver le temps !
     yes: Merci d'avoir accepté l'invitation.
   menu:
@@ -1466,7 +1775,8 @@ events:
   button:
     no: Non, je ne participerai pas
     maybe: Peut-être
-    yes: J'en suis !
+    yes: Je participe
+    change: Modifier la réponse
   morePeople: … et {count} autres
   invitedCount: '{count} invités'
   maybeCount: '{count} viennent peut-être'
@@ -1484,11 +1794,12 @@ events:
   create:
     info: "<b>Attention :</b>\n<br>\nL'évènement sera accessible à tous les membres\
       \ des <b>différents groupes</b>\npar un lien partagé ou dans le menu de l'évènement.\n\
-      <br>\n"
+      <br>\nPour que le rendez-vous soit également affiché sur le tableau de bord\
+      \ pour les nouveaux arrivant.e.s, \nenregistre-le à nouveau ultérieurement.\n"
     mumble: Sur la plateforme de chat liée à foodsharing (BigBlueButton)
     online: Par conférence vidéo/téléphonique
     offline: Dans la vraie vie (IRL)
-    desc: Description de l'évènement
+    desc: Description de l'évènement ?
     endtime: Heure de fin
     starttime: Heure de début
     multiday: L'évènement dure plusieurs jours
@@ -1519,13 +1830,13 @@ wall:
     tu peux la supprimer si besoin est.
   confirm-deletion: La contribution de {name} doit-elle être supprimée ?
   delete: Supprimer la contribution
-  see-more: Voir plus de contributions
+  see-more: Voir toutes les contributions
   message_placeholder: Écrire un message…
   name: Mur
 chat:
   confirm_draft_discard: "En changeant de conversation, le texte écrit jusqu'ici sera\
-    \ automatiquement supprimé.\nEn interrompant cet échange, ton brouillon sera automatiquement\
-    \ utilisé dans la nouvelle conversation.\n"
+    \ automatiquement supprimé.\n\nEn interrompant cet échange, ton brouillon sera\
+    \ automatiquement utilisé dans la nouvelle conversation.\n"
   empty_recipients: Tu dois d'abord choisir un·e destinataire.
   empty_message: Tu dois d'abord écrire un message.
   error_sending_message: L'envoi du message a échoué.
@@ -1537,6 +1848,15 @@ chat:
   conversations: Discussions
   new_message: Nouveau message
   open_chat: Écrire un message
+  display_all_messages: Afficher tous les messages
+  no_conversation: Pas de conversation sélectionné
+  no_messages: Pas de message
+  search: Chercher
+  start_of_conversation: 'Conversation commencée le :'
+  receivermissing: Tu dois indiquer un destinataire
+  incorrect_address: Cette adresse e-mail n'est pas correcte
+  new_messages: Nouveaux messages
+  select_recipients: Sélectionner un ou une destinataire
 timepicker:
   labelNowButton: maintenant
   labelCloseButton: fermer
@@ -1560,6 +1880,16 @@ calendar:
   labelPrevMonth: Mois précédent
   labelPrevYear: Année précédente
   locale: de
+  export:
+    event:
+      linkTitle: Événement Foodsharing
+      statusUnspecified: Tu n'as pas encore indiqué si tu participais à ce rendez-vous.
+        Tu peux le faire sur la page en lien.
+      description: Description
+    pickup:
+      name: '{store} collecte'
+      unconfirmed: non confirmé
+      description: Collecte Foodsharing chez <a href="{url}">{store}</a>
 storeedit:
   milestone:
     dropped: "{user} ne fait désormais plus partie de l'équipe"
@@ -1591,9 +1921,10 @@ storeedit:
     empty: L'équipe ne peut pas être vide
     cannot-leave: Tu es encore responsable coopération pour ce magasin et ne peut
       donc pas le quitter.
-    leave: Retirer de l'équipe
+    leave: Quitter l'équipe
     bread: Modifier l'équipe
     foodsaver: Collecteur/collectrice
+    leave_myself: Toi-même
   actions: Options
   not-in-region: Tu peux ajouter des magasins partenaires uniquement dans la région
     dont tu fais partie.
@@ -1680,7 +2011,7 @@ basket:
     \ que partageur.se ?\nClique en haut sur <b>Rejoins-nous !</b> pour partager des\
     \ denrées dès maintenant !\n"
   requests: Demandes ({count})
-  provider: 'Par :'
+  provider: 'Fournisseur.euse'
   where: Où ?
   updated: Actualisé le <strong>{date}</strong>
   expires: Disponible jusqu'au <strong>{date}</strong>
@@ -1695,6 +2026,8 @@ basket:
   my_list_empty: Tu n'as pas enregistré de paniers solidaires
   description: Description
   title: Paniers solidaires
+  not_withdrawn: "La demande de panier solidaire n'a pas pu être retirée : "
+  no_nearby: Il n'y a pas de paniers solidaires dans un rayon de {radius} kilomètres
 formatting:
   md: Tu peux utiliser Markdown pour formater <a href="https://www.markdownguide.org/">Markdown</a>
     à utiliser.
@@ -1705,7 +2038,9 @@ footer:
   donate_now: Faire un don
   call_to_donate: "Tu souhaites soutenir foodsharing ?\n"
   version: 'Version : {version}'
-  donate: Soutenir
+  donate:
+    call_to: Tu veux soutenir foodsharing ?
+    cta: Faire un don maintenant
   hosting_tooltip: Hébergé sur le serveur Manitu, neutre en Co².
   hosting_info: 'Serveur neutre en Co² :'
   statistics: Statistiques
@@ -1725,6 +2060,20 @@ footer:
   call_to_action: Rejoindre
   denns_at_alt_text: Denn's Biomarkt
   beta_testing_issues: Tâches de test de la version bêta
+  hosting:
+    info: <a href="https://www.manitu.de/webhosting/" title="Webhosting">Hébergement</a>
+      neutre en CO2
+    tooltip: <a href="https://www.manitu.de/webhosting/" title="Webhosting">Hébergement</a>
+      neutre en CO2 sur manitu
+  partner_names:
+    wiener_tafel: Wiener Tafel
+    denns: Denn's Biomarkt
+    lebensministerium: Bundesministerium für Landwirtschaft, Regionen und Tourismus
+  infosDeveloper: Pour les développeurs.euses
+  meta:
+    version: 'Version : {version}'
+    it_devdocs: by foodsharing IT
+    beta_testing_issues: Tâches de test de la version bêta
 search:
   persons: Personnes
   groups: Groupes
@@ -1735,10 +2084,12 @@ search:
   noresults: Aucun résultat
   thread-title-only: La recherche a lieu dans les titres, pas dans les contributions.
   forum: Rechercher par titre…
-  placeholder: Recherche de personnes, groupes, entreprises…
+  placeholder: Commencer la recherche maintenant ...
   title: Recherche
   user_search:
     placeholder: Nom ou identifiant
+  informations: Tu peux rechercher des personnes, des groupes, des magasins, des secteurs
+    géographiques et des frigos solidaires.
 index:
   confirm_open_video: Souhaites-tu regarder la vidéo sur YouTube ? La vidéo se lancera
     dans un nouvel onglet.
@@ -1749,6 +2100,7 @@ messages:
   bread: Messages
 map:
   title: Carte
+  donates: Magasin participe
 content:
   changelog: Changelog actuel
   empty: Aucune page existante.
@@ -1785,6 +2137,20 @@ regionOptions:
   save: Enregistrer les options
   success: Les options ont été enregistrées avec succès
   header_page: Options pour {bezirk}
+  regionPickupRuleActive: 'Activer la règle de secteur géographique suivante pour
+    les collectes auprès des entreprises ROSINEN (Raren Oft Sagenhaften Inspesondere
+    Nicht alltäglichen Extrem beliebten Nüztliche) :'
+  regionPickupTimespan: Veuillez indiquer la période en jours pendant laquelle le
+    règlement est en vigueur
+  regionPickupLimitNumber: Merci d'indiquer le nombre maximum de collectes possibles
+    pour cette période
+  regionPickupLimitDayNumber: Merci d'indiquer le nombre total maximum de collectes
+    pour UNE JOURNÉE
+  regionPickupInactiveHours: Merci d'indiquer le nombre d'heures avant une collecte
+    pendant lesquelles la règle ne s'applique plus
+  regionPickupRuleActiveStoreList: 'Liste des établissements du district pris en compte
+    pour la règle ROSINEN. ATTENTION : Tous les ramassages des établissements listés
+    sont additionnés et pris en compte pour la règle.'
 ageBandList:
   NumberOfAgeband: Nombre
   ageBand: Groupe d'âge
@@ -1804,16 +2170,16 @@ bell:
   banana_given_title: Nouvelle banane de confiance
   workgroup_request_decline: Le groupe de travail a décliné ta demande.
   workgroup_request_decline_title: '{name}'
-  workgroup_request_accept: Bienvenue dans le groupe de travail !
+  workgroup_request_accept: Tu as été accepté dans le groupe de travail.
   workgroup_request_accept_title: '{name}'
-  passgen_failed: Ajoute une photo pour que ton profil soit pris en compte ;)
+  passgen_failed: Ajoute une photo pour que ton profil soit pris en compte.
   sharepoint_activate: '{name} a été ajouté'
   sharepoint_activate_title: Nouveau frigo solidaire à {bezirk}
   buddy_request: '{name} te connait.'
   buddy_request_title: Connais-tu {name} ?
   betrieb_fetch: '{count} collectes à confirmer'
   betrieb_fetch_title: '{betrieb}'
-  new_foodsaver_verified: Est déjà formé(e) - peut déjà se lancer !
+  new_foodsaver_verified: Déjà formé(e) - peut se lancer
   new_foodsaver_verified_title: '{name} fraîchement arrivé(e) à {bezirk}'
   new_foodsaver: A besoin d'être formé.e
   new_foodsaver_needs_introduction: A besoin d'être formé.e
@@ -1849,6 +2215,9 @@ bell:
   no_bells: Tu n'as pas de notifications.
   store_request_imposed: Tu as été ajouté.e à l'équipe.
   store_request_imposed_title: '{name}'
+  foodsaver_verified_title: Tu es désormais vérifié !
+  new_foodsaver_needs_verification: Doit être vérifié
+  foodsaver_verified: Récupère ta carte de collecteur.rice ici...
 personal_data:
   landline: Numéro de fixe
   mobile: Numéro de portable
@@ -1890,6 +2259,7 @@ reports:
   about_first_name: À propos du prénom
   about_last_name: À propos du nom
   about: À propos de
+  about_email: Par courriel
 month:
   short:
     "12": Déc.
@@ -1941,6 +2311,7 @@ date:
   to: à
   from: de
   time: '{time} heures'
+  clock: heure
 addresspicker:
   infobox_profile: <a href="https://wiki.foodsharing.de/Foodsharer">Les Foodsharer</a>
     ont besoin d'entrer une adresse pour pouvoir proposer des paniers solidaires sur
@@ -1973,13 +2344,15 @@ storelist:
   geo: géo
 storestatus:
   "7": Le magasin n'existe plus
-  "6": Fait don de ses denrées alimentaires à la croix rouge, banques alimentaires...
+  "6": Fait don de ses denrées alimentaires à la croix rouge, banques alimentaires
   "5": Le magasin coopère déjà avec foodsharing
   "4": Ne souhaite pas coopérer
   "3": Le magasin est prêt à coopérer
   "2": Négociations en cours
   "1": Aucun contact pour le moment
   "0": Statut ambigu
+  "3a": Le magasin est prêt à faire des dons. :-)
+  "5a": Le magasin fait déjà des dons
 releases:
   "2020-05": Version « orange » (mai 2020)
   "2020-08": Version « poire » (août 2020)
@@ -1987,28 +2360,31 @@ releases:
   "2020-12": Version « fruit du dragon » (décembre 2020)
   "2021-03": Version « fraise » 🍓 (mars 2021)
   "2021-09": Version « Figue » 🥧 (septembre 2021)
+  "2022-01": Version "Grapefruit" 🍋 (janvier 2022)
+  "2022-12": Version "Icecream" 🍇 (décembre 2022)
+  "2022-05": Version "myrtille" 🍇 (mai 2022)
 startpage:
   donate:
     text: "Nous nous efforçons de faire parrainer toutes nos dépenses. Cependant,\
-      \ dans certains cas, cela n’est pas possible ou pas en intégralité, par exemple\
+      \ dans certains cas, cela n’est pas possible ou pas en intégralité, \npar exemple\
       \ pour les dépenses liées au financement de manifestations, à l’assistance juridique,\
-      \ aux assurances. Nous nous réjouissons de toute forme de soutien.\n"
+      \ aux assurances. \nNous nous réjouissons de toute forme de soutien.\n"
     title: Faire un don
     link: Soutenir foodsharing
   towns:
     text: "« Les villes participantes diffèrent selon qu’elles sont en route vers\
-      \ la limitation du gaspillage alimentaire ou qu’elles l'ont déjà atteinte.\n\
-      Ce dernier est le cas lorsqu’il y a, à côté d’une équipe foodsharing sur place,\
-      \ une déclaration de motivation, signée par la municipalité, symbolisant le\
-      \ partenariat entre foodsharing et les pouvoirs publics. »\n"
+      \ la limitation du gaspillage alimentaire \nou qu’elles l'ont déjà atteinte.\
+      \ Ce dernier est le cas lorsqu’il y a, à côté d’une équipe foodsharing sur place,\
+      \ \nune déclaration de motivation, signée par la municipalité, symbolisant le\
+      \ partenariat entre foodsharing \net les pouvoirs publics. »\n"
     title: Villes foodsharing
   demands:
-    text: "« Plan d'action avec le centre d'action pour l'environnement allemand publié\
-      \ pour le sixième anniversaire de foodsharing le 12/12/2018. \nPour que l’Allemagne\
-      \ ne renonce pas à ses objectifs de protection du climat pour 2020, foodsharing\
-      \ et le centre d'action allemande pour l’environnement montrent un plan d’action\
-      \ présentant les mesures sans lesquelles l’objectif à mi-parcours ne peut être\
-      \ atteint. »\n"
+    text: "\"Plan d'action avec l'aide allemande à l'environnement\npublié à l'occasion\
+      \ du 6e anniversaire de foodsharing le 12.12.2018. Pour éviter à l'Allemagne\
+      \ de manquer une nouvelle fois à sa parole\n- comme pour les objectifs de protection\
+      \ du climat pour 2020 -, foodsharing et Deutsche Umwelthilfe montrent avec un\n\
+      plan d'action les mesures sans lesquelles l'objectif de réduction de moitié\
+      \ ne pourra pas être atteint\".\n"
     title: Revendications
   near_you:
     text3:
@@ -2030,12 +2406,11 @@ startpage:
       part4: frigos solidaires
     title: À proximité
   how_we_work:
-    text: "Tout le fonctionnement est sur la base du volontariat, est bénévole, indépendant\
-      \ et sans aucune fin publicitaire.\nNotre plateforme est le centre de la communication\
-      \ de nos équipes. Grâce à celle-ci, nous nous coordonnons au niveau local comme\
-      \ international.\nLe site web est l'app (version beta) sont open source et basés\
-      \ sur l'engagement sans faille de nombre de participants. \nComment participer\
-      \ en tant que développeur.euse ?\n"
+    text: "\"Tout cela est réalisé bénévolement et gratuitement, de manière indépendante\
+      \ et sans publicité. La plate-forme constitue \nle cœur de notre de notre communauté.\
+      \ C'est ici que nous nous mettons en réseau et nous coordonnons au niveau local\
+      \ et européen. \nLe site web et l'application bêta sont open source et repose\
+      \ sur l'engagement et le cœur de beaucoup. Comment participer à l'IT\" ?\n"
     title: Fonctionnement
   store:
     text: Tu travailles dans un supermarché, un restaurant, une cantine ? Inscris
@@ -2054,7 +2429,7 @@ startpage:
     text: Le mouvement a commencé en 2012 et s'est répandu à l'international avec
       plus de 200 000 utilisateur.ice.s en Allemagne, Autriche, Suisse et dans bien
       d'autres pays européens.
-    title: Agis à nos côtés !
+    title: Participe
   vision:
     title: Mission
     text: Notre but à l'avenir est de réduire voire déconstruire cette culture de
@@ -2062,7 +2437,7 @@ startpage:
       collectons et par là-même sauvons les denrées dans le cadre privé mais aussi
       auprès des magasins, ensemble pour un monde plus durable et plus respectueux.
       Nous sommes un mouvement qui s'inscrit dans la mouvance de la politique de l'éducation.
-  this_is_how_it_works: Comment ça fonctionne ?
+  this_is_how_it_works: Comment ça marche
   more_infos: Plus d'infos
   call_to_action_button: Rejoindre
   slogan: Ensemble pour un plus grand respect de nos ressources alimentaires
@@ -2070,10 +2445,67 @@ startpage:
   slogan_3: foodsharing est et restera gratuit.
   slogan_2: collaboratif, durable et respectueux
   slogan_1: Ensemble pour mieux apprécier la nourriture
+  join_welcome: Ravi que tu souhaites rejoindre foodsharing !
+  followrules_a: Respecte les règles et le <a href='https://wiki.foodsharing.de/Hygiene-Ratgeber_für_Lebensmittel'
+    target='_blank' rel='noopener noreferrer nofollow'>guide</a> pour le partage de
+    nourriture
+  honest: Sois honnête
+  responsibility: de tous les aliments finissent à la poubelle. Cela doit enfin cesser.
+    Nous ne voulons plus rien jeter ! Nous voulons traiter les aliments de manière
+    responsable et nous sommes heureux que tu participes à ce projet.
+  join_rules: Participer - nos règles
+  respect: "Comme les aliments nous font vivre, nous voulons aussi les traiter avec\
+    \ respect. Pour que tout se passe au mieux chez nous, nous avons défini quelques\
+    \ règles de conduite au fil des années. Donner des aliments à d'autres est une\
+    \ chose très humaine, mais aussi très responsable. Le principe de base est toujours\
+    \ le suivant : \"Ne rien donner aux autres que l'on ne mangerait plus soi-même\"\
+    . Lis maintenant l'étiquette de foodsharing !"
+  telltruth: Nous tous, qui avons développé foodsharing et gérons le site web, prenons
+    notre tâche très au sérieux. Nous respectons un certain nombre de lois et d'obligations.
+    Toi aussi, s'il te plaît, sois honnête lorsque tu remplis tes données et pour
+    toutes les autres contributions que tu fais sur la plateforme, par exemple pour
+    les paniers solidaires et les contributions au forum.
+  dependability: Dans de nombreuses villes, il existe des frigos solidaires. Vous
+    pouvez vous retrouver là ou dans d'autres lieux neutres pour partager. Si vous
+    souhaitez remettre ou prendre en charge des denrées alimentaires, soyez fiables
+    et ponctuels, ne laissez tomber personne.
+  proposals: Nous souhaitons nous développer et devenir meilleur. Pour cela, nous
+    avons besoin de vous avec beaucoup de bonnes idées et de conseils. Envoyez-les
+    à <a href='mailto:info@foodsharing.de'>info@foodsharing.de</a>
+  register: Au bas de cette page, tu peux t'inscrire en tant que bénévole.
+  beresponsible: Sois responsable
+  notallowed: Le partage de médicaments (y compris les médicaments homéopathiques)
+    est exclu sur foodsharing. Les vêtements, les cosmétiques, les produits chimiques
+    ménagers, les jouets et autres produits non alimentaires ne peuvent pas non plus
+    être échangés ou partagés sur foodsharing. La plateforme foodsharing se réserve
+    le droit de supprimer de telles offres.
+  makeproposals: Fais des propositions
+  bedependable: Sois fiable
+  forstores: Pour les entreprises et les magasins
+  together: Avec foodsharing, vous pouvez vous engager pour que les aliments rejetés
+    et invendables trouvent une utilisation pertinente au lieu d'être jetés. Vous
+    trouverez plus d'informations <a href='/fuer-unternehmen'>ici.</a>
+  join: Participer
+  followrules_c: Tous les détails se trouvent dans les <a href='https://wiki.foodsharing.de/Hygieneregeln'
+    target='_blank' rel='noopener noreferrer nofollow'>règles d'hygiène foodsharing</a>.
+    Tu trouveras également des conseils dans le <a href='https://wiki.foodsharing.de/Hygiene-Ratgeber_für_Lebensmittel'
+    target='_blank' rel='noopener noreferrer nofollow'>guide</a>.
+  etiquette: Étiquette foodsharing
+  followrules_b: Nous attirons expressément ton attention sur le fait que, pour des
+    raisons juridiques, nous n'autorisons la distribution et le partage de certains
+    aliments et autres marchandises que sous certaines conditions. Cela concerne notamment
+    les denrées périssables telles que le poisson cru, la viande crue, les plats à
+    base d'œufs crus et les aliments préparés. De manière générale, nous veillons
+    avec tous nos sens à ce que les aliments soient encore consommables.
+  registernow: S'inscrire maintenant
 language_chooser:
   content: Choisis une langue
   title: Choisir la langue
   choose_button: Actualiser
+  translation_help_info_text: Ce lien mène au portail de traduction, clique sur le
+    crayon pour commencer
+  translation_help: Tu parles d'autres langues ? Foodsharing cherche toujours des
+    bénévoles pour traduire
 poll:
   cancel:
     question: Souhaites-tu vraiment annuler ce vote ? Tu ne pourras pas revenir à
@@ -2093,6 +2525,7 @@ poll:
     option_text: options
     votes: voix
     number_of_votes: Voix attribuées
+    percentage_of_votes: Participation au vote
   may_not_yet_vote: Ce vote n'a pas encore commencé.
   may_not_vote: Tu ne peux pas participer à ce vote.
   already_voted: tu as déjà participé à ce vote
@@ -2125,7 +2558,7 @@ poll:
     shuffle_options: Afficher les options dans un ordre aléatoire lors du vote
   untraceable: Nous ne pouvons pas retrouver l'information concernant ton vote car
     celui-ci a été anonymisé.
-  vote_success: a voté !
+  vote_success: Tu as voté avec succès.
   error_cannot_vote: Tu ne peux pas participer à ce vote
   submit_vote: envoyer le vote
   submit_vote_warning: 'Attention : le vote est anonyme et tu ne peux plus changer
@@ -2182,7 +2615,7 @@ stats:
   total:
     fsp: frigos solidaires sont utilisés pour partager les denrées.
     baskets: paniers alimentaires ont été postés sur le site à ce jour.
-    pickups: Les collectes n'ont plus de secret pour nos collecteur.ice.s !
+    pickups: missions de sauvetage ont été menées à bien par nos collecteur.ice.s.
     foodsharer: Les partageur.euse.s sont enregistrés sur le site de foodsharing et
       soutiennent notre travail.
     foodsaver: Les collecteur.ice.s s'engagent de manière bénévole pour un monde sans
@@ -2202,7 +2635,7 @@ region:
       les secteurs affiliés
     title: Mise à jour secteur géographique principal
     parent-info: Tous les collecteur.ice.s sont automatiquement dans le secteur géographique
-      principal dès qu'il est créé.
+      principal dès qu'il est créé
     parent: Secteur géographique principal
     confirm: Commencer la mise à jour maintenant ?
   type:
@@ -2251,6 +2684,7 @@ polls:
     Wiki
   hint: La fonction vote peut être testée dans le GT international "Abstimmungen -
     Test".
+  until: Possible jusqu'au {until}
 buddy:
   request_accepted: Ça y est, vous vous connaissez.
   request_sent: Ta demande a été envoyée.
@@ -2261,7 +2695,7 @@ base:
     alimentation, jeter de la nourriture à la poubelle, donner, redistribuer, échange
     de nourriture
   whatfor: Sur foodsharing.network tu peux aider à sauver des denrées avant leur destruction
-    pour les redistribuer à des organisations locales ou à un tiers.
+    pour les redistribuer à des organisations locales ou à un tiers
 sidenav:
   yourgroups: Tes groupes
   countryspecific: Groupes nationaux
@@ -2286,7 +2720,7 @@ blog:
   permissions:
     delete: Tu ne peux pas supprimer cet article
     edit: Tu ne peux pas modifier l'article
-    new: Tu ne peux pas créer d'article.
+    new: Tu ne peux pas créer d'article
   failure:
     delete: L'article n'a pas pu être supprimé
     edit: L'article n'a pas pu être enregistré
@@ -2316,6 +2750,7 @@ blog:
   header: Nouvelles chez foodsharing
   go: aller au blog
   bread: Blog
+  read: lire la suite
 push_notifications:
   test_notification_body: Super, ça a fonctionné :)
   test_notification_title: activer les notifications push
@@ -2330,14 +2765,19 @@ regionPin:
     Ceci sera affiché dans la fenêtre contextuelle de l'épingle de la carte…
   pin_visible: Épingle visible sur la carte
 numbers:
-  thousands_separator:
+  thousands_separator: .
   decimal_separator: ','
-  million_abbreviation: ' M'
-  billion_abbreviation: ' Mrd'
+  million_abbreviation: ' Million.'
+  billion_abbreviation: ' Milliards.'
 edit_websites: Modifier les pages web publiques
 request_time: 'Heure de la demande :'
 activitypost:
   write: Écris une réponse…
+  quickreply_button: Envoyer maintenant <br›ou appuyer sur la touche <code class="key">"Entrée"</code>.
+  quickreply_info: <code class="key">Maj + Entrée</code> pour ajouter une nouvelle
+    ligne.
+  response: répondre
+  Response: Réponses
 contentmanagement: Gestion du contenu
 logincontrol:
   success: Réussite !
@@ -2362,4 +2802,205 @@ quiz:
     dû avoir moins que {maxpoints} points d'erreur !
   congrats_details: Félicitations ! Passé avec {points} de {max_points} points d'erreur !
   type: -Questionnaire
+  donecorrectly: tu as répondu entièrement correctement. C'est super !
+  heavysigh: Tu as réussi !
+  wikilink: Article wiki correspondant à ce sujet
+  choice:
+    koquestion: Malheureusement, cette question était particulièrement importante
+      et tu n'y as pas répondu correctement.
+    neut: est neutre et donc sans appréciation.
+    wrongb: n'est pas exact !
+    whatisko: Des questions comme celles-ci ont un poids particulièrement important
+      et conduisent malheureusement à l'échec si tu y réponds de manière erronée.
+    cresponses: Réponses correctes
+    nresponses: Réponses neutres
+    correctb: est incorrect. Tu as vu juste !
+    answer: Réponse
+    wronga: aurait également été correcte.
+    correcta: c'est correct !
+    fpsum: points d'erreur accumulés
+    sadlywrong: a malheureusement été mal répondu.
+    alsowrong: a malheureusement été considéré comme faux, car tu n'as rien choisi
+      ou le temps est écoulé.
+    percenta: tu n'as malheureusement que
+    percentb: '% de réponses correctes.'
+    responses: Réponses
+    wresponses: Réponses fausses
+    writecomment: Ecrire un commentaire sur cette question
+    send: Envoyer
+    joke: c'était juste une question pour rire et elle ne sera bien sûr pas évaluée
+  nownownow: Commencer le quiz maintenant
+  timedstart: Démarrer le quiz avec une limite de temps et 10 questions
+  finishnow:
+    fs: Terminez maintenant votre inscription Foodsaver.
+    bv: Terminer maintenant l'inscription du responsable de coopération.
+    bot: Terminez maintenant votre inscription d'ambassadeur.rice.
+  learnbreak: Pause d'apprentissage
+  session_deleted: Les résultats de ce quiz ont été supprimés, car le quiz a été clôturé
+    il y a plus de deux semaines.
+  finished: Félicitations, tu as réussi !
+  resultsbelow: Tu trouveras l'évaluation ci-dessous.
+  threestrikes: Tu as échoué 3 fois au quiz.
+  waitxdays: Tu peux réessayer dans
+  days: Jours
+  notfinishedyet: Tu n'as pas encore terminé le quiz.
+  safeandsound: Mais pas de problème. Ta session a été enregistrée. Tu peux continuer
+    à répondre à tout moment.
+  continuenow: Répondre au quiz maintenant !
+  continuetype: -Continuer le quiz
+  trynumber: C'était la tentative numéro
+  failedbeforebut: " fois déjà, tu as échoué au quiz. C'est le nombre d'essais qu'il\
+    \ te reste à faire :"
+  goodluck: Bonne chance !
+  regstart: Démarrer le quiz sans limite de temps et 20 questions
+  quizleft: " - Il ne reste plus qu'à réussir le quiz !"
 fpsingular: Point d'erreur
+bootstrap-datepicker:
+  labelCurrentMonth: Mois actuel
+  labelHelp: Naviguer dans le calendrier à l'aide des touches fléchées
+  labelPrevMonth: Mois précédent
+  labelToday: Aujourd'hui
+  labelNextMonth: Mois suivant
+  labelNextDecade: Décennie suivante
+  labelPrevYear: Année précédente
+  labelSelected: Date sélectionnée
+  labelNextYear: Année suivante
+  labelPrevDecade: Décennie précédente
+  labelCalendar: Calendrier
+  labelNav: Navigation dans le calendrier
+  labelNoDateSelected: Pas de date sélectionnée
+filter_by: Filtrer par
+system_administration:
+  mailboxes: Gérer les boîtes aux lettres
+  quiz: Gérer le quiz
+  reports: Consulter les signalements
+  regions: Gérer les secteurs géographiques
+  content: Modifier le contenu
+  blog: Modifier les articles du blog
+  email: Envoyer la newsletter
+globals:
+  type:
+    persons: Personnes
+    my_persons: Mes personnes
+    foodshare_points: Frigo solidaire
+    my_foodshare_points: Mes frigos solidaires
+    mailboxes: Boîtes aux lettres
+    buddies: Camarades
+    my_mailboxes: Mes boîtes aux lettres
+    my_buddies: Mes camarades
+    stores: Magasins
+    my_stores: Mes magasins
+    regions: Secteur géographique
+    my_regions: Mon secteur géographique
+    my_groups: Mes groupes
+    groups: Groupes
+  show_less: Afficher moins
+  close: Fermer
+  reset: Réinitialiser
+  show_more: Afficher plus
+  account:
+    signout: Déconnexion
+    signup: Participer
+    signin: Connexion
+  select: Sélectionner svp...
+  save: Enregistrer
+  you: Toi
+navigation:
+  system_administration: Administration du système
+  help_needed: Besoin d'aide ?
+  help: Aide
+  promotion: Dans l'informatique ? Nous avons besoin de toi !
+  help_and_support: Aide et assistance
+  regions: Secteur géographique
+  groups: Groupes
+  notifications: Notifications
+  stores: Magasins
+  search: Recherche
+  map: Carte
+  profil: 👋 Salut {name} !
+  contact: Contact
+  whats_new: Quoi de neuf ?
+  styleguide: Styleguide
+  support: Assistance
+  basket: Paniers solidaires
+  wiki: Wiki
+  conversations: Messages
+information:
+  calendar_sync:
+    description: Tu peux ainsi voir tes prochaines dates de collecte avec le programme
+      de calendrier de ton choix.
+    title: Connais-tu la synchronisation du calendrier pour tes collectes ?
+    link: S'abonner maintenant
+  push:
+    title: Tu peux maintenant recevoir des notifications push de foodsharing.
+    description: Si tu ne veux plus recevoir de notifications push, tu peux les désactiver
+      à tout moment dans les paramètres.
+    link: Vers les préférences
+fpko: Points d'erreur (k. o.)
+error:
+  old_user_avatar:
+    description: En septembre 2021, nous avons procédé à un changement technique qui
+      concerne les photos de profil. C'est pourquoi nous te demandons de télécharger
+      à nouveau ta photo de profil ou de la renouveler. Si tu veux réutiliser ta photo
+      actuelle, tu peux la télécharger <a href="{link}" download>ici</a>. Excuse-nous
+      pour le dérangement.
+    title: Il y a un problème avec ta photo de profil.
+    link: Renouveler la photo de profil maintenant
+  missing_home_region:
+    link: Sélectionner maintenant le secteur géographique de base
+    title: Choisis un secteur géographique principal.
+    description: Pour que tu puisses continuer, un secteur géographique de base est
+      nécessaire.
+  mail_activation:
+    title: Adresse électronique non confirmée !
+    link_1: Demander un nouveau courriel d'activation
+    description: Confirme ton adresse électronique en cliquant sur le lien contenu
+      dans le mail d'activation.
+    link_2: Modifier le courriel
+  missing_geolocation:
+    title: Il y a eu une erreur avec ton adresse.
+    description: Merci de vérifier ton adresse. Les coordonnées n'ont pas pu être
+      déterminées.
+    link: Vers la saisie d'adresses
+  invalid_mobile_phonenumber:
+    title: Il y a un problème avec ton numéro de téléphone portable.
+    description: Ton numéro de téléphone mobile a malheureusement un format qui ne
+      peut pas être appelé.
+    link: Corriger le numéro de téléphone mobile maintenant
+  mail_bounce:
+    link_1: Modifier l'adresse électronique
+    description: Ton adresse courriel est bloquée pour les courriels et les communications
+      de foodsharing.
+    title: Adresse e-mail bloquée !
+    link_2: J'ai besoin d'aide
+  missing_user_avatar:
+    description: Montre aux membres de Foodsharing qui tu es !
+    link: Télécharger une photo de profil maintenant
+    title: Tu n'as pas encore chargé de photo de profil.
+join_region:
+  headline: Choisis le secteur géographique dans lequel tu veux être actif.
+  description: Tu peux rejoindre ton premier secteur géographique en cliquant sur
+    le choix <em>Europe</em> jusqu'à ton secteur géographique. Si tu ne trouves pas
+    de secteur géographique qui te convienne, choisis un niveau supérieur ou rejoins
+    le district le plus proche. Si tu n'as pas la possibilité de suivre une formation
+    de collecteur.rice dans ta région, tu peux envisager de créer ton propre secteur
+    géographique. Dans ce cas, lis attentivement le wiki et en particulier l'<a href="{href}">article
+    sur la création ou la réactivation de secteurs géographiques<a>. Si tu souhaites
+    lancer le secteur géographique ou si tu as des questions explicites auxquelles
+    le wiki ne répond pas, écris-nous <a href="{mail}">un courriel</a>. Nous ne sommes
+    pas le point de contact central pour les questions générales, mais nous pouvons
+    t'aider à répondre aux questions sur les secteurs géographiques.
+  error:
+    is_state: <strong>Il s'agit d'un département.</strong><br> Choisis une ville,
+      une région ou un secteur géographique !
+    is_country: <strong>Il s'agit d'un pays.</strong><br> Choisis une ville, une région
+      ou un secteur géographique !
+    is_big_city: <strong>Il s'agit d'une grande ville.</strong><br> Choisis une ville,
+      une région ou un secteur géographique !
+    not_allowed: Tu ne peux pas t'inscrire dans ce secteur géographique.
+use_region_pickup_rule: La règle des ROSINEN de secteur géographique doit-elle s'appliquer
+  à ce magasin pour les collectes ?
+groups:
+  empty: Tu ne fais pas encore partie d'un groupe de travail
+timefrom: heure de
+deletelow: effacer

@@ -31,225 +31,225 @@ use Symfony\Contracts\Translation\TranslatorInterface;
 
 class ProfileView extends View
 {
-	private array $foodsaver;
-	private ProfilePermissions $profilePermissions;
-	private StorePermissions $storePermissions;
-	private ReportPermissions $reportPermissions;
-	private RegionGateway $regionGateway;
-	private MailboxGateway $mailboxGateway;
-	private GroupFunctionGateway $groupFunctionGateway;
-	private GroupGateway $groupGateway;
+    private array $foodsaver;
+    private ProfilePermissions $profilePermissions;
+    private StorePermissions $storePermissions;
+    private ReportPermissions $reportPermissions;
+    private RegionGateway $regionGateway;
+    private MailboxGateway $mailboxGateway;
+    private GroupFunctionGateway $groupFunctionGateway;
+    private GroupGateway $groupGateway;
 
-	public function __construct(
-		\Twig\Environment $twig,
-		Session $session,
-		Utils $viewUtils,
-		ProfilePermissions $profilePermissions,
-		StorePermissions $storePermissions,
-		ReportPermissions $reportPermissions,
-		DataHelper $dataHelper,
-		IdentificationHelper $identificationHelper,
-		ImageHelper $imageService,
-		NumberHelper $numberHelper,
-		PageHelper $pageHelper,
-		RouteHelper $routeHelper,
-		Sanitizer $sanitizerService,
-		TimeHelper $timeHelper,
-		TranslationHelper $translationHelper,
-		TranslatorInterface $translator,
-		RegionGateway $regionGateway,
-		MailboxGateway $mailboxGateway,
-		GroupFunctionGateway $groupFunctionGateway,
-		GroupGateway $groupGateway
-	) {
-		parent::__construct(
-			$twig,
-			$session,
-			$viewUtils,
-			$dataHelper,
-			$identificationHelper,
-			$imageService,
-			$numberHelper,
-			$pageHelper,
-			$routeHelper,
-			$sanitizerService,
-			$timeHelper,
-			$translationHelper,
-			$translator
-		);
+    public function __construct(
+        \Twig\Environment $twig,
+        Session $session,
+        Utils $viewUtils,
+        ProfilePermissions $profilePermissions,
+        StorePermissions $storePermissions,
+        ReportPermissions $reportPermissions,
+        DataHelper $dataHelper,
+        IdentificationHelper $identificationHelper,
+        ImageHelper $imageService,
+        NumberHelper $numberHelper,
+        PageHelper $pageHelper,
+        RouteHelper $routeHelper,
+        Sanitizer $sanitizerService,
+        TimeHelper $timeHelper,
+        TranslationHelper $translationHelper,
+        TranslatorInterface $translator,
+        RegionGateway $regionGateway,
+        MailboxGateway $mailboxGateway,
+        GroupFunctionGateway $groupFunctionGateway,
+        GroupGateway $groupGateway
+    ) {
+        parent::__construct(
+            $twig,
+            $session,
+            $viewUtils,
+            $dataHelper,
+            $identificationHelper,
+            $imageService,
+            $numberHelper,
+            $pageHelper,
+            $routeHelper,
+            $sanitizerService,
+            $timeHelper,
+            $translationHelper,
+            $translator
+        );
 
-		$this->mailboxGateway = $mailboxGateway;
-		$this->regionGateway = $regionGateway;
-		$this->profilePermissions = $profilePermissions;
-		$this->storePermissions = $storePermissions;
-		$this->reportPermissions = $reportPermissions;
-		$this->groupFunctionGateway = $groupFunctionGateway;
-		$this->groupGateway = $groupGateway;
-		$this->imageService = $imageService;
-	}
+        $this->mailboxGateway = $mailboxGateway;
+        $this->regionGateway = $regionGateway;
+        $this->profilePermissions = $profilePermissions;
+        $this->storePermissions = $storePermissions;
+        $this->reportPermissions = $reportPermissions;
+        $this->groupFunctionGateway = $groupFunctionGateway;
+        $this->groupGateway = $groupGateway;
+        $this->imageService = $imageService;
+    }
 
-	public function profile(string $wallPosts, array $userStores = [], array $commitmentsStats = []): void
-	{
-		$page = new vPage($this->foodsaver['name'], $this->infos());
-		$fsId = $this->foodsaver['id'];
-		$regionId = $this->foodsaver['bezirk_id'];
+    public function profile(string $wallPosts, array $userStores = [], array $commitmentsStats = []): void
+    {
+        $page = new vPage($this->foodsaver['name'], $this->infos());
+        $fsId = $this->foodsaver['id'];
+        $regionId = $this->foodsaver['bezirk_id'];
 
-		// what is the viewer allowed to do in this profile?
-		$maySeeHistory = $this->profilePermissions->maySeeHistory($fsId);
-		$mayAdmin = $this->profilePermissions->mayAdministrateUserProfile($fsId, $regionId);
-		$maySeeBounceWarning = $this->profilePermissions->maySeeBounceWarning($fsId);
-		$maySeePickups = $this->profilePermissions->maySeePickups($fsId);
-		$maySeeStores = $this->profilePermissions->maySeeStores($fsId);
-		$maySeeCommitmentsStat = $this->profilePermissions->maySeeCommitmentsStat($fsId);
+        // what is the viewer allowed to do in this profile?
+        $maySeeHistory = $this->profilePermissions->maySeeHistory($fsId);
+        $mayAdmin = $this->profilePermissions->mayAdministrateUserProfile($fsId, $regionId);
+        $maySeeBounceWarning = $this->profilePermissions->maySeeBounceWarning($fsId);
+        $maySeePickups = $this->profilePermissions->maySeePickups($fsId);
+        $maySeeStores = $this->profilePermissions->maySeeStores($fsId);
+        $maySeeCommitmentsStat = $this->profilePermissions->maySeeCommitmentsStat($fsId);
 
-		if ($this->foodsaver['rolle'] > Role::FOODSHARER) {
-			// MediationRequest
-			if ($this->regionGateway->getRegionOption($regionId, RegionOptionType::ENABLE_MEDIATION_BUTTON)) {
-				$mediationGroupEmail = $this->renderMediationRequest($regionId);
-			}
+        if ($this->foodsaver['rolle'] > Role::FOODSHARER) {
+            // MediationRequest
+            if ($this->regionGateway->getRegionOption($regionId, RegionOptionType::ENABLE_MEDIATION_BUTTON)) {
+                $mediationGroupEmail = $this->renderMediationRequest($regionId);
+            }
 
-			// ReportRequest
-			$isReportButtonEnabled = intval($this->regionGateway->getRegionOption($regionId, RegionOptionType::ENABLE_REPORT_BUTTON)) === 1;
+            // ReportRequest
+            $isReportButtonEnabled = intval($this->regionGateway->getRegionOption($regionId, RegionOptionType::ENABLE_REPORT_BUTTON)) === 1;
 
-			if ($this->regionGateway->getRegionOption($regionId, RegionOptionType::ENABLE_REPORT_BUTTON)) {
-				$storeListOptions = [['value' => null, 'text' => $this->translator->trans('profile.choosestore')]];
-				foreach ($userStores as $store) {
-					$storeListOptions[] = ['value' => $store['id'], 'text' => $store['name']];
-				}
-				$isReportedIdReportAdmin = $this->groupFunctionGateway->isRegionFunctionGroupAdmin($regionId, WorkgroupFunction::REPORT, $this->foodsaver['id']);
-				$isReporterIdReportAdmin = $this->groupFunctionGateway->isRegionFunctionGroupAdmin($regionId, WorkgroupFunction::REPORT, $this->session->id());
-				$isReportedIdArbitrationAdmin = $this->groupFunctionGateway->isRegionFunctionGroupAdmin($regionId, WorkgroupFunction::ARBITRATION, $this->foodsaver['id']);
-				$isReporterIdArbitrationAdmin = $this->groupFunctionGateway->isRegionFunctionGroupAdmin($regionId, WorkgroupFunction::ARBITRATION, $this->session->id());
+            if ($this->regionGateway->getRegionOption($regionId, RegionOptionType::ENABLE_REPORT_BUTTON)) {
+                $storeListOptions = [['value' => null, 'text' => $this->translator->trans('profile.choosestore')]];
+                foreach ($userStores as $store) {
+                    $storeListOptions[] = ['value' => $store['id'], 'text' => $store['name']];
+                }
+                $isReportedIdReportAdmin = $this->groupFunctionGateway->isRegionFunctionGroupAdmin($regionId, WorkgroupFunction::REPORT, $this->foodsaver['id']);
+                $isReporterIdReportAdmin = $this->groupFunctionGateway->isRegionFunctionGroupAdmin($regionId, WorkgroupFunction::REPORT, $this->session->id());
+                $isReportedIdArbitrationAdmin = $this->groupFunctionGateway->isRegionFunctionGroupAdmin($regionId, WorkgroupFunction::ARBITRATION, $this->foodsaver['id']);
+                $isReporterIdArbitrationAdmin = $this->groupFunctionGateway->isRegionFunctionGroupAdmin($regionId, WorkgroupFunction::ARBITRATION, $this->session->id());
 
-				$hasReportGroup = $this->groupFunctionGateway->existRegionFunctionGroup($regionId, WorkgroupFunction::REPORT);
-				$reporterHasReportGroup = $hasReportGroup;
+                $hasReportGroup = $this->groupFunctionGateway->existRegionFunctionGroup($regionId, WorkgroupFunction::REPORT);
+                $reporterHasReportGroup = $hasReportGroup;
 
-				if ($hasReportGroup) {
-					$reportGroupId = $this->groupFunctionGateway->getRegionFunctionGroupId($regionId, WorkgroupFunction::REPORT);
-					$reportGroupDetails = $this->groupGateway->getGroupLegacy($reportGroupId);
-					$MailboxNameReportRequest = $this->mailboxGateway->getMailboxname($reportGroupDetails['mailbox_id']) ?? '';
-				}
+                if ($hasReportGroup) {
+                    $reportGroupId = $this->groupFunctionGateway->getRegionFunctionGroupId($regionId, WorkgroupFunction::REPORT);
+                    $reportGroupDetails = $this->groupGateway->getGroupLegacy($reportGroupId);
+                    $MailboxNameReportRequest = $this->mailboxGateway->getMailboxname($reportGroupDetails['mailbox_id']) ?? '';
+                }
 
-				$hasArbitrationGroup = $this->groupFunctionGateway->existRegionFunctionGroup($regionId, WorkgroupFunction::ARBITRATION);
+                $hasArbitrationGroup = $this->groupFunctionGateway->existRegionFunctionGroup($regionId, WorkgroupFunction::ARBITRATION);
 
-				if ($regionId != $this->session->getCurrentRegionId()) {
-					$reporterHasReportGroup = $this->groupFunctionGateway->existRegionFunctionGroup($this->session->getCurrentRegionId(), WorkgroupFunction::REPORT);
-				}
+                if ($regionId != $this->session->getCurrentRegionId()) {
+                    $reporterHasReportGroup = $this->groupFunctionGateway->existRegionFunctionGroup($this->session->getCurrentRegionId(), WorkgroupFunction::REPORT);
+                }
 
-				$buttonNameReportRequest = $this->translator->trans('profile.reportRequest');
-			}
-		}
+                $buttonNameReportRequest = $this->translator->trans('profile.reportRequest');
+            }
+        }
 
-		$page->addSectionLeft(
-			$this->vueComponent('vue-profile-menu', 'ProfileMenu', [
-				'isOnline' => $this->foodsaver['online'],
-				'foodSaverName' => $this->foodsaver['name'],
-				'photo' => $this->foodsaver['photo'],
-				'fsId' => $this->foodsaver['id'],
-				'fsIdSession' => $this->session->id(),
-				'isSleeping' => (bool)$this->foodsaver['sleep_status'],
-				'isNoBuddy' => $this->foodsaver['buddy'] === BuddyId::NO_BUDDY,
-				'mayAdmin' => $mayAdmin,
-				'mayHistory' => $maySeeHistory,
-				'noteCount' => $this->foodsaver['note_count'] ?? 0,
-				'mayNotes' => $this->reportPermissions->mayHandleReports(),
-				'violationCount' => $this->foodsaver['violation_count'] ?? 0,
-				'mayViolation' => $this->reportPermissions->mayHandleReports(),
-				'hasLocalMediationGroup' => $this->groupFunctionGateway->existRegionFunctionGroup($regionId, WorkgroupFunction::MEDIATION),
-				'mediationGroupEmail' => $mediationGroupEmail ?? '',
-				'storeListOptions' => $storeListOptions ?? [],
-				'isReportedIdReportAdmin' => $isReportedIdReportAdmin ?? false,
-				'hasReportGroup' => $hasReportGroup ?? false,
-				'hasArbitrationGroup' => $hasArbitrationGroup ?? false,
-				'isReporterIdReportAdmin' => $isReporterIdReportAdmin ?? false,
-				'isReporterIdArbitrationAdmin' => $isReporterIdArbitrationAdmin ?? false,
-				'isReportedIdArbitrationAdmin' => $isReportedIdArbitrationAdmin ?? false,
-				'isReportButtonEnabled' => $isReportButtonEnabled ?? false,
-				'reporterHasReportGroup' => $reporterHasReportGroup ?? false,
-				'mailboxNameReportRequest' => $MailboxNameReportRequest ?? '',
-				'buttonNameReportRequest' => $buttonNameReportRequest ?? $this->translator->trans('profile.report.oldReportButton')
-			])
-		);
+        $page->addSectionLeft(
+            $this->vueComponent('vue-profile-menu', 'ProfileMenu', [
+                'isOnline' => $this->foodsaver['online'],
+                'foodSaverName' => $this->foodsaver['name'],
+                'photo' => $this->foodsaver['photo'],
+                'fsId' => $this->foodsaver['id'],
+                'fsIdSession' => $this->session->id(),
+                'isSleeping' => (bool)$this->foodsaver['sleep_status'],
+                'isNoBuddy' => $this->foodsaver['buddy'] === BuddyId::NO_BUDDY,
+                'mayAdmin' => $mayAdmin,
+                'mayHistory' => $maySeeHistory,
+                'noteCount' => $this->foodsaver['note_count'] ?? 0,
+                'mayNotes' => $this->reportPermissions->mayHandleReports(),
+                'violationCount' => $this->foodsaver['violation_count'] ?? 0,
+                'mayViolation' => $this->reportPermissions->mayHandleReports(),
+                'hasLocalMediationGroup' => $this->groupFunctionGateway->existRegionFunctionGroup($regionId, WorkgroupFunction::MEDIATION),
+                'mediationGroupEmail' => $mediationGroupEmail ?? '',
+                'storeListOptions' => $storeListOptions ?? [],
+                'isReportedIdReportAdmin' => $isReportedIdReportAdmin ?? false,
+                'hasReportGroup' => $hasReportGroup ?? false,
+                'hasArbitrationGroup' => $hasArbitrationGroup ?? false,
+                'isReporterIdReportAdmin' => $isReporterIdReportAdmin ?? false,
+                'isReporterIdArbitrationAdmin' => $isReporterIdArbitrationAdmin ?? false,
+                'isReportedIdArbitrationAdmin' => $isReportedIdArbitrationAdmin ?? false,
+                'isReportButtonEnabled' => $isReportButtonEnabled ?? false,
+                'reporterHasReportGroup' => $reporterHasReportGroup ?? false,
+                'mailboxNameReportRequest' => $MailboxNameReportRequest ?? '',
+                'buttonNameReportRequest' => $buttonNameReportRequest ?? $this->translator->trans('profile.report.oldReportButton')
+            ])
+        );
 
-		if ($maySeeBounceWarning && $this->foodsaver['emailIsBouncing']) {
-			$mayRemove = $this->profilePermissions->mayRemoveFromBounceList($this->foodsaver['id']);
-			$page->addSection($this->vueComponent('email-bounce-list', 'EmailBounceList', [
-				'userId' => $this->foodsaver['id'],
-				'emailAddress' => $this->foodsaver['email'],
-				'mayRemove' => $mayRemove,
-				'bounceEvents' => $mayRemove ? $this->foodsaver['emailBounceCategories'] : []
-			]));
-		}
+        if ($maySeeBounceWarning && $this->foodsaver['emailIsBouncing']) {
+            $mayRemove = $this->profilePermissions->mayRemoveFromBounceList($this->foodsaver['id']);
+            $page->addSection($this->vueComponent('email-bounce-list', 'EmailBounceList', [
+                'userId' => $this->foodsaver['id'],
+                'emailAddress' => $this->foodsaver['email'],
+                'mayRemove' => $mayRemove,
+                'bounceEvents' => $mayRemove ? $this->foodsaver['emailBounceCategories'] : []
+            ]));
+        }
 
-		if ($maySeePickups) {
-			$page->addSection(
-				$this->vueComponent('pickups-section', 'PickupsSection', [
-					'showRegisteredTab' => $maySeePickups,
-					'showOptionsTab' => $this->storePermissions->maySeePickupOptions($fsId),
-					'showHistoryTab' => $maySeePickups,
-					'fsId' => $fsId,
-					'allowSlotCancelation' => $this->profilePermissions->mayCancelSlotsFromProfile($fsId),
-					'isOwnProfile' => ($fsId == $this->session->id()),
-				]),
-				$this->translator->trans('pickup.overview.header')
-			);
-		}
+        if ($maySeePickups) {
+            $page->addSection(
+                $this->vueComponent('pickups-section', 'PickupsSection', [
+                    'showRegisteredTab' => $maySeePickups,
+                    'showOptionsTab' => $this->storePermissions->maySeePickupOptions($fsId),
+                    'showHistoryTab' => $maySeePickups,
+                    'fsId' => $fsId,
+                    'allowSlotCancelation' => $this->profilePermissions->mayCancelSlotsFromProfile($fsId),
+                    'isOwnProfile' => ($fsId == $this->session->id()),
+                ]),
+                $this->translator->trans('pickup.overview.header')
+            );
+        }
 
-		if ($maySeeCommitmentsStat && $commitmentsStats) {
-			$page->addSection($this->vueComponent('profile-commitments-stat', 'ProfileCommitmentsStat', [
-				'commitmentsStats' => $commitmentsStats,
-			]),
-				$this->translator->trans('profile.commitments_stat.title')
-			);
-		}
+        if ($maySeeCommitmentsStat && $commitmentsStats) {
+            $page->addSection($this->vueComponent('profile-commitments-stat', 'ProfileCommitmentsStat', [
+                'commitmentsStats' => $commitmentsStats,
+            ]),
+                $this->translator->trans('profile.commitments_stat.title')
+            );
+        }
 
-		$wallTitle = $this->translator->trans('profile.pinboard', ['{name}' => $this->foodsaver['name']]);
-		$page->addSection($wallPosts, $wallTitle);
+        $wallTitle = $this->translator->trans('profile.pinboard', ['{name}' => $this->foodsaver['name']]);
+        $page->addSection($wallPosts, $wallTitle);
 
-		if ($this->session->id() != $fsId) {
-			$this->pageHelper->addStyle('#wallposts .tools {display:none;}');
-		}
+        if ($this->session->id() != $fsId) {
+            $this->pageHelper->addStyle('#wallposts .tools {display:none;}');
+        }
 
-		$fsMail = '';
-		if ($this->foodsaver['rolle'] > Role::FOODSAVER) {
-			if ($this->profilePermissions->maySeeEmailAddress($fsId)) {
-				$fsMail = $this->foodsaver['mailbox'];
-			}
-		}
+        $fsMail = '';
+        if ($this->foodsaver['rolle'] > Role::FOODSAVER) {
+            if ($this->profilePermissions->maySeeEmailAddress($fsId)) {
+                $fsMail = $this->foodsaver['mailbox'];
+            }
+        }
 
-		$page->addSectionLeft(
-			$this->vueComponent('vue-profile-infos', 'ProfileInfos', [
-				'isfoodsaver' => $this->foodsaver['rolle'] > Role::FOODSHARER,
-				'fsMail' => $fsMail,
-				'privateMail' => $this->profilePermissions->maySeePrivateEmail($fsId) ? $this->foodsaver['email'] : '',
-				'registrationDate' => $this->profilePermissions->maySeeRegistrationDate($fsId) ? Carbon::parse($this->foodsaver['anmeldedatum'])->format('d.m.Y') : '',
-				'lastActivity' => $this->profilePermissions->maySeelastActivity($fsId) ? Carbon::parse($this->foodsaver['last_activity'])->format('d.m.Y') : '',
-				'buddyCount' => $this->foodsaver['stat_buddycount'],
-				'name' => $this->foodsaver['name'],
-				'fsId' => $this->foodsaver['id'],
-				'fsIdSession' => $this->session->id()
-			]),
-			$this->translator->trans('profile.infos.title')
-		);
+        $page->addSectionLeft(
+            $this->vueComponent('vue-profile-infos', 'ProfileInfos', [
+                'isfoodsaver' => $this->foodsaver['rolle'] > Role::FOODSHARER,
+                'fsMail' => $fsMail,
+                'privateMail' => $this->profilePermissions->maySeePrivateEmail($fsId) ? $this->foodsaver['email'] : '',
+                'registrationDate' => $this->profilePermissions->maySeeRegistrationDate($fsId) ? Carbon::parse($this->foodsaver['anmeldedatum'])->format('d.m.Y') : '',
+                'lastActivity' => $this->profilePermissions->maySeelastActivity($fsId) ? Carbon::parse($this->foodsaver['last_activity'])->format('d.m.Y') : '',
+                'buddyCount' => $this->foodsaver['stat_buddycount'],
+                'name' => $this->foodsaver['name'],
+                'fsId' => $this->foodsaver['id'],
+                'fsIdSession' => $this->session->id()
+            ]),
+            $this->translator->trans('profile.infos.title')
+        );
 
-		if ($maySeeStores && count($userStores) > 0) {
-			$page->addSectionLeft(
-				$this->vueComponent('vue-profile-storelist', 'ProfileStoreList', [
-					'stores' => $userStores,
-				])
-			);
-		}
+        if ($maySeeStores && count($userStores) > 0) {
+            $page->addSectionLeft(
+                $this->vueComponent('vue-profile-storelist', 'ProfileStoreList', [
+                    'stores' => $userStores,
+                ])
+            );
+        }
 
-		$page->render();
-	}
+        $page->render();
+    }
 
-	private function infos(): string
-	{
-		$infos = $this->renderInformation();
-		$stats = join('', $this->renderStatistics());
-		$bananas = $this->renderBananas();
+    private function infos(): string
+    {
+        $infos = $this->renderInformation();
+        $stats = join('', $this->renderStatistics());
+        $bananas = $this->renderBananas();
 
-		return '
+        return '
 			<div>
 				<div class="profile statdisplay">
 					' . $stats . '
@@ -257,356 +257,356 @@ class ProfileView extends View
 				</div>
 			    <div class="infos"> ' . $infos . ' </div>
 			</div>';
-	}
+    }
 
-	public function userNotes(string $notes, array $userStores): void
-	{
-		$fsName = $this->foodsaver['name'];
+    public function userNotes(string $notes, array $userStores): void
+    {
+        $fsName = $this->foodsaver['name'];
 
-		$page = new vPage(
-			$this->translator->trans('profile.notes.title', ['{name}' => $fsName]),
-			$this->v_utils->v_info($this->translator->trans('profile.notes.info')) . $notes
-		);
-		$page->setBread($this->translator->trans('profile.notes.bread'));
+        $page = new vPage(
+            $this->translator->trans('profile.notes.title', ['{name}' => $fsName]),
+            $this->v_utils->v_info($this->translator->trans('profile.notes.info')) . $notes
+        );
+        $page->setBread($this->translator->trans('profile.notes.bread'));
 
-		$page->addSectionLeft('<a href="#"><img src="' . $this->imageService->img($this->foodsaver['photo'], 130) . '" /></a>');
+        $page->addSectionLeft('<a href="#"><img src="' . $this->imageService->img($this->foodsaver['photo'], 130) . '" /></a>');
 
-		$page->render();
-	}
+        $page->render();
+    }
 
-	public function getHistory(array $history, int $changeType): string
-	{
-		$out = '
+    public function getHistory(array $history, int $changeType): string
+    {
+        $out = '
 			<ul class="linklist history">';
 
-		$curDate = '';
-		foreach ($history as $h) {
-			if ($curDate !== $h['date']) {
-				$out = $this->renderTypeOfHistoryEntry($changeType, $h, $out);
+        $curDate = '';
+        foreach ($history as $h) {
+            if ($curDate !== $h['date']) {
+                $out = $this->renderTypeOfHistoryEntry($changeType, $h, $out);
 
-				$curDate = $h['date'];
-			}
+                $curDate = $h['date'];
+            }
 
-			$out = $h['bot_id'] === null
-				? $out . '<li>' . $this->translator->trans('profile.history.noActor') . '</li>'
-				: $out . '<li>
+            $out = $h['bot_id'] === null
+                ? $out . '<li>' . $this->translator->trans('profile.history.noActor') . '</li>'
+                : $out . '<li>
 					<a class="corner-all" href="/profile/' . (int)$h['bot_id'] . '">
 						<span class="n">' . $h['name'] . ' ' . $h['nachname'] . '</span>
 						<span class="t"></span>
 						<span class="c"></span>
 					</a>
 				</li>';
-		}
-		$out .= '
+        }
+        $out .= '
 		</ul>';
-		if ($curDate === '') {
-			$out = $this->translator->trans('profile.history.noData');
-		}
+        if ($curDate === '') {
+            $out = $this->translator->trans('profile.history.noData');
+        }
 
-		return $out;
-	}
+        return $out;
+    }
 
-	public function setData(array $data): void
-	{
-		$this->foodsaver = $data;
-	}
+    public function setData(array $data): void
+    {
+        $this->foodsaver = $data;
+    }
 
-	private function renderStatistics(): array
-	{
-		$stats = [];
-		if (($fetchWeight = $this->foodsaver['stat_fetchweight']) > 0) {
-			$label = $this->translator->trans('profile.stats.weight');
-			$stats[] = $this->renderStat($fetchWeight, 'kg', $label, 'stat_fetchweight');
-		}
+    private function renderStatistics(): array
+    {
+        $stats = [];
+        if (($fetchWeight = $this->foodsaver['stat_fetchweight']) > 0) {
+            $label = $this->translator->trans('profile.stats.weight');
+            $stats[] = $this->renderStat($fetchWeight, 'kg', $label, 'stat_fetchweight');
+        }
 
-		if (($fetchCount = $this->foodsaver['stat_fetchcount']) > 0) {
-			$label = $this->translator->trans('profile.stats.count');
-			$stats[] = $this->renderStat($fetchCount, 'x', $label, 'stat_fetchcount');
-		}
+        if (($fetchCount = $this->foodsaver['stat_fetchcount']) > 0) {
+            $label = $this->translator->trans('profile.stats.count');
+            $stats[] = $this->renderStat($fetchCount, 'x', $label, 'stat_fetchcount');
+        }
 
-		if (($basketCount = $this->foodsaver['basketCount']) > 0) {
-			$label = $this->translator->trans('profile.stats.baskets');
-			$stats[] = '<a href="/essenskoerbe">'
-				. $this->renderStat($basketCount, '', $label, 'stat_basketcount')
-				. '</a>';
-		}
+        if (($basketCount = $this->foodsaver['basketCount']) > 0) {
+            $label = $this->translator->trans('profile.stats.baskets');
+            $stats[] = '<a href="/essenskoerbe">'
+                . $this->renderStat($basketCount, '', $label, 'stat_basketcount')
+                . '</a>';
+        }
 
-		if ($this->session->mayRole(Role::FOODSAVER)) {
-			$label = $this->translator->trans('profile.stats.posts');
-			$stats[] = $this->renderStat($this->foodsaver['stat_postcount'], '', $label, 'stat_postcount');
-		}
+        if ($this->session->mayRole(Role::FOODSAVER)) {
+            $label = $this->translator->trans('profile.stats.posts');
+            $stats[] = $this->renderStat($this->foodsaver['stat_postcount'], '', $label, 'stat_postcount');
+        }
 
-		return $stats;
-	}
+        return $stats;
+    }
 
-	private function renderStat($number, string $suffix, string $label, string $class): string
-	{
-		return '<span class="item ' . $class . '">'
-			. '<span class="val">' . $this->numberHelper->format_number($number)
-			. ($suffix ? '<span style="white-space:nowrap">&thinsp;</span>' . $suffix : '')
-			. '</span>
+    private function renderStat($number, string $suffix, string $label, string $class): string
+    {
+        return '<span class="item ' . $class . '">'
+            . '<span class="val">' . $this->numberHelper->format_number($number)
+            . ($suffix ? '<span style="white-space:nowrap">&thinsp;</span>' . $suffix : '')
+            . '</span>
 			<span class="name">' . $label . '</span>
 		</span>';
-	}
+    }
 
-	private function renderBananas(): string
-	{
-		if (!$this->session->mayRole(Role::FOODSAVER)) {
-			return '';
-		}
+    private function renderBananas(): string
+    {
+        if (!$this->session->mayRole(Role::FOODSAVER)) {
+            return '';
+        }
 
-		$this->pageHelper->addJs('
+        $this->pageHelper->addJs('
 			$(".stat_bananacount").fancybox({
 				closeClick: false,
 				closeBtn: true,
 			});
 		');
 
-		$canGiveBanana = (!$this->foodsaver['bouched']) && ($this->foodsaver['id'] != $this->session->id());
+        $canGiveBanana = (!$this->foodsaver['bouched']) && ($this->foodsaver['id'] != $this->session->id());
 
-		$this->pageHelper->addHidden(
-			$this->vueComponent('vue-profile-bananalist', 'BananaList', [
-				'recipientId' => intval($this->foodsaver['id']),
-				'recipientName' => $this->foodsaver['name'],
-				'canGiveBanana' => $canGiveBanana,
-				'canRemoveBanana' => $this->profilePermissions->mayDeleteBanana($this->foodsaver['id']),
-				'bananas' => $this->foodsaver['bananen'],
-			])
-		);
+        $this->pageHelper->addHidden(
+            $this->vueComponent('vue-profile-bananalist', 'BananaList', [
+                'recipientId' => intval($this->foodsaver['id']),
+                'recipientName' => $this->foodsaver['name'],
+                'canGiveBanana' => $canGiveBanana,
+                'canRemoveBanana' => $this->profilePermissions->mayDeleteBanana($this->foodsaver['id']),
+                'bananas' => $this->foodsaver['bananen'],
+            ])
+        );
 
-		$buttonClass = $canGiveBanana ? '' : ' bouched';
-		$bananaCount = count($this->foodsaver['bananen']) ?: '&nbsp;';
+        $buttonClass = $canGiveBanana ? '' : ' bouched';
+        $bananaCount = count($this->foodsaver['bananen']) ?: '&nbsp;';
 
-		return '
+        return '
 			<a href="#bananas" onclick="return false;" class="item stat_bananacount' . $buttonClass . '">
 				<span class="val">' . $bananaCount . '</span>
 				<span class="name">&nbsp;</span>
 			</a>
 		';
-	}
+    }
 
-	private function renderMediationRequest(int $regionId): string
-	{
-		if (($this->foodsaver['rolle'] < Role::FOODSAVER) || ($this->foodsaver['id'] === $this->session->id())) {
-			return '';
-		}
+    private function renderMediationRequest(int $regionId): string
+    {
+        if (($this->foodsaver['rolle'] < Role::FOODSAVER) || ($this->foodsaver['id'] === $this->session->id())) {
+            return '';
+        }
 
-		$mailboxName = '';
-		if ($this->groupFunctionGateway->existRegionFunctionGroup($regionId, WorkgroupFunction::MEDIATION)) {
-			$mediationGroupId = $this->groupFunctionGateway->getRegionFunctionGroupId($regionId, WorkgroupFunction::MEDIATION);
-			$mediationGroupDetails = $this->groupGateway->getGroupLegacy($mediationGroupId);
-			$mailboxName = $this->mailboxGateway->getMailboxname($mediationGroupDetails['mailbox_id']);
-		}
+        $mailboxName = '';
+        if ($this->groupFunctionGateway->existRegionFunctionGroup($regionId, WorkgroupFunction::MEDIATION)) {
+            $mediationGroupId = $this->groupFunctionGateway->getRegionFunctionGroupId($regionId, WorkgroupFunction::MEDIATION);
+            $mediationGroupDetails = $this->groupGateway->getGroupLegacy($mediationGroupId);
+            $mailboxName = $this->mailboxGateway->getMailboxname($mediationGroupDetails['mailbox_id']);
+        }
 
-		return $mailboxName;
-	}
+        return $mailboxName;
+    }
 
-	private function renderInformation(): string
-	{
-		$infos = [];
-		[$ambassador, $infos] = $this->renderAmbassadorInformation($infos);
-		$infos = $this->renderFoodsaverInformation($ambassador, $infos);
-		$infos = $this->renderOrgaTeamMemberInformation($infos);
-		if (
-			$this->foodsaver['id'] != $this->session->id()
-			&& $this->foodsaver['rolle'] > Role::FOODSHARER
-			&& $this->session->mayRole(Role::FOODSAVER)
-		) {
-			$infos = $this->renderFoodsaverTeamMemberInformation($infos);
-		}
-		$infos = $this->renderSleepingHatInformation($infos);
-		$infos = $this->renderAboutMeInternalInformation($infos);
+    private function renderInformation(): string
+    {
+        $infos = [];
+        [$ambassador, $infos] = $this->renderAmbassadorInformation($infos);
+        $infos = $this->renderFoodsaverInformation($ambassador, $infos);
+        $infos = $this->renderOrgaTeamMemberInformation($infos);
+        if (
+            $this->foodsaver['id'] != $this->session->id()
+            && $this->foodsaver['rolle'] > Role::FOODSHARER
+            && $this->session->mayRole(Role::FOODSAVER)
+        ) {
+            $infos = $this->renderFoodsaverTeamMemberInformation($infos);
+        }
+        $infos = $this->renderSleepingHatInformation($infos);
+        $infos = $this->renderAboutMeInternalInformation($infos);
 
-		$out = '<dl class="profile-infos profile-main">';
-		foreach ($infos as $info) {
-			$out .= '<dt>' . $info['name'];
-			if (!empty($info['val'])) {
-				$out .= ':';
-			}
-			$out .= '</dt>';
+        $out = '<dl class="profile-infos profile-main">';
+        foreach ($infos as $info) {
+            $out .= '<dt>' . $info['name'];
+            if (!empty($info['val'])) {
+                $out .= ':';
+            }
+            $out .= '</dt>';
 
-			if (!empty($info['val'])) {
-				$out .= '<dd>' . $info['val'] . '</dd>';
-			}
-		}
-		$out .= '</dl>';
+            if (!empty($info['val'])) {
+                $out .= '<dd>' . $info['val'] . '</dd>';
+            }
+        }
+        $out .= '</dl>';
 
-		return $out;
-	}
+        return $out;
+    }
 
-	private function renderAmbassadorInformation(array $infos): array
-	{
-		$ambassador = [];
-		if ($this->foodsaver['botschafter']) {
-			foreach ($this->foodsaver['botschafter'] as $foodsaver) {
-				$ambassador[$foodsaver['id']] = '<a class="light" href="/?page=bezirk&bid=' . $foodsaver['id'] . '&sub=forum">' . $foodsaver['name'] . '</a>';
-			}
-			$infos[] = [
-				'name' => $this->translator->trans('profile.ambRegions', [
-					'{name}' => $this->foodsaver['name'],
-					'{role}' => $this->translationHelper->genderWord(
-						$this->foodsaver['geschlecht'],
-						$this->translator->trans('terminology.ambassador.m'),
-						$this->translator->trans('terminology.ambassador.f'),
-						$this->translator->trans('terminology.ambassador.d')
-					),
-				]),
-				'val' => implode(', ', $ambassador),
-			];
-		}
+    private function renderAmbassadorInformation(array $infos): array
+    {
+        $ambassador = [];
+        if ($this->foodsaver['botschafter']) {
+            foreach ($this->foodsaver['botschafter'] as $foodsaver) {
+                $ambassador[$foodsaver['id']] = '<a class="light" href="/?page=bezirk&bid=' . $foodsaver['id'] . '&sub=forum">' . $foodsaver['name'] . '</a>';
+            }
+            $infos[] = [
+                'name' => $this->translator->trans('profile.ambRegions', [
+                    '{name}' => $this->foodsaver['name'],
+                    '{role}' => $this->translationHelper->genderWord(
+                        $this->foodsaver['geschlecht'],
+                        $this->translator->trans('terminology.ambassador.m'),
+                        $this->translator->trans('terminology.ambassador.f'),
+                        $this->translator->trans('terminology.ambassador.d')
+                    ),
+                ]),
+                'val' => implode(', ', $ambassador),
+            ];
+        }
 
-		return [$ambassador, $infos];
-	}
+        return [$ambassador, $infos];
+    }
 
-	private function renderFoodsaverInformation(array $ambassador, array $infos): array
-	{
-		if ($this->foodsaver['foodsaver']) {
-			$fsa = [];
-			$fsHomeDistrict = '';
-			foreach ($this->foodsaver['foodsaver'] as $foodsaver) {
-				if ($foodsaver['id'] == $this->foodsaver['bezirk_id']) {
-					$fsHomeDistrict = '<a class="light" href="/?page=bezirk&bid=' . $foodsaver['id'] . '&sub=forum">' . $foodsaver['name'] . '</a>';
-					if ($this->profilePermissions->maySeeHistory($this->foodsaver['id']) && !empty($this->foodsaver['home_district_history'])) {
-						$fsHomeDistrict .= ' (<a class="light" href="/profile/' . $this->foodsaver['home_district_history']['changer_id'] . '">' . $this->foodsaver['home_district_history']['changer_full_name'] . '</a> ';
-						$fsHomeDistrict .= Carbon::parse($this->foodsaver['home_district_history']['date'])->format('d.m.Y H:i:s') . ')';
-					}
-				}
-				if (!isset($ambassador[$foodsaver['id']])) {
-					$fsa[] = '<a class="light" href="/?page=bezirk&bid=' . $foodsaver['id'] . '&sub=forum">' . $foodsaver['name'] . '</a>';
-				}
-			}
-			if (!empty($fsa)) {
-				$infos[] = [
-					'name' => $this->translator->trans('profile.regions', ['{name}' => $this->foodsaver['name']]),
-					'val' => implode(', ', $fsa),
-				];
-			}
-			if (!empty($fsHomeDistrict)) {
-				$infos[] = [
-					'name' => $this->translator->trans('profile.homeRegion', ['{name}' => $this->foodsaver['name']]),
-					'val' => $fsHomeDistrict,
-				];
-			}
-		}
+    private function renderFoodsaverInformation(array $ambassador, array $infos): array
+    {
+        if ($this->foodsaver['foodsaver']) {
+            $fsa = [];
+            $fsHomeDistrict = '';
+            foreach ($this->foodsaver['foodsaver'] as $foodsaver) {
+                if ($foodsaver['id'] == $this->foodsaver['bezirk_id']) {
+                    $fsHomeDistrict = '<a class="light" href="/?page=bezirk&bid=' . $foodsaver['id'] . '&sub=forum">' . $foodsaver['name'] . '</a>';
+                    if ($this->profilePermissions->maySeeHistory($this->foodsaver['id']) && !empty($this->foodsaver['home_district_history'])) {
+                        $fsHomeDistrict .= ' (<a class="light" href="/profile/' . $this->foodsaver['home_district_history']['changer_id'] . '">' . $this->foodsaver['home_district_history']['changer_full_name'] . '</a> ';
+                        $fsHomeDistrict .= Carbon::parse($this->foodsaver['home_district_history']['date'])->format('d.m.Y H:i:s') . ')';
+                    }
+                }
+                if (!isset($ambassador[$foodsaver['id']])) {
+                    $fsa[] = '<a class="light" href="/?page=bezirk&bid=' . $foodsaver['id'] . '&sub=forum">' . $foodsaver['name'] . '</a>';
+                }
+            }
+            if (!empty($fsa)) {
+                $infos[] = [
+                    'name' => $this->translator->trans('profile.regions', ['{name}' => $this->foodsaver['name']]),
+                    'val' => implode(', ', $fsa),
+                ];
+            }
+            if (!empty($fsHomeDistrict)) {
+                $infos[] = [
+                    'name' => $this->translator->trans('profile.homeRegion', ['{name}' => $this->foodsaver['name']]),
+                    'val' => $fsHomeDistrict,
+                ];
+            }
+        }
 
-		return $infos;
-	}
+        return $infos;
+    }
 
-	private function renderAboutMeInternalInformation(array $infos): array
-	{
-		if ($this->foodsaver['about_me_intern']) {
-			$infos[] = [
-				'name' => $this->translator->trans('profile.about_me_intern'),
-				'val' => $this->foodsaver['about_me_intern'],
-			];
-		}
+    private function renderAboutMeInternalInformation(array $infos): array
+    {
+        if ($this->foodsaver['about_me_intern']) {
+            $infos[] = [
+                'name' => $this->translator->trans('profile.about_me_intern'),
+                'val' => $this->foodsaver['about_me_intern'],
+            ];
+        }
 
-		return $infos;
-	}
+        return $infos;
+    }
 
-	private function renderOrgaTeamMemberInformation(array $infos): array
-	{
-		if ($this->foodsaver['orga']) {
-			$ambassador = [];
-			foreach ($this->foodsaver['orga'] as $foodsaver) {
-				if ($this->session->mayRole(Role::FOODSAVER)) {
-					$ambassador[$foodsaver['id']] = '<a class="light" href="/?page=bezirk&bid=' . $foodsaver['id'] . '&sub=forum">' . $foodsaver['name'] . '</a>';
-				} else {
-					$ambassador[$foodsaver['id']] = $foodsaver['name'];
-				}
-			}
-			$infos[] = [
-				'name' => $this->translator->trans('profile.workgroups_admin', ['{name}' => $this->foodsaver['name']]),
-				'val' => implode(', ', $ambassador),
-			];
-		}
+    private function renderOrgaTeamMemberInformation(array $infos): array
+    {
+        if ($this->foodsaver['orga']) {
+            $ambassador = [];
+            foreach ($this->foodsaver['orga'] as $foodsaver) {
+                if ($this->session->mayRole(Role::FOODSAVER)) {
+                    $ambassador[$foodsaver['id']] = '<a class="light" href="/?page=bezirk&bid=' . $foodsaver['id'] . '&sub=forum">' . $foodsaver['name'] . '</a>';
+                } else {
+                    $ambassador[$foodsaver['id']] = $foodsaver['name'];
+                }
+            }
+            $infos[] = [
+                'name' => $this->translator->trans('profile.workgroups_admin', ['{name}' => $this->foodsaver['name']]),
+                'val' => implode(', ', $ambassador),
+            ];
+        }
 
-		return $infos;
-	}
+        return $infos;
+    }
 
-	private function renderFoodsaverTeamMemberInformation(array $infos): array
-	{
-		// only display groups in which the user is not an admin
-		if (!empty($this->foodsaver['working_groups'])) {
-			$groups = $this->foodsaver['working_groups'];
-			$groupInfos = [];
-			foreach ($groups as $group) {
-				$groupInfos[$group['id']] = $group['name'];
-			}
+    private function renderFoodsaverTeamMemberInformation(array $infos): array
+    {
+        // only display groups in which the user is not an admin
+        if (!empty($this->foodsaver['working_groups'])) {
+            $groups = $this->foodsaver['working_groups'];
+            $groupInfos = [];
+            foreach ($groups as $group) {
+                $groupInfos[$group['id']] = $group['name'];
+            }
 
-			$infos[] = [
-				'name' => $this->translator->trans('profile.workgroups_member', ['{name}' => $this->foodsaver['name']]),
-				'val' => implode(', ', $groupInfos),
-			];
-		} else {
-			$infos[] = [
-				'name' => $this->translator->trans('profile.no_common_workgroups', ['{name}' => $this->foodsaver['name']]),
-				'val' => null,
-			];
-		}
+            $infos[] = [
+                'name' => $this->translator->trans('profile.workgroups_member', ['{name}' => $this->foodsaver['name']]),
+                'val' => implode(', ', $groupInfos),
+            ];
+        } else {
+            $infos[] = [
+                'name' => $this->translator->trans('profile.no_common_workgroups', ['{name}' => $this->foodsaver['name']]),
+                'val' => null,
+            ];
+        }
 
-		return $infos;
-	}
+        return $infos;
+    }
 
-	private function renderSleepingHatInformation(array $infos): array
-	{
-		switch ($this->foodsaver['sleep_status']) {
-			case 1:
-				$infos[] = [
-					'name' => $this->translator->trans('profile.sleepinfo', [
-						'{name}' => $this->foodsaver['name'],
-						'{from}' => date('d.m.Y', $this->foodsaver['sleep_from_ts']),
-						'{until}' => date('d.m.Y', $this->foodsaver['sleep_until_ts']),
-					]),
-					'val' => $this->foodsaver['sleep_msg'],
-				];
-				break;
-			case 2:
-				$infos[] = [
-					'name' => $this->translator->trans('profile.sleeping', ['{name}' => $this->foodsaver['name']]),
-					'val' => $this->foodsaver['sleep_msg'],
-				];
-				break;
-			default:
-				break;
-		}
+    private function renderSleepingHatInformation(array $infos): array
+    {
+        switch ($this->foodsaver['sleep_status']) {
+            case 1:
+                $infos[] = [
+                    'name' => $this->translator->trans('profile.sleepinfo', [
+                        '{name}' => $this->foodsaver['name'],
+                        '{from}' => date('d.m.Y', $this->foodsaver['sleep_from_ts']),
+                        '{until}' => date('d.m.Y', $this->foodsaver['sleep_until_ts']),
+                    ]),
+                    'val' => $this->foodsaver['sleep_msg'],
+                ];
+                break;
+            case 2:
+                $infos[] = [
+                    'name' => $this->translator->trans('profile.sleeping', ['{name}' => $this->foodsaver['name']]),
+                    'val' => $this->foodsaver['sleep_msg'],
+                ];
+                break;
+            default:
+                break;
+        }
 
-		return $infos;
-	}
+        return $infos;
+    }
 
-	private function renderTypeOfHistoryEntry(int $changeType, array $h, string $out): string
-	{
-		$when = $this->timeHelper->niceDate($h['date_ts']);
+    private function renderTypeOfHistoryEntry(int $changeType, array $h, string $out): string
+    {
+        $when = $this->timeHelper->niceDate($h['date_ts']);
 
-		switch ($changeType) {
-			case 0:
-				$typeOfChange = '';
-				switch ($h['change_status']) {
-					case 0:
-						$class = 'unverify';
-						$typeOfChange = $this->translator->trans('profile.history.lostVerification');
-						break;
-					case 1:
-						$class = 'verify';
-						$typeOfChange = $this->translator->trans('profile.history.wasVerified');
-						break;
-					default:
-						$class = '';
-						break;
-				}
-				$out .= '<li class="title">'
-					. '<span class="' . $class . '">' . $typeOfChange . '</span>'
-					. ' am ' . $when . ' durch:</li>';
-				break;
-			case 1:
-				$out = $h['bot_id'] === null
-					? $out . '<li class="title">' . $when . '</li>'
-					: $out . '<li class="title">' . $when . ' durch:</li>';
-				break;
-			default:
-				break;
-		}
+        switch ($changeType) {
+            case 0:
+                $typeOfChange = '';
+                switch ($h['change_status']) {
+                    case 0:
+                        $class = 'unverify';
+                        $typeOfChange = $this->translator->trans('profile.history.lostVerification');
+                        break;
+                    case 1:
+                        $class = 'verify';
+                        $typeOfChange = $this->translator->trans('profile.history.wasVerified');
+                        break;
+                    default:
+                        $class = '';
+                        break;
+                }
+                $out .= '<li class="title">'
+                    . '<span class="' . $class . '">' . $typeOfChange . '</span>'
+                    . ' am ' . $when . ' durch:</li>';
+                break;
+            case 1:
+                $out = $h['bot_id'] === null
+                    ? $out . '<li class="title">' . $when . '</li>'
+                    : $out . '<li class="title">' . $when . ' durch:</li>';
+                break;
+            default:
+                break;
+        }
 
-		return $out;
-	}
+        return $out;
+    }
 }

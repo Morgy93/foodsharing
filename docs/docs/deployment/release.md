@@ -10,6 +10,11 @@ People with rights for this can be found in the [gitlab-Wiki](https://gitlab.com
 For organization, we use [gitlab milestones](https://gitlab.com/foodsharing-dev/foodsharing/-/milestones). Their titles consist of the month and the year of the release and a fruit. If you are working on something which belongs to the next release, feel free to add it to the milestone.
 Please don't recycle milestones, but always use a new one for each release.
 
+## Release Notes
+
+We build a small python script to collect all german release notes text and images. Create gitlab in your profile in menu "Access Tokens" with permission level "read_api".
+Script command is: python3 ./scripts/releaseNotes.py
+
 ## Workflow
 
 Since we can tag the latest commit of the release on branch master, it is not necessary to create a new branch for the release. Also, in contrast to hotfixes which are cherry-picked, it is not necessary to merge the changes back into master after the release.

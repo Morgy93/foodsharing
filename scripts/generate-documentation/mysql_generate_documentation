@@ -7,9 +7,9 @@ root="$dir/../.."
 # shellcheck source=./__helping-functions.sh
 source "$dir/../__helping-functions.sh"
 
-BUILD_DIR="$root/docs/db/build"
+BUILD_DIR="$root/docs/data/build"
 RESULT_FOLDER="$root/docs/docs/backend/database"
-META_DATA_FILE="$root/docs/db/database_metadata.json"
+META_DATA_FILE="$root/docs/data/database_metadata.json"
 
 # Set node module path to global modules
 export NODE_PATH=$(npm root -g)
@@ -27,10 +27,10 @@ mysqldump -h "db" -u "root" -p"root" --skip-comments --no-data --skip-add-drop-t
 TABLE_USAGE_FILE="$BUILD_DIR/extract_tables_usage_from_php.grep_result"
 MODULE_FILE="$BUILD_DIR/modules.json"
 grep --include=\*.php -E "([^\$]fs_[a-zA-Z0-9_]+)" -R -B5 -A 2 -n "$root/src" > $TABLE_USAGE_FILE
-node "$dir/generate-db-documenation/extract_tables_usage_from_php_parser.js"  $BUILD_DIR $TABLE_USAGE_FILE $MODULE_FILE
+node "$dir/generate-documentation/extract_tables_usage_from_php_parser.js"  $BUILD_DIR $TABLE_USAGE_FILE $MODULE_FILE
 
 # Transform SQL dump and usage information to documentation
-node "$dir/generate-db-documenation/sql_to_documentation.js" $BUILD_DIR $RESULT_FOLDER $SQL_DUMP_FILE $META_DATA_FILE $MODULE_FILE
+node "$dir/generate-documentation/sql_to_documentation.js" $BUILD_DIR $RESULT_FOLDER $SQL_DUMP_FILE $META_DATA_FILE $MODULE_FILE
 
 echo
 echo "GENERATION COMPLETE"

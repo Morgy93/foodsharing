@@ -7,26 +7,26 @@ namespace Foodsharing\Modules\Core\DTO;
  */
 class GeoLocation
 {
-	/**
-	 * Latitude of the location.
-	 */
-	public float $lat = 0;
+    /**
+     * Latitude of the location.
+     */
+    public float $lat = 0;
 
-	/**
-	 * Longitude of the location.
-	 */
-	public float $lon = 0;
+    /**
+     * Longitude of the location.
+     */
+    public float $lon = 0;
 
-	public static function createFromArray($queryResult)
-	{
-		$obj = new GeoLocation();
-		if (!is_numeric($queryResult['lat']) || !is_numeric($queryResult['lon'])) {
-			throw new \InvalidArgumentException('Longitude/Latitude is invalid.');
-		}
+    public static function createFromArray($queryResult)
+    {
+        $obj = new GeoLocation();
+        if (!is_numeric($queryResult['lat']) || !is_numeric($queryResult['lon'])) {
+            throw new \InvalidArgumentException('Longitude/Latitude is invalid.');
+        }
 
-		$obj->lat = floatval($queryResult['lat']);
-		$obj->lon = floatval($queryResult['lon']);
+        $obj->lat = floatval($queryResult['lat']);
+        $obj->lon = floatval($queryResult['lon']);
 
-		return $obj;
-	}
+        return $obj;
+    }
 }

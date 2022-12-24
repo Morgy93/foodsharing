@@ -86,7 +86,7 @@ services:
   #------------------------------------
   docs:
     container_name: foodsharing_test_docs
-    command: sh -c "yarn && yarn serve"
+    command: sh -c "yarn && yarn api:build && yarn serve"
     ports:
       - 26000:3000
 

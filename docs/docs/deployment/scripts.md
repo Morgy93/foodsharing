@@ -49,7 +49,13 @@ All scripts can be run with `./scripts/[script]`.
 | `db-drop [env]`                             | dev/test      | Drop the database |
 | `db-dump`                                   | (dev)         | Run a `mysqldump` command in correct context |
 | `db-run [command]`                          | (dev)         | Run a `mysql` command in correct context: `mysql foodsharing "select * from fs_foodsaver"` |
-| `db-doc-build`                              | (dev)         | Generates the data for [Tables, columns overview](../backend/database/database-tables-columns) |
+
+## DevDocs `scripts`
+| Script                                      | ENV           | Description                                                                           |
+|---------------------------------------------|---------------|---------------------------------------------------------------------------------------|
+| `doc-build`                                 | (dev)         | Generates the database overview and Rest-Api overview  |
+| `doc-build-db`                              | (dev)         | Generates the database overview |
+| `doc-build-api`                             | (dev)         | Generates the Rest-Api overview  |
 
 ## Other helping `scripts`
 | Script                                      | ENV           | Description                                                                           |

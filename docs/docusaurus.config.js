@@ -5,7 +5,7 @@ const simplePlantUML = require("@akebifiky/remark-simple-plantuml");
 module.exports = {
   title: 'Foodsharing DEV',
   tagline: 'Together for more code rescue',
-  url: 'https://devdocs.foodsharing.network',
+  url: 'https://beta.foodsharing.de',
   baseUrl: '/',
   onBrokenLinks: 'throw',
   onBrokenMarkdownLinks: 'warn',
@@ -36,9 +36,40 @@ module.exports = {
         theme: {
           customCss: require.resolve('./src/css/custom.css'),
         },
-      }
+      },
     ],
   ],
+  plugins: [
+    [
+      '@docusaurus/plugin-content-docs',
+      {
+        id: 'docs-api',
+        path: 'docs-api',
+        routeBasePath: 'docs-api',
+        sidebarPath: require.resolve('./sidebars.api.js'),
+        docLayoutComponent: "@theme/DocPage",
+        docItemComponent: "@theme/ApiItem",
+      },
+    ],
+    [
+      "docusaurus-plugin-openapi-docs",
+      {
+        id: "api-operation",
+        docsPluginId: "classic",
+        config: {
+          api: {
+            specPath: "data/api_dump.json",
+            outputDir: "docs-api",
+            sidebarOptions: {
+              groupPathsBy: "tag",
+              categoryLinkSource: "tag"
+            },
+          }
+        }
+      },
+    ],
+  ],
+  themes: ["docusaurus-theme-openapi-docs"],
   themeConfig: {
     navbar: {
       title: 'Foodsharing',
@@ -50,8 +81,13 @@ module.exports = {
         {
           type: 'doc',
           docId: 'intro',
-          position: 'left',
           label: 'Guide',
+          position: 'left',
+        },
+        {
+          to: "docs-api/foodsharing-api",
+          label: "Rest API",
+          position: "left",
         },
         {
           type: 'docsVersionDropdown',
@@ -68,8 +104,8 @@ module.exports = {
           position: 'right',
         },
         {
-          label: 'Slack',
           href: 'https://slackin.yunity.org',
+          label: 'Slack',
           position: 'right',
         },
       ],
