@@ -437,7 +437,7 @@ class ForumRestController extends AbstractFOSRestController
             throw new AccessDeniedHttpException();
         }
 
-        $this->forumGateway->deleteThread($threadId);
+        $this->forumTransactions->deleteThread($threadId);
 
         return $this->handleView($this->view([], 200));
     }

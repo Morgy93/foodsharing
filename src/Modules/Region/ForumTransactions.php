@@ -102,8 +102,23 @@ class ForumTransactions
     public function activateThread(int $threadId): void
     {
         $this->forumGateway->activateThread($threadId);
+        $this->removeInactiveThreadBell($threadId);
+    }
 
-        // remove the bell that was created to notify the moderators about the new thread
+    public function deleteThread(int $threadId): void
+    {
+        $this->forumGateway->deleteThread($threadId);
+        $this->removeInactiveThreadBell($threadId);
+    }
+
+    /**
+     * Removes the bell that was created to notify moderators about a new thread. This function does nothing if
+     * the thread or the bell do not exist
+     *
+     * @param int $threadId the thread for which the bell was created
+     */
+    private function removeInactiveThreadBell(int $threadId): void
+    {
         $identifier = BellType::createIdentifier(BellType::NOT_ACTIVATED_FORUM_THREAD, $threadId);
         if ($this->bellGateway->bellWithIdentifierExists($identifier)) {
             $this->bellGateway->delBellsByIdentifier($identifier);
@@ -166,14 +181,15 @@ class ForumTransactions
             $bellData = Bell::create(
                 'forum_not_activated_thread_title',
                 'forum_not_activated_thread',
-                'fas fa-comment-plus',
+                'fas fa-comment',
                 ['href' => $link],
                 [
                     'user' => $this->session->user('name'),
                     'forum' => $region['name'],
                     'title' => $thread['title'],
                 ],
-                BellType::createIdentifier(BellType::NOT_ACTIVATED_FORUM_THREAD, $threadId)
+                BellType::createIdentifier(BellType::NOT_ACTIVATED_FORUM_THREAD, $threadId),
+                false
             );
             $this->bellGateway->addBell(array_column($moderators, 'id'), $bellData);
         }
