@@ -51,6 +51,7 @@ class MailsControl extends ConsoleControl
         switch ($argv[0]) {
             case 'newsletter':
                 $sourceKey = 'workqueueNewsletter';
+                // no break
             default:
                 $sourceKey = 'workqueue';
         }
