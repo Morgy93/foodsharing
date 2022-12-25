@@ -315,7 +315,6 @@ class MailsControl extends ConsoleControl
 
     public function handleEmailRateLimited($data, $type): bool
     {
-        $noReply = false;
         switch ($type) {
             case 'newsletter':
                 $delayConstant = DELAY_MICRO_SECONDS_BETWEEN_NEWSLETTER;
@@ -323,6 +322,7 @@ class MailsControl extends ConsoleControl
                 break;
             default:
                 $delayConstant = DELAY_MICRO_SECONDS_BETWEEN_MAILS;
+                $noReply = false;
         }
 
         self::info('Mail from: ' . $data['from'][0] . ' (' . $data['from'][1] . ')');
