@@ -49,11 +49,10 @@ class MailsControl extends ConsoleControl
     public function queueWorker($argv)
     {
         switch ($argv[0]) {
-            case 'email':
-                $sourceKey = 'workqueue';
-                break;
             case 'newsletter':
                 $sourceKey = 'workqueueNewsletter';
+            default:
+                $sourceKey = 'workqueue';
         }
 
         $this->mem->ensureConnected();
