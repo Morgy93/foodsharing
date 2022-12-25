@@ -331,9 +331,9 @@ class MailsControl extends ConsoleControl
         $mailParts = explode('@', $data['from'][0]);
         $fromDomain = end($mailParts);
 
-        if (in_array($fromDomain, MAILBOX_OWN_DOMAINS, true) || $noReply !== false) {
+        if (in_array($fromDomain, MAILBOX_OWN_DOMAINS, true) || !$noReply) {
             $email->from(new Address($data['from'][0], $data['from'][1] ?? ''));
-        } elseif ($noReply) {
+        } else {
             $email->from(new Address(DEFAULT_EMAIL, $data['from'][1] ?? ''));
             $email->replyTo(new Address($data['from'][0], $data['from'][1] ?? ''));
         }
