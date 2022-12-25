@@ -147,7 +147,7 @@ class WorkGroupXhr extends Control
         }
 
         $userMail = $this->session->user('email');
-        $recipients = [$group['email'], $userMail];
+        $recipients = [$group['email']];
 
         $this->emailHelper->tplMail('general/workgroup_contact', $recipients, [
             'gruppenname' => $group['name'],
