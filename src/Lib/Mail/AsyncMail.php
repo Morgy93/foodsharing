@@ -88,7 +88,7 @@ class AsyncMail
         return $this->data;
     }
 
-    public function send($type)
+    public function send($type = 'email')
     {
         $this->mem->queueWork($type, $this->toArray(), $this->highPriority);
     }
