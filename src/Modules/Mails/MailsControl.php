@@ -316,13 +316,12 @@ class MailsControl extends ConsoleControl
     {
         $noReply = false;
         switch ($type) {
-            case 'mail':
-                $delayConstant = DELAY_MICRO_SECONDS_BETWEEN_MAILS;
-                break;
             case 'newsletter':
                 $delayConstant = DELAY_MICRO_SECONDS_BETWEEN_NEWSLETTER;
                 $noReply = true;
                 break;
+            default:
+                $delayConstant = DELAY_MICRO_SECONDS_BETWEEN_MAILS;
         }
 
         self::info('Mail from: ' . $data['from'][0] . ' (' . $data['from'][1] . ')');
