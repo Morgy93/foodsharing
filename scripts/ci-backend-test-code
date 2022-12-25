@@ -30,8 +30,8 @@ echo $SECONDS seconds elapsed
 log-header "Initializing database"
 SECONDS=0
 mysql -u root -proot -hdb --execute="drop database if exists foodsharing; create database foodsharing"
-php run.php Mails queueWorker &
-php run.php Mails queueWorker newsletter &
+php run.php Mails queueWorkerMail &
+php run.php Mails queueWorkerNewsletter &
 vendor/bin/phinx migrate
 echo $SECONDS seconds elapsed
 

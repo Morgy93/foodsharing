@@ -46,14 +46,26 @@ class MailsControl extends ConsoleControl
         parent::__construct();
     }
 
-    public function queueWorker($argv)
+    public function queueWorkerMail()
     {
-        switch ($argv[0]) {
+        $this->queueWorker();
+    }
+
+    public function queueWorkerNewsletter()
+    {
+        $this->queueWorker('newsletter');
+    }
+
+    public function queueWorker($type = null)
+    {
+        switch ($type) {
             case 'newsletter':
                 $sourceKey = 'workqueueNewsletter';
-                // no break
+                break;
+
             default:
                 $sourceKey = 'workqueue';
+                break;
         }
 
         $this->mem->ensureConnected();
