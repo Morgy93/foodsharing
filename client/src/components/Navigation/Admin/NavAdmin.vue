@@ -63,14 +63,6 @@
         <i class="icon-subnav fas fa-file-alt" /> {{ $i18n('system_administration.content') }}
       </a>
     </template>
-    <template #actions>
-      <span
-        class="dropdown-item dropdown-action disabled"
-        style="user-select: none"
-      >
-        Special snowflake, HA? ❄️
-      </span>
-    </template>
   </Dropdown>
 </template>
 <script>

@@ -26,7 +26,7 @@
       <small
         role="menuitem"
         class="disabled dropdown-item"
-        v-html="$i18n('bell.no_bells')"
+        v-text="$i18n('bell.no_bells')"
       />
     </template>
     <template #actions>

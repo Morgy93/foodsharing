@@ -164,7 +164,7 @@
         </b-button>
       </template>
       <template
-        v-if="maySetAdminOrAmbassador && managementModeEnabled"
+        v-if="maySetAdminOrAmbassador"
         #cell(setAdminButton)="row"
       >
         <b-button
@@ -243,7 +243,6 @@ export default {
       lastActivityFilterMonths: 6,
       memberList: [],
       isBusy: false,
-      managementModeEnabled: false,
       roleOptions: [
         { value: null, text: i18n('group.role_name') },
         { value: 1, text: i18n('terminology.role.1') },
@@ -266,7 +265,7 @@ export default {
         return (
           (!filterText || (member.name.toLowerCase().indexOf(filterText) !== -1)) &&
           (this.filterRole === null || (member.role === this.filterRole)) &&
-          (!this.filterLastActivity || (Date.parse(member.lastActivity) > this.dateBeforeMonths))
+          (!this.filterLastActivity || (Date.parse(member.lastActivity) <= this.dateBeforeMonths))
         )
       })
     },
@@ -425,7 +424,7 @@ export default {
       hideLoader()
     },
     async showRemoveMemberConfirmation (memberId, memberName) {
-      const remove = await this.$bvModal.msgBoxConfirm(i18n('group.member_list.remove_text', { name: memberName, id: memberId }), {
+      const remove = await this.$bvModal.msgBoxConfirm(i18n(this.isWorkGroup ? 'group.member_list.remove_text_group' : 'group.member_list.remove_text_region', { name: memberName, id: memberId }), {
         modalClass: 'bootstrap',
         title: i18n('group.member_list.remove_title'),
         cancelTitle: i18n('button.cancel'),
@@ -436,9 +435,6 @@ export default {
       if (remove) {
         this.tryRemoveMember(memberId)
       }
-    },
-    toggleManageControls () {
-      this.managementModeEnabled = !this.managementModeEnabled
     },
     containsMember (memberId) {
       return this.memberList.some(member => member.id === memberId)

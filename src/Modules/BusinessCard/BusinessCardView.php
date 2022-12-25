@@ -6,17 +6,17 @@ use Foodsharing\Modules\Core\View;
 
 class BusinessCardView extends View
 {
-	public function top()
-	{
-		return $this->topbar($this->translator->trans('bcard.card'),
-			$this->translator->trans('bcard.claim'),
-			'<img src="/img/bcard.png" />'
-		);
-	}
+    public function top()
+    {
+        return $this->topbar($this->translator->trans('bcard.card'),
+            $this->translator->trans('bcard.claim'),
+            '<img src="/img/bcard.png" />'
+        );
+    }
 
-	public function optionForm($selectedData)
-	{
-		$this->pageHelper->addJs('
+    public function optionForm($selectedData)
+    {
+        $this->pageHelper->addJs('
 			$("#optionen-form .input-wrapper:last").hide();
 			
 			$("#opt").on("change", function () {
@@ -33,8 +33,8 @@ class BusinessCardView extends View
 				
 			});');
 
-		return $this->v_utils->v_quickform($this->translator->trans('bcard.actions'), [
-			$this->v_utils->v_form_select('opt', ['desc' => $this->translator->trans('bcard.desc'), 'values' => $selectedData]),
-		], ['submit' => $this->translator->trans('bcard.generate')]);
-	}
+        return $this->v_utils->v_quickform($this->translator->trans('bcard.actions'), [
+            $this->v_utils->v_form_select('opt', ['desc' => $this->translator->trans('bcard.desc'), 'values' => $selectedData]),
+        ], ['submit' => $this->translator->trans('bcard.generate')]);
+    }
 }

@@ -10,7 +10,7 @@ $extra_params = ['bezirk_id' => $region['id']];
 $bibA = $I->createStoreCoordinator(null, $extra_params);
 
 for ($i = 0; $i < 30; ++$i) {
-	$I->createStore($region['id']);
+    $I->createStore($region['id']);
 }
 
 $I->login($bibA['email']);

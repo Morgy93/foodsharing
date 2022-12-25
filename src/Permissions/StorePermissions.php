@@ -13,351 +13,351 @@ use Foodsharing\Modules\Store\TeamStatus as UserTeamStatus;
 
 class StorePermissions
 {
-	private StoreGateway $storeGateway;
-	private Session $session;
-	private GroupFunctionGateway $groupFunctionGateway;
-	private ProfilePermissions $profilePermissions;
+    private StoreGateway $storeGateway;
+    private Session $session;
+    private GroupFunctionGateway $groupFunctionGateway;
+    private ProfilePermissions $profilePermissions;
 
-	public function __construct(
-		StoreGateway $storeGateway,
-		Session $session,
-		GroupFunctionGateway $groupFunctionGateway,
-		ProfilePermissions $profilePermissions
-	) {
-		$this->storeGateway = $storeGateway;
-		$this->session = $session;
-		$this->groupFunctionGateway = $groupFunctionGateway;
-		$this->profilePermissions = $profilePermissions;
-	}
+    public function __construct(
+        StoreGateway $storeGateway,
+        Session $session,
+        GroupFunctionGateway $groupFunctionGateway,
+        ProfilePermissions $profilePermissions
+    ) {
+        $this->storeGateway = $storeGateway;
+        $this->session = $session;
+        $this->groupFunctionGateway = $groupFunctionGateway;
+        $this->profilePermissions = $profilePermissions;
+    }
 
-	/**
-	 * Assumes that the given user is a foodsaver (i.e. can join store teams).
-	 * Just the additional permissions for the given, specific store are checked.
-	 */
-	public function mayJoinStoreRequest(int $storeId, ?int $userId = null): bool
-	{
-		$userId ??= $this->session->id();
-		if (is_null($userId)) {
-			return false;
-		}
+    /**
+     * Assumes that the given user is a foodsaver (i.e. can join store teams).
+     * Just the additional permissions for the given, specific store are checked.
+     */
+    public function mayJoinStoreRequest(int $storeId, ?int $userId = null): bool
+    {
+        $userId ??= $this->session->id();
+        if (is_null($userId)) {
+            return false;
+        }
 
-		$storeTeamStatus = $this->storeGateway->getStoreTeamStatus($storeId);
+        $storeTeamStatus = $this->storeGateway->getStoreTeamStatus($storeId);
 
-		// store open?
-		if (!in_array($storeTeamStatus, [StoreTeamStatus::OPEN, StoreTeamStatus::OPEN_SEARCHING])) {
-			return false;
-		}
+        // store open?
+        if (!in_array($storeTeamStatus, [StoreTeamStatus::OPEN, StoreTeamStatus::OPEN_SEARCHING])) {
+            return false;
+        }
 
-		// already in team?
-		if ($this->storeGateway->getUserTeamStatus($userId, $storeId) !== UserTeamStatus::NoMember) {
-			return false;
-		}
+        // already in team?
+        if ($this->storeGateway->getUserTeamStatus($userId, $storeId) !== UserTeamStatus::NoMember) {
+            return false;
+        }
 
-		return true;
-	}
+        return true;
+    }
 
-	public function mayAddUserToStoreTeam(int $storeId, int $userId, int $userRole): bool
-	{
-		if (!$this->mayEditStoreTeam($storeId)) {
-			return false;
-		}
-		if ($this->storeGateway->getUserTeamStatus($userId, $storeId) !== UserTeamStatus::NoMember) {
-			return false;
-		}
+    public function mayAddUserToStoreTeam(int $storeId, int $userId, int $userRole): bool
+    {
+        if (!$this->mayEditStoreTeam($storeId)) {
+            return false;
+        }
+        if ($this->storeGateway->getUserTeamStatus($userId, $storeId) !== UserTeamStatus::NoMember) {
+            return false;
+        }
 
-		return $userRole >= Role::FOODSAVER;
-	}
+        return $userRole >= Role::FOODSAVER;
+    }
 
-	/**
-	 * Does not check if the given user is part of the store team.
-	 * If that is not guaranteed, you will need to verify membership yourself.
-	 */
-	public function mayLeaveStoreTeam(int $storeId, int $userId): bool
-	{
-		$currentManagers = $this->storeGateway->getStoreManagers($storeId);
-		$isManager = in_array($userId, $currentManagers, true);
+    /**
+     * Does not check if the given user is part of the store team.
+     * If that is not guaranteed, you will need to verify membership yourself.
+     */
+    public function mayLeaveStoreTeam(int $storeId, int $userId): bool
+    {
+        $currentManagers = $this->storeGateway->getStoreManagers($storeId);
+        $isManager = in_array($userId, $currentManagers, true);
 
-		return !$isManager;
-	}
+        return !$isManager;
+    }
 
-	public function mayAccessStore(int $storeId): bool
-	{
-		$fsId = $this->session->id();
-		if (!$fsId) {
-			return false;
-		}
+    public function mayAccessStore(int $storeId): bool
+    {
+        $fsId = $this->session->id();
+        if (!$fsId) {
+            return false;
+        }
 
-		if ($this->session->mayRole(Role::ORGA)) {
-			return true;
-		}
-		if ($this->storeGateway->getUserTeamStatus($fsId, $storeId) >= UserTeamStatus::WaitingList) {
-			return true;
-		}
+        if ($this->session->mayRole(Role::ORGA)) {
+            return true;
+        }
+        if ($this->storeGateway->getUserTeamStatus($fsId, $storeId) >= UserTeamStatus::WaitingList) {
+            return true;
+        }
 
-		$storeRegion = $this->storeGateway->getStoreRegionId($storeId);
-		$storeGroup = $this->groupFunctionGateway->getRegionFunctionGroupId($storeRegion, WorkgroupFunction::STORES_COORDINATION);
-		if (empty($storeGroup)) {
-			if ($this->session->isAdminFor($storeRegion)) {
-				return true;
-			}
-		} elseif ($this->session->isAdminFor($storeGroup)) {
-			return true;
-		}
+        $storeRegion = $this->storeGateway->getStoreRegionId($storeId);
+        $storeGroup = $this->groupFunctionGateway->getRegionFunctionGroupId($storeRegion, WorkgroupFunction::STORES_COORDINATION);
+        if (empty($storeGroup)) {
+            if ($this->session->isAdminFor($storeRegion)) {
+                return true;
+            }
+        } elseif ($this->session->isAdminFor($storeGroup)) {
+            return true;
+        }
 
-		return false;
-	}
+        return false;
+    }
 
-	public function mayReadStoreWall(int $storeId): bool
-	{
-		$fsId = $this->session->id();
-		if (!$fsId) {
-			return false;
-		}
+    public function mayReadStoreWall(int $storeId): bool
+    {
+        $fsId = $this->session->id();
+        if (!$fsId) {
+            return false;
+        }
 
-		if ($this->session->mayRole(Role::ORGA)) {
-			return true;
-		}
-		if ($this->storeGateway->getUserTeamStatus($fsId, $storeId) >= UserTeamStatus::Member) {
-			return true;
-		}
+        if ($this->session->mayRole(Role::ORGA)) {
+            return true;
+        }
+        if ($this->storeGateway->getUserTeamStatus($fsId, $storeId) >= UserTeamStatus::Member) {
+            return true;
+        }
 
-		$storeRegion = $this->storeGateway->getStoreRegionId($storeId);
-		$storeGroup = $this->groupFunctionGateway->getRegionFunctionGroupId($storeRegion, WorkgroupFunction::STORES_COORDINATION);
-		if (empty($storeGroup)) {
-			if ($this->session->isAdminFor($storeRegion)) {
-				return true;
-			}
-		} elseif ($this->session->isAdminFor($storeGroup)) {
-			return true;
-		}
+        $storeRegion = $this->storeGateway->getStoreRegionId($storeId);
+        $storeGroup = $this->groupFunctionGateway->getRegionFunctionGroupId($storeRegion, WorkgroupFunction::STORES_COORDINATION);
+        if (empty($storeGroup)) {
+            if ($this->session->isAdminFor($storeRegion)) {
+                return true;
+            }
+        } elseif ($this->session->isAdminFor($storeGroup)) {
+            return true;
+        }
 
-		return false;
-	}
+        return false;
+    }
 
-	public function mayWriteStoreWall(int $storeId): bool
-	{
-		return $this->mayReadStoreWall($storeId);
-	}
+    public function mayWriteStoreWall(int $storeId): bool
+    {
+        return $this->mayReadStoreWall($storeId);
+    }
 
-	/**
-	 * Can remove any store wallpost, regardless of author and creation time.
-	 */
-	public function mayDeleteStoreWall(int $storeId): bool
-	{
-		return $this->session->mayRole(Role::ORGA);
-	}
+    /**
+     * Can remove any store wallpost, regardless of author and creation time.
+     */
+    public function mayDeleteStoreWall(int $storeId): bool
+    {
+        return $this->session->mayRole(Role::ORGA);
+    }
 
-	/**
-	 * Can remove this specific store wallpost right now.
-	 */
-	public function mayDeleteStoreWallPost(int $storeId, int $postId): bool
-	{
-		if (!$this->session->mayRole()) {
-			return false;
-		}
-		if ($this->mayDeleteStoreWall($storeId)) {
-			return true;
-		}
+    /**
+     * Can remove this specific store wallpost right now.
+     */
+    public function mayDeleteStoreWallPost(int $storeId, int $postId): bool
+    {
+        if (!$this->session->mayRole()) {
+            return false;
+        }
+        if ($this->mayDeleteStoreWall($storeId)) {
+            return true;
+        }
 
-		$post = $this->storeGateway->getStoreWallpost($storeId, $postId);
+        $post = $this->storeGateway->getStoreWallpost($storeId, $postId);
 
-		if (!$post) {
-			return false;
-		}
-		if ($this->session->id() === $post['foodsaver_id']) {
-			return true;
-		}
-		if ($this->mayEditStore($storeId)) {
-			return $post['zeit'] <= Carbon::today()->subMonth();
-		}
+        if (!$post) {
+            return false;
+        }
+        if ($this->session->id() === $post['foodsaver_id']) {
+            return true;
+        }
+        if ($this->mayEditStore($storeId)) {
+            return $post['zeit'] <= Carbon::today()->subMonth();
+        }
 
-		return false;
-	}
+        return false;
+    }
 
-	public function mayCreateStore(): bool
-	{
-		return $this->session->mayRole(Role::STORE_MANAGER);
-	}
+    public function mayCreateStore(): bool
+    {
+        return $this->session->mayRole(Role::STORE_MANAGER);
+    }
 
-	public function mayEditStore(int $storeId): bool
-	{
-		$fsId = $this->session->id();
-		if (!$fsId) {
-			return false;
-		}
-		if (!$this->session->mayRole(Role::STORE_MANAGER)) {
-			return false;
-		}
-		if ($this->session->mayRole(Role::ORGA)) {
-			return true;
-		}
+    public function mayEditStore(int $storeId): bool
+    {
+        $fsId = $this->session->id();
+        if (!$fsId) {
+            return false;
+        }
+        if (!$this->session->mayRole(Role::STORE_MANAGER)) {
+            return false;
+        }
+        if ($this->session->mayRole(Role::ORGA)) {
+            return true;
+        }
 
-		if (!$this->storeGateway->storeExists($storeId)) {
-			return false;
-		}
+        if (!$this->storeGateway->storeExists($storeId)) {
+            return false;
+        }
 
-		if ($this->session->mayIsStoreResponsible($storeId)) {
-			return true;
-		}
+        if ($this->session->mayIsStoreResponsible($storeId)) {
+            return true;
+        }
 
-		// Check store mannager role by group of region
-		$storeRegion = $this->storeGateway->getStoreRegionId($storeId);
-		$storeGroup = $this->groupFunctionGateway->getRegionFunctionGroupId($storeRegion, WorkgroupFunction::STORES_COORDINATION);
-		if (empty($storeGroup)) {
-			if ($this->session->isAdminFor($storeRegion)) {
-				return true;
-			}
-		} elseif ($this->session->isAdminFor($storeGroup)) {
-			return true;
-		}
+        // Check store mannager role by group of region
+        $storeRegion = $this->storeGateway->getStoreRegionId($storeId);
+        $storeGroup = $this->groupFunctionGateway->getRegionFunctionGroupId($storeRegion, WorkgroupFunction::STORES_COORDINATION);
+        if (empty($storeGroup)) {
+            if ($this->session->isAdminFor($storeRegion)) {
+                return true;
+            }
+        } elseif ($this->session->isAdminFor($storeGroup)) {
+            return true;
+        }
 
-		return false;
-	}
+        return false;
+    }
 
-	public function mayEditStoreTeam(int $storeId): bool
-	{
-		return $this->mayEditStore($storeId);
-	}
+    public function mayEditStoreTeam(int $storeId): bool
+    {
+        return $this->mayEditStore($storeId);
+    }
 
-	public function mayRemovePickupUser(int $storeId, int $fsId): bool
-	{
-		if ($fsId === $this->session->id()) {
-			return true;
-		}
+    public function mayRemovePickupUser(int $storeId, int $fsId): bool
+    {
+        if ($fsId === $this->session->id()) {
+            return true;
+        }
 
-		if ($this->mayEditPickups($storeId)) {
-			return true;
-		}
+        if ($this->mayEditPickups($storeId)) {
+            return true;
+        }
 
-		if ($this->profilePermissions->mayAdministrateUserProfile($fsId)) {
-			return true;
-		}
+        if ($this->profilePermissions->mayAdministrateUserProfile($fsId)) {
+            return true;
+        }
 
-		return false;
-	}
+        return false;
+    }
 
-	public function mayConfirmPickup(int $storeId): bool
-	{
-		return $this->mayEditPickups($storeId);
-	}
+    public function mayConfirmPickup(int $storeId): bool
+    {
+        return $this->mayEditPickups($storeId);
+    }
 
-	public function mayEditPickups(int $storeId): bool
-	{
-		return $this->mayEditStore($storeId);
-	}
+    public function mayEditPickups(int $storeId): bool
+    {
+        return $this->mayEditStore($storeId);
+    }
 
-	public function mayAcceptRequests(int $storeId): bool
-	{
-		return $this->mayEditStore($storeId);
-	}
+    public function mayAcceptRequests(int $storeId): bool
+    {
+        return $this->mayEditStore($storeId);
+    }
 
-	public function mayAddPickup(int $storeId): bool
-	{
-		return $this->mayEditPickups($storeId);
-	}
+    public function mayAddPickup(int $storeId): bool
+    {
+        return $this->mayEditPickups($storeId);
+    }
 
-	public function mayDeletePickup(int $storeId): bool
-	{
-		return $this->mayEditPickups($storeId);
-	}
+    public function mayDeletePickup(int $storeId): bool
+    {
+        return $this->mayEditPickups($storeId);
+    }
 
-	public function maySeePickupHistory(int $storeId): bool
-	{
-		return $this->mayEditStore($storeId);
-	}
+    public function maySeePickupHistory(int $storeId): bool
+    {
+        return $this->mayEditStore($storeId);
+    }
 
-	public function mayDoPickup(int $storeId): bool
-	{
-		if (!$this->session->isVerified()) {
-			return false;
-		}
+    public function mayDoPickup(int $storeId): bool
+    {
+        if (!$this->session->isVerified()) {
+            return false;
+        }
 
-		if (!$this->mayReadStoreWall($storeId)) {
-			return false;
-		}
+        if (!$this->mayReadStoreWall($storeId)) {
+            return false;
+        }
 
-		return true;
-	}
+        return true;
+    }
 
-	public function maySeePickups(int $storeId): bool
-	{
-		return $this->mayDoPickup($storeId);
-	}
+    public function maySeePickups(int $storeId): bool
+    {
+        return $this->mayDoPickup($storeId);
+    }
 
-	public function maySeePhoneNumbers(int $storeId): bool
-	{
-		return $this->mayDoPickup($storeId);
-	}
+    public function maySeePhoneNumbers(int $storeId): bool
+    {
+        return $this->mayDoPickup($storeId);
+    }
 
-	public function mayChatWithRegularTeam(array $store): bool
-	{
-		if ($store['jumper']) {
-			return false;
-		}
+    public function mayChatWithRegularTeam(array $store): bool
+    {
+        if ($store['jumper']) {
+            return false;
+        }
 
-		return $store['team_conversation_id'] !== null;
-	}
+        return $store['team_conversation_id'] !== null;
+    }
 
-	public function mayChatWithJumperWaitingTeam(array $store): bool
-	{
-		return ($store['verantwortlich'] || $store['jumper']) && $store['springer_conversation_id'] !== null;
-	}
+    public function mayChatWithJumperWaitingTeam(array $store): bool
+    {
+        return ($store['verantwortlich'] || $store['jumper']) && $store['springer_conversation_id'] !== null;
+    }
 
-	/**
-	 * This permission roughly assumes that both user and store exist.
-	 * If that is not guaranteed, you will need to check existence in the callers!
-	 */
-	public function mayBecomeStoreManager(int $storeId, int $userId, int $userRole): bool
-	{
-		$currentManagers = $this->storeGateway->getStoreManagers($storeId);
+    /**
+     * This permission roughly assumes that both user and store exist.
+     * If that is not guaranteed, you will need to check existence in the callers!
+     */
+    public function mayBecomeStoreManager(int $storeId, int $userId, int $userRole): bool
+    {
+        $currentManagers = $this->storeGateway->getStoreManagers($storeId);
 
-		// at most three managers are allowed right now
-		if (count($currentManagers) >= 3) {
-			return false;
-		}
+        // at most three managers are allowed right now
+        if (count($currentManagers) >= 3) {
+            return false;
+        }
 
-		$isAlreadyManager = in_array($userId, $currentManagers, true);
-		if ($isAlreadyManager) {
-			return false;
-		}
+        $isAlreadyManager = in_array($userId, $currentManagers, true);
+        if ($isAlreadyManager) {
+            return false;
+        }
 
-		return $userRole >= Role::STORE_MANAGER;
-	}
+        return $userRole >= Role::STORE_MANAGER;
+    }
 
-	public function mayLoseStoreManagement(int $storeId, int $userId): bool
-	{
-		$currentManagers = $this->storeGateway->getStoreManagers($storeId);
-		$isManager = in_array($userId, $currentManagers, true);
-		if (!$isManager) {
-			return false;
-		}
+    public function mayLoseStoreManagement(int $storeId, int $userId): bool
+    {
+        $currentManagers = $this->storeGateway->getStoreManagers($storeId);
+        $isManager = in_array($userId, $currentManagers, true);
+        if (!$isManager) {
+            return false;
+        }
 
-		// at least one other manager needs to remain after leaving
-		if (count($currentManagers) <= 1) {
-			return false;
-		}
+        // at least one other manager needs to remain after leaving
+        if (count($currentManagers) <= 1) {
+            return false;
+        }
 
-		return true;
-	}
+        return true;
+    }
 
-	public function maySeePickupOptions(int $userId): bool
-	{
-		return $this->session->mayRole(Role::FOODSAVER) && $this->session->id() == $userId;
-	}
+    public function maySeePickupOptions(int $userId): bool
+    {
+        return $this->session->mayRole(Role::FOODSAVER) && $this->session->id() == $userId;
+    }
 
-	/**
-	 * Check is the user have the permission to view the list of stores.
-	 */
-	public function mayListStores(int $userId = null): bool
-	{
-		if ($userId == null) {
-			$userId = $this->session->id();
-		}
+    /**
+     * Check is the user have the permission to view the list of stores.
+     */
+    public function mayListStores(int $userId = null): bool
+    {
+        if ($userId == null) {
+            $userId = $this->session->id();
+        }
 
-		if (!$userId) {
-			return false;
-		}
+        if (!$userId) {
+            return false;
+        }
 
-		return $this->session->mayRole(Role::FOODSAVER);
-	}
+        return $this->session->mayRole(Role::FOODSAVER);
+    }
 }

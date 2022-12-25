@@ -9,23 +9,23 @@ use OpenApi\Annotations as OA;
  */
 class CommonLabel
 {
-	/**
-	 * Maximum count of slots per pickup.
-	 *
-	 * The count of slots are limited by the foodsharing platform.
-	 *
-	 * @OA\Property(format="int64", example=1)
-	 */
-	public int $id = 0;
+    /**
+     * Maximum count of slots per pickup.
+     *
+     * The count of slots are limited by the foodsharing platform.
+     *
+     * @OA\Property(format="int64", example=1)
+     */
+    public int $id = 0;
 
-	public string $name = '';
+    public string $name = '';
 
-	public static function createFromArray(array $data): CommonLabel
-	{
-		$obj = new CommonLabel();
-		$obj->id = $data['id'];
-		$obj->name = $data['name'];
+    public static function createFromArray(array $data): CommonLabel
+    {
+        $obj = new CommonLabel();
+        $obj->id = $data['id'];
+        $obj->name = $data['name'];
 
-		return $obj;
-	}
+        return $obj;
+    }
 }

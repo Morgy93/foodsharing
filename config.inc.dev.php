@@ -1,13 +1,13 @@
 <?php
 
 if (php_sapi_name() != 'cli') {
-	/* Whoops catches all error messages in CLI mode as well :( */
-	Foodsharing\Debug\Whoops::register();
+    /* Whoops catches all error messages in CLI mode as well :( */
+    Foodsharing\Debug\Whoops::register();
 }
 
 $protocol = 'http';
 if (isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] == 'on') {
-	$protocol = 'https';
+    $protocol = 'https';
 }
 
 $host = 'localhost:18080';
@@ -23,13 +23,13 @@ define('WEBCAL_URL', 'webcal://' . $host);
 
 define('INFLUX_DSN', 'udp+influxdb://influxdb:8089/foodsharing');
 
-define('DEFAULT_EMAIL', 'noreply@foodsharing.de');
-define('SUPPORT_EMAIL', 'it@foodsharing.network');
-define('DEFAULT_EMAIL_NAME', 'foodsharing-Freiwillige');
 define('VERSION', '0.8.3');
+
+define('DEFAULT_EMAIL', 'no-reply@foodsharing.network');
+define('SUPPORT_EMAIL', 'it@foodsharing.network');
+define('DEFAULT_EMAIL_NAME', 'Foodsharing');
 define('EMAIL_PUBLIC', 'info@foodsharing.de');
-define('EMAIL_PUBLIC_NAME', 'foodsharing-Freiwillige');
-define('NOREPLY_EMAIL_HOST', 'foodsharing.de');
+define('EMAIL_PUBLIC_NAME', 'Foodsharing');
 define('PLATFORM_MAILBOX_HOST', 'foodsharing.network');
 
 define('MAILBOX_OWN_DOMAINS', ['foodsharing.network', 'lebensmittelretten.de', 'foodsharing.de']);
@@ -45,7 +45,7 @@ define('REDIS_PORT', 6379);
 define('DELAY_MICRO_SECONDS_BETWEEN_MAILS', 1330000);
 
 define('IMAP', [
-	['host' => 'imap', 'user' => 'user', 'password' => 'pass']
+    ['host' => 'imap', 'user' => 'user', 'password' => 'pass']
 ]);
 
 define('BOUNCE_IMAP_HOST', null);
@@ -55,7 +55,7 @@ define('BOUNCE_IMAP_PORT', null);
 define('BOUNCE_IMAP_SERVICE_OPTION', null);
 
 if (!defined('ROOT_DIR')) {
-	define('ROOT_DIR', './');
+    define('ROOT_DIR', './');
 }
 
 define('WEBPUSH_PUBLIC_KEY', 'BGBBW8RtRe4LpGT+6Q7BJGGSbgcULM/w9BrxBLva2AVf85Pj7t4xrViT3lsxn8Dp0fpJ1SPoDbwP1n6gt3/R7ps='); // test public key

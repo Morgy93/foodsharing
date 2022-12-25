@@ -14,55 +14,55 @@ use Symfony\Component\HttpKernel\Exception\UnauthorizedHttpException;
 
 class LocaleRestController extends AbstractFOSRestController
 {
-	private SettingsGateway $settingsGateway;
-	private Session $session;
+    private SettingsGateway $settingsGateway;
+    private Session $session;
 
-	public function __construct(
-		SettingsGateway $settingsGateway,
-		Session $session
-	) {
-		$this->settingsGateway = $settingsGateway;
-		$this->session = $session;
-	}
+    public function __construct(
+        SettingsGateway $settingsGateway,
+        Session $session
+    ) {
+        $this->settingsGateway = $settingsGateway;
+        $this->session = $session;
+    }
 
-	/**
-	 * Returns the locale setting for the current session.
-	 *
-	 * @OA\Tag(name="locale")
-	 * @Rest\Get("locale")
-	 */
-	public function getLocaleAction(): Response
-	{
-		if (!$this->session->mayRole()) {
-			throw new UnauthorizedHttpException('');
-		}
+    /**
+     * Returns the locale setting for the current session.
+     *
+     * @OA\Tag(name="locale")
+     * @Rest\Get("locale")
+     */
+    public function getLocaleAction(): Response
+    {
+        if (!$this->session->mayRole()) {
+            throw new UnauthorizedHttpException('');
+        }
 
-		$locale = $this->session->getLocale();
+        $locale = $this->session->getLocale();
 
-		return $this->handleView($this->view(['locale' => $locale], 200));
-	}
+        return $this->handleView($this->view(['locale' => $locale], 200));
+    }
 
-	/**
-	 * Sets the locale for the current session.
-	 *
-	 * @OA\Tag(name="locale")
-	 * @Rest\Post("locale")
-	 * @Rest\RequestParam(name="locale")
-	 */
-	public function setLocaleAction(ParamFetcher $paramFetcher): Response
-	{
-		if (!$this->session->mayRole()) {
-			throw new UnauthorizedHttpException('');
-		}
+    /**
+     * Sets the locale for the current session.
+     *
+     * @OA\Tag(name="locale")
+     * @Rest\Post("locale")
+     * @Rest\RequestParam(name="locale")
+     */
+    public function setLocaleAction(ParamFetcher $paramFetcher): Response
+    {
+        if (!$this->session->mayRole()) {
+            throw new UnauthorizedHttpException('');
+        }
 
-		$locale = $paramFetcher->get('locale');
-		if (empty($locale)) {
-			$locale = Session::DEFAULT_LOCALE;
-		}
+        $locale = $paramFetcher->get('locale');
+        if (empty($locale)) {
+            $locale = Session::DEFAULT_LOCALE;
+        }
 
-		$this->session->set('locale', $locale);
-		$this->settingsGateway->setUserOption($this->session->id(), UserOptionType::LOCALE, $locale);
+        $this->session->set('locale', $locale);
+        $this->settingsGateway->setUserOption($this->session->id(), UserOptionType::LOCALE, $locale);
 
-		return $this->getLocaleAction();
-	}
+        return $this->getLocaleAction();
+    }
 }

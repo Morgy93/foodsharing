@@ -39,7 +39,7 @@
       >
         <option
           :value="null"
-          v-html="$i18n('globals.select')"
+          v-text="$i18n('globals.select')"
         />
         <option
           v-for="(entry, key) in region.list"

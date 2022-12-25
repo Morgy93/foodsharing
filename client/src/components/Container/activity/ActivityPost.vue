@@ -86,19 +86,19 @@
         >
           <span
             v-if="isTruncatable"
-            v-html="!state ? $i18n('globals.show_more') : $i18n('globals.show_less')"
+            v-text="!state ? $i18n('globals.show_more') : $i18n('globals.show_less')"
           />
           <span
             v-if="isTruncatable && canQuickreply"
-            v-html="!state ? '&' : ''"
+            v-text="!state ? '&' : ''"
           />
           <span
             v-if="canQuickreply && isTruncatable"
-            v-html="!state ? $i18n('activitypost.response') : ''"
+            v-text="!state ? $i18n('activitypost.response') : ''"
           />
           <span
             v-if="canQuickreply && !isTruncatable"
-            v-html="!state ? $i18n('activitypost.Response') : $i18n('globals.show_less')"
+            v-text="!state ? $i18n('activitypost.Response') : $i18n('globals.show_less')"
           />
           <i
             :class="{ 'fa-rotate-180': state }"
@@ -141,7 +141,7 @@
             <i class="fas fa-paper-plane" />
             <span
               v-if="viewIsMobile"
-              v-html="$i18n('activitypost.Response')"
+              v-text="$i18n('activitypost.Response')"
             />
           </button>
         </div>

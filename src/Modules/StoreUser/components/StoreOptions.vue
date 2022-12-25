@@ -9,7 +9,7 @@
       type="button"
       class="list-group-item list-group-item-action"
       @click="openChat(teamConversionId)"
-      v-html="$i18n('store.chat.team')"
+      v-text="$i18n('store.chat.team')"
     />
     <button
       v-if="springerConversationId != null && userIsInStore || isJumper"
@@ -23,7 +23,7 @@
       type="button"
       class="list-group-item list-group-item-action"
       @click="goToStoreEdit"
-      v-html="$i18n('storeedit.bread')"
+      v-text="$i18n('storeedit.bread')"
     />
     <button
       v-if="mayEditStore"
@@ -31,7 +31,7 @@
       class="list-group-item list-group-item-action"
       href="#"
       @click="loadEditRecurringPickupModal"
-      v-html="$i18n('pickup.edit.bread')"
+      v-text="$i18n('pickup.edit.bread')"
     />
     <button
       v-if="mayLeaveStoreTeam && userIsInStore || isJumper"
@@ -39,7 +39,7 @@
       class="list-group-item list-group-item-action"
       href="#"
       @click="removeFromTeam(fsId, $i18n('storeedit.team.leave_myself'))"
-      v-html="$i18n('storeedit.team.leave')"
+      v-text="$i18n('storeedit.team.leave')"
     />
   </div>
 </template>

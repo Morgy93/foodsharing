@@ -29,6 +29,10 @@ export async function listPolls (groupId) {
   return get(`/groups/${groupId}/polls`)
 }
 
+export async function listCurrentPolls () {
+  return get('/user/current/polls')
+}
+
 export function createPoll (regionId, name, description, startDate, endDate, scope, type, options, shuffleOptions, notifyVoters) {
   return post('/polls', {
     regionId: regionId,

@@ -19,49 +19,49 @@ use Symfony\Component\HttpKernel\Exception\UnauthorizedHttpException;
  */
 final class NewsletterRestController extends AbstractFOSRestController
 {
-	private NewsletterEmailPermissions $newsletterEmailPermissions;
-	private Session $session;
-	private EmailHelper $emailHelper;
+    private NewsletterEmailPermissions $newsletterEmailPermissions;
+    private Session $session;
+    private EmailHelper $emailHelper;
 
-	private const NOT_ALLOWED = 'not allowed';
-	private const INVALID_ADDRESS = 'invalid address';
+    private const NOT_ALLOWED = 'not allowed';
+    private const INVALID_ADDRESS = 'invalid address';
 
-	public function __construct(
-		NewsletterEmailPermissions $newsletterEmailPermissions,
-		Session $session,
-		EmailHelper $emailHelper
-	) {
-		$this->newsletterEmailPermissions = $newsletterEmailPermissions;
-		$this->session = $session;
-		$this->emailHelper = $emailHelper;
-	}
+    public function __construct(
+        NewsletterEmailPermissions $newsletterEmailPermissions,
+        Session $session,
+        EmailHelper $emailHelper
+    ) {
+        $this->newsletterEmailPermissions = $newsletterEmailPermissions;
+        $this->session = $session;
+        $this->emailHelper = $emailHelper;
+    }
 
-	/**
-	 * Sends a test newsletter email to the given address. Returns 200 on success, 401 if the current user may not
-	 * send newsletters, or 400 if the email address is invalid.
-	 *
-	 * @OA\Tag(name="newsletter")
-	 * @Rest\Post("newsletter/test")
-	 * @Rest\RequestParam(name="address")
-	 * @Rest\RequestParam(name="subject")
-	 * @Rest\RequestParam(name="message")
-	 */
-	public function sendTestEmailAction(ParamFetcher $paramFetcher): Response
-	{
-		if (!$this->session->id()) {
-			throw new UnauthorizedHttpException('', self::NOT_ALLOWED);
-		}
-		if (!$this->newsletterEmailPermissions->mayAdministrateNewsletterEmail()) {
-			throw new AccessDeniedHttpException(self::NOT_ALLOWED);
-		}
+    /**
+     * Sends a test newsletter email to the given address. Returns 200 on success, 401 if the current user may not
+     * send newsletters, or 400 if the email address is invalid.
+     *
+     * @OA\Tag(name="newsletter")
+     * @Rest\Post("newsletter/test")
+     * @Rest\RequestParam(name="address")
+     * @Rest\RequestParam(name="subject")
+     * @Rest\RequestParam(name="message")
+     */
+    public function sendTestEmailAction(ParamFetcher $paramFetcher): Response
+    {
+        if (!$this->session->id()) {
+            throw new UnauthorizedHttpException('', self::NOT_ALLOWED);
+        }
+        if (!$this->newsletterEmailPermissions->mayAdministrateNewsletterEmail()) {
+            throw new AccessDeniedHttpException(self::NOT_ALLOWED);
+        }
 
-		$address = $paramFetcher->get('address');
-		if (!$this->emailHelper->validEmail($address)) {
-			throw new BadRequestHttpException(self::INVALID_ADDRESS);
-		}
+        $address = $paramFetcher->get('address');
+        if (!$this->emailHelper->validEmail($address)) {
+            throw new BadRequestHttpException(self::INVALID_ADDRESS);
+        }
 
-		$this->emailHelper->libmail(false, $address, $paramFetcher->get('subject'), $paramFetcher->get('message'));
+        $this->emailHelper->libmail(false, $address, $paramFetcher->get('subject'), $paramFetcher->get('message'));
 
-		return $this->handleView($this->view([], 200));
-	}
+        return $this->handleView($this->view([], 200));
+    }
 }

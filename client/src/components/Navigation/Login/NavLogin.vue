@@ -13,13 +13,13 @@
         :href="$url('passwordReset')"
         role="menuitem"
         class="testing-login-click-password-reset dropdown-item dropdown-action"
-        v-html="$i18n('login.forgotten_password_label')"
+        v-text="$i18n('login.forgotten_password_label')"
       />
       <a
         :href="$url('joininfo')"
         role="menuitem"
         class="dropdown-item dropdown-action"
-        v-html="$i18n('register.topbar')"
+        v-text="$i18n('register.topbar')"
       />
     </template>
   </Dropdown>

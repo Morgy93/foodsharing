@@ -28,35 +28,35 @@ set('default_timeout', 600);
 
 // Hosts
 host('beta')
-	->setHostname('foodsharing.network');
+    ->setHostname('foodsharing.network');
 
 host('production')
-	->setHostname('foodsharing.network');
+    ->setHostname('foodsharing.network');
 
 // Tasks
 desc('Create the revision information');
 task('deploy:create_revision', function () {
-	$revision = input()->getOption('revision');
-	cd('{{release_path}}');
-	run("./scripts/deploy-generate_revision $revision");
+    $revision = input()->getOption('revision');
+    cd('{{release_path}}');
+    run("./scripts/deploy-generate_revision $revision");
 });
 
 task('deploy:update_code', function () {
-	upload(__DIR__ . '/', '{{release_path}}', [
-		'--exclude=.git',
-		'--exclude=client',
-		'--exclude=migrations',
-		'--exclude=deployer',
-		'--compress-level=9'
-	]);
+    upload(__DIR__ . '/', '{{release_path}}', [
+        '--exclude=.git',
+        '--exclude=client',
+        '--exclude=migrations',
+        '--exclude=deployer',
+        '--compress-level=9'
+    ]);
 });
 
 task('deploy:cache:warmup', function () {
-	run('sudo -u {{http_user}} -g {{http_group}} FS_ENV=prod php-{{alias}} {{release_path}}/bin/console cache:warmup -e prod');
+    run('sudo -u {{http_user}} -g {{http_group}} FS_ENV=prod php-{{alias}} {{release_path}}/bin/console cache:warmup -e prod');
 })->desc('Warmup symfony cache');
 
 task('deploy:permissions', function () {
-	run('
+    run('
 		sudo chgrp -R {{http_group}} {{release_path}};
 		chmod 750 {{release_path}};
 	');
@@ -64,22 +64,22 @@ task('deploy:permissions', function () {
 
 desc('Deploy your project');
 task('deploy', [
-	'deploy:info',
-	'deploy:setup',
-	'deploy:lock',
-	'deploy:release',
-	'deploy:update_code',
-	'deploy:writable',
-	'deploy:shared',
-	'deploy:clear_paths',
-	'deploy:permissions',
-	'deploy:create_revision',
-	'deploy:cache:warmup',
-	'deploy:symlink',
-	'cachetool:clear:opcache',
-	'deploy:unlock',
-	'deploy:cleanup',
-	'deploy:success'
+    'deploy:info',
+    'deploy:setup',
+    'deploy:lock',
+    'deploy:release',
+    'deploy:update_code',
+    'deploy:writable',
+    'deploy:shared',
+    'deploy:clear_paths',
+    'deploy:permissions',
+    'deploy:create_revision',
+    'deploy:cache:warmup',
+    'deploy:symlink',
+    'cachetool:clear:opcache',
+    'deploy:unlock',
+    'deploy:cleanup',
+    'deploy:success'
 ]);
 
 // [Optional] If deploy fails automatically unlock.

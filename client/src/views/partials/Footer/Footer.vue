@@ -136,7 +136,7 @@
           <a
             v-else
             :href="$url('release_notes')"
-            v-html="$i18n('releases.2022-05')"
+            v-html="$i18n('releases.2022-12')"
           />
           <a
             :href="$url('devdocs')"

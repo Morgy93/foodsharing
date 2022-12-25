@@ -18,12 +18,12 @@
     <div class="introfield__content">
       <h3
         class="introfield__title testing-intro-field"
-        v-html="viewIsMD ? $i18n('dashboard.greeting', {name: user.firstname}) : $i18n('dashboard.greeting_short', {name: user.firstname})"
+        v-text="viewIsMD ? $i18n('dashboard.greeting', {name: user.firstname}) : $i18n('dashboard.greeting_short', {name: user.firstname})"
       />
       <p
         v-if="!isFoodsaver && !getHomeRegionName"
         class="introfield__description"
-        v-html="$i18n('dashboard.foodsharer')"
+        v-text="$i18n('dashboard.foodsharer')"
       />
       <p
         v-if="!getHomeRegionName && stats.count > 0 && stats.weight > 0"
@@ -38,7 +38,7 @@
       <p
         v-else-if="isFoodsaver && getHomeRegionName"
         class="introfield__description"
-        v-html="$i18n('dashboard.homeRegion', {region: getHomeRegionName})"
+        v-text="$i18n('dashboard.homeRegion', {region: getHomeRegionName})"
       />
     </div>
   </div>

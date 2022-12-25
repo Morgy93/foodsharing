@@ -6,4678 +6,4678 @@ use Phinx\Util\Literal;
 /* More migration history can be found in e2bfd22332cd32fa58a975f86298ce3174d98c7f where pure SQL migrations have been transformed to phinx */
 class InitialMigration extends Phinx\Migration\AbstractMigration
 {
-	public function change()
-	{
-		$this->execute('set sql_mode="NO_AUTO_VALUE_ON_ZERO";');
-		$this->execute("ALTER DATABASE CHARACTER SET 'utf8mb4';");
-		$this->execute("ALTER DATABASE COLLATE='utf8mb4_unicode_ci';");
-		$this->table('fs_basket', [
-			'id' => false,
-			'primary_key' => ['id'],
-			'engine' => 'InnoDB',
-			'encoding' => 'utf8mb4',
-			'collation' => 'utf8mb4_unicode_ci',
-			'comment' => '',
-		])
-			->addColumn('id', 'integer', [
-				'null' => false,
-				'limit' => '10',
-				'signed' => false,
-				'identity' => 'enable',
-			])
-			->addColumn('foodsaver_id', 'integer', [
-				'null' => false,
-				'limit' => '10',
-				'signed' => false,
-				'after' => 'id',
-			])
-			->addColumn('status', 'integer', [
-				'null' => true,
-				'default' => null,
-				'limit' => MysqlAdapter::INT_TINY,
-				'signed' => false,
-				'after' => 'foodsaver_id',
-			])
-			->addColumn('time', 'datetime', [
-				'null' => true,
-				'default' => null,
-				'after' => 'status',
-			])
-			->addColumn('update', 'datetime', [
-				'null' => true,
-				'default' => null,
-				'after' => 'time',
-			])
-			->addColumn('until', 'date', [
-				'null' => false,
-				'after' => 'update',
-			])
-			->addColumn('fetchtime', 'datetime', [
-				'null' => true,
-				'default' => null,
-				'after' => 'until',
-			])
-			->addColumn('description', 'text', [
-				'null' => true,
-				'default' => null,
-				'limit' => MysqlAdapter::TEXT_MEDIUM,
-				'collation' => 'utf8mb4_unicode_ci',
-				'encoding' => 'utf8mb4',
-				'after' => 'fetchtime',
-			])
-			->addColumn('picture', 'string', [
-				'null' => true,
-				'default' => null,
-				'limit' => 150,
-				'collation' => 'utf8mb4_unicode_ci',
-				'encoding' => 'utf8mb4',
-				'after' => 'description',
-			])
-			->addColumn('tel', 'string', [
-				'null' => false,
-				'default' => '',
-				'limit' => 50,
-				'collation' => 'utf8mb4_unicode_ci',
-				'encoding' => 'utf8mb4',
-				'after' => 'picture',
-			])
-			->addColumn('handy', 'string', [
-				'null' => false,
-				'default' => '',
-				'limit' => 50,
-				'collation' => 'utf8mb4_unicode_ci',
-				'encoding' => 'utf8mb4',
-				'after' => 'tel',
-			])
-			->addColumn('contact_type', 'string', [
-				'null' => false,
-				'default' => '1',
-				'limit' => 20,
-				'collation' => 'utf8mb4_unicode_ci',
-				'encoding' => 'utf8mb4',
-				'after' => 'handy',
-			])
-			->addColumn('location_type', 'integer', [
-				'null' => true,
-				'default' => null,
-				'limit' => MysqlAdapter::INT_TINY,
-				'signed' => false,
-				'after' => 'contact_type',
-			])
-			->addColumn('weight', 'float', [
-				'null' => true,
-				'default' => null,
-				'after' => 'location_type',
-			])
-			->addColumn('lat', Literal::from('float(10,6)'), [
-				'null' => false,
-				'default' => '0.000000',
-				'after' => 'weight',
-			])
-			->addColumn('lon', Literal::from('float(10,6)'), [
-				'null' => false,
-				'default' => '0.000000',
-				'after' => 'lat',
-			])
-			->addColumn('bezirk_id', 'integer', [
-				'null' => false,
-				'limit' => '10',
-				'signed' => false,
-				'after' => 'lon',
-			])
-			->addColumn('fs_id', 'integer', [
-				'null' => false,
-				'default' => '0',
-				'limit' => '10',
-				'after' => 'bezirk_id',
-			])
-			->addColumn('appost', 'integer', [
-				'null' => false,
-				'default' => '0',
-				'limit' => MysqlAdapter::INT_TINY,
-				'after' => 'fs_id',
-			])
-			->addIndex(['foodsaver_id'], [
-				'name' => 'basket_FKIndex1',
-				'unique' => false,
-			])
-			->addIndex(['bezirk_id'], [
-				'name' => 'bezirk_id',
-				'unique' => false,
-			])
-			->addIndex(['lat', 'lon'], [
-				'name' => 'lat',
-				'unique' => false,
-			])
-			->addIndex(['fs_id'], [
-				'name' => 'fs_id',
-				'unique' => false,
-			])
-			->create();
-		$this->table('fs_basket_anfrage', [
-			'id' => false,
-			'primary_key' => ['foodsaver_id', 'basket_id'],
-			'engine' => 'InnoDB',
-			'encoding' => 'utf8mb4',
-			'collation' => 'utf8mb4_unicode_ci',
-			'comment' => '',
-		])
-			->addColumn('foodsaver_id', 'integer', [
-				'null' => false,
-				'limit' => '10',
-				'signed' => false,
-			])
-			->addColumn('basket_id', 'integer', [
-				'null' => false,
-				'limit' => '10',
-				'signed' => false,
-				'after' => 'foodsaver_id',
-			])
-			->addColumn('status', 'integer', [
-				'null' => true,
-				'default' => null,
-				'limit' => MysqlAdapter::INT_TINY,
-				'signed' => false,
-				'after' => 'basket_id',
-			])
-			->addColumn('time', 'datetime', [
-				'null' => false,
-				'after' => 'status',
-			])
-			->addColumn('appost', 'integer', [
-				'null' => false,
-				'default' => '0',
-				'limit' => MysqlAdapter::INT_TINY,
-				'after' => 'time',
-			])
-			->addIndex(['foodsaver_id'], [
-				'name' => 'foodsaver_has_basket_FKIndex1',
-				'unique' => false,
-			])
-			->addIndex(['basket_id'], [
-				'name' => 'foodsaver_has_basket_FKIndex2',
-				'unique' => false,
-			])
-			->create();
-		$this->table('fs_basket_has_art', [
-			'id' => false,
-			'primary_key' => ['basket_id', 'art_id'],
-			'engine' => 'InnoDB',
-			'encoding' => 'utf8mb4',
-			'collation' => 'utf8mb4_unicode_ci',
-			'comment' => '',
-		])
-			->addColumn('basket_id', 'integer', [
-				'null' => false,
-				'limit' => '10',
-				'signed' => false,
-			])
-			->addColumn('art_id', 'integer', [
-				'null' => false,
-				'limit' => '10',
-				'signed' => false,
-				'after' => 'basket_id',
-			])
-			->create();
-		$this->table('fs_basket_has_types', [
-			'id' => false,
-			'primary_key' => ['basket_id', 'types_id'],
-			'engine' => 'InnoDB',
-			'encoding' => 'utf8mb4',
-			'collation' => 'utf8mb4_unicode_ci',
-			'comment' => '',
-		])
-			->addColumn('basket_id', 'integer', [
-				'null' => false,
-				'limit' => '10',
-				'signed' => false,
-			])
-			->addColumn('types_id', 'integer', [
-				'null' => false,
-				'limit' => '10',
-				'signed' => false,
-				'after' => 'basket_id',
-			])
-			->create();
-		$this->table('fs_answer', [
-			'id' => false,
-			'primary_key' => ['id'],
-			'engine' => 'InnoDB',
-			'encoding' => 'utf8mb4',
-			'collation' => 'utf8mb4_unicode_ci',
-			'comment' => '',
-		])
-			->addColumn('id', 'integer', [
-				'null' => false,
-				'limit' => '10',
-				'signed' => false,
-				'identity' => 'enable',
-			])
-			->addColumn('question_id', 'integer', [
-				'null' => false,
-				'limit' => '10',
-				'signed' => false,
-				'after' => 'id',
-			])
-			->addColumn('text', 'text', [
-				'null' => true,
-				'default' => null,
-				'limit' => MysqlAdapter::TEXT_MEDIUM,
-				'collation' => 'utf8mb4_unicode_ci',
-				'encoding' => 'utf8mb4',
-				'after' => 'question_id',
-			])
-			->addColumn('explanation', 'text', [
-				'null' => false,
-				'limit' => MysqlAdapter::TEXT_MEDIUM,
-				'collation' => 'utf8mb4_unicode_ci',
-				'encoding' => 'utf8mb4',
-				'after' => 'text',
-			])
-			->addColumn('right', 'integer', [
-				'null' => true,
-				'default' => null,
-				'limit' => MysqlAdapter::INT_TINY,
-				'signed' => false,
-				'after' => 'explanation',
-			])
-			->addIndex(['question_id'], [
-				'name' => 'answer_FKIndex1',
-				'unique' => false,
-			])
-			->create();
-		$this->table('fs_fetchweight', [
-			'id' => false,
-			'primary_key' => ['id'],
-			'engine' => 'InnoDB',
-			'encoding' => 'utf8mb4',
-			'collation' => 'utf8mb4_unicode_ci',
-			'comment' => '',
-		])
-			->addColumn('id', 'integer', [
-				'null' => false,
-				'limit' => MysqlAdapter::INT_REGULAR,
-			])
-			->addColumn('weight', 'decimal', [
-				'null' => false,
-				'precision' => 5,
-				'scale' => 1,
-				'after' => 'id',
-			])
-			->create();
-		$this->table('fs_mailchange', [
-			'id' => false,
-			'primary_key' => ['foodsaver_id'],
-			'engine' => 'InnoDB',
-			'encoding' => 'utf8mb4',
-			'collation' => 'utf8mb4_unicode_ci',
-			'comment' => '',
-		])
-			->addColumn('foodsaver_id', 'integer', [
-				'null' => false,
-				'limit' => '10',
-				'signed' => false,
-			])
-			->addColumn('newmail', 'string', [
-				'null' => true,
-				'default' => null,
-				'limit' => 200,
-				'collation' => 'utf8mb4_unicode_ci',
-				'encoding' => 'utf8mb4',
-				'after' => 'foodsaver_id',
-			])
-			->addColumn('time', 'datetime', [
-				'null' => true,
-				'default' => null,
-				'after' => 'newmail',
-			])
-			->addColumn('token', 'string', [
-				'null' => true,
-				'default' => null,
-				'limit' => 300,
-				'collation' => 'utf8mb4_unicode_ci',
-				'encoding' => 'utf8mb4',
-				'after' => 'time',
-			])
-			->create();
-		$this->table('fs_apitoken', [
-			'id' => false,
-			'engine' => 'InnoDB',
-			'encoding' => 'utf8mb4',
-			'collation' => 'utf8mb4_unicode_ci',
-			'comment' => '',
-		])
-			->addColumn('foodsaver_id', 'integer', [
-				'null' => false,
-				'limit' => '10',
-				'signed' => false,
-			])
-			->addColumn('token', 'string', [
-				'null' => false,
-				'limit' => 255,
-				'collation' => 'utf8mb4_unicode_ci',
-				'encoding' => 'utf8mb4',
-				'after' => 'foodsaver_id',
-			])
-			->addIndex(['foodsaver_id'], [
-				'name' => 'foodsaver_id',
-				'unique' => false,
-			])
-			->create();
-		$this->table('fs_email_blacklist', [
-			'id' => false,
-			'engine' => 'InnoDB',
-			'encoding' => 'utf8mb4',
-			'collation' => 'utf8mb4_unicode_ci',
-			'comment' => '',
-		])
-			->addColumn('email', 'string', [
-				'null' => false,
-				'limit' => 255,
-				'collation' => 'utf8mb4_unicode_ci',
-				'encoding' => 'utf8mb4',
-			])
-			->addColumn('since', 'timestamp', [
-				'null' => false,
-				'default' => 'CURRENT_TIMESTAMP',
-				'after' => 'email',
-			])
-			->addColumn('reason', 'text', [
-				'null' => false,
-				'limit' => MysqlAdapter::TEXT_MEDIUM,
-				'collation' => 'utf8mb4_unicode_ci',
-				'encoding' => 'utf8mb4',
-				'after' => 'since',
-			])
-			->create();
-		$this->table('fs_quiz_session', [
-			'id' => false,
-			'primary_key' => ['id'],
-			'engine' => 'InnoDB',
-			'encoding' => 'utf8mb4',
-			'collation' => 'utf8mb4_unicode_ci',
-			'comment' => '',
-		])
-			->addColumn('id', 'integer', [
-				'null' => false,
-				'limit' => '10',
-				'signed' => false,
-				'identity' => 'enable',
-			])
-			->addColumn('foodsaver_id', 'integer', [
-				'null' => false,
-				'limit' => '10',
-				'signed' => false,
-				'after' => 'id',
-			])
-			->addColumn('quiz_id', 'integer', [
-				'null' => false,
-				'limit' => '10',
-				'signed' => false,
-				'after' => 'foodsaver_id',
-			])
-			->addColumn('status', 'integer', [
-				'null' => true,
-				'default' => null,
-				'limit' => MysqlAdapter::INT_TINY,
-				'signed' => false,
-				'after' => 'quiz_id',
-			])
-			->addColumn('quiz_index', 'integer', [
-				'null' => true,
-				'default' => null,
-				'limit' => MysqlAdapter::INT_TINY,
-				'signed' => false,
-				'after' => 'status',
-			])
-			->addColumn('quiz_questions', 'text', [
-				'null' => true,
-				'default' => null,
-				'limit' => MysqlAdapter::TEXT_MEDIUM,
-				'collation' => 'utf8mb4_unicode_ci',
-				'encoding' => 'utf8mb4',
-				'after' => 'quiz_index',
-			])
-			->addColumn('quiz_result', 'text', [
-				'null' => true,
-				'default' => null,
-				'limit' => MysqlAdapter::TEXT_MEDIUM,
-				'collation' => 'utf8mb4_unicode_ci',
-				'encoding' => 'utf8mb4',
-				'after' => 'quiz_questions',
-			])
-			->addColumn('time_start', 'datetime', [
-				'null' => true,
-				'default' => null,
-				'after' => 'quiz_result',
-			])
-			->addColumn('time_end', 'datetime', [
-				'null' => true,
-				'default' => null,
-				'after' => 'time_start',
-			])
-			->addColumn('fp', 'decimal', [
-				'null' => true,
-				'default' => null,
-				'precision' => 5,
-				'scale' => 2,
-				'after' => 'time_end',
-			])
-			->addColumn('maxfp', 'integer', [
-				'null' => true,
-				'default' => null,
-				'limit' => MysqlAdapter::INT_TINY,
-				'signed' => false,
-				'after' => 'fp',
-			])
-			->addColumn('quest_count', 'integer', [
-				'null' => true,
-				'default' => null,
-				'limit' => MysqlAdapter::INT_TINY,
-				'signed' => false,
-				'after' => 'maxfp',
-			])
-			->addColumn('easymode', 'integer', [
-				'null' => false,
-				'default' => '0',
-				'limit' => MysqlAdapter::INT_TINY,
-				'after' => 'quest_count',
-			])
-			->addIndex(['quiz_id'], [
-				'name' => 'quiz_result_FKIndex1',
-				'unique' => false,
-			])
-			->addIndex(['foodsaver_id'], [
-				'name' => 'quiz_result_FKIndex2',
-				'unique' => false,
-			])
-			->create();
-		$this->table('fs_question_has_quiz', [
-			'id' => false,
-			'primary_key' => ['question_id', 'quiz_id'],
-			'engine' => 'InnoDB',
-			'encoding' => 'utf8mb4',
-			'collation' => 'utf8mb4_unicode_ci',
-			'comment' => '',
-		])
-			->addColumn('question_id', 'integer', [
-				'null' => false,
-				'limit' => '10',
-				'signed' => false,
-			])
-			->addColumn('quiz_id', 'integer', [
-				'null' => false,
-				'limit' => '10',
-				'signed' => false,
-				'after' => 'question_id',
-			])
-			->addColumn('fp', 'integer', [
-				'null' => true,
-				'default' => null,
-				'limit' => MysqlAdapter::INT_TINY,
-				'signed' => false,
-				'after' => 'quiz_id',
-			])
-			->addIndex(['question_id'], [
-				'name' => 'question_has_quiz_FKIndex1',
-				'unique' => false,
-			])
-			->addIndex(['quiz_id'], [
-				'name' => 'question_has_quiz_FKIndex2',
-				'unique' => false,
-			])
-			->create();
-		$this->table('fs_fetchdate', [
-			'id' => false,
-			'primary_key' => ['id'],
-			'engine' => 'InnoDB',
-			'encoding' => 'utf8mb4',
-			'collation' => 'utf8mb4_unicode_ci',
-			'comment' => '',
-		])
-			->addColumn('id', 'integer', [
-				'null' => false,
-				'limit' => '10',
-				'signed' => false,
-				'identity' => 'enable',
-			])
-			->addColumn('betrieb_id', 'integer', [
-				'null' => false,
-				'limit' => '10',
-				'signed' => false,
-				'after' => 'id',
-			])
-			->addColumn('time', 'datetime', [
-				'null' => true,
-				'default' => null,
-				'after' => 'betrieb_id',
-			])
-			->addColumn('fetchercount', 'integer', [
-				'null' => true,
-				'default' => null,
-				'limit' => MysqlAdapter::INT_TINY,
-				'signed' => false,
-				'after' => 'time',
-			])
-			->addIndex(['betrieb_id', 'time'], [
-				'name' => 'betrieb_id',
-				'unique' => true,
-			])
-			->addIndex(['betrieb_id'], [
-				'name' => 'fetchdate_FKIndex1',
-				'unique' => false,
-			])
-			->create();
-		$this->table('fs_quiz', [
-			'id' => false,
-			'primary_key' => ['id'],
-			'engine' => 'InnoDB',
-			'encoding' => 'utf8mb4',
-			'collation' => 'utf8mb4_unicode_ci',
-			'comment' => '',
-		])
-			->addColumn('id', 'integer', [
-				'null' => false,
-				'limit' => '10',
-				'signed' => false,
-				'identity' => 'enable',
-			])
-			->addColumn('name', 'string', [
-				'null' => true,
-				'default' => null,
-				'limit' => 200,
-				'collation' => 'utf8mb4_unicode_ci',
-				'encoding' => 'utf8mb4',
-				'after' => 'id',
-			])
-			->addColumn('desc', 'text', [
-				'null' => true,
-				'default' => null,
-				'limit' => MysqlAdapter::TEXT_MEDIUM,
-				'collation' => 'utf8mb4_unicode_ci',
-				'encoding' => 'utf8mb4',
-				'after' => 'name',
-			])
-			->addColumn('maxfp', 'integer', [
-				'null' => false,
-				'limit' => MysqlAdapter::INT_SMALL,
-				'signed' => false,
-				'after' => 'desc',
-			])
-			->addColumn('questcount', 'integer', [
-				'null' => false,
-				'limit' => MysqlAdapter::INT_SMALL,
-				'signed' => false,
-				'after' => 'maxfp',
-			])
-			->create();
-		$this->table('fs_stat_abholmengen', [
-			'id' => false,
-			'primary_key' => ['betrieb_id', 'date'],
-			'engine' => 'InnoDB',
-			'encoding' => 'utf8mb4',
-			'collation' => 'utf8mb4_unicode_ci',
-			'comment' => '',
-		])
-			->addColumn('betrieb_id', 'integer', [
-				'null' => false,
-				'limit' => '10',
-				'signed' => false,
-			])
-			->addColumn('date', 'datetime', [
-				'null' => false,
-				'after' => 'betrieb_id',
-			])
-			->addColumn('abholmenge', 'decimal', [
-				'null' => false,
-				'precision' => 5,
-				'scale' => 1,
-				'after' => 'date',
-			])
-			->addIndex(['betrieb_id', 'date'], [
-				'name' => 'betrieb_id',
-				'unique' => true,
-			])
-			->create();
-		$this->table('fs_question', [
-			'id' => false,
-			'primary_key' => ['id'],
-			'engine' => 'InnoDB',
-			'encoding' => 'utf8mb4',
-			'collation' => 'utf8mb4_unicode_ci',
-			'comment' => '',
-		])
-			->addColumn('id', 'integer', [
-				'null' => false,
-				'limit' => '10',
-				'signed' => false,
-				'identity' => 'enable',
-			])
-			->addColumn('text', 'text', [
-				'null' => true,
-				'default' => null,
-				'limit' => MysqlAdapter::TEXT_MEDIUM,
-				'collation' => 'utf8mb4_unicode_ci',
-				'encoding' => 'utf8mb4',
-				'after' => 'id',
-			])
-			->addColumn('duration', 'integer', [
-				'null' => false,
-				'limit' => '3',
-				'signed' => false,
-				'after' => 'text',
-			])
-			->addColumn('wikilink', 'string', [
-				'null' => false,
-				'limit' => 250,
-				'collation' => 'utf8mb4_unicode_ci',
-				'encoding' => 'utf8mb4',
-				'after' => 'duration',
-			])
-			->create();
-		$this->table('fs_bezirk_closure', [
-			'id' => false,
-			'engine' => 'InnoDB',
-			'encoding' => 'utf8mb4',
-			'collation' => 'utf8mb4_unicode_ci',
-			'comment' => '',
-		])
-			->addColumn('bezirk_id', 'integer', [
-				'null' => false,
-				'limit' => '10',
-				'signed' => false,
-			])
-			->addColumn('ancestor_id', 'integer', [
-				'null' => false,
-				'limit' => '10',
-				'signed' => false,
-				'after' => 'bezirk_id',
-			])
-			->addColumn('depth', 'integer', [
-				'null' => false,
-				'limit' => '10',
-				'signed' => false,
-				'after' => 'ancestor_id',
-			])
-			->addIndex(['ancestor_id'], [
-				'name' => 'ancestor_id',
-				'unique' => false,
-			])
-			->addIndex(['bezirk_id'], [
-				'name' => 'bezirk_id',
-				'unique' => false,
-			])
-			->create();
-		$this->table('fs_email_bounces', [
-			'id' => false,
-			'engine' => 'InnoDB',
-			'encoding' => 'utf8mb4',
-			'collation' => 'utf8mb4_general_ci',
-			'comment' => '',
-		])
-			->addColumn('email', 'string', [
-				'null' => false,
-				'limit' => 255,
-				'collation' => 'utf8mb4_general_ci',
-				'encoding' => 'utf8mb4',
-			])
-			->addColumn('bounced_at', 'datetime', [
-				'null' => false,
-				'after' => 'email',
-			])
-			->addColumn('bounce_category', 'string', [
-				'null' => false,
-				'limit' => 255,
-				'collation' => 'utf8mb4_general_ci',
-				'encoding' => 'utf8mb4',
-				'after' => 'bounced_at',
-			])
-			->addIndex(['email'], [
-				'name' => 'email',
-				'unique' => false,
-			])
-			->create();
-		$this->table('fs_contact', [
-			'id' => false,
-			'primary_key' => ['id'],
-			'engine' => 'InnoDB',
-			'encoding' => 'utf8mb4',
-			'collation' => 'utf8mb4_unicode_ci',
-			'comment' => '',
-		])
-			->addColumn('id', 'integer', [
-				'null' => false,
-				'limit' => '10',
-				'signed' => false,
-				'identity' => 'enable',
-			])
-			->addColumn('name', 'string', [
-				'null' => true,
-				'default' => null,
-				'limit' => 180,
-				'collation' => 'utf8mb4_unicode_ci',
-				'encoding' => 'utf8mb4',
-				'after' => 'id',
-			])
-			->addColumn('email', 'string', [
-				'null' => true,
-				'default' => null,
-				'limit' => 180,
-				'collation' => 'utf8mb4_unicode_ci',
-				'encoding' => 'utf8mb4',
-				'after' => 'name',
-			])
-			->addIndex(['email'], [
-				'name' => 'email',
-				'unique' => true,
-			])
-			->create();
-		$this->table('fs_report', [
-			'id' => false,
-			'primary_key' => ['id'],
-			'engine' => 'InnoDB',
-			'encoding' => 'utf8mb4',
-			'collation' => 'utf8mb4_unicode_ci',
-			'comment' => '',
-		])
-			->addColumn('id', 'integer', [
-				'null' => false,
-				'limit' => '10',
-				'signed' => false,
-				'identity' => 'enable',
-			])
-			->addColumn('foodsaver_id', 'integer', [
-				'null' => false,
-				'limit' => '10',
-				'signed' => false,
-				'after' => 'id',
-			])
-			->addColumn('reporter_id', 'integer', [
-				'null' => true,
-				'default' => null,
-				'limit' => '10',
-				'signed' => false,
-				'after' => 'foodsaver_id',
-			])
-			->addColumn('reporttype', 'integer', [
-				'null' => true,
-				'default' => null,
-				'limit' => MysqlAdapter::INT_TINY,
-				'signed' => false,
-				'after' => 'reporter_id',
-			])
-			->addColumn('betrieb_id', 'integer', [
-				'null' => true,
-				'default' => null,
-				'limit' => '10',
-				'signed' => false,
-				'after' => 'reporttype',
-			])
-			->addColumn('time', 'datetime', [
-				'null' => true,
-				'default' => null,
-				'after' => 'betrieb_id',
-			])
-			->addColumn('committed', 'integer', [
-				'null' => true,
-				'default' => '0',
-				'limit' => MysqlAdapter::INT_TINY,
-				'signed' => false,
-				'after' => 'time',
-			])
-			->addColumn('msg', 'text', [
-				'null' => true,
-				'default' => null,
-				'limit' => MysqlAdapter::TEXT_MEDIUM,
-				'collation' => 'utf8mb4_unicode_ci',
-				'encoding' => 'utf8mb4',
-				'after' => 'committed',
-			])
-			->addColumn('tvalue', 'string', [
-				'null' => true,
-				'default' => null,
-				'limit' => 300,
-				'collation' => 'utf8mb4_unicode_ci',
-				'encoding' => 'utf8mb4',
-				'after' => 'msg',
-			])
-			->addIndex(['foodsaver_id'], [
-				'name' => 'report_FKIndex1',
-				'unique' => false,
-			])
-			->addIndex(['reporter_id'], [
-				'name' => 'report_reporter',
-				'unique' => false,
-			])
-			->addIndex(['betrieb_id'], [
-				'name' => 'report_betrieb',
-				'unique' => false,
-			])
-			->create();
-		$this->table('fs_bell', [
-			'id' => false,
-			'primary_key' => ['id'],
-			'engine' => 'InnoDB',
-			'encoding' => 'utf8mb4',
-			'collation' => 'utf8mb4_unicode_ci',
-			'comment' => '',
-		])
-			->addColumn('id', 'integer', [
-				'null' => false,
-				'limit' => '10',
-				'signed' => false,
-				'identity' => 'enable',
-			])
-			->addColumn('name', 'string', [
-				'null' => true,
-				'default' => null,
-				'limit' => 50,
-				'collation' => 'utf8mb4_unicode_ci',
-				'encoding' => 'utf8mb4',
-				'after' => 'id',
-			])
-			->addColumn('body', 'string', [
-				'null' => true,
-				'default' => null,
-				'limit' => 50,
-				'collation' => 'utf8mb4_unicode_ci',
-				'encoding' => 'utf8mb4',
-				'after' => 'name',
-			])
-			->addColumn('vars', 'text', [
-				'null' => true,
-				'default' => null,
-				'limit' => MysqlAdapter::TEXT_MEDIUM,
-				'collation' => 'utf8mb4_unicode_ci',
-				'encoding' => 'utf8mb4',
-				'after' => 'body',
-			])
-			->addColumn('attr', 'string', [
-				'null' => true,
-				'default' => null,
-				'limit' => 500,
-				'collation' => 'utf8mb4_unicode_ci',
-				'encoding' => 'utf8mb4',
-				'after' => 'vars',
-			])
-			->addColumn('icon', 'string', [
-				'null' => true,
-				'default' => null,
-				'limit' => 150,
-				'collation' => 'utf8mb4_unicode_ci',
-				'encoding' => 'utf8mb4',
-				'after' => 'attr',
-			])
-			->addColumn('identifier', 'string', [
-				'null' => true,
-				'default' => null,
-				'limit' => 40,
-				'collation' => 'utf8mb4_unicode_ci',
-				'encoding' => 'utf8mb4',
-				'after' => 'icon',
-			])
-			->addColumn('time', 'datetime', [
-				'null' => false,
-				'after' => 'identifier',
-			])
-			->addColumn('closeable', 'integer', [
-				'null' => false,
-				'default' => '1',
-				'limit' => MysqlAdapter::INT_TINY,
-				'signed' => false,
-				'after' => 'time',
-			])
-			->addColumn('expiration', 'date', [
-				'null' => true,
-				'default' => null,
-				'after' => 'closeable',
-			])
-			->addIndex(['expiration'], [
-				'name' => 'expiration',
-				'unique' => false,
-			])
-			->addIndex(['identifier'], [
-				'name' => 'identifier'
-			])
-			->create();
-		$this->table('fs_faq', [
-			'id' => false,
-			'primary_key' => ['id'],
-			'engine' => 'InnoDB',
-			'encoding' => 'utf8mb4',
-			'collation' => 'utf8mb4_unicode_ci',
-			'comment' => '',
-		])
-			->addColumn('id', 'integer', [
-				'null' => false,
-				'limit' => '10',
-				'signed' => false,
-				'identity' => 'enable',
-			])
-			->addColumn('foodsaver_id', 'integer', [
-				'null' => true,
-				'default' => null,
-				'limit' => '10',
-				'signed' => false,
-				'after' => 'id',
-			])
-			->addColumn('faq_kategorie_id', 'integer', [
-				'null' => false,
-				'limit' => '10',
-				'signed' => false,
-				'after' => 'foodsaver_id',
-			])
-			->addColumn('name', 'string', [
-				'null' => true,
-				'default' => null,
-				'limit' => 500,
-				'collation' => 'utf8mb4_unicode_ci',
-				'encoding' => 'utf8mb4',
-				'after' => 'faq_kategorie_id',
-			])
-			->addColumn('answer', 'text', [
-				'null' => true,
-				'default' => null,
-				'limit' => MysqlAdapter::TEXT_MEDIUM,
-				'collation' => 'utf8mb4_unicode_ci',
-				'encoding' => 'utf8mb4',
-				'after' => 'name',
-			])
-			->addIndex(['foodsaver_id'], [
-				'name' => 'faq_FKIndex1',
-				'unique' => false,
-			])
-			->addIndex(['faq_kategorie_id'], [
-				'name' => 'faq_kategorie_id',
-				'unique' => false,
-			])
-			->create();
-		$this->table('fs_abholzeiten', [
-			'id' => false,
-			'primary_key' => ['betrieb_id', 'dow', 'time'],
-			'engine' => 'InnoDB',
-			'encoding' => 'utf8mb4',
-			'collation' => 'utf8mb4_unicode_ci',
-			'comment' => '',
-		])
-			->addColumn('betrieb_id', 'integer', [
-				'null' => false,
-				'limit' => '10',
-				'signed' => false,
-			])
-			->addColumn('dow', 'integer', [
-				'null' => false,
-				'limit' => MysqlAdapter::INT_TINY,
-				'signed' => false,
-				'after' => 'betrieb_id',
-			])
-			->addColumn('time', 'time', [
-				'null' => false,
-				'default' => '00:00:00',
-				'after' => 'dow',
-			])
-			->addColumn('fetcher', 'integer', [
-				'null' => false,
-				'default' => '4',
-				'limit' => MysqlAdapter::INT_TINY,
-				'signed' => false,
-				'after' => 'time',
-			])
-			->create();
-		$this->table('fs_msg', [
-			'id' => false,
-			'primary_key' => ['id'],
-			'engine' => 'InnoDB',
-			'encoding' => 'utf8mb4',
-			'collation' => 'utf8mb4_unicode_ci',
-			'comment' => '',
-		])
-			->addColumn('id', 'integer', [
-				'null' => false,
-				'limit' => '10',
-				'signed' => false,
-				'identity' => 'enable',
-			])
-			->addColumn('conversation_id', 'integer', [
-				'null' => false,
-				'limit' => '10',
-				'signed' => false,
-				'after' => 'id',
-			])
-			->addColumn('foodsaver_id', 'integer', [
-				'null' => false,
-				'limit' => '10',
-				'signed' => false,
-				'after' => 'conversation_id',
-			])
-			->addColumn('body', 'text', [
-				'null' => true,
-				'default' => null,
-				'limit' => MysqlAdapter::TEXT_MEDIUM,
-				'collation' => 'utf8mb4_unicode_ci',
-				'encoding' => 'utf8mb4',
-				'after' => 'foodsaver_id',
-			])
-			->addColumn('time', 'datetime', [
-				'null' => true,
-				'default' => null,
-				'after' => 'body',
-			])
-			->addColumn('is_htmlentity_encoded', 'boolean', [
-				'null' => false,
-				'default' => '1',
-				'limit' => MysqlAdapter::INT_TINY,
-				'after' => 'time',
-			])
-			->addIndex(['foodsaver_id'], [
-				'name' => 'message_FKIndex1',
-				'unique' => false,
-			])
-			->addIndex(['conversation_id', 'time'], [
-				'name' => 'message_conversationTimeIndex',
-				'unique' => false,
-			])
-			->create();
-		$this->table('fs_content', [
-			'id' => false,
-			'primary_key' => ['id'],
-			'engine' => 'InnoDB',
-			'encoding' => 'utf8mb4',
-			'collation' => 'utf8mb4_unicode_ci',
-			'comment' => '',
-		])
-			->addColumn('id', 'integer', [
-				'null' => false,
-				'limit' => '10',
-				'signed' => false,
-				'identity' => 'enable',
-			])
-			->addColumn('name', 'string', [
-				'null' => true,
-				'default' => null,
-				'limit' => 20,
-				'collation' => 'utf8mb4_unicode_ci',
-				'encoding' => 'utf8mb4',
-				'after' => 'id',
-			])
-			->addColumn('title', 'string', [
-				'null' => true,
-				'default' => null,
-				'limit' => 120,
-				'collation' => 'utf8mb4_unicode_ci',
-				'encoding' => 'utf8mb4',
-				'after' => 'name',
-			])
-			->addColumn('body', 'text', [
-				'null' => true,
-				'default' => null,
-				'limit' => MysqlAdapter::TEXT_MEDIUM,
-				'collation' => 'utf8mb4_unicode_ci',
-				'encoding' => 'utf8mb4',
-				'after' => 'title',
-			])
-			->addColumn('last_mod', 'datetime', [
-				'null' => true,
-				'default' => null,
-				'after' => 'body',
-			])
-			->create();
-		$this->table('fs_application_has_wallpost', [
-			'id' => false,
-			'primary_key' => ['application_id', 'wallpost_id'],
-			'engine' => 'InnoDB',
-			'encoding' => 'utf8mb4',
-			'collation' => 'utf8mb4_unicode_ci',
-			'comment' => '',
-		])
-			->addColumn('application_id', 'integer', [
-				'null' => false,
-				'limit' => '10',
-				'signed' => false,
-			])
-			->addColumn('wallpost_id', 'integer', [
-				'null' => false,
-				'limit' => '10',
-				'signed' => false,
-				'after' => 'application_id',
-			])
-			->addIndex(['application_id'], [
-				'name' => 'application_id',
-				'unique' => false,
-			])
-			->addIndex(['wallpost_id'], [
-				'name' => 'wallpost_id',
-				'unique' => false,
-			])
-			->create();
-		$this->table('fs_basket_has_wallpost', [
-			'id' => false,
-			'primary_key' => ['basket_id', 'wallpost_id'],
-			'engine' => 'InnoDB',
-			'encoding' => 'utf8mb4',
-			'collation' => 'utf8mb4_unicode_ci',
-			'comment' => '',
-		])
-			->addColumn('basket_id', 'integer', [
-				'null' => false,
-				'limit' => '10',
-				'signed' => false,
-			])
-			->addColumn('wallpost_id', 'integer', [
-				'null' => false,
-				'limit' => '10',
-				'signed' => false,
-				'after' => 'basket_id',
-			])
-			->addIndex(['basket_id'], [
-				'name' => 'basket_has_wallpost_FKIndex1',
-				'unique' => false,
-			])
-			->addIndex(['wallpost_id'], [
-				'name' => 'basket_has_wallpost_FKIndex2',
-				'unique' => false,
-			])
-			->addIndex(['basket_id'], [
-				'name' => 'basket_id',
-				'unique' => false,
-			])
-			->addIndex(['wallpost_id'], [
-				'name' => 'wallpost_id',
-				'unique' => false,
-			])
-			->create();
-		$this->table('fs_bezirk_has_theme', [
-			'id' => false,
-			'primary_key' => ['theme_id', 'bezirk_id'],
-			'engine' => 'InnoDB',
-			'encoding' => 'utf8mb4',
-			'collation' => 'utf8mb4_unicode_ci',
-			'comment' => '',
-		])
-			->addColumn('theme_id', 'integer', [
-				'null' => false,
-				'limit' => '10',
-				'signed' => false,
-			])
-			->addColumn('bezirk_id', 'integer', [
-				'null' => false,
-				'limit' => '10',
-				'signed' => false,
-				'after' => 'theme_id',
-			])
-			->addColumn('bot_theme', 'integer', [
-				'null' => false,
-				'default' => '0',
-				'limit' => MysqlAdapter::INT_TINY,
-				'signed' => false,
-				'after' => 'bezirk_id',
-			])
-			->addIndex(['bezirk_id'], [
-				'name' => 'bezirk_id',
-				'unique' => false,
-			])
-			->create();
-		$this->table('fs_betrieb_has_lebensmittel', [
-			'id' => false,
-			'primary_key' => ['betrieb_id', 'lebensmittel_id'],
-			'engine' => 'InnoDB',
-			'encoding' => 'utf8mb4',
-			'collation' => 'utf8mb4_unicode_ci',
-			'comment' => '',
-		])
-			->addColumn('betrieb_id', 'integer', [
-				'null' => false,
-				'limit' => '10',
-				'signed' => false,
-			])
-			->addColumn('lebensmittel_id', 'integer', [
-				'null' => false,
-				'limit' => '10',
-				'signed' => false,
-				'after' => 'betrieb_id',
-			])
-			->create();
-		$this->table('fs_betrieb_notiz', [
-			'id' => false,
-			'primary_key' => ['id'],
-			'engine' => 'InnoDB',
-			'encoding' => 'utf8mb4',
-			'collation' => 'utf8mb4_unicode_ci',
-			'comment' => '',
-		])
-			->addColumn('id', 'integer', [
-				'null' => false,
-				'limit' => '10',
-				'signed' => false,
-				'identity' => 'enable',
-			])
-			->addColumn('foodsaver_id', 'integer', [
-				'null' => false,
-				'limit' => '10',
-				'signed' => false,
-				'after' => 'id',
-			])
-			->addColumn('betrieb_id', 'integer', [
-				'null' => false,
-				'limit' => '10',
-				'signed' => false,
-				'after' => 'foodsaver_id',
-			])
-			->addColumn('milestone', 'integer', [
-				'null' => false,
-				'default' => '0',
-				'limit' => MysqlAdapter::INT_TINY,
-				'signed' => false,
-				'after' => 'betrieb_id',
-			])
-			->addColumn('text', 'text', [
-				'null' => true,
-				'default' => null,
-				'limit' => MysqlAdapter::TEXT_MEDIUM,
-				'collation' => 'utf8mb4_unicode_ci',
-				'encoding' => 'utf8mb4',
-				'after' => 'milestone',
-			])
-			->addColumn('zeit', 'datetime', [
-				'null' => true,
-				'default' => null,
-				'after' => 'text',
-			])
-			->addColumn('last', 'integer', [
-				'null' => false,
-				'default' => '0',
-				'limit' => MysqlAdapter::INT_TINY,
-				'after' => 'zeit',
-			])
-			->addIndex(['betrieb_id'], [
-				'name' => 'betrieb_notitz_FKIndex1',
-				'unique' => false,
-			])
-			->addIndex(['foodsaver_id'], [
-				'name' => 'betrieb_notiz_FKIndex2',
-				'unique' => false,
-			])
-			->create();
-		$this->table('fs_bezirk', [
-			'id' => false,
-			'primary_key' => ['id'],
-			'engine' => 'InnoDB',
-			'encoding' => 'utf8mb4',
-			'collation' => 'utf8mb4_unicode_ci',
-			'comment' => '',
-		])
-			->addColumn('id', 'integer', [
-				'null' => false,
-				'limit' => '10',
-				'signed' => false,
-				'identity' => 'enable',
-			])
-			->addColumn('parent_id', 'integer', [
-				'null' => true,
-				'default' => '0',
-				'limit' => MysqlAdapter::INT_REGULAR,
-				'signed' => false,
-				'after' => 'id',
-			])
-			->addColumn('has_children', 'integer', [
-				'null' => false,
-				'default' => '0',
-				'limit' => MysqlAdapter::INT_TINY,
-				'after' => 'parent_id',
-			])
-			->addColumn('type', 'integer', [
-				'null' => false,
-				'default' => '1',
-				'limit' => MysqlAdapter::INT_TINY,
-				'after' => 'has_children',
-			])
-			->addColumn('teaser', 'text', [
-				'null' => false,
-				'default' => '',
-				'limit' => MysqlAdapter::TEXT_MEDIUM,
-				'collation' => 'utf8mb4_unicode_ci',
-				'encoding' => 'utf8mb4',
-				'after' => 'type',
-			])
-			->addColumn('desc', 'text', [
-				'null' => false,
-				'default' => '',
-				'limit' => MysqlAdapter::TEXT_MEDIUM,
-				'collation' => 'utf8mb4_unicode_ci',
-				'encoding' => 'utf8mb4',
-				'after' => 'teaser',
-			])
-			->addColumn('photo', 'string', [
-				'null' => false,
-				'default' => '',
-				'limit' => 200,
-				'collation' => 'utf8mb4_unicode_ci',
-				'encoding' => 'utf8mb4',
-				'after' => 'desc',
-			])
-			->addColumn('master', 'integer', [
-				'null' => false,
-				'default' => '0',
-				'limit' => '10',
-				'signed' => false,
-				'after' => 'photo',
-			])
-			->addColumn('mailbox_id', 'integer', [
-				'null' => false,
-				'default' => '0',
-				'limit' => '10',
-				'signed' => false,
-				'after' => 'master',
-			])
-			->addColumn('name', 'string', [
-				'null' => true,
-				'default' => null,
-				'limit' => 50,
-				'collation' => 'utf8mb4_unicode_ci',
-				'encoding' => 'utf8mb4',
-				'after' => 'mailbox_id',
-			])
-			->addColumn('email', 'string', [
-				'null' => false,
-				'default' => '',
-				'limit' => 120,
-				'collation' => 'utf8mb4_unicode_ci',
-				'encoding' => 'utf8mb4',
-				'after' => 'name',
-			])
-			->addColumn('email_pass', 'string', [
-				'null' => false,
-				'default' => '',
-				'limit' => 50,
-				'collation' => 'utf8mb4_unicode_ci',
-				'encoding' => 'utf8mb4',
-				'after' => 'email',
-			])
-			->addColumn('email_name', 'string', [
-				'null' => false,
-				'default' => '',
-				'limit' => 100,
-				'collation' => 'utf8mb4_unicode_ci',
-				'encoding' => 'utf8mb4',
-				'after' => 'email_pass',
-			])
-			->addColumn('apply_type', 'integer', [
-				'null' => false,
-				'default' => '2',
-				'limit' => MysqlAdapter::INT_TINY,
-				'after' => 'email_name',
-			])
-			->addColumn('banana_count', 'integer', [
-				'null' => false,
-				'default' => '0',
-				'limit' => MysqlAdapter::INT_TINY,
-				'after' => 'apply_type',
-			])
-			->addColumn('fetch_count', 'integer', [
-				'null' => false,
-				'default' => '0',
-				'limit' => MysqlAdapter::INT_TINY,
-				'after' => 'banana_count',
-			])
-			->addColumn('week_num', 'integer', [
-				'null' => false,
-				'default' => '0',
-				'limit' => MysqlAdapter::INT_TINY,
-				'after' => 'fetch_count',
-			])
-			->addColumn('report_num', 'integer', [
-				'null' => false,
-				'default' => '0',
-				'limit' => MysqlAdapter::INT_TINY,
-				'after' => 'week_num',
-			])
-			->addColumn('stat_last_update', 'datetime', [
-				'null' => false,
-				'default' => 'CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP',
-				'after' => 'report_num',
-			])
-			->addColumn('stat_fetchweight', 'decimal', [
-				'null' => false,
-				'default' => '0',
-				'precision' => 10,
-				'signed' => false,
-				'scale' => 2,
-				'after' => 'stat_last_update',
-			])
-			->addColumn('stat_fetchcount', 'integer', [
-				'null' => false,
-				'default' => '0',
-				'limit' => '10',
-				'signed' => false,
-				'after' => 'stat_fetchweight',
-			])
-			->addColumn('stat_postcount', 'integer', [
-				'null' => false,
-				'default' => '0',
-				'limit' => '10',
-				'signed' => false,
-				'after' => 'stat_fetchcount',
-			])
-			->addColumn('stat_betriebcount', 'integer', [
-				'null' => false,
-				'default' => '0',
-				'limit' => '7',
-				'signed' => false,
-				'after' => 'stat_postcount',
-			])
-			->addColumn('stat_korpcount', 'integer', [
-				'null' => false,
-				'default' => '0',
-				'limit' => '7',
-				'signed' => false,
-				'after' => 'stat_betriebcount',
-			])
-			->addColumn('stat_botcount', 'integer', [
-				'null' => false,
-				'default' => '0',
-				'limit' => '7',
-				'signed' => false,
-				'after' => 'stat_korpcount',
-			])
-			->addColumn('stat_fscount', 'integer', [
-				'null' => false,
-				'default' => '0',
-				'limit' => '7',
-				'signed' => false,
-				'after' => 'stat_botcount',
-			])
-			->addColumn('stat_fairteilercount', 'integer', [
-				'null' => false,
-				'default' => '0',
-				'limit' => '7',
-				'signed' => false,
-				'after' => 'stat_fscount',
-			])
-			->addColumn('conversation_id', 'integer', [
-				'null' => false,
-				'default' => '0',
-				'limit' => '10',
-				'signed' => false,
-				'after' => 'stat_fairteilercount',
-			])
-			->addColumn('moderated', 'integer', [
-				'null' => false,
-				'default' => '0',
-				'limit' => MysqlAdapter::INT_TINY,
-				'after' => 'conversation_id',
-			])
-			->addIndex(['parent_id'], [
-				'name' => 'parent_id',
-				'unique' => false,
-			])
-			->addIndex(['type'], [
-				'name' => 'type',
-				'unique' => false,
-			])
-			->addIndex(['mailbox_id'], [
-				'name' => 'mailbox_id',
-				'unique' => false,
-			])
-			->addIndex(['master'], [
-				'name' => 'master',
-				'unique' => false,
-			])
-			->create();
-		$this->table('fs_blog_entry', [
-			'id' => false,
-			'primary_key' => ['id'],
-			'engine' => 'InnoDB',
-			'encoding' => 'utf8mb4',
-			'collation' => 'utf8mb4_unicode_ci',
-			'comment' => '',
-		])
-			->addColumn('id', 'integer', [
-				'null' => false,
-				'limit' => '10',
-				'signed' => false,
-				'identity' => 'enable',
-			])
-			->addColumn('bezirk_id', 'integer', [
-				'null' => false,
-				'limit' => '10',
-				'signed' => false,
-				'after' => 'id',
-			])
-			->addColumn('foodsaver_id', 'integer', [
-				'null' => false,
-				'limit' => '10',
-				'signed' => false,
-				'after' => 'bezirk_id',
-			])
-			->addColumn('active', 'integer', [
-				'null' => false,
-				'limit' => MysqlAdapter::INT_TINY,
-				'signed' => false,
-				'after' => 'foodsaver_id',
-			])
-			->addColumn('name', 'string', [
-				'null' => true,
-				'default' => null,
-				'limit' => 100,
-				'collation' => 'utf8mb4_unicode_ci',
-				'encoding' => 'utf8mb4',
-				'after' => 'active',
-			])
-			->addColumn('teaser', 'string', [
-				'null' => true,
-				'default' => null,
-				'limit' => 500,
-				'collation' => 'utf8mb4_unicode_ci',
-				'encoding' => 'utf8mb4',
-				'after' => 'name',
-			])
-			->addColumn('body', 'text', [
-				'null' => true,
-				'default' => null,
-				'limit' => MysqlAdapter::TEXT_MEDIUM,
-				'collation' => 'utf8mb4_unicode_ci',
-				'encoding' => 'utf8mb4',
-				'after' => 'teaser',
-			])
-			->addColumn('time', 'datetime', [
-				'null' => true,
-				'default' => null,
-				'after' => 'body',
-			])
-			->addColumn('picture', 'string', [
-				'null' => false,
-				'limit' => 150,
-				'collation' => 'utf8mb4_unicode_ci',
-				'encoding' => 'utf8mb4',
-				'after' => 'time',
-			])
-			->addIndex(['foodsaver_id'], [
-				'name' => 'blog_entry_FKIndex1',
-				'unique' => false,
-			])
-			->addIndex(['bezirk_id'], [
-				'name' => 'blog_entry_FKIndex2',
-				'unique' => false,
-			])
-			->addIndex(['active'], [
-				'name' => 'active',
-				'unique' => false,
-			])
-			->create();
-		$this->table('fs_foodsaver_has_conversation', [
-			'id' => false,
-			'primary_key' => ['id'],
-			'engine' => 'InnoDB',
-			'encoding' => 'utf8mb4',
-			'collation' => 'utf8mb4_unicode_ci',
-			'comment' => '',
-		])
-			->addColumn('foodsaver_id', 'integer', [
-				'null' => false,
-				'limit' => '10',
-				'signed' => false,
-			])
-			->addColumn('conversation_id', 'integer', [
-				'null' => false,
-				'limit' => '10',
-				'signed' => false,
-				'after' => 'foodsaver_id',
-			])
-			->addColumn('unread', 'integer', [
-				'null' => true,
-				'default' => '1',
-				'limit' => MysqlAdapter::INT_TINY,
-				'signed' => false,
-				'after' => 'conversation_id',
-			])
-			->addColumn('id', 'integer', [
-				'null' => false,
-				'limit' => '10',
-				'signed' => false,
-				'identity' => 'enable',
-				'after' => 'unread',
-			])
-			->addIndex(['foodsaver_id', 'conversation_id'], [
-				'name' => 'foodsaver_id',
-				'unique' => true,
-			])
-			->addIndex(['foodsaver_id'], [
-				'name' => 'foodsaver_has_conversation_FKIndex1',
-				'unique' => false,
-			])
-			->addIndex(['conversation_id'], [
-				'name' => 'foodsaver_has_conversation_FKIndex2',
-				'unique' => false,
-			])
-			->create();
-		$this->table('fs_mailbox', [
-			'id' => false,
-			'primary_key' => ['id'],
-			'engine' => 'InnoDB',
-			'encoding' => 'utf8mb4',
-			'collation' => 'utf8mb4_unicode_ci',
-			'comment' => '',
-		])
-			->addColumn('id', 'integer', [
-				'null' => false,
-				'limit' => '10',
-				'signed' => false,
-				'identity' => 'enable',
-			])
-			->addColumn('name', 'string', [
-				'null' => true,
-				'default' => null,
-				'limit' => 50,
-				'collation' => 'utf8mb4_unicode_ci',
-				'encoding' => 'utf8mb4',
-				'after' => 'id',
-			])
-			->addColumn('member', 'integer', [
-				'null' => false,
-				'default' => '0',
-				'limit' => MysqlAdapter::INT_TINY,
-				'after' => 'name',
-			])
-			->addColumn('last_access', 'datetime', [
-				'null' => false,
-				'default' => 'CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP',
-				'after' => 'member',
-			])
-			->addIndex(['name'], [
-				'name' => 'email_unique',
-				'unique' => true,
-			])
-			->addIndex(['member'], [
-				'name' => 'member',
-				'unique' => false,
-			])
-			->create();
-		$this->table('fs_event_has_wallpost', [
-			'id' => false,
-			'primary_key' => ['event_id', 'wallpost_id'],
-			'engine' => 'InnoDB',
-			'encoding' => 'utf8mb4',
-			'collation' => 'utf8mb4_unicode_ci',
-			'comment' => '',
-		])
-			->addColumn('event_id', 'integer', [
-				'null' => false,
-				'limit' => '10',
-				'signed' => false,
-			])
-			->addColumn('wallpost_id', 'integer', [
-				'null' => false,
-				'limit' => '10',
-				'signed' => false,
-				'after' => 'event_id',
-			])
-			->addIndex(['event_id'], [
-				'name' => 'event_id',
-				'unique' => false,
-			])
-			->addIndex(['wallpost_id'], [
-				'name' => 'wallpost_id',
-				'unique' => false,
-			])
-			->create();
-		$this->table('fs_theme', [
-			'id' => false,
-			'primary_key' => ['id'],
-			'engine' => 'InnoDB',
-			'encoding' => 'utf8mb4',
-			'collation' => 'utf8mb4_unicode_ci',
-			'comment' => '',
-		])
-			->addColumn('id', 'integer', [
-				'null' => false,
-				'limit' => '10',
-				'signed' => false,
-				'identity' => 'enable',
-			])
-			->addColumn('foodsaver_id', 'integer', [
-				'null' => false,
-				'limit' => '10',
-				'signed' => false,
-				'after' => 'id',
-			])
-			->addColumn('last_post_id', 'integer', [
-				'null' => false,
-				'default' => '0',
-				'limit' => '10',
-				'signed' => false,
-				'after' => 'foodsaver_id',
-			])
-			->addColumn('name', 'string', [
-				'null' => true,
-				'default' => null,
-				'limit' => 260,
-				'collation' => 'utf8mb4_unicode_ci',
-				'encoding' => 'utf8mb4',
-				'after' => 'last_post_id',
-			])
-			->addColumn('time', 'datetime', [
-				'null' => true,
-				'default' => null,
-				'after' => 'name',
-			])
-			->addColumn('active', 'integer', [
-				'null' => false,
-				'default' => '1',
-				'limit' => MysqlAdapter::INT_TINY,
-				'signed' => false,
-				'after' => 'time',
-			])
-			->addColumn('sticky', 'boolean', [
-				'null' => false,
-				'default' => '0',
-				'limit' => MysqlAdapter::INT_TINY,
-				'after' => 'active',
-			])
-			->addIndex(['foodsaver_id'], [
-				'name' => 'theme_FKIndex1',
-				'unique' => false,
-			])
-			->addIndex(['last_post_id'], [
-				'name' => 'last_post_id',
-				'unique' => false,
-			])
-			->addIndex(['active'], [
-				'name' => 'active',
-				'unique' => false,
-			])
-			->create();
-		$this->table('fs_bezirk_has_wallpost', [
-			'id' => false,
-			'primary_key' => ['bezirk_id', 'wallpost_id'],
-			'engine' => 'InnoDB',
-			'encoding' => 'utf8mb4',
-			'collation' => 'utf8mb4_unicode_ci',
-			'comment' => '',
-		])
-			->addColumn('bezirk_id', 'integer', [
-				'null' => false,
-				'limit' => '10',
-				'signed' => false,
-			])
-			->addColumn('wallpost_id', 'integer', [
-				'null' => false,
-				'limit' => '10',
-				'signed' => false,
-				'after' => 'bezirk_id',
-			])
-			->addIndex(['bezirk_id'], [
-				'name' => 'bezirk_id',
-				'unique' => false,
-			])
-			->addIndex(['wallpost_id'], [
-				'name' => 'wallpost_id',
-				'unique' => false,
-			])
-			->create();
-		$this->table('fs_botschafter', [
-			'id' => false,
-			'primary_key' => ['foodsaver_id', 'bezirk_id'],
-			'engine' => 'InnoDB',
-			'encoding' => 'utf8mb4',
-			'collation' => 'utf8mb4_unicode_ci',
-			'comment' => '',
-		])
-			->addColumn('foodsaver_id', 'integer', [
-				'null' => false,
-				'limit' => '10',
-				'signed' => false,
-			])
-			->addColumn('bezirk_id', 'integer', [
-				'null' => false,
-				'limit' => '10',
-				'signed' => false,
-				'after' => 'foodsaver_id',
-			])
-			->addIndex(['foodsaver_id'], [
-				'name' => 'foodsaver_has_bezirk_FKIndex1',
-				'unique' => false,
-			])
-			->addIndex(['bezirk_id'], [
-				'name' => 'foodsaver_has_bezirk_FKIndex2',
-				'unique' => false,
-			])
-			->create();
-		$this->table('fs_buddy', [
-			'id' => false,
-			'primary_key' => ['foodsaver_id', 'buddy_id'],
-			'engine' => 'InnoDB',
-			'encoding' => 'utf8mb4',
-			'collation' => 'utf8mb4_unicode_ci',
-			'comment' => '',
-		])
-			->addColumn('foodsaver_id', 'integer', [
-				'null' => false,
-				'limit' => '10',
-				'signed' => false,
-			])
-			->addColumn('buddy_id', 'integer', [
-				'null' => false,
-				'limit' => '10',
-				'signed' => false,
-				'after' => 'foodsaver_id',
-			])
-			->addColumn('confirmed', 'integer', [
-				'null' => true,
-				'default' => null,
-				'limit' => MysqlAdapter::INT_TINY,
-				'signed' => false,
-				'after' => 'buddy_id',
-			])
-			->addIndex(['confirmed'], [
-				'name' => 'buddy_confirmed',
-				'unique' => false,
-			])
-			->addIndex(['buddy_id'], [
-				'name' => 'buddy_id',
-				'unique' => false,
-			])
-			->create();
-		$this->table('fs_conversation', [
-			'id' => false,
-			'primary_key' => ['id'],
-			'engine' => 'InnoDB',
-			'encoding' => 'utf8mb4',
-			'collation' => 'utf8mb4_unicode_ci',
-			'comment' => '',
-		])
-			->addColumn('id', 'integer', [
-				'null' => false,
-				'limit' => '10',
-				'signed' => false,
-				'identity' => 'enable',
-			])
-			->addColumn('locked', 'boolean', [
-				'null' => false,
-				'default' => '0',
-				'limit' => MysqlAdapter::INT_TINY,
-				'after' => 'id',
-			])
-			->addColumn('name', 'string', [
-				'null' => true,
-				'default' => null,
-				'limit' => 40,
-				'collation' => 'utf8mb4_unicode_ci',
-				'encoding' => 'utf8mb4',
-				'after' => 'locked',
-			])
-			->addColumn('last', 'datetime', [
-				'null' => true,
-				'default' => null,
-				'after' => 'name',
-			])
-			->addColumn('last_foodsaver_id', 'integer', [
-				'null' => true,
-				'default' => null,
-				'limit' => '10',
-				'signed' => false,
-				'after' => 'last',
-			])
-			->addColumn('last_message_id', 'integer', [
-				'null' => true,
-				'default' => null,
-				'limit' => '10',
-				'signed' => false,
-				'after' => 'last_foodsaver_id',
-			])
-			->addColumn('last_message', 'text', [
-				'null' => true,
-				'default' => null,
-				'limit' => MysqlAdapter::TEXT_MEDIUM,
-				'collation' => 'utf8mb4_unicode_ci',
-				'encoding' => 'utf8mb4',
-				'after' => 'last_message_id',
-			])
-			->addColumn('last_message_is_htmlentity_encoded', 'boolean', [
-				'null' => false,
-				'default' => '1',
-				'limit' => MysqlAdapter::INT_TINY,
-				'after' => 'last_message',
-			])
-			->addIndex(['last_foodsaver_id'], [
-				'name' => 'conversation_last_fs_id',
-				'unique' => false,
-			])
-			->create();
-		$this->table('fs_foodsaver_has_contact', [
-			'id' => false,
-			'primary_key' => ['foodsaver_id', 'contact_id'],
-			'engine' => 'InnoDB',
-			'encoding' => 'utf8mb4',
-			'collation' => 'utf8mb4_unicode_ci',
-			'comment' => '',
-		])
-			->addColumn('foodsaver_id', 'integer', [
-				'null' => false,
-				'limit' => '10',
-				'default' => 0,
-				'signed' => false,
-			])
-			->addColumn('contact_id', 'integer', [
-				'null' => false,
-				'limit' => '10',
-				'signed' => false,
-				'default' => 0,
-				'after' => 'foodsaver_id',
-			])
-			->addIndex(['contact_id'], [
-				'name' => 'contact_id',
-				'unique' => false,
-			])
-			->create();
-		$this->table('fs_event', [
-			'id' => false,
-			'primary_key' => ['id'],
-			'engine' => 'InnoDB',
-			'encoding' => 'utf8mb4',
-			'collation' => 'utf8mb4_unicode_ci',
-			'comment' => '',
-		])
-			->addColumn('id', 'integer', [
-				'null' => false,
-				'limit' => '10',
-				'signed' => false,
-				'identity' => 'enable',
-			])
-			->addColumn('foodsaver_id', 'integer', [
-				'null' => false,
-				'limit' => '10',
-				'signed' => false,
-				'after' => 'id',
-			])
-			->addColumn('bezirk_id', 'integer', [
-				'null' => true,
-				'default' => null,
-				'limit' => '10',
-				'signed' => false,
-				'after' => 'foodsaver_id',
-			])
-			->addColumn('location_id', 'integer', [
-				'null' => true,
-				'default' => null,
-				'limit' => '10',
-				'signed' => false,
-				'after' => 'bezirk_id',
-			])
-			->addColumn('public', 'boolean', [
-				'null' => false,
-				'default' => '0',
-				'limit' => MysqlAdapter::INT_TINY,
-				'after' => 'location_id',
-			])
-			->addColumn('name', 'string', [
-				'null' => true,
-				'default' => null,
-				'limit' => 200,
-				'collation' => 'utf8mb4_unicode_ci',
-				'encoding' => 'utf8mb4',
-				'after' => 'public',
-			])
-			->addColumn('start', 'datetime', [
-				'null' => false,
-				'after' => 'name',
-			])
-			->addColumn('end', 'datetime', [
-				'null' => false,
-				'after' => 'start',
-			])
-			->addColumn('description', 'text', [
-				'null' => true,
-				'default' => null,
-				'limit' => MysqlAdapter::TEXT_MEDIUM,
-				'collation' => 'utf8mb4_unicode_ci',
-				'encoding' => 'utf8mb4',
-				'after' => 'end',
-			])
-			->addColumn('bot', 'integer', [
-				'null' => true,
-				'default' => '0',
-				'limit' => MysqlAdapter::INT_TINY,
-				'signed' => false,
-				'after' => 'description',
-			])
-			->addColumn('online', 'integer', [
-				'null' => true,
-				'default' => '0',
-				'limit' => MysqlAdapter::INT_TINY,
-				'signed' => false,
-				'after' => 'bot',
-			])
-			->addIndex(['location_id'], [
-				'name' => 'event_FKIndex1',
-				'unique' => false,
-			])
-			->addIndex(['bezirk_id'], [
-				'name' => 'event_FKIndex2',
-				'unique' => false,
-			])
-			->addIndex(['foodsaver_id'], [
-				'name' => 'event_FKIndex3',
-				'unique' => false,
-			])
-			->create();
-		$this->table('fs_email_status', [
-			'id' => false,
-			'primary_key' => ['email_id', 'foodsaver_id'],
-			'engine' => 'InnoDB',
-			'encoding' => 'utf8mb4',
-			'collation' => 'utf8mb4_unicode_ci',
-			'comment' => '',
-		])
-			->addColumn('email_id', 'integer', [
-				'null' => false,
-				'limit' => '10',
-				'signed' => false,
-			])
-			->addColumn('foodsaver_id', 'integer', [
-				'null' => false,
-				'limit' => '10',
-				'signed' => false,
-				'after' => 'email_id',
-			])
-			->addColumn('status', 'integer', [
-				'null' => true,
-				'default' => '0',
-				'limit' => MysqlAdapter::INT_TINY,
-				'signed' => false,
-				'after' => 'foodsaver_id',
-			])
-			->addIndex(['foodsaver_id'], [
-				'name' => 'foodsaver_id',
-				'unique' => false,
-			])
-			->create();
-		$this->table('fs_foodsaver_has_wallpost', [
-			'id' => false,
-			'primary_key' => ['foodsaver_id', 'wallpost_id'],
-			'engine' => 'InnoDB',
-			'encoding' => 'utf8mb4',
-			'collation' => 'utf8mb4_unicode_ci',
-			'comment' => '',
-		])
-			->addColumn('foodsaver_id', 'integer', [
-				'null' => false,
-				'limit' => '10',
-				'signed' => false,
-			])
-			->addColumn('wallpost_id', 'integer', [
-				'null' => false,
-				'limit' => '10',
-				'signed' => false,
-				'after' => 'foodsaver_id',
-			])
-			->addColumn('usercomment', 'integer', [
-				'null' => false,
-				'default' => '0',
-				'limit' => MysqlAdapter::INT_TINY,
-				'after' => 'wallpost_id',
-			])
-			->addIndex(['foodsaver_id'], [
-				'name' => 'foodsaver_has_wallpost_FKIndex1',
-				'unique' => false,
-			])
-			->addIndex(['wallpost_id'], [
-				'name' => 'foodsaver_has_wallpost_FKIndex2',
-				'unique' => false,
-			])
-			->addIndex(['foodsaver_id'], [
-				'name' => 'foodsaver_id',
-				'unique' => false,
-			])
-			->addIndex(['wallpost_id'], [
-				'name' => 'wallpost_id',
-				'unique' => false,
-			])
-			->create();
-		$this->table('fs_ipblock', [
-			'id' => false,
-			'primary_key' => ['ip', 'context'],
-			'engine' => 'InnoDB',
-			'encoding' => 'utf8mb4',
-			'collation' => 'utf8mb4_unicode_ci',
-			'comment' => '',
-		])
-			->addColumn('ip', 'string', [
-				'null' => false,
-				'limit' => 20,
-				'collation' => 'utf8mb4_unicode_ci',
-				'encoding' => 'utf8mb4',
-			])
-			->addColumn('context', 'string', [
-				'null' => false,
-				'limit' => 10,
-				'collation' => 'utf8mb4_unicode_ci',
-				'encoding' => 'utf8mb4',
-				'after' => 'ip',
-			])
-			->addColumn('start', 'datetime', [
-				'null' => true,
-				'default' => null,
-				'after' => 'context',
-			])
-			->addColumn('duration', 'integer', [
-				'null' => true,
-				'default' => null,
-				'limit' => '10',
-				'signed' => false,
-				'after' => 'start',
-			])
-			->create();
-		$this->table('fs_pass_gen', [
-			'id' => false,
-			'primary_key' => ['foodsaver_id', 'date'],
-			'engine' => 'InnoDB',
-			'encoding' => 'utf8mb4',
-			'collation' => 'utf8mb4_unicode_ci',
-			'comment' => '',
-		])
-			->addColumn('foodsaver_id', 'integer', [
-				'null' => false,
-				'limit' => '10',
-				'signed' => false,
-			])
-			->addColumn('date', 'datetime', [
-				'null' => false,
-				'after' => 'foodsaver_id',
-			])
-			->addColumn('bot_id', 'integer', [
-				'null' => true,
-				'default' => null,
-				'limit' => '10',
-				'signed' => false,
-				'after' => 'date',
-			])
-			->addIndex(['bot_id'], [
-				'name' => 'bot_id',
-				'unique' => false,
-			])
-			->create();
-		$this->table('fs_lebensmittel', [
-			'id' => false,
-			'primary_key' => ['id'],
-			'engine' => 'InnoDB',
-			'encoding' => 'utf8mb4',
-			'collation' => 'utf8mb4_unicode_ci',
-			'comment' => '',
-		])
-			->addColumn('id', 'integer', [
-				'null' => false,
-				'limit' => '10',
-				'signed' => false,
-				'identity' => 'enable',
-			])
-			->addColumn('name', 'string', [
-				'null' => true,
-				'default' => null,
-				'limit' => 50,
-				'collation' => 'utf8mb4_unicode_ci',
-				'encoding' => 'utf8mb4',
-				'after' => 'id',
-			])
-			->create();
-		$this->table('fs_fairteiler_follower', [
-			'id' => false,
-			'primary_key' => ['fairteiler_id', 'foodsaver_id'],
-			'engine' => 'InnoDB',
-			'encoding' => 'utf8mb4',
-			'collation' => 'utf8mb4_unicode_ci',
-			'comment' => '',
-		])
-			->addColumn('fairteiler_id', 'integer', [
-				'null' => false,
-				'limit' => '10',
-				'signed' => false,
-			])
-			->addColumn('foodsaver_id', 'integer', [
-				'null' => false,
-				'limit' => '10',
-				'signed' => false,
-				'after' => 'fairteiler_id',
-			])
-			->addColumn('type', 'integer', [
-				'null' => false,
-				'default' => '1',
-				'limit' => MysqlAdapter::INT_TINY,
-				'signed' => false,
-				'after' => 'foodsaver_id',
-			])
-			->addColumn('infotype', 'integer', [
-				'null' => false,
-				'default' => '1',
-				'limit' => MysqlAdapter::INT_TINY,
-				'signed' => false,
-				'after' => 'type',
-			])
-			->addIndex(['fairteiler_id'], [
-				'name' => 'fairteiler_verantwortlich_FKIndex1',
-				'unique' => false,
-			])
-			->addIndex(['foodsaver_id'], [
-				'name' => 'fairteiler_verantwortlich_FKIndex2',
-				'unique' => false,
-			])
-			->addIndex(['type'], [
-				'name' => 'type',
-				'unique' => false,
-			])
-			->addIndex(['infotype'], [
-				'name' => 'infotype',
-				'unique' => false,
-			])
-			->create();
-		$this->table('fs_betrieb_team', [
-			'id' => false,
-			'primary_key' => ['id'],
-			'engine' => 'InnoDB',
-			'encoding' => 'utf8mb4',
-			'collation' => 'utf8mb4_unicode_ci',
-			'comment' => '',
-		])
-			->addColumn('foodsaver_id', 'integer', [
-				'null' => false,
-				'limit' => '10',
-				'signed' => false,
-			])
-			->addColumn('betrieb_id', 'integer', [
-				'null' => false,
-				'limit' => '10',
-				'signed' => false,
-				'after' => 'foodsaver_id',
-			])
-			->addColumn('verantwortlich', 'integer', [
-				'null' => true,
-				'default' => '0',
-				'limit' => MysqlAdapter::INT_TINY,
-				'signed' => false,
-				'after' => 'betrieb_id',
-			])
-			->addColumn('active', 'integer', [
-				'null' => false,
-				'default' => '0',
-				'limit' => MysqlAdapter::INT_REGULAR,
-				'after' => 'verantwortlich',
-			])
-			->addColumn('stat_last_update', 'datetime', [
-				'null' => true,
-				'default' => null,
-				'after' => 'active',
-			])
-			->addColumn('stat_fetchcount', 'integer', [
-				'null' => false,
-				'default' => '0',
-				'limit' => '10',
-				'signed' => false,
-				'after' => 'stat_last_update',
-			])
-			->addColumn('stat_first_fetch', 'date', [
-				'null' => true,
-				'default' => null,
-				'after' => 'stat_fetchcount',
-			])
-			->addColumn('stat_last_fetch', 'date', [
-				'null' => true,
-				'default' => null,
-				'after' => 'stat_first_fetch',
-			])
-			->addColumn('stat_add_date', 'date', [
-				'null' => true,
-				'default' => null,
-				'after' => 'stat_last_fetch',
-			])
-			->addColumn('id', 'integer', [
-				'null' => false,
-				'limit' => '10',
-				'signed' => false,
-				'identity' => 'enable',
-				'after' => 'stat_add_date',
-			])
-			->addIndex(['foodsaver_id', 'betrieb_id'], [
-				'name' => 'foodsaver_id',
-				'unique' => true,
-			])
-			->addIndex(['foodsaver_id'], [
-				'name' => 'foodsaver_has_betrieb_FKIndex1',
-				'unique' => false,
-			])
-			->addIndex(['betrieb_id'], [
-				'name' => 'foodsaver_has_betrieb_FKIndex2',
-				'unique' => false,
-			])
-			->create();
-		$this->table('fs_fairteiler_has_wallpost', [
-			'id' => false,
-			'primary_key' => ['fairteiler_id', 'wallpost_id'],
-			'engine' => 'InnoDB',
-			'encoding' => 'utf8mb4',
-			'collation' => 'utf8mb4_unicode_ci',
-			'comment' => '',
-		])
-			->addColumn('fairteiler_id', 'integer', [
-				'null' => false,
-				'limit' => '10',
-				'signed' => false,
-			])
-			->addColumn('wallpost_id', 'integer', [
-				'null' => false,
-				'limit' => '10',
-				'signed' => false,
-				'after' => 'fairteiler_id',
-			])
-			->addIndex(['fairteiler_id'], [
-				'name' => 'fairteiler_has_wallpost_FKIndex1',
-				'unique' => false,
-			])
-			->addIndex(['wallpost_id'], [
-				'name' => 'fairteiler_has_wallpost_FKIndex2',
-				'unique' => false,
-			])
-			->create();
-		$this->table('fs_kette', [
-			'id' => false,
-			'primary_key' => ['id'],
-			'engine' => 'InnoDB',
-			'encoding' => 'utf8mb4',
-			'collation' => 'utf8mb4_unicode_ci',
-			'comment' => '',
-		])
-			->addColumn('id', 'integer', [
-				'null' => false,
-				'limit' => '10',
-				'signed' => false,
-				'identity' => 'enable',
-			])
-			->addColumn('name', 'string', [
-				'null' => true,
-				'default' => null,
-				'limit' => 60,
-				'collation' => 'utf8mb4_unicode_ci',
-				'encoding' => 'utf8mb4',
-				'after' => 'id',
-			])
-			->addColumn('logo', 'string', [
-				'null' => false,
-				'default' => '',
-				'limit' => 30,
-				'collation' => 'utf8mb4_unicode_ci',
-				'encoding' => 'utf8mb4',
-				'after' => 'name',
-			])
-			->create();
-		$this->table('fs_faq_category', [
-			'id' => false,
-			'primary_key' => ['id'],
-			'engine' => 'InnoDB',
-			'encoding' => 'utf8mb4',
-			'collation' => 'utf8mb4_unicode_ci',
-			'comment' => '',
-		])
-			->addColumn('id', 'integer', [
-				'null' => false,
-				'limit' => '10',
-				'signed' => false,
-				'identity' => 'enable',
-			])
-			->addColumn('name', 'string', [
-				'null' => true,
-				'default' => null,
-				'limit' => 50,
-				'collation' => 'utf8mb4_unicode_ci',
-				'encoding' => 'utf8mb4',
-				'after' => 'id',
-			])
-			->create();
-		$this->table('fs_fairteiler', [
-			'id' => false,
-			'primary_key' => ['id'],
-			'engine' => 'InnoDB',
-			'encoding' => 'utf8mb4',
-			'collation' => 'utf8mb4_unicode_ci',
-			'comment' => '',
-		])
-			->addColumn('id', 'integer', [
-				'null' => false,
-				'limit' => '10',
-				'signed' => false,
-				'identity' => 'enable',
-			])
-			->addColumn('bezirk_id', 'integer', [
-				'null' => true,
-				'default' => null,
-				'limit' => '10',
-				'signed' => false,
-				'after' => 'id',
-			])
-			->addColumn('name', 'string', [
-				'null' => true,
-				'default' => null,
-				'limit' => 260,
-				'collation' => 'utf8mb4_unicode_ci',
-				'encoding' => 'utf8mb4',
-				'after' => 'bezirk_id',
-			])
-			->addColumn('picture', 'string', [
-				'null' => false,
-				'default' => '',
-				'limit' => 100,
-				'collation' => 'utf8mb4_unicode_ci',
-				'encoding' => 'utf8mb4',
-				'after' => 'name',
-			])
-			->addColumn('status', 'integer', [
-				'null' => true,
-				'default' => null,
-				'limit' => MysqlAdapter::INT_TINY,
-				'signed' => false,
-				'after' => 'picture',
-			])
-			->addColumn('desc', 'text', [
-				'null' => true,
-				'default' => null,
-				'limit' => MysqlAdapter::TEXT_MEDIUM,
-				'collation' => 'utf8mb4_unicode_ci',
-				'encoding' => 'utf8mb4',
-				'after' => 'status',
-			])
-			->addColumn('anschrift', 'string', [
-				'null' => true,
-				'default' => null,
-				'limit' => 260,
-				'collation' => 'utf8mb4_unicode_ci',
-				'encoding' => 'utf8mb4',
-				'after' => 'desc',
-			])
-			->addColumn('plz', 'string', [
-				'null' => true,
-				'default' => null,
-				'limit' => 5,
-				'collation' => 'utf8mb4_unicode_ci',
-				'encoding' => 'utf8mb4',
-				'after' => 'anschrift',
-			])
-			->addColumn('ort', 'string', [
-				'null' => true,
-				'default' => null,
-				'limit' => 100,
-				'collation' => 'utf8mb4_unicode_ci',
-				'encoding' => 'utf8mb4',
-				'after' => 'plz',
-			])
-			->addColumn('lat', 'string', [
-				'null' => true,
-				'default' => null,
-				'limit' => 100,
-				'collation' => 'utf8mb4_unicode_ci',
-				'encoding' => 'utf8mb4',
-				'after' => 'ort',
-			])
-			->addColumn('lon', 'string', [
-				'null' => true,
-				'default' => null,
-				'limit' => 100,
-				'collation' => 'utf8mb4_unicode_ci',
-				'encoding' => 'utf8mb4',
-				'after' => 'lat',
-			])
-			->addColumn('add_date', 'date', [
-				'null' => true,
-				'default' => null,
-				'after' => 'lon',
-			])
-			->addColumn('add_foodsaver', 'integer', [
-				'null' => true,
-				'default' => null,
-				'limit' => '10',
-				'signed' => false,
-				'after' => 'add_date',
-			])
-			->addIndex(['bezirk_id'], [
-				'name' => 'fairteiler_FKIndex1',
-				'unique' => false,
-			])
-			->create();
-		$this->table('fs_verify_history', [
-			'id' => false,
-			'engine' => 'InnoDB',
-			'encoding' => 'utf8mb4',
-			'collation' => 'utf8mb4_unicode_ci',
-			'comment' => '',
-		])
-			->addColumn('fs_id', 'integer', [
-				'null' => true,
-				'default' => null,
-				'limit' => '10',
-				'signed' => false,
-			])
-			->addColumn('date', 'datetime', [
-				'null' => false,
-				'after' => 'fs_id',
-			])
-			->addColumn('bot_id', 'integer', [
-				'null' => true,
-				'default' => null,
-				'limit' => '10',
-				'signed' => false,
-				'after' => 'date',
-			])
-			->addColumn('change_status', 'boolean', [
-				'null' => true,
-				'default' => null,
-				'limit' => MysqlAdapter::INT_TINY,
-				'after' => 'bot_id',
-			])
-			->addIndex(['fs_id'], [
-				'name' => 'fs_id',
-				'unique' => false,
-			])
-			->create();
-		$this->table('fs_push_notification_subscription', [
-			'id' => true,
-			'engine' => 'InnoDB',
-			'encoding' => 'utf8mb4',
-			'collation' => 'utf8mb4_unicode_ci',
-			'comment' => '',
-		])
-			->addColumn('foodsaver_id', 'integer', [
-				'null' => false,
-				'limit' => MysqlAdapter::INT_REGULAR,
-			])
-			->addColumn('data', 'text', [
-				'null' => true,
-				'default' => null,
-				'limit' => 65535,
-				'collation' => 'utf8mb4_unicode_ci',
-				'encoding' => 'utf8mb4',
-				'after' => 'foodsaver_id',
-			])
-			->addColumn('type', 'string', [
-				'null' => true,
-				'default' => null,
-				'limit' => 24,
-				'collation' => 'utf8mb4_unicode_ci',
-				'encoding' => 'utf8mb4',
-				'after' => 'data',
-			])
-			->create();
-		$this->table('fs_rating', [
-			'id' => false,
-			'primary_key' => ['foodsaver_id', 'rater_id', 'ratingtype'],
-			'engine' => 'InnoDB',
-			'encoding' => 'utf8mb4',
-			'collation' => 'utf8mb4_unicode_ci',
-			'comment' => 'ratingtype 1+2 = bananen, 4+5 = betriebsmeldung',
-		])
-			->addColumn('foodsaver_id', 'integer', [
-				'null' => false,
-				'limit' => '10',
-				'signed' => false,
-			])
-			->addColumn('rater_id', 'integer', [
-				'null' => false,
-				'limit' => '10',
-				'signed' => false,
-				'after' => 'foodsaver_id',
-			])
-			->addColumn('ratingtype', 'integer', [
-				'null' => false,
-				'default' => '1',
-				'limit' => MysqlAdapter::INT_TINY,
-				'signed' => false,
-				'after' => 'rater_id',
-			])
-			->addColumn('rating', 'integer', [
-				'null' => true,
-				'default' => null,
-				'limit' => MysqlAdapter::INT_TINY,
-				'after' => 'ratingtype',
-			])
-			->addColumn('msg', 'text', [
-				'null' => false,
-				'limit' => MysqlAdapter::TEXT_MEDIUM,
-				'collation' => 'utf8mb4_unicode_ci',
-				'encoding' => 'utf8mb4',
-				'after' => 'rating',
-			])
-			->addColumn('time', 'datetime', [
-				'null' => false,
-				'after' => 'msg',
-			])
-			->addIndex(['rater_id'], [
-				'name' => 'fk_foodsaver_has_foodsaver_foodsaver1_idx',
-				'unique' => false,
-			])
-			->addIndex(['foodsaver_id'], [
-				'name' => 'fk_foodsaver_has_foodsaver_foodsaver_idx',
-				'unique' => false,
-			])
-			->create();
-		$this->table('fs_location', [
-			'id' => false,
-			'primary_key' => ['id'],
-			'engine' => 'InnoDB',
-			'encoding' => 'utf8mb4',
-			'collation' => 'utf8mb4_unicode_ci',
-			'comment' => '',
-		])
-			->addColumn('id', 'integer', [
-				'null' => false,
-				'limit' => '10',
-				'signed' => false,
-				'identity' => 'enable',
-			])
-			->addColumn('name', 'string', [
-				'null' => true,
-				'default' => null,
-				'limit' => 200,
-				'collation' => 'utf8mb4_unicode_ci',
-				'encoding' => 'utf8mb4',
-				'after' => 'id',
-			])
-			->addColumn('lat', 'decimal', [
-				'null' => true,
-				'default' => null,
-				'precision' => 10,
-				'scale' => 8,
-				'after' => 'name',
-			])
-			->addColumn('lon', 'decimal', [
-				'null' => true,
-				'default' => null,
-				'precision' => 11,
-				'scale' => 8,
-				'after' => 'lat',
-			])
-			->addColumn('zip', 'string', [
-				'null' => true,
-				'default' => null,
-				'limit' => 10,
-				'collation' => 'utf8mb4_unicode_ci',
-				'encoding' => 'utf8mb4',
-				'after' => 'lon',
-			])
-			->addColumn('city', 'string', [
-				'null' => true,
-				'default' => null,
-				'limit' => 100,
-				'collation' => 'utf8mb4_unicode_ci',
-				'encoding' => 'utf8mb4',
-				'after' => 'zip',
-			])
-			->addColumn('street', 'string', [
-				'null' => true,
-				'default' => null,
-				'limit' => 200,
-				'collation' => 'utf8mb4_unicode_ci',
-				'encoding' => 'utf8mb4',
-				'after' => 'city',
-			])
-			->create();
-		$this->table('fs_foodsaver_has_bell', [
-			'id' => false,
-			'primary_key' => ['foodsaver_id', 'bell_id'],
-			'engine' => 'InnoDB',
-			'encoding' => 'utf8mb4',
-			'collation' => 'utf8mb4_unicode_ci',
-			'comment' => '',
-		])
-			->addColumn('foodsaver_id', 'integer', [
-				'null' => false,
-				'limit' => '10',
-				'signed' => false,
-			])
-			->addColumn('bell_id', 'integer', [
-				'null' => false,
-				'limit' => '10',
-				'signed' => false,
-				'after' => 'foodsaver_id',
-			])
-			->addColumn('seen', 'integer', [
-				'null' => true,
-				'default' => '0',
-				'limit' => MysqlAdapter::INT_TINY,
-				'signed' => false,
-				'after' => 'bell_id',
-			])
-			->addIndex(['foodsaver_id'], [
-				'name' => 'foodsaver_has_bell_FKIndex1',
-				'unique' => false,
-			])
-			->addIndex(['bell_id'], [
-				'name' => 'foodsaver_has_bell_FKIndex2',
-				'unique' => false,
-			])
-			->create();
-		$this->table('fs_foodsaver_has_bezirk', [
-			'id' => false,
-			'primary_key' => ['foodsaver_id', 'bezirk_id'],
-			'engine' => 'InnoDB',
-			'encoding' => 'utf8mb4',
-			'collation' => 'utf8mb4_unicode_ci',
-			'comment' => '',
-		])
-			->addColumn('foodsaver_id', 'integer', [
-				'null' => false,
-				'limit' => '10',
-				'signed' => false,
-			])
-			->addColumn('bezirk_id', 'integer', [
-				'null' => false,
-				'limit' => '10',
-				'signed' => false,
-				'after' => 'foodsaver_id',
-			])
-			->addColumn('active', 'integer', [
-				'null' => true,
-				'default' => '0',
-				'limit' => '10',
-				'signed' => false,
-				'comment' => '0=beworben,1=aktiv,10=vielleicht',
-				'after' => 'bezirk_id',
-			])
-			->addColumn('added', 'datetime', [
-				'null' => false,
-				'default' => 'CURRENT_TIMESTAMP',
-				'after' => 'active',
-			])
-			->addColumn('application', 'text', [
-				'null' => false,
-				'default' => '',
-				'limit' => MysqlAdapter::TEXT_MEDIUM,
-				'collation' => 'utf8mb4_unicode_ci',
-				'encoding' => 'utf8mb4',
-				'after' => 'added',
-			])
-			->addIndex(['foodsaver_id'], [
-				'name' => 'foodsaver_has_bezirk_FKIndex1',
-				'unique' => false,
-			])
-			->addIndex(['bezirk_id'], [
-				'name' => 'foodsaver_has_bezirk_FKIndex2',
-				'unique' => false,
-			])
-			->create();
-		$this->table('fs_report_has_wallpost', [
-			'id' => false,
-			'primary_key' => ['fsreport_id', 'wallpost_id'],
-			'engine' => 'InnoDB',
-			'encoding' => 'utf8mb4',
-			'collation' => 'utf8mb4_unicode_ci',
-			'comment' => '',
-		])
-			->addColumn('fsreport_id', 'integer', [
-				'null' => false,
-				'limit' => '10',
-				'signed' => false,
-			])
-			->addColumn('wallpost_id', 'integer', [
-				'null' => false,
-				'limit' => '10',
-				'signed' => false,
-				'after' => 'fsreport_id',
-			])
-			->addIndex(['fsreport_id'], [
-				'name' => 'fsreport_id',
-				'unique' => false,
-			])
-			->addIndex(['wallpost_id'], [
-				'name' => 'wallpost_id',
-				'unique' => false,
-			])
-			->create();
-		$this->table('fs_question_has_wallpost', [
-			'id' => false,
-			'primary_key' => ['question_id', 'wallpost_id'],
-			'engine' => 'InnoDB',
-			'encoding' => 'utf8mb4',
-			'collation' => 'utf8mb4_unicode_ci',
-			'comment' => '',
-		])
-			->addColumn('question_id', 'integer', [
-				'null' => false,
-				'limit' => '10',
-				'signed' => false,
-			])
-			->addColumn('wallpost_id', 'integer', [
-				'null' => false,
-				'limit' => '10',
-				'signed' => false,
-				'after' => 'question_id',
-			])
-			->addColumn('usercomment', 'integer', [
-				'null' => false,
-				'default' => '0',
-				'limit' => MysqlAdapter::INT_TINY,
-				'after' => 'wallpost_id',
-			])
-			->addIndex(['question_id'], [
-				'name' => 'question_has_wallpost_FKIndex1',
-				'unique' => false,
-			])
-			->addIndex(['wallpost_id'], [
-				'name' => 'question_has_wallpost_FKIndex2',
-				'unique' => false,
-			])
-			->addIndex(['question_id'], [
-				'name' => 'question_id',
-				'unique' => false,
-			])
-			->addIndex(['wallpost_id'], [
-				'name' => 'wallpost_id',
-				'unique' => false,
-			])
-			->create();
-		$this->table('fs_pass_request', [
-			'id' => false,
-			'primary_key' => ['foodsaver_id'],
-			'engine' => 'InnoDB',
-			'encoding' => 'utf8mb4',
-			'collation' => 'utf8mb4_unicode_ci',
-			'comment' => '',
-		])
-			->addColumn('foodsaver_id', 'integer', [
-				'null' => false,
-				'limit' => '10',
-				'signed' => false,
-			])
-			->addColumn('name', 'string', [
-				'null' => true,
-				'default' => null,
-				'limit' => 50,
-				'collation' => 'utf8mb4_unicode_ci',
-				'encoding' => 'utf8mb4',
-				'after' => 'foodsaver_id',
-			])
-			->addColumn('time', 'datetime', [
-				'null' => true,
-				'default' => null,
-				'after' => 'name',
-			])
-			->create();
-		$this->table('fs_mailbox_member', [
-			'id' => false,
-			'primary_key' => ['mailbox_id', 'foodsaver_id'],
-			'engine' => 'InnoDB',
-			'encoding' => 'utf8mb4',
-			'collation' => 'utf8mb4_unicode_ci',
-			'comment' => '',
-		])
-			->addColumn('mailbox_id', 'integer', [
-				'null' => false,
-				'limit' => '10',
-				'signed' => false,
-			])
-			->addColumn('foodsaver_id', 'integer', [
-				'null' => false,
-				'limit' => '10',
-				'signed' => false,
-				'after' => 'mailbox_id',
-			])
-			->addColumn('email_name', 'string', [
-				'null' => false,
-				'limit' => 120,
-				'collation' => 'utf8mb4_unicode_ci',
-				'encoding' => 'utf8mb4',
-				'after' => 'foodsaver_id',
-			])
-			->addIndex(['mailbox_id'], [
-				'name' => 'mailbox_has_foodsaver_FKIndex1',
-				'unique' => false,
-			])
-			->addIndex(['foodsaver_id'], [
-				'name' => 'mailbox_has_foodsaver_FKIndex2',
-				'unique' => false,
-			])
-			->create();
-		$this->table('fs_theme_follower', [
-			'id' => false,
-			'primary_key' => ['foodsaver_id', 'theme_id'],
-			'engine' => 'InnoDB',
-			'encoding' => 'utf8mb4',
-			'collation' => 'utf8mb4_unicode_ci',
-			'comment' => '',
-		])
-			->addColumn('foodsaver_id', 'integer', [
-				'null' => false,
-				'limit' => '10',
-				'signed' => false,
-			])
-			->addColumn('theme_id', 'integer', [
-				'null' => false,
-				'limit' => '10',
-				'signed' => false,
-				'after' => 'foodsaver_id',
-			])
-			->addColumn('infotype', 'boolean', [
-				'null' => false,
-				'default' => '0',
-				'limit' => MysqlAdapter::INT_TINY,
-				'after' => 'theme_id',
-			])
-			->addColumn('bell_notification', 'boolean', [
-				'null' => false,
-				'default' => '1',
-				'limit' => MysqlAdapter::INT_TINY,
-				'after' => 'infotype',
-			])
-			->addIndex(['infotype'], [
-				'name' => 'infotype',
-				'unique' => false,
-			])
-			->addIndex(['theme_id'], [
-				'name' => 'theme_id',
-				'unique' => false,
-			])
-			->create();
-		$this->table('fs_foodsaver_archive', [
-			'id' => false,
-			'primary_key' => ['id'],
-			'engine' => 'InnoDB',
-			'encoding' => 'utf8mb4',
-			'collation' => 'utf8mb4_unicode_ci',
-			'comment' => '',
-		])
-			->addColumn('id', 'integer', [
-				'null' => false,
-				'limit' => '10',
-				'signed' => false,
-				'identity' => 'enable',
-			])
-			->addColumn('bezirk_id', 'integer', [
-				'null' => false,
-				'limit' => '10',
-				'signed' => false,
-				'after' => 'id',
-			])
-			->addColumn('position', 'string', [
-				'null' => false,
-				'default' => '',
-				'limit' => 255,
-				'collation' => 'utf8mb4_unicode_ci',
-				'encoding' => 'utf8mb4',
-				'after' => 'bezirk_id',
-			])
-			->addColumn('verified', 'integer', [
-				'null' => false,
-				'default' => '0',
-				'limit' => MysqlAdapter::INT_TINY,
-				'signed' => false,
-				'after' => 'position',
-			])
-			->addColumn('last_pass', 'datetime', [
-				'null' => true,
-				'default' => null,
-				'after' => 'verified',
-			])
-			->addColumn('new_bezirk', 'string', [
-				'null' => false,
-				'limit' => 120,
-				'collation' => 'utf8mb4_unicode_ci',
-				'encoding' => 'utf8mb4',
-				'after' => 'last_pass',
-			])
-			->addColumn('want_new', 'integer', [
-				'null' => false,
-				'default' => '0',
-				'limit' => MysqlAdapter::INT_TINY,
-				'after' => 'new_bezirk',
-			])
-			->addColumn('mailbox_id', 'integer', [
-				'null' => true,
-				'default' => null,
-				'limit' => '10',
-				'signed' => false,
-				'after' => 'want_new',
-			])
-			->addColumn('rolle', 'integer', [
-				'null' => false,
-				'limit' => MysqlAdapter::INT_TINY,
-				'after' => 'mailbox_id',
-			])
-			->addColumn('type', 'integer', [
-				'null' => true,
-				'default' => '0',
-				'limit' => MysqlAdapter::INT_TINY,
-				'after' => 'rolle',
-			])
-			->addColumn('plz', 'string', [
-				'null' => true,
-				'default' => null,
-				'limit' => 10,
-				'collation' => 'utf8mb4_unicode_ci',
-				'encoding' => 'utf8mb4',
-				'after' => 'type',
-			])
-			->addColumn('stadt', 'string', [
-				'null' => true,
-				'default' => null,
-				'limit' => 100,
-				'collation' => 'utf8mb4_unicode_ci',
-				'encoding' => 'utf8mb4',
-				'after' => 'plz',
-			])
-			->addColumn('lat', 'string', [
-				'null' => true,
-				'default' => null,
-				'limit' => 20,
-				'collation' => 'utf8mb4_unicode_ci',
-				'encoding' => 'utf8mb4',
-				'after' => 'stadt',
-			])
-			->addColumn('lon', 'string', [
-				'null' => true,
-				'default' => null,
-				'limit' => 20,
-				'collation' => 'utf8mb4_unicode_ci',
-				'encoding' => 'utf8mb4',
-				'after' => 'lat',
-			])
-			->addColumn('photo', 'string', [
-				'null' => true,
-				'default' => null,
-				'limit' => 50,
-				'collation' => 'utf8mb4_unicode_ci',
-				'encoding' => 'utf8mb4',
-				'after' => 'lon',
-			])
-			->addColumn('email', 'string', [
-				'null' => true,
-				'default' => null,
-				'limit' => 120,
-				'collation' => 'utf8mb4_unicode_ci',
-				'encoding' => 'utf8mb4',
-				'after' => 'photo',
-			])
-			->addColumn('password', 'string', [
-				'null' => true,
-				'default' => null,
-				'limit' => 100,
-				'collation' => 'utf8mb4_unicode_ci',
-				'encoding' => 'utf8mb4',
-				'after' => 'email',
-			])
-			->addColumn('name', 'string', [
-				'null' => true,
-				'default' => null,
-				'limit' => 120,
-				'collation' => 'utf8mb4_unicode_ci',
-				'encoding' => 'utf8mb4',
-				'after' => 'password',
-			])
-			->addColumn('admin', 'integer', [
-				'null' => true,
-				'default' => null,
-				'limit' => MysqlAdapter::INT_TINY,
-				'signed' => false,
-				'after' => 'name',
-			])
-			->addColumn('nachname', 'string', [
-				'null' => true,
-				'default' => null,
-				'limit' => 120,
-				'collation' => 'utf8mb4_unicode_ci',
-				'encoding' => 'utf8mb4',
-				'after' => 'admin',
-			])
-			->addColumn('anschrift', 'string', [
-				'null' => true,
-				'default' => null,
-				'limit' => 120,
-				'collation' => 'utf8mb4_unicode_ci',
-				'encoding' => 'utf8mb4',
-				'after' => 'nachname',
-			])
-			->addColumn('telefon', 'string', [
-				'null' => true,
-				'default' => null,
-				'limit' => 30,
-				'collation' => 'utf8mb4_unicode_ci',
-				'encoding' => 'utf8mb4',
-				'after' => 'anschrift',
-			])
-			->addColumn('homepage', 'string', [
-				'null' => true,
-				'default' => null,
-				'limit' => 255,
-				'collation' => 'utf8mb4_unicode_ci',
-				'encoding' => 'utf8mb4',
-				'after' => 'telefon',
-			])
-			->addColumn('handy', 'string', [
-				'null' => true,
-				'default' => null,
-				'limit' => 50,
-				'collation' => 'utf8mb4_unicode_ci',
-				'encoding' => 'utf8mb4',
-				'after' => 'homepage',
-			])
-			->addColumn('geschlecht', 'integer', [
-				'null' => false,
-				'default' => '0',
-				'limit' => MysqlAdapter::INT_TINY,
-				'signed' => false,
-				'after' => 'handy',
-			])
-			->addColumn('geb_datum', 'date', [
-				'null' => true,
-				'default' => null,
-				'after' => 'geschlecht',
-			])
-			->addColumn('anmeldedatum', 'datetime', [
-				'null' => true,
-				'default' => null,
-				'after' => 'geb_datum',
-			])
-			->addColumn('privacy_notice_accepted_date', 'datetime', [
-				'null' => true,
-				'default' => null,
-				'after' => 'anmeldedatum',
-			])
-			->addColumn('privacy_policy_accepted_date', 'datetime', [
-				'null' => true,
-				'default' => null,
-				'after' => 'privacy_notice_accepted_date',
-			])
-			->addColumn('orgateam', 'integer', [
-				'null' => true,
-				'default' => '0',
-				'limit' => MysqlAdapter::INT_TINY,
-				'signed' => false,
-				'after' => 'privacy_policy_accepted_date',
-			])
-			->addColumn('active', 'integer', [
-				'null' => false,
-				'default' => '0',
-				'limit' => MysqlAdapter::INT_TINY,
-				'signed' => false,
-				'after' => 'orgateam',
-			])
-			->addColumn('data', 'text', [
-				'null' => false,
-				'limit' => MysqlAdapter::TEXT_MEDIUM,
-				'collation' => 'utf8mb4_unicode_ci',
-				'encoding' => 'utf8mb4',
-				'after' => 'active',
-			])
-			->addColumn('about_me_public', 'text', [
-				'null' => false,
-				'limit' => MysqlAdapter::TEXT_MEDIUM,
-				'collation' => 'utf8mb4_unicode_ci',
-				'encoding' => 'utf8mb4',
-				'after' => 'data',
-			])
-			->addColumn('newsletter', 'boolean', [
-				'null' => false,
-				'default' => '0',
-				'limit' => MysqlAdapter::INT_TINY,
-				'after' => 'about_me_public',
-			])
-			->addColumn('token', 'string', [
-				'null' => false,
-				'limit' => 25,
-				'collation' => 'utf8mb4_unicode_ci',
-				'encoding' => 'utf8mb4',
-				'after' => 'newsletter',
-			])
-			->addColumn('infomail_message', 'boolean', [
-				'null' => false,
-				'default' => '1',
-				'limit' => MysqlAdapter::INT_TINY,
-				'after' => 'token',
-			])
-			->addColumn('last_login', 'datetime', [
-				'null' => true,
-				'default' => null,
-				'after' => 'infomail_message',
-			])
-			->addColumn('stat_fetchweight', 'decimal', [
-				'null' => false,
-				'default' => '0.00',
-				'signed' => false,
-				'precision' => 9,
-				'scale' => 2,
-				'after' => 'last_login',
-			])
-			->addColumn('stat_fetchcount', 'integer', [
-				'null' => false,
-				'default' => '0',
-				'limit' => '10',
-				'signed' => false,
-				'after' => 'stat_fetchweight',
-			])
-			->addColumn('stat_ratecount', 'integer', [
-				'null' => false,
-				'default' => '0',
-				'limit' => '10',
-				'signed' => false,
-				'after' => 'stat_fetchcount',
-			])
-			->addColumn('stat_rating', 'decimal', [
-				'null' => false,
-				'default' => '0.00',
-				'signed' => false,
-				'precision' => 4,
-				'scale' => 2,
-				'after' => 'stat_ratecount',
-			])
-			->addColumn('stat_postcount', 'integer', [
-				'null' => false,
-				'default' => '0',
-				'limit' => MysqlAdapter::INT_REGULAR,
-				'after' => 'stat_rating',
-			])
-			->addColumn('stat_buddycount', 'integer', [
-				'null' => false,
-				'limit' => '7',
-				'signed' => false,
-				'after' => 'stat_postcount',
-			])
-			->addColumn('stat_bananacount', 'integer', [
-				'null' => false,
-				'default' => '0',
-				'limit' => '7',
-				'signed' => false,
-				'after' => 'stat_buddycount',
-			])
-			->addColumn('stat_fetchrate', 'decimal', [
-				'null' => false,
-				'default' => '100.00',
-				'precision' => 6,
-				'scale' => 2,
-				'after' => 'stat_bananacount',
-			])
-			->addColumn('sleep_status', 'integer', [
-				'null' => false,
-				'default' => '0',
-				'limit' => MysqlAdapter::INT_TINY,
-				'signed' => false,
-				'after' => 'stat_fetchrate',
-			])
-			->addColumn('sleep_from', 'date', [
-				'null' => true,
-				'default' => null,
-				'after' => 'sleep_status',
-			])
-			->addColumn('sleep_until', 'date', [
-				'null' => true,
-				'default' => null,
-				'after' => 'sleep_from',
-			])
-			->addColumn('sleep_msg', 'text', [
-				'null' => true,
-				'default' => null,
-				'limit' => MysqlAdapter::TEXT_MEDIUM,
-				'collation' => 'utf8mb4_unicode_ci',
-				'encoding' => 'utf8mb4',
-				'after' => 'sleep_until',
-			])
-			->addColumn('option', 'text', [
-				'null' => false,
-				'limit' => MysqlAdapter::TEXT_MEDIUM,
-				'collation' => 'utf8mb4_unicode_ci',
-				'encoding' => 'utf8mb4',
-				'after' => 'sleep_msg',
-			])
-			->addColumn('beta', 'boolean', [
-				'null' => false,
-				'default' => '0',
-				'limit' => MysqlAdapter::INT_TINY,
-				'after' => 'option',
-			])
-			->addColumn('quiz_rolle', 'integer', [
-				'null' => false,
-				'default' => '0',
-				'limit' => MysqlAdapter::INT_TINY,
-				'signed' => false,
-				'after' => 'beta',
-			])
-			->addColumn('contact_public', 'integer', [
-				'null' => false,
-				'limit' => MysqlAdapter::INT_TINY,
-				'after' => 'quiz_rolle',
-			])
-			->addColumn('deleted_at', 'datetime', [
-				'null' => true,
-				'default' => null,
-				'after' => 'contact_public',
-			])
-			->addColumn('about_me_intern', 'text', [
-				'null' => true,
-				'default' => null,
-				'limit' => 65535,
-				'collation' => 'utf8mb4_unicode_ci',
-				'encoding' => 'utf8mb4',
-				'after' => 'deleted_at',
-			])->create();
-		$this->table('fs_post_reaction', [
-			'id' => false,
-			'engine' => 'InnoDB',
-			'encoding' => 'utf8mb4',
-			'collation' => 'utf8mb4_unicode_ci',
-			'comment' => '',
-		])
-			->addColumn('post_id', 'integer', [
-				'null' => false,
-				'limit' => '10',
-				'signed' => false,
-			])
-			->addColumn('time', 'datetime', [
-				'null' => false,
-				'after' => 'post_id',
-			])
-			->addColumn('foodsaver_id', 'integer', [
-				'null' => false,
-				'limit' => MysqlAdapter::INT_REGULAR,
-				'after' => 'time',
-			])
-			->addColumn('key', 'string', [
-				'null' => true,
-				'default' => null,
-				'limit' => 63,
-				'collation' => 'utf8mb4_unicode_ci',
-				'encoding' => 'utf8mb4',
-				'after' => 'foodsaver_id',
-			])
-			->addIndex(['post_id', 'foodsaver_id', 'key'], [
-				'name' => 'post-foodsaver-key',
-				'unique' => true,
-			])
-			->addIndex(['post_id'], [
-				'name' => 'post_id',
-				'unique' => false,
-			])
-			->create();
-		$this->table('fs_foodsaver', [
-			'id' => false,
-			'primary_key' => ['id'],
-			'engine' => 'InnoDB',
-			'encoding' => 'utf8mb4',
-			'collation' => 'utf8mb4_unicode_ci',
-			'comment' => '',
-		])
-			->addColumn('id', 'integer', [
-				'null' => false,
-				'limit' => '10',
-				'signed' => false,
-				'identity' => 'enable',
-			])
-			->addColumn('bezirk_id', 'integer', [
-				'null' => false,
-				'limit' => '10',
-				'signed' => false,
-				'after' => 'id',
-			])
-			->addColumn('position', 'string', [
-				'null' => false,
-				'default' => '',
-				'limit' => 255,
-				'collation' => 'utf8mb4_unicode_ci',
-				'encoding' => 'utf8mb4',
-				'after' => 'bezirk_id',
-			])
-			->addColumn('verified', 'integer', [
-				'null' => false,
-				'default' => '0',
-				'limit' => MysqlAdapter::INT_TINY,
-				'signed' => false,
-				'after' => 'position',
-			])
-			->addColumn('last_pass', 'datetime', [
-				'null' => true,
-				'default' => null,
-				'after' => 'verified',
-			])
-			->addColumn('new_bezirk', 'string', [
-				'null' => false,
-				'default' => '',
-				'limit' => 120,
-				'collation' => 'utf8mb4_unicode_ci',
-				'encoding' => 'utf8mb4',
-				'after' => 'last_pass',
-			])
-			->addColumn('want_new', 'integer', [
-				'null' => false,
-				'default' => '0',
-				'limit' => MysqlAdapter::INT_TINY,
-				'after' => 'new_bezirk',
-			])
-			->addColumn('mailbox_id', 'integer', [
-				'null' => true,
-				'default' => null,
-				'limit' => '10',
-				'signed' => false,
-				'after' => 'want_new',
-			])
-			->addColumn('rolle', 'integer', [
-				'null' => false,
-				'limit' => MysqlAdapter::INT_TINY,
-				'after' => 'mailbox_id',
-			])
-			->addColumn('type', 'integer', [
-				'null' => true,
-				'default' => '0',
-				'limit' => MysqlAdapter::INT_TINY,
-				'after' => 'rolle',
-			])
-			->addColumn('plz', 'string', [
-				'null' => true,
-				'default' => null,
-				'limit' => 10,
-				'collation' => 'utf8mb4_unicode_ci',
-				'encoding' => 'utf8mb4',
-				'after' => 'type',
-			])
-			->addColumn('stadt', 'string', [
-				'null' => true,
-				'default' => null,
-				'limit' => 100,
-				'collation' => 'utf8mb4_unicode_ci',
-				'encoding' => 'utf8mb4',
-				'after' => 'plz',
-			])
-			->addColumn('lat', 'string', [
-				'null' => true,
-				'default' => null,
-				'limit' => 20,
-				'collation' => 'utf8mb4_unicode_ci',
-				'encoding' => 'utf8mb4',
-				'after' => 'stadt',
-			])
-			->addColumn('lon', 'string', [
-				'null' => true,
-				'default' => null,
-				'limit' => 20,
-				'collation' => 'utf8mb4_unicode_ci',
-				'encoding' => 'utf8mb4',
-				'after' => 'lat',
-			])
-			->addColumn('photo', 'string', [
-				'null' => true,
-				'default' => null,
-				'limit' => 50,
-				'collation' => 'utf8mb4_unicode_ci',
-				'encoding' => 'utf8mb4',
-				'after' => 'lon',
-			])
-			->addColumn('email', 'string', [
-				'null' => true,
-				'default' => null,
-				'limit' => 120,
-				'collation' => 'utf8mb4_unicode_ci',
-				'encoding' => 'utf8mb4',
-				'after' => 'photo',
-			])
-			->addColumn('password', 'string', [
-				'null' => true,
-				'default' => null,
-				'limit' => 100,
-				'collation' => 'utf8mb4_unicode_ci',
-				'encoding' => 'utf8mb4',
-				'after' => 'email',
-			])
-			->addColumn('name', 'string', [
-				'null' => true,
-				'default' => null,
-				'limit' => 120,
-				'collation' => 'utf8mb4_unicode_ci',
-				'encoding' => 'utf8mb4',
-				'after' => 'password',
-			])
-			->addColumn('admin', 'integer', [
-				'null' => true,
-				'default' => null,
-				'limit' => MysqlAdapter::INT_TINY,
-				'signed' => false,
-				'after' => 'name',
-			])
-			->addColumn('nachname', 'string', [
-				'null' => true,
-				'default' => null,
-				'limit' => 120,
-				'collation' => 'utf8mb4_unicode_ci',
-				'encoding' => 'utf8mb4',
-				'after' => 'admin',
-			])
-			->addColumn('anschrift', 'string', [
-				'null' => true,
-				'default' => null,
-				'limit' => 120,
-				'collation' => 'utf8mb4_unicode_ci',
-				'encoding' => 'utf8mb4',
-				'after' => 'nachname',
-			])
-			->addColumn('telefon', 'string', [
-				'null' => true,
-				'default' => null,
-				'limit' => 30,
-				'collation' => 'utf8mb4_unicode_ci',
-				'encoding' => 'utf8mb4',
-				'after' => 'anschrift',
-			])
-			->addColumn('homepage', 'string', [
-				'null' => true,
-				'default' => null,
-				'limit' => 255,
-				'collation' => 'utf8mb4_unicode_ci',
-				'encoding' => 'utf8mb4',
-				'after' => 'telefon',
-			])
-			->addColumn('handy', 'string', [
-				'null' => true,
-				'default' => null,
-				'limit' => 50,
-				'collation' => 'utf8mb4_unicode_ci',
-				'encoding' => 'utf8mb4',
-				'after' => 'homepage',
-			])
-			->addColumn('geschlecht', 'integer', [
-				'null' => false,
-				'default' => '0',
-				'limit' => MysqlAdapter::INT_TINY,
-				'signed' => false,
-				'after' => 'handy',
-			])
-			->addColumn('geb_datum', 'date', [
-				'null' => true,
-				'default' => null,
-				'after' => 'geschlecht',
-			])
-			->addColumn('anmeldedatum', 'datetime', [
-				'null' => true,
-				'default' => null,
-				'after' => 'geb_datum',
-			])
-			->addColumn('privacy_notice_accepted_date', 'datetime', [
-				'null' => true,
-				'default' => null,
-				'after' => 'anmeldedatum',
-			])
-			->addColumn('privacy_policy_accepted_date', 'datetime', [
-				'null' => true,
-				'default' => null,
-				'after' => 'privacy_notice_accepted_date',
-			])
-			->addColumn('orgateam', 'integer', [
-				'null' => true,
-				'default' => '0',
-				'limit' => MysqlAdapter::INT_TINY,
-				'signed' => false,
-				'after' => 'privacy_policy_accepted_date',
-			])
-			->addColumn('active', 'integer', [
-				'null' => false,
-				'default' => '0',
-				'limit' => MysqlAdapter::INT_TINY,
-				'signed' => false,
-				'after' => 'orgateam',
-			])
-			->addColumn('data', 'text', [
-				'null' => false,
-				'default' => '',
-				'limit' => MysqlAdapter::TEXT_MEDIUM,
-				'collation' => 'utf8mb4_unicode_ci',
-				'encoding' => 'utf8mb4',
-				'after' => 'active',
-			])
-			->addColumn('about_me_public', 'text', [
-				'null' => false,
-				'default' => '',
-				'limit' => MysqlAdapter::TEXT_MEDIUM,
-				'collation' => 'utf8mb4_unicode_ci',
-				'encoding' => 'utf8mb4',
-				'after' => 'data',
-			])
-			->addColumn('newsletter', 'boolean', [
-				'null' => false,
-				'default' => '0',
-				'limit' => MysqlAdapter::INT_TINY,
-				'after' => 'about_me_public',
-			])
-			->addColumn('token', 'string', [
-				'null' => false,
-				'limit' => 25,
-				'collation' => 'utf8mb4_unicode_ci',
-				'encoding' => 'utf8mb4',
-				'after' => 'newsletter',
-			])
-			->addColumn('infomail_message', 'boolean', [
-				'null' => false,
-				'default' => '1',
-				'limit' => MysqlAdapter::INT_TINY,
-				'after' => 'token',
-			])
-			->addColumn('last_login', 'datetime', [
-				'null' => true,
-				'default' => null,
-				'after' => 'infomail_message',
-			])
-			->addColumn('stat_fetchweight', 'decimal', [
-				'null' => false,
-				'default' => '0.00',
-				'signed' => false,
-				'precision' => 9,
-				'scale' => 2,
-				'after' => 'last_login',
-			])
-			->addColumn('stat_fetchcount', 'integer', [
-				'null' => false,
-				'default' => '0',
-				'limit' => '10',
-				'signed' => false,
-				'after' => 'stat_fetchweight',
-			])
-			->addColumn('stat_ratecount', 'integer', [
-				'null' => false,
-				'default' => '0',
-				'limit' => '10',
-				'signed' => false,
-				'after' => 'stat_fetchcount',
-			])
-			->addColumn('stat_rating', 'decimal', [
-				'null' => false,
-				'default' => '0.00',
-				'signed' => false,
-				'precision' => 4,
-				'scale' => 2,
-				'after' => 'stat_ratecount',
-			])
-			->addColumn('stat_postcount', 'integer', [
-				'null' => false,
-				'default' => '0',
-				'limit' => MysqlAdapter::INT_REGULAR,
-				'after' => 'stat_rating',
-			])
-			->addColumn('stat_buddycount', 'integer', [
-				'null' => false,
-				'default' => '0',
-				'limit' => '7',
-				'signed' => false,
-				'after' => 'stat_postcount',
-			])
-			->addColumn('stat_bananacount', 'integer', [
-				'null' => false,
-				'default' => '0',
-				'limit' => '7',
-				'signed' => false,
-				'after' => 'stat_buddycount',
-			])
-			->addColumn('stat_fetchrate', 'decimal', [
-				'null' => false,
-				'default' => '100.00',
-				'precision' => 6,
-				'scale' => 2,
-				'after' => 'stat_bananacount',
-			])
-			->addColumn('sleep_status', 'integer', [
-				'null' => false,
-				'default' => '0',
-				'limit' => MysqlAdapter::INT_TINY,
-				'signed' => false,
-				'after' => 'stat_fetchrate',
-			])
-			->addColumn('sleep_from', 'date', [
-				'null' => true,
-				'default' => null,
-				'after' => 'sleep_status',
-			])
-			->addColumn('sleep_until', 'date', [
-				'null' => true,
-				'default' => null,
-				'after' => 'sleep_from',
-			])
-			->addColumn('sleep_msg', 'text', [
-				'null' => true,
-				'default' => null,
-				'limit' => MysqlAdapter::TEXT_MEDIUM,
-				'collation' => 'utf8mb4_unicode_ci',
-				'encoding' => 'utf8mb4',
-				'after' => 'sleep_until',
-			])
-			->addColumn('option', 'text', [
-				'null' => false,
-				'default' => '',
-				'limit' => MysqlAdapter::TEXT_MEDIUM,
-				'collation' => 'utf8mb4_unicode_ci',
-				'encoding' => 'utf8mb4',
-				'after' => 'sleep_msg',
-			])
-			->addColumn('beta', 'boolean', [
-				'null' => false,
-				'default' => '0',
-				'limit' => MysqlAdapter::INT_TINY,
-				'after' => 'option',
-			])
-			->addColumn('quiz_rolle', 'integer', [
-				'null' => false,
-				'default' => '0',
-				'limit' => MysqlAdapter::INT_TINY,
-				'signed' => false,
-				'after' => 'beta',
-			])
-			->addColumn('contact_public', 'integer', [
-				'null' => false,
-				'default' => '0',
-				'limit' => MysqlAdapter::INT_TINY,
-				'after' => 'quiz_rolle',
-			])
-			->addColumn('deleted_at', 'datetime', [
-				'null' => true,
-				'default' => null,
-				'after' => 'contact_public',
-			])
-			->addColumn('about_me_intern', 'text', [
-				'null' => true,
-				'default' => null,
-				'limit' => 65535,
-				'collation' => 'utf8mb4_unicode_ci',
-				'encoding' => 'utf8mb4',
-				'after' => 'deleted_at',
-			])
-			->addIndex(['email'], [
-				'name' => 'email',
-				'unique' => true,
-			])
-			->addIndex(['bezirk_id'], [
-				'name' => 'foodsaver_FKIndex2',
-				'unique' => false,
-			])
-			->addIndex(['plz'], [
-				'name' => 'plz',
-				'unique' => false,
-			])
-			->addIndex(['want_new'], [
-				'name' => 'want_new',
-				'unique' => false,
-			])
-			->addIndex(['mailbox_id'], [
-				'name' => 'mailbox_id',
-				'unique' => false,
-			])
-			->addIndex(['newsletter'], [
-				'name' => 'newsletter',
-				'unique' => false,
-			])
-			->addIndex(['name', 'nachname'], [
-				'name' => 'name',
-				'unique' => false,
-				'type' => 'fulltext',
-			])
-			->create();
-		$this->table('fs_abholer', [
-			'id' => false,
-			'primary_key' => ['id'],
-			'engine' => 'InnoDB',
-			'encoding' => 'utf8mb4',
-			'collation' => 'utf8mb4_unicode_ci',
-			'comment' => '',
-		])
-			->addColumn('foodsaver_id', 'integer', [
-				'null' => false,
-				'limit' => '10',
-				'signed' => false,
-			])
-			->addColumn('betrieb_id', 'integer', [
-				'null' => false,
-				'limit' => '10',
-				'signed' => false,
-				'after' => 'foodsaver_id',
-			])
-			->addColumn('date', 'datetime', [
-				'null' => false,
-				'after' => 'betrieb_id',
-			])
-			->addColumn('confirmed', 'integer', [
-				'null' => false,
-				'default' => '0',
-				'limit' => MysqlAdapter::INT_TINY,
-				'signed' => false,
-				'after' => 'date',
-			])
-			->addColumn('id', 'integer', [
-				'null' => false,
-				'limit' => '10',
-				'signed' => false,
-				'identity' => 'enable',
-				'after' => 'confirmed',
-			])
-			->addIndex(['foodsaver_id', 'betrieb_id', 'date'], [
-				'name' => 'foodsaver_id',
-				'unique' => true,
-			])
-			->addIndex(['betrieb_id'], [
-				'name' => 'betrieb_id',
-				'unique' => false,
-			])
-			->create();
-		$this->table('fs_send_email', [
-			'id' => false,
-			'primary_key' => ['id'],
-			'engine' => 'InnoDB',
-			'encoding' => 'utf8mb4',
-			'collation' => 'utf8mb4_unicode_ci',
-			'comment' => '',
-		])
-			->addColumn('id', 'integer', [
-				'null' => false,
-				'limit' => '10',
-				'signed' => false,
-				'identity' => 'enable',
-			])
-			->addColumn('foodsaver_id', 'integer', [
-				'null' => false,
-				'limit' => '10',
-				'signed' => false,
-				'after' => 'id',
-			])
-			->addColumn('mailbox_id', 'integer', [
-				'null' => false,
-				'limit' => '10',
-				'signed' => false,
-				'after' => 'foodsaver_id',
-			])
-			->addColumn('mode', 'integer', [
-				'null' => false,
-				'default' => '1',
-				'limit' => MysqlAdapter::INT_TINY,
-				'after' => 'mailbox_id',
-			])
-			->addColumn('complete', 'integer', [
-				'null' => false,
-				'default' => '0',
-				'limit' => MysqlAdapter::INT_TINY,
-				'after' => 'mode',
-			])
-			->addColumn('name', 'string', [
-				'null' => true,
-				'default' => null,
-				'limit' => 200,
-				'collation' => 'utf8mb4_unicode_ci',
-				'encoding' => 'utf8mb4',
-				'after' => 'complete',
-			])
-			->addColumn('message', 'text', [
-				'null' => true,
-				'default' => null,
-				'limit' => MysqlAdapter::TEXT_MEDIUM,
-				'collation' => 'utf8mb4_unicode_ci',
-				'encoding' => 'utf8mb4',
-				'after' => 'name',
-			])
-			->addColumn('zeit', 'datetime', [
-				'null' => true,
-				'default' => null,
-				'after' => 'message',
-			])
-			->addColumn('recip', 'text', [
-				'null' => true,
-				'default' => null,
-				'limit' => MysqlAdapter::TEXT_MEDIUM,
-				'collation' => 'utf8mb4_unicode_ci',
-				'encoding' => 'utf8mb4',
-				'after' => 'zeit',
-			])
-			->addColumn('attach', 'string', [
-				'null' => false,
-				'limit' => 500,
-				'collation' => 'utf8mb4_unicode_ci',
-				'encoding' => 'utf8mb4',
-				'after' => 'recip',
-			])
-			->addIndex(['foodsaver_id'], [
-				'name' => 'send_email_FKIndex1',
-				'unique' => false,
-			])
-			->create();
-		$this->table('fs_mailbox_message', [
-			'id' => false,
-			'primary_key' => ['id'],
-			'engine' => 'InnoDB',
-			'encoding' => 'utf8mb4',
-			'collation' => 'utf8mb4_unicode_ci',
-			'comment' => '',
-		])
-			->addColumn('id', 'integer', [
-				'null' => false,
-				'limit' => '10',
-				'signed' => false,
-				'identity' => 'enable',
-			])
-			->addColumn('mailbox_id', 'integer', [
-				'null' => false,
-				'limit' => '10',
-				'signed' => false,
-				'after' => 'id',
-			])
-			->addColumn('folder', 'integer', [
-				'null' => true,
-				'default' => '1',
-				'limit' => MysqlAdapter::INT_TINY,
-				'signed' => false,
-				'after' => 'mailbox_id',
-			])
-			->addColumn('sender', 'text', [
-				'null' => true,
-				'default' => null,
-				'limit' => 65535,
-				'collation' => 'utf8mb4_unicode_ci',
-				'encoding' => 'utf8mb4',
-				'after' => 'folder',
-			])
-			->addColumn('to', 'text', [
-				'null' => false,
-				'limit' => MysqlAdapter::TEXT_MEDIUM,
-				'collation' => 'utf8mb4_unicode_ci',
-				'encoding' => 'utf8mb4',
-				'after' => 'sender',
-			])
-			->addColumn('subject', 'text', [
-				'null' => true,
-				'default' => null,
-				'limit' => 65535,
-				'collation' => 'utf8mb4_unicode_ci',
-				'encoding' => 'utf8mb4',
-				'after' => 'to',
-			])
-			->addColumn('body', 'text', [
-				'null' => true,
-				'default' => null,
-				'limit' => MysqlAdapter::TEXT_MEDIUM,
-				'collation' => 'utf8mb4_unicode_ci',
-				'encoding' => 'utf8mb4',
-				'after' => 'subject',
-			])
-			->addColumn('body_html', 'text', [
-				'null' => false,
-				'limit' => MysqlAdapter::TEXT_MEDIUM,
-				'collation' => 'utf8mb4_unicode_ci',
-				'encoding' => 'utf8mb4',
-				'after' => 'body',
-			])
-			->addColumn('time', 'datetime', [
-				'null' => true,
-				'default' => null,
-				'after' => 'body_html',
-			])
-			->addColumn('attach', 'text', [
-				'null' => true,
-				'default' => null,
-				'limit' => MysqlAdapter::TEXT_MEDIUM,
-				'collation' => 'utf8mb4_unicode_ci',
-				'encoding' => 'utf8mb4',
-				'after' => 'time',
-			])
-			->addColumn('read', 'integer', [
-				'null' => true,
-				'default' => null,
-				'limit' => MysqlAdapter::INT_TINY,
-				'signed' => false,
-				'after' => 'attach',
-			])
-			->addColumn('answer', 'integer', [
-				'null' => true,
-				'default' => null,
-				'limit' => MysqlAdapter::INT_TINY,
-				'signed' => false,
-				'after' => 'read',
-			])
-			->addIndex(['folder'], [
-				'name' => 'email_message_folder',
-				'unique' => false,
-			])
-			->addIndex(['mailbox_id', 'read'], [
-				'name' => 'mailbox_message_FKIndex1',
-				'unique' => false,
-			])
-			->create();
-		$this->table('fs_betrieb', [
-			'id' => false,
-			'primary_key' => ['id'],
-			'engine' => 'InnoDB',
-			'encoding' => 'utf8mb4',
-			'collation' => 'utf8mb4_unicode_ci',
-			'comment' => '',
-		])
-			->addColumn('id', 'integer', [
-				'null' => false,
-				'limit' => '10',
-				'signed' => false,
-				'identity' => 'enable',
-			])
-			->addColumn('betrieb_status_id', 'integer', [
-				'null' => false,
-				'limit' => '10',
-				'signed' => false,
-				'after' => 'id',
-			])
-			->addColumn('bezirk_id', 'integer', [
-				'null' => false,
-				'limit' => '10',
-				'signed' => false,
-				'after' => 'betrieb_status_id',
-			])
-			->addColumn('added', 'date', [
-				'null' => false,
-				'after' => 'bezirk_id',
-			])
-			->addColumn('plz', 'string', [
-				'null' => false,
-				'limit' => 5,
-				'collation' => 'utf8mb4_unicode_ci',
-				'encoding' => 'utf8mb4',
-				'after' => 'added',
-			])
-			->addColumn('stadt', 'string', [
-				'null' => false,
-				'limit' => 50,
-				'collation' => 'utf8mb4_unicode_ci',
-				'encoding' => 'utf8mb4',
-				'after' => 'plz',
-			])
-			->addColumn('lat', 'string', [
-				'null' => true,
-				'default' => null,
-				'limit' => 20,
-				'collation' => 'utf8mb4_unicode_ci',
-				'encoding' => 'utf8mb4',
-				'after' => 'stadt',
-			])
-			->addColumn('lon', 'string', [
-				'null' => true,
-				'default' => null,
-				'limit' => 20,
-				'collation' => 'utf8mb4_unicode_ci',
-				'encoding' => 'utf8mb4',
-				'after' => 'lat',
-			])
-			->addColumn('kette_id', 'integer', [
-				'null' => true,
-				'default' => null,
-				'limit' => '10',
-				'signed' => false,
-				'after' => 'lon',
-			])
-			->addColumn('betrieb_kategorie_id', 'integer', [
-				'null' => true,
-				'default' => null,
-				'limit' => MysqlAdapter::INT_REGULAR,
-				'after' => 'kette_id',
-			])
-			->addColumn('name', 'string', [
-				'null' => true,
-				'default' => null,
-				'limit' => 120,
-				'collation' => 'utf8mb4_unicode_ci',
-				'encoding' => 'utf8mb4',
-				'after' => 'betrieb_kategorie_id',
-			])
-			->addColumn('str', 'string', [
-				'null' => true,
-				'default' => null,
-				'limit' => 120,
-				'collation' => 'utf8mb4_unicode_ci',
-				'encoding' => 'utf8mb4',
-				'after' => 'name',
-			])
-			->addColumn('hsnr', 'string', [
-				'null' => true,
-				'default' => null,
-				'limit' => 20,
-				'collation' => 'utf8mb4_unicode_ci',
-				'encoding' => 'utf8mb4',
-				'after' => 'str',
-			])
-			->addColumn('status_date', 'date', [
-				'null' => true,
-				'default' => null,
-				'after' => 'hsnr',
-			])
-			->addColumn('status', 'integer', [
-				'null' => true,
-				'default' => null,
-				'limit' => MysqlAdapter::INT_TINY,
-				'signed' => false,
-				'after' => 'status_date',
-			])
-			->addColumn('ansprechpartner', 'string', [
-				'null' => true,
-				'default' => null,
-				'limit' => 60,
-				'collation' => 'utf8mb4_unicode_ci',
-				'encoding' => 'utf8mb4',
-				'after' => 'status',
-			])
-			->addColumn('telefon', 'string', [
-				'null' => true,
-				'default' => null,
-				'limit' => 50,
-				'collation' => 'utf8mb4_unicode_ci',
-				'encoding' => 'utf8mb4',
-				'after' => 'ansprechpartner',
-			])
-			->addColumn('fax', 'string', [
-				'null' => true,
-				'default' => null,
-				'limit' => 50,
-				'collation' => 'utf8mb4_unicode_ci',
-				'encoding' => 'utf8mb4',
-				'after' => 'telefon',
-			])
-			->addColumn('email', 'string', [
-				'null' => true,
-				'default' => null,
-				'limit' => 60,
-				'collation' => 'utf8mb4_unicode_ci',
-				'encoding' => 'utf8mb4',
-				'after' => 'fax',
-			])
-			->addColumn('begin', 'date', [
-				'null' => true,
-				'default' => null,
-				'after' => 'email',
-			])
-			->addColumn('besonderheiten', 'text', [
-				'null' => true,
-				'default' => null,
-				'limit' => MysqlAdapter::TEXT_MEDIUM,
-				'collation' => 'utf8mb4_unicode_ci',
-				'encoding' => 'utf8mb4',
-				'after' => 'begin',
-			])
-			->addColumn('public_info', 'string', [
-				'null' => true,
-				'default' => null,
-				'limit' => 200,
-				'collation' => 'utf8mb4_unicode_ci',
-				'encoding' => 'utf8mb4',
-				'after' => 'besonderheiten',
-			])
-			->addColumn('public_time', 'integer', [
-				'null' => false,
-				'limit' => MysqlAdapter::INT_TINY,
-				'after' => 'public_info',
-			])
-			->addColumn('ueberzeugungsarbeit', 'integer', [
-				'null' => false,
-				'limit' => MysqlAdapter::INT_TINY,
-				'after' => 'public_time',
-			])
-			->addColumn('presse', 'integer', [
-				'null' => false,
-				'limit' => MysqlAdapter::INT_TINY,
-				'after' => 'ueberzeugungsarbeit',
-			])
-			->addColumn('sticker', 'integer', [
-				'null' => false,
-				'limit' => MysqlAdapter::INT_TINY,
-				'after' => 'presse',
-			])
-			->addColumn('abholmenge', 'integer', [
-				'null' => false,
-				'limit' => MysqlAdapter::INT_TINY,
-				'after' => 'sticker',
-			])
-			->addColumn('team_status', 'integer', [
-				'null' => false,
-				'default' => '1',
-				'limit' => MysqlAdapter::INT_TINY,
-				'comment' => '0 = Team Voll; 1 = Es werden noch Helfer gesucht; 2 = Es werden dringend Helfer gesucht',
-				'after' => 'abholmenge',
-			])
-			->addColumn('prefetchtime', 'integer', [
-				'null' => false,
-				'default' => '1209600',
-				'limit' => '10',
-				'signed' => false,
-				'after' => 'team_status',
-			])
-			->addColumn('team_conversation_id', 'integer', [
-				'null' => true,
-				'default' => null,
-				'limit' => '10',
-				'signed' => false,
-				'after' => 'prefetchtime',
-			])
-			->addColumn('springer_conversation_id', 'integer', [
-				'null' => true,
-				'default' => null,
-				'limit' => '10',
-				'signed' => false,
-				'after' => 'team_conversation_id',
-			])
-			->addColumn('deleted_at', 'datetime', [
-				'null' => true,
-				'default' => null,
-				'after' => 'springer_conversation_id',
-			])
-			->addIndex(['kette_id'], [
-				'name' => 'betrieb_FKIndex2',
-				'unique' => false,
-			])
-			->addIndex(['bezirk_id'], [
-				'name' => 'betrieb_FKIndex3',
-				'unique' => false,
-			])
-			->addIndex(['betrieb_status_id'], [
-				'name' => 'betrieb_FKIndex5',
-				'unique' => false,
-			])
-			->addIndex(['plz'], [
-				'name' => 'plz',
-				'unique' => false,
-			])
-			->addIndex(['team_status'], [
-				'name' => 'team_status',
-				'unique' => false,
-			])
-			->create();
-		$this->table('fs_wallpost', [
-			'id' => false,
-			'primary_key' => ['id'],
-			'engine' => 'InnoDB',
-			'encoding' => 'utf8mb4',
-			'collation' => 'utf8mb4_unicode_ci',
-			'comment' => '',
-		])
-			->addColumn('id', 'integer', [
-				'null' => false,
-				'limit' => '10',
-				'signed' => false,
-				'identity' => 'enable',
-			])
-			->addColumn('foodsaver_id', 'integer', [
-				'null' => false,
-				'limit' => '10',
-				'signed' => false,
-				'after' => 'id',
-			])
-			->addColumn('body', 'text', [
-				'null' => true,
-				'default' => null,
-				'limit' => MysqlAdapter::TEXT_MEDIUM,
-				'collation' => 'utf8mb4_unicode_ci',
-				'encoding' => 'utf8mb4',
-				'after' => 'foodsaver_id',
-			])
-			->addColumn('time', 'datetime', [
-				'null' => true,
-				'default' => null,
-				'after' => 'body',
-			])
-			->addColumn('attach', 'text', [
-				'null' => true,
-				'default' => null,
-				'limit' => MysqlAdapter::TEXT_MEDIUM,
-				'collation' => 'utf8mb4_unicode_ci',
-				'encoding' => 'utf8mb4',
-				'after' => 'time',
-			])
-			->addIndex(['foodsaver_id'], [
-				'name' => 'wallpost_FKIndex1',
-				'unique' => false,
-			])
-			->create();
-		$this->table('fs_theme_post', [
-			'id' => false,
-			'primary_key' => ['id'],
-			'engine' => 'InnoDB',
-			'encoding' => 'utf8mb4',
-			'collation' => 'utf8mb4_unicode_ci',
-			'comment' => '',
-		])
-			->addColumn('id', 'integer', [
-				'null' => false,
-				'limit' => '10',
-				'signed' => false,
-				'identity' => 'enable',
-			])
-			->addColumn('theme_id', 'integer', [
-				'null' => false,
-				'limit' => '10',
-				'signed' => false,
-				'after' => 'id',
-			])
-			->addColumn('foodsaver_id', 'integer', [
-				'null' => false,
-				'limit' => '10',
-				'signed' => false,
-				'after' => 'theme_id',
-			])
-			->addColumn('reply_post', 'integer', [
-				'null' => false,
-				'default' => '0',
-				'limit' => '10',
-				'signed' => false,
-				'after' => 'foodsaver_id',
-			])
-			->addColumn('body', 'text', [
-				'null' => true,
-				'default' => null,
-				'limit' => MysqlAdapter::TEXT_MEDIUM,
-				'collation' => 'utf8mb4_unicode_ci',
-				'encoding' => 'utf8mb4',
-				'after' => 'reply_post',
-			])
-			->addColumn('time', 'datetime', [
-				'null' => true,
-				'default' => null,
-				'after' => 'body',
-			])
-			->addIndex(['foodsaver_id'], [
-				'name' => 'theme_post_FKIndex1',
-				'unique' => false,
-			])
-			->addIndex(['theme_id'], [
-				'name' => 'theme_post_FKIndex2',
-				'unique' => false,
-			])
-			->addIndex(['reply_post'], [
-				'name' => 'reply_post',
-				'unique' => false,
-			])
-			->create();
-		$this->table('fs_usernotes_has_wallpost', [
-			'id' => false,
-			'primary_key' => ['usernotes_id', 'wallpost_id'],
-			'engine' => 'InnoDB',
-			'encoding' => 'utf8mb4',
-			'collation' => 'utf8mb4_unicode_ci',
-			'comment' => '',
-		])
-			->addColumn('usernotes_id', 'integer', [
-				'null' => false,
-				'limit' => '10',
-				'signed' => false,
-			])
-			->addColumn('wallpost_id', 'integer', [
-				'null' => false,
-				'limit' => '10',
-				'signed' => false,
-				'after' => 'usernotes_id',
-			])
-			->addColumn('usercomment', 'integer', [
-				'null' => false,
-				'default' => '0',
-				'limit' => MysqlAdapter::INT_TINY,
-				'after' => 'wallpost_id',
-			])
-			->addIndex(['usernotes_id'], [
-				'name' => 'usernotes_has_wallpost_FKIndex1',
-				'unique' => false,
-			])
-			->addIndex(['wallpost_id'], [
-				'name' => 'usernotes_has_wallpost_FKIndex2',
-				'unique' => false,
-			])
-			->addIndex(['usernotes_id'], [
-				'name' => 'usernotes_id',
-				'unique' => false,
-			])
-			->addIndex(['wallpost_id'], [
-				'name' => 'wallpost_id',
-				'unique' => false,
-			])
-			->create();
-		$this->table('fs_foodsaver_has_event', [
-			'id' => false,
-			'primary_key' => ['foodsaver_id', 'event_id'],
-			'engine' => 'InnoDB',
-			'encoding' => 'utf8mb4',
-			'collation' => 'utf8mb4_unicode_ci',
-			'comment' => '',
-		])
-			->addColumn('foodsaver_id', 'integer', [
-				'null' => false,
-				'limit' => '10',
-				'signed' => false,
-			])
-			->addColumn('event_id', 'integer', [
-				'null' => false,
-				'limit' => '10',
-				'signed' => false,
-				'after' => 'foodsaver_id',
-			])
-			->addColumn('status', 'integer', [
-				'null' => false,
-				'default' => '0',
-				'limit' => MysqlAdapter::INT_TINY,
-				'signed' => false,
-				'after' => 'event_id',
-			])
-			->addIndex(['foodsaver_id'], [
-				'name' => 'foodsaver_has_event_FKIndex1',
-				'unique' => false,
-			])
-			->addIndex(['event_id'], [
-				'name' => 'foodsaver_has_event_FKIndex2',
-				'unique' => false,
-			])
-			->create();
-		$this->table('fs_betrieb_kategorie', [
-			'id' => false,
-			'primary_key' => ['id'],
-			'engine' => 'InnoDB',
-			'encoding' => 'utf8mb4',
-			'collation' => 'utf8mb4_unicode_ci',
-			'comment' => '',
-		])
-			->addColumn('id', 'integer', [
-				'null' => false,
-				'limit' => '10',
-				'signed' => false,
-				'identity' => 'enable',
-			])
-			->addColumn('name', 'string', [
-				'null' => true,
-				'default' => null,
-				'limit' => 50,
-				'collation' => 'utf8mb4_unicode_ci',
-				'encoding' => 'utf8mb4',
-				'after' => 'id',
-			])
-			->create();
-		$this->table('fs_foodsaver_change_history', [
-			'id' => false,
-			'engine' => 'InnoDB',
-			'encoding' => 'utf8mb4',
-			'collation' => 'utf8mb4_unicode_ci',
-			'comment' => '',
-		])
-			->addColumn('date', 'timestamp', [
-				'null' => false,
-				'default' => 'CURRENT_TIMESTAMP',
-			])
-			->addColumn('fs_id', 'integer', [
-				'null' => false,
-				'limit' => MysqlAdapter::INT_REGULAR,
-				'after' => 'date',
-			])
-			->addColumn('changer_id', 'integer', [
-				'null' => false,
-				'limit' => MysqlAdapter::INT_REGULAR,
-				'after' => 'fs_id',
-			])
-			->addColumn('object_name', 'text', [
-				'null' => false,
-				'limit' => MysqlAdapter::TEXT_MEDIUM,
-				'collation' => 'utf8mb4_unicode_ci',
-				'encoding' => 'utf8mb4',
-				'after' => 'changer_id',
-			])
-			->addColumn('old_value', 'text', [
-				'null' => true,
-				'default' => null,
-				'limit' => MysqlAdapter::TEXT_MEDIUM,
-				'collation' => 'utf8mb4_unicode_ci',
-				'encoding' => 'utf8mb4',
-				'after' => 'object_name',
-			])
-			->addColumn('new_value', 'text', [
-				'null' => true,
-				'default' => null,
-				'limit' => MysqlAdapter::TEXT_MEDIUM,
-				'collation' => 'utf8mb4_unicode_ci',
-				'encoding' => 'utf8mb4',
-				'after' => 'old_value',
-			])
-			->addIndex(['fs_id'], [
-				'name' => 'fs_id',
-				'unique' => false,
-			])
-			->create();
-		$this->execute('SET FOREIGN_KEY_CHECKS=0;');
-		$this->table('fs_answer')
-				->addForeignKey('question_id', 'fs_question', 'id', ['delete' => 'CASCADE'])
-				->update();
-		$this->table('fs_apitoken')
-				->addForeignKey('foodsaver_id', 'fs_foodsaver', 'id', ['delete' => 'CASCADE'])
-				->update();
-		$this->table('fs_application_has_wallpost')
-				->addForeignKey('application_id', 'fs_foodsaver', 'id', ['delete' => 'CASCADE'])
-				->addForeignKey('wallpost_id', 'fs_wallpost', 'id', ['delete' => 'CASCADE'])
-				->update();
-		$this->table('fs_basket_anfrage')
-				->addForeignKey('foodsaver_id', 'fs_foodsaver', 'id', ['delete' => 'CASCADE'])
-				->addForeignKey('basket_id', 'fs_basket', 'id', ['delete' => 'CASCADE'])
-				->update();
-		$this->table('fs_basket_has_wallpost')
-				->addForeignKey('basket_id', 'fs_basket', 'id', ['delete' => 'CASCADE'])
-				->addForeignKey('wallpost_id', 'fs_wallpost', 'id', ['delete' => 'CASCADE'])
-				->update();
-		$this->table('fs_bezirk')
-				->addForeignKey('parent_id', 'fs_bezirk', 'id', ['update' => 'CASCADE'])
-				->update();
-		$this->table('fs_bezirk_closure')
-				->addForeignKey('bezirk_id', 'fs_bezirk', 'id', ['delete' => 'CASCADE', 'update' => 'CASCADE'])
-				->addForeignKey('ancestor_id', 'fs_bezirk', 'id', ['delete' => 'CASCADE', 'update' => 'CASCADE'])
-				->update();
-		$this->table('fs_bezirk_has_theme')
-				->addForeignKey('bezirk_id', 'fs_bezirk', 'id', ['delete' => 'CASCADE'])
-				->addForeignKey('theme_id', 'fs_theme', 'id', ['delete' => 'CASCADE'])
-				->update();
-		$this->table('fs_bezirk_has_wallpost')
-				->addForeignKey('bezirk_id', 'fs_bezirk', 'id', ['delete' => 'CASCADE'])
-				->addForeignKey('wallpost_id', 'fs_wallpost', 'id', ['delete' => 'CASCADE'])
-				->update();
-		$this->table('fs_botschafter')
-				->addForeignKey('foodsaver_id', 'fs_foodsaver', 'id', ['delete' => 'CASCADE'])
-				->addForeignKey('bezirk_id', 'fs_bezirk', 'id', ['delete' => 'CASCADE'])
-				->update();
-		$this->table('fs_buddy')
-				->addForeignKey('foodsaver_id', 'fs_foodsaver', 'id', ['delete' => 'CASCADE'])
-				->addForeignKey('buddy_id', 'fs_foodsaver', 'id', ['delete' => 'CASCADE'])
-				->update();
-		$this->table('fs_email_status')
-				->addForeignKey('foodsaver_id', 'fs_foodsaver', 'id', ['delete' => 'CASCADE'])
-				->addForeignKey('email_id', 'fs_send_email', 'id', ['delete' => 'CASCADE'])
-				->update();
-		$this->table('fs_event')
-				->addForeignKey('bezirk_id', 'fs_bezirk', 'id', ['delete' => 'SET_NULL'])
-				->addForeignKey('location_id', 'fs_location', 'id', ['delete' => 'CASCADE'])
-				->update();
-		$this->table('fs_event_has_wallpost')
-				->addForeignKey('event_id', 'fs_event', 'id', ['delete' => 'CASCADE'])
-				->addForeignKey('wallpost_id', 'fs_wallpost', 'id', ['delete' => 'CASCADE'])
-				->update();
-		$this->table('fs_fairteiler')
-				->addForeignKey('bezirk_id', 'fs_bezirk', 'id', ['delete' => 'SET_NULL'])
-				->update();
-		$this->table('fs_fairteiler_follower')
-				->addForeignKey('foodsaver_id', 'fs_foodsaver', 'id', ['delete' => 'CASCADE'])
-				->addForeignKey('fairteiler_id', 'fs_fairteiler', 'id', ['delete' => 'CASCADE'])
-				->update();
-		$this->table('fs_fairteiler_has_wallpost')
-				->addForeignKey('fairteiler_id', 'fs_fairteiler', 'id', ['delete' => 'CASCADE'])
-				->addForeignKey('wallpost_id', 'fs_wallpost', 'id', ['delete' => 'CASCADE'])
-				->update();
-		$this->table('fs_foodsaver_has_bell')
-				->addForeignKey('foodsaver_id', 'fs_foodsaver', 'id', ['delete' => 'CASCADE'])
-				->addForeignKey('bell_id', 'fs_bell', 'id', ['delete' => 'CASCADE'])
-				->update();
-		$this->table('fs_foodsaver_has_bezirk')
-				->addForeignKey('foodsaver_id', 'fs_foodsaver', 'id', ['delete' => 'CASCADE'])
-				->addForeignKey('bezirk_id', 'fs_bezirk', 'id', ['delete' => 'CASCADE'])
-				->update();
-		$this->table('fs_foodsaver_has_contact')
-				->addForeignKey('foodsaver_id', 'fs_foodsaver', 'id', ['delete' => 'CASCADE'])
-				->addForeignKey('contact_id', 'fs_contact', 'id', ['delete' => 'CASCADE'])
-				->update();
-		$this->table('fs_foodsaver_has_conversation')
-				->addForeignKey('foodsaver_id', 'fs_foodsaver', 'id', ['delete' => 'CASCADE'])
-				->addForeignKey('conversation_id', 'fs_conversation', 'id', ['delete' => 'CASCADE'])
-				->update();
-		$this->table('fs_foodsaver_has_event')
-				->addForeignKey('foodsaver_id', 'fs_foodsaver', 'id', ['delete' => 'CASCADE'])
-				->addForeignKey('event_id', 'fs_event', 'id', ['delete' => 'CASCADE'])
-				->update();
-		$this->table('fs_foodsaver_has_wallpost')
-				->addForeignKey('foodsaver_id', 'fs_foodsaver', 'id', ['delete' => 'CASCADE'])
-				->addForeignKey('wallpost_id', 'fs_wallpost', 'id', ['delete' => 'CASCADE'])
-				->update();
-		$this->table('fs_report_has_wallpost')
-				->addForeignKey('fsreport_id', 'fs_foodsaver', 'id', ['delete' => 'CASCADE'])
-				->addForeignKey('wallpost_id', 'fs_wallpost', 'id', ['delete' => 'CASCADE'])
-				->update();
-		$this->table('fs_mailbox_member')
-				->addForeignKey('foodsaver_id', 'fs_foodsaver', 'id', ['delete' => 'CASCADE'])
-				->addForeignKey('mailbox_id', 'fs_mailbox', 'id', ['delete' => 'CASCADE'])
-				->update();
-		$this->table('fs_mailbox_message')
-				->addForeignKey('mailbox_id', 'fs_mailbox', 'id', ['delete' => 'CASCADE'])
-				->update();
-		$this->table('fs_mailchange')
-				->addForeignKey('foodsaver_id', 'fs_foodsaver', 'id', ['delete' => 'CASCADE'])
-				->update();
-		$this->table('fs_msg')
-				->addForeignKey('conversation_id', 'fs_conversation', 'id', ['delete' => 'CASCADE'])
-				->update();
-		$this->table('fs_pass_gen')
-				->addForeignKey('foodsaver_id', 'fs_foodsaver', 'id', ['delete' => 'CASCADE'])
-				->addForeignKey('bot_id', 'fs_foodsaver', 'id', ['delete' => 'CASCADE'])
-				->update();
-		$this->table('fs_pass_request')
-				->addForeignKey('foodsaver_id', 'fs_foodsaver', 'id', ['delete' => 'CASCADE'])
-				->update();
-		$this->table('fs_post_reaction')
-				->addForeignKey('post_id', 'fs_theme_post', 'id', ['delete' => 'CASCADE', 'update' => 'CASCADE'])
-				->update();
-		$this->table('fs_question_has_quiz')
-				->addForeignKey('question_id', 'fs_question', 'id', ['delete' => 'CASCADE'])
-				->addForeignKey('quiz_id', 'fs_quiz', 'id', ['delete' => 'CASCADE'])
-				->update();
-		$this->table('fs_question_has_wallpost')
-				->addForeignKey('question_id', 'fs_question', 'id', ['delete' => 'CASCADE'])
-				->addForeignKey('wallpost_id', 'fs_wallpost', 'id', ['delete' => 'CASCADE'])
-				->update();
-		$this->table('fs_quiz_session')
-				->addForeignKey('foodsaver_id', 'fs_foodsaver', 'id', ['delete' => 'CASCADE'])
-				->update();
-		$this->table('fs_rating')
-				->addForeignKey('foodsaver_id', 'fs_foodsaver', 'id', ['delete' => 'CASCADE'])
-				->addForeignKey('rater_id', 'fs_foodsaver', 'id', ['delete' => 'CASCADE'])
-				->update();
-		$this->table('fs_theme_follower')
-				->addForeignKey('foodsaver_id', 'fs_foodsaver', 'id', ['delete' => 'CASCADE'])
-				->addForeignKey('theme_id', 'fs_theme', 'id', ['delete' => 'CASCADE'])
-				->update();
-		$this->table('fs_theme_post')
-				->addForeignKey('theme_id', 'fs_theme', 'id', ['delete' => 'CASCADE'])
-				->update();
-		$this->table('fs_usernotes_has_wallpost')
-				->addForeignKey('wallpost_id', 'fs_wallpost', 'id', ['delete' => 'CASCADE'])
-				->update();
-		$this->table('fs_fetchweight')->insert([
-			['id' => '0', 'weight' => '1.5'],
-			['id' => '1', 'weight' => '2.0'],
-			['id' => '2', 'weight' => '4.0'],
-			['id' => '3', 'weight' => '7.5'],
-			['id' => '4', 'weight' => '15'],
-			['id' => '5', 'weight' => '25'],
-			['id' => '6', 'weight' => '45'],
-			['id' => '7', 'weight' => '64']
-		])->save();
-		$content = [['id' => '4', 'name' => 'fuer-unternehmen', 'title' => 'Für Unternehmen', 'body' => '<p><span>Wir freuen uns sehr, dass Ihr Betrieb an foodsharing interessiert ist! Gemeinsam mit foodsharing k&ouml;nnen Sie sich daf&uuml;r einsetzen, dass aussortierte und unverk&auml;ufliche Lebensmittel eine sinnvolle Verwendung anstelle der Entsorgung erfahren.</span></p>
+    public function change()
+    {
+        $this->execute('set sql_mode="NO_AUTO_VALUE_ON_ZERO";');
+        $this->execute("ALTER DATABASE CHARACTER SET 'utf8mb4';");
+        $this->execute("ALTER DATABASE COLLATE='utf8mb4_unicode_ci';");
+        $this->table('fs_basket', [
+            'id' => false,
+            'primary_key' => ['id'],
+            'engine' => 'InnoDB',
+            'encoding' => 'utf8mb4',
+            'collation' => 'utf8mb4_unicode_ci',
+            'comment' => '',
+        ])
+            ->addColumn('id', 'integer', [
+                'null' => false,
+                'limit' => '10',
+                'signed' => false,
+                'identity' => 'enable',
+            ])
+            ->addColumn('foodsaver_id', 'integer', [
+                'null' => false,
+                'limit' => '10',
+                'signed' => false,
+                'after' => 'id',
+            ])
+            ->addColumn('status', 'integer', [
+                'null' => true,
+                'default' => null,
+                'limit' => MysqlAdapter::INT_TINY,
+                'signed' => false,
+                'after' => 'foodsaver_id',
+            ])
+            ->addColumn('time', 'datetime', [
+                'null' => true,
+                'default' => null,
+                'after' => 'status',
+            ])
+            ->addColumn('update', 'datetime', [
+                'null' => true,
+                'default' => null,
+                'after' => 'time',
+            ])
+            ->addColumn('until', 'date', [
+                'null' => false,
+                'after' => 'update',
+            ])
+            ->addColumn('fetchtime', 'datetime', [
+                'null' => true,
+                'default' => null,
+                'after' => 'until',
+            ])
+            ->addColumn('description', 'text', [
+                'null' => true,
+                'default' => null,
+                'limit' => MysqlAdapter::TEXT_MEDIUM,
+                'collation' => 'utf8mb4_unicode_ci',
+                'encoding' => 'utf8mb4',
+                'after' => 'fetchtime',
+            ])
+            ->addColumn('picture', 'string', [
+                'null' => true,
+                'default' => null,
+                'limit' => 150,
+                'collation' => 'utf8mb4_unicode_ci',
+                'encoding' => 'utf8mb4',
+                'after' => 'description',
+            ])
+            ->addColumn('tel', 'string', [
+                'null' => false,
+                'default' => '',
+                'limit' => 50,
+                'collation' => 'utf8mb4_unicode_ci',
+                'encoding' => 'utf8mb4',
+                'after' => 'picture',
+            ])
+            ->addColumn('handy', 'string', [
+                'null' => false,
+                'default' => '',
+                'limit' => 50,
+                'collation' => 'utf8mb4_unicode_ci',
+                'encoding' => 'utf8mb4',
+                'after' => 'tel',
+            ])
+            ->addColumn('contact_type', 'string', [
+                'null' => false,
+                'default' => '1',
+                'limit' => 20,
+                'collation' => 'utf8mb4_unicode_ci',
+                'encoding' => 'utf8mb4',
+                'after' => 'handy',
+            ])
+            ->addColumn('location_type', 'integer', [
+                'null' => true,
+                'default' => null,
+                'limit' => MysqlAdapter::INT_TINY,
+                'signed' => false,
+                'after' => 'contact_type',
+            ])
+            ->addColumn('weight', 'float', [
+                'null' => true,
+                'default' => null,
+                'after' => 'location_type',
+            ])
+            ->addColumn('lat', Literal::from('float(10,6)'), [
+                'null' => false,
+                'default' => '0.000000',
+                'after' => 'weight',
+            ])
+            ->addColumn('lon', Literal::from('float(10,6)'), [
+                'null' => false,
+                'default' => '0.000000',
+                'after' => 'lat',
+            ])
+            ->addColumn('bezirk_id', 'integer', [
+                'null' => false,
+                'limit' => '10',
+                'signed' => false,
+                'after' => 'lon',
+            ])
+            ->addColumn('fs_id', 'integer', [
+                'null' => false,
+                'default' => '0',
+                'limit' => '10',
+                'after' => 'bezirk_id',
+            ])
+            ->addColumn('appost', 'integer', [
+                'null' => false,
+                'default' => '0',
+                'limit' => MysqlAdapter::INT_TINY,
+                'after' => 'fs_id',
+            ])
+            ->addIndex(['foodsaver_id'], [
+                'name' => 'basket_FKIndex1',
+                'unique' => false,
+            ])
+            ->addIndex(['bezirk_id'], [
+                'name' => 'bezirk_id',
+                'unique' => false,
+            ])
+            ->addIndex(['lat', 'lon'], [
+                'name' => 'lat',
+                'unique' => false,
+            ])
+            ->addIndex(['fs_id'], [
+                'name' => 'fs_id',
+                'unique' => false,
+            ])
+            ->create();
+        $this->table('fs_basket_anfrage', [
+            'id' => false,
+            'primary_key' => ['foodsaver_id', 'basket_id'],
+            'engine' => 'InnoDB',
+            'encoding' => 'utf8mb4',
+            'collation' => 'utf8mb4_unicode_ci',
+            'comment' => '',
+        ])
+            ->addColumn('foodsaver_id', 'integer', [
+                'null' => false,
+                'limit' => '10',
+                'signed' => false,
+            ])
+            ->addColumn('basket_id', 'integer', [
+                'null' => false,
+                'limit' => '10',
+                'signed' => false,
+                'after' => 'foodsaver_id',
+            ])
+            ->addColumn('status', 'integer', [
+                'null' => true,
+                'default' => null,
+                'limit' => MysqlAdapter::INT_TINY,
+                'signed' => false,
+                'after' => 'basket_id',
+            ])
+            ->addColumn('time', 'datetime', [
+                'null' => false,
+                'after' => 'status',
+            ])
+            ->addColumn('appost', 'integer', [
+                'null' => false,
+                'default' => '0',
+                'limit' => MysqlAdapter::INT_TINY,
+                'after' => 'time',
+            ])
+            ->addIndex(['foodsaver_id'], [
+                'name' => 'foodsaver_has_basket_FKIndex1',
+                'unique' => false,
+            ])
+            ->addIndex(['basket_id'], [
+                'name' => 'foodsaver_has_basket_FKIndex2',
+                'unique' => false,
+            ])
+            ->create();
+        $this->table('fs_basket_has_art', [
+            'id' => false,
+            'primary_key' => ['basket_id', 'art_id'],
+            'engine' => 'InnoDB',
+            'encoding' => 'utf8mb4',
+            'collation' => 'utf8mb4_unicode_ci',
+            'comment' => '',
+        ])
+            ->addColumn('basket_id', 'integer', [
+                'null' => false,
+                'limit' => '10',
+                'signed' => false,
+            ])
+            ->addColumn('art_id', 'integer', [
+                'null' => false,
+                'limit' => '10',
+                'signed' => false,
+                'after' => 'basket_id',
+            ])
+            ->create();
+        $this->table('fs_basket_has_types', [
+            'id' => false,
+            'primary_key' => ['basket_id', 'types_id'],
+            'engine' => 'InnoDB',
+            'encoding' => 'utf8mb4',
+            'collation' => 'utf8mb4_unicode_ci',
+            'comment' => '',
+        ])
+            ->addColumn('basket_id', 'integer', [
+                'null' => false,
+                'limit' => '10',
+                'signed' => false,
+            ])
+            ->addColumn('types_id', 'integer', [
+                'null' => false,
+                'limit' => '10',
+                'signed' => false,
+                'after' => 'basket_id',
+            ])
+            ->create();
+        $this->table('fs_answer', [
+            'id' => false,
+            'primary_key' => ['id'],
+            'engine' => 'InnoDB',
+            'encoding' => 'utf8mb4',
+            'collation' => 'utf8mb4_unicode_ci',
+            'comment' => '',
+        ])
+            ->addColumn('id', 'integer', [
+                'null' => false,
+                'limit' => '10',
+                'signed' => false,
+                'identity' => 'enable',
+            ])
+            ->addColumn('question_id', 'integer', [
+                'null' => false,
+                'limit' => '10',
+                'signed' => false,
+                'after' => 'id',
+            ])
+            ->addColumn('text', 'text', [
+                'null' => true,
+                'default' => null,
+                'limit' => MysqlAdapter::TEXT_MEDIUM,
+                'collation' => 'utf8mb4_unicode_ci',
+                'encoding' => 'utf8mb4',
+                'after' => 'question_id',
+            ])
+            ->addColumn('explanation', 'text', [
+                'null' => false,
+                'limit' => MysqlAdapter::TEXT_MEDIUM,
+                'collation' => 'utf8mb4_unicode_ci',
+                'encoding' => 'utf8mb4',
+                'after' => 'text',
+            ])
+            ->addColumn('right', 'integer', [
+                'null' => true,
+                'default' => null,
+                'limit' => MysqlAdapter::INT_TINY,
+                'signed' => false,
+                'after' => 'explanation',
+            ])
+            ->addIndex(['question_id'], [
+                'name' => 'answer_FKIndex1',
+                'unique' => false,
+            ])
+            ->create();
+        $this->table('fs_fetchweight', [
+            'id' => false,
+            'primary_key' => ['id'],
+            'engine' => 'InnoDB',
+            'encoding' => 'utf8mb4',
+            'collation' => 'utf8mb4_unicode_ci',
+            'comment' => '',
+        ])
+            ->addColumn('id', 'integer', [
+                'null' => false,
+                'limit' => MysqlAdapter::INT_REGULAR,
+            ])
+            ->addColumn('weight', 'decimal', [
+                'null' => false,
+                'precision' => 5,
+                'scale' => 1,
+                'after' => 'id',
+            ])
+            ->create();
+        $this->table('fs_mailchange', [
+            'id' => false,
+            'primary_key' => ['foodsaver_id'],
+            'engine' => 'InnoDB',
+            'encoding' => 'utf8mb4',
+            'collation' => 'utf8mb4_unicode_ci',
+            'comment' => '',
+        ])
+            ->addColumn('foodsaver_id', 'integer', [
+                'null' => false,
+                'limit' => '10',
+                'signed' => false,
+            ])
+            ->addColumn('newmail', 'string', [
+                'null' => true,
+                'default' => null,
+                'limit' => 200,
+                'collation' => 'utf8mb4_unicode_ci',
+                'encoding' => 'utf8mb4',
+                'after' => 'foodsaver_id',
+            ])
+            ->addColumn('time', 'datetime', [
+                'null' => true,
+                'default' => null,
+                'after' => 'newmail',
+            ])
+            ->addColumn('token', 'string', [
+                'null' => true,
+                'default' => null,
+                'limit' => 300,
+                'collation' => 'utf8mb4_unicode_ci',
+                'encoding' => 'utf8mb4',
+                'after' => 'time',
+            ])
+            ->create();
+        $this->table('fs_apitoken', [
+            'id' => false,
+            'engine' => 'InnoDB',
+            'encoding' => 'utf8mb4',
+            'collation' => 'utf8mb4_unicode_ci',
+            'comment' => '',
+        ])
+            ->addColumn('foodsaver_id', 'integer', [
+                'null' => false,
+                'limit' => '10',
+                'signed' => false,
+            ])
+            ->addColumn('token', 'string', [
+                'null' => false,
+                'limit' => 255,
+                'collation' => 'utf8mb4_unicode_ci',
+                'encoding' => 'utf8mb4',
+                'after' => 'foodsaver_id',
+            ])
+            ->addIndex(['foodsaver_id'], [
+                'name' => 'foodsaver_id',
+                'unique' => false,
+            ])
+            ->create();
+        $this->table('fs_email_blacklist', [
+            'id' => false,
+            'engine' => 'InnoDB',
+            'encoding' => 'utf8mb4',
+            'collation' => 'utf8mb4_unicode_ci',
+            'comment' => '',
+        ])
+            ->addColumn('email', 'string', [
+                'null' => false,
+                'limit' => 255,
+                'collation' => 'utf8mb4_unicode_ci',
+                'encoding' => 'utf8mb4',
+            ])
+            ->addColumn('since', 'timestamp', [
+                'null' => false,
+                'default' => 'CURRENT_TIMESTAMP',
+                'after' => 'email',
+            ])
+            ->addColumn('reason', 'text', [
+                'null' => false,
+                'limit' => MysqlAdapter::TEXT_MEDIUM,
+                'collation' => 'utf8mb4_unicode_ci',
+                'encoding' => 'utf8mb4',
+                'after' => 'since',
+            ])
+            ->create();
+        $this->table('fs_quiz_session', [
+            'id' => false,
+            'primary_key' => ['id'],
+            'engine' => 'InnoDB',
+            'encoding' => 'utf8mb4',
+            'collation' => 'utf8mb4_unicode_ci',
+            'comment' => '',
+        ])
+            ->addColumn('id', 'integer', [
+                'null' => false,
+                'limit' => '10',
+                'signed' => false,
+                'identity' => 'enable',
+            ])
+            ->addColumn('foodsaver_id', 'integer', [
+                'null' => false,
+                'limit' => '10',
+                'signed' => false,
+                'after' => 'id',
+            ])
+            ->addColumn('quiz_id', 'integer', [
+                'null' => false,
+                'limit' => '10',
+                'signed' => false,
+                'after' => 'foodsaver_id',
+            ])
+            ->addColumn('status', 'integer', [
+                'null' => true,
+                'default' => null,
+                'limit' => MysqlAdapter::INT_TINY,
+                'signed' => false,
+                'after' => 'quiz_id',
+            ])
+            ->addColumn('quiz_index', 'integer', [
+                'null' => true,
+                'default' => null,
+                'limit' => MysqlAdapter::INT_TINY,
+                'signed' => false,
+                'after' => 'status',
+            ])
+            ->addColumn('quiz_questions', 'text', [
+                'null' => true,
+                'default' => null,
+                'limit' => MysqlAdapter::TEXT_MEDIUM,
+                'collation' => 'utf8mb4_unicode_ci',
+                'encoding' => 'utf8mb4',
+                'after' => 'quiz_index',
+            ])
+            ->addColumn('quiz_result', 'text', [
+                'null' => true,
+                'default' => null,
+                'limit' => MysqlAdapter::TEXT_MEDIUM,
+                'collation' => 'utf8mb4_unicode_ci',
+                'encoding' => 'utf8mb4',
+                'after' => 'quiz_questions',
+            ])
+            ->addColumn('time_start', 'datetime', [
+                'null' => true,
+                'default' => null,
+                'after' => 'quiz_result',
+            ])
+            ->addColumn('time_end', 'datetime', [
+                'null' => true,
+                'default' => null,
+                'after' => 'time_start',
+            ])
+            ->addColumn('fp', 'decimal', [
+                'null' => true,
+                'default' => null,
+                'precision' => 5,
+                'scale' => 2,
+                'after' => 'time_end',
+            ])
+            ->addColumn('maxfp', 'integer', [
+                'null' => true,
+                'default' => null,
+                'limit' => MysqlAdapter::INT_TINY,
+                'signed' => false,
+                'after' => 'fp',
+            ])
+            ->addColumn('quest_count', 'integer', [
+                'null' => true,
+                'default' => null,
+                'limit' => MysqlAdapter::INT_TINY,
+                'signed' => false,
+                'after' => 'maxfp',
+            ])
+            ->addColumn('easymode', 'integer', [
+                'null' => false,
+                'default' => '0',
+                'limit' => MysqlAdapter::INT_TINY,
+                'after' => 'quest_count',
+            ])
+            ->addIndex(['quiz_id'], [
+                'name' => 'quiz_result_FKIndex1',
+                'unique' => false,
+            ])
+            ->addIndex(['foodsaver_id'], [
+                'name' => 'quiz_result_FKIndex2',
+                'unique' => false,
+            ])
+            ->create();
+        $this->table('fs_question_has_quiz', [
+            'id' => false,
+            'primary_key' => ['question_id', 'quiz_id'],
+            'engine' => 'InnoDB',
+            'encoding' => 'utf8mb4',
+            'collation' => 'utf8mb4_unicode_ci',
+            'comment' => '',
+        ])
+            ->addColumn('question_id', 'integer', [
+                'null' => false,
+                'limit' => '10',
+                'signed' => false,
+            ])
+            ->addColumn('quiz_id', 'integer', [
+                'null' => false,
+                'limit' => '10',
+                'signed' => false,
+                'after' => 'question_id',
+            ])
+            ->addColumn('fp', 'integer', [
+                'null' => true,
+                'default' => null,
+                'limit' => MysqlAdapter::INT_TINY,
+                'signed' => false,
+                'after' => 'quiz_id',
+            ])
+            ->addIndex(['question_id'], [
+                'name' => 'question_has_quiz_FKIndex1',
+                'unique' => false,
+            ])
+            ->addIndex(['quiz_id'], [
+                'name' => 'question_has_quiz_FKIndex2',
+                'unique' => false,
+            ])
+            ->create();
+        $this->table('fs_fetchdate', [
+            'id' => false,
+            'primary_key' => ['id'],
+            'engine' => 'InnoDB',
+            'encoding' => 'utf8mb4',
+            'collation' => 'utf8mb4_unicode_ci',
+            'comment' => '',
+        ])
+            ->addColumn('id', 'integer', [
+                'null' => false,
+                'limit' => '10',
+                'signed' => false,
+                'identity' => 'enable',
+            ])
+            ->addColumn('betrieb_id', 'integer', [
+                'null' => false,
+                'limit' => '10',
+                'signed' => false,
+                'after' => 'id',
+            ])
+            ->addColumn('time', 'datetime', [
+                'null' => true,
+                'default' => null,
+                'after' => 'betrieb_id',
+            ])
+            ->addColumn('fetchercount', 'integer', [
+                'null' => true,
+                'default' => null,
+                'limit' => MysqlAdapter::INT_TINY,
+                'signed' => false,
+                'after' => 'time',
+            ])
+            ->addIndex(['betrieb_id', 'time'], [
+                'name' => 'betrieb_id',
+                'unique' => true,
+            ])
+            ->addIndex(['betrieb_id'], [
+                'name' => 'fetchdate_FKIndex1',
+                'unique' => false,
+            ])
+            ->create();
+        $this->table('fs_quiz', [
+            'id' => false,
+            'primary_key' => ['id'],
+            'engine' => 'InnoDB',
+            'encoding' => 'utf8mb4',
+            'collation' => 'utf8mb4_unicode_ci',
+            'comment' => '',
+        ])
+            ->addColumn('id', 'integer', [
+                'null' => false,
+                'limit' => '10',
+                'signed' => false,
+                'identity' => 'enable',
+            ])
+            ->addColumn('name', 'string', [
+                'null' => true,
+                'default' => null,
+                'limit' => 200,
+                'collation' => 'utf8mb4_unicode_ci',
+                'encoding' => 'utf8mb4',
+                'after' => 'id',
+            ])
+            ->addColumn('desc', 'text', [
+                'null' => true,
+                'default' => null,
+                'limit' => MysqlAdapter::TEXT_MEDIUM,
+                'collation' => 'utf8mb4_unicode_ci',
+                'encoding' => 'utf8mb4',
+                'after' => 'name',
+            ])
+            ->addColumn('maxfp', 'integer', [
+                'null' => false,
+                'limit' => MysqlAdapter::INT_SMALL,
+                'signed' => false,
+                'after' => 'desc',
+            ])
+            ->addColumn('questcount', 'integer', [
+                'null' => false,
+                'limit' => MysqlAdapter::INT_SMALL,
+                'signed' => false,
+                'after' => 'maxfp',
+            ])
+            ->create();
+        $this->table('fs_stat_abholmengen', [
+            'id' => false,
+            'primary_key' => ['betrieb_id', 'date'],
+            'engine' => 'InnoDB',
+            'encoding' => 'utf8mb4',
+            'collation' => 'utf8mb4_unicode_ci',
+            'comment' => '',
+        ])
+            ->addColumn('betrieb_id', 'integer', [
+                'null' => false,
+                'limit' => '10',
+                'signed' => false,
+            ])
+            ->addColumn('date', 'datetime', [
+                'null' => false,
+                'after' => 'betrieb_id',
+            ])
+            ->addColumn('abholmenge', 'decimal', [
+                'null' => false,
+                'precision' => 5,
+                'scale' => 1,
+                'after' => 'date',
+            ])
+            ->addIndex(['betrieb_id', 'date'], [
+                'name' => 'betrieb_id',
+                'unique' => true,
+            ])
+            ->create();
+        $this->table('fs_question', [
+            'id' => false,
+            'primary_key' => ['id'],
+            'engine' => 'InnoDB',
+            'encoding' => 'utf8mb4',
+            'collation' => 'utf8mb4_unicode_ci',
+            'comment' => '',
+        ])
+            ->addColumn('id', 'integer', [
+                'null' => false,
+                'limit' => '10',
+                'signed' => false,
+                'identity' => 'enable',
+            ])
+            ->addColumn('text', 'text', [
+                'null' => true,
+                'default' => null,
+                'limit' => MysqlAdapter::TEXT_MEDIUM,
+                'collation' => 'utf8mb4_unicode_ci',
+                'encoding' => 'utf8mb4',
+                'after' => 'id',
+            ])
+            ->addColumn('duration', 'integer', [
+                'null' => false,
+                'limit' => '3',
+                'signed' => false,
+                'after' => 'text',
+            ])
+            ->addColumn('wikilink', 'string', [
+                'null' => false,
+                'limit' => 250,
+                'collation' => 'utf8mb4_unicode_ci',
+                'encoding' => 'utf8mb4',
+                'after' => 'duration',
+            ])
+            ->create();
+        $this->table('fs_bezirk_closure', [
+            'id' => false,
+            'engine' => 'InnoDB',
+            'encoding' => 'utf8mb4',
+            'collation' => 'utf8mb4_unicode_ci',
+            'comment' => '',
+        ])
+            ->addColumn('bezirk_id', 'integer', [
+                'null' => false,
+                'limit' => '10',
+                'signed' => false,
+            ])
+            ->addColumn('ancestor_id', 'integer', [
+                'null' => false,
+                'limit' => '10',
+                'signed' => false,
+                'after' => 'bezirk_id',
+            ])
+            ->addColumn('depth', 'integer', [
+                'null' => false,
+                'limit' => '10',
+                'signed' => false,
+                'after' => 'ancestor_id',
+            ])
+            ->addIndex(['ancestor_id'], [
+                'name' => 'ancestor_id',
+                'unique' => false,
+            ])
+            ->addIndex(['bezirk_id'], [
+                'name' => 'bezirk_id',
+                'unique' => false,
+            ])
+            ->create();
+        $this->table('fs_email_bounces', [
+            'id' => false,
+            'engine' => 'InnoDB',
+            'encoding' => 'utf8mb4',
+            'collation' => 'utf8mb4_general_ci',
+            'comment' => '',
+        ])
+            ->addColumn('email', 'string', [
+                'null' => false,
+                'limit' => 255,
+                'collation' => 'utf8mb4_general_ci',
+                'encoding' => 'utf8mb4',
+            ])
+            ->addColumn('bounced_at', 'datetime', [
+                'null' => false,
+                'after' => 'email',
+            ])
+            ->addColumn('bounce_category', 'string', [
+                'null' => false,
+                'limit' => 255,
+                'collation' => 'utf8mb4_general_ci',
+                'encoding' => 'utf8mb4',
+                'after' => 'bounced_at',
+            ])
+            ->addIndex(['email'], [
+                'name' => 'email',
+                'unique' => false,
+            ])
+            ->create();
+        $this->table('fs_contact', [
+            'id' => false,
+            'primary_key' => ['id'],
+            'engine' => 'InnoDB',
+            'encoding' => 'utf8mb4',
+            'collation' => 'utf8mb4_unicode_ci',
+            'comment' => '',
+        ])
+            ->addColumn('id', 'integer', [
+                'null' => false,
+                'limit' => '10',
+                'signed' => false,
+                'identity' => 'enable',
+            ])
+            ->addColumn('name', 'string', [
+                'null' => true,
+                'default' => null,
+                'limit' => 180,
+                'collation' => 'utf8mb4_unicode_ci',
+                'encoding' => 'utf8mb4',
+                'after' => 'id',
+            ])
+            ->addColumn('email', 'string', [
+                'null' => true,
+                'default' => null,
+                'limit' => 180,
+                'collation' => 'utf8mb4_unicode_ci',
+                'encoding' => 'utf8mb4',
+                'after' => 'name',
+            ])
+            ->addIndex(['email'], [
+                'name' => 'email',
+                'unique' => true,
+            ])
+            ->create();
+        $this->table('fs_report', [
+            'id' => false,
+            'primary_key' => ['id'],
+            'engine' => 'InnoDB',
+            'encoding' => 'utf8mb4',
+            'collation' => 'utf8mb4_unicode_ci',
+            'comment' => '',
+        ])
+            ->addColumn('id', 'integer', [
+                'null' => false,
+                'limit' => '10',
+                'signed' => false,
+                'identity' => 'enable',
+            ])
+            ->addColumn('foodsaver_id', 'integer', [
+                'null' => false,
+                'limit' => '10',
+                'signed' => false,
+                'after' => 'id',
+            ])
+            ->addColumn('reporter_id', 'integer', [
+                'null' => true,
+                'default' => null,
+                'limit' => '10',
+                'signed' => false,
+                'after' => 'foodsaver_id',
+            ])
+            ->addColumn('reporttype', 'integer', [
+                'null' => true,
+                'default' => null,
+                'limit' => MysqlAdapter::INT_TINY,
+                'signed' => false,
+                'after' => 'reporter_id',
+            ])
+            ->addColumn('betrieb_id', 'integer', [
+                'null' => true,
+                'default' => null,
+                'limit' => '10',
+                'signed' => false,
+                'after' => 'reporttype',
+            ])
+            ->addColumn('time', 'datetime', [
+                'null' => true,
+                'default' => null,
+                'after' => 'betrieb_id',
+            ])
+            ->addColumn('committed', 'integer', [
+                'null' => true,
+                'default' => '0',
+                'limit' => MysqlAdapter::INT_TINY,
+                'signed' => false,
+                'after' => 'time',
+            ])
+            ->addColumn('msg', 'text', [
+                'null' => true,
+                'default' => null,
+                'limit' => MysqlAdapter::TEXT_MEDIUM,
+                'collation' => 'utf8mb4_unicode_ci',
+                'encoding' => 'utf8mb4',
+                'after' => 'committed',
+            ])
+            ->addColumn('tvalue', 'string', [
+                'null' => true,
+                'default' => null,
+                'limit' => 300,
+                'collation' => 'utf8mb4_unicode_ci',
+                'encoding' => 'utf8mb4',
+                'after' => 'msg',
+            ])
+            ->addIndex(['foodsaver_id'], [
+                'name' => 'report_FKIndex1',
+                'unique' => false,
+            ])
+            ->addIndex(['reporter_id'], [
+                'name' => 'report_reporter',
+                'unique' => false,
+            ])
+            ->addIndex(['betrieb_id'], [
+                'name' => 'report_betrieb',
+                'unique' => false,
+            ])
+            ->create();
+        $this->table('fs_bell', [
+            'id' => false,
+            'primary_key' => ['id'],
+            'engine' => 'InnoDB',
+            'encoding' => 'utf8mb4',
+            'collation' => 'utf8mb4_unicode_ci',
+            'comment' => '',
+        ])
+            ->addColumn('id', 'integer', [
+                'null' => false,
+                'limit' => '10',
+                'signed' => false,
+                'identity' => 'enable',
+            ])
+            ->addColumn('name', 'string', [
+                'null' => true,
+                'default' => null,
+                'limit' => 50,
+                'collation' => 'utf8mb4_unicode_ci',
+                'encoding' => 'utf8mb4',
+                'after' => 'id',
+            ])
+            ->addColumn('body', 'string', [
+                'null' => true,
+                'default' => null,
+                'limit' => 50,
+                'collation' => 'utf8mb4_unicode_ci',
+                'encoding' => 'utf8mb4',
+                'after' => 'name',
+            ])
+            ->addColumn('vars', 'text', [
+                'null' => true,
+                'default' => null,
+                'limit' => MysqlAdapter::TEXT_MEDIUM,
+                'collation' => 'utf8mb4_unicode_ci',
+                'encoding' => 'utf8mb4',
+                'after' => 'body',
+            ])
+            ->addColumn('attr', 'string', [
+                'null' => true,
+                'default' => null,
+                'limit' => 500,
+                'collation' => 'utf8mb4_unicode_ci',
+                'encoding' => 'utf8mb4',
+                'after' => 'vars',
+            ])
+            ->addColumn('icon', 'string', [
+                'null' => true,
+                'default' => null,
+                'limit' => 150,
+                'collation' => 'utf8mb4_unicode_ci',
+                'encoding' => 'utf8mb4',
+                'after' => 'attr',
+            ])
+            ->addColumn('identifier', 'string', [
+                'null' => true,
+                'default' => null,
+                'limit' => 40,
+                'collation' => 'utf8mb4_unicode_ci',
+                'encoding' => 'utf8mb4',
+                'after' => 'icon',
+            ])
+            ->addColumn('time', 'datetime', [
+                'null' => false,
+                'after' => 'identifier',
+            ])
+            ->addColumn('closeable', 'integer', [
+                'null' => false,
+                'default' => '1',
+                'limit' => MysqlAdapter::INT_TINY,
+                'signed' => false,
+                'after' => 'time',
+            ])
+            ->addColumn('expiration', 'date', [
+                'null' => true,
+                'default' => null,
+                'after' => 'closeable',
+            ])
+            ->addIndex(['expiration'], [
+                'name' => 'expiration',
+                'unique' => false,
+            ])
+            ->addIndex(['identifier'], [
+                'name' => 'identifier'
+            ])
+            ->create();
+        $this->table('fs_faq', [
+            'id' => false,
+            'primary_key' => ['id'],
+            'engine' => 'InnoDB',
+            'encoding' => 'utf8mb4',
+            'collation' => 'utf8mb4_unicode_ci',
+            'comment' => '',
+        ])
+            ->addColumn('id', 'integer', [
+                'null' => false,
+                'limit' => '10',
+                'signed' => false,
+                'identity' => 'enable',
+            ])
+            ->addColumn('foodsaver_id', 'integer', [
+                'null' => true,
+                'default' => null,
+                'limit' => '10',
+                'signed' => false,
+                'after' => 'id',
+            ])
+            ->addColumn('faq_kategorie_id', 'integer', [
+                'null' => false,
+                'limit' => '10',
+                'signed' => false,
+                'after' => 'foodsaver_id',
+            ])
+            ->addColumn('name', 'string', [
+                'null' => true,
+                'default' => null,
+                'limit' => 500,
+                'collation' => 'utf8mb4_unicode_ci',
+                'encoding' => 'utf8mb4',
+                'after' => 'faq_kategorie_id',
+            ])
+            ->addColumn('answer', 'text', [
+                'null' => true,
+                'default' => null,
+                'limit' => MysqlAdapter::TEXT_MEDIUM,
+                'collation' => 'utf8mb4_unicode_ci',
+                'encoding' => 'utf8mb4',
+                'after' => 'name',
+            ])
+            ->addIndex(['foodsaver_id'], [
+                'name' => 'faq_FKIndex1',
+                'unique' => false,
+            ])
+            ->addIndex(['faq_kategorie_id'], [
+                'name' => 'faq_kategorie_id',
+                'unique' => false,
+            ])
+            ->create();
+        $this->table('fs_abholzeiten', [
+            'id' => false,
+            'primary_key' => ['betrieb_id', 'dow', 'time'],
+            'engine' => 'InnoDB',
+            'encoding' => 'utf8mb4',
+            'collation' => 'utf8mb4_unicode_ci',
+            'comment' => '',
+        ])
+            ->addColumn('betrieb_id', 'integer', [
+                'null' => false,
+                'limit' => '10',
+                'signed' => false,
+            ])
+            ->addColumn('dow', 'integer', [
+                'null' => false,
+                'limit' => MysqlAdapter::INT_TINY,
+                'signed' => false,
+                'after' => 'betrieb_id',
+            ])
+            ->addColumn('time', 'time', [
+                'null' => false,
+                'default' => '00:00:00',
+                'after' => 'dow',
+            ])
+            ->addColumn('fetcher', 'integer', [
+                'null' => false,
+                'default' => '4',
+                'limit' => MysqlAdapter::INT_TINY,
+                'signed' => false,
+                'after' => 'time',
+            ])
+            ->create();
+        $this->table('fs_msg', [
+            'id' => false,
+            'primary_key' => ['id'],
+            'engine' => 'InnoDB',
+            'encoding' => 'utf8mb4',
+            'collation' => 'utf8mb4_unicode_ci',
+            'comment' => '',
+        ])
+            ->addColumn('id', 'integer', [
+                'null' => false,
+                'limit' => '10',
+                'signed' => false,
+                'identity' => 'enable',
+            ])
+            ->addColumn('conversation_id', 'integer', [
+                'null' => false,
+                'limit' => '10',
+                'signed' => false,
+                'after' => 'id',
+            ])
+            ->addColumn('foodsaver_id', 'integer', [
+                'null' => false,
+                'limit' => '10',
+                'signed' => false,
+                'after' => 'conversation_id',
+            ])
+            ->addColumn('body', 'text', [
+                'null' => true,
+                'default' => null,
+                'limit' => MysqlAdapter::TEXT_MEDIUM,
+                'collation' => 'utf8mb4_unicode_ci',
+                'encoding' => 'utf8mb4',
+                'after' => 'foodsaver_id',
+            ])
+            ->addColumn('time', 'datetime', [
+                'null' => true,
+                'default' => null,
+                'after' => 'body',
+            ])
+            ->addColumn('is_htmlentity_encoded', 'boolean', [
+                'null' => false,
+                'default' => '1',
+                'limit' => MysqlAdapter::INT_TINY,
+                'after' => 'time',
+            ])
+            ->addIndex(['foodsaver_id'], [
+                'name' => 'message_FKIndex1',
+                'unique' => false,
+            ])
+            ->addIndex(['conversation_id', 'time'], [
+                'name' => 'message_conversationTimeIndex',
+                'unique' => false,
+            ])
+            ->create();
+        $this->table('fs_content', [
+            'id' => false,
+            'primary_key' => ['id'],
+            'engine' => 'InnoDB',
+            'encoding' => 'utf8mb4',
+            'collation' => 'utf8mb4_unicode_ci',
+            'comment' => '',
+        ])
+            ->addColumn('id', 'integer', [
+                'null' => false,
+                'limit' => '10',
+                'signed' => false,
+                'identity' => 'enable',
+            ])
+            ->addColumn('name', 'string', [
+                'null' => true,
+                'default' => null,
+                'limit' => 20,
+                'collation' => 'utf8mb4_unicode_ci',
+                'encoding' => 'utf8mb4',
+                'after' => 'id',
+            ])
+            ->addColumn('title', 'string', [
+                'null' => true,
+                'default' => null,
+                'limit' => 120,
+                'collation' => 'utf8mb4_unicode_ci',
+                'encoding' => 'utf8mb4',
+                'after' => 'name',
+            ])
+            ->addColumn('body', 'text', [
+                'null' => true,
+                'default' => null,
+                'limit' => MysqlAdapter::TEXT_MEDIUM,
+                'collation' => 'utf8mb4_unicode_ci',
+                'encoding' => 'utf8mb4',
+                'after' => 'title',
+            ])
+            ->addColumn('last_mod', 'datetime', [
+                'null' => true,
+                'default' => null,
+                'after' => 'body',
+            ])
+            ->create();
+        $this->table('fs_application_has_wallpost', [
+            'id' => false,
+            'primary_key' => ['application_id', 'wallpost_id'],
+            'engine' => 'InnoDB',
+            'encoding' => 'utf8mb4',
+            'collation' => 'utf8mb4_unicode_ci',
+            'comment' => '',
+        ])
+            ->addColumn('application_id', 'integer', [
+                'null' => false,
+                'limit' => '10',
+                'signed' => false,
+            ])
+            ->addColumn('wallpost_id', 'integer', [
+                'null' => false,
+                'limit' => '10',
+                'signed' => false,
+                'after' => 'application_id',
+            ])
+            ->addIndex(['application_id'], [
+                'name' => 'application_id',
+                'unique' => false,
+            ])
+            ->addIndex(['wallpost_id'], [
+                'name' => 'wallpost_id',
+                'unique' => false,
+            ])
+            ->create();
+        $this->table('fs_basket_has_wallpost', [
+            'id' => false,
+            'primary_key' => ['basket_id', 'wallpost_id'],
+            'engine' => 'InnoDB',
+            'encoding' => 'utf8mb4',
+            'collation' => 'utf8mb4_unicode_ci',
+            'comment' => '',
+        ])
+            ->addColumn('basket_id', 'integer', [
+                'null' => false,
+                'limit' => '10',
+                'signed' => false,
+            ])
+            ->addColumn('wallpost_id', 'integer', [
+                'null' => false,
+                'limit' => '10',
+                'signed' => false,
+                'after' => 'basket_id',
+            ])
+            ->addIndex(['basket_id'], [
+                'name' => 'basket_has_wallpost_FKIndex1',
+                'unique' => false,
+            ])
+            ->addIndex(['wallpost_id'], [
+                'name' => 'basket_has_wallpost_FKIndex2',
+                'unique' => false,
+            ])
+            ->addIndex(['basket_id'], [
+                'name' => 'basket_id',
+                'unique' => false,
+            ])
+            ->addIndex(['wallpost_id'], [
+                'name' => 'wallpost_id',
+                'unique' => false,
+            ])
+            ->create();
+        $this->table('fs_bezirk_has_theme', [
+            'id' => false,
+            'primary_key' => ['theme_id', 'bezirk_id'],
+            'engine' => 'InnoDB',
+            'encoding' => 'utf8mb4',
+            'collation' => 'utf8mb4_unicode_ci',
+            'comment' => '',
+        ])
+            ->addColumn('theme_id', 'integer', [
+                'null' => false,
+                'limit' => '10',
+                'signed' => false,
+            ])
+            ->addColumn('bezirk_id', 'integer', [
+                'null' => false,
+                'limit' => '10',
+                'signed' => false,
+                'after' => 'theme_id',
+            ])
+            ->addColumn('bot_theme', 'integer', [
+                'null' => false,
+                'default' => '0',
+                'limit' => MysqlAdapter::INT_TINY,
+                'signed' => false,
+                'after' => 'bezirk_id',
+            ])
+            ->addIndex(['bezirk_id'], [
+                'name' => 'bezirk_id',
+                'unique' => false,
+            ])
+            ->create();
+        $this->table('fs_betrieb_has_lebensmittel', [
+            'id' => false,
+            'primary_key' => ['betrieb_id', 'lebensmittel_id'],
+            'engine' => 'InnoDB',
+            'encoding' => 'utf8mb4',
+            'collation' => 'utf8mb4_unicode_ci',
+            'comment' => '',
+        ])
+            ->addColumn('betrieb_id', 'integer', [
+                'null' => false,
+                'limit' => '10',
+                'signed' => false,
+            ])
+            ->addColumn('lebensmittel_id', 'integer', [
+                'null' => false,
+                'limit' => '10',
+                'signed' => false,
+                'after' => 'betrieb_id',
+            ])
+            ->create();
+        $this->table('fs_betrieb_notiz', [
+            'id' => false,
+            'primary_key' => ['id'],
+            'engine' => 'InnoDB',
+            'encoding' => 'utf8mb4',
+            'collation' => 'utf8mb4_unicode_ci',
+            'comment' => '',
+        ])
+            ->addColumn('id', 'integer', [
+                'null' => false,
+                'limit' => '10',
+                'signed' => false,
+                'identity' => 'enable',
+            ])
+            ->addColumn('foodsaver_id', 'integer', [
+                'null' => false,
+                'limit' => '10',
+                'signed' => false,
+                'after' => 'id',
+            ])
+            ->addColumn('betrieb_id', 'integer', [
+                'null' => false,
+                'limit' => '10',
+                'signed' => false,
+                'after' => 'foodsaver_id',
+            ])
+            ->addColumn('milestone', 'integer', [
+                'null' => false,
+                'default' => '0',
+                'limit' => MysqlAdapter::INT_TINY,
+                'signed' => false,
+                'after' => 'betrieb_id',
+            ])
+            ->addColumn('text', 'text', [
+                'null' => true,
+                'default' => null,
+                'limit' => MysqlAdapter::TEXT_MEDIUM,
+                'collation' => 'utf8mb4_unicode_ci',
+                'encoding' => 'utf8mb4',
+                'after' => 'milestone',
+            ])
+            ->addColumn('zeit', 'datetime', [
+                'null' => true,
+                'default' => null,
+                'after' => 'text',
+            ])
+            ->addColumn('last', 'integer', [
+                'null' => false,
+                'default' => '0',
+                'limit' => MysqlAdapter::INT_TINY,
+                'after' => 'zeit',
+            ])
+            ->addIndex(['betrieb_id'], [
+                'name' => 'betrieb_notitz_FKIndex1',
+                'unique' => false,
+            ])
+            ->addIndex(['foodsaver_id'], [
+                'name' => 'betrieb_notiz_FKIndex2',
+                'unique' => false,
+            ])
+            ->create();
+        $this->table('fs_bezirk', [
+            'id' => false,
+            'primary_key' => ['id'],
+            'engine' => 'InnoDB',
+            'encoding' => 'utf8mb4',
+            'collation' => 'utf8mb4_unicode_ci',
+            'comment' => '',
+        ])
+            ->addColumn('id', 'integer', [
+                'null' => false,
+                'limit' => '10',
+                'signed' => false,
+                'identity' => 'enable',
+            ])
+            ->addColumn('parent_id', 'integer', [
+                'null' => true,
+                'default' => '0',
+                'limit' => MysqlAdapter::INT_REGULAR,
+                'signed' => false,
+                'after' => 'id',
+            ])
+            ->addColumn('has_children', 'integer', [
+                'null' => false,
+                'default' => '0',
+                'limit' => MysqlAdapter::INT_TINY,
+                'after' => 'parent_id',
+            ])
+            ->addColumn('type', 'integer', [
+                'null' => false,
+                'default' => '1',
+                'limit' => MysqlAdapter::INT_TINY,
+                'after' => 'has_children',
+            ])
+            ->addColumn('teaser', 'text', [
+                'null' => false,
+                'default' => '',
+                'limit' => MysqlAdapter::TEXT_MEDIUM,
+                'collation' => 'utf8mb4_unicode_ci',
+                'encoding' => 'utf8mb4',
+                'after' => 'type',
+            ])
+            ->addColumn('desc', 'text', [
+                'null' => false,
+                'default' => '',
+                'limit' => MysqlAdapter::TEXT_MEDIUM,
+                'collation' => 'utf8mb4_unicode_ci',
+                'encoding' => 'utf8mb4',
+                'after' => 'teaser',
+            ])
+            ->addColumn('photo', 'string', [
+                'null' => false,
+                'default' => '',
+                'limit' => 200,
+                'collation' => 'utf8mb4_unicode_ci',
+                'encoding' => 'utf8mb4',
+                'after' => 'desc',
+            ])
+            ->addColumn('master', 'integer', [
+                'null' => false,
+                'default' => '0',
+                'limit' => '10',
+                'signed' => false,
+                'after' => 'photo',
+            ])
+            ->addColumn('mailbox_id', 'integer', [
+                'null' => false,
+                'default' => '0',
+                'limit' => '10',
+                'signed' => false,
+                'after' => 'master',
+            ])
+            ->addColumn('name', 'string', [
+                'null' => true,
+                'default' => null,
+                'limit' => 50,
+                'collation' => 'utf8mb4_unicode_ci',
+                'encoding' => 'utf8mb4',
+                'after' => 'mailbox_id',
+            ])
+            ->addColumn('email', 'string', [
+                'null' => false,
+                'default' => '',
+                'limit' => 120,
+                'collation' => 'utf8mb4_unicode_ci',
+                'encoding' => 'utf8mb4',
+                'after' => 'name',
+            ])
+            ->addColumn('email_pass', 'string', [
+                'null' => false,
+                'default' => '',
+                'limit' => 50,
+                'collation' => 'utf8mb4_unicode_ci',
+                'encoding' => 'utf8mb4',
+                'after' => 'email',
+            ])
+            ->addColumn('email_name', 'string', [
+                'null' => false,
+                'default' => '',
+                'limit' => 100,
+                'collation' => 'utf8mb4_unicode_ci',
+                'encoding' => 'utf8mb4',
+                'after' => 'email_pass',
+            ])
+            ->addColumn('apply_type', 'integer', [
+                'null' => false,
+                'default' => '2',
+                'limit' => MysqlAdapter::INT_TINY,
+                'after' => 'email_name',
+            ])
+            ->addColumn('banana_count', 'integer', [
+                'null' => false,
+                'default' => '0',
+                'limit' => MysqlAdapter::INT_TINY,
+                'after' => 'apply_type',
+            ])
+            ->addColumn('fetch_count', 'integer', [
+                'null' => false,
+                'default' => '0',
+                'limit' => MysqlAdapter::INT_TINY,
+                'after' => 'banana_count',
+            ])
+            ->addColumn('week_num', 'integer', [
+                'null' => false,
+                'default' => '0',
+                'limit' => MysqlAdapter::INT_TINY,
+                'after' => 'fetch_count',
+            ])
+            ->addColumn('report_num', 'integer', [
+                'null' => false,
+                'default' => '0',
+                'limit' => MysqlAdapter::INT_TINY,
+                'after' => 'week_num',
+            ])
+            ->addColumn('stat_last_update', 'datetime', [
+                'null' => false,
+                'default' => 'CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP',
+                'after' => 'report_num',
+            ])
+            ->addColumn('stat_fetchweight', 'decimal', [
+                'null' => false,
+                'default' => '0',
+                'precision' => 10,
+                'signed' => false,
+                'scale' => 2,
+                'after' => 'stat_last_update',
+            ])
+            ->addColumn('stat_fetchcount', 'integer', [
+                'null' => false,
+                'default' => '0',
+                'limit' => '10',
+                'signed' => false,
+                'after' => 'stat_fetchweight',
+            ])
+            ->addColumn('stat_postcount', 'integer', [
+                'null' => false,
+                'default' => '0',
+                'limit' => '10',
+                'signed' => false,
+                'after' => 'stat_fetchcount',
+            ])
+            ->addColumn('stat_betriebcount', 'integer', [
+                'null' => false,
+                'default' => '0',
+                'limit' => '7',
+                'signed' => false,
+                'after' => 'stat_postcount',
+            ])
+            ->addColumn('stat_korpcount', 'integer', [
+                'null' => false,
+                'default' => '0',
+                'limit' => '7',
+                'signed' => false,
+                'after' => 'stat_betriebcount',
+            ])
+            ->addColumn('stat_botcount', 'integer', [
+                'null' => false,
+                'default' => '0',
+                'limit' => '7',
+                'signed' => false,
+                'after' => 'stat_korpcount',
+            ])
+            ->addColumn('stat_fscount', 'integer', [
+                'null' => false,
+                'default' => '0',
+                'limit' => '7',
+                'signed' => false,
+                'after' => 'stat_botcount',
+            ])
+            ->addColumn('stat_fairteilercount', 'integer', [
+                'null' => false,
+                'default' => '0',
+                'limit' => '7',
+                'signed' => false,
+                'after' => 'stat_fscount',
+            ])
+            ->addColumn('conversation_id', 'integer', [
+                'null' => false,
+                'default' => '0',
+                'limit' => '10',
+                'signed' => false,
+                'after' => 'stat_fairteilercount',
+            ])
+            ->addColumn('moderated', 'integer', [
+                'null' => false,
+                'default' => '0',
+                'limit' => MysqlAdapter::INT_TINY,
+                'after' => 'conversation_id',
+            ])
+            ->addIndex(['parent_id'], [
+                'name' => 'parent_id',
+                'unique' => false,
+            ])
+            ->addIndex(['type'], [
+                'name' => 'type',
+                'unique' => false,
+            ])
+            ->addIndex(['mailbox_id'], [
+                'name' => 'mailbox_id',
+                'unique' => false,
+            ])
+            ->addIndex(['master'], [
+                'name' => 'master',
+                'unique' => false,
+            ])
+            ->create();
+        $this->table('fs_blog_entry', [
+            'id' => false,
+            'primary_key' => ['id'],
+            'engine' => 'InnoDB',
+            'encoding' => 'utf8mb4',
+            'collation' => 'utf8mb4_unicode_ci',
+            'comment' => '',
+        ])
+            ->addColumn('id', 'integer', [
+                'null' => false,
+                'limit' => '10',
+                'signed' => false,
+                'identity' => 'enable',
+            ])
+            ->addColumn('bezirk_id', 'integer', [
+                'null' => false,
+                'limit' => '10',
+                'signed' => false,
+                'after' => 'id',
+            ])
+            ->addColumn('foodsaver_id', 'integer', [
+                'null' => false,
+                'limit' => '10',
+                'signed' => false,
+                'after' => 'bezirk_id',
+            ])
+            ->addColumn('active', 'integer', [
+                'null' => false,
+                'limit' => MysqlAdapter::INT_TINY,
+                'signed' => false,
+                'after' => 'foodsaver_id',
+            ])
+            ->addColumn('name', 'string', [
+                'null' => true,
+                'default' => null,
+                'limit' => 100,
+                'collation' => 'utf8mb4_unicode_ci',
+                'encoding' => 'utf8mb4',
+                'after' => 'active',
+            ])
+            ->addColumn('teaser', 'string', [
+                'null' => true,
+                'default' => null,
+                'limit' => 500,
+                'collation' => 'utf8mb4_unicode_ci',
+                'encoding' => 'utf8mb4',
+                'after' => 'name',
+            ])
+            ->addColumn('body', 'text', [
+                'null' => true,
+                'default' => null,
+                'limit' => MysqlAdapter::TEXT_MEDIUM,
+                'collation' => 'utf8mb4_unicode_ci',
+                'encoding' => 'utf8mb4',
+                'after' => 'teaser',
+            ])
+            ->addColumn('time', 'datetime', [
+                'null' => true,
+                'default' => null,
+                'after' => 'body',
+            ])
+            ->addColumn('picture', 'string', [
+                'null' => false,
+                'limit' => 150,
+                'collation' => 'utf8mb4_unicode_ci',
+                'encoding' => 'utf8mb4',
+                'after' => 'time',
+            ])
+            ->addIndex(['foodsaver_id'], [
+                'name' => 'blog_entry_FKIndex1',
+                'unique' => false,
+            ])
+            ->addIndex(['bezirk_id'], [
+                'name' => 'blog_entry_FKIndex2',
+                'unique' => false,
+            ])
+            ->addIndex(['active'], [
+                'name' => 'active',
+                'unique' => false,
+            ])
+            ->create();
+        $this->table('fs_foodsaver_has_conversation', [
+            'id' => false,
+            'primary_key' => ['id'],
+            'engine' => 'InnoDB',
+            'encoding' => 'utf8mb4',
+            'collation' => 'utf8mb4_unicode_ci',
+            'comment' => '',
+        ])
+            ->addColumn('foodsaver_id', 'integer', [
+                'null' => false,
+                'limit' => '10',
+                'signed' => false,
+            ])
+            ->addColumn('conversation_id', 'integer', [
+                'null' => false,
+                'limit' => '10',
+                'signed' => false,
+                'after' => 'foodsaver_id',
+            ])
+            ->addColumn('unread', 'integer', [
+                'null' => true,
+                'default' => '1',
+                'limit' => MysqlAdapter::INT_TINY,
+                'signed' => false,
+                'after' => 'conversation_id',
+            ])
+            ->addColumn('id', 'integer', [
+                'null' => false,
+                'limit' => '10',
+                'signed' => false,
+                'identity' => 'enable',
+                'after' => 'unread',
+            ])
+            ->addIndex(['foodsaver_id', 'conversation_id'], [
+                'name' => 'foodsaver_id',
+                'unique' => true,
+            ])
+            ->addIndex(['foodsaver_id'], [
+                'name' => 'foodsaver_has_conversation_FKIndex1',
+                'unique' => false,
+            ])
+            ->addIndex(['conversation_id'], [
+                'name' => 'foodsaver_has_conversation_FKIndex2',
+                'unique' => false,
+            ])
+            ->create();
+        $this->table('fs_mailbox', [
+            'id' => false,
+            'primary_key' => ['id'],
+            'engine' => 'InnoDB',
+            'encoding' => 'utf8mb4',
+            'collation' => 'utf8mb4_unicode_ci',
+            'comment' => '',
+        ])
+            ->addColumn('id', 'integer', [
+                'null' => false,
+                'limit' => '10',
+                'signed' => false,
+                'identity' => 'enable',
+            ])
+            ->addColumn('name', 'string', [
+                'null' => true,
+                'default' => null,
+                'limit' => 50,
+                'collation' => 'utf8mb4_unicode_ci',
+                'encoding' => 'utf8mb4',
+                'after' => 'id',
+            ])
+            ->addColumn('member', 'integer', [
+                'null' => false,
+                'default' => '0',
+                'limit' => MysqlAdapter::INT_TINY,
+                'after' => 'name',
+            ])
+            ->addColumn('last_access', 'datetime', [
+                'null' => false,
+                'default' => 'CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP',
+                'after' => 'member',
+            ])
+            ->addIndex(['name'], [
+                'name' => 'email_unique',
+                'unique' => true,
+            ])
+            ->addIndex(['member'], [
+                'name' => 'member',
+                'unique' => false,
+            ])
+            ->create();
+        $this->table('fs_event_has_wallpost', [
+            'id' => false,
+            'primary_key' => ['event_id', 'wallpost_id'],
+            'engine' => 'InnoDB',
+            'encoding' => 'utf8mb4',
+            'collation' => 'utf8mb4_unicode_ci',
+            'comment' => '',
+        ])
+            ->addColumn('event_id', 'integer', [
+                'null' => false,
+                'limit' => '10',
+                'signed' => false,
+            ])
+            ->addColumn('wallpost_id', 'integer', [
+                'null' => false,
+                'limit' => '10',
+                'signed' => false,
+                'after' => 'event_id',
+            ])
+            ->addIndex(['event_id'], [
+                'name' => 'event_id',
+                'unique' => false,
+            ])
+            ->addIndex(['wallpost_id'], [
+                'name' => 'wallpost_id',
+                'unique' => false,
+            ])
+            ->create();
+        $this->table('fs_theme', [
+            'id' => false,
+            'primary_key' => ['id'],
+            'engine' => 'InnoDB',
+            'encoding' => 'utf8mb4',
+            'collation' => 'utf8mb4_unicode_ci',
+            'comment' => '',
+        ])
+            ->addColumn('id', 'integer', [
+                'null' => false,
+                'limit' => '10',
+                'signed' => false,
+                'identity' => 'enable',
+            ])
+            ->addColumn('foodsaver_id', 'integer', [
+                'null' => false,
+                'limit' => '10',
+                'signed' => false,
+                'after' => 'id',
+            ])
+            ->addColumn('last_post_id', 'integer', [
+                'null' => false,
+                'default' => '0',
+                'limit' => '10',
+                'signed' => false,
+                'after' => 'foodsaver_id',
+            ])
+            ->addColumn('name', 'string', [
+                'null' => true,
+                'default' => null,
+                'limit' => 260,
+                'collation' => 'utf8mb4_unicode_ci',
+                'encoding' => 'utf8mb4',
+                'after' => 'last_post_id',
+            ])
+            ->addColumn('time', 'datetime', [
+                'null' => true,
+                'default' => null,
+                'after' => 'name',
+            ])
+            ->addColumn('active', 'integer', [
+                'null' => false,
+                'default' => '1',
+                'limit' => MysqlAdapter::INT_TINY,
+                'signed' => false,
+                'after' => 'time',
+            ])
+            ->addColumn('sticky', 'boolean', [
+                'null' => false,
+                'default' => '0',
+                'limit' => MysqlAdapter::INT_TINY,
+                'after' => 'active',
+            ])
+            ->addIndex(['foodsaver_id'], [
+                'name' => 'theme_FKIndex1',
+                'unique' => false,
+            ])
+            ->addIndex(['last_post_id'], [
+                'name' => 'last_post_id',
+                'unique' => false,
+            ])
+            ->addIndex(['active'], [
+                'name' => 'active',
+                'unique' => false,
+            ])
+            ->create();
+        $this->table('fs_bezirk_has_wallpost', [
+            'id' => false,
+            'primary_key' => ['bezirk_id', 'wallpost_id'],
+            'engine' => 'InnoDB',
+            'encoding' => 'utf8mb4',
+            'collation' => 'utf8mb4_unicode_ci',
+            'comment' => '',
+        ])
+            ->addColumn('bezirk_id', 'integer', [
+                'null' => false,
+                'limit' => '10',
+                'signed' => false,
+            ])
+            ->addColumn('wallpost_id', 'integer', [
+                'null' => false,
+                'limit' => '10',
+                'signed' => false,
+                'after' => 'bezirk_id',
+            ])
+            ->addIndex(['bezirk_id'], [
+                'name' => 'bezirk_id',
+                'unique' => false,
+            ])
+            ->addIndex(['wallpost_id'], [
+                'name' => 'wallpost_id',
+                'unique' => false,
+            ])
+            ->create();
+        $this->table('fs_botschafter', [
+            'id' => false,
+            'primary_key' => ['foodsaver_id', 'bezirk_id'],
+            'engine' => 'InnoDB',
+            'encoding' => 'utf8mb4',
+            'collation' => 'utf8mb4_unicode_ci',
+            'comment' => '',
+        ])
+            ->addColumn('foodsaver_id', 'integer', [
+                'null' => false,
+                'limit' => '10',
+                'signed' => false,
+            ])
+            ->addColumn('bezirk_id', 'integer', [
+                'null' => false,
+                'limit' => '10',
+                'signed' => false,
+                'after' => 'foodsaver_id',
+            ])
+            ->addIndex(['foodsaver_id'], [
+                'name' => 'foodsaver_has_bezirk_FKIndex1',
+                'unique' => false,
+            ])
+            ->addIndex(['bezirk_id'], [
+                'name' => 'foodsaver_has_bezirk_FKIndex2',
+                'unique' => false,
+            ])
+            ->create();
+        $this->table('fs_buddy', [
+            'id' => false,
+            'primary_key' => ['foodsaver_id', 'buddy_id'],
+            'engine' => 'InnoDB',
+            'encoding' => 'utf8mb4',
+            'collation' => 'utf8mb4_unicode_ci',
+            'comment' => '',
+        ])
+            ->addColumn('foodsaver_id', 'integer', [
+                'null' => false,
+                'limit' => '10',
+                'signed' => false,
+            ])
+            ->addColumn('buddy_id', 'integer', [
+                'null' => false,
+                'limit' => '10',
+                'signed' => false,
+                'after' => 'foodsaver_id',
+            ])
+            ->addColumn('confirmed', 'integer', [
+                'null' => true,
+                'default' => null,
+                'limit' => MysqlAdapter::INT_TINY,
+                'signed' => false,
+                'after' => 'buddy_id',
+            ])
+            ->addIndex(['confirmed'], [
+                'name' => 'buddy_confirmed',
+                'unique' => false,
+            ])
+            ->addIndex(['buddy_id'], [
+                'name' => 'buddy_id',
+                'unique' => false,
+            ])
+            ->create();
+        $this->table('fs_conversation', [
+            'id' => false,
+            'primary_key' => ['id'],
+            'engine' => 'InnoDB',
+            'encoding' => 'utf8mb4',
+            'collation' => 'utf8mb4_unicode_ci',
+            'comment' => '',
+        ])
+            ->addColumn('id', 'integer', [
+                'null' => false,
+                'limit' => '10',
+                'signed' => false,
+                'identity' => 'enable',
+            ])
+            ->addColumn('locked', 'boolean', [
+                'null' => false,
+                'default' => '0',
+                'limit' => MysqlAdapter::INT_TINY,
+                'after' => 'id',
+            ])
+            ->addColumn('name', 'string', [
+                'null' => true,
+                'default' => null,
+                'limit' => 40,
+                'collation' => 'utf8mb4_unicode_ci',
+                'encoding' => 'utf8mb4',
+                'after' => 'locked',
+            ])
+            ->addColumn('last', 'datetime', [
+                'null' => true,
+                'default' => null,
+                'after' => 'name',
+            ])
+            ->addColumn('last_foodsaver_id', 'integer', [
+                'null' => true,
+                'default' => null,
+                'limit' => '10',
+                'signed' => false,
+                'after' => 'last',
+            ])
+            ->addColumn('last_message_id', 'integer', [
+                'null' => true,
+                'default' => null,
+                'limit' => '10',
+                'signed' => false,
+                'after' => 'last_foodsaver_id',
+            ])
+            ->addColumn('last_message', 'text', [
+                'null' => true,
+                'default' => null,
+                'limit' => MysqlAdapter::TEXT_MEDIUM,
+                'collation' => 'utf8mb4_unicode_ci',
+                'encoding' => 'utf8mb4',
+                'after' => 'last_message_id',
+            ])
+            ->addColumn('last_message_is_htmlentity_encoded', 'boolean', [
+                'null' => false,
+                'default' => '1',
+                'limit' => MysqlAdapter::INT_TINY,
+                'after' => 'last_message',
+            ])
+            ->addIndex(['last_foodsaver_id'], [
+                'name' => 'conversation_last_fs_id',
+                'unique' => false,
+            ])
+            ->create();
+        $this->table('fs_foodsaver_has_contact', [
+            'id' => false,
+            'primary_key' => ['foodsaver_id', 'contact_id'],
+            'engine' => 'InnoDB',
+            'encoding' => 'utf8mb4',
+            'collation' => 'utf8mb4_unicode_ci',
+            'comment' => '',
+        ])
+            ->addColumn('foodsaver_id', 'integer', [
+                'null' => false,
+                'limit' => '10',
+                'default' => 0,
+                'signed' => false,
+            ])
+            ->addColumn('contact_id', 'integer', [
+                'null' => false,
+                'limit' => '10',
+                'signed' => false,
+                'default' => 0,
+                'after' => 'foodsaver_id',
+            ])
+            ->addIndex(['contact_id'], [
+                'name' => 'contact_id',
+                'unique' => false,
+            ])
+            ->create();
+        $this->table('fs_event', [
+            'id' => false,
+            'primary_key' => ['id'],
+            'engine' => 'InnoDB',
+            'encoding' => 'utf8mb4',
+            'collation' => 'utf8mb4_unicode_ci',
+            'comment' => '',
+        ])
+            ->addColumn('id', 'integer', [
+                'null' => false,
+                'limit' => '10',
+                'signed' => false,
+                'identity' => 'enable',
+            ])
+            ->addColumn('foodsaver_id', 'integer', [
+                'null' => false,
+                'limit' => '10',
+                'signed' => false,
+                'after' => 'id',
+            ])
+            ->addColumn('bezirk_id', 'integer', [
+                'null' => true,
+                'default' => null,
+                'limit' => '10',
+                'signed' => false,
+                'after' => 'foodsaver_id',
+            ])
+            ->addColumn('location_id', 'integer', [
+                'null' => true,
+                'default' => null,
+                'limit' => '10',
+                'signed' => false,
+                'after' => 'bezirk_id',
+            ])
+            ->addColumn('public', 'boolean', [
+                'null' => false,
+                'default' => '0',
+                'limit' => MysqlAdapter::INT_TINY,
+                'after' => 'location_id',
+            ])
+            ->addColumn('name', 'string', [
+                'null' => true,
+                'default' => null,
+                'limit' => 200,
+                'collation' => 'utf8mb4_unicode_ci',
+                'encoding' => 'utf8mb4',
+                'after' => 'public',
+            ])
+            ->addColumn('start', 'datetime', [
+                'null' => false,
+                'after' => 'name',
+            ])
+            ->addColumn('end', 'datetime', [
+                'null' => false,
+                'after' => 'start',
+            ])
+            ->addColumn('description', 'text', [
+                'null' => true,
+                'default' => null,
+                'limit' => MysqlAdapter::TEXT_MEDIUM,
+                'collation' => 'utf8mb4_unicode_ci',
+                'encoding' => 'utf8mb4',
+                'after' => 'end',
+            ])
+            ->addColumn('bot', 'integer', [
+                'null' => true,
+                'default' => '0',
+                'limit' => MysqlAdapter::INT_TINY,
+                'signed' => false,
+                'after' => 'description',
+            ])
+            ->addColumn('online', 'integer', [
+                'null' => true,
+                'default' => '0',
+                'limit' => MysqlAdapter::INT_TINY,
+                'signed' => false,
+                'after' => 'bot',
+            ])
+            ->addIndex(['location_id'], [
+                'name' => 'event_FKIndex1',
+                'unique' => false,
+            ])
+            ->addIndex(['bezirk_id'], [
+                'name' => 'event_FKIndex2',
+                'unique' => false,
+            ])
+            ->addIndex(['foodsaver_id'], [
+                'name' => 'event_FKIndex3',
+                'unique' => false,
+            ])
+            ->create();
+        $this->table('fs_email_status', [
+            'id' => false,
+            'primary_key' => ['email_id', 'foodsaver_id'],
+            'engine' => 'InnoDB',
+            'encoding' => 'utf8mb4',
+            'collation' => 'utf8mb4_unicode_ci',
+            'comment' => '',
+        ])
+            ->addColumn('email_id', 'integer', [
+                'null' => false,
+                'limit' => '10',
+                'signed' => false,
+            ])
+            ->addColumn('foodsaver_id', 'integer', [
+                'null' => false,
+                'limit' => '10',
+                'signed' => false,
+                'after' => 'email_id',
+            ])
+            ->addColumn('status', 'integer', [
+                'null' => true,
+                'default' => '0',
+                'limit' => MysqlAdapter::INT_TINY,
+                'signed' => false,
+                'after' => 'foodsaver_id',
+            ])
+            ->addIndex(['foodsaver_id'], [
+                'name' => 'foodsaver_id',
+                'unique' => false,
+            ])
+            ->create();
+        $this->table('fs_foodsaver_has_wallpost', [
+            'id' => false,
+            'primary_key' => ['foodsaver_id', 'wallpost_id'],
+            'engine' => 'InnoDB',
+            'encoding' => 'utf8mb4',
+            'collation' => 'utf8mb4_unicode_ci',
+            'comment' => '',
+        ])
+            ->addColumn('foodsaver_id', 'integer', [
+                'null' => false,
+                'limit' => '10',
+                'signed' => false,
+            ])
+            ->addColumn('wallpost_id', 'integer', [
+                'null' => false,
+                'limit' => '10',
+                'signed' => false,
+                'after' => 'foodsaver_id',
+            ])
+            ->addColumn('usercomment', 'integer', [
+                'null' => false,
+                'default' => '0',
+                'limit' => MysqlAdapter::INT_TINY,
+                'after' => 'wallpost_id',
+            ])
+            ->addIndex(['foodsaver_id'], [
+                'name' => 'foodsaver_has_wallpost_FKIndex1',
+                'unique' => false,
+            ])
+            ->addIndex(['wallpost_id'], [
+                'name' => 'foodsaver_has_wallpost_FKIndex2',
+                'unique' => false,
+            ])
+            ->addIndex(['foodsaver_id'], [
+                'name' => 'foodsaver_id',
+                'unique' => false,
+            ])
+            ->addIndex(['wallpost_id'], [
+                'name' => 'wallpost_id',
+                'unique' => false,
+            ])
+            ->create();
+        $this->table('fs_ipblock', [
+            'id' => false,
+            'primary_key' => ['ip', 'context'],
+            'engine' => 'InnoDB',
+            'encoding' => 'utf8mb4',
+            'collation' => 'utf8mb4_unicode_ci',
+            'comment' => '',
+        ])
+            ->addColumn('ip', 'string', [
+                'null' => false,
+                'limit' => 20,
+                'collation' => 'utf8mb4_unicode_ci',
+                'encoding' => 'utf8mb4',
+            ])
+            ->addColumn('context', 'string', [
+                'null' => false,
+                'limit' => 10,
+                'collation' => 'utf8mb4_unicode_ci',
+                'encoding' => 'utf8mb4',
+                'after' => 'ip',
+            ])
+            ->addColumn('start', 'datetime', [
+                'null' => true,
+                'default' => null,
+                'after' => 'context',
+            ])
+            ->addColumn('duration', 'integer', [
+                'null' => true,
+                'default' => null,
+                'limit' => '10',
+                'signed' => false,
+                'after' => 'start',
+            ])
+            ->create();
+        $this->table('fs_pass_gen', [
+            'id' => false,
+            'primary_key' => ['foodsaver_id', 'date'],
+            'engine' => 'InnoDB',
+            'encoding' => 'utf8mb4',
+            'collation' => 'utf8mb4_unicode_ci',
+            'comment' => '',
+        ])
+            ->addColumn('foodsaver_id', 'integer', [
+                'null' => false,
+                'limit' => '10',
+                'signed' => false,
+            ])
+            ->addColumn('date', 'datetime', [
+                'null' => false,
+                'after' => 'foodsaver_id',
+            ])
+            ->addColumn('bot_id', 'integer', [
+                'null' => true,
+                'default' => null,
+                'limit' => '10',
+                'signed' => false,
+                'after' => 'date',
+            ])
+            ->addIndex(['bot_id'], [
+                'name' => 'bot_id',
+                'unique' => false,
+            ])
+            ->create();
+        $this->table('fs_lebensmittel', [
+            'id' => false,
+            'primary_key' => ['id'],
+            'engine' => 'InnoDB',
+            'encoding' => 'utf8mb4',
+            'collation' => 'utf8mb4_unicode_ci',
+            'comment' => '',
+        ])
+            ->addColumn('id', 'integer', [
+                'null' => false,
+                'limit' => '10',
+                'signed' => false,
+                'identity' => 'enable',
+            ])
+            ->addColumn('name', 'string', [
+                'null' => true,
+                'default' => null,
+                'limit' => 50,
+                'collation' => 'utf8mb4_unicode_ci',
+                'encoding' => 'utf8mb4',
+                'after' => 'id',
+            ])
+            ->create();
+        $this->table('fs_fairteiler_follower', [
+            'id' => false,
+            'primary_key' => ['fairteiler_id', 'foodsaver_id'],
+            'engine' => 'InnoDB',
+            'encoding' => 'utf8mb4',
+            'collation' => 'utf8mb4_unicode_ci',
+            'comment' => '',
+        ])
+            ->addColumn('fairteiler_id', 'integer', [
+                'null' => false,
+                'limit' => '10',
+                'signed' => false,
+            ])
+            ->addColumn('foodsaver_id', 'integer', [
+                'null' => false,
+                'limit' => '10',
+                'signed' => false,
+                'after' => 'fairteiler_id',
+            ])
+            ->addColumn('type', 'integer', [
+                'null' => false,
+                'default' => '1',
+                'limit' => MysqlAdapter::INT_TINY,
+                'signed' => false,
+                'after' => 'foodsaver_id',
+            ])
+            ->addColumn('infotype', 'integer', [
+                'null' => false,
+                'default' => '1',
+                'limit' => MysqlAdapter::INT_TINY,
+                'signed' => false,
+                'after' => 'type',
+            ])
+            ->addIndex(['fairteiler_id'], [
+                'name' => 'fairteiler_verantwortlich_FKIndex1',
+                'unique' => false,
+            ])
+            ->addIndex(['foodsaver_id'], [
+                'name' => 'fairteiler_verantwortlich_FKIndex2',
+                'unique' => false,
+            ])
+            ->addIndex(['type'], [
+                'name' => 'type',
+                'unique' => false,
+            ])
+            ->addIndex(['infotype'], [
+                'name' => 'infotype',
+                'unique' => false,
+            ])
+            ->create();
+        $this->table('fs_betrieb_team', [
+            'id' => false,
+            'primary_key' => ['id'],
+            'engine' => 'InnoDB',
+            'encoding' => 'utf8mb4',
+            'collation' => 'utf8mb4_unicode_ci',
+            'comment' => '',
+        ])
+            ->addColumn('foodsaver_id', 'integer', [
+                'null' => false,
+                'limit' => '10',
+                'signed' => false,
+            ])
+            ->addColumn('betrieb_id', 'integer', [
+                'null' => false,
+                'limit' => '10',
+                'signed' => false,
+                'after' => 'foodsaver_id',
+            ])
+            ->addColumn('verantwortlich', 'integer', [
+                'null' => true,
+                'default' => '0',
+                'limit' => MysqlAdapter::INT_TINY,
+                'signed' => false,
+                'after' => 'betrieb_id',
+            ])
+            ->addColumn('active', 'integer', [
+                'null' => false,
+                'default' => '0',
+                'limit' => MysqlAdapter::INT_REGULAR,
+                'after' => 'verantwortlich',
+            ])
+            ->addColumn('stat_last_update', 'datetime', [
+                'null' => true,
+                'default' => null,
+                'after' => 'active',
+            ])
+            ->addColumn('stat_fetchcount', 'integer', [
+                'null' => false,
+                'default' => '0',
+                'limit' => '10',
+                'signed' => false,
+                'after' => 'stat_last_update',
+            ])
+            ->addColumn('stat_first_fetch', 'date', [
+                'null' => true,
+                'default' => null,
+                'after' => 'stat_fetchcount',
+            ])
+            ->addColumn('stat_last_fetch', 'date', [
+                'null' => true,
+                'default' => null,
+                'after' => 'stat_first_fetch',
+            ])
+            ->addColumn('stat_add_date', 'date', [
+                'null' => true,
+                'default' => null,
+                'after' => 'stat_last_fetch',
+            ])
+            ->addColumn('id', 'integer', [
+                'null' => false,
+                'limit' => '10',
+                'signed' => false,
+                'identity' => 'enable',
+                'after' => 'stat_add_date',
+            ])
+            ->addIndex(['foodsaver_id', 'betrieb_id'], [
+                'name' => 'foodsaver_id',
+                'unique' => true,
+            ])
+            ->addIndex(['foodsaver_id'], [
+                'name' => 'foodsaver_has_betrieb_FKIndex1',
+                'unique' => false,
+            ])
+            ->addIndex(['betrieb_id'], [
+                'name' => 'foodsaver_has_betrieb_FKIndex2',
+                'unique' => false,
+            ])
+            ->create();
+        $this->table('fs_fairteiler_has_wallpost', [
+            'id' => false,
+            'primary_key' => ['fairteiler_id', 'wallpost_id'],
+            'engine' => 'InnoDB',
+            'encoding' => 'utf8mb4',
+            'collation' => 'utf8mb4_unicode_ci',
+            'comment' => '',
+        ])
+            ->addColumn('fairteiler_id', 'integer', [
+                'null' => false,
+                'limit' => '10',
+                'signed' => false,
+            ])
+            ->addColumn('wallpost_id', 'integer', [
+                'null' => false,
+                'limit' => '10',
+                'signed' => false,
+                'after' => 'fairteiler_id',
+            ])
+            ->addIndex(['fairteiler_id'], [
+                'name' => 'fairteiler_has_wallpost_FKIndex1',
+                'unique' => false,
+            ])
+            ->addIndex(['wallpost_id'], [
+                'name' => 'fairteiler_has_wallpost_FKIndex2',
+                'unique' => false,
+            ])
+            ->create();
+        $this->table('fs_kette', [
+            'id' => false,
+            'primary_key' => ['id'],
+            'engine' => 'InnoDB',
+            'encoding' => 'utf8mb4',
+            'collation' => 'utf8mb4_unicode_ci',
+            'comment' => '',
+        ])
+            ->addColumn('id', 'integer', [
+                'null' => false,
+                'limit' => '10',
+                'signed' => false,
+                'identity' => 'enable',
+            ])
+            ->addColumn('name', 'string', [
+                'null' => true,
+                'default' => null,
+                'limit' => 60,
+                'collation' => 'utf8mb4_unicode_ci',
+                'encoding' => 'utf8mb4',
+                'after' => 'id',
+            ])
+            ->addColumn('logo', 'string', [
+                'null' => false,
+                'default' => '',
+                'limit' => 30,
+                'collation' => 'utf8mb4_unicode_ci',
+                'encoding' => 'utf8mb4',
+                'after' => 'name',
+            ])
+            ->create();
+        $this->table('fs_faq_category', [
+            'id' => false,
+            'primary_key' => ['id'],
+            'engine' => 'InnoDB',
+            'encoding' => 'utf8mb4',
+            'collation' => 'utf8mb4_unicode_ci',
+            'comment' => '',
+        ])
+            ->addColumn('id', 'integer', [
+                'null' => false,
+                'limit' => '10',
+                'signed' => false,
+                'identity' => 'enable',
+            ])
+            ->addColumn('name', 'string', [
+                'null' => true,
+                'default' => null,
+                'limit' => 50,
+                'collation' => 'utf8mb4_unicode_ci',
+                'encoding' => 'utf8mb4',
+                'after' => 'id',
+            ])
+            ->create();
+        $this->table('fs_fairteiler', [
+            'id' => false,
+            'primary_key' => ['id'],
+            'engine' => 'InnoDB',
+            'encoding' => 'utf8mb4',
+            'collation' => 'utf8mb4_unicode_ci',
+            'comment' => '',
+        ])
+            ->addColumn('id', 'integer', [
+                'null' => false,
+                'limit' => '10',
+                'signed' => false,
+                'identity' => 'enable',
+            ])
+            ->addColumn('bezirk_id', 'integer', [
+                'null' => true,
+                'default' => null,
+                'limit' => '10',
+                'signed' => false,
+                'after' => 'id',
+            ])
+            ->addColumn('name', 'string', [
+                'null' => true,
+                'default' => null,
+                'limit' => 260,
+                'collation' => 'utf8mb4_unicode_ci',
+                'encoding' => 'utf8mb4',
+                'after' => 'bezirk_id',
+            ])
+            ->addColumn('picture', 'string', [
+                'null' => false,
+                'default' => '',
+                'limit' => 100,
+                'collation' => 'utf8mb4_unicode_ci',
+                'encoding' => 'utf8mb4',
+                'after' => 'name',
+            ])
+            ->addColumn('status', 'integer', [
+                'null' => true,
+                'default' => null,
+                'limit' => MysqlAdapter::INT_TINY,
+                'signed' => false,
+                'after' => 'picture',
+            ])
+            ->addColumn('desc', 'text', [
+                'null' => true,
+                'default' => null,
+                'limit' => MysqlAdapter::TEXT_MEDIUM,
+                'collation' => 'utf8mb4_unicode_ci',
+                'encoding' => 'utf8mb4',
+                'after' => 'status',
+            ])
+            ->addColumn('anschrift', 'string', [
+                'null' => true,
+                'default' => null,
+                'limit' => 260,
+                'collation' => 'utf8mb4_unicode_ci',
+                'encoding' => 'utf8mb4',
+                'after' => 'desc',
+            ])
+            ->addColumn('plz', 'string', [
+                'null' => true,
+                'default' => null,
+                'limit' => 5,
+                'collation' => 'utf8mb4_unicode_ci',
+                'encoding' => 'utf8mb4',
+                'after' => 'anschrift',
+            ])
+            ->addColumn('ort', 'string', [
+                'null' => true,
+                'default' => null,
+                'limit' => 100,
+                'collation' => 'utf8mb4_unicode_ci',
+                'encoding' => 'utf8mb4',
+                'after' => 'plz',
+            ])
+            ->addColumn('lat', 'string', [
+                'null' => true,
+                'default' => null,
+                'limit' => 100,
+                'collation' => 'utf8mb4_unicode_ci',
+                'encoding' => 'utf8mb4',
+                'after' => 'ort',
+            ])
+            ->addColumn('lon', 'string', [
+                'null' => true,
+                'default' => null,
+                'limit' => 100,
+                'collation' => 'utf8mb4_unicode_ci',
+                'encoding' => 'utf8mb4',
+                'after' => 'lat',
+            ])
+            ->addColumn('add_date', 'date', [
+                'null' => true,
+                'default' => null,
+                'after' => 'lon',
+            ])
+            ->addColumn('add_foodsaver', 'integer', [
+                'null' => true,
+                'default' => null,
+                'limit' => '10',
+                'signed' => false,
+                'after' => 'add_date',
+            ])
+            ->addIndex(['bezirk_id'], [
+                'name' => 'fairteiler_FKIndex1',
+                'unique' => false,
+            ])
+            ->create();
+        $this->table('fs_verify_history', [
+            'id' => false,
+            'engine' => 'InnoDB',
+            'encoding' => 'utf8mb4',
+            'collation' => 'utf8mb4_unicode_ci',
+            'comment' => '',
+        ])
+            ->addColumn('fs_id', 'integer', [
+                'null' => true,
+                'default' => null,
+                'limit' => '10',
+                'signed' => false,
+            ])
+            ->addColumn('date', 'datetime', [
+                'null' => false,
+                'after' => 'fs_id',
+            ])
+            ->addColumn('bot_id', 'integer', [
+                'null' => true,
+                'default' => null,
+                'limit' => '10',
+                'signed' => false,
+                'after' => 'date',
+            ])
+            ->addColumn('change_status', 'boolean', [
+                'null' => true,
+                'default' => null,
+                'limit' => MysqlAdapter::INT_TINY,
+                'after' => 'bot_id',
+            ])
+            ->addIndex(['fs_id'], [
+                'name' => 'fs_id',
+                'unique' => false,
+            ])
+            ->create();
+        $this->table('fs_push_notification_subscription', [
+            'id' => true,
+            'engine' => 'InnoDB',
+            'encoding' => 'utf8mb4',
+            'collation' => 'utf8mb4_unicode_ci',
+            'comment' => '',
+        ])
+            ->addColumn('foodsaver_id', 'integer', [
+                'null' => false,
+                'limit' => MysqlAdapter::INT_REGULAR,
+            ])
+            ->addColumn('data', 'text', [
+                'null' => true,
+                'default' => null,
+                'limit' => 65535,
+                'collation' => 'utf8mb4_unicode_ci',
+                'encoding' => 'utf8mb4',
+                'after' => 'foodsaver_id',
+            ])
+            ->addColumn('type', 'string', [
+                'null' => true,
+                'default' => null,
+                'limit' => 24,
+                'collation' => 'utf8mb4_unicode_ci',
+                'encoding' => 'utf8mb4',
+                'after' => 'data',
+            ])
+            ->create();
+        $this->table('fs_rating', [
+            'id' => false,
+            'primary_key' => ['foodsaver_id', 'rater_id', 'ratingtype'],
+            'engine' => 'InnoDB',
+            'encoding' => 'utf8mb4',
+            'collation' => 'utf8mb4_unicode_ci',
+            'comment' => 'ratingtype 1+2 = bananen, 4+5 = betriebsmeldung',
+        ])
+            ->addColumn('foodsaver_id', 'integer', [
+                'null' => false,
+                'limit' => '10',
+                'signed' => false,
+            ])
+            ->addColumn('rater_id', 'integer', [
+                'null' => false,
+                'limit' => '10',
+                'signed' => false,
+                'after' => 'foodsaver_id',
+            ])
+            ->addColumn('ratingtype', 'integer', [
+                'null' => false,
+                'default' => '1',
+                'limit' => MysqlAdapter::INT_TINY,
+                'signed' => false,
+                'after' => 'rater_id',
+            ])
+            ->addColumn('rating', 'integer', [
+                'null' => true,
+                'default' => null,
+                'limit' => MysqlAdapter::INT_TINY,
+                'after' => 'ratingtype',
+            ])
+            ->addColumn('msg', 'text', [
+                'null' => false,
+                'limit' => MysqlAdapter::TEXT_MEDIUM,
+                'collation' => 'utf8mb4_unicode_ci',
+                'encoding' => 'utf8mb4',
+                'after' => 'rating',
+            ])
+            ->addColumn('time', 'datetime', [
+                'null' => false,
+                'after' => 'msg',
+            ])
+            ->addIndex(['rater_id'], [
+                'name' => 'fk_foodsaver_has_foodsaver_foodsaver1_idx',
+                'unique' => false,
+            ])
+            ->addIndex(['foodsaver_id'], [
+                'name' => 'fk_foodsaver_has_foodsaver_foodsaver_idx',
+                'unique' => false,
+            ])
+            ->create();
+        $this->table('fs_location', [
+            'id' => false,
+            'primary_key' => ['id'],
+            'engine' => 'InnoDB',
+            'encoding' => 'utf8mb4',
+            'collation' => 'utf8mb4_unicode_ci',
+            'comment' => '',
+        ])
+            ->addColumn('id', 'integer', [
+                'null' => false,
+                'limit' => '10',
+                'signed' => false,
+                'identity' => 'enable',
+            ])
+            ->addColumn('name', 'string', [
+                'null' => true,
+                'default' => null,
+                'limit' => 200,
+                'collation' => 'utf8mb4_unicode_ci',
+                'encoding' => 'utf8mb4',
+                'after' => 'id',
+            ])
+            ->addColumn('lat', 'decimal', [
+                'null' => true,
+                'default' => null,
+                'precision' => 10,
+                'scale' => 8,
+                'after' => 'name',
+            ])
+            ->addColumn('lon', 'decimal', [
+                'null' => true,
+                'default' => null,
+                'precision' => 11,
+                'scale' => 8,
+                'after' => 'lat',
+            ])
+            ->addColumn('zip', 'string', [
+                'null' => true,
+                'default' => null,
+                'limit' => 10,
+                'collation' => 'utf8mb4_unicode_ci',
+                'encoding' => 'utf8mb4',
+                'after' => 'lon',
+            ])
+            ->addColumn('city', 'string', [
+                'null' => true,
+                'default' => null,
+                'limit' => 100,
+                'collation' => 'utf8mb4_unicode_ci',
+                'encoding' => 'utf8mb4',
+                'after' => 'zip',
+            ])
+            ->addColumn('street', 'string', [
+                'null' => true,
+                'default' => null,
+                'limit' => 200,
+                'collation' => 'utf8mb4_unicode_ci',
+                'encoding' => 'utf8mb4',
+                'after' => 'city',
+            ])
+            ->create();
+        $this->table('fs_foodsaver_has_bell', [
+            'id' => false,
+            'primary_key' => ['foodsaver_id', 'bell_id'],
+            'engine' => 'InnoDB',
+            'encoding' => 'utf8mb4',
+            'collation' => 'utf8mb4_unicode_ci',
+            'comment' => '',
+        ])
+            ->addColumn('foodsaver_id', 'integer', [
+                'null' => false,
+                'limit' => '10',
+                'signed' => false,
+            ])
+            ->addColumn('bell_id', 'integer', [
+                'null' => false,
+                'limit' => '10',
+                'signed' => false,
+                'after' => 'foodsaver_id',
+            ])
+            ->addColumn('seen', 'integer', [
+                'null' => true,
+                'default' => '0',
+                'limit' => MysqlAdapter::INT_TINY,
+                'signed' => false,
+                'after' => 'bell_id',
+            ])
+            ->addIndex(['foodsaver_id'], [
+                'name' => 'foodsaver_has_bell_FKIndex1',
+                'unique' => false,
+            ])
+            ->addIndex(['bell_id'], [
+                'name' => 'foodsaver_has_bell_FKIndex2',
+                'unique' => false,
+            ])
+            ->create();
+        $this->table('fs_foodsaver_has_bezirk', [
+            'id' => false,
+            'primary_key' => ['foodsaver_id', 'bezirk_id'],
+            'engine' => 'InnoDB',
+            'encoding' => 'utf8mb4',
+            'collation' => 'utf8mb4_unicode_ci',
+            'comment' => '',
+        ])
+            ->addColumn('foodsaver_id', 'integer', [
+                'null' => false,
+                'limit' => '10',
+                'signed' => false,
+            ])
+            ->addColumn('bezirk_id', 'integer', [
+                'null' => false,
+                'limit' => '10',
+                'signed' => false,
+                'after' => 'foodsaver_id',
+            ])
+            ->addColumn('active', 'integer', [
+                'null' => true,
+                'default' => '0',
+                'limit' => '10',
+                'signed' => false,
+                'comment' => '0=beworben,1=aktiv,10=vielleicht',
+                'after' => 'bezirk_id',
+            ])
+            ->addColumn('added', 'datetime', [
+                'null' => false,
+                'default' => 'CURRENT_TIMESTAMP',
+                'after' => 'active',
+            ])
+            ->addColumn('application', 'text', [
+                'null' => false,
+                'default' => '',
+                'limit' => MysqlAdapter::TEXT_MEDIUM,
+                'collation' => 'utf8mb4_unicode_ci',
+                'encoding' => 'utf8mb4',
+                'after' => 'added',
+            ])
+            ->addIndex(['foodsaver_id'], [
+                'name' => 'foodsaver_has_bezirk_FKIndex1',
+                'unique' => false,
+            ])
+            ->addIndex(['bezirk_id'], [
+                'name' => 'foodsaver_has_bezirk_FKIndex2',
+                'unique' => false,
+            ])
+            ->create();
+        $this->table('fs_report_has_wallpost', [
+            'id' => false,
+            'primary_key' => ['fsreport_id', 'wallpost_id'],
+            'engine' => 'InnoDB',
+            'encoding' => 'utf8mb4',
+            'collation' => 'utf8mb4_unicode_ci',
+            'comment' => '',
+        ])
+            ->addColumn('fsreport_id', 'integer', [
+                'null' => false,
+                'limit' => '10',
+                'signed' => false,
+            ])
+            ->addColumn('wallpost_id', 'integer', [
+                'null' => false,
+                'limit' => '10',
+                'signed' => false,
+                'after' => 'fsreport_id',
+            ])
+            ->addIndex(['fsreport_id'], [
+                'name' => 'fsreport_id',
+                'unique' => false,
+            ])
+            ->addIndex(['wallpost_id'], [
+                'name' => 'wallpost_id',
+                'unique' => false,
+            ])
+            ->create();
+        $this->table('fs_question_has_wallpost', [
+            'id' => false,
+            'primary_key' => ['question_id', 'wallpost_id'],
+            'engine' => 'InnoDB',
+            'encoding' => 'utf8mb4',
+            'collation' => 'utf8mb4_unicode_ci',
+            'comment' => '',
+        ])
+            ->addColumn('question_id', 'integer', [
+                'null' => false,
+                'limit' => '10',
+                'signed' => false,
+            ])
+            ->addColumn('wallpost_id', 'integer', [
+                'null' => false,
+                'limit' => '10',
+                'signed' => false,
+                'after' => 'question_id',
+            ])
+            ->addColumn('usercomment', 'integer', [
+                'null' => false,
+                'default' => '0',
+                'limit' => MysqlAdapter::INT_TINY,
+                'after' => 'wallpost_id',
+            ])
+            ->addIndex(['question_id'], [
+                'name' => 'question_has_wallpost_FKIndex1',
+                'unique' => false,
+            ])
+            ->addIndex(['wallpost_id'], [
+                'name' => 'question_has_wallpost_FKIndex2',
+                'unique' => false,
+            ])
+            ->addIndex(['question_id'], [
+                'name' => 'question_id',
+                'unique' => false,
+            ])
+            ->addIndex(['wallpost_id'], [
+                'name' => 'wallpost_id',
+                'unique' => false,
+            ])
+            ->create();
+        $this->table('fs_pass_request', [
+            'id' => false,
+            'primary_key' => ['foodsaver_id'],
+            'engine' => 'InnoDB',
+            'encoding' => 'utf8mb4',
+            'collation' => 'utf8mb4_unicode_ci',
+            'comment' => '',
+        ])
+            ->addColumn('foodsaver_id', 'integer', [
+                'null' => false,
+                'limit' => '10',
+                'signed' => false,
+            ])
+            ->addColumn('name', 'string', [
+                'null' => true,
+                'default' => null,
+                'limit' => 50,
+                'collation' => 'utf8mb4_unicode_ci',
+                'encoding' => 'utf8mb4',
+                'after' => 'foodsaver_id',
+            ])
+            ->addColumn('time', 'datetime', [
+                'null' => true,
+                'default' => null,
+                'after' => 'name',
+            ])
+            ->create();
+        $this->table('fs_mailbox_member', [
+            'id' => false,
+            'primary_key' => ['mailbox_id', 'foodsaver_id'],
+            'engine' => 'InnoDB',
+            'encoding' => 'utf8mb4',
+            'collation' => 'utf8mb4_unicode_ci',
+            'comment' => '',
+        ])
+            ->addColumn('mailbox_id', 'integer', [
+                'null' => false,
+                'limit' => '10',
+                'signed' => false,
+            ])
+            ->addColumn('foodsaver_id', 'integer', [
+                'null' => false,
+                'limit' => '10',
+                'signed' => false,
+                'after' => 'mailbox_id',
+            ])
+            ->addColumn('email_name', 'string', [
+                'null' => false,
+                'limit' => 120,
+                'collation' => 'utf8mb4_unicode_ci',
+                'encoding' => 'utf8mb4',
+                'after' => 'foodsaver_id',
+            ])
+            ->addIndex(['mailbox_id'], [
+                'name' => 'mailbox_has_foodsaver_FKIndex1',
+                'unique' => false,
+            ])
+            ->addIndex(['foodsaver_id'], [
+                'name' => 'mailbox_has_foodsaver_FKIndex2',
+                'unique' => false,
+            ])
+            ->create();
+        $this->table('fs_theme_follower', [
+            'id' => false,
+            'primary_key' => ['foodsaver_id', 'theme_id'],
+            'engine' => 'InnoDB',
+            'encoding' => 'utf8mb4',
+            'collation' => 'utf8mb4_unicode_ci',
+            'comment' => '',
+        ])
+            ->addColumn('foodsaver_id', 'integer', [
+                'null' => false,
+                'limit' => '10',
+                'signed' => false,
+            ])
+            ->addColumn('theme_id', 'integer', [
+                'null' => false,
+                'limit' => '10',
+                'signed' => false,
+                'after' => 'foodsaver_id',
+            ])
+            ->addColumn('infotype', 'boolean', [
+                'null' => false,
+                'default' => '0',
+                'limit' => MysqlAdapter::INT_TINY,
+                'after' => 'theme_id',
+            ])
+            ->addColumn('bell_notification', 'boolean', [
+                'null' => false,
+                'default' => '1',
+                'limit' => MysqlAdapter::INT_TINY,
+                'after' => 'infotype',
+            ])
+            ->addIndex(['infotype'], [
+                'name' => 'infotype',
+                'unique' => false,
+            ])
+            ->addIndex(['theme_id'], [
+                'name' => 'theme_id',
+                'unique' => false,
+            ])
+            ->create();
+        $this->table('fs_foodsaver_archive', [
+            'id' => false,
+            'primary_key' => ['id'],
+            'engine' => 'InnoDB',
+            'encoding' => 'utf8mb4',
+            'collation' => 'utf8mb4_unicode_ci',
+            'comment' => '',
+        ])
+            ->addColumn('id', 'integer', [
+                'null' => false,
+                'limit' => '10',
+                'signed' => false,
+                'identity' => 'enable',
+            ])
+            ->addColumn('bezirk_id', 'integer', [
+                'null' => false,
+                'limit' => '10',
+                'signed' => false,
+                'after' => 'id',
+            ])
+            ->addColumn('position', 'string', [
+                'null' => false,
+                'default' => '',
+                'limit' => 255,
+                'collation' => 'utf8mb4_unicode_ci',
+                'encoding' => 'utf8mb4',
+                'after' => 'bezirk_id',
+            ])
+            ->addColumn('verified', 'integer', [
+                'null' => false,
+                'default' => '0',
+                'limit' => MysqlAdapter::INT_TINY,
+                'signed' => false,
+                'after' => 'position',
+            ])
+            ->addColumn('last_pass', 'datetime', [
+                'null' => true,
+                'default' => null,
+                'after' => 'verified',
+            ])
+            ->addColumn('new_bezirk', 'string', [
+                'null' => false,
+                'limit' => 120,
+                'collation' => 'utf8mb4_unicode_ci',
+                'encoding' => 'utf8mb4',
+                'after' => 'last_pass',
+            ])
+            ->addColumn('want_new', 'integer', [
+                'null' => false,
+                'default' => '0',
+                'limit' => MysqlAdapter::INT_TINY,
+                'after' => 'new_bezirk',
+            ])
+            ->addColumn('mailbox_id', 'integer', [
+                'null' => true,
+                'default' => null,
+                'limit' => '10',
+                'signed' => false,
+                'after' => 'want_new',
+            ])
+            ->addColumn('rolle', 'integer', [
+                'null' => false,
+                'limit' => MysqlAdapter::INT_TINY,
+                'after' => 'mailbox_id',
+            ])
+            ->addColumn('type', 'integer', [
+                'null' => true,
+                'default' => '0',
+                'limit' => MysqlAdapter::INT_TINY,
+                'after' => 'rolle',
+            ])
+            ->addColumn('plz', 'string', [
+                'null' => true,
+                'default' => null,
+                'limit' => 10,
+                'collation' => 'utf8mb4_unicode_ci',
+                'encoding' => 'utf8mb4',
+                'after' => 'type',
+            ])
+            ->addColumn('stadt', 'string', [
+                'null' => true,
+                'default' => null,
+                'limit' => 100,
+                'collation' => 'utf8mb4_unicode_ci',
+                'encoding' => 'utf8mb4',
+                'after' => 'plz',
+            ])
+            ->addColumn('lat', 'string', [
+                'null' => true,
+                'default' => null,
+                'limit' => 20,
+                'collation' => 'utf8mb4_unicode_ci',
+                'encoding' => 'utf8mb4',
+                'after' => 'stadt',
+            ])
+            ->addColumn('lon', 'string', [
+                'null' => true,
+                'default' => null,
+                'limit' => 20,
+                'collation' => 'utf8mb4_unicode_ci',
+                'encoding' => 'utf8mb4',
+                'after' => 'lat',
+            ])
+            ->addColumn('photo', 'string', [
+                'null' => true,
+                'default' => null,
+                'limit' => 50,
+                'collation' => 'utf8mb4_unicode_ci',
+                'encoding' => 'utf8mb4',
+                'after' => 'lon',
+            ])
+            ->addColumn('email', 'string', [
+                'null' => true,
+                'default' => null,
+                'limit' => 120,
+                'collation' => 'utf8mb4_unicode_ci',
+                'encoding' => 'utf8mb4',
+                'after' => 'photo',
+            ])
+            ->addColumn('password', 'string', [
+                'null' => true,
+                'default' => null,
+                'limit' => 100,
+                'collation' => 'utf8mb4_unicode_ci',
+                'encoding' => 'utf8mb4',
+                'after' => 'email',
+            ])
+            ->addColumn('name', 'string', [
+                'null' => true,
+                'default' => null,
+                'limit' => 120,
+                'collation' => 'utf8mb4_unicode_ci',
+                'encoding' => 'utf8mb4',
+                'after' => 'password',
+            ])
+            ->addColumn('admin', 'integer', [
+                'null' => true,
+                'default' => null,
+                'limit' => MysqlAdapter::INT_TINY,
+                'signed' => false,
+                'after' => 'name',
+            ])
+            ->addColumn('nachname', 'string', [
+                'null' => true,
+                'default' => null,
+                'limit' => 120,
+                'collation' => 'utf8mb4_unicode_ci',
+                'encoding' => 'utf8mb4',
+                'after' => 'admin',
+            ])
+            ->addColumn('anschrift', 'string', [
+                'null' => true,
+                'default' => null,
+                'limit' => 120,
+                'collation' => 'utf8mb4_unicode_ci',
+                'encoding' => 'utf8mb4',
+                'after' => 'nachname',
+            ])
+            ->addColumn('telefon', 'string', [
+                'null' => true,
+                'default' => null,
+                'limit' => 30,
+                'collation' => 'utf8mb4_unicode_ci',
+                'encoding' => 'utf8mb4',
+                'after' => 'anschrift',
+            ])
+            ->addColumn('homepage', 'string', [
+                'null' => true,
+                'default' => null,
+                'limit' => 255,
+                'collation' => 'utf8mb4_unicode_ci',
+                'encoding' => 'utf8mb4',
+                'after' => 'telefon',
+            ])
+            ->addColumn('handy', 'string', [
+                'null' => true,
+                'default' => null,
+                'limit' => 50,
+                'collation' => 'utf8mb4_unicode_ci',
+                'encoding' => 'utf8mb4',
+                'after' => 'homepage',
+            ])
+            ->addColumn('geschlecht', 'integer', [
+                'null' => false,
+                'default' => '0',
+                'limit' => MysqlAdapter::INT_TINY,
+                'signed' => false,
+                'after' => 'handy',
+            ])
+            ->addColumn('geb_datum', 'date', [
+                'null' => true,
+                'default' => null,
+                'after' => 'geschlecht',
+            ])
+            ->addColumn('anmeldedatum', 'datetime', [
+                'null' => true,
+                'default' => null,
+                'after' => 'geb_datum',
+            ])
+            ->addColumn('privacy_notice_accepted_date', 'datetime', [
+                'null' => true,
+                'default' => null,
+                'after' => 'anmeldedatum',
+            ])
+            ->addColumn('privacy_policy_accepted_date', 'datetime', [
+                'null' => true,
+                'default' => null,
+                'after' => 'privacy_notice_accepted_date',
+            ])
+            ->addColumn('orgateam', 'integer', [
+                'null' => true,
+                'default' => '0',
+                'limit' => MysqlAdapter::INT_TINY,
+                'signed' => false,
+                'after' => 'privacy_policy_accepted_date',
+            ])
+            ->addColumn('active', 'integer', [
+                'null' => false,
+                'default' => '0',
+                'limit' => MysqlAdapter::INT_TINY,
+                'signed' => false,
+                'after' => 'orgateam',
+            ])
+            ->addColumn('data', 'text', [
+                'null' => false,
+                'limit' => MysqlAdapter::TEXT_MEDIUM,
+                'collation' => 'utf8mb4_unicode_ci',
+                'encoding' => 'utf8mb4',
+                'after' => 'active',
+            ])
+            ->addColumn('about_me_public', 'text', [
+                'null' => false,
+                'limit' => MysqlAdapter::TEXT_MEDIUM,
+                'collation' => 'utf8mb4_unicode_ci',
+                'encoding' => 'utf8mb4',
+                'after' => 'data',
+            ])
+            ->addColumn('newsletter', 'boolean', [
+                'null' => false,
+                'default' => '0',
+                'limit' => MysqlAdapter::INT_TINY,
+                'after' => 'about_me_public',
+            ])
+            ->addColumn('token', 'string', [
+                'null' => false,
+                'limit' => 25,
+                'collation' => 'utf8mb4_unicode_ci',
+                'encoding' => 'utf8mb4',
+                'after' => 'newsletter',
+            ])
+            ->addColumn('infomail_message', 'boolean', [
+                'null' => false,
+                'default' => '1',
+                'limit' => MysqlAdapter::INT_TINY,
+                'after' => 'token',
+            ])
+            ->addColumn('last_login', 'datetime', [
+                'null' => true,
+                'default' => null,
+                'after' => 'infomail_message',
+            ])
+            ->addColumn('stat_fetchweight', 'decimal', [
+                'null' => false,
+                'default' => '0.00',
+                'signed' => false,
+                'precision' => 9,
+                'scale' => 2,
+                'after' => 'last_login',
+            ])
+            ->addColumn('stat_fetchcount', 'integer', [
+                'null' => false,
+                'default' => '0',
+                'limit' => '10',
+                'signed' => false,
+                'after' => 'stat_fetchweight',
+            ])
+            ->addColumn('stat_ratecount', 'integer', [
+                'null' => false,
+                'default' => '0',
+                'limit' => '10',
+                'signed' => false,
+                'after' => 'stat_fetchcount',
+            ])
+            ->addColumn('stat_rating', 'decimal', [
+                'null' => false,
+                'default' => '0.00',
+                'signed' => false,
+                'precision' => 4,
+                'scale' => 2,
+                'after' => 'stat_ratecount',
+            ])
+            ->addColumn('stat_postcount', 'integer', [
+                'null' => false,
+                'default' => '0',
+                'limit' => MysqlAdapter::INT_REGULAR,
+                'after' => 'stat_rating',
+            ])
+            ->addColumn('stat_buddycount', 'integer', [
+                'null' => false,
+                'limit' => '7',
+                'signed' => false,
+                'after' => 'stat_postcount',
+            ])
+            ->addColumn('stat_bananacount', 'integer', [
+                'null' => false,
+                'default' => '0',
+                'limit' => '7',
+                'signed' => false,
+                'after' => 'stat_buddycount',
+            ])
+            ->addColumn('stat_fetchrate', 'decimal', [
+                'null' => false,
+                'default' => '100.00',
+                'precision' => 6,
+                'scale' => 2,
+                'after' => 'stat_bananacount',
+            ])
+            ->addColumn('sleep_status', 'integer', [
+                'null' => false,
+                'default' => '0',
+                'limit' => MysqlAdapter::INT_TINY,
+                'signed' => false,
+                'after' => 'stat_fetchrate',
+            ])
+            ->addColumn('sleep_from', 'date', [
+                'null' => true,
+                'default' => null,
+                'after' => 'sleep_status',
+            ])
+            ->addColumn('sleep_until', 'date', [
+                'null' => true,
+                'default' => null,
+                'after' => 'sleep_from',
+            ])
+            ->addColumn('sleep_msg', 'text', [
+                'null' => true,
+                'default' => null,
+                'limit' => MysqlAdapter::TEXT_MEDIUM,
+                'collation' => 'utf8mb4_unicode_ci',
+                'encoding' => 'utf8mb4',
+                'after' => 'sleep_until',
+            ])
+            ->addColumn('option', 'text', [
+                'null' => false,
+                'limit' => MysqlAdapter::TEXT_MEDIUM,
+                'collation' => 'utf8mb4_unicode_ci',
+                'encoding' => 'utf8mb4',
+                'after' => 'sleep_msg',
+            ])
+            ->addColumn('beta', 'boolean', [
+                'null' => false,
+                'default' => '0',
+                'limit' => MysqlAdapter::INT_TINY,
+                'after' => 'option',
+            ])
+            ->addColumn('quiz_rolle', 'integer', [
+                'null' => false,
+                'default' => '0',
+                'limit' => MysqlAdapter::INT_TINY,
+                'signed' => false,
+                'after' => 'beta',
+            ])
+            ->addColumn('contact_public', 'integer', [
+                'null' => false,
+                'limit' => MysqlAdapter::INT_TINY,
+                'after' => 'quiz_rolle',
+            ])
+            ->addColumn('deleted_at', 'datetime', [
+                'null' => true,
+                'default' => null,
+                'after' => 'contact_public',
+            ])
+            ->addColumn('about_me_intern', 'text', [
+                'null' => true,
+                'default' => null,
+                'limit' => 65535,
+                'collation' => 'utf8mb4_unicode_ci',
+                'encoding' => 'utf8mb4',
+                'after' => 'deleted_at',
+            ])->create();
+        $this->table('fs_post_reaction', [
+            'id' => false,
+            'engine' => 'InnoDB',
+            'encoding' => 'utf8mb4',
+            'collation' => 'utf8mb4_unicode_ci',
+            'comment' => '',
+        ])
+            ->addColumn('post_id', 'integer', [
+                'null' => false,
+                'limit' => '10',
+                'signed' => false,
+            ])
+            ->addColumn('time', 'datetime', [
+                'null' => false,
+                'after' => 'post_id',
+            ])
+            ->addColumn('foodsaver_id', 'integer', [
+                'null' => false,
+                'limit' => MysqlAdapter::INT_REGULAR,
+                'after' => 'time',
+            ])
+            ->addColumn('key', 'string', [
+                'null' => true,
+                'default' => null,
+                'limit' => 63,
+                'collation' => 'utf8mb4_unicode_ci',
+                'encoding' => 'utf8mb4',
+                'after' => 'foodsaver_id',
+            ])
+            ->addIndex(['post_id', 'foodsaver_id', 'key'], [
+                'name' => 'post-foodsaver-key',
+                'unique' => true,
+            ])
+            ->addIndex(['post_id'], [
+                'name' => 'post_id',
+                'unique' => false,
+            ])
+            ->create();
+        $this->table('fs_foodsaver', [
+            'id' => false,
+            'primary_key' => ['id'],
+            'engine' => 'InnoDB',
+            'encoding' => 'utf8mb4',
+            'collation' => 'utf8mb4_unicode_ci',
+            'comment' => '',
+        ])
+            ->addColumn('id', 'integer', [
+                'null' => false,
+                'limit' => '10',
+                'signed' => false,
+                'identity' => 'enable',
+            ])
+            ->addColumn('bezirk_id', 'integer', [
+                'null' => false,
+                'limit' => '10',
+                'signed' => false,
+                'after' => 'id',
+            ])
+            ->addColumn('position', 'string', [
+                'null' => false,
+                'default' => '',
+                'limit' => 255,
+                'collation' => 'utf8mb4_unicode_ci',
+                'encoding' => 'utf8mb4',
+                'after' => 'bezirk_id',
+            ])
+            ->addColumn('verified', 'integer', [
+                'null' => false,
+                'default' => '0',
+                'limit' => MysqlAdapter::INT_TINY,
+                'signed' => false,
+                'after' => 'position',
+            ])
+            ->addColumn('last_pass', 'datetime', [
+                'null' => true,
+                'default' => null,
+                'after' => 'verified',
+            ])
+            ->addColumn('new_bezirk', 'string', [
+                'null' => false,
+                'default' => '',
+                'limit' => 120,
+                'collation' => 'utf8mb4_unicode_ci',
+                'encoding' => 'utf8mb4',
+                'after' => 'last_pass',
+            ])
+            ->addColumn('want_new', 'integer', [
+                'null' => false,
+                'default' => '0',
+                'limit' => MysqlAdapter::INT_TINY,
+                'after' => 'new_bezirk',
+            ])
+            ->addColumn('mailbox_id', 'integer', [
+                'null' => true,
+                'default' => null,
+                'limit' => '10',
+                'signed' => false,
+                'after' => 'want_new',
+            ])
+            ->addColumn('rolle', 'integer', [
+                'null' => false,
+                'limit' => MysqlAdapter::INT_TINY,
+                'after' => 'mailbox_id',
+            ])
+            ->addColumn('type', 'integer', [
+                'null' => true,
+                'default' => '0',
+                'limit' => MysqlAdapter::INT_TINY,
+                'after' => 'rolle',
+            ])
+            ->addColumn('plz', 'string', [
+                'null' => true,
+                'default' => null,
+                'limit' => 10,
+                'collation' => 'utf8mb4_unicode_ci',
+                'encoding' => 'utf8mb4',
+                'after' => 'type',
+            ])
+            ->addColumn('stadt', 'string', [
+                'null' => true,
+                'default' => null,
+                'limit' => 100,
+                'collation' => 'utf8mb4_unicode_ci',
+                'encoding' => 'utf8mb4',
+                'after' => 'plz',
+            ])
+            ->addColumn('lat', 'string', [
+                'null' => true,
+                'default' => null,
+                'limit' => 20,
+                'collation' => 'utf8mb4_unicode_ci',
+                'encoding' => 'utf8mb4',
+                'after' => 'stadt',
+            ])
+            ->addColumn('lon', 'string', [
+                'null' => true,
+                'default' => null,
+                'limit' => 20,
+                'collation' => 'utf8mb4_unicode_ci',
+                'encoding' => 'utf8mb4',
+                'after' => 'lat',
+            ])
+            ->addColumn('photo', 'string', [
+                'null' => true,
+                'default' => null,
+                'limit' => 50,
+                'collation' => 'utf8mb4_unicode_ci',
+                'encoding' => 'utf8mb4',
+                'after' => 'lon',
+            ])
+            ->addColumn('email', 'string', [
+                'null' => true,
+                'default' => null,
+                'limit' => 120,
+                'collation' => 'utf8mb4_unicode_ci',
+                'encoding' => 'utf8mb4',
+                'after' => 'photo',
+            ])
+            ->addColumn('password', 'string', [
+                'null' => true,
+                'default' => null,
+                'limit' => 100,
+                'collation' => 'utf8mb4_unicode_ci',
+                'encoding' => 'utf8mb4',
+                'after' => 'email',
+            ])
+            ->addColumn('name', 'string', [
+                'null' => true,
+                'default' => null,
+                'limit' => 120,
+                'collation' => 'utf8mb4_unicode_ci',
+                'encoding' => 'utf8mb4',
+                'after' => 'password',
+            ])
+            ->addColumn('admin', 'integer', [
+                'null' => true,
+                'default' => null,
+                'limit' => MysqlAdapter::INT_TINY,
+                'signed' => false,
+                'after' => 'name',
+            ])
+            ->addColumn('nachname', 'string', [
+                'null' => true,
+                'default' => null,
+                'limit' => 120,
+                'collation' => 'utf8mb4_unicode_ci',
+                'encoding' => 'utf8mb4',
+                'after' => 'admin',
+            ])
+            ->addColumn('anschrift', 'string', [
+                'null' => true,
+                'default' => null,
+                'limit' => 120,
+                'collation' => 'utf8mb4_unicode_ci',
+                'encoding' => 'utf8mb4',
+                'after' => 'nachname',
+            ])
+            ->addColumn('telefon', 'string', [
+                'null' => true,
+                'default' => null,
+                'limit' => 30,
+                'collation' => 'utf8mb4_unicode_ci',
+                'encoding' => 'utf8mb4',
+                'after' => 'anschrift',
+            ])
+            ->addColumn('homepage', 'string', [
+                'null' => true,
+                'default' => null,
+                'limit' => 255,
+                'collation' => 'utf8mb4_unicode_ci',
+                'encoding' => 'utf8mb4',
+                'after' => 'telefon',
+            ])
+            ->addColumn('handy', 'string', [
+                'null' => true,
+                'default' => null,
+                'limit' => 50,
+                'collation' => 'utf8mb4_unicode_ci',
+                'encoding' => 'utf8mb4',
+                'after' => 'homepage',
+            ])
+            ->addColumn('geschlecht', 'integer', [
+                'null' => false,
+                'default' => '0',
+                'limit' => MysqlAdapter::INT_TINY,
+                'signed' => false,
+                'after' => 'handy',
+            ])
+            ->addColumn('geb_datum', 'date', [
+                'null' => true,
+                'default' => null,
+                'after' => 'geschlecht',
+            ])
+            ->addColumn('anmeldedatum', 'datetime', [
+                'null' => true,
+                'default' => null,
+                'after' => 'geb_datum',
+            ])
+            ->addColumn('privacy_notice_accepted_date', 'datetime', [
+                'null' => true,
+                'default' => null,
+                'after' => 'anmeldedatum',
+            ])
+            ->addColumn('privacy_policy_accepted_date', 'datetime', [
+                'null' => true,
+                'default' => null,
+                'after' => 'privacy_notice_accepted_date',
+            ])
+            ->addColumn('orgateam', 'integer', [
+                'null' => true,
+                'default' => '0',
+                'limit' => MysqlAdapter::INT_TINY,
+                'signed' => false,
+                'after' => 'privacy_policy_accepted_date',
+            ])
+            ->addColumn('active', 'integer', [
+                'null' => false,
+                'default' => '0',
+                'limit' => MysqlAdapter::INT_TINY,
+                'signed' => false,
+                'after' => 'orgateam',
+            ])
+            ->addColumn('data', 'text', [
+                'null' => false,
+                'default' => '',
+                'limit' => MysqlAdapter::TEXT_MEDIUM,
+                'collation' => 'utf8mb4_unicode_ci',
+                'encoding' => 'utf8mb4',
+                'after' => 'active',
+            ])
+            ->addColumn('about_me_public', 'text', [
+                'null' => false,
+                'default' => '',
+                'limit' => MysqlAdapter::TEXT_MEDIUM,
+                'collation' => 'utf8mb4_unicode_ci',
+                'encoding' => 'utf8mb4',
+                'after' => 'data',
+            ])
+            ->addColumn('newsletter', 'boolean', [
+                'null' => false,
+                'default' => '0',
+                'limit' => MysqlAdapter::INT_TINY,
+                'after' => 'about_me_public',
+            ])
+            ->addColumn('token', 'string', [
+                'null' => false,
+                'limit' => 25,
+                'collation' => 'utf8mb4_unicode_ci',
+                'encoding' => 'utf8mb4',
+                'after' => 'newsletter',
+            ])
+            ->addColumn('infomail_message', 'boolean', [
+                'null' => false,
+                'default' => '1',
+                'limit' => MysqlAdapter::INT_TINY,
+                'after' => 'token',
+            ])
+            ->addColumn('last_login', 'datetime', [
+                'null' => true,
+                'default' => null,
+                'after' => 'infomail_message',
+            ])
+            ->addColumn('stat_fetchweight', 'decimal', [
+                'null' => false,
+                'default' => '0.00',
+                'signed' => false,
+                'precision' => 9,
+                'scale' => 2,
+                'after' => 'last_login',
+            ])
+            ->addColumn('stat_fetchcount', 'integer', [
+                'null' => false,
+                'default' => '0',
+                'limit' => '10',
+                'signed' => false,
+                'after' => 'stat_fetchweight',
+            ])
+            ->addColumn('stat_ratecount', 'integer', [
+                'null' => false,
+                'default' => '0',
+                'limit' => '10',
+                'signed' => false,
+                'after' => 'stat_fetchcount',
+            ])
+            ->addColumn('stat_rating', 'decimal', [
+                'null' => false,
+                'default' => '0.00',
+                'signed' => false,
+                'precision' => 4,
+                'scale' => 2,
+                'after' => 'stat_ratecount',
+            ])
+            ->addColumn('stat_postcount', 'integer', [
+                'null' => false,
+                'default' => '0',
+                'limit' => MysqlAdapter::INT_REGULAR,
+                'after' => 'stat_rating',
+            ])
+            ->addColumn('stat_buddycount', 'integer', [
+                'null' => false,
+                'default' => '0',
+                'limit' => '7',
+                'signed' => false,
+                'after' => 'stat_postcount',
+            ])
+            ->addColumn('stat_bananacount', 'integer', [
+                'null' => false,
+                'default' => '0',
+                'limit' => '7',
+                'signed' => false,
+                'after' => 'stat_buddycount',
+            ])
+            ->addColumn('stat_fetchrate', 'decimal', [
+                'null' => false,
+                'default' => '100.00',
+                'precision' => 6,
+                'scale' => 2,
+                'after' => 'stat_bananacount',
+            ])
+            ->addColumn('sleep_status', 'integer', [
+                'null' => false,
+                'default' => '0',
+                'limit' => MysqlAdapter::INT_TINY,
+                'signed' => false,
+                'after' => 'stat_fetchrate',
+            ])
+            ->addColumn('sleep_from', 'date', [
+                'null' => true,
+                'default' => null,
+                'after' => 'sleep_status',
+            ])
+            ->addColumn('sleep_until', 'date', [
+                'null' => true,
+                'default' => null,
+                'after' => 'sleep_from',
+            ])
+            ->addColumn('sleep_msg', 'text', [
+                'null' => true,
+                'default' => null,
+                'limit' => MysqlAdapter::TEXT_MEDIUM,
+                'collation' => 'utf8mb4_unicode_ci',
+                'encoding' => 'utf8mb4',
+                'after' => 'sleep_until',
+            ])
+            ->addColumn('option', 'text', [
+                'null' => false,
+                'default' => '',
+                'limit' => MysqlAdapter::TEXT_MEDIUM,
+                'collation' => 'utf8mb4_unicode_ci',
+                'encoding' => 'utf8mb4',
+                'after' => 'sleep_msg',
+            ])
+            ->addColumn('beta', 'boolean', [
+                'null' => false,
+                'default' => '0',
+                'limit' => MysqlAdapter::INT_TINY,
+                'after' => 'option',
+            ])
+            ->addColumn('quiz_rolle', 'integer', [
+                'null' => false,
+                'default' => '0',
+                'limit' => MysqlAdapter::INT_TINY,
+                'signed' => false,
+                'after' => 'beta',
+            ])
+            ->addColumn('contact_public', 'integer', [
+                'null' => false,
+                'default' => '0',
+                'limit' => MysqlAdapter::INT_TINY,
+                'after' => 'quiz_rolle',
+            ])
+            ->addColumn('deleted_at', 'datetime', [
+                'null' => true,
+                'default' => null,
+                'after' => 'contact_public',
+            ])
+            ->addColumn('about_me_intern', 'text', [
+                'null' => true,
+                'default' => null,
+                'limit' => 65535,
+                'collation' => 'utf8mb4_unicode_ci',
+                'encoding' => 'utf8mb4',
+                'after' => 'deleted_at',
+            ])
+            ->addIndex(['email'], [
+                'name' => 'email',
+                'unique' => true,
+            ])
+            ->addIndex(['bezirk_id'], [
+                'name' => 'foodsaver_FKIndex2',
+                'unique' => false,
+            ])
+            ->addIndex(['plz'], [
+                'name' => 'plz',
+                'unique' => false,
+            ])
+            ->addIndex(['want_new'], [
+                'name' => 'want_new',
+                'unique' => false,
+            ])
+            ->addIndex(['mailbox_id'], [
+                'name' => 'mailbox_id',
+                'unique' => false,
+            ])
+            ->addIndex(['newsletter'], [
+                'name' => 'newsletter',
+                'unique' => false,
+            ])
+            ->addIndex(['name', 'nachname'], [
+                'name' => 'name',
+                'unique' => false,
+                'type' => 'fulltext',
+            ])
+            ->create();
+        $this->table('fs_abholer', [
+            'id' => false,
+            'primary_key' => ['id'],
+            'engine' => 'InnoDB',
+            'encoding' => 'utf8mb4',
+            'collation' => 'utf8mb4_unicode_ci',
+            'comment' => '',
+        ])
+            ->addColumn('foodsaver_id', 'integer', [
+                'null' => false,
+                'limit' => '10',
+                'signed' => false,
+            ])
+            ->addColumn('betrieb_id', 'integer', [
+                'null' => false,
+                'limit' => '10',
+                'signed' => false,
+                'after' => 'foodsaver_id',
+            ])
+            ->addColumn('date', 'datetime', [
+                'null' => false,
+                'after' => 'betrieb_id',
+            ])
+            ->addColumn('confirmed', 'integer', [
+                'null' => false,
+                'default' => '0',
+                'limit' => MysqlAdapter::INT_TINY,
+                'signed' => false,
+                'after' => 'date',
+            ])
+            ->addColumn('id', 'integer', [
+                'null' => false,
+                'limit' => '10',
+                'signed' => false,
+                'identity' => 'enable',
+                'after' => 'confirmed',
+            ])
+            ->addIndex(['foodsaver_id', 'betrieb_id', 'date'], [
+                'name' => 'foodsaver_id',
+                'unique' => true,
+            ])
+            ->addIndex(['betrieb_id'], [
+                'name' => 'betrieb_id',
+                'unique' => false,
+            ])
+            ->create();
+        $this->table('fs_send_email', [
+            'id' => false,
+            'primary_key' => ['id'],
+            'engine' => 'InnoDB',
+            'encoding' => 'utf8mb4',
+            'collation' => 'utf8mb4_unicode_ci',
+            'comment' => '',
+        ])
+            ->addColumn('id', 'integer', [
+                'null' => false,
+                'limit' => '10',
+                'signed' => false,
+                'identity' => 'enable',
+            ])
+            ->addColumn('foodsaver_id', 'integer', [
+                'null' => false,
+                'limit' => '10',
+                'signed' => false,
+                'after' => 'id',
+            ])
+            ->addColumn('mailbox_id', 'integer', [
+                'null' => false,
+                'limit' => '10',
+                'signed' => false,
+                'after' => 'foodsaver_id',
+            ])
+            ->addColumn('mode', 'integer', [
+                'null' => false,
+                'default' => '1',
+                'limit' => MysqlAdapter::INT_TINY,
+                'after' => 'mailbox_id',
+            ])
+            ->addColumn('complete', 'integer', [
+                'null' => false,
+                'default' => '0',
+                'limit' => MysqlAdapter::INT_TINY,
+                'after' => 'mode',
+            ])
+            ->addColumn('name', 'string', [
+                'null' => true,
+                'default' => null,
+                'limit' => 200,
+                'collation' => 'utf8mb4_unicode_ci',
+                'encoding' => 'utf8mb4',
+                'after' => 'complete',
+            ])
+            ->addColumn('message', 'text', [
+                'null' => true,
+                'default' => null,
+                'limit' => MysqlAdapter::TEXT_MEDIUM,
+                'collation' => 'utf8mb4_unicode_ci',
+                'encoding' => 'utf8mb4',
+                'after' => 'name',
+            ])
+            ->addColumn('zeit', 'datetime', [
+                'null' => true,
+                'default' => null,
+                'after' => 'message',
+            ])
+            ->addColumn('recip', 'text', [
+                'null' => true,
+                'default' => null,
+                'limit' => MysqlAdapter::TEXT_MEDIUM,
+                'collation' => 'utf8mb4_unicode_ci',
+                'encoding' => 'utf8mb4',
+                'after' => 'zeit',
+            ])
+            ->addColumn('attach', 'string', [
+                'null' => false,
+                'limit' => 500,
+                'collation' => 'utf8mb4_unicode_ci',
+                'encoding' => 'utf8mb4',
+                'after' => 'recip',
+            ])
+            ->addIndex(['foodsaver_id'], [
+                'name' => 'send_email_FKIndex1',
+                'unique' => false,
+            ])
+            ->create();
+        $this->table('fs_mailbox_message', [
+            'id' => false,
+            'primary_key' => ['id'],
+            'engine' => 'InnoDB',
+            'encoding' => 'utf8mb4',
+            'collation' => 'utf8mb4_unicode_ci',
+            'comment' => '',
+        ])
+            ->addColumn('id', 'integer', [
+                'null' => false,
+                'limit' => '10',
+                'signed' => false,
+                'identity' => 'enable',
+            ])
+            ->addColumn('mailbox_id', 'integer', [
+                'null' => false,
+                'limit' => '10',
+                'signed' => false,
+                'after' => 'id',
+            ])
+            ->addColumn('folder', 'integer', [
+                'null' => true,
+                'default' => '1',
+                'limit' => MysqlAdapter::INT_TINY,
+                'signed' => false,
+                'after' => 'mailbox_id',
+            ])
+            ->addColumn('sender', 'text', [
+                'null' => true,
+                'default' => null,
+                'limit' => 65535,
+                'collation' => 'utf8mb4_unicode_ci',
+                'encoding' => 'utf8mb4',
+                'after' => 'folder',
+            ])
+            ->addColumn('to', 'text', [
+                'null' => false,
+                'limit' => MysqlAdapter::TEXT_MEDIUM,
+                'collation' => 'utf8mb4_unicode_ci',
+                'encoding' => 'utf8mb4',
+                'after' => 'sender',
+            ])
+            ->addColumn('subject', 'text', [
+                'null' => true,
+                'default' => null,
+                'limit' => 65535,
+                'collation' => 'utf8mb4_unicode_ci',
+                'encoding' => 'utf8mb4',
+                'after' => 'to',
+            ])
+            ->addColumn('body', 'text', [
+                'null' => true,
+                'default' => null,
+                'limit' => MysqlAdapter::TEXT_MEDIUM,
+                'collation' => 'utf8mb4_unicode_ci',
+                'encoding' => 'utf8mb4',
+                'after' => 'subject',
+            ])
+            ->addColumn('body_html', 'text', [
+                'null' => false,
+                'limit' => MysqlAdapter::TEXT_MEDIUM,
+                'collation' => 'utf8mb4_unicode_ci',
+                'encoding' => 'utf8mb4',
+                'after' => 'body',
+            ])
+            ->addColumn('time', 'datetime', [
+                'null' => true,
+                'default' => null,
+                'after' => 'body_html',
+            ])
+            ->addColumn('attach', 'text', [
+                'null' => true,
+                'default' => null,
+                'limit' => MysqlAdapter::TEXT_MEDIUM,
+                'collation' => 'utf8mb4_unicode_ci',
+                'encoding' => 'utf8mb4',
+                'after' => 'time',
+            ])
+            ->addColumn('read', 'integer', [
+                'null' => true,
+                'default' => null,
+                'limit' => MysqlAdapter::INT_TINY,
+                'signed' => false,
+                'after' => 'attach',
+            ])
+            ->addColumn('answer', 'integer', [
+                'null' => true,
+                'default' => null,
+                'limit' => MysqlAdapter::INT_TINY,
+                'signed' => false,
+                'after' => 'read',
+            ])
+            ->addIndex(['folder'], [
+                'name' => 'email_message_folder',
+                'unique' => false,
+            ])
+            ->addIndex(['mailbox_id', 'read'], [
+                'name' => 'mailbox_message_FKIndex1',
+                'unique' => false,
+            ])
+            ->create();
+        $this->table('fs_betrieb', [
+            'id' => false,
+            'primary_key' => ['id'],
+            'engine' => 'InnoDB',
+            'encoding' => 'utf8mb4',
+            'collation' => 'utf8mb4_unicode_ci',
+            'comment' => '',
+        ])
+            ->addColumn('id', 'integer', [
+                'null' => false,
+                'limit' => '10',
+                'signed' => false,
+                'identity' => 'enable',
+            ])
+            ->addColumn('betrieb_status_id', 'integer', [
+                'null' => false,
+                'limit' => '10',
+                'signed' => false,
+                'after' => 'id',
+            ])
+            ->addColumn('bezirk_id', 'integer', [
+                'null' => false,
+                'limit' => '10',
+                'signed' => false,
+                'after' => 'betrieb_status_id',
+            ])
+            ->addColumn('added', 'date', [
+                'null' => false,
+                'after' => 'bezirk_id',
+            ])
+            ->addColumn('plz', 'string', [
+                'null' => false,
+                'limit' => 5,
+                'collation' => 'utf8mb4_unicode_ci',
+                'encoding' => 'utf8mb4',
+                'after' => 'added',
+            ])
+            ->addColumn('stadt', 'string', [
+                'null' => false,
+                'limit' => 50,
+                'collation' => 'utf8mb4_unicode_ci',
+                'encoding' => 'utf8mb4',
+                'after' => 'plz',
+            ])
+            ->addColumn('lat', 'string', [
+                'null' => true,
+                'default' => null,
+                'limit' => 20,
+                'collation' => 'utf8mb4_unicode_ci',
+                'encoding' => 'utf8mb4',
+                'after' => 'stadt',
+            ])
+            ->addColumn('lon', 'string', [
+                'null' => true,
+                'default' => null,
+                'limit' => 20,
+                'collation' => 'utf8mb4_unicode_ci',
+                'encoding' => 'utf8mb4',
+                'after' => 'lat',
+            ])
+            ->addColumn('kette_id', 'integer', [
+                'null' => true,
+                'default' => null,
+                'limit' => '10',
+                'signed' => false,
+                'after' => 'lon',
+            ])
+            ->addColumn('betrieb_kategorie_id', 'integer', [
+                'null' => true,
+                'default' => null,
+                'limit' => MysqlAdapter::INT_REGULAR,
+                'after' => 'kette_id',
+            ])
+            ->addColumn('name', 'string', [
+                'null' => true,
+                'default' => null,
+                'limit' => 120,
+                'collation' => 'utf8mb4_unicode_ci',
+                'encoding' => 'utf8mb4',
+                'after' => 'betrieb_kategorie_id',
+            ])
+            ->addColumn('str', 'string', [
+                'null' => true,
+                'default' => null,
+                'limit' => 120,
+                'collation' => 'utf8mb4_unicode_ci',
+                'encoding' => 'utf8mb4',
+                'after' => 'name',
+            ])
+            ->addColumn('hsnr', 'string', [
+                'null' => true,
+                'default' => null,
+                'limit' => 20,
+                'collation' => 'utf8mb4_unicode_ci',
+                'encoding' => 'utf8mb4',
+                'after' => 'str',
+            ])
+            ->addColumn('status_date', 'date', [
+                'null' => true,
+                'default' => null,
+                'after' => 'hsnr',
+            ])
+            ->addColumn('status', 'integer', [
+                'null' => true,
+                'default' => null,
+                'limit' => MysqlAdapter::INT_TINY,
+                'signed' => false,
+                'after' => 'status_date',
+            ])
+            ->addColumn('ansprechpartner', 'string', [
+                'null' => true,
+                'default' => null,
+                'limit' => 60,
+                'collation' => 'utf8mb4_unicode_ci',
+                'encoding' => 'utf8mb4',
+                'after' => 'status',
+            ])
+            ->addColumn('telefon', 'string', [
+                'null' => true,
+                'default' => null,
+                'limit' => 50,
+                'collation' => 'utf8mb4_unicode_ci',
+                'encoding' => 'utf8mb4',
+                'after' => 'ansprechpartner',
+            ])
+            ->addColumn('fax', 'string', [
+                'null' => true,
+                'default' => null,
+                'limit' => 50,
+                'collation' => 'utf8mb4_unicode_ci',
+                'encoding' => 'utf8mb4',
+                'after' => 'telefon',
+            ])
+            ->addColumn('email', 'string', [
+                'null' => true,
+                'default' => null,
+                'limit' => 60,
+                'collation' => 'utf8mb4_unicode_ci',
+                'encoding' => 'utf8mb4',
+                'after' => 'fax',
+            ])
+            ->addColumn('begin', 'date', [
+                'null' => true,
+                'default' => null,
+                'after' => 'email',
+            ])
+            ->addColumn('besonderheiten', 'text', [
+                'null' => true,
+                'default' => null,
+                'limit' => MysqlAdapter::TEXT_MEDIUM,
+                'collation' => 'utf8mb4_unicode_ci',
+                'encoding' => 'utf8mb4',
+                'after' => 'begin',
+            ])
+            ->addColumn('public_info', 'string', [
+                'null' => true,
+                'default' => null,
+                'limit' => 200,
+                'collation' => 'utf8mb4_unicode_ci',
+                'encoding' => 'utf8mb4',
+                'after' => 'besonderheiten',
+            ])
+            ->addColumn('public_time', 'integer', [
+                'null' => false,
+                'limit' => MysqlAdapter::INT_TINY,
+                'after' => 'public_info',
+            ])
+            ->addColumn('ueberzeugungsarbeit', 'integer', [
+                'null' => false,
+                'limit' => MysqlAdapter::INT_TINY,
+                'after' => 'public_time',
+            ])
+            ->addColumn('presse', 'integer', [
+                'null' => false,
+                'limit' => MysqlAdapter::INT_TINY,
+                'after' => 'ueberzeugungsarbeit',
+            ])
+            ->addColumn('sticker', 'integer', [
+                'null' => false,
+                'limit' => MysqlAdapter::INT_TINY,
+                'after' => 'presse',
+            ])
+            ->addColumn('abholmenge', 'integer', [
+                'null' => false,
+                'limit' => MysqlAdapter::INT_TINY,
+                'after' => 'sticker',
+            ])
+            ->addColumn('team_status', 'integer', [
+                'null' => false,
+                'default' => '1',
+                'limit' => MysqlAdapter::INT_TINY,
+                'comment' => '0 = Team Voll; 1 = Es werden noch Helfer gesucht; 2 = Es werden dringend Helfer gesucht',
+                'after' => 'abholmenge',
+            ])
+            ->addColumn('prefetchtime', 'integer', [
+                'null' => false,
+                'default' => '1209600',
+                'limit' => '10',
+                'signed' => false,
+                'after' => 'team_status',
+            ])
+            ->addColumn('team_conversation_id', 'integer', [
+                'null' => true,
+                'default' => null,
+                'limit' => '10',
+                'signed' => false,
+                'after' => 'prefetchtime',
+            ])
+            ->addColumn('springer_conversation_id', 'integer', [
+                'null' => true,
+                'default' => null,
+                'limit' => '10',
+                'signed' => false,
+                'after' => 'team_conversation_id',
+            ])
+            ->addColumn('deleted_at', 'datetime', [
+                'null' => true,
+                'default' => null,
+                'after' => 'springer_conversation_id',
+            ])
+            ->addIndex(['kette_id'], [
+                'name' => 'betrieb_FKIndex2',
+                'unique' => false,
+            ])
+            ->addIndex(['bezirk_id'], [
+                'name' => 'betrieb_FKIndex3',
+                'unique' => false,
+            ])
+            ->addIndex(['betrieb_status_id'], [
+                'name' => 'betrieb_FKIndex5',
+                'unique' => false,
+            ])
+            ->addIndex(['plz'], [
+                'name' => 'plz',
+                'unique' => false,
+            ])
+            ->addIndex(['team_status'], [
+                'name' => 'team_status',
+                'unique' => false,
+            ])
+            ->create();
+        $this->table('fs_wallpost', [
+            'id' => false,
+            'primary_key' => ['id'],
+            'engine' => 'InnoDB',
+            'encoding' => 'utf8mb4',
+            'collation' => 'utf8mb4_unicode_ci',
+            'comment' => '',
+        ])
+            ->addColumn('id', 'integer', [
+                'null' => false,
+                'limit' => '10',
+                'signed' => false,
+                'identity' => 'enable',
+            ])
+            ->addColumn('foodsaver_id', 'integer', [
+                'null' => false,
+                'limit' => '10',
+                'signed' => false,
+                'after' => 'id',
+            ])
+            ->addColumn('body', 'text', [
+                'null' => true,
+                'default' => null,
+                'limit' => MysqlAdapter::TEXT_MEDIUM,
+                'collation' => 'utf8mb4_unicode_ci',
+                'encoding' => 'utf8mb4',
+                'after' => 'foodsaver_id',
+            ])
+            ->addColumn('time', 'datetime', [
+                'null' => true,
+                'default' => null,
+                'after' => 'body',
+            ])
+            ->addColumn('attach', 'text', [
+                'null' => true,
+                'default' => null,
+                'limit' => MysqlAdapter::TEXT_MEDIUM,
+                'collation' => 'utf8mb4_unicode_ci',
+                'encoding' => 'utf8mb4',
+                'after' => 'time',
+            ])
+            ->addIndex(['foodsaver_id'], [
+                'name' => 'wallpost_FKIndex1',
+                'unique' => false,
+            ])
+            ->create();
+        $this->table('fs_theme_post', [
+            'id' => false,
+            'primary_key' => ['id'],
+            'engine' => 'InnoDB',
+            'encoding' => 'utf8mb4',
+            'collation' => 'utf8mb4_unicode_ci',
+            'comment' => '',
+        ])
+            ->addColumn('id', 'integer', [
+                'null' => false,
+                'limit' => '10',
+                'signed' => false,
+                'identity' => 'enable',
+            ])
+            ->addColumn('theme_id', 'integer', [
+                'null' => false,
+                'limit' => '10',
+                'signed' => false,
+                'after' => 'id',
+            ])
+            ->addColumn('foodsaver_id', 'integer', [
+                'null' => false,
+                'limit' => '10',
+                'signed' => false,
+                'after' => 'theme_id',
+            ])
+            ->addColumn('reply_post', 'integer', [
+                'null' => false,
+                'default' => '0',
+                'limit' => '10',
+                'signed' => false,
+                'after' => 'foodsaver_id',
+            ])
+            ->addColumn('body', 'text', [
+                'null' => true,
+                'default' => null,
+                'limit' => MysqlAdapter::TEXT_MEDIUM,
+                'collation' => 'utf8mb4_unicode_ci',
+                'encoding' => 'utf8mb4',
+                'after' => 'reply_post',
+            ])
+            ->addColumn('time', 'datetime', [
+                'null' => true,
+                'default' => null,
+                'after' => 'body',
+            ])
+            ->addIndex(['foodsaver_id'], [
+                'name' => 'theme_post_FKIndex1',
+                'unique' => false,
+            ])
+            ->addIndex(['theme_id'], [
+                'name' => 'theme_post_FKIndex2',
+                'unique' => false,
+            ])
+            ->addIndex(['reply_post'], [
+                'name' => 'reply_post',
+                'unique' => false,
+            ])
+            ->create();
+        $this->table('fs_usernotes_has_wallpost', [
+            'id' => false,
+            'primary_key' => ['usernotes_id', 'wallpost_id'],
+            'engine' => 'InnoDB',
+            'encoding' => 'utf8mb4',
+            'collation' => 'utf8mb4_unicode_ci',
+            'comment' => '',
+        ])
+            ->addColumn('usernotes_id', 'integer', [
+                'null' => false,
+                'limit' => '10',
+                'signed' => false,
+            ])
+            ->addColumn('wallpost_id', 'integer', [
+                'null' => false,
+                'limit' => '10',
+                'signed' => false,
+                'after' => 'usernotes_id',
+            ])
+            ->addColumn('usercomment', 'integer', [
+                'null' => false,
+                'default' => '0',
+                'limit' => MysqlAdapter::INT_TINY,
+                'after' => 'wallpost_id',
+            ])
+            ->addIndex(['usernotes_id'], [
+                'name' => 'usernotes_has_wallpost_FKIndex1',
+                'unique' => false,
+            ])
+            ->addIndex(['wallpost_id'], [
+                'name' => 'usernotes_has_wallpost_FKIndex2',
+                'unique' => false,
+            ])
+            ->addIndex(['usernotes_id'], [
+                'name' => 'usernotes_id',
+                'unique' => false,
+            ])
+            ->addIndex(['wallpost_id'], [
+                'name' => 'wallpost_id',
+                'unique' => false,
+            ])
+            ->create();
+        $this->table('fs_foodsaver_has_event', [
+            'id' => false,
+            'primary_key' => ['foodsaver_id', 'event_id'],
+            'engine' => 'InnoDB',
+            'encoding' => 'utf8mb4',
+            'collation' => 'utf8mb4_unicode_ci',
+            'comment' => '',
+        ])
+            ->addColumn('foodsaver_id', 'integer', [
+                'null' => false,
+                'limit' => '10',
+                'signed' => false,
+            ])
+            ->addColumn('event_id', 'integer', [
+                'null' => false,
+                'limit' => '10',
+                'signed' => false,
+                'after' => 'foodsaver_id',
+            ])
+            ->addColumn('status', 'integer', [
+                'null' => false,
+                'default' => '0',
+                'limit' => MysqlAdapter::INT_TINY,
+                'signed' => false,
+                'after' => 'event_id',
+            ])
+            ->addIndex(['foodsaver_id'], [
+                'name' => 'foodsaver_has_event_FKIndex1',
+                'unique' => false,
+            ])
+            ->addIndex(['event_id'], [
+                'name' => 'foodsaver_has_event_FKIndex2',
+                'unique' => false,
+            ])
+            ->create();
+        $this->table('fs_betrieb_kategorie', [
+            'id' => false,
+            'primary_key' => ['id'],
+            'engine' => 'InnoDB',
+            'encoding' => 'utf8mb4',
+            'collation' => 'utf8mb4_unicode_ci',
+            'comment' => '',
+        ])
+            ->addColumn('id', 'integer', [
+                'null' => false,
+                'limit' => '10',
+                'signed' => false,
+                'identity' => 'enable',
+            ])
+            ->addColumn('name', 'string', [
+                'null' => true,
+                'default' => null,
+                'limit' => 50,
+                'collation' => 'utf8mb4_unicode_ci',
+                'encoding' => 'utf8mb4',
+                'after' => 'id',
+            ])
+            ->create();
+        $this->table('fs_foodsaver_change_history', [
+            'id' => false,
+            'engine' => 'InnoDB',
+            'encoding' => 'utf8mb4',
+            'collation' => 'utf8mb4_unicode_ci',
+            'comment' => '',
+        ])
+            ->addColumn('date', 'timestamp', [
+                'null' => false,
+                'default' => 'CURRENT_TIMESTAMP',
+            ])
+            ->addColumn('fs_id', 'integer', [
+                'null' => false,
+                'limit' => MysqlAdapter::INT_REGULAR,
+                'after' => 'date',
+            ])
+            ->addColumn('changer_id', 'integer', [
+                'null' => false,
+                'limit' => MysqlAdapter::INT_REGULAR,
+                'after' => 'fs_id',
+            ])
+            ->addColumn('object_name', 'text', [
+                'null' => false,
+                'limit' => MysqlAdapter::TEXT_MEDIUM,
+                'collation' => 'utf8mb4_unicode_ci',
+                'encoding' => 'utf8mb4',
+                'after' => 'changer_id',
+            ])
+            ->addColumn('old_value', 'text', [
+                'null' => true,
+                'default' => null,
+                'limit' => MysqlAdapter::TEXT_MEDIUM,
+                'collation' => 'utf8mb4_unicode_ci',
+                'encoding' => 'utf8mb4',
+                'after' => 'object_name',
+            ])
+            ->addColumn('new_value', 'text', [
+                'null' => true,
+                'default' => null,
+                'limit' => MysqlAdapter::TEXT_MEDIUM,
+                'collation' => 'utf8mb4_unicode_ci',
+                'encoding' => 'utf8mb4',
+                'after' => 'old_value',
+            ])
+            ->addIndex(['fs_id'], [
+                'name' => 'fs_id',
+                'unique' => false,
+            ])
+            ->create();
+        $this->execute('SET FOREIGN_KEY_CHECKS=0;');
+        $this->table('fs_answer')
+                ->addForeignKey('question_id', 'fs_question', 'id', ['delete' => 'CASCADE'])
+                ->update();
+        $this->table('fs_apitoken')
+                ->addForeignKey('foodsaver_id', 'fs_foodsaver', 'id', ['delete' => 'CASCADE'])
+                ->update();
+        $this->table('fs_application_has_wallpost')
+                ->addForeignKey('application_id', 'fs_foodsaver', 'id', ['delete' => 'CASCADE'])
+                ->addForeignKey('wallpost_id', 'fs_wallpost', 'id', ['delete' => 'CASCADE'])
+                ->update();
+        $this->table('fs_basket_anfrage')
+                ->addForeignKey('foodsaver_id', 'fs_foodsaver', 'id', ['delete' => 'CASCADE'])
+                ->addForeignKey('basket_id', 'fs_basket', 'id', ['delete' => 'CASCADE'])
+                ->update();
+        $this->table('fs_basket_has_wallpost')
+                ->addForeignKey('basket_id', 'fs_basket', 'id', ['delete' => 'CASCADE'])
+                ->addForeignKey('wallpost_id', 'fs_wallpost', 'id', ['delete' => 'CASCADE'])
+                ->update();
+        $this->table('fs_bezirk')
+                ->addForeignKey('parent_id', 'fs_bezirk', 'id', ['update' => 'CASCADE'])
+                ->update();
+        $this->table('fs_bezirk_closure')
+                ->addForeignKey('bezirk_id', 'fs_bezirk', 'id', ['delete' => 'CASCADE', 'update' => 'CASCADE'])
+                ->addForeignKey('ancestor_id', 'fs_bezirk', 'id', ['delete' => 'CASCADE', 'update' => 'CASCADE'])
+                ->update();
+        $this->table('fs_bezirk_has_theme')
+                ->addForeignKey('bezirk_id', 'fs_bezirk', 'id', ['delete' => 'CASCADE'])
+                ->addForeignKey('theme_id', 'fs_theme', 'id', ['delete' => 'CASCADE'])
+                ->update();
+        $this->table('fs_bezirk_has_wallpost')
+                ->addForeignKey('bezirk_id', 'fs_bezirk', 'id', ['delete' => 'CASCADE'])
+                ->addForeignKey('wallpost_id', 'fs_wallpost', 'id', ['delete' => 'CASCADE'])
+                ->update();
+        $this->table('fs_botschafter')
+                ->addForeignKey('foodsaver_id', 'fs_foodsaver', 'id', ['delete' => 'CASCADE'])
+                ->addForeignKey('bezirk_id', 'fs_bezirk', 'id', ['delete' => 'CASCADE'])
+                ->update();
+        $this->table('fs_buddy')
+                ->addForeignKey('foodsaver_id', 'fs_foodsaver', 'id', ['delete' => 'CASCADE'])
+                ->addForeignKey('buddy_id', 'fs_foodsaver', 'id', ['delete' => 'CASCADE'])
+                ->update();
+        $this->table('fs_email_status')
+                ->addForeignKey('foodsaver_id', 'fs_foodsaver', 'id', ['delete' => 'CASCADE'])
+                ->addForeignKey('email_id', 'fs_send_email', 'id', ['delete' => 'CASCADE'])
+                ->update();
+        $this->table('fs_event')
+                ->addForeignKey('bezirk_id', 'fs_bezirk', 'id', ['delete' => 'SET_NULL'])
+                ->addForeignKey('location_id', 'fs_location', 'id', ['delete' => 'CASCADE'])
+                ->update();
+        $this->table('fs_event_has_wallpost')
+                ->addForeignKey('event_id', 'fs_event', 'id', ['delete' => 'CASCADE'])
+                ->addForeignKey('wallpost_id', 'fs_wallpost', 'id', ['delete' => 'CASCADE'])
+                ->update();
+        $this->table('fs_fairteiler')
+                ->addForeignKey('bezirk_id', 'fs_bezirk', 'id', ['delete' => 'SET_NULL'])
+                ->update();
+        $this->table('fs_fairteiler_follower')
+                ->addForeignKey('foodsaver_id', 'fs_foodsaver', 'id', ['delete' => 'CASCADE'])
+                ->addForeignKey('fairteiler_id', 'fs_fairteiler', 'id', ['delete' => 'CASCADE'])
+                ->update();
+        $this->table('fs_fairteiler_has_wallpost')
+                ->addForeignKey('fairteiler_id', 'fs_fairteiler', 'id', ['delete' => 'CASCADE'])
+                ->addForeignKey('wallpost_id', 'fs_wallpost', 'id', ['delete' => 'CASCADE'])
+                ->update();
+        $this->table('fs_foodsaver_has_bell')
+                ->addForeignKey('foodsaver_id', 'fs_foodsaver', 'id', ['delete' => 'CASCADE'])
+                ->addForeignKey('bell_id', 'fs_bell', 'id', ['delete' => 'CASCADE'])
+                ->update();
+        $this->table('fs_foodsaver_has_bezirk')
+                ->addForeignKey('foodsaver_id', 'fs_foodsaver', 'id', ['delete' => 'CASCADE'])
+                ->addForeignKey('bezirk_id', 'fs_bezirk', 'id', ['delete' => 'CASCADE'])
+                ->update();
+        $this->table('fs_foodsaver_has_contact')
+                ->addForeignKey('foodsaver_id', 'fs_foodsaver', 'id', ['delete' => 'CASCADE'])
+                ->addForeignKey('contact_id', 'fs_contact', 'id', ['delete' => 'CASCADE'])
+                ->update();
+        $this->table('fs_foodsaver_has_conversation')
+                ->addForeignKey('foodsaver_id', 'fs_foodsaver', 'id', ['delete' => 'CASCADE'])
+                ->addForeignKey('conversation_id', 'fs_conversation', 'id', ['delete' => 'CASCADE'])
+                ->update();
+        $this->table('fs_foodsaver_has_event')
+                ->addForeignKey('foodsaver_id', 'fs_foodsaver', 'id', ['delete' => 'CASCADE'])
+                ->addForeignKey('event_id', 'fs_event', 'id', ['delete' => 'CASCADE'])
+                ->update();
+        $this->table('fs_foodsaver_has_wallpost')
+                ->addForeignKey('foodsaver_id', 'fs_foodsaver', 'id', ['delete' => 'CASCADE'])
+                ->addForeignKey('wallpost_id', 'fs_wallpost', 'id', ['delete' => 'CASCADE'])
+                ->update();
+        $this->table('fs_report_has_wallpost')
+                ->addForeignKey('fsreport_id', 'fs_foodsaver', 'id', ['delete' => 'CASCADE'])
+                ->addForeignKey('wallpost_id', 'fs_wallpost', 'id', ['delete' => 'CASCADE'])
+                ->update();
+        $this->table('fs_mailbox_member')
+                ->addForeignKey('foodsaver_id', 'fs_foodsaver', 'id', ['delete' => 'CASCADE'])
+                ->addForeignKey('mailbox_id', 'fs_mailbox', 'id', ['delete' => 'CASCADE'])
+                ->update();
+        $this->table('fs_mailbox_message')
+                ->addForeignKey('mailbox_id', 'fs_mailbox', 'id', ['delete' => 'CASCADE'])
+                ->update();
+        $this->table('fs_mailchange')
+                ->addForeignKey('foodsaver_id', 'fs_foodsaver', 'id', ['delete' => 'CASCADE'])
+                ->update();
+        $this->table('fs_msg')
+                ->addForeignKey('conversation_id', 'fs_conversation', 'id', ['delete' => 'CASCADE'])
+                ->update();
+        $this->table('fs_pass_gen')
+                ->addForeignKey('foodsaver_id', 'fs_foodsaver', 'id', ['delete' => 'CASCADE'])
+                ->addForeignKey('bot_id', 'fs_foodsaver', 'id', ['delete' => 'CASCADE'])
+                ->update();
+        $this->table('fs_pass_request')
+                ->addForeignKey('foodsaver_id', 'fs_foodsaver', 'id', ['delete' => 'CASCADE'])
+                ->update();
+        $this->table('fs_post_reaction')
+                ->addForeignKey('post_id', 'fs_theme_post', 'id', ['delete' => 'CASCADE', 'update' => 'CASCADE'])
+                ->update();
+        $this->table('fs_question_has_quiz')
+                ->addForeignKey('question_id', 'fs_question', 'id', ['delete' => 'CASCADE'])
+                ->addForeignKey('quiz_id', 'fs_quiz', 'id', ['delete' => 'CASCADE'])
+                ->update();
+        $this->table('fs_question_has_wallpost')
+                ->addForeignKey('question_id', 'fs_question', 'id', ['delete' => 'CASCADE'])
+                ->addForeignKey('wallpost_id', 'fs_wallpost', 'id', ['delete' => 'CASCADE'])
+                ->update();
+        $this->table('fs_quiz_session')
+                ->addForeignKey('foodsaver_id', 'fs_foodsaver', 'id', ['delete' => 'CASCADE'])
+                ->update();
+        $this->table('fs_rating')
+                ->addForeignKey('foodsaver_id', 'fs_foodsaver', 'id', ['delete' => 'CASCADE'])
+                ->addForeignKey('rater_id', 'fs_foodsaver', 'id', ['delete' => 'CASCADE'])
+                ->update();
+        $this->table('fs_theme_follower')
+                ->addForeignKey('foodsaver_id', 'fs_foodsaver', 'id', ['delete' => 'CASCADE'])
+                ->addForeignKey('theme_id', 'fs_theme', 'id', ['delete' => 'CASCADE'])
+                ->update();
+        $this->table('fs_theme_post')
+                ->addForeignKey('theme_id', 'fs_theme', 'id', ['delete' => 'CASCADE'])
+                ->update();
+        $this->table('fs_usernotes_has_wallpost')
+                ->addForeignKey('wallpost_id', 'fs_wallpost', 'id', ['delete' => 'CASCADE'])
+                ->update();
+        $this->table('fs_fetchweight')->insert([
+            ['id' => '0', 'weight' => '1.5'],
+            ['id' => '1', 'weight' => '2.0'],
+            ['id' => '2', 'weight' => '4.0'],
+            ['id' => '3', 'weight' => '7.5'],
+            ['id' => '4', 'weight' => '15'],
+            ['id' => '5', 'weight' => '25'],
+            ['id' => '6', 'weight' => '45'],
+            ['id' => '7', 'weight' => '64']
+        ])->save();
+        $content = [['id' => '4', 'name' => 'fuer-unternehmen', 'title' => 'Für Unternehmen', 'body' => '<p><span>Wir freuen uns sehr, dass Ihr Betrieb an foodsharing interessiert ist! Gemeinsam mit foodsharing k&ouml;nnen Sie sich daf&uuml;r einsetzen, dass aussortierte und unverk&auml;ufliche Lebensmittel eine sinnvolle Verwendung anstelle der Entsorgung erfahren.</span></p>
 <p><span><strong>Was ist unser Ziel?</strong><br />Wir Foodsaver sind eine Gruppe von Menschen, die sich ehrenamtlich daf&uuml;r engagieren, dass weniger Lebensmittel in den M&uuml;ll wandern. Weltweit landet n&auml;mlich jedes dritte produzierte Lebensmittel in der Tonne. In jedem einzelnen stecken aber Arbeitszeit, Ressourcen, zum Teil lange Transportwege und Geld. Foodsharing bietet eine M&ouml;glichkeit, all das wieder wertzusch&auml;tzen, indem wir Essen eine zweite Chance geben.</span></p>
 <p><span><strong>Das k&ouml;nnen wir Ihrem Betrieb bieten:</strong><br /> Deshalb k&uuml;mmern wir uns um alle Lebensmittel, die aus verschiedenen Gr&uuml;nden nicht mehr verkauft werden k&ouml;nnen, aber noch genie&szlig;bar sind. Falls gew&uuml;nscht, wird das Abgeholte von den Foodsavern nach Verwertbarkeit sortiert. Die noch genie&szlig;baren Produkte werden anschlie&szlig;end weiter verteilt. Damit die Rechtssicherheit f&uuml;r die Lebensmittelspendebetriebe gew&auml;hrleistet ist, &nbsp;unterschreiben alle Foodsaver eine<a href="https://wiki.foodsharing.de/Rechtsvereinbarung" target="_blank" style="text-decoration: none;"><span> </span></a><a href="https://wiki.foodsharing.de/Rechtsvereinbarung" target="_blank">Rechtsvereinbarung</a></span><span>, mit der sie die volle Verantwortung f&uuml;r die abgeholten Lebensmittel &uuml;bernehmen.</span></p>
 <p><span><strong>Und was machen wir mit dem Essen?</strong><br /> Ein Gro&szlig;teil der geretteten Lebensmittel wird von den Foodsavern an Vereine, Tafeln, Suppenk&uuml;chen, FreundInnen, NachbarInnen, und nat&uuml;rlich &uuml;ber das foodsharing-Netzwerk oder Fair-Teiler (&ouml;ffentliche Regale zum Austausch von Lebensmitteln) verschenkt, der Rest wird von den Foodsavern selbst verwertet. Wir sehen uns als Erg&auml;nzung und Unterst&uuml;tzung der &uuml;ber 900 Tafeln in Deutschland. Als flexible, lokal organisierte Initiative k&ouml;nnen Foodsaver auch Kleinstmengen, Produkte &uuml;ber dem Mindesthaltbarkeitsdatum, an Wochenenden/Feiertagen und spontan abholen. Von Betrieben, die mit einer Tafel oder einer &auml;hnlichen Initiative zusammenarbeiten, werden nur Lebensmittel abgeholt, die von jenen aus rechtlichen oder logistischen Gr&uuml;nden nicht verwendet werden k&ouml;nnen - also nur das, was wirklich im M&uuml;ll landen w&uuml;rde. Es ist umso erfreulicher, wenn der karitative Gedanke der Tafeln mit dem foodsharing-Motto &bdquo;verwenden statt verschwenden&ldquo; einhergeht.</span> <br /><span>Mittlerweile sind &uuml;ber 38.000 engagierte Menschen in Deutschland, &Ouml;sterreich, Liechtenstein und der Schweiz akkreditierte LebensmittelretterInnen. Gemeinsam kooperieren wir mit 4.500 Betrieben, darunter f&uuml;hrende Bioh&auml;ndlerInnen wie SuperBioMarkt und die </span><a href="https://wiki.foodsharing.de/images/9/9b/Tonnen_sind_kein_Platz_f%C3%BCr_Lebensmittel.pdf" target="_blank"><span>Bio Company</span></a><span>. Insgesamt wurden so schon &uuml;ber 15.000 Tonnen Lebensmittel gerettet!</span></p>
@@ -4695,7 +4695,7 @@ class InitialMigration extends Phinx\Migration\AbstractMigration
 <li>Mit uns sind Sie auch rechtlich auf der sicheren Seite.<span> Lebensmittelabgaben bedeuten keine rechtlichen Risiken f&uuml;r Sie, weil alle unsere Foodsaver einem </span><a href="https://wiki.foodsharing.de/Rechtsvereinbarung#Rechtsvereinbarung_Teil_II_-_Haftungsausschluss" target="_blank" style="text-decoration: none;"><span>Haftungsausschluss</span></a><span> zugestimmt haben. Mit der Abgabe der Lebensmittel an die Foodsaver &uuml;bernehmen wir die volle Verantwortung f&uuml;r deren weitere Verwendung. Wir verpflichten uns zur Zuverl&auml;ssigkeit den Betrieben gegen&uuml;ber und zur Einhaltung der hygienischen Richtlinien bei Lagerung und Transport der Ware. Wir verpflichten uns au&szlig;erdem, die Waren nicht weiter zu verkaufen.</span></li>
 </ul>
 <p><strong>Kontakt: <a href="mailto:info@foodsharing.de" target="_blank">info@foodsharing.de</a><br /></strong></p>', 'last_mod' => '2020-01-06 17:50:50'],
-			['id' => '8', 'name' => 'impressum', 'title' => 'Impressum', 'body' => '<div class="mainframe">
+            ['id' => '8', 'name' => 'impressum', 'title' => 'Impressum', 'body' => '<div class="mainframe">
 <div class="imprint">
 <h4>Angaben gem&auml;&szlig; &sect; 5 TMG:</h4>
 <p>Foodsharing e.V.<br />Neven-DuMont-Str. 14<br /> 50667 K&ouml;ln</p>
@@ -4714,9 +4714,9 @@ class InitialMigration extends Phinx\Migration\AbstractMigration
 <p></p>
 </div>
 </div>', 'last_mod' => '2019-12-02 23:38:34'],
-			['id' => '9', 'name' => 'mission', 'title' => 'Mission ', 'body' => '<p><strong>Herzlich Willkommen bei foodsharing!<br /></strong><br /> <span>foodsharing ist eine 2012 entstandene Initiative gegen die Lebensmittelverschwendung, welche Lebensmittel "rettet", die man ansonsten wegwerfen w&uuml;rde.</span> <span>&Uuml;ber 200.000 registrierte NutzerInnen in Deutschland/&Ouml;sterreich/Schweiz, und &uuml;ber 25.000 Freiwillige, sogenannte Foodsaver, machen diese Initiative mittlerweile zu einer internationalen Bewegung. Es kooperieren &uuml;ber 3.000 Betriebe, bei denen bisher schon 7,8 Millionen Kilogramm Lebensmittel vor der Verschwendung bewahrt worden sind. T&auml;glich finden etwa 1.000 weitere Abholungen statt.</span><br /><br /> <span>Die Plattform foodsharing.de basiert auf ehrenamtlichem Engagement. Das Retten und Teilen von Lebensmitteln findet geldfrei statt. Der gemeinn&uuml;tzige foodsharing e.V. sorgt als Betreiber der Webseite daf&uuml;r, dass diese unkommerziell und ohne Werbung bleibt.</span><br /> <br /><span>Allein in Deutschland ist die Lebensmittelverschwendung ein gro&szlig;es Problem: Etwa ein Drittel aller Lebensmittel werden verschwendet. Und dabei wird nicht nur das Lebensmittel an sich weggeworfen, sondern auch die Ressourcen die z.B. in Anbau, Ernte, Verpackung, Transport und Lagerung geflossen sind.</span> <span>Die Verschwendung findet &uuml;berall statt: bei Anbau, Ernte, Weiterverarbeitung, Verkauf sowie beim Endverbraucher.</span> <span>foodsharing sensibilisiert f&uuml;r das Thema soweit m&ouml;glich bei allen AkteurInnen mit denen die Initiative in Kontakt steht. Bei unterschiedlichen Aktionen machen die MitstreiterInnen auf die unglaubliche Verschwendung in der Gesellschaft aufmerksam und bieten L&ouml;sungsans&auml;tze an.</span> <span>Ziel ist, auf pers&ouml;nlicher Ebene Aufkl&auml;rung, Umdenken und verantwortliches Handeln anzusto&szlig;en.</span><br /><br /> <span>foodsharing bringt Menschen unterschiedlichster Hintergr&uuml;nde zusammen und begeistert zum Mitmachen, Mitdenken und verantwortungsvollem Umgang mit den Ressourcen unseres Planeten.</span> <span>Es gibt keine andere Initiative dieser Gr&ouml;&szlig;e, welche in diesem Umfang ehrenamtlich t&auml;tig ist, &ouml;ffentlich kommuniziert, wie viele Lebensmittel weggeworfen werden, und aus einer Nachhaltigkeitsperspektive L&ouml;sungsans&auml;tze bietet.</span><br /> <span>___</span><br /> <span>Hier erf&auml;hrst Du mehr &uuml;ber uns:</span><br /> <span><a href="/?page=content&amp;sub=forderungen" target="_blank"><strong>Forderungen</strong></a> - unser Forderungspapier</span><br /> <span><strong><a href="/team" target="_blank">Team</a></strong>&nbsp;- unser Team und foodsharing Kontakte</span><br /> <span><a href="/partner" target="_blank"><strong>Partner</strong></a> - diese Partner unterst&uuml;tzen foodsharing</span><br /> <span><a href="/statistik" target="_blank"><strong>Statistik</strong></a> - foodsharing Zahlen &amp; Fakten</span><br /> <span><a href="/?page=content&amp;sub=presse" target="_blank"><strong>Presse</strong></a> - Kontakte und Informationen f&uuml;r Presse</span></p>
+            ['id' => '9', 'name' => 'mission', 'title' => 'Mission ', 'body' => '<p><strong>Herzlich Willkommen bei foodsharing!<br /></strong><br /> <span>foodsharing ist eine 2012 entstandene Initiative gegen die Lebensmittelverschwendung, welche Lebensmittel "rettet", die man ansonsten wegwerfen w&uuml;rde.</span> <span>&Uuml;ber 200.000 registrierte NutzerInnen in Deutschland/&Ouml;sterreich/Schweiz, und &uuml;ber 25.000 Freiwillige, sogenannte Foodsaver, machen diese Initiative mittlerweile zu einer internationalen Bewegung. Es kooperieren &uuml;ber 3.000 Betriebe, bei denen bisher schon 7,8 Millionen Kilogramm Lebensmittel vor der Verschwendung bewahrt worden sind. T&auml;glich finden etwa 1.000 weitere Abholungen statt.</span><br /><br /> <span>Die Plattform foodsharing.de basiert auf ehrenamtlichem Engagement. Das Retten und Teilen von Lebensmitteln findet geldfrei statt. Der gemeinn&uuml;tzige foodsharing e.V. sorgt als Betreiber der Webseite daf&uuml;r, dass diese unkommerziell und ohne Werbung bleibt.</span><br /> <br /><span>Allein in Deutschland ist die Lebensmittelverschwendung ein gro&szlig;es Problem: Etwa ein Drittel aller Lebensmittel werden verschwendet. Und dabei wird nicht nur das Lebensmittel an sich weggeworfen, sondern auch die Ressourcen die z.B. in Anbau, Ernte, Verpackung, Transport und Lagerung geflossen sind.</span> <span>Die Verschwendung findet &uuml;berall statt: bei Anbau, Ernte, Weiterverarbeitung, Verkauf sowie beim Endverbraucher.</span> <span>foodsharing sensibilisiert f&uuml;r das Thema soweit m&ouml;glich bei allen AkteurInnen mit denen die Initiative in Kontakt steht. Bei unterschiedlichen Aktionen machen die MitstreiterInnen auf die unglaubliche Verschwendung in der Gesellschaft aufmerksam und bieten L&ouml;sungsans&auml;tze an.</span> <span>Ziel ist, auf pers&ouml;nlicher Ebene Aufkl&auml;rung, Umdenken und verantwortliches Handeln anzusto&szlig;en.</span><br /><br /> <span>foodsharing bringt Menschen unterschiedlichster Hintergr&uuml;nde zusammen und begeistert zum Mitmachen, Mitdenken und verantwortungsvollem Umgang mit den Ressourcen unseres Planeten.</span> <span>Es gibt keine andere Initiative dieser Gr&ouml;&szlig;e, welche in diesem Umfang ehrenamtlich t&auml;tig ist, &ouml;ffentlich kommuniziert, wie viele Lebensmittel weggeworfen werden, und aus einer Nachhaltigkeitsperspektive L&ouml;sungsans&auml;tze bietet.</span><br /> <span>___</span><br /> <span>Hier erf&auml;hrst Du mehr &uuml;ber uns:</span><br /> <span><a href="/?page=content&amp;sub=forderungen" target="_blank"><strong>Forderungen</strong></a> - unser Forderungspapier</span><br /> <span><strong><a href="/team" target="_blank">Team</a></strong>&nbsp;- unser Team und foodsharing Kontakte</span><br /> <span><a href="/partner" target="_blank"><strong>Partner</strong></a> - diese Partner unterst&uuml;tzen foodsharing</span><br /> <span><a href="/statistik" target="_blank"><strong>Statistik</strong></a> - foodsharing Zahlen &amp; Fakten</span><br /> <span><a href="/?page=content&amp;sub=presse" target="_blank"><strong>Presse</strong></a> - Kontakte und Informationen f&uuml;r Presse</span></p>
 <p><br /><span>F&uuml;r aktuelle Berichte und Ank&uuml;ndigungen kannst Du uns auch&nbsp;<a href="https://de-de.facebook.com/foodsharing.de" target="_blank">auf facebook</a> besuchen.</span> <br /><span>Ausf&uuml;hrliche Informationen &uuml;ber unser Lebensmittelretten findest Du in <a href="https://youtu.be/dqsVjuK3rTc" target="_blank">diesem Erkl&auml;r-Video</a>.</span><br /><br /> <span>Wir w&uuml;nschen Dir viel Spass und freuen uns &uuml;ber Anregungen und Fragen!</span><br /> <span>Dein foodsharing-Team</span></p>', 'last_mod' => '2019-06-15 12:46:42'],
-			['id' => '10', 'name' => 'partner', 'title' => 'Partner', 'body' => '<!--
+            ['id' => '10', 'name' => 'partner', 'title' => 'Partner', 'body' => '<!--
 Die Seite wird durch Julian Brinke (julian@foodsharing-krefeld.de) betreut.
 Logogroesse (hxb) 100x390 px (max)
 Bitte alle Änderungen absprechen
@@ -5128,16 +5128,16 @@ Bitte alle Änderungen absprechen
 </div>
 <!-- ui-widget ui-widget-content corner-bottom margin-bottom ui-padding -->
 <p></p>', 'last_mod' => '2020-04-09 14:45:43'],
-			['id' => '11', 'name' => 'statistik', 'title' => 'Statistik', 'body' => '<div>{STAT_GESAMT}</div>', 'last_mod' => '2019-03-11 22:39:57'],
-			['id' => '12', 'name' => 'quiz-description', 'title' => 'Anleitung Quiz', 'body' => '<ul>
+            ['id' => '11', 'name' => 'statistik', 'title' => 'Statistik', 'body' => '<div>{STAT_GESAMT}</div>', 'last_mod' => '2019-03-11 22:39:57'],
+            ['id' => '12', 'name' => 'quiz-description', 'title' => 'Anleitung Quiz', 'body' => '<ul>
 <li>Fragen und Antworten sorgf&auml;ltig durchlesen</li>
 <li>Die (Deiner Meinung nach richtigen) Antworten durch draufklicken ausw&auml;hlen (mehrere Antworten k&ouml;nnen richtig sein)</li>
 <li>Nach dem Beantworten der Frage, bekommst Du eine Zwischenauswertung mit Erkl&auml;rung zu den jeweiligen Antworten, was Dir dabei hilft zu verstehen, was warum richtig oder falsch ist.&nbsp;Lies Dir bitte alle Erkl&auml;rungen sorgf&auml;ltig durch und hinterlasse einen&nbsp;Kommentar, wenn etwas unlogisch, nicht verst&auml;ndlich oder der gleichen vorkommt.</li>
 <li>Am Ende bekommst Du direkt ein Feedback, ob Du bestanden hast, welche Fehler Du wo genau gemacht hast und kannst noch mal in Ruhe&nbsp;die Begr&uuml;ndungen dazu durchlesen.</li>
 </ul>
 <p></p>', 'last_mod' => '2019-02-26 11:54:14'],
-			['id' => '13', 'name' => 'quiz-failed', 'title' => 'Du hast leider bei 5 Versuchen das Quiz für Foodsaver nicht bestanden.', 'body' => '<p>Damit m&ouml;glichst viele Lebensmittel gerettet werden k&ouml;nnen, ist Zuverl&auml;ssigkeit, sichere Beherrschung der Abholungen und professionelles Auftreten bei den Betrieben und im Team unverzichtbar. Mit den Antworten, die du in allen deinen Quiz-Anl&auml;ufen gegeben hast, vermittelst du das nicht. Es ist deutlich, dass du als Foodsaver eher nicht geeignet bist. Du kannst dich trotzdem in der Gemeinschaft einbringen, indem du z. B. Essensk&ouml;rbe online stellst oder die Essensk&ouml;rbe von anderen abholst. Damit kannst du ebenfalls etwas gegen Lebensmittelverschwendung tun und musst daf&uuml;r kein Foodsaver sein.</p>', 'last_mod' => '2020-01-05 20:41:18'],
-			['id' => '14', 'name' => 'confirm-fs', 'title' => 'Bestätigung Foodsaver', 'body' => '<p>Herzlichen Gl&uuml;ckwunsch, Du hast das Quiz zum Foodsaver bestanden!</p>
+            ['id' => '13', 'name' => 'quiz-failed', 'title' => 'Du hast leider bei 5 Versuchen das Quiz für Foodsaver nicht bestanden.', 'body' => '<p>Damit m&ouml;glichst viele Lebensmittel gerettet werden k&ouml;nnen, ist Zuverl&auml;ssigkeit, sichere Beherrschung der Abholungen und professionelles Auftreten bei den Betrieben und im Team unverzichtbar. Mit den Antworten, die du in allen deinen Quiz-Anl&auml;ufen gegeben hast, vermittelst du das nicht. Es ist deutlich, dass du als Foodsaver eher nicht geeignet bist. Du kannst dich trotzdem in der Gemeinschaft einbringen, indem du z. B. Essensk&ouml;rbe online stellst oder die Essensk&ouml;rbe von anderen abholst. Damit kannst du ebenfalls etwas gegen Lebensmittelverschwendung tun und musst daf&uuml;r kein Foodsaver sein.</p>', 'last_mod' => '2020-01-05 20:41:18'],
+            ['id' => '14', 'name' => 'confirm-fs', 'title' => 'Bestätigung Foodsaver', 'body' => '<p>Herzlichen Gl&uuml;ckwunsch, Du hast das Quiz zum Foodsaver bestanden!</p>
 <p><span>Um das Upgrade abzuschlie&szlig;en, gehe bitte bis zum Ende der Seite und best&auml;tige, dass Du die Rechtsvereinbarung gelesen und akzeptiert hast. Mit einem Klick auf Best&auml;tigen wirst Du dann zum Foodsaver.</span></p>
 <p><span>W&auml;hle einen Bezirk aus und der/die f&uuml;r dich zust&auml;ndige&nbsp;</span>BotschafterIn wird sich innerhalb der n&auml;chsten Tage mit Dir in Verbindung setzen.</p>
 <p>Zun&auml;chst werden die 3 Einf&uuml;hrungsabholungen (<a href="http://wiki.foodsharing.de/Einf&uuml;hrungsabholungen" target="_blank">wiki.foodsharing.de/Einf&uuml;hrungsabholungen)</a>&nbsp;gemacht, daf&uuml;r schl&auml;gt der/die&nbsp;jeweilige BotschafterIn bzw. Vertrauensperson Termine f&uuml;r die Abholungen vor, die rechtzeitig (min. 24 Stunden) vor dem Termin von Dir best&auml;tigt werden. Du wirst dann&nbsp;informiert, wann und wo man sich trifft und wie man sich erkennt.&nbsp;</p>
@@ -5146,11 +5146,11 @@ Bitte alle Änderungen absprechen
 <p></p>
 <p>Willkommen&nbsp;in der Welt des Lebensmittelrettens! Viele Freude bei allem und auf einen guten Start!</p>
 <p>Herzlich&nbsp;das&nbsp;gesamte foodsharing Team</p>', 'last_mod' => '2019-02-15 12:08:27'],
-			['id' => '15', 'name' => 'confirm-bip', 'title' => 'Bestätigung BetriebsverantwortlicheR', 'body' => '<p>Herzlichen Gl&uuml;ckwunsch, Du hast das Quiz zum betriebsverantwortlichen Foodsaver bestanden... bitte best&auml;tigen</p>', 'last_mod' => '2014-08-13 01:07:13'],
-			['id' => '16', 'name' => 'confirm-bot', 'title' => 'Bestätigung BotschafterIn', 'body' => '<p>Herzlichen Gl&uuml;ckwunsch, Du hast das Quiz zur/zum BotschafterIn bestanden.</p>
+            ['id' => '15', 'name' => 'confirm-bip', 'title' => 'Bestätigung BetriebsverantwortlicheR', 'body' => '<p>Herzlichen Gl&uuml;ckwunsch, Du hast das Quiz zum betriebsverantwortlichen Foodsaver bestanden... bitte best&auml;tigen</p>', 'last_mod' => '2014-08-13 01:07:13'],
+            ['id' => '16', 'name' => 'confirm-bot', 'title' => 'Bestätigung BotschafterIn', 'body' => '<p>Herzlichen Gl&uuml;ckwunsch, Du hast das Quiz zur/zum BotschafterIn bestanden.</p>
 <p>Bitte nimm Dir noch ein paar Minuten Zeit und f&uuml;lle die nachfolgenden Fragen aus.</p>
 <p></p>', 'last_mod' => '2014-08-13 01:08:05'],
-			['id' => '17', 'name' => 'quiz-starttext', 'title' => 'Jetzt geht es los - folgendes ist zu beachten:', 'body' => '<p></p>
+            ['id' => '17', 'name' => 'quiz-starttext', 'title' => 'Jetzt geht es los - folgendes ist zu beachten:', 'body' => '<p></p>
 <ul>
 <li>Bist Du sicher, dass Du alle aufgef&uuml;hrten Wiki-Dokumente aufmerksam durchgelesen und verinnerlicht hast? Ohne das Wissen und die Erfahrungen, welche im Wiki&nbsp;innerhalb von 2,5 Jahren zusammen getragen wurden, ist ein Bestehen des Quizes nicht m&ouml;glich.</li>
 <li>W&auml;hrend des Quizes darf Dir nicht geholfen werden. Suche Dir deswegen einen ruhigen Ort in dem Du ungest&ouml;rt das Quiz machen kannst.</li>
@@ -5163,7 +5163,7 @@ Bitte alle Änderungen absprechen
 </ul>
 <p><strong>Hinweis:</strong><br /><span>Alle hier aufgef&uuml;hrten Beschreibungen basieren auf F&auml;llen aus dem echten Foodsaver-Leben. Eine m&ouml;gliche Anlehnung an Ereignisse, die sich so oder so &auml;hnlich zugetragen haben, ist gewollt.</span></p>
 <p></p>', 'last_mod' => '2018-08-16 20:34:33'],
-			['id' => '18', 'name' => 'quiz-popup', 'title' => 'Quiz - Jetzt geht\'s los!', 'body' => '<p><span><strong>Jetzt geht es los! Bitte beachte</strong>:</span></p>
+            ['id' => '18', 'name' => 'quiz-popup', 'title' => 'Quiz - Jetzt geht\'s los!', 'body' => '<p><span><strong>Jetzt geht es los! Bitte beachte</strong>:</span></p>
 <ul>
 <li>
 <p><strong>Alles gelesen? </strong><span>Bist Du sicher, dass Du alle </span><span>im <strong>Wiki-Artikel</strong></span><a href="https://wiki.foodsharing.de/Quiz#Quiz_f.C3.BCr_Foodsaver" target="_blank" style="text-decoration: none;"><span> </span><span>Quiz</span></a><span> aufgef&uuml;hrten Wiki-Dokumente aufmerksam durchgelesen und verinnerlicht hast? Ohne das Wissen und die Erfahrungen, </span><strong>die dort</strong><span> zusammengetragen wurden, ist ein Bestehen des Quiz nicht m&ouml;glich.</span></p>
@@ -5214,19 +5214,19 @@ Bitte alle Änderungen absprechen
 </ul>
 <p></p>
 <p><span>Jetzt w&uuml;nschen wir dir gute Gedanken und viel Erfolg beim Quiz!</span></p>', 'last_mod' => '2019-11-09 11:27:15'],
-			['id' => '19', 'name' => 'quiz-failed-fs-try1', 'title' => 'Diesmal hat es leider nicht geklappt', 'body' => '<p><span>Aber kein Grund zur Sorge: Das war ja erst dein erster Versuch. Lies dir hier nochmal in Ruhe die Fragen und die dazugeh&ouml;rigen Antworten durch, damit es beim n&auml;chsten Mal besser klappt. Vielleicht hilft es dir, wenn du nochmal in die </span><a href="https://wiki.foodsharing.de/Quiz" target="_blank" style="text-decoration: none;"><span>Artikel im Wiki</span></a><span> schaust.</span></p>
+            ['id' => '19', 'name' => 'quiz-failed-fs-try1', 'title' => 'Diesmal hat es leider nicht geklappt', 'body' => '<p><span>Aber kein Grund zur Sorge: Das war ja erst dein erster Versuch. Lies dir hier nochmal in Ruhe die Fragen und die dazugeh&ouml;rigen Antworten durch, damit es beim n&auml;chsten Mal besser klappt. Vielleicht hilft es dir, wenn du nochmal in die </span><a href="https://wiki.foodsharing.de/Quiz" target="_blank" style="text-decoration: none;"><span>Artikel im Wiki</span></a><span> schaust.</span></p>
 <p></p>
 <p><span>Gern kannst du ein Problem auch mit einer/einem Botschafter*in an deinem Wohnort (oder in der N&auml;he) besprechen. Du findest ihre Emailadresse auf der foodsharing-Seite: in der Men&uuml;-Leiste rechts das Brief-Symbol f&uuml;hrt dich zum richtigen Land (Deutschland, &Ouml;sterreich, ...), und dort steht dann die Liste aller Bezirke.</span></p>', 'last_mod' => '2019-11-09 11:39:26'],
-			['id' => '20', 'name' => 'quiz-failed-fs-try2', 'title' => 'Diesmal hat es leider nicht geklappt', 'body' => '<p><span>Das sind leider zum zweiten Mal mehr Fehlerpunkte, als zum Bestehen erlaubt sind. Lies Dir hier noch mal in Ruhe die Fragen und die dazugeh&ouml;rigen Antworten durch, damit es beim n&auml;chsten Mal besser klappt. Vielleicht solltest du vor deinem 3. Versuch die </span><a href="https://wiki.foodsharing.de/Quiz" target="_blank" style="text-decoration: none;"><span>Artikel im Wiki</span></a><span> nochmal genauer lesen.</span></p>
+            ['id' => '20', 'name' => 'quiz-failed-fs-try2', 'title' => 'Diesmal hat es leider nicht geklappt', 'body' => '<p><span>Das sind leider zum zweiten Mal mehr Fehlerpunkte, als zum Bestehen erlaubt sind. Lies Dir hier noch mal in Ruhe die Fragen und die dazugeh&ouml;rigen Antworten durch, damit es beim n&auml;chsten Mal besser klappt. Vielleicht solltest du vor deinem 3. Versuch die </span><a href="https://wiki.foodsharing.de/Quiz" target="_blank" style="text-decoration: none;"><span>Artikel im Wiki</span></a><span> nochmal genauer lesen.</span></p>
 <p></p>
 <p><span>Gern kannst du ein Problem auch mit einer/einem Botschafter*in an deinem Wohnort (oder in der N&auml;he) besprechen. Du findest ihre Emailadresse auf der foodsharing-Seite: in der Men&uuml;-Leiste rechts das Brief-Symbol f&uuml;hrt dich zum richtigen Land (Deutschland, &Ouml;sterreich, ...), und dort steht dann die Liste aller Bezirke.</span></p>', 'last_mod' => '2019-11-09 11:40:46'],
-			['id' => '21', 'name' => 'quiz-failed-fs-try3', 'title' => 'Diesmal hat es leider nicht geklappt', 'body' => '<p><span>Leider hast du erneut zu viele Fehlerpunkte. Damit m&ouml;glichst viele Lebensmittel gerettet werden k&ouml;nnen, ist Zuverl&auml;ssigkeit, sichere Beherrschung der Abholungen und professionelles Auftreten bei den Betrieben und im Team unverzichtbar.</span></p>
+            ['id' => '21', 'name' => 'quiz-failed-fs-try3', 'title' => 'Diesmal hat es leider nicht geklappt', 'body' => '<p><span>Leider hast du erneut zu viele Fehlerpunkte. Damit m&ouml;glichst viele Lebensmittel gerettet werden k&ouml;nnen, ist Zuverl&auml;ssigkeit, sichere Beherrschung der Abholungen und professionelles Auftreten bei den Betrieben und im Team unverzichtbar.</span></p>
 <p><span>Mit den Antworten, die du gegeben hast, vermittelst du das zum jetzigen Zeitpunkt leider nicht.</span></p>
 <p><span>Daher bekommst du einen Monat Lernpause. Danach kannst du das Quiz erneut ablegen.</span></p>
 <p></p>
 <p><span>Gern kannst du ein Problem auch mit einer/einem Botschafter*in an deinem Wohnort (oder in der N&auml;he) besprechen. Du findest ihre Emailadresse auf der foodsharing-Seite: in der Men&uuml;-Leiste rechts das Brief-Symbol f&uuml;hrt dich zum richtigen Land (Deutschland, &Ouml;sterreich, ...), und dort steht dann die Liste aller Bezirke.</span></p>', 'last_mod' => '2019-11-09 11:41:02'],
 
-			['id' => '28', 'name' => 'datenschutz', 'title' => 'Datenschutzerklärung', 'body' => '<h3><span>Datenschutzerkl&auml;rung foodsharing</span></h3>
+            ['id' => '28', 'name' => 'datenschutz', 'title' => 'Datenschutzerklärung', 'body' => '<h3><span>Datenschutzerkl&auml;rung foodsharing</span></h3>
 <p></p>
 <h4><span>1. Name und Kontaktdaten des f&uuml;r die Verarbeitung Verantwortlichen sowie des betrieblichen Datenschutzbeauftragten</span></h4>
 <p><span>Diese Datenschutzinformation gilt f&uuml;r die Datenverarbeitung durch</span></p>
@@ -5408,11 +5408,11 @@ Bitte alle Änderungen absprechen
 <p><span>Diese Datenschutzerkl&auml;rung ist aktuell g&uuml;ltig und hat den Stand Mai 2020</span><span>.</span></p>
 <p><span>Durch die Weiterentwicklung unserer Website und Angebote dar&uuml;ber oder aufgrund ge&auml;nderter gesetzlicher beziehungsweise beh&ouml;rdlicher Vorgaben kann es notwendig werden, diese Datenschutzerkl&auml;rung zu &auml;ndern. Die jeweils aktuelle Datenschutzerkl&auml;rung kann jederzeit auf unserer Website abgerufen und/oder ausgedruckt werden.</span></p>', 'last_mod' => '2020-05-16 00:09:33'],
 
-			['id' => '30', 'name' => 'rv-foodsaver', 'title' => 'Rechtsvereinbarung für Foodsaver', 'body' => '<p><strong>Eigenerkl&auml;rung - Verhaltenskodex und Sorgfaltspflichten</strong></p>
+            ['id' => '30', 'name' => 'rv-foodsaver', 'title' => 'Rechtsvereinbarung für Foodsaver', 'body' => '<p><strong>Eigenerkl&auml;rung - Verhaltenskodex und Sorgfaltspflichten</strong></p>
 <p><span>Ich erkl&auml;re das Folgende:<br /><br /></span>Ich werde im Rahmen von foodsharing als Foodsaver t&auml;tig werden. Das hei&szlig;t, ich hole bei LebensmittelspenderInnen Lebensmittel ab und verpflichte mich, diese entweder selbst zu verbrauchen oder ausschlie&szlig;lich unentgeltlich an Dritte weiterzugeben (privat, Suppenk&uuml;chen, Tafeln, Bahnhofsmissionen, gemeinn&uuml;tzige Vereine, Fair-Teiler, online als Essenskorb etc.).<br /><br />Das oberste Ziel ist es, alle noch genie&szlig;baren Lebensmittel vor der Vernichtung zu bewahren und sie dem menschlichen Verzehr zuzuf&uuml;hren. Als Foodsaver handle ich ehrenamtlich aus sozialen, ethischen und &ouml;kologischen Gr&uuml;nden, um die Lebensmittelverschwendung und damit den Hunger, die Ressourcenverschwendung und den Klimawandel uvm. zu minimieren.<br /><br />Die Foodsaver sind eine effiziente, lokale und zeitnahe Erg&auml;nzung zu anderen gemeinn&uuml;tzigen Organisationen wie z.B. den Tafeln. Zielsetzung ist es, neben gro&szlig;en Lebensmittelh&auml;nderInnen, m&ouml;glichst allen kleinen LebensmittelspenderInnen wie B&auml;ckereien, Biol&auml;den, Restaurants etc. die Kooperation mit den Foodsavern zu erm&ouml;glichen, sodass unabh&auml;ngig von der Gr&ouml;&szlig;e des Lebensmittelbetriebes keine noch genie&szlig;baren Lebensmittel weggeworfen werden m&uuml;ssen.<br /><br />Die umfassende Zufriedenheit unserer Kooperationsbetriebe ist ein elementarer Teil des Lebensmittelrettens. Ich verpflichte mich, mich daf&uuml;r mit zuverl&auml;ssigem, freundlichem und aufgeschlossenem Verhalten gegen&uuml;ber den Menschen und Betrieben auf allen Ebenen einzusetzen.<br /><br />Ich verpflichte mich, keine Betriebe anzusprechen bzw. Kooperationen aufzubauen, so lange ich nicht das Quiz zum Betriebsverantwortlichen bestanden habe. Generell ist es nur in Absprache mit dem Betriebskettenteam gestattet, Betriebe mit mehr als 2 Filialen anzusprechen.<br /><br />Ziel ist es, eine Abholquote von 100% zu erreichen. Um diese zu gew&auml;hrleisten, bin ich als</p>
 <p><span>Foodsaver dazu angehalten, alle Abholtermine auf der Website einzutragen und gut mit anderen Foodsavern vernetzt zu sein.&nbsp;Bei unerwartetem Ausfall wie z.B. durch Krankheit etc. bin ich dazu verpflichtet, mich schnellstm&ouml;glich aus dem Kalender auszutragen und mich um einen Ersatzfoodsaver zu k&uuml;mmern, der schon mal bei dem Lebensmittelspendebetrieb abgeholt hat und nur im Notfall einen Foodsaver zu w&auml;hlen, der bei dem Betrieb noch nie abgeholt hat. Sollte sich bis 24 Stunden vor dem Abholtermin kein Ersatz gefunden haben, muss das Suchen nach einem Ersatz via Telefon und E-Mail fortgef&uuml;hrt werden, bis jemand gefunden wird. Ist die Suche auch bis zu einer Stunde vor Abholtermin nicht erfolgreich, muss die Filiale umgehend telefonisch informiert werden, dass an dem betreffenden Tag keine Abholung vorgenommen werden kann. </span></p>
 <p><span>In den Ausnahmesituationen, in denen trotz aller Bem&uuml;hungen keine Abholung stattfinden konnte, muss das Team des Betriebes per Pinnwandeintrag &uuml;ber das Nichterscheinen informiert werden sowie das Nichtabholen als eigener Versto&szlig; gemeldet werden.<br /><br /></span>Als Foodsaver sichere ich zu, K&uuml;hlware und leicht verderbliche Lebensmittel&nbsp;bis zur &Uuml;bergabe an Dritte sachgerecht zu lagern bzw. zu k&uuml;hlen und andernfalls solche Lebensmittel nicht an Dritte weiterzugeben.<br /><br />Als Foodsaver garantiere ich, w&auml;hrend der Abholungen oder danach keine noch essbaren Lebensmittel zu entsorgen und mich verantwortlich und fachgerecht um die Entsorgung der nicht mehr genie&szlig;baren Lebensmittel, aber auch Verpackungen, Kartons etc. zu k&uuml;mmern.<br /><br />Desweiteren verpflichte ich mich, den Ort, an dem die Ware entgegengenommen bzw. getrennt wird, mindestens so sauber zu hinterlassen, wie ich ihn vorgefunden habe.<br /><br /><span>Die Lebensmittel werden zu den Zeiten abgeholt, zu welchen es die Lebensmittelspenderbetriebe</span><span> </span><span>w&uuml;nschen. Normalerweise sind dies feste Zeiten, allerdings stehen die Foodsaver auch</span><span> </span><span>bereit, um au&szlig;erterminlich Lebensmittel abzuholen.<br /><br /></span><span>Ich best&auml;tige, die </span><a href="http://wiki.foodsharing.de/Verhaltensregeln" target="_blank"><span>Verhaltensregeln</span></a><span> und andere </span><a href="http://wiki.foodsharing.de" target="_blank"><span>foodsharing-Wiki-Dokumente</span></a><span> gelesen und verstanden zu haben und verpflichte mich, mich nach diesen zu verhalten. Wenn ich Kenntnis davon erlange, dass diese Verhaltensregeln von anderen Foodsavern, Betriebsverantwortlichen oder BotschafterInnen nicht eingehalten werden, melde ich diese Verst&ouml;&szlig;e &uuml;ber das Formular "Versto&szlig; melden" im Profil des jeweiligen Users.<br /><br /></span>Als Foodsaver erkl&auml;re ich, die in dieser Vereinbarung festgehaltenen Werte zu achten und foodsharing nicht zu sch&auml;digen. Dies beinhaltet insbesondere die Pflicht, jegliche diskreditierenden Aussagen gegen foodsharing, ihren BotschafterInnen, Foodsavern und anderen Unterst&uuml;tzerInnen, auch nach Beendigung meiner Teilnahme als Foodsaver, zu unterlassen. Ich nehme zur Kenntnis, dass ich bei Versto&szlig; gegen diese Erkl&auml;rung, insbesondere wenn ich foodsharing durch meine Handlungen oder Aussagen vors&auml;tzlich oder grob fahrl&auml;ssig sch&auml;dige, von einer Teilnahme als Foodsaver ausgeschlossen werde bzw. mir die Teilnahme als Foodsaver untersagt wird.<br /><br />Ich verpflichte mich auch, mich &uuml;ber aktuelle Informationen und Neuigkeiten auf dem Laufenden zu halten (Regelm&auml;&szlig;ige foodsharing-Treffen aufsuchen, Newsletter lesen, Foren auf der Homepage besuchen, Mails lesen).<br /><br />foodsharing ist&nbsp;in erster Linie parteipolitisch neutral.&nbsp;<span>Ich verpflichte mich, mich diesbez&uuml;glich an die Regeln und Vorgaben im Dokument </span><a href="http://wiki.foodsharing.de/Foodsharing_und_Politik" target="_blank"><span>&bdquo;Foodsharing und Politk&ldquo;</span></a><span> zu halten.</span></p>', 'last_mod' => '2019-06-11 13:35:31'],
-			['id' => '31', 'name' => 'rv-biebs', 'title' => 'Rechtsvereinbarung', 'body' => '<p><strong>Zusatzrechtsvereinbarung f&uuml;r Betriebsverantwortliche bei foodsharing:</strong></p>
+            ['id' => '31', 'name' => 'rv-biebs', 'title' => 'Rechtsvereinbarung', 'body' => '<p><strong>Zusatzrechtsvereinbarung f&uuml;r Betriebsverantwortliche bei foodsharing:</strong></p>
 <p><strong>&nbsp;</strong></p>
 <p><span>Zus&auml;tzlich bin ich als BetriebsverantwortlicheR daf&uuml;r verantwortlich, nur Betriebe anzusprechen, bei denen ich auch garantieren kann, dass gen&uuml;gend Foodsaver bereit stehen, die notfalls auch 7 Tage die Woche ab Erstkontakt Lebensmittel abholen k&ouml;nnen.<br /><br /></span>Bevor ich als BetriebsverantwortlicheR aktiv werde, verpflichte ich mich, mit den BotschafterInnen meiner Region in Kontakt zu treten und erst nach Absprache mit ihnen neue KooperationspartnerInnen zu suchen. Dabei versichere ich, nur inhaberInnengef&uuml;hrte Betriebe anzusprechen und f&uuml;r alle Betriebe mit mehr als 2 Filialen das Betriebskettenteam zu kontaktieren.</p>
 <p><span><br /></span>Noch bevor ich einen Betrieb anspreche, &uuml;berpr&uuml;fe ich, ob der Betrieb nicht bereits eingetragen wurde. Nach jedem Kontakt zum Betrieb trage ich alle relevanten Informationen noch am selben Tag bei foodsharing ein bzw. aktualisiere alle in Erfahrung gebrachten Informationen, die bei der Betriebseintragung abgefragt werden.</p>
@@ -5421,12 +5421,12 @@ Bitte alle Änderungen absprechen
 <p><span><br /></span>Zus&auml;tzlich erkl&auml;re ich mich als BetriebsverantwortlicheR bereit, foodsharing&nbsp;immer verantwortungsbewusst und motiviert zu repr&auml;sentieren. Ich bin mir bewusst, dass ich im Hinblick auf die Foodsaver, Betriebsverantwortlichen und BotschafterInnenkollegInnen eine Vorbildfunktion innehabe, die mir Freude bereitet und die ich ernstnehme. Das <a href="http://wiki.foodsharing.de/Betriebsverantwortliche" target="_blank">Wiki-Dokument</a>&nbsp;bez&uuml;glich meiner Aufgaben und anderen Verpflichtungen als BetriebsverantwortlicheR habe ich gelesen, verinnerlicht und stehe dahinter.</p>
 <p></p>
 <p></p>', 'last_mod' => '2019-06-11 13:35:58'],
-			['id' => '32', 'name' => 'rv-botschafter', 'title' => 'Rechtsvereinbarung', 'body' => '<p>Derzeit keine, werden noch bearbeitet und dann nachgereicht.&nbsp;</p>', 'last_mod' => '2015-01-07 05:32:12'],
-			['id' => '33', 'name' => 'quiz-hinweis', 'title' => 'Wichtiger Hinweis:', 'body' => '<div class="ace-line">
+            ['id' => '32', 'name' => 'rv-botschafter', 'title' => 'Rechtsvereinbarung', 'body' => '<p>Derzeit keine, werden noch bearbeitet und dann nachgereicht.&nbsp;</p>', 'last_mod' => '2015-01-07 05:32:12'],
+            ['id' => '33', 'name' => 'quiz-hinweis', 'title' => 'Wichtiger Hinweis:', 'body' => '<div class="ace-line">
 <p><span>Liebe*r&nbsp;{NAME},<br /><br /></span>sch&ouml;n, dass Du dabei bist und Dich gegen die Lebensmittelverschwendung einsetzen willst!<br />Willst Du in Zukunft wie schon tausende andere&nbsp;<strong>Foodsaver werden und Lebensmittel bei B&auml;ckereien, Superm&auml;rkten, Restaurants etc.&nbsp;retten?</strong><br />Vielleicht sogar BetriebsverantwortlicheR werden oder Dich bei einen der unz&auml;hligen Arbeitsgruppen einbringen? Solltest Du&nbsp;Lust auf noch mehr Verantwortung haben und Deine Region mitaufbauen wollen bzw. bestehende BotschafterInnen unterst&uuml;tzen wollen, kannst Du Dich auch als&nbsp;foodsharing BotschafterIn bewerben. Lese Dich jetzt in die notwendigen <a href="https://wiki.foodsharing.de/Foodsaver" target="_blank">Dokumente im Wiki</a>&nbsp;ein, um dann <a href="/?page=settings&amp;sub=up_fs" target="_blank">das kleine Quiz</a> zu absolvieren.<br /><br />Du hast die M&ouml;glichkeit zwischen dem Quiz mit 10 Fragen und Zeitlimit oder dem&nbsp;<span>Quiz mit 20 Fragen ohne Zeitlimit.<br /><br /></span><strong>Sch&ouml;n, dass Du dabei bist und Dich einbringen willst! Wir freuen uns auf Deine Unterst&uuml;tzung!</strong></p>
 <span><span>Herzlich Dein&nbsp;foodsharing Orgateam</span></span></div>', 'last_mod' => '2019-03-12 11:02:45'],
 
-			['id' => '36', 'name' => 'bot-last-quiz-popup', 'title' => 'Wichtig: BotschafterInnen Quiz jetzt machen', 'body' => '<div>Liebe*r {NAME}</div>
+            ['id' => '36', 'name' => 'bot-last-quiz-popup', 'title' => 'Wichtig: BotschafterInnen Quiz jetzt machen', 'body' => '<div>Liebe*r {NAME}</div>
 <div>hiermit erinnern wir Dich an das BotschafterInnen Quiz f&uuml;r welches Du noch bis einschlie&szlig;lich dem 12.01 Zeit hast. Bitte lies Dir Dir dazu alle n&ouml;tigen Wiki-Dokumente durch, solltest Du das Foodsaver und/oder&nbsp;Betriebsverantwortlichen Quiz noch nicht gemacht haben, musst Du diese erst bestehen um das BotschafterInnen Quiz machen zu k&ouml;nnen.</div>
 <div></div>
 <div>Vielen Dank dir Dir f&uuml;r Deinen Einsatz, wir sind Dir sehr dankbar und nun gutes gelingen beim Quiz!</div>
@@ -5434,7 +5434,7 @@ Bitte alle Änderungen absprechen
 <div>Einen wunderbaren Einstieg in die BotschafterInnen Welt</div>
 <div></div>
 <div>Herzlich Euer fooddsharing Orgateam</div>', 'last_mod' => '2019-11-09 12:17:09'],
-			['id' => '37', 'name' => 'myfoodsharing-at-mai', 'title' => 'Myfoodsharing.at Hauptseite', 'body' => '<div class="campaign topbarpadding">
+            ['id' => '37', 'name' => 'myfoodsharing-at-mai', 'title' => 'Myfoodsharing.at Hauptseite', 'body' => '<div class="campaign topbarpadding">
 <div class="campaignimg"><img src="/img/fsgabelgwrgbklein.png" /></div>
 <div class="campaigntext">
 <div class="field">
@@ -5468,7 +5468,7 @@ Bitte alle Änderungen absprechen
 </div>
 </div>
 </div>', 'last_mod' => '2020-03-19 13:58:48'],
-			['id' => '38', 'name' => 'foodsharing-de-main', 'title' => 'foodsharing.de Hauptseite', 'body' => '<div class="campaign topbarpadding">
+            ['id' => '38', 'name' => 'foodsharing-de-main', 'title' => 'foodsharing.de Hauptseite', 'body' => '<div class="campaign topbarpadding">
 <div class="campaignimg"><img src="/img/fsgabelgwrgbklein.png" /></div>
 <div class="campaigntext">
 <div class="field">
@@ -5513,7 +5513,7 @@ Bitte alle Änderungen absprechen
 </div>
 </div>
 </div>', 'last_mod' => '2020-04-09 17:16:19'],
-			['id' => '39', 'name' => 'team-header', 'title' => 'Kontakt', 'body' => '<div class="head ui-widget-header ui-corner-top">Ehemalige:</div>
+            ['id' => '39', 'name' => 'team-header', 'title' => 'Kontakt', 'body' => '<div class="head ui-widget-header ui-corner-top">Ehemalige:</div>
 <div class="ui-widget ui-widget-content corner-bottom margin-bottom ui-padding">
 <p><a href="/team/ehemalige" target="_blank">Hier</a> kommst du zu unseren ehemaligen Unterst&uuml;tzenden.</p>
 </div>
@@ -5575,7 +5575,7 @@ Bitte alle Änderungen absprechen
 <p>Der Vorstand des foodsharing e.V. h&auml;lt die F&auml;den zusammen, vernetzt Deutschland, &Ouml;sterreich und die Schweiz als Nutzer der Plattform foodsharing.de, und ist f&uuml;r &uuml;berregionalen Angelegenheiten zust&auml;ndig. Der Vorstand arbeitet im Team sehr viel in engen Absprachen miteinander, und haupts&auml;chlich online zusammen, um alle Anliegen der gro&szlig;en foodsharing Community und von Extern zu bek&uuml;mmern. Dar&uuml;ber hinaus besch&auml;ftigt sich der Vorstand ausgiebig mit der Organisationsentwicklung und der politischen Dimension der Lebensmittelverschwendung.</p>
 </div>', 'last_mod' => '2020-05-15 10:13:28'],
 
-			['id' => '42', 'name' => 'Spenden', 'title' => 'SPENDEN', 'body' => '<p><span>Liebe foodsharing-Begeisterte,<br /><br />foodsharing w&auml;chst und gedeiht &ndash; das ist wunderbar! Es ist unfassbar, was wir seit 2012 gemeinsam geschafft haben! Es gibt keine andere Organisation in der Gr&ouml;&szlig;enordnung, die ausschlie&szlig;lich ehrenamtlich und f&uuml;r Nutzende kostenlos funktioniert &ndash; darauf d&uuml;rfen wir wirklich stolz sein.<br /><br />Ausschlie&szlig;lich ehrenamtlich - aber wof&uuml;r wird dann Geld gebraucht?<br /><br />Wir bem&uuml;hen uns f&uuml;r jegliche Ausgaben um Sponsering. In manchen F&auml;llen gelingt dies jedoch nicht oder nicht vollst&auml;ndig, z.B. bei Ausgaben f&uuml;r:<br /><br />&nbsp;&nbsp;&nbsp;&nbsp; - Finanzierung von Aktionen und Veranstaltungen (z.B. Fahrtkosten, Materialien, Flyer)<br />&nbsp;&nbsp;&nbsp;&nbsp; <span>- Rechtsberatung<br />&nbsp;&nbsp;&nbsp;&nbsp; - Versicherungen</span><br /><br />Deshalb freuen wir uns &uuml;ber Spenden in jeglicher H&ouml;he</span> &uuml;ber <span><a href="https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&amp;hosted_button_id=CLPZCSCKGNXE4" target="_blank">PayPal (hier klicken)</a></span> oder auf unser Konto:<br /><br /><span>foodsharing e.V.</span><br />IBAN: DE66 4306 0967 4063 8156 00<br />BIC: GENODEM1GLS</p>
+            ['id' => '42', 'name' => 'Spenden', 'title' => 'SPENDEN', 'body' => '<p><span>Liebe foodsharing-Begeisterte,<br /><br />foodsharing w&auml;chst und gedeiht &ndash; das ist wunderbar! Es ist unfassbar, was wir seit 2012 gemeinsam geschafft haben! Es gibt keine andere Organisation in der Gr&ouml;&szlig;enordnung, die ausschlie&szlig;lich ehrenamtlich und f&uuml;r Nutzende kostenlos funktioniert &ndash; darauf d&uuml;rfen wir wirklich stolz sein.<br /><br />Ausschlie&szlig;lich ehrenamtlich - aber wof&uuml;r wird dann Geld gebraucht?<br /><br />Wir bem&uuml;hen uns f&uuml;r jegliche Ausgaben um Sponsering. In manchen F&auml;llen gelingt dies jedoch nicht oder nicht vollst&auml;ndig, z.B. bei Ausgaben f&uuml;r:<br /><br />&nbsp;&nbsp;&nbsp;&nbsp; - Finanzierung von Aktionen und Veranstaltungen (z.B. Fahrtkosten, Materialien, Flyer)<br />&nbsp;&nbsp;&nbsp;&nbsp; <span>- Rechtsberatung<br />&nbsp;&nbsp;&nbsp;&nbsp; - Versicherungen</span><br /><br />Deshalb freuen wir uns &uuml;ber Spenden in jeglicher H&ouml;he</span> &uuml;ber <span><a href="https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&amp;hosted_button_id=CLPZCSCKGNXE4" target="_blank">PayPal (hier klicken)</a></span> oder auf unser Konto:<br /><br /><span>foodsharing e.V.</span><br />IBAN: DE66 4306 0967 4063 8156 00<br />BIC: GENODEM1GLS</p>
 <p><span>Da der foodsharing e.V. gemeinn&uuml;tzig ist, k&ouml;nnen wir ab 200&euro; steuerwirksame Zuwendungsbest&auml;tigungen ausstellen. Bitte vermerke in diesem Falle Deine Postanschrift bei der &Uuml;berweisung. Sollte die Quittung nicht innerhalb von acht Wochen bei Dir sein, bitten wir Dich um eine Mail an <a href="mailto:spenden@foodsharing.de" target="_blank">spenden@foodsharing.de</a>. <br /></span></p>
 <p></p>
 <h3>SPENDEN ALS F&Ouml;RDERMITGLIED</h3>
@@ -5591,10 +5591,10 @@ Bitte alle Änderungen absprechen
 <p></p>
 <h3>SPENDEN &Uuml;BER SCHULENGEL.DE</h3>
 <p>Du kannst Foodsharing auch unterst&uuml;tzen, indem Du f&uuml;r Deine Online-Eink&auml;ufe in Zukunft einen kleinen Umweg machst. Wenn Du etwas &uuml;ber unsere Seite bei Schulengel.de einkaufst, bekommen wir als Dankesch&ouml;n eine Provision als Spende &uuml;berwiesen. Das klappt bei den meisten Online-Shops.&nbsp;<br /><br />Unsere Seite auf Schulengel.de:<br /><a href="https://www.schulengel.de/einrichtungen/details/5599-foodsharing-ev" target="_blank">https://www.schulengel.de/einrichtungen/details/5599-foodsharing-ev </a><a href="https://www.schulengel.de/einrichtungen/details/5599-foodsharing-ev" target="_blank"><br /><br /></a><strong>Wir z&auml;hlen auf Eure Unterst&uuml;tzung! <br />Viele Gr&uuml;&szlig;e,<br />Euer foodsharing-Team</strong></p>', 'last_mod' => '2020-01-07 21:17:53'],
-			['id' => '45', 'name' => 'not_verified_for_bie', 'title' => 'Noch nicht verifiziert', 'body' => '<p></p>
+            ['id' => '45', 'name' => 'not_verified_for_bie', 'title' => 'Noch nicht verifiziert', 'body' => '<p></p>
 <p>Dein Botschafter muss dich erst Verifizieren, anschlie&szlig;end kannst du das Betriebsverantwortlichen Quiz machen.</p>
 <p>Bitte spreche deinen Botschafter auf deine Verifizierung an.&nbsp;</p>', 'last_mod' => '2015-05-04 17:39:44'],
-			['id' => '46', 'name' => 'vergangene_Kampagnen', 'title' => 'Vergangene Kampagnen', 'body' => '<h2>Stopp den Lebensmittelm&uuml;ll - Verschwendungsfasten 2019</h2>
+            ['id' => '46', 'name' => 'vergangene_Kampagnen', 'title' => 'Vergangene Kampagnen', 'body' => '<h2>Stopp den Lebensmittelm&uuml;ll - Verschwendungsfasten 2019</h2>
 <p><img src="https://cloud.foodsharing.network/s/f8rfwTCRJRnEsyz/preview" width="627" /></p>
 <p>Jedes Jahr wandern in Deutschland 18 Millionen Tonnen Lebensmittel in den M&uuml;ll. Dabei lie&szlig;e sich mehr als die H&auml;lfte davon einfach vermeiden.<strong> Somit ist Lebensmittelverschwendung eins der unn&ouml;tigsten Probleme unserer Gesellschaft!</strong> Um auf dieses Drama aufmerksam zu machen,&nbsp;laden wir zur Fastenzeit vom 6. M&auml;rz bis 20. April 2019 zum Lebensmittelverschwendungs-Fasten ein. Und wir wollen, dass auch Ern&auml;hrungsministerin Julia Kl&ouml;ckner mitmacht.</p>
 <p><strong><a href="https://www.change.org/p/julia-kl%C3%B6ckner-verschwendungsfasten-2019-kein-essen-in-den-m%C3%BCll" target="_blank">Fordert darum jetzt mit uns</a>&nbsp;von Ministerin Julia Kl&ouml;ckner (CDU): &bdquo;Setzen Sie mit uns ein Zeichen und fasten Sie zur Fastenzeit Lebensmittelverschwendung! Schluss mit dem unn&ouml;tigen Wegwerfen von kostbaren Lebensmitteln!</strong> Befassen Sie sich 40 Tage lang intensiv mit diesem Problem. Sie haben lange genug auf das Wohlwollen von Unternehmen gehofft &ndash; nun brauchen wir endlich wirksame Ma&szlig;nahmen, um die Lebensmittelabf&auml;lle bis 2030 zu halbieren.&ldquo;</p>
@@ -5632,7 +5632,7 @@ Bitte alle Änderungen absprechen
 <p></p>
 <p>Quelle:</p>
 <p>&sup1; <a href="https://www.wwf.de/fileadmin/fm-wwf/Publikationen-PDF/WWF_Studie_Das_grosse_Wegschmeissen.pdf" target="_blank" style="text-decoration: none;">https://www.wwf.de/fileadmin/fm-wwf/Publikationen-PDF/WWF_Studie_Das_grosse_Wegschmeissen.pdf</a><span> </span></p>', 'last_mod' => '2019-12-05 12:34:42'],
-			['id' => '47', 'name' => 'foodsharingschweiz-t', 'title' => 'wird ignoriert', 'body' => '<div class="campaign topbarpadding">
+            ['id' => '47', 'name' => 'foodsharingschweiz-t', 'title' => 'wird ignoriert', 'body' => '<div class="campaign topbarpadding">
 <div class="campaignimg"><img src="/img/fsgabelgwrgbklein.png" /></div>
 <div class="campaigntext">
 <div class="field">
@@ -5666,7 +5666,7 @@ Bitte alle Änderungen absprechen
 </div>
 </div>
 </div>', 'last_mod' => '2020-03-19 13:58:54'],
-			['id' => '48', 'name' => 'beta-foodsharing-mai', 'title' => 'Beta foodsharing Startseite', 'body' => '<div class="campaign topbarpadding">
+            ['id' => '48', 'name' => 'beta-foodsharing-mai', 'title' => 'Beta foodsharing Startseite', 'body' => '<div class="campaign topbarpadding">
 <div class="campaignimg"><img src="/img/fsgabelgwrgbklein.png" /></div>
 <div class="campaigntext">
 <div class="field">
@@ -5714,7 +5714,7 @@ Bitte alle Änderungen absprechen
 <h5>Wir unterst&uuml;tzen das Entwicklerteam, suchen gemeinsam <a href="http://devdocs.foodsharing.network/it-tasks.html" target="_blank">Programmierer</a> - sowie HelferInnen und melden Fehler konzentriert und im Detail an <a href="mailto:it@foodsharing.network?subject=BETA-Fehler" target="_blank">it@foodsharing.network</a></h5>
 </div>
 </div>', 'last_mod' => '2020-04-09 12:46:00'],
-			['id' => '49', 'name' => 'aktion-fairteiler', 'title' => 'Rette die Fair-Teiler!', 'body' => '<h2><img src="https://media.foodsharing.de/files/Upload%20sonstiges/1.png" width="400" /></h2>
+            ['id' => '49', 'name' => 'aktion-fairteiler', 'title' => 'Rette die Fair-Teiler!', 'body' => '<h2><img src="https://media.foodsharing.de/files/Upload%20sonstiges/1.png" width="400" /></h2>
 <p>Die Berliner Lebensmittel&auml;mter m&ouml;chten <a href="https://www.berliner-zeitung.de/berlin/petition-fuer--fairteiler--gegruendet-foodsharing-initiative-wehrt-sich-gegen-auflagen-der-lebensmittelaufsicht,10809148,33732024.html" target="_blank"><span>Auflagen f&uuml;r foodsharing Fair-Teiler vorschreiben</span></a><span>, weil sie die Fair-Teiler als Lebensmittelbetrieb einstufen. Das w&uuml;rde uns dazu zwingen, viele Fair-Teiler in Berlin zu schlie&szlig;en! Allerdings betreibt foodsharing inzwischen &uuml;ber 350 Fair-Teiler - und an keinem anderen Ort wird der Einsatz von tausenden Ehrenamtlichen gegen die Lebensmittelverschwendung so torpediert! Deswegen fordern wir eine realistische Einsch&auml;tzung der Sachlage durch die Beh&ouml;rden und einen gut ausgearbeiteten Leitfaden f&uuml;r Fair-Teiler vom Berliner Senat. </span><strong>Wenn Du uns unterst&uuml;tzen und die Fair-Teiler retten m&ouml;chtest</strong><span><span><strong>,</strong> dann <span> </span><a href="https://weact.campact.de/p/fair-teiler-retten" target="_blank" style="text-decoration: none;"><span>unterschreibe unsere Petition</span></a><span> und</span>&nbsp;<a href="mailto:Eva-maria.Milke@ba-fk.berlin.de,Torsten.Kuehne@ba-pankow.berlin.de,sabine.toepfer-kataw@senjust.berlin.de,ordvetleb1@ba-pankow.berlin.de,staatssekretaerin@senjust.berlin.de?bcc=petition@lebensmittelretten.de&amp;subject=Beschwerde&amp;body=Sehr%20geehrte%20Frau%20Staatssekret%C3%A4rin%20Toepfer-Kataw%2C%20Herr%20Stadtrat%20K%C3%BChne%2C%20Herr%20Dr.%20Zengerling%20und%20Frau%20Milke%2C%0A%0A%0A" target="_blank">schicke eine Mail an die verantwortlichen Personen</a> (siehe Vorlage weiter unten), damit deutlich wird, wie viele Menschen den Protest unterst&uuml;tzen!</span></span></p>
 <p>A) Unsere Forderungen <br /> B) Was passierte <br /> C) Was die Beh&ouml;rden von uns fordern<br /> D) Warum wir Fair-Teiler brauchen <br />E) Wie kann ich unterst&uuml;tzen? <br />F) Presseecho <br />G) Mail-Vorlage</p>
 <h2><strong>A) Unsere Forderungen</strong></h2>
@@ -5753,8 +5753,8 @@ Bitte alle Änderungen absprechen
 <p><span>Sehr geehrte Frau Staatssekret&auml;rin Toepfer-Kataw, Herr Stadtrat K&uuml;hne, Herr Dr. Zengerling und Frau Milke,</span></p>
 <p></p>
 <p><br /><span>die Einstufung der Fai r Teiler als Lebensmittelbetriebe wird dazu f&uuml;hren, dass viele Fai r Teiler in Berlin geschlossen werden m&uuml;ssen. Diese drastische Vorgehensweise ist einmalig in Deutschland. Das finde ich unverantwortlich und fordere Sie deswegen zu einer realistischeren Beurteilung der Sachlage auf!</span><br /><span>Fai r Teiler sind private &Uuml;bergabeorte von Lebensmitteln und gleichzeitig ein sozialer Beitrag zur Reduktion der Lebensmittelverschwendung.</span><span></span><span>&nbsp;Sie f&ouml;rdern das Bewusstsein f&uuml;r diese Thematik in der Bev&ouml;lkerung und fungieren als soziale Treffpunkte in der Nachbarschaft. Fodsharing Deutschland hat dabei eine innovative Vorreiterrolle eingenommen. Mittlerweile wurde diese Idee u.a. von L&auml;ndern wie der Schweiz, Brasilien, Spanien und S&uuml;dkorea &uuml;bernommen. In &Ouml;sterreich werden Fai r Teiler sogar durch das Lebensmittelministerium unterst&uuml;tzt und gef&ouml;rdert. Dar&uuml;ber hinaus erreichen Nahrungsmittel durch Fai r Teiler sehr viele Menschen und direkt auch Bed&uuml;rftige, die sich ohne Stigmatisierung bedienen k&ouml;nnen. Ich halte die Regelungen von fodsharing f&uuml;r die Fai r Teiler f&uuml;r absolut ausreichend und die gesundheitlichen Gefahren f&uuml;r gering, was die Tatsache belegt, dass es bisher keinerlei Vorf&auml;lle an den &uuml;ber 350 Fai r Teiler gab.</span><br /><br /><span>Herr Dr. Zengerling und Frau Milke, durch Ihre ungerechtfertigte Einstufung von Fai r Teiler als Lebensmittelunternehmen und die damit verbundenen Auflagen ist eine Fortf&uuml;hrung dieser innovativen Idee in Berlin nicht mehr m&ouml;glich. Ich fordere Sie deswegen auf, Fai r Teiler so zu bewerten, wie es andere Lebensmittel&auml;mter auch tun: als privaten &Uuml;bergabeort f&uuml;r Lebensmittel!</span><br /><br /><span>Auf Bundesebene hat die Regierung 2012 unter der CDU/CSU beschlossen, den Lebensmittelm&uuml;ll bis 2020 um die H&auml;lfte zu reduzieren. Um dieses Ziel in Privathaushalten zu erreichen, wurde die Informationskampagne &ldquo;Zu gut f&uuml;r die Tonne&rdquo; ins Leben gerufen und jeder B&uuml;rger/in aufgerufen, aktiv in diesem Sinne zu wirken.</span><br /><br /><span>Mit Ihren bisherigen Forderungen stellen Sie sich gegen die erkl&auml;rte Politik der Bundesregierung, Herr Stadtrat K&uuml;hne! Es entt&auml;uscht mich sehr, dass Sie zivilgesellschaftliches Engagement gegen Essensverschwendung und f&uuml;r die w&uuml;rdige Versorgung Bed&uuml;rftiger blockieren.</span><br /><br /><span>Frau Staatssekret&auml;rin Toepfer-Kataw und Herr Stadtrat K&uuml;hne, unterst&uuml;tzen Sie das Lebensmittelamt, indem Sie gemeinsam mit fodsharing einen Leitfaden f&uuml;r die Fai r Teiler erstellen, damit diese einmalige Initiative von tausenden Freiwilligen weiter bestehen kann!</span><br /><br /><span>Mit freundlichen Gr&uuml;&szlig;en</span></p>', 'last_mod' => '2019-03-04 18:15:48'],
-			['id' => '51', 'name' => 'broadcast', 'title' => 'broadcast', 'body' => '<p><span>Gedanken und Hinweise zur aktuellen Situation:&nbsp;<a href="https://foodsharing.de/?page=bezirk&amp;bid=741&amp;sub=forum&amp;tid=103467" target="_blank">Europa-Forum (wenn Du eingeloggt bist)</a>&nbsp;und&nbsp;</span><a href="https://wiki.foodsharing.de/FAQ_zu_Corona_und_foodsharing" target="_blank">FAQ zu Corona und foodsharing</a></p>', 'last_mod' => '2020-05-23 18:28:59'],
-			['id' => '52', 'name' => 'com_germany', 'title' => 'Hier findet ihr foodsharing-Gemeinschaften', 'body' => '<h2>foodsharing-Bezirke</h2>
+            ['id' => '51', 'name' => 'broadcast', 'title' => 'broadcast', 'body' => '<p><span>Gedanken und Hinweise zur aktuellen Situation:&nbsp;<a href="https://foodsharing.de/?page=bezirk&amp;bid=741&amp;sub=forum&amp;tid=103467" target="_blank">Europa-Forum (wenn Du eingeloggt bist)</a>&nbsp;und&nbsp;</span><a href="https://wiki.foodsharing.de/FAQ_zu_Corona_und_foodsharing" target="_blank">FAQ zu Corona und foodsharing</a></p>', 'last_mod' => '2020-05-23 18:28:59'],
+            ['id' => '52', 'name' => 'com_germany', 'title' => 'Hier findet ihr foodsharing-Gemeinschaften', 'body' => '<h2>foodsharing-Bezirke</h2>
 <p>Hinweis: Mit Strg+F kann die Liste in vielen Browsern nach L&auml;ndern, St&auml;dten, Bundesl&auml;ndern oder Stadtteilen durchsucht werden.</p>
 <p></p>
 <h1><strong>Deutschland <br /></strong></h1>
@@ -6360,17 +6360,17 @@ Bitte alle Änderungen absprechen
 <p>Weitere aktive L&auml;nder:</p>
 <h1><a href="mailto:Belgien@foodsharing.network" target="_blank">Belgien</a></h1>
 <h1><strong><a href="mailto:niederlande@foodsharing.network" target="_blank">Niederlande</a> <br /></strong></h1>', 'last_mod' => '2020-05-08 17:58:55'],
-			['id' => '53', 'name' => 'team-aktive-header', 'title' => 'Admins', 'body' => '<div class="head ui-widget-header ui-corner-top">Admins</div>
+            ['id' => '53', 'name' => 'team-aktive-header', 'title' => 'Admins', 'body' => '<div class="head ui-widget-header ui-corner-top">Admins</div>
 <div class="ui-widget ui-widget-content corner-bottom margin-bottom ui-padding">Foodsharing ist nur dank dem Engagement tausender Ehrenamtlicher m&ouml;glich! Hier stellen sich einige Menschen vor, die &uuml;berregionale Arbeitsgruppen koordinieren, die Webseite entwickeln oder andere wichtige Aufgaben f&uuml;r ganz foodsharing &uuml;bernehmen:</div>', 'last_mod' => '2018-02-01 13:23:05'],
-			['id' => '54', 'name' => 'team-ehemalige-heade', 'title' => 'Ehemalige', 'body' => '<div class="head ui-widget-header ui-corner-top">Ehemalige</div>
+            ['id' => '54', 'name' => 'team-ehemalige-heade', 'title' => 'Ehemalige', 'body' => '<div class="head ui-widget-header ui-corner-top">Ehemalige</div>
 <div class="ui-widget ui-widget-content corner-bottom margin-bottom ui-padding"><br />Gemeinsam blicken wir auf eine erfolgreiche Entsehungsgeschichte von foodsharing zur&uuml;ck. Wir m&ouml;chten an dieser Stelle all den Menschen danken, die daran mitwirkten, indem sie zum Teil Vollzeit-ehrenamtlich, oder in einem sehr hohen Ma&szlig;e, f&uuml;r das Orgateam oder den Vorstand aktiv waren!</div>', 'last_mod' => '2018-02-23 09:24:21'],
-			['id' => '58', 'name' => 'presse', 'title' => 'Presseinformation', 'body' => '<p><strong>Allgemeine Presseanfragen</strong><br /> Es freut uns, dass auch Sie &uuml;ber foodsharing berichten m&ouml;chten! F&uuml;r Interviews, Hintergrundinformationen oder weitere Anfragen wenden Sie sich gerne an unser ehrenamtliches <strong>Presse-Team</strong>.<br /><br /> Kerstin Bergmann<br /> <a href="mailto:presse@foodsharing.de" target="_blank">presse@foodsharing.de</a><br /><br /> Bei Spezialfragen zu einzelnen Bereichen k&ouml;nnen Sie direkt &uuml;ber unsere&nbsp;<a href="/team" target="_blank">Team-Seite</a> die verantwortliche Person herausfinden und kontaktieren.<br /><br /> Allgemeine <strong>Pressetexte</strong> finden Sie in unserem Wiki sowohl&nbsp;<a href="https://wiki.foodsharing.de/Pressetext" target="_blank">ausf&uuml;hrlich</a> als auch <a href="https://wiki.foodsharing.de/Pressetext_kurz" target="_blank">k&uuml;rzer</a>: <a href="https://wiki.foodsharing.de/Pressetext" target="_blank">https://wiki.foodsharing.de/Pressetext.</a> Aktuelle statistische Daten &uuml;ber die Nutzung der Plattform entnehmen Sie bitte <a href="/statistik" target="_blank">dieser Seite.</a><br /><br /> <strong>Fotos und Logo</strong> k&ouml;nnen Sie&nbsp;<a href="https://drive.google.com/drive/folders/0B2u0BeBttLvMYkROVjd0ejIwT1k?usp=sharing" target="_blank">hier downloaden</a>. Diese d&uuml;rfen Sie gerne unter Angabe der Quelle verwenden. Sie sind Eigentum von foodsharing. Die Urheberrechte liegen zu jeder Zeit beim foodsharing e.V.<br /><br /> <strong>Kurzbeschreibung foodsharing, November 2017:</strong><br /> Seit 2012 rettet die foodsharing-Bewegung t&auml;glich tonnenweise gute Lebensmittel vor dem M&uuml;ll. Wir verteilen sie ehrenamtlich und kostenfrei im Bekanntenkreis, der Nachbarschaft, in Obdachlosenheimen, Schulen, Kinderg&auml;rten und &uuml;ber die Plattform foodsharing.de. Unsere &ouml;ffentlich zug&auml;nglichen Regale und K&uuml;hlschr&auml;nke, sog. &bdquo;Fair-Teiler&ldquo;, stehen allen zur Verf&uuml;gung. 200.000 Menschen aus Deutschland, &Ouml;sterreich und der Schweiz nutzen regelm&auml;&szlig;ig die Internetplattform nach dem Motto: &bdquo;Teile Lebensmittel, anstatt sie wegzuwerfen!&ldquo;. Inzwischen engagieren sich dar&uuml;ber hinaus 48.000 Menschen ehrenamtlich als Foodsaver*innen, indem sie &uuml;berproduzierte Lebensmittel von B&auml;ckereien, Superm&auml;rkten, Kantinen und Gro&szlig;h&auml;ndlern abholen und verteilen. Das geschieht kontinuierlich &uuml;ber 500 Mal am Tag bei fast 5.000 Kooperationspartnern. <br /><br /></p>
+            ['id' => '58', 'name' => 'presse', 'title' => 'Presseinformation', 'body' => '<p><strong>Allgemeine Presseanfragen</strong><br /> Es freut uns, dass auch Sie &uuml;ber foodsharing berichten m&ouml;chten! F&uuml;r Interviews, Hintergrundinformationen oder weitere Anfragen wenden Sie sich gerne an unser ehrenamtliches <strong>Presse-Team</strong>.<br /><br /> Kerstin Bergmann<br /> <a href="mailto:presse@foodsharing.de" target="_blank">presse@foodsharing.de</a><br /><br /> Bei Spezialfragen zu einzelnen Bereichen k&ouml;nnen Sie direkt &uuml;ber unsere&nbsp;<a href="/team" target="_blank">Team-Seite</a> die verantwortliche Person herausfinden und kontaktieren.<br /><br /> Allgemeine <strong>Pressetexte</strong> finden Sie in unserem Wiki sowohl&nbsp;<a href="https://wiki.foodsharing.de/Pressetext" target="_blank">ausf&uuml;hrlich</a> als auch <a href="https://wiki.foodsharing.de/Pressetext_kurz" target="_blank">k&uuml;rzer</a>: <a href="https://wiki.foodsharing.de/Pressetext" target="_blank">https://wiki.foodsharing.de/Pressetext.</a> Aktuelle statistische Daten &uuml;ber die Nutzung der Plattform entnehmen Sie bitte <a href="/statistik" target="_blank">dieser Seite.</a><br /><br /> <strong>Fotos und Logo</strong> k&ouml;nnen Sie&nbsp;<a href="https://drive.google.com/drive/folders/0B2u0BeBttLvMYkROVjd0ejIwT1k?usp=sharing" target="_blank">hier downloaden</a>. Diese d&uuml;rfen Sie gerne unter Angabe der Quelle verwenden. Sie sind Eigentum von foodsharing. Die Urheberrechte liegen zu jeder Zeit beim foodsharing e.V.<br /><br /> <strong>Kurzbeschreibung foodsharing, November 2017:</strong><br /> Seit 2012 rettet die foodsharing-Bewegung t&auml;glich tonnenweise gute Lebensmittel vor dem M&uuml;ll. Wir verteilen sie ehrenamtlich und kostenfrei im Bekanntenkreis, der Nachbarschaft, in Obdachlosenheimen, Schulen, Kinderg&auml;rten und &uuml;ber die Plattform foodsharing.de. Unsere &ouml;ffentlich zug&auml;nglichen Regale und K&uuml;hlschr&auml;nke, sog. &bdquo;Fair-Teiler&ldquo;, stehen allen zur Verf&uuml;gung. 200.000 Menschen aus Deutschland, &Ouml;sterreich und der Schweiz nutzen regelm&auml;&szlig;ig die Internetplattform nach dem Motto: &bdquo;Teile Lebensmittel, anstatt sie wegzuwerfen!&ldquo;. Inzwischen engagieren sich dar&uuml;ber hinaus 48.000 Menschen ehrenamtlich als Foodsaver*innen, indem sie &uuml;berproduzierte Lebensmittel von B&auml;ckereien, Superm&auml;rkten, Kantinen und Gro&szlig;h&auml;ndlern abholen und verteilen. Das geschieht kontinuierlich &uuml;ber 500 Mal am Tag bei fast 5.000 Kooperationspartnern. <br /><br /></p>
 <p><strong>Letzte Pressemitteilungen:</strong></p>
 <p>2020-04-09&nbsp;<a href="https://drive.google.com/file/d/168Jgf1qnQ9B3qbqWk-2-fuwts_waysVV/view?usp=sharing" target="_blank">Lebensmittelrettung durch Corona-Krise erschwert: Deutsche Umwelthilfe und Foodsharing fordern sofortige Rechtssicherheit</a><br />2019-04-04 <a href="https://drive.google.com/open?id=1uw8DE0zzjmypfZHyvSDZVN_Men0uaGCO" target="_blank">55.000 Unterschriften gegen Lebensmittelverschwendung: Deutsche Umwelthilfe und foodsharing stellen Ern&auml;hrungsministerin Julia Kl&ouml;ckner Petition vor</a> <br />2019-03-05 <a href="https://drive.google.com/open?id=1JttRXiY0DAqyQdeTGZz4HNePy5-uXc-H" target="_blank">90 Prozent unverkaufter Lebensmittel wandern vom Regal in die Tonne. Das entspricht 11,5 Millionen Mahlzeiten t&auml;glich.</a> <br />2019-03-05 <a href="https://drive.google.com/open?id=1qXwnjfDet3qvk9AXyMn38tCESOGA3-HG" target="_blank">Hintergrund und Berechnung der heutigen Pressemitteilung</a> <br /> 2019-02-20 <a href="https://drive.google.com/file/d/1n6dO396ddQ1T8JWMM2XWDVG5FmP5xK5-/view?usp=sharing" target="_blank">Lebensmittel retten, aber richtig! foodsharing und Deutsche Umwelthilfe kritisieren unzureichende Strategie von Ern&auml;hrungsministerin Kl&ouml;ckner</a><br /> 2019-01-22 <a href="https://drive.google.com/file/d/1rbPi2FpUpCneiSHUdMyD7JHTqDTI5K1a/view?usp=sharing" target="_blank">Schluss mit Lebensmittelm&uuml;ll &ndash; Deutsche Umwelthilfe und foodsharing kritisieren unzureichende Strategie der Bundesregierung, Lebensmittelm&uuml;ll zu stoppen und fordern Julia Kl&ouml;ckner zum Verschwendungsfasten auf</a><br /> 2018-12-12 <a href="https://drive.google.com/file/d/10npkuFn208_OiFi8O8iq-U_ejUrcmL1i/view?usp=sharing" target="_blank">Lebensmittelverschwendung stoppen: Deutsche Umwelthilfe und foodsharing fordern verbindlichen Aktionsplan statt freiwilliger Konzernvereinbarungen</a> <br />2017-12-12 <a href="/?page=blog&amp;sub=read&amp;id=229" target="_blank">Anpacken statt Abwarten: Deutsche Umwelthilfe und foodsharing fordern verbindliche nationale Strategie zur Halbierung der Lebensmittelverschwendung bis 2030</a> zu den <a href="https://drive.google.com/open?id=13pKyQzKvcBxPeRfFSaQuYMpIQIxoX6LP" target="_blank">Bildern der Presseaktion</a>.<br /> Weitere Pressemitteilungen zum <strong>foodsharing-Geburtstag</strong> von&nbsp;<a href="http://pinkcarrotshealth.com/de/blog/don-t-let-good-food-go-bad-foodsharing-e-v-und-pink-carrots-rufen-zur-rettung-von-lebensmitteln-auf" target="_blank">PINK CARROTS</a> und der <a href="https://www.biocompany.de/neuigkeiten/gemeinsam-gegen-lebensmittelverschwendung.html" target="_blank">BIO COMPANY</a>.<br />2017-03-31<a href="/?page=blog&amp;sub=read&amp;id=227" target="_blank">&bdquo;Wegwerfstopp f&uuml;r Superm&auml;rkte&ldquo; wieder im Gespr&auml;ch; Kampagne "Leere Tonne"</a><br /> 2017-03-01 <a href="/?page=blog&amp;sub=read&amp;id=225" target="_blank">Lebensmittelverschwendung: Mit falschen Zahlen schiebt Ern&auml;hrungsminister Christian Schmidt den Verbrauchern den schwarzen Peter zu</a><br /> 2016-12-11 <a href="https://foodsharing.de/?page=blog&amp;sub=read&amp;id=222" target="_blank">Vier Jahre foodsharing: Eine Erfolgsgeschichte</a><br /> 2016-08-11 <a href="/?page=blog&amp;sub=read&amp;id=221" target="_blank">foodsharing-Festival 2016 mit &uuml;ber 600 Teilnehmenden in Berlin</a></p>', 'last_mod' => '2020-04-09 14:34:34'],
-			['id' => '59', 'name' => 'Infohub', 'title' => 'Übersicht - Neuigkeiten & Informationen von foodsharing', 'body' => '<p><span>Neben dem t&auml;glichen Einsatz unserer Lebensmittelretter*innen, verstehen wir uns auch als bildungspolitische Bewegung, die sich nachhaltigen Umwelt- und Konsumzielen verpflichtet f&uuml;hlt. Daher m&ouml;chten wir Dich &uuml;ber unsere Aktivit&auml;ten sowie das Thema Lebensmittel- und Ressourcenverschwendung informieren: </span></p>
+            ['id' => '59', 'name' => 'Infohub', 'title' => 'Übersicht - Neuigkeiten & Informationen von foodsharing', 'body' => '<p><span>Neben dem t&auml;glichen Einsatz unserer Lebensmittelretter*innen, verstehen wir uns auch als bildungspolitische Bewegung, die sich nachhaltigen Umwelt- und Konsumzielen verpflichtet f&uuml;hlt. Daher m&ouml;chten wir Dich &uuml;ber unsere Aktivit&auml;ten sowie das Thema Lebensmittel- und Ressourcenverschwendung informieren: </span></p>
 <p><span><strong><a href="https://foodsharing.de/news" target="_blank">News</a></strong>&nbsp;- wichtige Mitteilungen an die &Ouml;ffentlichkeit &uuml;ber foodsharing</span><br /> <span><strong><a href="https://foodsharing.de/faq" target="_blank">F.A.Q.</a></strong>&nbsp;- Erl&auml;uterungen von foodsharing-Abl&auml;ufen</span><br /> <span><strong><a href="https://foodsharing.de/ratgeber" target="_blank">Ratgeber</a></strong>&nbsp;- Tipps zum bewussten Umgang mit Lebensmitteln</span><br /> <span><strong><a href="https://foodsharing.de/unterstuetzung" target="_blank">Spendenaufruf</a></strong>&nbsp;- Unterst&uuml;tzung</span></p>
 <p><br /><span>F&uuml;r aktuelle Berichte und Ank&uuml;ndigungen kannst Du uns auch&nbsp;<a href="https://de-de.facebook.com/foodsharing.de" target="_blank">auf facebook</a> besuchen.</span> <br /><span>Ausf&uuml;hrliche Informationen &uuml;ber unser Lebensmittelretten findest Du in <a href="https://youtu.be/dqsVjuK3rTc" target="_blank">diesem Erkl&auml;r-Video</a>.</span><br /><br /> <span>Wir w&uuml;nschen Dir viel Spass und freuen uns &uuml;ber Anregungen und Fragen!</span><br /> <span>Dein foodsharing-Team</span></p>', 'last_mod' => '2017-12-10 13:07:00'],
-			['id' => '60', 'name' => 'Forderungen', 'title' => 'Don’t let good food go bad - Aktionsplan gegen Lebensmittelverschwendung', 'body' => '<p><strong>Aktionsplan</strong> mit Deutscher Umwelthilfe<br />ver&ouml;ffentlicht zum 6. foodsharing-Geburtstag am 12.12.<strong>2018</strong><br /><strong><a href="https://www.duh.de/fileadmin/user_upload/download/Projektinformation/Kreislaufwirtschaft/Lebensmittelverschwendung/181210_Aktionsplan_foodsharing_DUH_FINAL.pdf" target="_blank">zum Download</a></strong><br /><br />"Im Rahmen der Nachhaltigkeitsziele der Vereinten Nationen verpflichtete sich Deutschland dazu, die Lebensmittelabf&auml;lle im Einzelhandel und in privaten Haushalten bis 2030 um 50 % zu reduzieren 2 . Doch die deutsche Bundesregierung l&auml;sst bisher keine ernsthaften Bem&uuml;hungen erkennen, dieses Ziel zu erreichen. Das im November 2018 vom Bundesministerium f&uuml;r Ern&auml;hrung und Landwirtschaft und dem Bundesumweltministerium ver&ouml;ffentlichte Eckpunktepapier setzt auf freiwillige Zielvereinbarungen mit den Unternehmen und verz&ouml;gert so notwendige Entscheidungen. Um Deutschland vor einem erneuten Wortbruch &ndash; wie bei den Klimaschutzzielen f&uuml;r 2020 &ndash; zu bewahren, zeigen foodsharing und Deutsche Umwelthilfe mit einem Aktionsplan die Ma&szlig;nahmen auf, ohne die das Halbierungsziel nicht erreicht werden kann." <br /><br /> <strong>Stellungnahme</strong> an das Bundesministerium f&uuml;r Ern&auml;hrung und Landwirtschaft (BMEL)<br />zur Strategie gegen Lebensmittelverschwendung, vom 18. Dezember 2018<br /><strong><a href="https://drive.google.com/file/d/1O3RmGNz222SKg27O58CAZjdT3lHDygo9/view?usp=sharing" target="_blank">zum Download</a></strong></p>
+            ['id' => '60', 'name' => 'Forderungen', 'title' => 'Don’t let good food go bad - Aktionsplan gegen Lebensmittelverschwendung', 'body' => '<p><strong>Aktionsplan</strong> mit Deutscher Umwelthilfe<br />ver&ouml;ffentlicht zum 6. foodsharing-Geburtstag am 12.12.<strong>2018</strong><br /><strong><a href="https://www.duh.de/fileadmin/user_upload/download/Projektinformation/Kreislaufwirtschaft/Lebensmittelverschwendung/181210_Aktionsplan_foodsharing_DUH_FINAL.pdf" target="_blank">zum Download</a></strong><br /><br />"Im Rahmen der Nachhaltigkeitsziele der Vereinten Nationen verpflichtete sich Deutschland dazu, die Lebensmittelabf&auml;lle im Einzelhandel und in privaten Haushalten bis 2030 um 50 % zu reduzieren 2 . Doch die deutsche Bundesregierung l&auml;sst bisher keine ernsthaften Bem&uuml;hungen erkennen, dieses Ziel zu erreichen. Das im November 2018 vom Bundesministerium f&uuml;r Ern&auml;hrung und Landwirtschaft und dem Bundesumweltministerium ver&ouml;ffentlichte Eckpunktepapier setzt auf freiwillige Zielvereinbarungen mit den Unternehmen und verz&ouml;gert so notwendige Entscheidungen. Um Deutschland vor einem erneuten Wortbruch &ndash; wie bei den Klimaschutzzielen f&uuml;r 2020 &ndash; zu bewahren, zeigen foodsharing und Deutsche Umwelthilfe mit einem Aktionsplan die Ma&szlig;nahmen auf, ohne die das Halbierungsziel nicht erreicht werden kann." <br /><br /> <strong>Stellungnahme</strong> an das Bundesministerium f&uuml;r Ern&auml;hrung und Landwirtschaft (BMEL)<br />zur Strategie gegen Lebensmittelverschwendung, vom 18. Dezember 2018<br /><strong><a href="https://drive.google.com/file/d/1O3RmGNz222SKg27O58CAZjdT3lHDygo9/view?usp=sharing" target="_blank">zum Download</a></strong></p>
 <p><strong>Forderungen &amp; Vors&auml;tze aus 2017:</strong><br />--- Download der&nbsp;<a href="https://wiki.foodsharing.de/images/c/c6/Forderugen_lang_2017-12.pdf" target="_blank">ausf&uuml;hrlichen Forderungen</a> und&nbsp;<a href="https://wiki.foodsharing.de/images/1/13/Forderungen%26Vorsaetze_DUH%26foodsharing_Flyer.pdf" target="_blank">des Flyers</a> ---<br /> Lebensmittelverschwendung ist ein Skandal mit gravierenden lokalen und globalen Auswirkungen auf Klima, Umwelt und Menschen. Deswegen beschloss die UN in ihren nachhaltigen Entwicklungszielen, sie bis 2030 zu halbieren (Sustainable Development Goal 12.3). Damit wir dieses Ziel erreichen, muss viel passieren. Die Bundesregierung aus Union und SPD - aber insbesondere das CSU-gef&uuml;hrte Bundesministerium f&uuml;r Ern&auml;hrung und Landwirtschaft (BMEL) - haben die letzten Jahre verschlafen. Um glaubw&uuml;rdig und wirksam das Problem zu l&ouml;sen, richtet foodsharing zu seinem f&uuml;nfj&auml;hrigen Bestehen gemeinsam mit der&nbsp;<a href="https://www.duh.de/foodsharing/" target="_blank">Deutschen Umwelthilfe</a> <strong>f&uuml;nf Kernforderungen</strong> an die n&auml;chste Koalition.<br /><br /> <strong>Anpacken statt Abwarten:</strong> Du musst nicht auf die Bundesregierung warten! Verschenke gemeinsam mit foodsharing und Deutscher Umwelthilfe <strong>f&uuml;nf gute Vors&auml;tze</strong> f&uuml;r das kommende Jahr und setze sie selbst um! F&uuml;r einen respektvollen Umgang mit Lebensmitteln!</p>
 <p>1. Wir fordern eine <b>nationale Strategie </b>der Bundesregierung, um die Lebensmittelverschwendung vom Acker bis zum Teller wirksam bis 2030 zu halbieren. Alle relevanten Akteure m&uuml;ssen bei der Entwicklung und Umsetzung eingebunden werden.</p>
 <ul>
@@ -6394,7 +6394,7 @@ Bitte alle Änderungen absprechen
 </ul>
 <p><i>Achtung: Nach &Uuml;berschreibten des MHD kann ein Lebensmittel problemlos verzehrt werden, solange es noch einwandfrei ist; nach Ablauf des Verbrauchsdatums (&bdquo;zu verbrauchen bis&ldquo;) ist der Verkauf eines Produktes nicht mehr zul&auml;ssig und es kann gesundheitsgef&auml;hrdend sein.</i></p>
 <p><a href="https://www.duh.de/foodsharing/" target="_blank">in Kooperation mit</a><br /><img src="https://www.duh.de/typo3conf/ext/ig_project/Resources/Public/Icons/duh-logo-black.png" width="408" /></p>', 'last_mod' => '2019-03-04 10:20:38'],
-			['id' => '61', 'name' => 'com_austria', 'title' => 'Communities Österreich', 'body' => '<p><strong>Liste der Ortsgrguppen in &Ouml;sterreich</strong></p>
+            ['id' => '61', 'name' => 'com_austria', 'title' => 'Communities Österreich', 'body' => '<p><strong>Liste der Ortsgrguppen in &Ouml;sterreich</strong></p>
 <p></p>
 <p></p>
 <ul>
@@ -6424,7 +6424,7 @@ Bitte alle Änderungen absprechen
 <li>Wien <a href="mailto:wien@foodsharing.network" target="_blank">wien@foodsharing.network</a></li>
 <li>Wien (Stadt) <a href="mailto:wien.stadt@foodsharing.network" target="_blank">wien.stadt@foodsharing.network</a></li>
 </ul>', 'last_mod' => '2019-01-23 10:29:22'],
-			['id' => '62', 'name' => 'com_switzerland', 'title' => 'Ortsgruppen Schweiz', 'body' => '<h1>Eine Liste der Ortsgruppen der Schweiz</h1>
+            ['id' => '62', 'name' => 'com_switzerland', 'title' => 'Ortsgruppen Schweiz', 'body' => '<h1>Eine Liste der Ortsgruppen der Schweiz</h1>
 <p>Die Namen der Bezirke beziehen sich jeweils auf den Kanton und nicht strikt auf die Stadt.</p>
 <p></p>
 <ul>
@@ -6437,7 +6437,7 @@ Bitte alle Änderungen absprechen
 <li>Zug&nbsp;<a href="mailto:zug@foodsharing.network" target="_blank">zug[at]foodsharing.network</a></li>
 <li>Z&uuml;rich&nbsp;<a href="mailto:zuerich@foodsharing.network" target="_blank">zuerich[at]foodsharing.network</a></li>
 </ul>', 'last_mod' => '2019-11-16 15:30:01'],
-			['id' => '63', 'name' => 'Transparenz', 'title' => 'Tranzparenz', 'body' => '<p></p>
+            ['id' => '63', 'name' => 'Transparenz', 'title' => 'Tranzparenz', 'body' => '<p></p>
 <p><img src="https://lh4.googleusercontent.com/H2skmEtKwF8O6UuYDfkHzZSeW70BfRExs7qTa72v2AvTLV_fy-IAOnyrwk8sc3KnthAWgDVkBzdB5eZEvYEs1VuqNoyPaKSoxR6uKIJYPUkbvMt9VeRSQCHndChg7BhXQQuJf6qjf2tm293l2A" width="256" /></p>
 <p></p>
 <p><span>Transparenz ist uns wichtig. Deshalb haben wir uns der </span><span>Initiative Transparente Zivilgesellschaft</span><span> </span></p>
@@ -6486,21 +6486,21 @@ Bitte alle Änderungen absprechen
 <p><strong>10. Zuwendungen, die mehr als 10 Prozent der Gesamtjahreseinnahmen ausmachen:</strong></p>
 <p><span>Diese sind in der Mittelherkunft 2015 bis 2017 dargestellt (s. Punkte 7.)</span></p>
 <p></p>', 'last_mod' => '2018-05-02 11:20:47'],
-			['id' => '64', 'name' => 'datenschutzbelehrung', 'title' => '-- ignored --', 'body' => '<p>Betriebsverantwortliche und Botschafter*innen haben zur Erf&uuml;llung ihrer Aufgaben Zugriff auf bestimmte personenbezogene Daten anderer Nutzer*innen. In dem Zusammenhang m&uuml;ssen wir dich auf folgenden Sachverhalt hinweisen:</p>
+            ['id' => '64', 'name' => 'datenschutzbelehrung', 'title' => '-- ignored --', 'body' => '<p>Betriebsverantwortliche und Botschafter*innen haben zur Erf&uuml;llung ihrer Aufgaben Zugriff auf bestimmte personenbezogene Daten anderer Nutzer*innen. In dem Zusammenhang m&uuml;ssen wir dich auf folgenden Sachverhalt hinweisen:</p>
 <p>Personenbezogene Daten, zu denen du im Rahmen deiner T&auml;tigkeit bei Foodsharing Zugang erh&auml;ltst oder Kenntnis erlangst, sind nach Art. 5 Abs. 1, Art. 32 Abs. 4 Datenschutz-Grundverordnung (DSGVO) vertraulich zu behandeln. Nach &sect; 53 BDSG ist es untersagt, personenbezogene Daten unbefugt zu verarbeiten oder zu nutzen (Datengeheimnis).</p>
 <p>S&auml;mtliche im Rahmen deiner T&auml;tigkeit bei Foodsharing erlangte personenbezogene Daten sind nur zum vorgesehenen Zweck und in &Uuml;bereinstimmung mit&nbsp;<a href="/?page=legal" target="_blank">unserer Datenschutzerkl&auml;rung</a> sowie den geltenden Datenschutzgesetzen (<a href="https://www.bgbl.de/xaver/bgbl/start.xav?startbk=Bundesanzeiger_BGBl&amp;jumpTo=bgbl117s2097.pdf" target="_blank">BDSG</a> und <a href="https://eur-lex.europa.eu/legal-content/DE/TXT/PDF/?uri=CELEX:32016R0679&amp;from=EN" target="_blank">DSGVO</a>) zu verwenden. Sie sind insbesondere dahingehend vertraulich zu behandeln, dass sie unbefugten Dritten nicht ohne Einwilligung der betroffenen Person zug&auml;nglich gemacht werden d&uuml;rfen. Ausnahmen sind in Ziffer 3 unserer Datenschutzvereinbarung sowie in Art. 6 Abs. 1 DSGVO geregelt.</p>
 <p>Diese Verpflichtung besteht auch nach Beendigung deiner T&auml;tigkeit bei Foodsharing fort.</p>
 <p>Verst&ouml;&szlig;e gegen die Vertraulichkeit k&ouml;nnen nach geltender Rechtslage mit Freiheits- oder Geldstrafe geahndet werden (vgl. insbes. &sect;&sect; 42, 43 BDSG).</p>', 'last_mod' => '2018-05-24 18:25:28'],
-			['id' => '66', 'name' => 'petition-fasten', 'title' => 'foodsharing-Städte', 'body' => '<p><img src="https://cloud.foodsharing.network/s/3WaqTgfSri2WgJd/preview" width="627" /></p>
+            ['id' => '66', 'name' => 'petition-fasten', 'title' => 'foodsharing-Städte', 'body' => '<p><img src="https://cloud.foodsharing.network/s/3WaqTgfSri2WgJd/preview" width="627" /></p>
 <h2><a href="https://www.foodsharing-staedte.org/de" target="_blank">www.foodsharing-staedte.org</a></h2>
 <h2></h2>
 <p></p>
 <p>Worum geht es?<br />foodsharing ist mehr als Lebensmittelretten! Und genau das wollen wir darstellen: Mit der Bewegung "foodsharing-St&auml;dte" m&ouml;chten wir den Austausch zwischen den St&auml;dten f&ouml;rdern und mit Ideen dazu anregen, gemeinsam lokal gegen Lebensmittelverschwendung aktiv zu werden. Ein besonders gro&szlig;es Anliegen ist uns dabei die Zusammenarbeit zwischen der Zivilgesellschaft (foodsaver*innen, sowie Bewohner*innen der Stadt, die bisher noch keine Ber&uuml;hrung mit foodsharing hatten) und der &ouml;ffentlichen Hand (also der Stadt-/Gemeindeverwaltung, Abgeordneten und B&uuml;rgermeister*innen).</p>
 <p></p>
 <p>Du bist neugierig geworden? Dann schau einfach auf unserer Website vorbei: <a href="https://www.foodsharing-staedte.org/de" target="_blank">www.foodsharing-staedte.org</a></p>', 'last_mod' => '2020-03-08 12:13:36'],
-			['id' => '67', 'name' => 'Freundeskreis', 'title' => 'Freundeskreis', 'body' => '<p>Inhalt hier einsetzen.&nbsp;</p>', 'last_mod' => '2019-01-22 16:48:59'],
-			['id' => '68', 'name' => 'transparenz', 'title' => 'transparenz', 'body' => '<p>Hier erscheinen in K&uuml;rze die Information zur Initiative Transparente Zivilgesellschaft</p>', 'last_mod' => '2019-02-17 18:02:05'],
-			['id' => '69', 'name' => 'Akademie', 'title' => 'foodsharing-Akademie für Lebensmittel-Wertschätzung', 'body' => '<p></p>
+            ['id' => '67', 'name' => 'Freundeskreis', 'title' => 'Freundeskreis', 'body' => '<p>Inhalt hier einsetzen.&nbsp;</p>', 'last_mod' => '2019-01-22 16:48:59'],
+            ['id' => '68', 'name' => 'transparenz', 'title' => 'transparenz', 'body' => '<p>Hier erscheinen in K&uuml;rze die Information zur Initiative Transparente Zivilgesellschaft</p>', 'last_mod' => '2019-02-17 18:02:05'],
+            ['id' => '69', 'name' => 'Akademie', 'title' => 'foodsharing-Akademie für Lebensmittel-Wertschätzung', 'body' => '<p></p>
 <h3><a href="https://www.foodsharing-akademie.org/" target="_blank">www.foodsharing-akademie.org</a></h3>
 <p></p>
 <ol>
@@ -6521,7 +6521,7 @@ Bitte alle Änderungen absprechen
 <p>Durch unsere Abholungen sch&uuml;tzen wir aufw&auml;ndig produzierte Ware vor der sinnlosen Entsorgung. Damit sensibilisieren wir sowohl die involvierten Mitarbeitenden der Unternehmen als auch die Abholenden, an die wir &bdquo;Essensk&ouml;rbe&ldquo; verteilen. Mit der foodsharing-Akademie m&ouml;chten wir auch Menschen dar&uuml;ber hinaus erreichen. Beispielsweise Kinder und Jugendliche, die statistisch mehr verschwenden als &auml;ltere Generationen. <br />&nbsp;&nbsp; Wir vermitteln den Wert unserer LEBENsmittel. Wie wird eigentlich ein Brot hergestellt? Wie viele Ressourcen stecken in einer Milch? Darauf aufbauend schauen wir uns den verantwortungsvollen Umgang damit an. Sowohl &bdquo;Reste&ldquo;verwertung oder die richtige Lagerung k&ouml;nnen dabei entscheidend sein. Die foodsharing-Akademie schult Multiplikator*innen f&uuml;r Workshops und Vortr&auml;ge und vermittelt diese an anfragende Interessierte.</p>
 <h3><b>5. Unterst&uuml;tzung</b></h3>
 <p>Unsere Erfolge haben wir durch ehrenamtliches Engagement erreicht. F&uuml;r manche Projekte m&uuml;ssen wir jedoch Geld in die Hand nehmen: Bei Fortbildungen der foodsharing-Akademie ben&ouml;tigen wir beispielsweise ein Seminarhaus oder Fachreferent*innen. Da foodsharing weitgehend geldfrei entstand, haben wir bisher wenig Einnahmen. Deswegen macht Deine kleine Spende mit dem Stichwort &bdquo;Akademie&ldquo; einen gro&szlig;en Unterschied! <a href="/unterstuetzung" target="_blank">Zur Spendenseite</a></p>', 'last_mod' => '2019-12-19 20:59:10'],
-			['id' => '71', 'name' => 'Vorträge & Workshops', 'title' => 'Bildungs-Anfragen: Vorträge & Workshops zu Essensverschwendung', 'body' => '<p><span>Bestimmt gibt es auch in Deiner N&auml;he motivierte und kompetente FoodsaverInnen, die Du f&uuml;r einen Workshop oder Vortrag gewinnen kannst! Unsere Freiwilligen k&ouml;nnen Dir nicht nur aus der Praxis berichten und Anekdoten aus dem &bdquo;Retteralltag&ldquo; erz&auml;hlen &ndash; sondern kennen sich auch gut mit Lebensmittelverschwendung aus. </span><b>Wir f&ouml;rdern die Wertsch&auml;tzung f&uuml;r&lsquo;s Essen, indem wir Vortr&auml;ge, Workshops oder Seminare anbieten. </b><a href="mailto:bildung@foodsharing.de" target="_blank"><b>Frag uns einfach an!</b></a><span></span> <br /><br /> In diesen Bildungsveranstaltungen ist, abh&auml;ngig von den Erfahrungswerten und Wissensschwerpunkten der Foodsaver vor Ort, vieles m&ouml;glich. Folgende Bausteine sind denkbar:</p>
+            ['id' => '71', 'name' => 'Vorträge & Workshops', 'title' => 'Bildungs-Anfragen: Vorträge & Workshops zu Essensverschwendung', 'body' => '<p><span>Bestimmt gibt es auch in Deiner N&auml;he motivierte und kompetente FoodsaverInnen, die Du f&uuml;r einen Workshop oder Vortrag gewinnen kannst! Unsere Freiwilligen k&ouml;nnen Dir nicht nur aus der Praxis berichten und Anekdoten aus dem &bdquo;Retteralltag&ldquo; erz&auml;hlen &ndash; sondern kennen sich auch gut mit Lebensmittelverschwendung aus. </span><b>Wir f&ouml;rdern die Wertsch&auml;tzung f&uuml;r&lsquo;s Essen, indem wir Vortr&auml;ge, Workshops oder Seminare anbieten. </b><a href="mailto:bildung@foodsharing.de" target="_blank"><b>Frag uns einfach an!</b></a><span></span> <br /><br /> In diesen Bildungsveranstaltungen ist, abh&auml;ngig von den Erfahrungswerten und Wissensschwerpunkten der Foodsaver vor Ort, vieles m&ouml;glich. Folgende Bausteine sind denkbar:</p>
 <ul>
 <li>w&auml;hrend einer Reise vom Feld bis zum Teller gehen wir Stationen unserer Nahrungsmittel durch. Dabei verdeutlichen wir, was eigentlich drin steckt im Essen und n&ouml;tig ist, um es herzustellen</li>
 <li><span>bei einer </span><span>Supermarktrallye </span><span>hinterfragen wir die angebotenen Produkte in einem Supermarkt etwas genauer</span></li>
@@ -6535,12 +6535,12 @@ Bitte alle Änderungen absprechen
 <li>Zeit (Dauer, regelm&auml;&szlig;iges Unterrichtsfach, &hellip;)</li>
 </ul>
 <p>Du m&ouml;chtest selber eine Veranstaltung leiten und suchst Material? Oder Du bist an der foodsharing-Akademie interessiert? <a href="/?page=content&amp;sub=academy" target="_blank">Hier entlang!</a></p>', 'last_mod' => '2019-06-15 12:36:59'],
-			['id' => '72', 'name' => 'fs_Festival', 'title' => 'foodsharing Festival', 'body' => '<p><img src="https://foodsharing.de/images/wallpost/5c6ae934017da.png" width="195" /></p>
+            ['id' => '72', 'name' => 'fs_Festival', 'title' => 'foodsharing Festival', 'body' => '<p><img src="https://foodsharing.de/images/wallpost/5c6ae934017da.png" width="195" /></p>
 <p></p>
 <p>Eine wachsende foodsharing Gemeinschaft braucht Orte, um sich pers&ouml;nlich zu begegnen. Aus den ersten gro&szlig;en Berlin-Treffen wurden Internationale Treffen und schlie&szlig;lich das foodsharing Festival, was seit 2016 in der wundersch&ouml;nen Malzfabrik in Berlin stattfindet. Das Festival erm&ouml;glicht Austausch und Vernetzung zwischen den Besuchenden &ndash; seien es langj&auml;hriger Foodsaver*innen oder absolute Neulinge. Alle aktuellen Infos und R&uuml;ckblicke aus den letzten Jahren findest du hier: <a href="http://www.foodsharing-festival.org/" target="_blank">www.foodsharing-festival.org</a></p>
 <p></p>
 <p><img src="https://foodsharing.de/images/wallpost/5c6a98f8ad792.jpg" width="627" /></p>', 'last_mod' => '2019-03-12 09:16:49'],
-			['id' => '73', 'name' => 'Kontakt', 'title' => 'Kontakt', 'body' => '<div class="head ui-widget-header ui-corner-top">Kontaktanfragen:</div>
+            ['id' => '73', 'name' => 'Kontakt', 'title' => 'Kontakt', 'body' => '<div class="head ui-widget-header ui-corner-top">Kontaktanfragen:</div>
 <div class="ui-widget ui-widget-content corner-bottom margin-bottom ui-padding">Du kannst gerne Kontakt mit uns aufnehmen! Wir bitten Dich aber, Dein Anliegen nur einer Person zu schreiben. <br />F&uuml;r <strong>allgemeine Anfragen</strong> stehen wir Dir unter <a href="mailto:info@foodsharing.de" target="_blank">info@foodsharing.de</a> (oder <a href="mailto:info@foodsharingschweiz.ch" target="_blank">info@foodsharingschweiz.ch</a> f&uuml;r die Schweiz) zur Verf&uuml;gung oder leiten Dich gerne an passende Ansprechpersonen &ndash; auch in foodsharing-Bezirken &ndash; weiter.<br /><br />Hast Du Probleme mit der Website oder Deinem Account, wende Dich bitte an&nbsp;<a href="mailto:it@foodsharing.network" target="_blank">it@foodsharing.network</a><br /><br />Ein paar direkte, lokale Anlaufstellen finden sich hier: <br /><br />
 <ul>
 <li><strong><a href="/?page=content&amp;sub=communitiesGermany" target="_blank">Deutschland </a></strong></li>
@@ -6552,8 +6552,8 @@ Bitte alle Änderungen absprechen
 <li><strong><a href="/?page=content&amp;sub=communitiesSwitzerland" target="_blank">Schweiz</a></strong></li>
 </ul>
 <br /><br /> If you are interested in carrying the idea of sharing and saving food around the world (or to your own country) contact: <a href="mailto:foodsaving@yunity.org" target="_blank">foodsaving@yunity.org</a><a target="_blank">&nbsp;</a></div>', 'last_mod' => '2019-06-15 12:47:44'],
-			['id' => '74', 'name' => 'International', 'title' => 'International', 'body' => '<p>If you are interested in carrying the idea of sharing and saving food around the world (or to your own country) contact: <a href="mailto:foodsaving@yunity.org" target="_blank">foodsaving@yunity.org</a><a target="_blank"> <br /><br /></a></p>', 'last_mod' => '2019-02-17 18:32:04'],
-			['id' => '75', 'name' => 'datenschutz-cloud', 'title' => 'Datenschutzerklärung foodsharing cloud', 'body' => '<h3><span>Datenschutzerkl&auml;rung foodsharing cloud</span></h3>
+            ['id' => '74', 'name' => 'International', 'title' => 'International', 'body' => '<p>If you are interested in carrying the idea of sharing and saving food around the world (or to your own country) contact: <a href="mailto:foodsaving@yunity.org" target="_blank">foodsaving@yunity.org</a><a target="_blank"> <br /><br /></a></p>', 'last_mod' => '2019-02-17 18:32:04'],
+            ['id' => '75', 'name' => 'datenschutz-cloud', 'title' => 'Datenschutzerklärung foodsharing cloud', 'body' => '<h3><span>Datenschutzerkl&auml;rung foodsharing cloud</span></h3>
 <p></p>
 <h4><span>1. Name und Kontaktdaten des f&uuml;r die Verarbeitung Verantwortlichen sowie des betrieblichen Datenschutzbeauftragten</span></h4>
 <p><span>Diese Datenschutzinformation gilt f&uuml;r die Datenverarbeitung durch</span></p>
@@ -6672,17 +6672,17 @@ Bitte alle Änderungen absprechen
 <p><span>Diese Datenschutzerkl&auml;rung ist aktuell g&uuml;ltig und hat den Stand Februar 2019.</span></p>
 <p><span>Durch die Weiterentwicklung unserer Website und Angebote dar&uuml;ber oder aufgrund ge&auml;nderter gesetzlicher beziehungsweise beh&ouml;rdlicher Vorgaben kann es notwendig werden, diese Datenschutzerkl&auml;rung zu &auml;ndern. Die jeweils aktuelle Datenschutzerkl&auml;rung kann jederzeit auf unserer Website abgerufen und/oder ausgedruckt werden.</span></p>
 <p></p>', 'last_mod' => '2019-02-28 12:46:59']];
-		$this->table('fs_content')->insert($content)->save();
+        $this->table('fs_content')->insert($content)->save();
 
-		$fs_bezirk = [
-			['id' => 0, 'parent_id' => null, 'has_children' => '1', 'type' => '0', 'teaser' => 'Root', 'desc' => 'Root', 'photo' => '', 'master' => '0', 'mailbox_id' => '0', 'name' => '', 'email' => '', 'email_pass' => '', 'email_name' => '', 'apply_type' => '0', 'banana_count' => '0', 'fetch_count' => '0', 'week_num' => '0', 'report_num' => '0', 'stat_last_update' => '2020-05-24 02:17:18', 'stat_fetchweight' => '702651.00', 'stat_fetchcount' => '48754', 'stat_postcount' => '152', 'stat_betriebcount' => '13', 'stat_korpcount' => '0', 'stat_botcount' => '0', 'stat_fscount' => '0', 'stat_fairteilercount' => '0', 'conversation_id' => '0', 'moderated' => '0'],
-			['id' => '392', 'parent_id' => '0', 'has_children' => '1', 'type' => '8', 'teaser' => '', 'desc' => '', 'photo' => '', 'master' => '392', 'mailbox_id' => '32678', 'name' => 'Arbeitsgruppen Überregional', 'email' => '', 'email_pass' => '', 'email_name' => 'Foodsharing Arbeitsgruppen Überregional', 'apply_type' => '2', 'banana_count' => '0', 'fetch_count' => '0', 'week_num' => '0', 'report_num' => '0', 'stat_last_update' => '2020-05-24 02:17:57', 'stat_fetchweight' => '5176.00', 'stat_fetchcount' => '208', 'stat_postcount' => '53969', 'stat_betriebcount' => '1', 'stat_korpcount' => '0', 'stat_botcount' => '1', 'stat_fscount' => '3360', 'stat_fairteilercount' => '0', 'conversation_id' => '0', 'moderated' => '0'],
-			['id' => '258', 'parent_id' => '0', 'has_children' => '1', 'type' => '7', 'teaser' => 'Das Forum des alten Orgateams', 'desc' => '', 'photo' => '', 'master' => '0', 'mailbox_id' => '528', 'name' => 'Orgateam Archiv', 'email' => '', 'email_pass' => '', 'email_name' => 'Foodsharing Orgateam', 'apply_type' => '0', 'banana_count' => '0', 'fetch_count' => '0', 'week_num' => '0', 'report_num' => '0', 'stat_last_update' => '2020-05-24 02:17:55', 'stat_fetchweight' => '179.00', 'stat_fetchcount' => '135', 'stat_postcount' => '6308', 'stat_betriebcount' => '0', 'stat_korpcount' => '0', 'stat_botcount' => '0', 'stat_fscount' => '22', 'stat_fairteilercount' => '0', 'conversation_id' => '0', 'moderated' => '1'],
-			['id' => '741', 'parent_id' => '0', 'has_children' => '1', 'type' => '6', 'teaser' => '', 'desc' => '', 'photo' => '', 'master' => '0', 'mailbox_id' => '25467', 'name' => 'Europa', 'email' => 'europa', 'email_pass' => '', 'email_name' => 'Foodsharing Europa', 'apply_type' => '2', 'banana_count' => '0', 'fetch_count' => '0', 'week_num' => '0', 'report_num' => '0', 'stat_last_update' => '2020-05-24 02:18:15', 'stat_fetchweight' => '33829400.50', 'stat_fetchcount' => '2116647', 'stat_postcount' => '1733615', 'stat_betriebcount' => '23002', 'stat_korpcount' => '7031', 'stat_botcount' => '1004', 'stat_fscount' => '74600', 'stat_fairteilercount' => '891', 'conversation_id' => '0', 'moderated' => '0'],
-			['id' => '1373', 'parent_id' => '0', 'has_children' => '0', 'type' => '7', 'teaser' => '.', 'desc' => '', 'photo' => 'workgroup/d441822c461c17a96c2a58bada5861dcb09efbe1.png', 'master' => '1373', 'mailbox_id' => '26644', 'name' => 'Vereinsvorstand', 'email' => '', 'email_pass' => '', 'email_name' => 'Foodsharing Vereinsvorstand', 'apply_type' => '0', 'banana_count' => '0', 'fetch_count' => '0', 'week_num' => '0', 'report_num' => '0', 'stat_last_update' => '2020-05-24 02:18:25', 'stat_fetchweight' => '0.00', 'stat_fetchcount' => '0', 'stat_postcount' => '4', 'stat_betriebcount' => '0', 'stat_korpcount' => '0', 'stat_botcount' => '0', 'stat_fscount' => '12', 'stat_fairteilercount' => '0', 'conversation_id' => '0', 'moderated' => '1'],
-			['id' => '1564', 'parent_id' => '258', 'has_children' => '0', 'type' => '7', 'teaser' => 'x', 'desc' => '', 'photo' => '', 'master' => '0', 'mailbox_id' => '30177', 'name' => 'Ehemalige (Vorstand und Orgateam)', 'email' => 'ehemalige', 'email_pass' => '', 'email_name' => 'Foodsharing Ehemalige', 'apply_type' => '0', 'banana_count' => '0', 'fetch_count' => '0', 'week_num' => '0', 'report_num' => '0', 'stat_last_update' => '2020-05-24 02:18:27', 'stat_fetchweight' => '0.00', 'stat_fetchcount' => '0', 'stat_postcount' => '0', 'stat_betriebcount' => '0', 'stat_korpcount' => '0', 'stat_botcount' => '0', 'stat_fscount' => '13', 'stat_fairteilercount' => '0', 'conversation_id' => '0', 'moderated' => '0'],
-			['id' => '1565', 'parent_id' => '258', 'has_children' => '0', 'type' => '7', 'teaser' => 'Wer hier in der Gruppe aufgelistet wird, erscheint auch auf der Teamseite. Ist bisher eine stille Gruppe.', 'desc' => '', 'photo' => '', 'master' => '0', 'mailbox_id' => '30176', 'name' => 'Aktive (Überregional)', 'email' => '', 'email_pass' => '', 'email_name' => 'Foodsharing Aktive', 'apply_type' => '2', 'banana_count' => '0', 'fetch_count' => '0', 'week_num' => '0', 'report_num' => '0', 'stat_last_update' => '2020-05-24 02:18:27', 'stat_fetchweight' => '0.00', 'stat_fetchcount' => '0', 'stat_postcount' => '8', 'stat_betriebcount' => '0', 'stat_korpcount' => '0', 'stat_botcount' => '0', 'stat_fscount' => '5', 'stat_fairteilercount' => '0', 'conversation_id' => '0', 'moderated' => '0'],
-			['id' => '341', 'parent_id' => '392', 'has_children' => '1', 'type' => '7', 'teaser' => 'Wir beschäftigen uns mit dem derzeit so nötig zu überarbeitenden Anmeldevorgang und Quiz, mit dem man sich für den Status des Foodsavers, Filialverantwortlichen oder gar den der BotschafterInnen qualifizieren kann.
+        $fs_bezirk = [
+            ['id' => 0, 'parent_id' => null, 'has_children' => '1', 'type' => '0', 'teaser' => 'Root', 'desc' => 'Root', 'photo' => '', 'master' => '0', 'mailbox_id' => '0', 'name' => '', 'email' => '', 'email_pass' => '', 'email_name' => '', 'apply_type' => '0', 'banana_count' => '0', 'fetch_count' => '0', 'week_num' => '0', 'report_num' => '0', 'stat_last_update' => '2020-05-24 02:17:18', 'stat_fetchweight' => '702651.00', 'stat_fetchcount' => '48754', 'stat_postcount' => '152', 'stat_betriebcount' => '13', 'stat_korpcount' => '0', 'stat_botcount' => '0', 'stat_fscount' => '0', 'stat_fairteilercount' => '0', 'conversation_id' => '0', 'moderated' => '0'],
+            ['id' => '392', 'parent_id' => '0', 'has_children' => '1', 'type' => '8', 'teaser' => '', 'desc' => '', 'photo' => '', 'master' => '392', 'mailbox_id' => '32678', 'name' => 'Arbeitsgruppen Überregional', 'email' => '', 'email_pass' => '', 'email_name' => 'Foodsharing Arbeitsgruppen Überregional', 'apply_type' => '2', 'banana_count' => '0', 'fetch_count' => '0', 'week_num' => '0', 'report_num' => '0', 'stat_last_update' => '2020-05-24 02:17:57', 'stat_fetchweight' => '5176.00', 'stat_fetchcount' => '208', 'stat_postcount' => '53969', 'stat_betriebcount' => '1', 'stat_korpcount' => '0', 'stat_botcount' => '1', 'stat_fscount' => '3360', 'stat_fairteilercount' => '0', 'conversation_id' => '0', 'moderated' => '0'],
+            ['id' => '258', 'parent_id' => '0', 'has_children' => '1', 'type' => '7', 'teaser' => 'Das Forum des alten Orgateams', 'desc' => '', 'photo' => '', 'master' => '0', 'mailbox_id' => '528', 'name' => 'Orgateam Archiv', 'email' => '', 'email_pass' => '', 'email_name' => 'Foodsharing Orgateam', 'apply_type' => '0', 'banana_count' => '0', 'fetch_count' => '0', 'week_num' => '0', 'report_num' => '0', 'stat_last_update' => '2020-05-24 02:17:55', 'stat_fetchweight' => '179.00', 'stat_fetchcount' => '135', 'stat_postcount' => '6308', 'stat_betriebcount' => '0', 'stat_korpcount' => '0', 'stat_botcount' => '0', 'stat_fscount' => '22', 'stat_fairteilercount' => '0', 'conversation_id' => '0', 'moderated' => '1'],
+            ['id' => '741', 'parent_id' => '0', 'has_children' => '1', 'type' => '6', 'teaser' => '', 'desc' => '', 'photo' => '', 'master' => '0', 'mailbox_id' => '25467', 'name' => 'Europa', 'email' => 'europa', 'email_pass' => '', 'email_name' => 'Foodsharing Europa', 'apply_type' => '2', 'banana_count' => '0', 'fetch_count' => '0', 'week_num' => '0', 'report_num' => '0', 'stat_last_update' => '2020-05-24 02:18:15', 'stat_fetchweight' => '33829400.50', 'stat_fetchcount' => '2116647', 'stat_postcount' => '1733615', 'stat_betriebcount' => '23002', 'stat_korpcount' => '7031', 'stat_botcount' => '1004', 'stat_fscount' => '74600', 'stat_fairteilercount' => '891', 'conversation_id' => '0', 'moderated' => '0'],
+            ['id' => '1373', 'parent_id' => '0', 'has_children' => '0', 'type' => '7', 'teaser' => '.', 'desc' => '', 'photo' => 'workgroup/d441822c461c17a96c2a58bada5861dcb09efbe1.png', 'master' => '1373', 'mailbox_id' => '26644', 'name' => 'Vereinsvorstand', 'email' => '', 'email_pass' => '', 'email_name' => 'Foodsharing Vereinsvorstand', 'apply_type' => '0', 'banana_count' => '0', 'fetch_count' => '0', 'week_num' => '0', 'report_num' => '0', 'stat_last_update' => '2020-05-24 02:18:25', 'stat_fetchweight' => '0.00', 'stat_fetchcount' => '0', 'stat_postcount' => '4', 'stat_betriebcount' => '0', 'stat_korpcount' => '0', 'stat_botcount' => '0', 'stat_fscount' => '12', 'stat_fairteilercount' => '0', 'conversation_id' => '0', 'moderated' => '1'],
+            ['id' => '1564', 'parent_id' => '258', 'has_children' => '0', 'type' => '7', 'teaser' => 'x', 'desc' => '', 'photo' => '', 'master' => '0', 'mailbox_id' => '30177', 'name' => 'Ehemalige (Vorstand und Orgateam)', 'email' => 'ehemalige', 'email_pass' => '', 'email_name' => 'Foodsharing Ehemalige', 'apply_type' => '0', 'banana_count' => '0', 'fetch_count' => '0', 'week_num' => '0', 'report_num' => '0', 'stat_last_update' => '2020-05-24 02:18:27', 'stat_fetchweight' => '0.00', 'stat_fetchcount' => '0', 'stat_postcount' => '0', 'stat_betriebcount' => '0', 'stat_korpcount' => '0', 'stat_botcount' => '0', 'stat_fscount' => '13', 'stat_fairteilercount' => '0', 'conversation_id' => '0', 'moderated' => '0'],
+            ['id' => '1565', 'parent_id' => '258', 'has_children' => '0', 'type' => '7', 'teaser' => 'Wer hier in der Gruppe aufgelistet wird, erscheint auch auf der Teamseite. Ist bisher eine stille Gruppe.', 'desc' => '', 'photo' => '', 'master' => '0', 'mailbox_id' => '30176', 'name' => 'Aktive (Überregional)', 'email' => '', 'email_pass' => '', 'email_name' => 'Foodsharing Aktive', 'apply_type' => '2', 'banana_count' => '0', 'fetch_count' => '0', 'week_num' => '0', 'report_num' => '0', 'stat_last_update' => '2020-05-24 02:18:27', 'stat_fetchweight' => '0.00', 'stat_fetchcount' => '0', 'stat_postcount' => '8', 'stat_betriebcount' => '0', 'stat_korpcount' => '0', 'stat_botcount' => '0', 'stat_fscount' => '5', 'stat_fairteilercount' => '0', 'conversation_id' => '0', 'moderated' => '0'],
+            ['id' => '341', 'parent_id' => '392', 'has_children' => '1', 'type' => '7', 'teaser' => 'Wir beschäftigen uns mit dem derzeit so nötig zu überarbeitenden Anmeldevorgang und Quiz, mit dem man sich für den Status des Foodsavers, Filialverantwortlichen oder gar den der BotschafterInnen qualifizieren kann.
 
 Wenn Du Dich schon sehr mit der Lebensmittelrettung auskennst, sie schon anderen gekonnt vermitteln kannst, sowie Lust hast, dir kreative Fragen auszudenken und dir Gedanken zur Anmeldung zu machen, bist du hier herzlich willkommen!
 
@@ -6692,9 +6692,9 @@ Wenn du den Button "Gruppe kontaktieren" verwendest, dann schreibe bitte eine Em
 Wir können sonst nicht antworten, da uns Absender*in und Emailadresse leider nicht automatisch angezeigt werden!
 
 (*) Die Administratoren dieser Gruppe haben Zugriff auf das Quiz, die Quizkommentare und die Quizauswertungen.(341, QUIZ_AND_REGISTRATION_WORK_GROUP)', 'desc' => 'Wir besch&auml;ftigen uns mit dem derzeit so n&ouml;tig zu &uuml;berarbeitenden Anmeldevorgang, dem auch demn&auml;chst ein Quiz anschlie&szlig;bar sein soll, mit dem man sich f&uuml;r den Status des Foodsavers, Filialverantwortlichen oder gar der BotschafterInnen qualifiziert.', 'photo' => '', 'master' => '392', 'mailbox_id' => '19708', 'name' => 'Anmeldevorgang & Quiz', 'email' => '', 'email_pass' => '', 'email_name' => 'Foodsharing Anmeldevorgang  Quiz', 'apply_type' => '2', 'banana_count' => '0', 'fetch_count' => '0', 'week_num' => '0', 'report_num' => '0', 'stat_last_update' => '2020-05-24 02:17:56', 'stat_fetchweight' => '0.00', 'stat_fetchcount' => '0', 'stat_postcount' => '157', 'stat_betriebcount' => '0', 'stat_korpcount' => '0', 'stat_botcount' => '0', 'stat_fscount' => '13', 'stat_fairteilercount' => '0', 'conversation_id' => '0', 'moderated' => '0']
-	];
-		$this->table('fs_bezirk')->insert($fs_bezirk)->save();
-		$this->execute('SET FOREIGN_KEY_CHECKS=1;');
-		$this->execute('set sql_mode="";');
-	}
+    ];
+        $this->table('fs_bezirk')->insert($fs_bezirk)->save();
+        $this->execute('SET FOREIGN_KEY_CHECKS=1;');
+        $this->execute('set sql_mode="";');
+    }
 }

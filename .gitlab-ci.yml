@@ -89,6 +89,10 @@ build:websocket:
     key: websocket:build:cache
     paths:
       - websocket/node_modules
+  artifacts:
+    expire_in: 1 week
+    paths:
+      - websocket/node_modules
 
 build:frontend:
   <<: *defaults
@@ -329,7 +333,7 @@ test:websocket:
   dependencies:
     - build:websocket
   script:
-    - (cd websocket && yarn && yarn test)
+    - (cd websocket && yarn test)
   cache:
     key: websocket:build:cache
     paths:

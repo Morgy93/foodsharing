@@ -10,45 +10,45 @@ use Foodsharing\Modules\Core\DBConstants\Foodsaver\Gender;
  */
 class RegisterData
 {
-	/**
-	 * First name of the user. The database and all arrays fetched directly from the database refer to this
-	 * as 'name'.
-	 */
-	public string $firstName;
+    /**
+     * First name of the user. The database and all arrays fetched directly from the database refer to this
+     * as 'name'.
+     */
+    public string $firstName;
 
-	/**
-	 * Last name of the user. The database and all arrays fetched directly from the database refer to this
-	 * as 'surname' or 'nachname'.
-	 */
-	public string $lastName;
+    /**
+     * Last name of the user. The database and all arrays fetched directly from the database refer to this
+     * as 'surname' or 'nachname'.
+     */
+    public string $lastName;
 
-	/**
-	 * Email address of the user.
-	 */
-	public string $email;
+    /**
+     * Email address of the user.
+     */
+    public string $email;
 
-	/**
-	 * Password of the user.
-	 */
-	public string $password;
+    /**
+     * Password of the user.
+     */
+    public string $password;
 
-	/**
-	 * Gender of the user. Should be one of the constants in {@see Gender}.
-	 */
-	public int $gender;
+    /**
+     * Gender of the user. Should be one of the constants in {@see Gender}.
+     */
+    public int $gender;
 
-	/**
-	 * Birthday of the user.
-	 */
-	public DateTime $birthday;
+    /**
+     * Birthday of the user.
+     */
+    public DateTime $birthday;
 
-	/**
-	 * Mobile phone number of the user.
-	 */
-	public string $mobilePhone;
+    /**
+     * Mobile phone number of the user.
+     */
+    public string $mobilePhone;
 
-	/**
-	 * Whether the user is subscribing to the newsletter.
-	 */
-	public bool $subscribeNewsletter;
+    /**
+     * Whether the user is subscribing to the newsletter.
+     */
+    public bool $subscribeNewsletter;
 }
