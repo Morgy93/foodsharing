@@ -5,6 +5,7 @@
 
 
 ## Changes
+- Added toogle collapse function to store team list for desktop view !2525 @chriswalg
 
 
 ## Bugfixes
