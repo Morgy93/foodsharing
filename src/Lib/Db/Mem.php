@@ -50,12 +50,11 @@ class Mem
             $this->ensureConnected();
 
             switch ($type) {
-                case 'email':
-                    $workingQueue = 'workqueue';
-                    break;
                 case 'newsletter':
                     $workingQueue = 'workqueueNewsletter';
                     break;
+                default:
+                    $workingQueue = 'workqueue';
             }
 
             if ($highPriority) {
