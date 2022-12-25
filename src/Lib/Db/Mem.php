@@ -49,10 +49,19 @@ class Mem
             $e = serialize(['type' => $type, 'data' => $data]);
             $this->ensureConnected();
 
+            switch ($type) {
+                case 'email':
+                    $workingQueue = 'workqueue';
+                    break;
+                case 'newsletter':
+                    $workingQueue = 'workqueueNewsletter';
+                    break;
+            }
+
             if ($highPriority) {
-                return $this->cache->rPush('workqueue', $e);
+                return $this->cache->rPush($workingQueue, $e);
             } else {
-                return $this->cache->lPush('workqueue', $e);
+                return $this->cache->lPush($workingQueue, $e);
             }
         }
     }

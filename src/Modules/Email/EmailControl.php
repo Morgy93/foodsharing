@@ -148,7 +148,7 @@ class EmailControl extends Control
                         }
 
                         if ($this->emailHelper->validEmail($email)) {
-                            $this->emailHelper->libmail($bezirk, $email, $subject, str_replace('{NAME}', $name, $nachricht));
+                            $this->emailHelper->libmail($bezirk, $email, $subject, str_replace('{NAME}', $name, $nachricht), $type = 'newsletter');
                             ++$count;
                         } else {
                             unset($foodsaver[$i]);

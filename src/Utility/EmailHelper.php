@@ -131,7 +131,7 @@ final class EmailHelper
     }
 
     public function libmail($bezirk, $email, $subject, $message, $attach = false, $token = false,
-        bool $highPriority = false)
+        bool $highPriority = false, $type = 'email')
     {
         if ($bezirk === false) {
             $bezirk = [
@@ -176,7 +176,7 @@ final class EmailHelper
         }
 
         $mail->setHighPriority($highPriority);
-        $mail->send();
+        $mail->send($type);
         $this->metrics->addOutgoingMail('libmail', 1);
     }
 }

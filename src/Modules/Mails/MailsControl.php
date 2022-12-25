@@ -46,15 +46,23 @@ class MailsControl extends ConsoleControl
         parent::__construct();
     }
 
-    public function queueWorker()
+    public function queueWorker($argv)
     {
+        switch ($argv[0]) {
+            case 'email':
+                $sourceKey = 'workqueue';
+                break;
+            case 'newsletter':
+                $sourceKey = 'workqueueNewsletter';
+        }
+
         $this->mem->ensureConnected();
         $running = true;
         while ($running) {
-            $elem = $this->mem->cache->brpoplpush('workqueue', 'workqueueprocessing', 10);
+            $elem = $this->mem->cache->brpoplpush($sourceKey, 'workqueueprocessing', 10);
             if ($elem !== false && $e = unserialize($elem)) {
                 if ($e['type'] == 'email') {
-                    $res = $this->handleEmailRateLimited($e['data']);
+                    $res = $this->handleEmailRateLimited($e['data'], $e['type']);
                 } else {
                     $res = false;
                 }
@@ -305,17 +313,28 @@ class MailsControl extends ConsoleControl
         return false;
     }
 
-    public function handleEmailRateLimited($data)
+    public function handleEmailRateLimited($data, $type): bool
     {
+        $noReply = false;
+        switch ($type) {
+            case 'mail':
+                $delayConstant = DELAY_MICRO_SECONDS_BETWEEN_MAILS;
+                break;
+            case 'newsletter':
+                $delayConstant = DELAY_MICRO_SECONDS_BETWEEN_NEWSLETTER;
+                $noReply = true;
+                break;
+        }
+
         self::info('Mail from: ' . $data['from'][0] . ' (' . $data['from'][1] . ')');
         $email = new Email();
 
         $mailParts = explode('@', $data['from'][0]);
         $fromDomain = end($mailParts);
 
-        if (in_array($fromDomain, MAILBOX_OWN_DOMAINS, true)) {
+        if (in_array($fromDomain, MAILBOX_OWN_DOMAINS, true) || $noReply !== false) {
             $email->from(new Address($data['from'][0], $data['from'][1] ?? ''));
-        } else {
+        } elseif ($noReply) {
             $email->from(new Address(DEFAULT_EMAIL, $data['from'][1] ?? ''));
             $email->replyTo(new Address($data['from'][0], $data['from'][1] ?? ''));
         }
@@ -383,7 +402,7 @@ class MailsControl extends ConsoleControl
             }
         }
         // rate limiting
-        usleep($mailCount * DELAY_MICRO_SECONDS_BETWEEN_MAILS);
+        usleep($mailCount * $delayConstant);
 
         return true;
     }
