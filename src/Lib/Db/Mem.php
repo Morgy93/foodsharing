@@ -51,10 +51,10 @@ class Mem
 
             switch ($type) {
                 case 'newsletter':
-                    $workingQueue = 'workqueueNewsletter';
+                    $workingQueue = 'newsletterQueue';
                     break;
                 default:
-                    $workingQueue = 'workqueue';
+                    $workingQueue = 'mailQueue';
             }
 
             if ($highPriority) {
