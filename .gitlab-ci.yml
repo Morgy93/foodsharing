@@ -78,7 +78,7 @@ build:websocket:
   stage: build
   interruptible: true
   rules:
-    - if: $CI_COMMIT_BRANCH == 'master' || $CI_COMMIT_BRANCH == 'production'
+    - if: $CI_COMMIT_BRANCH == 'master' || $CI_COMMIT_BRANCH == 'production' || $CI_COMMIT_BRANCH == 'server_migration'
     - if: $CI_MERGE_REQUEST_ID
     - if: $CI_PIPELINE_SOURCE == "schedule"
       when: never
@@ -99,7 +99,7 @@ build:frontend:
   stage: build
   interruptible: true
   rules:
-    - if: $CI_COMMIT_BRANCH == 'master' || $CI_COMMIT_BRANCH == 'production'
+    - if: $CI_COMMIT_BRANCH == 'master' || $CI_COMMIT_BRANCH == 'production' || $CI_COMMIT_BRANCH == 'server_migration'
     - if: $CI_MERGE_REQUEST_ID
     - if: $CI_PIPELINE_SOURCE == "schedule"
       when: never
@@ -122,7 +122,7 @@ build:backend:
   stage: build
   interruptible: true
   rules:
-    - if: $CI_COMMIT_BRANCH == 'master' || $CI_COMMIT_BRANCH == 'production'
+    - if: $CI_COMMIT_BRANCH == 'master' || $CI_COMMIT_BRANCH == 'production' || $CI_COMMIT_BRANCH == 'server_migration'
     - if: $CI_MERGE_REQUEST_ID
     - if: $CI_PIPELINE_SOURCE == "schedule"
       when: never
@@ -145,7 +145,7 @@ build:docs:
   stage: build
   interruptible: true
   rules:
-    - if: $CI_COMMIT_BRANCH == 'master' || $CI_COMMIT_BRANCH == 'production'
+    - if: $CI_COMMIT_BRANCH == 'master' || $CI_COMMIT_BRANCH == 'production' || $CI_COMMIT_BRANCH == 'server_migration'
     - if: $CI_MERGE_REQUEST_ID
     - if: $CI_PIPELINE_SOURCE == "schedule"
       when: never
@@ -168,7 +168,7 @@ test:backend-code:
   stage: test
   interruptible: true
   rules:
-    - if: $CI_COMMIT_BRANCH == 'master' || $CI_COMMIT_BRANCH == 'production'
+    - if: $CI_COMMIT_BRANCH == 'master' || $CI_COMMIT_BRANCH == 'production' || $CI_COMMIT_BRANCH == 'server_migration'
     - if: $CI_MERGE_REQUEST_ID
     - if: $CI_PIPELINE_SOURCE == "schedule"
       when: never
@@ -234,7 +234,7 @@ test:backend-acceptance:
   stage: test
   interruptible: true
   rules:
-    - if: $CI_COMMIT_BRANCH == 'master' || $CI_COMMIT_BRANCH == 'production'
+    - if: $CI_COMMIT_BRANCH == 'master' || $CI_COMMIT_BRANCH == 'production' || $CI_COMMIT_BRANCH == 'server_migration'
     - if: $CI_MERGE_REQUEST_ID
     - if: $CI_PIPELINE_SOURCE == "schedule"
       when: never
@@ -297,7 +297,7 @@ test:frontend:
   stage: test
   interruptible: true
   rules:
-    - if: $CI_COMMIT_BRANCH == 'master' || $CI_COMMIT_BRANCH == 'production'
+    - if: $CI_COMMIT_BRANCH == 'master' || $CI_COMMIT_BRANCH == 'production' || $CI_COMMIT_BRANCH == 'server_migration'
     - if: $CI_MERGE_REQUEST_ID
     - if: $CI_PIPELINE_SOURCE == "schedule"
       when: never
@@ -316,7 +316,7 @@ test:websocket:
   stage: test
   interruptible: true
   rules:
-    - if: $CI_COMMIT_BRANCH == 'master' || $CI_COMMIT_BRANCH == 'production'
+    - if: $CI_COMMIT_BRANCH == 'master' || $CI_COMMIT_BRANCH == 'production' || $CI_COMMIT_BRANCH == 'server_migration'
       changes:
         - 'websocket/**/*'
     - if: $CI_MERGE_REQUEST_ID
@@ -352,7 +352,7 @@ deploy:beta:
 deploy:production:
   <<: *deploy
   rules:
-    - if: $CI_COMMIT_BRANCH == 'production'
+    - if: $CI_COMMIT_BRANCH == 'production' || $CI_COMMIT_BRANCH == 'server_migration'
     - if: $CI_PIPELINE_SOURCE == "schedule"
       when: never
   environment:
