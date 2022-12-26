@@ -43,7 +43,7 @@ define('REDIS_HOST', 'redis');
 define('REDIS_PORT', 6379);
 
 define('DELAY_MICRO_SECONDS_BETWEEN_MAILS', 1330000);
-define('DELAY_MICRO_SECONDS_BETWEEN_NEWSLETTER', 1330000);
+define('DELAY_MICRO_SECONDS_BETWEEN_NEWSLETTER', 500000);
 
 define('IMAP', [
     ['host' => 'imap', 'user' => 'user', 'password' => 'pass']
