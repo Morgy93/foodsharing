@@ -67,7 +67,12 @@ services:
     user: ${CURRENT_USER}
     container_name: foodsharing_mailqueuerunner
     image: registry.gitlab.com/foodsharing-dev/images/php:latest
-    command: php run.php Mails queueWorkerMail && php run.php Mails queueWorkerNewsletter
+    command:
+      - /bin/sh
+      - -c
+      - |
+        php run.php Mails queueWorkerMail
+        php run.php Mails queueWorkerNewsletter
     restart: unless-stopped
     depends_on:
       - db
