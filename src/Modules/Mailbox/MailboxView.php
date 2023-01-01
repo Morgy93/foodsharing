@@ -54,54 +54,26 @@ class MailboxView extends View
 		';
     }
 
-    /**
-     * Converts an array with a mail sender/recipient from the database to a string.
-     */
-    private function createMailAddressString(array $mailAddress): string
-    {
-        if (isset($mailAddress['personal'])) {
-            return $mailAddress['personal'];
-        } elseif (isset($mailAddress['host'])) {
-            return $mailAddress['mailbox'] . '@' . $mailAddress['host'];
-        } else {
-            return $mailAddress['mailbox'];
-        }
-    }
-
-    /**
-     * Removes leading and trailing quotation marks and replaces escaped quotation marks.
-     */
-    private function fixQuotation(string $json): string
-    {
-        $trimmed = trim($json, '"');
-
-        return str_replace('\"', '"', $trimmed);
-    }
-
     public function listMessages(array $messages, int $folder, string $currentMailboxName)
     {
         $out = '';
 
         foreach ($messages as $m) {
-            // fix wrong quotation that can occur in some data sets
-            $m['sender'] = $this->fixQuotation($m['sender']);
-            $m['to'] = $this->fixQuotation($m['to']);
-
             // create from/to text depending on the folder
             $fromToAddresses = [];
             switch ($folder) {
                 case MailboxFolder::FOLDER_INBOX:
-                    $fromToAddresses = [json_decode($m['sender'], true)];
+                    $fromToAddresses = [$m['sender']];
                     break;
                 case MailboxFolder::FOLDER_SENT:
-                    $fromToAddresses = json_decode($m['to'], true);
+                    $fromToAddresses = $m['to'];
                     break;
                 case MailboxFolder::FOLDER_TRASH:
-                    $from = json_decode($m['sender'], true); // returns null or the input string if parsing fails
-                    if (!is_null($from) && is_array($from)) {
-                        if ($this->createMailAddressString($from) == $currentMailboxName) {
+                    $from = $m['sender'];
+                    if (!is_null($from)) {
+                        if ($from->getMailbox() === $currentMailboxName || $from->getAddress() === $currentMailboxName) {
                             // mail was sent
-                            $fromToAddresses = json_decode($m['to'], true);
+                            $fromToAddresses = $m['to'];
                         } else {
                             // mail was received
                             $fromToAddresses = [$from];
@@ -113,7 +85,7 @@ class MailboxView extends View
             // safety check: if json_decode fails it might return null or a string
             if (!is_null($fromToAddresses) && is_array($fromToAddresses)) {
                 $mappedAddresses = array_map(function ($a) {
-                    return $this->createMailAddressString($a);
+                    return !empty($a->getName()) ? $a->getName() : $a->getAddress();
                 }, array_filter($fromToAddresses));
 
                 $fromToText = implode(', ', $mappedAddresses);
@@ -150,22 +122,18 @@ class MailboxView extends View
     public function message($mail)
     {
         $mail['body'] = trim($mail['body']);
-        $von = json_decode($mail['sender'], true);
+        $von = $mail['sender'];
 
-        $sender = $von['mailbox'] . '@' . $von['host'];
-        if (isset($von['personal'])) {
-            $von_str = $von['personal'];
+        $sender = $von->getAddress();
+        if (!empty($von->getName())) {
+            $von_str = $von->getName();
         } else {
             $von_str = $sender;
         }
 
-        $an = json_decode($mail['to'], true);
-        $an_str = [];
-        if (is_array($an)) {
-            foreach ($an as $a) {
-                $an_str[] = $a['mailbox'] . '@' . $a['host'];
-            }
-        }
+        $an_str = array_map(function ($a) {
+            return $a->getAddress();
+        }, $mail['to']);
 
         $attach = '';
         if (is_array($mail['attach']) && count($mail['attach']) > 0) {
@@ -229,7 +197,7 @@ class MailboxView extends View
 				' . $attach . '
 				<input type="hidden" name="mb-hidden-id" id="mb-hidden-id" value="' . $mail['id'] . '" />
 				<input type="hidden" name="mb-hidden-subject" id="mb-hidden-subject" value="' . $mail['subject'] . '" />
-				<input type="hidden" name="mb-hidden-email" id="mb-hidden-email" value="' . $von['mailbox'] . '@' . $von['host'] . '" />
+				<input type="hidden" name="mb-hidden-email" id="mb-hidden-email" value="' . $von->getAddress() . '" />
 
 				<textarea id="mailbox-body-plain" style="display:none;">' . $this->replyMail($mail['body'], $mail['time_ts']) . '</textarea>
 			</div>';

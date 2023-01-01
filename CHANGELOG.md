@@ -13,12 +13,16 @@
 
 ## Refactoring
 - added poppins font in Styleguide !2564 @Niklas003 
+- Use email address DTO and let the MailboxGateway handle JSON encoding !2520 @alex.simm
+
 
 ## Dev/Test/CI stuff
 - Fix given null parameter !2550 @BibaltiK
-- Small Improving Changes on GitLab CI !2565
+- Small Improving Changes on GitLab CI !2565 !2566 !2567 !2582 @stcz
+- Add $SKIP_CI_TESTS Variable to deploy production faster if needed !2581 @stcz
 - Change identity style from tab to space !2571 @BibaltiK
 - Python Script to generate Release Notes from gitlab MRs !2548 @alex.simm
+- Restart all foodsharing services after production deployment !2583 @stcz
 
 
 ## Development documentation

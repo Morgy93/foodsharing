@@ -2,6 +2,7 @@
 
 namespace Foodsharing\Modules\Mailbox;
 
+use Ddeboer\Imap\Message\EmailAddress;
 use Exception;
 use Foodsharing\Lib\Session;
 use Foodsharing\Modules\Core\BaseGateway;
@@ -94,7 +95,7 @@ class MailboxGateway extends BaseGateway
         return $this->db->fetchValue(
             'SELECT COUNT(*) FROM `fs_mailbox_message` m WHERE m.`read` = 0 AND m.`mailbox_id` IN (
 				SELECT r.`mailbox_id`
-				FROM fs_bezirk r 
+				FROM fs_bezirk r
 				JOIN fs_botschafter a
 				ON a.`foodsaver_id` = :fs_id1 AND r.`id` = a.`bezirk_id` AND r.`mailbox_id` IS NOT NULL
 			UNION
@@ -103,7 +104,7 @@ class MailboxGateway extends BaseGateway
 				WHERE f.`id` = :fs_id2 AND f.`mailbox_id` IS NOT NULL
 			UNION
 				SELECT m.`mailbox_id`
-				FROM `fs_mailbox_member` m 
+				FROM `fs_mailbox_member` m
 				WHERE m.`foodsaver_id` = :fs_id3
 			)',
             [
@@ -143,7 +144,7 @@ class MailboxGateway extends BaseGateway
 
     public function getMessage(int $message_id)
     {
-        return $this->db->fetch(
+        $data = $this->db->fetch(
             '
 			SELECT 	m.`id`,
 					m.`folder`,
@@ -165,6 +166,11 @@ class MailboxGateway extends BaseGateway
 		',
             [':message_id' => $message_id]
         );
+
+        $data['sender'] = $this->parseAddress($data['sender']);
+        $data['to'] = $this->parseAddresses($data['to']);
+
+        return $data;
     }
 
     public function setRead(int $mail_id, int $read): int
@@ -174,7 +180,7 @@ class MailboxGateway extends BaseGateway
 
     public function listMessages(int $mailbox_id, int $folder): array
     {
-        return $this->db->fetchAll(
+        $data = $this->db->fetchAll(
             '
 			SELECT 	`id`,
 					`folder`,
@@ -193,13 +199,20 @@ class MailboxGateway extends BaseGateway
 		',
             [':mailbox_id' => $mailbox_id, ':farray_folder' => $folder]
         );
+
+        foreach ($data as &$d) {
+            $d['sender'] = $this->parseAddress($d['sender']);
+            $d['to'] = $this->parseAddresses($d['to']);
+        }
+
+        return $data;
     }
 
     public function saveMessage(
         int $mailbox_id, // mailbox id
         int $folder, // folder
-        string $from, // sender
-        string $to, // to
+        EmailAddress $from, // sender
+        array $to, // to
         string $subject, // subject
         string $body,
         string $html,
@@ -208,13 +221,16 @@ class MailboxGateway extends BaseGateway
         int $read = 0,
         int $answer = 0
     ): int {
+        $from = $this->formatAddress($from);
+        $to = $this->formatAddresses($to);
+
         return $this->db->insert(
             'fs_mailbox_message',
             [
                 'mailbox_id' => $mailbox_id,
                 'folder' => $folder,
-                'sender' => strip_tags($from),
-                'to' => strip_tags($to),
+                'sender' => $from,
+                'to' => $to,
                 'subject' => strip_tags($subject),
                 'body' => strip_tags($body),
                 'body_html' => strip_tags($html),
@@ -550,5 +566,59 @@ class MailboxGateway extends BaseGateway
         }
 
         return $mb_id;
+    }
+
+    /**
+     * Converts a JSON string into an email address DTO.
+     */
+    private function parseAddress(string $json): EmailAddress
+    {
+        $json = str_replace('\"', '"', trim($json, '"'));
+        $data = json_decode($json, true, 512, JSON_THROW_ON_ERROR + JSON_INVALID_UTF8_IGNORE);
+        $name = isset($data['personal']) ? $data['personal'] : null;
+
+        return new EmailAddress($data['mailbox'], $data['host'], $name);
+    }
+
+    /**
+     * Converts a JSON string into an array of email address DTOs.
+     */
+    private function parseAddresses(string $json): array
+    {
+        $data = json_decode($json, true, 512, JSON_THROW_ON_ERROR + JSON_INVALID_UTF8_IGNORE);
+
+        return array_map(function ($x) {
+            $name = isset($x['personal']) ? $x['personal'] : null;
+
+            return new EmailAddress($x['mailbox'], $x['host'], $name);
+        }, $data);
+    }
+
+    /**
+     * Converts an email address DTO into a JSON string.
+     */
+    private function formatAddress(EmailAddress $address): string
+    {
+        return json_encode([
+            'mailbox' => $address->getMailbox(),
+            'host' => $address->getHostname(),
+            'personal' => $address->getName()
+        ]);
+    }
+
+    /**
+     * Converts an array of email address DTOs into a JSON string.
+     */
+    private function formatAddresses(array $addresses): string
+    {
+        $mapped = array_map(function ($a) {
+            return [
+                'mailbox' => $a->getMailbox(),
+                'host' => $a->getHostname(),
+                'personal' => $a->getName()
+            ];
+        }, $addresses);
+
+        return json_encode($mapped);
     }
 }
