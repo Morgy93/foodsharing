@@ -138,7 +138,7 @@ class MailsControl extends ConsoleControl
                             $return_path = $return_path[0];
                         }
                         if ($return_path && $return_path != DEFAULT_EMAIL) {
-                            $this->emailHelper->tplMail('general/invalid_email_address', $return_path->getAddress(), ['address' => implode(', ', $mboxes)]);
+                            $this->emailHelper->transactionMail('general/invalid_email_address', $return_path->getAddress(), ['address' => implode(', ', $mboxes)]);
                         }
                         ++$stats['unknown-recipient'];
                     } else {
@@ -325,15 +325,10 @@ class MailsControl extends ConsoleControl
 
     public function handleEmailRateLimited($data, $type): bool
     {
-        switch ($type) {
-            case 'newsletter':
-                $delayConstant = DELAY_MICRO_SECONDS_BETWEEN_NEWSLETTER;
-                $noReply = true;
-                break;
-            default:
-                $delayConstant = DELAY_MICRO_SECONDS_BETWEEN_MAILS;
-                $noReply = false;
-        }
+        $delayConstant = match ($type) {
+            'newsletter' => DELAY_MICRO_SECONDS_BETWEEN_NEWSLETTER,
+            default => DELAY_MICRO_SECONDS_BETWEEN_MAILS,
+        };
 
         self::info('Mail from: ' . $data['from'][0] . ' (' . $data['from'][1] . ')');
         $email = new Email();
@@ -341,9 +336,9 @@ class MailsControl extends ConsoleControl
         $mailParts = explode('@', $data['from'][0]);
         $fromDomain = end($mailParts);
 
-        if (in_array($fromDomain, MAILBOX_OWN_DOMAINS, true) || !$noReply) {
+        if (in_array($fromDomain, MAILBOX_OWN_DOMAINS, true) || $type == 'email') {
             $email->from(new Address($data['from'][0], $data['from'][1] ?? ''));
-        } else {
+        } elseif ($type == 'transaction') {
             $email->from(new Address(DEFAULT_EMAIL, $data['from'][1] ?? ''));
             $email->replyTo(new Address($data['from'][0], $data['from'][1] ?? ''));
         }

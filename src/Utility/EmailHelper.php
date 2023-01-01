@@ -47,7 +47,7 @@ final class EmailHelper
         return $this->twig->render('emailTemplates/general/body.html.twig', ['MESSAGE' => $message, 'UNSUBSCRIBE' => $unsubscribe]);
     }
 
-    public function tplMail($tpl_id, $to, $var = [], $from_email = false, bool $highPriority = false)
+    public function transactionMail($tpl_id, $to, $var = [], $from_email = false, bool $highPriority = false)
     {
         $mail = new AsyncMail($this->mem);
 
@@ -109,7 +109,7 @@ final class EmailHelper
             $mail->addRecipient($to);
         }
         $mail->setHighPriority($highPriority);
-        $mail->send();
+        $mail->send('transaction');
         $this->metrics->addOutgoingMail($tpl_id, $num_recipients);
     }
 

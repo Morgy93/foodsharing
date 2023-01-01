@@ -299,7 +299,7 @@ class MaintenanceControl extends ConsoleControl
         if ($foodsaver = $this->maintenanceGateway->getStoreManagersWhichWillBeAlerted()) {
             self::info('send ' . count($foodsaver) . ' warnings...');
             foreach ($foodsaver as $fs) {
-                $this->emailHelper->tplMail('chat/fetch_warning', $fs['fs_email'], [
+                $this->emailHelper->transactionMail('chat/fetch_warning', $fs['fs_email'], [
                     'anrede' => $this->translator->trans('salutation.' . $fs['geschlecht']),
                     'name' => $fs['fs_name'],
                     'betrieb' => $fs['betrieb_name'],

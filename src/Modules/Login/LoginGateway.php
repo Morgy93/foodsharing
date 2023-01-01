@@ -203,7 +203,7 @@ class LoginGateway extends BaseGateway
                 'anrede' => $this->translator->trans('salutation.' . $fs['geschlecht']),
             ];
 
-            $this->emailHelper->tplMail('user/reset_password', $fs['email'], $vars, false, true);
+            $this->emailHelper->transactionMail('user/reset_password', $fs['email'], $vars, false, true);
 
             return true;
         }

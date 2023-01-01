@@ -102,7 +102,7 @@ class LoginService
 
         $activationUrl = BASE_URL . '/?page=login&a=activate&e=' . urlencode($data['email']) . '&t=' . urlencode($token);
 
-        $this->emailHelper->tplMail('user/join', $data['email'], [
+        $this->emailHelper->transactionMail('user/join', $data['email'], [
             'name' => $data['name'],
             'link' => $activationUrl,
             'anrede' => $this->translator->trans('salutation.' . $data['geschlecht'])

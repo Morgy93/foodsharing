@@ -86,7 +86,7 @@ class SettingsXhr extends Control
         }
 
         $this->mailsGateway->removeBounceForMail($emailAddress);
-        $this->emailHelper->tplMail('user/change_email', $emailAddress, [
+        $this->emailHelper->transactionMail('user/change_email', $emailAddress, [
             'anrede' => $this->translator->trans('salutation.' . $fs['geschlecht']),
             'name' => $fs['name'],
             'link' => BASE_URL . '/?page=settings&sub=general&newmail=' . $token

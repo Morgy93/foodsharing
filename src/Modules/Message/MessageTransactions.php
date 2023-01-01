@@ -56,7 +56,7 @@ class MessageTransactions
                 'name' => $recipient['name'],
             ]);
 
-            $this->emailHelper->tplMail($templateData['emailTemplate'], $recipient['email'], $templateData);
+            $this->emailHelper->transactionMail($templateData['emailTemplate'], $recipient['email'], $templateData);
         }
         $_SESSION['lastMailMessage'] = $sessdata;
     }
