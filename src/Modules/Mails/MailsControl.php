@@ -21,6 +21,9 @@ class MailsControl extends ConsoleControl
     private RouteHelper $routeHelper;
     private EmailHelper $emailHelper;
 
+    public const redisQueueForNewsletterMails = 'newsletterQueue';
+    public const redisQueueForNormalMails = 'mailQueue';
+
     /*
      * todo move this to config file as a constant if this becomes a permanent solution
      * until then we need to be able to configure this rather flexible in here
@@ -58,15 +61,10 @@ class MailsControl extends ConsoleControl
 
     public function queueWorker($type = null)
     {
-        switch ($type) {
-            case 'newsletter':
-                $sourceKey = 'newsletterQueue';
-                break;
-
-            default:
-                $sourceKey = 'mailQueue';
-                break;
-        }
+        $sourceKey = match ($type) {
+            'newsletter' => $this->redisQueueForNewsletterMails,
+            default => $this->redisQueueForNormalMails,
+        };
 
         $this->mem->ensureConnected();
         $running = true;
