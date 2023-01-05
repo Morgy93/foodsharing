@@ -1,15 +1,19 @@
 # PHP-View to vue.js
 
-## Backend
+This is the basic process to detangle front- from backend. Some Modules have already been refactored.<!-- ToDo link to list of growing examples --> They can serve as an example on how a module is supposed to look at the end.
+
+In general, you should, after picking a module that hasn't been refactored yet, do the following:
+## Identify the Backend
 * find the correct `PHP`-folder in the [`src/Modules`](https://gitlab.com/foodsharing-dev/foodsharing/-/tree/master/src/Modules).
 * find the `view`-controller
 
-## Frontend
+## Identify the Frontend
 * create a component folder and files in [`client/src/components/`](https://gitlab.com/foodsharing-dev/foodsharing/-/tree/master/client/src/components)
 * or create a page folder and file in [`client/src/components/`](https://gitlab.com/foodsharing-dev/foodsharing/-/tree/master/client/src/views/pages)
 * to register the component or page and create a JavaScript-file in the `PHP`-folder
 
-### Example, Dashboard.
+### Example: Dashboard Module
+<!-- ToDo @diejani What is this paragraph supposed to describe? -->
 > It is required to place a *page* loader javascript in [`src/Modules`](https://gitlab.com/foodsharing-dev/foodsharing/-/tree/master/src/Modules) based on the `webpack`-configuration.
 
 ```javascript

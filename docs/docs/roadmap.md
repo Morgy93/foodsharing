@@ -5,11 +5,11 @@ In order to speed up development and motivate more developers, we want to concen
 > We first have to renovate our house (foodsharing.de). This means that we first have to rebuild the foundation and the roof, because it drips in all sorts of places when we want to build or change a function.
 
 ## Main goal
-> - [ ] Refactor XHR endpoints to rest APIs endpoints, to cover the website functionality
+> - [ ] HR endpoints to rest APIs endpoints, to cover the website functionality
 > - [x] Upgrade to PHP 8.1 (10.2022)
 
 ## Second goal
-> - [ ] Refactor old php / inline HTML / JavaScript to Vue.JS
+> - [ ] Refactor old php / inline HTML / JavaScript to Vue.JS (Link to _[Epic](https://gitlab.com/groups/foodsharing-dev/-/epics/9)_)
 > - [ ] Get rid of unnecessary packages like jQuery
 
 ## Other topics
