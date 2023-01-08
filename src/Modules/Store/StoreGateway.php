@@ -916,7 +916,7 @@ class StoreGateway extends BaseGateway
             'action' => $action,
             'fs_id_a' => $foodsaver_id,
             'fs_id_p' => $fs_id_p,
-            'date_reference' => $dateReference ? $dateReference->format('Y-m-d H:i:s') : null,
+            'date_reference' => $dateReference ? $this->db->date($dateReference) : null,
             'content' => $content ? strip_tags($content) : '',
             'reason' => $reason ? strip_tags($reason) : ''
         ]);

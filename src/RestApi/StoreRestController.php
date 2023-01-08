@@ -665,7 +665,6 @@ class StoreRestController extends AbstractFOSRestController
 
         $storeLogEntriesFromLastSevenDaysWithCorrectedDateFormat = array_map(function ($logEntry) {
             $correctedSlotDate = new DateTime($logEntry['date_reference']);
-            $correctedSlotDate->add(new \DateInterval('PT2H'));
             $logEntry['date_reference'] = $correctedSlotDate->format(DATE_ATOM);
 
             $correctedPerformedAtDate = new DateTime($logEntry['performed_at']);
