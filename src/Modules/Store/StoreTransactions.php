@@ -666,7 +666,7 @@ class StoreTransactions
         $this->bellGateway->addBell($bellRecipients, $bellData);
     }
 
-    private function triggerBellForJoining(int $storeId, int $userId, int $actionType): void
+    private function triggerBellForJoining(int $storeId, int $userId, StoreLogAction $actionType): void
     {
         if ($actionType === StoreLogAction::ADDED_WITHOUT_REQUEST) {
             $bellTitle = 'store_request_imposed_title';
@@ -689,7 +689,7 @@ class StoreTransactions
             $bellIcon = 'fas fa-user-times';
             $bellId = BellType::createIdentifier(BellType::STORE_REQUEST_REJECTED, $userId);
         } else {
-            throw new \DomainException('Unknown store-team action: ' . $actionType);
+            throw new \DomainException('Unknown store-team action: ' . $actionType->name);
         }
         $bellLink = '/?page=fsbetrieb&id=' . $storeId;
 

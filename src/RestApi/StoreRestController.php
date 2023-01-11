@@ -458,12 +458,12 @@ class StoreRestController extends AbstractFOSRestController
         $this->storeTransactions->declineStoreRequest($storeId, $userId);
 
         if ($this->session->id() == $userId) {
-            $LogAction = StoreLogAction::REQUEST_CANCELLED;
+            $logAction = StoreLogAction::REQUEST_CANCELLED;
         } else {
-            $LogAction = StoreLogAction::REQUEST_DECLINED;
+            $logAction = StoreLogAction::REQUEST_DECLINED;
         }
 
-        $this->storeGateway->addStoreLog($storeId, $this->session->id(), $userId, null, $LogAction);
+        $this->storeGateway->addStoreLog($storeId, $this->session->id(), $userId, null, $logAction);
 
         return $this->handleView($this->view([], 200));
     }

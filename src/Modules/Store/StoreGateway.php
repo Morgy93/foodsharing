@@ -4,10 +4,12 @@ declare(strict_types=1);
 
 namespace Foodsharing\Modules\Store;
 
+use DateTime;
 use Foodsharing\Modules\Core\BaseGateway;
 use Foodsharing\Modules\Core\Database;
 use Foodsharing\Modules\Core\DBConstants\Store\CooperationStatus;
 use Foodsharing\Modules\Core\DBConstants\Store\Milestone;
+use Foodsharing\Modules\Core\DBConstants\Store\StoreLogAction;
 use Foodsharing\Modules\Core\DBConstants\StoreTeam\MembershipStatus;
 use Foodsharing\Modules\Region\RegionGateway;
 use Foodsharing\Modules\Store\DTO\Store;
@@ -902,20 +904,31 @@ class StoreGateway extends BaseGateway
         return $store;
     }
 
+    /**
+     * Adds a store log entry with different information.
+     *
+     * @param int $storeId Identifier of store
+     * @param int $modifingFoodsaverId Identifer of foodsaver which makes the modification
+     * @param int|null $effectedFoodsaverId Identifier of foodsaver which effected by this change
+     * @param DateTime|null $dateReference Datetime which was important for the change (like for pickup slots)
+     * @param StoreLogAction $action Kind of modification
+     * @param string|null $content ??
+     * @param string|null $reason Note why this action is done
+     */
     public function addStoreLog(
-        int $store_id,
-        int $foodsaver_id,
-        ?int $fs_id_p,
-        ?\DateTimeInterface $dateReference,
-        int $action,
+        int $storeId,
+        int $modifingFoodsaverId,
+        ?int $effectedFoodsaverId,
+        ?DateTime $dateReference,
+        StoreLogAction $action,
         ?string $content = null,
         ?string $reason = null
     ) {
         return $this->db->insert('fs_store_log', [
-            'store_id' => $store_id,
-            'action' => $action,
-            'fs_id_a' => $foodsaver_id,
-            'fs_id_p' => $fs_id_p,
+            'store_id' => $storeId,
+            'action' => $action->value,
+            'fs_id_a' => $modifingFoodsaverId,
+            'fs_id_p' => $effectedFoodsaverId,
             'date_reference' => $dateReference ? $this->db->date($dateReference) : null,
             'content' => $content ? strip_tags($content) : '',
             'reason' => $reason ? strip_tags($reason) : ''
