@@ -43,16 +43,11 @@ stages:
   tags:
     - non-shared
     - foodsharing # run it on our foodsharing ci server
-  dependencies:
-    - build:frontend
-    - build:backend
-    - build:websocket
-    - build:docs
   script:
     - chmod -R 750 ./
     - (cd deployer && composer install)
     - deployer/vendor/bin/dep deploy $CI_ENVIRONMENT_NAME --revision $CI_COMMIT_SHA
-    - ./scripts/deploy-websocket-restart
+    - ./scripts/deploy-restart-services
     - ./scripts/deploy-notify-slack
 
 outdated:
@@ -73,6 +68,9 @@ outdated:
     paths:
       - vendor
 
+.build-artifacts: &build-artifacts
+  expire_in: 1 day
+
 build:websocket:
   <<: *defaults
   stage: build
@@ -85,12 +83,8 @@ build:websocket:
   image: registry.gitlab.com/foodsharing-dev/images/node:latest
   script:
     - (cd websocket && yarn && yarn lint)
-  cache:
-    key: websocket:build:cache
-    paths:
-      - websocket/node_modules
   artifacts:
-    expire_in: 1 week
+    <<: *build-artifacts
     paths:
       - websocket/node_modules
 
@@ -109,10 +103,9 @@ build:frontend:
   cache:
     key: frontend:build:cache
     paths:
-      - assets
       - client/node_modules
   artifacts:
-    expire_in: 1 week
+    <<: *build-artifacts
     paths:
       - assets
       - sw.js
@@ -132,10 +125,9 @@ build:backend:
   cache:
     key: backend:build:cache
     paths:
-      - vendor
       - .php-cs-fixer.php.cache
   artifacts:
-    expire_in: 1 week
+    <<: *build-artifacts
     paths:
       - assets
       - vendor
@@ -145,7 +137,7 @@ build:docs:
   stage: build
   interruptible: true
   rules:
-    - if: $CI_COMMIT_BRANCH == 'master' || $CI_COMMIT_BRANCH == 'production'
+    - if: $CI_COMMIT_BRANCH == 'master'
     - if: $CI_MERGE_REQUEST_ID
     - if: $CI_PIPELINE_SOURCE == "schedule"
       when: never
@@ -159,9 +151,13 @@ build:docs:
   script:
     - ./scripts/ci-docs-build
   artifacts:
-    expire_in: 1 week
+    <<: *build-artifacts
     paths:
-      - docs
+      - docs/build
+
+.test-artifacts: &test-artifacts
+  expire_in: 2 weeks
+  when: always
 
 test:backend-code:
   <<: *defaults
@@ -169,6 +165,8 @@ test:backend-code:
   interruptible: true
   rules:
     - if: $CI_COMMIT_BRANCH == 'master' || $CI_COMMIT_BRANCH == 'production'
+    - if: $CI_COMMIT_BRANCH == 'production' && $SKIP_CI_TESTS == 'true'
+      when: never
     - if: $CI_MERGE_REQUEST_ID
     - if: $CI_PIPELINE_SOURCE == "schedule"
       when: never
@@ -209,18 +207,15 @@ test:backend-code:
     - build:frontend
     - build:backend
     - build:websocket
-    - test:backend-acceptance
   script:
     - touch $CI_PROJECT_DIR/code_updated # Create file to notify websocket container that code is up to date
     - ./scripts/ci-backend-test-code
   cache:
     key: backend:build:cache
     paths:
-      - vendor
       - .php-cs-fixer.php.cache
   artifacts:
-    expire_in: 1 month
-    when: always
+    <<: *test-artifacts
     paths:
       - tests/_output
     reports: # make the report available in Gitlab UI. see https://docs.gitlab.com/ee/ci/unit_test_reports.html
@@ -235,6 +230,8 @@ test:backend-acceptance:
   interruptible: true
   rules:
     - if: $CI_COMMIT_BRANCH == 'master' || $CI_COMMIT_BRANCH == 'production'
+    - if: $CI_COMMIT_BRANCH == 'production' && $SKIP_CI_TESTS == 'true'
+      when: never
     - if: $CI_MERGE_REQUEST_ID
     - if: $CI_PIPELINE_SOURCE == "schedule"
       when: never
@@ -282,11 +279,9 @@ test:backend-acceptance:
   cache:
     key: backend:build:cache
     paths:
-      - vendor
       - .php-cs-fixer.php.cache
   artifacts:
-    expire_in: 1 month
-    when: always
+    <<: *test-artifacts
     paths:
       - tests/_output
     reports: # make the report available in Gitlab UI. see https://docs.gitlab.com/ee/ci/unit_test_reports.html
@@ -298,6 +293,8 @@ test:frontend:
   interruptible: true
   rules:
     - if: $CI_COMMIT_BRANCH == 'master' || $CI_COMMIT_BRANCH == 'production'
+    - if: $CI_COMMIT_BRANCH == 'production' && $SKIP_CI_TESTS == 'true'
+      when: never
     - if: $CI_MERGE_REQUEST_ID
     - if: $CI_PIPELINE_SOURCE == "schedule"
       when: never
@@ -306,6 +303,8 @@ test:frontend:
     REDIS_HOST: redis
   script:
     - (cd client && yarn && yarn test)
+  dependencies:
+    - build:frontend
   cache:
     key: frontend:build:cache
     paths:
@@ -319,6 +318,8 @@ test:websocket:
     - if: $CI_COMMIT_BRANCH == 'master' || $CI_COMMIT_BRANCH == 'production'
       changes:
         - 'websocket/**/*'
+    - if: $CI_COMMIT_BRANCH == 'production' && $SKIP_CI_TESTS == 'true'
+      when: never
     - if: $CI_MERGE_REQUEST_ID
       changes:
         - 'websocket/**/*'
@@ -334,10 +335,6 @@ test:websocket:
     - build:websocket
   script:
     - (cd websocket && yarn test)
-  cache:
-    key: websocket:build:cache
-    paths:
-      - websocket/node_modules
 
 deploy:beta:
   <<: *deploy
@@ -345,6 +342,10 @@ deploy:beta:
     - if: $CI_COMMIT_BRANCH == 'master'
     - if: $CI_PIPELINE_SOURCE == "schedule"
       when: never
+  dependencies:
+    - build:frontend
+    - build:backend
+    - build:websocket
   environment:
     name: beta
     url: https://beta.foodsharing.de
@@ -355,6 +356,10 @@ deploy:production:
     - if: $CI_COMMIT_BRANCH == 'production'
     - if: $CI_PIPELINE_SOURCE == "schedule"
       when: never
+  dependencies:
+    - build:frontend
+    - build:backend
+    - build:websocket
   environment:
     name: production
     url: https://foodsharing.de

@@ -9,42 +9,24 @@ use Foodsharing\Modules\Core\DBConstants\Region\WorkgroupFunction;
 use Foodsharing\Modules\Foodsaver\FoodsaverGateway;
 use Foodsharing\Modules\Group\GroupGateway;
 use Foodsharing\Modules\Store\StoreGateway;
-use Foodsharing\Utility\EmailHelper;
-use Symfony\Contracts\Translation\TranslatorInterface;
+use Foodsharing\Modules\Store\StoreMaintainceTransactions;
 
 class MaintenanceControl extends ConsoleControl
 {
-    private StoreGateway $storeGateway;
-    private FoodsaverGateway $foodsaverGateway;
-    private EmailHelper $emailHelper;
-    private MaintenanceGateway $maintenanceGateway;
-    private BellUpdateTrigger $bellUpdateTrigger;
-    private GroupGateway $groupGateway;
-    private TranslatorInterface $translator;
-
     public function __construct(
-        StoreGateway $storeGateway,
-        FoodsaverGateway $foodsaverGateway,
-        EmailHelper $emailHelper,
-        MaintenanceGateway $maintenanceGateway,
-        BellUpdateTrigger $bellUpdateTrigger,
-        GroupGateway $groupGateway,
-        TranslatorInterface $translator
+        private readonly StoreGateway $storeGateway,
+        private readonly FoodsaverGateway $foodsaverGateway,
+        private readonly MaintenanceGateway $maintenanceGateway,
+        private readonly BellUpdateTrigger $bellUpdateTrigger,
+        private readonly GroupGateway $groupGateway,
+        private readonly StoreMaintainceTransactions $storeMaintainceTransactions
     ) {
-        $this->storeGateway = $storeGateway;
-        $this->foodsaverGateway = $foodsaverGateway;
-        $this->emailHelper = $emailHelper;
-        $this->maintenanceGateway = $maintenanceGateway;
-        $this->bellUpdateTrigger = $bellUpdateTrigger;
-        $this->groupGateway = $groupGateway;
-        $this->translator = $translator;
-
         parent::__construct();
     }
 
     public function warnings()
     {
-        $this->betriebFetchWarning();
+        $this->storeTriggerPickupWarnings();
     }
 
     public function daily()
@@ -52,7 +34,7 @@ class MaintenanceControl extends ConsoleControl
         /*
          * warn store manager if there are no fetching people
          */
-        $this->betriebFetchWarning();
+        $this->storeTriggerPickupWarnings();
 
         /*
          * fill memcache with info about users if they want information mails etc.
@@ -294,19 +276,17 @@ class MaintenanceControl extends ConsoleControl
         self::success('OK');
     }
 
-    public function betriebFetchWarning()
+    public function storeTriggerPickupWarnings()
     {
-        if ($foodsaver = $this->maintenanceGateway->getStoreManagersWhichWillBeAlerted()) {
-            self::info('send ' . count($foodsaver) . ' warnings...');
-            foreach ($foodsaver as $fs) {
-                $this->emailHelper->tplMail('chat/fetch_warning', $fs['fs_email'], [
-                    'anrede' => $this->translator->trans('salutation.' . $fs['geschlecht']),
-                    'name' => $fs['fs_name'],
-                    'betrieb' => $fs['betrieb_name'],
-                    'link' => BASE_URL . '/?page=fsbetrieb&id=' . $fs['betrieb_id']
-                ]);
+        try {
+            $statistics = $this->storeMaintainceTransactions->triggerFetchWarningNotification();
+            self::info('send ' . $statistics['count_warned_foodsavers'] . ' warnings...');
+            foreach ($statistics as $key => $stat) {
+                self::info(' - ' . $key . ': ' . $stat);
             }
             self::success('OK');
+        } catch (\Exception $ex) {
+            self::error($ex);
         }
     }
 

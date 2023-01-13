@@ -2,6 +2,7 @@
 
 namespace Foodsharing\Modules\Mailbox;
 
+use Ddeboer\Imap\Message\EmailAddress;
 use Foodsharing\Lib\Mail\AsyncMail;
 use Foodsharing\Lib\Xhr\XhrResponses;
 use Foodsharing\Modules\Core\Control;
@@ -135,7 +136,7 @@ class MailboxXhr extends Control
 
             return [
                 'status' => 1,
-                'html' => $this->view->listMessages($messages, $folder, $currentMailboxName),
+                'html' => $this->view->listMessages($messages, $folder, $mailbox['name']),
                 'append' => '#messagelist tbody',
                 'script' => '
 					$("#mb-messagelist-title").text("' . $currentMailboxName . '");
@@ -165,8 +166,8 @@ class MailboxXhr extends Control
         $mailboxId = $this->mailboxGateway->getMailboxId($_GET['mid']);
         if ($this->mailboxPermissions->mayMailbox($mailboxId)) {
             $message = $this->mailboxGateway->getMessage($_GET['mid']);
-            $sender = json_decode($message['sender'], true, 512, JSON_THROW_ON_ERROR + JSON_INVALID_UTF8_IGNORE);
-            if (isset($sender['mailbox'], $sender['host']) && $sender != null) {
+            $sender = $message['sender'];
+            if ($sender != null) {
                 $subject = 'Re: ' . trim(str_replace(['Re:', 'RE:', 're:', 'aw:', 'Aw:', 'AW:'], '', $message['subject']));
 
                 $data = json_decode(file_get_contents('php://input'), true);
@@ -178,10 +179,10 @@ class MailboxXhr extends Control
 
                 $mail = new AsyncMail($this->mem);
                 $mail->setFrom($message['mailbox'] . '@' . PLATFORM_MAILBOX_HOST, $this->session->user('name'));
-                if (!empty($sender['personal'])) {
-                    $mail->addRecipient($sender['mailbox'] . '@' . $sender['host'], $sender['personal']);
+                if (!empty($sender->getName())) {
+                    $mail->addRecipient($sender->getAddress(), $sender->getName());
                 } else {
-                    $mail->addRecipient($sender['mailbox'] . '@' . $sender['host']);
+                    $mail->addRecipient($sender->getAddress());
                 }
                 $mail->setSubject($subject);
                 $html = nl2br($body);
@@ -193,12 +194,8 @@ class MailboxXhr extends Control
                 $this->mailboxGateway->saveMessage(
                     $mailboxId,
                     MailboxFolder::FOLDER_SENT,
-                    json_encode([
-                        'host' => PLATFORM_MAILBOX_HOST,
-                        'mailbox' => $message['mailbox'],
-                        'personal' => $this->session->user('name')
-                    ]),
-                    json_encode([$sender]),
+                    new EmailAddress($message['mailbox'], PLATFORM_MAILBOX_HOST, $this->session->user('name')),
+                    [$sender],
                     $subject,
                     $body,
                     $html,
@@ -295,23 +292,15 @@ class MailboxXhr extends Control
                     if ($this->emailHelper->validEmail($a)) {
                         $t = explode('@', $a);
 
-                        $to[] = [
-                            'personal' => $a,
-                            'mailbox' => $t[0],
-                            'host' => $t[1]
-                        ];
+                        $to[] = new EmailAddress($t[0], $t[1], $a);
                     }
                 }
 
                 if ($this->mailboxGateway->saveMessage(
                     $mb_id,
                     MailboxFolder::FOLDER_SENT,
-                    json_encode([
-                        'host' => PLATFORM_MAILBOX_HOST,
-                        'mailbox' => $mailbox['name'],
-                        'personal' => $mailbox['email_name']
-                    ]),
-                    json_encode($to),
+                    new EmailAddress($mailbox['name'], PLATFORM_MAILBOX_HOST, $mailbox['email_name']),
+                    $to,
                     $_POST['sub'],
                     $_POST['body'],
                     nl2br($_POST['body']),

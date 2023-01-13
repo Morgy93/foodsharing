@@ -509,7 +509,6 @@ class StoreTransactionsTest extends \Codeception\Test\Unit
         $store_coord = $this->tester->createStore($this->region_id, null, null, ['betrieb_status_id' => CooperationStatus::COOPERATION_ESTABLISHED->value]);
         $this->tester->addStoreTeam($store_coord['id'], $this->foodsaver['id'], true);
         $this->tester->addRecurringPickup($store_coord['id'], ['time' => '16:30:00', 'dow' => $dow, 'fetcher' => 1]);
-        $regularSlots = $this->gateway->getRegularPickups($store_coord['id']);
 
         // Create store membership
         $store_member = $this->tester->createStore($this->region_id, null, null, ['betrieb_status_id' => CooperationStatus::COOPERATION_ESTABLISHED->value]);

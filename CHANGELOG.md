@@ -6,20 +6,30 @@
 
 ## Changes
 - Added toogle collapse function to store team list for desktop view !2525 @chriswalg
+- Make menubar sticky on mobile !2411 @AntonBallmaier
 
 
 ## Bugfixes
+- Reimplementation of the StoreManager empty pickup E-Mail notification !2574 @KoeMai
 - Outgoing mails were sent out with an invalid charset !2572 @\_fridtjof_
 - Return the correct data from the user details REST endpoint #1534 !2575 @alex.simm
+- Fixed some typos #1539 !2585 @alex.simm
+- Fix some broken links !2586
+- Show the report button on the own profile page !2589 @alex.simm
+- Hacky workaround to replace $amp in urls from chat messages #1531 !2594 @chriswalg
 
 ## Refactoring
 - added poppins font in Styleguide !2564 @Niklas003 
+- Use email address DTO and let the MailboxGateway handle JSON encoding !2520 @alex.simm
+
 
 ## Dev/Test/CI stuff
 - Fix given null parameter !2550 @BibaltiK
-- Small Improving Changes on GitLab CI !2565
+- Small Improving Changes on GitLab CI !2565 !2566 !2567 !2568 !2582 @stcz
+- Add $SKIP_CI_TESTS Variable to deploy production faster if needed !2581 @stcz
 - Change identity style from tab to space !2571 @BibaltiK
 - Python Script to generate Release Notes from gitlab MRs !2548 @alex.simm
+- Restart all foodsharing services after production deployment !2583 @stcz
 
 
 ## Development documentation

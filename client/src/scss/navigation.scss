@@ -30,6 +30,23 @@ $breaking-viewport: 767px;
   }
 }
 
+@media (max-width: $breaking-viewport) {
+  .navigation.navbar .nav-container {
+    overflow-y: scroll;
+    max-height: 100vh;
+
+    // make sure the website isn't scrolled behind the menu
+    overscroll-behavior: contain;
+
+    // hide wierdly positioned menu scrollbar
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+    & ::-webkit-scrollbar {
+      display: none;
+    }
+  }
+}
+
 @media (min-width: $breaking-viewport) {
   .nav-foodsharer .mainnav .nav-item .nav-text {
     display: unset;
@@ -100,7 +117,12 @@ $breaking-viewport: 767px;
 
 @media (max-width: $breaking-viewport) {
   .navigation .navbar-collapse {
-    margin-bottom: 3rem;
+    // Abount 115px of buffer required to account for
+    // the vh issue many mobile browsers. The empty bottom
+    // part of the navigation may not be visible when the
+    // browser shows the address bar. For more details see
+    // https://chanind.github.io/javascript/2019/09/28/avoid-100vh-on-mobile-web.html
+    margin-bottom: 7.25rem;
 
     & .metanav,
     & .sidenav {
@@ -127,6 +149,10 @@ $breaking-viewport: 767px;
       }
     }
   }
+}
+
+body.nav-open{
+  overflow: hidden;
 }
 
 .navigation .nav-item {
@@ -245,6 +271,7 @@ $breaking-viewport: 767px;
   @media (max-width: $breaking-viewport) {
     min-width: 100%;
     max-width: 100%;
+    position: static;
   }
 
   & .collapse {
@@ -279,7 +306,7 @@ $breaking-viewport: 767px;
   @media (max-width: $breaking-viewport) {
     width: 100%;
     min-width: unset;
-    max-width: unset;
+    max-width: calc( 91 * 1vw );
     top: 3rem;
   }
 }
