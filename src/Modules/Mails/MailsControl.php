@@ -22,12 +22,6 @@ class MailsControl extends ConsoleControl
     private RouteHelper $routeHelper;
     private EmailHelper $emailHelper;
 
-    /*
-     * todo move this to config file as a constant if this becomes a permanent solution
-     * until then we need to be able to configure this rather flexible in here
-     * 45,11 mails/minute = 1330 milli seconds between mails
-     * */
-
     public function __construct(
         MailsGateway $mailsGateway,
         Database $database,
