@@ -57,7 +57,7 @@ class StoreMaintainceTransactions
                     $foodsavers[] = $foodsaverId;
 
                     $fs = $this->foodsaverGateway->getFoodsaver($foodsaverId);
-                    $this->emailHelper->tplMail('chat/fetch_warning', $fs['email'], [
+                    $this->emailHelper->templateMail('chat/fetch_warning', $fs['email'], [
                         'anrede' => $this->translator->trans('salutation.' . $fs['geschlecht']),
                         'name' => $fs['name'],
                         'betrieb' => $store['name'],
