@@ -105,7 +105,7 @@ class ForumTransactions
     public function notificationMail($recipients, $tpl, $data): void
     {
         foreach ($recipients as $recipient) {
-            $this->emailHelper->transactionMail(
+            $this->emailHelper->templateMail(
                 $tpl,
                 $recipient['email'],
                 array_merge($data, [

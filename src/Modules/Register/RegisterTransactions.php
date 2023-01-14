@@ -45,7 +45,7 @@ class RegisterTransactions
         }
 
         // send activation email
-        $this->emailHelper->transactionMail('user/join', $data->email, [
+        $this->emailHelper->templateMail('user/join', $data->email, [
             'name' => $data->firstName,
             'link' => $activationUrl,
             'anrede' => $this->translator->trans('salutation.' . $data->gender),

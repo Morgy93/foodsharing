@@ -138,7 +138,7 @@ class MailsControl extends ConsoleControl
                             $return_path = $return_path[0];
                         }
                         if ($return_path && $return_path != DEFAULT_EMAIL) {
-                            $this->emailHelper->transactionMail('general/invalid_email_address', $return_path->getAddress(), ['address' => implode(', ', $mboxes)]);
+                            $this->emailHelper->templateMail('general/invalid_email_address', $return_path->getAddress(), ['address' => implode(', ', $mboxes)]);
                         }
                         ++$stats['unknown-recipient'];
                     } else {

@@ -51,7 +51,7 @@ class LegalControl extends Control
             if ($privacyNoticeNeccessary) {
                 if ($data->isPrivacyNoticeAcknowledged()) {
                     $this->gateway->agreeToPn($this->session->id(), $privacyNoticeDate);
-                    $this->emailHelper->transactionMail('user/privacy_notice', $this->session->user('email'), ['vorname' => $this->session->user('name')]);
+                    $this->emailHelper->templateMail('user/privacy_notice', $this->session->user('email'), ['vorname' => $this->session->user('name')]);
                 } else {
                     $this->gateway->downgradeToFoodsaver($this->session->id());
                 }

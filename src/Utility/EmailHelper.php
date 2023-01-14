@@ -47,7 +47,7 @@ final class EmailHelper
         return $this->twig->render('emailTemplates/general/body.html.twig', ['MESSAGE' => $message, 'UNSUBSCRIBE' => $unsubscribe]);
     }
 
-    public function transactionMail($tpl_id, $to, $var = [], $from_email = false, bool $highPriority = false)
+    public function templateMail($tpl_id, $to, $var = [], $from_email = false, bool $highPriority = false)
     {
         $mail = new AsyncMail($this->mem);
 

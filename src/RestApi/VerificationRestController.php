@@ -95,7 +95,7 @@ class VerificationRestController extends AbstractFOSRestController
 
         $passportMailLink = 'https://foodsharing.de/' . $passportGenLink;
         $fs = $this->foodsaverGateway->getFoodsaver($userId);
-        $this->emailHelper->transactionMail('user/verification', $fs['email'], [
+        $this->emailHelper->templateMail('user/verification', $fs['email'], [
             'name' => $fs['name'],
             'link' => $passportMailLink,
             'anrede' => $this->translator->trans('salutation.' . $fs['geschlecht']),
