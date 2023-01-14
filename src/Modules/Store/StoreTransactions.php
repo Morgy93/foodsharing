@@ -31,17 +31,15 @@ use Symfony\Contracts\Translation\TranslatorInterface;
 
 class StoreTransactions
 {
-    public const DEFAULT_USER_SHOWN_STORE_COOPERATION_STATE = [CooperationStatus::UNCLEAR, CooperationStatus::NO_CONTACT, CooperationStatus::IN_NEGOTIATION, CooperationStatus::COOPERATION_STARTING, CooperationStatus::COOPERATION_ESTABLISHED, CooperationStatus::PERMANENTLY_CLOSED];
+    public const DEFAULT_USER_SHOWN_STORE_COOPERATION_STATE = [
+        CooperationStatus::UNCLEAR,
+        CooperationStatus::NO_CONTACT,
+        CooperationStatus::IN_NEGOTIATION,
+        CooperationStatus::COOPERATION_STARTING,
+        CooperationStatus::COOPERATION_ESTABLISHED,
+        CooperationStatus::PERMANENTLY_CLOSED
+    ];
 
-    private MessageGateway $messageGateway;
-    private PickupGateway $pickupGateway;
-    private StoreGateway $storeGateway;
-    private TranslatorInterface $translator;
-    private BellGateway $bellGateway;
-    private FoodsaverGateway $foodsaverGateway;
-    private RegionGateway $regionGateway;
-    private Session $session;
-    private Sanitizer $sanitizer;
     public const MAX_SLOTS_PER_PICKUP = 10;
     // status constants for getAvailablePickupStatus
     private const STATUS_RED_TODAY_TOMORROW = 3;
@@ -50,25 +48,16 @@ class StoreTransactions
     private const STATUS_GREEN = 0;
 
     public function __construct(
-        MessageGateway $messageGateway,
-        PickupGateway $pickupGateway,
-        StoreGateway $storeGateway,
-        TranslatorInterface $translator,
-        BellGateway $bellGateway,
-        FoodsaverGateway $foodsaverGateway,
-        RegionGateway $regionGateway,
-        Sanitizer $sanitizerService,
-        Session $session
+        private readonly MessageGateway $messageGateway,
+        private readonly PickupGateway $pickupGateway,
+        private readonly StoreGateway $storeGateway,
+        private readonly TranslatorInterface $translator,
+        private readonly BellGateway $bellGateway,
+        private readonly FoodsaverGateway $foodsaverGateway,
+        private readonly RegionGateway $regionGateway,
+        private readonly Sanitizer $sanitizerService,
+        private readonly Session $session
     ) {
-        $this->messageGateway = $messageGateway;
-        $this->pickupGateway = $pickupGateway;
-        $this->storeGateway = $storeGateway;
-        $this->translator = $translator;
-        $this->bellGateway = $bellGateway;
-        $this->foodsaverGateway = $foodsaverGateway;
-        $this->regionGateway = $regionGateway;
-        $this->session = $session;
-        $this->sanitizer = $sanitizerService;
     }
 
     public function getCommonStoreMetadata($supressStoreChains = true): CommonStoreMetadata
@@ -145,7 +134,7 @@ class StoreTransactions
     {
         $stores = $this->storeGateway->listStoresInRegion($regionId, true);
 
-        $storesMapped = array_map(function (Store $store) use ($expand) {
+        return array_map(function (Store $store) use ($expand) {
             $requiredStoreInformation = StoreListInformation::loadFrom($store, !$expand);
             if ($expand) {
                 $regionName = $this->regionGateway->getRegionName($store->regionId);
@@ -154,8 +143,6 @@ class StoreTransactions
 
             return $requiredStoreInformation;
         }, $stores);
-
-        return $storesMapped;
     }
 
     public function createStore(array $legacyGlobalData): int
@@ -199,7 +186,7 @@ class StoreTransactions
         $store->zip = $legacyGlobalData['plz'];
         $store->city = $legacyGlobalData['stadt'];
 
-        $store->publicInfo = $this->sanitizer->purifyHtml($legacyGlobalData['public_info']);
+        $store->publicInfo = $this->sanitizerService->purifyHtml($legacyGlobalData['public_info']);
         $store->publicTime = intval($legacyGlobalData['public_time']);
 
         $store->categoryId = intval($legacyGlobalData['betrieb_kategorie_id']);
@@ -251,7 +238,7 @@ class StoreTransactions
             throw new PickupValidationException(PickupValidationException::SLOT_COUNT_OUT_OF_RANGE);
         }
 
-        $occupiedSlots = count($this->pickupGateway->getPickupSignupsForDate($storeId, $date));
+        $occupiedSlots = count($this->pickupGateway->getPickupSignUpsForDate($storeId, $date));
         if ($newTotalSlots < $occupiedSlots) {
             throw new PickupValidationException(PickupValidationException::MORE_OCCUPIED_SLOTS);
         }
@@ -394,12 +381,12 @@ class StoreTransactions
     public function setStoreNameInConversations(int $storeId, string $storeName): void
     {
         if ($tcid = $this->storeGateway->getBetriebConversation($storeId, false)) {
-            $team_conversation_name = $this->translator->trans('store.team_conversation_name', ['{name}' => $storeName]);
-            $this->messageGateway->renameConversation($tcid, $team_conversation_name);
+            $teamConversationName = $this->translator->trans('store.team_conversation_name', ['{name}' => $storeName]);
+            $this->messageGateway->renameConversation($tcid, $teamConversationName);
         }
         if ($scid = $this->storeGateway->getBetriebConversation($storeId, true)) {
-            $springer_conversation_name = $this->translator->trans('store.springer_conversation_name', ['{name}' => $storeName]);
-            $this->messageGateway->renameConversation($scid, $springer_conversation_name);
+            $springerConversationName = $this->translator->trans('store.springer_conversation_name', ['{name}' => $storeName]);
+            $this->messageGateway->renameConversation($scid, $springerConversationName);
         }
     }
 
@@ -716,15 +703,15 @@ class StoreTransactions
                 $res = Carbon::now()->diffInHours($pickupDate);
                 if ($res > $ignoreRuleHours) {
                     // the allowed numbers of pickups in a timespan. Timespan is +/- from pickupdate
-                    $NumberAllowedPickups = (int)$this->regionGateway->getRegionOption($regionId, RegionOptionType::REGION_PICKUP_RULE_LIMIT_NUMBER);
+                    $numberAllowedPickups = (int)$this->regionGateway->getRegionOption($regionId, RegionOptionType::REGION_PICKUP_RULE_LIMIT_NUMBER);
                     $intervall = (int)$this->regionGateway->getRegionOption($regionId, RegionOptionType::REGION_PICKUP_RULE_TIMESPAN_DAYS);
                     // if we have more or same amount of used slots occupied then allowed we return false
-                    if ($this->pickupGateway->getNumberOfPickupsForUserWithStoreRules($fsId, $pickupDate->copy()->subDays($intervall), $pickupDate->copy()->addDays($intervall)) >= $NumberAllowedPickups) {
+                    if ($this->pickupGateway->getNumberOfPickupsForUserWithStoreRules($fsId, $pickupDate->copy()->subDays($intervall), $pickupDate->copy()->addDays($intervall)) >= $numberAllowedPickups) {
                         return false;
                     }
                     // if we have more then or same amount of allowed pickups per day we return false
-                    $NumberAllowedPickupsPerDay = (int)$this->regionGateway->getRegionOption($regionId, RegionOptionType::REGION_PICKUP_RULE_LIMIT_DAY_NUMBER);
-                    if ($this->pickupGateway->getNumberOfPickupsForUserWithStoreRulesSameDay($fsId, $pickupDate) >= $NumberAllowedPickupsPerDay) {
+                    $numberAllowedPickupsPerDay = (int)$this->regionGateway->getRegionOption($regionId, RegionOptionType::REGION_PICKUP_RULE_LIMIT_DAY_NUMBER);
+                    if ($this->pickupGateway->getNumberOfPickupsForUserWithStoreRulesSameDay($fsId, $pickupDate) >= $numberAllowedPickupsPerDay) {
                         return false;
                     }
                 }

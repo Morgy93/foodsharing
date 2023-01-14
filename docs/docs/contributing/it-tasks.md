@@ -117,7 +117,7 @@ Announcements for Hackweeks can be found in the [Slack Channel #foodsharing-hack
 Thank you for reading so long. With a fit IT we have so much more potential and of course it would be great to distribute the many tasks on many shoulders. With an even cooler IT team, we can do whatever we want in a good mood. And you learn a whole bunch of exciting stuff on the side. We are really looking forward to welcoming you and your friends to the team soon.
 
 📣📣 **Maybe it's really not for you, but please send someone the link to this page. So YOU CAN HELP us and thus the whole community A LOT! ❤️ ❤️**   
-https://devdocs.foodsharing.network/it-tasks_EN.html
+https://devdocs.foodsharing.network/docs/current/contributing/it-tasks
 
 Best regards from your IT team!
 [it@foodsharing.network](mailto:it@foodsharing.network)

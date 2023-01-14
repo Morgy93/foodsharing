@@ -928,13 +928,36 @@ class StoreGateway extends BaseGateway
         $this->db->update('fs_betrieb', ['team_status' => $teamStatus], ['id' => $storeId]);
     }
 
+    public function getAllStores(array $listOfcooperationStatus = []): array
+    {
+        $where = '';
+        $countStates = count($listOfcooperationStatus);
+        if ($countStates != 0) {
+            $cooperationStatusPlaceHolder = implode(',', array_fill(0, $countStates, '?'));
+
+            $where = 'WHERE b.betrieb_status_id IN (' . $cooperationStatusPlaceHolder . ');';
+        }
+        $values = array_map(
+            function (CooperationStatus $status) {
+                return $status->value;
+            },
+            $listOfcooperationStatus);
+
+        return $this->db->fetchAll(
+            'SELECT
+                b.`id`, b.`name`
+            FROM
+                fs_betrieb b ' . $where,
+            $values);
+    }
+
     /**
      * Return all stores.
      * Can be restricted to stores the user is a member of.
      *
      * @return array name and id of the stores
      */
-    public function getStores(int $fs_id = null): array
+    public function getStores(int $fs_id = null, array $cooperationStatus = []): array
     {
         if ($fs_id) {
             return $this->db->fetchAll('SELECT
@@ -953,7 +976,7 @@ class StoreGateway extends BaseGateway
                 ':starting' => CooperationStatus::COOPERATION_STARTING->value
             ]);
         } else {
-            return $this->db->fetchAllByCriteria('fs_betrieb', ['id', 'name']);
+            return $this->getAllStores();
         }
     }
 

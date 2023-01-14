@@ -496,7 +496,7 @@ settings:
   title: Paramètres
   name_change:
     desc: Il n'est pas possible de modifier son propre nom de manière autonome. Tu
-      peux toutefois demander un <a {link}">changement de nom</a>.
+      peux toutefois demander un <a {link}">changement de nom</a> .
     request: Demander un changement de nom
     title: Nom (Prénom et nom)
     foodsharer_info: Pour changer ton nom, tu dois nous faire une demande sous <a

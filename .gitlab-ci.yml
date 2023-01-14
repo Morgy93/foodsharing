@@ -43,11 +43,6 @@ stages:
   tags:
     - non-shared
     - foodsharing # run it on our foodsharing ci server
-  dependencies:
-    - build:frontend
-    - build:backend
-    - build:websocket
-    - build:docs
   script:
     - chmod -R 750 ./
     - (cd deployer && composer install)
@@ -88,10 +83,6 @@ build:websocket:
   image: registry.gitlab.com/foodsharing-dev/images/node:latest
   script:
     - (cd websocket && yarn && yarn lint)
-  cache:
-    key: websocket:build:cache
-    paths:
-      - websocket/node_modules
   artifacts:
     <<: *build-artifacts
     paths:
@@ -112,7 +103,6 @@ build:frontend:
   cache:
     key: frontend:build:cache
     paths:
-      - assets
       - client/node_modules
   artifacts:
     <<: *build-artifacts
@@ -135,7 +125,6 @@ build:backend:
   cache:
     key: backend:build:cache
     paths:
-      - vendor
       - .php-cs-fixer.php.cache
   artifacts:
     <<: *build-artifacts
@@ -218,14 +207,12 @@ test:backend-code:
     - build:frontend
     - build:backend
     - build:websocket
-    - test:backend-acceptance
   script:
     - touch $CI_PROJECT_DIR/code_updated # Create file to notify websocket container that code is up to date
     - ./scripts/ci-backend-test-code
   cache:
     key: backend:build:cache
     paths:
-      - vendor
       - .php-cs-fixer.php.cache
   artifacts:
     <<: *test-artifacts
@@ -292,7 +279,6 @@ test:backend-acceptance:
   cache:
     key: backend:build:cache
     paths:
-      - vendor
       - .php-cs-fixer.php.cache
   artifacts:
     <<: *test-artifacts
@@ -317,6 +303,8 @@ test:frontend:
     REDIS_HOST: redis
   script:
     - (cd client && yarn && yarn test)
+  dependencies:
+    - build:frontend
   cache:
     key: frontend:build:cache
     paths:
@@ -347,10 +335,6 @@ test:websocket:
     - build:websocket
   script:
     - (cd websocket && yarn test)
-  cache:
-    key: websocket:build:cache
-    paths:
-      - websocket/node_modules
 
 deploy:beta:
   <<: *deploy
@@ -358,6 +342,10 @@ deploy:beta:
     - if: $CI_COMMIT_BRANCH == 'master'
     - if: $CI_PIPELINE_SOURCE == "schedule"
       when: never
+  dependencies:
+    - build:frontend
+    - build:backend
+    - build:websocket
   environment:
     name: beta
     url: https://beta.foodsharing.de
@@ -368,6 +356,10 @@ deploy:production:
     - if: $CI_COMMIT_BRANCH == 'production'
     - if: $CI_PIPELINE_SOURCE == "schedule"
       when: never
+  dependencies:
+    - build:frontend
+    - build:backend
+    - build:websocket
   environment:
     name: production
     url: https://foodsharing.de

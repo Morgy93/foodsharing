@@ -796,7 +796,7 @@ pickup:
   signout_sure: Do you really want to leave this team?
   copiedNumber: '"{number}" was copied to the clipboard.'
   leave: Leave
-  kick: Kick
+  kick: Remove
   history:
     title: Pick-up history
     search: Show pick-ups
@@ -823,7 +823,7 @@ pickup:
       \ the maximum number of possible foodsavers with the company!\nAny additional\
       \ helpers required can wait with bicycle trailers or the like\nout of sight\
       \ of the store.\n"
-    added: Pick-up date was added.
+    added: Pick-up slot was added.
   slot_remove: Delete slot
   slot_add: Add slot
   no_slots_available: No pick-up slots available
@@ -841,7 +841,7 @@ pickup:
   delete_not_empty: At the moment there are still foodsavers enrolled. You can only
     delete this pick-up date when all slots have been emptied before.
   to_be_confirmed: This pick-up date still has to be confirmed by a Store Coordinator.
-  delete_title: Delete pick-up
+  delete_title: Delete pick-up slot
   join_agree: yes, absolutely
   join_cancel: rather not
   really_join_date: Would you like to sign up for the pick-up on {date}?
@@ -854,7 +854,7 @@ pickup:
     header: Pick-ups
     tab:
       registered:
-        name: Registered Pick-ups
+        name: Registered Pick-up slots
         tooltip:
           own: Future pick-ups, for which you signed up
           other: Future pick-ups the user signed up for
@@ -1822,8 +1822,8 @@ store:
     store, the following district-wide CHERRY rule applies:'
   regionPickupRulesInactive: The additional district rules for pick-ups are not active
   regionPickupRuleLong: Within {regionPickupRuleTimespan} days, no more than a total
-    of {regionPickupRuleLimit} pick-ups may be made, taking into account stores from
-    all districts with pick-up rules. No more than a total of {regionPickupRuleLimitDay}
+    of {regionPickupRuleLimit} pick-ups may be made, taking into account all stores
+    with pick-up rule, regardless which district. No more than a total of {regionPickupRuleLimitDay}
     times may be picked up from these districts per day. {regionPickupRuleInactive}
     hours before the pick-up, this rule is not taken into account.
   regionPickupRules: additional CHERRY rule
@@ -2156,8 +2156,8 @@ fsp:
   publicwall: Please remember that posts on a Food-Share Point's pinboard are public.
   noManager: There must be at least one person responsible for this Food-Share Point.
   addedOn: Added on
-  rejectConfirm: Attention, if you delete this Food-Share Point, you won't be able
-    to undo this. Proceed?
+  rejectConfirm: Attention! You cannot undo deletion of this Food-Share Point. Do
+    you want to proceed deleting it?
   addError: The Food-Share Point wasn't added. Did you fill out everything correctly?
   descLabel: Write some basic information about the Food-Share Point, especially when
     it is accessible/open.
