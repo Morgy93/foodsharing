@@ -4,20 +4,8 @@ sidebar_position: 2
 
 # Getting Ready
 Foodsharing is mostly written in [PHP](https://www.php.net/docs.php) and [vue.js](https://vuejs.org).
+You have two choices when setting up the code: [locally](#local) or in a [browser](#go-mobile-wild).
 
-
-### Requirements
-- **UNIX** (or [WSL](https://ubuntu.com/tutorials/install-ubuntu-on-wsl2-on-windows-10#1-overview))
-- [Git](https://git-scm.com/book/en/v2/Getting-Started-Installing-Git)
-- [Node.js (16.18)](https://nodejs.org/download/release/v16.18.0/)
-    - Newer versions can cause conflicts with the legacy code.
-- [Docker](https://docs.docker.com/)
-
-:::note
-
-To switch between Node.js versions on a **UNIX** system, you can use [nvm](https://github.com/nvm-sh/nvm).
-
-:::
 
 ## Project structure
 
@@ -66,7 +54,22 @@ Foodsharing
 </details>
 
 
-## Start the local engine
+
+
+## Local
+### Requirements
+- **UNIX** (or [WSL](https://ubuntu.com/tutorials/install-ubuntu-on-wsl2-on-windows-10#1-overview))
+- [Git](https://git-scm.com/book/en/v2/Getting-Started-Installing-Git)
+- [Node.js (16.18)](https://nodejs.org/download/release/v16.18.0/)
+    - Newer versions can cause conflicts with the legacy code.
+- [Docker](https://docs.docker.com/)
+
+:::note
+
+To switch between Node.js versions on a **UNIX** system, you can use [nvm](https://github.com/nvm-sh/nvm).
+
+:::
+### Start the local engine
 
 Developing on a local basis requires a UNIX base system with docker installed.
 
@@ -91,8 +94,6 @@ cd foodsharing && ./scripts/start
 You need an ssh key on your system to clone the repository with SSH ([set up guide](https://docs.gitlab.com/ee/user/ssh.html#generate-an-ssh-key-pair)).
 
 :::
-
-
 ## Go mobile wild
 
 A pre-configured **Visual Studio Code**, requires a [GitLab](https://gitlab.com) account.

@@ -9,8 +9,8 @@ In general, you should, after picking a module that hasn't been refactored yet, 
 
 ## Identify the Frontend
 * create a component folder and files in [`client/src/components/`](https://gitlab.com/foodsharing-dev/foodsharing/-/tree/master/client/src/components)
-* or create a page folder and file in [`client/src/components/`](https://gitlab.com/foodsharing-dev/foodsharing/-/tree/master/client/src/views/pages)
-* to register the component or page and create a JavaScript-file in the `PHP`-folder
+* or create a page folder and file in [`client/src/components/`](https://gitlab.com/foodsharing-dev/foodsharing/-/tree/master/client/src/views/pages) <!--ToDo when to create a Page and when a Component Folder -->
+* to register the component or page, create a JavaScript-file in the `PHP`-folder
 
 ### Example: Dashboard Module
 <!-- ToDo @diejani What is this paragraph supposed to describe? -->
@@ -29,20 +29,20 @@ vueRegister({
 vueApply('#dashboard')
 ```
 
-When replacing a complete page, you could add the page to the [base.twig#L63](https://gitlab.com/foodsharing-dev/foodsharing/-/blob/master/templates/layouts/base.twig#L63). Which gives you more control over the page because the `else` uses an old grid, which won't stop using.
+When replacing a complete page, you could add the page to the [base.twig#L63](https://gitlab.com/foodsharing-dev/foodsharing/-/blob/master/templates/layouts/base.twig#L63). Which gives you more control over the page because the `else` uses an old grid, which won't stop using. <!-- ToDo What is the else? and what will it not stop using? -->
 
 ```twig
 {% if route in 'dashboard,index,content'|split(',') %}
 ```
 
-> Maybe you need to extend [shame-old-style-corrections.scss#L1-4](https://gitlab.com/foodsharing-dev/foodsharing/-/blob/master/client/src/scss/shame-old-style-corrections.scss#L1-4). To remove the margin.
+> Maybe you need to extend [shame-old-style-corrections.scss#L1-4](https://gitlab.com/foodsharing-dev/foodsharing/-/blob/master/client/src/scss/shame-old-style-corrections.scss#L1-4). To remove the margin. <!-- ToDo Why does the margin require removal? -->
 
 
 ## Hard part
-* Find the code position, where **HTML** is in use.
-* Extract the used variables
+* Find the code position, where **HTML** is in use. <!--ToDo The generated html files? Or where those are generated in the code? -->
+* Extract the used variables <!-- How? For what?-->
 
-<details><summary>Some examples</summary>
+<details><summary>Some examples</summary> <!--ToDo of what? -->
 
 ```php
 return $this->twig->render('pages/FoodSharePoint/foodSharePointTop.html.twig', [
@@ -123,7 +123,7 @@ public function joininfo(): string
 </details>
 
 ## Showing the Vue-Component
-When you found the correct `PHP`-view file, you can register the `Vue`-component in it.
+When you found the correct `PHP`-view file, you can register the `Vue`-component in it. <!--ToDo What PHP file is being referred to here? We've only been introduced to a folder -->
 
 ```php
 $this->vueComponent('component-id', 'component-name', $params)
