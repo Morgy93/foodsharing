@@ -109,7 +109,7 @@ final class EmailHelper
             $mail->addRecipient($to);
         }
         $mail->setHighPriority($highPriority);
-        $mail->send('transaction');
+        $mail->send('defaultMail');
         $this->metrics->addOutgoingMail($tpl_id, $num_recipients);
     }
 
