@@ -2,6 +2,7 @@
 
 namespace Foodsharing\Lib\Db;
 
+use Foodsharing\Modules\Core\CommonConst;
 use Redis;
 
 class Mem
@@ -50,8 +51,8 @@ class Mem
             $this->ensureConnected();
 
             $workingQueue = match ($type) {
-                'newsletter' => $this->redisQueueForNewsletterMails,
-                default => $this->redisQueueForNormalMails,
+                'newsletter' => CommonConst::redisQueueForNewsletterMails,
+                default => CommonConst::redisQueueForNormalMails,
             };
 
             if ($highPriority) {

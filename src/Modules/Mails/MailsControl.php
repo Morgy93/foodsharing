@@ -4,6 +4,7 @@ namespace Foodsharing\Modules\Mails;
 
 use Ddeboer\Imap\Server;
 use Foodsharing\Modules\Console\ConsoleControl;
+use Foodsharing\Modules\Core\CommonConst;
 use Foodsharing\Modules\Core\Database;
 use Foodsharing\Modules\Core\InfluxMetrics;
 use Foodsharing\Utility\EmailHelper;
@@ -20,9 +21,6 @@ class MailsControl extends ConsoleControl
     private InfluxMetrics $metrics;
     private RouteHelper $routeHelper;
     private EmailHelper $emailHelper;
-
-    public const redisQueueForNewsletterMails = 'newsletterQueue';
-    public const redisQueueForNormalMails = 'mailQueue';
 
     /*
      * todo move this to config file as a constant if this becomes a permanent solution
@@ -62,8 +60,8 @@ class MailsControl extends ConsoleControl
     public function queueWorker($type = null)
     {
         $sourceKey = match ($type) {
-            'newsletter' => $this->redisQueueForNewsletterMails,
-            default => $this->redisQueueForNormalMails,
+            'newsletter' => CommonConst::redisQueueForNewsletterMails,
+            default => CommonConst::redisQueueForNormalMails,
         };
 
         $this->mem->ensureConnected();
