@@ -14,67 +14,67 @@ use Foodsharing\Utility\Sanitizer;
 
 final class BlogGateway extends BaseGateway
 {
-	private BellGateway $bellGateway;
-	private FoodsaverGateway $foodsaverGateway;
-	private Sanitizer $sanitizerService;
-	private Session $session;
+    private BellGateway $bellGateway;
+    private FoodsaverGateway $foodsaverGateway;
+    private Sanitizer $sanitizerService;
+    private Session $session;
 
-	public function __construct(
-		BellGateway $bellGateway,
-		Database $db,
-		FoodsaverGateway $foodsaverGateway,
-		Sanitizer $sanitizerService,
-		Session $session
-	) {
-		parent::__construct($db);
-		$this->bellGateway = $bellGateway;
-		$this->foodsaverGateway = $foodsaverGateway;
-		$this->sanitizerService = $sanitizerService;
-		$this->session = $session;
-	}
+    public function __construct(
+        BellGateway $bellGateway,
+        Database $db,
+        FoodsaverGateway $foodsaverGateway,
+        Sanitizer $sanitizerService,
+        Session $session
+    ) {
+        parent::__construct($db);
+        $this->bellGateway = $bellGateway;
+        $this->foodsaverGateway = $foodsaverGateway;
+        $this->sanitizerService = $sanitizerService;
+        $this->session = $session;
+    }
 
-	public function setPublished(int $blogId, bool $isPublished): int
-	{
-		return $this->db->update('fs_blog_entry', ['active' => intval($isPublished)], ['id' => $blogId]);
-	}
+    public function setPublished(int $blogId, bool $isPublished): int
+    {
+        return $this->db->update('fs_blog_entry', ['active' => intval($isPublished)], ['id' => $blogId]);
+    }
 
-	public function update_blog_entry(int $id, array $data): int
-	{
-		$data_stripped = [
-			'bezirk_id' => $data['bezirk_id'],
-			'foodsaver_id' => $data['foodsaver_id'],
-			'name' => strip_tags($data['name']),
-			'teaser' => strip_tags($data['teaser']),
-			'body' => $data['body'],
-			'time' => strip_tags($data['time']),
-		];
+    public function update_blog_entry(int $id, array $data): int
+    {
+        $data_stripped = [
+            'bezirk_id' => $data['bezirk_id'],
+            'foodsaver_id' => $data['foodsaver_id'],
+            'name' => strip_tags($data['name']),
+            'teaser' => strip_tags($data['teaser']),
+            'body' => $data['body'],
+            'time' => strip_tags($data['time']),
+        ];
 
-		if (!empty($data['picture'])) {
-			$data_stripped['picture'] = strip_tags($data['picture']);
-		}
+        if (!empty($data['picture'])) {
+            $data_stripped['picture'] = strip_tags($data['picture']);
+        }
 
-		return $this->db->update(
-			'fs_blog_entry',
-			$data_stripped,
-			['id' => $id]
-		);
-	}
+        return $this->db->update(
+            'fs_blog_entry',
+            $data_stripped,
+            ['id' => $id]
+        );
+    }
 
-	public function getAuthorOfPost(int $article_id)
-	{
-		$val = false;
-		try {
-			$val = $this->db->fetchByCriteria('fs_blog_entry', ['bezirk_id', 'foodsaver_id'], ['id' => $article_id]);
-		} catch (\Exception $e) {
-			// has to be caught until we can check whether a to be fetched value does really exist.
-		}
+    public function getAuthorOfPost(int $article_id)
+    {
+        $val = false;
+        try {
+            $val = $this->db->fetchByCriteria('fs_blog_entry', ['bezirk_id', 'foodsaver_id'], ['id' => $article_id]);
+        } catch (\Exception $e) {
+            // has to be caught until we can check whether a to be fetched value does really exist.
+        }
 
-		return $val;
-	}
+        return $val;
+    }
 
-	public function getPost(int $id): array
-	{
-		return $this->db->fetch('
+    public function getPost(int $id): array
+    {
+        return $this->db->fetch('
 			SELECT
 				b.`id`,
 				b.`name`,
@@ -93,15 +93,15 @@ final class BlogGateway extends BaseGateway
 				b.`active` = 1
 			AND
 				b.id = :fs_id',
-			[':fs_id' => $id]);
-	}
+            [':fs_id' => $id]);
+    }
 
-	public function listNews(int $page): array
-	{
-		$page = ($page - 1) * 10;
+    public function listNews(int $page): array
+    {
+        $page = ($page - 1) * 10;
 
-		return $this->db->fetchAll(
-			'
+        return $this->db->fetchAll(
+            '
 			SELECT
 				b.`id`,
 				b.`name`,
@@ -122,20 +122,20 @@ final class BlogGateway extends BaseGateway
 			ORDER BY
 				b.`id` DESC
 			LIMIT :page,10',
-			[':page' => $page]
-		);
-	}
+            [':page' => $page]
+        );
+    }
 
-	public function getBlogpostList(): array
-	{
-		if ($this->session->mayRole(Role::ORGA)) {
-			$filter = '';
-		} else {
-			$ownRegionIds = implode(',', array_map('intval', $this->session->listRegionIDs()));
-			$filter = 'WHERE `bezirk_id` IN (' . $ownRegionIds . ')';
-		}
+    public function getBlogpostList(): array
+    {
+        if ($this->session->mayRole(Role::ORGA)) {
+            $filter = '';
+        } else {
+            $ownRegionIds = implode(',', array_map('intval', $this->session->listRegionIDs()));
+            $filter = 'WHERE `bezirk_id` IN (' . $ownRegionIds . ')';
+        }
 
-		return $this->db->fetchAll('
+        return $this->db->fetchAll('
 			SELECT 	 	`id`,
 						`name`,
 						`foodsaver_id`,
@@ -147,17 +147,17 @@ final class BlogGateway extends BaseGateway
 			FROM 		`fs_blog_entry`
 			' . $filter . '
 			ORDER BY `time` DESC');
-	}
+    }
 
-	public function del_blog_entry(int $id): int
-	{
-		return $this->db->delete('fs_blog_entry', ['id' => $id]);
-	}
+    public function del_blog_entry(int $id): int
+    {
+        return $this->db->delete('fs_blog_entry', ['id' => $id]);
+    }
 
-	public function getOne_blog_entry(int $id): array
-	{
-		return $this->db->fetch(
-			'
+    public function getOne_blog_entry(int $id): array
+    {
+        return $this->db->fetch(
+            '
 			SELECT
 			`id`,
 			`bezirk_id`,
@@ -171,54 +171,54 @@ final class BlogGateway extends BaseGateway
 			`picture`
 			FROM 		`fs_blog_entry`
 			WHERE 		`id` = :fs_id',
-			[':fs_id' => $id]
-		);
-	}
+            [':fs_id' => $id]
+        );
+    }
 
-	public function add_blog_entry(array $data): int
-	{
-		$regionId = intval($data['bezirk_id']);
-		$active = intval($this->session->mayRole(Role::ORGA) || $this->session->isAdminFor($regionId));
+    public function add_blog_entry(array $data): int
+    {
+        $regionId = intval($data['bezirk_id']);
+        $active = intval($this->session->mayRole(Role::ORGA) || $this->session->isAdminFor($regionId));
 
-		$id = $this->db->insert(
-			'fs_blog_entry',
-			[
-				'bezirk_id' => $regionId,
-				'foodsaver_id' => (int)$data['foodsaver_id'],
-				'name' => strip_tags($data['name']),
-				'teaser' => strip_tags($data['teaser']),
-				'body' => $data['body'],
-				'time' => strip_tags($data['time']),
-				'picture' => strip_tags($data['picture']),
-				'active' => $active,
-			]
-		);
+        $id = $this->db->insert(
+            'fs_blog_entry',
+            [
+                'bezirk_id' => $regionId,
+                'foodsaver_id' => (int)$data['foodsaver_id'],
+                'name' => strip_tags($data['name']),
+                'teaser' => strip_tags($data['teaser']),
+                'body' => $data['body'],
+                'time' => strip_tags($data['time']),
+                'picture' => strip_tags($data['picture']),
+                'active' => $active,
+            ]
+        );
 
-		$foodsaver = [];
-		$orgateam = $this->foodsaverGateway->getOrgaTeam();
-		$botschafter = $this->foodsaverGateway->getAdminsOrAmbassadors($regionId);
+        $foodsaver = [];
+        $orgateam = $this->foodsaverGateway->getOrgaTeam();
+        $botschafter = $this->foodsaverGateway->getAdminsOrAmbassadors($regionId);
 
-		foreach ($orgateam as $o) {
-			$foodsaver[$o['id']] = $o;
-		}
-		foreach ($botschafter as $b) {
-			$foodsaver[$b['id']] = $b;
-		}
+        foreach ($orgateam as $o) {
+            $foodsaver[$o['id']] = $o;
+        }
+        foreach ($botschafter as $b) {
+            $foodsaver[$b['id']] = $b;
+        }
 
-		$bellData = Bell::create(
-			'blog_new_check_title',
-			'blog_new_check',
-			'fas fa-bullhorn',
-			['href' => '/?page=blog&sub=edit&id=' . $id],
-			[
-				'user' => $this->session->user('name'),
-				'teaser' => $this->sanitizerService->tt($data['teaser'], 100),
-				'title' => $data['name']
-			],
-			BellType::createIdentifier(BellType::NEW_BLOG_POST, $id)
-		);
-		$this->bellGateway->addBell($foodsaver, $bellData);
+        $bellData = Bell::create(
+            'blog_new_check_title',
+            'blog_new_check',
+            'fas fa-bullhorn',
+            ['href' => '/?page=blog&sub=edit&id=' . $id],
+            [
+                'user' => $this->session->user('name'),
+                'teaser' => $this->sanitizerService->tt($data['teaser'], 100),
+                'title' => $data['name']
+            ],
+            BellType::createIdentifier(BellType::NEW_BLOG_POST, $id)
+        );
+        $this->bellGateway->addBell($foodsaver, $bellData);
 
-		return $id;
-	}
+        return $id;
+    }
 }

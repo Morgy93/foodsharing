@@ -12,17 +12,17 @@ $env = $_SERVER['FS_ENV'] ?? 'dev';
 $debug = (bool)($_SERVER['APP_DEBUG'] ?? ('prod' !== $env));
 
 if ($debug) {
-	umask(0000);
+    umask(0000);
 
-	Debug::enable();
+    Debug::enable();
 }
 
 if ($trustedProxies = $_SERVER['TRUSTED_PROXIES'] ?? false) {
-	Request::setTrustedProxies(explode(',', $trustedProxies), Request::HEADER_X_FORWARDED_ALL ^ Request::HEADER_X_FORWARDED_HOST);
+    Request::setTrustedProxies(explode(',', $trustedProxies), Request::HEADER_X_FORWARDED_ALL ^ Request::HEADER_X_FORWARDED_HOST);
 }
 
 if ($trustedHosts = $_SERVER['TRUSTED_HOSTS'] ?? false) {
-	Request::setTrustedHosts(explode(',', $trustedHosts));
+    Request::setTrustedHosts(explode(',', $trustedHosts));
 }
 
 $kernel = new Kernel($env, $debug);

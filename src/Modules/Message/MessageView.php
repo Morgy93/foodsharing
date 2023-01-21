@@ -6,8 +6,8 @@ use Foodsharing\Modules\Core\View;
 
 final class MessageView extends View
 {
-	public function index(): string
-	{
-		return $this->vueComponent('message', 'MessagePage');
-	}
+    public function index(): string
+    {
+        return $this->vueComponent('message', 'MessagePage');
+    }
 }

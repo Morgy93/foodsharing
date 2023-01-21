@@ -2,7 +2,7 @@
 
 $I = new CliTester($scenario);
 
-$store = $I->createStore(1);
+$store = $I->createStore(1, null, null, ['betrieb_status_id' => '5']);
 $store_established = $I->createStore(1, null, null, ['betrieb_status_id' => '5']);
 
 $fetcher_unconfirmed_past_1 = $I->createFoodsaver();

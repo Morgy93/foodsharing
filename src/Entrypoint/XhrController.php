@@ -15,101 +15,101 @@ use Symfony\Component\HttpFoundation\Response;
 
 class XhrController extends AbstractController
 {
-	/*
-	   methods wich are excluded from the CSRF Protection.
-	   We start with every method and remove one by another
-	   NEVER ADD SOMETING TO THIS LIST!
-	*/
-	private const csrf_whitelist = [
-		// 'bBubble',
-		// 'out',
-		// 'getRecip',
-		// 'continueMail',
-		// 'newregion',
-		// 'editpickups',
-		// 'bezirkTree',
-		// 'bteamstatus',
-		// 'getBezirk',
-		// 'saveBezirk',
-		// 'fetchDeny',
-		// 'fetchConfirm',
-		// 'delPost',
-		// 'abortEmail',
-	];
+    /*
+       methods wich are excluded from the CSRF Protection.
+       We start with every method and remove one by another
+       NEVER ADD SOMETING TO THIS LIST!
+    */
+    private const csrf_whitelist = [
+        // 'bBubble',
+        // 'out',
+        // 'getRecip',
+        // 'continueMail',
+        // 'newregion',
+        // 'editpickups',
+        // 'bezirkTree',
+        // 'bteamstatus',
+        // 'getBezirk',
+        // 'saveBezirk',
+        // 'fetchDeny',
+        // 'fetchConfirm',
+        // 'delPost',
+        // 'abortEmail',
+    ];
 
-	/**
-	 * @DisableCsrfProtection CSRF Protection (originally done for the REST API)
-	 * breaks POST on these entrypoints right now,
-	 * so this annotation disables it.
-	 * Note that this entry point still performs CSRF checks on its own,
-	 * except for what's specified in csrf_whitelist.
-	 */
-	public function __invoke(
-		Request $request,
-		Session $session,
-		Mem $mem,
-		InfluxMetrics $influxdb,
-		XhrMethods $xhr
-	): Response {
-		$session->initIfCookieExists();
+    /**
+     * @DisableCsrfProtection CSRF Protection (originally done for the REST API)
+     * breaks POST on these entrypoints right now,
+     * so this annotation disables it.
+     * Note that this entry point still performs CSRF checks on its own,
+     * except for what's specified in csrf_whitelist.
+     */
+    public function __invoke(
+        Request $request,
+        Session $session,
+        Mem $mem,
+        InfluxMetrics $influxdb,
+        XhrMethods $xhr
+    ): Response {
+        $session->initIfCookieExists();
 
-		// is this actually used anywhere? (prod?)
-		global $g_page_cache;
-		if (isset($g_page_cache)) {
-			$cache = new Caching($g_page_cache, $session, $mem, $influxdb);
-			$cache->lookup();
-		}
+        // is this actually used anywhere? (prod?)
+        global $g_page_cache;
+        if (isset($g_page_cache)) {
+            $cache = new Caching($g_page_cache, $session, $mem, $influxdb);
+            $cache->lookup();
+        }
 
-		$action = $request->query->get('f');
+        $action = $request->query->get('f');
 
-		if ($action === null) {
-			return new Response(null, Response::HTTP_BAD_REQUEST);
-		}
+        if ($action === null) {
+            return new Response(null, Response::HTTP_BAD_REQUEST);
+        }
 
-		if (!in_array($action, XhrController::csrf_whitelist) && !$session->isValidCsrfHeader()) {
-			$response = new Response();
-			$response->setProtocolVersion('1.1');
-			$response->setStatusCode(Response::HTTP_FORBIDDEN);
-			$response->setContent('CSRF Failed: CSRF token missing or incorrect.');
+        if (!in_array($action, XhrController::csrf_whitelist) && !$session->isValidCsrfHeader()) {
+            $response = new Response();
+            $response->setProtocolVersion('1.1');
+            $response->setStatusCode(Response::HTTP_FORBIDDEN);
+            $response->setContent('CSRF Failed: CSRF token missing or incorrect.');
 
-			return $response;
-		}
+            return $response;
+        }
 
-		$func = 'xhr_' . $action;
-		if (!method_exists($xhr, $func)) {
-			return new Response(null, Response::HTTP_BAD_REQUEST);
-		}
+        $func = 'xhr_' . $action;
+        if (!method_exists($xhr, $func)) {
+            return new Response(null, Response::HTTP_BAD_REQUEST);
+        }
 
-		$response = new Response();
+        $response = new Response();
 
-		$influxdb->addPageStatData(['controller' => $func]);
+        $influxdb->addPageStatData(['controller' => $func]);
 
-		ob_start();
-		echo $xhr->$func($_GET);
-		$page = ob_get_contents();
-		ob_end_clean();
+        ob_start();
+        echo $xhr->$func($_GET);
+        $page = ob_get_contents();
+        ob_end_clean();
 
-		if ($page === XhrResponses::PERMISSION_DENIED) {
-			$response->setProtocolVersion('1.1');
-			$response->setStatusCode(Response::HTTP_FORBIDDEN);
-			$response->setContent('Permission denied');
+        if ($page === XhrResponses::PERMISSION_DENIED) {
+            $response->setProtocolVersion('1.1');
+            $response->setStatusCode(Response::HTTP_FORBIDDEN);
+            $response->setContent('Permission denied');
 
-			return $response;
-		}
+            return $response;
+        }
 
-		if (is_string($page) && (!trim($page) || $page[0] == '{' || $page[0] == '[')) {
-			// just assume it's JSON, to prevent the browser from interpreting it as
-			// HTML, which could result in XSS possibilities
-			$response->headers->set('Content-Type', 'application/json');
-		}
+        if (is_string($page) && (!trim($page) || $page[0] == '{' || $page[0] == '[')) {
+            // just assume it's JSON, to prevent the browser from interpreting it as
+            // HTML, which could result in XSS possibilities
+            $response->headers->set('Content-Type', 'application/json');
+        }
 
-		// check for page caching
-		if (isset($cache) && $cache->shouldCache()) {
-			$cache->cache($page);
-		}
+        // check for page caching
+        if (isset($cache) && $cache->shouldCache()) {
+            $cache->cache($page);
+        }
 
-		$response->setContent($page);
+        $response->setContent($page);
 
-		return $response;
-	}
+        return $response;
+    }
 }

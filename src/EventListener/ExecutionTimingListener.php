@@ -9,29 +9,29 @@ use Symfony\Component\HttpKernel\KernelEvents;
 
 class ExecutionTimingListener implements EventSubscriberInterface
 {
-	private $influxMetrics;
+    private $influxMetrics;
 
-	public function __construct(InfluxMetrics $influxMetrics)
-	{
-		$this->influxMetrics = $influxMetrics;
-	}
+    public function __construct(InfluxMetrics $influxMetrics)
+    {
+        $this->influxMetrics = $influxMetrics;
+    }
 
-	public function onKernelController(ControllerEvent $event)
-	{
-		$controller = $event->getController();
-		// when a controller class defines multiple action methods, the controller
-		// is returned as [$controllerInstance, 'methodName']
-		if (!is_array($controller)) {
-			return;
-		}
+    public function onKernelController(ControllerEvent $event)
+    {
+        $controller = $event->getController();
+        // when a controller class defines multiple action methods, the controller
+        // is returned as [$controllerInstance, 'methodName']
+        if (!is_array($controller)) {
+            return;
+        }
 
-		$this->influxMetrics->addPageStatData(['controller' => get_class($controller[0]), 'method' => $controller[1]]);
-	}
+        $this->influxMetrics->addPageStatData(['controller' => get_class($controller[0]), 'method' => $controller[1]]);
+    }
 
-	public static function getSubscribedEvents()
-	{
-		return [
-			KernelEvents::CONTROLLER => 'onKernelController',
-		];
-	}
+    public static function getSubscribedEvents()
+    {
+        return [
+            KernelEvents::CONTROLLER => 'onKernelController',
+        ];
+    }
 }

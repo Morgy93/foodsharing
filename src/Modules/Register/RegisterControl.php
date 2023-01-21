@@ -6,24 +6,24 @@ use Foodsharing\Modules\Core\Control;
 
 class RegisterControl extends Control
 {
-	public function __construct(
-		RegisterView $view
-	) {
-		$this->view = $view;
+    public function __construct(
+        RegisterView $view
+    ) {
+        $this->view = $view;
 
-		parent::__construct();
-	}
+        parent::__construct();
+    }
 
-	public function index()
-	{
-		if ($this->session->mayRole()) {
-			$this->flashMessageHelper->info($this->translator->trans('register.account-exists'));
-			$this->routeHelper->go('/?page=dashboard');
-		} else {
-			$this->pageHelper->addBread($this->translator->trans('register.title'));
-			$this->pageHelper->addTitle($this->translator->trans('register.title'));
+    public function index()
+    {
+        if ($this->session->mayRole()) {
+            $this->flashMessageHelper->info($this->translator->trans('register.account-exists'));
+            $this->routeHelper->go('/?page=dashboard');
+        } else {
+            $this->pageHelper->addBread($this->translator->trans('register.title'));
+            $this->pageHelper->addTitle($this->translator->trans('register.title'));
 
-			$this->pageHelper->addContent($this->view->registerForm());
-		}
-	}
+            $this->pageHelper->addContent($this->view->registerForm());
+        }
+    }
 }

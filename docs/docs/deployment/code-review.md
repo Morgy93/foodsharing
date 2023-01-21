@@ -45,23 +45,3 @@ More not-yet-implemented ideas include:
 1. Add API versioning (to allow introducing breaking api changes in the future without immediately breaking the apps) ([not yet](https://gitlab.com/foodsharing-dev/foodsharing/issues/511#note_173339753), hopefully coming at some point)
 1. Standardize pagination (e.g. fixed query param names, return total number of items, either via envelope or header)
 1. [Automatically generated documentation](https://gitlab.com/foodsharing-dev/foodsharing/issues/511#note_173339753) for REST API
-
-### Response status codes
-Please use the following status codes consistently in REST responses. More detailled explanations are listed at https://restfulapi.net/http-status-codes/.
-
-**Valid request:**
-- 200: The request was valid and contains a response body.
-- 204: The request was valid but does not contain a response body. This indicates that the client is not required to update the frontend.
-
-**User status error:**
-- 401: The user is not logged in. This should indicate to redirect the client to a login page.
-- 403: The user is logged in, but is not allowed to do the particular action. This should trigger an error message in the client.
- 
-**Parameter error:**
-- 400: Invalid request. This means that required parameters are missing, not correctly formatted, or out of a reasonable range.
-- 404: All parameters are valid but the resource does not exist.
-- 409: There is a conflict between the 
-
-For example, requesting `/api/user/{id}` should return a 400 if the id is not given or is not a number. It should return 404 if id is a number but the user with that id does not exist.
-
-Other status codes can be used but should be well documented in that function. The REST endpoints should never return 5xx codes deliberately. Those codes are use by Symfony to indicate syntax errors in the backend.

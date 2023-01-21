@@ -4,8 +4,8 @@ set -o errexit
 
 dir=$(dirname "$0")
 root="$dir/../.."
-# shellcheck source=./__helping-functions.sh
-source "$dir"/../__helping-functions.sh
+# shellcheck source=./__common.sh
+source "$dir"/../__common.sh
 
 log-header "Load API documentation"
 "$root"/bin/console nelmio:apidoc:dump --format=json > "$root"/docs/data/api_dump.json

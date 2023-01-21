@@ -8,21 +8,21 @@ use Foodsharing\Modules\Core\DBConstants\Region\ThreadStatus;
 
 class ForumGateway extends BaseGateway
 {
-	private ForumFollowerGateway $forumFollowerGateway;
+    private ForumFollowerGateway $forumFollowerGateway;
 
-	public function __construct(
-		Database $db,
-		ForumFollowerGateway $forumFollowerGateway
-	) {
-		parent::__construct($db);
-		$this->forumFollowerGateway = $forumFollowerGateway;
-	}
+    public function __construct(
+        Database $db,
+        ForumFollowerGateway $forumFollowerGateway
+    ) {
+        parent::__construct($db);
+        $this->forumFollowerGateway = $forumFollowerGateway;
+    }
 
-	// Thread-related
+    // Thread-related
 
-	public function listThreads(int $regionId, int $subforumId = 0, int $limit = 15, int $offset = 0): array
-	{
-		$threads = $this->db->fetchAll('
+    public function listThreads(int $regionId, int $subforumId = 0, int $limit = 15, int $offset = 0): array
+    {
+        $threads = $this->db->fetchAll('
 			SELECT 		t.id,
 						t.name as title,
 						t.`time`,
@@ -67,18 +67,18 @@ class ForumGateway extends BaseGateway
 			LIMIT :limit
 			OFFSET :offset
 		', [
-			':regionId' => $regionId,
-			':subforumId' => $subforumId,
-			':limit' => $limit,
-			':offset' => $offset,
-		]);
+            ':regionId' => $regionId,
+            ':subforumId' => $subforumId,
+            ':limit' => $limit,
+            ':offset' => $offset,
+        ]);
 
-		return $threads ?: [];
-	}
+        return $threads ?: [];
+    }
 
-	public function getThreadInfo(int $threadId): array
-	{
-		return $this->db->fetch('
+    public function getThreadInfo(int $threadId): array
+    {
+        return $this->db->fetch('
 		SELECT		t.name as title,
 					bt.bezirk_id as region_id,
 					bt.bot_theme as ambassador_forum
@@ -86,11 +86,11 @@ class ForumGateway extends BaseGateway
 		LEFT JOIN   fs_bezirk_has_theme bt ON bt.theme_id = t.id
 		WHERE		t.id = :thread_id
 		', ['thread_id' => $threadId]);
-	}
+    }
 
-	public function getThread(int $threadId): array
-	{
-		return $this->db->fetch('
+    public function getThread(int $threadId): array
+    {
+        return $this->db->fetch('
 			SELECT 		t.id,
 						b.bezirk_id AS regionId, 
 						b.bot_theme AS regionSubId, 
@@ -112,110 +112,110 @@ class ForumGateway extends BaseGateway
 			LIMIT 1
 
 		', ['thread_id' => $threadId]);
-	}
+    }
 
-	public function addThread($foodsaverId, $regionId, $title, $body, $isActive, $ambassadorForum = false)
-	{
-		$isAmbassadorForum = $ambassadorForum ? 1 : 0;
-		$threadId = $this->db->insert('fs_theme', [
-			'foodsaver_id' => $foodsaverId,
-			'name' => $title,
-			'time' => date('Y-m-d H:i:s'),
-			'active' => $isActive,
-			'status' => ThreadStatus::OPEN,
-		]);
+    public function addThread($foodsaverId, $regionId, $title, $body, $isActive, $ambassadorForum = false)
+    {
+        $isAmbassadorForum = $ambassadorForum ? 1 : 0;
+        $threadId = $this->db->insert('fs_theme', [
+            'foodsaver_id' => $foodsaverId,
+            'name' => $title,
+            'time' => date('Y-m-d H:i:s'),
+            'active' => $isActive,
+            'status' => ThreadStatus::OPEN,
+        ]);
 
-		$this->forumFollowerGateway->followThreadByBell($foodsaverId, $threadId);
+        $this->forumFollowerGateway->followThreadByBell($foodsaverId, $threadId);
 
-		$this->db->insert('fs_bezirk_has_theme', [
-			'bezirk_id' => $regionId,
-			'theme_id' => $threadId,
-			'bot_theme' => $isAmbassadorForum
-		]);
+        $this->db->insert('fs_bezirk_has_theme', [
+            'bezirk_id' => $regionId,
+            'theme_id' => $threadId,
+            'bot_theme' => $isAmbassadorForum
+        ]);
 
-		$this->addPost($foodsaverId, $threadId, $body);
+        $this->addPost($foodsaverId, $threadId, $body);
 
-		return $threadId;
-	}
+        return $threadId;
+    }
 
-	public function activateThread(int $threadId): void
-	{
-		$this->db->update('fs_theme', ['active' => 1], ['id' => $threadId]);
-	}
+    public function activateThread(int $threadId): void
+    {
+        $this->db->update('fs_theme', ['active' => 1], ['id' => $threadId]);
+    }
 
-	public function deleteThread($thread_id)
-	{
-		$this->db->delete('fs_theme_post', ['theme_id' => $thread_id]);
-		$this->db->delete('fs_theme', ['id' => $thread_id]);
-	}
+    public function deleteThread($thread_id)
+    {
+        $this->db->delete('fs_theme_post', ['theme_id' => $thread_id]);
+        $this->db->delete('fs_theme', ['id' => $thread_id]);
+    }
 
-	public function getBotThreadStatus($thread_id)
-	{
-		return $this->db->fetch('
+    public function getBotThreadStatus($thread_id)
+    {
+        return $this->db->fetch('
 			SELECT  ht.bot_theme,
 					ht.bezirk_id
 			FROM
 					fs_bezirk_has_theme ht
 			WHERE   ht.theme_id = :theme_id
 		', ['theme_id' => $thread_id]);
-	}
+    }
 
-	public function stickThread($thread_id)
-	{
-		return $this->db->update(
-			'fs_theme',
-			['sticky' => 1],
-			['id' => $thread_id]
-		);
-	}
+    public function stickThread($thread_id)
+    {
+        return $this->db->update(
+            'fs_theme',
+            ['sticky' => 1],
+            ['id' => $thread_id]
+        );
+    }
 
-	public function unstickThread($thread_id)
-	{
-		$this->db->update(
-			'fs_theme',
-			['sticky' => 0],
-			['id' => $thread_id]
-		);
-	}
+    public function unstickThread($thread_id)
+    {
+        $this->db->update(
+            'fs_theme',
+            ['sticky' => 0],
+            ['id' => $thread_id]
+        );
+    }
 
-	/**
-	 * Returns the {@see ThreadStatus} of a thread. Throws an exception if the thread does not exist.
-	 */
-	public function getThreadStatus(int $threadId): int
-	{
-		return $this->db->fetchValueByCriteria('fs_theme', 'status', ['id' => $threadId]);
-	}
+    /**
+     * Returns the {@see ThreadStatus} of a thread. Throws an exception if the thread does not exist.
+     */
+    public function getThreadStatus(int $threadId): int
+    {
+        return $this->db->fetchValueByCriteria('fs_theme', 'status', ['id' => $threadId]);
+    }
 
-	/**
-	 * Sets the status of a thread and returns whether the status was set successfully, see {@see ThreadStatus}.
-	 */
-	public function setThreadStatus(int $threadId, int $status): bool
-	{
-		return $this->db->update('fs_theme', ['status' => $status], ['id' => $threadId]) > 0;
-	}
+    /**
+     * Sets the status of a thread and returns whether the status was set successfully, see {@see ThreadStatus}.
+     */
+    public function setThreadStatus(int $threadId, int $status): bool
+    {
+        return $this->db->update('fs_theme', ['status' => $status], ['id' => $threadId]) > 0;
+    }
 
-	// Post-related
+    // Post-related
 
-	public function addPost($fs_id, $thread_id, $body)
-	{
-		$post_id = $this->db->insert(
-			'fs_theme_post',
-			[
-				'theme_id' => $thread_id,
-				'foodsaver_id' => $fs_id,
-				'body' => $body,
-				'time' => date('Y-m-d H:i:s')
-			]
-		);
+    public function addPost($fs_id, $thread_id, $body)
+    {
+        $post_id = $this->db->insert(
+            'fs_theme_post',
+            [
+                'theme_id' => $thread_id,
+                'foodsaver_id' => $fs_id,
+                'body' => $body,
+                'time' => date('Y-m-d H:i:s')
+            ]
+        );
 
-		$this->db->update('fs_theme', ['last_post_id' => $post_id], ['id' => $thread_id]);
+        $this->db->update('fs_theme', ['last_post_id' => $post_id], ['id' => $thread_id]);
 
-		return $post_id;
-	}
+        return $post_id;
+    }
 
-	private function getPostSelect()
-	{
-		return '
+    private function getPostSelect()
+    {
+        return '
 			SELECT 		fs.id AS author_id,
 						IF(fs.deleted_at IS NOT NULL,"abgemeldeter Benutzer", fs.name) AS author_name,
 						fs.photo AS author_photo,
@@ -233,18 +233,18 @@ class ForumGateway extends BaseGateway
 				ON 		ht.theme_id = p.theme_id
 			LEFT JOIN	fs_bezirk b
 				ON		b.id = ht.bezirk_id';
-	}
+    }
 
-	/**
-	 * This method is private because we currently trust the given postIds to exist as well as be not-harmful.
-	 */
-	private function getReactionsForPosts(array $postIds)
-	{
-		if (empty($postIds)) {
-			return [];
-		}
-		$postIdClause = implode(',', $postIds);
-		$reactions = $this->db->fetchAll('
+    /**
+     * This method is private because we currently trust the given postIds to exist as well as be not-harmful.
+     */
+    private function getReactionsForPosts(array $postIds)
+    {
+        if (empty($postIds)) {
+            return [];
+        }
+        $postIdClause = implode(',', $postIds);
+        $reactions = $this->db->fetchAll('
 			SELECT
 			r.post_id,
 			r.`key`,
@@ -259,107 +259,107 @@ class ForumGateway extends BaseGateway
 			ON
 			fs.id = r.foodsaver_id
 			WHERE r.post_id IN (' . $postIdClause . ')'
-		);
-		$out = [];
-		foreach ($postIds as $id) {
-			$out[$id] = [];
-		}
-		foreach ($reactions as $r) {
-			$user = [
-				'id' => $r['foodsaver_id'],
-				'name' => $r['foodsaver_name']
-			];
-			if (!isset($out[$r['post_id']][$r['key']])) {
-				$out[$r['post_id']][$r['key']] = [$user];
-			} else {
-				$out[$r['post_id']][$r['key']][] = $user;
-			}
-		}
+        );
+        $out = [];
+        foreach ($postIds as $id) {
+            $out[$id] = [];
+        }
+        foreach ($reactions as $r) {
+            $user = [
+                'id' => $r['foodsaver_id'],
+                'name' => $r['foodsaver_name']
+            ];
+            if (!isset($out[$r['post_id']][$r['key']])) {
+                $out[$r['post_id']][$r['key']] = [$user];
+            } else {
+                $out[$r['post_id']][$r['key']][] = $user;
+            }
+        }
 
-		return $out;
-	}
+        return $out;
+    }
 
-	public function addReaction($postId, $fsId, $key): bool
-	{
-		$this->db->insert(
-			'fs_post_reaction',
-			[
-				'post_id' => $postId,
-				'foodsaver_id' => $fsId,
-				'key' => $key,
-				'time' => $this->db->now()
-			]
-		);
+    public function addReaction($postId, $fsId, $key): bool
+    {
+        $this->db->insert(
+            'fs_post_reaction',
+            [
+                'post_id' => $postId,
+                'foodsaver_id' => $fsId,
+                'key' => $key,
+                'time' => $this->db->now()
+            ]
+        );
 
-		return true;
-	}
+        return true;
+    }
 
-	public function removeReaction($postId, $fsId, $key)
-	{
-		$this->db->delete(
-			'fs_post_reaction',
-			[
-				'post_id' => $postId,
-				'foodsaver_id' => $fsId,
-				'key' => $key
-			]
-		);
-	}
+    public function removeReaction($postId, $fsId, $key)
+    {
+        $this->db->delete(
+            'fs_post_reaction',
+            [
+                'post_id' => $postId,
+                'foodsaver_id' => $fsId,
+                'key' => $key
+            ]
+        );
+    }
 
-	public function listPosts($threadId)
-	{
-		$posts = $this->db->fetchAll(
-			$this->getPostSelect() . ' 
+    public function listPosts($threadId)
+    {
+        $posts = $this->db->fetchAll(
+            $this->getPostSelect() . ' 
 			WHERE 		p.theme_id = :threadId
 
 			ORDER BY 	p.`time`
 		', ['threadId' => $threadId]);
 
-		if (empty($posts)) {
-			return [];
-		}
+        if (empty($posts)) {
+            return [];
+        }
 
-		$postIds = array_column($posts, 'id');
-		$reactions = $this->getReactionsForPosts($postIds);
-		$mergeReactions = function ($post) use ($reactions) {
-			$post['reactions'] = $reactions[$post['id']];
+        $postIds = array_column($posts, 'id');
+        $reactions = $this->getReactionsForPosts($postIds);
+        $mergeReactions = function ($post) use ($reactions) {
+            $post['reactions'] = $reactions[$post['id']];
 
-			return $post;
-		};
+            return $post;
+        };
 
-		return array_map($mergeReactions, $posts);
-	}
+        return array_map($mergeReactions, $posts);
+    }
 
-	public function getPost($postId)
-	{
-		return $this->db->fetch(
-			$this->getPostSelect() . ' 
+    public function getPost($postId)
+    {
+        return $this->db->fetch(
+            $this->getPostSelect() . ' 
 			WHERE 		p.id = :postId
 
 			ORDER BY 	p.`time`
 		', ['postId' => $postId]);
-	}
+    }
 
-	public function deletePost($id)
-	{
-		$thread_id = $this->db->fetchValue('SELECT `theme_id` FROM `fs_theme_post` WHERE `id` = :id', ['id' => $id]);
-		$this->db->delete('fs_theme_post', ['id' => $id]);
+    public function deletePost($id)
+    {
+        $thread_id = $this->db->fetchValue('SELECT `theme_id` FROM `fs_theme_post` WHERE `id` = :id', ['id' => $id]);
+        $this->db->delete('fs_theme_post', ['id' => $id]);
 
-		if ($last_post_id = $this->db->fetchValue(
-			'SELECT MAX(`id`) FROM `fs_theme_post` WHERE `theme_id` = :theme_id',
-			['theme_id' => $thread_id]
-		)) {
-			$this->db->update('fs_theme', ['last_post_id' => $last_post_id], ['id' => $thread_id]);
-		} else {
-			$this->db->delete('fs_theme', ['id' => $thread_id]);
-		}
+        if ($last_post_id = $this->db->fetchValue(
+            'SELECT MAX(`id`) FROM `fs_theme_post` WHERE `theme_id` = :theme_id',
+            ['theme_id' => $thread_id]
+        )) {
+            $this->db->update('fs_theme', ['last_post_id' => $last_post_id], ['id' => $thread_id]);
+        } else {
+            $this->db->delete('fs_theme', ['id' => $thread_id]);
+        }
 
-		return true;
-	}
+        return true;
+    }
 
-	public function getRegionForPost($post_id)
-	{
-		return $this->db->fetchValue('
+    public function getRegionForPost($post_id)
+    {
+        return $this->db->fetchValue('
 			SELECT 	bt.bezirk_id
 
 			FROM 	fs_bezirk_has_theme bt,
@@ -369,11 +369,11 @@ class ForumGateway extends BaseGateway
 			AND 	t.id = bt.theme_id
 			AND 	tp.id = :id
 		', ['id' => $post_id]);
-	}
+    }
 
-	public function getForumsForThread($threadId)
-	{
-		return $this->db->fetchAll('
+    public function getForumsForThread($threadId)
+    {
+        return $this->db->fetchAll('
 		SELECT
 			bt.bezirk_id AS forumId,
 			bt.bot_theme AS forumSubId
@@ -382,18 +382,18 @@ class ForumGateway extends BaseGateway
 
 		WHERE bt.theme_id = :threadId
 		', ['threadId' => $threadId]);
-	}
+    }
 
-	public function getThreadForPost(int $postId): ?int
-	{
-		$threadId = $this->db->fetchByCriteria('fs_theme_post',
-			['theme_id'],
-			['id' => $postId]
-		);
-		if (empty($threadId)) {
-			return null;
-		} else {
-			return $threadId['theme_id'];
-		}
-	}
+    public function getThreadForPost(int $postId): ?int
+    {
+        $threadId = $this->db->fetchByCriteria('fs_theme_post',
+            ['theme_id'],
+            ['id' => $postId]
+        );
+        if (empty($threadId)) {
+            return null;
+        } else {
+            return $threadId['theme_id'];
+        }
+    }
 }

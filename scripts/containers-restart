@@ -1,15 +1,11 @@
 #!/bin/bash
 dir=$(dirname "$0")
 
-# shellcheck source=./__helping-functions.sh
-source "$dir"/__helping-functions.sh
+# shellcheck source=./__common.sh
+source "$dir"/__common.sh
 
-# ENVS
-export FS_ENV=dev
-export CURRENT_USER=$(id -u):$(id -g)
-
-if [ $@ ]; then
-  FS_ENV=$@
+if [ "$1" ]; then
+  FS_ENV="$1"
 fi
 
 # set -o errexit tells the shell to exit as soon as a command exits with non-zero status, i.e. fails

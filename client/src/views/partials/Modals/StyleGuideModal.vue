@@ -50,9 +50,10 @@
               </li>
               <li>
                 <strong>Body:</strong>
-                <span>
-                  sans-serif
-                </span>
+                <a
+                  href="https://fonts.google.com/specimen/Poppins"
+                  v-text="'poppins'"
+                />
               </li>
             </ul>
           </div>

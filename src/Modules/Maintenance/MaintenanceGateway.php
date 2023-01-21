@@ -10,68 +10,68 @@ use Foodsharing\Modules\Core\DBConstants\Quiz\SessionStatus;
 
 class MaintenanceGateway extends BaseGateway
 {
-	/**
-	 * Sets the status of all outdated baskets to {@link Status::DELETED_OTHER_REASON}.
-	 *
-	 * @return int the number of changed baskets
-	 */
-	public function deactivateOldBaskets(): int
-	{
-		return $this->db->update(
-			'fs_basket',
-			['status' => Status::DELETED_OTHER_REASON],
-			['status' => Status::REQUESTED_MESSAGE_READ, 'until <' => $this->db->now()]
-		);
-	}
+    /**
+     * Sets the status of all outdated baskets to {@link Status::DELETED_OTHER_REASON}.
+     *
+     * @return int the number of changed baskets
+     */
+    public function deactivateOldBaskets(): int
+    {
+        return $this->db->update(
+            'fs_basket',
+            ['status' => Status::DELETED_OTHER_REASON],
+            ['status' => Status::REQUESTED_MESSAGE_READ, 'until <' => $this->db->now()]
+        );
+    }
 
-	/**
-	 * Deletes all unconfirmed fetch dates in the past.
-	 *
-	 * @return int the number of deleted entries
-	 */
-	public function deleteUnconfirmedFetchDates(): int
-	{
-		return $this->db->delete('fs_abholer', ['confirmed' => 0, 'date <' => $this->db->now()]);
-	}
+    /**
+     * Deletes all unconfirmed fetch dates in the past.
+     *
+     * @return int the number of deleted entries
+     */
+    public function deleteUnconfirmedFetchDates(): int
+    {
+        return $this->db->delete('fs_abholer', ['confirmed' => 0, 'date <' => $this->db->now()]);
+    }
 
-	/**
-	 * Removes sleep status from users if it was active since yesterday and the user is not endless inactive.
-	 *
-	 * @return int the number of users that were changed
-	 */
-	public function wakeupSleepingUsers(): int
-	{
-		return $this->db->update(
-			'fs_foodsaver',
-			['sleep_status' => SleepStatus::NONE, 'sleep_from' => null, 'sleep_until' => null],
-			['sleep_until <' => $this->db->curdate(), 'sleep_status !=' => SleepStatus::FULL]
-		);
-	}
+    /**
+     * Removes sleep status from users if it was active since yesterday and the user is not endless inactive.
+     *
+     * @return int the number of users that were changed
+     */
+    public function wakeupSleepingUsers(): int
+    {
+        return $this->db->update(
+            'fs_foodsaver',
+            ['sleep_status' => SleepStatus::NONE, 'sleep_from' => null, 'sleep_until' => null],
+            ['sleep_until <' => $this->db->curdate(), 'sleep_status !=' => SleepStatus::FULL]
+        );
+    }
 
-	/**
-	 * Sets sleep status if the sleep status is now and in the future active.
-	 *
-	 * @return int the number of users that were changed
-	 */
-	public function putUsersToSleep(): int
-	{
-		return $this->db->update(
-			'fs_foodsaver',
-			['sleep_status' => SleepStatus::TEMP],
-			['sleep_until >=' => $this->db->curdate()]
-		);
-	}
+    /**
+     * Sets sleep status if the sleep status is now and in the future active.
+     *
+     * @return int the number of users that were changed
+     */
+    public function putUsersToSleep(): int
+    {
+        return $this->db->update(
+            'fs_foodsaver',
+            ['sleep_status' => SleepStatus::TEMP],
+            ['sleep_until >=' => $this->db->curdate()]
+        );
+    }
 
-	/**
-	 * Returns the managers for all stores that have pickup free slots in the next two days.
-	 */
-	public function getStoreManagersWhichWillBeAlerted(): array
-	{
-		$dow = (int)date('w');
-		$dowTomorrow = ($dow + 1) % 7;
+    /**
+     * Returns the managers for all stores that have pickup free slots in the next two days.
+     */
+    public function getStoreManagersWhichWillBeAlerted(): array
+    {
+        $dow = (int)date('w');
+        $dowTomorrow = ($dow + 1) % 7;
 
-		// find all stores with pickup slots today or tomorrow
-		$storesInRange = $this->db->fetchAll('
+        // find all stores with pickup slots today or tomorrow
+        $storesInRange = $this->db->fetchAll('
 			SELECT
 				DISTINCT z.betrieb_id
 			FROM
@@ -93,19 +93,19 @@ class MaintenanceGateway extends BaseGateway
 					z.dow = :dowTomorrow
 			)
 		', [
-			':dow' => $dow,
-			':time' => date('H:i:s'),
-			':dowTomorrow' => $dowTomorrow
-		]);
+            ':dow' => $dow,
+            ':time' => date('H:i:s'),
+            ':dowTomorrow' => $dowTomorrow
+        ]);
 
-		if (!empty($storesInRange)) {
-			$storeIds = [];
-			foreach ($storesInRange as $store) {
-				$storeIds[(int)$store['betrieb_id']] = (int)$store['betrieb_id'];
-			}
+        if (!empty($storesInRange)) {
+            $storeIds = [];
+            foreach ($storesInRange as $store) {
+                $storeIds[(int)$store['betrieb_id']] = (int)$store['betrieb_id'];
+            }
 
-			// remove all stores from the list that have someone who will pickup
-			$storeWithFetcher = $this->db->fetchAll('
+            // remove all stores from the list that have someone who will pickup
+            $storeWithFetcher = $this->db->fetchAll('
 				SELECT
 					DISTINCT a.betrieb_id AS id
 				FROM
@@ -120,13 +120,13 @@ class MaintenanceGateway extends BaseGateway
 					a.date <= CURRENT_DATE() + INTERVAL 2 DAY
 			');
 
-			foreach ($storeWithFetcher as $s) {
-				unset($storeIds[$s['id']]);
-			}
+            foreach ($storeWithFetcher as $s) {
+                unset($storeIds[$s['id']]);
+            }
 
-			// return the managers for all remaining stores in the list
-			if (!empty($storeIds)) {
-				return $this->db->fetchAll('
+            // return the managers for all remaining stores in the list
+            if (!empty($storeIds)) {
+                return $this->db->fetchAll('
 					SELECT
 						fs.id AS fs_id,
 						fs.email AS fs_email,
@@ -154,28 +154,28 @@ class MaintenanceGateway extends BaseGateway
 
 					AND
 						b.id IN(' . implode(',', $storeIds) . ')');
-			}
-		}
+            }
+        }
 
-		return [];
-	}
+        return [];
+    }
 
-	/**
-	 * Deletes all outdated entries from the blocked IPs.
-	 *
-	 * @return int the number of deleted entries
-	 */
-	public function deleteOldIpBlocks(): int
-	{
-		return $this->db->execute('DELETE FROM `fs_ipblock` WHERE UNIX_TIMESTAMP(NOW()) > UNIX_TIMESTAMP(start)+duration ')->rowCount();
-	}
+    /**
+     * Deletes all outdated entries from the blocked IPs.
+     *
+     * @return int the number of deleted entries
+     */
+    public function deleteOldIpBlocks(): int
+    {
+        return $this->db->execute('DELETE FROM `fs_ipblock` WHERE UNIX_TIMESTAMP(NOW()) > UNIX_TIMESTAMP(start)+duration ')->rowCount();
+    }
 
-	/**
-	 * Makes sure that all foodsavers in regions that have master regions are also members of the master region.
-	 */
-	public function masterRegionUpdate(): void
-	{
-		$foodsaver = $this->db->fetchAll('
+    /**
+     * Makes sure that all foodsavers in regions that have master regions are also members of the master region.
+     */
+    public function masterRegionUpdate(): void
+    {
+        $foodsaver = $this->db->fetchAll('
 				SELECT
 				b.`id`,
 				b.`name`,
@@ -191,56 +191,56 @@ class MaintenanceGateway extends BaseGateway
 				AND 	hb.active = 1
 		');
 
-		foreach ($foodsaver as $fs) {
-			if ((int)$fs['master'] > 0) {
-				$this->db->insertIgnore('fs_foodsaver_has_bezirk', [
-					'foodsaver_id' => $fs['foodsaver_id'],
-					'bezirk_id' => $fs['master'],
-					'active' => 1,
-					'added' => $this->db->now()
-				]);
-			}
-		}
-	}
+        foreach ($foodsaver as $fs) {
+            if ((int)$fs['master'] > 0) {
+                $this->db->insertIgnore('fs_foodsaver_has_bezirk', [
+                    'foodsaver_id' => $fs['foodsaver_id'],
+                    'bezirk_id' => $fs['master'],
+                    'active' => 1,
+                    'added' => $this->db->now()
+                ]);
+            }
+        }
+    }
 
-	/**
-	 * Lists all users that have a profile photo.
-	 *
-	 * @return array foodsaver Id and photo file name for each user
-	 */
-	public function listUsersWithPhoto(): array
-	{
-		return $this->db->fetchAllByCriteria('fs_foodsaver', ['id', 'photo'], ['photo !=' => '']);
-	}
+    /**
+     * Lists all users that have a profile photo.
+     *
+     * @return array foodsaver Id and photo file name for each user
+     */
+    public function listUsersWithPhoto(): array
+    {
+        return $this->db->fetchAllByCriteria('fs_foodsaver', ['id', 'photo'], ['photo !=' => '']);
+    }
 
-	/**
-	 * Removes the profile photo file name for all users in the list.
-	 *
-	 * @param array $foodsaverIds a list of foodsaver IDs
-	 */
-	public function unsetUserPhotos(array $foodsaverIds): void
-	{
-		$this->db->update('fs_foodsaver', ['photo' => ''], ['id' => $foodsaverIds]);
-	}
+    /**
+     * Removes the profile photo file name for all users in the list.
+     *
+     * @param array $foodsaverIds a list of foodsaver IDs
+     */
+    public function unsetUserPhotos(array $foodsaverIds): void
+    {
+        $this->db->update('fs_foodsaver', ['photo' => ''], ['id' => $foodsaverIds]);
+    }
 
-	/**
-	 * Updates all quiz sessions that were finished or aborted more than two weeks ago by setting
-	 * questions and answers to null. After this the quiz results can not be seen anymore.
-	 *
-	 * @return int the number of updated entries
-	 */
-	public function updateFinishedQuizSessions(): int
-	{
-		return $this->db->update(
-			'fs_quiz_session',
-			[
-				'quiz_result' => null,
-				'quiz_questions' => null,
-			],
-			[
-				'status' => [SessionStatus::FAILED, SessionStatus::PASSED],
-				'time_end <' => Carbon::now()->subWeeks(2)->format('Y-m-d H:i:s'),
-			]
-		);
-	}
+    /**
+     * Updates all quiz sessions that were finished or aborted more than two weeks ago by setting
+     * questions and answers to null. After this the quiz results can not be seen anymore.
+     *
+     * @return int the number of updated entries
+     */
+    public function updateFinishedQuizSessions(): int
+    {
+        return $this->db->update(
+            'fs_quiz_session',
+            [
+                'quiz_result' => null,
+                'quiz_questions' => null,
+            ],
+            [
+                'status' => [SessionStatus::FAILED, SessionStatus::PASSED],
+                'time_end <' => Carbon::now()->subWeeks(2)->format('Y-m-d H:i:s'),
+            ]
+        );
+    }
 }

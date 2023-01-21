@@ -2,12 +2,10 @@
 
 export FS_ENV=dev
 
-set -o errexit
-
 dir=$(dirname "$0")
 
-# shellcheck source=./__helping-functions.sh
-source "$dir"/__helping-functions.sh
+# shellcheck source=./__common.sh
+source "$dir"/__common.sh
 
 composer validate --no-check-all --no-check-publish
 composer install --verbose --prefer-dist --no-progress --no-interaction --no-scripts --ignore-platform-reqs
@@ -20,7 +18,7 @@ composer update
 composer install --verbose --prefer-dist --no-progress --no-interaction --no-dev --classmap-authoritative --no-scripts --ignore-platform-reqs
 composer dump-autoload --classmap-authoritative
 
-log-header "Create folder structur ..."
+log-header "Create folder structure ..."
 bin/console foodsharing:setup
 
 log-header "Installing assets ..."

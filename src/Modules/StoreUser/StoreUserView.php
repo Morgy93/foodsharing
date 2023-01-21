@@ -18,80 +18,80 @@ use Symfony\Contracts\Translation\TranslatorInterface;
 
 class StoreUserView extends View
 {
-	public function __construct(
-		\Twig\Environment $twig,
-		Session $session,
-		Utils $viewUtils,
-		DataHelper $dataHelper,
-		IdentificationHelper $identificationHelper,
-		ImageHelper $imageService,
-		NumberHelper $numberHelper,
-		PageHelper $pageHelper,
-		RouteHelper $routeHelper,
-		Sanitizer $sanitizerService,
-		TimeHelper $timeHelper,
-		TranslationHelper $translationHelper,
-		TranslatorInterface $translator
-	) {
-		parent::__construct(
-			$twig,
-			$session,
-			$viewUtils,
-			$dataHelper,
-			$identificationHelper,
-			$imageService,
-			$numberHelper,
-			$pageHelper,
-			$routeHelper,
-			$sanitizerService,
-			$timeHelper,
-			$translationHelper,
-			$translator
-		);
-	}
+    public function __construct(
+        \Twig\Environment $twig,
+        Session $session,
+        Utils $viewUtils,
+        DataHelper $dataHelper,
+        IdentificationHelper $identificationHelper,
+        ImageHelper $imageService,
+        NumberHelper $numberHelper,
+        PageHelper $pageHelper,
+        RouteHelper $routeHelper,
+        Sanitizer $sanitizerService,
+        TimeHelper $timeHelper,
+        TranslationHelper $translationHelper,
+        TranslatorInterface $translator
+    ) {
+        parent::__construct(
+            $twig,
+            $session,
+            $viewUtils,
+            $dataHelper,
+            $identificationHelper,
+            $imageService,
+            $numberHelper,
+            $pageHelper,
+            $routeHelper,
+            $sanitizerService,
+            $timeHelper,
+            $translationHelper,
+            $translator
+        );
+    }
 
-	public function u_storeList($storeData, $title)
-	{
-		if (empty($storeData)) {
-			return '';
-		}
+    public function u_storeList($storeData, $title)
+    {
+        if (empty($storeData)) {
+            return '';
+        }
 
-		$isRegion = false;
-		$storeRows = [];
-		foreach ($storeData as $i => $store) {
-			$status = $this->v_utils->v_getStatusAmpel($store['betrieb_status_id']);
+        $isRegion = false;
+        $storeRows = [];
+        foreach ($storeData as $i => $store) {
+            $status = $this->v_utils->v_getStatusAmpel($store['betrieb_status_id']);
 
-			$storeRows[$i] = [
-				['cnt' => '<a class="linkrow ui-corner-all" href="/?page=fsbetrieb&id=' . $store['id'] . '">' . $store['name'] . '</a>'],
-				['cnt' => $store['str']],
-				['cnt' => $store['plz']],
-				['cnt' => $status]
-			];
+            $storeRows[$i] = [
+                ['cnt' => '<a class="linkrow ui-corner-all" href="/?page=fsbetrieb&id=' . $store['id'] . '">' . $store['name'] . '</a>'],
+                ['cnt' => $store['str']],
+                ['cnt' => $store['plz']],
+                ['cnt' => $status]
+            ];
 
-			if (isset($store['bezirk_name'])) {
-				$storeRows[$i][] = ['cnt' => $store['bezirk_name']];
-				$isRegion = true;
-			}
-		}
+            if (isset($store['bezirk_name'])) {
+                $storeRows[$i][] = ['cnt' => $store['bezirk_name']];
+                $isRegion = true;
+            }
+        }
 
-		$head = [
-			['name' => $this->translator->trans('storelist.name'), 'width' => 180],
-			['name' => $this->translator->trans('storelist.addressdata')],
-			['name' => $this->translator->trans('storelist.zipcode'), 'width' => 90],
-			['name' => $this->translator->trans('storelist.status'), 'width' => 50]
-		];
-		if ($isRegion) {
-			$head[] = ['name' => $this->translator->trans('region.type.region')];
-		}
+        $head = [
+            ['name' => $this->translator->trans('storelist.name'), 'width' => 180],
+            ['name' => $this->translator->trans('storelist.addressdata')],
+            ['name' => $this->translator->trans('storelist.zipcode'), 'width' => 90],
+            ['name' => $this->translator->trans('storelist.status'), 'width' => 50]
+        ];
+        if ($isRegion) {
+            $head[] = ['name' => $this->translator->trans('region.type.region')];
+        }
 
-		$table = $this->v_utils->v_tablesorter($head, $storeRows);
+        $table = $this->v_utils->v_tablesorter($head, $storeRows);
 
-		return $this->v_utils->v_field($table, $title);
-	}
+        return $this->v_utils->v_field($table, $title);
+    }
 
-	public function u_editPickups(array $allDates): string
-	{
-		$out = '<table class="timetable">
+    public function u_editPickups(array $allDates): string
+    {
+        $out = '<table class="timetable">
 		<thead>
 			<tr>
 				<th class="ui-padding">' . $this->translator->trans('day') . '</th>
@@ -108,13 +108,13 @@ class StoreUserView extends View
 		</tfoot>
 		<tbody>';
 
-		$dows = range(1, 6);
-		$dows[] = 0;
+        $dows = range(1, 6);
+        $dows[] = 0;
 
-		foreach ($allDates as $date) {
-			$time = explode(':', $date['time']);
+        foreach ($allDates as $date) {
+            $time = explode(':', $date['time']);
 
-			$out .= '
+            $out .= '
 			<tr class="odd">
 				<td class="ui-padding">
 					<select class="nft-dow" name="newfetchtime[]" id="nft-dow">
@@ -134,10 +134,10 @@ class StoreUserView extends View
 					<button class="nft-remove"></button>
 				</td>
 			</tr>';
-		}
-		$out .= '</tbody></table>';
+        }
+        $out .= '</tbody></table>';
 
-		$out .= '<table id="nft-hidden-row" style="display: none;">
+        $out .= '<table id="nft-hidden-row" style="display: none;">
 		<tbody>
 			<tr class="odd">
 				<td class="ui-padding">
@@ -160,18 +160,18 @@ class StoreUserView extends View
 		</tbody>
 		</table>';
 
-		return $out;
-	}
+        return $out;
+    }
 
-	private function prepareOptionRange(array $range, ?string $selectedValue = null, bool $dayOfWeek = false): string
-	{
-		$out = '';
-		foreach ($range as $item) {
-			$selected = ($item == $selectedValue) ? ' selected="selected"' : '';
-			$label = $dayOfWeek ? $this->timeHelper->getDow($item) : str_pad($item, 2, '0', STR_PAD_LEFT);
-			$out .= '<option' . $selected . ' value="' . $item . '">' . $label . '</option>';
-		}
+    private function prepareOptionRange(array $range, ?string $selectedValue = null, bool $dayOfWeek = false): string
+    {
+        $out = '';
+        foreach ($range as $item) {
+            $selected = ($item == $selectedValue) ? ' selected="selected"' : '';
+            $label = $dayOfWeek ? $this->timeHelper->getDow($item) : str_pad($item, 2, '0', STR_PAD_LEFT);
+            $out .= '<option' . $selected . ' value="' . $item . '">' . $label . '</option>';
+        }
 
-		return $out;
-	}
+        return $out;
+    }
 }
