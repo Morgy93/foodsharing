@@ -7,7 +7,7 @@ use Faker\Generator;
 use Foodsharing\Modules\Core\DBConstants\Store\CooperationStatus;
 use Foodsharing\Modules\Core\DBConstants\StoreTeam\MembershipStatus;
 use Foodsharing\Modules\Core\DBConstants\Unit\UnitType;
-use Foodsharing\Modules\Store\DTO\CreateStoreData;
+use Foodsharing\Modules\Store\DTO\Store;
 use Foodsharing\Modules\Store\StoreGateway;
 use Foodsharing\Modules\Store\TeamStatus;
 
@@ -59,12 +59,12 @@ class StoreGatewayTest extends Unit
 
     public function testAddNewStore(): void
     {
-        $storeDTO = new CreateStoreData();
+        $storeDTO = new Store();
         $storeDTO->name = 'StoreGatewayTestbetrieb';
         $storeDTO->regionId = 1567;
-        $storeDTO->lat = 51.5367827;
-        $storeDTO->lon = 9.9258967;
-        $storeDTO->str = 'Bahnhofsplatz 1';
+        $storeDTO->location->lat = 51.5367827;
+        $storeDTO->location->lon = 9.9258967;
+        $storeDTO->street = 'Bahnhofsplatz 1';
         $storeDTO->zip = '37073';
         $storeDTO->city = 'Göttingen';
         $storeDTO->publicInfo = 'Testeintrag im Feld öffentliche Information';

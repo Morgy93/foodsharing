@@ -5,23 +5,35 @@
 
 
 ## Changes
+- Make menubar sticky on mobile !2411 @AntonBallmaier
 
 
 ## Bugfixes
+- Reimplementation of the StoreManager empty pickup E-Mail notification !2574 @KoeMai
 - Outgoing mails were sent out with an invalid charset !2572 @\_fridtjof_
-
+- Return the correct data from the user details REST endpoint #1534 !2575 @alex.simm
+- Fixed some typos #1539 !2585 @alex.simm
+- Fix some broken links !2586
+- Show the report button on the own profile page !2589 @alex.simm
+- Hacky workaround to replace $amp in urls from chat messages #1531 !2594 @chriswalg
 
 ## Refactoring
 - added poppins font in Styleguide !2564 @Niklas003 
+- Use email address DTO and let the MailboxGateway handle JSON encoding !2520 @alex.simm
+- Replaced the usage of a function in FoodsaverGateway with a more ressource saving function !2595 @alex.simm
+
 
 ## Dev/Test/CI stuff
 - Fix given null parameter !2550 @BibaltiK
-- Small Improving Changes on GitLab CI !2565
+- Small Improving Changes on GitLab CI !2565 !2566 !2567 !2568 !2582 @stcz
+- Add $SKIP_CI_TESTS Variable to deploy production faster if needed !2581 @stcz
 - Change identity style from tab to space !2571 @BibaltiK
+- Python Script to generate Release Notes from gitlab MRs !2548 @alex.simm
+- Restart all foodsharing services after production deployment !2583 @stcz
+- Clean up scripts a bit more !2480 @\_fridtjof_
 
 
 ## Development documentation
-
 
 
 # Release "Icecream", 2022-12-18
@@ -53,6 +65,7 @@
 - District rules for maximum number of pickups in a timeframe accross severall stores combined can be set !2414 !2530 @fs_k
 - Provide RestAPI to change teamstatus of a store !2406
 - Added RestAPI for regular Pickup configuration !1373 @koemai
+- Added RestAPI to create a new store !2484 @koemai
 - The chat has been modernised !2301 !2498 !2508 !2514 !2533 @NINI1988
 - Added new body font !2426 @sefn
 

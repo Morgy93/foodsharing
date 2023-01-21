@@ -349,6 +349,13 @@ class RegionGateway extends BaseGateway
         return $region;
     }
 
+    /**
+     * Return the unit type for a region.
+     *
+     * @see UnitType
+     *
+     * @throws Exception when region does not exist
+     */
     public function getType(int $regionId): int
     {
         return (int)$this->db->fetchValueByCriteria('fs_bezirk', 'type', ['id' => $regionId]);

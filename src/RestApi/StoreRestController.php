@@ -17,6 +17,8 @@ use Foodsharing\Modules\Store\StoreGateway;
 use Foodsharing\Modules\Store\StoreTransactions;
 use Foodsharing\Modules\Store\TeamStatus as TeamMembershipStatus;
 use Foodsharing\Permissions\StorePermissions;
+use Foodsharing\RestApi\Models\Store\CreateStoreModel;
+use Foodsharing\RestApi\Models\Store\MinimalStoreModel;
 use Foodsharing\RestApi\Models\Store\StorePaginationResult;
 use Foodsharing\RestApi\Models\Store\StoreStatusForMemberModel;
 use FOS\RestBundle\Controller\AbstractFOSRestController;
@@ -24,12 +26,15 @@ use FOS\RestBundle\Controller\Annotations as Rest;
 use FOS\RestBundle\Request\ParamFetcher;
 use Nelmio\ApiDocBundle\Annotation\Model;
 use OpenApi\Annotations as OA;
+use Sensio\Bundle\FrameworkExtraBundle\Configuration\ParamConverter;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\Exception\AccessDeniedHttpException;
 use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 use Symfony\Component\HttpKernel\Exception\UnauthorizedHttpException;
 use Symfony\Component\HttpKernel\Exception\UnprocessableEntityHttpException;
+use Symfony\Component\Validator\ConstraintViolationListInterface;
+use Symfony\Component\Validator\Validator\ValidatorInterface;
 
 class StoreRestController extends AbstractFOSRestController
 {
@@ -109,6 +114,50 @@ class StoreRestController extends AbstractFOSRestController
         $result->stores = $stores;
 
         return $this->handleView($this->view($result, 200));
+    }
+
+    /**
+     * Creates a new store.
+     *
+     * This method creates a new store. The store will initial contains the provided information.
+     * Additional the platform will prepare the chat channels for team and sprinters.
+     *
+     * The calling user is added as first store responsible in the store team.
+     * You can add an initial first post on the store wall for all following members.
+     *
+     * After creation the platform informs all members of the related region about the new store.
+     *
+     * @OA\Tag(name="stores")
+     * @OA\RequestBody(@Model(type=CreateStoreModel::class))
+     * @Rest\Post("region/{regionId}/stores")
+     * @ParamConverter("storeCreateInformation", converter="fos_rest.request_body")
+     * @OA\Response(response=Response::HTTP_CREATED,
+     *	description="Created the new store and informed region members provides",
+     *  @Model(type=MinimalStoreModel::class)
+     * )
+     * @OA\Response(response=Response::HTTP_BAD_REQUEST, description="Invalid body data")
+     * @OA\Response(response=Response::HTTP_UNAUTHORIZED, description="Not logged in")
+     * @OA\Response(response=Response::HTTP_FORBIDDEN, description="No permission to create a store")
+     */
+    public function addStoreAction(int $regionId, CreateStoreModel $storeCreateInformation, ValidatorInterface $validator): Response
+    {
+        if (!$this->session->mayRole()) {
+            throw new UnauthorizedHttpException('', self::NOT_LOGGED_IN);
+        }
+
+        if (!$this->storePermissions->mayCreateStore($regionId)) {
+            throw new AccessDeniedHttpException('No permission to create store for this region');
+        }
+
+        $errors = $validator->validate($storeCreateInformation);
+        $this->throwBadRequestExceptionOnError($errors);
+
+        $storeModel = new MinimalStoreModel();
+        $store = $storeCreateInformation->store->toCreateStore();
+        $store->regionId = $regionId;
+        $storeModel->id = $this->storeTransactions->createStore($store, $this->session->id(), $storeCreateInformation->firstPost);
+
+        return $this->handleView($this->view($storeModel, Response::HTTP_CREATED));
     }
 
     /**
@@ -693,6 +742,22 @@ class StoreRestController extends AbstractFOSRestController
         // Target user is in Team (or externals are allowed)
         if (!$allowExternals && $this->storeGateway->getUserTeamStatus($targetId, $storeId) === TeamMembershipStatus::NoMember) {
             throw new NotFoundHttpException('User is not a member of this store.');
+        }
+    }
+
+    /**
+     * Check if a Constraint violation is found and if it exist it throws an BadRequestExeption.
+     *
+     * @param ConstraintViolationListInterface $errors Validation result
+     *
+     * @throws BadRequestHttpException if violation is detected
+     */
+    private function throwBadRequestExceptionOnError(ConstraintViolationListInterface $errors): void
+    {
+        if ($errors->count() > 0) {
+            $firstError = $errors->get(0);
+            $relevantErrorContent = ['field' => $firstError->getPropertyPath(), 'message' => $firstError->getMessage()];
+            throw new BadRequestHttpException(json_encode($relevantErrorContent));
         }
     }
 }

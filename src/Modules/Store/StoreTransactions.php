@@ -15,6 +15,7 @@ use Foodsharing\Modules\Core\DBConstants\Store\Milestone;
 use Foodsharing\Modules\Core\DBConstants\Store\PublicTimes;
 use Foodsharing\Modules\Core\DBConstants\Store\StoreLogAction;
 use Foodsharing\Modules\Core\DBConstants\StoreTeam\MembershipStatus;
+use Foodsharing\Modules\Core\DBConstants\Unit\UnitType;
 use Foodsharing\Modules\Core\DTO\GeoLocation;
 use Foodsharing\Modules\Foodsaver\FoodsaverGateway;
 use Foodsharing\Modules\Message\MessageGateway;
@@ -31,17 +32,15 @@ use Symfony\Contracts\Translation\TranslatorInterface;
 
 class StoreTransactions
 {
-    public const DEFAULT_USER_SHOWN_STORE_COOPERATION_STATE = [CooperationStatus::UNCLEAR, CooperationStatus::NO_CONTACT, CooperationStatus::IN_NEGOTIATION, CooperationStatus::COOPERATION_STARTING, CooperationStatus::COOPERATION_ESTABLISHED, CooperationStatus::PERMANENTLY_CLOSED];
+    public const DEFAULT_USER_SHOWN_STORE_COOPERATION_STATE = [
+        CooperationStatus::UNCLEAR,
+        CooperationStatus::NO_CONTACT,
+        CooperationStatus::IN_NEGOTIATION,
+        CooperationStatus::COOPERATION_STARTING,
+        CooperationStatus::COOPERATION_ESTABLISHED,
+        CooperationStatus::PERMANENTLY_CLOSED
+    ];
 
-    private MessageGateway $messageGateway;
-    private PickupGateway $pickupGateway;
-    private StoreGateway $storeGateway;
-    private TranslatorInterface $translator;
-    private BellGateway $bellGateway;
-    private FoodsaverGateway $foodsaverGateway;
-    private RegionGateway $regionGateway;
-    private Session $session;
-    private Sanitizer $sanitizer;
     public const MAX_SLOTS_PER_PICKUP = 10;
     // status constants for getAvailablePickupStatus
     private const STATUS_RED_TODAY_TOMORROW = 3;
@@ -50,25 +49,16 @@ class StoreTransactions
     private const STATUS_GREEN = 0;
 
     public function __construct(
-        MessageGateway $messageGateway,
-        PickupGateway $pickupGateway,
-        StoreGateway $storeGateway,
-        TranslatorInterface $translator,
-        BellGateway $bellGateway,
-        FoodsaverGateway $foodsaverGateway,
-        RegionGateway $regionGateway,
-        Sanitizer $sanitizerService,
-        Session $session
+        private readonly MessageGateway $messageGateway,
+        private readonly PickupGateway $pickupGateway,
+        private readonly StoreGateway $storeGateway,
+        private readonly TranslatorInterface $translator,
+        private readonly BellGateway $bellGateway,
+        private readonly FoodsaverGateway $foodsaverGateway,
+        private readonly RegionGateway $regionGateway,
+        private readonly Sanitizer $sanitizerService,
+        private readonly Session $session
     ) {
-        $this->messageGateway = $messageGateway;
-        $this->pickupGateway = $pickupGateway;
-        $this->storeGateway = $storeGateway;
-        $this->translator = $translator;
-        $this->bellGateway = $bellGateway;
-        $this->foodsaverGateway = $foodsaverGateway;
-        $this->regionGateway = $regionGateway;
-        $this->session = $session;
-        $this->sanitizer = $sanitizerService;
     }
 
     public function getCommonStoreMetadata($supressStoreChains = true): CommonStoreMetadata
@@ -145,7 +135,7 @@ class StoreTransactions
     {
         $stores = $this->storeGateway->listStoresInRegion($regionId, true);
 
-        $storesMapped = array_map(function (Store $store) use ($expand) {
+        return array_map(function (Store $store) use ($expand) {
             $requiredStoreInformation = StoreListInformation::loadFrom($store, !$expand);
             if ($expand) {
                 $regionName = $this->regionGateway->getRegionName($store->regionId);
@@ -154,29 +144,78 @@ class StoreTransactions
 
             return $requiredStoreInformation;
         }, $stores);
-
-        return $storesMapped;
     }
 
-    public function createStore(array $legacyGlobalData): int
+    /**
+     * Creates a new store with the possiblility to post a first message.
+     *
+     * This method creates all required parts for a store
+     * 1. Store information
+     * 2. Add author to the Store as store manager
+     * 3. Creates conversation threads for Team and Jumpers
+     * 4. Optional a first notes to the store wall
+     * 5. Informs members of the store related region about a new store
+     *
+     * @param CreateStoreData $createStore Initial required store information
+     * @param int $authorFsId FoddsaverId of the store creator, it is used for conversation and information bell
+     * @param string $firstStorePost First message on the store wall
+     *
+     * @throws StoreTransactionException When region is invalid or not a region (like workinggroups)
+     */
+    public function createStore(CreateStoreData $createStore, int $authorFsId, ?string $firstStorePost = null): int
     {
-        $store = new CreateStoreData();
-        $store->name = $legacyGlobalData['name'];
-        $store->regionId = $legacyGlobalData['bezirk_id'];
-        $store->lat = floatval($legacyGlobalData['lat']);
-        $store->lon = floatval($legacyGlobalData['lon']);
-        $store->str = $legacyGlobalData['str'];
-        $store->zip = $legacyGlobalData['plz'];
-        $store->city = $legacyGlobalData['stadt'];
-        $store->publicInfo = $legacyGlobalData['public_info'];
-        $store->createdAt = Carbon::now();
-        $store->updatedAt = $store->createdAt;
+        try {
+            $regionType = $this->regionGateway->getType($createStore->regionId);
+        } catch (\Exception $dbExpection) {
+            throw new StoreTransactionException(StoreTransactionException::INVALID_REGION);
+        }
+        if (!UnitType::isAccessibleRegion($regionType)) {
+            throw new StoreTransactionException(StoreTransactionException::INVALID_REGION_TYPE);
+        }
 
+        $store = $createStore->toStore();
         $storeId = $this->storeGateway->addStore($store);
-        $managerId = $this->session->id();
 
-        $this->storeGateway->addStoreManager($storeId, $managerId);
-        $this->createTeamConversations($storeId, $managerId);
+        $this->storeGateway->addStoreManager($storeId, $authorFsId);
+
+        $storeTeamChatId = $this->messageGateway->createConversation([$authorFsId], true);
+        $this->storeGateway->updateStoreConversation($storeId, $storeTeamChatId, false);
+
+        $standbyTeamChatId = $this->messageGateway->createConversation([$authorFsId], true);
+        $this->storeGateway->updateStoreConversation($storeId, $standbyTeamChatId, true);
+
+        $this->setStoreNameInConversations($storeId, $createStore->name);
+
+        $this->storeGateway->add_betrieb_notiz([
+            'foodsaver_id' => $authorFsId,
+            'betrieb_id' => $storeId,
+            'text' => '{BETRIEB_ADDED}', // TODO Do we want to keep this?
+            'zeit' => date('Y-m-d H:i:s', time() - 10),
+            'milestone' => Milestone::CREATED,
+        ]);
+
+        if (!empty($firstStorePost)) {
+            $this->storeGateway->add_betrieb_notiz([
+                'foodsaver_id' => $authorFsId,
+                'betrieb_id' => $storeId,
+                'text' => $firstStorePost,
+                'zeit' => date('Y-m-d H:i:s'),
+                'milestone' => Milestone::NONE,
+            ]);
+        }
+
+        $authorName = $this->foodsaverGateway->getFoodsaverName($authorFsId);
+        $foodsaver = $this->foodsaverGateway->getFoodsaversByRegion($createStore->regionId);
+
+        $bellData = Bell::create('store_new_title', 'store_new', 'fas fa-store-alt', [
+            'href' => '/?page=fsbetrieb&id=' . $storeId
+        ], [
+            'user' => $authorName,
+            'name' => $createStore->name
+        ], BellType::createIdentifier(BellType::NEW_STORE, $storeId));
+        $this->bellGateway->addBell(array_map(function ($f) {
+            return $f->id;
+        }, $foodsaver), $bellData);
 
         return $storeId;
     }
@@ -199,7 +238,7 @@ class StoreTransactions
         $store->zip = $legacyGlobalData['plz'];
         $store->city = $legacyGlobalData['stadt'];
 
-        $store->publicInfo = $this->sanitizer->purifyHtml($legacyGlobalData['public_info']);
+        $store->publicInfo = $this->sanitizerService->purifyHtml($legacyGlobalData['public_info']);
         $store->publicTime = intval($legacyGlobalData['public_time']);
 
         $store->categoryId = intval($legacyGlobalData['betrieb_kategorie_id']);
@@ -226,6 +265,7 @@ class StoreTransactions
         $store->updatedAt = Carbon::now();
 
         $this->storeGateway->updateStoreData($store->id, $store);
+        $this->setStoreNameInConversations($store->id, $store->name);
 
         return true;
     }
@@ -251,7 +291,7 @@ class StoreTransactions
             throw new PickupValidationException(PickupValidationException::SLOT_COUNT_OUT_OF_RANGE);
         }
 
-        $occupiedSlots = count($this->pickupGateway->getPickupSignupsForDate($storeId, $date));
+        $occupiedSlots = count($this->pickupGateway->getPickupSignUpsForDate($storeId, $date));
         if ($newTotalSlots < $occupiedSlots) {
             throw new PickupValidationException(PickupValidationException::MORE_OCCUPIED_SLOTS);
         }
@@ -394,12 +434,12 @@ class StoreTransactions
     public function setStoreNameInConversations(int $storeId, string $storeName): void
     {
         if ($tcid = $this->storeGateway->getBetriebConversation($storeId, false)) {
-            $team_conversation_name = $this->translator->trans('store.team_conversation_name', ['{name}' => $storeName]);
-            $this->messageGateway->renameConversation($tcid, $team_conversation_name);
+            $teamConversationName = $this->translator->trans('store.team_conversation_name', ['{name}' => $storeName]);
+            $this->messageGateway->renameConversation($tcid, $teamConversationName);
         }
         if ($scid = $this->storeGateway->getBetriebConversation($storeId, true)) {
-            $springer_conversation_name = $this->translator->trans('store.springer_conversation_name', ['{name}' => $storeName]);
-            $this->messageGateway->renameConversation($scid, $springer_conversation_name);
+            $springerConversationName = $this->translator->trans('store.springer_conversation_name', ['{name}' => $storeName]);
+            $this->messageGateway->renameConversation($scid, $springerConversationName);
         }
     }
 
@@ -476,11 +516,11 @@ class StoreTransactions
     public function createKickMessage(int $foodsaverId, int $storeId, DateTime $pickupDate, ?string $message = null): string
     {
         $fs = $this->foodsaverGateway->getFoodsaver($foodsaverId);
-        $store = $this->storeGateway->getBetrieb($storeId);
+        $storeName = $this->storeGateway->getStoreName($storeId);
 
         $salutation = $this->translator->trans('salutation.' . $fs['geschlecht']) . ' ' . $fs['name'];
         $mandatoryMessage = $this->translator->trans('pickup.kick_message', [
-            '{storeName}' => $store['name'],
+            '{storeName}' => $storeName,
             '{date}' => date('d.m.Y H:i', $pickupDate->getTimestamp())
         ]);
         $optionalMessage = empty($message) ? '' : ("\n\n" . $message);
@@ -599,20 +639,6 @@ class StoreTransactions
         ]);
     }
 
-    /**
-     * creates an empty team conversation for the given store.
-     * creates an empty standby-team conversation for the given store.
-     * prefills both conversations with the given userId.
-     */
-    private function createTeamConversations(int $storeId, int $managerId): void
-    {
-        $storeTeamChatId = $this->messageGateway->createConversation([$managerId], true);
-        $this->storeGateway->updateStoreConversation($storeId, $storeTeamChatId, false);
-
-        $standbyTeamChatId = $this->messageGateway->createConversation([$managerId], true);
-        $this->storeGateway->updateStoreConversation($storeId, $standbyTeamChatId, true);
-    }
-
     // notify people who can do something with the request: store managers, region ambassadors, or orga
     private function notifyStoreManagersAboutRequest(int $storeId, int $userId): void
     {
@@ -716,15 +742,15 @@ class StoreTransactions
                 $res = Carbon::now()->diffInHours($pickupDate);
                 if ($res > $ignoreRuleHours) {
                     // the allowed numbers of pickups in a timespan. Timespan is +/- from pickupdate
-                    $NumberAllowedPickups = (int)$this->regionGateway->getRegionOption($regionId, RegionOptionType::REGION_PICKUP_RULE_LIMIT_NUMBER);
+                    $numberAllowedPickups = (int)$this->regionGateway->getRegionOption($regionId, RegionOptionType::REGION_PICKUP_RULE_LIMIT_NUMBER);
                     $intervall = (int)$this->regionGateway->getRegionOption($regionId, RegionOptionType::REGION_PICKUP_RULE_TIMESPAN_DAYS);
                     // if we have more or same amount of used slots occupied then allowed we return false
-                    if ($this->pickupGateway->getNumberOfPickupsForUserWithStoreRules($fsId, $pickupDate->copy()->subDays($intervall), $pickupDate->copy()->addDays($intervall)) >= $NumberAllowedPickups) {
+                    if ($this->pickupGateway->getNumberOfPickupsForUserWithStoreRules($fsId, $pickupDate->copy()->subDays($intervall), $pickupDate->copy()->addDays($intervall)) >= $numberAllowedPickups) {
                         return false;
                     }
                     // if we have more then or same amount of allowed pickups per day we return false
-                    $NumberAllowedPickupsPerDay = (int)$this->regionGateway->getRegionOption($regionId, RegionOptionType::REGION_PICKUP_RULE_LIMIT_DAY_NUMBER);
-                    if ($this->pickupGateway->getNumberOfPickupsForUserWithStoreRulesSameDay($fsId, $pickupDate) >= $NumberAllowedPickupsPerDay) {
+                    $numberAllowedPickupsPerDay = (int)$this->regionGateway->getRegionOption($regionId, RegionOptionType::REGION_PICKUP_RULE_LIMIT_DAY_NUMBER);
+                    if ($this->pickupGateway->getNumberOfPickupsForUserWithStoreRulesSameDay($fsId, $pickupDate) >= $numberAllowedPickupsPerDay) {
                         return false;
                     }
                 }
