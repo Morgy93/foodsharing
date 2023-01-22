@@ -548,7 +548,7 @@ class MailboxGateway extends BaseGateway
 			]
 		);
 
-		$mailboxName = $mailboxesStartingWithName > 0 ? $name . $mailboxesStartingWithName + 1 : $name;
+		$mailboxName = $mailboxesStartingWithName > 0 ? $name . ($mailboxesStartingWithName + 1) : $name;
 
 		return $this->db->insert('fs_mailbox', ['name' => strip_tags($mailboxName)]);
 	}
