@@ -541,7 +541,7 @@ class MailboxGateway extends BaseGateway
 	 */
 	private function createMailbox(string $name): int
 	{
-		$mailboxesStartingWithName = $this->db->fetchValue(
+		$mailboxesStartingWithName = (int)$this->db->fetchValue(
 			'SELECT COUNT(name) FROM fs_mailbox WHERE name LIKE :name',
 			[
 				'name' => $name . '%'
