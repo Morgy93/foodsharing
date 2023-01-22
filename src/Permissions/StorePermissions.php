@@ -4,30 +4,24 @@ namespace Foodsharing\Permissions;
 
 use Carbon\Carbon;
 use Foodsharing\Lib\Session;
+use Foodsharing\Modules\Core\DatabaseNoValueFoundException;
 use Foodsharing\Modules\Core\DBConstants\Foodsaver\Role;
 use Foodsharing\Modules\Core\DBConstants\Region\WorkgroupFunction;
 use Foodsharing\Modules\Core\DBConstants\Store\TeamStatus as StoreTeamStatus;
 use Foodsharing\Modules\Group\GroupFunctionGateway;
+use Foodsharing\Modules\Region\RegionGateway;
 use Foodsharing\Modules\Store\StoreGateway;
 use Foodsharing\Modules\Store\TeamStatus as UserTeamStatus;
 
 class StorePermissions
 {
-    private StoreGateway $storeGateway;
-    private Session $session;
-    private GroupFunctionGateway $groupFunctionGateway;
-    private ProfilePermissions $profilePermissions;
-
     public function __construct(
-        StoreGateway $storeGateway,
-        Session $session,
-        GroupFunctionGateway $groupFunctionGateway,
-        ProfilePermissions $profilePermissions
+        private readonly StoreGateway $storeGateway,
+        private readonly Session $session,
+        private readonly GroupFunctionGateway $groupFunctionGateway,
+        private readonly ProfilePermissions $profilePermissions,
+        private readonly RegionGateway $regionGateway
     ) {
-        $this->storeGateway = $storeGateway;
-        $this->session = $session;
-        $this->groupFunctionGateway = $groupFunctionGateway;
-        $this->profilePermissions = $profilePermissions;
     }
 
     /**
@@ -174,9 +168,40 @@ class StorePermissions
         return false;
     }
 
-    public function mayCreateStore(): bool
+    /**
+     * Checks create store permission for current user in session.
+     *
+     * The method checks the role (StoreManager).
+     * If a regionId is provided then a check of the region membership is done.
+     *
+     * This allows to see if the user is allowed to create store.
+     * And of the user is allowed to create stores in the regions belongs to.
+     *
+     * @param int $regionId Region Id to check membership
+     *
+     * @return bool true when the user is allowed to create a store
+     */
+    public function mayCreateStore(?int $regionId = null): bool
     {
-        return $this->session->mayRole(Role::STORE_MANAGER);
+        if ($this->session->mayRole(Role::ORGA)) {
+            return true;
+        }
+
+        if ($this->session->mayRole(Role::STORE_MANAGER)) {
+            try {
+                // Check if user is allowed to create stores in general
+                if ($regionId == null) {
+                    return true;
+                }
+
+                // Check user is allowed to create store in specific region
+                return $this->regionGateway->hasMember($this->session->id(), $regionId);
+            } catch (DatabaseNoValueFoundException $ex) {
+                return false;
+            }
+        }
+
+        return false;
     }
 
     public function mayEditStore(int $storeId): bool

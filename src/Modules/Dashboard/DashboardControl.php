@@ -15,7 +15,6 @@ use Foodsharing\Modules\Settings\SettingsGateway;
 
 class DashboardControl extends Control
 {
-    private ?array $user;
     private array $params;
     private ContentGateway $contentGateway;
     private SettingsGateway $settingsGateway;
@@ -47,7 +46,6 @@ class DashboardControl extends Control
             $this->routeHelper->go('/');
         }
 
-        $this->user = $this->foodsaverGateway->getFoodsaverBasics($this->session->id());
         $this->params = [];
     }
 

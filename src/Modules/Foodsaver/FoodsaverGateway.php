@@ -943,6 +943,39 @@ class FoodsaverGateway extends BaseGateway
         );
     }
 
+    /**
+     * Returns the minimal profile data of one user.
+     *
+     * @param int $userId id of the foodsharer
+     *
+     * @return ?Profile the user's profile or null if the user id does not exist
+     */
+    public function getProfile(int $userId): ?Profile
+    {
+        $data = $this->db->fetchByCriteria(
+            'fs_foodsaver',
+            ['id', 'name', 'photo', 'sleep_status'],
+            ['id' => $userId]);
+
+        if (empty($data)) {
+            return null;
+        }
+
+        return new Profile(
+            $data['id'],
+            $data['name'],
+            $data['photo'],
+            $data['sleep_status']
+        );
+    }
+
+    /**
+     * Returns the minimal profile data of multiple users.
+     *
+     * @param int[] $fsIds ids of the foodsavers
+     *
+     * @return Profile[]
+     */
     public function getProfileForUsers(array $fsIds): array
     {
         $res = $this->db->fetchAllByCriteria(

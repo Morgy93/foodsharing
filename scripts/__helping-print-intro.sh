@@ -2,15 +2,15 @@
 
 set -o errexit
 dir=$(dirname "$0")
-source "$dir"/__helping-functions.sh
+source "$dir"/__common.sh
 
 ## Environment port mapping for the url creation
-if [ $FS_ENV == "dev" ]
+if [ "$FS_ENV" == "dev" ]
 then
   page_port=18080 #nginx
   phpmyadmin_port=18081
   devdocs_port=13000
-elif [ $FS_ENV == "test" ]
+elif [ "$FS_ENV" == "test" ]
 then
   page_port=28080 #nginx
   phpmyadmin_port=28081
@@ -22,14 +22,14 @@ else
 fi
 
 # Cyrptic gitpod or localhost urls for the print
-if [ $USER == "gitpod" ]
+if [ "$USER" == "gitpod" ]
 then
-    page_url=`gp url $page_port`
+    page_url=$(gp url $page_port)
     api_url="$page_url/api/doc/"
-    devdocs_url=`gp url $devdocs_port`
-    phpmyadmin_url=`gp url $phpmyadmin_port`
-    gitpod_config=$page_url":8080"
-    echo $gitpod_config > config/gitpod
+    devdocs_url=$(gp url $devdocs_port)
+    phpmyadmin_url=$(gp url $phpmyadmin_port)
+    gitpod_config="$page_url:8080"
+    echo "$gitpod_config" > config/gitpod
 else
     page_url="http://localhost:$page_port"
     api_url="http://localhost:$page_port/api/doc/"

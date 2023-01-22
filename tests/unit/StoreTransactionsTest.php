@@ -7,8 +7,11 @@ use Faker\Generator;
 use Foodsharing\Modules\Core\DBConstants\Bell\BellType;
 use Foodsharing\Modules\Core\DBConstants\Store\ConvinceStatus;
 use Foodsharing\Modules\Core\DBConstants\Store\CooperationStatus;
+use Foodsharing\Modules\Core\DBConstants\Store\Milestone;
 use Foodsharing\Modules\Core\DBConstants\Store\PublicTimes;
+use Foodsharing\Modules\Core\DBConstants\StoreTeam\MembershipStatus;
 use Foodsharing\Modules\Core\DBConstants\Unit\UnitType;
+use Foodsharing\Modules\Store\DTO\CreateStoreData;
 use Foodsharing\Modules\Store\PickupGateway;
 use Foodsharing\Modules\Store\StoreGateway;
 use Foodsharing\Modules\Store\StoreTransactionException;
@@ -34,6 +37,144 @@ class StoreTransactionsTest extends \Codeception\Test\Unit
         $this->faker = $this->faker = Factory::create('de_DE');
         $this->foodsaver = $this->tester->createFoodsaver();
         $this->region_id = $this->tester->createRegion()['id'];
+        $this->tester->addRegionMember($this->region_id, $this->foodsaver['id']);
+    }
+
+    public function testCreateStoreThrowsExceptionIfRegionIsWorkingGroup()
+    {
+        $storeCreator = $this->tester->createAmbassador();
+        $workingGroup = $this->tester->createWorkingGroup('TestWG');
+        $store = new CreateStoreData();
+        $store->name = 'A store throw exception';
+        $store->regionId = $workingGroup['id'];
+        $store->location->lat = 42.900;
+        $store->location->lon = 5.200;
+        $store->street = ' Langstr. 10';
+        $store->zip = '69132';
+        $store->city = 'Mühlhausen';
+        $store->publicInfo = 'Public info.';
+
+        $this->expectException(StoreTransactionException::class);
+        $this->expectExceptionMessage(StoreTransactionException::INVALID_REGION_TYPE);
+        $this->transactions->createStore($store, $storeCreator['id'], 'First post');
+
+        $this->tester->dontSeeInDatabase('fs_betrieb', [
+            'name' => $store->name,
+            'bezirk_id' => $store->regionId,
+            'lat' => $store->location->lat,
+            'lon' => $store->location->lon,
+            'str' => $store->street,
+            'plz' => $store->zip,
+            'stadt' => $store->city,
+            'public_info' => $store->publicInfo]);
+    }
+
+    public function testCreateStoreThrowsExceptionForInvalidRegion()
+    {
+        $storeCreator = $this->tester->createAmbassador();
+        $store = new CreateStoreData();
+        $store->name = 'A store throw exception';
+        $store->regionId = 1234;
+        $store->location->lat = 42.900;
+        $store->location->lon = 5.200;
+        $store->street = ' Langstr. 10';
+        $store->zip = '69132';
+        $store->city = 'Mühlhausen';
+        $store->publicInfo = 'Public info.';
+
+        $this->expectException(StoreTransactionException::class);
+        $this->expectExceptionMessage(StoreTransactionException::INVALID_REGION);
+        $this->transactions->createStore($store, $storeCreator['id'], 'First post');
+
+        $this->tester->dontSeeInDatabase('fs_betrieb', [
+            'name' => $store->name,
+            'bezirk_id' => $store->regionId,
+            'lat' => $store->location->lat,
+            'lon' => $store->location->lon,
+            'str' => $store->street,
+            'plz' => $store->zip,
+            'stadt' => $store->city,
+            'public_info' => $store->publicInfo]);
+    }
+
+    public function testCreateStoreWithFirstPost()
+    {
+        $storeCreator = $this->tester->createAmbassador();
+        $region = $this->tester->createRegion('ttest');
+
+        $store = new CreateStoreData();
+        $store->name = 'A store';
+        $store->regionId = $region['id'];
+        $store->location->lat = 42.900;
+        $store->location->lon = 5.200;
+        $store->street = ' Langstr. 10';
+        $store->zip = '69132';
+        $store->city = 'Mühlhausen';
+        $store->publicInfo = 'Public info.';
+
+        $dbStoreId = $this->transactions->createStore($store, $storeCreator['id'], 'First post');
+
+        $this->tester->seeInDatabase('fs_betrieb', [
+            'id' => $dbStoreId,
+            'name' => $store->name,
+            'bezirk_id' => $store->regionId,
+            'lat' => $store->location->lat,
+            'lon' => $store->location->lon,
+            'str' => $store->street,
+            'plz' => $store->zip,
+            'stadt' => $store->city,
+            'public_info' => $store->publicInfo]);
+
+        $teamConversation = $this->tester->grabFromDatabase('fs_betrieb', 'team_conversation_id', ['id' => $dbStoreId]);
+        $this->tester->seeInDatabase('fs_foodsaver_has_conversation', ['conversation_id' => $teamConversation, 'foodsaver_id' => $storeCreator['id']]);
+        $sprinterConversation = $this->tester->grabFromDatabase('fs_betrieb', 'springer_conversation_id', ['id' => $dbStoreId]);
+        $this->tester->seeInDatabase('fs_foodsaver_has_conversation', ['conversation_id' => $sprinterConversation, 'foodsaver_id' => $storeCreator['id']]);
+
+        // Check creator is store owner
+        $this->tester->seeInDatabase('fs_betrieb_team', [
+            'betrieb_id' => $dbStoreId,
+            'foodsaver_id' => $storeCreator['id'],
+            'verantwortlich' => 1,
+            'active' => MembershipStatus::MEMBER]);
+
+        // Check existing conversation
+        $this->tester->seeInDatabase('fs_conversation', ['locked' => 1, 'id' => $teamConversation, 'name' => 'Team ' . $store->name]);
+        $this->tester->seeInDatabase('fs_conversation', ['locked' => 1, 'id' => $sprinterConversation, 'name' => 'Springer ' . $store->name]);
+
+        // Check creation of notes in store wall
+        $this->tester->seeInDatabase('fs_betrieb_notiz', [
+            'foodsaver_id' => $storeCreator['id'], 'betrieb_id' => $dbStoreId, 'text' => '{BETRIEB_ADDED}', 'milestone' => Milestone::CREATED]);
+        $this->tester->seeInDatabase('fs_betrieb_notiz', [
+            'foodsaver_id' => $storeCreator['id'], 'betrieb_id' => $dbStoreId, 'text' => 'First post', 'milestone' => Milestone::NONE]);
+
+        // Test bell for foodsaver
+        $this->tester->seeInDatabase('fs_bell', [
+                'name' => 'store_new_title',
+                'body' => 'store_new',
+                'identifier' => 'store-new-' . $dbStoreId
+        ]);
+    }
+
+    public function testCreateStoreWithoutFirstPost()
+    {
+        $storeCreator = $this->tester->createAmbassador();
+        $region = $this->tester->createRegion('ttest');
+
+        $store = new CreateStoreData();
+        $store->name = 'A store';
+        $store->regionId = $region['id'];
+        $store->location->lat = 42.900;
+        $store->location->lon = 5.200;
+        $store->street = ' Langstr. 11';
+        $store->zip = '69132';
+        $store->city = 'Mühlhausen';
+        $store->publicInfo = 'Public info.';
+
+        $dbStoreId = $this->transactions->createStore($store, $storeCreator['id']);
+
+        // Check creation of notes in store wall
+        $this->tester->dontSeeInDatabase('fs_betrieb_notiz', [
+            'foodsaver_id' => $storeCreator['id'], 'betrieb_id' => $dbStoreId, 'milestone' => Milestone::NONE]);
     }
 
     public function testDefaultCommonStoreMetaData()

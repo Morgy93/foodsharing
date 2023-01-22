@@ -195,6 +195,11 @@ class ContentControl extends Control
         $this->addContent(ContentId::CAMPAIGN_LEERE_TONNE);
     }
 
+    public function newsFromIT(): void
+    {
+        $this->addContent(ContentId::NEWS_FROM_IT);
+    }
+
     public function foodSharePointRescue(): void
     {
         $this->addContent(ContentId::RESCUE_FOOD_SHARE_POINT);

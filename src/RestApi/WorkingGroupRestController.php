@@ -5,6 +5,7 @@ namespace Foodsharing\RestApi;
 use Foodsharing\Lib\Session;
 use Foodsharing\Modules\Core\DBConstants\Unit\UnitType;
 use Foodsharing\Modules\Foodsaver\FoodsaverGateway;
+use Foodsharing\Modules\Foodsaver\Profile;
 use Foodsharing\Modules\WorkGroup\WorkGroupGateway;
 use Foodsharing\Permissions\WorkGroupPermissions;
 use Foodsharing\RestApi\Models\Group\EditWorkGroupData;
@@ -42,7 +43,11 @@ class WorkingGroupRestController extends AbstractFOSRestController
     /**
      * Adds a member to a working group. If the user is already a member of the group, nothing happens.
      *
-     * @OA\Response(response="200", description="Success")
+     * @OA\Response(
+     * 		response="200",
+     * 		description="Success",
+     *      @Model(type=Profile::class)
+     * )
      * @OA\Response(response="401", description="Not logged in")
      * @OA\Response(response="403", description="Insufficient permissions")
      * @OA\Response(response="404", description="Group not found")
@@ -65,7 +70,7 @@ class WorkingGroupRestController extends AbstractFOSRestController
         }
 
         $this->workGroupGateway->addToGroup($groupId, $memberId);
-        $user = RestNormalization::normalizeUser($this->foodsaverGateway->getFoodsaverBasics($memberId));
+        $user = $this->foodsaverGateway->getProfile($memberId);
 
         return $this->handleView($this->view($user, 200));
     }

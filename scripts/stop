@@ -3,4 +3,4 @@ set -o errexit
 dir=$(dirname "$0")
 
 # Command
-"$dir"/containers-stop $@
+"$dir"/containers-stop "$@"

@@ -94,6 +94,13 @@ class Store
     public ?DateTime $createdAt = null;
     public DateTime $updatedAt;
 
+    public function __construct()
+    {
+        $this->location = new GeoLocation();
+        $this->createdAt = new DateTime();
+        $this->updatedAt = new DateTime();
+    }
+
     public static function createFromArray($queryResult): Store
     {
         $obj = new Store();

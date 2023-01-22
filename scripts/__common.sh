@@ -7,7 +7,8 @@ set -o errexit
 export FS_ENV=${FS_ENV:-dev}
 
 # user identification number of the current user
-export CURRENT_USER=$(id -u):$(id -g)
+CURRENT_USER=$(id -u):$(id -g)
+export CURRENT_USER
 
 
 MYSQL_USERNAME=${MYSQL_USERNAME:-root}
@@ -52,7 +53,7 @@ function sql-dump() {
 function exec-in-container() {
   local container=$1; shift;
   local command=$*;
-  "$dir"/docker-compose exec -T --user "$(id -u)":"$(id -g)" "$container" sh -c "HOME=./ $command"
+  "$dir"/docker-compose exec -T --user "$CURRENT_USER" "$container" sh -c "HOME=./ $command"
 }
 
 function exec-in-container-with-image-user() {
@@ -64,13 +65,13 @@ function exec-in-container-with-image-user() {
 function run-in-container() {
   local container=$1; shift;
   local command=$*;
-  "$dir"/docker-compose run --rm --no-deps --user "$(id -u)":"$(id -g)" "$container" sh -c "HOME=./ $command"
+  "$dir"/docker-compose run --rm --no-deps --user "$CURRENT_USER" "$container" sh -c "HOME=./ $command"
 }
 
 function run-in-container-with-service-ports() {
   local container=$1; shift;
   local command=$*;
-  "$dir"/docker-compose run --rm --no-deps --user "$(id -u)":"$(id -g)" --service-ports "$container" sh -c "HOME=./ $command"
+  "$dir"/docker-compose run --rm --no-deps --user "$CURRENT_USER" --service-ports "$container" sh -c "HOME=./ $command"
 }
 
 function exec-in-container-asroot() {
@@ -114,8 +115,8 @@ function recreatedb() {
 function migratedb() {
   echo "Migrating database for $FS_ENV"
   local container=${1:-app}
-  exec-in-container $container vendor/bin/phinx migrate
-  exec-in-container $container bin/console maintenance:recreateGroupStructure
+  exec-in-container "$container" vendor/bin/phinx migrate
+  exec-in-container "$container" bin/console maintenance:recreateGroupStructure
 }
 
 function wait-for-mysql() {
