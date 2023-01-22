@@ -94,7 +94,7 @@ class MailboxGateway extends BaseGateway
 		return $this->db->fetchValue(
 			'SELECT COUNT(*) FROM `fs_mailbox_message` m WHERE m.`read` = 0 AND m.`mailbox_id` IN (
 				SELECT r.`mailbox_id`
-				FROM fs_bezirk r 
+				FROM fs_bezirk r
 				JOIN fs_botschafter a
 				ON a.`foodsaver_id` = :fs_id1 AND r.`id` = a.`bezirk_id` AND r.`mailbox_id` IS NOT NULL
 			UNION
@@ -103,7 +103,7 @@ class MailboxGateway extends BaseGateway
 				WHERE f.`id` = :fs_id2 AND f.`mailbox_id` IS NOT NULL
 			UNION
 				SELECT m.`mailbox_id`
-				FROM `fs_mailbox_member` m 
+				FROM `fs_mailbox_member` m
 				WHERE m.`foodsaver_id` = :fs_id3
 			)',
 			[
@@ -539,16 +539,17 @@ class MailboxGateway extends BaseGateway
 	/**
 	 * Creates a Mailbox for the user and returns its ID.
 	 */
-	private function createMailbox(string $mb_name): int
+	private function createMailbox(string $name): int
 	{
-		$mb_id = 0;
-		$i = 0;
-		$insert_name = $mb_name;
-		while (($mb_id = $this->db->insert('fs_mailbox', ['name' => strip_tags($insert_name)])) === 0) {
-			++$i;
-			$insert_name = $mb_name . $i;
-		}
+		$mailboxesStartingWithName = $this->db->fetchValue(
+			"SELECT COUNT(name) FROM fs_mailbox WHERE name LIKE :name",
+			[
+				'name' => $name.'%'
+			]
+		);
 
-		return $mb_id;
+		$mailboxName = $mailboxesStartingWithName > 0 ? $name . $mailboxesStartingWithName + 1 : $name;
+
+		return $this->db->insert('fs_mailbox', ['name' => strip_tags($mailboxName)]);
 	}
 }
