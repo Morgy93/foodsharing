@@ -132,6 +132,7 @@
 - Prevent errors in the calendar export caused by events with wrong dates #1301 !2532 @alex.simm
 - Sanitize public info in store to prevent xss !2538 @chriswalg
 - Sanitize chat messages to prevent xss #1515 !2537 @chriswalg
+- Rewrite method to create mailboxes !2596 @martincodes-de
 
 ## Refactoring
 - Currently running events are shown within the event overview until their end !2162 @merhoc
