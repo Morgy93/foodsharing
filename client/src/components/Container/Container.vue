@@ -8,6 +8,17 @@
         :class="{ 'expanded': isExpanded }"
         v-html="title"
       />
+      <button
+        v-if="mayEditStore"
+        v-b-tooltip.hover.top
+        :title="$i18n(managementModeEnabled ? 'store.sm.managementToggleOff' : 'store.sm.managementToggleOn')"
+        class="mr-3 ml-3"
+        :class="[managementModeEnabled ? ['text-warning', 'active'] : 'text-light', 'btn', 'btn-primary', 'btn-sm']"
+        href="#"
+        @click.prevent.stop="toggleManageControlsInContainer"
+      >
+        <i class="fas fa-fw fa-cog" />
+      </button>
       <i
         :alt="isExpanded ? $i18n('globals.show_more') : $i18n('globals.show_less')"
         class="fas fa-angle-down"
@@ -37,6 +48,8 @@ export default {
     tag: { type: String, default: 'tag' },
     title: { type: String, default: 'title' },
     toggleVisiblity: { type: Boolean, default: false },
+    managementModeEnabled: { type: Boolean, default: false },
+    mayEditStore: { type: Boolean, default: false },
   },
   data () {
     return {
@@ -73,6 +86,9 @@ export default {
     reduceList () {
       this.isToggled = false
       this.$emit('reduce-list')
+    },
+    toggleManageControlsInContainer () {
+      this.$emit('toogle-manage-controls')
     },
   },
 }
