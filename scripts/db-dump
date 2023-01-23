@@ -1,10 +1,8 @@
 #!/bin/bash
 
-set -o errexit
-
 dir=$(dirname "$0")
 
-# shellcheck source=./__helping-functions.sh
-source "$dir"/__helping-functions.sh
+# shellcheck source=./__common.sh
+source "$dir"/__common.sh
 
-exec-in-container-asroot db mysqldump -p"$MYSQL_PASSWORD" foodsharing "$@"
+sql-dump "$@"

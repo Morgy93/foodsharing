@@ -17,6 +17,7 @@ class StoreApiCest
     private $store;
     private $foodsharer;
     private $user;
+    private $unverifiedUser;
     private $teamMember;
     private $manager;
     private $region;
@@ -26,6 +27,19 @@ class StoreApiCest
     private const API_REGIONS = 'api/region';
     private const EMAIL = 'email';
     private const ID = 'id';
+
+    public function createDefaultNewStoreJson()
+    {
+        return ['store' => [
+            'name' => 'Store Name', 'regionId' => $this->region['id'],
+            'location' => ['lat' => 123.01, 'lon' => 4.190000],
+            'street' => 'Mühlbachweg 122',
+            'zip' => '12234',
+            'city' => 'Karlsruhe',
+            'publicInfo' => 'Wetten des es geht'
+        ], 'firstPost' => null
+        ];
+    }
 
     public function _before(ApiTester $I)
     {
@@ -37,6 +51,7 @@ class StoreApiCest
         $this->teamMember = $I->createFoodsaver();
         $I->addStoreTeam($this->store[self::ID], $this->teamMember[self::ID], false);
         $this->manager = $I->createStoreCoordinator(null, ['bezirk_id' => $this->region['id']]);
+        $I->addRegionMember($this->region['id'], $this->manager['id']);
         $I->addStoreTeam($this->store[self::ID], $this->manager[self::ID], true);
         $this->faker = Faker\Factory::create('de_DE');
     }
@@ -179,6 +194,326 @@ class StoreApiCest
         $names = $I->grabDataFromResponseByJsonPath('stores.*.name');
         $I->assertContains($store1['name'], $names);
         $I->assertContains($store2['name'], $names);
+    }
+
+    public function canNotGetAccessToCreateStoreAsUnknownUser(ApiTester $I)
+    {
+        $I->haveHttpHeader('Content-Type', 'application/json');
+        $I->sendPOST(self::API_REGIONS . '/' . $this->region['id'] . '/stores', $this->createDefaultNewStoreJson());
+        $I->seeResponseCodeIs(Http::UNAUTHORIZED);
+    }
+
+    public function canNotGetAccessToCreateStoreAsFoodsharer(ApiTester $I)
+    {
+        $I->login($this->foodsharer['email']);
+
+        $I->haveHttpHeader('Content-Type', 'application/json');
+        $I->sendPOST(self::API_REGIONS . '/' . $this->region['id'] . '/stores', $this->createDefaultNewStoreJson());
+        $I->seeResponseCodeIs(Http::FORBIDDEN);
+    }
+
+    public function canNotGetAccessToCreateStoreAsFoodsaver(ApiTester $I)
+    {
+        $I->login($this->user['email']);
+
+        $I->haveHttpHeader('Content-Type', 'application/json');
+        $I->sendPOST(self::API_REGIONS . '/' . $this->region['id'] . '/stores', $this->createDefaultNewStoreJson());
+        $I->seeResponseCodeIs(Http::FORBIDDEN);
+    }
+
+    public function canNotGetAccessToCreateStoreAsUnverifiedFoodsaver(ApiTester $I)
+    {
+        $I->login($this->unverifiedUser['email']);
+
+        $I->haveHttpHeader('Content-Type', 'application/json');
+        $I->sendPOST(self::API_REGIONS . '/' . $this->region['id'] . '/stores', $this->createDefaultNewStoreJson());
+        $I->seeResponseCodeIs(Http::FORBIDDEN);
+    }
+
+    public function canGetAccessToCreateStoreAsStoreManagerOfRegionWithoutContent(ApiTester $I)
+    {
+        $I->login($this->manager['email']);
+
+        $I->haveHttpHeader('Content-Type', 'application/json');
+        $I->sendPOST(self::API_REGIONS . '/' . $this->region['id'] . '/stores', []);
+        $I->seeResponseCodeIs(Http::BAD_REQUEST);
+    }
+
+    public function createStoreAsStoreManagerOfValidRegionButInvalidContent(ApiTester $I)
+    {
+        $storeUri = self::API_REGIONS . '/' . $this->region['id'] . '/stores';
+        $I->login($this->manager['email']);
+        $I->haveHttpHeader('Content-Type', 'application/json');
+
+        // No store data
+        $I->sendPOST($storeUri, ['firstPost' => null]);
+        $I->seeResponseCodeIs(Http::BAD_REQUEST);
+
+        $I->sendPOST($storeUri, ['store' => null]);
+        $I->seeResponseCodeIs(Http::BAD_REQUEST);
+
+        // Empty store name
+        $I->sendPOST($storeUri, ['store' => ['name' => ''], 'firstPost' => null]);
+        $I->seeResponseCodeIs(Http::BAD_REQUEST);
+
+        // Empty location
+        $I->sendPOST($storeUri, [
+            'store' => [
+                'name' => 'Store Name',
+                'location' => null
+            ], 'firstPost' => null]);
+        $I->seeResponseCodeIs(Http::BAD_REQUEST);
+
+        $I->sendPOST($storeUri, [
+            'store' => [
+                'name' => 'Store Name',
+                'location' => ['lat' => '']
+            ], 'firstPost' => null]);
+        $I->seeResponseCodeIs(Http::BAD_REQUEST);
+        $I->sendPOST($storeUri, [
+            'store' => [
+                'name' => 'Store Name',
+                'location' => ['lat' => '123.01', 'lon' => 'sw']
+            ], 'firstPost' => null]);
+        $I->seeResponseCodeIs(Http::BAD_REQUEST);
+        $I->sendPOST($storeUri, [
+            'store' => [
+                'name' => 'Store Name',
+                'location' => ['lat' => 123.01, 'lon' => 4.190000]
+            ], 'firstPost' => null]);
+        $I->seeResponseCodeIs(Http::BAD_REQUEST);
+        $I->sendPOST($storeUri, [
+            'store' => [
+                'name' => 'Store Name',
+                'location' => ['lat' => 123.01, 'lon' => 4.190000],
+                'street' => null,
+            ], 'firstPost' => null]);
+        $I->seeResponseCodeIs(Http::BAD_REQUEST);
+        $I->sendPOST($storeUri, [
+            'store' => [
+                'name' => 'Store Name',
+                'location' => ['lat' => 123.01, 'lon' => 4.190000],
+                'street' => 'Mühlbachweg 122',
+                'zip' => null
+            ], 'firstPost' => null]);
+        $I->seeResponseCodeIs(Http::BAD_REQUEST);
+        $I->sendPOST($storeUri, [
+            'store' => [
+                'name' => 'Store Name',
+                'location' => ['lat' => 123.01, 'lon' => 4.190000],
+                'street' => 'Mühlbachweg 122',
+                'zip' => '12234',
+                'city' => null
+            ], 'firstPost' => null]);
+        $I->sendPOST($storeUri, [
+                'store' => [
+                    'name' => 'Store Name',
+                    'location' => ['lat' => 123.01, 'lon' => 4.190000],
+                    'street' => 'Mühlbachweg 122',
+                    'zip' => '12234',
+                    'city' => 'Karlsruhe',
+                    'publicInfo' => null
+                ], 'firstPost' => null]);
+        $I->seeResponseCodeIs(Http::BAD_REQUEST);
+    }
+
+    public function createStoreAsStoreManagerWithPublicInfoXssIsBadRequest(ApiTester $I)
+    {
+        $I->login($this->manager['email']);
+        $I->haveHttpHeader('Content-Type', 'application/json');
+
+        $storeInfo = [
+            'name' => 'Store Name',
+            'location' => ['lat' => 123.01, 'lon' => 4.190000],
+            'street' => 'Mühlbachweg 122',
+            'zip' => '12234',
+            'city' => 'Karlsruhe',
+            'publicInfo' => 'Wetten <script>alert()</script>des es geht'
+        ];
+        $I->sendPOST(self::API_REGIONS . '/' . $this->region['id'] . '/stores', [
+            'store' => $storeInfo, 'firstPost' => null]);
+        $I->seeResponseCodeIs(Http::BAD_REQUEST);
+
+        $I->dontSeeInDatabase('fs_betrieb', [
+            'name' => $storeInfo['name'],
+            'bezirk_id' => $this->region['id'] + 10,
+            'str' => $storeInfo['street'],
+            'plz' => $storeInfo['zip'],
+            'stadt' => $storeInfo['city'],
+            'public_info' => $storeInfo['publicInfo']]);
+    }
+
+    public function createStoreAsStoreManagerWithNameXssIsBadRequest(ApiTester $I)
+    {
+        $I->login($this->manager['email']);
+        $I->haveHttpHeader('Content-Type', 'application/json');
+
+        $storeInfo = [
+            'name' => 'Store Name <script>alert()</script>',
+            'location' => ['lat' => 123.01, 'lon' => 4.190000],
+            'street' => 'Mühlbachweg 122',
+            'zip' => '12234',
+            'city' => 'Karlsruhe',
+            'publicInfo' => 'Wetten des es geht'
+        ];
+        $I->sendPOST(self::API_REGIONS . '/' . $this->region['id'] . '/stores', [
+            'store' => $storeInfo, 'firstPost' => null]);
+        $I->seeResponseCodeIs(Http::BAD_REQUEST);
+
+        $I->dontSeeInDatabase('fs_betrieb', [
+            'name' => $storeInfo['name'],
+            'bezirk_id' => $this->region['id'] + 10,
+            'str' => $storeInfo['street'],
+            'plz' => $storeInfo['zip'],
+            'stadt' => $storeInfo['city'],
+            'public_info' => $storeInfo['publicInfo']]);
+    }
+
+    public function createStoreAsStoreManagerWithStreetXssIsBadRequest(ApiTester $I)
+    {
+        $I->login($this->manager['email']);
+        $I->haveHttpHeader('Content-Type', 'application/json');
+
+        $storeInfo = [
+            'name' => 'Store Name <script>alert()</script>',
+            'location' => ['lat' => 123.01, 'lon' => 4.190000],
+            'street' => 'Mühlbachweg<script>alert()</script> 122',
+            'zip' => '12234',
+            'city' => 'Karlsruhe <script>alert()</script>',
+            'publicInfo' => 'Wettendes es geht'
+        ];
+        $I->sendPOST(self::API_REGIONS . '/' . $this->region['id'] . '/stores', [
+            'store' => $storeInfo, 'firstPost' => null]);
+        $I->seeResponseCodeIs(Http::BAD_REQUEST);
+
+        $I->dontSeeInDatabase('fs_betrieb', [
+            'name' => $storeInfo['name'],
+            'bezirk_id' => $this->region['id'] + 10,
+            'str' => $storeInfo['street'],
+            'plz' => $storeInfo['zip'],
+            'stadt' => $storeInfo['city'],
+            'public_info' => $storeInfo['publicInfo']]);
+    }
+
+    public function createStoreAsStoreManagerWithCityXssIsBadRequest(ApiTester $I)
+    {
+        $I->login($this->manager['email']);
+        $I->haveHttpHeader('Content-Type', 'application/json');
+
+        $storeInfo = [
+            'name' => 'Store Name <script>alert()</script>',
+            'location' => ['lat' => 123.01, 'lon' => 4.190000],
+            'street' => 'Mühlbachweg 122',
+            'zip' => '12234',
+            'city' => 'Karlsruhe <script>alert()</script>',
+            'publicInfo' => 'Wettendes es geht'
+        ];
+        $I->sendPOST(self::API_REGIONS . '/' . $this->region['id'] . '/stores', [
+            'store' => $storeInfo, 'firstPost' => null]);
+        $I->seeResponseCodeIs(Http::BAD_REQUEST);
+
+        $I->dontSeeInDatabase('fs_betrieb', [
+            'name' => $storeInfo['name'],
+            'bezirk_id' => $this->region['id'] + 10,
+            'str' => $storeInfo['street'],
+            'plz' => $storeInfo['zip'],
+            'stadt' => $storeInfo['city'],
+            'public_info' => $storeInfo['publicInfo']]);
+    }
+
+    public function createStoreAsStoreManagerOfRegionForInvalidRegionIsForbidden(ApiTester $I)
+    {
+        $I->login($this->manager['email']);
+        $I->haveHttpHeader('Content-Type', 'application/json');
+
+        $storeInfo = [
+            'name' => 'Store Name',
+            'location' => ['lat' => 123.01, 'lon' => 4.190000],
+            'street' => 'Mühlbachweg 122',
+            'zip' => '12234',
+            'city' => 'Karlsruhe',
+            'publicInfo' => 'Wetten des es geht'
+        ];
+        $I->sendPOST(self::API_REGIONS . '/' . $this->region['id'] + 10 . '/stores', [
+            'store' => $storeInfo, 'firstPost' => null]);
+        $I->seeResponseCodeIs(Http::FORBIDDEN);
+
+        $I->dontSeeInDatabase('fs_betrieb', [
+            'name' => $storeInfo['name'],
+            'bezirk_id' => $this->region['id'] + 10,
+            'str' => $storeInfo['street'],
+            'plz' => $storeInfo['zip'],
+            'stadt' => $storeInfo['city'],
+            'public_info' => $storeInfo['publicInfo']]);
+    }
+
+    public function createStoreAsStoreManagerOfRegionSuccessful(ApiTester $I)
+    {
+        $I->login($this->manager['email']);
+        $I->haveHttpHeader('Content-Type', 'application/json');
+
+        $storeInfo = [
+            'name' => 'Store Name',
+            'location' => ['lat' => 123.01, 'lon' => 4.190000],
+            'street' => 'Mühlbachweg 122',
+            'zip' => '12234',
+            'city' => 'Karlsruhe',
+            'publicInfo' => 'Wetten des es geht'
+        ];
+        $I->sendPOST(self::API_REGIONS . '/' . $this->region['id'] . '/stores', [
+            'store' => $storeInfo, 'firstPost' => null]);
+        $I->seeResponseCodeIs(Http::CREATED);
+        $storeIds = $I->grabDataFromResponseByJsonPath('$.id');
+        $I->assertEquals(1, count($storeIds));
+
+        $I->seeInDatabase('fs_betrieb', [
+            'id' => $storeIds[0],
+            'name' => $storeInfo['name'],
+            'bezirk_id' => $this->region['id'],
+            'str' => $storeInfo['street'],
+            'plz' => $storeInfo['zip'],
+            'stadt' => $storeInfo['city'],
+            'public_info' => $storeInfo['publicInfo']]);
+
+        $I->dontSeeInDatabase('fs_betrieb_notiz', [
+            'foodsaver_id' => $this->manager['id'],
+            'betrieb_id' => $storeIds[0],
+            'milestone' => Milestone::NONE]);
+    }
+
+    public function createStoreAsStoreManagerOfRegionSuccessfulWithFirstPost(ApiTester $I)
+    {
+        $I->login($this->manager['email']);
+        $I->haveHttpHeader('Content-Type', 'application/json');
+
+        $storeInfo = [
+            'name' => 'Store Name',
+            'location' => ['lat' => 123.01, 'lon' => 4.190000],
+            'street' => 'Mühlbachweg 122',
+            'zip' => '12234',
+            'city' => 'Karlsruhe',
+            'publicInfo' => 'Wetten des es geht'
+        ];
+        $I->sendPOST(self::API_REGIONS . '/' . $this->region['id'] . '/stores', [
+            'store' => $storeInfo, 'firstPost' => 'First post']);
+        $I->seeResponseCodeIs(Http::CREATED);
+        $storeIds = $I->grabDataFromResponseByJsonPath('$.id');
+        $I->assertEquals(1, count($storeIds));
+
+        $I->seeInDatabase('fs_betrieb', [
+            'id' => $storeIds[0],
+            'name' => $storeInfo['name'],
+            'bezirk_id' => $this->region['id'],
+            'str' => $storeInfo['street'],
+            'plz' => $storeInfo['zip'],
+            'stadt' => $storeInfo['city'],
+            'public_info' => $storeInfo['publicInfo']]);
+
+        $I->seeInDatabase('fs_betrieb_notiz', [
+            'foodsaver_id' => $this->manager['id'],
+            'betrieb_id' => $storeIds[0],
+            'milestone' => Milestone::NONE,
+            'text' => 'First post']);
     }
 
     public function getStore(ApiTester $I)

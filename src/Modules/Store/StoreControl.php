@@ -2,27 +2,21 @@
 
 namespace Foodsharing\Modules\Store;
 
-use Foodsharing\Modules\Bell\BellGateway;
-use Foodsharing\Modules\Bell\DTO\Bell;
 use Foodsharing\Modules\Core\Control;
-use Foodsharing\Modules\Core\DBConstants\Bell\BellType;
 use Foodsharing\Modules\Core\DBConstants\Foodsaver\Role;
-use Foodsharing\Modules\Core\DBConstants\Store\Milestone;
 use Foodsharing\Modules\Core\DBConstants\Unit\UnitType;
-use Foodsharing\Modules\Foodsaver\FoodsaverGateway;
 use Foodsharing\Modules\Region\RegionGateway;
+use Foodsharing\Modules\Store\DTO\CreateStoreData;
 use Foodsharing\Permissions\StorePermissions;
 use Foodsharing\Utility\DataHelper;
 use Foodsharing\Utility\IdentificationHelper;
 
 class StoreControl extends Control
 {
-    private $bellGateway;
     private $storeGateway;
     private $storePermissions;
     private $storeTransactions;
     private $regionGateway;
-    private $foodsaverGateway;
     private $identificationHelper;
     private $dataHelper;
 
@@ -30,19 +24,15 @@ class StoreControl extends Control
         StorePermissions $storePermissions,
         StoreTransactions $storeTransactions,
         StoreView $view,
-        BellGateway $bellGateway,
         StoreGateway $storeGateway,
-        FoodsaverGateway $foodsaverGateway,
         RegionGateway $regionGateway,
         IdentificationHelper $identificationHelper,
         DataHelper $dataHelper
     ) {
         $this->view = $view;
-        $this->bellGateway = $bellGateway;
         $this->storeGateway = $storeGateway;
         $this->storePermissions = $storePermissions;
         $this->storeTransactions = $storeTransactions;
-        $this->foodsaverGateway = $foodsaverGateway;
         $this->regionGateway = $regionGateway;
         $this->identificationHelper = $identificationHelper;
         $this->dataHelper = $dataHelper;
@@ -157,8 +147,6 @@ class StoreControl extends Control
 
             $this->storeTransactions->updateAllStoreData($id, $g_data);
 
-            $this->storeTransactions->setStoreNameInConversations($id, $g_data['name']);
-
             $this->flashMessageHelper->success($this->translator->trans('storeedit.edit_success'));
             $this->routeHelper->go('/?page=fsbetrieb&id=' . $id);
         }
@@ -186,45 +174,14 @@ class StoreControl extends Control
         if (isset($g_data['anschrift'])) {
             $g_data['str'] = $g_data['anschrift'];
         }
-
-        $storeId = $this->storeTransactions->createStore($g_data);
+        $firstStorePost = $g_data['first_post'] ?? null;
+        $storeId = $this->storeTransactions->createStore(CreateStoreData::createFromArray($g_data), $this->session->id(), $firstStorePost);
 
         if (!$storeId) {
             $this->flashMessageHelper->error($this->translator->trans('error_unexpected'));
 
             return;
         }
-
-        $this->storeTransactions->setStoreNameInConversations($storeId, $g_data['name']);
-        $this->storeGateway->add_betrieb_notiz([
-            'foodsaver_id' => $this->session->id(),
-            'betrieb_id' => $storeId,
-            'text' => '{BETRIEB_ADDED}', // TODO Do we want to keep this?
-            'zeit' => date('Y-m-d H:i:s', time() - 10),
-            'milestone' => Milestone::CREATED,
-        ]);
-
-        if (isset($g_data['first_post']) && !empty($g_data['first_post'])) {
-            $this->storeGateway->add_betrieb_notiz([
-                'foodsaver_id' => $this->session->id(),
-                'betrieb_id' => $storeId,
-                'text' => $g_data['first_post'],
-                'zeit' => date('Y-m-d H:i:s'),
-                'milestone' => Milestone::NONE,
-            ]);
-        }
-
-        $foodsaver = $this->foodsaverGateway->getFoodsaversByRegion($g_data['bezirk_id']);
-
-        $bellData = Bell::create('store_new_title', 'store_new', 'fas fa-store-alt', [
-            'href' => '/?page=fsbetrieb&id=' . (int)$storeId
-        ], [
-            'user' => $this->session->user('name'),
-            'name' => $g_data['name']
-        ], BellType::createIdentifier(BellType::NEW_STORE, (int)$storeId));
-        $this->bellGateway->addBell(array_map(function ($f) {
-            return $f->id;
-        }, $foodsaver), $bellData);
 
         $this->flashMessageHelper->success($this->translator->trans('storeedit.add_success'));
 

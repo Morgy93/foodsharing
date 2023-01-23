@@ -7,6 +7,8 @@
 ## Changes
 - Added toogle collapse function to store team list for desktop view !2525 @chriswalg
 - Make menubar sticky on mobile !2411 @AntonBallmaier
+- Added a new content page for it infos to menu !2590 @chriswalg
+- Removed freshdesk link to Support and renamed contact to contact & support !2590 @chriswalg
 
 
 ## Bugfixes
@@ -21,6 +23,7 @@
 ## Refactoring
 - added poppins font in Styleguide !2564 @Niklas003 
 - Use email address DTO and let the MailboxGateway handle JSON encoding !2520 @alex.simm
+- Replaced the usage of a function in FoodsaverGateway with a more ressource saving function !2595 @alex.simm
 
 
 ## Dev/Test/CI stuff
@@ -30,10 +33,10 @@
 - Change identity style from tab to space !2571 @BibaltiK
 - Python Script to generate Release Notes from gitlab MRs !2548 @alex.simm
 - Restart all foodsharing services after production deployment !2583 @stcz
+- Clean up scripts a bit more !2480 @\_fridtjof_
 
 
 ## Development documentation
-
 
 
 # Release "Icecream", 2022-12-18
@@ -65,6 +68,7 @@
 - District rules for maximum number of pickups in a timeframe accross severall stores combined can be set !2414 !2530 @fs_k
 - Provide RestAPI to change teamstatus of a store !2406
 - Added RestAPI for regular Pickup configuration !1373 @koemai
+- Added RestAPI to create a new store !2484 @koemai
 - The chat has been modernised !2301 !2498 !2508 !2514 !2533 @NINI1988
 - Added new body font !2426 @sefn
 

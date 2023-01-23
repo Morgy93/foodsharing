@@ -10,7 +10,6 @@ use Foodsharing\Modules\Core\DBConstants\Store\CooperationStatus;
 use Foodsharing\Modules\Core\DBConstants\Store\Milestone;
 use Foodsharing\Modules\Core\DBConstants\StoreTeam\MembershipStatus;
 use Foodsharing\Modules\Region\RegionGateway;
-use Foodsharing\Modules\Store\DTO\CreateStoreData;
 use Foodsharing\Modules\Store\DTO\Store;
 use Foodsharing\Modules\Store\DTO\StoreTeamMembership;
 
@@ -27,19 +26,19 @@ class StoreGateway extends BaseGateway
         $this->regionGateway = $regionGateway;
     }
 
-    public function addStore(CreateStoreData $store): int
+    public function addStore(Store $store): int
     {
         return $this->db->insert('fs_betrieb', [
             'name' => $store->name,
             'bezirk_id' => $store->regionId,
-            'lat' => $store->lat,
-            'lon' => $store->lon,
-            'str' => $store->str,
+            'lat' => $store->location->lat,
+            'lon' => $store->location->lon,
+            'str' => $store->street,
             'plz' => $store->zip,
             'stadt' => $store->city,
             'public_info' => $store->publicInfo,
-            'added' => $store->createdAt,
-            'status_date' => $store->updatedAt,
+            'added' => $store->createdAt->format('Y-m-d'),
+            'status_date' => $store->updatedAt->format('Y-m-d')
         ]);
     }
 

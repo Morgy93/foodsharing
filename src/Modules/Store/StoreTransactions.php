@@ -15,6 +15,7 @@ use Foodsharing\Modules\Core\DBConstants\Store\Milestone;
 use Foodsharing\Modules\Core\DBConstants\Store\PublicTimes;
 use Foodsharing\Modules\Core\DBConstants\Store\StoreLogAction;
 use Foodsharing\Modules\Core\DBConstants\StoreTeam\MembershipStatus;
+use Foodsharing\Modules\Core\DBConstants\Unit\UnitType;
 use Foodsharing\Modules\Core\DTO\GeoLocation;
 use Foodsharing\Modules\Foodsaver\FoodsaverGateway;
 use Foodsharing\Modules\Message\MessageGateway;
@@ -145,25 +146,76 @@ class StoreTransactions
         }, $stores);
     }
 
-    public function createStore(array $legacyGlobalData): int
+    /**
+     * Creates a new store with the possiblility to post a first message.
+     *
+     * This method creates all required parts for a store
+     * 1. Store information
+     * 2. Add author to the Store as store manager
+     * 3. Creates conversation threads for Team and Jumpers
+     * 4. Optional a first notes to the store wall
+     * 5. Informs members of the store related region about a new store
+     *
+     * @param CreateStoreData $createStore Initial required store information
+     * @param int $authorFsId FoddsaverId of the store creator, it is used for conversation and information bell
+     * @param string $firstStorePost First message on the store wall
+     *
+     * @throws StoreTransactionException When region is invalid or not a region (like workinggroups)
+     */
+    public function createStore(CreateStoreData $createStore, int $authorFsId, ?string $firstStorePost = null): int
     {
-        $store = new CreateStoreData();
-        $store->name = $legacyGlobalData['name'];
-        $store->regionId = $legacyGlobalData['bezirk_id'];
-        $store->lat = floatval($legacyGlobalData['lat']);
-        $store->lon = floatval($legacyGlobalData['lon']);
-        $store->str = $legacyGlobalData['str'];
-        $store->zip = $legacyGlobalData['plz'];
-        $store->city = $legacyGlobalData['stadt'];
-        $store->publicInfo = $legacyGlobalData['public_info'];
-        $store->createdAt = Carbon::now();
-        $store->updatedAt = $store->createdAt;
+        try {
+            $regionType = $this->regionGateway->getType($createStore->regionId);
+        } catch (\Exception $dbExpection) {
+            throw new StoreTransactionException(StoreTransactionException::INVALID_REGION);
+        }
+        if (!UnitType::isAccessibleRegion($regionType)) {
+            throw new StoreTransactionException(StoreTransactionException::INVALID_REGION_TYPE);
+        }
 
+        $store = $createStore->toStore();
         $storeId = $this->storeGateway->addStore($store);
-        $managerId = $this->session->id();
 
-        $this->storeGateway->addStoreManager($storeId, $managerId);
-        $this->createTeamConversations($storeId, $managerId);
+        $this->storeGateway->addStoreManager($storeId, $authorFsId);
+
+        $storeTeamChatId = $this->messageGateway->createConversation([$authorFsId], true);
+        $this->storeGateway->updateStoreConversation($storeId, $storeTeamChatId, false);
+
+        $standbyTeamChatId = $this->messageGateway->createConversation([$authorFsId], true);
+        $this->storeGateway->updateStoreConversation($storeId, $standbyTeamChatId, true);
+
+        $this->setStoreNameInConversations($storeId, $createStore->name);
+
+        $this->storeGateway->add_betrieb_notiz([
+            'foodsaver_id' => $authorFsId,
+            'betrieb_id' => $storeId,
+            'text' => '{BETRIEB_ADDED}', // TODO Do we want to keep this?
+            'zeit' => date('Y-m-d H:i:s', time() - 10),
+            'milestone' => Milestone::CREATED,
+        ]);
+
+        if (!empty($firstStorePost)) {
+            $this->storeGateway->add_betrieb_notiz([
+                'foodsaver_id' => $authorFsId,
+                'betrieb_id' => $storeId,
+                'text' => $firstStorePost,
+                'zeit' => date('Y-m-d H:i:s'),
+                'milestone' => Milestone::NONE,
+            ]);
+        }
+
+        $authorName = $this->foodsaverGateway->getFoodsaverName($authorFsId);
+        $foodsaver = $this->foodsaverGateway->getFoodsaversByRegion($createStore->regionId);
+
+        $bellData = Bell::create('store_new_title', 'store_new', 'fas fa-store-alt', [
+            'href' => '/?page=fsbetrieb&id=' . $storeId
+        ], [
+            'user' => $authorName,
+            'name' => $createStore->name
+        ], BellType::createIdentifier(BellType::NEW_STORE, $storeId));
+        $this->bellGateway->addBell(array_map(function ($f) {
+            return $f->id;
+        }, $foodsaver), $bellData);
 
         return $storeId;
     }
@@ -213,6 +265,7 @@ class StoreTransactions
         $store->updatedAt = Carbon::now();
 
         $this->storeGateway->updateStoreData($store->id, $store);
+        $this->setStoreNameInConversations($store->id, $store->name);
 
         return true;
     }
@@ -463,11 +516,11 @@ class StoreTransactions
     public function createKickMessage(int $foodsaverId, int $storeId, DateTime $pickupDate, ?string $message = null): string
     {
         $fs = $this->foodsaverGateway->getFoodsaver($foodsaverId);
-        $store = $this->storeGateway->getBetrieb($storeId);
+        $storeName = $this->storeGateway->getStoreName($storeId);
 
         $salutation = $this->translator->trans('salutation.' . $fs['geschlecht']) . ' ' . $fs['name'];
         $mandatoryMessage = $this->translator->trans('pickup.kick_message', [
-            '{storeName}' => $store['name'],
+            '{storeName}' => $storeName,
             '{date}' => date('d.m.Y H:i', $pickupDate->getTimestamp())
         ]);
         $optionalMessage = empty($message) ? '' : ("\n\n" . $message);
@@ -584,20 +637,6 @@ class StoreTransactions
             'zeit' => date('Y-m-d H:i:s'),
             'milestone' => Milestone::ACCEPTED,
         ]);
-    }
-
-    /**
-     * creates an empty team conversation for the given store.
-     * creates an empty standby-team conversation for the given store.
-     * prefills both conversations with the given userId.
-     */
-    private function createTeamConversations(int $storeId, int $managerId): void
-    {
-        $storeTeamChatId = $this->messageGateway->createConversation([$managerId], true);
-        $this->storeGateway->updateStoreConversation($storeId, $storeTeamChatId, false);
-
-        $standbyTeamChatId = $this->messageGateway->createConversation([$managerId], true);
-        $this->storeGateway->updateStoreConversation($storeId, $standbyTeamChatId, true);
     }
 
     // notify people who can do something with the request: store managers, region ambassadors, or orga

@@ -9,6 +9,7 @@ use Foodsharing\Modules\Core\DBConstants\Foodsaver\Gender;
 use Foodsharing\Modules\Core\DBConstants\Foodsaver\Role;
 use Foodsharing\Modules\Foodsaver\FoodsaverGateway;
 use Foodsharing\Modules\Foodsaver\FoodsaverTransactions;
+use Foodsharing\Modules\Foodsaver\Profile;
 use Foodsharing\Modules\Group\GroupTransactions;
 use Foodsharing\Modules\Login\LoginGateway;
 use Foodsharing\Modules\Profile\ProfileGateway;
@@ -36,6 +37,7 @@ use FOS\RestBundle\Controller\AbstractFOSRestController;
 use FOS\RestBundle\Controller\Annotations as Rest;
 use FOS\RestBundle\Request\ParamFetcher;
 use Mobile_Detect;
+use Nelmio\ApiDocBundle\Annotation\Model;
 use OpenApi\Annotations as OA;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\Exception\AccessDeniedHttpException;
@@ -105,6 +107,13 @@ class UserRestController extends AbstractFOSRestController
      * Checks if the user is logged in and lists the basic user information. Returns 200 and the user data, 404 if the
      * user does not exist, or 401 if not logged in.
      *
+     * @OA\Response(
+     * 		response="200",
+     * 		description="Success",
+     *      @Model(type=Profile::class)
+     * )
+     * @OA\Response(response="401", description="Not logged in")
+     * @OA\Response(response="404", description="User with that id not found")
      * @OA\Tag(name="user")
      * @Rest\Get("user/{id}", requirements={"id" = "\d+"})
      */
@@ -114,12 +123,12 @@ class UserRestController extends AbstractFOSRestController
             throw new UnauthorizedHttpException('');
         }
 
-        $data = $this->foodsaverGateway->getFoodsaverBasics($id);
+        $data = $this->foodsaverGateway->getProfile($id);
         if (empty($data)) {
             throw new NotFoundHttpException('User does not exist.');
         }
 
-        return $this->handleView($this->view(RestNormalization::normalizeUser($data), 200));
+        return $this->handleView($this->view($data, 200));
     }
 
     /**
@@ -274,13 +283,12 @@ class UserRestController extends AbstractFOSRestController
             }
 
             // retrieve user data and normalise it
-            $user = $this->foodsaverGateway->getFoodsaverBasics($fs_id);
+            $user = $this->foodsaverGateway->getProfile($fs_id);
             if (empty($user)) {
                 throw new NotFoundHttpException('User does not exist.');
             }
-            $normalizedUser = RestNormalization::normalizeUser($user);
 
-            return $this->handleView($this->view($normalizedUser, 200));
+            return $this->handleView($this->view($user, 200));
         }
 
         throw new UnauthorizedHttpException('', 'email or password are invalid');
@@ -382,7 +390,7 @@ class UserRestController extends AbstractFOSRestController
             $id = $this->registerTransactions->registerUser($data);
 
             // return the created user
-            $user = RestNormalization::normalizeUser($this->foodsaverGateway->getFoodsaverBasics($id));
+            $user = $this->foodsaverGateway->getProfile($id);
 
             return $this->handleView($this->view($user, 200));
         } catch (\Exception $e) {

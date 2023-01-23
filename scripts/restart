@@ -3,4 +3,4 @@ set -o errexit
 dir=$(dirname "$0")
 
 # Command
-"$dir"/containers-restart $@
+"$dir"/containers-restart "$@"

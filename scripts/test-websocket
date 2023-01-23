@@ -1,15 +1,10 @@
 #!/bin/bash
+export FS_ENV=test
+
 dir=$(dirname "$0")
 
-# shellcheck source=./__helping-functions.sh
-source "$dir"/__helping-functions.sh
-
-# ENVS
-export FS_ENV=test
-export CURRENT_USER=$(id -u):$(id -g)
-
-# set -o errexit tells the shell to exit as soon as a command exits with non-zero status, i.e. fails
-set -o errexit
+# shellcheck source=./__common.sh
+source "$dir"/__common.sh
 
 log-header "Running websocket tests"
 run-in-container websocket 'yarn && yarn lint && yarn test'
