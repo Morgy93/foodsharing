@@ -558,15 +558,15 @@ class MailboxGateway extends BaseGateway
     private function createMailbox(string $name): int
     {
         $amountOfMailboxesStartingWithName = (int)$this->db->fetchValue(
-			'SELECT COUNT(name) FROM fs_mailbox WHERE name LIKE :name',
+            'SELECT COUNT(name) FROM fs_mailbox WHERE name LIKE :name',
             [
-				'name' => $name . '%'
-			]
+                'name' => $name . '%'
+            ]
         );
 
         $mailboxName = $amountOfMailboxesStartingWithName > 0 ? $name . $amountOfMailboxesStartingWithName : $name;
 
-		return $this->db->insert('fs_mailbox', ['name' => strip_tags($mailboxName)]);
+        return $this->db->insert('fs_mailbox', ['name' => strip_tags($mailboxName)]);
     }
 
     /**
