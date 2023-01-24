@@ -3,10 +3,6 @@
 # which command to run by docker-compose and additional arguments is specified by the arguments
 # of this script
 
-set -o errexit
-
-dir=$(dirname "$0")
-
 # Export the current host operating system to FS_PLATFORM
 unameOut="$(uname -s)"
 case "${unameOut}" in
@@ -20,8 +16,10 @@ then
     FS_PLATFORM=gitpod
 fi
 
-# shellcheck source=./__helping-functions.sh
-source "$dir"/__helping-functions.sh
+dir=$(dirname "$0")
+
+# shellcheck source=./__common.sh
+source "$dir"/__common.sh
 
 docker-compose \
   --file "$dir"/../docker/docker-compose.yml \

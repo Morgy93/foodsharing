@@ -6,14 +6,14 @@ use Foodsharing\Modules\Core\View;
 
 class StatisticsView extends View
 {
-	public function getStatRegions(array $regions): string
-	{
-		$out = '<table class="leaderboard stat_regions">';
+    public function getStatRegions(array $regions): string
+    {
+        $out = '<table class="leaderboard stat_regions">';
 
-		$i = 0;
-		foreach ($regions as $r) {
-			++$i;
-			$out .= '
+        $i = 0;
+        foreach ($regions as $r) {
+            ++$i;
+            $out .= '
 			<tr>
 				<td class="rank">
 					<h4>' . $i . '.</h4>
@@ -21,30 +21,30 @@ class StatisticsView extends View
 				<td class="name">
 					<h4>' . $r['name'] . '</h4>
 					<p class="fetchweight">'
-				. $this->numberHelper->format_number($r['fetchweight'])
-					. '<span style="white-space: nowrap;">&thinsp;</span>kg '
-					. $this->translator->trans('profile.stats.weight')
-					. '</p>
+                . $this->numberHelper->format_number($r['fetchweight'])
+                    . '<span style="white-space: nowrap;">&thinsp;</span>kg '
+                    . $this->translator->trans('profile.stats.weight')
+                    . '</p>
 					<p class="fetchcount">'
-				. $this->numberHelper->format_number($r['fetchcount'])
-					. '<span style="white-space: nowrap;">&thinsp;</span>x '
-					. $this->translator->trans('profile.stats.count')
-					. '</p>
+                . $this->numberHelper->format_number($r['fetchcount'])
+                    . '<span style="white-space: nowrap;">&thinsp;</span>x '
+                    . $this->translator->trans('profile.stats.count')
+                    . '</p>
 				</td>
 			</tr>';
-		}
-		$out .= '</table>';
+        }
+        $out .= '</table>';
 
-		return $this->v_utils->v_field(
-			$out,
-			$this->translator->trans('stats.leader.regions'),
-			['class' => 'ui-padding']
-		);
-	}
+        return $this->v_utils->v_field(
+            $out,
+            $this->translator->trans('stats.leader.regions'),
+            ['class' => 'ui-padding']
+        );
+    }
 
-	public function getStatTotal(array $stat, int $foodsharerCount, int $avgDailyFetchCount, int $foodSharePointsCount): string
-	{
-		return $this->v_utils->v_field('
+    public function getStatTotal(array $stat, int $foodsharerCount, int $avgDailyFetchCount, int $foodSharePointsCount): string
+    {
+        return $this->v_utils->v_field('
 	<div id="stat_whole">
 		<div class="stat_item">
 			<div class="stat_badge">
@@ -153,18 +153,18 @@ class StatisticsView extends View
 			</div>
 		</div>
 	</div>',
-			$this->translator->trans('stats.title')
-		);
-	}
+            $this->translator->trans('stats.title')
+        );
+    }
 
-	public function getStatFoodsaver(array $foodsaver): string
-	{
-		$out = '<table class="leaderboard stat_foodsaver">';
+    public function getStatFoodsaver(array $foodsaver): string
+    {
+        $out = '<table class="leaderboard stat_foodsaver">';
 
-		$i = 0;
-		foreach ($foodsaver as $fs) {
-			++$i;
-			$out .= '
+        $i = 0;
+        foreach ($foodsaver as $fs) {
+            ++$i;
+            $out .= '
 			<tr>
 				<td class="rank">
 					<h4>' . $i . '.</h4>
@@ -172,24 +172,24 @@ class StatisticsView extends View
 				<td class="name">
 					<h4>' . $fs['name'] . '</h4>
 					<p class="fetchweight">'
-				. $this->numberHelper->format_number($fs['fetchweight'])
-					. '<span style="white-space: nowrap;">&thinsp;</span>kg '
-					. $this->translator->trans('profile.stats.weight')
-					. '</p>
+                . $this->numberHelper->format_number($fs['fetchweight'])
+                    . '<span style="white-space: nowrap;">&thinsp;</span>kg '
+                    . $this->translator->trans('profile.stats.weight')
+                    . '</p>
 					<p class="fetchcount">'
-				. $this->numberHelper->format_number($fs['fetchcount'])
-					. '<span style="white-space: nowrap;">&thinsp;</span>x '
-					. $this->translator->trans('profile.stats.count')
-					. '</p>
+                . $this->numberHelper->format_number($fs['fetchcount'])
+                    . '<span style="white-space: nowrap;">&thinsp;</span>x '
+                    . $this->translator->trans('profile.stats.count')
+                    . '</p>
 				</td>
 			</tr>';
-		}
-		$out .= '</table>';
+        }
+        $out .= '</table>';
 
-		return $this->v_utils->v_field(
-			$out,
-			$this->translator->trans('stats.leader.users'),
-			['class' => 'ui-padding']
-		);
-	}
+        return $this->v_utils->v_field(
+            $out,
+            $this->translator->trans('stats.leader.users'),
+            ['class' => 'ui-padding']
+        );
+    }
 }

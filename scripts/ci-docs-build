@@ -1,12 +1,11 @@
 #!/bin/bash
+
+export FS_ENV=dev
+
 dir=$(dirname "$0")
-root="$dir/../.."
 
-source "$dir"/__helping-functions.sh
-set -o errexit
-
-# ENVS
-export FS_ENV=test
+# shellcheck source=./__common.sh
+source "$dir"/__common.sh
 
 log-header "Preparing execution environment: Prepare PHP config, application & composer dev dependencies"
 composer install --prefer-dist --no-progress --no-interaction --no-scripts --ignore-platform-reqs

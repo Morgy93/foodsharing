@@ -4,17 +4,17 @@ use Codeception\Util\HttpCode;
 
 class PushNotificationSubscriptionCest
 {
-	/**
-	 * @var string
-	 */
-	private $testSubscription;
+    /**
+     * @var string
+     */
+    private $testSubscription;
 
-	public function _before(ApiTester $I)
-	{
-		$this->tester = $I;
-		$this->user = $I->createFoodsaver();
+    public function _before(ApiTester $I)
+    {
+        $this->tester = $I;
+        $this->user = $I->createFoodsaver();
 
-		$this->testSubscription = '
+        $this->testSubscription = '
 		{
 			"endpoint": "https://some.pushservice.com/something-unique",
 			"keys": {
@@ -22,20 +22,20 @@ class PushNotificationSubscriptionCest
 				"auth":"FPssNDTKnInHVndSTdbKFw=="
 			}
 		}';
-	}
+    }
 
-	public function subscriptionSucceedsIfLoggedIn(ApiTester $I)
-	{
-		$I->login($this->user['email']);
-		$I->sendPOST('api/pushnotification/webpush/subscription', $this->testSubscription);
+    public function subscriptionSucceedsIfLoggedIn(ApiTester $I)
+    {
+        $I->login($this->user['email']);
+        $I->sendPOST('api/pushnotification/webpush/subscription', $this->testSubscription);
 
-		$I->seeResponseCodeIs(HttpCode::OK);
-	}
+        $I->seeResponseCodeIs(HttpCode::OK);
+    }
 
-	public function subscriptionFailsIfNotLoggedIn(ApiTester $I)
-	{
-		$I->sendPOST('api/pushnotification/webpush/subscription', $this->testSubscription);
+    public function subscriptionFailsIfNotLoggedIn(ApiTester $I)
+    {
+        $I->sendPOST('api/pushnotification/webpush/subscription', $this->testSubscription);
 
-		$I->seeResponseCodeIs(HttpCode::UNAUTHORIZED);
-	}
+        $I->seeResponseCodeIs(HttpCode::UNAUTHORIZED);
+    }
 }

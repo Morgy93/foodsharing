@@ -19,16 +19,16 @@ $I->acceptPopup();
 $I->waitForActiveAPICalls();
 
 $I->seeInDatabase('fs_foodsaver', [
-	'id' => $foodsaver['id'],
-	'name' => null,
-	'email' => null,
-	'nachname' => null,
-	'deleted_by' => $foodsaver['id']
+    'id' => $foodsaver['id'],
+    'name' => null,
+    'email' => null,
+    'nachname' => null,
+    'deleted_by' => $foodsaver['id']
 ]);
 
 $I->seeInDatabase('fs_foodsaver_archive', [
-	'id' => $foodsaver['id'],
-	'name' => $foodsaver['name'],
-	'email' => $foodsaver['email'],
-	'nachname' => $foodsaver['nachname']
+    'id' => $foodsaver['id'],
+    'name' => $foodsaver['name'],
+    'email' => $foodsaver['email'],
+    'nachname' => $foodsaver['nachname']
 ]);

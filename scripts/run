@@ -1,14 +1,11 @@
 #!/bin/bash
 
-export FS_ENV=dev
-export CURRENT_USER=$(id -u):$(id -g)
-
 set -e
 
 dir=$(dirname "$0")
 
-# shellcheck source=./__helping-functions.sh
-source "$dir"/__helping-functions.sh
+# shellcheck source=./__common.sh
+source "$dir"/__common.sh
 
 PARAMS=( "$@" );
 "$dir"/docker-compose exec -T --user 33:33 app sh -c "HOME=./ php -f run.php" "${PARAMS[@]}"

@@ -1724,7 +1724,7 @@ settings:
     disabled: "Push-Benachrichtigungen erfolgreich deaktiviert"
   name_change:
     title: Name (Vor- & Nachname)
-    desc: Der eigene Name kann nicht selbstständig geändert werden. Du kannst aber eine <a {link}">Namesänderung beantragen</a>.
+    desc: Der eigene Name kann nicht selbstständig geändert werden. Du kannst aber eine <a {link}">Namensänderung beantragen</a>.
     request: Namensänderung beantragen
     foodsaver_info: "Um deinen Namen zu ändern musst du eine*n Botschafter*in aus deinem Stammbezirk kontaktieren. Diese*r kann dann die Namensänderung für dich durchführen.<hr/>Wer Botschafter in deinem Stammbezirk ist, siehst du im <a {link}>Forum deines Bezirks</a> in der linken Seitenleiste."
     foodsharer_info: "Um deinen Namen zu ändern musst du uns eine Anfrage unter <a {link}>Support-Formular</a> erstellen."
@@ -2698,13 +2698,13 @@ system_administration:
 navigation:
   map: Karte
   promotion: In der IT? Wir brauchen dich!
-  contact: Kontakt
+  contact: Kontakt & Support
   whats_new: Was ist neu?
   styleguide: Styleguide
+  news_from_it: Aktuelles & Störungen
   support: Support
   help_needed: Hilfe nötig?
   help: Hilfe
-  help_and_support: Hilfe & Support
   wiki: Wiki
   regions: Bezirke
   groups: Gruppen

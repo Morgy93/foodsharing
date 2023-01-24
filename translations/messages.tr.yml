@@ -11,3 +11,8 @@ email: Email adresi
 attachement: Ek
 name: Ad
 nachname: Soyad
+anschrift: Sokak ve ev numarası (yukarıdaki haritadan otomatik olarak, gerekirse daha
+  sonra düzeltin)
+address: Adres
+options: Seçenekler
+picture: Resim

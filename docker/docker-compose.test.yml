@@ -7,7 +7,7 @@ services:
   nginx:
     container_name: foodsharing_test_nginx
     ports:
-      - 28080:8080
+      - "28080:8080"
 
   # Customized PHP
   #------------------------------------
@@ -16,7 +16,7 @@ services:
     environment:
       FS_ENV: test
     ports:
-      - 29000:9000
+      - "29000:9000"
 
   # Webpack client
   #------------------------------------
@@ -24,7 +24,7 @@ services:
     container_name: foodsharing_test_client
     command: sh -c "yarn && yarn dev"
     ports:
-      - 28090:8082
+      - "28090:8082"
 
   # PHP mail queue runner
   #------------------------------------
@@ -38,8 +38,8 @@ services:
   websocket:
     container_name: foodsharing_test_websocket
     ports:
-      - 21337:1337
-      - 21338:1338
+      - "21337:1337"
+      - "21338:1338"
 
   # mysql
   #------------------------------------
@@ -48,28 +48,28 @@ services:
     environment:
       - MYSQL_ROOT_PASSWORD=root
     ports:
-      - 23306:3306
+      - "23306:3306"
 
   # redis
   #------------------------------------
   redis:
     container_name: foodsharing_test_redis
     ports:
-      - 36379:6379
+      - "36379:6379"
 
   # phpmyadmin
   #------------------------------------
   phpmyadmin:
     container_name: foodsharing_test_phpmyadmin
     ports:
-      - 28081:80
+      - "28081:80"
 
   # maildev
   #------------------------------------
   maildev:
     container_name: foodsharing_test_maildev
     ports:
-      - 28084:1080
+      - "28084:1080"
 
   # influxdb
   # used for mail sending tracking and server monitoring
@@ -77,9 +77,9 @@ services:
   influxdb:
     container_name: foodsharing_test_influxdb
     ports:
-      - 28083:8083
-      - 28089:8089/udp
-      - 28086:8086
+      - "28083:8083"
+      - "28089:8089/udp"
+      - "28086:8086"
 
   # docs
   # A plattform for the developer documentations
@@ -88,7 +88,7 @@ services:
     container_name: foodsharing_test_docs
     command: sh -c "yarn && yarn api:build && yarn serve"
     ports:
-      - 26000:3000
+      - "26000:3000"
 
   # selenium
   # for running browser-based tests

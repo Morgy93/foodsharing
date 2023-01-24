@@ -10,38 +10,38 @@ use Foodsharing\RestApi\Models\Group\EditWorkGroupData;
 
 class WorkGroupGateway extends BaseGateway
 {
-	public function __construct(
-		Database $db
-	) {
-		parent::__construct($db);
-	}
+    public function __construct(
+        Database $db
+    ) {
+        parent::__construct($db);
+    }
 
-	/*
-	 * Own existing applications.
-	 */
-	public function getApplications(int $fsId): array
-	{
-		$ret = $this->db->fetchAllValues('
+    /*
+     * Own existing applications.
+     */
+    public function getApplications(int $fsId): array
+    {
+        $ret = $this->db->fetchAllValues('
 			SELECT	`bezirk_id`
 			FROM	`fs_foodsaver_has_bezirk`
 			WHERE	`active` != :active
 			AND		`foodsaver_id` = :foodsaver_id
 		', [':active' => 1, ':foodsaver_id' => $fsId]);
-		if ($ret) {
-			$out = [];
-			foreach ($ret as $gid) {
-				$out[$gid] = $gid;
-			}
+        if ($ret) {
+            $out = [];
+            foreach ($ret as $gid) {
+                $out[$gid] = $gid;
+            }
 
-			return $out;
-		}
+            return $out;
+        }
 
-		return [];
-	}
+        return [];
+    }
 
-	public function getGroup(int $regionId): array
-	{
-		$group = $this->db->fetch('
+    public function getGroup(int $regionId): array
+    {
+        $group = $this->db->fetch('
 			SELECT	b.`id`,
 					b.`name`,
 					b.`parent_id`,
@@ -59,8 +59,8 @@ class WorkGroupGateway extends BaseGateway
 			ON			b.`mailbox_id` = m.`id`
 			WHERE	b.`id` = :bezirk_id
 		', [':bezirk_id' => $regionId]);
-		if ($group) {
-			$group['member'] = $this->db->fetchAll('
+        if ($group) {
+            $group['member'] = $this->db->fetchAll('
 				SELECT		`id`,
 							`name`,
 							`photo`
@@ -70,7 +70,7 @@ class WorkGroupGateway extends BaseGateway
 				WHERE		hb.`bezirk_id` = :bezirk_id
 				AND			hb.`active` = 1
 			', [':bezirk_id' => $regionId]);
-			$group['leader'] = $this->db->fetchAll('
+            $group['leader'] = $this->db->fetchAll('
 				SELECT		`id`,
 							`name`,
 							`photo`
@@ -79,44 +79,44 @@ class WorkGroupGateway extends BaseGateway
 				ON			hb.`foodsaver_id` = fs.`id`
 				WHERE		hb.`bezirk_id` = :bezirk_id
 			', [':bezirk_id' => $regionId]);
-		}
+        }
 
-		return $group;
-	}
+        return $group;
+    }
 
-	public function addToGroup(int $regionId, int $fsId): int
-	{
-		return $this->db->insertOrUpdate(
-			'fs_foodsaver_has_bezirk',
-			[
-				'foodsaver_id' => $fsId,
-				'bezirk_id' => $regionId,
-				'active' => 1,
-				'added' => $this->db->now()
-			]
-		);
-	}
+    public function addToGroup(int $regionId, int $fsId): int
+    {
+        return $this->db->insertOrUpdate(
+            'fs_foodsaver_has_bezirk',
+            [
+                'foodsaver_id' => $fsId,
+                'bezirk_id' => $regionId,
+                'active' => 1,
+                'added' => $this->db->now()
+            ]
+        );
+    }
 
-	/**
-	 * Removes an active member from the group.
-	 *
-	 * @throws Exception
-	 */
-	public function removeFromGroup(int $groupId, int $fsId): void
-	{
-		$this->db->delete(
-			'fs_foodsaver_has_bezirk',
-			[
-				'bezirk_id' => $groupId,
-				'foodsaver_id' => $fsId,
-				'active' => 1
-			]
-		);
-	}
+    /**
+     * Removes an active member from the group.
+     *
+     * @throws Exception
+     */
+    public function removeFromGroup(int $groupId, int $fsId): void
+    {
+        $this->db->delete(
+            'fs_foodsaver_has_bezirk',
+            [
+                'bezirk_id' => $groupId,
+                'foodsaver_id' => $fsId,
+                'active' => 1
+            ]
+        );
+    }
 
-	public function listMemberGroups(int $fsId): array
-	{
-		return $this->db->fetchAll('
+    public function listMemberGroups(int $fsId): array
+    {
+        return $this->db->fetchAll('
 			SELECT		b.`id`,
 						b.`name`,
 						b.`teaser`,
@@ -129,11 +129,11 @@ class WorkGroupGateway extends BaseGateway
 			AND			hb.active = :active
 			ORDER BY	b.`name`
 		', [':foodsaver_id' => $fsId, ':bezirk_type' => UnitType::WORKING_GROUP, ':active' => 1]);
-	}
+    }
 
-	public function listGroups(int $parentId): array
-	{
-		$groups = $this->db->fetchAll('
+    public function listGroups(int $parentId): array
+    {
+        $groups = $this->db->fetchAll('
 			SELECT		b.`id`,
 						b.`name`,
 						b.`parent_id`,
@@ -151,9 +151,9 @@ class WorkGroupGateway extends BaseGateway
 			AND			b.`type` = :bezirk_type
 			ORDER BY	`name`
 		', [':parent_id' => $parentId, ':bezirk_type' => UnitType::WORKING_GROUP]);
-		if ($groups) {
-			foreach ($groups as $i => $g) {
-				$members = $this->db->fetchAll('
+        if ($groups) {
+            foreach ($groups as $i => $g) {
+                $members = $this->db->fetchAll('
 					SELECT		`id`,
 								`name`,
 								`photo`
@@ -163,7 +163,7 @@ class WorkGroupGateway extends BaseGateway
 					WHERE		hb.`bezirk_id` = :bezirk_id
 					AND			hb.`active` = 1
 				', [':bezirk_id' => $g['id']]);
-				$leaders = $this->db->fetchAll('
+                $leaders = $this->db->fetchAll('
 					SELECT		`id`,
 								`name`,
 								`photo`
@@ -172,40 +172,40 @@ class WorkGroupGateway extends BaseGateway
 					ON			hb.`foodsaver_id` = fs.id
 					WHERE		hb.`bezirk_id` = :bezirk_id
 				', [':bezirk_id' => $g['id']]);
-				$groups[$i]['members'] = $members ? $members : [];
-				$groups[$i]['leaders'] = $leaders ? $leaders : [];
-				try {
-					$groups[$i]['function'] = $this->db->fetchValueByCriteria('fs_region_function', 'function_id',
-						['region_id' => $g['id']]
-					);
-				} catch (Exception $e) {
-					$groups[$i]['function'] = null;
-				}
-			}
+                $groups[$i]['members'] = $members ? $members : [];
+                $groups[$i]['leaders'] = $leaders ? $leaders : [];
+                try {
+                    $groups[$i]['function'] = $this->db->fetchValueByCriteria('fs_region_function', 'function_id',
+                        ['region_id' => $g['id']]
+                    );
+                } catch (Exception $e) {
+                    $groups[$i]['function'] = null;
+                }
+            }
 
-			return $groups;
-		}
+            return $groups;
+        }
 
-		return [];
-	}
+        return [];
+    }
 
-	public function groupApply(int $regionId, int $fsId, string $application): int
-	{
-		return $this->db->insertOrUpdate(
-			'fs_foodsaver_has_bezirk',
-			[
-				'foodsaver_id' => $fsId,
-				'bezirk_id' => $regionId,
-				'active' => 0,
-				'added' => $this->db->now(),
-				'application' => strip_tags($application)
-			]
-		);
-	}
+    public function groupApply(int $regionId, int $fsId, string $application): int
+    {
+        return $this->db->insertOrUpdate(
+            'fs_foodsaver_has_bezirk',
+            [
+                'foodsaver_id' => $fsId,
+                'bezirk_id' => $regionId,
+                'active' => 0,
+                'added' => $this->db->now(),
+                'application' => strip_tags($application)
+            ]
+        );
+    }
 
-	public function getFsWithMail(int $fsId): array
-	{
-		return $this->db->fetch('
+    public function getFsWithMail(int $fsId): array
+    {
+        return $this->db->fetch('
 			SELECT		fs.`id`,
 						fs.`name`,
 						IF(mb.`name` IS NULL, fs.`email`, CONCAT(mb.`name`,"@' . PLATFORM_MAILBOX_HOST . '")) AS email
@@ -214,69 +214,69 @@ class WorkGroupGateway extends BaseGateway
 			ON			fs.`mailbox_id` = mb.`id`
 			WHERE		fs.`id` = :fs_id
 		', [':fs_id' => $fsId]);
-	}
+    }
 
-	public function getGroupMail(int $regionId): string
-	{
-		return $this->db->fetchValue('
+    public function getGroupMail(int $regionId): string
+    {
+        return $this->db->fetchValue('
 			SELECT		CONCAT(mb.`name`,"@' . PLATFORM_MAILBOX_HOST . '")
 			FROM		`fs_bezirk` bz
 			INNER JOIN	`fs_mailbox` mb
 			ON			bz.`mailbox_id` = mb.`id`
 			WHERE		bz.`id` = :bezirk_id
 		', [':bezirk_id' => $regionId]);
-	}
+    }
 
-	public function updateGroup(int $regionId, EditWorkGroupData $group): int
-	{
-		$description = $group->description == null ? null : strip_tags($group->description);
-		$photo = $group->photo == null ? '' : strip_tags($group->photo);
+    public function updateGroup(int $regionId, EditWorkGroupData $group): int
+    {
+        $description = $group->description == null ? null : strip_tags($group->description);
+        $photo = $group->photo == null ? '' : strip_tags($group->photo);
 
-		return $this->db->update(
-			'fs_bezirk',
-			[
-				'name' => strip_tags($group->name),
-				'teaser' => $description,
-				'photo' => $photo,
-				'apply_type' => $group->applyType,
-				'banana_count' => $group->requiredBananas,
-				'fetch_count' => $group->requiredPickups,
-				'week_num' => $group->requiredWeeks
-			],
-			['id' => $regionId]
-		);
-	}
+        return $this->db->update(
+            'fs_bezirk',
+            [
+                'name' => strip_tags($group->name),
+                'teaser' => $description,
+                'photo' => $photo,
+                'apply_type' => $group->applyType,
+                'banana_count' => $group->requiredBananas,
+                'fetch_count' => $group->requiredPickups,
+                'week_num' => $group->requiredWeeks
+            ],
+            ['id' => $regionId]
+        );
+    }
 
-	public function getStats(int $fsId): array
-	{
-		$ret = $this->db->fetchByCriteria(
-			'fs_foodsaver',
-			['anmeldedatum', 'stat_fetchcount', 'stat_bananacount'],
-			['id' => $fsId]
-		);
-		if ($ret) {
-			$time = strtotime($ret['anmeldedatum']);
-			// 604800 = seconds per week
-			$weeks = (int)round((time() - $time) / 604800);
+    public function getStats(int $fsId): array
+    {
+        $ret = $this->db->fetchByCriteria(
+            'fs_foodsaver',
+            ['anmeldedatum', 'stat_fetchcount', 'stat_bananacount'],
+            ['id' => $fsId]
+        );
+        if ($ret) {
+            $time = strtotime($ret['anmeldedatum']);
+            // 604800 = seconds per week
+            $weeks = (int)round((time() - $time) / 604800);
 
-			return [
-				'weeks' => $weeks,
-				'fetchcount' => $ret['stat_fetchcount'],
-				'bananacount' => $ret['stat_bananacount'],
-			];
-		}
+            return [
+                'weeks' => $weeks,
+                'fetchcount' => $ret['stat_fetchcount'],
+                'bananacount' => $ret['stat_bananacount'],
+            ];
+        }
 
-		return [];
-	}
+        return [];
+    }
 
-	public function getCountryGroups(): array
-	{
-		return $this->db->fetchAll('
+    public function getCountryGroups(): array
+    {
+        return $this->db->fetchAll('
 			SELECT	`id`,
 					`name`,
 					`parent_id`
 			FROM	`fs_bezirk`
 			WHERE	`type` = :type
 		', [':type' => UnitType::COUNTRY]);
-	}
+    }
 }

@@ -18,21 +18,21 @@
  */
 class ApiTester extends \Codeception\Actor
 {
-	use _generated\ApiTesterActions;
+    use _generated\ApiTesterActions;
 
-	public function __construct(Codeception\Scenario $scenario)
-	{
-		parent::__construct($scenario);
-		$this->haveHttpHeader('X-CSRF-Token', CSRF_TEST_TOKEN);
-	}
+    public function __construct(Codeception\Scenario $scenario)
+    {
+        parent::__construct($scenario);
+        $this->haveHttpHeader('X-CSRF-Token', CSRF_TEST_TOKEN);
+    }
 
-	/**
-	 * Checks the content type is html, and the content contains html.
-	 */
-	public function seeHtml()
-	{
-		$I = $this;
-		$I->seeHttpHeader('Content-Type', 'text/html; charset=UTF-8');
-		$I->seeResponseIsHtml();
-	}
+    /**
+     * Checks the content type is html, and the content contains html.
+     */
+    public function seeHtml()
+    {
+        $I = $this;
+        $I->seeHttpHeader('Content-Type', 'text/html; charset=UTF-8');
+        $I->seeResponseIsHtml();
+    }
 }

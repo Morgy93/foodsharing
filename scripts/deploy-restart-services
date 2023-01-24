@@ -8,4 +8,5 @@ set -o nounset
 if [[ "$CI_ENVIRONMENT_NAME" == "production" ]]
 then
   ssh deploy@foodsharing.network sudo systemctl restart fs-websocket.service
+  ssh deploy@foodsharing.network sudo systemctl restart fs-mailqueuerunner.service
 fi

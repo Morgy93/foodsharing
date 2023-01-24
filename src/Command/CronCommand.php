@@ -9,31 +9,31 @@ use Symfony\Component\Console\Output\OutputInterface;
 
 class CronCommand extends Command
 {
-	protected static $defaultName = 'foodsharing:cronjob';
+    protected static $defaultName = 'foodsharing:cronjob';
 
-	/**
-	 * @var MailsControl
-	 */
-	private $mailsControl;
+    /**
+     * @var MailsControl
+     */
+    private $mailsControl;
 
-	public function __construct(MailsControl $mailsControl)
-	{
-		$this->mailsControl = $mailsControl;
+    public function __construct(MailsControl $mailsControl)
+    {
+        $this->mailsControl = $mailsControl;
 
-		parent::__construct();
-	}
+        parent::__construct();
+    }
 
-	protected function configure(): void
-	{
-		$this->setDescription('Executes regular maintenance tasks.');
-		$this->setHelp('This command executes background tasks that need to be run in regular intervals.
+    protected function configure(): void
+    {
+        $this->setDescription('Executes regular maintenance tasks.');
+        $this->setHelp('This command executes background tasks that need to be run in regular intervals.
 		While the exact interval should not matter, it must still be chosen sane. See implementation for details.');
-	}
+    }
 
-	protected function execute(InputInterface $input, OutputInterface $output): int
-	{
-		$this->mailsControl->fetchMails();
+    protected function execute(InputInterface $input, OutputInterface $output): int
+    {
+        $this->mailsControl->fetchMails();
 
-		return 0;
-	}
+        return 0;
+    }
 }

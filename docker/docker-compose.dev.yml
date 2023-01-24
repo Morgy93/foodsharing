@@ -7,7 +7,7 @@ services:
   nginx:
     container_name: foodsharing_dev_nginx
     ports:
-      - 18080:8080
+      - "18080:8080"
 
   # Customized PHP
   #------------------------------------
@@ -16,7 +16,7 @@ services:
     environment:
       FS_ENV: dev
     ports:
-      - 19000:9000
+      - "19000:9000"
 
   # Webpack client
   #------------------------------------
@@ -24,7 +24,7 @@ services:
     container_name: foodsharing_dev_client
     command: sh -c "yarn && yarn dev"
     ports:
-      - 18090:8082
+      - "18090:8082"
 
   # PHP mail queue runner
   #------------------------------------
@@ -38,8 +38,8 @@ services:
   websocket:
     container_name: foodsharing_dev_websocket
     ports:
-      - 11337:1337
-      - 11338:1338
+      - "11337:1337"
+      - "11338:1338"
 
   # mysql
   #------------------------------------
@@ -48,28 +48,28 @@ services:
     environment:
       - MYSQL_ROOT_PASSWORD=root
     ports:
-      - 13306:3306
+      - "13306:3306"
 
   # redis
   #------------------------------------
   redis:
     container_name: foodsharing_dev_redis
     ports:
-      - 16379:6379
+      - "16379:6379"
 
   # phpmyadmin
   #------------------------------------
   phpmyadmin:
     container_name: foodsharing_dev_phpmyadmin
     ports:
-      - 18081:80
+      - "18081:80"
 
   # maildev
   #------------------------------------
   maildev:
     container_name: foodsharing_dev_maildev
     ports:
-      - 18084:1080
+      - "18084:1080"
 
   # influxdb
   # used for mail sending tracking and server monitoring
@@ -77,9 +77,9 @@ services:
   influxdb:
     container_name: foodsharing_dev_influxdb
     ports:
-      - 18083:8083
-      - 18089:8089/udp
-      - 18086:8086
+      - "18083:8083"
+      - "18089:8089/udp"
+      - "18086:8086"
 
   # docs
   # A plattform for the developer documentations
@@ -88,4 +88,4 @@ services:
     container_name: foodsharing_dev_docs
     command: sh -c "yarn && yarn api:build && yarn start"
     ports:
-      - 13000:3000
+      - "13000:3000"

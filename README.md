@@ -7,7 +7,7 @@ This is the code that powers
 
 ## 💻 Development
 
-Visit our [old DevDocs](https://devdocs.foodsharing.network) or our [GitLab Wiki](https://gitlab.com/foodsharing-dev/foodsharing/-/wikis/home) to get started with development.
+Visit our [DevDocs](https://devdocs.foodsharing.network) to get started with development.
 
 ### Quickstart 
 

@@ -6,23 +6,23 @@ use Foodsharing\Modules\Core\View;
 
 class TeamView extends View
 {
-	public function user($user): string
-	{
-		$socials = '';
+    public function user($user): string
+    {
+        $socials = '';
 
-		if ($user['homepage'] != '') {
-			$socials .= '<li><a title="' . $this->translator->trans('terminology.homepage') . '" href="' . $user['homepage'] . '" target="_blank"><i class="fas fa-globe"></i></a></li>';
-		}
+        if ($user['homepage'] != '') {
+            $socials .= '<li><a title="' . $this->translator->trans('terminology.homepage') . '" href="' . $user['homepage'] . '" target="_blank"><i class="fas fa-globe"></i></a></li>';
+        }
 
-		if (!empty($socials)) {
-			$socials = '
+        if (!empty($socials)) {
+            $socials = '
 			<ul id="team-socials">
 				' . $socials . '
 			</ul>';
-		}
+        }
 
-		$photo = $this->fixPhotoPath($user['photo'], '');
-		$out = '
+        $photo = $this->fixPhotoPath($user['photo'], '');
+        $out = '
 
 		<div id="team-user" class="corner-all">
 			<span class="img" style="background-image:url(' . $photo . ');"></span>
@@ -35,33 +35,33 @@ class TeamView extends View
 			</span>
 		</div>';
 
-		return $out;
-	}
+        return $out;
+    }
 
-	public function contactForm($user): string
-	{
-		return $this->v_utils->v_quickform('Schreibe ' . $user['name'] . ' eine E-Mail!', [
-			$this->v_utils->v_form_text('name'),
-			$this->v_utils->v_form_text('email'),
-			$this->v_utils->v_form_textarea('message'),
-			$this->v_utils->v_form_hidden('id', (int)$user['id'])
-		], ['id' => 'contactform']);
-	}
+    public function contactForm($user): string
+    {
+        return $this->v_utils->v_quickform('Schreibe ' . $user['name'] . ' eine E-Mail!', [
+            $this->v_utils->v_form_text('name'),
+            $this->v_utils->v_form_text('email'),
+            $this->v_utils->v_form_textarea('message'),
+            $this->v_utils->v_form_hidden('id', (int)$user['id'])
+        ], ['id' => 'contactform']);
+    }
 
-	public function teamList($team, $header): string
-	{
-		$out = '
+    public function teamList($team, $header): string
+    {
+        $out = '
 		<ul id="team-list" class="linklist">';
 
-		foreach ($team as $t) {
-			$socials = '&nbsp;';
-			if ($t['homepage'] != '') {
-				$socials .= '<i class="fas fa-globe"><span>' . $t['homepage'] . '</span></i>';
-			}
+        foreach ($team as $t) {
+            $socials = '&nbsp;';
+            if ($t['homepage'] != '') {
+                $socials .= '<i class="fas fa-globe"><span>' . $t['homepage'] . '</span></i>';
+            }
 
-			$photoFile = $this->fixPhotoPath($t['photo'], 'q_');
+            $photoFile = $this->fixPhotoPath($t['photo'], 'q_');
 
-			$out .= '
+            $out .= '
 			<li>
 				<a id="t-' . $t['id'] . '" href="/team/' . $t['id'] . '" class="corner-all" target="_self">
 					<span class="img" style="background-image:url(' . $photoFile . ');"></span>
@@ -75,24 +75,24 @@ class TeamView extends View
 					</span>
 				</a>
 			</li>';
-		}
+        }
 
-		$out .= '
+        $out .= '
 		</ul>';
 
-		return $header['body'] . $out;
-	}
+        return $header['body'] . $out;
+    }
 
-	/**
-	 * Returns the correct path to a user's profile photo. The prefix is only used for old photos from the /images
-	 * directory.
-	 */
-	private function fixPhotoPath(?string $photo, string $prefix): string
-	{
-		if (empty($photo)) {
-			return '';
-		}
+    /**
+     * Returns the correct path to a user's profile photo. The prefix is only used for old photos from the /images
+     * directory.
+     */
+    private function fixPhotoPath(?string $photo, string $prefix): string
+    {
+        if (empty($photo)) {
+            return '';
+        }
 
-		return !str_starts_with($photo, '/api') ? '/images/' . $prefix . $photo : $photo;
-	}
+        return !str_starts_with($photo, '/api') ? '/images/' . $prefix . $photo : $photo;
+    }
 }

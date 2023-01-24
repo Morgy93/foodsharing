@@ -13,24 +13,24 @@ use Foodsharing\Utility\WeightHelper;
 
 final class ProfileGateway extends BaseGateway
 {
-	private WebSocketConnection $webSocketConnection;
-	private $weightHelper;
+    private WebSocketConnection $webSocketConnection;
+    private $weightHelper;
 
-	public function __construct(Database $db, WebSocketConnection $webSocketConnection, WeightHelper $weightHelper)
-	{
-		parent::__construct($db);
-		$this->webSocketConnection = $webSocketConnection;
-		$this->weightHelper = $weightHelper;
-	}
+    public function __construct(Database $db, WebSocketConnection $webSocketConnection, WeightHelper $weightHelper)
+    {
+        parent::__construct($db);
+        $this->webSocketConnection = $webSocketConnection;
+        $this->weightHelper = $weightHelper;
+    }
 
-	/**
-	 * @param int $fsId id of the foodsaver we want the info from
-	 * @param int $viewerId id of foodsaver looking for info. Pass -1 to prevent loading profile information of the viewer.
-	 * @param bool $mayHandleReports info such as nb. of violations is only retrieved if this is true
-	 */
-	public function getData(int $fsId, int $viewerId, bool $mayHandleReports): array
-	{
-		$stm = '
+    /**
+     * @param int $fsId id of the foodsaver we want the info from
+     * @param int $viewerId id of foodsaver looking for info. Pass -1 to prevent loading profile information of the viewer.
+     * @param bool $mayHandleReports info such as nb. of violations is only retrieved if this is true
+     */
+    public function getData(int $fsId, int $viewerId, bool $mayHandleReports): array
+    {
+        $stm = '
 			SELECT 	fs.`id`,
 					fs.`bezirk_id`,
 					fs.`position`,
@@ -78,37 +78,37 @@ final class ProfileGateway extends BaseGateway
 
 			WHERE 	fs.id = :fs_id
 			';
-		if (($data = $this->db->fetch($stm, [':fs_id' => $fsId])) === []
-		) {
-			return [];
-		}
-		$data['online'] = $this->webSocketConnection->isUserOnline($fsId);
+        if (($data = $this->db->fetch($stm, [':fs_id' => $fsId])) === []
+        ) {
+            return [];
+        }
+        $data['online'] = $this->webSocketConnection->isUserOnline($fsId);
 
-		$data['bouched'] = false;
-		$data['bananen'] = false;
-		if ($viewerId != -1) {
-			$stm = 'SELECT 1 FROM `fs_rating` WHERE rater_id = :viewerId AND foodsaver_id = :fs_id';
+        $data['bouched'] = false;
+        $data['bananen'] = false;
+        if ($viewerId != -1) {
+            $stm = 'SELECT 1 FROM `fs_rating` WHERE rater_id = :viewerId AND foodsaver_id = :fs_id';
 
-			try {
-				if ($this->db->fetchValue($stm, [':viewerId' => $viewerId, ':fs_id' => $fsId])) {
-					$data['bouched'] = true;
-				}
-			} catch (\Exception $e) {
-				// has to be caught until we can check whether a to be fetched value does really exist.
-			}
-		}
-		$this->loadBananas($data, $fsId);
+            try {
+                if ($this->db->fetchValue($stm, [':viewerId' => $viewerId, ':fs_id' => $fsId])) {
+                    $data['bouched'] = true;
+                }
+            } catch (\Exception $e) {
+                // has to be caught until we can check whether a to be fetched value does really exist.
+            }
+        }
+        $this->loadBananas($data, $fsId);
 
-		$data['botschafter'] = false;
-		$data['foodsaver'] = false;
-		$data['orga'] = false;
+        $data['botschafter'] = false;
+        $data['foodsaver'] = false;
+        $data['orga'] = false;
 
-		if ($mayHandleReports) {
-			$data['violation_count'] = $this->getViolationCount($fsId);
-			$data['note_count'] = $this->getNotesCount($fsId);
-		}
+        if ($mayHandleReports) {
+            $data['violation_count'] = $this->getViolationCount($fsId);
+            $data['note_count'] = $this->getNotesCount($fsId);
+        }
 
-		$stm = '
+        $stm = '
 			SELECT 	bz.`name`,
 					bz.`id`
 			FROM 	`fs_bezirk` bz,
@@ -117,11 +117,11 @@ final class ProfileGateway extends BaseGateway
 			AND 	b.foodsaver_id = :fs_id
 			AND 	bz.type != 7
 		';
-		if ($bot = $this->db->fetchAll($stm, [':fs_id' => $fsId])) {
-			$data['botschafter'] = $bot;
-		}
+        if ($bot = $this->db->fetchAll($stm, [':fs_id' => $fsId])) {
+            $data['botschafter'] = $bot;
+        }
 
-		$stm = '
+        $stm = '
 			SELECT 	bz.`name`,
 					bz.`id`,
 			        bz.type
@@ -131,12 +131,12 @@ final class ProfileGateway extends BaseGateway
 			AND 	b.foodsaver_id = :fs_id
 			AND		bz.type != :type
 		';
-		if ($fs = $this->db->fetchAll($stm, [':fs_id' => $fsId, ':type' => UnitType::WORKING_GROUP])) {
-			$data['foodsaver'] = $fs;
-		}
+        if ($fs = $this->db->fetchAll($stm, [':fs_id' => $fsId, ':type' => UnitType::WORKING_GROUP])) {
+            $data['foodsaver'] = $fs;
+        }
 
-		// find all working groups in which both the foodsaver and the viewer of the profile are active members
-		$stm = '
+        // find all working groups in which both the foodsaver and the viewer of the profile are active members
+        $stm = '
 			SELECT 	bz.name,
 					bz.id
 			FROM 	fs_bezirk bz
@@ -150,15 +150,15 @@ final class ProfileGateway extends BaseGateway
 			AND     b2.active = 1
 			AND     bz.type = :type
 		';
-		if ($fs = $this->db->fetchAll($stm, [
-			':fs_id' => $fsId,
-			':viewerId' => $viewerId,
-			':type' => UnitType::WORKING_GROUP
-		])) {
-			$data['working_groups'] = $fs;
-		}
+        if ($fs = $this->db->fetchAll($stm, [
+            ':fs_id' => $fsId,
+            ':viewerId' => $viewerId,
+            ':type' => UnitType::WORKING_GROUP
+        ])) {
+            $data['working_groups'] = $fs;
+        }
 
-		$stm = '
+        $stm = '
 			SELECT 	bz.`name`,
 					bz.`id`
 			FROM 	`fs_bezirk` bz,
@@ -167,20 +167,20 @@ final class ProfileGateway extends BaseGateway
 			AND 	b.foodsaver_id = :fs_id
 			AND 	bz.type = 7
 		';
-		if ($orga = $this->db->fetchAll($stm, [':fs_id' => $fsId])) {
-			$data['orga'] = $orga;
-		}
+        if ($orga = $this->db->fetchAll($stm, [':fs_id' => $fsId])) {
+            $data['orga'] = $orga;
+        }
 
-		$data['pic'] = false;
-		if (!empty($data['photo']) && file_exists('images/' . $data['photo'])) {
-			$data['pic'] = [
-				'original' => 'images/' . $data['photo'],
-				'medium' => 'images/130_q_' . $data['photo'],
-				'mini' => 'images/50_q_' . $data['photo'],
-			];
-		}
+        $data['pic'] = false;
+        if (!empty($data['photo']) && file_exists('images/' . $data['photo'])) {
+            $data['pic'] = [
+                'original' => 'images/' . $data['photo'],
+                'medium' => 'images/130_q_' . $data['photo'],
+                'mini' => 'images/50_q_' . $data['photo'],
+            ];
+        }
 
-		$stm = '
+        $stm = '
 			SELECT his.date,
 			       his.changer_id,
 			       concat(ch.name," " ,ch.nachname) as changer_full_name,
@@ -194,25 +194,25 @@ final class ProfileGateway extends BaseGateway
 				object_name = \'bezirk_id\'
 			order by date desc
 			limit 1';
-		if ($home_district_history = $this->db->fetch($stm, [':fs_id' => $fsId])) {
-			$data['home_district_history'] = $home_district_history;
-		}
+        if ($home_district_history = $this->db->fetch($stm, [':fs_id' => $fsId])) {
+            $data['home_district_history'] = $home_district_history;
+        }
 
-		return $data;
-	}
+        return $data;
+    }
 
-	public function isUserVerified(int $userId): bool
-	{
-		return boolval($this->db->fetchValueByCriteria('fs_foodsaver', 'verified', ['id' => $userId]));
-	}
+    public function isUserVerified(int $userId): bool
+    {
+        return boolval($this->db->fetchValueByCriteria('fs_foodsaver', 'verified', ['id' => $userId]));
+    }
 
-	/**
-	 * @param array $data pass by reference with "&" --> otherwise the array will only be changed in scope of the method
-	 * @param int $fsId the foodsaver id for which bananas should be loaded
-	 */
-	private function loadBananas(array &$data, int $fsId): void
-	{
-		$stm = '
+    /**
+     * @param array $data pass by reference with "&" --> otherwise the array will only be changed in scope of the method
+     * @param int $fsId the foodsaver id for which bananas should be loaded
+     */
+    private function loadBananas(array &$data, int $fsId): void
+    {
+        $stm = '
 					SELECT 	fs.id,
 							fs.name,
 							fs.photo,
@@ -225,32 +225,32 @@ final class ProfileGateway extends BaseGateway
 					ORDER BY time DESC
 			';
 
-		$bananaList = $this->db->fetchAll($stm, [':fs_id' => $fsId]);
-		foreach ($bananaList as &$banana) {
-			$banana['createdAt'] = str_replace(' ', 'T', $banana['time']);
-		}
+        $bananaList = $this->db->fetchAll($stm, [':fs_id' => $fsId]);
+        foreach ($bananaList as &$banana) {
+            $banana['createdAt'] = str_replace(' ', 'T', $banana['time']);
+        }
 
-		$data['bananen'] = $bananaList;
-		$bananaCountNew = count($bananaList);
+        $data['bananen'] = $bananaList;
+        $bananaCountNew = count($bananaList);
 
-		if ($data['stat_bananacount'] != $bananaCountNew) {
-			$this->db->update('fs_foodsaver', ['stat_bananacount' => $bananaCountNew], ['id' => $fsId]);
-			$data['stat_bananacount'] = $bananaCountNew;
-		}
+        if ($data['stat_bananacount'] != $bananaCountNew) {
+            $this->db->update('fs_foodsaver', ['stat_bananacount' => $bananaCountNew], ['id' => $fsId]);
+            $data['stat_bananacount'] = $bananaCountNew;
+        }
 
-		if (!$data['bananen']) {
-			$data['bananen'] = [];
-		}
-	}
+        if (!$data['bananen']) {
+            $data['bananen'] = [];
+        }
+    }
 
-	private function getViolationCount(int $fsId): int
-	{
-		return (int)$this->db->count('fs_report', ['foodsaver_id' => $fsId]);
-	}
+    private function getViolationCount(int $fsId): int
+    {
+        return (int)$this->db->count('fs_report', ['foodsaver_id' => $fsId]);
+    }
 
-	private function getNotesCount(int $fsId): int
-	{
-		$stm = '
+    private function getNotesCount(int $fsId): int
+    {
+        $stm = '
 			SELECT
 				COUNT(wallpost_id)
 			FROM
@@ -259,55 +259,55 @@ final class ProfileGateway extends BaseGateway
 				usernotes_id = :fs_id
 		';
 
-		return (int)$this->db->fetchValue($stm, [':fs_id' => $fsId]);
-	}
+        return (int)$this->db->fetchValue($stm, [':fs_id' => $fsId]);
+    }
 
-	public function giveBanana(int $fsId, ?int $sessionId, string $message = ''): int
-	{
-		if ($sessionId === null) {
-			throw new \UnexpectedValueException('Must be logged in to give banana.');
-		}
+    public function giveBanana(int $fsId, ?int $sessionId, string $message = ''): int
+    {
+        if ($sessionId === null) {
+            throw new \UnexpectedValueException('Must be logged in to give banana.');
+        }
 
-		$bananaId = $this->db->insert('fs_rating', [
-			'foodsaver_id' => $fsId,
-			'rater_id' => $sessionId,
-			'msg' => $message,
-			'time' => $this->db->now(),
-		]);
+        $bananaId = $this->db->insert('fs_rating', [
+            'foodsaver_id' => $fsId,
+            'rater_id' => $sessionId,
+            'msg' => $message,
+            'time' => $this->db->now(),
+        ]);
 
-		return $bananaId;
-	}
+        return $bananaId;
+    }
 
-	/**
-	 * Returns whether the user with the raterId has already given a banana with the user with userId.
-	 */
-	public function hasGivenBanana(?int $raterId, int $userId): bool
-	{
-		if ($raterId === null) {
-			return false;
-		}
+    /**
+     * Returns whether the user with the raterId has already given a banana with the user with userId.
+     */
+    public function hasGivenBanana(?int $raterId, int $userId): bool
+    {
+        if ($raterId === null) {
+            return false;
+        }
 
-		return $this->db->exists('fs_rating', ['foodsaver_id' => $userId, 'rater_id' => $raterId]);
-	}
+        return $this->db->exists('fs_rating', ['foodsaver_id' => $userId, 'rater_id' => $raterId]);
+    }
 
-	/**
-	 * Deletes a banana. Returns whether it existed and was deleted.
-	 */
-	public function removeBanana(int $userId, int $raterId): bool
-	{
-		return $this->db->delete('fs_rating', ['foodsaver_id' => $userId, 'rater_id' => $raterId]) > 0;
-	}
+    /**
+     * Deletes a banana. Returns whether it existed and was deleted.
+     */
+    public function removeBanana(int $userId, int $raterId): bool
+    {
+        return $this->db->delete('fs_rating', ['foodsaver_id' => $userId, 'rater_id' => $raterId]) > 0;
+    }
 
-	/**
-	 * Counts how many pickups were done that the foodsaver signed up for 20 hours before pickup time therefore
-	 * securing the pickup during a week.
-	 *
-	 *  int $fsId FoodsaverId
-	 *  int $week Number of weeks to be added as interval to current date
-	 */
-	public function getSecuredPickupsCount(int $fsId, int $week): int
-	{
-		$stm = 'SELECT
+    /**
+     * Counts how many pickups were done that the foodsaver signed up for 20 hours before pickup time therefore
+     * securing the pickup during a week.
+     *
+     *  int $fsId FoodsaverId
+     *  int $week Number of weeks to be added as interval to current date
+     */
+    public function getSecuredPickupsCount(int $fsId, int $week): int
+    {
+        $stm = 'SELECT
                     COUNT(*) as Anzahl
                 FROM
                     (SELECT
@@ -323,18 +323,18 @@ final class ProfileGateway extends BaseGateway
                         a.foodsaver_id, a.betrieb_id, a.date
                     ) z';
 
-		$res = $this->db->fetchAll($stm, [
-			':fs_id' => $fsId,
-			':action' => StoreLogAction::SIGN_UP_SLOT,
-			':week' => $week
-		]);
+        $res = $this->db->fetchAll($stm, [
+            ':fs_id' => $fsId,
+            ':action' => StoreLogAction::SIGN_UP_SLOT,
+            ':week' => $week
+        ]);
 
-		return $res['0']['Anzahl'];
-	}
+        return $res['0']['Anzahl'];
+    }
 
-	public function getBasketsShared(int $fsId, int $week): int
-	{
-		$stm = 'SELECT
+    public function getBasketsShared(int $fsId, int $week): int
+    {
+        $stm = 'SELECT
        				 COUNT(DISTINCT a.foodsaver_id) as count
 				FROM `fs_basket` b
 				left outer join fs_basket_anfrage a on b.id = a.basket_id
@@ -342,18 +342,18 @@ final class ProfileGateway extends BaseGateway
 				  AND DATE_FORMAT(b.`time`,\'%Y-%v\') = DATE_FORMAT(CURRENT_DATE() + INTERVAL :week WEEK,\'%Y-%v\')
 				  AND a.status = :basket_status
 		';
-		$res = $this->db->fetchAll($stm, [
-			':fs_id' => $fsId,
-			':week' => $week,
-			':basket_status' => RequestStatus::DELETED_PICKED_UP
-		]);
+        $res = $this->db->fetchAll($stm, [
+            ':fs_id' => $fsId,
+            ':week' => $week,
+            ':basket_status' => RequestStatus::DELETED_PICKED_UP
+        ]);
 
-		return $res['0']['count'];
-	}
+        return $res['0']['count'];
+    }
 
-	public function getBasketsOfferedStat(int $fsId, int $week): array
-	{
-		$stm = 'SELECT
+    public function getBasketsOfferedStat(int $fsId, int $week): array
+    {
+        $stm = 'SELECT
        				COUNT(*) as count,
        				SUM(weight) as weight
 				FROM `fs_basket` a
@@ -361,15 +361,15 @@ final class ProfileGateway extends BaseGateway
 				  AND DATE_FORMAT(a.`time`,\'%Y-%v\') = DATE_FORMAT(CURRENT_DATE() + INTERVAL :week WEEK,\'%Y-%v\')
 		';
 
-		return $this->db->fetchAll($stm, [
-			':fs_id' => $fsId,
-			':week' => $week
-		]);
-	}
+        return $this->db->fetchAll($stm, [
+            ':fs_id' => $fsId,
+            ':week' => $week
+        ]);
+    }
 
-	public function getResponsibleActiveStoresCount(int $fsId): int
-	{
-		$stm = '
+    public function getResponsibleActiveStoresCount(int $fsId): int
+    {
+        $stm = '
 			SELECT 	COUNT(*) as count
 			FROM             fs_betrieb_team st
 			LEFT OUTER JOIN  fs_betrieb s  ON  s.id = st.betrieb_id
@@ -379,35 +379,35 @@ final class ProfileGateway extends BaseGateway
 			AND    st.verantwortlich = 1
 		';
 
-		$res = $this->db->fetchAll($stm, [
-			':fs_id' => $fsId,
-			':stat_start' => CooperationStatus::COOPERATION_STARTING->value,
-			':stat_est' => CooperationStatus::COOPERATION_ESTABLISHED->value
-		]);
+        $res = $this->db->fetchAll($stm, [
+            ':fs_id' => $fsId,
+            ':stat_start' => CooperationStatus::COOPERATION_STARTING->value,
+            ':stat_est' => CooperationStatus::COOPERATION_ESTABLISHED->value
+        ]);
 
-		return $res['0']['count'];
-	}
+        return $res['0']['count'];
+    }
 
-	public function getEventsCreatedCount(int $fsId, int $week): int
-	{
-		$stm = 'SELECT
+    public function getEventsCreatedCount(int $fsId, int $week): int
+    {
+        $stm = 'SELECT
 					COUNT(*) AS count
 				FROM `fs_event` a
 				WHERE a.foodsaver_id = :fs_id
 				  	AND DATE_FORMAT(a.`start`,\'%Y-%v\') = DATE_FORMAT(CURRENT_DATE() + INTERVAL :week WEEK,\'%Y-%v\')
 		';
 
-		$res = $this->db->fetchAll($stm, [
-			':fs_id' => $fsId,
-			':week' => $week
-		]);
+        $res = $this->db->fetchAll($stm, [
+            ':fs_id' => $fsId,
+            ':week' => $week
+        ]);
 
-		return $res['0']['count'];
-	}
+        return $res['0']['count'];
+    }
 
-	public function getEventsParticipatedCount(int $fsId, int $week): array
-	{
-		$stm = 'SELECT
+    public function getEventsParticipatedCount(int $fsId, int $week): array
+    {
+        $stm = 'SELECT
 					COUNT(*) AS count,
 					SUM(TIMESTAMPDIFF(MINUTE,start,end))DIV 60 as duration_hours,
 					LPAD(SUM(TIMESTAMPDIFF(MINUTE,start,end))%60,2,0) as duration_minutes
@@ -418,16 +418,16 @@ final class ProfileGateway extends BaseGateway
 				  	AND DATE_FORMAT(e.start,\'%Y-%v\') = DATE_FORMAT(CURRENT_DATE() + INTERVAL :week WEEK,\'%Y-%v\')
 		';
 
-		return $this->db->fetchAll($stm, [
-			':fs_id' => $fsId,
-			':week' => $week,
-			':part_status' => 1
-		]);
-	}
+        return $this->db->fetchAll($stm, [
+            ':fs_id' => $fsId,
+            ':week' => $week,
+            ':part_status' => 1
+        ]);
+    }
 
-	public function getPickupsStat(int $fsId, int $week): array
-	{
-		$stm = 'SELECT 	bez.name AS districtName,
+    public function getPickupsStat(int $fsId, int $week): array
+    {
+        $stm = 'SELECT 	bez.name AS districtName,
 						kat.name AS categorieName,
 						CASE b.abholmenge
 							WHEN 0 THEN \'' . $this->weightHelper->getFetchWeightName(0) . '\'
@@ -457,15 +457,15 @@ final class ProfileGateway extends BaseGateway
 						b.abholmenge ASC
 		';
 
-		return $this->db->fetchAll($stm, [
-			':fs_id' => $fsId,
-			':week' => $week
-		]);
-	}
+        return $this->db->fetchAll($stm, [
+            ':fs_id' => $fsId,
+            ':week' => $week
+        ]);
+    }
 
-	public function getPassHistory(int $fsId): array
-	{
-		$stm = '
+    public function getPassHistory(int $fsId): array
+    {
+        $stm = '
 			SELECT
 			  pg.foodsaver_id,
 			  pg.date,
@@ -486,12 +486,12 @@ final class ProfileGateway extends BaseGateway
 			DESC
 		';
 
-		return $this->db->fetchAll($stm, [':fs_id' => $fsId]);
-	}
+        return $this->db->fetchAll($stm, [':fs_id' => $fsId]);
+    }
 
-	public function getVerifyHistory(int $fsId): array
-	{
-		$stm = '
+    public function getVerifyHistory(int $fsId): array
+    {
+        $stm = '
 			SELECT
 			  vh.fs_id,
 			  vh.date,
@@ -512,14 +512,14 @@ final class ProfileGateway extends BaseGateway
 			  vh.date
 			DESC
 		';
-		$ret = $this->db->fetchAll($stm, [':fs_id' => $fsId]);
+        $ret = $this->db->fetchAll($stm, [':fs_id' => $fsId]);
 
-		return $ret;
-	}
+        return $ret;
+    }
 
-	public function listStoresOfFoodsaver(int $fsId): array
-	{
-		return $this->db->fetchAll('
+    public function listStoresOfFoodsaver(int $fsId): array
+    {
+        return $this->db->fetchAll('
 			SELECT 	s.id,
 					s.name,
 					st.verantwortlich as isManager,
@@ -533,24 +533,24 @@ final class ProfileGateway extends BaseGateway
 
 			ORDER BY  st.verantwortlich DESC, st.active ASC, s.name ASC
 		', [
-			':fs_id' => $fsId,
-		]);
-	}
+            ':fs_id' => $fsId,
+        ]);
+    }
 
-	public function buddyStatus(int $fsId, int $sessionId): int
-	{
-		try {
-			if (($status = $this->db->fetchValueByCriteria(
-				'fs_buddy',
-				'confirmed',
-				['foodsaver_id' => $sessionId, 'buddy_id' => $fsId]
-			)) !== []) {
-				return $status;
-			}
-		} catch (\Exception $e) {
-			// has to be caught until we can check whether a to be fetched value does really exist.
-		}
+    public function buddyStatus(int $fsId, int $sessionId): int
+    {
+        try {
+            if (($status = $this->db->fetchValueByCriteria(
+                'fs_buddy',
+                'confirmed',
+                ['foodsaver_id' => $sessionId, 'buddy_id' => $fsId]
+            )) !== []) {
+                return $status;
+            }
+        } catch (\Exception $e) {
+            // has to be caught until we can check whether a to be fetched value does really exist.
+        }
 
-		return -1;
-	}
+        return -1;
+    }
 }

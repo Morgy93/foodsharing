@@ -6,25 +6,25 @@ use Foodsharing\Modules\Core\View;
 
 class LoginView extends View
 {
-	public function passwordRequest(): string
-	{
-		if ($this->session->mayRole()) {
-			return '';
-		}
+    public function passwordRequest(): string
+    {
+        if ($this->session->mayRole()) {
+            return '';
+        }
 
-		$params = [
-			'email' => $this->translator->trans('register.login_email'),
-			'action' => $_SERVER['REQUEST_URI'],
-		];
+        $params = [
+            'email' => $this->translator->trans('register.login_email'),
+            'action' => $_SERVER['REQUEST_URI'],
+        ];
 
-		return $this->twig->render('pages/ForgotPassword/ForgotPasswordForm.twig', $params);
-	}
+        return $this->twig->render('pages/ForgotPassword/ForgotPasswordForm.twig', $params);
+    }
 
-	public function newPasswordForm(string $key): string
-	{
-		$key = preg_replace('/[^0-9a-zA-Z]/', '', $key);
-		$out = $this->v_utils->v_info($this->translator->trans('register.change-password'));
-		$out .= '
+    public function newPasswordForm(string $key): string
+    {
+        $key = preg_replace('/[^0-9a-zA-Z]/', '', $key);
+        $out = $this->v_utils->v_info($this->translator->trans('register.change-password'));
+        $out .= '
 		<form name="newPass" method="post" class="contact-form">
 			<input type="hidden" name="k" value="' . $key . '" />
 			' . $this->v_utils->v_form_passwd('pass1') . '
@@ -34,15 +34,15 @@ class LoginView extends View
 			</div>
 		</form>';
 
-		return $this->v_utils->v_field(
-			$out,
-			$this->translator->trans('register.set-password'),
-			['class' => 'ui-padding']
-		);
-	}
+        return $this->v_utils->v_field(
+            $out,
+            $this->translator->trans('register.set-password'),
+            ['class' => 'ui-padding']
+        );
+    }
 
-	public function loginPage()
-	{
-		return $this->vueComponent('login-page', 'LoginPage');
-	}
+    public function loginPage()
+    {
+        return $this->vueComponent('login-page', 'LoginPage');
+    }
 }

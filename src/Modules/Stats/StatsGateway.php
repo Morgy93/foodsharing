@@ -61,27 +61,27 @@ use Foodsharing\Modules\Core\DBConstants\Unit\UnitType;
  */
 class StatsGateway extends BaseGateway
 {
-	public function __construct(Database $db)
-	{
-		parent::__construct($db);
-	}
+    public function __construct(Database $db)
+    {
+        parent::__construct($db);
+    }
 
-	/**
-	 * Update the user stats for every foodsaver.
-	 *
-	 * This includes:
-	 *  - number of pickups
-	 *  - total weight
-	 *  - number of posts
-	 *  - number of bananas recived
-	 *  - number of buddies (with accepted request)
-	 *  - rate of successful fetches
-	 *
-	 * @throws \Exception
-	 */
-	public function updateFoodsaverStats(): void
-	{
-		$this->db->execute('UPDATE fs_foodsaver fs
+    /**
+     * Update the user stats for every foodsaver.
+     *
+     * This includes:
+     *  - number of pickups
+     *  - total weight
+     *  - number of posts
+     *  - number of bananas recived
+     *  - number of buddies (with accepted request)
+     *  - rate of successful fetches
+     *
+     * @throws \Exception
+     */
+    public function updateFoodsaverStats(): void
+    {
+        $this->db->execute('UPDATE fs_foodsaver fs
 			LEFT OUTER JOIN (
 				SELECT
 					a.foodsaver_id AS id,
@@ -130,21 +130,21 @@ class StatsGateway extends BaseGateway
 				fs.stat_buddycount = IFNULL(buddies.buddies, 0),
 				fs.stat_fetchrate = IFNULL(ROUND(100 - IFNULL(missed.missed, 0) / fetches.fetches * 100, 2), 100)
 		');
-	}
+    }
 
-	/**
-	 * Update the store team stats for each foodsaver in every store.
-	 *
-	 * This includes:
-	 *  - number of pickups
-	 *  - first and last pickup date
-	 *  - new stats update date
-	 *
-	 * @throws \Exception
-	 */
-	public function updateStoreUsersStats(): void
-	{
-		$this->db->execute('UPDATE fs_betrieb_team team
+    /**
+     * Update the store team stats for each foodsaver in every store.
+     *
+     * This includes:
+     *  - number of pickups
+     *  - first and last pickup date
+     *  - new stats update date
+     *
+     * @throws \Exception
+     */
+    public function updateStoreUsersStats(): void
+    {
+        $this->db->execute('UPDATE fs_betrieb_team team
 			LEFT OUTER JOIN (
 				SELECT
 					foodsaver_id,
@@ -162,24 +162,24 @@ class StatsGateway extends BaseGateway
 				team.stat_last_fetch = stats.last_fetch,
 				team.stat_last_update = NOW()
 		');
-	}
+    }
 
-	/**
-	 * Update the region stats that cannot be calculated incrementally for every region.
-	 *
-	 * This includes:
-	 *  - number of foodsavers
-	 *  - number of bots
-	 *  - number of posts
-	 *  - number of sharepoints
-	 *  - number of stores
-	 *  - number of cooperating stores
-	 *
-	 * @throws \Exception
-	 */
-	public function updateNonIncrementalRegionStats(): void
-	{
-		$this->db->execute('UPDATE fs_bezirk region
+    /**
+     * Update the region stats that cannot be calculated incrementally for every region.
+     *
+     * This includes:
+     *  - number of foodsavers
+     *  - number of bots
+     *  - number of posts
+     *  - number of sharepoints
+     *  - number of stores
+     *  - number of cooperating stores
+     *
+     * @throws \Exception
+     */
+    public function updateNonIncrementalRegionStats(): void
+    {
+        $this->db->execute('UPDATE fs_bezirk region
 			LEFT OUTER JOIN (
 				SELECT
 					c.ancestor_id AS region_id,
@@ -246,25 +246,25 @@ class StatsGateway extends BaseGateway
 				region.stat_betriebcount = IFNULL(stores.stores, 0),
 				region.stat_korpcount = IFNULL(stores.coops, 0)
 		', [
-			'type_working_group' => UnitType::WORKING_GROUP,
-			'coop_starting' => CooperationStatus::COOPERATION_STARTING->value,
-			'coop_established' => CooperationStatus::COOPERATION_ESTABLISHED->value,
-		]);
-	}
+            'type_working_group' => UnitType::WORKING_GROUP,
+            'coop_starting' => CooperationStatus::COOPERATION_STARTING->value,
+            'coop_established' => CooperationStatus::COOPERATION_ESTABLISHED->value,
+        ]);
+    }
 
-	/**
-	 * Update the region stats that can be calculated incrementally for every region.
-	 *
-	 * This includes:
-	 *  - number of pickups
-	 *  - first and last pickup date
-	 *  - new stats update date
-	 *
-	 * @throws \Exception
-	 */
-	public function updateIncrementalRegionStats(): void
-	{
-		$this->db->execute('UPDATE fs_bezirk region
+    /**
+     * Update the region stats that can be calculated incrementally for every region.
+     *
+     * This includes:
+     *  - number of pickups
+     *  - first and last pickup date
+     *  - new stats update date
+     *
+     * @throws \Exception
+     */
+    public function updateIncrementalRegionStats(): void
+    {
+        $this->db->execute('UPDATE fs_bezirk region
 			LEFT OUTER JOIN (
 				SELECT
 					c.ancestor_id AS region_id,
@@ -286,23 +286,23 @@ class StatsGateway extends BaseGateway
 				region.stat_last_update = NOW()
 
 		');
-	}
+    }
 
-	/**
-	 * Update the region stats that could be calculated incrementally for every region, but from scratch.
-	 *
-	 * This can be used to fix previous wrong stat calculations.
-	 *
-	 * This includes:
-	 *  - number of pickups
-	 * 	- total weight
-	 *  - new stats update date
-	 *
-	 * @throws \Exception
-	 */
-	public function calculateIncrementalRegionStatsFromScratch(): void
-	{
-		$this->db->execute('UPDATE fs_bezirk region
+    /**
+     * Update the region stats that could be calculated incrementally for every region, but from scratch.
+     *
+     * This can be used to fix previous wrong stat calculations.
+     *
+     * This includes:
+     *  - number of pickups
+     * 	- total weight
+     *  - new stats update date
+     *
+     * @throws \Exception
+     */
+    public function calculateIncrementalRegionStatsFromScratch(): void
+    {
+        $this->db->execute('UPDATE fs_bezirk region
 			LEFT OUTER JOIN (
 				SELECT
 					c.ancestor_id AS region_id,
@@ -321,5 +321,5 @@ class StatsGateway extends BaseGateway
 				region.stat_fetchweight = IFNULL(fetches.weight_diff, 0),
 				region.stat_last_update = NOW()
 		');
-	}
+    }
 }
