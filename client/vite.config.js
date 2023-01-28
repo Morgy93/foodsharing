@@ -30,12 +30,10 @@ export default {
     },
   },
   root: './public',
-  base: '/build/',
+  base: '/',
   build: {
     manifest: true,
     emptyOutDir: true,
-    assetsDir: 'assets',
-    outDir: '/',
     rollupOptions: {
       input: ['./assets/app.js'],
     },
