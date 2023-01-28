@@ -5,7 +5,7 @@ const symfonyPlugin = {
   name: 'symfony',
   configResolved (config) {
     if (config.env.DEV && config.build.manifest) {
-      const buildDir = resolve(config.root, config.build.outDir, 'manifest.json')
+      const buildDir = resolve(config.root, config.build.outDir, 'modules.json')
       existsSync(buildDir) && unlinkSync(buildDir)
     }
   },
@@ -34,8 +34,5 @@ export default {
   build: {
     manifest: true,
     emptyOutDir: true,
-    rollupOptions: {
-      input: ['assets/*'],
-    },
   },
 }
