@@ -1,38 +1,20 @@
-import { resolve } from 'path'
-import { unlinkSync, existsSync } from 'fs'
+import {defineConfig} from "vite";
+import symfonyPlugin from "vite-plugin-symfony";
 
-const symfonyPlugin = {
-  name: 'symfony',
-  configResolved (config) {
-    if (config.env.DEV && config.build.manifest) {
-      const buildDir = resolve(config.root, config.build.outDir, 'modules.json')
-      existsSync(buildDir) && unlinkSync(buildDir)
+export default defineConfig({
+  plugins: [
+    symfonyPlugin(),
+  ],
+
+  build: {
+    rollupOptions: {
+      input: {
+        /* relative to the root option */
+        app: "./assets/app.ts",
+
+        /* you can also provide css files to prevent FOUC */
+        theme: "./assets/theme.css"
+      },
     }
   },
-  configureServer (devServer) {
-    const { watcher, ws } = devServer
-    watcher.add(resolve('templates/**/*.twig'))
-    watcher.on('change', function (path) {
-      if (path.endsWith('.twig')) {
-        ws.send({
-          type: 'full-reload',
-        })
-      }
-    })
-  },
-}
-
-export default {
-  plugins: [symfonyPlugin],
-  server: {
-    watch: {
-      disableGlobbing: false,
-    },
-  },
-  root: './public',
-  base: '/',
-  build: {
-    manifest: true,
-    emptyOutDir: true,
-  },
-}
+});
