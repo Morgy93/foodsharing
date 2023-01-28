@@ -35,7 +35,7 @@ export default {
     manifest: true,
     emptyOutDir: true,
     rollupOptions: {
-      input: ['/public/assets/app.js'],
+      input: ['./public/assets/app.js'],
     },
   },
 }
