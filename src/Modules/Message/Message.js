@@ -1,12 +1,13 @@
 import '@/core'
 import '@/globals'
-import 'jquery-tagedit'
-import 'jquery-tagedit-auto-grow-input'
-import './Message.css'
 
-import msg from '@/msg'
-import { expose } from '@/utils'
+import { vueRegister, vueApply } from '@/vue'
 
-expose({ msg })
+// View: Message
+import '@/views/pages/Message/MessagePage.scss'
+import MessagePage from '@/views/pages/Message/MessagePage.vue'
 
-msg.init()
+vueRegister({
+  MessagePage,
+})
+vueApply('#message')

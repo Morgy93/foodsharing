@@ -61,13 +61,13 @@ ul.block, ul.block, ul.block li, ul.block li {
 
 body, div, p, ul, ol, th, td, label {
   font-size: 14px;
-  font-family: Helvetica, Arial, "lucida grande", tahoma, verdana, arial, sans-serif;
+  /* font-family: Helvetica, Arial, "lucida grande", tahoma, verdana, arial, sans-serif; */
   line-height: 1.38;
   font-weight: normal;
 }
 
 h1, h2, h3, h4, h5, h6, .head.ui-widget-header {
-  font-family: Helvetica, Arial, "lucida grande", tahoma, verdana, arial, sans-serif;
+  font-family: var(--fs-font-family-body);
   font-weight: bold;
 }
 

@@ -1,10 +1,8 @@
 import io from 'socket.io-client'
 
 // eslint-disable-next-line camelcase
-import { session_id, GET } from '@/script'
+import { session_id } from '@/script'
 
-import msg from '@/msg'
-import conv from '@/conv'
 import DataBells from '@/stores/bells'
 import conversationStore, { convertMessage } from '@/stores/conversations'
 
@@ -25,12 +23,7 @@ export default {
         const obj = data.o
         const message = convertMessage(obj.message)
         obj.message = message
-        await conversationStore.updateFromPush(obj)
-        if (GET('page') === 'msg') {
-          msg.push(obj)
-        } else {
-          conv.push(obj)
-        }
+        await conversationStore.newMessageReceived(obj)
       }
     })
 

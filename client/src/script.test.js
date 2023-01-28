@@ -6,7 +6,6 @@ describe('script', () => {
   const sandbox = sinon.createSandbox()
 
   let browser
-  let msg
   let script
   let mockBrowser
   let server
@@ -16,10 +15,8 @@ describe('script', () => {
 
     browser = require('@/browser')
     script = require('@/script')
-    msg = require('@/msg').default
 
     mockBrowser = sandbox.mock(browser)
-    sandbox.stub(msg, 'loadConversation')
   })
 
   afterEach(() => {

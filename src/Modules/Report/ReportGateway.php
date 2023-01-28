@@ -7,28 +7,28 @@ use Foodsharing\Modules\Core\BaseGateway;
 
 class ReportGateway extends BaseGateway
 {
-	/* Reporttype: 1: Other (see list ReportView for list of possible reasons, they are all mapped to 1...), 2: missed pickup */
+    /* Reporttype: 1: Other (see list ReportView for list of possible reasons, they are all mapped to 1...), 2: missed pickup */
 
-	public function addBetriebReport($reportedId, $reporterId, $reasonId, $reason, $message, $storeId = 0): int
-	{
-		return $this->db->insert(
-			'fs_report',
-			[
-				'foodsaver_id' => (int)$reportedId,
-				'reporter_id' => (int)$reporterId,
-				'reporttype' => (int)$reasonId,
-				'betrieb_id' => (int)$storeId,
-				'time' => date('Y-m-d H:i:s'),
-				'committed' => 0,
-				'msg' => strip_tags($message),
-				'tvalue' => strip_tags($reason),
-			]
-		);
-	}
+    public function addBetriebReport($reportedId, $reporterId, $reasonId, $reason, $message, $storeId = 0): int
+    {
+        return $this->db->insert(
+            'fs_report',
+            [
+                'foodsaver_id' => (int)$reportedId,
+                'reporter_id' => (int)$reporterId,
+                'reporttype' => (int)$reasonId,
+                'betrieb_id' => (int)$storeId,
+                'time' => date('Y-m-d H:i:s'),
+                'committed' => 0,
+                'msg' => strip_tags($message),
+                'tvalue' => strip_tags($reason),
+            ]
+        );
+    }
 
-	public function getFoodsaverBetriebe($fsId): array
-	{
-		$stm = '
+    public function getFoodsaverBetriebe($fsId): array
+    {
+        $stm = '
 			SELECT 	b.id, b.name
 			FROM 	fs_betrieb_team t,
 					fs_betrieb b
@@ -36,23 +36,23 @@ class ReportGateway extends BaseGateway
 			AND 	t.foodsaver_id = :foodsaver_id
 		';
 
-		return $this->db->fetchAll($stm, [':foodsaver_id' => (int)$fsId]);
-	}
+        return $this->db->fetchAll($stm, [':foodsaver_id' => (int)$fsId]);
+    }
 
-	public function delReport($id): void
-	{
-		$this->db->delete('fs_report', ['id' => (int)$id]);
-	}
+    public function delReport($id): void
+    {
+        $this->db->delete('fs_report', ['id' => (int)$id]);
+    }
 
-	public function confirmReport($id): void
-	{
-		$this->db->update('fs_report', ['committed' => 1], ['id' => $id]);
-	}
+    public function confirmReport($id): void
+    {
+        $this->db->update('fs_report', ['committed' => 1], ['id' => $id]);
+    }
 
-	public function getReportedSavers(): array
-	{
-		return $this->db->fetchAll(
-			'
+    public function getReportedSavers(): array
+    {
+        return $this->db->fetchAll(
+            '
 			SELECT 	fs.name,
 					CONCAT(fs.nachname," (",COUNT(rp.foodsaver_id),")") AS nachname,
 					fs.photo,
@@ -70,38 +70,38 @@ class ReportGateway extends BaseGateway
 
 			ORDER BY count DESC, fs.name
 		'
-		);
-	}
+        );
+    }
 
-	public function getReportStats(): array
-	{
-		$ret = $this->db->fetchAll(
-			'
+    public function getReportStats(): array
+    {
+        $ret = $this->db->fetchAll(
+            '
 			SELECT 	`committed`, COUNT(`id`) as count
 			FROM 	fs_report
 			GROUP BY `committed`
 			ORDER BY `committed`
 		'
-		);
-		$new = 0;
-		$com = 0;
-		foreach ($ret as $r) {
-			if ($r['committed'] == 0) {
-				$new = $r['count'];
-			} else {
-				$com = $r['count'];
-			}
-		}
+        );
+        $new = 0;
+        $com = 0;
+        foreach ($ret as $r) {
+            if ($r['committed'] == 0) {
+                $new = $r['count'];
+            } else {
+                $com = $r['count'];
+            }
+        }
 
-		return [
-			'com' => $com,
-			'new' => $new
-		];
-	}
+        return [
+            'com' => $com,
+            'new' => $new
+        ];
+    }
 
-	public function getReportedSaver($id): ?array
-	{
-		$stm = '
+    public function getReportedSaver($id): ?array
+    {
+        $stm = '
 			SELECT 	`id`,
 					`name`,
 					`nachname`,
@@ -112,9 +112,9 @@ class ReportGateway extends BaseGateway
 
 			WHERE 	id = :id
 		';
-		if ($fs = $this->db->fetch($stm, [':id' => (int)$id])
-		) {
-			$stm = '
+        if ($fs = $this->db->fetch($stm, [':id' => (int)$id])
+        ) {
+            $stm = '
 				SELECT
 					r.id,
 	            	r.`msg`,
@@ -143,17 +143,17 @@ class ReportGateway extends BaseGateway
 	          	ORDER BY
 					r.`time` DESC
 			';
-			$fs['reports'] = $this->db->fetchAll($stm, [':id' => (int)$id]);
+            $fs['reports'] = $this->db->fetchAll($stm, [':id' => (int)$id]);
 
-			return $fs;
-		}
+            return $fs;
+        }
 
-		return null;
-	}
+        return null;
+    }
 
-	public function getReport($id): ?array
-	{
-		$stm = '
+    public function getReport($id): ?array
+    {
+        $stm = '
 			SELECT
 				r.id,
             	r.`msg`,
@@ -186,28 +186,28 @@ class ReportGateway extends BaseGateway
 			WHERE
 				r.`id` = :id
 		';
-		$report = $this->db->fetch($stm, [':id' => (int)$id]);
-		if (!$report) {
-			return null;
-		}
+        $report = $this->db->fetch($stm, [':id' => (int)$id]);
+        if (!$report) {
+            return null;
+        }
 
-		$stm = 'SELECT id, name FROM fs_betrieb WHERE id = :store_id';
-		if ($report['betrieb_id'] > 0 && $betrieb = $this->db->fetch(
-			$stm,
-			[':store_id' => (int)$report['betrieb_id']]
-		)) {
-			$report['betrieb'] = $betrieb;
-		}
+        $stm = 'SELECT id, name FROM fs_betrieb WHERE id = :store_id';
+        if ($report['betrieb_id'] > 0 && $betrieb = $this->db->fetch(
+            $stm,
+            [':store_id' => (int)$report['betrieb_id']]
+        )) {
+            $report['betrieb'] = $betrieb;
+        }
 
-		return $report;
-	}
+        return $report;
+    }
 
-	private function reportSelect(): Select
-	{
-		$query = $this->db->fluent()
-			->from('fs_report r')
-			->disableSmartJoin()
-			->select('
+    private function reportSelect(): Select
+    {
+        $query = $this->db->fluent()
+            ->from('fs_report r')
+            ->disableSmartJoin()
+            ->select('
 				r.id,
 				r.`msg`,
 				r.`tvalue`,
@@ -230,63 +230,63 @@ class ReportGateway extends BaseGateway
 				rp.photo AS rp_photo,
 
 				b.name AS b_name')
-			->leftJoin('fs_foodsaver fs ON r.foodsaver_id = fs.id')
-			->leftJoin('fs_foodsaver rp ON r.reporter_id = rp.id')
-			->leftJoin('fs_bezirk b ON fs.bezirk_id = b.id')
-			->leftJoin('fs_betrieb s ON r.betrieb_id = s.id')
-			->orderBy('r.time DESC');
+            ->leftJoin('fs_foodsaver fs ON r.foodsaver_id = fs.id')
+            ->leftJoin('fs_foodsaver rp ON r.reporter_id = rp.id')
+            ->leftJoin('fs_bezirk b ON fs.bezirk_id = b.id')
+            ->leftJoin('fs_betrieb s ON r.betrieb_id = s.id')
+            ->orderBy('r.time DESC');
 
-		return $query;
-	}
+        return $query;
+    }
 
-	public function getReportsByReporteeRegions($regions, ?array $excludeReportsWithUsers, ?array $onlyReportsWithUsers = null)
-	{
-		$query = $this->reportSelect();
+    public function getReportsByReporteeRegions($regions, ?array $excludeReportsWithUsers, ?array $onlyReportsWithUsers = null)
+    {
+        $query = $this->reportSelect();
 
-		if ($regions !== null && is_array($regions)) {
-			if (!empty($regions)) {
-				/* fluentpdo ignores the where clause when $regions is empty... */
-				$query = $query->where('fs.bezirk_id', $regions);
-			} else {
-				return [];
-			}
-		}
-		if (!empty($excludeReportsWithUsers)) {
-			$in = str_repeat('?,', count($excludeReportsWithUsers) - 1) . '?';
-			$query = $query->where('r.reporter_id not in (' . $in . ')', $excludeReportsWithUsers);
-			$query = $query->where('r.foodsaver_id not in (' . $in . ')', $excludeReportsWithUsers);
-		}
-		if (!empty($onlyReportsWithUsers)) {
-			$in = str_repeat('?,', count($onlyReportsWithUsers) - 1) . '?';
-			$query = $query->where('r.reporter_id in (' . $in . ')', $onlyReportsWithUsers);
-			$query = $query->where('r.foodsaver_id in (' . $in . ')', $onlyReportsWithUsers, 'OR');
-		}
+        if ($regions !== null && is_array($regions)) {
+            if (!empty($regions)) {
+                /* fluentpdo ignores the where clause when $regions is empty... */
+                $query = $query->where('fs.bezirk_id', $regions);
+            } else {
+                return [];
+            }
+        }
+        if (!empty($excludeReportsWithUsers)) {
+            $in = str_repeat('?,', count($excludeReportsWithUsers) - 1) . '?';
+            $query = $query->where('r.reporter_id not in (' . $in . ')', $excludeReportsWithUsers);
+            $query = $query->where('r.foodsaver_id not in (' . $in . ')', $excludeReportsWithUsers);
+        }
+        if (!empty($onlyReportsWithUsers)) {
+            $in = str_repeat('?,', count($onlyReportsWithUsers) - 1) . '?';
+            $query = $query->where('r.reporter_id in (' . $in . ')', $onlyReportsWithUsers);
+            $query = $query->where('r.foodsaver_id in (' . $in . ')', $onlyReportsWithUsers, 'OR');
+        }
 
-		// restrict access only to new reports to avoid social conflicts from old entries
-		$query = $query->where('time >= \'2021-01-01\'');
+        // restrict access only to new reports to avoid social conflicts from old entries
+        $query = $query->where('time >= \'2021-01-01\'');
 
-		return $query->fetchAll();
-	}
+        return $query->fetchAll();
+    }
 
-	public function getReportsForRegionlessByReporterRegion($regions, $excludeReportsAboutUser = null)
-	{
-		$query = $this->reportSelect();
-		$query->where('fs.bezirk_id = 0');
-		if ($regions !== null && is_array($regions)) {
-			$query = $query->where('rp.bezirk_id', $regions);
-		}
-		if ($excludeReportsAboutUser !== null) {
-			$query = $query->where('fs.id != ?', $excludeReportsAboutUser);
-		}
+    public function getReportsForRegionlessByReporterRegion($regions, $excludeReportsAboutUser = null)
+    {
+        $query = $this->reportSelect();
+        $query->where('fs.bezirk_id = 0');
+        if ($regions !== null && is_array($regions)) {
+            $query = $query->where('rp.bezirk_id', $regions);
+        }
+        if ($excludeReportsAboutUser !== null) {
+            $query = $query->where('fs.id != ?', $excludeReportsAboutUser);
+        }
 
-		return $query->fetchAll();
-	}
+        return $query->fetchAll();
+    }
 
-	public function getReports($committed = '0'): array
-	{
-		$query = $this->reportSelect();
-		$query = $query->where('r.committed = ?', $committed);
+    public function getReports($committed = '0'): array
+    {
+        $query = $this->reportSelect();
+        $query = $query->where('r.committed = ?', $committed);
 
-		return $query->fetchAll();
-	}
+        return $query->fetchAll();
+    }
 }

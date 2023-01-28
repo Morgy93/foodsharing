@@ -353,7 +353,6 @@ botschafter: Ambasciatore
 geschlecht: Genere
 anschrift: Via e numero civico (automaticamente dalla mappa sopra, correggere successivamente
   se necessario)
-last_login: Ultimo accesso
 handy: Numero di cellulare (incluso il prefisso internazionale, inizia con +)
 telefon: Numero di rete fissa (incluso il prefisso internazionale, inizia con +)
 attachement: Allegato
@@ -546,7 +545,6 @@ login:
     per favore riprova.
   error_no_password: Per favore inserisci la tua password.
   error_no_email: Inserisci il tuo indirizzo e-mail.
-  steady_login: Rimani connesso/a (utilizza i cookie)
   save_password: Salva la password
   login_button_label: Accedi
   forgotten_password_label: Password dimenticata?
@@ -842,17 +840,17 @@ storeview:
   specials: particolarità
   managers: Foodsaver responsabile
   status: Stato attuale
-  frequency4: di notte
-  frequency3: a sera
-  frequency2: mezzogiorno/pomeriggio
-  frequency1: mattina
+  public_time_at_night: di notte
+  public_time_in_the_evening: a sera
+  public_time_at_noon_or_afternoon: mezzogiorno/pomeriggio
+  public_time_in_the_morning: mattina
   cooperation: Cooperazione da {startTime}.
   teamInfo: Ci sono <strong>{active}</strong> attivi e <strong>{jumper}</strong> sostituti
     nella squadra.
   info: Informazioni
   store: Azienda
   counter: <strong>{count}<span style="white-space:nowrap"> </span>{suffix}</strong>
-  frequency: Sarà rilevato all'incirca {freq}. Si prega di non recarsi mai al negozio
+  public_time: Sarà rilevato all'incirca {freq}. Si prega di non recarsi mai al negozio
     senza previa consultazione!
   pickupWeight: '{pickupWeight} sono stati salvati.'
   pickupCount: In questa agenzia e stato {pickupCount} ritirato.
@@ -1103,7 +1101,7 @@ foodsaver:
   manage:
     remove: Elimina dal distretto
     actions: Opzioni
-    last-login: Ultimo accesso
+    last-activity: Ultimo accesso
     role: Ruolo
     name: Nome
     photo: Foto
@@ -1891,7 +1889,7 @@ profile:
     privateMail: Indirizzo e-mail privato
     never: Mai prima
     registrationDate: Data di registrazione
-    lastLogin: Ultimo accesso
+    lastActivity: Ultimo accesso
     title: Informazioni
   online: '{nome} è online.'
   notes:

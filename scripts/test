@@ -1,22 +1,16 @@
 #!/bin/bash
 
 export FS_ENV=test
-export CURRENT_USER=$(id -u):$(id -g)
-
-# set -o errexit tells the shell to exit as soon as a command exits with non-zero status, i.e. fails
-set -o errexit
 
 dir=$(dirname "$0")
 
-# source runs the content of the argument as if it was here (without launching a subshell!)
-# __helping-functions.sh defines basic functions, mainly to run commands in containers
-# shellcheck source=./__helping-functions.sh
-source "$dir"/__helping-functions.sh
+# shellcheck source=./__common.sh
+source "$dir"/__common.sh
 
-if [[ ! $(dc ls --filter=name='foodsharing_test' | grep 'running') ]];
+if [[ ! $("$dir"/docker-compose ls --filter=name='foodsharing_test' | grep -q 'running(12)') ]];
 then
     log-header "Bringing up containers ..."
-    dc up -d
+    "$dir"/docker-compose up -d
 
     log-header "Running composer install ..."
     exec-in-container app 'composer install'
@@ -37,6 +31,14 @@ then
     log-header "Waiting for assets to be generated ..."
     wait-for-assets
     exec-in-container app "bin/console assets:install"
+fi
+
+if ! sql-query mysql 'use foodsharing'; then
+    log-header "Initialize Database ..."
+    sql-query mysql "drop database if exists foodsharing; create database foodsharing"
+
+    log-header "Running migrations"
+    migratedb
 fi
 
 log-header "Running tests"

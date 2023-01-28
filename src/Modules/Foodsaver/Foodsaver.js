@@ -8,6 +8,8 @@ import i18n from '@/helper/i18n'
 import { deleteUser } from '@/api/user'
 import './Foodsaver.css'
 import { attachAddressPicker } from '@/addressPicker'
+import { vueApply, vueRegister } from '@/vue'
+import AvatarList from '@/components/AvatarList'
 
 const fsapp = {
   init: function () {
@@ -74,4 +76,11 @@ expose({
 
 if (document.querySelector('#map')) {
   attachAddressPicker()
+}
+
+if (GET('edit') === undefined) {
+  vueRegister({
+    AvatarList,
+  })
+  vueApply('#fslist', true)
 }

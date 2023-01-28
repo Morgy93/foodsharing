@@ -17,6 +17,7 @@
     />
     <b-collapse
       :id="toggleId(entry.id)"
+      :visible="isAlone"
       class="dropdown-submenu"
       accordion="groups"
     >

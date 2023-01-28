@@ -15,6 +15,7 @@ import i18n from '@/helper/i18n'
 import { expose } from '@/utils'
 import { removeBasket, listBasketCoordinates } from '@/api/baskets'
 import basketStore from '@/stores/baskets'
+import AvatarList from '@/components/AvatarList'
 
 expose({
   tryRemoveBasket,
@@ -109,6 +110,12 @@ $(document).ready(() => {
       RequestForm,
     })
     vueApply('#' + requestFormContainerId)
+  }
+
+  // Creator avatar is only visible on /essenskoerbe/{id}, not on /essenskoerbe/find
+  if (document.getElementById('basket-creator')) {
+    vueRegister({ AvatarList })
+    vueApply('#basket-creator')
   }
 })
 

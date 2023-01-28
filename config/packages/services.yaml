@@ -23,10 +23,6 @@ services:
 
     HTMLPurifier: '@exercise_html_purifier.default'
 
-    Intervention\Image\ImageManager:
-        arguments:
-            - driver: 'imagick'
-
     mysqli:
       class: mysqli
       arguments:
@@ -51,7 +47,6 @@ services:
         - !php/const DB_PASS
         calls:
         - [ setAttribute, [!php/const PDO::ATTR_EMULATE_PREPARES, false]]
-        - [ setAttribute, [!php/const PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION]]
 
     InfluxDB\Database:
         factory: ['InfluxDB\Client', 'fromdsn']

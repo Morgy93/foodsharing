@@ -88,7 +88,7 @@ import { BFormTextarea, BModal } from 'bootstrap-vue'
 import { requestBasket, withdrawBasketRequest } from '@/api/baskets'
 import { pulseSuccess, pulseError } from '@/script'
 import i18n from '@/helper/i18n'
-import conv from '@/conv'
+import conversationStore from '@/stores/conversations'
 
 export default {
   components: { BFormTextarea, BModal },
@@ -173,7 +173,7 @@ export default {
       this.isLoading = false
     },
     openChat () {
-      conv.userChat(this.basketCreatorId)
+      conversationStore.openChatWithUser(this.basketCreatorId)
     },
   },
 }

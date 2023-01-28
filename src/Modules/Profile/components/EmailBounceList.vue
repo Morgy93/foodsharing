@@ -44,9 +44,6 @@ export default {
     mayRemove: { type: Boolean, default: false },
     bounceEvents: { type: Array, default: () => { return [] } },
   },
-  created () {
-    console.error(this.bounceEvents)
-  },
   methods: {
     convertDate (date) {
       return new Date(Date.parse(date))

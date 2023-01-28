@@ -91,7 +91,7 @@
 import Avatar from '@/components/Avatar'
 import ThreadPostActions from './ThreadPostActions'
 import ThreadPostDate from './ThreadPostDate'
-import conv from '@/conv'
+import conversationStore from '@/stores/conversations'
 import MediaQueryMixin from '@/mixins/MediaQueryMixin'
 
 export default {
@@ -117,7 +117,7 @@ export default {
   },
   methods: {
     openChat () {
-      conv.userChat(this.author.id)
+      conversationStore.openChatWithUser(this.author.id)
     },
   },
 }

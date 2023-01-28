@@ -89,6 +89,13 @@
     {% endembed %}
 {% endif %}
 
+{% if isRegion and region.boardAdmins %}
+    {% embed 'components/field.twig' with {'title': 'terminology.boardAdmins'|trans} %}
+        {% block content %}
+            {% include 'partials/avatarList.twig' with {'id': 'stores-list', 'entries': region.boardAdmins}%}
+        {% endblock %}
+    {% endembed %}
+{% endif %}
 
 
 <div id="signout_sure" title="{{ 'are_you_sure'|trans }}">

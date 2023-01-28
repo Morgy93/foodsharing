@@ -4,21 +4,21 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "e4108f2adcb690db9f0283e61d22cd49",
+    "content-hash": "72e3a20a3bbd7dceab4a0198b52b0127",
     "packages": [],
     "packages-dev": [
         {
             "name": "deployer/deployer",
-            "version": "v7.0.0",
+            "version": "v7.0.2",
             "source": {
                 "type": "git",
                 "url": "https://github.com/deployphp/deployer.git",
-                "reference": "04788d6c8ccbd985534fee1705175ea44e4213dd"
+                "reference": "99a57a9035cfe0eeae5dba5befe5411ac0f3ac72"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/deployphp/deployer/zipball/04788d6c8ccbd985534fee1705175ea44e4213dd",
-                "reference": "04788d6c8ccbd985534fee1705175ea44e4213dd",
+                "url": "https://api.github.com/repos/deployphp/deployer/zipball/99a57a9035cfe0eeae5dba5befe5411ac0f3ac72",
+                "reference": "99a57a9035cfe0eeae5dba5befe5411ac0f3ac72",
                 "shasum": ""
             },
             "bin": [
@@ -48,7 +48,7 @@
                     "type": "github"
                 }
             ],
-            "time": "2022-07-26T22:25:15+00:00"
+            "time": "2022-09-10T07:44:30+00:00"
         }
     ],
     "aliases": [],
@@ -59,7 +59,7 @@
     "platform": [],
     "platform-dev": [],
     "platform-overrides": {
-        "php": "8.0.13"
+        "php": "8.1"
     },
     "plugin-api-version": "2.3.0"
 }

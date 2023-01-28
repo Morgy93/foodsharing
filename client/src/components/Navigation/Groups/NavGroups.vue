@@ -24,14 +24,14 @@
       <small
         role="menuitem"
         class="disabled dropdown-item"
-        v-html="$i18n('groups.empty')"
+        v-text="$i18n('groups.empty')"
       />
     </template>
     <template #actions>
       <a
         :href="$url('workingGroups')"
         role="menuitem"
-        class="dropdown-item dropdown-action"
+        class="dropdown-item dropdown-action text-truncate"
       >
         <i class="icon-subnav fas fa-users" />
         {{ $i18n('menu.entry.group_overview') }}

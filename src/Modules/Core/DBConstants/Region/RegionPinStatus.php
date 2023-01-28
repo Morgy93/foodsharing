@@ -7,11 +7,11 @@ namespace Foodsharing\Modules\Core\DBConstants\Region;
  */
 class RegionPinStatus
 {
-	public const INACTIVE = 0;
-	public const ACTIVE = 1;
+    public const INACTIVE = 0;
+    public const ACTIVE = 1;
 
-	public static function isValid(int $status): bool
-	{
-		return in_array($status, [self::INACTIVE, self::ACTIVE]);
-	}
+    public static function isValid(int $status): bool
+    {
+        return in_array($status, [self::INACTIVE, self::ACTIVE]);
+    }
 }

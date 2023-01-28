@@ -63,6 +63,17 @@
           <span v-else>{{ $i18n('store.may_not_referred_to_in_public') }}</span>
         </div>
         <div
+          v-if="useRegionPickupRules"
+          id="inputUseRegionPickupRules"
+          class="desc-block mb-1 py-1"
+        >
+          <div class="desc-block-title mb-2 py-1">
+            {{ $i18n('store.regionPickupRules') }}
+          </div>
+          <span>{{ $i18n('store.useRegionPickupRules') }}</span><br>
+          <span>{{ $i18n('store.regionPickupRuleLong', {regionPickupRuleTimespan, regionPickupRuleLimit, regionPickupRuleLimitDay, regionPickupRuleInactive}) }}</span>
+        </div>
+        <div
           v-if="lastFetchDate !== null"
           id="inputMyLastPickup"
           class="desc-block mb-1 py-1"
@@ -122,6 +133,30 @@ export default {
       type: Number,
       default: 0,
     },
+    regionPickupRules: {
+      type: Boolean,
+      default: false,
+    },
+    regionPickupRuleActive: {
+      type: Boolean,
+      default: false,
+    },
+    regionPickupRuleTimespan: {
+      type: String,
+      default: '',
+    },
+    regionPickupRuleLimit: {
+      type: String,
+      default: '',
+    },
+    regionPickupRuleLimitDay: {
+      type: String,
+      default: '',
+    },
+    regionPickupRuleInactive: {
+      type: String,
+      default: '',
+    },
   },
   data () {
     return {
@@ -131,6 +166,13 @@ export default {
   computed: {
     allowedToMentionInPublic () {
       return this.press === 1
+    },
+    useRegionPickupRules () {
+      if (this.regionPickupRules === true && this.regionPickupRuleActive === true) {
+        return true
+      } else {
+        return false
+      }
     },
   },
   methods: {

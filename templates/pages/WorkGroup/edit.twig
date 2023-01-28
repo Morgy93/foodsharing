@@ -5,36 +5,13 @@
 {% endblock %}
 
 {% block main %}
-    {% include 'partials/picture_upload_box.twig' with {'id': 'work_group_form_photo', 'img': form.vars.value.photo} %}
-    {{ form_start(form) }}
-    {% embed 'components/field.twig' with {'title': group.name, 'classes': ['ui-padding']} %}
-        {% block content %}
-            {{ form_row(form.name) }}
-            {{ form_row(form.description) }}
-            {{ form_row(form.photo) }}
-        {% endblock %}
-    {% endembed %}
-
-    {% embed 'components/field.twig' with {'title': 'group.applications'|trans, 'classes': ['ui-padding']} %}
-        {% block content %}
-            {{ form_row(form.applyType) }}
-            <div id="addapply">
-                {{ form_row(form.bananaCount) }}
-                {{ form_row(form.fetchCount) }}
-                {{ form_row(form.weekNum) }}
-            </div>
-        {% endblock %}
-    {% endembed %}
-
-    <div class="alert alert-' . $type . '">
-        <i class="fas fa-info-circle"></i>
-        {{ 'group.member_list.old_edit_hint'|trans }}
-        <a href="/?page=bezirk&sub=members&bid={{ group.id }}">{{ 'group.member_list.old_edit_hint_link'|trans }}</a>
-    </div>
-    <br>
-
-    <input type="submit" value="{{ 'group.actions.safe'|trans }}" />
-    {{ form_end(form) }}
+    {% include 'partials/vue-wrapper.twig' with {
+        id: 'vue-group-edit-form',
+        component: 'WorkingGroupEditForm',
+        props: {
+            group: group
+        }
+    } %}
 {% endblock %}
 
 {% block bottom %}

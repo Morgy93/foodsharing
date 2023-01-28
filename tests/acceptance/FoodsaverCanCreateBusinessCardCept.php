@@ -2,14 +2,14 @@
 
 function convertId($text)
 {
-	$text = strtolower($text);
-	str_replace(
-		['ä', 'ö', 'ü', 'ß', ' '],
-		['ae', 'oe', 'ue', 'ss', '_'],
-		$text
-	);
+    $text = strtolower($text);
+    str_replace(
+        ['ä', 'ö', 'ü', 'ß', ' '],
+        ['ae', 'oe', 'ue', 'ss', '_'],
+        $text
+    );
 
-	return preg_replace('/[^a-z0-9_]/', '', $text);
+    return preg_replace('/[^a-z0-9_]/', '', $text);
 }
 
 $I = new AcceptanceTester($scenario);

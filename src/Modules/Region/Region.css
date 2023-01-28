@@ -80,7 +80,13 @@ div.event {
   text-decoration: none;
 }
 
+label[for^="forum_create_thread_form_sendMail"] {
+  margin-right: 10px;
+  margin-left: 3px;
+}
+
 /* TODO move me to MemberList.vue */
 .user_pic_width {
   width: 50px;
 }
+

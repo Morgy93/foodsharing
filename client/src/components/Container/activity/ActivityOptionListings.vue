@@ -36,20 +36,20 @@
         <label
           v-if="listing.items.length === 0"
           class="info-italic"
-          v-html="$i18n('dashboard.empty_section', {type: listing.shortName})"
+          v-text="$i18n('dashboard.empty_section', {type: listing.shortName})"
         />
       </fieldset>
       <hr>
       <div class="d-flex justify-content-between">
         <button
           class="btn btn-primary"
-          @click="saveOptionListings"
-          v-html="$i18n('dashboard.save_selection')"
+          @click.prevent="saveOptionListings"
+          v-text="$i18n('dashboard.save_selection')"
         />
         <button
           class="btn btn-outline-danger"
-          @click="$emit('close')"
-          v-html="$i18n('button.cancel')"
+          @click.prevent="$emit('close')"
+          v-text="$i18n('button.cancel')"
         />
       </div>
     </form>

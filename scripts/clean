@@ -1,35 +1,47 @@
 #!/bin/bash
-
-export CURRENT_USER=$(id -u):$(id -g)
-
-set -o errexit
-
 dir=$(dirname "$0")
 
-base_dir=$(cd "$dir/.." && pwd)
+# shellcheck source=./__common.sh
+source "$dir"/__common.sh
 
-# shellcheck source=./__helping-functions.sh
-source "$dir"/__helping-functions.sh
+# existsTestEnv=$($dir/docker-compose ls --filter=name='foodsharing' | grep 'foodsharing_test')
+# echo $($dir/docker-compose ls --filter=name='foodsharing_test' | grep 'foodsharing_test')
+if [[ "$1" == "full" ]]; then
+  log-header "Removing containers and images"
+  if [[ ! $("$dir"/docker-compose ls --filter=name='foodsharing' --all | grep -q 'foodsharing_test') ]]; then
+    "$dir"/docker-compose down --rmi all -v --remove-orphans
+  else
+    FS_ENV="dev"
+    "$dir"/docker-compose down -v --remove-orphans
+    FS_ENV="test"
+    "$dir"/docker-compose down --rmi all -v --remove-orphans
+  fi
+else
+  log-header "Removing containers"
+  FS_ENV="dev"
+  "$dir"/docker-compose down -v --remove-orphans
+  FS_ENV="test"
+  "$dir"/docker-compose down -v --remove-orphans
+fi
 
-# Remove docker dev containers
-FS_ENV=dev
-"$dir"/containers-remove
-# Remove docker test containers
-FS_ENV="test"
-"$dir"/containers-remove
+if [[ "$1" == "full" ]]; then
+  base_dir=$(cd "$dir/.." && pwd)
 
-log-header "Removing local node_modules"
-find $base_dir -name "node_modules" -type d -prune | xargs du -chs # prints the folders
-find $base_dir -name "node_modules" -type d -prune -exec rm -rf '{}' + # removes the folders
+  log-header "Removing local node_modules"
+  find "$base_dir" -name "node_modules" -type d -prune | xargs du -chs # prints the folders
+  find "$base_dir" -name "node_modules" -type d -prune -exec rm -rf '{}' + # removes the folders
 
-log-header "Removing directories"
-rm -vrf \
-  "$base_dir"/assets \
-  "$base_dir"/images \
-  "$base_dir"/data \
-  "$base_dir"/cache \
-  "$base_dir"/var \
-  "$base_dir"/tmp \
-  "$base_dir"/tests/_output
+  log-header "Removing directories"
+
+  rm -vrf \
+    "$base_dir"/assets \
+    "$base_dir"/images \
+    "$base_dir"/data \
+    "$base_dir"/cache \
+    "$base_dir"/var \
+    "$base_dir"/tmp \
+    "$base_dir"/tests/_output \
+    "$base_dir"/docs/build
+fi
 
 log-header "All clean!"

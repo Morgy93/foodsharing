@@ -6,20 +6,20 @@
     class="testing-login-dropdown is-open-on-mobile"
   >
     <template #content>
-      <LoginEntry />
+      <LoginForm />
     </template>
     <template #actions>
       <a
         :href="$url('passwordReset')"
         role="menuitem"
         class="testing-login-click-password-reset dropdown-item dropdown-action"
-        v-html="$i18n('login.forgotten_password_label')"
+        v-text="$i18n('login.forgotten_password_label')"
       />
       <a
         :href="$url('joininfo')"
         role="menuitem"
         class="dropdown-item dropdown-action"
-        v-html="$i18n('register.topbar')"
+        v-text="$i18n('register.topbar')"
       />
     </template>
   </Dropdown>
@@ -27,11 +27,11 @@
 <script>
 // Components
 import Dropdown from '../_NavItems/NavDropdown'
-import LoginEntry from './NavLoginEntry'
+import LoginForm from '../../Login/LoginForm.vue'
 
 export default {
   name: 'MenuStores',
-  components: { Dropdown, LoginEntry },
+  components: { Dropdown, LoginForm },
 }
 </script>
 <style lang="scss" scoped>

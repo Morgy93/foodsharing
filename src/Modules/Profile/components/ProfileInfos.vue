@@ -2,10 +2,10 @@
   <div class="infos">
     <ul>
       <li
-        v-if="lastLogin"
+        v-if="lastActivity"
         class="mb-2"
       >
-        <b>{{ $i18n('profile.infos.lastLogin') }}:</b> {{ lastLogin }}
+        <b>{{ $i18n('profile.infos.lastActivity') }}:</b> {{ lastActivity }}
       </li>
       <li
         v-if="registrationDate"
@@ -42,7 +42,7 @@
 
 export default {
   props: {
-    lastLogin: { type: String, default: '' },
+    lastActivity: { type: String, default: '' },
     registrationDate: { type: String, default: '' },
     privateMail: { type: String, default: null },
     fsMail: { type: String, default: '' },

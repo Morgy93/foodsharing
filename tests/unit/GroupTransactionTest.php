@@ -9,34 +9,34 @@ use PHPUnit\Framework\TestCase;
 
 class GroupTransactionsTest extends TestCase
 {
-	private GroupTransactions $groupTansactions;
+    private GroupTransactions $groupTansactions;
 
-	private groupGateway $groupGateway;
-	private UnitGateway $unitGateway;
+    private groupGateway $groupGateway;
+    private UnitGateway $unitGateway;
 
-	protected function setUp(): void
-	{
-		$this->groupGateway = $this->createMock(GroupGateway::class);
-		$this->unitGateway = $this->createMock(UnitGateway::class);
-		$this->groupTansactions = new GroupTransactions($this->groupGateway, $this->unitGateway);
-	}
+    protected function setUp(): void
+    {
+        $this->groupGateway = $this->createMock(GroupGateway::class);
+        $this->unitGateway = $this->createMock(UnitGateway::class);
+        $this->groupTansactions = new GroupTransactions($this->groupGateway, $this->unitGateway);
+    }
 
-	public function testListFoodsaversRegionsEmpty()
-	{
-		$this->unitGateway->method('listAllDirectReleatedUnitsAndResponsibilitiesOfFoodsaver')->with($this->equalTo(1), UnitType::getGroupTypes())->willReturn([]);
-		$this->assertEquals(
-			[],
-			$this->groupTansactions->getUserGroups(1)
-		);
-	}
+    public function testListFoodsaversRegionsEmpty()
+    {
+        $this->unitGateway->method('listAllDirectReleatedUnitsAndResponsibilitiesOfFoodsaver')->with($this->equalTo(1), UnitType::getGroupTypes())->willReturn([]);
+        $this->assertEquals(
+            [],
+            $this->groupTansactions->getUserGroups(1)
+        );
+    }
 
-	public function testListFoodsaversRegionsElement()
-	{
-		$units = [new UserUnit()];
-		$this->unitGateway->method('listAllDirectReleatedUnitsAndResponsibilitiesOfFoodsaver')->with($this->equalTo(2), UnitType::getGroupTypes())->willReturn($units);
-		$this->assertEquals(
-			$units,
-			$this->groupTansactions->getUserGroups(2)
-		);
-	}
+    public function testListFoodsaversRegionsElement()
+    {
+        $units = [new UserUnit()];
+        $this->unitGateway->method('listAllDirectReleatedUnitsAndResponsibilitiesOfFoodsaver')->with($this->equalTo(2), UnitType::getGroupTypes())->willReturn($units);
+        $this->assertEquals(
+            $units,
+            $this->groupTansactions->getUserGroups(2)
+        );
+    }
 }

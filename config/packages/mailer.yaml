@@ -1,4 +1,3 @@
 framework:
     mailer:
         dsn: !php/const MAILER_HOST
-        #"smtp://maildev:25"

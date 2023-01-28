@@ -6,55 +6,55 @@ use Foodsharing\Modules\Core\View;
 
 class WallPostView extends View
 {
-	private string $table;
-	private int $wallId;
+    private string $table;
+    private int $wallId;
 
-	public function setTable(string $table, int $wallId): void
-	{
-		$this->table = $table;
-		$this->wallId = $wallId;
-	}
+    public function setTable(string $table, int $wallId): void
+    {
+        $this->table = $table;
+        $this->wallId = $wallId;
+    }
 
-	public function posts(array $posts, bool $mayDelete): string
-	{
-		/*
-		 [0] => Array
-		(
-			[id] => 1
-			[body] => dfghfgh
-			[time] => 2014-01-25 22:27:13
-			[time_ts] => 1390685233
-			[attach] =>
-			[foodsaver_id] => 56
-			[name] => Raphael
-			[nachname] => Wintrich
-			[photo] => 2cb1258a658ed46e0704764e1a2f491d.png
-		)
-		 */
-		$out = '
+    public function posts(array $posts, bool $mayDelete): string
+    {
+        /*
+         [0] => Array
+        (
+            [id] => 1
+            [body] => dfghfgh
+            [time] => 2014-01-25 22:27:13
+            [time_ts] => 1390685233
+            [attach] =>
+            [foodsaver_id] => 56
+            [name] => Raphael
+            [nachname] => Wintrich
+            [photo] => 2cb1258a658ed46e0704764e1a2f491d.png
+        )
+         */
+        $out = '
 		<table class="pintable">
 			<tbody>';
 
-		foreach ($posts as $p) {
-			$gallery = '';
-			$gal_col = '';
-			if (isset($p['gallery'])) {
-				$gal_col = '';
-				$gallery = '
+        foreach ($posts as $p) {
+            $gallery = '';
+            $gal_col = '';
+            if (isset($p['gallery'])) {
+                $gal_col = '';
+                $gallery = '
 				<div class="gallery">';
-				foreach ($p['gallery'] as $img) {
-					$gallery .= '<a href="/' . $img['image'] . '" class="preview-thumb" rel="wallpost-gallery-' . $p['id'] . '"><img src="/' . $img['medium'] . '" /></a>';
-				}
-				$gallery .= '
+                foreach ($p['gallery'] as $img) {
+                    $gallery .= '<a href="/' . $img['image'] . '" class="preview-thumb" rel="wallpost-gallery-' . $p['id'] . '"><img src="/' . $img['medium'] . '" /></a>';
+                }
+                $gallery .= '
 					<div class="clear"></div>
 				</div>';
-			}
-			$del = '';
-			if ($mayDelete || $p['foodsaver_id'] == $this->session->id()) {
-				$del = '<span class="dot">·</span><a onclick="delWallpost(' . $p['id'] . ', \'' . $this->table . '\', ' . $this->wallId . ');return false;" href="#p' . $p['id'] . '" class="pdelete light">' . $this->translator->trans('wall.delete') . '</a>';
-			}
+            }
+            $del = '';
+            if ($mayDelete || $p['foodsaver_id'] == $this->session->id()) {
+                $del = '<span class="dot">·</span><a onclick="delWallpost(' . $p['id'] . ', \'' . $this->table . '\', ' . $this->wallId . ');return false;" href="#p' . $p['id'] . '" class="pdelete light">' . $this->translator->trans('wall.delete') . '</a>';
+            }
 
-			$out .= '
+            $out .= '
 				<tr class="odd bpost wallpost-' . $p['id'] . '">
 					<td class="img">
 						<input type="hidden" name="pid" class="pid" value="' . $p['id'] . '" />
@@ -72,10 +72,10 @@ class WallPostView extends View
 					</div>
 					</td>
 				</tr>';
-		}
+        }
 
-		return $out . '
+        return $out . '
 			</tbody>
 		</table>';
-	}
+    }
 }

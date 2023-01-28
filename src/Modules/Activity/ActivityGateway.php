@@ -7,11 +7,11 @@ use Foodsharing\Modules\Core\DBConstants\Store\Milestone;
 
 class ActivityGateway extends BaseGateway
 {
-	private const ITEMS_PER_PAGE = 10;
+    private const ITEMS_PER_PAGE = 10;
 
-	public function fetchAllFoodSharePointWallUpdates(int $fsId, int $page): array
-	{
-		$stm = '
+    public function fetchAllFoodSharePointWallUpdates(int $fsId, int $page): array
+    {
+        $stm = '
 			select w_id as id,
 				f_name as name,
 				region_id,
@@ -43,21 +43,21 @@ class ActivityGateway extends BaseGateway
 				w.id IS NOT NULL
 			order by w.id desc
 			LIMIT :start_item_index, :items_per_page';
-		$posts = $this->db->fetchAll(
-			$stm,
-			[
-				':foodsaver_id' => $fsId,
-				':start_item_index' => $page * self::ITEMS_PER_PAGE,
-				':items_per_page' => self::ITEMS_PER_PAGE,
-			]
-		);
+        $posts = $this->db->fetchAll(
+            $stm,
+            [
+                ':foodsaver_id' => $fsId,
+                ':start_item_index' => $page * self::ITEMS_PER_PAGE,
+                ':items_per_page' => self::ITEMS_PER_PAGE,
+            ]
+        );
 
-		return $this->prepareImageGallery($posts);
-	}
+        return $this->prepareImageGallery($posts);
+    }
 
-	public function fetchAllFriendWallUpdates(array $buddyIds, int $page): array
-	{
-		$stm = '
+    public function fetchAllFriendWallUpdates(array $buddyIds, int $page): array
+    {
+        $stm = '
 		SELECT
 			w.id,
 			w.body,
@@ -87,20 +87,20 @@ class ActivityGateway extends BaseGateway
 		LIMIT :start_item_index, :items_per_page
 		';
 
-		$posts = $this->db->fetchAll(
-			$stm,
-			[
-				':start_item_index' => $page * self::ITEMS_PER_PAGE,
-				':items_per_page' => self::ITEMS_PER_PAGE
-			]
-		);
+        $posts = $this->db->fetchAll(
+            $stm,
+            [
+                ':start_item_index' => $page * self::ITEMS_PER_PAGE,
+                ':items_per_page' => self::ITEMS_PER_PAGE
+            ]
+        );
 
-		return $this->prepareImageGallery($posts);
-	}
+        return $this->prepareImageGallery($posts);
+    }
 
-	public function fetchAllMailboxUpdates(array $mb_ids, int $page): array
-	{
-		$stm = '
+    public function fetchAllMailboxUpdates(array $mb_ids, int $page): array
+    {
+        $stm = '
 				SELECT
 					m.id,
 					m.sender,
@@ -123,18 +123,18 @@ class ActivityGateway extends BaseGateway
 			LIMIT :start_item_index, :items_per_page
 		';
 
-		return $this->db->fetchAll(
-			$stm,
-			[
-				':start_item_index' => $page * self::ITEMS_PER_PAGE,
-				':items_per_page' => self::ITEMS_PER_PAGE
-			]
-		);
-	}
+        return $this->db->fetchAll(
+            $stm,
+            [
+                ':start_item_index' => $page * self::ITEMS_PER_PAGE,
+                ':items_per_page' => self::ITEMS_PER_PAGE
+            ]
+        );
+    }
 
-	public function fetchAllForumUpdates(array $regionIds, int $page, $isAmbassadorThread = false): array
-	{
-		$stm = '
+    public function fetchAllForumUpdates(array $regionIds, int $page, $isAmbassadorThread = false): array
+    {
+        $stm = '
 			SELECT	t.id,
 					t.name,
 					t.`time`,
@@ -166,19 +166,19 @@ class ActivityGateway extends BaseGateway
 			LIMIT :start_item_index, :items_per_page
 		';
 
-		return $this->db->fetchAll(
-			$stm,
-			[
-				':start_item_index' => $page * self::ITEMS_PER_PAGE,
-				':items_per_page' => self::ITEMS_PER_PAGE,
-				':isAmbassadorThread' => $isAmbassadorThread ? 1 : 0
-			]
-		);
-	}
+        return $this->db->fetchAll(
+            $stm,
+            [
+                ':start_item_index' => $page * self::ITEMS_PER_PAGE,
+                ':items_per_page' => self::ITEMS_PER_PAGE,
+                ':isAmbassadorThread' => $isAmbassadorThread ? 1 : 0
+            ]
+        );
+    }
 
-	public function fetchAllStoreUpdates(int $fsId, int $page): array
-	{
-		$stm = '
+    public function fetchAllStoreUpdates(int $fsId, int $page): array
+    {
+        $stm = '
 			SELECT 	n.id,
 					n.milestone,
 					n.`text`,
@@ -214,27 +214,27 @@ class ActivityGateway extends BaseGateway
 			LIMIT :start_item_index, :items_per_page
 		';
 
-		return $this->db->fetchAll(
-			$stm,
-			[
-				':foodsaver_id' => $fsId,
-				':wall_message' => Milestone::NONE,
-				':start_item_index' => $page * self::ITEMS_PER_PAGE,
-				':items_per_page' => self::ITEMS_PER_PAGE,
-			]
-		);
-	}
+        return $this->db->fetchAll(
+            $stm,
+            [
+                ':foodsaver_id' => $fsId,
+                ':wall_message' => Milestone::NONE,
+                ':start_item_index' => $page * self::ITEMS_PER_PAGE,
+                ':items_per_page' => self::ITEMS_PER_PAGE,
+            ]
+        );
+    }
 
-	public function fetchAllBuddies(array $buddyIds): array
-	{
-		$stm = 'SELECT photo,name,id FROM fs_foodsaver WHERE id IN(' . implode(',', $buddyIds) . ')';
+    public function fetchAllBuddies(array $buddyIds): array
+    {
+        $stm = 'SELECT photo,name,id FROM fs_foodsaver WHERE id IN(' . implode(',', $buddyIds) . ')';
 
-		return $this->db->fetchAll($stm);
-	}
+        return $this->db->fetchAll($stm);
+    }
 
-	public function fetchAllEventUpdates(int $fsId, int $page): array
-	{
-		$stm = '
+    public function fetchAllEventUpdates(int $fsId, int $page): array
+    {
+        $stm = '
 		select
 			w_id as id,
 			e_name as name,
@@ -273,38 +273,38 @@ class ActivityGateway extends BaseGateway
 		ORDER BY w.id DESC
 			LIMIT :start_item_index, :items_per_page
 			';
-		$events = $this->db->fetchAll(
-			$stm,
-			[
-				':foodsaver_id' => $fsId,
-				':start_item_index' => $page * self::ITEMS_PER_PAGE,
-				':items_per_page' => self::ITEMS_PER_PAGE,
-			]
-		);
+        $events = $this->db->fetchAll(
+            $stm,
+            [
+                ':foodsaver_id' => $fsId,
+                ':start_item_index' => $page * self::ITEMS_PER_PAGE,
+                ':items_per_page' => self::ITEMS_PER_PAGE,
+            ]
+        );
 
-		return $this->prepareImageGallery($events);
-	}
+        return $this->prepareImageGallery($events);
+    }
 
-	private function prepareImageGallery(array $updateData): array
-	{
-		foreach ($updateData as $key => $w) {
-			if (empty($w['attach'])) {
-				continue;
-			}
-			$data = json_decode($w['attach'], true);
-			$imgData = $data['image'] ?? [];
+    private function prepareImageGallery(array $updateData): array
+    {
+        foreach ($updateData as $key => $w) {
+            if (empty($w['attach'])) {
+                continue;
+            }
+            $data = json_decode($w['attach'], true);
+            $imgData = $data['image'] ?? [];
 
-			$gallery = [];
-			foreach ($imgData as $img) {
-				$gallery[] = [
-					'image' => 'images/wallpost/' . $img['file'],
-					'medium' => 'images/wallpost/medium_' . $img['file'],
-					'thumb' => 'images/wallpost/thumb_' . $img['file']
-				];
-			}
-			$updateData[$key]['gallery'] = $gallery;
-		}
+            $gallery = [];
+            foreach ($imgData as $img) {
+                $gallery[] = [
+                    'image' => 'images/wallpost/' . $img['file'],
+                    'medium' => 'images/wallpost/medium_' . $img['file'],
+                    'thumb' => 'images/wallpost/thumb_' . $img['file']
+                ];
+            }
+            $updateData[$key]['gallery'] = $gallery;
+        }
 
-		return $updateData;
-	}
+        return $updateData;
+    }
 }

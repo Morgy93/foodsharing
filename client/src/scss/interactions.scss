@@ -14,8 +14,7 @@ html a[href]:not(:where(
     /* corrections to disable old styles */
     .team-memberinfo a,
     .author a,
-    .leaflet-control-zoom a,
-    #msg-conversation-title a
+    .leaflet-control-zoom a
 )) {
     text-decoration: none;
     font-weight: 600;

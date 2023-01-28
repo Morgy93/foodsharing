@@ -12,10 +12,10 @@ require __DIR__ . '/../vendor/autoload.php';
  */
 function initializeContainer()
 {
-	$env = $_SERVER['FS_ENV'] ?? getenv('FS_ENV') ?? 'dev';
-	$debug = (bool)($_SERVER['APP_DEBUG'] ?? ('prod' !== $env));
-	$kernel = new Kernel($env, $debug);
-	$kernel->boot();
+    $env = $_SERVER['FS_ENV'] ?? getenv('FS_ENV') ?? 'dev';
+    $debug = (bool)($_SERVER['APP_DEBUG'] ?? ('prod' !== $env));
+    $kernel = new Kernel($env, $debug);
+    $kernel->boot();
 
-	return $kernel->getContainer();
+    return $kernel->getContainer();
 }

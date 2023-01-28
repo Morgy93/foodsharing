@@ -1,17 +1,3 @@
-<div align="center">
-	<br>
-	<br>
-	<a href="https://foodsharing.de">
-		<!-- image is docs/images/FS_Logo_gb_RGB.png but hosted publicly -->
-		<img src="https://user-images.githubusercontent.com/31616/42413241-8802b03c-821c-11e8-91c5-f94930313290.png" alt="foodsharing">
-	</a>
-	<br>
-	<br>
-</div>
-
-<!-- image is docs/images/fsscreenshot.png but hosted pubicly -->
-![](https://user-images.githubusercontent.com/31616/42418486-f8f571e6-82a1-11e8-8771-41e403944101.png)
-
 ## 🌍 Overview
 
 This is the code that powers
@@ -21,7 +7,7 @@ This is the code that powers
 
 ## 💻 Development
 
-Visit our [old DevDocs](https://devdocs.foodsharing.network) or our [GitLab Wiki](https://gitlab.com/foodsharing-dev/foodsharing/-/wikis/home) to get started with development.
+Visit our [DevDocs](https://devdocs.foodsharing.network) to get started with development.
 
 ### Quickstart 
 
@@ -40,6 +26,9 @@ Our developers hang out in the
 Translations are done via 
 [weblate](https://hosted.weblate.org/projects/foodsharing/). If you can help translate the app into a
 new language, feel free to help!
+
+## Testing
+This project is tested with BrowserStack. Thank you!
 
 ## 👪 Contributors
 

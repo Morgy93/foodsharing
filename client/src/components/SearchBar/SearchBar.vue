@@ -12,7 +12,7 @@
           />
           <span
             class="sr-only"
-            v-html="$i18n('search.placeholder')"
+            v-text="$i18n('search.placeholder')"
           />
         </b-input-group-text>
       </b-input-group-prepend>

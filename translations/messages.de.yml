@@ -33,7 +33,6 @@ betrieb: "Kooperationsbetrieb/e"
 active: "Aktiviert" # TODO check this
 mailbox_name: "Mailbox-Name" # XhrMethods
 rolle: "Benutzer*innenrolle" # FoodsaverView
-last_login: "Letzter Login"
 title: "Überschrift"
 body: "Nachricht"
 status: "Aktueller Status"
@@ -139,6 +138,7 @@ presse: "Ist der Betrieb/Laden/Verein bereit, bei der Presse und foodsharing.de 
 sticker: "Ist der Betrieb/Laden/Verein etc. gewillt, einen Sticker beim Eingang oder anderswo sichtbar anzubringen?"
 prefetchtime: "Wie viele Wochen im Voraus können sich Foodsaver mittels automatischer Slots eintragen?"
 abholmenge: "Wie viel Kilogramm werden pro Abholung ungefähr mitgenommen?"
+use_region_pickup_rule: "Soll für diesen Betrieb die Bezirks-ROSINEN-regel für Abholungen gelten?"
 #
 # FORM DATA KEYS: WorkGroup
 # --
@@ -266,6 +266,7 @@ button:
 
 bread:
   backToOverview: "zurück zur Übersicht"
+  backToStore: "zurück zum Betrieb"
 
 ui:
   switch:
@@ -327,6 +328,9 @@ group:
   name: "Name"
   description: "Beschreibung"
   photo: "Foto"
+  last_activity: "Letzte Aktivität"
+  filter_by_last_activity: "Nicht aktiv in Monaten"
+  role_name: "Rolle"
   applications: "Bewerbungen"
   applications_for: "Bewerbungen für %name%"
   application_region: "Bewerbung für "
@@ -336,7 +340,11 @@ group:
   enterskills: "Fähigkeiten:" #in WorkGroupXhr
   enterxp: "Erfahrung:" #in WorkGroupXhr
   entertime: "Zeit:" #in WorkGroupXhr
-  edit: "{group} bearbeiten"
+  edit:
+    title: "{group} bearbeiten"
+    name_required: "Bitte gib einen Namen ein."
+    description_required: "Bitte gib eine Beschreibung ein."
+    description_placeholder: "Beschreibung der Arbeitsgruppe"
   saved: "Änderungen wurden gespeichert"
   mail_link_title:
     workgroup: "Arbeitsgruppen-Postfach"
@@ -398,7 +406,7 @@ group:
     go: "Zur Gruppe"
     apply: "Für diese Arbeitsgruppe bewerben"
     join: "Dieser Arbeitsgruppe beitreten"
-    safe: "Änderungen speichern"
+    save: "Änderungen speichern"
   no_groups: "Hier gibt es noch keine Arbeitsgruppen"
   quit_name_workgroup: "Team %name% verlassen"
   quit_name_district: "Bezirk %name% verlassen"
@@ -419,6 +427,7 @@ group:
     fsmanagement: "Verwaltung"
     pr: "Öffentlichkeitsarbeit"
     moderation: "Moderation"
+    board: "Vorstand"
     invalid: "Ein Bezirk kann nicht mit einer Arbeitsgruppenfunktion versehen werden."
     duplicate_welcome_team: "Begrüßungsteam schon angelegt! Pro Bezirk kann es nur ein Begrüßungsteam geben."
     duplicate_voting_team: "Abstimmungsteam schon angelegt! Pro Bezirk kann es nur ein Abstimmungsteam geben."
@@ -430,6 +439,7 @@ group:
     duplicate_fsmanagement_team: 'Verwaltungsteam schon angelegt! Pro Bezirk kann es nur ein Verwaltungsteam geben.'
     duplicate_pr_team: 'Öffentlichkeitsarbeitsteam schon angelegt! Pro Bezirk kann es nur ein Öffentlichkeitsarbeitsteam geben.'
     duplicate_moderation_team: 'Moderationsteam schon angelegt! Pro Bezirk kann es nur ein Moderationsteam geben.'
+    duplicate_board_team: 'Vorstand schon angelegt! Pro Bezirk kann es nur einen Vorstand geben.'
     restricted_workgroup_function: 'Diese Arbeitsgruppenfunktion kann nur von der Überregionalen Arbeitsgruppe Anlegen bearbeitet werden'
     tooltip_function_1: "Administrator*innen dieser Arbeitsgruppe werden bei neuen Mitgliedern im Bezirk benachrichtigt"
     tooltip_function_2: "Administrator*innen dieser Arbeitsgruppe können Abstimmungen für den Bezirk anlegen"
@@ -440,6 +450,7 @@ group:
     tooltip_function_7: "Administrator*innen dieser Arbeitsgruppe bekommen Meldungen mit Beteiligung des Meldeteams angezeigt. Es werden keine Meldungen angezeigt, an denen die Administrator*innen beteiligt sind! Diese erhält das Meldeteam"
     tooltip_function_9: "Administrator*innen dieser Arbeitsgruppe können die Ortsgruppenbeschreibung für die Karte bearbeiten."
     tooltip_function_10: "Administrator*innen dieser Arbeitsgruppe können in moderierten Foren Beiträge freischalten."
+    tooltip_function_11: "Administrator*innen dieser Arbeitsgruppe werden in der Bezirksübersicht angezeigt."
   unique_function:
     tooltip_function_region331: "Administrator*innen dieser Arbeitsgruppe können Newsletter versenden"
     tooltip_function_region341: "Administrator*innen dieser Arbeitsgruppe können die Quizfragen verwalten"
@@ -459,7 +470,8 @@ group:
     set_admin_text: "Möchtest du {name} ({id}) wirklich als Admin eintragen?"
     set_ambassador_text: "Möchtest du {name} ({id}) wirklich als Botschafter eintragen?"
     remove_title: "Mitglied entfernen"
-    remove_text: "Möchtest du {name} ({id}) wirklich aus der Arbeitsgruppe entfernen?"
+    remove_text_group: "Möchtest du {name} ({id}) wirklich aus der Arbeitsgruppe entfernen?"
+    remove_text_region: "Möchtest du {name} ({id}) wirklich aus der Region entfernen?"
     add_member: "In das Team aufnehmen"
     admin_mode_on: "Ansicht für Administrator*innen aktivieren"
     admin_mode_off: "Zurück zur Standard-Ansicht"
@@ -521,7 +533,7 @@ login:
   forgotten_password_label: "Passwort vergessen?"
   login_button_label: "Einloggen"
   save_password: "Passwort speichern"
-  steady_login: "Für einen Tag eingeloggt bleiben (verwendet Cookies)"
+  steady_login: "Dauerhaft eingeloggt bleiben"
   error_no_email: "Bitte gib deine E-Mail-Adresse an."
   error_no_password: "Bitte gib dein Passwort an."
   error_no_auth: "Leider finden wir diese E-Mail-Adresse oder Passwort nicht, bitte versuche es noch einmal."
@@ -622,6 +634,12 @@ terminology:
     m: "Orgamensch"
     f: "Orgamensch"
     d: "Orgamensch"
+  role:
+    "0": "Foodsharer*in"
+    "1": "Foodsaver*in"
+    "2": "Betriebsverantwortliche*r"
+    "3": "Botschafter*in"
+    "4": "Orgamensch"
   ambassadors: "Botschafter*innen"
   ambassador_forum: "Botschafter*innenforum"
   admins: "Administrator*innen"
@@ -635,6 +653,7 @@ terminology:
   fsManagementAdmins: "Verwaltung"
   prAdmins: "Öffentlichkeitsarbeitsteam"
   moderationAdmins: "Moderationsteam"
+  boardAdmins : "Vorstand"
   wall: "Pinnwand"
   statistic: "Statistik"
   reports: "Meldungsansicht (LMG)"
@@ -750,11 +769,11 @@ storeview:
   pickupCount: "Bei diesem Betrieb wurde {pickupCount} abgeholt."
   pickupWeight: "Es wurden {pickupWeight} gerettet."
   cooperation: "Kooperation seit {startTime}."
-  frequency: "Es wird in etwa {freq} abgeholt. Geh bitte niemals ohne Absprache zum Laden!"
-  frequency1: "morgens"
-  frequency2: "mittags/nachmittags"
-  frequency3: "abends"
-  frequency4: "nachts"
+  public_time: "Es wird in etwa {freq} abgeholt. Geh bitte niemals ohne Absprache zum Laden!"
+  public_time_in_the_morning: "morgens"
+  public_time_at_noon_or_afternoon: "mittags/nachmittags"
+  public_time_in_the_evening: "abends"
+  public_time_at_night: "nachts"
   status: "Aktueller Status"
   status_notes: "Statusnotizen"
   managers: "Verantwortliche Foodsaver"
@@ -808,6 +827,10 @@ store:
   days_before: "vor"
   team_conversation_name: "Team {name}"
   springer_conversation_name: "Springer {name}"
+  regionPickupRules: "zusätzliche ROSINEN-Regel"
+  useRegionPickupRules: "Dies ist ein ROSINEN-Betrieb. Zusätzlich zu den Betriebsregeln gilt folgende Bezirks-ROSINEN-Regel für Abholungen:"
+  regionPickupRulesInactive: "Die zusätzlichen Bezirksregeln für Abholungen sind nicht aktiv"
+  regionPickupRuleLong: "Innerhalb von {regionPickupRuleTimespan} Tagen dürfen nicht mehr als insgesamt {regionPickupRuleLimit} Abholungen unter Berücksichtigung aller Betriebe mit Bezirksregeln durchgeführt werden. Pro Tag darf höchstens insgesamt {regionPickupRuleLimitDay}-mal bei diesen Betrieben abgeholt werden. {regionPickupRuleInactive} Stunden vor der Abholung wird diese Regel nicht berücksichtigt."
   sm:
     managementToggleOn: "Ansicht für Betriebsverantwortliche aktivieren"
     managementToggleOff: "Zurück zur Standard-Ansicht"
@@ -941,6 +964,7 @@ pickup:
   team_message_success: "Nachricht ans Team wurde erfolgreich versendet"
   join_title_date: "Sicher?"
   same_day_hint: "Du bist am {day} für die folgenden Abholungen eingetragen:"
+  region_pickup_rule_failed: "Diese Eintragung erfüllt nicht die Bezirksregeln"
   same_day_entry: "[{when} Uhr] {name}"
   really_join_date: "Möchtest du dich verbindlich für die Abholung am {date} eintragen?"
   join_cancel: "Doch nicht"
@@ -1100,6 +1124,7 @@ forum:
 chat:
   open_chat: "Nachricht schreiben"
   new_message: "Neue Nachricht" #also Mailbox.js
+  new_messages: "Neue Nachrichten"
   receivermissing: "Du musst einen Empfänger angeben" #Mailbox.js
   incorrect_address: "Diese E-Mail-Adresse ist nicht korrekt" #Mailbox.js
   conversations: "Unterhaltungen"
@@ -1111,10 +1136,16 @@ chat:
   error_sending_message: "Das Senden der Nachricht ist fehlgeschlagen."
   empty_message: "Du musst erst eine Nachricht eingeben."
   empty_recipients: "Du musst erst noch Empfänger*innen auswählen."
+  select_recipients: "Empfänger*innen auswählen"
   confirm_draft_discard: |
     Du wechselst zu einer neuen Unterhaltung. Der Text im Antwortfeld wird dabei verworfen.
 
     Wenn du diesen Dialog abbrichst, wird dein Entwurf stattdessen in die neue Unterhaltung mitgenommen.
+  search: "Suchen"
+  no_messages: "Keine Nachrichten"
+  no_conversation: "Keine Unterhaltung ausgewählt"
+  start_of_conversation: "Konversation gestartet am:"
+  display_all_messages: "Alle Nachrichten anzeigen"
 
 wall:
   name: "Pinnwand"
@@ -1453,6 +1484,12 @@ regionOptions:
   save: "Optionen speichern"
   enableReportButton: "Technische Unterstützung für Meldungen durch einen Meldungs-Link auf den Profilen der Stammfoodsaver des Bezirkes aktivieren."
   enableMediationButton: "Technische Unterstützung für Mediationen durch einen Mediations-Link auf den Profilen der Stammfoodsaver des Bezirkes aktivieren."
+  regionPickupRuleActive: "Folgende Bezirksregel für Abholungen bei ROSINEN (Raren Oft Sagenhaften Inspesondere Nicht alltäglichen Extrem beliebten Nüztliche)-Betrieben aktivieren:"
+  regionPickupTimespan: "Bitte gib den Zeitraum in Tagen an, in denen die Regelung gültig ist"
+  regionPickupLimitNumber: "Bitte gib die maximale Anzahl der insgesamt möglichen Abholungen für diesen Zeitraum an"
+  regionPickupLimitDayNumber: "Bitte gib die insgesamte maximale Anzahl von Abholungen für EINEN TAG an"
+  regionPickupInactiveHours: "Bitte gib die Anzahl Stunden vor einer Abholung an, in denen die Regel nicht mehr gilt"
+  regionPickupRuleActiveStoreList: "Liste der Betriebe im Bezirk, die für die ROSINEN Regel berücksichtigt werden. ACHTUNG: Alle Abholung der aufgelisteten Betriebe werden zusammengezählt und für die Regel berücksichtigt."
 
 regionPin:
   header_page: "Öffentliche Ortsgruppenbeschreibung für {bezirk}"
@@ -1482,7 +1519,7 @@ foodsaver:
     photo: "Foto"
     name: "Name"
     role: "Rolle"
-    last-login: "Letzter Login"
+    last-activity: "Letzte Aktivität"
     actions: "Optionen"
     remove: "Aus Bezirk löschen"
     orga: "ist im bundesweiten Orgateam dabei"
@@ -1515,7 +1552,7 @@ foodsaver:
   restricted: "Du hast leider keine Berechtigung, diese Daten einzusehen."
   list:
     summary: "{count} Foodsaver in {region}"
-    inactive: ", die sich 6 Monate nicht eingeloggt haben:"
+    inactive: ", die in den letzten 6 Monaten nicht aktiv waren:"
   kicked: "Foodsaver wurde entfernt"
 
 content:
@@ -1687,7 +1724,7 @@ settings:
     disabled: "Push-Benachrichtigungen erfolgreich deaktiviert"
   name_change:
     title: Name (Vor- & Nachname)
-    desc: Der eigene Name kann nicht selbstständig geändert werden. Du kannst aber eine <a {link}">Namesänderung beantragen</a>.
+    desc: Der eigene Name kann nicht selbstständig geändert werden. Du kannst aber eine <a {link}">Namensänderung beantragen</a>.
     request: Namensänderung beantragen
     foodsaver_info: "Um deinen Namen zu ändern musst du eine*n Botschafter*in aus deinem Stammbezirk kontaktieren. Diese*r kann dann die Namensänderung für dich durchführen.<hr/>Wer Botschafter in deinem Stammbezirk ist, siehst du im <a {link}>Forum deines Bezirks</a> in der linken Seitenleiste."
     foodsharer_info: "Um deinen Namen zu ändern musst du uns eine Anfrage unter <a {link}>Support-Formular</a> erstellen."
@@ -1708,6 +1745,7 @@ profile:
     remove_button: "Von der Bounce-Liste entfernen"
   commitments_stat:
     title: "Engagementstatistik"
+    tooltip_visibility: "Die Engagemenstatistik ist sichtbar ab der Rolle des Betriebsverantwortlichen. Es wird eingeschränkt auf gemeinsamen Stammbezirk oder gemeinsame Betriebe."
     respActStores: "Danke für das Koordinieren von {count} aktiven "
     securePickupWeek: "Danke für das {count}-malige kurzfristige Einspringen und Sicherstellen von Abholungen!"
     eventsCreatedWeek: "Danke für das {count}-malige Erstellen von Events in dieser Woche. "
@@ -1763,7 +1801,7 @@ profile:
   online: "{name} ist online."
   infos:
     title: "Infos"
-    lastLogin: "Letzter Login"
+    lastActivity: "Letzte Aktivität"
     registrationDate: "Registrierungsdatum"
     never: "Noch nie"
     privateMail: "Private E-Mail-Adresse"
@@ -1940,6 +1978,7 @@ dashboard:
     no-stores: "Du bist bis jetzt in keinem Betriebsteam."
     users: "Foodsaver*innen"
     buddies: "Menschen, die Du kennst"
+    polls: Abstimmungen
   options:
     hide:
       text: "Anzeige verwalten"
@@ -1953,6 +1992,7 @@ dashboard:
   event: "Nächstes Event"
   eventCount: "Nächste Events ({count})"
   pickupdates: "Nächste Abholtermine"
+  polls: Deine laufenden Abstimmungen
   quiz:
     ack: "Hinweis gelesen und nicht mehr anzeigen"
     read: "weiterlesen"
@@ -2185,6 +2225,7 @@ footer:
     denns: Denn's Biomarkt
 
 releases:
+  "2022-12": "Release \"Icecream\" 🍇 (Dezember 2022)"
   "2022-05": "Release \"Heidelbeere\" 🍇 (Mai 2022)"
   "2022-01": "Release \"Grapefruit\" 🍋 (Januar 2022)"
   "2021-09": "Release \"Feige\" 🥧 (September 2021)"
@@ -2385,7 +2426,7 @@ email_template:
     part2: "Leider hat sich für den nächsten Termin noch niemand zum Abholen eingetragen."
   find_someone: "Bitte kümmere dich schnellstmöglich um jemanden aus deinem Betriebsteam, damit die Abholung stattfinden kann. Solltest du niemanden mobilisieren können, wäre es schön, wenn du die Abholung übernehmen könntest. Sollte dir das nicht möglich sein, dann sage den Termin bitte rechtzeitig beim Betrieb ab."
   information: "Info"
-  manual_slots_get_ignored: "Diese Benachrichtigung wird aktuell leider nur bei automatischen Abholterminen versendet. Manuell angelegte, überschriebene oder gelöschte Slots werden daher nicht berücksichtigt."
+  manual_slots_get_ignored: "Diese Benachrichtigung wird aktuell leider nur versendet, wenn sich niemand für die regelmäßigen Abholzeiten eingetragen hat. Einzeln hinzugefügte Zusatztermine sowie überschriebene oder gelöschte Slots werden bislang nicht berücksichtigt. Um diese Benachrichtigung nicht mehr zu erhalten, entferne die regelmäßigen Abholzeiten auf der Seite deines Betriebes indem du auf das Stift-Icon bei den Abholterminen klickst und die nicht benötigten Abholzeiten entfernst."
   help_needed:
     main: "Um diese Funktion zu überarbeiten, benötigen wir die Unterstützung weiterer Programmierer*innen, Tester und Helfer aus deinem Bezirk."
     link: "https://devdocs.foodsharing.network/it-tasks.html"
@@ -2407,6 +2448,7 @@ polls:
   ongoing: "Laufende Abstimmungen"
   ended: "Vergangene Abstimmungen"
   future: "Zukünftige Abstimmungen"
+  until: "Möglich bis {until}"
 
 poll:
   not_available: "Diese Abstimmung existiert nicht oder du kannst nicht darauf zugreifen."
@@ -2656,13 +2698,13 @@ system_administration:
 navigation:
   map: Karte
   promotion: In der IT? Wir brauchen dich!
-  contact: Kontakt
+  contact: Kontakt & Support
   whats_new: Was ist neu?
   styleguide: Styleguide
+  news_from_it: Aktuelles & Störungen
   support: Support
   help_needed: Hilfe nötig?
   help: Hilfe
-  help_and_support: Hilfe & Support
   wiki: Wiki
   regions: Bezirke
   groups: Gruppen

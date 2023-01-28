@@ -1,10 +1,5 @@
 #!/bin/bash
 
-export FS_ENV=dev
-export CURRENT_USER=$(id -u):$(id -g)
-
-set -o errexit
-
 dir=$(dirname "$0")
 
 # shellcheck source=./lint-php
@@ -12,6 +7,3 @@ source "$dir"/lint-php
 
 # shellcheck source=./lint-js
 source "$dir"/lint-js
-
-# shellcheck source=./lint-markdown
-source "$dir"/lint-markdown

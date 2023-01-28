@@ -11,7 +11,7 @@ namespace Foodsharing\Modules\Core\DBConstants\Buddy;
  */
 class BuddyId
 {
-	public const NO_BUDDY = -1;
-	public const REQUESTED = 0;
-	public const BUDDY = 1;
+    public const NO_BUDDY = -1;
+    public const REQUESTED = 0;
+    public const BUDDY = 1;
 }

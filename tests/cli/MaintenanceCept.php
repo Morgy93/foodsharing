@@ -2,7 +2,7 @@
 
 $I = new CliTester($scenario);
 
-$store = $I->createStore(1);
+$store = $I->createStore(1, null, null, ['betrieb_status_id' => '5']);
 $store_established = $I->createStore(1, null, null, ['betrieb_status_id' => '5']);
 
 $fetcher_unconfirmed_past_1 = $I->createFoodsaver();
@@ -42,7 +42,7 @@ $I->haveInDatabase('fs_abholer', $dataset_confirmed_future);
 $I->am('Cron');
 $I->wantTo('see that maintenance jobs do execute');
 $I->amInPath('');
-$I->runShellCommand('php -f run.php Maintenance daily');
+$I->runShellCommand('bin/console foodsharing:daily-cronjob');
 
 $I->seeInShellOutput('send 1 warnings...');
 $I->seeInShellOutput('delete unconfirmed fetchdates');

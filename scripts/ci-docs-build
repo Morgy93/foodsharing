@@ -1,0 +1,28 @@
+#!/bin/bash
+
+export FS_ENV=dev
+
+dir=$(dirname "$0")
+
+# shellcheck source=./__common.sh
+source "$dir"/__common.sh
+
+log-header "Preparing execution environment: Prepare PHP config, application & composer dev dependencies"
+composer install --prefer-dist --no-progress --no-interaction --no-scripts --ignore-platform-reqs
+
+sed "s#/app#$CI_PROJECT_DIR#g" /usr/local/etc/php-fpm.d/fpm.conf > /tmp/tmp; cat /tmp/tmp > /usr/local/etc/php-fpm.d/fpm.conf; rm /tmp/tmp
+
+bin/console foodsharing:setup
+
+log-header "Initializing database"
+mysql -u root -proot -hdb --execute="drop database if exists foodsharing; create database foodsharing"
+vendor/bin/phinx migrate
+
+log-header "Build database documentation"
+"$dir"/generate-documentation/mysql_generate_documentation
+
+log-header "Load API Dump"
+bin/console nelmio:apidoc:dump --format=json > docs/data/api_dump.json
+
+log-header "Build documentation"
+cd docs/ && yarn && yarn build:all
