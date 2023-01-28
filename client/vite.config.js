@@ -1,5 +1,5 @@
-import {defineConfig} from "vite";
-import symfonyPlugin from "vite-plugin-symfony";
+import { defineConfig } from 'vite'
+import symfonyPlugin from 'vite-plugin-symfony'
 
 export default defineConfig({
   plugins: [
@@ -10,11 +10,11 @@ export default defineConfig({
     rollupOptions: {
       input: {
         /* relative to the root option */
-        app: "./assets/app.ts",
+        app: './assets/app.ts',
 
         /* you can also provide css files to prevent FOUC */
-        theme: "./assets/theme.css"
+        theme: './assets/theme.css',
       },
-    }
+    },
   },
-});
+})
