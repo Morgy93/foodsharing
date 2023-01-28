@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "08ae4fd13c1f2e4fe54e257b836fa783",
+    "content-hash": "4861e5bb84502320ce1658b2817b38c3",
     "packages": [
         {
             "name": "brick/math",
@@ -2247,16 +2247,16 @@
         },
         {
             "name": "pentatrion/vite-bundle",
-            "version": "v2.3.0",
+            "version": "v2.3.2",
             "source": {
                 "type": "git",
                 "url": "https://github.com/lhapaipai/vite-bundle.git",
-                "reference": "7cd8acc6eac2f5ab402736c249ec430e67b1745e"
+                "reference": "0bbbc4649ec8ed1bfc39b973b2aed043f4dc8c30"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/lhapaipai/vite-bundle/zipball/7cd8acc6eac2f5ab402736c249ec430e67b1745e",
-                "reference": "7cd8acc6eac2f5ab402736c249ec430e67b1745e",
+                "url": "https://api.github.com/repos/lhapaipai/vite-bundle/zipball/0bbbc4649ec8ed1bfc39b973b2aed043f4dc8c30",
+                "reference": "0bbbc4649ec8ed1bfc39b973b2aed043f4dc8c30",
                 "shasum": ""
             },
             "require": {
@@ -2298,9 +2298,9 @@
             ],
             "support": {
                 "issues": "https://github.com/lhapaipai/vite-bundle/issues",
-                "source": "https://github.com/lhapaipai/vite-bundle/tree/v2.3.0"
+                "source": "https://github.com/lhapaipai/vite-bundle/tree/v2.3.2"
             },
-            "time": "2022-11-14T19:36:18+00:00"
+            "time": "2023-01-05T22:35:01+00:00"
         },
         {
             "name": "php-http/client-common",

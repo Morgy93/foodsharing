@@ -83,7 +83,7 @@
     "twig/intl-extra": "v3.4.2",
     "twig/twig": "v3.4.3",
     "voku/bounce-mail-handler": "6.0.4",
-    "pentatrion/vite-bundle": "v2.3.0"
+    "pentatrion/vite-bundle": "v2.3.2"
   },
   "autoload": {
     "psr-4": {
