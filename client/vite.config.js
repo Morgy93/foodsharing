@@ -29,13 +29,13 @@ export default {
       disableGlobbing: false,
     },
   },
-  root: './assets',
+  root: './public',
   base: '/build/',
   build: {
     manifest: true,
     emptyOutDir: true,
-    assetsDir: '',
-    outDir: '../public/build/',
+    assetsDir: 'assets',
+    outDir: '/',
     rollupOptions: {
       input: ['./assets/app.js'],
     },
