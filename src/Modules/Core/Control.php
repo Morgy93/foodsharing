@@ -78,11 +78,11 @@ abstract class Control
                     if (str_ends_with($asset, '.js')) {
                         $this->pageHelper->addWebpackScript($asset);
                     } elseif (str_ends_with($asset, '.css')) {
-						$this->pageHelper->addWebpackStylesheet($asset);
-					}
-				}
-			}
-		} */
+                        $this->pageHelper->addWebpackStylesheet($asset);
+                    }
+                }
+            }
+        } */
         $this->metrics->addPageStatData(['controller' => $className]);
     }
 

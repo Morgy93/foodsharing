@@ -24,10 +24,10 @@ class ContentSecurityPolicy
             ],
             'script-src' => [
                 'http://localhost:18099',
-				$self,
-				$unsafeInline,
-				$unsafeEval, // lots of `$.globalEval` still ... 😢
-				],
+                $self,
+                $unsafeInline,
+                $unsafeEval, // lots of `$.globalEval` still ... 😢
+                ],
             'connect-src' => [
                 $self,
                 $this->websocketUrlFor($httpHost),

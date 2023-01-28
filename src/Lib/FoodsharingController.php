@@ -87,19 +87,19 @@ abstract class FoodsharingController extends AbstractController
         }
 
         /* $projectDir = $container->get('kernel')->getProjectDir();
-		$webpackModules = $projectDir . '/assets/modules.json';
-		$manifest = json_decode(file_get_contents($webpackModules), true);
-		$moduleName = substr($className, 0, $pos);
-		$entry = 'Modules/' . $moduleName;
-		if (isset($manifest[$entry])) {
-			foreach ($manifest[$entry] as $asset) {
-				if (substr($asset, -3) === '.js') {
-					$this->pageHelper->addWebpackScript($asset);
-				} elseif (substr($asset, -4) === '.css') {
-					$this->pageHelper->addWebpackStylesheet($asset);
-				}
-			}
-		} */
+        $webpackModules = $projectDir . '/assets/modules.json';
+        $manifest = json_decode(file_get_contents($webpackModules), true);
+        $moduleName = substr($className, 0, $pos);
+        $entry = 'Modules/' . $moduleName;
+        if (isset($manifest[$entry])) {
+            foreach ($manifest[$entry] as $asset) {
+                if (substr($asset, -3) === '.js') {
+                    $this->pageHelper->addWebpackScript($asset);
+                } elseif (substr($asset, -4) === '.css') {
+                    $this->pageHelper->addWebpackStylesheet($asset);
+                }
+            }
+        } */
 
         $this->metrics->addPageStatData(['controller' => $className]);
     }
