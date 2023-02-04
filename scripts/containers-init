@@ -4,6 +4,10 @@ dir=$(dirname "$0")
 # shellcheck source=./__common.sh
 source "$dir"/__common.sh
 
+"$dir"/docker-compose version
+
+docker image prune -a
+
 log-header "Check for new images ..."
 "$dir"/docker-compose build --pull
 
