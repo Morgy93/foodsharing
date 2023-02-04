@@ -6,7 +6,7 @@ source "$dir"/__common.sh
 
 "$dir"/docker-compose version
 
-docker image prune -a
+docker image prune -a -f
 
 log-header "Check for new images ..."
 "$dir"/docker-compose build --pull
