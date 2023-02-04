@@ -6,7 +6,11 @@ source "$dir"/__common.sh
 
 "$dir"/docker-compose version
 
+log-header "Remove existing images unused "
 docker image prune -a -f
+
+log-header "Remove existing containers"
+"$dir"/docker-compose rm -f
 
 log-header "Check for new images ..."
 "$dir"/docker-compose build --pull
