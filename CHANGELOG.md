@@ -146,6 +146,8 @@
 - Updated some backend dependencies !2721 @chriswalg
 - Remove migration to remove linebreaks in forum posts #1438 !2817 @chriswalg
 - Show beta or dev in Logo !2812 @chriswalg
+- Add a PHP preload wrapper for Symfony !2618 @\_fridtjof_
+
 
 ## Development documentation
 
