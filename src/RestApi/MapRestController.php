@@ -12,6 +12,7 @@ use Foodsharing\Modules\Store\StoreGateway;
 use FOS\RestBundle\Controller\AbstractFOSRestController;
 use FOS\RestBundle\Controller\Annotations as Rest;
 use FOS\RestBundle\Request\ParamFetcher;
+use Nelmio\ApiDocBundle\Annotation\Model;
 use OpenApi\Annotations as OA;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
@@ -112,5 +113,24 @@ class MapRestController extends AbstractFOSRestController
             'name' => $region['name'],
             'description' => $pin['desc']
         ], 200));
+    }
+
+    /**
+     * Returns the data for the bubble of a basket marker on the map.
+     *
+     * @OA\Response(response="200", description="Success", @Model(type=BasketBubbleData::class))
+     * @OA\Response(response="404", description="The basket does not exist")
+     * @OA\Tag(name="map")
+     * @Rest\Get("map/baskets/{basketId}")
+     * @Rest\QueryParam(name="basketId", requirements="\d+", nullable=true, description="Basket for which to return data")
+     */
+    public function getBasketBubbleAction(int $basketId): Response
+    {
+        $basket = $this->mapGateway->getBasketBubbleData($basketId, $this->session->mayRole());
+        if (empty($basket)) {
+            throw new NotFoundHttpException('basket does not exist');
+        }
+
+        return $this->handleView($this->view($basket, 200));
     }
 }
