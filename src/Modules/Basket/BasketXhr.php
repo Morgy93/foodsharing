@@ -92,10 +92,6 @@ class BasketXhr extends Control
                 'initialData' => [],
             ]));
 
-            $dia->addButton($this->translator->trans('basket.go'),
-                'goTo(\'/essenskoerbe/' . (int)$basket['id'] . '\');'
-            );
-
             $modal = false;
             if (isset($_GET['modal'])) {
                 $modal = true;
