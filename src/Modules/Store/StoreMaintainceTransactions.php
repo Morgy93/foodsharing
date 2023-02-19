@@ -5,19 +5,14 @@ namespace Foodsharing\Modules\Store;
 use DateInterval;
 use DateTime;
 use Foodsharing\Modules\Core\DBConstants\Store\CooperationStatus;
-use Foodsharing\Modules\Foodsaver\FoodsaverGateway;
 use Foodsharing\Modules\Store\DTO\PickupInformation;
-use Foodsharing\Utility\EmailHelper;
-use Symfony\Contracts\Translation\TranslatorInterface;
 
 class StoreMaintainceTransactions
 {
     public function __construct(
         private readonly StoreGateway $storeGateway,
         private readonly PickupTransactions $pickupTransactions,
-        private readonly EmailHelper $emailHelper,
-        private readonly TranslatorInterface $translator,
-        private readonly FoodsaverGateway $foodsaverGateway
+        private readonly NotificationTransaction $notificationTransaction
     ) {
     }
 
@@ -53,17 +48,7 @@ class StoreMaintainceTransactions
                 ++$storesWithNotification;
 
                 $storeManagers = $this->storeGateway->getStoreManagers($store['id']);
-                foreach ($storeManagers as $foodsaverId) {
-                    $foodsavers[] = $foodsaverId;
-
-                    $fs = $this->foodsaverGateway->getFoodsaver($foodsaverId);
-                    $this->emailHelper->tplMail('chat/fetch_warning', $fs['email'], [
-                        'anrede' => $this->translator->trans('salutation.' . $fs['geschlecht']),
-                        'name' => $fs['name'],
-                        'betrieb' => $store['name'],
-                        'link' => BASE_URL . '/?page=fsbetrieb&id=' . $store['id']
-                    ]);
-                }
+                $this->notificationTransaction->sendNotification($storeManagers, new FetchWarningNotificationStragety($store, $emptyPickups));
             }
         }
 

@@ -5,9 +5,6 @@ namespace Foodsharing\Modules\Store;
 use Carbon\Carbon;
 use DateTime;
 use Foodsharing\Lib\Session;
-use Foodsharing\Modules\Bell\BellGateway;
-use Foodsharing\Modules\Bell\DTO\Bell;
-use Foodsharing\Modules\Core\DBConstants\Bell\BellType;
 use Foodsharing\Modules\Core\DBConstants\Region\RegionOptionType;
 use Foodsharing\Modules\Core\DBConstants\Store\ConvinceStatus;
 use Foodsharing\Modules\Core\DBConstants\Store\CooperationStatus;
@@ -19,7 +16,6 @@ use Foodsharing\Modules\Core\DBConstants\StoreTeam\MembershipStatus;
 use Foodsharing\Modules\Core\DBConstants\Unit\UnitType;
 use Foodsharing\Modules\Core\DTO\PatchGeoLocation;
 use Foodsharing\Modules\Foodsaver\FoodsaverGateway;
-use Foodsharing\Modules\Foodsaver\Profile;
 use Foodsharing\Modules\Message\MessageGateway;
 use Foodsharing\Modules\Region\RegionGateway;
 use Foodsharing\Modules\Store\DTO\CommonLabel;
@@ -59,11 +55,11 @@ class StoreTransactions
         private readonly PickupGateway $pickupGateway,
         private readonly StoreGateway $storeGateway,
         private readonly TranslatorInterface $translator,
-        private readonly BellGateway $bellGateway,
         private readonly FoodsaverGateway $foodsaverGateway,
         private readonly RegionGateway $regionGateway,
         private readonly Sanitizer $sanitizerService,
-        private readonly Session $session
+        private readonly Session $session,
+        private readonly NotificationTransaction $notificationTransaction
     ) {
     }
 
@@ -211,21 +207,9 @@ class StoreTransactions
         }
 
         $authorName = $this->foodsaverGateway->getFoodsaverName($authorFsId);
-        $foodsaver = $this->foodsaverGateway->getFoodsaversByRegion($createStore->regionId);
+        $foodsavers = $this->foodsaverGateway->getFoodsaversByRegion($createStore->regionId);
 
-        $bellData = Bell::create('store_new_title', 'store_new', 'fas fa-store-alt', [
-            'href' => '/?page=fsbetrieb&id=' . $storeId
-        ], [
-            'user' => $authorName,
-            'name' => $createStore->name
-        ], BellType::createIdentifier(BellType::NEW_STORE, $storeId));
-        $this->bellGateway->addBell(
-            array_map(
-                function (Profile $f) { return $f->id; },
-                $foodsaver
-            ),
-            $bellData
-        );
+        $this->notificationTransaction->sendNotification($foodsavers, new NewStoreCooperationNotificationStrategy($store, $authorName));
 
         return $storeId;
     }
@@ -633,7 +617,7 @@ class StoreTransactions
         $this->storeGateway->addStoreLog($storeId, $this->session->id(), $userId, null, StoreLogAction::REQUEST_APPROVED);
 
         $actionType = $moveToStandby ? StoreLogAction::MOVED_TO_JUMPER : StoreLogAction::REQUEST_APPROVED;
-        $this->triggerBellForJoining($storeId, $userId, $actionType);
+        $this->informTeamMemberNotification($storeId, $userId, $actionType);
 
         // add the user to the store's region
         $regionId = $this->storeGateway->getStoreRegionId($storeId);
@@ -650,7 +634,7 @@ class StoreTransactions
         // userId = affected user, sessionId = active user
         // => don't add a bell notification if the request was withdrawn by the user
         if ($userId !== $this->session->id()) {
-            $this->triggerBellForJoining($storeId, $userId, StoreLogAction::REQUEST_DECLINED);
+            $this->informTeamMemberNotification($storeId, $userId, StoreLogAction::REQUEST_DECLINED);
         }
     }
 
@@ -676,7 +660,7 @@ class StoreTransactions
 
         $this->storeGateway->addStoreLog($storeId, $this->session->id(), $userId, null, StoreLogAction::ADDED_WITHOUT_REQUEST);
 
-        $this->triggerBellForJoining($storeId, $userId, StoreLogAction::ADDED_WITHOUT_REQUEST);
+        $this->informTeamMemberNotification($storeId, $userId, StoreLogAction::ADDED_WITHOUT_REQUEST);
     }
 
     public function removeStoreMember(int $storeId, int $userId): void
@@ -794,70 +778,24 @@ class StoreTransactions
                 $bellRecipients = $this->foodsaverGateway->getOrgaTeam();
             }
         }
-
-        $storeName = $this->storeGateway->getStoreName($storeId);
-
-        $bellData = Bell::create('store_new_request_title', 'store_new_request', 'fas fa-user-plus', [
-            'href' => '/?page=fsbetrieb&id=' . $storeId,
-        ], [
-            'user' => $this->session->user('name'),
-            'name' => $storeName,
-        ], 'store-request-' . $storeId);
-
-        $this->bellGateway->addBell($bellRecipients, $bellData);
+        $store = $this->storeGateway->getStore($storeId);
+        $authorName = $this->session->user('name');
+        $this->notificationTransaction->sendNotification($bellRecipients, new InformStoreManagerNotificationStragety($store, $authorName, $userId));
     }
 
-    private function triggerBellForJoining(int $storeId, int $userId, int $actionType): void
+    private function informTeamMemberNotification(int $storeId, int $affectedFoodsaver, int $actionType): void
     {
-        if ($actionType === StoreLogAction::ADDED_WITHOUT_REQUEST) {
-            $bellTitle = 'store_request_imposed_title';
-            $bellMsg = 'store_request_imposed';
-            $bellIcon = 'fas fa-user-plus';
-            $bellId = 'store-imposed-' . $storeId . '-' . $userId;
-        } elseif ($actionType === StoreLogAction::MOVED_TO_JUMPER) {
-            $bellTitle = 'store_request_accept_wait_title';
-            $bellMsg = 'store_request_accept_wait';
-            $bellIcon = 'fas fa-user-tag';
-            $bellId = BellType::createIdentifier(BellType::STORE_REQUEST_WAITING, $userId);
-        } elseif ($actionType === StoreLogAction::REQUEST_APPROVED) {
-            $bellTitle = 'store_request_accept_title';
-            $bellMsg = 'store_request_accept';
-            $bellIcon = 'fas fa-user-check';
-            $bellId = BellType::createIdentifier(BellType::STORE_REQUEST_ACCEPTED, $userId);
-        } elseif ($actionType === StoreLogAction::REQUEST_DECLINED) {
-            $bellTitle = 'store_request_deny_title';
-            $bellMsg = 'store_request_deny';
-            $bellIcon = 'fas fa-user-times';
-            $bellId = BellType::createIdentifier(BellType::STORE_REQUEST_REJECTED, $userId);
-        } else {
-            throw new \DomainException('Unknown store-team action: ' . $actionType);
-        }
-        $bellLink = '/?page=fsbetrieb&id=' . $storeId;
-
-        $storeName = $this->storeGateway->getStoreName($storeId);
-
-        $bellData = Bell::create($bellTitle, $bellMsg, $bellIcon, [
-            'href' => $bellLink,
-        ], [
-            'user' => $this->session->user('name'),
-            'name' => $storeName,
-        ], $bellId);
-        $this->bellGateway->addBell([$userId], $bellData);
+        $store = $this->storeGateway->getStore($storeId);
+        $authorName = $this->session->user('name');
+        $this->notificationTransaction->sendNotification([$affectedFoodsaver], new InformTeamMemberNotificationStrategy($store, $authorName, $affectedFoodsaver, $actionType));
     }
 
     public function triggerBellForRegularPickupChanged(int $storeId)
     {
-        $storeName = $this->storeGateway->getStoreName($storeId);
-
+        $store = $this->storeGateway->getStore($storeId);
         $team = $this->storeGateway->getStoreTeam($storeId);
         $team = array_map(function ($foodsaver) { return $foodsaver['id']; }, $team);
-        $bellData = Bell::create('store_cr_times_title', 'store_cr_times', 'fas fa-user-clock', [
-            'href' => '/?page=fsbetrieb&id=' . $storeId,
-        ], [
-            'user' => $this->session->user('name'),
-            'name' => $storeName,
-        ], BellType::createIdentifier(BellType::STORE_TIME_CHANGED, $storeId));
-        $this->bellGateway->addBell($team, $bellData);
+        $this->notificationTransaction->sendNotification($team, new RegularPickupTimeChangeNotificationStragety($store, $this->session->user('name')));
     }
 
     /**
