@@ -1,0 +1,7 @@
+flagception:
+  features:
+    feature_123:
+      default: true
+
+    feature_abc:
+      default: false
