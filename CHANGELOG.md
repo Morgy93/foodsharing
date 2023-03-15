@@ -32,6 +32,7 @@
 - Use Store DTO in StoreGateway !2515 !2611 @KoeMai
 - Move business logic for editing store into StoreTransaction !2515 @KoeMai
 - Fix TeamStoreStatus and move getStoreMarkers to StoreGateway !2560 @KoeMai
+- Adds pagination to store REST API !1496 @rnoennig
 
 
 ## Dev/Test/CI stuff

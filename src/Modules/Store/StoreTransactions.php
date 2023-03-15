@@ -31,6 +31,7 @@ use Foodsharing\Modules\Store\DTO\PatchStore;
 use Foodsharing\Modules\Store\DTO\PatchStoreOptionModel;
 use Foodsharing\Modules\Store\DTO\Store;
 use Foodsharing\Modules\Store\DTO\StoreListInformation;
+use Foodsharing\Modules\Store\DTO\StorePaginationResult;
 use Foodsharing\Modules\Store\DTO\StoreStatusForMember;
 use Foodsharing\Utility\Sanitizer;
 use Foodsharing\Utility\WeightHelper;
@@ -134,14 +135,23 @@ class StoreTransactions
      *
      * @param int $regionId Region identifier
      * @param bool $expand Expand information about store and region
+     * @param int $startOffset zero based index of result rows which will be skipped
+     * @param int $limit Number of maximum rows to return
      *
-     * @return array<StoreListInformation> List of information
+     * @return StorePaginationResult List of pagination information
      */
-    public function listOverviewInformationsOfStoresInRegion(int $regionId, bool $expand): array
+    public function listOverviewInformationsOfStoresInRegion(int $regionId, bool $expand, int $startOffset = null, int $limit = null): StorePaginationResult
     {
-        $stores = $this->storeGateway->listStoresInRegion($regionId, true);
+        if (null === $startOffset) {
+            $startOffset = 0;
+        }
+        if (null === $limit) {
+            $limit = 9999;
+        }
+        $totalStoreCount = $this->storeGateway->countStoresInRegion($regionId, true);
+        $stores = $this->storeGateway->listStoresInRegion($regionId, true, $startOffset, $limit);
 
-        return array_map(function (Store $store) use ($expand) {
+        $storesMapped = array_map(function (Store $store) use ($expand) {
             $requiredStoreInformation = StoreListInformation::loadFrom($store, !$expand);
             if ($expand) {
                 $regionName = $this->regionGateway->getRegionName($store->regionId);
@@ -150,6 +160,12 @@ class StoreTransactions
 
             return $requiredStoreInformation;
         }, $stores);
+
+        $result = new StorePaginationResult();
+        $result->total = $totalStoreCount;
+        $result->stores = $storesMapped;
+
+        return $result;
     }
 
     /**

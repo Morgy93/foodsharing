@@ -1052,20 +1052,41 @@ class StoreGateway extends BaseGateway
         ]);
     }
 
-    /**
-     * Returns a list of stores which belong to regions.
-     *
-     *  @return array<Store>
-     */
-    public function listStoresInRegion(int $regionId, bool $includeSubregions = false): array
-    {
-        $regionIds = [$regionId];
-        if ($includeSubregions) {
-            $regionIds = array_merge($regionIds, $this->regionGateway->listIdsForDescendantsAndSelf($regionId));
+        /**
+         * Returns a count of all stores which belong to the given region and optionally all sub regions.
+         */
+        public function countStoresInRegion(int $regionId, bool $includeSubregions = false): int
+        {
+            $regionIds = [$regionId];
+            if ($includeSubregions) {
+                $regionIds = array_merge($regionIds, $this->regionGateway->listIdsForDescendantsAndSelf($regionId));
+            }
+
+            $placeholders = implode(',', array_fill(0, count($regionIds), '?'));
+            $storeCount = $this->db->fetchValue('SELECT count(fs_betrieb.id)
+						FROM 	fs_betrieb,
+								fs_bezirk
+						WHERE 	fs_betrieb.bezirk_id = fs_bezirk.id
+						AND 	fs_betrieb.bezirk_id IN(' . $placeholders . ')
+				', $regionIds);
+
+            return $storeCount;
         }
 
-        $placeholders = implode(',', array_fill(0, count($regionIds), '?'));
-        $results = $this->db->fetchAll('SELECT
+        /**
+         * Returns a list of stores which belong to regions.
+         *
+         *  @return array<Store>
+         */
+        public function listStoresInRegion(int $regionId, bool $includeSubregions = false, int $startOffset = 0, int $limit = 9999): array
+        {
+            $regionIds = [$regionId];
+            if ($includeSubregions) {
+                $regionIds = array_merge($regionIds, $this->regionGateway->listIdsForDescendantsAndSelf($regionId));
+            }
+
+            $placeholders = implode(',', array_fill(0, count($regionIds), '?'));
+            $results = $this->db->fetchAll('SELECT
                     fs_betrieb.id,
                     fs_betrieb.name,
                     fs_betrieb.bezirk_id as regionId,
@@ -1098,12 +1119,14 @@ class StoreGateway extends BaseGateway
 						fs_bezirk
 				WHERE 	fs_betrieb.bezirk_id = fs_bezirk.id
 				AND 	fs_betrieb.bezirk_id IN(' . $placeholders . ')
-		', $regionIds);
+				LIMIT ' . $limit . '
+				OFFSET ' . $startOffset . '
+				', $regionIds);
 
-        return array_map(function ($store) {
-            return Store::createFromArray($store);
-        }, $results);
-    }
+            return array_map(function ($store) {
+                return Store::createFromArray($store);
+            }, $results);
+        }
 
     public function listStoresWithoutRegion(array $storeIds): array
     {
