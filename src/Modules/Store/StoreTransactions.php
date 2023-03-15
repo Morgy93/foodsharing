@@ -32,6 +32,7 @@ use Foodsharing\Modules\Store\DTO\PatchStoreOptionModel;
 use Foodsharing\Modules\Store\DTO\Store;
 use Foodsharing\Modules\Store\DTO\StoreListInformation;
 use Foodsharing\Modules\Store\DTO\StoreStatusForMember;
+use Foodsharing\Modules\Store\DTO\StorePaginationResult;
 use Foodsharing\Utility\Sanitizer;
 use Foodsharing\Utility\WeightHelper;
 use Symfony\Contracts\Translation\TranslatorInterface;
@@ -128,29 +129,38 @@ class StoreTransactions
     }
 
     /**
-     * Return a list of store identifiers of reduced store information which belong to region.
-     *
-     * This list of stores contains all stores from sub regions.
-     *
-     * @param int $regionId Region identifier
-     * @param bool $expand Expand information about store and region
-     *
-     * @return array<StoreListInformation> List of information
-     */
-    public function listOverviewInformationsOfStoresInRegion(int $regionId, bool $expand): array
-    {
-        $stores = $this->storeGateway->listStoresInRegion($regionId, true);
+  	 * Return a list of store identifiers of reduced store information which belong to region.
+  	 *
+  	 * This list of stores contains all stores from sub regions.
+  	 *
+  	 * @param int $regionId Region identifier
+  	 * @param bool $expand Expand information about store and region
+  	 * @param int $startOffset zero based index of result rows which will be skipped
+   	 * @param int $limit Number of maximum rows to return
+  	 *
+  	 * @return StorePaginationResult List of pagination information
+  	 */
+  	public function listOverviewInformationsOfStoresInRegion(int $regionId, bool $expand, int $startOffset, int $limit): StorePaginationResult
+  	{
+    		$totalStoreCount = $this->storeGateway->countStoresInRegion($regionId, true);
+    		$stores = $this->storeGateway->listStoresInRegion($regionId, true, $startOffset, $limit);
 
-        return array_map(function (Store $store) use ($expand) {
-            $requiredStoreInformation = StoreListInformation::loadFrom($store, !$expand);
-            if ($expand) {
-                $regionName = $this->regionGateway->getRegionName($store->regionId);
-                $requiredStoreInformation->region->name = $regionName;
-            }
+    		$storesMapped = array_map(function (Store $store) use ($expand) {
+      			$requiredStoreInformation = StoreListInformation::loadFrom($store, !$expand);
+      			if ($expand) {
+        				$regionName = $this->regionGateway->getRegionName($store->regionId);
+        				$requiredStoreInformation->region->name = $regionName;
+      			}
 
-            return $requiredStoreInformation;
-        }, $stores);
-    }
+      			return $requiredStoreInformation;
+    		}, $stores);
+    		
+    		$result = new StorePaginationResult();
+    		$result->total = $totalStoreCount;
+    		$result->stores = $storesMapped;
+
+    		return $result;
+  	}
 
     /**
      * Creates a new store with the possiblility to post a first message.

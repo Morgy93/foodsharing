@@ -1,6 +1,6 @@
 <?php
 
-namespace Foodsharing\RestApi\Models\Store;
+namespace Foodsharing\Modules\Store\DTO;
 
 use Foodsharing\Modules\Store\DTO\StoreListInformation;
 use Nelmio\ApiDocBundle\Annotation\Model;

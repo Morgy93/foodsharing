@@ -14,6 +14,7 @@ use Foodsharing\Modules\Region\RegionGateway;
 use Foodsharing\Modules\Store\DTO\CommonStoreMetadata;
 use Foodsharing\Modules\Store\DTO\PatchStore;
 use Foodsharing\Modules\Store\DTO\Store;
+use Foodsharing\Modules\Store\DTO\StorePaginationResult;
 use Foodsharing\Modules\Store\StoreGateway;
 use Foodsharing\Modules\Store\StoreTransactionException;
 use Foodsharing\Modules\Store\StoreTransactions;
@@ -21,7 +22,6 @@ use Foodsharing\Modules\Store\TeamStatus as TeamMembershipStatus;
 use Foodsharing\Permissions\StorePermissions;
 use Foodsharing\RestApi\Models\Store\CreateStoreModel;
 use Foodsharing\RestApi\Models\Store\MinimalStoreModel;
-use Foodsharing\RestApi\Models\Store\StorePaginationResult;
 use Foodsharing\RestApi\Models\Store\StoreStatusForMemberModel;
 use FOS\RestBundle\Controller\AbstractFOSRestController;
 use FOS\RestBundle\Controller\Annotations as Rest;
@@ -84,39 +84,40 @@ class StoreRestController extends AbstractFOSRestController
     }
 
     /**
-     * Provides store identifiers for stores of a region.
-     *
-     * @OA\Tag(name="stores")
-     * @OA\Tag(name="region")
-     * @OA\Response(
-     * 		response="200",
-     * 		description="Success.",
-     *      @Model(type=StorePaginationResult::class)
-     * )
-     * @OA\Response(response="401", description="Not logged in")
-     * @OA\Response(response="403", description="Forbidden to access store list")
-     * @Rest\Get("region/{regionId}/stores", requirements={"regionId" = "\d+"})
-     * @Rest\QueryParam(name="expand", requirements="\d+", default="0", description="Expand information for store and region")
-     */
-    public function getStoresOfRegion(int $regionId, ParamFetcher $paramFetcher): Response
-    {
-        if (!$this->session->mayRole()) {
-            throw new UnauthorizedHttpException('', self::NOT_LOGGED_IN);
-        }
+	 * Provides store identifiers for stores of a region.
+	 *
+	 * @OA\Tag(name="stores")
+	 * @OA\Tag(name="region")
+	 * @OA\Response(
+	 * 		response="200",
+	 * 		description="Success.",
+	 *      @Model(type=StorePaginationResult::class)
+	 * )
+	 * @OA\Response(response="401", description="Not logged in")
+	 * @OA\Response(response="403", description="Forbidden to access store list")
+	 * @Rest\Get("region/{regionId}/stores", requirements={"regionId" = "\d+"})
+	 * @Rest\QueryParam(name="expand", requirements="\d+", default="0", description="Expand information for store and region")
+	 * @Rest\QueryParam(name="startOffset", requirements="\d+", default="0", description="Zero based index of result rows which will be skipped")
+	 * @Rest\QueryParam(name="limit", requirements="\d+", default="9999", description="Number of maximum rows to return")
+	 */
+  	public function getStoresOfRegion(int $regionId, ParamFetcher $paramFetcher): Response
+  	{
+    		if (!$this->session->mayRole()) {
+    			   throw new UnauthorizedHttpException('', self::NOT_LOGGED_IN);
+    		}
 
-        if (!$this->storePermissions->mayListStores()) {
-            throw new AccessDeniedHttpException('No permission see store list');
-        }
+    		if (!$this->storePermissions->mayListStores()) {
+    			   throw new AccessDeniedHttpException('No permission see store list');
+    		}
 
-        $expand = boolval($paramFetcher->get('expand'));
+    		$expand = boolval($paramFetcher->get('expand'));
+    		$startOffset = intval($paramFetcher->get('startOffset'));
+    		$limit = intval($paramFetcher->get('limit'));
 
-        $stores = $this->storeTransactions->listOverviewInformationsOfStoresInRegion($regionId, $expand);
-        $result = new StorePaginationResult();
-        $result->total = count($stores);
-        $result->stores = $stores;
+    		$result = $this->storeTransactions->listOverviewInformationsOfStoresInRegion($regionId, $expand, $startOffset, $limit);
 
-        return $this->handleView($this->view($result, 200));
-    }
+    		return $this->handleView($this->view($result, 200));
+  	}
 
     /**
      * Creates a new store.
