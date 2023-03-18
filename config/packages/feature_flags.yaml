@@ -1,10 +1,6 @@
 flagception:
   features:
-    feature_123:
+    always_true_for_testing_purposes:
       default: true
-
-    feature_abc:
+    always_false_for_testing_purposes:
       default: false
-
-    mark_conversation_as_readed:
-      default: true
