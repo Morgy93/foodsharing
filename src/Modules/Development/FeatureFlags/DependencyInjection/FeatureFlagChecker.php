@@ -6,5 +6,5 @@ namespace Foodsharing\Modules\Development\FeatureFlags\DependencyInjection;
 
 interface FeatureFlagChecker
 {
-    public function isFeatureFlagActive(string $identifier, ?int $foodsaverId = null): bool;
+    public function isFeatureFlagActive(string $identifier): bool;
 }

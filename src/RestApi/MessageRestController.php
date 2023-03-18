@@ -3,6 +3,7 @@
 namespace Foodsharing\RestApi;
 
 use Foodsharing\Lib\Session;
+use Foodsharing\Modules\Development\FeatureFlags\DependencyInjection\FeatureFlagChecker;
 use Foodsharing\Modules\Foodsaver\FoodsaverGateway;
 use Foodsharing\Modules\Message\MessageGateway;
 use Foodsharing\Modules\Message\MessageTransactions;
@@ -21,17 +22,20 @@ class MessageRestController extends AbstractFOSRestController
     private MessageGateway $messageGateway;
     private MessageTransactions $messageTransactions;
     private Session $session;
+    private FeatureFlagChecker $featureFlagChecker;
 
     public function __construct(
         FoodsaverGateway $foodsaverGateway,
         MessageGateway $messageGateway,
         MessageTransactions $messageTransactions,
-        Session $session
+        Session $session,
+        FeatureFlagChecker $featureFlagChecker,
     ) {
         $this->foodsaverGateway = $foodsaverGateway;
         $this->messageGateway = $messageGateway;
         $this->messageTransactions = $messageTransactions;
         $this->session = $session;
+        $this->featureFlagChecker = $featureFlagChecker;
     }
 
     /**

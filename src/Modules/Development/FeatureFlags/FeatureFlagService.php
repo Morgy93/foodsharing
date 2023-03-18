@@ -8,16 +8,11 @@ class FeatureFlagService implements DependencyInjection\FeatureFlagChecker
 {
     public function __construct(
         private readonly FeatureManagerInterface $manager,
-        private readonly FeatureFlagContextGenerator $contextGenerator,
     ) {
     }
 
-    public function isFeatureFlagActive(string $identifier, ?int $foodsaverId = null): bool
+    public function isFeatureFlagActive(string $identifier): bool
     {
-        if (is_null($foodsaverId)) {
-            return $this->manager->isActive($identifier);
-        }
-
-        return $this->manager->isActive($identifier, $this->contextGenerator->generate($foodsaverId));
+        return $this->manager->isActive($identifier);
     }
 }

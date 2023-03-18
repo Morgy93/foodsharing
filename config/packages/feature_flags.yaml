@@ -5,3 +5,6 @@ flagception:
 
     feature_abc:
       default: false
+
+    mark_conversation_as_readed:
+      default: true
