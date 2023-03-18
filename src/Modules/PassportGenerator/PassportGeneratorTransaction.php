@@ -221,9 +221,9 @@ class PassportGeneratorTransaction extends AbstractController
                     if (str_starts_with($photo, '/api/uploads')) {
                         // get the UUID and create a resized file
                         $uuid = substr($photo, strlen('/api/uploads/'));
-                        $filename = $this->uploadsTransactions->getFileLocation($uuid, 200, 257, 0);
+                        $filename = $this->uploadsTransactions->generateFilePath($uuid, 200, 257, 0);
                         if (!file_exists($filename)) {
-                            $originalFilename = $this->uploadsTransactions->getFileLocation($uuid);
+                            $originalFilename = $this->uploadsTransactions->generateFilePath($uuid);
                             $this->uploadsTransactions->resizeImage($originalFilename, $filename, 200, 257, 0);
                         }
                         $pdf->Image($filename, $photoMarginX + $x, $photoMarginY + $y, 24);

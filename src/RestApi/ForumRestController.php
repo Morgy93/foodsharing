@@ -6,7 +6,7 @@ use Foodsharing\Lib\Session;
 use Foodsharing\Modules\Region\ForumFollowerGateway;
 use Foodsharing\Modules\Region\ForumGateway;
 use Foodsharing\Modules\Region\ForumTransactions;
-use Foodsharing\Modules\Region\RegionGateway;
+use Foodsharing\Modules\Region\RegionTransactions;
 use Foodsharing\Permissions\ForumPermissions;
 use Foodsharing\Utility\Sanitizer;
 use FOS\RestBundle\Controller\AbstractFOSRestController;
@@ -21,7 +21,7 @@ use Symfony\Component\HttpKernel\Exception\UnauthorizedHttpException;
 class ForumRestController extends AbstractFOSRestController
 {
     private Session $session;
-    private RegionGateway $regionGateway;
+    private RegionTransactions $regionTransactions;
     private ForumGateway $forumGateway;
     private ForumFollowerGateway $forumFollowerGateway;
     private ForumPermissions $forumPermissions;
@@ -30,7 +30,7 @@ class ForumRestController extends AbstractFOSRestController
 
     public function __construct(
         Session $session,
-        RegionGateway $regionGateway,
+        RegionTransactions $regionTransactions,
         ForumGateway $forumGateway,
         ForumFollowerGateway $forumFollowerGateway,
         ForumPermissions $forumPermissions,
@@ -38,7 +38,7 @@ class ForumRestController extends AbstractFOSRestController
         Sanitizer $sanitizerService
     ) {
         $this->session = $session;
-        $this->regionGateway = $regionGateway;
+        $this->regionTransactions = $regionTransactions;
         $this->forumGateway = $forumGateway;
         $this->forumFollowerGateway = $forumFollowerGateway;
         $this->forumPermissions = $forumPermissions;
@@ -229,6 +229,7 @@ class ForumRestController extends AbstractFOSRestController
      * @Rest\Post("forum/{forumId}/{forumSubId}", requirements={"forumId" = "\d+", "forumSubId" = "\d"})
      * @Rest\RequestParam(name="title", description="title of thread")
      * @Rest\RequestParam(name="body", description="post message")
+     * @Rest\RequestParam(name="sendMail", description="false or true value - send a notification mail for all forum user")
      */
     public function createThreadAction(int $forumId, int $forumSubId, ParamFetcher $paramFetcher): SymfonyResponse
     {
@@ -241,10 +242,11 @@ class ForumRestController extends AbstractFOSRestController
 
         $body = $paramFetcher->get('body');
         $title = $paramFetcher->get('title');
-        $regionDetails = $this->regionGateway->getRegionDetails($forumId);
+        $sendMail = $paramFetcher->get('sendMail') ?? false;
+        $regionDetails = $this->regionTransactions->getRegionDetails($forumId);
         $postActiveWithoutModeration = ($this->session->user('verified') && !$regionDetails['moderated']) || $this->session->isAmbassadorForRegion([$forumId]);
 
-        $threadId = $this->forumTransactions->createThread($this->session->id(), $title, $body, $regionDetails, $forumSubId, $postActiveWithoutModeration, true);
+        $threadId = $this->forumTransactions->createThread($this->session->id(), $title, $body, $regionDetails, $forumSubId, $postActiveWithoutModeration, $sendMail);
 
         return $this->getThreadAction($threadId);
     }

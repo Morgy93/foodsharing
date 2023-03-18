@@ -2,14 +2,14 @@
 
 # set -o errexit tells the shell to exit as soon as a command exits with non-zero status, i.e. fails
 set -o errexit
-
+set -o nounset
+set -o pipefail
 # :- is an shell operator. If FS_ENV is set and not the empty string, use FS_ENV, otherwise use dev
 export FS_ENV=${FS_ENV:-dev}
 
 # user identification number of the current user
 CURRENT_USER=$(id -u):$(id -g)
 export CURRENT_USER
-
 
 MYSQL_USERNAME=${MYSQL_USERNAME:-root}
 MYSQL_PASSWORD=${MYSQL_PASSWORD:-root}

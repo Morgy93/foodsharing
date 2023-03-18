@@ -1096,6 +1096,10 @@ forum:
     delete: "Beitrag löschen" #also in ThreadPostActions
     body: "Nachricht"
   thread:
+    delivery_mail:
+      title: "Mailversand"
+      active: "aktiviert"
+      non_active: "deaktiviert"
     with_mail: "Thema eröffnet und alle per E-Mail darüber informiert"
     no_mail: "Das Thema wurde eröffnet, ohne E-Mails zu versenden"
     too_big_to_mail: "Für das Thema wurden keine E-Mails versendet, da es sich um ein Land oder ein Bundesland handelt."

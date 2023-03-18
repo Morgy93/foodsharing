@@ -1,13 +1,12 @@
 #!/bin/bash
 
-set --errexit
-set --nounset
-
-SLACK_WEBHOOK_URL=${SLACK_WEBHOOK_URL:-}
+set -o errexit
+set -o nounset
+set -o pipefail
 
 basedir="$(dirname "$0")/.."
 
-if [ -n "$SLACK_WEBHOOK_URL" ]; then
+if [ "${SLACK_WEBHOOK_URL:-}" ]; then
   echo "SLACK_WEBHOOK_URL was set"
 else
   echo "SLACK_WEBHOOK_URL was not set"
@@ -15,8 +14,10 @@ else
 fi
 
 json_escape () {
-  local text="$1"
-  echo "$text" | jq --raw-input --slurp --compact-output '.'
+      # clearly not a very thorough json escaping ... ;)
+      local text="$1"
+      text=${text//\"/\\\"} # escape double quotes
+      printf '"%s"' "$text"
 }
 
 send_to_slack () {

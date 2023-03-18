@@ -74,3 +74,12 @@ export function addReaction (postId, key) {
 export function removeReaction (postId, key) {
   return remove(`/forum/post/${postId}/reaction/${key}`)
 }
+
+export function createThread (forumId, forumSubId, title, body, sendMail) {
+  return post(`/forum/${forumId}/${forumSubId}`, {
+    title: title,
+    body: body,
+    sendMail: sendMail,
+  },
+  )
+}

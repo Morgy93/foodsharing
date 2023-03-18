@@ -1,7 +1,7 @@
 <template>
   <b-navbar
     toggleable="md"
-    sticky
+    :sticky="viewIsMD"
     class="navigation"
     :class="{
       'nav-not-visible': isLoggedIn,
@@ -19,8 +19,6 @@
       <b-collapse
         id="nav-collapse"
         is-nav
-        @show="disablePageScroll"
-        @hide="enablePageScroll"
       >
         <SideNavLoggedIn v-if="isLoggedIn" />
         <SideNavLoggedOut v-else />
@@ -122,14 +120,6 @@ export default {
       await DataBells.mutations.fetch()
       await DataConversations.initConversations()
     }
-  },
-  methods: {
-    enablePageScroll () {
-      document.body.classList.remove('nav-open')
-    },
-    disablePageScroll () {
-      document.body.classList.add('nav-open')
-    },
   },
 }
 </script>

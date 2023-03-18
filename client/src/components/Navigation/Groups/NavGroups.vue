@@ -31,7 +31,7 @@
       <a
         :href="$url('workingGroups')"
         role="menuitem"
-        class="dropdown-item dropdown-action text-truncate"
+        class="dropdown-item dropdown-action"
       >
         <i class="icon-subnav fas fa-users" />
         {{ $i18n('menu.entry.group_overview') }}

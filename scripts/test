@@ -1,21 +1,20 @@
 #!/bin/bash
 
-export FS_ENV=test
+export FS_ENV="test"
 
 dir=$(dirname "$0")
 
 # shellcheck source=./__common.sh
 source "$dir"/__common.sh
 
-if [[ ! $("$dir"/docker-compose ls --filter=name='foodsharing_test' | grep -q 'running(12)') ]];
-then
-    log-header "Bringing up containers ..."
-    "$dir"/docker-compose up -d
+if [[ ! $("$dir"/docker-compose ps --filter name=foodsharing_test | grep -c "Up" | awk '{print $1}') -eq 12 ]]; then
+     log-header "Bringing up containers ..."
+    "$dir"/docker-compose up --detach
 
     log-header "Running composer install ..."
     exec-in-container app 'composer install'
 
-    log-header "Create folder structur ..."
+    log-header "Create folder structure ..."
     exec-in-container app bin/console foodsharing:setup
 
     log-header "Reset (clear) cache ..."

@@ -2,8 +2,6 @@
 
 version: '2'
 services:
-  # nginx
-  #------------------------------------
   nginx:
     container_name: foodsharing_test_nginx
     ports:
@@ -46,26 +44,20 @@ services:
   db:
     container_name: foodsharing_test_db
     environment:
-      - MYSQL_ROOT_PASSWORD=root
+      MYSQL_ROOT_PASSWORD: root
     ports:
       - "23306:3306"
 
-  # redis
-  #------------------------------------
   redis:
     container_name: foodsharing_test_redis
     ports:
       - "36379:6379"
 
-  # phpmyadmin
-  #------------------------------------
   phpmyadmin:
     container_name: foodsharing_test_phpmyadmin
     ports:
       - "28081:80"
 
-  # maildev
-  #------------------------------------
   maildev:
     container_name: foodsharing_test_maildev
     ports:

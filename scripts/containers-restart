@@ -8,9 +8,6 @@ if [ "$1" ]; then
   FS_ENV="$1"
 fi
 
-# set -o errexit tells the shell to exit as soon as a command exits with non-zero status, i.e. fails
-set -o errexit
-
 log-header "Clear assets ..."
 rm -rf "$(cd "$dir/.." && pwd)"/assets/*
 

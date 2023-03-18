@@ -1,7 +1,5 @@
 #!/bin/bash
 
-set -e
-
 dir=$(dirname "$0")
 
 # shellcheck source=./__common.sh

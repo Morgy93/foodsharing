@@ -32,6 +32,8 @@
 - Use Store DTO in StoreGateway !2515 !2611 @KoeMai
 - Move business logic for editing store into StoreTransaction !2515 @KoeMai
 - Fix TeamStoreStatus and move getStoreMarkers to StoreGateway !2560 @KoeMai
+- Move uploadlogic and actions from controller to transactionclass for reuse !2478 @martncodes-de
+- Reimplement create new forum thread in vue js !2627 @chriswalg
 
 
 ## Dev/Test/CI stuff
@@ -47,7 +49,7 @@
 - Update Symfony to latest patch versions !2604 @\_fridtjof_
 - Update deployer to v7.1.3 !2600 @chriswalg
 - Update some backend dependencies !2601 @chriswalg
-- Bump socket.io (client and server) to v4 (credits to @janopae), superagent to v9, node-dev to v8, and ts-node-dev to v2 !2614 @peter.toennies
+- Bump socket.io (client and server) to v4 (credits to @janopae), superagent to v9, node-dev to v8, and ts-node-dev to v2 !2614 !2630 @peter.toennies
 - Improve CI to not build same things multiple times !2569 @stcz
 - Get rid of includes/setup.php !2609 @\_fridtjof_
 - bump fontawsome to v6, glob to v8, mkdirp to v2, jsdom to v21, and sinon to v15, remove dotenv !2613 @peter.toennies
@@ -55,6 +57,7 @@
 - Clean up Symfony related code and config !2608 !2623 @\_fridtjof_
 - Improved test stability when geocoding is involved !2620 @\_fridtjof_
 - some updates to composer packages. Removed deprecations in order to prepare for Symfony 6 ! 2617 @peter.toennies
+- Improved scripts. repaired outdated notify. Made test rerun faster. Made clean more powerfull !2622 @peter.toennies
 
 ## Development documentation
 

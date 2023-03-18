@@ -5,9 +5,15 @@ dir=$(dirname "$0")
 # shellcheck source=./__common.sh
 source "$dir"/__common.sh
 
-if [ "$1" ]; then
+if [[ "${1:-}" == "dev" || "${1:-}" == "test" ]]; then
   FS_ENV="$1"
+  log-header "Stopping $FS_ENV containers ..."
+  "$dir"/docker-compose stop
+elif [[ -z "${1:-}" ]]; then
+  FS_ENV="test"
+  log-header "Stopping $FS_ENV containers ..."
+    "$dir"/docker-compose stop
+  FS_ENV="dev"
+  log-header "Stopping $FS_ENV containers ..."
+    "$dir"/docker-compose stop
 fi
-
-log-header "Stopping $FS_ENV containers ..."
-"$dir"/docker-compose stop

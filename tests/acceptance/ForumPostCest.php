@@ -182,22 +182,20 @@ class ForumPostCest
         $I->waitForActiveAPICalls();
     }
 
-    private function _createThread(AcceptanceTester $I, $regionId, $title, $emailPossible, $sendEmail = true)
+    private function _createThread(AcceptanceTester $I, $regionId, $title, $emailPossible, $sendEmail = false)
     {
         $I->amOnPage($I->forumUrl($regionId));
         $I->click('Neues Thema verfassen');
         $I->waitForPageBody();
-        $I->fillField('#forum_create_thread_form_title', $title);
-        $I->fillField('#forum_create_thread_form_body', 'TestThreadPost');
+        $I->fillField('#forum-create-thread-form-title', $title);
+        $I->fillField('#forum-create-thread-form-body', 'TestThreadPost');
         $I->deleteAllMails();
         if (!$emailPossible) {
             $I->dontSee('Alle Forenmitglieder über die Erstellung dieses neuen Themas per E-Mail informieren');
         } elseif ($sendEmail) {
-            $I->selectOption('#forum_create_thread_form_sendMail_1', 'Ja');
-        } else {
-            $I->selectOption('#forum_create_thread_form_sendMail_0', 'Nein');
+            $I->click('#send_mail_button');
         }
-        $I->click('Senden');
+        $I->click('Anlegen');
         $I->waitForPageBody();
     }
 
@@ -215,7 +213,7 @@ class ForumPostCest
         $this->_createThread($I, $this->{$example[1]}['id'], $title, $emailPossible);
         $I->amOnPage($I->forumUrl($this->{$example[1]}['id']));
         $I->dontSee($title);
-        $I->wait(2);
+        $I->expectNumMails(1, 5);
         $mail = $I->getMails()[0];
         $I->assertStringContainsString($title, $mail->text);
         $I->assertStringContainsString('tigt werden', $mail->subject);
@@ -252,7 +250,7 @@ class ForumPostCest
         $I->amOnPage($I->forumUrl($this->{$example[1]}['id']));
         $I->waitForActiveAPICalls();
         $I->see($title);
-        $I->wait(2); // wait a bit for the mails to arrive
+        $I->expectNumMails(1, 5); // wait a bit for the mails to arrive
         $numMails = count($I->getMails());
         /* one could assume, there should be 3 mail, because there are 3 people in the region,
         but the number of recieved mails fluctuates.
@@ -282,6 +280,7 @@ class ForumPostCest
         $I->deleteAllMails();
         $title = 'moderated thread to be activated';
         $this->_createThread($I, $this->moderatedTestBezirk['id'], $title, false);
+        $I->wait(2); // wait a bit for the mails to arrive
         $mail = $I->getMails()[0];
         $I->assertStringContainsString($title, $mail->text);
         $I->assertStringContainsString('tigt werden', $mail->subject);
@@ -316,10 +315,11 @@ class ForumPostCest
         $I->login($this->{$example[0]}['email']);
         $title = 'TestThreadTitleForDeletion';
         $I->deleteAllMails();
-        $this->_createThread($I, $this->{$example[1]}['id'], $title, false);
+        $this->_createThread($I, $this->{$example[1]}['id'], $title, true, true);
         $I->amOnPage($I->forumUrl($this->{$example[1]}['id']));
         $I->waitForActiveAPICalls();
 
+        $I->expectNumMails(1, 5);
         $mail = $I->getMails()[0];
         preg_match('/http:\/\/.*?\/(.*?)"/', $mail->html, $matches);
         $link = html_entity_decode($matches[1]);
@@ -350,5 +350,22 @@ class ForumPostCest
         $I->seeCurrentUrlEquals($I->forumUrl($this->{$example[1]}['id']));
         $I->waitForPageBody();
         $I->cantSee($title);
+    }
+
+    /**
+     * Makes sure that created threads in moderated regions are not visible until they were activated. This includes
+     * regions that are not marked as moderated but that are moderated because of their type (states, big cities, ...).
+     *
+     * @example["foodsaver", "bigTestBezirk"]
+     * @example["foodsaver", "moderatedTestBezirk"]
+     */
+    public function canNotSeeInactiveThreads(AcceptanceTester $I, Codeception\Example $example)
+    {
+        $I->login($this->{$example[0]}['email']);
+        $title = 'TestThreadTitle';
+        $this->_createThread($I, $this->{$example[1]}['id'], $title, true);
+        $I->amOnPage($I->forumThreadUrl($this->{$example[1]}['id']));
+        $I->waitForActiveAPICalls();
+        $I->dontSee($title);
     }
 }

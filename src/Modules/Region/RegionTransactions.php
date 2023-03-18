@@ -13,8 +13,11 @@ class RegionTransactions
     public const NEW_FOODSAVER_NEEDS_VERIFICATION = 'new_foodsaver_needs_verification';
     public const NEW_FOODSAVER_NEEDS_INTRODUCTION = 'new_foodsaver_needs_introduction';
 
-    public function __construct(private FoodsaverGateway $foodsaverGateway, private UnitGateway $unitGateway)
-    {
+    public function __construct(
+        private readonly FoodsaverGateway $foodsaverGateway,
+        private readonly UnitGateway $unitGateway,
+        private readonly RegionGateway $regionGateway
+    ) {
     }
 
     public function getJoinMessage(array $userData): string
@@ -42,5 +45,19 @@ class RegionTransactions
     public function getUserRegions(int $fsId): array
     {
         return $this->unitGateway->listAllDirectReleatedUnitsAndResponsibilitiesOfFoodsaver($fsId, UnitType::getRegionTypes());
+    }
+
+    /**
+     * Returns details of a region. Makes sure that the moderated flag is properly set for regions of certain types.
+     */
+    public function getRegionDetails(int $regionId): array
+    {
+        $region = $this->regionGateway->getRegionDetails($regionId);
+        if ($region) {
+            $big = [UnitType::BIG_CITY, UnitType::FEDERAL_STATE, UnitType::COUNTRY];
+            $region['moderated'] = $region['moderated'] || in_array($region['type'], $big);
+        }
+
+        return $region;
     }
 }
