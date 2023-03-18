@@ -17,12 +17,13 @@ class FeatureFlagServiceTest extends Unit
         $this->featureFlagService = $this->tester->get(FeatureFlagService::class);
     }
 
-    public function testIsFeatureFlagActive_FeatureIsActive_true()
+    public function testIsFeatureFlagActiveFeatureIsActiveTrue()
     {
         $featureFlagState = $this->featureFlagService->isFeatureFlagActive('always_true_for_testing_purposes');
         $this->assertTrue($featureFlagState);
     }
-    public function testIsFeatureFlagActive_FeatureIsNotActive_True()
+
+    public function testIsFeatureFlagActiveFeatureIsNotActiveTrue()
     {
         $featureFlagState = $this->featureFlagService->isFeatureFlagActive('always_false_for_testing_purposes');
         $this->assertFalse($featureFlagState);
