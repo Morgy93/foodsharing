@@ -17,12 +17,9 @@ class IsFeatureFlagActiveResponse
     #[NotBlank]
     public readonly bool $isActive;
 
-    public static function create(string $featureFlag, bool $isActive): self
+    public function __construct(string $featureFlag, bool $isActive)
     {
-        $response = new IsFeatureFlagActiveResponse();
-        $response->featureFlag = $featureFlag;
-        $response->isActive = $isActive;
-
-        return $response;
+        $this->featureFlag = $featureFlag;
+        $this->isActive = $isActive;
     }
 }

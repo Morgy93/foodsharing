@@ -28,6 +28,6 @@ final class FeatureFlagRestController extends AbstractFOSRestController
     {
         $isFeatureFlagActive = $this->featureFlagChecker->isFeatureFlagActive($featureFlag);
 
-        return $this->json(IsFeatureFlagActiveResponse::create($featureFlag, $isFeatureFlagActive), HttpResponse::HTTP_OK);
+        return $this->json(new IsFeatureFlagActiveResponse($featureFlag, $isFeatureFlagActive), HttpResponse::HTTP_OK);
     }
 }

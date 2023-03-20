@@ -12,6 +12,7 @@ services:
          - '../../src/Kernel.php'
          - '../../src/Modules/{PushNotification/Notification,Foodsaver/Profile.php,Message/Message.php}'
          - '../../src/Modules/Uploads/DTO/'
+         - '../../src/RestApi/Models/'
 
     Foodsharing\Lib\Session:
         calls:
