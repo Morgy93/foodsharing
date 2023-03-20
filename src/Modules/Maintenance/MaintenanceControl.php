@@ -10,16 +10,20 @@ use Foodsharing\Modules\Foodsaver\FoodsaverGateway;
 use Foodsharing\Modules\Group\GroupGateway;
 use Foodsharing\Modules\Store\StoreGateway;
 use Foodsharing\Modules\Store\StoreMaintainceTransactions;
+use Foodsharing\Utility\IMAPFolderCleanupHelper;
 
 class MaintenanceControl extends ConsoleControl
 {
+    public const DELETE_DELAY_DAYS = 30;
+
     public function __construct(
         private readonly StoreGateway $storeGateway,
         private readonly FoodsaverGateway $foodsaverGateway,
         private readonly MaintenanceGateway $maintenanceGateway,
         private readonly BellUpdateTrigger $bellUpdateTrigger,
         private readonly GroupGateway $groupGateway,
-        private readonly StoreMaintainceTransactions $storeMaintainceTransactions
+        private readonly StoreMaintainceTransactions $storeMaintenanceTransactions,
+        private readonly IMAPFolderCleanupHelper $imapFolderCleanupHelper
     ) {
         parent::__construct();
     }
@@ -96,7 +100,15 @@ class MaintenanceControl extends ConsoleControl
          */
         $this->bellUpdateTrigger->triggerUpdate();
 
+        /*
+         * removing questions from finished quiz sessions
+         */
         $this->updateFinishedQuizSessions();
+
+        /*
+         * Remove failed and unprocessed E-Mais form IMAP folder
+         */
+        $this->deleteImapFolderMails();
     }
 
     public function rebuildRegionClosure()
@@ -279,7 +291,7 @@ class MaintenanceControl extends ConsoleControl
     public function storeTriggerPickupWarnings()
     {
         try {
-            $statistics = $this->storeMaintainceTransactions->triggerFetchWarningNotification();
+            $statistics = $this->storeMaintenanceTransactions->triggerFetchWarningNotification();
             self::info('send ' . $statistics['count_warned_foodsavers'] . ' warnings...');
             foreach ($statistics as $key => $stat) {
                 self::info(' - ' . $key . ': ' . $stat);
@@ -316,5 +328,17 @@ class MaintenanceControl extends ConsoleControl
         self::info('removing questions from finished quiz sessions...');
         $count = $this->maintenanceGateway->updateFinishedQuizSessions();
         self::success($count . ' sessions updated');
+    }
+
+    public function deleteImapFolderMails($deleteDelayDays = self::DELETE_DELAY_DAYS)
+    {
+        self::info('cleaning up IMAP folders...');
+        foreach (IMAP as $imap) {
+            $deleted = $this->imapFolderCleanupHelper->cleanupFolder($imap['host'], $imap['user'], $imap['password'], IMAP_FAILED_BOX, $deleteDelayDays);
+            self::info($deleted . ' E-Mails deleted from ' . $imap['host'] . ' ' . IMAP_FAILED_BOX);
+        }
+        $deleted = $this->imapFolderCleanupHelper->cleanupFolder(BOUNCE_IMAP_HOST, BOUNCE_IMAP_USER, BOUNCE_IMAP_PASS, BOUNCE_IMAP_UNPROCESSED_BOX, $deleteDelayDays);
+        self::info($deleted . ' E-Mails deleted from ' . BOUNCE_IMAP_HOST . ' ' . BOUNCE_IMAP_UNPROCESSED_BOX);
+        self::success('All folders processed');
     }
 }

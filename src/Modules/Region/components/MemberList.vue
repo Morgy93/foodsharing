@@ -148,6 +148,20 @@
       <template #cell(role)="row">
         {{ $i18n('terminology.role.' + row.item.role) }}
       </template>
+      <template #cell(isVerified)="row">
+        <i
+          v-if="row.item.isVerified"
+          class="fas fa-user-check"
+          :title="$i18n('group.member_list.is_verified')"
+        />
+      </template>
+      <template #cell(isHomeRegion)="row">
+        <i
+          v-if="row.item.isHomeRegion"
+          class="fas fa-house-user"
+          :title="$i18n('group.member_list.is_home_region')"
+        />
+      </template>
       <template
         v-if="mayRemoveAdminOrAmbassador"
         #cell(removeAdminButton)="row"
@@ -302,6 +316,20 @@ export default {
           sortable: true,
           class: 'align-middle',
         })
+
+        if (!this.isWorkGroup) {
+          columns.push({
+            key: 'isVerified',
+            label: this.$i18n('group.member_list.is_verified'),
+            sortable: true,
+            class: 'align-middle',
+          }, {
+            key: 'isHomeRegion',
+            label: this.$i18n('group.member_list.is_home_region'),
+            sortable: true,
+            class: 'align-middle',
+          })
+        }
       }
       columns.push(
         {

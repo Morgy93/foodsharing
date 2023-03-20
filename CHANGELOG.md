@@ -12,6 +12,7 @@
 - Changed persistent cookie timespan from 14 days to 38 years !2626 @chriswalg
 - Updated the number of registered users on the start page !2629 @alex.simm
 
+- Added home region and verified columns to member tables of regions and working groups !2602 #1548 @alex.simm
 
 ## Bugfixes
 - Reimplementation of the StoreManager empty pickup E-Mail notification !2574 @KoeMai
@@ -58,6 +59,10 @@
 - Improved test stability when geocoding is involved !2620 @\_fridtjof_
 - some updates to composer packages. Removed deprecations in order to prepare for Symfony 6 ! 2617 @peter.toennies
 - Improved scripts. repaired outdated notify. Made test rerun faster. Made clean more powerfull !2622 @peter.toennies
+
+
+- Delete faulty mails on imap server !2591 @stcz
+
 
 ## Development documentation
 

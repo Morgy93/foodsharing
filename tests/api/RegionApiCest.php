@@ -6,6 +6,7 @@ use Foodsharing\Modules\Core\DBConstants\Unit\UnitType;
 class RegionApiCest
 {
     private $user;
+    private $userAmbassador;
     private $userOrga;
     private $region;
 
@@ -15,6 +16,10 @@ class RegionApiCest
         $this->user = $I->createFoodsaver();
         $this->userOrga = $I->createOrga();
         $this->region = $I->createRegion();
+
+        $this->userAmbassador = $I->createFoodsaver();
+        $I->addRegionMember($this->region['id'], $this->userAmbassador['id']);
+        $I->addRegionAdmin($this->region['id'], $this->userAmbassador['id']);
     }
 
     public function canJoinRegion(ApiTester $I)
@@ -182,10 +187,34 @@ class RegionApiCest
         $I->sendGET('api/region/' . $this->region['id'] . '/members');
         $I->seeResponseCodeIs(\Codeception\Util\HttpCode::OK);
         $I->seeResponseIsJson();
+
+        // the following fields should only be visible to admins
         $responseItem = $I->grabDataFromResponseByJsonPath('$[*].lastActivity');
-        $I->assertNotNull($responseItem);
+        $I->assertNull($responseItem[0]);
         $responseItem = $I->grabDataFromResponseByJsonPath('$[*].role');
-        $I->assertNotNull($responseItem);
+        $I->assertNull($responseItem[0]);
+        $responseItem = $I->grabDataFromResponseByJsonPath('$[*].isVerified');
+        $I->assertNull($responseItem[0]);
+        $responseItem = $I->grabDataFromResponseByJsonPath('$[*].isHomeRegion');
+        $I->assertNull($responseItem[0]);
+    }
+
+    public function canSeeMemberDetailsAsAmbassador(ApiTester $I)
+    {
+        $I->login($this->userAmbassador['email']);
+        $I->sendGET('api/region/' . $this->region['id'] . '/members');
+        $I->seeResponseCodeIs(\Codeception\Util\HttpCode::OK);
+        $I->seeResponseIsJson();
+
+        // the following fields should only be visible to admins
+        $responseItem = $I->grabDataFromResponseByJsonPath('$[*].lastActivity');
+        $I->assertNotNull($responseItem[0]);
+        $responseItem = $I->grabDataFromResponseByJsonPath('$[*].role');
+        $I->assertNotNull($responseItem[0]);
+        $responseItem = $I->grabDataFromResponseByJsonPath('$[*].isVerified');
+        $I->assertNotNull($responseItem[0]);
+        $responseItem = $I->grabDataFromResponseByJsonPath('$[*].isHomeRegion');
+        $I->assertNotNull($responseItem[0]);
     }
 
     public function listOwnRegions(ApiTester $I)

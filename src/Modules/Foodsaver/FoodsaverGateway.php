@@ -81,6 +81,8 @@ class FoodsaverGateway extends BaseGateway
 					fs.sleep_status,
 					fs.rolle as role,
 					fs.last_login as last_activity,
+					fs.verified,
+					fs.bezirk_id as home_region,
                     if (isnull(fsbot.`bezirk_id`) , false, true) as isAdminOrAmbassadorOfRegion
 
 		    FROM	fs_foodsaver fs
@@ -98,11 +100,17 @@ class FoodsaverGateway extends BaseGateway
             ':regionId' => $regionId
         ]);
 
-        return array_map(function ($fs) use ($includeAdminFields) {
-            return RegionGroupMemberEntry::create($fs['id'], $fs['name'], $fs['photo'], $fs['sleep_status'],
-                $includeAdminFields ? $fs['role'] : null,
-                $includeAdminFields ? new DateTime($fs['last_activity']) : null,
-                $fs['isAdminOrAmbassadorOfRegion']);
+        return array_map(function ($foodsaver) use ($includeAdminFields, $regionId) {
+            $member = RegionGroupMemberEntry::create($foodsaver['id'], $foodsaver['name'], $foodsaver['photo'], $foodsaver['sleep_status'],
+                $foodsaver['isAdminOrAmbassadorOfRegion']);
+            if ($includeAdminFields) {
+                $member->role = $foodsaver['role'];
+                $member->lastActivity = new DateTime($foodsaver['last_activity']);
+                $member->isVerified = $foodsaver['verified'];
+                $member->isHomeRegion = $foodsaver['home_region'] == $regionId;
+            }
+
+            return $member;
         }, $res);
     }
 

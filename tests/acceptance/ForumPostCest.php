@@ -250,7 +250,7 @@ class ForumPostCest
         $I->amOnPage($I->forumUrl($this->{$example[1]}['id']));
         $I->waitForActiveAPICalls();
         $I->see($title);
-        $I->expectNumMails(1, 5); // wait a bit for the mails to arrive
+        $I->expectNumMails(3, 5); // wait a bit for the mails to arrive
         $numMails = count($I->getMails());
         /* one could assume, there should be 3 mail, because there are 3 people in the region,
         but the number of recieved mails fluctuates.
