@@ -3,7 +3,6 @@
 namespace Foodsharing\RestApi;
 
 use Foodsharing\Lib\Session;
-use Foodsharing\Modules\Development\FeatureFlags\DependencyInjection\FeatureFlagChecker;
 use Foodsharing\Modules\Foodsaver\FoodsaverGateway;
 use Foodsharing\Modules\Message\MessageGateway;
 use Foodsharing\Modules\Message\MessageTransactions;
