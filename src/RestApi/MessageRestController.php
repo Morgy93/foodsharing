@@ -22,20 +22,17 @@ class MessageRestController extends AbstractFOSRestController
     private MessageGateway $messageGateway;
     private MessageTransactions $messageTransactions;
     private Session $session;
-    private FeatureFlagChecker $featureFlagChecker;
 
     public function __construct(
         FoodsaverGateway $foodsaverGateway,
         MessageGateway $messageGateway,
         MessageTransactions $messageTransactions,
         Session $session,
-        FeatureFlagChecker $featureFlagChecker,
     ) {
         $this->foodsaverGateway = $foodsaverGateway;
         $this->messageGateway = $messageGateway;
         $this->messageTransactions = $messageTransactions;
         $this->session = $session;
-        $this->featureFlagChecker = $featureFlagChecker;
     }
 
     /**
