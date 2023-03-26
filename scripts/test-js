@@ -2,15 +2,10 @@
 
 export FS_ENV=test
 
-set -o errexit
-
 dir=$(dirname "$0")
 
-# shellcheck source=./inc.sh
-source "$dir"/inc.sh
+# shellcheck source=./__common.sh
+source "$dir"/__common.sh
 
-echo "Running client js tests"
+log-header "Running client js tests"
 run-in-container client 'yarn && yarn lint && yarn test'
-
-echo "Done!"
-

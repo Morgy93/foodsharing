@@ -3,22 +3,23 @@
 namespace Foodsharing\Permissions;
 
 use Foodsharing\Lib\Session;
+use Foodsharing\Modules\Core\DBConstants\Foodsaver\Role;
 
 final class UserPermissions
 {
-	private Session $session;
+    private Session $session;
 
-	public function __construct(Session $session)
-	{
-		$this->session = $session;
-	}
+    public function __construct(Session $session)
+    {
+        $this->session = $session;
+    }
 
-	public function maySeeUserDetails(int $userId): bool
-	{
-		if ($this->session->may('orga')) {
-			return true;
-		}
+    public function maySeeUserDetails(int $userId): bool
+    {
+        if ($this->session->mayRole(Role::ORGA)) {
+            return true;
+        }
 
-		return $userId === $this->session->id();
-	}
+        return $userId === $this->session->id();
+    }
 }

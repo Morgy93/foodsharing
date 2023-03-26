@@ -88,10 +88,10 @@ export default {
       }
 
       return filtered.sort((a, b) => {
-        const aD = this.convertDate(a.start)
-        const bD = this.convertDate(b.start)
-        if (aD.getTime() === bD.getTime()) return 0
-        return aD > bD ? 1 : -1
+        const aDate = this.convertDate(a.start)
+        const bDate = this.convertDate(b.start)
+        if (aDate.getTime() === bDate.getTime()) return 0
+        return aDate < bDate ? 1 : -1
       })
     },
   },

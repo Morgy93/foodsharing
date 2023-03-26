@@ -7,15 +7,15 @@ use Foodsharing\Modules\Core\View;
 
 class RegionAdminView extends View
 {
-	public function v_bezirk_tree($id)
-	{
-		$this->pageHelper->addJs('
+    public function v_bezirk_tree($id)
+    {
+        $this->pageHelper->addJs('
 	$("#' . $id . '").dynatree({
 		onDblClick: function (node, event) {
 			alert(node.data.ident);
 		},
 		initAjax: {
-			url: "/xhr.php?f=bezirkTree",
+			url: "/xhr?f=bezirkTree",
 			data: {p: "0"}
 		},
 		onActivate: function (node){
@@ -24,7 +24,7 @@ class RegionAdminView extends View
 			$("#' . $id . '-hidden").val(node.data.ident);
 			$("#' . $id . '-hidden-name").val(node.data.title);
 			$.ajax({
-				url: "/xhr.php?f=getBezirk",
+				url: "/xhr?f=getBezirk",
 				data: {"id": node.data.ident},
 				dataType: "json",
 				success: function (data) {
@@ -98,7 +98,7 @@ class RegionAdminView extends View
 		},
 		onLazyRead: function (node) {
 			node.appendAjax({
-				url: "/xhr.php?f=bezirkTree",
+				url: "/xhr?f=bezirkTree",
 				data: {"p": node.data.ident},
 				dataType: "json",
 				success: function (node) {},
@@ -109,12 +109,12 @@ class RegionAdminView extends View
 	});
 	');
 
-		return '<div><div id="' . $id . '"></div><input type="hidden" name="' . $id . '-hidden" id="' . $id . '-hidden" value="0" /><input type="hidden" name="' . $id . '-hidden-name" id="' . $id . '-hidden-name" value="0" /></div>';
-	}
+        return '<div><div id="' . $id . '"></div><input type="hidden" name="' . $id . '-hidden" id="' . $id . '-hidden" value="0" /><input type="hidden" name="' . $id . '-hidden-name" id="' . $id . '-hidden-name" value="0" /></div>';
+    }
 
-	public function i_map($id)
-	{
-		$this->pageHelper->addJsFunc('
+    public function i_map($id)
+    {
+        $this->pageHelper->addJsFunc('
 	var ' . $id . '_markers = [];
 	var ' . $id . '_bounds = L.latLngBounds([]);
 	var ' . $id . '_infowindow = L.popup();
@@ -124,14 +124,14 @@ class RegionAdminView extends View
 		' . $id . '_markers = [];
 	}');
 
-		$this->pageHelper->addContent($this->v_utils->v_field('<div class="map" id="' . $id . '_map"></div>', 'Karte'));
+        $this->pageHelper->addContent($this->v_utils->v_field('<div class="map" id="' . $id . '_map"></div>', 'Karte'));
 
-		$lon = MapConstants::CENTER_GERMANY_LON;
+        $lon = MapConstants::CENTER_GERMANY_LON;
 
-		$this->pageHelper->addJs('
+        $this->pageHelper->addJs('
 		var ' . $id . '_center = [' . MapConstants::CENTER_GERMANY_LAT . ',' . MapConstants::CENTER_GERMANY_LON . '];
 		var ' . $id . '_zoom = ' . MapConstants::ZOOM_COUNTRY . ';
 		var ' . $id . '_map = initMap(document.getElementById("' . $id . '_map"), ' . $id . '_center, ' . $id . '_zoom);
 	');
-	}
+    }
 }

@@ -7,7 +7,7 @@ import 'jquery-fancybox'
 import 'jquery-ui-addons'
 
 import { GET, goTo, isMob } from '@/browser'
-import conv from '@/conv'
+import conversationStore from '@/stores/conversations'
 import { requestStoreTeamMembership, declineStoreRequest } from '@/api/stores'
 import i18n from '@/helper/i18n'
 
@@ -165,7 +165,7 @@ export function initialize () {
 }
 
 export function chat (fsid) {
-  conv.userChat(fsid)
+  conversationStore.openChatWithUser(fsid)
 }
 
 export function profile (id) {
@@ -208,7 +208,7 @@ export const ajax = {
     }
 
     return $.ajax({
-      url: `/xhrapp.php?app=${app}&m=${method}`,
+      url: `/xhrapp?app=${app}&m=${method}`,
       data: opt.data,
       dataType: 'json',
       method: opt.method,
@@ -337,7 +337,7 @@ export function closeBox () {
 export function u_loadCoords (addressdata, func) {
   let anschrift = ''
   if (addressdata.str != undefined) {
-    anschrift = `${addressdata.str} ${addressdata.hsnr}`
+    anschrift = `${addressdata.str}`
   } else {
     const tmp = addressdata.anschrift.split('/')
     anschrift = tmp[0]

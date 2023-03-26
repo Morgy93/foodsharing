@@ -37,6 +37,12 @@ export async function confirmPickup (storeId, pickupDate, fsId) {
   return patch(`/stores/${storeId}/pickups/${date}/${fsId}`, { isConfirmed: true })
 }
 
+export async function checkPickupRuleStore (fsId, storeId, pickupDate) {
+  const date = pickupDate.toISOString()
+  const res = await get(`/stores/${storeId}/pickupRuleCheck/${date}/${fsId}`)
+  return res.result
+}
+
 export async function setPickupSlots (storeId, pickupDate, totalSlots) {
   const date = pickupDate.toISOString()
   return patch(`/stores/${storeId}/pickups/${date}`, { totalSlots: totalSlots })

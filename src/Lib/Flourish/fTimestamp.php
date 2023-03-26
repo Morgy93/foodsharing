@@ -676,7 +676,7 @@ class fTimestamp
 
 		$result = date_default_timezone_set($timezone);
 		if (!$result) {
-			throw new fProgrammerException(
+			throw new fException(
 				'The timezone specified, %s, is not a valid timezone',
 				$timezone
 			);

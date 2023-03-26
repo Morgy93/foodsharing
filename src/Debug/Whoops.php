@@ -13,15 +13,15 @@ use Whoops\Util\Misc;
  */
 class Whoops
 {
-	public static function register(): void
-	{
-		$whoops = new Run();
-		$whoops->pushHandler(new PrettyPageHandler());
+    public static function register(): void
+    {
+        $whoops = new Run();
+        $whoops->pushHandler(new PrettyPageHandler());
 
-		if (Misc::isAjaxRequest()) {
-			$whoops->pushHandler(new JsonResponseHandler());
-		}
+        if (Misc::isAjaxRequest()) {
+            $whoops->pushHandler(new JsonResponseHandler());
+        }
 
-		$whoops->register();
-	}
+        $whoops->register();
+    }
 }

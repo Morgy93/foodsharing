@@ -17,6 +17,14 @@ export async function writeStorePost (storeId, text) {
   return normalizeStoreWallPost(newPost)
 }
 
+export async function setStoreTeamStatus (storeId, status) {
+  return patch(`/stores/${storeId}`, { teamStatus: status })
+}
+
+export async function getStoreDetails (storeId) {
+  return get(`/stores/${storeId}`)
+}
+
 export async function deleteStorePost (storeId, postId) {
   return remove(`/stores/${storeId}/posts/${postId}`)
 }

@@ -1,49 +1,90 @@
-am_cache
-.idea
-*.swp
-*.swo
+
+## JAVASCRIPT / NODE
 node_modules
-data/**
-/data/logg.txt
-**/menus/
+**/node_modules
+
+**/.npm
+**/.env
+**/.cache
+**/.yarnrc
+**/yarn-error.log
+**/dist
+
+client/test/_compiled.js
+/websocket/test.js
 js/gen/script.js
 css/gen/style.css
+sw.js
+sw.js.map
+# workaround for the service worker plugin
+!/public/public/sw.js
+
+## PHP
+/data/logg.txt
+**/menus/
+
+assets
+api/**
+data/**
 cache/**
 tmp/**
 vendor/**
 deployer/vendor/**
 phinx/vendor/**
-tests/_output/*vendor
-tests/_support/_generated/
-.composer
-chat/.npm
-chat/.yarnrc
-chat/dist
-api/**
 .php-cs-fixer.cache
 revision.inc.php
-.vagrant
-.DS_Store
-docs/_book
-docs/dist
-docs/node_modules
-assets
+
+tests/_output
+tests/_support/_generated/
+
 dev-assets
-client/.env
-client/yarn-error.log
-client/.cache
-client/.yarnrc
-client/dist
-client/test/_compiled.js
+
 /images/
 /nbproject/
 maintenance_mode_on
-sw.js
-.vscode
+
 var/**
 builds
-/chat/yarn-error.log
-/chat/test.js
+
+## Documentation
+docs/?
+docs/src/mdbook-plantuml-img
+docs/book
 docs/build
-docs/src/database-tables-columns.md
-docs/src/mdbook-plantuml-img/
+docs/data/build
+docs/docs-api/*
+docs/docs/backend/database/database-tables-columns.md
+docs/data/api_dump.json
+docs/.config
+.docusaurus
+.cache-loader
+
+*.swp
+*.swo
+
+## SYSTEM
+.composer
+.DS_Store
+config/gitpod
+
+am_cache
+.idea
+
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+
+# +----------------------------+
+# |    Keep .gitkeep files     |
+# +----------------------------+-------------------------------+
+# | To keep an empty directory, add a .gitkeep file to it      |
+# | and ignore the directory with a wildcard:                  |
+# |                                                            |
+# |     /path/to/dir/*                                         |
+# |                                                            |
+# | this will ignore the content but not the director itself.  |
+# +------------------------------------------------------------+
+!/**/.gitkeep
+
+

@@ -3,212 +3,195 @@
 namespace Foodsharing\Lib\Db;
 
 use Exception;
-use Foodsharing\Debug\DebugBar;
 use Foodsharing\Lib\Session;
 use Foodsharing\Modules\Core\InfluxMetrics;
 use mysqli;
 
 class Db
 {
-	/**
-	 * @var mysqli
-	 */
-	private $mysqli;
+    /**
+     * @var mysqli
+     */
+    private $mysqli;
 
-	/**
-	 * @var DebugBar
-	 */
-	private $debug;
+    /**
+     * @var Session
+     */
+    protected $session;
 
-	/**
-	 * @var Session
-	 */
-	protected $session;
+    /**
+     * @var InfluxMetrics
+     */
+    protected $influxMetrics;
 
-	/**
-	 * @var InfluxMetrics
-	 */
-	protected $influxMetrics;
+    /**
+     * @required
+     */
+    public function setInfluxMetrics(InfluxMetrics $influxMetrics)
+    {
+        $this->influxMetrics = $influxMetrics;
+    }
 
-	/**
-	 * @required
-	 */
-	public function setDebug(DebugBar $debug)
-	{
-		$this->debug = $debug;
-	}
+    /**
+     * @required
+     */
+    public function setSession(Session $session)
+    {
+        $this->session = $session;
+    }
 
-	/**
-	 * @required
-	 */
-	public function setInfluxMetrics(InfluxMetrics $influxMetrics)
-	{
-		$this->influxMetrics = $influxMetrics;
-	}
+    /**
+     * @required
+     */
+    public function setMysqli(mysqli $mysqli)
+    {
+        $this->mysqli = $mysqli;
+    }
 
-	/**
-	 * @required
-	 */
-	public function setSession(Session $session)
-	{
-		$this->session = $session;
-	}
+    /**
+     * @deprecated use one of the new Database methods instead. if nothing else fits, use db->execute.
+     */
+    public function sql($query)
+    {
+        $start = hrtime(true);
+        $res = $this->mysqli->query($query);
+        $duration = intdiv(hrtime(true) - $start, 1000 * 1000);
 
-	/**
-	 * @required
-	 */
-	public function setMysqli(mysqli $mysqli)
-	{
-		$this->mysqli = $mysqli;
-	}
+        if ($res == false) {
+            error_log('SQL QUERY ERROR URL ' . ($_SERVER['REQUEST_URI'] ?? $_SERVER['argv'][0]) . ' IN ' . $query . ' : ' . $this->mysqli->error);
+        }
+        $this->influxMetrics->addDbQuery($duration);
 
-	/**
-	 * @deprecated use one of the new Database methods instead. if nothing else fits, use db->execute.
-	 */
-	public function sql($query)
-	{
-		$start = hrtime(true);
-		$res = $this->mysqli->query($query);
-		$duration = intdiv(hrtime(true) - $start, 1000 * 1000);
+        return $res;
+    }
 
-		if ($res == false) {
-			error_log('SQL QUERY ERROR URL ' . ($_SERVER['REQUEST_URI'] ?? $_SERVER['argv'][0]) . ' IN ' . $query . ' : ' . $this->mysqli->error);
-			$this->debug->addQuery($query, $duration, false, $this->mysqli->errno, $this->mysqli->error);
-		} else {
-			$this->debug->addQuery($query, $duration, true);
-		}
-		$this->influxMetrics->addDbQuery($duration);
+    /**
+     * @deprecated use db->fetchValue
+     */
+    public function qOne($sql)
+    {
+        if ($res = $this->sql($sql)) {
+            if ($row = $res->fetch_array()) {
+                if (isset($row[0])) {
+                    return $row[0];
+                }
+            }
+        }
 
-		return $res;
-	}
+        return false;
+    }
 
-	/**
-	 * @deprecated use db->fetchValue
-	 */
-	public function qOne($sql)
-	{
-		if ($res = $this->sql($sql)) {
-			if ($row = $res->fetch_array()) {
-				if (isset($row[0])) {
-					return $row[0];
-				}
-			}
-		}
+    /**
+     * @deprecated use db->fetch
+     */
+    public function qRow($sql)
+    {
+        try {
+            $res = $this->sql($sql);
 
-		return false;
-	}
+            if (is_object($res) && ($row = $res->fetch_assoc())) {
+                foreach ($row as $i => $r) {
+                    $row[$i] = $r;
+                }
 
-	/**
-	 * @deprecated use db->fetch
-	 */
-	public function qRow($sql)
-	{
-		try {
-			$res = $this->sql($sql);
+                return $row;
+            }
+        } catch (Exception $e) {
+        }
 
-			if (is_object($res) && ($row = $res->fetch_assoc())) {
-				foreach ($row as $i => $r) {
-					$row[$i] = $r;
-				}
+        return false;
+    }
 
-				return $row;
-			}
-		} catch (Exception $e) {
-		}
+    /**
+     * @deprecated use db->delete
+     */
+    public function del($sql)
+    {
+        if ($res = $this->sql($sql)) {
+            return $this->mysqli->affected_rows;
+        }
 
-		return false;
-	}
+        return false;
+    }
 
-	/**
-	 * @deprecated use db->delete
-	 */
-	public function del($sql)
-	{
-		if ($res = $this->sql($sql)) {
-			return $this->mysqli->affected_rows;
-		}
+    /**
+     * @deprecated use db->insert
+     */
+    public function insert($sql)
+    {
+        if ($res = $this->sql($sql)) {
+            return $this->mysqli->insert_id;
+        }
 
-		return false;
-	}
+        return false;
+    }
 
-	/**
-	 * @deprecated use db->insert
-	 */
-	public function insert($sql)
-	{
-		if ($res = $this->sql($sql)) {
-			return $this->mysqli->insert_id;
-		}
+    /**
+     * @deprecated use db->update
+     */
+    public function update($sql)
+    {
+        if ($this->sql($sql)) {
+            return true;
+        }
 
-		return false;
-	}
+        return false;
+    }
 
-	/**
-	 * @deprecated use db->update
-	 */
-	public function update($sql)
-	{
-		if ($this->sql($sql)) {
-			return true;
-		}
+    /**
+     * @deprecated use strip_tags() until the frontend can escape properly!
+     * (The string escaping part is not needed anymore with prepared statements)
+     */
+    public function strval($val, $html = false)
+    {
+        if (is_string($html) || $html === false) {
+            if (is_string($html)) {
+                $val = strip_tags($val, $html);
+            } else {
+                $val = strip_tags($val);
+            }
+        }
 
-		return false;
-	}
+        return '"' . $this->safe($val) . '"';
+    }
 
-	/**
-	 * @deprecated use strip_tags() until the frontend can escape properly!
-	 * (The string escaping part is not needed anymore with prepared statements)
-	 */
-	public function strval($val, $html = false)
-	{
-		if (is_string($html) || $html === false) {
-			if (is_string($html)) {
-				$val = strip_tags($val, $html);
-			} else {
-				$val = strip_tags($val);
-			}
-		}
+    /**
+     * @deprecated use db->fetchAll
+     */
+    public function q($sql)
+    {
+        $out = [];
+        if ($res = $this->sql($sql)) {
+            while ($row = $res->fetch_assoc()) {
+                foreach ($row as $i => $r) {
+                    $row[$i] = $r;
+                }
+                $out[] = $row;
+            }
+        }
 
-		return '"' . $this->safe($val) . '"';
-	}
+        return $out;
+    }
 
-	/**
-	 * @deprecated use db->fetchAll
-	 */
-	public function q($sql)
-	{
-		$out = [];
-		if ($res = $this->sql($sql)) {
-			while ($row = $res->fetch_assoc()) {
-				foreach ($row as $i => $r) {
-					$row[$i] = $r;
-				}
-				$out[] = $row;
-			}
-		}
+    /**
+     * @deprecated Usage is not needed when passing data as prepared statement
+     */
+    public function safe($str)
+    {
+        return $this->mysqli->escape_string($str);
+    }
 
-		return $out;
-	}
+    /**
+     * @deprecated use db->fetchByCriteria instead
+     */
+    public function getValues($fields, $table, $id)
+    {
+        $fields = implode('`,`', $fields);
 
-	/**
-	 * @deprecated Usage is not needed when passing data as prepared statement
-	 */
-	public function safe($str)
-	{
-		return $this->mysqli->escape_string($str);
-	}
-
-	/**
-	 * @deprecated use db->fetchByCriteria instead
-	 */
-	public function getValues($fields, $table, $id)
-	{
-		$fields = implode('`,`', $fields);
-
-		return $this->qRow('
+        return $this->qRow('
 			SELECT 	`' . $fields . '`
 			FROM 	`fs_' . $table . '`
 			WHERE 	`id` = ' . (int)$id . '
 		');
-	}
+    }
 }

@@ -20,18 +20,6 @@
   padding-bottom: 5px;
 }
 
-.verify,
-.unverify {
-  color: var(--fs-color-light);
-  font-weight: bold;
-}
-.verify {
-  background-color: var(--fs-color-secondary-500);
-}
-.unverify {
-  background-color: var(--fs-color-danger-500);
-}
-
 .profile.statdisplay {
   margin-bottom: 5rem;
   padding-bottom: 2rem;

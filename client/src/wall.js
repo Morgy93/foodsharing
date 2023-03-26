@@ -70,7 +70,7 @@ export function initWall (module, wallId) {
       }
 
       $.ajax({
-        url: `/xhrapp.php?app=wallpost&m=post&table=${module}&id=${wallId}`,
+        url: `/xhrapp?app=wallpost&m=post&table=${module}&id=${wallId}`,
         type:
           'POST',
         data:
@@ -103,7 +103,7 @@ export function initWall (module, wallId) {
     $('#wall-submit')[0].focus()
   })
   $.ajax({
-    url: `/xhrapp.php?app=wallpost&m=update&table=${module}&id=${wallId}&last=0`,
+    url: `/xhrapp?app=wallpost&m=update&table=${module}&id=${wallId}&last=0`,
     dataType:
       'JSON',
     success:

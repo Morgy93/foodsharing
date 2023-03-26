@@ -1,0 +1,12 @@
+#!/bin/bash
+
+dir=$(dirname "$0")
+
+# shellcheck source=./__common.sh
+source "$dir"/__common.sh
+
+log-header "Calculating stats"
+exec-in-container app bin/console foodsharing:daily-cronjob
+exec-in-container app bin/console foodsharing:stats
+
+log-header "All done"

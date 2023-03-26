@@ -14,8 +14,9 @@ export function getConversationIdForConversationWithUser (userId) {
   return get(`/user/${userId}/conversation`)
 }
 
-export function getMessages (conversationId, olderThanID) {
-  return get(`/conversations/${conversationId}/messages?olderThanId=${olderThanID}`)
+export function getMessages (conversationId, olderThanId, limit = '') {
+  const queryString = generateQueryString({ olderThanId, limit })
+  return get(`/conversations/${conversationId}/messages${queryString}`)
 }
 
 export function sendMessage (conversationId, body) {

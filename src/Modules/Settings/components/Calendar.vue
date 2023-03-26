@@ -84,7 +84,6 @@ export default {
     try {
       this.token = await getApiToken()
     } catch (e) {
-      // an error means that the user has no token
       this.token = null
     }
     hideLoader()

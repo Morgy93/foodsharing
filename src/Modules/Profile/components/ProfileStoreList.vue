@@ -36,7 +36,7 @@
           <span class="flex-grow-1 p-1 pl-2">
             {{ store.name }}
           </span>
-          <StoreStatusIcon :status="store.cooperationStatus" />
+          <StoreStatusIcon :cooperation-status="store.cooperationStatus" />
         </b-list-group-item>
       </b-list-group>
     </b-card>

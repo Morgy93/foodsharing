@@ -20,11 +20,10 @@
       <div v-show="displayWall" class="card-body p-0">
         <StoreWall
           :store-id="storeId"
-          :compact="!displayWall"
+          :show-only-excerpt="viewIsMobile"
           :managers="storeManagers"
           :may-write-post="mayWritePost"
           :may-delete-everything="mayDeleteEverything"
-          @toggle-compact="toggleWallDisplay"
         />
       </div>
     </div>
@@ -33,9 +32,11 @@
 
 <script>
 import StoreWall from './StoreWall'
+import MediaQueryMixin from '@/mixins/MediaQueryMixin'
 
 export default {
   components: { StoreWall },
+  mixins: [MediaQueryMixin],
   props: {
     storeId: { type: Number, required: true },
     storeManagers: { type: Array, default: () => [] },

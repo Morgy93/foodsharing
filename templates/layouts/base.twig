@@ -8,7 +8,12 @@
 
     <head>
         <meta charset="utf-8">
+        {% if route in 'msg'|split(',') %}
+        {# Android Firefox zooms in message textarea input field, so prevent this by the following settings #}
+        <meta name="viewport" content="width=device-width, height=device-height, initial-scale=1.0, minimum-scale=1, maximum-scale=1, user-scalable=no">
+        {% else %}
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        {% endif %}
         <link rel="favicon" href="/favicon.ico" type="image/x-icon" />
 
         <title>{{ head.title }}</title>
@@ -60,7 +65,7 @@
         {% endblock %}
 
         {% block full %}
-            {% if route in 'dashboard,index,content'|split(',') %}
+            {% if route in 'dashboard,index,content,msg'|split(',') %}
                 {# /*
                 * to keep the old page stable,
                 * cause of the different types of grid systems
@@ -157,9 +162,11 @@
         {% block footer %}
             {{ footer | raw }}
         {% endblock %}
+
         {% for script in head.scripts %}
             <script type="text/javascript" src="{{ script }}"></script>
         {% endfor %}
+
 
         <script type="text/javascript">
             {{ head.jsFunc | raw }}

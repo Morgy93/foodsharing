@@ -2,46 +2,53 @@
 
 namespace Foodsharing\Modules\Foodsaver;
 
+use DateTime;
+
 class RegionGroupMemberEntry
 {
-	public int $id;
+    public int $id;
 
-	public ?string $name;
+    public ?string $name;
 
-	public ?string $avatar;
+    public ?string $avatar;
 
-	public int $sleepStatus;
+    public int $sleepStatus;
 
-	public int $role;
+    public ?int $role = null;
 
-	public bool $isAdminOrAmbassadorOfRegion;
+    public ?DateTime $lastActivity;
 
-	public function __construct()
-	{
-		$this->id = 0;
-		$this->name = null;
-		$this->avatar = null;
-		$this->sleepStatus = 0;
-		$this->role = 0;
-		$this->isAdminOrAmbassadorOfRegion = false;
-	}
+    public bool $isAdminOrAmbassadorOfRegion;
 
-	public static function create(
-		int $id,
-		?string $name,
-		?string $avatar,
-		int $sleepStatus,
-		int $role,
-		bool $isAdminOrAmbassadorOfRegion): RegionGroupMemberEntry
-	{
-		$p = new RegionGroupMemberEntry();
-		$p->id = $id;
-		$p->name = $name;
-		$p->avatar = $avatar;
-		$p->sleepStatus = $sleepStatus;
-		$p->role = $role;
-		$p->isAdminOrAmbassadorOfRegion = $isAdminOrAmbassadorOfRegion;
+    public ?bool $isVerified = null;
 
-		return $p;
-	}
+    public ?bool $isHomeRegion = null;
+
+    public function __construct()
+    {
+        $this->id = 0;
+        $this->name = null;
+        $this->avatar = null;
+        $this->sleepStatus = 0;
+        $this->role = null;
+        $this->lastActivity = null;
+        $this->isAdminOrAmbassadorOfRegion = false;
+    }
+
+    public static function create(
+        int $id,
+        ?string $name,
+        ?string $avatar,
+        int $sleepStatus,
+        bool $isAdminOrAmbassadorOfRegion): RegionGroupMemberEntry
+    {
+        $p = new RegionGroupMemberEntry();
+        $p->id = $id;
+        $p->name = $name;
+        $p->avatar = $avatar;
+        $p->sleepStatus = $sleepStatus;
+        $p->isAdminOrAmbassadorOfRegion = $isAdminOrAmbassadorOfRegion;
+
+        return $p;
+    }
 }

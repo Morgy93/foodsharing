@@ -9,5 +9,5 @@ modules:
         - \Helper\Maildev
         - Db
         - REST:
-            url: 'http://web:8080/'
+            url: http://nginx:8080/
             depends: PhpBrowser

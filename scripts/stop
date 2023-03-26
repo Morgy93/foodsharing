@@ -4,10 +4,5 @@ set -o errexit
 
 dir=$(dirname "$0")
 
-# shellcheck source=./inc.sh
-source "$dir"/inc.sh
-
-echo "Stopping containers"
-dc stop
-
-echo "All stopped!"
+# Command
+"$dir"/containers-stop "$@"

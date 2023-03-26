@@ -13,86 +13,16 @@ namespace Flourish;
  * @see       http://flourishlib.com/fValidationException
  *
  * @version    1.0.0b4
- * @changes    1.0.0b4  Added support for nested error arrays [wb-imarc, 2010-10-03]
- * @changes    1.0.0b3  Added ::removeFieldNames() [wb, 2010-05-26]
- * @changes    1.0.0b2  Added a custom ::__construct() to handle arrays of messages [wb, 2009-09-17]
- * @changes    1.0.0b   The initial implementation [wb, 2007-06-14]
  */
 class fValidationException extends fExpectedException
 {
-	const formatField = 'fValidationException::formatField';
-	const removeFieldNames = 'fValidationException::removeFieldNames';
-	const setFieldFormat = 'fValidationException::setFieldFormat';
-
-	/**
+    /**
 	 * The formatting string to use for field names.
 	 *
 	 * @var string
 	 */
-	protected static $field_format = '%s: ';
 
-	/**
-	 * Accepts a field name and formats it based on the formatting string set via ::setFieldFormat().
-	 *
-	 * @param string $field  The name of the field to format
-	 *
-	 * @return string  The formatted field name
-	 */
-	public static function formatField($field)
-	{
-		return sprintf(self::$field_format, $field);
-	}
-
-	/**
-	 * Removes the field names from normal validation messages, leaving just the message part.
-	 *
-	 * @param array $messages  The messages to remove the field names from
-	 *
-	 * @return array  The messages without field names
-	 */
-	public static function removeFieldNames($messages)
-	{
-		$token_field = self::formatField('__TOKEN__');
-		$replace_regex = '#^' . str_replace('__TOKEN__', '(.*?)', preg_quote($token_field, '#')) . '#';
-
-		$output = array();
-		foreach ($messages as $column => $message) {
-			if (is_array($message)) {
-				$message['errors'] = self::removeFieldNames($message['errors']);
-				$output[$column] = $message;
-			} else {
-				$output[$column] = preg_replace($replace_regex, '', $message);
-			}
-		}
-
-		return $output;
-	}
-
-	/**
-	 * Set the format to be applied to all field names used in fValidationExceptions.
-	 *
-	 * The format should contain exactly one `%s`
-	 * [http://php.net/sprintf sprintf()] conversion specification, which will
-	 * be replaced with the field name. Any literal `%` characters should be
-	 * written as `%%`.
-	 *
-	 * The default format is just `%s: `, which simply inserts a `:` and space
-	 * after the field name.
-	 *
-	 * @param string $format  A string to format the field name with - `%s` will be replaced with the field name
-	 */
-	public static function setFieldFormat($format)
-	{
-		if (substr_count(str_replace('%%', '', $format), '%') != 1 || strpos($format, '%s') === false) {
-			throw new fProgrammerException(
-				'The format, %s, has more or less than exactly one %%s sprintf() conversion specification',
-				$format
-			);
-		}
-		self::$field_format = $format;
-	}
-
-	/**
+    /**
 	 * Sets the message for the exception, allowing for custom formatting beyond fException.
 	 *
 	 * If this method receives exactly two parameters, a string and an array,

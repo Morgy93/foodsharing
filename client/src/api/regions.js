@@ -12,10 +12,15 @@ export function masterUpdate (regionId) {
   return patch(`/region/${regionId}/masterupdate`)
 }
 
-export function setRegionOptions (regionId, enableReportButton, enableMediationButton) {
+export function setRegionOptions (regionId, enableReportButton, enableMediationButton, regionPickupRuleActive, regionPickupRuleTimespan, regionPickupRuleLimit, regionPickupRuleLimitDay, regionPickupRuleInactive) {
   return post(`/region/${regionId}/options`, {
     enableReportButton: enableReportButton,
     enableMediationButton: enableMediationButton,
+    regionPickupRuleActive: regionPickupRuleActive,
+    regionPickupRuleTimespan: regionPickupRuleTimespan,
+    regionPickupRuleLimit: regionPickupRuleLimit,
+    regionPickupRuleLimitDay: regionPickupRuleLimitDay,
+    regionPickupRuleInactive: regionPickupRuleInactive,
   })
 }
 

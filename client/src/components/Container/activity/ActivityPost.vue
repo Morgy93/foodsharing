@@ -1,12 +1,10 @@
 <template>
   <li
     class="list-group-item activity-post"
-    :class="{
-      'list-group-item-action clickable': canQuickreply || isTruncatable,
-    }"
-    @click.stop="toggleState"
   >
-    <div class="d-flex align-items-center mb-2 font-weight-bold">
+    <div
+      class="d-flex align-items-center mb-2 font-weight-bold"
+    >
       <a
         v-if="fs_id && fs_name"
         :href="$url('profile', fs_id)"
@@ -83,24 +81,24 @@
         />
         <button
           v-if="isTruncatable || canQuickreply"
-          class="btn btn-sm btn-link pl-0 mb-1"
+          class="btn btn-sm btn-link ml-n2 mb-1"
           @click.stop.prevent="toggleState"
         >
           <span
             v-if="isTruncatable"
-            v-html="!state ? $i18n('globals.show_more') : $i18n('globals.show_less')"
+            v-text="!state ? $i18n('globals.show_more') : $i18n('globals.show_less')"
           />
           <span
             v-if="isTruncatable && canQuickreply"
-            v-html="!state ? '&' : ''"
+            v-text="!state ? '&' : ''"
           />
           <span
             v-if="canQuickreply && isTruncatable"
-            v-html="!state ? $i18n('activitypost.response') : ''"
+            v-text="!state ? $i18n('activitypost.response') : ''"
           />
           <span
             v-if="canQuickreply && !isTruncatable"
-            v-html="!state ? $i18n('activitypost.Response') : $i18n('globals.show_less')"
+            v-text="!state ? $i18n('activitypost.Response') : $i18n('globals.show_less')"
           />
           <i
             :class="{ 'fa-rotate-180': state }"
@@ -143,7 +141,7 @@
             <i class="fas fa-paper-plane" />
             <span
               v-if="viewIsMobile"
-              v-html="$i18n('activitypost.Response')"
+              v-text="$i18n('activitypost.Response')"
             />
           </button>
         </div>

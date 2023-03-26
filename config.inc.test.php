@@ -1,14 +1,16 @@
 <?php
 
+/* If you make changes here check if changes at the production server are needed */
+
 /* Adding Whoops during testing can be very useful as the screenshots in the tests/_output folder can show a nice
-	 error message. It also catches warnings and the whole site runs in a way that is always throwing warnings out.
-	 But hopefully we fix all those at some point :)
+     error message. It also catches warnings and the whole site runs in a way that is always throwing warnings out.
+     But hopefully we fix all those at some point :)
 */
 Foodsharing\Debug\Whoops::register();
 
 $protocol = 'http';
 if (isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] == 'on') {
-	$protocol = 'https';
+    $protocol = 'https';
 }
 
 $host = 'lmr.local/';
@@ -18,38 +20,45 @@ define('DB_HOST', 'db');
 define('DB_USER', 'root');
 define('DB_PASS', 'root');
 define('DB_DB', 'foodsharing');
-define('INFLUX_DSN', 'udp+influxdb://influxdb:8089/foodsharing');
 define('ERROR_REPORT', E_ALL);
 define('BASE_URL', $protocol . '://' . $host);
 define('WEBCAL_URL', 'webcal://' . $host);
-define('DEFAULT_EMAIL', 'noreply@foodsharing.de');
+
+define('INFLUX_DSN', 'udp+influxdb://influxdb:8089/foodsharing');
+
+define('VERSION', '0.8.3');
+
+define('DEFAULT_EMAIL', 'no-reply@foodsharing.network');
 define('SUPPORT_EMAIL', 'it@foodsharing.network');
-define('DEFAULT_EMAIL_NAME', 'foodsharing-Freiwillige');
-define('VERSION', '0.8.1');
+define('DEFAULT_EMAIL_NAME', 'Foodsharing');
 define('EMAIL_PUBLIC', 'info@foodsharing.de');
-define('EMAIL_PUBLIC_NAME', 'foodsharing-Freiwillige');
-define('NOREPLY_EMAIL_HOST', 'foodsharing.de');
+define('EMAIL_PUBLIC_NAME', 'Foodsharing');
 define('PLATFORM_MAILBOX_HOST', 'foodsharing.network');
 
 define('MAILBOX_OWN_DOMAINS', ['foodsharing.network', 'lebensmittelretten.de', 'foodsharing.de']);
 
-define('MAILER_HOST', 'smtp://maildev:25');
+define('MAILER_HOST', 'smtp://maildev:1025');
+
 define('MEM_ENABLED', true);
 
-define('SOCK_URL', 'http://chat:1338/');
+define('SOCK_URL', 'http://websocket:1338/');
 define('REDIS_HOST', 'redis');
 define('REDIS_PORT', 6379);
+
+define('DELAY_MICRO_SECONDS_BETWEEN_MAILS', 1330000);
+
+define('IMAP', []);
+define('IMAP_FAILED_BOX', 'INBOX/FailedProcessing');
 
 define('BOUNCE_IMAP_HOST', null);
 define('BOUNCE_IMAP_USER', null);
 define('BOUNCE_IMAP_PASS', null);
 define('BOUNCE_IMAP_PORT', null);
 define('BOUNCE_IMAP_SERVICE_OPTION', null);
-
-define('IMAP', []);
+define('BOUNCE_IMAP_UNPROCESSED_BOX', null);
 
 if (!defined('ROOT_DIR')) {
-	define('ROOT_DIR', './');
+    define('ROOT_DIR', './');
 }
 
 define('CSRF_TEST_TOKEN', '__TESTTOKEN__');

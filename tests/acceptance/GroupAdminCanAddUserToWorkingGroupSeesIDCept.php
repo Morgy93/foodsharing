@@ -14,8 +14,6 @@ $I->addRegionAdmin($group['parent_id'], $admin['id']);
 
 $I->login($admin['email']);
 $I->amOnPage($I->groupMemberListUrl($group['id']));
-$I->waitForElement('.fa-cog');
-$I->click('Ansicht für Administrator*innen aktivieren');
 $I->waitForElement('#new-foodsaver-search');
 $I->fillField('#new-foodsaver-search div input', $foodsaver['name']);
 $I->waitForElement('.suggestions');

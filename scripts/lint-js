@@ -1,16 +1,12 @@
 #!/bin/bash
 
-export FS_ENV=dev
-
-set -o errexit
-
 dir=$(dirname "$0")
 
-# shellcheck source=./inc.sh
-source "$dir"/inc.sh
+# shellcheck source=./__common.sh
+source "$dir"/__common.sh
 
 echo "Linting client js"
 run-in-container client yarn lint
 
-echo "Linting chat js"
-run-in-container chat yarn lint
+echo "Linting websocket js"
+run-in-container websocket yarn lint

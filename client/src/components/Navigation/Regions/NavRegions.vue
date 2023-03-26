@@ -22,7 +22,7 @@
       <small
         role="menuitem"
         class="disabled dropdown-item"
-        v-html="$i18n('region.none')"
+        v-text="$i18n('region.none')"
       />
     </template>
     <template #actions>

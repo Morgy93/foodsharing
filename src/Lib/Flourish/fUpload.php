@@ -170,7 +170,7 @@ class fUpload
 		}
 
 		if (!$directory->isWritable()) {
-			throw new fEnvironmentException(
+			throw new fException(
 				'The directory specified, %s, is not writable',
 				$directory->getPath()
 			);
@@ -200,11 +200,11 @@ class fUpload
 		$file_name = fFilesystem::makeUniqueName($file_name);
 
 		if (!move_uploaded_file($file_array['tmp_name'], $file_name)) {
-			throw new fEnvironmentException('There was an error moving the uploaded file');
+			throw new fException('There was an error moving the uploaded file');
 		}
 
 		if (!chmod($file_name, 0644)) {
-			throw new fEnvironmentException('Unable to change permissions on the uploaded file');
+			throw new fException('Unable to change permissions on the uploaded file');
 		}
 
 		return fFilesystem::createObject($file_name);

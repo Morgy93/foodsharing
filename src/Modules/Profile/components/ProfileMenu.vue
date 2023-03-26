@@ -88,7 +88,7 @@
         <span v-html="$i18n('profile.nav.violations', { count: violationCount })" />
       </b-list-group-item>
       <b-list-group-item
-        v-if="fsId !== fsIdSession && buttonNameReportRequest"
+        v-if="showReportButton"
         type="button"
         class="list-group-item list-group-item-action"
         href="#"
@@ -97,7 +97,7 @@
         <i class="far fa-life-ring fa-fw" /> {{ buttonNameReportRequest }}
       </b-list-group-item>
       <b-list-group-item
-        v-if="fsId !== fsIdSession"
+        v-if="showModerationButton"
         type="button"
         class="list-group-item list-group-item-action"
         href="#"
@@ -107,6 +107,7 @@
       </b-list-group-item>
     </b-list-group>
     <b-modal
+      v-if="showModerationButton"
       ref="modal_mediation"
       :title="$i18n('profile.mediation.title', { name: foodSaverName })"
       :cancel-title="$i18n('button.cancel')"
@@ -119,8 +120,9 @@
       />
     </b-modal>
     <b-modal
+      v-if="showReportButton"
       ref="modal_report_request"
-      :title="$i18n('profile.mediation.title', { name: foodSaverName })"
+      :title="$i18n('profile.report.title', { name: foodSaverName })"
       :cancel-title="$i18n('button.cancel')"
       header-class="d-flex"
       content-class="pr-3 pt-3"
@@ -141,20 +143,24 @@
         :mailbox-name="mailboxNameReportRequest"
       />
     </b-modal>
+    <ProfileHistoryModal
+      ref="profileHistoryModal"
+    />
   </div>
 </template>
 
 <script>
 import Avatar from '@/components/Avatar.vue'
-import { ajreq, pulseError, pulseInfo } from '@/script'
-import conv from '@/conv'
+import { pulseError, pulseInfo } from '@/script'
+import conversationStore from '@/stores/conversations'
 import MediationRequest from './MediationRequest'
 import ReportRequest from './ReportRequest'
+import ProfileHistoryModal from './ProfileHistoryModal'
 import { sendBuddyRequest } from '@/api/buddy'
 import i18n from '@/helper/i18n'
 
 export default {
-  components: { Avatar, ReportRequest, MediationRequest },
+  components: { Avatar, ReportRequest, MediationRequest, ProfileHistoryModal },
   props: {
     fsId: { type: Number, required: true },
     fsIdSession: { type: Number, required: true },
@@ -188,9 +194,17 @@ export default {
       isBuddy: false,
     }
   },
+  computed: {
+    showReportButton () {
+      return this.buttonNameReportRequest !== null && this.buttonNameReportRequest.length > 0
+    },
+    showModerationButton () {
+      return this.fsId !== this.fsIdSession
+    },
+  },
   methods: {
     openChat (fsId) {
-      conv.userChat(fsId)
+      conversationStore.openChatWithUser(fsId)
     },
     async trySendBuddyRequest (userId) {
       try {
@@ -206,11 +220,7 @@ export default {
       }
     },
     OpenHistory (type) {
-      ajreq('history', {
-        app: 'profile',
-        fsid: this.fsId,
-        type: type,
-      })
+      this.$refs.profileHistoryModal.showModal(this.fsId, type === 0)
     },
   },
 }

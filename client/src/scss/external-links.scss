@@ -13,7 +13,7 @@ a[href]:not(:where(
   /* exclude javascript*/
   [href^="javascript:"],
   /* classes to exclude */
-  .hide-external,
+  .hide-external
 )):after {
     content: "\f35d";
     font-family: "Font Awesome 5 Free";

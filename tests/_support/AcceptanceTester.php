@@ -20,54 +20,54 @@ use Codeception\Lib\Friend;
  */
 class AcceptanceTester extends Codeception\Actor
 {
-	use _generated\AcceptanceTesterActions;
-	use \Codeception\Lib\Actor\Shared\Friend;
+    use _generated\AcceptanceTesterActions;
+    use \Codeception\Lib\Actor\Shared\Friend;
 
-	/**
-	 * Wait to see the body element.
-	 */
-	public function waitForPageBody()
-	{
-		return $this->waitForElement(['css' => 'body']);
-	}
+    /**
+     * Wait to see the body element.
+     */
+    public function waitForPageBody()
+    {
+        return $this->waitForElement(['css' => 'body']);
+    }
 
-	public function login($email, $password = 'password')
-	{
-		$I = $this;
-		$I->amOnPage('/');
-		$I->executeJS('window.localStorage.clear();');
-		$I->waitForElement('.testing-login-dropdown');
-		$I->click('.testing-login-dropdown');
-		$I->fillField('.testing-login-input-email', $email);
-		$I->fillField('.testing-login-input-password', $password);
-		$I->click('.testing-login-click-submit');
-		$I->waitForActiveAPICalls();
-		$I->waitForElementNotVisible('#pulse-success');
-		$I->waitForPageBody();
-		$I->waitForElement('.testing-intro-field');
-		$I->see('Hallo', '.testing-intro-field');
-	}
+    public function login($email, $password = 'password')
+    {
+        $I = $this;
+        $I->amOnPage('/');
+        $I->executeJS('window.localStorage.clear();');
+        $I->waitForElement('.testing-login-dropdown');
+        $I->click('.testing-login-dropdown');
+        $I->fillField('.testing-login-input-email', $email);
+        $I->fillField('.testing-login-input-password', $password);
+        $I->click('.testing-login-click-submit');
+        $I->waitForActiveAPICalls();
+        $I->waitForElementNotVisible('#pulse-success');
+        $I->waitForPageBody();
+        $I->waitForElement('.testing-intro-field');
+        $I->see('Hallo', '.testing-intro-field');
+    }
 
-	public function logMeOut()
-	{
-		$this->amOnPage('/?page=logout');
-		$this->waitForPageBody();
-	}
+    public function logMeOut()
+    {
+        $this->amOnPage('/?page=logout');
+        $this->waitForPageBody();
+    }
 
-	/**
-	 * Assert if a regexp is on the text content of the page.
-	 *
-	 * @param regexp to check
-	 * @param string selector to check in, default 'html'
-	 */
-	public function seeMatches($regexp, $selector = 'html')
-	{
-		$text = $this->grabTextFrom($selector);
-		$this->assertRegExp($regexp, $text);
-	}
+    /**
+     * Assert if a regexp is on the text content of the page.
+     *
+     * @param regexp to check
+     * @param string selector to check in, default 'html'
+     */
+    public function seeMatches($regexp, $selector = 'html')
+    {
+        $text = $this->grabTextFrom($selector);
+        $this->assertRegExp($regexp, $text);
+    }
 
-	public function waitForActiveAPICalls($timeout = 60)
-	{
-		$this->waitForJS('return window.fetch.activeFetchCalls == 0;', $timeout);
-	}
+    public function waitForActiveAPICalls($timeout = 60)
+    {
+        $this->waitForJS('return window.fetch.activeFetchCalls == 0;', $timeout);
+    }
 }

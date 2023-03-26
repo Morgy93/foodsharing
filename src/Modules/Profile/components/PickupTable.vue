@@ -188,7 +188,7 @@ export default {
      * Used strings are translated.
      */
     formatDate (date) {
-      return this.$dateFormatter.dateTime(date, { short: true })
+      return this.$dateFormatter.dateTimeTime(date, { short: true }) + ' ' + i18n('date.clock')
     },
     /**
      * Returns the correct icon tooltip text based on the slot status.

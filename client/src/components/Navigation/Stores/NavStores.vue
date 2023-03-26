@@ -54,7 +54,7 @@
       <small
         role="menuitem"
         class="disabled dropdown-item"
-        v-html="$i18n('store.noStores')"
+        v-text="$i18n('store.noStores')"
       />
     </template>
     <template #actions>

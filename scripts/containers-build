@@ -1,0 +1,11 @@
+#!/bin/bash
+dir=$(dirname "$0")
+
+# shellcheck source=./__common.sh
+source "$dir"/__common.sh
+
+log-header "Clear assets ..."
+rm -rf "$(cd "$dir/.." && pwd)"/assets/*
+
+log-header "Build containers ..."
+"$dir"/docker-compose build --pull

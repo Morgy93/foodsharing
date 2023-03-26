@@ -93,7 +93,7 @@ class fFile implements Iterator, Countable
 
 		$directory = fFilesystem::getPathInfo($file_path, 'dirname');
 		if (!is_writable($directory)) {
-			throw new fEnvironmentException(
+			throw new fException(
 				'The file path specified, %s, is inside of a directory that is not writable',
 				$file_path
 			);
@@ -499,7 +499,7 @@ class fFile implements Iterator, Countable
 		$directory = $this->getParent();
 
 		if (!$directory->isWritable()) {
-			throw new fEnvironmentException(
+			throw new fException(
 				'The file count not be cloned because the containing directory, %s, is not writable',
 				$directory
 			);
@@ -641,7 +641,7 @@ class fFile implements Iterator, Countable
 		$this->tossIfDeleted();
 
 		if (!$this->isWritable()) {
-			throw new fEnvironmentException(
+			throw new fException(
 				'This file, %s, can not be appended because it is not writable',
 				$this->file
 			);
@@ -694,7 +694,7 @@ class fFile implements Iterator, Countable
 	/**
 	 * Returns the current line of the file (required by iterator interface).
 	 *
-	 * @throws fNoRemainingException   When there are no remaining lines in the file
+	 * @throws fException   When there are no remaining lines in the file
 	 *
 	 * @internal
 	 *
@@ -708,7 +708,7 @@ class fFile implements Iterator, Countable
 		if ($this->file_handle === null) {
 			$this->next();
 		} elseif (!$this->valid()) {
-			throw new fNoRemainingException('There are no remaining lines');
+			throw new fException('There are no remaining lines');
 		}
 
 		return $this->current_line;
@@ -729,7 +729,7 @@ class fFile implements Iterator, Countable
 		}
 
 		if (!$this->getParent()->isWritable()) {
-			throw new fEnvironmentException(
+			throw new fException(
 				'The file, %s, can not be deleted because the directory containing it is not writable',
 				$this->file
 			);
@@ -783,7 +783,7 @@ class fFile implements Iterator, Countable
 				$new_filename = fFilesystem::makeUniqueName($new_filename);
 				$check_dir_permissions = true;
 			} elseif (!is_writable($new_filename)) {
-				throw new fEnvironmentException(
+				throw new fException(
 					'The new directory specified, %1$s, already contains a file with the name %2$s, but it is not writable',
 					$new_directory->getPath(),
 					$this->getName()
@@ -795,7 +795,7 @@ class fFile implements Iterator, Countable
 
 		if ($check_dir_permissions) {
 			if (!$new_directory->isWritable()) {
-				throw new fEnvironmentException(
+				throw new fException(
 					'The new directory specified, %s, is not writable',
 					$new_directory
 				);
@@ -1007,7 +1007,7 @@ class fFile implements Iterator, Countable
 	/**
 	 * Returns the current one-based line number (required by iterator interface).
 	 *
-	 * @throws fNoRemainingException  When there are no remaining lines in the file
+	 * @throws fException  When there are no remaining lines in the file
 	 *
 	 * @internal
 	 *
@@ -1020,7 +1020,7 @@ class fFile implements Iterator, Countable
 		if ($this->file_handle === null) {
 			$this->next();
 		} elseif (!$this->valid()) {
-			throw new fNoRemainingException('There are no remaining lines');
+			throw new fException('There are no remaining lines');
 		}
 
 		return $this->current_line_number;
@@ -1058,7 +1058,7 @@ class fFile implements Iterator, Countable
 	/**
 	 * Advances to the next line in the file (required by iterator interface).
 	 *
-	 * @throws fNoRemainingException  When there are no remaining lines in the file
+	 * @throws fException  When there are no remaining lines in the file
 	 *
 	 * @internal
 	 */
@@ -1071,7 +1071,7 @@ class fFile implements Iterator, Countable
 			$this->current_line = '';
 			$this->current_line_number = 0;
 		} elseif (!$this->valid()) {
-			throw new fNoRemainingException('There are no remaining lines');
+			throw new fException('There are no remaining lines');
 		}
 
 		$this->current_line = fgets($this->file_handle);
@@ -1156,7 +1156,7 @@ class fFile implements Iterator, Countable
 		$this->tossIfDeleted();
 
 		if (!$this->getParent()->isWritable()) {
-			throw new fEnvironmentException(
+			throw new fException(
 				'The file, %s, can not be renamed because the directory containing it is not writable',
 				$this->file
 			);
@@ -1170,7 +1170,7 @@ class fFile implements Iterator, Countable
 		$info = fFilesystem::getPathInfo($new_filename);
 
 		if (!file_exists($info['dirname'])) {
-			throw new fProgrammerException(
+			throw new fException(
 				'The new filename specified, %s, is inside of a directory that does not exist',
 				$new_filename
 			);
@@ -1189,7 +1189,7 @@ class fFile implements Iterator, Countable
 
 		if (file_exists($new_filename)) {
 			if (!is_writable($new_filename)) {
-				throw new fEnvironmentException(
+				throw new fException(
 					'The new filename specified, %s, already exists, but is not writable',
 					$new_filename
 				);
@@ -1203,7 +1203,7 @@ class fFile implements Iterator, Countable
 		} else {
 			$new_dir = new fDirectory($info['dirname']);
 			if (!$new_dir->isWritable()) {
-				throw new fEnvironmentException(
+				throw new fException(
 					'The new filename specified, %s, is inside of a directory that is not writable',
 					$new_filename
 				);
@@ -1242,7 +1242,7 @@ class fFile implements Iterator, Countable
 	protected function tossIfDeleted()
 	{
 		if ($this->deleted) {
-			throw new fProgrammerException(
+			throw new fException(
 				"The action requested can not be performed because the file has been deleted\n\nBacktrace for fFile::delete() call:\n%s",
 				fCore::backtrace(0, $this->deleted)
 			);
@@ -1285,7 +1285,7 @@ class fFile implements Iterator, Countable
 		$this->tossIfDeleted();
 
 		if (!$this->isWritable()) {
-			throw new fEnvironmentException(
+			throw new fException(
 				'This file, %s, can not be written to because it is not writable',
 				$this->file
 			);

@@ -11,14 +11,14 @@
         <h4
           v-if="ReleaseData.version"
           class="releasefield__title"
-          v-html="$i18n(`releases.${ReleaseData.version}`)"
+          v-text="$i18n(`releases.${ReleaseData.version}`)"
         />
       </div>
       <div class="releasefield__links">
         <a
           class="releasefield__link"
           :href="$url('release_notes')"
-          v-html="$i18n('menu.entry.release-notes')"
+          v-text="$i18n('menu.entry.release-notes')"
         />
       </div>
     </div>

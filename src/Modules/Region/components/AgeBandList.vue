@@ -65,16 +65,15 @@ export default {
   data () {
     return {
       sortBy: 'ageBand',
-      fields: {
-        ageBand: {
-          label: this.$i18n('ageBandList.ageBand'),
-          sortable: true,
-        },
-        NumberOfAgeband: {
-          label: this.$i18n('ageBandList.NumberOfAgeband'),
-          sortable: true,
-        },
+      fields: [{
+        label: this.$i18n('ageBandList.ageBand'),
+        sortable: true,
       },
+      {
+        label: this.$i18n('ageBandList.NumberOfAgeband'),
+        sortable: true,
+      },
+      ],
     }
   },
 }

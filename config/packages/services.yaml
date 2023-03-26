@@ -6,7 +6,12 @@ services:
 
     Foodsharing\:
         resource: '../../src/*'
-        exclude: '../../src/{Lib/Flourish,Lib/Cache,Lib/Session,Lib/View/v*,Dev,Debug,FoodsharingKernel.php,Modules/PushNotification/Notification}'
+        exclude:
+         - '../../src/Lib/{Flourish,Cache,Session,View/v*}'
+         - '../../src/{Dev,Debug}'
+         - '../../src/Kernel.php'
+         - '../../src/Modules/{PushNotification/Notification,Foodsaver/Profile.php,Message/Message.php}'
+         - '../../src/Modules/Uploads/DTO/'
 
     Foodsharing\Lib\Session:
         calls:
@@ -23,10 +28,6 @@ services:
 
     HTMLPurifier: '@exercise_html_purifier.default'
 
-    Intervention\Image\ImageManager:
-        arguments:
-            - driver: 'imagick'
-
     mysqli:
       class: mysqli
       arguments:
@@ -37,8 +38,8 @@ services:
       calls:
         - [query, ['SET NAMES "utf8mb4"']]
 
-    Foodsharing\Debug\DebugBar:
-        class: Foodsharing\Debug\DisabledDebugBar
+    #Foodsharing\Debug\DebugBar:
+    #    class: Foodsharing\Debug\DisabledDebugBar
 
     PDO:
         alias: RealPDO
@@ -51,7 +52,6 @@ services:
         - !php/const DB_PASS
         calls:
         - [ setAttribute, [!php/const PDO::ATTR_EMULATE_PREPARES, false]]
-        - [ setAttribute, [!php/const PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION]]
 
     InfluxDB\Database:
         factory: ['InfluxDB\Client', 'fromdsn']
@@ -67,6 +67,7 @@ services:
             service: 'imap'
             serviceOption: !php/const BOUNCE_IMAP_SERVICE_OPTION
             boxname: 'INBOX'
+            unprocessedBox: !php/const BOUNCE_IMAP_UNPROCESSED_BOX
             maxMessages: 10000
             verbose: 0
 
@@ -83,12 +84,6 @@ services:
             - { name: kernel.event_listener, event: kernel.controller }
         arguments:
             - "@annotation_reader"
-
-    Foodsharing\Modules\Message\Message:
-        autowire: false
-
-    Foodsharing\Modules\Foodsaver\Profile:
-        autowire: false
 
     GuzzleHttp\Client:
 

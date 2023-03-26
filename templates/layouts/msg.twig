@@ -5,7 +5,13 @@
 
 {% block main %}
     {{ content.top.html | raw }}
-    {{ content.main.html | raw }}
+    <div class="container">
+        <div class="row">
+            <div class="col px-0">
+                {{ content.main.html | raw }}
+            </div>
+        </div>
+    </div>
 {% endblock %}
 
 {% block footer %}

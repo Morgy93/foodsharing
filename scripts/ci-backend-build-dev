@@ -1,0 +1,20 @@
+#!/bin/bash
+# This script is creating the artifacts for the tests with dev dependencies
+
+dir=$(dirname "$0")
+
+# shellcheck source=./__helping-functions.sh
+source "$dir"/__common.sh
+
+composer validate --no-check-all --no-check-publish
+composer install --verbose --prefer-dist --no-progress --no-interaction --no-scripts --ignore-platform-reqs
+
+vendor/bin/php-cs-fixer fix --dry-run --diff --verbose --ansi
+vendor/bin/parallel-lint --no-progress --exclude vendor .
+vendor/bin/phpstan analyse --memory-limit=768M --no-progress
+
+log-header "Create folder structure ..."
+bin/console foodsharing:setup
+
+log-header "Installing assets ..."
+bin/console assets:install

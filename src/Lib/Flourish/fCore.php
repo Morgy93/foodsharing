@@ -490,7 +490,7 @@ class fCore
 	public static function enableDynamicConstants()
 	{
 		if (!self::$handles_errors) {
-			throw new fProgrammerException(
+			throw new fException(
 				'Dynamic constants can not be enabled unless error handling has been enabled via %s',
 				__CLASS__ . '::enableErrorHandling()'
 			);

@@ -7,14 +7,13 @@
     :zoom="zoom"
     :center="center"
   >
-    <l-tile-layer
+    <!-- <l-tile-layer
       v-if="useVectorMap"
       :options="vectorLayerOptions"
       :tile-layer-class="vectorLayerClass"
       :attribution="attribution"
-    />
+    /> -->
     <l-tile-layer
-      v-else
       :url="tileUrl"
       :attribution="attribution"
     />
@@ -23,14 +22,14 @@
 </template>
 
 <script>
-import L from 'leaflet'
+// import L from 'leaflet'
 import { LMap, LTileLayer } from 'vue2-leaflet'
 // import mapboxgl from 'mapbox-gl'
 // import 'mapbox-gl-leaflet'
 // import 'mapbox-gl/dist/mapbox-gl.css'
 import 'leaflet/dist/leaflet.css'
-import { MAP_ATTRIBUTION, MAP_RASTER_TILES_URL, MAP_TILES_URL } from '@/consts'
-import { isWebGLSupported } from '@/utils'
+import { MAP_ATTRIBUTION, MAP_RASTER_TILES_URL } from '@/consts'
+// import { isWebGLSupported } from '@/utils'
 
 // window.mapboxgl = mapboxgl // mapbox-gl-leaflet expects this to be global
 
@@ -44,17 +43,18 @@ export default {
   data () {
     return {
       attribution: MAP_ATTRIBUTION,
-      vectorLayerClass: (url, options) => L.mapboxGL(options),
+      /* vectorLayerClass: (url, options) => L.mapboxGL(options),
       vectorLayerOptions: {
         accessToken: 'no-token',
         style: MAP_TILES_URL,
-      },
+      }, */
       tileUrl: MAP_RASTER_TILES_URL,
     }
   },
   computed: {
     useVectorMap () {
-      return isWebGLSupported()
+      // return isWebGLSupported()
+      return false
     },
   },
   methods: {

@@ -17,6 +17,7 @@ const urls = {
   communitiesGermany: () => '/?page=content&sub=communitiesGermany',
   communitiesSwitzerland: () => '/?page=content&sub=communitiesSwitzerland',
   contact: () => '/?page=content&sub=contact',
+  newsFromIT: () => '/?page=content&sub=newsFromIT',
   contentEdit: () => '/?page=content',
   conversations: (conversationId = null) => `/?page=msg${conversationId ? `&cid=${conversationId}` : ''}`,
   dashboard: () => '/?page=dashboard',
@@ -37,7 +38,10 @@ const urls = {
   joininfo: () => '/?page=content&sub=joininfo',
   leeretonne: () => '/?page=content&sub=leeretonne',
   login: () => '/?page=login',
-  logout: () => '/?page=logout',
+  logout: () => {
+    const url = new URL(window.location.href)
+    return '/?page=logout&ref=' + encodeURIComponent(url.pathname + url.search)
+  },
   mailbox: (mailboxId = null) => `/?page=mailbox${mailboxId ? `&show=${mailboxId}` : ''}`,
   mailboxManage: () => '/?page=mailbox&a=manage',
   mailboxMailto: (email) => `/?page=mailbox&mailto=${email}`,
@@ -111,6 +115,7 @@ const urls = {
   stores: (regionId) => `/?page=betrieb&bid=${regionId}`,
   wall: (regionId) => `/?page=bezirk&bid=${regionId}&sub=wall`,
   workingGroups: (regionId = null) => regionId ? `/?page=groups&p=${regionId}` : '/?page=groups',
+  subGroups: (parentGroupId) => parentGroupId ? `/?page=groups&p=${parentGroupId}` : '/?page=groups',
 
   // whats new & changelog
   changelog: () => '/?page=content&sub=changelog',
@@ -150,7 +155,6 @@ const urls = {
 
   // Devdocs
   devdocs: () => 'https://devdocs.foodsharing.network',
-  devdocs_it_tasks: () => 'https://devdocs.foodsharing.network/it-tasks.html',
 
   // Beta Testing
   beta: () => 'https://beta.foodsharing.de',

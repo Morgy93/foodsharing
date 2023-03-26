@@ -1,0 +1,10 @@
+#!/bin/bash
+export FS_ENV=test
+
+dir=$(dirname "$0")
+
+# shellcheck source=./__common.sh
+source "$dir"/__common.sh
+
+log-header "Running websocket tests"
+run-in-container websocket 'yarn && yarn lint && yarn test'

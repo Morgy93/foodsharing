@@ -118,7 +118,7 @@ export default {
       DataRegions.mutations.set(this.regions)
       await DataBaskets.mutations.fetchOwn()
       await DataBells.mutations.fetch()
-      await DataConversations.loadConversations()
+      await DataConversations.initConversations()
     }
   },
 }

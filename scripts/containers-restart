@@ -1,0 +1,21 @@
+#!/bin/bash
+dir=$(dirname "$0")
+
+# shellcheck source=./__common.sh
+source "$dir"/__common.sh
+
+if [ "$1" ]; then
+  FS_ENV="$1"
+fi
+
+log-header "Clear assets ..."
+rm -rf "$(cd "$dir/.." && pwd)"/assets/*
+
+log-header "Restarting $FS_ENV containers ..."
+"$dir"/docker-compose restart
+
+log-header "Waiting for assets to be generated ..."
+wait-for-assets
+exec-in-container app bin/console assets:install
+
+"$dir"/__helping-print-intro.sh

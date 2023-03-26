@@ -33,12 +33,12 @@
         <small
           v-if="!basket.requests.length"
           class="mb-1 text-truncate"
-          v-html="$i18n('basket.no_requests')"
+          v-text="$i18n('basket.no_requests')"
         />
         <small
           v-if="basket.requests.length > 0"
           class="testing-basket-requested-by mb-1 text-truncate"
-          v-html="$i18n('basket.requested_by', { name: basket.requests.map(r => r.user.name).join(', ') })"
+          v-text="$i18n('basket.requested_by', { name: basket.requests.map(r => r.user.name).join(', ') })"
         />
       </span>
     </span>
@@ -62,7 +62,7 @@
         </small>
       </div>
       <button
-        v-b-tooltip="$i18n('basket.request_close')"
+        v-b-tooltip.left="$i18n('basket.request_close')"
         :title="$i18n('basket.request_close')"
         class="testing-basket-requests-close btn btn-sm btn-outline-danger"
         @click.prevent.stop="openRemoveDialog(entry.user.id, $event)"
@@ -76,7 +76,7 @@
 <script>
 // Others
 import Avatar from '@/components/Avatar'
-import conv from '@/conv'
+import conversationStore from '@/stores/conversations'
 
 export default {
   components: { Avatar },
@@ -101,7 +101,7 @@ export default {
       }
     },
     openChat (userId) {
-      conv.userChat(userId)
+      conversationStore.openChatWithUser(userId)
     },
     openRemoveDialog (userId) {
       this.$emit('basket-remove', this.basket.id, userId)

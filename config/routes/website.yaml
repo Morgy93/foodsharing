@@ -1,4 +1,0 @@
-website:
-  type: annotation
-  prefix: /
-  resource: ../../src/Modules/

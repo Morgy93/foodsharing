@@ -1,0 +1,9 @@
+#!/bin/bash
+
+dir=$(dirname "$0")
+
+# shellcheck source=./__common.sh
+source "$dir"/__common.sh
+
+log-header "Fixing php code"
+run-in-container app vendor/bin/php-cs-fixer fix

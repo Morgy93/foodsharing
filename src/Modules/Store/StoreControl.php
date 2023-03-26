@@ -2,262 +2,266 @@
 
 namespace Foodsharing\Modules\Store;
 
-use Foodsharing\Modules\Bell\BellGateway;
-use Foodsharing\Modules\Bell\DTO\Bell;
 use Foodsharing\Modules\Core\Control;
-use Foodsharing\Modules\Core\DBConstants\Bell\BellType;
-use Foodsharing\Modules\Core\DBConstants\Region\Type;
-use Foodsharing\Modules\Core\DBConstants\Store\CooperationStatus;
-use Foodsharing\Modules\Core\DBConstants\Store\Milestone;
-use Foodsharing\Modules\Foodsaver\FoodsaverGateway;
+use Foodsharing\Modules\Core\DBConstants\Foodsaver\Role;
+use Foodsharing\Modules\Core\DBConstants\Unit\UnitType;
+use Foodsharing\Modules\Core\DTO\PatchGeoLocation;
 use Foodsharing\Modules\Region\RegionGateway;
+use Foodsharing\Modules\Store\DTO\CreateStoreData;
+use Foodsharing\Modules\Store\DTO\PatchAddress;
+use Foodsharing\Modules\Store\DTO\PatchContactData;
+use Foodsharing\Modules\Store\DTO\PatchStore;
+use Foodsharing\Modules\Store\DTO\PatchStoreOptionModel;
 use Foodsharing\Permissions\StorePermissions;
 use Foodsharing\Utility\DataHelper;
 use Foodsharing\Utility\IdentificationHelper;
-use Foodsharing\Utility\WeightHelper;
 
 class StoreControl extends Control
 {
-	private $bellGateway;
-	private $storeGateway;
-	private $storePermissions;
-	private $storeTransactions;
-	private $regionGateway;
-	private $foodsaverGateway;
-	private $identificationHelper;
-	private $dataHelper;
-	private $weightHelper;
+    private $storeGateway;
+    private $storePermissions;
+    private $storeTransactions;
+    private $regionGateway;
+    private $identificationHelper;
+    private $dataHelper;
 
-	public function __construct(
-		StorePermissions $storePermissions,
-		StoreTransactions $storeTransactions,
-		StoreView $view,
-		BellGateway $bellGateway,
-		StoreGateway $storeGateway,
-		FoodsaverGateway $foodsaverGateway,
-		RegionGateway $regionGateway,
-		IdentificationHelper $identificationHelper,
-		DataHelper $dataHelper,
-		WeightHelper $weightHelper
-	) {
-		$this->view = $view;
-		$this->bellGateway = $bellGateway;
-		$this->storeGateway = $storeGateway;
-		$this->storePermissions = $storePermissions;
-		$this->storeTransactions = $storeTransactions;
-		$this->foodsaverGateway = $foodsaverGateway;
-		$this->regionGateway = $regionGateway;
-		$this->identificationHelper = $identificationHelper;
-		$this->dataHelper = $dataHelper;
-		$this->weightHelper = $weightHelper;
+    public function __construct(
+        StorePermissions $storePermissions,
+        StoreTransactions $storeTransactions,
+        StoreView $view,
+        StoreGateway $storeGateway,
+        RegionGateway $regionGateway,
+        IdentificationHelper $identificationHelper,
+        DataHelper $dataHelper
+    ) {
+        $this->view = $view;
+        $this->storeGateway = $storeGateway;
+        $this->storePermissions = $storePermissions;
+        $this->storeTransactions = $storeTransactions;
+        $this->regionGateway = $regionGateway;
+        $this->identificationHelper = $identificationHelper;
+        $this->dataHelper = $dataHelper;
 
-		parent::__construct();
+        parent::__construct();
 
-		if (!$this->session->may()) {
-			$this->routeHelper->goLogin();
-		}
-	}
+        if (!$this->session->mayRole()) {
+            $this->routeHelper->goLoginAndExit();
+        }
+    }
 
-	public function index()
-	{
-		/* form methods below work with $g_data */
-		global $g_data;
+    public function index()
+    {
+        /* form methods below work with $g_data */
+        global $g_data;
 
-		if (isset($_GET['bid'])) {
-			$regionId = (int)$_GET['bid'];
-		} else {
-			$regionId = $this->session->getCurrentRegionId();
-		}
+        if (isset($_GET['bid'])) {
+            $regionId = (int)$_GET['bid'];
+        } else {
+            $regionId = $this->session->getCurrentRegionId();
+        }
 
-		if (!$this->session->may('orga') && $regionId == 0) {
-			$regionId = $this->session->getCurrentRegionId();
-		}
-		if ($regionId > 0) {
-			$region = $this->regionGateway->getRegion($regionId);
-		} else {
-			$region = ['name' => $this->translator->trans('store.complete')];
-		}
-		if ($this->identificationHelper->getAction('new')) {
-			if ($this->storePermissions->mayCreateStore()) {
-				$this->handle_add($this->session->id());
+        if (!$this->session->mayRole(Role::ORGA) && $regionId == 0) {
+            $regionId = $this->session->getCurrentRegionId();
+        }
+        if ($regionId > 0) {
+            $region = $this->regionGateway->getRegion($regionId);
+        } else {
+            $region = ['name' => $this->translator->trans('store.complete')];
+        }
+        if ($this->identificationHelper->getAction('new')) {
+            if ($this->storePermissions->mayCreateStore()) {
+                $this->handle_add($this->session->id());
 
-				$this->pageHelper->addBread($this->translator->trans('store.bread'), '/?page=fsbetrieb');
-				$this->pageHelper->addBread($this->translator->trans('storeedit.add-new'));
+                $this->pageHelper->addBread($this->translator->trans('store.bread'), '/?page=fsbetrieb');
+                $this->pageHelper->addBread($this->translator->trans('storeedit.add-new'));
 
-				$chosenRegion = ($regionId > 0 && Type::isAccessibleRegion($this->regionGateway->getType($regionId))) ? $region : null;
-				$this->pageHelper->addContent($this->view->betrieb_form(
-					$this->storeGateway->getBasics_groceries(),
-					$this->storeGateway->getBasics_chain(),
-					$this->storeGateway->getStoreCategories(),
-					$this->getStoreStateList(),
-					$this->weightHelper->getWeightListEntries(),
-					$chosenRegion,
-					'betrieb'
-				));
+                $chosenRegion = ($regionId > 0 && UnitType::isAccessibleRegion($this->regionGateway->getType($regionId))) ? $region : null;
+                $this->pageHelper->addContent($this->view->betrieb_form(
+                    $this->storeTransactions->getCommonStoreMetadata(false),
+                    $chosenRegion,
+                    'betrieb'
+                ));
 
-				$this->pageHelper->addContent($this->v_utils->v_field($this->v_utils->v_menu([
-					['name' => $this->translator->trans('bread.backToOverview'), 'href' => '/?page=fsbetrieb&bid=' . $regionId]
-				]), $this->translator->trans('storeedit.actions')), CNT_RIGHT);
-			} else {
-				$this->flashMessageHelper->info($this->translator->trans('store.smneeded'));
-				$this->routeHelper->go('/?page=settings&sub=up_bip');
-			}
-		} elseif ($id = $this->identificationHelper->getActionId('delete')) {
-		} elseif ($id = $this->identificationHelper->getActionId('edit')) {
-			$this->pageHelper->addBread($this->translator->trans('store.bread'), '/?page=fsbetrieb');
-			$this->pageHelper->addBread($this->translator->trans('storeedit.bread'));
-			$data = $this->storeGateway->getEditStoreData($id);
+                $this->pageHelper->addContent($this->v_utils->v_field($this->v_utils->v_menu([
+                    ['name' => $this->translator->trans('bread.backToOverview'), 'href' => '/?page=fsbetrieb&bid=' . $regionId]
+                ]), $this->translator->trans('storeedit.actions')), CNT_RIGHT);
+            } else {
+                $this->flashMessageHelper->info($this->translator->trans('store.smneeded'));
+                $this->routeHelper->goAndExit('/?page=settings&sub=up_bip');
+            }
+        } elseif ($id = $this->identificationHelper->getActionId('delete')) {
+        } elseif ($id = $this->identificationHelper->getActionId('edit')) {
+            $this->pageHelper->addBread($this->translator->trans('store.bread'), '/?page=fsbetrieb');
+            $this->pageHelper->addBread($this->translator->trans('storeedit.bread'));
+            $store = $this->storeGateway->getStore($id);
+            $data['name'] = $store->name;
+            $data['bezirk_id'] = $store->regionId;
+            $data['lat'] = $store->location->lat;
+            $data['lon'] = $store->location->lon;
+            $data['str'] = $store->address->street;
+            $data['plz'] = $store->address->zipCode;
+            $data['ort'] = $store->address->city;
 
-			$this->pageHelper->addTitle($data['name']);
-			$this->pageHelper->addTitle($this->translator->trans('storeedit.bread'));
+            $data['public_info'] = $store->publicInfo;
+            $data['public_time'] = $store->publicTime->value;
+            $data['betrieb_kategorie_id'] = $store->categoryId;
+            $data['kette_id'] = $store->chainId;
+            $data['betrieb_status_id'] = $store->cooperationStatus->value;
+            $data['besonderheiten'] = $store->description;
 
-			if ($this->storePermissions->mayEditStore($id)) {
-				$this->handle_edit();
+            $data['ansprechpartner'] = $store->contact->name;
+            $data['telefon'] = $store->contact->phone;
+            $data['fax'] = $store->contact->fax;
+            $data['email'] = $store->contact->email;
 
-				$this->dataHelper->setEditData($data);
+            $data['begin'] = $store->cooperationStart ? $store->cooperationStart->format('Y-m-d') : '';
+            $data['prefetchtime'] = $store->calendarInterval;
+            $data['abholmenge'] = $store->weight;
+            $data['ueberzeugungsarbeit'] = $store->effort->value;
+            $data['presse'] = $store->publicity;
+            $data['sticker'] = $store->showsSticker;
+            $data['use_region_pickup_rule'] = $store->options->useRegionPickupRule;
+            $data['lebensmittel'] = $store->groceries;
+            $data['status_date'] = $store->updatedAt->format('Y-m-d H:i:s');
+            $data['added'] = $store->createdAt->format('Y-m-d H:i:s');
 
-				$regionId = $data['bezirk_id'];
-				$regionName = $this->regionGateway->getRegionName($regionId);
+            $this->pageHelper->addTitle($store->name);
+            $this->pageHelper->addTitle($this->translator->trans('storeedit.bread'));
 
-				$this->pageHelper->addContent($this->view->betrieb_form(
-					$this->storeGateway->getBasics_groceries(),
-					$this->storeGateway->getBasics_chain(),
-					$this->storeGateway->getStoreCategories(),
-					$this->getStoreStateList(),
-					$this->weightHelper->getWeightListEntries(),
-					['id' => $regionId, 'name' => $regionName],
-					'',
-				));
-			} else {
-				$this->flashMessageHelper->info($this->translator->trans('store.locked'));
-			}
+            if ($this->storePermissions->mayEditStore($id)) {
+                $this->handle_edit();
 
-			$this->pageHelper->addContent($this->v_utils->v_field($this->v_utils->v_menu([
-				$this->routeHelper->pageLink('betrieb')
-			]), $this->translator->trans('storeedit.actions')), CNT_RIGHT);
-		} elseif (isset($_GET['id'])) {
-			$this->routeHelper->go('/?page=fsbetrieb&id=' . (int)$_GET['id']);
-		} else {
-			$this->pageHelper->addBread($this->translator->trans('store.bread'), '/?page=fsbetrieb');
+                $this->dataHelper->setEditData($data);
 
-			$stores = $this->storeGateway->listStoresInRegion($regionId, true);
+                $regionId = $store->regionId;
+                $regionName = $this->regionGateway->getRegionName($regionId);
 
-			$storesMapped = array_map(function ($store) {
-				return [
-					'id' => (int)$store['id'],
-					'name' => $store['name'],
-					// status COOPERATION_STARTING and COOPERATION_ESTABLISHED are the same (in cooperation), always return COOPERATION_STARTING
-					'status' => $store['betrieb_status_id'] == CooperationStatus::COOPERATION_ESTABLISHED ? CooperationStatus::COOPERATION_STARTING : (int)$store['betrieb_status_id'],
-					'added' => $store['added'],
-					'region' => $store['bezirk_name'],
-					'address' => $store['anschrift'],
-					'city' => $store['stadt'],
-					'zipcode' => $store['plz'],
-					'geo' => $store['geo'],
-				];
-			}, $stores);
+                $this->pageHelper->addContent($this->view->betrieb_form(
+                    $this->storeTransactions->getCommonStoreMetadata(false),
+                    ['id' => $regionId, 'name' => $regionName],
+                    '',
+                ));
+            } else {
+                $this->flashMessageHelper->info($this->translator->trans('store.locked'));
+            }
 
-			$this->pageHelper->addContent($this->view->vueComponent('vue-storelist', 'store-list', [
-				'regionName' => $region['name'],
-				'regionId' => $regionId,
-				'showCreateStore' => $this->storePermissions->mayCreateStore(),
-				'stores' => array_values($storesMapped),
-			]));
-		}
-	}
+            $this->pageHelper->addContent($this->v_utils->v_field($this->v_utils->v_menu([
+                ['name' => $this->translator->trans('bread.backToStore'), 'href' => '/?page=fsbetrieb&bid=' . $regionId]
+            ]), $this->translator->trans('storeedit.actions')), CNT_RIGHT);
+        } elseif (isset($_GET['id'])) {
+            $this->routeHelper->goAndExit('/?page=fsbetrieb&id=' . (int)$_GET['id']);
+        } else {
+            if (!$this->session->mayRole() || !$this->storePermissions->mayListStores()) {
+                $this->routeHelper->goAndExit('/');
+            }
 
-	public function getStoreStateList(): array
-	{
-		return [
-			['id' => '1', 'name' => $this->translator->trans('storestatus.1')],
-			['id' => '2', 'name' => $this->translator->trans('storestatus.2')],
-			['id' => '3', 'name' => $this->translator->trans('storestatus.3a')],
-			['id' => '4', 'name' => $this->translator->trans('storestatus.4')],
-			['id' => '5', 'name' => $this->translator->trans('storestatus.5')],
-			['id' => '6', 'name' => $this->translator->trans('storestatus.6')],
-			['id' => '7', 'name' => $this->translator->trans('storestatus.7')],
-		];
-	}
+            if (empty($region) || $regionId <= 0) {
+                $this->flashMessageHelper->info($this->translator->trans('store.error'));
+                $this->routeHelper->goAndExit('/');
+            } else {
+                $this->pageHelper->addBread($this->translator->trans('store.bread'), '/?page=fsbetrieb');
+                $storesMapped = $this->storeTransactions->listOverviewInformationsOfStoresInRegion($regionId, true);
 
-	private function handle_edit()
-	{
-		global $g_data;
-		if ($this->submitted()) {
-			$id = (int)$_GET['id'];
-			$g_data['stadt'] = $g_data['ort'];
-			$g_data['str'] = $g_data['anschrift'];
+                $this->pageHelper->addContent($this->view->vueComponent('vue-storelist', 'store-list', [
+                    'regionName' => $region['name'],
+                    'regionId' => $regionId,
+                    'showCreateStore' => $this->storePermissions->mayCreateStore(),
+                    'stores' => array_values($storesMapped),
+                ]));
+            }
+        }
+    }
 
-			$this->storeTransactions->updateAllStoreData($id, $g_data);
+    private function handle_edit()
+    {
+        global $g_data;
+        if ($this->submitted()) {
+            $id = (int)$_GET['id'];
+            $store = new PatchStore();
+            $store->name = $g_data['name'];
+            $store->regionId = intval($g_data['bezirk_id']);
 
-			$this->storeTransactions->setStoreNameInConversations($id, $g_data['name']);
+            $store->location = new PatchGeoLocation();
+            $store->location->lat = floatval($g_data['lat']);
+            $store->location->lon = floatval($g_data['lon']);
+            $store->address = new PatchAddress();
+            $store->address->street = $g_data['anschrift'];
+            $store->address->zipCode = $g_data['plz'];
+            $store->address->city = $g_data['ort'];
 
-			$this->flashMessageHelper->success($this->translator->trans('storeedit.edit_success'));
-			$this->routeHelper->go('/?page=fsbetrieb&id=' . $id);
-		}
-	}
+            $store->publicInfo = $g_data['public_info'];
+            $store->publicTime = intval($g_data['public_time']);
 
-	private function handle_add($coordinator)
-	{
-		global $g_data;
-		if (!$this->submitted()) {
-			return;
-		}
+            if (!empty($g_data['betrieb_kategorie_id'])) {
+                $store->categoryId = intval($g_data['betrieb_kategorie_id']);
+            }
+            if (!empty($g_data['kette_id'])) {
+                $store->chainId = intval($g_data['kette_id']);
+            }
+            $store->cooperationStatus = intval($g_data['betrieb_status_id']);
+            $store->description = $g_data['besonderheiten'];
 
-		$g_data['bezirk_id'] ??= $this->session->getCurrentRegionId();
+            $store->contact = new PatchContactData();
+            $store->contact->name = $g_data['ansprechpartner'];
+            $store->contact->phone = $g_data['telefon'];
+            $store->contact->fax = $g_data['fax'];
+            $store->contact->email = $g_data['email'];
+            $store->cooperationStart = $g_data['begin'];
+            $store->calendarInterval = intval($g_data['prefetchtime']);
+            $store->weight = intval($g_data['abholmenge']);
+            $store->effort = intval($g_data['ueberzeugungsarbeit']);
+            $store->publicity = boolval($g_data['presse']);
+            $store->showsSticker = boolval($g_data['sticker']);
 
-		if (!in_array($g_data['bezirk_id'], $this->session->listRegionIDs())) {
-			$this->flashMessageHelper->error($this->translator->trans('storeedit.not-in-region'));
-			$this->routeHelper->goPage();
+            $store->options = new PatchStoreOptionModel();
+            $store->options->useRegionPickupRule = boolval($g_data['use_region_pickup_rule']);
+            if (isset($g_data['lebensmittel'])) {
+                $store->groceries = array_map(function ($value) {
+                    return intval($value);
+                }, $g_data['lebensmittel']);
+            }
 
-			return;
-		}
+            try {
+                $this->storeTransactions->updateStore($id, $store);
+                $this->flashMessageHelper->success($this->translator->trans('storeedit.edit_success'));
+            } catch (StoreTransactionException $ex) {
+                $this->flashMessageHelper->error($ex->getMessage());
+            }
+            $this->routeHelper->goAndExit('/?page=fsbetrieb&id=' . $id);
+        }
+    }
 
-		if (isset($g_data['ort'])) {
-			$g_data['stadt'] = $g_data['ort'];
-		}
-		if (isset($g_data['anschrift'])) {
-			$g_data['str'] = $g_data['anschrift'];
-		}
+    private function handle_add($coordinator)
+    {
+        global $g_data;
+        if (!$this->submitted()) {
+            return;
+        }
 
-		$storeId = $this->storeTransactions->createStore($g_data);
+        $g_data['bezirk_id'] ??= $this->session->getCurrentRegionId();
 
-		if (!$storeId) {
-			$this->flashMessageHelper->error($this->translator->trans('error_unexpected'));
+        if (!in_array($g_data['bezirk_id'], $this->session->listRegionIDs())) {
+            $this->flashMessageHelper->error($this->translator->trans('storeedit.not-in-region'));
+            $this->routeHelper->goPageAndExit();
+        }
 
-			return;
-		}
+        if (isset($g_data['ort'])) {
+            $g_data['stadt'] = $g_data['ort'];
+        }
+        if (isset($g_data['anschrift'])) {
+            $g_data['str'] = $g_data['anschrift'];
+        }
+        $firstStorePost = $g_data['first_post'] ?? null;
+        $storeId = $this->storeTransactions->createStore(CreateStoreData::createFromArray($g_data), $this->session->id(), $firstStorePost);
 
-		$this->storeTransactions->setStoreNameInConversations($storeId, $g_data['name']);
-		$this->storeGateway->add_betrieb_notiz([
-			'foodsaver_id' => $this->session->id(),
-			'betrieb_id' => $storeId,
-			'text' => '{BETRIEB_ADDED}', // TODO Do we want to keep this?
-			'zeit' => date('Y-m-d H:i:s', time() - 10),
-			'milestone' => Milestone::CREATED,
-		]);
+        if (!$storeId) {
+            $this->flashMessageHelper->error($this->translator->trans('error_unexpected'));
 
-		if (isset($g_data['first_post']) && !empty($g_data['first_post'])) {
-			$this->storeGateway->add_betrieb_notiz([
-				'foodsaver_id' => $this->session->id(),
-				'betrieb_id' => $storeId,
-				'text' => $g_data['first_post'],
-				'zeit' => date('Y-m-d H:i:s'),
-				'milestone' => Milestone::NONE,
-			]);
-		}
+            return;
+        }
 
-		$foodsaver = $this->foodsaverGateway->getFoodsaversByRegion($g_data['bezirk_id']);
+        $this->flashMessageHelper->success($this->translator->trans('storeedit.add_success'));
 
-		$bellData = Bell::create('store_new_title', 'store_new', 'fas fa-store-alt', [
-			'href' => '/?page=fsbetrieb&id=' . (int)$storeId
-		], [
-			'user' => $this->session->user('name'),
-			'name' => $g_data['name']
-		], BellType::createIdentifier(BellType::NEW_STORE, (int)$storeId));
-		$this->bellGateway->addBell($foodsaver, $bellData);
-
-		$this->flashMessageHelper->success($this->translator->trans('storeedit.add_success'));
-
-		$this->routeHelper->go('/?page=fsbetrieb&id=' . (int)$storeId);
-	}
+        $this->routeHelper->goAndExit('/?page=fsbetrieb&id=' . (int)$storeId);
+    }
 }

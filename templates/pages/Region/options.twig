@@ -7,8 +7,16 @@
         props: {
             regionId : region.id,
             regionName : region.name,
+            maySetRegionOptionsReportButtons : maySetRegionOptionsReportButtons,
+            maySetRegionOptionsRegionPickupRule : maySetRegionOptionsRegionPickupRule,
             isReportButtonEnabled : isReportButtonEnabled,
-            isMediationButtonEnabled : isMediationButtonEnabled
+            isMediationButtonEnabled : isMediationButtonEnabled,
+            isRegionPickupRuleActive : isRegionPickupRuleActive,
+            regionPickupRuleTimespanDays : regionPickupRuleTimespanDays,
+            regionPickupRuleLimitNumber : regionPickupRuleLimitNumber,
+            regionPickupRuleLimitDayNumber : regionPickupRuleLimitDayNumber,
+            regionPickupRuleInactiveHours : regionPickupRuleInactiveHours,
+            regionPickupRuleActiveStoreList : regionPickupRuleActiveStoreList
         }
     } %}
 {% endblock %}

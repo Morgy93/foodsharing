@@ -51,7 +51,7 @@
   </div>
 </template>
 
-<script setup>
+<script>
 export default {
   props: {
     name: {

@@ -7,13 +7,24 @@ framework:
     assets:
         base_path: '/assets'
 
+sensio_framework_extra:
+    router:
+        annotations: false # Required to have no conflict with Symfony Router
+
 jms_serializer:
     property_naming:
         id: 'jms_serializer.identical_property_naming_strategy'
+    visitors:
+        json_deserialization:
+            strict: true
 
 fos_rest:
     param_fetcher_listener: true
     body_listener: true
+    body_converter:
+        enabled: true
+        validate: true
+        validation_errors_argument: validationErrors
     exception:
         serializer_error_renderer: true
         codes:

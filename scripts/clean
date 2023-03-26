@@ -1,33 +1,39 @@
 #!/bin/bash
 
-export FS_ENV=dev
-
-set -o errexit
-
 dir=$(dirname "$0")
 
-base_dir=$(cd "$dir/.." && pwd)
+# shellcheck source=./__common.sh
+source "$dir"/__common.sh
 
-# shellcheck source=./inc.sh
-source "$dir"/inc.sh
+declare -r base_dir=$(cd "$dir/.." && pwd)
 
-echo "Removing local node_modules"
-(cd "$dir" && rm -rf node_modules)
+if [[ "${1:-}" == "full" ]]; then
+  log-header "Removing containers and images"
+  FS_ENV="test"
+  "$dir"/docker-compose down --volumes --remove-orphans
+  FS_ENV="dev"
+  "$dir"/docker-compose down --rmi all --volumes --remove-orphans
 
-echo "Removing containers"
-"$dir"/rm
-FS_ENV="test" "$dir"/rm
+  log-header "Removing local node_modules"
+  find "$base_dir" -name "node_modules" -type d -prune | xargs du -chs # prints the folders
+  find "$base_dir" -name "node_modules" -type d -prune -exec rm -rf '{}' + # removes the folders
+else
+  log-header "Removing containers"
+  FS_ENV="dev"
+  "$dir"/docker-compose down --volumes --remove-orphans
+  FS_ENV="test"
+  "$dir"/docker-compose down --volumes --remove-orphans
+fi
 
-echo "Removing directories"
+log-header "Removing directories"
 
-rm -rf \
-  "$base_dir"/images/basket \
-  "$base_dir"/data/attach \
-  "$base_dir"/data/mailattach \
-  "$base_dir"/data/pass \
-  "$base_dir"/data/uploads \
-  "$base_dir"/data/visite \
-  "$base_dir"/cache/searchindex \
-  "$base_dir"/tmp
+      rm --recursive --force \
+        "$base_dir"/assets \
+        "$base_dir"/images \
+        "$base_dir"/data \
+        "$base_dir"/cache \
+        "$base_dir"/var \
+        "$base_dir"/tmp \
+        "$base_dir"/tests/_output
 
-echo "All clean!"
+log-header "All clean!"

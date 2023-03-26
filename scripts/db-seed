@@ -1,0 +1,18 @@
+#!/bin/bash
+
+dir=$(dirname "$0")
+
+# shellcheck source=./__common.sh
+source "$dir"/__common.sh
+
+log-header "Seed DB ..."
+exec-in-container app vendor/bin/codecept foodsharing:seed "$@"
+
+log-header "Running daily cronjob..."
+exec-in-container app bin/console foodsharing:daily-cronjob
+
+log-header "Running stats ..."
+exec-in-container app bin/console foodsharing:stats
+
+log-header "All done"
+"$dir"/__helping-print-intro.sh

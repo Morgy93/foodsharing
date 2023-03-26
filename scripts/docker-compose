@@ -3,10 +3,6 @@
 # which command to run by docker-compose and additional arguments is specified by the arguments
 # of this script
 
-set -o errexit
-
-dir=$(dirname "$0")
-
 # Export the current host operating system to FS_PLATFORM
 unameOut="$(uname -s)"
 case "${unameOut}" in
@@ -14,10 +10,19 @@ case "${unameOut}" in
     *)          export FS_PLATFORM=default;;
 esac
 
-# shellcheck source=./inc.sh
-source "$dir"/inc.sh
+# check if gp is there
+if [[ $(type -t gp) == file ]];
+then
+    FS_PLATFORM=gitpod
+fi
+
+dir=$(dirname "$0")
+
+# shellcheck source=./__common.sh
+source "$dir"/__common.sh
 
 docker-compose \
+  --file "$dir"/../docker/docker-compose.yml \
   --file "$dir"/../docker/docker-compose."$FS_ENV".yml \
   --project-name foodsharing_"$FS_ENV" \
   "$@"

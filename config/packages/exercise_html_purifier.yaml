@@ -3,7 +3,7 @@ exercise_html_purifier:
   html_profiles:
     default:
       config:
-        Cache.SerializerPermissions: 0775
+        Cache.SerializerPermissions: 0o775
         AutoFormat.DisplayLinkURI: false
         AutoFormat.Linkify: false
         CSS.AllowedProperties: []

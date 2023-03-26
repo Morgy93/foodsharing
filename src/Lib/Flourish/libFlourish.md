@@ -67,6 +67,7 @@ Also, get rid of two more classes that are now unused:
     - fURL
     - fUTF8
 - 2020-12-01: slimmed down fUpload
+- 2022-02-05: removed most of the Exception classes and made fExeption non-abstract
 
 ## General descriptions of this folder
 The folder is containing the classes of https://github.com/flourishlib/flourish-classes

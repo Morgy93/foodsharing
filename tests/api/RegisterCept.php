@@ -13,14 +13,14 @@ $birthdate = '1990-05-31';
 $I->haveHttpHeader('Content-Type', 'application/x-www-form-urlencoded');
 
 $I->sendPOST('/api/user', [
-	'firstname' => $first_name,
-	'lastname' => $last_name,
-	'email' => $email,
-	'mobilePhone' => '39833',
-	'password' => $pass,
-	'gender' => 0,
-	'birthdate' => $birthdate,
-	'subscribeNewsletter' => 1,
+    'firstname' => $first_name,
+    'lastname' => $last_name,
+    'email' => $email,
+    'mobilePhone' => '39833',
+    'password' => $pass,
+    'gender' => 0,
+    'birthdate' => $birthdate,
+    'subscribeNewsletter' => 1,
 //	'lat' => 51.36662,
 //	'lon' => 12.74167,
 //	'str' => 'Kantstraße',
@@ -33,11 +33,11 @@ $I->seeResponseIsJson();
 $I->seeResponseContainsJson(['name' => $first_name]);
 
 $I->seeInDatabase('fs_foodsaver', [
-	'email' => $email,
-	'name' => $first_name,
-	'nachname' => $last_name,
-	'newsletter' => 1,
-	'geb_datum' => $birthdate,
+    'email' => $email,
+    'name' => $first_name,
+    'nachname' => $last_name,
+    'newsletter' => 1,
+    'geb_datum' => $birthdate,
 //	'anschrift' => 'Kantstraße 5a',
 //	'plz' => '12345'
 ]);

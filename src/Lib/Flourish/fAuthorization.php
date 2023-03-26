@@ -206,13 +206,13 @@ class fAuthorization
 	private static function validateAuthLevel($level = null)
 	{
 		if (self::$levels === null) {
-			throw new fProgrammerException(
+			throw new fException(
 				'No authorization levels have been set, please call %s',
 				__CLASS__ . '::setAuthLevels()'
 			);
 		}
 		if ($level !== null && !isset(self::$levels[$level])) {
-			throw new fProgrammerException(
+			throw new fException(
 				'The authorization level specified, %1$s, is invalid. Must be one of: %2$s.',
 				$level,
 				join(', ', array_keys(self::$levels))
