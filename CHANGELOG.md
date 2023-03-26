@@ -60,10 +60,8 @@
 - Improved test stability when geocoding is involved !2620 @\_fridtjof_
 - some updates to composer packages. Removed deprecations in order to prepare for Symfony 6 ! 2617 @peter.toennies
 - Improved scripts. repaired outdated notify. Made test rerun faster. Made clean more powerfull !2622 @peter.toennies
-
-
 - Delete faulty mails on imap server !2591 @stcz
-
+- Bump @sentry/vue to version 7 !2636 @peter.toennies
 
 ## Development documentation
 
