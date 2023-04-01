@@ -923,8 +923,8 @@ storeview:
     without prior consultation!'
   pickupWeight: '{pickupWeight} were saved.'
   counter: <strong>{count}<span style="white-space:nowrap"> </span>{suffix}</strong>
-  teamInfo: There are <strong>{active}</strong> actives and <strong>{jumper}</strong>
-    backup people in the team.
+  teamInfo: There are <strong>{active}</strong> active and <strong>{jumper}</strong>
+    standby foodsavers in the team.
   pickupCount: At this store there have been {pickupCount} pick-ups.
   status_notes: status notes
 day: Day
@@ -1109,7 +1109,7 @@ bell:
   store_cr_times: Pick-up times have changed
   store_new_request: Request for {name}
   forum_answer: '{user} responded to your comment'
-  store_request_accept_wait: You were added to the jumper/waiting list.
+  store_request_accept_wait: You were added to the list of standby foodsavers.
   store_request_imposed: You were added to the store team.
   store_request_imposed_title: '{name}'
   foodsaver_verified_title: You are now verified!
@@ -1721,7 +1721,7 @@ store:
   all_of_my_stores: All my stores
   bread: All stores
   request:
-    to-jumper: Jumper list
+    to-jumper: List of standby foodsavers
     verified: User is verified
     title: Requests for {storeTitle}
     withdraw: Withdraw request
@@ -1738,7 +1738,7 @@ store:
   sm:
     reallyRemove: Do you really want to remove {name} from the store team?
     removeFromTeam: Remove from the team
-    filterJumper: Jumper
+    filterJumper: Standby
     filterUnverified: Unverified
     pickupReset: Standard sorting
     managementActions: Actions for Store Coordinators
@@ -1751,7 +1751,7 @@ store:
     managementEffect: 'Sort by last pick-up date:'
     managementToggleOff: Back to standard view
     managementToggleOn: Toggle view for Store Coordinators
-    makeJumper: add to jumper list
+    makeJumper: add to list of standby foodsavers
     reloadRequired: 'For updating the team information:'
     reloadPage: Reload page
     reallyDemote: Do you really want to remove {name} as Store Coordinator?
@@ -1772,7 +1772,7 @@ store:
   actions: Options
   chat:
     team: Message to the team
-    jumper: Message to Jumper
+    jumper: Message to standby foodsavers
   error: Store could not be loaded.
   noStores: There are no stores yet
   may_not_referred_to_in_public: Please do not refer to this store in public (for
@@ -1780,7 +1780,7 @@ store:
   memberSince: 'In team since: {date}'
   lastPickupShort: last {date}
   lastPickup: 'Last pick-up: {date}'
-  jumperSince: 'Jumper since: {date}'
+  jumperSince: 'Standby since: {date}'
   tooltip_managing: You are responsible for this store
   not-in-team: You are not a member of this store's team yet.
   tooltip_yellow: Open collections in the next five days
@@ -1789,20 +1789,20 @@ store:
   short_tooltip_yellow: Open pick-ups in 5 days
   short_tooltip_orange: Open pick-ups in 3 days
   short_tooltip_red: Open pick-ups today or tomorrow
-  springer_conversation_name: Jumper {name}
+  springer_conversation_name: Standby {name}
   my_last_pickup: My last pick-up
   average_collection_quantity: Pick-up quantity on average
   mayManage: Passed the quiz for Store Coordinators.
   mayAmb: Passed the ambassador quiz.
   fetchCount: Picked up {count}× here.
-  isJumper: Is on the jumper list.
+  isJumper: Is on the list of standby foodsavers.
   noPickup: Has never picked up here.
   go: To the team page
   pickup_slot_unavailable: This pick-up slot is further in the future than intended
     by the responsibles. So please try again at a later date.
   appliedFor: Request made
-  willgetcontacted: You are currently on the jumper list. You will be contacted if
-    help is needed.
+  willgetcontacted: You are currently on the list of standby foodsavers. You will
+    be contacted if help is needed.
   team:
     isfull: Team is full
   filter: Filter by …
@@ -1829,7 +1829,7 @@ store:
   complete: complete database
   peoplecame: It has often happened that people went to a store unsolicited.
   smneeded: To set up a store, you must be a Store Coordinator.
-  tooltip_jumping: 'You are a jumper in this store'
+  tooltip_jumping: 'You are a standby foodsaver in this store'
   useRegionPickupRules: 'This is a CHERRY store. In addition to the rules for this
     store, the following district-wide CHERRY rule applies:'
   regionPickupRulesInactive: The additional district rules for pick-ups are not active
@@ -2379,7 +2379,7 @@ dashboard:
     pending: Requests have been made to
     stores: Your stores
     managing_stores: Stores you coordinate
-    jumping_stores: Your jumping list stores
+    jumping_stores: Stores where you are standby
     buddies: People you know
     users: foodsavers
     polls: Polls
