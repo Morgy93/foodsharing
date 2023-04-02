@@ -16,6 +16,7 @@ import { expose } from '@/utils'
 import { removeBasket, listBasketCoordinates } from '@/api/baskets'
 import basketStore from '@/stores/baskets'
 import AvatarList from '@/components/AvatarList'
+import CreateOrEditBasket from './components/CreateOrEditBasket.vue'
 
 expose({
   tryRemoveBasket,
@@ -110,6 +111,11 @@ $(document).ready(() => {
       RequestForm,
     })
     vueApply('#' + requestFormContainerId)
+  }
+
+  if (document.getElementById('createOrEdit')) {
+    vueRegister({ CreateOrEditBasket })
+    vueApply('#create-or-edit-basket')
   }
 
   // Creator avatar is only visible on /essenskoerbe/{id}, not on /essenskoerbe/find

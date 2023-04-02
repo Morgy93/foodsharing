@@ -29,14 +29,14 @@
       />
     </template>
     <template #actions>
-      <button
+      <a
+        :href="$url('basketCreateOrEdit')"
         role="menuitem"
         class="testing-basket-create dropdown-item dropdown-action"
-        @click="openBasketCreationForm"
       >
         <i class="icon-subnav fas fa-plus" />
         {{ $i18n('basket.add') }}
-      </button>
+      </a>
       <a
         :href="$url('baskets')"
         role="menuitem"

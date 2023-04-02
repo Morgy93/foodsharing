@@ -8,6 +8,7 @@ const urls = {
   academy: () => '/?page=content&sub=academy',
   basket: (basketId) => `/essenskoerbe/${basketId}`,
   baskets: () => '/essenskoerbe',
+  basketCreateOrEdit: () => '/essenskoerbe/createOrEdit',
   blog: () => '/news',
   blogAdd: () => '/?page=blog&sub=add',
   blogEdit: (blogId) => `/?page=blog&sub=edit&id=${blogId}`,

@@ -249,6 +249,8 @@ class BasketView extends View
                 'landlineNumber' => ($allowContactByPhone && !empty($basket['tel'])) ? $basket['tel'] : null,
                 'allowRequestByMessage' => $allowContactByMessage
             ]);
+
+            $this->vueComponent('createOrEditBasket', 'create-or-edit-basket');
         }
         if ($this->basketPermissions->mayEdit($basket['fs_id'])) {
             $request = '
