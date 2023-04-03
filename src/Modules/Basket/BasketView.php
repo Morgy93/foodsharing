@@ -250,7 +250,6 @@ class BasketView extends View
                 'allowRequestByMessage' => $allowContactByMessage
             ]);
 
-            $this->vueComponent('createOrEditBasket', 'create-or-edit-basket');
         }
         if ($this->basketPermissions->mayEdit($basket['fs_id'])) {
             $request = '

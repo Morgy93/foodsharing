@@ -66,4 +66,9 @@ class BasketControl extends Control
             $this->view->basketTaken($basket);
         }
     }
+
+    private function createOrEdit(): void
+    {
+        $this->vueComponent('createOrEditBasket', 'create-or-edit-basket');
+    }
 }
