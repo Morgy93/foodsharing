@@ -113,7 +113,7 @@ $(document).ready(() => {
     vueApply('#' + requestFormContainerId)
   }
 
-  if (document.getElementById('createOrEdit')) {
+  if (document.getElementById('create-or-edit-basket')) {
     vueRegister({ CreateOrEditBasket })
     vueApply('#create-or-edit-basket')
   }

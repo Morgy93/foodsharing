@@ -67,8 +67,8 @@ class BasketControl extends Control
         }
     }
 
-    private function createOrEdit(): void
+    private function create(): void
     {
-        $this->vueComponent('createOrEditBasket', 'create-or-edit-basket');
+        $this->pageHelper->addContent($this->view->vueComponent('create-or-edit-basket', 'CreateOrEditBasket'));
     }
 }
