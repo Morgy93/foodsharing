@@ -249,7 +249,6 @@ class BasketView extends View
                 'landlineNumber' => ($allowContactByPhone && !empty($basket['tel'])) ? $basket['tel'] : null,
                 'allowRequestByMessage' => $allowContactByMessage
             ]);
-
         }
         if ($this->basketPermissions->mayEdit($basket['fs_id'])) {
             $request = '
