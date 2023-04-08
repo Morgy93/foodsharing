@@ -3,10 +3,7 @@ dir=$(dirname "$0")
 
 # shellcheck source=./__common.sh
 source "$dir"/__common.sh
-
-if [ "$1" ]; then
-  FS_ENV="$1"
-fi
+FS_ENV="${1:-dev}"
 
 log-header "Clear assets ..."
 rm -rf "$(cd "$dir/.." && pwd)"/assets/*

@@ -5,3 +5,28 @@ regionPin:
   lat: Широта
 lat: Широта
 lon: Долгота
+desc: Описание
+description: Описание
+plz: Почтовый индекс (автоматически с карты выше)
+email: Адрес электронной почты
+attachement: Вложение
+telefon: Номер стационарного телефона (включая код страны, начинается с +)
+geschlecht: Пол
+handy: Номер мобильного телефона (включая код страны, начинается с +)
+name: Имя
+add: добавить
+nachname: Фамилия
+subject: Тема
+address: Адрес
+edit: редактировать
+geb_datum: Дата рождения (гггг-мм-дд)
+bootstrap-datepicker:
+  labelToday: Сегодня
+botschafter: Посол
+numbers:
+  decimal_separator: ','
+  thousands_separator: ' '
+  million_abbreviation: ' миллионов'
+  billion_abbreviation: ' миллиардов'
+logincontrol:
+  success: Успех!

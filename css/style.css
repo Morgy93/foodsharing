@@ -593,14 +593,6 @@ ul.linklist li > a i.fa {
   width: 17px;
 }
 
-.history li.title {
-  font-size: 13px;
-  font-weight: bold;
-  border-top: 1px solid var(--fs-border-default);
-  padding-top: 8px;
-  margin-top: 8px;
-}
-
 ul.linklist li span.c {
   clear: both;
   display: block;

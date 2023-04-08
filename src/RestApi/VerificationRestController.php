@@ -7,12 +7,15 @@ use Foodsharing\Modules\Bell\BellGateway;
 use Foodsharing\Modules\Bell\DTO\Bell;
 use Foodsharing\Modules\Core\DBConstants\Bell\BellType;
 use Foodsharing\Modules\Foodsaver\FoodsaverGateway;
+use Foodsharing\Modules\Profile\DTO\PassHistoryEntry;
+use Foodsharing\Modules\Profile\DTO\VerificationHistoryEntry;
 use Foodsharing\Modules\Profile\ProfileGateway;
 use Foodsharing\Modules\Store\PickupGateway;
 use Foodsharing\Permissions\ProfilePermissions;
 use Foodsharing\Utility\EmailHelper;
 use FOS\RestBundle\Controller\AbstractFOSRestController;
 use FOS\RestBundle\Controller\Annotations as Rest;
+use Nelmio\ApiDocBundle\Annotation\Model;
 use OpenApi\Annotations as OA;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\Exception\AccessDeniedHttpException;
@@ -93,7 +96,7 @@ class VerificationRestController extends AbstractFOSRestController
         );
         $this->bellGateway->addBell($userId, $bellData);
 
-        $passportMailLink = 'https://foodsharing.de/' . $passportGenLink;
+        $passportMailLink = 'https://foodsharing.de' . $passportGenLink;
         $fs = $this->foodsaverGateway->getFoodsaver($userId);
         $this->emailHelper->tplMail('user/verification', $fs['email'], [
             'name' => $fs['name'],
@@ -140,5 +143,59 @@ class VerificationRestController extends AbstractFOSRestController
         $this->foodsaverGateway->changeUserVerification($userId, $sessionId, false);
 
         return $this->handleView($this->view([], 200));
+    }
+
+    /**
+     * Returns a list of the user's past (de-)verifications.
+     *
+     * @OA\Parameter(name="userId", in="path", @OA\Schema(type="integer"), description="which user's history to return")
+     * @OA\Response(response="200", description="Success.", @OA\JsonContent(type="array",
+     *     @OA\Items(ref=@Model(type=VerificationHistoryEntry::class))
+     * ))
+     * @OA\Response(response="401", description="Not logged in.")
+     * @OA\Response(response="403", description="Insufficient permissions to view this user's history.")
+     * @OA\Tag(name="verification")
+     * @Rest\Get("user/{userId}/verificationhistory", requirements={"userId" = "\d+"})
+     */
+    public function getVerificationHistoryAction(int $userId): Response
+    {
+        $viewerId = $this->session->id();
+        if (!$viewerId) {
+            throw new UnauthorizedHttpException('');
+        }
+        if (!$this->profilePermissions->maySeeHistory($userId)) {
+            throw new AccessDeniedHttpException();
+        }
+
+        $history = $this->profileGateway->getVerifyHistory($userId);
+
+        return $this->handleView($this->view($history, 200));
+    }
+
+    /**
+     * Returns a list of the times the user's pass was created.
+     *
+     * @OA\Parameter(name="userId", in="path", @OA\Schema(type="integer"), description="which user's history to return")
+     * @OA\Response(response="200", description="Success.", @OA\JsonContent(type="array",
+     *     @OA\Items(ref=@Model(type=PassHistoryEntry::class))
+     * ))
+     * @OA\Response(response="401", description="Not logged in.")
+     * @OA\Response(response="403", description="Insufficient permissions to view this user's history.")
+     * @OA\Tag(name="verification")
+     * @Rest\Get("user/{userId}/passhistory", requirements={"userId" = "\d+"})
+     */
+    public function getPassHistoryAction(int $userId): Response
+    {
+        $viewerId = $this->session->id();
+        if (!$viewerId) {
+            throw new UnauthorizedHttpException('');
+        }
+        if (!$this->profilePermissions->maySeeHistory($userId)) {
+            throw new AccessDeniedHttpException();
+        }
+
+        $history = $this->profileGateway->getPassHistory($userId);
+
+        return $this->handleView($this->view($history, 200));
     }
 }

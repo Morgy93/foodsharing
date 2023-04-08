@@ -72,24 +72,24 @@
     >
       <button
         class="list-group-item list-row-item list-group-item-action"
-        :class="{'accept': status === 1}"
-        @click.prevent="acceptInvitation(entry.id); status = 1"
+        :class="{'accept': status === EventInvitationResponse.EVENT_INVITATION_RESPONSE_YES}"
+        @click.prevent="sendInvitationUpdate(EventInvitationResponse.EVENT_INVITATION_RESPONSE_YES)"
       >
         <i class="fas fa-calendar-check d-none d-sm-inline" />
         {{ $i18n('events.button.yes') }}
       </button>
       <button
         class="list-group-item list-row-item list-group-item-action"
-        :class="{'maybe': status === 2}"
-        @click.prevent="maybeInvitation(entry.id); status = 2"
+        :class="{'maybe': status === EventInvitationResponse.EVENT_INVITATION_RESPONSE_MAYBE}"
+        @click.prevent="sendInvitationUpdate(EventInvitationResponse.EVENT_INVITATION_RESPONSE_MAYBE)"
       >
         <i class="fas fa-question-circle d-none d-sm-inline" />
         {{ $i18n('events.button.maybe') }}
       </button>
       <button
         class="list-group-item list-row-item list-group-item-action"
-        :class="{'default': status === 3}"
-        @click.prevent="declineInvitation(entry.id); status = 3"
+        :class="{'default': status === EventInvitationResponse.EVENT_INVITATION_RESPONSE_NO}"
+        @click.prevent="sendInvitationUpdate(EventInvitationResponse.EVENT_INVITATION_RESPONSE_NO)"
       >
         <i class="fas fa-fw fa-calendar-times d-none d-sm-inline" />
         {{ $i18n('events.button.no') }}
@@ -99,7 +99,8 @@
 </template>
 
 <script>
-import { acceptInvitation, declineInvitation, maybeInvitation } from '@/api/events'
+import { EventInvitationResponse, mutations } from '@/stores/events'
+import { showLoader, hideLoader, pulseSuccess, pulseError } from '@/script'
 
 export default {
   props: {
@@ -108,6 +109,7 @@ export default {
   },
   data () {
     return {
+      EventInvitationResponse: EventInvitationResponse,
       startDate: new Date(this.entry.start_ts * 1000),
       endDate: new Date(this.entry.end_ts * 1000),
       status: this.entry.status,
@@ -162,9 +164,18 @@ export default {
     },
   },
   methods: {
-    acceptInvitation,
-    maybeInvitation,
-    declineInvitation,
+    async sendInvitationUpdate (newStatus) {
+      showLoader()
+      try {
+        await mutations.setInvitationResponse(this.entry.id, newStatus)
+        const texts = ['events.rsvp.yes', 'events.rsvp.maybe', 'events.rsvp.no']
+        pulseSuccess(this.$i18n(texts[newStatus - 1]))
+        this.status = newStatus
+      } catch (e) {
+        pulseError(this.$i18n('error_unexpected'))
+      }
+      hideLoader()
+    },
   },
 }
 </script>

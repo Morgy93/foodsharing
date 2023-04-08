@@ -404,6 +404,16 @@ class SeedCommand extends Command implements CustomCommandInterface
         ]);
         $this->writeUser($userbot2, $password, 'ambassador');
 
+        // Create an ambassador whose profile is already deleted and cannot be used but who will show up in verification histories
+        $userbotDeleted = $I->createAmbassador($password, [
+            'email' => 'userbotdeleted@example.com',
+            'name' => 'Bot3',
+            'bezirk_id' => $region2,
+            'about_me_intern' => 'hello!',
+            'deleted_at' => Carbon::now()->subYear()
+        ]);
+        $this->writeUser($userbotDeleted, $password, 'deleted ambassador');
+
         $userbotregion2 = $I->createAmbassador($password, [
             'email' => 'userbotreg2@example.com',
             'name' => 'Bot Entenhausen',
@@ -519,6 +529,7 @@ class SeedCommand extends Command implements CustomCommandInterface
         $this->output->writeln('Create some more users');
         $this->foodsavers = array_column([$user2, $userbot, $userorga, $userbot2, $userStoreManager, $userStoreManager2], 'id');
         foreach ($this->foodsavers as $user) {
+            $this->addVerificationAndPassHistory($I, $user, $userbotDeleted['id'], 13);
             $this->addVerificationAndPassHistory($I, $user, $userbot['id']);
         }
         foreach (range(0, 100) as $_) {
@@ -528,6 +539,7 @@ class SeedCommand extends Command implements CustomCommandInterface
             $I->addCollector($user['id'], $store['id']);
             $I->addStoreNotiz($user['id'], $store['id']);
             $I->addForumThreadPost($thread['id'], $user['id']);
+            $this->addVerificationAndPassHistory($I, $user['id'], $userbotDeleted['id'], 13);
             $this->addVerificationAndPassHistory($I, $user['id'], $userbot['id']);
             $I->addEventInvitation($event['id'], $user['id']);
             $this->output->write('.');
@@ -718,16 +730,20 @@ class SeedCommand extends Command implements CustomCommandInterface
     }
 
     /**
-     * Adds some entries to the verification and pass history of a user.
+     * Adds some entries to the verification and pass history of a user. The verification history will be filled with
+     * three entries at 1 month, 6 months, and 1 year. The offset parameter can be used to shift these entries by
+     * some months into the past.
      *
      * @param int $userId the user to be verified
      * @param int $verifierId the ambassador who verified the user
+     * @param int $monthsInPast number of months by which the verification entries will be shifted into the past
      */
-    private function addVerificationAndPassHistory(Foodsharing $I, int $userId, int $verifierId)
+    private function addVerificationAndPassHistory(Foodsharing $I, int $userId, int $verifierId, int $monthsInPast = 0)
     {
-        $I->addVerificationHistory($userId, $verifierId, true, Carbon::today()->sub('1 year'));
-        $I->addVerificationHistory($userId, $verifierId, false, Carbon::today()->sub('6 months'));
-        $I->addVerificationHistory($userId, $verifierId, true, Carbon::today()->sub('1 month'));
+        $offset = Carbon::today()->subMonths($monthsInPast);
+        $I->addVerificationHistory($userId, $verifierId, true, $offset->sub('1 year'));
+        $I->addVerificationHistory($userId, $verifierId, false, $offset->sub('6 months'));
+        $I->addVerificationHistory($userId, $verifierId, true, $offset->sub('1 month'));
 
         foreach (range(0, 3) as $_) {
             $I->addPassHistory($userId, $verifierId);

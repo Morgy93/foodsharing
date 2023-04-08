@@ -1,9 +1,17 @@
-import { patch, remove } from './base'
+import { get, patch, remove } from './base'
 
 export async function verifyUser (userId) {
-  return (await patch(`/user/${userId}/verification`))
+  return await patch(`/user/${userId}/verification`)
 }
 
 export async function deverifyUser (userId) {
-  return (await remove(`/user/${userId}/verification`))
+  return await remove(`/user/${userId}/verification`)
+}
+
+export async function getVerificationHistory (userId) {
+  return await get(`/user/${userId}/verificationhistory`)
+}
+
+export async function getPassHistory (userId) {
+  return await get(`/user/${userId}/passhistory`)
 }

@@ -41,15 +41,15 @@
 
           <b-button-group v-if="statusAvailable()" size="sm">
             <b-button
-              :variant="statusVariant(1)"
-              @click="acceptInvitation(eventId); currentStatus = 1"
+              :variant="statusVariant(EventInvitationStatus.EVENT_INVITATION_RESPONSE_YES)"
+              @click="sendInvitationUpdate(EventInvitationStatus.EVENT_INVITATION_RESPONSE_YES)"
             >
               <i class="fas fa-fw fa-calendar-check" />
               {{ $i18n('events.button.yes') }}
             </b-button>
             <b-button
-              :variant="statusVariant(2)"
-              @click="maybeInvitation(eventId); currentStatus = 2"
+              :variant="statusVariant(EventInvitationStatus.EVENT_INVITATION_RESPONSE_MAYBE)"
+              @click="sendInvitationUpdate(EventInvitationStatus.EVENT_INVITATION_RESPONSE_MAYBE)"
             >
               <i class="fas fa-fw fa-question-circle" />
               <span class="d-none d-sm-inline">
@@ -57,8 +57,8 @@
               </span>
             </b-button>
             <b-button
-              :variant="statusVariant(3)"
-              @click="declineInvitation(eventId)"
+              :variant="statusVariant(EventInvitationStatus.EVENT_INVITATION_RESPONSE_NO)"
+              @click="sendInvitationUpdate(EventInvitationStatus.EVENT_INVITATION_RESPONSE_NO)"
             >
               <!-- TODO faded UI after clicking (don't remove, to allow correcting mis-clicks) -->
               <i class="fas fa-fw fa-calendar-times" />
@@ -74,8 +74,9 @@
 </template>
 
 <script>
-import { acceptInvitation, declineInvitation, maybeInvitation } from '@/api/events'
 import CalendarDate from '@/components/CalendarDate'
+import { hideLoader, pulseError, pulseSuccess, showLoader } from '@/script'
+import { mutations, EventInvitationResponse } from '@/stores/events'
 
 export default {
   components: { CalendarDate },
@@ -90,6 +91,7 @@ export default {
   },
   data () {
     return {
+      EventInvitationStatus: EventInvitationResponse,
       startDate: new Date(Date.parse(this.start)),
       endDate: new Date(Date.parse(this.end)),
       currentStatus: this.status,
@@ -122,9 +124,6 @@ export default {
     },
   },
   methods: {
-    acceptInvitation,
-    maybeInvitation,
-    declineInvitation,
     statusAvailable: function () {
       return this.currentStatus >= 0
     },
@@ -136,6 +135,18 @@ export default {
       }
     },
     edit: function () {},
+    async sendInvitationUpdate (newStatus) {
+      showLoader()
+      try {
+        await mutations.setInvitationResponse(this.eventId, newStatus)
+        const texts = ['events.rsvp.yes', 'events.rsvp.maybe', 'events.rsvp.no']
+        pulseSuccess(this.$i18n(texts[newStatus - 1]))
+        this.currentStatus = newStatus
+      } catch (e) {
+        pulseError(this.$i18n('error_unexpected'))
+      }
+      hideLoader()
+    },
   },
 }
 </script>

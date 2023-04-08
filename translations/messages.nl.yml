@@ -1,5 +1,5 @@
 geb_datum: Geboortedatum (JJJJ-MM-DD)
-nachname: Familienaam
+nachname: Achternaam
 address: Adres
 email: e-mailadres
 lat: breedtegraad
@@ -13,3 +13,30 @@ group:
   function:
     welcome: Begroeting
 fax: fax
+name: Naam
+title: Kop
+add: voeg toe
+message: Bericht
+desc: Beschrijving
+geschlecht: Geslacht
+botschafter: Ambassadeur
+options: Opties
+bezirk: Wijk
+active: geactiveerd
+mailbox_name: mailbox naam
+rolle: Gebruikersrol
+status: huidige status
+info: Informatie
+picture: Afbeelding
+anschrift: Straat en huisnummer (automatisch uit kaart boven, corrigeer eventueel
+  achteraf)
+fs_id: foodsharing-ID
+stadt: Uw stad of gemeente
+regions: Districten
+photo: Foto
+daterange: Periode
+groups:
+  empty: Je bent nog in geen werkgroep
+yes: Ja
+no: Nee
+betrieb: samenwerkende bedrijven

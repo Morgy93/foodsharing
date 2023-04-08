@@ -31,7 +31,7 @@ startpage:
   call_to_action:
     title: Delta
     text: Vi ble grunnlagt i 2012, og nå er vi en internasjonal bevegelse med over
-      200 000 brukere i Tyskland, Østerrike, Sveits og andre europeiske land.
+      500 000 brukere i Tyskland, Østerrike, Sveits og andre europeiske land.
   vision:
     title: Oppdrag
     text: Vårt langsiktige mål er å redusere kastkulturen av mat og andre ressurser.
@@ -208,6 +208,7 @@ polls:
   ended: Tidligere avstemninger
   ongoing: Pågående avstemninger
   future: Fremtidige avstemninger
+  until: mulig frem til {until}
 email_template:
   help_needed:
     support_mail: it@foodsharing.network
@@ -594,6 +595,7 @@ dashboard:
     baskets: Matkurver
     managing_stores: Ditt bedriftsansvar
     jumping_stores: Springer-selskapene dine
+    polls: Avstemninger
   homeRegion: Ditt hjemdistrikt er {region}.
   chooseHomeRegion: Velg et hjemdistrikt.
   updates_title_some: Oppdateringsoversikt ({0})
@@ -642,6 +644,7 @@ dashboard:
   full_subline: Du hentet dagligvarer <b>{pickups} ganger</b>, og sparte <b>{weight}
     kg</b>. Hjemmedistriktet ditt er <b>{region}</b>.
   eventCount: Neste hendelser ({count})
+  polls: Dine pågående avstemninger
 search:
   persons: personer
   groups: grupper
@@ -1547,6 +1550,10 @@ group:
       ambassadør?
     set_admin_text: Er du sikker på at du vil legge til {name} ({id}) som administrator?
     set_ambassador_title: Registrer medlem som ambassadør
+    is_home_region: Hjemdistrikt
+    is_verified: Bekreftet
+    remove_text_group: Er du sikker på at du vil fjerne {name} ({id}) fra arbeidsgruppen?
+    remove_text_region: Er du sikker på at du vil fjerne {name} ({id}) fra regionen?
   saved: Endringene har blitt lagret
   subtitle: her kan du finne hjelp og mye å gjøre…
   member_count: '{0} ingen bidragsytere|{1} en bidragsyter| [2, Inf[ %count% bidragsytere'
@@ -1579,6 +1586,9 @@ group:
   enterskills: 'Ferdigheter:'
   enterxp: 'Erfaring:'
   application_from: fra
+  last_activity: Siste aktivitet
+  filter_by_last_activity: Ikke aktiv på måneder
+  role_name: Rolle
 bcard:
   generate: Lag visittkort
   actions: Alternativer
@@ -1939,6 +1949,10 @@ forum:
       en stat.
     navigate_to_newest_post: gå til siste innlegg
     navigate_to_oldest_post: gå til første innlegg
+    delivery_mail:
+      active: aktivert
+      non_active: deaktivert
+      title: Postlevering
   post:
     body: Beskjed
     delete: Slett innlegget
@@ -2417,6 +2431,12 @@ terminology:
   homepage: Hjemmeside
   fsps: Distribusjonsstasjoner
   boardAdmins: Borde
+  role:
+    "1": Matredder
+    "2": Samarbeidsoffiser
+    "3": Ambassadør
+    "4": Organisasjonsperson
+    "0": matdeler
 gender:
   d: mangfoldig
   f: Fru
@@ -2433,6 +2453,7 @@ ui:
     on: publisert
 bread:
   backToOverview: tilbake til oversikt
+  backToStore: tilbake til firmasiden
 apply_type: Hvem kan melde seg inn i denne gruppen?
 public_time: Omtrentlig tid på dagen for henting
 public_info: Offentlig info for butikken
@@ -2509,8 +2530,8 @@ regionOptions:
   enableReportButton: Aktiver rapportknapp på profilene til hjemmebrukerne i dette
     distriktet.
   regionPickupInactiveHours: 'Vennligst angi hvor mange timer før henting denne regelen
-    skal slutte å være implementert:'
-  regionPickupLimitNumber: 'Angi maksimalt antall mulige samlinger for denne perioden:'
+    skal slutte å være implementert'
+  regionPickupLimitNumber: 'Angi maksimalt antall mulige samlinger for denne perioden'
 messages:
   bread: Meldinger
 list:
@@ -2564,6 +2585,7 @@ releases:
   "2020-10": Versjon «cranberry» (oktober 2020)
   "2022-05": Versjon "Blåbær" 🍇 (Mai 2022)
   "2022-01": Versjon "Grapefrukt" 🍋 (Januar 2022)
+  "2022-12": Utgivelse "Iskrem" 🍇 (desember 2022)
 push_notifications:
   test_notification_title: Push-varsler er aktivert
   test_notification_body: Flott, det ser ut til å ha fungert :)
@@ -2721,7 +2743,7 @@ navigation:
   help_and_support: Hjelp og støtte
   support: Støtte
   map: Kart
-  contact: Kontakt
+  contact: Kontakt og støtte
   help: Hjelp
   notifications: Varsler
   conversations: Beskjed
@@ -2732,6 +2754,7 @@ navigation:
   promotion: Innen IT trenger vi deg!
   profil: 👋 Hei {name}!
   system_administration: Systemadministrasjon
+  news_from_it: Nyheter og forstyrrelser
 error:
   mail_bounce:
     link_2: Jeg trenger hjelp

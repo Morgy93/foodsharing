@@ -35,6 +35,9 @@ function showSelected (event, selected, map, engine) {
   map.fitBounds(markers.getBounds())
 }
 
+/**
+ * @deprecated use the vue component LeafletLocationSearch instead
+ */
 export function attachAddressPicker () {
   const data = [$('#lat').val(), $('#lon').val()]
   let center = [51, 12]

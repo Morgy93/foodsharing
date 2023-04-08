@@ -35,7 +35,9 @@
 - Fix TeamStoreStatus and move getStoreMarkers to StoreGateway !2560 @KoeMai
 - Move uploadlogic and actions from controller to transactionclass for reuse !2478 @martncodes-de
 - Reimplement create new forum thread in vue js !2627 @chriswalg
+- New vue component for address search !2632 @alex.simm
 
+- Replaced the history dialogs on profile pages with a vue component !2587 @alex.simm
 
 ## Dev/Test/CI stuff
 - Fix given null parameter !2550 @BibaltiK
@@ -59,10 +61,8 @@
 - Improved test stability when geocoding is involved !2620 @\_fridtjof_
 - some updates to composer packages. Removed deprecations in order to prepare for Symfony 6 ! 2617 @peter.toennies
 - Improved scripts. repaired outdated notify. Made test rerun faster. Made clean more powerfull !2622 @peter.toennies
-
-
 - Delete faulty mails on imap server !2591 @stcz
-
+- Replaced FS_ENV to "${1:-dev}" for containers-start to solve unbound variable !2542 @chriswalg
 
 ## Development documentation
 

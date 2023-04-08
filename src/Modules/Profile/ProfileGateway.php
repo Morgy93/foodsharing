@@ -2,6 +2,7 @@
 
 namespace Foodsharing\Modules\Profile;
 
+use Carbon\Carbon;
 use Foodsharing\Lib\WebSocketConnection;
 use Foodsharing\Modules\Core\BaseGateway;
 use Foodsharing\Modules\Core\Database;
@@ -9,6 +10,9 @@ use Foodsharing\Modules\Core\DBConstants\BasketRequests\Status as RequestStatus;
 use Foodsharing\Modules\Core\DBConstants\Store\CooperationStatus;
 use Foodsharing\Modules\Core\DBConstants\Store\StoreLogAction;
 use Foodsharing\Modules\Core\DBConstants\Unit\UnitType;
+use Foodsharing\Modules\Foodsaver\Profile;
+use Foodsharing\Modules\Profile\DTO\PassHistoryEntry;
+use Foodsharing\Modules\Profile\DTO\VerificationHistoryEntry;
 use Foodsharing\Utility\WeightHelper;
 
 final class ProfileGateway extends BaseGateway
@@ -463,16 +467,20 @@ final class ProfileGateway extends BaseGateway
         ]);
     }
 
+    /**
+     * @return PassHistoryEntry[]
+     */
     public function getPassHistory(int $fsId): array
     {
         $stm = '
 			SELECT
 			  pg.foodsaver_id,
-			  pg.date,
 			  UNIX_TIMESTAMP(pg.date) AS date_ts,
 			  pg.bot_id,
 			  fs.nachname,
-			  fs.name
+			  fs.name,
+			  fs.photo,
+			  fs.sleep_status
 			FROM
 			  fs_pass_gen pg
 			LEFT JOIN
@@ -486,20 +494,35 @@ final class ProfileGateway extends BaseGateway
 			DESC
 		';
 
-        return $this->db->fetchAll($stm, [':fs_id' => $fsId]);
+        $passHistory = $this->db->fetchAll($stm, [':fs_id' => $fsId]);
+
+        return array_map(function ($entry) {
+            $actor = $entry['bot_id']
+                ? new Profile($entry['bot_id'], $entry['name'] . ' ' . $entry['nachname'], $entry['photo'],
+                    $entry['sleep_status'] ?? 0)
+                : null;
+
+            return PassHistoryEntry::create($entry['foodsaver_id'], Carbon::createFromTimestamp($entry['date_ts']), $actor
+            );
+        }, $passHistory);
     }
 
+    /**
+     * @return VerificationHistoryEntry[]
+     */
     public function getVerifyHistory(int $fsId): array
     {
         $stm = '
 			SELECT
 			  vh.fs_id,
-			  vh.date,
 			  UNIX_TIMESTAMP(vh.date) AS date_ts,
 			  vh.change_status,
 			  vh.bot_id,
 			  fs.nachname,
-			  fs.name
+			  fs.name,
+			  fs.photo,
+			  fs.sleep_status,
+			  fs.deleted_at
 			FROM
 			  fs_verify_history vh
 			LEFT JOIN
@@ -512,9 +535,17 @@ final class ProfileGateway extends BaseGateway
 			  vh.date
 			DESC
 		';
-        $ret = $this->db->fetchAll($stm, [':fs_id' => $fsId]);
+        $verificationHistory = $this->db->fetchAll($stm, [':fs_id' => $fsId]);
 
-        return $ret;
+        return array_map(function ($entry) {
+            $actor = $entry['bot_id'] && $entry['deleted_at'] == null
+                ? new Profile($entry['bot_id'], $entry['name'] . ' ' . $entry['nachname'], $entry['photo'], $entry['sleep_status'] ?? 0)
+                : null;
+
+            return VerificationHistoryEntry::create($entry['fs_id'], Carbon::createFromTimestamp($entry['date_ts']),
+                $entry['change_status'] > 0, $actor
+            );
+        }, $verificationHistory);
     }
 
     public function listStoresOfFoodsaver(int $fsId): array

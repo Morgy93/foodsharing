@@ -175,6 +175,8 @@ group:
     old_edit_hint: You can now find the member administration on the tab
     remove_text_group: Do you really want to remove {name} ({id}) from this workgroup?
     remove_text_region: Do you really want to remove {name} ({id}) from the region?
+    is_verified: Verified
+    is_home_region: Home region
   application_from: by
   entermotivation: 'Motivation:'
   enterskills: 'Skills:'
@@ -486,8 +488,11 @@ profile:
       vsclients: towards clients
       ofstore: by store employees
       bossy: Has shown invasive behavior
-      ofclients: by clients
-      offs: by Foodsavers
+      ofclients: by customers
+      offs: by foodsavers
+      nearfs: in front of foodsavers
+      nearclients: in front of customers
+      nearstore: in front of employees
     control:
       total: total
       tot: total
@@ -510,11 +515,14 @@ profile:
     noshow: The person didn't come
     late: The person was late
     cancellation: Frequent late cancellation of appointments without finding a replacement
+    readup: "Find advice on processing a report here: <a href='https://wiki.foodsharing.de/Regelverletzungen_-_Konsequenzen_und_Bearbeitung#D.29_Bearbeitung_einer_Meldung'>Processing\
+      \ a report</a>"
   history:
     wasVerified: Verified
     lostVerification: De-verified
-    noActor: There is no information about the creator
+    noActor: unknown
     noData: No data is available.
+    actionBy: by
   nav:
     storelist: Stores ({count})
     notes: Notes <strong>({count})</strong>
@@ -729,6 +737,10 @@ forum:
     closed: Closed thread
     navigate_to_newest_post: "jump to latest post"
     navigate_to_oldest_post: "jump to first post"
+    delivery_mail:
+      title: Mail dispatch
+      active: activated
+      non_active: disabled
   post:
     delete: Delete post
     body: Message
@@ -911,8 +923,8 @@ storeview:
     without prior consultation!'
   pickupWeight: '{pickupWeight} were saved.'
   counter: <strong>{count}<span style="white-space:nowrap"> </span>{suffix}</strong>
-  teamInfo: There are <strong> {active} </strong> actives and <strong> {jumper} </strong>
-    jumpers in the team.
+  teamInfo: There are <strong>{active}</strong> active and <strong>{jumper}</strong>
+    standby foodsavers in the team.
   pickupCount: At this store there have been {pickupCount} pick-ups.
   status_notes: status notes
 day: Day
@@ -1097,7 +1109,7 @@ bell:
   store_cr_times: Pick-up times have changed
   store_new_request: Request for {name}
   forum_answer: '{user} responded to your comment'
-  store_request_accept_wait: You were added to the jumper/waiting list.
+  store_request_accept_wait: You were added to the list of standby foodsavers.
   store_request_imposed: You were added to the store team.
   store_request_imposed_title: '{name}'
   foodsaver_verified_title: You are now verified!
@@ -1709,7 +1721,7 @@ store:
   all_of_my_stores: All my stores
   bread: All stores
   request:
-    to-jumper: Jumper list
+    to-jumper: List of standby foodsavers
     verified: User is verified
     title: Requests for {storeTitle}
     withdraw: Withdraw request
@@ -1726,7 +1738,7 @@ store:
   sm:
     reallyRemove: Do you really want to remove {name} from the store team?
     removeFromTeam: Remove from the team
-    filterJumper: Jumper
+    filterJumper: Standby
     filterUnverified: Unverified
     pickupReset: Standard sorting
     managementActions: Actions for Store Coordinators
@@ -1739,7 +1751,7 @@ store:
     managementEffect: 'Sort by last pick-up date:'
     managementToggleOff: Back to standard view
     managementToggleOn: Toggle view for Store Coordinators
-    makeJumper: add to jumper list
+    makeJumper: add to list of standby foodsavers
     reloadRequired: 'For updating the team information:'
     reloadPage: Reload page
     reallyDemote: Do you really want to remove {name} as Store Coordinator?
@@ -1760,7 +1772,7 @@ store:
   actions: Options
   chat:
     team: Message to the team
-    jumper: Message to Jumper
+    jumper: Message to standby foodsavers
   error: Store could not be loaded.
   noStores: There are no stores yet
   may_not_referred_to_in_public: Please do not refer to this store in public (for
@@ -1768,7 +1780,7 @@ store:
   memberSince: 'In team since: {date}'
   lastPickupShort: last {date}
   lastPickup: 'Last pick-up: {date}'
-  jumperSince: 'Jumper since: {date}'
+  jumperSince: 'Standby since: {date}'
   tooltip_managing: You are responsible for this store
   not-in-team: You are not a member of this store's team yet.
   tooltip_yellow: Open collections in the next five days
@@ -1777,20 +1789,20 @@ store:
   short_tooltip_yellow: Open pick-ups in 5 days
   short_tooltip_orange: Open pick-ups in 3 days
   short_tooltip_red: Open pick-ups today or tomorrow
-  springer_conversation_name: Jumper {name}
+  springer_conversation_name: Standby {name}
   my_last_pickup: My last pick-up
   average_collection_quantity: Pick-up quantity on average
   mayManage: Passed the quiz for Store Coordinators.
   mayAmb: Passed the ambassador quiz.
   fetchCount: Picked up {count}× here.
-  isJumper: Is on the jumper list.
+  isJumper: Is on the list of standby foodsavers.
   noPickup: Has never picked up here.
   go: To the team page
   pickup_slot_unavailable: This pick-up slot is further in the future than intended
     by the responsibles. So please try again at a later date.
   appliedFor: Request made
-  willgetcontacted: You are currently on the jumper list. You will be contacted if
-    help is needed.
+  willgetcontacted: You are currently on the list of standby foodsavers. You will
+    be contacted if help is needed.
   team:
     isfull: Team is full
   filter: Filter by …
@@ -1817,7 +1829,7 @@ store:
   complete: complete database
   peoplecame: It has often happened that people went to a store unsolicited.
   smneeded: To set up a store, you must be a Store Coordinator.
-  tooltip_jumping: 'You are a jumper in this store'
+  tooltip_jumping: 'You are a standby foodsaver in this store'
   useRegionPickupRules: 'This is a CHERRY store. In addition to the rules for this
     store, the following district-wide CHERRY rule applies:'
   regionPickupRulesInactive: The additional district rules for pick-ups are not active
@@ -1826,7 +1838,7 @@ store:
     with pick-up rule, regardless which district. No more than a total of {regionPickupRuleLimitDay}
     times may be picked up from these districts per day. {regionPickupRuleInactive}
     hours before the pick-up, this rule is not taken into account.
-  regionPickupRules: additional CHERRY rule
+  regionPickupRules: additional rule for much sought-after slots
 search:
   mygroups: My groups
   mybuddies: My buddies
@@ -2367,7 +2379,7 @@ dashboard:
     pending: Requests have been made to
     stores: Your stores
     managing_stores: Stores you coordinate
-    jumping_stores: Your jumping list stores
+    jumping_stores: Stores where you are standby
     buddies: People you know
     users: foodsavers
     polls: Polls
@@ -2715,6 +2727,14 @@ startpage:
     target='_blank' rel='noopener noreferrer nofollow'>foodsharing hygiene rules</a>.
     Guidance can also be found in the <a href='https://wiki.foodsharing.de/Hygiene-Ratgeber_für_Lebensmittel'
     target='_blank' rel='noopener noreferrer nofollow'>guide</a>.
+  respect: "To preserve groceries we want to treat them respectfully. To ensure everything\
+    \ runs optimally, we have defined a few behaviour rules over the years. Sharing\
+    \ groceries is a very human, but also responsible task. Basically always applies:\
+    \ \"Don't share with others, that you would not eat yourself.\" Please read the\
+    \ foodsharing etiquette!"
+  together: Together with foodsharing, you can help ensure that discarded and unsaleable
+    food is put to good use instead of being thrown away. You can find more information
+    <a href='/fuer-unternehmen'>here.</a>
 date_short:
   Sunday: Sun
   Saturday: Sat
@@ -2847,14 +2867,15 @@ error:
 
   invalid_mobile_phonenumber:
     title: There is a problem with your mobile phone number.
-    link: Correct your mobile phone number
+    link: Correct your mobile phone number now
     description: Unfortunately, your mobile phone number has a format that cannot
       be called.
   missing_geolocation:
     description: Please check your address. The coordinates couldn't be determined.
     title: There was an error with your address.
+    link: To the address entry
   missing_home_region:
-    link: Choose your home disctrict
+    link: Choose your home disctrict now
     description: To continue, you have to select a home district.
     title: Choose a home district.
   missing_user_avatar:
@@ -2862,7 +2883,7 @@ error:
     title: You haven't uploaded a profile picture yet.
     description: Show the other members of Foodsharing who you are!
   old_user_avatar:
-    title: There is a problem with your profile photo.
+    title: There is a problem with your profile picture.
     link: Update profile picture now
     description: In September 2021 we have made a technical change that affects the
       profile pictures. Therefore we ask you to re-upload or renew your profile picture.
@@ -2874,8 +2895,8 @@ information:
     info: "If you no longer want to receive push notifications, you can deactivate\
       \ them at any time in the settings."
     link: "To the settings"
-    description: If you want to stop receiving push messsages, you can turn them off
-      anytime in the settings.
+    description: If you no longer want to receive push notifications, you can deactivate
+      them at any time in the settings.
   calendar_sync:
     title: "Do you know the calendar synchronization for your pick-ups?"
     info: "This will allow you to see your next pickup dates using a calendar program\
@@ -2900,6 +2921,7 @@ globals:
     groups: Groups
     my_groups: My groups
     persons: Persons
+    my_persons: My friends
   save: Save
   close: Close
   select: Please select...
@@ -2924,12 +2946,12 @@ bootstrap-datepicker:
   labelNav: Calendar navigation
   labelHelp: Navigate the calendar using arrow keys
 system_administration:
-  regions: Administrate regions
+  regions: Manage districts
   email: Send newsletter
-  blog: Administrate blog entries
-  quiz: Administrate quiz
-  mailboxes: Administrate mailboxes
-  content: Administrate content
+  blog: Edit blog posts
+  quiz: Manage quiz
+  mailboxes: Manage mailboxes
+  content: Edit content
   reports: Show reports
 join_region:
   error:
@@ -2941,9 +2963,18 @@ join_region:
     is_big_city: <strong>This is a large city.</strong><br> Please choose a city,
       a region or a district!
   headline: Please choose the region in which you want to become active.
+  description: You can join your first district by clicking through to your district
+    starting with <em>Europe</em> and your country. If you don't find a district for
+    you, choose a level higher or join the nearest district. If you don't have the
+    opportunity to train as a food saver in the area, you can consider starting your
+    own district. In this case, please read the wiki carefully, in particular the
+    <a href="{href}">article on founding or reactivating districts<a>. If you want
+    to start the district or have explicit questions that the wiki doesn't answer,
+    send us a <a href="{mail}">mail</a>. We're not a central point for questions of
+    all kinds, but we can help with district-related questions.
 navigation:
   map: Map
-  contact: Contact
+  contact: Contact & Support
   whats_new: What is new?
   support: Support
   help: Help
@@ -2956,11 +2987,12 @@ navigation:
   conversations: 'Conversations'
   notifications: Notifications
   system_administration: System administration
-  help_needed: Help needed?
+  help_needed: Need help?
   profil: 👋 Hello {name}!
   styleguide: Style guide
   help_and_support: Help & Support
   promotion: In IT? We need you!
+  news_from_it: News & Disruptions
 use_region_pickup_rule: Should the district-wide CHERRY rule apply to this establishment?
 savewithus: Join us saving!
-timefrom: ''
+timefrom: 'Time from'

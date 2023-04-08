@@ -143,20 +143,24 @@
         :mailbox-name="mailboxNameReportRequest"
       />
     </b-modal>
+    <ProfileHistoryModal
+      ref="profileHistoryModal"
+    />
   </div>
 </template>
 
 <script>
 import Avatar from '@/components/Avatar.vue'
-import { ajreq, pulseError, pulseInfo } from '@/script'
+import { pulseError, pulseInfo } from '@/script'
 import conversationStore from '@/stores/conversations'
 import MediationRequest from './MediationRequest'
 import ReportRequest from './ReportRequest'
+import ProfileHistoryModal from './ProfileHistoryModal'
 import { sendBuddyRequest } from '@/api/buddy'
 import i18n from '@/helper/i18n'
 
 export default {
-  components: { Avatar, ReportRequest, MediationRequest },
+  components: { Avatar, ReportRequest, MediationRequest, ProfileHistoryModal },
   props: {
     fsId: { type: Number, required: true },
     fsIdSession: { type: Number, required: true },
@@ -216,11 +220,7 @@ export default {
       }
     },
     OpenHistory (type) {
-      ajreq('history', {
-        app: 'profile',
-        fsid: this.fsId,
-        type: type,
-      })
+      this.$refs.profileHistoryModal.showModal(this.fsId, type === 0)
     },
   },
 }

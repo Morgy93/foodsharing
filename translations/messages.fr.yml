@@ -195,6 +195,8 @@ group:
       ?
     remove_text_region: Veux-tu vraiment supprimer {name} ({id}) de la région ?
     old_edit_hint: Tu trouveras désormais la gestion des membres sous l'onglet
+    is_verified: Vérifié
+    is_home_region: District principal
   last_activity: Dernière activité
   role_name: Rôle
   entertime: 'Temps :'
@@ -733,6 +735,10 @@ forum:
     close: Fermer le sujet
     navigate_to_newest_post: Aller au dernier article
     navigate_to_oldest_post: Aller au premier article
+    delivery_mail:
+      non_active: désactivé
+      title: Envoi de courrier
+      active: activé
   follow:
     email: comme courriel
     bell: par la cloche
@@ -1549,7 +1555,8 @@ profile:
     lostVerification: non-certifié.e
     wasVerified: certifié.e
     noData: Aucune donnée.
-    noActor: Il n'y a aucune information sur le/la responsable
+    noActor: inconnu
+    actionBy: par
   nav:
     storelist: Magasins ({count})
     violations: Signalements <strong>({count})</strong>
@@ -2427,7 +2434,7 @@ startpage:
     title: en tant que membre
   call_to_action:
     text: Le mouvement a commencé en 2012 et s'est répandu à l'international avec
-      plus de 200 000 utilisateur.ice.s en Allemagne, Autriche, Suisse et dans bien
+      plus de 500 000 utilisateur.ice.s en Allemagne, Autriche, Suisse et dans bien
       d'autres pays européens.
     title: Participe
   vision:
