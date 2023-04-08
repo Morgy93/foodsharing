@@ -581,7 +581,7 @@ class StoreTransactions
 
         /* Never occupy more slots than available */
         if ($totalSlots = $this->totalSlotsIfPickupSlotAvailable($storeId, $date, $fsId)) {
-            if ($this->checkPickupRule($storeId, $date, $fsId)) {
+            if ($this->checkRegionPickupRule($storeId, $date, $fsId)) {
                 $this->pickupGateway->addFetcher($fsId, $storeId, $date, $confirmed);
                 // [#860] convert to manual slot, so they don't vanish when changing the schedule
                 $this->createOrUpdatePickup($storeId, $date, $totalSlots);
@@ -899,34 +899,44 @@ class StoreTransactions
      * @param Carbon $pickupDate Date of Pickup
      * @param int $fsId foodsaver ID
      *
-     * @return bool true or false - true if no rule is violated, false if a rule is vialated
+     * @return bool true or false - true if no rule is violated, false if a rule is violated
      *
      * @throws \Exception
      */
-    public function checkPickupRule(int $storeId, Carbon $pickupDate, int $fsId): bool
+    public function checkRegionPickupRule(int $storeId, Carbon $pickupDate, int $fsId): bool
     {
         $response['result'] = true; //default response, rule is passed
+        $doesStoreUseRegionPickupRule = (bool)$this->storeGateway->getUseRegionPickupRule($storeId);
 
-        // Does this store have a pickupRule ?
-        if ($this->storeGateway->getUseRegionPickupRule($storeId)) {
+        if ($doesStoreUseRegionPickupRule) {
             $regionId = $this->storeGateway->getStoreRegionId($storeId);
-            // Does the region of the store have a pickuprule and it is active?
-            if ((bool)$this->regionGateway->getRegionOption($regionId, RegionOptionType::REGION_PICKUP_RULE_ACTIVE)) {
-                // how many hours before a pickup can this rule be ignored ?
-                $ignoreRuleHours = (int)$this->regionGateway->getRegionOption($regionId, RegionOptionType::REGION_PICKUP_RULE_INACTIVE_HOURS);
-                $res = Carbon::now()->diffInHours($pickupDate);
-                if ($res > $ignoreRuleHours) {
-                    // the allowed numbers of pickups in a timespan. Timespan is +/- from pickupdate
-                    $numberAllowedPickups = (int)$this->regionGateway->getRegionOption($regionId, RegionOptionType::REGION_PICKUP_RULE_LIMIT_NUMBER);
-                    $intervall = (int)$this->regionGateway->getRegionOption($regionId, RegionOptionType::REGION_PICKUP_RULE_TIMESPAN_DAYS);
-                    // if we have more or same amount of used slots occupied then allowed we return false
-                    if ($this->pickupGateway->getNumberOfPickupsForUserWithStoreRules($fsId, $pickupDate->copy()->subDays($intervall), $pickupDate->copy()->addDays($intervall)) >= $numberAllowedPickups) {
+            $isRegionPickupRuleActive = (bool)$this->regionGateway->getRegionOption($regionId, RegionOptionType::REGION_PICKUP_RULE_ACTIVE);
+
+            if ($isRegionPickupRuleActive) {
+                $timeUntilPickupToIgnoreRuleInHours = (int)$this->regionGateway->getRegionOption($regionId, RegionOptionType::REGION_PICKUP_RULE_INACTIVE_HOURS);
+                $timeUntilPickupInHours = Carbon::now()->diffInHours($pickupDate);
+
+                if ($timeUntilPickupInHours > $timeUntilPickupToIgnoreRuleInHours) {
+                    $timespanRegionRuleInDays = (int)$this->regionGateway->getRegionOption($regionId, RegionOptionType::REGION_PICKUP_RULE_TIMESPAN_DAYS);
+                    $numberAllowedPickupsPerTimespan = (int)$this->regionGateway->getRegionOption($regionId, RegionOptionType::REGION_PICKUP_RULE_LIMIT_NUMBER);
+                    $numberAllowedPickupsPerDay = (int)$this->regionGateway->getRegionOption($regionId, RegionOptionType::REGION_PICKUP_RULE_LIMIT_DAY_NUMBER);
+
+                    if ($numberAllowedPickupsPerDay < $numberAllowedPickupsPerTimespan
+                        && $this->pickupGateway->getNumberOfPickupsForUserWithStoreRulesSameDay($fsId, $pickupDate) >= $numberAllowedPickupsPerDay) {
                         return false;
                     }
-                    // if we have more then or same amount of allowed pickups per day we return false
-                    $numberAllowedPickupsPerDay = (int)$this->regionGateway->getRegionOption($regionId, RegionOptionType::REGION_PICKUP_RULE_LIMIT_DAY_NUMBER);
-                    if ($this->pickupGateway->getNumberOfPickupsForUserWithStoreRulesSameDay($fsId, $pickupDate) >= $numberAllowedPickupsPerDay) {
+
+                    if ($numberAllowedPickupsPerTimespan == 1
+                        && $this->pickupGateway->getNumberOfPickupsForUserWithStoreRules($fsId, $pickupDate->copy()->subDays($timespanRegionRuleInDays), $pickupDate->copy()->addDays($timespanRegionRuleInDays)) >= $numberAllowedPickupsPerTimespan) {
                         return false;
+                    }
+
+                    if ($numberAllowedPickupsPerTimespan > 1) {
+                        for ($i = 0; $i <= $timespanRegionRuleInDays; $i++) {
+                            if ($this->pickupGateway->getNumberOfPickupsForUserWithStoreRules($fsId, $pickupDate->copy()->subDays($timespanRegionRuleInDays - $i), $pickupDate->copy()->addDays($i)) >= $numberAllowedPickupsPerTimespan) {
+                                return false;
+                            }
+                        }
                     }
                 }
             }

@@ -659,7 +659,7 @@ final class PickupRestController extends AbstractFOSRestController
             throw new BadRequestHttpException('Invalid date format');
         }
 
-        $response['result'] = $this->storeTransactions->checkPickupRule($storeId, $pickupSlotDate, $fsId);
+        $response['result'] = $this->storeTransactions->checkRegionPickupRule($storeId, $pickupSlotDate, $fsId);
 
         return $this->handleView($this->view($response));
     }
