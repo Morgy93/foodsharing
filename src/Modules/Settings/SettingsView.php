@@ -480,10 +480,14 @@ class SettingsView extends View
 
         $g_data['ort'] = $g_data['stadt'];
 
-        foreach (['anschrift', 'plz', 'ort', 'lat', 'lon'] as $i) {
-            $latLonOptions[$i] = $g_data[$i];
-        }
-        $latLonOptions['location'] = ['lat' => $g_data['lat'], 'lon' => $g_data['lon']];
+        $addressPicker = $this->vueComponent('settings-address-search', 'LeafletLocationSearchVForm', [
+            'zoom' => 17,
+            'coordinates' => ['lat' => $g_data['lat'], 'lon' => $g_data['lon']],
+            'street' => $g_data['anschrift'],
+            'postalCode' => $g_data['plz'],
+            'city' => $g_data['ort'],
+            'additionalInfoText' => $this->translator->trans('addresspicker.infobox_profile'),
+        ]);
 
         return $this->v_utils->v_quickform($this->translator->trans('settings.header'), [
             $this->vueComponent('name-input', 'NameInput', [
@@ -495,7 +499,7 @@ class SettingsView extends View
             $this->v_utils->v_form_text('handy', ['placeholder' => $this->translator->trans('register.phone_example')]),
             $this->v_utils->v_form_text('telefon', ['placeholder' => $this->translator->trans('register.landline_example')]),
             $regionPicker,
-            $this->latLonPicker('LatLng', $latLonOptions, '_profile'),
+            $addressPicker,
             $position,
             $this->v_utils->v_form_textarea('about_me_intern', [
                 'desc' => $this->translator->trans('foodsaver.about_me_intern'),

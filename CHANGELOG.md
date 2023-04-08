@@ -35,6 +35,7 @@
 - Fix TeamStoreStatus and move getStoreMarkers to StoreGateway !2560 @KoeMai
 - Move uploadlogic and actions from controller to transactionclass for reuse !2478 @martncodes-de
 - Reimplement create new forum thread in vue js !2627 @chriswalg
+- New vue component for address search !2632 @alex.simm
 
 - Replaced the history dialogs on profile pages with a vue component !2587 @alex.simm
 

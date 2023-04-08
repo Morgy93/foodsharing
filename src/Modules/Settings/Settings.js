@@ -20,6 +20,7 @@ import $ from 'jquery'
 import Calendar from './components/Calendar'
 import ProfilePicture from './components/ProfilePicture'
 import NameInput from './components/NameInput'
+import LeafletLocationSearchVForm from '@/components/map/LeafletLocationSearchVForm'
 
 if (GET('sub') === 'calendar') {
   vueRegister({
@@ -30,9 +31,11 @@ if (GET('sub') === 'calendar') {
   vueRegister({
     ProfilePicture,
     NameInput,
+    LeafletLocationSearchVForm,
   })
   vueApply('#image-upload')
   vueApply('#name-input')
+  vueApply('#settings-address-search')
 }
 
 expose({

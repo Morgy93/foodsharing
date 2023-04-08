@@ -5,7 +5,9 @@
     ref="map"
     style="height: 300px"
     :zoom="zoom"
-    :center="center"
+    :center="[center.lat, center.lon]"
+    @move="$emit('move', $event)"
+    @dragend="$emit('dragend', $event)"
   >
     <!-- <l-tile-layer
       v-if="useVectorMap"
@@ -38,7 +40,7 @@ export default {
   components: { LMap, LTileLayer },
   props: {
     zoom: { type: Number, required: true },
-    center: { type: Array, required: true },
+    center: { type: Object, required: true },
   },
   data () {
     return {
@@ -57,12 +59,35 @@ export default {
       return false
     },
   },
+  mounted () {
+    // invalidate the size after a short timeout to make leaflet render the map
+    const map = this.getMapObject()
+    setTimeout(function () { map.invalidateSize() }, 400)
+  },
   methods: {
     /**
      * Returns leaflet's internal map object.
      */
     getMapObject () {
       return this.$refs.map.mapObject
+    },
+    /**
+     * Sets the map's boundaries to the rectangular spanned by the two coordinates.
+     */
+    centerMap (coordinates) {
+      this.getMapObject().panTo(coordinates)
+    },
+    /**
+     * Sets the map's boundaries to the rectangular spanned by the two coordinates.
+     */
+    setBounds (coordUpperLeft, coordLowerRight) {
+      this.getMapObject().fitBounds([coordUpperLeft, coordLowerRight])
+    },
+    /**
+     * Sets the map's zoom to a new value.
+     */
+    setZoom (zoom) {
+      this.getMapObject().setZoom(zoom)
     },
   },
 }
