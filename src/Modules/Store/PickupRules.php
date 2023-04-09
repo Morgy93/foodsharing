@@ -46,6 +46,7 @@ class PickupRules
 
         if ($timeUntilPickupInHours > $timeUntilPickupToIgnoreRuleInHours) {
             $timespanRegionRuleInDays = (int)$this->regionGateway->getRegionOption($regionId, RegionOptionType::REGION_PICKUP_RULE_TIMESPAN_DAYS);
+            $timespanWithoutPickupDay = $timespanRegionRuleInDays - 1;
             $numberAllowedPickupsPerTimespan = (int)$this->regionGateway->getRegionOption($regionId, RegionOptionType::REGION_PICKUP_RULE_LIMIT_NUMBER);
             $numberAllowedPickupsPerDay = (int)$this->regionGateway->getRegionOption($regionId, RegionOptionType::REGION_PICKUP_RULE_LIMIT_DAY_NUMBER);
 
@@ -55,13 +56,13 @@ class PickupRules
             }
 
             if ($numberAllowedPickupsPerTimespan == 1
-                && $this->pickupGateway->getNumberOfPickupsForUserWithStoreRules($fsId, $pickupDate->copy()->subDays($timespanRegionRuleInDays), $pickupDate->copy()->addDays($timespanRegionRuleInDays)) >= $numberAllowedPickupsPerTimespan) {
+                && $this->pickupGateway->getNumberOfPickupsForUserWithStoreRules($fsId, $pickupDate->copy()->subDays($timespanWithoutPickupDay), $pickupDate->copy()->addDays($timespanWithoutPickupDay)) >= $numberAllowedPickupsPerTimespan) {
                 return false;
             }
 
             if ($numberAllowedPickupsPerTimespan > 1) {
-                for ($i = 0; $i <= $timespanRegionRuleInDays; ++$i) {
-                    $timespanStartDate = $pickupDate->copy()->subDays($timespanRegionRuleInDays - $i);
+                for ($i = 0; $i <= $timespanWithoutPickupDay; ++$i) {
+                    $timespanStartDate = $pickupDate->copy()->subDays($timespanWithoutPickupDay - $i);
                     $timespanEndDate = $pickupDate->copy()->addDays($i);
                     $pickupsInTimespan = $this->pickupGateway->getNumberOfPickupsForUserWithStoreRules($fsId, $timespanStartDate, $timespanEndDate);
 

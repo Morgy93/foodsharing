@@ -5,7 +5,6 @@ namespace Foodsharing\Modules\Store;
 class StoreTransactionException extends \Exception
 {
     public const NO_PICKUP_SLOT_AVAILABLE = 'No pickup slot available';
-    public const PICKUP_RULE_VIOLATED = 'District Pickup Rule violated';
     public const NO_PICKUP_OTHER_USER = 'No pickup for another users.';
     public const STORE_CATEGORY_NOT_EXISTS = 'Store category does not exists.';
     public const STORE_CHAIN_NOT_EXISTS = 'Store chain does not exists.';
