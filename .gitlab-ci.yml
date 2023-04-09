@@ -497,3 +497,26 @@ deploy:docs:
   environment:
     name: docs
     url: https://devdocs.foodsharing.network
+
+test:qodana:
+  extends:
+    - .defaults
+  stage: test
+  interruptible: true
+  rules:
+    - if: $CI_COMMIT_BRANCH == 'master'
+        - !reference [.dirs-app-rule, rules]
+        - !reference [.dirs-frontend-rule, rules]
+    - if: $CI_COMMIT_BRANCH == 'production' && $SKIP_CI_TESTS == 'true'
+      when: never
+    - if: $CI_PIPELINE_SOURCE == "schedule"
+      when: never
+  image: jetbrains/qodana
+  variables:
+    API_KEY: "$QODANA_API_KEY"
+    QODANA_SERVER: "https://cloud.qodana.com"
+  script:
+    - qodana run
+  artifacts:
+    reports:
+      code-quality: qodana-*/report.json
