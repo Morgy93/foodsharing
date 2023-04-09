@@ -519,7 +519,7 @@ test:qodana:
     QODANA_BRANCH: $CI_COMMIT_BRANCH
     QODANA_REVISION: $CI_COMMIT_SHA
     QODANA_JOB_URL: $CI_JOB_URL
-    QODANA_PROJECT_DIR: "-/"
+    QODANA_PROJECT_DIR: "./"
   script:
     - qodana
   artifacts:
