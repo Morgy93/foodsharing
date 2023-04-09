@@ -39,7 +39,8 @@ class PickupRules
         return true;
     }
 
-    private function checkRegionPickupRule($regionId, Carbon $pickupDate, int $fsId): bool {
+    private function checkRegionPickupRule($regionId, Carbon $pickupDate, int $fsId): bool
+    {
         $timeUntilPickupToIgnoreRuleInHours = (int)$this->regionGateway->getRegionOption($regionId, RegionOptionType::REGION_PICKUP_RULE_INACTIVE_HOURS);
         $timeUntilPickupInHours = Carbon::now()->diffInHours($pickupDate);
 
