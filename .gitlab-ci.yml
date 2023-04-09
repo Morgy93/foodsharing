@@ -519,8 +519,9 @@ test:qodana:
     QODANA_BRANCH: $CI_COMMIT_BRANCH
     QODANA_REVISION: $CI_COMMIT_SHA
     QODANA_JOB_URL: $CI_JOB_URL
+    QODANA_PROJECT_DIR: "/data/project"
   script:
-    - qodana --project-dir=/data/project --results-dir=/data/results --save-report
+    - qodana
   artifacts:
     paths:
       - qodana
