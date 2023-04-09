@@ -150,11 +150,11 @@ build:backend-dev:
   interruptible: true
   rules:
     - if: $CI_COMMIT_BRANCH == 'master' || $CI_COMMIT_BRANCH == 'production'
-    - !reference [.dirs-app-rule, rules]
-    - !reference [.dirs-backend-rule, rules]
-    - !reference [.dirs-frontend-rule, rules]
-    - !reference [.dirs-websocket-rule, rules]
-    - !reference [.dirs-docs-rule, rules]
+    - !reference[.dirs-app-rule, rules]
+    - !reference[.dirs-backend-rule, rules]
+    - !reference[.dirs-frontend-rule, rules]
+    - !reference[.dirs-websocket-rule, rules]
+    - !reference[.dirs-docs-rule, rules]
     - if: $CI_COMMIT_BRANCH == 'production' && $SKIP_CI_TESTS == 'true'
       when: never
     - if: $CI_PIPELINE_SOURCE == "schedule"
@@ -179,10 +179,10 @@ build:websocket:
   interruptible: true
   rules:
     - if: $CI_COMMIT_BRANCH == 'master' || $CI_COMMIT_BRANCH == 'production'
-    - !reference [ .dirs-app-rule, rules ]
-    - !reference [ .dirs-backend-rule, rules ]
-    - !reference [ .dirs-frontend-rule, rules ]
-    - !reference [ .dirs-websocket-rule, rules ]
+    - !reference[ .dirs-app-rule, rules ]
+    - !reference[ .dirs-backend-rule, rules ]
+    - !reference[ .dirs-frontend-rule, rules ]
+    - !reference[ .dirs-websocket-rule, rules ]
     - if: $CI_PIPELINE_SOURCE == "schedule"
       when: never
   image: registry.gitlab.com/foodsharing-dev/images/node:latest
@@ -200,10 +200,10 @@ build:frontend:
   interruptible: true
   rules:
     - if: $CI_COMMIT_BRANCH == 'master' || $CI_COMMIT_BRANCH == 'production'
-    - !reference [ .dirs-app-rule, rules ]
-    - !reference [ .dirs-backend-rule, rules ]
-    - !reference [ .dirs-frontend-rule, rules ]
-    - !reference [ .dirs-websocket-rule, rules ]
+    - !reference[ .dirs-app-rule, rules ]
+    - !reference[ .dirs-backend-rule, rules ]
+    - !reference[ .dirs-frontend-rule, rules ]
+    - !reference[ .dirs-websocket-rule, rules ]
     - if: $CI_PIPELINE_SOURCE == "schedule"
       when: never
   image: registry.gitlab.com/foodsharing-dev/images/node:latest
@@ -226,10 +226,10 @@ build:backend:
   interruptible: true
   rules:
     - if: $CI_COMMIT_BRANCH == 'master' || $CI_COMMIT_BRANCH == 'production'
-    - !reference [ .dirs-app-rule, rules ]
-    - !reference [ .dirs-backend-rule, rules ]
-    - !reference [ .dirs-frontend-rule, rules ]
-    - !reference [ .dirs-websocket-rule, rules ]
+    - !reference[ .dirs-app-rule, rules ]
+    - !reference[ .dirs-backend-rule, rules ]
+    - !reference[ .dirs-frontend-rule, rules ]
+    - !reference[ .dirs-websocket-rule, rules ]
     - if: $CI_PIPELINE_SOURCE == "schedule"
       when: never
   image: registry.gitlab.com/foodsharing-dev/images/php:latest
@@ -252,7 +252,7 @@ build:docs:
   interruptible: true
   rules:
     - if: $CI_COMMIT_BRANCH == 'master'
-    - !reference [ .dirs-docs-rule, rules ]
+    - !reference[ .dirs-docs-rule, rules ]
     - if: $CI_PIPELINE_SOURCE == "schedule"
       when: never
   image: registry.gitlab.com/foodsharing-dev/images/docs:latest
@@ -287,8 +287,8 @@ test:backend-code:
   interruptible: true
   rules:
     - if: $CI_COMMIT_BRANCH == 'master' || $CI_COMMIT_BRANCH == 'production'
-    - !reference [.dirs-app-rule, rules]
-    - !reference [.dirs-backend-rule, rules]
+    - !reference[.dirs-app-rule, rules]
+    - !reference[.dirs-backend-rule, rules]
     - if: $CI_COMMIT_BRANCH == 'production' && $SKIP_CI_TESTS == 'true'
       when: never
     - if: $CI_PIPELINE_SOURCE == "schedule"
@@ -353,10 +353,10 @@ test:backend-acceptance:
   interruptible: true
   rules:
     - if: $CI_COMMIT_BRANCH == 'master' || $CI_COMMIT_BRANCH == 'production'
-    - !reference [.dirs-app-rule, rules]
-    - !reference [.dirs-backend-rule, rules]
-    - !reference [.dirs-frontend-rule, rules]
-    - !reference [.dirs-websocket-rule, rules]
+    - !reference[.dirs-app-rule, rules]
+    - !reference[.dirs-backend-rule, rules]
+    - !reference[.dirs-frontend-rule, rules]
+    - !reference[.dirs-websocket-rule, rules]
     - if: $CI_COMMIT_BRANCH == 'production' && $SKIP_CI_TESTS == 'true'
       when: never
     - if: $CI_PIPELINE_SOURCE == "schedule"
@@ -419,8 +419,8 @@ test:frontend:
   interruptible: true
   rules:
     - if: $CI_COMMIT_BRANCH == 'master' || $CI_COMMIT_BRANCH == 'production'
-    - !reference [.dirs-app-rule, rules]
-    - !reference [.dirs-frontend-rule, rules]
+    - !reference[.dirs-app-rule, rules]
+    - !reference[.dirs-frontend-rule, rules]
     - if: $CI_COMMIT_BRANCH == 'production' && $SKIP_CI_TESTS == 'true'
       when: never
     - if: $CI_PIPELINE_SOURCE == "schedule"
@@ -444,8 +444,8 @@ test:websocket:
   interruptible: true
   rules:
     - if: $CI_COMMIT_BRANCH == 'master' || $CI_COMMIT_BRANCH == 'production'
-    - !reference [.dirs-app-rule, rules]
-    - !reference [.dirs-websocket-rule, rules]
+    - !reference[.dirs-app-rule, rules]
+    - !reference[.dirs-websocket-rule, rules]
     - if: $CI_COMMIT_BRANCH == 'production' && $SKIP_CI_TESTS == 'true'
       when: never
     - if: $CI_PIPELINE_SOURCE == "schedule"
@@ -505,8 +505,8 @@ test:qodana:
   interruptible: true
   rules:
     - if: $CI_COMMIT_BRANCH == 'master'
-    - !reference [.dirs-app-rule, rules]
-    - !reference [.dirs-frontend-rule, rules]
+    - !reference[.dirs-app-rule, rules]
+    - !reference[.dirs-frontend-rule, rules]
     - if: $CI_COMMIT_BRANCH == 'production' && $SKIP_CI_TESTS == 'true'
       when: never
     - if: $CI_PIPELINE_SOURCE == "schedule"
@@ -519,4 +519,4 @@ test:qodana:
     - qodana run
   artifacts:
     reports:
-      code-quality: qodana-*/report.json
+      qodana-quality: qodana-*/report.json
