@@ -157,7 +157,6 @@ test:qodana:
     - if: $CI_PIPELINE_SOURCE == "schedule"
       when: never
   image: jetbrains/qodana
-  entrypoint: [ "/usr/bin/bash", "-l", "-c" ]
   variables:
     API_KEY: "$QODANA_API_KEY"
     QODANA_SERVER: "https://cloud.qodana.com"
