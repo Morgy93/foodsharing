@@ -589,9 +589,11 @@ class StoreTransactions
                 $this->pickupGateway->addFetcher($fsId, $storeId, $date, $confirmed);
                 // [#860] convert to manual slot, so they don't vanish when changing the schedule
                 $this->createOrUpdatePickup($storeId, $date, $totalSlots);
+
             } else {
                 throw new \DomainException('District Pickup Rule violated');
             }
+
         } else {
             throw new StoreTransactionException(StoreTransactionException::NO_PICKUP_SLOT_AVAILABLE);
         }
