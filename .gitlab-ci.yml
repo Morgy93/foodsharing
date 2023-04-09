@@ -518,5 +518,5 @@ test:qodana:
   script:
     - qodana run
   artifacts:
-    reports:
-      qodana-quality: qodana-*/report.json
+    paths:
+      - qodana-*/report.json
