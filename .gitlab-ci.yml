@@ -519,4 +519,4 @@ test:qodana:
     - qodana run
   artifacts:
     paths:
-      - qodana-*/report.json
+      - qodana
