@@ -156,7 +156,7 @@ test:qodana:
       when: never
     - if: $CI_PIPELINE_SOURCE == "schedule"
       when: never
-  image: jetbrains/qodana
+  image: jetbrains/qodana-php
   variables:
     API_KEY: "$QODANA_API_KEY"
     QODANA_SERVER: "https://cloud.qodana.com"
