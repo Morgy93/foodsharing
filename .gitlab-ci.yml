@@ -505,8 +505,8 @@ test:qodana:
   interruptible: true
   rules:
     - if: $CI_COMMIT_BRANCH == 'master'
-        - !reference [.dirs-app-rule, rules]
-        - !reference [.dirs-frontend-rule, rules]
+    - !reference [.dirs-app-rule, rules]
+    - !reference [.dirs-frontend-rule, rules]
     - if: $CI_COMMIT_BRANCH == 'production' && $SKIP_CI_TESTS == 'true'
       when: never
     - if: $CI_PIPELINE_SOURCE == "schedule"
