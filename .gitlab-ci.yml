@@ -157,7 +157,6 @@ test:qodana:
     - if: $CI_PIPELINE_SOURCE == "schedule"
       when: never
   image: jetbrains/qodana
-  entrypoint: [ '' ]
   variables:
     API_KEY: "$QODANA_API_KEY"
     QODANA_SERVER: "https://cloud.qodana.com"
@@ -165,9 +164,10 @@ test:qodana:
     QODANA_BRANCH: $CI_COMMIT_BRANCH
     QODANA_REVISION: $CI_COMMIT_SHA
     QODANA_JOB_URL: $CI_JOB_URL
-  script:
-    - qodana
-  artifacts:
-    paths:
-      - qodana/report/
-    expose_as: 'Qodana report'
+    script:
+      - qodana --save-report --results-dir=$CI_PROJECT_DIR/qodana
+        --report-dir=$CI_PROJECT_DIR/qodana/report
+    artifacts:
+      paths:
+        - qodana/report/
+      expose_as: 'Qodana report'
