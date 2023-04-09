@@ -42,13 +42,34 @@
             Option B
           </b-form-radio>
         </b-form-group>
+        <LeafletLocationSearchVForm
+          :coordinates="getLocations"
+          :zoom="zoom"
+          :postal-code="getUserDetails.postalCode"
+          :street="getUserDetails.street"
+          :city="getUserDetails.city"
+        />
       </div>
     </div>
   </div>
 </template>
 
 <script>
+import LeafletLocationSearchVForm from '@/components/map/LeafletLocationSearchVForm'
+import DataUser from '@/stores/user'
+
 export default {
+  components: { LeafletLocationSearchVForm },
+  data: function () {
+    return {
+      zoom: 17,
+    }
+  },
+  computed: {
+    getLocations: () => DataUser.getters.getLocations(),
+    getUserDetails: () => DataUser.getters.getUserDetails(),
+
+  },
 }
 </script>
 
