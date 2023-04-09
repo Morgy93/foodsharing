@@ -8,6 +8,7 @@ use Foodsharing\Lib\Session;
 use Foodsharing\Modules\Core\DBConstants\Store\StoreLogAction;
 use Foodsharing\Modules\Foodsaver\FoodsaverGateway;
 use Foodsharing\Modules\Message\MessageTransactions;
+use Foodsharing\Modules\Region\RegionGateway;
 use Foodsharing\Modules\Store\DTO\RegularPickup;
 use Foodsharing\Modules\Store\PickupGateway;
 use Foodsharing\Modules\Store\PickupRules;
@@ -42,6 +43,7 @@ final class PickupRestController extends AbstractFOSRestController
         private Session $session,
         private PickupGateway $pickupGateway,
         private StoreGateway $storeGateway,
+        private RegionGateway $regionGateway,
         private StorePermissions $storePermissions,
         private ProfilePermissions $profilePermissions,
         private StoreTransactions $storeTransactions,
