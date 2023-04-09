@@ -520,7 +520,7 @@ test:qodana:
     QODANA_REVISION: $CI_COMMIT_SHA
     QODANA_JOB_URL: $CI_JOB_URL
   script:
-    - qodana -i ./ -s -o qodana-results/
+    - qodana -i . -s -o qodana-results/
   artifacts:
     paths:
       - qodana
