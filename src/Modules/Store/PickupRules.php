@@ -24,7 +24,7 @@ class PickupRules
      */
     public function observesPickupRules(int $storeId, Carbon $pickupDate, int $fsId): bool
     {
-        $response['result'] = true; //default response, rule is passed
+        $response['result'] = true; // default response, rule is passed
         $doesStoreUseRegionPickupRule = (bool)$this->storeGateway->getUseRegionPickupRule($storeId);
 
         if ($doesStoreUseRegionPickupRule) {
@@ -71,5 +71,7 @@ class PickupRules
                 }
             }
         }
+
+        return true;
     }
 }

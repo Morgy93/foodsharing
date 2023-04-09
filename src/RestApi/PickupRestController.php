@@ -10,6 +10,7 @@ use Foodsharing\Modules\Foodsaver\FoodsaverGateway;
 use Foodsharing\Modules\Message\MessageTransactions;
 use Foodsharing\Modules\Store\DTO\RegularPickup;
 use Foodsharing\Modules\Store\PickupGateway;
+use Foodsharing\Modules\Store\PickupRules;
 use Foodsharing\Modules\Store\PickupTransactions;
 use Foodsharing\Modules\Store\PickupValidationException;
 use Foodsharing\Modules\Store\StoreGateway;
@@ -659,7 +660,8 @@ final class PickupRestController extends AbstractFOSRestController
             throw new BadRequestHttpException('Invalid date format');
         }
 
-        $response['result'] = $this->storeTransactions->checkRegionPickupRule($storeId, $pickupSlotDate, $fsId);
+        $pickupRules = new PickupRules($this->pickupGateway, $this->storeGateway, $this->regionGateway);
+        $response['result'] = $pickupRules->observesPickupRules($storeId, $pickupSlotDate, $fsId);
 
         return $this->handleView($this->view($response));
     }
