@@ -570,6 +570,9 @@ class StoreTransactions
         }
     }
 
+    /**
+     * @throws StoreTransactionException
+     */
     public function joinPickup(int $storeId, Carbon $date, int $fsId, int $issuerId = null): bool
     {
         if ($fsId != $issuerId) {
@@ -581,13 +584,17 @@ class StoreTransactions
 
         /* Never occupy more slots than available */
         if ($totalSlots = $this->totalSlotsIfPickupSlotAvailable($storeId, $date, $fsId)) {
-            if ($this->checkRegionPickupRule($storeId, $date, $fsId)) {
+            $pickupRules = new PickupRules($this->pickupGateway, $this->storeGateway, $this->regionGateway);
+
+            if ($pickupRules->observesPickupRules($storeId, $date, $fsId)) {
                 $this->pickupGateway->addFetcher($fsId, $storeId, $date, $confirmed);
                 // [#860] convert to manual slot, so they don't vanish when changing the schedule
                 $this->createOrUpdatePickup($storeId, $date, $totalSlots);
+
             } else {
                 throw new \DomainException('District Pickup Rule violated');
             }
+
         } else {
             throw new StoreTransactionException(StoreTransactionException::NO_PICKUP_SLOT_AVAILABLE);
         }
@@ -892,56 +899,5 @@ class StoreTransactions
             'name' => $storeName,
         ], BellType::createIdentifier(BellType::STORE_TIME_CHANGED, $storeId));
         $this->bellGateway->addBell($team, $bellData);
-    }
-
-    /**
-     * @param int $storeId Id of Store
-     * @param Carbon $pickupDate Date of Pickup
-     * @param int $fsId foodsaver ID
-     *
-     * @return bool true or false - true if no rule is violated, false if a rule is violated
-     *
-     * @throws \Exception
-     */
-    public function checkRegionPickupRule(int $storeId, Carbon $pickupDate, int $fsId): bool
-    {
-        $response['result'] = true; //default response, rule is passed
-        $doesStoreUseRegionPickupRule = (bool)$this->storeGateway->getUseRegionPickupRule($storeId);
-
-        if ($doesStoreUseRegionPickupRule) {
-            $regionId = $this->storeGateway->getStoreRegionId($storeId);
-            $isRegionPickupRuleActive = (bool)$this->regionGateway->getRegionOption($regionId, RegionOptionType::REGION_PICKUP_RULE_ACTIVE);
-
-            if ($isRegionPickupRuleActive) {
-                $timeUntilPickupToIgnoreRuleInHours = (int)$this->regionGateway->getRegionOption($regionId, RegionOptionType::REGION_PICKUP_RULE_INACTIVE_HOURS);
-                $timeUntilPickupInHours = Carbon::now()->diffInHours($pickupDate);
-
-                if ($timeUntilPickupInHours > $timeUntilPickupToIgnoreRuleInHours) {
-                    $timespanRegionRuleInDays = (int)$this->regionGateway->getRegionOption($regionId, RegionOptionType::REGION_PICKUP_RULE_TIMESPAN_DAYS);
-                    $numberAllowedPickupsPerTimespan = (int)$this->regionGateway->getRegionOption($regionId, RegionOptionType::REGION_PICKUP_RULE_LIMIT_NUMBER);
-                    $numberAllowedPickupsPerDay = (int)$this->regionGateway->getRegionOption($regionId, RegionOptionType::REGION_PICKUP_RULE_LIMIT_DAY_NUMBER);
-
-                    if ($numberAllowedPickupsPerDay < $numberAllowedPickupsPerTimespan
-                        && $this->pickupGateway->getNumberOfPickupsForUserWithStoreRulesSameDay($fsId, $pickupDate) >= $numberAllowedPickupsPerDay) {
-                        return false;
-                    }
-
-                    if ($numberAllowedPickupsPerTimespan == 1
-                        && $this->pickupGateway->getNumberOfPickupsForUserWithStoreRules($fsId, $pickupDate->copy()->subDays($timespanRegionRuleInDays), $pickupDate->copy()->addDays($timespanRegionRuleInDays)) >= $numberAllowedPickupsPerTimespan) {
-                        return false;
-                    }
-
-                    if ($numberAllowedPickupsPerTimespan > 1) {
-                        for ($i = 0; $i <= $timespanRegionRuleInDays; $i++) {
-                            if ($this->pickupGateway->getNumberOfPickupsForUserWithStoreRules($fsId, $pickupDate->copy()->subDays($timespanRegionRuleInDays - $i), $pickupDate->copy()->addDays($i)) >= $numberAllowedPickupsPerTimespan) {
-                                return false;
-                            }
-                        }
-                    }
-                }
-            }
-        }
-
-        return true;
     }
 }

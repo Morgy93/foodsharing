@@ -664,7 +664,6 @@ class RegionGateway extends BaseGateway
      *
      * @return string|null value of option or null if not found
      *
-     * @throws \Exception
      */
     public function getRegionOption(int $regionId, int $optionType): ?string
     {
