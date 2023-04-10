@@ -4,6 +4,7 @@ namespace Helper;
 
 use Carbon\Carbon;
 use DateTime;
+use DateTimeZone;
 use Faker;
 use Foodsharing\Modules\Core\DBConstants\Foodsaver\Role;
 use Foodsharing\Modules\Core\DBConstants\FoodSharePoint\FollowerType;
@@ -329,7 +330,7 @@ class Foodsharing extends \Codeception\Module\Db
         $params = array_merge([
             'betrieb_status_id' => $this->faker->numberBetween(0, 6),
             'status' => 1,
-            'added' => $this->faker->dateTime(),
+            'added' => $this->toDate($this->faker->dateTime()),
             'betrieb_kategorie_id' => $this->faker->numberBetween(1, 10),
             'plz' => $this->faker->postcode(),
             'stadt' => $this->faker->city(),
@@ -337,12 +338,12 @@ class Foodsharing extends \Codeception\Module\Db
             'lat' => $this->faker->latitude(55, 46),
             'lon' => $this->faker->longitude(4, 16),
             'name' => 'betrieb_' . $this->faker->company(),
-            'status_date' => $this->faker->dateTime(),
+            'status_date' => $this->toDate($this->faker->dateTime()),
             'ansprechpartner' => $this->faker->name(),
             'telefon' => $this->faker->phoneNumber(),
             'fax' => $this->faker->phoneNumber(),
             'email' => $this->faker->unique()->email(),
-            'begin' => $this->faker->date(),
+            'begin' => $this->toDate($this->faker->dateTime()),
             'besonderheiten' => '',
             'public_info' => '',
             'public_time' => 0,
@@ -359,8 +360,8 @@ class Foodsharing extends \Codeception\Module\Db
             'springer_conversation_id' => $springer_conversation,
             'kette_id' => 0,
         ], $extra_params);
-        $params['status_date'] = $this->toDateTime($params['status_date']);
-        $params['added'] = $this->toDateTime($params['added']);
+        $params['status_date'] = $this->toDate($params['status_date']);
+        $params['added'] = $this->toDate($params['added']);
 
         $params['id'] = $this->haveInDatabase('fs_betrieb', $params);
 
@@ -1164,7 +1165,10 @@ class Foodsharing extends \Codeception\Module\Db
         return md5($email . '-lz%&lk4-' . $pass);
     }
 
-    private function toDateTime($date = null)
+    /**
+     * Converts a DateTime to an date with time as string "Y-m-d H:i:s" with timezone 'Europe/Berlin'.
+     */
+    private function toDateTime($date = null): ?string
     {
         if ($date === null) {
             return null;
@@ -1172,10 +1176,27 @@ class Foodsharing extends \Codeception\Module\Db
         if ($date instanceof DateTime) {
             $dt = $date;
         } else {
-            $dt = new DateTime($date);
+            $dt = new DateTime($date, new DateTimeZone('Europe/Berlin'));
         }
 
         return $dt->format('Y-m-d H:i:s');
+    }
+
+    /**
+     * Converts a DateTime to an date as string "Y-m-d" with timezone 'Europe/Berlin'.
+     */
+    private function toDate($date = null): ?string
+    {
+        if ($date === null) {
+            return null;
+        }
+        if ($date instanceof DateTime) {
+            $dt = $date;
+        } else {
+            $dt = new DateTime($date, new DateTimeZone('Europe/Berlin'));
+        }
+
+        return $dt->format('Y-m-d');
     }
 
     private function createRandomText(int $minLength, int $maxLength): string

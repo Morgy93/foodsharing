@@ -278,6 +278,11 @@ build:docs:
 test:backend-code:
   extends:
     - .defaults
+  tags:
+    # The following instance type was chosen as a workaround, until
+    #  https://gitlab.com/foodsharing-dev/foodsharing/-/issues/1590 (more specifically
+    #  https://gitlab.com/gitlab-org/gitlab-runner/-/issues/30884) is resolved
+    - saas-linux-small-amd64
   stage: test
   interruptible: true
   rules:

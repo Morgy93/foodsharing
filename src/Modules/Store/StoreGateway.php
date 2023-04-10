@@ -6,6 +6,7 @@ namespace Foodsharing\Modules\Store;
 
 use Foodsharing\Modules\Core\BaseGateway;
 use Foodsharing\Modules\Core\Database;
+use Foodsharing\Modules\Core\DatabaseNoValueFoundException;
 use Foodsharing\Modules\Core\DBConstants\Store\CooperationStatus;
 use Foodsharing\Modules\Core\DBConstants\Store\Milestone;
 use Foodsharing\Modules\Core\DBConstants\Store\TeamSearchStatus;
@@ -32,7 +33,7 @@ class StoreGateway extends BaseGateway
     {
         return $this->db->insert('fs_betrieb', [
             'name' => $store->name,
-            'bezirk_id' => $store->regionId,
+            'bezirk_id' => $store->region->id,
             'lat' => $store->location->lat,
             'lon' => $store->location->lon,
             'str' => $store->address->street,
@@ -94,7 +95,15 @@ class StoreGateway extends BaseGateway
         return $result;
     }
 
-    public function getStore(int $storeId): Store
+    /**
+     * Returns all information about a store if it exists.
+     *
+     * @param int $storeId Identifier of the store
+     * @param bool $skipLoadingOfGroceries avoids loading of groceries to reduce DB load
+     *
+     * @throws DatabaseNoValueFoundException When store not found
+     */
+    public function getStore(int $storeId, bool $skipLoadingOfGroceries = false): Store
     {
         $result = $this->db->fetch(
             'SELECT	`id`,
@@ -133,7 +142,11 @@ class StoreGateway extends BaseGateway
         ]);
 
         if ($result) {
-            $result['groceries'] = array_column($this->getGroceries($storeId), 'id');
+            if (!$skipLoadingOfGroceries) {
+                $result['groceries'] = array_column($this->getGroceries($storeId), 'id');
+            }
+        } else {
+            throw new DatabaseNoValueFoundException();
         }
 
         return Store::createFromArray($result);
@@ -143,7 +156,7 @@ class StoreGateway extends BaseGateway
     {
         $this->db->update('fs_betrieb', [
             'name' => $store->name,
-            'bezirk_id' => $store->regionId,
+            'bezirk_id' => $store->region->id,
 
             'lat' => $store->location->lat,
             'lon' => $store->location->lon,
@@ -154,8 +167,8 @@ class StoreGateway extends BaseGateway
             'public_info' => $store->publicInfo,
             'public_time' => $store->publicTime->value,
 
-            'betrieb_kategorie_id' => $store->categoryId,
-            'kette_id' => $store->chainId,
+            'betrieb_kategorie_id' => $store->category ? $store->category->id : null,
+            'kette_id' => $store->chain ? $store->chain->id : null,
             'betrieb_status_id' => $store->cooperationStatus->value,
 
             'besonderheiten' => $store->description,
@@ -164,7 +177,7 @@ class StoreGateway extends BaseGateway
             'telefon' => $store->contact->phone,
             'fax' => $store->contact->fax,
             'email' => $store->contact->email,
-            'begin' => $store->cooperationStart ? $this->db->date($store->cooperationStart) : null,
+            'begin' => $store->cooperationStart ? $this->db->date($store->cooperationStart, false) : null,
             'team_status' => $store->teamStatus->value,
 
             'prefetchtime' => $store->calendarInterval,
@@ -196,7 +209,6 @@ class StoreGateway extends BaseGateway
 					b.betrieb_kategorie_id,
 					b.name,
 					b.str,
-					b.`betrieb_status_id`,
 					k.logo
 
 			FROM 	fs_betrieb b
@@ -1103,16 +1115,6 @@ class StoreGateway extends BaseGateway
         return array_map(function ($store) {
             return Store::createFromArray($store);
         }, $results);
-    }
-
-    public function listStoresWithoutRegion(array $storeIds): array
-    {
-        return $this->db->fetchAll(
-            'SELECT id,name,bezirk_id,str
-			FROM fs_betrieb
-			WHERE id IN(' . implode(',', $storeIds) . ')
-			AND ( bezirk_id = 0 OR bezirk_id IS NULL)'
-        );
     }
 
     public function getStoreLogsByActionType(int $storeId, array $storeActions): array

@@ -6,6 +6,7 @@ use DateTime;
 use Foodsharing\Lib\Session;
 use Foodsharing\Modules\Bell\BellGateway;
 use Foodsharing\Modules\Bell\DTO\Bell;
+use Foodsharing\Modules\Core\DatabaseNoValueFoundException;
 use Foodsharing\Modules\Core\DBConstants\Bell\BellType;
 use Foodsharing\Modules\Core\DBConstants\Store\Milestone;
 use Foodsharing\Modules\Core\DBConstants\Store\StoreLogAction;
@@ -119,6 +120,43 @@ class StoreRestController extends AbstractFOSRestController
     }
 
     /**
+     * Provides store information, contacts and options for a store id.
+     *
+     * Depending on the access permission some information are not provided.
+     *
+     * @OA\Tag(name="stores")
+     * @OA\Response(
+     * 		response=Response::HTTP_OK,
+     * 		description="Success.",
+     *      @Model(type=Store::class)
+     * )
+     * @OA\Response(response="401", description="Not logged in")
+     * @OA\Response(response="403", description="Not allowed to see/list stores")
+     * @OA\Response(response="404", description="Store not found")
+     * @Rest\Get("/stores/{storeId}/information", requirements={"storeId" = "\d+"})
+     */
+    public function getStoreInformationAction(int $storeId)
+    {
+        if (!$this->session->mayRole()) {
+            throw new UnauthorizedHttpException('', self::NOT_LOGGED_IN);
+        }
+
+        if (!$this->storePermissions->mayListStores()) {
+            throw new AccessDeniedHttpException('No permission see store list');
+        }
+
+        try {
+            $maySeeDetails = $this->storePermissions->mayAccessStore($storeId);
+            $maySeeSensitiveDetails = $this->storePermissions->mayEditStore($storeId);
+            $result = $this->storeTransactions->getStore($storeId, $maySeeDetails, $maySeeSensitiveDetails);
+
+            return $this->handleView($this->view($result, 200));
+        } catch (DatabaseNoValueFoundException $ex) {
+            throw new NotFoundHttpException('Store not found.');
+        }
+    }
+
+    /**
      * Creates a new store.
      *
      * This method creates a new store. The store will initial contains the provided information.
@@ -197,7 +235,7 @@ class StoreRestController extends AbstractFOSRestController
      * Allows to patch the store with information like the store team status.
      *
      * @OA\Tag(name="stores")
-     * @Rest\Patch("stores/{storeId}", requirements={"storeId" = "\d+"})
+     * @Rest\Patch("stores/{storeId}/information", requirements={"storeId" = "\d+"})
      * @OA\RequestBody(@Model(type=PatchStore::class))
      * @ParamConverter("storeModel", converter="fos_rest.request_body")
      * @OA\Response(response=Response::HTTP_BAD_REQUEST, description="Invalid request data")

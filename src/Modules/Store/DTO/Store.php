@@ -8,7 +8,10 @@ use Foodsharing\Modules\Core\DBConstants\Store\CooperationStatus;
 use Foodsharing\Modules\Core\DBConstants\Store\PublicTimes;
 use Foodsharing\Modules\Core\DBConstants\Store\TeamSearchStatus;
 use Foodsharing\Modules\Core\DTO\GeoLocation;
+use Foodsharing\Modules\Core\DTO\MinimalIdentifier;
 use InvalidArgumentException;
+use JMS\Serializer\Annotation\Type;
+use OpenApi\Attributes as OA;
 
 /**
  * This class is a representation of an Store.
@@ -28,7 +31,7 @@ class Store
     /**
      * Region which is manages and is responsible for this store.
      */
-    public int $regionId;
+    public MinimalIdentifier $region;
 
     /**
      * Location of the store.
@@ -43,8 +46,6 @@ class Store
     /**
      * Public information about the store which is visible
      * for users which are looking for a store.
-     *
-     * Max length 180 chars
      */
     public string $publicInfo;
 
@@ -58,14 +59,17 @@ class Store
      *
      * @see StoreGateway::getStoreCategories()
      */
-    public ?int $categoryId = null;
+    public ?MinimalIdentifier $category = null;
 
     /**
      * Identifier of the store chain.
      *
+     * Only set if store is related to a store chain.
+     *
      * @see StoreGateway::getBasics_chain()
      */
-    public ?int $chainId = null;
+    #[OA\Property(nullable: true)]
+    public ?MinimalIdentifier $chain = null;
 
     /**
      * Enum which represents the current state of cooperation between foodsharing and store.
@@ -74,18 +78,26 @@ class Store
 
     /**
      * Date of cooperation between store and foodsharing.
+     *
+     * @Type("DateTime<'Y-m-d'>")
      */
     public ?DateTime $cooperationStart = null;
 
     /**
      * String which describes the store.
+     *
+     * Only visible to store team members
      */
-    public string $description;
+    #[OA\Property(nullable: true)]
+    public ?string $description = null;
 
     /**
      * Contact information for store contact.
+     *
+     * Only visible to store managers or organaisators
      */
-    public ContactData $contact;
+    #[OA\Property(nullable: true)]
+    public ?ContactData $contact;
 
     /**
      * Duration in seconds before user can register to a pickup slot before pickup.
@@ -109,34 +121,43 @@ class Store
      * - 5: 20-30 kg
      * - 6: 40-50 kg
      * - 7: more then 50 kg
-     *
-     * @Assert\Range(min=0, max=7)
      */
     public int $weight = 0;
 
     /**
      * Enum which represents the effort to create the cooperation betwee store and foodsharing.
+     *
+     * Only visible to store managers or organaisators
      */
-    public ConvinceStatus $effort = ConvinceStatus::NOT_SET;
+    #[OA\Property(nullable: true)]
+    public ?ConvinceStatus $effort = ConvinceStatus::NOT_SET;
 
     /**
      * Boolean which represents that store allow using for foodsharing publicity.
+     *
+     * Only visible to store team members
      */
-    public bool $publicity = false;
+    #[OA\Property(nullable: true)]
+    public ?bool $publicity = false;
 
     /**
      * Boolean which mark store that they shows foodsharing sticker on the store.
+     *
+     * Only visible to store managers or organaisators
      */
-    public bool $showsSticker = false;
+    #[OA\Property(nullable: true)]
+    public ?bool $showsSticker = null;
 
     /**
      * List of grocerie which are provided by the store.
      *
-     * @var int[] List of grocerie which are provided by the store
+     * Only visible to store managers or organaisators
      *
-     * @Type("array<int>")
+     * @var int[] List of grocerie which are provided by the store
      */
-    public array $groceries = [];
+    #[OA\Property(nullable: true)]
+    #[Type('array<int>')]
+    public ?array $groceries = null;
 
     /**
      * Status of team.
@@ -145,11 +166,28 @@ class Store
 
     /**
      * Configuration option to influence behavior of store.
+     *
+     * Only visible to store team members
      */
-    public StoreOptionModel $options;
+    #[OA\Property(nullable: true)]
+    public ?StoreOptionModel $options = null;
 
+    /**
+     * Date of store creation in system.
+     *
+     * @Type("DateTime<'Y-m-d'>")
+     */
     public DateTime $createdAt;
-    public DateTime $updatedAt;
+
+    /**
+     * Date of last update of store information.
+     *
+     * Only visible to store managers or organaisators
+     *
+     * @Type("DateTime<'Y-m-d'>")
+     */
+    #[OA\Property(nullable: true)]
+    public ?DateTime $updatedAt = null;
 
     public function __construct()
     {
@@ -166,7 +204,7 @@ class Store
         $obj = new Store();
         $obj->id = $queryResult['id'];
         $obj->name = $queryResult['name'];
-        $obj->regionId = $queryResult['regionId'];
+        $obj->region = MinimalIdentifier::createFromId($queryResult['regionId']);
 
         try {
             $obj->location = GeoLocation::createFromArray($queryResult);
@@ -180,8 +218,8 @@ class Store
         $obj->publicInfo = isset($queryResult['public_info']) ? $queryResult['public_info'] : '';
         $obj->publicTime = PublicTimes::tryFrom($queryResult['public_time']);
 
-        $obj->categoryId = $queryResult['categoryId'];
-        $obj->chainId = $queryResult['chainId'];
+        $obj->category = MinimalIdentifier::createFromId($queryResult['categoryId']);
+        $obj->chain = MinimalIdentifier::createFromId($queryResult['chainId']);
 
         $obj->cooperationStatus = CooperationStatus::tryFrom($queryResult['cooperationStatus']);
         if ($queryResult['cooperationStart']) {

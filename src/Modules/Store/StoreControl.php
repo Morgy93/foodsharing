@@ -95,7 +95,7 @@ class StoreControl extends Control
             $this->pageHelper->addBread($this->translator->trans('storeedit.bread'));
             $store = $this->storeGateway->getStore($id);
             $data['name'] = $store->name;
-            $data['bezirk_id'] = $store->regionId;
+            $data['bezirk_id'] = $store->region->id;
             $data['lat'] = $store->location->lat;
             $data['lon'] = $store->location->lon;
             $data['str'] = $store->address->street;
@@ -104,8 +104,8 @@ class StoreControl extends Control
 
             $data['public_info'] = $store->publicInfo;
             $data['public_time'] = $store->publicTime->value;
-            $data['betrieb_kategorie_id'] = $store->categoryId;
-            $data['kette_id'] = $store->chainId;
+            $data['betrieb_kategorie_id'] = $store->category ? $store->category->id : null;
+            $data['kette_id'] = $store->chain ? $store->chain->id : null;
             $data['betrieb_status_id'] = $store->cooperationStatus->value;
             $data['besonderheiten'] = $store->description;
 
@@ -133,7 +133,7 @@ class StoreControl extends Control
 
                 $this->dataHelper->setEditData($data);
 
-                $regionId = $store->regionId;
+                $regionId = $store->region->id;
                 $regionName = $this->regionGateway->getRegionName($regionId);
 
                 $this->pageHelper->addContent($this->view->betrieb_form(

@@ -7,6 +7,7 @@ use Faker\Generator;
 use Foodsharing\Modules\Core\DBConstants\Store\CooperationStatus;
 use Foodsharing\Modules\Core\DBConstants\StoreTeam\MembershipStatus;
 use Foodsharing\Modules\Core\DBConstants\Unit\UnitType;
+use Foodsharing\Modules\Core\DTO\MinimalIdentifier;
 use Foodsharing\Modules\Store\DTO\Store;
 use Foodsharing\Modules\Store\StoreGateway;
 use Foodsharing\Modules\Store\TeamStatus;
@@ -61,7 +62,7 @@ class StoreGatewayTest extends Unit
     {
         $storeDTO = new Store();
         $storeDTO->name = 'StoreGatewayTestbetrieb';
-        $storeDTO->regionId = 1567;
+        $storeDTO->region = MinimalIdentifier::createFromId(1567);
         $storeDTO->location->lat = 51.5367827;
         $storeDTO->location->lon = 9.9258967;
         $storeDTO->address->street = 'Bahnhofsplatz 1';
@@ -135,7 +136,7 @@ class StoreGatewayTest extends Unit
         $dbStore = $listOfStores[0];
         $this->assertEquals($store['id'], $dbStore->id);
         $this->assertEquals($store['name'], $dbStore->name);
-        $this->assertEquals($store['bezirk_id'], $dbStore->regionId);
+        $this->assertEquals($store['bezirk_id'], $dbStore->region->id);
         $this->assertEquals($store['lat'], $dbStore->location->lat);
         $this->assertEquals($store['lon'], $dbStore->location->lon);
         $this->assertEquals($store['str'], $dbStore->address->street);
@@ -143,8 +144,8 @@ class StoreGatewayTest extends Unit
         $this->assertEquals($store['stadt'], $dbStore->address->city);
         $this->assertEquals($store['public_info'], $dbStore->publicInfo);
         $this->assertEquals($store['public_time'], $dbStore->publicTime->value);
-        $this->assertEquals($store['kette_id'], $dbStore->chainId);
-        $this->assertEquals($store['betrieb_kategorie_id'], $dbStore->categoryId);
+        $this->assertEquals($store['kette_id'], $dbStore->chain ? $dbStore->chain->id : null);
+        $this->assertEquals($store['betrieb_kategorie_id'], $dbStore->category ? $dbStore->category->id : null);
         $this->assertEquals($store['betrieb_status_id'], $dbStore->cooperationStatus->value);
         $this->assertEquals($store['besonderheiten'], $dbStore->description);
         $this->assertEquals($store['presse'], $dbStore->publicity);
@@ -167,7 +168,7 @@ class StoreGatewayTest extends Unit
         $dbStore = $listOfStores[0];
         $this->assertEquals($store['id'], $dbStore->id);
         $this->assertEquals($store['name'], $dbStore->name);
-        $this->assertEquals($store['bezirk_id'], $dbStore->regionId);
+        $this->assertEquals($store['bezirk_id'], $dbStore->region->id);
         $this->assertEquals($store['lat'], $dbStore->location->lat);
         $this->assertEquals($store['lon'], $dbStore->location->lon);
         $this->assertEquals($store['str'], $dbStore->address->street);
@@ -176,8 +177,8 @@ class StoreGatewayTest extends Unit
         $this->assertEquals($store['public_info'], $dbStore->publicInfo);
         $this->assertEquals($store['public_time'], $dbStore->publicTime->value);
         $this->assertEquals($store['begin'], $dbStore->cooperationStart);
-        $this->assertEquals($store['kette_id'], $dbStore->chainId);
-        $this->assertEquals($store['betrieb_kategorie_id'], $dbStore->categoryId);
+        $this->assertEquals($store['kette_id'], $dbStore->chain ? $dbStore->chain->id : null);
+        $this->assertEquals($store['betrieb_kategorie_id'], $dbStore->category ? $dbStore->category->id : null);
         $this->assertEquals($store['betrieb_status_id'], $dbStore->cooperationStatus->value);
         $this->assertEquals($store['team_status'], $dbStore->teamStatus->value);
         $this->assertEquals($store['besonderheiten'], $dbStore->description);
@@ -233,7 +234,7 @@ class StoreGatewayTest extends Unit
         $listOfStores = $this->gateway->listStoresInRegion($region['id'], true);
         $this->assertEquals(1, count($listOfStores));
 
-        $this->assertEquals($listOfStores[0]->categoryId, null);
+        $this->assertEquals($listOfStores[0]->category, null);
     }
 
     /**

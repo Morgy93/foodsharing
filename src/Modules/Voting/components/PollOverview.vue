@@ -40,7 +40,7 @@
             </b-badge>
           </li>
           <li class="poll-region">
-            <b>{{ $i18n(isWorkGroup ? 'terminology.group' : 'terminology.region') }}:</b> {{ regionName }}
+            <b>{{ $i18n(isWorkGroup ? 'terminology.group' : 'terminology.region') }}:</b> <a :href="$url('polls', regionId)">{{ regionName }}</a>
           </li>
           <li class="poll-scope">
             <b>{{ $i18n('poll.allowed_voters') }}:</b> {{ $i18n('poll.scope_description_'+poll.scope) }}
@@ -133,6 +133,10 @@ export default {
   props: {
     poll: {
       type: Object,
+      required: true,
+    },
+    regionId: {
+      type: Number,
       required: true,
     },
     regionName: {

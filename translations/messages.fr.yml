@@ -226,6 +226,8 @@ bcard:
   info:
     address_shortened: Ton adresse ou ton code postal + ville seront raccourcis sur
       la carte de visite.
+  role: "Rôle/District"
+
 pass:
   notGenerated: Votre badge n'a pas pu être généré.
   noPhoto: "Les personnes suivantes n'ont pas encore importé de photo :"

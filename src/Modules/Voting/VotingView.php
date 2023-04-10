@@ -13,6 +13,7 @@ class VotingView extends View
     {
         return $this->vueComponent('poll-overview', 'pollOverview', [
             'poll' => $poll,
+            'regionId' => $region['id'],
             'regionName' => $region['name'],
             'isWorkGroup' => UnitType::isGroup($region['type']),
             'mayVote' => $mayVote,

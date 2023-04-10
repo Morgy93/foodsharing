@@ -18,7 +18,7 @@ export async function writeStorePost (storeId, text) {
 }
 
 export async function setStoreTeamStatus (storeId, status) {
-  return patch(`/stores/${storeId}`, { teamStatus: status })
+  return patch(`/stores/${storeId}/information`, { teamStatus: status })
 }
 
 export async function getStoreDetails (storeId) {

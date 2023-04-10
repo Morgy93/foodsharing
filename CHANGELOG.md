@@ -4,15 +4,14 @@
 - Ongoing polls a user has not yet voted in are displayed on the dashboard. !2349 @AntonBallmaier
 - Provide RestApi to edit store !2515 !2625 @KoeMai
 
-
 ## Changes
 - Make menubar sticky on mobile !2411 @AntonBallmaier
 - Added a new content page for it infos to menu !2590 @chriswalg
 - Removed freshdesk link to Support and renamed contact to contact & support !2590 @chriswalg
 - Changed persistent cookie timespan from 14 days to 38 years !2626 @chriswalg
 - Updated the number of registered users on the start page !2629 @alex.simm
-
 - Added home region and verified columns to member tables of regions and working groups !2602 #1548 @alex.simm
+- Minor updates in the frontend of the voting tool #975 !2640 @alex.simm 
 
 ## Bugfixes
 - Reimplementation of the StoreManager empty pickup E-Mail notification !2574 @KoeMai
@@ -24,6 +23,7 @@
 - Hacky workaround to replace $amp in urls from chat messages #1531 !2594 @chriswalg
 - Fixed some stability issues with incoming Mail processing !2598 !2607 @\_fridtjof_
 - Removed remains of mapbox-gl in the LeafletMap component #1570 !2628 @alex.simm
+- Made creation of business cards for foreign languages work #1575 @andre161292
 
 
 ## Refactoring
@@ -36,8 +36,9 @@
 - Move uploadlogic and actions from controller to transactionclass for reuse !2478 @martncodes-de
 - Reimplement create new forum thread in vue js !2627 @chriswalg
 - New vue component for address search !2632 @alex.simm
-
+- Replaced get store information to rest api !1449 @KoeMai
 - Replaced the history dialogs on profile pages with a vue component !2587 @alex.simm
+- Moved verification to memberlist !2646 @chriswalg
 
 ## Dev/Test/CI stuff
 - Fix given null parameter !2550 @BibaltiK

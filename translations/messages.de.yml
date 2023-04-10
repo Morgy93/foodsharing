@@ -293,8 +293,8 @@ pass:
     Foodsaver, die einen Ausweis bekommen haben und die Richtigkeit ihrer Persodaten bestätigt haben, können verifiziert werden.
   claim: "Teile Lebensmittel, anstatt sie wegzuwerfen!"
   verify:
-    do: "Account von {name} verifizieren"
-    undo: "Verifizierung von {name} aufheben"
+    do: "Account von {name} ({id}) verifizieren"
+    undo: "Verifizierung von {name} ({id}) aufheben"
     confirm: "Sicher?"
     text: |
       Persodaten gecheckt? <br/>
@@ -304,6 +304,7 @@ pass:
     checkPickups: "Vor dem Entverifizieren musst du die eingetragenen Abholtermine prüfen."
   button:
     verify: "Verifizieren"
+    unverify: "Entverifizieren"
     check: "Termine prüfen"
   noPhoto: "Die folgenden Personen haben noch kein Foto hochgeladen:"
   notGenerated: "Ihr Ausweis konnte daher nicht erstellt werden."
@@ -323,9 +324,11 @@ bcard:
   generate: "Visitenkarten erstellen"
   info:
     address_shortened: "Deine Anschrift und/oder PLZ + Ort werden auf der Visitenkarte gekürzt ausgegeben."
+  role: "Role/Region"
 
 group:
   name: "Name"
+  userId: "ID"
   description: "Beschreibung"
   photo: "Foto"
   last_activity: "Letzte Aktivität"
@@ -1442,6 +1445,7 @@ memberlist:
   header_for_district: "Foodsaver im Bezirk {bezirk}"
   header_for_workgroup: "Foodsaver in der Arbeitsgruppe {bezirk}"
   some_in_all: "({some} von {all})"
+  filter_for_name_id: "Name oder ID"
 
 genderlist:
   header_for_district: "Verteilung der Foodsaver nach Geschlecht in {bezirk}"
@@ -2515,6 +2519,7 @@ poll:
     option_text: "Option"
     percentage_of_votes: "Wahlbeteiligung"
     sum: "Summe"
+    average: "Mittelwert"
   submit_vote_question: "Wirklich jetzt abstimmen? Deine Auswahl kann danach nicht mehr geändert werden."
   eligible_votes_count: "Anzahl der Stimmberechtigten"
   edit:

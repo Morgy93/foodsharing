@@ -12,6 +12,7 @@ sensio_framework_extra:
         annotations: false # Required to have no conflict with Symfony Router
 
 jms_serializer:
+    enum_support: true
     property_naming:
         id: 'jms_serializer.identical_property_naming_strategy'
     visitors:

@@ -7,6 +7,7 @@ use DateTime;
 use Foodsharing\Lib\Session;
 use Foodsharing\Modules\Bell\BellGateway;
 use Foodsharing\Modules\Bell\DTO\Bell;
+use Foodsharing\Modules\Core\DatabaseNoValueFoundException;
 use Foodsharing\Modules\Core\DBConstants\Bell\BellType;
 use Foodsharing\Modules\Core\DBConstants\Region\RegionOptionType;
 use Foodsharing\Modules\Core\DBConstants\Store\ConvinceStatus;
@@ -17,6 +18,7 @@ use Foodsharing\Modules\Core\DBConstants\Store\StoreLogAction;
 use Foodsharing\Modules\Core\DBConstants\Store\TeamSearchStatus;
 use Foodsharing\Modules\Core\DBConstants\StoreTeam\MembershipStatus;
 use Foodsharing\Modules\Core\DBConstants\Unit\UnitType;
+use Foodsharing\Modules\Core\DTO\MinimalIdentifier;
 use Foodsharing\Modules\Core\DTO\PatchGeoLocation;
 use Foodsharing\Modules\Foodsaver\FoodsaverGateway;
 use Foodsharing\Modules\Foodsaver\Profile;
@@ -144,12 +146,44 @@ class StoreTransactions
         return array_map(function (Store $store) use ($expand) {
             $requiredStoreInformation = StoreListInformation::loadFrom($store, !$expand);
             if ($expand) {
-                $regionName = $this->regionGateway->getRegionName($store->regionId);
+                $regionName = $this->regionGateway->getRegionName($store->region->id);
                 $requiredStoreInformation->region->name = $regionName;
             }
 
             return $requiredStoreInformation;
         }, $stores);
+    }
+
+    /**
+     * Provides information about a store and reduce the information to essential parts.
+     *
+     * @param int $storeId Identifier of store
+     * @param bool $showDetails Leaves details about stores like description, effort, publicity and options in object
+     * @param bool $showSensitiveDetails Leaves details about stores like contact, updatedAt, showsSticker and groceries in object
+     *
+     * @throws DatabaseNoValueFoundException Store not found
+     */
+    public function getStore(int $storeId, bool $showDetails, bool $showSensitiveDetails): Store
+    {
+        $suppressLoadingGroceries = !$showSensitiveDetails;
+        $dbResult = $this->storeGateway->getStore($storeId, $suppressLoadingGroceries);
+
+        if (!$showDetails) {
+            $dbResult->description = null;
+            $dbResult->effort = null;
+            $dbResult->publicity = null;
+            $dbResult->options = null;
+        }
+
+        if (!$showSensitiveDetails) {
+            $dbResult->contact = null;
+            $dbResult->updatedAt = null;
+            $dbResult->effort = null;
+            $dbResult->showsSticker = null;
+            $dbResult->groceries = null;
+        }
+
+        return $dbResult;
     }
 
     /**
@@ -279,7 +313,7 @@ class StoreTransactions
 
         if (!empty($storeChange->regionId)) {
             $changeInformation->informationChanged = true;
-            $store->regionId = $storeChange->regionId;
+            $store->region = MinimalIdentifier::createFromId($storeChange->regionId);
         }
 
         if (!empty($storeChange->publicInfo)) {
@@ -302,7 +336,7 @@ class StoreTransactions
             if (!$storeCategoryExists) {
                 throw new StoreTransactionException(StoreTransactionException::STORE_CATEGORY_NOT_EXISTS);
             }
-            $store->categoryId = $storeChange->categoryId;
+            $store->category = MinimalIdentifier::createFromId($storeChange->categoryId);
         }
 
         if (!is_null($storeChange->chainId)) {
@@ -311,7 +345,7 @@ class StoreTransactions
             if (!$storeChainExists) {
                 throw new StoreTransactionException(StoreTransactionException::STORE_CHAIN_NOT_EXISTS);
             }
-            $store->chainId = $storeChange->chainId;
+            $store->chain = MinimalIdentifier::createFromId($storeChange->chainId);
         }
 
         if (!is_null($storeChange->cooperationStatus)) {

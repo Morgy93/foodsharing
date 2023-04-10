@@ -183,6 +183,8 @@ bcard:
   for: '{role} per {region}'
   card: Il tuo biglietto da visita
   title: Generatore biglietto da visita
+  role: Rotolo/Distretto
+
 pass:
   button:
     check: Controlla gli appuntamenti

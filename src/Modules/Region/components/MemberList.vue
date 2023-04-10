@@ -90,7 +90,7 @@
             v-model="filterText"
             type="text"
             class="form-control form-control-sm"
-            placeholder="Name"
+            :placeholder="$i18n('memberlist.filter_for_name_id')"
           >
         </div>
         <div
@@ -130,6 +130,13 @@
           />
         </div>
       </template>
+      <template #cell(userId)="row">
+        <a
+          :href="$url('profile', row.item.id)"
+        >
+          {{ row.item.id }}
+        </a>
+      </template>
       <template #cell(userName)="row">
         <a
           :href="$url('profile', row.item.id)"
@@ -149,11 +156,22 @@
         {{ $i18n('terminology.role.' + row.item.role) }}
       </template>
       <template #cell(isVerified)="row">
-        <i
+        <button
           v-if="row.item.isVerified"
-          class="fas fa-user-check"
+          class="btn btn-sm btn-primary"
           :title="$i18n('group.member_list.is_verified')"
-        />
+          @click="showVerifyConfirmation(false, row.item.id,row.item.name)"
+        >
+          <i class="fas fa-user-check" />
+        </button>
+        <button
+          v-else
+          class="btn btn-sm btn-secondary"
+          :title="$i18n('group.member_list.verify')"
+          @click="showVerifyConfirmation(true, row.item.id,row.item.name)"
+        >
+          <i class="fas fa-user-check" />
+        </button>
       </template>
       <template #cell(isHomeRegion)="row">
         <i
@@ -228,6 +246,7 @@ import { hideLoader, pulseError, showLoader } from '@/script'
 import i18n from '@/helper/i18n'
 import UserSearchInput from '@/components/UserSearchInput'
 import Avatar from '@/components/Avatar'
+import { verifyUser, deverifyUser } from '@/api/verification'
 
 export default {
   components: { Avatar, BButton, BFormSelect, BTable, BPagination, UserSearchInput },
@@ -277,7 +296,7 @@ export default {
       const filterText = this.filterText ? this.filterText.toLowerCase() : null
       return this.memberList.filter((member) => {
         return (
-          (!filterText || (member.name.toLowerCase().indexOf(filterText) !== -1)) &&
+          ((!filterText || (member.id.toString().startsWith(filterText))) || (member.name.toLowerCase().indexOf(filterText) !== -1)) &&
           (this.filterRole === null || (member.role === this.filterRole)) &&
           (!this.filterLastActivity || (Date.parse(member.lastActivity) <= this.dateBeforeMonths))
         )
@@ -300,6 +319,12 @@ export default {
         }, {
           key: 'userName',
           label: this.$i18n('group.name'),
+          sortable: false,
+          class: 'align-middle',
+        },
+        {
+          key: 'userId',
+          label: this.$i18n('group.userId'),
           sortable: false,
           class: 'align-middle',
         },
@@ -365,6 +390,23 @@ export default {
     hideLoader()
   },
   methods: {
+    async showVerifyConfirmation (isVerified, memberId, memberName) {
+      const returnFromModal = await this.$bvModal.msgBoxConfirm(i18n(isVerified ? 'pass.verify.do' : 'pass.verify.undo', { name: memberName, id: memberId }), {
+        modalClass: 'bootstrap',
+        title: i18n(isVerified ? 'pass.button.verify' : 'pass.button.unverify'),
+        cancelTitle: i18n('button.cancel'),
+        okTitle: i18n('button.yes_i_am_sure'),
+        headerClass: 'd-flex',
+        contentClass: 'pr-3 pt-3',
+      })
+      if (returnFromModal) {
+        await this.updateVerificationStatusFromUser(isVerified, memberId)
+        const index = this.memberList.findIndex(member => member.id === memberId)
+        if (index >= 0) {
+          this.memberList[index].isVerified = isVerified
+        }
+      }
+    },
     compare: optimizedCompare,
 
     clearFilter () {
@@ -479,6 +521,21 @@ export default {
         // the backend doesn't care if the user was already in the group, so we have to check here
         if (!this.containsMember(userId)) {
           this.memberList.push(addedUser)
+        }
+      } catch (e) {
+        pulseError(i18n('error_unexpected'))
+      }
+      this.isBusy = false
+      hideLoader()
+    },
+    async updateVerificationStatusFromUser (isVerified, userId) {
+      showLoader()
+      this.isBusy = true
+      try {
+        if (isVerified) {
+          verifyUser(userId)
+        } else {
+          deverifyUser(userId)
         }
       } catch (e) {
         pulseError(i18n('error_unexpected'))
