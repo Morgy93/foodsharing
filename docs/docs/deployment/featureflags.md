@@ -32,16 +32,16 @@ As example, i added a featureflag to show the newest design for our documentatio
 flagception:
   features:
     always_true_for_testing_purposes: # feature flag identifier
+      # This feature flag is default activated for testing purposes.
       default: true
-      description: This feature flag is default activated for testing purposes.
       
     always_false_for_testing_purposes:
+      # This feature flag is default disabled for testing purposes.
       default: false
-      description: This feature flag is default disabled for testing purposes.
     
     show_newest_design_for_documentation:
+      # activates the newest design for our documentation
       default: true
-      description: activates the newest design for our documentation
 ```
 
 ## How to use feature flags / check if feature flag is active
