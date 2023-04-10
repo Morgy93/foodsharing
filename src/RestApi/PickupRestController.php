@@ -629,7 +629,7 @@ final class PickupRestController extends AbstractFOSRestController
     }
 
     /**
-     * Check if a Constraint violation is found and if it exist it throws an BadRequestExeption.
+     * Check if a Constraint violation is found and if it exists it throws an BadRequestException.
      *
      * @param ConstraintViolationListInterface $errors Validation result
      *
@@ -656,7 +656,7 @@ final class PickupRestController extends AbstractFOSRestController
             throw new UnauthorizedHttpException('');
         }
 
-        // is it a valid pickupdate?
+        // is it a valid pickup date?
         $pickupSlotDate = TimeHelper::parsePickupDate($pickupDate);
         if (is_null($pickupSlotDate)) {
             throw new BadRequestHttpException('Invalid date format');

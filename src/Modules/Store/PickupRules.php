@@ -51,8 +51,13 @@ class PickupRules
             $numberAllowedPickupsPerDay = (int)$this->regionGateway->getRegionOption($regionId, RegionOptionType::REGION_PICKUP_RULE_LIMIT_DAY_NUMBER);
 
             if ($numberAllowedPickupsPerDay < $numberAllowedPickupsPerTimespan
-                && $this->pickupGateway->getNumberOfPickupsForUserWithStoreRulesSameDay($fsId, $pickupDate) >= $numberAllowedPickupsPerDay) {
-                return false;
+                || $timespanRegionRuleInDays == 1) {
+                if ($this->pickupGateway->getNumberOfPickupsForUserWithStoreRulesSameDay($fsId, $pickupDate) >= $numberAllowedPickupsPerDay) {
+                    return false;
+                }
+                if ($timespanRegionRuleInDays == 1) {
+                    return true;
+                }
             }
 
             if ($numberAllowedPickupsPerTimespan == 1
