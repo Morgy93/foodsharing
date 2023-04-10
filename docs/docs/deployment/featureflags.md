@@ -24,3 +24,46 @@ In addition, feature flags can also be used to react quickly to problems or malf
 :::
 
 ## How to create feature flags
+1. navigate to `config/feature_flags.yaml`
+2. add your feature flag with a meaningful identifier, short description and default value, if the flag should be active or not
+
+As example, i added a featureflag to show the newest design for our documentation:
+```yaml title='/config/feature_flags.yaml'
+flagception:
+  features:
+    always_true_for_testing_purposes: # feature flag identifier
+      default: true
+      description: This feature flag is default activated for testing purposes.
+      
+    always_false_for_testing_purposes:
+      default: false
+      description: This feature flag is default disabled for testing purposes.
+    
+    show_newest_design_for_documentation:
+      default: true
+      description: activates the newest design for our documentation
+```
+
+## How to use feature flags / check if feature flag is active
+Let's see how we can check in our code, if a feature flag is active.
+### PHP
+1. Inject via [symfony autowiring](https://symfony.com/doc/current/service_container/autowiring.html) the interface `FeatureFlagChecker (Foodsharing\Modules\Development\FeatureFlags\DependencyInjection\FeatureFlagChecker)`
+2. Use the method `isFeatureFlagActive($featureFlagIdentifier)`
+```php title='FeatureFlagRestController.php'
+final class FeatureFlagRestController extends AbstractFOSRestController
+{
+    public function __construct(
+        private readonly FeatureFlagChecker $featureFlagChecker,
+    ) {
+    }
+
+    public function isFeatureFlagActiveAction(): JsonResponse
+    {
+        $isFeatureFlagActive = $this->featureFlagChecker->isFeatureFlagActive('show_newest_design_for_documentation');
+        ...
+    }
+}
+```
+### VueJS
+
+### Twig

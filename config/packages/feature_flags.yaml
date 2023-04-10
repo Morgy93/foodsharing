@@ -2,5 +2,8 @@ flagception:
   features:
     always_true_for_testing_purposes:
       default: true
+      description: This feature flag is default activated for testing purposes.
+
     always_false_for_testing_purposes:
       default: false
+      description: This feature flag is default activated for testing purposes.
