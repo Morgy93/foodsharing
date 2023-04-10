@@ -67,3 +67,8 @@ final class FeatureFlagRestController extends AbstractFOSRestController
 ### VueJS
 
 ### Twig
+```twig
+{% if isFeatureFlagActive('show_newest_design_for_documentation') %}
+    <!-- Do something -->
+{% endif %}
+```
