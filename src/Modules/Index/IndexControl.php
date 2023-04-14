@@ -22,10 +22,13 @@ class IndexControl extends Control
         $this->pageHelper->addTitle($this->translator->trans('savewithus'));
 
         $host = $_SERVER['HTTP_HOST'] ?? BASE_URL;
+        
+        echo "<script>console.log('URL: " . $host . "');</script>";
+
         if (strpos($host, 'foodsharing.at') !== false) {
             $contentIds = [ContentId::STARTPAGE_BLOCK1_AT, ContentId::STARTPAGE_BLOCK2_AT, ContentId::STARTPAGE_BLOCK3_AT];
             $country = 'AT';
-        } elseif (strpos($host, 'foodsharingschweiz.ch') !== false) {
+        } elseif (strpos($host, 'foodsharingschweiz.ch') !== false || strpos($host, 'foodsharing.network') !== false) {
             $contentIds = [ContentId::STARTPAGE_BLOCK1_CH, ContentId::STARTPAGE_BLOCK2_CH, ContentId::STARTPAGE_BLOCK3_CH];
             $country = 'CH';
         } elseif (strpos($host, 'beta.foodsharing.de') !== false) {
