@@ -8,7 +8,7 @@
     </div>
     <div
       v-else
-      class="card my-2 rounded"
+      class="my-2"
     >
       <div
         v-if="bubbleData.photo"
@@ -24,17 +24,26 @@
         v-if="bubbleData.createdAt"
         class="mb-3"
       >
-        <div><b>{{ $i18n('basket.date') }}</b></div>
+        <div
+          class="mb-1 section-label"
+        >
+          {{ $i18n('basket.date') }}
+        </div>
         <div>{{ displayDate }}</div>
       </div>
 
-      <div><b>{{ $i18n('basket.description') }}</b></div>
+      <div
+        class="mb-1 section-label"
+      >
+        {{ $i18n('basket.description') }}
+      </div>
       <div class="mb-3">
         {{ bubbleData.description }}
       </div>
 
       <b-button
         variant="primary"
+        class="mx-5"
         :href="$url('basket', bubbleData.id)"
       >
         {{ $i18n('basket.go') }}
@@ -89,5 +98,9 @@ export default {
 .basketpicture {
   width: 100%;
   overflow: hidden;
+}
+.section-label {
+  color: var(--fs-color-primary-500);
+  font-weight: 500;
 }
 </style>

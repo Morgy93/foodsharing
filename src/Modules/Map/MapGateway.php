@@ -64,11 +64,11 @@ class MapGateway extends BaseGateway
     }
 
     /**
-     * Returns the data for a basket's bubble on the map.
+     * Returns the data for a basket's bubble on the map or null if the basket does not exist.
      *
      * @param bool $includeDetails whether to include details that should not be visible when logged out
      */
-    public function getBasketBubbleData(int $basketId, bool $includeDetails): BasketBubbleData
+    public function getBasketBubbleData(int $basketId, bool $includeDetails): ?BasketBubbleData
     {
         $basket = $this->db->fetch('
 			SELECT
@@ -93,6 +93,9 @@ class MapGateway extends BaseGateway
 		', [
             ':id' => $basketId,
         ]);
+        if (empty($basket)) {
+            return null;
+        }
 
         $bubbleData = BasketBubbleData::create($basket['id'], $basket['description'], $basket['picture']);
         if ($includeDetails) {
