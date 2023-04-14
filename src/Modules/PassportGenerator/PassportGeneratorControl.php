@@ -112,7 +112,7 @@ final class PassportGeneratorControl extends Control
 		$size = filesize($file);
 		header('Content-Type: application/pdf');
 		header('Content-Disposition: attachment; filename=' . $filename . '');
-		header("Content-Length: $size");
+		header('Content-Length: ' . $size);
 		readfile($file);
 
 		exit;
