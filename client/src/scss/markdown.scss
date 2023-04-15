@@ -1,0 +1,15 @@
+.markdown th {
+    background-color: var(--fs-color-primary-400);
+    padding: 5px;
+    border: 1px black solid;
+    color: var(--fs-color-light);
+    word-break: keep-all;
+}
+
+.markdown td {
+    padding-left: 10px;
+    padding-right: 10px;
+    border: 1px black solid;
+}
+
+.markdown tr:nth-child(even) { background-color: var(--fs-color-primary-200);}
