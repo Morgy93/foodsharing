@@ -8,3 +8,4 @@ exercise_html_purifier:
         AutoFormat.Linkify: false
         CSS.AllowedProperties: []
         URI.DisableExternalResources: true
+        URI.Host: '%env(string:HOST)%'

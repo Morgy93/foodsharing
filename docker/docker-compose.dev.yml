@@ -15,6 +15,7 @@ services:
     container_name: foodsharing_dev_app
     environment:
       FS_ENV: dev
+      HOST: gitpod.io
     ports:
       - "19000:9000"
 
