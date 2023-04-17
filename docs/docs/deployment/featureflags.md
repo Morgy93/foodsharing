@@ -65,8 +65,34 @@ final class FeatureFlagRestController extends AbstractFOSRestController
 }
 ```
 ### VueJS
+1. Require the FeatureFlag Mixin
+2. Use it with `this.isFeatureFlagActive('...')`
+```js title='FancyComponent.vue'
+<template>
+  <div>
+    <p v-if="isMyFeatureFlagActive">My feature is active!</p>
+    <p v-else>My feature is not active yet.</p>
+  </div>
+</template>
+
+<script>
+import FeatureFlagMixin from '@/mixins/FeatureFlagMixin'
+
+export default {
+  mixins: [FeatureFlagMixin],
+
+  computed: {
+    isMyFeatureFlagActive () {
+      return this.isFeatureFlagActive('show_newest_design_for_documentation')
+    },
+  },
+}
+</script>
+```
+
 
 ### Twig
+`isFeatureFlagActive('...')` is a global twig-function, you can use and call it everywhere inside twig
 ```twig
 {% if isFeatureFlagActive('show_newest_design_for_documentation') %}
     <!-- Do something -->
