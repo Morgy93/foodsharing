@@ -4905,6 +4905,11 @@ linkifyjs@2.1.9:
   resolved "https://registry.yarnpkg.com/linkifyjs/-/linkifyjs-2.1.9.tgz#af06e45a2866ff06c4766582590d098a4d584702"
   integrity sha512-74ivurkK6WHvHFozVaGtQWV38FzBwSTGNmJolEgFp7QgR2bl6ArUWlvT4GcHKbPe1z3nWYi+VUdDZk16zDOVug==
 
+liquor-tree@^0.2.70:
+  version "0.2.70"
+  resolved "https://registry.yarnpkg.com/liquor-tree/-/liquor-tree-0.2.70.tgz#451ec5a0041994f82f895f1fe47c8cc81a034845"
+  integrity sha512-5CiMlDVmuveYwwc27mYe1xZ3J4aHhZBErUhIp9ov4v4wIBso+s5JAByOOit4iOCMCQ5ODd8VggbKymzZREYbBQ==
+
 loader-runner@^2.4.0:
   version "2.4.0"
   resolved "https://registry.yarnpkg.com/loader-runner/-/loader-runner-2.4.0.tgz#ed47066bfe534d7e84c4c7b9998c2a75607d9357"
@@ -7600,6 +7605,11 @@ vue-infinite-loading@^2.4.5:
   version "2.4.5"
   resolved "https://registry.yarnpkg.com/vue-infinite-loading/-/vue-infinite-loading-2.4.5.tgz#cc20fd40af7f20188006443c99b60470cf1de1b3"
   integrity sha512-xhq95Mxun060bRnsOoLE2Be6BR7jYwuC89kDe18+GmCLVrRA/dU0jrGb12Xu6NjmKs+iTW0AA6saSEmEW4cR7g==
+
+vue-jstree@^2.1.6:
+  version "2.1.6"
+  resolved "https://registry.yarnpkg.com/vue-jstree/-/vue-jstree-2.1.6.tgz#44827ad72953ed77da6590ce4e8f37f7787f8653"
+  integrity sha512-vtUmhLbfE2JvcnYNRXauJPkNJSRO/f9BTsbxV+ESXP/mMQPVUIYI4EkSHKSEOxVDHTU7SfLp/AxplmaAl6ctcg==
 
 vue-loader@~15.10.1:
   version "15.10.1"

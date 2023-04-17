@@ -34,7 +34,7 @@ class SearchRestController extends AbstractFOSRestController
         SearchGateway $searchGateway,
         SearchTransactions $searchTransactions,
         ForumPermissions $forumPermissions,
-        SearchPermissions $searchPermissions
+        SearchPermissions $searchPermissions,
     ) {
         $this->session = $session;
         $this->searchGateway = $searchGateway;

@@ -21,6 +21,7 @@ class SearchApiCest
 
         $this->user = $I->createFoodsaver();
         $I->addRegionMember($this->region1['id'], $this->user['id']);
+
         $this->user1 = $I->createFoodsaver();
         $I->addRegionMember($this->region1['id'], $this->user1['id']);
         $this->user2 = $I->createFoodsaver();
@@ -77,5 +78,33 @@ class SearchApiCest
         $I->seeResponseContainsJson([
             'myRegions' => ['id' => $this->region1['id']]
         ]);
+    }
+
+    public function canUserWithoutRightsSearchForEmailAdresses(ApiTester $I)
+    {
+        $I->login($this->user1['email']);
+        $I->sendGET("api/search/all?q={$this->user1['email']}");
+        $I->seeResponseCodeIs(HttpCode::OK);
+        $I->cantSeeResponseContainsJson(['users' => [
+            0 => [
+                'id' => $this->user1['id'],
+                'name' => $this->user1['name'],
+                'teaser' => sprintf('FS-ID: %s | Mail: %s', $this->user1['id'], $this->user1['email'])
+            ]
+        ]]);
+    }
+
+    public function canUserWithOrgaRightsSearchForEmailAdresses(ApiTester $I)
+    {
+        $I->login($this->userOrga['email']);
+        $I->sendGET("api/search/all?q={$this->user1['email']}");
+        $I->seeResponseCodeIs(HttpCode::OK);
+        $I->canSeeResponseContainsJson(['users' => [
+            0 => [
+                'id' => $this->user1['id'],
+                'name' => $this->user1['name'],
+                'teaser' => sprintf('FS-ID: %s | Mail: %s', $this->user1['id'], $this->user1['email'])
+            ]
+        ]]);
     }
 }

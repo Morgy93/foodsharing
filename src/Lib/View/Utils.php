@@ -57,6 +57,9 @@ class Utils
         return $this->v_field('<div class="v-form">' . $this->v_form($title, $elements, $option) . '</div>', $title);
     }
 
+    /**
+     * @deprecated use the vue components RegionTree or RegionTreeVForm instead
+     */
     public function v_regionPicker(array $region, string $label): string
     {
         $id = $this->identificationHelper->id('bezirk_id');

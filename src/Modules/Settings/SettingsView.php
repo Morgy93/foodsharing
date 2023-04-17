@@ -11,6 +11,7 @@ use Foodsharing\Modules\Core\DBConstants\Foodsaver\SleepStatus;
 use Foodsharing\Modules\Core\DBConstants\FoodSharePoint\FollowerType;
 use Foodsharing\Modules\Core\DBConstants\Info\InfoType;
 use Foodsharing\Modules\Core\DBConstants\Quiz\AnswerRating;
+use Foodsharing\Modules\Core\DBConstants\Unit\UnitType;
 use Foodsharing\Modules\Core\View;
 use Foodsharing\Modules\Region\RegionGateway;
 use Foodsharing\Utility\DataHelper;
@@ -474,7 +475,12 @@ class SettingsView extends View
                 $bezirk['name'] = $b['name'];
             }
 
-            $regionPicker = $this->v_utils->v_regionPicker($bezirk, $this->translator->trans('terminology.homeRegion'));
+            $regionPicker .= $this->vueComponent('region-tree-vform', 'RegionTreeVForm', [
+                'title' => $this->translator->trans('terminology.homeRegion'),
+                'inputName' => 'bezirk_id',
+                'initialValue' => $bezirk,
+                'selectableRegionTypes' => [UnitType::CITY, UnitType::DISTRICT, UnitType::REGION, UnitType::WORKING_GROUP, UnitType::PART_OF_TOWN],
+            ]);
             $position = $this->v_utils->v_form_text('position');
         }
 

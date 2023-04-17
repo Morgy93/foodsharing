@@ -21,6 +21,7 @@ import Calendar from './components/Calendar'
 import ProfilePicture from './components/ProfilePicture'
 import NameInput from './components/NameInput'
 import LeafletLocationSearchVForm from '@/components/map/LeafletLocationSearchVForm'
+import RegionTreeVForm from '@/components/regiontree/RegionTreeVForm'
 
 if (GET('sub') === 'calendar') {
   vueRegister({
@@ -32,10 +33,15 @@ if (GET('sub') === 'calendar') {
     ProfilePicture,
     NameInput,
     LeafletLocationSearchVForm,
+    RegionTreeVForm,
   })
   vueApply('#image-upload')
   vueApply('#name-input')
   vueApply('#settings-address-search')
+
+  if (document.getElementById('region-tree-vform') !== null) {
+    vueApply('#region-tree-vform')
+  }
 }
 
 expose({

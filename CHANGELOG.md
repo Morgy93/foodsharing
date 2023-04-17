@@ -11,7 +11,9 @@
 - Changed persistent cookie timespan from 14 days to 38 years !2626 @chriswalg
 - Updated the number of registered users on the start page !2629 @alex.simm
 - Added home region and verified columns to member tables of regions and working groups !2602 #1548 @alex.simm
-- Minor updates in the frontend of the voting tool #975 !2640 @alex.simm 
+- Minor updates in the frontend of the voting tool #975 !2640 @alex.simm
+- Show title of forum post in window header !2658 #1591 @McGoldi
+- Support and orga-user can search users with e-mail !2651 !2663 @chriswalg @martincodes-de
 
 ## Bugfixes
 - Reimplementation of the StoreManager empty pickup E-Mail notification !2574 @KoeMai
@@ -24,6 +26,8 @@
 - Fixed some stability issues with incoming Mail processing !2598 !2607 @\_fridtjof_
 - Removed remains of mapbox-gl in the LeafletMap component #1570 !2628 @alex.simm
 - Made creation of business cards for foreign languages work #1575 @andre161292
+- Fixed deleted notification subscriptions for forum threads whenever a user is removed #1066 @McGoldi
+- Use strip_tags instead of preg_replace for basket phone to keep + sign #1005 !2650
 
 
 ## Refactoring
@@ -33,12 +37,17 @@
 - Use Store DTO in StoreGateway !2515 !2611 @KoeMai
 - Move business logic for editing store into StoreTransaction !2515 @KoeMai
 - Fix TeamStoreStatus and move getStoreMarkers to StoreGateway !2560 @KoeMai
+- added poppins font in Styleguide !2564 @Niklas003
+- Replace the region tree with a new vue component !2483 @alex.simm
 - Move uploadlogic and actions from controller to transactionclass for reuse !2478 @martncodes-de
 - Reimplement create new forum thread in vue js !2627 @chriswalg
-- New vue component for address search !2632 @alex.simm
+- New vue component for address search !2632 !2669 @alex.simm
 - Replaced get store information to rest api !1449 @KoeMai
 - Replaced the history dialogs on profile pages with a vue component !2587 @alex.simm
 - Moved verification to memberlist !2646 @chriswalg
+
+- added poppins font in Styleguide !2564 @Niklas003
+- Replace the region tree with a new vue component !2483 @alex.simm
 
 ## Dev/Test/CI stuff
 - Fix given null parameter !2550 @BibaltiK
@@ -64,6 +73,7 @@
 - Improved scripts. repaired outdated notify. Made test rerun faster. Made clean more powerfull !2622 @peter.toennies
 - Delete faulty mails on imap server !2591 @stcz
 - Replaced FS_ENV to "${1:-dev}" for containers-start to solve unbound variable !2542 @chriswalg
+- Made scripts work with docker-compose-plugin !1587 @andre161292
 
 ## Development documentation
 

@@ -187,6 +187,7 @@ group:
   last_activity: Last activity
   filter_by_last_activity: No activity in months
   role_name: Role
+  userId: ID
 settings:
   header: Profile settings
   name_change:
@@ -254,7 +255,7 @@ settings:
     link_title: 'ICS/ICAL/WebCal:'
     menu: Calendar
     sync: "Your calendar programme has to synchronise this calendar regularly.\nOnly\
-      \ then new pick-up dates appear and cancelled dates disappear.\n"
+      \ after synchronisation, new pick-up dates appear and cancelled dates disappear.\n"
     token-warning: "Important: Keep the link secret.\nIt contains a key to access\
       \ your pick-up dates without a password.\n"
     title: Your pickup calendar
@@ -1926,10 +1927,11 @@ pass:
   button:
     verify: Verify
     check: Check appointments
+    unverify: remove verification
   verify:
     failed: A problem occured
     confirm: Sure?
-    undo: Verification of {name} cancel
+    undo: Cancel verification of {name}
     do: Verify {name}'s account
     checkPickups: Before de-verifying you have to check the pick-up dates entered.
     hasPickup: Still registered for pick-ups
@@ -2225,6 +2227,7 @@ memberlist:
   some_in_all: ({some} of {all})
   header_for_workgroup: Foodsavers in the working group {bezirk}
   header_for_district: Foodsavers in the region {bezirk}
+  filter_for_name_id: name or ID
 chat:
   conversations: Conversations
   new_message: New message

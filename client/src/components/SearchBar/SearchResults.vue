@@ -219,26 +219,26 @@ export default {
   computed: {
     filtered () {
       const query = this.query.toLowerCase().trim()
-      const words = query.match(/[^ ,;+.]+/g)
+      const searchTerms = query.match(/[^ ,;+.]+/g)
 
-      // filter elements, whether all of the query words are contained somewhere in name or teaser
-      const filterFunction = (e) => {
-        if (!words.length) return false
-        for (const word of words) {
-          if (!match(word, e)) return false
+      const containsAllSearchTerms = (searchResultEntry) => {
+        if (!searchTerms.length) return false
+        for (const searchTerm of searchTerms) {
+          if (!match(searchTerm, searchResultEntry)) return false
         }
         return true
       }
+
       const res = {
-        stores: this.stores.filter(filterFunction),
-        regions: this.regions.filter(filterFunction),
-        users: this.users.filter(filterFunction),
-        groups: this.groups.filter(filterFunction),
-        foodSharePoints: this.foodSharePoints.filter(filterFunction),
-        myGroups: this.myGroups.filter(filterFunction),
-        myStores: this.myStores.filter(filterFunction),
-        myRegions: this.myRegions.filter(filterFunction),
-        myBuddies: this.myBuddies.filter(filterFunction),
+        stores: this.stores.filter(containsAllSearchTerms),
+        regions: this.regions.filter(containsAllSearchTerms),
+        users: this.users.filter(containsAllSearchTerms),
+        groups: this.groups.filter(containsAllSearchTerms),
+        foodSharePoints: this.foodSharePoints.filter(containsAllSearchTerms),
+        myGroups: this.myGroups.filter(containsAllSearchTerms),
+        myStores: this.myStores.filter(containsAllSearchTerms),
+        myRegions: this.myRegions.filter(containsAllSearchTerms),
+        myBuddies: this.myBuddies.filter(containsAllSearchTerms),
       }
 
       // additionally remove elements in global search which are already contained in the private lists

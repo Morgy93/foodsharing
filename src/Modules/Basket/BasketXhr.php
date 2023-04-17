@@ -158,8 +158,8 @@ class BasketXhr extends Control
             $contact_type = implode(':', $data['contact_type']);
             if (in_array(2, $data['contact_type'])) {
                 $tel = [
-                    'tel' => preg_replace('/[^0-9\-\/]/', '', $data['tel']),
-                    'handy' => preg_replace('/[^0-9\-\/]/', '', $data['handy']),
+                    'tel' => strip_tags($data['tel']),
+                    'handy' => strip_tags($data['handy']),
                 ];
             }
         }

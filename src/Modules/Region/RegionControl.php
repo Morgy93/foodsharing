@@ -28,6 +28,7 @@ final class RegionControl extends Control
     private RegionGateway $gateway;
     private EventGateway $eventGateway;
     private FoodSharePointGateway $foodSharePointGateway;
+    private ForumGateway $forumGateway;
     private ForumFollowerGateway $forumFollowerGateway;
     private FormFactoryInterface $formFactory;
     private ForumTransactions $forumTransactions;
@@ -54,6 +55,7 @@ final class RegionControl extends Control
     public function __construct(
         EventGateway $eventGateway,
         FoodSharePointGateway $foodSharePointGateway,
+        ForumGateway $forumGateway,
         ForumFollowerGateway $forumFollowerGateway,
         ForumPermissions $forumPermissions,
         RegionPermissions $regionPermissions,
@@ -72,6 +74,7 @@ final class RegionControl extends Control
         $this->forumPermissions = $forumPermissions;
         $this->regionPermissions = $regionPermissions;
         $this->foodSharePointGateway = $foodSharePointGateway;
+        $this->forumGateway = $forumGateway;
         $this->forumFollowerGateway = $forumFollowerGateway;
         $this->forumTransactions = $forumTransactions;
         $this->reportPermissions = $reportPermissions;
@@ -382,8 +385,11 @@ final class RegionControl extends Control
         $viewdata['sub'] = $sub;
 
         if ($threadId = $request->query->getInt('tid')) {
+            $thread = $this->forumGateway->getThreadInfo($threadId);
+            $this->pageHelper->addTitle($thread['title']);
             $viewdata['threadId'] = $threadId; // this triggers the rendering of the vue component `Thread`
         } elseif ($request->query->has('newthread')) {
+            $this->pageHelper->addTitle($this->translator->trans('forum.new_thread'));
             $postActiveWithoutModeration = $this->forumPermissions->mayStartUnmoderatedThread($region, $ambassadorForum);
             $viewdata['newThreadForm'] = $this->handleNewThreadForm($request, $region, $ambassadorForum, $postActiveWithoutModeration);
             $viewdata['postActiveWithoutModeration'] = $postActiveWithoutModeration;

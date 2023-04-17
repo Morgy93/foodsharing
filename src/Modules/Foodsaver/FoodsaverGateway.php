@@ -1026,6 +1026,19 @@ class FoodsaverGateway extends BaseGateway
         return count($foodsaverIds) === count($existing);
     }
 
+    public function getUserFromEmail(string $email): array
+    {
+        return $this->db->fetchByCriteria(
+            'fs_foodsaver',
+            [
+                'id',
+                'name',
+                'email',
+            ],
+            ['email' => $email]
+        );
+    }
+
     public function changeUserVerification(int $userId, int $actorId, bool $newStatus): void
     {
         $updated = $this->db->update('fs_foodsaver', ['verified' => intval($newStatus)], [
