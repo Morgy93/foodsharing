@@ -100,6 +100,7 @@ abstract class Control
     protected function render(string $template, array $data = []): string
     {
         $global = $this->pageHelper->generateAndGetGlobalViewData();
+        $this->session->updateLastActivity();
         $viewData = array_merge($global, $data);
 
         return $this->twig->render($template, $viewData);

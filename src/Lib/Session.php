@@ -525,9 +525,11 @@ class Session
         return isset($_SESSION['mob']) && $_SESSION['mob'] == 1;
     }
 
-    public function updateLastActivity()
-    {
-        $session_last_activity = $_SESSION['client']['last_activity'];
+    public function updateLastActivity(){
+        $fs = $this->foodsaverGateway->getFoodsaverDetails($this->id());
+        $session_last_activity = $fs['last_activity'];
+
+        //$_SESSION['client']['last_activity'];
         if ($session_last_activity === null) {
             $session_last_activity = date('Y-m-d');
         }
@@ -535,7 +537,7 @@ class Session
         $last_activity = date('Y-m-d', strtotime($session_last_activity));
         $today = date('Y-m-d');
 
-        if ($this->isPersistent() && $today != $last_activity) {
+        if ($today != $last_activity) {
             $this->loginGateway->updateLastActivityInDatabase($this->id());
             $this->refreshFromDatabase();
         }
