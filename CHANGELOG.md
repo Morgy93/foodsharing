@@ -3,6 +3,7 @@
 ## Features
 - Ongoing polls a user has not yet voted in are displayed on the dashboard. !2349 @AntonBallmaier
 - Provide RestApi to edit store !2515 !2625 @KoeMai
+- New section in user settings->notifications with an entry per region to get or not get mail notification for new forum threads #179 @McGoldi
 
 ## Changes
 - Make menubar sticky on mobile !2411 @AntonBallmaier
