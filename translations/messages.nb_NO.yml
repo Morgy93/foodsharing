@@ -934,6 +934,7 @@ settings:
   header: Profilinnstillinger
   follow:
     thread: Bli varslet når det er noe nytt om «{thread}»?
+    region: Bli varslet når det er noe nytt om «{region}»?
     mail: Ja, jeg vil gjerne bli informert om nye bidrag på e-post.
     none: Slutt å varsle deg om nye innlegg på e-post.
   newsletter: "Ca en gang i måneden sender vi ut aktuell informasjon\nom matsparebevegelsen\

@@ -288,6 +288,7 @@ settings:
     \ that?\n"
   follow:
     thread: Get notified when there is something new about "{thread}"?
+    region: Get notified when there is something new in your "{region}"?
     none: Please do not notify me of new posts by email.
     mail: Yes, I would like to be informed about new posts by email.
   newsletter: "About once a month we send out current information\nabout the food\

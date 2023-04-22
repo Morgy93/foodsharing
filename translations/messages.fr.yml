@@ -408,6 +408,7 @@ settings:
     none: Ne plus m'informer sur les nouvelles publications par courriel.
     mail: Oui, je souhaite être informé·e des nouvelles publications par courriel.
     thread: Recevoir les nouvelles du fil "{thread}" ?
+    region: Recevoir les nouvelles du fil "{region}" ?
   calendar:
     sync: "Ton programme de calendrier doit régulièrement resynchroniser ce calendrier.\n\
       Ce n'est qu'alors que les nouvelles dates de collecte apparaîtront ou que les\

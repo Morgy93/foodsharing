@@ -2008,6 +2008,7 @@ settings:
     none: Per favore, non mandarmi email sui nuovi post.
     mail: Sì, vorrei essere informato dei nuovi messaggi via e-mail.
     thread: Tieniti aggiornato sull'argomento del forum "{thread}"?
+    region: Tieniti aggiornato sull'argomento del forum "{region}"?
   notifications: Notifiche
   header: I tuoi impostazioni
   title: Impostazioni
