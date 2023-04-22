@@ -420,6 +420,8 @@ class SettingsControl extends Control
             }
             $fspIdsToUnfollow = [];
             $threadIdsToUnfollow = [];
+            $regionIdsToUnfollow = [];
+
             foreach ($_POST as $key => $infoType) {
                 if (substr($key, 0, 11) == 'fairteiler_') {
                     $foodSharePointId = (int)substr($key, 11);
@@ -439,6 +441,18 @@ class SettingsControl extends Control
                             $this->forumFollowerGateway->updateInfoType($fsId, $threadId, $infoType);
                         }
                     }
+                } elseif (substr($key, 0, 7) == 'region_') {
+                    $regionId = (int)substr($key, 7);
+                    if (!empty($regionId)) {
+                        $this->regionGateway->updateRegion($fsId, $regionId, $infoType);
+                        /*if ($infoType == InfoType::NONE) {
+                            $regionIdsToUnfollow[] = $regionId;
+                        } else {
+                            // Whats this for?!?
+                            //$this->forumFollowerGateway->updateInfoType($fsId, $regionId, $new_topic_mail);
+                        }
+                        */
+                    }
                 }
             }
 
@@ -449,6 +463,13 @@ class SettingsControl extends Control
                 $fsId = $this->session->id();
                 foreach ($threadIdsToUnfollow as $singleThreadId) {
                     $this->forumFollowerGateway->unfollowThreadByEmail($fsId, $singleThreadId);
+                }
+            }
+
+            if (!empty($regionIdsToUnfollow)) {
+                $fsId = $this->session->id();
+                foreach ($regionIdsToUnfollow as $singleRegionId) {
+                    $this->regionGateway->updateRegion($fsId, $singleThreadId);
                 }
             }
 

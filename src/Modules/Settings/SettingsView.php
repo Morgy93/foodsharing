@@ -191,10 +191,9 @@ class SettingsView extends View
             }
         }
 
-
         if ($regions) {
             foreach ($regions as $region) {
-                $g_data['region_' . $region['id']] = $region['name'];
+                $g_data['region_' . $region['id']] = $region['new_topic_mail'];
                 $out .= $this->v_utils->v_form_radio('region_' . $region['id'], [
                     'label' => $this->translator->trans('settings.follow.region', ['{region}' => $region['name']]),
                     'desc' => $region['name'],

@@ -198,7 +198,8 @@ class RegionGateway extends BaseGateway
 				b.`id`,
 				b.`name`,
 				b.`teaser`,
-				b.`photo`
+				b.`photo`,
+                hb.`new_topic_mail`
 
 			FROM
 				fs_bezirk b,
@@ -395,6 +396,18 @@ class RegionGateway extends BaseGateway
             'added' => $this->db->now(),
             'active' => $active
         ]);
+    }
+
+    public function updateRegion(int $foodsaverId, int $regionId, int $new_topic_mail = 1)
+    {
+        $this->db->update(
+            'fs_foodsaver_has_bezirk',
+            ['new_topic_mail' => $new_topic_mail],
+            [
+                'foodsaver_id' => $foodsaverId,
+                'bezirk_id' => $regionId,
+            ]
+        );
     }
 
     public function setRegionAdmin(int $regionId, int $fs_id)
