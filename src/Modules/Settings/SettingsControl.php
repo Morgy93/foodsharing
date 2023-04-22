@@ -420,7 +420,6 @@ class SettingsControl extends Control
             }
             $fspIdsToUnfollow = [];
             $threadIdsToUnfollow = [];
-            $regionIdsToUnfollow = [];
 
             foreach ($_POST as $key => $infoType) {
                 if (substr($key, 0, 11) == 'fairteiler_') {
@@ -445,13 +444,6 @@ class SettingsControl extends Control
                     $regionId = (int)substr($key, 7);
                     if (!empty($regionId)) {
                         $this->regionGateway->updateRegion($fsId, $regionId, $infoType);
-                        /*if ($infoType == InfoType::NONE) {
-                            $regionIdsToUnfollow[] = $regionId;
-                        } else {
-                            // Whats this for?!?
-                            //$this->forumFollowerGateway->updateInfoType($fsId, $regionId, $new_topic_mail);
-                        }
-                        */
                     }
                 }
             }
