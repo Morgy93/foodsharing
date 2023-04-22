@@ -129,6 +129,7 @@ class FoodsaverGateway extends BaseGateway
 			WHERE   fs.deleted_at IS NULL
 			AND 	fs.last_login >= CURDATE() - INTERVAL 6 MONTH
 			AND 	fsreg.active = 1
+            AND     fsreg.new_topic_mail = 1
 			AND 	fsreg.bezirk_id = :regionId
 		', [
             ':regionId' => $regionId
