@@ -150,7 +150,7 @@ class SettingsView extends View
         return '<div id="formwrapper" style="display: none;">' . $out . '</div>';
     }
 
-    public function settingsInfo($foodSharePoints, $threads)
+    public function settingsInfo($foodSharePoints, $threads, $regions)
     {
         global $g_data;
         $out = '';
@@ -183,6 +183,21 @@ class SettingsView extends View
                 $out .= $this->v_utils->v_form_radio('thread_' . $thread['id'], [
                     'label' => $this->translator->trans('settings.follow.thread', ['{thread}' => $thread['name']]),
                     'desc' => $thread['name'],
+                    'values' => [
+                        ['id' => InfoType::EMAIL, 'name' => $this->translator->trans('settings.follow.mail')],
+                        ['id' => InfoType::NONE, 'name' => $this->translator->trans('settings.follow.none')]
+                    ]
+                ]);
+            }
+        }
+
+
+        if ($regions) {
+            foreach ($regions as $region) {
+                $g_data['region_' . $region['id']] = $region['name'];
+                $out .= $this->v_utils->v_form_radio('region_' . $region['id'], [
+                    'label' => $this->translator->trans('settings.follow.region', ['{region}' => $region['name']]),
+                    'desc' => $region['name'],
                     'values' => [
                         ['id' => InfoType::EMAIL, 'name' => $this->translator->trans('settings.follow.mail')],
                         ['id' => InfoType::NONE, 'name' => $this->translator->trans('settings.follow.none')]

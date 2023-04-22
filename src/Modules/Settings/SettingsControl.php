@@ -15,6 +15,7 @@ use Foodsharing\Modules\PassportGenerator\PassportGeneratorTransaction;
 use Foodsharing\Modules\Quiz\QuizGateway;
 use Foodsharing\Modules\Quiz\QuizSessionGateway;
 use Foodsharing\Modules\Region\ForumFollowerGateway;
+use Foodsharing\Modules\Region\RegionGateway;
 use Foodsharing\Permissions\SettingsPermissions;
 use Foodsharing\Utility\DataHelper;
 
@@ -29,6 +30,7 @@ class SettingsControl extends Control
     private FoodSharePointGateway $foodSharePointGateway;
     private DataHelper $dataHelper;
     private ForumFollowerGateway $forumFollowerGateway;
+    private RegionGateway $regionGateway;
     private SettingsPermissions $settingsPermissions;
     private PassportGeneratorTransaction $passportGeneratorTransaction;
 
@@ -42,6 +44,7 @@ class SettingsControl extends Control
         FoodSharePointGateway $foodSharePointGateway,
         DataHelper $dataHelper,
         ForumFollowerGateway $forumFollowerGateway,
+        RegionGateway $regionGateway,
         SettingsPermissions $settingsPermissions,
         PassportGeneratorTransaction $passportGeneratorTransaction
     ) {
@@ -54,6 +57,7 @@ class SettingsControl extends Control
         $this->foodSharePointGateway = $foodSharePointGateway;
         $this->dataHelper = $dataHelper;
         $this->forumFollowerGateway = $forumFollowerGateway;
+        $this->regionGateway = $regionGateway;
         $this->settingsPermissions = $settingsPermissions;
         $this->passportGeneratorTransaction = $passportGeneratorTransaction;
 
@@ -458,8 +462,9 @@ class SettingsControl extends Control
 
         $foodSharePoints = $this->foodSharePointGateway->listFoodsaversFoodSharePoints($fsId);
         $threads = $this->forumFollowerGateway->getEmailSubscribedThreadsForUser($fsId);
+        $regions = $this->regionGateway->listForFoodsaverExceptWorkingGroups($fsId);
 
-        $this->pageHelper->addContent($this->view->settingsInfo($foodSharePoints, $threads));
+        $this->pageHelper->addContent($this->view->settingsInfo($foodSharePoints, $threads, $regions));
     }
 
     public function handle_edit()

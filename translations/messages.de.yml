@@ -1636,6 +1636,7 @@ settings:
   notifications: "Benachrichtigungen"
   follow:
     thread: "Über das Forenthema \"{thread}\" auf dem Laufenden bleiben?"
+    region: "Über den Bezirk \"{region}\" auf dem Laufenden bleiben?"
     mail: "Ja, ich möchte per E-Mail über neue Posts informiert werden."
     none: "Bitte nicht mehr per E-Mail über neue Posts informieren."
   newsletter: |
