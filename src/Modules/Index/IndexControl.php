@@ -22,7 +22,6 @@ class IndexControl extends Control
         $this->pageHelper->addTitle($this->translator->trans('savewithus'));
 
         $host = $_SERVER['HTTP_HOST'] ?? BASE_URL;
-        
         echo "<script>console.log('URL: " . $host . "');</script>";
 
         if (strpos($host, 'foodsharing.at') !== false) {
