@@ -2,6 +2,8 @@
 
 namespace Foodsharing\Modules\RegionAdmin;
 
+use Foodsharing\Modules\Core\DBConstants\Unit\UnitType;
+use Foodsharing\Modules\Group\GroupFunctionGateway;
 use Foodsharing\Modules\Map\DTO\MapMarker;
 use Foodsharing\Modules\Region\RegionGateway;
 use Foodsharing\Modules\RegionAdmin\DTO\RegionDetails;
@@ -12,6 +14,7 @@ class RegionAdminTransactions
     public function __construct(
         private readonly RegionGateway $regionGateway,
         private readonly StoreGateway $storeGateway,
+        private readonly GroupFunctionGateway $groupFunctionGateway,
     ) {
     }
 
@@ -23,6 +26,18 @@ class RegionAdminTransactions
             return MapMarker::create($store['id'], $store['lat'], $store['lon']);
         }, $stores);
 
-        return RegionDetails::create($regionId, $region['name'], $stores);
+        $workingGroupFunction = $region['type'] === UnitType::WORKING_GROUP
+            ? $this->groupFunctionGateway->getRegionGroupFunctionId($region['id'], $region['parent_id'])
+            : null;
+
+        return RegionDetails::create(
+            $regionId,
+            $region['name'],
+            $region['type'],
+            $workingGroupFunction,
+            $region['email'],
+            $region['email_name'],
+            $stores
+        );
     }
 }

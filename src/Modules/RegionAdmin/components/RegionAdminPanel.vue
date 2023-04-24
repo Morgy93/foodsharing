@@ -1,11 +1,24 @@
 <template>
-  <div>
-    <p>{{ regionDetails.id }}, {{ regionDetails.name }}</p>
-    <region-admin-map
-      :store-markers.sync="storeMarkers"
-    />
-    <region-tree
-      @change="onRegionSelected"
+  <div :class="{disabledLoading: isLoading}">
+    <b-overlay :show="isLoading">
+      <template #overlay>
+        <i class="fas fa-spinner fa-spin" />
+      </template>
+    </b-overlay>
+
+    <div class="row">
+      <region-tree
+        class="col-4"
+        @change="onRegionSelected"
+      />
+      <region-admin-map
+        :store-markers.sync="storeMarkers"
+        class="col-8"
+      />
+    </div>
+    <region-form
+      :region-details.sync="regionDetails"
+      class="mt-5"
     />
   </div>
 </template>
@@ -13,16 +26,20 @@
 <script>
 
 import RegionAdminMap from './RegionAdminMap'
+import RegionForm from './RegionForm'
 import RegionTree from '@/components/regiontree/RegionTree'
 import { getRegionDetails } from '@/api/regions'
+import { pulseError } from '@/script'
+import { BOverlay } from 'bootstrap-vue'
 
 export default {
-  components: { RegionAdminMap, RegionTree },
+  components: { RegionAdminMap, RegionForm, RegionTree, BOverlay },
   props: {
     regionId: { type: Number, default: null },
   },
   data () {
     return {
+      isLoading: false,
       regionDetails: {},
     }
   },
@@ -33,8 +50,15 @@ export default {
   },
   methods: {
     async onRegionSelected (region) {
-      console.error(region.id + ', ' + region.name)
-      this.regionDetails = await getRegionDetails(region.id)
+      this.isLoading = true
+
+      try {
+        this.regionDetails = await getRegionDetails(region.id)
+      } catch (e) {
+        pulseError(this.$i18n('error_unexpected'))
+      }
+
+      this.isLoading = false
     },
   },
 }
