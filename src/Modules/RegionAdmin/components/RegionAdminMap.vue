@@ -38,8 +38,11 @@ export default {
       await new Promise(resolve => setTimeout(resolve, 1000))
 
       // set the map's bounds to show all markers
-      const bounds = this.$refs.storeMarkersGroup.mapObject.getBounds()
-      this.$refs.leafletMap.setBounds([bounds.getNorthWest(), bounds.getSouthEast()])
+      const markerGroup = this.$refs.storeMarkersGroup.mapObject
+      if (Object.keys(markerGroup.getLayers()).length > 0) {
+        const bounds = markerGroup.getBounds()
+        this.$refs.leafletMap.setBounds([bounds.getNorthWest(), bounds.getSouthEast()])
+      }
     },
   },
 }
