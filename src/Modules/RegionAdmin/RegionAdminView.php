@@ -138,4 +138,11 @@ class RegionAdminView extends View
         ]);
         $this->pageHelper->addContent($map);
     }
+
+    public function panel()
+    {
+        $this->pageHelper->addContent($this->vueComponent('region-admin-panel', 'RegionAdminPanel', [
+            'regionId' => 0
+        ]));
+    }
 }

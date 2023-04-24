@@ -68,7 +68,7 @@ class RegionAdminControl extends Control
             $this->translator->trans('terminology.regions')
         ), CNT_RIGHT); */
 
-        $this->view->i_map();
+        $this->view->panel();
     }
 
     private function deleteregion_button(): string

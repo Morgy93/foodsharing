@@ -18,7 +18,7 @@ import { deleteGroup } from '@/api/groups'
 import { masterUpdate } from '@/api/regions'
 import { searchUser } from '@/api/search'
 import { vueApply, vueRegister } from '@/vue'
-import RegionAdminMap from './components/RegionAdminMap'
+import RegionAdminPanel from './components/RegionAdminPanel'
 
 expose({
   img,
@@ -56,5 +56,5 @@ async function tryMasterUpdate (regionId) {
   }
 }
 
-vueRegister({ RegionAdminMap })
-vueApply('#region-admin-map')
+vueRegister({ RegionAdminPanel })
+vueApply('#region-admin-panel')

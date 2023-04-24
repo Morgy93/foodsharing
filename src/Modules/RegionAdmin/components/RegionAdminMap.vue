@@ -21,17 +21,15 @@ import LeafletMap from '@/components/map/LeafletMap'
 import { LMarker, LFeatureGroup } from 'vue2-leaflet'
 import L from 'leaflet'
 import 'leaflet.awesome-markers'
-import { getMapMarkers } from '@/api/map'
 L.AwesomeMarkers.Icon.prototype.options.prefix = 'fa'
 
 export default {
   components: { LeafletMap, LMarker, LFeatureGroup },
   props: {
-    regionId: { type: Number, default: null },
+    storeMarkers: { type: Array, default: () => [] },
   },
   data () {
     return {
-      storeMarkers: [],
       storeIcon: L.AwesomeMarkers.icon({ icon: 'shopping-cart', markerColor: 'darkred' }),
     }
   },
@@ -43,9 +41,6 @@ export default {
       const bounds = this.$refs.storeMarkersGroup.mapObject.getBounds()
       this.$refs.leafletMap.setBounds([bounds.getNorthWest(), bounds.getSouthEast()])
     },
-  },
-  async mounted () {
-    this.storeMarkers = (await getMapMarkers(['betriebe'], [])).betriebe
   },
 }
 </script>
