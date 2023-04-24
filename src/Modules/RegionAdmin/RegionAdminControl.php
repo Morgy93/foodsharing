@@ -34,7 +34,7 @@ class RegionAdminControl extends Control
 
     public function index()
     {
-        $id = $this->identificationHelper->id('tree');
+        /* $id = $this->identificationHelper->id('tree');
         $this->pageHelper->addBread($this->translator->trans('region.bread'), '/?page=region');
         $this->pageHelper->addTitle($this->translator->trans('region.bread'));
 
@@ -61,14 +61,14 @@ class RegionAdminControl extends Control
         ), CNT_LEFT);
         $this->pageHelper->addContent($this->v_utils->v_field(
             $this->view->v_bezirk_tree($id) . '
-				<div id="bezirk-buttons" class="bootstrap">
-					' . $this->deleteregion_button() . '
-					' . $this->newregion_button() . '
-				</div>',
+                <div id="bezirk-buttons" class="bootstrap">
+                    ' . $this->deleteregion_button() . '
+                    ' . $this->newregion_button() . '
+                </div>',
             $this->translator->trans('terminology.regions')
-        ), CNT_RIGHT);
+        ), CNT_RIGHT); */
 
-        $this->view->i_map($id);
+        $this->view->i_map();
     }
 
     private function deleteregion_button(): string

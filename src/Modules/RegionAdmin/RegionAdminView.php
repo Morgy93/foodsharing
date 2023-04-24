@@ -112,26 +112,30 @@ class RegionAdminView extends View
         return '<div><div id="' . $id . '"></div><input type="hidden" name="' . $id . '-hidden" id="' . $id . '-hidden" value="0" /><input type="hidden" name="' . $id . '-hidden-name" id="' . $id . '-hidden-name" value="0" /></div>';
     }
 
-    public function i_map($id)
+    public function i_map()
     {
-        $this->pageHelper->addJsFunc('
-	var ' . $id . '_markers = [];
-	var ' . $id . '_bounds = L.latLngBounds([]);
-	var ' . $id . '_infowindow = L.popup();
-	' . $id . '_infowindow.setContent(\'Information!\');
-	function ' . $id . '_clearMarkers() {
-		' . $id . '_bounds = L.latLngBounds([]);
-		' . $id . '_markers = [];
-	}');
+        /* $this->pageHelper->addJsFunc('
+    var ' . $id . '_markers = [];
+    var ' . $id . '_bounds = L.latLngBounds([]);
+    var ' . $id . '_infowindow = L.popup();
+    ' . $id . '_infowindow.setContent(\'Information!\');
+    function ' . $id . '_clearMarkers() {
+        ' . $id . '_bounds = L.latLngBounds([]);
+        ' . $id . '_markers = [];
+    }');
 
         $this->pageHelper->addContent($this->v_utils->v_field('<div class="map" id="' . $id . '_map"></div>', 'Karte'));
 
         $lon = MapConstants::CENTER_GERMANY_LON;
 
         $this->pageHelper->addJs('
-		var ' . $id . '_center = [' . MapConstants::CENTER_GERMANY_LAT . ',' . MapConstants::CENTER_GERMANY_LON . '];
-		var ' . $id . '_zoom = ' . MapConstants::ZOOM_COUNTRY . ';
-		var ' . $id . '_map = initMap(document.getElementById("' . $id . '_map"), ' . $id . '_center, ' . $id . '_zoom);
-	');
+        var ' . $id . '_center = [' . MapConstants::CENTER_GERMANY_LAT . ',' . MapConstants::CENTER_GERMANY_LON . '];
+        var ' . $id . '_zoom = ' . MapConstants::ZOOM_COUNTRY . ';
+        var ' . $id . '_map = initMap(document.getElementById("' . $id . '_map"), ' . $id . '_center, ' . $id . '_zoom);
+    '); */
+        $map = $this->vueComponent('region-admin-map', 'RegionAdminMap', [
+            'regionId' => 0
+        ]);
+        $this->pageHelper->addContent($map);
     }
 }
