@@ -8,6 +8,7 @@ use Foodsharing\Modules\Map\DTO\MapMarker;
 use Foodsharing\Modules\Region\RegionGateway;
 use Foodsharing\Modules\RegionAdmin\DTO\RegionDetails;
 use Foodsharing\Modules\Store\StoreGateway;
+use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
 
 class RegionAdminTransactions
 {
@@ -39,5 +40,21 @@ class RegionAdminTransactions
             $region['email_name'],
             $stores
         );
+    }
+
+    /**
+     * Adds a new region and returns details about that region.
+     */
+    public function addRegion(int $parentId): RegionDetails
+    {
+        $parentRegion = $this->regionGateway->getRegion($parentId);
+        if (empty($parentRegion)) {
+            throw new BadRequestHttpException('parent region does not exist');
+        }
+
+        $regionId = $this->regionGateway->addRegion($parentId, 'Neue Region');
+        $this->regionGateway->setRegionHasChildren($parentId, true);
+
+        return $this->getRegionDetails($regionId);
     }
 }

@@ -26,7 +26,7 @@ class RegionAdminRestController extends AbstractFOSRestController
     /**
      * Returns details about a region for the region admin module.
      *
-     * @OA\Tag(name="regionadmin")
+     * @OA\Tag(name="region")
      * @Rest\Get("region/{regionId}")
      * @OA\Response(
      * 		response="200",
@@ -47,6 +47,34 @@ class RegionAdminRestController extends AbstractFOSRestController
         }
 
         $region = $this->regionAdminTransactions->getRegionDetails($regionId);
+
+        return $this->handleView($this->view($region, 200));
+    }
+
+    /**
+     * Creates a new region or working group as a child of another region.
+     *
+     * @OA\Tag(name="region")
+     * @Rest\Post("region/{parentId}/children")
+     * @OA\Response(
+     *     response="200",
+     *     description="Success",
+     *     @Model(type=RegionDetails::class))
+     * )
+     * @OA\Response(response="401", description="Not logged in")
+     * @OA\Response(response="403", description="Insufficient permissions")
+     */
+    public function addRegionAction(int $parentId): Response
+    {
+        if (!$this->session->mayRole()) {
+            throw new UnauthorizedHttpException('');
+        }
+
+        if (!$this->regionPermissions->mayAdministrateRegions()) {
+            throw new AccessDeniedHttpException();
+        }
+
+        $region = $this->regionAdminTransactions->addRegion($parentId);
 
         return $this->handleView($this->view($region, 200));
     }

@@ -138,39 +138,6 @@ class XhrMethods
         return 0;
     }
 
-    public function xhr_newregion($data)
-    {
-        if (!$this->regionPermissions->mayAdministrateRegions()) {
-            return;
-        }
-
-        $data['name'] = strip_tags($data['name']);
-        $data['name'] = str_replace(['/', '"', "'", '.', ';'], '', $data['name']);
-        $data['has_children'] = 0;
-        $data['email_pass'] = '';
-        $data['email_name'] = 'foodsharing ' . $data['name'];
-
-        if (empty($data['name'])) {
-            return;
-        }
-
-        $out = $this->regionGateway->addRegion($data);
-
-        if (!$out) {
-            return;
-        }
-
-        $parentId = intval($data['parent_id']);
-        $this->model->update('UPDATE fs_bezirk SET has_children = 1 WHERE `id` = ' . $parentId);
-
-        return json_encode([
-            'status' => 1,
-            'script' => '$("#tree").dynatree("getTree").reload(); pulseInfo("'
-                . $this->translator->trans('region.created', ['{region}' => $data['name']]) .
-                '");',
-        ]);
-    }
-
     public function xhr_bezirkTree($data)
     {
         $region = $this->regionGateway->getBezirkByParent(

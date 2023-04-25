@@ -64,3 +64,7 @@ export function setAdminOrAmbassador (regionId, memberId) {
 export function getRegionDetails (regionId) {
   return get(`/region/${regionId}/`)
 }
+
+export function addRegion (parentId) {
+  return post(`/region/${parentId}/children`)
+}

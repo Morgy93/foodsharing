@@ -54,6 +54,33 @@ export default {
         name: node.text,
       })
     },
+    /**
+     * Makes the currently selected node reload its children.
+     */
+    async updateSelectedNode (childId) {
+      const selection = this.$refs.tree.selected()
+      if (selection.length > 0) {
+        // remove all children
+        const node = selection[0]
+        const children = Array.from(node.children)
+        for (let i = 0; i < children.length; ++i) {
+          node.removeChild(children[i])
+        }
+
+        // reload children
+        await node.tree.loadChildren(node)
+        node.expand()
+      }
+    },
+    /**
+     * Selects the region with the given id.
+     */
+    selectRegion (regionId) {
+      const found = this.$refs.tree.find(node => node.id === regionId)
+      if (found.length > 0) {
+        found[0].select()
+      }
+    },
   },
 }
 </script>

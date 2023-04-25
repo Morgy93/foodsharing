@@ -2387,6 +2387,7 @@ region:
   forum-redirect: "Für Regionen gibt es keine Pinnwand. Du wurdest zum Forum weitergeleitet."
   bread: "Bezirke verwalten"
   new: "Neuer Bezirk"
+  new_region_confirm: "Soll eine neue Region innerhalb von {parent} angelegt werden?"
   created: "{region} wurde angelegt"
   edit: "Bezirk bearbeiten"
   noParent: "Ohne Elternbezirk"

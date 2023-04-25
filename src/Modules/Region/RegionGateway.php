@@ -427,34 +427,24 @@ class RegionGateway extends BaseGateway
         $this->db->commit();
     }
 
-    public function addRegion(array $data): int
+    /**
+     * Adds a new region. Returns the new region's id.
+     */
+    public function addRegion(int $parentId, string $name): int
     {
         $this->db->beginTransaction();
 
         $id = $this->db->insert('fs_bezirk', [
-            'parent_id' => (int)$data['parent_id'],
-            'has_children' => (int)$data['has_children'],
-            'name' => strip_tags($data['name']),
-            'email' => strip_tags($data['email']),
-            'email_pass' => strip_tags($data['email_pass']),
-            'email_name' => strip_tags($data['email_name'])
+            'parent_id' => $parentId,
+            'has_children' => 0,
+            'name' => $name,
+            'email' => '',
+            'email_pass' => '',
+            'email_name' => '',
         ]);
 
-        $this->db->execute('INSERT INTO `fs_bezirk_closure` (ancestor_id, bezirk_id, depth) SELECT t.ancestor_id, ' . $id . ', t.depth+1 FROM `fs_bezirk_closure` AS t WHERE t.bezirk_id = ' . (int)$data['parent_id'] . ' UNION ALL SELECT ' . $id . ', ' . $id . ', 0');
+        $this->db->execute('INSERT INTO `fs_bezirk_closure` (ancestor_id, bezirk_id, depth) SELECT t.ancestor_id, ' . $id . ', t.depth+1 FROM `fs_bezirk_closure` AS t WHERE t.bezirk_id = ' . $parentId . ' UNION ALL SELECT ' . $id . ', ' . $id . ', 0');
         $this->db->commit();
-
-        if (isset($data['foodsaver']) && is_array($data['foodsaver'])) {
-            foreach ($data['foodsaver'] as $foodsaver_id) {
-                $this->db->insert('fs_botschafter', [
-                    'bezirk_id' => (int)$id,
-                    'foodsaver_id' => (int)$foodsaver_id
-                ]);
-                $this->db->insert('fs_foodsaver_has_bezirk', [
-                    'bezirk_id' => (int)$id,
-                    'foodsaver_id' => (int)$foodsaver_id
-                ]);
-            }
-        }
 
         return $id;
     }
@@ -778,5 +768,13 @@ class RegionGateway extends BaseGateway
                 'bezirk_id' => $regionId,
             ]
         );
+    }
+
+    /**
+     * Updates the entry of a region that indicates if it has children.
+     */
+    public function setRegionHasChildren(int $regionId, bool $hasChildren): void
+    {
+        $this->db->update('fs_bezirk', ['has_children' => $hasChildren ? 1 : 0], ['id' => $regionId]);
     }
 }
