@@ -1,16 +1,20 @@
 <template>
   <leaflet-map
     ref="leafletMap"
-    :zoom="9"
+    :zoom="4"
     :center="{lat: 52, lon: 9}"
+    :height="400"
   >
-    <l-feature-group ref="storeMarkersGroup">
+    <l-feature-group
+      ref="storeMarkersGroup"
+    >
       <l-marker
         v-for="marker in storeMarkers"
         :key="marker.id"
         :lat-lng="[marker.lat, marker.lon]"
         :icon="storeIcon"
         :draggable="false"
+        @ready="updateBounds"
       />
     </l-feature-group>
   </leaflet-map>
@@ -33,10 +37,8 @@ export default {
       storeIcon: L.AwesomeMarkers.icon({ icon: 'shopping-cart', markerColor: 'darkred' }),
     }
   },
-  watch: {
-    async storeMarkers () {
-      await new Promise(resolve => setTimeout(resolve, 1000))
-
+  methods: {
+    updateBounds () {
       // set the map's bounds to show all markers
       const markerGroup = this.$refs.storeMarkersGroup.mapObject
       if (Object.keys(markerGroup.getLayers()).length > 0) {

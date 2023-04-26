@@ -81,28 +81,23 @@
         />
       </select>
 
-      <button
-        type="submit"
-        class="btn btn-primary"
-        @click="submit"
-      >
-        {{ $i18n('button.save') }}
-      </button>
+      <div class="mt-3">
+        <button
+          type="submit"
+          class="btn btn-primary"
+          @click="submit"
+        >
+          {{ $i18n('button.save') }}
+        </button>
+        <hr class="my-3">
 
-      <label
-        for="masterUpdateButton"
-        class="m-2"
-        v-text="$i18n('region.hull.title')"
-      />
-      <button
-        id="masterUpdateButton"
-        type="button"
-        class="btn btn-primary"
-        @click="startMasterUpdate"
-      >
-        {{ $i18n('region.hull.start') }}
-      </button>
-      <span v-if="regionDetails.name">{{ $i18n('region.hull.closure', { region: regionDetails.name }) }}</span>
+        <span
+          v-if="regionDetails.name"
+          class="ml-2"
+        >
+          {{ $i18n('region.hull.closure', {region: regionDetails.name}) }}
+        </span>
+      </div>
     </form>
   </div>
 </template>
@@ -152,8 +147,7 @@ export default {
   },
   methods: {
     submit () {
-    },
-    startMasterUpdate () {
+      // TODO
     },
   },
 }

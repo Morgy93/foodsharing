@@ -9,12 +9,12 @@
     <div class="row">
       <region-tree
         ref="regionTree"
-        class="col-4"
+        class="col-4 m-2 page-container region-tree"
         @change="onRegionSelected"
       />
       <region-admin-map
         :store-markers.sync="storeMarkers"
-        class="col-8"
+        class="col-7 region-map"
       />
     </div>
     <button
@@ -31,9 +31,18 @@
       @click="deleteRegion"
       v-text="$i18n('region.delete')"
     />
+    <button
+      id="masterUpdateButton"
+      v-b-tooltip.hover="$i18n('region.hull.closure', {region: regionDetails.name})"
+      type="button"
+      class="btn btn-secondary mt-3"
+      :disabled="regionDetails.id === undefined"
+      @click="startMasterUpdate"
+      v-text="$i18n('region.hull.start')"
+    />
     <region-form
       :region-details.sync="regionDetails"
-      class="mt-3"
+      class="page-container mt-3"
     />
   </div>
 </template>
@@ -136,6 +145,17 @@ export default {
         this.isLoading = false
       }
     },
+    async startMasterUpdate () {
+      // TODO
+    },
   },
 }
 </script>
+
+<style type="text/scss" scoped>
+.region-tree {
+  overflow: scroll;
+  height: 400px;
+  max-height: 400px;
+}
+</style>
