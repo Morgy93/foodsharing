@@ -2392,6 +2392,8 @@ region:
   edit: "Bezirk bearbeiten"
   noParent: "Ohne Elternbezirk"
   delete: "Bezirk löschen"
+  delete_confirm: "Soll die Region {parent} wirklich gelöscht werden?"
+  delete_conflict: "Die Region kann nicht gelöscht werden, da sie noch Unterregionen, Fairteiler oder Betriebe enthält."
   none: "Noch kein Bezirk gewählt"
   type:
     title: "Bezirkstyp"

@@ -34,6 +34,7 @@ class RegionAdminTransactions
         return RegionDetails::create(
             $regionId,
             $region['name'],
+            $region['parent_id'],
             $region['type'],
             $workingGroupFunction,
             $region['email'],

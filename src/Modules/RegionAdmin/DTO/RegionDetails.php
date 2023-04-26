@@ -12,6 +12,8 @@ class RegionDetails
 
     public string $name;
 
+    public ?int $parentId;
+
     /**
      * @see UnitType
      */
@@ -34,6 +36,7 @@ class RegionDetails
     public static function create(
         int $id,
         string $name,
+        ?int $parentId,
         int $type,
         ?int $workingGroupFunction,
         string $mailbox,
@@ -43,8 +46,11 @@ class RegionDetails
         $r = new RegionDetails();
         $r->id = $id;
         $r->name = $name;
+        $r->parentId = $parentId;
         $r->type = $type;
         $r->workingGroupFunction = $workingGroupFunction;
+        $r->mailbox = $mailbox;
+        $r->mailboxName = $mailboxName;
         $r->storeMarkers = $storeMarkers;
 
         return $r;
