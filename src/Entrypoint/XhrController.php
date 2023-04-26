@@ -29,7 +29,6 @@ class XhrController extends AbstractController
         // 'editpickups',
         // 'bezirkTree',
         // 'bteamstatus',
-        // 'getBezirk',
         // 'saveBezirk',
         // 'fetchDeny',
         // 'fetchConfirm',

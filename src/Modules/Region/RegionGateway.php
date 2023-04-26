@@ -48,16 +48,6 @@ class RegionGateway extends BaseGateway
         return $this->db->fetchAllValues($stm);
     }
 
-    public function getBasics_bezirk(): array
-    {
-        return $this->db->fetchAll('
-			SELECT 	 	`id`,
-						`name`
-
-			FROM 		`fs_bezirk`
-			ORDER BY `name`');
-    }
-
     public function getBezirkByParent(int $parentId, bool $includeOrga = false): array
     {
         $sql = 'AND 		`type` != ' . UnitType::WORKING_GROUP;
