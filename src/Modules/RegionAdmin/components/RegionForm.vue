@@ -3,7 +3,7 @@
     <form @submit.prevent>
       <label
         for="nameInput"
-        class="m-2"
+        class="my-2"
         v-text="$i18n('name')"
       />
       <input
@@ -11,12 +11,12 @@
         ref="name-input"
         v-model="name"
         type="text"
-        class="m-2"
+        class="my-2"
       >
 
       <label
         for="mailboxInput"
-        class="m-2"
+        class="my-2"
       >
         {{ $i18n('mailbox_name') }}<br>
         {{ $i18n('region.mail.name-info') }}
@@ -26,12 +26,12 @@
         ref="mailbox-input"
         v-model="mailbox"
         type="text"
-        class="m-2"
+        class="my-2"
       >
 
       <label
         for="mailboxNameInput"
-        class="m-2"
+        class="my-2"
         v-text="$i18n('region.mail.sender')"
       />
       <input
@@ -39,18 +39,18 @@
         ref="mailbox-name-input"
         v-model="mailboxName"
         type="text"
-        class="m-2"
+        class="my-2"
       >
 
       <label
         for="typeInput"
-        class="m-2"
+        class="my-2"
         v-text="$i18n('region.type.title')"
       />
       <select
         id="typeInput"
         v-model="type"
-        class="m-2"
+        class="my-2"
       >
         <option
           v-for="(value, key) in regionTypes"
@@ -63,13 +63,13 @@
 
       <label
         for="workingGroupFunctionInput"
-        class="m-2"
+        class="my-2"
         v-text="$i18n('group.function.title')"
       />
       <select
         id="workingGroupFunctionInput"
         v-model="workingGroupFunction"
-        class="m-2"
+        class="my-2"
         :disabled="type !== 7"
       >
         <option
@@ -89,14 +89,6 @@
         >
           {{ $i18n('button.save') }}
         </button>
-        <hr class="my-3">
-
-        <span
-          v-if="regionDetails.name"
-          class="ml-2"
-        >
-          {{ $i18n('region.hull.closure', {region: regionDetails.name}) }}
-        </span>
       </div>
     </form>
   </div>

@@ -52,7 +52,7 @@
 import RegionAdminMap from './RegionAdminMap'
 import RegionForm from './RegionForm'
 import RegionTree from '@/components/regiontree/RegionTree'
-import { addRegion, getRegionDetails } from '@/api/regions'
+import { addRegion, getRegionDetails, masterUpdate } from '@/api/regions'
 import { pulseError } from '@/script'
 import { BOverlay } from 'bootstrap-vue'
 import { deleteGroup } from '@/api/groups'
@@ -74,6 +74,22 @@ export default {
     },
   },
   methods: {
+    runAfterConfirm (title, message, callback) {
+      this.$bvModal.msgBoxConfirm(message, {
+        modalClass: 'bootstrap',
+        title: title,
+        cancelTitle: this.$i18n('button.cancel'),
+        okTitle: this.$i18n('yes'),
+        headerClass: 'd-flex',
+        contentClass: 'pr-3 pt-3',
+      }).then(async accepted => {
+        if (accepted) {
+          this.isLoading = true
+          await callback()
+          this.isLoading = false
+        }
+      })
+    },
     /**
      * Callback from the region tree. Loads the selected region's details and forwards them to the form.
      */
@@ -92,61 +108,56 @@ export default {
      * Handler for the 'new region' button. Shows a confirmation modal, adds a region, and selects that new region.
      */
     async addNewRegion () {
-      const accepted = await this.$bvModal.msgBoxConfirm(this.$i18n('region.new_region_confirm', { parent: this.regionDetails.name }), {
-        modalClass: 'bootstrap',
-        title: this.$i18n('region.new'),
-        cancelTitle: this.$i18n('button.cancel'),
-        okTitle: this.$i18n('yes'),
-        headerClass: 'd-flex',
-        contentClass: 'pr-3 pt-3',
-      })
-      if (accepted) {
-        this.isLoading = true
+      this.runAfterConfirm(
+        this.$i18n('region.new'),
+        this.$i18n('region.new_region_confirm', { parent: this.regionDetails.name }),
+        async _ => {
+          try {
+            const child = await addRegion(this.regionDetails.id)
 
-        try {
-          const child = await addRegion(this.regionDetails.id)
-
-          // refresh the parent region's children to load the new region
-          await this.$refs.regionTree.updateSelectedNode(child.id)
-          this.$refs.regionTree.selectRegion(child.id)
-        } catch (e) {
-          pulseError(this.$i18n('error_unexpected'))
-        }
-
-        this.isLoading = false
-      }
-    },
-    async deleteRegion () {
-      const accepted = await this.$bvModal.msgBoxConfirm(this.$i18n('region.delete_confirm', { parent: this.regionDetails.name }), {
-        modalClass: 'bootstrap',
-        title: this.$i18n('region.delete'),
-        cancelTitle: this.$i18n('button.cancel'),
-        okTitle: this.$i18n('yes'),
-        headerClass: 'd-flex',
-        contentClass: 'pr-3 pt-3',
-      })
-      if (accepted) {
-        this.isLoading = true
-
-        try {
-          await deleteGroup(this.regionDetails.id)
-
-          // refresh the parent region's children to remove the deleted node
-          this.$refs.regionTree.selectRegion(this.regionDetails.parentId)
-          await this.$refs.regionTree.updateSelectedNode(this.regionDetails.parentId)
-        } catch (e) {
-          if (e.code === 409) {
-            pulseError(this.$i18n('region.delete_conflict'))
-          } else {
+            // refresh the parent region's children to load the new region
+            await this.$refs.regionTree.updateSelectedNode(child.id)
+            this.$refs.regionTree.selectRegion(child.id)
+          } catch (e) {
             pulseError(this.$i18n('error_unexpected'))
           }
-        }
 
-        this.isLoading = false
-      }
+          this.isLoading = false
+        })
+    },
+    async deleteRegion () {
+      this.runAfterConfirm(
+        this.$i18n('region.delete'),
+        this.$i18n('region.delete_confirm', { parent: this.regionDetails.name }),
+        async _ => {
+          try {
+            await deleteGroup(this.regionDetails.id)
+
+            // refresh the parent region's children to remove the deleted node
+            this.$refs.regionTree.selectRegion(this.regionDetails.parentId)
+            await this.$refs.regionTree.updateSelectedNode(this.regionDetails.parentId)
+          } catch (e) {
+            if (e.code === 409) {
+              pulseError(this.$i18n('region.delete_conflict'))
+            } else {
+              pulseError(this.$i18n('error_unexpected'))
+            }
+          }
+        },
+      )
     },
     async startMasterUpdate () {
-      // TODO
+      this.runAfterConfirm(
+        this.$i18n('region.hull.title'),
+        this.$i18n('region.hull.confirm'),
+        async _ => {
+          try {
+            await masterUpdate(this.regionDetails.id)
+          } catch (e) {
+            pulseError(this.$i18n('error_unexpected'))
+          }
+        },
+      )
     },
   },
 }
