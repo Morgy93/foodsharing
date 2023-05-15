@@ -31,7 +31,7 @@ class EventControl extends Control
         parent::__construct();
 
         if (!$this->session->mayRole()) {
-            $this->routeHelper->goLogin();
+            $this->routeHelper->goLoginAndExit();
         }
     }
 
@@ -53,7 +53,7 @@ class EventControl extends Control
                 $link = '/?page=bezirk&sub=events&bid=' . $regionId;
             }
 
-            return $this->routeHelper->go($link);
+            return $this->routeHelper->goAndExit($link);
         }
 
         $eventId = intval($eventId);
@@ -62,7 +62,7 @@ class EventControl extends Control
         if (!$event || !$this->eventPermissions->maySeeEvent($event)) {
             $this->flashMessageHelper->info($this->translator->trans('events.notFound'));
 
-            return $this->routeHelper->go('/?page=dashboard');
+            return $this->routeHelper->goAndExit('/?page=dashboard');
         }
 
         $regionId = $event['bezirk_id'];
@@ -107,11 +107,11 @@ class EventControl extends Control
         $event = $this->eventGateway->getEvent($eventId, true);
 
         if (!$event) {
-            return $this->routeHelper->go('/?page=dashboard');
+            return $this->routeHelper->goAndExit('/?page=dashboard');
         }
 
         if (!$this->eventPermissions->mayEditEvent($event)) {
-            return $this->routeHelper->go('/?page=event&id=' . $eventId);
+            return $this->routeHelper->goAndExit('/?page=event&id=' . $eventId);
         }
 
         $regionEventsLink = '/?page=bezirk&sub=events&bid=' . $event['bezirk_id'];
@@ -128,7 +128,7 @@ class EventControl extends Control
                     $this->eventGateway->inviteFullRegion($data['bezirk_id'], $_GET['id'], $data['invitesubs']);
                 }
                 $this->flashMessageHelper->success($this->translator->trans('events.edited'));
-                $this->routeHelper->go('/?page=event&id=' . (int)$_GET['id']);
+                $this->routeHelper->goAndExit('/?page=event&id=' . (int)$_GET['id']);
             }
         }
 
@@ -159,7 +159,7 @@ class EventControl extends Control
                     $this->eventGateway->inviteFullRegion($data['bezirk_id'], $id, $data['invitesubs']);
                 }
                 $this->flashMessageHelper->success($this->translator->trans('events.created'));
-                $this->routeHelper->go('/?page=event&id=' . $id);
+                $this->routeHelper->goAndExit('/?page=event&id=' . $id);
             }
         } else {
             $regions = $this->session->getRegions();

@@ -46,7 +46,7 @@ class EmailControl extends Control
         parent::__construct();
 
         if (!$this->newsletterEmailPermissions->mayAdministrateNewsletterEmail()) {
-            $this->routeHelper->go('/');
+            $this->routeHelper->goAndExit('/');
         }
     }
 
@@ -178,7 +178,7 @@ class EmailControl extends Control
                     $foodsaver[] = $o;
                 }
                 $this->emailGateway->initEmail($this->session->id(), $mailbox_id, $foodsaver, $nachricht, $subject, $attach);
-                $this->routeHelper->goPage();
+                $this->routeHelper->goPageAndExit();
             } elseif ($data['recip_choose'] != 'manual') {
                 $this->flashMessageHelper->error($this->translator->trans('recipients.empty-region'));
             }

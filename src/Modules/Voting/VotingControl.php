@@ -45,7 +45,7 @@ class VotingControl extends Control
                         $this->pageHelper->addContent($this->view->editPollForm($poll));
                     } else {
                         $this->flashMessageHelper->error($this->translator->trans('poll.may_not_edit'));
-                        $this->routeHelper->go('/?page=poll&id=' . $poll->id);
+                        $this->routeHelper->goAndExit('/?page=poll&id=' . $poll->id);
                     }
                 } else {
                     $mayVote = $this->votingPermissions->mayVote($poll);
@@ -69,11 +69,11 @@ class VotingControl extends Control
                 $this->pageHelper->addContent($this->view->newPollForm($region));
             } else {
                 $this->flashMessageHelper->info($this->translator->trans('poll.not_available'));
-                $this->routeHelper->go('/?page=dashboard');
+                $this->routeHelper->goAndExit('/?page=dashboard');
             }
         } catch (Exception $e) {
             $this->flashMessageHelper->info($this->translator->trans('poll.not_available'));
-            $this->routeHelper->go('/?page=dashboard');
+            $this->routeHelper->goAndExit('/?page=dashboard');
         }
     }
 }

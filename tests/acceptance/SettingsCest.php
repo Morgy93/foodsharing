@@ -132,23 +132,23 @@ class SettingsCest
 
     final public function canEditLocation(AcceptanceTester $I): void
     {
-        $address = 'Hammer Straße 23 48153 Münster Deutschland';
+        $address = 'Teststraße 1 37073 Teststadt Deutschland';
         $I->login($this->foodsaver['email']);
         $I->amOnPage('/?page=settings&sub=general');
         $I->waitForPageBody();
-        $I->fillField('#addresspicker', $address);
-        $I->waitForElementVisible('#addresspicker_listbox');
-        $I->click("//*[@id='addresspicker_listbox']//*[contains(text(), 'Hammer Straße 23')]");
+        $I->fillField('#searchinput', $address);
+        $I->waitForElementVisible('#searchinput_listbox');
+        $I->click("//*[@id='searchinput_listbox']//*[contains(text(), 'Teststraße 1')]");
         $I->click('Speichern');
         $I->waitForPageBody();
 
         $I->amOnPage('/?page=settings&sub=general');
         $I->waitForPageBody();
-        $I->seeInField('#anschrift', 'Hammer Straße 23');
-        $I->seeInField('#plz', '48153');
-        $I->seeInField('#ort', 'Münster');
-        $I->assertEqualsWithDelta($I->grabValueFrom('#lat'), 51.953549550000005, 0.001);
-        $I->assertEqualsWithDelta($I->grabValueFrom('#lon'), 7.6261375873508435, 0.001);
+        $I->seeInField('#input-street', 'Teststraße 1');
+        $I->seeInField('#input-postal', '37073');
+        $I->seeInField('#input-city', 'Teststadt');
+        $I->assertEqualsWithDelta($I->grabValueFrom('input[name=lat]'), 51.0, 0.001);
+        $I->assertEqualsWithDelta($I->grabValueFrom('input[name=lon]'), 9.0, 0.001);
     }
 
     private function createSelector(string $field): string

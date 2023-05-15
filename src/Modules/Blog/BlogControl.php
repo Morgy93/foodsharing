@@ -40,7 +40,7 @@ class BlogControl extends Control
             } else {
                 $this->flashMessageHelper->info($this->translator->trans('blog.permissions.delete'));
             }
-            $this->routeHelper->goPage();
+            $this->routeHelper->goPageAndExit();
         }
         $this->pageHelper->addBread($this->translator->trans('blog.bread'), '/?page=blog');
         $this->pageHelper->addTitle($this->translator->trans('blog.bread'));
@@ -71,15 +71,15 @@ class BlogControl extends Control
             ));
             $this->pageHelper->addContent($this->view->pager($page));
         } elseif ($page > 1) {
-            $this->routeHelper->go('/?page=blog');
+            $this->routeHelper->goAndExit('/?page=blog');
         }
     }
 
     public function read(): void
     {
         if (isset($_GET['id']) && is_numeric($_GET['id']) && $news = $this->blogGateway->getPost($_GET['id'])) {
-            $this->pageHelper->addBread($news['name']);
-            $this->pageHelper->addContent($this->view->newsPost($news));
+            $this->pageHelper->addBread($news->title);
+            $this->pageHelper->addContent($this->view->newsPost($news->id));
         }
     }
 
@@ -140,7 +140,7 @@ class BlogControl extends Control
             ]), $this->translator->trans('blog.actions')), CNT_LEFT);
         } else {
             $this->flashMessageHelper->info($this->translator->trans('blog.permissions.new'));
-            $this->routeHelper->goPage();
+            $this->routeHelper->goPageAndExit();
         }
     }
 
@@ -154,7 +154,7 @@ class BlogControl extends Control
 
             if ($this->blogGateway->add_blog_entry($g_data) && $this->blogPermissions->mayAdd()) {
                 $this->flashMessageHelper->success($this->translator->trans('blog.success.new'));
-                $this->routeHelper->goPage();
+                $this->routeHelper->goPageAndExit();
             } else {
                 $this->flashMessageHelper->error($this->translator->trans('blog.failure.new'));
             }
@@ -175,7 +175,7 @@ class BlogControl extends Control
             $this->pageHelper->addContent($this->view->blog_entry_form($regions, $data));
         } else {
             $this->flashMessageHelper->info($this->translator->trans('blog.permissions.edit'));
-            $this->routeHelper->goPage();
+            $this->routeHelper->goPageAndExit();
         }
     }
 
@@ -190,7 +190,7 @@ class BlogControl extends Control
 
             if ($this->blogGateway->update_blog_entry($_GET['id'], $g_data)) {
                 $this->flashMessageHelper->success($this->translator->trans('blog.success.edit'));
-                $this->routeHelper->goPage('blog&sub=manage');
+                $this->routeHelper->goPageAndExit('blog&sub=manage');
             } else {
                 $this->flashMessageHelper->error($this->translator->trans('blog.failure.edit'));
             }

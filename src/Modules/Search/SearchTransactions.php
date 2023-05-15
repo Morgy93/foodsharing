@@ -53,23 +53,29 @@ class SearchTransactions
     /**
      * Searches for regions, stores, and foodsavers.
      *
-     * @param string $q the search query
+     * @param string $query the search query
      *
      * @return array SearchResult[]
      */
-    public function search(string $q): array
+    public function search(string $query): array
     {
         $regionsFilter = null;
         if (!$this->searchPermissions->maySearchAllRegions()) {
             $regionsFilter = $this->regionGateway->listIdsForDescendantsAndSelf($this->session->getCurrentRegionId());
         }
 
-        $regions = $this->searchGateway->searchRegions($q);
-        $users = $this->searchGateway->searchUserInGroups($q, $this->searchPermissions->maySeeUserAddress(), $regionsFilter);
-        $stores = $this->searchGateway->searchStores($q, $regionsFilter);
-        $foodSharePoints = $this->searchGateway->searchFoodSharePoints($q);
-        if ($singleUser = $this->searchSingleUserByID($q)) {
+        $regions = $this->searchGateway->searchRegions($query);
+        $users = $this->searchGateway->searchUserInGroups($query, $this->searchPermissions->maySeeUserAddress(), $regionsFilter);
+        $stores = $this->searchGateway->searchStores($query, $regionsFilter);
+        $foodSharePoints = $this->searchGateway->searchFoodSharePoints($query);
+        if ($singleUser = $this->searchUserByID($query)) {
             array_unshift($users, $singleUser);
+        }
+
+        if ($this->searchPermissions->maySearchByEmailAddress()) {
+            if ($singleUser = $this->searchUserByEmail($query)) {
+                array_unshift($users, $singleUser);
+            }
         }
 
         return [
@@ -80,12 +86,30 @@ class SearchTransactions
         ];
     }
 
-    private function searchSingleUserByID(string $q): array
+    private function searchUserByEmail(string $query): array
     {
-        if (!preg_match('/^[0-9]+$/', $q)) {
+        if (str_ends_with($query, PLATFORM_MAILBOX_HOST) || !filter_var($query, FILTER_VALIDATE_EMAIL)) {
             return [];
         }
-        $userId = intval($q);
+
+        $user = $this->foodsaverGateway->getUserFromEmail($query);
+        if (empty($user)) {
+            return [];
+        }
+
+        return [
+            'id' => $user['id'],
+            'name' => $user['name'],
+            'teaser' => 'FS-ID: ' . $user['id'] . ' | Mail: ' . $user['email'],
+        ];
+    }
+
+    private function searchUserByID(string $query): array
+    {
+        if (!preg_match('/^[0-9]+$/', $query)) {
+            return [];
+        }
+        $userId = intval($query);
 
         if (!$this->foodsaverGateway->foodsaverExists($userId)) {
             return [];

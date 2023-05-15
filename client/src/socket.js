@@ -21,8 +21,7 @@ export default {
     socket.on('conv', async function (data) {
       if (data.m === 'push') {
         const obj = data.o
-        const message = convertMessage(obj.message)
-        obj.message = message
+        obj.message = convertMessage(obj.message)
         await conversationStore.newMessageReceived(obj)
       }
     })

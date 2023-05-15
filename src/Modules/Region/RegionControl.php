@@ -5,6 +5,7 @@ namespace Foodsharing\Modules\Region;
 use Foodsharing\Modules\Core\Control;
 use Foodsharing\Modules\Core\DBConstants\Foodsaver\Role;
 use Foodsharing\Modules\Core\DBConstants\Map\MapConstants;
+use Foodsharing\Modules\Core\DBConstants\Region\RegionIDs;
 use Foodsharing\Modules\Core\DBConstants\Region\RegionOptionType;
 use Foodsharing\Modules\Core\DBConstants\Unit\UnitType;
 use Foodsharing\Modules\Event\EventGateway;
@@ -28,6 +29,7 @@ final class RegionControl extends Control
     private RegionGateway $gateway;
     private EventGateway $eventGateway;
     private FoodSharePointGateway $foodSharePointGateway;
+    private ForumGateway $forumGateway;
     private ForumFollowerGateway $forumFollowerGateway;
     private FormFactoryInterface $formFactory;
     private ForumTransactions $forumTransactions;
@@ -54,6 +56,7 @@ final class RegionControl extends Control
     public function __construct(
         EventGateway $eventGateway,
         FoodSharePointGateway $foodSharePointGateway,
+        ForumGateway $forumGateway,
         ForumFollowerGateway $forumFollowerGateway,
         ForumPermissions $forumPermissions,
         RegionPermissions $regionPermissions,
@@ -72,6 +75,7 @@ final class RegionControl extends Control
         $this->forumPermissions = $forumPermissions;
         $this->regionPermissions = $regionPermissions;
         $this->foodSharePointGateway = $foodSharePointGateway;
+        $this->forumGateway = $forumGateway;
         $this->forumFollowerGateway = $forumFollowerGateway;
         $this->forumTransactions = $forumTransactions;
         $this->reportPermissions = $reportPermissions;
@@ -159,6 +163,10 @@ final class RegionControl extends Control
             $menu['mailbox'] = ['name' => $regionOrGroupString, 'href' => '/?page=mailbox'];
         }
 
+        if ($regionId == RegionIDs::STORE_CHAIN_GROUP) {
+            $menu['chainList'] = ['name' => 'menu.entry.chainList', 'href' => '/?page=chain'];
+        }
+
         if ($this->mayAccessApplications($regionId)) {
             if ($requests = $this->gateway->listRequests($regionId)) {
                 $menu['applications'] = ['name' => $this->translator->trans('group.applications') . ' (' . count($requests) . ')', 'href' => '/?page=bezirk&bid=' . $regionId . '&sub=applications'];
@@ -242,6 +250,7 @@ final class RegionControl extends Control
             ['key' => 'subgroups', 'position' => 18],
             ['key' => 'options', 'position' => 19],
             ['key' => 'pin', 'position' => 20],
+            ['key' => 'chainList', 'position' => 21],
         ];
 
         $orderedMenu = [];
@@ -258,7 +267,7 @@ final class RegionControl extends Control
     public function index(Request $request, Response $response)
     {
         if (!$this->session->mayRole()) {
-            $this->routeHelper->goLogin();
+            $this->routeHelper->goLoginAndExit();
         }
 
         $region_id = $request->query->getInt('bid', $_SESSION['client']['bezirk_id']);
@@ -269,9 +278,7 @@ final class RegionControl extends Control
             $this->region = $region;
         } else {
             $this->flashMessageHelper->error($this->translator->trans('region.not-member'));
-            $this->routeHelper->go('/?page=dashboard');
-
-            return;
+            $this->routeHelper->goAndExit('/?page=dashboard');
         }
 
         $this->pageHelper->addTitle($region['name']);
@@ -280,7 +287,7 @@ final class RegionControl extends Control
         switch ($request->query->get('sub')) {
             case 'botforum':
                 if (!$this->forumPermissions->mayAccessAmbassadorBoard($region_id)) {
-                    $this->routeHelper->go($this->forumTransactions->url($region_id, false));
+                    $this->routeHelper->goAndExit($this->forumTransactions->url($region_id, false));
                 }
                 $this->forum($request, $response, $region, true);
                 break;
@@ -290,7 +297,7 @@ final class RegionControl extends Control
             case 'wall':
                 if (!UnitType::isGroup($region['type'])) {
                     $this->flashMessageHelper->info($this->translator->trans('region.forum-redirect'));
-                    $this->routeHelper->go('/?page=bezirk&bid=' . $region_id . '&sub=forum');
+                    $this->routeHelper->goAndExit('/?page=bezirk&bid=' . $region_id . '&sub=forum');
                 } else {
                     $this->wall($request, $response, $region);
                 }
@@ -319,17 +326,16 @@ final class RegionControl extends Control
             case 'pin':
                 if (!$this->regionPermissions->maySetRegionPin($region_id) || UnitType::isGroup($region['type'])) {
                     $this->flashMessageHelper->info($this->translator->trans('region.restricted'));
-                    $this->routeHelper->go($this->forumTransactions->url($region_id, false));
+                    $this->routeHelper->goAndExit($this->forumTransactions->url($region_id, false));
                 }
                 $this->pin($request, $response, $region);
                 break;
             default:
                 if (UnitType::isGroup($region['type'])) {
-                    $this->routeHelper->go('/?page=bezirk&bid=' . $region_id . '&sub=wall');
+                    $this->routeHelper->goAndExit('/?page=bezirk&bid=' . $region_id . '&sub=wall');
                 } else {
-                    $this->routeHelper->go($this->forumTransactions->url($region_id, false));
+                    $this->routeHelper->goAndExit($this->forumTransactions->url($region_id, false));
                 }
-                break;
         }
     }
 
@@ -356,12 +362,18 @@ final class RegionControl extends Control
         $data = CreateForumThreadData::create();
         $form = $this->formFactory->create(ForumCreateThreadForm::class, $data, ['postActiveWithoutModeration' => $postActiveWithoutModeration]);
         $form->handleRequest($request);
-        if ($form->isSubmitted() && $form->isValid()
+        if (
+            $form->isSubmitted() && $form->isValid()
             && $this->forumPermissions->mayPostToRegion($region['id'], $ambassadorForum)
         ) {
             $threadId = $this->forumTransactions->createThread(
-                $this->session->id(), $data->title, $data->body, $region,
-                $ambassadorForum, $postActiveWithoutModeration, $postActiveWithoutModeration ? $data->sendMail : null
+                $this->session->id(),
+                $data->title,
+                $data->body,
+                $region,
+                $ambassadorForum,
+                $postActiveWithoutModeration,
+                $postActiveWithoutModeration ? $data->sendMail : null
             );
 
             $this->forumFollowerGateway->followThreadByBell($this->session->id(), $threadId);
@@ -369,7 +381,7 @@ final class RegionControl extends Control
             if (!$postActiveWithoutModeration) {
                 $this->flashMessageHelper->info($this->translator->trans('forum.hold_back_for_moderation'));
             }
-            $this->routeHelper->go($this->forumTransactions->url($region['id'], $ambassadorForum));
+            $this->routeHelper->goAndExit($this->forumTransactions->url($region['id'], $ambassadorForum));
         }
 
         return $form->createView();
@@ -385,8 +397,11 @@ final class RegionControl extends Control
         $viewdata['sub'] = $sub;
 
         if ($threadId = $request->query->getInt('tid')) {
+            $thread = $this->forumGateway->getThreadInfo($threadId);
+            $this->pageHelper->addTitle($thread['title']);
             $viewdata['threadId'] = $threadId; // this triggers the rendering of the vue component `Thread`
         } elseif ($request->query->has('newthread')) {
+            $this->pageHelper->addTitle($this->translator->trans('forum.new_thread'));
             $postActiveWithoutModeration = $this->forumPermissions->mayStartUnmoderatedThread($region, $ambassadorForum);
             $viewdata['newThreadForm'] = $this->handleNewThreadForm($request, $region, $ambassadorForum, $postActiveWithoutModeration);
             $viewdata['postActiveWithoutModeration'] = $postActiveWithoutModeration;

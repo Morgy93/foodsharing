@@ -4,13 +4,16 @@ declare(strict_types=1);
 
 namespace Foodsharing\Modules\Store;
 
+use Exception;
 use Foodsharing\Modules\Core\BaseGateway;
 use Foodsharing\Modules\Core\Database;
+use Foodsharing\Modules\Core\DatabaseNoValueFoundException;
 use Foodsharing\Modules\Core\DBConstants\Store\CooperationStatus;
 use Foodsharing\Modules\Core\DBConstants\Store\Milestone;
+use Foodsharing\Modules\Core\DBConstants\Store\TeamSearchStatus;
 use Foodsharing\Modules\Core\DBConstants\StoreTeam\MembershipStatus;
+use Foodsharing\Modules\Map\DTO\MapMarker;
 use Foodsharing\Modules\Region\RegionGateway;
-use Foodsharing\Modules\Store\DTO\CreateStoreData;
 use Foodsharing\Modules\Store\DTO\Store;
 use Foodsharing\Modules\Store\DTO\StoreTeamMembership;
 
@@ -27,19 +30,19 @@ class StoreGateway extends BaseGateway
         $this->regionGateway = $regionGateway;
     }
 
-    public function addStore(CreateStoreData $store): int
+    public function addStore(Store $store): int
     {
         return $this->db->insert('fs_betrieb', [
             'name' => $store->name,
-            'bezirk_id' => $store->regionId,
-            'lat' => $store->lat,
-            'lon' => $store->lon,
-            'str' => $store->str,
-            'plz' => $store->zip,
-            'stadt' => $store->city,
+            'bezirk_id' => $store->region->id,
+            'lat' => $store->location->lat,
+            'lon' => $store->location->lon,
+            'str' => $store->address->street,
+            'plz' => $store->address->zipCode,
+            'stadt' => $store->address->city,
             'public_info' => $store->publicInfo,
-            'added' => $store->createdAt,
-            'status_date' => $store->updatedAt,
+            'added' => $this->db->date($store->createdAt, false),
+            'status_date' => $this->db->date($store->updatedAt, false)
         ]);
     }
 
@@ -93,37 +96,45 @@ class StoreGateway extends BaseGateway
         return $result;
     }
 
-    public function getEditStoreData(int $storeId): array
+    /**
+     * Returns all information about a store if it exists.
+     *
+     * @param int $storeId Identifier of the store
+     * @param bool $skipLoadingOfGroceries avoids loading of groceries to reduce DB load
+     *
+     * @throws DatabaseNoValueFoundException When store not found
+     */
+    public function getStore(int $storeId, bool $skipLoadingOfGroceries = false): Store
     {
-        $result = $this->db->fetch('
-			SELECT	`id`,
-					`betrieb_status_id`,
-					`bezirk_id`,
-					`plz`,
-					`stadt`,
+        $result = $this->db->fetch(
+            'SELECT	`id`,
+                    `name`,
+					`bezirk_id` as regionId,
 					`lat`,
 					`lon`,
-					`kette_id`,
-					`betrieb_kategorie_id`,
-					`name`,
-					`str`,
-					`status_date`,
-					`status`,
-					`ansprechpartner`,
-					`telefon`,
-					`fax`,
-					`email`,
-					`begin`,
-					`besonderheiten`,
-					`ueberzeugungsarbeit`,
-					`presse`,
-					`sticker`,
-					`abholmenge`,
-					`prefetchtime`,
+					`str` AS street,
+					`plz` AS zipCode,
+					`stadt` as city,
 					`public_info`,
 					`public_time`,
-					`use_region_pickup_rule`
-
+					`betrieb_kategorie_id` as categoryId,
+					`kette_id` as chainId,
+					`betrieb_status_id` as cooperationStatus,
+					`begin` as cooperationStart,
+					`besonderheiten` as description,
+					`ansprechpartner` as contactName,
+					`telefon` as contactPhone,
+					`fax` as contactFax,
+					`email` as contactEmail,
+					`prefetchtime` as calendarInterval,
+					`abholmenge` as weight,
+					`ueberzeugungsarbeit` as effort,
+					`presse` as publicity,
+					`sticker`,
+					`team_status` as teamStatus,
+					`use_region_pickup_rule` as useRegionPickupRule,
+					`status_date` as updatedAt,
+					`added` as createdAt
 			FROM 	`fs_betrieb`
 
 			WHERE 	`id` = :storeId
@@ -132,50 +143,58 @@ class StoreGateway extends BaseGateway
         ]);
 
         if ($result) {
-            $result['lebensmittel'] = array_column($this->getGroceries($storeId), 'id');
+            if (!$skipLoadingOfGroceries) {
+                $result['groceries'] = array_column($this->getGroceries($storeId), 'id');
+            }
+        } else {
+            throw new DatabaseNoValueFoundException();
         }
 
-        return $result;
+        return Store::createFromArray($result);
     }
 
-    public function updateStoreData(int $storeId, Store $store): int
+    public function updateStoreData(Store $store, bool $groceriesChanged = false)
     {
-        return $this->db->update('fs_betrieb', [
+        $this->db->update('fs_betrieb', [
             'name' => $store->name,
-            'bezirk_id' => $store->regionId,
+            'bezirk_id' => $store->region->id,
 
             'lat' => $store->location->lat,
             'lon' => $store->location->lon,
-            'str' => $store->street,
-            'plz' => $store->zip,
-            'stadt' => $store->city,
+            'str' => $store->address->street,
+            'plz' => $store->address->zipCode,
+            'stadt' => $store->address->city,
 
             'public_info' => $store->publicInfo,
-            'public_time' => $store->publicTime,
+            'public_time' => $store->publicTime->value,
 
-            'betrieb_kategorie_id' => $store->categoryId,
-            'kette_id' => $store->chainId,
+            'betrieb_kategorie_id' => $store->category ? $store->category->id : null,
+            'kette_id' => $store->chain ? $store->chain->id : null,
             'betrieb_status_id' => $store->cooperationStatus->value,
 
             'besonderheiten' => $store->description,
 
-            'ansprechpartner' => $store->contactName,
-            'telefon' => $store->contactPhone,
-            'fax' => $store->contactFax,
-            'email' => $store->contactEmail,
-            'begin' => $store->cooperationStart,
+            'ansprechpartner' => $store->contact->name,
+            'telefon' => $store->contact->phone,
+            'fax' => $store->contact->fax,
+            'email' => $store->contact->email,
+            'begin' => $store->cooperationStart ? $this->db->date($store->cooperationStart, false) : null,
+            'team_status' => $store->teamStatus->value,
 
             'prefetchtime' => $store->calendarInterval,
-            'use_region_pickup_rule' => $store->useRegionPickupRule,
+            'use_region_pickup_rule' => $store->options->useRegionPickupRule,
             'abholmenge' => $store->weight,
-            'ueberzeugungsarbeit' => $store->effort,
+            'ueberzeugungsarbeit' => $store->effort->value,
             'presse' => $store->publicity,
-            'sticker' => $store->sticker,
-
-            'status_date' => $store->updatedAt,
+            'sticker' => $store->showsSticker,
+            'status_date' => $this->db->date($store->updatedAt)
         ], [
-            'id' => $storeId,
+            'id' => $store->id,
         ]);
+
+        if ($groceriesChanged) {
+            $this->setGroceries($store->id, $store->groceries);
+        }
     }
 
     public function getMapsStores(int $regionId): array
@@ -195,8 +214,6 @@ class StoreGateway extends BaseGateway
 					k.logo
 
 			FROM 	fs_betrieb b
-			LEFT JOIN fs_kette k ON b.kette_id = k.id
-
 			WHERE 	b.bezirk_id = :regionId
 			  AND	b.betrieb_status_id <> :permanentlyClosed
 			  AND	b.`lat` != ""
@@ -443,7 +460,7 @@ class StoreGateway extends BaseGateway
         ]);
     }
 
-    public function setGroceries(int $storeId, array $foodTypeIds): void
+    private function setGroceries(int $storeId, array $foodTypeIds): int
     {
         $this->db->delete('fs_betrieb_has_lebensmittel', ['betrieb_id' => $storeId]);
 
@@ -451,7 +468,7 @@ class StoreGateway extends BaseGateway
             return ['betrieb_id' => $storeId, 'lebensmittel_id' => $foodId];
         }, $foodTypeIds);
 
-        $this->db->insertMultiple('fs_betrieb_has_lebensmittel', $newFoodData);
+        return $this->db->insertMultiple('fs_betrieb_has_lebensmittel', $newFoodData);
     }
 
     private function getApplications(int $storeId): array
@@ -497,6 +514,11 @@ class StoreGateway extends BaseGateway
 		');
     }
 
+    public function existStoreCategory(int $id): bool
+    {
+        return $this->db->exists('fs_betrieb_kategorie', ['id' => $id]);
+    }
+
     public function getBasics_groceries(): array
     {
         return $this->db->fetchAll('
@@ -512,9 +534,14 @@ class StoreGateway extends BaseGateway
         return $this->db->fetchAll('
 			SELECT	`id`,
 					`name`
-			FROM 	`fs_kette`
+			FROM 	`fs_chain`
 			ORDER BY `name`
 		');
+    }
+
+    public function existStoreChain(int $id): bool
+    {
+        return $this->db->exists('fs_chain', ['id' => $id]);
     }
 
     public function getStoreTeam($storeId): array
@@ -662,9 +689,9 @@ class StoreGateway extends BaseGateway
         return $this->db->count('fs_betrieb_team', ['foodsaver_id' => $fs_id, 'verantwortlich' => 1]);
     }
 
-    public function getStoreTeamStatus(int $storeId): int
+    public function getStoreTeamStatus(int $storeId): TeamSearchStatus
     {
-        return $this->db->fetchValueByCriteria('fs_betrieb', 'team_status', ['id' => $storeId]);
+        return TeamSearchStatus::tryFrom($this->db->fetchValueByCriteria('fs_betrieb', 'team_status', ['id' => $storeId]));
     }
 
     public function getUserTeamStatus(int $userId, int $storeId): int
@@ -818,11 +845,8 @@ class StoreGateway extends BaseGateway
     {
         return $this->db->fetch('
 			SELECT   `id`,
-			         `name`,
-			         `logo`
-
-			FROM     `fs_kette`
-
+			         `name`
+			FROM     `fs_chain`
 			WHERE    `id` = :id
         ', [
             ':id' => $id
@@ -923,9 +947,27 @@ class StoreGateway extends BaseGateway
         ]);
     }
 
-    public function setStoreTeamStatus(int $storeId, int $teamStatus)
+    public function getAllStores(array $listOfcooperationStatus = []): array
     {
-        $this->db->update('fs_betrieb', ['team_status' => $teamStatus], ['id' => $storeId]);
+        $where = '';
+        $countStates = count($listOfcooperationStatus);
+        if ($countStates != 0) {
+            $cooperationStatusPlaceHolder = implode(',', array_fill(0, $countStates, '?'));
+
+            $where = 'WHERE b.betrieb_status_id IN (' . $cooperationStatusPlaceHolder . ');';
+        }
+        $values = array_map(
+            function (CooperationStatus $status) {
+                return $status->value;
+            },
+            $listOfcooperationStatus);
+
+        return $this->db->fetchAll(
+            'SELECT
+                b.`id`, b.`name`
+            FROM
+                fs_betrieb b ' . $where,
+            $values);
     }
 
     /**
@@ -934,7 +976,7 @@ class StoreGateway extends BaseGateway
      *
      * @return array name and id of the stores
      */
-    public function getStores(int $fs_id = null): array
+    public function getStores(int $fs_id = null, array $cooperationStatus = []): array
     {
         if ($fs_id) {
             return $this->db->fetchAll('SELECT
@@ -953,7 +995,7 @@ class StoreGateway extends BaseGateway
                 ':starting' => CooperationStatus::COOPERATION_STARTING->value
             ]);
         } else {
-            return $this->db->fetchAllByCriteria('fs_betrieb', ['id', 'name']);
+            return $this->getAllStores($cooperationStatus);
         }
     }
 
@@ -1022,7 +1064,9 @@ class StoreGateway extends BaseGateway
     /**
      * Returns a list of stores which belong to regions.
      *
-     *  @return array<Store>
+     * @return array<Store>
+     *
+     * @throws Exception
      */
     public function listStoresInRegion(int $regionId, bool $includeSubregions = false): array
     {
@@ -1032,29 +1076,35 @@ class StoreGateway extends BaseGateway
         }
 
         $placeholders = implode(',', array_fill(0, count($regionIds), '?'));
-        $results = $this->db->fetchAll('SELECT fs_betrieb.id,
-						fs_betrieb.name,
-						fs_betrieb.bezirk_id as region_id,
-						fs_betrieb.lat,
-						fs_betrieb.lon,
-
-						fs_betrieb.str AS street,
-						fs_betrieb.plz as zip,
-						fs_betrieb.stadt as city,
-
-						fs_betrieb.public_info,
-						fs_betrieb.public_time,
-
-						fs_betrieb.kette_id as chainId,
-						fs_betrieb.betrieb_kategorie_id as categoryId,
-						fs_betrieb.betrieb_status_id as cooperationStatus,
-						fs_betrieb.besonderheiten as "description",
-
-						fs_betrieb.presse as publicity,
-						fs_betrieb.sticker,
-
-						fs_betrieb.added as createdAt,
-						fs_betrieb.status_date as updatedAt
+        $results = $this->db->fetchAll('SELECT
+                    fs_betrieb.id,
+                    fs_betrieb.name,
+                    fs_betrieb.bezirk_id as regionId,
+                    fs_betrieb.lat,
+                    fs_betrieb.lon,
+                    fs_betrieb.str AS street,
+                    fs_betrieb.plz AS zipCode,
+                    fs_betrieb.stadt as city,
+                    fs_betrieb.public_info,
+                    fs_betrieb.public_time,
+                    fs_betrieb.betrieb_kategorie_id as categoryId,
+                    fs_betrieb.kette_id as chainId,
+                    fs_betrieb.betrieb_status_id as cooperationStatus,
+                    fs_betrieb.begin as cooperationStart,
+                    fs_betrieb.besonderheiten as description,
+                    fs_betrieb.ansprechpartner as contactName,
+                    fs_betrieb.telefon as contactPhone,
+                    fs_betrieb.fax as contactFax,
+                    fs_betrieb.email as contactEmail,
+                    fs_betrieb.prefetchtime as calendarInterval,
+                    fs_betrieb.abholmenge as weight,
+                    fs_betrieb.ueberzeugungsarbeit as effort,
+                    fs_betrieb.presse as publicity,
+                    fs_betrieb.sticker,
+                    fs_betrieb.team_status as teamStatus,
+                    fs_betrieb.use_region_pickup_rule as useRegionPickupRule,
+                    fs_betrieb.status_date as updatedAt,
+                    fs_betrieb.added as createdAt
 				FROM 	fs_betrieb,
 						fs_bezirk
 				WHERE 	fs_betrieb.bezirk_id = fs_bezirk.id
@@ -1066,14 +1116,56 @@ class StoreGateway extends BaseGateway
         }, $results);
     }
 
-    public function listStoresWithoutRegion(array $storeIds): array
+    /**
+     * Returns a list of stores where the user is a member.
+     *
+     * @return array<Store>
+     *
+     * @throws Exception
+     */
+    public function listStoresInFromUser(int $fs_id = null, array $cooperationStatus = []): array
     {
-        return $this->db->fetchAll(
-            'SELECT id,name,bezirk_id,str
-			FROM fs_betrieb
-			WHERE id IN(' . implode(',', $storeIds) . ')
-			AND ( bezirk_id = 0 OR bezirk_id IS NULL)'
-        );
+        $results = $this->db->fetchAll('SELECT
+                b.id,
+                b.name,
+                b.bezirk_id as regionId,
+                b.lat,
+                b.lon,
+                b.str AS street,
+                b.plz AS zipCode,
+                b.stadt as city,
+                b.public_info,
+                b.public_time,
+                b.betrieb_kategorie_id as categoryId,
+                b.kette_id as chainId,
+                b.betrieb_status_id as cooperationStatus,
+                b.begin as cooperationStart,
+                b.besonderheiten as description,
+                b.ansprechpartner as contactName,
+                b.telefon as contactPhone,
+                b.fax as contactFax,
+                b.email as contactEmail,
+                b.prefetchtime as calendarInterval,
+                b.abholmenge as weight,
+                b.ueberzeugungsarbeit as effort,
+                b.presse as publicity,
+                b.sticker,
+                b.team_status as teamStatus,
+                b.use_region_pickup_rule as useRegionPickupRule,
+                b.status_date as updatedAt,
+                b.added as createdAt
+            FROM fs_betrieb_team t
+            JOIN fs_betrieb b ON
+                b.id = t.betrieb_id
+            WHERE t.foodsaver_id = :fs_id AND t.active = :membership_status
+    ', [
+                'fs_id' => $fs_id,
+                'membership_status' => MembershipStatus::MEMBER,
+        ]);
+
+        return array_map(function ($store) {
+            return Store::createFromArray($store);
+        }, $results);
     }
 
     public function getStoreLogsByActionType(int $storeId, array $storeActions): array
@@ -1114,5 +1206,29 @@ class StoreGateway extends BaseGateway
 					  and b.use_region_pickup_rule',
             [':regionId' => $regionId]
         );
+    }
+
+    /**
+     * Provides Stores with position markers.
+     *
+     * @param array<CooperationStatus> $excludedStoreTypes Excludes stores of this types
+     */
+    public function getStoreMarkers(array $excludedStoreTypes, array $teamStatus): array
+    {
+        $query = 'SELECT id, lat, lon FROM fs_betrieb WHERE (lat != "" OR lon != "")';
+
+        if (!empty($excludedStoreTypes)) {
+            $query .= ' AND betrieb_status_id NOT IN(' . implode(',', array_fill(0, count($excludedStoreTypes), '?')) . ')';
+        }
+        if (!empty($teamStatus)) {
+            $query .= ' AND team_status IN (' . implode(',', array_fill(0, count($teamStatus), '?')) . ')';
+        }
+        $teamStatusIds = array_map(function (TeamSearchStatus $item) { return $item->value; }, $teamStatus);
+        $excludedStoreTypesIds = array_map(function (CooperationStatus $storeType) { return $storeType->value; }, $excludedStoreTypes);
+        $markers = $this->db->fetchAll($query, array_merge($excludedStoreTypesIds, $teamStatusIds));
+
+        return array_map(function ($x) {
+            return MapMarker::create($x['id'], floatval($x['lat']), floatval($x['lon']));
+        }, $markers);
     }
 }

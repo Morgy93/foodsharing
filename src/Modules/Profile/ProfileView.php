@@ -274,38 +274,6 @@ class ProfileView extends View
         $page->render();
     }
 
-    public function getHistory(array $history, int $changeType): string
-    {
-        $out = '
-			<ul class="linklist history">';
-
-        $curDate = '';
-        foreach ($history as $h) {
-            if ($curDate !== $h['date']) {
-                $out = $this->renderTypeOfHistoryEntry($changeType, $h, $out);
-
-                $curDate = $h['date'];
-            }
-
-            $out = $h['bot_id'] === null
-                ? $out . '<li>' . $this->translator->trans('profile.history.noActor') . '</li>'
-                : $out . '<li>
-					<a class="corner-all" href="/profile/' . (int)$h['bot_id'] . '">
-						<span class="n">' . $h['name'] . ' ' . $h['nachname'] . '</span>
-						<span class="t"></span>
-						<span class="c"></span>
-					</a>
-				</li>';
-        }
-        $out .= '
-		</ul>';
-        if ($curDate === '') {
-            $out = $this->translator->trans('profile.history.noData');
-        }
-
-        return $out;
-    }
-
     public function setData(array $data): void
     {
         $this->foodsaver = $data;
@@ -572,41 +540,5 @@ class ProfileView extends View
         }
 
         return $infos;
-    }
-
-    private function renderTypeOfHistoryEntry(int $changeType, array $h, string $out): string
-    {
-        $when = $this->timeHelper->niceDate($h['date_ts']);
-
-        switch ($changeType) {
-            case 0:
-                $typeOfChange = '';
-                switch ($h['change_status']) {
-                    case 0:
-                        $class = 'unverify';
-                        $typeOfChange = $this->translator->trans('profile.history.lostVerification');
-                        break;
-                    case 1:
-                        $class = 'verify';
-                        $typeOfChange = $this->translator->trans('profile.history.wasVerified');
-                        break;
-                    default:
-                        $class = '';
-                        break;
-                }
-                $out .= '<li class="title">'
-                    . '<span class="' . $class . '">' . $typeOfChange . '</span>'
-                    . ' am ' . $when . ' durch:</li>';
-                break;
-            case 1:
-                $out = $h['bot_id'] === null
-                    ? $out . '<li class="title">' . $when . '</li>'
-                    : $out . '<li class="title">' . $when . ' durch:</li>';
-                break;
-            default:
-                break;
-        }
-
-        return $out;
     }
 }

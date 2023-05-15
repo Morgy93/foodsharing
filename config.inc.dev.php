@@ -1,5 +1,7 @@
 <?php
 
+/* If you make changes here check if changes at the production server are needed */
+
 if (php_sapi_name() != 'cli') {
     /* Whoops catches all error messages in CLI mode as well :( */
     Foodsharing\Debug\Whoops::register();
@@ -47,12 +49,14 @@ define('DELAY_MICRO_SECONDS_BETWEEN_MAILS', 1330000);
 define('IMAP', [
     ['host' => 'imap', 'user' => 'user', 'password' => 'pass']
 ]);
+define('IMAP_FAILED_BOX', 'INBOX/FailedProcessing');
 
 define('BOUNCE_IMAP_HOST', null);
 define('BOUNCE_IMAP_USER', null);
 define('BOUNCE_IMAP_PASS', null);
 define('BOUNCE_IMAP_PORT', null);
 define('BOUNCE_IMAP_SERVICE_OPTION', null);
+define('BOUNCE_IMAP_UNPROCESSED_BOX', null);
 
 if (!defined('ROOT_DIR')) {
     define('ROOT_DIR', './');

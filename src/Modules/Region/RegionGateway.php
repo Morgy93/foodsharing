@@ -221,6 +221,12 @@ class RegionGateway extends BaseGateway
         ]);
     }
 
+    /**
+     * Fetches details for a region.
+     *
+     * Warning: this function does not properly set the moderated flag for large regions. In most cases you might want
+     * to use RegionTransactions::getRegionDetails instead.
+     */
     public function getRegionDetails(int $regionId): array
     {
         $region = $this->db->fetch('
@@ -349,6 +355,13 @@ class RegionGateway extends BaseGateway
         return $region;
     }
 
+    /**
+     * Return the unit type for a region.
+     *
+     * @see UnitType
+     *
+     * @throws Exception when region does not exist
+     */
     public function getType(int $regionId): int
     {
         return (int)$this->db->fetchValueByCriteria('fs_bezirk', 'type', ['id' => $regionId]);

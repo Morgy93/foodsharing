@@ -6,38 +6,18 @@ use Foodsharing\Lib\Session;
 use Foodsharing\Modules\Core\DBConstants\Foodsaver\Role;
 use Foodsharing\Modules\Core\DBConstants\Region\RegionIDs;
 use Foodsharing\Modules\Foodsaver\FoodsaverGateway;
-use Foodsharing\Modules\Region\RegionGateway;
 
 class ProfilePermissions
 {
     private Session $session;
-    private RegionGateway $regionGateway;
+    private CommonPermissions $commonPermissions;
     private FoodsaverGateway $foodsaverGateway;
 
-    public function __construct(Session $session, RegionGateway $regionGateway, FoodsaverGateway $foodsaverGateway)
+    public function __construct(Session $session, CommonPermissions $commonPermissions, FoodsaverGateway $foodsaverGateway)
     {
         $this->session = $session;
-        $this->regionGateway = $regionGateway;
+        $this->commonPermissions = $commonPermissions;
         $this->foodsaverGateway = $foodsaverGateway;
-    }
-
-    public function mayAdministrateUserProfile(int $userId, ?int $regionId = null): bool
-    {
-        if ($this->session->mayRole(Role::ORGA)) {
-            return true;
-        }
-
-        if (!$this->session->isAmbassador()) {
-            return false;
-        }
-
-        if ($regionId !== null && $this->session->isAdminFor($regionId)) {
-            return true;
-        }
-
-        $regionIds = $this->regionGateway->getFsRegionIds($userId);
-
-        return $this->session->isAmbassadorForRegion($regionIds, false, true);
     }
 
     public function hasApplicant(int $userId): bool
@@ -47,22 +27,22 @@ class ProfilePermissions
 
     public function mayEditUserProfile(int $userId): bool
     {
-        return $this->session->id() === $userId || $this->mayAdministrateUserProfile($userId);
+        return $this->session->id() === $userId || $this->commonPermissions->mayAdministrateRegion($userId);
     }
 
     public function mayCancelSlotsFromProfile(int $userId): bool
     {
-        return $this->session->id() != $userId && $this->mayAdministrateUserProfile($userId);
+        return $this->session->id() != $userId && $this->commonPermissions->mayAdministrateRegion($userId);
     }
 
     public function mayChangeUserVerification(int $userId): bool
     {
-        return $this->mayAdministrateUserProfile($userId);
+        return $this->commonPermissions->mayVerifyRegion($userId);
     }
 
     public function maySeeHistory(int $fsId): bool
     {
-        return $this->mayAdministrateUserProfile($fsId);
+        return $this->commonPermissions->mayAdministrateRegion($fsId);
     }
 
     public function maySeeUserNotes(int $userId): bool
@@ -76,7 +56,7 @@ class ProfilePermissions
             return false;
         }
 
-        return $this->maySeeAllPickups($fsId) || $this->mayAdministrateUserProfile($fsId);
+        return $this->maySeeAllPickups($fsId) || $this->commonPermissions->mayAdministrateRegion($fsId);
     }
 
     public function maySeeAllPickups(int $fsId): bool
@@ -93,7 +73,7 @@ class ProfilePermissions
         return
             $this->session->id() == $fsId ||
             $this->hasApplicant($fsId) ||
-            $this->mayAdministrateUserProfile($fsId);
+            $this->commonPermissions->mayAdministrateRegion($fsId);
     }
 
     public function maySeeCommitmentsStat(int $fsId): bool
@@ -102,7 +82,7 @@ class ProfilePermissions
             return true;
         }
 
-        if ($this->mayAdministrateUserProfile($fsId)) {
+        if ($this->commonPermissions->mayAdministrateRegion($fsId)) {
             return true;
         }
 
@@ -162,5 +142,10 @@ class ProfilePermissions
     public function mayRemoveFromBounceList(int $userId): bool
     {
         return $this->session->id() == $userId || $this->session->mayRole(Role::ORGA) || $this->session->isAdminFor(RegionIDs::IT_SUPPORT_GROUP);
+    }
+
+    public function mayAdministrateUserProfile(int $userId, ?int $regionId = null): bool
+    {
+        return $this->commonPermissions->mayAdministrateRegion($userId, $regionId);
     }
 }

@@ -483,13 +483,13 @@ class Database
      *
      * @return mixed the value of the first column of the first row
      *
-     * @throws \Exception if the query is malformed, or if there were no results
+     * @throws DatabaseNoValueFoundException if the query is malformed, or if there were no results
      */
     public function fetchValue(string $query, array $params = [])
     {
         $out = $this->preparedQuery($query, $params)->fetchAll();
         if (empty($out)) {
-            throw new \Exception('Expected one or more results, but none was returned.');
+            throw new DatabaseNoValueFoundException('Expected one or more results, but none was returned.');
         }
 
         return array_values($out[0])[0];

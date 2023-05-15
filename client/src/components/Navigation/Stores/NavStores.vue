@@ -68,7 +68,7 @@
         {{ $i18n('storeedit.add-new') }}
       </a>
       <a
-        :href="$url('storeList')"
+        :href="$url('storeOwnList')"
         role="menuitem"
         class="dropdown-item dropdown-action"
       >

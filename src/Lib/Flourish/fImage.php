@@ -99,7 +99,7 @@ class fImage extends fFile
 	{
 		// Make sure we can execute the convert binary
 		if (self::isSafeModeExecDirRestricted($path)) {
-			throw new fEnvironmentException(
+			throw new fException(
 				'Safe mode is turned on and the ImageMagick convert binary is not in the directory defined by the safe_mode_exec_dir ini setting or safe_mode_exec_dir is not set - safe_mode_exec_dir is currently %s.',
 				ini_get('safe_mode_exec_dir')
 			);
@@ -114,7 +114,7 @@ class fImage extends fFile
 		}
 
 		if (!$executable) {
-			throw new fEnvironmentException(
+			throw new fException(
 				'The ImageMagick convert binary located in the directory %s does not exist or is not executable',
 				$path
 			);
@@ -155,7 +155,7 @@ class fImage extends fFile
 
 		$directory = fFilesystem::getPathInfo($file_path, 'dirname');
 		if (!is_writable($directory)) {
-			throw new fEnvironmentException(
+			throw new fException(
 				'The file path specified, %s, is inside of a directory that is not writable',
 				$file_path
 			);
@@ -300,7 +300,7 @@ class fImage extends fFile
 
 		$valid_elements = array('type', 'width', 'height');
 		if ($element !== null && !in_array($element, $valid_elements)) {
-			throw new fProgrammerException(
+			throw new fException(
 				'The element specified, %1$s, is invalid. Must be one of: %2$s.',
 				$element,
 				join(', ', $valid_elements)
@@ -498,7 +498,7 @@ class fImage extends fFile
 	{
 		$temp_dir = new fDirectory($temp_dir);
 		if (!$temp_dir->isWritable()) {
-			throw new fEnvironmentException(
+			throw new fException(
 				'The ImageMagick temp directory specified, %s, does not appear to be writable',
 				$temp_dir->getPath()
 			);
@@ -584,7 +584,7 @@ class fImage extends fFile
 	 */
 	public function append($data)
 	{
-		throw new fProgrammerException('It is not possible to append an image');
+		throw new fException('It is not possible to append an image');
 	}
 
 	/**
@@ -620,7 +620,7 @@ class fImage extends fFile
 					$crop_from_x = max($orig_width - $new_width, 0);
 					break;
 				default:
-					throw new fProgrammerException(
+					throw new fException(
 						'The crop-from x specified, %1$s, is not a valid horizontal position. Must be one of: %2$s.',
 						$crop_from_x,
 						array('left', 'center', 'right')
@@ -640,7 +640,7 @@ class fImage extends fFile
 					$crop_from_y = max($orig_height - $new_height, 0);
 					break;
 				default:
-					throw new fProgrammerException(
+					throw new fException(
 						'The crop-from y specified, %1$s, is not a valid vertical position. Must be one of: %2$s.',
 						$crop_from_y,
 						array('top', 'center', 'bottom')
@@ -650,27 +650,27 @@ class fImage extends fFile
 
 		// Make sure the user input is valid
 		if (!is_numeric($crop_from_x) || $crop_from_x < 0 || $crop_from_x > $orig_width - 1) {
-			throw new fProgrammerException(
+			throw new fException(
 				'The crop-from x specified, %s, is not a number, is less than zero, or would result in a zero-width image',
 				$crop_from_x
 			);
 		}
 		if (!is_numeric($crop_from_y) || $crop_from_y < 0 || $crop_from_y > $orig_height - 1) {
-			throw new fProgrammerException(
+			throw new fException(
 				'The crop-from y specified, %s, is not a number, is less than zero, or would result in a zero-height image',
 				$crop_from_y
 			);
 		}
 
 		if (!is_numeric($new_width) || $new_width <= 0 || $crop_from_x + $new_width > $orig_width) {
-			throw new fProgrammerException(
+			throw new fException(
 				'The new width specified, %1$s, is not a number, is less than or equal to zero, or is larger than can be cropped with the specified crop-from x of %2$s',
 				$new_width,
 				$crop_from_x
 			);
 		}
 		if (!is_numeric($new_height) || $new_height <= 0 || $crop_from_y + $new_height > $orig_height) {
-			throw new fProgrammerException(
+			throw new fException(
 				'The new height specified, %1$s, is not a number, is less than or equal to zero, or is larger than can be cropped with the specified crop-from y of %2$s',
 				$new_height,
 				$crop_from_y
@@ -714,13 +714,13 @@ class fImage extends fFile
 
 		// Make sure the user input is valid
 		if ((!is_numeric($ratio_width) && $ratio_width !== null) || $ratio_width < 0) {
-			throw new fProgrammerException(
+			throw new fException(
 				'The ratio width specified, %s, is not a number or is less than or equal to zero',
 				$ratio_width
 			);
 		}
 		if ((!is_numeric($ratio_height) && $ratio_height !== null) || $ratio_height < 0) {
-			throw new fProgrammerException(
+			throw new fException(
 				'The ratio height specified, %s, is not a number or is less than or equal to zero',
 				$ratio_height
 			);
@@ -729,7 +729,7 @@ class fImage extends fFile
 		// Make sure
 		$valid_horizontal_positions = array('left', 'center', 'right');
 		if (!in_array(strtolower($horizontal_position), $valid_horizontal_positions)) {
-			throw new fProgrammerException(
+			throw new fException(
 				'The horizontal position specified, %1$s, is not valid. Must be one of: %2$s.',
 				$horizontal_position,
 				$valid_horizontal_positions
@@ -738,7 +738,7 @@ class fImage extends fFile
 
 		$valid_vertical_positions = array('top', 'center', 'bottom');
 		if (!in_array(strtolower($vertical_position), $valid_vertical_positions)) {
-			throw new fProgrammerException(
+			throw new fException(
 				'The vertical position specified, %1$s, is not valid. Must be one of: %2$s.',
 				$vertical_position,
 				$valid_vertical_positions
@@ -897,7 +897,7 @@ class fImage extends fFile
 			// Estimate the memory usage and throw an exception if we will run out
 			$load_byte_usage = $this->pending_modifications[0]['old_width'] * $this->pending_modifications[0]['old_height'] * 4;
 			if ($load_byte_usage + $beginning_memory_usage > $memory_limit_bytes) {
-				throw new fEnvironmentException(
+				throw new fException(
 					'The predicted memory usage to complete the image modifications using the GD extension, %1$s, will most likely exceed the memory limit of %2$s',
 					$load_byte_usage + $beginning_memory_usage,
 					$memory_limit_bytes
@@ -924,7 +924,7 @@ class fImage extends fFile
 				$old_byte_usage = $this->pending_modifications[0]['old_width'] * $this->pending_modifications[0]['old_height'] * 4;
 				$new_byte_usage = $this->pending_modifications[0]['width'] * $this->pending_modifications[0]['height'] * 4;
 				if ($old_byte_usage + $new_byte_usage + $beginning_memory_usage > $memory_limit_bytes) {
-					throw new fEnvironmentException(
+					throw new fException(
 						'The predicted memory usage to complete the image modifications using the GD extension, %1$s, will most likely exceed the memory limit of %2$s',
 						$old_byte_usage + $new_byte_usage + $beginning_memory_usage,
 						$memory_limit_bytes
@@ -1179,7 +1179,7 @@ class fImage extends fFile
 		exec($command_line, $output, $return_value);
 
 		if ($return_value !== 0) {
-			throw new fEnvironmentException(
+			throw new fException(
 				"An error occurred running the command, %1\$s, to modify the image. The error output was:\n%2\$s",
 				$command_line,
 				join("\n", $output)
@@ -1206,19 +1206,19 @@ class fImage extends fFile
 
 		// Make sure the user input is valid
 		if ((!is_numeric($canvas_width) && $canvas_width !== null) || $canvas_width < 0) {
-			throw new fProgrammerException(
+			throw new fException(
 				'The canvas width specified, %s, is not an integer or is less than zero',
 				$canvas_width
 			);
 		}
 		if ((!is_numeric($canvas_height) && $canvas_height !== null) || $canvas_height < 0) {
-			throw new fProgrammerException(
+			throw new fException(
 				'The canvas height specified, %s is not an integer or is less than zero',
 				$canvas_height
 			);
 		}
 		if ($canvas_width == 0 && $canvas_height == 0) {
-			throw new fProgrammerException(
+			throw new fException(
 				'The canvas width and canvas height are both zero, so no resizing will occur'
 			);
 		}
@@ -1280,7 +1280,7 @@ class fImage extends fFile
 		// Make sure the user input is valid
 		$valid_degrees = array(90, 180, 270);
 		if (!in_array($degrees, $valid_degrees)) {
-			throw new fProgrammerException(
+			throw new fException(
 				'The number of degrees specified, %1$s, is not valid. Must be one of: %2$s.',
 				$degrees,
 				$valid_degrees
@@ -1345,14 +1345,14 @@ class fImage extends fFile
 		self::determineProcessor();
 
 		if (self::$processor == 'none') {
-			throw new fEnvironmentException(
+			throw new fException(
 				"The changes to the image can't be saved because neither the GD extension or ImageMagick appears to be installed on the server"
 			);
 		}
 
 		$type = self::getImageType($this->file);
 		if ($type == 'tif' && self::$processor == 'gd') {
-			throw new fEnvironmentException(
+			throw new fException(
 				'The image specified, %s, is a TIFF file and the GD extension can not handle TIFF files. Please install ImageMagick if you wish to manipulate TIFF files.',
 				$this->file
 			);
@@ -1360,7 +1360,7 @@ class fImage extends fFile
 
 		$valid_image_types = array('jpg', 'gif', 'png');
 		if ($new_image_type !== null && !in_array($new_image_type, $valid_image_types)) {
-			throw new fProgrammerException(
+			throw new fException(
 				'The new image type specified, %1$s, is invalid. Must be one of: %2$s.',
 				$new_image_type,
 				join(', ', $valid_image_types)
@@ -1372,7 +1372,7 @@ class fImage extends fFile
 		}
 
 		if (!is_integer($jpeg_quality) || $jpeg_quality < 1 || $jpeg_quality > 100) {
-			throw new fProgrammerException(
+			throw new fException(
 				'The JPEG quality specified, %1$s, is either not an integer, less than %2$s or greater than %3$s.',
 				$jpeg_quality,
 				1,
@@ -1390,7 +1390,7 @@ class fImage extends fFile
 
 			if (file_exists($output_file)) {
 				if (!is_writable($output_file)) {
-					throw new fEnvironmentException(
+					throw new fException(
 						'Changes to the image can not be saved because the file, %s, is not writable',
 						$output_file
 					);
@@ -1398,7 +1398,7 @@ class fImage extends fFile
 			} else {
 				$output_dir = dirname($output_file);
 				if (!is_writable($output_dir)) {
-					throw new fEnvironmentException(
+					throw new fException(
 						'Changes to the image can not be saved because the directory to save the new file, %s, is not writable',
 						$output_dir
 					);
@@ -1407,7 +1407,7 @@ class fImage extends fFile
 		} else {
 			$output_file = $this->file;
 			if (!is_writable($output_file)) {
-				throw new fEnvironmentException(
+				throw new fException(
 					'Changes to the image can not be saved because the file, %s, is not writable',
 					$output_file
 				);

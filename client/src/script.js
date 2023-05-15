@@ -208,7 +208,7 @@ export const ajax = {
     }
 
     return $.ajax({
-      url: `/xhrapp.php?app=${app}&m=${method}`,
+      url: `/xhrapp?app=${app}&m=${method}`,
       data: opt.data,
       dataType: 'json',
       method: opt.method,

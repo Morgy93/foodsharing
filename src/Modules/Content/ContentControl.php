@@ -32,7 +32,7 @@ class ContentControl extends Control
     {
         if (!isset($_GET['sub'])) {
             if (!$this->contentPermissions->mayEditContent()) {
-                $this->routeHelper->go('/');
+                $this->routeHelper->goAndExit('/');
             }
 
             if ($this->identificationHelper->getAction('neu')) {
@@ -49,11 +49,11 @@ class ContentControl extends Control
             } elseif ($id = $this->identificationHelper->getActionId('delete')) {
                 if ($this->contentGateway->delete($id)) {
                     $this->flashMessageHelper->success($this->translator->trans('content.delete_success'));
-                    $this->routeHelper->goPage();
+                    $this->routeHelper->goPageAndExit();
                 }
             } elseif ($id = $this->identificationHelper->getActionId('edit')) {
                 if (!$this->contentPermissions->mayEditContentId((int)$_GET['id'])) {
-                    $this->routeHelper->go('/?page=content');
+                    $this->routeHelper->goAndExit('/?page=content');
                 }
                 $this->handle_edit();
 
@@ -71,7 +71,7 @@ class ContentControl extends Control
             } elseif ($id = $this->identificationHelper->getActionId('view')) {
                 $this->addContent($id);
             } elseif (isset($_GET['id'])) {
-                $this->routeHelper->go('/?page=content&a=edit&id=' . (int)$_GET['id']);
+                $this->routeHelper->goAndExit('/?page=content&a=edit&id=' . (int)$_GET['id']);
             } else {
                 $this->pageHelper->addBread($this->translator->trans('content.public'), '/?page=content');
 
@@ -193,6 +193,11 @@ class ContentControl extends Control
     public function leeretonne(): void
     {
         $this->addContent(ContentId::CAMPAIGN_LEERE_TONNE);
+    }
+
+    public function newsFromIT(): void
+    {
+        $this->addContent(ContentId::NEWS_FROM_IT);
     }
 
     public function foodSharePointRescue(): void
@@ -334,7 +339,7 @@ class ContentControl extends Control
             $g_data['last_mod'] = date('Y-m-d H:i:s');
             if ($this->contentGateway->update($_GET['id'], $g_data)) {
                 $this->flashMessageHelper->success($this->translator->trans('content.edit_success'));
-                $this->routeHelper->go('/?page=content&a=edit&id=' . (int)$_GET['id']);
+                $this->routeHelper->goAndExit('/?page=content&a=edit&id=' . (int)$_GET['id']);
             } else {
                 $this->flashMessageHelper->error($this->translator->trans('error_unexpected'));
             }
@@ -348,7 +353,7 @@ class ContentControl extends Control
             $g_data['last_mod'] = date('Y-m-d H:i:s');
             if ($this->contentGateway->create($g_data)) {
                 $this->flashMessageHelper->success($this->translator->trans('content.new_success'));
-                $this->routeHelper->goPage();
+                $this->routeHelper->goPageAndExit();
             } else {
                 $this->flashMessageHelper->error($this->translator->trans('error_unexpected'));
             }

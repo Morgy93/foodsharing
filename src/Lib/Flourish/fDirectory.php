@@ -68,7 +68,7 @@ class fDirectory
 		}
 
 		if (!is_writable($parent_directory)) {
-			throw new fEnvironmentException(
+			throw new fException(
 				'The directory specified, %s, is inside of a directory that is not writable',
 				$directory
 			);
@@ -213,7 +213,7 @@ class fDirectory
 		}
 
 		if (!$this->getParent()->isWritable()) {
-			throw new fEnvironmentException(
+			throw new fException(
 				'The directory, %s, can not be deleted because the directory containing it is not writable',
 				$this->directory
 			);
@@ -258,7 +258,7 @@ class fDirectory
 		$dirname = fFilesystem::getPathInfo($this->directory, 'dirname');
 
 		if ($dirname == $this->directory) {
-			throw new fEnvironmentException(
+			throw new fException(
 				'The current directory does not have a parent directory'
 			);
 		}
@@ -377,7 +377,7 @@ class fDirectory
 		$this->tossIfDeleted();
 
 		if (!$this->getParent()->isWritable()) {
-			throw new fEnvironmentException(
+			throw new fException(
 				'The directory, %s, can not be renamed because the directory containing it is not writable',
 				$this->directory
 			);
@@ -391,7 +391,7 @@ class fDirectory
 		$info = fFilesystem::getPathInfo($new_dirname);
 
 		if (!file_exists($info['dirname'])) {
-			throw new fProgrammerException(
+			throw new fException(
 				'The new directory name specified, %s, is inside of a directory that does not exist',
 				$new_dirname
 			);
@@ -399,7 +399,7 @@ class fDirectory
 
 		if (file_exists($new_dirname)) {
 			if (!is_writable($new_dirname)) {
-				throw new fEnvironmentException(
+				throw new fException(
 					'The new directory name specified, %s, already exists, but is not writable',
 					$new_dirname
 				);
@@ -410,7 +410,7 @@ class fDirectory
 		} else {
 			$parent_dir = new self($info['dirname']);
 			if (!$parent_dir->isWritable()) {
-				throw new fEnvironmentException(
+				throw new fException(
 					'The new directory name specified, %s, is inside of a directory that is not writable',
 					$new_dirname
 				);
@@ -534,7 +534,7 @@ class fDirectory
 	protected function tossIfDeleted()
 	{
 		if ($this->deleted) {
-			throw new fProgrammerException(
+			throw new fException(
 				"The action requested can not be performed because the directory has been deleted\n\nBacktrace for fDirectory::delete() call:\n%s",
 				fCore::backtrace(0, $this->deleted)
 			);

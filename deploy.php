@@ -1,5 +1,7 @@
 <?php
 
+/* If you make changes here please talk to an admin */
+
 namespace Deployer;
 
 require 'recipe/common.php';

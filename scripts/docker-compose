@@ -3,10 +3,6 @@
 # which command to run by docker-compose and additional arguments is specified by the arguments
 # of this script
 
-set -o errexit
-
-dir=$(dirname "$0")
-
 # Export the current host operating system to FS_PLATFORM
 unameOut="$(uname -s)"
 case "${unameOut}" in
@@ -20,10 +16,25 @@ then
     FS_PLATFORM=gitpod
 fi
 
-# shellcheck source=./__helping-functions.sh
-source "$dir"/__helping-functions.sh
+dir=$(dirname "$0")
 
-docker-compose \
+# shellcheck source=./__common.sh
+source "$dir"/__common.sh
+
+function _docker-compose () {
+    # On newer systems, docker-compose may not be available anymore.
+    # It's been substituted by "docker compose" (with a space inbetween).
+    if docker compose version >/dev/null 2>&1; then
+        docker compose "$@"
+    elif command -v docker-compose >/dev/null; then
+        docker-compose "$@"
+    else
+        echo "docker compose not found. Please install latest docker version"
+        exit 1
+    fi
+}
+
+_docker-compose \
   --file "$dir"/../docker/docker-compose.yml \
   --file "$dir"/../docker/docker-compose."$FS_ENV".yml \
   --project-name foodsharing_"$FS_ENV" \

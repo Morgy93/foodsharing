@@ -5,13 +5,14 @@ namespace Foodsharing\Modules\Core;
 use Foodsharing\Lib\Db\Mem;
 use Foodsharing\Lib\Session;
 use Foodsharing\Lib\View\Utils;
-use Foodsharing\Modules\Foodsaver\FoodsaverGateway;
 use Foodsharing\Utility\EmailHelper;
 use Foodsharing\Utility\FlashMessageHelper;
 use Foodsharing\Utility\PageHelper;
 use Foodsharing\Utility\RouteHelper;
 use Foodsharing\Utility\TranslationHelper;
 use ReflectionClass;
+use Symfony\Component\HttpFoundation\Request;
+use Symfony\Contracts\Service\Attribute\Required;
 use Symfony\Contracts\Translation\TranslatorInterface;
 
 abstract class Control
@@ -19,14 +20,14 @@ abstract class Control
     protected bool $isControl = false;
     protected bool $isXhrControl = false;
     protected $view;
-    private $sub;
+    private false|string $sub;
 
     protected PageHelper $pageHelper;
     protected Mem $mem;
-    protected \Foodsharing\Lib\Session $session;
+    protected Session $session;
     protected Utils $v_utils;
     private \Twig\Environment $twig;
-    private FoodsaverGateway $foodsaverGateway;
+    protected Request $request;
     private InfluxMetrics $metrics;
     protected EmailHelper $emailHelper;
     protected FlashMessageHelper $flashMessageHelper;
@@ -40,7 +41,6 @@ abstract class Control
         $this->mem = $container->get(Mem::class);
         $this->session = $container->get(Session::class);
         $this->v_utils = $container->get(Utils::class);
-        $this->foodsaverGateway = $container->get(FoodsaverGateway::class);
         $this->metrics = $container->get(InfluxMetrics::class);
         $this->pageHelper = $container->get(PageHelper::class);
         $this->emailHelper = $container->get(EmailHelper::class);
@@ -86,15 +86,18 @@ abstract class Control
         $this->metrics->addPageStatData(['controller' => $className]);
     }
 
-    /**
-     * @required
-     */
+    #[Required]
     public function setTwig(\Twig\Environment $twig): void
     {
         $this->twig = $twig;
     }
 
-    protected function render($template, $data)
+    public function setRequest(Request $req): void
+    {
+        $this->request = $req;
+    }
+
+    protected function render(string $template, array $data = []): string
     {
         $global = $this->pageHelper->generateAndGetGlobalViewData();
         $viewData = array_merge($global, $data);
@@ -102,24 +105,9 @@ abstract class Control
         return $this->twig->render($template, $viewData);
     }
 
-    public function setTemplate($template)
-    {
-        global $g_template;
-        $g_template = $template;
-    }
-
     public function getSub()
     {
         return $this->sub;
-    }
-
-    public function getRequest($name)
-    {
-        if (isset($_REQUEST[$name])) {
-            return $_REQUEST[$name];
-        }
-
-        return false;
     }
 
     public function wallposts($table, $id): string
@@ -137,7 +125,7 @@ abstract class Control
 					<span id="wallpost-loader"></span><span id="wallpost-attach-image"><i class="far fa-image"></i> ' . $this->translator->trans('button.attach_image') . '</span>
 					<a href="#" id="wall-submit">' . $this->translator->trans('button.send') . '</a>
 					<div style="overflow: hidden; height: 0;">
-						<form id="wallpost-attachimage-form" action="/xhrapp.php?app=wallpost&m=attachimage&table=' . $table . '&id=' . $id . '" method="post" enctype="multipart/form-data" target="wallpost-frame">
+						<form id="wallpost-attachimage-form" action="/xhrapp?app=wallpost&m=attachimage&table=' . $table . '&id=' . $id . '" method="post" enctype="multipart/form-data" target="wallpost-frame">
 							<input id="wallpost-attach-trigger" type="file" accept="image/png, image/jpeg" maxlength="100000" size="chars" name="etattach" />
 						</form>
 					</div>

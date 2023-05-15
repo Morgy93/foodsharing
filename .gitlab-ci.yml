@@ -3,12 +3,21 @@
 include:
   - template: Dependency-Scanning.gitlab-ci.yml
 
-# to make the previous template work with kanthaus-runner, which expects these tags
-dependency_scanning:
-  tags:
-    - saas-linux-medium-amd64
+gemnasium-dependency_scanning:
+  rules:
+    - if: $CI_COMMIT_BRANCH == 'master' || $CI_COMMIT_BRANCH == 'production'
+    - if: $CI_MERGE_REQUEST_ID
+      changes:
+        - composer.lock
+        - deployer/composer.lock
+        - client/yarn.lock
+        - websocket/yarn.lock
+        - docs/yarn.lock
+    - if: $CI_COMMIT_BRANCH == 'production' && $SKIP_CI_TESTS == 'true'
+      when: never
 
 variables:
+  DS_EXCLUDED_ANALYZERS: "gemnasium-maven, gemnasium-python"
   # https://docs.docker.com/engine/userguide/storagedriver/selectadriver/
   # https://gitlab.com/gitlab-org/gitlab-ce/issues/19971
   DOCKER_DRIVER: overlay
@@ -19,13 +28,12 @@ stages:
   - test
   - deploy
 
-.defaults: &defaults
+.defaults:
   image: registry.gitlab.com/foodsharing-dev/images/ci/php:latest
   tags:
     - saas-linux-medium-amd64
 
-
-.ssh: &ssh
+.ssh:
   before_script:
     - eval $(ssh-agent -s)
     - ssh-add <(echo "$DEPLOY_SSH_KEY")
@@ -36,71 +44,166 @@ stages:
     # you will overwrite your user's SSH config.
     - '[[ -f /.dockerenv ]] && echo -e "Host *\n\tStrictHostKeyChecking no\n\n" > ~/.ssh/config'
 
-.deploy: &deploy
-  <<: *defaults
-  <<: *ssh
+.deploy:
+  extends:
+    - .defaults
+    - .ssh
   stage: deploy
   tags:
-    - non-shared
-    - foodsharing # run it on our foodsharing ci server
-  dependencies:
-    - build:frontend
-    - build:backend
-    - build:websocket
-    - build:docs
+    - foodsharing-deploy
   script:
     - chmod -R 750 ./
     - (cd deployer && composer install)
     - deployer/vendor/bin/dep deploy $CI_ENVIRONMENT_NAME --revision $CI_COMMIT_SHA
-    - ./scripts/deploy-websocket-restart
+    - ./scripts/deploy-restart-services
     - ./scripts/deploy-notify-slack
 
+.deploy-app:
+  extends:
+    - .deploy
+  needs:
+    - build:frontend
+    - build:backend
+    - build:websocket
+    - job: test:frontend
+      artifacts: false
+    - job: test:backend-acceptance
+      artifacts: false
+    - job: test:backend-code
+      artifacts: false
+    - job: test:websocket
+      artifacts: false
+
 outdated:
-  <<: *defaults
+  extends:
+    - .defaults
   stage: outdated
   rules:
     - if: $CI_PIPELINE_SOURCE == "schedule" && $SCHEDULED_JOB == "outdated"
       when: always
-  tags:
-    - non-shared
-    - foodsharing
   script:
-    # unfortunately "composer outdated -D" only works if you have installed the dependencies :/
-    - composer install --verbose --prefer-dist --no-progress --no-interaction --classmap-authoritative --no-scripts --ignore-platform-reqs
     - ./scripts/ci-notify-outdated
   cache:
     key: outdated:cache
     paths:
       - vendor
 
-build:websocket:
-  <<: *defaults
+.build-artifacts: &build-artifacts
+  expire_in: 1 day
+
+.dirs-app-rule:
+  rules:
+    if: $CI_MERGE_REQUEST_ID
+    changes:
+      - css/**/*
+      - docker/**/*
+      - img/**/*
+      - lib/**/*
+      - migrations/**/*
+      - public/**/*
+      - scripts/**/*
+      - templates/**/*
+      - tests/**/*
+      - translations/**/*
+      - .gitlab-ci.yml
+      - .php-cs-fixer.php
+      - codeception.yml
+      - composer.json
+      - composer.lock
+      - config.inc.*
+      - deploy.php
+      - jsconfig.json
+      - phinx.php
+      - phpstan.neon
+      - run.php
+
+.dirs-backend-rule:
+  rules:
+    if: $CI_MERGE_REQUEST_ID
+    changes:
+      - src/**/*
+      - config/**/*
+
+.dirs-frontend-rule:
+  rules:
+    if: $CI_MERGE_REQUEST_ID
+    changes:
+      - client/**/*
+
+.dirs-websocket-rule:
+  rules:
+    if: $CI_MERGE_REQUEST_ID
+    changes:
+      - websocket/**/*
+
+.dirs-docs-rule:
+  rules:
+    if: $CI_MERGE_REQUEST_ID
+    changes:
+      - docs/**/*
+      - scripts/**/*
+
+build:backend-dev:
+  extends:
+    - .defaults
   stage: build
   interruptible: true
   rules:
     - if: $CI_COMMIT_BRANCH == 'master' || $CI_COMMIT_BRANCH == 'production'
-    - if: $CI_MERGE_REQUEST_ID
+    - !reference [.dirs-app-rule, rules]
+    - !reference [.dirs-backend-rule, rules]
+    - !reference [.dirs-frontend-rule, rules]
+    - !reference [.dirs-websocket-rule, rules]
+    - !reference [.dirs-docs-rule, rules]
+    - if: $CI_COMMIT_BRANCH == 'production' && $SKIP_CI_TESTS == 'true'
+      when: never
+    - if: $CI_PIPELINE_SOURCE == "schedule"
+      when: never
+  image: registry.gitlab.com/foodsharing-dev/images/php:latest
+  script:
+    - ./scripts/ci-backend-build-dev
+  cache:
+    key: backend:build:cache
+    paths:
+      - .php-cs-fixer.php.cache
+  artifacts:
+    <<: *build-artifacts
+    paths:
+      - assets
+      - vendor
+
+build:websocket:
+  extends:
+    - .defaults
+  stage: build
+  interruptible: true
+  rules:
+    - if: $CI_COMMIT_BRANCH == 'master' || $CI_COMMIT_BRANCH == 'production'
+    - !reference [ .dirs-app-rule, rules ]
+    - !reference [ .dirs-backend-rule, rules ]
+    - !reference [ .dirs-frontend-rule, rules ]
+    - !reference [ .dirs-websocket-rule, rules ]
     - if: $CI_PIPELINE_SOURCE == "schedule"
       when: never
   image: registry.gitlab.com/foodsharing-dev/images/node:latest
   script:
     - (cd websocket && yarn && yarn lint)
-  cache:
-    key: websocket:build:cache
-    paths:
-      - websocket/node_modules
   artifacts:
-    expire_in: 1 week
+    <<: *build-artifacts
     paths:
       - websocket/node_modules
 
 build:frontend:
-  <<: *defaults
+  extends:
+    - .defaults
   stage: build
   interruptible: true
   rules:
     - if: $CI_COMMIT_BRANCH == 'master' || $CI_COMMIT_BRANCH == 'production'
-    - if: $CI_MERGE_REQUEST_ID
+    - !reference [ .dirs-app-rule, rules ]
+    - !reference [ .dirs-backend-rule, rules ]
+    - !reference [ .dirs-frontend-rule, rules ]
+    - !reference [ .dirs-websocket-rule, rules ]
     - if: $CI_PIPELINE_SOURCE == "schedule"
       when: never
   image: registry.gitlab.com/foodsharing-dev/images/node:latest
@@ -109,21 +212,24 @@ build:frontend:
   cache:
     key: frontend:build:cache
     paths:
-      - assets
       - client/node_modules
   artifacts:
-    expire_in: 1 week
+    <<: *build-artifacts
     paths:
       - assets
-      - sw.js
+      - public/sw.js
 
 build:backend:
-  <<: *defaults
+  extends:
+    - .defaults
   stage: build
   interruptible: true
   rules:
     - if: $CI_COMMIT_BRANCH == 'master' || $CI_COMMIT_BRANCH == 'production'
-    - if: $CI_MERGE_REQUEST_ID
+    - !reference [ .dirs-app-rule, rules ]
+    - !reference [ .dirs-backend-rule, rules ]
+    - !reference [ .dirs-frontend-rule, rules ]
+    - !reference [ .dirs-websocket-rule, rules ]
     - if: $CI_PIPELINE_SOURCE == "schedule"
       when: never
   image: registry.gitlab.com/foodsharing-dev/images/php:latest
@@ -132,21 +238,21 @@ build:backend:
   cache:
     key: backend:build:cache
     paths:
-      - vendor
       - .php-cs-fixer.php.cache
   artifacts:
-    expire_in: 1 week
+    <<: *build-artifacts
     paths:
       - assets
       - vendor
 
 build:docs:
-  <<: *defaults
+  extends:
+    - .defaults
   stage: build
   interruptible: true
   rules:
-    - if: $CI_COMMIT_BRANCH == 'master' || $CI_COMMIT_BRANCH == 'production'
-    - if: $CI_MERGE_REQUEST_ID
+    - if: $CI_COMMIT_BRANCH == 'master'
+    - !reference [ .dirs-docs-rule, rules ]
     - if: $CI_PIPELINE_SOURCE == "schedule"
       when: never
   image: registry.gitlab.com/foodsharing-dev/images/docs:latest
@@ -158,18 +264,28 @@ build:docs:
       alias: db
   script:
     - ./scripts/ci-docs-build
+  needs:
+    - build:backend-dev
   artifacts:
-    expire_in: 1 week
+    <<: *build-artifacts
     paths:
-      - docs
+      - docs/build
+
+.test-artifacts: &test-artifacts
+  expire_in: 2 weeks
+  when: always
 
 test:backend-code:
-  <<: *defaults
+  extends:
+    - .defaults
   stage: test
   interruptible: true
   rules:
     - if: $CI_COMMIT_BRANCH == 'master' || $CI_COMMIT_BRANCH == 'production'
-    - if: $CI_MERGE_REQUEST_ID
+    - !reference [.dirs-app-rule, rules]
+    - !reference [.dirs-backend-rule, rules]
+    - if: $CI_COMMIT_BRANCH == 'production' && $SKIP_CI_TESTS == 'true'
+      when: never
     - if: $CI_PIPELINE_SOURCE == "schedule"
       when: never
   image: registry.gitlab.com/foodsharing-dev/images/php:latest
@@ -195,32 +311,28 @@ test:backend-code:
       alias: selenium
     - name: registry.gitlab.com/foodsharing-dev/images/maildev:latest
       alias: maildev
-      command: ["bin/maildev",  "--web", "1080", "--smtp", "1025"]
+      command: [ "bin/maildev",  "--web", "1080", "--smtp", "1025" ]
     - name: registry.gitlab.com/foodsharing-dev/images/node:latest
       alias: websocket
-      command: ["/bin/sh", "-c", 'rm $CI_PROJECT_DIR/code_updated; while [ ! -e $CI_PROJECT_DIR/code_updated ]; do sleep 1; done; cd /builds/foodsharing-dev/foodsharing/websocket && yarn ts-node src/index.ts 0.0.0.0']
+      command: [ "/bin/sh", "-c", 'rm $CI_PROJECT_DIR/code_updated; while [ ! -e $CI_PROJECT_DIR/code_updated ]; do sleep 1; done; cd /builds/foodsharing-dev/foodsharing/websocket && yarn ts-node src/index.ts 0.0.0.0' ]
       # websocket service runs with code that gets checked out later by the main build job.
       # We use a file to synchronize that, so start websocket service only when that file has been recreated.
     - name: registry.gitlab.com/foodsharing-dev/images/ci/nginx:latest
       alias: nginx
     - name: registry.gitlab.com/foodsharing-dev/images/influxdb:latest
       alias: influxdb
-  dependencies:
+  needs:
     - build:frontend
-    - build:backend
-    - build:websocket
-    - test:backend-acceptance
+    - build:backend-dev
   script:
     - touch $CI_PROJECT_DIR/code_updated # Create file to notify websocket container that code is up to date
     - ./scripts/ci-backend-test-code
   cache:
     key: backend:build:cache
     paths:
-      - vendor
       - .php-cs-fixer.php.cache
   artifacts:
-    expire_in: 1 month
-    when: always
+    <<: *test-artifacts
     paths:
       - tests/_output
     reports: # make the report available in Gitlab UI. see https://docs.gitlab.com/ee/ci/unit_test_reports.html
@@ -230,17 +342,22 @@ test:backend-code:
         path: tests/_output/code-cobertura.xml
 
 test:backend-acceptance:
-  <<: *defaults
+  extends:
+    - .defaults
   stage: test
   interruptible: true
   rules:
     - if: $CI_COMMIT_BRANCH == 'master' || $CI_COMMIT_BRANCH == 'production'
-    - if: $CI_MERGE_REQUEST_ID
+    - !reference [.dirs-app-rule, rules]
+    - !reference [.dirs-backend-rule, rules]
+    - !reference [.dirs-frontend-rule, rules]
+    - !reference [.dirs-websocket-rule, rules]
+    - if: $CI_COMMIT_BRANCH == 'production' && $SKIP_CI_TESTS == 'true'
+      when: never
     - if: $CI_PIPELINE_SOURCE == "schedule"
       when: never
   tags:
-    - foodsharing
-    - shared
+    - foodsharing-test
   image: registry.gitlab.com/foodsharing-dev/images/php:latest
   variables:
     MYSQL_ROOT_PASSWORD: root
@@ -262,19 +379,19 @@ test:backend-acceptance:
       alias: selenium
     - name: registry.gitlab.com/foodsharing-dev/images/maildev:latest
       alias: maildev
-      command: ["bin/maildev",  "--web", "1080", "--smtp", "1025"]
+      command: [ "bin/maildev",  "--web", "1080", "--smtp", "1025" ]
     - name: registry.gitlab.com/foodsharing-dev/images/node:latest
       alias: websocket
-      command: ["/bin/sh", "-c", 'rm $CI_PROJECT_DIR/code_updated; while [ ! -e $CI_PROJECT_DIR/code_updated ]; do sleep 1; done; cd /builds/foodsharing-dev/foodsharing/websocket && yarn ts-node src/index.ts 0.0.0.0']
+      command: [ "/bin/sh", "-c", 'rm $CI_PROJECT_DIR/code_updated; while [ ! -e $CI_PROJECT_DIR/code_updated ]; do sleep 1; done; cd /builds/foodsharing-dev/foodsharing/websocket && yarn ts-node src/index.ts 0.0.0.0' ]
       # websocket service runs with code that gets checked out later by the main build job.
       # We use a file to synchronize that, so start websocket service only when that file has been recreated.
-    - name: registry.gitlab.com/foodsharing-dev/images/ci/nginx:latest
+    - name: registry.gitlab.com/foodsharing-dev/images/ci/nginx:22
       alias: nginx
     - name: registry.gitlab.com/foodsharing-dev/images/influxdb:latest
       alias: influxdb
-  dependencies:
+  needs:
+    - build:backend-dev
     - build:frontend
-    - build:backend
     - build:websocket
   script:
     - touch $CI_PROJECT_DIR/code_updated # Create file to notify websocket container that code is up to date
@@ -282,23 +399,25 @@ test:backend-acceptance:
   cache:
     key: backend:build:cache
     paths:
-      - vendor
       - .php-cs-fixer.php.cache
   artifacts:
-    expire_in: 1 month
-    when: always
+    <<: *test-artifacts
     paths:
       - tests/_output
     reports: # make the report available in Gitlab UI. see https://docs.gitlab.com/ee/ci/unit_test_reports.html
       junit: tests/_output/report-*.xml
 
 test:frontend:
-  <<: *defaults
+  extends:
+    - .defaults
   stage: test
   interruptible: true
   rules:
     - if: $CI_COMMIT_BRANCH == 'master' || $CI_COMMIT_BRANCH == 'production'
-    - if: $CI_MERGE_REQUEST_ID
+    - !reference [.dirs-app-rule, rules]
+    - !reference [.dirs-frontend-rule, rules]
+    - if: $CI_COMMIT_BRANCH == 'production' && $SKIP_CI_TESTS == 'true'
+      when: never
     - if: $CI_PIPELINE_SOURCE == "schedule"
       when: never
   image: registry.gitlab.com/foodsharing-dev/images/node:latest
@@ -306,22 +425,24 @@ test:frontend:
     REDIS_HOST: redis
   script:
     - (cd client && yarn && yarn test)
+  needs:
+    - build:frontend
   cache:
     key: frontend:build:cache
     paths:
       - client/node_modules
 
 test:websocket:
-  <<: *defaults
+  extends:
+    - .defaults
   stage: test
   interruptible: true
   rules:
     - if: $CI_COMMIT_BRANCH == 'master' || $CI_COMMIT_BRANCH == 'production'
-      changes:
-        - 'websocket/**/*'
-    - if: $CI_MERGE_REQUEST_ID
-      changes:
-        - 'websocket/**/*'
+    - !reference [.dirs-app-rule, rules]
+    - !reference [.dirs-websocket-rule, rules]
+    - if: $CI_COMMIT_BRANCH == 'production' && $SKIP_CI_TESTS == 'true'
+      when: never
     - if: $CI_PIPELINE_SOURCE == "schedule"
       when: never
   image: registry.gitlab.com/foodsharing-dev/images/node:latest
@@ -330,17 +451,14 @@ test:websocket:
   services:
     - name: registry.gitlab.com/foodsharing-dev/images/redis:latest
       alias: redis
-  dependencies:
+  needs:
     - build:websocket
   script:
     - (cd websocket && yarn test)
-  cache:
-    key: websocket:build:cache
-    paths:
-      - websocket/node_modules
 
 deploy:beta:
-  <<: *deploy
+  extends:
+    - .deploy-app
   rules:
     - if: $CI_COMMIT_BRANCH == 'master'
     - if: $CI_PIPELINE_SOURCE == "schedule"
@@ -350,7 +468,8 @@ deploy:beta:
     url: https://beta.foodsharing.de
 
 deploy:production:
-  <<: *deploy
+  extends:
+    - .deploy-app
   rules:
     - if: $CI_COMMIT_BRANCH == 'production'
     - if: $CI_PIPELINE_SOURCE == "schedule"
@@ -360,12 +479,13 @@ deploy:production:
     url: https://foodsharing.de
 
 deploy:docs:
-  <<: *deploy
+  extends:
+    - .deploy
   rules:
     - if: $CI_COMMIT_BRANCH == 'master'
     - if: $CI_PIPELINE_SOURCE == "schedule"
       when: never
-  dependencies:
+  needs:
     - build:docs
   script:
     - rsync -avz --delete docs/build/ "deploy@devdocs.foodsharing.network:/var/www/devdocs/htdocs/"

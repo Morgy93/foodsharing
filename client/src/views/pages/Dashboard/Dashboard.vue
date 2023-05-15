@@ -4,7 +4,10 @@
     class="container my-3 my-sm-5"
   >
     <div class="mb-1 mb-sm-3">
-      <Broadcast :entry="broadcast" />
+      <Broadcast
+        v-if="broadcast"
+        :entry="broadcast"
+      />
       <Release v-if="!isBeta" />
       <ErrorContainer />
       <Intro />
@@ -116,6 +119,7 @@ import DataPickups from '@/stores/pickups.js'
 import DataBaskets from '@/stores/baskets.js'
 import DataUser from '@/stores/user.js'
 import DataEvents from '@/stores/events.js'
+import DataBroadcast from '@/stores/broadcast.js'
 // Components
 import Broadcast from '@/components/Banners/Broadcast/BroadcastField.vue'
 import Intro from '@/components/Banners/Intro/IntroField.vue'
@@ -159,7 +163,6 @@ export default {
   },
   mixins: [MediaQueryMixin, StateTogglerMixin, RouteAndDeviceCheckMixin],
   props: {
-    broadcast: { type: Object, default: () => null },
     quiz: { type: Object, default: () => null },
     events: { type: Object, default: () => ({ accepted: null, invites: null }) },
   },
@@ -191,6 +194,7 @@ export default {
       return (this.hasPickups && this.visible.pickups) || (this.hasStores && this.isStoresVisible)
     },
     getLocations: () => DataUser.getters.getLocations(),
+    broadcast: () => DataBroadcast.getters.getBroadcastMessage(),
   },
   watch: {
     visible: {
@@ -223,6 +227,7 @@ export default {
   },
   async mounted () {
     this.visible = JSON.parse(localStorage.getItem('dashboard.visible')) || this.visible
+    await DataBroadcast.mutations.fetch()
   },
   methods: {
     resetHiding () {

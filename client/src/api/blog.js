@@ -1,4 +1,8 @@
-import { patch, remove } from './base'
+import { get, patch, remove } from './base'
+
+export async function getBlogpost (blogPostId) {
+  return get(`/blog/${blogPostId}`)
+}
 
 export async function publishBlogpost (blogId, newPublishedState) {
   return patch(`/blog/${blogId}`, { isPublished: +newPublishedState })

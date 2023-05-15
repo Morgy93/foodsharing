@@ -21,6 +21,13 @@
         } %}
     {% endif %}
     {% if newThreadForm is defined %}
-        {% include 'pages/Region/newForumThread.twig' %}
+        {% include "partials/vue-wrapper.twig" with {
+            id: 'vue-new-thread',
+            component: "NewThread",
+            props: {
+                groupId: region.id,
+                subforumId: sub=='botforum' ? 1 : 0,
+            }
+        } %}
     {% endif %}
 {% endblock %}

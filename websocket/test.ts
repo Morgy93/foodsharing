@@ -3,11 +3,10 @@ import { spawn } from 'child_process';
 import * as test from 'tape';
 import * as randomString from 'randomstring';
 import { Test } from 'tape';
-import * as io from 'socket.io-client';
+import { io, Socket } from 'socket.io-client';
 import { serialize } from 'cookie';
 import * as superagent from 'superagent';
 import { Response } from 'superagent';
-import Socket = SocketIOClient.Socket;
 
 const HTTP_URL = 'http://127.0.0.1:1338';
 const WS_URL = 'http://127.0.0.1:1337';
@@ -404,9 +403,8 @@ test('online status is true if user has two windows in different browsers and on
 });
 
 function connect (t: Test, sessionId: string, cookieName = 'PHPSESSID'): Socket {
-    const socket = io.connect(WS_URL, {
+    const socket = io(WS_URL, {
         transports: ['websocket'],
-        // @ts-expect-error - according to the socket.io client documentation, extraHeaders is a possible option when using node.js
         extraHeaders: {
             cookie: serialize(cookieName, sessionId)
         }

@@ -161,7 +161,7 @@ class ActivityTransactions
         $out = [];
 
         foreach ($updates as $u) {
-            $replyUrl = '/xhrapp.php?app=wallpost&m=quickreply&table=event&id=' . (int)$u['event_id'];
+            $replyUrl = '/xhrapp?app=wallpost&m=quickreply&table=event&id=' . (int)$u['event_id'];
 
             $out[] = ActivityUpdate::create(
                 'event',
@@ -285,7 +285,7 @@ class ActivityTransactions
         $out = [];
         foreach ($updates as $u) {
             $sender = json_decode($u['sender'], true, 512, JSON_THROW_ON_ERROR + JSON_INVALID_UTF8_IGNORE);
-            $replyUrl = '/xhrapp.php?app=mailbox&m=quickreply&mid=' . (int)$u['id'];
+            $replyUrl = '/xhrapp?app=mailbox&m=quickreply&mid=' . (int)$u['id'];
 
             $out[] = MailboxUpdate::create(
                 Carbon::createFromTimestamp($u['time_ts']),

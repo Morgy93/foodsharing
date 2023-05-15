@@ -3,7 +3,6 @@
 namespace Foodsharing\Utility;
 
 use Exception;
-use Flourish\fException;
 use Flourish\fImage;
 use Foodsharing\Modules\Core\DBConstants\Foodsaver\Role;
 use UnexpectedValueException;
@@ -52,7 +51,7 @@ final class ImageHelper
      *
      * @throws UnexpectedValueException if the file does not exist or has an
      *                                  unknown image type
-     * @throws fException if an error occures while resizing the image
+     * @throws Exception if an error occurs while resizing the image
      */
     public function createResizedPictures(string $file, string $dstDir, array $sizes): string
     {
@@ -67,7 +66,7 @@ final class ImageHelper
                 $img->resize($s, $s);
                 $img->saveChanges();
             }
-        } catch (fException $e) {
+        } catch (\Exception $e) {
             // in case of an error remove all created files
             $this->removeResizedPictures($dstDir, $name, $sizes);
             throw $e;

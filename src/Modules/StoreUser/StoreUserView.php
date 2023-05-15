@@ -50,45 +50,6 @@ class StoreUserView extends View
         );
     }
 
-    public function u_storeList($storeData, $title)
-    {
-        if (empty($storeData)) {
-            return '';
-        }
-
-        $isRegion = false;
-        $storeRows = [];
-        foreach ($storeData as $i => $store) {
-            $status = $this->v_utils->v_getStatusAmpel($store['betrieb_status_id']);
-
-            $storeRows[$i] = [
-                ['cnt' => '<a class="linkrow ui-corner-all" href="/?page=fsbetrieb&id=' . $store['id'] . '">' . $store['name'] . '</a>'],
-                ['cnt' => $store['str']],
-                ['cnt' => $store['plz']],
-                ['cnt' => $status]
-            ];
-
-            if (isset($store['bezirk_name'])) {
-                $storeRows[$i][] = ['cnt' => $store['bezirk_name']];
-                $isRegion = true;
-            }
-        }
-
-        $head = [
-            ['name' => $this->translator->trans('storelist.name'), 'width' => 180],
-            ['name' => $this->translator->trans('storelist.addressdata')],
-            ['name' => $this->translator->trans('storelist.zipcode'), 'width' => 90],
-            ['name' => $this->translator->trans('storelist.status'), 'width' => 50]
-        ];
-        if ($isRegion) {
-            $head[] = ['name' => $this->translator->trans('region.type.region')];
-        }
-
-        $table = $this->v_utils->v_tablesorter($head, $storeRows);
-
-        return $this->v_utils->v_field($table, $title);
-    }
-
     public function u_editPickups(array $allDates): string
     {
         $out = '<table class="timetable">

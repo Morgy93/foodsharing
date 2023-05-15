@@ -10,6 +10,7 @@ import './Foodsaver.css'
 import { attachAddressPicker } from '@/addressPicker'
 import { vueApply, vueRegister } from '@/vue'
 import AvatarList from '@/components/AvatarList'
+import RegionTreeVForm from '@/components/regiontree/RegionTreeVForm'
 
 const fsapp = {
   init: function () {
@@ -83,4 +84,10 @@ if (GET('edit') === undefined) {
     AvatarList,
   })
   vueApply('#fslist', true)
+}
+if (GET('a') === 'edit') {
+  vueRegister({
+    RegionTreeVForm,
+  })
+  vueApply('#region-tree-vform')
 }

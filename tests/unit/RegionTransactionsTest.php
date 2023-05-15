@@ -2,6 +2,7 @@
 
 use Foodsharing\Modules\Core\DBConstants\Unit\UnitType;
 use Foodsharing\Modules\Foodsaver\FoodsaverGateway;
+use Foodsharing\Modules\Region\RegionGateway;
 use Foodsharing\Modules\Region\RegionTransactions;
 use Foodsharing\Modules\Unit\DTO\UserUnit;
 use Foodsharing\Modules\Unit\UnitGateway;
@@ -13,12 +14,14 @@ class RegionTransactionsTest extends TestCase
 
     private FoodsaverGateway $foodsaverGateway;
     private UnitGateway $unitGateway;
+    private RegionGateway $regionGateway;
 
     protected function setUp(): void
     {
         $this->foodsaverGateway = $this->createMock(FoodsaverGateway::class);
         $this->unitGateway = $this->createMock(UnitGateway::class);
-        $this->regionTransactions = new RegionTransactions($this->foodsaverGateway, $this->unitGateway);
+        $this->regionGateway = $this->createMock(RegionGateway::class);
+        $this->regionTransactions = new RegionTransactions($this->foodsaverGateway, $this->unitGateway, $this->regionGateway);
     }
 
     public function testListFoodsaversRegionsEmpty()

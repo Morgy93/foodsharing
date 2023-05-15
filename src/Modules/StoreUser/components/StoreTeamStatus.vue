@@ -32,9 +32,9 @@ export default {
       teamStatusSelected: null,
       isLoading: false,
       options: [
-        { value: '0', text: this.$i18n('store.team.isfull') },
-        { value: '1', text: this.$i18n('menu.entry.helpwanted') },
-        { value: '2', text: this.$i18n('menu.entry.helpneeded') },
+        { value: 0, text: this.$i18n('store.team.isfull') },
+        { value: 1, text: this.$i18n('menu.entry.helpwanted') },
+        { value: 2, text: this.$i18n('menu.entry.helpneeded') },
       ],
     }
   },

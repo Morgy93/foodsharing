@@ -1,0 +1,106 @@
+<!-- Wrapper class that allows using the RegionTree component in v-forms. -->
+<template>
+  <div
+    id="input-wrapper"
+    class="bootstrap input-wrapper"
+  >
+    <label
+      v-if="title"
+      class="wrapper-label ui-widget"
+    >
+      {{ title }}
+    </label>
+    <div>
+      {{ selectedRegion.name }}
+      <b-link
+        v-if="!disabled"
+        class="btn btn-sm btn-secondary ml-2"
+        @click="$refs.regionTreeModal.show()"
+      >
+        {{ $i18n('region.change') }}
+      </b-link>
+    </div>
+
+    <b-modal
+      ref="regionTreeModal"
+      :title="$i18n(modalTitle)"
+      :cancel-title="$i18n('button.cancel')"
+      :ok-title="$i18n('button.send')"
+      modal-class="bootstrap"
+      header-class="d-flex"
+      content-class="pr-3 pt-3"
+      @ok="onModalClosed"
+    >
+      <region-tree
+        :selectable-region-types="selectableRegionTypes"
+        @change="onRegionSelected"
+      />
+    </b-modal>
+
+    <div class="element-wrapper">
+      <input
+        :name="inputName"
+        :value="selectedRegion.id"
+        type="hidden"
+      >
+    </div>
+  </div>
+</template>
+
+<script>
+import RegionTree from './RegionTree'
+import { getters as regionGetters } from '@/stores/regions'
+import { BLink, BModal } from 'bootstrap-vue'
+
+export default {
+  components: { BLink, BModal, RegionTree },
+  props: {
+    title: {
+      type: String,
+      default: null,
+    },
+    modalTitle: {
+      type: String,
+      default: 'terminology.homeRegion',
+    },
+    inputName: {
+      type: String,
+      required: true,
+    },
+    initialValue: {
+      type: Object,
+      default: function () {
+        return {
+          id: 0,
+          name: 'Root',
+        }
+      },
+    },
+    // if not null, only these types of regions can be selected
+    selectableRegionTypes: { type: Array, default: null },
+    disabled: {
+      type: Boolean,
+      default: false,
+    },
+  },
+  data () {
+    return {
+      tmpSelectedRegion: null,
+      selectedRegion: regionGetters.find(this.initialValue.id),
+    }
+  },
+  methods: {
+    onRegionSelected (region) {
+      this.tmpSelectedRegion = region
+    },
+    onModalClosed (e) {
+      this.selectedRegion = this.tmpSelectedRegion
+      this.$emit('update:initialValue', this.tmpSelectedRegion)
+    },
+  },
+}
+</script>
+
+<style lang="scss">
+
+</style>

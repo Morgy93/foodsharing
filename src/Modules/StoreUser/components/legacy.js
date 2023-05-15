@@ -7,7 +7,7 @@ export async function legacyXhrCall (func, fdata = null) {
   showLoader()
   return $.ajax({
     dataType: 'json',
-    url: `/xhr.php?f=${func}`,
+    url: `/xhr?f=${func}`,
     data: fdata || {},
     success: function (data) {
       hideLoader()

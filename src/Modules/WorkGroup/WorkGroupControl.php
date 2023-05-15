@@ -34,7 +34,7 @@ class WorkGroupControl extends Control
     public function index(Request $request, Response $response): void
     {
         if (!$this->session->mayRole()) {
-            $this->routeHelper->goLogin();
+            $this->routeHelper->goLoginAndExit();
         }
 
         $this->pageHelper->addBread($this->translator->trans('terminology.groups'), '/?page=groups');
@@ -162,9 +162,9 @@ class WorkGroupControl extends Control
         $groupId = $request->query->getInt('id');
         $group = $this->workGroupGateway->getGroup($groupId);
         if (!$group) {
-            $this->routeHelper->go('/?page=groups');
+            $this->routeHelper->goAndExit('/?page=groups');
         } elseif ($group['type'] != UnitType::WORKING_GROUP || !$this->workGroupPermissions->mayEdit($group)) {
-            $this->routeHelper->go('/?page=dashboard');
+            $this->routeHelper->goAndExit('/?page=dashboard');
         }
 
         $bread = $this->translator->trans('group.edit.title', ['{group}' => $group['name']]);

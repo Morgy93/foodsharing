@@ -363,6 +363,7 @@ class SeedCommand extends Command implements CustomCommandInterface
         $I->createWorkingGroup('Abstimmungs-AG Praxisaustausch', ['parent_id' => RegionIDs::GLOBAL_WORKING_GROUPS, 'id' => RegionIDs::VOTING_ADMIN_GROUP]);
         $I->createWorkingGroup('Fairteiler-AG Praxisaustausch', ['parent_id' => RegionIDs::GLOBAL_WORKING_GROUPS, 'id' => RegionIDs::FSP_TEAM_ADMIN_GROUP]);
         $I->createWorkingGroup('Betriebskoordination-AG Praxisaustausch', ['parent_id' => RegionIDs::GLOBAL_WORKING_GROUPS, 'id' => RegionIDs::STORE_COORDINATION_TEAM_ADMIN_GROUP]);
+        $I->createWorkingGroup('AG Betriebsketten', ['parent_id' => RegionIDs::GLOBAL_WORKING_GROUPS, 'id' => RegionIDs::STORE_CHAIN_GROUP]);
         $I->createWorkingGroup('Meldungen-AG Praxisaustausch', ['parent_id' => RegionIDs::GLOBAL_WORKING_GROUPS, 'id' => RegionIDs::REPORT_TEAM_ADMIN_GROUP]);
         $I->createWorkingGroup('Mediation-AG Praxisaustausch', ['parent_id' => RegionIDs::GLOBAL_WORKING_GROUPS, 'id' => RegionIDs::MEDIATION_TEAM_ADMIN_GROUP]);
         $I->createWorkingGroup('Schiedsstelle-AG Praxisaustausch', ['parent_id' => RegionIDs::GLOBAL_WORKING_GROUPS, 'id' => RegionIDs::ARBITRATION_TEAM_ADMIN_GROUP]);
@@ -403,6 +404,16 @@ class SeedCommand extends Command implements CustomCommandInterface
             'about_me_intern' => 'hello!'
         ]);
         $this->writeUser($userbot2, $password, 'ambassador');
+
+        // Create an ambassador whose profile is already deleted and cannot be used but who will show up in verification histories
+        $userbotDeleted = $I->createAmbassador($password, [
+            'email' => 'userbotdeleted@example.com',
+            'name' => 'Bot3',
+            'bezirk_id' => $region2,
+            'about_me_intern' => 'hello!',
+            'deleted_at' => Carbon::now()->subYear()
+        ]);
+        $this->writeUser($userbotDeleted, $password, 'deleted ambassador');
 
         $userbotregion2 = $I->createAmbassador($password, [
             'email' => 'userbotreg2@example.com',
@@ -446,11 +457,13 @@ class SeedCommand extends Command implements CustomCommandInterface
         $I->addRegionMember($ag_aktive, $userbot['id']);
 
         $I->addRegionMember($ag_testimonials, $user2['id']);
+        $I->addRegionMember(RegionIDs::STORE_CHAIN_GROUP, $user2['id']);
 
         $I->addRegionAdmin(RegionIDs::IT_SUPPORT_GROUP, $userStoreManager2['id']);
         $I->addRegionMember(RegionIDs::IT_SUPPORT_GROUP, $userStoreManager2['id']);
         $I->addRegionAdmin(RegionIDs::NEWSLETTER_WORK_GROUP, $user2['id']);
         $I->addRegionAdmin(RegionIDs::EDITORIAL_GROUP, $userbot['id']);
+        $I->addRegionAdmin(RegionIDs::STORE_CHAIN_GROUP, $userbot['id']);
 
         // Make ambassador responsible for all work groups in the region
         $this->output->writeln('- make ambassador responsible for all work groups');
@@ -487,8 +500,10 @@ class SeedCommand extends Command implements CustomCommandInterface
         $I->addRecurringPickup($store['id']);
 
         $this->output->writeln('- create store chains');
+        $this->chain_ids = [];
         foreach (range(0, 50) as $_) {
-            $I->addStoreChain();
+            $chain = $I->addStoreChain();
+            $this->chain_ids[] = $chain['id'];
             $this->output->write('.');
         }
         $this->output->writeln(' done');
@@ -519,6 +534,7 @@ class SeedCommand extends Command implements CustomCommandInterface
         $this->output->writeln('Create some more users');
         $this->foodsavers = array_column([$user2, $userbot, $userorga, $userbot2, $userStoreManager, $userStoreManager2], 'id');
         foreach ($this->foodsavers as $user) {
+            $this->addVerificationAndPassHistory($I, $user, $userbotDeleted['id'], 13);
             $this->addVerificationAndPassHistory($I, $user, $userbot['id']);
         }
         foreach (range(0, 100) as $_) {
@@ -528,6 +544,7 @@ class SeedCommand extends Command implements CustomCommandInterface
             $I->addCollector($user['id'], $store['id']);
             $I->addStoreNotiz($user['id'], $store['id']);
             $I->addForumThreadPost($thread['id'], $user['id']);
+            $this->addVerificationAndPassHistory($I, $user['id'], $userbotDeleted['id'], 13);
             $this->addVerificationAndPassHistory($I, $user['id'], $userbot['id']);
             $I->addEventInvitation($event['id'], $user['id']);
             $this->output->write('.');
@@ -594,7 +611,12 @@ class SeedCommand extends Command implements CustomCommandInterface
             $conv1 = $I->createConversation([$userbot['id']], ['name' => 'team', 'locked' => 1]);
             $conv2 = $I->createConversation([$userbot['id']], ['name' => 'springer', 'locked' => 1]);
 
-            $store = $I->createStore($region1, $conv1['id'], $conv2['id']);
+            $extra_params = [];
+            if (rand(0, 1) == 1) {
+                $extra_params['kette_id'] = $this->chain_ids[random_int(0, 10)];
+            }
+
+            $store = $I->createStore($region1, $conv1['id'], $conv2['id'], $extra_params);
             foreach (range(0, 5) as $_) {
                 $I->addRecurringPickup($store['id']);
             }
@@ -657,9 +679,14 @@ class SeedCommand extends Command implements CustomCommandInterface
         $this->output->writeln(' done');
 
         $this->output->writeln('Create polls');
-        foreach ([VotingType::SELECT_ONE_CHOICE, VotingType::SELECT_MULTIPLE, VotingType::THUMB_VOTING,
-                     VotingType::SCORE_VOTING] as $type) {
-            $this->createPoll($region1, $userbot['id'], $type,
+        foreach ([
+            VotingType::SELECT_ONE_CHOICE, VotingType::SELECT_MULTIPLE, VotingType::THUMB_VOTING,
+            VotingType::SCORE_VOTING
+        ] as $type) {
+            $this->createPoll(
+                $region1,
+                $userbot['id'],
+                $type,
                 [$user2['id'], $userStoreManager['id'], $userStoreManager2['id'], $userbot['id'], $userorga['id']]
             );
             $this->output->write('.');
@@ -718,16 +745,20 @@ class SeedCommand extends Command implements CustomCommandInterface
     }
 
     /**
-     * Adds some entries to the verification and pass history of a user.
+     * Adds some entries to the verification and pass history of a user. The verification history will be filled with
+     * three entries at 1 month, 6 months, and 1 year. The offset parameter can be used to shift these entries by
+     * some months into the past.
      *
      * @param int $userId the user to be verified
      * @param int $verifierId the ambassador who verified the user
+     * @param int $monthsInPast number of months by which the verification entries will be shifted into the past
      */
-    private function addVerificationAndPassHistory(Foodsharing $I, int $userId, int $verifierId)
+    private function addVerificationAndPassHistory(Foodsharing $I, int $userId, int $verifierId, int $monthsInPast = 0)
     {
-        $I->addVerificationHistory($userId, $verifierId, true, Carbon::today()->sub('1 year'));
-        $I->addVerificationHistory($userId, $verifierId, false, Carbon::today()->sub('6 months'));
-        $I->addVerificationHistory($userId, $verifierId, true, Carbon::today()->sub('1 month'));
+        $offset = Carbon::today()->subMonths($monthsInPast);
+        $I->addVerificationHistory($userId, $verifierId, true, $offset->sub('1 year'));
+        $I->addVerificationHistory($userId, $verifierId, false, $offset->sub('6 months'));
+        $I->addVerificationHistory($userId, $verifierId, true, $offset->sub('1 month'));
 
         foreach (range(0, 3) as $_) {
             $I->addPassHistory($userId, $verifierId);

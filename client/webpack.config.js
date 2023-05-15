@@ -72,7 +72,7 @@ plugins.push(
 plugins.push(
   new ServiceWorkerWebpackPlugin({
     entry: path.join(__dirname, 'src/serviceWorker.js'),
-    filename: '../sw.js',
+    filename: '../public/sw.js',
   }),
 )
 

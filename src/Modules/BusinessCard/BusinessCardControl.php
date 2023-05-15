@@ -26,7 +26,7 @@ class BusinessCardControl extends Control
     public function index(): void
     {
         if (!$this->session->mayRole()) {
-            $this->routeHelper->goLogin();
+            $this->routeHelper->goLoginAndExit();
         }
 
         $this->pageHelper->addBread($this->translator->trans('bcard.title'));
@@ -41,11 +41,11 @@ class BusinessCardControl extends Control
             }
             if (strlen($data['telefon'] . $data['handy']) <= 3) {
                 $this->flashMessageHelper->error($this->translator->trans('bcard.error.phone'));
-                $this->routeHelper->go('/?page=settings');
+                $this->routeHelper->goAndExit('/?page=settings');
             }
             if ($data['verified'] == 0) {
                 $this->flashMessageHelper->error($this->translator->trans('bcard.error.verified'));
-                $this->routeHelper->go('/?page=settings');
+                $this->routeHelper->goAndExit('/?page=settings');
             }
 
             $choices = [];
@@ -85,7 +85,7 @@ class BusinessCardControl extends Control
     public function makeCard()
     {
         $data = $this->gateway->getMyData($this->session->id(), $this->session->mayRole(Role::STORE_MANAGER));
-        $opt = $this->getRequest('opt');
+        $opt = $this->request->query->get('opt');
         if (!$data || !$opt) {
             return;
         } else {

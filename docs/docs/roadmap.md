@@ -18,7 +18,6 @@ In order to speed up development and motivate more developers, we want to concen
 > Some delegates (preferably ambassadors) should be available to us in Slack and be able to explain the processes of the platform or bring open questions to the community for a vote so that a consensus can be reached.
 
 ### Global architecture
-> - [ ] Persistent sessions are a problem for the last login date https://gitlab.com/foodsharing-dev/foodsharing/-/issues/956
 > - [ ] Refactor “Betriebe” and “Fairteiler” to “Orte” / places.
 > - [ ] Refactor “Regions” and “Groups” to a unified name.
 > - [ ] Unifying name conventions (Company, Stores and Betriebe are the same)

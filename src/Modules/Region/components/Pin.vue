@@ -20,9 +20,10 @@
 
           <LeafletLocationPicker
             :zoom="6"
-            :coordinates="[lat, lon]"
+            :coordinates="{lat: inlat, lon: inlon}"
             :icon="locationPickerIcon"
-            @coordinates-change="updateCoordinates"
+            :marker-draggable="true"
+            @coordinates-changed="updateCoordinates"
           />
 
           <b-form-group
@@ -113,8 +114,8 @@ export default {
       this.isLoading = false
     },
     updateCoordinates (coords) {
-      this.inlat = coords[0]
-      this.inlon = coords[1]
+      this.inlat = coords.lat
+      this.inlon = coords.lon
     },
   },
 }

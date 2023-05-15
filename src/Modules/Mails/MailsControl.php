@@ -88,158 +88,169 @@ class MailsControl extends ConsoleControl
         $connection = $server->authenticate($user, $password);
 
         $mailbox = $connection->getMailbox('INBOX');
+        if (!$connection->hasMailbox(IMAP_FAILED_BOX)) {
+            $connection->createMailbox(IMAP_FAILED_BOX);
+        }
+        $failedMailbox = $connection->getMailbox(IMAP_FAILED_BOX);
+
         $messages = $mailbox->getMessages();
         $stats = ['unknown-recipient' => 0, 'failure' => 0, 'delivered' => 0, 'has-attachment' => 0];
-        if (count($messages) > 0) {
-            $have_send = [];
-            $i = 0;
+        if (count($messages) <= 0) {
+            return $stats;
+        }
+
+        $have_send = [];
+        foreach ($messages as $msg) {
             try {
-                foreach ($messages as $msg) {
-                    ++$i;
-                    $mboxes = [];
-                    $recipients = $msg->getTo() + $msg->getCc() + $msg->getBcc() + $msg->getReplyTo();
-                    foreach ($recipients as $to) {
-                        if (in_array(strtolower($to->getHostname()), MAILBOX_OWN_DOMAINS)) {
-                            $mboxes[] = $to->getMailbox();
-                        }
+                $mboxes = [];
+                $recipients = $msg->getTo() + $msg->getCc() + $msg->getBcc() + $msg->getReplyTo();
+                foreach ($recipients as $to) {
+                    if (in_array(strtolower($to->getHostname()), MAILBOX_OWN_DOMAINS)) {
+                        $mboxes[] = $to->getMailbox();
+                    }
+                }
+
+                if (empty($mboxes)) {
+                    $msg->delete();
+                    continue;
+                }
+
+                $mb_ids = $this->mailsGateway->getMailboxIds($mboxes);
+
+                if (!$mb_ids) {
+                    // send auto-reply message
+                    $return_path = $msg->getReturnPath();
+                    if (!$return_path) {
+                        $return_path = $msg->getFrom();
+                    } else {
+                        $return_path = $return_path[0];
+                    }
+                    if ($return_path && $return_path != DEFAULT_EMAIL) {
+                        $this->emailHelper->tplMail('general/invalid_email_address', $return_path->getAddress(), ['address' => implode(', ', $mboxes)]);
+                    }
+                    ++$stats['unknown-recipient'];
+                } else {
+                    try {
+                        $html = $msg->getBodyHtml();
+                    } catch (\Exception $e) {
+                        $html = null;
+                        self::error('Could not get HTML body ' . $e->getMessage() . ', continuing with PLAIN TEXT\n');
                     }
 
-                    if (empty($mboxes)) {
-                        $msg->delete();
-                        continue;
-                    }
-
-                    $mb_ids = $this->mailsGateway->getMailboxIds($mboxes);
-
-                    if (!$mb_ids) {
-                        // send auto-reply message
-                        $return_path = $msg->getReturnPath();
-                        if (!$return_path) {
-                            $return_path = $msg->getFrom();
-                        } else {
-                            $return_path = $return_path[0];
-                        }
-                        if ($return_path && $return_path != DEFAULT_EMAIL) {
-                            $this->emailHelper->tplMail('general/invalid_email_address', $return_path->getAddress(), ['address' => implode(', ', $mboxes)]);
-                        }
-                        ++$stats['unknown-recipient'];
+                    if ($html) {
+                        $h2t = new \Html2Text\Html2Text($html);
+                        $body = $h2t->get_text();
+                        $html = preg_replace('#<script(.*?)>(.*?)</script>#is', '', $html);
                     } else {
                         try {
-                            $html = $msg->getBodyHtml();
+                            $text = $msg->getBodyText();
                         } catch (\Exception $e) {
-                            $html = null;
-                            self::error('Could not get HTML body ' . $e->getMessage() . ', continuing with PLAIN TEXT\n');
+                            $text = null;
+                            self::error('Could not get PLAIN TEXT body ' . $e->getMessage() . ', skipping mail.\n');
                         }
-
-                        if ($html) {
-                            $h2t = new \Html2Text\Html2Text($html);
-                            $body = $h2t->get_text();
-                            $html = preg_replace('#<script(.*?)>(.*?)</script>#is', '', $html);
+                        if ($text != null) {
+                            $body = $text;
+                            $html = nl2br($this->routeHelper->autolink($text));
                         } else {
-                            try {
-                                $text = $msg->getBodyText();
-                            } catch (\Exception $e) {
-                                $text = null;
-                                self::error('Could not get PLAIN TEXT body ' . $e->getMessage() . ', skipping mail.\n');
-                            }
-                            if ($text != null) {
-                                $body = $text;
-                                $html = nl2br($this->routeHelper->autolink($text));
-                            } else {
-                                $body = '';
-                            }
-                        }
-
-                        $attach = [];
-                        foreach ($msg->getAttachments() as $a) {
-                            $filename = $a->getFilename();
-                            if ($this->attach_allow($filename, null)) {
-                                $new_filename = bin2hex(random_bytes(16));
-                                $path = 'data/mailattach/';
-                                $j = 0;
-                                while (file_exists($path . $new_filename)) {
-                                    ++$j;
-                                    $new_filename = $j . '-' . $filename;
-                                }
-                                try {
-                                    file_put_contents($path . $new_filename, $a->getDecodedContent());
-                                    $attach[] = [
-                                        'filename' => $new_filename,
-                                        'origname' => $filename,
-                                        'mime' => mime_content_type($path . $new_filename)
-                                    ];
-                                } catch (\Exception $e) {
-                                    self::error('Could not parse/save an attachment (' . $e->getMessage() . "), skipping that one...\n");
-                                }
-                            }
-                        }
-                        if ($attach) {
-                            ++$stats['has-attachment'];
-                        }
-                        $attach = json_encode($attach);
-
-                        $date = null;
-                        try {
-                            $date = $msg->getDate();
-                        } catch (\Exception $e) {
-                            self::error('Error parsing date: ' . $e->getMessage() . ", continuing with 'now'\n");
-                        }
-                        if ($date === null) {
-                            $date = new \DateTime();
-                        }
-
-                        $md = $date->format('Y-m-d H:i:s') . ':' . $msg->getSubject();
-
-                        $delivered = false;
-
-                        foreach ($mb_ids as $id) {
-                            if (!isset($have_send[$id])) {
-                                $have_send[$id] = [];
-                            }
-
-                            if (!isset($have_send[$id][$md])) {
-                                $delivered = true;
-                                $have_send[$id][$md] = true;
-                                $from = [];
-                                $from['mailbox'] = $msg->getFrom()->getMailbox();
-                                $from['host'] = $msg->getFrom()->getHostname();
-                                $name = $msg->getFrom()->getName();
-                                if ($name) {
-                                    $from['personal'] = $msg->getFrom()->getName();
-                                }
-
-                                $this->mailsGateway->saveMessage(
-                                    $id, // mailbox id
-                                    1, // folder
-                                    json_encode($from), // sender
-                                    json_encode(array_map(function ($r) {
-                                        return ['mailbox' => $r->getMailbox(), 'host' => $r->getHostname()];
-                                    }, $recipients)), // all recipients
-                                    strip_tags($msg->getSubject()), // subject
-                                    $body,
-                                    $html,
-                                    $date->format('Y-m-d H:i:s'),
-                                    $attach,
-                                    0,
-                                    0
-                                );
-                            }
-                        }
-                        if ($delivered) {
-                            ++$stats['delivered'];
-                        } else {
-                            ++$stats['failure'];
+                            $body = '';
+                            $html = '';
                         }
                     }
 
-                    $msg->delete();
+                    $attach = [];
+                    foreach ($msg->getAttachments() as $i => $attachment) {
+                        $filename = $attachment->getFilename();
+                        if ($filename === null) {
+                            $filename = 'unknown_' . $i;
+                            self::info('Attachment without(?) a specified filename encountered. gave it a generic one (' . $filename . ')\n');
+                        }
+                        if ($this->isAttachmentAllowed($filename)) {
+                            $new_filename = bin2hex(random_bytes(16));
+                            $path = 'data/mailattach/';
+                            $j = 0;
+                            while (file_exists($path . $new_filename)) {
+                                ++$j;
+                                $new_filename = $j . '-' . $filename;
+                            }
+                            try {
+                                file_put_contents($path . $new_filename, $attachment->getDecodedContent());
+                                $attach[] = [
+                                    'filename' => $new_filename,
+                                    'origname' => $filename,
+                                    'mime' => mime_content_type($path . $new_filename)
+                                ];
+                            } catch (\Exception $e) {
+                                self::error('Could not parse/save an attachment (' . $e->getMessage() . "), skipping that one...\n");
+                            }
+                        }
+                    }
+                    if ($attach) {
+                        ++$stats['has-attachment'];
+                    }
+                    $attach = json_encode($attach);
+
+                    $date = null;
+                    try {
+                        $date = $msg->getDate();
+                    } catch (\Exception $e) {
+                        self::error('Error parsing date: ' . $e->getMessage() . ", continuing with 'now'\n");
+                    }
+                    if ($date === null) {
+                        $date = new \DateTime();
+                    }
+
+                    $md = $date->format('Y-m-d H:i:s') . ':' . $msg->getSubject();
+
+                    $delivered = false;
+
+                    foreach ($mb_ids as $id) {
+                        if (!isset($have_send[$id])) {
+                            $have_send[$id] = [];
+                        }
+
+                        if (!isset($have_send[$id][$md])) {
+                            $delivered = true;
+                            $have_send[$id][$md] = true;
+                            $from = [];
+                            $from['mailbox'] = $msg->getFrom()->getMailbox();
+                            $from['host'] = $msg->getFrom()->getHostname();
+                            $name = $msg->getFrom()->getName();
+                            if ($name) {
+                                $from['personal'] = $msg->getFrom()->getName();
+                            }
+
+                            $this->mailsGateway->saveMessage(
+                                $id, // mailbox id
+                                1, // folder
+                                json_encode($from), // sender
+                                json_encode(array_map(function ($r) {
+                                    return ['mailbox' => $r->getMailbox(), 'host' => $r->getHostname()];
+                                }, $recipients)), // all recipients
+                                $msg->getSubject() ?? '',
+                                $body,
+                                $html,
+                                $date->format('Y-m-d H:i:s'),
+                                $attach
+                            );
+                        }
+                    }
+                    if ($delivered) {
+                        ++$stats['delivered'];
+                    } else {
+                        ++$stats['failure'];
+                    }
                 }
+
+                $msg->delete(); // message has been processed at this point, mark it for deletion
             } catch (\Exception $e) {
                 self::error('Something went wrong, ' . $e->getMessage() . "\n");
-            } finally {
-                $connection->expunge();
+                \Sentry\captureException($e);
+                $msg->move($failedMailbox);
             }
         }
+
+        // actually delete all messages that were processed
+        $connection->expunge();
 
         return $stats;
     }
@@ -280,7 +291,7 @@ class MailsControl extends ConsoleControl
         }
     }
 
-    private function attach_allow($filename, $mime)
+    private function isAttachmentAllowed(string $filename): bool
     {
         if (strlen($filename) < 300) {
             $ext = explode('.', $filename);

@@ -8,24 +8,12 @@ use Foodsharing\Modules\Core\Control;
 use Foodsharing\Utility\PageHelper;
 use Foodsharing\Utility\RouteHelper;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
-use Symfony\Component\DependencyInjection\ContainerInterface;
 use Symfony\Component\DependencyInjection\Exception\ServiceNotFoundException;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 
 class IndexController extends AbstractController
 {
-    /**
-     * @var ContainerInterface Kernel container needed to access any service,
-     * instead of just the ones specified in AbstractController::getSubscribedServices
-     */
-    private ContainerInterface $fullServiceContainer;
-
-    public function __construct(ContainerInterface $container)
-    {
-        $this->fullServiceContainer = $container;
-    }
-
     /**
      * @DisableCsrfProtection CSRF Protection (originally done for the REST API)
      * breaks POST on these entrypoints right now,
@@ -40,41 +28,40 @@ class IndexController extends AbstractController
 
         $app = $routeHelper->getPage();
 
-        $controller = $routeHelper->getLegalControlIfNecessary() ?? Routing::getClassName($app, 'Control');
+        $controllerName = $routeHelper->getLegalControlIfNecessary() ?? Routing::getClassName($app, 'Control');
 
         try {
             global $container;
-            $container = $this->fullServiceContainer;
-            if ($controller !== null) {
-                /** @var Control $obj */
-                $obj = $container->get(ltrim($controller, '\\'));
+            if ($controllerName !== null) {
+                /** @var Control $controller */
+                $controller = $container->get(ltrim($controllerName, '\\'));
+                $controller->setRequest($request);
             }
-        } catch (ServiceNotFoundException $e) {
+        } catch (ServiceNotFoundException) {
+            throw $this->createNotFoundException();
         }
 
-        if (isset($obj)) {
+        if (isset($controller)) {
             $action = $request->query->get('a');
-            if ($action !== null && is_callable([$obj, $action])) {
-                $obj->$action($request, $response);
+            if ($action !== null && is_callable([$controller, $action])) {
+                $controller->$action($request, $response);
             } else {
                 // In practice, every class inheriting from Control has an index method,
                 // but it does not exist in Control itself, which is why PHPStan complains here.
                 /* @phpstan-ignore-next-line */
-                $obj->index($request, $response);
+                $controller->index($request, $response);
             }
-            $sub = $obj->getSub();
-            if ($sub !== false && is_callable([$obj, $sub])) {
-                $obj->$sub($request, $response);
+            $sub = $controller->getSub();
+            if ($sub !== false && is_callable([$controller, $sub])) {
+                $controller->$sub($request, $response);
             }
         } else {
-            $response->setStatusCode(Response::HTTP_NOT_FOUND);
-            $response->setContent('');
+            throw $this->createNotFoundException();
         }
 
         $controllerUsedResponse = $response->getContent() !== '--';
         if (!$controllerUsedResponse) {
-            global $g_template;
-            $page = $this->renderView('layouts/' . $g_template . '.twig', $pageHelper->generateAndGetGlobalViewData());
+            $page = $this->renderView('layouts/default.twig', $pageHelper->generateAndGetGlobalViewData());
 
             $response->setContent($page);
         }

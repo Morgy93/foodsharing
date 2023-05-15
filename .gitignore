@@ -11,10 +11,13 @@ node_modules
 **/dist
 
 client/test/_compiled.js
+/websocket/test.js
 js/gen/script.js
 css/gen/style.css
 sw.js
 sw.js.map
+# workaround for the service worker plugin
+!/public/public/sw.js
 
 ## PHP
 /data/logg.txt

@@ -37,7 +37,7 @@ class StoreListInformation
     public ?string $city = null;
 
     /** Zip code of store location */
-    public ?string $zip = null;
+    public ?string $zipCode = null;
 
     /**
      * Cooperation status of store.
@@ -69,13 +69,12 @@ class StoreListInformation
             $obj->name = $store->name;
             $obj->cooperationStatus = $store->cooperationStatus;
             $obj->location = $store->location;
-            $obj->region = new MinimalRegionIdentifier();
-            $obj->region->id = $store->regionId;
-            $obj->street = $store->street;
-            $obj->city = $store->city;
-            $obj->zip = $store->zip;
+            $obj->region = MinimalRegionIdentifier::createFromId($store->region->id);
+            $obj->street = $store->address->street;
+            $obj->city = $store->address->city;
+            $obj->zipCode = $store->address->zipCode;
 
-            $obj->createdAt = $store->createdAt ? $store->createdAt->format('Y-m-d') : null;
+            $obj->createdAt = $store->createdAt->format('Y-m-d');
         }
 
         return $obj;

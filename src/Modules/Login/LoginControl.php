@@ -46,7 +46,7 @@ class LoginControl extends Control
             }
         } else {
             if (!isset($_GET['sub']) || $_GET['sub'] != 'unsubscribe') {
-                $this->routeHelper->go('/?page=dashboard');
+                $this->routeHelper->goAndExit('/?page=dashboard');
             }
         }
     }
@@ -56,7 +56,7 @@ class LoginControl extends Control
         $fsId = $this->session->id();
 
         if (is_null($fsId)) {
-            $this->routeHelper->goPage('login');
+            $this->routeHelper->goPageAndExit('login');
         }
 
         if ($this->loginService->newMailActivation($fsId)) {
@@ -65,7 +65,7 @@ class LoginControl extends Control
             $this->flashMessageHelper->error($this->translator->trans('dashboard.activation_mail_failure'));
         }
 
-        $this->routeHelper->goPage('dashboard');
+        $this->routeHelper->goPageAndExit('dashboard');
     }
 
     public function activate()
@@ -73,10 +73,10 @@ class LoginControl extends Control
         if (!empty($_GET['e']) && !empty($_GET['t']) && $this->loginGateway->activate($_GET['e'], $_GET['t'])) {
             $this->session->set('email_is_activated', true);
             $this->flashMessageHelper->success($this->translator->trans('register.activation_success'));
-            $this->routeHelper->goPage('login');
+            $this->routeHelper->goPageAndExit('login');
         } else {
             $this->flashMessageHelper->error($this->translator->trans('register.activation_failed'));
-            $this->routeHelper->goPage('login');
+            $this->routeHelper->goPageAndExit('login');
         }
     }
 
@@ -130,7 +130,7 @@ class LoginControl extends Control
                         }
 
                         if ($check) {
-                            $this->routeHelper->go('/?page=login');
+                            $this->routeHelper->goAndExit('/?page=login');
                         }
                     } else {
                         $this->flashMessageHelper->error($this->translator->trans('login.pwreset.mismatch'));

@@ -27,7 +27,7 @@ class MailboxControl extends Control
         parent::__construct();
 
         if (!$this->session->mayRole()) {
-            $this->routeHelper->goLogin();
+            $this->routeHelper->goLoginAndExit();
         }
 
         if (!$this->mailboxPermissions->mayHaveMailbox()) {
@@ -55,7 +55,7 @@ class MailboxControl extends Control
                                 header('Content-Type: ' . $mime);
                             }
                             header('Content-Disposition: attachment; filename="' . $filename . '"');
-                            header('Content-Length: $size');
+                            header('Content-Length: ' . $size);
                             readfile($file);
                             exit;
                         }
@@ -64,7 +64,7 @@ class MailboxControl extends Control
             }
         }
 
-        $this->routeHelper->goPage('mailbox');
+        $this->routeHelper->goPageAndExit('mailbox');
     }
 
     public function index()
@@ -120,7 +120,7 @@ class MailboxControl extends Control
                 if ($mailbox = $this->mailboxGateway->filterName($_POST['name'])) {
                     if ($this->mailboxGateway->addMailbox($mailbox, 1)) {
                         $this->flashMessageHelper->success($this->translator->trans('mailbox.add_success'));
-                        $this->routeHelper->go('/?page=mailbox&a=manage');
+                        $this->routeHelper->goAndExit('/?page=mailbox&a=manage');
                     } else {
                         $this->flashMessageHelper->error($this->translator->trans('mailbox.already_exists'));
                     }
@@ -144,7 +144,7 @@ class MailboxControl extends Control
 
                 if ($this->mailboxGateway->updateMember($_POST['mbid'], $g_data[$index])) {
                     $this->flashMessageHelper->success($this->translator->trans('mailbox.saved'));
-                    $this->routeHelper->go('/?page=mailbox&a=manage');
+                    $this->routeHelper->goAndExit('/?page=mailbox&a=manage');
                 }
             }
 
@@ -162,7 +162,7 @@ class MailboxControl extends Control
             $this->pageHelper->addContent($this->view->manageOpt(), CNT_LEFT);
         } else {
             $this->flashMessageHelper->error($this->translator->trans('mailbox.not-allowed'));
-            $this->routeHelper->goPage('dashboard');
+            $this->routeHelper->goPageAndExit('dashboard');
         }
     }
 }

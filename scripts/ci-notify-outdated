@@ -1,21 +1,23 @@
 #!/bin/bash
 
-set -eu
-
-SLACK_WEBHOOK_URL=${SLACK_WEBHOOK_URL:-}
+set -o errexit
+set -o nounset
+set -o pipefail
 
 basedir="$(dirname "$0")/.."
 
-if [ -z "$SLACK_WEBHOOK_URL" ]; then
+if [ "${SLACK_WEBHOOK_URL:-}" ]; then
+  echo "SLACK_WEBHOOK_URL was set"
+else
   echo "SLACK_WEBHOOK_URL was not set"
   exit 1
 fi
 
 json_escape () {
-    # clearly not a very thorough json escaping ... ;)
-    local text="$1"
-    text=${text//\"/\\\"} # escape double quotes
-    printf '"%s"' "$text"
+      # clearly not a very thorough json escaping ... ;)
+      local text="$1"
+      text=${text//\"/\\\"} # escape double quotes
+      printf '"%s"' "$text"
 }
 
 send_to_slack () {
@@ -28,29 +30,38 @@ send_to_slack () {
   escaped=$(json_escape "$text")
   local payload
   payload=$(printf '{
-    "username": "Outdated Bot",
+    "username": "Outdated Packages Bot",
+    "icon_emoji": ":warning:",
     "channel": "#fs-outdated",
     "text": %s
   }' "$escaped")
   echo "Posting: $title"
   curl \
-    -X POST \
-    -H 'Content-type: application/json' \
-    --data "$payload" \
-    "$SLACK_WEBHOOK_URL"
-  echo
+      --request POST \
+      --header 'Content-type: application/json' \
+      --data "$payload" \
+      "$SLACK_WEBHOOK_URL" \
+      --fail \
+      --silent \
+      --show-error
+    if [ $? -eq 0 ]; then
+      echo "Posting successful!"
+    else
+      echo "Posting failed!"
+    fi
 }
 
 composer_outdated () {
   local dir="$1"
-  cd "$dir" && composer outdated -D
+  cd "$dir" && composer outdated --direct --locked
 }
 
 yarn_outdated () {
   local dir="$1"
-  cd "$dir" && yarn outdated | grep -E -v '<red|yellow|green>|Color legend'
+  cd "$dir" && yarn outdated | grep --extended-regexp --invert-match '<red|yellow|green>|Color legend'
 }
 
 send_to_slack "Outdated PHP dependencies" "$(composer_outdated "$basedir")"
-send_to_slack "Outdated Javascript dependencies ($(client/))" "$(yarn_outdated "$basedir/client")"
-send_to_slack "Outdated Javascript dependencies ($(websocket/))" "$(yarn_outdated "$basedir/websocket")"
+send_to_slack "Outdated Javascript dependencies (client/)" "$(yarn_outdated "$basedir/client")"
+send_to_slack "Outdated Javascript dependencies (websocket/)" "$(yarn_outdated "$basedir/websocket")"
+send_to_slack "Outdated Javascript dependencies (docs/)" "$(yarn_outdated "$basedir/docs")"

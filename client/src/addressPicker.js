@@ -7,6 +7,7 @@ import 'leaflet.awesome-markers'
 // import 'mapbox-gl/dist/mapbox-gl.css'
 import { initMap } from '@/mapUtils'
 import { locale } from '@/helper/i18n'
+import { isTest } from '@/helper/server-data'
 
 const fsIcon = L.AwesomeMarkers.icon({
   icon: 'smile',
@@ -34,6 +35,9 @@ function showSelected (event, selected, map, engine) {
   map.fitBounds(markers.getBounds())
 }
 
+/**
+ * @deprecated use the vue component LeafletLocationSearch instead
+ */
 export function attachAddressPicker () {
   const data = [$('#lat').val(), $('#lon').val()]
   let center = [51, 12]
@@ -43,7 +47,7 @@ export function attachAddressPicker () {
 
   const engine = new window.PhotonAddressEngine(
     {
-      url: 'https://photon.komoot.io',
+      url: isTest ? '/mock/photon' : 'https://photon.komoot.io',
       formatResult: function (feature) {
         const prop = feature.properties
         return [prop.name || '', prop.street, prop.housenumber || '', prop.postcode, prop.city, prop.country].filter(Boolean).join(' ')

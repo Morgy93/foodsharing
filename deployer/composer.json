@@ -1,6 +1,6 @@
 {
     "require-dev": {
-        "deployer/deployer": "~v7.0.0"
+        "deployer/deployer": "^v7.1.3"
     },
     "config": {
         "platform": {

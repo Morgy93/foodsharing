@@ -42,7 +42,7 @@ final class PassportGeneratorControl extends Control
                 $this->region = $region;
             }
         } else {
-            $this->routeHelper->go('/?page=dashboard');
+            $this->routeHelper->goAndExit('/?page=dashboard');
         }
     }
 
@@ -55,7 +55,7 @@ final class PassportGeneratorControl extends Control
         $this->pageHelper->addTitle($this->translator->trans('pass.bread'));
 
         if (isset($_POST['passes']) && !empty($_POST['passes'])) {
-            $this->passportGeneratorTransaction->generate($_POST['passes'], true, false, $this->region);
+            $this->passportGeneratorTransaction->generate($_POST['passes'], null, true, false, true, true);
         }
 
         if ($regions = $this->passportGeneratorGateway->getPassFoodsaver($this->regionId)) {
@@ -112,7 +112,7 @@ final class PassportGeneratorControl extends Control
         $size = filesize($file);
         header('Content-Type: application/pdf');
         header('Content-Disposition: attachment; filename=' . $filename . '');
-        header("Content-Length: $size");
+        header('Content-Length: ' . $size);
         readfile($file);
 
         exit;

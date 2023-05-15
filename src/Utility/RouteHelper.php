@@ -9,37 +9,30 @@ use Symfony\Contracts\Translation\TranslatorInterface;
 
 final class RouteHelper
 {
-    private Session $session;
-    private TranslatorInterface $translator;
-    private LegalGateway $legalGateway;
-
     public function __construct(
-        Session $session,
-        TranslatorInterface $translator,
-        LegalGateway $legalGateway
+        private readonly Session $session,
+        private readonly TranslatorInterface $translator,
+        private readonly LegalGateway $legalGateway
     ) {
-        $this->session = $session;
-        $this->translator = $translator;
-        $this->legalGateway = $legalGateway;
     }
 
-    public function go(string $url)
+    public function goAndExit(string $url): never
     {
         header('Location: ' . $url);
         exit;
     }
 
-    public function goSelf(): void
+    public function goSelfAndExit(): never
     {
-        $this->go($this->getSelf());
+        $this->goAndExit($this->getSelf());
     }
 
-    public function goLogin(): void
+    public function goLoginAndExit(): never
     {
-        $this->go('/?page=login&ref=' . urlencode($this->getSelf()));
+        $this->goAndExit('/?page=login&ref=' . urlencode($this->getSelf()));
     }
 
-    public function goPage(string $page = ''): void
+    public function goPageAndExit(string $page = ''): never
     {
         if (empty($page)) {
             $page = $this->getPage();
@@ -47,27 +40,12 @@ final class RouteHelper
                 $page .= '&bid=' . (int)$_GET['bid'];
             }
         }
-        $this->go('/?page=' . $page);
+        $this->goAndExit('/?page=' . $page);
     }
 
     public function getSelf()
     {
-        // TODO revert all this when index.php is the only entry point left
-        // xhr.php and xhrapp.php currently modify REQUEST_URI to make symfony's routing happy.
-        // see those two files for the reason why
-        // because we don't want to use these technically-invalid URIs anywhere (form URLs for example),
-        // fix them if needed
-
-        // Example of an URI affected by the hack:
-        // '/xhrapp.php/xhrapp.php?app=groups&m=apply&id=1'
-        // only one /xhrapp.php should be there
-
-        $originalRequestUri = $_SERVER['REQUEST_URI'];
-
-        $fixedRequestUri = preg_replace('/^\/xhr.php\/xhr.php/', '/xhr.php', $originalRequestUri, 1);
-        $fixedRequestUri = preg_replace('/^\/xhrapp.php\/xhrapp.php/', '/xhrapp.php', $fixedRequestUri, 1);
-
-        return $fixedRequestUri;
+        return $_SERVER['REQUEST_URI'];
     }
 
     public function getPage(): string

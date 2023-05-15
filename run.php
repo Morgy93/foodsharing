@@ -1,28 +1,26 @@
 <?php
 
-use Symfony\Component\DependencyInjection\Container;
+use Foodsharing\Kernel;
 
-require __DIR__ . '/includes/setup.php';
+require __DIR__ . '/vendor/autoload.php';
+
+\Doctrine\Common\Annotations\AnnotationRegistry::registerLoader('class_exists');
+
 require_once 'config.inc.php';
 
-/* @var Container $container */
-global $container;
-$container = initializeContainer();
+$env = $_SERVER['FS_ENV'] ?? getenv('FS_ENV') ?? 'dev';
+$debug = (bool)($_SERVER['APP_DEBUG'] ?? ('prod' !== $env));
+$kernel = new Kernel($env, $debug);
+$kernel->boot();
 
-/*
- * force only executing on commandline
-*/
-if (!isset($argv)) {
-    header('Location: ' . BASE_URL);
-    exit;
-}
+global $container;
+$container = $kernel->getContainer();
 
 $app = 'Console';
 $method = 'index';
 
 if (isset($argv[3]) && $argv[3] == 'quiet') {
     define('QUIET', true);
-} else {
 }
 
 if (isset($argv) && is_array($argv)) {

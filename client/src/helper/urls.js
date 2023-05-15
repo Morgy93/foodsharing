@@ -17,6 +17,7 @@ const urls = {
   communitiesGermany: () => '/?page=content&sub=communitiesGermany',
   communitiesSwitzerland: () => '/?page=content&sub=communitiesSwitzerland',
   contact: () => '/?page=content&sub=contact',
+  newsFromIT: () => '/?page=content&sub=newsFromIT',
   contentEdit: () => '/?page=content',
   conversations: (conversationId = null) => `/?page=msg${conversationId ? `&cid=${conversationId}` : ''}`,
   dashboard: () => '/?page=dashboard',
@@ -60,6 +61,7 @@ const urls = {
   statistics: () => '/statistik',
   store: (storeId) => `/?page=fsbetrieb&id=${storeId}`,
   storeList: () => '/?page=fsbetrieb',
+  storeOwnList: () => '/?page=betrieb&a=own',
 
   team: () => '/team',
   transparency: () => '/?page=content&sub=transparency',
@@ -80,7 +82,7 @@ const urls = {
 
   // region id
   forum: (regionId, subforumId = 0, threadId = null, postId = null, newThread = false) => {
-    const str = [`/?page=bezirk&bid=${regionId}`]
+    const str = [`/?page=bezirk${regionId ? `&bid=${regionId}` : ''}`]
     if (subforumId === 1) {
       str.push('&sub=botforum')
     } else {
@@ -96,6 +98,11 @@ const urls = {
       str.push('&newthread=1')
     }
     return str.join('')
+  },
+
+  // simplified url for forum threads
+  forumThread: (threadId, postId = null) => {
+    return url('forum', null, 0, threadId, postId)
   },
   events: (regionId) => `/?page=bezirk&bid=${regionId}&sub=events`,
   foodsaverList: (regionId) => `/?page=foodsaver&bid=${regionId}`,
@@ -151,6 +158,7 @@ const urls = {
   wiener_tafel: () => 'https://www.wienertafel.at',
   bmlfuw: () => 'https://www.bmlrt.gv.at',
   denns: () => 'https://www.denns-biomarkt.at',
+  chains: () => '/?page=chain',
 
   // Devdocs
   devdocs: () => 'https://devdocs.foodsharing.network',

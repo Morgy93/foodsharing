@@ -105,12 +105,16 @@ export default {
       if (this.numValues > 1) {
         result.push({
           key: 'sum',
-          label: this.$i18n('poll.results.sum'),
+          label: this.$i18n(this.numValues === 7 ? 'poll.results.average' : 'poll.results.sum'),
           sortable: true,
           sortByFormatted: 'true',
           class: 'text-center',
           formatter: (value, key, item) => {
-            return this.sumVotes(item)
+            let sum = this.sumVotes(item)
+            if (this.numValues === 7) {
+              sum = Math.round(sum / this.numVotes * 100) / 100
+            }
+            return sum
           },
         })
       }

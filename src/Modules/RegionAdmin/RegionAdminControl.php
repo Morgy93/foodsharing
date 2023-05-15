@@ -28,7 +28,7 @@ class RegionAdminControl extends Control
         parent::__construct();
 
         if (!$this->regionPermissions->mayAdministrateRegions()) {
-            $this->routeHelper->go('/');
+            $this->routeHelper->goAndExit('/');
         }
     }
 

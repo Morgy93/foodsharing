@@ -4,9 +4,11 @@ namespace Foodsharing\Modules\Store;
 
 use Carbon\Carbon;
 use DateTime;
+use Exception;
 use Foodsharing\Lib\Session;
 use Foodsharing\Modules\Bell\BellGateway;
 use Foodsharing\Modules\Bell\DTO\Bell;
+use Foodsharing\Modules\Core\DatabaseNoValueFoundException;
 use Foodsharing\Modules\Core\DBConstants\Bell\BellType;
 use Foodsharing\Modules\Core\DBConstants\Region\RegionOptionType;
 use Foodsharing\Modules\Core\DBConstants\Store\ConvinceStatus;
@@ -14,14 +16,22 @@ use Foodsharing\Modules\Core\DBConstants\Store\CooperationStatus;
 use Foodsharing\Modules\Core\DBConstants\Store\Milestone;
 use Foodsharing\Modules\Core\DBConstants\Store\PublicTimes;
 use Foodsharing\Modules\Core\DBConstants\Store\StoreLogAction;
+use Foodsharing\Modules\Core\DBConstants\Store\TeamSearchStatus;
 use Foodsharing\Modules\Core\DBConstants\StoreTeam\MembershipStatus;
-use Foodsharing\Modules\Core\DTO\GeoLocation;
+use Foodsharing\Modules\Core\DBConstants\Unit\UnitType;
+use Foodsharing\Modules\Core\DTO\MinimalIdentifier;
+use Foodsharing\Modules\Core\DTO\PatchGeoLocation;
 use Foodsharing\Modules\Foodsaver\FoodsaverGateway;
+use Foodsharing\Modules\Foodsaver\Profile;
 use Foodsharing\Modules\Message\MessageGateway;
 use Foodsharing\Modules\Region\RegionGateway;
 use Foodsharing\Modules\Store\DTO\CommonLabel;
 use Foodsharing\Modules\Store\DTO\CommonStoreMetadata;
 use Foodsharing\Modules\Store\DTO\CreateStoreData;
+use Foodsharing\Modules\Store\DTO\PatchAddress;
+use Foodsharing\Modules\Store\DTO\PatchContactData;
+use Foodsharing\Modules\Store\DTO\PatchStore;
+use Foodsharing\Modules\Store\DTO\PatchStoreOptionModel;
 use Foodsharing\Modules\Store\DTO\Store;
 use Foodsharing\Modules\Store\DTO\StoreListInformation;
 use Foodsharing\Modules\Store\DTO\StoreStatusForMember;
@@ -31,17 +41,15 @@ use Symfony\Contracts\Translation\TranslatorInterface;
 
 class StoreTransactions
 {
-    public const DEFAULT_USER_SHOWN_STORE_COOPERATION_STATE = [CooperationStatus::UNCLEAR, CooperationStatus::NO_CONTACT, CooperationStatus::IN_NEGOTIATION, CooperationStatus::COOPERATION_STARTING, CooperationStatus::COOPERATION_ESTABLISHED, CooperationStatus::PERMANENTLY_CLOSED];
+    public const DEFAULT_USER_SHOWN_STORE_COOPERATION_STATE = [
+        CooperationStatus::UNCLEAR,
+        CooperationStatus::NO_CONTACT,
+        CooperationStatus::IN_NEGOTIATION,
+        CooperationStatus::COOPERATION_STARTING,
+        CooperationStatus::COOPERATION_ESTABLISHED,
+        CooperationStatus::PERMANENTLY_CLOSED
+    ];
 
-    private MessageGateway $messageGateway;
-    private PickupGateway $pickupGateway;
-    private StoreGateway $storeGateway;
-    private TranslatorInterface $translator;
-    private BellGateway $bellGateway;
-    private FoodsaverGateway $foodsaverGateway;
-    private RegionGateway $regionGateway;
-    private Session $session;
-    private Sanitizer $sanitizer;
     public const MAX_SLOTS_PER_PICKUP = 10;
     // status constants for getAvailablePickupStatus
     private const STATUS_RED_TODAY_TOMORROW = 3;
@@ -50,25 +58,16 @@ class StoreTransactions
     private const STATUS_GREEN = 0;
 
     public function __construct(
-        MessageGateway $messageGateway,
-        PickupGateway $pickupGateway,
-        StoreGateway $storeGateway,
-        TranslatorInterface $translator,
-        BellGateway $bellGateway,
-        FoodsaverGateway $foodsaverGateway,
-        RegionGateway $regionGateway,
-        Sanitizer $sanitizerService,
-        Session $session
+        private readonly MessageGateway $messageGateway,
+        private readonly PickupGateway $pickupGateway,
+        private readonly StoreGateway $storeGateway,
+        private readonly TranslatorInterface $translator,
+        private readonly BellGateway $bellGateway,
+        private readonly FoodsaverGateway $foodsaverGateway,
+        private readonly RegionGateway $regionGateway,
+        private readonly Sanitizer $sanitizerService,
+        private readonly Session $session
     ) {
-        $this->messageGateway = $messageGateway;
-        $this->pickupGateway = $pickupGateway;
-        $this->storeGateway = $storeGateway;
-        $this->translator = $translator;
-        $this->bellGateway = $bellGateway;
-        $this->foodsaverGateway = $foodsaverGateway;
-        $this->regionGateway = $regionGateway;
-        $this->session = $session;
-        $this->sanitizer = $sanitizerService;
     }
 
     public function getCommonStoreMetadata($supressStoreChains = true): CommonStoreMetadata
@@ -79,13 +78,15 @@ class StoreTransactions
             return CommonLabel::createFromArray($row);
         }, $this->storeGateway->getBasics_groceries());
 
-        $store->categories = array_map(function ($row) {
-            return CommonLabel::createFromArray($row);
-        }, $this->storeGateway->getStoreCategories());
+        $store->categories = [new CommonLabel(0, $this->translator->trans('store.nodeclaration')),
+            ...array_map(function ($row) {
+                return CommonLabel::createFromArray($row);
+            }, $this->storeGateway->getStoreCategories())];
 
         $store->status = array_map(function ($row) {
             return CommonLabel::createFromArray($row);
         }, [
+            ['id' => CooperationStatus::UNCLEAR->value, 'name' => $this->translator->trans('store.nodeclaration')],
             ['id' => CooperationStatus::NO_CONTACT->value, 'name' => $this->translator->trans('storestatus.1')],
             ['id' => CooperationStatus::IN_NEGOTIATION->value, 'name' => $this->translator->trans('storestatus.2')],
             ['id' => CooperationStatus::COOPERATION_STARTING->value, 'name' => $this->translator->trans('storestatus.3a')],
@@ -98,6 +99,7 @@ class StoreTransactions
         $store->publicTimes = array_map(function ($row) {
             return CommonLabel::createFromArray($row);
         }, [
+            ['id' => PublicTimes::NOT_SET->value, 'name' => $this->translator->trans('store.nodeclaration')],
             ['id' => PublicTimes::IN_THE_MORNING->value, 'name' => $this->translator->trans('storeview.public_time_in_the_morning')],
             ['id' => PublicTimes::AT_NOON_IN_THE_AFTERNOON->value, 'name' => $this->translator->trans('storeview.public_time_at_noon_or_afternoon')],
             ['id' => PublicTimes::IN_THE_EVENING->value, 'name' => $this->translator->trans('storeview.public_time_in_the_evening')],
@@ -107,6 +109,7 @@ class StoreTransactions
         $store->convinceStatus = array_map(function ($row) {
             return CommonLabel::createFromArray($row);
         }, [
+            ['id' => ConvinceStatus::NOT_SET->value, 'name' => $this->translator->trans('store.nodeclaration')],
             ['id' => ConvinceStatus::NO_PROBLEM_AT_ALL->value, 'name' => $this->translator->trans('store.convince.none')],
             ['id' => ConvinceStatus::AFTER_SOME_PERSUASION->value, 'name' => $this->translator->trans('store.convince.some')],
             ['id' => ConvinceStatus::DIFFICULT_NEGOTIATION->value, 'name' => $this->translator->trans('store.convince.much')],
@@ -114,9 +117,10 @@ class StoreTransactions
         ]);
 
         if (!$supressStoreChains) {
-            $store->storeChains = array_map(function ($row) {
-                return CommonLabel::createFromArray($row);
-            }, $this->storeGateway->getBasics_chain());
+            $store->storeChains = [new CommonLabel(0, $this->translator->trans('store.nodeclaration')),
+                ...array_map(function ($row) {
+                    return CommonLabel::createFromArray($row);
+                }, $this->storeGateway->getBasics_chain())];
         }
 
         $store->weight = array_map(function ($row) {
@@ -140,94 +144,343 @@ class StoreTransactions
      * @param bool $expand Expand information about store and region
      *
      * @return array<StoreListInformation> List of information
+     *
+     * @throws Exception
      */
     public function listOverviewInformationsOfStoresInRegion(int $regionId, bool $expand): array
     {
         $stores = $this->storeGateway->listStoresInRegion($regionId, true);
 
-        $storesMapped = array_map(function (Store $store) use ($expand) {
+        return $this->arrayMapStoreListInformation($stores, $expand);
+    }
+
+    /**
+     * Returns a list of stores where the user is a member of reduced store information.
+     **
+     * @param int $userId User identifier
+     * @param bool $expand Expand information about store and region
+     *
+     * @return array<StoreListInformation> List of information
+     *
+     * @throws Exception
+     */
+    public function listOverviewInformationsOfStoresFromUser(int $userId, bool $expand): array
+    {
+        $stores = $this->storeGateway->listStoresInFromUser($userId);
+
+        return $this->arrayMapStoreListInformation($stores, $expand);
+    }
+
+    private function arrayMapStoreListInformation(array $stores, bool $expand): array
+    {
+        return array_map(function (Store $store) use ($expand) {
             $requiredStoreInformation = StoreListInformation::loadFrom($store, !$expand);
             if ($expand) {
-                $regionName = $this->regionGateway->getRegionName($store->regionId);
+                $regionName = $this->regionGateway->getRegionName($store->region->id);
                 $requiredStoreInformation->region->name = $regionName;
             }
 
             return $requiredStoreInformation;
         }, $stores);
-
-        return $storesMapped;
     }
 
-    public function createStore(array $legacyGlobalData): int
+    /**
+     * Provides information about a store and reduce the information to essential parts.
+     *
+     * @param int $storeId Identifier of store
+     * @param bool $showDetails Leaves details about stores like description, effort, publicity and options in object
+     * @param bool $showSensitiveDetails Leaves details about stores like contact, updatedAt, showsSticker and groceries in object
+     *
+     * @throws DatabaseNoValueFoundException Store not found
+     */
+    public function getStore(int $storeId, bool $showDetails, bool $showSensitiveDetails): Store
     {
-        $store = new CreateStoreData();
-        $store->name = $legacyGlobalData['name'];
-        $store->regionId = $legacyGlobalData['bezirk_id'];
-        $store->lat = floatval($legacyGlobalData['lat']);
-        $store->lon = floatval($legacyGlobalData['lon']);
-        $store->str = $legacyGlobalData['str'];
-        $store->zip = $legacyGlobalData['plz'];
-        $store->city = $legacyGlobalData['stadt'];
-        $store->publicInfo = $legacyGlobalData['public_info'];
-        $store->createdAt = Carbon::now();
-        $store->updatedAt = $store->createdAt;
+        $suppressLoadingGroceries = !$showSensitiveDetails;
+        $dbResult = $this->storeGateway->getStore($storeId, $suppressLoadingGroceries);
 
+        if (!$showDetails) {
+            $dbResult->description = null;
+            $dbResult->effort = null;
+            $dbResult->publicity = null;
+            $dbResult->options = null;
+        }
+
+        if (!$showSensitiveDetails) {
+            $dbResult->contact = null;
+            $dbResult->updatedAt = null;
+            $dbResult->effort = null;
+            $dbResult->showsSticker = null;
+            $dbResult->groceries = null;
+        }
+
+        return $dbResult;
+    }
+
+    /**
+     * Creates a new store with the possiblility to post a first message.
+     *
+     * This method creates all required parts for a store
+     * 1. Store information
+     * 2. Add author to the Store as store manager
+     * 3. Creates conversation threads for Team and Jumpers
+     * 4. Optional a first notes to the store wall
+     * 5. Informs members of the store related region about a new store
+     *
+     * @param CreateStoreData $createStore Initial required store information
+     * @param int $authorFsId FoddsaverId of the store creator, it is used for conversation and information bell
+     * @param string $firstStorePost First message on the store wall
+     *
+     * @throws StoreTransactionException When region is invalid or not a region (like workinggroups)
+     */
+    public function createStore(CreateStoreData $createStore, int $authorFsId, ?string $firstStorePost = null): int
+    {
+        try {
+            $regionType = $this->regionGateway->getType($createStore->regionId);
+        } catch (Exception $dbExpection) {
+            throw new StoreTransactionException(StoreTransactionException::INVALID_REGION);
+        }
+        if (!UnitType::isAccessibleRegion($regionType)) {
+            throw new StoreTransactionException(StoreTransactionException::INVALID_REGION_TYPE);
+        }
+
+        $store = $createStore->toStore();
         $storeId = $this->storeGateway->addStore($store);
-        $managerId = $this->session->id();
 
-        $this->storeGateway->addStoreManager($storeId, $managerId);
-        $this->createTeamConversations($storeId, $managerId);
+        $this->storeGateway->addStoreManager($storeId, $authorFsId);
+
+        $storeTeamChatId = $this->messageGateway->createConversation([$authorFsId], true);
+        $this->storeGateway->updateStoreConversation($storeId, $storeTeamChatId, false);
+
+        $standbyTeamChatId = $this->messageGateway->createConversation([$authorFsId], true);
+        $this->storeGateway->updateStoreConversation($storeId, $standbyTeamChatId, true);
+
+        $this->setStoreNameInConversations($storeId, $createStore->name);
+
+        $this->storeGateway->add_betrieb_notiz([
+            'foodsaver_id' => $authorFsId,
+            'betrieb_id' => $storeId,
+            'text' => '{BETRIEB_ADDED}',
+            'zeit' => date('Y-m-d H:i:s', time() - 10),
+            'milestone' => Milestone::CREATED,
+        ]);
+
+        if (!empty($firstStorePost)) {
+            $this->storeGateway->add_betrieb_notiz([
+                'foodsaver_id' => $authorFsId,
+                'betrieb_id' => $storeId,
+                'text' => $firstStorePost,
+                'zeit' => date('Y-m-d H:i:s'),
+                'milestone' => Milestone::NONE,
+            ]);
+        }
+
+        $authorName = $this->foodsaverGateway->getFoodsaverName($authorFsId);
+        $foodsaver = $this->foodsaverGateway->getFoodsaversByRegion($createStore->regionId);
+
+        $bellData = Bell::create('store_new_title', 'store_new', 'fas fa-store-alt', [
+            'href' => '/?page=fsbetrieb&id=' . $storeId
+        ], [
+            'user' => $authorName,
+            'name' => $createStore->name
+        ], BellType::createIdentifier(BellType::NEW_STORE, $storeId));
+        $this->bellGateway->addBell(
+            array_map(
+                function (Profile $f) { return $f->id; },
+                $foodsaver
+            ),
+            $bellData
+        );
 
         return $storeId;
     }
 
-    public function updateAllStoreData(int $storeId, array $legacyGlobalData): bool
+    /**
+     * Update the information about the store.
+     *
+     * @param int $storeId Identifier of store to modify
+     * @param PatchStore $storeChange Changes on the store
+     *
+     * @return bool information have changed
+     *
+     * @throws StoreTransactionException
+     */
+    public function updateStore(int $storeId, PatchStore $storeChange): bool
     {
-        $this->storeGateway->setGroceries($storeId, $legacyGlobalData['lebensmittel'] ?? []);
+        $store = $this->storeGateway->getStore($storeId);
 
-        $store = new Store();
+        $changeInformation = $this->checkAndPatchStore($storeChange, $store);
 
-        $store->id = $storeId;
-        $store->name = $legacyGlobalData['name'];
-        $store->regionId = intval($legacyGlobalData['bezirk_id']);
+        if ($changeInformation->informationChanged) {
+            $store->updatedAt = Carbon::now();
+            $this->storeGateway->updateStoreData($store, $changeInformation->groceriesChanged);
 
-        $address = $legacyGlobalData['str'];
-        $store->location = new GeoLocation();
-        $store->location->lat = floatval($legacyGlobalData['lat']);
-        $store->location->lon = floatval($legacyGlobalData['lon']);
-        $store->street = $address;
-        $store->zip = $legacyGlobalData['plz'];
-        $store->city = $legacyGlobalData['stadt'];
-
-        $store->publicInfo = $this->sanitizer->purifyHtml($legacyGlobalData['public_info']);
-        $store->publicTime = intval($legacyGlobalData['public_time']);
-
-        $store->categoryId = intval($legacyGlobalData['betrieb_kategorie_id']);
-        $store->chainId = intval($legacyGlobalData['kette_id']);
-        $store->cooperationStatus = CooperationStatus::tryFrom(intval($legacyGlobalData['betrieb_status_id']));
-
-        $store->description = $legacyGlobalData['besonderheiten'];
-
-        $store->contactName = $legacyGlobalData['ansprechpartner'];
-        $store->contactPhone = $legacyGlobalData['telefon'];
-        $store->contactFax = $legacyGlobalData['fax'];
-        $store->contactEmail = $legacyGlobalData['email'];
-        $store->cooperationStart = null;
-        if (!empty($legacyGlobalData['begin'])) {
-            $store->cooperationStart = Carbon::createFromFormat('Y-m-d', $legacyGlobalData['begin']);
+            if ($changeInformation->nameChanged) {
+                $this->setStoreNameInConversations($storeId, $store->name);
+            }
         }
-        $store->calendarInterval = intval($legacyGlobalData['prefetchtime']);
-        $store->useRegionPickupRule = intval($legacyGlobalData['use_region_pickup_rule']);
-        $store->weight = intval($legacyGlobalData['abholmenge']);
-        $store->effort = intval($legacyGlobalData['ueberzeugungsarbeit']);
-        $store->publicity = boolval($legacyGlobalData['presse']);
-        $store->sticker = boolval($legacyGlobalData['sticker']);
 
-        $store->updatedAt = Carbon::now();
+        return $changeInformation->informationChanged;
+    }
 
-        $this->storeGateway->updateStoreData($store->id, $store);
+    /**
+     * Check for the correct values of the store and updates the store object.
+     *
+     * @param PatchStore $storeChange Changes on the store
+     * @param Store $store Store to apply changes
+     *
+     * @return PatchStoreChangeInformation information about the important changes
+     *
+     * @throws StoreTransactionException
+     */
+    private function checkAndPatchStore(PatchStore &$storeChange, Store &$store): PatchStoreChangeInformation
+    {
+        $changeInformation = new PatchStoreChangeInformation();
+        if (!empty($storeChange->name)) {
+            $changeInformation->informationChanged = true;
+            $changeInformation->nameChanged = true;
+            $store->name = $storeChange->name;
+        }
 
-        return true;
+        if (!empty($storeChange->regionId)) {
+            $changeInformation->informationChanged = true;
+            $store->region = MinimalIdentifier::createFromId($storeChange->regionId);
+        }
+
+        if (!empty($storeChange->publicInfo)) {
+            $changeInformation->informationChanged = true;
+            $store->publicInfo = $this->sanitizerService->purifyHtml($storeChange->publicInfo);
+        }
+
+        if (!is_null($storeChange->publicTime)) {
+            $publicTime = PublicTimes::tryFrom($storeChange->publicTime);
+            if (!$publicTime) {
+                throw new StoreTransactionException(StoreTransactionException::INVALID_PUBLIC_TIMES);
+            }
+            $changeInformation->informationChanged = true;
+            $store->publicTime = $publicTime;
+        }
+
+        if (!is_null($storeChange->categoryId)) {
+            $changeInformation->informationChanged = true;
+            if ($storeChange->categoryId !== 0) {
+                $storeCategoryExists = $this->storeGateway->existStoreCategory($storeChange->categoryId);
+                if (!$storeCategoryExists) {
+                    throw new StoreTransactionException(StoreTransactionException::STORE_CATEGORY_NOT_EXISTS);
+                }
+                $store->category = MinimalIdentifier::createFromId($storeChange->categoryId);
+            } else {
+                $store->category = null;
+            }
+        }
+
+        if (!is_null($storeChange->chainId)) {
+            $changeInformation->informationChanged = true;
+            if ($storeChange->chainId !== 0) {
+                $storeChainExists = $this->storeGateway->existStoreChain($storeChange->chainId);
+                if (!$storeChainExists) {
+                    throw new StoreTransactionException(StoreTransactionException::STORE_CHAIN_NOT_EXISTS);
+                }
+                $store->chain = MinimalIdentifier::createFromId($storeChange->chainId);
+            } else {
+                $store->chain = null;
+            }
+        }
+
+        if (!is_null($storeChange->cooperationStatus)) {
+            $cooperationStatus = CooperationStatus::tryFrom($storeChange->cooperationStatus);
+            if (!$cooperationStatus) {
+                throw new StoreTransactionException(StoreTransactionException::INVALID_COOPERATION_STATUS);
+            }
+            $changeInformation->informationChanged = true;
+            $store->cooperationStatus = $cooperationStatus;
+        }
+
+        if (!empty($storeChange->description)) {
+            $changeInformation->informationChanged = true;
+            $store->description = $storeChange->description;
+        }
+
+        if (!empty($storeChange->cooperationStart)) {
+            $cooperationStart = DateTime::createFromFormat('Y-m-d', $storeChange->cooperationStart);
+            if (!$cooperationStart) {
+                throw new StoreTransactionException(StoreTransactionException::INVALID_STORE_COOPERATION_START);
+            }
+            $changeInformation->informationChanged = true;
+            $store->cooperationStart = $cooperationStart;
+        }
+
+        if ($storeChange->teamStatus !== null) {
+            if (!TeamSearchStatus::tryFrom($storeChange->teamStatus)) {
+                throw new StoreTransactionException(StoreTransactionException::INVALID_STORE_TEAM_STATUS);
+            }
+            $changeInformation->informationChanged = true;
+            $store->teamStatus = TeamSearchStatus::from($storeChange->teamStatus);
+        }
+
+        if (!empty($storeChange->calendarInterval)) {
+            $changeInformation->informationChanged = true;
+            $store->calendarInterval = $storeChange->calendarInterval;
+        }
+
+        if (!is_null($storeChange->weight)) {
+            $changeInformation->informationChanged = true;
+            $store->weight = $storeChange->weight;
+        }
+
+        if (!is_null($storeChange->effort)) {
+            $effort = ConvinceStatus::tryFrom($storeChange->effort);
+            if (!$effort) {
+                throw new StoreTransactionException(StoreTransactionException::INVALID_CONVINCE_STATUS);
+            }
+            $changeInformation->informationChanged = true;
+            $store->effort = $effort;
+        }
+
+        if (!is_null($storeChange->showsSticker)) {
+            $changeInformation->informationChanged = true;
+            $store->showsSticker = $storeChange->showsSticker;
+        }
+
+        if (!is_null($storeChange->publicity)) {
+            $changeInformation->informationChanged = true;
+            $store->publicity = $storeChange->publicity;
+        }
+
+        if (!is_null($storeChange->groceries)) {
+            $changeInformation->informationChanged = true;
+            $changeInformation->groceriesChanged = true;
+            $store->groceries = $storeChange->groceries;
+        }
+
+        if (!is_null($storeChange->location)) {
+            $changed = PatchGeoLocation::apply($storeChange->location, $store->location);
+            if ($changed) {
+                $changeInformation->informationChanged = true;
+            }
+        }
+
+        if (!is_null($storeChange->address)) {
+            $changed = PatchAddress::apply($storeChange->address, $store->address);
+            if ($changed) {
+                $changeInformation->informationChanged = true;
+            }
+        }
+
+        if (!is_null($storeChange->contact)) {
+            $changed = PatchContactData::apply($storeChange->contact, $store->contact);
+            if ($changed) {
+                $changeInformation->informationChanged = true;
+            }
+        }
+
+        if (!is_null($storeChange->options)) {
+            $changed = PatchStoreOptionModel::apply($storeChange->options, $store->options);
+            if ($changed) {
+                $changeInformation->informationChanged = true;
+            }
+        }
+
+        return $changeInformation;
     }
 
     /**
@@ -251,7 +504,7 @@ class StoreTransactions
             throw new PickupValidationException(PickupValidationException::SLOT_COUNT_OUT_OF_RANGE);
         }
 
-        $occupiedSlots = count($this->pickupGateway->getPickupSignupsForDate($storeId, $date));
+        $occupiedSlots = count($this->pickupGateway->getPickupSignUpsForDate($storeId, $date));
         if ($newTotalSlots < $occupiedSlots) {
             throw new PickupValidationException(PickupValidationException::MORE_OCCUPIED_SLOTS);
         }
@@ -394,12 +647,12 @@ class StoreTransactions
     public function setStoreNameInConversations(int $storeId, string $storeName): void
     {
         if ($tcid = $this->storeGateway->getBetriebConversation($storeId, false)) {
-            $team_conversation_name = $this->translator->trans('store.team_conversation_name', ['{name}' => $storeName]);
-            $this->messageGateway->renameConversation($tcid, $team_conversation_name);
+            $teamConversationName = $this->translator->trans('store.team_conversation_name', ['{name}' => $storeName]);
+            $this->messageGateway->renameConversation($tcid, $teamConversationName);
         }
         if ($scid = $this->storeGateway->getBetriebConversation($storeId, true)) {
-            $springer_conversation_name = $this->translator->trans('store.springer_conversation_name', ['{name}' => $storeName]);
-            $this->messageGateway->renameConversation($scid, $springer_conversation_name);
+            $springerConversationName = $this->translator->trans('store.springer_conversation_name', ['{name}' => $storeName]);
+            $this->messageGateway->renameConversation($scid, $springerConversationName);
         }
     }
 
@@ -476,11 +729,11 @@ class StoreTransactions
     public function createKickMessage(int $foodsaverId, int $storeId, DateTime $pickupDate, ?string $message = null): string
     {
         $fs = $this->foodsaverGateway->getFoodsaver($foodsaverId);
-        $store = $this->storeGateway->getBetrieb($storeId);
+        $storeName = $this->storeGateway->getStoreName($storeId);
 
         $salutation = $this->translator->trans('salutation.' . $fs['geschlecht']) . ' ' . $fs['name'];
         $mandatoryMessage = $this->translator->trans('pickup.kick_message', [
-            '{storeName}' => $store['name'],
+            '{storeName}' => $storeName,
             '{date}' => date('d.m.Y H:i', $pickupDate->getTimestamp())
         ]);
         $optionalMessage = empty($message) ? '' : ("\n\n" . $message);
@@ -599,20 +852,6 @@ class StoreTransactions
         ]);
     }
 
-    /**
-     * creates an empty team conversation for the given store.
-     * creates an empty standby-team conversation for the given store.
-     * prefills both conversations with the given userId.
-     */
-    private function createTeamConversations(int $storeId, int $managerId): void
-    {
-        $storeTeamChatId = $this->messageGateway->createConversation([$managerId], true);
-        $this->storeGateway->updateStoreConversation($storeId, $storeTeamChatId, false);
-
-        $standbyTeamChatId = $this->messageGateway->createConversation([$managerId], true);
-        $this->storeGateway->updateStoreConversation($storeId, $standbyTeamChatId, true);
-    }
-
     // notify people who can do something with the request: store managers, region ambassadors, or orga
     private function notifyStoreManagersAboutRequest(int $storeId, int $userId): void
     {
@@ -700,7 +939,7 @@ class StoreTransactions
      *
      * @return bool true or false - true if no rule is violated, false if a rule is vialated
      *
-     * @throws \Exception
+     * @throws Exception
      */
     public function checkPickupRule(int $storeId, Carbon $pickupDate, int $fsId): bool
     {
@@ -716,15 +955,15 @@ class StoreTransactions
                 $res = Carbon::now()->diffInHours($pickupDate);
                 if ($res > $ignoreRuleHours) {
                     // the allowed numbers of pickups in a timespan. Timespan is +/- from pickupdate
-                    $NumberAllowedPickups = (int)$this->regionGateway->getRegionOption($regionId, RegionOptionType::REGION_PICKUP_RULE_LIMIT_NUMBER);
+                    $numberAllowedPickups = (int)$this->regionGateway->getRegionOption($regionId, RegionOptionType::REGION_PICKUP_RULE_LIMIT_NUMBER);
                     $intervall = (int)$this->regionGateway->getRegionOption($regionId, RegionOptionType::REGION_PICKUP_RULE_TIMESPAN_DAYS);
                     // if we have more or same amount of used slots occupied then allowed we return false
-                    if ($this->pickupGateway->getNumberOfPickupsForUserWithStoreRules($fsId, $pickupDate->copy()->subDays($intervall), $pickupDate->copy()->addDays($intervall)) >= $NumberAllowedPickups) {
+                    if ($this->pickupGateway->getNumberOfPickupsForUserWithStoreRules($fsId, $pickupDate->copy()->subDays($intervall), $pickupDate->copy()->addDays($intervall)) >= $numberAllowedPickups) {
                         return false;
                     }
                     // if we have more then or same amount of allowed pickups per day we return false
-                    $NumberAllowedPickupsPerDay = (int)$this->regionGateway->getRegionOption($regionId, RegionOptionType::REGION_PICKUP_RULE_LIMIT_DAY_NUMBER);
-                    if ($this->pickupGateway->getNumberOfPickupsForUserWithStoreRulesSameDay($fsId, $pickupDate) >= $NumberAllowedPickupsPerDay) {
+                    $numberAllowedPickupsPerDay = (int)$this->regionGateway->getRegionOption($regionId, RegionOptionType::REGION_PICKUP_RULE_LIMIT_DAY_NUMBER);
+                    if ($this->pickupGateway->getNumberOfPickupsForUserWithStoreRulesSameDay($fsId, $pickupDate) >= $numberAllowedPickupsPerDay) {
                         return false;
                     }
                 }

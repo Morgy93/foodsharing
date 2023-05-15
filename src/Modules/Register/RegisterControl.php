@@ -18,7 +18,7 @@ class RegisterControl extends Control
     {
         if ($this->session->mayRole()) {
             $this->flashMessageHelper->info($this->translator->trans('register.account-exists'));
-            $this->routeHelper->go('/?page=dashboard');
+            $this->routeHelper->goAndExit('/?page=dashboard');
         } else {
             $this->pageHelper->addBread($this->translator->trans('register.title'));
             $this->pageHelper->addTitle($this->translator->trans('register.title'));

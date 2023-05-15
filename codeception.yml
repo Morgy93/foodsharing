@@ -41,12 +41,5 @@ modules:
             dsn: mysql:host=db;dbname=foodsharing;charset=utf8mb4
             user: root
             password: root
-        \Helper\Container:
-            # custom module that inherits from Db so also needs db config
-            dsn: mysql:host=db;dbname=foodsharing;charset=utf8mb4
-            user: root
-            password: root
-            host: db
-            db: foodsharing
         \Helper\Maildev:
             url: http://maildev:1080

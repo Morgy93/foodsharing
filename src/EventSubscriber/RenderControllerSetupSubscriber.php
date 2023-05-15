@@ -8,14 +8,13 @@ use Foodsharing\Lib\ContentSecurityPolicy;
 use Foodsharing\Lib\Db\Mem;
 use Foodsharing\Lib\FoodsharingController;
 use Foodsharing\Lib\Session;
-use Foodsharing\Modules\Content\ContentGateway;
-use Foodsharing\Modules\Core\DBConstants\Content\ContentId;
 use Foodsharing\Modules\Core\InfluxMetrics;
 use Foodsharing\Utility\DataHelper;
 use Foodsharing\Utility\PageHelper;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 use Symfony\Component\HttpKernel\Event\ControllerEvent;
+use Symfony\Component\HttpKernel\Event\RequestEvent;
 use Symfony\Component\HttpKernel\Event\ResponseEvent;
 use Symfony\Component\HttpKernel\KernelEvents;
 use Symfony\Contracts\Translation\TranslatorInterface;
@@ -70,9 +69,23 @@ class RenderControllerSetupSubscriber implements EventSubscriberInterface
     public static function getSubscribedEvents()
     {
         return [
+            KernelEvents::REQUEST => 'onKernelRequest',
             KernelEvents::CONTROLLER => 'onKernelController',
             KernelEvents::RESPONSE => 'onKernelResponse',
         ];
+    }
+
+    /**
+     * This is fired before routing happens,
+     * and therefore before the controller is created.
+     * We use this opportunity to prepare the global $container variable
+     * currently used to easily prepare common controller dependencies
+     * in the `Control` and `FoodsharingController` classes.
+     */
+    public function onKernelRequest(RequestEvent $event)
+    {
+        global $container;
+        $container = $this->fullServiceContainer;
     }
 
     /**
@@ -133,23 +146,19 @@ class RenderControllerSetupSubscriber implements EventSubscriberInterface
         global $content_right_width;
         $content_right_width = 6;
 
-        global $g_template;
-        $g_template = 'default';
-
         global $g_data;
-        $g_data = $this->get(DataHelper::class)->getPostData();
+        /** @var DataHelper $dataHelper */
+        $dataHelper = $this->get(DataHelper::class);
+        $g_data = $dataHelper->getPostData();
 
         // TODO check if all of these are actually needed anymore
+        /** @var PageHelper $pageHelper */
         $pageHelper = $this->get(PageHelper::class);
         $pageHelper->addHidden('<ul id="hidden-info"></ul>');
         $pageHelper->addHidden('<ul id="hidden-error"></ul>');
         $pageHelper->addHidden('<div id="dialog-confirm" title='
         . $this->translator->trans('really_delete')
         . '><p><span class="ui-icon ui-icon-alert" style="float:left; margin:0 7px 20px 0;"></span><span id="dialog-confirm-msg"></span><input type="hidden" value="" id="dialog-confirm-url" /></p></div>');
-
-        $contentGateway = $this->get(ContentGateway::class);
-        global $g_broadcast_message;
-        $g_broadcast_message = $contentGateway->get(ContentId::BROADCAST_MESSAGE)['body'];
     }
 
     public function onKernelResponse(ResponseEvent $event)
@@ -168,6 +177,7 @@ class RenderControllerSetupSubscriber implements EventSubscriberInterface
         $response->headers->set('X-Frame-Options', 'DENY');
         $response->headers->set('X-Content-Type-Options', 'nosniff');
 
+        /** @var ContentSecurityPolicy $csp */
         $csp = $this->get(ContentSecurityPolicy::class);
         $cspString = $csp->generate($request->getSchemeAndHttpHost(), CSP_REPORT_URI, CSP_REPORT_ONLY);
         $cspParts = explode(': ', $cspString, 2);

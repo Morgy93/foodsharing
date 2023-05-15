@@ -6,6 +6,7 @@ use Foodsharing\Annotation\DisableCsrfProtection;
 use Foodsharing\Lib\Routing;
 use Foodsharing\Lib\Session;
 use Foodsharing\Lib\Xhr\XhrResponses;
+use Foodsharing\Modules\Core\Control;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 use Symfony\Component\HttpFoundation\Request;
@@ -159,11 +160,14 @@ class XhrAppController extends AbstractController
 
         global $container;
         $container = $this->fullServiceContainer;
+        /** @var Control $obj */
         $obj = $this->fullServiceContainer->get(ltrim($class, '\\'));
 
         if (!method_exists($obj, $meth)) {
             return new Response(null, Response::HTTP_BAD_REQUEST);
         }
+
+        $obj->setRequest($request);
 
         $response = new Response();
 

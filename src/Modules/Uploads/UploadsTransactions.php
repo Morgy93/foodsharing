@@ -2,6 +2,10 @@
 
 namespace Foodsharing\Modules\Uploads;
 
+use Foodsharing\Modules\Uploads\DTO\Image;
+use Foodsharing\Modules\Uploads\Exceptions\Base64DecodingException;
+use Foodsharing\Modules\Uploads\Exceptions\FileSizeTooBigException;
+use Foodsharing\Modules\Uploads\Exceptions\InvalidFileException;
 use Imagick;
 
 class UploadsTransactions
@@ -9,7 +13,7 @@ class UploadsTransactions
     /**
      * Returns the actual path of the file with the specified parameters.
      */
-    public function getFileLocation(string $uuid, int $width = 0, int $height = 0, int $quality = 0): string
+    public function generateFilePath(string $uuid, int $width = 0, int $height = 0, int $quality = 0): string
     {
         $filename = $uuid;
 
@@ -121,5 +125,70 @@ class UploadsTransactions
             $img->setImageCompressionQuality($quality);
         }
         $img->writeImage($output);
+    }
+
+    /**
+     * This method generates a temporary file, before it can be saved in the database and on the non-temporary harddrive location.
+     * It validates the image and remove exif data too.
+     *
+     * @return Image data of the temporary file
+     *
+     * @throws FileSizeTooBigException
+     * @throws Base64DecodingException
+     * @throws InvalidFileException
+     */
+    public function storeTemporaryValidatedFile(string $bodyBase64Encoded): Image
+    {
+        $maxBase64Size = 4 * (UploadAttributes::MAX_UPLOAD_FILE_SIZE / 3);
+        if (strlen($bodyBase64Encoded) > $maxBase64Size) {
+            throw new FileSizeTooBigException('file is bigger than ' . round(UploadAttributes::MAX_UPLOAD_FILE_SIZE / 1024 / 1024, 1) . ' MB');
+        }
+
+        $bodyDecoded = base64_decode($bodyBase64Encoded, true);
+        if (!$bodyDecoded) {
+            throw new Base64DecodingException('invalid body');
+        }
+
+        // generate & save temporary file
+        $temporaryFile = tempnam(sys_get_temp_dir(), 'fs_upload');
+        file_put_contents($temporaryFile, $bodyDecoded);
+
+        $bodyHashOfTemporaryFile = hash_file('sha256', $temporaryFile);
+        $sizeOfTemporaryFile = filesize($temporaryFile);
+        $mimeTypeOfTemporaryFile = mime_content_type($temporaryFile);
+
+        // image? check if its valid
+        if (!$this->isValidImage($temporaryFile)) {
+            unlink($temporaryFile);
+            throw new InvalidFileException('invalid image provided');
+        }
+
+        return new Image(
+            filePath: $temporaryFile,
+            fileSize: $sizeOfTemporaryFile,
+            hashedBody: $bodyHashOfTemporaryFile,
+            mimeType: $mimeTypeOfTemporaryFile
+        );
+    }
+
+    public function moveTemporaryFileToPermanentLocation(
+        string $temporaryFilePath,
+        string $reservedFilePathForPersistentFile,
+        string $temporaryFileMimeType
+    ): void {
+        $dir = dirname($reservedFilePathForPersistentFile);
+
+        // create parent directories if they don't exist yet
+        if (!file_exists($dir) && !mkdir($dir, 0775, true) && !is_dir($dir)) {
+            throw new \RuntimeException(sprintf('Directory "%s" was not created', $dir));
+        }
+
+        // JPEG? strip exif data!
+        if ($temporaryFileMimeType === 'image/jpeg') {
+            $this->stripImageExifData($temporaryFilePath, $reservedFilePathForPersistentFile);
+        } else {
+            // otherwise just move it
+            rename($temporaryFilePath, $reservedFilePathForPersistentFile);
+        }
     }
 }

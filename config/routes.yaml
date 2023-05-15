@@ -1,27 +1,22 @@
-spenden:
-  path: /spenden
-  controller: Symfony\Bundle\FrameworkBundle\Controller\RedirectController::urlRedirectAction
-  defaults:
-    path: https://spenden.foodsharing.de
-    permanent: true # 301
+index:
+  path: /
+  controller: Foodsharing\Entrypoint\IndexController
 
-freundeskreis:
-  path: /freundeskreis
-  controller: Symfony\Bundle\FrameworkBundle\Controller\RedirectController::urlRedirectAction
-  defaults:
-    path: https://spenden.foodsharing.de/freundeskreis
-    permanent: true # 301
+website:
+  type: annotation
+  prefix: /
+  resource: ../src/Modules/
 
-selfservice:
-  path: /selfservice
-  controller: Symfony\Bundle\FrameworkBundle\Controller\RedirectController::urlRedirectAction
-  defaults:
-    path: https://spenden.foodsharing.de/selfservice
-    permanent: true # 301
+xhr:
+  path: /xhr
+  controller: Foodsharing\Entrypoint\XhrController
 
-unterstuetzung:
-  path: /unterstuetzung
-  controller: Symfony\Bundle\FrameworkBundle\Controller\RedirectController::urlRedirectAction
-  defaults:
-    path: https://spenden.foodsharing.de
-    permanent: true # 301
+xhrapp:
+  path: /xhrapp
+  controller: Foodsharing\Entrypoint\XhrAppController
+
+mock:
+  type: annotation
+  prefix: /mock
+  resource: ../src/Mock/
+  condition: "'%kernel.environment%' in ['dev', 'test']"

@@ -87,14 +87,6 @@ Port: You can replicate this by doing the following at the end of your controlle
 return $this->renderGlobal();
 ```
 
-#### The controller sets $g_template (this is only the case for MapControl or MessageControl)
-
-Explanation: IndexController uses this global to determine the template to render.
-It is almost always set to the 'default' template.
-
-Port: Instead of setting $g_template,
-just pass the value it would be set to as an argument to `renderGlobal`.
-
 #### The controller takes a $response argument, and renders into it
 
 Explanation: Some controllers already use a Response object.

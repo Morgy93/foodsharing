@@ -81,6 +81,8 @@ class FoodsaverGateway extends BaseGateway
 					fs.sleep_status,
 					fs.rolle as role,
 					fs.last_login as last_activity,
+					fs.verified,
+					fs.bezirk_id as home_region,
                     if (isnull(fsbot.`bezirk_id`) , false, true) as isAdminOrAmbassadorOfRegion
 
 		    FROM	fs_foodsaver fs
@@ -98,11 +100,17 @@ class FoodsaverGateway extends BaseGateway
             ':regionId' => $regionId
         ]);
 
-        return array_map(function ($fs) use ($includeAdminFields) {
-            return RegionGroupMemberEntry::create($fs['id'], $fs['name'], $fs['photo'], $fs['sleep_status'],
-                $includeAdminFields ? $fs['role'] : null,
-                $includeAdminFields ? new DateTime($fs['last_activity']) : null,
-                $fs['isAdminOrAmbassadorOfRegion']);
+        return array_map(function ($foodsaver) use ($includeAdminFields, $regionId) {
+            $member = RegionGroupMemberEntry::create($foodsaver['id'], $foodsaver['name'], $foodsaver['photo'], $foodsaver['sleep_status'],
+                $foodsaver['isAdminOrAmbassadorOfRegion']);
+            if ($includeAdminFields) {
+                $member->role = $foodsaver['role'];
+                $member->lastActivity = new DateTime($foodsaver['last_activity']);
+                $member->isVerified = $foodsaver['verified'];
+                $member->isHomeRegion = $foodsaver['home_region'] == $regionId;
+            }
+
+            return $member;
         }, $res);
     }
 
@@ -943,6 +951,39 @@ class FoodsaverGateway extends BaseGateway
         );
     }
 
+    /**
+     * Returns the minimal profile data of one user.
+     *
+     * @param int $userId id of the foodsharer
+     *
+     * @return ?Profile the user's profile or null if the user id does not exist
+     */
+    public function getProfile(int $userId): ?Profile
+    {
+        $data = $this->db->fetchByCriteria(
+            'fs_foodsaver',
+            ['id', 'name', 'photo', 'sleep_status'],
+            ['id' => $userId]);
+
+        if (empty($data)) {
+            return null;
+        }
+
+        return new Profile(
+            $data['id'],
+            $data['name'],
+            $data['photo'],
+            $data['sleep_status']
+        );
+    }
+
+    /**
+     * Returns the minimal profile data of multiple users.
+     *
+     * @param int[] $fsIds ids of the foodsavers
+     *
+     * @return Profile[]
+     */
     public function getProfileForUsers(array $fsIds): array
     {
         $res = $this->db->fetchAllByCriteria(
@@ -983,6 +1024,19 @@ class FoodsaverGateway extends BaseGateway
         $existing = $this->db->fetchAllValuesByCriteria('fs_foodsaver', 'id', ['id' => $foodsaverIds, 'deleted_at' => null]);
 
         return count($foodsaverIds) === count($existing);
+    }
+
+    public function getUserFromEmail(string $email): array
+    {
+        return $this->db->fetchByCriteria(
+            'fs_foodsaver',
+            [
+                'id',
+                'name',
+                'email',
+            ],
+            ['email' => $email]
+        );
     }
 
     public function changeUserVerification(int $userId, int $actorId, bool $newStatus): void

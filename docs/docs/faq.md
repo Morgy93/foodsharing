@@ -7,7 +7,6 @@ A: The main architecture goals came from this book "[Modernizing Legacy Applicat
 
 A few current architecture goals would be:
 
-* only 1 php entrypoint (`index.php`), remove [xhr](deployment/requests)|xhrapp.php/etc
 * use symfony approach for handling all requests (some controllers do this already, others use the old way), in IndexController the `$isUsingResponse` switches behaviour based on that
 * create [REST](backend/api/introduction) controllers for all API use, remove all other API stuff
 * use a symfony router or similar (might also involve changing page urls to nice paths instead of get parameters + adding redirects)

@@ -47,9 +47,7 @@ class TeamControl extends Control
                 return;
             }
 
-            $this->routeHelper->go('/team');
-
-            return;
+            $this->routeHelper->goAndExit('/team');
         }
 
         if ($teamType = $this->uriStr(2)) {

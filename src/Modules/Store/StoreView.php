@@ -39,7 +39,7 @@ class StoreView extends View
         TimeHelper $timeHelper,
         TranslationHelper $translationHelper,
         WeightHelper $weightHelper,
-        TranslatorInterface $translator
+        TranslatorInterface $translator,
     ) {
         $this->weightHelper = $weightHelper;
         parent::__construct(
@@ -55,7 +55,7 @@ class StoreView extends View
             $sanitizerService,
             $timeHelper,
             $translationHelper,
-            $translator
+            $translator,
         );
     }
 
@@ -269,5 +269,10 @@ class StoreView extends View
         . $this->v_utils->v_info('<strong>' . $tstatus . '</strong>') . '</div>';
 
         return $html;
+    }
+
+    public function storeOwnList(): string
+    {
+        return $this->vueComponent('vue-store-own-list', 'StoreOwnList');
     }
 }

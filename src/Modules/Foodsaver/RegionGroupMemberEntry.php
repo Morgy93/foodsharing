@@ -14,11 +14,15 @@ class RegionGroupMemberEntry
 
     public int $sleepStatus;
 
-    public ?int $role;
+    public ?int $role = null;
 
     public ?DateTime $lastActivity;
 
     public bool $isAdminOrAmbassadorOfRegion;
+
+    public ?bool $isVerified = null;
+
+    public ?bool $isHomeRegion = null;
 
     public function __construct()
     {
@@ -26,7 +30,7 @@ class RegionGroupMemberEntry
         $this->name = null;
         $this->avatar = null;
         $this->sleepStatus = 0;
-        $this->role = 0;
+        $this->role = null;
         $this->lastActivity = null;
         $this->isAdminOrAmbassadorOfRegion = false;
     }
@@ -36,8 +40,6 @@ class RegionGroupMemberEntry
         ?string $name,
         ?string $avatar,
         int $sleepStatus,
-        ?int $role,
-        ?DateTime $lastActivity,
         bool $isAdminOrAmbassadorOfRegion): RegionGroupMemberEntry
     {
         $p = new RegionGroupMemberEntry();
@@ -45,8 +47,6 @@ class RegionGroupMemberEntry
         $p->name = $name;
         $p->avatar = $avatar;
         $p->sleepStatus = $sleepStatus;
-        $p->role = $role;
-        $p->lastActivity = $lastActivity;
         $p->isAdminOrAmbassadorOfRegion = $isAdminOrAmbassadorOfRegion;
 
         return $p;

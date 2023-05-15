@@ -293,8 +293,8 @@ pass:
     Foodsaver, die einen Ausweis bekommen haben und die Richtigkeit ihrer Persodaten bestätigt haben, können verifiziert werden.
   claim: "Teile Lebensmittel, anstatt sie wegzuwerfen!"
   verify:
-    do: "Account von {name} verifizieren"
-    undo: "Verifizierung von {name} aufheben"
+    do: "Account von {name} ({id}) verifizieren"
+    undo: "Verifizierung von {name} ({id}) aufheben"
     confirm: "Sicher?"
     text: |
       Persodaten gecheckt? <br/>
@@ -304,6 +304,7 @@ pass:
     checkPickups: "Vor dem Entverifizieren musst du die eingetragenen Abholtermine prüfen."
   button:
     verify: "Verifizieren"
+    unverify: "Entverifizieren"
     check: "Termine prüfen"
   noPhoto: "Die folgenden Personen haben noch kein Foto hochgeladen:"
   notGenerated: "Ihr Ausweis konnte daher nicht erstellt werden."
@@ -323,9 +324,11 @@ bcard:
   generate: "Visitenkarten erstellen"
   info:
     address_shortened: "Deine Anschrift und/oder PLZ + Ort werden auf der Visitenkarte gekürzt ausgegeben."
+  role: "Role/Region"
 
 group:
   name: "Name"
+  userId: "ID"
   description: "Beschreibung"
   photo: "Foto"
   last_activity: "Letzte Aktivität"
@@ -459,6 +462,7 @@ group:
     tooltip_function_region432: "Administrator*innen dieser Arbeitsgruppe können Meldungen einsehen"
     tooltip_function_region387: "Administrator*innen dieser Arbeitsgruppe können Einträge von der E-Mail-Bounceliste entfernen"
     tooltip_function_region327: "Administrator*innen dieser Arbeitsgruppe können Blogeinträge bearbeiten"
+    tooltip_function_region332: "Mitglieder dieser Arbeitsgruppe haben Zugriff auf die Kettenliste"
   show-all: "Alle anzeigen"
   member_list:
     remove_admin_title: "Als Admin austragen"
@@ -477,6 +481,8 @@ group:
     admin_mode_off: "Zurück zur Standard-Ansicht"
     old_edit_hint: "Die Mitgliederverwaltung findest du jetzt auf dem Reiter"
     old_edit_hint_link: "Mitglieder"
+    is_verified: "Verifiziert"
+    is_home_region: "Stammbezirk"
 
 legal:
   pp: "Datenschutzerklärung"
@@ -614,6 +620,8 @@ terminology:
   forum: "Forum"
   events: "Termine"
   stores: "Betriebe"
+  store: Betrieb
+  pickup: "Abholung"
   foodsharer:
     m: "Foodsharer"
     f: "Foodsharerin"
@@ -762,13 +770,25 @@ fsp:
     n_in_region: "{0} Keine Fairteiler in %name%| {1} Ein Fairteiler in %name%| [2, Inf[ %count% Fairteiler in %name%"
 
 storeview:
+  show_information: "Betriebs-Information anzeigen"
   store: "Betrieb"
+  common: "Allgemein"
+  visible_for_public: "Dieser Text ist für jeden Foodsaver sichtbar."
+  visible_for_team: "Dieser Text ist nur für das Abholteam sichtbar."
+  invalid_field: "Ungültiger Feldinhalt. Die Änderung kann nicht gespeichert werden."
+  contact:
+    name: "Name/Vorname"
+  management: "Verwaltung"
+  source_data: "Stammdaten"
+  select_related_region: "Auswahl des zuständigen Bezirkes"
   info: "Informationen"
   teamInfo: "Es sind <strong>{active}</strong> Aktive und <strong>{jumper}</strong> Springer im Team."
   counter: "<strong>{count}<span style=\"white-space:nowrap\"> </span>{suffix}</strong>"
   pickupCount: "Bei diesem Betrieb wurde {pickupCount} abgeholt."
   pickupWeight: "Es wurden {pickupWeight} gerettet."
   cooperation: "Kooperation seit {startTime}."
+  cooperation_start: "Kooperation seit"
+  cooperation_status: "Kooperationstatus"
   public_time: "Es wird in etwa {freq} abgeholt. Geh bitte niemals ohne Absprache zum Laden!"
   public_time_in_the_morning: "morgens"
   public_time_at_noon_or_afternoon: "mittags/nachmittags"
@@ -778,7 +798,21 @@ storeview:
   status_notes: "Statusnotizen"
   managers: "Verantwortliche Foodsaver"
   specials: "Besonderheiten"
+  team: "Abholteam"
   want_to_fetch: "In diesem Team würde ich gerne helfen."
+  public_and_statistics: "Statistik & Öffentlichkeitsarbeit"
+  no_permission_to_view: "Fehlende Berechtigung"
+  groceries:
+    label: "Welche Lebensmittel dürfen abgeholt werden?"
+    select_tag: "Wähle Lebensmittelkategorie"
+    search_tag: "Suche nach Lebensmittelkategorien"
+    no_match: "Keine passende Lebensmittelkategorie gefunden"
+    no_tag_preset: "Keine Lebensmittelkategorie vorhanden"
+  calendar_interval:
+    not_set: "Kein Zeitraum festgelegt"
+    single: "1 Woche"
+    multiply: "{weeks} Wochen"
+
 
 store:
   bread: "Alle Betriebe" #also in MapView
@@ -798,6 +832,7 @@ store:
   tooltip_managing: "Du bist verantwortlich für diesen Betrieb"
   tooltip_jumping: "Du bist Springer für diesen Betrieb"
   allStoresOfRegion: "Alle Betriebe aus dem Bezirk"
+  ownStores: "Eigene Betriebe"
   addNewStoresButton: "Neuen Betrieb eintragen"
   noStores: "Es sind noch keine Betriebe eingetragen"
   go: "Zur Teamseite"
@@ -930,6 +965,7 @@ storeedit:
     teamStatus2: "Es werden dringend noch Helfer*innen gesucht"
   add_success: "Kooperationsbetrieb wurde eingetragen"
   edit_success: "Änderungen wurden gespeichert"
+  unsuccess: "Änderungen konnte nicht übernommen werden."
   milestone:
     statuschanged: "Statusänderung am {date}"
     created: "{user} hat den Betrieb am {date} eingetragen"
@@ -1096,6 +1132,10 @@ forum:
     delete: "Beitrag löschen" #also in ThreadPostActions
     body: "Nachricht"
   thread:
+    delivery_mail:
+      title: "Mailversand"
+      active: "aktiviert"
+      non_active: "deaktiviert"
     with_mail: "Thema eröffnet und alle per E-Mail darüber informiert"
     no_mail: "Das Thema wurde eröffnet, ohne E-Mails zu versenden"
     too_big_to_mail: "Für das Thema wurden keine E-Mails versendet, da es sich um ein Land oder ein Bundesland handelt."
@@ -1269,7 +1309,7 @@ addresspicker:
   placeholder: "Bitte hier die Adresse suchen. Falls nötig, danach unten korrigieren."
   infobox: "Bitte gib die Adresse im Textfeld zwischen dieser Nachricht und der Karte ein und bestätige diese dann durch Auswahl in der Karte."
   infobox_profile: "<a href=\"https://wiki.foodsharing.de/Foodsharer\">Foodsharer</a> benötigen die Adresse, um Essenskörbe über die Webseite anbieten zu können. Um als <a href=\"https://wiki.foodsharing.de/Foodsaver\">Foodsaver</a> an Lebensmittelrettungen teilnehmen zu können, ist sie notwendig."
-
+  different_location: Adresse ist unabhängig von Geo-Position
 date:
   time: "{time} Uhr"
   clock: "Uhr"
@@ -1435,7 +1475,10 @@ list:
 memberlist:
   header_for_district: "Foodsaver im Bezirk {bezirk}"
   header_for_workgroup: "Foodsaver in der Arbeitsgruppe {bezirk}"
+
+filterlist:
   some_in_all: "({some} von {all})"
+  filter_for_name_id: "Name oder ID"
 
 genderlist:
   header_for_district: "Verteilung der Foodsaver nach Geschlecht in {bezirk}"
@@ -1670,6 +1713,10 @@ settings:
   saved: "Änderungen wurden gespeichert."
   passport:
     menu: "Ausweis"
+    verified_text: "Dieser Ausweis wird ohne Schnittmarken heruntergeladen. Das PDF ist vor Drucken und Bearbeiten geschützt.
+      Es soll nur auf dem Smartphone vorgezeigt werden. Solltest du einen gedruckten Ausweis benötigen, wende Dich an deine Botschafter."
+    non_verified_text: "Du bist noch nicht verifiziert. Nur verifizierten Foodsavern steht das Herunterladen vom Ausweis zur Verfügung."
+    button: "Ausweis herunterladen"
   calendar:
     menu: "Kalender"
     title: "Dein Abholkalender"
@@ -1724,7 +1771,7 @@ settings:
     disabled: "Push-Benachrichtigungen erfolgreich deaktiviert"
   name_change:
     title: Name (Vor- & Nachname)
-    desc: Der eigene Name kann nicht selbstständig geändert werden. Du kannst aber eine <a {link}">Namesänderung beantragen</a>.
+    desc: Der eigene Name kann nicht selbstständig geändert werden. Du kannst aber eine <a {link}">Namensänderung beantragen</a>.
     request: Namensänderung beantragen
     foodsaver_info: "Um deinen Namen zu ändern musst du eine*n Botschafter*in aus deinem Stammbezirk kontaktieren. Diese*r kann dann die Namensänderung für dich durchführen.<hr/>Wer Botschafter in deinem Stammbezirk ist, siehst du im <a {link}>Forum deines Bezirks</a> in der linken Seitenleiste."
     foodsharer_info: "Um deinen Namen zu ändern musst du uns eine Anfrage unter <a {link}>Support-Formular</a> erstellen."
@@ -1790,10 +1837,11 @@ profile:
     violations: "Meldungen <strong>({count})</strong>"
     storelist: "Betriebe ({count})"
   history:
-    noActor: "Es liegt keine Information über den Ersteller vor"
+    noActor: "unbekannt"
     noData: "Es liegen keine Daten vor."
     wasVerified: "Verifiziert"
     lostVerification: "Entverifiziert"
+    actionBy: "durch"
   notes:
     bread: "Notizen"
     title: "Notizen über {name}"
@@ -1853,7 +1901,7 @@ profile:
     oldReportButtonTextPart2: "Wendet euch bei Bedarf an die lokale Meldungsgruppe in eurem Bezirk."
     oldReportButtonTextPart3: "Mehr Infos zum Meldesystem findet ihr"
     reporterHasNoReportGroup: "Du kannst die technische Unterstützung des Meldesystemes nicht nutzen, da es in deinem Bezirk keine lokale Meldungsgruppe gibt."
-    noReportGroup: "Du kannst die technische Unterstützung des Meldesystems nicht nutzen, da diese für den Bezirk des Foodsaver nicht aktiviert ist."
+    noReportGroup: "Du kannst die technische Unterstützung des Meldesystems nicht nutzen, da diese für den Bezirk des Foodsavers nicht aktiviert ist."
     reportedAdminNoArbitration: "Du kannst keine Meldung gegen {name} absetzen, da diese*r Administrator*in der lokalen Meldungsgruppe des Bezirkes ist und dort keine Schiedstelle existiert."
     reporterAdminNoArbitration: "Du bist Administrator*in der lokalen Meldungsgruppe und da es keine lokale Schiedsstelle gibt, kannst du keine Meldung absetzen."
     repAdminAgainstArbAdmin: "Du bist Administrator*in des Meldebearbeitungsteams und willst eine*n Administrator*in der Schiedsstelle melden. Dies wird im Moment technisch nicht unterstützt. Du kannst jederzeit eine Meldung per E-Mail an die für euch lokal Verantwortlichen für diesen Fall einreichen."
@@ -2163,6 +2211,7 @@ menu:
     events: "Termine"
     members: "Mitglieder"
     workingGroupEdit: "Gruppe verwalten"
+    chainList: "Kettenübersicht"
     aboutUs: "Über uns"
     fundamentals: "Grundsätze"
     blog: "Blog"
@@ -2250,6 +2299,7 @@ storestatus:
 storelist:
  entered: "Eingetragen:"
  status: "Status"
+ isManaging: "Verantwortlich"
  name: "Name"
  address: "Straße"
  addressdata: "Anschrift"
@@ -2508,6 +2558,7 @@ poll:
     option_text: "Option"
     percentage_of_votes: "Wahlbeteiligung"
     sum: "Summe"
+    average: "Mittelwert"
   submit_vote_question: "Wirklich jetzt abstimmen? Deine Auswahl kann danach nicht mehr geändert werden."
   eligible_votes_count: "Anzahl der Stimmberechtigten"
   edit:
@@ -2564,7 +2615,7 @@ startpage:
      Haushalten sowie von Betrieben, stehen im Dialog mit der Politik und tragen unsere Vision in die Welt hinaus."
   call_to_action:
     title: "Mach mit"
-    text: "Wir entstanden 2012, mittlerweile sind wir eine internationale Bewegung  mit über 200.000 Nutzer*innen
+    text: "Wir entstanden 2012, mittlerweile sind wir eine internationale Bewegung  mit über 500.000 Nutzer*innen
       in Deutschland, Österreich, Schweiz und weiteren europäischen Ländern."
   member:
     title: "als Mitglied"
@@ -2644,6 +2695,77 @@ numbers:
   million_abbreviation: " Mio."
   billion_abbreviation: " Mrd."
 
+chain:
+  listheader: Betriebsketten
+  filterplaceholder: Name / Adresse / KAM ID
+  columns:
+    status: Status
+    name: Name
+    stores: Betriebe
+    headquarters: Zentrale
+    kams: KAMs
+    notes: Hinweise
+  new: Neue Kette eintragen
+  allowpress: Öffentliche Nennung erlaubt.
+  tooltips:
+    modification_date: Zuletzt bearbeitet
+    options: Optionen
+  options:
+    showstores: Betriebe anzeigen
+    edit: Bearbeiten
+  inputmodal:
+    title:
+      edit: Kette bearbeiten
+      new: Kette erstellen
+    inputs:
+      name:
+        label: Name
+        invalidfeedback: Name darf nicht leer sein
+        placeholder: Name der Kette
+      headquarters:
+        label: Zentrale
+        placeholder:
+          zip: Plz.
+          city: Stadt
+      status:
+        label: Status
+      thread:
+        label: Forum-Thread
+        invalidfeedback: Ungültige Eingabe. Thread-Id oder Link benötigt.
+        description: Id eines Forum-Threads. Link einfügen zur automatischen Erkennung.
+      kam:
+        label: KAMs
+        invalidfeedback: Ungültige Eingabe. Ein oder mehrere Nutzer-Ids benötigt.
+        description: Nutzer-Ids der Key-Account-Manager, ggf. mit Komma getrennt.
+      press:
+        label: Presse
+        description: Öffentliche Nennung der Kooperation erlauben
+      notes:
+        label: Notizen
+        invalidfeedback: Notizen dürfen nicht länger als 200 Zeichen sein.
+        description: Hinweise, die in der Kettenübersicht angezeigt werden.
+      details:
+        label: Infos für Betriebe
+        description: Hinweise, die auf Betriebsseiten angezeigt werden, die zur Kette gehören.
+    cancel: Abbrechen
+    ok: Speichern
+  detailsmodal:
+    title: Betriebe der Kette {chain}
+    nostores: Keine Betriebe
+    stores: "Betriebe:"
+  status:
+    cooperating: Kooperiert
+    negotiating: In Verhandlung
+    notcooperating: Kooperiert nicht
+    filterplaceholder: Status
+  error:
+    create: Kette konnte nicht erstellt werden.
+    edit: Kette konnte nicht bearbeitet werden.
+    notfs: Zum ansehen dieser Liste musst du Foodsaver sein.
+  bread:
+    workinggroup: Betriebsketten
+    list: Übersicht
+  pagetitle: Betriebsketten
 error:
   mail_bounce:
     title: "Gesperrte E-Mail-Adresse!"
@@ -2698,13 +2820,13 @@ system_administration:
 navigation:
   map: Karte
   promotion: In der IT? Wir brauchen dich!
-  contact: Kontakt
+  contact: Kontakt & Support
   whats_new: Was ist neu?
   styleguide: Styleguide
+  news_from_it: Aktuelles & Störungen
   support: Support
   help_needed: Hilfe nötig?
   help: Hilfe
-  help_and_support: Hilfe & Support
   wiki: Wiki
   regions: Bezirke
   groups: Gruppen

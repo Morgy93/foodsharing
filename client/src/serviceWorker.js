@@ -15,12 +15,35 @@ self.addEventListener('push', function (event) {
 })
 
 self.addEventListener('notificationclick', function (event) {
-  if (event.notification.data.action) {
-    const page = event.notification.data.action.page
-    const params = event.notification.data.action.params
-    const url = urls[page](...params)
-    self.clients.openWindow(url)
-  }
+  event.waitUntil((async () => {
+    const notifications = await self.registration.getNotifications()
+    if (event.notification.data.action) {
+      const { page, params } = event.notification.data.action
+      const url = urls[page](...params)
+      event.notification.close() // for android users you have to explicitly close the notification
+      const notificationOfSameKind = notifications.filter(notification => notification.data.action.page === page)
+      switch (page) {
+        case 'conversations': // close all notifications of the same thread
+          notificationOfSameKind
+            .filter(notification => JSON.stringify(notification.data.action.params) === JSON.stringify(params))
+            .forEach(notification => notification.close())
+          break
+        default: // close notification of the same kind
+          notificationOfSameKind.forEach(notification => notification.close())
+      }
+      // open a new window or focus the foodsharing tab of same kind
+      return await self.clients.matchAll({ type: 'window' }).then((clients) => {
+        for (const client of clients) {
+          const clientUrl = new URL(client.url)
+          const notificationUrl = new URL(clientUrl.host + url)
+          if (clientUrl.searchParams.get('page') === notificationUrl.searchParams.get('page')) {
+            return client.focus().then(() => client.navigate(url))
+          }
+        }
+        return self.clients.openWindow(url)
+      })
+    }
+  })())
 })
 
 // Time to time, browsers decide to reset their push subscription data. Then all subscriptions for this browser become invalid, and we need to register a new one.

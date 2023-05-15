@@ -183,6 +183,8 @@ bcard:
   for: '{role} per {region}'
   card: Il tuo biglietto da visita
   title: Generatore biglietto da visita
+  role: Rotolo/Distretto
+
 pass:
   button:
     check: Controlla gli appuntamenti
@@ -194,8 +196,8 @@ pass:
     failed: Si è verificato un problema
     text: "Dati personali controllati?<br/>\nConsegnato l'ID carta?\n"
     confirm: sicuro?
-    undo: Annulla verifica {name}
-    do: Verifica l'account di {name}
+    undo: Annulla verifica {name} ({id})
+    do: Verifica l'account di {name} ({id})
   notGenerated: Non è stato possibile creare il tuo ID.
   noPhoto: 'Le seguenti persone non hanno ancora caricato una foto:'
   claim: Condividi il cibo invece di buttarlo via!
@@ -553,6 +555,7 @@ login:
   form_title: registrare Ben tornato
   topbar: Accedi
   submit_btn: Accedi
+  steady_login: Resta connesso
 salutation:
   "3": Cara/o
   "2": Cara
@@ -914,7 +917,7 @@ startpage:
   call_to_action:
     title: Partecipa
     text: Siamo stati fondati nel 2012 e ora siamo un movimento internazionale con
-      oltre 200.000 utenti in Germania, Austria, Svizzera e altri paesi europei.
+      oltre 500.000 utenti in Germania, Austria, Svizzera e altri paesi europei.
   demands:
     text: "\"Piano d'azione con l'aiuto ambientale tedesco\npubblicato in occasione\
       \ del 6° compleanno del foodsharing il 12.12.2018. Per salvare la Germania da\
@@ -1358,7 +1361,7 @@ wall:
   info-somebody-else: Questo post è più vecchia di un mese, quindi tu come responsabile
     puoi rimuoverla se necessario.
   delete: eliminare il post
-  see-more: Mostra più post
+  see-more: Mostra tutti i post
   message_placeholder: Scrivere messaggio…
   error-create: Non è stato possibile salvare la tua immissione in Bacheca.
   created: Fantastico, la tua immissione in bacheca è stata salvata.
@@ -1520,6 +1523,7 @@ genderlist:
 memberlist:
   header_for_workgroup: Foodsaver nel gruppo di lavoro {distretto}
   header_for_district: Foodsaver nel distretto {distretto}
+filterlist:
   some_in_all: ({some} da {all})
 list:
   filter_for: Filtra per…
@@ -1902,7 +1906,7 @@ profile:
     lostVerification: Deverificato
     wasVerified: Verificato
     noData: Non ci sono dati disponibili.
-    noActor: Non ci sono informazioni sul creatore
+    noActor: sconosciuto
   nav:
     storelist: Agenzie ({count})
     violations: Messaggi <strong>({count})</strong>
@@ -2006,7 +2010,7 @@ settings:
     mail: Sì, vorrei essere informato dei nuovi messaggi via e-mail.
     thread: Tieniti aggiornato sull'argomento del forum "{thread}"?
   notifications: Notifiche
-  header: I tuoi dati/impostazioni
+  header: I tuoi impostazioni
   title: Impostazioni
 mailbox:
   mark_as_unread: Contrassegnare come non letto

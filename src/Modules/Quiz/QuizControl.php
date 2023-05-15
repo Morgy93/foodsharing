@@ -41,9 +41,9 @@ class QuizControl extends Control
         parent::__construct();
 
         if (!$this->session->mayRole()) {
-            $this->routeHelper->goLogin();
+            $this->routeHelper->goLoginAndExit();
         } elseif (!$this->quizPermissions->mayEditQuiz()) {
-            $this->routeHelper->go('/');
+            $this->routeHelper->goAndExit('/');
         }
     }
 
@@ -64,7 +64,7 @@ class QuizControl extends Control
             if (isset($_GET['id'])) {
                 $this->listQuiz($_GET['id']);
             } else {
-                $this->routeHelper->go('/?page=quiz&id=1');
+                $this->routeHelper->goAndExit('/?page=quiz&id=1');
             }
 
             $this->pageHelper->addContent($this->view->topbar('Quiz' . $topbtn, $slogan, '<img src="/img/quiz.png" />'), CNT_TOP);
@@ -140,7 +140,7 @@ class QuizControl extends Control
 
                     if ($updatedQuizId = $this->quizGateway->updateQuiz($quizId, $name, $desc, $maxFailurePoints, $questionCount)) {
                         $this->flashMessageHelper->success('Quiz wurde erfolgreich geändert!');
-                        $this->routeHelper->go('/?page=quiz&id=' . (int)$updatedQuizId);
+                        $this->routeHelper->goAndExit('/?page=quiz&id=' . (int)$updatedQuizId);
                     }
                 }
             }
@@ -161,7 +161,7 @@ class QuizControl extends Control
 
                 if ($quizId = $this->quizGateway->addQuiz($name, $desc, $maxFailurePoints, $questionCount)) {
                     $this->flashMessageHelper->success('Quiz wurde erfolgreich angelegt!');
-                    $this->routeHelper->go('/?page=quiz&id=' . (int)$quizId);
+                    $this->routeHelper->goAndExit('/?page=quiz&id=' . (int)$quizId);
                 }
             }
         }

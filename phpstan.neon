@@ -30,8 +30,6 @@ parameters:
     -
       message: '#Property [a-zA-Z0-9\\_]+::\$[a-zA-Z]+ is never read, only written.#'
       paths:
-        - src/Lib/FoodsharingController.php
-        - src/Modules/Core/Control.php
         - src/Modules/Dashboard/DashboardControl.php
     # LEVEL 5+ some legacy code calling legacy library code:
     -

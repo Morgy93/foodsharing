@@ -59,7 +59,7 @@ class EmailView extends View
 			$("#' . $id . '-abort").button().on("click", function () {
 				showLoader();
 				$.ajax({
-					url: "/xhr.php?f=abortEmail",
+					url: "/xhr?f=abortEmail",
 					data: {id:' . (int)$mail['id'] . '},
 					complete: function () {
 						hideLoader();
@@ -74,7 +74,7 @@ class EmailView extends View
 				showLoader();
 				$.ajax({
 					dataType: "json",
-					url: "/xhr.php?f=continueMail&id=' . (int)$mail['id'] . '",
+					url: "/xhr?f=continueMail&id=' . (int)$mail['id'] . '",
 					success: function (data) {
 						$("#' . $id . '-continue").hide();
 						if (data.status == 1) {
@@ -238,12 +238,12 @@ class EmailView extends View
 			clickFolderMode: 3,
 			activeVisible: true,
 			initAjax: {
-				url: "/xhr.php?f=bezirkTree",
+				url: "/xhr?f=bezirkTree",
 				data: {p: "0"}
 			},
 			onLazyRead: function (node) {
 				node.appendAjax({
-					url: "/xhr.php?f=bezirkTree",
+					url: "/xhr?f=bezirkTree",
 					data: {"p": node.data.ident},
 					dataType: "json",
 					success: function (node) {},

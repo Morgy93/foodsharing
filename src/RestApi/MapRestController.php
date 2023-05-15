@@ -5,9 +5,10 @@ namespace Foodsharing\RestApi;
 use Foodsharing\Lib\Session;
 use Foodsharing\Modules\Core\DBConstants\Region\RegionPinStatus;
 use Foodsharing\Modules\Core\DBConstants\Store\CooperationStatus;
-use Foodsharing\Modules\Core\DBConstants\Store\TeamStatus;
+use Foodsharing\Modules\Core\DBConstants\Store\TeamSearchStatus;
 use Foodsharing\Modules\Map\MapGateway;
 use Foodsharing\Modules\Region\RegionGateway;
+use Foodsharing\Modules\Store\StoreGateway;
 use FOS\RestBundle\Controller\AbstractFOSRestController;
 use FOS\RestBundle\Controller\Annotations as Rest;
 use FOS\RestBundle\Request\ParamFetcher;
@@ -18,18 +19,12 @@ use Symfony\Component\HttpKernel\Exception\UnauthorizedHttpException;
 
 class MapRestController extends AbstractFOSRestController
 {
-    private MapGateway $mapGateway;
-    private RegionGateway $regionGateway;
-    private Session $session;
-
     public function __construct(
-        MapGateway $mapGateway,
-        RegionGateway $regionGateway,
-        Session $session
+        private MapGateway $mapGateway,
+        private RegionGateway $regionGateway,
+        private StoreGateway $storeGateway,
+        private Session $session
     ) {
-        $this->mapGateway = $mapGateway;
-        $this->regionGateway = $regionGateway;
-        $this->session = $session;
     }
 
     /**
@@ -61,16 +56,16 @@ class MapRestController extends AbstractFOSRestController
             }
 
             $excludedStoreTypes = [];
-            $teamStatus = [];
+            $teamSearchStatus = [];
             $status = $paramFetcher->get('status');
             if (is_array($status) && !empty($status)) {
                 foreach ($status as $s) {
                     switch ($s) {
                         case 'needhelpinstant':
-                            $teamStatus[] = TeamStatus::OPEN_SEARCHING;
+                            $teamSearchStatus[] = TeamSearchStatus::OPEN_SEARCHING;
                             break;
                         case 'needhelp':
-                            $teamStatus[] = TeamStatus::OPEN;
+                            $teamSearchStatus[] = TeamSearchStatus::OPEN;
                             break;
                         case 'nkoorp':
                             $excludedStoreTypes = array_merge($excludedStoreTypes, [
@@ -81,7 +76,7 @@ class MapRestController extends AbstractFOSRestController
                 }
             }
 
-            $markers['betriebe'] = $this->mapGateway->getStoreMarkers($excludedStoreTypes, $teamStatus);
+            $markers['betriebe'] = $this->storeGateway->getStoreMarkers($excludedStoreTypes, $teamSearchStatus);
         }
 
         return $this->handleView($this->view($markers, 200));

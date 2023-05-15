@@ -120,7 +120,7 @@ class fSession
 				if (!isset($tip[$array_key])) {
 					$tip[$array_key] = array();
 				} elseif (!is_array($tip[$array_key])) {
-					throw new fProgrammerException(
+					throw new fException(
 						'%1$s was called for the key, %2$s, which is not an array',
 						__CLASS__ . '::add()',
 						$original_key
@@ -134,7 +134,7 @@ class fSession
 		if (!isset($tip[$key])) {
 			$tip[$key] = array();
 		} elseif (!is_array($tip[$key])) {
-			throw new fProgrammerException(
+			throw new fException(
 				'%1$s was called for the key, %2$s, which is not an array',
 				__CLASS__ . '::add()',
 				$key
@@ -226,7 +226,7 @@ class fSession
 				if (!isset($tip[$array_key])) {
 					return $value;
 				} elseif (!is_array($tip[$array_key])) {
-					throw new fProgrammerException(
+					throw new fException(
 						'%1$s was called for an element, %2$s, which is not an array',
 						__CLASS__ . '::delete()',
 						$original_key
@@ -279,7 +279,7 @@ class fSession
 	public static function enablePersistence()
 	{
 		if (self::$persistent_timespan === null) {
-			throw new fProgrammerException(
+			throw new fException(
 				'The method %1$s must be called with the %2$s parameter before calling %3$s',
 				__CLASS__ . '::setLength()',
 				'$persistent_timespan',
@@ -353,7 +353,7 @@ class fSession
 	public static function ignoreSubdomain()
 	{
 		if (self::$open || isset($_SESSION)) {
-			throw new fProgrammerException(
+			throw new fException(
 				'%1$s must be called before any of %2$s, %3$s, %4$s, %5$s, %6$s, %7$s or %8$s',
 				__CLASS__ . '::ignoreSubdomain()',
 				__CLASS__ . '::add()',
@@ -373,7 +373,7 @@ class fSession
 		} elseif (isset($_SERVER['HTTP_HOST'])) {
 			$domain = $_SERVER['HTTP_HOST'];
 		} else {
-			throw new fEnvironmentException(
+			throw new fException(
 				'The domain name could not be found in %1$s or %2$s. Please set one of these keys to use %3$s.',
 				'$_SERVER[\'SERVER_NAME\']',
 				'$_SERVER[\'HTTP_HOST\']',
@@ -483,7 +483,7 @@ class fSession
 				if (!isset($tip[$array_key])) {
 					return null;
 				} elseif (!is_array($tip[$array_key])) {
-					throw new fProgrammerException(
+					throw new fException(
 						'%1$s was called for the key, %2$s, which is not an array',
 						__CLASS__ . '::remove()',
 						$original_key
@@ -497,7 +497,7 @@ class fSession
 		if (!isset($tip[$key])) {
 			return null;
 		} elseif (!is_array($tip[$key])) {
-			throw new fProgrammerException(
+			throw new fException(
 				'%1$s was called for the key, %2$s, which is not an array',
 				__CLASS__ . '::remove()',
 				$key
@@ -573,7 +573,7 @@ class fSession
 	public static function setLength($normal_timespan, $persistent_timespan = null)
 	{
 		if (self::$open || isset($_SESSION)) {
-			throw new fProgrammerException(
+			throw new fException(
 				'%1$s must be called before any of %2$s, %3$s, %4$s, %5$s, %6$s, %7$s or %8$s',
 				__CLASS__ . '::setLength()',
 				__CLASS__ . '::add()',
@@ -611,7 +611,7 @@ class fSession
 	public static function setPath($directory)
 	{
 		if (self::$open || isset($_SESSION)) {
-			throw new fProgrammerException(
+			throw new fException(
 				'%1$s must be called before any of %2$s, %3$s, %4$s, %5$s, %6$s, %7$s or %8$s',
 				__CLASS__ . '::setPath()',
 				__CLASS__ . '::add()',
@@ -629,7 +629,7 @@ class fSession
 		}
 
 		if (!$directory->isWritable()) {
-			throw new fEnvironmentException(
+			throw new fException(
 				'The directory specified, %s, is not writable',
 				$directory->getPath()
 			);

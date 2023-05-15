@@ -5,6 +5,7 @@ namespace Foodsharing\Modules\Foodsaver;
 use Foodsharing\Lib\Session;
 use Foodsharing\Lib\View\Utils;
 use Foodsharing\Modules\Core\DBConstants\Foodsaver\Role;
+use Foodsharing\Modules\Core\DBConstants\Unit\UnitType;
 use Foodsharing\Modules\Core\View;
 use Foodsharing\Utility\DataHelper;
 use Foodsharing\Utility\IdentificationHelper;
@@ -164,8 +165,12 @@ class FoodsaverView extends View
 			$("#lon-wrapper").hide();
 		');
 
-        $regionPicker = $this->v_utils->v_regionPicker($regionDetails ?: [], $this->translator->trans('terminology.homeRegion'));
-        $link = '<a href="/?page=settings&sub=general">' . $this->translator->trans('terminology.settings') . '</a>';
+        $regionPicker = $this->vueComponent('region-tree-vform', 'RegionTreeVForm', [
+            'title' => $this->translator->trans('terminology.homeRegion'),
+            'inputName' => 'bezirk_id',
+            'initialValue' => $regionDetails,
+            'selectableRegionTypes' => [UnitType::CITY, UnitType::DISTRICT, UnitType::REGION, UnitType::WORKING_GROUP, UnitType::PART_OF_TOWN],
+        ]);
 
         $g_data['ort'] = $g_data['stadt'];
         foreach (['anschrift', 'plz', 'ort', 'lat', 'lon'] as $i) {

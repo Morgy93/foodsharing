@@ -1,5 +1,7 @@
 <?php
 
+/* If you make changes here check if changes at the production server are needed */
+
 /* Adding Whoops during testing can be very useful as the screenshots in the tests/_output folder can show a nice
      error message. It also catches warnings and the whole site runs in a way that is always throwing warnings out.
      But hopefully we fix all those at some point :)
@@ -46,12 +48,14 @@ define('REDIS_PORT', 6379);
 define('DELAY_MICRO_SECONDS_BETWEEN_MAILS', 1330000);
 
 define('IMAP', []);
+define('IMAP_FAILED_BOX', 'INBOX/FailedProcessing');
 
 define('BOUNCE_IMAP_HOST', null);
 define('BOUNCE_IMAP_USER', null);
 define('BOUNCE_IMAP_PASS', null);
 define('BOUNCE_IMAP_PORT', null);
 define('BOUNCE_IMAP_SERVICE_OPTION', null);
+define('BOUNCE_IMAP_UNPROCESSED_BOX', null);
 
 if (!defined('ROOT_DIR')) {
     define('ROOT_DIR', './');

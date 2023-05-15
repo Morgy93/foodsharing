@@ -44,7 +44,7 @@ final class ProfileControl extends Control
         parent::__construct();
 
         if (!$profileId = $this->uriInt(2)) {
-            $this->routeHelper->goPage('dashboard');
+            $this->routeHelper->goPageAndExit('dashboard');
         }
 
         $viewerId = $this->session->id() ?? -1; // -1 carries special meaning for `profileGateway:getData`
@@ -59,7 +59,7 @@ final class ProfileControl extends Control
 
         if ($isRemoved) {
             $this->flashMessageHelper->error($this->translator->trans('profile.notFound'));
-            $this->routeHelper->goPage('dashboard');
+            $this->routeHelper->goPageAndExit('dashboard');
         }
 
         $this->foodsaver = $data;
@@ -98,7 +98,7 @@ final class ProfileControl extends Control
             $storeList = $this->profileGateway->listStoresOfFoodsaver($fsId);
             $this->view->userNotes($userNotes, $storeList);
         } else {
-            $this->routeHelper->go('/profile/' . $fsId);
+            $this->routeHelper->goAndExit('/profile/' . $fsId);
         }
     }
 

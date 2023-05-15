@@ -42,7 +42,7 @@ class Session
 
     private const DEFAULT_NORMAL_SESSION_TIMESPAN = '24 hours';
 
-    private const DEFAULT_PERSISTENT_SESSION_TIMESPAN = '14 days';
+    private const DEFAULT_PERSISTENT_SESSION_TIMESPAN = '38 years';
 
     public function __construct(
         private Mem $mem,

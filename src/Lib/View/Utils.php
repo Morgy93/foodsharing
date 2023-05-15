@@ -57,6 +57,9 @@ class Utils
         return $this->v_field('<div class="v-form">' . $this->v_form($title, $elements, $option) . '</div>', $title);
     }
 
+    /**
+     * @deprecated use the vue components RegionTree or RegionTreeVForm instead
+     */
     public function v_regionPicker(array $region, string $label): string
     {
         $id = $this->identificationHelper->id('bezirk_id');
@@ -104,11 +107,11 @@ class Utils
 			checkbox: true,
 			selectMode: 1,
 			initAjax: {
-				url: "/xhr.php?f=bezirkTree",
+				url: "/xhr?f=bezirkTree",
 				data: {p: "0"}
 			},
 			onLazyRead: function (node) {
-				node.appendAjax({url: "/xhr.php?f=bezirkTree",
+				node.appendAjax({url: "/xhr?f=bezirkTree",
 					data: {"p": node.data.ident},
 					dataType: "json",
 					success: function (node) {},

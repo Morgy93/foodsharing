@@ -1,5 +1,5 @@
-<!-- Extension of the LeafletMap that contains a single marker for choosing a location.
-  The chosen coordinates are emitted in a "coordinates-change" event. -->
+<!-- Extension of the LeafletMap that contains a single marker for marking or choosing a location. The marker can new made draggable.
+  In this case, the chosen coordinates are emitted in a "coordinates-changed" event when dropping the marker. -->
 <template>
   <leaflet-map
     ref="leafletMap"
@@ -10,6 +10,8 @@
       ref="marker"
       :lat-lng="coordinates"
       :icon="icon"
+      :draggable="markerDraggable"
+      @dragend="onMarkerDragEnd"
     />
   </leaflet-map>
 </template>
@@ -23,22 +25,34 @@ export default {
   components: { LeafletMap, LMarker },
   props: {
     zoom: { type: Number, required: true },
-    coordinates: { type: Array, required: true },
+    coordinates: { type: Object, required: true },
     icon: { type: Object, required: true },
+    markerDraggable: { type: Boolean, default: false },
   },
-  data () {
-    return {
-      coords: this.coordinates,
-    }
-  },
-  mounted () {
-    // update the marker's location when the map is moved
-    const map = this.$refs.leafletMap.getMapObject()
-    map.on('move', () => {
-      this.coords = map.getCenter()
-      this.$refs.marker.setLatLng(this.coords)
-      this.$emit('coordinates-change', [this.coords.lat, this.coords.lng])
-    })
+  methods: {
+    /**
+     * Sets the marker to new coordinates and centers the map on it.
+     */
+    centerMapAndMarker (coordinates) {
+      this.$refs.leafletMap.centerMap(coordinates)
+      this.$refs.marker.setLatLng(coordinates)
+    },
+    /**
+     * Sets the map's boundaries to the rectangular spanned by the two coordinates.
+     */
+    setBounds (coordUpperLeft, coordLowerRight) {
+      this.$refs.leafletMap.setBounds(coordUpperLeft, coordLowerRight)
+    },
+    /**
+     * Sets the map's zoom to a new value.
+     */
+    setZoom (zoom) {
+      this.$refs.leafletMap.setZoom(zoom)
+    },
+    onMarkerDragEnd (event) {
+      const coords = event.target.getLatLng()
+      this.$emit('coordinates-changed', { lat: coords.lat, lon: coords.lng })
+    },
   },
 }
 </script>

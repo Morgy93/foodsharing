@@ -151,6 +151,9 @@ class View
 		</div>';
     }
 
+    /**
+     * @deprecated use the Vue components LeafletLocationPicker and LeafletLocationSearch instead
+     */
     public function latLonPicker(string $id, array $options = [], string $context = ''): string
     {
         if (!isset($options['location'])) {

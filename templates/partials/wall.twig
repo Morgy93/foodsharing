@@ -12,7 +12,7 @@
         <a href="#" id="wall-submit">{{ 'button.send'|trans }}</a>
         <div style="overflow:hidden;height:1px;">
             <form id="wallpost-attachimage-form"
-                  action="/xhrapp.php?app=wallpost&m=attachimage&table={{ module }}&id={{ wallId }}" method="post"
+                  action="/xhrapp?app=wallpost&m=attachimage&table={{ module }}&id={{ wallId }}" method="post"
                   enctype="multipart/form-data" target="wallpost-frame">
                 <input id="wallpost-attach-trigger" type="file" maxlength="100000" size="chars" name="etattach"/>
             </form>

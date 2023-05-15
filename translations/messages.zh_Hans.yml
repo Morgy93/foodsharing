@@ -6,7 +6,7 @@ description: 描述
 desc: 描述
 edit: 改写
 nachname: 姓名
-geb_datum: 生日日期
+geb_datum: 出生日期 (YYYY-MM-DD)
 handy: 手机号码
 telefon: 电话号码
 attachement: 附件

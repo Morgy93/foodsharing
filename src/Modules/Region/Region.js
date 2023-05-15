@@ -24,6 +24,7 @@ import { leaveRegion } from '@/api/regions'
 // Wallpost
 import '../WallPost/WallPost.css'
 import { initWall } from '@/wall'
+import NewThread from './components/NewThread.vue'
 
 $(document).ready(() => {
   $('a[href=\'#signout\']').on('click', function () {
@@ -79,6 +80,11 @@ $(document).ready(() => {
         Thread,
       })
       vueApply('#vue-thread')
+    } else if (GET('newthread')) {
+      vueRegister({
+        NewThread,
+      })
+      vueApply('#vue-new-thread', true)
     } else if (!GET('newthread')) {
       vueRegister({
         ThreadList,

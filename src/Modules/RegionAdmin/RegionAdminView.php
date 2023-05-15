@@ -15,7 +15,7 @@ class RegionAdminView extends View
 			alert(node.data.ident);
 		},
 		initAjax: {
-			url: "/xhr.php?f=bezirkTree",
+			url: "/xhr?f=bezirkTree",
 			data: {p: "0"}
 		},
 		onActivate: function (node){
@@ -24,7 +24,7 @@ class RegionAdminView extends View
 			$("#' . $id . '-hidden").val(node.data.ident);
 			$("#' . $id . '-hidden-name").val(node.data.title);
 			$.ajax({
-				url: "/xhr.php?f=getBezirk",
+				url: "/xhr?f=getBezirk",
 				data: {"id": node.data.ident},
 				dataType: "json",
 				success: function (data) {
@@ -98,7 +98,7 @@ class RegionAdminView extends View
 		},
 		onLazyRead: function (node) {
 			node.appendAjax({
-				url: "/xhr.php?f=bezirkTree",
+				url: "/xhr?f=bezirkTree",
 				data: {"p": node.data.ident},
 				dataType: "json",
 				success: function (node) {},

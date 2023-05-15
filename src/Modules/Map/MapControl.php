@@ -4,23 +4,21 @@ namespace Foodsharing\Modules\Map;
 
 use Foodsharing\Modules\Core\Control;
 use Foodsharing\Modules\Core\DBConstants\Foodsaver\Role;
+use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\HttpFoundation\Response;
 
 class MapControl extends Control
 {
-    private MapGateway $mapGateway;
-
-    public function __construct(MapGateway $mapGateway, MapView $view)
+    public function __construct(private readonly MapGateway $mapGateway, MapView $view)
     {
         $this->view = $view;
-        $this->mapGateway = $mapGateway;
 
         parent::__construct();
     }
 
-    public function index()
+    public function index(Request $request, Response $response)
     {
         $this->pageHelper->addTitle($this->translator->trans('map.title'));
-        $this->setTemplate('map');
 
         if ($this->session->mayRole()) {
             $center = $this->mapGateway->getFoodsaverLocation($this->session->id());
@@ -55,5 +53,7 @@ class MapControl extends Control
         }
 
         $this->pageHelper->addJs('map.initMarker(' . $jsarr . ');');
+
+        $response->setContent($this->render('layouts/map.twig'));
     }
 }

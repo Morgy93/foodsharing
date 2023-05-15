@@ -37,7 +37,7 @@ class ChangePickupTimeCest
             'id' => 1
         ];
 
-        $I->sendGET('/xhr.php', $request);
+        $I->sendGET('/xhr', $request);
         $I->seeResponseCodeIs(\Codeception\Util\HttpCode::OK);
         $I->seeResponseIsJson();
     }

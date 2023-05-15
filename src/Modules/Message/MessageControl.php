@@ -3,6 +3,8 @@
 namespace Foodsharing\Modules\Message;
 
 use Foodsharing\Modules\Core\Control;
+use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\HttpFoundation\Response;
 
 final class MessageControl extends Control
 {
@@ -14,16 +16,14 @@ final class MessageControl extends Control
         parent::__construct();
 
         if (!$this->session->mayRole()) {
-            $this->routeHelper->goLogin();
+            $this->routeHelper->goLoginAndExit();
         }
     }
 
-    public function index(): void
+    public function index(Request $request, Response $response): void
     {
-        $this->setTemplate('msg');
+        $this->pageHelper->addContent($this->view->index());
 
-        $this->pageHelper->addContent($this->view->index(), CNT_MAIN);
-
-        return;
+        $response->setContent($this->render('layouts/msg.twig'));
     }
 }

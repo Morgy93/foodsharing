@@ -31,10 +31,10 @@ class BasketControl extends Control
                 if (method_exists($this, $m)) {
                     $this->$m();
                 } else {
-                    $this->routeHelper->go('/essenskoerbe/find');
+                    $this->routeHelper->goAndExit('/essenskoerbe/find');
                 }
             } else {
-                $this->routeHelper->go('/essenskoerbe/find');
+                $this->routeHelper->goAndExit('/essenskoerbe/find');
             }
         }
     }

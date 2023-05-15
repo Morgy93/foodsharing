@@ -1,5 +1,7 @@
 <?php
 
+/* If you make changes here check if changes at the production server are needed */
+
 $FS_ENV = getenv('FS_ENV');
 $env_filename = __DIR__ . '/config.inc.' . $FS_ENV . '.php';
 $private_env_filename = __DIR__ . '/.config.inc.' . $FS_ENV . '.php';

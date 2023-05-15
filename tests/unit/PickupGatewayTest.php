@@ -4,6 +4,7 @@ use Carbon\Carbon;
 use Faker\Factory;
 use Faker\Generator;
 use Foodsharing\Modules\Store\PickupGateway;
+use Foodsharing\Modules\Store\RegularPickupGateway;
 
 class PickupGatewayTest extends \Codeception\Test\Unit
 {
@@ -17,6 +18,7 @@ class PickupGatewayTest extends \Codeception\Test\Unit
 
     protected function _before()
     {
+        $this->regularPickupGateway = $this->tester->get(RegularPickupGateway::class);
         $this->gateway = $this->tester->get(PickupGateway::class);
         $this->region = $this->tester->createRegion();
         $this->store = $this->tester->createStore($this->region['id']);
@@ -24,7 +26,7 @@ class PickupGatewayTest extends \Codeception\Test\Unit
         $this->faker = Factory::create('de_DE');
     }
 
-    public function testGetPickupDates()
+    public function testgetPickupSignupsForDates()
     {
         $date = '2018-07-18';
         $time = '16:40:00';
@@ -36,25 +38,14 @@ class PickupGatewayTest extends \Codeception\Test\Unit
         $this->tester->addRecurringPickup($this->store['id'],
             ['time' => $time, 'dow' => $dow, 'fetcher' => $fetcher]
         );
-        $regularSlots = $this->gateway->getRegularPickups($this->store['id']);
-        $this->assertEquals([
-            [
-                'dow' => 3,
-                'time' => $time,
-                'fetcher' => $fetcher,
-            ]
-        ], $regularSlots);
-
         $this->gateway->addFetcher($fsid, $this->store['id'], new Carbon($datetime));
-        $fsList = $this->gateway->getPickupSignupsForDate($this->store['id'], new Carbon($datetime));
+        $fsList = $this->gateway->getPickupSignUpsForDate($this->store['id'], new Carbon($datetime));
 
-        $this->assertEquals([
-            [
-                'foodsaver_id' => $fsid,
-                'date' => $datetime,
-                'confirmed' => 0,
-            ]
-        ], $fsList);
+        $this->assertEquals(1, count($fsList));
+
+        $this->assertEquals($fsid, $fsList[0]->foodsaverId);
+        $this->assertEquals(new Carbon($datetime), $fsList[0]->date);
+        $this->assertEquals(false, $fsList[0]->isConfirmed);
     }
 
     public function testGetIrregularPickupDate()
@@ -66,12 +57,10 @@ class PickupGatewayTest extends \Codeception\Test\Unit
         $this->tester->addPickup($this->store['id'], ['time' => $date, 'fetchercount' => $fetcher]);
         $irregularSlots = $this->gateway->getOnetimePickups($this->store['id'], $internalDate);
 
-        $this->assertEquals([
-            [
-            'date' => $internalDate->copy()->setTimezone('Europe/Berlin')->format('Y-m-d H:i:s'),
-            'fetcher' => $fetcher
-        ]
-        ], $irregularSlots);
+        $this->assertEquals(1, count($irregularSlots));
+
+        $this->assertEquals($fetcher, $irregularSlots[0]->slots);
+        $this->assertEquals($internalDate->copy()->setTimezone('Europe/Berlin'), $irregularSlots[0]->date);
     }
 
     public function testUpdateExpiredBellsRemovesBellIfNoUnconfirmedFetchesAreInTheFuture()

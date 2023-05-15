@@ -1,25 +1,20 @@
 #!/bin/bash
+
+export FS_ENV="test"
+
 dir=$(dirname "$0")
 
-# shellcheck source=./__helping-functions.sh
-source "$dir"/__helping-functions.sh
+# shellcheck source=./__common.sh
+source "$dir"/__common.sh
 
-# ENVS
-export FS_ENV=test
-export CURRENT_USER=$(id -u):$(id -g)
-
-# set -o errexit tells the shell to exit as soon as a command exits with non-zero status, i.e. fails
-set -o errexit
-
-if [[ ! $("$dir"/docker-compose ls --filter=name='foodsharing_test' | grep 'running(12)') ]];
-then
-    log-header "Bringing up containers ..."
-    "$dir"/docker-compose up -d
+if [[ ! $("$dir"/docker-compose ps --filter name=foodsharing_test | grep -c "Up" | awk '{print $1}') -eq 12 ]]; then
+     log-header "Bringing up containers ..."
+    "$dir"/docker-compose up --detach
 
     log-header "Running composer install ..."
     exec-in-container app 'composer install'
 
-    log-header "Create folder structur ..."
+    log-header "Create folder structure ..."
     exec-in-container app bin/console foodsharing:setup
 
     log-header "Reset (clear) cache ..."

@@ -11,6 +11,7 @@ use Foodsharing\Modules\Core\DBConstants\Foodsaver\SleepStatus;
 use Foodsharing\Modules\Core\DBConstants\FoodSharePoint\FollowerType;
 use Foodsharing\Modules\Core\DBConstants\Info\InfoType;
 use Foodsharing\Modules\Core\DBConstants\Quiz\AnswerRating;
+use Foodsharing\Modules\Core\DBConstants\Unit\UnitType;
 use Foodsharing\Modules\Core\View;
 use Foodsharing\Modules\Region\RegionGateway;
 use Foodsharing\Utility\DataHelper;
@@ -426,7 +427,14 @@ class SettingsView extends View
             $this->v_utils->v_form_passwd('passcheck');
     }
 
-    public function settingsCalendar()
+    public function passport(): string
+    {
+        return $this->vueComponent('passport', 'Passport', [
+            'userId' => $this->session->id(),
+        ]);
+    }
+
+    public function settingsCalendar(): string
     {
         return $this->vueComponent('calendar', 'Calendar', [
             'baseUrlWebcal' => WEBCAL_URL . '/api/calendar/',
@@ -474,16 +482,25 @@ class SettingsView extends View
                 $bezirk['name'] = $b['name'];
             }
 
-            $regionPicker = $this->v_utils->v_regionPicker($bezirk, $this->translator->trans('terminology.homeRegion'));
+            $regionPicker .= $this->vueComponent('region-tree-vform', 'RegionTreeVForm', [
+                'title' => $this->translator->trans('terminology.homeRegion'),
+                'inputName' => 'bezirk_id',
+                'initialValue' => $bezirk,
+                'selectableRegionTypes' => [UnitType::CITY, UnitType::DISTRICT, UnitType::REGION, UnitType::WORKING_GROUP, UnitType::PART_OF_TOWN],
+            ]);
             $position = $this->v_utils->v_form_text('position');
         }
 
         $g_data['ort'] = $g_data['stadt'];
 
-        foreach (['anschrift', 'plz', 'ort', 'lat', 'lon'] as $i) {
-            $latLonOptions[$i] = $g_data[$i];
-        }
-        $latLonOptions['location'] = ['lat' => $g_data['lat'], 'lon' => $g_data['lon']];
+        $addressPicker = $this->vueComponent('settings-address-search', 'LeafletLocationSearchVForm', [
+            'zoom' => 17,
+            'coordinates' => ['lat' => $g_data['lat'], 'lon' => $g_data['lon']],
+            'street' => $g_data['anschrift'],
+            'postalCode' => $g_data['plz'],
+            'city' => $g_data['ort'],
+            'additionalInfoText' => $this->translator->trans('addresspicker.infobox_profile'),
+        ]);
 
         return $this->v_utils->v_quickform($this->translator->trans('settings.header'), [
             $this->vueComponent('name-input', 'NameInput', [
@@ -495,7 +512,7 @@ class SettingsView extends View
             $this->v_utils->v_form_text('handy', ['placeholder' => $this->translator->trans('register.phone_example')]),
             $this->v_utils->v_form_text('telefon', ['placeholder' => $this->translator->trans('register.landline_example')]),
             $regionPicker,
-            $this->latLonPicker('LatLng', $latLonOptions, '_profile'),
+            $addressPicker,
             $position,
             $this->v_utils->v_form_textarea('about_me_intern', [
                 'desc' => $this->translator->trans('foodsaver.about_me_intern'),

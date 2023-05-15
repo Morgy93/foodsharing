@@ -129,7 +129,7 @@ class XhrDialog
 			<input class="input" type="hidden" name="filename" id="' . $in_id . '-filename" value="" />
 			<div class="attach-preview" style="float: right;"></div>
 			<div style="width: 10px; height: 10px; overflow: hidden;">
-				<form action="/xhrapp.php?app=main&m=picupload" target="' . $in_id . '-iframe" id="' . $in_id . '-form" method="post" enctype="multipart/form-data">
+				<form action="/xhrapp?app=main&m=picupload" target="' . $in_id . '-iframe" id="' . $in_id . '-form" method="post" enctype="multipart/form-data">
 					<input style="float: right;" type="file" name="' . $id . '" id="' . $in_id . '-file" />
 					<input type="hidden" name="id" value="' . $this->id . '" />
 					<input type="hidden" name="oid" value="' . $id . '" />

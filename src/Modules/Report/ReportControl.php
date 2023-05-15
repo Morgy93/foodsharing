@@ -28,7 +28,7 @@ class ReportControl extends Control
         parent::__construct();
 
         if (!$this->session->mayRole()) {
-            $this->routeHelper->goLogin();
+            $this->routeHelper->goLoginAndExit();
         }
     }
 
@@ -41,12 +41,12 @@ class ReportControl extends Control
         //return;
         } else {
             if (!isset($_GET['sub'])) {
-                $this->routeHelper->go('/?page=report&sub=uncom');
+                $this->routeHelper->goAndExit('/?page=report&sub=uncom');
             }
             if ($this->reportPermissions->mayHandleReports()) {
                 $this->pageHelper->addBread($this->translator->trans('menu.reports'), '/?page=report');
             } else {
-                $this->routeHelper->go('/?page=dashboard');
+                $this->routeHelper->goAndExit('/?page=dashboard');
             }
         }
     }
@@ -118,7 +118,7 @@ class ReportControl extends Control
                 );
             }
         } else {
-            $this->routeHelper->go('/?page=dashboard');
+            $this->routeHelper->goAndExit('/?page=dashboard');
         }
     }
 }

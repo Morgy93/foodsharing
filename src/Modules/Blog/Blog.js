@@ -9,6 +9,7 @@ import { ifconfirm } from '@/script'
 import { expose } from '@/utils'
 import { vueApply, vueRegister } from '@/vue'
 import BlogOverview from './components/BlogOverview.vue'
+import BlogPost from './components/BlogPost'
 import FileUploadVForm from '@/components/upload/FileUploadVForm'
 
 expose({
@@ -25,4 +26,9 @@ if (GET('sub') === 'manage') {
     FileUploadVForm,
   })
   vueApply('#image-upload')
+} else if (GET('sub') === 'read') {
+  vueRegister({
+    BlogPost,
+  })
+  vueApply('#blog-post')
 }

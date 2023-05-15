@@ -108,8 +108,8 @@ class StoreCest
             $I->unlockAllInputFields();
             $I->fillField('first_post', 'Testeintrag');
             $I->fillField('name', 'Testbetrieb');
-            $I->fillField('#addresspicker', 'Göttingen Bahnhofsplatz 1 37073 Göttingen Deutschland');
-            $I->wait(1);
+            $I->fillField('#addresspicker', 'Test Teststraße 1 37073 Teststadt Deutschland');
+            $I->waitForElementVisible('#addresspicker_listbox');
 
             $I->pressKey('#addresspicker', WebDriverKeys::ARROW_DOWN);
             $I->pressKey('#addresspicker', WebDriverKeys::RETURN_KEY);
@@ -122,9 +122,9 @@ class StoreCest
             $I->canSee('Kooperationsbetrieb wurde eingetragen', ['css' => '#pulse-success p']);
             $I->canSeeInDatabase('fs_betrieb', [
                 'name' => 'Testbetrieb',
-                'str' => 'Bahnhofsplatz 1',
+                'str' => 'Teststraße 1',
                 'plz' => '37073',
-                'stadt' => 'Göttingen',
+                'stadt' => 'Teststadt',
                 'public_info' => 'Testeintrag im Feld öffentliche Information',
             ]);
         }

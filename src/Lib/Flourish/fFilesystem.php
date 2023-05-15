@@ -127,7 +127,7 @@ class fFilesystem
 	public static function begin()
 	{
 		if (self::$commit_operations !== null) {
-			throw new fProgrammerException(
+			throw new fException(
 				'There is already a filesystem transaction in progress'
 			);
 		}
@@ -141,7 +141,7 @@ class fFilesystem
 	public static function commit()
 	{
 		if (!self::isInsideTransaction()) {
-			throw new fProgrammerException(
+			throw new fException(
 				'There is no filesystem transaction in progress to commit'
 			);
 		}
@@ -176,7 +176,7 @@ class fFilesystem
 	public static function convertToBytes($size)
 	{
 		if (!preg_match('#^(\d+(?:\.\d+)?)\s*(k|m|g|t)?(ilo|ega|era|iga)?( )?b?(yte(s)?)?$#D', strtolower(trim($size)), $matches)) {
-			throw new fProgrammerException(
+			throw new fException(
 				'The size specified, %s, does not appears to be a valid size',
 				$size
 			);
@@ -262,7 +262,7 @@ class fFilesystem
 	{
 		$valid_elements = array('dirname', 'basename', 'extension', 'filename');
 		if ($element !== null && !in_array($element, $valid_elements)) {
-			throw new fProgrammerException(
+			throw new fException(
 				'The element specified, %1$s, is invalid. Must be one of: %2$s.',
 				$element,
 				join(', ', $valid_elements)

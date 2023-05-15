@@ -35,7 +35,7 @@ class PassportGeneratorTransaction extends AbstractController
         $this->projectDir = $kernel->getProjectDir();
     }
 
-    public function generate(array $foodsavers, bool $cutMarkers = true, bool $protectPDF = false, $region = null): void
+    public function generate(array $foodsavers, string $lastPassGen = null, bool $cutMarkers = true, bool $protectPDF = false, bool $ambassadorGeneration = false, bool $oldGeneration = false): string
     {
         $tmp = [];
         foreach ($foodsavers as $foodsaver) {
@@ -48,6 +48,15 @@ class PassportGeneratorTransaction extends AbstractController
 
         if ($protectPDF) {
             $pdf->SetProtection(['print', 'copy', 'modify', 'assemble'], '', null, 0, null);
+        }
+
+        $generationUntilDate = '+3 years';
+        if ($ambassadorGeneration) {
+            $untilFrom = date('d. m. Y');
+            $validUntil = date('d. m. Y', strtotime($generationUntilDate));
+        } else {
+            $untilFrom = date('d. m. Y', strtotime($lastPassGen));
+            $validUntil = date('d. m. Y', strtotime($generationUntilDate, strtotime($lastPassGen)));
         }
 
         if (count($tmp) === 1) {
@@ -185,9 +194,8 @@ class PassportGeneratorTransaction extends AbstractController
                 }
                 $pdf->SetFont('Ubuntu-L', '', 10);
                 $pdf->Text($roleMarginX + $x, $roleMarginY + $y, $this->getRole($foodsaver['geschlecht'], $foodsaver['rolle']));
-                $pdf->Text($validDownMarginX + $x, $validDownMarginY + $y, date('d. m. Y', time() - 1814400));
-                $pdf->Text($validTillMarginX + $x, $validTillMarginY + $y, date('d. m. Y', time() + 94608000));
-
+                $pdf->Text($validDownMarginX + $x, $validDownMarginY + $y, $untilFrom);
+                $pdf->Text($validTillMarginX + $x, $validTillMarginY + $y, $validUntil);
                 $pdf->SetFont('Ubuntu-L', '', 6);
                 $pdf->Text($nameLabelMarginX + $x, $nameLabelMarginY + $y, 'Name');
                 $pdf->Text($roleLabelMarginX + $x, $roleLabelMarginY + $y, 'Rolle');
@@ -221,9 +229,9 @@ class PassportGeneratorTransaction extends AbstractController
                     if (str_starts_with($photo, '/api/uploads')) {
                         // get the UUID and create a resized file
                         $uuid = substr($photo, strlen('/api/uploads/'));
-                        $filename = $this->uploadsTransactions->getFileLocation($uuid, 200, 257, 0);
+                        $filename = $this->uploadsTransactions->generateFilePath($uuid, 200, 257, 0);
                         if (!file_exists($filename)) {
-                            $originalFilename = $this->uploadsTransactions->getFileLocation($uuid);
+                            $originalFilename = $this->uploadsTransactions->generateFilePath($uuid);
                             $this->uploadsTransactions->resizeImage($originalFilename, $filename, 200, 257, 0);
                         }
                         $pdf->Image($filename, $photoMarginX + $x, $photoMarginY + $y, 24);
@@ -261,18 +269,16 @@ class PassportGeneratorTransaction extends AbstractController
             );
         }
 
-        $this->passportGeneratorGateway->updateLastGen($is_generated);
-
-        if (count($tmp) === 1) {
-            $name = $is_generated[0];
-        } else {
-            $regionName = strtolower($region['name']);
-            $regionName = str_replace(['ä', 'ö', 'ü', 'ß'], ['ae', 'oe', 'ue', 'ss'], $regionName);
-            $regionName = preg_replace('/[^a-zA-Z]/', '', $regionName);
-            $name = $regionName;
+        if ($ambassadorGeneration) {
+            $this->passportGeneratorGateway->updateLastGen($is_generated);
         }
-        $pdf->Output('foodsaver_pass_' . $name . '.pdf', 'D');
-        exit;
+
+        if ($oldGeneration) {
+            $pdf->Output('foodsaver_pass_.pdf', 'D');
+            exit;
+        } else {
+            return $pdf->Output('', 'S');
+        }
     }
 
     public function getRole(int $gender_id, int $role_id): string

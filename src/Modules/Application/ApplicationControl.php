@@ -31,7 +31,7 @@ class ApplicationControl extends Control
 
         $mayManageApplications = ($this->session->isAdminFor($this->bezirk_id) || $this->session->mayRole(Role::ORGA));
         if (!$mayManageApplications) {
-            $this->routeHelper->go('/');
+            $this->routeHelper->goAndExit('/');
         }
 
         $this->bezirk = $this->gateway->getRegion($this->bezirk_id);

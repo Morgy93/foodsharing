@@ -86,14 +86,14 @@ class FoodSharePointControl extends Control
     private function setup(Request $request): void
     {
         if ($request->query->has('uri') && $foodSharePointId = $this->uriInt(2)) {
-            $this->routeHelper->go('/?page=fairteiler&sub=ft&id=' . $foodSharePointId);
+            $this->routeHelper->goAndExit('/?page=fairteiler&sub=ft&id=' . $foodSharePointId);
         }
 
         // allowed only for logged in users
         if (!$this->session->mayRole()
             && $request->query->has('sub')
             && $request->query->get('sub') !== 'ft') {
-            $this->routeHelper->goLogin();
+            $this->routeHelper->goLoginAndExit();
         }
 
         $this->foodSharePoint = [];
@@ -103,9 +103,7 @@ class FoodSharePointControl extends Control
             $this->foodSharePoint = $this->foodSharePointGateway->getFoodSharePoint($foodSharePointId);
 
             if (!$this->foodSharePoint) {
-                $this->routeHelper->go('/?page=fairteiler');
-
-                return;
+                $this->routeHelper->goAndExit('/?page=fairteiler');
             }
             $regionId = $this->foodSharePoint['bezirk_id'];
         }
@@ -133,7 +131,7 @@ class FoodSharePointControl extends Control
 
             if ($this->handleFollowUnfollow($foodSharePointId, $this->session->id() ?? 0, $follow, $infoType)) {
                 $url = explode('&follow=', $this->routeHelper->getSelf());
-                $this->routeHelper->go($url[0]);
+                $this->routeHelper->goAndExit($url[0]);
             }
 
             if (!isset($this->regions[$this->foodSharePoint['bezirk_id']])) {
@@ -183,7 +181,7 @@ class FoodSharePointControl extends Control
     public function edit(Request $request): void
     {
         if (!$this->foodSharePointPermissions->mayEdit($this->regionId, $this->follower)) {
-            $this->routeHelper->go('/?page=fairteiler&sub=ft&id=' . $this->foodSharePoint['id']);
+            $this->routeHelper->goAndExit('/?page=fairteiler&sub=ft&id=' . $this->foodSharePoint['id']);
         }
         $this->pageHelper->addBread(
             $this->foodSharePoint['name'],
@@ -193,7 +191,7 @@ class FoodSharePointControl extends Control
         if ($request->request->get('form_submit') === 'fairteiler') {
             if ($this->handleEditFsp($request)) {
                 $this->flashMessageHelper->success($this->translator->trans('fsp.editSuccess'));
-                $this->routeHelper->go($this->routeHelper->getSelf());
+                $this->routeHelper->goAndExit($this->routeHelper->getSelf());
             } else {
                 $this->flashMessageHelper->error($this->translator->trans('error_unexpected'));
             }
@@ -234,9 +232,7 @@ class FoodSharePointControl extends Control
     {
         $foodSharePoint = $this->foodSharePoint;
         if (!$foodSharePoint || !$this->foodSharePointPermissions->mayApproveFoodSharePointCreation($foodSharePoint['bezirk_id'])) {
-            $this->routeHelper->goPage('fairteiler');
-
-            return;
+            $this->routeHelper->goPageAndExit('fairteiler');
         }
 
         if ($request->query->has('agree')) {
@@ -269,14 +265,14 @@ class FoodSharePointControl extends Control
     {
         $this->foodSharePointGateway->acceptFoodSharePoint($this->foodSharePoint['id']);
         $this->flashMessageHelper->success($this->translator->trans('fsp.acceptSuccess'));
-        $this->routeHelper->go('/?page=fairteiler&sub=ft&id=' . $this->foodSharePoint['id']);
+        $this->routeHelper->goAndExit('/?page=fairteiler&sub=ft&id=' . $this->foodSharePoint['id']);
     }
 
     private function delete(): void
     {
         if ($this->foodSharePointGateway->deleteFoodSharePoint($this->foodSharePoint['id'])) {
             $this->flashMessageHelper->info($this->translator->trans('fsp.deleteSuccess'));
-            $this->routeHelper->go('/?page=fairteiler&bid=' . $this->regionId);
+            $this->routeHelper->goAndExit('/?page=fairteiler&bid=' . $this->regionId);
         }
     }
 
@@ -341,7 +337,7 @@ class FoodSharePointControl extends Control
                 } else {
                     $this->flashMessageHelper->success($this->translator->trans('fsp.suggestSuccess'));
                 }
-                $this->routeHelper->go('/?page=fairteiler&bid=' . (int)$this->regionId);
+                $this->routeHelper->goAndExit('/?page=fairteiler&bid=' . (int)$this->regionId);
             } else {
                 $this->flashMessageHelper->error($this->translator->trans('fsp.addError'));
             }

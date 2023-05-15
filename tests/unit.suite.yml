@@ -5,6 +5,11 @@
 class_name: UnitTester
 modules:
     enabled:
+        - Symfony:
+            app_path: 'src'
+            environment: 'test'
+            kernel_class: 'Foodsharing\Kernel'
+            cache_router: 'true'
         - Asserts
         - \Helper\Unit
         - \Helper\Foodsharing

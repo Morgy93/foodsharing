@@ -11,7 +11,6 @@ use Foodsharing\Modules\Core\DBConstants\Quiz\QuizStatus;
 use Foodsharing\Modules\Core\DBConstants\Quiz\SessionStatus;
 use Foodsharing\Modules\Foodsaver\FoodsaverGateway;
 use Foodsharing\Modules\FoodSharePoint\FoodSharePointGateway;
-use Foodsharing\Modules\PassportGenerator\PassportGeneratorTransaction;
 use Foodsharing\Modules\Quiz\QuizGateway;
 use Foodsharing\Modules\Quiz\QuizSessionGateway;
 use Foodsharing\Modules\Region\ForumFollowerGateway;
@@ -30,7 +29,6 @@ class SettingsControl extends Control
     private DataHelper $dataHelper;
     private ForumFollowerGateway $forumFollowerGateway;
     private SettingsPermissions $settingsPermissions;
-    private PassportGeneratorTransaction $passportGeneratorTransaction;
 
     public function __construct(
         SettingsView $view,
@@ -43,7 +41,6 @@ class SettingsControl extends Control
         DataHelper $dataHelper,
         ForumFollowerGateway $forumFollowerGateway,
         SettingsPermissions $settingsPermissions,
-        PassportGeneratorTransaction $passportGeneratorTransaction
     ) {
         $this->view = $view;
         $this->settingsGateway = $settingsGateway;
@@ -55,12 +52,11 @@ class SettingsControl extends Control
         $this->dataHelper = $dataHelper;
         $this->forumFollowerGateway = $forumFollowerGateway;
         $this->settingsPermissions = $settingsPermissions;
-        $this->passportGeneratorTransaction = $passportGeneratorTransaction;
 
         parent::__construct();
 
         if (!$this->session->mayRole()) {
-            $this->routeHelper->goLogin();
+            $this->routeHelper->goLoginAndExit();
         }
 
         if (isset($_GET['newmail'])) {
@@ -70,7 +66,7 @@ class SettingsControl extends Control
         $this->foodsaver = $this->foodsaverGateway->getFoodsaverDetails($this->session->id());
 
         if (!isset($_GET['sub'])) {
-            $this->routeHelper->go('/?page=settings&sub=general');
+            $this->routeHelper->goAndExit('/?page=settings&sub=general');
         }
 
         $this->pageHelper->addTitle($this->translator->trans('settings.title'));
@@ -89,8 +85,7 @@ class SettingsControl extends Control
         if ($this->settingsPermissions->mayUseCalendarExport()) {
             $menu[] = ['name' => $this->translator->trans('settings.calendar.menu'), 'href' => '/?page=settings&sub=calendar'];
         }
-
-        if ($this->settingsPermissions->mayUsePassportGeneration()) {
+        if ($this->session->mayRole() > Role::FOODSHARER) {
             $menu[] = ['name' => $this->translator->trans('settings.passport.menu'), 'href' => '/?page=settings&sub=passport'];
         }
 
@@ -165,7 +160,7 @@ class SettingsControl extends Control
                     $fsId = $this->session->id();
                     if (!$this->quizSessionGateway->hasPassedQuiz($fsId, Role::FOODSAVER)) {
                         $this->flashMessageHelper->info($this->translator->trans('foodsaver.upgrade.needs_fs_quiz'));
-                        $this->routeHelper->go('/?page=settings&sub=up_fs');
+                        $this->routeHelper->goAndExit('/?page=settings&sub=up_fs');
                     }
 
                     $this->handleQuizStatus($quiz, $quizRole);
@@ -192,17 +187,14 @@ class SettingsControl extends Control
             switch ($this->foodsaver['rolle']) {
                 case Role::FOODSHARER:
                     $this->flashMessageHelper->info($this->translator->trans('foodsaver.upgrade.needs_fs'));
-                    $this->routeHelper->go('/?page=settings&sub=up_fs');
-                    break;
-
+                    $this->routeHelper->goAndExit('/?page=settings&sub=up_fs');
+                    // no break
                 case Role::FOODSAVER:
                     $this->flashMessageHelper->info($this->translator->trans('foodsaver.upgrade.needs_sm'));
-                    $this->routeHelper->go('/?page=settings&sub=up_bip');
-                    break;
-
+                    $this->routeHelper->goAndExit('/?page=settings&sub=up_bip');
+                    // no break
                 default:
-                    $this->routeHelper->go('/?page=settings');
-                    break;
+                    $this->routeHelper->goAndExit('/?page=settings');
             }
         }
     }
@@ -280,7 +272,7 @@ class SettingsControl extends Control
                         $this->foodsaverGateway->riseRole($fsId, Role::FOODSAVER);
                     }
                     $this->flashMessageHelper->success($this->translator->trans('foodsaver.upgrade.fs_success'));
-                    $this->routeHelper->go('/?page=relogin&url=' . urlencode('/?page=dashboard'));
+                    $this->routeHelper->goAndExit('/?page=relogin&url=' . urlencode('/?page=dashboard'));
                 }
             }
             $cnt = $this->contentGateway->get(ContentId::QUIZ_CONFIRM_FS_PAGE_14);
@@ -301,7 +293,7 @@ class SettingsControl extends Control
                     $this->foodsaverGateway->riseRole($fsId, Role::STORE_MANAGER);
                     $this->session->refreshFromDatabase();
                     $this->flashMessageHelper->success($this->translator->trans('foodsaver.upgrade.sm_success'));
-                    $this->routeHelper->go('/?page=dashboard');
+                    $this->routeHelper->goAndExit('/?page=dashboard');
                 }
             }
             $cnt = $this->contentGateway->get(ContentId::QUIZ_CONFIRM_SM_PAGE_15);
@@ -387,10 +379,11 @@ class SettingsControl extends Control
 
     public function passport()
     {
-        if ($this->settingsPermissions->mayUsePassportGeneration()) {
-            $this->passportGeneratorTransaction->generate([$this->session->id()], false, true);
+        if ($this->session->mayRole() > Role::FOODSHARER) {
+            $this->pageHelper->addBread($this->translator->trans('settings.passport.menu'));
+            $this->pageHelper->addContent($this->view->passport());
         } else {
-            $this->routeHelper->go('/?page=settings');
+            $this->routeHelper->goAndExit('/?page=settings');
         }
     }
 
@@ -400,7 +393,7 @@ class SettingsControl extends Control
             $this->pageHelper->addBread($this->translator->trans('settings.calendar.menu'));
             $this->pageHelper->addContent($this->view->settingsCalendar());
         } else {
-            $this->routeHelper->go('/?page=settings');
+            $this->routeHelper->goAndExit('/?page=settings');
         }
     }
 
@@ -497,7 +490,7 @@ class SettingsControl extends Control
                         $this->session->refreshFromDatabase();
                         $this->flashMessageHelper->success($this->translator->trans('foodsaver.edit_success'));
                     } catch (\Exception $e) {
-                        $this->routeHelper->goPage('logout');
+                        $this->routeHelper->goPageAndExit('logout');
                     }
                 } else {
                     $this->flashMessageHelper->error($this->translator->trans('error_unexpected'));

@@ -114,6 +114,7 @@
     </div>
 
     <b-modal
+      v-if="!isLoading"
       ref="editPollConfirmModal"
       :title="$i18n('poll.new_poll.submit')"
       :cancel-title="$i18n('button.cancel')"

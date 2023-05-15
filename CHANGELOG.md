@@ -2,27 +2,89 @@
 
 ## Features
 - Ongoing polls a user has not yet voted in are displayed on the dashboard. !2349 @AntonBallmaier
-
+- Provide RestApi to edit store !2515 !2625 @KoeMai
+- New UI for Stores information and modification of stores !2645 !2685 @KoeMai
 
 ## Changes
-
+- Make menubar sticky on mobile !2411 @AntonBallmaier
+- Added a new content page for it infos to menu !2590 @chriswalg
+- Removed freshdesk link to Support and renamed contact to contact & support !2590 @chriswalg
+- Changed persistent cookie timespan from 14 days to 38 years !2626 @chriswalg
+- Updated the number of registered users on the start page !2629 @alex.simm
+- Added home region and verified columns to member tables of regions and working groups !2602 #1548 @alex.simm
+- Minor updates in the frontend of the voting tool #975 !2640 @alex.simm
+- Show title of forum post in window header !2658 #1591 @McGoldi
+- Support and orga-user can search users with e-mail !2651 !2663 @chriswalg @martincodes-de
+- focus foodsharing tab of the same kind if clicking a push notification !2671 @buntel
+- close push notification of the same thread or same kind if clicked !2671 @buntel
 
 ## Bugfixes
+- Reimplementation of the StoreManager empty pickup E-Mail notification !2574 @KoeMai
 - Outgoing mails were sent out with an invalid charset !2572 @\_fridtjof_
 - Return the correct data from the user details REST endpoint #1534 !2575 @alex.simm
+- Fixed some typos #1539 !2585 @alex.simm
+- Fix some broken links !2586
+- Show the report button on the own profile page !2589 @alex.simm
+- Hacky workaround to replace $amp in urls from chat messages #1531 !2594 @chriswalg
+- Fixed some stability issues with incoming Mail processing !2598 !2607 @\_fridtjof_
+- Removed remains of mapbox-gl in the LeafletMap component #1570 !2628 @alex.simm
+- Made creation of business cards for foreign languages work #1575 @andre161292
+- Fixed deleted notification subscriptions for forum threads whenever a user is removed #1066 @McGoldi
+- Use strip_tags instead of preg_replace for basket phone to keep + sign #1005 !2650
+- Fix wrong Content-Length header in mailbox attachment and passport download !2664 @stcz
+- close push notification on android phones !2671 @buntel
+
 
 ## Refactoring
-- added poppins font in Styleguide !2564 @Niklas003 
+- added poppins font in Styleguide !2564 @Niklas003
+- Use email address DTO and let the MailboxGateway handle JSON encoding !2520 @alex.simm
+- Replaced the usage of a function in FoodsaverGateway with a more ressource saving function !2595 @alex.simm
+- Use Store DTO in StoreGateway !2515 !2611 @KoeMai
+- Move business logic for editing store into StoreTransaction !2515 @KoeMai
+- Fix TeamStoreStatus and move getStoreMarkers to StoreGateway !2560 @KoeMai
+- added poppins font in Styleguide !2564 @Niklas003
+- Replace the region tree with a new vue component !2483 @alex.simm
+- Move uploadlogic and actions from controller to transactionclass for reuse !2478 @martncodes-de
+- Reimplement create new forum thread in vue js !2627 @chriswalg
+- New vue component for address search !2632 !2669 @alex.simm
+- Replaced get store information to rest api !1449 @KoeMai
+- Replaced the history dialogs on profile pages with a vue component !2587 @alex.simm
+- Moved verification to memberlist !2646 @chriswalg
+- The broadcast banner fetches its content from the API #1284 !2661 @alex.simm
+
+- added poppins font in Styleguide !2564 @Niklas003
+- Replace the region tree with a new vue component !2483 @alex.simm
+- New vue component for blog posts !2676 @alex.simm
+- Changed forum post response to empty content #1499 !2638 @krauterisator
 
 ## Dev/Test/CI stuff
 - Fix given null parameter !2550 @BibaltiK
-- Small Improving Changes on GitLab CI !2565
+- Small Improving Changes on GitLab CI !2565 !2566 !2567 !2568 !2582 @stcz
+- Add $SKIP_CI_TESTS Variable to deploy production faster if needed !2581 @stcz
 - Change identity style from tab to space !2571 @BibaltiK
 - Python Script to generate Release Notes from gitlab MRs !2548 @alex.simm
-
+- Restart all foodsharing services after production deployment !2583 @stcz
+- Clean up scripts a bit more !2480 @\_fridtjof_
+- Introduce a public/ directory for static content !2486 !2599 @\_fridtjof_
+- Add a infrastructure documentation !2579 @stcz
+- Update Symfony to latest patch versions !2604 @\_fridtjof_
+- Update deployer to v7.1.3 !2600 @chriswalg
+- Update some backend dependencies !2601 @chriswalg
+- Bump socket.io (client and server) to v4 (credits to @janopae), superagent to v9, node-dev to v8, and ts-node-dev to v2 !2614 !2630 @peter.toennies
+- Improve CI to not build same things multiple times !2569 @stcz
+- Get rid of includes/setup.php !2609 @\_fridtjof_
+- bump fontawsome to v6, glob to v8, mkdirp to v2, jsdom to v21, and sinon to v15, remove dotenv !2613 @peter.toennies
+- improved the script which reports outdated packages to Slack !2619 @peter.toennies
+- Clean up Symfony related code and config !2608 !2623 @\_fridtjof_
+- Improved test stability when geocoding is involved !2620 @\_fridtjof_
+- some updates to composer packages. Removed deprecations in order to prepare for Symfony 6 ! 2617 @peter.toennies
+- Improved scripts. repaired outdated notify. Made test rerun faster. Made clean more powerfull !2622 @peter.toennies
+- Delete faulty mails on imap server !2591 @stcz
+- Replaced FS_ENV to "${1:-dev}" for containers-start to solve unbound variable !2542 @chriswalg
+- Made scripts work with docker-compose-plugin !1587 @andre161292
+- remove trailing whitespace from CHANGELOG.md !2690 @Morgy93
 
 ## Development documentation
-
 
 
 # Release "Icecream", 2022-12-18
@@ -45,6 +107,7 @@
 - On the login page, "Stay logged in for one day" is saved in local storage for the next logins. !2249 @NINI1988
 - Food-share-points are listed in the topbar search #1251 !2260 @alex.simm
 - On all external links is now a visible indicator !2280 @sefn
+- Store chains can now be manged from the website. The working group "Betriebsketten" contains a tabular overview of all chains. !2251 @AntonBallmaier
 - At stores under pickup history, storemanagers can now see the signed out foodsavers from pickup slots from past 7 days with the signout date. !2363 @martincodes-de
 - Voter Turnout Percentage can be seen if the poll has completed !2377 @viveknshah
 - Provide RestAPI to get backend defined common meta information for stores like "max count of slots per pickup" !1373 @koemai
@@ -54,12 +117,13 @@
 - District rules for maximum number of pickups in a timeframe accross severall stores combined can be set !2414 !2530 @fs_k
 - Provide RestAPI to change teamstatus of a store !2406
 - Added RestAPI for regular Pickup configuration !1373 @koemai
+- Added RestAPI to create a new store !2484 @koemai
 - The chat has been modernised !2301 !2498 !2508 !2514 !2533 @NINI1988
 - Added new body font !2426 @sefn
 
 ## Changes
-- Checks in the id card creation function if only one foodsaver is selected and then reduces the 
-  size to the area for a single id card. If more than one foodsaver is selected, then the old logic takes effect 
+- Checks in the id card creation function if only one foodsaver is selected and then reduces the
+  size to the area for a single id card. If more than one foodsaver is selected, then the old logic takes effect
   and an A4 sheet is used. !2198 #chriswalg
 - Send a bell notification and email, if a foodsaver was verified. !2198 #chriswalg
 - Unifiying the foodsaver adress change page and adress change page for ambassadors !2171 @NINI1988
@@ -96,7 +160,7 @@
 - Push notifications can be (de-)activated in the settings again #1239 @alex.simm
 - Show the region name in the updates overview on the dashboard even when the titel is long #1207 @Caroline Fischer
 - Using the sleeping function on the translated website is working again #1133 !2225 @alex.simm
-- Prevent "Payload to large" errors due to padding in web push #1213 !2212 @alex.simm  
+- Prevent "Payload to large" errors due to padding in web push #1213 !2212 @alex.simm
 - When setting a sleeping interval starting in the future, you no longer get a sleeping hat right away. !2215 !2563 @AntonBallmaier
 - The public profile page can handle names with unicode characters #1265 !2239 @alex.simm
 - Fix a type error for the report button on profile !2246 #1271 @alex.simm
@@ -105,7 +169,7 @@
 - The lifetime of baskets are now really in days, before the hours and minutes wasn't compared. It was possible to add a basket at 11pm with the lifetime of 1 day, but it would be deleted 12am. !1243 @martincodes-de
 - Email attachment icon is no longer shown on all emails. !2242 @AntonBallmaier
 - Fix: On dashboard activity post with a markdown list has no margin to the respond button. !2278 @NINI1988
-- iOS users should now open the adresses with maps.app !2236 @sefn 
+- iOS users should now open the adresses with maps.app !2236 @sefn
 - Force content which is too broad to scroll, so the the Topbar will never leave the screen width !2258 @NINI1988
 - A wall post with multiple lines will use the complete available size to display its text !2277 @NINI1988
 - Restrictions on the view of the store list in profile !2273 @chriswalg
@@ -124,7 +188,7 @@
 - Add margins to sendmail form buttons !2424 @diejani
 - Clean up pickup endpoint and catch DomainException: No pickup slot available problems !1407 @KoeMai
 - StoreCest, improved and removed unnecessary elements !2434 @sefn
-- Fix the link in the notification regarding old profile photos #1424 !2459 @alex.simm  
+- Fix the link in the notification regarding old profile photos #1424 !2459 @alex.simm
 - If session persistent and current date not equal to last_login, update last_login date on every dashboard reload !2450 !2495 @chriswalg
 - Prevent access to missing conversation member image
 - New AvatarList doesn't show avatar on foodsharepoints !2479 @alex.simm
@@ -137,6 +201,7 @@
 - Prevent errors in the calendar export caused by events with wrong dates #1301 !2532 @alex.simm
 - Sanitize public info in store to prevent xss !2538 @chriswalg
 - Sanitize chat messages to prevent xss #1515 !2537 @chriswalg
+- Rewrite method to create mailboxes !2596 @martincodes-de
 
 ## Refactoring
 - Currently running events are shown within the event overview until their end !2162 @merhoc
@@ -180,8 +245,8 @@
 - Added instructions to run nightly maintenance to dev docs. !2215 @AntonBallmaier
 - Remove questions from quiz sessions after the session is finished or aborted #1030 @alex.simm
 - Results of quiz sessions will be removed two weeks after the session is finished or aborted #1030 @alex.simm
-- Add a workaround to upload files to the startpage. #1245 !2233 @stcz 
-- Added missing indices to the store database table !2232 @alex.simm 
+- Add a workaround to upload files to the startpage. #1245 !2233 @stcz
+- Added missing indices to the store database table !2232 @alex.simm
 - bump mocha to versio 10 !2255 @peter.toennies
 - Add how to connect other device with local development website to dev docs !2259 @NINI1988
 - Fix the url to api doc for dev env !2290 @chriswalg
@@ -194,7 +259,7 @@
 - Added the cli commands bin/console foodsharing:daily-cronjob and foodsharing:stats !2407 @chriswalg
 - Replace `node-sass` with `sass` #1047 !2404 @schanso
 - Added mayRole function to Session class and made may function deprecated #1277 !2341 @alex.simm
-- Fix maintenance script test #1430 !2429 @rnoennig 
+- Fix maintenance script test #1430 !2429 @rnoennig
 - Update php to version 8.1 !2358 !2491 @chriswalg
 - Remove unused triage bot in CI !2444 @chriswalg
 - Update backend dependencies !2441 @chriswalg
@@ -227,18 +292,18 @@
 - Make map legend colapsable !2166 @NINI1988
 - Make map legend collapsible !2166 @NINI1988
 - Updated the link to instagram on the startpage !2179 #1206 @alex.simm
-- Set a timeout on the sending chat messages to websockets !2167 #1069 @alex.simm 
-- add/remove Admins over memberlist for groups and regions !2143 @fs_k 
+- Set a timeout on the sending chat messages to websockets !2167 #1069 @alex.simm
+- add/remove Admins over memberlist for groups and regions !2143 @fs_k
 - It will be logged who deleted a user profile @alex.simm
 - Improved nightly maintenance runtime !2176 @AntonBallmaier
 
 ## Bugfixes
-- Fix the community marker map for regions that do not yet have a pin #1183 !2154 @alex.simm  
+- Fix the community marker map for regions that do not yet have a pin #1183 !2154 @alex.simm
 - Redirect to login for user that is not logged in at https://foodsharing.de/?page=login&a=resendActivationMail #1136 !2138 @ESchae
 - Fix typos in forum markdown hints. !2167 @NINI1988
 - Fixed the user search pointing to a non-existing path !2170 @alex.simm
 - The visibility of the StoreWall can be toggled again !2177 @nudin
-- Prevent text-overflow in thread posts in forum !2392 @FlorianMaak 
+- Prevent text-overflow in thread posts in forum !2392 @FlorianMaak
 - The visibility of mobile submit-button on fairteiler page !1392 @FlorianMaak
 
 ## Refactoring
@@ -262,9 +327,9 @@
 ## Features
 
 - Set iCalendar location for exported pickup events #1139 !2072 @iron9
-- Display community pin for local foodsharing communities. #53 !2060 !2081 @fs_k 
+- Display community pin for local foodsharing communities. #53 !2060 !2081 @fs_k
 - Added norwegian translation !2107 @alex.simm
-- Select the community pin on a map !2102 @alex.simm 
+- Select the community pin on a map !2102 @alex.simm
 
 ## Changes
 - Allow admins of the working group "Redaktion" to edit blog posts #34 !2061 @alex.simm
@@ -282,14 +347,14 @@
 - Fixed the list of responsible store members in REST responses !2033 #1124 @alex.simm
 - Fixed for content edit !2062 @fs_k
 - Fix for store change !2065 @fs_k
-- Fix for future timeslot visibility to use Europe/Berlin timezone !2070 @fs_k 
+- Fix for future timeslot visibility to use Europe/Berlin timezone !2070 @fs_k
 - Unverified users who change their home region are not deverified again !2093 @alex.simm
 - Some checks for PHP data types in order to avoid Sentry errors !2001 !2099 @alex.simm
 
 ## Refactoring
 - move more hardcoded language to language files !2108 !2122 !2110 @jonathan_b
 - Get Members in MemberList.vue from Rest Api !2094 !2111 !2123 @chriswalg @alex.simm
-- Refactored the format of the quick search index !2115 @alex.simm 
+- Refactored the format of the quick search index !2115 @alex.simm
 
 ## Dev/Test/CI stuff
 
@@ -360,7 +425,7 @@
 - Fix errors that occur for non-existing password reset keys !2004 @alex.simm
 - Text overflow fixed !2008 #1105 #1106 @YertleTurtleGit
 - the function FoodsaverGateway:getOrgaTeam now factors in the user role Orga !2038 @fs_k
-- Set correct MIME type for attachments which are fetched via IMAP #1092 !2041 @Thylossus  
+- Set correct MIME type for attachments which are fetched via IMAP #1092 !2041 @Thylossus
 
 ## Refactoring
 - Update documentation: Give more on information on how to post a testing task in the forum

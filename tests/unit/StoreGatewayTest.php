@@ -7,7 +7,8 @@ use Faker\Generator;
 use Foodsharing\Modules\Core\DBConstants\Store\CooperationStatus;
 use Foodsharing\Modules\Core\DBConstants\StoreTeam\MembershipStatus;
 use Foodsharing\Modules\Core\DBConstants\Unit\UnitType;
-use Foodsharing\Modules\Store\DTO\CreateStoreData;
+use Foodsharing\Modules\Core\DTO\MinimalIdentifier;
+use Foodsharing\Modules\Store\DTO\Store;
 use Foodsharing\Modules\Store\StoreGateway;
 use Foodsharing\Modules\Store\TeamStatus;
 
@@ -59,14 +60,14 @@ class StoreGatewayTest extends Unit
 
     public function testAddNewStore(): void
     {
-        $storeDTO = new CreateStoreData();
+        $storeDTO = new Store();
         $storeDTO->name = 'StoreGatewayTestbetrieb';
-        $storeDTO->regionId = 1567;
-        $storeDTO->lat = 51.5367827;
-        $storeDTO->lon = 9.9258967;
-        $storeDTO->str = 'Bahnhofsplatz 1';
-        $storeDTO->zip = '37073';
-        $storeDTO->city = 'Göttingen';
+        $storeDTO->region = MinimalIdentifier::createFromId(1567);
+        $storeDTO->location->lat = 51.5367827;
+        $storeDTO->location->lon = 9.9258967;
+        $storeDTO->address->street = 'Bahnhofsplatz 1';
+        $storeDTO->address->zipCode = '37073';
+        $storeDTO->address->city = 'Göttingen';
         $storeDTO->publicInfo = 'Testeintrag im Feld öffentliche Information';
         $storeDTO->createdAt = Carbon::now();
         $storeDTO->updatedAt = Carbon::now();
@@ -75,6 +76,22 @@ class StoreGatewayTest extends Unit
 
         $this->assertIsInt($storeId);
         $this->assertTrue($storeId !== 0);
+    }
+
+    public function testExistCategory()
+    {
+        $this->tester->haveInDatabase('fs_betrieb_kategorie', ['id' => 2, 'name' => 'Category']);
+
+        $this->assertTrue($this->gateway->existStoreCategory(2));
+        $this->assertFalse($this->gateway->existStoreCategory(3));
+    }
+
+    public function testExistChain()
+    {
+        $this->tester->haveInDatabase('fs_chain', ['id' => 2, 'name' => 'Chain']);
+
+        $this->assertTrue($this->gateway->existStoreChain(2));
+        $this->assertFalse($this->gateway->existStoreChain(3));
     }
 
     public function testIsInTeam(): void
@@ -119,20 +136,54 @@ class StoreGatewayTest extends Unit
         $dbStore = $listOfStores[0];
         $this->assertEquals($store['id'], $dbStore->id);
         $this->assertEquals($store['name'], $dbStore->name);
-        $this->assertEquals($store['bezirk_id'], $dbStore->regionId);
+        $this->assertEquals($store['bezirk_id'], $dbStore->region->id);
         $this->assertEquals($store['lat'], $dbStore->location->lat);
         $this->assertEquals($store['lon'], $dbStore->location->lon);
-        $this->assertEquals($store['str'], $dbStore->street);
-        $this->assertEquals($store['plz'], $dbStore->zip);
-        $this->assertEquals($store['stadt'], $dbStore->city);
+        $this->assertEquals($store['str'], $dbStore->address->street);
+        $this->assertEquals($store['plz'], $dbStore->address->zipCode);
+        $this->assertEquals($store['stadt'], $dbStore->address->city);
         $this->assertEquals($store['public_info'], $dbStore->publicInfo);
-        $this->assertEquals($store['public_time'], $dbStore->publicTime);
-        $this->assertEquals($store['kette_id'], $dbStore->chainId);
-        $this->assertEquals($store['betrieb_kategorie_id'], $dbStore->categoryId);
+        $this->assertEquals($store['public_time'], $dbStore->publicTime->value);
+        $this->assertEquals($store['kette_id'], $dbStore->chain ? $dbStore->chain->id : null);
+        $this->assertEquals($store['betrieb_kategorie_id'], $dbStore->category ? $dbStore->category->id : null);
         $this->assertEquals($store['betrieb_status_id'], $dbStore->cooperationStatus->value);
         $this->assertEquals($store['besonderheiten'], $dbStore->description);
         $this->assertEquals($store['presse'], $dbStore->publicity);
-        $this->assertEquals($store['sticker'], $dbStore->sticker);
+        $this->assertEquals($store['sticker'], $dbStore->showsSticker);
+        $this->assertEquals($storeAdded->format('Y-m-d'), $dbStore->createdAt->format('Y-m-d'));
+        $this->assertEquals($storeStatusUpdate->format('Y-m-d'), $dbStore->updatedAt->format('Y-m-d'));
+    }
+
+    public function testListStoresInRegionStoreContentIsNull(): void
+    {
+        $region = $this->tester->createRegion();
+        $storeAdded = new DateTime();
+        $storeStatusUpdate = new DateTime();
+        $store = $this->tester->createStore($region['id'], null, null, ['begin' => null, 'besonderheiten' => null, 'team_status' => 1, 'added' => $storeAdded, 'status_date' => $storeStatusUpdate]);
+
+        $listOfStores = $this->gateway->listStoresInRegion($region['id'], true);
+        $this->assertIsArray($listOfStores);
+        $this->assertEquals(1, count($listOfStores));
+
+        $dbStore = $listOfStores[0];
+        $this->assertEquals($store['id'], $dbStore->id);
+        $this->assertEquals($store['name'], $dbStore->name);
+        $this->assertEquals($store['bezirk_id'], $dbStore->region->id);
+        $this->assertEquals($store['lat'], $dbStore->location->lat);
+        $this->assertEquals($store['lon'], $dbStore->location->lon);
+        $this->assertEquals($store['str'], $dbStore->address->street);
+        $this->assertEquals($store['plz'], $dbStore->address->zipCode);
+        $this->assertEquals($store['stadt'], $dbStore->address->city);
+        $this->assertEquals($store['public_info'], $dbStore->publicInfo);
+        $this->assertEquals($store['public_time'], $dbStore->publicTime->value);
+        $this->assertEquals($store['begin'], $dbStore->cooperationStart);
+        $this->assertEquals($store['kette_id'], $dbStore->chain ? $dbStore->chain->id : null);
+        $this->assertEquals($store['betrieb_kategorie_id'], $dbStore->category ? $dbStore->category->id : null);
+        $this->assertEquals($store['betrieb_status_id'], $dbStore->cooperationStatus->value);
+        $this->assertEquals($store['team_status'], $dbStore->teamStatus->value);
+        $this->assertEquals($store['besonderheiten'], $dbStore->description);
+        $this->assertEquals($store['presse'], $dbStore->publicity);
+        $this->assertEquals($store['sticker'], $dbStore->showsSticker);
         $this->assertEquals($storeAdded->format('Y-m-d'), $dbStore->createdAt->format('Y-m-d'));
         $this->assertEquals($storeStatusUpdate->format('Y-m-d'), $dbStore->updatedAt->format('Y-m-d'));
     }
@@ -183,7 +234,7 @@ class StoreGatewayTest extends Unit
         $listOfStores = $this->gateway->listStoresInRegion($region['id'], true);
         $this->assertEquals(1, count($listOfStores));
 
-        $this->assertEquals($listOfStores[0]->categoryId, null);
+        $this->assertEquals($listOfStores[0]->category, null);
     }
 
     /**
