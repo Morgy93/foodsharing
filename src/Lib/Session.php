@@ -529,7 +529,6 @@ class Session
         $fs = $this->foodsaverGateway->getFoodsaverDetails($this->id());
         $session_last_activity = $fs['last_activity'];
 
-        //$_SESSION['client']['last_activity'];
         if ($session_last_activity === null) {
             $session_last_activity = date('Y-m-d');
         }
