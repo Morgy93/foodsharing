@@ -17,6 +17,7 @@
 - Support and orga-user can search users with e-mail !2651 !2663 @chriswalg @martincodes-de
 - focus foodsharing tab of the same kind if clicking a push notification !2671 @buntel
 - close push notification of the same thread or same kind if clicked !2671 @buntel
+- Added GetReplyTo in mailboxupdate to import mails to database #530 !2578 @chriswalg
 
 ## Bugfixes
 - Reimplementation of the StoreManager empty pickup E-Mail notification !2574 @KoeMai
