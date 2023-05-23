@@ -2,7 +2,6 @@
 
 namespace Foodsharing\Modules\StoreChain;
 
-use DateTime;
 use Exception;
 use Foodsharing\Modules\Core\BaseGateway;
 use Foodsharing\Modules\Foodsaver\DTO\FoodsaverForAvatar;
@@ -60,7 +59,7 @@ class StoreChainGateway extends BaseGateway
     {
         $where = '';
         if (!is_null($id)) {
-            $where = 'WHERE c.`id` = ' . $id;
+            $where = 'WHERE c.`id` = :chainId';
         }
         $data = $this->db->fetchAll('SELECT
 				c.*,
@@ -70,47 +69,31 @@ class StoreChainGateway extends BaseGateway
 				s.`kette_id` = c.`id`
 			' . $where . '
 			GROUP BY c.`id`
-		');
+		', !is_null($id) ? ['chainId' => $id] : []);
 
         $chains = [];
         foreach ($data as $chain) {
-            $formatted = new StoreChainForChainList();
-            $formatted->name = $chain['name'];
-            $formatted->status = $chain['status'];
-            $formatted->allow_press = $chain['allow_press'];
-            $formatted->id = $chain['id'];
-            $formatted->headquarters_zip = $chain['headquarters_zip'];
-            $formatted->headquarters_city = $chain['headquarters_city'];
-            $formatted->modification_date = new DateTime($chain['modification_date']);
-            $formatted->forum_thread = $chain['forum_thread'];
-            $formatted->notes = $chain['notes'];
-            $formatted->common_store_information = $chain['common_store_information'];
-            $formatted->store_count = $chain['stores'];
-            $formatted->kams = [];
-            $chains[$chain['id']] = $formatted;
+            $chainItem = StoreChainForChainList::createFromArray($chain);
+            $chainItem->kams = $this->getStoreChainKeyAccountManagers($chainItem->id);
+
+            $chains[] = $chainItem;
         }
 
-        // Adding Kams:
-        if (!is_null($id)) {
-            $where = 'WHERE k.chain_id = ' . $id;
-        }
+        return $chains;
+    }
+
+    public function getStoreChainKeyAccountManagers(int $chainId)
+    {
         $kams = $this->db->fetchAll('SELECT
 				k.*, f.name, f.photo
 			FROM
 				fs_key_account_manager k
 			JOIN fs_foodsaver f ON f.id = k.foodsaver_id
-			' . $where
-        );
+			WHERE k.chain_id = :chainId', ['chainId' => $chainId]);
 
-        foreach ($kams as $kam) {
-            $formatted = new FoodsaverForAvatar();
-            $formatted->id = $kam['foodsaver_id'];
-            $formatted->name = $kam['name'];
-            $formatted->avatar = $kam['photo'];
-            $chains[$kam['chain_id']]->kams[] = $formatted;
-        }
-
-        return array_values($chains);
+        return array_map(function ($kam) {
+            return FoodsaverForAvatar::createFromArray($kam);
+        }, $kams);
     }
 
     /**

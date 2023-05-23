@@ -105,4 +105,23 @@ class StoreChainForChainList
      * )
      */
     public array $kams;
+
+    public static function createFromArray(array $data): StoreChainForChainList
+    {
+        $obj = new StoreChainForChainList();
+        $obj->id = $data['id'];
+        $obj->name = $data['name'];
+        $obj->status = $data['status'];
+        $obj->allow_press = $data['allow_press'];
+        $obj->headquarters_zip = $data['headquarters_zip'];
+        $obj->headquarters_city = $data['headquarters_city'];
+        $obj->modification_date = new DateTime($data['modification_date']);
+        $obj->forum_thread = $data['forum_thread'];
+        $obj->notes = $data['notes'];
+        $obj->common_store_information = $data['common_store_information'];
+        $obj->store_count = $data['stores'];
+        $obj->kams = [];
+
+        return $obj;
+    }
 }
