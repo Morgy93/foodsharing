@@ -62,6 +62,31 @@ class StoreChainRestController extends AbstractFOSRestController
     }
 
     /**
+     * Returns a specific store chain.
+     *
+     * @OA\Tag(name="chain")
+     * @Rest\Get("chain/{chainId}", requirements={"chainId" = "\d+"})
+     * @OA\Response(
+     * 		response="200",
+     * 		description="Success.",
+     *      @Model(type=StoreChainForChainList::class)
+     * )
+     * @OA\Response(response="401", description="Not logged in")
+     * @OA\Response(response="403", description="Insufficient permissions")
+     */
+    public function getStoreChainAction($chainId): Response
+    {
+        if (!$this->session->mayRole()) {
+            throw new UnauthorizedHttpException(self::NOT_LOGGED_IN);
+        }
+        if (!$this->permissions->maySeeChainList()) {
+            throw new AccessDeniedHttpException();
+        }
+
+        return $this->handleView($this->view($this->gateway->getStoreChains($chainId), 200));
+    }
+
+    /**
      * Creates a new store.
      * The name must not be empty. All other parameters are
      * optional. Returns the created store chain.
