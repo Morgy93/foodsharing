@@ -5,17 +5,17 @@ namespace Foodsharing\Modules\StoreChain;
 use Exception;
 use Foodsharing\Modules\Core\BaseGateway;
 use Foodsharing\Modules\Foodsaver\DTO\FoodsaverForAvatar;
+use Foodsharing\Modules\StoreChain\DTO\StoreChain;
 use Foodsharing\Modules\StoreChain\DTO\StoreChainForChainList;
-use Foodsharing\Modules\StoreChain\DTO\StoreChainForUpdate;
 
 class StoreChainGateway extends BaseGateway
 {
     /**
      * @throws Exception
      */
-    public function addStoreChain(StoreChainForUpdate $storeData): int
+    public function addStoreChain(StoreChain $storeData): int
     {
-        return $this->db->insert('fs_chain', [
+        $id = $this->db->insert('fs_chain', [
             'name' => $storeData->name,
             'headquarters_zip' => $storeData->headquarters_zip,
             'headquarters_city' => $storeData->headquarters_city,
@@ -26,12 +26,15 @@ class StoreChainGateway extends BaseGateway
             'notes' => $storeData->notes,
             'common_store_information' => $storeData->common_store_information,
         ]);
+        $this->updateAllKeyAccountManagers($id, $storeData->kams);
+
+        return $id;
     }
 
     /**
      * @throws Exception
      */
-    public function updateStoreChain(StoreChainForUpdate $storeData, $id)
+    public function updateStoreChain(StoreChain $storeData, $updateKams)
     {
         $this->db->update(
             'fs_chain',
@@ -46,8 +49,42 @@ class StoreChainGateway extends BaseGateway
                 'notes' => $storeData->notes,
                 'common_store_information' => $storeData->common_store_information,
             ],
-            ['id' => $id]
+            ['id' => $storeData->id]
         );
+        if ($updateKams) {
+            $this->updateAllKeyAccountManagers($storeData->id, $storeData->kams);
+        }
+    }
+
+    /**
+     * Delete and insert all key account managers (kams).
+     *
+     * @param array $kams are account ids for key account managers
+     *
+     * @throws Exception
+     */
+    public function updateAllKeyAccountManagers(int $chainId, array $kams)
+    {
+        //delete previous kams
+        $this->db->delete('fs_key_account_manager', ['chain_id' => $chainId]);
+
+        //add new kams
+        foreach ($kams as $fs_id) {
+            $this->db->insert('fs_key_account_manager', [
+                'chain_id' => $chainId,
+                'foodsaver_id' => $fs_id,
+            ]);
+        }
+    }
+
+    /**
+     * Check is user a key account manager for chain.
+     *
+     * @throws Exception
+     */
+    public function isUserKeyAccountManager(int $chainId, int $fs_id): bool
+    {
+        return $this->db->exists('fs_key_account_manager', ['foodsaver_id' => $fs_id, 'chain_id' => $chainId]);
     }
 
     /**
@@ -73,10 +110,8 @@ class StoreChainGateway extends BaseGateway
 
         $chains = [];
         foreach ($data as $chain) {
-            $chainItem = StoreChainForChainList::createFromArray($chain);
-            $chainItem->kams = $this->getStoreChainKeyAccountManagers($chainItem->id);
-
-            $chains[] = $chainItem;
+            $chain['kams'] = $this->getStoreChainKeyAccountManagers($chain['id']);
+            $chains[] = StoreChainForChainList::createFromArray($chain);
         }
 
         return $chains;

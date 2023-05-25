@@ -5,13 +5,13 @@ namespace Foodsharing\Permissions;
 use Foodsharing\Lib\Session;
 use Foodsharing\Modules\Core\DBConstants\Foodsaver\Role;
 use Foodsharing\Modules\Core\DBConstants\Region\RegionIDs;
-use Foodsharing\Modules\StoreChain\KeyAccountManagerGateway;
+use Foodsharing\Modules\StoreChain\StoreChainGateway;
 
 class StoreChainPermissions
 {
     public function __construct(
         private readonly Session $session,
-        private readonly KeyAccountManagerGateway $gateway
+        private readonly StoreChainGateway $gateway
     ) {
     }
 

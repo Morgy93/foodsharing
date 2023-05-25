@@ -2,6 +2,7 @@
 
 namespace Foodsharing\Modules\StoreChain\DTO;
 
+use DateTime;
 use OpenApi\Annotations as OA;
 
 /**
@@ -10,8 +11,15 @@ use OpenApi\Annotations as OA;
  * logic. You can see it more like a Data Transfer Object (DTO) used to pass a chains data between
  * parts of the application in a unified format.
  */
-class StoreChainForUpdate
+class StoreChain
 {
+    /**
+     * Unique identifier of the chain.
+     *
+     * @OA\Property(example=1, readOnly=true)
+     */
+    public ?int $id;
+
     /**
      * Name of the chain.
      *
@@ -75,4 +83,29 @@ class StoreChainForUpdate
      * @OA\Property(type="array", description="Managers of this chain",	items={"type"="integer"})
      */
     public array $kams;
+
+    /**
+     * Date of last modification.
+     *
+     * @OA\Property(readOnly=true)
+     */
+    public ?DateTime $modification_date;
+
+    public static function createFromArray(array $data): StoreChain
+    {
+        $obj = new StoreChain();
+        $obj->id = $data['id'];
+        $obj->name = $data['name'];
+        $obj->status = $data['status'];
+        $obj->allow_press = $data['allow_press'];
+        $obj->headquarters_zip = $data['headquarters_zip'];
+        $obj->headquarters_city = $data['headquarters_city'];
+        $obj->modification_date = new DateTime($data['modification_date']);
+        $obj->forum_thread = $data['forum_thread'];
+        $obj->notes = $data['notes'];
+        $obj->common_store_information = $data['common_store_information'];
+        $obj->kams = $data['kams'] ?? [];
+
+        return $obj;
+    }
 }

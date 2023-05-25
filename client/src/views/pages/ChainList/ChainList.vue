@@ -94,7 +94,7 @@
             <a
               v-if="row.item.forum_thread"
               class="thread-link"
-              :href="$url('forumThread', row.item.forum_thread)"
+              :href="$url('forumThread', row.item.chain.forum_thread)"
             >
               {{ row.value }}
             </a>
@@ -113,14 +113,14 @@
                 v-b-tooltip.hover.window="$i18n('chain.tooltips.modification_date')"
                 class="text-muted change-date"
               >
-                {{ $dateFormatter.date(new Date(row.item.modification_date), { short: true }) }}
+                {{ $dateFormatter.date(new Date(row.item.chain.modification_date), { short: true }) }}
               </small>
             </span>
           </template>
 
           <template #cell(actions)="row">
             <b-dropdown
-              v-if="adminPermissions || row.item.kams.some(kam => kam.id === ownId)"
+              v-if="adminPermissions || row.item.chain.kams.some(kam => kam.id === ownId)"
               v-b-tooltip.hover.noninteractive.window="$i18n('chain.tooltips.options')"
               size="sm"
               no-caret
@@ -208,11 +208,13 @@ export default {
           label: this.$i18n('chain.columns.status'),
           tdClass: 'status',
           sortable: true,
+          formatter: (value, key, item) => item.chain.status,
         },
         {
           key: 'name',
           label: this.$i18n('chain.columns.name'),
           sortable: true,
+          formatter: (value, key, item) => item.chain.name,
         },
         {
           key: 'store_count',
@@ -224,14 +226,17 @@ export default {
           key: 'headquarters_city',
           label: this.$i18n('chain.columns.headquarters'),
           sortable: true,
+          formatter: (value, key, item) => item.chain.headquarters_city,
         },
         {
           key: 'kams',
           label: this.$i18n('chain.columns.kams'),
+          formatter: (value, key, item) => item.chain.kams,
         },
         {
           key: 'notes',
           label: this.$i18n('chain.columns.notes'),
+          formatter: (value, key, item) => item.chain.notes,
         },
         {
           key: 'actions',
@@ -266,7 +271,7 @@ export default {
         chains = chains.filter(
           chain => (
             searchKeys.some(key => chain[key]?.toLowerCase().includes(filterText))) ||
-            chain.kams.find(kam => kam.id === parseInt(filterText)),
+            chain.chain.kams.find(kam => kam.id === parseInt(filterText)),
         )
       }
       if (this.filterStatus !== null) {
@@ -293,16 +298,16 @@ export default {
     },
     editChainModal (row) {
       const chain = row.item
-      this.$refs['input-modal'].show(chain.id, {
-        name: chain.name,
-        headquarters_zip: chain.headquarters_zip,
-        headquarters_city: chain.headquarters_city,
-        status: chain.status,
-        forum_thread: chain.forum_thread,
-        notes: chain.notes,
-        common_store_information: chain.common_store_information,
-        allow_press: !!chain.allow_press,
-        kamIds: chain.kams.map(x => x.id).join(', '),
+      this.$refs['input-modal'].show(chain.chain.id, {
+        name: chain.chain.name,
+        headquarters_zip: chain.chain.headquarters_zip,
+        headquarters_city: chain.chain.headquarters_city,
+        status: chain.chain.status,
+        forum_thread: chain.chain.forum_thread,
+        notes: chain.chain.notes,
+        common_store_information: chain.chain.common_store_information,
+        allow_press: !!chain.chain.allow_press,
+        kamIds: chain.chain.kams.map(x => x.id).join(', '),
       })
     },
     createChainModal () {
@@ -321,7 +326,7 @@ export default {
     async detailsChainModal (row) {
       const selectedChain = row.item
       this.$refs['details-modal'].show(selectedChain)
-      await mutations.fetchChainStores(selectedChain.id)
+      await mutations.fetchChainStores(selectedChain.chain.id)
     },
     async finishEditing (chainId, data) {
       showLoader()

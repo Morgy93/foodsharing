@@ -3,37 +3,42 @@
 namespace Foodsharing\Modules\StoreChain;
 
 use Exception;
-use Foodsharing\Modules\StoreChain\DTO\StoreChainForUpdate;
+use Foodsharing\Modules\Foodsaver\FoodsaverGateway;
+use Foodsharing\Modules\StoreChain\DTO\StoreChain;
 
 class StoreChainTransactions
 {
     public function __construct(
         private readonly StoreChainGateway $storeChainGateway,
-        private readonly KeyAccountManagerGateway $keyAccountManagerGateway
+        private readonly FoodsaverGateway $foodsaverGateway
     ) {
     }
 
     /**
      * @throws Exception
      */
-    public function updateStoreChain(StoreChainForUpdate $storeData, $id, bool $updateKams): void
+    public function updateStoreChain(StoreChain $storeData, bool $updateKams): void
     {
-        $this->storeChainGateway->updateStoreChain($storeData, $id);
-
-        if ($updateKams) {
-            $this->keyAccountManagerGateway->updateAllKeyAccountManagers($id, $storeData->kams);
+        if (!$storeData->id) {
+            throw new StoreChainTransactionException(StoreChainTransactionException::INVALID_STORECHAIN_ID);
         }
+
+        if ($updateKams && !$this->foodsaverGateway->foodsaversExist($storeData->kams)) {
+            throw new StoreChainTransactionException(StoreChainTransactionException::KEY_ACCOUNT_MANAGER_ID_NOT_EXISTS);
+        }
+
+        $this->storeChainGateway->updateStoreChain($storeData, $updateKams);
     }
 
     /**
      * @throws Exception
      */
-    public function addStoreChain(StoreChainForUpdate $storeData): int
+    public function addStoreChain(StoreChain $storeData): int
     {
-        $chainId = $this->storeChainGateway->addStoreChain($storeData);
+        if (!$this->foodsaverGateway->foodsaversExist($storeData->kams)) {
+            throw new StoreChainTransactionException(StoreChainTransactionException::KEY_ACCOUNT_MANAGER_ID_NOT_EXISTS);
+        }
 
-        $this->keyAccountManagerGateway->updateAllKeyAccountManagers($chainId, $storeData->kams);
-
-        return $chainId;
+        return $this->storeChainGateway->addStoreChain($storeData);
     }
 }

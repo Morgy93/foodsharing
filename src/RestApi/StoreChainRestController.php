@@ -3,8 +3,8 @@
 namespace Foodsharing\RestApi;
 
 use Foodsharing\Lib\Session;
+use Foodsharing\Modules\StoreChain\DTO\StoreChain;
 use Foodsharing\Modules\StoreChain\DTO\StoreChainForChainList;
-use Foodsharing\Modules\StoreChain\DTO\StoreChainForUpdate;
 use Foodsharing\Modules\StoreChain\StoreChainGateway;
 use Foodsharing\Modules\StoreChain\StoreChainStatus;
 use Foodsharing\Modules\StoreChain\StoreChainTransactions;
@@ -154,14 +154,15 @@ class StoreChainRestController extends AbstractFOSRestController
         }
 
         $params = $this->validateChainParameters($paramFetcher);
+        $params->id = $chainId;
 
         $updateKams = $this->permissions->mayEditKams($chainId);
-        $this->transactions->updateStoreChain($params, $chainId, $updateKams);
+        $this->transactions->updateStoreChain($params, $updateKams);
 
         return $this->handleView($this->view($this->gateway->getStoreChains($chainId)[0]));
     }
 
-    private function validateChainParameters(ParamFetcher $paramFetcher): StoreChainForUpdate
+    private function validateChainParameters(ParamFetcher $paramFetcher): StoreChain
     {
         $name = trim(strip_tags($paramFetcher->get('name')));
         if (empty($name)) {
@@ -207,7 +208,7 @@ class StoreChainRestController extends AbstractFOSRestController
             }
         }
 
-        $chain = new StoreChainForUpdate();
+        $chain = new StoreChain();
         $chain->name = $name;
         $chain->status = $status->value;
         $chain->allow_press = $allow_press;
