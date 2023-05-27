@@ -3,8 +3,8 @@
 namespace Foodsharing\Modules\StoreChain\DTO;
 
 use DateTime;
-use OpenApi\Annotations as OA;
 use JMS\Serializer\Annotation\Type;
+use OpenApi\Annotations as OA;
 use Symfony\Component\Validator\Constraints as Assert;
 
 /**
@@ -91,7 +91,6 @@ class StoreChain
      *
      * @OA\Property(type="array", description="Managers of this chain",	items={"type"="integer"})
      * @Assert\All(@Assert\Positive())
-     *
      * @Type("array<int>")
      */
     public array $kams = [];

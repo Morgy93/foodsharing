@@ -12,7 +12,6 @@ use Foodsharing\Modules\StoreChain\StoreChainTransactions;
 use Foodsharing\Permissions\StoreChainPermissions;
 use FOS\RestBundle\Controller\AbstractFOSRestController;
 use FOS\RestBundle\Controller\Annotations as Rest;
-use FOS\RestBundle\Request\ParamFetcher;
 use Nelmio\ApiDocBundle\Annotation\Model;
 use OpenApi\Annotations as OA;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\ParamConverter;
@@ -186,7 +185,6 @@ class StoreChainRestController extends AbstractFOSRestController
 
         return $this->handleView($this->view($this->gateway->getStoreChains($chainId)[0]));
     }
-
 
     /**
      * Returns the list of stores that are part of a given chain.
