@@ -3,6 +3,7 @@
 namespace Foodsharing\RestApi;
 
 use Foodsharing\Lib\Session;
+use Foodsharing\Modules\StoreChain\DTO\PatchStoreChain;
 use Foodsharing\Modules\StoreChain\DTO\StoreChain;
 use Foodsharing\Modules\StoreChain\DTO\StoreChainForChainList;
 use Foodsharing\Modules\StoreChain\StoreChainGateway;
@@ -14,11 +15,13 @@ use FOS\RestBundle\Controller\Annotations as Rest;
 use FOS\RestBundle\Request\ParamFetcher;
 use Nelmio\ApiDocBundle\Annotation\Model;
 use OpenApi\Annotations as OA;
+use Sensio\Bundle\FrameworkExtraBundle\Configuration\ParamConverter;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\Exception\AccessDeniedHttpException;
 use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 use Symfony\Component\HttpKernel\Exception\UnauthorizedHttpException;
+use Symfony\Component\Validator\ConstraintViolationListInterface;
 
 class StoreChainRestController extends AbstractFOSRestController
 {
@@ -127,21 +130,14 @@ class StoreChainRestController extends AbstractFOSRestController
      *
      * @OA\Tag(name="chain")
      * @Rest\Patch("chain/{chainId}", requirements={"chainId" = "\d+"})
-     * @Rest\RequestParam(name="name", nullable=false)
-     * @Rest\RequestParam(name="headquarters_zip", nullable=true, requirements="\d{5}")
-     * @Rest\RequestParam(name="headquarters_city", nullable=true)
-     * @Rest\RequestParam(name="status", nullable=false)
-     * @Rest\RequestParam(name="allow_press", nullable=false, default=false)
-     * @Rest\RequestParam(name="forum_thread", nullable=true, requirements="\d+")
-     * @Rest\RequestParam(name="notes", nullable=true)
-     * @Rest\RequestParam(name="common_store_information", nullable=true)
-     * @Rest\RequestParam(name="kams", nullable=true)
+     * @OA\RequestBody(@Model(type=PatchStoreChain::class))
+     * @ParamConverter("storeModel", converter="fos_rest.request_body")
      * @OA\Response(response="200", description="Success")
      * @OA\Response(response="401", description="Not logged in")
      * @OA\Response(response="403", description="Insufficient permissions")
      * @OA\Response(response="404", description="Chain does not exist")
      */
-    public function updateChainAction($chainId, ParamFetcher $paramFetcher): Response
+    public function updateChainAction($chainId, PatchStoreChain $storeModel, ConstraintViolationListInterface $validationErrors): Response
     {
         if (!$this->session->mayRole()) {
             throw new UnauthorizedHttpException(self::NOT_LOGGED_IN);
@@ -153,8 +149,44 @@ class StoreChainRestController extends AbstractFOSRestController
             throw new AccessDeniedHttpException();
         }
 
-        $params = $this->validateChainParameters($paramFetcher);
+        $this->throwBadRequestExceptionOnError($validationErrors);
+        $params = $this->gateway->getStoreChains($chainId)[0]->chain;
         $params->id = $chainId;
+        if (!empty($storeModel->name)) {
+            $params->name = $storeModel->name;
+            if (empty(trim(strip_tags($params->name)))) {
+                throw new BadRequestHttpException('name must not be empty');
+            }
+        }
+
+        if (!empty($storeModel->status)) {
+            $status = StoreChainStatus::tryFrom($storeModel->status);
+            if (!$status instanceof StoreChainStatus) {
+                throw new BadRequestHttpException('status must be a valid status id');
+            }
+            $params->status = $status->value;
+        }
+        if (!empty($storeModel->headquarters_zip)) {
+            $params->headquarters_zip = $storeModel->headquarters_zip;
+        }
+        if (!empty($storeModel->headquarters_city)) {
+            $params->headquarters_city = $storeModel->headquarters_city;
+        }
+        if (!empty($storeModel->allow_press)) {
+            $params->allow_press = $storeModel->allow_press;
+        }
+        if (!empty($storeModel->forum_thread)) {
+            $params->forum_thread = $storeModel->forum_thread;
+        }
+        if (!empty($storeModel->notes)) {
+            $params->notes = $storeModel->notes;
+        }
+        if (!empty($storeModel->common_store_information)) {
+            $params->common_store_information = $storeModel->common_store_information;
+        }
+        if (!empty($storeModel->kams)) {
+            $params->kams = $storeModel->kams;
+        }
 
         $updateKams = $this->permissions->mayEditKams($chainId);
         $this->transactions->updateStoreChain($params, $updateKams);
@@ -241,5 +273,21 @@ class StoreChainRestController extends AbstractFOSRestController
         }
 
         return $this->handleView($this->view($this->gateway->getChainStores($chainId), 200));
+    }
+
+    /**
+     * Check if a Constraint violation is found and if it exist it throws an BadRequestExeption.
+     *
+     * @param ConstraintViolationListInterface $errors Validation result
+     *
+     * @throws BadRequestHttpException if violation is detected
+     */
+    private function throwBadRequestExceptionOnError(ConstraintViolationListInterface $errors): void
+    {
+        if ($errors->count() > 0) {
+            $firstError = $errors->get(0);
+            $relevantErrorContent = ['field' => $firstError->getPropertyPath(), 'message' => $firstError->getMessage()];
+            throw new BadRequestHttpException(json_encode($relevantErrorContent));
+        }
     }
 }
