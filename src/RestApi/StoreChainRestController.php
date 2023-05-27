@@ -96,20 +96,13 @@ class StoreChainRestController extends AbstractFOSRestController
      *
      * @OA\Tag(name="chain")
      * @Rest\Post("chain")
-     * @Rest\RequestParam(name="name", nullable=false)
-     * @Rest\RequestParam(name="headquarters_zip", nullable=true, requirements="\d{5}")
-     * @Rest\RequestParam(name="headquarters_city", nullable=true)
-     * @Rest\RequestParam(name="status", nullable=false)
-     * @Rest\RequestParam(name="allow_press", nullable=false, default=false)
-     * @Rest\RequestParam(name="forum_thread", nullable=true, requirements="\d+")
-     * @Rest\RequestParam(name="notes", nullable=true)
-     * @Rest\RequestParam(name="common_store_information", nullable=true)
-     * @Rest\RequestParam(name="kams", nullable=true)
+     * @ParamConverter("storeModel", converter="fos_rest.request_body")
+     * @OA\RequestBody(@Model(type=PatchStoreChain::class))
      * @OA\Response(response="200", description="Success")
      * @OA\Response(response="401", description="Not logged in")
      * @OA\Response(response="403", description="Insufficient permissions")
      */
-    public function createChainAction(ParamFetcher $paramFetcher): Response
+    public function createChainAction(StoreChain $storeModel, ConstraintViolationListInterface $validationErrors): Response
     {
         if (!$this->session->mayRole()) {
             throw new UnauthorizedHttpException(self::NOT_LOGGED_IN);
@@ -118,9 +111,9 @@ class StoreChainRestController extends AbstractFOSRestController
             throw new AccessDeniedHttpException();
         }
 
-        $params = $this->validateChainParameters($paramFetcher);
+        $this->throwBadRequestExceptionOnError($validationErrors);
 
-        $id = $this->gateway->addStoreChain($params);
+        $id = $this->gateway->addStoreChain($storeModel);
 
         return $this->handleView($this->view($this->gateway->getStoreChains($id)[0]));
     }
@@ -194,65 +187,6 @@ class StoreChainRestController extends AbstractFOSRestController
         return $this->handleView($this->view($this->gateway->getStoreChains($chainId)[0]));
     }
 
-    private function validateChainParameters(ParamFetcher $paramFetcher): StoreChain
-    {
-        $name = trim(strip_tags($paramFetcher->get('name')));
-        if (empty($name)) {
-            throw new BadRequestHttpException('name must not be empty');
-        }
-
-        $headquarters_city = trim(strip_tags($paramFetcher->get('headquarters_city')));
-        if (empty($headquarters_city)) {
-            $headquarters_city = null;
-        } elseif (strlen($headquarters_city) > 50) {
-            throw new BadRequestHttpException('headquarters_city must not be longer than 50 chars');
-        }
-
-        $status = StoreChainStatus::tryFrom($paramFetcher->get('status'));
-        if (!$status instanceof StoreChainStatus) {
-            throw new BadRequestHttpException('status must be a valid status id');
-        }
-
-        $allow_press = (bool)$paramFetcher->get('allow_press');
-
-        $forum_thread = $paramFetcher->get('forum_thread');
-        if (!is_null($forum_thread)) {
-            $forum_thread = (int)$forum_thread;
-        }
-
-        $notes = trim(strip_tags($paramFetcher->get('notes')));
-        if (empty($notes)) {
-            $notes = null;
-        } elseif (mb_strlen($notes) > 200) {
-            throw new BadRequestHttpException('notes must not be longer than 200 chars');
-        }
-
-        $kams = $paramFetcher->get('kams');
-        if (empty($kams)) {
-            $kams = [];
-        } elseif (!is_array($kams)) {
-            throw new BadRequestHttpException('kams must be an array of user ids');
-        } else {
-            foreach ($kams as $id) {
-                if (!is_int($id) || $id < 0) {
-                    throw new BadRequestHttpException('kams must be an array of user ids');
-                }
-            }
-        }
-
-        $chain = new StoreChain();
-        $chain->name = $name;
-        $chain->status = $status->value;
-        $chain->allow_press = $allow_press;
-        $chain->headquarters_zip = $paramFetcher->get('headquarters_zip');
-        $chain->headquarters_city = $headquarters_city;
-        $chain->forum_thread = $forum_thread;
-        $chain->notes = $notes;
-        $chain->common_store_information = $paramFetcher->get('common_store_information');
-        $chain->kams = $kams;
-
-        return $chain;
-    }
 
     /**
      * Returns the list of stores that are part of a given chain.

@@ -313,10 +313,10 @@ export default {
     createChainModal () {
       this.$refs['input-modal'].show(-1, {
         name: '',
-        headquarters_zip: '',
+        headquarters_zip: null,
         headquarters_city: '',
         status: 2,
-        forum_thread: '',
+        forum_thread: null,
         allow_press: false,
         notes: '',
         common_store_information: '',

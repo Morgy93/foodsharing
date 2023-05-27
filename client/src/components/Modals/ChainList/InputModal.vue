@@ -215,10 +215,10 @@ export default {
     finishedEditing () {
       const data = {
         name: this.input.name,
-        headquarters_zip: this.input.headquarters_zip,
+        headquarters_zip: String(this.input.headquarters_zip),
         headquarters_city: this.input.headquarters_city,
-        status: this.input.status,
-        forum_thread: this.input.forum_thread || null,
+        status: Number(this.input.status),
+        forum_thread: Number(this.input.forum_thread) || null,
         allow_press: this.input.allow_press,
         notes: this.input.notes,
         common_store_information: this.input.common_store_information,

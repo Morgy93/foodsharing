@@ -4,6 +4,8 @@ namespace Foodsharing\Modules\StoreChain\DTO;
 
 use DateTime;
 use OpenApi\Annotations as OA;
+use JMS\Serializer\Annotation\Type;
+use Symfony\Component\Validator\Constraints as Assert;
 
 /**
  * Class that represents the data of a store chain, in a format in which it is sent to the client.
@@ -24,6 +26,7 @@ class StoreChain
      * Name of the chain.
      *
      * @OA\Property(example="MyChain GmbH")
+     * @Assert\Length(max=120)
      */
     public string $name;
 
@@ -34,6 +37,7 @@ class StoreChain
      * - '2' - Cooperating.
      *
      * @OA\Property(enum={0, 1, 2}, example=2)
+     * @Assert\Range (min = 0, max = 2)
      */
     public int $status;
 
@@ -41,6 +45,7 @@ class StoreChain
      * ZIP code of the chains headquater.
      *
      * @OA\Property(example="48149", nullable=true)
+     * @Assert\Length(max=120)
      */
     public ?string $headquarters_zip;
 
@@ -48,6 +53,7 @@ class StoreChain
      * City of the chains headquater.
      *
      * @OA\Property(example="Münster", nullable=true)
+     * @Assert\Length(max=50)
      */
     public ?string $headquarters_city;
 
@@ -60,6 +66,7 @@ class StoreChain
      * Identifier of a forum thread related to this chain.
      *
      * @OA\Property(example=12345)
+     * @Assert\Range (min = 0)
      */
     public ?int $forum_thread;
 
@@ -67,6 +74,7 @@ class StoreChain
      * Miscellaneous notes.
      *
      * @OA\Property(example="Cooperating since 2021", nullable=true)
+     * @Assert\Length(max=200)
      */
     public ?string $notes;
 
@@ -74,6 +82,7 @@ class StoreChain
      * Information about the chain to be displayed on every related stores page.
      *
      * @OA\Property(example="Pickup times between 10:00 and 12:15", nullable=true)
+     * @Assert\Length(max=16777215)
      */
     public ?string $common_store_information;
 
@@ -81,8 +90,11 @@ class StoreChain
      * Identifiers of key account managers.
      *
      * @OA\Property(type="array", description="Managers of this chain",	items={"type"="integer"})
+     * @Assert\All(@Assert\Positive())
+     *
+     * @Type("array<int>")
      */
-    public array $kams;
+    public array $kams = [];
 
     /**
      * Date of last modification.
