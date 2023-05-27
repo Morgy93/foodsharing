@@ -334,14 +334,18 @@ export default {
       if (chainId < 0) {
         try {
           await mutations.createChain(data)
-        } catch (e) {
-          pulseError(this.$i18n('chain.error.create'))
+        } catch (err) {
+          const errorDescription = err.jsonContent ?? { message: '' }
+          const errorMessage = `${errorDescription.message ?? 'Unknown'}`
+          pulseError(this.$i18n('chain.error.create', { error: errorMessage }))
         }
       } else {
         try {
           await mutations.editChain(chainId, data)
-        } catch {
-          pulseError(this.$i18n('chain.error.edit'))
+        } catch (err) {
+          const errorDescription = err.jsonContent ?? { message: '' }
+          const errorMessage = `${errorDescription.message ?? 'Unknown'}`
+          pulseError(this.$i18n('chain.error.edit', { error: errorMessage }))
         }
       }
       hideLoader()

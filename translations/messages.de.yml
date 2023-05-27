@@ -2772,8 +2772,8 @@ chain:
     notcooperating: Kooperiert nicht
     filterplaceholder: Status
   error:
-    create: Kette konnte nicht erstellt werden.
-    edit: Kette konnte nicht bearbeitet werden.
+    create: Kette konnte nicht erstellt werden ({error}).
+    edit: Kette konnte nicht bearbeitet werden ({error}).
     notfs: Zum ansehen dieser Liste musst du Foodsaver sein.
   bread:
     workinggroup: Betriebsketten
