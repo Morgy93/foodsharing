@@ -12,8 +12,10 @@ use Foodsharing\Modules\Core\DBConstants\Store\CooperationStatus;
 use Foodsharing\Modules\Core\DBConstants\Store\Milestone;
 use Foodsharing\Modules\Core\DBConstants\Store\TeamSearchStatus;
 use Foodsharing\Modules\Core\DBConstants\StoreTeam\MembershipStatus;
+use Foodsharing\Modules\Core\Pagination;
 use Foodsharing\Modules\Map\DTO\MapMarker;
 use Foodsharing\Modules\Region\RegionGateway;
+use Foodsharing\Modules\Store\DTO\MinimalStoreIdentifier;
 use Foodsharing\Modules\Store\DTO\Store;
 use Foodsharing\Modules\Store\DTO\StoreTeamMembership;
 
@@ -94,6 +96,24 @@ class StoreGateway extends BaseGateway
         }
 
         return $result;
+    }
+
+    /**
+     * Return all identifiers for stores of a store chain.
+     *
+     * @return MinimalStoreIdentifier[]
+     *
+     * @throws Exception
+     */
+    public function findAllStoresOfStoreChain(int $chainId, Pagination $pagination = new Pagination()): array
+    {
+        $results = $this->db->fetchAll('SELECT id, name
+            FROM fs_betrieb
+            WHERE kette_id = :chainId' .
+            $pagination->buildSqlLimit(),
+            $pagination->addSqlLimitParameters(['chainId' => $chainId]));
+
+        return array_map(function (array $item) { return MinimalStoreIdentifier::createFromArray($item); }, $results);
     }
 
     /**

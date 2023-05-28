@@ -4,6 +4,7 @@ namespace Foodsharing\Modules\StoreChain;
 
 use Exception;
 use Foodsharing\Modules\Core\BaseGateway;
+use Foodsharing\Modules\Core\Pagination;
 use Foodsharing\Modules\Foodsaver\DTO\FoodsaverForAvatar;
 use Foodsharing\Modules\StoreChain\DTO\StoreChain;
 use Foodsharing\Modules\StoreChain\DTO\StoreChainForChainList;
@@ -92,12 +93,13 @@ class StoreChainGateway extends BaseGateway
      *
      * @throws Exception
      */
-    public function getStoreChains(?int $id = null): array
+    public function getStoreChains(?int $id = null, Pagination $pagination = new Pagination()): array
     {
         $where = '';
         if (!is_null($id)) {
             $where = 'WHERE c.`id` = :chainId';
         }
+
         $data = $this->db->fetchAll('SELECT
 				c.*,
 				COUNT(s.`id`) AS stores
@@ -106,7 +108,7 @@ class StoreChainGateway extends BaseGateway
 				s.`kette_id` = c.`id`
 			' . $where . '
 			GROUP BY c.`id`
-		', !is_null($id) ? ['chainId' => $id] : []);
+		' . $pagination->buildSqlLimit(), $pagination->addSqlLimitParameters(!is_null($id) ? ['chainId' => $id] : []));
 
         $chains = [];
         foreach ($data as $chain) {
@@ -137,13 +139,5 @@ class StoreChainGateway extends BaseGateway
     public function chainExists($chainId): bool
     {
         return $this->db->exists('fs_chain', ['id' => $chainId]);
-    }
-
-    /**
-     * @throws Exception
-     */
-    public function getChainStores($chainId): array
-    {
-        return $this->db->fetchAllByCriteria('fs_betrieb', ['id', 'name'], ['kette_id' => $chainId]);
     }
 }

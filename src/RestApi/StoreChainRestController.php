@@ -3,6 +3,9 @@
 namespace Foodsharing\RestApi;
 
 use Foodsharing\Lib\Session;
+use Foodsharing\Modules\Core\Pagination;
+use Foodsharing\Modules\Store\DTO\MinimalStoreIdentifier;
+use Foodsharing\Modules\Store\StoreGateway;
 use Foodsharing\Modules\StoreChain\DTO\PatchStoreChain;
 use Foodsharing\Modules\StoreChain\DTO\StoreChain;
 use Foodsharing\Modules\StoreChain\DTO\StoreChainForChainList;
@@ -12,6 +15,7 @@ use Foodsharing\Modules\StoreChain\StoreChainTransactions;
 use Foodsharing\Permissions\StoreChainPermissions;
 use FOS\RestBundle\Controller\AbstractFOSRestController;
 use FOS\RestBundle\Controller\Annotations as Rest;
+use FOS\RestBundle\Request\ParamFetcher;
 use Nelmio\ApiDocBundle\Annotation\Model;
 use OpenApi\Annotations as OA;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\ParamConverter;
@@ -29,6 +33,7 @@ class StoreChainRestController extends AbstractFOSRestController
 
     public function __construct(
         private readonly Session $session,
+        private readonly StoreGateway $storeGateway,
         private readonly StoreChainGateway $gateway,
         private readonly StoreChainTransactions $transactions,
         private readonly StoreChainPermissions $permissions
@@ -40,6 +45,8 @@ class StoreChainRestController extends AbstractFOSRestController
      *
      * @OA\Tag(name="chain")
      * @Rest\Get("chains")
+     * @Rest\QueryParam(name="pageSize" , description="Count of chains on page", requirements="\d+", default=20, strict=true)
+     * @Rest\QueryParam(name="offset" , description="Offset of items", requirements="\d+", default=0, strict=true)
      * @OA\Response(
      * 		response="200",
      * 		description="Success.",
@@ -51,7 +58,7 @@ class StoreChainRestController extends AbstractFOSRestController
      * @OA\Response(response="401", description="Not logged in")
      * @OA\Response(response="403", description="Insufficient permissions")
      */
-    public function getStoreChainsAction(): Response
+    public function getStoreChainsAction(ParamFetcher $paramFetcher): Response
     {
         if (!$this->session->mayRole()) {
             throw new UnauthorizedHttpException(self::NOT_LOGGED_IN);
@@ -60,7 +67,11 @@ class StoreChainRestController extends AbstractFOSRestController
             throw new AccessDeniedHttpException();
         }
 
-        return $this->handleView($this->view($this->gateway->getStoreChains(), 200));
+        $pagination = new Pagination();
+        $pagination->pageSize = $paramFetcher->get('pageSize');
+        $pagination->offset = $paramFetcher->get('offset');
+
+        return $this->handleView($this->view($this->gateway->getStoreChains(null, $pagination), 200));
     }
 
     /**
@@ -189,13 +200,22 @@ class StoreChainRestController extends AbstractFOSRestController
     /**
      * Returns the list of stores that are part of a given chain.
      *
+     * @Rest\QueryParam(name="pageSize" , description="Count of chains on page", requirements="\d+", default=20, strict=true)
+     * @Rest\QueryParam(name="offset" , description="Offset of items", requirements="\d+", default=0, strict=true)
      * @OA\Tag(name="chain")
      * @Rest\Get("chain/{chainId}/stores", requirements={"chainId" = "\d+"})
-     * @OA\Response(response="200", description="Success")
+     * @OA\Response(
+     * 		response="200",
+     * 		description="Success.",
+     *      @OA\JsonContent(
+     *        type="array",
+     *        @OA\Items(ref=@Model(type=MinimalStoreIdentifier::class))
+     *      )
+     * )
      * @OA\Response(response="401", description="Not logged in")
      * @OA\Response(response="403", description="Insufficient permissions")
      */
-    public function getChainStoresAction($chainId): Response
+    public function getChainStoresAction(int $chainId, ParamFetcher $paramFetcher): Response
     {
         if (!$this->session->mayRole()) {
             throw new UnauthorizedHttpException(self::NOT_LOGGED_IN);
@@ -204,7 +224,11 @@ class StoreChainRestController extends AbstractFOSRestController
             throw new AccessDeniedHttpException();
         }
 
-        return $this->handleView($this->view($this->gateway->getChainStores($chainId), 200));
+        $pagination = new Pagination();
+        $pagination->pageSize = $paramFetcher->get('pageSize');
+        $pagination->offset = $paramFetcher->get('offset');
+
+        return $this->handleView($this->view($this->storeGateway->findAllStoresOfStoreChain($chainId, $pagination), 200));
     }
 
     /**
