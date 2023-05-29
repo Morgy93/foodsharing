@@ -4,8 +4,9 @@ namespace Foodsharing\Modules\StoreChain\DTO;
 
 use DateTime;
 use DateTimeZone;
+use Foodsharing\Modules\Foodsaver\DTO\FoodsaverForAvatar;
 use Foodsharing\Modules\StoreChain\StoreChainStatus;
-use JMS\Serializer\Annotation\Type;
+use Nelmio\ApiDocBundle\Annotation\Model;
 use OpenApi\Annotations as OA;
 use Symfony\Component\Validator\Constraints as Assert;
 
@@ -91,9 +92,12 @@ class StoreChain
     /**
      * Identifiers of key account managers.
      *
-     * @OA\Property(type="array", description="Managers of this chain",	items={"type"="integer"})
-     * @Assert\All(@Assert\Positive())
-     * @Type("array<int>")
+     * @var array<FoodsaverForAvatar> Array of store information
+     *
+     * @OA\Property(
+     *        type="array",
+     *        @OA\Items(ref=@Model(type=FoodsaverForAvatar::class))
+     *      )
      */
     public array $kams = [];
 
@@ -117,7 +121,7 @@ class StoreChain
         $obj->forum_thread = $data['forum_thread'];
         $obj->notes = $data['notes'];
         $obj->common_store_information = $data['common_store_information'];
-        $obj->kams = array_map(function ($kam) { return $kam->id; }, $data['kams']);
+        $obj->kams = $data['kams'];
 
         return $obj;
     }

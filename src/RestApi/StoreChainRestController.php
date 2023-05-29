@@ -4,6 +4,7 @@ namespace Foodsharing\RestApi;
 
 use Foodsharing\Lib\Session;
 use Foodsharing\Modules\Core\Pagination;
+use Foodsharing\Modules\Foodsaver\DTO\FoodsaverForAvatar;
 use Foodsharing\Modules\Store\DTO\MinimalStoreIdentifier;
 use Foodsharing\Modules\Store\StoreGateway;
 use Foodsharing\Modules\StoreChain\DTO\PatchStoreChain;
@@ -200,7 +201,12 @@ class StoreChainRestController extends AbstractFOSRestController
             $changed = true;
         }
         if (!empty($storeModel->kams)) {
-            $params->kams = $storeModel->kams;
+            $params->kams = array_map(function ($kam) {
+                $obj = new FoodsaverForAvatar();
+                $obj->id = $kam;
+
+                return $obj;
+            }, $storeModel->kams);
             $changed = true;
         }
 
