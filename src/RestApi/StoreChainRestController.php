@@ -13,12 +13,14 @@ use Foodsharing\Modules\StoreChain\StoreChainGateway;
 use Foodsharing\Modules\StoreChain\StoreChainStatus;
 use Foodsharing\Modules\StoreChain\StoreChainTransactions;
 use Foodsharing\Permissions\StoreChainPermissions;
+use Foodsharing\RestApi\Models\StoreChain\CreateStoreChainModel;
 use FOS\RestBundle\Controller\AbstractFOSRestController;
 use FOS\RestBundle\Controller\Annotations as Rest;
 use FOS\RestBundle\Request\ParamFetcher;
 use Nelmio\ApiDocBundle\Annotation\Model;
 use OpenApi\Annotations as OA;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\ParamConverter;
+use Symfony\Component\HttpFoundation\Exception\BadRequestException;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\Exception\AccessDeniedHttpException;
 use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
@@ -45,7 +47,7 @@ class StoreChainRestController extends AbstractFOSRestController
      *
      * @OA\Tag(name="chain")
      * @Rest\Get("chains")
-     * @Rest\QueryParam(name="pageSize" , description="Count of chains on page", requirements="\d+", default=20, strict=true)
+     * @Rest\QueryParam(name="pageSize" , description="Count of chains on page", requirements="\d+", default=0, strict=true)
      * @Rest\QueryParam(name="offset" , description="Offset of items", requirements="\d+", default=0, strict=true)
      * @OA\Response(
      * 		response="200",
@@ -78,7 +80,7 @@ class StoreChainRestController extends AbstractFOSRestController
      * Returns a specific store chain.
      *
      * @OA\Tag(name="chain")
-     * @Rest\Get("chain/{chainId}", requirements={"chainId" = "\d+"})
+     * @Rest\Get("chains/{chainId}", requirements={"chainId" = "\d+"})
      * @OA\Response(
      * 		response="200",
      * 		description="Success.",
@@ -105,14 +107,14 @@ class StoreChainRestController extends AbstractFOSRestController
      * optional. Returns the created store chain.
      *
      * @OA\Tag(name="chain")
-     * @Rest\Post("chain")
+     * @Rest\Post("chains")
      * @ParamConverter("storeModel", converter="fos_rest.request_body")
-     * @OA\RequestBody(@Model(type=PatchStoreChain::class))
+     * @OA\RequestBody(@Model(type=StoreChain::class))
      * @OA\Response(response="200", description="Success")
      * @OA\Response(response="401", description="Not logged in")
      * @OA\Response(response="403", description="Insufficient permissions")
      */
-    public function createChainAction(StoreChain $storeModel, ConstraintViolationListInterface $validationErrors): Response
+    public function createChainAction(CreateStoreChainModel $storeModel, ConstraintViolationListInterface $validationErrors): Response
     {
         if (!$this->session->mayRole()) {
             throw new UnauthorizedHttpException(self::NOT_LOGGED_IN);
@@ -123,7 +125,7 @@ class StoreChainRestController extends AbstractFOSRestController
 
         $this->throwBadRequestExceptionOnError($validationErrors);
 
-        $id = $this->gateway->addStoreChain($storeModel);
+        $id = $this->transactions->addStoreChain($storeModel->toCreateStore());
 
         return $this->handleView($this->view($this->gateway->getStoreChains($id)[0]));
     }
@@ -132,7 +134,7 @@ class StoreChainRestController extends AbstractFOSRestController
      * Updates a store.
      *
      * @OA\Tag(name="chain")
-     * @Rest\Patch("chain/{chainId}", requirements={"chainId" = "\d+"})
+     * @Rest\Patch("chains/{chainId}", requirements={"chainId" = "\d+"})
      * @OA\RequestBody(@Model(type=PatchStoreChain::class))
      * @ParamConverter("storeModel", converter="fos_rest.request_body")
      * @OA\Response(response="200", description="Success")
@@ -153,6 +155,8 @@ class StoreChainRestController extends AbstractFOSRestController
         }
 
         $this->throwBadRequestExceptionOnError($validationErrors);
+
+        $changed = false;
         $params = $this->gateway->getStoreChains($chainId)[0]->chain;
         $params->id = $chainId;
         if (!empty($storeModel->name)) {
@@ -160,6 +164,7 @@ class StoreChainRestController extends AbstractFOSRestController
             if (empty(trim(strip_tags($params->name)))) {
                 throw new BadRequestHttpException('name must not be empty');
             }
+            $changed = true;
         }
 
         if (!empty($storeModel->status)) {
@@ -167,43 +172,55 @@ class StoreChainRestController extends AbstractFOSRestController
             if (!$status instanceof StoreChainStatus) {
                 throw new BadRequestHttpException('status must be a valid status id');
             }
-            $params->status = $status->value;
+            $params->status = $status;
+            $changed = true;
         }
         if (!empty($storeModel->headquarters_zip)) {
             $params->headquarters_zip = $storeModel->headquarters_zip;
+            $changed = true;
         }
         if (!empty($storeModel->headquarters_city)) {
             $params->headquarters_city = $storeModel->headquarters_city;
+            $changed = true;
         }
         if (!empty($storeModel->allow_press)) {
             $params->allow_press = $storeModel->allow_press;
+            $changed = true;
         }
         if (!empty($storeModel->forum_thread)) {
             $params->forum_thread = $storeModel->forum_thread;
+            $changed = true;
         }
         if (!empty($storeModel->notes)) {
             $params->notes = $storeModel->notes;
+            $changed = true;
         }
         if (!empty($storeModel->common_store_information)) {
             $params->common_store_information = $storeModel->common_store_information;
+            $changed = true;
         }
         if (!empty($storeModel->kams)) {
             $params->kams = $storeModel->kams;
+            $changed = true;
         }
 
-        $updateKams = $this->permissions->mayEditKams($chainId);
-        $this->transactions->updateStoreChain($params, $updateKams);
+        if ($changed) {
+            $updateKams = $this->permissions->mayEditKams($chainId);
+            $this->transactions->updateStoreChain($params, $updateKams);
 
-        return $this->handleView($this->view($this->gateway->getStoreChains($chainId)[0]));
+            return $this->handleView($this->view($this->gateway->getStoreChains($chainId)[0]));
+        } else {
+            throw new BadRequestException('No information changed.');
+        }
     }
 
     /**
      * Returns the list of stores that are part of a given chain.
      *
-     * @Rest\QueryParam(name="pageSize" , description="Count of chains on page", requirements="\d+", default=20, strict=true)
+     * @Rest\QueryParam(name="pageSize" , description="Count of chains on page", requirements="\d+", default=0, strict=true)
      * @Rest\QueryParam(name="offset" , description="Offset of items", requirements="\d+", default=0, strict=true)
      * @OA\Tag(name="chain")
-     * @Rest\Get("chain/{chainId}/stores", requirements={"chainId" = "\d+"})
+     * @Rest\Get("chains/{chainId}/stores", requirements={"chainId" = "\d+"})
      * @OA\Response(
      * 		response="200",
      * 		description="Success.",

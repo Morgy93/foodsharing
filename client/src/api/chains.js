@@ -5,13 +5,13 @@ export async function listChains () {
 }
 
 export async function listChainStores (chainId) {
-  return await get(`/chain/${chainId}/stores`)
+  return await get(`/chains/${chainId}/stores`)
 }
 
 export async function createChain (data) {
-  return await post('/chain', data)
+  return await post('/chains', data)
 }
 
 export async function editChain (id, data) {
-  return await patch(`/chain/${id}`, data)
+  return await patch(`/chains/${id}`, data)
 }

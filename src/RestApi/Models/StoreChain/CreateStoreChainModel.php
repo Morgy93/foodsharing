@@ -1,36 +1,30 @@
 <?php
 
-namespace Foodsharing\Modules\StoreChain\DTO;
+namespace Foodsharing\RestApi\Models\StoreChain;
 
 use DateTime;
-use DateTimeZone;
+use Foodsharing\Modules\StoreChain\DTO\StoreChain;
 use Foodsharing\Modules\StoreChain\StoreChainStatus;
+use Foodsharing\Validator\NoHtml;
 use JMS\Serializer\Annotation\Type;
 use OpenApi\Annotations as OA;
 use Symfony\Component\Validator\Constraints as Assert;
 
 /**
  * Class that represents the data of a store chain, in a format in which it is sent to the client.
- * This is not an entity class, it does not provide any domain logic nor does it contain any access
- * logic. You can see it more like a Data Transfer Object (DTO) used to pass a chains data between
- * parts of the application in a unified format.
  */
-class StoreChain
+class CreateStoreChainModel
 {
-    /**
-     * Unique identifier of the chain.
-     *
-     * @OA\Property(example=1, readOnly=true)
-     */
-    public ?int $id;
-
     /**
      * Name of the chain.
      *
      * @OA\Property(example="MyChain GmbH")
+     * @Assert\NotNull()
      * @Assert\Length(max=120)
+     *
+     * @NoHtml
      */
-    public string $name;
+    public ?string $name;
 
     /**
      * Indicates the cooperation status of this chain.
@@ -41,13 +35,16 @@ class StoreChain
      * @OA\Property(enum={0, 1, 2}, example=2)
      * @Assert\Range (min = 0, max = 2)
      */
-    public StoreChainStatus $status;
+    public int $status;
 
     /**
      * ZIP code of the chains headquater.
      *
      * @OA\Property(example="48149", nullable=true)
-     * @Assert\Length(max=120)
+     * @Assert\NotNull()
+     * @Assert\Length(max=5)
+     *
+     * @NoHtml
      */
     public ?string $headquarters_zip;
 
@@ -55,20 +52,24 @@ class StoreChain
      * City of the chains headquater.
      *
      * @OA\Property(example="Münster", nullable=true)
+     * @Assert\NotNull()
      * @Assert\Length(max=50)
+     *
+     * @NoHtml
      */
     public ?string $headquarters_city;
 
     /**
      * Whether the chain can be referred to in press releases.
      */
-    public bool $allow_press;
+    public ?bool $allow_press;
 
     /**
      * Identifier of a forum thread related to this chain.
      *
      * @OA\Property(example=12345)
      * @Assert\Range (min = 0)
+     * @Assert\NotNull()
      */
     public ?int $forum_thread;
 
@@ -77,6 +78,8 @@ class StoreChain
      *
      * @OA\Property(example="Cooperating since 2021", nullable=true)
      * @Assert\Length(max=200)
+     *
+     * @NoHtml
      */
     public ?string $notes;
 
@@ -97,27 +100,19 @@ class StoreChain
      */
     public array $kams = [];
 
-    /**
-     * Date of last modification.
-     *
-     * @OA\Property(readOnly=true)
-     */
-    public ?DateTime $modification_date;
-
-    public static function createFromArray(array $data): StoreChain
+    public function toCreateStore(): StoreChain
     {
         $obj = new StoreChain();
-        $obj->id = $data['id'];
-        $obj->name = $data['name'];
-        $obj->status = StoreChainStatus::from($data['status']);
-        $obj->allow_press = $data['allow_press'];
-        $obj->headquarters_zip = $data['headquarters_zip'];
-        $obj->headquarters_city = $data['headquarters_city'];
-        $obj->modification_date = new DateTime($data['modification_date'], new DateTimeZone('Europe/Berlin'));
-        $obj->forum_thread = $data['forum_thread'];
-        $obj->notes = $data['notes'];
-        $obj->common_store_information = $data['common_store_information'];
-        $obj->kams = array_map(function ($kam) { return $kam->id; }, $data['kams']);
+        $obj->name = $this->name;
+        $obj->status = StoreChainStatus::from($this->status);
+        $obj->allow_press = $this->allow_press;
+        $obj->headquarters_zip = $this->headquarters_zip;
+        $obj->headquarters_city = $this->headquarters_city;
+        $obj->modification_date = new DateTime();
+        $obj->forum_thread = $this->forum_thread;
+        $obj->notes = $this->notes;
+        $obj->common_store_information = $this->common_store_information;
+        $obj->kams = $this->kams;
 
         return $obj;
     }

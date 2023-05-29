@@ -5,7 +5,9 @@ namespace Foodsharing\Modules\StoreChain;
 class StoreChainTransactionException extends \Exception
 {
     public const INVALID_STORECHAIN_ID = 'Store chain Id is not valid.';
-    public const KEY_ACCOUNT_MANAGER_ID_NOT_EXISTS = 'Store chain key account manager id does not exist.';
+    public const KEY_ACCOUNT_MANAGER_ID_NOT_EXISTS = 'Store chain key account manager does not exist.';
+    public const THREAD_ID_NOT_EXISTS = 'Store chain thread does not exist.';
+    public const WRONG_FORUM = 'Thread is from wrong forum.';
 
     public function __construct(string $message = '', int $code = 0)
     {

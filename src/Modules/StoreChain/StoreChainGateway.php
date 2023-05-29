@@ -20,7 +20,7 @@ class StoreChainGateway extends BaseGateway
             'name' => $storeData->name,
             'headquarters_zip' => $storeData->headquarters_zip,
             'headquarters_city' => $storeData->headquarters_city,
-            'status' => $storeData->status,
+            'status' => $storeData->status->value,
             'modification_date' => $this->db->now(),
             'allow_press' => $storeData->allow_press,
             'forum_thread' => $storeData->forum_thread,
@@ -43,7 +43,7 @@ class StoreChainGateway extends BaseGateway
                 'name' => $storeData->name,
                 'headquarters_zip' => $storeData->headquarters_zip,
                 'headquarters_city' => $storeData->headquarters_city,
-                'status' => $storeData->status,
+                'status' => $storeData->status->value,
                 'modification_date' => $this->db->now(),
                 'allow_press' => $storeData->allow_press,
                 'forum_thread' => $storeData->forum_thread,
@@ -119,14 +119,19 @@ class StoreChainGateway extends BaseGateway
         return $chains;
     }
 
-    public function getStoreChainKeyAccountManagers(int $chainId)
+    /**
+     * @return FoodsaverForAvatar[]
+     */
+    public function getStoreChainKeyAccountManagers(int $chainId): array
     {
         $kams = $this->db->fetchAll('SELECT
 				k.*, f.name, f.photo
 			FROM
 				fs_key_account_manager k
 			JOIN fs_foodsaver f ON f.id = k.foodsaver_id
-			WHERE k.chain_id = :chainId', ['chainId' => $chainId]);
+			WHERE k.chain_id = :chainId',
+            ['chainId' => $chainId]
+        );
 
         return array_map(function ($kam) {
             return FoodsaverForAvatar::createFromArray($kam);

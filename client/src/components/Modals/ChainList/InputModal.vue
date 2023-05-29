@@ -41,7 +41,7 @@
           id="zip-input"
           v-model="input.headquarters_zip"
           :placeholder="$i18n('chain.inputmodal.inputs.headquarters.placeholder.zip')"
-          :state="input.headquarters_zip ? /^\d{5}$/.test(input.headquarters_zip) : null"
+          :state="input.headquarters_zip ? /^\d{4,5}$/.test(input.headquarters_zip) : null"
           maxlength="5"
           trim
         />

@@ -11,7 +11,7 @@ class Pagination
      *
      * @Assert\Positive()
      */
-    public ?int $pageSize;
+    public ?int $pageSize = null;
 
     /**
      * Offset to start.

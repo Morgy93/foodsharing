@@ -3,14 +3,17 @@
 namespace Foodsharing\Modules\StoreChain;
 
 use Exception;
+use Foodsharing\Modules\Core\DBConstants\Region\RegionIDs;
 use Foodsharing\Modules\Foodsaver\FoodsaverGateway;
+use Foodsharing\Modules\Region\ForumGateway;
 use Foodsharing\Modules\StoreChain\DTO\StoreChain;
 
 class StoreChainTransactions
 {
     public function __construct(
         private readonly StoreChainGateway $storeChainGateway,
-        private readonly FoodsaverGateway $foodsaverGateway
+        private readonly FoodsaverGateway $foodsaverGateway,
+        private readonly ForumGateway $forumGateway
     ) {
     }
 
@@ -23,9 +26,8 @@ class StoreChainTransactions
             throw new StoreChainTransactionException(StoreChainTransactionException::INVALID_STORECHAIN_ID);
         }
 
-        if ($updateKams && !$this->foodsaverGateway->foodsaversExist($storeData->kams)) {
-            throw new StoreChainTransactionException(StoreChainTransactionException::KEY_ACCOUNT_MANAGER_ID_NOT_EXISTS);
-        }
+        $this->throwExceptionIfKeyAccountManagerDoesNotExist($storeData->kams);
+        $this->throwExceptionIfForumInvalid($storeData->forum_thread);
 
         $this->storeChainGateway->updateStoreChain($storeData, $updateKams);
     }
@@ -35,10 +37,28 @@ class StoreChainTransactions
      */
     public function addStoreChain(StoreChain $storeData): int
     {
-        if (!$this->foodsaverGateway->foodsaversExist($storeData->kams)) {
-            throw new StoreChainTransactionException(StoreChainTransactionException::KEY_ACCOUNT_MANAGER_ID_NOT_EXISTS);
-        }
+        $this->throwExceptionIfKeyAccountManagerDoesNotExist($storeData->kams);
+        $this->throwExceptionIfForumInvalid($storeData->forum_thread);
 
         return $this->storeChainGateway->addStoreChain($storeData);
+    }
+
+    private function throwExceptionIfKeyAccountManagerDoesNotExist($kams)
+    {
+        if (!$this->foodsaverGateway->foodsaversExist($kams)) {
+            throw new StoreChainTransactionException(StoreChainTransactionException::KEY_ACCOUNT_MANAGER_ID_NOT_EXISTS);
+        }
+    }
+
+    private function throwExceptionIfForumInvalid(int $threadId)
+    {
+        $forumResult = $this->forumGateway->getForumsForThread($threadId);
+        if (empty($forumResult)) {
+            throw new StoreChainTransactionException(StoreChainTransactionException::THREAD_ID_NOT_EXISTS);
+        }
+
+        if ($forumResult[0]['forumId'] != RegionIDs::STORE_CHAIN_GROUP) {
+            throw new StoreChainTransactionException(StoreChainTransactionException::WRONG_FORUM);
+        }
     }
 }
