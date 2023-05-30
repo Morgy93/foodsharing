@@ -341,4 +341,34 @@ class StoreChainApiCest
         $I->sendGet(self::API_BASE . '/' . StoreChainApiCest::CHAIN_ID);
         $I->seeResponseCodeIs($forbidden);
     }
+
+    public function testValidCreationOfChain(ApiTester $I)
+    {
+        $I->login($this->getUserByRole('chainManager')['email']);
+        $I->haveHttpHeader('Content-Type', 'application/json');
+        $I->sendPOST(self::API_BASE,
+            [
+               'name' => 'New Chain',
+               'status' => 2,
+               'headquarters_zip' => '4312',
+               'headquarters_city' => 'Ried in der Riedmark',
+               'allow_press' => true,
+               'forum_thread' => $this->chainForum['id'],
+               'notes' => 'Notizen',
+               'common_store_information' => 'Common Store information',
+               'kams' => [$this->getUserByRole('chainKeyAccountManager')['id'], $this->getUserByRole('chainKeyAccountManagerOtherChain')['id']]
+            ]
+        );
+        $I->seeResponseCodeIs(Http::CREATED);
+        $I->seeInDatabase('fs_chain', [
+            'name' => 'New Chain',
+            'status' => 2,
+            'headquarters_zip' => '4312',
+            'headquarters_city' => 'Ried in der Riedmark',
+            'allow_press' => true,
+            'forum_thread' => $this->chainForum['id'],
+            'notes' => 'Notizen',
+            'common_store_information' => 'Common Store information']);
+        // Test KAMS
+    }
 }

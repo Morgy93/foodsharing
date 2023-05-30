@@ -128,7 +128,7 @@ class StoreChainRestController extends AbstractFOSRestController
 
         $id = $this->transactions->addStoreChain($storeModel->toCreateStore());
 
-        return $this->handleView($this->view($this->gateway->getStoreChains($id)[0]));
+        return $this->handleView($this->view($this->gateway->getStoreChains($id)[0], 201));
     }
 
     /**
