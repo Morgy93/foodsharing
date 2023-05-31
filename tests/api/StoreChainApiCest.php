@@ -5,6 +5,8 @@ namespace api;
 use ApiTester;
 use Codeception\Example;
 use Codeception\Util\HttpCode as Http;
+use DateTime;
+use DateTimeZone;
 use Foodsharing\Modules\Core\DBConstants\Region\RegionIDs;
 
 /**
@@ -360,7 +362,9 @@ class StoreChainApiCest
             ]
         );
         $I->seeResponseCodeIs(Http::CREATED);
-        $I->seeInDatabase('fs_chain', [
+        $I->seeResponseIsJson();
+
+        $id = $I->grabFromDatabase('fs_chain', 'id', [
             'name' => 'New Chain',
             'status' => 2,
             'headquarters_zip' => '4312',
@@ -369,6 +373,166 @@ class StoreChainApiCest
             'forum_thread' => $this->chainForum['id'],
             'notes' => 'Notizen',
             'common_store_information' => 'Common Store information']);
+
+        $modificationDate = $I->grabFromDatabase('fs_chain', 'modification_date', [
+                'id' => $id]);
+        $modificationDate = DateTime::createFromFormat('Y-m-d H:i:s', $modificationDate . ' 00:00:00', new DateTimeZone('Europe/Berlin'));
+
+        $I->seeResponseContainsJson([
+                'chain' => [
+                  'id' => $id,
+                  'name' => 'New Chain',
+                  'status' => 2,
+                  'headquarters_zip' => '4312',
+                  'headquarters_city' => 'Ried in der Riedmark',
+                  'allow_press' => true,
+                  'forum_thread' => $this->chainForum['id'],
+                  'notes' => 'Notizen',
+                  'common_store_information' => 'Common Store information',
+                  'kams' => [
+                    [
+                      'id' => $this->getUserByRole('chainKeyAccountManager')['id'],
+                      'name' => $this->getUserByRole('chainKeyAccountManager')['name'],
+                      'avatar' => null
+                    ],
+                    [
+                        'id' => $this->getUserByRole('chainKeyAccountManagerOtherChain')['id'],
+                        'name' => $this->getUserByRole('chainKeyAccountManagerOtherChain')['name'],
+                      'avatar' => null
+                    ]
+                    ],
+                    'modification_date' => $modificationDate->format('c')
+                ],
+                'store_count' => 0
+        ]);
+
         // Test KAMS
+        $I->seeNumRecords(2, 'fs_key_account_manager', ['chain_id' => $id]);
+        $I->seeInDatabase('fs_key_account_manager',
+            ['foodsaver_id' => $this->getUserByRole('chainKeyAccountManager')['id'],
+            'chain_id' => $id]
+        );
+        $I->seeInDatabase('fs_key_account_manager',
+            ['foodsaver_id' => $this->getUserByRole('chainKeyAccountManagerOtherChain')['id'],
+            'chain_id' => $id]
+        );
+    }
+
+    public function testMinimalValidCreationOfChain(ApiTester $I)
+    {
+        $I->login($this->getUserByRole('chainManager')['email']);
+        $I->haveHttpHeader('Content-Type', 'application/json');
+        $I->sendPOST(self::API_BASE,
+            [
+               'name' => 'New Chain minimal',
+               'headquarters_zip' => '4312',
+               'headquarters_city' => 'Ried in der Riedmark',
+               'forum_thread' => $this->chainForum['id'],
+            ]
+        );
+        $I->seeResponseCodeIs(Http::CREATED);
+        $I->seeResponseIsJson();
+
+        $id = $I->grabFromDatabase('fs_chain', 'id', [
+            'name' => 'New Chain minimal',
+            'status' => 0,
+            'headquarters_zip' => '4312',
+            'headquarters_city' => 'Ried in der Riedmark',
+            'allow_press' => false,
+            'forum_thread' => $this->chainForum['id'],
+            'notes' => null,
+            'common_store_information' => null]);
+
+        $modificationDate = $I->grabFromDatabase('fs_chain', 'modification_date', [
+                'id' => $id]);
+        $modificationDate = DateTime::createFromFormat('Y-m-d H:i:s', $modificationDate . ' 00:00:00', new DateTimeZone('Europe/Berlin'));
+
+        $I->seeResponseContainsJson([
+                'chain' => [
+                  'id' => $id,
+                  'name' => 'New Chain minimal',
+                  'status' => 0,
+                  'headquarters_zip' => '4312',
+                  'headquarters_city' => 'Ried in der Riedmark',
+                  'allow_press' => false,
+                  'forum_thread' => $this->chainForum['id'],
+                  'notes' => null,
+                  'common_store_information' => null,
+                  'kams' => [],
+                    'modification_date' => $modificationDate->format('c')
+                ],
+                'store_count' => 0
+        ]);
+
+        // Test KAMS
+        $I->seeNumRecords(0, 'fs_key_account_manager', ['chain_id' => $id]);
+    }
+
+    public function testRejectCreationOfChain(ApiTester $I)
+    {
+        $requestBodies = [];
+
+        // Missing name
+        $requestBodies[] = [
+            'headquarters_zip' => '4312',
+            'headquarters_city' => 'Ried in der Riedmark',
+            'forum_thread' => $this->chainForum['id'],
+        ];
+        $requestBodies[] = [
+            'name' => "<a href='test'>invalid name</a>",
+            'headquarters_zip' => '4312',
+            'headquarters_city' => 'Ried in der Riedmark',
+            'forum_thread' => $this->chainForum['id'],
+        ];
+
+        // Invalid headquarter zip
+        $requestBodies[] = [
+            'name' => 'ToLongZip',
+            'headquarters_zip' => '4312123',
+            'headquarters_city' => 'Ried in der Riedmark',
+            'forum_thread' => $this->chainForum['id'],
+        ];
+        // Missing zip
+        $requestBodies[] = [
+            'name' => 'missingZip',
+            'headquarters_city' => 'Ried in der Riedmark',
+            'forum_thread' => $this->chainForum['id'],
+        ];
+
+        // missing city name
+        $requestBodies[] = [
+            'name' => 'missingCityName',
+            'headquarters_zip' => '4312',
+            'forum_thread' => $this->chainForum['id'],
+        ];
+
+        // invalid forum
+        $requestBodies[] = [
+            'name' => 'InvalidForumId',
+            'headquarters_zip' => '4312',
+            'headquarters_city' => 'Ried in der Riedmark',
+            'forum_thread' => $this->chainForum['id'] + 1,
+        ];
+        $requestBodies[] = [
+            'name' => 'missingForum',
+            'headquarters_zip' => '4312',
+            'headquarters_city' => 'Ried in der Riedmark',
+        ];
+        $requestBodies[] = [
+            'name' => 'InvalidForum',
+            'headquarters_zip' => '4312',
+            'headquarters_city' => 'Ried in der Riedmark',
+            'forum_thread' => 'a',
+        ];
+
+        $I->login($this->getUserByRole('chainManager')['email']);
+        $I->haveHttpHeader('Content-Type', 'application/json');
+        foreach ($requestBodies as &$body) {
+            $I->sendPOST(self::API_BASE, $body);
+            $I->seeResponseCodeIs(Http::BAD_REQUEST);
+            $I->seeResponseIsJson();
+
+            $I->dontSeeInDatabase('fs_chain', $body);
+        }
     }
 }

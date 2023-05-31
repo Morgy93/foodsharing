@@ -12,6 +12,8 @@ use Symfony\Component\Validator\Constraints as Assert;
 
 /**
  * Class that represents the data of a store chain, in a format in which it is sent to the client.
+ *
+ * @OA\Schema(required={"id", "name", "headquarters_zip", "headquarters_city", "forum_thread"})
  */
 class CreateStoreChainModel
 {
@@ -24,7 +26,7 @@ class CreateStoreChainModel
      *
      * @NoHtml
      */
-    public ?string $name;
+    public ?string $name = null;
 
     /**
      * Indicates the cooperation status of this chain.
@@ -35,34 +37,34 @@ class CreateStoreChainModel
      * @OA\Property(enum={0, 1, 2}, example=2)
      * @Assert\Range (min = 0, max = 2)
      */
-    public int $status;
+    public ?int $status = 0;
 
     /**
      * ZIP code of the chains headquater.
      *
-     * @OA\Property(example="48149", nullable=true)
-     * @Assert\NotNull()
+     * @OA\Property(example="48149")
      * @Assert\Length(max=5)
+     * @Assert\NotNull()
      *
      * @NoHtml
      */
-    public ?string $headquarters_zip;
+    public ?string $headquarters_zip = null;
 
     /**
      * City of the chains headquater.
      *
-     * @OA\Property(example="Münster", nullable=true)
+     * @OA\Property(example="Münster")
      * @Assert\NotNull()
      * @Assert\Length(max=50)
      *
      * @NoHtml
      */
-    public ?string $headquarters_city;
+    public ?string $headquarters_city = null;
 
     /**
      * Whether the chain can be referred to in press releases.
      */
-    public ?bool $allow_press;
+    public ?bool $allow_press = false;
 
     /**
      * Identifier of a forum thread related to this chain.
@@ -71,7 +73,7 @@ class CreateStoreChainModel
      * @Assert\Range (min = 0)
      * @Assert\NotNull()
      */
-    public ?int $forum_thread;
+    public ?int $forum_thread = null;
 
     /**
      * Miscellaneous notes.
@@ -81,7 +83,7 @@ class CreateStoreChainModel
      *
      * @NoHtml
      */
-    public ?string $notes;
+    public ?string $notes = null;
 
     /**
      * Information about the chain to be displayed on every related stores page.
@@ -89,7 +91,7 @@ class CreateStoreChainModel
      * @OA\Property(example="Pickup times between 10:00 and 12:15", nullable=true)
      * @Assert\Length(max=16777215)
      */
-    public ?string $common_store_information;
+    public ?string $common_store_information = null;
 
     /**
      * Identifiers of key account managers.

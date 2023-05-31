@@ -2,16 +2,17 @@
 
 namespace Foodsharing\RestApi;
 
+use Codeception\Util\HttpCode;
 use Foodsharing\Lib\Session;
 use Foodsharing\Modules\Core\Pagination;
 use Foodsharing\Modules\Foodsaver\DTO\FoodsaverForAvatar;
 use Foodsharing\Modules\Store\DTO\MinimalStoreIdentifier;
 use Foodsharing\Modules\Store\StoreGateway;
 use Foodsharing\Modules\StoreChain\DTO\PatchStoreChain;
-use Foodsharing\Modules\StoreChain\DTO\StoreChain;
 use Foodsharing\Modules\StoreChain\DTO\StoreChainForChainList;
 use Foodsharing\Modules\StoreChain\StoreChainGateway;
 use Foodsharing\Modules\StoreChain\StoreChainStatus;
+use Foodsharing\Modules\StoreChain\StoreChainTransactionException;
 use Foodsharing\Modules\StoreChain\StoreChainTransactions;
 use Foodsharing\Permissions\StoreChainPermissions;
 use Foodsharing\RestApi\Models\StoreChain\CreateStoreChainModel;
@@ -110,8 +111,13 @@ class StoreChainRestController extends AbstractFOSRestController
      * @OA\Tag(name="chain")
      * @Rest\Post("chains")
      * @ParamConverter("storeModel", converter="fos_rest.request_body")
-     * @OA\RequestBody(@Model(type=StoreChain::class))
-     * @OA\Response(response="200", description="Success")
+     * @OA\RequestBody(@Model(type=CreateStoreChainModel::class))
+     * @OA\Response(
+     * 		response="201",
+     * 		description="Success.",
+     *      @Model(type=StoreChainForChainList::class)
+     * )
+     * @OA\Response(response="400", description="Bad content")
      * @OA\Response(response="401", description="Not logged in")
      * @OA\Response(response="403", description="Insufficient permissions")
      */
@@ -125,10 +131,13 @@ class StoreChainRestController extends AbstractFOSRestController
         }
 
         $this->throwBadRequestExceptionOnError($validationErrors);
+        try {
+            $id = $this->transactions->addStoreChain($storeModel->toCreateStore());
 
-        $id = $this->transactions->addStoreChain($storeModel->toCreateStore());
-
-        return $this->handleView($this->view($this->gateway->getStoreChains($id)[0], 201));
+            return $this->handleView($this->view($this->gateway->getStoreChains($id)[0], HttpCode::CREATED));
+        } catch (StoreChainTransactionException $ex) {
+            throw new BadRequestHttpException($ex->getMessage());
+        }
     }
 
     /**
