@@ -435,8 +435,9 @@ group:
   applications_for: '%name% için müracatlar'
   title: Foodsharing Çalışma Grupları
   subtitle: Burada yardım ve yapacak çok şey bulacaksınız…
-  member_count: '{0} Katkıda bulunan yok|{1} Bir katkıda bulunan var| [2, Inf[ %count%
-    katkıda bulunanlar'
+  member_count_0: 'Katkıda bulunan yok'
+  member_count_1: 'Bir katkıda bulunan var'
+  member_count_2: '{count{ katkıda bulunanlar'
   really_quit_workgroup: '%name% çalışma grubundan ayrılmak istediğinize emin misiniz?'
   already_applied: Bu grup için zaten başvuruda bulundunuz.
   quit_name_district: '%name% bölgesinden ayrıl'
@@ -453,7 +454,9 @@ group:
   application_region: 'için başvuru '
   application_from: -den
   motivation: Motivasyon Yazısı
-  admin_count: '{0} Yönetici yok|{1} Bir yönetici| [2, Inf[ %count% yönetici'
+  admin_count_0: 'Yönetici yok'
+  admin_count_1: 'Bir yönetici'
+  admin_count_2: '{count} yönetici'
   unique_function:
     tooltip_function_region332: Bu çalışma grubunun üyeleri İşletme zinciri listesine
       erişebilir

@@ -14,7 +14,7 @@
         href="#"
         @click.prevent.stop="toggleDisplay"
       >
-        <i :class="['fas fa-fw', `fa-chevron-${display ? 'down' : 'left'}`]" />
+        <i :class="['fas fa-fw', `fa-chevron-${display ? 'down' : 'up'}`]" />
       </a>
     </div>
     <div class="corner-bottom margin-bottom bootstrap pickup-history">

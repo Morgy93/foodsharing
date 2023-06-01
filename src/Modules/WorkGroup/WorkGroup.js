@@ -6,6 +6,7 @@ import './WorkGroup.css'
 import { GET } from '@/browser'
 import { vueApply, vueRegister } from '@/vue'
 import WorkingGroupEditForm from '@/components/workinggroups/WorkingGroupEditForm'
+import WorkingGroupList from '@/components/workinggroups/WorkingGroupList'
 
 const $groups = $('.groups .field')
 if ($groups.length > 3) {
@@ -38,9 +39,18 @@ if ($groups.length > 3) {
   $groups.children('.ui-widget.ui-widget-content.corner-bottom').hide()
 }
 
+const components = {}
+
 if (GET('sub') === 'edit') {
-  vueRegister({
-    WorkingGroupEditForm,
-  })
+  components.WorkingGroupEditForm = WorkingGroupEditForm
+} else {
+  components.WorkingGroupList = WorkingGroupList
+}
+
+vueRegister(components)
+
+if (GET('sub') === 'edit') {
   vueApply('#vue-group-edit-form')
+} else {
+  vueApply('#vue-group-list')
 }

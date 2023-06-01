@@ -21,14 +21,18 @@ group:
     member_since_weeks: How many weeks does an applicant need to be registered on
       the platform?
     not_fulfilled: To apply for this group, you have to be registered for at least
-      %weeks% weeks, have %bananas% trust bananas and helped %fetches% times picking
+      {weeks} weeks, have {bananas} trust bananas and helped {fetches} times picking
       up food.
   members: Members
   administrators: Group administrators
   title: foodsharing working groups
   subtitle: find help and or work…
-  member_count: '{0} No members|{1} One member| [2, Inf[ %count% members'
-  admin_count: '{0} No administrators|{1} One administrator| [2, Inf[ %count% administrators'
+  member_count_0: 'No members'
+  member_count_1: 'One member'
+  member_count_2: '{count} members'
+  admin_count_0: 'No administrators'
+  admin_count_1: 'One administrator'
+  admin_count_2: '{count} administrators'
   image: image for %name%
   already_applied: You already applied for this group.
   actions:

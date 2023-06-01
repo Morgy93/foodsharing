@@ -70,7 +70,7 @@ function autoLink (text) {
   })
 }
 
-function nl2br (str) {
+export function nl2br (str) {
   const breakTag = '<br>'
   return (`${str}`).replace(/([^>\r\n]?)(\r\n|\n\r|\r|\n)/g, `$1${breakTag}$2`)
 }

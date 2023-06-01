@@ -140,10 +140,12 @@ group:
     save: Salvare le modifiche
   already_applied: Hai già fatto domanda per questo gruppo.
   image: Foto per% name%
-  admin_count: '{0} Nessun amministratore |{1} Un amministratore | [2, Inf[% count%
-    amministratori'
-  member_count: '{0} Nessun collaboratore | {1} Un collaboratore | [2, Inf [% count%
-    collaboratori'
+  admin_count_0: 'Nessun amministratore'
+  admin_count_1: 'Un amministratore'
+  admin_count_2: '{count} amministratori'
+  member_count_0: 'Nessun collaboratore'
+  member_count_1: 'Un collaboratore'
+  member_count_2: '{count} collaboratori'
   subtitle: qui troverai aiuto e tanto da fare …
   title: gruppi di lavoro-foodsharing
   administrators: amministratore del gruppo

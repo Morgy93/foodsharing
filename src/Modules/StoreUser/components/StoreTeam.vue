@@ -32,7 +32,7 @@
               href="#"
               @click.prevent="toggleTeamDisplay"
             >
-              <i :class="['fas fa-fw', `fa-chevron-${displayMembers ? 'down' : 'left'}`]" />
+              <i :class="['fas fa-fw', `fa-chevron-${displayMembers ? 'down' : 'up'}`]" />
             </button>
           </div>
         </div>

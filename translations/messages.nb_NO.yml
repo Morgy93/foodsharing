@@ -1532,8 +1532,8 @@ group:
     member_since_weeks: Hvor mange uker burde en søker vært hos oss?
     banana_count: Hvor mange tillitsbananer må en søker ha?
     not_fulfilled: For å søke på denne arbeidsgruppen må du ha vært med foodsharing
-      i %weeks% uker, allerede ha samlet %bananas% tilitsbananer og allerede ha deltatt
-      i %fetches% innsamlinger.
+      i {weeks} uker, allerede ha samlet {bananas} tilitsbananer og allerede ha deltatt
+      i {fetches} innsamlinger.
   edit:
     title: Rediger {group}
     name_required: Vennligst skriv inn et navn.
@@ -1567,8 +1567,12 @@ group:
     not_verified: ikke låst opp
   saved: Endringene har blitt lagret
   subtitle: her kan du finne hjelp og mye å gjøre…
-  member_count: '{0} ingen bidragsytere|{1} en bidragsyter| [2, Inf[ %count% bidragsytere'
-  admin_count: '{0} ingen administratorer|{1} en administrator| [2, Inf[ %count% administratorer'
+  member_count_0: 'ingen bidragsytere'
+  member_count_1: 'en bidragsyter'
+  member_count_2: '{count} bidragsytere'
+  admin_count_0: 'ingen administratorer'
+  admin_count_1: 'en administrator'
+  admin_count_2: '{count} administratorer'
   already_applied: Du har allerede søkt på denne gruppen.
   really_quit_workgroup: Vil du virkelig forlate Arbeidsgruppe %name%?
   really_quit_district: Vil du virkelig forlate %name%-distriktet?

@@ -24,8 +24,8 @@ group:
     nobody: Personne (groupe fermé).
     requirements: Qui peut entrer dans ce groupe ?
     not_fulfilled: Pour candidater à ce groupe de travail, tu dois être inscrit.e
-      depuis %weeks% semaines sur foodsharing, avoir %bananas% de bananes-confiance
-      et avoir réalisé %fetches% de collectes.
+      depuis {weeks} semaines sur foodsharing, avoir {bananas} de bananes-confiance
+      et avoir réalisé {fetches} de collectes.
     banana_count_errors:
       max: Ne vous attendez pas à recevoir plus de {{ limit }} bananes-confiance.
       min: Personne ne peut avoir moins de {{ limit }} bananes-confiance.
@@ -170,9 +170,12 @@ group:
     save: Enregistrer les modifications
   already_applied: Tu as déjà candidaté pour ce groupe.
   image: Image principale pour %name%
-  admin_count: "{0} pas d'admin|{1} un.e admin| [2, Inf[ %count% admins"
-  member_count: '{0} Pas de participant.e.s|{1} un.e participant.e| [2, Inf[ %count%
-    participant.e.s'
+  admin_count_0: "pas d'admin"
+  admin_count_1: "un.e admin"
+  admin_count_2: "{count} admins"
+  member_count_0: 'Pas de participant.e.s'
+  member_count_1: 'un.e participant.e'
+  member_count_2: '{count} participant.e.s'
   mail_link_title:
     region: Messagerie du district
     workgroup: Messagerie du groupe de travail

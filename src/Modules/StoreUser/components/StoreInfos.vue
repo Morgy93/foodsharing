@@ -12,7 +12,7 @@
           class="px-1 text-light"
           @click.prevent.stop="toggleInfoDisplay"
         >
-          <i :class="['fas fa-fw', `fa-chevron-${displayInfos ? 'down' : 'left'}`]" />
+          <i :class="['fas fa-fw', `fa-chevron-${displayInfos ? 'down' : 'up'}`]" />
         </b-link>
       </div>
 

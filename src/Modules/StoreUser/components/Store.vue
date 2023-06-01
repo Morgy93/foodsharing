@@ -13,7 +13,7 @@
           href="#"
           @click.prevent.stop="toggleWallDisplay"
         >
-          <i :class="['fas fa-fw', `fa-chevron-${displayWall ? 'down' : 'left'}`]" />
+          <i :class="['fas fa-fw', `fa-chevron-${displayWall ? 'down' : 'up'}`]" />
         </a>
       </div>
 
