@@ -135,31 +135,9 @@ class MailboxControl extends Control
     {
         $this->pageHelper->addBread($this->translator->trans('mailbox.manage'));
         if ($this->mailboxPermissions->mayManageMailboxes()) {
-            if (isset($_POST['mbid'])) {
-                global $g_data;
 
-                $index = 'foodsaver_' . (int)$_POST['mbid'];
+            $this->pageHelper->addContent($this->view->vueComponent('vue-mailbox-manage', 'MailboxManage'));
 
-                $this->sanitizerService->handleTagSelect($index);
-
-                if ($this->mailboxGateway->updateMember($_POST['mbid'], $g_data[$index])) {
-                    $this->flashMessageHelper->success($this->translator->trans('mailbox.saved'));
-                    $this->routeHelper->goAndExit('/?page=mailbox&a=manage');
-                }
-            }
-
-            if ($boxes = $this->mailboxGateway->getMemberBoxes()) {
-                $this->pageHelper->addJs('
-
-				');
-                foreach ($boxes as $b) {
-                    global $g_data;
-                    $g_data['foodsaver_' . $b['id']] = $b['member'];
-                    $this->pageHelper->addContent($this->view->manageMemberBox($b));
-                }
-            }
-
-            $this->pageHelper->addContent($this->view->manageOpt(), CNT_LEFT);
         } else {
             $this->flashMessageHelper->error($this->translator->trans('mailbox.not-allowed'));
             $this->routeHelper->goPageAndExit('dashboard');
