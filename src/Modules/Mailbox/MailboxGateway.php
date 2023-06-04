@@ -309,7 +309,7 @@ class MailboxGateway extends BaseGateway
             return $boxes;
         }
 
-        return false;
+        return [];
     }
 
     public function updateMember(int $mbid, array $foodsaver): bool

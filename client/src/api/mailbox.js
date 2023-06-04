@@ -11,3 +11,7 @@ export async function setEmailStatus (emailId, read) {
 export async function deleteEmail (emailId) {
   return remove(`/emails/${emailId}`)
 }
+
+export async function getMemberBoxes () {
+  return get('/mailbox/member')
+}

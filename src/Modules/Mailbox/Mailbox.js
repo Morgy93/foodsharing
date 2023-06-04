@@ -5,7 +5,6 @@ import $ from 'jquery'
 import 'corejs-typeahead'
 import 'jquery-tagedit'
 import 'jquery-tagedit-auto-grow-input'
-import { searchUser } from '@/api/search'
 import { expose } from '@/utils'
 import {
   ajreq,
@@ -19,6 +18,7 @@ import './Mailbox.css'
 import Mailbox from './components/Mailbox.vue'
 import i18n from '@/helper/i18n'
 import { deleteEmail, setEmailStatus } from '@/api/mailbox'
+import MailboxManage from './components/MailboxManage.vue'
 
 expose({
   mb_finishFile,
@@ -41,7 +41,10 @@ expose({
 })
 
 if (GET('a') === 'manage') {
-  expose({ searchUser })
+  vueRegister({
+    MailboxManage,
+  })
+  vueApply('#vue-mailbox-manage', true) // Mailbox
 }
 
 vueRegister({

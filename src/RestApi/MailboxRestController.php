@@ -103,4 +103,27 @@ class MailboxRestController extends AbstractFOSRestController
 
         return $this->handleView($this->view($unread, 200));
     }
+
+    /**
+     * Returns a list ......
+     *
+     * @OA\Tag(name="mailbox")
+     * @OA\Response(response="200", description="success")
+     * @OA\Response(response="401", description="Not logged in")
+     * @Rest\Get("mailbox/member")
+     */
+    public function listMemberMailboxesAction(): Response
+    {
+        if (!$this->session->mayRole()) {
+            throw new UnauthorizedHttpException('');
+        }
+
+        if (!$this->mailboxPermissions->mayManageMailboxes()) {
+            throw new AccessDeniedHttpException();
+        }
+
+        $boxes = $this->mailboxGateway->getMemberBoxes();
+
+        return $this->handleView($this->view($boxes, 200));
+    }
 }
