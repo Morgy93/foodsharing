@@ -124,7 +124,8 @@ class StoreChainGateway extends BaseGateway
      */
     public function getStoreChainKeyAccountManagers(int $chainId): array
     {
-        $kams = $this->db->fetchAll('SELECT
+        $kams = $this->db->fetchAll(
+            'SELECT
 				k.*, f.name, f.photo
 			FROM
 				fs_key_account_manager k

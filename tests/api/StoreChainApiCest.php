@@ -348,7 +348,8 @@ class StoreChainApiCest
     {
         $I->login($this->getUserByRole('chainManager')['email']);
         $I->haveHttpHeader('Content-Type', 'application/json');
-        $I->sendPOST(self::API_BASE,
+        $I->sendPOST(
+            self::API_BASE,
             [
                'name' => 'New Chain',
                'status' => 2,
@@ -408,11 +409,13 @@ class StoreChainApiCest
 
         // Test KAMS
         $I->seeNumRecords(2, 'fs_key_account_manager', ['chain_id' => $id]);
-        $I->seeInDatabase('fs_key_account_manager',
+        $I->seeInDatabase(
+            'fs_key_account_manager',
             ['foodsaver_id' => $this->getUserByRole('chainKeyAccountManager')['id'],
             'chain_id' => $id]
         );
-        $I->seeInDatabase('fs_key_account_manager',
+        $I->seeInDatabase(
+            'fs_key_account_manager',
             ['foodsaver_id' => $this->getUserByRole('chainKeyAccountManagerOtherChain')['id'],
             'chain_id' => $id]
         );
@@ -422,7 +425,8 @@ class StoreChainApiCest
     {
         $I->login($this->getUserByRole('chainManager')['email']);
         $I->haveHttpHeader('Content-Type', 'application/json');
-        $I->sendPOST(self::API_BASE,
+        $I->sendPOST(
+            self::API_BASE,
             [
                'name' => 'New Chain minimal',
                'headquarters_zip' => '4312',
