@@ -19,9 +19,16 @@ class RegionAdminTransactions
     ) {
     }
 
-    public function getRegionDetails(int $regionId): RegionDetails
+    /**
+     * Returns details about a region or working group or null if the id does not exist.
+     */
+    public function getRegionDetails(int $regionId): ?RegionDetails
     {
         $region = $this->regionGateway->getRegion($regionId);
+        if (empty($region)) {
+            return null;
+        }
+
         $stores = $this->storeGateway->getMapsStores($regionId);
         $stores = array_map(function ($store) {
             return MapMarker::create($store['id'], $store['lat'], $store['lon']);

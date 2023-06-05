@@ -12,6 +12,7 @@ use Nelmio\ApiDocBundle\Annotation\Model;
 use OpenApi\Annotations as OA;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\Exception\AccessDeniedHttpException;
+use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 use Symfony\Component\HttpKernel\Exception\UnauthorizedHttpException;
 
 class RegionAdminRestController extends AbstractFOSRestController
@@ -35,6 +36,7 @@ class RegionAdminRestController extends AbstractFOSRestController
      * )
      * @OA\Response(response="401", description="Not logged in")
      * @OA\Response(response="403", description="Insufficient permissions")
+     * @OA\Response(response="404", description="The region does not exist")
      */
     public function getRegionDetailsAction(int $regionId): Response
     {
@@ -47,6 +49,9 @@ class RegionAdminRestController extends AbstractFOSRestController
         }
 
         $region = $this->regionAdminTransactions->getRegionDetails($regionId);
+        if (is_null($region)) {
+            throw new NotFoundHttpException();
+        }
 
         return $this->handleView($this->view($region, 200));
     }
@@ -61,6 +66,7 @@ class RegionAdminRestController extends AbstractFOSRestController
      *     description="Success",
      *     @Model(type=RegionDetails::class))
      * )
+     * @OA\Response(response="400", description="Parent region does not exist")
      * @OA\Response(response="401", description="Not logged in")
      * @OA\Response(response="403", description="Insufficient permissions")
      */
