@@ -18,7 +18,7 @@ import { deleteGroup } from '@/api/groups'
 import { masterUpdate } from '@/api/regions'
 import { searchUser } from '@/api/search'
 import { vueApply, vueRegister } from '@/vue'
-import RegionAdminPanel from './components/RegionAdminPanel'
+import RegionAdminPanel from '@/components/RegionAdmin/RegionAdminPanel'
 
 expose({
   img,
