@@ -4,12 +4,10 @@ namespace Foodsharing\Lib\Xhr;
 
 use Foodsharing\Lib\Db\Db;
 use Foodsharing\Lib\Session;
-use Foodsharing\Lib\View\Utils;
 use Foodsharing\Modules\Core\DBConstants\Email\EmailStatus;
 use Foodsharing\Modules\Core\DBConstants\Region\WorkgroupFunction;
 use Foodsharing\Modules\Core\DBConstants\Unit\UnitType;
 use Foodsharing\Modules\Email\EmailGateway;
-use Foodsharing\Modules\Foodsaver\FoodsaverGateway;
 use Foodsharing\Modules\Group\GroupFunctionGateway;
 use Foodsharing\Modules\Group\GroupGateway;
 use Foodsharing\Modules\Mailbox\MailboxGateway;
@@ -25,12 +23,10 @@ class XhrMethods
 {
     private Db $model;
     private Session $session;
-    private Utils $v_utils;
     private GroupFunctionGateway $groupFunctionGateway;
     private GroupGateway $groupGateway;
     private RegionGateway $regionGateway;
     private StoreGateway $storeGateway;
-    private FoodsaverGateway $foodsaverGateway;
     private EmailGateway $emailGateway;
     private MailboxGateway $mailboxGateway;
     private Sanitizer $sanitizerService;
@@ -42,12 +38,10 @@ class XhrMethods
     public function __construct(
         Session $session,
         Db $model,
-        Utils $viewUtils,
         GroupFunctionGateway $groupFunctionGateway,
         GroupGateway $groupGateway,
         RegionGateway $regionGateway,
         StoreGateway $storeGateway,
-        FoodsaverGateway $foodsaverGateway,
         EmailGateway $emailGateway,
         MailboxGateway $mailboxGateway,
         Sanitizer $sanitizerService,
@@ -58,12 +52,10 @@ class XhrMethods
     ) {
         $this->session = $session;
         $this->model = $model;
-        $this->v_utils = $viewUtils;
         $this->groupFunctionGateway = $groupFunctionGateway;
         $this->groupGateway = $groupGateway;
         $this->regionGateway = $regionGateway;
         $this->storeGateway = $storeGateway;
-        $this->foodsaverGateway = $foodsaverGateway;
         $this->emailGateway = $emailGateway;
         $this->mailboxGateway = $mailboxGateway;
         $this->sanitizerService = $sanitizerService;
@@ -169,7 +161,7 @@ class XhrMethods
 
     public function xhr_saveBezirk($data)
     {
-        if (!$this->regionPermissions->mayAdministrateRegions()) {
+        /* if (!$this->regionPermissions->mayAdministrateRegions()) {
             return;
         }
 
@@ -280,7 +272,7 @@ class XhrMethods
                     'script' => 'pulseError("' . $this->translator->trans('group.function.duplicate_board_team') . '");',
                 ]);
             }
-        }
+        } */
 
         $oldRegionData = $this->groupGateway->getGroupLegacy($regionId);
 

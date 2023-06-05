@@ -68,3 +68,13 @@ export function getRegionDetails (regionId) {
 export function addRegion (parentId) {
   return post(`/region/${parentId}/children`)
 }
+
+export function updateRegion (regionId, name, mailbox, mailboxName, type, workingGroupFunction = null) {
+  return patch(`/region/${regionId}`, {
+    name: name,
+    mailbox: mailbox,
+    mailboxName: mailboxName,
+    type: type,
+    workingGroupFunction: workingGroupFunction,
+  })
+}
