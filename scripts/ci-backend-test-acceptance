@@ -37,6 +37,9 @@ echo -ne ".";
 done
 echo
 
+log-header "Create DB dump file for codeception"
+sql_dump_to_file "$dir"/dump.sql
+
 log-header "Running tests"
 failed=0
 SECONDS=0
