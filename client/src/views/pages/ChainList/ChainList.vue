@@ -77,8 +77,8 @@
             />
           </template>
 
-          <template #cell(headquarters_city)="row">
-            {{ row.item.headquarters_zip }}
+          <template #cell(headquartersCity)="row">
+            {{ row.item.headquartersZip }}
             {{ row.value }}
           </template>
 
@@ -92,28 +92,28 @@
 
           <template #cell(name)="row">
             <a
-              v-if="row.item.forum_thread"
+              v-if="row.item.chain.forumThread"
               class="thread-link"
-              :href="$url('forumThread', row.item.chain.forum_thread)"
+              :href="$url('forumThread', row.item.chain.regionId, row.item.chain.forumThread)"
             >
-              {{ row.value }}
+              {{ row.item.chain.name }}
             </a>
             <span v-else>
-              {{ row.value }}
+              {{ row.item.chain.name }}
             </span>
           </template>
 
           <template #cell(notes)="row">
             <span class="clamped-3">
-              <span v-if="row.item.allow_press">
+              <span v-if="row.item.allowPress">
                 {{ $i18n('chain.allowpress') }}
               </span>
               {{ row.value }}
               <small
-                v-b-tooltip.hover.window="$i18n('chain.tooltips.modification_date')"
+                v-b-tooltip.hover.window="$i18n('chain.tooltips.modificationDate')"
                 class="text-muted change-date"
               >
-                {{ $dateFormatter.date(new Date(row.item.chain.modification_date), { short: true }) }}
+                {{ $dateFormatter.date(new Date(row.item.chain.modificationDate), { short: true }) }}
               </small>
             </span>
           </template>
@@ -214,7 +214,7 @@ export default {
           key: 'name',
           label: this.$i18n('chain.columns.name'),
           sortable: true,
-          formatter: (value, key, item) => item.chain.name,
+          formatter: (value, key, item) => item,
         },
         {
           key: 'store_count',
@@ -223,10 +223,10 @@ export default {
           tdClass: 'text-center',
         },
         {
-          key: 'headquarters_city',
+          key: 'headquartersCity',
           label: this.$i18n('chain.columns.headquarters'),
           sortable: true,
-          formatter: (value, key, item) => item.chain.headquarters_city,
+          formatter: (value, key, item) => item.chain.headquartersCity,
         },
         {
           key: 'kams',
@@ -267,7 +267,7 @@ export default {
       let chains = this.chains
       const filterText = this.filterText.trim().toLowerCase()
       if (filterText) {
-        const searchKeys = ['name', 'headquarters_city']
+        const searchKeys = ['name', 'headquartersCity']
         chains = chains.filter(
           chain => (
             searchKeys.some(key => chain[key]?.toLowerCase().includes(filterText))) ||
@@ -300,26 +300,26 @@ export default {
       const chain = row.item
       this.$refs['input-modal'].show(chain.chain.id, {
         name: chain.chain.name,
-        headquarters_zip: chain.chain.headquarters_zip,
-        headquarters_city: chain.chain.headquarters_city,
+        headquartersZip: chain.chain.headquartersZip,
+        headquartersCity: chain.chain.headquartersCity,
         status: chain.chain.status,
-        forum_thread: chain.chain.forum_thread,
+        forumThread: chain.chain.forumThread,
         notes: chain.chain.notes,
-        common_store_information: chain.chain.common_store_information,
-        allow_press: !!chain.chain.allow_press,
+        commonStoreInformation: chain.chain.commonStoreInformation,
+        allowPress: !!chain.chain.allowPress,
         kamIds: chain.chain.kams.map(x => x.id).join(', '),
       })
     },
     createChainModal () {
       this.$refs['input-modal'].show(-1, {
         name: '',
-        headquarters_zip: null,
-        headquarters_city: '',
+        headquartersZip: null,
+        headquartersCity: '',
         status: 2,
-        forum_thread: null,
-        allow_press: false,
+        forumThread: null,
+        allowPress: false,
         notes: '',
-        common_store_information: '',
+        commonStoreInformation: '',
         kamIds: '',
       })
     },

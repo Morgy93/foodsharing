@@ -39,18 +39,18 @@
       >
         <b-form-input
           id="zip-input"
-          v-model="input.headquarters_zip"
+          v-model="input.headquartersZip"
           :placeholder="$i18n('chain.inputmodal.inputs.headquarters.placeholder.zip')"
-          :state="input.headquarters_zip ? /^\d{4,5}$/.test(input.headquarters_zip) : null"
+          :state="input.headquartersZip ? /^\d{4,5}$/.test(input.headquartersZip) : null"
           maxlength="5"
           trim
         />
         <b-form-input
           id="city-input"
-          v-model="input.headquarters_city"
+          v-model="input.headquartersCity"
           :placeholder="$i18n('chain.inputmodal.inputs.headquarters.placeholder.city')"
           :formatter="singleSpacing"
-          :state="input.headquarters_city ? true : null"
+          :state="input.headquartersCity ? true : null"
           maxlength="50"
           trim
         />
@@ -79,10 +79,10 @@
       >
         <b-form-input
           id="thread-input"
-          v-model="input.forum_thread"
+          v-model="input.forumThread"
           placeholder="foodsharing.de/ ... sub=forum&tid=12345"
-          :formatter="x => /tid=(\d+)/.test(input.forum_thread) ? x.match(/tid=(\d+)/)[1] : x"
-          :state="input.forum_thread ? /(tid=(\d+))|^\d+$/.test(input.forum_thread) : null"
+          :formatter="x => /tid=(\d+)/.test(input.forumThread) ? x.match(/tid=(\d+)/)[1] : x"
+          :state="input.forumThread ? /(tid=(\d+))|^\d+$/.test(input.forumThread) : null"
           lazy-formatter
           trim
         />
@@ -116,7 +116,7 @@
       >
         <b-form-checkbox
           id="press-input"
-          v-model="input.allow_press"
+          v-model="input.allowPress"
           size="lg"
         >
           {{ $i18n('chain.inputmodal.inputs.press.description') }}
@@ -151,7 +151,7 @@
       >
         <b-form-textarea
           id="details-input"
-          v-model="input.common_store_information"
+          v-model="input.commonStoreInformation"
           rows="1"
         />
       </b-form-group>
@@ -215,13 +215,13 @@ export default {
     finishedEditing () {
       const data = {
         name: this.input.name,
-        headquarters_zip: String(this.input.headquarters_zip),
-        headquarters_city: this.input.headquarters_city,
+        headquartersZip: String(this.input.headquartersZip),
+        headquartersCity: this.input.headquartersCity,
         status: Number(this.input.status),
-        forum_thread: Number(this.input.forum_thread) || null,
-        allow_press: this.input.allow_press,
+        forumThread: Number(this.input.forumThread) || null,
+        allowPress: this.input.allowPress,
         notes: this.input.notes,
-        common_store_information: this.input.common_store_information,
+        commonStoreInformation: this.input.commonStoreInformation,
         kams: this.input.kamIds ? this.input.kamIds.split(',').map(id => +id) : [],
       }
       this.$emit('ok', this.chainEditing, data)

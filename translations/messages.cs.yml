@@ -496,7 +496,7 @@ chain:
   allowpress: ''
   tooltips:
     options: ''
-    modification_date: ''
+    modificationDate: ''
   options:
     edit: ''
     showstores: ''

@@ -353,12 +353,12 @@ class StoreChainApiCest
             [
                'name' => 'New Chain',
                'status' => 2,
-               'headquarters_zip' => '4312',
-               'headquarters_city' => 'Ried in der Riedmark',
-               'allow_press' => true,
-               'forum_thread' => $this->chainForum['id'],
+               'headquartersZip' => '4312',
+               'headquartersCity' => 'Ried in der Riedmark',
+               'allowPress' => true,
+               'forumThread' => $this->chainForum['id'],
                'notes' => 'Notizen',
-               'common_store_information' => 'Common Store information',
+               'commonStoreInformation' => 'Common Store information',
                'kams' => [$this->getUserByRole('chainKeyAccountManager')['id'], $this->getUserByRole('chainKeyAccountManagerOtherChain')['id']]
             ]
         );
@@ -384,12 +384,12 @@ class StoreChainApiCest
                   'id' => $id,
                   'name' => 'New Chain',
                   'status' => 2,
-                  'headquarters_zip' => '4312',
-                  'headquarters_city' => 'Ried in der Riedmark',
-                  'allow_press' => true,
-                  'forum_thread' => $this->chainForum['id'],
+                  'headquartersZip' => '4312',
+                  'headquartersCity' => 'Ried in der Riedmark',
+                  'allowPress' => true,
+                  'forumThread' => $this->chainForum['id'],
                   'notes' => 'Notizen',
-                  'common_store_information' => 'Common Store information',
+                  'commonStoreInformation' => 'Common Store information',
                   'kams' => [
                     [
                       'id' => $this->getUserByRole('chainKeyAccountManager')['id'],
@@ -402,7 +402,7 @@ class StoreChainApiCest
                       'avatar' => null
                     ]
                     ],
-                    'modification_date' => $modificationDate->format('c')
+                    'modificationDate' => $modificationDate->format('c')
                 ],
                 'store_count' => 0
         ]);
@@ -429,9 +429,9 @@ class StoreChainApiCest
             self::API_BASE,
             [
                'name' => 'New Chain minimal',
-               'headquarters_zip' => '4312',
-               'headquarters_city' => 'Ried in der Riedmark',
-               'forum_thread' => $this->chainForum['id'],
+               'headquartersZip' => '4312',
+               'headquartersCity' => 'Ried in der Riedmark',
+               'forumThread' => $this->chainForum['id'],
             ]
         );
         $I->seeResponseCodeIs(Http::CREATED);
@@ -456,14 +456,14 @@ class StoreChainApiCest
                   'id' => $id,
                   'name' => 'New Chain minimal',
                   'status' => 0,
-                  'headquarters_zip' => '4312',
-                  'headquarters_city' => 'Ried in der Riedmark',
-                  'allow_press' => false,
-                  'forum_thread' => $this->chainForum['id'],
+                  'headquartersZip' => '4312',
+                  'headquartersCity' => 'Ried in der Riedmark',
+                  'allowPress' => false,
+                  'forumThread' => $this->chainForum['id'],
                   'notes' => null,
-                  'common_store_information' => null,
+                  'commonStoreInformation' => null,
                   'kams' => [],
-                    'modification_date' => $modificationDate->format('c')
+                    'modificationDate' => $modificationDate->format('c')
                 ],
                 'store_count' => 0
         ]);
@@ -478,55 +478,55 @@ class StoreChainApiCest
 
         // Missing name
         $requestBodies[] = [
-            'headquarters_zip' => '4312',
-            'headquarters_city' => 'Ried in der Riedmark',
-            'forum_thread' => $this->chainForum['id'],
+            'headquartersZip' => '4312',
+            'headquartersCity' => 'Ried in der Riedmark',
+            'forumThread' => $this->chainForum['id'],
         ];
         $requestBodies[] = [
             'name' => "<a href='test'>invalid name</a>",
-            'headquarters_zip' => '4312',
-            'headquarters_city' => 'Ried in der Riedmark',
-            'forum_thread' => $this->chainForum['id'],
+            'headquartersZip' => '4312',
+            'headquartersCity' => 'Ried in der Riedmark',
+            'forumThread' => $this->chainForum['id'],
         ];
 
         // Invalid headquarter zip
         $requestBodies[] = [
             'name' => 'ToLongZip',
-            'headquarters_zip' => '4312123',
-            'headquarters_city' => 'Ried in der Riedmark',
-            'forum_thread' => $this->chainForum['id'],
+            'headquartersZip' => '4312123',
+            'headquartersCity' => 'Ried in der Riedmark',
+            'forumThread' => $this->chainForum['id'],
         ];
         // Missing zip
         $requestBodies[] = [
             'name' => 'missingZip',
-            'headquarters_city' => 'Ried in der Riedmark',
-            'forum_thread' => $this->chainForum['id'],
+            'headquartersCity' => 'Ried in der Riedmark',
+            'forumThread' => $this->chainForum['id'],
         ];
 
         // missing city name
         $requestBodies[] = [
             'name' => 'missingCityName',
-            'headquarters_zip' => '4312',
-            'forum_thread' => $this->chainForum['id'],
+            'headquartersZip' => '4312',
+            'forumThread' => $this->chainForum['id'],
         ];
 
         // invalid forum
         $requestBodies[] = [
             'name' => 'InvalidForumId',
-            'headquarters_zip' => '4312',
-            'headquarters_city' => 'Ried in der Riedmark',
-            'forum_thread' => $this->chainForum['id'] + 1,
+            'headquartersZip' => '4312',
+            'headquartersCity' => 'Ried in der Riedmark',
+            'forumThread' => $this->chainForum['id'] + 1,
         ];
         $requestBodies[] = [
             'name' => 'missingForum',
-            'headquarters_zip' => '4312',
-            'headquarters_city' => 'Ried in der Riedmark',
+            'headquartersZip' => '4312',
+            'headquartersCity' => 'Ried in der Riedmark',
         ];
         $requestBodies[] = [
             'name' => 'InvalidForum',
-            'headquarters_zip' => '4312',
-            'headquarters_city' => 'Ried in der Riedmark',
-            'forum_thread' => 'a',
+            'headquartersZip' => '4312',
+            'headquartersCity' => 'Ried in der Riedmark',
+            'forumThread' => 'a',
         ];
 
         $I->login($this->getUserByRole('chainManager')['email']);

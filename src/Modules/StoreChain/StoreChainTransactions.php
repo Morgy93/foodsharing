@@ -27,7 +27,7 @@ class StoreChainTransactions
         }
 
         $this->throwExceptionIfKeyAccountManagerDoesNotExist($storeData->kams);
-        $this->throwExceptionIfForumInvalid($storeData->forum_thread);
+        $this->throwExceptionIfForumInvalid($storeData->forumThread);
 
         $this->storeChainGateway->updateStoreChain($storeData, $updateKams);
     }
@@ -38,14 +38,15 @@ class StoreChainTransactions
     public function addStoreChain(StoreChain $storeData): int
     {
         $this->throwExceptionIfKeyAccountManagerDoesNotExist($storeData->kams);
-        $this->throwExceptionIfForumInvalid($storeData->forum_thread);
+        $this->throwExceptionIfForumInvalid($storeData->forumThread);
 
         return $this->storeChainGateway->addStoreChain($storeData);
     }
 
     private function throwExceptionIfKeyAccountManagerDoesNotExist($kams)
     {
-        if (!$this->foodsaverGateway->foodsaversExist($kams)) {
+        $ids = array_map(function ($item) { return $item->id;}, $kams);
+        if (!$this->foodsaverGateway->foodsaversExist($ids)) {
             throw new StoreChainTransactionException(StoreChainTransactionException::KEY_ACCOUNT_MANAGER_ID_NOT_EXISTS);
         }
     }

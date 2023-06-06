@@ -3,6 +3,7 @@
 namespace Foodsharing\RestApi\Models\StoreChain;
 
 use DateTime;
+use Foodsharing\Modules\Foodsaver\DTO\FoodsaverForAvatar;
 use Foodsharing\Modules\StoreChain\DTO\StoreChain;
 use Foodsharing\Modules\StoreChain\StoreChainStatus;
 use Foodsharing\Validator\NoHtml;
@@ -13,7 +14,7 @@ use Symfony\Component\Validator\Constraints as Assert;
 /**
  * Class that represents the data of a store chain, in a format in which it is sent to the client.
  *
- * @OA\Schema(required={"id", "name", "headquarters_zip", "headquarters_city", "forum_thread"})
+ * @OA\Schema(required={"id", "name", "headquartersZip", "headquartersCity", "forumThread"})
  */
 class CreateStoreChainModel
 {
@@ -48,7 +49,7 @@ class CreateStoreChainModel
      *
      * @NoHtml
      */
-    public ?string $headquarters_zip = null;
+    public ?string $headquartersZip = null;
 
     /**
      * City of the chains headquater.
@@ -59,12 +60,12 @@ class CreateStoreChainModel
      *
      * @NoHtml
      */
-    public ?string $headquarters_city = null;
+    public ?string $headquartersCity = null;
 
     /**
      * Whether the chain can be referred to in press releases.
      */
-    public ?bool $allow_press = false;
+    public ?bool $allowPress = false;
 
     /**
      * Identifier of a forum thread related to this chain.
@@ -73,7 +74,7 @@ class CreateStoreChainModel
      * @Assert\Range (min = 0)
      * @Assert\NotNull()
      */
-    public ?int $forum_thread = null;
+    public ?int $forumThread = null;
 
     /**
      * Miscellaneous notes.
@@ -91,7 +92,7 @@ class CreateStoreChainModel
      * @OA\Property(example="Pickup times between 10:00 and 12:15", nullable=true)
      * @Assert\Length(max=16777215)
      */
-    public ?string $common_store_information = null;
+    public ?string $commonStoreInformation = null;
 
     /**
      * Identifiers of key account managers.
@@ -107,14 +108,18 @@ class CreateStoreChainModel
         $obj = new StoreChain();
         $obj->name = $this->name;
         $obj->status = StoreChainStatus::from($this->status);
-        $obj->allow_press = $this->allow_press;
-        $obj->headquarters_zip = $this->headquarters_zip;
-        $obj->headquarters_city = $this->headquarters_city;
-        $obj->modification_date = new DateTime();
-        $obj->forum_thread = $this->forum_thread;
+        $obj->allowPress = $this->allowPress;
+        $obj->headquartersZip = $this->headquartersZip;
+        $obj->headquartersCity = $this->headquartersCity;
+        $obj->modificationDate = new DateTime();
+        $obj->forumThread = $this->forumThread;
         $obj->notes = $this->notes;
-        $obj->common_store_information = $this->common_store_information;
-        $obj->kams = $this->kams;
+        $obj->commonStoreInformation = $this->commonStoreInformation;
+        $obj->kams = array_map(function ($kam) {
+                $obj = new FoodsaverForAvatar();
+                $obj->id = $kam;
+                return $obj;
+            }, $this->kams);
 
         return $obj;
     }

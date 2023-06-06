@@ -922,7 +922,7 @@ chain:
     status: ''
   new: ''
   tooltips:
-    modification_date: ''
+    modificationDate: ''
     options: ''
   inputmodal:
     inputs:

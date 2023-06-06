@@ -39,7 +39,7 @@ class PatchStoreChain
      * @OA\Property(example="48149", nullable=true)
      * @Assert\Length(max=120)
      */
-    public ?string $headquarters_zip;
+    public ?string $headquartersZip;
 
     /**
      * City of the chains headquater.
@@ -47,12 +47,12 @@ class PatchStoreChain
      * @OA\Property(example="Münster", nullable=true)
      * @Assert\Length(max=50)
      */
-    public ?string $headquarters_city;
+    public ?string $headquartersCity;
 
     /**
      * Whether the chain can be referred to in press releases.
      */
-    public ?bool $allow_press;
+    public ?bool $allowPress;
 
     /**
      * Identifier of a forum thread related to this chain.
@@ -60,7 +60,7 @@ class PatchStoreChain
      * @OA\Property(example=12345)
      * @Assert\Range (min = 0)
      */
-    public ?int $forum_thread;
+    public ?int $forumThread;
 
     /**
      * Miscellaneous notes.
@@ -76,7 +76,7 @@ class PatchStoreChain
      * @OA\Property(example="Pickup times between 10:00 and 12:15", nullable=true)
      * @Assert\Length(max=16777215)
      */
-    public ?string $common_store_information;
+    public ?string $commonStoreInformation;
 
     /**
      * Identifiers of key account managers.

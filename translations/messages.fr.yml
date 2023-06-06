@@ -3081,7 +3081,7 @@ chain:
   new: Créer une nouvelle chaîne
   allowpress: Dénomination publique autorisée.
   tooltips:
-    modification_date: Dernière modification
+    modificationDate: Dernière modification
     options: Options
   options:
     showstores: Afficher les établissements

@@ -1545,7 +1545,7 @@ chain:
     create: ''
   tooltips:
     options: ''
-    modification_date: ''
+    modificationDate: ''
   options:
     showstores: ''
     edit: ''

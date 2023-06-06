@@ -4,6 +4,7 @@ namespace Foodsharing\Modules\StoreChain\DTO;
 
 use DateTime;
 use DateTimeZone;
+use Foodsharing\Modules\Core\DBConstants\Region\RegionIDs;
 use Foodsharing\Modules\Foodsaver\DTO\FoodsaverForAvatar;
 use Foodsharing\Modules\StoreChain\StoreChainStatus;
 use Nelmio\ApiDocBundle\Annotation\Model;
@@ -50,7 +51,7 @@ class StoreChain
      * @OA\Property(example="48149", nullable=true)
      * @Assert\Length(max=120)
      */
-    public ?string $headquarters_zip;
+    public ?string $headquartersZip;
 
     /**
      * City of the chains headquater.
@@ -58,12 +59,12 @@ class StoreChain
      * @OA\Property(example="Münster", nullable=true)
      * @Assert\Length(max=50)
      */
-    public ?string $headquarters_city;
+    public ?string $headquartersCity;
 
     /**
      * Whether the chain can be referred to in press releases.
      */
-    public bool $allow_press;
+    public bool $allowPress;
 
     /**
      * Identifier of a forum thread related to this chain.
@@ -71,7 +72,7 @@ class StoreChain
      * @OA\Property(example=12345)
      * @Assert\Range (min = 0)
      */
-    public ?int $forum_thread;
+    public int $forumThread;
 
     /**
      * Miscellaneous notes.
@@ -87,7 +88,7 @@ class StoreChain
      * @OA\Property(example="Pickup times between 10:00 and 12:15", nullable=true)
      * @Assert\Length(max=16777215)
      */
-    public ?string $common_store_information;
+    public ?string $commonStoreInformation;
 
     /**
      * Identifiers of key account managers.
@@ -106,7 +107,14 @@ class StoreChain
      *
      * @OA\Property(readOnly=true)
      */
-    public ?DateTime $modification_date;
+    public ?DateTime $modificationDate;
+
+    /**
+     * Region of store chain management
+     *
+     * @OA\Property(readOnly=true)
+     */
+    public ?int $regionId = RegionIDs::STORE_CHAIN_GROUP;
 
     public static function createFromArray(array $data): StoreChain
     {
@@ -114,13 +122,13 @@ class StoreChain
         $obj->id = $data['id'];
         $obj->name = $data['name'];
         $obj->status = StoreChainStatus::from($data['status']);
-        $obj->allow_press = $data['allow_press'];
-        $obj->headquarters_zip = $data['headquarters_zip'];
-        $obj->headquarters_city = $data['headquarters_city'];
-        $obj->modification_date = new DateTime($data['modification_date'], new DateTimeZone('Europe/Berlin'));
-        $obj->forum_thread = $data['forum_thread'];
+        $obj->allowPress = $data['allow_press'];
+        $obj->headquartersZip = $data['headquarters_zip'];
+        $obj->headquartersCity = $data['headquarters_city'];
+        $obj->modificationDate = new DateTime($data['modification_date'], new DateTimeZone('Europe/Berlin'));
+        $obj->forumThread = $data['forum_thread'] ?? 0;
         $obj->notes = $data['notes'];
-        $obj->common_store_information = $data['common_store_information'];
+        $obj->commonStoreInformation = $data['common_store_information'];
         $obj->kams = $data['kams'];
 
         return $obj;

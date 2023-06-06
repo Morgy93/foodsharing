@@ -2930,7 +2930,7 @@ chain:
   new: Gå inn i ny kjede
   allowpress: Offentlig navngivning tillatt.
   tooltips:
-    modification_date: Sist redigert
+    modificationDate: Sist redigert
     options: Innstillinger
   options:
     showstores: Vise selskaper

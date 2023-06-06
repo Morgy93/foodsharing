@@ -2721,7 +2721,7 @@ chain:
   new: Neue Kette eintragen
   allowpress: Öffentliche Nennung erlaubt.
   tooltips:
-    modification_date: Zuletzt bearbeitet
+    modificationDate: Zuletzt bearbeitet
     options: Optionen
   options:
     showstores: Betriebe anzeigen

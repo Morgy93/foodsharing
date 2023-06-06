@@ -2942,7 +2942,7 @@ chain:
     status: ''
   tooltips:
     options: ''
-    modification_date: ''
+    modificationDate: ''
   new: ''
   allowpress: ''
   detailsmodal:

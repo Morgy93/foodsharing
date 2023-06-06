@@ -19,13 +19,20 @@ class StoreChainForChainList
      *
      * @OA\Property(example=5)
      */
-    public int $store_count;
+    public int $storeCount;
+
+    /**
+     * The identifier of the region of AG
+     *
+     * @OA\Property(example=335)
+     */
+    public int $regionId;
 
     public static function createFromArray(array $data): StoreChainForChainList
     {
         $obj = new StoreChainForChainList();
         $obj->chain = StoreChain::createFromArray($data);
-        $obj->store_count = $data['stores'];
+        $obj->storeCount = $data['stores'];
 
         return $obj;
     }

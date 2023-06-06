@@ -1238,7 +1238,7 @@ chain:
   new: ''
   allowpress: ''
   tooltips:
-    modification_date: ''
+    modificationDate: ''
     options: ''
   options:
     showstores: ''

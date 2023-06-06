@@ -2909,7 +2909,7 @@ chain:
   new: Create new Chain
   allowpress: Public mentions allowed.
   tooltips:
-    modification_date: Last changed
+    modificationDate: Last changed
     options: Options
   options:
     showstores: Show stores

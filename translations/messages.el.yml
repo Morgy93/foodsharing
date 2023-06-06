@@ -1992,7 +1992,7 @@ chain:
     showstores: ''
     edit: ''
   tooltips:
-    modification_date: ''
+    modificationDate: ''
     options: ''
   detailsmodal:
     nostores: ''

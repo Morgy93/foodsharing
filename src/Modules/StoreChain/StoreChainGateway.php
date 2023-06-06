@@ -18,14 +18,14 @@ class StoreChainGateway extends BaseGateway
     {
         $id = $this->db->insert('fs_chain', [
             'name' => $storeData->name,
-            'headquarters_zip' => $storeData->headquarters_zip,
-            'headquarters_city' => $storeData->headquarters_city,
+            'headquarters_zip' => $storeData->headquartersZip,
+            'headquarters_city' => $storeData->headquartersCity,
             'status' => $storeData->status->value,
             'modification_date' => $this->db->now(),
-            'allow_press' => $storeData->allow_press,
-            'forum_thread' => $storeData->forum_thread,
+            'allow_press' => $storeData->allowPress,
+            'forum_thread' => $storeData->forumThread,
             'notes' => $storeData->notes,
-            'common_store_information' => $storeData->common_store_information,
+            'common_store_information' => $storeData->commonStoreInformation,
         ]);
         $this->updateAllKeyAccountManagers($id, $storeData->kams);
 
@@ -41,14 +41,14 @@ class StoreChainGateway extends BaseGateway
             'fs_chain',
             [
                 'name' => $storeData->name,
-                'headquarters_zip' => $storeData->headquarters_zip,
-                'headquarters_city' => $storeData->headquarters_city,
+                'headquarters_zip' => $storeData->headquartersZip,
+                'headquarters_city' => $storeData->headquartersCity,
                 'status' => $storeData->status->value,
                 'modification_date' => $this->db->now(),
-                'allow_press' => $storeData->allow_press,
-                'forum_thread' => $storeData->forum_thread,
+                'allow_press' => $storeData->allowPress,
+                'forum_thread' => $storeData->forumThread,
                 'notes' => $storeData->notes,
-                'common_store_information' => $storeData->common_store_information,
+                'common_store_information' => $storeData->commonStoreInformation,
             ],
             ['id' => $storeData->id]
         );
@@ -60,7 +60,7 @@ class StoreChainGateway extends BaseGateway
     /**
      * Delete and insert all key account managers (kams).
      *
-     * @param array $kams are account ids for key account managers
+     * @param FoodsaverForAvatar[] $kams are account ids for key account managers
      *
      * @throws Exception
      */
@@ -70,10 +70,10 @@ class StoreChainGateway extends BaseGateway
         $this->db->delete('fs_key_account_manager', ['chain_id' => $chainId]);
 
         //add new kams
-        foreach ($kams as $fs_id) {
+        foreach ($kams as $fs) {
             $this->db->insert('fs_key_account_manager', [
                 'chain_id' => $chainId,
-                'foodsaver_id' => $fs_id,
+                'foodsaver_id' => $fs->id,
             ]);
         }
     }

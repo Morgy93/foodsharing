@@ -185,28 +185,30 @@ class StoreChainRestController extends AbstractFOSRestController
             $params->status = $status;
             $changed = true;
         }
-        if (!empty($storeModel->headquarters_zip)) {
-            $params->headquarters_zip = $storeModel->headquarters_zip;
+        if (!empty($storeModel->headquartersZip)) {
+            $params->headquartersZip = $storeModel->headquartersZip;
             $changed = true;
         }
-        if (!empty($storeModel->headquarters_city)) {
-            $params->headquarters_city = $storeModel->headquarters_city;
+        if (!empty($storeModel->headquartersCity)) {
+            $params->headquartersCity = $storeModel->headquartersCity;
             $changed = true;
         }
-        if (!empty($storeModel->allow_press)) {
-            $params->allow_press = $storeModel->allow_press;
+        if (!empty($storeModel->allowPress)) {
+            $params->allowPress = $storeModel->allowPress;
             $changed = true;
         }
-        if (!empty($storeModel->forum_thread)) {
-            $params->forum_thread = $storeModel->forum_thread;
+        if (!empty($storeModel->forumThread)) {
+            $params->forumThread = $storeModel->forumThread;
             $changed = true;
+        } else {
+            throw new BadRequestHttpException('forumThread is required');
         }
         if (!empty($storeModel->notes)) {
             $params->notes = $storeModel->notes;
             $changed = true;
         }
-        if (!empty($storeModel->common_store_information)) {
-            $params->common_store_information = $storeModel->common_store_information;
+        if (!empty($storeModel->commonStoreInformation)) {
+            $params->commonStoreInformation = $storeModel->commonStoreInformation;
             $changed = true;
         }
         if (!empty($storeModel->kams)) {
