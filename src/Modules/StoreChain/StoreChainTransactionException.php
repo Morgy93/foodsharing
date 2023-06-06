@@ -8,6 +8,8 @@ class StoreChainTransactionException extends \Exception
     public const KEY_ACCOUNT_MANAGER_ID_NOT_EXISTS = 'Store chain key account manager does not exist.';
     public const THREAD_ID_NOT_EXISTS = 'Store chain thread does not exist.';
     public const WRONG_FORUM = 'Thread is from wrong forum.';
+    public const EMPTY_NAME = 'name must not be empty';
+    public const INVALID_STATUS = 'status must be a valid status id';
 
     public function __construct(string $message = '', int $code = 0)
     {

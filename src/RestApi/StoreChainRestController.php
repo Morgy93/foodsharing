@@ -2,16 +2,14 @@
 
 namespace Foodsharing\RestApi;
 
-use Codeception\Util\HttpCode;
 use Foodsharing\Lib\Session;
 use Foodsharing\Modules\Core\Pagination;
-use Foodsharing\Modules\Foodsaver\DTO\FoodsaverForAvatar;
 use Foodsharing\Modules\Store\DTO\MinimalStoreIdentifier;
 use Foodsharing\Modules\Store\StoreGateway;
 use Foodsharing\Modules\StoreChain\DTO\PatchStoreChain;
+use Foodsharing\Modules\StoreChain\DTO\StoreChain;
 use Foodsharing\Modules\StoreChain\DTO\StoreChainForChainList;
 use Foodsharing\Modules\StoreChain\StoreChainGateway;
-use Foodsharing\Modules\StoreChain\StoreChainStatus;
 use Foodsharing\Modules\StoreChain\StoreChainTransactionException;
 use Foodsharing\Modules\StoreChain\StoreChainTransactions;
 use Foodsharing\Permissions\StoreChainPermissions;
@@ -111,13 +109,8 @@ class StoreChainRestController extends AbstractFOSRestController
      * @OA\Tag(name="chain")
      * @Rest\Post("chains")
      * @ParamConverter("storeModel", converter="fos_rest.request_body")
-     * @OA\RequestBody(@Model(type=CreateStoreChainModel::class))
-     * @OA\Response(
-     * 		response="201",
-     * 		description="Success.",
-     *      @Model(type=StoreChainForChainList::class)
-     * )
-     * @OA\Response(response="400", description="Bad content")
+     * @OA\RequestBody(@Model(type=StoreChain::class))
+     * @OA\Response(response="200", description="Success")
      * @OA\Response(response="401", description="Not logged in")
      * @OA\Response(response="403", description="Insufficient permissions")
      */
@@ -131,13 +124,10 @@ class StoreChainRestController extends AbstractFOSRestController
         }
 
         $this->throwBadRequestExceptionOnError($validationErrors);
-        try {
-            $id = $this->transactions->addStoreChain($storeModel->toCreateStore());
 
-            return $this->handleView($this->view($this->gateway->getStoreChains($id)[0], HttpCode::CREATED));
-        } catch (StoreChainTransactionException $ex) {
-            throw new BadRequestHttpException($ex->getMessage());
-        }
+        $id = $this->transactions->addStoreChain($storeModel->toCreateStore());
+
+        return $this->handleView($this->view($this->gateway->getStoreChains($id)[0]));
     }
 
     /**
@@ -166,68 +156,16 @@ class StoreChainRestController extends AbstractFOSRestController
 
         $this->throwBadRequestExceptionOnError($validationErrors);
 
-        $changed = false;
-        $params = $this->gateway->getStoreChains($chainId)[0]->chain;
-        $params->id = $chainId;
-        if (!empty($storeModel->name)) {
-            $params->name = $storeModel->name;
-            if (empty(trim(strip_tags($params->name)))) {
-                throw new BadRequestHttpException('name must not be empty');
-            }
-            $changed = true;
-        }
-
-        if (!empty($storeModel->status)) {
-            $status = StoreChainStatus::tryFrom($storeModel->status);
-            if (!$status instanceof StoreChainStatus) {
-                throw new BadRequestHttpException('status must be a valid status id');
-            }
-            $params->status = $status;
-            $changed = true;
-        }
-        if (!empty($storeModel->headquartersZip)) {
-            $params->headquartersZip = $storeModel->headquartersZip;
-            $changed = true;
-        }
-        if (!empty($storeModel->headquartersCity)) {
-            $params->headquartersCity = $storeModel->headquartersCity;
-            $changed = true;
-        }
-        if (!empty($storeModel->allowPress)) {
-            $params->allowPress = $storeModel->allowPress;
-            $changed = true;
-        }
-        if (!empty($storeModel->forumThread)) {
-            $params->forumThread = $storeModel->forumThread;
-            $changed = true;
-        } else {
-            throw new BadRequestHttpException('forumThread is required');
-        }
-        if (!empty($storeModel->notes)) {
-            $params->notes = $storeModel->notes;
-            $changed = true;
-        }
-        if (!empty($storeModel->commonStoreInformation)) {
-            $params->commonStoreInformation = $storeModel->commonStoreInformation;
-            $changed = true;
-        }
-        if (!empty($storeModel->kams)) {
-            $params->kams = array_map(function ($kam) {
-                $obj = new FoodsaverForAvatar();
-                $obj->id = $kam;
-
-                return $obj;
-            }, $storeModel->kams);
-            $changed = true;
-        }
-
-        if ($changed) {
+        try {
             $updateKams = $this->permissions->mayEditKams($chainId);
-            $this->transactions->updateStoreChain($params, $updateKams);
-
-            return $this->handleView($this->view($this->gateway->getStoreChains($chainId)[0]));
-        } else {
-            throw new BadRequestException('No information changed.');
+            $changed = $this->transactions->updateStoreChain($chainId, $storeModel, $updateKams);
+            if ($changed) {
+                return $this->handleView($this->view($this->gateway->getStoreChains($chainId)[0]));
+            } else {
+                throw new BadRequestException('No information changed.');
+            }
+        } catch (StoreChainTransactionException $ex) {
+            throw new BadRequestException($ex->getMessage());
         }
     }
 
