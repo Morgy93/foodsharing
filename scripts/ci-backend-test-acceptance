@@ -38,7 +38,7 @@ done
 echo
 
 log-header "Create DB dump file for codeception"
-mysqldump --password=$MYSQL_PASSWORD foodsharing > "$dir"/dump.sql
+mysqldump --user root --password=root -hdb foodsharing > "$dir"/dump.sql
 
 log-header "Running tests"
 failed=0
