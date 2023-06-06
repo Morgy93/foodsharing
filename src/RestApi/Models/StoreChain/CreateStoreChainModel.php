@@ -7,6 +7,8 @@ use Foodsharing\Modules\Foodsaver\DTO\FoodsaverForAvatar;
 use Foodsharing\Modules\StoreChain\DTO\StoreChain;
 use Foodsharing\Modules\StoreChain\StoreChainStatus;
 use Foodsharing\Validator\NoHtml;
+use Foodsharing\Validator\NoMarkdown;
+use Foodsharing\Validator\NoMultiLineText;
 use JMS\Serializer\Annotation\Type;
 use OpenApi\Annotations as OA;
 use Symfony\Component\Validator\Constraints as Assert;
@@ -26,6 +28,10 @@ class CreateStoreChainModel
      * @Assert\Length(max=120)
      *
      * @NoHtml
+     *
+     * @NoMultiLineText
+     *
+     * @NoMarkdown
      */
     public ?string $name = null;
 
@@ -48,6 +54,10 @@ class CreateStoreChainModel
      * @Assert\NotNull()
      *
      * @NoHtml
+     *
+     * @NoMultiLineText
+     *
+     * @NoMarkdown
      */
     public ?string $headquartersZip = null;
 
@@ -59,6 +69,10 @@ class CreateStoreChainModel
      * @Assert\Length(max=50)
      *
      * @NoHtml
+     *
+     * @NoMultiLineText
+     *
+     * @NoMarkdown
      */
     public ?string $headquartersCity = null;
 
@@ -83,6 +97,10 @@ class CreateStoreChainModel
      * @Assert\Length(max=200)
      *
      * @NoHtml
+     *
+     * @NoMultiLineText
+     *
+     * @NoMarkdown
      */
     public ?string $notes = null;
 
@@ -116,10 +134,11 @@ class CreateStoreChainModel
         $obj->notes = $this->notes;
         $obj->commonStoreInformation = $this->commonStoreInformation;
         $obj->kams = array_map(function ($kam) {
-                $obj = new FoodsaverForAvatar();
-                $obj->id = $kam;
-                return $obj;
-            }, $this->kams);
+            $obj = new FoodsaverForAvatar();
+            $obj->id = $kam;
+
+            return $obj;
+        }, $this->kams);
 
         return $obj;
     }

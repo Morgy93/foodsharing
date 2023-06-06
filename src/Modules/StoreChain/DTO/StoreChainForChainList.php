@@ -22,7 +22,7 @@ class StoreChainForChainList
     public int $storeCount;
 
     /**
-     * The identifier of the region of AG
+     * The identifier of the region of AG.
      *
      * @OA\Property(example=335)
      */

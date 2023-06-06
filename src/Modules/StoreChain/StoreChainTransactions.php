@@ -45,7 +45,7 @@ class StoreChainTransactions
 
     private function throwExceptionIfKeyAccountManagerDoesNotExist($kams)
     {
-        $ids = array_map(function ($item) { return $item->id;}, $kams);
+        $ids = array_map(function ($item) { return $item->id; }, $kams);
         if (!$this->foodsaverGateway->foodsaversExist($ids)) {
             throw new StoreChainTransactionException(StoreChainTransactionException::KEY_ACCOUNT_MANAGER_ID_NOT_EXISTS);
         }

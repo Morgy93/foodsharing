@@ -110,7 +110,7 @@ class StoreChain
     public ?DateTime $modificationDate;
 
     /**
-     * Region of store chain management
+     * Region of store chain management.
      *
      * @OA\Property(readOnly=true)
      */

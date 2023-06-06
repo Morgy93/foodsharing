@@ -404,7 +404,7 @@ class StoreChainApiCest
                     ],
                     'modificationDate' => $modificationDate->format('c')
                 ],
-                'store_count' => 0
+                'storeCount' => 0
         ]);
 
         // Test KAMS
@@ -465,7 +465,7 @@ class StoreChainApiCest
                   'kams' => [],
                     'modificationDate' => $modificationDate->format('c')
                 ],
-                'store_count' => 0
+                'storeCount' => 0
         ]);
 
         // Test KAMS
@@ -536,7 +536,197 @@ class StoreChainApiCest
             $I->seeResponseCodeIs(Http::BAD_REQUEST);
             $I->seeResponseIsJson();
 
-            $I->dontSeeInDatabase('fs_chain', $body);
+            $testPattern = [];
+            $testPattern['name'] = $body['name'] ?? null;
+            $testPattern['headquarters_zip'] = $body['headquartersZip'] ?? null;
+            $testPattern['headquarters_city'] = $body['headquartersCity'] ?? null;
+            $testPattern['forum_thread'] = $body['forumThread'] ?? null;
+            array_filter($testPattern, static function ($var) {return $var !== null; });
+            $I->dontSeeInDatabase('fs_chain', $testPattern);
+        }
+    }
+
+    public function testRejectOptionalPropertiesCreationOfChain(ApiTester $I)
+    {
+        $requestBodies = [];
+
+        // Invalid status
+        $requestBodies[] = [
+            'name' => 'Status out of range',
+            'headquartersZip' => '4312',
+            'headquartersCity' => 'Ried in der Riedmark',
+            'forumThread' => $this->chainForum['id'],
+            'status' => 3,
+            'allowPress' => true,
+            'notes' => 'Notizen',
+            'commonStoreInformation' => 'Common Store information',
+            'kams' => [$this->getUserByRole('chainKeyAccountManager')['id'], $this->getUserByRole('chainKeyAccountManagerOtherChain')['id']]
+        ];
+        $requestBodies[] = [
+            'name' => 'Status with string',
+            'headquartersZip' => '4312',
+            'headquartersCity' => 'Ried in der Riedmark',
+            'forumThread' => $this->chainForum['id'],
+            'status' => 'a',
+            'allowPress' => true,
+            'notes' => 'Notizen',
+            'commonStoreInformation' => 'Common Store information',
+            'kams' => [$this->getUserByRole('chainKeyAccountManager')['id'], $this->getUserByRole('chainKeyAccountManagerOtherChain')['id']]
+        ];
+
+        // Invalid allowPress
+        $requestBodies[] = [
+            'name' => 'allowPress with true as string',
+            'headquartersZip' => '4312',
+            'headquartersCity' => 'Ried in der Riedmark',
+            'forumThread' => $this->chainForum['id'],
+            'status' => 1,
+            'allowPress' => 'true',
+            'notes' => 'Notizen',
+            'commonStoreInformation' => 'Common Store information',
+            'kams' => [$this->getUserByRole('chainKeyAccountManager')['id'], $this->getUserByRole('chainKeyAccountManagerOtherChain')['id']]
+        ];
+        $requestBodies[] = [
+            'name' => 'allowPress with number not boolean',
+            'headquartersZip' => '4312',
+            'headquartersCity' => 'Ried in der Riedmark',
+            'forumThread' => $this->chainForum['id'],
+            'status' => 1,
+            'allowPress' => 1,
+            'notes' => 'Notizen',
+            'commonStoreInformation' => 'Common Store information',
+            'kams' => [$this->getUserByRole('chainKeyAccountManager')['id'], $this->getUserByRole('chainKeyAccountManagerOtherChain')['id']]
+        ];
+        $requestBodies[] = [
+            'name' => 'allowPress with string',
+            'headquartersZip' => '4312',
+            'headquartersCity' => 'Ried in der Riedmark',
+            'forumThread' => $this->chainForum['id'],
+            'status' => 1,
+            'allowPress' => 'Hallo',
+            'notes' => 'Notizen',
+            'commonStoreInformation' => 'Common Store information',
+            'kams' => [$this->getUserByRole('chainKeyAccountManager')['id'], $this->getUserByRole('chainKeyAccountManagerOtherChain')['id']]
+        ];
+
+        // Invalid notes
+        $requestBodies[] = [
+            'name' => 'To long notes text',
+            'headquartersZip' => '4312',
+            'headquartersCity' => 'Ried in der Riedmark',
+            'forumThread' => $this->chainForum['id'],
+            'status' => 1,
+            'allowPress' => false,
+            'notes' => bin2hex(random_bytes(201)),
+            'commonStoreInformation' => 'Common Store information',
+            'kams' => [$this->getUserByRole('chainKeyAccountManager')['id'], $this->getUserByRole('chainKeyAccountManagerOtherChain')['id']]
+        ];
+        $requestBodies[] = [
+            'name' => 'With HTML break in notes',
+            'headquartersZip' => '4312',
+            'headquartersCity' => 'Ried in der Riedmark',
+            'forumThread' => $this->chainForum['id'],
+            'status' => 1,
+            'allowPress' => false,
+            'notes' => '<b>Hallo</b>',
+            'commonStoreInformation' => 'Common Store information',
+            'kams' => [$this->getUserByRole('chainKeyAccountManager')['id'], $this->getUserByRole('chainKeyAccountManagerOtherChain')['id']]
+        ];
+        $requestBodies[] = [
+            'name' => 'With markdown markup in notes',
+            'headquartersZip' => '4312',
+            'headquartersCity' => 'Ried in der Riedmark',
+            'forumThread' => $this->chainForum['id'],
+            'status' => 1,
+            'allowPress' => false,
+            'notes' => '**Hallo**',
+            'commonStoreInformation' => 'Common Store information',
+            'kams' => [$this->getUserByRole('chainKeyAccountManager')['id'], $this->getUserByRole('chainKeyAccountManagerOtherChain')['id']]
+        ];
+        $requestBodies[] = [
+            'name' => 'With Windows line break in notes',
+            'headquartersZip' => '4312',
+            'headquartersCity' => 'Ried in der Riedmark',
+            'forumThread' => $this->chainForum['id'],
+            'status' => 1,
+            'allowPress' => false,
+            'notes' => "Hallo\r\nhhh",
+            'commonStoreInformation' => 'Common Store information',
+            'kams' => [$this->getUserByRole('chainKeyAccountManager')['id'], $this->getUserByRole('chainKeyAccountManagerOtherChain')['id']]
+        ];
+        $requestBodies[] = [
+            'name' => 'With UNIX line break in notes',
+            'headquartersZip' => '4312',
+            'headquartersCity' => 'Ried in der Riedmark',
+            'forumThread' => $this->chainForum['id'],
+            'status' => 1,
+            'allowPress' => false,
+            'notes' => "Hallo\nhhh",
+            'commonStoreInformation' => 'Common Store information',
+            'kams' => [$this->getUserByRole('chainKeyAccountManager')['id'], $this->getUserByRole('chainKeyAccountManagerOtherChain')['id']]
+        ];
+
+        // Test kams
+        $requestBodies[] = [
+            'name' => 'String a value',
+            'headquartersZip' => '4312',
+            'headquartersCity' => 'Ried in der Riedmark',
+            'forumThread' => $this->chainForum['id'],
+            'status' => 1,
+            'allowPress' => true,
+            'notes' => 'Notizen',
+            'commonStoreInformation' => 'Common Store information',
+            'kams' => 'any'
+        ];
+        $requestBodies[] = [
+            'name' => 'Array of string as value',
+            'headquartersZip' => '4312',
+            'headquartersCity' => 'Ried in der Riedmark',
+            'forumThread' => $this->chainForum['id'],
+            'status' => 1,
+            'allowPress' => true,
+            'notes' => 'Notizen',
+            'commonStoreInformation' => 'Common Store information',
+            'kams' => ['any']
+        ];
+        $requestBodies[] = [
+            'name' => 'Array with negativ number as value',
+            'headquartersZip' => '4312',
+            'headquartersCity' => 'Ried in der Riedmark',
+            'forumThread' => $this->chainForum['id'],
+            'status' => 1,
+            'allowPress' => true,
+            'notes' => 'Notizen',
+            'commonStoreInformation' => 'Common Store information',
+            'kams' => [-1]
+        ];
+        $requestBodies[] = [
+            'name' => 'Array with invalid key account manager Id',
+            'headquartersZip' => '4312',
+            'headquartersCity' => 'Ried in der Riedmark',
+            'forumThread' => $this->chainForum['id'],
+            'status' => 1,
+            'allowPress' => true,
+            'notes' => 'Notizen',
+            'commonStoreInformation' => 'Common Store information',
+            'kams' => [$this->getUserByRole('chainKeyAccountManager')['id'] + 5]
+        ];
+
+        // Test
+        $I->login($this->getUserByRole('chainManager')['email']);
+        $I->haveHttpHeader('Content-Type', 'application/json');
+        foreach ($requestBodies as &$body) {
+            $I->sendPOST(self::API_BASE, $body);
+            $I->seeResponseCodeIs(Http::BAD_REQUEST);
+            $I->seeResponseIsJson();
+
+            $testPattern = [];
+            $testPattern['name'] = $body['name'] ?? null;
+            $testPattern['headquarters_zip'] = $body['headquartersZip'] ?? null;
+            $testPattern['headquarters_city'] = $body['headquartersCity'] ?? null;
+            $testPattern['forum_thread'] = $body['forumThread'] ?? null;
+            array_filter($testPattern, static function ($var) {return $var !== null; });
+            $I->dontSeeInDatabase('fs_chain', $testPattern);
         }
     }
 }

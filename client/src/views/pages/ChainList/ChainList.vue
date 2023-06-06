@@ -217,7 +217,7 @@ export default {
           formatter: (value, key, item) => item,
         },
         {
-          key: 'store_count',
+          key: 'storeCount',
           label: this.$i18n('chain.columns.stores'),
           sortable: true,
           tdClass: 'text-center',

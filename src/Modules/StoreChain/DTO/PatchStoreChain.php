@@ -2,6 +2,9 @@
 
 namespace Foodsharing\Modules\StoreChain\DTO;
 
+use Foodsharing\Validator\NoHtml;
+use Foodsharing\Validator\NoMarkdown;
+use Foodsharing\Validator\NoMultiLineText;
 use JMS\Serializer\Annotation\Type;
 use OpenApi\Annotations as OA;
 use Symfony\Component\Validator\Constraints as Assert;
@@ -19,6 +22,12 @@ class PatchStoreChain
      *
      * @OA\Property(example="MyChain GmbH")
      * @Assert\Length(max=120)
+     *
+     * @NoHtml
+     *
+     * @NoMultiLineText
+     *
+     * @NoMarkdown
      */
     public ?string $name;
 
@@ -37,7 +46,13 @@ class PatchStoreChain
      * ZIP code of the chains headquater.
      *
      * @OA\Property(example="48149", nullable=true)
-     * @Assert\Length(max=120)
+     * @Assert\Length(max=5)
+     *
+     * @NoHtml
+     *
+     * @NoMultiLineText
+     *
+     * @NoMarkdown
      */
     public ?string $headquartersZip;
 
@@ -46,6 +61,12 @@ class PatchStoreChain
      *
      * @OA\Property(example="Münster", nullable=true)
      * @Assert\Length(max=50)
+     *
+     * @NoHtml
+     *
+     * @NoMultiLineText
+     *
+     * @NoMarkdown
      */
     public ?string $headquartersCity;
 
@@ -67,6 +88,12 @@ class PatchStoreChain
      *
      * @OA\Property(example="Cooperating since 2021", nullable=true)
      * @Assert\Length(max=200)
+     *
+     * @NoHtml
+     *
+     * @NoMultiLineText
+     *
+     * @NoMarkdown
      */
     public ?string $notes;
 
