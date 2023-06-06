@@ -41,7 +41,7 @@ if ! sql-query mysql 'use foodsharing'; then
 fi
 
 log-header "Create DB dump file for codeception"
-sql-dump-to-file dump.sql
+sql_dump_to_file "$dir"/dump.sql
 
 log-header "Running tests"
 exec-in-container selenium "find /home/seluser/Downloads -type f -print0 | xargs -r -n 1 -0 rm"
