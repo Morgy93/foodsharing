@@ -50,6 +50,12 @@ function sql-dump() {
   "$dir"/docker-compose exec -T db mysqldump --password="$MYSQL_PASSWORD" foodsharing "$@"
 }
 
+function sql-dump-to-file() {
+  local filename=$1
+    "$dir"/docker-compose exec -T db sh -c "mysqldump --password=$MYSQL_PASSWORD foodsharing > /tmp/dump.sql"
+    "$dir"/docker-compose cp db:/tmp/dump.sql $filename
+}
+
 function exec-in-container() {
   local container=$1; shift;
   local command=$*;
