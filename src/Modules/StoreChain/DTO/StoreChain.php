@@ -24,10 +24,12 @@ class StoreChain
      *
      * @OA\Property(example=1, readOnly=true)
      */
-    public ?int $id;
+    public ?int $id = null;
 
     /**
      * Name of the chain.
+     *
+     * Field does not support HTML, Markdown or multiline strings.
      *
      * @OA\Property(example="MyChain GmbH")
      * @Assert\Length(max=120)
@@ -48,18 +50,20 @@ class StoreChain
     /**
      * ZIP code of the chains headquater.
      *
-     * @OA\Property(example="48149", nullable=true)
+     * @OA\Property(example="48149")
      * @Assert\Length(max=120)
      */
-    public ?string $headquartersZip;
+    public string $headquartersZip;
 
     /**
      * City of the chains headquater.
      *
-     * @OA\Property(example="Münster", nullable=true)
+     * Field does not support HTML, Markdown or multiline strings.
+     *
+     * @OA\Property(example="Münster")
      * @Assert\Length(max=50)
      */
-    public ?string $headquartersCity;
+    public string $headquartersCity;
 
     /**
      * Whether the chain can be referred to in press releases.
@@ -77,10 +81,12 @@ class StoreChain
     /**
      * Miscellaneous notes.
      *
+     * Field does not support HTML, Markdown or multiline strings.
+     *
      * @OA\Property(example="Cooperating since 2021", nullable=true)
      * @Assert\Length(max=200)
      */
-    public ?string $notes;
+    public ?string $notes = null;
 
     /**
      * Information about the chain to be displayed on every related stores page.
@@ -88,7 +94,7 @@ class StoreChain
      * @OA\Property(example="Pickup times between 10:00 and 12:15", nullable=true)
      * @Assert\Length(max=16777215)
      */
-    public ?string $commonStoreInformation;
+    public ?string $commonStoreInformation = null;
 
     /**
      * Identifiers of key account managers.
@@ -107,7 +113,7 @@ class StoreChain
      *
      * @OA\Property(readOnly=true)
      */
-    public ?DateTime $modificationDate;
+    public ?DateTime $modificationDate = null;
 
     /**
      * Region of store chain management.
@@ -120,11 +126,11 @@ class StoreChain
     {
         $obj = new StoreChain();
         $obj->id = $data['id'];
-        $obj->name = $data['name'];
+        $obj->name = $data['name'] ?? '';
         $obj->status = StoreChainStatus::from($data['status']);
         $obj->allowPress = $data['allow_press'];
-        $obj->headquartersZip = $data['headquarters_zip'];
-        $obj->headquartersCity = $data['headquarters_city'];
+        $obj->headquartersZip = $data['headquarters_zip'] ?? '';
+        $obj->headquartersCity = $data['headquarters_city'] ?? '';
         $obj->modificationDate = new DateTime($data['modification_date'], new DateTimeZone('Europe/Berlin'));
         $obj->forumThread = $data['forum_thread'] ?? 0;
         $obj->notes = $data['notes'];

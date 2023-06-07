@@ -729,4 +729,281 @@ class StoreChainApiCest
             $I->dontSeeInDatabase('fs_chain', $testPattern);
         }
     }
+
+    public function testChangeAllOfChain(ApiTester $I)
+    {
+        $newForum = $I->addForumThread(RegionIDs::STORE_CHAIN_GROUP, $this->chainManager['id']);
+
+        $I->login($this->getUserByRole('chainManager')['email']);
+
+        $I->haveHttpHeader('Content-Type', 'application/json');
+        $I->sendPATCH(self::API_BASE . '/' . StoreChainApiCest::CHAIN_ID, [
+            'name' => 'MyChain GmbH',
+                'status' => 1,
+                'headquartersZip' => '48150',
+                'headquartersCity' => 'Münster 1',
+                'allowPress' => false,
+                'forumThread' => $newForum['id'],
+                'notes' => 'Cooperating since 2021',
+                'commonStoreInformation' => 'Pickup times between 11:00 and 12:15',
+                'kams' => [
+                    $this->getUserByRole('chainKeyAccountManager')['id']
+                ]
+        ]
+        );
+        $I->seeResponseCodeIs(Http::OK);
+
+        $modificationDate = $I->grabFromDatabase('fs_chain', 'modification_date', ['id' => StoreChainApiCest::CHAIN_ID]);
+        $modificationDate = DateTime::createFromFormat('Y-m-d H:i:s', $modificationDate . ' 00:00:00', new DateTimeZone('Europe/Berlin'));
+
+        $I->seeResponseContainsJson([
+                'chain' => [
+                  'id' => StoreChainApiCest::CHAIN_ID,
+                  'name' => 'MyChain GmbH',
+                  'status' => 1,
+                  'headquartersZip' => '48150',
+                  'headquartersCity' => 'Münster 1',
+                  'allowPress' => false,
+                  'forumThread' => $newForum['id'],
+                  'notes' => 'Cooperating since 2021',
+                  'commonStoreInformation' => 'Pickup times between 11:00 and 12:15',
+                  'kams' => [
+                    [
+                      'id' => $this->getUserByRole('chainKeyAccountManager')['id'],
+                      'name' => $this->getUserByRole('chainKeyAccountManager')['name'],
+                      'avatar' => null
+                    ]
+                    ],
+                    'modificationDate' => $modificationDate->format('c')
+                ],
+                'storeCount' => 1
+        ]);
+
+        // Test KAMS
+        $I->seeNumRecords(1, 'fs_key_account_manager', ['chain_id' => StoreChainApiCest::CHAIN_ID]);
+        $I->seeInDatabase(
+            'fs_key_account_manager',
+            ['foodsaver_id' => $this->getUserByRole('chainKeyAccountManager')['id'],
+            'chain_id' => StoreChainApiCest::CHAIN_ID]
+        );
+    }
+
+    public function testChangeSinglePropertyOfChain(ApiTester $I)
+    {
+        $newForum = $I->addForumThread(RegionIDs::STORE_CHAIN_GROUP, $this->chainManager['id']);
+
+        $I->login($this->getUserByRole('chainManager')['email']);
+
+        $I->haveHttpHeader('Content-Type', 'application/json');
+        $I->sendPATCH(self::API_BASE . '/' . StoreChainApiCest::CHAIN_ID, ['name' => 'MyChain GmbH 1', 'forumThread' => $this->chainForum['id'], 'headquartersZip' => '48151', 'headquartersCity' => 'Münster 2']);
+        $I->seeResponseCodeIs(Http::OK);
+        $I->sendPATCH(self::API_BASE . '/' . StoreChainApiCest::CHAIN_ID, ['name' => 'MyChain GmbH']);
+        $I->seeResponseCodeIs(Http::OK);
+        $I->sendPATCH(self::API_BASE . '/' . StoreChainApiCest::CHAIN_ID, ['status' => 1]);
+        $I->seeResponseCodeIs(Http::OK);
+        $I->sendPATCH(self::API_BASE . '/' . StoreChainApiCest::CHAIN_ID, ['headquartersZip' => '48150']);
+        $I->seeResponseCodeIs(Http::OK);
+        $I->sendPATCH(self::API_BASE . '/' . StoreChainApiCest::CHAIN_ID, ['headquartersCity' => 'Münster 1']);
+        $I->seeResponseCodeIs(Http::OK);
+        $I->sendPATCH(self::API_BASE . '/' . StoreChainApiCest::CHAIN_ID, ['forumThread' => $newForum['id']]);
+        $I->seeResponseCodeIs(Http::OK);
+        $I->sendPATCH(self::API_BASE . '/' . StoreChainApiCest::CHAIN_ID, ['notes' => 'Cooperating since 2021']);
+        $I->seeResponseCodeIs(Http::OK);
+        $I->sendPATCH(self::API_BASE . '/' . StoreChainApiCest::CHAIN_ID, ['commonStoreInformation' => 'Pickup times between 11:00 and 12:15']);
+        $I->seeResponseCodeIs(Http::OK);
+        $I->sendPATCH(self::API_BASE . '/' . StoreChainApiCest::CHAIN_ID, ['kams' => [
+            $this->getUserByRole('chainKeyAccountManager')['id']
+        ]]);
+        $I->seeResponseCodeIs(Http::OK);
+
+        $modificationDate = $I->grabFromDatabase('fs_chain', 'modification_date', ['id' => StoreChainApiCest::CHAIN_ID]);
+        $modificationDate = DateTime::createFromFormat('Y-m-d H:i:s', $modificationDate . ' 00:00:00', new DateTimeZone('Europe/Berlin'));
+
+        $I->seeResponseContainsJson([
+                'chain' => [
+                  'id' => StoreChainApiCest::CHAIN_ID,
+                  'name' => 'MyChain GmbH',
+                  'status' => 1,
+                  'headquartersZip' => '48150',
+                  'headquartersCity' => 'Münster 1',
+                  'allowPress' => false,
+                  'forumThread' => $newForum['id'],
+                  'notes' => 'Cooperating since 2021',
+                  'commonStoreInformation' => 'Pickup times between 11:00 and 12:15',
+                  'kams' => [
+                    [
+                      'id' => $this->getUserByRole('chainKeyAccountManager')['id'],
+                      'name' => $this->getUserByRole('chainKeyAccountManager')['name'],
+                      'avatar' => null
+                    ]
+                    ],
+                    'modificationDate' => $modificationDate->format('c')
+                ],
+                'storeCount' => 1
+        ]);
+
+        // Test KAMS
+        $I->seeNumRecords(1, 'fs_key_account_manager', ['chain_id' => StoreChainApiCest::CHAIN_ID]);
+        $I->seeInDatabase(
+            'fs_key_account_manager',
+            ['foodsaver_id' => $this->getUserByRole('chainKeyAccountManager')['id'],
+            'chain_id' => StoreChainApiCest::CHAIN_ID]
+        );
+    }
+
+    public function testRejectUpdateOfChain(ApiTester $I)
+    {
+        $requestBodies = [];
+
+        // Invalid name
+        $requestBodies[] = [
+            'name' => ''
+        ];
+        $requestBodies[] = [
+            'name' => '<span>HTML Name</span>'
+        ];
+        $requestBodies[] = [
+            'name' => '**Markdown Name**'
+        ];
+        $requestBodies[] = [
+            'name' => '**Multiline
+                 Name**'
+        ];
+
+        // Invalid status
+        $requestBodies[] = [
+            'name' => 'Status out of range',
+            'status' => 3
+        ];
+        $requestBodies[] = [
+            'name' => 'Status with string',
+            'status' => 'a'
+        ];
+
+        // Invalid allowPress
+        $requestBodies[] = [
+            'name' => 'allowPress with true as string',
+            'allowPress' => 'true'
+        ];
+        $requestBodies[] = [
+            'name' => 'allowPress with number not boolean',
+            'allowPress' => 1
+        ];
+        $requestBodies[] = [
+            'name' => 'allowPress with string',
+            'allowPress' => 'Hallo'
+        ];
+
+        // Invalid notes
+        $requestBodies[] = [
+            'name' => 'To long notes text',
+            'notes' => bin2hex(random_bytes(201))
+        ];
+        $requestBodies[] = [
+            'name' => 'With HTML break in notes',
+            'notes' => '<b>Hallo</b>'
+        ];
+        $requestBodies[] = [
+            'name' => 'With markdown markup in notes',
+            'notes' => '**Hallo**'
+        ];
+        $requestBodies[] = [
+            'name' => 'With Multi line break in notes',
+
+            'notes' => 'Hallo
+                hhh'
+        ];
+        $requestBodies[] = [
+            'name' => 'With Windows line break in notes',
+
+            'notes' => "Hallo\r\nhhh"
+        ];
+        $requestBodies[] = [
+            'name' => 'With UNIX line break in notes',
+            'notes' => "Hallo\nhhh"
+        ];
+
+        // Test kams
+        $requestBodies[] = [
+            'name' => 'String a value',
+            'kams' => 'any'
+        ];
+        $requestBodies[] = [
+            'name' => 'Array of string as value',
+            'kams' => ['any']
+        ];
+        $requestBodies[] = [
+            'name' => 'Array with negativ number as value',
+            'kams' => [-1]
+        ];
+        $requestBodies[] = [
+            'name' => 'Array with invalid key account manager Id',
+            'kams' => [$this->getUserByRole('chainKeyAccountManager')['id'] + 5]
+        ];
+        // Invalid headquarter zip
+        $requestBodies[] = [
+            'name' => 'ToLongZip',
+            'headquartersZip' => '4312123'
+        ];
+
+        // missing city name
+        $requestBodies[] = [
+            'name' => 'missingCityName',
+            'headquartersCity' => '',
+            'forumThread' => $this->chainForum['id'],
+        ];
+        $requestBodies[] = [
+            'name' => 'To long notes text',
+            'headquartersCity' => bin2hex(random_bytes(51))
+        ];
+        $requestBodies[] = [
+            'name' => 'With HTML break in notes',
+            'headquartersCity' => '<b>Hallo</b>'
+        ];
+        $requestBodies[] = [
+            'name' => 'With markdown markup in notes',
+            'headquartersCity' => '**Hallo**'
+        ];
+        $requestBodies[] = [
+            'name' => 'With Windows line break in notes',
+            'headquartersCity' => "Hallo\r\nhhh"
+        ];
+        $requestBodies[] = [
+            'name' => 'With UNIX line break in notes',
+            'headquartersCity' => "Hallo\nhhh"
+        ];
+
+        // invalid forum
+        $requestBodies[] = [
+            'name' => 'InvalidForumId',
+            'forumThread' => $this->chainForum['id'] + 1
+        ];
+        $requestBodies[] = [
+            'name' => 'missingForum',
+            'forumThread' => ''
+        ];
+        $requestBodies[] = [
+            'name' => 'InvalidForum',
+            'forumThread' => 'a'
+        ];
+
+        // Test
+        $I->login($this->getUserByRole('chainManager')['email']);
+        $I->haveHttpHeader('Content-Type', 'application/json');
+        foreach ($requestBodies as &$body) {
+            $I->sendPATCH(self::API_BASE . '/' . StoreChainApiCest::CHAIN_ID, $body);
+            $I->seeResponseCodeIs(Http::BAD_REQUEST);
+            $I->seeResponseIsJson();
+
+            $testPattern = [];
+            $testPattern['name'] = $body['name'] ?? null;
+            $testPattern['headquarters_zip'] = $body['headquartersZip'] ?? null;
+            $testPattern['headquarters_city'] = $body['headquartersCity'] ?? null;
+            $testPattern['allow_press'] = $body['allowPress'] ?? null;
+            $testPattern['forum_thread'] = $body['forumThread'] ?? null;
+            $testPattern['common_store_information'] = $body['commonStoreInformation'] ?? null;
+            array_filter($testPattern, static function ($var) {return $var !== null; });
+            $I->dontSeeInDatabase('fs_chain', $testPattern);
+        }
+    }
 }

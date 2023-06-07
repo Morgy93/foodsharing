@@ -20,6 +20,8 @@ class PatchStoreChain
     /**
      * Name of the chain.
      *
+     * Field does not support HTML, Markdown or multiline strings.
+     *
      * @OA\Property(example="MyChain GmbH")
      * @Assert\Length(max=120)
      *
@@ -29,7 +31,7 @@ class PatchStoreChain
      *
      * @NoMarkdown
      */
-    public ?string $name;
+    public ?string $name = null;
 
     /**
      * Indicates the cooperation status of this chain.
@@ -40,7 +42,7 @@ class PatchStoreChain
      * @OA\Property(enum={0, 1, 2}, example=2)
      * @Assert\Range (min = 0, max = 2)
      */
-    public ?int $status;
+    public ?int $status = null;
 
     /**
      * ZIP code of the chains headquater.
@@ -54,10 +56,12 @@ class PatchStoreChain
      *
      * @NoMarkdown
      */
-    public ?string $headquartersZip;
+    public ?string $headquartersZip = null;
 
     /**
      * City of the chains headquater.
+     *
+     * Field does not support HTML, Markdown or multiline strings.
      *
      * @OA\Property(example="Münster", nullable=true)
      * @Assert\Length(max=50)
@@ -68,12 +72,12 @@ class PatchStoreChain
      *
      * @NoMarkdown
      */
-    public ?string $headquartersCity;
+    public ?string $headquartersCity = null;
 
     /**
      * Whether the chain can be referred to in press releases.
      */
-    public ?bool $allowPress;
+    public ?bool $allowPress = null;
 
     /**
      * Identifier of a forum thread related to this chain.
@@ -81,10 +85,12 @@ class PatchStoreChain
      * @OA\Property(example=12345)
      * @Assert\Range (min = 0)
      */
-    public ?int $forumThread;
+    public ?int $forumThread = null;
 
     /**
      * Miscellaneous notes.
+     *
+     * Field does not support HTML, Markdown or multiline strings.
      *
      * @OA\Property(example="Cooperating since 2021", nullable=true)
      * @Assert\Length(max=200)
@@ -95,7 +101,7 @@ class PatchStoreChain
      *
      * @NoMarkdown
      */
-    public ?string $notes;
+    public ?string $notes = null;
 
     /**
      * Information about the chain to be displayed on every related stores page.
@@ -103,7 +109,7 @@ class PatchStoreChain
      * @OA\Property(example="Pickup times between 10:00 and 12:15", nullable=true)
      * @Assert\Length(max=16777215)
      */
-    public ?string $commonStoreInformation;
+    public ?string $commonStoreInformation = null;
 
     /**
      * Identifiers of key account managers.
@@ -115,5 +121,5 @@ class PatchStoreChain
      *
      * @Type("array<int>")
      */
-    public ?array $kams;
+    public ?array $kams = null;
 }

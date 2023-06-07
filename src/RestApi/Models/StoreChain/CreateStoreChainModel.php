@@ -23,6 +23,8 @@ class CreateStoreChainModel
     /**
      * Name of the chain.
      *
+     * Field does not support HTML, Markdown or multiline strings.
+     *
      * @OA\Property(example="MyChain GmbH")
      * @Assert\NotNull()
      * @Assert\Length(max=120)
@@ -64,6 +66,8 @@ class CreateStoreChainModel
     /**
      * City of the chains headquater.
      *
+     * Field does not support HTML, Markdown or multiline strings.
+     *
      * @OA\Property(example="Münster")
      * @Assert\NotNull()
      * @Assert\Length(max=50)
@@ -92,6 +96,8 @@ class CreateStoreChainModel
 
     /**
      * Miscellaneous notes.
+     *
+     * Field does not support HTML, Markdown or multiline strings.
      *
      * @OA\Property(example="Cooperating since 2021", nullable=true)
      * @Assert\Length(max=200)

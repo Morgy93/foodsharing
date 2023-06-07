@@ -39,11 +39,11 @@ class StoreChainTransactions
         $changed = false;
         $params = $this->storeChainGateway->getStoreChains($chainId)[0]->chain;
         $params->id = $chainId;
-        if (!empty($storeModel->name)) {
-            $params->name = $storeModel->name;
-            if (empty(trim(strip_tags($params->name)))) {
+        if (!is_null($storeModel->name)) {
+            if (empty(trim(strip_tags($storeModel->name)))) {
                 throw new StoreChainTransactionException(StoreChainTransactionException::EMPTY_NAME);
             }
+            $params->name = $storeModel->name;
             $changed = true;
         }
 
@@ -55,11 +55,17 @@ class StoreChainTransactions
             $params->status = $status;
             $changed = true;
         }
-        if (!empty($storeModel->headquartersZip)) {
+        if (!is_null($storeModel->headquartersZip)) {
+            if (empty(trim(strip_tags($storeModel->headquartersZip)))) {
+                throw new StoreChainTransactionException(StoreChainTransactionException::EMPTY_ZIP);
+            }
             $params->headquartersZip = $storeModel->headquartersZip;
             $changed = true;
         }
-        if (!empty($storeModel->headquartersCity)) {
+        if (!is_null($storeModel->headquartersCity)) {
+            if (empty(trim(strip_tags($storeModel->headquartersCity)))) {
+                throw new StoreChainTransactionException(StoreChainTransactionException::EMPTY_CITY);
+            }
             $params->headquartersCity = $storeModel->headquartersCity;
             $changed = true;
         }
@@ -68,14 +74,15 @@ class StoreChainTransactions
             $changed = true;
         }
         if (!empty($storeModel->forumThread)) {
+            $this->throwExceptionIfForumInvalid($storeModel->forumThread);
             $params->forumThread = $storeModel->forumThread;
             $changed = true;
         }
-        if (!empty($storeModel->notes)) {
+        if (!is_null($storeModel->notes)) {
             $params->notes = $storeModel->notes;
             $changed = true;
         }
-        if (!empty($storeModel->commonStoreInformation)) {
+        if (!is_null($storeModel->commonStoreInformation)) {
             $params->commonStoreInformation = $storeModel->commonStoreInformation;
             $changed = true;
         }
@@ -86,13 +93,11 @@ class StoreChainTransactions
 
                 return $obj;
             }, $storeModel->kams);
+            $this->throwExceptionIfKeyAccountManagerDoesNotExist($params->kams);
             $changed = true;
         }
 
         if ($changed) {
-            $this->throwExceptionIfKeyAccountManagerDoesNotExist($params->kams);
-            $this->throwExceptionIfForumInvalid($params->forumThread);
-
             $this->storeChainGateway->updateStoreChain($params, $updateKams);
 
             return true;
