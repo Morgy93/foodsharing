@@ -4,11 +4,13 @@ namespace Foodsharing\Modules\StoreChain;
 
 use Exception;
 use Foodsharing\Modules\Core\DBConstants\Region\RegionIDs;
+use Foodsharing\Modules\Core\Pagination;
 use Foodsharing\Modules\Foodsaver\DTO\FoodsaverForAvatar;
 use Foodsharing\Modules\Foodsaver\FoodsaverGateway;
 use Foodsharing\Modules\Region\ForumGateway;
 use Foodsharing\Modules\StoreChain\DTO\PatchStoreChain;
 use Foodsharing\Modules\StoreChain\DTO\StoreChain;
+use Foodsharing\Modules\StoreChain\DTO\StoreChainForChainList;
 
 class StoreChainTransactions
 {
@@ -17,6 +19,27 @@ class StoreChainTransactions
         private readonly FoodsaverGateway $foodsaverGateway,
         private readonly ForumGateway $forumGateway
     ) {
+    }
+
+    /**
+     * @return StoreChainForChainList[]
+     *
+     * @throws Exception
+     */
+    public function getStoreChains(?int $id = null, bool $details = true, Pagination $pagination = new Pagination()): array
+    {
+        $results = $this->storeChainGateway->getStoreChains($id, $pagination);
+        if (!$details) {
+            foreach ($results as &$item) {
+                $item->storeCount = null;
+                $item->chain->forumThread = null;
+                $item->chain->notes = null;
+                $item->chain->kams = null;
+                $item->chain->regionId = null;
+            }
+        }
+
+        return $results;
     }
 
     /**

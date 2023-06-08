@@ -73,7 +73,7 @@ class StoreChainRestController extends AbstractFOSRestController
         $pagination->pageSize = $paramFetcher->get('pageSize');
         $pagination->offset = $paramFetcher->get('offset');
 
-        return $this->handleView($this->view($this->gateway->getStoreChains(null, $pagination), 200));
+        return $this->handleView($this->view($this->transactions->getStoreChains(null, $this->permissions->maySeeChainDetails(), $pagination), 200));
     }
 
     /**
@@ -98,7 +98,12 @@ class StoreChainRestController extends AbstractFOSRestController
             throw new AccessDeniedHttpException();
         }
 
-        return $this->handleView($this->view($this->gateway->getStoreChains($chainId), 200));
+        $chain = $this->transactions->getStoreChains($chainId, $this->permissions->maySeeChainDetails($chainId));
+        if (empty($chain)) {
+            throw new NotFoundHttpException('Requested store chain not found.');
+        }
+
+        return $this->handleView($this->view($chain[0], 200));
     }
 
     /**

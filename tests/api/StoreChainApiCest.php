@@ -61,8 +61,8 @@ class StoreChainApiCest
         $I->addStoreTeam($this->store['id'], $this->storeManager['id'], true);
 
         $this->storeWithoutChain = $I->createStore($this->region['id'], null, null, ['kette_id' => null]);
-        $I->addStoreTeam($this->store['id'], $this->storeTeamMemberWithoutChain['id'], false);
-        $I->addStoreTeam($this->store['id'], $this->storeManagerWithoutChain['id'], true);
+        $I->addStoreTeam($this->storeWithoutChain['id'], $this->storeTeamMemberWithoutChain['id'], false);
+        $I->addStoreTeam($this->storeWithoutChain['id'], $this->storeManagerWithoutChain['id'], true);
 
         $I->addRegionMember(RegionIDs::STORE_CHAIN_GROUP, $this->storeManagerAgChainMember['id'], true);
         $this->chainMember = $I->createFoodsaver();
@@ -263,84 +263,6 @@ class StoreChainApiCest
         $I->login($this->getUserByRole($role)['email']);
         $I->haveHttpHeader('Content-Type', 'application/json');
         $I->sendGet(self::API_BASE . '/' . StoreChainApiCest::CHAIN_ID . '/stores');
-        $I->seeResponseCodeIs($forbidden);
-    }
-
-    /**
-     * Test access of user role to list store chains.
-     *
-     * Expect that user get an error 403 on HTTP level
-     *
-     * Forbidden roles:
-     * anonym
-     *
-     * @example { "role": "foodsharer", "access": false}
-     *
-     * Allowed roles:
-     * @example { "role": "verifiedFoodsaver", "access": true}
-     * @example { "role": "unverifiedFoodsaver", "access": true}
-     * @example { "role": "storeTeamMemberWithoutChain", "access": true}
-     * @example { "role": "orga", "access": true}
-     * @example { "role": "chainManager", "access": true}
-     * @example { "role": "storeManagerAgChainMember", "access": true}
-     * @example { "role": "chainMember", "access": true}
-     * @example { "role": "storeTeamMember", "access": true}
-     * @example { "role": "storeManagerWithoutChain", "access": true}
-     * @example { "role": "storeManager", "access": true}
-     * @example { "role": "chainKeyAccountManager", "access": true}
-     * @example { "role": "chainKeyAccountManagerOtherChain", "access": true}
-     */
-    public function testAccessGetStoreChainsEndpoint(ApiTester $I, Example $example)
-    {
-        $role = $example['role'];
-        $forbidden = $example['access'] ? Http::OK : Http::FORBIDDEN;
-        // Anonym
-        $I->haveHttpHeader('Content-Type', 'application/json');
-        $I->sendGet(self::API_BASE);
-        $I->seeResponseCodeIs(Http::UNAUTHORIZED);
-
-        $I->login($this->getUserByRole($role)['email']);
-        $I->haveHttpHeader('Content-Type', 'application/json');
-        $I->sendGet(self::API_BASE);
-        $I->seeResponseCodeIs($forbidden);
-    }
-
-    /**
-     * Test access of user role to store chain details (no content check).
-     *
-     * Expect that user get an error 403 on HTTP level
-     *
-     * Forbidden roles:
-     * anonym
-     *
-     * @example { "role": "foodsharer", "access": false}
-     *
-     * Allowed roles:
-     * @example { "role": "verifiedFoodsaver", "access": true}
-     * @example { "role": "unverifiedFoodsaver", "access": true}
-     * @example { "role": "storeTeamMemberWithoutChain", "access": true}
-     * @example { "role": "orga", "access": true}
-     * @example { "role": "chainManager", "access": true}
-     * @example { "role": "storeManagerAgChainMember", "access": true}
-     * @example { "role": "chainMember", "access": true}
-     * @example { "role": "storeTeamMember", "access": true}
-     * @example { "role": "storeManagerWithoutChain", "access": true}
-     * @example { "role": "storeManager", "access": true}
-     * @example { "role": "chainKeyAccountManager", "access": true}
-     * @example { "role": "chainKeyAccountManagerOtherChain", "access": true}
-     */
-    public function testAccessGetSingleStoreChainInformationEndpoint(ApiTester $I, Example $example)
-    {
-        $role = $example['role'];
-        $forbidden = $example['access'] ? Http::OK : Http::FORBIDDEN;
-        // Anonym
-        $I->haveHttpHeader('Content-Type', 'application/json');
-        $I->sendGet(self::API_BASE . '/' . StoreChainApiCest::CHAIN_ID);
-        $I->seeResponseCodeIs(Http::UNAUTHORIZED);
-
-        $I->login($this->getUserByRole($role)['email']);
-        $I->haveHttpHeader('Content-Type', 'application/json');
-        $I->sendGet(self::API_BASE . '/' . StoreChainApiCest::CHAIN_ID);
         $I->seeResponseCodeIs($forbidden);
     }
 
@@ -1006,4 +928,265 @@ class StoreChainApiCest
             $I->dontSeeInDatabase('fs_chain', $testPattern);
         }
     }
+
+    /**
+     * Test access of user role to store chain details (no content check).
+     *
+     * Expect that user get an error 403 on HTTP level
+     *
+     *
+     * Forbidden roles:
+     * anonym
+     *
+     * @example { "role": "foodsharer", "access": false}
+     * @example { "role": "verifiedFoodsaver", "access": false}
+     * @example { "role": "unverifiedFoodsaver", "access": false}
+     * @example { "role": "storeTeamMemberWithoutChain", "access": false}
+     *
+     * Allowed roles:
+     * @example { "role": "storeTeamMember", "access": true}
+     * @example { "role": "storeManagerWithoutChain", "access": true}
+     * @example { "role": "orga", "access": true}
+     * @example { "role": "chainManager", "access": true}
+     * @example { "role": "storeManagerAgChainMember", "access": true}
+     * @example { "role": "chainMember", "access": true}
+     * @example { "role": "storeManager", "access": true}
+     * @example { "role": "chainKeyAccountManager", "access": true}
+     * @example { "role": "chainKeyAccountManagerOtherChain", "access": true}
+     */
+    public function testAccessGetSingleStoreChainInformationEndpoint(ApiTester $I, Example $example)
+    {
+        $role = $example['role'];
+        $forbidden = $example['access'] ? Http::OK : Http::FORBIDDEN;
+        // Anonym
+        $I->haveHttpHeader('Content-Type', 'application/json');
+        $I->sendGet(self::API_BASE . '/' . StoreChainApiCest::CHAIN_ID);
+        $I->seeResponseCodeIs(Http::UNAUTHORIZED);
+
+        $I->login($this->getUserByRole($role)['email']);
+        $I->haveHttpHeader('Content-Type', 'application/json');
+        $I->sendGet(self::API_BASE . '/' . StoreChainApiCest::CHAIN_ID);
+        $I->seeResponseCodeIs($forbidden);
+    }
+
+    /**
+     * @example { "role": "storeTeamMember", "details": false}
+     * @example { "role": "storeManagerWithoutChain", "details": false}
+     * @example { "role": "storeManager", "details": false}
+     * @example { "role": "storeManagerAgChainMember", "details": true}
+     * @example { "role": "chainManager", "details": true}
+     * @example { "role": "chainMember", "details": true}
+     * @example { "role": "chainKeyAccountManager", "details": true}
+     * @example { "role": "chainKeyAccountManagerOtherChain", "details": true}
+     * @example { "role": "orga", "details": true}
+     */
+    public function testSeeInformationPermissionDependentForGetSingleStoreChainInformationEndpoint(ApiTester $I, Example $example)
+    {
+        $role = $example['role'];
+        $details = $example['details'];
+        $modificationDate = new DateTime('now', new DateTimeZone('Europe/Berlin'));
+        $newChain = $I->addStoreChain([
+            'name' => 'New Chain',
+            'status' => 2,
+            'headquarters_zip' => '4312',
+            'headquarters_city' => 'Ried in der Riedmark',
+            'allow_press' => true,
+            'forum_thread' => $this->chainForum['id'],
+            'notes' => 'Notizen',
+            'common_store_information' => 'Common Store information',
+            'modification_date' => $modificationDate->format('Y-m-d')
+        ]);
+        $I->haveInDatabase('fs_key_account_manager', ['foodsaver_id' => $this->chainKeyAccountManager['id'], 'chain_id' => $newChain['id']]);
+        $I->createStore($this->region['id'], null, null, ['kette_id' => $newChain['id']]);
+        $I->createStore($this->region['id'], null, null, ['kette_id' => $newChain['id']]);
+        $I->createStore($this->region['id'], null, null, ['kette_id' => $newChain['id']]);
+
+        $I->login($this->getUserByRole($role)['email']);
+        $I->haveHttpHeader('Content-Type', 'application/json');
+        $I->sendGet(self::API_BASE . '/' . $newChain['id']);
+        $I->seeResponseCodeIs(Http::OK);
+
+        $expectation = [
+            'chain' => [
+                'id' => $newChain['id'],
+                'name' => $newChain['name'],
+                'headquartersZip' => $newChain['headquarters_zip'],
+                'headquartersCity' => $newChain['headquarters_city'],
+                'status' => $newChain['status'],
+                'allowPress' => $newChain['allow_press'],
+                'commonStoreInformation' => $newChain['common_store_information'],
+                'modificationDate' => $modificationDate->format('Y-m-d\T00:00:00+02:00'),
+                'forumThread' => $details ? $newChain['forum_thread'] : null,
+                'notes' => $details ? $newChain['notes'] : null,
+                'kams' => $details ? [
+                    [
+                    'id' => $this->chainKeyAccountManager['id'],
+                    'name' => $this->chainKeyAccountManager['name'],
+                    'avatar' => null
+                    ]
+                ] : null,
+                'regionId' => $details ? RegionIDs::STORE_CHAIN_GROUP : null
+            ],
+            'storeCount' => $details ? 3 : null
+        ];
+
+        $I->seeResponseContainsJson($expectation);
+    }
+
+    /**
+     * Test access of user role to list store chains.
+     *
+     * Expect that user get an error 403 on HTTP level
+     *
+     * Forbidden roles:
+     * anonym
+     *
+     * @example { "role": "foodsharer", "access": false}
+     * @example { "role": "verifiedFoodsaver", "access": false}
+     * @example { "role": "unverifiedFoodsaver", "access": false}
+     * @example { "role": "storeTeamMemberWithoutChain", "access": false}
+     *
+     * Allowed roles:
+     * @example { "role": "orga", "access": true}
+     * @example { "role": "chainManager", "access": true}
+     * @example { "role": "storeManagerAgChainMember", "access": true}
+     * @example { "role": "chainMember", "access": true}
+     * @example { "role": "storeTeamMember", "access": true}
+     * @example { "role": "storeManagerWithoutChain", "access": true}
+     * @example { "role": "storeManager", "access": true}
+     * @example { "role": "chainKeyAccountManager", "access": true}
+     * @example { "role": "chainKeyAccountManagerOtherChain", "access": true}
+     */
+    public function testAccessGetStoreChainsEndpoint(ApiTester $I, Example $example)
+    {
+        $role = $example['role'];
+        $forbidden = $example['access'] ? Http::OK : Http::FORBIDDEN;
+        // Anonym
+        $I->haveHttpHeader('Content-Type', 'application/json');
+        $I->sendGet(self::API_BASE);
+        $I->seeResponseCodeIs(Http::UNAUTHORIZED);
+
+        $I->login($this->getUserByRole($role)['email']);
+        $I->haveHttpHeader('Content-Type', 'application/json');
+        $I->sendGet(self::API_BASE);
+        $I->seeResponseCodeIs($forbidden);
+    }
+
+    /**
+     * Tests the list all storechain endpoint that the user groups only is the information
+     * they are allowed to see.
+     *
+     * Only see
+     *
+     * @example { "role": "storeTeamMember", "details": false}
+     * @example { "role": "storeManagerWithoutChain", "details": false}
+     * @example { "role": "storeManager", "details": false}
+     * @example { "role": "storeManagerAgChainMember", "details": true}
+     * @example { "role": "chainManager", "details": true}
+     * @example { "role": "chainMember", "details": true}
+     * @example { "role": "chainKeyAccountManager", "details": true}
+     * @example { "role": "chainKeyAccountManagerOtherChain", "details": true}
+     * @example { "role": "orga", "details": true}
+     */
+    public function testInformationForGetAllStoreChainInformationEndpoint(ApiTester $I, Example $example)
+    {
+        $role = $example['role'];
+        $details = $example['details'];
+
+        $modificationDate = new DateTime('now', new DateTimeZone('Europe/Berlin'));
+
+        $newChain = $I->addStoreChain([
+            'name' => 'New Chain',
+            'status' => 2,
+            'headquarters_zip' => '4312',
+            'headquarters_city' => 'Ried in der Riedmark',
+            'allow_press' => true,
+            'forum_thread' => $this->chainForum['id'],
+            'notes' => 'Notizen',
+            'common_store_information' => 'Common Store information',
+            'modification_date' => $modificationDate->format('Y-m-d')
+        ]);
+        $I->haveInDatabase('fs_key_account_manager', ['foodsaver_id' => $this->chainKeyAccountManager['id'], 'chain_id' => $newChain['id']]);
+        $this->store = $I->createStore($this->region['id'], null, null, ['kette_id' => $newChain['id']]);
+        $this->store = $I->createStore($this->region['id'], null, null, ['kette_id' => $newChain['id']]);
+        $this->store = $I->createStore($this->region['id'], null, null, ['kette_id' => $newChain['id']]);
+
+        $newChain1 = $I->addStoreChain([
+            'name' => 'New Chain 1',
+            'status' => 2,
+            'headquarters_zip' => '4312',
+            'headquarters_city' => 'Ried in der Riedmark',
+            'allow_press' => true,
+            'forum_thread' => $this->chainForum['id'],
+            'notes' => 'Notizen',
+            'common_store_information' => 'Common Store information',
+
+            'modification_date' => $modificationDate->format('Y-m-d')
+        ]);
+        $I->haveInDatabase('fs_key_account_manager', ['foodsaver_id' => $this->chainKeyAccountManager['id'], 'chain_id' => $newChain1['id']]);
+        $this->store = $I->createStore($this->region['id'], null, null, ['kette_id' => $newChain1['id']]);
+        $this->store = $I->createStore($this->region['id'], null, null, ['kette_id' => $newChain1['id']]);
+
+        $I->login($this->getUserByRole($role)['email']);
+        $I->haveHttpHeader('Content-Type', 'application/json');
+        $I->sendGet(self::API_BASE);
+        $I->seeResponseCodeIs(Http::OK);
+        $expectation = [[
+            'chain' => [
+                'id' => $newChain['id'],
+                'name' => $newChain['name'],
+                'headquartersZip' => $newChain['headquarters_zip'],
+                'headquartersCity' => $newChain['headquarters_city'],
+                'status' => $newChain['status'],
+                'allowPress' => $newChain['allow_press'],
+                'commonStoreInformation' => $newChain['common_store_information'],
+                'modificationDate' => $modificationDate->format('Y-m-d\T00:00:00+02:00'),
+                'forumThread' => $details ? $newChain['forum_thread'] : null,
+                'notes' => $details ? $newChain['notes'] : null,
+                'kams' => $details ? [
+                    [
+                    'id' => $this->chainKeyAccountManager['id'],
+                    'name' => $this->chainKeyAccountManager['name'],
+                    'avatar' => null
+                    ]
+                ] : null,
+                'regionId' => $details ? RegionIDs::STORE_CHAIN_GROUP : null
+            ],
+            'storeCount' => $details ? 3 : null
+        ],
+        [
+            'chain' => [
+                'id' => $newChain1['id'],
+                'name' => $newChain1['name'],
+                'headquartersZip' => $newChain1['headquarters_zip'],
+                'headquartersCity' => $newChain1['headquarters_city'],
+                'status' => $newChain1['status'],
+                'allowPress' => $newChain1['allow_press'],
+                'commonStoreInformation' => $newChain1['common_store_information'],
+                'modificationDate' => $modificationDate->format('Y-m-d\T00:00:00+02:00'),
+                'forumThread' => $details ? $newChain1['forum_thread'] : null,
+                'notes' => $details ? $newChain1['notes'] : null,
+                'kams' => $details ? [
+                    [
+                    'id' => $this->chainKeyAccountManager['id'],
+                    'name' => $this->chainKeyAccountManager['name'],
+                    'avatar' => null
+                    ]
+                ] : null,
+                'regionId' => $details ? RegionIDs::STORE_CHAIN_GROUP : null
+            ],
+            'storeCount' => $details ? 2 : null
+        ]
+        ];
+
+        $I->seeResponseContainsJson($expectation);
+    }
+
+    /*
+     * Test pagination for list of store chain
+     */
+
+    /*
+      * Test list sotres of store chain
+      */
 }

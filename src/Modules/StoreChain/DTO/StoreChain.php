@@ -73,10 +73,12 @@ class StoreChain
     /**
      * Identifier of a forum thread related to this chain.
      *
+     * Only visible to members of AG store chain
+     *
      * @OA\Property(example=12345)
      * @Assert\Range (min = 0)
      */
-    public int $forumThread;
+    public ?int $forumThread;
 
     /**
      * Miscellaneous notes.
@@ -106,7 +108,7 @@ class StoreChain
      *        @OA\Items(ref=@Model(type=FoodsaverForAvatar::class))
      *      )
      */
-    public array $kams = [];
+    public ?array $kams = [];
 
     /**
      * Date of last modification.

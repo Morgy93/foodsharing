@@ -600,6 +600,22 @@ class StoreGateway extends BaseGateway
         ]);
     }
 
+    public function isStoreTeamMemberOfStoreChainStore($fsId): bool
+    {
+        return $this->db->fetch('
+				SELECT COUNT(*) as count
+				FROM `fs_betrieb_team` t
+				INNER JOIN `fs_betrieb` b
+				     	ON b.id = t.betrieb_id
+				WHERE	t.foodsaver_id = :fsId
+				AND 	t.active = :membershipStatus
+                AND     b.kette_id IS NOT NULL
+		', [
+            ':fsId' => $fsId,
+            ':membershipStatus' => MembershipStatus::MEMBER
+        ])['count'] != 0;
+    }
+
     public function getBetriebSpringer($storeId): array
     {
         return $this->db->fetchAll('

@@ -19,14 +19,7 @@ class StoreChainForChainList
      *
      * @OA\Property(example=5)
      */
-    public int $storeCount;
-
-    /**
-     * The identifier of the region of AG.
-     *
-     * @OA\Property(example=335)
-     */
-    public int $regionId;
+    public ?int $storeCount;
 
     public static function createFromArray(array $data): StoreChainForChainList
     {
