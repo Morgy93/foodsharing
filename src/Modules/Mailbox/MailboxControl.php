@@ -133,11 +133,8 @@ class MailboxControl extends Control
 
     public function manage()
     {
-        $this->pageHelper->addBread($this->translator->trans('mailbox.manage'));
         if ($this->mailboxPermissions->mayManageMailboxes()) {
-
             $this->pageHelper->addContent($this->view->vueComponent('vue-mailbox-manage', 'MailboxManage'));
-
         } else {
             $this->flashMessageHelper->error($this->translator->trans('mailbox.not-allowed'));
             $this->routeHelper->goPageAndExit('dashboard');

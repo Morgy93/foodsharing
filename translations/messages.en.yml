@@ -635,7 +635,7 @@ mailbox:
   trash: Trash
   sent: Sent
   inbox: Inbox
-  manage: Mailbox manager
+  manage: Mailbox Manager
   member: Mailbox user
   actions: Options
   title: Mailboxes
