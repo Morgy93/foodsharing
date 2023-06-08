@@ -33,6 +33,7 @@
     "leaflet.markercluster": "^1.5.3",
     "libphonenumber-js": "^1.10.19",
     "liquor-tree": "^0.2.70",
+    "intersection-observer": "^0.12.2",
     "markdown-it": "^12.3.2",
     "relative-time-format": "^1.1.6",
     "sass": "~1.55.0",

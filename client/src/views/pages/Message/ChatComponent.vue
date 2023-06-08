@@ -71,6 +71,10 @@
 </template>
 
 <script>
+if (!('IntersectionObserver' in window)) {
+  import('intersection-observer')
+}
+
 import { register } from 'vue-advanced-chat'
 
 import Avatar from '@/components/Avatar.vue'
