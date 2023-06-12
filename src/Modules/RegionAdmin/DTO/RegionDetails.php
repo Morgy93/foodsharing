@@ -42,7 +42,7 @@ class RegionDetails
         string $mailbox,
         string $mailboxName,
         array $storeMarkers
-    ) {
+    ): RegionDetails {
         $r = new RegionDetails();
         $r->id = $id;
         $r->name = $name;
