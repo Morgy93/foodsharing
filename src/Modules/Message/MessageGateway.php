@@ -160,6 +160,27 @@ final class MessageGateway extends BaseGateway
         return $res;
     }
 
+    public function getCorrectUserIdsForMessages(array $messageIds): array
+    {
+        $placeholders = $this->db->generatePlaceholders(count($messageIds));
+        $results = $this->db->fetchAll('
+        SELECT id, foodsaver_id
+        FROM fs_msg
+        WHERE id IN (' . $placeholders . ')',
+            $messageIds
+        );
+
+        $correctFoodsaverIds = [];
+        foreach ($results as $result) {
+            $messageId = $result['id'];
+            $foodsaverId = $result['foodsaver_id'];
+            $correctFoodsaverIds[$messageId] = $foodsaverId;
+        }
+
+        return $correctFoodsaverIds;
+    }
+
+
     /**
      * Renames an Conversation.
      */

@@ -196,6 +196,8 @@ class MessageTransactions
             $offset
         );
 
+        $conversations = $this->fixMembersForConversations($conversations);
+
         $members = [];
         foreach ($conversations as $conversation) {
             $members = array_merge($conversation->members, $members);
@@ -209,4 +211,33 @@ class MessageTransactions
             'profiles' => $profiles
         ];
     }
+
+    private function fixMembersForConversations(array $conversations): array
+    {
+        $messageIdsToUpdate = [];
+        foreach ($conversations as $conversation) {
+            if ($conversation->lastMessage && $conversation->lastMessage->id) {
+                $messageIdsToUpdate[] = $conversation->lastMessage->id;
+            }
+        }
+
+        // Entfernen Sie Duplikate aus der Liste der Nachrichten-IDs
+        $messageIdsToUpdate = array_unique($messageIdsToUpdate);
+
+        // Abfrage der richtigen Benutzer-IDs basierend auf den Nachrichten-IDs
+        $correctUserIds = $this->messageGateway->getCorrectUserIdsForMessages($messageIdsToUpdate);
+
+        // Aktualisieren der Konversationsobjekte mit den richtigen Benutzer-IDs
+        foreach ($conversations as $conversation) {
+            if ($conversation->lastMessage && $conversation->lastMessage->id) {
+                $messageId = $conversation->lastMessage->id;
+                if (isset($correctUserIds[$messageId])) {
+                    $conversation->members[] = $correctUserIds[$messageId];
+                }
+            }
+        }
+
+        return $conversations;
+    }
+
 }
