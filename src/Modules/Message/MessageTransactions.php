@@ -240,6 +240,10 @@ class MessageTransactions
                     if (!in_array($correctUserIds[$messageId], $conversation->members)) {
                         $conversation->members[] = $correctUserIds[$messageId];
                     }
+
+                    if ($conversation->lastMessage->authorId !== $correctUserIds[$messageId]) {
+                        $conversation->lastMessage->authorId = $correctUserIds[$messageId];
+                    }
                 }
             }
         }
