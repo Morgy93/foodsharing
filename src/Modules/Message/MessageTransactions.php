@@ -232,12 +232,18 @@ class MessageTransactions
             if ($conversation->lastMessage && $conversation->lastMessage->id) {
                 $messageId = $conversation->lastMessage->id;
                 if (isset($correctUserIds[$messageId])) {
-                    $conversation->members[] = $correctUserIds[$messageId];
+                    // Entfernen Sie den leeren "0"-Eintrag, falls vorhanden
+                    $conversation->members = array_filter($conversation->members, function ($memberId) {
+                        return $memberId !== 0;
+                    });
+                    // Fügen Sie die richtige Benutzer-ID zur Mitgliederliste hinzu, wenn sie nicht bereits enthalten ist
+                    if (!in_array($correctUserIds[$messageId], $conversation->members)) {
+                        $conversation->members[] = $correctUserIds[$messageId];
+                    }
                 }
             }
         }
 
         return $conversations;
     }
-
 }

@@ -180,7 +180,6 @@ final class MessageGateway extends BaseGateway
         return $correctFoodsaverIds;
     }
 
-
     /**
      * Renames an Conversation.
      */
