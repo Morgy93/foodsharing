@@ -1072,6 +1072,30 @@ class StoreChainApiCest
         $I->seeResponseCodeIs($forbidden);
     }
 
+    private function createStoreChain($I, DateTime $modificationDate, int $countStores, array $keyAccountManagerIds = [])
+    {
+        $seed = rand();
+        $newChain = $I->addStoreChain([
+            'name' => 'New Chain ' . $seed,
+            'status' => 2,
+            'headquarters_zip' => '4312',
+            'headquarters_city' => 'Ried in der Riedmark',
+            'allow_press' => true,
+            'forum_thread' => $this->chainForum['id'],
+            'notes' => 'Notizen',
+            'common_store_information' => 'Common Store information',
+            'modification_date' => $modificationDate->format('Y-m-d')
+        ]);
+        foreach ($keyAccountManagerIds as $keyAccountManagerId) {
+            $I->haveInDatabase('fs_key_account_manager', ['foodsaver_id' => $keyAccountManagerId, 'chain_id' => $newChain['id']]);
+        }
+        for ($i = 0; $i < $countStores; ++$i) {
+            $this->store = $I->createStore($this->region['id'], null, null, ['kette_id' => $newChain['id']]);
+        }
+
+        return $newChain;
+    }
+
     /**
      * Tests the list all storechain endpoint that the user groups only is the information
      * they are allowed to see.
@@ -1095,37 +1119,8 @@ class StoreChainApiCest
 
         $modificationDate = new DateTime('now', new DateTimeZone('Europe/Berlin'));
 
-        $newChain = $I->addStoreChain([
-            'name' => 'New Chain',
-            'status' => 2,
-            'headquarters_zip' => '4312',
-            'headquarters_city' => 'Ried in der Riedmark',
-            'allow_press' => true,
-            'forum_thread' => $this->chainForum['id'],
-            'notes' => 'Notizen',
-            'common_store_information' => 'Common Store information',
-            'modification_date' => $modificationDate->format('Y-m-d')
-        ]);
-        $I->haveInDatabase('fs_key_account_manager', ['foodsaver_id' => $this->chainKeyAccountManager['id'], 'chain_id' => $newChain['id']]);
-        $this->store = $I->createStore($this->region['id'], null, null, ['kette_id' => $newChain['id']]);
-        $this->store = $I->createStore($this->region['id'], null, null, ['kette_id' => $newChain['id']]);
-        $this->store = $I->createStore($this->region['id'], null, null, ['kette_id' => $newChain['id']]);
-
-        $newChain1 = $I->addStoreChain([
-            'name' => 'New Chain 1',
-            'status' => 2,
-            'headquarters_zip' => '4312',
-            'headquarters_city' => 'Ried in der Riedmark',
-            'allow_press' => true,
-            'forum_thread' => $this->chainForum['id'],
-            'notes' => 'Notizen',
-            'common_store_information' => 'Common Store information',
-
-            'modification_date' => $modificationDate->format('Y-m-d')
-        ]);
-        $I->haveInDatabase('fs_key_account_manager', ['foodsaver_id' => $this->chainKeyAccountManager['id'], 'chain_id' => $newChain1['id']]);
-        $this->store = $I->createStore($this->region['id'], null, null, ['kette_id' => $newChain1['id']]);
-        $this->store = $I->createStore($this->region['id'], null, null, ['kette_id' => $newChain1['id']]);
+        $newChain = $this->createStoreChain($I, $modificationDate, 3, [$this->chainKeyAccountManager['id']]);
+        $newChain1 = $this->createStoreChain($I, $modificationDate, 2, [$this->chainKeyAccountManager['id']]);
 
         $I->login($this->getUserByRole($role)['email']);
         $I->haveHttpHeader('Content-Type', 'application/json');
@@ -1185,6 +1180,71 @@ class StoreChainApiCest
     /*
      * Test pagination for list of store chain
      */
+   public function testInformationForGetAllStoreChainPaginationEndpoint(ApiTester $I)
+   {
+       $role = 'orga';
+
+       $modificationDate = new DateTime('now', new DateTimeZone('Europe/Berlin'));
+
+       // Already existing 1
+       // Already existing 2
+       $newChain = $this->createStoreChain($I, $modificationDate, 3, [$this->chainKeyAccountManager['id']]);
+       $newChain1 = $this->createStoreChain($I, $modificationDate, 2, [$this->chainKeyAccountManager['id']]);
+       $newChain2 = $this->createStoreChain($I, $modificationDate, 1, [$this->chainKeyAccountManager['id']]);
+       $newChain3 = $this->createStoreChain($I, $modificationDate, 0, [$this->chainKeyAccountManager['id']]);
+
+       $I->login($this->getUserByRole($role)['email']);
+       $I->haveHttpHeader('Content-Type', 'application/json');
+
+       // Test unlimited
+       $I->sendGet(self::API_BASE, ['pageSize' => 0, 'offset' => 0]);
+       $I->seeResponseCodeIs(Http::OK);
+       $I->seeResponseIsJson();
+       $storeCounts = $I->grabDataFromResponseByJsonPath('$..storeCount');
+       $I->assertEquals(1, $storeCounts[0]);
+       $I->assertEquals(0, $storeCounts[1]);
+       $I->assertEquals(3, $storeCounts[2]);
+       $I->assertEquals(2, $storeCounts[3]);
+       $I->assertEquals(1, $storeCounts[4]);
+       $I->assertEquals(0, $storeCounts[5]);
+
+       // Test size limit with offset
+       $I->sendGet(self::API_BASE, ['pageSize' => 2, 'offset' => 2]);
+       $I->seeResponseCodeIs(Http::OK);
+       $I->seeResponseIsJson();
+       $storeCounts = $I->grabDataFromResponseByJsonPath('$..storeCount');
+       $I->assertEquals(3, $storeCounts[0]);
+       $I->assertEquals(2, $storeCounts[1]);
+
+       // Test size limit
+       $I->sendGet(self::API_BASE, ['pageSize' => 1]);
+       $I->seeResponseCodeIs(Http::OK);
+       $I->seeResponseIsJson();
+       $storeCounts = $I->grabDataFromResponseByJsonPath('$..storeCount');
+       $I->assertEquals(1, $storeCounts[0]);
+
+       $I->sendGet(self::API_BASE, ['pageSize' => 2]);
+       $I->seeResponseCodeIs(Http::OK);
+       $I->seeResponseIsJson();
+       $storeCounts = $I->grabDataFromResponseByJsonPath('$..storeCount');
+       $I->assertEquals(1, $storeCounts[0]);
+       $I->assertEquals(0, $storeCounts[1]);
+
+       // Test size limit with offset
+       $I->sendGet(self::API_BASE, ['pageSize' => 2, 'offset' => 2]);
+       $I->seeResponseCodeIs(Http::OK);
+       $I->seeResponseIsJson();
+       $storeCounts = $I->grabDataFromResponseByJsonPath('$..storeCount');
+       $I->assertEquals(3, $storeCounts[0]);
+       $I->assertEquals(2, $storeCounts[1]);
+
+       // Test partial output on end of storechain table
+       $I->sendGet(self::API_BASE, ['pageSize' => 2, 'offset' => 5]);
+       $I->seeResponseCodeIs(Http::OK);
+       $I->seeResponseIsJson();
+       $storeCounts = $I->grabDataFromResponseByJsonPath('$..storeCount');
+       $I->assertEquals(0, $storeCounts[0]);
+   }
 
     /*
       * Test list sotres of store chain

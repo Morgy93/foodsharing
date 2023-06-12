@@ -108,6 +108,7 @@ class StoreChainGateway extends BaseGateway
 				s.`kette_id` = c.`id`
 			' . $where . '
 			GROUP BY c.`id`
+            ORDER BY c.id
 		' . $pagination->buildSqlLimit(), $pagination->addSqlLimitParameters(!is_null($id) ? ['chainId' => $id] : []));
 
         $chains = [];
