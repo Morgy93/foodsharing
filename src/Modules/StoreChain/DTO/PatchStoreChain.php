@@ -23,7 +23,7 @@ class PatchStoreChain
      * Field does not support HTML, Markdown or multiline strings.
      *
      * @OA\Property(example="MyChain GmbH")
-     * @Assert\Length(max=120)
+     * @Assert\Length(min=1, max=120)
      *
      * @NoHtml
      *
@@ -48,7 +48,7 @@ class PatchStoreChain
      * ZIP code of the chains headquater.
      *
      * @OA\Property(example="48149", nullable=true)
-     * @Assert\Length(max=5)
+     * @Assert\Length(min=1, max=5)
      *
      * @NoHtml
      *
@@ -64,7 +64,7 @@ class PatchStoreChain
      * Field does not support HTML, Markdown or multiline strings.
      *
      * @OA\Property(example="Münster", nullable=true)
-     * @Assert\Length(max=50)
+     * @Assert\Length(min=1, max=50)
      *
      * @NoHtml
      *

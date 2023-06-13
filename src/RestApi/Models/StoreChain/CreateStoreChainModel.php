@@ -16,7 +16,7 @@ use Symfony\Component\Validator\Constraints as Assert;
 /**
  * Class that represents the data of a store chain, in a format in which it is sent to the client.
  *
- * @OA\Schema(required={"id", "name", "headquartersZip", "headquartersCity", "forumThread"})
+ * @OA\Schema(required={"id", "name", "headquartersZip", "headquartersCity", "forumThread", "status", "allowPress" })
  */
 class CreateStoreChainModel
 {
@@ -27,7 +27,7 @@ class CreateStoreChainModel
      *
      * @OA\Property(example="MyChain GmbH")
      * @Assert\NotNull()
-     * @Assert\Length(max=120)
+     * @Assert\Length(min=1, max=120)
      *
      * @NoHtml
      *
@@ -44,15 +44,16 @@ class CreateStoreChainModel
      * - '2' - Cooperating.
      *
      * @OA\Property(enum={0, 1, 2}, example=2)
+     * @Assert\NotNull()
      * @Assert\Range (min = 0, max = 2)
      */
-    public ?int $status = 0;
+    public ?int $status = null;
 
     /**
      * ZIP code of the chains headquater.
      *
      * @OA\Property(example="48149")
-     * @Assert\Length(max=5)
+     * @Assert\Length(min=1, max=5)
      * @Assert\NotNull()
      *
      * @NoHtml
@@ -70,7 +71,7 @@ class CreateStoreChainModel
      *
      * @OA\Property(example="Münster")
      * @Assert\NotNull()
-     * @Assert\Length(max=50)
+     * @Assert\Length(min=1, max=50)
      *
      * @NoHtml
      *
@@ -82,14 +83,16 @@ class CreateStoreChainModel
 
     /**
      * Whether the chain can be referred to in press releases.
+     *
+     * @Assert\NotNull()
      */
-    public ?bool $allowPress = false;
+    public ?bool $allowPress = null;
 
     /**
      * Identifier of a forum thread related to this chain.
      *
      * @OA\Property(example=12345)
-     * @Assert\Range (min = 0)
+     * @Assert\Range (min=0)
      * @Assert\NotNull()
      */
     public ?int $forumThread = null;

@@ -6,6 +6,7 @@ class StoreChainTransactionException extends \Exception
 {
     public const INVALID_STORECHAIN_ID = 'Store chain Id is not valid.';
     public const KEY_ACCOUNT_MANAGER_ID_NOT_EXISTS = 'Store chain key account manager does not exist.';
+    public const KEY_ACCOUNT_MANAGER_ID_NOT_IN_GROUP = 'Store chain key account manager belong to AG Storechain.';
     public const THREAD_ID_NOT_EXISTS = 'Store chain thread does not exist.';
     public const WRONG_FORUM = 'Thread is from wrong forum.';
     public const EMPTY_NAME = 'Name can not be empty';

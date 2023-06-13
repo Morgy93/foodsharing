@@ -8,6 +8,7 @@ use Foodsharing\Modules\Core\Pagination;
 use Foodsharing\Modules\Foodsaver\DTO\FoodsaverForAvatar;
 use Foodsharing\Modules\Foodsaver\FoodsaverGateway;
 use Foodsharing\Modules\Region\ForumGateway;
+use Foodsharing\Modules\Region\RegionGateway;
 use Foodsharing\Modules\StoreChain\DTO\PatchStoreChain;
 use Foodsharing\Modules\StoreChain\DTO\StoreChain;
 use Foodsharing\Modules\StoreChain\DTO\StoreChainForChainList;
@@ -17,7 +18,8 @@ class StoreChainTransactions
     public function __construct(
         private readonly StoreChainGateway $storeChainGateway,
         private readonly FoodsaverGateway $foodsaverGateway,
-        private readonly ForumGateway $forumGateway
+        private readonly ForumGateway $forumGateway,
+        private readonly RegionGateway $regionGateway
     ) {
     }
 
@@ -47,7 +49,7 @@ class StoreChainTransactions
      */
     public function addStoreChain(StoreChain $storeData): int
     {
-        $this->throwExceptionIfKeyAccountManagerDoesNotExist($storeData->kams);
+        $this->throwExceptionIfKeyAccountManagerIsInvalid($storeData->kams);
         $this->throwExceptionIfForumInvalid($storeData->forumThread);
 
         return $this->storeChainGateway->addStoreChain($storeData);
@@ -116,7 +118,7 @@ class StoreChainTransactions
 
                 return $obj;
             }, $storeModel->kams);
-            $this->throwExceptionIfKeyAccountManagerDoesNotExist($params->kams);
+            $this->throwExceptionIfKeyAccountManagerIsInvalid($params->kams);
             $changed = true;
         }
 
@@ -129,11 +131,17 @@ class StoreChainTransactions
         }
     }
 
-    private function throwExceptionIfKeyAccountManagerDoesNotExist($kams)
+    private function throwExceptionIfKeyAccountManagerIsInvalid($kams)
     {
         $ids = array_map(function ($item) { return $item->id; }, $kams);
         if (!$this->foodsaverGateway->foodsaversExist($ids)) {
             throw new StoreChainTransactionException(StoreChainTransactionException::KEY_ACCOUNT_MANAGER_ID_NOT_EXISTS);
+        }
+
+        foreach ($ids as $id) {
+            if (!$this->regionGateway->hasMember($id, RegionIDs::STORE_CHAIN_GROUP)) {
+                throw new StoreChainTransactionException(StoreChainTransactionException::KEY_ACCOUNT_MANAGER_ID_NOT_IN_GROUP);
+            }
         }
     }
 

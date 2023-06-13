@@ -148,6 +148,17 @@ class StoreChainApiCest
         return $user;
     }
 
+    private function getRandomString(int $n): string
+    {
+        $randomString = '';
+
+        for ($i = 0; $i < $n; ++$i) {
+            $randomString .= rand(0, 9);
+        }
+
+        return $randomString;
+    }
+
     /**
      * Test access of user to create store chain.
      *
@@ -185,45 +196,6 @@ class StoreChainApiCest
         $I->login($this->getUserByRole($role)['email']);
         $I->haveHttpHeader('Content-Type', 'application/json');
         $I->sendPOST(self::API_BASE);
-        $I->seeResponseCodeIs($responseCode);
-    }
-
-    /**
-     * Test access of user to edit store chain.
-     *
-     * Expect that user get an error 403 on HTTP level
-     *
-     * Forbidden roles:
-     * anonym
-     *
-     * @example { "role": "foodsharer", "access": false}
-     * @example { "role": "verifiedFoodsaver", "access": false}
-     * @example { "role": "unverifiedFoodsaver", "access": false}
-     * @example { "role": "storeTeamMemberWithoutChain", "access": false}
-     * @example { "role": "storeManagerWithoutChain", "access": false}
-     * @example { "role": "storeTeamMember", "access": false}
-     * @example { "role": "storeManager", "access": false}
-     * @example { "role": "storeManagerAgChainMember", "access": false}
-     * @example { "role": "chainMember", "access": false}
-     * @example { "role": "chainKeyAccountManagerOtherChain", "access": false}
-     * Allowed roles:
-     * @example { "role": "orga", "access": true}
-     * @example { "role": "chainManager", "access": true}
-     * @example { "role": "chainKeyAccountManager", "access": true}
-     */
-    public function canAccessUpdateChainPATCHEndpoint(ApiTester $I, Example $example)
-    {
-        $role = $example['role'];
-        $responseCode = $example['access'] ? Http::BAD_REQUEST : Http::FORBIDDEN;
-
-        // Anonym
-        $I->haveHttpHeader('Content-Type', 'application/json');
-        $I->sendPATCH(self::API_BASE . '/' . StoreChainApiCest::CHAIN_ID);
-        $I->seeResponseCodeIs(Http::UNAUTHORIZED);
-
-        $I->login($this->getUserByRole($role)['email']);
-        $I->haveHttpHeader('Content-Type', 'application/json');
-        $I->sendPATCH(self::API_BASE . '/' . StoreChainApiCest::CHAIN_ID);
         $I->seeResponseCodeIs($responseCode);
     }
 
@@ -312,9 +284,11 @@ class StoreChainApiCest
             self::API_BASE,
             [
                'name' => 'New Chain minimal',
+               'status' => 1,
                'headquartersZip' => '4312',
                'headquartersCity' => 'Ried in der Riedmark',
                'forumThread' => $this->chainForum['id'],
+               'allowPress' => true,
             ]
         );
         $I->seeResponseCodeIs(Http::CREATED);
@@ -322,10 +296,10 @@ class StoreChainApiCest
 
         $id = $I->grabFromDatabase('fs_chain', 'id', [
             'name' => 'New Chain minimal',
-            'status' => 0,
+            'status' => 1,
             'headquarters_zip' => '4312',
             'headquarters_city' => 'Ried in der Riedmark',
-            'allow_press' => false,
+            'allow_press' => true,
             'forum_thread' => $this->chainForum['id'],
             'notes' => null,
             'common_store_information' => null]);
@@ -338,15 +312,15 @@ class StoreChainApiCest
                 'chain' => [
                   'id' => $id,
                   'name' => 'New Chain minimal',
-                  'status' => 0,
+                  'status' => 1,
                   'headquartersZip' => '4312',
                   'headquartersCity' => 'Ried in der Riedmark',
-                  'allowPress' => false,
+                  'allowPress' => true,
                   'forumThread' => $this->chainForum['id'],
                   'notes' => null,
                   'commonStoreInformation' => null,
                   'kams' => [],
-                    'modificationDate' => $modificationDate->format('c')
+                  'modificationDate' => $modificationDate->format('c')
                 ],
                 'storeCount' => 0
         ]);
@@ -364,12 +338,24 @@ class StoreChainApiCest
             'headquartersZip' => '4312',
             'headquartersCity' => 'Ried in der Riedmark',
             'forumThread' => $this->chainForum['id'],
+            'status' => 2,
+            'allowPress' => true
         ];
         $requestBodies[] = [
             'name' => "<a href='test'>invalid name</a>",
             'headquartersZip' => '4312',
             'headquartersCity' => 'Ried in der Riedmark',
             'forumThread' => $this->chainForum['id'],
+            'status' => 2,
+            'allowPress' => true
+        ];
+        $requestBodies[] = [
+            'name' => '',
+            'headquartersZip' => '4312',
+            'headquartersCity' => 'empty name',
+            'forumThread' => $this->chainForum['id'],
+            'status' => 2,
+            'allowPress' => true
         ];
 
         // Invalid headquarter zip
@@ -378,19 +364,51 @@ class StoreChainApiCest
             'headquartersZip' => '4312123',
             'headquartersCity' => 'Ried in der Riedmark',
             'forumThread' => $this->chainForum['id'],
+            'status' => 2,
+            'allowPress' => true
         ];
-        // Missing zip
+        $requestBodies[] = [
+            'name' => 'empty',
+            'headquartersZip' => '',
+            'headquartersCity' => 'Ried in der Riedmark',
+            'forumThread' => $this->chainForum['id'],
+            'status' => 2,
+            'allowPress' => true
+        ];
+        // Missing headquarter zip
         $requestBodies[] = [
             'name' => 'missingZip',
             'headquartersCity' => 'Ried in der Riedmark',
             'forumThread' => $this->chainForum['id'],
+            'status' => 2,
+            'allowPress' => true
         ];
 
-        // missing city name
+        // missing headquarter city name
         $requestBodies[] = [
             'name' => 'missingCityName',
             'headquartersZip' => '4312',
             'forumThread' => $this->chainForum['id'],
+            'status' => 2,
+            'allowPress' => true
+        ];
+
+        // to long headquarter city name
+        $requestBodies[] = [
+            'name' => 'toLongCityName',
+            'headquartersZip' => '4312',
+            'headquartersCity' => $this->getRandomString(51),
+            'forumThread' => $this->chainForum['id'],
+            'status' => 2,
+            'allowPress' => true
+        ];
+        $requestBodies[] = [
+            'name' => 'emptCityName',
+            'headquartersZip' => '4312',
+            'headquartersCity' => $this->getRandomString(51),
+            'forumThread' => $this->chainForum['id'],
+            'status' => 2,
+            'allowPress' => true
         ];
 
         // invalid forum
@@ -399,17 +417,90 @@ class StoreChainApiCest
             'headquartersZip' => '4312',
             'headquartersCity' => 'Ried in der Riedmark',
             'forumThread' => $this->chainForum['id'] + 1,
+            'status' => 2,
+            'allowPress' => true
         ];
         $requestBodies[] = [
             'name' => 'missingForum',
             'headquartersZip' => '4312',
             'headquartersCity' => 'Ried in der Riedmark',
+            'status' => 2,
+            'allowPress' => true
         ];
         $requestBodies[] = [
             'name' => 'InvalidForum',
             'headquartersZip' => '4312',
             'headquartersCity' => 'Ried in der Riedmark',
             'forumThread' => 'a',
+            'status' => 2,
+            'allowPress' => true
+        ];
+
+        // Invalid status
+        $requestBodies[] = [
+            'name' => 'Status out of range',
+            'headquartersZip' => '4312',
+            'headquartersCity' => 'Ried in der Riedmark',
+            'forumThread' => $this->chainForum['id'],
+            'status' => 3,
+            'allowPress' => true
+        ];
+        $requestBodies[] = [
+            'name' => 'Status with string',
+            'headquartersZip' => '4312',
+            'headquartersCity' => 'Ried in der Riedmark',
+            'forumThread' => $this->chainForum['id'],
+            'status' => 'a',
+            'allowPress' => true
+        ];
+        $requestBodies[] = [
+            'name' => 'Status empty',
+            'headquartersZip' => '4312',
+            'headquartersCity' => 'Ried in der Riedmark',
+            'forumThread' => $this->chainForum['id'],
+            'status' => '',
+            'allowPress' => true
+        ];
+        $requestBodies[] = [
+            'name' => 'missing status',
+            'headquartersZip' => '4312',
+            'headquartersCity' => 'Ried in der Riedmark',
+            'forumThread' => $this->chainForum['id'],
+            'allowPress' => true
+        ];
+
+        // Invalid allowPress
+        $requestBodies[] = [
+            'name' => 'allowPress with true as string',
+            'headquartersZip' => '4312',
+            'headquartersCity' => 'Ried in der Riedmark',
+            'forumThread' => $this->chainForum['id'],
+            'status' => 1,
+            'allowPress' => 'true'
+        ];
+        $requestBodies[] = [
+            'name' => 'allowPress with number not boolean',
+            'headquartersZip' => '4312',
+            'headquartersCity' => 'Ried in der Riedmark',
+            'forumThread' => $this->chainForum['id'],
+            'status' => 1,
+            'allowPress' => 1
+        ];
+        $requestBodies[] = [
+            'name' => 'allowPress with string',
+            'headquartersZip' => '4312',
+            'headquartersCity' => 'Ried in der Riedmark',
+            'forumThread' => $this->chainForum['id'],
+            'status' => 1,
+            'allowPress' => 'Hallo'
+        ];
+
+        $requestBodies[] = [
+            'name' => 'missing allowPress',
+            'headquartersZip' => '4312',
+            'headquartersCity' => 'Ried in der Riedmark',
+            'forumThread' => $this->chainForum['id'],
+            'status' => 1,
         ];
 
         $I->login($this->getUserByRole('chainManager')['email']);
@@ -424,6 +515,8 @@ class StoreChainApiCest
             $testPattern['headquarters_zip'] = $body['headquartersZip'] ?? null;
             $testPattern['headquarters_city'] = $body['headquartersCity'] ?? null;
             $testPattern['forum_thread'] = $body['forumThread'] ?? null;
+            $testPattern['allow_press'] = $body['allowPress'] ?? null;
+            $testPattern['status'] = $body['status'] ?? null;
             array_filter($testPattern, static function ($var) {return $var !== null; });
             $I->dontSeeInDatabase('fs_chain', $testPattern);
         }
@@ -432,65 +525,6 @@ class StoreChainApiCest
     public function testRejectOptionalPropertiesCreationOfChain(ApiTester $I)
     {
         $requestBodies = [];
-
-        // Invalid status
-        $requestBodies[] = [
-            'name' => 'Status out of range',
-            'headquartersZip' => '4312',
-            'headquartersCity' => 'Ried in der Riedmark',
-            'forumThread' => $this->chainForum['id'],
-            'status' => 3,
-            'allowPress' => true,
-            'notes' => 'Notizen',
-            'commonStoreInformation' => 'Common Store information',
-            'kams' => [$this->getUserByRole('chainKeyAccountManager')['id'], $this->getUserByRole('chainKeyAccountManagerOtherChain')['id']]
-        ];
-        $requestBodies[] = [
-            'name' => 'Status with string',
-            'headquartersZip' => '4312',
-            'headquartersCity' => 'Ried in der Riedmark',
-            'forumThread' => $this->chainForum['id'],
-            'status' => 'a',
-            'allowPress' => true,
-            'notes' => 'Notizen',
-            'commonStoreInformation' => 'Common Store information',
-            'kams' => [$this->getUserByRole('chainKeyAccountManager')['id'], $this->getUserByRole('chainKeyAccountManagerOtherChain')['id']]
-        ];
-
-        // Invalid allowPress
-        $requestBodies[] = [
-            'name' => 'allowPress with true as string',
-            'headquartersZip' => '4312',
-            'headquartersCity' => 'Ried in der Riedmark',
-            'forumThread' => $this->chainForum['id'],
-            'status' => 1,
-            'allowPress' => 'true',
-            'notes' => 'Notizen',
-            'commonStoreInformation' => 'Common Store information',
-            'kams' => [$this->getUserByRole('chainKeyAccountManager')['id'], $this->getUserByRole('chainKeyAccountManagerOtherChain')['id']]
-        ];
-        $requestBodies[] = [
-            'name' => 'allowPress with number not boolean',
-            'headquartersZip' => '4312',
-            'headquartersCity' => 'Ried in der Riedmark',
-            'forumThread' => $this->chainForum['id'],
-            'status' => 1,
-            'allowPress' => 1,
-            'notes' => 'Notizen',
-            'commonStoreInformation' => 'Common Store information',
-            'kams' => [$this->getUserByRole('chainKeyAccountManager')['id'], $this->getUserByRole('chainKeyAccountManagerOtherChain')['id']]
-        ];
-        $requestBodies[] = [
-            'name' => 'allowPress with string',
-            'headquartersZip' => '4312',
-            'headquartersCity' => 'Ried in der Riedmark',
-            'forumThread' => $this->chainForum['id'],
-            'status' => 1,
-            'allowPress' => 'Hallo',
-            'notes' => 'Notizen',
-            'commonStoreInformation' => 'Common Store information',
-            'kams' => [$this->getUserByRole('chainKeyAccountManager')['id'], $this->getUserByRole('chainKeyAccountManagerOtherChain')['id']]
-        ];
 
         // Invalid notes
         $requestBodies[] = [
@@ -594,6 +628,17 @@ class StoreChainApiCest
             'commonStoreInformation' => 'Common Store information',
             'kams' => [$this->getUserByRole('chainKeyAccountManager')['id'] + 5]
         ];
+        $requestBodies[] = [
+            'name' => 'Array with foodsaver Id without relation to AG store chain',
+            'headquartersZip' => '4312',
+            'headquartersCity' => 'Ried in der Riedmark',
+            'forumThread' => $this->chainForum['id'],
+            'status' => 1,
+            'allowPress' => true,
+            'notes' => 'Notizen',
+            'commonStoreInformation' => 'Common Store information',
+            'kams' => [$this->getUserByRole('storeManager')['id']]
+        ];
 
         // Test
         $I->login($this->getUserByRole('chainManager')['email']);
@@ -611,6 +656,45 @@ class StoreChainApiCest
             array_filter($testPattern, static function ($var) {return $var !== null; });
             $I->dontSeeInDatabase('fs_chain', $testPattern);
         }
+    }
+
+    /**
+     * Test access of user to edit store chain.
+     *
+     * Expect that user get an error 403 on HTTP level
+     *
+     * Forbidden roles:
+     * anonym
+     *
+     * @example { "role": "foodsharer", "access": false}
+     * @example { "role": "verifiedFoodsaver", "access": false}
+     * @example { "role": "unverifiedFoodsaver", "access": false}
+     * @example { "role": "storeTeamMemberWithoutChain", "access": false}
+     * @example { "role": "storeManagerWithoutChain", "access": false}
+     * @example { "role": "storeTeamMember", "access": false}
+     * @example { "role": "storeManager", "access": false}
+     * @example { "role": "storeManagerAgChainMember", "access": false}
+     * @example { "role": "chainMember", "access": false}
+     * @example { "role": "chainKeyAccountManagerOtherChain", "access": false}
+     * Allowed roles:
+     * @example { "role": "orga", "access": true}
+     * @example { "role": "chainManager", "access": true}
+     * @example { "role": "chainKeyAccountManager", "access": true}
+     */
+    public function canAccessUpdateChainPATCHEndpoint(ApiTester $I, Example $example)
+    {
+        $role = $example['role'];
+        $responseCode = $example['access'] ? Http::BAD_REQUEST : Http::FORBIDDEN;
+
+        // Anonym
+        $I->haveHttpHeader('Content-Type', 'application/json');
+        $I->sendPATCH(self::API_BASE . '/' . StoreChainApiCest::CHAIN_ID);
+        $I->seeResponseCodeIs(Http::UNAUTHORIZED);
+
+        $I->login($this->getUserByRole($role)['email']);
+        $I->haveHttpHeader('Content-Type', 'application/json');
+        $I->sendPATCH(self::API_BASE . '/' . StoreChainApiCest::CHAIN_ID);
+        $I->seeResponseCodeIs($responseCode);
     }
 
     public function testChangeAllOfChain(ApiTester $I)
@@ -762,6 +846,10 @@ class StoreChainApiCest
             'name' => 'Status with string',
             'status' => 'a'
         ];
+        $requestBodies[] = [
+            'name' => 'Status empty string',
+            'status' => ''
+        ];
 
         // Invalid allowPress
         $requestBodies[] = [
@@ -823,10 +911,19 @@ class StoreChainApiCest
             'name' => 'Array with invalid key account manager Id',
             'kams' => [$this->getUserByRole('chainKeyAccountManager')['id'] + 5]
         ];
+        $requestBodies[] = [
+            'name' => 'Array with foodsaver Id without relation to AG store chain',
+            'kams' => [$this->getUserByRole('storeManager')['id']]
+        ];
+
         // Invalid headquarter zip
         $requestBodies[] = [
             'name' => 'ToLongZip',
             'headquartersZip' => '4312123'
+        ];
+        $requestBodies[] = [
+            'name' => 'empty zip',
+            'headquartersZip' => ''
         ];
 
         // missing city name
@@ -836,23 +933,27 @@ class StoreChainApiCest
             'forumThread' => $this->chainForum['id'],
         ];
         $requestBodies[] = [
-            'name' => 'To long notes text',
+            'name' => 'To long city',
             'headquartersCity' => bin2hex(random_bytes(51))
         ];
         $requestBodies[] = [
-            'name' => 'With HTML break in notes',
+            'name' => 'Empty city',
+            'headquartersCity' => ''
+        ];
+        $requestBodies[] = [
+            'name' => 'With HTML break in city',
             'headquartersCity' => '<b>Hallo</b>'
         ];
         $requestBodies[] = [
-            'name' => 'With markdown markup in notes',
+            'name' => 'With markdown markup in city',
             'headquartersCity' => '**Hallo**'
         ];
         $requestBodies[] = [
-            'name' => 'With Windows line break in notes',
+            'name' => 'With Windows line break in city',
             'headquartersCity' => "Hallo\r\nhhh"
         ];
         $requestBodies[] = [
-            'name' => 'With UNIX line break in notes',
+            'name' => 'With UNIX line break in city',
             'headquartersCity' => "Hallo\nhhh"
         ];
 
