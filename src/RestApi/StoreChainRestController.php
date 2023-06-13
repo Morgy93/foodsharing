@@ -164,6 +164,10 @@ class StoreChainRestController extends AbstractFOSRestController
 
         $this->throwBadRequestExceptionOnError($validationErrors);
 
+        if (!$this->gateway->chainExists($chainId)) {
+            throw new NotFoundHttpException('Chain does not exists');
+        }
+
         try {
             $updateKams = $this->permissions->mayEditKams($chainId);
             $changed = $this->transactions->updateStoreChain($chainId, $storeModel, $updateKams);
@@ -202,6 +206,10 @@ class StoreChainRestController extends AbstractFOSRestController
         }
         if (!$this->permissions->maySeeChainStores($chainId)) {
             throw new AccessDeniedHttpException();
+        }
+
+        if (!$this->gateway->chainExists($chainId)) {
+            throw new NotFoundHttpException('Chain does not exists');
         }
 
         $pagination = new Pagination();

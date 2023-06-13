@@ -54,6 +54,11 @@ class StoreChainPermissions
 
     public function maySeeChainStores($chainId): bool
     {
+        if ($this->session->mayRole(Role::FOODSAVER) &&
+            $this->regionGateway->hasMember($this->session->id(), RegionIDs::STORE_CHAIN_GROUP)) {
+            return true;
+        }
+
         return $this->mayAdministrateStoreChain($chainId);
     }
 

@@ -227,45 +227,6 @@ class StoreChainApiCest
         $I->seeResponseCodeIs($responseCode);
     }
 
-    /**
-     * Test access of user to list store of store chain.
-     *
-     * Expect that user get an error 403 on HTTP level
-     *
-     * Forbidden roles:
-     * anonym
-     *
-     * @example { "role": "foodsharer", "access": false}
-     * @example { "role": "verifiedFoodsaver", "access": false}
-     * @example { "role": "unverifiedFoodsaver", "access": false}
-     * @example { "role": "storeTeamMemberWithoutChain", "access": false}
-     * @example { "role": "storeManagerAgChainMember", "access": false}
-     * @example { "role": "chainMember", "access": false}
-     * @example { "role": "storeTeamMember", "access": false}
-     * @example { "role": "storeManagerWithoutChain", "access": false}
-     * @example { "role": "storeManager", "access": false}
-     * @example { "role": "chainKeyAccountManagerOtherChain", "access": false}
-     *
-     * Allowed roles:
-     * @example { "role": "chainManager", "access": true}
-     * @example { "role": "orga", "access": true}
-     * @example { "role": "chainKeyAccountManager", "access": true}
-     */
-    public function testAccessGetStoresOfStoreChainEndpoint(ApiTester $I, Example $example)
-    {
-        $role = $example['role'];
-        $forbidden = $example['access'] ? Http::OK : Http::FORBIDDEN;
-        // Anonym
-        $I->haveHttpHeader('Content-Type', 'application/json');
-        $I->sendGet(self::API_BASE . '/' . StoreChainApiCest::CHAIN_ID . '/stores');
-        $I->seeResponseCodeIs(Http::UNAUTHORIZED);
-
-        $I->login($this->getUserByRole($role)['email']);
-        $I->haveHttpHeader('Content-Type', 'application/json');
-        $I->sendGet(self::API_BASE . '/' . StoreChainApiCest::CHAIN_ID . '/stores');
-        $I->seeResponseCodeIs($forbidden);
-    }
-
     public function testValidCreationOfChain(ApiTester $I)
     {
         $I->login($this->getUserByRole('chainManager')['email']);
@@ -912,6 +873,10 @@ class StoreChainApiCest
         // Test
         $I->login($this->getUserByRole('chainManager')['email']);
         $I->haveHttpHeader('Content-Type', 'application/json');
+        $I->sendPATCH(self::API_BASE . '/' . 142, ['name' => 'Invalid chain id']);
+        $I->seeResponseCodeIs(Http::NOT_FOUND);
+        $I->seeResponseIsJson();
+
         foreach ($requestBodies as &$body) {
             $I->sendPATCH(self::API_BASE . '/' . StoreChainApiCest::CHAIN_ID, $body);
             $I->seeResponseCodeIs(Http::BAD_REQUEST);
@@ -1090,7 +1055,7 @@ class StoreChainApiCest
             $I->haveInDatabase('fs_key_account_manager', ['foodsaver_id' => $keyAccountManagerId, 'chain_id' => $newChain['id']]);
         }
         for ($i = 0; $i < $countStores; ++$i) {
-            $this->store = $I->createStore($this->region['id'], null, null, ['kette_id' => $newChain['id']]);
+            $I->createStore($this->region['id'], null, null, ['kette_id' => $newChain['id']]);
         }
 
         return $newChain;
@@ -1270,6 +1235,134 @@ class StoreChainApiCest
    }
 
     /*
-     * Test list sotres of store chain
+     * Test list stores of store chain
      */
+    /**
+     * Test access of user to list store of store chain.
+     *
+     * Expect that user get an error 403 on HTTP level
+     *
+     * Forbidden roles:
+     * anonym
+     *
+     * @example { "role": "foodsharer", "access": false}
+     * @example { "role": "verifiedFoodsaver", "access": false}
+     * @example { "role": "unverifiedFoodsaver", "access": false}
+     * @example { "role": "storeTeamMemberWithoutChain", "access": false}
+     * @example { "role": "storeTeamMember", "access": false}
+     * @example { "role": "storeManagerWithoutChain", "access": false}
+     * @example { "role": "storeManager", "access": false}
+     *
+     * Allowed roles:
+     * @example { "role": "chainMember", "access": true}
+     * @example { "role": "chainManager", "access": true}
+     * @example { "role": "orga", "access": true}
+     * @example { "role": "storeManagerAgChainMember", "access": true}
+     * @example { "role": "chainKeyAccountManager", "access": true}
+     * @example { "role": "chainKeyAccountManagerOtherChain", "access": true}
+     */
+    public function testAccessGetStoresOfStoreChainEndpoint(ApiTester $I, Example $example)
+    {
+        $role = $example['role'];
+        $forbidden = $example['access'] ? Http::OK : Http::FORBIDDEN;
+        // Anonym
+        $I->haveHttpHeader('Content-Type', 'application/json');
+        $I->sendGet(self::API_BASE . '/' . StoreChainApiCest::CHAIN_ID . '/stores');
+        $I->seeResponseCodeIs(Http::UNAUTHORIZED);
+
+        $I->login($this->getUserByRole($role)['email']);
+        $I->haveHttpHeader('Content-Type', 'application/json');
+        $I->sendGet(self::API_BASE . '/' . StoreChainApiCest::CHAIN_ID . '/stores');
+        $I->seeResponseCodeIs($forbidden);
+    }
+
+    public function testContentOfGetStoresOfStoreChainEndpoint(ApiTester $I)
+    {
+        $modificationDate = new DateTime('now', new DateTimeZone('Europe/Berlin'));
+        $newChain = $I->addStoreChain([
+            'name' => 'New Chain',
+            'status' => 2,
+            'headquarters_zip' => '4312',
+            'headquarters_city' => 'Ried in der Riedmark',
+            'allow_press' => true,
+            'forum_thread' => $this->chainForum['id'],
+            'notes' => 'Notizen',
+            'common_store_information' => 'Common Store information',
+            'modification_date' => $modificationDate->format('Y-m-d')
+        ]);
+
+        $stores = [];
+        $expectedResponse = [];
+        for ($i = 0; $i < 5; ++$i) {
+            $store = $I->createStore($this->region['id'], null, null, ['kette_id' => $newChain['id']]);
+            $expectedResponse[] = ['id' => $store['id'], 'name' => $store['name']];
+            $stores[] = $store;
+        }
+        $url = self::API_BASE . '/' . $newChain['id'] . '/stores';
+
+        $I->login($this->getUserByRole('chainManager')['email']);
+        $I->haveHttpHeader('Content-Type', 'application/json');
+        $I->sendGet($url);
+        $I->seeResponseCodeIs(HTTP::OK);
+        $I->seeResponseContainsJson($expectedResponse);
+
+        // Test size limit
+        $I->sendGet($url, ['pageSize' => 1]);
+        $I->seeResponseCodeIs(Http::OK);
+        $I->seeResponseIsJson();
+        $storeIds = $I->grabDataFromResponseByJsonPath('$..id');
+        $I->assertCount(1, $storeIds);
+        $I->assertEquals($stores[0]['id'], $storeIds[0]);
+
+        $I->sendGet($url, ['pageSize' => 2]);
+        $I->seeResponseCodeIs(Http::OK);
+        $I->seeResponseIsJson();
+        $storeIds = $I->grabDataFromResponseByJsonPath('$..id');
+        $I->assertCount(2, $storeIds);
+        $I->assertEquals($stores[0]['id'], $storeIds[0]);
+        $I->assertEquals($stores[1]['id'], $storeIds[1]);
+
+        // Test size limit with offset
+        $I->sendGet($url, ['pageSize' => 2, 'offset' => 2]);
+        $I->seeResponseCodeIs(Http::OK);
+        $I->seeResponseIsJson();
+        $storeIds = $I->grabDataFromResponseByJsonPath('$..id');
+        $I->assertCount(2, $storeIds);
+        $I->assertEquals($stores[2]['id'], $storeIds[0]);
+        $I->assertEquals($stores[3]['id'], $storeIds[1]);
+
+        // Test partial output on end of storechain table
+        $I->sendGet($url, ['pageSize' => 2, 'offset' => 4]);
+        $I->seeResponseCodeIs(Http::OK);
+        $I->seeResponseIsJson();
+        $storeIds = $I->grabDataFromResponseByJsonPath('$..id');
+        $I->assertCount(1, $storeIds);
+        $I->assertEquals($stores[4]['id'], $storeIds[0]);
+    }
+
+   public function testBadRequestInformationForGetStoresOfStoreChainEndpoint(ApiTester $I)
+   {
+       $I->login($this->getUserByRole('chainManager')['email']);
+       $I->haveHttpHeader('Content-Type', 'application/json');
+
+       // Test bad id
+       $I->sendGet(self::API_BASE . '/42/stores');
+       $I->seeResponseCodeIs(Http::NOT_FOUND);
+
+       $I->sendGet(self::API_BASE . '/a/stores');
+       $I->seeResponseCodeIs(Http::NOT_FOUND);
+
+       // Test bad pagination for stores of store chain
+       $I->sendGet(self::API_BASE . '/' . StoreChainApiCest::CHAIN_ID . '/stores', ['pageSize' => 'a', 'offset' => 0]);
+       $I->seeResponseCodeIs(Http::BAD_REQUEST);
+
+       $I->sendGet(self::API_BASE . '/' . StoreChainApiCest::CHAIN_ID . '/stores', ['pageSize' => 0, 'offset' => 'a']);
+       $I->seeResponseCodeIs(Http::BAD_REQUEST);
+
+       $I->sendGet(self::API_BASE . '/' . StoreChainApiCest::CHAIN_ID . '/stores', ['pageSize' => -1, 'offset' => 0]);
+       $I->seeResponseCodeIs(Http::BAD_REQUEST);
+
+       $I->sendGet(self::API_BASE . '/' . StoreChainApiCest::CHAIN_ID . '/stores', ['pageSize' => 0, 'offset' => -1]);
+       $I->seeResponseCodeIs(Http::BAD_REQUEST);
+   }
 }
