@@ -1246,7 +1246,30 @@ class StoreChainApiCest
        $I->assertEquals(0, $storeCounts[0]);
    }
 
+   /*
+     * Test pagination for list of store chain
+     */
+   public function testBadRequestInformationForGetAllStoreChainPaginationEndpoint(ApiTester $I)
+   {
+       $role = 'orga';
+
+       $I->login($this->getUserByRole($role)['email']);
+       $I->haveHttpHeader('Content-Type', 'application/json');
+
+       $I->sendGet(self::API_BASE, ['pageSize' => 'a', 'offset' => 0]);
+       $I->seeResponseCodeIs(Http::BAD_REQUEST);
+
+       $I->sendGet(self::API_BASE, ['pageSize' => 0, 'offset' => 'a']);
+       $I->seeResponseCodeIs(Http::BAD_REQUEST);
+
+       $I->sendGet(self::API_BASE, ['pageSize' => -1, 'offset' => 0]);
+       $I->seeResponseCodeIs(Http::BAD_REQUEST);
+
+       $I->sendGet(self::API_BASE, ['pageSize' => 0, 'offset' => -1]);
+       $I->seeResponseCodeIs(Http::BAD_REQUEST);
+   }
+
     /*
-      * Test list sotres of store chain
-      */
+     * Test list sotres of store chain
+     */
 }
