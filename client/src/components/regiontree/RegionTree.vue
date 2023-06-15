@@ -55,13 +55,25 @@ export default {
       })
     },
     /**
-     * Makes the currently selected node reload its children.
+     * Returns the node that corresponds to the region id, or null if no such node is in the tree.
      */
-    async updateSelectedNode (childId) {
-      const selection = this.$refs.tree.selected()
-      if (selection.length > 0) {
+    findRegionById (regionId) {
+      const found = this.$refs.tree.find(node => node.id === regionId)
+      return found.length > 0 ? found[0].select() : null
+    },
+    /**
+     * Selects the region with the given id.
+     */
+    selectRegion (regionId) {
+      this.findRegionById(regionId)?.select()
+    },
+    /**
+     * Makes the node corresponding to the region reload its children.
+     */
+    async updateNode (regionId) {
+      const node = this.findRegionById(regionId)
+      if (node) {
         // remove all children
-        const node = selection[0]
         const children = Array.from(node.children)
         for (let i = 0; i < children.length; ++i) {
           node.removeChild(children[i])
@@ -70,15 +82,6 @@ export default {
         // reload children
         await node.tree.loadChildren(node)
         node.expand()
-      }
-    },
-    /**
-     * Selects the region with the given id.
-     */
-    selectRegion (regionId) {
-      const found = this.$refs.tree.find(node => node.id === regionId)
-      if (found.length > 0) {
-        found[0].select()
       }
     },
   },

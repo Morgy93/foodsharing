@@ -43,6 +43,7 @@
     <region-form
       :region-details.sync="regionDetails"
       class="page-container mt-3"
+      @region-updated="(regionId, parentId) => updateNode(parentId, regionId)"
     />
   </div>
 </template>
@@ -74,6 +75,16 @@ export default {
     },
   },
   methods: {
+    /**
+     * Forces the region tree to refresh the child nodes of a region. Optionally selects a specified region after the
+     * refresh.
+     */
+    async updateNode (regionId, selectRegion = null) {
+      await this.$refs.regionTree.updateNode(regionId)
+      if (selectRegion) {
+        this.$refs.regionTree.selectRegion(selectRegion)
+      }
+    },
     runAfterConfirm (title, message, callback) {
       this.$bvModal.msgBoxConfirm(message, {
         modalClass: 'bootstrap',
@@ -116,8 +127,7 @@ export default {
             const child = await addRegion(this.regionDetails.id)
 
             // refresh the parent region's children to load the new region
-            await this.$refs.regionTree.updateSelectedNode(child.id)
-            this.$refs.regionTree.selectRegion(child.id)
+            await this.updateNode(this.regionDetails.id, child.id)
           } catch (e) {
             pulseError(this.$i18n('error_unexpected'))
           }
@@ -134,8 +144,7 @@ export default {
             await deleteGroup(this.regionDetails.id)
 
             // refresh the parent region's children to remove the deleted node
-            this.$refs.regionTree.selectRegion(this.regionDetails.parentId)
-            await this.$refs.regionTree.updateSelectedNode(this.regionDetails.parentId)
+            await this.updateNode(this.regionDetails.parentId, this.regionDetails.parentId)
           } catch (e) {
             if (e.code === 409) {
               pulseError(this.$i18n('region.delete_conflict'))

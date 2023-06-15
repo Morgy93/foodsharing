@@ -83,18 +83,19 @@
 
       <div class="mt-3">
         <button
-          type="submit"
           class="btn btn-primary"
-          @click="submit"
-        >
-          {{ $i18n('button.save') }}
-        </button>
+          @click="submitForm"
+          v-text="$i18n('button.save')"
+        />
       </div>
     </form>
   </div>
 </template>
 
 <script>
+import { updateRegion } from '@/api/regions'
+import { pulseSuccess, pulseError } from '@/script'
+
 export default {
   props: {
     regionDetails: { type: Object, default: null },
@@ -138,8 +139,19 @@ export default {
     },
   },
   methods: {
-    submit () {
-      // TODO
+    async submitForm () {
+      try {
+        const groupFunction = this.type === 7 ? this.workingGroupFunction : null
+        await updateRegion(this.regionDetails.id, this.name, this.mailbox, this.mailboxName, this.type, groupFunction)
+
+        // refresh the parent region's children to refresh the updated region
+        this.$emit('region-updated', this.regionDetails.id, this.regionDetails.parentId)
+
+        pulseSuccess(this.$i18n('region.edit_success'))
+      } catch (e) {
+        console.error(e)
+        pulseError(this.$i18n('error_unexpected'))
+      }
     },
   },
 }
