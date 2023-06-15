@@ -4,7 +4,6 @@ namespace Foodsharing\Modules\RegionAdmin\DTO;
 
 use Foodsharing\Modules\Core\DBConstants\Region\WorkgroupFunction;
 use Foodsharing\Modules\Core\DBConstants\Unit\UnitType;
-use Foodsharing\Modules\Map\DTO\MapMarker;
 
 class RegionDetails
 {
@@ -28,11 +27,6 @@ class RegionDetails
 
     public string $mailboxName;
 
-    /**
-     * @var MapMarker[]
-     */
-    public array $storeMarkers;
-
     public static function create(
         int $id,
         string $name,
@@ -40,8 +34,7 @@ class RegionDetails
         int $type,
         ?int $workingGroupFunction,
         string $mailbox,
-        string $mailboxName,
-        array $storeMarkers
+        string $mailboxName
     ): RegionDetails {
         $r = new RegionDetails();
         $r->id = $id;
@@ -51,7 +44,6 @@ class RegionDetails
         $r->workingGroupFunction = $workingGroupFunction;
         $r->mailbox = $mailbox;
         $r->mailboxName = $mailboxName;
-        $r->storeMarkers = $storeMarkers;
 
         return $r;
     }

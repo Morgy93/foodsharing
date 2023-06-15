@@ -12,10 +12,6 @@
         class="col-4 m-2 page-container region-tree"
         @change="onRegionSelected"
       />
-      <region-admin-map
-        :store-markers.sync="storeMarkers"
-        class="col-7 region-map"
-      />
     </div>
     <button
       id="addRegionButton"
@@ -50,7 +46,6 @@
 
 <script>
 
-import RegionAdminMap from './RegionAdminMap'
 import RegionForm from './RegionForm'
 import RegionTree from '@/components/regiontree/RegionTree'
 import { addRegion, getRegionDetails, masterUpdate } from '@/api/regions'
@@ -59,7 +54,7 @@ import { BOverlay } from 'bootstrap-vue'
 import { deleteGroup } from '@/api/groups'
 
 export default {
-  components: { RegionAdminMap, RegionForm, RegionTree, BOverlay },
+  components: { RegionForm, RegionTree, BOverlay },
   props: {
     regionId: { type: Number, default: null },
   },

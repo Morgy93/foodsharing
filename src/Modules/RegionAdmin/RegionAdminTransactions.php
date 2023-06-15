@@ -5,10 +5,8 @@ namespace Foodsharing\Modules\RegionAdmin;
 use Foodsharing\Modules\Core\DBConstants\Region\WorkgroupFunction;
 use Foodsharing\Modules\Core\DBConstants\Unit\UnitType;
 use Foodsharing\Modules\Group\GroupFunctionGateway;
-use Foodsharing\Modules\Map\DTO\MapMarker;
 use Foodsharing\Modules\Region\RegionGateway;
 use Foodsharing\Modules\RegionAdmin\DTO\RegionDetails;
-use Foodsharing\Modules\Store\StoreGateway;
 use Foodsharing\RestApi\Models\Region\RegionUpdateModel;
 use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
 use Symfony\Contracts\Translation\TranslatorInterface;
@@ -17,7 +15,6 @@ class RegionAdminTransactions
 {
     public function __construct(
         private readonly RegionGateway $regionGateway,
-        private readonly StoreGateway $storeGateway,
         private readonly GroupFunctionGateway $groupFunctionGateway,
         private readonly TranslatorInterface $translator
     ) {
@@ -33,11 +30,6 @@ class RegionAdminTransactions
             return null;
         }
 
-        $stores = $this->storeGateway->getMapsStores($regionId);
-        $stores = array_map(function ($store) {
-            return MapMarker::create($store['id'], $store['lat'], $store['lon']);
-        }, $stores);
-
         $workingGroupFunction = $region['type'] === UnitType::WORKING_GROUP
             ? $this->groupFunctionGateway->getRegionGroupFunctionId($region['id'], $region['parent_id'])
             : null;
@@ -49,8 +41,7 @@ class RegionAdminTransactions
             $region['type'],
             $workingGroupFunction,
             $region['email'],
-            $region['email_name'],
-            $stores
+            $region['email_name']
         );
     }
 
