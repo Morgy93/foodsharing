@@ -2,7 +2,8 @@
 
 namespace Foodsharing\RestApi;
 
-use Foodsharing\Modules\Development\FeatureToggles\DTO\DependencyInjection\FeatureToggleChecker;
+use Foodsharing\Modules\Development\FeatureToggles\DependencyInjection\FeatureToggleChecker;
+use Foodsharing\Modules\Development\FeatureToggles\FeatureToggleIdentifier;
 use Foodsharing\RestApi\Models\FeatureFlag\IsFeatureToggleActiveResponse;
 use FOS\RestBundle\Controller\AbstractFOSRestController;
 use FOS\RestBundle\Controller\Annotations\Get;
@@ -27,6 +28,9 @@ final class FeatureFlagRestController extends AbstractFOSRestController
     public function isFeatureToggleActiveAction(string $featureToggle): JsonResponse
     {
         $isFeatureFlagActive = $this->featureToggleChecker->isFeatureToggleActive($featureToggle);
-        return $this->json(new IsFeatureToggleActiveResponse($featureToggle, $isFeatureFlagActive), HttpResponse::HTTP_OK);
+        return $this->json(
+            new IsFeatureToggleActiveResponse($featureToggle, $isFeatureFlagActive),
+            HttpResponse::HTTP_OK
+        );
     }
 }
