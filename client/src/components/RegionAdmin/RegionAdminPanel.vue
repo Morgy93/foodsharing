@@ -6,41 +6,45 @@
       </template>
     </b-overlay>
 
+    <div class="row mb-2">
+      <button
+        id="addRegionButton"
+        class="btn btn-secondary"
+        :disabled="regionDetails.id === undefined"
+        @click="addNewRegion"
+        v-text="$i18n('region.new')"
+      />
+      <button
+        id="deleteRegionButton"
+        class="btn btn-secondary ml-2"
+        :disabled="regionDetails.id === undefined"
+        @click="deleteRegion"
+        v-text="$i18n('region.delete')"
+      />
+      <button
+        id="masterUpdateButton"
+        v-b-tooltip.hover="$i18n('region.hull.closure', {region: regionDetails.name})"
+        type="button"
+        class="btn btn-secondary ml-2"
+        :disabled="regionDetails.id === undefined"
+        @click="startMasterUpdate"
+        v-text="$i18n('region.hull.start')"
+      />
+    </div>
+
     <div class="row">
       <region-tree
         ref="regionTree"
-        class="col-4 m-2 page-container region-tree"
+        class="col-4 page-container region-tree"
         @change="onRegionSelected"
       />
+
+      <region-form
+        :region-details.sync="regionDetails"
+        class="page-container col-8"
+        @region-updated="(regionId, parentId) => updateNode(parentId, regionId)"
+      />
     </div>
-    <button
-      id="addRegionButton"
-      class="btn btn-secondary mt-3"
-      :disabled="regionDetails.id === undefined"
-      @click="addNewRegion"
-      v-text="$i18n('region.new')"
-    />
-    <button
-      id="deleteRegionButton"
-      class="btn btn-secondary mt-3"
-      :disabled="regionDetails.id === undefined"
-      @click="deleteRegion"
-      v-text="$i18n('region.delete')"
-    />
-    <button
-      id="masterUpdateButton"
-      v-b-tooltip.hover="$i18n('region.hull.closure', {region: regionDetails.name})"
-      type="button"
-      class="btn btn-secondary mt-3"
-      :disabled="regionDetails.id === undefined"
-      @click="startMasterUpdate"
-      v-text="$i18n('region.hull.start')"
-    />
-    <region-form
-      :region-details.sync="regionDetails"
-      class="page-container mt-3"
-      @region-updated="(regionId, parentId) => updateNode(parentId, regionId)"
-    />
   </div>
 </template>
 
