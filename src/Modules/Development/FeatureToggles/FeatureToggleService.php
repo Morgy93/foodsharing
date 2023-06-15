@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Foodsharing\Modules\Development\FeatureFlags;
+namespace Foodsharing\Modules\Development\FeatureToggles;
 
 use Flagception\Manager\FeatureManagerInterface;
 

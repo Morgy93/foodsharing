@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Foodsharing\Modules\Development\FeatureFlags\DependencyInjection;
+namespace Foodsharing\Modules\Development\FeatureToggles\DTO\DependencyInjection;
 
 interface FeatureToggleChecker
 {

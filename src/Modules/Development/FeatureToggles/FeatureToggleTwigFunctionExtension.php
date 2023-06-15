@@ -2,9 +2,9 @@
 
 declare(strict_types=1);
 
-namespace Foodsharing\Modules\Development\FeatureFlags;
+namespace Foodsharing\Modules\Development\FeatureToggles;
 
-use Foodsharing\Modules\Development\FeatureFlags\DependencyInjection\FeatureToggleChecker;
+use Foodsharing\Modules\Development\FeatureToggles\DTO\DependencyInjection\FeatureToggleChecker;
 use Twig\Extension\AbstractExtension;
 use Twig\TwigFunction;
 
