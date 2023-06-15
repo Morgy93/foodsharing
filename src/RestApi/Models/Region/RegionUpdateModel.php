@@ -2,7 +2,10 @@
 
 namespace Foodsharing\RestApi\Models\Region;
 
+use Foodsharing\Modules\Core\DBConstants\Region\WorkgroupFunction;
 use Foodsharing\Modules\Core\DBConstants\Unit\UnitType;
+use OpenApi\Annotations as OA;
+use Symfony\Component\Validator\Constraints as Assert;
 
 class RegionUpdateModel
 {
@@ -12,7 +15,7 @@ class RegionUpdateModel
      * @Assert\NotBlank()
      * @OA\Property(example="Testbezirk")
      */
-    public string $name;
+    public string $name = '';
 
     /**
      * The region's mailbox as used in the email address.
@@ -20,14 +23,14 @@ class RegionUpdateModel
      * @Assert\NotBlank()
      * @OA\Property(example="testgruppe")
      */
-    public string $mailbox;
+    public string $mailbox = '';
 
     /**
      * The sender name for the region's mailbox.
      *
      * @OA\Property(example="Testgruppe")
      */
-    public ?string $mailboxName;
+    public ?string $mailboxName = null;
 
     /**
      * The region type.
@@ -37,7 +40,7 @@ class RegionUpdateModel
      * @Assert\Type("integer")
      * @OA\Property(example=UnitType::CITY)
      */
-    public int $type;
+    public int $type = UnitType::UNDEFINED;
 
     /**
      * Special function type of the working group. A value of null means that the working group does not have a
@@ -47,5 +50,5 @@ class RegionUpdateModel
      *
      * @OA\Property(example=WorkgroupFunction::WELCOME)
      */
-    public ?int $workingGroupFunction;
+    public ?int $workingGroupFunction = null;
 }
