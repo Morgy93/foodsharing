@@ -11,7 +11,10 @@ flagception:
         db_table: fs_feature_toggles
         db_column_feature: identifier
         db_column_state: isActive
+
   features:
     always_true_for_testing_purposes:
+      default: true
 
     always_false_for_testing_purposes:
+      default: false
