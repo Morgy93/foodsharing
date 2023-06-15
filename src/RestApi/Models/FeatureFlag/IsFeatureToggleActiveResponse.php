@@ -7,19 +7,19 @@ namespace Foodsharing\RestApi\Models\FeatureFlag;
 use OpenApi\Attributes\Property;
 use Symfony\Component\Validator\Constraints\NotBlank;
 
-class IsFeatureFlagActiveResponse
+class IsFeatureToggleActiveResponse
 {
-    #[Property(description: 'Identifier for requested feature flag')]
+    #[Property(description: 'Identifier for requested feature toggle')]
     #[NotBlank]
-    public readonly string $featureFlag;
+    public readonly string $featureToggle;
 
     #[Property]
     #[NotBlank]
     public readonly bool $isActive;
 
-    public function __construct(string $featureFlag, bool $isActive)
+    public function __construct(string $featureToggle, bool $isActive)
     {
-        $this->featureFlag = $featureFlag;
+        $this->featureToggle = $featureToggle;
         $this->isActive = $isActive;
     }
 }

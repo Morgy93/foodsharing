@@ -6,14 +6,14 @@ namespace Foodsharing\Modules\Development\FeatureFlags;
 
 use Flagception\Manager\FeatureManagerInterface;
 
-final class FeatureFlagService implements DependencyInjection\FeatureFlagChecker
+final class FeatureToggleService implements DependencyInjection\FeatureToggleChecker
 {
     public function __construct(
         private readonly FeatureManagerInterface $manager,
     ) {
     }
 
-    public function isFeatureFlagActive(string $identifier): bool
+    public function isFeatureToggleActive(string $identifier): bool
     {
         return $this->manager->isActive($identifier);
     }

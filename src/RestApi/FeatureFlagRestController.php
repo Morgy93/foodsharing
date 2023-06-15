@@ -2,8 +2,8 @@
 
 namespace Foodsharing\RestApi;
 
-use Foodsharing\Modules\Development\FeatureFlags\DependencyInjection\FeatureFlagChecker;
-use Foodsharing\RestApi\Models\FeatureFlag\IsFeatureFlagActiveResponse;
+use Foodsharing\Modules\Development\FeatureFlags\DependencyInjection\FeatureToggleChecker;
+use Foodsharing\RestApi\Models\FeatureFlag\IsFeatureToggleActiveResponse;
 use FOS\RestBundle\Controller\AbstractFOSRestController;
 use FOS\RestBundle\Controller\Annotations\Get;
 use Nelmio\ApiDocBundle\Annotation\Model;
@@ -16,17 +16,17 @@ use Symfony\Component\HttpFoundation\Response as HttpResponse;
 final class FeatureFlagRestController extends AbstractFOSRestController
 {
     public function __construct(
-        private readonly FeatureFlagChecker $featureFlagChecker,
+        private readonly FeatureToggleChecker $featureToggleChecker,
     ) {
     }
 
-    #[Tag('featuretoggles')]
+    #[Tag('featuretoggle')]
     #[Get(path: 'featuretoggle/{featureToggle}')]
     #[Parameter(name: 'featureToggle', description: 'Identifier for feature toggle', in: 'path', required: true)]
-    #[Response(response: HttpResponse::HTTP_OK, description: 'Successful', content: new Model(type: IsFeatureFlagActiveResponse::class))]
-    public function isFeatureFlagActiveAction(string $featureToggle): JsonResponse
+    #[Response(response: HttpResponse::HTTP_OK, description: 'Successful', content: new Model(type: IsFeatureToggleActiveResponse::class))]
+    public function isFeatureToggleActiveAction(string $featureToggle): JsonResponse
     {
-        $isFeatureFlagActive = $this->featureFlagChecker->isFeatureFlagActive($featureToggle);
-        return $this->json(new IsFeatureFlagActiveResponse($featureToggle, $isFeatureFlagActive), HttpResponse::HTTP_OK);
+        $isFeatureFlagActive = $this->featureToggleChecker->isFeatureToggleActive($featureToggle);
+        return $this->json(new IsFeatureToggleActiveResponse($featureToggle, $isFeatureFlagActive), HttpResponse::HTTP_OK);
     }
 }

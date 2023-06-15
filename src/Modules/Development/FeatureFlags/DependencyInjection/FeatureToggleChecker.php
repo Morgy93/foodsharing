@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Foodsharing\Modules\Development\FeatureFlags\DependencyInjection;
 
-interface FeatureFlagChecker
+interface FeatureToggleChecker
 {
-    public function isFeatureFlagActive(string $identifier): bool;
+    public function isFeatureToggleActive(string $identifier): bool;
 }

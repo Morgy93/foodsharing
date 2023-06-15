@@ -48,7 +48,7 @@ flagception:
 Let's see how we can check in our code, if a feature flag is active.
 ### PHP
 1. Inject via [symfony autowiring](https://symfony.com/doc/current/service_container/autowiring.html) the interface `FeatureFlagChecker (Foodsharing\Modules\Development\FeatureFlags\DependencyInjection\FeatureFlagChecker)`
-2. Use the method `isFeatureFlagActive($featureFlagIdentifier)`
+2. Use the method `isFeatureToggleActive($featureFlagIdentifier)`
 ```php title='FeatureFlagRestController.php'
 final class FeatureFlagRestController extends AbstractFOSRestController
 {
@@ -57,16 +57,16 @@ final class FeatureFlagRestController extends AbstractFOSRestController
     ) {
     }
 
-    public function isFeatureFlagActiveAction(): JsonResponse
+    public function isFeatureToggleActiveAction(): JsonResponse
     {
-        $isFeatureFlagActive = $this->featureFlagChecker->isFeatureFlagActive('show_newest_design_for_documentation');
+        $isFeatureToggleActive = $this->featureFlagChecker->isFeatureToggleActive('show_newest_design_for_documentation');
         ...
     }
 }
 ```
 ### VueJS
 1. Require the FeatureFlag Mixin
-2. Use it with `this.isFeatureFlagActive('...')`
+2. Use it with `this.isFeatureToggleActive('...')`
 ```js title='FancyComponent.vue'
 <template>
   <div>
@@ -83,7 +83,7 @@ export default {
 
   computed: {
     isMyFeatureFlagActive () {
-      return this.isFeatureFlagActive('show_newest_design_for_documentation')
+      return this.isFeatureToggleActive('show_newest_design_for_documentation')
     },
   },
 }
@@ -92,9 +92,9 @@ export default {
 
 
 ### Twig
-`isFeatureFlagActive('...')` is a global twig-function, you can use and call it everywhere inside twig
+`isFeatureToggleActive('...')` is a global twig-function, you can use and call it everywhere inside twig
 ```twig
-{% if isFeatureFlagActive('show_newest_design_for_documentation') %}
+{% if isFeatureToggleActive('show_newest_design_for_documentation') %}
     <!-- Do something -->
 {% endif %}
 ```
