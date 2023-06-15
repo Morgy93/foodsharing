@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace Foodsharing\Modules\Development\FeatureToggles;
 
 use Flagception\Manager\FeatureManagerInterface;
-use Foodsharing\Modules\Development\FeatureToggles\Querys\DependencyInjection\FeatureToggleChecker;
+use Foodsharing\Modules\Development\FeatureToggles\DependencyInjection\FeatureToggleChecker;
 use Foodsharing\Modules\Development\FeatureToggles\Querys\IsFeatureToggleInsideDatabaseQuery;
 
 final class FeatureToggleService implements FeatureToggleChecker

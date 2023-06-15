@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Foodsharing\Modules\Development\FeatureToggles;
 
-use Foodsharing\Modules\Development\FeatureToggles\Querys\DependencyInjection\FeatureToggleChecker;
+use Foodsharing\Modules\Development\FeatureToggles\DependencyInjection\FeatureToggleChecker;
 use Twig\Extension\AbstractExtension;
 use Twig\TwigFunction;
 

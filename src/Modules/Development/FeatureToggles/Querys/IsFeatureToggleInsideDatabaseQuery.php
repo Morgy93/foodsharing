@@ -3,7 +3,6 @@
 namespace Foodsharing\Modules\Development\FeatureToggles\Querys;
 
 use Foodsharing\Modules\Core\Database;
-use Symfony\Component\Yaml\Yaml;
 
 class IsFeatureToggleInsideDatabaseQuery
 {
