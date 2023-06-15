@@ -15,7 +15,7 @@ final class FeatureToggleIdentifier
      */
     public static function all(): array
     {
-        $oClass = new ReflectionClass(self::class);
-        return $oClass->getConstants();
+        $identifierDefinitions = new ReflectionClass(self::class);
+        return $identifierDefinitions->getConstants();
     }
 }
