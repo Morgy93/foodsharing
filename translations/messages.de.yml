@@ -2419,6 +2419,10 @@ region:
   save: "Ja, speichern"
   cancel: "Nein, doch nicht"
   edit_success: "Bezirk wurde gespeichert."
+  form:
+    invalid_name: "Der Name darf nicht leer sein"
+    invalid_mailbox: "Der Name der Mailbox darf nicht leer sein"
+
 
 blog:
   read: "weiterlesen"

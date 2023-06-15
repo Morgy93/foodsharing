@@ -9,10 +9,16 @@
       <input
         id="nameInput"
         ref="name-input"
-        v-model="name"
+        v-model="$v.name.$model"
         type="text"
         class="my-2"
+        :class="{ 'is-invalid': $v.name.$error }"
       >
+      <div
+        v-if="$v.name.$error"
+        class="invalid-feedback"
+        v-text="$i18n('region.form.invalid_name')"
+      />
 
       <label
         for="mailboxInput"
@@ -24,10 +30,16 @@
       <input
         id="mailboxInput"
         ref="mailbox-input"
-        v-model="mailbox"
+        v-model="$v.mailbox.$model"
         type="text"
         class="my-2"
+        :class="{ 'is-invalid': $v.mailbox.$error }"
       >
+      <div
+        v-if="$v.mailbox.$error"
+        class="invalid-feedback"
+        v-text="$i18n('region.form.invalid_name')"
+      />
 
       <label
         for="mailboxNameInput"
@@ -84,6 +96,7 @@
       <div class="mt-3">
         <button
           class="btn btn-primary"
+          :disabled="$v.$invalid"
           @click="submitForm"
           v-text="$i18n('button.save')"
         />
@@ -95,6 +108,7 @@
 <script>
 import { updateRegion } from '@/api/regions'
 import { pulseSuccess, pulseError } from '@/script'
+import { required, minLength } from 'vuelidate/lib/validators'
 
 export default {
   props: {
@@ -132,6 +146,10 @@ export default {
         { id: 11, name: 'board' },
       ],
     }
+  },
+  validations: {
+    name: { required, minLength: minLength(1) },
+    mailbox: { required, minLength: minLength(1) },
   },
   watch: {
     regionDetails () {

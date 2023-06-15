@@ -7,6 +7,9 @@ use Foodsharing\Modules\Core\DBConstants\Unit\UnitType;
 use OpenApi\Annotations as OA;
 use Symfony\Component\Validator\Constraints as Assert;
 
+/**
+ * Contains all properties of a region that can be updated in the region admin module.
+ */
 class RegionUpdateModel
 {
     /**
