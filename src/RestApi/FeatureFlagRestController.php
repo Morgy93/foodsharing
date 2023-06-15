@@ -3,7 +3,6 @@
 namespace Foodsharing\RestApi;
 
 use Foodsharing\Modules\Development\FeatureToggles\DependencyInjection\FeatureToggleChecker;
-use Foodsharing\Modules\Development\FeatureToggles\FeatureToggleIdentifier;
 use Foodsharing\RestApi\Models\FeatureFlag\IsFeatureToggleActiveResponse;
 use FOS\RestBundle\Controller\AbstractFOSRestController;
 use FOS\RestBundle\Controller\Annotations\Get;
