@@ -2419,7 +2419,6 @@ region:
   save: "Ja, speichern"
   cancel: "Nein, doch nicht"
   edit_success: "Bezirk wurde gespeichert."
-  still_contains_elements: "Der Bezirk kann nicht gelöscht werden, da er noch Unterregionen, Betriebe oder Fairteiler enthält."
 
 blog:
   read: "weiterlesen"
