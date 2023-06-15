@@ -17,7 +17,6 @@ import {
   pulseInfo,
   GET,
 } from '@/script'
-import '@/tablesorter' // Remove after replacing u_storeList
 import { vueApply, vueRegister } from '@/vue'
 import PickupHistory from './components/PickupHistory'
 import PickupList from './components/PickupList'

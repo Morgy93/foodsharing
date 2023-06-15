@@ -3,7 +3,29 @@
     class="list-group-item list-group-item-action field field--stack"
     :href="$url('store', entry.store.id)"
   >
-    <span class="field-container">
+    <div class="d-flex justify-content-between align-items-center">
+      <h6
+        class="field-headline field-headline--big"
+        :class="{
+          'text-danger': isSoon
+        }"
+      >
+        {{ $dateFormatter.date(date, {type: 'full'}) }}
+      </h6>
+      <h6
+        v-if="isSoon"
+        class="field-headline field-headline--big text-danger"
+      >
+        {{ $dateFormatter.relativeTime(date, {short: true}) }}
+      </h6>
+      <h6
+        v-else
+        class="field-headline field-headline--big"
+      >
+        {{ $dateFormatter.time(date) }}
+      </h6>
+    </div>
+    <p class="field-container m-0">
       <small
         v-b-tooltip="entry.store.name.length > 30 ? entry.store.name : ''"
         class="field-subline"
@@ -64,27 +86,7 @@
           </span>
         </span>
       </span>
-    </span>
-    <h6
-      class="field-headline field-headline--big"
-      :class="{
-        'text-danger': isSoon
-      }"
-    >
-      <i class="fas fa-clock mr-2" />
-      <span
-        v-b-tooltip="$dateFormatter.dateTimeTooltip(date, { isShown: isSoon })"
-      >
-        {{ $dateFormatter.base(date, { isRelativeTime: isSoon }) }}
-
-      </span>
-      <span
-        v-if="isSoon"
-        class="pickup-status-time"
-      >
-        ({{ $dateFormatter.time(date) }})
-      </span>
-    </h6>
+    </p>
   </a>
 </template>
 
@@ -130,6 +132,7 @@ export default {
   margin: 0 0.25rem;
   display: inline-flex;
   flex-direction: row-reverse;
+  font-size: 0.875rem;
 }
 
 $size: 1.25rem;

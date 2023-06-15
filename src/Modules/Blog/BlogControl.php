@@ -78,8 +78,8 @@ class BlogControl extends Control
     public function read(): void
     {
         if (isset($_GET['id']) && is_numeric($_GET['id']) && $news = $this->blogGateway->getPost($_GET['id'])) {
-            $this->pageHelper->addBread($news['name']);
-            $this->pageHelper->addContent($this->view->newsPost($news));
+            $this->pageHelper->addBread($news->title);
+            $this->pageHelper->addContent($this->view->newsPost($news->id));
         }
     }
 

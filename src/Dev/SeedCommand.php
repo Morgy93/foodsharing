@@ -363,6 +363,7 @@ class SeedCommand extends Command implements CustomCommandInterface
         $I->createWorkingGroup('Abstimmungs-AG Praxisaustausch', ['parent_id' => RegionIDs::GLOBAL_WORKING_GROUPS, 'id' => RegionIDs::VOTING_ADMIN_GROUP]);
         $I->createWorkingGroup('Fairteiler-AG Praxisaustausch', ['parent_id' => RegionIDs::GLOBAL_WORKING_GROUPS, 'id' => RegionIDs::FSP_TEAM_ADMIN_GROUP]);
         $I->createWorkingGroup('Betriebskoordination-AG Praxisaustausch', ['parent_id' => RegionIDs::GLOBAL_WORKING_GROUPS, 'id' => RegionIDs::STORE_COORDINATION_TEAM_ADMIN_GROUP]);
+        $I->createWorkingGroup('AG Betriebsketten', ['parent_id' => RegionIDs::GLOBAL_WORKING_GROUPS, 'id' => RegionIDs::STORE_CHAIN_GROUP]);
         $I->createWorkingGroup('Meldungen-AG Praxisaustausch', ['parent_id' => RegionIDs::GLOBAL_WORKING_GROUPS, 'id' => RegionIDs::REPORT_TEAM_ADMIN_GROUP]);
         $I->createWorkingGroup('Mediation-AG Praxisaustausch', ['parent_id' => RegionIDs::GLOBAL_WORKING_GROUPS, 'id' => RegionIDs::MEDIATION_TEAM_ADMIN_GROUP]);
         $I->createWorkingGroup('Schiedsstelle-AG Praxisaustausch', ['parent_id' => RegionIDs::GLOBAL_WORKING_GROUPS, 'id' => RegionIDs::ARBITRATION_TEAM_ADMIN_GROUP]);
@@ -456,11 +457,13 @@ class SeedCommand extends Command implements CustomCommandInterface
         $I->addRegionMember($ag_aktive, $userbot['id']);
 
         $I->addRegionMember($ag_testimonials, $user2['id']);
+        $I->addRegionMember(RegionIDs::STORE_CHAIN_GROUP, $user2['id']);
 
         $I->addRegionAdmin(RegionIDs::IT_SUPPORT_GROUP, $userStoreManager2['id']);
         $I->addRegionMember(RegionIDs::IT_SUPPORT_GROUP, $userStoreManager2['id']);
         $I->addRegionAdmin(RegionIDs::NEWSLETTER_WORK_GROUP, $user2['id']);
         $I->addRegionAdmin(RegionIDs::EDITORIAL_GROUP, $userbot['id']);
+        $I->addRegionAdmin(RegionIDs::STORE_CHAIN_GROUP, $userbot['id']);
 
         // Make ambassador responsible for all work groups in the region
         $this->output->writeln('- make ambassador responsible for all work groups');
@@ -497,8 +500,10 @@ class SeedCommand extends Command implements CustomCommandInterface
         $I->addRecurringPickup($store['id']);
 
         $this->output->writeln('- create store chains');
+        $this->chain_ids = [];
         foreach (range(0, 50) as $_) {
-            $I->addStoreChain();
+            $chain = $I->addStoreChain();
+            $this->chain_ids[] = $chain['id'];
             $this->output->write('.');
         }
         $this->output->writeln(' done');
@@ -606,7 +611,12 @@ class SeedCommand extends Command implements CustomCommandInterface
             $conv1 = $I->createConversation([$userbot['id']], ['name' => 'team', 'locked' => 1]);
             $conv2 = $I->createConversation([$userbot['id']], ['name' => 'springer', 'locked' => 1]);
 
-            $store = $I->createStore($region1, $conv1['id'], $conv2['id']);
+            $extra_params = [];
+            if (rand(0, 1) == 1) {
+                $extra_params['kette_id'] = $this->chain_ids[random_int(0, 10)];
+            }
+
+            $store = $I->createStore($region1, $conv1['id'], $conv2['id'], $extra_params);
             foreach (range(0, 5) as $_) {
                 $I->addRecurringPickup($store['id']);
             }
@@ -669,9 +679,14 @@ class SeedCommand extends Command implements CustomCommandInterface
         $this->output->writeln(' done');
 
         $this->output->writeln('Create polls');
-        foreach ([VotingType::SELECT_ONE_CHOICE, VotingType::SELECT_MULTIPLE, VotingType::THUMB_VOTING,
-                     VotingType::SCORE_VOTING] as $type) {
-            $this->createPoll($region1, $userbot['id'], $type,
+        foreach ([
+            VotingType::SELECT_ONE_CHOICE, VotingType::SELECT_MULTIPLE, VotingType::THUMB_VOTING,
+            VotingType::SCORE_VOTING
+        ] as $type) {
+            $this->createPoll(
+                $region1,
+                $userbot['id'],
+                $type,
                 [$user2['id'], $userStoreManager['id'], $userStoreManager2['id'], $userbot['id'], $userorga['id']]
             );
             $this->output->write('.');

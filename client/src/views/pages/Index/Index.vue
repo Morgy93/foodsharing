@@ -456,6 +456,12 @@ export default {
   margin-right: 0px;
 }
 
+@media screen and (max-width: 767px) {
+      h3 {
+        font-size: 1rem;
+      }
+  }
+
 h5 {
   font-family: var(--fs-font-family-headline);
 }

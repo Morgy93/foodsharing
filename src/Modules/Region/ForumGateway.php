@@ -5,17 +5,21 @@ namespace Foodsharing\Modules\Region;
 use Foodsharing\Modules\Core\BaseGateway;
 use Foodsharing\Modules\Core\Database;
 use Foodsharing\Modules\Core\DBConstants\Region\ThreadStatus;
+use Symfony\Contracts\Translation\TranslatorInterface;
 
 class ForumGateway extends BaseGateway
 {
     private ForumFollowerGateway $forumFollowerGateway;
+    protected TranslatorInterface $translator;
 
     public function __construct(
         Database $db,
-        ForumFollowerGateway $forumFollowerGateway
+        ForumFollowerGateway $forumFollowerGateway,
+        TranslatorInterface $translator
     ) {
         parent::__construct($db);
         $this->forumFollowerGateway = $forumFollowerGateway;
+        $this->translator = $translator;
     }
 
     // Thread-related
@@ -92,8 +96,8 @@ class ForumGateway extends BaseGateway
     {
         return $this->db->fetch('
 			SELECT 		t.id,
-						b.bezirk_id AS regionId, 
-						b.bot_theme AS regionSubId, 
+						b.bezirk_id AS regionId,
+						b.bot_theme AS regionSubId,
 						t.name as title,
 						t.`time`,
 						UNIX_TIMESTAMP(t.`time`) AS time_ts,
@@ -108,7 +112,7 @@ class ForumGateway extends BaseGateway
 			LEFT JOIN fs_bezirk_has_theme AS b ON b.theme_id = t.id
 
 			WHERE 		t.id = :thread_id
-			
+
 			LIMIT 1
 
 		', ['thread_id' => $threadId]);
@@ -217,10 +221,10 @@ class ForumGateway extends BaseGateway
     {
         return '
 			SELECT 		fs.id AS author_id,
-						IF(fs.deleted_at IS NOT NULL,"abgemeldeter Benutzer", fs.name) AS author_name,
+						IF(fs.deleted_at IS NOT NULL,"' . $this->translator->trans('forum.deleted_user') . '", fs.name) AS author_name,
 						fs.photo AS author_photo,
 						fs.sleep_status AS author_sleep_status,
-						IF(fs.deleted_at IS NOT NULL, "Beitrag von nicht mehr angemeldetem Benutzer", p.body) AS body,
+						p.body AS body,
 						p.`time`,
 						p.id,
 						UNIX_TIMESTAMP(p.`time`) AS time_ts,
@@ -229,7 +233,7 @@ class ForumGateway extends BaseGateway
 			FROM 		fs_theme_post p
 			INNER JOIN   fs_foodsaver fs
 				ON 		p.foodsaver_id = fs.id
-			LEFT JOIN   fs_bezirk_has_theme ht 
+			LEFT JOIN   fs_bezirk_has_theme ht
 				ON 		ht.theme_id = p.theme_id
 			LEFT JOIN	fs_bezirk b
 				ON		b.id = ht.bezirk_id';
@@ -251,7 +255,7 @@ class ForumGateway extends BaseGateway
 			r.time,
 			r.foodsaver_id,
 			fs.name as foodsaver_name
-			
+
 			FROM
 			fs_post_reaction r
 			LEFT JOIN
@@ -309,7 +313,7 @@ class ForumGateway extends BaseGateway
     public function listPosts($threadId)
     {
         $posts = $this->db->fetchAll(
-            $this->getPostSelect() . ' 
+            $this->getPostSelect() . '
 			WHERE 		p.theme_id = :threadId
 
 			ORDER BY 	p.`time`
@@ -333,7 +337,7 @@ class ForumGateway extends BaseGateway
     public function getPost($postId)
     {
         return $this->db->fetch(
-            $this->getPostSelect() . ' 
+            $this->getPostSelect() . '
 			WHERE 		p.id = :postId
 
 			ORDER BY 	p.`time`

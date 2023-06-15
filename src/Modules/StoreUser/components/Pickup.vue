@@ -154,6 +154,7 @@
           v-model="kickMessage"
           :placeholder="$i18n('pickup.kick_message_placeholder')"
           max-rows="4"
+          maxlength="3000"
         />
         <div>{{ $i18n('pickup.kick_message_footer') }}</div>
       </blockquote>

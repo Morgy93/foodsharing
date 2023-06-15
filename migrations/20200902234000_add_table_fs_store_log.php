@@ -1,5 +1,6 @@
 <?php
 
+use Phinx\Db\Adapter\MysqlAdapter;
 use Phinx\Migration\AbstractMigration;
 
 class AddTableFsStoreLog extends AbstractMigration
@@ -16,7 +17,7 @@ class AddTableFsStoreLog extends AbstractMigration
             ->addColumn('fs_id_p', 'integer', ['null' => true, 'limit' => 10, 'comment' => 'to which foodsaver_id is it done to'])
             ->addColumn('date_reference', 'datetime', ['null' => true, 'comment' => 'date referenced (slot or wallpost entry)'])
             ->addColumn('content', 'string', ['null' => true, 'limit' => 255, 'comment' => 'Text from the store-wall-entry'])
-            ->addColumn('reason', 'string', ['null' => true, 'limit' => 255, 'comment' => 'Why a negativ action was done'])
+            ->addColumn('reason', 'text', ['null' => true, 'limit' => MysqlAdapter::TEXT_MEDIUM, 'comment' => 'Why a negativ action was done'])
             ->create();
     }
 }

@@ -4,8 +4,8 @@
     :class="[`avatars_${avatars.length}`]"
   >
     <Avatar
-      v-for="(avatar) in avatars"
-      :key="avatar"
+      v-for="(avatar, index) in avatars"
+      :key="'avatar_' + index"
       :url="avatar"
       :size="35"
     />
@@ -28,12 +28,18 @@ export default {
       default: () => ({}),
     },
   },
+  data () {
+    return {
+      defaultAvatar: '/img/mini_q_avatar.png',
+    }
+  },
   computed: {
     loggedinUser () {
       return DataUser.getters.getUser()
     },
     avatars () {
       const lastId = this.conversation?.lastMessage?.authorId
+
       return this.filteredMemberList()
         // bring last participant to the top
         .sort((a, b) => {
@@ -44,7 +50,10 @@ export default {
         })
         // we dont need more then 4
         .slice(0, 4)
-        .map(m => profileStore.profiles[m].avatar)
+        .map((m) => {
+          const userProfile = profileStore.profiles[m]
+          return userProfile?.avatar || this.defaultAvatar
+        })
     },
   },
   methods: {

@@ -31,6 +31,11 @@ final class PassportGeneratorGateway extends BaseGateway
         return $this->db->update('fs_foodsaver', ['last_pass' => $this->db->now()], ['id' => $foodsaver]);
     }
 
+    public function getLastGen(int $fsId): string
+    {
+        return $this->db->fetchValueByCriteria('fs_foodsaver', 'last_pass', ['id' => $fsId]);
+    }
+
     public function getPassFoodsaver(int $regionId): array
     {
         $stm = '

@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Foodsharing\Modules\Store;
 
+use Exception;
 use Foodsharing\Modules\Core\BaseGateway;
 use Foodsharing\Modules\Core\Database;
 use Foodsharing\Modules\Core\DatabaseNoValueFoundException;
@@ -209,11 +210,10 @@ class StoreGateway extends BaseGateway
 					b.betrieb_kategorie_id,
 					b.name,
 					b.str,
+					b.`betrieb_status_id`,
 					k.logo
 
 			FROM 	fs_betrieb b
-			LEFT JOIN fs_kette k ON b.kette_id = k.id
-
 			WHERE 	b.bezirk_id = :regionId
 			  AND	b.betrieb_status_id <> :permanentlyClosed
 			  AND	b.`lat` != ""
@@ -534,14 +534,14 @@ class StoreGateway extends BaseGateway
         return $this->db->fetchAll('
 			SELECT	`id`,
 					`name`
-			FROM 	`fs_kette`
+			FROM 	`fs_chain`
 			ORDER BY `name`
 		');
     }
 
     public function existStoreChain(int $id): bool
     {
-        return $this->db->exists('fs_kette', ['id' => $id]);
+        return $this->db->exists('fs_chain', ['id' => $id]);
     }
 
     public function getStoreTeam($storeId): array
@@ -845,11 +845,8 @@ class StoreGateway extends BaseGateway
     {
         return $this->db->fetch('
 			SELECT   `id`,
-			         `name`,
-			         `logo`
-
-			FROM     `fs_kette`
-
+			         `name`
+			FROM     `fs_chain`
 			WHERE    `id` = :id
         ', [
             ':id' => $id
@@ -1067,7 +1064,9 @@ class StoreGateway extends BaseGateway
     /**
      * Returns a list of stores which belong to regions.
      *
-     *  @return array<Store>
+     * @return array<Store>
+     *
+     * @throws Exception
      */
     public function listStoresInRegion(int $regionId, bool $includeSubregions = false): array
     {
@@ -1111,6 +1110,57 @@ class StoreGateway extends BaseGateway
 				WHERE 	fs_betrieb.bezirk_id = fs_bezirk.id
 				AND 	fs_betrieb.bezirk_id IN(' . $placeholders . ')
 		', $regionIds);
+
+        return array_map(function ($store) {
+            return Store::createFromArray($store);
+        }, $results);
+    }
+
+    /**
+     * Returns a list of stores where the user is a member.
+     *
+     * @return array<Store>
+     *
+     * @throws Exception
+     */
+    public function listStoresInFromUser(int $fs_id = null, array $cooperationStatus = []): array
+    {
+        $results = $this->db->fetchAll('SELECT
+                b.id,
+                b.name,
+                b.bezirk_id as regionId,
+                b.lat,
+                b.lon,
+                b.str AS street,
+                b.plz AS zipCode,
+                b.stadt as city,
+                b.public_info,
+                b.public_time,
+                b.betrieb_kategorie_id as categoryId,
+                b.kette_id as chainId,
+                b.betrieb_status_id as cooperationStatus,
+                b.begin as cooperationStart,
+                b.besonderheiten as description,
+                b.ansprechpartner as contactName,
+                b.telefon as contactPhone,
+                b.fax as contactFax,
+                b.email as contactEmail,
+                b.prefetchtime as calendarInterval,
+                b.abholmenge as weight,
+                b.ueberzeugungsarbeit as effort,
+                b.presse as publicity,
+                b.sticker,
+                b.team_status as teamStatus,
+                b.use_region_pickup_rule as useRegionPickupRule,
+                b.status_date as updatedAt,
+                b.added as createdAt
+            FROM fs_betrieb_team t
+            JOIN fs_betrieb b ON
+                b.id = t.betrieb_id
+            WHERE t.foodsaver_id = :fs_id
+    ', [
+                'fs_id' => $fs_id
+        ]);
 
         return array_map(function ($store) {
             return Store::createFromArray($store);

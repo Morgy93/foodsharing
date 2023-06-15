@@ -51,7 +51,13 @@ export default {
     title () {
       if (this.conversation.title) return this.conversation.title
       return this.filteredMemberList()
-        .map(m => profileStore.profiles[m].name)
+        .map(m => {
+          if (profileStore.profiles[m]) {
+            return profileStore.profiles[m].name
+          } else {
+            return this.$i18n('chat.unknown_username')
+          }
+        })
         .join(', ')
     },
     loggedinUser () {

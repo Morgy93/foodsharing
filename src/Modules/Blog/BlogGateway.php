@@ -2,9 +2,12 @@
 
 namespace Foodsharing\Modules\Blog;
 
+use Carbon\Carbon;
+use DateTimeZone;
 use Foodsharing\Lib\Session;
 use Foodsharing\Modules\Bell\BellGateway;
 use Foodsharing\Modules\Bell\DTO\Bell;
+use Foodsharing\Modules\Blog\DTO\BlogPost;
 use Foodsharing\Modules\Core\BaseGateway;
 use Foodsharing\Modules\Core\Database;
 use Foodsharing\Modules\Core\DBConstants\Bell\BellType;
@@ -72,16 +75,18 @@ final class BlogGateway extends BaseGateway
         return $val;
     }
 
-    public function getPost(int $id): array
+    /**
+     * Returns the blog post with the given id, or null if the id does not exist.
+     */
+    public function getPost(int $id): ?BlogPost
     {
-        return $this->db->fetch('
+        $blogPost = $this->db->fetch('
 			SELECT
 				b.`id`,
 				b.`name`,
 				b.`time`,
 				UNIX_TIMESTAMP(b.`time`) AS time_ts,
 				b.`body`,
-				b.`time`,
 				b.`picture`,
 				CONCAT(fs.name," ",fs.nachname) AS fs_name
 			FROM
@@ -94,6 +99,19 @@ final class BlogGateway extends BaseGateway
 			AND
 				b.id = :fs_id',
             [':fs_id' => $id]);
+
+        if (empty($blogPost)) {
+            return null;
+        }
+
+        return BlogPost::create(
+            $blogPost['id'],
+            $blogPost['name'],
+            $blogPost['body'],
+            Carbon::createFromTimestamp($blogPost['time_ts'], new DateTimeZone('Europe/Berlin')),
+            $blogPost['fs_name'],
+            $blogPost['picture']
+        );
     }
 
     public function listNews(int $page): array

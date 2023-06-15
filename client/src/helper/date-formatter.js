@@ -328,19 +328,45 @@ export default {
    *
    * @param {Date} date a date to format
    * @param {Object} options options for the formatter
-   * @param {Boolean} options.short a trigger to remove the weekday
+   * @param {full|no-weekday|normal} options.type a trigger to remove the weekday
    * @returns {string} the date or totay
    */
-  date (date = new Date(), { short = false } = {}) {
+  date (date = new Date(), { short = false, type = 'default' } = {}) {
     const d = new Date(date)
-    const options = {
-      weekday: !this.isToday(d) ? 'long' : undefined,
-      year: !this.isSameYear(d) ? 'numeric' : undefined,
-      month: 'numeric',
-      day: 'numeric',
-    }
+    let options
+
     if (short) {
-      options.weekday = undefined
+      type = 'no-weekday'
+    }
+
+    switch (type) {
+      case 'full': {
+        options = {
+          weekday: !this.isToday(d) ? 'long' : undefined,
+          year: !this.isSameYear(d) ? 'numeric' : undefined,
+          month: 'long',
+          day: 'numeric',
+        }
+        break
+      }
+      case 'no-weekday': {
+        options = {
+          weekday: undefined,
+          year: !this.isSameYear(d) ? 'numeric' : undefined,
+          month: 'long',
+          day: 'numeric',
+        }
+        break
+      }
+      default: {
+        options = {
+          weekday: !this.isToday(d) ? 'long' : undefined,
+          year: !this.isSameYear(d) ? 'numeric' : undefined,
+          month: 'numeric',
+          day: 'numeric',
+        }
+        break
+      }
     }
 
     if (this.isToday(d)) {

@@ -11,23 +11,37 @@
         <span v-html="additionalInfoText" />
       </div>
     </div>
-
-    <b-form-input
-      id="searchinput"
-      v-model="searchInput"
-      :placeholder="$i18n('addresspicker.placeholder')"
-      class="mb-2"
-    />
+    <b-form-group>
+      <b-form-input
+        id="searchinput"
+        v-model="searchInput"
+        :placeholder="$i18n('addresspicker.placeholder')"
+        :disabled="disabled"
+      />
+    </b-form-group>
     <LeafletLocationPicker
       ref="locationPicker"
       :icon="icon"
-      :coordinates.sync="coords"
+      :coordinates="coordinates"
       :zoom="zoom"
-      :marker-draggable="true"
+      :marker-draggable="!disabled"
       @coordinates-changed="updateCoordinates"
     />
 
     <div v-if="showAddressFields">
+      <b-form-group
+        :label="$i18n('addresspicker.different_location')"
+        label-for="different-location"
+        class="my-2"
+      >
+        <b-form-checkbox
+          id="different_location"
+          ref="differentLocation"
+          v-model="differentLocation"
+          :disabled="disabled"
+          switch
+        />
+      </b-form-group>
       <b-form-group
         :label="$i18n('anschrift')"
         label-for="input-street"
@@ -36,8 +50,9 @@
         <b-form-input
           id="input-street"
           ref="inputStreet"
-          v-model="currentStreet"
-          :disabled="false"
+          :value="street"
+          :disabled="disabled || !differentLocation"
+          @change="$event => updateAddress('street', $event)"
         />
       </b-form-group>
       <b-form-group
@@ -48,9 +63,10 @@
         <b-form-input
           id="input-postal"
           ref="inputPostal"
-          v-model="currentPostal"
+          :value="postalCode"
           class="my-2"
-          :disabled="true"
+          :disabled="disabled || !differentLocation"
+          @change="$event => updateAddress('postalCode', $event)"
         />
       </b-form-group>
       <b-form-group
@@ -61,9 +77,10 @@
         <b-form-input
           id="input-city"
           ref="inputCity"
-          v-model="currentCity"
+          :value="city"
           class="my-2"
-          :disabled="true"
+          :disabled="disabled || !differentLocation"
+          @change="$event => updateAddress('city', $event)"
         />
       </b-form-group>
     </div>
@@ -99,10 +116,12 @@ export default {
     showAddressFields: { type: Boolean, default: true },
     additionalInfoText: { type: String, default: null },
     doReverseGeocoding: { type: Boolean, default: true },
+    disabled: { type: Boolean, default: false },
   },
   data () {
     return {
       icon: L.AwesomeMarkers.icon({ icon: this.iconName, markerColor: this.iconColor }),
+      differentLocation: null,
       coords: this.coordinates,
       currentPostal: this.postalCode,
       currentStreet: this.street,
@@ -139,6 +158,7 @@ export default {
   },
   methods: {
     updateCoordinates (coords) {
+      this.coords = coords
       // if the marker was dragged, we need to do reverse geocoding to find the address
       if (this.doReverseGeocoding) {
         this.geolocationSearchEngine.reverseGeocode([coords.lat, coords.lon])
@@ -146,8 +166,9 @@ export default {
     },
     updateMap (event, searchResult) {
       this.searchInput = searchResult.description
-      this.coords = { lat: searchResult.geometry.coordinates[1], lon: searchResult.geometry.coordinates[0] }
-
+      if (!this.differentLocation) {
+        this.coords = { lat: searchResult.geometry.coordinates[1], lon: searchResult.geometry.coordinates[0] }
+      }
       // set the map to the new coordinates
       this.$refs.locationPicker.centerMapAndMarker(this.coords)
       if (searchResult.properties.extent) {
@@ -158,17 +179,45 @@ export default {
       }
 
       // update the address data
-      const prop = searchResult.properties
-      if (prop.postcode) {
-        this.currentPostal = prop.postcode
+      if (!this.differentLocation) {
+        const prop = searchResult.properties
+        if (prop.postcode) {
+          this.currentPostal = prop.postcode
+        }
+        if (prop.city) {
+          this.currentCity = prop.city
+        }
+        if (prop.street) {
+          this.currentStreet = prop.street + (prop.housenumber ? ' ' + prop.housenumber : '')
+        }
       }
-      if (prop.city) {
-        this.currentCity = prop.city
+      this.updateAddress()
+    },
+    updateAddress (field, value) {
+      if (!this.currentCity) {
+        this.currentCity = this.city
       }
-      if (prop.street) {
-        this.currentStreet = prop.street + (prop.housenumber ? ' ' + prop.housenumber : '')
+      if (!this.currentPostal) {
+        this.currentPostal = this.postalCode
+      }
+      if (!this.currentStreet) {
+        this.currentStreet = this.street
       }
 
+      if (field === 'street') {
+        this.currentStreet = value
+      }
+
+      if (field === 'postalCode') {
+        this.currentPostal = value
+      }
+
+      if (field === 'city') {
+        this.currentCity = value
+      }
+      this.emitAddressChange()
+    },
+    emitAddressChange () {
       this.$emit('address-change', this.coords, this.currentStreet, this.currentPostal, this.currentCity)
     },
   },

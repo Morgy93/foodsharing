@@ -3,6 +3,7 @@
 namespace Foodsharing\RestApi;
 
 use DateTime;
+use Exception;
 use Foodsharing\Lib\Session;
 use Foodsharing\Modules\Bell\BellGateway;
 use Foodsharing\Modules\Bell\DTO\Bell;
@@ -79,7 +80,41 @@ class StoreRestController extends AbstractFOSRestController
         }
 
         $result = $this->storeTransactions->getCommonStoreMetadata(
-            !$this->storePermissions->mayCreateStore());
+            !$this->storePermissions->mayListStores());
+
+        return $this->handleView($this->view($result, 200));
+    }
+
+    /**
+     * Returns a list of stores where the user is a member of reduced store information.
+     *
+     * @OA\Tag(name="stores")
+     * @OA\Tag(name="user")
+     * @OA\Response(
+     *        response="200",
+     *        description="Success.",
+     *      @Model(type=StorePaginationResult::class)
+     * )
+     * @OA\Response(response="401", description="Not logged in")
+     * @OA\Response(response="403", description="Forbidden to access store list")
+     * @Rest\Get("user/current/stores/details")
+     *
+     * @throws Exception
+     */
+    public function getStoresOfUser(): Response
+    {
+        if (!$this->session->mayRole()) {
+            throw new UnauthorizedHttpException('', self::NOT_LOGGED_IN);
+        }
+
+        if (!$this->storePermissions->mayListStores($this->session->id())) {
+            throw new AccessDeniedHttpException('No permission see store list');
+        }
+
+        $stores = $this->storeTransactions->listOverviewInformationsOfStoresFromUser($this->session->id(), true);
+        $result = new StorePaginationResult();
+        $result->total = count($stores);
+        $result->stores = $stores;
 
         return $this->handleView($this->view($result, 200));
     }
@@ -97,9 +132,8 @@ class StoreRestController extends AbstractFOSRestController
      * @OA\Response(response="401", description="Not logged in")
      * @OA\Response(response="403", description="Forbidden to access store list")
      * @Rest\Get("region/{regionId}/stores", requirements={"regionId" = "\d+"})
-     * @Rest\QueryParam(name="expand", requirements="\d+", default="0", description="Expand information for store and region")
      */
-    public function getStoresOfRegion(int $regionId, ParamFetcher $paramFetcher): Response
+    public function getStoresOfRegion(int $regionId): Response
     {
         if (!$this->session->mayRole()) {
             throw new UnauthorizedHttpException('', self::NOT_LOGGED_IN);
@@ -109,9 +143,7 @@ class StoreRestController extends AbstractFOSRestController
             throw new AccessDeniedHttpException('No permission see store list');
         }
 
-        $expand = boolval($paramFetcher->get('expand'));
-
-        $stores = $this->storeTransactions->listOverviewInformationsOfStoresInRegion($regionId, $expand);
+        $stores = $this->storeTransactions->listOverviewInformationsOfStoresInRegion($regionId, true);
         $result = new StorePaginationResult();
         $result->total = count($stores);
         $result->stores = $stores;
@@ -148,6 +180,7 @@ class StoreRestController extends AbstractFOSRestController
         try {
             $maySeeDetails = $this->storePermissions->mayAccessStore($storeId);
             $maySeeSensitiveDetails = $this->storePermissions->mayEditStore($storeId);
+
             $result = $this->storeTransactions->getStore($storeId, $maySeeDetails, $maySeeSensitiveDetails);
 
             return $this->handleView($this->view($result, 200));

@@ -10,7 +10,6 @@ use Foodsharing\Modules\Core\DBConstants\Region\WorkgroupFunction;
 use Foodsharing\Modules\Core\DBConstants\Store\CooperationStatus;
 use Foodsharing\Modules\Group\GroupFunctionGateway;
 use Foodsharing\Modules\Region\RegionGateway;
-use Foodsharing\Modules\Store\PickupGateway;
 use Foodsharing\Modules\Store\StoreGateway;
 use Foodsharing\Permissions\StorePermissions;
 use Foodsharing\Utility\DataHelper;
@@ -19,7 +18,6 @@ use Foodsharing\Utility\WeightHelper;
 class StoreUserControl extends Control
 {
     private $regionGateway;
-    private $pickupGateway;
     private $storeGateway;
     private $storePermissions;
     private $dataHelper;
@@ -29,7 +27,6 @@ class StoreUserControl extends Control
     public function __construct(
         StoreUserView $view,
         RegionGateway $regionGateway,
-        PickupGateway $pickupGateway,
         StoreGateway $storeGateway,
         StorePermissions $storePermissions,
         DataHelper $dataHelper,
@@ -38,7 +35,6 @@ class StoreUserControl extends Control
     ) {
         $this->view = $view;
         $this->regionGateway = $regionGateway;
-        $this->pickupGateway = $pickupGateway;
         $this->storeGateway = $storeGateway;
         $this->storePermissions = $storePermissions;
         $this->dataHelper = $dataHelper;
@@ -140,7 +136,7 @@ class StoreUserControl extends Control
                         'storeId' => $storeId,
                         'isJumper' => $store['jumper'],
                         'fsId' => $this->session->id()
-                    ]),
+                ]),
                     CNT_LEFT
                 );
 
@@ -214,23 +210,6 @@ class StoreUserControl extends Control
                     );
                 }
 
-                /* change regular fetchdates */
-                if ($this->storePermissions->mayEditPickups($storeId)) {
-                    $width = $this->session->isMob() ? '$(window).width() * 0.96' : '$(window).width() / 2';
-                    $pickup_dates = $this->pickupGateway->getAbholzeiten($storeId);
-
-                    $this->pageHelper->hiddenDialog(
-                        'editpickups',
-                        [
-                            $this->view->u_editPickups($pickup_dates),
-                            $this->v_utils->v_form_hidden('bid', 0)
-                        ],
-                        $this->translator->trans('pickup.edit.add'),
-                        true,
-                        $width
-                    );
-                }
-
                 if (!$store['jumper']) {
                     if (!in_array($store['betrieb_status_id'], [
                         CooperationStatus::COOPERATION_STARTING->value,
@@ -252,36 +231,6 @@ class StoreUserControl extends Control
                 } else {
                     $this->routeHelper->goAndExit('/karte');
                 }
-            }
-        } else {
-            $this->pageHelper->addBread($this->translator->trans('menu.entry.your_stores'));
-
-            if ($this->storePermissions->mayCreateStore()) {
-                $this->pageHelper->addContent($this->v_utils->v_menu(
-                    [
-                        ['href' => '/?page=betrieb&a=new', 'name' => $this->translator->trans('storeedit.add-new')]
-                    ],
-                    $this->translator->trans('storeedit.actions')
-                ), CNT_RIGHT);
-            }
-
-            $region = $this->regionGateway->getRegion($this->session->getCurrentRegionId());
-            $stores = $this->storeGateway->getMyStores($this->session->id(), $this->session->getCurrentRegionId());
-            $this->pageHelper->addContent($this->view->u_storeList(
-                $stores['verantwortlich'],
-                $this->translator->trans('storelist.managing')
-            ));
-            $this->pageHelper->addContent($this->view->u_storeList(
-                $stores['team'],
-                $this->translator->trans('storelist.fetching')
-            ));
-
-            if (!is_null($region)) {
-                $regionName = $region['name'];
-                $this->pageHelper->addContent($this->view->u_storeList(
-                    $stores['sonstige'],
-                    $this->translator->trans('storelist.others', ['{region}' => $regionName])
-                ));
             }
         }
     }

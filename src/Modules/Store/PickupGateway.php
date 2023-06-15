@@ -225,32 +225,6 @@ class PickupGateway extends BaseGateway implements BellUpdaterInterface
         return $result;
     }
 
-    public function getAbholzeiten(int $storeId): array
-    {
-        $times = $this->db->fetchAll('
-			SELECT `time`, `dow`, `fetcher`
-			FROM `fs_abholzeiten`
-			WHERE `betrieb_id` = :storeId
-		', [':storeId' => $storeId]);
-
-        if (!$times) {
-            return [];
-        }
-
-        $result = [];
-        foreach ($times as $r) {
-            $result[$r['dow'] . '-' . $r['time']] = [
-                'dow' => $r['dow'],
-                'time' => $r['time'],
-                'fetcher' => $r['fetcher'],
-            ];
-        }
-
-        ksort($result);
-
-        return $result;
-    }
-
     /**
      * Returns a list of pickup sign up for the store on the date.
      *

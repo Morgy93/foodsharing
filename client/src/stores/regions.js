@@ -16,6 +16,10 @@ export const getters = {
   getChoosedRegionChildren () {
     return store.choosedRegionChildren
   },
+
+  find (regionId) {
+    return store.regions.find(region => region.id === regionId)
+  },
 }
 
 export const mutations = {

@@ -4,12 +4,13 @@ import en from '@translations/messages.en.yml'
 import fr from '@translations/messages.fr.yml'
 import it from '@translations/messages.it.yml'
 import nbNo from '@translations/messages.nb_NO.yml'
+import tr from '@translations/messages.tr.yml'
 
 export const { locale } = serverData
 
 export default function (path, variables = {}) {
   // find the selected language, use German as fallback
-  const language = { en: en, fr: fr, it: it, nb_NO: nbNo }
+  const language = { en: en, fr: fr, it: it, nb_NO: nbNo, tr: tr }
   const selected = Object.keys(language).find(l => l.localeCompare(locale || l) === 0)
   const src = selected ? language[selected] : de
 

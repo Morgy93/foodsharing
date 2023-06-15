@@ -69,7 +69,7 @@ class ForumApiCest
         $I->sendPOST($threadPath . '/posts', [
             'body' => $body
         ]);
-        $I->seeResponseCodeIs(\Codeception\Util\HttpCode::NO_CONTENT);
+        $I->seeResponseCodeIs(\Codeception\Util\HttpCode::OK);
         $I->seeInDatabase('fs_theme_post', ['body' => $body]);
         $I->sendGET($threadPath);
         $I->seeResponseIsJson();

@@ -92,6 +92,7 @@ You need an ssh key on your system to clone the repository with SSH ([set up gui
 
 :::
 
+Continue on [Seed Overview](backend/database/seed-overview).
 
 ## Go mobile wild
 

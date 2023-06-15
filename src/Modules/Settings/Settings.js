@@ -22,26 +22,26 @@ import ProfilePicture from './components/ProfilePicture'
 import NameInput from './components/NameInput'
 import LeafletLocationSearchVForm from '@/components/map/LeafletLocationSearchVForm'
 import RegionTreeVForm from '@/components/regiontree/RegionTreeVForm'
+import Passport from './components/Passport.vue'
 
-if (GET('sub') === 'calendar') {
-  vueRegister({
-    Calendar,
-  })
-  vueApply('#calendar')
-} else if (GET('sub') === 'general') {
-  vueRegister({
-    ProfilePicture,
-    NameInput,
-    LeafletLocationSearchVForm,
-    RegionTreeVForm,
-  })
-  vueApply('#image-upload')
-  vueApply('#name-input')
-  vueApply('#settings-address-search')
+switch (GET('sub')) {
+  case 'passport':
+    vueRegister({ Passport })
+    vueApply('#passport')
+    break
+  case 'calendar':
+    vueRegister({ Calendar })
+    vueApply('#calendar')
+    break
+  case 'general':
+    vueRegister({ ProfilePicture, NameInput, LeafletLocationSearchVForm, RegionTreeVForm })
+    vueApply('#image-upload')
+    vueApply('#name-input')
+    vueApply('#settings-address-search')
 
-  if (document.getElementById('region-tree-vform') !== null) {
-    vueApply('#region-tree-vform')
-  }
+    if (document.getElementById('region-tree-vform') !== null) {
+      vueApply('#region-tree-vform')
+    }
 }
 
 expose({

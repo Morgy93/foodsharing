@@ -11,7 +11,6 @@ use Foodsharing\Modules\Core\DBConstants\Quiz\QuizStatus;
 use Foodsharing\Modules\Core\DBConstants\Quiz\SessionStatus;
 use Foodsharing\Modules\Foodsaver\FoodsaverGateway;
 use Foodsharing\Modules\FoodSharePoint\FoodSharePointGateway;
-use Foodsharing\Modules\PassportGenerator\PassportGeneratorTransaction;
 use Foodsharing\Modules\Quiz\QuizGateway;
 use Foodsharing\Modules\Quiz\QuizSessionGateway;
 use Foodsharing\Modules\Region\ForumFollowerGateway;
@@ -30,7 +29,6 @@ class SettingsControl extends Control
     private DataHelper $dataHelper;
     private ForumFollowerGateway $forumFollowerGateway;
     private SettingsPermissions $settingsPermissions;
-    private PassportGeneratorTransaction $passportGeneratorTransaction;
 
     public function __construct(
         SettingsView $view,
@@ -43,7 +41,6 @@ class SettingsControl extends Control
         DataHelper $dataHelper,
         ForumFollowerGateway $forumFollowerGateway,
         SettingsPermissions $settingsPermissions,
-        PassportGeneratorTransaction $passportGeneratorTransaction
     ) {
         $this->view = $view;
         $this->settingsGateway = $settingsGateway;
@@ -55,7 +52,6 @@ class SettingsControl extends Control
         $this->dataHelper = $dataHelper;
         $this->forumFollowerGateway = $forumFollowerGateway;
         $this->settingsPermissions = $settingsPermissions;
-        $this->passportGeneratorTransaction = $passportGeneratorTransaction;
 
         parent::__construct();
 
@@ -89,8 +85,7 @@ class SettingsControl extends Control
         if ($this->settingsPermissions->mayUseCalendarExport()) {
             $menu[] = ['name' => $this->translator->trans('settings.calendar.menu'), 'href' => '/?page=settings&sub=calendar'];
         }
-
-        if ($this->settingsPermissions->mayUsePassportGeneration()) {
+        if ($this->session->mayRole() > Role::FOODSHARER) {
             $menu[] = ['name' => $this->translator->trans('settings.passport.menu'), 'href' => '/?page=settings&sub=passport'];
         }
 
@@ -384,8 +379,9 @@ class SettingsControl extends Control
 
     public function passport()
     {
-        if ($this->settingsPermissions->mayUsePassportGeneration()) {
-            $this->passportGeneratorTransaction->generate([$this->session->id()], false, true);
+        if ($this->session->mayRole() > Role::FOODSHARER) {
+            $this->pageHelper->addBread($this->translator->trans('settings.passport.menu'));
+            $this->pageHelper->addContent($this->view->passport());
         } else {
             $this->routeHelper->goAndExit('/?page=settings');
         }

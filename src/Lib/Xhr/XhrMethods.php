@@ -177,7 +177,7 @@ class XhrMethods
             'status' => 1,
             'script' => '$("#tree").dynatree("getTree").reload(); pulseInfo("'
                 . $this->translator->trans('region.created', ['{region}' => $data['name']]) .
-            '");',
+                '");',
         ]);
     }
 
@@ -205,8 +205,8 @@ class XhrMethods
 				' . (int)$data['newfetchtime'][$i] . ',
 				' . $this->model->strval(
                     sprintf('%02d', $data['nfttime']['hour'][$i])
-                    . ':' .
-                    sprintf('%02d', $data['nfttime']['min'][$i]) . ':00'
+                        . ':' .
+                        sprintf('%02d', $data['nfttime']['min'][$i]) . ':00'
                 ) . ',
 				' . (int)$data['nft-count'][$i] . '
 			)
@@ -216,7 +216,9 @@ class XhrMethods
         $storeName = $this->storeGateway->getStoreName($data['bid']);
 
         $team = $this->storeGateway->getStoreTeam($data['bid']);
-        $team = array_map(function ($foodsaver) { return $foodsaver['id']; }, $team);
+        $team = array_map(function ($foodsaver) {
+            return $foodsaver['id'];
+        }, $team);
         $bellData = Bell::create('store_cr_times_title', 'store_cr_times', 'fas fa-user-clock', [
             'href' => '/?page=fsbetrieb&id=' . (int)$data['bid'],
         ], [
@@ -230,9 +232,10 @@ class XhrMethods
 
     public function xhr_bezirkTree($data)
     {
-        $region = $this->regionGateway->getBezirkByParent($data['p'],
+        $region = $this->regionGateway->getBezirkByParent(
+            $data['p'],
             $this->regionPermissions->mayAdministrateRegions()
-            || $this->newsletterEmailPermissions->mayAdministrateNewsletterEmail()
+                || $this->newsletterEmailPermissions->mayAdministrateNewsletterEmail()
         );
         if (!$region) {
             $out = ['status' => 0];
@@ -336,19 +339,22 @@ class XhrMethods
                 'botschafter'
             )
         ], ['submit' => $this->translator->trans('button.save')])
-        .
-        $this->v_utils->v_input_wrapper($this->translator->trans('region.hull.title'),
-            '<a class="button" href="#" onclick="'
-                . 'if (confirm(\'' . $this->translator->trans('region.hull.confirm') . '\')) {'
-                . 'tryMasterUpdate(' . (int)$data['id'] . ');} return false;'
-            . '">'
-            . $this->translator->trans('region.hull.start')
-            . '</a>', 'masterupdate', [
-                'desc' => $this->translator->trans('region.hull.closure', [
-                    '{region}' => $g_data['name'],
-                ]),
-            ]
-        );
+            .
+            $this->v_utils->v_input_wrapper(
+                $this->translator->trans('region.hull.title'),
+                '<a class="button" href="#" onclick="'
+                    . 'if (confirm(\'' . $this->translator->trans('region.hull.confirm') . '\')) {'
+                    . 'tryMasterUpdate(' . (int)$data['id'] . ');} return false;'
+                    . '">'
+                    . $this->translator->trans('region.hull.start')
+                    . '</a>',
+                'masterupdate',
+                [
+                    'desc' => $this->translator->trans('region.hull.closure', [
+                        '{region}' => $g_data['name'],
+                    ]),
+                ]
+            );
 
         $out['script'] = '
 		$("#bezirkform-form").off("submit");
@@ -412,35 +418,20 @@ class XhrMethods
         if ($betriebe = $this->storeGateway->getMapsStores($data['id'])) {
             $out['betriebe'] = $betriebe;
             foreach ($out['betriebe'] as $i => $b) {
-                $img = ($b['kette_id'] == 0) ? '' : $b['logo'];
-                if ($img) {
-                    $img = '<a href="/?page=fsbetrieb&id=' . (int)$b['id'] . '">'
-                        . '<img style="float: right; margin-left: 10px;" src="' . $this->idimg($img, 100) . '" />'
-                    . '</a>';
-                }
                 $out['betriebe'][$i]['bubble'] = '<div style="height: 110px; overflow: hidden; width: 270px; ">'
-                    . '<div style="margin-right: 5px; float: right;">' . $img . '</div>'
+                    . '<div style="margin-right: 5px; float: right;"></div>'
                     . '<h1 style="font-size: 13px; font-weight: bold; margin-bottom: 8px;">'
-                        . '<a href="/?page=fsbetrieb&id=' . (int)$b['id'] . '">'
-                        . $this->sanitizerService->jsSafe($b['name'])
-                        . '</a>'
+                    . '<a href="/?page=fsbetrieb&id=' . (int)$b['id'] . '">'
+                    . $this->sanitizerService->jsSafe($b['name'])
+                    . '</a>'
                     . '</h1>'
                     . '<p>' . $this->sanitizerService->jsSafe($b['str']) . '</p>'
                     . '<p>' . $this->sanitizerService->jsSafe($b['plz'] . ' ' . $b['stadt']) . '</p>'
-                . '</div><div class="clear"></div>';
+                    . '</div><div class="clear"></div>';
             }
         }
 
         return json_encode($out);
-    }
-
-    private function idimg($file, $size)
-    {
-        if (!empty($file)) {
-            return 'images/' . str_replace('/', '/' . $size . '_', $file);
-        }
-
-        return false;
     }
 
     public function xhr_saveBezirk($data)

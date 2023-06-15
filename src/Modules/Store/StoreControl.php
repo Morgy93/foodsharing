@@ -72,8 +72,7 @@ class StoreControl extends Control
             if ($this->storePermissions->mayCreateStore()) {
                 $this->handle_add($this->session->id());
 
-                $this->pageHelper->addBread($this->translator->trans('store.bread'), '/?page=fsbetrieb');
-                $this->pageHelper->addBread($this->translator->trans('storeedit.add-new'));
+                $this->pageHelper->addBread($this->translator->trans('storeedit.add-new'), '/?page=fsbetrieb');
 
                 $chosenRegion = ($regionId > 0 && UnitType::isAccessibleRegion($this->regionGateway->getType($regionId))) ? $region : null;
                 $this->pageHelper->addContent($this->view->betrieb_form(
@@ -89,9 +88,11 @@ class StoreControl extends Control
                 $this->flashMessageHelper->info($this->translator->trans('store.smneeded'));
                 $this->routeHelper->goAndExit('/?page=settings&sub=up_bip');
             }
-        } elseif ($id = $this->identificationHelper->getActionId('delete')) {
+        } elseif ($this->identificationHelper->getAction('own')) {
+            $this->pageHelper->addBread($this->translator->trans('store.ownStores'));
+            $this->pageHelper->addContent($this->view->storeOwnList());
         } elseif ($id = $this->identificationHelper->getActionId('edit')) {
-            $this->pageHelper->addBread($this->translator->trans('store.bread'), '/?page=fsbetrieb');
+            $this->pageHelper->addBread($this->translator->trans('storeedit.bread'), '/?page=fsbetrieb');
             $this->pageHelper->addBread($this->translator->trans('storeedit.bread'));
             $store = $this->storeGateway->getStore($id);
             $data['name'] = $store->name;
@@ -160,13 +161,10 @@ class StoreControl extends Control
                 $this->routeHelper->goAndExit('/');
             } else {
                 $this->pageHelper->addBread($this->translator->trans('store.bread'), '/?page=fsbetrieb');
-                $storesMapped = $this->storeTransactions->listOverviewInformationsOfStoresInRegion($regionId, true);
-
-                $this->pageHelper->addContent($this->view->vueComponent('vue-storelist', 'store-list', [
+                $this->pageHelper->addContent($this->view->vueComponent('vue-store-region-list', 'store-region-list', [
                     'regionName' => $region['name'],
                     'regionId' => $regionId,
-                    'showCreateStore' => $this->storePermissions->mayCreateStore(),
-                    'stores' => array_values($storesMapped),
+                    'showCreateStore' => $this->storePermissions->mayCreateStore()
                 ]));
             }
         }

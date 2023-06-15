@@ -570,15 +570,23 @@ class MailboxGateway extends BaseGateway
     }
 
     /**
+     * Fixes legacy email address JSON possibly containing quoted keys and/or values.
+     */
+    private function fixQuotedAddressJson(string $json): string
+    {
+        return preg_replace('/(?<=\{|,)\\\\"(host|mailbox|personal)\\\\":\\\\"(.*?)\\\\"(?=\}|,\\\\"(?:host|mailbox|personal)\\\\")/', '"$1":"$2"', trim($json, '"'));
+    }
+
+    /**
      * Converts a JSON string into an email address DTO.
      */
     private function parseAddress(string $json): EmailAddress
     {
-        $json = str_replace('\"', '"', trim($json, '"'));
+        $json = $this->fixQuotedAddressJson($json);
         $data = json_decode($json, true, 512, JSON_THROW_ON_ERROR + JSON_INVALID_UTF8_IGNORE);
         $name = isset($data['personal']) ? $data['personal'] : null;
 
-        return new EmailAddress($data['mailbox'], $data['host'], $name);
+        return new EmailAddress($data['mailbox'], $data['host'] ?? '', $name);
     }
 
     /**
@@ -586,12 +594,13 @@ class MailboxGateway extends BaseGateway
      */
     private function parseAddresses(string $json): array
     {
+        $json = $this->fixQuotedAddressJson($json);
         $data = json_decode($json, true, 512, JSON_THROW_ON_ERROR + JSON_INVALID_UTF8_IGNORE);
 
         return array_map(function ($x) {
             $name = isset($x['personal']) ? $x['personal'] : null;
 
-            return new EmailAddress($x['mailbox'], $x['host'], $name);
+            return new EmailAddress($x['mailbox'], $x['host'] ?? '', $name);
         }, $data);
     }
 

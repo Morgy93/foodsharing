@@ -1,8 +1,9 @@
 import Vue from 'vue'
-import { listStoresForCurrentUser } from '@/api/stores'
+import { listStoresForCurrentUser, getStoreMetaData } from '@/api/stores'
 
 export const store = Vue.observable({
   stores: [],
+  metadata: {},
 })
 
 export const getters = {
@@ -29,6 +30,38 @@ export const getters = {
     return store.stores.length > 0
   },
 
+  getStoreCategoryTypes () {
+    return store.metadata.categories ?? []
+  },
+
+  getStoreConvinceStatusTypes () {
+    return store.metadata.convinceStatus ?? []
+  },
+
+  getStoreWeightTypes () {
+    return store.metadata.weight ?? []
+  },
+
+  getStoreCooperationStatus () {
+    return store.metadata.status ?? []
+  },
+
+  getGrocerieTypes () {
+    return store.metadata.groceries ?? []
+  },
+
+  getStoreChains () {
+    return store.metadata.storeChains ?? []
+  },
+
+  getPublicTimes () {
+    return store.metadata.publicTimes ?? []
+  },
+
+  getMaxCountPickupSlot () {
+    return store.metadata.maxCountPickupSlot ?? 0
+  },
+
   has (id) {
     return store.stores.find(store => store.id === id)
   },
@@ -38,6 +71,7 @@ export const mutations = {
   async fetch (force = false) {
     if (!store.length || force) {
       store.stores = await listStoresForCurrentUser()
+      store.metadata = await getStoreMetaData()
     }
   },
 }

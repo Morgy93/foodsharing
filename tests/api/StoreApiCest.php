@@ -50,7 +50,7 @@ class StoreApiCest
         $this->region = $I->createRegion();
         $this->nextRegion = $I->createRegion();
         $this->otherRegion = $I->createRegion();
-        $I->haveInDatabase('fs_kette', ['id' => 40, 'name' => 'Chain']);
+        $I->haveInDatabase('fs_chain', ['id' => 40, 'name' => 'Chain']);
         $I->haveInDatabase('fs_betrieb_kategorie', ['id' => 20, 'name' => 'Category']);
         $this->foodsharer = $I->createFoodsharer(null, ['verified' => 0]);
         $this->user = $I->createFoodsaver(null, ['verified' => 0]);
@@ -289,8 +289,7 @@ class StoreApiCest
         $I->seeResponseIsJson();
         $I->seeResponseContainsJson(['maxCountPickupSlot' => 10]);
         $storeChains = $I->grabDataFromResponseByJsonPath('$.storeChains');
-        $I->assertCount(1, $storeChains);
-        $I->assertEquals(null, $storeChains[0]);
+        $I->assertNotCount(0, $storeChains);
         $groceries = $I->grabDataFromResponseByJsonPath('$.groceries');
         $I->assertNotCount(0, $groceries);
         $categories = $I->grabDataFromResponseByJsonPath('$.categories');
@@ -388,7 +387,7 @@ class StoreApiCest
 
         $names = $I->grabDataFromResponseByJsonPath('stores.*.name');
         foreach ($names as $name) {
-            $I->assertNull($name);
+            $I->assertNotEmpty($name, 'Store name should not be empty');
         }
     }
 
@@ -1131,7 +1130,7 @@ class StoreApiCest
     public function patchStoreChainAsStoreManager(ApiTester $I)
     {
         $I->login($this->manager[self::EMAIL]);
-        $I->haveInDatabase('fs_kette', ['id' => 4, 'name' => 'Chain']);
+        $I->haveInDatabase('fs_chain', ['id' => 4, 'name' => 'Chain']);
 
         $I->haveHttpHeader('Content-Type', 'application/json');
         $I->sendPATCH(self::API_STORES . '/' . $this->store[self::ID] . '/information', ['chainId' => 4]);

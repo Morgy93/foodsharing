@@ -24,10 +24,13 @@ source "$dir"/__common.sh
 function _docker-compose () {
     # On newer systems, docker-compose may not be available anymore.
     # It's been substituted by "docker compose" (with a space inbetween).
-    if command -v docker-compose >/dev/null; then
+    if docker compose version >/dev/null 2>&1; then
+        docker compose "$@"
+    elif command -v docker-compose >/dev/null; then
         docker-compose "$@"
     else
-        docker compose "$@"
+        echo "docker compose not found. Please install latest docker version"
+        exit 1
     fi
 }
 

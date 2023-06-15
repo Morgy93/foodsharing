@@ -1,5 +1,6 @@
 <template>
   <div class="store-desc bootstrap rounded list-group mb-2">
+    <StoreInformationModal :store-id="storeId" />
     <div
       class="list-group-item py-2 text-white font-weight-bold bg-primary d-flex justify-content-between"
       v-html="$i18n('store.actions')"
@@ -19,19 +20,10 @@
       v-html="$i18n('store.chat.jumper')"
     />
     <button
-      v-if="mayEditStore"
       type="button"
       class="list-group-item list-group-item-action"
-      @click="goToStoreEdit"
-      v-text="$i18n('storeedit.bread')"
-    />
-    <button
-      v-if="mayEditStore"
-      type="button"
-      class="list-group-item list-group-item-action"
-      href="#"
-      @click="loadEditRecurringPickupModal"
-      v-text="$i18n('pickup.edit.bread')"
+      @click="$bvModal.show('storeInformationModal')"
+      v-text="$i18n('storeview.show_information')"
     />
     <button
       v-if="mayLeaveStoreTeam && userIsInStore || isJumper"
@@ -46,12 +38,15 @@
 
 <script>
 import conversationStore from '@/stores/conversations'
-import $ from 'jquery'
 import { pulseError } from '@/script'
 import DataUser from '@/stores/user'
 import { removeStoreMember } from '@/api/stores'
+import StoreInformationModal from './StoreInformationModal.vue'
 
 export default {
+  components: {
+    StoreInformationModal,
+  },
   props: {
     fsId: { type: Number, required: true },
     mayLeaveStoreTeam: { type: Boolean, default: false },
@@ -77,13 +72,6 @@ export default {
   methods: {
     openChat (conversationId) {
       conversationStore.openChat(conversationId)
-    },
-    loadEditRecurringPickupModal () {
-      $('#bid').val(this.storeId)
-      $('#editpickups').dialog('open')
-    },
-    goToStoreEdit () {
-      window.location.href = this.$url('storeEdit', this.storeId)
     },
     async removeFromTeam (fsId, fsName) {
       if (!fsId) {

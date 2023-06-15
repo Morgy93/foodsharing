@@ -427,7 +427,14 @@ class SettingsView extends View
             $this->v_utils->v_form_passwd('passcheck');
     }
 
-    public function settingsCalendar()
+    public function passport(): string
+    {
+        return $this->vueComponent('passport', 'Passport', [
+            'userId' => $this->session->id(),
+        ]);
+    }
+
+    public function settingsCalendar(): string
     {
         return $this->vueComponent('calendar', 'Calendar', [
             'baseUrlWebcal' => WEBCAL_URL . '/api/calendar/',

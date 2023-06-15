@@ -46,7 +46,7 @@
 
 <script>
 // Stores
-import { mutations, getters } from '@/stores/user'
+import { getters } from '@/stores/user'
 // Components
 import Avatar from '@/components/Avatar'
 // Mixins
@@ -83,9 +83,6 @@ export default {
     isFoodsaver () {
       return getters.isFoodsaver()
     },
-  },
-  async mounted () {
-    await mutations.fetchDetails()
   },
 }
 </script>

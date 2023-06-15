@@ -1,4 +1,4 @@
-import { get, patch, post, remove } from './base'
+import { get, patch, post, remove, put } from './base'
 
 export async function listPickups (storeId) {
   const res = await get(`/stores/${storeId}/pickups`)
@@ -108,4 +108,12 @@ export async function listPickupOptions (page) {
 
 export async function listPastPickups (fsId, page) {
   return await get(`/pickup/history?fsId=${fsId}&page=${page}`)
+}
+
+export async function getRegularPickup (storeId) {
+  return await get(`/stores/${storeId}/regularPickup`)
+}
+
+export async function editRegularPickup (storeId, regularPickups) {
+  return await put(`/stores/${storeId}/regularPickup`, regularPickups)
 }

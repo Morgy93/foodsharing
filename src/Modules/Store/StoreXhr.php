@@ -64,56 +64,6 @@ class StoreXhr extends Control
         }
     }
 
-    public function adddate()
-    {
-        $storeId = (int)$_GET['id'];
-        if (!$this->storePermissions->mayAddPickup($storeId)) {
-            return XhrResponses::PERMISSION_DENIED;
-        }
-
-        $dia = new XhrDialog();
-        $dia->setTitle($this->translator->trans('store.enterdate'));
-        $dia->addContent($this->view->dateForm());
-        $dia->addOpt('width', 280);
-        $dia->setResizeable(false);
-        $dia->addAbortButton();
-        $dia->addButton($this->translator->trans('button.save'), 'saveDate();');
-
-        $dia->addJs('
-
-			function saveDate()
-			{
-				var date = $("#datepicker").datepicker( "getDate" );
-
-				date = date.getFullYear() + "-" +
-				    ("00" + (date.getMonth()+1)).slice(-2) + "-" +
-				    ("00" + date.getDate()).slice(-2) + " " +
-				    ("00" + $("select[name=\'time[hour]\']").val()).slice(-2) + ":" +
-				    ("00" + $("select[name=\'time[min]\']").val()).slice(-2) + ":00";
-
-				if($("#fetchercount").val() >= 0)
-				{
-					ajreq("savedate",{
-						app:"betrieb",
-						time:date,
-						fetchercount:$("#fetchercount").val(),
-						bid:' . $storeId . '
-					});
-				}
-				else
-				{
-					pulseError("' . $this->translator->trans('store.enternumber') . '");
-				}
-			}
-
-			$("#datepicker").datepicker({
-				minDate: new Date()
-			});
-		');
-
-        return $dia->xhrout();
-    }
-
     public function signout()
     {
         $xhr = new Xhr();

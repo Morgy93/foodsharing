@@ -27,7 +27,6 @@ export default {
     }
   },
   async mounted () {
-    await DataUser.mutations.fetchDetails()
     /**
      * Shows an error when the user has an invalid mobile phone number
      */

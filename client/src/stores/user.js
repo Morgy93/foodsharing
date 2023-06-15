@@ -1,7 +1,11 @@
 import Vue from 'vue'
+import { getCacheInterval, setCache, getCache } from '@/helper/cache'
 import { getMailUnreadCount } from '@/api/mailbox'
 import { getDetails } from '@/api/user'
 import serverData from '@/helper/server-data'
+
+const mailUnreadCountRateLimitInterval = 300000 // 5 minutes in milliseconds
+const userDetailsRateLimitInterval = 60000 // 1 minute in milliseconds
 
 export const store = Vue.observable({
   mailUnreadCount: 0,
@@ -98,15 +102,34 @@ export const getters = {
 
 export const mutations = {
   async fetchDetails () {
+    const cacheRequestName = 'userDetails'
     try {
-      store.details = await getDetails()
+      if (await getCacheInterval(cacheRequestName, userDetailsRateLimitInterval)) {
+        store.details = await getDetails()
+
+        await setCache(cacheRequestName, store.details)
+      } else {
+        store.details = await getCache(cacheRequestName)
+      }
     } catch (e) {
-      store.details = null
+      console.error('Error fetching user details:', e)
     }
   },
-
   async fetchMailUnreadCount () {
-    store.mailUnreadCount = await getMailUnreadCount()
+    const cacheRequestName = 'mailUnreadCount'
+    try {
+      if (await getCacheInterval(cacheRequestName, mailUnreadCountRateLimitInterval)) {
+        const unreadCount = await getMailUnreadCount()
+        store.mailUnreadCount = unreadCount
+
+        await setCache(cacheRequestName, unreadCount)
+      } else {
+        const unreadCount = await getCache(cacheRequestName)
+        store.mailUnreadCount = unreadCount
+      }
+    } catch (e) {
+      console.error('Error fetching mail unread count:', e)
+    }
   },
 }
 

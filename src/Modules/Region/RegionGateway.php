@@ -10,6 +10,7 @@ use Foodsharing\Modules\Core\DBConstants\Region\RegionIDs;
 use Foodsharing\Modules\Core\DBConstants\Region\WorkgroupFunction;
 use Foodsharing\Modules\Core\DBConstants\Unit\UnitType;
 use Foodsharing\Modules\Foodsaver\FoodsaverGateway;
+use Foodsharing\Modules\Foodsaver\Profile;
 use Foodsharing\Modules\Group\GroupFunctionGateway;
 
 class RegionGateway extends BaseGateway
@@ -367,16 +368,23 @@ class RegionGateway extends BaseGateway
         return (int)$this->db->fetchValueByCriteria('fs_bezirk', 'type', ['id' => $regionId]);
     }
 
-    public function listRequests(int $regionId): array
+    /**
+     * Returns all users who have an pending application to the given region.
+     *
+     * @param int $regionId the region for which to list the applicants
+     *
+     * @return Profile[]
+     *
+     * @throws Exception
+     */
+    public function listApplicants(int $regionId): array
     {
-        return $this->db->fetchAll('
+        $applicants = $this->db->fetchAll('
 			SELECT 	fs.`id`,
 					fs.`name`,
-					fs.`nachname`,
 					fs.`photo`,
-					fb.application,
-					fb.active,
-					UNIX_TIMESTAMP(fb.added) AS `time`
+					fs.sleep_status,
+					fb.active
 
 			FROM 	`fs_foodsaver_has_bezirk` fb,
 					`fs_foodsaver` fs
@@ -385,6 +393,10 @@ class RegionGateway extends BaseGateway
 			AND 	fb.bezirk_id = :regionId
 			AND 	fb.active = 0
 		', ['regionId' => $regionId]);
+
+        return array_map(function ($applicant) {
+            return new Profile($applicant['id'], $applicant['name'], $applicant['photo'], $applicant['sleep_status']);
+        }, $applicants);
     }
 
     public function linkBezirk(int $foodsaverId, int $regionId, int $active = 1)

@@ -189,9 +189,8 @@ class ProfileView extends View
                     'showHistoryTab' => $maySeePickups,
                     'fsId' => $fsId,
                     'allowSlotCancelation' => $this->profilePermissions->mayCancelSlotsFromProfile($fsId),
-                    'isOwnProfile' => ($fsId == $this->session->id()),
+                    'isOwnProfile' => ($fsId === $this->session->id()),
                 ]),
-                $this->translator->trans('pickup.overview.header')
             );
         }
 

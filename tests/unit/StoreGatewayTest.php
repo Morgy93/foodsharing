@@ -88,7 +88,7 @@ class StoreGatewayTest extends Unit
 
     public function testExistChain()
     {
-        $this->tester->haveInDatabase('fs_kette', ['id' => 2, 'name' => 'Chain']);
+        $this->tester->haveInDatabase('fs_chain', ['id' => 2, 'name' => 'Chain']);
 
         $this->assertTrue($this->gateway->existStoreChain(2));
         $this->assertFalse($this->gateway->existStoreChain(3));
