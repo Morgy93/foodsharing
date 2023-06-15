@@ -13,8 +13,8 @@ flagception:
         db_column_state: isActive
 
   features:
-    always_true_for_testing_purposes:
+    alwaysTrueForTestingPurposes:
       default: true
 
-    always_false_for_testing_purposes:
+    alwaysFalseForTestingPurposes:
       default: false
