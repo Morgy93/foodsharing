@@ -20,14 +20,13 @@ final class FeatureFlagRestController extends AbstractFOSRestController
     ) {
     }
 
-    #[Tag('featureflags')]
-    #[Get(path: 'featureflags/{feature flag}')]
-    #[Parameter(name: 'feature flag', description: 'Identifier for feature flag', in: 'path', required: true)]
+    #[Tag('featuretoggles')]
+    #[Get(path: 'featuretoggle/{featureToggle}')]
+    #[Parameter(name: 'featureToggle', description: 'Identifier for feature toggle', in: 'path', required: true)]
     #[Response(response: HttpResponse::HTTP_OK, description: 'Successful', content: new Model(type: IsFeatureFlagActiveResponse::class))]
-    public function isFeatureFlagActiveAction(string $featureFlag): JsonResponse
+    public function isFeatureFlagActiveAction(string $featureToggle): JsonResponse
     {
-        $isFeatureFlagActive = $this->featureFlagChecker->isFeatureFlagActive($featureFlag);
-
-        return $this->json(new IsFeatureFlagActiveResponse($featureFlag, $isFeatureFlagActive), HttpResponse::HTTP_OK);
+        $isFeatureFlagActive = $this->featureFlagChecker->isFeatureFlagActive($featureToggle);
+        return $this->json(new IsFeatureFlagActiveResponse($featureToggle, $isFeatureFlagActive), HttpResponse::HTTP_OK);
     }
 }

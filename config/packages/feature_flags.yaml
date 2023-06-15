@@ -1,7 +1,0 @@
-flagception:
-  features:
-    always_true_for_testing_purposes:
-      default: true
-
-    always_false_for_testing_purposes:
-      default: false
