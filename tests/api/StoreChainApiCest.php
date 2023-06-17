@@ -1084,13 +1084,13 @@ class StoreChainApiCest
                 'modificationDate' => $modificationDate->format('Y-m-d\T00:00:00+02:00'),
                 'forumThread' => $details ? $newChain['forum_thread'] : null,
                 'notes' => $details ? $newChain['notes'] : null,
-                'kams' => $details ? [
+                'kams' => [
                     [
                     'id' => $this->chainKeyAccountManager['id'],
                     'name' => $this->chainKeyAccountManager['name'],
                     'avatar' => null
                     ]
-                ] : null,
+                ],
                 'regionId' => $details ? RegionIDs::STORE_CHAIN_GROUP : null
             ],
             'storeCount' => $details ? 3 : null
@@ -1204,13 +1204,13 @@ class StoreChainApiCest
                 'modificationDate' => $modificationDate->format('Y-m-d\T00:00:00+02:00'),
                 'forumThread' => $details ? $newChain['forum_thread'] : null,
                 'notes' => $details ? $newChain['notes'] : null,
-                'kams' => $details ? [
+                'kams' => [
                     [
                     'id' => $this->chainKeyAccountManager['id'],
                     'name' => $this->chainKeyAccountManager['name'],
                     'avatar' => null
                     ]
-                ] : null,
+                ],
                 'regionId' => $details ? RegionIDs::STORE_CHAIN_GROUP : null
             ],
             'storeCount' => $details ? 3 : null
@@ -1227,13 +1227,13 @@ class StoreChainApiCest
                 'modificationDate' => $modificationDate->format('Y-m-d\T00:00:00+02:00'),
                 'forumThread' => $details ? $newChain1['forum_thread'] : null,
                 'notes' => $details ? $newChain1['notes'] : null,
-                'kams' => $details ? [
+                'kams' => [
                     [
                     'id' => $this->chainKeyAccountManager['id'],
                     'name' => $this->chainKeyAccountManager['name'],
                     'avatar' => null
                     ]
-                ] : null,
+                ],
                 'regionId' => $details ? RegionIDs::STORE_CHAIN_GROUP : null
             ],
             'storeCount' => $details ? 2 : null

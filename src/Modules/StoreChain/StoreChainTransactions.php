@@ -36,7 +36,6 @@ class StoreChainTransactions
                 $item->storeCount = null;
                 $item->chain->forumThread = null;
                 $item->chain->notes = null;
-                $item->chain->kams = null;
                 $item->chain->regionId = null;
             }
         }
