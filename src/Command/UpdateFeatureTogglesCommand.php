@@ -22,6 +22,7 @@ class UpdateFeatureTogglesCommand extends Command
     {
         $this->featureToggleService->updateFeatureToggles();
         $output->writeln('<info>Updated feature toggle identifiers to manage them via api.</info>');
+
         return Command::SUCCESS;
     }
 }

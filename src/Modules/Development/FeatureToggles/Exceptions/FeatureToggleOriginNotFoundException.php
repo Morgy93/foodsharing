@@ -6,5 +6,4 @@ use Exception;
 
 final class FeatureToggleOriginNotFoundException extends Exception
 {
-
 }

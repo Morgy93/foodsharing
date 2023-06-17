@@ -13,9 +13,8 @@ final class SaveNewFeatureTogglesCommand
 
     /**
      * Creates new database entries for these identifiers. They are not active after creation.
-     * @param string[] $identifiers
-     * @return void
      *
+     * @param string[] $identifiers
      */
     public function execute(array $identifiers): void
     {

@@ -19,6 +19,7 @@ final class GetFeatureToggleOriginQuery
      * Returns the origin from feature toggle.
      *
      * @return string origin (possible: filesystem | database)
+     *
      * @throws FeatureToggleOriginNotFoundException
      */
     public function execute(string $featureToggleIdentifier): string
@@ -40,8 +41,6 @@ final class GetFeatureToggleOriginQuery
             return 'database';
         }
 
-        throw new FeatureToggleOriginNotFoundException(
-            sprintf('Origin from feature toggle (identifier: %s) not found', $featureToggleIdentifier)
-        );
+        throw new FeatureToggleOriginNotFoundException(sprintf('Origin from feature toggle (identifier: %s) not found', $featureToggleIdentifier));
     }
 }

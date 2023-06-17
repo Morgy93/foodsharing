@@ -15,7 +15,7 @@ use Foodsharing\Modules\Development\FeatureToggles\Querys\GetFeatureToggleOrigin
 final class FeatureToggleService implements FeatureToggleChecker
 {
     public function __construct(
-        private readonly FeatureManagerInterface     $manager,
+        private readonly FeatureManagerInterface $manager,
         private readonly GetFeatureToggleOriginQuery $isFeatureToggleInsideDatabaseQuery,
         private readonly GetExistingFeatureTogglesFromDatabaseQuery $existingFeatureTogglesFromDatabaseQuery,
         private readonly GetExistingHardcodedFeatureTogglesQuery $existingHardcodedFeatureTogglesQuery,

@@ -14,6 +14,7 @@ final class GetExistingHardcodedFeatureTogglesQuery
     public function execute(): array
     {
         $featureToggleConfigFile = Yaml::parseFile(self::FEATURE_TOGGLE_CONFIG_FILE_PATH);
+
         return array_keys($featureToggleConfigFile['flagception']['features']);
     }
 }

@@ -13,9 +13,8 @@ final class DeleteUndefinedFeatureTogglesCommand
 
     /**
      * Removes database entries for these identifiers.
-     * @param string[] $identifiers
-     * @return void
      *
+     * @param string[] $identifiers
      */
     public function execute(array $identifiers): void
     {

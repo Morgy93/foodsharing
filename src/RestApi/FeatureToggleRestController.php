@@ -22,8 +22,7 @@ final class FeatureToggleRestController extends AbstractFOSRestController
     public function __construct(
         private readonly FeatureToggleChecker $featureToggleChecker,
         private readonly FeatureToggleService $featureToggleService,
-    )
-    {
+    ) {
     }
 
     /**
