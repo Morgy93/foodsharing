@@ -32,10 +32,10 @@ class NoMarkdownValidator extends ConstraintValidator
             // separate multiple types using pipes
             // throw new UnexpectedValueException($value, 'string|int');
         }
-
-        $escapedValue = $this->parseDown->text($value);
+        $escapedHtmlValue = htmlspecialchars($value, ENT_QUOTES, 'UTF-8');
+        $escapedValue = $this->parseDown->text($escapedHtmlValue);
         $escapedValueSkipedContainer = substr($escapedValue, strlen('<p>'), strlen($escapedValue) - (strlen('<p>') + strlen('</p>')));
-        if ($escapedValueSkipedContainer != $value) {
+        if ($escapedValueSkipedContainer != $escapedHtmlValue) {
             // the argument must be a string or an object implementing __toString()
             $this->context->buildViolation($constraint->message)
                 ->setParameter('{{ string }}', $value)

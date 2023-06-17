@@ -206,7 +206,7 @@ class StoreChainApiCest
         $I->sendPOST(
             self::API_BASE,
             [
-               'name' => 'New Chain',
+               'name' => 'New Chain & next chains',
                'status' => 2,
                'headquartersZip' => '4312',
                'headquartersCity' => 'Ried in der Riedmark',
@@ -222,7 +222,7 @@ class StoreChainApiCest
         $I->seeResponseIsJson();
 
         $id = $I->grabFromDatabase('fs_chain', 'id', [
-            'name' => 'New Chain',
+            'name' => 'New Chain & next chains',
             'status' => 2,
             'headquarters_zip' => '4312',
             'headquarters_city' => 'Ried in der Riedmark',
@@ -235,11 +235,12 @@ class StoreChainApiCest
         $modificationDate = $I->grabFromDatabase('fs_chain', 'modification_date', [
                 'id' => $id]);
         $modificationDate = DateTime::createFromFormat('Y-m-d H:i:s', $modificationDate . ' 00:00:00', new DateTimeZone('Europe/Berlin'));
+        $modificationDateString = $modificationDate->format('c');
 
         $I->seeResponseContainsJson([
                 'chain' => [
                   'id' => $id,
-                  'name' => 'New Chain',
+                  'name' => 'New Chain & next chains',
                   'status' => 2,
                   'headquartersZip' => '4312',
                   'headquartersCity' => 'Ried in der Riedmark',
@@ -259,7 +260,7 @@ class StoreChainApiCest
                       'avatar' => null
                     ]
                     ],
-                    'modificationDate' => $modificationDate->format('c')
+                    'modificationDate' => $modificationDateString
                 ],
                 'storeCount' => 0
         ]);
