@@ -25,6 +25,13 @@ final class ChainAddStoreCountFixFk extends AbstractMigration
             ]
         )->dropForeignKey('forum_thread')
         ->addForeignKey('forum_thread', 'fs_theme', 'id', ['delete' => 'SET NULL'])
+
+        // Add index for a better filter of store chains on server side
+        // https://mariadb.com/kb/en/full-text-index-overview/
+        ->addIndex('name', ['type' => 'fulltext'])
+        ->addIndex('notes', ['type' => 'fulltext'])
+        ->addIndex('common_store_information', ['type' => 'fulltext'])
+        ->addIndex('headquarters_city', ['type' => 'fulltext'])
         ->save();
     }
 }
