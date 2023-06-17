@@ -17,12 +17,13 @@ use OpenApi\Attributes\Tag;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Response as HttpResponse;
 
-final class FeatureFlagRestController extends AbstractFOSRestController
+final class FeatureToggleRestController extends AbstractFOSRestController
 {
     public function __construct(
         private readonly FeatureToggleChecker $featureToggleChecker,
         private readonly FeatureToggleService $featureToggleService,
-    ) {
+    )
+    {
     }
 
     /**
@@ -45,6 +46,17 @@ final class FeatureFlagRestController extends AbstractFOSRestController
 
         return $this->json(
             new FeatureTogglesResponse($featureToggles),
+            HttpResponse::HTTP_OK
+        );
+    }
+
+    #[Tag('featuretoggle')]
+    #[Get(path: 'featuretoggle/test')]
+    #[Response(response: HttpResponse::HTTP_OK, description: 'Successful')]
+    public function getTestsAction(): JsonResponse
+    {
+        return $this->json(
+            [],
             HttpResponse::HTTP_OK
         );
     }

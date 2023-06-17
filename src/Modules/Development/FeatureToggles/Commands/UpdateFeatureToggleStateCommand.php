@@ -4,7 +4,7 @@ namespace Foodsharing\Modules\Development\FeatureToggles\Commands;
 
 use Foodsharing\Modules\Core\Database;
 
-class UpdateFeatureToggleStateCommand
+final class UpdateFeatureToggleStateCommand
 {
     public function __construct(
         private readonly Database $database,

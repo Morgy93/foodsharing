@@ -2,12 +2,11 @@
 
 namespace Foodsharing\Modules\Development\FeatureToggles\Querys;
 
-use Exception;
 use Foodsharing\Modules\Core\Database;
 use Foodsharing\Modules\Development\FeatureToggles\Exceptions\FeatureToggleOriginNotFoundException;
 use Symfony\Component\Yaml\Yaml;
 
-class GetFeatureToggleOrigin
+final class GetFeatureToggleOriginQuery
 {
     private const FEATURE_TOGGLE_CONFIG_FILE_PATH = __DIR__ . '/../../../../../config/packages/feature_toggles.yaml';
 
