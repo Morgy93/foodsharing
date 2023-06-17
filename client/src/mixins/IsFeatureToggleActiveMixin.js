@@ -1,8 +1,9 @@
+import { fetchFeatureToggle } from '@/api/featuretoggles'
+
 export default {
   methods: {
     async isFeatureToggleActive (featureToggleIdentifier) {
-      const url = `/api/featureflags/${featureToggleIdentifier}`
-      const response = await fetch(url)
+      const response = fetchFeatureToggle(featureToggleIdentifier)
       const data = await response.json()
       return data.isActive === true
     },
