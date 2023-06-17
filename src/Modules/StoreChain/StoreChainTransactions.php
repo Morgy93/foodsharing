@@ -34,6 +34,7 @@ class StoreChainTransactions
         if (!$details) {
             foreach ($results as &$item) {
                 $item->storeCount = null;
+                $item->chain->estimatedStoreCount = null;
                 $item->chain->forumThread = null;
                 $item->chain->notes = null;
                 $item->chain->regionId = null;
@@ -118,6 +119,11 @@ class StoreChainTransactions
                 return $obj;
             }, $storeModel->kams);
             $this->throwExceptionIfKeyAccountManagerIsInvalid($params->kams);
+            $changed = true;
+        }
+
+        if (!empty($storeModel->estimatedStoreCount)) {
+            $params->estimatedStoreCount = $storeModel->estimatedStoreCount;
             $changed = true;
         }
 

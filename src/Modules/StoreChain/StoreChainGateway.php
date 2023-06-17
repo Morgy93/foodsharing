@@ -26,6 +26,7 @@ class StoreChainGateway extends BaseGateway
             'forum_thread' => $storeData->forumThread,
             'notes' => $storeData->notes,
             'common_store_information' => $storeData->commonStoreInformation,
+            'estimated_store_count' => $storeData->estimatedStoreCount
         ]);
         $this->updateAllKeyAccountManagers($id, $storeData->kams);
 
@@ -49,6 +50,7 @@ class StoreChainGateway extends BaseGateway
                 'forum_thread' => $storeData->forumThread,
                 'notes' => $storeData->notes,
                 'common_store_information' => $storeData->commonStoreInformation,
+                'estimated_store_count' => $storeData->estimatedStoreCount
             ],
             ['id' => $storeData->id]
         );

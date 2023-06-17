@@ -15,7 +15,7 @@ final class ChainAddStoreCountFixFk extends AbstractMigration
                 'primary_key' => ['id']
             ]
         )->addColumn(
-            'estimatedStoreCount',
+            'estimated_store_count',
             'integer',
             [
                 'null' => false,

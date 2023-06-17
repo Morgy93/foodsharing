@@ -130,6 +130,16 @@ class CreateStoreChainModel
      */
     public array $kams = [];
 
+    /**
+     * Count of estimated stores.
+     *
+     * Only visible to members of AG store chain
+     *
+     * @OA\Property(example=12)
+     * @Assert\Range (min = 0)
+     */
+    public ?int $estimatedStoreCount = null;
+
     public function toCreateStore(): StoreChain
     {
         $obj = new StoreChain();
@@ -142,6 +152,7 @@ class CreateStoreChainModel
         $obj->forumThread = $this->forumThread;
         $obj->notes = $this->notes;
         $obj->commonStoreInformation = $this->commonStoreInformation;
+        $obj->estimatedStoreCount = $this->estimatedStoreCount ?? 0;
         $obj->kams = array_map(function ($kam) {
             $obj = new FoodsaverForAvatar();
             $obj->id = $kam;

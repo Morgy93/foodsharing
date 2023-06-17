@@ -212,6 +212,7 @@ class StoreChainApiCest
                'headquartersCity' => 'Ried in der Riedmark',
                'allowPress' => true,
                'forumThread' => $this->chainForum['id'],
+               'estimatedStoreCount' => 20,
                'notes' => 'Notizen',
                'commonStoreInformation' => 'Common Store information',
                'kams' => [$this->getUserByRole('chainKeyAccountManager')['id'], $this->getUserByRole('chainKeyAccountManagerOtherChain')['id']]
@@ -225,6 +226,7 @@ class StoreChainApiCest
             'status' => 2,
             'headquarters_zip' => '4312',
             'headquarters_city' => 'Ried in der Riedmark',
+            'estimated_store_count' => 20,
             'allow_press' => true,
             'forum_thread' => $this->chainForum['id'],
             'notes' => 'Notizen',
@@ -640,6 +642,26 @@ class StoreChainApiCest
             'kams' => [$this->getUserByRole('storeManager')['id']]
         ];
 
+        // invalid estimated_store_count
+        $requestBodies[] = [
+            'name' => 'To low EstimatedStoreCount',
+            'headquartersZip' => '4312',
+            'headquartersCity' => 'Ried in der Riedmark',
+            'forumThread' => $this->chainForum['id'],
+            'estimatedStoreCount' => -1,
+            'status' => 2,
+            'allowPress' => true
+        ];
+        $requestBodies[] = [
+            'name' => 'InvalidEstimatedStoreCount',
+            'headquartersZip' => '4312',
+            'headquartersCity' => 'Ried in der Riedmark',
+            'forumThread' => $this->chainForum['id'],
+            'estimatedStoreCount' => 'a',
+            'status' => 2,
+            'allowPress' => true
+        ];
+
         // Test
         $I->login($this->getUserByRole('chainManager')['email']);
         $I->haveHttpHeader('Content-Type', 'application/json');
@@ -713,6 +735,7 @@ class StoreChainApiCest
                 'forumThread' => $newForum['id'],
                 'notes' => 'Cooperating since 2021',
                 'commonStoreInformation' => 'Pickup times between 11:00 and 12:15',
+                'estimatedStoreCount' => 22,
                 'kams' => [
                     $this->getUserByRole('chainKeyAccountManager')['id']
                 ]
@@ -734,6 +757,7 @@ class StoreChainApiCest
                   'forumThread' => $newForum['id'],
                   'notes' => 'Cooperating since 2021',
                   'commonStoreInformation' => 'Pickup times between 11:00 and 12:15',
+                  'estimatedStoreCount' => 22,
                   'kams' => [
                     [
                       'id' => $this->getUserByRole('chainKeyAccountManager')['id'],
@@ -778,6 +802,9 @@ class StoreChainApiCest
         $I->seeResponseCodeIs(Http::OK);
         $I->sendPATCH(self::API_BASE . '/' . StoreChainApiCest::CHAIN_ID, ['commonStoreInformation' => 'Pickup times between 11:00 and 12:15']);
         $I->seeResponseCodeIs(Http::OK);
+        $I->sendPATCH(self::API_BASE . '/' . StoreChainApiCest::CHAIN_ID, ['estimatedStoreCount' => 12]);
+        $I->seeResponseCodeIs(Http::OK);
+
         $I->sendPATCH(self::API_BASE . '/' . StoreChainApiCest::CHAIN_ID, ['kams' => [
             $this->getUserByRole('chainKeyAccountManager')['id']
         ]]);
@@ -797,6 +824,7 @@ class StoreChainApiCest
                   'forumThread' => $newForum['id'],
                   'notes' => 'Cooperating since 2021',
                   'commonStoreInformation' => 'Pickup times between 11:00 and 12:15',
+                  'estimatedStoreCount' => 12,
                   'kams' => [
                     [
                       'id' => $this->getUserByRole('chainKeyAccountManager')['id'],
@@ -969,6 +997,16 @@ class StoreChainApiCest
         $requestBodies[] = [
             'name' => 'InvalidForum',
             'forumThread' => 'a'
+        ];
+
+        // invalid estimated_store_count
+        $requestBodies[] = [
+            'name' => 'To low EstimatedStoreCount',
+            'estimatedStoreCount' => -1
+        ];
+        $requestBodies[] = [
+            'name' => 'InvalidEstimatedStoreCount',
+            'estimatedStoreCount' => 'a',
         ];
 
         // Test
@@ -1148,6 +1186,7 @@ class StoreChainApiCest
             'headquarters_city' => 'Ried in der Riedmark',
             'allow_press' => true,
             'forum_thread' => $this->chainForum['id'],
+            'estimated_store_count' => 1,
             'notes' => 'Notizen',
             'common_store_information' => 'Common Store information',
             'modification_date' => $modificationDate->format('Y-m-d')
@@ -1254,10 +1293,10 @@ class StoreChainApiCest
 
        // Already existing 1
        // Already existing 2
-       $newChain = $this->createStoreChain($I, $modificationDate, 3, [$this->chainKeyAccountManager['id']]);
-       $newChain1 = $this->createStoreChain($I, $modificationDate, 2, [$this->chainKeyAccountManager['id']]);
-       $newChain2 = $this->createStoreChain($I, $modificationDate, 1, [$this->chainKeyAccountManager['id']]);
-       $newChain3 = $this->createStoreChain($I, $modificationDate, 0, [$this->chainKeyAccountManager['id']]);
+       $this->createStoreChain($I, $modificationDate, 3, [$this->chainKeyAccountManager['id']]);
+       $this->createStoreChain($I, $modificationDate, 2, [$this->chainKeyAccountManager['id']]);
+       $this->createStoreChain($I, $modificationDate, 1, [$this->chainKeyAccountManager['id']]);
+       $this->createStoreChain($I, $modificationDate, 0, [$this->chainKeyAccountManager['id']]);
 
        $I->login($this->getUserByRole($role)['email']);
        $I->haveHttpHeader('Content-Type', 'application/json');
@@ -1385,6 +1424,7 @@ class StoreChainApiCest
             'status' => 2,
             'headquarters_zip' => '4312',
             'headquarters_city' => 'Ried in der Riedmark',
+            'estimated_store_count' => 12,
             'allow_press' => true,
             'forum_thread' => $this->chainForum['id'],
             'notes' => 'Notizen',

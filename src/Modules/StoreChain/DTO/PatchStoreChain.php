@@ -122,4 +122,14 @@ class PatchStoreChain
      * @Type("array<int>")
      */
     public ?array $kams = null;
+
+    /**
+     * Count of estimated stores.
+     *
+     * Only visible to members of AG store chain
+     *
+     * @OA\Property(example=12)
+     * @Assert\Range (min = 0)
+     */
+    public ?int $estimatedStoreCount = null;
 }

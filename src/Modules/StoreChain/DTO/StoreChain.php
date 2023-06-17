@@ -111,6 +111,16 @@ class StoreChain
     public ?array $kams = [];
 
     /**
+     * Count of estimated stores.
+     *
+     * Only visible to members of AG store chain
+     *
+     * @OA\Property(example=12)
+     * @Assert\Range (min = 0)
+     */
+    public ?int $estimatedStoreCount = 0;
+
+    /**
      * Date of last modification.
      *
      * @OA\Property(readOnly=true)
@@ -138,6 +148,7 @@ class StoreChain
         $obj->notes = $data['notes'];
         $obj->commonStoreInformation = $data['common_store_information'];
         $obj->kams = $data['kams'];
+        $obj->estimatedStoreCount = $data['estimated_store_count'] ?? 0;
 
         return $obj;
     }
