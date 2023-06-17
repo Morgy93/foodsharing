@@ -28,7 +28,7 @@
         <div class="col-4">
           <label>
             <input
-              v-model="filterText"
+              v-model.trim="filterText"
               type="text"
               class="form-control form-control-sm"
               placeholder="Name/Adresse"
@@ -68,7 +68,7 @@
       </div>
       <b-table
         id="store-list"
-        :fields="fieldsFiltered"
+        :fields="fields"
         :current-page="currentPage"
         :per-page="perPage"
         :sort-by.sync="sortBy"
@@ -79,7 +79,7 @@
         responsive
       >
         <template
-          #cell(cooperationStatus)="row"
+          #cell(status)="row"
           :v-if="isMobile"
         >
           <div class="text-center">
@@ -88,7 +88,7 @@
         </template>
         <template
           v-if="isManagingEnabled"
-          #cell(isManaging)="row"
+          #cell(memberState)="row"
         >
           <span
             v-if="isManaging(row.item)"
@@ -228,103 +228,67 @@ export default {
         { value: 6, text: i18n('storestatus.6') }, // CooperationStatus::GIVES_TO_OTHER_CHARITY
         { value: 7, text: i18n('storestatus.7') }, // CooperationStatus::PERMANENTLY_CLOSED
       ],
+      availableFields: [
+        'status',
+        'name',
+        'address',
+        'zipcode',
+        'city',
+        'added',
+        'region',
+        'region',
+        'memberState',
+        'actions',
+      ],
+      // actions not sortable, has no label
+      FieldsNotSortable: [
+        'actions',
+      ],
+      FieldsWithoutLabel: [
+        'actions',
+      ],
+      FieldsHasStatusClass: [
+        'status',
+        'added',
+        'memberState',
+      ],
     }
   },
   computed: {
     fields () {
-      const columns = [
-        {
-          key: 'cooperationStatus',
-          label: i18n('storelist.status'),
-          tdClass: 'status',
-          sortable: true,
-        },
-      ]
-      columns.push(
-        {
-          key: 'name',
-          label: i18n('storelist.name'),
-          sortable: true,
-        },
-        {
-          key: 'street',
-          label: i18n('storelist.address'),
-          sortable: true,
-        },
-        {
-          key: 'zipCode',
-          label: i18n('storelist.zipcode'),
-          sortable: true,
-        },
-        {
-          key: 'city',
-          label: i18n('storelist.city'),
-          sortable: true,
-        })
-
-      if (!this.isManagingEnabled) {
-        columns.push({
-          key: 'createdAt',
-          label: i18n('storelist.added'),
-          tdClass: 'status',
-          sortable: true,
-        })
-      }
-      columns.push({
-        key: 'region',
-        label: i18n('storelist.region'),
-        sortable: true,
-      })
-      if (this.isManagingEnabled) {
-        columns.push({
-          key: 'isManaging',
-          label: i18n('storelist.memberState'),
-          tdClass: 'status',
-          sortable: true,
-        })
-      }
-      columns.push({
-        key: 'actions',
-        label: '',
-        sortable: false,
-      })
-      return columns
-    },
-    storesFiltered: function () {
-      if (!this.filterText.trim() && !this.filterStatus) return this.stores
-      const filterText = this.filterText ? this.filterText.toLowerCase() : null
-      return Array.from(this.stores.filter((store) => {
-        return (
-          (!this.filterStatus || store.cooperationStatus === this.filterStatus) &&
-          (!filterText || (
-            store.name.toLowerCase().indexOf(filterText) !== -1 ||
-            store.street.toLowerCase().indexOf(filterText) !== -1 ||
-            store.region.name.toLowerCase().indexOf(filterText) !== -1 ||
-            store.city.toLowerCase().indexOf(filterText) !== -1 ||
-            store.zipCode.toLowerCase().indexOf(filterText) !== -1
-          ))
-        )
-      }))
-    },
-    fieldsFiltered: function () {
-      const outputFields = []
-
-      const regions = [...new Set(this.stores.map(function (value) {
-        return value.region.name
-      }))]
-
-      const displayableFields = (window.innerWidth > 800 && window.innerHeight > 600)
-        ? ['region', 'actions']
-        : ['region', 'street', 'createdAt', 'zip']
-
-      this.fields.forEach(field => {
-        if ((field.key === 'region' && regions.length > 0) ||
-          !displayableFields.includes(field.key)) {
-          outputFields.push(field)
+      return this.availableFields.map(field => {
+        const fieldOpt = {
+          key: field,
+          label: this.FieldsWithoutLabel.includes(field) ? '' : i18n(`storelist.${field}`),
+          sortable: !this.FieldsNotSortable.includes(field),
         }
+        if (this.FieldsHasStatusClass.includes(field)) {
+          fieldOpt.tdClass = 'status'
+        }
+        return fieldOpt
       })
-
-      return outputFields
+    },
+    storesFiltered () {
+      let stores = this.stores
+      if (this.filterStatus) {
+        stores = stores.filter(store => store.status === this.filterStatus)
+      }
+      if (this.filterText) {
+        // match filterText an all store properties
+        stores = stores.filter(store => {
+          for (const prop in store) {
+            const propValue = store[prop]
+            if (typeof propValue === 'string' && propValue.toLocaleLowerCase().indexOf(this.filterTextLower) !== -1) {
+              return true
+            }
+          }
+          return false
+        })
+      }
+      return stores
+    },
+    filterTextLower () {
+      return this.filterText.toLowerCase()
     },
   },
   methods: {

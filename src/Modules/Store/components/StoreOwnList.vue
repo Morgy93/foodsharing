@@ -37,8 +37,7 @@ export default {
     showLoader()
     this.isBusy = true
     try {
-      const values = await listStoresDetailsForCurrentUser()
-      this.stores = values.stores
+      this.stores = await listStoresDetailsForCurrentUser()
       console.log('stores: ', this.stores)
     } catch (e) {
       pulseError(i18n('error_unexpected'))

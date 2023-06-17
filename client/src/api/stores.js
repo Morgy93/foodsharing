@@ -50,7 +50,20 @@ export async function listStoresForCurrentUser () {
 }
 
 export async function listStoresDetailsForCurrentUser (expand) {
-  return get('/user/current/stores/details')
+  const { stores } = await get('/user/current/stores/details')
+  // format store that they met column keys
+  return stores.map(store => {
+    const changeKey = (key, newKey) => {
+      store[newKey] = store[key]
+      delete store[key]
+    }
+    changeKey('cooperationStatus', 'status')
+    changeKey('street', 'address')
+    changeKey('zipCode', 'zipcode')
+    changeKey('createdAt', 'added')
+    changeKey('memberState', 'memberState')
+    return store
+  })
 }
 
 export async function requestStoreTeamMembership (storeId, userId) {
