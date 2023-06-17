@@ -2,7 +2,14 @@
 {% extends 'pages/Region/baseRegion.twig' %}
 
 {% block main %}
-    {%  include 'partials/listFoodSharePointsForRegion.html.twig' with {'region': region, 'food_share_points': food_share_points} %}
+    {% include 'partials/vue-wrapper.twig' with {
+        id: 'food-share-points-list',
+        component: 'FoodSharePointsList',
+        props: {
+            regionId: region.id,
+            regionName: region.name,
+        }
+    } %}
 {% endblock %}
 
 {% block right %}

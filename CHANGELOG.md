@@ -5,6 +5,8 @@
 - Provide RestApi to edit store !2515 !2625 @KoeMai
 - New UI for Stores information and modification of stores !2645 !2685 !2688 @KoeMai
 - Added turkish translation !2720 @Evren
+- Store chains can now be manged from the website. The working group "Betriebsketten" contains a tabular overview of all chains. !2251 !2273 @AntonBallmaier
+- Store markers on the map can be filtered by the user's membership #1025 !2682 @alex.simm
 
 ## Changes
 - Make menubar sticky on mobile !2411 @AntonBallmaier
@@ -21,6 +23,7 @@
 - Removed the additional button in the report modal #1599 !2677 @alex.simm
 - Show forum text if foodsaver deleted again !2697 @chriswalg
 - Add CTA on the profile-page for calendar export #1583 !2705 @sefn
+- Remove relative time from last pickup #1571 !2706 @sefn
 
 ## Bugfixes
 - Reimplementation of the StoreManager empty pickup E-Mail notification !2574 @KoeMai
@@ -42,6 +45,8 @@
 - reduce font-size on the mobile index page #1624 !2704 @sefn
 - condition check and fallback for profiles and avatars in chat components #1584 !2719 !2725 @chriswalg
 - fixed map showing grey when zooming in too close #1632 @florianunsinn
+- Bugfix for Date-Formatter #1571 !2706 @sefn
+
 
 ## Refactoring
 - added poppins font in Styleguide !2564 @Niklas003
@@ -69,6 +74,7 @@
 - Refactor edit pickup rules to vue component and moved it to storeInformationModal !2686 @chriswalg 
 - Refactor own store list in vue !2668 !2683 @chriswalg
 - Refactored the list of group applications to vue, which not also shows profile pictures #343 !2696 @alex.simm
+- Refactor the list of food share points in a region to vue !2702 @alex.simm
 
 ## Dev/Test/CI stuff
 - Fix given null parameter !2550 @BibaltiK
@@ -97,6 +103,7 @@
 - Made scripts work with docker-compose-plugin !1587 @andre161292
 - remove trailing whitespace from CHANGELOG.md !2690 @Morgy93
 - [DevDocs] Added follow-up link for local dev environment on getting ready page !2689 @Morgy93
+- cache bell request and limit to 1 minute !2722 @chriswalg
 - Cache userDetails, limit request to 1 minute and only load once on dashboard !2727 @chriswalg
 
 ## Development documentation
@@ -122,7 +129,6 @@
 - On the login page, "Stay logged in for one day" is saved in local storage for the next logins. !2249 @NINI1988
 - Food-share-points are listed in the topbar search #1251 !2260 @alex.simm
 - On all external links is now a visible indicator !2280 @sefn
-- Store chains can now be manged from the website. The working group "Betriebsketten" contains a tabular overview of all chains. !2251 @AntonBallmaier
 - At stores under pickup history, storemanagers can now see the signed out foodsavers from pickup slots from past 7 days with the signout date. !2363 @martincodes-de
 - Voter Turnout Percentage can be seen if the poll has completed !2377 @viveknshah
 - Provide RestAPI to get backend defined common meta information for stores like "max count of slots per pickup" !1373 @koemai

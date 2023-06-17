@@ -209,9 +209,7 @@ class StoreGateway extends BaseGateway
 					b.kette_id,
 					b.betrieb_kategorie_id,
 					b.name,
-					b.str,
-					b.`betrieb_status_id`,
-					k.logo
+					b.str
 
 			FROM 	fs_betrieb b
 			WHERE 	b.bezirk_id = :regionId
@@ -1211,20 +1209,41 @@ class StoreGateway extends BaseGateway
      * Provides Stores with position markers.
      *
      * @param array<CooperationStatus> $excludedStoreTypes Excludes stores of this types
+     * @param array<TeamSearchStatus> $teamStatus Store team status values to be included. If empty, all team status
+     *                                            values will be included.
+     * @param int|null $userId if not null, only list stores in which this user is a member (this includes jumpers)
+     *
+     * @return MapMarker[]
      */
-    public function getStoreMarkers(array $excludedStoreTypes, array $teamStatus): array
+    public function getStoreMarkers(array $excludedStoreTypes, array $teamStatus, ?int $userId = null): array
     {
-        $query = 'SELECT id, lat, lon FROM fs_betrieb WHERE (lat != "" OR lon != "")';
+        $query = 'SELECT b.id, b.lat, b.lon FROM fs_betrieb b';
+        $conditions = ['lat != ""', 'lon != ""'];
 
+        // condition for the user's membership
+        $params = [];
+        if (!empty($userId)) {
+            $query .= ' INNER JOIN fs_betrieb_team t
+			            ON b.id = t.betrieb_id';
+            $conditions[] = 't.foodsaver_id = ?';
+            $conditions[] = 't.active >= ?';
+            $params = [$userId, MembershipStatus::MEMBER];
+        }
+
+        // conditions for the store's cooperation and team status
         if (!empty($excludedStoreTypes)) {
-            $query .= ' AND betrieb_status_id NOT IN(' . implode(',', array_fill(0, count($excludedStoreTypes), '?')) . ')';
+            $conditions[] = 'b.betrieb_status_id NOT IN(' . implode(',', array_fill(0, count($excludedStoreTypes), '?')) . ')';
+            $excludedStoreTypesIds = array_map(function (CooperationStatus $storeType) { return $storeType->value; }, $excludedStoreTypes);
+            $params = array_merge($params, $excludedStoreTypesIds);
         }
         if (!empty($teamStatus)) {
-            $query .= ' AND team_status IN (' . implode(',', array_fill(0, count($teamStatus), '?')) . ')';
+            $conditions[] = 'b.team_status IN (' . implode(',', array_fill(0, count($teamStatus), '?')) . ')';
+            $teamStatusIds = array_map(function (TeamSearchStatus $item) { return $item->value; }, $teamStatus);
+            $params = array_merge($params, $teamStatusIds);
         }
-        $teamStatusIds = array_map(function (TeamSearchStatus $item) { return $item->value; }, $teamStatus);
-        $excludedStoreTypesIds = array_map(function (CooperationStatus $storeType) { return $storeType->value; }, $excludedStoreTypes);
-        $markers = $this->db->fetchAll($query, array_merge($excludedStoreTypesIds, $teamStatusIds));
+
+        $query .= ' WHERE ' . implode(' AND ', $conditions);
+        $markers = $this->db->fetchAll($query, $params);
 
         return array_map(function ($x) {
             return MapMarker::create($x['id'], floatval($x['lat']), floatval($x['lon']));

@@ -7,6 +7,39 @@ RelativeTimeFormat.addLocale(en)
 
 const locale = serverData.locale
 
+/**
+ * Returns the difference between two date, in specific unit
+ * @param {Date} dateA
+ * @param {Date} dateB
+ * @param {second|minute|hour|day|week|month|year} unit
+ * @returns
+ */
+function differenceFromDatesToUnit (dateA, dateB, unit) {
+  const isLeapYear = [dateA, dateB].some(date => date.getFullYear() % 4 === 0)
+  const diffInMs = dateA - dateB
+
+  switch (unit) {
+    case 'second':
+      return diffInMs / 1_000
+    case 'minute':
+      return diffInMs / 60_000
+    case 'hour':
+      return diffInMs / 3_600_000
+    case 'day':
+      return diffInMs / 86_400_000
+    case 'week':
+      return diffInMs / 604_800_000
+    case 'month':
+      return diffInMs / 2_629_800_000
+    case 'year':
+      if (isLeapYear) {
+        return diffInMs / 31_622_400_000
+      } else {
+        return diffInMs / 31_536_000_000
+      }
+  }
+}
+
 export default {
   /**
    *
@@ -200,57 +233,36 @@ export default {
    * @returns {string} the relative time
    */
   relativeTime (date = new Date(), { short = false } = {}) {
-    let diffInMs = new Date() - new Date(date)
-    const isInFuture = diffInMs < 0
-
-    if (isInFuture) {
-      diffInMs = new Date(date) - new Date()
-    }
-
-    const intervalCalc = (dur) => diffInMs / dur
     const rtf = new RelativeTimeFormat(locale, {
       localeMatcher: 'best fit',
       numeric: 'auto',
       style: short ? 'narrow' : 'long',
     })
 
-    const format = (unit) => {
-      return rtf.format(Math.round(isInFuture ? step : -step), unit)
+    let dateA = new Date()
+    let dateB = new Date(date)
+
+    const isInFuture = dateA - dateB < 0
+
+    if (isInFuture) {
+      dateA = new Date(date)
+      dateB = new Date()
     }
 
-    // Time years step
-    let step = intervalCalc(this.YearsToMs())
-    if (step > 1) {
-      return format('year')
-    }
-    // Time months step
-    step = intervalCalc(this.MonthsToMs())
-    if (step > 1) {
-      return format('month')
-    }
-    // Time weeks step
-    step = intervalCalc(this.WeeksToMs())
-    if (step > 2) {
-      return format('week')
-    }
-    // Time days step
-    step = intervalCalc(this.DaysToMs())
-    if (step > 1) {
-      return format('day')
-    }
-    // Time hours step
-    step = intervalCalc(this.HoursToMs())
-    if (step > 1) {
-      return format('hour')
-    }
-    // Time minutes step
-    step = intervalCalc(this.MinutesToMs())
-    if (step > 1) {
-      return format('minute')
-    }
-    // Time seconds step
-    step = intervalCalc(this.SecondsToMs())
-    return format('second')
+    const { value, unit } = ['year', 'month', 'week', 'day', 'hour', 'minute', 'second']
+      .map((unit) => {
+        const value = Math.floor(differenceFromDatesToUnit(dateA, dateB, unit))
+        const difference = (dateA - dateB) / value
+
+        if (difference >= 1) {
+          return { value, unit }
+        }
+
+        return null
+      })
+      .find(({ value = 0 }) => value >= 1)
+
+    return rtf.format(isInFuture ? value : -value, unit)
   },
 
   /**

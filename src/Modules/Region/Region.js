@@ -26,6 +26,7 @@ import '../WallPost/WallPost.css'
 import { initWall } from '@/wall'
 import NewThread from './components/NewThread.vue'
 import ApplicationsList from './components/ApplicationsList'
+import FoodSharePointsList from './components/FoodSharePointsList'
 
 $(document).ready(() => {
   $('a[href=\'#signout\']').on('click', function () {
@@ -117,5 +118,10 @@ $(document).ready(() => {
       ApplicationsList,
     })
     vueApply('#applications-list')
+  } else if (GET('sub') === 'fairteiler') {
+    vueRegister({
+      FoodSharePointsList,
+    })
+    vueApply('#food-share-points-list')
   }
 })

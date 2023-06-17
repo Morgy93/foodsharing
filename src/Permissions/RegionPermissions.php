@@ -133,4 +133,13 @@ final class RegionPermissions
 
         return in_array($regionId, $this->session->listRegionIDs());
     }
+
+    public function mayListFoodSharePointsInRegion(int $regionId)
+    {
+        if ($this->session->mayRole(Role::ORGA)) {
+            return true;
+        }
+
+        return in_array($regionId, $this->session->listRegionIDs());
+    }
 }

@@ -9,7 +9,6 @@ use Foodsharing\Modules\Core\DBConstants\Region\RegionIDs;
 use Foodsharing\Modules\Core\DBConstants\Region\RegionOptionType;
 use Foodsharing\Modules\Core\DBConstants\Unit\UnitType;
 use Foodsharing\Modules\Event\EventGateway;
-use Foodsharing\Modules\FoodSharePoint\FoodSharePointGateway;
 use Foodsharing\Modules\Mailbox\MailboxGateway;
 use Foodsharing\Modules\Store\StoreGateway;
 use Foodsharing\Modules\Voting\VotingGateway;
@@ -28,7 +27,6 @@ final class RegionControl extends Control
     private array $region;
     private RegionGateway $gateway;
     private EventGateway $eventGateway;
-    private FoodSharePointGateway $foodSharePointGateway;
     private ForumGateway $forumGateway;
     private ForumFollowerGateway $forumFollowerGateway;
     private FormFactoryInterface $formFactory;
@@ -55,7 +53,6 @@ final class RegionControl extends Control
 
     public function __construct(
         EventGateway $eventGateway,
-        FoodSharePointGateway $foodSharePointGateway,
         ForumGateway $forumGateway,
         ForumFollowerGateway $forumFollowerGateway,
         ForumPermissions $forumPermissions,
@@ -74,7 +71,6 @@ final class RegionControl extends Control
         $this->eventGateway = $eventGateway;
         $this->forumPermissions = $forumPermissions;
         $this->regionPermissions = $regionPermissions;
-        $this->foodSharePointGateway = $foodSharePointGateway;
         $this->forumGateway = $forumGateway;
         $this->forumFollowerGateway = $forumFollowerGateway;
         $this->forumTransactions = $forumTransactions;
@@ -351,8 +347,6 @@ final class RegionControl extends Control
         $this->pageHelper->addBread($this->translator->trans('terminology.fsp'), '/?page=bezirk&bid=' . $region['id'] . '&sub=fairteiler');
         $this->pageHelper->addTitle($this->translator->trans('terminology.fsp'));
         $viewdata = $this->regionViewData($region, $request->query->get('sub'));
-        $bezirk_ids = $this->gateway->listIdsForDescendantsAndSelf($region['id']);
-        $viewdata['food_share_points'] = $this->foodSharePointGateway->listActiveFoodSharePoints($bezirk_ids);
         $response->setContent($this->render('pages/Region/foodSharePoint.twig', $viewdata));
     }
 

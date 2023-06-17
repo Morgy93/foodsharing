@@ -82,7 +82,7 @@
             {{ $i18n('store.my_last_pickup') }}
           </div>
           <span>
-            {{ $dateFormatter.dateBasic(lastFetchDate) }}
+            {{ $dateFormatter.date(lastFetchDate) }}
           </span>
           ({{ $dateFormatter.relativeTime(lastFetchDate) }})
         </div>

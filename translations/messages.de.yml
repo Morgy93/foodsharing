@@ -768,7 +768,7 @@ fsp:
     descSettings: "Du folgst allen Informationen des Fairteilers \"{name}\". Auf welche Art möchtest du diese Benachrichtigungen bekommen?"
     manager: "Du bist verantwortlich für diesen Fairteiler und somit verpflichtet, die Updates entgegenzunehmen."
   twig:
-    n_in_region: "{0} Keine Fairteiler in %name%| {1} Ein Fairteiler in %name%| [2, Inf[ %count% Fairteiler in %name%"
+    n_in_region: "{count} Fairteiler in {name}"
 
 storeview:
   show_information: "Betriebsinformationen anzeigen"
@@ -1625,6 +1625,8 @@ content:
 map:
   title: "Karte"
   donates: "Betrieb spendet" #MapView
+  filters:
+    my_stores: "Nur meine Betriebe"
 
 messages:
   bread: "Nachrichten"

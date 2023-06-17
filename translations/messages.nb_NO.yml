@@ -2403,8 +2403,7 @@ fsp:
   delete: Fjerne distribusjonsstasjonen
   deleteSuccess: Distribusjonsstasjon ble fjernet
   twig:
-    n_in_region: '{0} Ingen distribusjonsstasjoner i %name%| {1} En distribusjonsstasjon
-      i %name%| [2, Inf[ %count% distribusjonsstasjoner i %name%'
+    n_in_region: '{count} distribusjonsstasjoner i {name}'
 day: Dag
 time: Tid
 select: Vennligst velg

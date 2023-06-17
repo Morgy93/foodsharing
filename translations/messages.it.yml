@@ -662,8 +662,7 @@ fsp:
   inRegion: tutti divisori in {regione}
   yours: Divisori nei tuoi distretti
   twig:
-    n_in_region: '{0} Nessun divisore in % name%| {1} Un divisore in %name%| [2, Inf[%
-      count% divisore in %name%'
+    n_in_region: '{count} divisore in {name}'
   info:
     manager: Sei responsabile di questo divisore e quindi obbligato a ricevere gli
       aggiornamenti.

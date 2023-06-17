@@ -1,5 +1,5 @@
 import Vue from 'vue'
-import { getCacheInterval, setCache, getCache } from '@/helper/cache'
+import { getCache, getCacheInterval, setCache } from '@/helper/cache'
 import { getMailUnreadCount } from '@/api/mailbox'
 import { getDetails } from '@/api/user'
 import serverData from '@/helper/server-data'
@@ -119,13 +119,11 @@ export const mutations = {
     const cacheRequestName = 'mailUnreadCount'
     try {
       if (await getCacheInterval(cacheRequestName, mailUnreadCountRateLimitInterval)) {
-        const unreadCount = await getMailUnreadCount()
-        store.mailUnreadCount = unreadCount
+        store.mailUnreadCount = await getMailUnreadCount()
 
-        await setCache(cacheRequestName, unreadCount)
+        await setCache(cacheRequestName, store.mailUnreadCount)
       } else {
-        const unreadCount = await getCache(cacheRequestName)
-        store.mailUnreadCount = unreadCount
+        store.mailUnreadCount = await getCache(cacheRequestName)
       }
     } catch (e) {
       console.error('Error fetching mail unread count:', e)

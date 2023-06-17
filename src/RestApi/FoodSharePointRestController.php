@@ -4,11 +4,14 @@ namespace Foodsharing\RestApi;
 
 use Foodsharing\Lib\Session;
 use Foodsharing\Modules\FoodSharePoint\FoodSharePointGateway;
+use Foodsharing\Modules\Region\RegionGateway;
+use Foodsharing\Permissions\RegionPermissions;
 use FOS\RestBundle\Controller\AbstractFOSRestController;
 use FOS\RestBundle\Controller\Annotations as Rest;
 use FOS\RestBundle\Request\ParamFetcher;
 use OpenApi\Annotations as OA;
 use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\HttpKernel\Exception\AccessDeniedHttpException;
 use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 use Symfony\Component\HttpKernel\Exception\UnauthorizedHttpException;
@@ -18,16 +21,15 @@ use Symfony\Component\HttpKernel\Exception\UnauthorizedHttpException;
  */
 final class FoodSharePointRestController extends AbstractFOSRestController
 {
-    private FoodSharePointGateway $foodSharePointGateway;
-    private Session $session;
-
     private const NOT_LOGGED_IN = 'not logged in';
     private const MAX_FSP_DISTANCE = 50;
 
-    public function __construct(FoodSharePointGateway $foodSharePointGateway, Session $session)
-    {
-        $this->foodSharePointGateway = $foodSharePointGateway;
-        $this->session = $session;
+    public function __construct(
+        private readonly FoodSharePointGateway $foodSharePointGateway,
+        private readonly RegionGateway $regionGateway,
+        private readonly RegionPermissions $regionPermissions,
+        private readonly Session $session
+    ) {
     }
 
     /**
@@ -137,5 +139,31 @@ final class FoodSharePointRestController extends AbstractFOSRestController
         }
 
         return $fsp;
+    }
+
+    /**
+     * Returns a list of all food share points in a region and all its subregions.
+     *
+     * @OA\Tag(name="foodsharepoint")
+     * @OA\Parameter(name="regionId", in="path", @OA\Schema(type="integer"), description="region for which to return food share points")
+     * @OA\Response(response="200", description="Success")
+     * @OA\Response(response="401", description="Not logged in")
+     * @OA\Response(response="403", description="Insufficient permission to access the region")
+     * @Rest\Get("regions/{regionId}/foodSharePoints", requirements={"regionId" = "\d+"})
+     */
+    public function listFoodSharePoints(int $regionId): Response
+    {
+        if (!$this->session->mayRole()) {
+            throw new UnauthorizedHttpException('', self::NOT_LOGGED_IN);
+        }
+
+        if (!$this->regionPermissions->mayListFoodSharePointsInRegion($regionId)) {
+            throw new AccessDeniedHttpException('');
+        }
+
+        $regionIds = $this->regionGateway->listIdsForDescendantsAndSelf($regionId);
+        $foodSharePoints = $this->foodSharePointGateway->listActiveFoodSharePoints($regionIds);
+
+        return $this->handleView($this->view($foodSharePoints, 200));
     }
 }

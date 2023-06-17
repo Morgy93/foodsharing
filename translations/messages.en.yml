@@ -2172,8 +2172,7 @@ language_chooser:
 plz: Post code (automatically filled by the map above)
 fsp:
   twig:
-    n_in_region: '{0} No Food-Share Points in %name%| {1} One Food-Share Point in
-      %name%| [2, Inf[ %count% Food-Share Points in %name%'
+    n_in_region: '{count} Food-Share Points in {name}'
   deleteSuccess: Food-Share Point was removed
   deleteConfirm: Do you really want to remove this Food-Share Point?
   delete: Remove Food-Share Point

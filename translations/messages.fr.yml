@@ -789,8 +789,7 @@ fsp:
     bell: seulement des informations internes à l'équipe (cloche)
     from: Mises à jour du frigo solidaire « {name} »
   twig:
-    n_in_region: '{0} Aucun frigo solidaire à %name%| {1} Un frigo solidaire à %name%|
-      [2, Inf[ %count% frigos solidaires à %name%'
+    n_in_region: '{count} frigos solidaires à {name}'
   none: Il n'y a encore aucun frigo solidaire d'enregistré
   deleteSuccess: Le frigo solidaire a été supprimé
   deleteConfirm: Souhaites-tu réellement supprimer ce frigo solidaire ?
