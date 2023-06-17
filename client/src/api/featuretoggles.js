@@ -4,5 +4,5 @@ export async function fetchAllFeatureToggles () {
 }
 
 export async function fetchFeatureToggle (featureToggleIdentifier) {
-  return get(`featureflags/${featureToggleIdentifier}`)
+  return get(`featuretoggle/${featureToggleIdentifier}`)
 }
