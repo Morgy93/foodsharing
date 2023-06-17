@@ -5,6 +5,8 @@ namespace Foodsharing\RestApi;
 use Foodsharing\Modules\Development\FeatureToggles\DependencyInjection\FeatureToggleChecker;
 use Foodsharing\Modules\Development\FeatureToggles\FeatureToggleIdentifier;
 use Foodsharing\Modules\Development\FeatureToggles\FeatureToggleService;
+use Foodsharing\RestApi\Models\FeatureFlag\FeatureToggle;
+use Foodsharing\RestApi\Models\FeatureFlag\FeatureTogglesResponse;
 use Foodsharing\RestApi\Models\FeatureFlag\IsFeatureToggleActiveResponse;
 use FOS\RestBundle\Controller\AbstractFOSRestController;
 use FOS\RestBundle\Controller\Annotations\Get;
@@ -28,21 +30,21 @@ final class FeatureFlagRestController extends AbstractFOSRestController
      */
     #[Tag('featuretoggle')]
     #[Get(path: 'featuretoggle/')]
-    #[Response(response: HttpResponse::HTTP_OK, description: 'Successful')]
+    #[Response(response: HttpResponse::HTTP_OK, description: 'Successful', content: new Model(type: FeatureTogglesResponse::class))]
     public function getAllFeatureTogglesAction(): JsonResponse
     {
         $featureToggles = [];
 
         foreach (FeatureToggleIdentifier::all() as $featureToggleIdentifier) {
-            $featureToggles[] = [
-                "identifier" => $featureToggleIdentifier,
-                "isActive" => $this->featureToggleChecker->isFeatureToggleActive($featureToggleIdentifier),
-                "origin" => $this->featureToggleService->getFeatureToggleOrigin($featureToggleIdentifier),
-            ];
+            $featureToggles[] = FeatureToggle::create(
+                $featureToggleIdentifier,
+                $this->featureToggleChecker->isFeatureToggleActive($featureToggleIdentifier),
+                $this->featureToggleService->getFeatureToggleOrigin($featureToggleIdentifier)
+            );
         }
 
         return $this->json(
-            $featureToggles,
+            new FeatureTogglesResponse($featureToggles),
             HttpResponse::HTTP_OK
         );
     }
