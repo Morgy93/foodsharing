@@ -2,7 +2,9 @@
 
 namespace Foodsharing\Modules\Development\FeatureToggles\Querys;
 
+use Exception;
 use Foodsharing\Modules\Core\Database;
+use Foodsharing\Modules\Development\FeatureToggles\Exceptions\FeatureToggleOriginNotFoundException;
 use Symfony\Component\Yaml\Yaml;
 
 class GetFeatureToggleOrigin
@@ -17,15 +19,17 @@ class GetFeatureToggleOrigin
     /**
      * Returns the origin from feature toggle.
      *
-     * @return string origin (possible: filesystem | database | unknown)
+     * @return string origin (possible: filesystem | database)
+     * @throws FeatureToggleOriginNotFoundException
      */
     public function execute(string $featureToggleIdentifier): string
     {
         $featureToggleConfigFile = Yaml::parseFile(self::FEATURE_TOGGLE_CONFIG_FILE_PATH);
         $features = $featureToggleConfigFile['flagception']['features'];
-        $hasExistingHardcodedDefault = array_key_exists('default', $features[$featureToggleIdentifier]);
 
-        if ($hasExistingHardcodedDefault) {
+        $isFeatureToggleHardcoded = array_key_exists($featureToggleIdentifier, $features);
+
+        if ($isFeatureToggleHardcoded) {
             return 'filesystem';
         }
 
@@ -37,6 +41,8 @@ class GetFeatureToggleOrigin
             return 'database';
         }
 
-        return 'unknown';
+        throw new FeatureToggleOriginNotFoundException(
+            sprintf('Origin from feature toggle (identifier: %s) not found', $featureToggleIdentifier)
+        );
     }
 }
