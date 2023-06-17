@@ -59,6 +59,7 @@ final class FeatureFlagRestController extends AbstractFOSRestController
     public function isFeatureToggleActiveAction(string $featureToggle): JsonResponse
     {
         $isFeatureFlagActive = $this->featureToggleChecker->isFeatureToggleActive($featureToggle);
+
         return $this->json(
             new IsFeatureToggleActiveResponse($featureToggle, $isFeatureFlagActive),
             HttpResponse::HTTP_OK

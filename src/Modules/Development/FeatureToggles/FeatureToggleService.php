@@ -12,7 +12,7 @@ final class FeatureToggleService implements FeatureToggleChecker
 {
     public function __construct(
         private readonly FeatureManagerInterface $manager,
-        private readonly GetFeatureToggleOrigin  $isFeatureToggleInsideDatabaseQuery,
+        private readonly GetFeatureToggleOrigin $isFeatureToggleInsideDatabaseQuery,
     ) {
     }
 
