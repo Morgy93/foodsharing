@@ -36,7 +36,7 @@ final class FeatureToggleService implements FeatureToggleChecker
 
     public function updateFeatureToggles(): void
     {
-        $featureToggles = FeatureToggleIdentifier::all();
+        $featureToggles = FeatureToggleDefinitions::all();
         $hardcodedFeatureToggles = $this->existingHardcodedFeatureTogglesQuery->execute();
         $alreadySavedFeatureToggles = $this->existingFeatureTogglesFromDatabaseQuery->execute();
 

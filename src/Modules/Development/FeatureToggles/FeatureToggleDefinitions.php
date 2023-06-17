@@ -4,7 +4,7 @@ namespace Foodsharing\Modules\Development\FeatureToggles;
 
 use ReflectionClass;
 
-final class FeatureToggleIdentifier
+final class FeatureToggleDefinitions
 {
     public const ALWAYS_TRUE_FOR_TESTING_PURPOSES = 'alwaysTrueForTestingPurposes';
     public const ALWAYS_FALSE_FOR_TESTING_PURPOSES = 'alwaysFalseForTestingPurposes';

@@ -3,7 +3,7 @@
 namespace Foodsharing\RestApi;
 
 use Foodsharing\Modules\Development\FeatureToggles\DependencyInjection\FeatureToggleChecker;
-use Foodsharing\Modules\Development\FeatureToggles\FeatureToggleIdentifier;
+use Foodsharing\Modules\Development\FeatureToggles\FeatureToggleDefinitions;
 use Foodsharing\Modules\Development\FeatureToggles\FeatureToggleService;
 use Foodsharing\RestApi\Models\FeatureFlag\FeatureToggle;
 use Foodsharing\RestApi\Models\FeatureFlag\FeatureTogglesResponse;
@@ -36,7 +36,7 @@ final class FeatureToggleRestController extends AbstractFOSRestController
     {
         $featureToggles = [];
 
-        foreach (FeatureToggleIdentifier::all() as $featureToggleIdentifier) {
+        foreach (FeatureToggleDefinitions::all() as $featureToggleIdentifier) {
             $featureToggles[] = FeatureToggle::create(
                 $featureToggleIdentifier,
                 $this->featureToggleChecker->isFeatureToggleActive($featureToggleIdentifier),
