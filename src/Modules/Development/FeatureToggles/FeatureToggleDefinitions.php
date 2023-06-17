@@ -17,7 +17,7 @@ final class FeatureToggleDefinitions
     /**
      * Returns all feature toggle identifiers.
      *
-     * @return array<string, string>
+     * @return array<int, string>
      */
     public static function all(): array
     {
