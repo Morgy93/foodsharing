@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Foodsharing\Modules\Development\FeatureToggles;
 
 use Flagception\Manager\FeatureManagerInterface;
+use Foodsharing\Modules\Development\FeatureToggles\Commands\DeleteUndefinedFeatureTogglesCommand;
 use Foodsharing\Modules\Development\FeatureToggles\Commands\SaveNewFeatureTogglesCommand;
 use Foodsharing\Modules\Development\FeatureToggles\DependencyInjection\FeatureToggleChecker;
 use Foodsharing\Modules\Development\FeatureToggles\Querys\GetExistingFeatureTogglesFromDatabaseQuery;
@@ -19,6 +20,7 @@ final class FeatureToggleService implements FeatureToggleChecker
         private readonly GetExistingFeatureTogglesFromDatabaseQuery $existingFeatureTogglesFromDatabaseQuery,
         private readonly GetExistingHardcodedFeatureTogglesQuery $existingHardcodedFeatureTogglesQuery,
         private readonly SaveNewFeatureTogglesCommand $saveNewFeatureTogglesCommand,
+        private readonly DeleteUndefinedFeatureTogglesCommand $deleteUndefinedFeatureTogglesCommand,
     ) {
     }
 
@@ -32,13 +34,16 @@ final class FeatureToggleService implements FeatureToggleChecker
         return $this->isFeatureToggleInsideDatabaseQuery->execute($identifier);
     }
 
-    public function saveNewFeatureToggles(): void
+    public function updateFeatureToggles(): void
     {
         $featureToggles = FeatureToggleIdentifier::all();
         $hardcodedFeatureToggles = $this->existingHardcodedFeatureTogglesQuery->execute();
         $alreadySavedFeatureToggles = $this->existingFeatureTogglesFromDatabaseQuery->execute();
 
         $newFeatureToggles = array_diff($featureToggles, $alreadySavedFeatureToggles, $hardcodedFeatureToggles);
+        $notDefinedFeatureToggles = array_diff($alreadySavedFeatureToggles, $featureToggles);
+
         $this->saveNewFeatureTogglesCommand->execute($newFeatureToggles);
+        $this->deleteUndefinedFeatureTogglesCommand->execute($notDefinedFeatureToggles);
     }
 }
