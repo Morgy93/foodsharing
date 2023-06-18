@@ -19,7 +19,7 @@
               <span
                 class="badge badge-secondary"
                 :class="[featureToggle.isActive ? 'bg-success' : 'bg-danger']"
-              >{{ toggleState(featureToggle.isActive) }}
+              >{{ getToggleStateDescription(featureToggle.isActive) }}
               </span>
             </h4>
           </b-col>
@@ -55,8 +55,8 @@ export default {
     await this.fetchAllFeatureToggles()
   },
   methods: {
-    toggleState (value) {
-      return value ? 'aktiv' : 'inaktiv'
+    getToggleStateDescription (value) {
+      return value ? 'on' : 'off'
     },
     async fetchAllFeatureToggles () {
       try {
