@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Foodsharing\RestApi\Models\FeatureFlag;
+namespace Foodsharing\RestApi\Models\FeatureToggle;
 
 use Nelmio\ApiDocBundle\Annotation\Model;
 use OpenApi\Attributes\Items;

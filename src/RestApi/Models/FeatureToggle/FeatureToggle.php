@@ -1,6 +1,6 @@
 <?php
 
-namespace Foodsharing\RestApi\Models\FeatureFlag;
+namespace Foodsharing\RestApi\Models\FeatureToggle;
 
 use OpenApi\Attributes\Property;
 
