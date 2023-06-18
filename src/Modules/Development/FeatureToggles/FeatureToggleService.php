@@ -12,6 +12,7 @@ use Foodsharing\Modules\Development\FeatureToggles\DependencyInjection\FeatureTo
 use Foodsharing\Modules\Development\FeatureToggles\Querys\GetExistingFeatureTogglesFromDatabaseQuery;
 use Foodsharing\Modules\Development\FeatureToggles\Querys\GetExistingHardcodedFeatureTogglesQuery;
 use Foodsharing\Modules\Development\FeatureToggles\Querys\GetFeatureToggleOriginQuery;
+use Symfony\Component\HttpFoundation\Exception\BadRequestException;
 
 final class FeatureToggleService implements FeatureToggleChecker
 {
@@ -52,5 +53,14 @@ final class FeatureToggleService implements FeatureToggleChecker
     public function updateFeatureToggleState(string $identifier, bool $newState): void
     {
         $this->updateFeatureToggleStateCommand->execute($identifier, $newState);
+    }
+
+    public function isFeatureToggleToggable(string $identifier): bool
+    {
+        $origin = $this->getFeatureToggleOrigin($identifier);
+        if ($origin !== 'database') {
+            return false;
+        }
+        return true;
     }
 }

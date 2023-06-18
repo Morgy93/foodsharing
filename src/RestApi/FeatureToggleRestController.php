@@ -79,8 +79,7 @@ final class FeatureToggleRestController extends AbstractFOSRestController
             throw $this->createNotFoundException('Feature toggle is not defined');
         }
 
-        $origin = $this->featureToggleService->getFeatureToggleOrigin($featureToggle);
-        if ($origin !== 'database') {
+        if (!$this->featureToggleService->isFeatureToggleToggable($featureToggle)) {
             throw new BadRequestException('Feature toggle is not toggable');
         }
 
