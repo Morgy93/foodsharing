@@ -40,7 +40,7 @@ final class FeatureToggleRestController extends AbstractFOSRestController
             $featureToggles[] = FeatureToggle::create(
                 $featureToggleIdentifier,
                 $this->featureToggleChecker->isFeatureToggleActive($featureToggleIdentifier),
-                $this->featureToggleService->getFeatureToggleOrigin($featureToggleIdentifier),
+                $this->featureToggleService->isFeatureToggleToggable($featureToggleIdentifier),
             );
         }
 

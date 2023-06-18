@@ -10,17 +10,16 @@ class FeatureToggle
     public readonly bool $isActive;
 
     #[Property(
-        description: 'When origin = database, the featuretoggle can be disabled via weboverview.',
-        enum: ['filesystem', 'database'],
+        description: 'Is feature toggle toggable via api or not.',
     )]
-    public readonly string $origin;
+    public readonly bool $isToggable;
 
-    public static function create(string $identifier, bool $isActive, string $origin): self
+    public static function create(string $identifier, bool $isActive, bool $isToggable): self
     {
         $featureToggle = new FeatureToggle();
 
         $featureToggle->isActive = $isActive;
-        $featureToggle->origin = $origin;
+        $featureToggle->isToggable = $isToggable;
         $featureToggle->identifier = $identifier;
 
         return $featureToggle;
