@@ -7,6 +7,7 @@ namespace Foodsharing\Modules\Development\FeatureToggles;
 use Flagception\Manager\FeatureManagerInterface;
 use Foodsharing\Modules\Development\FeatureToggles\Commands\DeleteUndefinedFeatureTogglesCommand;
 use Foodsharing\Modules\Development\FeatureToggles\Commands\SaveNewFeatureTogglesCommand;
+use Foodsharing\Modules\Development\FeatureToggles\Commands\UpdateFeatureToggleStateCommand;
 use Foodsharing\Modules\Development\FeatureToggles\DependencyInjection\FeatureToggleChecker;
 use Foodsharing\Modules\Development\FeatureToggles\Querys\GetExistingFeatureTogglesFromDatabaseQuery;
 use Foodsharing\Modules\Development\FeatureToggles\Querys\GetExistingHardcodedFeatureTogglesQuery;
@@ -21,6 +22,7 @@ final class FeatureToggleService implements FeatureToggleChecker
         private readonly GetExistingHardcodedFeatureTogglesQuery $existingHardcodedFeatureTogglesQuery,
         private readonly SaveNewFeatureTogglesCommand $saveNewFeatureTogglesCommand,
         private readonly DeleteUndefinedFeatureTogglesCommand $deleteUndefinedFeatureTogglesCommand,
+        private readonly UpdateFeatureToggleStateCommand $updateFeatureToggleStateCommand,
     ) {
     }
 
@@ -45,5 +47,10 @@ final class FeatureToggleService implements FeatureToggleChecker
 
         $this->saveNewFeatureTogglesCommand->execute($newFeatureToggles);
         $this->deleteUndefinedFeatureTogglesCommand->execute($notDefinedFeatureToggles);
+    }
+
+    public function updateFeatureToggleState(string $identifier, bool $newState): void
+    {
+        $this->updateFeatureToggleStateCommand->execute($identifier, $newState);
     }
 }
