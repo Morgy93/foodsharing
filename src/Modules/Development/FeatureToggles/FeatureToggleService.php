@@ -69,6 +69,7 @@ final class FeatureToggleService implements FeatureToggleChecker
         if ($origin !== 'database') {
             return false;
         }
+
         return true;
     }
 }

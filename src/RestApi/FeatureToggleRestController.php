@@ -92,5 +92,4 @@ final class FeatureToggleRestController extends AbstractFOSRestController
             HttpResponse::HTTP_OK,
         );
     }
-
 }
