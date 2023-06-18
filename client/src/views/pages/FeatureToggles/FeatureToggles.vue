@@ -6,7 +6,6 @@
         v-for="featureToggle in featureToggles"
         :key="featureToggle.identifier"
         class="list-group-item"
-        :class="[featureToggle.isActive ? 'bg-secondary text-white' : '']"
       >
         <b-row>
           <b-col
@@ -14,12 +13,12 @@
             md="10"
           >
             <h4
-              class="truncate"
+              class="text-break"
             >
               {{ featureToggle.identifier }}
               <span
                 class="badge badge-secondary"
-                :class="[featureToggle.isActive ? 'bg-primary' : '']"
+                :class="[featureToggle.isActive ? 'bg-success' : 'bg-danger']"
               >{{ toggleState(featureToggle.isActive) }}
               </span>
             </h4>
@@ -30,7 +29,7 @@
           >
             <button
               type="button"
-              :class="[featureToggle.isActive ? 'btn btn-secondary' : 'btn btn-primary']"
+              class="btn btn-secondary"
               :disabled="!featureToggle.isToggable"
               @click="toggle(featureToggle.identifier)"
             >
