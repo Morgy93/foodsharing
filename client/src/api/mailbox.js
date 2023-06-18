@@ -1,4 +1,4 @@
-import { get, remove, patch } from './base'
+import { get, remove, patch, post } from './base'
 
 export async function getMailUnreadCount () {
   return get('/emails/unread-count')
@@ -14,4 +14,12 @@ export async function deleteEmail (emailId) {
 
 export async function getMemberBoxes () {
   return get('/mailbox/member')
+}
+
+export async function createMailbox (name, alias, users) {
+  return post('/mailbox/create', {
+    name: name,
+    alias: alias,
+    users: users
+  })
 }

@@ -555,7 +555,7 @@ class MailboxGateway extends BaseGateway
     /**
      * Creates a Mailbox for the user and returns its ID.
      */
-    private function createMailbox(string $name): int
+    public function createMailbox(string $name): int
     {
         $amountOfMailboxesStartingWithName = $this->db->fetchValue(
             'SELECT COUNT(name) FROM fs_mailbox WHERE name LIKE :name',
@@ -630,5 +630,11 @@ class MailboxGateway extends BaseGateway
         }, $addresses);
 
         return json_encode($mapped);
+    }
+
+    public function dsfdsf (): void
+    {
+        //  if ($this->db->update('fs_foodsaver', ['mailbox_id' => (int)$mb_id], ['id' => $fsId])) {
+
     }
 }
