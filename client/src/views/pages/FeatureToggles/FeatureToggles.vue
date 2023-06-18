@@ -1,11 +1,27 @@
 <template>
   <div class="container">
-    {{ featureToggles }}
+    <ul class="list-group">
+      <li
+        v-for="featureToggle in featureToggles"
+        :key="featureToggle.identifier"
+        class="list-group-item"
+      >
+        {{ featureToggle.identifier }} / {{ featureToggle.isActive }}
+        <button
+          type="button"
+          class="btn btn-primary"
+          :disabled="!featureToggle.isToggable"
+          @click="toggle(featureToggle.identifier)"
+        >
+          Toggle
+        </button>
+      </li>
+    </ul>
   </div>
 </template>
 
 <script>
-import { fetchAllFeatureToggles } from '@/api/featuretoggles'
+import { fetchAllFeatureToggles, switchFeatureToggleState } from '@/api/featuretoggles'
 
 export default {
   data () {
@@ -19,8 +35,17 @@ export default {
   methods: {
     async fetchAllFeatureToggles () {
       try {
-        this.featureToggles = await fetchAllFeatureToggles()
+        const response = await fetchAllFeatureToggles()
+        this.featureToggles = response.featureToggles
         console.log('test-featureToggles', this.featureToggles)
+      } catch {
+
+      }
+    },
+    async toggle (identifier) {
+      try {
+        await switchFeatureToggleState(identifier)
+        await this.fetchAllFeatureToggles()
       } catch {
 
       }
