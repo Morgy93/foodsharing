@@ -1,6 +1,6 @@
 <template>
   <div class="container">
-    New Page
+    {{ featureToggles }}
   </div>
 </template>
 
@@ -8,15 +8,19 @@
 import { fetchAllFeatureToggles } from '@/api/featuretoggles'
 
 export default {
+  data () {
+    return {
+      featureToggles: [],
+    }
+  },
+  async mounted () {
+    await this.fetchAllFeatureToggles()
+  },
   methods: {
-    data () {
-      return {
-        featureToggles: null,
-      }
-    },
     async fetchAllFeatureToggles () {
       try {
-        this.featureToggles = fetchAllFeatureToggles
+        this.featureToggles = await fetchAllFeatureToggles()
+        console.log('test-featureToggles', this.featureToggles)
       } catch {
 
       }
