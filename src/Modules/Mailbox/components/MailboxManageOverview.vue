@@ -1,23 +1,6 @@
 <template>
   <div>
-    <b-row>
-      <b-col
-        cols="12"
-        md="10"
-      >
-        {{ $i18n('mailbox.manage') }}
-      </b-col>
-      <b-col
-        cols="12"
-        md="2"
-      >
-        <b-button
-          variant="primary"
-        >
-          Mailbox erstellen
-        </b-button>
-      </b-col>
-    </b-row>
+    {{ $i18n('mailbox.manage') }}
     <b-row
       v-for="mailbox in mailboxes"
       :key="mailbox.id"
