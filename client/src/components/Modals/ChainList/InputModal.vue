@@ -175,6 +175,8 @@
 </template>
 
 <script>
+import { hideLoader, showLoader } from '@/script'
+
 export default {
   props: {
     statusFilterOptions: {
@@ -190,6 +192,7 @@ export default {
     return {
       input: {},
       chainEditing: -1, // The id of the chain to be edited or -1 if a new chain should be created instead
+      finishHandle: (chainId, data) => { return true },
     }
   },
   computed: {
@@ -198,9 +201,10 @@ export default {
     },
   },
   methods: {
-    show (chainEditing, inputData) {
+    show (chainEditing, inputData, finishHandle) {
       this.chainEditing = chainEditing
       this.input = inputData
+      this.finishHandle = finishHandle
       this.$refs['input-modal'].show()
     },
     singleSpacing (str) {
@@ -212,19 +216,26 @@ export default {
       ids = [...new Set(ids)]
       return ids.join(', ')
     },
-    finishedEditing () {
+    finishedEditing (bvModalEvent) {
+      bvModalEvent.preventDefault()
       const data = {
         name: this.input.name,
         headquartersZip: String(this.input.headquartersZip),
         headquartersCity: this.input.headquartersCity,
         status: Number(this.input.status),
-        forumThread: Number(this.input.forumThread) || null,
+        forumThread: Number(this.input.forumThread) || 0,
         allowPress: this.input.allowPress,
         notes: this.input.notes,
         commonStoreInformation: this.input.commonStoreInformation,
         kams: this.input.kamIds ? this.input.kamIds.split(',').map(id => +id) : [],
       }
-      this.$emit('ok', this.chainEditing, data)
+      showLoader()
+      this.finishHandle(this.chainEditing, data).then((successful) => {
+        if (successful) {
+          this.$refs['input-modal'].hide()
+          hideLoader()
+        }
+      })
     },
   },
 }

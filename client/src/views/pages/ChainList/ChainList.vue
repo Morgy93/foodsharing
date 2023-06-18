@@ -182,7 +182,7 @@ import PickupEntries from '../../../../../src/Modules/Profile/components/PickupE
 import InputModal from '@/components/Modals/ChainList/InputModal.vue'
 import StoreDetailsModal from '@/components/Modals/ChainList/StoreDetailsModal.vue'
 import { getters, mutations } from '@/stores/chains'
-import { hideLoader, pulseError, showLoader } from '@/script'
+import { pulseError } from '@/script'
 
 export default {
   components: { PickupEntries, InputModal, StoreDetailsModal },
@@ -308,7 +308,7 @@ export default {
         commonStoreInformation: chain.chain.commonStoreInformation,
         allowPress: !!chain.chain.allowPress,
         kamIds: chain.chain.kams.map(x => x.id).join(', '),
-      })
+      }, this.finishEditing)
     },
     createChainModal () {
       this.$refs['input-modal'].show(-1, {
@@ -321,7 +321,7 @@ export default {
         notes: '',
         commonStoreInformation: '',
         kamIds: '',
-      })
+      }, this.finishEditing)
     },
     async detailsChainModal (row) {
       const selectedChain = row.item
@@ -329,7 +329,6 @@ export default {
       await mutations.fetchChainStores(selectedChain.chain.id)
     },
     async finishEditing (chainId, data) {
-      showLoader()
       console.log(data)
       if (chainId < 0) {
         try {
@@ -338,6 +337,7 @@ export default {
           const errorDescription = err.jsonContent ?? { message: '' }
           const errorMessage = `${errorDescription.message ?? 'Unknown'}`
           pulseError(this.$i18n('chain.error.create', { error: errorMessage }))
+          return false
         }
       } else {
         try {
@@ -346,9 +346,10 @@ export default {
           const errorDescription = err.jsonContent ?? { message: '' }
           const errorMessage = `${errorDescription.message ?? 'Unknown'}`
           pulseError(this.$i18n('chain.error.edit', { error: errorMessage }))
+          return false
         }
       }
-      hideLoader()
+      return true
     },
   },
 }
