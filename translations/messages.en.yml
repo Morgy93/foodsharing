@@ -2902,7 +2902,8 @@ chain:
   columns:
     status: Status
     name: Name
-    stores: Stores
+    estimatedStoreCount: Estimated count of cooperating stores
+    stores: Count cooperating stores
     headquarters: Headquarters
     kams: KAMs
     notes: Notes
@@ -2923,6 +2924,10 @@ chain:
         label: Name
         invalidfeedback: Name must not be empty
         placeholder: Name of the chain
+      estimatedStoreCount:
+        label: "Estimated count of stores"
+        invalidfeedback: "Only digits are allowed."
+        description: "The count of store of store chain which may cooperate"
       headquarters:
         label: Headquarters
         placeholder:

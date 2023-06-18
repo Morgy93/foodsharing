@@ -57,6 +57,22 @@
       </b-form-group>
 
       <b-form-group
+        :label="$i18n('chain.inputmodal.inputs.estimatedStoreCount.label')"
+        label-for="estimatedStoreCount-input"
+        label-cols-sm="2"
+        label-align-sm="right"
+        :invalid-feedback="$i18n('chain.inputmodal.inputs.estimatedStoreCount.invalidfeedback')"
+        :description="$i18n('chain.inputmodal.inputs.estimatedStoreCount.description')"
+      >
+        <b-form-input
+          id="estimatedStoreCount-input"
+          v-model="input.estimatedStoreCount"
+          :state="input.estimatedStoreCount ? /^\d+$/.test(input.estimatedStoreCount) : 0"
+          trim
+        />
+      </b-form-group>
+
+      <b-form-group
         :label="$i18n('chain.inputmodal.inputs.status.label')"
         label-for="status-input"
         label-cols-sm="2"
@@ -224,6 +240,7 @@ export default {
         headquartersCity: this.input.headquartersCity,
         status: Number(this.input.status),
         forumThread: Number(this.input.forumThread) || 0,
+        estimatedStoreCount: Number(this.input.estimatedStoreCount) || 0,
         allowPress: this.input.allowPress,
         notes: this.input.notes,
         commonStoreInformation: this.input.commonStoreInformation,

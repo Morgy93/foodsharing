@@ -217,6 +217,13 @@ export default {
           formatter: (value, key, item) => item,
         },
         {
+          key: 'estimatedStoreCount',
+          label: this.$i18n('chain.columns.estimatedStoreCount'),
+          sortable: true,
+          tdClass: 'text-center',
+          formatter: (value, key, item) => item.chain.estimatedStoreCount,
+        },
+        {
           key: 'storeCount',
           label: this.$i18n('chain.columns.stores'),
           sortable: true,
@@ -306,6 +313,7 @@ export default {
         forumThread: chain.chain.forumThread,
         notes: chain.chain.notes,
         commonStoreInformation: chain.chain.commonStoreInformation,
+        estimatedStoreCount: chain.chain.estimatedStoreCount,
         allowPress: !!chain.chain.allowPress,
         kamIds: chain.chain.kams.map(x => x.id).join(', '),
       }, this.finishEditing)
@@ -318,6 +326,7 @@ export default {
         status: 2,
         forumThread: null,
         allowPress: false,
+        estimatedStoreCount: 0,
         notes: '',
         commonStoreInformation: '',
         kamIds: '',

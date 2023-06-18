@@ -2714,7 +2714,8 @@ chain:
   columns:
     status: Status
     name: Name
-    stores: Betriebe
+    estimatedStoreCount: Erwartete Anzahl von Betriebe
+    stores: Anzahl kooperierender Betriebe
     headquarters: Zentrale
     kams: KAMs
     notes: Hinweise
@@ -2735,6 +2736,10 @@ chain:
         label: Name
         invalidfeedback: Name darf nicht leer sein
         placeholder: Name der Kette
+      estimatedStoreCount:
+        label: "Erwartete Anzahl von Betriebe"
+        invalidfeedback: "Nur Ganzzahlen sind erlaubt."
+        description: "Anzahl Betriebe möglichen Betriebe die Kooperieren könnten "
       headquarters:
         label: Zentrale
         placeholder:
