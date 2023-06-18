@@ -14,14 +14,10 @@ class FeatureToggle
     )]
     public readonly bool $isToggable;
 
-    public static function create(string $identifier, bool $isActive, bool $isToggable): self
+    public function __construct(string $identifier, bool $isActive, bool $isToggable)
     {
-        $featureToggle = new FeatureToggle();
-
-        $featureToggle->isActive = $isActive;
-        $featureToggle->isToggable = $isToggable;
-        $featureToggle->identifier = $identifier;
-
-        return $featureToggle;
+        $this->isActive = $isActive;
+        $this->isToggable = $isToggable;
+        $this->identifier = $identifier;
     }
 }
