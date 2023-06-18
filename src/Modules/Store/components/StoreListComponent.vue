@@ -20,7 +20,7 @@
       class="card-body p-0"
     >
       <ConfigureableList
-        v-model="subsetOfFields"
+        v-model="fieldSelection"
         :fields="fields"
       >
         <template #head="{ showConfigurationDialog }">
@@ -32,7 +32,7 @@
         <template #default>
           <ul>
             <li
-              v-for="field in fields.filter(field => subsetOfFields.includes(field.key))"
+              v-for="field in selectedFields"
               :key="field.key"
             >
               {{ field.key }}
@@ -40,143 +40,155 @@
           </ul>
         </template>
       </ConfigureableList>
-      <div class="form-row p-1 ">
-        <div class="col-2 text-center">
-          <label class=" col-form-label col-form-label-sm">
-            {{ $i18n('store.filter') }}
-          </label>
-        </div>
-        <div class="col-4">
-          <label>
-            <input
-              v-model.trim="filterText"
-              type="text"
-              class="form-control form-control-sm"
-              placeholder="Name/Adresse"
-            >
-          </label>
-        </div>
-        <div class="col-3">
-          <b-form-select
-            v-model="filterStatus"
-            :options="statusOptions"
-            size="sm"
-          />
-        </div>
-        <div class="col">
-          <button
-            v-b-tooltip.hover
-            type="button"
-            class="btn btn-sm"
-            :title="$i18n('storelist.emptyfilters')"
-            @click="clearFilter"
-          >
-            <i class="fas fa-times" />
-          </button>
-        </div>
-        <div
-          v-if="showCreateStore"
-          :regionId="regionId"
-          class="col"
-        >
-          <a
-            :href="$url('storeAdd', regionId)"
-            class="btn btn-sm btn-primary btn-block"
-          >
-            {{ $i18n('store.addNewStoresButton') }}
-          </a>
-        </div>
-      </div>
-      <b-table
-        id="store-list"
+      <ConfigureableList
+        v-model="fieldSelection"
         :fields="fields"
-        :current-page="currentPage"
-        :per-page="perPage"
-        :sort-by.sync="sortBy"
-        :sort-desc.sync="sortDesc"
-        :items="storesFiltered"
-        small
-        hover
-        responsive
       >
-        <template
-          #cell(status)="row"
-          :v-if="isMobile"
-        >
-          <div class="text-center">
-            <StoreStatusIcon :cooperation-status="row.value" />
+        <template #head="{ showConfigurationDialog }">
+          <div class="form-row p-1 ">
+            <div class="col-2 text-center">
+              <label class=" col-form-label col-form-label-sm">
+                {{ $i18n('store.filter') }}
+              </label>
+            </div>
+            <div class="col-4">
+              <label>
+                <input
+                  v-model.trim="filterText"
+                  type="text"
+                  class="form-control form-control-sm"
+                  placeholder="Name/Adresse"
+                >
+              </label>
+            </div>
+            <div class="col-3">
+              <b-form-select
+                v-model="filterStatus"
+                :options="statusOptions"
+                size="sm"
+              />
+            </div>
+            <div class="col">
+              <button
+                v-b-tooltip.hover
+                type="button"
+                class="btn btn-sm"
+                :title="$i18n('storelist.emptyfilters')"
+                @click="clearFilter"
+              >
+                <i class="fas fa-times" />
+              </button>
+            </div>
+            <div
+              v-if="showCreateStore"
+              :regionId="regionId"
+              class="col"
+            >
+              <a
+                :href="$url('storeAdd', regionId)"
+                class="btn btn-sm btn-primary btn-block"
+              >
+                {{ $i18n('store.addNewStoresButton') }}
+              </a>
+            </div>
           </div>
-        </template>
-        <template
-          v-if="isManagingEnabled"
-          #cell(memberState)="row"
-        >
-          <span
-            v-if="isManaging(row.item)"
-          >
-            {{ $i18n('store.managing') }}
-          </span>
-          <span
-            v-if="isMember(row.item)"
-          >
-            {{ $i18n('store.member') }}
-          </span>
-          <span
-            v-if="isJumping(row.item)"
-          >
-            {{ $i18n('store.jumping') }}
-          </span>
-          <span
-            v-if="isAppliedForTeam(row.item)"
-          >
-            {{ $i18n('store.isAppliedForTeam') }}
-          </span>
-        </template>
-        <template
-          #cell(name)="row"
-        >
-          <a
-            :href="$url('store', row.item.id)"
-            class="ui-corner-all"
-          >
-            {{ row.value }}
-          </a>
-        </template>
-        <template
-          #cell(region)="row"
-        >
-          {{ row.value.name }}
-        </template>
-        <template
-          #cell(actions)="row"
-        >
-          <b-button
-            size="sm"
-            @click.stop="row.toggleDetails"
-          >
-            {{ row.detailsShowing ? 'x' : 'Details' }}
+          <b-button @click="showConfigurationDialog">
+            Configure
           </b-button>
         </template>
-        <template
-          #row-details="row"
-        >
-          <b-card>
-            <div class="details">
-              <p>
-                <strong>{{ $i18n('storelist.addressdata') }}</strong><br>
-                {{ row.item.street }} <a
-                  :href="mapLink(row.item)"
-                  class="nav-link details-nav"
-                  :title="$i18n('storelist.map')"
-                >
-                  <i class="fas fa-map-marker-alt" />
-                </a><br> {{ row.item.zipCode }} {{ row.item.city }}
-              </p>
-              <p><strong>{{ $i18n('storelist.entered') }}</strong> {{ row.item.createdAt }}</p>
-            </div>
-          </b-card>
+        <template #default>
+          <b-table
+            id="store-list"
+            :fields="selectedFields"
+            :current-page="currentPage"
+            :per-page="perPage"
+            :sort-by.sync="sortBy"
+            :sort-desc.sync="sortDesc"
+            :items="storesFiltered"
+            small
+            hover
+            responsive
+          >
+            <template
+              #cell(status)="row"
+              :v-if="isMobile"
+            >
+              <div class="text-center">
+                <StoreStatusIcon :cooperation-status="row.value" />
+              </div>
+            </template>
+            <template
+              v-if="isManagingEnabled"
+              #cell(memberState)="row"
+            >
+              <span
+                v-if="isManaging(row.item)"
+              >
+                {{ $i18n('store.managing') }}
+              </span>
+              <span
+                v-if="isMember(row.item)"
+              >
+                {{ $i18n('store.member') }}
+              </span>
+              <span
+                v-if="isJumping(row.item)"
+              >
+                {{ $i18n('store.jumping') }}
+              </span>
+              <span
+                v-if="isAppliedForTeam(row.item)"
+              >
+                {{ $i18n('store.isAppliedForTeam') }}
+              </span>
+            </template>
+            <template
+              #cell(name)="row"
+            >
+              <a
+                :href="$url('store', row.item.id)"
+                class="ui-corner-all"
+              >
+                {{ row.value }}
+              </a>
+            </template>
+            <template
+              #cell(region)="row"
+            >
+              {{ row.value.name }}
+            </template>
+            <template
+              #cell(actions)="row"
+            >
+              <b-button
+                size="sm"
+                @click.stop="row.toggleDetails"
+              >
+                {{ row.detailsShowing ? 'x' : 'Details' }}
+              </b-button>
+            </template>
+            <template
+              #row-details="row"
+            >
+              <b-card>
+                <div class="details">
+                  <p>
+                    <strong>{{ $i18n('storelist.addressdata') }}</strong><br>
+                    {{ row.item.street }} <a
+                      :href="mapLink(row.item)"
+                      class="nav-link details-nav"
+                      :title="$i18n('storelist.map')"
+                    >
+                      <i class="fas fa-map-marker-alt" />
+                    </a><br> {{ row.item.zipCode }} {{ row.item.city }}
+                  </p>
+                  <p><strong>{{ $i18n('storelist.entered') }}</strong> {{ row.item.createdAt }}</p>
+                </div>
+              </b-card>
+            </template>
+          </b-table>
         </template>
-      </b-table>
+      </ConfigureableList>
       <div class="float-right p-1 pr-3">
         <b-pagination
           v-model="currentPage"
@@ -261,7 +273,7 @@ export default {
         'memberState',
         'actions',
       ],
-      subsetOfFields: [
+      fieldSelection: [
         'status',
         'city',
         'name',
@@ -293,6 +305,9 @@ export default {
         }
         return fieldOpt
       })
+    },
+    selectedFields () {
+      return this.fields.filter(field => this.fieldSelection.includes(field.key))
     },
     // configreableFields () {
     //   return this.fields.map(field => {
