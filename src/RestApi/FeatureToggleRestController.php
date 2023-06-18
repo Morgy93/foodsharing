@@ -46,7 +46,7 @@ final class FeatureToggleRestController extends AbstractFOSRestController
 
         return $this->json(
             new FeatureTogglesResponse($featureToggles),
-            HttpResponse::HTTP_OK
+            HttpResponse::HTTP_OK,
         );
     }
 
@@ -63,7 +63,7 @@ final class FeatureToggleRestController extends AbstractFOSRestController
 
         return $this->json(
             new IsFeatureToggleActiveResponse($featureToggle, $isFeatureFlagActive),
-            HttpResponse::HTTP_OK
+            HttpResponse::HTTP_OK,
         );
     }
 
@@ -89,7 +89,7 @@ final class FeatureToggleRestController extends AbstractFOSRestController
 
         return $this->json(
             null,
-            HttpResponse::HTTP_OK
+            HttpResponse::HTTP_OK,
         );
     }
 
