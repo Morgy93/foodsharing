@@ -112,8 +112,8 @@ class MailboxControl extends Control
 
     public function newbox()
     {
-        $this->pageHelper->addBread($this->translator->trans('mailbox.manage'), '/?page=mailbox&a=manage');
-        $this->pageHelper->addBread($this->translator->trans('mailbox.new'));
+        //$this->pageHelper->addBread($this->translator->trans('mailbox.manage'), '/?page=mailbox&a=manage');
+        //$this->pageHelper->addBread($this->translator->trans('mailbox.new'));
 
         if ($this->mailboxPermissions->mayAddMailboxes()) {
             if (isset($_POST['name'])) {

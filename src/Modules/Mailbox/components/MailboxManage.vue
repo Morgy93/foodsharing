@@ -2,11 +2,11 @@
   <div class="container bg-white">
     <b-row>
       <b-col md="10">
-        <MailboxManageOverview v-if="!enableCreateMode || !enableEditMode" />
+        <MailboxManageOverview v-if="!enableCreateMode" />
         <MailboxManageEdit v-if="enableEditMode" />
-        <MailboxManageCreate v-if="enableCreateMode || !enableCreateMode" />
+        <MailboxManageCreate v-if="enableCreateMode" />
       </b-col>
-      <b-col>
+      <b-col v-if="!enableCreateMode">
         <b-button
           variant="primary"
           @click="setCreateMode"
