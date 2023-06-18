@@ -32,6 +32,11 @@ final class FeatureToggleService implements FeatureToggleChecker
         return $this->manager->isActive($identifier);
     }
 
+    public function isFeatureToggleDefined(string $identifier): bool
+    {
+        return in_array($identifier, FeatureToggleDefinitions::all());
+    }
+
     public function getFeatureToggleOrigin(string $identifier): string
     {
         return $this->isFeatureToggleInsideDatabaseQuery->execute($identifier);

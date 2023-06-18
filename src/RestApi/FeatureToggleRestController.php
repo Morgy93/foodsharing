@@ -75,7 +75,7 @@ final class FeatureToggleRestController extends AbstractFOSRestController
     #[Response(response: HttpResponse::HTTP_BAD_REQUEST, description: 'Feature toggle is not toggable')]
     public function toggleFeatureToggleAction(string $featureToggle): JsonResponse
     {
-        if (!in_array($featureToggle, FeatureToggleDefinitions::all())) {
+        if (!$this->featureToggleService->isFeatureToggleDefined($featureToggle)) {
             throw $this->createNotFoundException('Feature toggle is not defined');
         }
 
