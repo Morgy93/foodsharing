@@ -37,6 +37,7 @@
 
 <script>
 import UserSearchInput from '@/components/UserSearchInput.vue'
+import { createMailbox} from '@/api/mailbox'
 
 export default {
   components: { UserSearchInput },
@@ -68,6 +69,9 @@ export default {
       } catch {
 
       }
+    },
+    async tryCreateMailbox () {
+      await createMailbox()
     },
   },
 }
