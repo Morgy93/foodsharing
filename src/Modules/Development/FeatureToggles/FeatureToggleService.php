@@ -12,7 +12,6 @@ use Foodsharing\Modules\Development\FeatureToggles\DependencyInjection\FeatureTo
 use Foodsharing\Modules\Development\FeatureToggles\Querys\GetExistingFeatureTogglesFromDatabaseQuery;
 use Foodsharing\Modules\Development\FeatureToggles\Querys\GetExistingHardcodedFeatureTogglesQuery;
 use Foodsharing\Modules\Development\FeatureToggles\Querys\GetFeatureToggleOriginQuery;
-use Symfony\Component\HttpFoundation\Exception\BadRequestException;
 
 final class FeatureToggleService implements FeatureToggleChecker
 {
