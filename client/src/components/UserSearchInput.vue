@@ -97,7 +97,8 @@ export default {
     },
     buttonClicked () {
       if (this.user) {
-        this.$emit('user-selected', this.user.id)
+        console.log('username', this.user.value)
+        this.$emit('user-selected', this.user.id, this.user.value)
         this.user = null
         this.$refs.simpleSuggest.setText('')
       }
