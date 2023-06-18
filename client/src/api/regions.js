@@ -42,6 +42,7 @@ export function listRegionMembers (regionId) {
 }
 
 export function listRegionStores (regionId) {
+  // todo: this should be broken, please see ownList
   return get(`/region/${regionId}/stores`)
 }
 

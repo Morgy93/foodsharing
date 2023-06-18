@@ -19,6 +19,27 @@
       v-if="stores.length"
       class="card-body p-0"
     >
+      <ConfigureableList
+        v-model="subsetOfFields"
+        :fields="fields"
+      >
+        <template #head="{ showConfigurationDialog }">
+          <h2>Some Head</h2>
+          <b-button @click="showConfigurationDialog">
+            Configure
+          </b-button>
+        </template>
+        <template #default>
+          <ul>
+            <li
+              v-for="field in fields.filter(field => subsetOfFields.includes(field.key))"
+              :key="field.key"
+            >
+              {{ field.key }}
+            </li>
+          </ul>
+        </template>
+      </ConfigureableList>
       <div class="form-row p-1 ">
         <div class="col-2 text-center">
           <label class=" col-form-label col-form-label-sm">
@@ -198,9 +219,10 @@ import {
 } from 'bootstrap-vue'
 import StoreStatusIcon from './StoreStatusIcon.vue'
 import i18n from '@/helper/i18n'
+import ConfigureableList from '@/components/ConfigureableList.vue'
 
 export default {
-  components: { BCard, BTable, BButton, BPagination, BFormSelect, StoreStatusIcon },
+  components: { BCard, BTable, BButton, BPagination, BFormSelect, StoreStatusIcon, ConfigureableList },
   directives: { VBTooltip },
   props: {
     stores: { type: Array, default: () => [] },
@@ -236,9 +258,13 @@ export default {
         'city',
         'added',
         'region',
-        'region',
         'memberState',
         'actions',
+      ],
+      subsetOfFields: [
+        'status',
+        'city',
+        'name',
       ],
       // actions not sortable, has no label
       FieldsNotSortable: [
@@ -268,6 +294,11 @@ export default {
         return fieldOpt
       })
     },
+    // configreableFields () {
+    //   return this.fields.map(field => {
+    //     return { text: field.label, value: field.key }
+    //   })
+    // },
     storesFiltered () {
       let stores = this.stores
       if (this.filterStatus) {
