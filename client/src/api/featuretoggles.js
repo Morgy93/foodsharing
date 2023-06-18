@@ -4,7 +4,7 @@ export async function fetchAllFeatureToggles () {
 }
 
 export async function fetchFeatureToggle (featureToggleIdentifier) {
-  return get(`featuretoggle/${featureToggleIdentifier}`)
+  return get(`/featuretoggle/${featureToggleIdentifier}`)
 }
 
 export async function switchFeatureToggleState (featureToggleIdentifier) {
