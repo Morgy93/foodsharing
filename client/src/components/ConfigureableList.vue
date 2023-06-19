@@ -1,5 +1,10 @@
 <template>
   <div>
+    <b-button
+      @click="allFields = fields.concat().reverse()"
+    >
+      Reverse
+    </b-button>
     <slot
       name="head"
       :showConfigurationDialog="showConfigurationDialog"
@@ -20,11 +25,18 @@
       centered
       size="lg"
       hide-header-close
+      @shown="onModalHasOpened"
     >
       <b-form-group
+        ref="drag-drop-list"
         v-slot="{ ariaDescribedby }"
         label="Configure:"
       >
+        <DragAndDropSortList :value="fields">
+          <template #item="item">
+            {{ item }}
+          </template>
+        </DragAndDropSortList>
         <b-form-checkbox
           v-for="field in fields"
           :key="field.key"
@@ -44,16 +56,29 @@
 </template>
 
 <script>
+import { ref, toRef } from 'vue'
+import { useDragAndDropSortableList } from '@/composeables/DragAndDropSortList'
+import DragAndDropSortList from '@/components/DragAndDropSortList.vue'
+
 export default {
+  components: { DragAndDropSortList },
   props: {
     fields: {
       type: Array,
       required: true,
     },
-    value: {
+    selection: {
       type: Array,
       required: true,
     },
+  },
+  setup (props) {
+    const fields = toRef(props, 'fields')
+    const dragDropList = ref(null)
+
+    const { setupDragAndDropList } = useDragAndDropSortableList(dragDropList, fields)
+
+    return { dragDropList, setupDragAndDropList }
   },
   data () {
     return {}
@@ -61,16 +86,31 @@ export default {
   computed: {
     selectedFields: {
       get () {
-        return this.value
+        return this.selection
       },
       set (value) {
-        this.$emit('input', value)
+        this.$emit('update:selection', value)
+      },
+    },
+    allFields: {
+      get () {
+        return this.fields
+      },
+      set (value) {
+        this.$emit('update:fields', value)
       },
     },
   },
   methods: {
     showConfigurationDialog () {
       this.$refs['configure-modal'].show()
+    },
+    onModalHasOpened () {
+      this.dragDropList = this.$refs['drag-drop-list']
+      this.setupDragAndDropList()
+    },
+    emitData (data) {
+      this.$emit('input', data)
     },
   },
 }

@@ -20,8 +20,8 @@
       class="card-body p-0"
     >
       <ConfigureableList
-        v-model="fieldSelection"
-        :fields="fields"
+        :fields.sync="fields"
+        :selection.sync="fieldSelection"
       >
         <template #head="{ showConfigurationDialog }">
           <h2>Some Head</h2>
@@ -35,7 +35,7 @@
               v-for="field in selectedFields"
               :key="field.key"
             >
-              {{ field.key }}
+              {{ field.key }} <button>drag me</button>
             </li>
           </ul>
         </template>
@@ -293,20 +293,26 @@ export default {
     }
   },
   computed: {
-    fields () {
-      return this.availableFields.map(field => {
-        const fieldOpt = {
-          key: field,
-          label: this.FieldsWithoutLabel.includes(field) ? '' : i18n(`storelist.${field}`),
-          sortable: !this.FieldsNotSortable.includes(field),
-        }
-        if (this.FieldsHasStatusClass.includes(field)) {
-          fieldOpt.tdClass = 'status'
-        }
-        return fieldOpt
-      })
+    fields: {
+      get () {
+        return this.availableFields.map(field => {
+          const fieldOpt = {
+            key: field,
+            label: this.FieldsWithoutLabel.includes(field) ? '' : i18n(`storelist.${field}`),
+            sortable: !this.FieldsNotSortable.includes(field),
+          }
+          if (this.FieldsHasStatusClass.includes(field)) {
+            fieldOpt.tdClass = 'status'
+          }
+          return fieldOpt
+        })
+      },
+      set (fields) {
+        this.availableFields = fields.map(field => field.key)
+      },
     },
     selectedFields () {
+      console.log('eval selectedFields', this.fieldSelection.concat(), this.fields.filter(field => this.fieldSelection.includes(field.key)))
       return this.fields.filter(field => this.fieldSelection.includes(field.key))
     },
     // configreableFields () {
