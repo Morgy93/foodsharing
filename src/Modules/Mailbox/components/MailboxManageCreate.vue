@@ -29,6 +29,7 @@
       size="sm"
       variant="primary"
       :disabled="!isValidToCreate"
+      @click="tryCreateMailbox"
     >
       Erstellen
     </b-button>
@@ -37,7 +38,7 @@
 
 <script>
 import UserSearchInput from '@/components/UserSearchInput.vue'
-import { createMailbox} from '@/api/mailbox'
+import { createMailbox } from '@/api/mailbox'
 
 export default {
   components: { UserSearchInput },
@@ -71,7 +72,8 @@ export default {
       }
     },
     async tryCreateMailbox () {
-      await createMailbox()
+      const userIds = this.mailboxUserList.map(user => user.id)
+      await createMailbox(this.name, this.mailboxAlias, userIds)
     },
   },
 }

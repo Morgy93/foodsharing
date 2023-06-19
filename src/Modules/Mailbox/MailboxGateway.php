@@ -631,10 +631,4 @@ class MailboxGateway extends BaseGateway
 
         return json_encode($mapped);
     }
-
-    public function dsfdsf (): void
-    {
-        //  if ($this->db->update('fs_foodsaver', ['mailbox_id' => (int)$mb_id], ['id' => $fsId])) {
-
-    }
 }

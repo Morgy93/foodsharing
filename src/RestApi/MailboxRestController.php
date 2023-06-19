@@ -5,6 +5,7 @@ namespace Foodsharing\RestApi;
 use Foodsharing\Lib\Session;
 use Foodsharing\Modules\Core\DBConstants\Mailbox\MailboxFolder;
 use Foodsharing\Modules\Mailbox\MailboxGateway;
+use Foodsharing\Modules\Mailbox\MailboxTransactions;
 use Foodsharing\Permissions\MailboxPermissions;
 use FOS\RestBundle\Controller\AbstractFOSRestController;
 use FOS\RestBundle\Controller\Annotations as Rest;
@@ -13,7 +14,6 @@ use OpenApi\Annotations as OA;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\Exception\AccessDeniedHttpException;
 use Symfony\Component\HttpKernel\Exception\UnauthorizedHttpException;
-use Foodsharing\Modules\Mailbox\MailboxTransactions;
 
 class MailboxRestController extends AbstractFOSRestController
 {
@@ -139,6 +139,9 @@ class MailboxRestController extends AbstractFOSRestController
      * @OA\Response(response="200", description="success")
      * @OA\Response(response="401", description="Not logged in")
      * @Rest\Post("mailbox/create")
+     * @Rest\QueryParam(name="name", nullable=false, requirements="\d+")
+     * @Rest\QueryParam(name="alias", nullable=false, requirements="\d+")
+     * @Rest\QueryParam(name="users", nullable=false, requirements="\d+")
      */
     public function createMailboxAction(ParamFetcher $paramFetcher): Response
     {
@@ -154,8 +157,7 @@ class MailboxRestController extends AbstractFOSRestController
         $alias = $paramFetcher->get('alias');
         $users = $paramFetcher->get('users');
 
-        $this->mailboxTransactions->createMailboxAndAddUser($name);
-
+        $this->mailboxTransactions->createMailboxAndAddUser($name, $users);
 
         return $this->handleView($this->view([], 200));
     }
