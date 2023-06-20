@@ -25,39 +25,37 @@
       centered
       size="lg"
       hide-header-close
-      @shown="onModalHasOpened"
     >
       <b-form-group
         ref="drag-drop-list"
         v-slot="{ ariaDescribedby }"
         label="Configure:"
       >
-        <DragAndDropSortList :value="fields">
-          <template #item="item">
-            {{ item }}
+        <DragAndDropSortList v-model="allFields">
+          <template #item="{ item, onDragStart }">
+            <b-form-checkbox
+              v-model="selectedFields"
+              :value="item.key"
+              :aria-describedby="ariaDescribedby"
+            >
+              <div>
+                {{ item.label }}
+                <button
+                  draggable="true"
+                  @dragstart="onDragStart()"
+                >
+                  grab
+                </button>
+              </div>
+            </b-form-checkbox>
           </template>
         </DragAndDropSortList>
-        <b-form-checkbox
-          v-for="field in fields"
-          :key="field.key"
-          v-model="selectedFields"
-          :value="field.key"
-          :aria-describedby="ariaDescribedby"
-        >
-          <div>
-            {{ field.label }}<button draggable="true">
-              grab
-            </button>
-          </div>
-        </b-form-checkbox>
       </b-form-group>
     </b-modal>
   </div>
 </template>
 
 <script>
-import { ref, toRef } from 'vue'
-import { useDragAndDropSortableList } from '@/composeables/DragAndDropSortList'
 import DragAndDropSortList from '@/components/DragAndDropSortList.vue'
 
 export default {
@@ -71,14 +69,6 @@ export default {
       type: Array,
       required: true,
     },
-  },
-  setup (props) {
-    const fields = toRef(props, 'fields')
-    const dragDropList = ref(null)
-
-    const { setupDragAndDropList } = useDragAndDropSortableList(dragDropList, fields)
-
-    return { dragDropList, setupDragAndDropList }
   },
   data () {
     return {}
@@ -104,13 +94,6 @@ export default {
   methods: {
     showConfigurationDialog () {
       this.$refs['configure-modal'].show()
-    },
-    onModalHasOpened () {
-      this.dragDropList = this.$refs['drag-drop-list']
-      this.setupDragAndDropList()
-    },
-    emitData (data) {
-      this.$emit('input', data)
     },
   },
 }

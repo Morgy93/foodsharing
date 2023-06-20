@@ -3,14 +3,13 @@
     <div
       v-for="(item, key) in items"
       :key="key"
+      @drop="reposition(key)"
+      @dragover.prevent
     >
       <slot
         name="item"
         :item="item"
-        draggable="true"
-        @dragstart="startPosition = key"
-        @drop="reposition(key)"
-        @dragover.prevent
+        :onDragStart="onDragStart.bind(null, key)"
       />
     </div>
   </div>
@@ -35,18 +34,25 @@ export default {
         return this.value
       },
       set (value) {
+        // console.log('emit something', value)
         this.$emit('input', value)
       },
     },
   },
   methods: {
+    onDragStart (startPosition) {
+      this.startPosition = startPosition
+    },
     reposition (dropPosition) {
+      // don't alter the props, instead...
+      const items = this.items.concat()
       console.log(`drop ${this.startPosition} onto ${dropPosition}`)
       // console.log('before:', this.items.map(item => item))
       // reposition
-      const item = this.items.splice(this.startPosition, 1)[0]
-      this.items.splice(dropPosition, 0, item)
-      // console.log('after:', this.items.map(item => item))
+      const item = items.splice(this.startPosition, 1)[0]
+      items.splice(dropPosition, 0, item)
+      // ...emit the changes
+      this.items = items
     },
   },
 }

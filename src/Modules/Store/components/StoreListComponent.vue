@@ -308,11 +308,12 @@ export default {
         })
       },
       set (fields) {
+        // console.log('set fields', fields)
         this.availableFields = fields.map(field => field.key)
       },
     },
     selectedFields () {
-      console.log('eval selectedFields', this.fieldSelection.concat(), this.fields.filter(field => this.fieldSelection.includes(field.key)))
+      // console.log('eval selectedFields', this.fieldSelection.concat(), this.fields.filter(field => this.fieldSelection.includes(field.key)))
       return this.fields.filter(field => this.fieldSelection.includes(field.key))
     },
     // configreableFields () {
