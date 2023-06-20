@@ -1,31 +1,31 @@
 /* eslint-disable eqeqeq */
 
-const storage = {
+export default class Storage {
+  #prefix = ''
 
-  prefix: '',
+  constructor (name) {
+    this.setPrefix(name)
+  }
 
-  setPrefix: function (prefix) {
-    this.prefix = `${prefix}:`
-  },
-  set: function (key, val) {
+  setPrefix (prefix) {
+    this.#prefix = `${prefix}:`
+  }
+
+  set (key, val) {
     val = JSON.stringify({ v: val })
-    window.localStorage.setItem(storage.prefix + key, val)
-  },
-  get: function (key, def = undefined) {
-    let val = window.localStorage.getItem(storage.prefix + key)
+    window.localStorage.setItem(this.#prefix + key, val)
+  }
+
+  get (key, def = undefined) {
+    let val = window.localStorage.getItem(this.#prefix + key)
     if (val != undefined) {
       val = JSON.parse(val)
       return val.v
     }
     return def
-  },
-  del: function (key) {
-    window.localStorage.removeItem(storage.prefix + key)
-  },
-  reset: function () {
-    this.del('badge')
-    this.del('msg-chats')
-  },
-}
+  }
 
-export default storage
+  del (key) {
+    window.localStorage.removeItem(this.#prefix + key)
+  }
+}

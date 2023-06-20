@@ -10,7 +10,7 @@ import { GET } from '@/browser'
 
 import { showLoader, hideLoader, goTo, ajreq } from '@/script'
 
-import storage from '@/storage'
+import Storage from '@/storage'
 
 import { initMap } from '@/mapUtils'
 
@@ -25,6 +25,8 @@ import './Map.css'
 import { getMapMarkers } from '@/api/map'
 import { vueApply, vueRegister } from '@/vue'
 import CommunityBubble from './components/CommunityBubble'
+
+const storage = new Storage('map')
 
 let u_map = null
 let markers = null
@@ -58,8 +60,6 @@ const comIcon = L.AwesomeMarkers.icon({
 const map = {
   initiated: false,
   init: function () {
-    storage.setPrefix('map')
-
     const center = storage.get('center', [50.89, 10.13])
     const zoom = storage.get('zoom', 6)
     u_map = initMap('map', center, zoom)
