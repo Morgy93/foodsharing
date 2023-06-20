@@ -11,139 +11,150 @@
         v-if="chains !== null"
         class="card-body p-0"
       >
-        <div class="form-row p-1 ">
-          <div class="col-2 text-center">
-            <label class=" col-form-label col-form-label-sm">
-              {{ $i18n('store.filter') }}
-            </label>
-          </div>
-          <div class="col-4">
-            <label>
-              <input
-                v-model="filterText"
-                type="text"
-                class="form-control form-control-sm"
-                :placeholder="$i18n('chain.filterplaceholder')"
-              >
-            </label>
-          </div>
-          <div class="col-3">
-            <b-form-select
-              v-model="filterStatus"
-              :options="statusFilterOptions"
-            />
-          </div>
-          <div class="col">
-            <button
-              v-b-tooltip.hover
-              type="button"
-              class="btn"
-              :title="$i18n('storelist.emptyfilters')"
-              @click="clearFilter"
-            >
-              <i class="fas fa-times" />
-            </button>
-          </div>
-          <div
-            v-if="adminPermissions"
-            class="col"
-          >
-            <b-button
-              size="sm"
-              variant="primary"
-              @click="createChainModal"
-            >
-              {{ $i18n('chain.new') }}
-            </b-button>
-          </div>
-        </div>
-        <b-table
-          id="chain-list"
-          :fields="fields"
-          :current-page="currentPage"
-          :per-page="perPage"
-          :items="chainsFiltered"
-          tbody-tr-class="chain-row"
-          sort-icon-left
-          small
-          hover
-          responsive
+        <ConfigureableList
+          :fields.sync="fields"
+          :selection.sync="fieldSelection"
         >
-          <template #cell(status)="row">
-            <i
-              v-b-tooltip.hover.window="statusOptions[row.value].description"
-              class="fas fa-circle"
-              :style="{ color: statusOptions[row.value].color }"
-            />
+          <template #head="{ showConfigurationDialog }">
+            <div class="form-row p-1 ">
+              <div class="col-2 text-center">
+                <label class=" col-form-label col-form-label-sm">
+                  {{ $i18n('store.filter') }}
+                </label>
+              </div>
+              <div class="col-4">
+                <label>
+                  <input
+                    v-model="filterText"
+                    type="text"
+                    class="form-control form-control-sm"
+                    :placeholder="$i18n('chain.filterplaceholder')"
+                  >
+                </label>
+              </div>
+              <div class="col-3">
+                <b-form-select
+                  v-model="filterStatus"
+                  :options="statusFilterOptions"
+                />
+              </div>
+              <div class="col">
+                <button
+                  v-b-tooltip.hover
+                  type="button"
+                  class="btn"
+                  :title="$i18n('storelist.emptyfilters')"
+                  @click="clearFilter"
+                >
+                  <i class="fas fa-times" />
+                </button>
+              </div>
+              <div
+                v-if="adminPermissions"
+                class="col"
+              >
+                <b-button
+                  size="sm"
+                  variant="primary"
+                  @click="createChainModal"
+                >
+                  {{ $i18n('chain.new') }}
+                </b-button>
+                <b-button @click="showConfigurationDialog">
+                  Configure
+                </b-button>
+              </div>
+            </div>
           </template>
 
-          <template #cell(headquarters_city)="row">
-            {{ row.item.headquarters_zip }}
-            {{ row.value }}
-          </template>
+          <b-table
+            id="chain-list"
+            :fields="selectedFields"
+            :current-page="currentPage"
+            :per-page="perPage"
+            :items="chainsFiltered"
+            tbody-tr-class="chain-row"
+            sort-icon-left
+            small
+            hover
+            responsive
+          >
+            <template #cell(status)="row">
+              <i
+                v-b-tooltip.hover.window="statusOptions[row.value].description"
+                class="fas fa-circle"
+                :style="{ color: statusOptions[row.value].color }"
+              />
+            </template>
 
-          <template #cell(kams)="row">
-            <PickupEntries
-              :registered-users="row.value"
-              :max-width="100"
-              :min-width="60"
-            />
-          </template>
-
-          <template #cell(name)="row">
-            <a
-              v-if="row.item.forum_thread"
-              class="thread-link"
-              :href="$url('forumThread', row.item.forum_thread)"
-            >
+            <template #cell(headquarters_city)="row">
+              {{ row.item.headquarters_zip }}
               {{ row.value }}
-            </a>
-            <span v-else>
-              {{ row.value }}
-            </span>
-          </template>
+            </template>
 
-          <template #cell(notes)="row">
-            <span class="clamped-3">
-              <span v-if="row.item.allow_press">
-                {{ $i18n('chain.allowpress') }}
+            <template #cell(kams)="row">
+              <PickupEntries
+                :registered-users="row.value"
+                :max-width="100"
+                :min-width="60"
+              />
+            </template>
+
+            <template #cell(name)="row">
+              <a
+                v-if="row.item.forum_thread"
+                class="thread-link"
+                :href="$url('forumThread', row.item.forum_thread)"
+              >
+                {{ row.value }}
+              </a>
+              <span v-else>
+                {{ row.value }}
               </span>
-              {{ row.value }}
-              <small
-                v-b-tooltip.hover.window="$i18n('chain.tooltips.modification_date')"
-                class="text-muted change-date"
-              >
-                {{ $dateFormatter.date(new Date(row.item.modification_date), { short: true }) }}
-              </small>
-            </span>
-          </template>
+            </template>
 
-          <template #cell(actions)="row">
-            <b-dropdown
-              v-if="adminPermissions || row.item.kams.some(kam => kam.id === ownId)"
-              v-b-tooltip.hover.noninteractive.window="$i18n('chain.tooltips.options')"
-              size="sm"
-              no-caret
-              variant="primary"
-            >
-              <template #button-content>
-                <i class="fas fa-cog" />
-              </template>
-              <b-dropdown-item
-                href="#"
-                @click="detailsChainModal(row)"
+            <template #cell(notes)="row">
+              <span class="clamped-3">
+                <span v-if="row.item.allow_press">
+                  {{ $i18n('chain.allowpress') }}
+                </span>
+                {{ row.value }}
+                <small
+                  v-b-tooltip.hover.window="$i18n('chain.tooltips.modification_date')"
+                  class="text-muted change-date"
+                >
+                  {{ $dateFormatter.date(new Date(row.item.modification_date), { short: true }) }}
+                </small>
+              </span>
+            </template>
+
+            <template #cell(actions)="row">
+              <b-dropdown
+                v-if="adminPermissions || row.item.kams.some(kam => kam.id === ownId)"
+                v-b-tooltip.hover.noninteractive.window="$i18n('chain.tooltips.options')"
+                size="sm"
+                no-caret
+                variant="primary"
               >
-                {{ $i18n('chain.options.showstores') }}
-              </b-dropdown-item>
-              <b-dropdown-item
-                href="#"
-                @click="editChainModal(row)"
-              >
-                {{ $i18n('chain.options.edit') }}
-              </b-dropdown-item>
-            </b-dropdown>
-          </template>
-        </b-table>
+                <template #button-content>
+                  <i class="fas fa-cog" />
+                </template>
+                <b-dropdown-item
+                  href="#"
+                  @click="detailsChainModal(row)"
+                >
+                  {{ $i18n('chain.options.showstores') }}
+                </b-dropdown-item>
+                <b-dropdown-item
+                  href="#"
+                  @click="editChainModal(row)"
+                >
+                  {{ $i18n('chain.options.edit') }}
+                </b-dropdown-item>
+              </b-dropdown>
+            </template>
+          </b-table>
+        </ConfigureableList>
         <div class="float-right p-1 pr-3">
           <b-pagination
             v-model="currentPage"
@@ -183,9 +194,11 @@ import InputModal from '@/components/Modals/ChainList/InputModal.vue'
 import StoreDetailsModal from '@/components/Modals/ChainList/StoreDetailsModal.vue'
 import { getters, mutations } from '@/stores/chains'
 import { hideLoader, pulseError, showLoader } from '@/script'
+import ConfigureableList from '@/components/ConfigureableList.vue'
+import i18n from '@/helper/i18n'
 
 export default {
-  components: { PickupEntries, InputModal, StoreDetailsModal },
+  components: { ConfigureableList, PickupEntries, InputModal, StoreDetailsModal },
   props: {
     adminPermissions: {
       type: Boolean,
@@ -202,41 +215,35 @@ export default {
       perPage: 20,
       filterText: '',
       filterStatus: null,
-      fields: [
-        {
-          key: 'status',
-          label: this.$i18n('chain.columns.status'),
-          tdClass: 'status',
-          sortable: true,
-        },
-        {
-          key: 'name',
-          label: this.$i18n('chain.columns.name'),
-          sortable: true,
-        },
-        {
-          key: 'store_count',
-          label: this.$i18n('chain.columns.stores'),
-          sortable: true,
-          tdClass: 'text-center',
-        },
-        {
-          key: 'headquarters_city',
-          label: this.$i18n('chain.columns.headquarters'),
-          sortable: true,
-        },
-        {
-          key: 'kams',
-          label: this.$i18n('chain.columns.kams'),
-        },
-        {
-          key: 'notes',
-          label: this.$i18n('chain.columns.notes'),
-        },
-        {
-          key: 'actions',
-          label: '',
-        },
+      availableFields: [
+        'status',
+        'name',
+        'stores',
+        'headquarters',
+        'kams',
+        'notes',
+        'actions',
+      ],
+      FieldsClassMap: {
+        status: 'status',
+        stores: 'text-center',
+      },
+      FieldsNotSortable: [
+        'actions',
+        'notes',
+        'kams',
+      ],
+      FieldsWithoutLabel: [
+        'actions',
+      ],
+      fieldSelection: [
+        'status',
+        'name',
+        'stores',
+        'headquarters',
+        'kams',
+        'notes',
+        'actions',
       ],
       statusOptions: [
         {
@@ -257,6 +264,27 @@ export default {
   computed: {
     chains: () => getters.getChains(),
     storeList: () => getters.getStores(),
+    fields: {
+      get () {
+        return this.availableFields.map(field => {
+          const fieldOpt = {
+            key: field,
+            label: this.FieldsWithoutLabel.includes(field) ? '' : i18n(`chain.columns.${field}`),
+            sortable: !this.FieldsNotSortable.includes(field),
+          }
+          if (this.FieldsClassMap[field]) {
+            fieldOpt.tdClass = this.FieldsClassMap[field]
+          }
+          return fieldOpt
+        })
+      },
+      set (fields) {
+        this.availableFields = fields.map(field => field.key)
+      },
+    },
+    selectedFields () {
+      return this.fields.filter(field => this.fieldSelection.includes(field.key))
+    },
     chainsFiltered: function () {
       if (this.chains === null) return []
       let chains = this.chains
