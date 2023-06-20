@@ -24,27 +24,6 @@
         :selection.sync="fieldSelection"
       >
         <template #head="{ showConfigurationDialog }">
-          <h2>Some Head</h2>
-          <b-button @click="showConfigurationDialog">
-            Configure
-          </b-button>
-        </template>
-        <template #default>
-          <ul>
-            <li
-              v-for="field in selectedFields"
-              :key="field.key"
-            >
-              {{ field.key }} <button>drag me</button>
-            </li>
-          </ul>
-        </template>
-      </ConfigureableList>
-      <ConfigureableList
-        v-model="fieldSelection"
-        :fields="fields"
-      >
-        <template #head="{ showConfigurationDialog }">
           <div class="form-row p-1 ">
             <div class="col-2 text-center">
               <label class=" col-form-label col-form-label-sm">

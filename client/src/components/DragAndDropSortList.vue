@@ -4,7 +4,7 @@
       v-for="(item, key) in items"
       :key="key"
       @drop="reposition(key)"
-      @dragover.prevent
+      @dragover.prevent="onDragOver"
     >
       <slot
         name="item"
@@ -26,6 +26,7 @@ export default {
   data () {
     return {
       startPosition: null,
+      hoverPosition: null,
     }
   },
   computed: {
@@ -42,6 +43,9 @@ export default {
   methods: {
     onDragStart (startPosition) {
       this.startPosition = startPosition
+    },
+    onDragOver (hoverPosition) {
+      this.hoverPosition = hoverPosition
     },
     reposition (dropPosition) {
       // don't alter the props, instead...
