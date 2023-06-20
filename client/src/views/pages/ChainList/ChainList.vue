@@ -277,7 +277,7 @@ export default {
         const searchKeys = ['name', 'headquartersCity']
         chains = chains.filter(
           chain => (
-            searchKeys.some(key => chain[key]?.toLowerCase().includes(filterText))) ||
+            searchKeys.some(key => chain.chain[key]?.toLowerCase().includes(filterText))) ||
             chain.chain.kams.find(kam => kam.id === parseInt(filterText)),
         )
       }
