@@ -34,8 +34,7 @@ export default {
     showLoader()
     this.isBusy = true
     try {
-      const values = await listRegionStores(this.regionId)
-      this.stores = values.stores
+      this.stores = await listRegionStores(this.regionId)
       console.log('stores: ', this.stores)
     } catch (e) {
       pulseError(i18n('error_unexpected'))

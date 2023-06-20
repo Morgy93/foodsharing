@@ -1,4 +1,5 @@
 import { get, patch, post, remove } from './base'
+import { formatStoresToMatchColumnKeys } from '@/api/stores'
 
 export function joinRegion (regionId) {
   return post(`/region/${regionId}/join`)
@@ -41,9 +42,9 @@ export function listRegionMembers (regionId) {
   return get(`/region/${regionId}/members`)
 }
 
-export function listRegionStores (regionId) {
-  // todo: this should be broken, please see ownList
-  return get(`/region/${regionId}/stores`)
+export async function listRegionStores (regionId) {
+  const { stores } = await get(`/region/${regionId}/stores`)
+  return formatStoresToMatchColumnKeys(stores)
 }
 
 export function removeMember (regionId, memberId) {

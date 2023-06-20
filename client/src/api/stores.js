@@ -51,7 +51,13 @@ export async function listStoresForCurrentUser () {
 
 export async function listStoresDetailsForCurrentUser (expand) {
   const { stores } = await get('/user/current/stores/details')
-  // format store that they met column keys
+  return formatStoresToMatchColumnKeys(stores)
+}
+
+/**
+ * This can be removed if we adjust the api endpoint
+ */
+export function formatStoresToMatchColumnKeys (stores) {
   return stores.map(store => {
     const changeKey = (key, newKey) => {
       store[newKey] = store[key]
