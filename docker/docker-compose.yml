@@ -28,9 +28,9 @@ services:
     depends_on:
       - db
       - redis
-      - mailqueuerunner
+#      - mailqueuerunner
       - influxdb
-      - websocket
+#      - websocket
     volumes:
       - ../:/app:delegated
       - ./conf/php/dev-config.${FS_PLATFORM}.ini:/usr/local/etc/php/conf.d/dev-config.ini:cached

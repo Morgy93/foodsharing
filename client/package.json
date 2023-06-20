@@ -9,7 +9,7 @@
     "fix": "bin/eslint -c package.json --fix",
     "clean-assets": "shx rm -rf ../assets/*",
     "build": "yarn clean-assets && NODE_ENV=production webpack",
-    "dev": "yarn clean-assets && webpack serve --hot --config serve.config.js",
+    "dev": "webpack serve --hot --config serve.config.js",
     "test": "node test"
   },
   "dependencies": {
