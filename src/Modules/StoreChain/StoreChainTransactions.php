@@ -86,6 +86,10 @@ class StoreChainTransactions
             }
             $params->headquartersZip = $storeModel->headquartersZip;
             $changed = true;
+        } else {
+            if (empty(trim(strip_tags($params->headquartersZip)))) {
+                throw new StoreChainTransactionException(StoreChainTransactionException::EMPTY_ZIP);
+            }
         }
         if (!is_null($storeModel->headquartersCity)) {
             if (empty(trim(strip_tags($storeModel->headquartersCity)))) {
@@ -93,6 +97,10 @@ class StoreChainTransactions
             }
             $params->headquartersCity = $storeModel->headquartersCity;
             $changed = true;
+        } else {
+            if (empty(trim(strip_tags($params->headquartersCity)))) {
+                throw new StoreChainTransactionException(StoreChainTransactionException::EMPTY_CITY);
+            }
         }
         if (!empty($storeModel->allowPress)) {
             $params->allowPress = $storeModel->allowPress;
@@ -102,6 +110,8 @@ class StoreChainTransactions
             $this->throwExceptionIfForumInvalid($storeModel->forumThread);
             $params->forumThread = $storeModel->forumThread;
             $changed = true;
+        } else {
+            $this->throwExceptionIfForumInvalid($params->forumThread);
         }
         if (!is_null($storeModel->notes)) {
             $params->notes = $storeModel->notes;
@@ -120,6 +130,8 @@ class StoreChainTransactions
             }, $storeModel->kams);
             $this->throwExceptionIfKeyAccountManagerIsInvalid($params->kams);
             $changed = true;
+        } else {
+            $this->throwExceptionIfKeyAccountManagerIsInvalid($params->kams);
         }
 
         if (!empty($storeModel->estimatedStoreCount)) {

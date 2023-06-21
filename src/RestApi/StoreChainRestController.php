@@ -89,7 +89,7 @@ class StoreChainRestController extends AbstractFOSRestController
      * @OA\Response(response="401", description="Not logged in")
      * @OA\Response(response="403", description="Insufficient permissions")
      */
-    public function getStoreChainAction($chainId): Response
+    public function getStoreChainAction(int $chainId): Response
     {
         if (!$this->session->mayRole()) {
             throw new UnauthorizedHttpException(self::NOT_LOGGED_IN);

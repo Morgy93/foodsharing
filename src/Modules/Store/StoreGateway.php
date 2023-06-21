@@ -110,8 +110,8 @@ class StoreGateway extends BaseGateway
         $results = $this->db->fetchAll('SELECT id, name
             FROM fs_betrieb
             WHERE kette_id = :chainId' .
-            $pagination->buildSqlLimit(),
-            $pagination->addSqlLimitParameters(['chainId' => $chainId]));
+            $this->buildPaginationSqlLimit($pagination),
+            $this->addPaginationSqlLimitParameters($pagination, ['chainId' => $chainId]));
 
         return array_map(function (array $item) { return MinimalStoreIdentifier::createFromArray($item); }, $results);
     }
@@ -600,7 +600,7 @@ class StoreGateway extends BaseGateway
         ]);
     }
 
-    public function isStoreTeamMemberOfStoreChainStore($fsId): bool
+    public function isStoreTeamMemberOfStoreChainStore(int $fsId): bool
     {
         return $this->db->fetch('
 				SELECT COUNT(*) as count

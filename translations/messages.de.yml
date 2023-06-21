@@ -2739,7 +2739,7 @@ chain:
       estimatedStoreCount:
         label: "Erwartete Anzahl von Betriebe"
         invalidfeedback: "Nur Ganzzahlen sind erlaubt."
-        description: "Anzahl Betriebe möglichen Betriebe die Kooperieren könnten "
+        description: "Gesamtanzahl Betriebe der Kette"
       headquarters:
         label: Zentrale
         placeholder:

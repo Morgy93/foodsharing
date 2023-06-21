@@ -31,10 +31,10 @@ class StoreChainPermissions
 
     public function maySeeChainList(): bool
     {
-        return $this->session->mayRole(Role::FOODSAVER) &&
-        $this->regionGateway->hasMember($this->session->id(), RegionIDs::STORE_CHAIN_GROUP) ||
-        $this->session->mayRole(Role::STORE_MANAGER) ||
-        $this->storeGateway->isStoreTeamMemberOfStoreChainStore($this->session->id());
+        return $this->session->mayRole(Role::STORE_MANAGER) ||
+            ($this->session->mayRole(Role::FOODSAVER) &&
+                $this->regionGateway->hasMember($this->session->id(), RegionIDs::STORE_CHAIN_GROUP)) ||
+            $this->storeGateway->isStoreTeamMemberOfStoreChainStore($this->session->id());
     }
 
     public function mayCreateChain(): bool

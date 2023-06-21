@@ -36,7 +36,7 @@ class StoreChainGateway extends BaseGateway
     /**
      * @throws Exception
      */
-    public function updateStoreChain(StoreChain $storeData, $updateKams)
+    public function updateStoreChain(StoreChain $storeData, bool $updateKams)
     {
         $this->db->update(
             'fs_chain',
@@ -111,7 +111,8 @@ class StoreChainGateway extends BaseGateway
 			' . $where . '
 			GROUP BY c.`id`
             ORDER BY c.id
-		' . $pagination->buildSqlLimit(), $pagination->addSqlLimitParameters(!is_null($id) ? ['chainId' => $id] : []));
+		' . $this->buildPaginationSqlLimit($pagination),
+            $this->addPaginationSqlLimitParameters($pagination, !is_null($id) ? ['chainId' => $id] : []));
 
         $chains = [];
         foreach ($data as $chain) {
