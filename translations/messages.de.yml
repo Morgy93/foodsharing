@@ -2749,7 +2749,7 @@ chain:
         label: Status
       thread:
         label: Forum-Thread
-        invalidfeedback: Ungültige Eingabe. Thread-Id oder Link benötigt.
+        invalidfeedback: Thread-Id oder Link benötigt.
         description: Id eines Forum-Threads. Link einfügen zur automatischen Erkennung.
       kam:
         label: KAMs

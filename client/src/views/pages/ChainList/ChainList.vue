@@ -166,7 +166,6 @@
       ref="input-modal"
       :status-filter-options="statusFilterOptions"
       :admin-permissions="adminPermissions"
-      @ok="finishEditing"
     />
 
     <StoreDetailsModal
@@ -305,7 +304,7 @@ export default {
     },
     editChainModal (row) {
       const chain = row.item
-      this.$refs['input-modal'].show(chain.chain.id, {
+      const input = {
         name: chain.chain.name,
         headquartersZip: chain.chain.headquartersZip,
         headquartersCity: chain.chain.headquartersCity,
@@ -316,7 +315,8 @@ export default {
         estimatedStoreCount: chain.chain.estimatedStoreCount,
         allowPress: !!chain.chain.allowPress,
         kamIds: chain.chain.kams.map(x => x.id).join(', '),
-      }, this.finishEditing)
+      }
+      this.$refs['input-modal'].show(chain.chain.id, input, this.finishEditing)
     },
     createChainModal () {
       this.$refs['input-modal'].show(-1, {
@@ -338,7 +338,6 @@ export default {
       await mutations.fetchChainStores(selectedChain.chain.id)
     },
     async finishEditing (chainId, data) {
-      console.log(data)
       if (chainId < 0) {
         try {
           await mutations.createChain(data)

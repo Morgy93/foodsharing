@@ -41,7 +41,7 @@
           id="zip-input"
           v-model="input.headquartersZip"
           :placeholder="$i18n('chain.inputmodal.inputs.headquarters.placeholder.zip')"
-          :state="input.headquartersZip ? /^(\d{4}|\d{5})$/.test(input.headquartersZip) : null"
+          :state="input.headquartersZip ? /^\d{4,5}$/.test(input.headquartersZip) : false"
           maxlength="5"
           trim
         />
@@ -50,7 +50,7 @@
           v-model="input.headquartersCity"
           :placeholder="$i18n('chain.inputmodal.inputs.headquarters.placeholder.city')"
           :formatter="singleSpacing"
-          :state="input.headquartersCity ? true : null"
+          :state="!!input.headquartersCity"
           maxlength="50"
           trim
         />
@@ -67,7 +67,7 @@
         <b-form-input
           id="estimatedStoreCount-input"
           v-model="input.estimatedStoreCount"
-          :state="input.estimatedStoreCount ? /^\d+$/.test(input.estimatedStoreCount) : 0"
+          :state="input.estimatedStoreCount ? /^\d+$/.test(input.estimatedStoreCount) : null"
           trim
         />
       </b-form-group>
@@ -98,7 +98,7 @@
           v-model="input.forumThread"
           placeholder="foodsharing.de/ ... sub=forum&tid=12345"
           :formatter="x => /tid=(\d+)/.test(input.forumThread) ? x.match(/tid=(\d+)/)[1] : x"
-          :state="input.forumThread ? /(tid=(\d+))|^\d+$/.test(input.forumThread) : null"
+          :state="input.forumThread ? /(tid=(\d+))|^\d+$/.test(input.forumThread) : false"
           lazy-formatter
           trim
         />
@@ -239,7 +239,7 @@ export default {
         headquartersZip: String(this.input.headquartersZip),
         headquartersCity: this.input.headquartersCity,
         status: Number(this.input.status),
-        forumThread: Number(this.input.forumThread) || 0,
+        forumThread: Number(this.input.forumThread) || null,
         estimatedStoreCount: Number(this.input.estimatedStoreCount) || 0,
         allowPress: this.input.allowPress,
         notes: this.input.notes,
@@ -248,9 +248,9 @@ export default {
       }
       showLoader()
       this.finishHandle(this.chainEditing, data).then((successful) => {
+        hideLoader()
         if (successful) {
           this.$refs['input-modal'].hide()
-          hideLoader()
         }
       })
     },
