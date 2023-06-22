@@ -17,6 +17,24 @@ const assetsPath = resolve('../assets')
 const modulesJsonPath = join(assetsPath, 'modules.json')
 
 const plugins = []
+const moduleRules = [
+  {
+    test: /\.(png|jpe?g|gif|svg|mp4|webm)(\?.*)?$/,
+    loader: 'url-loader',
+    options: {
+      limit: 10000,
+      name: dev ? 'img/[name].[ext]' : 'img/[name].[hash:7].[ext]',
+    },
+  },
+  {
+    test: /\.(woff2?|eot|ttf|otf)(\?.*)?$/,
+    loader: 'url-loader',
+    options: {
+      limit: 10000,
+      name: dev ? 'fonts/[name].[ext]' : 'fonts/[name].[hash:7].[ext]',
+    },
+  },
+]
 
 if (!dev) {
   plugins.push(
@@ -76,6 +94,21 @@ plugins.push(
   }),
 )
 
+if (!dev) {
+  moduleRules.push({
+    enforce: 'pre',
+    test: /\.(js|vue)$/,
+    exclude: [
+      /node_modules/,
+      resolve('lib'),
+    ],
+    loader: 'eslint-loader',
+    options: {
+      configFile: resolve('package.json'),
+    },
+  })
+}
+
 module.exports = merge(webpackBase, {
   entry: moduleEntries(),
   mode: dev ? 'development' : 'production',
@@ -95,36 +128,7 @@ module.exports = merge(webpackBase, {
     publicPath: '/assets/',
   },
   module: {
-    rules: [
-      {
-        enforce: 'pre',
-        test: /\.(js|vue)$/,
-        exclude: [
-          /node_modules/,
-          resolve('lib'),
-        ],
-        loader: 'eslint-loader',
-        options: {
-          configFile: resolve('package.json'),
-        },
-      },
-      {
-        test: /\.(png|jpe?g|gif|svg|mp4|webm)(\?.*)?$/,
-        loader: 'url-loader',
-        options: {
-          limit: 10000,
-          name: dev ? 'img/[name].[ext]' : 'img/[name].[hash:7].[ext]',
-        },
-      },
-      {
-        test: /\.(woff2?|eot|ttf|otf)(\?.*)?$/,
-        loader: 'url-loader',
-        options: {
-          limit: 10000,
-          name: dev ? 'fonts/[name].[ext]' : 'fonts/[name].[hash:7].[ext]',
-        },
-      },
-    ],
+    rules: moduleRules,
   },
   plugins,
   optimization: {
