@@ -12,4 +12,11 @@ class Pagination
      * @Assert\Positive()
      */
     public ?int $pageSize = null;
+
+    /**
+     * Offset to start.
+     *
+     * @Assert\Positive()
+     */
+    public int $offset = 0;
 }
