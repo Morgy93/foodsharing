@@ -22,6 +22,7 @@
       <ConfigureableList
         :fields.sync="fields"
         :selection.sync="fieldSelection"
+        store
       >
         <template #head="{ showConfigurationDialog }">
           <div class="form-row p-1 ">

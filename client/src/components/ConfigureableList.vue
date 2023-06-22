@@ -1,10 +1,5 @@
 <template>
   <div>
-    <b-button
-      @click="allFields = fields.concat().reverse()"
-    >
-      Reverse
-    </b-button>
     <slot
       name="head"
       :showConfigurationDialog="showConfigurationDialog"
@@ -31,15 +26,15 @@
         v-slot="{ ariaDescribedby }"
         label="Configure:"
       >
-        <DragAndDropSortList v-model="allFields">
+        <DragAndDropSortList v-model="componentFields">
           <template #item="{ item, onDragStart }">
             <b-form-checkbox
-              v-model="selectedFields"
-              :value="item.key"
+              v-model="componentSelection"
+              :value="item[fieldKey]"
               :aria-describedby="ariaDescribedby"
             >
               <div>
-                {{ item.label }}
+                {{ item[fieldLabel] }}
                 <button
                   draggable="true"
                   @dragstart="onDragStart()"
@@ -57,7 +52,10 @@
 
 <script>
 import DragAndDropSortList from '@/components/DragAndDropSortList.vue'
+import Storage from '@/storage'
+import { debounce } from '@/utils'
 
+const storage = new Storage('vue')
 export default {
   components: { DragAndDropSortList },
   props: {
@@ -69,31 +67,103 @@ export default {
       type: Array,
       required: true,
     },
+    fieldKey: {
+      type: String,
+      default: 'key',
+    },
+    fieldLabel: {
+      type: String,
+      default: 'label',
+    },
+    storageKey: {
+      type: String,
+      default: function () { return this.$parent.$options._componentTag },
+    },
+    store: {
+      type: Boolean,
+      default: false,
+    },
   },
   data () {
-    return {}
+    return {
+      unsavedChanges: false,
+    }
   },
   computed: {
-    selectedFields: {
+    componentSelection: {
       get () {
         return this.selection
       },
       set (value) {
-        this.$emit('update:selection', value)
+        console.log('selection got update')
+        this.debouncedEmitSelection(value)
+        if (this.store) {
+          this.debouncedSave()
+        }
       },
     },
-    allFields: {
+    componentFields: {
       get () {
         return this.fields
       },
       set (value) {
+        console.log('fields got update')
         this.$emit('update:fields', value)
+        if (this.store) {
+          this.debouncedSave()
+        }
       },
     },
+  },
+  created () {
+    console.log(this.store, this.storageKey)
+    console.log('parent name:', this.$parent.$options._componentTag)
+    this.debouncedEmitSelection = debounce(value => this.$emit('update:selection', value))
+    if (this.store) {
+      this.debouncedSave = debounce(() => {
+        this.unsavedChanges = true
+        this.save()
+      }, 1000)
+      this.load()
+      window.addEventListener('beforeunload', this.imidiateSave)
+    }
+  },
+  destroyed () {
+    if (this.store) {
+      window.removeEventListener('beforeunload', this.imidiateSave)
+    }
+  },
+  mounted () {
+    this.showConfigurationDialog()
   },
   methods: {
     showConfigurationDialog () {
       this.$refs['configure-modal'].show()
+    },
+    save () {
+      console.log('saving...')
+      storage.set(`${this.storageKey}-fields`, this.fields)
+      storage.set(`${this.storageKey}-selection`, this.selection)
+      this.unsavedChanges = false
+    },
+    imidiateSave () {
+      if (this.unsavedChanges) {
+        this.save()
+      }
+    },
+    load () {
+      console.log('loading...', storage)
+      storage.getKeys().forEach(key => {
+        const storaKeyLength = this.storageKey.length + 1
+        let propName = key.substring(storaKeyLength)
+        propName = propName[0].toUpperCase() + propName.slice(1)
+        propName = 'component' + propName
+        console.log('loaded prop:', propName)
+        const data = storage.get(key)
+        if (data) {
+          this[propName] = data
+        }
+      })
     },
   },
 }
