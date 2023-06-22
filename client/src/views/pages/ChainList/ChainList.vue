@@ -274,11 +274,13 @@ export default {
       const filterText = this.filterText.trim().toLowerCase()
       if (filterText) {
         const searchKeys = ['name', 'headquartersCity']
-        chains = chains.filter(
-          chain => (
-            searchKeys.some(key => chain.chain[key]?.toLowerCase().includes(filterText))) ||
-            chain.chain.kams.find(kam => kam.id === parseInt(filterText)),
-        )
+        const searchTerms = filterText.split(/[^a-zA-Z0-9]+/).filter(term => term)
+        chains = chains.filter(chain => {
+          return searchKeys.some(key => {
+            const value = chain.chain[key]?.toLowerCase()
+            return searchTerms.every(term => value.includes(term))
+          }) || chain.chain.kams.find(kam => kam.id === parseInt(filterText))
+        })
       }
       if (this.filterStatus !== null) {
         chains = chains.filter(chain => chain.status === this.filterStatus)
