@@ -20,6 +20,8 @@
       centered
       size="lg"
       hide-header-close
+      @ok="save"
+      @cancel="reset"
     >
       <b-form-group
         v-slot="{ ariaDescribedby }"
@@ -57,7 +59,6 @@
 <script>
 import DragAndDropSortList from '@/components/DragAndDropSortList.vue'
 import Storage from '@/storage'
-import { debounce } from '@/utils'
 
 const storage = new Storage('vue')
 export default {
@@ -91,6 +92,9 @@ export default {
   data () {
     return {
       unsavedChanges: false,
+      dataLoaded: false,
+      initialData: [],
+      defaultData: [],
     }
   },
   computed: {
@@ -99,10 +103,10 @@ export default {
         return this.selection
       },
       set (value) {
-        console.log('selection got update')
+        console.log('selection got update', value)
         this.$emit('update:selection', value)
-        if (this.store) {
-          this.debouncedSave()
+        if (this.store && this.dataLoaded) {
+          this.unsavedChanges = true
         }
       },
     },
@@ -111,10 +115,10 @@ export default {
         return this.fields
       },
       set (value) {
-        console.log('fields got update')
+        console.log('fields got update', value)
         this.$emit('update:fields', value)
-        if (this.store) {
-          this.debouncedSave()
+        if (this.store && this.dataLoaded) {
+          this.unsavedChanges = true
         }
       },
     },
@@ -123,51 +127,45 @@ export default {
     console.log(this.store, this.storageKey)
     console.log('parent name:', this.$parent.$options._componentTag)
     if (this.store) {
-      // wait 2 seconds before saving settings
-      this.debouncedSave = debounce(() => {
-        this.unsavedChanges = true
-        this.save()
-      }, 2000)
       this.load()
-      window.addEventListener('beforeunload', this.imidiateSave)
+      // window.addEventListener('beforeunload', this.save)
     }
   },
   destroyed () {
     if (this.store) {
-      window.removeEventListener('beforeunload', this.imidiateSave)
+      // window.removeEventListener('beforeunload', this.save)
     }
   },
-  mounted () {
-    this.showConfigurationDialog()
-  },
+  // mounted () {
+  //   this.showConfigurationDialog()
+  // },
   methods: {
     showConfigurationDialog () {
       this.$refs['configure-modal'].show()
     },
     save () {
       console.log('saving...')
-      storage.set(`${this.storageKey}-fields`, this.fields)
+      storage.set(`${this.storageKey}-fields`, this.fields.map(field => field.key))
       storage.set(`${this.storageKey}-selection`, this.selection)
       this.unsavedChanges = false
     },
-    imidiateSave () {
-      if (this.unsavedChanges) {
-        this.save()
-      }
-    },
     load () {
       console.log('loading...', storage)
-      storage.getKeys().forEach(key => {
-        const storaKeyLength = this.storageKey.length + 1
-        let propName = key.substring(storaKeyLength)
-        propName = propName[0].toUpperCase() + propName.slice(1)
-        propName = 'component' + propName
-        console.log('loaded prop:', propName)
-        const data = storage.get(key)
-        if (data) {
-          this[propName] = data
-        }
-      })
+      const fields = storage.get(`${this.storageKey}-fields`)
+      if (fields) {
+        this.componentFields = fields.map(field => { return { key: field } })
+      }
+      const selection = storage.get(`${this.storageKey}-selection`)
+      if (selection) {
+        this.componentSelection = selection
+      }
+      this.dataLoaded = true
+    },
+    reset () {
+      console.log('reset')
+    },
+    unsavedChangesPrompt () {
+      alert('You have unsaved changes')
     },
   },
 }
