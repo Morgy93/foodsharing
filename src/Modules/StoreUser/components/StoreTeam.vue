@@ -239,9 +239,7 @@ export default {
       if (this.wSM) {
         fields.push({ key: 'mobinfo', class: 'col-mobinfo' })
       }
-      if (this.wXS || this.wSM) {
-        fields.push({ key: 'call', class: 'col-call' })
-      }
+      fields.push({ key: 'call', class: 'col-call' })
       return fields
     },
   },
