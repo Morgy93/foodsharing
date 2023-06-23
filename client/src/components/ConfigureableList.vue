@@ -22,29 +22,33 @@
       hide-header-close
     >
       <b-form-group
-        ref="drag-drop-list"
         v-slot="{ ariaDescribedby }"
         label="Configure:"
+        aria-describedby="something"
       >
-        <DragAndDropSortList v-model="componentFields">
-          <template #item="{ item, onDragStart }">
-            <b-form-checkbox
-              v-model="componentSelection"
-              :value="item[fieldKey]"
-              :aria-describedby="ariaDescribedby"
-            >
-              <div>
-                {{ item[fieldLabel] }}
-                <button
-                  draggable="true"
-                  @dragstart="onDragStart()"
-                >
-                  grab
-                </button>
-              </div>
-            </b-form-checkbox>
-          </template>
-        </DragAndDropSortList>
+        <b-form-checkbox-group
+          v-model="componentSelection"
+          :aria-describedby="ariaDescribedby"
+        >
+          <DragAndDropSortList v-model="componentFields">
+            <template #item="{ item, onDragStart }">
+              <b-form-checkbox
+                :value="item[fieldKey]"
+                :aria-describedby="ariaDescribedby"
+              >
+                <div>
+                  {{ item[fieldLabel] }}
+                  <button
+                    draggable="true"
+                    @dragstart="onDragStart()"
+                  >
+                    grab
+                  </button>
+                </div>
+              </b-form-checkbox>
+            </template>
+          </DragAndDropSortList>
+        </b-form-checkbox-group>
       </b-form-group>
     </b-modal>
   </div>
@@ -96,7 +100,7 @@ export default {
       },
       set (value) {
         console.log('selection got update')
-        this.debouncedEmitSelection(value)
+        this.$emit('update:selection', value)
         if (this.store) {
           this.debouncedSave()
         }
@@ -118,12 +122,12 @@ export default {
   created () {
     console.log(this.store, this.storageKey)
     console.log('parent name:', this.$parent.$options._componentTag)
-    this.debouncedEmitSelection = debounce(value => this.$emit('update:selection', value))
     if (this.store) {
+      // wait 2 seconds before saving settings
       this.debouncedSave = debounce(() => {
         this.unsavedChanges = true
         this.save()
-      }, 1000)
+      }, 2000)
       this.load()
       window.addEventListener('beforeunload', this.imidiateSave)
     }
