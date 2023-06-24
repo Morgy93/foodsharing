@@ -1,7 +1,17 @@
 import { get, patch, post } from './base'
 
 export async function listChains () {
-  return await get('/chains')
+  const chains = await get('/chains')
+  // format chain to match keys
+  return chains.map(chain => {
+    const changeKey = (key, newKey) => {
+      chain[newKey] = chain[key]
+      delete chain[key]
+    }
+    changeKey('store_count', 'stores')
+    changeKey('headquarters_city', 'headquarters')
+    return chain
+  })
 }
 
 export async function listChainStores (chainId) {

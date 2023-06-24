@@ -88,7 +88,7 @@
               />
             </template>
 
-            <template #cell(headquarters_city)="row">
+            <template #cell(headquarters)="row">
               {{ row.item.headquarters_zip }}
               {{ row.value }}
             </template>
