@@ -2820,6 +2820,7 @@ chain:
         label: 'Forum Konusu'
         description: 'Bir forum dizisinin ID si. Otomatik algılama için bağlantı ekleyin.'
         invalidfeedback: 'Geçersiz Giriş. Konu ID si veya Link gerekli.'
+        placeholder: ''
       notes:
         label: 'Notlar'
         invalidfeedback: 'Notlar 200 karakterden uzun olamaz.'

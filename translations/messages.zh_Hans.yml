@@ -1518,6 +1518,7 @@ chain:
         label: ''
         invalidfeedback: ''
         description: ''
+        placeholder: ''
       name:
         label: ''
         invalidfeedback: ''

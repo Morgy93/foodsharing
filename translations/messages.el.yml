@@ -1973,6 +1973,7 @@ chain:
         label: ''
         invalidfeedback: ''
         description: ''
+        placeholder: ''
       press:
         label: ''
         description: ''

@@ -774,6 +774,7 @@ chain:
         label: ''
         description: ''
         invalidfeedback: ''
+        placeholder: ''
       status:
         label: ''
       headquarters:

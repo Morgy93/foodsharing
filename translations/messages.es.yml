@@ -1629,6 +1629,7 @@ chain:
         label: ''
         invalidfeedback: ''
         description: ''
+        placeholder: ''
       details:
         description: ''
         label: ''

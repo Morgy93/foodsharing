@@ -2750,7 +2750,8 @@ chain:
       thread:
         label: Forum-Thread
         invalidfeedback: Thread-Id oder Link benötigt.
-        description: Id eines Forum-Threads. Link einfügen zur automatischen Erkennung.
+        description: Suchen nach dem Forum durch die Eingabe von mindestens 3 Zeichen.
+        placeholder: Suche Forum-Thread-Name
       kam:
         label: KAMs
         invalidfeedback: Ungültige Eingabe. Ein oder mehrere Nutzer-Ids benötigt.

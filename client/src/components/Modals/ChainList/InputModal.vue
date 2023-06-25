@@ -93,14 +93,12 @@
         :invalid-feedback="$i18n('chain.inputmodal.inputs.thread.invalidfeedback')"
         :description="$i18n('chain.inputmodal.inputs.thread.description')"
       >
-        <b-form-input
-          id="thread-input"
+        <forum-search-input
+          id="new-foodsaver-search"
           v-model="input.forumThread"
-          placeholder="foodsharing.de/ ... sub=forum&tid=12345"
-          :formatter="x => /tid=(\d+)/.test(input.forumThread) ? x.match(/tid=(\d+)/)[1] : x"
-          :state="input.forumThread ? /(tid=(\d+))|^\d+$/.test(input.forumThread) : false"
-          lazy-formatter
-          trim
+          class="m-1"
+          :placeholder="$i18n('chain.inputmodal.inputs.thread.placeholder')"
+          :region-id="332"
         />
       </b-form-group>
 
@@ -192,8 +190,10 @@
 
 <script>
 import { hideLoader, showLoader } from '@/script'
+import ForumSearchInput from '@/components/ForumSearchInput.vue'
 
 export default {
+  components: { ForumSearchInput },
   props: {
     statusFilterOptions: {
       type: Array,

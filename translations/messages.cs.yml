@@ -462,6 +462,7 @@ chain:
         label: ''
         invalidfeedback: ''
         description: ''
+        placeholder: ''
     cancel: ''
     ok: ''
     title:

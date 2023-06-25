@@ -2902,6 +2902,7 @@ chain:
         description: ''
         invalidfeedback: ''
         label: ''
+        placeholder: ''
       headquarters:
         label: ''
         placeholder:

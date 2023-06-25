@@ -2953,6 +2953,7 @@ chain:
         invalidfeedback: Ugyldig inndata. Tråd-ID eller lenke nødvendig.
         description: Id for en forumtråd. Sett inn lenke for automatisk gjenkjenning.
         label: Forumtråd
+        placeholder: ''
       kam:
         label: KAM-er
         invalidfeedback: Ugyldig inndata. En eller flere bruker-IDer kreves.

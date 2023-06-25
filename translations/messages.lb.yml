@@ -941,6 +941,7 @@ chain:
         label: ''
         invalidfeedback: ''
         description: ''
+        placeholder: ''
       kam:
         label: ''
         invalidfeedback: ''

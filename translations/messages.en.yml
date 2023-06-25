@@ -2937,8 +2937,8 @@ chain:
         label: Status
       thread:
         label: Forum-Thread
-        invalidfeedback: Thread-Id or link required.
-        description: Id of a forum thread. Paste a link for automatic identification.
+        invalidfeedback: Thread is invalid
+        description: Search for forum thread name by entering at least 3 charaters
       kam:
         label: KAMs
         invalidfeedback: Invalid input. One or more user ids required.

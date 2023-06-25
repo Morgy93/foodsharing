@@ -3105,6 +3105,7 @@ chain:
           reconnaissance automatique.
         label: Fil de discussion du forum
         invalidfeedback: Entrée invalide. ID de fil ou lien requis.
+        placeholder: ''
       kam:
         label: Responsables d’Affaires
         invalidfeedback: Entrée non valide. Un ou plusieurs identifiants d'utilisateur
