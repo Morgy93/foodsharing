@@ -280,7 +280,7 @@ export default {
         })
       },
       set (fields) {
-        this.availableFields = fields.map(field => field.key)
+        this.availableFields = fields
       },
     },
     selectedFields () {

@@ -289,7 +289,7 @@ export default {
       },
       set (fields) {
         // console.log('set fields', fields)
-        this.availableFields = fields.map(field => field.key)
+        this.availableFields = fields
       },
     },
     selectedFields () {

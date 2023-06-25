@@ -72,6 +72,14 @@ export default {
       type: Array,
       required: true,
     },
+    defaultSelection: {
+      type: Array,
+      default: function () { return this.selection },
+    },
+    defaultFields: {
+      type: Array,
+      default: function () { return this.fieldsOrder },
+    },
     fieldKey: {
       type: String,
       default: 'key',
@@ -93,8 +101,8 @@ export default {
     return {
       unsavedChanges: false,
       dataLoaded: false,
-      initialData: [],
-      defaultData: [],
+      initialSelection: [],
+      initialFields: [],
     }
   },
   computed: {
@@ -114,13 +122,17 @@ export default {
       get () {
         return this.fields
       },
-      set (value) {
+      set (fieldsOrFieldKeys) {
+        const value = typeof fieldsOrFieldKeys[0] === 'string' ? fieldsOrFieldKeys : fieldsOrFieldKeys.map(field => field[this.fieldKey])
         console.log('fields got update', value)
         this.$emit('update:fields', value)
         if (this.store && this.dataLoaded) {
           this.unsavedChanges = true
         }
       },
+    },
+    fieldsOrder () {
+      return this.fields.map(field => field[this.fieldKey])
     },
   },
   created () {
@@ -136,33 +148,42 @@ export default {
       // window.removeEventListener('beforeunload', this.save)
     }
   },
-  // mounted () {
-  //   this.showConfigurationDialog()
-  // },
   methods: {
     showConfigurationDialog () {
       this.$refs['configure-modal'].show()
     },
     save () {
       console.log('saving...')
-      storage.set(`${this.storageKey}-fields`, this.fields.map(field => field.key))
+      storage.set(`${this.storageKey}-fields`, this.fieldsOrder)
       storage.set(`${this.storageKey}-selection`, this.selection)
       this.unsavedChanges = false
+      this.setInitialData()
     },
     load () {
       console.log('loading...', storage)
-      const fields = storage.get(`${this.storageKey}-fields`)
-      if (fields) {
-        this.componentFields = fields.map(field => { return { key: field } })
-      }
-      const selection = storage.get(`${this.storageKey}-selection`)
-      if (selection) {
-        this.componentSelection = selection
-      }
+      storage.getKeys().forEach(key => {
+        const storaKeyLength = this.storageKey.length + 1
+        let propName = key.substring(storaKeyLength)
+        propName = propName[0].toUpperCase() + propName.slice(1)
+        const data = storage.get(key)
+        if (data) {
+          this['initial' + propName] = data
+          this['component' + propName] = data
+        }
+      })
       this.dataLoaded = true
     },
+    setInitialData () {
+      this.initialSelection = this.selection
+      this.initialFields = this.fieldsOrder
+    },
     reset () {
-      console.log('reset')
+      this.componentSelection = this.initialSelection
+      this.componentFields = this.initialFields
+    },
+    resetDefaults () {
+      this.componentSelection = this.defaultSelection
+      this.componentFields = this.defaultFields
     },
     unsavedChangesPrompt () {
       alert('You have unsaved changes')
