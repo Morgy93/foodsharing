@@ -316,7 +316,7 @@ export default {
         commonStoreInformation: chain.chain.commonStoreInformation,
         estimatedStoreCount: chain.chain.estimatedStoreCount,
         allowPress: !!chain.chain.allowPress,
-        kamIds: chain.chain.kams.map(x => x.id).join(', '),
+        kamIds: chain.chain.kams.map(x => x.id),
       }
       this.$refs['input-modal'].show(chain.chain.id, input, this.finishEditing)
     },
@@ -331,7 +331,7 @@ export default {
         estimatedStoreCount: 0,
         notes: '',
         commonStoreInformation: '',
-        kamIds: '',
+        kamIds: [],
       }, this.finishEditing)
     },
     async detailsChainModal (row) {

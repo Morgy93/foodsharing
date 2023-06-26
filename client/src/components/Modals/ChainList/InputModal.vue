@@ -110,14 +110,14 @@
         :invalid-feedback="$i18n('chain.inputmodal.inputs.kam.invalidfeedback')"
         :description="$i18n('chain.inputmodal.inputs.kam.description')"
       >
-        <b-form-input
+        <multi-user-search-input
           id="kams-input"
           v-model="input.kamIds"
-          placeholder="12345, 67890, ..."
-          :state="input.kamIds ? /^(\d+\s*,\s*)*\d+\s*,?$/.test(input.kamIds) : null"
-          :formatter="formatKams"
-          lazy-formatter
-          trim
+          class="m-1"
+          :placeholder="$i18n('store.sm.searchPlaceholder')"
+          button-icon="fa-user-plus"
+          :button-tooltip="$i18n('store.sm.makeRegularTeamMember')"
+          :region-id="332"
           :disabled="!adminPermissions"
         />
       </b-form-group>
@@ -191,9 +191,10 @@
 <script>
 import { hideLoader, showLoader } from '@/script'
 import ForumSearchInput from '@/components/ForumSearchInput.vue'
+import MultiUserSearchInput from '@/components/MultiUserSearchInput.vue'
 
 export default {
-  components: { ForumSearchInput },
+  components: { ForumSearchInput, MultiUserSearchInput },
   props: {
     statusFilterOptions: {
       type: Array,
@@ -206,6 +207,7 @@ export default {
   },
   data () {
     return {
+      kams: [],
       input: {},
       chainEditing: -1, // The id of the chain to be edited or -1 if a new chain should be created instead
       finishHandle: (chainId, data) => { return true },
@@ -226,12 +228,6 @@ export default {
     singleSpacing (str) {
       return str.trim().replaceAll(/\s+/g, ' ')
     },
-    formatKams (str) {
-      let ids = str.matchAll(/\d+/g)
-      ids = [...ids].map(x => x[0])
-      ids = [...new Set(ids)]
-      return ids.join(', ')
-    },
     finishedEditing (bvModalEvent) {
       bvModalEvent.preventDefault()
       const data = {
@@ -244,7 +240,7 @@ export default {
         allowPress: this.input.allowPress,
         notes: this.input.notes,
         commonStoreInformation: this.input.commonStoreInformation,
-        kams: this.input.kamIds ? this.input.kamIds.split(',').map(id => +id) : [],
+        kams: this.input.kamIds ?? [],
       }
       showLoader()
       this.finishHandle(this.chainEditing, data).then((successful) => {

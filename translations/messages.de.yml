@@ -2708,6 +2708,11 @@ numbers:
   million_abbreviation: " Mio."
   billion_abbreviation: " Mrd."
 
+usersearch:
+  search_tag: 'Wähle Benutzer'
+  select_tag: 'Suche Benutzer über den Namen'
+  no_tag_preset: 'Benutzer nicht gefunden'
+
 chain:
   listheader: Betriebsketten
   filterplaceholder: Name / Adresse / KAM ID
