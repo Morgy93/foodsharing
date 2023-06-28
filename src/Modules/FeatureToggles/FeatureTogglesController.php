@@ -27,6 +27,7 @@ class FeatureTogglesController extends \Foodsharing\Lib\FoodsharingController
         if ($featureToggleChecker->isFeatureToggleActive(FeatureToggleDefinitions::SHOW_FEATURE_TOGGLE_VUE_PAGE)) {
             $featureTogglePage = $this->prepareVueComponent('vue-feature-toggles', 'FeatureToggles');
             $this->pageHelper->addContent($featureTogglePage);
+
             return $this->renderGlobal();
         }
 
