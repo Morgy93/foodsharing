@@ -45,7 +45,8 @@ class Routing
         'wallpost' => 'WallPost',
         'groups' => 'WorkGroup',
         'store' => 'Store',
-        'chain' => 'StoreChain'
+        'chain' => 'StoreChain',
+        'featuretoggles' => 'FeatureToggles'
     ];
 
     public static $fqcnPrefix = '\\Foodsharing\\Modules\\';
