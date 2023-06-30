@@ -166,6 +166,7 @@ questcount: "Wie viele Fragen sollen bei Klausur gestellt werden?"
 wikilink: "Link zur Wiki-Seite"
 
 filter_by: "Filtern nach"
+configure_columns: "Spalten konfigurieren"
 
 quiz:
   question: "Frage"
@@ -263,6 +264,7 @@ button:
   answer: "Antworten"
   create: "Anlegen"
   clear_filter: "Filter leeren"
+  reset_default: "Standard wiederherstellen"
 
 bread:
   backToOverview: "zurück zur Übersicht"

@@ -26,14 +26,14 @@ export default class Storage {
     return def
   }
 
-  getKeys () {
+  getKeys (prefix = '') {
     const keys = Object.keys(window.localStorage)
     if (this.#prefix) {
       return keys
-        .filter(key => key.includes(this.#prefix))
+        .filter(key => key.includes(this.#prefix + prefix))
         .map(key => key.substring(this.#prefix.length))
     } else {
-      return keys
+      return prefix ? keys : keys.filter(key => key.startsWith(prefix))
     }
   }
 

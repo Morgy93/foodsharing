@@ -9,24 +9,31 @@
         type="button"
         @click="$refs['configure-modal'].show()"
       >
-        configre
+        configure
       </button>
     </slot>
     <slot />
     <b-modal
       ref="configure-modal"
-      title="Configure"
       modal-class="bootstrap"
-      centered
+      floating
       size="lg"
       hide-header-close
       @ok="save"
-      @cancel="reset"
+      @close="reset"
+      @hide="handleCloseOnEscOrBackdrop"
     >
+      <template #modal-header="{ close }">
+        <h2>{{ $i18n('configure_columns') }}</h2>
+        <button type="button" @click="close" class="btn btn-sm">
+         <i class="fas fa-xmark" />
+        </button>
+      </template>
+      <template #default>
+
       <b-form-group
         v-slot="{ ariaDescribedby }"
-        label="Configure:"
-        aria-describedby="something"
+        aria-describedby=""
       >
         <b-form-checkbox-group
           v-model="componentSelection"
@@ -40,11 +47,8 @@
               >
                 <div>
                   {{ item[fieldLabel] }}
-                  <button
-                    draggable="true"
-                    @dragstart="onDragStart()"
-                  >
-                    grab
+                  <button type="button" @click="onDragStart" class="btn btn-sm" draggable="true">
+                    <i class="fas fa-bars" />
                   </button>
                 </div>
               </b-form-checkbox>
@@ -52,6 +56,11 @@
           </DragAndDropSortList>
         </b-form-checkbox-group>
       </b-form-group>
+      </template>
+      <template #modal-footer="{ ok }">
+        <b-button @click="resetDefaults">{{ $i18n('button.reset_default') }}</b-button>
+        <b-button variant="primary" @click="ok">{{ $i18n('button.save') }}</b-button>
+      </template>
     </b-modal>
   </div>
 </template>
@@ -102,7 +111,7 @@ export default {
       unsavedChanges: false,
       dataLoaded: false,
       initialSelection: [],
-      initialFields: [],
+      initialFields: [], // todo: fix is empty array
     }
   },
   computed: {
@@ -140,12 +149,15 @@ export default {
     console.log('parent name:', this.$parent.$options._componentTag)
     if (this.store) {
       this.load()
-      // window.addEventListener('beforeunload', this.save)
+      window.addEventListener('beforeunload', this.unsavedChangesPrompt)
     }
+  },
+  mounted () {
+    this.showConfigurationDialog()
   },
   destroyed () {
     if (this.store) {
-      // window.removeEventListener('beforeunload', this.save)
+      window.removeEventListener('beforeunload', this.unsavedChangesPrompt)
     }
   },
   methods: {
@@ -161,12 +173,13 @@ export default {
     },
     load () {
       console.log('loading...', storage)
-      storage.getKeys().forEach(key => {
+      storage.getKeys(this.storageKey).forEach(key => {
         const storaKeyLength = this.storageKey.length + 1
         let propName = key.substring(storaKeyLength)
         propName = propName[0].toUpperCase() + propName.slice(1)
         const data = storage.get(key)
         if (data) {
+          console.log(key, data)
           this['initial' + propName] = data
           this['component' + propName] = data
         }
@@ -178,16 +191,50 @@ export default {
       this.initialFields = this.fieldsOrder
     },
     reset () {
+      console.log('resetting')
       this.componentSelection = this.initialSelection
       this.componentFields = this.initialFields
+      this.unsavedChanges = false
     },
     resetDefaults () {
       this.componentSelection = this.defaultSelection
       this.componentFields = this.defaultFields
     },
-    unsavedChangesPrompt () {
-      alert('You have unsaved changes')
+    handleCloseOnEscOrBackdrop (event) {
+      // https://github.com/bootstrap-vue/bootstrap-vue/issues/3164
+      if (event.trigger === 'esc' || event.trigger === 'backdrop') {
+        this.reset()
+      }
+    },
+    unsavedChangesPrompt (event) {
+      if (this.unsavedChanges) {
+        // https://developer.mozilla.org/en-US/docs/Web/API/Window/beforeunload_event
+        event.preventDefault()
+        return (event.returnValue = "")
+      }
     },
   },
 }
 </script>
+
+<style scoped lang="scss">
+  .btn.btn-secondary {
+    border-color: var(--theme-dark, #4B4F58);
+  }
+  .modal-body {
+    display: flex;
+    padding: 8px 16px;
+    align-items: flex-start;
+    gap: 16px;
+    flex: 1 0 0;
+    align-self: stretch;
+    background: deeppink;
+    outline: lime 2px dotted;
+  }
+  span {
+    border: 0.6px solid var(--components-form-border-default, #CED4DA);
+    background: var(--components-form-background-default, #FFF);
+
+    border-radius: 2px;
+  }
+</style>
