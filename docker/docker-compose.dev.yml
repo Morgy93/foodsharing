@@ -89,3 +89,6 @@ services:
     command: sh -c "yarn && yarn api:build && yarn start"
     ports:
       - "13000:3000"
+
+  cypress:
+    container_name: foodsharing_ui_testing

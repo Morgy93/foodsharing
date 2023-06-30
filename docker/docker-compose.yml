@@ -193,6 +193,20 @@ services:
     # ports:
     #   - 3000:3000
 
+  cypress:
+    user: ${CURRENT_USER}
+    container_name: foodsharing_ui_testing
+    image: "cypress/included:12.3.0"
+    depends_on:
+      - nginx
+    environment:
+      # pass base url to test pointing at the web application
+      - CYPRESS_baseUrl=http://localhost:18080
+    # share the current folder as volume to avoid copying
+    working_dir: /tests/e2e
+    volumes:
+      - ./:/tests/e2e
+
 volumes:
   database:
   influxdb:
