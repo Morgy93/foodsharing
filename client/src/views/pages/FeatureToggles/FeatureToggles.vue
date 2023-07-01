@@ -6,7 +6,8 @@
       </h4>
 
       <div class="alert alert-danger mt-2">
-        Please be careful, danger-zone! Only change FeatureToggle states if you know what you are doing and have technical experience as a developer / admin.
+        Please be careful, danger-zone! Only change FeatureToggle states if you know what you are doing
+        and have technical experience as a developer / admin.
       </div>
 
       <ul class="list-group pt-2">
