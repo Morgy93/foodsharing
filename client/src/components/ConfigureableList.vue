@@ -47,11 +47,11 @@
               >
                 <div>
                   {{ item[fieldLabel] }}
-                  <button type="button" @click="onDragStart" class="btn btn-sm" draggable="true">
-                    <i class="fas fa-bars" />
-                  </button>
                 </div>
               </b-form-checkbox>
+              <button type="button" @dragstart="onDragStart" class="btn btn-sm" draggable="true">
+                <i class="fas fa-bars" />
+              </button>
             </template>
           </DragAndDropSortList>
         </b-form-checkbox-group>
@@ -221,15 +221,26 @@ export default {
   .btn.btn-secondary {
     border-color: var(--theme-dark, #4B4F58);
   }
-  .modal-body {
+
+  .modal-body .drag-drop-container {
+    margin: -1rem; //counter .modal-body padding
     display: flex;
-    padding: 8px 16px;
-    align-items: flex-start;
+    align-items: stretch;
+    flex-flow: column nowrap;
     gap: 16px;
-    flex: 1 0 0;
-    align-self: stretch;
-    background: deeppink;
+    padding: 8px 16px;
     outline: lime 2px dotted;
+
+    ::v-deep >  div {
+      display: flex;
+      justify-content: space-between;
+      align-items: baseline;
+      background: pink;
+
+      input, label {
+        position: initial;
+      }
+    }
   }
   span {
     border: 0.6px solid var(--components-form-border-default, #CED4DA);
@@ -237,4 +248,7 @@ export default {
 
     border-radius: 2px;
   }
+</style>
+<style lang="scss">
+
 </style>
