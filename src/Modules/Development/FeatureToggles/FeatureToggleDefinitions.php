@@ -14,7 +14,6 @@ final class FeatureToggleDefinitions
     public const ALWAYS_TRUE_FOR_TESTING_PURPOSES = 'alwaysTrueForTestingPurposes';
     public const ALWAYS_FALSE_FOR_TESTING_PURPOSES = 'alwaysFalseForTestingPurposes';
     public const SHOW_FEATURE_TOGGLE_VUE_PAGE = 'showFeatureToggleVuePage';
-    public const SHOW_FEATURE_TOGGLE_DANGER_ZONE_ALERT = 'showFeatureToggleDangerZoneAlert';
 
     /**
      * Returns all feature toggle identifiers.
