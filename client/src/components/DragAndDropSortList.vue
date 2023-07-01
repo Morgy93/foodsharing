@@ -1,6 +1,7 @@
 <template>
-  <div>
+  <div class="drag-drop-container">
     <div
+      ref="drag-image"
       v-for="(item, key) in items"
       :key="key"
       @drop="reposition(key)"
@@ -41,8 +42,13 @@ export default {
     },
   },
   methods: {
-    onDragStart (startPosition) {
+    onDragStart (startPosition, event) {
+      const dragImage =  this.$refs['drag-image'][startPosition]
+      console.log(event, dragImage)
       this.startPosition = startPosition
+
+      event.dataTransfer.setDragImage(dragImage, 0, 0) // todo: capture mouse in element and paste values here
+      // event.dataTransfer.effectAllowed = "copy"; //move
     },
     onDragOver (hoverPosition) {
       this.hoverPosition = hoverPosition
