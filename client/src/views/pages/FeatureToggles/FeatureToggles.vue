@@ -1,7 +1,9 @@
 <template>
   <FoodsharingControllerPageWrapper>
     <div class="container">
-      <h4>FeatureToggles</h4>
+      <h4>
+        FeatureToggles
+      </h4>
       <ul class="list-group pt-2">
         <li
           v-for="featureToggle in featureToggles"
@@ -59,25 +61,16 @@ export default {
     await this.fetchAllFeatureToggles()
   },
   methods: {
-    getToggleStateDescription (value) {
-      return value ? 'on' : 'off'
+    getToggleStateDescription (state) {
+      return state ? 'on' : 'off'
     },
     async fetchAllFeatureToggles () {
-      try {
-        const response = await fetchAllFeatureToggles()
-        this.featureToggles = response.featureToggles
-        console.log('test-featureToggles', this.featureToggles)
-      } catch {
-
-      }
+      const response = await fetchAllFeatureToggles()
+      this.featureToggles = response.featureToggles
     },
-    async toggle (identifier) {
-      try {
-        await switchFeatureToggleState(identifier)
-        await this.fetchAllFeatureToggles()
-      } catch {
-
-      }
+    async toggle (featureToggleIdentifier) {
+      await switchFeatureToggleState(featureToggleIdentifier)
+      await this.fetchAllFeatureToggles()
     },
   },
 }
