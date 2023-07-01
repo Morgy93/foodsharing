@@ -5,7 +5,10 @@
         FeatureToggles
       </h4>
 
-      <div class="alert alert-danger mt-2">
+      <div
+        v-if="isDangerZoneAlertVisible"
+        class="alert alert-danger mt-2"
+      >
         Please be careful, danger-zone! Only change FeatureToggle states if you know what you are doing
         and have technical experience as a developer / admin.
       </div>
@@ -60,11 +63,13 @@ export default {
   components: { FoodsharingControllerPageWrapper },
   data () {
     return {
+      isDangerZoneAlertVisible: null,
       featureToggles: [],
     }
   },
   async mounted () {
     await this.fetchAllFeatureToggles()
+    this.isDangerZoneAlertVisible = await this.$isFeatureToggleActive('showFeatureToggleDangerZoneAlert')
   },
   methods: {
     getToggleStateDescription (state) {
