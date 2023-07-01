@@ -26,10 +26,10 @@ In addition, feature toggles can also be used to react quickly to problems or ma
 ## How to create feature toggles
 1. navigate to `FeatureToggleDefinitions.php`
 2. add your feature toggle with a meaningful identifier
-3. run the command to update the feature toggles `foodsharing:update:featuretoggles`
+3. run the symfony-command to update the feature toggles `foodsharing:update:featuretoggles` or visit `/featuretoggles` as orga user
 
 As example, i added a feature toggle to show the newest design for our documentation:
-```php title='/config/feature_toggles.yaml'
+```php title='src/Modules/Development/FeatureToggles/FeatureToggleDefinitions.php'
 final class FeatureToggleDefinitions
 {
     public const ALWAYS_TRUE_FOR_TESTING_PURPOSES = 'alwaysTrueForTestingPurposes';
@@ -71,22 +71,28 @@ final class FeatureToggleRestController extends AbstractFOSRestController
 }
 ```
 ### VueJS
-1. Require the FeatureToggle Mixin
-2. Use it with `this.isFeatureToggleActive('...')`
+1. define one boolean attribute to check your feature toggle state (tip: start with `is`) with default value `null`
+2. inside `async mounted()` assign `await this.$isFeatureToggleActive('...')` your defined boolean-variable
 ```js title='FancyComponent.vue'
 <template>
   <div>
-    <p v-if="isMyFeatureToggleActive">My feature is active!</p>
-    <p v-else>My feature is not active yet.</p>
+    <p v-if="isMyFeatureToggleActive">We have some news for you: new devdocs design</p>
+    <p v-else>At this moment, we don't have any news for you.</p>
   </div>
 </template>
 
 <script>
-import FeatureToggleMixin from '@/mixins/FeatureToggleMixin'
-
+    
 export default {
-  mixins: [FeatureToggleMixin],
-
+  data () {
+    return {
+        isMyFeatureToggleActive: null,
+        featureToggles: [],
+    }
+  },
+  async mounted () {
+    this.isMyFeatureToggleActive = await this.$isFeatureToggleActive('showNewestDevdocsDesign')
+  },
   computed: {
     isMyFeatureToggleActive () {
       return this.isFeatureToggleActive('showNewestDevdocsDesign')
@@ -96,7 +102,6 @@ export default {
 </script>
 ```
 
-
 ### Twig
 `isFeatureToggleActive('...')` is a global twig-function, you can use and call it everywhere inside twig
 ```twig
@@ -104,3 +109,10 @@ export default {
     <!-- Do something -->
 {% endif %}
 ```
+
+## How to toggle feature toggles
+1. be a user with orga permission
+2. visit `/featuretoggles`
+
+The page should be like this:
+![Featuretoggle page](../images/deployment/featuretoggles/featuretoggles-page.png)
