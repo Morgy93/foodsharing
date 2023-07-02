@@ -44,10 +44,10 @@ export default {
   methods: {
     onDragStart (startPosition, event) {
       const dragImage = this.$refs['drag-image'][startPosition]
-      console.log(event, dragImage)
+      const { x, y } = dragImage.getBoundingClientRect()
       this.startPosition = startPosition
 
-      event.dataTransfer.setDragImage(dragImage, 0, 0) // todo: capture mouse in element and paste values here
+      event.dataTransfer.setDragImage(dragImage, event.clientX - x, event.clientY - y) // todo: capture mouse in element and paste values here
       // event.dataTransfer.effectAllowed = "copy"; //move
     },
     onDragOver (hoverPosition) {
