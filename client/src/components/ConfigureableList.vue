@@ -25,7 +25,7 @@
     >
       <template #modal-header="{ close }">
         <h2>{{ $i18n('configure_columns') }}</h2>
-        <button type="button" @click="close" class="btn btn-sm">
+        <button type="button" @click="close" class="btn btn-sm no-shadow">
          <i class="fas fa-xmark" />
         </button>
       </template>
@@ -41,7 +41,7 @@
             <label :for="`${storageKey}-${item[fieldKey]}`">
               {{ item[fieldLabel] }}
             </label>
-            <button type="button" @dragstart="onDragStart" class="btn btn-sm" draggable="true">
+            <button type="button" @dragstart="onDragStart" class="btn btn-sm no-shadow" draggable="true">
               <i class="fas fa-bars" />
             </button>
           </template>
@@ -210,8 +210,10 @@ export default {
 <style scoped lang="scss">
   .btn.btn-secondary {
     border-color: var(--theme-dark, #4B4F58);
+  }
 
-    :focus {
+  button.no-shadow {
+    &, &:focus, &:active, &:hover {
       box-shadow: initial;
     }
   }
