@@ -30,32 +30,22 @@
         </button>
       </template>
       <template #default>
-
-      <b-form-group
-        v-slot="{ ariaDescribedby }"
-        aria-describedby=""
-      >
-        <b-form-checkbox-group
-          v-model="componentSelection"
-          :aria-describedby="ariaDescribedby"
-        >
-          <DragAndDropSortList v-model="componentFields">
-            <template #item="{ item, onDragStart }">
-              <b-form-checkbox
-                :value="item[fieldKey]"
-                :aria-describedby="ariaDescribedby"
-              >
-                <div>
-                  {{ item[fieldLabel] }}
-                </div>
-              </b-form-checkbox>
-              <button type="button" @dragstart="onDragStart" class="btn btn-sm" draggable="true">
-                <i class="fas fa-bars" />
-              </button>
-            </template>
-          </DragAndDropSortList>
-        </b-form-checkbox-group>
-      </b-form-group>
+        <DragAndDropSortList v-model="componentFields">
+          <template #item="{ item, onDragStart }">
+            <input
+              :id="`${storageKey}-${item[fieldKey]}`"
+              type="checkbox"
+              :value="item[fieldKey]"
+              v-model="componentSelection"
+            />
+            <label :for="`${storageKey}-${item[fieldKey]}`">
+              {{ item[fieldLabel] }}
+            </label>
+            <button type="button" @dragstart="onDragStart" class="btn btn-sm" draggable="true">
+              <i class="fas fa-bars" />
+            </button>
+          </template>
+        </DragAndDropSortList>
       </template>
       <template #modal-footer="{ ok }">
         <b-button @click="resetDefaults">{{ $i18n('button.reset_default') }}</b-button>
@@ -220,6 +210,10 @@ export default {
 <style scoped lang="scss">
   .btn.btn-secondary {
     border-color: var(--theme-dark, #4B4F58);
+
+    :focus {
+      box-shadow: initial;
+    }
   }
 
   .modal-body .drag-drop-container {

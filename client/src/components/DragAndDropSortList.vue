@@ -43,7 +43,7 @@ export default {
   },
   methods: {
     onDragStart (startPosition, event) {
-      const dragImage =  this.$refs['drag-image'][startPosition]
+      const dragImage = this.$refs['drag-image'][startPosition]
       console.log(event, dragImage)
       this.startPosition = startPosition
 
