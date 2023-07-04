@@ -18,7 +18,10 @@ final class AddFeatureToggleTable extends AbstractMigration
      */
     public function change(): void
     {
-        $featureToggleTable = $this->table('fs_feature_toggles');
+        $featureToggleTable = $this->table('fs_feature_toggles', [
+            'id' => false,
+            'primary_key' => ['identifier'],
+        ]);
 
         $featureToggleTable->addColumn('identifier', 'string', [
             'limit' => 255,

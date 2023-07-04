@@ -23,7 +23,7 @@ final class SaveNewFeatureTogglesCommand
         foreach ($identifiers as $identifier) {
             $rows[] = [
                 'identifier' => $identifier,
-                'isActive' => false,
+                'is_active' => false,
             ];
         }
 

@@ -17,7 +17,7 @@ final class GetFeatureToggleStateQuery
     public function execute(string $featureToggleIdentifier): bool
     {
         try {
-            $state = $this->database->fetchValue('SELECT isActive FROM fs_feature_toggles WHERE identifier = :featureToggleIdentifier', [
+            $state = $this->database->fetchValue('SELECT is_active FROM fs_feature_toggles WHERE identifier = :featureToggleIdentifier', [
                 'featureToggleIdentifier' => $featureToggleIdentifier,
             ]);
         } catch (DatabaseNoValueFoundException) {
