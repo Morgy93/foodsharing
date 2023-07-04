@@ -15,7 +15,7 @@ final class UpdateFeatureToggleStateCommand
     {
         $this->database->update(
             'fs_feature_toggles',
-            ['isActive' => $newState],
+            ['is_active' => $newState],
             ['identifier' => $featureToggleIdentifier],
         );
     }
