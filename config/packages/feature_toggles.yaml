@@ -1,17 +1,4 @@
 flagception:
-  activators:
-    database:
-      # Enable database activator (default: false)
-      enable: true
-
-      # By pdo instance
-      pdo: 'PDO'
-
-      options:
-        db_table: fs_feature_toggles
-        db_column_feature: identifier
-        db_column_state: isActive
-
   features:
     alwaysTrueForTestingPurposes:
       default: true

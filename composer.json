@@ -53,7 +53,6 @@
     "erusev/parsedown": "1.7.*",
     "exercise/htmlpurifier-bundle": "4.1.*",
     "filp/whoops": "2.14.*",
-    "flagception/database-activator": "^1.1",
     "flagception/flagception-bundle": "^4.3",
     "fpdo/fluentpdo": "2.2.*",
     "friendsofsymfony/rest-bundle": "3.4.*",
