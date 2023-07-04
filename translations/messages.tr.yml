@@ -432,7 +432,7 @@ group:
   userId: ID
   filter_by_last_activity: Aylardır aktif değil
   applications: Müracatlar
-  applications_for: '%name% için müracatlar'
+  applications_for: '{name} için müracatlar'
   title: Foodsharing Çalışma Grupları
   subtitle: Burada yardım ve yapacak çok şey bulacaksınız…
   member_count: '{0} Katkıda bulunan yok|{1} Bir katkıda bulunan var| [2, Inf[ %count%
@@ -1865,6 +1865,7 @@ settings:
         önceki bağlantının üzeri yazılır ve öncekini geçersiz kılar. Bunu gerçekten
         yeniden oluşturmak istiyor musun?
       title: Yeni bir jeton oluştur
+    export_tooltip: Seçtiğiniz bir takvim programı ile tahsilat tarihlerinizi görüntüleyebilirsiniz.
   title: Ayarlar
   passport:
     menu: Kimlik Kartı
@@ -1987,6 +1988,7 @@ chat:
   confirm_draft_discard: "Yeni bir sohbete geçersiniz. Cevap alanındaki metin atılır.\n
     \nBu iletişim kutusunu iptal ederseniz taslağınız bunun yerine yeni görüşmeye
     taşınacaktır.\n"
+  unknown_username: bilinmeyen isim
 push_notifications:
   test_notification_title: Push bildirimleri etkinleştirildi
   test_notification_body: Harika, bu işe yaramış gibi görünüyor :)
@@ -2548,8 +2550,7 @@ fsp:
     mail: Zil ve e-posta bildirimi
     bell: sadece dahili bilgi mesajları (zil)
   twig:
-    n_in_region: '{0} %name%| içinde gıda dağıtım noktası {1} %name%| içinde gıda
-      dağıtım noktası [2, Inf[ %count%, %name% içinde gıda dağıtım noktası'
+    n_in_region: '{count} {name} içinde gıda dağıtım noktası'
   followers: Takipçi*ler
   addSuccess: Gıda dağıtım noktası başarıyla girildi
   location: Posta kodu / Şehir

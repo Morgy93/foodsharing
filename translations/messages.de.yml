@@ -774,8 +774,8 @@ storeview:
   show_information: "Betriebsinformationen anzeigen"
   store: "Betrieb"
   common: "Allgemein"
-  visible_for_public: "Dieser Text ist für jeden Foodsaver sichtbar."
-  visible_for_team: "Dieser Text ist nur für das Abholteam sichtbar."
+  visible_for_public: "Dieser Text ist für jeden Foodsaver sichtbar, z.B. auf der Karte."
+  visible_for_team: "Dieser Text ist nur für das Betriebsteam sichtbar."
   invalid_field: "Ungültiger Feldinhalt. Die Änderung kann nicht gespeichert werden."
   contact:
     name: "Name/Vorname"
@@ -802,7 +802,7 @@ storeview:
   team: "Abholteam"
   want_to_fetch: "In diesem Team würde ich gerne helfen."
   public_and_statistics: "Statistik & Öffentlichkeitsarbeit"
-  no_permission_to_view: "Fehlende Berechtigung"
+  no_permission_to_view: "Nur für Betriebsverantwortliche sichtbar."
   groceries:
     label: "Welche Lebensmittel dürfen abgeholt werden?"
     select_tag: "Wähle Lebensmittelkategorie"
@@ -1142,8 +1142,8 @@ forum:
   thread:
     delivery_mail:
       title: "Mailversand"
-      active: "aktiviert"
-      non_active: "deaktiviert"
+      activate: "aktivieren"
+      disable: "deaktivieren"
     with_mail: "Thema eröffnet und alle per E-Mail darüber informiert"
     no_mail: "Das Thema wurde eröffnet, ohne E-Mails zu versenden"
     too_big_to_mail: "Für das Thema wurden keine E-Mails versendet, da es sich um ein Land oder ein Bundesland handelt."
@@ -2663,10 +2663,11 @@ startpage:
   demands:
     title: Forderungen
     text: |
-      "Aktionsplan mit Deutscher Umwelthilfe
-      veröffentlicht zum 6. foodsharing-Geburtstag am 12.12.2018. Um Deutschland vor einem erneuten Wortbruch
-      – wie bei den Klimaschutzzielen für 2020 – zu bewahren, zeigen foodsharing und Deutsche Umwelthilfe mit einem
-      Aktionsplan die Maßnahmen auf, ohne die das Halbierungsziel nicht erreicht werden kann."
+      "Um die Lebensmittelverschwendung effektiv einzudämmen, braucht es mehr als das bloße Retten von übriggebliebenen
+      Lebensmitteln aus Betrieben oder Aufklärung von Konsument*innen. Stattdessen muss sich politisch etwas bewegen:
+      Wir benötigen verbindliche Reduktionsziele für die Verschwendung entlang der gesamten Wertschöpfungskette.
+      Außerdem müssen aktuell bestehende Handelsnormen überdacht und gelockert werden sowie Organisationen, die
+      Lebensmittel retten oder Bildung rund um das Thema Ernährung anbieten, gestärkt werden."
   towns:
     title: foodsharing Städte
     text: |

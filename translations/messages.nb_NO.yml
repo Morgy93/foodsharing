@@ -913,6 +913,9 @@ settings:
       title: Generer et nytt token
       message: Du kan bare opprette ett token om gangen. Et nytt token vil overskrive
         den forrige lenken og gjøre den ugyldig. Vil du virkelig gjenskape det?
+    export: Eksporter kalender
+    export_tooltip: Dette lar deg se dine neste hentedatoer med et kalenderprogram
+      du velger.
   notifications: Varsler
   title: Innstillinger
   account: Kontoalternativer
@@ -1035,6 +1038,8 @@ mailbox:
 map:
   title: Kart
   donates: Selskapet donerer
+  filters:
+    my_stores: Kun mine bedrifter
 content:
   content: innhold
   bread: alle sider
@@ -1950,6 +1955,7 @@ chat:
   search: Søk
   no_messages: Ingen meldinger
   no_conversation: Ingen samtale er valgt
+  unknown_username: ukjent navn
 forum:
   thread:
     title: Tittel

@@ -3,7 +3,7 @@
 ## Features
 - Ongoing polls a user has not yet voted in are displayed on the dashboard. !2349 @AntonBallmaier
 - Provide RestApi to edit store !2515 !2625 @KoeMai
-- New UI for Stores information and modification of stores !2645 !2685 !2688 @KoeMai
+- New UI for Stores information and modification of stores !2645 !2685 !2688 !2731 !2736 @KoeMai
 - Added turkish translation !2720 @Evren
 - Store chains can now be manged from the website. The working group "Betriebsketten" contains a tabular overview of all chains. !2251 !2273 @AntonBallmaier
 - Store markers on the map can be filtered by the user's membership #1025 !2682 @alex.simm
@@ -23,7 +23,7 @@
 - Removed the additional button in the report modal #1599 !2677 @alex.simm
 - Show forum text if foodsaver deleted again !2697 @chriswalg
 - Add CTA on the profile-page for calendar export #1583 !2705 @sefn
-- Remove relative time from last pickup #1571 !2706 @sefn
+- Remove relative time from last pickup #1571 #1643 !2706 !2744 @sefn
 
 ## Bugfixes
 - Reimplementation of the StoreManager empty pickup E-Mail notification !2574 @KoeMai
@@ -46,7 +46,9 @@
 - condition check and fallback for profiles and avatars in chat components #1584 !2719 !2725 @chriswalg
 - fixed map showing grey when zooming in too close #1632 @florianunsinn
 - Bugfix for Date-Formatter #1571 !2706 @sefn
-
+- Fixed push notifications button #1638 !2728 !2729 @florianunsinn
+- In the user details, only include that a calendar token exists but not the token itself !2735 @alex.simm
+- Fixed undefined "mailbox" #1612 !2746 @chriswalg @alex.simm 
 
 ## Refactoring
 - added poppins font in Styleguide !2564 @Niklas003
@@ -58,7 +60,7 @@
 - added poppins font in Styleguide !2564 @Niklas003
 - Replace the region tree with a new vue component !2483 @alex.simm
 - Move uploadlogic and actions from controller to transactionclass for reuse !2478 @martncodes-de
-- Reimplement create new forum thread in vue js !2627 @chriswalg
+- Reimplement create new forum thread in vue js !2627 !2748 @chriswalg
 - New vue component for address search !2632 !2669 @alex.simm
 - Replaced get store information to rest api !1449 @KoeMai
 - Put Date and time in two lines at User Dashboard Card "Nächste Abholungen". #1448 !2588 !2707 @Niklas003 @sefn
@@ -71,7 +73,7 @@
 - New vue component for blog posts !2676 !2687 @alex.simm
 - Changed forum post response to empty content #1499 !2638 @krauterisator
 - Refactor add pickup modal !2693 @chriswalg
-- Refactor edit pickup rules to vue component and moved it to storeInformationModal !2686 @chriswalg 
+- Refactor edit pickup rules to vue component and moved it to storeInformationModal !2686 !2731 @chriswalg 
 - Refactor own store list in vue !2668 !2683 @chriswalg
 - Refactored the list of group applications to vue, which not also shows profile pictures #343 !2696 @alex.simm
 - Refactor the list of food share points in a region to vue !2702 @alex.simm
@@ -105,6 +107,7 @@
 - [DevDocs] Added follow-up link for local dev environment on getting ready page !2689 @Morgy93
 - cache bell request and limit to 1 minute !2722 @chriswalg
 - Cache userDetails, limit request to 1 minute and only load once on dashboard !2727 @chriswalg
+- switch from /bin/bash to /usr/bin/env to allow more setups like nixos !2708
 
 ## Development documentation
 

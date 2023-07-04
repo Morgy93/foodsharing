@@ -74,9 +74,9 @@ class UserApiCest
         $I->login($this->user[self::EMAIL]);
 
         // see your own details
-        $I->sendGET(self::API_USER . '/' . $this->user[self::ID] . '/details');
+        /* $I->sendGET(self::API_USER . '/' . $this->user[self::ID] . '/details');
         $I->seeResponseCodeIs(Http::OK);
-        $I->seeResponseIsJson();
+        $I->seeResponseIsJson(); */
 
         $I->sendGET(self::API_USER . '/current/details');
         $I->seeResponseCodeIs(Http::OK);
@@ -84,21 +84,25 @@ class UserApiCest
     }
 
     /**
+     * TODO: disabled because the /user/{id}/details endpoint is disabled.
+     *
      * Do not see details of non-existing user.
      */
-    public function getUserDetailsNoneExistingUser(ApiTester $I)
+    /* public function getUserDetailsNoneExistingUser(ApiTester $I)
     {
         $I->login($this->user[self::EMAIL]);
 
         $I->sendGET(self::API_USER . '/999999999/details');
         $I->seeResponseCodeIs(Http::NOT_FOUND);
         $I->seeResponseIsJson();
-    }
+    } */
 
     /**
+     * TODO: disabled because the /user/{id}/details endpoint is disabled.
+     *
      * Check that only limited fields are returned for a none logged in user.
      */
-    public function getUserDetailsNoUser(ApiTester $I)
+    /* public function getUserDetailsNoUser(ApiTester $I)
     {
         // no login
 
@@ -144,12 +148,14 @@ class UserApiCest
                 'mayAdministrateUserProfile' => false
             ]
         ]);
-    }
+    } */
 
     /**
+     * TODO: disabled because the /user/{id}/details endpoint is disabled.
+     *
      * Check that only allowed fields for another user are return in the response.
      */
-    public function getUserDetailsOfOtherUser(ApiTester $I)
+    /* public function getUserDetailsOfOtherUser(ApiTester $I)
     {
         $testUser = $I->createFoodsaver();
         $I->login($this->user[self::EMAIL]);
@@ -194,12 +200,14 @@ class UserApiCest
                 'mayAdministrateUserProfile' => 'boolean'
             ]
         ]);
-    }
+    } */
 
     /**
+     * TODO: disabled because the /user/{id}/details endpoint is disabled.
+     *
      * Check that only allowed fields of the current user are returned in the response.
      */
-    public function getUserDetailsFromCurrentUser(ApiTester $I)
+    /* public function getUserDetailsFromCurrentUser(ApiTester $I)
     {
         $I->login($this->user[self::EMAIL]);
 
@@ -261,12 +269,14 @@ class UserApiCest
                 'mayAdministrateUserProfile' => 'boolean'
             ]
         ]);
-    }
+    } */
 
     /**
+     * TODO: disabled because the /user/{id}/details endpoint is disabled.
+     *
      * Check that all fields of a user are returned for an orga user.
      */
-    public function getUserDetailsAsOrgaUser(ApiTester $I)
+    /* public function getUserDetailsAsOrgaUser(ApiTester $I)
     {
         $I->login($this->userOrga[self::EMAIL]);
 
@@ -330,7 +340,7 @@ class UserApiCest
                 'mayAdministrateUserProfile' => true
             ]
         ]);
-    }
+    } */
 
     /**
      * @example["abcd@efgh.com"]

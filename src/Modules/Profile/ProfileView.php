@@ -212,7 +212,7 @@ class ProfileView extends View
         $fsMail = '';
         if ($this->foodsaver['rolle'] > Role::FOODSAVER) {
             if ($this->profilePermissions->maySeeEmailAddress($fsId)) {
-                $fsMail = $this->foodsaver['mailbox'];
+                $fsMail = $this->foodsaver['mailbox'] ?? '';
             }
         }
 

@@ -437,6 +437,9 @@ settings:
         le lien précédent et le rend invalide. Voulez-vous vraiment en créer un nouveau ?
       title: Créer un nouveau jeton
       button: Générer un nouveau jeton
+    export: Exporter le calendrier
+    export_tooltip: Vous pouvez voir vos dates de ramassage avec un programme de calendrier
+      de votre choix.
   push:
     disabled: Les notifications push on été désactivées
     disable: Désactiver les notifications push
@@ -1912,6 +1915,7 @@ chat:
   incorrect_address: Cette adresse e-mail n'est pas correcte
   new_messages: Nouveaux messages
   select_recipients: Sélectionner un ou une destinataire
+  unknown_username: nom inconnu
 timepicker:
   labelNowButton: maintenant
   labelCloseButton: fermer
@@ -2157,6 +2161,8 @@ messages:
 map:
   title: Carte
   donates: Magasin participe
+  filters:
+    my_stores: Seulement mes magasins
 content:
   changelog: Changelog actuel
   empty: Aucune page existante.
@@ -3076,7 +3082,7 @@ chain:
     name: Nom
     stores: Coopérations
     headquarters: Quartier général
-    kams: Responsables d’Affaires
+    kams: Responsables des chaînes de magasins
     notes: Remarques
   new: Créer une nouvelle chaîne
   allowpress: Dénomination publique autorisée.
@@ -3106,11 +3112,11 @@ chain:
         label: Fil de discussion du forum
         invalidfeedback: Entrée invalide. ID de fil ou lien requis.
       kam:
-        label: Responsables d’Affaires
+        label: Responsables des chaines de magasins
         invalidfeedback: Entrée non valide. Un ou plusieurs identifiants d'utilisateur
           sont requis.
-        description: ID utilisateur des gestionnaires de comptes clés, séparés par
-          des virgules si nécessaire.
+        description: ID utilisateur des gestionnaires de comptes clés (chaînes de
+          magasins), séparés par des virgules si nécessaire.
       notes:
         label: Remarques
         invalidfeedback: Les notes ne peuvent pas dépasser 200 caractères.

@@ -319,7 +319,7 @@ terminology:
   moderationAdmins: ''
   votingAdmins: ''
   arbitrationAdmins: ''
-  fsp: ''
+  fsp: 'Punto de distribución de alimentos'
   fsManagementAdmins: ''
   boardAdmins: ''
   statistic: ''
@@ -2516,10 +2516,10 @@ addreaction: ''
 mail:
   noreply_addresses_not_allowed: ''
 numbers:
-  decimal_separator: ''
-  thousands_separator: ''
+  decimal_separator: '.'
+  thousands_separator: ','
   million_abbreviation: ''
-  billion_abbreviation: ''
+  billion_abbreviation: ' Mil millones.'
 timefrom: ''
 logincontrol:
   title: ''

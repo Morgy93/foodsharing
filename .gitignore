@@ -17,7 +17,7 @@ css/gen/style.css
 sw.js
 sw.js.map
 # workaround for the service worker plugin
-!/public/public/sw.js
+!/public/sw.js
 
 ## PHP
 /data/logg.txt

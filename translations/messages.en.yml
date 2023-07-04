@@ -275,6 +275,9 @@ settings:
         it?
       title: Generate a new token
       button: Generate a new token
+    export: Export calendar
+    export_tooltip: You can view your upcoming pickup dates using a calendar program
+      of your choice.
   saved: The changes were saved.
   changemail:
     done: Your e-mail address was changed.
@@ -925,7 +928,7 @@ storeview:
   cooperation_status: "State of cooperation"
   common: "Common information"
   visible_for_public: "This text is visible for all foodsavers."
-  visible_for_team: "This text is visible for the pickup team of the store."
+  visible_for_team: "This text is visible for the team of the store."
   invalid_field: "Invalid field content. The change is not stored."
   contact:
     name: "Name/first name"
@@ -935,7 +938,7 @@ storeview:
   store: Store
   want_to_fetch: I would like to help in this team.
   public_and_statistics: "Public activites and statistical information"
-  no_permission_to_view: "No permission"
+  no_permission_to_view: "Only for store manager visible."
   groceries:
     label: Which kinds of food are allowed to be collected?
     select_tag: Choose food category
@@ -1682,6 +1685,8 @@ basket:
 map:
   title: Map
   donates: company donates
+  filters:
+    my_stores: My stores only
 content:
   content: Content
   name: Unique name
@@ -2299,6 +2304,7 @@ chat:
   start_of_conversation: "Conversation started on:"
   display_all_messages: "Display all messages"
 
+  unknown_username: unknown name
 delete: Delete
 error_unexpected: An error has occurred
 register:
@@ -2673,11 +2679,12 @@ startpage:
       or insurances.\nWe would be delighted in receiving any support.\n"
   demands:
     title: Demands
-    text: "Action plan with Deutsche Umwelthilfe\npublished on the 6th foodsharing
-      anniversary on December 12th, 2018. In order to save Germany from breaking \n
-      its word again — as with the climate protection targets for 2020 — foodsharing
-      and Deutsche Umwelthilfe are using \na concrete action plan to show the measures
-      without which the goal of halving food waste cannot be achieved.\n"
+    text: "To reduce food waste effectively, it takes more than saving leftover food
+      from cooperations or education of consumers.\nInstead, we need political progress.
+      We need binding targets for the reduction of food waste along the entire value
+      chain.\nIn addition, current trade standards need to be reconsidered and relaxed,
+      and organizations that save\norganizations that save food or provide education
+      on nutrition must be strengthened.\n"
   near_you:
     text3:
       part2: Find disctricts close to you
@@ -2749,7 +2756,7 @@ startpage:
   bedependable: Be dependable
   makeproposals: Make proposals
   proposals: We want to develop and consistently improve. Therefore we need you with
-    your many great ideas and tipps. Please send them to <a href='mailto:info@foodsharing.de'>info@foodsharing.de</a>
+    your many great ideas and tips. Please send them to <a href='mailto:info@foodsharing.de'>info@foodsharing.de</a>
   join_welcome: Nice that you want to join foodsharing!
   join_rules: Participate - Our Rules
   notallowed: The sharing of medicines (including homeopathic ones) is excluded on

@@ -1390,6 +1390,14 @@ class StoreApiCest
         $I->seeInDatabase('fs_betrieb', [
             'id' => $this->store[self::ID],
             'prefetchtime' => 604800]);
+
+        // Used for store vacation when the store contains many automatic pickup roles
+        $I->sendPATCH(self::API_STORES . '/' . $this->store[self::ID] . '/information', ['calendarInterval' => 0]);
+        $I->seeResponseCodeIs(Http::OK);
+
+        $I->seeInDatabase('fs_betrieb', [
+                'id' => $this->store[self::ID],
+                'prefetchtime' => 0]);
     }
 
     public function canNotPatchStoreCalendarIntervalWithInvalidFormatForStoreManager(ApiTester $I)

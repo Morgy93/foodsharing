@@ -417,7 +417,7 @@ class StoreTransactions
             $store->teamStatus = TeamSearchStatus::from($storeChange->teamStatus);
         }
 
-        if (!empty($storeChange->calendarInterval)) {
+        if (!is_null($storeChange->calendarInterval)) {
             $changeInformation->informationChanged = true;
             $store->calendarInterval = $storeChange->calendarInterval;
         }

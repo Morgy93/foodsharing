@@ -57,10 +57,6 @@
                 max-rows="10"
                 :disabled="!editMode"
               />
-              <div
-                class="mb-2 ml-2"
-                v-html="$i18n('forum.markdown_description')"
-              />
             </b-form-group>
           </b-card-text>
         </b-tab>
@@ -159,7 +155,7 @@
         >
           <b-card-text>
             <b-form-group
-              label="Region"
+              :label="$i18n('bezirk')"
               label-for="region"
             >
               <region-tree-v-form
@@ -244,7 +240,7 @@
               <b-form-spinbutton
                 id="calendarInterval"
                 v-model="calendarInterval"
-                min="1"
+                min="0"
                 max="8"
                 class="w-50"
                 :disabled="!editMode"
@@ -261,6 +257,7 @@
                 id="useRegionPickupRule"
                 v-model="store.options.useRegionPickupRule"
                 switch
+                :disabled-field="!editMode"
                 :disabled="!editMode"
               />
             </b-form-group>
@@ -340,6 +337,7 @@
                 id="showsSticker"
                 v-model="store.showsSticker"
                 switch
+                :disabled-field="!editMode"
                 :disabled="!editMode"
               />
               <small
@@ -358,6 +356,7 @@
                 id="publicity"
                 v-model="store.publicity"
                 switch
+                :disabled-field="!editMode"
                 :disabled="!editMode"
               />
               <small
@@ -633,7 +632,7 @@ export default {
         const store = this.store
         store.groceries = this.storeFoodIds
         await updateStore(store)
-        if (this.isUpdatedRegularPickup) {
+        if (this.isUpdatedRegularPickup()) {
           await editRegularPickup(this.storeId, this.editPickups)
         }
         pulseSuccess(this.$i18n('storeedit.edit_success'))
