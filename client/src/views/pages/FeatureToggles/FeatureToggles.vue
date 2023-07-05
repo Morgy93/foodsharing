@@ -67,8 +67,12 @@ export default {
       featureToggles: [],
     }
   },
-  async mounted () {
-    await this.fetchAllFeatureToggles()
+  /*
+   - use created hook because its triggers the request faster and we don't need the dom.
+   - we don't need await here because we don't return a value
+   */
+  async created () {
+    this.fetchAllFeatureToggles()
     this.isDangerZoneAlertVisible = await this.$isFeatureToggleActive('showFeatureToggleDangerZoneAlert')
   },
   methods: {
@@ -79,9 +83,22 @@ export default {
       const response = await fetchAllFeatureToggles()
       this.featureToggles = response.featureToggles
     },
-    async toggle (featureToggleIdentifier) {
-      await switchFeatureToggleState(featureToggleIdentifier)
-      await this.fetchAllFeatureToggles()
+    toggle (featureToggleIdentifier) {
+      switchFeatureToggleState(featureToggleIdentifier)
+        .then(() => {
+          // every thing was successful, so we don't need to contact the server, just switch the toggle
+          const toggle = this.featureToggles.find(toggle => toggle.identifier === featureToggleIdentifier)
+          toggle.isActive = !toggle.isActive
+          // also update our danger box!
+          if (featureToggleIdentifier === 'showFeatureToggleDangerZoneAlert') {
+            this.isDangerZoneAlertVisible = !this.isDangerZoneAlertVisible
+          }
+        })
+        .catch(error => {
+          console.log('Error:', error)
+          // only fetch toggles again if we are not sure about what happened on the server
+          this.fetchAllFeatureToggles()
+        })
     },
   },
 }
