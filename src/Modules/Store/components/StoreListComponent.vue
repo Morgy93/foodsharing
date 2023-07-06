@@ -97,10 +97,8 @@
                 <StoreStatusIcon :cooperation-status="row.value" />
               </div>
             </template>
-            <template
-              v-if="isManagingEnabled"
-              #cell(memberState)="row"
-            >
+            <template #cell(memberState)="row">
+              {{ row.item }}
               <span
                 v-if="isManaging(row.item)"
               >
@@ -210,8 +208,10 @@ import {
   BCard,
 } from 'bootstrap-vue'
 import StoreStatusIcon from './StoreStatusIcon.vue'
-import i18n from '@/helper/i18n'
 import ConfigureableList from '@/components/ConfigureableList.vue'
+import { useStoreStore } from '@/stores/store'
+
+const storeStore = useStoreStore()
 
 export default {
   components: { BCard, BTable, BButton, BPagination, BFormSelect, StoreStatusIcon, ConfigureableList },
@@ -219,7 +219,6 @@ export default {
   props: {
     stores: { type: Array, default: () => [] },
     isManagingEnabled: { type: Boolean, default: false },
-    storeMemberStatus: { type: Array, default: () => [] },
     showCreateStore: { type: Boolean, default: false },
     regionId: { type: Number, default: 0 },
     regionName: { type: String, default: '' },
@@ -234,13 +233,13 @@ export default {
       filterStatus: null,
       statusOptions: [
         { value: null, text: 'Status' },
-        { value: 1, text: i18n('storestatus.1') }, // CooperationStatus::NO_CONTACT
-        { value: 2, text: i18n('storestatus.2') }, // CooperationStatus::IN_NEGOTIATION
-        { value: 3, text: i18n('storestatus.3') }, // CooperationStatus::COOPERATION_STARTING
-        { value: 4, text: i18n('storestatus.4') }, // CooperationStatus::DOES_NOT_WANT_TO_WORK_WITH_US
-        { value: 5, text: i18n('storestatus.5') }, // CooperationStatus::COOPERATION_ESTABLISHED
-        { value: 6, text: i18n('storestatus.6') }, // CooperationStatus::GIVES_TO_OTHER_CHARITY
-        { value: 7, text: i18n('storestatus.7') }, // CooperationStatus::PERMANENTLY_CLOSED
+        { value: 1, text: this.$i18n('storestatus.1') }, // CooperationStatus::NO_CONTACT
+        { value: 2, text: this.$i18n('storestatus.2') }, // CooperationStatus::IN_NEGOTIATION
+        { value: 3, text: this.$i18n('storestatus.3') }, // CooperationStatus::COOPERATION_STARTING
+        { value: 4, text: this.$i18n('storestatus.4') }, // CooperationStatus::DOES_NOT_WANT_TO_WORK_WITH_US
+        { value: 5, text: this.$i18n('storestatus.5') }, // CooperationStatus::COOPERATION_ESTABLISHED
+        { value: 6, text: this.$i18n('storestatus.6') }, // CooperationStatus::GIVES_TO_OTHER_CHARITY
+        { value: 7, text: this.$i18n('storestatus.7') }, // CooperationStatus::PERMANENTLY_CLOSED
       ],
       availableFields: [
         'status',
@@ -278,7 +277,7 @@ export default {
         return this.availableFields.map(field => {
           const fieldOpt = {
             key: field,
-            label: this.FieldsWithoutLabel.includes(field) ? '' : i18n(`storelist.${field}`),
+            label: this.FieldsWithoutLabel.includes(field) ? '' : this.$i18n(`storelist.${field}`),
             sortable: !this.FieldsNotSortable.includes(field),
           }
           if (this.FieldsHasStatusClass.includes(field)) {
@@ -323,9 +322,15 @@ export default {
     filterTextLower () {
       return this.filterText.toLowerCase()
     },
+    storeMemberStatus () {
+      return
+    }
   },
   methods: {
-    isManaging (value) {
+    getStoreMemberStatus (fsId) {
+
+    },
+    isManaging (fsId) {
       const isManaging = this.storeMemberStatus.some(obj => obj.list.some(item => item.id === value.id && item.isManaging === true))
       return Boolean(isManaging)
     },
