@@ -98,27 +98,7 @@
               </div>
             </template>
             <template #cell(memberState)="row">
-              {{ row.item }}
-              <span
-                v-if="isManaging(row.item)"
-              >
-                {{ $i18n('store.managing') }}
-              </span>
-              <span
-                v-if="isMember(row.item)"
-              >
-                {{ $i18n('store.member') }}
-              </span>
-              <span
-                v-if="isJumping(row.item)"
-              >
-                {{ $i18n('store.jumping') }}
-              </span>
-              <span
-                v-if="isAppliedForTeam(row.item)"
-              >
-                {{ $i18n('store.isAppliedForTeam') }}
-              </span>
+              {{ getUserRole(row.item.id) }}
             </template>
             <template
               #cell(name)="row"
@@ -241,53 +221,67 @@ export default {
         { value: 6, text: this.$i18n('storestatus.6') }, // CooperationStatus::GIVES_TO_OTHER_CHARITY
         { value: 7, text: this.$i18n('storestatus.7') }, // CooperationStatus::PERMANENTLY_CLOSED
       ],
-      availableFields: [
-        'status',
-        'name',
-        'address',
-        'zipcode',
-        'city',
-        'added',
-        'region',
-        'memberState',
-        'actions',
+      fieldsDefinition: [
+        {
+          key: 'cooperationStatus',
+          label: this.$i18n('storelist.status'),
+          tdClass: 'status',
+          sortable: true,
+        },
+        {
+          key: 'name',
+          label: this.$i18n('storelist.name'),
+          sortable: true,
+        },
+        {
+          key: 'street',
+          label: this.$i18n('storelist.address'),
+          sortable: true,
+        },
+        {
+          key: 'zipCode',
+          label: this.$i18n('storelist.zipcode'),
+          sortable: true,
+        },
+        {
+          key: 'city',
+          label: this.$i18n('storelist.city'),
+          sortable: true,
+        },
+
+        {
+          key: 'createdAt',
+          label: this.$i18n('storelist.added'),
+          tdClass: 'status',
+          sortable: true,
+        },
+        {
+          key: 'region',
+          label: this.$i18n('storelist.region'),
+          sortable: true,
+        },
+        {
+          key: 'memberState',
+          label: this.$i18n('storelist.memberState'),
+          tdClass: 'status',
+          sortable: true,
+        },
+        {
+          key: 'actions',
+          label: '',
+          sortable: false,
+        },
       ],
-      fieldSelection: [
-        'status',
-        'city',
-        'name',
-      ],
-      // actions not sortable, has no label
-      FieldsNotSortable: [
-        'actions',
-      ],
-      FieldsWithoutLabel: [
-        'actions',
-      ],
-      FieldsHasStatusClass: [
-        'status',
-        'added',
-        'memberState',
-      ],
+      availableFields: [],
+      fieldSelection: [],
     }
   },
   computed: {
     fields: {
       get () {
-        return this.availableFields.map(field => {
-          const fieldOpt = {
-            key: field,
-            label: this.FieldsWithoutLabel.includes(field) ? '' : this.$i18n(`storelist.${field}`),
-            sortable: !this.FieldsNotSortable.includes(field),
-          }
-          if (this.FieldsHasStatusClass.includes(field)) {
-            fieldOpt.tdClass = 'status'
-          }
-          return fieldOpt
-        })
+        return this.availableFields.map(fieldKey => this.fieldsDefinition.find(field => field.key === fieldKey))
       },
       set (fields) {
-        // console.log('set fields', fields)
         this.availableFields = fields
       },
     },
@@ -326,25 +320,27 @@ export default {
       return
     }
   },
+  created () {
+    this.availableFields = this.fieldsDefinition.map(field => field.key)
+    this.fieldSelection = this.availableFields
+  },
   methods: {
-    getStoreMemberStatus (fsId) {
-
-    },
-    isManaging (fsId) {
-      const isManaging = this.storeMemberStatus.some(obj => obj.list.some(item => item.id === value.id && item.isManaging === true))
-      return Boolean(isManaging)
-    },
-    isMember (value) {
-      const isMember = this.storeMemberStatus.some(obj => obj.list.some(item => item.id === value.id && item.membershipStatus === 1 && item.isManaging === false))
-      return Boolean(isMember)
-    },
-    isJumping (value) {
-      const isJumping = this.storeMemberStatus.some(obj => obj.list.some(item => item.id === value.id && item.membershipStatus === 2))
-      return Boolean(isJumping)
-    },
-    isAppliedForTeam (value) {
-      const AppliedForTeam = this.storeMemberStatus.some(obj => obj.list.some(item => item.id === value.id && item.membershipStatus === 0))
-      return Boolean(AppliedForTeam)
+    getUserRole (storeId) {
+      if (storeStore.userRelations === null) {
+        storeStore.fetchUserStoreRelations()
+        return '...loading'
+      } else {
+        const relation = storeStore.userRelations.find(relation => relation.id === storeId)
+        if (relation.isManaging) {
+          return this.$i18n('store.managing')
+        }
+        switch (relation.membershipStatus) {
+          case 0: return this.$i18n('store.isAppliedForTeam')
+          case 1: return this.$i18n('store.member')
+          case 2: return this.$i18n('store.jumping')
+        }
+      }
+      // not a member
     },
     clearFilter () {
       this.filterStatus = null
