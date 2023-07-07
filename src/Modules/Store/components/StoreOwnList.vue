@@ -25,12 +25,7 @@ export default {
     stores: () => storeStore.userStores
   },
   async created () {
-    console.log(storeStore, this.stores)
-    setTimeout(() => {
-    console.log(storeStore, this.stores)
-    }, 2500)
     if (!this.stores.length) {
-      console.log('fetch stores')
       showLoader()
       this.isBusy = true
       await Promise.all([

@@ -331,13 +331,15 @@ export default {
         return '...loading'
       } else {
         const relation = storeStore.userRelations.find(relation => relation.id === storeId)
-        if (relation.isManaging) {
-          return this.$i18n('store.managing')
-        }
-        switch (relation.membershipStatus) {
-          case 0: return this.$i18n('store.isAppliedForTeam')
-          case 1: return this.$i18n('store.member')
-          case 2: return this.$i18n('store.jumping')
+        if (relation) {
+          if (relation.isManaging) {
+            return this.$i18n('store.managing')
+          }
+          switch (relation.membershipStatus) {
+            case 0: return this.$i18n('store.isAppliedForTeam')
+            case 1: return this.$i18n('store.member')
+            case 2: return this.$i18n('store.jumping')
+          }
         }
       }
       // not a member

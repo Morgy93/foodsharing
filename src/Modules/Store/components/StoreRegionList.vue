@@ -12,9 +12,10 @@
 
 <script>
 import StoreListComponent from './StoreListComponent.vue'
-import { hideLoader, pulseError, showLoader } from '@/script'
-import i18n from '@/helper/i18n'
-import { listRegionStores } from '@/api/regions'
+import { hideLoader, showLoader } from '@/script'
+import { useStoreStore } from '@/stores/store'
+
+const storeStore = useStoreStore()
 
 export default {
   components: { StoreListComponent },
@@ -26,19 +27,16 @@ export default {
   data () {
     return {
       isManagingEnabled: false,
-      stores: [],
     }
   },
-  async mounted () {
-    console.log('mounted')
+  computed: {
+    stores: () => storeStore.regionStores
+  },
+  async created () {
     showLoader()
     this.isBusy = true
-    try {
-      this.stores = await listRegionStores(this.regionId)
-      console.log('stores: ', this.stores)
-    } catch (e) {
-      pulseError(i18n('error_unexpected'))
-    }
+    await storeStore.fetchStoresForRegion(this.regionId)
+    console.log('stores: ', this.stores)
     this.isBusy = false
     hideLoader()
   },
