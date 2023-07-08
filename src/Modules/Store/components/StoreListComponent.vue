@@ -26,13 +26,13 @@
       >
         <template #head="{ showConfigurationDialog }">
           <div class="form-row p-1 ">
-            <div class="col-2 text-center">
+            <div class="d-flex align-items-center col-2">
               <label class=" col-form-label col-form-label-sm">
                 {{ $i18n('store.filter') }}
               </label>
             </div>
-            <div class="col-4">
-              <label>
+            <div class="d-flex align-items-center col-4">
+              <label class="mb-0">
                 <input
                   v-model.trim="filterText"
                   type="text"
@@ -41,14 +41,15 @@
                 >
               </label>
             </div>
-            <div class="col-3">
+            <div class="d-flex align-items-center col-3">
               <b-form-select
+                class="h-100"
                 v-model="filterStatus"
                 :options="statusOptions"
                 size="sm"
               />
             </div>
-            <div class="col">
+            <div class="d-flex align-items-center col">
               <button
                 v-b-tooltip.hover
                 type="button"
@@ -71,10 +72,10 @@
                 {{ $i18n('store.addNewStoresButton') }}
               </a>
             </div>
+            <button type="button" @click="showConfigurationDialog" class="btn btn-sm ml-auto shadow-none">
+              <i class="fas fa-gear" />
+            </button>
           </div>
-          <b-button @click="showConfigurationDialog">
-            Configure
-          </b-button>
         </template>
         <template #default>
           <b-table
@@ -90,8 +91,7 @@
             responsive
           >
             <template
-              #cell(status)="row"
-              :v-if="isMobile"
+              #cell(cooperationStatus)="row"
             >
               <div class="text-center">
                 <StoreStatusIcon :cooperation-status="row.value" />
@@ -343,6 +343,9 @@ export default {
         }
       }
       // not a member
+    },
+    fetchData() {
+      storeStore.fetchStoresForCurrentUser()
     },
     clearFilter () {
       this.filterStatus = null
