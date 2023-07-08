@@ -147,7 +147,7 @@ export default {
     }
   },
   mounted () {
-    this.showConfigurationDialog()
+    // this.showConfigurationDialog()
   },
   destroyed () {
     if (this.store) {
