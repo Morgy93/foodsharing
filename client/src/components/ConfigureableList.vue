@@ -45,7 +45,7 @@
                 {{ item[fieldLabel] }}
               </label>
             </div>
-            <button type="button" @dragstart="onDragStart" class="btn btn-sm ml-auto no-shadow" draggable="true">
+            <button type="button" @dragstart="onDragStart" class="btn btn-sm ml-auto shadow-none" draggable="true">
               <i class="fas fa-bars" />
             </button>
           </template>
@@ -220,12 +220,6 @@ export default {
 
   .btn.btn-secondary {
     border-color: var(--theme-dark, #4B4F58);
-  }
-
-  button.no-shadow {
-    &, &:focus, &:active, &:hover {
-      box-shadow: initial;
-    }
   }
 
   .modal-body .drag-drop-container {
