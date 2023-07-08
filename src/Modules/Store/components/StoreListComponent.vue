@@ -43,10 +43,9 @@
             </div>
             <div class="d-flex align-items-center col-3">
               <b-form-select
-                class="h-100"
                 v-model="filterStatus"
                 :options="statusOptions"
-                size="sm"
+                size="mb"
               />
             </div>
             <div class="d-flex align-items-center col">
@@ -63,11 +62,11 @@
             <div
               v-if="showCreateStore"
               :regionId="regionId"
-              class="col"
+              class="col one-line-button"
             >
               <a
                 :href="$url('storeAdd', regionId)"
-                class="btn btn-sm btn-primary btn-block"
+                class="btn btn-mb btn-primary btn-block"
               >
                 {{ $i18n('store.addNewStoresButton') }}
               </a>
@@ -368,5 +367,8 @@ export default {
   .details-nav {
     float:right;
     font-size: 2em;
+  }
+  .one-line-button {
+    min-width: fit-content;
   }
 </style>
