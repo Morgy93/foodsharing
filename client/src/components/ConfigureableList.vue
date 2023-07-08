@@ -4,7 +4,7 @@
       name="head"
       :showConfigurationDialog="showConfigurationDialog"
     >
-      <h2>Use the named slot "head" to control this content.</h2>
+      <h4>Use the named slot "head" to control this content.</h4>
       <button
         type="button"
         @click="$refs['configure-modal'].show()"
@@ -24,7 +24,7 @@
       @hide="handleCloseOnEscOrBackdrop"
     >
       <template #modal-header="{ close }">
-        <h2>{{ $i18n('configure_columns') }}</h2>
+        <h4>{{ $i18n('configure_columns') }}</h4>
         <button type="button" @click="close" class="btn btn-sm no-shadow">
          <i class="fas fa-xmark" />
         </button>
@@ -32,23 +32,27 @@
       <template #default>
         <DragAndDropSortList v-model="componentFields">
           <template #item="{ item, onDragStart }">
-            <input
-              :id="`${storageKey}-${item[fieldKey]}`"
-              type="checkbox"
-              :value="item[fieldKey]"
-              v-model="componentSelection"
-            />
-            <label :for="`${storageKey}-${item[fieldKey]}`">
-              {{ item[fieldLabel] }}
-            </label>
-            <button type="button" @dragstart="onDragStart" class="btn btn-sm no-shadow" draggable="true">
+            <div class="d-flex align-items-center checkbox-nest">
+              <input
+                :id="`${storageKey}-${item[fieldKey]}`"
+                type="checkbox"
+                :value="item[fieldKey]"
+                v-model="componentSelection"
+              />
+            </div>
+            <div class="d-flex align-items-center">
+              <label :for="`${storageKey}-${item[fieldKey]}`" class="mb-0 ml-1">
+                {{ item[fieldLabel] }}
+              </label>
+            </div>
+            <button type="button" @dragstart="onDragStart" class="btn btn-sm ml-auto no-shadow" draggable="true">
               <i class="fas fa-bars" />
             </button>
           </template>
         </DragAndDropSortList>
       </template>
       <template #modal-footer="{ ok }">
-        <b-button @click="resetDefaults">{{ $i18n('button.reset_default') }}</b-button>
+        <b-button @click="resetDefaults" class="col">{{ $i18n('button.reset_default') }}</b-button>
         <b-button variant="primary" @click="ok">{{ $i18n('button.save') }}</b-button>
       </template>
     </b-modal>
@@ -208,6 +212,12 @@ export default {
 </script>
 
 <style scoped lang="scss">
+  $border: solid 0.6px #CED4DA;
+  @mixin has-border {
+    border: $border;
+    border-radius: 2px;
+  }
+
   .btn.btn-secondary {
     border-color: var(--theme-dark, #4B4F58);
   }
@@ -225,26 +235,23 @@ export default {
     flex-flow: column nowrap;
     gap: 16px;
     padding: 8px 16px;
-    outline: lime 2px dotted;
 
     ::v-deep >  div {
       display: flex;
-      justify-content: space-between;
-      align-items: baseline;
-      background: pink;
+      justify-content: flex-start;
+      align-items: stretch;
+      @include has-border;
 
       input, label {
         position: initial;
       }
     }
   }
-  span {
-    border: 0.6px solid var(--components-form-border-default, #CED4DA);
-    background: var(--components-form-background-default, #FFF);
-
-    border-radius: 2px;
+  .has-border {
+    @include has-border
   }
-</style>
-<style lang="scss">
-
+  .checkbox-nest {
+    padding: 8px;
+    background: var(--fs-color-gray-200);
+  }
 </style>
