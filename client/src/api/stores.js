@@ -50,26 +50,7 @@ export async function listStoresForCurrentUser () {
 }
 
 export async function listStoresDetailsForCurrentUser (expand) {
-  const { stores } = await get('/user/current/stores/details')
-  return formatStoresToMatchColumnKeys(stores)
-}
-
-/**
- * This can be removed if we adjust the api endpoint
- */
-export function formatStoresToMatchColumnKeys (stores) {
-  return stores.map(store => {
-    const changeKey = (key, newKey) => {
-      store[newKey] = store[key]
-      delete store[key]
-    }
-    changeKey('cooperationStatus', 'status')
-    changeKey('street', 'address')
-    changeKey('zipCode', 'zipcode')
-    changeKey('createdAt', 'added')
-    changeKey('memberState', 'memberState')
-    return store
-  })
+  return get('/user/current/stores/details')
 }
 
 export async function requestStoreTeamMembership (storeId, userId) {

@@ -1,5 +1,6 @@
 import { defineStore } from 'pinia'
 import { get } from '@/api/base'
+import { listStoresDetailsForCurrentUser, listStoresForCurrentUser } from '@/api/stores'
 
 export const useStoreStore = defineStore('store', {
   state: () => {
@@ -44,12 +45,12 @@ export const useStoreStore = defineStore('store', {
       this.addStores(stores)
     },
     async fetchStoresForCurrentUser () {
-      const { stores } = await get('/user/current/stores/details')
+      const { stores } = await listStoresDetailsForCurrentUser()
       this.addStores(stores)
     },
     async fetchUserStoreRelations () {
       // todo: looks like here we are missing stores that we are member in but they don't cooperate
-      this.userRelations = await get('/user/current/stores')
+      this.userRelations = await listStoresForCurrentUser()
     },
     addStores (stores) {
       const patch = { ...this.storeData }
