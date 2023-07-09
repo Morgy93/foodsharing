@@ -75,14 +75,6 @@ export default {
       type: Array,
       required: true,
     },
-    defaultSelection: {
-      type: Array,
-      default: function () { return this.selection },
-    },
-    defaultFields: {
-      type: Array,
-      default: function () { return this.fieldsOrder },
-    },
     fieldKey: {
       type: String,
       default: 'key',
@@ -99,13 +91,21 @@ export default {
       type: Boolean,
       default: false,
     },
+    defaultSelection: {
+      type: Array,
+      default: function () { return this.selection },
+    },
+    defaultFields: {
+      type: Array,
+      default: function () { return this.fields.map(field => field[this.fieldKey]) },
+    },
   },
   data () {
     return {
       unsavedChanges: false,
       dataLoaded: false,
       initialSelection: [],
-      initialFields: [], // todo: fix is empty array
+      initialFields: [],
     }
   },
   computed: {
@@ -114,7 +114,6 @@ export default {
         return this.selection
       },
       set (value) {
-        console.log('selection got update', value)
         this.$emit('update:selection', value)
         if (this.store && this.dataLoaded) {
           this.unsavedChanges = true
@@ -127,7 +126,6 @@ export default {
       },
       set (fieldsOrFieldKeys) {
         const value = typeof fieldsOrFieldKeys[0] === 'string' ? fieldsOrFieldKeys : fieldsOrFieldKeys.map(field => field[this.fieldKey])
-        console.log('fields got update', value)
         this.$emit('update:fields', value)
         if (this.store && this.dataLoaded) {
           this.unsavedChanges = true
@@ -139,8 +137,7 @@ export default {
     },
   },
   created () {
-    console.log(this.store, this.storageKey)
-    console.log('parent name:', this.$parent.$options._componentTag)
+    this.setInitialData()
     if (this.store) {
       this.load()
       window.addEventListener('beforeunload', this.unsavedChangesPrompt)
@@ -166,14 +163,12 @@ export default {
       this.setInitialData()
     },
     load () {
-      console.log('loading...', storage)
       storage.getKeys(this.storageKey).forEach(key => {
         const storaKeyLength = this.storageKey.length + 1
         let propName = key.substring(storaKeyLength)
         propName = propName[0].toUpperCase() + propName.slice(1)
         const data = storage.get(key)
         if (data) {
-          console.log(key, data)
           this['initial' + propName] = data
           this['component' + propName] = data
         }
