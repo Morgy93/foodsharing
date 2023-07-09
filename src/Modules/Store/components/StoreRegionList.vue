@@ -1,15 +1,36 @@
 <template>
   <div>
-    <StoreListComponent
-      :stores="stores"
-      :show-create-store="showCreateStore"
-      :region-id="regionId"
-      :region-name="regionName"
-    >
+    <StoreListComponent :stores="stores">
       <template #head-title>
         <span>
           {{ $i18n('store.allStoresOfRegion') }} {{ regionName }}
         </span>
+      </template>
+      <template #header-actions>
+        <div
+          :regionId="regionId"
+          class="col one-line-button"
+        >
+          <a
+            :href="$url('storeAdd', regionId)"
+            class="btn btn-mb btn-primary btn-block"
+          >
+            {{ $i18n('store.addNewStoresButton') }}
+          </a>
+        </div>
+      </template>
+      <template #no-stores-footer-actions>
+        <div
+          :regionId="regionId"
+          class="col"
+        >
+          <a
+            :href="$url('storeAdd', regionId)"
+            class="btn btn-sm btn-primary btn-block"
+          >
+            {{ $i18n('store.addNewStoresButton') }}
+          </a>
+        </div>
       </template>
     </StoreListComponent>
   </div>

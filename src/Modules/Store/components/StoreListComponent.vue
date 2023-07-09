@@ -50,18 +50,7 @@
                 <i class="fas fa-times" />
               </button>
             </div>
-            <div
-              v-if="showCreateStore"
-              :regionId="regionId"
-              class="col one-line-button"
-            >
-              <a
-                :href="$url('storeAdd', regionId)"
-                class="btn btn-mb btn-primary btn-block"
-              >
-                {{ $i18n('store.addNewStoresButton') }}
-              </a>
-            </div>
+            <slot name="header-actions"></slot>
             <button type="button" @click="showConfigurationDialog" class="btn btn-sm ml-auto shadow-none">
               <i class="fas fa-gear" />
             </button>
@@ -152,18 +141,7 @@
       class="card-body d-flex justify-content-center"
     >
       {{ $i18n('store.noStores') }}
-      <div
-        v-if="showCreateStore"
-        :regionId="regionId"
-        class="col"
-      >
-        <a
-          :href="$url('storeAdd', regionId)"
-          class="btn btn-sm btn-primary btn-block"
-        >
-          {{ $i18n('store.addNewStoresButton') }}
-        </a>
-      </div>
+      <slot name="no-stores-footer-actions"></slot>
     </div>
   </div>
 </template>
@@ -187,10 +165,7 @@ export default {
   components: { BCard, BTable, BButton, BPagination, BFormSelect, StoreStatusIcon, ConfigureableList },
   directives: { VBTooltip },
   props: {
-    stores: { type: Array, default: () => [] },
-    showCreateStore: { type: Boolean, default: false },
-    regionId: { type: Number, default: 0 },
-    regionName: { type: String, default: '' },
+    stores: { type: Array, required: true },
   },
   data () {
     return {
