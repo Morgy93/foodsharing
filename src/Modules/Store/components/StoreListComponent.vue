@@ -1,16 +1,7 @@
 <template>
   <div class="card mb-3 rounded">
     <div class="card-header text-white bg-primary">
-      <span
-        v-if="isManagingEnabled"
-      >
-        {{ $i18n('store.ownStores') }}
-      </span>
-      <span
-        v-else
-      >
-        {{ $i18n('store.allStoresOfRegion') }} {{ regionName }}
-      </span>
+      <slot name="head-title"></slot>
       <span>
         {{ $i18n('filterlist.some_in_all', {some: storesFiltered.length, all: stores.length}) }}
       </span>
@@ -197,7 +188,6 @@ export default {
   directives: { VBTooltip },
   props: {
     stores: { type: Array, default: () => [] },
-    isManagingEnabled: { type: Boolean, default: false },
     showCreateStore: { type: Boolean, default: false },
     regionId: { type: Number, default: 0 },
     regionName: { type: String, default: '' },

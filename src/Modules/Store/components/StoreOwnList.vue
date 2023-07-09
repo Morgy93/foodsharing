@@ -1,9 +1,12 @@
 <template>
   <div>
-    <StoreListComponent
-      :is-managing-enabled="isManagingEnabled"
-      :stores="stores"
-    />
+    <StoreListComponent :stores="stores">
+      <template #head-title>
+        <span>
+          {{ $i18n('store.ownStores') }}
+        </span>
+      </template>
+    </StoreListComponent>
   </div>
 </template>
 
@@ -17,9 +20,7 @@ const storeStore = useStoreStore()
 export default {
   components: { StoreListComponent },
   data () {
-    return {
-      isManagingEnabled: true,
-    }
+    return {}
   },
   computed: {
     stores: () => storeStore.userStores

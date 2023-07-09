@@ -1,12 +1,17 @@
 <template>
   <div>
     <StoreListComponent
-      :is-managing-enabled="isManagingEnabled"
       :stores="stores"
       :show-create-store="showCreateStore"
       :region-id="regionId"
       :region-name="regionName"
-    />
+    >
+      <template #head-title>
+        <span>
+          {{ $i18n('store.allStoresOfRegion') }} {{ regionName }}
+        </span>
+      </template>
+    </StoreListComponent>
   </div>
 </template>
 
@@ -25,9 +30,7 @@ export default {
     regionName: { type: String, default: '' },
   },
   data () {
-    return {
-      isManagingEnabled: false,
-    }
+    return {}
   },
   computed: {
     stores: () => storeStore.regionStores
