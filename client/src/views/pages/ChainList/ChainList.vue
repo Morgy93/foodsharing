@@ -61,10 +61,10 @@
                 >
                   {{ $i18n('chain.new') }}
                 </b-button>
-                <b-button @click="showConfigurationDialog">
-                  Configure
-                </b-button>
               </div>
+              <button type="button" @click="showConfigurationDialog" class="btn btn-sm ml-auto shadow-none">
+                <i class="fas fa-gear" />
+              </button>
             </div>
           </template>
 
@@ -216,36 +216,44 @@ export default {
       perPage: 20,
       filterText: '',
       filterStatus: null,
-      availableFields: [
-        'status',
-        'name',
-        'stores',
-        'headquarters',
-        'kams',
-        'notes',
-        'actions',
+      fieldsDefinition:  [
+        {
+          key: 'status',
+          label: this.$i18n('chain.columns.status'),
+          tdClass: 'status',
+          sortable: true,
+        },
+        {
+          key: 'name',
+          label: this.$i18n('chain.columns.name'),
+          sortable: true,
+        },
+        {
+          key: 'store_count',
+          label: this.$i18n('chain.columns.stores'),
+          sortable: true,
+          tdClass: 'text-center',
+        },
+        {
+          key: 'headquarters_city',
+          label: this.$i18n('chain.columns.headquarters'),
+          sortable: true,
+        },
+        {
+          key: 'kams',
+          label: this.$i18n('chain.columns.kams'),
+        },
+        {
+          key: 'notes',
+          label: this.$i18n('chain.columns.notes'),
+        },
+        {
+          key: 'actions',
+          label: '',
+        },
       ],
-      FieldsClassMap: {
-        status: 'status',
-        stores: 'text-center',
-      },
-      FieldsNotSortable: [
-        'actions',
-        'notes',
-        'kams',
-      ],
-      FieldsWithoutLabel: [
-        'actions',
-      ],
-      fieldSelection: [
-        'status',
-        'name',
-        'stores',
-        'headquarters',
-        'kams',
-        'notes',
-        'actions',
-      ],
+      availableFields: [],
+      fieldSelection: [],
       statusOptions: [
         {
           description: this.$i18n('chain.status.cooperating'),
@@ -267,17 +275,7 @@ export default {
     storeList: () => getters.getStores(),
     fields: {
       get () {
-        return this.availableFields.map(field => {
-          const fieldOpt = {
-            key: field,
-            label: this.FieldsWithoutLabel.includes(field) ? '' : i18n(`chain.columns.${field}`),
-            sortable: !this.FieldsNotSortable.includes(field),
-          }
-          if (this.FieldsClassMap[field]) {
-            fieldOpt.tdClass = this.FieldsClassMap[field]
-          }
-          return fieldOpt
-        })
+        return this.availableFields.map(fieldKey => this.fieldsDefinition.find(field => field.key === fieldKey))
       },
       set (fields) {
         this.availableFields = fields
@@ -312,8 +310,10 @@ export default {
       )
     },
   },
-  async mounted () {
-    await mutations.fetchChains()
+  async created () {
+    mutations.fetchChains()
+    this.availableFields = this.fieldsDefinition.map(field => field.key)
+    this.fieldSelection = this.availableFields
   },
   methods: {
     clearFilter () {
