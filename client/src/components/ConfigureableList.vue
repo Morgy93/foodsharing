@@ -62,6 +62,7 @@
 <script>
 import DragAndDropSortList from '@/components/DragAndDropSortList.vue'
 import Storage from '@/storage'
+import { arrayContentEquals, arrayEquals } from '@/utils'
 
 const storage = new Storage('vue')
 export default {
@@ -102,7 +103,6 @@ export default {
   },
   data () {
     return {
-      unsavedChanges: false,
       dataLoaded: false,
       initialSelection: [],
       initialFields: [],
@@ -115,9 +115,6 @@ export default {
       },
       set (value) {
         this.$emit('update:selection', value)
-        if (this.store && this.dataLoaded) {
-          this.unsavedChanges = true
-        }
       },
     },
     componentFields: {
@@ -127,14 +124,14 @@ export default {
       set (fieldsOrFieldKeys) {
         const value = typeof fieldsOrFieldKeys[0] === 'string' ? fieldsOrFieldKeys : fieldsOrFieldKeys.map(field => field[this.fieldKey])
         this.$emit('update:fields', value)
-        if (this.store && this.dataLoaded) {
-          this.unsavedChanges = true
-        }
       },
     },
     fieldsOrder () {
       return this.fields.map(field => field[this.fieldKey])
     },
+    unsavedChanges () {
+      return !arrayEquals(this.initialFields, this.fieldsOrder) || !arrayContentEquals(this.initialSelection, this.componentSelection)
+    }
   },
   created () {
     this.setInitialData()
@@ -159,7 +156,6 @@ export default {
       console.log('saving...')
       storage.set(`${this.storageKey}-fields`, this.fieldsOrder)
       storage.set(`${this.storageKey}-selection`, this.selection)
-      this.unsavedChanges = false
       this.setInitialData()
     },
     load () {
@@ -183,7 +179,6 @@ export default {
       console.log('resetting')
       this.componentSelection = this.initialSelection
       this.componentFields = this.initialFields
-      this.unsavedChanges = false
     },
     resetDefaults () {
       this.componentSelection = this.defaultSelection

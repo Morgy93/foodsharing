@@ -128,3 +128,23 @@ export function throttle (func, timeout = 300) {
     }
   }
 }
+
+/**
+ * returns true if the array contents and its order are equal. [1, 2, 3] !== [3, 2, 1]
+ * @param {[]} a
+ * @param {[]} b
+ * @returns {boolean}
+ */
+export function arrayEquals(a, b) {
+  return a.length === b.length && a.every((val, index) => val === b[index])
+}
+
+/**
+ * returns true if the array contents are equal. [1, 2, 3] === [3, 2, 1]
+ * @param {[]} a
+ * @param {[]} b
+ * @returns {boolean}
+ */
+export function arrayContentEquals(a, b) {
+  return a.length === b.length && a.every((val, index) => b.includes(val))
+}
