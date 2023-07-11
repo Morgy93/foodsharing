@@ -166,6 +166,8 @@ questcount: "Wie viele Fragen sollen bei Klausur gestellt werden?"
 wikilink: "Link zur Wiki-Seite"
 
 filter_by: "Filtern nach"
+save_filter_and_sort: "Filter und Sortierung speichern"
+save_filter_description: "Angewendete Filter und Sortierung für zukünftige Aufrufe vormerken"
 configure_columns: "Spalten konfigurieren"
 
 quiz:

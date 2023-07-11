@@ -30,7 +30,7 @@
         </button>
       </template>
       <template #default>
-        <DragAndDropSortList v-model="componentFields">
+        <DragAndDropSortList v-model="componentFields" class="mb-1">
           <template #item="{ item, onDragStart }">
             <div class="d-flex align-items-center checkbox-nest">
               <input
@@ -50,6 +50,11 @@
             </button>
           </template>
         </DragAndDropSortList>
+        <hr/>
+        <div v-if="filter" class="form-group form-check mb-0">
+          <input type="checkbox" class="form-check-input" id="save-filter-checkbox" v-model="saveFilter">
+          <label class="form-check-label" for="save-filter-checkbox" v-b-tooltip.hover="$i18n('save_filter_description')">{{ $i18n('save_filter_and_sort') }}</label>
+        </div>
       </template>
       <template #modal-footer="{ ok }">
         <b-button @click="resetDefaults" class="col">{{ $i18n('button.reset_default') }}</b-button>
@@ -64,7 +69,6 @@ import DragAndDropSortList from '@/components/DragAndDropSortList.vue'
 import Storage from '@/storage'
 import { arrayContentEquals, arrayEquals } from '@/utils'
 
-const storage = new Storage('vue')
 export default {
   components: { DragAndDropSortList },
   props: {
@@ -100,9 +104,14 @@ export default {
       type: Array,
       default: function () { return this.fields.map(field => field[this.fieldKey]) },
     },
+    filter: {
+      type: Object,
+      default: null
+    }
   },
   data () {
     return {
+      saveFilter: Boolean(this.filter),
       dataLoaded: false,
       initialSelection: [],
       initialFields: [],
@@ -126,6 +135,14 @@ export default {
         this.$emit('update:fields', value)
       },
     },
+    componentFilter: {
+      get () {
+        return this.filter
+      },
+      set (value) {
+        this.$emit('update:filter', value)
+      },
+    },
     fieldsOrder () {
       return this.fields.map(field => field[this.fieldKey])
     },
@@ -134,10 +151,19 @@ export default {
     }
   },
   created () {
+    this.storage = new Storage(`vue-${this.storageKey}`)
     this.setInitialData()
     if (this.store) {
       this.load()
       window.addEventListener('beforeunload', this.unsavedChangesPrompt)
+    }
+    if (this.saveFilter) {
+      this.componentFilter = this.storage.get('filter')
+    }
+  },
+  watch: {
+    saveFilter: () => {
+      //del or set filter
     }
   },
   mounted () {
@@ -154,16 +180,17 @@ export default {
     },
     save () {
       console.log('saving...')
-      storage.set(`${this.storageKey}-fields`, this.fieldsOrder)
-      storage.set(`${this.storageKey}-selection`, this.selection)
+      this.storage.set('fields', this.fieldsOrder)
+      this.storage.set('selection', this.selection)
       this.setInitialData()
     },
+    saveFilterAndSortOrder () {
+      this.storage.set('filter')
+    },
     load () {
-      storage.getKeys(this.storageKey).forEach(key => {
-        const storaKeyLength = this.storageKey.length + 1
-        let propName = key.substring(storaKeyLength)
-        propName = propName[0].toUpperCase() + propName.slice(1)
-        const data = storage.get(key)
+      this.storage.getKeys().forEach(key => {
+        const propName = key[0].toUpperCase() + key.slice(1)
+        const data = this.storage.get(key)
         if (data) {
           this['initial' + propName] = data
           this['component' + propName] = data
