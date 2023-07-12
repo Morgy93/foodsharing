@@ -117,6 +117,7 @@ export default {
       dataLoaded: false,
       initialSelection: [],
       initialFields: [],
+      initialSavestate: this.saveState,
     }
   },
   computed: {
@@ -141,18 +142,10 @@ export default {
       return this.fields.map(field => field[this.fieldKey])
     },
     unsavedChanges () {
-      return !arrayEquals(this.initialFields, this.fieldsOrder) || !arrayContentEquals(this.initialSelection, this.componentSelection)
+      return !arrayEquals(this.initialFields, this.fieldsOrder) || !arrayContentEquals(this.initialSelection, this.componentSelection) || this.initialSavestate !== this.saveState
     },
   },
   watch: {
-    saveState: function (value) {
-      console.log('saveState changed', value)
-      if (value) {
-        this.storage.set('state', this.state)
-      } else {
-        this.storage.del('state')
-      }
-    },
     state: {
       handler: function (state) {
         this.debouncedSaveState(state)
@@ -170,6 +163,8 @@ export default {
       this.load()
       window.addEventListener('beforeunload', this.unsavedChangesPrompt)
     }
+    const saveState = this.storage.get('savestate')
+    if (saveState !== undefined) this.saveState = saveState
     if (this.saveState) {
       const state = this.storage.get('state')
       if (state) {
@@ -193,6 +188,12 @@ export default {
       console.log('saving...')
       this.storage.set('fields', this.fieldsOrder)
       this.storage.set('selection', this.selection)
+      this.storage.set('savestate', this.saveState)
+      if (this.saveState) {
+        this.storage.set('state', this.state)
+      } else {
+        this.storage.del('state')
+      }
       this.setInitialData()
     },
     load () {
@@ -209,6 +210,7 @@ export default {
     setInitialData () {
       this.initialSelection = this.selection
       this.initialFields = this.fieldsOrder
+      this.initialSavestate = this.saveState
     },
     reset () {
       console.log('resetting')
