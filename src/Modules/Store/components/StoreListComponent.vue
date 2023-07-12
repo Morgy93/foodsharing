@@ -258,7 +258,7 @@ export default {
     storesFiltered () {
       let stores = this.stores
       if (this.state.filterStatus) {
-        stores = stores.filter(store => store.status === this.state.filterStatus)
+        stores = stores.filter(store => store.cooperationStatus === this.state.filterStatus)
       }
       if (this.state.filterText) {
         // match filterText an all store properties
