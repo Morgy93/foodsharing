@@ -13,6 +13,7 @@
       <ConfigureableList
         :fields.sync="fields"
         :selection.sync="fieldSelection"
+        :state.sync="state"
         store
       >
         <template #head="{ showConfigurationDialog }">
@@ -25,7 +26,7 @@
             <div class="d-flex align-items-center col-4">
               <label class="mb-0">
                 <input
-                  v-model.trim="filterText"
+                  v-model.trim="state.filterText"
                   type="text"
                   class="form-control form-control-sm"
                   placeholder="Name/Adresse"
@@ -34,7 +35,7 @@
             </div>
             <div class="d-flex align-items-center col-3">
               <b-form-select
-                v-model="filterStatus"
+                v-model="state.filterStatus"
                 :options="statusOptions"
                 size="mb"
               />
@@ -60,10 +61,10 @@
           <b-table
             id="store-list"
             :fields="selectedFields"
-            :current-page="currentPage"
+            :current-page="state.currentPage"
             :per-page="perPage"
-            :sort-by.sync="sortBy"
-            :sort-desc.sync="sortDesc"
+            :sort-by.sync="state.sortBy"
+            :sort-desc.sync="state.sortDesc"
             :items="storesFiltered"
             small
             hover
@@ -128,7 +129,7 @@
       </ConfigureableList>
       <div class="float-right p-1 pr-3">
         <b-pagination
-          v-model="currentPage"
+          v-model="state.currentPage"
           :total-rows="storesFiltered.length"
           :per-page="perPage"
           aria-controls="store-list"
@@ -169,12 +170,19 @@ export default {
   },
   data () {
     return {
-      sortBy: 'createdAt',
-      sortDesc: true,
-      currentPage: 1,
+      // sortBy: 'createdAt',
+      // sortDesc: true,
+      // currentPage: 1,
       perPage: 20,
-      filterText: '',
-      filterStatus: null,
+      state: {
+        sortBy: 'createdAt',
+        sortDesc: true,
+        currentPage: 1,
+        filterText: '',
+        filterStatus: null,
+      },
+      // filterText: '',
+      // filterStatus: null,
       statusOptions: [
         { value: null, text: 'Status' },
         { value: 1, text: this.$i18n('storestatus.1') }, // CooperationStatus::NO_CONTACT
@@ -259,11 +267,12 @@ export default {
     //   })
     // },
     storesFiltered () {
+      console.log('STATE:', this.state, this.state.filterStatus)
       let stores = this.stores
-      if (this.filterStatus) {
-        stores = stores.filter(store => store.status === this.filterStatus)
+      if (this.state.filterStatus) {
+        stores = stores.filter(store => store.status === this.state.filterStatus)
       }
-      if (this.filterText) {
+      if (this.state.filterText) {
         // match filterText an all store properties
         stores = stores.filter(store => {
           for (const prop in store) {
@@ -278,11 +287,8 @@ export default {
       return stores
     },
     filterTextLower () {
-      return this.filterText.toLowerCase()
+      return this.state.filterText.toLowerCase()
     },
-    storeMemberStatus () {
-      return
-    }
   },
   created () {
     this.availableFields = this.fieldsDefinition.map(field => field.key)
@@ -312,8 +318,8 @@ export default {
       storeStore.fetchStoresForCurrentUser()
     },
     clearFilter () {
-      this.filterStatus = null
-      this.filterText = ''
+      this.state.filterStatus = null
+      this.state.filterText = ''
     },
     mapLink (store) {
       if (['iPad', 'iPhone', 'iPod'].includes(
