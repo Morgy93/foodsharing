@@ -170,9 +170,6 @@ export default {
   },
   data () {
     return {
-      // sortBy: 'createdAt',
-      // sortDesc: true,
-      // currentPage: 1,
       perPage: 20,
       state: {
         sortBy: 'createdAt',
@@ -181,8 +178,6 @@ export default {
         filterText: '',
         filterStatus: null,
       },
-      // filterText: '',
-      // filterStatus: null,
       statusOptions: [
         { value: null, text: 'Status' },
         { value: 1, text: this.$i18n('storestatus.1') }, // CooperationStatus::NO_CONTACT
@@ -258,16 +253,9 @@ export default {
       },
     },
     selectedFields () {
-      // console.log('eval selectedFields', this.fieldSelection.concat(), this.fields.filter(field => this.fieldSelection.includes(field.key)))
       return this.fields.filter(field => this.fieldSelection.includes(field.key))
     },
-    // configreableFields () {
-    //   return this.fields.map(field => {
-    //     return { text: field.label, value: field.key }
-    //   })
-    // },
     storesFiltered () {
-      console.log('STATE:', this.state, this.state.filterStatus)
       let stores = this.stores
       if (this.state.filterStatus) {
         stores = stores.filter(store => store.status === this.state.filterStatus)
