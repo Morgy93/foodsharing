@@ -31,7 +31,7 @@
       </template>
       <template #default>
         <DragAndDropSortList v-model="componentFields" class="mb-1">
-          <template #item="{ item, onDragStart }">
+          <template #item="{ item, events }">
             <div class="d-flex align-items-center checkbox-nest">
               <input
                 :id="`${storageKey}-${item[fieldKey]}`"
@@ -45,7 +45,7 @@
                 {{ item[fieldLabel] }}
               </label>
             </div>
-            <button type="button" @dragstart="onDragStart" class="btn btn-sm ml-auto shadow-none" draggable="true">
+            <button type="button" v-on="events" class="btn btn-sm ml-auto shadow-none" draggable="true">
               <i class="fas fa-bars" />
             </button>
           </template>
@@ -261,6 +261,7 @@ export default {
       display: flex;
       justify-content: flex-start;
       align-items: stretch;
+      position: relative;
       @include has-border;
 
       input, label {
