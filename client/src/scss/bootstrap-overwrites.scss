@@ -62,3 +62,29 @@ code.key {
     position: sticky !important;
   }
 
+
+// make BTable more responsive. Display row data in a grid layout if the screen gets to small.
+@media (width < 1200px) {
+    .table-responsive {
+        thead {
+            display: none;
+        }
+
+        tbody {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(18rem, 1fr)); // 18rem is hardcoded for minimum store item / Idk how to make this flexible
+        }
+
+        tr {
+            > td {
+                display: flex;
+            }
+
+            > td::before {
+                content: attr(data-th-label) ':';
+                font-weight: bold;
+                margin-right: auto;
+            }
+        }
+    }
+}

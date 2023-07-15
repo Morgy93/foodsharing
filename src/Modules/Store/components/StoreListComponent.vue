@@ -58,7 +58,6 @@
           </div>
         </template>
         <template #default>
-          <MobileFriendlyTable>
             <b-table
               id="store-list"
               :fields="selectedFields"
@@ -126,7 +125,6 @@
                 </b-card>
               </template>
             </b-table>
-          </MobileFriendlyTable>
         </template>
       </ConfigureableList>
       <div class="float-right p-1 pr-3">
@@ -161,12 +159,11 @@ import {
 import StoreStatusIcon from './StoreStatusIcon.vue'
 import ConfigureableList from '@/components/ConfigureableList.vue'
 import { useStoreStore } from '@/stores/store'
-import MobileFriendlyTable from '@/components/MobileFriendlyTable.vue'
 
 const storeStore = useStoreStore()
 
 export default {
-  components: { MobileFriendlyTable, BCard, BTable, BButton, BPagination, BFormSelect, StoreStatusIcon, ConfigureableList },
+  components: { BCard, BTable, BButton, BPagination, BFormSelect, StoreStatusIcon, ConfigureableList },
   directives: { VBTooltip },
   props: {
     stores: { type: Array, required: true },
@@ -241,7 +238,7 @@ export default {
           label: '',
           sortable: false,
         },
-      ],
+      ].map(this.addTdAttr),
       availableFields: [],
       fieldSelection: [],
     }
@@ -322,6 +319,7 @@ export default {
 
       return `geo:0,0?q=${store.location.lat},${store.location.lon}`
     },
+    addTdAttr: field => ({...field, tdAttr: {"data-th-label": field.label} })
   },
 }
 </script>
