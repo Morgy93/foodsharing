@@ -27,13 +27,16 @@ export default defineComponent({
           console.log(td.children.length, tds[index], labels[index])
           td.dataset.label = labels[index]
           if (!td.children.length) {
-            const span = document.createElement('span')
-            span.innerText = td.innerText
-            td.innerText = ''
-            td.append(span)
+            // this.wrapTextInSpan(td)
           }
         }
       })
+    },
+    wrapTextInSpan (element) {
+      const span = document.createElement('span')
+      span.innerText = element.innerText
+      element.innerText = ''
+      element.append(span)
     },
   },
 })
@@ -47,15 +50,15 @@ export default defineComponent({
     tr {
       > td {
         display: flex;
-        > *, .class-center {
-          flex-grow: 3;
-          text-align: end !important;
+        > * {
+          //flex-grow: 3;
+          text-align: center;
         }
       }
       > td::before {
         content: attr(data-label);
         font-weight: bold;
-        flex-grow: 1;
+        width: 25%;
       }
     }
   }
