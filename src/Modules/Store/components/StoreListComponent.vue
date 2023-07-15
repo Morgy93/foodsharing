@@ -69,6 +69,7 @@
               small
               hover
               responsive
+              class="small-screen-switch-to-grid-layout"
             >
               <template
                 #cell(cooperationStatus)="row"

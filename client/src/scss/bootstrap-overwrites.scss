@@ -65,7 +65,7 @@ code.key {
 
 // make BTable more responsive. Display row data in a grid layout if the screen gets to small.
 @media (width < 1200px) {
-    .table-responsive {
+    .small-screen-switch-to-grid-layout {
         thead {
             display: none;
         }
