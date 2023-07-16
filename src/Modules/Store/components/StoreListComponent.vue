@@ -239,7 +239,7 @@ export default {
           label: '',
           sortable: false,
         },
-      ].map(this.addTdAttr),
+      ],
       availableFields: [],
       fieldSelection: [],
     }
@@ -323,7 +323,6 @@ export default {
 
       return `geo:0,0?q=${store.location.lat},${store.location.lon}`
     },
-    addTdAttr: field => ({...field, tdAttr: {"data-th-label": field.label} })
   },
 }
 </script>
