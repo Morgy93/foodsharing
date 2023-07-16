@@ -50,7 +50,7 @@ export async function listStoresForCurrentUser () {
 }
 
 export async function listStoresDetailsForCurrentUser (expand) {
-  return get('/user/current/stores/details')
+  return get('/user/current/stores/details') // list of store data
 }
 
 export async function requestStoreTeamMembership (storeId, userId) {
