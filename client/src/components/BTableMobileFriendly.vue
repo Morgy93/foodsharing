@@ -74,13 +74,16 @@ export default defineComponent({
       })
     },
     addTdAttr: field => {
-      const oldTdAttr = field.tdAttr || {}
-      field.tdAttr = {...oldTdAttr, "data-th-label": field.label}
+      const presentTdAttr = field.tdAttr || {}
+      field.tdAttr = {...presentTdAttr, "data-th-label": field.label}
       return field
     },
     addRowExpandedClass (item, type) {
-      console.log(item, Boolean(this.expandedRows.includes(item[this.itemKey])))
-      return this.expandedRows.includes(item[this.itemKey]) ? 'expand' : ''
+      let presentClasses = this.$attrs['tbody-tr-class']
+      if (presentClasses === undefined) presentClasses = []
+      if (typeof presentClasses === 'string') presentClasses = [presentClasses]
+      if (this.expandedRows.includes(item[this.itemKey])) presentClasses.push('expand')
+      return presentClasses
     },
     toggleRowExpansion (item, index, event) {
       if (this.contentOverflow) {
