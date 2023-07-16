@@ -30,16 +30,18 @@ import { BTable } from 'bootstrap-vue'
 
 export default defineComponent({
   name: 'BTableMobileFriendly',
-  comments: { BTable },
+  components: { BTable },
+  inheritAttrs: false,
   props: {
     itemKey: {
       required: false,
-      default: 'id'
-    }
+      type: String,
+      default: 'id',
+    },
   },
   data: () => ({
     contentOverflow: false,
-    expandedRows: []
+    expandedRows: [],
   }),
   created () {
     console.log(this)
@@ -61,7 +63,7 @@ export default defineComponent({
     },
     allRowsExpanded: function () {
       return this.$attrs.items.length === this.expandedRows.length
-    }
+    },
   },
   methods: {
     doesElementOverflow (element) {
