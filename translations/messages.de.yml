@@ -169,6 +169,8 @@ filter_by: "Filtern nach"
 save_state: "Filter und Sortierung speichern"
 save_state_description: "Angewendete Filter und Sortierung für zukünftige Aufrufe vormerken"
 configure_columns: "Spalten konfigurieren"
+expand_all: "Alle ausklappen"
+collapse_all: "Alle einklappen"
 
 quiz:
   question: "Frage"

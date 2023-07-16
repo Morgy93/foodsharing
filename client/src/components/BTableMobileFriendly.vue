@@ -1,10 +1,27 @@
 <template>
-  <b-table v-bind="attributes" v-on="$listeners" ref="table" :class="{'grid-layout': contentOverflow}">
-    <slot v-for="(_, name) in $slots" :name="name" :slot="name" />
-    <template v-for="(_, name) in $scopedSlots" v-slot:[name]="slotData">
-      <slot :name="name" v-bind="slotData" />
-    </template>
-  </b-table>
+  <div>
+    <button
+      v-if="contentOverflow"
+      type="button"
+      class="btn btn-sm btn-secondary btn-block"
+      @click="toggleRowExpansionAll"
+    >
+      {{ allRowsExpanded ? $i18n('collapse_all') : $i18n('expand_all') }}
+    </button>
+    <b-table
+      v-bind="attributes"
+      v-on="$listeners"
+      ref="table"
+      :class="{'grid-layout': contentOverflow}"
+      @row-clicked="toggleRowExpansion"
+      :tbody-tr-class="addRowExpandedClass"
+    >
+      <slot v-for="(_, name) in $slots" :name="name" :slot="name" />
+      <template v-for="(_, name) in $scopedSlots" v-slot:[name]="slotData">
+        <slot :name="name" v-bind="slotData" />
+      </template>
+    </b-table>
+  </div>
 </template>
 
 <script>
@@ -14,6 +31,16 @@ import { BTable } from 'bootstrap-vue'
 export default defineComponent({
   name: 'BTableMobileFriendly',
   comments: { BTable },
+  props: {
+    itemKey: {
+      required: false,
+      default: 'id'
+    }
+  },
+  data: () => ({
+    contentOverflow: false,
+    expandedRows: []
+  }),
   created () {
     console.log(this)
   },
@@ -23,9 +50,6 @@ export default defineComponent({
     resizeObserver.observe(this.table)
     this.onTableResize()
   },
-  data: () => ({
-    contentOverflow: false,
-  }),
   computed: {
     attributes: function () {
       const attrs = this.$attrs
@@ -35,6 +59,9 @@ export default defineComponent({
     table: function () {
       return this.$refs.table.$el
     },
+    allRowsExpanded: function () {
+      return this.$attrs.items.length === this.expandedRows.length
+    }
   },
   methods: {
     doesElementOverflow (element) {
@@ -47,6 +74,27 @@ export default defineComponent({
       })
     },
     addTdAttr: field => ({...field, tdAttr: {"data-th-label": field.label} }),
+    addRowExpandedClass (item, type) {
+      console.log(item, Boolean(this.expandedRows.includes(item[this.itemKey])))
+      return this.expandedRows.includes(item[this.itemKey]) ? 'expand' : ''
+    },
+    toggleRowExpansion (item, index, event) {
+      if (this.contentOverflow) {
+        const keyIndex = this.expandedRows.indexOf(item[this.itemKey])
+        if (keyIndex === -1) {
+          this.expandedRows.push(item[this.itemKey])
+        } else {
+          this.expandedRows.splice(keyIndex, 1)
+        }
+      }
+    },
+    toggleRowExpansionAll () {
+      if (this.allRowsExpanded) {
+        this.expandedRows = []
+      } else {
+        this.expandedRows = this.$attrs.items.map(item => item[this.itemKey])
+      }
+    }
   }
 })
 </script>
@@ -71,20 +119,21 @@ export default defineComponent({
       }
 
       > td {
-        //display: none;
+        display: none;
         &::before {
           content: attr(data-th-label) ':';
           margin-right: auto;
         }
         &:first-child {
-          display: initial;
+          display: flex;
           &::before {
             font-weight: bold;
           }
         }
-        &.expand {
-          display: initial;
-        }
+      }
+
+      &.expand > td {
+        display: flex;
       }
     }
   }
