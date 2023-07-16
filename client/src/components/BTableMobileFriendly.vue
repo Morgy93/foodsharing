@@ -73,7 +73,11 @@ export default defineComponent({
         this.contentOverflow = this.doesElementOverflow(this.table)
       })
     },
-    addTdAttr: field => ({...field, tdAttr: {"data-th-label": field.label} }),
+    addTdAttr: field => {
+      const oldTdAttr = field.tdAttr || {}
+      field.tdAttr = {...oldTdAttr, "data-th-label": field.label}
+      return field
+    },
     addRowExpandedClass (item, type) {
       console.log(item, Boolean(this.expandedRows.includes(item[this.itemKey])))
       return this.expandedRows.includes(item[this.itemKey]) ? 'expand' : ''
