@@ -61,33 +61,3 @@ code.key {
 .b-table-sticky-header > .table.b-table > thead > tr > th {
     position: sticky !important;
   }
-
-
-// make BTable more responsive. Display row data in a grid layout if the screen gets to small.
-@media (width < 1200px) {
-    .small-screen-switch-to-grid-layout {
-        thead {
-            display: none;
-        }
-
-        tbody {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(18rem, 1fr)); // 18rem is hardcoded for minimum store item / Idk how to make this flexible
-            grid-gap: 0.15rem;
-            background: var(--fs-color-background);
-        }
-
-        tr {
-            background: var(--white);
-            > td {
-                display: flex;
-            }
-
-            > td::before {
-                content: attr(data-th-label) ':';
-                font-weight: bold;
-                margin-right: auto;
-            }
-        }
-    }
-}

@@ -58,74 +58,74 @@
           </div>
         </template>
         <template #default>
-            <b-table
-              id="store-list"
-              :fields="selectedFields"
-              :current-page="state.currentPage"
-              :per-page="perPage"
-              :sort-by.sync="state.sortBy"
-              :sort-desc.sync="state.sortDesc"
-              :items="storesFiltered"
-              small
-              hover
-              responsive
-              class="small-screen-switch-to-grid-layout"
+          <b-table-mobile-friendly
+            id="store-list"
+            :fields="selectedFields"
+            :current-page="state.currentPage"
+            :per-page="perPage"
+            :sort-by.sync="state.sortBy"
+            :sort-desc.sync="state.sortDesc"
+            :items="storesFiltered"
+            small
+            hover
+            responsive
+            @row-clicked
+          >
+            <template
+              #cell(cooperationStatus)="row"
             >
-              <template
-                #cell(cooperationStatus)="row"
+              <div class="text-center">
+                <StoreStatusIcon :cooperation-status="row.value" />
+              </div>
+            </template>
+            <template #cell(memberState)="row">
+              {{ getUserRole(row.item.id) }}
+            </template>
+            <template
+              #cell(name)="row"
+            >
+              <a
+                :href="$url('store', row.item.id)"
+                class="ui-corner-all"
               >
-                <div class="text-center">
-                  <StoreStatusIcon :cooperation-status="row.value" />
+                {{ row.value }}
+              </a>
+            </template>
+            <template
+              #cell(region)="row"
+            >
+              {{ row.value.name }}
+            </template>
+            <template
+              #cell(actions)="row"
+            >
+              <b-button
+                size="sm"
+                @click.stop="row.toggleDetails"
+              >
+                {{ row.detailsShowing ? 'x' : 'Details' }}
+              </b-button>
+            </template>
+            <template
+              #row-details="row"
+            >
+              <b-card>
+                <div class="details">
+                  <p>
+                    <strong>{{ $i18n('storelist.addressdata') }}</strong><br>
+                    {{ row.item.street }} <a
+                      :href="mapLink(row.item)"
+                      class="nav-link details-nav"
+                      :title="$i18n('storelist.map')"
+                    >
+                      <i class="fas fa-map-marker-alt" />
+                    </a><br> {{ row.item.zipCode }} {{ row.item.city }}
+                  </p>
+                  <p><strong>{{ $i18n('storelist.entered') }}</strong> {{ row.item.createdAt }}</p>
                 </div>
-              </template>
-              <template #cell(memberState)="row">
-                {{ getUserRole(row.item.id) }}
-              </template>
-              <template
-                #cell(name)="row"
-              >
-                <a
-                  :href="$url('store', row.item.id)"
-                  class="ui-corner-all"
-                >
-                  {{ row.value }}
-                </a>
-              </template>
-              <template
-                #cell(region)="row"
-              >
-                {{ row.value.name }}
-              </template>
-              <template
-                #cell(actions)="row"
-              >
-                <b-button
-                  size="sm"
-                  @click.stop="row.toggleDetails"
-                >
-                  {{ row.detailsShowing ? 'x' : 'Details' }}
-                </b-button>
-              </template>
-              <template
-                #row-details="row"
-              >
-                <b-card>
-                  <div class="details">
-                    <p>
-                      <strong>{{ $i18n('storelist.addressdata') }}</strong><br>
-                      {{ row.item.street }} <a
-                        :href="mapLink(row.item)"
-                        class="nav-link details-nav"
-                        :title="$i18n('storelist.map')"
-                      >
-                        <i class="fas fa-map-marker-alt" />
-                      </a><br> {{ row.item.zipCode }} {{ row.item.city }}
-                    </p>
-                    <p><strong>{{ $i18n('storelist.entered') }}</strong> {{ row.item.createdAt }}</p>
-                  </div>
-                </b-card>
-              </template>
-            </b-table>
+              </b-card>
+            </template>
+          </b-table-mobile-friendly>
         </template>
       </ConfigureableList>
       <div class="float-right p-1 pr-3">
@@ -150,7 +150,6 @@
 
 <script>
 import {
-  BTable,
   BPagination,
   BFormSelect,
   VBTooltip,
@@ -159,12 +158,13 @@ import {
 } from 'bootstrap-vue'
 import StoreStatusIcon from './StoreStatusIcon.vue'
 import ConfigureableList from '@/components/ConfigureableList.vue'
+import BTableMobileFriendly from '@/components/BTableMobileFriendly.vue'
 import { useStoreStore } from '@/stores/store'
 
 const storeStore = useStoreStore()
 
 export default {
-  components: { BCard, BTable, BButton, BPagination, BFormSelect, StoreStatusIcon, ConfigureableList },
+  components: { BCard, BTableMobileFriendly, BButton, BPagination, BFormSelect, StoreStatusIcon, ConfigureableList },
   directives: { VBTooltip },
   props: {
     stores: { type: Array, required: true },
@@ -284,6 +284,9 @@ export default {
     this.fieldSelection = this.availableFields
   },
   methods: {
+    onRowClick () {
+      console.log('parent')
+    },
     getUserRole (storeId) {
       if (storeStore.userRelations === null) {
         storeStore.fetchUserStoreRelations()
