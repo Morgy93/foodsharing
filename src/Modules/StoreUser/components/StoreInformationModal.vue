@@ -40,7 +40,7 @@
               <b-form-input
                 id="storeName"
                 v-model="store.name"
-                :disabled-field="!editMode"
+                :disabled="!editMode"
               />
             </b-form-group>
             <b-form-group
@@ -55,11 +55,7 @@
                 :state="publicInfoState"
                 rows="5"
                 max-rows="10"
-                :disabled-field="!editMode"
-              />
-              <div
-                class="mb-2 ml-2"
-                v-html="$i18n('forum.markdown_description')"
+                :disabled="!editMode"
               />
             </b-form-group>
           </b-card-text>
@@ -90,7 +86,7 @@
                 <b-form-input
                   id="contactName"
                   v-model="store.contact.name"
-                  :disabled-field="!editMode"
+                  :disabled="!editMode"
                 />
               </b-form-group>
               <b-form-group
@@ -100,7 +96,7 @@
                 <b-form-input
                   id="phone"
                   v-model="store.contact.phone"
-                  :disabled-field="!editMode"
+                  :disabled="!editMode"
                 />
               </b-form-group>
               <b-form-group
@@ -110,7 +106,7 @@
                 <b-form-input
                   id="fax"
                   v-model="store.contact.fax"
-                  :disabled-field="!editMode"
+                  :disabled="!editMode"
                 />
               </b-form-group>
               <b-form-group
@@ -121,7 +117,7 @@
                   id="email"
                   v-model="store.contact.email"
                   :type="'email'"
-                  :disabled-field="!editMode"
+                  :disabled="!editMode"
                 />
               </b-form-group>
             </b-form-group>
@@ -134,7 +130,7 @@
                 id="chainId"
                 v-model="store.chainId"
                 :options="storeChains"
-                :disabled-field="!editMode"
+                :disabled="!editMode"
               />
             </b-form-group>
             <b-form-group
@@ -148,7 +144,7 @@
                 :street="store.address.street"
                 :postal-code="store.address.zipCode"
                 :city="store.address.city"
-                :disabled-field="!editMode"
+                :disabled="!editMode"
                 @address-change="onAddressChanged"
               />
             </b-form-group>
@@ -159,17 +155,16 @@
         >
           <b-card-text>
             <b-form-group
-              label="Region"
+              :label="$i18n('bezirk')"
               label-for="region"
             >
               <region-tree-v-form
                 v-if="region"
+                v-model="store.region"
                 modal-title="storeview.select_related_region"
                 input-name="regionId"
-                :initial-value="store.region"
                 :selectable-region-types="[1, 8, 9]"
-                :disabled-field="!editMode"
-                @update:initial-value="store.region = $event"
+                :disabled="!editMode"
               />
             </b-form-group>
             <b-form-group
@@ -181,7 +176,7 @@
                 id="categoryId"
                 v-model="store.categoryId"
                 :options="categoryTypes"
-                :disabled-field="!editMode"
+                :disabled="!editMode"
               />
             </b-form-group>
             <b-form-group
@@ -192,7 +187,7 @@
               <b-form-datepicker
                 id="cooperationStart"
                 v-model="store.cooperationStart"
-                :disabled-field="!editMode"
+                :disabled="!editMode"
               />
             </b-form-group>
             <b-form-group
@@ -203,7 +198,7 @@
                 id="cooperationStatus"
                 v-model="store.cooperationStatus"
                 :options="storeCooperationStatusTypes"
-                :disabled-field="!editMode"
+                :disabled="!editMode"
               />
             </b-form-group>
           </b-card-text>
@@ -221,7 +216,7 @@
                 id="weight"
                 v-model="store.weight"
                 :options="weightTypes"
-                :disabled-field="!editMode"
+                :disabled="!editMode"
               />
             </b-form-group>
             <b-form-group
@@ -233,7 +228,7 @@
                 id="publicTime"
                 v-model="store.publicTime"
                 :options="publicTimes"
-                :disabled-field="!editMode"
+                :disabled="!editMode"
               />
             </b-form-group>
             <b-form-group
@@ -244,10 +239,10 @@
               <b-form-spinbutton
                 id="calendarInterval"
                 v-model="calendarInterval"
-                min="1"
+                min="0"
                 max="8"
                 class="w-50"
-                :disabled-field="!editMode"
+                :disabled="!editMode"
                 :formatter-fn="calendarIntervalFormatter"
                 wrap
               />
@@ -262,6 +257,7 @@
                 v-model="store.options.useRegionPickupRule"
                 switch
                 :disabled-field="!editMode"
+                :disabled="!editMode"
               />
             </b-form-group>
             <RegularPickup
@@ -341,6 +337,7 @@
                 v-model="store.showsSticker"
                 switch
                 :disabled-field="!editMode"
+                :disabled="!editMode"
               />
               <small
                 v-if="store.showsSticker === null"
@@ -359,6 +356,7 @@
                 v-model="store.publicity"
                 switch
                 :disabled-field="!editMode"
+                :disabled="!editMode"
               />
               <small
                 v-if="store.publicity === null"
@@ -379,7 +377,7 @@
                 v-if="store.groceries !== null"
                 id="tags-with-dropdown"
                 v-model="storeFoodNames"
-                :disabled-field="!editMode"
+                :disabled="!editMode"
                 n-outer-focus
                 class="mb-2"
               >
@@ -545,10 +543,10 @@ export default {
       else return this.store.publicInfo.length <= 180
     },
     region () {
-      if (this.store.region) {
+      if (!this.store.region.name) {
         return regionGetters.find(this.store.region.id)
       } else {
-        return ''
+        return this.store.region.name
       }
     },
     calendarInterval: {
@@ -631,6 +629,8 @@ export default {
       try {
         showLoader()
         const store = this.store
+        store.regionId = this.store.region.id
+        delete store.region
         store.groceries = this.storeFoodIds
         await updateStore(store)
         if (this.isUpdatedRegularPickup()) {

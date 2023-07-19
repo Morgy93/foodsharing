@@ -108,7 +108,7 @@ class ReportControl extends Control
                 );
                 $this->pageHelper->addContent(
                     $this->v_utils->v_field(
-                        $this->wallposts('fsreport', (int)$_GET['id']),
+                        $this->wallposts('report', (int)$_GET['id']),
                         $this->translator->trans('profile.report.control.notes')
                     )
                 );

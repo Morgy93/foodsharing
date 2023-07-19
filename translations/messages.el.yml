@@ -1961,6 +1961,7 @@ chain:
         placeholder:
           city: ''
           zip: ''
+          country: ''
       kam:
         label: ''
         invalidfeedback: ''
@@ -1973,6 +1974,7 @@ chain:
         label: ''
         invalidfeedback: ''
         description: ''
+        placeholder: ''
       press:
         label: ''
         description: ''
@@ -1992,7 +1994,7 @@ chain:
     showstores: ''
     edit: ''
   tooltips:
-    modification_date: ''
+    modificationDate: ''
     options: ''
   detailsmodal:
     nostores: ''

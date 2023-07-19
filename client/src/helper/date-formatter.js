@@ -249,7 +249,7 @@ export default {
       dateB = new Date()
     }
 
-    const { value, unit } = ['year', 'month', 'week', 'day', 'hour', 'minute', 'second']
+    const { value = 0, unit = 'second' } = ['year', 'month', 'week', 'day', 'hour', 'minute', 'second']
       .map((unit) => {
         const value = Math.floor(differenceFromDatesToUnit(dateA, dateB, unit))
         const difference = (dateA - dateB) / value
@@ -260,7 +260,7 @@ export default {
 
         return null
       })
-      .find(({ value = 0 }) => value >= 1)
+      .find(({ value = 0 }) => value >= 1) || {}
 
     return rtf.format(isInFuture ? value : -value, unit)
   },

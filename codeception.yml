@@ -31,6 +31,8 @@ modules:
             user: root
             password: root
             cleanup: true
+            dump: dump.sql
+            populate: true
         \Helper\Foodsharing:
             # custom module that inherits from Db so also needs db config
             dsn: mysql:host=db;dbname=foodsharing;charset=utf8mb4

@@ -60,9 +60,11 @@ export default {
     },
   },
   mounted () {
-    // invalidate the size after a short timeout to make leaflet render the map
     const map = this.getMapObject()
-    setTimeout(function () { map.invalidateSize() }, 400)
+    const resizeObserver = new ResizeObserver((_) => {
+      map.invalidateSize()
+    })
+    resizeObserver.observe(document.getElementById('map'))
   },
   methods: {
     /**

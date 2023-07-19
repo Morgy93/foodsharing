@@ -3,10 +3,15 @@
 ## Features
 - Ongoing polls a user has not yet voted in are displayed on the dashboard. !2349 @AntonBallmaier
 - Provide RestApi to edit store !2515 !2625 @KoeMai
-- New UI for Stores information and modification of stores !2645 !2685 !2688 !2731 @KoeMai
+- New UI for Stores information and modification of stores !2645 !2685 !2688 !2731 !2736 !2752 @KoeMai
 - Added turkish translation !2720 @Evren
-- Store chains can now be manged from the website. The working group "Betriebsketten" contains a tabular overview of all chains. !2251 !2273 @AntonBallmaier
+- Store chains can now be manged from the website. The working group "Betriebsketten" contains a tabular overview of all chains. !2251 !2273 !2701 !2767 @AntonBallmaier @KoeMai
 - Store markers on the map can be filtered by the user's membership #1025 !2682 @alex.simm
+- Store chain information is visible on the store page !2742 @alex.simm 
+- New UI for Stores information and modification of stores !2645 !2685 !2688 @KoeMai
+- New UI for Stores information and modification of stores !2645 !2685 @KoeMai
+- Add home district count to region top #79 !2692 @Morgy93
+- Storemanagers can set a description for pickup slots #1653 !2757 @AntonBallmaier
 
 ## Changes
 - Make menubar sticky on mobile !2411 @AntonBallmaier
@@ -23,7 +28,7 @@
 - Removed the additional button in the report modal #1599 !2677 @alex.simm
 - Show forum text if foodsaver deleted again !2697 @chriswalg
 - Add CTA on the profile-page for calendar export #1583 !2705 @sefn
-- Remove relative time from last pickup #1571 !2706 @sefn
+- Remove relative time from last pickup #1571 #1643 !2706 !2744 @sefn
 
 ## Bugfixes
 - Reimplementation of the StoreManager empty pickup E-Mail notification !2574 @KoeMai
@@ -47,6 +52,16 @@
 - fixed map showing grey when zooming in too close #1632 @florianunsinn
 - Bugfix for Date-Formatter #1571 !2706 @sefn
 - Fixed push notifications button #1638 !2728 !2729 @florianunsinn
+- In the user details, only include that a calendar token exists but not the token itself !2735 @alex.simm
+- Fixed undefined "mailbox" #1612 !2746 @chriswalg @alex.simm 
+- Workaround for unvisible attachments because long mailbox names !2751 @chriswalg
+- Fixed errors in delayed vue map initialisation #1637 !2750 @chriswalg 
+- Check if thread exist before display the thread #1650 !2756 @chriswalg
+- Fix no error messages on BadRequestHttpExceptions on beta !2701 @KoeMai
+
+- removed styleguide from non-dev environments #1636 !2745 @sefn
+- fixed map storing chat status independantly from all other pages #1598 !2732 @florianunsinn
+- Fixed the loading of wall posts associated with reports !2770 #1648 @alex.simm
 
 ## Refactoring
 - added poppins font in Styleguide !2564 @Niklas003
@@ -56,9 +71,9 @@
 - Move business logic for editing store into StoreTransaction !2515 @KoeMai
 - Fix TeamStoreStatus and move getStoreMarkers to StoreGateway !2560 @KoeMai
 - added poppins font in Styleguide !2564 @Niklas003
-- Replace the region tree with a new vue component !2483 @alex.simm
+- Replace the region tree with a new vue component !2483 !2747 @alex.simm
 - Move uploadlogic and actions from controller to transactionclass for reuse !2478 @martncodes-de
-- Reimplement create new forum thread in vue js !2627 @chriswalg
+- Reimplement create new forum thread in vue js !2627 !2748 @chriswalg
 - New vue component for address search !2632 !2669 @alex.simm
 - Replaced get store information to rest api !1449 @KoeMai
 - Put Date and time in two lines at User Dashboard Card "Nächste Abholungen". #1448 !2588 !2707 @Niklas003 @sefn
@@ -75,6 +90,7 @@
 - Refactor own store list in vue !2668 !2683 @chriswalg
 - Refactored the list of group applications to vue, which not also shows profile pictures #343 !2696 @alex.simm
 - Refactor the list of food share points in a region to vue !2702 @alex.simm
+- Refactor setting sleeping mode to vue !2749 !2760 @chriswalg
 
 ## Dev/Test/CI stuff
 - Fix given null parameter !2550 @BibaltiK
@@ -103,8 +119,11 @@
 - Made scripts work with docker-compose-plugin !1587 @andre161292
 - remove trailing whitespace from CHANGELOG.md !2690 @Morgy93
 - [DevDocs] Added follow-up link for local dev environment on getting ready page !2689 @Morgy93
-- cache bell request and limit to 1 minute !2722 @chriswalg
+- cache bell request and limit to 1 minute !2722 !2755 !2762 !2765 @chriswalg
 - Cache userDetails, limit request to 1 minute and only load once on dashboard !2727 @chriswalg
+- switch from /bin/bash to /usr/bin/env to allow more setups like nixos !2708
+- Use one database dump before tests so that the tests are not depending on each other !2701 @koemai
+- Fix deprecated strtolower in MailsControl.php #1569 !2718 @stcz
 
 ## Development documentation
 

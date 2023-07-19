@@ -30,6 +30,9 @@ fos_rest:
         serializer_error_renderer: true
         codes:
             'DomainException': 409
+        messages:
+            'Symfony\Component\HttpKernel\Exception\BadRequestHttpException': true
+
     format_listener:
         rules:
           - { path: '^/api', priorities: ['json'], fallback_format: json, prefer_extension: false }

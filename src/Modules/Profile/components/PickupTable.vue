@@ -22,7 +22,7 @@
     </template>
 
     <template #cell(date)="entry">
-      <span class="no-wrap">{{ entry.value }}</span>
+      <span>{{ entry.value }}</span>
     </template>
 
     <template #cell(store)="entry">
@@ -37,6 +37,14 @@
         :total-slots="entry.item.slots.max"
         :max-width="offsetWidth / 4"
         :min-width="95"
+      />
+    </template>
+
+    <template #cell(description)="entry">
+      <i
+        v-if="entry.item.description"
+        v-b-tooltip.hover="entry.item.description"
+        class="fas fa-info-circle"
       />
     </template>
 
@@ -137,6 +145,11 @@ export default {
         key: 'store',
         label: i18n('pickup.overview.cols.store'),
         sortable: true,
+      },
+      {
+        key: 'description',
+        sortable: false,
+        label: '',
       },
       {
         key: 'slots',
@@ -289,15 +302,11 @@ export default {
   -webkit-box-orient: vertical;
 }
 
-.pickup-table .table tbody td {
+.pickup-table ::v-deep .table tbody td {
   vertical-align: middle;
 }
 
-.no-wrap {
-  white-space: nowrap;
-}
-
-::v-deep *[aria-colindex="4"] {
+::v-deep *[aria-colindex="5"] {
   min-width: 200px
 }
 

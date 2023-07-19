@@ -87,6 +87,20 @@
         </span>
       </span>
     </p>
+    <p
+      v-if="entry.description"
+      class="field-container m-0"
+    >
+      <small class="pickup-description">
+        <i
+          v-b-tooltip="entry.description"
+          class="fas fa-info-circle"
+        />
+        <i>
+          {{ entry.description }}
+        </i>
+      </small>
+    </p>
   </a>
 </template>
 
@@ -181,6 +195,11 @@ $size: 1.25rem;
     background-color: var(--fs-color-success-300);
     color: var(--fs-color-success-500);
   }
+}
+
+.pickup-description {
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
 </style>

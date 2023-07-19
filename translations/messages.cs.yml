@@ -438,6 +438,7 @@ chain:
         placeholder:
           zip: ''
           city: ''
+          country: ''
       press:
         description: ''
         label: ''
@@ -462,6 +463,7 @@ chain:
         label: ''
         invalidfeedback: ''
         description: ''
+        placeholder: ''
     cancel: ''
     ok: ''
     title:
@@ -496,7 +498,7 @@ chain:
   allowpress: ''
   tooltips:
     options: ''
-    modification_date: ''
+    modificationDate: ''
   options:
     edit: ''
     showstores: ''

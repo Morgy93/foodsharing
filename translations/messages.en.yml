@@ -244,6 +244,10 @@ settings:
       out of town or don't have time to save food right now for other reasons.\nIt
       is helpful to know if you are able to respond to messages\nor even sometimes
       make pick-ups.\n"
+    status: Your current status
+    message: Here you can leave a short message why you don't have time right now.
+    from: From
+    until: until
   account: Account options
   businesscard: Personal business card
   photo:
@@ -275,6 +279,9 @@ settings:
         it?
       title: Generate a new token
       button: Generate a new token
+    export: Export calendar
+    export_tooltip: You can view your upcoming pickup dates using a calendar program
+      of your choice.
   saved: The changes were saved.
   changemail:
     done: Your e-mail address was changed.
@@ -749,6 +756,8 @@ forum:
       title: Mail dispatch
       active: activated
       non_active: disabled
+      disable: disabled
+      activate: enabled
   post:
     delete: Delete post
     body: Message
@@ -770,6 +779,7 @@ forum:
     />Attention: If you want to use a * in your text, you have to put a &bsol; in
     front of it, e.g. when gendering he&bsol;*she.'
   deleted_user: deleted user
+  not_found: This thread does not exist.
 timepicker:
   labelNowButton: Now
   labelCloseButton: Close
@@ -925,7 +935,7 @@ storeview:
   cooperation_status: "State of cooperation"
   common: "Common information"
   visible_for_public: "This text is visible for all foodsavers."
-  visible_for_team: "This text is visible for the pickup team of the store."
+  visible_for_team: "This text is visible for the team of the store."
   invalid_field: "Invalid field content. The change is not stored."
   contact:
     name: "Name/first name"
@@ -935,7 +945,7 @@ storeview:
   store: Store
   want_to_fetch: I would like to help in this team.
   public_and_statistics: "Public activites and statistical information"
-  no_permission_to_view: "No permission"
+  no_permission_to_view: "Only for store manager visible."
   groceries:
     label: Which kinds of food are allowed to be collected?
     select_tag: Choose food category
@@ -1033,6 +1043,7 @@ terminology:
   mediationAdmins: Mediation team
   reportAdmins: Report processing team
   n_foodsaver: one foodsaver|%count% foodsavers
+  n_home_regions: "one with home district|%count% with home district"
   storesAdmins: Store coordination team
   n_sleeping: A nightcap |%count% nightcaps
   n_cooperating_stores: A running cooperation|%count% running cooperations
@@ -1539,7 +1550,7 @@ releases:
   "2021-09": "Release \"fig\" 🥧 (September 2021)"
   "2022-01": Release "Grapefruit" 🍋 (January 2022)
   "2022-05": Release "Blueberry" 🍇 (May 2022)
-  "2022-12": "Release \"Icecream\" 🍇 (December 2022)"
+  "2022-12": "Release \"Icecream\" 🍨 (December 2022)"
 
 footer:
   it_devdocs: by foodsharing IT
@@ -1682,6 +1693,8 @@ basket:
 map:
   title: Map
   donates: company donates
+  filters:
+    my_stores: My stores only
 content:
   content: Content
   name: Unique name
@@ -1885,6 +1898,8 @@ store:
   member: Member
   isAppliedForTeam: Request
   jumping: Standby
+  particularities_chain_tooltip: This store is part of a chain. This is why this additional
+    information is displayed, which applies to all establishments in the chain.
 search:
   mygroups: My groups
   mybuddies: My buddies
@@ -2299,6 +2314,7 @@ chat:
   start_of_conversation: "Conversation started on:"
   display_all_messages: "Display all messages"
 
+  unknown_username: unknown name
 delete: Delete
 error_unexpected: An error has occurred
 register:
@@ -2673,11 +2689,12 @@ startpage:
       or insurances.\nWe would be delighted in receiving any support.\n"
   demands:
     title: Demands
-    text: "Action plan with Deutsche Umwelthilfe\npublished on the 6th foodsharing
-      anniversary on December 12th, 2018. In order to save Germany from breaking \n
-      its word again — as with the climate protection targets for 2020 — foodsharing
-      and Deutsche Umwelthilfe are using \na concrete action plan to show the measures
-      without which the goal of halving food waste cannot be achieved.\n"
+    text: "To reduce food waste effectively, it takes more than saving leftover food
+      from cooperations or education of consumers.\nInstead, we need political progress.
+      We need binding targets for the reduction of food waste along the entire value
+      chain.\nIn addition, current trade standards need to be reconsidered and relaxed,
+      and organizations that save\norganizations that save food or provide education
+      on nutrition must be strengthened.\n"
   near_you:
     text3:
       part2: Find disctricts close to you
@@ -2749,7 +2766,7 @@ startpage:
   bedependable: Be dependable
   makeproposals: Make proposals
   proposals: We want to develop and consistently improve. Therefore we need you with
-    your many great ideas and tipps. Please send them to <a href='mailto:info@foodsharing.de'>info@foodsharing.de</a>
+    your many great ideas and tips. Please send them to <a href='mailto:info@foodsharing.de'>info@foodsharing.de</a>
   join_welcome: Nice that you want to join foodsharing!
   join_rules: Participate - Our Rules
   notallowed: The sharing of medicines (including homeopathic ones) is excluded on
@@ -2897,19 +2914,31 @@ activitypost:
 deletelow: delete
 
 chain:
+  errorCodes:
+    INVALID_STORECHAIN_ID: Store chain Id is not valid
+    KEY_ACCOUNT_MANAGER_ID_NOT_EXISTS: Store chain key account manager does not exist
+    KEY_ACCOUNT_MANAGER_ID_NOT_IN_GROUP: Store chain key account manager belong to AG Storechain
+    THREAD_ID_NOT_EXISTS: Store chain thread does not exist
+    WRONG_FORUM: Thread is from wrong forum
+    EMPTY_NAME: Name can not be empty
+    EMPTY_CITY: City can not be empty
+    EMPTY_COUNTRY: Country can not be empty
+    EMPTY_ZIP: Zip code can not be empty
+    INVALID_STATUS: status must be a valid status id
   listheader: Store chains
   filterplaceholder: Name / address / KAM ID
   columns:
     status: Status
     name: Name
-    stores: Stores
+    estimatedStoreCount: Estimated number of cooperating stores
+    stores: Count cooperating stores
     headquarters: Headquarters
     kams: KAMs
     notes: Notes
   new: Create new Chain
   allowpress: Public mentions allowed.
   tooltips:
-    modification_date: Last changed
+    modificationDate: Last changed
     options: Options
   options:
     showstores: Show stores
@@ -2923,17 +2952,23 @@ chain:
         label: Name
         invalidfeedback: Name must not be empty
         placeholder: Name of the chain
+      estimatedStoreCount:
+        label: "Estimated count of stores"
+        invalidfeedback: "Only digits are allowed."
+        description: "Number of stores in the store chain which may cooperate"
       headquarters:
         label: Headquarters
         placeholder:
           zip: Zip.
           city: City
+          country: 'Country'
       status:
         label: Status
       thread:
         label: Forum-Thread
-        invalidfeedback: Invalid input. Thread-Id or link needed.
-        description: Id of a forum thread. Paste a link for automatic identification.
+        invalidfeedback: Thread id or link required.
+        description: Search for forum thread name by entering at least 3 charaters.
+        placeholder: Search forum thread name
       kam:
         label: KAMs
         invalidfeedback: Invalid input. One or more user ids required.
@@ -2961,8 +2996,8 @@ chain:
     notcooperating: Not cooperating
     filterplaceholder: Status
   error:
-    create: Chain could not be created.
-    edit: Chain could not be edited.
+    create: Chain could not be created ({error}).
+    edit: Chain could not be edited ({error}).
     notfs: You must be foodsaver to view this list.
   bread:
     workinggroup: Store chains
@@ -3120,3 +3155,7 @@ navigation:
 use_region_pickup_rule: Should the district-wide CHERRY rule apply to this establishment?
 savewithus: Join us saving!
 timefrom: 'Time from'
+usersearch:
+  no_tag_preset: User not found
+  select_tag: Search users by name
+  search_tag: Search users

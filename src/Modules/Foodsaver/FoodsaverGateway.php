@@ -79,6 +79,8 @@ class FoodsaverGateway extends BaseGateway
 					fs.`photo`,
 					fs.`name`,
 					fs.sleep_status,
+					fs.sleep_from,
+					fs.sleep_until,
 					fs.rolle as role,
 					fs.last_login as last_activity,
 					fs.verified,
@@ -101,7 +103,8 @@ class FoodsaverGateway extends BaseGateway
         ]);
 
         return array_map(function ($foodsaver) use ($includeAdminFields, $regionId) {
-            $member = RegionGroupMemberEntry::create($foodsaver['id'], $foodsaver['name'], $foodsaver['photo'], $foodsaver['sleep_status'],
+            $isSleeping = $this->dataHelper->parseSleepingState($foodsaver['sleep_status'], $foodsaver['sleep_from'], $foodsaver['sleep_until']);
+            $member = RegionGroupMemberEntry::create($foodsaver['id'], $foodsaver['name'], $foodsaver['photo'], $isSleeping,
                 $foodsaver['isAdminOrAmbassadorOfRegion']);
             if ($includeAdminFields) {
                 $member->role = $foodsaver['role'];

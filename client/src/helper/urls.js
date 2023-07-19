@@ -102,8 +102,8 @@ const urls = {
   },
 
   // simplified url for forum threads
-  forumThread: (threadId, postId = null) => {
-    return url('forum', null, 0, threadId, postId)
+  forumThread: (regionId, threadId, postId = null) => {
+    return url('forum', regionId, 0, threadId, postId)
   },
   events: (regionId) => `/?page=bezirk&bid=${regionId}&sub=events`,
   foodsaverList: (regionId) => `/?page=foodsaver&bid=${regionId}`,

@@ -111,6 +111,16 @@ select {
     @extend .form-control;
 }
 
+/*
+    The adjustment above makes .form-control-sm no longer working for inputs with type text due to higher specificity.
+    This is a workaround to increase the specificity of form-controll-sm.
+*/
+input[type="text"].form-control-sm {
+    @extend .form-control-sm;
+}
+
+
+
 .comment.textarea,
 .comment textarea {
     display: block;

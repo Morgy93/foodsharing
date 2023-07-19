@@ -267,9 +267,12 @@ class PickupGateway extends BaseGateway implements BellUpdaterInterface
 			SELECT	a.foodsaver_id AS foodsaverId,
 					a.confirmed,
 					a.date,
-					UNIX_TIMESTAMP(a.date) AS date_ts
+					UNIX_TIMESTAMP(a.date) AS date_ts,
+                    f.description
 
 			FROM	fs_abholer a
+            LEFT OUTER JOIN fs_fetchdate f ON
+                f.betrieb_id = a.betrieb_id AND f.time = a.date
 
 			WHERE	a.betrieb_id = :storeId
 			AND     a.date >= :from
@@ -314,26 +317,27 @@ class PickupGateway extends BaseGateway implements BellUpdaterInterface
         if ($to) {
             $condition = array_merge($condition, ['time <=' => $this->db->date($to)]);
         }
-        $result = $this->db->fetchAllByCriteria('fs_fetchdate', ['time', 'fetchercount'], $condition);
+        $result = $this->db->fetchAllByCriteria('fs_fetchdate', ['time', 'fetchercount', 'description'], $condition);
 
         return array_map(function (array $dbItem): OneTimePickup { return OneTimePickup::createFromArray($dbItem); }, $result);
     }
 
-    public function addOnetimePickup(int $storeId, DateTime $date, int $slots)
+    public function addOnetimePickup(int $storeId, OneTimePickup $pickup)
     {
         $this->db->insert('fs_fetchdate', [
             'betrieb_id' => $storeId,
-            'time' => $this->db->date($date),
-            'fetchercount' => $slots,
+            'time' => $this->db->date($pickup->date),
+            'fetchercount' => $pickup->slots,
+            'description' => $pickup->description,
         ]);
     }
 
-    public function updateOnetimePickupTotalSlots(int $storeId, DateTime $date, int $slots): bool
+    public function updateOnetimePickupTotalSlots(int $storeId, OneTimePickup $pickup): bool
     {
         return $this->db->update(
             'fs_fetchdate',
-            ['fetchercount' => $slots],
-            ['betrieb_id' => $storeId, 'time' => $this->db->date($date)]
+            ['fetchercount' => $pickup->slots, 'description' => $pickup->description],
+            ['betrieb_id' => $storeId, 'time' => $this->db->date($pickup->date)]
         ) === 1;
     }
 
@@ -417,6 +421,7 @@ class PickupGateway extends BaseGateway implements BellUpdaterInterface
                         'totalSlots' => $slot->maxCountOfSlots,
                         'occupiedSlots' => array_values($occupiedSlots),
                         'isAvailable' => $isAvailable,
+                        'description' => $slot->description,
                     ];
                 }
 
@@ -449,6 +454,7 @@ class PickupGateway extends BaseGateway implements BellUpdaterInterface
                 'totalSlots' => $slot->slots,
                 'occupiedSlots' => array_values($occupiedSlots),
                 'isAvailable' => $isInFuture && $hasFree,
+                'description' => $slot->description,
             ];
         }
 
@@ -480,11 +486,13 @@ class PickupGateway extends BaseGateway implements BellUpdaterInterface
 				GROUP_CONCAT(f.id) AS fs_ids,
 				GROUP_CONCAT(QUOTE(CONCAT(f.name, " ", f.nachname))) AS fs_names,
 				GROUP_CONCAT(IFNULL(f.photo, "")) AS fs_avatars,
-				GROUP_CONCAT(p2.confirmed) AS slot_confimations
+				GROUP_CONCAT(p2.confirmed) AS slot_confimations,
+                d.description
 			FROM fs_abholer p1
 			LEFT JOIN fs_abholer p2 ON p1.betrieb_id = p2.betrieb_id AND p1.date = p2.date
 			LEFT JOIN fs_foodsaver f ON f.id = p2.foodsaver_id
 			LEFT JOIN fs_betrieb s ON s.id = p1.betrieb_id
+            LEFT OUTER JOIN fs_fetchdate d ON d.betrieb_id = p1.betrieb_id AND d.time = p1.date
 			WHERE p1.foodsaver_id = :fs_id AND p1.date < NOW() '
             . $timeContraint .
             'GROUP BY p1.betrieb_id, p1.date
@@ -520,7 +528,8 @@ class PickupGateway extends BaseGateway implements BellUpdaterInterface
 				GROUP_CONCAT(QUOTE(CONCAT(f.name, " ", f.nachname))) AS fs_names,
 				GROUP_CONCAT(IFNULL(f.photo, "")) AS fs_avatars,
 				GROUP_CONCAT(a2.confirmed) AS slot_confimations,
-				d.fetchercount AS max_fetchers
+				d.fetchercount AS max_fetchers,
+                d.`description` AS `description`
 			FROM `fs_abholer` a
 			LEFT OUTER JOIN `fs_abholer` a2 ON
 				a.betrieb_id = a2.betrieb_id AND a.date = a2.date

@@ -338,7 +338,7 @@ class MailboxGateway extends BaseGateway
 
     public function filterName(string $mb_name)
     {
-        $mb_name = strtolower($mb_name);
+        $mb_name = mb_strtolower($mb_name);
         $mb_name = trim($mb_name);
         $mb_name = str_replace(
             ['ä', 'ö', 'ü', 'è', 'à', 'ß', ' ', '-', '/', '\\'],
@@ -382,7 +382,7 @@ class MailboxGateway extends BaseGateway
                 );
                 foreach ($mailboxAdminRegions as $region) {
                     if ($region['mailbox_id'] == 0) {
-                        $mb_name = strtolower($region['name']);
+                        $mb_name = mb_strtolower($region['name']);
                         $mb_name = trim($mb_name);
                         $mb_name = str_replace(
                             ['ä', 'ö', 'ü', 'è', 'à', 'ß', ' ', '-', '/', '\\'],
@@ -451,7 +451,7 @@ class MailboxGateway extends BaseGateway
             $me['nachname'] = explode(' ', $me['nachname']);
             $me['nachname'] = $me['nachname'][0];
 
-            $mb_name = strtolower(substr($me['name'], 0, 1) . '.' . $me['nachname']);
+            $mb_name = mb_strtolower(substr($me['name'], 0, 1) . '.' . $me['nachname']);
             $mb_name = trim($mb_name);
             $mb_name = str_replace(['ä', 'ö', 'ü', 'è', 'ß', ' '], ['ae', 'oe', 'ue', 'e', 'ss', '.'], $mb_name);
             $mb_name = preg_replace('/[^0-9a-z\.]/', '', $mb_name) ?? '';

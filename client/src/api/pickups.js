@@ -43,9 +43,9 @@ export async function checkPickupRuleStore (fsId, storeId, pickupDate) {
   return res.result
 }
 
-export async function setPickupSlots (storeId, pickupDate, totalSlots) {
+export async function setPickupSlots (storeId, pickupDate, totalSlots, description) {
   const date = pickupDate.toISOString()
-  return patch(`/stores/${storeId}/pickups/${date}`, { totalSlots: totalSlots })
+  return patch(`/stores/${storeId}/pickups/${date}`, { totalSlots, description })
 }
 
 export async function listPickupHistory (storeId, fromDate, toDate) {

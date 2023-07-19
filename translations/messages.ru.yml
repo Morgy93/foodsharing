@@ -1032,12 +1032,14 @@ chain:
         placeholder:
           zip: ''
           city: ''
+          country: ''
       status:
         label: ''
       thread:
         invalidfeedback: ''
         description: ''
         label: ''
+        placeholder: ''
       kam:
         description: ''
         invalidfeedback: ''

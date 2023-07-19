@@ -16,12 +16,18 @@ export const store = Vue.observable({
   isLoggedIn: serverData.user?.id !== null,
 })
 
+export const SLEEP_STATUS = Object.freeze({
+  NONE: 0,
+  TEMP: 1,
+  FULL: 2,
+})
+
 export const getters = {
   isLoggedIn () {
     return store.isLoggedIn
   },
   isSleeping () {
-    return store.details?.sleeping
+    return store.details?.isSleeping
   },
   isFoodsaver () {
     return store.user?.isFoodsaver

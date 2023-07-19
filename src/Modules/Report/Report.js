@@ -9,7 +9,9 @@ import { GET } from '@/script'
 import '../WallPost/WallPost.css'
 import { initWall } from '@/wall'
 
-initWall('fsreport', GET('id'))
+if (GET('sub') === 'foodsaver') {
+  initWall('report', GET('id'))
+}
 
 // The container for the report list only exists if a region specific page is requested
 const reportListContainerId = 'vue-reportlist'

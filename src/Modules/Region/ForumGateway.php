@@ -224,6 +224,8 @@ class ForumGateway extends BaseGateway
 						IF(fs.deleted_at IS NOT NULL,"' . $this->translator->trans('forum.deleted_user') . '", fs.name) AS author_name,
 						fs.photo AS author_photo,
 						fs.sleep_status AS author_sleep_status,
+						fs.sleep_from AS author_sleep_from,
+						fs.sleep_until AS author_sleep_until,
 						p.body AS body,
 						p.`time`,
 						p.id,

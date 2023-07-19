@@ -43,7 +43,10 @@ export function attachAddressPicker () {
   let center = [51, 12]
   const initialZoom = 4
   const map = initMap('map', center, initialZoom, 18)
-  setTimeout(() => (map.invalidateSize()), 400)
+  const resizeObserver = new ResizeObserver((_) => {
+    map.invalidateSize()
+  })
+  resizeObserver.observe(document.getElementById('map'))
 
   const engine = new window.PhotonAddressEngine(
     {

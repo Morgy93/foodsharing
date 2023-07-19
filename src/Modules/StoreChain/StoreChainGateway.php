@@ -2,53 +2,94 @@
 
 namespace Foodsharing\Modules\StoreChain;
 
-use DateTime;
 use Exception;
 use Foodsharing\Modules\Core\BaseGateway;
+use Foodsharing\Modules\Core\Pagination;
 use Foodsharing\Modules\Foodsaver\DTO\FoodsaverForAvatar;
+use Foodsharing\Modules\StoreChain\DTO\StoreChain;
 use Foodsharing\Modules\StoreChain\DTO\StoreChainForChainList;
-use Foodsharing\Modules\StoreChain\DTO\StoreChainForUpdate;
 
 class StoreChainGateway extends BaseGateway
 {
     /**
      * @throws Exception
      */
-    public function addStoreChain(StoreChainForUpdate $storeData): int
+    public function addStoreChain(StoreChain $storeData): int
     {
-        return $this->db->insert('fs_chain', [
+        $id = $this->db->insert('fs_chain', [
             'name' => $storeData->name,
-            'headquarters_zip' => $storeData->headquarters_zip,
-            'headquarters_city' => $storeData->headquarters_city,
-            'status' => $storeData->status,
+            'headquarters_zip' => $storeData->headquartersZip,
+            'headquarters_city' => $storeData->headquartersCity,
+            'headquarters_country' => $storeData->headquartersCountry,
+            'status' => $storeData->status->value,
             'modification_date' => $this->db->now(),
-            'allow_press' => $storeData->allow_press,
-            'forum_thread' => $storeData->forum_thread,
+            'allow_press' => $storeData->allowPress,
+            'forum_thread' => $storeData->forumThread,
             'notes' => $storeData->notes,
-            'common_store_information' => $storeData->common_store_information,
+            'common_store_information' => $storeData->commonStoreInformation,
+            'estimated_store_count' => $storeData->estimatedStoreCount
         ]);
+        $this->updateAllKeyAccountManagers($id, $storeData->kams);
+
+        return $id;
     }
 
     /**
      * @throws Exception
      */
-    public function updateStoreChain(StoreChainForUpdate $storeData, $id)
+    public function updateStoreChain(StoreChain $storeData, bool $updateKams)
     {
         $this->db->update(
             'fs_chain',
             [
                 'name' => $storeData->name,
-                'headquarters_zip' => $storeData->headquarters_zip,
-                'headquarters_city' => $storeData->headquarters_city,
-                'status' => $storeData->status,
+                'headquarters_zip' => $storeData->headquartersZip,
+                'headquarters_city' => $storeData->headquartersCity,
+                'headquarters_country' => $storeData->headquartersCountry,
+                'status' => $storeData->status->value,
                 'modification_date' => $this->db->now(),
-                'allow_press' => $storeData->allow_press,
-                'forum_thread' => $storeData->forum_thread,
+                'allow_press' => $storeData->allowPress,
+                'forum_thread' => $storeData->forumThread,
                 'notes' => $storeData->notes,
-                'common_store_information' => $storeData->common_store_information,
+                'common_store_information' => $storeData->commonStoreInformation,
+                'estimated_store_count' => $storeData->estimatedStoreCount
             ],
-            ['id' => $id]
+            ['id' => $storeData->id]
         );
+        if ($updateKams) {
+            $this->updateAllKeyAccountManagers($storeData->id, $storeData->kams);
+        }
+    }
+
+    /**
+     * Delete and insert all key account managers (kams).
+     *
+     * @param FoodsaverForAvatar[] $kams are account ids for key account managers
+     *
+     * @throws Exception
+     */
+    public function updateAllKeyAccountManagers(int $chainId, array $kams)
+    {
+        //delete previous kams
+        $this->db->delete('fs_key_account_manager', ['chain_id' => $chainId]);
+
+        //add new kams
+        foreach ($kams as $fs) {
+            $this->db->insert('fs_key_account_manager', [
+                'chain_id' => $chainId,
+                'foodsaver_id' => $fs->id,
+            ]);
+        }
+    }
+
+    /**
+     * Check is user a key account manager for chain.
+     *
+     * @throws Exception
+     */
+    public function isUserKeyAccountManager(int $chainId, int $fs_id): bool
+    {
+        return $this->db->exists('fs_key_account_manager', ['foodsaver_id' => $fs_id, 'chain_id' => $chainId]);
     }
 
     /**
@@ -56,12 +97,13 @@ class StoreChainGateway extends BaseGateway
      *
      * @throws Exception
      */
-    public function getStoreChains(?int $id = null): array
+    public function getStoreChains(?int $id = null, Pagination $pagination = new Pagination()): array
     {
         $where = '';
         if (!is_null($id)) {
-            $where = 'WHERE c.`id` = ' . $id;
+            $where = 'WHERE c.`id` = :chainId';
         }
+
         $data = $this->db->fetchAll('SELECT
 				c.*,
 				COUNT(s.`id`) AS stores
@@ -70,47 +112,37 @@ class StoreChainGateway extends BaseGateway
 				s.`kette_id` = c.`id`
 			' . $where . '
 			GROUP BY c.`id`
-		');
+            ORDER BY c.id
+		' . $this->buildPaginationSqlLimit($pagination),
+            $this->addPaginationSqlLimitParameters($pagination, !is_null($id) ? ['chainId' => $id] : []));
 
         $chains = [];
         foreach ($data as $chain) {
-            $formatted = new StoreChainForChainList();
-            $formatted->name = $chain['name'];
-            $formatted->status = $chain['status'];
-            $formatted->allow_press = $chain['allow_press'];
-            $formatted->id = $chain['id'];
-            $formatted->headquarters_zip = $chain['headquarters_zip'];
-            $formatted->headquarters_city = $chain['headquarters_city'];
-            $formatted->modification_date = new DateTime($chain['modification_date']);
-            $formatted->forum_thread = $chain['forum_thread'];
-            $formatted->notes = $chain['notes'];
-            $formatted->common_store_information = $chain['common_store_information'];
-            $formatted->store_count = $chain['stores'];
-            $formatted->kams = [];
-            $chains[$chain['id']] = $formatted;
+            $chain['kams'] = $this->getStoreChainKeyAccountManagers($chain['id']);
+            $chains[] = StoreChainForChainList::createFromArray($chain);
         }
 
-        // Adding Kams:
-        if (!is_null($id)) {
-            $where = 'WHERE k.chain_id = ' . $id;
-        }
-        $kams = $this->db->fetchAll('SELECT
+        return $chains;
+    }
+
+    /**
+     * @return FoodsaverForAvatar[]
+     */
+    public function getStoreChainKeyAccountManagers(int $chainId): array
+    {
+        $kams = $this->db->fetchAll(
+            'SELECT
 				k.*, f.name, f.photo
 			FROM
 				fs_key_account_manager k
 			JOIN fs_foodsaver f ON f.id = k.foodsaver_id
-			' . $where
+			WHERE k.chain_id = :chainId AND f.deleted_at is NULL',
+            ['chainId' => $chainId]
         );
 
-        foreach ($kams as $kam) {
-            $formatted = new FoodsaverForAvatar();
-            $formatted->id = $kam['foodsaver_id'];
-            $formatted->name = $kam['name'];
-            $formatted->avatar = $kam['photo'];
-            $chains[$kam['chain_id']]->kams[] = $formatted;
-        }
-
-        return array_values($chains);
+        return array_map(function ($kam) {
+            return FoodsaverForAvatar::createFromArray($kam);
+        }, $kams);
     }
 
     /**
@@ -122,10 +154,14 @@ class StoreChainGateway extends BaseGateway
     }
 
     /**
-     * @throws Exception
+     * Returns the chain's description that is visible on the store page, or null if the chain does not exist.
      */
-    public function getChainStores($chainId): array
+    public function getCommonStoreInformation(int $chainId): ?string
     {
-        return $this->db->fetchAllByCriteria('fs_betrieb', ['id', 'name'], ['kette_id' => $chainId]);
+        try {
+            return $this->db->fetchValueByCriteria('fs_chain', 'common_store_information', ['id' => $chainId]);
+        } catch (Exception $e) {
+            return null;
+        }
     }
 }

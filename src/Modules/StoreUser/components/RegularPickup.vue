@@ -3,27 +3,38 @@
     :label="$i18n('pickup.edit.bread')"
   >
     <b-row>
-      <b-col>
+      <b-col
+        cols="4"
+        lg="2"
+      >
         {{ $i18n('day') }}
       </b-col>
 
-      <b-col cols="3">
+      <b-col
+        cols="4"
+        lg="2"
+      >
         {{ $i18n('time') }}
       </b-col>
 
-      <b-col cols="5">
+      <b-col
+        cols="4"
+        lg="2"
+      >
         {{ $i18n('pickup.edit.slot_titel') }}
       </b-col>
     </b-row>
 
     <div
-      v-for="(item, key) in editPickupsCopied"
+      v-for="(item, key, index) in editPickupsCopied"
       :key="key"
     >
+      <br v-if="index !== 0">
       <b-row class="pb-1">
         <b-col
           cols="4"
-          class="pr-0"
+          lg="2"
+          class="pr-1 pl-1 mb-1"
         >
           <b-form-select
             v-model="item.weekday"
@@ -41,8 +52,9 @@
         </b-col>
 
         <b-col
-          cols="3"
-          class="pl-1 pr-1"
+          cols="4"
+          lg="2"
+          class="pr-1 pl-1"
         >
           <b-form-timepicker
             v-model="item.startTimeOfPickup"
@@ -55,7 +67,8 @@
 
         <b-col
           cols="4"
-          class="pl-0 pr-1"
+          lg="2"
+          class="pr-1 pl-1"
         >
           <b-form-spinbutton
             v-model.number="item.maxCountOfSlots"
@@ -66,8 +79,23 @@
           />
         </b-col>
         <b-col
-          cols="1"
-          class="pl-0"
+          cols="10"
+          lg="5"
+          class="pr-1 pl-1"
+        >
+          <b-form-input
+            v-model="item.description"
+            :disabled="!editMode"
+            :size="'sm'"
+            :placeholder="$i18n('pickup.description')"
+            :maxlength="100"
+          />
+        </b-col>
+        <b-col
+          cols="2"
+          lg="1"
+          class="pr-1 pl-1"
+          align="right"
         >
           <b-button
             variant="danger"
@@ -130,6 +158,9 @@ export default {
         labelCloseButton: i18n('timepicker.labelCloseButton'),
       },
     }
+  },
+  computed: {
+    console: () => console,
   },
   async created () {
     this.editPickupsCopied = this.editPickups

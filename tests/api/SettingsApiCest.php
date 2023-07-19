@@ -42,8 +42,8 @@ class SettingsApiCest
         $I->login($this->user['email']);
         $I->sendPATCH('api/user/sleepmode', [
             'mode' => SleepStatus::TEMP,
-            'from' => Carbon::today()->addDay()->format('d.m.Y'),
-            'to' => Carbon::today()->addWeek()->format('d.m.Y')
+            'from' => Carbon::today()->addDay()->format('Y-m-d'),
+            'to' => Carbon::today()->addWeek()->format('Y-m-d')
         ]);
         $I->seeResponseCodeIs(HttpCode::NO_CONTENT);
         $I->seeInDatabase('fs_foodsaver', [

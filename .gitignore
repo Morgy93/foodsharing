@@ -74,6 +74,8 @@ npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
 
+dump.sql
+
 
 # +----------------------------+
 # |    Keep .gitkeep files     |

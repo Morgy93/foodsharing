@@ -774,12 +774,14 @@ chain:
         label: ''
         description: ''
         invalidfeedback: ''
+        placeholder: ''
       status:
         label: ''
       headquarters:
         placeholder:
           zip: ''
           city: ''
+          country: ''
         label: ''
       notes:
         label: ''
@@ -820,7 +822,7 @@ chain:
     status: ''
   tooltips:
     options: ''
-    modification_date: ''
+    modificationDate: ''
   options:
     edit: ''
     showstores: ''

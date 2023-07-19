@@ -1500,6 +1500,7 @@ chain:
         placeholder:
           city: ''
           zip: ''
+          country: ''
         label: ''
       status:
         label: ''
@@ -1518,6 +1519,7 @@ chain:
         label: ''
         invalidfeedback: ''
         description: ''
+        placeholder: ''
       name:
         label: ''
         invalidfeedback: ''
@@ -1545,7 +1547,7 @@ chain:
     create: ''
   tooltips:
     options: ''
-    modification_date: ''
+    modificationDate: ''
   options:
     showstores: ''
     edit: ''

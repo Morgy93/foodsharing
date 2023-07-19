@@ -15,14 +15,13 @@ import i18n from '@/helper/i18n'
 import { subscribeForPushNotifications, unsubscribeFromPushNotifications } from '@/pushNotifications'
 import { confirmDeleteUser } from '../Foodsaver/Foodsaver'
 import { vueApply, vueRegister } from '@/vue'
-import { setSleepStatus } from '@/api/user'
-import $ from 'jquery'
 import Calendar from './components/Calendar'
 import ProfilePicture from './components/ProfilePicture'
 import NameInput from './components/NameInput'
 import LeafletLocationSearchVForm from '@/components/map/LeafletLocationSearchVForm'
 import RegionTreeVForm from '@/components/regiontree/RegionTreeVForm'
 import Passport from './components/Passport.vue'
+import SleepingMode from './components/SleepingMode.vue'
 
 switch (GET('sub')) {
   case 'passport':
@@ -32,6 +31,10 @@ switch (GET('sub')) {
   case 'calendar':
     vueRegister({ Calendar })
     vueApply('#calendar')
+    break
+  case 'sleeping':
+    vueRegister({ SleepingMode })
+    vueApply('#sleeping-mode')
     break
   case 'general':
     vueRegister({ ProfilePicture, NameInput, LeafletLocationSearchVForm, RegionTreeVForm })
@@ -47,7 +50,6 @@ switch (GET('sub')) {
 expose({
   confirmDeleteUser,
   collapse_wrapper,
-  trySetSleepMode,
 })
 
 // Fill the Push Notifications module with life
@@ -105,18 +107,4 @@ async function refreshPushNotificationSettings () {
       throw error
     }
   }, { once: true })
-}
-
-async function trySetSleepMode () {
-  try {
-    const status = parseInt($('#sleep_status').val())
-    const from = $('#sleeprange_from').val()
-    const to = $('#sleeprange_to').val()
-    const message = $('#sleep_msg').val()
-
-    await setSleepStatus(status, from, to, message)
-    pulseSuccess(i18n('settings.sleep.saved'))
-  } catch (e) {
-    pulseError(i18n('error_unexpected'))
-  }
 }

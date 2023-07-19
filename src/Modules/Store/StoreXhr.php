@@ -9,6 +9,7 @@ use Foodsharing\Lib\Xhr\XhrResponses;
 use Foodsharing\Modules\Core\Control;
 use Foodsharing\Modules\Core\DBConstants\Foodsaver\Role;
 use Foodsharing\Modules\Core\DBConstants\Store\StoreLogAction;
+use Foodsharing\Modules\Store\DTO\OneTimePickup;
 use Foodsharing\Permissions\StorePermissions;
 
 class StoreXhr extends Control
@@ -53,7 +54,11 @@ class StoreXhr extends Control
         }
 
         try {
-            $this->storeTransactions->createOrUpdatePickup($storeId, $date, $totalSlots);
+            $pickup = new OneTimePickup();
+            $pickup->date = $date;
+            $pickup->slots = $totalSlots;
+
+            $this->storeTransactions->createOrUpdatePickup($storeId, $pickup);
             $this->flashMessageHelper->success($this->translator->trans('pickup.edit.added'));
 
             return [

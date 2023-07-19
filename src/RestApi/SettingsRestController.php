@@ -50,7 +50,7 @@ class SettingsRestController extends AbstractFOSRestController
             throw new UnauthorizedHttpException('');
         }
 
-        $mode = intval($paramFetcher->get('mode'));
+        $mode = $paramFetcher->get('mode');
         if (!SleepStatus::isValid($mode)) {
             throw new BadRequestHttpException('invalid sleep status');
         }
@@ -60,8 +60,8 @@ class SettingsRestController extends AbstractFOSRestController
         $to = null;
         if ($mode == SleepStatus::TEMP) {
             try {
-                $from = Carbon::createFromFormat('d.m.Y', $paramFetcher->get('from'));
-                $to = Carbon::createFromFormat('d.m.Y', $paramFetcher->get('to'));
+                $from = Carbon::createFromFormat('Y-m-d', $paramFetcher->get('from'));
+                $to = Carbon::createFromFormat('Y-m-d', $paramFetcher->get('to'));
             } catch (Exception $e) {
                 throw new BadRequestHttpException($e->getMessage());
             }
