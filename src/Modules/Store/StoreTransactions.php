@@ -659,12 +659,12 @@ class StoreTransactions
     /**
      * @return StoreStatusForMember[]
      */
-    public function listAllStoreStatusForFoodsaver(?int $foodsaverId): array
+    public function listAllStoreStatusForFoodsaver(?int $foodsaverId, bool $activeStores): array
     {
         if ($foodsaverId === null) {
             return [];
         }
-        $results = $this->storeGateway->listAllStoreTeamMembershipsForFoodsaver($foodsaverId);
+        $results = $this->storeGateway->listAllStoreTeamMembershipsForFoodsaver($foodsaverId, $activeStores ? StoreTransactions::DEFAULT_USER_SHOWN_STORE_COOPERATION_STATE : []);
         $storeTeamMemberships = [];
         foreach ($results as $resultRow) {
             $item = new StoreStatusforMember();

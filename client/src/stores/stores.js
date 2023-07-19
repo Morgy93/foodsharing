@@ -76,8 +76,8 @@ export const mutations = {
     if (!store.length || force) {
       // this method actually does not what it says, I fixed it.
       // But in the navigation and dashboard status box it seems useful to only show "active" stores.
-      // Unfortunately here I do not have this information for a quick fix, so more refactoring is necessary
-      store.stores = await listStoresForCurrentUser()
+      // For now we can give an additional parameter to filter out "unactive" stores, like before
+      store.stores = await listStoresForCurrentUser(true)
       store.metadata = await getStoreMetaData()
     }
   },
