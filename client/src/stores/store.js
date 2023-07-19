@@ -4,7 +4,6 @@ import { pulseError } from '@/script'
 import { listRegionStores } from '@/api/regions'
 
 function showError (callback) {
-  console.log(callback, callback())
   return callback().catch(error => {
     pulseError(this.$i18n('error_unexpected'))
     throw error
@@ -54,7 +53,6 @@ export const useStoreStore = defineStore('store', {
     },
     async fetchStoresForCurrentUser () {
       const { stores } = await showError(listStoresDetailsForCurrentUser)
-      console.log(stores)
       this.addStores(stores)
     },
     async fetchUserStoreRelations () {

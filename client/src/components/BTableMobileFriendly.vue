@@ -9,7 +9,8 @@
       {{ allRowsExpanded ? $i18n('collapse_all') : $i18n('expand_all') }}
     </button>
     <b-table
-      v-bind="attributes"
+      v-bind="$attrs"
+      :fields="preparedFields"
       v-on="$listeners"
       ref="table"
       :class="{'grid-layout': contentOverflow}"
@@ -33,6 +34,10 @@ export default defineComponent({
   components: { BTable },
   inheritAttrs: false,
   props: {
+    fields: {
+      required: true,
+      type: Array,
+    },
     itemKey: {
       required: false,
       type: String,
@@ -53,10 +58,8 @@ export default defineComponent({
     this.onTableResize()
   },
   computed: {
-    attributes: function () {
-      const attrs = this.$attrs
-      if (attrs.fields) attrs.fields = attrs.fields.map(this.addTdAttr)
-      return attrs
+    preparedFields: function () {
+      return this.fields.map(this.addTdAttr)
     },
     table: function () {
       return this.$refs.table.$el
