@@ -68,8 +68,15 @@ export const getters = {
 }
 
 export const mutations = {
+  /**
+   *  TODO: refactor this store further
+   * @deprecated use stores/store.js instead
+   */
   async fetch (force = false) {
     if (!store.length || force) {
+      // this method actually does not what it says, I fixed it.
+      // But in the navigation and dashboard status box it seems useful to only show "active" stores.
+      // Unfortunately here I do not have this information for a quick fix, so more refactoring is necessary
       store.stores = await listStoresForCurrentUser()
       store.metadata = await getStoreMetaData()
     }
