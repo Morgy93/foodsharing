@@ -797,14 +797,14 @@ class StoreGateway extends BaseGateway
      *
      * @return StoreTeamMembership[] Returns a array of memberships
      */
-    public function listAllStoreTeamMembershipsForFoodsaver(int $fsId, array $storeCooperationStates)
+    public function listAllStoreTeamMembershipsForFoodsaver(int $fsId, array $storeCooperationStates = [])
     {
         if ($fsId == 0) {
             return [];
         }
 
-        $inPlaceHolder = implode(', ', array_fill(0, count($storeCooperationStates), '?'));
-        $rows = $this->db->fetchAll('
+        $queryParams = [$fsId];
+        $query = '
 			SELECT 	b.id as store_id,
 					b.name as store_name,
 					bt.verantwortlich AS managing,
@@ -813,13 +813,23 @@ class StoreGateway extends BaseGateway
 				INNER JOIN fs_betrieb b
 					ON bt.betrieb_id = b.id
 			WHERE   bt.`foodsaver_id` = ?
-			AND 	b.betrieb_status_id IN (' . $inPlaceHolder . ')
-			ORDER BY bt.verantwortlich DESC, membership_status ASC, b.name ASC
-		', [
-            $fsId,
-            array_map(function (CooperationStatus $state) { return $state->value; },
-                $storeCooperationStates)
-        ]);
+        ';
+
+        if (!empty($storeCooperationStates)) {
+            $inPlaceHolder = implode(', ', array_fill(0, count($storeCooperationStates), '?'));
+			$query .= 'AND 	b.betrieb_status_id IN (' . $inPlaceHolder . ')
+			';
+            array_push($queryParams, array_map(
+                    function (CooperationStatus $state) { return $state->value; },
+                    $storeCooperationStates
+                )
+            );
+        }
+        $query .= 'ORDER BY bt.verantwortlich DESC, membership_status ASC, b.name ASC
+		';
+
+
+        $rows = $this->db->fetchAll($query, $queryParams);
 
         $results = [];
         foreach ($rows as $row) {

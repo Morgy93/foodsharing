@@ -664,7 +664,7 @@ class StoreTransactions
         if ($foodsaverId === null) {
             return [];
         }
-        $results = $this->storeGateway->listAllStoreTeamMembershipsForFoodsaver($foodsaverId, StoreTransactions::DEFAULT_USER_SHOWN_STORE_COOPERATION_STATE);
+        $results = $this->storeGateway->listAllStoreTeamMembershipsForFoodsaver($foodsaverId);
         $storeTeamMemberships = [];
         foreach ($results as $resultRow) {
             $item = new StoreStatusforMember();
