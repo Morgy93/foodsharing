@@ -56,7 +56,6 @@ export const useStoreStore = defineStore('store', {
       this.addStores(stores)
     },
     async fetchUserStoreRelations () {
-      // todo: looks like here we are missing stores that we are member in but they don't cooperate
       this.userRelations = await showError(listStoresForCurrentUser)
     },
     addStores (stores) {
