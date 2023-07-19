@@ -158,7 +158,6 @@ export default {
     this.debouncedSaveState = debounce(state => {
       this.storage.set('state', state)
     }, 500)
-    this.setInitialData()
     if (this.store) {
       this.load()
       window.addEventListener('beforeunload', this.unsavedChangesPrompt)
@@ -171,6 +170,7 @@ export default {
         this.$emit('update:state', state)
       }
     }
+    this.setInitialData()
   },
   mounted () {
     // this.showConfigurationDialog()
