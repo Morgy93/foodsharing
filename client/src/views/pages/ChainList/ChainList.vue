@@ -62,10 +62,10 @@
                   {{ $i18n('chain.new') }}
                 </b-button>
               </div>
+              <button type="button" @click="showConfigurationDialog" class="btn btn-sm ml-auto shadow-none">
+                <i class="fas fa-gear" />
+              </button>
             </div>
-            <button type="button" @click="showConfigurationDialog" class="btn btn-sm ml-auto shadow-none">
-              <i class="fas fa-gear" />
-            </button>
           </template>
           <b-table-mobile-friendly
             id="chain-list"
@@ -193,9 +193,10 @@ import StoreDetailsModal from '@/components/Modals/ChainList/StoreDetailsModal.v
 import { getters, mutations } from '@/stores/chains'
 import { pulseError } from '@/script'
 import BTableMobileFriendly from '@/components/BTableMobileFriendly.vue'
+import ConfigureableList from '@/components/ConfigureableList.vue'
 
 export default {
-  components: { BTableMobileFriendly, PickupEntries, InputModal, StoreDetailsModal },
+  components: { BTableMobileFriendly, PickupEntries, InputModal, StoreDetailsModal, ConfigureableList },
   props: {
     adminPermissions: {
       type: Boolean,
@@ -320,8 +321,10 @@ export default {
       )
     },
   },
-  async mounted () {
-    await mutations.fetchChains()
+  created () {
+    mutations.fetchChains()
+    this.availableFields = this.fieldsDefinition.map(field => field.key)
+    this.fieldSelection = this.availableFields
   },
   methods: {
     clearFilter () {
