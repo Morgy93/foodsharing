@@ -1,5 +1,4 @@
 import { get, patch, post, remove } from './base'
-import { formatStoresToMatchColumnKeys } from '@/api/stores'
 
 export function joinRegion (regionId) {
   return post(`/region/${regionId}/join`)
@@ -43,8 +42,7 @@ export function listRegionMembers (regionId) {
 }
 
 export async function listRegionStores (regionId) {
-  const { stores } = await get(`/region/${regionId}/stores`)
-  return formatStoresToMatchColumnKeys(stores)
+  return get(`/region/${regionId}/stores`)
 }
 
 export function removeMember (regionId, memberId) {

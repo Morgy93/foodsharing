@@ -1,6 +1,15 @@
 import { defineStore } from 'pinia'
-import { get } from '@/api/base'
 import { listStoresDetailsForCurrentUser, listStoresForCurrentUser } from '@/api/stores'
+import { pulseError } from '@/script'
+import { listRegionStores } from '@/api/regions'
+
+function showError (callback) {
+  console.log(callback, callback())
+  return callback().catch(error => {
+    pulseError(this.$i18n('error_unexpected'))
+    throw error
+  })
+}
 
 export const useStoreStore = defineStore('store', {
   state: () => {
@@ -38,19 +47,19 @@ export const useStoreStore = defineStore('store', {
     },
   },
   actions: {
-    // todo: pulseError(this.$i18n('error_unexpected'))
     async fetchStoresForRegion (regionId = this.regionId) {
-      const { stores } = await get(`/region/${regionId}/stores`)
+      const { stores } = await showError(() => listRegionStores(regionId))
       this.regionId = regionId
       this.addStores(stores)
     },
     async fetchStoresForCurrentUser () {
-      const { stores } = await listStoresDetailsForCurrentUser()
+      const { stores } = await showError(listStoresDetailsForCurrentUser)
+      console.log(stores)
       this.addStores(stores)
     },
     async fetchUserStoreRelations () {
       // todo: looks like here we are missing stores that we are member in but they don't cooperate
-      this.userRelations = await listStoresForCurrentUser()
+      this.userRelations = await showError(listStoresForCurrentUser)
     },
     addStores (stores) {
       const patch = { ...this.storeData }
@@ -63,5 +72,3 @@ export const useStoreStore = defineStore('store', {
     },
   },
 })
-
-// todo: pulseError(this.$i18n('error_unexpected'))
