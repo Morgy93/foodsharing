@@ -12,6 +12,9 @@
 - New UI for Stores information and modification of stores !2645 !2685 @KoeMai
 - Add home district count to region top #79 !2692 @Morgy93
 - Storemanagers can set a description for pickup slots #1653 !2757 @AntonBallmaier
+- Users have the ability to configure columns for the user in store list and store chain list !2733 @buntel
+- Users have the ability to keep the list filters and sort order on refresh (default: enabled) !2733 @buntel
+- b-table could now be displayed more mobile friendly. On small screens the table is displayed in a grid-layout !2733 @buntel
 
 ## Changes
 - Make menubar sticky on mobile !2411 @AntonBallmaier
@@ -91,6 +94,8 @@
 - Refactored the list of group applications to vue, which not also shows profile pictures #343 !2696 @alex.simm
 - Refactor the list of food share points in a region to vue !2702 @alex.simm
 - Refactor setting sleeping mode to vue !2749 !2760 @chriswalg
+- Refactor StoreListComponent.vue !2733 @buntel
+- Refactor storage.js !2733 @buntel
 
 ## Dev/Test/CI stuff
 - Fix given null parameter !2550 @BibaltiK
@@ -124,6 +129,7 @@
 - switch from /bin/bash to /usr/bin/env to allow more setups like nixos !2708
 - Use one database dump before tests so that the tests are not depending on each other !2701 @koemai
 - Fix deprecated strtolower in MailsControl.php #1569 !2718 @stcz
+- disable eslint in dev mode !2733 @buntel
 
 ## Development documentation
 
