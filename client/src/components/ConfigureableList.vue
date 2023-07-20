@@ -25,27 +25,42 @@
     >
       <template #modal-header="{ close }">
         <h4>{{ $i18n('configure_columns') }}</h4>
-        <button type="button" @click="close" class="btn btn-sm no-shadow">
-         <i class="fas fa-xmark" />
+        <button
+          type="button"
+          class="btn btn-sm no-shadow"
+          @click="close"
+        >
+          <i class="fas fa-xmark" />
         </button>
       </template>
       <template #default>
-        <DragAndDropSortList v-model="componentFields" class="mb-1">
+        <DragAndDropSortList
+          v-model="componentFields"
+          class="mb-1"
+        >
           <template #item="{ item, events }">
             <div class="d-flex align-items-center checkbox-nest">
               <input
                 :id="`${storageKey}-${item[fieldKey]}`"
+                v-model="componentSelection"
                 type="checkbox"
                 :value="item[fieldKey]"
-                v-model="componentSelection"
-              />
+              >
             </div>
             <div class="d-flex align-items-center">
-              <label :for="`${storageKey}-${item[fieldKey]}`" class="mb-0 ml-1">
+              <label
+                :for="`${storageKey}-${item[fieldKey]}`"
+                class="mb-0 ml-1"
+              >
                 {{ item[fieldLabel] }}
               </label>
             </div>
-            <button type="button" v-on="events" class="btn btn-sm ml-auto shadow-none" draggable="true">
+            <button
+              type="button"
+              class="btn btn-sm ml-auto shadow-none"
+              draggable="true"
+              v-on="events"
+            >
               <i class="fas fa-bars" />
             </button>
           </template>
@@ -53,14 +68,33 @@
         <div v-if="state">
           <hr>
           <div class="form-group form-check mb-0">
-            <input type="checkbox" class="form-check-input" id="save-filter-checkbox" v-model="saveState">
-            <label class="form-check-label" for="save-filter-checkbox" v-b-tooltip.hover="$i18n('save_state_description')">{{ $i18n('save_state') }}</label>
+            <input
+              id="save-filter-checkbox"
+              v-model="saveState"
+              type="checkbox"
+              class="form-check-input"
+            >
+            <label
+              v-b-tooltip.hover="$i18n('save_state_description')"
+              class="form-check-label"
+              for="save-filter-checkbox"
+            >{{ $i18n('save_state') }}</label>
           </div>
         </div>
       </template>
       <template #modal-footer="{ ok }">
-        <b-button @click="resetDefaults" class="col">{{ $i18n('button.reset_default') }}</b-button>
-        <b-button variant="primary" @click="ok">{{ $i18n('button.save') }}</b-button>
+        <b-button
+          class="col"
+          @click="resetDefaults"
+        >
+          {{ $i18n('button.reset_default') }}
+        </b-button>
+        <b-button
+          variant="primary"
+          @click="ok"
+        >
+          {{ $i18n('button.save') }}
+        </b-button>
       </template>
     </b-modal>
   </div>
@@ -231,7 +265,7 @@ export default {
       if (this.unsavedChanges) {
         // https://developer.mozilla.org/en-US/docs/Web/API/Window/beforeunload_event
         event.preventDefault()
-        return (event.returnValue = "")
+        return (event.returnValue = '')
       }
     },
   },

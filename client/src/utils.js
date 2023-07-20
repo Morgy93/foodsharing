@@ -135,7 +135,7 @@ export function throttle (func, timeout = 300) {
  * @param {[]} b
  * @returns {boolean}
  */
-export function arrayEquals(a, b) {
+export function arrayEquals (a, b) {
   return a.length === b.length && a.every((val, index) => val === b[index])
 }
 
@@ -145,6 +145,6 @@ export function arrayEquals(a, b) {
  * @param {[]} b
  * @returns {boolean}
  */
-export function arrayContentEquals(a, b) {
+export function arrayContentEquals (a, b) {
   return a.length === b.length && a.every((val, index) => b.includes(val))
 }

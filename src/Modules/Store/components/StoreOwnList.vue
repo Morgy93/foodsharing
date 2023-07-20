@@ -23,7 +23,7 @@ export default {
     return {}
   },
   computed: {
-    stores: () => storeStore.userStores
+    stores: () => storeStore.userStores,
   },
   async created () {
     if (!this.stores.length) {
@@ -31,7 +31,7 @@ export default {
       this.isBusy = true
       await Promise.all([
         storeStore.fetchUserStoreRelations(),
-        storeStore.fetchStoresForCurrentUser()
+        storeStore.fetchStoresForCurrentUser(),
       ])
       this.isBusy = false
       hideLoader()

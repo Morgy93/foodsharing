@@ -10,16 +10,26 @@
     </button>
     <b-table
       v-bind="$attrs"
-      :fields="preparedFields"
-      v-on="$listeners"
       ref="table"
+      :fields="preparedFields"
       :class="{'grid-layout': contentOverflow}"
-      @row-clicked="toggleRowExpansion"
       :tbody-tr-class="addRowExpandedClass"
+      v-on="$listeners"
+      @row-clicked="toggleRowExpansion"
     >
-      <slot v-for="(_, name) in $slots" :name="name" :slot="name" />
-      <template v-for="(_, name) in $scopedSlots" v-slot:[name]="slotData">
-        <slot :name="name" v-bind="slotData" />
+      <slot
+        v-for="(_, name) in $slots"
+        :slot="name"
+        :name="name"
+      />
+      <template
+        v-for="(_, name) in $scopedSlots"
+        #[name]="slotData"
+      >
+        <slot
+          :name="name"
+          v-bind="slotData"
+        />
       </template>
     </b-table>
   </div>
@@ -48,15 +58,6 @@ export default defineComponent({
     contentOverflow: false,
     expandedRows: [],
   }),
-  created () {
-    console.log(this)
-  },
-  mounted () {
-    console.log(this.table)
-    const resizeObserver = new ResizeObserver(this.onTableResize)
-    resizeObserver.observe(this.table)
-    this.onTableResize()
-  },
   computed: {
     preparedFields: function () {
       return this.fields.map(this.addTdAttr)
@@ -67,6 +68,15 @@ export default defineComponent({
     allRowsExpanded: function () {
       return this.$attrs.items.length === this.expandedRows.length
     },
+  },
+  created () {
+    console.log(this)
+  },
+  mounted () {
+    console.log(this.table)
+    const resizeObserver = new ResizeObserver(this.onTableResize)
+    resizeObserver.observe(this.table)
+    this.onTableResize()
   },
   methods: {
     doesElementOverflow (element) {
@@ -80,7 +90,7 @@ export default defineComponent({
     },
     addTdAttr: field => {
       const presentTdAttr = field.tdAttr || {}
-      field.tdAttr = {...presentTdAttr, "data-th-label": field.label}
+      field.tdAttr = { ...presentTdAttr, 'data-th-label': field.label }
       return field
     },
     addRowExpandedClass (item, type) {
@@ -106,8 +116,8 @@ export default defineComponent({
       } else {
         this.expandedRows = this.$attrs.items.map(item => item[this.itemKey])
       }
-    }
-  }
+    },
+  },
 })
 </script>
 

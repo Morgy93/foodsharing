@@ -1,7 +1,7 @@
 <template>
   <div class="card mb-3 rounded">
     <div class="card-header text-white bg-primary">
-      <slot name="head-title"></slot>
+      <slot name="head-title" />
       <span>
         {{ $i18n('filterlist.some_in_all', {some: storesFiltered.length, all: stores.length}) }}
       </span>
@@ -51,8 +51,12 @@
                 <i class="fas fa-times" />
               </button>
             </div>
-            <slot name="header-actions"></slot>
-            <button type="button" @click="showConfigurationDialog" class="btn btn-sm ml-auto shadow-none">
+            <slot name="header-actions" />
+            <button
+              type="button"
+              class="btn btn-sm ml-auto shadow-none"
+              @click="showConfigurationDialog"
+            >
               <i class="fas fa-gear" />
             </button>
           </div>
@@ -69,7 +73,6 @@
             small
             hover
             responsive
-            @row-clicked
           >
             <template
               #cell(cooperationStatus)="row"
@@ -143,7 +146,7 @@
       class="card-body d-flex justify-content-center"
     >
       {{ $i18n('store.noStores') }}
-      <slot name="no-stores-footer-actions"></slot>
+      <slot name="no-stores-footer-actions" />
     </div>
   </div>
 </template>
@@ -306,7 +309,7 @@ export default {
       }
       // not a member
     },
-    fetchData() {
+    fetchData () {
       storeStore.fetchStoresForCurrentUser()
     },
     clearFilter () {

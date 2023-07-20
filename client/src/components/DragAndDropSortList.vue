@@ -1,8 +1,8 @@
 <template>
   <div class="drag-drop-container">
     <div
-      ref="drag-image"
       v-for="(item, key) in items"
+      ref="drag-image"
       :key="key"
       @drop="reposition(key)"
       @dragover.prevent="onDragOver"

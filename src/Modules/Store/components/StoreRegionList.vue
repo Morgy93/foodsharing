@@ -54,7 +54,7 @@ export default {
     return {}
   },
   computed: {
-    stores: () => storeStore.regionStores
+    stores: () => storeStore.regionStores,
   },
   async created () {
     showLoader()

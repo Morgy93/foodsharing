@@ -63,7 +63,11 @@
                   {{ $i18n('chain.new') }}
                 </b-button>
               </div>
-              <button type="button" @click="showConfigurationDialog" class="btn btn-sm ml-auto shadow-none">
+              <button
+                type="button"
+                class="btn btn-sm ml-auto shadow-none"
+                @click="showConfigurationDialog"
+              >
                 <i class="fas fa-gear" />
               </button>
             </div>

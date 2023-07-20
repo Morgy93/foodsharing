@@ -46,7 +46,7 @@ export async function deleteStorePost (storeId, postId) {
 }
 
 export function listStoresForCurrentUser (filterUnactiveStores = false) {
-  return get(`/user/current/stores?activeStores=${filterUnactiveStores ? 1 : 0 }`)
+  return get(`/user/current/stores?activeStores=${filterUnactiveStores ? 1 : 0}`)
 }
 
 export function listStoresDetailsForCurrentUser (expand) {
