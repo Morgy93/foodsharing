@@ -41,7 +41,7 @@ export function listRegionMembers (regionId) {
   return get(`/region/${regionId}/members`)
 }
 
-export async function listRegionStores (regionId) {
+export function listRegionStores (regionId) {
   return get(`/region/${regionId}/stores`)
 }
 
