@@ -347,7 +347,7 @@ class StoreRestController extends AbstractFOSRestController
         if (!$this->session->mayRole()) {
             throw new UnauthorizedHttpException('', self::NOT_LOGGED_IN);
         }
-        $activeStores = (bool) $paramFetcher->get('activeStores');
+        $activeStores = (bool)$paramFetcher->get('activeStores');
 
         $listOfStoreStatus = $this->storeTransactions->listAllStoreStatusForFoodsaver($this->session->id(), $activeStores);
 

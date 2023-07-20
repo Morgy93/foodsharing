@@ -861,17 +861,16 @@ class StoreGateway extends BaseGateway
 
         if (!empty($storeCooperationStates)) {
             $inPlaceHolder = implode(', ', array_fill(0, count($storeCooperationStates), '?'));
-			$query .= 'AND 	b.betrieb_status_id IN (' . $inPlaceHolder . ')
+            $query .= 'AND 	b.betrieb_status_id IN (' . $inPlaceHolder . ')
 			';
             array_push($queryParams, array_map(
-                    function (CooperationStatus $state) { return $state->value; },
-                    $storeCooperationStates
-                )
+                function (CooperationStatus $state) { return $state->value; },
+                $storeCooperationStates
+            )
             );
         }
         $query .= 'ORDER BY bt.verantwortlich DESC, membership_status ASC, b.name ASC
 		';
-
 
         $rows = $this->db->fetchAll($query, $queryParams);
 
