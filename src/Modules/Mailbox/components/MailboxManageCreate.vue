@@ -4,12 +4,10 @@
     <label>Angezeigter Name *</label>
     <b-form-input
       v-model="name"
-      @input="nameValid"
     />
     <label>Name *</label>
     <b-form-input
       v-model="mailboxAlias"
-      @input="aliasValid"
     />
     <label>Ohne "@foodsharing.network"</label>
     <UserSearchInput
