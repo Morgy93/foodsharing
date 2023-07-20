@@ -69,11 +69,7 @@ export default defineComponent({
       return this.$attrs.items.length === this.expandedRows.length
     },
   },
-  created () {
-    console.log(this)
-  },
   mounted () {
-    console.log(this.table)
     const resizeObserver = new ResizeObserver(this.onTableResize)
     resizeObserver.observe(this.table)
     this.onTableResize()

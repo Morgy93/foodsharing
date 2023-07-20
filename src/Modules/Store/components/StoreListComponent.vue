@@ -287,9 +287,6 @@ export default {
     this.fieldSelection = this.availableFields
   },
   methods: {
-    onRowClick () {
-      console.log('parent')
-    },
     getUserRole (storeId) {
       if (storeStore.userRelations === null) {
         storeStore.fetchUserStoreRelations()

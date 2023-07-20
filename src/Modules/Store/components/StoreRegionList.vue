@@ -60,7 +60,6 @@ export default {
     showLoader()
     this.isBusy = true
     await storeStore.fetchStoresForRegion(this.regionId)
-    console.log('stores: ', this.stores)
     this.isBusy = false
     hideLoader()
   },

@@ -41,7 +41,6 @@ export default {
         return this.value
       },
       set (value) {
-        // console.log('emit something', value)
         this.$emit('input', value)
       },
     },
@@ -61,8 +60,7 @@ export default {
     reposition (dropPosition) {
       // don't alter the props, instead...
       const items = this.items.concat()
-      console.log(`drop ${this.startPosition} onto ${dropPosition}`)
-      // console.log('before:', this.items.map(item => item))
+      // console.log(`drop ${this.startPosition} onto ${dropPosition}`)
       // reposition
       const item = items.splice(this.startPosition, 1)[0]
       items.splice(dropPosition, 0, item)

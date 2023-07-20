@@ -219,7 +219,6 @@ export default {
       this.$refs['configure-modal'].show()
     },
     save () {
-      console.log('saving...')
       this.storage.set('fields', this.fieldsOrder)
       this.storage.set('selection', this.selection)
       this.storage.set('savestate', this.saveState)
@@ -247,7 +246,6 @@ export default {
       this.initialSavestate = this.saveState
     },
     reset () {
-      console.log('resetting')
       this.componentSelection = this.initialSelection
       this.componentFields = this.initialFields
     },
