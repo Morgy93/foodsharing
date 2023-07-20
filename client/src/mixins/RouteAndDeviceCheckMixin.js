@@ -9,7 +9,7 @@ export default {
     }
   },
   created: function () {
-    this.isDev = window.location.hostname.includes('localhost')
+    this.isDev = window.location.hostname.includes('localhost') || window.location.hostname.includes('gitpod')
     this.isBeta = window.location.hostname.includes('beta.foodsharing')
     this.isDotAt = window.location.hostname.includes('foodsharing.at')
     this.isChrome = navigator.userAgent.includes('Chrome')

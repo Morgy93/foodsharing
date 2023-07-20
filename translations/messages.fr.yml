@@ -437,6 +437,9 @@ settings:
         le lien précédent et le rend invalide. Voulez-vous vraiment en créer un nouveau ?
       title: Créer un nouveau jeton
       button: Générer un nouveau jeton
+    export: Exporter le calendrier
+    export_tooltip: Vous pouvez voir vos dates de ramassage avec un programme de calendrier
+      de votre choix.
   push:
     disabled: Les notifications push on été désactivées
     disable: Désactiver les notifications push
@@ -493,6 +496,11 @@ settings:
       quelques collectes, écris-le ;)\n"
     header: Fonction "sommeil"
     title: Mode sommeil
+    from: Du
+    until: au
+    message: Ici, vous pouvez laisser un court message pourquoi vous n’avez pas le
+      temps en ce moment.
+    status: Votre statut actuel
   account: Options du compte
   businesscard: Cartes de visite personnelles
   chatmail: "Lorsque tu reçois un message ou une notification interne à foodsharing
@@ -753,6 +761,8 @@ forum:
       non_active: désactivé
       title: Envoi de courrier
       active: activé
+      activate: activer
+      disable: désactiver
   follow:
     email: comme courriel
     bell: par la cloche
@@ -776,6 +786,7 @@ forum:
   new_thread: Ouvrir une nouvelle discussion
   from: de {name}
   deleted_user: utilisateur supprimé
+  not_found: Ce fil n’existe pas.
 fsp:
   info:
     mail: Cloche et notification par courriel
@@ -910,6 +921,7 @@ terminology:
     "4": Personne gérant l'organisation
   pickup: Collecte
   store: 'Magasin'
+  n_home_regions: un(e) avec district d’origine|%count% avec district d’origine
 register:
   activation_success: <strong>Activation réussie.</strong> Connecte-toi maintenant
     avec ton adresse courriel et le mot de passe que tu as choisi.
@@ -1216,6 +1228,10 @@ store:
   jumping: Sauteur
   member: Membre
   isAppliedForTeam: Demande
+  particularities_chain: Particularités de la chaîne
+  particularities_chain_tooltip: Cet établissement fait partie d'une chaîne. Pour
+    cette raison, ces informations supplémentaires sont affichées, qui s'appliquent
+    à tous les établissements de cette chaîne.
 storeview:
   want_to_fetch: J'aimerais m'engager dans cette équipe.
   specials: Particularités
@@ -1247,7 +1263,7 @@ storeview:
   cooperation_start: Coopération depuis
   cooperation_status: Statut de la coopération
   team: Équipe de ramassage
-  no_permission_to_view: Absence d’autorisation
+  no_permission_to_view: Visible uniquement par les responsables d'établissement.
   groceries:
     label: Quels aliments peuvent être ramassés ?
     search_tag: Recherche par catégories d’aliments
@@ -1912,6 +1928,7 @@ chat:
   incorrect_address: Cette adresse e-mail n'est pas correcte
   new_messages: Nouveaux messages
   select_recipients: Sélectionner un ou une destinataire
+  unknown_username: nom inconnu
 timepicker:
   labelNowButton: maintenant
   labelCloseButton: fermer
@@ -2157,6 +2174,8 @@ messages:
 map:
   title: Carte
   donates: Magasin participe
+  filters:
+    my_stores: Seulement mes magasins
 content:
   changelog: Changelog actuel
   empty: Aucune page existante.
@@ -2423,8 +2442,8 @@ releases:
   "2021-03": Version « fraise » 🍓 (mars 2021)
   "2021-09": Version « Figue » 🥧 (septembre 2021)
   "2022-01": Version "Grapefruit" 🍋 (janvier 2022)
-  "2022-12": Version "Icecream" 🍇 (décembre 2022)
   "2022-05": Version "myrtille" 🍇 (mai 2022)
+  "2022-12": Version "Icecream" 🍨 (décembre 2022)
 startpage:
   donate:
     text: "Nous nous efforçons de faire parrainer toutes nos dépenses. Cependant,
@@ -2441,12 +2460,14 @@ startpage:
       partenariat entre foodsharing \net les pouvoirs publics. »\n"
     title: Villes foodsharing
   demands:
-    text: "\"Plan d'action avec l'aide allemande à l'environnement\npublié à l'occasion
-      du 6e anniversaire de foodsharing le 12.12.2018. Pour éviter à l'Allemagne de
-      manquer une nouvelle fois à sa parole\n- comme pour les objectifs de protection
-      du climat pour 2020 -, foodsharing et Deutsche Umwelthilfe montrent avec un\n
-      plan d'action les mesures sans lesquelles l'objectif de réduction de moitié
-      ne pourra pas être atteint\".\n"
+    text: "Pour endiguer efficacement le gaspillage alimentaire, il ne suffit pas
+      de sauver les restes de nourriture des entreprises ou l'information des consommateurs.\n
+      Au lieu de cela, il faut que les choses bougent au niveau politique :\nNous
+      avons besoin d'objectifs de réduction contraignants pour le gaspillage tout
+      au long de la chaîne de création de valeur.\nEn outre, les normes commerciales
+      actuelles doivent être repensées et assouplies, et les organisations qui\nIl
+      faut renforcer les organisations qui sauvent les aliments ou qui proposent des
+      formations sur le thème de l'alimentation.\n"
     title: Revendications
   near_you:
     text3:
@@ -3076,12 +3097,13 @@ chain:
     name: Nom
     stores: Coopérations
     headquarters: Quartier général
-    kams: Responsables d’Affaires
+    kams: Responsables des chaînes de magasins
     notes: Remarques
+    estimatedStoreCount: Nombre prévu de magasins coopérants
   new: Créer une nouvelle chaîne
   allowpress: Dénomination publique autorisée.
   tooltips:
-    modification_date: Dernière modification
+    modificationDate: Dernière modification
     options: Options
   options:
     showstores: Afficher les établissements
@@ -3100,17 +3122,19 @@ chain:
         placeholder:
           zip: Code postal
           city: Ville
+          country: 'Pays'
       thread:
-        description: Id d'un fil de discussion du forum. Insérer un lien pour une
-          reconnaissance automatique.
+        description: Recherchez le nom du fil de discussion en saisissant au moins
+          3 caractères.
         label: Fil de discussion du forum
-        invalidfeedback: Entrée invalide. ID de fil ou lien requis.
+        invalidfeedback: ID de fil ou lien requis.
+        placeholder: 'Rechercher le nom du fil de discussion du forum'
       kam:
-        label: Responsables d’Affaires
+        label: Responsables des chaines de magasins
         invalidfeedback: Entrée non valide. Un ou plusieurs identifiants d'utilisateur
           sont requis.
-        description: ID utilisateur des gestionnaires de comptes clés, séparés par
-          des virgules si nécessaire.
+        description: ID utilisateur des gestionnaires de comptes clés (chaînes de
+          magasins), séparés par des virgules si nécessaire.
       notes:
         label: Remarques
         invalidfeedback: Les notes ne peuvent pas dépasser 200 caractères.
@@ -3124,6 +3148,10 @@ chain:
         label: 'Informations sur le magasin'
         description: 'Remarques affichées sur les pages de sites appartenant à la
           chaîne.'
+      estimatedStoreCount:
+        invalidfeedback: Seuls les nombres entiers sont autorisés comme valeurs d'entrée.
+        label: Nombre prévu de magasins coopérants
+        description: Nombre total de magasins de la chaîne susceptibles de coopérer
     cancel: Annuler
     ok: Sauvegarder
   detailsmodal:
@@ -3140,6 +3168,10 @@ chain:
     negotiating: en négociation
     notcooperating: ne coopère pas
   error:
-    create: La chaîne n’a pas pu être créée.
-    edit: La chaîne n’a pas pu être modifiée.
+    create: La chaîne n’a pas pu être créée ({error}).
+    edit: La chaîne n’a pas pu être modifiée ({error}).
     notfs: 'Vous devez être un Foodsaver pour voir cette liste.'
+usersearch:
+  no_tag_preset: Utilisateur non trouvé
+  select_tag: Rechercher des utilisateurs par nom
+  search_tag: Rechercher des utilisateurs

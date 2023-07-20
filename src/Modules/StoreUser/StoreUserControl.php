@@ -11,6 +11,7 @@ use Foodsharing\Modules\Core\DBConstants\Store\CooperationStatus;
 use Foodsharing\Modules\Group\GroupFunctionGateway;
 use Foodsharing\Modules\Region\RegionGateway;
 use Foodsharing\Modules\Store\StoreGateway;
+use Foodsharing\Modules\StoreChain\StoreChainGateway;
 use Foodsharing\Permissions\StorePermissions;
 use Foodsharing\Utility\DataHelper;
 use Foodsharing\Utility\WeightHelper;
@@ -31,7 +32,8 @@ class StoreUserControl extends Control
         StorePermissions $storePermissions,
         DataHelper $dataHelper,
         WeightHelper $weightHelper,
-        GroupFunctionGateway $groupFunctionGateway
+        GroupFunctionGateway $groupFunctionGateway,
+        private readonly StoreChainGateway $storeChainGateway
     ) {
         $this->view = $view;
         $this->regionGateway = $regionGateway;
@@ -94,9 +96,14 @@ class StoreUserControl extends Control
                     }
                 }
 
+                $particularitiesChain = (!is_null($store['kette_id']) && $store['kette_id'] > 0) ?
+                    $this->storeChainGateway->getCommonStoreInformation($store['kette_id'])
+                    : null;
+
                 /* Infos */
                 $this->pageHelper->addContent($this->view->vueComponent('vue-storeinfos', 'store-infos', [
                     'particularitiesDescription' => $store['besonderheiten'] ?? '',
+                    'particularitiesChain' => $particularitiesChain,
                     'lastFetchDate' => $lastFetchDate,
                     'street' => $store['str'],
                     'postcode' => $store['plz'],

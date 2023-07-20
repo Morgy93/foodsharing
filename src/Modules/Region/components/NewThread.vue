@@ -61,9 +61,9 @@ export default {
   computed: {
     sendMailLabelText () {
       const deliveryMail = this.$i18n('forum.thread.delivery_mail.title')
-      const active = this.$i18n('forum.thread.delivery_mail.active')
-      const nonActive = this.$i18n('forum.thread.delivery_mail.non_active')
-      return this.sendMail ? deliveryMail + ' ' + active : deliveryMail + ' ' + nonActive
+      const activate = this.$i18n('forum.thread.delivery_mail.activate')
+      const disable = this.$i18n('forum.thread.delivery_mail.disable')
+      return this.sendMail ? deliveryMail + ' ' + disable : deliveryMail + ' ' + activate
     },
   },
   methods: {

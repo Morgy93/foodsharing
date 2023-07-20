@@ -23,7 +23,7 @@ class RegularPickupGateway extends BaseGateway
     public function getRegularPickup(int $storeId): array
     {
         $times = $this->db->fetchAll('
-			SELECT `time`, `dow`, `fetcher`
+			SELECT `time`, `dow`, `fetcher`, `description`
 			FROM `fs_abholzeiten`
 			WHERE `betrieb_id` = :storeId
 			ORDER BY dow, time
@@ -39,6 +39,7 @@ class RegularPickupGateway extends BaseGateway
         $column_values['dow'] = $regularPickup->weekday;
         $column_values['fetcher'] = $regularPickup->maxCountOfSlots;
         $column_values['betrieb_id'] = $storeId;
+        $column_values['description'] = $regularPickup->description;
 
         return $this->db->insertOrUpdate('fs_abholzeiten', $column_values);
     }
@@ -89,7 +90,7 @@ class RegularPickupGateway extends BaseGateway
             $timeConstrain = '(? <= TIME_TO_SEC(`time`)+`dow`*86400 AND TIME_TO_SEC(`time`)+`dow`*86400 < 604800) OR (TIME_TO_SEC(`time`)+`dow`*86400 <= ?)';
         }
 
-        $query = 'SELECT `time`, `dow`, `fetcher` FROM fs_abholzeiten WHERE `betrieb_id` = ? AND (' . $timeConstrain . ')';
+        $query = 'SELECT `time`, `dow`, `fetcher`, `description` FROM fs_abholzeiten WHERE `betrieb_id` = ? AND (' . $timeConstrain . ')';
 
         $results = $this->db->fetchAll($query, [$storeId, $startTimeInSec, $lastTimeInSec]);
 

@@ -2,12 +2,10 @@
 
 namespace Foodsharing\Modules\Settings;
 
-use DateTime;
 use Foodsharing\Lib\Session;
 use Foodsharing\Lib\View\Utils;
 use Foodsharing\Modules\Content\ContentGateway;
 use Foodsharing\Modules\Core\DBConstants\Foodsaver\Role;
-use Foodsharing\Modules\Core\DBConstants\Foodsaver\SleepStatus;
 use Foodsharing\Modules\Core\DBConstants\FoodSharePoint\FollowerType;
 use Foodsharing\Modules\Core\DBConstants\Info\InfoType;
 use Foodsharing\Modules\Core\DBConstants\Quiz\AnswerRating;
@@ -64,90 +62,14 @@ class SettingsView extends View
         );
     }
 
-    public function sleepMode($sleep)
+    public function sleepMode($sleep): string
     {
-        if ($sleep['sleep_status'] == SleepStatus::NONE && $sleep['sleep_from'] != null) {
-            $sleep['sleep_status'] = SleepStatus::TEMP;
-        }
-        $this->dataHelper->setEditData($sleep);
-
-        if ($sleep['sleep_status'] != SleepStatus::TEMP) {
-            $this->pageHelper->addJs('$("#sleeprange-wrapper").hide();');
-        }
-
-        if ($sleep['sleep_status'] == SleepStatus::NONE) {
-            $this->pageHelper->addJs('$("#sleep_msg-wrapper").hide();');
-        }
-
-        if ($sleep['sleep_status'] == SleepStatus::TEMP) {
-            $date = DateTime::createFromFormat('Y-m-d', $sleep['sleep_from']);
-            if ($date === false) {
-                $date = new DateTime();
-            }
-            $from = $date->format('d.m.Y');
-
-            $date = DateTime::createFromFormat('Y-m-d', $sleep['sleep_until']);
-            if ($date === false) {
-                $date = new DateTime();
-            }
-            $to = $date->format('d.m.Y');
-
-            $this->pageHelper->addJs("
-				$('#sleeprange_from').val('$from');
-				$('#sleeprange_to').val('$to');
-			");
-        }
-
-        $this->pageHelper->addJs('
-			$("#sleep_status").on("change", function () {
-				var $this = $(this);
-				if ($this.val() == 1) {
-					$("#sleeprange-wrapper").show();
-				} else {
-					$("#sleeprange-wrapper").hide();
-				}
-
-				if ($this.val() > 0) {
-					$("#sleep_msg-wrapper").show();
-				} else {
-					$("#sleep_msg-wrapper").hide();
-				}
-			});
-			$("#sleep_msg").css("height", "80px");
-
-			$("#schlafmtzenfunktion-form").on("submit", function (ev) {
-				ev.preventDefault();
-				if ($("#sleep_status").val() == 1) {
-					if ($("#sleeprange_from").val() == "" || $("#sleeprange_to").val() == "") {
-						pulseError("' . $this->translator->trans('settings.sleep.missing-date') . '");
-						return;
-					}
-				}
-				trySetSleepMode()
-			});
-			$("#formwrapper").show();
-		');
-
-        $out = $this->v_utils->v_quickform($this->translator->trans('settings.sleep.header'), [
-            $this->v_utils->v_info($this->translator->trans('settings.sleep.info')),
-            $this->v_utils->v_form_select('sleep_status', [
-                'values' => [
-                    ['id' => SleepStatus::NONE, 'name' => $this->translator->trans('settings.sleep.none')],
-                    ['id' => SleepStatus::TEMP, 'name' => $this->translator->trans('settings.sleep.temp')],
-                    ['id' => SleepStatus::FULL, 'name' => $this->translator->trans('settings.sleep.full')]
-                ]
-            ]),
-            $this->v_utils->v_form_daterange('sleeprange', $this->translator->trans('settings.sleep.range')),
-            $this->v_utils->v_form_textarea('sleep_msg', [
-                'maxlength' => 150
-            ]),
-            $this->v_utils->v_info($this->translator->trans('settings.sleep.show'))
-        ], [
-            'submit' => $this->translator->trans('button.save'),
-            'id' => 'schlafmtzenfunktion' // this needs to be hardcoded until the form was rewritten in Vue
+        return $this->vueComponent('sleeping-mode', 'SleepingMode', [
+            'sleepStatus' => $sleep['sleep_status'],
+            'sleepFrom' => $sleep['sleep_from'],
+            'sleepUntil' => $sleep['sleep_until'],
+            'sleepMessage' => $sleep['sleep_msg']
         ]);
-
-        return '<div id="formwrapper" style="display: none;">' . $out . '</div>';
     }
 
     public function settingsInfo($foodSharePoints, $threads)

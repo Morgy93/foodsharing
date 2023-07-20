@@ -20,11 +20,17 @@ class OneTimePickup
      */
     public int $slots;
 
+    /**
+     * Description of a pickup.
+     */
+    public ?string $description;
+
     public static function createFromArray($queryResult)
     {
         $obj = new OneTimePickup();
         $obj->date = DateTime::createFromFormat('Y-m-d H:i:s', $queryResult['time'], new DateTimeZone('Europe/Berlin'));
         $obj->slots = $queryResult['fetchercount'];
+        $obj->description = $queryResult['description'];
 
         return $obj;
     }

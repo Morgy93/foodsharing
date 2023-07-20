@@ -16,7 +16,7 @@ class RegionTransactions
     public function __construct(
         private readonly FoodsaverGateway $foodsaverGateway,
         private readonly UnitGateway $unitGateway,
-        private readonly RegionGateway $regionGateway
+        private readonly RegionGateway $regionGateway,
     ) {
     }
 

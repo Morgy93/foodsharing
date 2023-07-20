@@ -8,6 +8,10 @@ export function getUser () {
   return get('/user/current')
 }
 
+export function getBasicUser (id) {
+  return get(`/user/${id}`)
+}
+
 export function getDetails () {
   return get('/user/current/details')
 }

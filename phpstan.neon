@@ -36,8 +36,3 @@ parameters:
       message: '#Parameter \#[0-9]+ \$[a-zA-Z_]+ of method Flourish\\fImage::[a-zA-Z]+\(\) expects int, string given#'
       paths:
         - src/
-    # LEVEL 5+ DateTimeInterface / DateTime / DateTimeImmutable, see https://github.com/phpstan/phpstan/issues/314
-    -
-      message: '#expects (DateTime|Carbon\\Carbon)(\|null)?, (DateTimeInterface|Carbon\\CarbonInterface)(\|null)? given#'
-      paths:
-        - src/Modules/Store/StoreTransactions.php

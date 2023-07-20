@@ -23,7 +23,7 @@
   >
     <template #content>
       <span
-        v-for="(item, idx) in entry.items"
+        v-for="(item, idx) in items"
         :key="idx"
       >
         <b-dropdown-divider
@@ -52,12 +52,14 @@ import Dropdown from './NavDropdown.vue'
 import Link from './NavLink.vue'
 // Mixins
 import MediaQueryMixin from '@/mixins/MediaQueryMixin'
+import RouteAndDeviceCheckMixin from '@/mixins/RouteAndDeviceCheckMixin'
+
 export default {
   components: {
     Dropdown,
     Link,
   },
-  mixins: [MediaQueryMixin],
+  mixins: [MediaQueryMixin, RouteAndDeviceCheckMixin],
   props: {
     entry: {
       type: Object,
@@ -70,6 +72,7 @@ export default {
         isScrollable: false,
         isFixedSize: false,
         isInternal: false,
+        isDevOnly: false,
         isOpen: false,
         isHighlighted: false,
         items: [],
@@ -80,6 +83,14 @@ export default {
   computed: {
     isDropdown () {
       return !this.entry.url && this.entry.items
+    },
+    items () {
+      return this.entry.items.filter(item => {
+        if (item.isDevOnly) {
+          return this.isDev
+        }
+        return true
+      })
     },
   },
 }

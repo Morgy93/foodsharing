@@ -15,7 +15,7 @@
       <b-link
         v-if="!disabled"
         class="btn btn-sm btn-secondary ml-2"
-        @click="$refs.regionTreeModal.show()"
+        @click="openModal"
       >
         {{ $i18n('region.change') }}
       </b-link>
@@ -25,7 +25,9 @@
       ref="regionTreeModal"
       :title="$i18n(modalTitle)"
       :cancel-title="$i18n('button.cancel')"
-      :ok-title="$i18n('button.send')"
+      :ok-title="$i18n('button.apply')"
+      :ok-disabled="tmpSelectedRegion === null"
+      scrollable
       modal-class="bootstrap"
       header-class="d-flex"
       content-class="pr-3 pt-3"
@@ -67,7 +69,7 @@ export default {
       type: String,
       required: true,
     },
-    initialValue: {
+    value: {
       type: Object,
       default: function () {
         return {
@@ -86,7 +88,7 @@ export default {
   data () {
     return {
       tmpSelectedRegion: null,
-      selectedRegion: regionGetters.find(this.initialValue.id),
+      selectedRegion: regionGetters.find(this.value.id),
     }
   },
   methods: {
@@ -95,7 +97,11 @@ export default {
     },
     onModalClosed (e) {
       this.selectedRegion = this.tmpSelectedRegion
-      this.$emit('update:initialValue', this.tmpSelectedRegion)
+      this.$emit('input', this.tmpSelectedRegion)
+    },
+    openModal () {
+      this.tmpSelectedRegion = null
+      this.$refs.regionTreeModal.show()
     },
   },
 }

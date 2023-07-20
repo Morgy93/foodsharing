@@ -8,7 +8,7 @@
       @ok="trySetPickupSlots"
     >
       <b-row>
-        <b-col cols="2">
+        <b-col cols="3">
           {{ $i18n('day') }}
         </b-col>
         <b-col>
@@ -25,7 +25,7 @@
         </b-col>
       </b-row>
       <b-row>
-        <b-col cols="2">
+        <b-col cols="3">
           {{ $i18n('time') }}
         </b-col>
         <b-col>
@@ -36,17 +36,42 @@
           />
         </b-col>
       </b-row>
-      <b-row class="pt-2">
-        <b-col cols="2">
+      <b-row
+        v-if="disableAutoPickupSlot === false"
+        class="pt-2"
+      >
+        <b-col cols="3">
+          {{ $i18n('pickup.edit.description_titel') }}
+        </b-col>
+        <b-col>
+          <b-form-input
+            v-model="slotDescription"
+            :placeholder="$i18n('pickup.description_optional')"
+            :maxlength="100"
+          />
+        </b-col>
+      </b-row>
+      <b-row
+        v-if="disableAutoPickupSlot === false"
+        class="pt-2"
+      >
+        <b-col cols="3">
           {{ $i18n('pickup.edit.slot_titel') }}
         </b-col>
         <b-col>
           <b-form-spinbutton
-            v-if="disableAutoPickupSlot === false"
             v-model="selectedSlotCount"
             :min="minSlotCount"
             :max="maxCountPickupSlot"
           />
+        </b-col>
+      </b-row>
+      <hr>
+      <b-row class="pt-2">
+        <b-col cols="3">
+          {{ $i18n('pickup.edit.disable_auto_slot_titel') }}
+        </b-col>
+        <b-col>
           <b-form-checkbox
             v-model="disableAutoPickupSlot"
             class="pt-2"
@@ -102,6 +127,7 @@ export default {
       minSlotDate: null,
       selectedSlotCount: 1,
       minSlotCount: 1,
+      slotDescription: '',
     }
   },
   computed: {
@@ -139,7 +165,11 @@ export default {
         combinedDateTime.setMinutes(minutes)
         combinedDateTime.setSeconds(seconds)
 
-        await setPickupSlots(this.storeId, combinedDateTime, this.selectedSlotCount)
+        if (!this.selectedSlotCount || this.slotDescription === '') {
+          this.slotDescription = null
+        }
+
+        await setPickupSlots(this.storeId, combinedDateTime, this.selectedSlotCount, this.slotDescription)
       } catch {
         pulseError(this.$i18n('storeedit.unsuccess'))
       }

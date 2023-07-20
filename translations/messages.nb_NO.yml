@@ -8,9 +8,12 @@ startpage:
       all støtte.\"\n"
   demands:
     title: Krav
-    text: "\"Handlingsplan for Tyskland\nFoodsharing og Deutsche Umwelthilfe viser
-      med en handlingsplan\nhvilke tiltak Tyskland måtte iverksette for å nå målet
-      om å\nhalvere matsvinnet.\"\n"
+    text: "For å redusere matsvinnet på en effektiv måte må vi gjøre mer enn bare
+      å redde matrester fra gårdene eller opplyse forbrukerne fra gårdene eller opplyse
+      forbrukerne.\nI stedet må noe endres politisk:\nVi trenger forpliktende reduksjonsmål
+      for avfall langs hele verdikjeden. I tillegg må gjeldende handelsstandarder
+      revurderes og lempes, og organisasjoner som sparer mat eller tilbyr undervisning
+      om ernæringsfaget må styrkes.\n"
   near_you:
     text2:
       part2: Matkurver
@@ -913,6 +916,9 @@ settings:
       title: Generer et nytt token
       message: Du kan bare opprette ett token om gangen. Et nytt token vil overskrive
         den forrige lenken og gjøre den ugyldig. Vil du virkelig gjenskape det?
+    export: Eksporter kalender
+    export_tooltip: Dette lar deg se dine neste hentedatoer med et kalenderprogram
+      du velger.
   notifications: Varsler
   title: Innstillinger
   account: Kontoalternativer
@@ -932,6 +938,11 @@ settings:
     show: "Ved å bruke denne funksjonen godtar du at statusen din, fraværsperioden
       din\nog bortemeldingen vises på profilsiden din og et natthetteikon plasseres\n
       over profilbildet ditt.\n"
+    status: Din nåværende status
+    message: Her kan du legge igjen en kort melding om hvorfor du ikke har tid for
+      øyeblikket.
+    from: Fra
+    until: til
   header: Profilinnstillinger
   follow:
     thread: Bli varslet når det er noe nytt om «{thread}»?
@@ -1035,6 +1046,8 @@ mailbox:
 map:
   title: Kart
   donates: Selskapet donerer
+  filters:
+    my_stores: Kun mine bedrifter
 content:
   content: innhold
   bread: alle sider
@@ -1950,6 +1963,7 @@ chat:
   search: Søk
   no_messages: Ingen meldinger
   no_conversation: Ingen samtale er valgt
+  unknown_username: ukjent navn
 forum:
   thread:
     title: Tittel
@@ -1971,6 +1985,8 @@ forum:
       active: aktivert
       non_active: deaktivert
       title: Postlevering
+      disable: deaktivere
+      activate: aktivere
   post:
     body: Beskjed
     delete: Slett innlegget
@@ -1997,6 +2013,7 @@ forum:
     />Obs: Hvis du vil bruke en * i teksten, må du sette inn en omvendt skråstrek
     (&bsol;) foran den, for eksempel som i han&bsol;*hun.'
   deleted_user: Slettet bruker
+  not_found: Denne tråden eksisterer ikke.
 timepicker:
   labelNowButton: nå
   labelCloseButton: Lukk
@@ -2306,6 +2323,10 @@ store:
   jumping: Hopper
   member: Medlem
   isAppliedForTeam: Forespørsel
+  particularities_chain: Kjedens spesielle egenskaper
+  particularities_chain_tooltip: Dette etablissementet er en del av en kjede. Dette
+    er grunnen til at denne tilleggsinformasjonen vises, som gjelder for alle virksomheter
+    i kjeden.
 storeview:
   status: Nåværende status
   public_time_at_night: om natten
@@ -2327,7 +2348,7 @@ storeview:
   status_notes: Statusnotater
   show_information: Vis bedriftsinformasjon
   common: Som regel
-  visible_for_public: Denne teksten er synlig for alle matreddere.
+  visible_for_public: Denne teksten er synlig for alle matreddere, f.eks. på kartet.
   visible_for_team: Denne teksten er bare synlig for innsamlingsteamet.
   invalid_field: Ugyldig feltinnhold. Endringen kan ikke lagres.
   contact:
@@ -2346,7 +2367,7 @@ storeview:
     single: 1 uke
     multiply: '{weeks} uker'
   cooperation_start: Samarbeid siden
-  no_permission_to_view: Manglende autorisasjon
+  no_permission_to_view: Kun synlig for de som er ansvarlige for driften.
   cooperation_status: Samarbeidsstatus
   team: Henteteam
   public_and_statistics: Statistikk og PR
@@ -2495,6 +2516,7 @@ terminology:
     "0": matdeler
   pickup: Plukke opp
   store: Selskapet
+  n_home_regions: en med hjemdistrikt|%count% med hjemdistrikt
 gender:
   d: mangfoldig
   f: Fru
@@ -2922,15 +2944,16 @@ chain:
   listheader: Driftskjeder
   columns:
     name: Navn
-    stores: Bedrifter
+    stores: Antall samarbeidende Bedrifter
     status: Status
     headquarters: Sentral
     kams: KAM-er
     notes: Notater
+    estimatedStoreCount: Estimert antall samarbeidende butikker
   new: Gå inn i ny kjede
   allowpress: Offentlig navngivning tillatt.
   tooltips:
-    modification_date: Sist redigert
+    modificationDate: Sist redigert
     options: Innstillinger
   options:
     showstores: Vise selskaper
@@ -2949,10 +2972,12 @@ chain:
         placeholder:
           zip: Postnummer
           city: By
+          country: 'Land'
       thread:
-        invalidfeedback: Ugyldig inndata. Tråd-ID eller lenke nødvendig.
-        description: Id for en forumtråd. Sett inn lenke for automatisk gjenkjenning.
+        invalidfeedback: Tråd-ID eller lenke nødvendig.
+        description: Søk etter navn på forumtråden ved å skrive inn minst 3 tegn.
         label: Forumtråd
+        placeholder: 'Søk på forumtrådens navn'
       kam:
         label: KAM-er
         invalidfeedback: Ugyldig inndata. En eller flere bruker-IDer kreves.
@@ -2970,6 +2995,10 @@ chain:
       press:
         label: Presse
         description: Tillat offentlig omtale av samarbeid
+      estimatedStoreCount:
+        label: Estimert antall samarbeidende butikker
+        invalidfeedback: Bare sifre er tillatt.
+        description: Totalt antall bedrifter i kjeden
     cancel: Avbryt
     ok: Lagre
   detailsmodal:
@@ -2984,9 +3013,13 @@ chain:
   filterplaceholder: Navn / adresse / KAM-ID
   error:
     notfs: Du må være matredder for å se denne listen.
-    create: Kjeden kunne ikke opprettes.
-    edit: Kjeden kunne ikke redigeres.
+    create: Kjeden kunne ikke opprettes ({error}).
+    edit: Kjeden kunne ikke redigeres ({error}).
   bread:
     workinggroup: Driftskjeder
     list: Oversikt
   pagetitle: Driftskjeder
+usersearch:
+  search_tag: Søk etter brukere
+  select_tag: Søk brukere etter navn
+  no_tag_preset: Bruker ikke funnet

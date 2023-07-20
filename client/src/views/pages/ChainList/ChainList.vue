@@ -77,8 +77,7 @@
             />
           </template>
 
-          <template #cell(headquarters_city)="row">
-            {{ row.item.headquarters_zip }}
+          <template #cell(headquartersCity)="row">
             {{ row.value }}
           </template>
 
@@ -92,35 +91,35 @@
 
           <template #cell(name)="row">
             <a
-              v-if="row.item.forum_thread"
+              v-if="row.item.chain.forumThread"
               class="thread-link"
-              :href="$url('forumThread', row.item.forum_thread)"
+              :href="$url('forumThread', row.item.chain.regionId, row.item.chain.forumThread)"
             >
-              {{ row.value }}
+              {{ row.item.chain.name }}
             </a>
             <span v-else>
-              {{ row.value }}
+              {{ row.item.chain.name }}
             </span>
           </template>
 
           <template #cell(notes)="row">
             <span class="clamped-3">
-              <span v-if="row.item.allow_press">
+              <span v-if="row.item.allowPress">
                 {{ $i18n('chain.allowpress') }}
               </span>
               {{ row.value }}
               <small
-                v-b-tooltip.hover.window="$i18n('chain.tooltips.modification_date')"
+                v-b-tooltip.hover.window="$i18n('chain.tooltips.modificationDate')"
                 class="text-muted change-date"
               >
-                {{ $dateFormatter.date(new Date(row.item.modification_date), { short: true }) }}
+                {{ $dateFormatter.date(new Date(row.item.chain.modificationDate), { short: true }) }}
               </small>
             </span>
           </template>
 
           <template #cell(actions)="row">
             <b-dropdown
-              v-if="adminPermissions || row.item.kams.some(kam => kam.id === ownId)"
+              v-if="adminPermissions || row.item.chain.kams.some(kam => kam.id === ownId)"
               v-b-tooltip.hover.noninteractive.window="$i18n('chain.tooltips.options')"
               size="sm"
               no-caret
@@ -166,7 +165,6 @@
       ref="input-modal"
       :status-filter-options="statusFilterOptions"
       :admin-permissions="adminPermissions"
-      @ok="finishEditing"
     />
 
     <StoreDetailsModal
@@ -182,7 +180,7 @@ import PickupEntries from '../../../../../src/Modules/Profile/components/PickupE
 import InputModal from '@/components/Modals/ChainList/InputModal.vue'
 import StoreDetailsModal from '@/components/Modals/ChainList/StoreDetailsModal.vue'
 import { getters, mutations } from '@/stores/chains'
-import { hideLoader, pulseError, showLoader } from '@/script'
+import { pulseError } from '@/script'
 
 export default {
   components: { PickupEntries, InputModal, StoreDetailsModal },
@@ -208,30 +206,42 @@ export default {
           label: this.$i18n('chain.columns.status'),
           tdClass: 'status',
           sortable: true,
+          formatter: (value, key, item) => item.chain.status,
         },
         {
           key: 'name',
           label: this.$i18n('chain.columns.name'),
           sortable: true,
+          formatter: (value, key, item) => item,
         },
         {
-          key: 'store_count',
+          key: 'estimatedStoreCount',
+          label: this.$i18n('chain.columns.estimatedStoreCount'),
+          sortable: true,
+          tdClass: 'text-center',
+          formatter: (value, key, item) => item.chain.estimatedStoreCount,
+        },
+        {
+          key: 'storeCount',
           label: this.$i18n('chain.columns.stores'),
           sortable: true,
           tdClass: 'text-center',
         },
         {
-          key: 'headquarters_city',
+          key: 'headquartersCity',
           label: this.$i18n('chain.columns.headquarters'),
           sortable: true,
+          formatter: (value, key, item) => item.chain.headquartersCountry + ', ' + item.chain.headquartersZip + ' ' + item.chain.headquartersCity,
         },
         {
           key: 'kams',
           label: this.$i18n('chain.columns.kams'),
+          formatter: (value, key, item) => item.chain.kams,
         },
         {
           key: 'notes',
           label: this.$i18n('chain.columns.notes'),
+          formatter: (value, key, item) => item.chain.notes,
         },
         {
           key: 'actions',
@@ -262,12 +272,14 @@ export default {
       let chains = this.chains
       const filterText = this.filterText.trim().toLowerCase()
       if (filterText) {
-        const searchKeys = ['name', 'headquarters_city']
-        chains = chains.filter(
-          chain => (
-            searchKeys.some(key => chain[key]?.toLowerCase().includes(filterText))) ||
-            chain.kams.find(kam => kam.id === parseInt(filterText)),
-        )
+        const searchKeys = ['name', 'headquartersCity']
+        const searchTerms = filterText.split(/[^a-zA-Z0-9]+/).filter(term => term)
+        chains = chains.filter(chain => {
+          return searchKeys.some(key => {
+            const value = chain.chain[key]?.toLowerCase()
+            return searchTerms.every(term => value.includes(term))
+          }) || chain.chain.kams.find(kam => kam.id === parseInt(filterText))
+        })
       }
       if (this.filterStatus !== null) {
         chains = chains.filter(chain => chain.status === this.filterStatus)
@@ -293,53 +305,62 @@ export default {
     },
     editChainModal (row) {
       const chain = row.item
-      this.$refs['input-modal'].show(chain.id, {
-        name: chain.name,
-        headquarters_zip: chain.headquarters_zip,
-        headquarters_city: chain.headquarters_city,
-        status: chain.status,
-        forum_thread: chain.forum_thread,
-        notes: chain.notes,
-        common_store_information: chain.common_store_information,
-        allow_press: !!chain.allow_press,
-        kamIds: chain.kams.map(x => x.id).join(', '),
-      })
+      const input = {
+        name: chain.chain.name,
+        headquartersZip: chain.chain.headquartersZip,
+        headquartersCity: chain.chain.headquartersCity,
+        headquartersCountry: chain.chain.headquartersCountry,
+        status: chain.chain.status,
+        forumThread: chain.chain.forumThread,
+        notes: chain.chain.notes,
+        commonStoreInformation: chain.chain.commonStoreInformation,
+        estimatedStoreCount: chain.chain.estimatedStoreCount,
+        allowPress: !!chain.chain.allowPress,
+        kamIds: chain.chain.kams.map(x => x.id),
+      }
+      this.$refs['input-modal'].show(chain.chain.id, input, this.finishEditing)
     },
     createChainModal () {
       this.$refs['input-modal'].show(-1, {
         name: '',
-        headquarters_zip: '',
-        headquarters_city: '',
+        headquartersZip: null,
+        headquartersCity: '',
+        headquartersCountry: '',
         status: 2,
-        forum_thread: '',
-        allow_press: false,
+        forumThread: null,
+        allowPress: false,
+        estimatedStoreCount: 0,
         notes: '',
-        common_store_information: '',
-        kamIds: '',
-      })
+        commonStoreInformation: '',
+        kamIds: [],
+      }, this.finishEditing)
     },
     async detailsChainModal (row) {
       const selectedChain = row.item
       this.$refs['details-modal'].show(selectedChain)
-      await mutations.fetchChainStores(selectedChain.id)
+      await mutations.fetchChainStores(selectedChain.chain.id)
     },
     async finishEditing (chainId, data) {
-      showLoader()
-      console.log(data)
       if (chainId < 0) {
         try {
           await mutations.createChain(data)
-        } catch (e) {
-          pulseError(this.$i18n('chain.error.create'))
+        } catch (err) {
+          const errorDescription = err.jsonContent ?? { message: '' }
+          const errorMessagePattern = `chain.errorCodes.${errorDescription.message ?? 'UNKNOWN'}`
+          pulseError(this.$i18n('chain.error.create', { error: this.$i18n(errorMessagePattern) }))
+          return false
         }
       } else {
         try {
           await mutations.editChain(chainId, data)
-        } catch {
-          pulseError(this.$i18n('chain.error.edit'))
+        } catch (err) {
+          const errorDescription = err.jsonContent ?? { message: '' }
+          const errorMessagePattern = `chain.errorCodes.${errorDescription.message ?? 'UNKNOWN'}`
+          pulseError(this.$i18n('chain.error.edit', { error: this.$i18n(errorMessagePattern) }))
+          return false
         }
       }
-      hideLoader()
+      return true
     },
   },
 }

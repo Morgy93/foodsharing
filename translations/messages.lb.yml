@@ -922,7 +922,7 @@ chain:
     status: ''
   new: ''
   tooltips:
-    modification_date: ''
+    modificationDate: ''
     options: ''
   inputmodal:
     inputs:
@@ -935,12 +935,14 @@ chain:
         placeholder:
           zip: ''
           city: ''
+          country: ''
       status:
         label: ''
       thread:
         label: ''
         invalidfeedback: ''
         description: ''
+        placeholder: ''
       kam:
         label: ''
         invalidfeedback: ''

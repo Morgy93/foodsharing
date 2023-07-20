@@ -13,19 +13,38 @@
           <span
             v-html="$dateFormatter.dateTime(date)"
           />
-          <div
+
+          <b-dropdown
             v-if="isCoordinator && !isInPast"
-            class="delete-pickup"
+            no-caret
+            right
+            variant="badge-light"
+            class="pickup-options m-2"
           >
-            <button
-              v-b-tooltip.hover="$i18n('pickup.delete_title')"
-              class="btn"
-              :class="{'cannot-delete': occupiedSlots.length > 0}"
+            <template #button-content>
+              <i class="fas fa-ellipsis-v" />
+            </template>
+            <b-dropdown-item
+              @click="$refs.modal_edit_description.show()"
+            >
+              <i class="fas fa-pen" />
+              {{ $i18n('pickup.edit_description') }}
+            </b-dropdown-item>
+            <b-dropdown-item
               @click="occupiedSlots.length > 0 ? $refs.modal_delete_error.show() : $refs.modal_delete.show()"
             >
-              <i class="fas fa-trash-alt" />
-            </button>
-          </div>
+              <i class="fas fa-trash" />
+              {{ $i18n('pickup.delete_title') }}
+            </b-dropdown-item>
+          </b-dropdown>
+        </div>
+        <div
+          v-if="description"
+        >
+          <i class="fas fa-info-circle" />
+          <i>
+            {{ description }}
+          </i>
         </div>
       </div>
       <p class="pickup-text">
@@ -176,6 +195,25 @@
     </b-modal>
 
     <b-modal
+      ref="modal_edit_description"
+      :title="$i18n('pickup.edit_description')"
+      :cancel-title="$i18n('button.cancel')"
+      :ok-title="$i18n('button.save')"
+      modal-class="bootstrap"
+      header-class="d-flex"
+      @ok="$emit('edit-description', date, totalSlots, newDescription)"
+    >
+      <p>
+        {{ $i18n('pickup.description_modal_text') }}
+      </p>
+      <b-form-input
+        v-model="newDescription"
+        :placeholder="$i18n('pickup.description')"
+        :maxlength="100"
+      />
+    </b-modal>
+
+    <b-modal
       ref="modal_delete_error"
       :title="$i18n('pickup.delete_title')"
       ok-only
@@ -219,6 +257,7 @@ export default {
     occupiedSlots: { type: Array, default: () => [] },
     isCoordinator: { type: Boolean, default: false },
     user: { type: Object, default: () => { return { id: null } } },
+    description: { type: String, default: () => { return null } },
   },
   data () {
     return {
@@ -237,6 +276,7 @@ export default {
       // cannot use slotDate here since it's computed and needs to avoid circular data references:
       teamMessage: this.$i18n('pickup.leave_team_message_template', { date: this.$dateFormatter.dateTime(this.date) }),
       kickMessage: '',
+      newDescription: this.description,
     }
   },
   computed: {
@@ -306,7 +346,7 @@ export default {
   // Pickup marker to explain traffic lights
   &.coord.soon.empty::after {
     float: right;
-    margin-right: -5px;
+    margin-right: 1em;
     text-align: right;
     content: "\f12a"; // fa-exclamation
     font-family: "Font Awesome 5 Free";
@@ -431,4 +471,15 @@ export default {
     }
   }
 }
+
+.pickup-options {
+  position: absolute;
+  top: -1.2em;
+  right: -1.5em;
+
+  ::v-deep .btn:focus {
+    box-shadow: none !important;
+  }
+}
+
 </style>

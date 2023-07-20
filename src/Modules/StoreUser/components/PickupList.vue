@@ -40,15 +40,17 @@
             :store-title="storeTitle"
             :is-coordinator="isCoordinator"
             :user="user"
+            :description="pickup.description"
             class="pickup-block"
             @leave="leave"
             @kick="kick"
             @join="join"
             @confirm="confirm"
-            @delete="setSlots(pickup.date, 0)"
-            @add-slot="setSlots(pickup.date, pickup.totalSlots + 1)"
-            @remove-slot="setSlots(pickup.date, pickup.totalSlots - 1)"
+            @delete="setSlots(pickup.date, 0, pickup.description)"
+            @add-slot="setSlots(pickup.date, pickup.totalSlots + 1, pickup.description)"
+            @remove-slot="setSlots(pickup.date, pickup.totalSlots - 1, pickup.description)"
             @team-message="sendTeamMessage"
+            @edit-description="editDescription"
           />
         </div>
       </div>
@@ -165,10 +167,10 @@ export default {
       }
       this.reload()
     },
-    async setSlots (date, totalSlots) {
+    async setSlots (date, totalSlots, description) {
       this.isLoading = true
       try {
-        await setPickupSlots(this.storeId, date, totalSlots)
+        await setPickupSlots(this.storeId, date, totalSlots, description)
       } catch (e) {
         pulseError(this.$i18n('pickuplist.error_changeSlotCount') + e)
       }
@@ -182,6 +184,15 @@ export default {
         console.error(e)
         pulseError(this.$i18n('pickuplist.error_whileSending'))
       }
+    },
+    async editDescription (date, totalSlots, description) {
+      this.isLoading = true
+      try {
+        await setPickupSlots(this.storeId, date, totalSlots, description)
+      } catch (e) {
+        pulseError(this.$i18n('pickuplist.error_changeSlotCount') + e)
+      }
+      this.reload()
     },
     loadAddPickupModal () {
       ajreq(

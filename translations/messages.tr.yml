@@ -432,7 +432,7 @@ group:
   userId: ID
   filter_by_last_activity: Aylardır aktif değil
   applications: Müracatlar
-  applications_for: '%name% için müracatlar'
+  applications_for: '{name} için müracatlar'
   title: Foodsharing Çalışma Grupları
   subtitle: Burada yardım ve yapacak çok şey bulacaksınız…
   member_count: '{0} Katkıda bulunan yok|{1} Bir katkıda bulunan var| [2, Inf[ %count%
@@ -682,17 +682,7 @@ startpage:
       etkinliklerde bilgilendiriyoruz.'
   bedependable: 'Güvenilir ol'
   demands:
-    text: '"Alman çevre yardımı ile eylem planı
-
-      12/12/2018 tarihinde foodsharing 6. yıldönümünde yayınlandı. Başka bir kelime
-      ihlalinden Almanya''ya
-
-      - 2020 için iklim koruma hedeflerinde olduğu gibi - foodsharing ve Deutsche
-      Umwelthilfe''yı bir arada gösteren
-
-      Eylem Planı, olmadan yarılanma hedefine ulaşılamayan önlemleri listeler."
-
-      '
+    text: ''
     title: 'Talepler'
   donate:
     text: '" Tüm harcamalarımıza sponsorluk bulmak için çalışıyoruz. Ancak bazı durumlarda
@@ -1644,7 +1634,7 @@ footer:
   press: Basın
   dataprivacy: 'Veri gizliliği'
 releases:
-  "2022-12": Release "Icecream" 🍇 (Aralık 2022)
+  "2022-12": Release "Icecream" 🍨 (Aralık 2022)
   "2020-05": Release 'Portakal' (Mayıs 2020)
   "2022-05": Release "Yaban Mersini" 🍇 (Mayıs 2022)
   "2021-09": Release "İncir" 🥧 (Eylül 2021)
@@ -1865,6 +1855,7 @@ settings:
         önceki bağlantının üzeri yazılır ve öncekini geçersiz kılar. Bunu gerçekten
         yeniden oluşturmak istiyor musun?
       title: Yeni bir jeton oluştur
+    export_tooltip: Seçtiğiniz bir takvim programı ile tahsilat tarihlerinizi görüntüleyebilirsiniz.
   title: Ayarlar
   passport:
     menu: Kimlik Kartı
@@ -1987,6 +1978,7 @@ chat:
   confirm_draft_discard: "Yeni bir sohbete geçersiniz. Cevap alanındaki metin atılır.\n
     \nBu iletişim kutusunu iptal ederseniz taslağınız bunun yerine yeni görüşmeye
     taşınacaktır.\n"
+  unknown_username: bilinmeyen isim
 push_notifications:
   test_notification_title: Push bildirimleri etkinleştirildi
   test_notification_body: Harika, bu işe yaramış gibi görünüyor :)
@@ -2548,8 +2540,7 @@ fsp:
     mail: Zil ve e-posta bildirimi
     bell: sadece dahili bilgi mesajları (zil)
   twig:
-    n_in_region: '{0} %name%| içinde gıda dağıtım noktası {1} %name%| içinde gıda
-      dağıtım noktası [2, Inf[ %count%, %name% içinde gıda dağıtım noktası'
+    n_in_region: '{count} {name} içinde gıda dağıtım noktası'
   followers: Takipçi*ler
   addSuccess: Gıda dağıtım noktası başarıyla girildi
   location: Posta kodu / Şehir
@@ -2820,6 +2811,7 @@ chain:
         label: 'Forum Konusu'
         description: 'Bir forum dizisinin ID si. Otomatik algılama için bağlantı ekleyin.'
         invalidfeedback: 'Geçersiz Giriş. Konu ID si veya Link gerekli.'
+        placeholder: ''
       notes:
         label: 'Notlar'
         invalidfeedback: 'Notlar 200 karakterden uzun olamaz.'
@@ -2837,6 +2829,7 @@ chain:
         placeholder:
           zip: 'Posta Kodu'
           city: 'Şehir'
+          country: ''
     title:
       edit: 'İşletme zincirini düzenle'
       new: 'İşletme zinciri oluştur'

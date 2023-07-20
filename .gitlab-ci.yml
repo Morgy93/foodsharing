@@ -346,6 +346,7 @@ test:backend-acceptance:
     - .defaults
   stage: test
   interruptible: true
+  timeout: 60 minutes
   rules:
     - if: $CI_COMMIT_BRANCH == 'master' || $CI_COMMIT_BRANCH == 'production'
     - !reference [.dirs-app-rule, rules]

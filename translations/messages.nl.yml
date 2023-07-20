@@ -1185,6 +1185,7 @@ chain:
         description: ''
         invalidfeedback: ''
         label: ''
+        placeholder: ''
       kam:
         invalidfeedback: ''
         label: ''
@@ -1208,6 +1209,7 @@ chain:
         placeholder:
           zip: ''
           city: ''
+          country: ''
       status:
         label: ''
     ok: ''
@@ -1238,7 +1240,7 @@ chain:
   new: ''
   allowpress: ''
   tooltips:
-    modification_date: ''
+    modificationDate: ''
     options: ''
   options:
     showstores: ''

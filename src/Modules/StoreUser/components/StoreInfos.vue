@@ -42,6 +42,20 @@
           <Markdown :source="particularitiesDescription" />
         </div>
         <div
+          v-if="particularitiesChain"
+          id="chainParticularities"
+          class="desc-block mb-1 py-1"
+        >
+          <div class="desc-block-title mb-2 py-1">
+            {{ $i18n('store.particularities_chain') }}
+            <i
+              class="fas fa-info-circle fa-fw"
+              :title="$i18n('store.particularities_chain_tooltip')"
+            />
+          </div>
+          <Markdown :source="particularitiesChain" />
+        </div>
+        <div
           id="inputAverageCollectionQuantity"
           class="desc-block mb-1 py-1"
         >
@@ -100,6 +114,10 @@ export default {
     particularitiesDescription: {
       type: String,
       default: '',
+    },
+    particularitiesChain: {
+      type: String,
+      default: null,
     },
     collectionQuantity: {
       type: String,

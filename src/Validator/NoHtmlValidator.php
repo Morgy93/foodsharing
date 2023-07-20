@@ -28,7 +28,7 @@ class NoHtmlValidator extends ConstraintValidator
             // throw new UnexpectedValueException($value, 'string|int');
         }
 
-        $escapedValue = htmlspecialchars($value, ENT_QUOTES, 'UTF-8');
+        $escapedValue = strip_tags($value);
         if ($escapedValue != $value) {
             // the argument must be a string or an object implementing __toString()
             $this->context->buildViolation($constraint->message)

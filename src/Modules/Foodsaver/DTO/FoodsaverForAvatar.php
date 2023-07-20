@@ -33,4 +33,17 @@ class FoodsaverForAvatar
      * @OA\Property(example="/api/uploads/bc476952-08be-45a7-b670-db27c966c9c2")
      */
     public ?string $avatar;
+
+    /**
+     * Converts an dictionary into an FoodsaverForAvatar object.
+     */
+    public static function createFromArray(array $data): FoodsaverForAvatar
+    {
+        $obj = new FoodsaverForAvatar();
+        $obj->id = $data['foodsaver_id'];
+        $obj->name = $data['name'];
+        $obj->avatar = $data['photo'];
+
+        return $obj;
+    }
 }

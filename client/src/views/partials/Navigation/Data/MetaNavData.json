@@ -38,10 +38,11 @@
             },
             {
                 "isInternal": true,
-                "isDivider": true
+                "isDivider": true,
+                "isDevOnly": true
             },
             {
-                "isInternal": true,
+                "isDevOnly": true,
                 "title": "navigation.styleguide",
                 "modal": "styleGuideModal"
             }

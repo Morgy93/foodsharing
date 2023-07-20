@@ -12,7 +12,7 @@ class RegionGroupMemberEntry
 
     public ?string $avatar;
 
-    public int $sleepStatus;
+    public bool $isSleeping;
 
     public ?int $role = null;
 
@@ -29,7 +29,7 @@ class RegionGroupMemberEntry
         $this->id = 0;
         $this->name = null;
         $this->avatar = null;
-        $this->sleepStatus = 0;
+        $this->isSleeping = false;
         $this->role = null;
         $this->lastActivity = null;
         $this->isAdminOrAmbassadorOfRegion = false;
@@ -39,14 +39,14 @@ class RegionGroupMemberEntry
         int $id,
         ?string $name,
         ?string $avatar,
-        int $sleepStatus,
+        bool $isSleeping,
         bool $isAdminOrAmbassadorOfRegion): RegionGroupMemberEntry
     {
         $p = new RegionGroupMemberEntry();
         $p->id = $id;
         $p->name = $name;
         $p->avatar = $avatar;
-        $p->sleepStatus = $sleepStatus;
+        $p->isSleeping = $isSleeping;
         $p->isAdminOrAmbassadorOfRegion = $isAdminOrAmbassadorOfRegion;
 
         return $p;

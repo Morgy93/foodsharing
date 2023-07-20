@@ -352,15 +352,15 @@ class StoreTransactionsTest extends \Codeception\Test\Unit
 
         $this->tester->addRecurringPickup($store['id'], ['time' => '16:30:00', 'dow' => $dow, 'fetcher' => $fetcher]);
 
-        $this->assertEquals($fetcher, $this->transactions->totalSlotsIfPickupSlotAvailable($store['id'], $date, $this->foodsaver['id']));
+        $this->assertEquals($fetcher, $this->transactions->getPickupIfPickupSlotAvailable($store['id'], $date, $this->foodsaver['id'])->slots);
 
         $this->tester->addCollector($this->foodsaver['id'], $store['id'], ['date' => $date]);
 
-        $this->assertEquals(0, $this->transactions->totalSlotsIfPickupSlotAvailable($store['id'], $date, $this->foodsaver['id']));
-        $this->assertEquals($fetcher, $this->transactions->totalSlotsIfPickupSlotAvailable($store['id'], $date, $foodsaver2['id']));
+        $this->assertEquals(null, $this->transactions->getPickupIfPickupSlotAvailable($store['id'], $date, $this->foodsaver['id']));
+        $this->assertEquals($fetcher, $this->transactions->getPickupIfPickupSlotAvailable($store['id'], $date, $foodsaver2['id'])->slots);
 
         $this->tester->addCollector($foodsaver2['id'], $store['id'], ['date' => $date]);
-        $this->assertEquals(0, $this->transactions->totalSlotsIfPickupSlotAvailable($store['id'], $date));
+        $this->assertEquals(null, $this->transactions->getPickupIfPickupSlotAvailable($store['id'], $date));
     }
 
     public function testPickupSlotAvailableMixed()
@@ -374,12 +374,12 @@ class StoreTransactionsTest extends \Codeception\Test\Unit
 
         $fetchercount = 1;
         $this->tester->addPickup($store['id'], ['time' => $date, 'fetchercount' => $fetchercount]);
-        $this->assertEquals($fetchercount, $this->transactions->totalSlotsIfPickupSlotAvailable($store['id'], $date));
+        $this->assertEquals($fetchercount, $this->transactions->getPickupIfPickupSlotAvailable($store['id'], $date)->slots);
 
         $this->tester->addCollector($this->foodsaver['id'], $store['id'], ['date' => $date]);
 
-        $this->assertEquals(0, $this->transactions->totalSlotsIfPickupSlotAvailable($store['id'], $date, $this->foodsaver['id']));
-        $this->assertEquals(0, $this->transactions->totalSlotsIfPickupSlotAvailable($store['id'], $date));
+        $this->assertEquals(null, $this->transactions->getPickupIfPickupSlotAvailable($store['id'], $date, $this->foodsaver['id']));
+        $this->assertEquals(null, $this->transactions->getPickupIfPickupSlotAvailable($store['id'], $date));
     }
 
     public function testSinglePickupTimeProperlyTakenIntoAccount()
@@ -404,7 +404,7 @@ class StoreTransactionsTest extends \Codeception\Test\Unit
         $store = $this->tester->createStore($this->regionId);
         $date = Carbon::now()->add('1 day')->microseconds(0);
 
-        $this->assertEquals(0, $this->transactions->totalSlotsIfPickupSlotAvailable($store['id'], $date));
+        $this->assertEquals(null, $this->transactions->getPickupIfPickupSlotAvailable($store['id'], $date));
     }
 
     public function testUserCanOnlySignupOncePerSlot()

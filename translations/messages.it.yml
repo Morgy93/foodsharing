@@ -2902,11 +2902,13 @@ chain:
         description: ''
         invalidfeedback: ''
         label: ''
+        placeholder: ''
       headquarters:
         label: ''
         placeholder:
           zip: ''
           city: ''
+          country: ''
       status:
         label: ''
       kam:
@@ -2942,7 +2944,7 @@ chain:
     status: ''
   tooltips:
     options: ''
-    modification_date: ''
+    modificationDate: ''
   new: ''
   allowpress: ''
   detailsmodal:

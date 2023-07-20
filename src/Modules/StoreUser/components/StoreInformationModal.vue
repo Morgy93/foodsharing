@@ -57,10 +57,6 @@
                 max-rows="10"
                 :disabled="!editMode"
               />
-              <div
-                class="mb-2 ml-2"
-                v-html="$i18n('forum.markdown_description')"
-              />
             </b-form-group>
           </b-card-text>
         </b-tab>
@@ -159,17 +155,16 @@
         >
           <b-card-text>
             <b-form-group
-              label="Region"
+              :label="$i18n('bezirk')"
               label-for="region"
             >
               <region-tree-v-form
                 v-if="region"
+                v-model="store.region"
                 modal-title="storeview.select_related_region"
                 input-name="regionId"
-                :initial-value="store.region"
                 :selectable-region-types="[1, 8, 9]"
                 :disabled="!editMode"
-                @update:initial-value="store.region = $event"
               />
             </b-form-group>
             <b-form-group
@@ -244,7 +239,7 @@
               <b-form-spinbutton
                 id="calendarInterval"
                 v-model="calendarInterval"
-                min="1"
+                min="0"
                 max="8"
                 class="w-50"
                 :disabled="!editMode"
@@ -261,6 +256,7 @@
                 id="useRegionPickupRule"
                 v-model="store.options.useRegionPickupRule"
                 switch
+                :disabled-field="!editMode"
                 :disabled="!editMode"
               />
             </b-form-group>
@@ -340,6 +336,7 @@
                 id="showsSticker"
                 v-model="store.showsSticker"
                 switch
+                :disabled-field="!editMode"
                 :disabled="!editMode"
               />
               <small
@@ -358,6 +355,7 @@
                 id="publicity"
                 v-model="store.publicity"
                 switch
+                :disabled-field="!editMode"
                 :disabled="!editMode"
               />
               <small
@@ -545,10 +543,10 @@ export default {
       else return this.store.publicInfo.length <= 180
     },
     region () {
-      if (this.store.region) {
+      if (!this.store.region.name) {
         return regionGetters.find(this.store.region.id)
       } else {
-        return ''
+        return this.store.region.name
       }
     },
     calendarInterval: {
@@ -631,9 +629,11 @@ export default {
       try {
         showLoader()
         const store = this.store
+        store.regionId = this.store.region.id
+        delete store.region
         store.groceries = this.storeFoodIds
         await updateStore(store)
-        if (this.isUpdatedRegularPickup) {
+        if (this.isUpdatedRegularPickup()) {
           await editRegularPickup(this.storeId, this.editPickups)
         }
         pulseSuccess(this.$i18n('storeedit.edit_success'))

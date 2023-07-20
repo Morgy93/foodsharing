@@ -12,7 +12,7 @@ class WallPostGateway extends BaseGateway
         'event',
         'fairteiler',
         'foodsaver',
-        'fsreport',
+        'report',
         'question',
         'usernotes'
     ];
@@ -30,6 +30,11 @@ class WallPostGateway extends BaseGateway
     {
         if (!$this->isValidTarget($target)) {
             throw new \Exception('Invalid wall target');
+        }
+
+        // The name in the database is not consistent: the table fs_report_has_wallpost contains the column "fsreport_id" instead of "report_id"
+        if ($target === 'report') {
+            return 'fsreport_id';
         }
 
         return $target . '_id';

@@ -108,6 +108,121 @@ class PickupApiCest
         $I->seeResponseCodeIs(\Codeception\Util\HttpCode::FORBIDDEN);
     }
 
+    public function pickupDescriptionVisible(\ApiTester $I)
+    {
+        $I->login($this->user['email']);
+
+        //Create a pickup
+        $pickupBaseDate = Carbon::now()->add('1 days');
+        $pickupBaseDate->hours(14)->minutes(45)->seconds(0);
+        $I->addPickup($this->store['id'], ['time' => $pickupBaseDate, 'fetchercount' => 1, 'description' => 'some description']);
+
+        $I->sendGet('api/stores/' . $this->store['id'] . '/pickups');
+        $I->seeResponseIsJson();
+        $I->seeResponseCodeIs(\Codeception\Util\HttpCode::OK);
+        $I->canSeeResponseContainsJson([
+            'description' => 'some description'
+        ]);
+    }
+
+    public function pickupDescriptionEditable(\ApiTester $I)
+    {
+        $I->login($this->storeCoordinator['email']);
+
+        //Create a pickup
+        $pickupBaseDate = Carbon::now()->add('1 days');
+        $pickupBaseDate->hours(14)->minutes(45)->seconds(0);
+        $I->addPickup($this->store['id'], ['time' => $pickupBaseDate, 'fetchercount' => 1]);
+
+        $I->sendPatch('api/stores/' . $this->store['id'] . '/pickups/' . $pickupBaseDate->toIso8601String(),
+            ['description' => 'random description', 'totalSlots' => 3]
+        );
+        $I->seeResponseIsJson();
+        $I->seeResponseCodeIs(\Codeception\Util\HttpCode::OK);
+        $I->canSeeResponseContainsJson([
+            'created' => false
+        ]);
+
+        $I->sendGet('api/stores/' . $this->store['id'] . '/pickups');
+        $I->seeResponseIsJson();
+        $I->seeResponseCodeIs(\Codeception\Util\HttpCode::OK);
+        $I->canSeeResponseContainsJson([
+            'description' => 'random description'
+        ]);
+    }
+
+    public function createOnetimePickupWithDescription(\ApiTester $I)
+    {
+        $I->login($this->storeCoordinator['email']);
+
+        //Create a pickup
+        $pickupBaseDate = Carbon::now()->add('1 days');
+        $pickupBaseDate->hours(14)->minutes(45)->seconds(0);
+
+        $I->sendPatch('api/stores/' . $this->store['id'] . '/pickups/' . $pickupBaseDate->toIso8601String(),
+            ['description' => 'another random description', 'totalSlots' => 3]
+        );
+        $I->seeResponseIsJson();
+        $I->seeResponseCodeIs(\Codeception\Util\HttpCode::OK);
+        $I->canSeeResponseContainsJson([
+            'created' => true
+        ]);
+
+        $I->sendGet('api/stores/' . $this->store['id'] . '/pickups');
+        $I->seeResponseIsJson();
+        $I->seeResponseCodeIs(\Codeception\Util\HttpCode::OK);
+        $I->canSeeResponseContainsJson([
+            'description' => 'another random description'
+        ]);
+    }
+
+    public function createAndEnterRegularPickupWithDescription(\ApiTester $I)
+    {
+        $coordinator = $I->createStoreCoordinator();
+        $I->addStoreTeam($this->store['id'], $coordinator['id'], true, false, true);
+        $I->login($coordinator['email']);
+
+        //Create a pickup
+        $pickupBaseDate = Carbon::now()->next('Monday')->add('1 weeks');
+        $pickupBaseDate->hours(10)->minutes(30)->seconds(0);
+
+        $I->haveHttpHeader('Content-Type', 'application/json');
+        $I->sendPut('api/stores/' . $this->store['id'] . '/regularPickup',
+            [[
+                'description' => 'regular slot description',
+                'maxCountOfSlots' => 1,
+                'startTimeOfPickup' => '10:30:00',
+                'weekday' => 1,
+            ]]
+        );
+        $I->seeResponseIsJson();
+        $I->seeResponseCodeIs(\Codeception\Util\HttpCode::OK);
+
+        $I->sendGet('api/stores/' . $this->store['id'] . '/pickups');
+        $I->seeResponseIsJson();
+        $I->seeResponseCodeIs(\Codeception\Util\HttpCode::OK);
+        $I->canSeeResponseContainsJson([
+            'description' => 'regular slot description'
+        ]);
+
+        // Enter into that regular slot
+        $I->sendPOST('api/stores/' . $this->store['id'] . '/pickups/' . $pickupBaseDate->toIso8601String() . '/' . $coordinator['id']);
+        $I->seeResponseIsJson();
+        $I->seeResponseCodeIs(\Codeception\Util\HttpCode::OK);
+
+        $I->sendGet('api/stores/' . $this->store['id'] . '/pickups');
+        $I->seeResponseIsJson();
+        $I->seeResponseCodeIs(\Codeception\Util\HttpCode::OK);
+
+        // Make sure the description of the regular pickup slot is still there (now as a onetime pickup)
+        $I->canSeeResponseContainsJson([
+            'description' => 'regular slot description',
+            'occupiedSlots' => [
+                ['isConfirmed' => true]
+            ]
+        ]);
+    }
+
     public function signupAsCoordinarIsPreconfirmed(\ApiTester $I)
     {
         $pickupBaseDate = Carbon::now()->add('2 days');

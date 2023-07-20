@@ -28,6 +28,7 @@ use Foodsharing\Modules\Region\RegionGateway;
 use Foodsharing\Modules\Store\DTO\CommonLabel;
 use Foodsharing\Modules\Store\DTO\CommonStoreMetadata;
 use Foodsharing\Modules\Store\DTO\CreateStoreData;
+use Foodsharing\Modules\Store\DTO\OneTimePickup;
 use Foodsharing\Modules\Store\DTO\PatchAddress;
 use Foodsharing\Modules\Store\DTO\PatchContactData;
 use Foodsharing\Modules\Store\DTO\PatchStore;
@@ -56,6 +57,7 @@ class StoreTransactions
     private const STATUS_ORANGE_3_DAYS = 2;
     private const STATUS_YELLOW_5_DAYS = 1;
     private const STATUS_GREEN = 0;
+    private const MAX_PICKUP_DESCRIPTION_LENGTH = 100;
 
     public function __construct(
         private readonly MessageGateway $messageGateway,
@@ -417,7 +419,7 @@ class StoreTransactions
             $store->teamStatus = TeamSearchStatus::from($storeChange->teamStatus);
         }
 
-        if (!empty($storeChange->calendarInterval)) {
+        if (!is_null($storeChange->calendarInterval)) {
             $changeInformation->informationChanged = true;
             $store->calendarInterval = $storeChange->calendarInterval;
         }
@@ -487,25 +489,28 @@ class StoreTransactions
      * Creates or updates a manual pick up.
      *
      * @param int $storeId Store to update
-     * @param \DateTimeInterface $date Date of manual pick up
-     * @param int $newTotalSlots count of total slots which should be set
+     * @param OneTimePickup $pickup Details of the pickup
      *
      * @return bool true if a new one is created, false if it is updated
      *
      * @throws PickupValidationException Exception if input is invalid
      */
-    public function createOrUpdatePickup(int $storeId, \DateTimeInterface $date, int $newTotalSlots): bool
+    public function createOrUpdatePickup(int $storeId, OneTimePickup $pickup): bool
     {
-        if ($date < Carbon::now()) {
+        if ($pickup->date < Carbon::now()) {
             throw new PickupValidationException(PickupValidationException::PICK_UP_DATE_IN_THE_PAST);
         }
 
-        if ($newTotalSlots < 0 || $newTotalSlots > self::MAX_SLOTS_PER_PICKUP) {
+        if ($pickup->slots < 0 || $pickup->slots > self::MAX_SLOTS_PER_PICKUP) {
             throw new PickupValidationException(PickupValidationException::SLOT_COUNT_OUT_OF_RANGE);
         }
 
-        $occupiedSlots = count($this->pickupGateway->getPickupSignUpsForDate($storeId, $date));
-        if ($newTotalSlots < $occupiedSlots) {
+        if (!is_null($pickup->description) && mb_strlen($pickup->description) > self::MAX_PICKUP_DESCRIPTION_LENGTH) {
+            throw new PickupValidationException(PickupValidationException::DESCRIPTION_OVERSIZED);
+        }
+
+        $occupiedSlots = count($this->pickupGateway->getPickupSignUpsForDate($storeId, $pickup->date));
+        if ($pickup->slots < $occupiedSlots) {
             throw new PickupValidationException(PickupValidationException::MORE_OCCUPIED_SLOTS);
         }
 
@@ -513,16 +518,16 @@ class StoreTransactions
             throw new PickupValidationException(PickupValidationException::INVALID_STORE);
         }
 
-        $filledOnetimeSlots = $this->pickupGateway->getOnetimePickups($storeId, $date);
+        $filledOnetimeSlots = $this->pickupGateway->getOnetimePickups($storeId, $pickup->date);
         if ($filledOnetimeSlots) {
-            $this->pickupGateway->updateOnetimePickupTotalSlots($storeId, $date, $newTotalSlots);
+            $this->pickupGateway->updateOnetimePickupTotalSlots($storeId, $pickup);
 
             return false;
-        } else {
-            $this->pickupGateway->addOnetimePickup($storeId, $date, $newTotalSlots);
-
-            return true;
         }
+
+        $this->pickupGateway->addOnetimePickup($storeId, $pickup);
+
+        return true;
     }
 
     /**
@@ -530,13 +535,13 @@ class StoreTransactions
      *
      * @param ?int $fsId Check whether this specific user could sign into a slot for this date
      *
-     * @return int 0 if no available slot, else the number of *total* slots (NOT available slots) for this date
+     * @return ?OneTimePickup null if no available slot, else the pickup for this date
      */
-    public function totalSlotsIfPickupSlotAvailable(int $storeId, Carbon $pickupDate, ?int $fsId = null): int
+    public function getPickupIfPickupSlotAvailable(int $storeId, Carbon $pickupDate, ?int $fsId = null): ?OneTimePickup
     {
         // do not allow signing up for past pickups
         if ($pickupDate < Carbon::now()) {
-            return 0;
+            return null;
         }
 
         $pickupSlots = $this->pickupGateway->getPickupSlots($storeId, $pickupDate, $pickupDate, $pickupDate);
@@ -545,23 +550,28 @@ class StoreTransactions
         if (count($pickupSlots) === 1) {
             $pickup = $pickupSlots[0];
         } else {
-            return 0;
+            return null;
         }
 
         // check if there are any free slots
         if (!$pickup['isAvailable']) {
-            return 0;
+            return null;
         }
 
         // when a user is provided, that user must not already be signed up
         if ($fsId) {
             $signedUpFoodsaverIds = array_column($pickup['occupiedSlots'], 'foodsaverId');
             if (in_array($fsId, $signedUpFoodsaverIds)) {
-                return 0;
+                return null;
             }
         }
 
-        return $pickup['totalSlots'];
+        $pickupObj = new OneTimePickup();
+        $pickupObj->date = $pickupDate;
+        $pickupObj->slots = $pickup['totalSlots'];
+        $pickupObj->description = $pickup['description'];
+
+        return $pickupObj;
     }
 
     /**
@@ -570,7 +580,7 @@ class StoreTransactions
      *
      * @param Carbon $maxDate end of date range
      *
-     * @return \DateTime the slot's time or null
+     * @return ?DateTime the slot's time or null
      */
     public function getNextAvailablePickupTime(int $storeId, Carbon $maxDate): ?DateTime
     {
@@ -618,11 +628,11 @@ class StoreTransactions
         $confirmed = $this->pickupIsPreconfirmed($storeId, $issuerId);
 
         /* Never occupy more slots than available */
-        if ($totalSlots = $this->totalSlotsIfPickupSlotAvailable($storeId, $date, $fsId)) {
+        if ($pickup = $this->getPickupIfPickupSlotAvailable($storeId, $date, $fsId)) {
             if ($this->checkPickupRule($storeId, $date, $fsId)) {
                 $this->pickupGateway->addFetcher($fsId, $storeId, $date, $confirmed);
                 // [#860] convert to manual slot, so they don't vanish when changing the schedule
-                $this->createOrUpdatePickup($storeId, $date, $totalSlots);
+                $this->createOrUpdatePickup($storeId, $pickup);
             } else {
                 throw new \DomainException('District Pickup Rule violated');
             }

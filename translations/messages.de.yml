@@ -108,8 +108,6 @@ newsletter: "Newsletter"
 infomail_message: "Benachrichtigung über Chat-Nachrichten auf foodsharing"
 newmail: "Gib hier deine neue E-Mail-Adresse ein"
 passcheck: "Bestätige die Änderung bitte mit deinem Passwort"
-sleep_status: "Dein aktueller Status"
-sleep_msg: "Hier kannst du eine kurze Nachricht hinterlassen, warum du gerade keine Zeit hast."
 homepage: "Deine Webseite"
 #
 # FORM DATA KEYS: StoreView (team + pickup time management)
@@ -678,6 +676,7 @@ terminology:
   settings: "Einstellungen"
   mailboxes: "Mailboxen"
   n_foodsaver: "Ein Foodsaver|%count% Foodsaver"
+  n_home_regions: "eine(r) mit Stammbezirk|%count% mit Stammbezirk"
   n_sleeping: "Eine Schlafmütze|%count% Schlafmützen"
   n_ambassadors: "Ein(e) Botschafter*in|%count% Botschafter*innen"
   n_stores: "Ein Betrieb|%count% Betriebe"
@@ -774,8 +773,8 @@ storeview:
   show_information: "Betriebsinformationen anzeigen"
   store: "Betrieb"
   common: "Allgemein"
-  visible_for_public: "Dieser Text ist für jeden Foodsaver sichtbar."
-  visible_for_team: "Dieser Text ist nur für das Abholteam sichtbar."
+  visible_for_public: "Dieser Text ist für jeden Foodsaver sichtbar, z.B. auf der Karte."
+  visible_for_team: "Dieser Text ist nur für das Betriebsteam sichtbar."
   invalid_field: "Ungültiger Feldinhalt. Die Änderung kann nicht gespeichert werden."
   contact:
     name: "Name/Vorname"
@@ -802,7 +801,7 @@ storeview:
   team: "Abholteam"
   want_to_fetch: "In diesem Team würde ich gerne helfen."
   public_and_statistics: "Statistik & Öffentlichkeitsarbeit"
-  no_permission_to_view: "Fehlende Berechtigung"
+  no_permission_to_view: "Nur für Betriebsverantwortliche sichtbar."
   groceries:
     label: "Welche Lebensmittel dürfen abgeholt werden?"
     select_tag: "Wähle Lebensmittelkategorie"
@@ -857,6 +856,8 @@ store:
   mayAmb: "Hat das Botschafter*innen-Quiz bestanden."
   mayManage: "Hat das Quiz für Betriebsverantwortliche bestanden."
   particularities: "Besonderheiten"
+  particularities_chain: "Besonderheiten der Kette"
+  particularities_chain_tooltip: "Dieser Betrieb ist Teil einer Kette. Deshalb werden diese zusätzlichen Informationen angezeigt, die für alle Betriebe der Kette gelten."
   average_collection_quantity: "Abholmenge im Schnitt"
   attribution: "Namensnennung"
   may_referred_to_in_public: "Dieser Betrieb darf öffentlich genannt werden."
@@ -1012,6 +1013,10 @@ pickup:
   join_agree: "Ja, verbindlich eintragen"
   take_empty_slot: "Hier eintragen"
   delete_title: "Abholtermin löschen"
+  edit_description: "Beschreibung bearbeiten"
+  description: "Beschreibung"
+  description_optional: "Beschreibung (optional)"
+  description_modal_text: "Gib eine neue Beschreibung für die Abholung an:"
   really_delete_date: "Möchtest du die Abholung am {date} wirklich löschen?"
   delete_not_empty: "Aktuell sind noch Foodsaver*innen eingetragen. Du kannst diesen Abholtermin erst löschen, wenn sich alle ausgetragen haben."
   to_be_confirmed: "Dieser Abholtermin muss noch von einer für diesen Betrieb verantwortlichen Person bestätigt werden."
@@ -1036,6 +1041,8 @@ pickup:
     add: "Abholzeiten eintragen"
     more: "Termin hinzufügen"
     slot_titel: "Slots"
+    description_titel: "Beschreibung"
+    disable_auto_slot_titel: "Deaktivierung"
     slotcount: "1 Abholer*in"
     slotscount: "{count} Abholer*innen"
     many-people: |
@@ -1142,8 +1149,8 @@ forum:
   thread:
     delivery_mail:
       title: "Mailversand"
-      active: "aktiviert"
-      non_active: "deaktiviert"
+      activate: "aktivieren"
+      disable: "deaktivieren"
     with_mail: "Thema eröffnet und alle per E-Mail darüber informiert"
     no_mail: "Das Thema wurde eröffnet, ohne E-Mails zu versenden"
     too_big_to_mail: "Für das Thema wurden keine E-Mails versendet, da es sich um ein Land oder ein Bundesland handelt."
@@ -1168,6 +1175,7 @@ forum:
   quickreply:
     success: "Prima, deine Antwort wurde gespeichert."
     error: "Post konnte nicht gespeichert werden."
+  not_found: "Dieser Thread ist nicht vorhanden."
 
 chat:
   open_chat: "Nachricht schreiben"
@@ -1695,6 +1703,10 @@ settings:
   sleep:
     title: "Schlafmütze"
     header: "Schlafmützenfunktion"
+    status: "Dein aktueller Status"
+    message: "Hier kannst du eine kurze Nachricht hinterlassen, warum du gerade keine Zeit hast."
+    from: "Von"
+    until: "bis"
     info: |
       Mit der Schlafmützenfunktion teilst du der Community mit, dass du zur Zeit verreist bist
       oder aus anderen Gründen gerade keine Zeit für das Retten von Lebensmitteln hast.
@@ -2287,7 +2299,7 @@ footer:
     denns: Denn's Biomarkt
 
 releases:
-  "2022-12": "Release \"Icecream\" 🍇 (Dezember 2022)"
+  "2022-12": "Release \"Icecream\" 🍨 (Dezember 2022)"
   "2022-05": "Release \"Heidelbeere\" 🍇 (Mai 2022)"
   "2022-01": "Release \"Grapefruit\" 🍋 (Januar 2022)"
   "2021-09": "Release \"Feige\" 🥧 (September 2021)"
@@ -2663,10 +2675,11 @@ startpage:
   demands:
     title: Forderungen
     text: |
-      "Aktionsplan mit Deutscher Umwelthilfe
-      veröffentlicht zum 6. foodsharing-Geburtstag am 12.12.2018. Um Deutschland vor einem erneuten Wortbruch
-      – wie bei den Klimaschutzzielen für 2020 – zu bewahren, zeigen foodsharing und Deutsche Umwelthilfe mit einem
-      Aktionsplan die Maßnahmen auf, ohne die das Halbierungsziel nicht erreicht werden kann."
+      "Um die Lebensmittelverschwendung effektiv einzudämmen, braucht es mehr als das bloße Retten von übriggebliebenen
+      Lebensmitteln aus Betrieben oder Aufklärung von Konsument*innen. Stattdessen muss sich politisch etwas bewegen:
+      Wir benötigen verbindliche Reduktionsziele für die Verschwendung entlang der gesamten Wertschöpfungskette.
+      Außerdem müssen aktuell bestehende Handelsnormen überdacht und gelockert werden sowie Organisationen, die
+      Lebensmittel retten oder Bildung rund um das Thema Ernährung anbieten, gestärkt werden."
   towns:
     title: foodsharing Städte
     text: |
@@ -2708,20 +2721,37 @@ numbers:
   million_abbreviation: " Mio."
   billion_abbreviation: " Mrd."
 
+usersearch:
+  search_tag: 'Wähle Benutzer'
+  select_tag: 'Suche Benutzer über den Namen'
+  no_tag_preset: 'Benutzer nicht gefunden'
+
 chain:
+  errorCodes:
+    INVALID_STORECHAIN_ID: Betriebsketten Id ist ungültig
+    KEY_ACCOUNT_MANAGER_ID_NOT_EXISTS: Key Account Manager existiert nicht
+    KEY_ACCOUNT_MANAGER_ID_NOT_IN_GROUP: Key Account Manager gehört nicht zur AG Betriebsketten
+    THREAD_ID_NOT_EXISTS: Forum Thread existiert nicht
+    WRONG_FORUM: Forum Thread gehört nicht zur AG Betriebsketten
+    EMPTY_NAME: Namens-Feld ist leer
+    EMPTY_CITY: Stadt-Feld ist leer
+    EMPTY_COUNTRY: Land-Feld ist leer
+    EMPTY_ZIP: Postleitzahl-Feld ist leer
+    INVALID_STATUS: Status-Feld ist ungültig
   listheader: Betriebsketten
   filterplaceholder: Name / Adresse / KAM ID
   columns:
     status: Status
     name: Name
-    stores: Betriebe
+    estimatedStoreCount: Erwartete Anzahl von Betrieben
+    stores: Anzahl kooperierender Betriebe
     headquarters: Zentrale
     kams: KAMs
     notes: Hinweise
   new: Neue Kette eintragen
   allowpress: Öffentliche Nennung erlaubt.
   tooltips:
-    modification_date: Zuletzt bearbeitet
+    modificationDate: Zuletzt bearbeitet
     options: Optionen
   options:
     showstores: Betriebe anzeigen
@@ -2735,17 +2765,23 @@ chain:
         label: Name
         invalidfeedback: Name darf nicht leer sein
         placeholder: Name der Kette
+      estimatedStoreCount:
+        label: "Erwartete Anzahl von Betriebe"
+        invalidfeedback: "Nur Ganzzahlen sind erlaubt."
+        description: "Gesamtanzahl Betriebe der Kette"
       headquarters:
         label: Zentrale
         placeholder:
           zip: Plz.
           city: Stadt
+          country: Land
       status:
         label: Status
       thread:
         label: Forum-Thread
-        invalidfeedback: Ungültige Eingabe. Thread-Id oder Link benötigt.
-        description: Id eines Forum-Threads. Link einfügen zur automatischen Erkennung.
+        invalidfeedback: Thread-Id oder Link benötigt.
+        description: Suchen nach dem Forum durch die Eingabe von mindestens 3 Zeichen.
+        placeholder: Suche Forum-Thread-Name
       kam:
         label: KAMs
         invalidfeedback: Ungültige Eingabe. Ein oder mehrere Nutzer-Ids benötigt.
@@ -2772,8 +2808,8 @@ chain:
     notcooperating: Kooperiert nicht
     filterplaceholder: Status
   error:
-    create: Kette konnte nicht erstellt werden.
-    edit: Kette konnte nicht bearbeitet werden.
+    create: Kette konnte nicht erstellt werden ({error}).
+    edit: Kette konnte nicht bearbeitet werden ({error}).
     notfs: Zum ansehen dieser Liste musst du Foodsaver sein.
   bread:
     workinggroup: Betriebsketten

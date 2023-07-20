@@ -103,6 +103,7 @@ class Foodsharing extends \Codeception\Module\Db
             'bezirk_id' => 0,
             'name' => $this->faker->firstName(),
             'nachname' => $this->faker->lastName(),
+            'deleted_at' => null,
             'verified' => 0,
             'rolle' => 0,
             'plz' => $this->faker->postcode(),

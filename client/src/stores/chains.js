@@ -28,7 +28,7 @@ export const mutations = {
   },
   async editChain (id, data) {
     const editedChain = await editChain(id, data)
-    store.chains = store.chains.map(chain => chain.id === id ? editedChain : chain)
+    store.chains = store.chains.map(chainItem => chainItem.chain.id === id ? editedChain : chainItem)
   },
 }
 
