@@ -5,22 +5,18 @@ namespace Foodsharing\Modules\Mailbox;
 use Foodsharing\Modules\Core\Control;
 use Foodsharing\Modules\Core\DBConstants\Foodsaver\Role;
 use Foodsharing\Permissions\MailboxPermissions;
-use Foodsharing\Utility\Sanitizer;
 
 class MailboxControl extends Control
 {
-    private Sanitizer $sanitizerService;
     private MailboxGateway $mailboxGateway;
     private MailboxPermissions $mailboxPermissions;
 
     public function __construct(
         MailboxView $view,
-        Sanitizer $sanitizerService,
         MailboxGateway $mailboxGateway,
         MailboxPermissions $mailboxPermissions
     ) {
         $this->view = $view;
-        $this->sanitizerService = $sanitizerService;
         $this->mailboxGateway = $mailboxGateway;
         $this->mailboxPermissions = $mailboxPermissions;
 
