@@ -14,6 +14,7 @@
         <ConfigureableList
           :fields.sync="fields"
           :selection.sync="fieldSelection"
+          :state.sync="state"
           store
         >
           <template #head="{ showConfigurationDialog }">
@@ -26,7 +27,7 @@
               <div class="col-4">
                 <label>
                   <input
-                    v-model="filterText"
+                    v-model.trim="state.filterText"
                     type="text"
                     class="form-control form-control-sm"
                     :placeholder="$i18n('chain.filterplaceholder')"
@@ -35,7 +36,7 @@
               </div>
               <div class="col-3">
                 <b-form-select
-                  v-model="filterStatus"
+                  v-model="state.filterStatus"
                   :options="statusFilterOptions"
                 />
               </div>
@@ -70,7 +71,7 @@
           <b-table-mobile-friendly
             id="chain-list"
             :fields="selectedFields"
-            :current-page="currentPage"
+            :current-page="state.currentPage"
             :per-page="perPage"
             :items="chainsFiltered"
             tbody-tr-class="chain-row"
@@ -156,7 +157,7 @@
         </ConfigureableList>
         <div class="float-right p-1 pr-3">
           <b-pagination
-            v-model="currentPage"
+            v-model="state.currentPage"
             :total-rows="chainsFiltered.length"
             :per-page="perPage"
             aria-controls="chain-list"
@@ -209,10 +210,12 @@ export default {
   },
   data () {
     return {
-      currentPage: 1,
+      state: {
+        currentPage: 1,
+        filterText: '',
+        filterStatus: null,
+      },
       perPage: 20,
-      filterText: '',
-      filterStatus: null,
       fieldsDefinition: [
         {
           key: 'status',
@@ -296,7 +299,7 @@ export default {
     chainsFiltered: function () {
       if (this.chains === null) return []
       let chains = this.chains
-      const filterText = this.filterText.trim().toLowerCase()
+      const filterText = this.state.filterText.toLowerCase()
       if (filterText) {
         const searchKeys = ['name', 'headquartersCity']
         const searchTerms = filterText.split(/[^a-zA-Z0-9]+/).filter(term => term)
@@ -307,8 +310,8 @@ export default {
           }) || chain.chain.kams.find(kam => kam.id === parseInt(filterText))
         })
       }
-      if (this.filterStatus !== null) {
-        chains = chains.filter(chain => chain.status === this.filterStatus)
+      if (this.state.filterStatus !== null) {
+        chains = chains.filter(chain => chain.status === this.state.filterStatus)
       }
       return chains
     },
@@ -328,8 +331,8 @@ export default {
   },
   methods: {
     clearFilter () {
-      this.filterStatus = null
-      this.filterText = ''
+      this.state.filterStatus = null
+      this.state.filterText = ''
     },
     editChainModal (row) {
       const chain = row.item
