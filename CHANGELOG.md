@@ -30,6 +30,7 @@
 - Add CTA on the profile-page for calendar export #1583 !2705 @sefn
 - Remove relative time from last pickup #1571 #1643 !2706 !2744 @sefn
 - Removed unused global report !2763 @chriswalg
+- Improved pickup table display on smaller devices !2779 @AntonBallmaier 
 
 ## Bugfixes
 - Reimplementation of the StoreManager empty pickup E-Mail notification !2574 @KoeMai
