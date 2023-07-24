@@ -261,6 +261,8 @@ export default {
   .options-dropdown {
     button {
       font-size: 14px;
+      padding: 3px 5px;
+      top: 2px;
     }
     label {
       white-space: nowrap;
