@@ -19,6 +19,11 @@
         v-b-tooltip.hover="iconTooltip(entry)"
         :class="iconClass(entry)"
       />
+      <i
+        v-if="entry.item.description"
+        v-b-tooltip.hover="entry.item.description"
+        class="fas fa-info-circle"
+      />
     </template>
 
     <template #cell(date)="entry">
@@ -35,16 +40,7 @@
       <AvatarStack
         :registered-users="entry.item.slots.occupied"
         :total-slots="entry.item.slots.max"
-        :max-width="offsetWidth / 4"
-        :min-width="95"
-      />
-    </template>
-
-    <template #cell(description)="entry">
-      <i
-        v-if="entry.item.description"
-        v-b-tooltip.hover="entry.item.description"
-        class="fas fa-info-circle"
+        :max-width="offsetWidth / 5"
       />
     </template>
 
@@ -145,11 +141,6 @@ export default {
         key: 'store',
         label: i18n('pickup.overview.cols.store'),
         sortable: true,
-      },
-      {
-        key: 'description',
-        sortable: false,
-        label: '',
       },
       {
         key: 'slots',
@@ -264,8 +255,8 @@ export default {
   }
 }
 
-.status-col {
-  width: 0;
+::v-deep .status-col {
+  text-align: center;
 }
 
 .shadow-registered .registered td > * {
@@ -304,10 +295,8 @@ export default {
 
 .pickup-table ::v-deep .table tbody td {
   vertical-align: middle;
-}
-
-::v-deep *[aria-colindex="5"] {
-  min-width: 200px
+  padding-left: 0.25rem;
+  padding-right: 0.25rem;
 }
 
 </style>

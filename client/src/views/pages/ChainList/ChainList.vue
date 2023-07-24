@@ -85,7 +85,6 @@
             <AvatarStack
               :registered-users="row.value"
               :max-width="100"
-              :min-width="60"
             />
           </template>
 
