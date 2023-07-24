@@ -32,7 +32,7 @@
     </template>
 
     <template #cell(slots)="entry">
-      <PickupEntries
+      <AvatarStack
         :registered-users="entry.item.slots.occupied"
         :total-slots="entry.item.slots.max"
         :max-width="offsetWidth / 4"
@@ -88,13 +88,13 @@
 
 <script>
 import { BTable } from 'bootstrap-vue'
-import PickupEntries from './PickupEntries.vue'
+import AvatarStack from '@/components/AvatarStack.vue'
 import i18n from '@/helper/i18n'
 
 const MIN_WIDTH_FOR_WIDE_LAYOUT = 600
 
 export default {
-  components: { BTable, PickupEntries },
+  components: { BTable, AvatarStack },
   props: {
     data: {
       // the data to be displayed in the table
