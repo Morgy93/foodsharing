@@ -27,6 +27,7 @@ use Foodsharing\Modules\Store\StoreTransactionException;
 use Foodsharing\Modules\Store\StoreTransactions;
 use Foodsharing\Modules\Store\TeamStatus as TeamMembershipStatus;
 use Foodsharing\Permissions\StorePermissions;
+use Foodsharing\RestApi\Models\QueryParser\QueryContrainstBuilder as QueryParserQueryContrainstBuilder;
 use Foodsharing\RestApi\Models\Store\CreateStoreModel;
 use Foodsharing\RestApi\Models\Store\MinimalStoreModel;
 use Foodsharing\RestApi\Models\Store\StorePaginationResult;
@@ -38,6 +39,7 @@ use FOS\RestBundle\Request\ParamFetcher;
 use Nelmio\ApiDocBundle\Annotation\Model;
 use OpenApi\Annotations as OA;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\ParamConverter;
+use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\Exception\AccessDeniedHttpException;
 use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
@@ -45,6 +47,7 @@ use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 use Symfony\Component\HttpKernel\Exception\UnauthorizedHttpException;
 use Symfony\Component\HttpKernel\Exception\UnprocessableEntityHttpException;
 use Symfony\Component\Validator\ConstraintViolationListInterface;
+use Symfony\Component\Validator\Validator\ValidatorInterface;
 
 class StoreRestController extends AbstractFOSRestController
 {
@@ -91,6 +94,45 @@ class StoreRestController extends AbstractFOSRestController
             !$this->storePermissions->mayListStores());
 
         return $this->handleView($this->view($result, 200));
+    }
+
+    /**
+     * Search for stores by different properties with pagination.
+     *
+     * Filter elements:
+     *
+     * - location:boundaryBox:<lat>:<lon>
+     * - cooperationStatus:in:<value1>,<value2>
+     * - name:sw:<beginOfName>
+     * - name:cn:<contains>
+     * - name=<searchFor>
+     * - chain:in:<chainID1>,<chainId2>
+     * - address:sw:<startWith>
+     *
+     * @OA\Tag(name="stores")
+     * @OA\Response(
+     *         response="200",
+     *         description="",
+     *         @Model(type=StorePaginationResult::class)
+     * )
+     * @Rest\Get("stores")
+     * @OA\Parameter(
+     *     name="q[]",
+     *     in="query",
+     *     description="Store filter string",
+     *     example="cooperationStatus:in:1,2"
+     * )
+     */
+    public function searchForStores(Request $req, ValidatorInterface $validator)
+    {
+        $rawQueries = $req->query->get('q') ?? [];
+        $collection = new QueryParserQueryContrainstBuilder();
+        $errors=$collection->validate($validator, $rawQueries, new PatchStore());
+        if(count($errors)) {
+            throw new BadRequestHttpException($errors->get(0)->getMessage());
+        }
+
+        return $this->handleView($this->view('ok', 200));
     }
 
     /**
