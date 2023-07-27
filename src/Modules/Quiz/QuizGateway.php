@@ -178,7 +178,7 @@ class QuizGateway extends BaseGateway
             array_push($questions, ...$this->getRandomQuestions($rounded, $fpCount['fp'], $quizId));
         }
         shuffle($questions);
-        return ['q'=>$questions, 'fp' => $fpCounts, 't'=>$total, 'c'=>$count];
+        return $questions;
     }
 
     public function updateQuestion(int $questionId, int $quizId, string $text, int $failurePoints, int $duration, string $wikiLink): void
@@ -298,11 +298,15 @@ class QuizGateway extends BaseGateway
         );
     }
 
-    public function getAnswers(int $questionId): array
+    public function getAnswers(int $questionId, bool $includeSolution = true): array
     {
+        $columns = ['id', 'text'];
+        if ($includeSolution) {
+            array_push($columns, 'explanation', 'right');
+        }
         return $this->db->fetchAllByCriteria(
             'fs_answer',
-            ['id', 'text', 'explanation', 'right'],
+            $columns,
             ['question_id' => $questionId]
         );
     }

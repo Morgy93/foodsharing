@@ -29,19 +29,10 @@ final class QuizRestController extends AbstractFOSRestController
      */
     public function startQuizSession(int $quizId): Response
     {
-        if (!$this->session->id()) {
-            throw new UnauthorizedHttpException('');
-        }
-
-        $runningQuizSession = $this->quizSessionGateway->getRunningSession($quizId, $this->session->id());
-        if ($runningQuizSession) {
-            throw new AccessDeniedHttpException('There is already a running quiz session.');
-        }
+        $this->sanityChecks($quizId);
+        $this->assertSessionRunning($quizId, false);
 
         $quiz = $this->quizGateway->getQuiz($quizId);
-        if(!$quiz){
-            throw new BadRequestHttpException('Invalid quizId given.');
-        }
 
         // TODO get easymode
         $easymode = true;
@@ -52,42 +43,67 @@ final class QuizRestController extends AbstractFOSRestController
         if ($quizId == Role::FOODSAVER && $easymode) {
             $quiz['questcount'] *= 2;
         }
-
-        $questions = $this->quizGateway->getFairQuestions($quiz['questcount'], $quizId);
-
-
-        
-        return $this->handleView($this->view([
-            'quiz' => $quiz,
-            'questions' => $questions,
-        ], 200));
-
         // TODO: Make sure the user is allowed to do this quiz!
 
+        $questions = $this->quizGateway->getFairQuestions($quiz['questcount'], $quizId);
+        $this->quizSessionGateway->initQuizSession($this->session->id(), $quizId, $questions, $quiz['maxfp'], $easymode);
 
-        // $questions = $this->getRandomQuestions($quizId, $quiz['questcount']);
-        // if ($questions) {
-        //     // for safety check if there are not too many questions
-        //     $questions = array_slice($questions, 0, (int)$quiz['questcount']);
-
-        //     /*
-        //         * Store quiz data in the users session
-        //         */
-        //     $this->session->set('quiz-id', $quizId);
-        //     $this->session->set('quiz-questions', $questions);
-        //     $this->session->set('quiz-index', 0);
-        // }
+        return $this->handleView($this->view(null, 200));
+    }
 
 
+    /**
+     * @OA\Tag(name="quiz")
+     * @Rest\Get("quiz/{quizId}/status", requirements={"quizId" = "\d+"})
+     */
+    public function getQuizStatus(int $quizId): Response
+    {
+        $this->sanityChecks($quizId);
 
-        // try {
-        //     $isConfirmed = $this->storeTransactions->joinPickup($storeId, $date, $fsId, $this->session->id());
+        $session = $this->quizSessionGateway->getRunningSession($quizId, $this->session->id());
+        if (!$session) {
+            return $this->handleView($this->view(['running' => false], 200));
+        }
+        return $this->handleView($this->view([
+            'running' => true,
+            'questions' => count($session['quiz_questions']),
+            'answered' => $session['quiz_index'],
+            'timed' => !$session['easymode'],
+        ], 200));
+    }
 
-        //     return $this->handleView($this->view([
-        //             'isConfirmed' => $isConfirmed
-        //         ], 200));
-        // } catch (StoreTransactionException $ex) {
-        //     throw new AccessDeniedHttpException($ex->getMessage(), $ex);
-        // }
+    /**
+     * @OA\Tag(name="quiz")
+     * @Rest\Get("quiz/{quizId}/question", requirements={"quizId" = "\d+"})
+     */
+    public function getNextQuestion(int $quizId): Response
+    {
+        $this->sanityChecks($quizId);
+        $session = $this->assertSessionRunning($quizId);
+        $question = $this->quizGateway->getQuestion($session['quiz_questions'][$session['quiz_index']]['id']);
+        $question['answers'] = $this->quizGateway->getAnswers($question['id'], false);
+        
+        return $this->handleView($this->view([
+            'question' => $question,
+        ], 200));
+    }
+
+    private function sanityChecks(int $quizId) {
+        if (!$this->session->id()) {
+            throw new UnauthorizedHttpException('');
+        }
+        if(!$this->quizGateway->getQuiz($quizId)){
+            throw new BadRequestHttpException('Invalid quizId given.');
+        }
+    }
+
+    private function assertSessionRunning(int $quizId, bool $isSet = true) {
+        $session = $this->quizSessionGateway->getRunningSession($quizId, $this->session->id());
+        if (!$session && $isSet) {
+            throw new AccessDeniedHttpException('There must be a running quiz session.');
+        } if ($session && !$isSet) {
+            throw new AccessDeniedHttpException('There must not be a running quiz session.');
+        }
+        return $session;
     }
 }

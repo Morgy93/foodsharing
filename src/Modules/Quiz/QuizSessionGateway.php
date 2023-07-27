@@ -19,7 +19,7 @@ class QuizSessionGateway extends BaseGateway
         $this->quizGateway = $quizGateway;
     }
 
-    public function initQuizSession(int $fsId, int $quizId, array $questions, int $maxFailurePoints, int $questionCount, int $easyMode = 0): int
+    public function initQuizSession(int $fsId, int $quizId, array $questions, int $maxFailurePoints, int $easyMode = 0): int
     {
         return $this->db->insert(
             'fs_quiz_session',
@@ -32,7 +32,7 @@ class QuizSessionGateway extends BaseGateway
                 'time_start' => $this->db->now(),
                 'fp' => 0,
                 'maxfp' => $maxFailurePoints,
-                'quest_count' => $questionCount,
+                'quest_count' => count($questions),
                 'easymode' => $easyMode
             ]
         );
