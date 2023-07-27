@@ -53,12 +53,13 @@ final class QuizRestController extends AbstractFOSRestController
             $quiz['questcount'] *= 2;
         }
 
-
+        $questions = $this->quizGateway->getFairQuestions($quiz['questcount'], $quizId);
 
 
         
         return $this->handleView($this->view([
-            'quiz' => $quiz
+            'quiz' => $quiz,
+            'questions' => $questions,
         ], 200));
 
         // TODO: Make sure the user is allowed to do this quiz!

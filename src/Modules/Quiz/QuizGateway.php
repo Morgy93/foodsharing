@@ -10,6 +10,8 @@ use Foodsharing\Modules\Core\DBConstants\Region\RegionIDs;
 use Foodsharing\Modules\Foodsaver\FoodsaverGateway;
 use Foodsharing\Modules\WallPost\WallPostGateway;
 
+use function PHPUnit\Framework\throwException;
+
 class QuizGateway extends BaseGateway
 {
     private BellGateway $bellGateway;
@@ -139,68 +141,44 @@ class QuizGateway extends BaseGateway
 				q.id,
 				q.duration,
 				hq.fp
-
-			FROM
-				fs_question q
-				LEFT JOIN fs_question_has_quiz hq
+			FROM fs_question q
+			LEFT JOIN fs_question_has_quiz hq
 				ON hq.question_id = q.id
-
-			WHERE
-				hq.quiz_id = :quizId
-			AND
-				hq.fp = :fp
-
-			ORDER BY
-				RAND()
-
+			WHERE hq.quiz_id = :quizId AND hq.fp = :fp
+            ORDER BY RAND()
 			LIMIT :count
 		', [':quizId' => $quizId, ':fp' => $failurePoints, ':count' => $count]);
     }
 
     public function getQuestionCountByFailurePoints(int $quizId): array
     {
-        $questions = $this->db->fetchAll('
-			SELECT
-				q.id,
-				q.duration,
-				hq.fp
+        return $this->db->fetchAll('
+            SELECT
+                hq.fp,
+                COUNT(q.id) AS `count`
+            FROM fs_question q
+            LEFT JOIN fs_question_has_quiz hq
+                ON hq.question_id = q.id
+            WHERE hq.quiz_id = :quizId
+            GROUP BY hq.fp
+            ORDER BY hq.fp ASC
+        ', [':quizId' => $quizId]);
+    }
 
-			FROM
-				fs_question q
-				LEFT JOIN fs_question_has_quiz hq
-				ON hq.question_id = q.id
-
-			WHERE
-				hq.quiz_id = :quizId
-		', [':quizId' => $quizId]);
-        if ($questions) {
-            $result = [];
-
-            $questionCounts = $this->db->fetchAll('
-				SELECT 	hq.fp, COUNT(q.id) AS `count`
-				FROM fs_question q
-					LEFT JOIN fs_question_has_quiz hq
-					ON hq.question_id = q.id
-
-				WHERE
-					hq.quiz_id = :quizId
-
-				GROUP BY
-					hq.fp
-			', [':quizId' => $quizId]);
-            if ($questionCounts) {
-                foreach ($questionCounts as $counts) {
-                    $failurePoints = $counts['fp'] ? $counts['fp'] : 0;
-                    if (!isset($result[$failurePoints])) {
-                        $result[$failurePoints] = $counts['count'];
-                    }
-                }
-            }
-
-            return $result;
+    public function getFairQuestions(int $count, int $quizId): array
+    {
+        $questions = [];
+        $fpCounts = $this->getQuestionCountByFailurePoints($quizId);
+        $total = array_reduce($fpCounts, fn ($a, $b) => $b['count'] + $a, 0);
+        $carryOver = 0;
+        foreach ($fpCounts as &$fpCount) {
+            $numQuestions = $fpCount['count'] / $total * $count + $carryOver;
+            $rounded = round($numQuestions);
+            $carryOver = $numQuestions - $rounded;
+            array_push($questions, ...$this->getRandomQuestions($rounded, $fpCount['fp'], $quizId));
         }
-
-        return [];
+        shuffle($questions);
+        return ['q'=>$questions, 'fp' => $fpCounts, 't'=>$total, 'c'=>$count];
     }
 
     public function updateQuestion(int $questionId, int $quizId, string $text, int $failurePoints, int $duration, string $wikiLink): void
