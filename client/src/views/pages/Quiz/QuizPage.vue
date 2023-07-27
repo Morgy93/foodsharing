@@ -7,13 +7,42 @@
   >
     <p>{{ quiz.desc }}</p>
 
-    <b-button block variant="primary">
-      {{ $i18n('quiz.timedstart') }}
-    </b-button>
-    <b-button block variant="primary">
-      {{ $i18n('quiz.regstart') }}
-    </b-button>
+    <div v-if="quizStatus.status === 0">
+      <b-button
+        block
+        variant="primary"
+        @click="showStartModal(true)"
+      >
+        {{ $i18n('quiz.timedstart') }}
+      </b-button>
+      <b-button
+        block
+        variant="primary"
+        @click="showStartModal(false)"
+      >
+        {{ $i18n('quiz.regstart') }}
+      </b-button>
+    </div>
+
     {{ quizStatus }}
+    <b-modal
+      ref="start-info-modal"
+      :title="$i18n('quiz.startmodal.title')"
+      :cancel-title="$i18n('button.cancel')"
+      :ok-title="$i18n('button.start')"
+      centered
+      size="lg"
+      @ok="startQuiz"
+    >
+      <ul>
+        <li
+          v-for="infoKey in infoKeys"
+          :key="infoKey"
+        >
+          {{ $i18n(`quiz.startmodal.infos.${infoKey}`) }}
+        </li>
+      </ul>
+    </b-modal>
   </Container>
 </template>
 
@@ -40,13 +69,28 @@ export default {
       default: () => null,
     },
     role: {
-      type: Object,
-      default: () => null,
+      type: Number,
+      default: -1,
     },
+  },
+  data () {
+    return {
+      infoKeys: ['wiki', 'real_life_examples', 'limited_tries', 'alone', 'read_carefully', 'multiple_choice', 'comment', 'pause', 'feedback'],
+      timed: undefined,
+    }
   },
   computed: {
     title () {
-      return i18n('quiz.title_start', { name: this.quiz.name })
+      return i18n(`quiz.title.${this.quizStatus.status}`, { name: this.quiz.name })
+    },
+  },
+  methods: {
+    showStartModal (timed) {
+      this.timed = timed
+      this.$refs['start-info-modal'].show()
+    },
+    startQuiz () {
+
     },
   },
 }

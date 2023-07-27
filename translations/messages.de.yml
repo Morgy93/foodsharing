@@ -202,19 +202,32 @@ quiz:
   threestrikes: "Du hast das Quiz 3x nicht bestanden."
   waitxdays: "Du kannst es noch einmal probieren in"
   days: "Tagen"
-  learnbreak: "Lernpause"
   notfinishedyet: "Du hast Das Quiz noch nicht beendet."
   safeandsound: "Aber kein Problem. Deine Sitzung wurde gespeichert. Du kannst jederzeit die Beantwortung fortführen."
   continuenow: "Quiz jetzt weiter beantworten!"
-  continuetype: "-Quiz fortführen"
   trynumber: "Das war Versuch Nummer"
   failedbeforebut: " mal hast du das Quiz bisher nicht bestanden. So viele Versuche hast du aber noch übrig:"
   goodluck: "Viel Glück!"
   timedstart: "Quiz mit Zeitlimit und 10 Fragen starten"
   regstart: "Quiz ohne Zeitlimit und 20 Fragen starten"
-  title_start: "{name} - Jetzt gilt es noch das Quiz zu bestehen!"
   nownownow: "Quiz jetzt starten"
   session_deleted: "Die Ergebnisse für dieses Quiz wurden gelöscht, da das Quiz vor mehr als zwei Wochen abgeschlossen wurde."
+  title:
+    0: "{name} - Jetzt das Quiz durchführen!"
+    1: "{name} - Quiz fortführen!"
+    2: "Lernpause ({name})"
+  startmodal:
+    title: "Hinweise zum Quiz"
+    infos: 
+      wiki: Bitte starte das Quiz nicht auf gut Glück. Lies vorab die aufgeführten Seiten im Foodsharing-Wiki aufmerksam durch. Ohne das Wissen aus dem Wiki, wirst du das Quiz nicht bestehen.
+      real_life_examples: Die meisten Fragen basieren auf echten Fällen aus dem Foodsharing-Leben. 
+      limited_tries: Du kannst das Quiz nicht beliebig oft wiederholen. Nach drei Versuchen musst du eine 30-tägige Lernpause einlegen, danach hast du nur noch zwei weitere Versuche. Die Fragen, die dir in jedem Versuch gestellt werden, unterscheiden sich.
+      alone: Während des Quizes darf dir nicht geholfen werden. Suche dir deswegen einen ruhigen Ort, an dem du ungestört das Quiz durchführen kannst. 
+      read_carefully: Lies dir alle Fragen und Antworten sorfältig durch. Dafür reicht die Zeit aus.
+      multiple_choice: Es können mehrere Antworten pro Frage richtig sein. Entscheide daher für jede Antwort einzeln, ob sie richtig oder falsch ist.
+      comment: Nach dem Beantworten jeder Frage, siehst du eine Zwischenauswertung mit Erklärungen zu jeder der Antwortmöglichkeiten. Das hilft zu verstehen, welche Antwort warum richtig oder falsch ist. Bei jedem Fehler solltest du dir die Erklärungen sorgfältig durchlesen. Wenn dir etwas unlogisch erscheint, nicht verständlich oder gar falsch ist, hinterlasse bitte einen Kommentar.
+      pause: Du kannst das Quiz nach jeder Frage pausieren und zu einem späteren Zeitpunkt fortsetzen.
+      feedback: Am Ende des Quizes bekommst du direkt eine Auswertung, ob du bestanden hast und welche Fehler du wo gemacht hast. Hier kannst du nocheinmal in Ruhe die Begründungen durchlesen.
 
 # quiz: "Quiz
 # For legacy UI reasons (QuizView), needs to be toplevel with this exact key:
@@ -259,6 +272,7 @@ button:
   answer: "Antworten"
   create: "Anlegen"
   clear_filter: "Filter leeren"
+  start: "Starten"
 
 bread:
   backToOverview: "zurück zur Übersicht"
