@@ -194,6 +194,16 @@ class SettingsControl extends Control
     {
         $fsId = $this->session->id();
         $quizStatus = $this->quizSessionGateway->getQuizStatus($role, $fsId);
+
+        $this->pageHelper->addContent($this->view->vueComponent('vue-quizpage', 'quiz-page', [
+            'ownId' => $this->session->id(),
+            'quizStatus' => $quizStatus,
+            'quiz' => $quiz,
+            'role' => $role,
+        ]));
+
+        return;
+
         switch ($quizStatus['status']) {
             case QuizStatus::NEVER_TRIED:
                 $this->pageHelper->addContent($this->view->quizIndex($quiz));
