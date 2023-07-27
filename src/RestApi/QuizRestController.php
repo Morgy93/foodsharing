@@ -5,6 +5,7 @@ namespace Foodsharing\RestApi;
 use Carbon\Carbon;
 use Foodsharing\Lib\Session;
 use Foodsharing\Modules\Core\DBConstants\Foodsaver\Role;
+use Foodsharing\Modules\Core\DBConstants\Quiz\AnswerRating;
 use Foodsharing\Modules\Quiz\QuizGateway;
 use Foodsharing\Modules\Quiz\QuizSessionGateway;
 use Foodsharing\RestApi\Models\Quiz\QuizAnswerModel;
@@ -121,14 +122,40 @@ final class QuizRestController extends AbstractFOSRestController
         //Update quiz state stored in session:
         $question['answers'] = $answers->answers;
         $question['userduration'] = (time() - (int)$this->session->get('quiz-quest-start'));
-        $question['noco'] = empty($answers->answers);
         $session['quiz_questions'][$session['quiz_index']] = $question;
         $this->quizSessionGateway->updateQuizSession($session['id'], $session['quiz_questions'], $session['quiz_index'] + 1);
 
+        if($session['quiz_index'] + 1 == count($session['quiz_questions'])) {
+            $this->finalizeQuiz($quizId, $session);
+        }
+
         return $this->handleView($this->view([
             'answered' => $answers->answers,
-            'solution' => $solution,
+            'solution' => $solution
         ], 200));
+    }
+
+    private function finalizeQuiz(int $quizId, array $session) {
+        $quiz = $this->quizGateway->getQuiz($quizId);
+        $failurePointsTotal = 0;
+        $quizLog = [];
+        foreach ($session['quiz_questions'] as &$answered_question) {
+            $failurePoints = 0;
+            $question = $this->quizGateway->getQuestion($answered_question['id']);
+            $solution = $this->quizGateway->getAnswers($answered_question['id']);
+            foreach ($solution as $answer) {
+                $answerWasSelected = in_array($answer['id'], $answered_question['answers']);
+                $answeredWrongly = ($answerWasSelected && $answer['right'] == AnswerRating::WRONG) || (!$answerWasSelected && $answer['right'] == AnswerRating::CORRECT);
+                $failurePoints += round($answeredWrongly * $question['fp'] / count($solution), 3);
+            }
+            $failurePointsTotal += $failurePoints;
+            $question['answeres'] = $solution;
+            $question['useranswers'] = $answered_question['answers'];
+            $question['userfp'] = $failurePoints;
+            $question['userduration'] = $answered_question['userduration'];
+            $quizLog[] = $question;
+        }
+        $this->quizSessionGateway->finishQuizSession($session['id'], $session['quiz_questions'], $quizLog, $failurePointsTotal, $quiz['maxfp']);
     }
 
     private function sanityChecks(int $quizId) {
