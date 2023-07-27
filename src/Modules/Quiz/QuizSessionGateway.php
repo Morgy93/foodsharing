@@ -248,71 +248,35 @@ class QuizSessionGateway extends BaseGateway
      */
     public function getQuizStatus(int $quizId, int $fsId): array
     {
-        $quizSessionStatus = $this->collectQuizStatus($quizId, $fsId);
-        $pauseEnd = Carbon::createFromTimestamp($quizSessionStatus['last_try'])->addDays(30);
-
-        $result = ['status' => QuizStatus::DISQUALIFIED, 'wait' => 0];
-
-        $now = Carbon::now();
-        if ($quizSessionStatus['times'] == 0) {
-            $result['status'] = QuizStatus::NEVER_TRIED;
-        } elseif ($quizSessionStatus['running'] > 0) {
-            $result['status'] = QuizStatus::RUNNING;
-        } elseif ($quizSessionStatus['passed'] > 0) {
-            $result['status'] = QuizStatus::PASSED;
-        } elseif ($quizSessionStatus['failed'] < 3) {
-            $result['status'] = QuizStatus::FAILED;
-        } elseif ($quizSessionStatus['failed'] == 3 && $now->isBefore($pauseEnd)) {
-            $result['status'] = QuizStatus::PAUSE;
-            $result['wait'] = intval(round($now->floatDiffInDays($pauseEnd)));
-        } elseif ($quizSessionStatus['failed'] == 3 && $now->greaterThanOrEqualTo($pauseEnd)) {
-            $result['status'] = QuizStatus::PAUSE_ELAPSED;
-        } elseif ($quizSessionStatus['failed'] == 4) {
-            $result['status'] = QuizStatus::PAUSE_ELAPSED;
+        $quizSessions = $this->collectQuizStatus($quizId, $fsId);
+        if (empty($quizSessions)) {
+            return ['status' => QuizStatus::NEVER_TRIED];
+        } if (end($quizSessions)['status'] == SessionStatus::RUNNING) {
+            return ['status' => QuizStatus::RUNNING];
+        } if (end($quizSessions)['status'] == SessionStatus::PASSED) {
+            return ['status' => QuizStatus::PASSED];
+        // We know there are only failed sessions so far
+        } if (count($quizSessions) < 3) {
+            return ['status' => QuizStatus::FAILED, 'tries' => count($quizSessions)];
         }
-
-        return $result;
+        $pauseEnd = Carbon::createFromTimestamp(end($quizSessions)['time_ts'])->addDays(30);
+        $now = Carbon::now();
+        if (count($quizSessions) == 3 && $now->isBefore($pauseEnd)) {
+            return ['status' => QuizStatus::PAUSE, 'wait' => intval(round($now->floatDiffInDays($pauseEnd)))];
+        } if (count($quizSessions) == 4 || (count($quizSessions) == 3 && $now->greaterThanOrEqualTo($pauseEnd))) {
+            return ['status' => QuizStatus::PAUSE_ELAPSED];
+        }
+        return ['status' => QuizStatus::DISQUALIFIED];
     }
 
-    public function collectQuizStatus(int $quizId, int $fsId): array
+    private function collectQuizStatus(int $quizId, int $fsId): array
     {
-        $out = [
-            'passed' => 0,
-            'running' => 0,
-            'failed' => 0,
-            'last_try' => 0,
-            'times' => 0
-        ];
-
-        $res = $this->db->fetchAll('
+        return $this->db->fetchAll('
 			SELECT foodsaver_id, `status`, UNIX_TIMESTAMP(`time_start`) AS time_ts
 			FROM fs_quiz_session
-			WHERE foodsaver_id = :fsId
-			AND quiz_id = :quizId
+			WHERE foodsaver_id = :fsId AND quiz_id = :quizId
+            ORDER BY time_ts ASC;
 		', [':fsId' => $fsId, ':quizId' => $quizId]);
-        if ($res) {
-            foreach ($res as $r) {
-                ++$out['times'];
-                if ($r['time_ts'] > $out['last_try']) {
-                    $out['last_try'] = $r['time_ts'];
-                }
-
-                switch ($r['status']) {
-                    case SessionStatus::RUNNING:
-                        ++$out['running'];
-                        break;
-                    case SessionStatus::PASSED:
-                        ++$out['passed'];
-                        break;
-                    case SessionStatus::FAILED:
-                        ++$out['failed'];
-                        break;
-                    default:
-                }
-            }
-        }
-
-        return $out;
     }
 
     public function getRunningSession(int $quizId, int $fsId): array
