@@ -6,6 +6,7 @@ use Foodsharing\Lib\Session;
 use Foodsharing\Modules\Core\DBConstants\Foodsaver\Role;
 use Foodsharing\Modules\Quiz\QuizGateway;
 use Foodsharing\Modules\Quiz\QuizSessionGateway;
+use Foodsharing\RestApi\Models\Quiz\QuizAnswerModel;
 use FOS\RestBundle\Controller\AbstractFOSRestController;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\Exception\AccessDeniedHttpException;
@@ -13,6 +14,10 @@ use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
 use Symfony\Component\HttpKernel\Exception\UnauthorizedHttpException;
 use OpenApi\Annotations as OA;
 use FOS\RestBundle\Controller\Annotations as Rest;
+use FOS\RestBundle\Request\ParamFetcher;
+use Nelmio\ApiDocBundle\Annotation\Model;
+use Sensio\Bundle\FrameworkExtraBundle\Configuration\ParamConverter;
+use Symfony\Component\Validator\Validator\ValidatorInterface;
 
 final class QuizRestController extends AbstractFOSRestController
 {
@@ -25,9 +30,10 @@ final class QuizRestController extends AbstractFOSRestController
 
     /**
      * @OA\Tag(name="quiz")
+     * @Rest\RequestParam(name="timed", default=true)
      * @Rest\Post("quiz/{quizId}/start", requirements={"quizId" = "\d+"})
      */
-    public function startQuizSession(int $quizId): Response
+    public function startQuizSession(int $quizId, ParamFetcher $paramFetcher): Response
     {
         $this->sanityChecks($quizId);
         $this->assertSessionRunning($quizId, false);
@@ -35,7 +41,7 @@ final class QuizRestController extends AbstractFOSRestController
         $quiz = $this->quizGateway->getQuiz($quizId);
 
         // TODO get easymode
-        $easymode = true;
+        $easymode = !$paramFetcher->get('timed');
         if ($easymode && $quizId != Role::FOODSAVER) {
             throw new BadRequestHttpException('Easymode is only allowed on the Foodsaver Quiz.');
         }
@@ -86,6 +92,30 @@ final class QuizRestController extends AbstractFOSRestController
         return $this->handleView($this->view([
             'question' => $question,
         ], 200));
+    }
+
+    /**
+     * @OA\Tag(name="quiz")
+     * @Rest\Post("quiz/{quizId}/answer", requirements={"quizId" = "\d+"})
+     * @OA\RequestBody(@Model(type=QuizAnswerModel::class))
+     * @ParamConverter("answers", converter="fos_rest.request_body")
+     */
+    public function answerNextQuestion(int $quizId, QuizAnswerModel $answers): Response
+    {
+        $this->sanityChecks($quizId);
+        $session = $this->assertSessionRunning($quizId);
+
+        $this->quizSessionGateway->updateQuizSession($session['id'], $session['quiz_questions'], $session['quiz_index'] + 1);
+
+
+        return $this->handleView($this->view([
+            'a' => $answers->answers,
+        ], 200));
+
+
+        // $question = $this->quizGateway->getQuestion($session['quiz_questions'][$session['quiz_index']]['id']);
+        // $question['answers'] = $this->quizGateway->getAnswers($question['id'], false);
+        
     }
 
     private function sanityChecks(int $quizId) {
