@@ -2,6 +2,7 @@
   <div class="list-group">
     <div
       class="list-group-item list-group-header"
+      :class="{collapsible}"
       @click="toggleExpanded"
     >
       <h5
@@ -9,12 +10,15 @@
         v-html="title"
       />
       <i
+        v-if="collapsible"
         :alt="isExpanded ? $i18n('globals.show_more') : $i18n('globals.show_less')"
         class="fas fa-angle-down"
         :class="{ 'fa-rotate-180': isExpanded }"
       />
     </div>
-    <slot v-if="isExpanded" />
+    <div :class="wrapContent ? 'ui-widget-content corner-bottom margin-bottom ui-padding': ''">
+      <slot v-if="isExpanded" />
+    </div>
     <button
       v-if="isExpanded && isToggleVisible && !isToggled"
       class="list-group-item small list-group-item-secondary list-group-item-action list-group-item-action-toggle font-weight-bold text-center"
@@ -37,6 +41,8 @@ export default {
     tag: { type: String, default: 'tag' },
     title: { type: String, default: 'title' },
     toggleVisiblity: { type: Boolean, default: false },
+    collapsible: { type: Boolean, default: true },
+    wrapContent: { type: Boolean, default: false },
   },
   data () {
     return {
@@ -57,6 +63,7 @@ export default {
   },
   methods: {
     toggleExpanded () {
+      if (!this.collapsible) return
       this.setExpanded(!this.isExpanded)
     },
     getExpanded () {
@@ -92,14 +99,17 @@ export default {
   align-items: center;
   background-color: var(--fs-color-primary-500);
   color: var(--fs-color-primary-100);
-  cursor: pointer;
   display: flex;
   justify-content: space-between;
   min-height: 40px;
   padding: 0 1rem;
 
-  &:hover {
-    background-color: var(--fs-color-primary-600);
+  &.collapsible {
+    cursor: pointer;
+
+    &:hover {
+      background-color: var(--fs-color-primary-600);
+    }
   }
 
   h5 {

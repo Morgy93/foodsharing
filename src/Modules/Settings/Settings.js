@@ -16,6 +16,12 @@ import RegionTreeVForm from '@/components/regiontree/RegionTreeVForm'
 import Passport from './components/Passport.vue'
 import Notifications from './components/Notifications.vue'
 import SleepingMode from './components/SleepingMode.vue'
+import QuizPage from '@/views/pages/Quiz/QuizPage.vue'
+
+vueRegister({
+  QuizPage,
+})
+vueApply('#vue-quizpage', true)
 
 switch (GET('sub')) {
   case 'info':

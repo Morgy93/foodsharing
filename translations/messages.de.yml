@@ -212,7 +212,7 @@ quiz:
   goodluck: "Viel Glück!"
   timedstart: "Quiz mit Zeitlimit und 10 Fragen starten"
   regstart: "Quiz ohne Zeitlimit und 20 Fragen starten"
-  quizleft: " - Jetzt gilt es noch das Quiz zu bestehen!"
+  title_start: "{name} - Jetzt gilt es noch das Quiz zu bestehen!"
   nownownow: "Quiz jetzt starten"
   session_deleted: "Die Ergebnisse für dieses Quiz wurden gelöscht, da das Quiz vor mehr als zwei Wochen abgeschlossen wurde."
 
