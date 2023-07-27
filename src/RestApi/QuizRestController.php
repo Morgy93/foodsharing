@@ -2,6 +2,7 @@
 
 namespace Foodsharing\RestApi;
 
+use Carbon\Carbon;
 use Foodsharing\Lib\Session;
 use Foodsharing\Modules\Core\DBConstants\Foodsaver\Role;
 use Foodsharing\Modules\Quiz\QuizGateway;
@@ -87,6 +88,9 @@ final class QuizRestController extends AbstractFOSRestController
         $this->sanityChecks($quizId);
         $session = $this->assertSessionRunning($quizId);
         $question = $this->quizGateway->getQuestion($session['quiz_questions'][$session['quiz_index']]['id']);
+        $this->session->set('quiz-quest-start', time());
+
+        $this->quizSessionGateway->updateQuizSession($session['id'], $session['quiz_questions'], $session['quiz_index']);
         $question['answers'] = $this->quizGateway->getAnswers($question['id'], false);
         
         return $this->handleView($this->view([
@@ -104,18 +108,27 @@ final class QuizRestController extends AbstractFOSRestController
     {
         $this->sanityChecks($quizId);
         $session = $this->assertSessionRunning($quizId);
+        $question = $session['quiz_questions'][$session['quiz_index']];
 
+        //Check that only answers to the question were given
+        $solution = $this->quizGateway->getAnswers($question['id']);
+        foreach ($answers->answers as &$answer) {
+            if (!in_array($answer, array_column($solution, 'id'))) {
+                throw new BadRequestHttpException('Invalid answerId given.');
+            }
+        }
+
+        //Update quiz state stored in session:
+        $question['answers'] = $answers->answers;
+        $question['userduration'] = (time() - (int)$this->session->get('quiz-quest-start'));
+        $question['noco'] = empty($answers->answers);
+        $session['quiz_questions'][$session['quiz_index']] = $question;
         $this->quizSessionGateway->updateQuizSession($session['id'], $session['quiz_questions'], $session['quiz_index'] + 1);
 
-
         return $this->handleView($this->view([
-            'a' => $answers->answers,
+            'answered' => $answers->answers,
+            'solution' => $solution,
         ], 200));
-
-
-        // $question = $this->quizGateway->getQuestion($session['quiz_questions'][$session['quiz_index']]['id']);
-        // $question['answers'] = $this->quizGateway->getAnswers($question['id'], false);
-        
     }
 
     private function sanityChecks(int $quizId) {
