@@ -392,4 +392,27 @@ class QuizSessionGateway extends BaseGateway
             );
         }
     }
+
+    public function getLatestSession(int $quizId, int $fsId) {
+        $result = $this->db->fetch('
+            SELECT
+                `status`,
+                fp,
+                maxfp,
+                time_end,
+                quiz_result as details
+            FROM fs_quiz_session
+            WHERE
+                quiz_id = :quizId AND
+                foodsaver_id = :fsId AND
+                status != :runningStatus
+            ORDER BY time_start DESC
+        ', [
+            'quizId' => $quizId,
+            'fsId' => $fsId,
+            'runningStatus' => QuizStatus::RUNNING,
+        ]);
+        $result['details'] = unserialize($result['details']);
+        return $result;
+    }
 }

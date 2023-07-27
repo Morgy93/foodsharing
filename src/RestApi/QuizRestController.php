@@ -42,7 +42,6 @@ final class QuizRestController extends AbstractFOSRestController
 
         $quiz = $this->quizGateway->getQuiz($quizId);
 
-        // TODO get easymode
         $easymode = !$paramFetcher->get('timed');
         if ($easymode && $quizId != Role::FOODSAVER) {
             throw new BadRequestHttpException('Easymode is only allowed on the Foodsaver Quiz.');
@@ -135,6 +134,41 @@ final class QuizRestController extends AbstractFOSRestController
         ], 200));
     }
 
+    /**
+     * @OA\Tag(name="quiz")
+     * @Rest\Get("quiz/{quizId}/results", requirements={"quizId" = "\d+"})
+     */
+    public function getQuizResults(int $quizId): Response
+    {
+        $this->sanityChecks($quizId);
+        $this->assertSessionRunning($quizId, false);
+
+        $session = $this->quizSessionGateway->getLatestSession($quizId, $this->session->id());
+        
+        return $this->handleView($this->view($session, 200));
+    }
+
+
+    /**
+     * @OA\Tag(name="quiz")
+     * @Rest\RequestParam(name="text", nullable=false)
+     * @Rest\Post("question/{questionId}/comment", requirements={"questionId" = "\d+"})
+     */
+    public function addCommentToQuestion(int $questionId, ParamFetcher $paramFetcher): Response
+    {
+        if (!$this->session->id()) {
+            throw new UnauthorizedHttpException('');
+        }
+        $question = $this->quizGateway->getQuestion($questionId);
+        if(!$question){
+            throw new BadRequestHttpException('Invalid questionId given.');
+        }
+        
+        $this->quizGateway->addUserComment($questionId, $this->session->id(), $paramFetcher->get('text'));
+        
+        return $this->handleView($this->view(null, 200));
+    }
+
     private function finalizeQuiz(int $quizId, array $session) {
         $quiz = $this->quizGateway->getQuiz($quizId);
         $failurePointsTotal = 0;
@@ -145,7 +179,9 @@ final class QuizRestController extends AbstractFOSRestController
             $solution = $this->quizGateway->getAnswers($answered_question['id']);
             foreach ($solution as $answer) {
                 $answerWasSelected = in_array($answer['id'], $answered_question['answers']);
-                $answeredWrongly = ($answerWasSelected && $answer['right'] == AnswerRating::WRONG) || (!$answerWasSelected && $answer['right'] == AnswerRating::CORRECT);
+                $answeredWrongly = ($answerWasSelected && $answer['right'] == AnswerRating::WRONG)
+                    || (!$answerWasSelected && $answer['right'] == AnswerRating::CORRECT)
+                    || ($answered_question['userduration'] > $answered_question['duration']);
                 $failurePoints += round($answeredWrongly * $question['fp'] / count($solution), 3);
             }
             $failurePointsTotal += $failurePoints;
