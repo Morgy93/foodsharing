@@ -1,0 +1,21 @@
+import { get, post } from './base'
+
+export function getQuizStatus (quizId) {
+  return get(`/quiz/${quizId}/status`)
+}
+
+export function getQuestion (quizId) {
+  return get(`/quiz/${quizId}/question`)
+}
+
+export function startQuiz (quizId, timed = true) {
+  return post(`/quiz/${quizId}/start`, { timed })
+}
+
+export function answerQuestion (quizId, selectedAnswers) {
+  return post(`/quiz/${quizId}/answer`, { answers: selectedAnswers })
+}
+
+export function commentQuestion (questionId, text) {
+  return post(`/question/${questionId}/comment`, { text })
+}

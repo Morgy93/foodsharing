@@ -2,31 +2,30 @@
 
 namespace Foodsharing\RestApi;
 
-use Carbon\Carbon;
 use Foodsharing\Lib\Session;
 use Foodsharing\Modules\Core\DBConstants\Foodsaver\Role;
 use Foodsharing\Modules\Core\DBConstants\Quiz\AnswerRating;
+use Foodsharing\Modules\Core\DBConstants\Quiz\QuizStatus;
 use Foodsharing\Modules\Quiz\QuizGateway;
 use Foodsharing\Modules\Quiz\QuizSessionGateway;
 use Foodsharing\RestApi\Models\Quiz\QuizAnswerModel;
 use FOS\RestBundle\Controller\AbstractFOSRestController;
+use FOS\RestBundle\Controller\Annotations as Rest;
+use FOS\RestBundle\Request\ParamFetcher;
+use Nelmio\ApiDocBundle\Annotation\Model;
+use OpenApi\Annotations as OA;
+use Sensio\Bundle\FrameworkExtraBundle\Configuration\ParamConverter;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\Exception\AccessDeniedHttpException;
 use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
 use Symfony\Component\HttpKernel\Exception\UnauthorizedHttpException;
-use OpenApi\Annotations as OA;
-use FOS\RestBundle\Controller\Annotations as Rest;
-use FOS\RestBundle\Request\ParamFetcher;
-use Nelmio\ApiDocBundle\Annotation\Model;
-use Sensio\Bundle\FrameworkExtraBundle\Configuration\ParamConverter;
-use Symfony\Component\Validator\Validator\ValidatorInterface;
 
 final class QuizRestController extends AbstractFOSRestController
 {
     public function __construct(
         private Session $session,
         private QuizGateway $quizGateway,
-        private QuizSessionGateway  $quizSessionGateway,
+        private QuizSessionGateway $quizSessionGateway,
     ) {
     }
 
@@ -55,9 +54,8 @@ final class QuizRestController extends AbstractFOSRestController
         $questions = $this->quizGateway->getFairQuestions($quiz['questcount'], $quizId);
         $this->quizSessionGateway->initQuizSession($this->session->id(), $quizId, $questions, $quiz['maxfp'], $easymode);
 
-        return $this->handleView($this->view(null, 200));
+        return $this->handleView($this->view(['questions' => count($questions), 'timed' => !$easymode], 200));
     }
-
 
     /**
      * @OA\Tag(name="quiz")
@@ -65,18 +63,18 @@ final class QuizRestController extends AbstractFOSRestController
      */
     public function getQuizStatus(int $quizId): Response
     {
-        $this->sanityChecks($quizId);
-
+        $quiz = $this->sanityChecks($quizId);
         $session = $this->quizSessionGateway->getRunningSession($quizId, $this->session->id());
-        if (!$session) {
-            return $this->handleView($this->view(['running' => false], 200));
+        $status = $this->quizSessionGateway->getQuizStatus($quizId, $this->session->id());
+        $status['questions'] = $quiz['questcount'];
+        $status['allowUntimed'] = $quizId == Role::FOODSAVER;
+        if ($status['status'] == QuizStatus::RUNNING) {
+            $status['questions'] = count($session['quiz_questions']);
+            $status['answered'] = $session['quiz_index'];
+            $status['timed'] = !$session['easymode'];
         }
-        return $this->handleView($this->view([
-            'running' => true,
-            'questions' => count($session['quiz_questions']),
-            'answered' => $session['quiz_index'],
-            'timed' => !$session['easymode'],
-        ], 200));
+
+        return $this->handleView($this->view($status, 200));
     }
 
     /**
@@ -92,7 +90,8 @@ final class QuizRestController extends AbstractFOSRestController
 
         $this->quizSessionGateway->updateQuizSession($session['id'], $session['quiz_questions'], $session['quiz_index']);
         $question['answers'] = $this->quizGateway->getAnswers($question['id'], false);
-        
+        $question['timed'] = !$session['easymode'];
+
         return $this->handleView($this->view([
             'question' => $question,
         ], 200));
@@ -124,7 +123,7 @@ final class QuizRestController extends AbstractFOSRestController
         $session['quiz_questions'][$session['quiz_index']] = $question;
         $this->quizSessionGateway->updateQuizSession($session['id'], $session['quiz_questions'], $session['quiz_index'] + 1);
 
-        if($session['quiz_index'] + 1 == count($session['quiz_questions'])) {
+        if ($session['quiz_index'] + 1 == count($session['quiz_questions'])) {
             $this->finalizeQuiz($quizId, $session);
         }
 
@@ -144,10 +143,9 @@ final class QuizRestController extends AbstractFOSRestController
         $this->assertSessionRunning($quizId, false);
 
         $session = $this->quizSessionGateway->getLatestSession($quizId, $this->session->id());
-        
+
         return $this->handleView($this->view($session, 200));
     }
-
 
     /**
      * @OA\Tag(name="quiz")
@@ -160,16 +158,17 @@ final class QuizRestController extends AbstractFOSRestController
             throw new UnauthorizedHttpException('');
         }
         $question = $this->quizGateway->getQuestion($questionId);
-        if(!$question){
+        if (!$question) {
             throw new BadRequestHttpException('Invalid questionId given.');
         }
-        
+
         $this->quizGateway->addUserComment($questionId, $this->session->id(), $paramFetcher->get('text'));
-        
-        return $this->handleView($this->view(null, 200));
+
+        return $this->handleView($this->view(['success'=>true], 200));
     }
 
-    private function finalizeQuiz(int $quizId, array $session) {
+    private function finalizeQuiz(int $quizId, array $session)
+    {
         $quiz = $this->quizGateway->getQuiz($quizId);
         $failurePointsTotal = 0;
         $quizLog = [];
@@ -194,22 +193,28 @@ final class QuizRestController extends AbstractFOSRestController
         $this->quizSessionGateway->finishQuizSession($session['id'], $session['quiz_questions'], $quizLog, $failurePointsTotal, $quiz['maxfp']);
     }
 
-    private function sanityChecks(int $quizId) {
+    private function sanityChecks(int $quizId)
+    {
         if (!$this->session->id()) {
             throw new UnauthorizedHttpException('');
         }
-        if(!$this->quizGateway->getQuiz($quizId)){
+        $quiz = $this->quizGateway->getQuiz($quizId);
+        if (!$quiz) {
             throw new BadRequestHttpException('Invalid quizId given.');
         }
+
+        return $quiz;
     }
 
-    private function assertSessionRunning(int $quizId, bool $isSet = true) {
+    private function assertSessionRunning(int $quizId, bool $isSet = true)
+    {
         $session = $this->quizSessionGateway->getRunningSession($quizId, $this->session->id());
         if (!$session && $isSet) {
             throw new AccessDeniedHttpException('There must be a running quiz session.');
         } if ($session && !$isSet) {
             throw new AccessDeniedHttpException('There must not be a running quiz session.');
         }
+
         return $session;
     }
 }

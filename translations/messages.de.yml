@@ -208,14 +208,21 @@ quiz:
   trynumber: "Das war Versuch Nummer"
   failedbeforebut: " mal hast du das Quiz bisher nicht bestanden. So viele Versuche hast du aber noch übrig:"
   goodluck: "Viel Glück!"
-  timedstart: "Quiz mit Zeitlimit und 10 Fragen starten"
-  regstart: "Quiz ohne Zeitlimit und 20 Fragen starten"
+  timedstart: "Quiz mit Zeitlimit und {count} Fragen starten"
+  regstart: "Quiz ohne Zeitlimit und {count} Fragen starten"
   nownownow: "Quiz jetzt starten"
   session_deleted: "Die Ergebnisse für dieses Quiz wurden gelöscht, da das Quiz vor mehr als zwei Wochen abgeschlossen wurde."
+  button:
+    pause: Später weitermachen
+    finish: Quiz abschließen
   title:
     0: "{name} - Jetzt das Quiz durchführen!"
     1: "{name} - Quiz fortführen!"
-    2: "Lernpause ({name})"
+    2: "{name} - Dieses Quiz hast du bestanden!"
+    3: "{name} - Versuchs nochmal!"
+    4: "Lernpause ({name})"
+    5: "{name} - Jetzt kannst du es nochmal versuchen!"
+    6: "{name} - Leider disqualifiziert."
   startmodal:
     title: "Hinweise zum Quiz"
     infos: 
@@ -224,11 +231,17 @@ quiz:
       limited_tries: Du kannst das Quiz nicht beliebig oft wiederholen. Nach drei Versuchen musst du eine 30-tägige Lernpause einlegen, danach hast du nur noch zwei weitere Versuche. Die Fragen, die dir in jedem Versuch gestellt werden, unterscheiden sich.
       alone: Während des Quizes darf dir nicht geholfen werden. Suche dir deswegen einen ruhigen Ort, an dem du ungestört das Quiz durchführen kannst. 
       read_carefully: Lies dir alle Fragen und Antworten sorfältig durch. Dafür reicht die Zeit aus.
-      multiple_choice: Es können mehrere Antworten pro Frage richtig sein. Entscheide daher für jede Antwort einzeln, ob sie richtig oder falsch ist.
+      multiple_choice: Es können mehrere Antworten pro Frage richtig sein - oder auch keine. Entscheide daher für jede Antwort einzeln, ob sie richtig oder falsch ist.
       comment: Nach dem Beantworten jeder Frage, siehst du eine Zwischenauswertung mit Erklärungen zu jeder der Antwortmöglichkeiten. Das hilft zu verstehen, welche Antwort warum richtig oder falsch ist. Bei jedem Fehler solltest du dir die Erklärungen sorgfältig durchlesen. Wenn dir etwas unlogisch erscheint, nicht verständlich oder gar falsch ist, hinterlasse bitte einen Kommentar.
       pause: Du kannst das Quiz nach jeder Frage pausieren und zu einem späteren Zeitpunkt fortsetzen.
       feedback: Am Ende des Quizes bekommst du direkt eine Auswertung, ob du bestanden hast und welche Fehler du wo gemacht hast. Hier kannst du nocheinmal in Ruhe die Begründungen durchlesen.
-
+  infomodal:
+    title: "Frage {index} von {questions}"
+  comment:
+    toggle: Kommentar schreiben
+    placeholder: Kommentar eingeben...
+    send: Kommentar abschicken
+    sent: Kommentar abgeschickt.
 # quiz: "Quiz
 # For legacy UI reasons (QuizView), needs to be toplevel with this exact key:
 quizusercomment: |

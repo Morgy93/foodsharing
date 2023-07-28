@@ -2,10 +2,6 @@
 
 namespace Foodsharing\RestApi\Models\Quiz;
 
-use DateTime;
-use Foodsharing\Modules\Foodsaver\DTO\FoodsaverForAvatar;
-use Foodsharing\Modules\StoreChain\DTO\StoreChain;
-use Foodsharing\Modules\StoreChain\StoreChainStatus;
 use JMS\Serializer\Annotation\Type;
 use OpenApi\Annotations as OA;
 use Symfony\Component\Validator\Constraints as Assert;

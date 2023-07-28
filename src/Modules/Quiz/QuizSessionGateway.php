@@ -255,7 +255,7 @@ class QuizSessionGateway extends BaseGateway
             return ['status' => QuizStatus::RUNNING];
         } if (end($quizSessions)['status'] == SessionStatus::PASSED) {
             return ['status' => QuizStatus::PASSED];
-        // We know there are only failed sessions so far
+            // We know there are only failed sessions so far
         } if (count($quizSessions) < 3) {
             return ['status' => QuizStatus::FAILED, 'tries' => count($quizSessions)];
         }
@@ -266,6 +266,7 @@ class QuizSessionGateway extends BaseGateway
         } if (count($quizSessions) == 4 || (count($quizSessions) == 3 && $now->greaterThanOrEqualTo($pauseEnd))) {
             return ['status' => QuizStatus::PAUSE_ELAPSED];
         }
+
         return ['status' => QuizStatus::DISQUALIFIED];
     }
 
@@ -393,7 +394,8 @@ class QuizSessionGateway extends BaseGateway
         }
     }
 
-    public function getLatestSession(int $quizId, int $fsId) {
+    public function getLatestSession(int $quizId, int $fsId)
+    {
         $result = $this->db->fetch('
             SELECT
                 `status`,
@@ -413,6 +415,7 @@ class QuizSessionGateway extends BaseGateway
             'runningStatus' => QuizStatus::RUNNING,
         ]);
         $result['details'] = unserialize($result['details']);
+
         return $result;
     }
 }

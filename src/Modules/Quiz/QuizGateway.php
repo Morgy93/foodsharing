@@ -10,8 +10,6 @@ use Foodsharing\Modules\Core\DBConstants\Region\RegionIDs;
 use Foodsharing\Modules\Foodsaver\FoodsaverGateway;
 use Foodsharing\Modules\WallPost\WallPostGateway;
 
-use function PHPUnit\Framework\throwException;
-
 class QuizGateway extends BaseGateway
 {
     private BellGateway $bellGateway;
@@ -178,6 +176,7 @@ class QuizGateway extends BaseGateway
             array_push($questions, ...$this->getRandomQuestions($rounded, $fpCount['fp'], $quizId));
         }
         shuffle($questions);
+
         return $questions;
     }
 
@@ -304,6 +303,7 @@ class QuizGateway extends BaseGateway
         if ($includeSolution) {
             array_push($columns, 'explanation', 'right');
         }
+
         return $this->db->fetchAllByCriteria(
             'fs_answer',
             $columns,

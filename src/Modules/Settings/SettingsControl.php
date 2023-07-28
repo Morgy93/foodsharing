@@ -196,10 +196,7 @@ class SettingsControl extends Control
         $quizStatus = $this->quizSessionGateway->getQuizStatus($role, $fsId);
 
         $this->pageHelper->addContent($this->view->vueComponent('vue-quizpage', 'quiz-page', [
-            'ownId' => $this->session->id(),
-            'quizStatus' => $quizStatus,
             'quiz' => $quiz,
-            'role' => $role,
         ]));
 
         return;
