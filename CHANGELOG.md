@@ -9,7 +9,7 @@
 - Store markers on the map can be filtered by the user's membership #1025 !2682 @alex.simm
 - Store chain information is visible on the store page !2742 @alex.simm
 - Add home district count to region top #79 !2692 @Morgy93
-- Storemanagers can set a description for pickup slots #1653 !2757 @AntonBallmaier
+- Storemanagers can set a description for pickup slots #1653 !2757 !2781 @AntonBallmaier
 
 ## Changes
 - Make menubar sticky on mobile !2411 @AntonBallmaier
@@ -90,7 +90,7 @@
 - Refactor own store list in vue !2668 !2683 @chriswalg
 - Refactored the list of group applications to vue, which not also shows profile pictures #343 !2696 @alex.simm
 - Refactor the list of food share points in a region to vue !2702 @alex.simm
-- Refactor notification settings page to vue and rest api !2700 @chriswalg
+- Refactor notification settings page to vue and rest api !2700 !2778 @chriswalg
 - Refactor setting sleeping mode to vue !2749 !2760 @chriswalg
 - Refactor user passport generation page #1617 !2660 !2758 @chriswalg
 
@@ -128,6 +128,7 @@
 - Fix deprecated strtolower in MailsControl.php #1569 !2718 @stcz
 - Added security page !2764 @martincodes_de
 - Add security.txt with contact information !2776 @stcz
+- added functionallity to new FoodsharingControllers to prepare and render vue components !2730 @martincodes-de
 
 ## Development documentation
 

@@ -210,6 +210,8 @@ class RegionGateway extends BaseGateway
 
         WHERE
             hb.bezirk_id = b.id
+        AND
+            hb.`active` = 1
 
         AND
             hb.`foodsaver_id` = :foodsaverId

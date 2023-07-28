@@ -114,7 +114,7 @@
         >
           <b-row align-v="center">
             <b-col cols="12" lg="6">
-              {{ thread.name }}
+              {{ thread.region_or_group_name }} / {{ thread.theme_name }}
             </b-col>
             <b-col cols="12" lg="6">
               <b-form-radio-group

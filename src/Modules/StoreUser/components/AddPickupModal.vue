@@ -49,6 +49,10 @@
             :placeholder="$i18n('pickup.description_optional')"
             :maxlength="100"
           />
+          <small v-if="slotDescription?.length === 100">
+            <i class="fas fa-info-circle" />
+            {{ $i18n('pickup.description_max_length_info') }}
+          </small>
         </b-col>
       </b-row>
       <b-row

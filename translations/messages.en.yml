@@ -1155,7 +1155,7 @@ bell:
   new_quiz_comment_title: New quiz comment
   fs_sleepmode: '{name} {nachname} is now inactive'
   fs_sleepmode_title: New nightcap
-  store_cr_times: Pick-up times have changed
+  store_cr_times: Pick-up slots have changed
   store_new_request: Request for {name}
   forum_answer: '{user} responded to your comment'
   store_request_accept_wait: You were added to the list of standby foodsavers.
@@ -1900,6 +1900,7 @@ store:
   jumping: Standby
   particularities_chain_tooltip: This store is part of a chain. This is why this additional
     information is displayed, which applies to all establishments in the chain.
+  particularities_chain: Particularities of the chain
 search:
   mygroups: My groups
   mybuddies: My buddies
@@ -2917,7 +2918,8 @@ chain:
   errorCodes:
     INVALID_STORECHAIN_ID: Store chain Id is not valid
     KEY_ACCOUNT_MANAGER_ID_NOT_EXISTS: Store chain key account manager does not exist
-    KEY_ACCOUNT_MANAGER_ID_NOT_IN_GROUP: Store chain key account manager belong to AG Storechain
+    KEY_ACCOUNT_MANAGER_ID_NOT_IN_GROUP: Store chain key account manager belong to
+      AG Storechain
     THREAD_ID_NOT_EXISTS: Store chain thread does not exist
     WRONG_FORUM: Thread is from wrong forum
     EMPTY_NAME: Name can not be empty
