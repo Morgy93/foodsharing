@@ -43,6 +43,7 @@
       :ok-title="$i18n('button.start')"
       centered
       size="lg"
+      scrollable
       @ok="initQuiz"
     >
       <ul>
@@ -63,6 +64,7 @@
       no-close-on-esc
       centered
       size="lg"
+      scrollable
     >
       <b-form-group
         :label="question?.text"
@@ -81,7 +83,14 @@
           </b-form-checkbox>
 
           <div v-if="!isQuestionActive">
-            {{ solutionById[answer.id]?.explanation }}
+            <p> {{ $i18n(answerText(selectedAnswers[answer.id], solutionById[answer.id]?.right)) }}</p>
+            <p>
+              <span class="explanation">
+                <b>Erklärung:</b>
+                {{ solutionById[answer.id]?.explanation }}
+              </span>
+              <a class="show-full-expl" href="#">Mehr anzeigen</a>
+            </p>
           </div>
         </div>
       </b-form-group>
@@ -251,8 +260,13 @@ export default {
     },
     answerColorClass (selected, right) {
       if (right === 2) return 'neutral'
-      if (!right === !selected) return 'success'
+      if (!right ^ selected) return 'success'
       return 'failiure'
+    },
+    answerText (selected, right) {
+      const path = 'quiz.answers.'
+      if (right === 2) return path + 'neutral'
+      return `${path}${!!selected}_${!!right}`
     },
     finishQuiz () {
       this.isQuizModalShown = false
@@ -324,6 +338,18 @@ export default {
   .btn{
     margin-top: .5em;
   }
+}
+
+.explanation {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 20em;
+}
+
+.show-full-expl {
+  position: relative;
+  top: -5px;
 }
 
 </style>

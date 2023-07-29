@@ -242,6 +242,12 @@ quiz:
     placeholder: Kommentar eingeben...
     send: Kommentar abschicken
     sent: Kommentar abgeschickt.
+  answers:
+    neutral: Neutrale Antwort - wird nicht gewertet.
+    false_false: Diese Antwort war natürlich falsch. Das hast Du richtig erkannt.
+    false_true: Diese Antwort wäre richtig gewesen.
+    true_false: Falsch! Diese Antwort stimmt nicht.
+    true_true: Richtig! Diese Antwort stimmt.
 # quiz: "Quiz
 # For legacy UI reasons (QuizView), needs to be toplevel with this exact key:
 quizusercomment: |
