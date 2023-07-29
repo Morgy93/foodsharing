@@ -23,11 +23,12 @@
 - Support and orga-user can search users with e-mail !2651 !2663 @chriswalg @martincodes-de
 - focus foodsharing tab of the same kind if clicking a push notification !2671 @buntel
 - close push notification of the same thread or same kind if clicked !2671 @buntel
-- Removed the additional button in the report modal #1599 !2677 @alex.simm
+- Removed the additional button in the report modal #1599 !2677 !2782 @alex.simm
 - Show forum text if foodsaver deleted again !2697 @chriswalg
 - Add CTA on the profile-page for calendar export #1583 !2705 @sefn
 - Remove relative time from last pickup #1571 #1643 !2706 !2744 @sefn
 - Removed unused global report !2763 @chriswalg
+- Improved pickup table display on smaller devices !2779 @AntonBallmaier 
 
 ## Bugfixes
 - Reimplementation of the StoreManager empty pickup E-Mail notification !2574 @KoeMai
@@ -63,6 +64,7 @@
 - catches bell-closing bug if no bell was found (symptom treatment) @martincodes_de
 - catches bell-closing bug if no bell was found (symptom treatment) !2766 @martincodes_de
 - Temporarily disable store page and member page for Europe and Germany !2777 @alex.simm
+- Pickup options can no longer be loaded multiple times in the pickup table !2779 @AntonBallmaier
 
 ## Refactoring
 - added poppins font in Styleguide !2564 @Niklas003
