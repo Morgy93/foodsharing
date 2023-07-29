@@ -205,12 +205,14 @@ export default {
           label: this.$i18n('chain.columns.status'),
           tdClass: 'status',
           sortable: true,
+          sortByFormatted: true,
           formatter: (value, key, item) => item.chain.status,
         },
         {
           key: 'name',
           label: this.$i18n('chain.columns.name'),
           sortable: true,
+          sortByFormatted: (value, key, item) => item.chain.name,
           formatter: (value, key, item) => item,
         },
         {
@@ -218,18 +220,21 @@ export default {
           label: this.$i18n('chain.columns.estimatedStoreCount'),
           sortable: true,
           tdClass: 'text-center',
+          sortByFormatted: true,
           formatter: (value, key, item) => item.chain.estimatedStoreCount,
         },
         {
           key: 'storeCount',
           label: this.$i18n('chain.columns.stores'),
           sortable: true,
+          sortByFormatted: true,
           tdClass: 'text-center',
         },
         {
           key: 'headquartersCity',
           label: this.$i18n('chain.columns.headquarters'),
           sortable: true,
+          sortByFormatted: true,
           formatter: (value, key, item) => item.chain.headquartersCountry + ', ' + item.chain.headquartersZip + ' ' + item.chain.headquartersCity,
         },
         {

@@ -211,6 +211,10 @@
         :placeholder="$i18n('pickup.description')"
         :maxlength="100"
       />
+      <small v-if="newDescription?.length === 100">
+        <i class="fas fa-info-circle" />
+        {{ $i18n('pickup.description_max_length_info') }}
+      </small>
     </b-modal>
 
     <b-modal

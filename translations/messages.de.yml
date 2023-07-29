@@ -1015,6 +1015,7 @@ pickup:
   description: "Beschreibung"
   description_optional: "Beschreibung (optional)"
   description_modal_text: "Gib eine neue Beschreibung für die Abholung an:"
+  description_max_length_info: "Maximale Beschreibungslänge erreicht (100 Zeichen)"
   really_delete_date: "Möchtest du die Abholung am {date} wirklich löschen?"
   delete_not_empty: "Aktuell sind noch Foodsaver*innen eingetragen. Du kannst diesen Abholtermin erst löschen, wenn sich alle ausgetragen haben."
   to_be_confirmed: "Dieser Abholtermin muss noch von einer für diesen Betrieb verantwortlichen Person bestätigt werden."
@@ -1447,7 +1448,7 @@ bell:
   store_wallpost: "Neuer Eintrag auf der Pinnwand."
 
   store_cr_times_title: "{name}"
-  store_cr_times: "Abholzeiten haben sich geändert"
+  store_cr_times: "Abholslots wurden angepasst"
 
   fs_sleepmode_title: "Neue Schlafmütze"
   fs_sleepmode: "{name} {nachname} ist jetzt inaktiv"

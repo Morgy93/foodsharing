@@ -90,6 +90,10 @@
             :placeholder="$i18n('pickup.description')"
             :maxlength="100"
           />
+          <small v-if="item.description?.length === 100">
+            <i class="fas fa-info-circle" />
+            {{ $i18n('pickup.description_max_length_info') }}
+          </small>
         </b-col>
         <b-col
           cols="2"

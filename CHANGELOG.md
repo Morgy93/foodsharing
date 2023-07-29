@@ -5,13 +5,11 @@
 - Provide RestApi to edit store !2515 !2625 @KoeMai
 - New UI for Stores information and modification of stores !2645 !2685 !2688 !2731 !2736 !2752 @KoeMai
 - Added turkish translation !2720 @Evren
-- Store chains can now be manged from the website. The working group "Betriebsketten" contains a tabular overview of all chains. !2251 !2273 !2701 !2767 @AntonBallmaier @KoeMai
+- Store chains can now be manged from the website. The working group "Betriebsketten" contains a tabular overview of all chains. !2251 !2273 !2701 !2767 !2769 @AntonBallmaier @KoeMai
 - Store markers on the map can be filtered by the user's membership #1025 !2682 @alex.simm
-- Store chain information is visible on the store page !2742 @alex.simm 
-- New UI for Stores information and modification of stores !2645 !2685 !2688 @KoeMai
-- New UI for Stores information and modification of stores !2645 !2685 @KoeMai
+- Store chain information is visible on the store page !2742 @alex.simm
 - Add home district count to region top #79 !2692 @Morgy93
-- Storemanagers can set a description for pickup slots #1653 !2757 @AntonBallmaier
+- Storemanagers can set a description for pickup slots #1653 !2757 !2781 @AntonBallmaier
 
 ## Changes
 - Make menubar sticky on mobile !2411 @AntonBallmaier
@@ -25,7 +23,7 @@
 - Support and orga-user can search users with e-mail !2651 !2663 @chriswalg @martincodes-de
 - focus foodsharing tab of the same kind if clicking a push notification !2671 @buntel
 - close push notification of the same thread or same kind if clicked !2671 @buntel
-- Removed the additional button in the report modal #1599 !2677 @alex.simm
+- Removed the additional button in the report modal #1599 !2677 !2782 @alex.simm
 - Show forum text if foodsaver deleted again !2697 @chriswalg
 - Add CTA on the profile-page for calendar export #1583 !2705 @sefn
 - Remove relative time from last pickup #1571 #1643 !2706 !2744 @sefn
@@ -94,7 +92,7 @@
 - Refactor own store list in vue !2668 !2683 @chriswalg
 - Refactored the list of group applications to vue, which not also shows profile pictures #343 !2696 @alex.simm
 - Refactor the list of food share points in a region to vue !2702 @alex.simm
-- Refactor notification settings page to vue and rest api !2700 @chriswalg
+- Refactor notification settings page to vue and rest api !2700 !2778 @chriswalg
 - Refactor setting sleeping mode to vue !2749 !2760 @chriswalg
 - Refactor user passport generation page #1617 !2660 !2758 @chriswalg
 
@@ -132,6 +130,7 @@
 - Fix deprecated strtolower in MailsControl.php #1569 !2718 @stcz
 - Added security page !2764 @martincodes_de
 - Add security.txt with contact information !2776 @stcz
+- added functionallity to new FoodsharingControllers to prepare and render vue components !2730 @martincodes-de
 
 ## Development documentation
 
