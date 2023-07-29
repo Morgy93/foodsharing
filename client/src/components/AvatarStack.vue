@@ -3,7 +3,7 @@
   <div
     class="pickup-entries"
     :style="{
-      '--component-height': height + 'px',
+      '--component-height': heightInPx + 'px',
       '--overlap': overlap + 'px',
       '--border-color': borderColor,
     }"
@@ -38,7 +38,7 @@
       <Avatar
         v-b-tooltip="user.name"
         :url="user.avatar"
-        :size="height"
+        :size="heightInPx"
         round
         img-class="content"
         :class="index?'':'last-avatar'"
@@ -63,12 +63,11 @@ export default {
       type: Number,
       default: 0,
     },
-    maxWidth: {
-      // Max width of the component in px
+    maxWidthInPx: {
       type: Number,
       default: 200,
     },
-    height: {
+    heightInPx: {
       type: Number,
       default: 35,
     },
@@ -89,8 +88,8 @@ export default {
   computed: {
     shownUsersNum () {
       // The free slots add-on needs 43px
-      const width = this.maxWidth - (this.freeSlots ? 43 : 0)
-      const maxCircles = Math.max(1, Math.floor((width - this.overlap) / (this.height - this.overlap)))
+      const width = this.maxWidthInPx - (this.freeSlots ? 43 : 0)
+      const maxCircles = Math.max(1, Math.floor((width - this.overlap) / (this.heightInPx - this.overlap)))
       if (this.registeredUsers.length <= maxCircles) {
         return this.registeredUsers.length
       } else {

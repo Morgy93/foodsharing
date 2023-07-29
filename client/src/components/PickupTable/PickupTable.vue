@@ -40,7 +40,7 @@
       <AvatarStack
         :registered-users="entry.item.slots.occupied"
         :total-slots="entry.item.slots.max"
-        :max-width="offsetWidth / 5"
+        :max-width-in-px="offsetWidth / 5"
       />
     </template>
 
