@@ -9,6 +9,7 @@ use Foodsharing\Modules\Core\DBConstants\Store\PublicTimes;
 use Foodsharing\Modules\Core\DBConstants\Store\TeamSearchStatus;
 use Foodsharing\Modules\Core\DTO\GeoLocation;
 use Foodsharing\Modules\Core\DTO\MinimalIdentifier;
+use Foodsharing\Modules\Region\DTO\MinimalRegionIdentifier;
 use InvalidArgumentException;
 use JMS\Serializer\Annotation\Type;
 use OpenApi\Attributes as OA;
@@ -31,7 +32,7 @@ class Store
     /**
      * Region which is manages and is responsible for this store.
      */
-    public MinimalIdentifier $region;
+    public MinimalRegionIdentifier $region;
 
     /**
      * Location of the store.
@@ -204,7 +205,7 @@ class Store
         $obj = new Store();
         $obj->id = $queryResult['id'];
         $obj->name = $queryResult['name'];
-        $obj->region = MinimalIdentifier::createFromId($queryResult['regionId']);
+        $obj->region = MinimalRegionIdentifier::createFromId($queryResult['regionId']);
 
         try {
             $obj->location = GeoLocation::createFromArray($queryResult);

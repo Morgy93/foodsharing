@@ -159,7 +159,7 @@
               label-for="region"
             >
               <region-tree-v-form
-                v-if="region"
+                v-if="store.region"
                 v-model="store.region"
                 modal-title="storeview.select_related_region"
                 input-name="regionId"
@@ -457,7 +457,7 @@
 // Stores
 import { getters, mutations } from '@/stores/stores'
 import { getters as pickupGetters, mutations as pickupMutations } from '@/stores/pickups'
-import { getters as regionGetters } from '@/stores/regions'
+
 // Others
 import { pulseError, showLoader, hideLoader, pulseSuccess } from '@/script'
 import { getStoreInformation, updateStore } from '@/api/stores'
@@ -515,10 +515,7 @@ export default {
           lon: 0.0,
           lat: 0.0,
         },
-        region: {
-          id: null,
-          name: null,
-        },
+        region: null,
         cooperationStatus: null,
         cooperationStart: null,
         weight: null,
@@ -541,13 +538,6 @@ export default {
     publicInfoState () {
       if (!this.editMode) return null
       else return this.store.publicInfo.length <= 180
-    },
-    region () {
-      if (!this.store.region.name) {
-        return regionGetters.find(this.store.region.id)
-      } else {
-        return this.store.region.name
-      }
     },
     calendarInterval: {
       get () {
@@ -628,7 +618,7 @@ export default {
 
       try {
         showLoader()
-        const store = this.store
+        const store = structuredClone(this.store)
         store.regionId = this.store.region.id
         delete store.region
         store.groceries = this.storeFoodIds

@@ -133,6 +133,7 @@ class FoodsaverGateway extends BaseGateway
 			AND 	fs.last_login >= CURDATE() - INTERVAL 6 MONTH
 			AND 	fsreg.active = 1
 			AND 	fsreg.bezirk_id = :regionId
+			AND     fsreg.notify_by_email_about_new_threads = 1
 		', [
             ':regionId' => $regionId
         ]);

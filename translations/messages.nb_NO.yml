@@ -444,6 +444,7 @@ menu:
     helpneeded: Hjelpere er akutt nødvendig
     your_baskets: Matkurvene dine
     chainList: Kjedeoversikt
+    security: Sikkerhet
   content: Rediger innhold
   email: Send nyhetsbrev
   reports: Overtredelsesrapporter
@@ -1213,7 +1214,7 @@ bell:
   store_request_accept: Du har blitt tatt opp i teamet.
   workgroup_request_decline: Du ble ikke tatt opp i arbeidsgruppen.
   poll_new_title: Ny avstemning
-  store_cr_times: Hentetidene er endret
+  store_cr_times: Pickup-spor er justert
   new_foodsaver: trenger innledende pickuper
   new_foodsaver_needs_introduction: trenger innledende pickuper
   passgen_failed: Last opp et bilde, så fungerer det.
@@ -2062,6 +2063,8 @@ pickup:
       lignende\nutenfor selskapets syn.\n"
     disable_auto_slot: Automatisk spor i fremtiden bør være deaktivert.
     slot_titel: Plasser
+    description_titel: Beskrivelse
+    disable_auto_slot_titel: Deaktivering
   history:
     search: Vis pickups
     title: Samlingshistorie
@@ -2161,6 +2164,11 @@ pickup:
       remove_reason: '(Årsak: {reason})'
   no_slots_available: Ingen henteplasser tilgjengelig
   region_pickup_rule_failed: Denne oppføringen oppfyller ikke fylkesreglene
+  description_optional: Beskrivelse (valgfritt)
+  edit_description: Rediger beskrivelse
+  description: Beskrivelse
+  description_modal_text: 'Oppgi en ny hentebeskrivelse:'
+  description_max_length_info: Maksimal beskrivelseslengde nådd (100 tegn)
 storeedit:
   fetch:
     teamStatus: lagstatus
@@ -2675,7 +2683,7 @@ releases:
   "2020-10": Versjon «cranberry» (oktober 2020)
   "2022-05": Versjon "Blåbær" 🍇 (Mai 2022)
   "2022-01": Versjon "Grapefrukt" 🍋 (Januar 2022)
-  "2022-12": Utgivelse "Iskrem" 🍇 (desember 2022)
+  "2022-12": Utgivelse "Iskrem" 🍨 (desember 2022)
 push_notifications:
   test_notification_title: Push-varsler er aktivert
   test_notification_body: Flott, det ser ut til å ha fungert :)
@@ -3019,7 +3027,42 @@ chain:
     workinggroup: Driftskjeder
     list: Oversikt
   pagetitle: Driftskjeder
+  errorCodes:
+    KEY_ACCOUNT_MANAGER_ID_NOT_EXISTS: Key Account Manager eksisterer ikke
+    KEY_ACCOUNT_MANAGER_ID_NOT_IN_GROUP: Key Account Manager tilhører ikke AG Bedriftskjeder
+    INVALID_STORECHAIN_ID: Bedriftskjede-ID er ugyldig
+    THREAD_ID_NOT_EXISTS: Forumtråden finnes ikke
+    WRONG_FORUM: Forumtråden tilhører ikke AG Bedriftskjeder
+    EMPTY_NAME: Navnefeltet er tomt
+    EMPTY_CITY: Byfeltet er tomt
+    EMPTY_COUNTRY: Land-feltet er tomt
+    EMPTY_ZIP: Postnummerfeltet er tomt
+    INVALID_STATUS: Statusfeltet er ugyldig
 usersearch:
   search_tag: Søk etter brukere
   select_tag: Søk brukere etter navn
   no_tag_preset: Bruker ikke funnet
+notifications:
+  chat:
+    title: chat-meldinger
+    description: Motta et varsel om nye chat-meldinger selv om du ikke er logget inn.
+  foodSharePoints:
+    title: Distribusjonsstasjoner
+    description: Motta varsler om nye innlegg på oppslagstavler på distribusjonsstasjoner
+      du følger.
+  threads:
+    title: forum emner
+  checkbox_push: Push-varsler
+  regions:
+    title: Distrikter
+  groups:
+    title: Arbeidsgrupper
+  newsletter:
+    title: Nyhetsbrev
+    description: Få den nyeste informasjonen om foodsharing på e-post ca. 1 gang i
+      måneden.
+  checkbox_email: E-post
+  success: Lagret
+  config_button: konfigurere individuelt
+  checkbox_bell: Klokke
+  checkbox_disabled: deaktivert

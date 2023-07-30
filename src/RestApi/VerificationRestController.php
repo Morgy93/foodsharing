@@ -7,7 +7,6 @@ use Foodsharing\Modules\Bell\BellGateway;
 use Foodsharing\Modules\Bell\DTO\Bell;
 use Foodsharing\Modules\Core\DBConstants\Bell\BellType;
 use Foodsharing\Modules\Foodsaver\FoodsaverGateway;
-use Foodsharing\Modules\PassportGenerator\PassportGeneratorGateway;
 use Foodsharing\Modules\PassportGenerator\PassportGeneratorTransaction;
 use Foodsharing\Modules\Profile\DTO\PassHistoryEntry;
 use Foodsharing\Modules\Profile\DTO\VerificationHistoryEntry;
@@ -39,7 +38,6 @@ class VerificationRestController extends AbstractFOSRestController
     protected TranslatorInterface $translator;
     private PassportPermissions $passportPermissions;
     private PassportGeneratorTransaction $passportGeneratorTransaction;
-    private PassportGeneratorGateway $PassportGeneratorGateway;
 
     public function __construct(
         BellGateway $bellGateway,
@@ -52,7 +50,6 @@ class VerificationRestController extends AbstractFOSRestController
         TranslatorInterface $translator,
         PassportPermissions $passportPermissions,
         PassportGeneratorTransaction $passportGeneratorTransaction,
-        PassportGeneratorGateway $passportGeneratorGateway,
     ) {
         $this->bellGateway = $bellGateway;
         $this->foodsaverGateway = $foodsaverGateway;
@@ -64,7 +61,6 @@ class VerificationRestController extends AbstractFOSRestController
         $this->translator = $translator;
         $this->passportPermissions = $passportPermissions;
         $this->passportGeneratorTransaction = $passportGeneratorTransaction;
-        $this->PassportGeneratorGateway = $passportGeneratorGateway;
     }
 
     /**
@@ -237,8 +233,9 @@ class VerificationRestController extends AbstractFOSRestController
             throw new AccessDeniedHttpException();
         }
 
-        $lastPassGen = $this->PassportGeneratorGateway->getLastGen($sessionId);
-        $pdf = $this->passportGeneratorTransaction->generate([$sessionId], $lastPassGen, false, true);
+        $passDate = $this->passportGeneratorTransaction->getPassDate($sessionId);
+
+        $pdf = $this->passportGeneratorTransaction->generate([$sessionId], $passDate, false, true);
 
         $response = new Response($pdf);
         $response->headers->set('Content-Type', 'application/pdf');

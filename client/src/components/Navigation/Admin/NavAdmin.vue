@@ -23,14 +23,6 @@
         <i class="icon-subnav fas fa-question-circle" /> {{ $i18n('system_administration.quiz') }}
       </a>
       <a
-        v-if="permissions.handleReports"
-        :href="$url('reports')"
-        role="menuitem"
-        class="dropdown-item dropdown-action"
-      >
-        <i class="icon-subnav fas fa-exclamation" /> {{ $i18n('system_administration.reports') }}
-      </a>
-      <a
         v-if="permissions.administrateRegions"
         :href="$url('region')"
         role="menuitem"

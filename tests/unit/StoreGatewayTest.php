@@ -7,7 +7,7 @@ use Faker\Generator;
 use Foodsharing\Modules\Core\DBConstants\Store\CooperationStatus;
 use Foodsharing\Modules\Core\DBConstants\StoreTeam\MembershipStatus;
 use Foodsharing\Modules\Core\DBConstants\Unit\UnitType;
-use Foodsharing\Modules\Core\DTO\MinimalIdentifier;
+use Foodsharing\Modules\Region\DTO\MinimalRegionIdentifier;
 use Foodsharing\Modules\Store\DTO\Store;
 use Foodsharing\Modules\Store\StoreGateway;
 use Foodsharing\Modules\Store\TeamStatus;
@@ -62,7 +62,7 @@ class StoreGatewayTest extends Unit
     {
         $storeDTO = new Store();
         $storeDTO->name = 'StoreGatewayTestbetrieb';
-        $storeDTO->region = MinimalIdentifier::createFromId(1567);
+        $storeDTO->region = MinimalRegionIdentifier::createFromId(1567);
         $storeDTO->location->lat = 51.5367827;
         $storeDTO->location->lon = 9.9258967;
         $storeDTO->address->street = 'Bahnhofsplatz 1';
@@ -245,7 +245,7 @@ class StoreGatewayTest extends Unit
     public function testEmptyGeoPosition(): void
     {
         $region = $this->tester->createRegion();
-        $this->tester->createStore($region['id'], null, null, ['lon' => null, 'lon' => null]);
+        $this->tester->createStore($region['id'], null, null, ['lat' => null, 'lon' => null]);
 
         $listOfStores = $this->gateway->listStoresInRegion($region['id'], true);
         $this->assertEquals(1, count($listOfStores));

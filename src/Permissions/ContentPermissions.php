@@ -57,6 +57,12 @@ final class ContentPermissions
         ContentId::STARTPAGE_BLOCK3_CH,
     ];
 
+    private array $IT_CONTENT_IDS = [
+        ContentId::SECURITY_PAGE,
+        ContentId::BROADCAST_MESSAGE,
+        ContentId::NEWS_FROM_IT,
+    ];
+
     public function __construct(Session $session)
     {
         $this->session = $session;
@@ -67,27 +73,38 @@ final class ContentPermissions
         return $this->session->mayRole(Role::ORGA)
             || $this->session->isAdminFor(RegionIDs::QUIZ_AND_REGISTRATION_WORK_GROUP)
             || $this->session->isAdminFor(RegionIDs::PR_PARTNER_AND_TEAM_WORK_GROUP)
+            || $this->session->isAdminFor(RegionIDs::IT_SUPPORT_GROUP)
             || $this->session->isAdminFor(RegionIDs::PR_START_PAGE);
     }
 
-    public function getEditableContentIds(): array
+    /**
+     * Returns a list of content IDs that the user may edit, or null indicating that the user may edit all content
+     * pages.
+     *
+     * @return int[]|null
+     */
+    public function getEditableContentIds(): ?array
     {
         if ($this->session->mayRole(Role::ORGA)) {
-            return [];
+            return null;
         }
+
+        $regionContentMap = [
+            RegionIDs::QUIZ_AND_REGISTRATION_WORK_GROUP => $this->QUIZ_CONTENT_IDS,
+            RegionIDs::PR_PARTNER_AND_TEAM_WORK_GROUP => $this->PR_PARTNER_AND_TEAM_CONTENT_IDS,
+            RegionIDs::IT_SUPPORT_GROUP => $this->IT_CONTENT_IDS,
+            RegionIDs::PR_START_PAGE => $this->START_CONTENT_IDS,
+        ];
 
         $ids = [];
-        if ($this->session->isAdminFor(RegionIDs::QUIZ_AND_REGISTRATION_WORK_GROUP)) {
-            $ids = $this->QUIZ_CONTENT_IDS;
-        }
-        if ($this->session->isAdminFor(RegionIDs::PR_PARTNER_AND_TEAM_WORK_GROUP)) {
-            $ids = array_merge($ids, $this->PR_PARTNER_AND_TEAM_CONTENT_IDS);
-        }
-        if ($this->session->isAdminFor(RegionIDs::PR_START_PAGE)) {
-            $ids = array_merge($ids, $this->START_CONTENT_IDS);
+
+        foreach ($regionContentMap as $regionID => $contentIDs) {
+            if ($this->session->isAdminFor($regionID)) {
+                $ids = array_merge($ids, $contentIDs);
+            }
         }
 
-        return ['id' => $ids];
+        return $ids;
     }
 
     public function mayEditContentId(int $id): bool
@@ -95,17 +112,17 @@ final class ContentPermissions
         if ($this->session->mayRole(Role::ORGA)) {
             return true;
         }
-        if ($this->session->isAdminFor(RegionIDs::QUIZ_AND_REGISTRATION_WORK_GROUP)
-            && in_array($id, $this->QUIZ_CONTENT_IDS)) {
-            return true;
-        }
-        if ($this->session->isAdminFor(RegionIDs::PR_PARTNER_AND_TEAM_WORK_GROUP)
-            && in_array($id, $this->PR_PARTNER_AND_TEAM_CONTENT_IDS)) {
-            return true;
-        }
-        if ($this->session->isAdminFor(RegionIDs::PR_START_PAGE)
-            && in_array($id, $this->START_CONTENT_IDS)) {
-            return true;
+
+        $regionContentMap = [
+            RegionIDs::QUIZ_AND_REGISTRATION_WORK_GROUP => $this->QUIZ_CONTENT_IDS,
+            RegionIDs::PR_PARTNER_AND_TEAM_WORK_GROUP => $this->PR_PARTNER_AND_TEAM_CONTENT_IDS,
+            RegionIDs::PR_START_PAGE => $this->START_CONTENT_IDS,
+        ];
+
+        foreach ($regionContentMap as $regionID => $contentIDs) {
+            if ($this->session->isAdminFor($regionID) && in_array($id, $contentIDs)) {
+                return true;
+            }
         }
 
         return false;

@@ -1,10 +1,11 @@
 <template>
   <div>
     <PickupModal
-      modal-id="AddPickupModal"
+      modal-id="DeletePickupModal"
       :store-id="storeId"
-      :title="$i18n('store.enter_date')"
-      :description="$i18n('store.enter_date_description')"
+      :title="$i18n('store.delete_date')"
+      :delete-pickup-mode="true"
+      :description="$i18n('store.delete_date_description')"
     />
   </div>
 </template>

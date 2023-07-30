@@ -5,6 +5,8 @@ namespace Foodsharing\Modules\FoodSharePoint;
 use Foodsharing\Modules\Bell\BellGateway;
 use Foodsharing\Modules\Bell\DTO\Bell;
 use Foodsharing\Modules\Core\DBConstants\Bell\BellType;
+use Foodsharing\Modules\Core\DBConstants\Info\InfoType;
+use Foodsharing\RestApi\Models\Notifications\FoodSharePoint;
 use Foodsharing\Utility\EmailHelper;
 use Foodsharing\Utility\Sanitizer;
 use Symfony\Contracts\Translation\TranslatorInterface;
@@ -76,6 +78,27 @@ class FoodSharePointTransactions
                 );
                 $this->bellGateway->addBell($followersWithoutPostAuthor, $bellData);
             }
+        }
+    }
+
+    /**
+     * Updates the user's notification settings for a list of food share points individually.
+     *
+     * @param FoodSharePoint[] $foodSharePoints
+     */
+    public function updateFoodSharePointNotifications(int $userId, array $foodSharePoints): void
+    {
+        foreach ($foodSharePoints as $foodSharePoint) {
+            $foodSharePointIdsToUnfollow = [];
+
+            if ($foodSharePoint->infotype == InfoType::NONE) {
+                $foodSharePointIdsToUnfollow[] = $foodSharePoint->id;
+            }
+            $this->foodSharePointGateway->updateInfoType($userId, $foodSharePoint->id, $foodSharePoint->infotype);
+        }
+
+        if (!empty($foodSharePointIdsToUnfollow)) {
+            $this->foodSharePointGateway->unfollowFoodSharePoints($userId, $foodSharePointIdsToUnfollow);
         }
     }
 }

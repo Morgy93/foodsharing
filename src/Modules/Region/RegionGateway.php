@@ -192,34 +192,41 @@ class RegionGateway extends BaseGateway
         }
     }
 
-    public function listForFoodsaverExceptWorkingGroups(int $foodsaverId): array
+    public function listForFoodsaverExceptWorkingGroups(int $foodsaverId, bool $excludeWorkingGroups = true): array
     {
-        return $this->db->fetchAll('
-			SELECT
-				b.`id`,
-				b.`name`,
-				b.`teaser`,
-				b.`photo`
+        $operator = $excludeWorkingGroups ? '!=' : '=';
 
-			FROM
-				fs_bezirk b,
-				fs_foodsaver_has_bezirk hb
+        $regions = $this->db->fetchAll('
+        SELECT
+            b.`id`,
+            b.`name`,
+            b.`teaser`,
+            b.`photo`,
+            hb.`notify_by_email_about_new_threads` as notifyByEmailAboutNewThreads
 
-			WHERE
-				hb.bezirk_id = b.id
+        FROM
+            fs_bezirk b,
+            fs_foodsaver_has_bezirk hb
 
-			AND
-				hb.`foodsaver_id` = :foodsaverId
+        WHERE
+            hb.bezirk_id = b.id
+        AND
+            hb.`active` = 1
 
-			AND
-				b.`type` != :workGroupType
+        AND
+            hb.`foodsaver_id` = :foodsaverId
 
-			ORDER BY
-				b.`name`
-		', [
+        AND
+            b.`type` ' . $operator . ' :workGroupType
+
+        ORDER BY
+            b.`name`
+    ', [
             ':foodsaverId' => $foodsaverId,
             ':workGroupType' => UnitType::WORKING_GROUP
         ]);
+
+        return $regions;
     }
 
     /**
@@ -778,5 +785,17 @@ class RegionGateway extends BaseGateway
         $hasSubgroup = (bool)$parentalStatus['has_children'];
 
         return $hasSubgroup;
+    }
+
+    public function updateRegionNotification(int $foodsaverId, int $regionId, bool $notifyByEmail): void
+    {
+        $this->db->update(
+            'fs_foodsaver_has_bezirk',
+            ['notify_by_email_about_new_threads' => $notifyByEmail ? 1 : 0],
+            [
+                'foodsaver_id' => $foodsaverId,
+                'bezirk_id' => $regionId,
+            ]
+        );
     }
 }

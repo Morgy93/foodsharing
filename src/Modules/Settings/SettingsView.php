@@ -6,8 +6,6 @@ use Foodsharing\Lib\Session;
 use Foodsharing\Lib\View\Utils;
 use Foodsharing\Modules\Content\ContentGateway;
 use Foodsharing\Modules\Core\DBConstants\Foodsaver\Role;
-use Foodsharing\Modules\Core\DBConstants\FoodSharePoint\FollowerType;
-use Foodsharing\Modules\Core\DBConstants\Info\InfoType;
 use Foodsharing\Modules\Core\DBConstants\Quiz\AnswerRating;
 use Foodsharing\Modules\Core\DBConstants\Unit\UnitType;
 use Foodsharing\Modules\Core\View;
@@ -72,69 +70,9 @@ class SettingsView extends View
         ]);
     }
 
-    public function settingsInfo($foodSharePoints, $threads)
+    public function settingsInfo()
     {
-        global $g_data;
-        $out = '';
-
-        if ($foodSharePoints) {
-            foreach ($foodSharePoints as $fsp) {
-                $this->pageHelper->addJs('
-					$("input[disabled=\'disabled\']").parent().on("click", function () {
-						pulseInfo("' . $this->translator->trans('fsp.info.manager') . '");
-					});
-				');
-
-                $g_data['fairteiler_' . $fsp['id']] = $fsp['infotype'];
-                $out .= $this->v_utils->v_form_radio('fairteiler_' . $fsp['id'], [
-                    'label' => $this->translator->trans('fsp.info.from', ['{name}' => $fsp['name']]),
-                    'desc' => $this->translator->trans('fsp.info.descSettings', ['{name}' => $fsp['name']]),
-                    'values' => [
-                        ['id' => InfoType::BELL, 'name' => $this->translator->trans('fsp.info.bell')],
-                        ['id' => InfoType::EMAIL, 'name' => $this->translator->trans('fsp.info.mail')],
-                        ['id' => InfoType::NONE, 'name' => $this->translator->trans('fsp.info.none')],
-                    ],
-                    'disabled' => $fsp['type'] == FollowerType::FOOD_SHARE_POINT_MANAGER
-                ]);
-            }
-        }
-
-        if ($threads) {
-            foreach ($threads as $thread) {
-                $g_data['thread_' . $thread['id']] = $thread['infotype'];
-                $out .= $this->v_utils->v_form_radio('thread_' . $thread['id'], [
-                    'label' => $this->translator->trans('settings.follow.thread', ['{thread}' => $thread['name']]),
-                    'desc' => $thread['name'],
-                    'values' => [
-                        ['id' => InfoType::EMAIL, 'name' => $this->translator->trans('settings.follow.mail')],
-                        ['id' => InfoType::NONE, 'name' => $this->translator->trans('settings.follow.none')]
-                    ]
-                ]);
-            }
-        }
-
-        return $this->v_utils->v_field($this->v_utils->v_form('settingsinfo', [
-            $this->v_utils->v_input_wrapper(
-                $this->translator->trans('settings.push.title'),
-                '<div id="push-notification-label"><!-- Content to be set via JavaScript --></div>
-					<a href="#" class="button" id="push-notification-button"><!-- Content to be set via JavaScript --></a>'
-            ),
-            $this->v_utils->v_form_radio('newsletter', [
-                'desc' => $this->translator->trans('settings.newsletter'),
-                'values' => [
-                    ['id' => 0, 'name' => $this->translator->trans('no')],
-                    ['id' => 1, 'name' => $this->translator->trans('yes')]
-                ]
-            ]),
-            $this->v_utils->v_form_radio('infomail_message', [
-                'desc' => $this->translator->trans('settings.chatmail'),
-                'values' => [
-                    ['id' => 0, 'name' => $this->translator->trans('no')],
-                    ['id' => 1, 'name' => $this->translator->trans('yes')]
-                ]
-            ]),
-            $out
-        ], ['submit' => $this->translator->trans('button.save')]), $this->translator->trans('settings.notifications'), ['class' => 'ui-padding']);
+        return $this->vueComponent('notifications', 'Notifications');
     }
 
     public function quizSession($session, $try_count, ContentGateway $contentGateway)
@@ -407,7 +345,7 @@ class SettingsView extends View
             $regionPicker .= $this->vueComponent('region-tree-vform', 'RegionTreeVForm', [
                 'title' => $this->translator->trans('terminology.homeRegion'),
                 'inputName' => 'bezirk_id',
-                'initialValue' => $bezirk,
+                'value' => $bezirk,
                 'selectableRegionTypes' => [UnitType::CITY, UnitType::DISTRICT, UnitType::REGION, UnitType::WORKING_GROUP, UnitType::PART_OF_TOWN],
             ]);
             $position = $this->v_utils->v_form_text('position');

@@ -24,6 +24,7 @@ use Foodsharing\Modules\Core\DTO\PatchGeoLocation;
 use Foodsharing\Modules\Foodsaver\FoodsaverGateway;
 use Foodsharing\Modules\Foodsaver\Profile;
 use Foodsharing\Modules\Message\MessageGateway;
+use Foodsharing\Modules\Region\DTO\MinimalRegionIdentifier;
 use Foodsharing\Modules\Region\RegionGateway;
 use Foodsharing\Modules\Store\DTO\CommonLabel;
 use Foodsharing\Modules\Store\DTO\CommonStoreMetadata;
@@ -199,6 +200,7 @@ class StoreTransactions
     {
         $suppressLoadingGroceries = !$showSensitiveDetails;
         $dbResult = $this->storeGateway->getStore($storeId, $suppressLoadingGroceries);
+        $dbResult->region->name = $this->regionGateway->getRegionName($dbResult->region->id);
 
         if (!$showDetails) {
             $dbResult->description = null;
@@ -345,7 +347,7 @@ class StoreTransactions
 
         if (!empty($storeChange->regionId)) {
             $changeInformation->informationChanged = true;
-            $store->region = MinimalIdentifier::createFromId($storeChange->regionId);
+            $store->region = MinimalRegionIdentifier::createFromId($storeChange->regionId);
         }
 
         if (!empty($storeChange->publicInfo)) {

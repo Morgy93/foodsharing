@@ -64,7 +64,7 @@ export default {
     const resizeObserver = new ResizeObserver((_) => {
       map.invalidateSize()
     })
-    resizeObserver.observe(document.getElementById('map'))
+    resizeObserver.observe(this.$refs.map.$el)
   },
   methods: {
     /**

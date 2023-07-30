@@ -232,11 +232,6 @@ class ContentControl extends Control
         $this->addContent(ContentId::FOR_COMPANIES);
     }
 
-    public function infohub(): void
-    {
-        $this->addContent(ContentId::INFO_HUB);
-    }
-
     public function fsstaedte(): void
     {
         $this->addContent(ContentId::FOODSHARING_STAEDTE);
@@ -245,6 +240,11 @@ class ContentControl extends Control
     public function workshops(): void
     {
         $this->addContent(ContentId::WORKSHOPS);
+    }
+
+    public function security(): void
+    {
+        $this->addContent(ContentId::SECURITY_PAGE);
     }
 
     public function releaseNotes(): void

@@ -8,6 +8,7 @@ use Foodsharing\Modules\Bell\DTO\BellForExpirationUpdates;
 use Foodsharing\Modules\Bell\DTO\BellForList;
 use Foodsharing\Modules\Core\BaseGateway;
 use Foodsharing\Modules\Core\Database;
+use Foodsharing\Modules\Core\DatabaseNoValueFoundException;
 
 class BellGateway extends BaseGateway
 {
@@ -178,7 +179,11 @@ class BellGateway extends BaseGateway
      */
     public function delBellForFoodsaver(int $bellId, int $fsId): bool
     {
-        $bellIsCloseable = $this->db->fetchValueByCriteria('fs_bell', 'closeable', ['id' => $bellId]);
+        try {
+            $bellIsCloseable = $this->db->fetchValueByCriteria('fs_bell', 'closeable', ['id' => $bellId]);
+        } catch (DatabaseNoValueFoundException) {
+            $bellIsCloseable = false;
+        }
 
         if (!$bellIsCloseable) {
             return false;

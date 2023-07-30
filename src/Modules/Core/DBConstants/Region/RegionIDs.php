@@ -52,6 +52,9 @@ class RegionIDs
     public const TESTREGION_1 = 343;
     public const TESTREGION_2 = 3113;
 
+    // countries
+    public const GERMANY = 1;
+
     public static function hasSpecialPermission(int $regionId): bool
     {
         return in_array($regionId, [

@@ -120,7 +120,9 @@ class WorkGroupGateway extends BaseGateway
 			SELECT		b.`id`,
 						b.`name`,
 						b.`teaser`,
-						b.`photo`
+						b.`photo`,
+						hb.`notify_by_email_about_new_threads` as notifyByEmailAboutNewThreads
+
 			FROM		`fs_bezirk` b
 			INNER JOIN	`fs_foodsaver_has_bezirk` hb
 			ON			hb.`bezirk_id` = b.`id`

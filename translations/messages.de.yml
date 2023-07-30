@@ -103,9 +103,7 @@ compose_body: "Nachricht"
 #
 # FORM DATA KEYS: SettingsView
 # --
-newsletter: "Newsletter"
 # comment: "Anregungen, Kritik und Kommentare" # this looks very unused
-infomail_message: "Benachrichtigung über Chat-Nachrichten auf foodsharing"
 newmail: "Gib hier deine neue E-Mail-Adresse ein"
 passcheck: "Bestätige die Änderung bitte mit deinem Passwort"
 homepage: "Deine Webseite"
@@ -919,7 +917,10 @@ store:
   team:
     isfull: "Team ist voll"
   filter: "Filtern nach …"
-  enterdate: "Abholtermin eintragen"
+  enter_date: "Einzelnen Abholtermin eintragen"
+  enter_date_description: "Nachdem du Datum, Uhrzeit und Abholendenzahl ausgewählt hast, kannst du einmalig für diesen Termin Slots einstellen. Solltest du regelmäßige (wöchentlich automatisch wiederkehrende) Slots erstellen wollen, nutze bitte das Menü 'Betriebsinformationen ansehen'."
+  delete_date: "Einzelnen Abholtermin löschen"
+  delete_date_description: "Solltest du regelmäßige (wöchentlich automatisch wiederkehrende) Slots in deinem Betrieb nutzen und verhindern wollen, dass ein bestimmter Termin (z.B. Feiertag) erzeugt wird, kannst du durch Angabe von Datum und Uhrzeit durch diese Funktion dafür sorgen. Solltest du bereits sichtbare Slots löschen wollen, ist dies auch direkt per Klick auf den Slot möglich, sofern kein:e Foodsaver:in eingetragen ist."
   enternumber: "Du musst noch die Anzahl der Abholer*innen auswählen."
   leaveinfo: "Hier kannst Du einige Infos für die Foodsaver angeben, die sich für das Team bewerben möchten."
   maxchar: "(max. 180 Zeichen)"
@@ -1023,6 +1024,7 @@ pickup:
   description: "Beschreibung"
   description_optional: "Beschreibung (optional)"
   description_modal_text: "Gib eine neue Beschreibung für die Abholung an:"
+  description_max_length_info: "Maximale Beschreibungslänge erreicht (100 Zeichen)"
   really_delete_date: "Möchtest du die Abholung am {date} wirklich löschen?"
   delete_not_empty: "Aktuell sind noch Foodsaver*innen eingetragen. Du kannst diesen Abholtermin erst löschen, wenn sich alle ausgetragen haben."
   to_be_confirmed: "Dieser Abholtermin muss noch von einer für diesen Betrieb verantwortlichen Person bestätigt werden."
@@ -1455,7 +1457,7 @@ bell:
   store_wallpost: "Neuer Eintrag auf der Pinnwand."
 
   store_cr_times_title: "{name}"
-  store_cr_times: "Abholzeiten haben sich geändert"
+  store_cr_times: "Abholslots wurden angepasst"
 
   fs_sleepmode_title: "Neue Schlafmütze"
   fs_sleepmode: "{name} {nachname} ist jetzt inaktiv"
@@ -2257,6 +2259,7 @@ menu:
     dataprivacy: "Datenschutz"
     release-notes: "Was ist neu?"
     stores: "Betriebe" #also in MapView
+    security: "Security"
     helpwanted: "Helfer*innen gesucht" #MapView
     helpneeded: "Helfer*innen dringend gesucht" #MapView
     other_stores: "Andere Betriebe" #MapView
@@ -2961,3 +2964,27 @@ bootstrap-datepicker:
   labelCalendar: 'Kalender'
   labelNav: 'Kalendernavigation'
   labelHelp: 'Mit den Pfeiltasten durch den Kalender navigieren'
+
+notifications:
+  chat:
+    title: 'Chat Nachrichten'
+    description: 'Erhalte eine Benachrichtung bei neuen Chat-Nachrichten auch wenn du nicht eingeloggt bist.'
+  foodSharePoints:
+    title: 'Fairteiler'
+    description: 'Erhalte eine Benachrichtigung bei neuen Einträgen auf Fairteiler-Pinnwänden denen du folgst.'
+  threads:
+    title: 'Foren-Themen'
+  regions:
+    title: 'Bezirke'
+  groups:
+    title: 'Arbeitsgruppen'
+  newsletter:
+    title: 'Newsletter'
+    description: 'Erhalte ca. 1x monatlich aktuelle Informationen rund um foodsharing per E-Mail.'
+  checkbox_email: 'E-Mail'
+  checkbox_push: 'Push'
+  checkbox_bell: 'Glocke'
+  checkbox_disabled: 'Deaktiviert'
+  success: "Erfolgreich gespeichert"
+  config_button: 'einzeln konfigurieren'
+

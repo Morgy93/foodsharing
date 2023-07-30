@@ -1364,6 +1364,7 @@ menu:
     baskets: Paniers solidaires
     your_baskets: Tes paniers solidaires
     chainList: Aperçu des chaînes
+    security: Sécurité
   content: modifier les contenus
   manage_mailboxes: gérer les boîtes de réception
   email: envoyer la lettre d'information
@@ -1735,6 +1736,8 @@ pickup:
     bread: Modifier les horaires des collectes
     slot_titel: Slots
     disable_auto_slot: La fente automatique à l'avenir devrait être désactivée.
+    description_titel: Description
+    disable_auto_slot_titel: désactivation
   history:
     search: Voir les collectes
     title: Historique des collectes
@@ -1832,6 +1835,9 @@ pickup:
     title: Historique des collecteurs.rices désinscrits au cours des 7 derniers jours
   no_slots_available: Aucun slot disponible
   region_pickup_rule_failed: Cette entrée ne respecte pas les règles du secteur géographique
+  edit_description: Modifier la description
+  description_optional: Description (facultatif)
+  description: Description
 events:
   bread: Évènements
   past: Évènements passés
@@ -3171,7 +3177,16 @@ chain:
     create: La chaîne n’a pas pu être créée ({error}).
     edit: La chaîne n’a pas pu être modifiée ({error}).
     notfs: 'Vous devez être un Foodsaver pour voir cette liste.'
+  errorCodes:
+    EMPTY_COUNTRY: Le champ Pays est vide
+    EMPTY_ZIP: Le champ du code postal est vide
+    EMPTY_CITY: Le champ de la ville est vide
+    INVALID_STATUS: Le champ d’état n’est pas valide
+    KEY_ACCOUNT_MANAGER_ID_NOT_EXISTS: Key Account Manager n’existe pas
 usersearch:
   no_tag_preset: Utilisateur non trouvé
   select_tag: Rechercher des utilisateurs par nom
   search_tag: Rechercher des utilisateurs
+notifications:
+  chat:
+    title: Messages de chat

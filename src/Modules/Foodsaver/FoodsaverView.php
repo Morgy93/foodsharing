@@ -168,7 +168,7 @@ class FoodsaverView extends View
         $regionPicker = $this->vueComponent('region-tree-vform', 'RegionTreeVForm', [
             'title' => $this->translator->trans('terminology.homeRegion'),
             'inputName' => 'bezirk_id',
-            'initialValue' => $regionDetails,
+            'value' => $regionDetails,
             'selectableRegionTypes' => [UnitType::CITY, UnitType::DISTRICT, UnitType::REGION, UnitType::WORKING_GROUP, UnitType::PART_OF_TOWN],
         ]);
 

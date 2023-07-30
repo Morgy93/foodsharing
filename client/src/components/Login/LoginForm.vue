@@ -54,6 +54,7 @@
           type="submit"
           variant="primary"
           class="testing-login-click-submit btn btn-block"
+          :disabled="$v.$invalid"
           @click="submit"
           @keydown.enter="submit"
         >
@@ -70,6 +71,7 @@
 <script>
 import { isDev } from '@/helper/server-data'
 import { login } from '@/api/user'
+import { required, email } from 'vuelidate/lib/validators'
 
 import { pulseError } from '@/script'
 
@@ -85,6 +87,10 @@ export default {
       focusLogin: false,
     }
   },
+  validations: {
+    email: { required, email },
+    password: { required },
+  },
   watch: {
     focusLogin: function (val) {
       if (val) {
@@ -99,7 +105,6 @@ export default {
     }
   },
   methods: {
-
     async submit () {
       if (this.rememberMe) {
         localStorage.setItem('login-rememberme', 'true')
