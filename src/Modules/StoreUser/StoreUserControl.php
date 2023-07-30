@@ -231,8 +231,7 @@ class StoreUserControl extends Control
                     }
                 }
             } else {
-                if ($store = $this->storeGateway->getBetrieb($storeId)) {
-                    $this->pageHelper->addBread($store['name']);
+                if ($this->storeGateway->storeExists($storeId)) {
                     $this->flashMessageHelper->info($this->translator->trans('store.not-in-team'));
                     $this->routeHelper->goAndExit('/?page=map&bid=' . $storeId);
                 } else {

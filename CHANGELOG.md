@@ -63,6 +63,7 @@
 - catches bell-closing bug if no bell was found (symptom treatment) @martincodes_de
 - catches bell-closing bug if no bell was found (symptom treatment) !2766 @martincodes_de
 - Temporarily disable store page and member page for Europe and Germany !2777 @alex.simm
+- Fix showing stores on the map that do not have a name #1669 !2786 @alex.simm
 
 ## Refactoring
 - added poppins font in Styleguide !2564 @Niklas003

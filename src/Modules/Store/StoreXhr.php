@@ -111,7 +111,7 @@ class StoreXhr extends Control
         $store['inTeam'] = $teamStatus > TeamStatus::Applied;
         $store['pendingRequest'] = $teamStatus == TeamStatus::Applied;
         $dia = new XhrDialog();
-        $dia->setTitle($store['name']);
+        $dia->setTitle($store['name'] ?? '');
         $dia->addContent($this->view->bubble($store));
         if ($store['inTeam'] || $this->storePermissions->mayEditStore($storeId)) {
             $dia->addButton($this->translator->trans('store.go'), 'goTo(\'/?page=fsbetrieb&id=' . (int)$store['id'] . '\');');
