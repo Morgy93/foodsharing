@@ -669,7 +669,7 @@ class StoreTransactions
     /**
      * @return StoreStatusForMember[]
      */
-    public function listAllStoreStatusForFoodsaver(?int $foodsaverId, bool $activeStores): array
+    public function listAllStoreStatusForFoodsaver(?int $foodsaverId, ?bool $activeStores = true): array
     {
         if ($foodsaverId === null) {
             return [];
