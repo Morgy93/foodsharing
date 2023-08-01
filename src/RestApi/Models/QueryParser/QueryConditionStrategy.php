@@ -7,11 +7,11 @@ use Symfony\Component\Validator\Validator\ValidatorInterface;
 
 abstract class QueryConditionStrategy
 {
-    abstract public function getOperator(): string;
+    abstract public static function getOperator(): string;
 
-    abstract public function checkValid(ValidatorInterface $validator, BasicFilterQuery $query, object $typeDef): ConstraintViolationListInterface;
+    abstract public function checkValid(ValidatorInterface $validator): ConstraintViolationListInterface;
 
-    abstract public function generateSqlConditionStatement(BasicFilterQuery $query): string;
+    abstract public function generateSqlConditionStatement(): string;
 
-    abstract public function generateSqlValues(BasicFilterQuery $query): array;
+    abstract public function generateSqlValues(): array;
 }

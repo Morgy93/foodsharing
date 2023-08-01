@@ -30,6 +30,7 @@ use Foodsharing\Permissions\StorePermissions;
 use Foodsharing\RestApi\Models\QueryParser\QueryContrainstBuilder as QueryParserQueryContrainstBuilder;
 use Foodsharing\RestApi\Models\Store\CreateStoreModel;
 use Foodsharing\RestApi\Models\Store\MinimalStoreModel;
+use Foodsharing\RestApi\Models\Store\SearchStoreFilter;
 use Foodsharing\RestApi\Models\Store\StorePaginationResult;
 use Foodsharing\RestApi\Models\Store\StoreStatusForMemberModel;
 use Foodsharing\Utility\TimeHelper;
@@ -105,7 +106,6 @@ class StoreRestController extends AbstractFOSRestController
      * - cooperationStatus:in:<value1>,<value2>
      * - name:sw:<beginOfName>
      * - name:cn:<contains>
-     * - name=<searchFor>
      * - chain:in:<chainID1>,<chainId2>
      * - address:sw:<startWith>
      *
@@ -126,13 +126,16 @@ class StoreRestController extends AbstractFOSRestController
     public function searchForStores(Request $req, ValidatorInterface $validator)
     {
         $rawQueries = $req->query->get('q') ?? [];
-        $collection = new QueryParserQueryContrainstBuilder();
-        $errors=$collection->validate($validator, $rawQueries, new PatchStore());
-        if(count($errors)) {
+        $collection = new QueryParserQueryContrainstBuilder(SearchStoreFilter::class);
+        $errors = $collection->validate($validator, $rawQueries);
+        if (count($errors)) {
             throw new BadRequestHttpException($errors->get(0)->getMessage());
         }
 
-        return $this->handleView($this->view('ok', 200));
+        $queries = $collection->findQueryConditionStrategies($rawQueries);
+        $stores = $this->storeGateway->findAllStoresByQueryConstrainCollection($queries);
+
+        return $this->handleView($this->view($stores, 200));
     }
 
     /**

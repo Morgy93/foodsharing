@@ -20,6 +20,7 @@ use Foodsharing\Modules\Region\RegionGateway;
 use Foodsharing\Modules\Store\DTO\MinimalStoreIdentifier;
 use Foodsharing\Modules\Store\DTO\Store;
 use Foodsharing\Modules\Store\DTO\StoreTeamMembership;
+use Foodsharing\RestApi\Models\QueryParser\QueryConditionStrategy;
 use Foodsharing\Utility\DataHelper;
 
 class StoreGateway extends BaseGateway
@@ -118,6 +119,35 @@ class StoreGateway extends BaseGateway
             WHERE kette_id = :chainId' .
             $this->buildPaginationSqlLimit($pagination),
             $this->addPaginationSqlLimitParameters($pagination, ['chainId' => $chainId]));
+
+        return array_map(function (array $item) { return MinimalStoreIdentifier::createFromArray($item); }, $results);
+    }
+
+    /**
+     * Return all identifiers for stores filtered query condition strategies.
+     *
+     * @param QueryConditionStrategy[] $queries List of Query parameter strategies
+     *
+     * @return MinimalStoreIdentifier[]
+     *
+     * @throws Exception
+     */
+    public function findAllStoresByQueryConstrainCollection(array $queries, Pagination $pagination = new Pagination()): array
+    {
+        $sqlWheres = '(' . join(' AND ', array_map(function ($query) { return $query->generateSqlConditionStatement(); }, $queries)) . ')';
+
+        $values = [];
+        foreach ($queries as $query) {
+            $values = array_merge($query->generateSqlValues());
+        }
+
+        $sql = 'SELECT id, name
+        FROM fs_betrieb
+        WHERE ' .
+        $sqlWheres .
+        $this->buildPaginationSqlLimit($pagination);
+        $results = $this->db->fetchAll($sql,
+            $this->addPaginationSqlLimitParameters($pagination, $values));
 
         return array_map(function (array $item) { return MinimalStoreIdentifier::createFromArray($item); }, $results);
     }

@@ -8,26 +8,45 @@ use Symfony\Component\Validator\Validator\ValidatorInterface;
 
 class QueryContrainstBuilder
 {
+    public function __construct(private readonly string $referenceTypename)
+    {
+    }
+
     /**
      * @param string[] $rawQueries V
      */
-    public function validate(ValidatorInterface $validator, array $rawQueries, object $typedef): ConstraintViolationListInterface
+    public function validate(ValidatorInterface $validator, array $rawQueries): ConstraintViolationListInterface
     {
-        $strategies = [new InListQueryConditionStrategy()];
+        $strategies = $this->findQueryConditionStrategies($rawQueries);
+
+        $errors = new ConstraintViolationList();
+        foreach ($strategies as $strategy) {
+            $errors->addAll($strategy->checkValid($validator));
+        }
+
+        return $errors;
+    }
+
+    /**
+     * @return QueryConditionStrategy[]
+     */
+    public function findQueryConditionStrategies(array $rawQueries): array
+    {
+        $strategies = [InListQueryConditionStrategy::class];
         $preprocessed = [];
         foreach ($rawQueries as $rawQuery) {
             $preprocessed[] = BasicFilterQuery::decodeRawQuery($rawQuery);
         }
 
-        $errors = new ConstraintViolationList();
+        $usedStrategies = [];
         foreach ($preprocessed as $query) {
-            $strategy = current(array_filter($strategies, function ($strategy) use (&$query) { return $strategy->getOperator() == $query->operator; }));
+            $strategy = current(array_filter($strategies, function ($strategy) use (&$query) { return $strategy::getOperator() == $query->operator; }));
 
             if ($strategy) {
-                $errors->addAll($strategy->checkValid($validator, $query, $typedef));
+                $usedStrategies[] = new $strategy($query, $this->referenceTypename);
             }
         }
 
-        return $errors;
+        return $usedStrategies;
     }
 }

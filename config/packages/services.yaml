@@ -20,6 +20,14 @@ services:
         calls:
         - [initIfCookieExists]
 
+    Foodsharing\RestApi\Models\QueryParser\InListQueryConditionStrategy:
+        autowire: false
+    Foodsharing\RestApi\Models\QueryParser\QueryContrainstBuilder:
+        autowire: false
+    Foodsharing\RestApi\Models\QueryParser\QueryDbFieldName:
+        autowire: false
+
+
     markdown.nohtml:
         class: \Parsedown
         calls:
