@@ -21,6 +21,7 @@ use Foodsharing\Modules\Core\DBConstants\StoreTeam\MembershipStatus;
 use Foodsharing\Modules\Core\DBConstants\Unit\UnitType;
 use Foodsharing\Modules\Core\DTO\MinimalIdentifier;
 use Foodsharing\Modules\Core\DTO\PatchGeoLocation;
+use Foodsharing\Modules\Core\Pagination;
 use Foodsharing\Modules\Foodsaver\FoodsaverGateway;
 use Foodsharing\Modules\Foodsaver\Profile;
 use Foodsharing\Modules\Message\MessageGateway;
@@ -36,7 +37,9 @@ use Foodsharing\Modules\Store\DTO\PatchStore;
 use Foodsharing\Modules\Store\DTO\PatchStoreOptionModel;
 use Foodsharing\Modules\Store\DTO\Store;
 use Foodsharing\Modules\Store\DTO\StoreListInformation;
+use Foodsharing\Modules\Store\DTO\StoreListInformationPaginationResult;
 use Foodsharing\Modules\Store\DTO\StoreStatusForMember;
+use Foodsharing\RestApi\Models\QueryParser\QueryConditionStrategy;
 use Foodsharing\Utility\Sanitizer;
 use Foodsharing\Utility\WeightHelper;
 use Symfony\Contracts\Translation\TranslatorInterface;
@@ -248,6 +251,24 @@ class StoreTransactions
         }
 
         return $dbResult;
+    }
+
+    /**
+     * Return all identifiers for stores filtered query condition strategies.
+     *
+     * @param QueryConditionStrategy[] $queries List of Query parameter strategies
+     *
+     * @throws Exception
+     */
+    public function findAllStoresByQueryConstrainCollection(array $queries, Pagination $pagination = new Pagination(), $expand = true): StoreListInformationPaginationResult
+    {
+        $storeResults = $this->storeGateway->findAllStoresByQueryConstrainCollection($queries, $pagination);
+
+        $result = new StoreListInformationPaginationResult();
+        $result->total = $storeResults->total;
+        $result->stores = $this->arrayMapStoreListInformation($storeResults->stores, $expand);
+
+        return $result;
     }
 
     /**

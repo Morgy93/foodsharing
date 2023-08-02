@@ -22,6 +22,7 @@ use Foodsharing\Modules\Region\RegionGateway;
 use Foodsharing\Modules\Store\DTO\CommonStoreMetadata;
 use Foodsharing\Modules\Store\DTO\PatchStore;
 use Foodsharing\Modules\Store\DTO\Store;
+use Foodsharing\Modules\Store\DTO\StoreListInformationPaginationResult;
 use Foodsharing\Modules\Store\StoreGateway;
 use Foodsharing\Modules\Store\StoreTransactionException;
 use Foodsharing\Modules\Store\StoreTransactions;
@@ -31,7 +32,6 @@ use Foodsharing\RestApi\Models\QueryParser\QueryContrainstBuilder as QueryParser
 use Foodsharing\RestApi\Models\Store\CreateStoreModel;
 use Foodsharing\RestApi\Models\Store\MinimalStoreModel;
 use Foodsharing\RestApi\Models\Store\SearchStoreFilter;
-use Foodsharing\RestApi\Models\Store\StorePaginationResult;
 use Foodsharing\RestApi\Models\Store\StoreStatusForMemberModel;
 use Foodsharing\Utility\TimeHelper;
 use FOS\RestBundle\Controller\AbstractFOSRestController;
@@ -113,7 +113,7 @@ class StoreRestController extends AbstractFOSRestController
      * @OA\Response(
      *         response="200",
      *         description="",
-     *         @Model(type=StorePaginationResult::class)
+     *         @Model(type=StoreListInformationPaginationResult::class)
      * )
      * @Rest\Get("stores")
      * @OA\Parameter(
@@ -125,6 +125,14 @@ class StoreRestController extends AbstractFOSRestController
      */
     public function searchForStores(Request $req, ValidatorInterface $validator)
     {
+        if (!$this->session->mayRole()) {
+            throw new UnauthorizedHttpException('', self::NOT_LOGGED_IN);
+        }
+
+        if (!$this->storePermissions->mayListStores($this->session->id())) {
+            throw new AccessDeniedHttpException('No permission see store list');
+        }
+
         $rawQueries = $req->query->get('q') ?? [];
         $collection = new QueryParserQueryContrainstBuilder(SearchStoreFilter::class);
         $errors = $collection->validate($validator, $rawQueries);
@@ -133,7 +141,8 @@ class StoreRestController extends AbstractFOSRestController
         }
 
         $queries = $collection->findQueryConditionStrategies($rawQueries);
-        $stores = $this->storeGateway->findAllStoresByQueryConstrainCollection($queries);
+
+        $stores = $this->storeTransactions->findAllStoresByQueryConstrainCollection($queries);
 
         return $this->handleView($this->view($stores, 200));
     }
@@ -165,7 +174,7 @@ class StoreRestController extends AbstractFOSRestController
         }
 
         $stores = $this->storeTransactions->listOverviewInformationsOfStoresFromUser($this->session->id(), true);
-        $result = new StorePaginationResult();
+        $result = new StoreListInformationPaginationResult();
         $result->total = count($stores);
         $result->stores = $stores;
 
@@ -197,7 +206,7 @@ class StoreRestController extends AbstractFOSRestController
         }
 
         $stores = $this->storeTransactions->listOverviewInformationsOfStoresInRegion($regionId, true);
-        $result = new StorePaginationResult();
+        $result = new StoreListInformationPaginationResult();
         $result->total = count($stores);
         $result->stores = $stores;
 

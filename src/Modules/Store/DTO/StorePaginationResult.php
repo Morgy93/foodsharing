@@ -1,8 +1,7 @@
 <?php
 
-namespace Foodsharing\RestApi\Models\Store;
+namespace Foodsharing\Modules\Store\DTO;
 
-use Foodsharing\Modules\Store\DTO\StoreListInformation;
 use Nelmio\ApiDocBundle\Annotation\Model;
 use OpenApi\Annotations as OA;
 
@@ -19,11 +18,11 @@ class StorePaginationResult
     public int $total = 0;
 
     /**
-     * @var array<StoreListInformation> Array of store information
+     * @var array<Store> Array of store information
      *
      * @OA\Property(
      *        type="array",
-     *        @OA\Items(ref=@Model(type=StoreListInformation::class))
+     *        @OA\Items(ref=@Model(type=Store::class))
      *      )
      */
     public array $stores = [];

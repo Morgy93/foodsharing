@@ -19,6 +19,7 @@ use Foodsharing\Modules\Map\DTO\MapMarker;
 use Foodsharing\Modules\Region\RegionGateway;
 use Foodsharing\Modules\Store\DTO\MinimalStoreIdentifier;
 use Foodsharing\Modules\Store\DTO\Store;
+use Foodsharing\Modules\Store\DTO\StorePaginationResult;
 use Foodsharing\Modules\Store\DTO\StoreTeamMembership;
 use Foodsharing\RestApi\Models\QueryParser\QueryConditionStrategy;
 use Foodsharing\Utility\DataHelper;
@@ -128,28 +129,77 @@ class StoreGateway extends BaseGateway
      *
      * @param QueryConditionStrategy[] $queries List of Query parameter strategies
      *
-     * @return MinimalStoreIdentifier[]
-     *
      * @throws Exception
      */
-    public function findAllStoresByQueryConstrainCollection(array $queries, Pagination $pagination = new Pagination()): array
+    public function findAllStoresByQueryConstrainCollection(array $queries, Pagination $pagination = new Pagination(), bool $skipLoadingOfGroceries = false): StorePaginationResult
     {
-        $sqlWheres = '(' . join(' AND ', array_map(function ($query) { return $query->generateSqlConditionStatement(); }, $queries)) . ')';
+        $sqlWheres = join(' AND ', array_map(function ($query) { return $query->generateSqlConditionStatement(); }, $queries));
+        if (!empty($sqlWheres)) {
+            $sqlWheres = '(' . $sqlWheres . ')';
+        }
+        $sqlWheresPagination = $this->buildPaginationSqlLimit($pagination);
+        if (!empty($sqlWheresPagination)) {
+            if (!empty($sqlWheres)) {
+                $sqlWheres .= 'AND (' . $this->buildPaginationSqlLimit($pagination) . ')';
+            } else {
+                $sqlWheres .= ' (' . $this->buildPaginationSqlLimit($pagination) . ')';
+            }
+        }
+
+        if (!empty($sqlWheres)) {
+            $sqlWheres = 'WHERE ' . $sqlWheres;
+        }
+
+        $sql = 'SELECT	`id`,
+                `name`,
+                `bezirk_id` as regionId,
+                `lat`,
+                `lon`,
+                `str` AS street,
+                `plz` AS zipCode,
+                `stadt` as city,
+                `public_info`,
+                `public_time`,
+                `betrieb_kategorie_id` as categoryId,
+                `kette_id` as chainId,
+                `betrieb_status_id` as cooperationStatus,
+                `begin` as cooperationStart,
+                `besonderheiten` as description,
+                `ansprechpartner` as contactName,
+                `telefon` as contactPhone,
+                `fax` as contactFax,
+                `email` as contactEmail,
+                `prefetchtime` as calendarInterval,
+                `abholmenge` as weight,
+                `ueberzeugungsarbeit` as effort,
+                `presse` as publicity,
+                `sticker`,
+                `team_status` as teamStatus,
+                `use_region_pickup_rule` as useRegionPickupRule,
+                `status_date` as updatedAt,
+                `added` as createdAt
+            FROM 	`fs_betrieb` ' . $sqlWheres;
 
         $values = [];
         foreach ($queries as $query) {
             $values = array_merge($query->generateSqlValues());
         }
+        $values = $this->addPaginationSqlLimitParameters($pagination, $values);
 
-        $sql = 'SELECT id, name
-        FROM fs_betrieb
-        WHERE ' .
-        $sqlWheres .
-        $this->buildPaginationSqlLimit($pagination);
-        $results = $this->db->fetchAll($sql,
-            $this->addPaginationSqlLimitParameters($pagination, $values));
+        $stores = $this->db->fetchAll($sql, $values);
 
-        return array_map(function (array $item) { return MinimalStoreIdentifier::createFromArray($item); }, $results);
+        $result = new StorePaginationResult();
+        $result->stores = array_map(function (array $item) use ($skipLoadingOfGroceries) {
+            if (!$skipLoadingOfGroceries) {
+                $item['groceries'] = array_column($this->getGroceries($item['id']), 'id');
+            }
+
+            return Store::createFromArray($item);
+        }, $stores);
+
+        $result->total = $this->db->fetchValue('SELECT count(id) FROM fs_betrieb ' . $sqlWheres, $values);
+
+        return $result;
     }
 
     /**
