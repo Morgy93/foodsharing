@@ -3,18 +3,17 @@
 use Foodsharing\RestApi\Models\QueryParser\BasicFilterQuery;
 use Foodsharing\RestApi\Models\QueryParser\InListQueryConditionStrategy;
 use Foodsharing\RestApi\Models\QueryParser\QueryDbFieldName;
-use PHPUnit\Framework\TestCase;
 use Symfony\Component\Validator\Constraints as Assert;
 use Symfony\Component\Validator\Validation;
 
-enum DaysOfWeek: int
+enum DaysOfWeekILQCS: int
 {
     case Sunday = 0;
     case Monday = 1;
     // etc.
 }
 
-class TestValidClass
+class TestValidClassILQS
 {
     #[Assert\Range(
         min: 0,
@@ -27,10 +26,10 @@ class TestValidClass
     #[Assert\Choice(['New York', 'Berlin', 'Tokyo'])]
     public string $option = 'Berlin';
 
-    public DaysOfWeek $weekDay = DaysOfWeek::Monday;
+    public DaysOfWeekILQCS $weekDay = DaysOfWeekILQCS::Monday;
 }
 
-class InListQueryConditionStrategyTest extends TestCase
+class InListQueryConditionStrategyTest extends \Codeception\Test\Unit
 {
     public function testInValueStrategyValidate()
     {
@@ -42,18 +41,18 @@ class InListQueryConditionStrategyTest extends TestCase
         $this->assertEquals('in', InListQueryConditionStrategy::getOperator());
 
         $query = BasicFilterQuery::decodeRawQuery('mm:in:1');
-        $validator = new InListQueryConditionStrategy($query, TestValidClass::class);
+        $validator = new InListQueryConditionStrategy($query, TestValidClassILQS::class);
         $errors = $validator->checkValid($valInterface);
         $this->assertCount(1, $errors);
 
         $query = BasicFilterQuery::decodeRawQuery('cmd:in:a,1');
-        $validator = new InListQueryConditionStrategy($query, TestValidClass::class);
+        $validator = new InListQueryConditionStrategy($query, TestValidClassILQS::class);
         $errors = $validator->checkValid($valInterface);
 
         $this->assertCount(1, $errors);
 
         $query = BasicFilterQuery::decodeRawQuery('cmd:in:0,1');
-        $validator = new InListQueryConditionStrategy($query, TestValidClass::class);
+        $validator = new InListQueryConditionStrategy($query, TestValidClassILQS::class);
         $errors = $validator->checkValid($valInterface);
 
         $this->assertCount(0, $errors);
@@ -62,12 +61,12 @@ class InListQueryConditionStrategyTest extends TestCase
     public function testGenerateSqlConditionStatementWithDbFieldname()
     {
         $query = BasicFilterQuery::decodeRawQuery('cmd:in:1');
-        $validator = new InListQueryConditionStrategy($query, TestValidClass::class);
+        $validator = new InListQueryConditionStrategy($query, TestValidClassILQS::class);
         $sqlSegment = $validator->generateSqlConditionStatement();
         $this->assertEquals('(command IN ( ? ))', $sqlSegment);
 
         $query = BasicFilterQuery::decodeRawQuery('cmd:in:1,2');
-        $validator = new InListQueryConditionStrategy($query, TestValidClass::class);
+        $validator = new InListQueryConditionStrategy($query, TestValidClassILQS::class);
         $sqlSegment = $validator->generateSqlConditionStatement();
         $this->assertEquals('(command IN ( ?, ? ))', $sqlSegment);
     }
@@ -75,12 +74,12 @@ class InListQueryConditionStrategyTest extends TestCase
     public function testGenerateSqlConditionStatement()
     {
         $query = BasicFilterQuery::decodeRawQuery('option:in:Berlin');
-        $validator = new InListQueryConditionStrategy($query, TestValidClass::class);
+        $validator = new InListQueryConditionStrategy($query, TestValidClassILQS::class);
         $sqlSegment = $validator->generateSqlConditionStatement();
         $this->assertEquals('(option IN ( ? ))', $sqlSegment);
 
         $query = BasicFilterQuery::decodeRawQuery('option:in:Berlin,Tokyo');
-        $validator = new InListQueryConditionStrategy($query, TestValidClass::class);
+        $validator = new InListQueryConditionStrategy($query, TestValidClassILQS::class);
         $sqlSegment = $validator->generateSqlConditionStatement();
         $this->assertEquals('(option IN ( ?, ? ))', $sqlSegment);
     }
@@ -94,7 +93,7 @@ class InListQueryConditionStrategyTest extends TestCase
 
         // test integer
         $query = BasicFilterQuery::decodeRawQuery('cmd:in:1');
-        $strategy = new InListQueryConditionStrategy($query, TestValidClass::class);
+        $strategy = new InListQueryConditionStrategy($query, TestValidClassILQS::class);
         $errors = $strategy->checkValid($valInterface);
         $this->assertCount(0, $errors);
 
@@ -105,7 +104,7 @@ class InListQueryConditionStrategyTest extends TestCase
 
         // test string
         $query = BasicFilterQuery::decodeRawQuery('option:in:Tokyo');
-        $strategy = new InListQueryConditionStrategy($query, TestValidClass::class);
+        $strategy = new InListQueryConditionStrategy($query, TestValidClassILQS::class);
         $errors = $strategy->checkValid($valInterface);
         $this->assertCount(0, $errors);
 
@@ -116,12 +115,12 @@ class InListQueryConditionStrategyTest extends TestCase
 
         // test enum
         $query = BasicFilterQuery::decodeRawQuery('weekDay:in:Sunday');
-        $strategy = new InListQueryConditionStrategy($query, TestValidClass::class);
+        $strategy = new InListQueryConditionStrategy($query, TestValidClassILQS::class);
         $errors = $strategy->checkValid($valInterface);
         $this->assertCount(0, $errors);
 
         $values = $strategy->generateSqlValues();
         $this->assertCount(1, $values);
-        $this->assertEquals(DaysOfWeek::Sunday, $values[0]);
+        $this->assertEquals(DaysOfWeekILQCS::Sunday, $values[0]);
     }
 }

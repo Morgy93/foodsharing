@@ -4,18 +4,17 @@ use Foodsharing\RestApi\Models\QueryParser\BasicFilterQuery;
 use Foodsharing\RestApi\Models\QueryParser\QueryConditionStrategy;
 use Foodsharing\RestApi\Models\QueryParser\QueryDbFieldName;
 use Foodsharing\RestApi\Models\QueryParser\StartWithQueryConditionStrategy;
-use PHPUnit\Framework\TestCase;
 use Symfony\Component\Validator\Constraints as Assert;
 use Symfony\Component\Validator\Validation;
 
-enum DaysOfWeek: int
+enum DaysOfWeekSw: int
 {
     case Sunday = 0;
     case Monday = 1;
     // etc.
 }
 
-class TestValidClass
+class TestValidClassSw
 {
     #[Assert\Range(
         min: 0,
@@ -28,10 +27,10 @@ class TestValidClass
     #[Assert\Choice(['New York', 'Berlin', 'Tokyo'])]
     public string $option = 'Berlin';
 
-    public DaysOfWeek $weekDay = DaysOfWeek::Monday;
+    public DaysOfWeekSw $weekDay = DaysOfWeekSw::Monday;
 }
 
-class StartWithQueryConditionStrategyTest extends TestCase
+class StartWithQueryConditionStrategyTest extends \Codeception\Test\Unit
 {
     public function testStartWithStrategyValidate()
     {
@@ -43,37 +42,37 @@ class StartWithQueryConditionStrategyTest extends TestCase
         $this->assertEquals('sw', StartWithQueryConditionStrategy::getOperator());
 
         $query = BasicFilterQuery::decodeRawQuery('option:sw:');
-        $validator = new StartWithQueryConditionStrategy($query, TestValidClass::class);
+        $validator = new StartWithQueryConditionStrategy($query, TestValidClassSw::class);
         $errors = $validator->checkValid($valInterface);
         $this->assertCount(1, $errors);
         $this->assertEquals(Assert\Choice::NO_SUCH_CHOICE_ERROR, $errors[0]->getCode());
 
         $query = BasicFilterQuery::decodeRawQuery('option:sw');
-        $validator = new StartWithQueryConditionStrategy($query, TestValidClass::class);
+        $validator = new StartWithQueryConditionStrategy($query, TestValidClassSw::class);
         $errors = $validator->checkValid($valInterface);
         $this->assertCount(1, $errors);
         $this->assertEquals(QueryConditionStrategy::EMPTY_VALUE, $errors[0]->getCode());
 
         $query = BasicFilterQuery::decodeRawQuery('mm:sw:1');
-        $validator = new StartWithQueryConditionStrategy($query, TestValidClass::class);
+        $validator = new StartWithQueryConditionStrategy($query, TestValidClassSw::class);
         $errors = $validator->checkValid($valInterface);
         $this->assertCount(1, $errors);
         $this->assertEquals(QueryConditionStrategy::INVALID_FIELD, $errors[0]->getCode());
 
         $query = BasicFilterQuery::decodeRawQuery('cmd:sw:a,1');
-        $validator = new StartWithQueryConditionStrategy($query, TestValidClass::class);
+        $validator = new StartWithQueryConditionStrategy($query, TestValidClassSw::class);
         $errors = $validator->checkValid($valInterface);
         $this->assertCount(1, $errors);
         $this->assertEquals(QueryConditionStrategy::TO_MANY_VALUES, $errors[0]->getCode());
 
         $query = BasicFilterQuery::decodeRawQuery('option:sw:a');
-        $validator = new StartWithQueryConditionStrategy($query, TestValidClass::class);
+        $validator = new StartWithQueryConditionStrategy($query, TestValidClassSw::class);
         $errors = $validator->checkValid($valInterface);
         $this->assertCount(1, $errors);
         $this->assertEquals(Assert\Choice::NO_SUCH_CHOICE_ERROR, $errors[0]->getCode());
 
         $query = BasicFilterQuery::decodeRawQuery('option:sw:New York');
-        $validator = new StartWithQueryConditionStrategy($query, TestValidClass::class);
+        $validator = new StartWithQueryConditionStrategy($query, TestValidClassSw::class);
         $errors = $validator->checkValid($valInterface);
         $this->assertCount(0, $errors);
     }
@@ -81,7 +80,7 @@ class StartWithQueryConditionStrategyTest extends TestCase
     public function testGenerateSqlConditionStatementWithDbFieldname()
     {
         $query = BasicFilterQuery::decodeRawQuery('cmd:sw:1');
-        $validator = new StartWithQueryConditionStrategy($query, TestValidClass::class);
+        $validator = new StartWithQueryConditionStrategy($query, TestValidClassSw::class);
         $sqlSegment = $validator->generateSqlConditionStatement();
         $this->assertEquals('(command LIKE ?)', $sqlSegment);
     }
@@ -89,7 +88,7 @@ class StartWithQueryConditionStrategyTest extends TestCase
     public function testGenerateSqlConditionStatement()
     {
         $query = BasicFilterQuery::decodeRawQuery('option:sw:Berlin');
-        $validator = new StartWithQueryConditionStrategy($query, TestValidClass::class);
+        $validator = new StartWithQueryConditionStrategy($query, TestValidClassSw::class);
         $sqlSegment = $validator->generateSqlConditionStatement();
         $this->assertEquals('(option LIKE ?)', $sqlSegment);
     }
@@ -103,7 +102,7 @@ class StartWithQueryConditionStrategyTest extends TestCase
 
         // test integer
         $query = BasicFilterQuery::decodeRawQuery('cmd:sw:1');
-        $strategy = new StartWithQueryConditionStrategy($query, TestValidClass::class);
+        $strategy = new StartWithQueryConditionStrategy($query, TestValidClassSw::class);
         $errors = $strategy->checkValid($valInterface);
         $this->assertCount(0, $errors);
 
@@ -113,7 +112,7 @@ class StartWithQueryConditionStrategyTest extends TestCase
 
         // test string
         $query = BasicFilterQuery::decodeRawQuery('option:sw:Tokyo');
-        $strategy = new StartWithQueryConditionStrategy($query, TestValidClass::class);
+        $strategy = new StartWithQueryConditionStrategy($query, TestValidClassSw::class);
         $errors = $strategy->checkValid($valInterface);
         $this->assertCount(0, $errors);
 
@@ -124,12 +123,12 @@ class StartWithQueryConditionStrategyTest extends TestCase
 
         // test enum
         $query = BasicFilterQuery::decodeRawQuery('weekDay:sw:Sunday');
-        $strategy = new StartWithQueryConditionStrategy($query, TestValidClass::class);
+        $strategy = new StartWithQueryConditionStrategy($query, TestValidClassSw::class);
         $errors = $strategy->checkValid($valInterface);
         $this->assertCount(0, $errors);
 
         $values = $strategy->generateSqlValues();
         $this->assertCount(1, $values);
-        $this->assertEquals(DaysOfWeek::Sunday, $values[0]);
+        $this->assertEquals(DaysOfWeekSw::Sunday, $values[0]);
     }
 }

@@ -17,12 +17,6 @@ class BasicFilterQuery
         $field = array_shift($elements);
         $operator = strtolower(array_shift($elements));
 
-        if ($pos = strpos($field, '=')) {
-            $operator = 'cn';
-            $elements = [substr($field, $pos + 1)];
-            $field = substr($field, 0, $pos);
-        }
-
         $parameters = [];
         foreach ($elements as $element) {
             $parameters = array_merge($parameters, explode(',', $element));

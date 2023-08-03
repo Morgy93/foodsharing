@@ -1,32 +1,8 @@
 <?php
 
 use Foodsharing\RestApi\Models\QueryParser\BasicFilterQuery;
-use PHPUnit\Framework\TestCase;
-use Symfony\Component\Validator\Constraints as Assert;
 
-enum DaysOfWeek: int
-{
-    case Sunday = 0;
-    case Monday = 1;
-    // etc.
-}
-
-class TestValidClass
-{
-    #[Assert\Range(
-        min: 0,
-        max: 1,
-        notInRangeMessage: 'You must be between {{ min }}cm and {{ max }}cm tall to enter',
-    )]
-    public int $cmd = 0;
-
-    #[Assert\Choice(['New York', 'Berlin', 'Tokyo'])]
-    public string $option = 'Berlin';
-
-    public DaysOfWeek $weekDay = DaysOfWeek::Monday;
-}
-
-class BasicFilterQueryTest extends TestCase
+class BasicFilterQueryTest extends \Codeception\Test\Unit
 {
     public function testBasicQueryFieldSeperation()
     {

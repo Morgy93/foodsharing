@@ -4,18 +4,10 @@ use Foodsharing\RestApi\Models\QueryParser\InListQueryConditionStrategy;
 use Foodsharing\RestApi\Models\QueryParser\QueryStrategyBuilder;
 use Foodsharing\RestApi\Models\QueryParser\StartWithQueryConditionStrategy;
 use Foodsharing\RestApi\Models\QueryParser\SupportedQueryConditionStrategy;
-use PHPUnit\Framework\TestCase;
 use Symfony\Component\Validator\Constraints as Assert;
 use Symfony\Component\Validator\Validation;
 
-enum DaysOfWeek: int
-{
-    case Sunday = 0;
-    case Monday = 1;
-    // etc.
-}
-
-class TestValidClass
+class TestValidClassQSB
 {
     #[Assert\Range(
         min: 0,
@@ -28,12 +20,9 @@ class TestValidClass
     #[Assert\Choice(['New York', 'Berlin', 'Tokyo'])]
     #[SupportedQueryConditionStrategy([InListQueryConditionStrategy::class, StartWithQueryConditionStrategy::class])]
     public string $option = 'Berlin';
-
-    #[SupportedQueryConditionStrategy([InListQueryConditionStrategy::class])]
-    public DaysOfWeek $weekDay = DaysOfWeek::Monday;
 }
 
-class QueryStrategyBuilderTest extends TestCase
+class QueryStrategyBuilderTest extends \Codeception\Test\Unit
 {
     public function testValidation()
     {
@@ -43,7 +32,7 @@ class QueryStrategyBuilderTest extends TestCase
             ->addDefaultDoctrineAnnotationReader() // add this only when using annotations
             ->getValidator();
 
-        $collection = new QueryStrategyBuilder(TestValidClass::class);
+        $collection = new QueryStrategyBuilder(TestValidClassQSB::class);
         $errors = $collection->validate($validator, ['option:in:Berlin']);
         $this->assertCount(0, $errors);
 
@@ -85,7 +74,7 @@ class QueryStrategyBuilderTest extends TestCase
               ->getValidator();
 
           $rawQueries = ['option:in:Berlin'];
-          $collection = new QueryStrategyBuilder(TestValidClass::class);
+          $collection = new QueryStrategyBuilder(TestValidClassQSB::class);
           $errors = $collection->validate($validator, $rawQueries);
           $this->assertCount(0, $errors);
 
