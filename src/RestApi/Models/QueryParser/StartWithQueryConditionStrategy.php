@@ -8,7 +8,7 @@ use Symfony\Component\Validator\ConstraintViolationList;
 use Symfony\Component\Validator\ConstraintViolationListInterface;
 use Symfony\Component\Validator\Validator\ValidatorInterface;
 
-class InListQueryConditionStrategy extends QueryConditionStrategy
+class StartWithQueryConditionStrategy extends QueryConditionStrategy
 {
     public function __construct(private readonly BasicFilterQuery $query, private readonly string $className)
     {
@@ -16,7 +16,7 @@ class InListQueryConditionStrategy extends QueryConditionStrategy
 
     public static function getOperator(): string
     {
-        return 'in';
+        return 'sw';
     }
 
     public function checkValid(ValidatorInterface $validator): ConstraintViolationListInterface
@@ -28,6 +28,10 @@ class InListQueryConditionStrategy extends QueryConditionStrategy
 
         if (empty($this->query->values)) {
             return new ConstraintViolationList([new ConstraintViolation('Empty query', null, [], '', $this->query->field, '', code: QueryConditionStrategy::EMPTY_VALUE)]);
+        }
+
+        if (count($this->query->values) > 1) {
+            return new ConstraintViolationList([new ConstraintViolation('Too many arguments', null, [], '', $this->query->field, '', code: QueryConditionStrategy::TO_MANY_VALUES)]);
         }
 
         $error = new ConstraintViolationList();
@@ -50,9 +54,7 @@ class InListQueryConditionStrategy extends QueryConditionStrategy
             $dbFieldName = $attribute->fieldname;
         }
 
-        $placeholders = join(', ', array_fill(0, count($this->query->values), '?'));
-
-        return '(' . $dbFieldName . ' IN ( ' . $placeholders . ' ))';
+        return '(' . $dbFieldName . ' LIKE ?)';
     }
 
     private function getTypePropertyByFieldName(): \ReflectionProperty
@@ -67,6 +69,8 @@ class InListQueryConditionStrategy extends QueryConditionStrategy
     public function generateSqlValues(): array
     {
         $property = $this->getTypePropertyByFieldName();
+        $value = $this->query->values[0];
+
         $typeOfField = $property->getType();
         if (!$property->hasType() || !($typeOfField instanceof \ReflectionNamedType)) {
             return [];
@@ -76,14 +80,16 @@ class InListQueryConditionStrategy extends QueryConditionStrategy
             if ($ref->isEnum()) {
                 $rEnum = new \ReflectionEnum($typeOfField->getName());
 
-                return array_map(function ($i) use ($rEnum) { return $rEnum->getCase($i)->getValue(); }, $this->query->values);
+                return [$rEnum->getCase($value)->getValue()];
             }
         }
 
-        return array_map(function ($i) use ($typeOfField) {
-            settype($i, $typeOfField->getName());
+        settype($value, $typeOfField->getName());
 
-            return $i;
-        }, $this->query->values);
+        if (is_string($value)) {
+            $value .= '%';
+        }
+
+        return [$value];
     }
 }

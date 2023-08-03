@@ -22,10 +22,15 @@ services:
 
     Foodsharing\RestApi\Models\QueryParser\InListQueryConditionStrategy:
         autowire: false
-    Foodsharing\RestApi\Models\QueryParser\QueryContrainstBuilder:
+    Foodsharing\RestApi\Models\QueryParser\QueryStrategyBuilder:
         autowire: false
     Foodsharing\RestApi\Models\QueryParser\QueryDbFieldName:
         autowire: false
+    Foodsharing\RestApi\Models\QueryParser\SupportedQueryConditionStrategy:
+        autowire: false
+    Foodsharing\RestApi\Models\QueryParser\StartWithQueryConditionStrategy:
+        autowire: false
+
 
 
     markdown.nohtml:

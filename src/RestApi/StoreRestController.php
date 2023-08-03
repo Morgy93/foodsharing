@@ -16,6 +16,7 @@ use Foodsharing\Modules\Core\DBConstants\Region\WorkgroupFunction;
 use Foodsharing\Modules\Core\DBConstants\Store\CooperationStatus;
 use Foodsharing\Modules\Core\DBConstants\Store\Milestone;
 use Foodsharing\Modules\Core\DBConstants\Store\StoreLogAction;
+use Foodsharing\Modules\Core\Pagination;
 use Foodsharing\Modules\Foodsaver\FoodsaverGateway;
 use Foodsharing\Modules\Group\GroupFunctionGateway;
 use Foodsharing\Modules\Region\RegionGateway;
@@ -28,7 +29,7 @@ use Foodsharing\Modules\Store\StoreTransactionException;
 use Foodsharing\Modules\Store\StoreTransactions;
 use Foodsharing\Modules\Store\TeamStatus as TeamMembershipStatus;
 use Foodsharing\Permissions\StorePermissions;
-use Foodsharing\RestApi\Models\QueryParser\QueryContrainstBuilder as QueryParserQueryContrainstBuilder;
+use Foodsharing\RestApi\Models\QueryParser\QueryStrategyBuilder;
 use Foodsharing\RestApi\Models\Store\CreateStoreModel;
 use Foodsharing\RestApi\Models\Store\MinimalStoreModel;
 use Foodsharing\RestApi\Models\Store\SearchStoreFilter;
@@ -100,16 +101,15 @@ class StoreRestController extends AbstractFOSRestController
     /**
      * Search for stores by different properties with pagination.
      *
-     * Filter elements:
+     * Filter expression:
      *
-     * - location:boundaryBox:<lat>:<lon>
-     * - cooperationStatus:in:<value1>,<value2>
-     * - name:sw:<beginOfName>
-     * - name:cn:<contains>
-     * - chain:in:<chainID1>,<chainId2>
-     * - address:sw:<startWith>
+     * - cooperationStatus:in:value1,value2
+     * - teamStatus:in:value1,value2
+     * - name:sw:beginOfName
      *
      * @OA\Tag(name="stores")
+     * @Rest\QueryParam(name="pageSize" , description="Count of chains on page", requirements="\d+", default=0, strict=true)
+     * @Rest\QueryParam(name="offset" , description="Offset of items", requirements="\d+", default=0, strict=true)
      * @OA\Response(
      *         response="200",
      *         description="",
@@ -123,7 +123,7 @@ class StoreRestController extends AbstractFOSRestController
      *     example="cooperationStatus:in:1,2"
      * )
      */
-    public function searchForStores(Request $req, ValidatorInterface $validator)
+    public function searchForStores(Request $req, ValidatorInterface $validator, ParamFetcher $paramFetcher)
     {
         if (!$this->session->mayRole()) {
             throw new UnauthorizedHttpException('', self::NOT_LOGGED_IN);
@@ -134,15 +134,19 @@ class StoreRestController extends AbstractFOSRestController
         }
 
         $rawQueries = $req->query->get('q') ?? [];
-        $collection = new QueryParserQueryContrainstBuilder(SearchStoreFilter::class);
+        $collection = new QueryStrategyBuilder(SearchStoreFilter::class);
         $errors = $collection->validate($validator, $rawQueries);
         if (count($errors)) {
             throw new BadRequestHttpException($errors->get(0)->getMessage());
         }
 
+        $pagination = new Pagination();
+        $pagination->pageSize = $paramFetcher->get('pageSize');
+        $pagination->offset = $paramFetcher->get('offset');
+
         $queries = $collection->findQueryConditionStrategies($rawQueries);
 
-        $stores = $this->storeTransactions->findAllStoresByQueryConstrainCollection($queries);
+        $stores = $this->storeTransactions->findAllStoresByQueryConditionCollection($queries, $pagination);
 
         return $this->handleView($this->view($stores, 200));
     }

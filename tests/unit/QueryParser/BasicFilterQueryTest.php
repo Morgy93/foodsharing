@@ -26,7 +26,7 @@ class TestValidClass
     public DaysOfWeek $weekDay = DaysOfWeek::Monday;
 }
 
-class QueryParamDbBuilderTest extends TestCase
+class BasicFilterQueryTest extends TestCase
 {
     public function testBasicQueryFieldSeperation()
     {

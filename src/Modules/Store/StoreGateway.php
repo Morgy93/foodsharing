@@ -131,23 +131,12 @@ class StoreGateway extends BaseGateway
      *
      * @throws Exception
      */
-    public function findAllStoresByQueryConstrainCollection(array $queries, Pagination $pagination = new Pagination(), bool $skipLoadingOfGroceries = false): StorePaginationResult
+    public function findAllStoresByQueryConditionCollection(array $queries, Pagination $pagination = new Pagination(), bool $skipLoadingOfGroceries = false): StorePaginationResult
     {
         $sqlWheres = join(' AND ', array_map(function ($query) { return $query->generateSqlConditionStatement(); }, $queries));
-        if (!empty($sqlWheres)) {
-            $sqlWheres = '(' . $sqlWheres . ')';
-        }
-        $sqlWheresPagination = $this->buildPaginationSqlLimit($pagination);
-        if (!empty($sqlWheresPagination)) {
-            if (!empty($sqlWheres)) {
-                $sqlWheres .= 'AND (' . $this->buildPaginationSqlLimit($pagination) . ')';
-            } else {
-                $sqlWheres .= ' (' . $this->buildPaginationSqlLimit($pagination) . ')';
-            }
-        }
 
         if (!empty($sqlWheres)) {
-            $sqlWheres = 'WHERE ' . $sqlWheres;
+            $sqlWheres = 'WHERE (' . $sqlWheres . ') ';
         }
 
         $sql = 'SELECT	`id`,
@@ -178,15 +167,15 @@ class StoreGateway extends BaseGateway
                 `use_region_pickup_rule` as useRegionPickupRule,
                 `status_date` as updatedAt,
                 `added` as createdAt
-            FROM 	`fs_betrieb` ' . $sqlWheres;
+            FROM 	`fs_betrieb` ';
+        $sql .= $sqlWheres;
+        $sql .= $this->buildPaginationSqlLimit($pagination, false);
 
         $values = [];
         foreach ($queries as $query) {
             $values = array_merge($query->generateSqlValues());
         }
-        $values = $this->addPaginationSqlLimitParameters($pagination, $values);
-
-        $stores = $this->db->fetchAll($sql, $values);
+        $stores = $this->db->fetchAll($sql, $this->addPaginationSqlLimitParameters($pagination, $values, false));
 
         $result = new StorePaginationResult();
         $result->stores = array_map(function (array $item) use ($skipLoadingOfGroceries) {

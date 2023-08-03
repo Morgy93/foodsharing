@@ -2,7 +2,11 @@
 
 namespace Foodsharing\RestApi\Models\Store;
 
+use Foodsharing\RestApi\Models\QueryParser\InListQueryConditionStrategy;
 use Foodsharing\RestApi\Models\QueryParser\QueryDbFieldName;
+use Foodsharing\RestApi\Models\QueryParser\StartWithQueryConditionStrategy;
+use Foodsharing\RestApi\Models\QueryParser\SupportedQueryConditionStrategy;
+use Foodsharing\Validator\NoHtml;
 use Symfony\Component\Validator\Constraints as Assert;
 
 class SearchStoreFilter
@@ -22,6 +26,7 @@ class SearchStoreFilter
      * @Assert\Range (min = 0, max = 7)
      */
     #[QueryDbFieldName('betrieb_status_id')]
+    #[SupportedQueryConditionStrategy([InListQueryConditionStrategy::class])]
     public ?int $cooperationStatus = null;
 
     /**
@@ -34,5 +39,17 @@ class SearchStoreFilter
      * @Assert\Range(min=0, max=2)
      */
     #[QueryDbFieldName('team_status')]
+    #[SupportedQueryConditionStrategy([InListQueryConditionStrategy::class])]
     public ?int $teamStatus = null;
+
+    /**
+     * Name of the store.
+     *
+     * @Assert\NotNull()
+     * @Assert\Length(max=120)
+     *
+     * @NoHtml
+     */
+    #[SupportedQueryConditionStrategy([StartWithQueryConditionStrategy::class])]
+    public ?string $name = '';
 }

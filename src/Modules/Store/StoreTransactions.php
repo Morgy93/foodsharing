@@ -260,9 +260,9 @@ class StoreTransactions
      *
      * @throws Exception
      */
-    public function findAllStoresByQueryConstrainCollection(array $queries, Pagination $pagination = new Pagination(), $expand = true): StoreListInformationPaginationResult
+    public function findAllStoresByQueryConditionCollection(array $queries, Pagination $pagination = new Pagination(), $expand = true): StoreListInformationPaginationResult
     {
-        $storeResults = $this->storeGateway->findAllStoresByQueryConstrainCollection($queries, $pagination);
+        $storeResults = $this->storeGateway->findAllStoresByQueryConditionCollection($queries, $pagination);
 
         $result = new StoreListInformationPaginationResult();
         $result->total = $storeResults->total;
