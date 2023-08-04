@@ -104,12 +104,17 @@ final class RegionControl extends Control
         $regionId = (int)$region['id'];
         $isHomeDistrict = $this->isHomeDistrict($region);
 
+        // The store and member pages are temporarily disabled for large regions because they cause an out-of-memory error
+        $storesAndMembersDisabled = in_array($regionId, [RegionIDs::EUROPE, RegionIDs::GERMANY]);
+
         $menu = [
             'forum' => ['name' => 'terminology.forum', 'href' => '/?page=bezirk&bid=' . $regionId . '&sub=forum'],
             'events' => ['name' => 'terminology.events', 'href' => '/?page=bezirk&bid=' . $regionId . '&sub=events'],
             'polls' => ['name' => 'terminology.polls', 'href' => '/?page=bezirk&bid=' . $regionId . '&sub=polls'],
-            'members' => ['name' => 'group.members', 'href' => '/?page=bezirk&bid=' . $regionId . '&sub=members'],
         ];
+        if (!$storesAndMembersDisabled) {
+            $menu['members'] = ['name' => 'group.members', 'href' => '/?page=bezirk&bid=' . $regionId . '&sub=members'];
+        }
 
         if (!$isWorkGroup && $this->forumPermissions->mayAccessAmbassadorBoard($regionId)) {
             $menu['ambassador_forum'] = ['name' => 'terminology.ambassador_forum', 'href' => '/?page=bezirk&bid=' . $regionId . '&sub=botforum'];
@@ -136,7 +141,9 @@ final class RegionControl extends Control
             $menu['groups'] = ['name' => 'terminology.groups', 'href' => '/?page=groups&p=' . $regionId];
             $menu['statistic'] = ['name' => 'terminology.statistic', 'href' => '/?page=bezirk&bid=' . $regionId . '&sub=statistic'];
 
-            $menu['stores'] = ['name' => 'menu.entry.stores', 'href' => '/?page=betrieb&bid=' . $regionId];
+            if (!$storesAndMembersDisabled) {
+                $menu['stores'] = ['name' => 'menu.entry.stores', 'href' => '/?page=betrieb&bid=' . $regionId];
+            }
 
             if ($this->session->isAdminFor($regionId)) {
                 $menu['passports'] = ['name' => 'menu.entry.ids', 'href' => '/?page=passgen&bid=' . $regionId];

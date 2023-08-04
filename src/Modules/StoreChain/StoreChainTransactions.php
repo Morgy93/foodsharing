@@ -132,7 +132,7 @@ class StoreChainTransactions
             $params->commonStoreInformation = $storeModel->commonStoreInformation;
             $changed = true;
         }
-        if (!empty($storeModel->kams)) {
+        if (!is_null($storeModel->kams)) {
             $params->kams = array_map(function ($kam) {
                 $obj = new FoodsaverForAvatar();
                 $obj->id = $kam;

@@ -82,10 +82,9 @@
           </template>
 
           <template #cell(kams)="row">
-            <PickupEntries
+            <AvatarStack
               :registered-users="row.value"
-              :max-width="100"
-              :min-width="60"
+              :max-width-in-px="100"
             />
           </template>
 
@@ -176,14 +175,14 @@
 
 <script>
 
-import PickupEntries from '../../../../../src/Modules/Profile/components/PickupEntries.vue'
+import AvatarStack from '@/components/AvatarStack.vue'
 import InputModal from '@/components/Modals/ChainList/InputModal.vue'
 import StoreDetailsModal from '@/components/Modals/ChainList/StoreDetailsModal.vue'
 import { getters, mutations } from '@/stores/chains'
 import { pulseError } from '@/script'
 
 export default {
-  components: { PickupEntries, InputModal, StoreDetailsModal },
+  components: { AvatarStack, InputModal, StoreDetailsModal },
   props: {
     adminPermissions: {
       type: Boolean,
@@ -206,12 +205,14 @@ export default {
           label: this.$i18n('chain.columns.status'),
           tdClass: 'status',
           sortable: true,
+          sortByFormatted: true,
           formatter: (value, key, item) => item.chain.status,
         },
         {
           key: 'name',
           label: this.$i18n('chain.columns.name'),
           sortable: true,
+          sortByFormatted: (value, key, item) => item.chain.name,
           formatter: (value, key, item) => item,
         },
         {
@@ -219,18 +220,21 @@ export default {
           label: this.$i18n('chain.columns.estimatedStoreCount'),
           sortable: true,
           tdClass: 'text-center',
+          sortByFormatted: true,
           formatter: (value, key, item) => item.chain.estimatedStoreCount,
         },
         {
           key: 'storeCount',
           label: this.$i18n('chain.columns.stores'),
           sortable: true,
+          sortByFormatted: true,
           tdClass: 'text-center',
         },
         {
           key: 'headquartersCity',
           label: this.$i18n('chain.columns.headquarters'),
           sortable: true,
+          sortByFormatted: true,
           formatter: (value, key, item) => item.chain.headquartersCountry + ', ' + item.chain.headquartersZip + ' ' + item.chain.headquartersCity,
         },
         {

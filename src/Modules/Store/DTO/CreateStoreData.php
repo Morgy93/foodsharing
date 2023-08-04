@@ -3,7 +3,7 @@
 namespace Foodsharing\Modules\Store\DTO;
 
 use Foodsharing\Modules\Core\DTO\GeoLocation;
-use Foodsharing\Modules\Core\DTO\MinimalIdentifier;
+use Foodsharing\Modules\Region\DTO\MinimalRegionIdentifier;
 
 class CreateStoreData
 {
@@ -66,7 +66,7 @@ class CreateStoreData
     {
         $store = new Store();
         $store->name = $this->name;
-        $store->region = MinimalIdentifier::createFromId($this->regionId);
+        $store->region = MinimalRegionIdentifier::createFromId($this->regionId);
         $store->location = $this->location;
         $store->address->street = $this->street;
         $store->address->zipCode = $this->zipCode;

@@ -56,9 +56,10 @@ final class RegionPermissions
 
     public function mayAccessStatisticCountry(): bool
     {
-        if ($this->session->mayRole(Role::ORGA)) {
+        // Temporarily disabled because it is too inefficient for Europe and Germany
+        /* if ($this->session->mayRole(Role::ORGA)) {
             return true;
-        }
+        } */
 
         return false;
     }

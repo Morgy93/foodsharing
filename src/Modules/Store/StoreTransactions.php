@@ -24,6 +24,7 @@ use Foodsharing\Modules\Core\DTO\PatchGeoLocation;
 use Foodsharing\Modules\Foodsaver\FoodsaverGateway;
 use Foodsharing\Modules\Foodsaver\Profile;
 use Foodsharing\Modules\Message\MessageGateway;
+use Foodsharing\Modules\Region\DTO\MinimalRegionIdentifier;
 use Foodsharing\Modules\Region\RegionGateway;
 use Foodsharing\Modules\Store\DTO\CommonLabel;
 use Foodsharing\Modules\Store\DTO\CommonStoreMetadata;
@@ -47,8 +48,7 @@ class StoreTransactions
         CooperationStatus::NO_CONTACT,
         CooperationStatus::IN_NEGOTIATION,
         CooperationStatus::COOPERATION_STARTING,
-        CooperationStatus::COOPERATION_ESTABLISHED,
-        CooperationStatus::PERMANENTLY_CLOSED
+        CooperationStatus::COOPERATION_ESTABLISHED
     ];
 
     public const MAX_SLOTS_PER_PICKUP = 10;
@@ -199,6 +199,7 @@ class StoreTransactions
     {
         $suppressLoadingGroceries = !$showSensitiveDetails;
         $dbResult = $this->storeGateway->getStore($storeId, $suppressLoadingGroceries);
+        $dbResult->region->name = $this->regionGateway->getRegionName($dbResult->region->id);
 
         if (!$showDetails) {
             $dbResult->description = null;
@@ -345,7 +346,7 @@ class StoreTransactions
 
         if (!empty($storeChange->regionId)) {
             $changeInformation->informationChanged = true;
-            $store->region = MinimalIdentifier::createFromId($storeChange->regionId);
+            $store->region = MinimalRegionIdentifier::createFromId($storeChange->regionId);
         }
 
         if (!empty($storeChange->publicInfo)) {

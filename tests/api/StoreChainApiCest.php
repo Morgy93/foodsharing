@@ -909,6 +909,23 @@ class StoreChainApiCest
         );
     }
 
+    public function testClearKamsPropertyOfChain(ApiTester $I)
+    {
+        $newForum = $I->addForumThread(RegionIDs::STORE_CHAIN_GROUP, $this->chainManager['id']);
+
+        $I->login($this->getUserByRole('chainManager')['email']);
+
+        $I->haveHttpHeader('Content-Type', 'application/json');
+        $I->sendPATCH(self::API_BASE . '/' . StoreChainApiCest::CHAIN_ID, ['name' => 'MyChain GmbH 1', 'forumThread' => $this->chainForum['id'], 'headquartersZip' => '48151', 'headquartersCity' => 'Münster 2', 'headquartersCountry' => 'Österreich']);
+        $I->seeResponseCodeIs(Http::OK);
+
+        $I->sendPATCH(self::API_BASE . '/' . StoreChainApiCest::CHAIN_ID, ['kams' => []]);
+        $I->seeResponseCodeIs(Http::OK);
+
+        // Test KAMS
+        $I->seeNumRecords(0, 'fs_key_account_manager', ['chain_id' => StoreChainApiCest::CHAIN_ID]);
+    }
+
     public function testRejectUpdateOfChain(ApiTester $I)
     {
         $requestBodies = [];

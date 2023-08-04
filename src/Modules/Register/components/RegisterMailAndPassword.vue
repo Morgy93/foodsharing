@@ -110,8 +110,8 @@
 <script>
 import { required, email, minLength, sameAs, not } from 'vuelidate/lib/validators'
 import { testRegisterEmail } from '@/api/user'
+import { isFoodsharingDomain } from '@/helper/urls'
 
-const isFoodsharingDomain = (value) => value.match(/(.)+@foodsharing.((network)|(de))$/g)
 const delay = (ms) => new Promise(resolve => setTimeout(resolve, ms))
 
 export default {

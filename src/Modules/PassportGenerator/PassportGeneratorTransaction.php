@@ -9,6 +9,7 @@ use Foodsharing\Modules\Core\DBConstants\Bell\BellType;
 use Foodsharing\Modules\Core\DBConstants\Foodsaver\Gender;
 use Foodsharing\Modules\Core\DBConstants\Foodsaver\Role;
 use Foodsharing\Modules\Foodsaver\FoodsaverGateway;
+use Foodsharing\Modules\Profile\ProfileGateway;
 use Foodsharing\Modules\Uploads\UploadsTransactions;
 use Foodsharing\Utility\FlashMessageHelper;
 use Foodsharing\Utility\TranslationHelper;
@@ -24,6 +25,7 @@ class PassportGeneratorTransaction extends AbstractController
     public function __construct(
         private readonly FoodsaverGateway $foodsaverGateway,
         private readonly PassportGeneratorGateway $passportGeneratorGateway,
+        private readonly ProfileGateway $profileGateway,
         private readonly Session $session,
         private readonly UploadsTransactions $uploadsTransactions,
         private readonly BellGateway $bellGateway,
@@ -35,7 +37,7 @@ class PassportGeneratorTransaction extends AbstractController
         $this->projectDir = $kernel->getProjectDir();
     }
 
-    public function generate(array $foodsavers, string $lastPassGen = null, bool $cutMarkers = true, bool $protectPDF = false, bool $ambassadorGeneration = false, bool $oldGeneration = false): string
+    public function generate(array $foodsavers, ?\DateTime $passDate = null, bool $cutMarkers = true, bool $protectPDF = false, bool $ambassadorGeneration = false, bool $oldGeneration = false): string
     {
         $tmp = [];
         foreach ($foodsavers as $foodsaver) {
@@ -52,11 +54,11 @@ class PassportGeneratorTransaction extends AbstractController
 
         $generationUntilDate = '+3 years';
         if ($ambassadorGeneration) {
-            $untilFrom = date('d. m. Y');
-            $validUntil = date('d. m. Y', strtotime($generationUntilDate));
+            $untilFrom = (new \DateTime())->format('d. m. Y');
+            $validUntil = (new \DateTime())->modify($generationUntilDate)->format('d. m. Y');
         } else {
-            $untilFrom = date('d. m. Y', strtotime($lastPassGen));
-            $validUntil = date('d. m. Y', strtotime($generationUntilDate, strtotime($lastPassGen)));
+            $untilFrom = $passDate->format('d. m. Y');
+            $validUntil = $passDate->modify($generationUntilDate)->format('d. m. Y');
         }
 
         if (count($tmp) === 1) {
@@ -317,5 +319,20 @@ class PassportGeneratorTransaction extends AbstractController
         }
 
         return $roles[$role_id];
+    }
+
+    public function getPassDate(int $userId): \DateTime
+    {
+        $date = $this->passportGeneratorGateway->getLastGen($userId);
+
+        if (empty($date)) {
+            $verifyHistory = $this->profileGateway->getVerifyHistory($userId);
+            if (!empty($verifyHistory)) {
+                $latestEntry = end($verifyHistory);
+                $date = $latestEntry->date;
+            }
+        }
+
+        return $date;
     }
 }

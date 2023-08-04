@@ -84,7 +84,6 @@
           align-v="stretch"
         />
         <b-form-select
-          v-if="storeListOptions.length > 1"
           v-model="storeList"
           :options="storeListOptions"
           class="mb-2"

@@ -20,6 +20,15 @@
               >
                 <i class="fas fa-plus" />
               </button>
+              <button
+                v-if="isCoordinator"
+                v-b-tooltip
+                :title="$i18n('store.delete_date')"
+                class="btn btn-primary btn-sm"
+                @click="$bvModal.show('DeletePickupModal')"
+              >
+                <i class="fas fa-trash-alt" />
+              </button>
             </div>
           </div>
         </div>
@@ -58,6 +67,9 @@
     <AddPickupModal
       :store-id="storeId"
     />
+    <DeletePickupModal
+      :store-id="storeId"
+    />
   </div>
 </template>
 
@@ -65,13 +77,14 @@
 import { VBTooltip } from 'bootstrap-vue'
 import Pickup from './Pickup'
 import AddPickupModal from './AddPickupModal.vue'
+import DeletePickupModal from './DeletePickupModal.vue'
 import { setPickupSlots, confirmPickup, joinPickup, leavePickup, listPickups } from '@/api/pickups'
 import { sendMessage } from '@/api/conversations'
 import DataUser from '@/stores/user'
 import { ajreq, pulseError, pulseSuccess } from '@/script'
 
 export default {
-  components: { Pickup, AddPickupModal },
+  components: { Pickup, AddPickupModal, DeletePickupModal },
   directives: { VBTooltip },
   props: {
     storeId: {

@@ -10,9 +10,9 @@ use Symfony\Component\HttpFoundation\Response;
 
 class ReportControl extends Control
 {
-    private $reportGateway;
-    private $imageService;
-    private $reportPermissions;
+    private ReportGateway $reportGateway;
+    private ImageHelper $imageService;
+    private ReportPermissions $reportPermissions;
 
     public function __construct(
         ReportGateway $reportGateway,
@@ -32,17 +32,11 @@ class ReportControl extends Control
         }
     }
 
-    // Request is needed here, even if not used inside the method.
     public function index(Request $request, Response $response): void
     {
         if (isset($_GET['bid'])) {
-            // $this->pageHelper->addContent($this->v_utils->v_info('<b>Während einer langen Probephase konnten Probleme dieser Funktion leider nicht entdeckt werden. Diese Funktion wird deshalb auf Wunsch der AG Meldegruppe ( <a href="mailto:meldungen@foodsharing.network">meldungen@foodsharing.network</a> ) vorübergehend deaktiviert.<br><br><br>Um sie nach einer Ausarbeitung durch die IT wieder zu aktivieren, benötigen wir die Unterstützung weiterer ProgrammiererInnen aus Deinem Bezirk:<br><br><a href="https://devdocs.foodsharing.network/it-tasks.html">https://devdocs.foodsharing.network/it-tasks.html</a> oder <a href="mailto:it@foodsharing.network">it@foodsharing.network</a></b>'));
             $this->byRegion($_GET['bid'], $response);
-        //return;
         } else {
-            if (!isset($_GET['sub'])) {
-                $this->routeHelper->goAndExit('/?page=report&sub=uncom');
-            }
             if ($this->reportPermissions->mayHandleReports()) {
                 $this->pageHelper->addBread($this->translator->trans('menu.reports'), '/?page=report');
             } else {
@@ -51,35 +45,11 @@ class ReportControl extends Control
         }
     }
 
-    private function byRegion($regionId, $response)
+    private function byRegion($regionId, $response): void
     {
         $response->setContent($this->render('pages/Report/by-region.twig',
             ['bid' => $regionId]
         ));
-    }
-
-    public function uncom(): void
-    {
-        if ($this->reportPermissions->mayHandleReports()) {
-            $this->pageHelper->addContent($this->view->statsMenu($this->reportGateway->getReportStats()), CNT_LEFT);
-
-            if ($reports = $this->reportGateway->getReports(0)) {
-                $this->pageHelper->addContent($this->view->listReports($reports));
-            }
-            $this->pageHelper->addContent($this->view->topbar($this->translator->trans('profile.report.control.newreports'), \count($reports) . ' ' . $this->translator->trans('profile.report.control.total'), '<img src="/img/shit.png" />'), CNT_TOP);
-        }
-    }
-
-    public function com(): void
-    {
-        if ($this->reportPermissions->mayHandleReports()) {
-            $this->pageHelper->addContent($this->view->statsMenu($this->reportGateway->getReportStats()), CNT_LEFT);
-
-            if ($reports = $this->reportGateway->getReports(1)) {
-                $this->pageHelper->addContent($this->view->listReports($reports));
-            }
-            $this->pageHelper->addContent($this->view->topbar($this->translator->trans('profile.report.control.delivered'), \count($reports) . ' ' . $this->translator->trans('profile.report.control.total'), '<img src="/img/shit.png" />'), CNT_TOP);
-        }
     }
 
     public function foodsaver(): void

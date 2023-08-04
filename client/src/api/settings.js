@@ -5,3 +5,10 @@ export async function setProfilePhoto (uuid) {
     uuid: uuid,
   })
 }
+
+export function requestEmailChange (email, password) {
+  return patch('/user/current/email', {
+    email: email,
+    password: password,
+  })
+}

@@ -32,21 +32,22 @@ class ForumFollowerGateway extends BaseGateway
     public function getEmailSubscribedThreadsForUser(int $fsId): array
     {
         return $this->db->fetchAll('
-			SELECT
-				th.id,
-				th.name,
-				tf.infotype
+        SELECT
+            th.id,
+            th.name AS theme_name,
+            tf.infotype,
+            b.name AS region_or_group_name
 
-			FROM
-				`fs_theme_follower` tf
-				LEFT JOIN `fs_theme` th
-				ON tf.theme_id = th.id
+        FROM
+            `fs_theme_follower` tf
+            LEFT JOIN `fs_theme` th ON tf.theme_id = th.id
+            LEFT JOIN `fs_bezirk_has_theme` bht ON tf.theme_id = bht.theme_id
+            LEFT JOIN `fs_bezirk` b ON bht.bezirk_id = b.id
 
-			WHERE
-				tf.foodsaver_id = :fsId
-			AND
-				tf.infotype = 1
-		', [':fsId' => $fsId]);
+        WHERE
+            tf.foodsaver_id = :fsId
+            AND tf.infotype = 1
+    ', [':fsId' => $fsId]);
     }
 
     public function getThreadBellFollower(int $threadId, int $fsId): array

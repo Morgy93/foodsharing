@@ -389,6 +389,7 @@ menu:
     group_overview: Group overview of global working groups
     baskets: Food baskets
     chainList: Chain list
+    security: Security
 profile:
   banana:
     by: ' by '
@@ -857,6 +858,8 @@ pickup:
     added: Pick-up slot was added.
     disable_auto_slot: Automatic slot in the future should be disabled.
     slot_titel: Slots
+    disable_auto_slot_titel: Deactivation
+    description_titel: Description
   slot_remove: Delete slot
   slot_add: Add slot
   no_slots_available: No pick-up slots available
@@ -928,6 +931,11 @@ pickup:
     freeSlots: "{slots} free"
 
   region_pickup_rule_failed: This entry does not comply with district regulations
+  description_optional: Description (optional)
+  description_modal_text: 'Enter a new description for the pickup:'
+  edit_description: Edit description
+  description: Description
+  description_max_length_info: Maximal length of the description reached (100 letters)
 storeview:
   show_information: Show store information
   cooperation: Cooperation since {startTime}.
@@ -1155,7 +1163,7 @@ bell:
   new_quiz_comment_title: New quiz comment
   fs_sleepmode: '{name} {nachname} is now inactive'
   fs_sleepmode_title: New nightcap
-  store_cr_times: Pick-up times have changed
+  store_cr_times: Pick-up slots have changed
   store_new_request: Request for {name}
   forum_answer: '{user} responded to your comment'
   store_request_accept_wait: You were added to the list of standby foodsavers.
@@ -1900,6 +1908,19 @@ store:
   jumping: Standby
   particularities_chain_tooltip: This store is part of a chain. This is why this additional
     information is displayed, which applies to all establishments in the chain.
+  particularities_chain: Particularities of the chain
+  enter_date: Enter a single pick-up date
+  delete_date: Delete a single pick-up date
+  enter_date_description: After you have selected the date, time and number of people
+    for a pick-up, you can set slots once for this appointment. If you want to create
+    regular (automatically recurring weekly) slots, please use the 'Show store information'
+    menu.
+  delete_date_description: If you use regular (automatically recurring weekly) slots
+    for your pick-ups and want to prevent a specific date (e.g. public holiday) from
+    being created, you can use this function by specifying date and time from the
+    slots to be removed from your series. If you want to delete slots that are already
+    visible, you can also do this directly by clicking on the slot as long as no one
+    is already registered.
 search:
   mygroups: My groups
   mybuddies: My buddies
@@ -2917,7 +2938,8 @@ chain:
   errorCodes:
     INVALID_STORECHAIN_ID: Store chain Id is not valid
     KEY_ACCOUNT_MANAGER_ID_NOT_EXISTS: Store chain key account manager does not exist
-    KEY_ACCOUNT_MANAGER_ID_NOT_IN_GROUP: Store chain key account manager belong to AG Storechain
+    KEY_ACCOUNT_MANAGER_ID_NOT_IN_GROUP: Store chain key account manager belong to
+      AG Storechain
     THREAD_ID_NOT_EXISTS: Store chain thread does not exist
     WRONG_FORUM: Thread is from wrong forum
     EMPTY_NAME: Name can not be empty
@@ -3159,3 +3181,28 @@ usersearch:
   no_tag_preset: User not found
   select_tag: Search users by name
   search_tag: Search users
+notifications:
+  chat:
+    title: Chat messages
+    description: Receive a notification about new chat messages even if you are not
+      logged in.
+  foodSharePoints:
+    title: Food-Share Points
+    description: Receive a notification about new posts on walls of the Food-Share
+      points that you follow.
+  config_button: configure individually
+  threads:
+    title: Forum threads
+  regions:
+    title: Regions
+  groups:
+    title: Working groups
+  newsletter:
+    title: Newsletter
+    description: Receive new information about foodsharing via E-Mail about once per
+      month.
+  checkbox_email: E-Mail
+  checkbox_push: Push
+  checkbox_bell: Bell
+  checkbox_disabled: Deactivated
+  success: Saved successfully

@@ -51,7 +51,6 @@
 
 <script>
 import RegionTree from './RegionTree'
-import { getters as regionGetters } from '@/stores/regions'
 import { BLink, BModal } from 'bootstrap-vue'
 
 export default {
@@ -88,7 +87,7 @@ export default {
   data () {
     return {
       tmpSelectedRegion: null,
-      selectedRegion: regionGetters.find(this.value.id),
+      selectedRegion: this.value,
     }
   },
   methods: {

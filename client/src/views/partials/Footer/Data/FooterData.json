@@ -90,6 +90,10 @@
           {
              "url":"release_notes",
              "title":"menu.entry.release-notes"
+          },
+          {
+             "url":"security",
+             "title":"menu.entry.security"
           }
        ]
     },

@@ -115,4 +115,23 @@ abstract class FoodsharingController extends AbstractController
     {
         return $this->render('layouts/' . $template . '.twig', $this->pageHelper->generateAndGetGlobalViewData());
     }
+
+    /**
+     * This method prepares a vue component to render it via '$this->pageHelper->addContent()'.
+     * After adding all content via pageHelper, please return at the end of the controller method with 'return $this->renderGlobal()'.
+     *
+     * @param string $htmlId html id defined in your <Component>.js
+     * @param string $componentName component name defined in your <Component>.js
+     */
+    protected function prepareVueComponent(string $htmlId, string $componentName, array $props = [], array $initialData = []): string
+    {
+        $response = $this->render('partials/vue-wrapper.twig', [
+            'id' => $htmlId,
+            'component' => $componentName,
+            'props' => $props,
+            'initialData' => $initialData,
+        ]);
+
+        return $response->getContent();
+    }
 }

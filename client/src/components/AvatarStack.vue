@@ -1,28 +1,32 @@
 <template>
   <!-- eslint-disable vue/max-attributes-per-line -->
-  <div class="pickup-entries">
+  <div
+    class="pickup-entries"
+    :style="{
+      '--component-height': heightInPx + 'px',
+      '--overlap': overlap + 'px',
+      '--border-color': borderColor,
+    }"
+  >
     <!-- Flex container reverses elements for correct draw order without z-index -->
     <div
       v-if="freeSlots"
       class="free-slots"
-      :class="{
-        'free-slots--users': shownUsersNum > 0,
-      }"
     >
       <span>
         {{ $i18n(`pickup.overview.freeSlots`, {slots: freeSlots}) }}
       </span>
     </div>
 
-    <div v-if="hiddenUsersNum" :id="'hidden-fetchers-'+uniqueId" class="hidden-users">
+    <div v-if="hiddenUsers.length" :id="'hidden-fetcher-'+uniqueId" class="hidden-users">
       <span>
-        +{{ hiddenUsersNum }}
+        +{{ hiddenUsers.length }}
       </span>
     </div>
-    <b-tooltip v-if="hiddenUsersNum" :target="'hidden-fetchers-'+uniqueId" triggers="hover">
+    <b-tooltip v-if="hiddenUsers.length" :target="'hidden-fetcher-'+uniqueId" triggers="hover">
       <span v-for="(user, index) in hiddenUsers" :key="user.id">
         <span v-if="index != 0">, </span>
-        <a :href="'/profile/' + user.id" class="tooltip-link">{{ user.name }}</a>
+        <a :href="$url('profile', user.id)" class="tooltip-link">{{ user.name }}</a>
       </span>
     </b-tooltip>
 
@@ -34,7 +38,7 @@
       <Avatar
         v-b-tooltip="user.name"
         :url="user.avatar"
-        :size="35"
+        :size="heightInPx"
         round
         img-class="content"
         :class="index?'':'last-avatar'"
@@ -51,14 +55,6 @@ import { v4 as uuidv4 } from 'uuid'
 export default {
   components: { Avatar },
   props: {
-    minWidth: {
-      type: Number,
-      default: 100,
-    },
-    maxWidth: {
-      type: Number,
-      default: 200,
-    },
     registeredUsers: {
       type: Array,
       default: () => [],
@@ -66,6 +62,22 @@ export default {
     totalSlots: {
       type: Number,
       default: 0,
+    },
+    maxWidthInPx: {
+      type: Number,
+      default: 200,
+    },
+    heightInPx: {
+      type: Number,
+      default: 35,
+    },
+    overlap: {
+      type: Number,
+      default: 15,
+    },
+    borderColor: {
+      type: String,
+      default: 'white',
     },
   },
   data () {
@@ -75,18 +87,14 @@ export default {
   },
   computed: {
     shownUsersNum () {
-      // Circles are 37px wide and 20px apart, so n circles need 17+20n px
-      // The free slots add-on needs 38px
-      const width = this.width - (this.freeSlots ? 38 : 0)
-      const maxCircles = Math.floor((width - 17) / 20)
+      // The free slots add-on needs 43px
+      const width = this.maxWidthInPx - (this.freeSlots ? 43 : 0)
+      const maxCircles = Math.max(1, Math.floor((width - this.overlap) / (this.heightInPx - this.overlap)))
       if (this.registeredUsers.length <= maxCircles) {
         return this.registeredUsers.length
       } else {
-        return maxCircles - 1
+        return Math.max(maxCircles - 1, 1)
       }
-    },
-    hiddenUsersNum () {
-      return Math.max(0, this.registeredUsers.length - this.shownUsersNum)
     },
     shownUsers () {
       return this.registeredUsers.slice(0, this.shownUsersNum).reverse()
@@ -97,41 +105,46 @@ export default {
     freeSlots () {
       return Math.max(0, this.totalSlots - this.registeredUsers.length)
     },
-    width () {
-      return Math.max(this.minWidth, this.maxWidth)
-    },
   },
 }
 </script>
-
 <style lang="scss" scoped>
 
 .pickup-entries {
   display: inline-flex;
   flex-direction: row-reverse;
-  width: max-content;
 
   & *:not(:last-child) {
-    margin-left: -15px;
+    margin-left: calc(-1 * var(--overlap));
   }
 }
 
 ::v-deep .avatar {
-  border: 2px solid var(--fs-color-light);
-  border-radius: 50%;
+  img {
+    // box-sizing: content-box;
+    border: 1px solid var(--border-color);
+    border-width: 1px 2px 1px 0;
+  }
 }
 
 .hidden-users, .free-slots {
     align-items: center;
-    border-radius: 35px;
+    border-radius: var(--component-height);
     border: 1px solid;
     display: flex;
     font-weight: bold;
-    height: 35px;
-    padding: 0 .75rem;
+    height: var(--component-height);
+    padding: 0 6px 0 calc(var(--overlap) + 1px);
+    min-width: var(--component-height);
+    white-space: nowrap;
 
-    &--users {
-      padding: 0 .75rem 0 1.5rem;
+    &:last-child{
+      padding-left: 6px;
+    }
+
+    span{
+      width: 100%;
+      text-align: center;
     }
   }
 
@@ -145,10 +158,6 @@ export default {
     border-color: var(--fs-color-primary-100);
     border-color: var(--fs-color-primary-300);
     color: var(--fs-color-primary-alpha-70);
+    background-color: var(--fs-color-light);
   }
-
-  .free-slots + .hidden-users {
-    margin-right: -15px;
-  }
-
 </style>

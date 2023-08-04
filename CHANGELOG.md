@@ -5,13 +5,11 @@
 - Provide RestApi to edit store !2515 !2625 @KoeMai
 - New UI for Stores information and modification of stores !2645 !2685 !2688 !2731 !2736 !2752 @KoeMai
 - Added turkish translation !2720 @Evren
-- Store chains can now be manged from the website. The working group "Betriebsketten" contains a tabular overview of all chains. !2251 !2273 !2701 !2767 @AntonBallmaier @KoeMai
+- Store chains can now be manged from the website. The working group "Betriebsketten" contains a tabular overview of all chains. !2251 !2273 !2701 !2767 !2769 @AntonBallmaier @KoeMai
 - Store markers on the map can be filtered by the user's membership #1025 !2682 @alex.simm
-- Store chain information is visible on the store page !2742 @alex.simm 
-- New UI for Stores information and modification of stores !2645 !2685 !2688 @KoeMai
-- New UI for Stores information and modification of stores !2645 !2685 @KoeMai
+- Store chain information is visible on the store page !2742 @alex.simm
 - Add home district count to region top #79 !2692 @Morgy93
-- Storemanagers can set a description for pickup slots #1653 !2757 @AntonBallmaier
+- Storemanagers can set a description for pickup slots #1653 !2757 !2781 @AntonBallmaier
 
 ## Changes
 - Make menubar sticky on mobile !2411 @AntonBallmaier
@@ -25,10 +23,14 @@
 - Support and orga-user can search users with e-mail !2651 !2663 @chriswalg @martincodes-de
 - focus foodsharing tab of the same kind if clicking a push notification !2671 @buntel
 - close push notification of the same thread or same kind if clicked !2671 @buntel
-- Removed the additional button in the report modal #1599 !2677 @alex.simm
+- Removed the additional button in the report modal #1599 !2677 !2782 @alex.simm
 - Show forum text if foodsaver deleted again !2697 @chriswalg
 - Add CTA on the profile-page for calendar export #1583 !2705 @sefn
 - Remove relative time from last pickup #1571 #1643 !2706 !2744 @sefn
+- Removed unused global report !2763 @chriswalg
+- Improved pickup table display on smaller devices !2779 @AntonBallmaier 
+- Added a validation for login form, to prevent send a api call. !2787 @chriswalg
+- Remove closed stores from map, dashboard and navigation #786 !2790 @chriswalg
 
 ## Bugfixes
 - Reimplementation of the StoreManager empty pickup E-Mail notification !2574 @KoeMai
@@ -55,13 +57,16 @@
 - In the user details, only include that a calendar token exists but not the token itself !2735 @alex.simm
 - Fixed undefined "mailbox" #1612 !2746 @chriswalg @alex.simm 
 - Workaround for unvisible attachments because long mailbox names !2751 @chriswalg
-- Fixed errors in delayed vue map initialisation #1637 !2750 @chriswalg 
+- Fixed errors in delayed vue map initialisation #1637 #1660 !2750 !2773 !2791 @chriswalg 
 - Check if thread exist before display the thread #1650 !2756 @chriswalg
 - Fix no error messages on BadRequestHttpExceptions on beta !2701 @KoeMai
-
 - removed styleguide from non-dev environments #1636 !2745 @sefn
 - fixed map storing chat status independantly from all other pages #1598 !2732 @florianunsinn
 - Fixed the loading of wall posts associated with reports !2770 #1648 @alex.simm
+- catches bell-closing bug if no bell was found (symptom treatment) @martincodes_de
+- catches bell-closing bug if no bell was found (symptom treatment) !2766 @martincodes_de
+- Pickup options can no longer be loaded multiple times in the pickup table !2779 @AntonBallmaier
+- Temporarily disable store page and member page for Europe and Germany !2777 !2788 @alex.simm
 
 ## Refactoring
 - added poppins font in Styleguide !2564 @Niklas003
@@ -71,13 +76,12 @@
 - Move business logic for editing store into StoreTransaction !2515 @KoeMai
 - Fix TeamStoreStatus and move getStoreMarkers to StoreGateway !2560 @KoeMai
 - added poppins font in Styleguide !2564 @Niklas003
-- Replace the region tree with a new vue component !2483 !2747 @alex.simm
+- Replace the region tree with a new vue component #1623 !2483 !2747 !2774 @alex.simm
 - Move uploadlogic and actions from controller to transactionclass for reuse !2478 @martncodes-de
 - Reimplement create new forum thread in vue js !2627 !2748 @chriswalg
 - New vue component for address search !2632 !2669 @alex.simm
 - Replaced get store information to rest api !1449 @KoeMai
 - Put Date and time in two lines at User Dashboard Card "Nächste Abholungen". #1448 !2588 !2707 @Niklas003 @sefn
-
 - Replaced the history dialogs on profile pages with a vue component !2587 @alex.simm
 - Moved verification to memberlist !2646 !2698 @chriswalg
 - The broadcast banner fetches its content from the API #1284 !2661 @alex.simm
@@ -85,12 +89,15 @@
 - Replace the region tree with a new vue component !2483 @alex.simm
 - New vue component for blog posts !2676 !2687 @alex.simm
 - Changed forum post response to empty content #1499 !2638 @krauterisator
-- Refactor add pickup modal !2693 @chriswalg
+- Refactor add pickup modal !2693 !2784 @chriswalg
 - Refactor edit pickup rules to vue component and moved it to storeInformationModal !2686 !2731 @chriswalg 
 - Refactor own store list in vue !2668 !2683 @chriswalg
 - Refactored the list of group applications to vue, which not also shows profile pictures #343 !2696 @alex.simm
 - Refactor the list of food share points in a region to vue !2702 @alex.simm
+- Refactor notification settings page to vue and rest api !2700 !2778 @chriswalg
 - Refactor setting sleeping mode to vue !2749 !2760 @chriswalg
+- Refactor user passport generation page #1617 !2660 !2758 @chriswalg
+- Replaced the form for changing the email address with a vue component !2753 @alex.simm
 
 ## Dev/Test/CI stuff
 - Fix given null parameter !2550 @BibaltiK
@@ -124,6 +131,10 @@
 - switch from /bin/bash to /usr/bin/env to allow more setups like nixos !2708
 - Use one database dump before tests so that the tests are not depending on each other !2701 @koemai
 - Fix deprecated strtolower in MailsControl.php #1569 !2718 @stcz
+- Added security page !2764 !2783 @martincodes_de
+- Add security.txt with contact information !2776 @stcz
+- added functionallity to new FoodsharingControllers to prepare and render vue components !2730 @martincodes-de
+- Updated some backend dependencies !2721 @chriswalg
 
 ## Development documentation
 
