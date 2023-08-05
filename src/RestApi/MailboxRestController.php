@@ -144,6 +144,7 @@ class MailboxRestController extends AbstractFOSRestController
 
     /**
      * Creates a Mailbox.
+     *
      * @throws Exception
      */
     #[Tag('mailbox')]

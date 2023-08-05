@@ -557,6 +557,7 @@ class MailboxGateway extends BaseGateway
 
     /**
      * Creates a Mailbox for the user and returns its ID.
+     *
      * @throws Exception
      */
     public function createMailbox(string $name): int
