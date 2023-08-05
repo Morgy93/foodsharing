@@ -1,4 +1,3 @@
-
 <?php
 
 namespace Foodsharing\RestApi\Models\Mailbox;
