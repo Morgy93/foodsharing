@@ -10,15 +10,19 @@ use Foodsharing\Permissions\MailboxPermissions;
 use Foodsharing\RestApi\Models\Mailbox\Creation;
 use FOS\RestBundle\Controller\AbstractFOSRestController;
 use FOS\RestBundle\Controller\Annotations as Rest;
-use FOS\RestBundle\Request\ParamFetcher;
+use Nelmio\ApiDocBundle\Annotation\Model;
 use OpenApi\Annotations as OA;
+use OpenApi\Attributes\Items;
+use OpenApi\Attributes\JsonContent;
 use OpenApi\Attributes\RequestBody;
 use OpenApi\Attributes\Response;
 use OpenApi\Attributes\Tag;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\ParamConverter;
 use Symfony\Component\HttpFoundation\Response as HttpResponse;
 use Symfony\Component\HttpKernel\Exception\AccessDeniedHttpException;
+use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
 use Symfony\Component\HttpKernel\Exception\UnauthorizedHttpException;
+use Symfony\Component\Validator\Validator\ValidatorInterface;
 
 class MailboxRestController extends AbstractFOSRestController
 {
@@ -144,9 +148,9 @@ class MailboxRestController extends AbstractFOSRestController
     #[Rest\Post(path: 'mailbox/create')]
     #[Response(response: HttpResponse::HTTP_OK, description: 'Successful')]
     #[Response(response: HttpResponse::HTTP_FORBIDDEN, description: 'Forbidden')]
-    #[RequestBody(content: new JsonContent(new Items(ref: new Model(type: Creation::class), type: 'array')))]
+    #[RequestBody(content: new JsonContent(type: 'array', items: new Items(ref: new Model(type: Creation::class))))]
     #[ParamConverter(data: 'Creation', class: 'array<Foodsharing\RestApi\Models\Mailbox\Creation>', converter: 'fos_rest.request_body')]
-    public function createMailboxAction(array $mailbox, ValidatorInterface $validator: Response
+    public function createMailboxAction(array $mailboxCreation, ValidatorInterface $validator): HttpResponse
     {
         if (!$this->session->mayRole()) {
             throw new UnauthorizedHttpException('');
@@ -156,7 +160,7 @@ class MailboxRestController extends AbstractFOSRestController
             throw new AccessDeniedHttpException();
         }
 
-        $errors = $validator->validate($mailbox);
+        $errors = $validator->validate($mailboxCreation);
         if (count($errors) > 0) {
             $errorMessages = [];
             foreach ($errors as $error) {
@@ -168,7 +172,7 @@ class MailboxRestController extends AbstractFOSRestController
             throw new BadRequestHttpException(json_encode($errorMessages));
         }
 
-        $this->mailboxTransactions->createMailboxAndAddUser($mailbox);
+        $this->mailboxTransactions->createMailboxAndAddUser($mailboxCreation);
 
         return $this->handleView($this->view([], 200));
     }
