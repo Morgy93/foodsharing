@@ -2,6 +2,7 @@
 
 namespace Foodsharing\RestApi;
 
+use Exception;
 use Foodsharing\Lib\Session;
 use Foodsharing\Modules\Core\DBConstants\Mailbox\MailboxFolder;
 use Foodsharing\Modules\Mailbox\MailboxGateway;
@@ -143,6 +144,7 @@ class MailboxRestController extends AbstractFOSRestController
 
     /**
      * Creates a Mailbox.
+     * @throws Exception
      */
     #[Tag('mailbox')]
     #[Rest\Post(path: 'mailbox/create')]
@@ -150,7 +152,7 @@ class MailboxRestController extends AbstractFOSRestController
     #[Response(response: HttpResponse::HTTP_FORBIDDEN, description: 'Forbidden')]
     #[RequestBody(content: new JsonContent(type: 'array', items: new Items(ref: new Model(type: Creation::class))))]
     #[ParamConverter(data: 'Creation', class: 'array<Foodsharing\RestApi\Models\Mailbox\Creation>', converter: 'fos_rest.request_body')]
-    public function createMailboxAction(array $mailboxCreation, ValidatorInterface $validator): HttpResponse
+    public function createMailboxAction(Creation $mailboxCreation, ValidatorInterface $validator): HttpResponse
     {
         if (!$this->session->mayRole()) {
             throw new UnauthorizedHttpException('');

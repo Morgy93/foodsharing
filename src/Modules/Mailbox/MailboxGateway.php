@@ -312,18 +312,21 @@ class MailboxGateway extends BaseGateway
         return [];
     }
 
-    public function updateMember(int $mbid, array $foodsaver): bool
+    /**
+     * @throws Exception
+     */
+    public function updateMember(int $mailboxId, array $userIds): bool
     {
         global $g_data;
-        if ($mbid > 0) {
-            $this->db->delete('fs_mailbox_member', ['mailbox_id' => $mbid]);
+        if ($mailboxId > 0) {
+            $this->db->delete('fs_mailbox_member', ['mailbox_id' => $mailboxId]);
 
             $insert = [];
 
-            foreach ($foodsaver as $fs) {
+            foreach ($userIds as $userId) {
                 $insert[] = [
-                    'mailbox_id' => $mbid,
-                    'foodsaver_id' => (int)$fs,
+                    'mailbox_id' => $mailboxId,
+                    'foodsaver_id' => (int)$userId,
                     'email_name' => '\'' . strip_tags($g_data['email_name']) . '\''
                 ];
             }
@@ -554,6 +557,7 @@ class MailboxGateway extends BaseGateway
 
     /**
      * Creates a Mailbox for the user and returns its ID.
+     * @throws Exception
      */
     public function createMailbox(string $name): int
     {
