@@ -56,7 +56,7 @@ class MailboxRestController extends AbstractFOSRestController
      * @OA\Tag(name="emails")
      * @Rest\Patch("emails/{emailId}/{status}", requirements={"emailId" = "\d+", "status" = "[0-1]"})
      */
-    public function setEmailStatusAction(int $emailId, int $status): Response
+    public function setEmailStatusAction(int $emailId, int $status): HttpResponse
     {
         if (!$this->session->id()) {
             throw new UnauthorizedHttpException('');
@@ -79,7 +79,7 @@ class MailboxRestController extends AbstractFOSRestController
      * @OA\Tag(name="emails")
      * @Rest\Delete("emails/{emailId}", requirements={"emailId" = "\d+"})
      */
-    public function deleteEmailAction(int $emailId): Response
+    public function deleteEmailAction(int $emailId): HttpResponse
     {
         // check permission
         if (!$this->session->id()) {
@@ -108,7 +108,7 @@ class MailboxRestController extends AbstractFOSRestController
      * @OA\Tag(name="emails")
      * @Rest\Get("emails/unread-count")
      */
-    public function getUnreadMailCountAction(): Response
+    public function getUnreadMailCountAction(): HttpResponse
     {
         if (!$this->session->id()) {
             throw new UnauthorizedHttpException('', 'Not logged in.');
@@ -126,7 +126,7 @@ class MailboxRestController extends AbstractFOSRestController
      * @OA\Response(response="401", description="Not logged in")
      * @Rest\Get("mailbox/member")
      */
-    public function listMemberMailboxesAction(): Response
+    public function listMemberMailboxesAction(): HttpResponse
     {
         if (!$this->session->mayRole()) {
             throw new UnauthorizedHttpException('');
