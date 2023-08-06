@@ -21,8 +21,8 @@
       </div>
       <div class="col-8">
         <ThreadList
-          subforum-id="subFormId"
-          group-id="regionOrGroupId"
+          :subforum-id="subForumId"
+          :group-id="regionId"
         />
       </div>
     </div>
@@ -51,6 +51,12 @@ export default {
     storesCooperationCount: { type: Number, required: true },
     storesPickupsCount: { type: Number, required: true },
     storesFetchedWeight: { type: Number, required: true },
+    activeSubpage: { type: String, required: true },
+  },
+  computed: {
+    subForumId () {
+      return this.activeSubpage === 'botforum' ? 1 : 0
+    },
   },
 }
 </script>

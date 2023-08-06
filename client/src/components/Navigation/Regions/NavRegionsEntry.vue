@@ -28,7 +28,6 @@
       :visible="isHomeRegion"
     >
       <NavRegionsLinkEntry
-        :is-alone="isAlone"
         :entry="entry"
       />
     </b-collapse>

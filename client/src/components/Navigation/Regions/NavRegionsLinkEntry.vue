@@ -21,10 +21,6 @@
 export default {
   name: 'NavRegionsLinkEntry',
   props: {
-    isAlone: {
-      type: Boolean,
-      default: false,
-    },
     entry: {
       type: Object,
       default: () => {},

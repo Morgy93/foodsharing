@@ -1,7 +1,6 @@
 <template>
   <div class="container">
     <NavRegionsLinkEntry
-      :is-alone="isAlone"
       :entry="region"
     />
   </div>
