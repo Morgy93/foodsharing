@@ -315,6 +315,28 @@ class StoreApiCest
         $I->assertNotCount(0, $storeChains);
     }
 
+    public function accessTestForAllStoresEndpoint(ApiTester $I) {
+        // Anonym
+        $I->sendGET(self::API_STORES);
+        $I->seeResponseCodeIs(Http::FORBIDDEN);
+
+        // Test access allowed
+        $I->login($this->manager[self::EMAIL]);
+        $I->sendGET(self::API_STORES);
+        $I->seeResponseCodeIs(Http::OK);
+    }
+
+    public function getAllStores(ApiTester $I) {
+        $I->login($this->manager[self::EMAIL]);
+        $I->sendGET(self::API_STORES);
+        $I->seeResponseCodeIs(Http::OK);
+
+        $countStores = $I->grabDataFromResponseByJsonPath('$.total');
+        $stores = $I->grabDataFromResponseByJsonPath('$.stores.id');
+        $I->assertCount(10, $store);
+        $I->seeNumRecords($countStores[0], 'fs_betrieb');
+    }
+
     public function canAnonymUserNotAccessToGetListOfStoresInRegion(ApiTester $I)
     {
         $regionRelatedRegion = $I->createRegion();
