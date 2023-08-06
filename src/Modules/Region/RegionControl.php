@@ -372,11 +372,11 @@ final class RegionControl extends Control
     {
         $this->pageHelper->addBread($this->translator->trans('terminology.polls'), '/?page=bezirk&bid=' . $region['id'] . '&sub=polls');
         $this->pageHelper->addTitle($this->translator->trans('terminology.polls'));
-        $viewdata = $this->regionViewData($region, $request->query->get('sub'));
-        $viewdata['polls'] = $this->votingGateway->listPolls($region['id']);
-        $viewdata['regionId'] = $region['id'];
-        $viewdata['mayCreatePoll'] = $this->votingPermissions->mayCreatePoll($region['id']);
-        $response->setContent($this->render('pages/Region/polls.twig', $viewdata));
+        $params = $this->regionViewData($region, $request->query->get('sub'));
+        // $viewdata['polls'] = $this->votingGateway->listPolls($region['id']);
+        // $viewdata['regionId'] = $region['id'];
+        // $viewdata['mayCreatePoll'] = $this->votingPermissions->mayCreatePoll($region['id']);
+        $this->pageHelper->addContent($this->view->vueComponent('region-page', 'RegionPage', $params));
     }
 
     private function options(Request $request, Response $response, array $region): void

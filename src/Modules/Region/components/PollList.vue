@@ -119,6 +119,7 @@
 <script>
 import { BLink, BFormInput, BPagination } from 'bootstrap-vue'
 import { optimizedCompare } from '@/utils'
+import GroupsData from '@/stores/groups'
 
 export default {
   components: { BLink, BFormInput, BPagination },
@@ -126,10 +127,6 @@ export default {
     regionId: {
       type: Number,
       required: true,
-    },
-    polls: {
-      type: Array,
-      default: () => [],
     },
     mayCreatePoll: {
       type: Boolean,
@@ -144,6 +141,9 @@ export default {
     }
   },
   computed: {
+    polls () {
+      return GroupsData.getters.getPolls(this.regionId)
+    },
     ongoingPolls: function () {
       return this.polls.filter(p => !this.isPollInFuture(p) && !this.isPollInPast(p))
     },
@@ -172,6 +172,9 @@ export default {
         this.currentPage * this.perPage,
       )
     },
+  },
+  created () {
+    GroupsData.mutations.listPolls(this.regionId)
   },
   methods: {
     compare: optimizedCompare,

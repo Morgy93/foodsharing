@@ -41,6 +41,7 @@
           :region-name="name"
           :region-id="regionId"
         />
+        <PollList :region-id="regionId" />
       </div>
     </div>
   </div>
@@ -52,9 +53,10 @@ import RegionSideNav from './RegionSideNav.vue'
 import ThreadList from './ThreadList.vue'
 import EventList from '../../Event/components/EventList.vue'
 import FoodSharePointsList from './FoodSharePointsList.vue'
+import PollList from './PollList.vue'
 
 export default {
-  components: { FoodSharePointsList, RegionTop, RegionSideNav, ThreadList, EventList },
+  components: { PollList, FoodSharePointsList, RegionTop, RegionSideNav, ThreadList, EventList },
   props: {
     regionId: { type: Number, required: true },
     name: { type: String, required: true },
