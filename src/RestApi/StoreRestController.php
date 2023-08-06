@@ -145,7 +145,6 @@ class StoreRestController extends AbstractFOSRestController
         $pagination->offset = $paramFetcher->get('offset');
 
         $queries = $collection->findQueryConditionStrategies($rawQueries);
-
         $stores = $this->storeTransactions->findAllStoresByQueryConditionCollection($queries, $pagination);
 
         return $this->handleView($this->view($stores, 200));

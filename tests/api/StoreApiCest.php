@@ -60,7 +60,9 @@ class StoreApiCest
         $this->orga = $I->createOrga();
         $this->teamConversation = $I->createConversation([$this->manager['id'], $this->teamMember['id']]);
         $this->springerConversation = $I->createConversation([$this->manager['id'], $this->teamMember['id']]);
-        $this->store = $I->createStore($this->region['id'], $this->teamConversation['id'], $this->springerConversation['id'], ['kette_id' => 40, 'betrieb_kategorie_id' => 20, 'use_region_pickup_rule' => 1]);
+        $this->store = $I->createStore($this->region['id'], $this->teamConversation['id'], $this->springerConversation['id'],
+            ['kette_id' => 40, 'betrieb_kategorie_id' => 20, 'use_region_pickup_rule' => 1, 'betrieb_status_id' => 5,
+        'team_status' => 0]);
 
         $I->addStoreTeam($this->store[self::ID], $this->teamMember[self::ID], false);
 
@@ -315,10 +317,11 @@ class StoreApiCest
         $I->assertNotCount(0, $storeChains);
     }
 
-    public function accessTestForAllStoresEndpoint(ApiTester $I) {
+    public function getAllStoresAccessTest(ApiTester $I)
+    {
         // Anonym
         $I->sendGET(self::API_STORES);
-        $I->seeResponseCodeIs(Http::FORBIDDEN);
+        $I->seeResponseCodeIs(Http::UNAUTHORIZED);
 
         // Test access allowed
         $I->login($this->manager[self::EMAIL]);
@@ -326,15 +329,83 @@ class StoreApiCest
         $I->seeResponseCodeIs(Http::OK);
     }
 
-    public function getAllStores(ApiTester $I) {
+    public function getAllStoresWithoutQuery(ApiTester $I)
+    {
         $I->login($this->manager[self::EMAIL]);
         $I->sendGET(self::API_STORES);
         $I->seeResponseCodeIs(Http::OK);
 
         $countStores = $I->grabDataFromResponseByJsonPath('$.total');
-        $stores = $I->grabDataFromResponseByJsonPath('$.stores.id');
-        $I->assertCount(10, $store);
+        $stores = $I->grabDataFromResponseByJsonPath('$.stores.*.id');
+        $I->assertCount(1, $stores);
         $I->seeNumRecords($countStores[0], 'fs_betrieb');
+        $I->assertEquals($this->store['id'], $stores[0]);
+    }
+
+    public function getAllStoresWithSingleQueryOfCooperationStatus(ApiTester $I)
+    {
+        $I->login($this->manager[self::EMAIL]);
+
+        $I->sendGet(self::API_STORES . '?q[]=cooperationStatus:in:a,a,1,2,a,a,a,a,a');
+        $I->seeResponseCodeIs(Http::BAD_REQUEST);
+        $I->sendGet(self::API_STORES . '?q[]=cooperationStatus:sw:a');
+        $I->seeResponseCodeIs(Http::BAD_REQUEST);
+
+        $I->sendGET(self::API_STORES . '?q[]=cooperationStatus:in:5');
+        $I->seeResponseCodeIs(Http::OK);
+
+        $countStores = $I->grabDataFromResponseByJsonPath('$.total');
+        $stores = $I->grabDataFromResponseByJsonPath('$.stores.*.id');
+        $I->assertCount(1, $stores);
+        $I->seeNumRecords($countStores[0], 'fs_betrieb');
+        $I->assertEquals($this->store['id'], $stores[0]);
+    }
+
+    public function getAllStoresWithSingleQueryOfTeamStatus(ApiTester $I)
+    {
+        $I->login($this->manager[self::EMAIL]);
+
+        $I->sendGet(self::API_STORES . '?q[]=teamStatus:in:a,a,1,2,a,a,a,a,a');
+        $I->seeResponseCodeIs(Http::BAD_REQUEST);
+        $I->sendGet(self::API_STORES . '?q[]=teamStatus:sw:a');
+        $I->seeResponseCodeIs(Http::BAD_REQUEST);
+
+        $I->sendGET(self::API_STORES . '?q[]=teamStatus:in:0');
+        $I->seeResponseCodeIs(Http::OK);
+
+        $countStores = $I->grabDataFromResponseByJsonPath('$.total');
+        $stores = $I->grabDataFromResponseByJsonPath('$.stores.*.id');
+        $I->assertCount(1, $stores);
+        $I->seeNumRecords($countStores[0], 'fs_betrieb');
+        $I->assertEquals($this->store['id'], $stores[0]);
+    }
+
+    public function getAllStoresWithSingleQueryOfName(ApiTester $I)
+    {
+        $I->login($this->manager[self::EMAIL]);
+
+        $I->sendGet(self::API_STORES . '?q[]=name:sw:' . $this->store['name']);
+        $I->seeResponseCodeIs(Http::OK);
+
+        $countStores = $I->grabDataFromResponseByJsonPath('$.total');
+        $stores = $I->grabDataFromResponseByJsonPath('$.stores.*.id');
+        $I->assertCount(1, $stores);
+        $I->seeNumRecords($countStores[0], 'fs_betrieb');
+        $I->assertEquals($this->store['id'], $stores[0]);
+    }
+
+    public function getAllStoresWithQueryForNameAndTeamStatus(ApiTester $I)
+    {
+        $I->login($this->manager[self::EMAIL]);
+
+        $I->sendGet(self::API_STORES . '?q[]=teamStatus:in:0&q[]=name:sw:' . $this->store['name']);
+        $I->seeResponseCodeIs(Http::OK);
+
+        $countStores = $I->grabDataFromResponseByJsonPath('$.total');
+        $stores = $I->grabDataFromResponseByJsonPath('$.stores.*.id');
+        $I->assertCount(1, $stores);
+        $I->seeNumRecords($countStores[0], 'fs_betrieb');
+        $I->assertEquals($this->store['id'], $stores[0]);
     }
 
     public function canAnonymUserNotAccessToGetListOfStoresInRegion(ApiTester $I)
