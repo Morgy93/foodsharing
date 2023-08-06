@@ -322,7 +322,7 @@ final class RegionControl extends Control
         $this->pageHelper->addBread($this->translator->trans('group.members'), '/?page=bezirk&bid=' . $region['id'] . '&sub=members');
         $this->pageHelper->addTitle($this->translator->trans('group.members'));
         $sub = $request->query->get('sub');
-        $viewdata = $this->regionViewData($region, $sub);
+        $params = $this->regionViewData($region, $sub);
 
         if ($region['type'] === UnitType::WORKING_GROUP) {
             $mayEditMembers = $this->workGroupPermission->mayEdit($region);
@@ -337,7 +337,7 @@ final class RegionControl extends Control
         $viewdata['maySetAdminOrAmbassador'] = $maySetAdminOrAmbassador;
         $viewdata['mayRemoveAdminOrAmbassador'] = $mayRemoveAdminOrAmbassador;
         $viewdata['userId'] = $this->session->id();
-        $response->setContent($this->render('pages/Region/members.twig', $viewdata));
+        $this->pageHelper->addContent($this->view->vueComponent('region-page', 'RegionPage', $params));
     }
 
     private function statistic(Request $request, Response $response, array $region): void

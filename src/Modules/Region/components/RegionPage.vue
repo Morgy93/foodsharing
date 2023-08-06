@@ -41,7 +41,14 @@
           :region-name="name"
           :region-id="regionId"
         />
-        <PollList :region-id="regionId" />
+        <PollList
+          v-if="activeSubpage === 'polls'"
+          :region-id="regionId"
+        />
+        <MemberList
+          v-if="activeSubpage === 'members'"
+          :group-id="regionId"
+        />
       </div>
     </div>
   </div>
@@ -54,9 +61,10 @@ import ThreadList from './ThreadList.vue'
 import EventList from '../../Event/components/EventList.vue'
 import FoodSharePointsList from './FoodSharePointsList.vue'
 import PollList from './PollList.vue'
+import MemberList from './MemberList.vue'
 
 export default {
-  components: { PollList, FoodSharePointsList, RegionTop, RegionSideNav, ThreadList, EventList },
+  components: { MemberList, PollList, FoodSharePointsList, RegionTop, RegionSideNav, ThreadList, EventList },
   props: {
     regionId: { type: Number, required: true },
     name: { type: String, required: true },
