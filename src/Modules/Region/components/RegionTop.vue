@@ -1,5 +1,5 @@
 <template>
-  <div class="container border border-dark">
+  <div class="container border border-dark rounded">
     <h4>{{ name }}</h4>
     {{ foodSaverCount }} Foodsaver ({{ foodSaverHomeDistrictCount }} mit Stammbezirk),
     {{ foodSaverHasSleepingHatCount }} Schlafmützen, {{ ambassadorCount }} Botschafter*innen,

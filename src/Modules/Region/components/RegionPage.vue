@@ -17,7 +17,7 @@
     </div>
     <div class="row">
       <div class="col-4">
-        <RegionSideNav />
+        <RegionSideNav :region-id="regionId" />
       </div>
       <div class="col-8">
         <ThreadList
