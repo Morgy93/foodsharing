@@ -383,7 +383,7 @@ final class RegionControl extends Control
     {
         $this->pageHelper->addBread($this->translator->trans('terminology.options'), '/?page=bezirk&bid=' . $region['id'] . '&sub=options');
         $this->pageHelper->addTitle($this->translator->trans('terminology.options'));
-        $viewdata = $this->regionViewData($region, $request->query->get('sub'));
+        $params = $this->regionViewData($region, $request->query->get('sub'));
         $regionOptions = $this->gateway->getAllRegionOptions($region['id']);
         $viewdata['maySetRegionOptionsReportButtons'] = boolval($this->regionPermissions->maySetRegionOptionsReportButtons($region['id']));
         $viewdata['maySetRegionOptionsRegionPickupRule'] = boolval($this->regionPermissions->maySetRegionOptionsRegionPickupRule($region['id']));
@@ -396,7 +396,7 @@ final class RegionControl extends Control
         $viewdata['regionPickupRuleInactiveHours'] = intval(array_key_exists(RegionOptionType::REGION_PICKUP_RULE_INACTIVE_HOURS, $regionOptions) ? $regionOptions[RegionOptionType::REGION_PICKUP_RULE_INACTIVE_HOURS] : 0);
         $viewdata['regionPickupRuleActiveStoreList'] = $this->storeGateway->listRegionStoresActivePickupRule($region['id']);
 
-        $response->setContent($this->render('pages/Region/options.twig', $viewdata));
+        $this->pageHelper->addContent($this->view->vueComponent('region-page', 'RegionPage', $params));
     }
 
     private function pin(Request $request, Response $response, array $region): void

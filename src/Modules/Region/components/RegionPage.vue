@@ -49,6 +49,10 @@
           v-if="activeSubpage === 'members'"
           :group-id="regionId"
         />
+        <Options
+          v-if="activeSubpage === 'options'"
+          :region-id="regionId"
+        />
       </div>
     </div>
   </div>
@@ -62,9 +66,10 @@ import EventList from '../../Event/components/EventList.vue'
 import FoodSharePointsList from './FoodSharePointsList.vue'
 import PollList from './PollList.vue'
 import MemberList from './MemberList.vue'
+import Options from './Options.vue'
 
 export default {
-  components: { MemberList, PollList, FoodSharePointsList, RegionTop, RegionSideNav, ThreadList, EventList },
+  components: { Options, MemberList, PollList, FoodSharePointsList, RegionTop, RegionSideNav, ThreadList, EventList },
   props: {
     regionId: { type: Number, required: true },
     name: { type: String, required: true },
