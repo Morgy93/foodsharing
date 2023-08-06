@@ -62,4 +62,21 @@ class EventRestController extends AbstractFOSRestController
 
         return $this->handleView($this->view([], Response::HTTP_NO_CONTENT));
     }
+
+    /**
+     * List events for region and groups.
+     *
+     * @OA\Response(response="204", description="Success")
+     * @OA\Response(response="400", description="Invalid status code")
+     * @OA\Response(response="401", description="Not logged in")
+     * @OA\Response(response="403", description="Insufficient permissions to join the event")
+     * @OA\Tag(name="events")
+     * @Rest\Get("region/{regionId}/events/", requirements={"regionId" = "\d+"})
+     */
+    public function listEventsAction(int $regionId)
+    {
+        $events = $this->eventGateway->listForRegion($regionId);
+
+        return $this->handleView($this->view($events, Response::HTTP_OK));
+    }
 }

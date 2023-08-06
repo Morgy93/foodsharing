@@ -58,14 +58,12 @@
 <script>
 import { optimizedCompare } from '@/utils'
 import EventPanel from './EventPanel'
+import EventsData from '@/stores/events'
 
 export default {
   components: { EventPanel },
   props: {
-    events: {
-      type: Array,
-      default: () => [],
-    },
+    regionId: { type: Number, required: true },
   },
   data () {
     return {
@@ -75,6 +73,9 @@ export default {
     }
   },
   computed: {
+    events () {
+      return EventsData.getters.getEvents(this.regionId)
+    },
     currentEvents: function () {
       return this.events.filter(p => !this.isEventInPast(p))
     },
@@ -94,6 +95,9 @@ export default {
         return aDate < bDate ? 1 : -1
       })
     },
+  },
+  async created () {
+    await EventsData.mutations.listEvents(this.regionId)
   },
   methods: {
     compare: optimizedCompare,

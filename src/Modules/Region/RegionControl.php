@@ -3,9 +3,7 @@
 namespace Foodsharing\Modules\Region;
 
 use Foodsharing\Modules\Core\Control;
-use Foodsharing\Modules\Core\DBConstants\Foodsaver\Role;
 use Foodsharing\Modules\Core\DBConstants\Map\MapConstants;
-use Foodsharing\Modules\Core\DBConstants\Region\RegionIDs;
 use Foodsharing\Modules\Core\DBConstants\Region\RegionOptionType;
 use Foodsharing\Modules\Core\DBConstants\Unit\UnitType;
 use Foodsharing\Modules\Event\EventGateway;
@@ -147,7 +145,7 @@ final class RegionControl extends Control
         ];
     }
 
-    public function index(Request $request, Response $response)
+    public function index(Request $request, Response $response): void
     {
         if (!$this->session->mayRole()) {
             $this->routeHelper->goLoginAndExit();
@@ -222,14 +220,14 @@ final class RegionControl extends Control
         }
     }
 
-    private function wall(Request $request, Response $response, array $region)
+    private function wall(Request $request, Response $response, array $region): void
     {
         $viewdata = $this->regionViewData($region, $request->query->get('sub'));
         $viewdata['wall'] = ['module' => 'bezirk', 'wallId' => $region['id']];
         $response->setContent($this->render('pages/Region/wall.twig', $viewdata));
     }
 
-    private function foodSharePoint(Request $request, Response $response, array $region)
+    private function foodSharePoint(Request $request, Response $response, array $region): void
     {
         $this->pageHelper->addBread($this->translator->trans('terminology.fsp'), '/?page=bezirk&bid=' . $region['id'] . '&sub=fairteiler');
         $this->pageHelper->addTitle($this->translator->trans('terminology.fsp'));
@@ -297,19 +295,21 @@ final class RegionControl extends Control
         $this->pageHelper->addContent($this->view->vueComponent('region-page', 'RegionPage', $params));
     }
 
-    private function events(Request $request, Response $response, $region)
+    private function events(Request $request, Response $response, $region): void
     {
         $this->pageHelper->addBread($this->translator->trans('events.bread'), '/?page=bezirk&bid=' . $region['id'] . '&sub=events');
         $this->pageHelper->addTitle($this->translator->trans('events.bread'));
         $sub = $request->query->get('sub');
-        $viewdata = $this->regionViewData($region, $sub);
+        $params = $this->regionViewData($region, $sub);
 
-        $viewdata['events'] = $this->eventGateway->listForRegion($region['id']);
+        // $params['events'] = $this->eventGateway->listForRegion($region['id']);
 
-        $response->setContent($this->render('pages/Region/events.twig', $viewdata));
+        $this->pageHelper->addContent($this->view->vueComponent('region-page', 'RegionPage', $params));
+
+        // $response->setContent($this->render('pages/Region/events.twig', $viewdata));
     }
 
-    private function applications(Request $request, Response $response, $region)
+    private function applications(Request $request, Response $response, $region): void
     {
         $this->pageHelper->addBread($this->translator->trans('group.applications'), '/?page=bezirk&bid=' . $region['id'] . '&sub=events');
         $this->pageHelper->addTitle($this->translator->trans('group.applications_for', ['%name%' => $region['name']]));

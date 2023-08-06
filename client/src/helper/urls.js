@@ -107,6 +107,7 @@ const urls = {
     return url('forum', regionId, 0, threadId, postId)
   },
   events: (regionId) => `/?page=bezirk&bid=${regionId}&sub=events`,
+  addEvents: (regionId) => `/?page=event&sub=add&bid=${regionId}`,
   foodsaverList: (regionId) => `/?page=foodsaver&bid=${regionId}`,
   foodsharepoints: (regionId) => `/?page=bezirk&bid=${regionId}&sub=fairteiler`,
   members: (regionId) => `/?page=bezirk&bid=${regionId}&sub=members`,

@@ -21,8 +21,19 @@
       </div>
       <div class="col-8">
         <ThreadList
+          v-if="activeSubpage === 'forum'"
           :subforum-id="subForumId"
           :group-id="regionId"
+        />
+        <b-button
+          variant="primary"
+          :href="$url('addEvents', regionId)"
+        >
+          Jetzt neuen Termin eintragen
+        </b-button>
+        <EventList
+          v-if="activeSubpage === 'events'"
+          region-id="regionId"
         />
       </div>
     </div>
@@ -33,9 +44,10 @@
 import RegionTop from './RegionTop.vue'
 import RegionSideNav from './RegionSideNav.vue'
 import ThreadList from './ThreadList.vue'
+import EventList from '../../Event/components/EventList.vue'
 
 export default {
-  components: { RegionTop, RegionSideNav, ThreadList },
+  components: { RegionTop, RegionSideNav, ThreadList, EventList },
   props: {
     regionId: { type: Number, required: true },
     name: { type: String, required: true },
