@@ -17,7 +17,10 @@
     </div>
     <div class="row">
       <div class="col-4">
-        <RegionSideNav :region-id="regionId" />
+        <RegionSideNav
+          :region-id="regionId"
+          :is-work-group="isWorkGroup"
+        />
         <ResponsibleUsers
           :responsible-users="admins"
           :title="$i18n('terminology.ambassadors')"
@@ -88,7 +91,6 @@ export default {
     name: { type: String, required: true },
     isWorkGroup: { type: Boolean, required: true },
     isHomeDistrict: { type: Boolean, required: true },
-    storesAndMembersDisabled: { type: Array, required: true },
     isRegion: { type: Boolean, required: true },
     foodSaverCount: { type: Number, required: true },
     foodSaverHomeDistrictCount: { type: Number, required: true },
