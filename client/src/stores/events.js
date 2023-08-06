@@ -30,6 +30,7 @@ export const mutations = {
     return updateInvitationResponse(eventId, status)
   },
   async listEvents (regionId) {
+    console.log('regionId', regionId)
     store.events = await listEvents(regionId)
   },
 }

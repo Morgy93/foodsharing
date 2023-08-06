@@ -33,7 +33,7 @@
         </b-button>
         <EventList
           v-if="activeSubpage === 'events'"
-          region-id="regionId"
+          :region-id="regionId"
         />
       </div>
     </div>
