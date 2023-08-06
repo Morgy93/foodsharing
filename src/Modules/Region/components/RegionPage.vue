@@ -18,6 +18,14 @@
     <div class="row">
       <div class="col-4">
         <RegionSideNav :region-id="regionId" />
+        <ResponsibleUsers
+          :responsible-users="admins"
+          :title="$i18n('terminology.ambassadors')"
+        />
+        <ResponsibleUsers
+          :responsible-users="welcomeAdmins"
+          :title="$i18n('terminology.welcomeAdmins')"
+        />
       </div>
       <div class="col-8">
         <ThreadList
@@ -71,9 +79,10 @@ import MemberList from './MemberList.vue'
 import Options from './Options.vue'
 import Statistics from './Statistics.vue'
 import Pin from './Pin.vue'
+import ResponsibleUsers from './ResponsibleUsers.vue'
 
 export default {
-  components: { Statistics, Options, MemberList, PollList, FoodSharePointsList, RegionTop, RegionSideNav, ThreadList, EventList, Pin },
+  components: { ResponsibleUsers, Statistics, Options, MemberList, PollList, FoodSharePointsList, RegionTop, RegionSideNav, ThreadList, EventList, Pin },
   props: {
     regionId: { type: Number, required: true },
     name: { type: String, required: true },
@@ -90,6 +99,8 @@ export default {
     storesPickupsCount: { type: Number, required: true },
     storesFetchedWeight: { type: Number, required: true },
     activeSubpage: { type: String, required: true },
+    admins: { type: Array, required: true },
+    welcomeAdmins: { type: Array, required: true },
   },
   computed: {
     subForumId () {
