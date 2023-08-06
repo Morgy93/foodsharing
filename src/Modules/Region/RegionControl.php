@@ -231,8 +231,8 @@ final class RegionControl extends Control
     {
         $this->pageHelper->addBread($this->translator->trans('terminology.fsp'), '/?page=bezirk&bid=' . $region['id'] . '&sub=fairteiler');
         $this->pageHelper->addTitle($this->translator->trans('terminology.fsp'));
-        $viewdata = $this->regionViewData($region, $request->query->get('sub'));
-        $response->setContent($this->render('pages/Region/foodSharePoint.twig', $viewdata));
+        $params = $this->regionViewData($region, $request->query->get('sub'));
+        $this->pageHelper->addContent($this->view->vueComponent('region-page', 'RegionPage', $params));
     }
 
     private function handleNewThreadForm(Request $request, array $region, $ambassadorForum, bool $postActiveWithoutModeration)
@@ -302,11 +302,7 @@ final class RegionControl extends Control
         $sub = $request->query->get('sub');
         $params = $this->regionViewData($region, $sub);
 
-        // $params['events'] = $this->eventGateway->listForRegion($region['id']);
-
         $this->pageHelper->addContent($this->view->vueComponent('region-page', 'RegionPage', $params));
-
-        // $response->setContent($this->render('pages/Region/events.twig', $viewdata));
     }
 
     private function applications(Request $request, Response $response, $region): void

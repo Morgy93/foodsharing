@@ -26,6 +26,7 @@
           :group-id="regionId"
         />
         <b-button
+          v-if="activeSubpage === 'events'"
           variant="primary"
           :href="$url('addEvents', regionId)"
         >
@@ -33,6 +34,11 @@
         </b-button>
         <EventList
           v-if="activeSubpage === 'events'"
+          :region-id="regionId"
+        />
+        <FoodSharePointsList
+          v-if="activeSubpage === 'fairteiler'"
+          :region-name="name"
           :region-id="regionId"
         />
       </div>
@@ -45,9 +51,10 @@ import RegionTop from './RegionTop.vue'
 import RegionSideNav from './RegionSideNav.vue'
 import ThreadList from './ThreadList.vue'
 import EventList from '../../Event/components/EventList.vue'
+import FoodSharePointsList from './FoodSharePointsList.vue'
 
 export default {
-  components: { RegionTop, RegionSideNav, ThreadList, EventList },
+  components: { FoodSharePointsList, RegionTop, RegionSideNav, ThreadList, EventList },
   props: {
     regionId: { type: Number, required: true },
     name: { type: String, required: true },
