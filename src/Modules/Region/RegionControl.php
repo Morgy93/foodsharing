@@ -6,14 +6,9 @@ use Foodsharing\Modules\Core\Control;
 use Foodsharing\Modules\Core\DBConstants\Map\MapConstants;
 use Foodsharing\Modules\Core\DBConstants\Region\RegionOptionType;
 use Foodsharing\Modules\Core\DBConstants\Unit\UnitType;
-use Foodsharing\Modules\Event\EventGateway;
-use Foodsharing\Modules\Mailbox\MailboxGateway;
 use Foodsharing\Modules\Store\StoreGateway;
-use Foodsharing\Modules\Voting\VotingGateway;
 use Foodsharing\Permissions\ForumPermissions;
 use Foodsharing\Permissions\RegionPermissions;
-use Foodsharing\Permissions\ReportPermissions;
-use Foodsharing\Permissions\VotingPermissions;
 use Foodsharing\Permissions\WorkGroupPermissions;
 use Foodsharing\Utility\ImageHelper;
 use Symfony\Component\Form\FormFactoryInterface;
@@ -24,8 +19,6 @@ final class RegionControl extends Control
 {
     private array $region;
     private RegionGateway $gateway;
-    private EventGateway $eventGateway;
-    private ForumGateway $forumGateway;
     private ForumFollowerGateway $forumFollowerGateway;
     private FormFactoryInterface $formFactory;
     private ForumTransactions $forumTransactions;
@@ -33,10 +26,6 @@ final class RegionControl extends Control
     private RegionPermissions $regionPermissions;
     private StoreGateway $storeGateway;
     private ImageHelper $imageService;
-    private ReportPermissions $reportPermissions;
-    private MailboxGateway $mailboxGateway;
-    private VotingGateway $votingGateway;
-    private VotingPermissions $votingPermissions;
     private WorkGroupPermissions $workGroupPermission;
 
     private const DisplayAvatarListEntries = 30;
@@ -51,34 +40,22 @@ final class RegionControl extends Control
 
     public function __construct(
         RegionView $view,
-        EventGateway $eventGateway,
-        ForumGateway $forumGateway,
         ForumFollowerGateway $forumFollowerGateway,
         ForumPermissions $forumPermissions,
         RegionPermissions $regionPermissions,
         ForumTransactions $forumTransactions,
         RegionGateway $gateway,
-        ReportPermissions $reportPermissions,
         ImageHelper $imageService,
-        MailboxGateway $mailboxGateway,
-        VotingGateway $votingGateway,
-        VotingPermissions $votingPermissions,
         WorkGroupPermissions $workGroupPermissions,
         StoreGateway $storeGateway
     ) {
         $this->view = $view;
         $this->gateway = $gateway;
-        $this->eventGateway = $eventGateway;
         $this->forumPermissions = $forumPermissions;
         $this->regionPermissions = $regionPermissions;
-        $this->forumGateway = $forumGateway;
         $this->forumFollowerGateway = $forumFollowerGateway;
         $this->forumTransactions = $forumTransactions;
-        $this->reportPermissions = $reportPermissions;
         $this->imageService = $imageService;
-        $this->mailboxGateway = $mailboxGateway;
-        $this->votingGateway = $votingGateway;
-        $this->votingPermissions = $votingPermissions;
         $this->workGroupPermission = $workGroupPermissions;
         $this->storeGateway = $storeGateway;
         parent::__construct();
