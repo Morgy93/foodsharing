@@ -10,6 +10,7 @@ import {
 import i18n from '@/helper/i18n'
 import './Region.css'
 import { vueRegister, vueApply } from '@/vue'
+import RegionPage from './components/RegionPage'
 import Thread from './components/Thread'
 import MemberList from './components/MemberList'
 import GenderList from './components/GenderList'
@@ -27,6 +28,9 @@ import { initWall } from '@/wall'
 import NewThread from './components/NewThread.vue'
 import ApplicationsList from './components/ApplicationsList'
 import FoodSharePointsList from './components/FoodSharePointsList'
+
+vueRegister({ RegionPage })
+vueApply('#region-page')
 
 $(document).ready(() => {
   $('a[href=\'#signout\']').on('click', function () {
