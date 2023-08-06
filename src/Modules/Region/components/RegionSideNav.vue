@@ -1,18 +1,21 @@
 <template>
-  <div class="container">
+  <container
+    title="Bezirks-Menü"
+    class="bg-white"
+  >
     <NavRegionsLinkEntry
       :entry="region"
     />
-  </div>
+  </container>
 </template>
-
 <script>
 import NavRegionsLinkEntry from '@/components/Navigation/Regions/NavRegionsLinkEntry.vue'
 import DataUser from '@/stores/user'
 import regionsData from '@/stores/regions'
+import Container from '@/components/Container/Container.vue'
 
 export default {
-  components: { NavRegionsLinkEntry },
+  components: { NavRegionsLinkEntry, Container },
   props: {
     regionId: { type: Number, required: true },
     isWorkGroup: { type: Boolean, required: true },

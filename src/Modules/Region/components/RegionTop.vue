@@ -1,11 +1,13 @@
 <template>
-  <div class="container border border-dark rounded">
+  <div class="container border border-dark rounded mb-2 regionTopBackground">
     <h4>{{ name }}</h4>
-    {{ foodSaverCount }} Foodsaver ({{ foodSaverHomeDistrictCount }} mit Stammbezirk),
-    {{ foodSaverHasSleepingHatCount }} Schlafmützen, {{ ambassadorCount }} Botschafter*innen,
-    {{ storesCount }} Betriebe, {{ storesCooperationCount }} laufende Kooperationen
-    {{ storesFetchedWeight }} kg Lebensmittel gerettet
-    Bei {{ storesPickupsCount }} Rettungseinsätzen
+    <div class="regionTopFont">
+      {{ foodSaverCount }} Foodsaver ({{ foodSaverHomeDistrictCount }} mit Stammbezirk),
+      {{ foodSaverHasSleepingHatCount }} Schlafmützen, {{ ambassadorCount }} Botschafter*innen,
+      {{ storesCount }} Betriebe, {{ storesCooperationCount }} laufende Kooperationen,
+      {{ storesFetchedWeight }} kg Lebensmittel gerettet,
+      Bei {{ storesPickupsCount }} Rettungseinsätzen
+    </div>
   </div>
 </template>
 
@@ -25,3 +27,13 @@ export default {
   },
 }
 </script>
+
+<style scoped>
+ .regionTopBackground {
+   background-color: var(--fs-color-primary-100);
+ }
+ .regionTopFont {
+   color: var(--fs-color-primary-600);
+   font-size: 1.2rem
+ }
+</style>
