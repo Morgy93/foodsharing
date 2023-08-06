@@ -18,8 +18,13 @@
     <div class="row">
       <div class="col-4">
         <RegionSideNav
+          v-if="!isWorkGroup"
           :region-id="regionId"
           :is-work-group="isWorkGroup"
+        />
+        <GroupSideNav
+          v-if="isWorkGroup"
+          :group-id="regionId"
         />
         <ResponsibleUsers
           :responsible-users="admins"
@@ -74,6 +79,7 @@
 <script>
 import RegionTop from './RegionTop.vue'
 import RegionSideNav from './RegionSideNav.vue'
+import GroupSideNav from './GroupSideNav.vue'
 import ThreadList from './ThreadList.vue'
 import EventList from '../../Event/components/EventList.vue'
 import FoodSharePointsList from './FoodSharePointsList.vue'
@@ -85,7 +91,7 @@ import Pin from './Pin.vue'
 import ResponsibleUsers from './ResponsibleUsers.vue'
 
 export default {
-  components: { ResponsibleUsers, Statistics, Options, MemberList, PollList, FoodSharePointsList, RegionTop, RegionSideNav, ThreadList, EventList, Pin },
+  components: { ResponsibleUsers, Statistics, Options, MemberList, PollList, FoodSharePointsList, RegionTop, RegionSideNav, GroupSideNav, ThreadList, EventList, Pin },
   props: {
     regionId: { type: Number, required: true },
     name: { type: String, required: true },
