@@ -53,6 +53,7 @@
           v-if="activeSubpage === 'options'"
           :region-id="regionId"
         />
+        <Statistics v-if="activeSubpage === 'statistic'" />
       </div>
     </div>
   </div>
@@ -67,9 +68,10 @@ import FoodSharePointsList from './FoodSharePointsList.vue'
 import PollList from './PollList.vue'
 import MemberList from './MemberList.vue'
 import Options from './Options.vue'
+import Statistics from './Statistics.vue'
 
 export default {
-  components: { Options, MemberList, PollList, FoodSharePointsList, RegionTop, RegionSideNav, ThreadList, EventList },
+  components: { Statistics, Options, MemberList, PollList, FoodSharePointsList, RegionTop, RegionSideNav, ThreadList, EventList },
   props: {
     regionId: { type: Number, required: true },
     name: { type: String, required: true },

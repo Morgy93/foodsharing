@@ -348,7 +348,7 @@ final class RegionControl extends Control
         );
         $this->pageHelper->addTitle($this->translator->trans('terminology.statistic'));
         $sub = $request->query->get('sub');
-        $viewData = $this->regionViewData($region, $sub);
+        $params = $this->regionViewData($region, $sub);
 
         $viewData['genderData']['district'] = $this->gateway->genderCountRegion((int)$region['id']);
         $viewData['genderData']['homeDistrict'] = $this->gateway->genderCountHomeRegion((int)$region['id']);
@@ -365,7 +365,7 @@ final class RegionControl extends Control
             $viewData['pickupData']['monthly'] = $this->gateway->listRegionPickupsByDate((int)$region['id'], '%Y-%m');
             $viewData['pickupData']['yearly'] = $this->gateway->listRegionPickupsByDate((int)$region['id'], '%Y');
         }
-        $response->setContent($this->render('pages/Region/statistic.twig', $viewData));
+        $this->pageHelper->addContent($this->view->vueComponent('region-page', 'RegionPage', $params));
     }
 
     private function polls(Request $request, Response $response, array $region): void
