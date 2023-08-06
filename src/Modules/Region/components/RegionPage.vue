@@ -54,6 +54,7 @@
           :region-id="regionId"
         />
         <Statistics v-if="activeSubpage === 'statistic'" />
+        <Pin v-if="activeSubpage === 'pin'" />
       </div>
     </div>
   </div>
@@ -69,9 +70,10 @@ import PollList from './PollList.vue'
 import MemberList from './MemberList.vue'
 import Options from './Options.vue'
 import Statistics from './Statistics.vue'
+import Pin from './Pin.vue'
 
 export default {
-  components: { Statistics, Options, MemberList, PollList, FoodSharePointsList, RegionTop, RegionSideNav, ThreadList, EventList },
+  components: { Statistics, Options, MemberList, PollList, FoodSharePointsList, RegionTop, RegionSideNav, ThreadList, EventList, Pin },
   props: {
     regionId: { type: Number, required: true },
     name: { type: String, required: true },

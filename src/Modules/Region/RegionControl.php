@@ -403,12 +403,12 @@ final class RegionControl extends Control
     {
         $this->pageHelper->addBread($this->translator->trans('terminology.pin'), '/?page=bezirk&bid=' . $region['id'] . '&sub=pin');
         $this->pageHelper->addTitle($this->translator->trans('terminology.pin'));
-        $viewdata = $this->regionViewData($region, $request->query->get('sub'));
+        $params = $this->regionViewData($region, $request->query->get('sub'));
         $result = $this->gateway->getRegionPin($region['id']);
         $viewdata['lat'] = $result['lat'] ?? MapConstants::CENTER_GERMANY_LAT;
         $viewdata['lon'] = $result['lon'] ?? MapConstants::CENTER_GERMANY_LON;
         $viewdata['desc'] = $result['desc'] ?? null;
         $viewdata['status'] = $result['status'] ?? null;
-        $response->setContent($this->render('pages/Region/pin.twig', $viewdata));
+        $this->pageHelper->addContent($this->view->vueComponent('region-page', 'RegionPage', $params));
     }
 }
