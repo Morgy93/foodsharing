@@ -32,7 +32,9 @@
 - Add CTA on the profile-page for calendar export #1583 !2705 @sefn
 - Remove relative time from last pickup #1571 #1643 !2706 !2744 @sefn
 - Removed unused global report !2763 @chriswalg
+- Improved pickup table display on smaller devices !2779 @AntonBallmaier 
 - Added a validation for login form, to prevent send a api call. !2787 @chriswalg
+- Remove closed stores from map, dashboard and navigation #786 !2790 @chriswalg
 
 ## Bugfixes
 - Reimplementation of the StoreManager empty pickup E-Mail notification !2574 @KoeMai
@@ -59,7 +61,7 @@
 - In the user details, only include that a calendar token exists but not the token itself !2735 @alex.simm
 - Fixed undefined "mailbox" #1612 !2746 @chriswalg @alex.simm 
 - Workaround for unvisible attachments because long mailbox names !2751 @chriswalg
-- Fixed errors in delayed vue map initialisation #1637 #1660 !2750 !2773 @chriswalg 
+- Fixed errors in delayed vue map initialisation #1637 #1660 !2750 !2773 !2791 @chriswalg 
 - Check if thread exist before display the thread #1650 !2756 @chriswalg
 - Fix no error messages on BadRequestHttpExceptions on beta !2701 @KoeMai
 - removed styleguide from non-dev environments #1636 !2745 @sefn
@@ -67,7 +69,8 @@
 - Fixed the loading of wall posts associated with reports !2770 #1648 @alex.simm
 - catches bell-closing bug if no bell was found (symptom treatment) @martincodes_de
 - catches bell-closing bug if no bell was found (symptom treatment) !2766 @martincodes_de
-- Temporarily disable store page and member page for Europe and Germany !2777 @alex.simm
+- Pickup options can no longer be loaded multiple times in the pickup table !2779 @AntonBallmaier
+- Temporarily disable store page and member page for Europe and Germany !2777 !2788 @alex.simm
 
 ## Refactoring
 - added poppins font in Styleguide !2564 @Niklas003
@@ -100,6 +103,7 @@
 - Refactor StoreListComponent.vue !2733 @buntel
 - Refactor storage.js !2733 @buntel
 - Refactor user passport generation page #1617 !2660 !2758 @chriswalg
+- Replaced the form for changing the email address with a vue component !2753 @alex.simm
 
 ## Dev/Test/CI stuff
 - Fix given null parameter !2550 @BibaltiK
@@ -137,6 +141,7 @@
 - Added security page !2764 !2783 @martincodes_de
 - Add security.txt with contact information !2776 @stcz
 - added functionallity to new FoodsharingControllers to prepare and render vue components !2730 @martincodes-de
+- Updated some backend dependencies !2721 @chriswalg
 
 ## Development documentation
 

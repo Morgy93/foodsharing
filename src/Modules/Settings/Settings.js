@@ -16,6 +16,7 @@ import RegionTreeVForm from '@/components/regiontree/RegionTreeVForm'
 import Passport from './components/Passport.vue'
 import Notifications from './components/Notifications.vue'
 import SleepingMode from './components/SleepingMode.vue'
+import ChangeEmailForm from './components/ChangeEmailForm'
 
 switch (GET('sub')) {
   case 'info':
@@ -33,6 +34,10 @@ switch (GET('sub')) {
   case 'sleeping':
     vueRegister({ SleepingMode })
     vueApply('#sleeping-mode')
+    break
+  case 'changeEmail':
+    vueRegister({ ChangeEmailForm })
+    vueApply('#change-email-form')
     break
   case 'general':
     vueRegister({ ProfilePicture, NameInput, LeafletLocationSearchVForm, RegionTreeVForm })

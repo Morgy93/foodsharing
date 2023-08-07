@@ -275,16 +275,9 @@ class SettingsView extends View
         return $out;
     }
 
-    public function changeMail()
-    {
-        return $this->v_utils->v_form_text('newmail');
-    }
-
     public function changemail3($email)
     {
-        return
-            $this->v_utils->v_info($this->translator->trans('settings.changemail.question') . ' <strong>' . $email . '</strong> ?') .
-            $this->v_utils->v_form_passwd('passcheck');
+        return $this->v_utils->v_info($this->translator->trans('settings.changemail.question') . ' <strong>' . $email . '</strong> ?');
     }
 
     public function passport(): string

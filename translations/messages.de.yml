@@ -104,7 +104,6 @@ compose_body: "Nachricht"
 # FORM DATA KEYS: SettingsView
 # --
 # comment: "Anregungen, Kritik und Kommentare" # this looks very unused
-newmail: "Gib hier deine neue E-Mail-Adresse ein"
 passcheck: "Bestätige die Änderung bitte mit deinem Passwort"
 homepage: "Deine Webseite"
 #
@@ -1733,12 +1732,17 @@ settings:
     tooltip: "{name} nimmt sich gerade eine Auszeit und ist im Schlafmützen-Modus"
   email: "E-Mail-Adresse ändern"
   changemail:
+    explanation: "Hier kannst du die E-Mail-Adresse ändern, mit der du dich registriert hast. Nach dem Absenden bekommst du eine E-Mail an deine neue Adresse gesendet, in der sich ein Link befindet, über den du deine neue Adresse bestätigen kannst."
+    explanation_password: "Bestätige den Änderungswunsch mit deinem aktuellen Passwort"
+    input_label_email: "Gib hier deine neue E-Mail-Adresse ein"
+    input_label_email_confirm: "Bitte bestätige hier deine neue E-Mail-Adresse"
+    input_label_password: "Bitte gib zur Bestätigung dein Passwort ein"
+    confirm_email_required: "Die E-Mail-Adressen stimmen nicht überein"
     question: "Sollen wir deine Emailadresse wirklich zu dieser ändern:"
-    passcheck: "Bestätige die Änderung bitte mit deinem Passwort"
-    passfail: "Das Passwort stimmt nicht, vertippt?"
     invalid: "Mit der eingegebenen E-Mail-Adresse stimmt etwas nicht."
     domain: "Bitte verwende eine andere E-Mail-Adresse, damit du dein Passwort jederzeit wiederherstellen kannst."
-    occupied: "Die E-Mail-Adresse konnte nicht geändert werden, irgendwer benutzt sie schon."
+    occupied: "Die E-Mail-Adresse konnte nicht geändert werden, da sie bereits verwendet wird."
+    wrong_password: "Das Password stimmt nicht."
     sent: "Gehe jetzt zu deinem <strong>neuen</strong> E-Mail-Postfach, um die Adresse zu bestätigen."
     done: "Deine E-Mail-Adresse wurde geändert."
   saved: "Änderungen wurden gespeichert."

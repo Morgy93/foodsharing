@@ -48,8 +48,7 @@ class StoreTransactions
         CooperationStatus::NO_CONTACT,
         CooperationStatus::IN_NEGOTIATION,
         CooperationStatus::COOPERATION_STARTING,
-        CooperationStatus::COOPERATION_ESTABLISHED,
-        CooperationStatus::PERMANENTLY_CLOSED
+        CooperationStatus::COOPERATION_ESTABLISHED
     ];
 
     public const MAX_SLOTS_PER_PICKUP = 10;

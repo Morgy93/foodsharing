@@ -87,7 +87,7 @@ class SettingsControl extends Control
 
         $menu = [
             ['name' => $this->translator->trans('settings.sleep.title'), 'href' => '/?page=settings&sub=sleeping'],
-            ['name' => $this->translator->trans('settings.email'), 'click' => 'ajreq(\'changemail\'); return false;'],
+            ['name' => $this->translator->trans('settings.email'), 'href' => '/?page=settings&sub=changeEmail'],
         ];
 
         if ($this->foodsaver['rolle'] == Role::FOODSHARER) {
@@ -392,6 +392,12 @@ class SettingsControl extends Control
     {
         $this->pageHelper->addBread($this->translator->trans('settings.notifications'));
         $this->pageHelper->addContent($this->view->settingsInfo());
+    }
+
+    public function changeEmail()
+    {
+        $this->pageHelper->addBread($this->translator->trans('settings.email'));
+        $this->pageHelper->addContent($this->view->vueComponent('change-email-form', 'ChangeEmailForm'));
     }
 
     public function handle_edit()

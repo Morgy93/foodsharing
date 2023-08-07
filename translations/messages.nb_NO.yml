@@ -2335,6 +2335,17 @@ store:
   particularities_chain_tooltip: Dette etablissementet er en del av en kjede. Dette
     er grunnen til at denne tilleggsinformasjonen vises, som gjelder for alle virksomheter
     i kjeden.
+  delete_date: Slett individuell innsamlingsdato
+  enter_date: Angi den individuelle hentedatoen
+  delete_date_description: Hvis du bruker regelmessige (ukentlige, automatisk tilbakevendende)
+    tidsluker i virksomheten din og vil forhindre at en bestemt dato (f.eks. ferie)
+    opprettes, kan du sikre dette ved å angi dato og klokkeslett med denne funksjonen.
+    Hvis du vil slette tidsluker som allerede er synlige, kan du også gjøre dette
+    direkte ved å klikke på tidsluken, forutsatt at det ikke er angitt noen matsparer.
+  enter_date_description: Etter at du har valgt dato, klokkeslett og antall personer
+    som skal hentes, kan du angi tidsluker én gang for denne datoen. Hvis du vil opprette
+    regelmessige (automatisk tilbakevendende ukentlige) tider, kan du bruke menyen
+    "Vis bedriftsinformasjon".
 storeview:
   status: Nåværende status
   public_time_at_night: om natten

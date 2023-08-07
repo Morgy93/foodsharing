@@ -7,25 +7,27 @@ use Exception;
 use Foodsharing\Lib\Session;
 use Foodsharing\Modules\Core\DBConstants\Foodsaver\SleepStatus;
 use Foodsharing\Modules\Settings\SettingsGateway;
+use Foodsharing\Modules\Settings\SettingsTransactions;
+use Foodsharing\RestApi\Models\Settings\EmailChangeRequest;
 use FOS\RestBundle\Controller\AbstractFOSRestController;
 use FOS\RestBundle\Controller\Annotations as Rest;
 use FOS\RestBundle\Request\ParamFetcher;
+use Nelmio\ApiDocBundle\Annotation\Model;
 use OpenApi\Annotations as OA;
+use OpenApi\Attributes as OA2;
+use Sensio\Bundle\FrameworkExtraBundle\Configuration\ParamConverter;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
 use Symfony\Component\HttpKernel\Exception\UnauthorizedHttpException;
+use Symfony\Component\Validator\Validator\ValidatorInterface;
 
 class SettingsRestController extends AbstractFOSRestController
 {
-    private SettingsGateway $settingsGateway;
-    private Session $session;
-
     public function __construct(
-        SettingsGateway $settingsGateway,
-        Session $session
+        private readonly SettingsGateway $settingsGateway,
+        private readonly SettingsTransactions $settingsTransactions,
+        private readonly Session $session
     ) {
-        $this->settingsGateway = $settingsGateway;
-        $this->session = $session;
     }
 
     /**
@@ -75,5 +77,34 @@ class SettingsRestController extends AbstractFOSRestController
         $this->settingsGateway->updateSleepMode($this->session->id(), $mode, $from, $to, $message);
 
         return $this->handleView($this->view([], 204));
+    }
+
+    /**
+     * Requests that the user's login email address will be changed. This does not permanently change the address yet,
+     * but sends out the confirmation email.
+     */
+    #[OA2\Tag(name: 'user')]
+    #[Rest\Patch('user/current/email')]
+    #[ParamConverter('request', converter: 'fos_rest.request_body')]
+    #[OA2\RequestBody(content: new Model(type: EmailChangeRequest::class))]
+    #[OA2\Response(response: '200', description: 'Success')]
+    #[OA2\Response(response: '400', description: 'Empty or invalid parameters')]
+    #[OA2\Response(response: '401', description: 'Not logged in')]
+    #[OA2\Response(response: '403', description: 'Wrong password')]
+    public function requestEmailChangeAction(EmailChangeRequest $request, ValidatorInterface $validator): Response
+    {
+        if (!$this->session->mayRole()) {
+            throw new UnauthorizedHttpException('');
+        }
+
+        $errors = $validator->validate($request);
+        if ($errors->count() > 0) {
+            $firstError = $errors->get(0);
+            throw new BadRequestHttpException(json_encode(['field' => $firstError->getPropertyPath(), 'message' => $firstError->getMessage()]));
+        }
+
+        $this->settingsTransactions->requestEmailChange($request);
+
+        return $this->handleView($this->view([], 200));
     }
 }

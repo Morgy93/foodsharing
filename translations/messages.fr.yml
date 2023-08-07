@@ -1232,6 +1232,8 @@ store:
   particularities_chain_tooltip: Cet établissement fait partie d'une chaîne. Pour
     cette raison, ces informations supplémentaires sont affichées, qui s'appliquent
     à tous les établissements de cette chaîne.
+  enter_date: Entrez une seule date de ramassage
+  delete_date: Supprimer une seule date de ramassage
 storeview:
   want_to_fetch: J'aimerais m'engager dans cette équipe.
   specials: Particularités
@@ -1838,6 +1840,8 @@ pickup:
   edit_description: Modifier la description
   description_optional: Description (facultatif)
   description: Description
+  description_modal_text: 'Donne une nouvelle description pour la collecte :'
+  description_max_length_info: Longueur maximale de la description atteinte (100 caractères)
 events:
   bread: Évènements
   past: Évènements passés
@@ -2272,7 +2276,7 @@ bell:
   new_quiz_comment_title: Nouveau commentaire sur le Quiz
   fs_sleepmode: '{name} {nachname} est inacti.f.ve'
   fs_sleepmode_title: Nouveau membre en mode sommeil
-  store_cr_times: Les horaires de collecte ont changé
+  store_cr_times: Les horaires de collecte ont été ajustés
   store_cr_times_title: '{name}'
   store_wallpost: Nouvelle contribution sur le mur.
   store_wallpost_title: '{name}'
@@ -3183,6 +3187,10 @@ chain:
     EMPTY_CITY: Le champ de la ville est vide
     INVALID_STATUS: Le champ d’état n’est pas valide
     KEY_ACCOUNT_MANAGER_ID_NOT_EXISTS: Key Account Manager n’existe pas
+    WRONG_FORUM: Le fil de discussion du forum n'appartient pas au GT Chaînes d'approvisionnement
+    EMPTY_NAME: Le champ Nom est vide
+    THREAD_ID_NOT_EXISTS: Le fil de discussion du forum n’existe pas
+    INVALID_STORECHAIN_ID: L’id de la chaînes n’est pas valide
 usersearch:
   no_tag_preset: Utilisateur non trouvé
   select_tag: Rechercher des utilisateurs par nom
@@ -3190,3 +3198,21 @@ usersearch:
 notifications:
   chat:
     title: Messages de chat
+    description: Soyez averti des nouveaux messages de chat même si vous n’êtes pas
+      connecté.
+  groups:
+    title: Groupes de travail
+  threads:
+    title: Sujets du forum
+  regions:
+    title: Secteurs géographique
+  newsletter:
+    title: Bulletin
+  checkbox_push: notifications push
+  foodSharePoints:
+    title: Frigo solidaire
+  checkbox_bell: Cloche
+  checkbox_disabled: désactivé
+  success: Enregistré avec succès
+  config_button: configurer individuellement
+  checkbox_email: Courrier électronique

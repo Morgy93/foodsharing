@@ -1909,6 +1909,18 @@ store:
   particularities_chain_tooltip: This store is part of a chain. This is why this additional
     information is displayed, which applies to all establishments in the chain.
   particularities_chain: Particularities of the chain
+  enter_date: Enter a single pick-up date
+  delete_date: Delete a single pick-up date
+  enter_date_description: After you have selected the date, time and number of people
+    for a pick-up, you can set slots once for this appointment. If you want to create
+    regular (automatically recurring weekly) slots, please use the 'Show store information'
+    menu.
+  delete_date_description: If you use regular (automatically recurring weekly) slots
+    for your pick-ups and want to prevent a specific date (e.g. public holiday) from
+    being created, you can use this function by specifying date and time from the
+    slots to be removed from your series. If you want to delete slots that are already
+    visible, you can also do this directly by clicking on the slot as long as no one
+    is already registered.
 search:
   mygroups: My groups
   mybuddies: My buddies

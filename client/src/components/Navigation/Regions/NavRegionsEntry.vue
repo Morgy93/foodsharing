@@ -67,6 +67,11 @@ export default {
     isHomeRegion () {
       return this.entry.id === DataUser.getters.getHomeRegion()
     },
+    showStatisticsAndMembers () {
+      /* Statistics and members page are temporarily disabled because they are too inefficient for Europe and large
+       countries. Region type 6 is "Country" which is also used for Europe. */
+      return this.entry.type !== 6
+    },
     menuEntries () {
       const menu = [
         {
@@ -87,16 +92,23 @@ export default {
         {
           href: 'polls', icon: 'fa-poll-h', text: 'terminology.polls',
         },
-        {
-          href: 'members', icon: 'fa-user', text: 'menu.entry.members',
-        },
-        {
-          href: 'options', icon: 'fa-tools', text: 'menu.entry.options',
-        },
-        {
-          href: 'statistic', icon: 'fa-chart-bar', text: 'terminology.statistic',
-        },
       ]
+
+      if (this.showStatisticsAndMembers) {
+        menu.push({
+          href: 'members', icon: 'fa-user', text: 'menu.entry.members',
+        })
+      }
+
+      menu.push({
+        href: 'options', icon: 'fa-tools', text: 'menu.entry.options',
+      })
+
+      if (this.showStatisticsAndMembers) {
+        menu.push({
+          href: 'statistic', icon: 'fa-chart-bar', text: 'terminology.statistic',
+        })
+      }
 
       if (this.entry.hasConference) {
         menu.push({

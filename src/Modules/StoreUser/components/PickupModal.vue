@@ -144,11 +144,10 @@ export default {
         const timeParts = this.selectedSlotTime.split(':')
         const hours = parseInt(timeParts[0])
         const minutes = parseInt(timeParts[1])
-        const seconds = parseInt(timeParts[2])
 
         combinedDateTime.setHours(hours)
         combinedDateTime.setMinutes(minutes)
-        combinedDateTime.setSeconds(seconds)
+        combinedDateTime.setSeconds(0)
 
         if (!this.selectedSlotCount || this.slotDescription === '') {
           this.slotDescription = null
@@ -159,8 +158,10 @@ export default {
         }
 
         await setPickupSlots(this.storeId, combinedDateTime, this.selectedSlotCount, this.slotDescription)
-      } catch {
-        pulseError(this.$i18n('storeedit.unsuccess'))
+      } catch (err) {
+        const errorDescription = err.jsonContent ?? { message: '' }
+        const errorMessage = `(${errorDescription.message ?? 'Unknown'})`
+        pulseError(this.$i18n('storeedit.unsuccess', { error: errorMessage }))
       }
     },
   },
