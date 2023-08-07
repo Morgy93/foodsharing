@@ -173,7 +173,7 @@ class StoreGateway extends BaseGateway
 
         $values = [];
         foreach ($queries as $query) {
-            $values = array_merge($query->generateSqlValues(), $values);
+            $values = array_merge($values, $query->generateSqlValues());
         }
         $stores = $this->db->fetchAll($sql, $this->addPaginationSqlLimitParameters($pagination, $values, false));
 

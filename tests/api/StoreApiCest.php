@@ -329,17 +329,88 @@ class StoreApiCest
         $I->seeResponseCodeIs(Http::OK);
     }
 
-    public function getAllStoresWithoutQuery(ApiTester $I)
+    public function getAllStoresWithoutQueryWithPagination(ApiTester $I)
     {
+        $I->createStore($this->region['id']);
+        $I->createStore($this->region['id']);
+        $I->createStore($this->region['id']);
+
         $I->login($this->manager[self::EMAIL]);
-        $I->sendGET(self::API_STORES);
+
+        // Test size with offset
+        $I->sendGET(self::API_STORES . '?offset=0&pageSize=2');
+        $I->seeResponseCodeIs(Http::OK);
+
+        $countStores = $I->grabDataFromResponseByJsonPath('$.total');
+        $stores = $I->grabDataFromResponseByJsonPath('$.stores.*.id');
+        $I->assertCount(2, $stores);
+        $I->seeNumRecords($countStores[0], 'fs_betrieb');
+
+        $I->sendGET(self::API_STORES . '?offset=1&pageSize=2');
+        $I->seeResponseCodeIs(Http::OK);
+
+        $countStores = $I->grabDataFromResponseByJsonPath('$.total');
+        $stores = $I->grabDataFromResponseByJsonPath('$.stores.*.id');
+        $I->assertCount(2, $stores);
+        $I->seeNumRecords($countStores[0], 'fs_betrieb');
+
+        $I->sendGET(self::API_STORES . '?offset=2&pageSize=2');
+        $I->seeResponseCodeIs(Http::OK);
+
+        $countStores = $I->grabDataFromResponseByJsonPath('$.total');
+        $stores = $I->grabDataFromResponseByJsonPath('$.stores.*.id');
+        $I->assertCount(2, $stores);
+        $I->seeNumRecords($countStores[0], 'fs_betrieb');
+
+        $I->sendGET(self::API_STORES . '?offset=3&pageSize=2');
         $I->seeResponseCodeIs(Http::OK);
 
         $countStores = $I->grabDataFromResponseByJsonPath('$.total');
         $stores = $I->grabDataFromResponseByJsonPath('$.stores.*.id');
         $I->assertCount(1, $stores);
         $I->seeNumRecords($countStores[0], 'fs_betrieb');
-        $I->assertEquals($this->store['id'], $stores[0]);
+    }
+
+    public function getAllStoresQueryOfCooperationStatusWithPagination(ApiTester $I)
+    {
+        $I->createStore($this->region['id'], null, null, ['betrieb_status_id' => 5]);
+        $I->createStore($this->region['id'], null, null, ['betrieb_status_id' => 5]);
+        $I->createStore($this->region['id'], null, null, ['betrieb_status_id' => 5]);
+
+        $I->login($this->manager[self::EMAIL]);
+
+        // Test size with offset
+        $I->sendGET(self::API_STORES . '?q[]=cooperationStatus:in:5&offset=0&pageSize=2');
+        $I->seeResponseCodeIs(Http::OK);
+
+        $countStores = $I->grabDataFromResponseByJsonPath('$.total');
+        $stores = $I->grabDataFromResponseByJsonPath('$.stores.*.id');
+        $I->assertCount(2, $stores);
+        $I->seeNumRecords($countStores[0], 'fs_betrieb');
+
+        $I->sendGET(self::API_STORES . '?offset=1&pageSize=2');
+        $I->seeResponseCodeIs(Http::OK);
+
+        $countStores = $I->grabDataFromResponseByJsonPath('$.total');
+        $stores = $I->grabDataFromResponseByJsonPath('$.stores.*.id');
+        $I->assertCount(2, $stores);
+        $I->seeNumRecords($countStores[0], 'fs_betrieb');
+
+        $I->sendGET(self::API_STORES . '?offset=2&pageSize=2');
+        $I->seeResponseCodeIs(Http::OK);
+
+        $countStores = $I->grabDataFromResponseByJsonPath('$.total');
+        $stores = $I->grabDataFromResponseByJsonPath('$.stores.*.id');
+        $I->assertCount(2, $stores);
+        $I->seeNumRecords($countStores[0], 'fs_betrieb');
+
+        $I->sendGET(self::API_STORES . '?offset=3&pageSize=2');
+        $I->seeResponseCodeIs(Http::OK);
+
+        $countStores = $I->grabDataFromResponseByJsonPath('$.total');
+        $stores = $I->grabDataFromResponseByJsonPath('$.stores.*.id');
+        $I->assertCount(1, $stores);
+        $I->seeNumRecords($countStores[0], 'fs_betrieb');
     }
 
     public function getAllStoresWithSingleQueryOfCooperationStatus(ApiTester $I)
@@ -357,8 +428,17 @@ class StoreApiCest
         $countStores = $I->grabDataFromResponseByJsonPath('$.total');
         $stores = $I->grabDataFromResponseByJsonPath('$.stores.*.id');
         $I->assertCount(1, $stores);
-        $I->seeNumRecords($countStores[0], 'fs_betrieb');
+        $I->assertEquals(1, $countStores[0]);
         $I->assertEquals($this->store['id'], $stores[0]);
+
+        // Test search with negative result
+        $I->sendGET(self::API_STORES . '?q[]=cooperationStatus:in:1');
+        $I->seeResponseCodeIs(Http::OK);
+
+        $countStores = $I->grabDataFromResponseByJsonPath('$.total');
+        $stores = $I->grabDataFromResponseByJsonPath('$.stores.*.id');
+        $I->assertCount(0, $stores);
+        $I->assertEquals(0, $countStores[0]);
     }
 
     public function getAllStoresWithSingleQueryOfTeamStatus(ApiTester $I)
@@ -376,22 +456,49 @@ class StoreApiCest
         $countStores = $I->grabDataFromResponseByJsonPath('$.total');
         $stores = $I->grabDataFromResponseByJsonPath('$.stores.*.id');
         $I->assertCount(1, $stores);
-        $I->seeNumRecords($countStores[0], 'fs_betrieb');
+        $I->assertEquals(1, $countStores[0]);
         $I->assertEquals($this->store['id'], $stores[0]);
+
+        // Test search with negative result
+        $I->sendGET(self::API_STORES . '?q[]=teamStatus:in:1');
+        $I->seeResponseCodeIs(Http::OK);
+
+        $countStores = $I->grabDataFromResponseByJsonPath('$.total');
+        $stores = $I->grabDataFromResponseByJsonPath('$.stores.*.id');
+        $I->assertCount(0, $stores);
+        $I->assertEquals(0, $countStores[0]);
     }
 
     public function getAllStoresWithSingleQueryOfName(ApiTester $I)
     {
         $I->login($this->manager[self::EMAIL]);
 
+        // Test full name
         $I->sendGet(self::API_STORES . '?q[]=name:sw:' . $this->store['name']);
         $I->seeResponseCodeIs(Http::OK);
 
         $countStores = $I->grabDataFromResponseByJsonPath('$.total');
         $stores = $I->grabDataFromResponseByJsonPath('$.stores.*.id');
         $I->assertCount(1, $stores);
-        $I->seeNumRecords($countStores[0], 'fs_betrieb');
+        $I->assertEquals(1, $countStores[0]);
         $I->assertEquals($this->store['id'], $stores[0]);
+
+        // Test start of name
+        $I->sendGet(self::API_STORES . '?q[]=name:sw:' . substr($this->store['name'], 0, 4));
+        $I->seeResponseCodeIs(Http::OK);
+        $countStores = $I->grabDataFromResponseByJsonPath('$.total');
+        $stores = $I->grabDataFromResponseByJsonPath('$.stores.*.id');
+        $I->assertCount(1, $stores);
+        $I->assertEquals(1, $countStores[0]);
+        $I->assertEquals($this->store['id'], $stores[0]);
+
+        // Test invalid name
+        $I->sendGet(self::API_STORES . '?q[]=name:sw:unknonw');
+        $I->seeResponseCodeIs(Http::OK);
+        $countStores = $I->grabDataFromResponseByJsonPath('$.total');
+        $stores = $I->grabDataFromResponseByJsonPath('$.stores.*.id');
+        $I->assertCount(0, $stores);
+        $I->assertEquals(0, $countStores[0]);
     }
 
     public function getAllStoresWithQueryForNameAndTeamStatus(ApiTester $I)
@@ -404,7 +511,7 @@ class StoreApiCest
         $countStores = $I->grabDataFromResponseByJsonPath('$.total');
         $stores = $I->grabDataFromResponseByJsonPath('$.stores.*.id');
         $I->assertCount(1, $stores);
-        $I->seeNumRecords($countStores[0], 'fs_betrieb');
+        $I->assertEquals(1, $countStores[0]);
         $I->assertEquals($this->store['id'], $stores[0]);
     }
 
