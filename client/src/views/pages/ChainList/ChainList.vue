@@ -321,7 +321,7 @@ export default {
       if (this.state.filterStatus !== null) {
         chains = chains.filter(chain => chain.status === this.state.filterStatus)
       }
-      return chains
+      return chains.map(chainWithStoreCount => ({ ...chainWithStoreCount, id: chainWithStoreCount.chain.id }))
     },
     statusFilterOptions: function () {
       return [{ value: null, text: this.$i18n('chain.status.filterplaceholder') }].concat(
