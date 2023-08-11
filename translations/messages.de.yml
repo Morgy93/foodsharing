@@ -1940,7 +1940,7 @@ profile:
     inthisblog: "in diesem Blogeintrag" #this and the following appear in ReportRequest
     kindofreport: "Bitte wähle die Art der Meldung"
     late: "Ist zu spät gekommen"
-    noshow: "Ist nicht zum abholen erschienen"
+    noshow: "Ist nicht zum Abholen erschienen"
     cancellation: "Häufiges kurzfristiges Absagen der Abholungen ohne Ersatzsuche"
     sells: "Verkauft gerettete Lebensmittel"
     other_reason: "Sonstiges"
