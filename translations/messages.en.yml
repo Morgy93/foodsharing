@@ -532,6 +532,7 @@ profile:
     noshow: The person didn't come
     late: The person was late
     cancellation: Frequent late cancellation of appointments without finding a replacement
+    other_reason: Other reason
     readup: "Find advice on processing a report here: <a href='https://wiki.foodsharing.de/Regelverletzungen_-_Konsequenzen_und_Bearbeitung#D.29_Bearbeitung_einer_Meldung'>Processing
       a report</a>"
   history:

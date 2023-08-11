@@ -152,6 +152,7 @@ export default {
         { value: '2', text: this.$i18n('profile.report.noshow') },
         { value: '10', text: this.$i18n('profile.report.cancellation') },
         { value: '15', text: this.$i18n('profile.report.sells') },
+        { value: '0', text: this.$i18n('profile.report.other_reason') },
       ],
     }
   },
