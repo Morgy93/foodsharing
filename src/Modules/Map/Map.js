@@ -23,6 +23,7 @@ import 'leaflet.markercluster'
 // import 'mapbox-gl/dist/mapbox-gl.css'
 import './Map.css'
 import { getMapMarkers } from '@/api/map'
+import { findStores, myStores } from '@/api/stores'
 import { vueApply, vueRegister } from '@/vue'
 import CommunityBubble from './components/CommunityBubble'
 
@@ -164,17 +165,56 @@ function init_bDialog () {
   })
 }
 
+function collectStoreOptions () {
+  const options = []
+  $('#map-options input:checked').each(function () {
+    options[options.length] = $(this).val()
+  })
+  return options
+}
+
+function showBubble (el) {
+  const id = (el.layer.options.id)
+  const type = el.layer.options.type
+
+  if (type === 'bk') {
+    ajreq('bubble', { app: 'basket', id: id })
+  } else if (type === 'b') {
+    ajreq('bubble', { app: 'store', id: id })
+  } else if (type === 'f') {
+    const bid = (el.layer.options.bid)
+    goTo(`/?page=fairteiler&sub=ft&bid=${bid}&id=${id}`)
+  } else if (type === 'c') {
+    ajreq('bubble', { app: 'bezirk', id: id }).then(x => {
+      vueApply('#community-bubble')
+    })
+  }
+}
+
+function prepareStoreTeamStatus (status) {
+  const teamStatus = []
+  if (status.includes('needhelp')) {
+    teamStatus.push(1)
+  }
+  if (status.includes('needhelpinstant')) {
+    teamStatus.push(2)
+  }
+  if (teamStatus.length !== 0) {
+    return [`q[]=teamStatus:in:${teamStatus.join(',')}`]
+  }
+  return []
+}
+
+function prepareStoreCooperationStatus (status) {
+  if (status.includes('nkoorp')) {
+    const status = [0, 1, 2, 4, 6, 7]
+    return [`q[]=cooperationStatus:in:${status.join(',')}`]
+  }
+  return []
+}
+
 async function loadMarker (types, loader) {
   $('#map-options').hide()
-  const options = []
-  for (let i = 0; i < types.length; i++) {
-    if (types[i] == 'betriebe') {
-      $('#map-options input:checked').each(function () {
-        options[options.length] = $(this).val()
-      })
-      $('#map-options').show()
-    }
-  }
 
   if (loader == undefined) {
     loader = true
@@ -185,64 +225,48 @@ async function loadMarker (types, loader) {
   }
 
   try {
-    const data = await getMapMarkers(types, options)
-
+    const data = await getMapMarkers(types.filter(item => item !== 'betriebe'), [])
     if (markers != null) {
       u_map.removeLayer(markers)
     }
 
     markers = L.markerClusterGroup({ maxClusterRadius: 50 })
-    markers.on('click', function (el) {
-      const id = (el.layer.options.id)
-      const type = el.layer.options.type
-
-      if (type === 'bk') {
-        ajreq('bubble', { app: 'basket', id: id })
-      } else if (type === 'b') {
-        ajreq('bubble', { app: 'store', id: id })
-      } else if (type === 'f') {
-        const bid = (el.layer.options.bid)
-        goTo(`/?page=fairteiler&sub=ft&bid=${bid}&id=${id}`)
-      } else if (type === 'c') {
-        ajreq('bubble', { app: 'bezirk', id: id }).then(x => {
-          vueApply('#community-bubble')
-        })
-      }
-    })
+    markers.on('click', showBubble)
 
     if (data.baskets != undefined) {
       $('#map-control li a.baskets').addClass('active')
-      for (let i = 0; i < data.baskets.length; i++) {
-        const a = data.baskets[i]
+      for (const a of data.baskets) {
         const marker = L.marker(new L.LatLng(a.lat, a.lon), { id: a.id, icon: bkIcon, type: 'bk' })
         markers.addLayer(marker)
       }
     }
 
-    if (data.betriebe != undefined) {
+    const containsStores = types.includes('betriebe')
+    if (containsStores) {
+      const storesOptions = collectStoreOptions()
+      const teamQueries = prepareStoreTeamStatus(storesOptions)
+      const queries = teamQueries.concat(prepareStoreCooperationStatus(storesOptions))
+      const storeData = storesOptions.includes('mine') ? await myStores(queries) : await findStores(queries)
+      $('#map-options').show()
       $('#map-control li a.betriebe').addClass('active')
-      for (let i = 0; i < data.betriebe.length; i++) {
-        const a = data.betriebe[i]
-        const marker = L.marker(new L.LatLng(a.lat, a.lon), { id: a.id, icon: bIcon, type: 'b' })
-
+      for (const a of storeData.stores) {
+        const loc = a.location
+        const marker = L.marker(new L.LatLng(loc.lat, loc.lon), { id: a.id, icon: bIcon, type: 'b' })
         markers.addLayer(marker)
       }
     }
 
     if (data.fairteiler != undefined) {
       $('#map-control li a.fairteiler').addClass('active')
-      for (let i = 0; i < data.fairteiler.length; i++) {
-        const a = data.fairteiler[i]
+      for (const a of data.fairteiler) {
         const marker = L.marker(new L.LatLng(a.lat, a.lon), { id: a.id, bid: a.regionId, icon: fIcon, type: 'f' })
-
         markers.addLayer(marker)
       }
     }
 
     if (data.communities != undefined) {
       $('#map-control li a.communities').addClass('active')
-      for (let i = 0; i < data.communities.length; i++) {
-        const a = data.communities[i]
+      for (const a of data.communities) {
         const marker = L.marker(new L.LatLng(a.lat, a.lon), { id: a.id, icon: comIcon, type: 'c' })
         markers.addLayer(marker)
       }

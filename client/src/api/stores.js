@@ -1,5 +1,18 @@
 import { get, patch, post, remove } from './base'
 
+export async function myStores (queries) {
+  const params = queries.join('&')
+  const url = `/user/current/stores/details?${params}`
+  console.log('queryURL', url)
+  return get(url)
+}
+
+export async function findStores (queries) {
+  const params = queries.join('&')
+  const url = `/stores?${params}`
+  return get(url)
+}
+
 export async function getStoreMetaData () {
   return await get('/stores/meta-data')
 }
