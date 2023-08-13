@@ -1257,52 +1257,76 @@ class StoreGateway extends BaseGateway
     /**
      * Returns a list of stores where the user is a member.
      *
-     * @return array<Store>
-     *
      * @throws Exception
      */
-    public function listStoresInFromUser(int $fs_id = null, array $cooperationStatus = []): array
+    public function findStoresFromUserWithQueryConditionCollection(int $fs_id, array $queries, Pagination $pagination = new Pagination(), bool $skipLoadingOfGroceries = false): StorePaginationResult
     {
-        $results = $this->db->fetchAll('SELECT
-                b.id,
-                b.name,
-                b.bezirk_id as regionId,
-                b.lat,
-                b.lon,
-                b.str AS street,
-                b.plz AS zipCode,
-                b.stadt as city,
-                b.public_info,
-                b.public_time,
-                b.betrieb_kategorie_id as categoryId,
-                b.kette_id as chainId,
-                b.betrieb_status_id as cooperationStatus,
-                b.begin as cooperationStart,
-                b.besonderheiten as description,
-                b.ansprechpartner as contactName,
-                b.telefon as contactPhone,
-                b.fax as contactFax,
-                b.email as contactEmail,
-                b.prefetchtime as calendarInterval,
-                b.abholmenge as weight,
-                b.ueberzeugungsarbeit as effort,
-                b.presse as publicity,
-                b.sticker,
-                b.team_status as teamStatus,
-                b.use_region_pickup_rule as useRegionPickupRule,
-                b.status_date as updatedAt,
-                b.added as createdAt
-            FROM fs_betrieb_team t
-            JOIN fs_betrieb b ON
-                b.id = t.betrieb_id
-            WHERE t.foodsaver_id = :fs_id
-    ', [
-                'fs_id' => $fs_id
-        ]);
+        $queriesWhereConditions = array_map(
+            function ($query) { return $query->generateSqlConditionStatement(); },
+            $queries
+        );
+        $sqlWheres = 'WHERE (' . join(' AND ', array_merge(['foodsaver_id = ?'], $queriesWhereConditions)) . ') ';
 
-        return array_map(function ($store) {
-            return Store::createFromArray($store);
-        }, $results);
+        $sql = 'SELECT
+                    b.id,
+                    b.name,
+                    b.bezirk_id as regionId,
+                    b.lat,
+                    b.lon,
+                    b.str AS street,
+                    b.plz AS zipCode,
+                    b.stadt as city,
+                    b.public_info,
+                    b.public_time,
+                    b.betrieb_kategorie_id as categoryId,
+                    b.kette_id as chainId,
+                    b.betrieb_status_id as cooperationStatus,
+                    b.begin as cooperationStart,
+                    b.besonderheiten as description,
+                    b.ansprechpartner as contactName,
+                    b.telefon as contactPhone,
+                    b.fax as contactFax,
+                    b.email as contactEmail,
+                    b.prefetchtime as calendarInterval,
+                    b.abholmenge as weight,
+                    b.ueberzeugungsarbeit as effort,
+                    b.presse as publicity,
+                    b.sticker,
+                    b.team_status as teamStatus,
+                    b.use_region_pickup_rule as useRegionPickupRule,
+                    b.status_date as updatedAt,
+                    b.added as createdAt
+                FROM fs_betrieb_team t
+                JOIN fs_betrieb b ON
+                    b.id = t.betrieb_id
+            ';
+        $sql .= $sqlWheres;
+        $sql .= $this->buildPaginationSqlLimit($pagination, false);
+
+        $values = [$fs_id];
+        foreach ($queries as $query) {
+            $values = array_merge($values, $query->generateSqlValues());
+        }
+        $stores = $this->db->fetchAll($sql, $this->addPaginationSqlLimitParameters($pagination, $values, false));
+
+        $result = new StorePaginationResult();
+        $result->stores = array_map(function (array $item) use ($skipLoadingOfGroceries) {
+            if (!$skipLoadingOfGroceries) {
+                $item['groceries'] = array_column($this->getGroceries($item['id']), 'id');
+            }
+
+            return Store::createFromArray($item);
+        }, $stores);
+
+        $result->total = $this->db->fetchValue(
+            'SELECT
+               count(b.id)
+             FROM fs_betrieb_team t
+             JOIN fs_betrieb b ON
+                b.id = t.betrieb_id ' .
+            $sqlWheres, $values);
+
+        return $result;
     }
 
     public function getStoreLogsByActionType(int $storeId, array $storeActions, Carbon $fromDate, Carbon $toDate): array

@@ -108,6 +108,12 @@ class StoreRestController extends AbstractFOSRestController
      * - name:sw:beginOfName
      *
      * @OA\Tag(name="stores")
+     * @OA\Parameter(
+     *     name="q[]",
+     *     in="query",
+     *     description="Store filter string",
+     *     example="cooperationStatus:in:1,2"
+     * )
      * @Rest\QueryParam(name="pageSize" , description="Count of chains on page", requirements="\d+", default=0, strict=true)
      * @Rest\QueryParam(name="offset" , description="Offset of items", requirements="\d+", default=0, strict=true)
      * @OA\Response(
@@ -116,12 +122,6 @@ class StoreRestController extends AbstractFOSRestController
      *         @Model(type=StoreListInformationPaginationResult::class)
      * )
      * @Rest\Get("stores")
-     * @OA\Parameter(
-     *     name="q[]",
-     *     in="query",
-     *     description="Store filter string",
-     *     example="cooperationStatus:in:1,2"
-     * )
      */
     public function searchForStores(Request $req, ValidatorInterface $validator, ParamFetcher $paramFetcher)
     {
@@ -139,12 +139,12 @@ class StoreRestController extends AbstractFOSRestController
         if (count($errors)) {
             throw new BadRequestHttpException($errors->get(0)->getMessage());
         }
+        $queries = $collection->findQueryConditionStrategies($rawQueries);
 
         $pagination = new Pagination();
         $pagination->pageSize = $paramFetcher->get('pageSize');
         $pagination->offset = $paramFetcher->get('offset');
 
-        $queries = $collection->findQueryConditionStrategies($rawQueries);
         $stores = $this->storeTransactions->findAllStoresByQueryConditionCollection($queries, $pagination);
 
         return $this->handleView($this->view($stores, 200));
@@ -155,18 +155,26 @@ class StoreRestController extends AbstractFOSRestController
      *
      * @OA\Tag(name="stores")
      * @OA\Tag(name="user")
+     * @Rest\Get("user/current/stores/details")
+     * @OA\Parameter(
+     *     name="q[]",
+     *     in="query",
+     *     description="Store filter string",
+     *     example="cooperationStatus:in:1,2"
+     * )
+     * @Rest\QueryParam(name="pageSize" , description="Count of chains on page", requirements="\d+", default=0, strict=true)
+     * @Rest\QueryParam(name="offset" , description="Offset of items", requirements="\d+", default=0, strict=true)
      * @OA\Response(
-     *        response="200",
-     *        description="Success.",
-     *      @Model(type=StorePaginationResult::class)
+     *         response="200",
+     *         description="",
+     *         @Model(type=StoreListInformationPaginationResult::class)
      * )
      * @OA\Response(response="401", description="Not logged in")
      * @OA\Response(response="403", description="Forbidden to access store list")
-     * @Rest\Get("user/current/stores/details")
      *
      * @throws Exception
      */
-    public function getStoresOfUser(): Response
+    public function getStoresOfUser(Request $req, ValidatorInterface $validator, ParamFetcher $paramFetcher): Response
     {
         if (!$this->session->mayRole()) {
             throw new UnauthorizedHttpException('', self::NOT_LOGGED_IN);
@@ -176,12 +184,21 @@ class StoreRestController extends AbstractFOSRestController
             throw new AccessDeniedHttpException('No permission see store list');
         }
 
-        $stores = $this->storeTransactions->listOverviewInformationsOfStoresFromUser($this->session->id(), true);
-        $result = new StoreListInformationPaginationResult();
-        $result->total = count($stores);
-        $result->stores = $stores;
+        $rawQueries = $req->query->get('q') ?? [];
+        $collection = new QueryStrategyBuilder(SearchStoreFilter::class);
+        $errors = $collection->validate($validator, $rawQueries);
+        if (count($errors)) {
+            throw new BadRequestHttpException($errors->get(0)->getMessage());
+        }
+        $queries = $collection->findQueryConditionStrategies($rawQueries);
 
-        return $this->handleView($this->view($result, 200));
+        $pagination = new Pagination();
+        $pagination->pageSize = $paramFetcher->get('pageSize');
+        $pagination->offset = $paramFetcher->get('offset');
+
+        $stores = $this->storeTransactions->findStoresForUser($this->session->id(), true, $queries, $pagination);
+
+        return $this->handleView($this->view($stores, 200));
     }
 
     /**

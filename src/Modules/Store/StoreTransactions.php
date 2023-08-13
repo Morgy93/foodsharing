@@ -191,20 +191,48 @@ class StoreTransactions
     }
 
     /**
-     * Returns a list of stores where the user is a member of reduced store information.
-     **
-     * @param int $userId User identifier
-     * @param bool $expand Expand information about store and region
+     * Return all identifiers for stores filtered query condition strategies.
      *
-     * @return array<StoreListInformation> List of information
+     * @param QueryConditionStrategy[] $queries List of Query parameter strategies
      *
      * @throws Exception
      */
-    public function listOverviewInformationsOfStoresFromUser(int $userId, bool $expand): array
+    public function findAllStoresByQueryConditionCollection(array $queries, Pagination $pagination = new Pagination(), $expand = true): StoreListInformationPaginationResult
     {
-        $stores = $this->storeGateway->listStoresInFromUser($userId);
+        $storeResults = $this->storeGateway->findAllStoresByQueryConditionCollection($queries, $pagination);
 
-        return $this->arrayMapStoreListInformation($stores, $expand);
+        $result = new StoreListInformationPaginationResult();
+        $result->total = $storeResults->total;
+        $result->stores = $this->arrayMapStoreListInformation($storeResults->stores, $expand);
+
+        return $result;
+    }
+
+    /**
+     * Returns a list of stores where the user is a member of reduced store information.
+     **
+     * @param int $userId User identifier
+     * @param QueryConditionStrategy[] $queries Queries to limit results
+     * @param Pagination $pagination Limits results to page
+     * @param bool $expand Expand information about store and region
+     *
+     * @return StoreListInformationPaginationResult List of information
+     *
+     * @throws Exception
+     */
+    public function findStoresForUser(
+        int $userId,
+        bool $expand = false,
+        array $queries = [],
+        Pagination $pagination = new Pagination()): StoreListInformationPaginationResult
+    {
+        $storeResults = $this->storeGateway->findStoresFromUserWithQueryConditionCollection($userId, $queries, $pagination);
+
+        $result = new StoreListInformationPaginationResult();
+        $result->total = $storeResults->total;
+        $result->stores = $this->arrayMapStoreListInformation($storeResults->stores, $expand);
+
+        return $result;
     }
 
     private function arrayMapStoreListInformation(array $stores, bool $expand): array
@@ -251,24 +279,6 @@ class StoreTransactions
         }
 
         return $dbResult;
-    }
-
-    /**
-     * Return all identifiers for stores filtered query condition strategies.
-     *
-     * @param QueryConditionStrategy[] $queries List of Query parameter strategies
-     *
-     * @throws Exception
-     */
-    public function findAllStoresByQueryConditionCollection(array $queries, Pagination $pagination = new Pagination(), $expand = true): StoreListInformationPaginationResult
-    {
-        $storeResults = $this->storeGateway->findAllStoresByQueryConditionCollection($queries, $pagination);
-
-        $result = new StoreListInformationPaginationResult();
-        $result->total = $storeResults->total;
-        $result->stores = $this->arrayMapStoreListInformation($storeResults->stores, $expand);
-
-        return $result;
     }
 
     /**

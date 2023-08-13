@@ -28,6 +28,7 @@ class StoreApiCest
     private $faker;
 
     private const API_STORES = 'api/stores';
+    private const API_USER_STORES = 'api/user/current/stores/details';
     private const API_REGIONS = 'api/region';
     private const EMAIL = 'email';
     private const ID = 'id';
@@ -317,6 +318,174 @@ class StoreApiCest
         $I->assertNotCount(0, $storeChains);
     }
 
+    public function getUserStoresAccessTest(ApiTester $I)
+    {
+        // Anonym
+        $I->sendGET(self::API_USER_STORES);
+        $I->seeResponseCodeIs(Http::UNAUTHORIZED);
+
+        // Test access allowed
+        $I->login($this->manager[self::EMAIL]);
+        $I->sendGET(self::API_USER_STORES);
+        $I->seeResponseCodeIs(Http::OK);
+    }
+
+    public function getUserStoresWithoutQueryWithPagination(ApiTester $I)
+    {
+        $store1 = $I->createStore($this->region['id']);
+        $I->addStoreTeam($store1[self::ID], $this->manager[self::ID], false);
+        $store2 = $I->createStore($this->region['id']);
+        $I->addStoreTeam($store2[self::ID], $this->manager[self::ID], false);
+        $store3 = $I->createStore($this->region['id']);
+        $I->addStoreTeam($store3[self::ID], $this->manager[self::ID], false);
+        $I->createStore($this->region['id']); // not related to user
+
+        $I->login($this->manager[self::EMAIL]);
+
+        // Test size with offset
+        $I->sendGET(self::API_USER_STORES . '?offset=0&pageSize=2');
+        $I->seeResponseCodeIs(Http::OK);
+
+        $countStores = $I->grabDataFromResponseByJsonPath('$.total');
+        $stores = $I->grabDataFromResponseByJsonPath('$.stores.*.id');
+        $I->assertCount(2, $stores);
+        $I->assertEquals(4, $countStores[0]);
+
+        $I->sendGET(self::API_USER_STORES . '?offset=1&pageSize=2');
+        $I->seeResponseCodeIs(Http::OK);
+
+        $countStores = $I->grabDataFromResponseByJsonPath('$.total');
+        $stores = $I->grabDataFromResponseByJsonPath('$.stores.*.id');
+        $I->assertCount(2, $stores);
+        $I->assertEquals(4, $countStores[0]);
+
+        $I->sendGET(self::API_USER_STORES . '?offset=2&pageSize=2');
+        $I->seeResponseCodeIs(Http::OK);
+
+        $countStores = $I->grabDataFromResponseByJsonPath('$.total');
+        $stores = $I->grabDataFromResponseByJsonPath('$.stores.*.id');
+        $I->assertCount(2, $stores);
+        $I->assertEquals(4, $countStores[0]);
+
+        $I->sendGET(self::API_USER_STORES . '?offset=3&pageSize=2');
+        $I->seeResponseCodeIs(Http::OK);
+
+        $countStores = $I->grabDataFromResponseByJsonPath('$.total');
+        $stores = $I->grabDataFromResponseByJsonPath('$.stores.*.id');
+        $I->assertCount(1, $stores);
+        $I->assertEquals(4, $countStores[0]);
+    }
+
+    public function getUserStoresWithSingleQueryOfCooperationStatus(ApiTester $I)
+    {
+        $I->login($this->manager[self::EMAIL]);
+
+        $I->sendGet(self::API_USER_STORES . '?q[]=cooperationStatus:in:a,a,1,2,a,a,a,a,a');
+        $I->seeResponseCodeIs(Http::BAD_REQUEST);
+        $I->sendGet(self::API_STORES . '?q[]=cooperationStatus:sw:a');
+        $I->seeResponseCodeIs(Http::BAD_REQUEST);
+
+        $I->sendGET(self::API_USER_STORES . '?q[]=cooperationStatus:in:5');
+        $I->seeResponseCodeIs(Http::OK);
+
+        $countStores = $I->grabDataFromResponseByJsonPath('$.total');
+        $stores = $I->grabDataFromResponseByJsonPath('$.stores.*.id');
+        $I->assertCount(1, $stores);
+        $I->assertEquals(1, $countStores[0]);
+        $I->assertEquals($this->store['id'], $stores[0]);
+
+        // Test search with negative result
+        $I->sendGET(self::API_USER_STORES . '?q[]=cooperationStatus:in:1');
+        $I->seeResponseCodeIs(Http::OK);
+
+        $countStores = $I->grabDataFromResponseByJsonPath('$.total');
+        $stores = $I->grabDataFromResponseByJsonPath('$.stores.*.id');
+        $I->assertCount(0, $stores);
+        $I->assertEquals(0, $countStores[0]);
+    }
+
+    public function getUserStoresQueryOfCooperationStatusWithPagination(ApiTester $I)
+    {
+        // Should be found in test
+        $store1 = $I->createStore($this->region['id'], null, null, ['betrieb_status_id' => 5]);
+        $I->addStoreTeam($store1[self::ID], $this->manager[self::ID], false);
+        $store2 = $I->createStore($this->region['id'], null, null, ['betrieb_status_id' => 5]);
+        $I->addStoreTeam($store2[self::ID], $this->manager[self::ID], false);
+        $store3 = $I->createStore($this->region['id'], null, null, ['betrieb_status_id' => 5]);
+        $I->addStoreTeam($store3[self::ID], $this->manager[self::ID], false);
+
+        // Should be filtered out
+        // Other state
+        $store4 = $I->createStore($this->region['id'], null, null, ['betrieb_status_id' => 4]);
+        $I->addStoreTeam($store4[self::ID], $this->manager[self::ID], false);
+
+        // not related to user
+        $I->createStore($this->region['id'], null, null, ['betrieb_status_id' => 5]);
+
+        $I->login($this->manager[self::EMAIL]);
+
+        // Test size with offset
+        $I->sendGET(self::API_USER_STORES . '?q[]=cooperationStatus:in:5&offset=0&pageSize=2');
+        $I->seeResponseCodeIs(Http::OK);
+
+        $countStores = $I->grabDataFromResponseByJsonPath('$.total');
+        $stores = $I->grabDataFromResponseByJsonPath('$.stores.*.id');
+        $I->assertCount(2, $stores);
+        $I->assertEquals(4, $countStores[0]);
+
+        $I->sendGET(self::API_USER_STORES . '?q[]=cooperationStatus:in:5&offset=1&pageSize=2');
+        $I->seeResponseCodeIs(Http::OK);
+
+        $countStores = $I->grabDataFromResponseByJsonPath('$.total');
+        $stores = $I->grabDataFromResponseByJsonPath('$.stores.*.id');
+        $I->assertCount(2, $stores);
+        $I->assertEquals(4, $countStores[0]);
+
+        $I->sendGET(self::API_USER_STORES . '?q[]=cooperationStatus:in:5&offset=2&pageSize=2');
+        $I->seeResponseCodeIs(Http::OK);
+
+        $countStores = $I->grabDataFromResponseByJsonPath('$.total');
+        $stores = $I->grabDataFromResponseByJsonPath('$.stores.*.id');
+        $I->assertCount(2, $stores);
+        $I->assertEquals(4, $countStores[0]);
+
+        $I->sendGET(self::API_USER_STORES . '?q[]=cooperationStatus:in:5&offset=3&pageSize=2');
+        $I->seeResponseCodeIs(Http::OK);
+
+        $countStores = $I->grabDataFromResponseByJsonPath('$.total');
+        $stores = $I->grabDataFromResponseByJsonPath('$.stores.*.id');
+        $I->assertCount(1, $stores);
+        $I->assertEquals(4, $countStores[0]);
+    }
+
+    public function getUserStoresWithSingleQueryOfTeamStatus(ApiTester $I)
+    {
+        $I->login($this->manager[self::EMAIL]);
+
+        $I->sendGet(self::API_USER_STORES . '?q[]=teamStatus:in:a,a,1,2,a,a,a,a,a');
+        $I->seeResponseCodeIs(Http::BAD_REQUEST);
+        $I->sendGet(self::API_USER_STORES . '?q[]=teamStatus:sw:a');
+        $I->seeResponseCodeIs(Http::BAD_REQUEST);
+
+        $I->sendGET(self::API_USER_STORES . '?q[]=teamStatus:in:0');
+        $I->seeResponseCodeIs(Http::OK);
+
+        $countStores = $I->grabDataFromResponseByJsonPath('$.total');
+        $stores = $I->grabDataFromResponseByJsonPath('$.stores.*.id');
+        $I->assertCount(1, $stores);
+        $I->assertEquals(1, $countStores[0]);
+        $I->assertEquals($this->store['id'], $stores[0]);
+
+        // Test search with negative result
+        $I->sendGET(self::API_USER_STORES . '?q[]=teamStatus:in:1');
+        $I->seeResponseCodeIs(Http::OK);
+
+        $countStores = $I->grabDataFromResponseByJsonPath('$.total');
+        $stores = $I->grabDataFromResponseByJsonPath('$.stores.*.id');
+        $I->assertCount(0, $stores);
+        $I->assertEquals(0, $countStores[0]);
+    }
+
     public function getAllStoresAccessTest(ApiTester $I)
     {
         // Anonym
@@ -388,7 +557,7 @@ class StoreApiCest
         $I->assertCount(2, $stores);
         $I->seeNumRecords($countStores[0], 'fs_betrieb');
 
-        $I->sendGET(self::API_STORES . '?offset=1&pageSize=2');
+        $I->sendGET(self::API_STORES . '?q[]=cooperationStatus:in:5&offset=1&pageSize=2');
         $I->seeResponseCodeIs(Http::OK);
 
         $countStores = $I->grabDataFromResponseByJsonPath('$.total');
@@ -396,7 +565,7 @@ class StoreApiCest
         $I->assertCount(2, $stores);
         $I->seeNumRecords($countStores[0], 'fs_betrieb');
 
-        $I->sendGET(self::API_STORES . '?offset=2&pageSize=2');
+        $I->sendGET(self::API_STORES . '?q[]=cooperationStatus:in:5&offset=2&pageSize=2');
         $I->seeResponseCodeIs(Http::OK);
 
         $countStores = $I->grabDataFromResponseByJsonPath('$.total');
@@ -404,7 +573,7 @@ class StoreApiCest
         $I->assertCount(2, $stores);
         $I->seeNumRecords($countStores[0], 'fs_betrieb');
 
-        $I->sendGET(self::API_STORES . '?offset=3&pageSize=2');
+        $I->sendGET(self::API_STORES . '?q[]=cooperationStatus:in:5&offset=3&pageSize=2');
         $I->seeResponseCodeIs(Http::OK);
 
         $countStores = $I->grabDataFromResponseByJsonPath('$.total');
