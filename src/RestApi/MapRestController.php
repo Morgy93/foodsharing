@@ -2,33 +2,26 @@
 
 namespace Foodsharing\RestApi;
 
-use Foodsharing\Lib\Session;
 use Foodsharing\Modules\Core\DBConstants\Region\RegionPinStatus;
-use Foodsharing\Modules\Core\DBConstants\Store\CooperationStatus;
-use Foodsharing\Modules\Core\DBConstants\Store\TeamSearchStatus;
 use Foodsharing\Modules\Map\MapGateway;
 use Foodsharing\Modules\Region\RegionGateway;
-use Foodsharing\Modules\Store\StoreGateway;
 use FOS\RestBundle\Controller\AbstractFOSRestController;
 use FOS\RestBundle\Controller\Annotations as Rest;
 use FOS\RestBundle\Request\ParamFetcher;
 use OpenApi\Annotations as OA;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
-use Symfony\Component\HttpKernel\Exception\UnauthorizedHttpException;
 
 class MapRestController extends AbstractFOSRestController
 {
     public function __construct(
         private MapGateway $mapGateway,
-        private RegionGateway $regionGateway,
-        private StoreGateway $storeGateway,
-        private Session $session
+        private RegionGateway $regionGateway
     ) {
     }
 
     /**
-     * Returns the coordinates of all baskets.
+     * Returns the coordinates of baskets, fairtailer, communities.
      *
      * @OA\Response(response="200", description="Success.")
      * @OA\Response(response="401", description="Not logged in.")
@@ -49,43 +42,6 @@ class MapRestController extends AbstractFOSRestController
         }
         if (in_array('communities', $types)) {
             $markers['communities'] = $this->mapGateway->getCommunityMarkers();
-        }
-        if (in_array('betriebe', $types)) {
-            if (!$this->session->id()) {
-                throw new UnauthorizedHttpException('', 'Not logged in.');
-            }
-
-            $excludedStoreTypes = [];
-            $teamSearchStatus = [];
-            $status = $paramFetcher->get('status');
-            $userId = null;
-
-            $excludedStoreTypes = array_merge($excludedStoreTypes, [
-                CooperationStatus::PERMANENTLY_CLOSED
-            ]);
-
-            if (is_array($status) && !empty($status)) {
-                foreach ($status as $s) {
-                    switch ($s) {
-                        case 'needhelpinstant':
-                            $teamSearchStatus[] = TeamSearchStatus::OPEN_SEARCHING;
-                            break;
-                        case 'needhelp':
-                            $teamSearchStatus[] = TeamSearchStatus::OPEN;
-                            break;
-                        case 'nkoorp':
-                            $excludedStoreTypes = array_merge($excludedStoreTypes, [
-                                CooperationStatus::COOPERATION_STARTING, CooperationStatus::COOPERATION_ESTABLISHED
-                            ]);
-                            break;
-                        case 'mine':
-                            $userId = $this->session->id();
-                            break;
-                    }
-                }
-            }
-
-            $markers['betriebe'] = $this->storeGateway->getStoreMarkers($excludedStoreTypes, $teamSearchStatus, $userId);
         }
 
         return $this->handleView($this->view($markers, 200));
