@@ -9,7 +9,14 @@
       class="card-body p-0"
     />
     <div class="row m-2">
-      <div class="col col-8">
+      <div class="col col-6">
+        <div>
+          <label>Titel</label>
+          <input
+            type="text"
+            class="form-control-sm"
+          >
+        </div>
         <label>Beschreibung</label>
         <b-form-textarea
           id="forum-create-thread-form-body"
@@ -42,15 +49,41 @@
             Option B
           </b-form-radio>
         </b-form-group>
-        <LeafletLocationSearchVForm
-          :coordinates="getLocations"
-          :zoom="zoom"
-          :postal-code="getUserDetails.postalCode"
-          :street="getUserDetails.street"
-          :city="getUserDetails.city"
-        />
+      </div>
+      <div class="col col-6">
+        <label>Abholadresse</label>
+        <div class="d-flex">
+          <input
+            v-model="getAddress"
+            type="text"
+            :disabled="true"
+          >
+          <button
+            class="btn"
+            @click="$refs.LocationPickerModal.show()"
+          >
+            <i class="fas fa-pencil-alt" />
+          </button>
+        </div>
       </div>
     </div>
+    <b-modal
+      ref="LocationPickerModal"
+      title="LocationPickerModal"
+      :cancel-title="$i18n('button.cancel')"
+      :ok-title="$i18n('button.yes_i_am_sure')"
+      cancel-variant="primary"
+      ok-variant="outline-danger"
+      @ok="deleteThread"
+    >
+      <LeafletLocationSearchVForm
+        :coordinates="getLocations"
+        :zoom="zoom"
+        :postal-code="getUserDetails.postalCode"
+        :street="getUserDetails.street"
+        :city="getUserDetails.city"
+      />
+    </b-modal>
   </div>
 </template>
 
@@ -66,9 +99,14 @@ export default {
     }
   },
   computed: {
+    getAddress () {
+      return `${this.getUserDetails.address} ${this.getUserDetails.postcode} ${this.getUserDetails.city}`
+    },
     getLocations: () => DataUser.getters.getLocations(),
     getUserDetails: () => DataUser.getters.getUserDetails(),
-
+  },
+  async mounted () {
+    await DataUser.mutations.fetchDetails()
   },
 }
 </script>
