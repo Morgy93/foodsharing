@@ -8,7 +8,7 @@ import { isWebGLSupported } from '@/utils'
  * @deprecated use the Vue component @/components/map/LeafletMap instead
  */
 export function initMap (element, center, zoom, maxZoom = 20) {
-  const map = L.map(element, { maxZoom: maxZoom }).setView(center, zoom)
+  const map = L.map(element, {}).setView(center, zoom)
 
   if (isWebGLSupported()) {
     // L.mapboxGL({
@@ -17,7 +17,7 @@ export function initMap (element, center, zoom, maxZoom = 20) {
   } else {
     // WebGL is not supported, fallback to raster tiles
   }
-  L.tileLayer(MAP_RASTER_TILES_URL, {}).addTo(map)
+  L.tileLayer(MAP_RASTER_TILES_URL, { maxZoom: maxZoom }).addTo(map)
   map.attributionControl.setPrefix(MAP_ATTRIBUTION)
 
   return map

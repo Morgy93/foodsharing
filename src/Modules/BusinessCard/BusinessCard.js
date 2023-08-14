@@ -1,4 +1,5 @@
 /* eslint-disable camelcase */
+import './BusinessCard.css'
 import '@/core'
 import '@/globals'
 import $ from 'jquery'

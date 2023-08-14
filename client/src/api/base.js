@@ -15,10 +15,11 @@ export function getCsrfToken () {
 }
 
 export class HTTPError extends Error {
-  constructor (code, text, method, url) {
+  constructor (code, text, method, url, jsonContent) {
     super(`HTTP Error ${code}: ${text} during ${method} ${url}`)
     this.code = code
     this.statusText = text
+    this.jsonContent = jsonContent
   }
 }
 
@@ -31,34 +32,36 @@ export async function request (path, options = {}) {
     const request = new self.Request(BASE_URL + path, o)
     const res = await self.fetch(request)
     if (!res.ok) {
-      throw new HTTPError(res.status, res.statusText, request.method, request.url)
+      const jsonContent = await res.json()
+      throw new HTTPError(res.status, res.statusText, request.method, request.url, jsonContent)
     }
-    if (res.status === 204) {
-      self.fetch.activeFetchCalls--
+    if (options.responseType === 'blob') {
+      return await res.blob()
+    } else if (res.status === 204) {
       return {}
     } else {
-      const json = await res.json()
-      self.fetch.activeFetchCalls--
-      return json
+      return await res.json()
     }
-  } catch (err) {
-    // console.error(err) // disabled for error handling in stores!
+  } finally {
     self.fetch.activeFetchCalls--
-    throw err
   }
 }
 
-export function get (path) {
-  return request(path)
+export function get (path, options) {
+  return request(path, options)
 }
 
-export function post (path, body) {
+export function post (path, body, options = {}) {
+  const contentType = options.responseType === 'blob' ? 'text/plain' : 'application/json; charset=utf-8'
+  const requestBody = options.responseType === 'blob' ? body : JSON.stringify(body)
+
   return request(path, {
     method: 'POST',
     headers: {
-      'Content-Type': 'application/json; charset=utf-8',
+      'Content-Type': contentType,
     },
-    body: JSON.stringify(body),
+    body: requestBody,
+    ...options,
   })
 }
 

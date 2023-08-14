@@ -180,7 +180,7 @@ span.status.answer-1 {
   background-color: var(--fs-color-light);
   overflow: auto;
   margin-top: 10px;
-  height: 23px;
+  height: 38px !important;
   padding: 5px;
   box-shadow: inset 0 0 3px var(--fs-color-primary-500);
 }
@@ -279,4 +279,8 @@ ul#et-file-list li {
 
 ul#et-file-list li.finish {
   background-image: url(/img/icon-mail/check-attach.png);
+}
+
+.mailbox-body {
+  max-height: 450px !important;
 }

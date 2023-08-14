@@ -492,6 +492,7 @@ final class ProfileGateway extends BaseGateway
 			ORDER BY
 			  pg.date
 			DESC
+			LIMIT 15
 		';
 
         $passHistory = $this->db->fetchAll($stm, [':fs_id' => $fsId]);

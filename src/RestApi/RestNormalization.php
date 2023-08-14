@@ -2,6 +2,7 @@
 
 namespace Foodsharing\RestApi;
 
+use Carbon\Carbon;
 use Foodsharing\Modules\Core\DBConstants\Foodsaver\SleepStatus;
 
 /**
@@ -30,7 +31,7 @@ class RestNormalization
     public static function normalizeUser(array $data, string $prefix = '', string $idPrefix = ''): array
     {
         //sleep_status is used with and without prefix
-        $sleepStatus = self::getSleepStatus($data, $prefix);
+        $sleepStatus = self::isSleeping($data, $prefix);
 
         return [
             'id' => (int)$data[$prefix . $idPrefix . 'id'],
@@ -59,7 +60,7 @@ class RestNormalization
             'id' => (int)$data['id'],
             'name' => $data['name'],
             'avatar' => $data['photo'] ?? null,
-            'sleepStatus' => self::getSleepStatus($data),
+            'sleepStatus' => self::isSleeping($data),
             'mobile' => $data['handy'] ?? '',
             'landline' => $data['telefon'] ?? '',
             // 'isVerified' => boolval($data['verified']),
@@ -70,20 +71,27 @@ class RestNormalization
         ];
     }
 
-    /**
-     * @return ?SleepStatus
-     */
-    private static function getSleepStatus(array $data, string $prefix = '')
+    private static function isSleeping(array $data, string $prefix = ''): bool
     {
+        $sleepFrom = null;
+        $sleepUntil = null;
         if (isset($data[$prefix . 'sleep_status'])) {
-            $sleepStatus = $data[$prefix . 'sleep_status'];
+            $sleepState = $data[$prefix . 'sleep_status'];
+            $sleepFrom = $data[$prefix . 'sleep_from'] ?? null;
+            $sleepUntil = $data[$prefix . 'sleep_until'] ?? null;
         } elseif (isset($data['sleep_status'])) {
-            $sleepStatus = $data['sleep_status'];
+            $sleepState = $data['sleep_status'];
         } else {
-            $sleepStatus = null;
+            $sleepState = SleepStatus::NONE;
         }
 
-        return $sleepStatus;
+        return match ($sleepState) {
+            SleepStatus::TEMP => $sleepFrom && Carbon::now()->isSameDay(Carbon::parse($sleepFrom))
+                || $sleepFrom && Carbon::now()->isAfter(Carbon::parse($sleepFrom)->startOfDay())
+                || ($sleepFrom && $sleepUntil && Carbon::now()->isBefore(Carbon::parse($sleepUntil)->addDay()) && Carbon::now()->isAfter(Carbon::parse($sleepFrom)->endOfDay())),
+            SleepStatus::FULL => true,
+            default => false,
+        };
     }
 
     /**

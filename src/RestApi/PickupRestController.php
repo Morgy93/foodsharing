@@ -8,6 +8,7 @@ use Foodsharing\Lib\Session;
 use Foodsharing\Modules\Core\DBConstants\Store\StoreLogAction;
 use Foodsharing\Modules\Foodsaver\FoodsaverGateway;
 use Foodsharing\Modules\Message\MessageTransactions;
+use Foodsharing\Modules\Store\DTO\OneTimePickup;
 use Foodsharing\Modules\Store\DTO\RegularPickup;
 use Foodsharing\Modules\Store\PickupGateway;
 use Foodsharing\Modules\Store\PickupTransactions;
@@ -310,6 +311,7 @@ final class PickupRestController extends AbstractFOSRestController
      * @OA\Response(response="403", description="No permission to change pickup")
      * @OA\Response(response="404", description="Store not found")
      * @RequestParam(name="totalSlots", requirements="\d+", description="Maximum allowed user on this pickup.")
+     * @RequestParam(name="description", requirements=".{0,100}", nullable=true, description="Description of this pickup.")
      */
     public function editPickupAction(int $storeId, string $pickupDate, ParamFetcherInterface $paramFetcher): Response
     {
@@ -336,8 +338,18 @@ final class PickupRestController extends AbstractFOSRestController
             throw new BadRequestHttpException("Invalid 'totalSlots'");
         }
 
+        $description = $paramFetcher->get('description');
+        if (!(is_null($description) || is_string($description))) {
+            throw new BadRequestHttpException("Invalid 'description'");
+        }
+
         try {
-            $created = $this->storeTransactions->createOrUpdatePickup($storeId, $date, $totalSlots);
+            $pickup = new OneTimePickup();
+            $pickup->date = $date;
+            $pickup->slots = $totalSlots;
+            $pickup->description = $description;
+
+            $created = $this->storeTransactions->createOrUpdatePickup($storeId, $pickup);
 
             return $this->handleView($this->view(['created' => $created], 200));
         } catch (PickupValidationException $ex) {
@@ -491,7 +503,8 @@ final class PickupRestController extends AbstractFOSRestController
                     str_getcsv($pickup['fs_avatars']),
                     str_getcsv($pickup['slot_confimations'])
                 )
-            ]
+            ],
+            'description' => $pickup['description']
         ], $pickups);
 
         return $this->handleView($this->view($pickups));
@@ -539,7 +552,8 @@ final class PickupRestController extends AbstractFOSRestController
                     str_getcsv($pickup['slot_confimations'])
                 ),
                 'max' => $pickup['max_fetchers'],
-            ]
+            ],
+            'description' => $pickup['description']
         ], $pickups);
 
         return $this->handleView($this->view($pickups));
@@ -605,6 +619,7 @@ final class PickupRestController extends AbstractFOSRestController
                         ),
                         'max' => $slot['totalSlots'],
                     ],
+                    'description' => $slot['description']
                 ],
                 $pickupSlots
             ));

@@ -1,4 +1,4 @@
-import { get, patch, post, remove } from './base'
+import { get, patch, post, remove, put } from './base'
 
 export async function listPickups (storeId) {
   const res = await get(`/stores/${storeId}/pickups`)
@@ -43,9 +43,9 @@ export async function checkPickupRuleStore (fsId, storeId, pickupDate) {
   return res.result
 }
 
-export async function setPickupSlots (storeId, pickupDate, totalSlots) {
+export async function setPickupSlots (storeId, pickupDate, totalSlots, description) {
   const date = pickupDate.toISOString()
-  return patch(`/stores/${storeId}/pickups/${date}`, { totalSlots: totalSlots })
+  return patch(`/stores/${storeId}/pickups/${date}`, { totalSlots, description })
 }
 
 export async function listPickupHistory (storeId, fromDate, toDate) {
@@ -102,10 +102,18 @@ export async function listRegisteredPickups (fsId) {
   return await get('/pickup/registered')
 }
 
-export async function listPickupOptions (page) {
-  return await get(`/pickup/options?pageSize=${page}`)
+export async function listPickupOptions (fsId, page) {
+  return await get(`/pickup/options?page=${page}`)
 }
 
 export async function listPastPickups (fsId, page) {
   return await get(`/pickup/history?fsId=${fsId}&page=${page}`)
+}
+
+export async function getRegularPickup (storeId) {
+  return await get(`/stores/${storeId}/regularPickup`)
+}
+
+export async function editRegularPickup (storeId, regularPickups) {
+  return await put(`/stores/${storeId}/regularPickup`, regularPickups)
 }

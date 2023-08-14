@@ -32,6 +32,7 @@ use Foodsharing\Permissions\ReportPermissions;
 use Foodsharing\Permissions\StorePermissions;
 use Foodsharing\RestApi\Models\Group\UserGroupModel;
 use Foodsharing\RestApi\Models\Region\UserRegionModel;
+use Foodsharing\Utility\DataHelper;
 use Foodsharing\Utility\EmailHelper;
 use FOS\RestBundle\Controller\AbstractFOSRestController;
 use FOS\RestBundle\Controller\Annotations as Rest;
@@ -76,7 +77,8 @@ class UserRestController extends AbstractFOSRestController
         private RegionPermissions $regionPermissions,
         private NewsletterEmailPermissions $newsletterEmailPermissions,
         private RegionTransactions $regionTransactions,
-        private GroupTransactions $groupTransactions
+        private GroupTransactions $groupTransactions,
+        private DataHelper $dataHelper
     ) {
         $this->session = $session;
         $this->loginGateway = $loginGateway;
@@ -101,6 +103,7 @@ class UserRestController extends AbstractFOSRestController
         $this->blogPermissions = $blogPermissions;
         $this->regionPermissions = $regionPermissions;
         $this->newsletterEmailPermissions = $newsletterEmailPermissions;
+        $this->dataHelper = $dataHelper;
     }
 
     /**
@@ -163,6 +166,7 @@ class UserRestController extends AbstractFOSRestController
         $response['foodsaver'] = ($this->session->mayRole(Role::FOODSAVER)) ? true : false;
         $response['isVerified'] = ($data['verified'] === 1) ? true : false;
         $response['regionId'] = $data['bezirk_id'];
+        $response['isSleeping'] = $this->dataHelper->parseSleepingState($data['sleep_status'], $data['sleep_from'], $data['sleep_until']);
         $response['regionName'] = ($data['bezirk_id'] === null) ? null : $this->regionGateway->getRegionName($data['bezirk_id']);
         $response['aboutMePublic'] = $data['about_me_public'];
 
@@ -170,7 +174,7 @@ class UserRestController extends AbstractFOSRestController
             $infos = $this->foodsaverGateway->getFoodsaverBasics($data['id']);
 
             $response['mailboxId'] = $data['mailbox_id'];
-            $response['hasCalendarToken'] = $this->settingsGateway->getApiToken($data['id']);
+            $response['hasCalendarToken'] = $this->settingsGateway->getApiToken($data['id']) !== null;
             $response['firstname'] = $data['name'];
             $response['lastname'] = $data['nachname'];
             $response['gender'] = $data['geschlecht'];
@@ -234,7 +238,14 @@ class UserRestController extends AbstractFOSRestController
      * @OA\Tag(name="user")
      * @Rest\Get("user/{id}/details", requirements={"id" = "\d+"})
      */
-    public function userDetailsAction(int $id): Response
+    /*
+     * TODO: disabled because the following points need to be fixed.
+     * - It uses normalizeUserDetails to return the same data as /user/current/details, including some private data like
+     *   the calendar token. We need to find out which of the response is actually needed in the frontend by whom.
+     * - The response includes permissions for the logged in user which does not make sense in an endpoint that should
+     *   return details about another user.
+     */
+    /* public function userDetailsAction(int $id): Response
     {
         $data = $this->profileGateway->getData($id, -1, $this->reportPermissions->mayHandleReports());
         if (empty($data)) {
@@ -244,7 +255,7 @@ class UserRestController extends AbstractFOSRestController
         $normalisedData = $this->normalizeUserDetails($data);
 
         return $this->handleView($this->view($normalisedData, Response::HTTP_OK));
-    }
+    } */
 
     /**
      * Lists the detailed profile of the current user. Returns 401 if not logged in or 200 and the data.
@@ -258,7 +269,10 @@ class UserRestController extends AbstractFOSRestController
             throw new UnauthorizedHttpException('');
         }
 
-        return $this->userDetailsAction($this->session->id());
+        $data = $this->profileGateway->getData($this->session->id(), -1, $this->reportPermissions->mayHandleReports());
+        $normalisedData = $this->normalizeUserDetails($data);
+
+        return $this->handleView($this->view($normalisedData, Response::HTTP_OK));
     }
 
     /**

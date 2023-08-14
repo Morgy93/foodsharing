@@ -1,5 +1,24 @@
 import { get, patch, post, remove } from './base'
 
+export async function getStoreMetaData () {
+  return await get('/stores/meta-data')
+}
+
+export async function getStoreMember (storeId) {
+  return await get(`/stores/${storeId}/member`)
+}
+export async function getStoreInformation (storeId) {
+  const result = await get(`/stores/${storeId}/information`)
+  result.chainId = result.chain ? result.chain.id : null
+  result.categoryId = result.category ? result.category.id : null
+  return result
+}
+
+export async function updateStore (store) {
+  const result = await patch(`/stores/${store.id}/information`, store)
+  return result
+}
+
 function normalizeStoreWallPost (post) {
   post.createdAt = new Date(Date.parse(post.createdAt))
   post.body = post.text
@@ -18,7 +37,7 @@ export async function writeStorePost (storeId, text) {
 }
 
 export async function setStoreTeamStatus (storeId, status) {
-  return patch(`/stores/${storeId}`, { teamStatus: status })
+  return patch(`/stores/${storeId}/information`, { teamStatus: status })
 }
 
 export async function getStoreDetails (storeId) {
@@ -31,6 +50,10 @@ export async function deleteStorePost (storeId, postId) {
 
 export async function listStoresForCurrentUser () {
   return get('/user/current/stores')
+}
+
+export async function listStoresDetailsForCurrentUser (expand) {
+  return get('/user/current/stores/details')
 }
 
 export async function requestStoreTeamMembership (storeId, userId) {
@@ -71,4 +94,8 @@ export async function moveMemberToRegularTeam (storeId, userId) {
 
 export async function getStoreLog (storeId, storeActionLogsAsArray) {
   return get(`/stores/${storeId}/log/${storeActionLogsAsArray.join(',')}`)
+}
+
+export async function getStorePermissions (storeId) {
+  return get(`/stores/${storeId}/permissions`)
 }

@@ -5,10 +5,10 @@ namespace Foodsharing\Modules\Region;
 use Foodsharing\Modules\Core\Control;
 use Foodsharing\Modules\Core\DBConstants\Foodsaver\Role;
 use Foodsharing\Modules\Core\DBConstants\Map\MapConstants;
+use Foodsharing\Modules\Core\DBConstants\Region\RegionIDs;
 use Foodsharing\Modules\Core\DBConstants\Region\RegionOptionType;
 use Foodsharing\Modules\Core\DBConstants\Unit\UnitType;
 use Foodsharing\Modules\Event\EventGateway;
-use Foodsharing\Modules\FoodSharePoint\FoodSharePointGateway;
 use Foodsharing\Modules\Mailbox\MailboxGateway;
 use Foodsharing\Modules\Store\StoreGateway;
 use Foodsharing\Modules\Voting\VotingGateway;
@@ -27,7 +27,7 @@ final class RegionControl extends Control
     private array $region;
     private RegionGateway $gateway;
     private EventGateway $eventGateway;
-    private FoodSharePointGateway $foodSharePointGateway;
+    private ForumGateway $forumGateway;
     private ForumFollowerGateway $forumFollowerGateway;
     private FormFactoryInterface $formFactory;
     private ForumTransactions $forumTransactions;
@@ -53,7 +53,7 @@ final class RegionControl extends Control
 
     public function __construct(
         EventGateway $eventGateway,
-        FoodSharePointGateway $foodSharePointGateway,
+        ForumGateway $forumGateway,
         ForumFollowerGateway $forumFollowerGateway,
         ForumPermissions $forumPermissions,
         RegionPermissions $regionPermissions,
@@ -71,7 +71,7 @@ final class RegionControl extends Control
         $this->eventGateway = $eventGateway;
         $this->forumPermissions = $forumPermissions;
         $this->regionPermissions = $regionPermissions;
-        $this->foodSharePointGateway = $foodSharePointGateway;
+        $this->forumGateway = $forumGateway;
         $this->forumFollowerGateway = $forumFollowerGateway;
         $this->forumTransactions = $forumTransactions;
         $this->reportPermissions = $reportPermissions;
@@ -104,12 +104,17 @@ final class RegionControl extends Control
         $regionId = (int)$region['id'];
         $isHomeDistrict = $this->isHomeDistrict($region);
 
+        // The store and member pages are temporarily disabled for large regions because they cause an out-of-memory error
+        $storesAndMembersDisabled = in_array($regionId, [RegionIDs::EUROPE, RegionIDs::GERMANY]);
+
         $menu = [
             'forum' => ['name' => 'terminology.forum', 'href' => '/?page=bezirk&bid=' . $regionId . '&sub=forum'],
             'events' => ['name' => 'terminology.events', 'href' => '/?page=bezirk&bid=' . $regionId . '&sub=events'],
             'polls' => ['name' => 'terminology.polls', 'href' => '/?page=bezirk&bid=' . $regionId . '&sub=polls'],
-            'members' => ['name' => 'group.members', 'href' => '/?page=bezirk&bid=' . $regionId . '&sub=members'],
         ];
+        if (!$storesAndMembersDisabled) {
+            $menu['members'] = ['name' => 'group.members', 'href' => '/?page=bezirk&bid=' . $regionId . '&sub=members'];
+        }
 
         if (!$isWorkGroup && $this->forumPermissions->mayAccessAmbassadorBoard($regionId)) {
             $menu['ambassador_forum'] = ['name' => 'terminology.ambassador_forum', 'href' => '/?page=bezirk&bid=' . $regionId . '&sub=botforum'];
@@ -136,7 +141,9 @@ final class RegionControl extends Control
             $menu['groups'] = ['name' => 'terminology.groups', 'href' => '/?page=groups&p=' . $regionId];
             $menu['statistic'] = ['name' => 'terminology.statistic', 'href' => '/?page=bezirk&bid=' . $regionId . '&sub=statistic'];
 
-            $menu['stores'] = ['name' => 'menu.entry.stores', 'href' => '/?page=betrieb&bid=' . $regionId];
+            if (!$storesAndMembersDisabled) {
+                $menu['stores'] = ['name' => 'menu.entry.stores', 'href' => '/?page=betrieb&bid=' . $regionId];
+            }
 
             if ($this->session->isAdminFor($regionId)) {
                 $menu['passports'] = ['name' => 'menu.entry.ids', 'href' => '/?page=passgen&bid=' . $regionId];
@@ -159,8 +166,12 @@ final class RegionControl extends Control
             $menu['mailbox'] = ['name' => $regionOrGroupString, 'href' => '/?page=mailbox'];
         }
 
+        if ($regionId == RegionIDs::STORE_CHAIN_GROUP) {
+            $menu['chainList'] = ['name' => 'menu.entry.chainList', 'href' => '/?page=chain'];
+        }
+
         if ($this->mayAccessApplications($regionId)) {
-            if ($requests = $this->gateway->listRequests($regionId)) {
+            if ($requests = $this->gateway->listApplicants($regionId)) {
                 $menu['applications'] = ['name' => $this->translator->trans('group.applications') . ' (' . count($requests) . ')', 'href' => '/?page=bezirk&bid=' . $regionId . '&sub=applications'];
             }
         }
@@ -182,6 +193,7 @@ final class RegionControl extends Control
         $viewdata['isRegion'] = !$isWorkGroup;
         $stat = [
             'num_fs' => $this->region['fs_count'],
+            'num_fs_home' => $this->region['fs_home_count'],
             'num_sleeping' => $this->region['sleeper_count'],
             'num_ambassadors' => $this->region['stat_botcount'],
             'num_stores' => $this->region['stat_betriebcount'],
@@ -242,6 +254,7 @@ final class RegionControl extends Control
             ['key' => 'subgroups', 'position' => 18],
             ['key' => 'options', 'position' => 19],
             ['key' => 'pin', 'position' => 20],
+            ['key' => 'chainList', 'position' => 21],
         ];
 
         $orderedMenu = [];
@@ -342,8 +355,6 @@ final class RegionControl extends Control
         $this->pageHelper->addBread($this->translator->trans('terminology.fsp'), '/?page=bezirk&bid=' . $region['id'] . '&sub=fairteiler');
         $this->pageHelper->addTitle($this->translator->trans('terminology.fsp'));
         $viewdata = $this->regionViewData($region, $request->query->get('sub'));
-        $bezirk_ids = $this->gateway->listIdsForDescendantsAndSelf($region['id']);
-        $viewdata['food_share_points'] = $this->foodSharePointGateway->listActiveFoodSharePoints($bezirk_ids);
         $response->setContent($this->render('pages/Region/foodSharePoint.twig', $viewdata));
     }
 
@@ -353,12 +364,18 @@ final class RegionControl extends Control
         $data = CreateForumThreadData::create();
         $form = $this->formFactory->create(ForumCreateThreadForm::class, $data, ['postActiveWithoutModeration' => $postActiveWithoutModeration]);
         $form->handleRequest($request);
-        if ($form->isSubmitted() && $form->isValid()
+        if (
+            $form->isSubmitted() && $form->isValid()
             && $this->forumPermissions->mayPostToRegion($region['id'], $ambassadorForum)
         ) {
             $threadId = $this->forumTransactions->createThread(
-                $this->session->id(), $data->title, $data->body, $region,
-                $ambassadorForum, $postActiveWithoutModeration, $postActiveWithoutModeration ? $data->sendMail : null
+                $this->session->id(),
+                $data->title,
+                $data->body,
+                $region,
+                $ambassadorForum,
+                $postActiveWithoutModeration,
+                $postActiveWithoutModeration ? $data->sendMail : null
             );
 
             $this->forumFollowerGateway->followThreadByBell($this->session->id(), $threadId);
@@ -382,8 +399,15 @@ final class RegionControl extends Control
         $viewdata['sub'] = $sub;
 
         if ($threadId = $request->query->getInt('tid')) {
+            $thread = $this->forumGateway->getThreadInfo($threadId);
+            if (empty($thread)) {
+                $this->flashMessageHelper->error($this->translator->trans('forum.thread.not_found'));
+                $this->routeHelper->goAndExit('/?page=bezirk&sub=forum&bid=' . $region['id']);
+            }
+            $this->pageHelper->addTitle($thread['title']);
             $viewdata['threadId'] = $threadId; // this triggers the rendering of the vue component `Thread`
         } elseif ($request->query->has('newthread')) {
+            $this->pageHelper->addTitle($this->translator->trans('forum.new_thread'));
             $postActiveWithoutModeration = $this->forumPermissions->mayStartUnmoderatedThread($region, $ambassadorForum);
             $viewdata['newThreadForm'] = $this->handleNewThreadForm($request, $region, $ambassadorForum, $postActiveWithoutModeration);
             $viewdata['postActiveWithoutModeration'] = $postActiveWithoutModeration;
@@ -413,7 +437,7 @@ final class RegionControl extends Control
         $sub = $request->query->get('sub');
         $viewdata = $this->regionViewData($region, $sub);
         if ($this->mayAccessApplications($region['id'])) {
-            $viewdata['applications'] = $this->gateway->listRequests($region['id']);
+            $viewdata['applications'] = $this->gateway->listApplicants($region['id']);
         }
         $response->setContent($this->render('pages/Region/applications.twig', $viewdata));
     }

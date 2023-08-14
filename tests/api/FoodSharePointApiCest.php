@@ -12,6 +12,7 @@ use Faker;
 class FoodSharePointApiCest
 {
     private $user;
+    private $region;
     private $faker;
 
     private const EMAIL = 'email';
@@ -22,6 +23,8 @@ class FoodSharePointApiCest
     public function _before(ApiTester $I)
     {
         $this->user = $I->createFoodsaver();
+        $this->region = $I->createRegion();
+        $I->addRegionMember($this->region['id'], $this->user['id']);
         $this->faker = Faker\Factory::create('de_DE');
     }
 
@@ -51,5 +54,19 @@ class FoodSharePointApiCest
         $I->sendGET(self::API_FSPS . '/nearby?lat=50&lon=9&distance=51');
         $I->seeResponseCodeIs(Http::BAD_REQUEST);
         $I->seeResponseIsJson();
+    }
+
+    public function canListFoodSharePointsInRegion(ApiTester $I)
+    {
+        $I->login($this->user[self::EMAIL]);
+        $I->sendGET('api/regions/' . $this->region['id'] . '/foodSharePoints');
+        $I->seeResponseCodeIs(Http::OK);
+        $I->seeResponseIsJson();
+    }
+
+    public function canNotListFoodSharePointsInRegionWithoutLogin(ApiTester $I)
+    {
+        $I->sendGET('api/regions/' . $this->region['id'] . '/foodSharePoints');
+        $I->seeResponseCodeIs(Http::UNAUTHORIZED);
     }
 }

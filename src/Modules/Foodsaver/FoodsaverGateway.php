@@ -79,6 +79,8 @@ class FoodsaverGateway extends BaseGateway
 					fs.`photo`,
 					fs.`name`,
 					fs.sleep_status,
+					fs.sleep_from,
+					fs.sleep_until,
 					fs.rolle as role,
 					fs.last_login as last_activity,
 					fs.verified,
@@ -101,7 +103,8 @@ class FoodsaverGateway extends BaseGateway
         ]);
 
         return array_map(function ($foodsaver) use ($includeAdminFields, $regionId) {
-            $member = RegionGroupMemberEntry::create($foodsaver['id'], $foodsaver['name'], $foodsaver['photo'], $foodsaver['sleep_status'],
+            $isSleeping = $this->dataHelper->parseSleepingState($foodsaver['sleep_status'], $foodsaver['sleep_from'], $foodsaver['sleep_until']);
+            $member = RegionGroupMemberEntry::create($foodsaver['id'], $foodsaver['name'], $foodsaver['photo'], $isSleeping,
                 $foodsaver['isAdminOrAmbassadorOfRegion']);
             if ($includeAdminFields) {
                 $member->role = $foodsaver['role'];
@@ -130,6 +133,7 @@ class FoodsaverGateway extends BaseGateway
 			AND 	fs.last_login >= CURDATE() - INTERVAL 6 MONTH
 			AND 	fsreg.active = 1
 			AND 	fsreg.bezirk_id = :regionId
+			AND     fsreg.notify_by_email_about_new_threads = 1
 		', [
             ':regionId' => $regionId
         ]);
@@ -1024,6 +1028,19 @@ class FoodsaverGateway extends BaseGateway
         $existing = $this->db->fetchAllValuesByCriteria('fs_foodsaver', 'id', ['id' => $foodsaverIds, 'deleted_at' => null]);
 
         return count($foodsaverIds) === count($existing);
+    }
+
+    public function getUserFromEmail(string $email): array
+    {
+        return $this->db->fetchByCriteria(
+            'fs_foodsaver',
+            [
+                'id',
+                'name',
+                'email',
+            ],
+            ['email' => $email]
+        );
     }
 
     public function changeUserVerification(int $userId, int $actorId, bool $newStatus): void

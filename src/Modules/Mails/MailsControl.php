@@ -105,7 +105,7 @@ class MailsControl extends ConsoleControl
                 $mboxes = [];
                 $recipients = $msg->getTo() + $msg->getCc() + $msg->getBcc();
                 foreach ($recipients as $to) {
-                    if (in_array(strtolower($to->getHostname()), MAILBOX_OWN_DOMAINS)) {
+                    if (in_array(strtolower($to->getHostname() ?? ''), MAILBOX_OWN_DOMAINS)) {
                         $mboxes[] = $to->getMailbox();
                     }
                 }

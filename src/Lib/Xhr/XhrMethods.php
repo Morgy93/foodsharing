@@ -5,9 +5,6 @@ namespace Foodsharing\Lib\Xhr;
 use Foodsharing\Lib\Db\Db;
 use Foodsharing\Lib\Session;
 use Foodsharing\Lib\View\Utils;
-use Foodsharing\Modules\Bell\BellGateway;
-use Foodsharing\Modules\Bell\DTO\Bell;
-use Foodsharing\Modules\Core\DBConstants\Bell\BellType;
 use Foodsharing\Modules\Core\DBConstants\Email\EmailStatus;
 use Foodsharing\Modules\Core\DBConstants\Region\WorkgroupFunction;
 use Foodsharing\Modules\Core\DBConstants\Unit\UnitType;
@@ -20,7 +17,6 @@ use Foodsharing\Modules\Region\RegionGateway;
 use Foodsharing\Modules\Store\StoreGateway;
 use Foodsharing\Permissions\NewsletterEmailPermissions;
 use Foodsharing\Permissions\RegionPermissions;
-use Foodsharing\Permissions\StorePermissions;
 use Foodsharing\Utility\EmailHelper;
 use Foodsharing\Utility\Sanitizer;
 use Symfony\Contracts\Translation\TranslatorInterface;
@@ -33,8 +29,6 @@ class XhrMethods
     private GroupFunctionGateway $groupFunctionGateway;
     private GroupGateway $groupGateway;
     private RegionGateway $regionGateway;
-    private StorePermissions $storePermissions;
-    private BellGateway $bellGateway;
     private StoreGateway $storeGateway;
     private FoodsaverGateway $foodsaverGateway;
     private EmailGateway $emailGateway;
@@ -52,9 +46,7 @@ class XhrMethods
         GroupFunctionGateway $groupFunctionGateway,
         GroupGateway $groupGateway,
         RegionGateway $regionGateway,
-        BellGateway $bellGateway,
         StoreGateway $storeGateway,
-        StorePermissions $storePermissions,
         FoodsaverGateway $foodsaverGateway,
         EmailGateway $emailGateway,
         MailboxGateway $mailboxGateway,
@@ -70,9 +62,7 @@ class XhrMethods
         $this->groupFunctionGateway = $groupFunctionGateway;
         $this->groupGateway = $groupGateway;
         $this->regionGateway = $regionGateway;
-        $this->bellGateway = $bellGateway;
         $this->storeGateway = $storeGateway;
-        $this->storePermissions = $storePermissions;
         $this->foodsaverGateway = $foodsaverGateway;
         $this->emailGateway = $emailGateway;
         $this->mailboxGateway = $mailboxGateway;
@@ -177,62 +167,16 @@ class XhrMethods
             'status' => 1,
             'script' => '$("#tree").dynatree("getTree").reload(); pulseInfo("'
                 . $this->translator->trans('region.created', ['{region}' => $data['name']]) .
-            '");',
+                '");',
         ]);
-    }
-
-    public function xhr_editpickups($data)
-    {
-        if (!$this->storePermissions->mayEditPickups($data['bid'])) {
-            return XhrResponses::PERMISSION_DENIED;
-        }
-
-        $this->model->del('DELETE FROM `fs_abholzeiten` WHERE `betrieb_id` = ' . (int)$data['bid']);
-
-        if (is_array($data['newfetchtime'])) {
-            for ($i = 0; $i < (count($data['newfetchtime']) - 1); ++$i) {
-                $this->model->sql('
-			REPLACE INTO 	`fs_abholzeiten`
-			(
-					`betrieb_id`,
-					`dow`,
-					`time`,
-					`fetcher`
-			)
-			VALUES
-			(
-				' . (int)$data['bid'] . ',
-				' . (int)$data['newfetchtime'][$i] . ',
-				' . $this->model->strval(
-                    sprintf('%02d', $data['nfttime']['hour'][$i])
-                    . ':' .
-                    sprintf('%02d', $data['nfttime']['min'][$i]) . ':00'
-                ) . ',
-				' . (int)$data['nft-count'][$i] . '
-			)
-		');
-            }
-        }
-        $storeName = $this->storeGateway->getStoreName($data['bid']);
-
-        $team = $this->storeGateway->getStoreTeam($data['bid']);
-        $team = array_map(function ($foodsaver) { return $foodsaver['id']; }, $team);
-        $bellData = Bell::create('store_cr_times_title', 'store_cr_times', 'fas fa-user-clock', [
-            'href' => '/?page=fsbetrieb&id=' . (int)$data['bid'],
-        ], [
-            'user' => $this->session->user('name'),
-            'name' => $storeName,
-        ], BellType::createIdentifier(BellType::STORE_TIME_CHANGED, (int)$data['bid']));
-        $this->bellGateway->addBell($team, $bellData);
-
-        return json_encode(['status' => 1]);
     }
 
     public function xhr_bezirkTree($data)
     {
-        $region = $this->regionGateway->getBezirkByParent($data['p'],
+        $region = $this->regionGateway->getBezirkByParent(
+            $data['p'],
             $this->regionPermissions->mayAdministrateRegions()
-            || $this->newsletterEmailPermissions->mayAdministrateNewsletterEmail()
+                || $this->newsletterEmailPermissions->mayAdministrateNewsletterEmail()
         );
         if (!$region) {
             $out = ['status' => 0];
@@ -336,19 +280,22 @@ class XhrMethods
                 'botschafter'
             )
         ], ['submit' => $this->translator->trans('button.save')])
-        .
-        $this->v_utils->v_input_wrapper($this->translator->trans('region.hull.title'),
-            '<a class="button" href="#" onclick="'
-                . 'if (confirm(\'' . $this->translator->trans('region.hull.confirm') . '\')) {'
-                . 'tryMasterUpdate(' . (int)$data['id'] . ');} return false;'
-            . '">'
-            . $this->translator->trans('region.hull.start')
-            . '</a>', 'masterupdate', [
-                'desc' => $this->translator->trans('region.hull.closure', [
-                    '{region}' => $g_data['name'],
-                ]),
-            ]
-        );
+            .
+            $this->v_utils->v_input_wrapper(
+                $this->translator->trans('region.hull.title'),
+                '<a class="button" href="#" onclick="'
+                    . 'if (confirm(\'' . $this->translator->trans('region.hull.confirm') . '\')) {'
+                    . 'tryMasterUpdate(' . (int)$data['id'] . ');} return false;'
+                    . '">'
+                    . $this->translator->trans('region.hull.start')
+                    . '</a>',
+                'masterupdate',
+                [
+                    'desc' => $this->translator->trans('region.hull.closure', [
+                        '{region}' => $g_data['name'],
+                    ]),
+                ]
+            );
 
         $out['script'] = '
 		$("#bezirkform-form").off("submit");
@@ -412,35 +359,20 @@ class XhrMethods
         if ($betriebe = $this->storeGateway->getMapsStores($data['id'])) {
             $out['betriebe'] = $betriebe;
             foreach ($out['betriebe'] as $i => $b) {
-                $img = ($b['kette_id'] == 0) ? '' : $b['logo'];
-                if ($img) {
-                    $img = '<a href="/?page=fsbetrieb&id=' . (int)$b['id'] . '">'
-                        . '<img style="float: right; margin-left: 10px;" src="' . $this->idimg($img, 100) . '" />'
-                    . '</a>';
-                }
                 $out['betriebe'][$i]['bubble'] = '<div style="height: 110px; overflow: hidden; width: 270px; ">'
-                    . '<div style="margin-right: 5px; float: right;">' . $img . '</div>'
+                    . '<div style="margin-right: 5px; float: right;"></div>'
                     . '<h1 style="font-size: 13px; font-weight: bold; margin-bottom: 8px;">'
-                        . '<a href="/?page=fsbetrieb&id=' . (int)$b['id'] . '">'
-                        . $this->sanitizerService->jsSafe($b['name'])
-                        . '</a>'
+                    . '<a href="/?page=fsbetrieb&id=' . (int)$b['id'] . '">'
+                    . $this->sanitizerService->jsSafe($b['name'])
+                    . '</a>'
                     . '</h1>'
                     . '<p>' . $this->sanitizerService->jsSafe($b['str']) . '</p>'
                     . '<p>' . $this->sanitizerService->jsSafe($b['plz'] . ' ' . $b['stadt']) . '</p>'
-                . '</div><div class="clear"></div>';
+                    . '</div><div class="clear"></div>';
             }
         }
 
         return json_encode($out);
-    }
-
-    private function idimg($file, $size)
-    {
-        if (!empty($file)) {
-            return 'images/' . str_replace('/', '/' . $size . '_', $file);
-        }
-
-        return false;
     }
 
     public function xhr_saveBezirk($data)

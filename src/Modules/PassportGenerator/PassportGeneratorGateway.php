@@ -2,6 +2,7 @@
 
 namespace Foodsharing\Modules\PassportGenerator;
 
+use Carbon\Carbon;
 use Foodsharing\Modules\Core\BaseGateway;
 use Foodsharing\Modules\Core\Database;
 use Foodsharing\Modules\Region\RegionGateway;
@@ -29,6 +30,13 @@ final class PassportGeneratorGateway extends BaseGateway
     public function updateLastGen(array $foodsaver): int
     {
         return $this->db->update('fs_foodsaver', ['last_pass' => $this->db->now()], ['id' => $foodsaver]);
+    }
+
+    public function getLastGen(int $fsId): ?\DateTime
+    {
+        $lastPass = $this->db->fetchValueByCriteria('fs_foodsaver', 'last_pass', ['id' => $fsId]);
+
+        return $lastPass ? Carbon::parse($lastPass) : null; // 'Y-m-d H:i:s'
     }
 
     public function getPassFoodsaver(int $regionId): array

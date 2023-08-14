@@ -11,14 +11,15 @@
     <div class="element-wrapper">
       <LeafletLocationSearch
         :zoom="zoom"
-        :coordinates="coordinates"
-        :postal-code="postalCode"
-        :street="street"
-        :city="city"
+        :coordinates="currentCoordinates"
+        :postal-code="currentPostalCode"
+        :street="currentStreet"
+        :city="currentCity"
         :icon-name="iconName"
         :icon-color="iconColor"
         :show-address-fields="showAddressFields"
         :additional-info-text="additionalInfoText"
+        :disabled="disabled"
         @address-change="onAddressChanged"
       />
       <input name="lat" :value="currentCoordinates.lat" type="hidden">
@@ -45,6 +46,7 @@ export default {
     iconColor: { type: String, default: 'orange' },
     showAddressFields: { type: Boolean, default: true },
     additionalInfoText: { type: String, default: null },
+    disabled: { type: Boolean, default: false },
   },
   data () {
     return {
@@ -60,6 +62,7 @@ export default {
       this.currentStreet = street
       this.currentPostalCode = postalCode
       this.currentCity = city
+      this.$emit('address-change', this.currentCoordinates, this.currentStreet, this.currentPostalCode, this.currentCity)
     },
   },
 }

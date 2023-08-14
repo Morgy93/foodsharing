@@ -92,7 +92,7 @@
         type="button"
         class="list-group-item list-group-item-action"
         href="#"
-        @click="$refs.modal_report_request.show()"
+        @click="$refs.report_request.show()"
       >
         <i class="far fa-life-ring fa-fw" /> {{ buttonNameReportRequest }}
       </b-list-group-item>
@@ -119,30 +119,23 @@
         :has-local-mediation-group="hasLocalMediationGroup"
       />
     </b-modal>
-    <b-modal
+    <ReportRequest
       v-if="showReportButton"
-      ref="modal_report_request"
-      :title="$i18n('profile.report.title', { name: foodSaverName })"
-      :cancel-title="$i18n('button.cancel')"
-      header-class="d-flex"
-      content-class="pr-3 pt-3"
-    >
-      <ReportRequest
-        :food-saver-name="foodSaverName"
-        :reported-id="fsId"
-        :reporter-id="fsIdSession"
-        :store-list-options="storeListOptions"
-        :has-report-group="hasReportGroup"
-        :has-arbitration-group="hasArbitrationGroup"
-        :is-reported-id-report-admin="isReportedIdReportAdmin"
-        :is-reporter-id-report-admin="isReporterIdReportAdmin"
-        :is-reported-id-arbitration-admin="isReportedIdArbitrationAdmin"
-        :is-reporter-id-arbitration-admin="isReporterIdArbitrationAdmin"
-        :is-report-button-enabled="isReportButtonEnabled"
-        :reporter-has-report-group="reporterHasReportGroup"
-        :mailbox-name="mailboxNameReportRequest"
-      />
-    </b-modal>
+      ref="report_request"
+      :food-saver-name="foodSaverName"
+      :reported-id="fsId"
+      :reporter-id="fsIdSession"
+      :store-list-options="storeListOptions"
+      :has-report-group="hasReportGroup"
+      :has-arbitration-group="hasArbitrationGroup"
+      :is-reported-id-report-admin="isReportedIdReportAdmin"
+      :is-reporter-id-report-admin="isReporterIdReportAdmin"
+      :is-reported-id-arbitration-admin="isReportedIdArbitrationAdmin"
+      :is-reporter-id-arbitration-admin="isReporterIdArbitrationAdmin"
+      :is-report-button-enabled="isReportButtonEnabled"
+      :reporter-has-report-group="reporterHasReportGroup"
+      :mailbox-name="mailboxNameReportRequest"
+    />
     <ProfileHistoryModal
       ref="profileHistoryModal"
     />

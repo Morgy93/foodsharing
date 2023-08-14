@@ -54,21 +54,21 @@ class PatchStore
      * - 3: IN_THE_EVENING
      * - 4: AT_NIGHT
      *
-     * @Assert\Positive()
+     * @Assert\Range (min = 0, max = 4)
      */
     public ?int $publicTime = null;
 
     /**
      * Identifier of the store category.
      *
-     * @Assert\Positive()
+     * @Assert\Range (min = 0)
      */
     public ?int $categoryId = null;
 
     /**
      * Identifier of the store chain.
      *
-     * @Assert\Positive()
+     * @Assert\Range (min = 0)
      */
     public ?int $chainId = null;
 
@@ -84,7 +84,7 @@ class PatchStore
      * - 6: GIVES_TO_OTHER_CHARITY
      * - 7: PERMANENTLY_CLOSED
      *
-     * @Assert\Positive()
+     * @Assert\Range (min = 0)
      */
     public ?int $cooperationStatus = null;
 
@@ -92,7 +92,6 @@ class PatchStore
      * String which describes the store.
      *
      * @Assert\Length(max=16777215)
-     * // What characters are allowed? Escape HTML?
      */
     public ?string $description = null;
 

@@ -4,9 +4,11 @@ namespace Foodsharing\Modules\Store;
 
 use Carbon\Carbon;
 use DateTime;
+use Exception;
 use Foodsharing\Lib\Session;
 use Foodsharing\Modules\Bell\BellGateway;
 use Foodsharing\Modules\Bell\DTO\Bell;
+use Foodsharing\Modules\Core\DatabaseNoValueFoundException;
 use Foodsharing\Modules\Core\DBConstants\Bell\BellType;
 use Foodsharing\Modules\Core\DBConstants\Region\RegionOptionType;
 use Foodsharing\Modules\Core\DBConstants\Store\ConvinceStatus;
@@ -17,14 +19,17 @@ use Foodsharing\Modules\Core\DBConstants\Store\StoreLogAction;
 use Foodsharing\Modules\Core\DBConstants\Store\TeamSearchStatus;
 use Foodsharing\Modules\Core\DBConstants\StoreTeam\MembershipStatus;
 use Foodsharing\Modules\Core\DBConstants\Unit\UnitType;
+use Foodsharing\Modules\Core\DTO\MinimalIdentifier;
 use Foodsharing\Modules\Core\DTO\PatchGeoLocation;
 use Foodsharing\Modules\Foodsaver\FoodsaverGateway;
 use Foodsharing\Modules\Foodsaver\Profile;
 use Foodsharing\Modules\Message\MessageGateway;
+use Foodsharing\Modules\Region\DTO\MinimalRegionIdentifier;
 use Foodsharing\Modules\Region\RegionGateway;
 use Foodsharing\Modules\Store\DTO\CommonLabel;
 use Foodsharing\Modules\Store\DTO\CommonStoreMetadata;
 use Foodsharing\Modules\Store\DTO\CreateStoreData;
+use Foodsharing\Modules\Store\DTO\OneTimePickup;
 use Foodsharing\Modules\Store\DTO\PatchAddress;
 use Foodsharing\Modules\Store\DTO\PatchContactData;
 use Foodsharing\Modules\Store\DTO\PatchStore;
@@ -43,8 +48,7 @@ class StoreTransactions
         CooperationStatus::NO_CONTACT,
         CooperationStatus::IN_NEGOTIATION,
         CooperationStatus::COOPERATION_STARTING,
-        CooperationStatus::COOPERATION_ESTABLISHED,
-        CooperationStatus::PERMANENTLY_CLOSED
+        CooperationStatus::COOPERATION_ESTABLISHED
     ];
 
     public const MAX_SLOTS_PER_PICKUP = 10;
@@ -53,6 +57,7 @@ class StoreTransactions
     private const STATUS_ORANGE_3_DAYS = 2;
     private const STATUS_YELLOW_5_DAYS = 1;
     private const STATUS_GREEN = 0;
+    private const MAX_PICKUP_DESCRIPTION_LENGTH = 100;
 
     public function __construct(
         private readonly MessageGateway $messageGateway,
@@ -67,6 +72,20 @@ class StoreTransactions
     ) {
     }
 
+    /**
+     * Returns a store's data including the team members in a format suitable for the frontend.
+     *
+     * @param int $userId the user who is requesting the data
+     * @param int $storeId the store
+     * @param bool $includeUserDetails whether to include phone numbers and last fetch dates for the team members
+     */
+    public function getMyStoreTeam(int $userId, int $storeId, bool $includeUserDetails): array
+    {
+        $store = $this->storeGateway->getMyStore($userId, $storeId);
+
+        return $this->getDisplayedStoreTeam($store, $includeUserDetails);
+    }
+
     public function getCommonStoreMetadata($supressStoreChains = true): CommonStoreMetadata
     {
         $store = new CommonStoreMetadata();
@@ -75,13 +94,15 @@ class StoreTransactions
             return CommonLabel::createFromArray($row);
         }, $this->storeGateway->getBasics_groceries());
 
-        $store->categories = array_map(function ($row) {
-            return CommonLabel::createFromArray($row);
-        }, $this->storeGateway->getStoreCategories());
+        $store->categories = [new CommonLabel(0, $this->translator->trans('store.nodeclaration')),
+            ...array_map(function ($row) {
+                return CommonLabel::createFromArray($row);
+            }, $this->storeGateway->getStoreCategories())];
 
         $store->status = array_map(function ($row) {
             return CommonLabel::createFromArray($row);
         }, [
+            ['id' => CooperationStatus::UNCLEAR->value, 'name' => $this->translator->trans('store.nodeclaration')],
             ['id' => CooperationStatus::NO_CONTACT->value, 'name' => $this->translator->trans('storestatus.1')],
             ['id' => CooperationStatus::IN_NEGOTIATION->value, 'name' => $this->translator->trans('storestatus.2')],
             ['id' => CooperationStatus::COOPERATION_STARTING->value, 'name' => $this->translator->trans('storestatus.3a')],
@@ -94,6 +115,7 @@ class StoreTransactions
         $store->publicTimes = array_map(function ($row) {
             return CommonLabel::createFromArray($row);
         }, [
+            ['id' => PublicTimes::NOT_SET->value, 'name' => $this->translator->trans('store.nodeclaration')],
             ['id' => PublicTimes::IN_THE_MORNING->value, 'name' => $this->translator->trans('storeview.public_time_in_the_morning')],
             ['id' => PublicTimes::AT_NOON_IN_THE_AFTERNOON->value, 'name' => $this->translator->trans('storeview.public_time_at_noon_or_afternoon')],
             ['id' => PublicTimes::IN_THE_EVENING->value, 'name' => $this->translator->trans('storeview.public_time_in_the_evening')],
@@ -103,6 +125,7 @@ class StoreTransactions
         $store->convinceStatus = array_map(function ($row) {
             return CommonLabel::createFromArray($row);
         }, [
+            ['id' => ConvinceStatus::NOT_SET->value, 'name' => $this->translator->trans('store.nodeclaration')],
             ['id' => ConvinceStatus::NO_PROBLEM_AT_ALL->value, 'name' => $this->translator->trans('store.convince.none')],
             ['id' => ConvinceStatus::AFTER_SOME_PERSUASION->value, 'name' => $this->translator->trans('store.convince.some')],
             ['id' => ConvinceStatus::DIFFICULT_NEGOTIATION->value, 'name' => $this->translator->trans('store.convince.much')],
@@ -110,9 +133,10 @@ class StoreTransactions
         ]);
 
         if (!$supressStoreChains) {
-            $store->storeChains = array_map(function ($row) {
-                return CommonLabel::createFromArray($row);
-            }, $this->storeGateway->getBasics_chain());
+            $store->storeChains = [new CommonLabel(0, $this->translator->trans('store.nodeclaration')),
+                ...array_map(function ($row) {
+                    return CommonLabel::createFromArray($row);
+                }, $this->storeGateway->getBasics_chain())];
         }
 
         $store->weight = array_map(function ($row) {
@@ -136,20 +160,77 @@ class StoreTransactions
      * @param bool $expand Expand information about store and region
      *
      * @return array<StoreListInformation> List of information
+     *
+     * @throws Exception
      */
     public function listOverviewInformationsOfStoresInRegion(int $regionId, bool $expand): array
     {
         $stores = $this->storeGateway->listStoresInRegion($regionId, true);
 
+        return $this->arrayMapStoreListInformation($stores, $expand);
+    }
+
+    /**
+     * Returns a list of stores where the user is a member of reduced store information.
+     **
+     * @param int $userId User identifier
+     * @param bool $expand Expand information about store and region
+     *
+     * @return array<StoreListInformation> List of information
+     *
+     * @throws Exception
+     */
+    public function listOverviewInformationsOfStoresFromUser(int $userId, bool $expand): array
+    {
+        $stores = $this->storeGateway->listStoresInFromUser($userId);
+
+        return $this->arrayMapStoreListInformation($stores, $expand);
+    }
+
+    private function arrayMapStoreListInformation(array $stores, bool $expand): array
+    {
         return array_map(function (Store $store) use ($expand) {
             $requiredStoreInformation = StoreListInformation::loadFrom($store, !$expand);
             if ($expand) {
-                $regionName = $this->regionGateway->getRegionName($store->regionId);
+                $regionName = $this->regionGateway->getRegionName($store->region->id);
                 $requiredStoreInformation->region->name = $regionName;
             }
 
             return $requiredStoreInformation;
         }, $stores);
+    }
+
+    /**
+     * Provides information about a store and reduce the information to essential parts.
+     *
+     * @param int $storeId Identifier of store
+     * @param bool $showDetails Leaves details about stores like description, effort, publicity and options in object
+     * @param bool $showSensitiveDetails Leaves details about stores like contact, updatedAt, showsSticker and groceries in object
+     *
+     * @throws DatabaseNoValueFoundException Store not found
+     */
+    public function getStore(int $storeId, bool $showDetails, bool $showSensitiveDetails): Store
+    {
+        $suppressLoadingGroceries = !$showSensitiveDetails;
+        $dbResult = $this->storeGateway->getStore($storeId, $suppressLoadingGroceries);
+        $dbResult->region->name = $this->regionGateway->getRegionName($dbResult->region->id);
+
+        if (!$showDetails) {
+            $dbResult->description = null;
+            $dbResult->effort = null;
+            $dbResult->publicity = null;
+            $dbResult->options = null;
+        }
+
+        if (!$showSensitiveDetails) {
+            $dbResult->contact = null;
+            $dbResult->updatedAt = null;
+            $dbResult->effort = null;
+            $dbResult->showsSticker = null;
+            $dbResult->groceries = null;
+        }
+
+        return $dbResult;
     }
 
     /**
@@ -172,7 +253,7 @@ class StoreTransactions
     {
         try {
             $regionType = $this->regionGateway->getType($createStore->regionId);
-        } catch (\Exception $dbExpection) {
+        } catch (Exception $dbExpection) {
             throw new StoreTransactionException(StoreTransactionException::INVALID_REGION);
         }
         if (!UnitType::isAccessibleRegion($regionType)) {
@@ -279,7 +360,7 @@ class StoreTransactions
 
         if (!empty($storeChange->regionId)) {
             $changeInformation->informationChanged = true;
-            $store->regionId = $storeChange->regionId;
+            $store->region = MinimalRegionIdentifier::createFromId($storeChange->regionId);
         }
 
         if (!empty($storeChange->publicInfo)) {
@@ -287,7 +368,7 @@ class StoreTransactions
             $store->publicInfo = $this->sanitizerService->purifyHtml($storeChange->publicInfo);
         }
 
-        if (!empty($storeChange->publicTime)) {
+        if (!is_null($storeChange->publicTime)) {
             $publicTime = PublicTimes::tryFrom($storeChange->publicTime);
             if (!$publicTime) {
                 throw new StoreTransactionException(StoreTransactionException::INVALID_PUBLIC_TIMES);
@@ -298,20 +379,28 @@ class StoreTransactions
 
         if (!is_null($storeChange->categoryId)) {
             $changeInformation->informationChanged = true;
-            $storeCategoryExists = $this->storeGateway->existStoreCategory($storeChange->categoryId);
-            if (!$storeCategoryExists) {
-                throw new StoreTransactionException(StoreTransactionException::STORE_CATEGORY_NOT_EXISTS);
+            if ($storeChange->categoryId !== 0) {
+                $storeCategoryExists = $this->storeGateway->existStoreCategory($storeChange->categoryId);
+                if (!$storeCategoryExists) {
+                    throw new StoreTransactionException(StoreTransactionException::STORE_CATEGORY_NOT_EXISTS);
+                }
+                $store->category = MinimalIdentifier::createFromId($storeChange->categoryId);
+            } else {
+                $store->category = null;
             }
-            $store->categoryId = $storeChange->categoryId;
         }
 
         if (!is_null($storeChange->chainId)) {
             $changeInformation->informationChanged = true;
-            $storeChainExists = $this->storeGateway->existStoreChain($storeChange->chainId);
-            if (!$storeChainExists) {
-                throw new StoreTransactionException(StoreTransactionException::STORE_CHAIN_NOT_EXISTS);
+            if ($storeChange->chainId !== 0) {
+                $storeChainExists = $this->storeGateway->existStoreChain($storeChange->chainId);
+                if (!$storeChainExists) {
+                    throw new StoreTransactionException(StoreTransactionException::STORE_CHAIN_NOT_EXISTS);
+                }
+                $store->chain = MinimalIdentifier::createFromId($storeChange->chainId);
+            } else {
+                $store->chain = null;
             }
-            $store->chainId = $storeChange->chainId;
         }
 
         if (!is_null($storeChange->cooperationStatus)) {
@@ -345,7 +434,7 @@ class StoreTransactions
             $store->teamStatus = TeamSearchStatus::from($storeChange->teamStatus);
         }
 
-        if (!empty($storeChange->calendarInterval)) {
+        if (!is_null($storeChange->calendarInterval)) {
             $changeInformation->informationChanged = true;
             $store->calendarInterval = $storeChange->calendarInterval;
         }
@@ -415,25 +504,28 @@ class StoreTransactions
      * Creates or updates a manual pick up.
      *
      * @param int $storeId Store to update
-     * @param \DateTimeInterface $date Date of manual pick up
-     * @param int $newTotalSlots count of total slots which should be set
+     * @param OneTimePickup $pickup Details of the pickup
      *
      * @return bool true if a new one is created, false if it is updated
      *
      * @throws PickupValidationException Exception if input is invalid
      */
-    public function createOrUpdatePickup(int $storeId, \DateTimeInterface $date, int $newTotalSlots): bool
+    public function createOrUpdatePickup(int $storeId, OneTimePickup $pickup): bool
     {
-        if ($date < Carbon::now()) {
+        if ($pickup->date < Carbon::now()) {
             throw new PickupValidationException(PickupValidationException::PICK_UP_DATE_IN_THE_PAST);
         }
 
-        if ($newTotalSlots < 0 || $newTotalSlots > self::MAX_SLOTS_PER_PICKUP) {
+        if ($pickup->slots < 0 || $pickup->slots > self::MAX_SLOTS_PER_PICKUP) {
             throw new PickupValidationException(PickupValidationException::SLOT_COUNT_OUT_OF_RANGE);
         }
 
-        $occupiedSlots = count($this->pickupGateway->getPickupSignUpsForDate($storeId, $date));
-        if ($newTotalSlots < $occupiedSlots) {
+        if (!is_null($pickup->description) && mb_strlen($pickup->description) > self::MAX_PICKUP_DESCRIPTION_LENGTH) {
+            throw new PickupValidationException(PickupValidationException::DESCRIPTION_OVERSIZED);
+        }
+
+        $occupiedSlots = count($this->pickupGateway->getPickupSignUpsForDate($storeId, $pickup->date));
+        if ($pickup->slots < $occupiedSlots) {
             throw new PickupValidationException(PickupValidationException::MORE_OCCUPIED_SLOTS);
         }
 
@@ -441,16 +533,16 @@ class StoreTransactions
             throw new PickupValidationException(PickupValidationException::INVALID_STORE);
         }
 
-        $filledOnetimeSlots = $this->pickupGateway->getOnetimePickups($storeId, $date);
+        $filledOnetimeSlots = $this->pickupGateway->getOnetimePickups($storeId, $pickup->date);
         if ($filledOnetimeSlots) {
-            $this->pickupGateway->updateOnetimePickupTotalSlots($storeId, $date, $newTotalSlots);
+            $this->pickupGateway->updateOnetimePickupTotalSlots($storeId, $pickup);
 
             return false;
-        } else {
-            $this->pickupGateway->addOnetimePickup($storeId, $date, $newTotalSlots);
-
-            return true;
         }
+
+        $this->pickupGateway->addOnetimePickup($storeId, $pickup);
+
+        return true;
     }
 
     /**
@@ -458,13 +550,13 @@ class StoreTransactions
      *
      * @param ?int $fsId Check whether this specific user could sign into a slot for this date
      *
-     * @return int 0 if no available slot, else the number of *total* slots (NOT available slots) for this date
+     * @return ?OneTimePickup null if no available slot, else the pickup for this date
      */
-    public function totalSlotsIfPickupSlotAvailable(int $storeId, Carbon $pickupDate, ?int $fsId = null): int
+    public function getPickupIfPickupSlotAvailable(int $storeId, Carbon $pickupDate, ?int $fsId = null): ?OneTimePickup
     {
         // do not allow signing up for past pickups
         if ($pickupDate < Carbon::now()) {
-            return 0;
+            return null;
         }
 
         $pickupSlots = $this->pickupGateway->getPickupSlots($storeId, $pickupDate, $pickupDate, $pickupDate);
@@ -473,23 +565,28 @@ class StoreTransactions
         if (count($pickupSlots) === 1) {
             $pickup = $pickupSlots[0];
         } else {
-            return 0;
+            return null;
         }
 
         // check if there are any free slots
         if (!$pickup['isAvailable']) {
-            return 0;
+            return null;
         }
 
         // when a user is provided, that user must not already be signed up
         if ($fsId) {
             $signedUpFoodsaverIds = array_column($pickup['occupiedSlots'], 'foodsaverId');
             if (in_array($fsId, $signedUpFoodsaverIds)) {
-                return 0;
+                return null;
             }
         }
 
-        return $pickup['totalSlots'];
+        $pickupObj = new OneTimePickup();
+        $pickupObj->date = $pickupDate;
+        $pickupObj->slots = $pickup['totalSlots'];
+        $pickupObj->description = $pickup['description'];
+
+        return $pickupObj;
     }
 
     /**
@@ -498,7 +595,7 @@ class StoreTransactions
      *
      * @param Carbon $maxDate end of date range
      *
-     * @return \DateTime the slot's time or null
+     * @return ?DateTime the slot's time or null
      */
     public function getNextAvailablePickupTime(int $storeId, Carbon $maxDate): ?DateTime
     {
@@ -546,11 +643,11 @@ class StoreTransactions
         $confirmed = $this->pickupIsPreconfirmed($storeId, $issuerId);
 
         /* Never occupy more slots than available */
-        if ($totalSlots = $this->totalSlotsIfPickupSlotAvailable($storeId, $date, $fsId)) {
+        if ($pickup = $this->getPickupIfPickupSlotAvailable($storeId, $date, $fsId)) {
             if ($this->checkPickupRule($storeId, $date, $fsId)) {
                 $this->pickupGateway->addFetcher($fsId, $storeId, $date, $confirmed);
                 // [#860] convert to manual slot, so they don't vanish when changing the schedule
-                $this->createOrUpdatePickup($storeId, $date, $totalSlots);
+                $this->createOrUpdatePickup($storeId, $pickup);
             } else {
                 throw new \DomainException('District Pickup Rule violated');
             }
@@ -867,7 +964,7 @@ class StoreTransactions
      *
      * @return bool true or false - true if no rule is violated, false if a rule is vialated
      *
-     * @throws \Exception
+     * @throws Exception
      */
     public function checkPickupRule(int $storeId, Carbon $pickupDate, int $fsId): bool
     {
@@ -899,5 +996,34 @@ class StoreTransactions
         }
 
         return true;
+    }
+
+    /**
+     * Returns all team member of the store (active and waiting list) and makes sure that details like the phone
+     * number are only included if allowed.
+     *
+     * @param array $store store data from the database
+     * @param bool $includeUserDetails whether to include or omit phone numbers and last fetch date
+     */
+    private function getDisplayedStoreTeam(array $store, bool $includeUserDetails): array
+    {
+        $allowedFields = [
+            // personal info
+            'id', 'name', 'photo', 'quiz_rolle', 'sleep_status', 'verified',
+            // team-related info
+            'verantwortlich', 'team_active', 'stat_fetchcount', 'add_date',
+        ];
+        if ($includeUserDetails) {
+            array_push($allowedFields, 'handy', 'telefon', 'last_fetch');
+        }
+
+        return array_map(
+            function ($teamMember) use ($allowedFields) {
+                return array_filter($teamMember, function ($key) use ($allowedFields) {
+                    return in_array($key, $allowedFields);
+                }, ARRAY_FILTER_USE_KEY);
+            },
+            array_merge($store['foodsaver'], $store['springer']),
+        );
     }
 }

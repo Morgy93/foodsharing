@@ -71,21 +71,11 @@ class BlogView extends View
         ]);
     }
 
-    public function newsPost(array $news): string
+    public function newsPost(int $blogId): string
     {
-        return $this->v_utils->v_field(
-            '<div class="news-post full"><h2><a href="/?page=blog&sub=read&id='
-            . $news['id'] . '">' . $news['name']
-            . '</a></h2><p class="small"><span class="time">'
-            . $this->timeHelper->niceDate($news['time_ts'])
-            . '</span><span class="name"> von '
-            . $news['fs_name']
-            . '</span></p>'
-            . $this->getImage($news, null, 'crop_0_528_')
-            . '<p>'
-            . $this->sanitizerService->purifyHtml($news['body'])
-            . '</p><div class="clear"></div></div>'
-        );
+        return $this->vueComponent('blog-post', 'BlogPost', [
+            'id' => $blogId
+        ]);
     }
 
     public function newsListItem(array $news): string
@@ -93,7 +83,7 @@ class BlogView extends View
         return '<div class="news-post"><h2><a href="/?page=blog&sub=read&id=' . $news['id'] . '">' . $news['name'] . '</a></h2><p class="small"><span class="time">' . $this->timeHelper->niceDate(
             $news['time_ts']
         ) . '</span><span class="name"> von ' . $news['fs_name'] . '</span></p>' . $this->getImage(
-            $news, [self::PICTURE_PREVIEW_WIDTH, self::PICTURE_PREVIEW_HEIGHT]
+            $news['picture'], $news['id'], [self::PICTURE_PREVIEW_WIDTH, self::PICTURE_PREVIEW_HEIGHT]
         ) . '<p>' . $this->routeHelper->autolink(
             $news['teaser']
         ) . '</p><p><a class="button" href="/?page=blog&sub=read&id=' . $news['id'] . '">
@@ -101,24 +91,24 @@ class BlogView extends View
 			</a></p><div class="clear"></div></div>';
     }
 
-    private function getImage(array $news, array $size = null, string $prefix = 'crop_1_528_'): string
+    private function getImage(string $postPicture, int $postId, array $size = null, string $prefix = 'crop_1_528_'): string
     {
-        if (empty($news['picture'])) {
+        if (empty($postPicture)) {
             return '';
         }
 
-        if (strpos($news['picture'], '/api/uploads/') === 0) {
+        if (strpos($postPicture, '/api/uploads/') === 0) {
             // path for pictures uploaded with the new API
-            $src = $news['picture'];
+            $src = $postPicture;
             if (!empty($size)) {
                 $src .= '?w=' . $size[0] . '&h=' . $size[1];
             }
         } else {
             // backward compatible path for old pictures
-            $src = '/images/' . str_replace('/', '/' . $prefix, $news['picture']);
+            $src = '/images/' . str_replace('/', '/' . $prefix, $postPicture);
         }
 
-        return '<a href="/?page=blog&sub=read&id=' . $news['id'] . '">'
+        return '<a href="/?page=blog&sub=read&id=' . $postId . '">'
             . '<img class="corner-all" src="' . $src . '" />'
             . '</a>';
     }

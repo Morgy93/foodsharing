@@ -4,6 +4,7 @@ namespace Foodsharing\Permissions;
 
 use Foodsharing\Lib\Session;
 use Foodsharing\Modules\Core\DBConstants\Foodsaver\Role;
+use Foodsharing\Modules\Core\DBConstants\Region\RegionIDs;
 
 class SearchPermissions
 {
@@ -35,5 +36,10 @@ class SearchPermissions
     public function maySeeUserAddress(): bool
     {
         return $this->session->mayRole(Role::ORGA);
+    }
+
+    public function maySearchByEmailAddress(): bool
+    {
+        return $this->session->mayRole(Role::ORGA) || $this->session->isAdminFor(RegionIDs::IT_SUPPORT_GROUP);
     }
 }

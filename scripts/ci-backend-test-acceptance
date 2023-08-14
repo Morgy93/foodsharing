@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 
 export FS_ENV=test
 
@@ -37,6 +37,9 @@ echo -ne ".";
 done
 echo
 
+log-header "Create DB dump file for codeception"
+mysqldump --user root --password=root -hdb foodsharing > dump.sql
+pwd 
 log-header "Running tests"
 failed=0
 SECONDS=0

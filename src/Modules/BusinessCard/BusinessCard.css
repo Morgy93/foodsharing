@@ -1,0 +1,7 @@
+#buisnesscard-form > .input-wrapper:last-of-type {
+  display: none;
+}
+
+#buisnesscard-form > .input-wrapper {
+  border-bottom: 0;
+}

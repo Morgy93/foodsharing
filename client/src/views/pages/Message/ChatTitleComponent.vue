@@ -59,6 +59,7 @@ export default {
       title: '',
       storeId: null,
       members: [],
+      defaultAvatar: '/img/mini_q_avatar.png',
     }
   },
   computed: {
@@ -79,23 +80,21 @@ export default {
         this.members = []
         return
       }
+
       const conversation = await conversationStore.getConversation(this.conversationId)
       const otherMembers = conversation.members.filter(m => m !== this.currentUserId).slice(0, LIMIT_DISPLAYED_USERS)
 
-      const title = conversation.title || `${otherMembers.map(member => ProfileStore.profiles[member].name).join(', ')}`
-
-      const members = otherMembers.map(member => (
-        {
-          id: ProfileStore.profiles[member].id,
-          name: ProfileStore.profiles[member].name,
-          avatar: ProfileStore.profiles[member].avatar,
+      this.members = otherMembers.map(member => {
+        const userProfile = ProfileStore.profiles[member]
+        return {
+          id: userProfile?.id,
+          name: userProfile?.name || this.$i18n('chat.unknown_username'),
+          avatar: userProfile?.avatar || this.defaultAvatar,
         }
-      ),
-      )
+      })
 
+      this.title = conversation.title || this.members.map(member => member.name).join(', ')
       this.storeId = conversation.storeId
-      this.title = title
-      this.members = members
     },
   },
 }

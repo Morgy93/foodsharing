@@ -6,6 +6,7 @@ use DateTime;
 use Exception;
 use Foodsharing\Modules\Core\BaseGateway;
 use Foodsharing\Modules\Core\DBConstants\Foodsaver\UserOptionType;
+use Foodsharing\RestApi\Models\Notifications\NewsletterChat;
 
 class SettingsGateway extends BaseGateway
 {
@@ -32,13 +33,13 @@ class SettingsGateway extends BaseGateway
         }
     }
 
-    public function saveInfoSettings(int $fsId, int $newsletter, int $infomail): int
+    public function saveInfoSettings(int $fsId, NewsletterChat $newsletterChat): int
     {
         return $this->db->update(
             'fs_foodsaver',
             [
-                'newsletter' => $newsletter,
-                'infomail_message' => $infomail
+                'newsletter' => $newsletterChat->newsletter,
+                'infomail_message' => $newsletterChat->chat
             ],
             ['id' => $fsId]
         );

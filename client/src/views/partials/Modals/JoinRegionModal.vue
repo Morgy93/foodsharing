@@ -6,7 +6,7 @@
     :title="$i18n('join_region.headline')"
     :cancel-title="$i18n('globals.close')"
     :ok-title="$i18n('globals.save')"
-
+    :ok-disabled="regionIsInValid"
     @show="showModal"
     @hidden="resetModal"
     @ok="joinRegion"

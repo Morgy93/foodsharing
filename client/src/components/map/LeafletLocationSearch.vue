@@ -11,23 +11,38 @@
         <span v-html="additionalInfoText" />
       </div>
     </div>
-
-    <b-form-input
-      id="searchinput"
-      v-model="searchInput"
-      :placeholder="$i18n('addresspicker.placeholder')"
-      class="mb-2"
-    />
+    <b-form-group>
+      <b-form-input
+        id="searchinput"
+        v-model="searchInput"
+        :placeholder="$i18n('addresspicker.placeholder')"
+        :disabled="disabled"
+      />
+    </b-form-group>
     <LeafletLocationPicker
       ref="locationPicker"
       :icon="icon"
-      :coordinates.sync="coords"
-      :zoom="zoom"
-      :marker-draggable="true"
+      :coordinates="currentCoords"
+      :zoom="currentZoom"
+      :bounds="currentBounds"
+      :marker-draggable="!disabled"
       @coordinates-changed="updateCoordinates"
     />
 
     <div v-if="showAddressFields">
+      <b-form-group
+        :label="$i18n('addresspicker.different_location')"
+        label-for="different-location"
+        class="my-2"
+      >
+        <b-form-checkbox
+          id="different_location"
+          ref="differentLocation"
+          v-model="differentLocation"
+          :disabled="disabled"
+          switch
+        />
+      </b-form-group>
       <b-form-group
         :label="$i18n('anschrift')"
         label-for="input-street"
@@ -37,7 +52,8 @@
           id="input-street"
           ref="inputStreet"
           v-model="currentStreet"
-          :disabled="false"
+          :disabled="disabled || !differentLocation"
+          @change="emitAddressChange"
         />
       </b-form-group>
       <b-form-group
@@ -50,7 +66,8 @@
           ref="inputPostal"
           v-model="currentPostal"
           class="my-2"
-          :disabled="true"
+          :disabled="disabled || !differentLocation"
+          @change="emitAddressChange"
         />
       </b-form-group>
       <b-form-group
@@ -63,7 +80,8 @@
           ref="inputCity"
           v-model="currentCity"
           class="my-2"
-          :disabled="true"
+          :disabled="disabled || !differentLocation"
+          @change="emitAddressChange"
         />
       </b-form-group>
     </div>
@@ -99,16 +117,20 @@ export default {
     showAddressFields: { type: Boolean, default: true },
     additionalInfoText: { type: String, default: null },
     doReverseGeocoding: { type: Boolean, default: true },
+    disabled: { type: Boolean, default: false },
   },
   data () {
     return {
       icon: L.AwesomeMarkers.icon({ icon: this.iconName, markerColor: this.iconColor }),
-      coords: this.coordinates,
+      differentLocation: null,
+      currentCoords: this.coordinates,
       currentPostal: this.postalCode,
       currentStreet: this.street,
       currentCity: this.city,
       searchInput: null,
       geolocationSearchEngine: null,
+      currentZoom: this.zoom,
+      currentBounds: null,
     }
   },
   mounted () {
@@ -139,37 +161,43 @@ export default {
   },
   methods: {
     updateCoordinates (coords) {
+      this.currentCoords = coords
       // if the marker was dragged, we need to do reverse geocoding to find the address
       if (this.doReverseGeocoding) {
         this.geolocationSearchEngine.reverseGeocode([coords.lat, coords.lon])
       }
     },
+    /**
+     * This function is called when a suggestion was selected in the search field.
+     */
     updateMap (event, searchResult) {
-      this.searchInput = searchResult.description
-      this.coords = { lat: searchResult.geometry.coordinates[1], lon: searchResult.geometry.coordinates[0] }
-
       // set the map to the new coordinates
-      this.$refs.locationPicker.centerMapAndMarker(this.coords)
       if (searchResult.properties.extent) {
         const bounds = searchResult.properties.extent
-        this.$refs.locationPicker.setBounds([bounds[1], bounds[0]], [bounds[3], bounds[2]])
+        this.currentBounds = [[bounds[1], bounds[0]], [bounds[3], bounds[2]]]
       } else {
-        this.$refs.locationPicker.setZoom(17)
+        this.currentZoom = 17
       }
 
       // update the address data
-      const prop = searchResult.properties
-      if (prop.postcode) {
-        this.currentPostal = prop.postcode
-      }
-      if (prop.city) {
-        this.currentCity = prop.city
-      }
-      if (prop.street) {
-        this.currentStreet = prop.street + (prop.housenumber ? ' ' + prop.housenumber : '')
-      }
+      if (!this.differentLocation) {
+        this.currentCoords = { lat: searchResult.geometry.coordinates[1], lon: searchResult.geometry.coordinates[0] }
 
-      this.$emit('address-change', this.coords, this.currentStreet, this.currentPostal, this.currentCity)
+        const prop = searchResult.properties
+        if (prop.postcode) {
+          this.currentPostal = prop.postcode
+        }
+        if (prop.city) {
+          this.currentCity = prop.city
+        }
+        if (prop.street) {
+          this.currentStreet = prop.street + (prop.housenumber ? ' ' + prop.housenumber : '')
+        }
+      }
+      this.emitAddressChange()
+    },
+    emitAddressChange () {
+      this.$emit('address-change', this.currentCoords, this.currentStreet, this.currentPostal, this.currentCity)
     },
   },
 }

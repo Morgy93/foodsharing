@@ -5,7 +5,13 @@ import requests
 import re
 import sys
 
-FILTER_LABELS = ['for::FS Community', 'for::BIEB', 'for::Ambassador', 'for::Orga only']
+FILTER_LABELS = {
+	'for::FS Community': 'Allgemein',
+	'for::BIEB': 'Betriebsverantwortliche',
+	'for::Ambassador': 'Botschafter\\*innen',
+	'for::Special working groups': 'Spezielle Arbeitsgruppen',
+	'for::Orga only': 'Orga'
+}
 API_URL = 'https://gitlab.com/api/v4'
 FIND_IMAGE_REGEXP = "\!\[[^]]*\]\([^\)]*\)"
 
@@ -19,8 +25,8 @@ def findProject(projectId: int) -> Tuple[str, str]:
 
 # Returns the ID and name of a milestone for its number in the project, or None if the number does not exist
 def findMilestoneID(projectId: int, milestoneNumber: int) -> Tuple[int, str]:
-	url = API_URL + '/projects/{0}/milestones/?private_token={1}'
-	milestones = requests.get(url.format(projectId, personalToken)).json()
+	url = API_URL + '/projects/{0}/milestones/?private_token={1}&iids[]={2}'
+	milestones = requests.get(url.format(projectId, personalToken, milestoneNumber)).json()
 	matches = [m for m in milestones if m['iid'] == milestoneNumber]
 	if len(matches) > 0:
 		return matches[0]['id'], matches[0]['title']
@@ -169,9 +175,9 @@ print('Frage merge requests ab')
 mergeRequests = listMergeRequests(projectID, milestoneMatch[0])
 
 # filter out those with specific labels
-for label in FILTER_LABELS:
+for label, labelName in FILTER_LABELS.items():
 	filteredMRs = list(filter(lambda x: label in x['labels'] and x['state'] == 'merged', mergeRequests))
-	print('\n\n## Label: "{0}" ({1} merge requests)'.format(label, len(filteredMRs)), file=outputFile)
+	print('\n\n## {0} ({1} merge requests)'.format(labelName, len(filteredMRs)), file=outputFile)
 
 	# extract release note texts and image links
 	releaseNoteTexts = [extractReleaseNotesText(mr['description']) for mr in filteredMRs]

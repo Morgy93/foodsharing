@@ -93,6 +93,12 @@ export default {
         })
       }
 
+      if (this.entry.isChainGroup) {
+        menu.push({
+          href: 'chains', icon: 'fa-link', text: 'menu.entry.chainList',
+        })
+      }
+
       return menu
     },
   },

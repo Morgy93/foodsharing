@@ -42,12 +42,20 @@ class RegularPickup
      */
     public int $maxCountOfSlots;
 
+    /**
+     * Description of the pickup slot.
+     *
+     * @OA\Property(type="string", example="Reserved for new Foodsavers")
+     */
+    public ?string $description = null;
+
     public static function createFromArray($query_result)
     {
         $obj = new RegularPickup();
         $obj->startTimeOfPickup = $query_result['time'];
         $obj->weekday = $query_result['dow'];
         $obj->maxCountOfSlots = $query_result['fetcher'];
+        $obj->description = $query_result['description'];
 
         return $obj;
     }
@@ -86,6 +94,7 @@ class RegularPickup
             $oneTimePickup->date = $start->clone()->addWeeks($i);
             $oneTimePickup->slots = $this->maxCountOfSlots;
             $oneTimePickups[] = $oneTimePickup;
+            $oneTimePickup->description = $this->description;
         }
 
         return $oneTimePickups;

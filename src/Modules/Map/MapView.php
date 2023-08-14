@@ -38,6 +38,7 @@ class MapView extends View
 					<label><input checked="checked" type="checkbox" name="viewopt[]" value="needhelp" /> ' . $this->translator->trans('menu.entry.helpwanted') . '</label>
 					<label><input checked="checked" type="checkbox" name="viewopt[]" value="needhelpinstant" /> ' . $this->translator->trans('menu.entry.helpneeded') . '</label>
 					<label><input type="checkbox" name="viewopt" value="nkoorp" /> ' . $this->translator->trans('menu.entry.other_stores') . '</label>
+					<label><input type="checkbox" name="viewopt" value="mine" /> ' . $this->translator->trans('map.filters.my_stores') . '</label>
 				</div>
 			</li>';
         }

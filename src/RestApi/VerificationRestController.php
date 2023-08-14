@@ -7,10 +7,12 @@ use Foodsharing\Modules\Bell\BellGateway;
 use Foodsharing\Modules\Bell\DTO\Bell;
 use Foodsharing\Modules\Core\DBConstants\Bell\BellType;
 use Foodsharing\Modules\Foodsaver\FoodsaverGateway;
+use Foodsharing\Modules\PassportGenerator\PassportGeneratorTransaction;
 use Foodsharing\Modules\Profile\DTO\PassHistoryEntry;
 use Foodsharing\Modules\Profile\DTO\VerificationHistoryEntry;
 use Foodsharing\Modules\Profile\ProfileGateway;
 use Foodsharing\Modules\Store\PickupGateway;
+use Foodsharing\Permissions\PassportPermissions;
 use Foodsharing\Permissions\ProfilePermissions;
 use Foodsharing\Utility\EmailHelper;
 use FOS\RestBundle\Controller\AbstractFOSRestController;
@@ -34,6 +36,8 @@ class VerificationRestController extends AbstractFOSRestController
     private Session $session;
     private EmailHelper $emailHelper;
     protected TranslatorInterface $translator;
+    private PassportPermissions $passportPermissions;
+    private PassportGeneratorTransaction $passportGeneratorTransaction;
 
     public function __construct(
         BellGateway $bellGateway,
@@ -43,7 +47,9 @@ class VerificationRestController extends AbstractFOSRestController
         ProfilePermissions $profilePermissions,
         Session $session,
         EmailHelper $emailHelper,
-        TranslatorInterface $translator
+        TranslatorInterface $translator,
+        PassportPermissions $passportPermissions,
+        PassportGeneratorTransaction $passportGeneratorTransaction,
     ) {
         $this->bellGateway = $bellGateway;
         $this->foodsaverGateway = $foodsaverGateway;
@@ -53,6 +59,8 @@ class VerificationRestController extends AbstractFOSRestController
         $this->session = $session;
         $this->emailHelper = $emailHelper;
         $this->translator = $translator;
+        $this->passportPermissions = $passportPermissions;
+        $this->passportGeneratorTransaction = $passportGeneratorTransaction;
     }
 
     /**
@@ -197,5 +205,41 @@ class VerificationRestController extends AbstractFOSRestController
         $history = $this->profileGateway->getPassHistory($userId);
 
         return $this->handleView($this->view($history, 200));
+    }
+
+    /**
+     * User can create own passport.
+     *
+     * @OA\Response(
+     *     response="200", description="Success.",
+     *     @OA\MediaType(mediaType="application/pdf",
+     *     @OA\Schema(type="string", format="binary", description="Passport as PDF-File")
+     *     )
+     * )
+     * @OA\Response(response="401", description="Not logged in.")
+     * @OA\Response(response="403", description="Insufficient permissions to create own passport.")
+     * @OA\Response(response="404", description="User not found.")
+     * @OA\Tag(name="verification")
+     * @Rest\Post("user/current/passport")
+     */
+    public function createAsUser(): Response
+    {
+        $sessionId = $this->session->id();
+        if (!$sessionId) {
+            throw new UnauthorizedHttpException('');
+        }
+
+        if (!$this->passportPermissions->mayCreatePassportAsUser($sessionId)) {
+            throw new AccessDeniedHttpException();
+        }
+
+        $passDate = $this->passportGeneratorTransaction->getPassDate($sessionId);
+
+        $pdf = $this->passportGeneratorTransaction->generate([$sessionId], $passDate, false, true);
+
+        $response = new Response($pdf);
+        $response->headers->set('Content-Type', 'application/pdf');
+
+        return $response;
     }
 }

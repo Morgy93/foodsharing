@@ -83,6 +83,10 @@ $colorlist: (
     --fs-color-type-foodshare-points: var(--fs-color-warning-500);
     --fs-color-type-communities: var(--fs-color-info-500);
 
+    --fs-color-chain-cooperating: var(--fs-color-success-500);
+    --fs-color-chain-negotiating: var(--fs-color-warning-500);
+    --fs-color-chain-not-cooperating: var(--fs-color-danger-500);
+
     --fs-border-default: var(--fs-color-primary-200);
     /**
         Shadow

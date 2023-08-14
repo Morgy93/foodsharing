@@ -2,13 +2,15 @@
   <div class="list-group">
     <div
       class="list-group-item list-group-header"
-      @click="toggleExpanded"
+      @click="!disableToggleExpanded ? toggleExpanded() : null"
     >
       <h5
         :class="{ 'expanded': isExpanded }"
-        v-html="title"
+        v-text="title"
       />
       <i
+        v-if="!disableToggleExpanded"
+        :id="title"
         :alt="isExpanded ? $i18n('globals.show_more') : $i18n('globals.show_less')"
         class="fas fa-angle-down"
         :class="{ 'fa-rotate-180': isExpanded }"
@@ -37,11 +39,13 @@ export default {
     tag: { type: String, default: 'tag' },
     title: { type: String, default: 'title' },
     toggleVisiblity: { type: Boolean, default: false },
+    containerIsExpanded: { type: Boolean, default: true },
+    disableToggleExpanded: { type: Boolean, default: false },
   },
   data () {
     return {
       isToggled: false,
-      isExpanded: true,
+      isExpanded: this.containerIsExpanded,
     }
   },
   computed: {

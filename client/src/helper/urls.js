@@ -6,6 +6,7 @@ const urls = {
   profile: (id) => `/profile/${id}`,
   profileNotes: (fsId) => `/profile/${fsId}/notes`,
   academy: () => '/?page=content&sub=academy',
+  application: (groupId, userId) => `/?page=application&bid=${groupId}&fid=${userId}`,
   basket: (basketId) => `/essenskoerbe/${basketId}`,
   baskets: () => '/essenskoerbe',
   basketCreateOrEdit: () => '/essenskoerbe/create',
@@ -18,7 +19,6 @@ const urls = {
   communitiesGermany: () => '/?page=content&sub=communitiesGermany',
   communitiesSwitzerland: () => '/?page=content&sub=communitiesSwitzerland',
   contact: () => '/?page=content&sub=contact',
-  newsFromIT: () => '/?page=content&sub=newsFromIT',
   contentEdit: () => '/?page=content',
   conversations: (conversationId = null) => `/?page=msg${conversationId ? `&cid=${conversationId}` : ''}`,
   dashboard: () => '/?page=dashboard',
@@ -47,6 +47,7 @@ const urls = {
   mailboxManage: () => '/?page=mailbox&a=manage',
   mailboxMailto: (email) => `/?page=mailbox&mailto=${email}`,
   map: () => '/karte',
+  newsFromIT: () => '/?page=content&sub=newsFromIT',
   vision: () => '/ueber-uns',
   partner: () => '/partner',
   passwordReset: () => '/?page=login&sub=passwordReset',
@@ -56,12 +57,14 @@ const urls = {
   region: () => '/?page=region',
   releaseNotes: () => '/?page=content&sub=releaseNotes',
   violations: (fsId) => `/?page=report&sub=foodsaver&id=${fsId}`,
+  security: () => '/?page=content&sub=security',
   settings: () => '/?page=settings',
   settingsCalendar: () => '/?page=settings&sub=calendar',
   settingsNotifications: () => '/?page=settings&sub=info',
   statistics: () => '/statistik',
-  store: (storeId) => `/?page=fsbetrieb&id=${storeId}`,
+  store: (storeId) => `/store/${storeId}`,
   storeList: () => '/?page=fsbetrieb',
+  storeOwnList: () => '/?page=betrieb&a=own',
 
   team: () => '/team',
   transparency: () => '/?page=content&sub=transparency',
@@ -82,7 +85,7 @@ const urls = {
 
   // region id
   forum: (regionId, subforumId = 0, threadId = null, postId = null, newThread = false) => {
-    const str = [`/?page=bezirk&bid=${regionId}`]
+    const str = [`/?page=bezirk${regionId ? `&bid=${regionId}` : ''}`]
     if (subforumId === 1) {
       str.push('&sub=botforum')
     } else {
@@ -98,6 +101,11 @@ const urls = {
       str.push('&newthread=1')
     }
     return str.join('')
+  },
+
+  // simplified url for forum threads
+  forumThread: (regionId, threadId, postId = null) => {
+    return url('forum', regionId, 0, threadId, postId)
   },
   events: (regionId) => `/?page=bezirk&bid=${regionId}&sub=events`,
   foodsaverList: (regionId) => `/?page=foodsaver&bid=${regionId}`,
@@ -153,6 +161,7 @@ const urls = {
   wiener_tafel: () => 'https://www.wienertafel.at',
   bmlfuw: () => 'https://www.bmlrt.gv.at',
   denns: () => 'https://www.denns-biomarkt.at',
+  chains: () => '/?page=chain',
 
   // Devdocs
   devdocs: () => 'https://devdocs.foodsharing.network',
@@ -187,4 +196,6 @@ const url = (key, ...params) => {
   return urls[key](...params)
 }
 
-export { url, urls }
+const isFoodsharingDomain = (value) => value.match(/(.)+@foodsharing.network$/g)
+
+export { url, urls, isFoodsharingDomain }

@@ -110,7 +110,7 @@ final class ProfileControl extends Control
         $maySeeCommitmentsStat = $this->profilePermissions->maySeeCommitmentsStat($fsId);
 
         $wallPosts = $this->wallposts('foodsaver', $fsId);
-        $userStores = $maySeeStores ? $this->profileGateway->listStoresOfFoodsaver($fsId) : [];
+        $userStores = $this->profileGateway->listStoresOfFoodsaver($fsId);
 
         $profileCommitmentsStat[0]['respActStores'] = $maySeeCommitmentsStat ? $this->profileGateway->getResponsibleActiveStoresCount($fsId) : 0;
         $pos = 0;

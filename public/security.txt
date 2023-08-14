@@ -1,0 +1,11 @@
+Contact: mailto:security@foodsharing.network
+Expires: 2026-01-01T00:00:00.000Z
+Acknowledgments: https://foodsharing.network/?page=content&sub=security
+Preferred-Languages: de, en
+Canonical: https://foodsharing.network/security.txt
+Canonical: https://beta.foodsharing.network/security.txt
+Canonical: https://foodsharing.de/security.txt
+Canonical: https://beta.foodsharing.de/security.txt
+Canonical: https://foodsharing.at/security.txt
+Canonical: https://beta.foodsharing.at/security.txt
+Policy: https://foodsharing.network/?page=content&sub=security

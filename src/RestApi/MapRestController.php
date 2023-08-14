@@ -58,6 +58,12 @@ class MapRestController extends AbstractFOSRestController
             $excludedStoreTypes = [];
             $teamSearchStatus = [];
             $status = $paramFetcher->get('status');
+            $userId = null;
+
+            $excludedStoreTypes = array_merge($excludedStoreTypes, [
+                CooperationStatus::PERMANENTLY_CLOSED
+            ]);
+
             if (is_array($status) && !empty($status)) {
                 foreach ($status as $s) {
                     switch ($s) {
@@ -72,11 +78,14 @@ class MapRestController extends AbstractFOSRestController
                                 CooperationStatus::COOPERATION_STARTING, CooperationStatus::COOPERATION_ESTABLISHED
                             ]);
                             break;
+                        case 'mine':
+                            $userId = $this->session->id();
+                            break;
                     }
                 }
             }
 
-            $markers['betriebe'] = $this->storeGateway->getStoreMarkers($excludedStoreTypes, $teamSearchStatus);
+            $markers['betriebe'] = $this->storeGateway->getStoreMarkers($excludedStoreTypes, $teamSearchStatus, $userId);
         }
 
         return $this->handleView($this->view($markers, 200));

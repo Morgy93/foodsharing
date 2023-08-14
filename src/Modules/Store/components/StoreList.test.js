@@ -16,13 +16,13 @@ function createMockStore () {
   }
 }
 
-describe('StoreList', () => {
+describe('StoreRegionList', () => {
   const sandbox = sinon.createSandbox()
 
   let storeList
 
   beforeEach(() => {
-    storeList = require('./StoreList').default
+    storeList = require('./StoreRegionList').default
   })
   afterEach(() => {
     sandbox.restore()

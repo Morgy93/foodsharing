@@ -10,6 +10,7 @@ import './Foodsaver.css'
 import { attachAddressPicker } from '@/addressPicker'
 import { vueApply, vueRegister } from '@/vue'
 import AvatarList from '@/components/AvatarList'
+import RegionTreeVForm from '@/components/regiontree/RegionTreeVForm'
 
 const fsapp = {
   init: function () {
@@ -46,14 +47,6 @@ const fsapp = {
   },
 }
 
-export async function confirmDeleteSelf (fsId) {
-  if (window.confirm(i18n('foodsaver.delete_account_sure'))) {
-    await deleteUser(fsId, null)
-    pulseSuccess(i18n('success'))
-    goTo('/?page=logout')
-  }
-}
-
 export async function confirmDeleteUser (fsId, name) {
   let reason
   do {
@@ -71,7 +64,6 @@ fsapp.init()
 expose({
   fsapp,
   confirmDeleteUser,
-  confirmDeleteSelf,
 })
 
 if (document.querySelector('#map')) {
@@ -83,4 +75,10 @@ if (GET('edit') === undefined) {
     AvatarList,
   })
   vueApply('#fslist', true)
+}
+if (GET('a') === 'edit') {
+  vueRegister({
+    RegionTreeVForm,
+  })
+  vueApply('#region-tree-vform')
 }

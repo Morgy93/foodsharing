@@ -56,9 +56,10 @@ final class RegionPermissions
 
     public function mayAccessStatisticCountry(): bool
     {
-        if ($this->session->mayRole(Role::ORGA)) {
+        // Temporarily disabled because it is too inefficient for Europe and Germany
+        /* if ($this->session->mayRole(Role::ORGA)) {
             return true;
-        }
+        } */
 
         return false;
     }
@@ -126,6 +127,15 @@ final class RegionPermissions
     }
 
     public function maySeeRegionMembers(int $regionId): bool
+    {
+        if ($this->session->mayRole(Role::ORGA)) {
+            return true;
+        }
+
+        return in_array($regionId, $this->session->listRegionIDs());
+    }
+
+    public function mayListFoodSharePointsInRegion(int $regionId)
     {
         if ($this->session->mayRole(Role::ORGA)) {
             return true;

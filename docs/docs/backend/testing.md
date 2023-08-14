@@ -31,6 +31,18 @@ or
 ./scripts/test acceptance LoginCest
 ```
 
+or
+
+```
+./scripts/test api SearchApiCest
+```
+
+or to run a specific test
+
+```
+./scripts/test api SearchApiCest:canOnlySearchWhenLoggedIn
+```
+
 To stop the Test containers run ```./scripts/stop test```.
 
 So far, end to end testing is working nicely (called acceptance tests in codeception).

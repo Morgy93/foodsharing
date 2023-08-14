@@ -6,10 +6,12 @@ use Foodsharing\Lib\Session;
 use Foodsharing\Modules\Bell\BellGateway;
 use Foodsharing\Modules\Bell\DTO\Bell;
 use Foodsharing\Modules\Core\DBConstants\Bell\BellType;
+use Foodsharing\Modules\Core\DBConstants\Info\InfoType;
 use Foodsharing\Modules\Core\DBConstants\Region\WorkgroupFunction;
 use Foodsharing\Modules\Core\DBConstants\Unit\UnitType;
 use Foodsharing\Modules\Foodsaver\FoodsaverGateway;
 use Foodsharing\Modules\Group\GroupFunctionGateway;
+use Foodsharing\RestApi\Models\Notifications\Thread;
 use Foodsharing\Utility\EmailHelper;
 use Foodsharing\Utility\FlashMessageHelper;
 use Foodsharing\Utility\Sanitizer;
@@ -201,5 +203,28 @@ class ForumTransactions
             throw new \InvalidArgumentException();
         }
         $this->forumGateway->removeReaction($postId, $fsId, $key);
+    }
+
+    /**
+     * Updates the user's notification settings for a list of forum threads individually.
+     *
+     * @param Thread[] $threads
+     */
+    public function updateThreadNotifications(int $userId, array $threads): void
+    {
+        foreach ($threads as $thread) {
+            $threadIdsToUnfollow = [];
+
+            if ($thread->infotype == InfoType::NONE) {
+                $threadIdsToUnfollow[] = $thread->id;
+            }
+            $this->forumFollowerGateway->updateInfoType($userId, $thread->id, $thread->infotype);
+        }
+
+        if (!empty($threadIdsToUnfollow)) {
+            foreach ($threadIdsToUnfollow as $threadId) {
+                $this->forumFollowerGateway->unfollowThreadByEmail($userId, $threadId);
+            }
+        }
     }
 }

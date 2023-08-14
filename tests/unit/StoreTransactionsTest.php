@@ -4,6 +4,7 @@ use Carbon\Carbon;
 use Carbon\CarbonInterval;
 use Faker\Factory;
 use Faker\Generator;
+use Foodsharing\Modules\Core\DatabaseNoValueFoundException;
 use Foodsharing\Modules\Core\DBConstants\Bell\BellType;
 use Foodsharing\Modules\Core\DBConstants\Store\ConvinceStatus;
 use Foodsharing\Modules\Core\DBConstants\Store\CooperationStatus;
@@ -25,7 +26,7 @@ class StoreTransactionsTest extends \Codeception\Test\Unit
     private PickupGateway $gateway;
     private Generator $faker;
 
-    private $region_id;
+    private $regionId;
     private $foodsaver;
 
     public function _before()
@@ -33,11 +34,42 @@ class StoreTransactionsTest extends \Codeception\Test\Unit
         $this->store = $this->tester->get(StoreGateway::class);
         $this->transactions = $this->tester->get(StoreTransactions::class);
         $this->gateway = $this->tester->get(PickupGateway::class);
-        $this->store = $this->tester->get(StoreGateway::class);
         $this->faker = $this->faker = Factory::create('de_DE');
         $this->foodsaver = $this->tester->createFoodsaver();
-        $this->region_id = $this->tester->createRegion()['id'];
-        $this->tester->addRegionMember($this->region_id, $this->foodsaver['id']);
+        $this->regionId = $this->tester->createRegion()['id'];
+        $this->tester->addRegionMember($this->regionId, $this->foodsaver['id']);
+    }
+
+    public function testGetStoreForNotExistingStore()
+    {
+        $storeInstance = $this->tester->createStore($this->regionId);
+        try {
+            $this->transactions->getStore($storeInstance['id'] + 1, true, true);
+            $this->assertTrue(false, 'Expect thrown exception');
+        } catch (DatabaseNoValueFoundException) {
+            $this->assertTrue(true);
+        }
+    }
+
+    public function testGetStoreForWithoutStoreTeamOnlyData()
+    {
+        $storeInstance = $this->tester->createStore($this->regionId);
+        $store = $this->transactions->getStore($storeInstance['id'], false, false);
+        $this->assertEquals(null, $store->description);
+        $this->assertEquals(null, $store->effort);
+        $this->assertEquals(null, $store->publicity);
+        $this->assertEquals(null, $store->options);
+    }
+
+    public function testGetStoreForWithoutSensitiveData()
+    {
+        $storeInstance = $this->tester->createStore($this->regionId);
+        $store = $this->transactions->getStore($storeInstance['id'], true, false);
+        $this->assertEquals(null, $store->contact);
+        $this->assertEquals(null, $store->updatedAt);
+        $this->assertEquals(null, $store->effort);
+        $this->assertEquals(null, $store->showsSticker);
+        $this->assertEquals(null, $store->groceries);
     }
 
     public function testCreateStoreThrowsExceptionIfRegionIsWorkingGroup()
@@ -190,13 +222,14 @@ class StoreTransactionsTest extends \Codeception\Test\Unit
         $common = $this->transactions->getCommonStoreMetadata();
 
         // Check cooperation status
-        $this->assertEquals(CooperationStatus::NO_CONTACT->value, $common->status[0]->id);
-        $this->assertEquals(CooperationStatus::IN_NEGOTIATION->value, $common->status[1]->id);
-        $this->assertEquals(CooperationStatus::COOPERATION_STARTING->value, $common->status[2]->id);
-        $this->assertEquals(CooperationStatus::DOES_NOT_WANT_TO_WORK_WITH_US->value, $common->status[3]->id);
-        $this->assertEquals(CooperationStatus::COOPERATION_ESTABLISHED->value, $common->status[4]->id);
-        $this->assertEquals(CooperationStatus::GIVES_TO_OTHER_CHARITY->value, $common->status[5]->id);
-        $this->assertEquals(CooperationStatus::PERMANENTLY_CLOSED->value, $common->status[6]->id);
+        $this->assertEquals(CooperationStatus::UNCLEAR->value, $common->status[0]->id);
+        $this->assertEquals(CooperationStatus::NO_CONTACT->value, $common->status[1]->id);
+        $this->assertEquals(CooperationStatus::IN_NEGOTIATION->value, $common->status[2]->id);
+        $this->assertEquals(CooperationStatus::COOPERATION_STARTING->value, $common->status[3]->id);
+        $this->assertEquals(CooperationStatus::DOES_NOT_WANT_TO_WORK_WITH_US->value, $common->status[4]->id);
+        $this->assertEquals(CooperationStatus::COOPERATION_ESTABLISHED->value, $common->status[5]->id);
+        $this->assertEquals(CooperationStatus::GIVES_TO_OTHER_CHARITY->value, $common->status[6]->id);
+        $this->assertEquals(CooperationStatus::PERMANENTLY_CLOSED->value, $common->status[7]->id);
 
         // Check food types
         foreach ($foods as $key => $food) {
@@ -208,7 +241,9 @@ class StoreTransactionsTest extends \Codeception\Test\Unit
         $this->assertNull($common->storeChains);
 
         // Check categories
+        array_shift($common->categories); // Remove "Not selected"
         $this->assertEquals($this->tester->grabNumRecords('fs_betrieb_kategorie'), count($common->categories));
+
         foreach ($common->categories as $category) {
             $this->tester->seeInDatabase('fs_betrieb_kategorie', ['id' => $category->id, 'name' => $category->name]);
         }
@@ -232,16 +267,18 @@ class StoreTransactionsTest extends \Codeception\Test\Unit
         $this->assertEquals('mehr als 50 kg', $common->weight[7]->name);
 
         // Check possible pickup time range
-        $this->assertEquals(PublicTimes::IN_THE_MORNING->value, $common->status[0]->id);
-        $this->assertEquals(PublicTimes::AT_NOON_IN_THE_AFTERNOON->value, $common->status[1]->id);
-        $this->assertEquals(PublicTimes::IN_THE_EVENING->value, $common->status[2]->id);
-        $this->assertEquals(PublicTimes::AT_NIGHT->value, $common->status[3]->id);
+        $this->assertEquals(PublicTimes::NOT_SET->value, $common->status[0]->id);
+        $this->assertEquals(PublicTimes::IN_THE_MORNING->value, $common->status[1]->id);
+        $this->assertEquals(PublicTimes::AT_NOON_IN_THE_AFTERNOON->value, $common->status[2]->id);
+        $this->assertEquals(PublicTimes::IN_THE_EVENING->value, $common->status[3]->id);
+        $this->assertEquals(PublicTimes::AT_NIGHT->value, $common->status[4]->id);
 
         // Check convince status
-        $this->assertEquals(ConvinceStatus::NO_PROBLEM_AT_ALL->value, $common->status[0]->id);
-        $this->assertEquals(ConvinceStatus::AFTER_SOME_PERSUASION->value, $common->status[1]->id);
-        $this->assertEquals(ConvinceStatus::DIFFICULT_NEGOTIATION->value, $common->status[2]->id);
-        $this->assertEquals(ConvinceStatus::LOOKED_BAD_BUT_WORKED->value, $common->status[3]->id);
+        $this->assertEquals(ConvinceStatus::NOT_SET->value, $common->status[0]->id);
+        $this->assertEquals(ConvinceStatus::NO_PROBLEM_AT_ALL->value, $common->status[1]->id);
+        $this->assertEquals(ConvinceStatus::AFTER_SOME_PERSUASION->value, $common->status[2]->id);
+        $this->assertEquals(ConvinceStatus::DIFFICULT_NEGOTIATION->value, $common->status[3]->id);
+        $this->assertEquals(ConvinceStatus::LOOKED_BAD_BUT_WORKED->value, $common->status[4]->id);
     }
 
     public function testAllCommonStoreMetaDataWithLoadOfStoreChains()
@@ -257,13 +294,14 @@ class StoreTransactionsTest extends \Codeception\Test\Unit
         $common = $this->transactions->getCommonStoreMetadata(false);
 
         // Check cooperation status
-        $this->assertEquals(CooperationStatus::NO_CONTACT->value, $common->status[0]->id);
-        $this->assertEquals(CooperationStatus::IN_NEGOTIATION->value, $common->status[1]->id);
-        $this->assertEquals(CooperationStatus::COOPERATION_STARTING->value, $common->status[2]->id);
-        $this->assertEquals(CooperationStatus::DOES_NOT_WANT_TO_WORK_WITH_US->value, $common->status[3]->id);
-        $this->assertEquals(CooperationStatus::COOPERATION_ESTABLISHED->value, $common->status[4]->id);
-        $this->assertEquals(CooperationStatus::GIVES_TO_OTHER_CHARITY->value, $common->status[5]->id);
-        $this->assertEquals(CooperationStatus::PERMANENTLY_CLOSED->value, $common->status[6]->id);
+        $this->assertEquals(CooperationStatus::UNCLEAR->value, $common->status[0]->id);
+        $this->assertEquals(CooperationStatus::NO_CONTACT->value, $common->status[1]->id);
+        $this->assertEquals(CooperationStatus::IN_NEGOTIATION->value, $common->status[2]->id);
+        $this->assertEquals(CooperationStatus::COOPERATION_STARTING->value, $common->status[3]->id);
+        $this->assertEquals(CooperationStatus::DOES_NOT_WANT_TO_WORK_WITH_US->value, $common->status[4]->id);
+        $this->assertEquals(CooperationStatus::COOPERATION_ESTABLISHED->value, $common->status[5]->id);
+        $this->assertEquals(CooperationStatus::GIVES_TO_OTHER_CHARITY->value, $common->status[6]->id);
+        $this->assertEquals(CooperationStatus::PERMANENTLY_CLOSED->value, $common->status[7]->id);
 
         // Check food types
         foreach ($foods as $key => $food) {
@@ -272,12 +310,14 @@ class StoreTransactionsTest extends \Codeception\Test\Unit
         }
 
         // Check store chains
+        array_shift($common->storeChains); // Remove "Not selected"
         foreach ($chains as $key => $chain) {
             $this->assertEquals($chain['id'], $common->storeChains[$key]->id);
             $this->assertEquals($chain['name'], $common->storeChains[$key]->name);
         }
 
         // Check categories
+        array_shift($common->categories); // Remove "Not selected"
         $this->assertEquals($this->tester->grabNumRecords('fs_betrieb_kategorie'), count($common->categories));
         foreach ($common->categories as $category) {
             $this->tester->seeInDatabase('fs_betrieb_kategorie', ['id' => $category->id, 'name' => $category->name]);
@@ -304,7 +344,7 @@ class StoreTransactionsTest extends \Codeception\Test\Unit
 
     public function testPickupSlotAvailableRegular()
     {
-        $store = $this->tester->createStore($this->region_id);
+        $store = $this->tester->createStore($this->regionId);
         $foodsaver2 = $this->tester->createFoodsaver();
         $date = Carbon::now()->add('2 days')->hours(16)->minutes(30)->seconds(0)->microseconds(0);
         $dow = $date->weekday();
@@ -312,20 +352,20 @@ class StoreTransactionsTest extends \Codeception\Test\Unit
 
         $this->tester->addRecurringPickup($store['id'], ['time' => '16:30:00', 'dow' => $dow, 'fetcher' => $fetcher]);
 
-        $this->assertEquals($fetcher, $this->transactions->totalSlotsIfPickupSlotAvailable($store['id'], $date, $this->foodsaver['id']));
+        $this->assertEquals($fetcher, $this->transactions->getPickupIfPickupSlotAvailable($store['id'], $date, $this->foodsaver['id'])->slots);
 
         $this->tester->addCollector($this->foodsaver['id'], $store['id'], ['date' => $date]);
 
-        $this->assertEquals(0, $this->transactions->totalSlotsIfPickupSlotAvailable($store['id'], $date, $this->foodsaver['id']));
-        $this->assertEquals($fetcher, $this->transactions->totalSlotsIfPickupSlotAvailable($store['id'], $date, $foodsaver2['id']));
+        $this->assertEquals(null, $this->transactions->getPickupIfPickupSlotAvailable($store['id'], $date, $this->foodsaver['id']));
+        $this->assertEquals($fetcher, $this->transactions->getPickupIfPickupSlotAvailable($store['id'], $date, $foodsaver2['id'])->slots);
 
         $this->tester->addCollector($foodsaver2['id'], $store['id'], ['date' => $date]);
-        $this->assertEquals(0, $this->transactions->totalSlotsIfPickupSlotAvailable($store['id'], $date));
+        $this->assertEquals(null, $this->transactions->getPickupIfPickupSlotAvailable($store['id'], $date));
     }
 
     public function testPickupSlotAvailableMixed()
     {
-        $store = $this->tester->createStore($this->region_id);
+        $store = $this->tester->createStore($this->regionId);
         $date = Carbon::now()->add('3 days')->hours(16)->minutes(40)->seconds(0)->microseconds(0);
         $dow = $date->format('w');
 
@@ -334,17 +374,17 @@ class StoreTransactionsTest extends \Codeception\Test\Unit
 
         $fetchercount = 1;
         $this->tester->addPickup($store['id'], ['time' => $date, 'fetchercount' => $fetchercount]);
-        $this->assertEquals($fetchercount, $this->transactions->totalSlotsIfPickupSlotAvailable($store['id'], $date));
+        $this->assertEquals($fetchercount, $this->transactions->getPickupIfPickupSlotAvailable($store['id'], $date)->slots);
 
         $this->tester->addCollector($this->foodsaver['id'], $store['id'], ['date' => $date]);
 
-        $this->assertEquals(0, $this->transactions->totalSlotsIfPickupSlotAvailable($store['id'], $date, $this->foodsaver['id']));
-        $this->assertEquals(0, $this->transactions->totalSlotsIfPickupSlotAvailable($store['id'], $date));
+        $this->assertEquals(null, $this->transactions->getPickupIfPickupSlotAvailable($store['id'], $date, $this->foodsaver['id']));
+        $this->assertEquals(null, $this->transactions->getPickupIfPickupSlotAvailable($store['id'], $date));
     }
 
     public function testSinglePickupTimeProperlyTakenIntoAccount()
     {
-        $store = $this->tester->createStore($this->region_id);
+        $store = $this->tester->createStore($this->regionId);
         $user = $this->tester->createFoodsaver();
 
         $date = Carbon::instance($this->faker->dateTimeInInterval('+2 days', '+10 days'));
@@ -361,15 +401,15 @@ class StoreTransactionsTest extends \Codeception\Test\Unit
 
     public function testPickupSlotNotAvailableEmpty()
     {
-        $store = $this->tester->createStore($this->region_id);
+        $store = $this->tester->createStore($this->regionId);
         $date = Carbon::now()->add('1 day')->microseconds(0);
 
-        $this->assertEquals(0, $this->transactions->totalSlotsIfPickupSlotAvailable($store['id'], $date));
+        $this->assertEquals(null, $this->transactions->getPickupIfPickupSlotAvailable($store['id'], $date));
     }
 
     public function testUserCanOnlySignupOncePerSlot()
     {
-        $store = $this->tester->createStore($this->region_id);
+        $store = $this->tester->createStore($this->regionId);
         $date = Carbon::now()->add('4 days')->hours(16)->minutes(20)->seconds(0)->microseconds(0);
         $dow = $date->format('w');
         $fetcher = 2;
@@ -384,7 +424,7 @@ class StoreTransactionsTest extends \Codeception\Test\Unit
 
     public function testUserCanOnlySignupForHimSelfOncePerSlot()
     {
-        $store = $this->tester->createStore($this->region_id);
+        $store = $this->tester->createStore($this->regionId);
         $date = Carbon::now()->add('4 days')->hours(16)->minutes(20)->seconds(0)->microseconds(0);
         $dow = $date->format('w');
         $fetcher = 2;
@@ -399,7 +439,7 @@ class StoreTransactionsTest extends \Codeception\Test\Unit
     public function testComfirmForStoreCoordinatorOfThisStoreOnSignupSelfSuccessful()
     {
         $coordinator = $this->tester->createStoreCoordinator();
-        $store = $this->tester->createStore($this->region_id);
+        $store = $this->tester->createStore($this->regionId);
         $this->tester->addStoreTeam($store['id'], $coordinator['id'], true);
         $date = Carbon::now()->add('4 days')->hours(16)->minutes(20)->seconds(0)->microseconds(0);
         $dow = $date->format('w');
@@ -412,7 +452,7 @@ class StoreTransactionsTest extends \Codeception\Test\Unit
 
     public function testNoComfirmForStoreTeamMemberOnSignup()
     {
-        $store = $this->tester->createStore($this->region_id);
+        $store = $this->tester->createStore($this->regionId);
         $date = Carbon::now()->add('4 days')->hours(16)->minutes(20)->seconds(0)->microseconds(0);
         $dow = $date->format('w');
         $fetcher = 2;
@@ -426,8 +466,8 @@ class StoreTransactionsTest extends \Codeception\Test\Unit
     {
         $coordinator1 = $this->tester->createStoreCoordinator();
         $coordinator2 = $this->tester->createStoreCoordinator();
-        $store1 = $this->tester->createStore($this->region_id);
-        $store2 = $this->tester->createStore($this->region_id);
+        $store1 = $this->tester->createStore($this->regionId);
+        $store2 = $this->tester->createStore($this->regionId);
         $this->tester->addStoreTeam($store1['id'], $coordinator1['id'], true);
         $this->tester->addStoreTeam($store2['id'], $coordinator2['id'], true);
 
@@ -441,7 +481,7 @@ class StoreTransactionsTest extends \Codeception\Test\Unit
 
     public function testUserCanOnlySignupForFuturePickups()
     {
-        $store = $this->tester->createStore($this->region_id);
+        $store = $this->tester->createStore($this->regionId);
         $pickup = new Carbon('1 hour ago');
         $fetchercount = 1;
 
@@ -455,7 +495,7 @@ class StoreTransactionsTest extends \Codeception\Test\Unit
     public function testUserCanOnlySignupForNotTooMuchInTheFuturePickups()
     {
         $interval = CarbonInterval::weeks(3);
-        $store = $this->tester->createStore($this->region_id, null, null, ['prefetchtime' => $interval->totalSeconds - 360]);
+        $store = $this->tester->createStore($this->regionId, null, null, ['prefetchtime' => $interval->totalSeconds - 360]);
 
         /* that pickup is now at least some minutes too much in the future to sign up */
         $pickup = Carbon::tomorrow()->add($interval)->microseconds(0);
@@ -478,7 +518,7 @@ class StoreTransactionsTest extends \Codeception\Test\Unit
     public function testUserCanSignupForManualFarInTheFuturePickups()
     {
         $interval = CarbonInterval::weeks(3);
-        $store = $this->tester->createStore($this->region_id, null, null, ['prefetchtime' => $interval->totalSeconds - 360]);
+        $store = $this->tester->createStore($this->regionId, null, null, ['prefetchtime' => $interval->totalSeconds - 360]);
 
         /* that pickup is now at least some minutes too much in the future to sign up */
         $pickup = Carbon::now()->add($interval)->microseconds(0);
@@ -491,7 +531,7 @@ class StoreTransactionsTest extends \Codeception\Test\Unit
 
     public function testUpdateExpiredBellsUpdatesBellCountIfStillUnconfirmedFetchesAreInTheFuture()
     {
-        $store = $this->tester->createStore($this->region_id);
+        $store = $this->tester->createStore($this->regionId);
         $foodsaver = $this->tester->createFoodsaver();
 
         $this->tester->addPickup($store['id'], ['time' => '2150-01-01 00:00:00', 'fetchercount' => 1]);
@@ -565,7 +605,7 @@ class StoreTransactionsTest extends \Codeception\Test\Unit
         $dow = $date->weekday();
 
         // stores should result is a non-null date if there are free slots available
-        $store = $this->tester->createStore($this->region_id, null, null, ['betrieb_status_id' => CooperationStatus::COOPERATION_ESTABLISHED->value]);
+        $store = $this->tester->createStore($this->regionId, null, null, ['betrieb_status_id' => CooperationStatus::COOPERATION_ESTABLISHED->value]);
         $this->tester->addRecurringPickup($store['id'], ['time' => '16:30:00', 'dow' => $dow, 'fetcher' => 1]);
         $this->assertEquals($this->transactions->getNextAvailablePickupTime($store['id'], $maxDate), $date);
 
@@ -579,7 +619,7 @@ class StoreTransactionsTest extends \Codeception\Test\Unit
         $dow = $date->weekday();
 
         // stores should have status != 0 if free slots are available
-        $store = $this->tester->createStore($this->region_id, null, null, ['betrieb_status_id' => CooperationStatus::COOPERATION_ESTABLISHED->value]);
+        $store = $this->tester->createStore($this->regionId, null, null, ['betrieb_status_id' => CooperationStatus::COOPERATION_ESTABLISHED->value]);
         $this->tester->addRecurringPickup($store['id'], ['time' => '16:30:00', 'dow' => $dow, 'fetcher' => 1]);
         $this->assertEquals($this->transactions->getAvailablePickupStatus($store['id']), 2);
 
@@ -647,12 +687,12 @@ class StoreTransactionsTest extends \Codeception\Test\Unit
         $date = Carbon::now()->add('2 days')->hours(16)->minutes(30)->seconds(0)->microseconds(0);
         $dow = $date->weekday();
 
-        $store_coord = $this->tester->createStore($this->region_id, null, null, ['betrieb_status_id' => CooperationStatus::COOPERATION_ESTABLISHED->value]);
+        $store_coord = $this->tester->createStore($this->regionId, null, null, ['betrieb_status_id' => CooperationStatus::COOPERATION_ESTABLISHED->value]);
         $this->tester->addStoreTeam($store_coord['id'], $this->foodsaver['id'], true);
         $this->tester->addRecurringPickup($store_coord['id'], ['time' => '16:30:00', 'dow' => $dow, 'fetcher' => 1]);
 
         // Create store membership
-        $store_member = $this->tester->createStore($this->region_id, null, null, ['betrieb_status_id' => CooperationStatus::COOPERATION_ESTABLISHED->value]);
+        $store_member = $this->tester->createStore($this->regionId, null, null, ['betrieb_status_id' => CooperationStatus::COOPERATION_ESTABLISHED->value]);
         $this->tester->addStoreTeam($store_member['id'], $this->foodsaver['id'], false);
 
         $result = $this->transactions->listAllStoreStatusForFoodsaver($this->foodsaver['id']);

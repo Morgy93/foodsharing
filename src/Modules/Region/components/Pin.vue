@@ -22,7 +22,8 @@
             :zoom="6"
             :coordinates="{lat: inlat, lon: inlon}"
             :icon="locationPickerIcon"
-            @coordinates-change="updateCoordinates"
+            :marker-draggable="true"
+            @coordinates-changed="updateCoordinates"
           />
 
           <b-form-group

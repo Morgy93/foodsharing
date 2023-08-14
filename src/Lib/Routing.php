@@ -4,7 +4,8 @@ namespace Foodsharing\Lib;
 
 class Routing
 {
-    private static $classes = ['activity' => 'Activity',
+    private static $classes = [
+        'activity' => 'Activity',
         'application' => 'Application',
         'basket' => 'Basket',
         'bell' => 'Bell',
@@ -43,7 +44,9 @@ class Routing
         'team' => 'Team',
         'wallpost' => 'WallPost',
         'groups' => 'WorkGroup',
-        'store' => 'Store'];
+        'store' => 'Store',
+        'chain' => 'StoreChain'
+    ];
 
     public static $fqcnPrefix = '\\Foodsharing\\Modules\\';
 

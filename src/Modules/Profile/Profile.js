@@ -2,13 +2,11 @@ import '@/core'
 import '@/globals'
 import './Profile.css'
 import { vueRegister, vueApply } from '@/vue'
-import MediationRequest from './components/MediationRequest'
-import ReportRequest from './components/ReportRequest'
 import BananaList from './components/BananaList'
 import PublicProfile from './components/PublicProfile'
 import ProfileStoreList from './components/ProfileStoreList'
 import EmailBounceList from './components/EmailBounceList'
-import PickupsSection from './components/PickupsSection'
+import PickupsSection from '@/components/PickupTable/PickupsSection'
 import ProfileCommitmentsStat from './components/ProfileCommitmentsStat'
 import ProfileMenu from './components/ProfileMenu'
 import ProfileInfos from './components/ProfileInfos'
@@ -21,8 +19,6 @@ vueRegister({
   BananaList,
   ProfileStoreList,
   PublicProfile,
-  MediationRequest,
-  ReportRequest,
   EmailBounceList,
   PickupsSection,
   ProfileCommitmentsStat,
@@ -33,8 +29,6 @@ vueRegister({
 vueApply('#vue-profile-bananalist', true) // BananaList
 vueApply('#vue-profile-storelist', true) // ProfileStoreList
 vueApply('#profile-public', true) // PublicProfile
-vueApply('#mediation-Request', true) // MediationRequest
-vueApply('#report-Request', true) // ReportRequest
 vueApply('#email-bounce-list', true)
 vueApply('#profile-commitments-stat', true)
 vueApply('#pickups-section', true)

@@ -76,9 +76,9 @@ class ContentId
     public const RESCUE_FOOD_SHARE_POINT = 49;
     public const IMPRESSUM = 8;
     public const ABOUT = 9;
-    public const INFO_HUB = 59;
     public const FOODSHARING_STAEDTE = 66;
     public const FOR_COMPANIES = 4;
     public const WORKSHOPS = 71;
     public const STATISTICS_PAGE = 11;
+    public const SECURITY_PAGE = 59;
 }

@@ -4,6 +4,7 @@ namespace Foodsharing\Utility;
 
 use Foodsharing\Lib\Session;
 use Foodsharing\Modules\Core\DBConstants\Foodsaver\Role;
+use Foodsharing\Modules\Core\DBConstants\Region\RegionIDs;
 use Foodsharing\Modules\Core\DBConstants\Unit\UnitType;
 use Foodsharing\Modules\Region\RegionGateway;
 use Foodsharing\Permissions\BlogPermissions;
@@ -224,6 +225,9 @@ final class PageHelper
             } else {
                 $group['isAdmin'] = $this->workGroupPermissions->mayEdit($group);
                 $group['hasSubgroups'] = $this->regionGateway->hasSubgroups($groupId);
+                if ($group['id'] == RegionIDs::STORE_CHAIN_GROUP) {
+                    $group['isChainGroup'] = true;
+                }
                 $workingGroups[] = $group;
             }
         }

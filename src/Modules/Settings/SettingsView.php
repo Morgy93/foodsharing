@@ -2,15 +2,12 @@
 
 namespace Foodsharing\Modules\Settings;
 
-use DateTime;
 use Foodsharing\Lib\Session;
 use Foodsharing\Lib\View\Utils;
 use Foodsharing\Modules\Content\ContentGateway;
 use Foodsharing\Modules\Core\DBConstants\Foodsaver\Role;
-use Foodsharing\Modules\Core\DBConstants\Foodsaver\SleepStatus;
-use Foodsharing\Modules\Core\DBConstants\FoodSharePoint\FollowerType;
-use Foodsharing\Modules\Core\DBConstants\Info\InfoType;
 use Foodsharing\Modules\Core\DBConstants\Quiz\AnswerRating;
+use Foodsharing\Modules\Core\DBConstants\Unit\UnitType;
 use Foodsharing\Modules\Core\View;
 use Foodsharing\Modules\Region\RegionGateway;
 use Foodsharing\Utility\DataHelper;
@@ -63,155 +60,19 @@ class SettingsView extends View
         );
     }
 
-    public function sleepMode($sleep)
+    public function sleepMode($sleep): string
     {
-        if ($sleep['sleep_status'] == SleepStatus::NONE && $sleep['sleep_from'] != null) {
-            $sleep['sleep_status'] = SleepStatus::TEMP;
-        }
-        $this->dataHelper->setEditData($sleep);
-
-        if ($sleep['sleep_status'] != SleepStatus::TEMP) {
-            $this->pageHelper->addJs('$("#sleeprange-wrapper").hide();');
-        }
-
-        if ($sleep['sleep_status'] == SleepStatus::NONE) {
-            $this->pageHelper->addJs('$("#sleep_msg-wrapper").hide();');
-        }
-
-        if ($sleep['sleep_status'] == SleepStatus::TEMP) {
-            $date = DateTime::createFromFormat('Y-m-d', $sleep['sleep_from']);
-            if ($date === false) {
-                $date = new DateTime();
-            }
-            $from = $date->format('d.m.Y');
-
-            $date = DateTime::createFromFormat('Y-m-d', $sleep['sleep_until']);
-            if ($date === false) {
-                $date = new DateTime();
-            }
-            $to = $date->format('d.m.Y');
-
-            $this->pageHelper->addJs("
-				$('#sleeprange_from').val('$from');
-				$('#sleeprange_to').val('$to');
-			");
-        }
-
-        $this->pageHelper->addJs('
-			$("#sleep_status").on("change", function () {
-				var $this = $(this);
-				if ($this.val() == 1) {
-					$("#sleeprange-wrapper").show();
-				} else {
-					$("#sleeprange-wrapper").hide();
-				}
-
-				if ($this.val() > 0) {
-					$("#sleep_msg-wrapper").show();
-				} else {
-					$("#sleep_msg-wrapper").hide();
-				}
-			});
-			$("#sleep_msg").css("height", "80px");
-
-			$("#schlafmtzenfunktion-form").on("submit", function (ev) {
-				ev.preventDefault();
-				if ($("#sleep_status").val() == 1) {
-					if ($("#sleeprange_from").val() == "" || $("#sleeprange_to").val() == "") {
-						pulseError("' . $this->translator->trans('settings.sleep.missing-date') . '");
-						return;
-					}
-				}
-				trySetSleepMode()
-			});
-			$("#formwrapper").show();
-		');
-
-        $out = $this->v_utils->v_quickform($this->translator->trans('settings.sleep.header'), [
-            $this->v_utils->v_info($this->translator->trans('settings.sleep.info')),
-            $this->v_utils->v_form_select('sleep_status', [
-                'values' => [
-                    ['id' => SleepStatus::NONE, 'name' => $this->translator->trans('settings.sleep.none')],
-                    ['id' => SleepStatus::TEMP, 'name' => $this->translator->trans('settings.sleep.temp')],
-                    ['id' => SleepStatus::FULL, 'name' => $this->translator->trans('settings.sleep.full')]
-                ]
-            ]),
-            $this->v_utils->v_form_daterange('sleeprange', $this->translator->trans('settings.sleep.range')),
-            $this->v_utils->v_form_textarea('sleep_msg', [
-                'maxlength' => 150
-            ]),
-            $this->v_utils->v_info($this->translator->trans('settings.sleep.show'))
-        ], [
-            'submit' => $this->translator->trans('button.save'),
-            'id' => 'schlafmtzenfunktion' // this needs to be hardcoded until the form was rewritten in Vue
+        return $this->vueComponent('sleeping-mode', 'SleepingMode', [
+            'sleepStatus' => $sleep['sleep_status'],
+            'sleepFrom' => $sleep['sleep_from'],
+            'sleepUntil' => $sleep['sleep_until'],
+            'sleepMessage' => $sleep['sleep_msg']
         ]);
-
-        return '<div id="formwrapper" style="display: none;">' . $out . '</div>';
     }
 
-    public function settingsInfo($foodSharePoints, $threads)
+    public function settingsInfo()
     {
-        global $g_data;
-        $out = '';
-
-        if ($foodSharePoints) {
-            foreach ($foodSharePoints as $fsp) {
-                $this->pageHelper->addJs('
-					$("input[disabled=\'disabled\']").parent().on("click", function () {
-						pulseInfo("' . $this->translator->trans('fsp.info.manager') . '");
-					});
-				');
-
-                $g_data['fairteiler_' . $fsp['id']] = $fsp['infotype'];
-                $out .= $this->v_utils->v_form_radio('fairteiler_' . $fsp['id'], [
-                    'label' => $this->translator->trans('fsp.info.from', ['{name}' => $fsp['name']]),
-                    'desc' => $this->translator->trans('fsp.info.descSettings', ['{name}' => $fsp['name']]),
-                    'values' => [
-                        ['id' => InfoType::BELL, 'name' => $this->translator->trans('fsp.info.bell')],
-                        ['id' => InfoType::EMAIL, 'name' => $this->translator->trans('fsp.info.mail')],
-                        ['id' => InfoType::NONE, 'name' => $this->translator->trans('fsp.info.none')],
-                    ],
-                    'disabled' => $fsp['type'] == FollowerType::FOOD_SHARE_POINT_MANAGER
-                ]);
-            }
-        }
-
-        if ($threads) {
-            foreach ($threads as $thread) {
-                $g_data['thread_' . $thread['id']] = $thread['infotype'];
-                $out .= $this->v_utils->v_form_radio('thread_' . $thread['id'], [
-                    'label' => $this->translator->trans('settings.follow.thread', ['{thread}' => $thread['name']]),
-                    'desc' => $thread['name'],
-                    'values' => [
-                        ['id' => InfoType::EMAIL, 'name' => $this->translator->trans('settings.follow.mail')],
-                        ['id' => InfoType::NONE, 'name' => $this->translator->trans('settings.follow.none')]
-                    ]
-                ]);
-            }
-        }
-
-        return $this->v_utils->v_field($this->v_utils->v_form('settingsinfo', [
-            $this->v_utils->v_input_wrapper(
-                $this->translator->trans('settings.push.title'),
-                '<div id="push-notification-label"><!-- Content to be set via JavaScript --></div>
-					<a href="#" class="button" id="push-notification-button"><!-- Content to be set via JavaScript --></a>'
-            ),
-            $this->v_utils->v_form_radio('newsletter', [
-                'desc' => $this->translator->trans('settings.newsletter'),
-                'values' => [
-                    ['id' => 0, 'name' => $this->translator->trans('no')],
-                    ['id' => 1, 'name' => $this->translator->trans('yes')]
-                ]
-            ]),
-            $this->v_utils->v_form_radio('infomail_message', [
-                'desc' => $this->translator->trans('settings.chatmail'),
-                'values' => [
-                    ['id' => 0, 'name' => $this->translator->trans('no')],
-                    ['id' => 1, 'name' => $this->translator->trans('yes')]
-                ]
-            ]),
-            $out
-        ], ['submit' => $this->translator->trans('button.save')]), $this->translator->trans('settings.notifications'), ['class' => 'ui-padding']);
+        return $this->vueComponent('notifications', 'Notifications');
     }
 
     public function quizSession($session, $try_count, ContentGateway $contentGateway)
@@ -414,19 +275,19 @@ class SettingsView extends View
         return $out;
     }
 
-    public function changeMail()
-    {
-        return $this->v_utils->v_form_text('newmail');
-    }
-
     public function changemail3($email)
     {
-        return
-            $this->v_utils->v_info($this->translator->trans('settings.changemail.question') . ' <strong>' . $email . '</strong> ?') .
-            $this->v_utils->v_form_passwd('passcheck');
+        return $this->v_utils->v_info($this->translator->trans('settings.changemail.question') . ' <strong>' . $email . '</strong> ?');
     }
 
-    public function settingsCalendar()
+    public function passport(): string
+    {
+        return $this->vueComponent('passport', 'Passport', [
+            'userId' => $this->session->id(),
+        ]);
+    }
+
+    public function settingsCalendar(): string
     {
         return $this->vueComponent('calendar', 'Calendar', [
             'baseUrlWebcal' => WEBCAL_URL . '/api/calendar/',
@@ -434,30 +295,11 @@ class SettingsView extends View
         ]);
     }
 
-    public function delete_account(int $fsId)
+    public function delete_account(int $fsId): string
     {
-        $content = $this->v_utils->v_info(
-            $this->translator->trans('foodsaver.delete_own_account')
-                . $this->translator->trans('notice') . '<br/>'
-                . $this->translator->trans('legal.if_delete.legal_1') . '<br/>'
-                . $this->translator->trans('legal.if_delete.legal_2') . '<br/><br/>'
-                . $this->translator->trans('legal.if_delete.this_gets_deleted_main')
-                . $this->translator->trans('legal.if_delete.this_gets_deleted_stores')
-                . $this->translator->trans('legal.if_delete.this_gets_deleted_quiz')
-                . $this->translator->trans('legal.if_delete.this_gets_deleted_verify')
-                . $this->translator->trans('legal.if_delete.this_gets_deleted_friendlist')
-                . $this->translator->trans('legal.if_delete.this_gets_deleted_trustbananas') . '<br/><br/>'
-                . $this->translator->trans('legal.if_delete.this_doesnt_get_deleted') . '<br/>'
-                . $this->translator->trans('legal.if_delete.this_doesnt_get_deleted_name')
-                . $this->translator->trans('legal.if_delete.this_doesnt_get_deleted_address')
-                . $this->translator->trans('legal.if_delete.this_doesnt_get_deleted_history')
-                . '<button type="button" id="delete-account" class="btn btn-sm btn-danger"'
-                . ' onclick="confirmDeleteSelf(' . $fsId . ')">'
-                . $this->translator->trans('foodsaver.delete_account_now')
-                . '</button>'
-        );
-
-        return $this->v_utils->v_field($content, '⚠️ ' . $this->translator->trans('foodsaver.delete_account'), ['class' => 'ui-padding bootstrap']);
+        return $this->vueComponent('delete-account', 'DeleteAccount', [
+            'userId' => $fsId
+        ]);
     }
 
     public function foodsaver_form()
@@ -474,7 +316,12 @@ class SettingsView extends View
                 $bezirk['name'] = $b['name'];
             }
 
-            $regionPicker = $this->v_utils->v_regionPicker($bezirk, $this->translator->trans('terminology.homeRegion'));
+            $regionPicker .= $this->vueComponent('region-tree-vform', 'RegionTreeVForm', [
+                'title' => $this->translator->trans('terminology.homeRegion'),
+                'inputName' => 'bezirk_id',
+                'value' => $bezirk,
+                'selectableRegionTypes' => [UnitType::CITY, UnitType::DISTRICT, UnitType::REGION, UnitType::WORKING_GROUP, UnitType::PART_OF_TOWN],
+            ]);
             $position = $this->v_utils->v_form_text('position');
         }
 

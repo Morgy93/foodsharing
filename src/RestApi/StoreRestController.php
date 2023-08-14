@@ -3,10 +3,13 @@
 namespace Foodsharing\RestApi;
 
 use DateTime;
+use Exception;
 use Foodsharing\Lib\Session;
 use Foodsharing\Modules\Bell\BellGateway;
 use Foodsharing\Modules\Bell\DTO\Bell;
+use Foodsharing\Modules\Core\DatabaseNoValueFoundException;
 use Foodsharing\Modules\Core\DBConstants\Bell\BellType;
+use Foodsharing\Modules\Core\DBConstants\Store\CooperationStatus;
 use Foodsharing\Modules\Core\DBConstants\Store\Milestone;
 use Foodsharing\Modules\Core\DBConstants\Store\StoreLogAction;
 use Foodsharing\Modules\Foodsaver\FoodsaverGateway;
@@ -78,7 +81,41 @@ class StoreRestController extends AbstractFOSRestController
         }
 
         $result = $this->storeTransactions->getCommonStoreMetadata(
-            !$this->storePermissions->mayCreateStore());
+            !$this->storePermissions->mayListStores());
+
+        return $this->handleView($this->view($result, 200));
+    }
+
+    /**
+     * Returns a list of stores where the user is a member of reduced store information.
+     *
+     * @OA\Tag(name="stores")
+     * @OA\Tag(name="user")
+     * @OA\Response(
+     *        response="200",
+     *        description="Success.",
+     *      @Model(type=StorePaginationResult::class)
+     * )
+     * @OA\Response(response="401", description="Not logged in")
+     * @OA\Response(response="403", description="Forbidden to access store list")
+     * @Rest\Get("user/current/stores/details")
+     *
+     * @throws Exception
+     */
+    public function getStoresOfUser(): Response
+    {
+        if (!$this->session->mayRole()) {
+            throw new UnauthorizedHttpException('', self::NOT_LOGGED_IN);
+        }
+
+        if (!$this->storePermissions->mayListStores($this->session->id())) {
+            throw new AccessDeniedHttpException('No permission see store list');
+        }
+
+        $stores = $this->storeTransactions->listOverviewInformationsOfStoresFromUser($this->session->id(), true);
+        $result = new StorePaginationResult();
+        $result->total = count($stores);
+        $result->stores = $stores;
 
         return $this->handleView($this->view($result, 200));
     }
@@ -96,9 +133,8 @@ class StoreRestController extends AbstractFOSRestController
      * @OA\Response(response="401", description="Not logged in")
      * @OA\Response(response="403", description="Forbidden to access store list")
      * @Rest\Get("region/{regionId}/stores", requirements={"regionId" = "\d+"})
-     * @Rest\QueryParam(name="expand", requirements="\d+", default="0", description="Expand information for store and region")
      */
-    public function getStoresOfRegion(int $regionId, ParamFetcher $paramFetcher): Response
+    public function getStoresOfRegion(int $regionId): Response
     {
         if (!$this->session->mayRole()) {
             throw new UnauthorizedHttpException('', self::NOT_LOGGED_IN);
@@ -108,14 +144,129 @@ class StoreRestController extends AbstractFOSRestController
             throw new AccessDeniedHttpException('No permission see store list');
         }
 
-        $expand = boolval($paramFetcher->get('expand'));
-
-        $stores = $this->storeTransactions->listOverviewInformationsOfStoresInRegion($regionId, $expand);
+        $stores = $this->storeTransactions->listOverviewInformationsOfStoresInRegion($regionId, true);
         $result = new StorePaginationResult();
         $result->total = count($stores);
         $result->stores = $stores;
 
         return $this->handleView($this->view($result, 200));
+    }
+
+    /**
+     * Provides store information, contacts and options for a store id.
+     *
+     * Depending on the access permission some information are not provided.
+     *
+     * @OA\Tag(name="stores")
+     * @OA\Response(
+     * 		response=Response::HTTP_OK,
+     * 		description="Success.",
+     *      @Model(type=Store::class)
+     * )
+     * @OA\Response(response="401", description="Not logged in")
+     * @OA\Response(response="403", description="Not allowed to see/list stores")
+     * @OA\Response(response="404", description="Store not found")
+     * @Rest\Get("/stores/{storeId}/information", requirements={"storeId" = "\d+"})
+     */
+    public function getStoreInformationAction(int $storeId)
+    {
+        if (!$this->session->mayRole()) {
+            throw new UnauthorizedHttpException('', self::NOT_LOGGED_IN);
+        }
+
+        if (!$this->storePermissions->mayListStores()) {
+            throw new AccessDeniedHttpException('No permission see store list');
+        }
+
+        try {
+            $maySeeDetails = $this->storePermissions->mayAccessStore($storeId);
+            $maySeeSensitiveDetails = $this->storePermissions->mayEditStore($storeId);
+
+            $result = $this->storeTransactions->getStore($storeId, $maySeeDetails, $maySeeSensitiveDetails);
+
+            return $this->handleView($this->view($result, 200));
+        } catch (DatabaseNoValueFoundException $ex) {
+            throw new NotFoundHttpException('Store not found.');
+        }
+    }
+
+    /**
+     * Provides store members.
+     *
+     * Depending on the access permission some information are not provided.
+     *
+     * @OA\Tag(name="stores")
+     * @OA\Response(response="200", description="Success")
+     * @OA\Response(response="401", description="Not logged in")
+     * @OA\Response(response="403", description="Not allowed to see/list stores")
+     * @OA\Response(response="404", description="Store not found")
+     * @Rest\Get("/stores/{storeId}/member", requirements={"storeId" = "\d+"})
+     */
+    public function getStoreMembersAction(int $storeId)
+    {
+        $userId = $this->session->id();
+        if (!$userId) {
+            throw new UnauthorizedHttpException('');
+        }
+
+        try {
+            $maySeeDetails = $this->storePermissions->maySeePhoneNumbers($storeId);
+            $result = $this->storeTransactions->getMyStoreTeam($userId, $storeId, $maySeeDetails);
+
+            return $this->handleView($this->view($result, 200));
+        } catch (DatabaseNoValueFoundException $ex) {
+            throw new NotFoundHttpException('Store not found.');
+        }
+    }
+
+    /**
+     * Provides store permissions.
+     **
+     * @OA\Tag(name="stores")
+     * @OA\Response(response="200", description="Success")
+     * @OA\Response(response="401", description="Not logged in")
+     * @OA\Response(response="403", description="Not allowed to see/list stores")
+     * @OA\Response(response="404", description="Store not found")
+     * @Rest\Get("/stores/{storeId}/permissions", requirements={"storeId" = "\d+"})
+     */
+    public function getStorePermissionsAction(int $storeId)
+    {
+        $userId = $this->session->id();
+        if (!$userId) {
+            throw new UnauthorizedHttpException('');
+        }
+
+        try {
+            $store = $this->storeGateway->getMyStore($this->session->id(), $storeId);
+
+            $teamConversionId = null;
+            if ($this->storePermissions->mayChatWithRegularTeam($store)) {
+                $teamConversionId = $store['team_conversation_id'];
+            }
+
+            $jumperConversationId = null;
+            if ($this->storePermissions->mayChatWithJumperWaitingTeam($store)) {
+                $jumperConversationId = $store['springer_conversation_id'];
+            }
+
+            $params = [
+                'mayDoPickup' => $this->storePermissions->mayDoPickup($storeId),
+                'teamConversionId' => $teamConversionId,
+                'jumperConversationId' => $jumperConversationId,
+                'mayEditStore' => $this->storePermissions->mayEditStore($storeId),
+                'mayLeaveStoreTeam' => $this->storePermissions->mayLeaveStoreTeam($storeId, $this->session->id()),
+                'storeId' => $storeId,
+                'maySeePickupHistory' => $this->storePermissions->maySeePickupHistory($storeId),
+                'mayReadStoreWall' => $this->storePermissions->mayReadStoreWall($storeId),
+                'mayWritePost' => $this->storePermissions->mayWriteStoreWall($storeId),
+                'mayDeleteEverything' => $this->storePermissions->mayDeleteStoreWall($storeId),
+                'maySeePickups' => $this->storePermissions->maySeePickups($storeId) && $store['betrieb_status_id'] === CooperationStatus::COOPERATION_STARTING || $store['betrieb_status_id'] === CooperationStatus::COOPERATION_ESTABLISHED,
+            ];
+
+            return $this->handleView($this->view($params, 200));
+        } catch (DatabaseNoValueFoundException $ex) {
+            throw new NotFoundHttpException('Store not found.');
+        }
     }
 
     /**
@@ -197,7 +348,7 @@ class StoreRestController extends AbstractFOSRestController
      * Allows to patch the store with information like the store team status.
      *
      * @OA\Tag(name="stores")
-     * @Rest\Patch("stores/{storeId}", requirements={"storeId" = "\d+"})
+     * @Rest\Patch("stores/{storeId}/information", requirements={"storeId" = "\d+"})
      * @OA\RequestBody(@Model(type=PatchStore::class))
      * @ParamConverter("storeModel", converter="fos_rest.request_body")
      * @OA\Response(response=Response::HTTP_BAD_REQUEST, description="Invalid request data")

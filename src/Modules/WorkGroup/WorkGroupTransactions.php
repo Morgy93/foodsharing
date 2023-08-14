@@ -24,7 +24,7 @@ class WorkGroupTransactions
      */
     public function removeMemberFromGroup(int $groupId, int $memberId): void
     {
-        $this->forumFollowerGateway->deleteForumSubscriptions($groupId, [$memberId], false);
+        $this->forumFollowerGateway->deleteForumSubscription($groupId, $memberId);
         $this->workGroupGateway->removeFromGroup($groupId, $memberId);
     }
 }

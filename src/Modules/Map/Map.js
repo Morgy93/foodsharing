@@ -58,10 +58,8 @@ const comIcon = L.AwesomeMarkers.icon({
 const map = {
   initiated: false,
   init: function () {
-    storage.setPrefix('map')
-
-    const center = storage.get('center', [50.89, 10.13])
-    const zoom = storage.get('zoom', 6)
+    const center = storage.get('map:center', [50.89, 10.13])
+    const zoom = storage.get('map:zoom', 6)
     u_map = initMap('map', center, zoom)
 
     expose({ u_map }) // need to re-expose it as it is just a variable
@@ -86,7 +84,7 @@ const map = {
       }
 
       if (GET('load') == undefined) {
-        items = storage.get('activeItems', items)
+        items = storage.get('map:activeItems', items)
       }
     }
     for (let i = 0; i < items.length; i++) {
@@ -104,9 +102,9 @@ const map = {
       activeItems.push($(this).attr('name'))
     })
 
-    storage.set('center', [center.lat, center.lng])
-    storage.set('zoom', zoom)
-    storage.set('activeItems', activeItems)
+    storage.set('map:center', [center.lat, center.lng])
+    storage.set('map:zoom', zoom)
+    storage.set('map:activeItems', activeItems)
   },
   setView: function (lat, lon, zoom) {
     if (!this.initiated) {
@@ -120,7 +118,7 @@ expose({ map })
 
 function u_init_map (lat, lon, zoom) {
   map.init()
-  if (lat == undefined && storage.get('center') == undefined) {
+  if (lat == undefined && storage.get('map:center') == undefined) {
     getBrowserLocation(pos => map.setView(pos.lat, pos.lon, 12))
   }
 }

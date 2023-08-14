@@ -6,15 +6,11 @@ use Foodsharing\Modules\Content\ContentGateway;
 use Foodsharing\Modules\Core\Control;
 use Foodsharing\Modules\Core\DBConstants\Content\ContentId;
 use Foodsharing\Modules\Core\DBConstants\Foodsaver\Role;
-use Foodsharing\Modules\Core\DBConstants\Info\InfoType;
 use Foodsharing\Modules\Core\DBConstants\Quiz\QuizStatus;
 use Foodsharing\Modules\Core\DBConstants\Quiz\SessionStatus;
 use Foodsharing\Modules\Foodsaver\FoodsaverGateway;
-use Foodsharing\Modules\FoodSharePoint\FoodSharePointGateway;
-use Foodsharing\Modules\PassportGenerator\PassportGeneratorTransaction;
 use Foodsharing\Modules\Quiz\QuizGateway;
 use Foodsharing\Modules\Quiz\QuizSessionGateway;
-use Foodsharing\Modules\Region\ForumFollowerGateway;
 use Foodsharing\Permissions\SettingsPermissions;
 use Foodsharing\Utility\DataHelper;
 
@@ -26,11 +22,8 @@ class SettingsControl extends Control
     private QuizSessionGateway $quizSessionGateway;
     private ContentGateway $contentGateway;
     private FoodsaverGateway $foodsaverGateway;
-    private FoodSharePointGateway $foodSharePointGateway;
     private DataHelper $dataHelper;
-    private ForumFollowerGateway $forumFollowerGateway;
     private SettingsPermissions $settingsPermissions;
-    private PassportGeneratorTransaction $passportGeneratorTransaction;
 
     public function __construct(
         SettingsView $view,
@@ -39,11 +32,8 @@ class SettingsControl extends Control
         QuizSessionGateway $quizSessionGateway,
         ContentGateway $contentGateway,
         FoodsaverGateway $foodsaverGateway,
-        FoodSharePointGateway $foodSharePointGateway,
         DataHelper $dataHelper,
-        ForumFollowerGateway $forumFollowerGateway,
         SettingsPermissions $settingsPermissions,
-        PassportGeneratorTransaction $passportGeneratorTransaction
     ) {
         $this->view = $view;
         $this->settingsGateway = $settingsGateway;
@@ -51,11 +41,8 @@ class SettingsControl extends Control
         $this->quizSessionGateway = $quizSessionGateway;
         $this->contentGateway = $contentGateway;
         $this->foodsaverGateway = $foodsaverGateway;
-        $this->foodSharePointGateway = $foodSharePointGateway;
         $this->dataHelper = $dataHelper;
-        $this->forumFollowerGateway = $forumFollowerGateway;
         $this->settingsPermissions = $settingsPermissions;
-        $this->passportGeneratorTransaction = $passportGeneratorTransaction;
 
         parent::__construct();
 
@@ -89,8 +76,7 @@ class SettingsControl extends Control
         if ($this->settingsPermissions->mayUseCalendarExport()) {
             $menu[] = ['name' => $this->translator->trans('settings.calendar.menu'), 'href' => '/?page=settings&sub=calendar'];
         }
-
-        if ($this->settingsPermissions->mayUsePassportGeneration()) {
+        if ($this->session->mayRole() > Role::FOODSHARER) {
             $menu[] = ['name' => $this->translator->trans('settings.passport.menu'), 'href' => '/?page=settings&sub=passport'];
         }
 
@@ -101,7 +87,7 @@ class SettingsControl extends Control
 
         $menu = [
             ['name' => $this->translator->trans('settings.sleep.title'), 'href' => '/?page=settings&sub=sleeping'],
-            ['name' => $this->translator->trans('settings.email'), 'click' => 'ajreq(\'changemail\'); return false;'],
+            ['name' => $this->translator->trans('settings.email'), 'href' => '/?page=settings&sub=changeEmail'],
         ];
 
         if ($this->foodsaver['rolle'] == Role::FOODSHARER) {
@@ -363,7 +349,7 @@ class SettingsControl extends Control
         }
     }
 
-    public function deleteaccount()
+    public function deleteaccount(): void
     {
         $this->pageHelper->addBread($this->translator->trans('foodsaver.delete_account'));
         $this->pageHelper->addContent($this->view->delete_account($this->session->id()));
@@ -384,8 +370,9 @@ class SettingsControl extends Control
 
     public function passport()
     {
-        if ($this->settingsPermissions->mayUsePassportGeneration()) {
-            $this->passportGeneratorTransaction->generate([$this->session->id()], false, true);
+        if ($this->session->mayRole() > Role::FOODSHARER) {
+            $this->pageHelper->addBread($this->translator->trans('settings.passport.menu'));
+            $this->pageHelper->addContent($this->view->passport());
         } else {
             $this->routeHelper->goAndExit('/?page=settings');
         }
@@ -403,63 +390,14 @@ class SettingsControl extends Control
 
     public function info()
     {
-        $fsId = $this->session->id();
-        global $g_data;
-        if (isset($_POST['form_submit']) && $_POST['form_submit'] == 'settingsinfo') {
-            $newsletter = 1;
-            if ($_POST['newsletter'] != 1) {
-                $newsletter = 0;
-            }
-            $infomail = 1;
-            if (isset($_POST['infomail_message']) && $_POST['infomail_message'] != 1) {
-                $infomail = 0;
-            }
-            $fspIdsToUnfollow = [];
-            $threadIdsToUnfollow = [];
-            foreach ($_POST as $key => $infoType) {
-                if (substr($key, 0, 11) == 'fairteiler_') {
-                    $foodSharePointId = (int)substr($key, 11);
-                    if (!empty($foodSharePointId)) {
-                        if ($infoType == InfoType::NONE) {
-                            $fspIdsToUnfollow[] = $foodSharePointId;
-                        } else {
-                            $this->foodSharePointGateway->updateInfoType($fsId, $foodSharePointId, $infoType);
-                        }
-                    }
-                } elseif (substr($key, 0, 7) == 'thread_') {
-                    $threadId = (int)substr($key, 7);
-                    if (!empty($threadId)) {
-                        if ($infoType == InfoType::NONE) {
-                            $threadIdsToUnfollow[] = $threadId;
-                        } else {
-                            $this->forumFollowerGateway->updateInfoType($fsId, $threadId, $infoType);
-                        }
-                    }
-                }
-            }
-
-            if (!empty($fspIdsToUnfollow)) {
-                $this->foodSharePointGateway->unfollowFoodSharePoints($fsId, $fspIdsToUnfollow);
-            }
-            if (!empty($threadIdsToUnfollow)) {
-                $fsId = $this->session->id();
-                foreach ($threadIdsToUnfollow as $singleThreadId) {
-                    $this->forumFollowerGateway->unfollowThreadByEmail($fsId, $singleThreadId);
-                }
-            }
-
-            if ($this->settingsGateway->saveInfoSettings($fsId, $newsletter, $infomail)) {
-                $this->flashMessageHelper->success($this->translator->trans('settings.saved'));
-            }
-        }
         $this->pageHelper->addBread($this->translator->trans('settings.notifications'));
+        $this->pageHelper->addContent($this->view->settingsInfo());
+    }
 
-        $g_data = $this->foodsaverGateway->getSubscriptions($fsId);
-
-        $foodSharePoints = $this->foodSharePointGateway->listFoodsaversFoodSharePoints($fsId);
-        $threads = $this->forumFollowerGateway->getEmailSubscribedThreadsForUser($fsId);
-
-        $this->pageHelper->addContent($this->view->settingsInfo($foodSharePoints, $threads));
+    public function changeEmail()
+    {
+        $this->pageHelper->addBread($this->translator->trans('settings.email'));
+        $this->pageHelper->addContent($this->view->vueComponent('change-email-form', 'ChangeEmailForm'));
     }
 
     public function handle_edit()

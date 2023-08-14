@@ -95,4 +95,35 @@ class ApplicationRestController extends AbstractFOSRestController
 
         return $this->handleView($this->view([], 200));
     }
+
+    /**
+     * Returns all pending applications for a working group.
+     *
+     * @OA\Tag(name="application")
+     * @OA\Parameter(name="groupId", in="path", @OA\Schema(type="integer"), description="for which working group to list the applications")
+     * @OA\Response(response="200", description="Success")
+     * @OA\Response(response="403", description="Insufficient permissions")
+     * @OA\Response(response="404", description="Group does not exist.")
+     * @Rest\Get("applications/{groupId}", requirements={"groupId" = "\d+"})
+     */
+    public function listApplicationsAction(int $groupId): Response
+    {
+        if (!$this->session->id()) {
+            throw new UnauthorizedHttpException('');
+        }
+
+        try {
+            $group = $this->regionGateway->getRegion($groupId);
+        } catch (Exception $e) {
+            throw new NotFoundHttpException();
+        }
+
+        if (!$this->workGroupPermissions->mayEdit($group)) {
+            throw new AccessDeniedHttpException();
+        }
+
+        $applicants = $this->regionGateway->listApplicants($groupId);
+
+        return $this->handleView($this->view($applicants, 200));
+    }
 }

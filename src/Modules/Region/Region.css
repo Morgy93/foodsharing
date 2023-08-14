@@ -10,24 +10,6 @@ div.post textarea {
 }
 
 /* food share point list */
-ul.food-share-point-list li a span.image {
-  display: block;
-  width: 60px;
-  height: 60px;
-  float: left;
-  margin-right: 10px;
-  background-position: center;
-  background-repeat: no-repeat;
-}
-
-ul.food-share-point-list li a span.image.noimage {
-  background-color: var(--fs-color-light);
-}
-
-ul.food-share-point-list li a span.clear {
-  display: block;
-  clear: both;
-}
 
 .event .welcome_profile_name {
   margin-left: 82px !important;

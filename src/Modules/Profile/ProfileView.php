@@ -15,6 +15,7 @@ use Foodsharing\Modules\Group\GroupFunctionGateway;
 use Foodsharing\Modules\Group\GroupGateway;
 use Foodsharing\Modules\Mailbox\MailboxGateway;
 use Foodsharing\Modules\Region\RegionGateway;
+use Foodsharing\Modules\Store\StoreGateway;
 use Foodsharing\Permissions\ProfilePermissions;
 use Foodsharing\Permissions\ReportPermissions;
 use Foodsharing\Permissions\StorePermissions;
@@ -60,7 +61,8 @@ class ProfileView extends View
         RegionGateway $regionGateway,
         MailboxGateway $mailboxGateway,
         GroupFunctionGateway $groupFunctionGateway,
-        GroupGateway $groupGateway
+        GroupGateway $groupGateway,
+        private readonly StoreGateway $storeGateway
     ) {
         parent::__construct(
             $twig,
@@ -112,8 +114,19 @@ class ProfileView extends View
             $isReportButtonEnabled = intval($this->regionGateway->getRegionOption($regionId, RegionOptionType::ENABLE_REPORT_BUTTON)) === 1;
 
             if ($this->regionGateway->getRegionOption($regionId, RegionOptionType::ENABLE_REPORT_BUTTON)) {
+                // if the current user is not allowed to see all stores of the profile, the report dialog will only show stores in which both users are
+                if ($maySeeStores) {
+                    $reportStores = $userStores;
+                } else {
+                    $myStores = $this->storeGateway->listMyStores($this->session->id());
+                    $myStoreIds = array_column($myStores, 'id');
+                    $reportStores = array_filter($userStores, function ($store) use ($myStoreIds) {
+                        return in_array($store['id'], $myStoreIds);
+                    });
+                }
+
                 $storeListOptions = [['value' => null, 'text' => $this->translator->trans('profile.choosestore')]];
-                foreach ($userStores as $store) {
+                foreach ($reportStores as $store) {
                     $storeListOptions[] = ['value' => $store['id'], 'text' => $store['name']];
                 }
                 $isReportedIdReportAdmin = $this->groupFunctionGateway->isRegionFunctionGroupAdmin($regionId, WorkgroupFunction::REPORT, $this->foodsaver['id']);
@@ -147,7 +160,7 @@ class ProfileView extends View
                 'photo' => $this->foodsaver['photo'],
                 'fsId' => $this->foodsaver['id'],
                 'fsIdSession' => $this->session->id(),
-                'isSleeping' => (bool)$this->foodsaver['sleep_status'],
+                'isSleeping' => $this->dataHelper->parseSleepingState($this->foodsaver['sleep_status'], $this->foodsaver['sleep_from'], $this->foodsaver['sleep_until']),
                 'isNoBuddy' => $this->foodsaver['buddy'] === BuddyId::NO_BUDDY,
                 'mayAdmin' => $mayAdmin,
                 'mayHistory' => $maySeeHistory,
@@ -189,9 +202,8 @@ class ProfileView extends View
                     'showHistoryTab' => $maySeePickups,
                     'fsId' => $fsId,
                     'allowSlotCancelation' => $this->profilePermissions->mayCancelSlotsFromProfile($fsId),
-                    'isOwnProfile' => ($fsId == $this->session->id()),
+                    'isOwnProfile' => ($fsId === $this->session->id()),
                 ]),
-                $this->translator->trans('pickup.overview.header')
             );
         }
 
@@ -213,7 +225,7 @@ class ProfileView extends View
         $fsMail = '';
         if ($this->foodsaver['rolle'] > Role::FOODSAVER) {
             if ($this->profilePermissions->maySeeEmailAddress($fsId)) {
-                $fsMail = $this->foodsaver['mailbox'];
+                $fsMail = $this->foodsaver['mailbox'] ?? '';
             }
         }
 

@@ -6,6 +6,8 @@
     style="height: 300px"
     :zoom="zoom"
     :center="[center.lat, center.lon]"
+    :bounds="bounds"
+    @ready="resetMap"
     @move="$emit('move', $event)"
     @dragend="$emit('dragend', $event)"
   >
@@ -41,6 +43,7 @@ export default {
   props: {
     zoom: { type: Number, required: true },
     center: { type: Object, required: true },
+    bounds: { type: Array, default: null },
   },
   data () {
     return {
@@ -65,11 +68,11 @@ export default {
     setTimeout(function () { map.invalidateSize() }, 400)
   },
   methods: {
-    /**
-     * Returns leaflet's internal map object.
-     */
-    getMapObject () {
-      return this.$refs.map.mapObject
+    resetMap (mapObject) {
+      const resizeObserver = new ResizeObserver((_) => {
+        mapObject.invalidateSize()
+      })
+      resizeObserver.observe(this.$refs.map.$el)
     },
     /**
      * Sets the map's boundaries to the rectangular spanned by the two coordinates.

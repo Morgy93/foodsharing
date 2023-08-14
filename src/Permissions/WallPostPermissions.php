@@ -54,7 +54,7 @@ class WallPostPermissions
                 $result = $fsId && $this->regionGateway->hasMember($fsId, RegionIDs::QUIZ_AND_REGISTRATION_WORK_GROUP);
                 break;
             case 'usernotes':
-            case 'fsreport':
+            case 'report':
                 $result = $fsId && ($this->regionGateway->hasMember($fsId, RegionIDs::EUROPE_REPORT_TEAM) || $this->session->mayRole(Role::ORGA));
                 break;
             case 'application':
@@ -96,7 +96,7 @@ class WallPostPermissions
                 break;
             case 'question':
             case 'usernotes':
-            case 'fsreport':
+            case 'report':
                 $result = $this->mayReadWall($fsId, $target, $targetId);
                 break;
             case 'fairteiler':

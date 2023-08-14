@@ -6,6 +6,7 @@ use Foodsharing\Modules\Core\DBConstants\Unit\UnitType;
 use Foodsharing\Modules\Foodsaver\FoodsaverGateway;
 use Foodsharing\Modules\Unit\DTO\UserUnit;
 use Foodsharing\Modules\Unit\UnitGateway;
+use Foodsharing\RestApi\Models\Notifications\Region;
 
 class RegionTransactions
 {
@@ -16,7 +17,7 @@ class RegionTransactions
     public function __construct(
         private readonly FoodsaverGateway $foodsaverGateway,
         private readonly UnitGateway $unitGateway,
-        private readonly RegionGateway $regionGateway
+        private readonly RegionGateway $regionGateway,
     ) {
     }
 
@@ -59,5 +60,17 @@ class RegionTransactions
         }
 
         return $region;
+    }
+
+    /**
+     * Updates the user's notification setting for each region individually.
+     *
+     * @param Region[] $regions
+     */
+    public function updateRegionNotification(int $userId, array $regions): void
+    {
+        foreach ($regions as $region) {
+            $this->regionGateway->updateRegionNotification($userId, $region->id, $region->notifyByEmailAboutNewThreads);
+        }
     }
 }

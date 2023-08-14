@@ -8,8 +8,6 @@ use Foodsharing\Lib\ContentSecurityPolicy;
 use Foodsharing\Lib\Db\Mem;
 use Foodsharing\Lib\FoodsharingController;
 use Foodsharing\Lib\Session;
-use Foodsharing\Modules\Content\ContentGateway;
-use Foodsharing\Modules\Core\DBConstants\Content\ContentId;
 use Foodsharing\Modules\Core\InfluxMetrics;
 use Foodsharing\Utility\DataHelper;
 use Foodsharing\Utility\PageHelper;
@@ -161,11 +159,6 @@ class RenderControllerSetupSubscriber implements EventSubscriberInterface
         $pageHelper->addHidden('<div id="dialog-confirm" title='
         . $this->translator->trans('really_delete')
         . '><p><span class="ui-icon ui-icon-alert" style="float:left; margin:0 7px 20px 0;"></span><span id="dialog-confirm-msg"></span><input type="hidden" value="" id="dialog-confirm-url" /></p></div>');
-
-        /** @var ContentGateway $contentGateway */
-        $contentGateway = $this->get(ContentGateway::class);
-        global $g_broadcast_message;
-        $g_broadcast_message = $contentGateway->get(ContentId::BROADCAST_MESSAGE)['body'];
     }
 
     public function onKernelResponse(ResponseEvent $event)

@@ -72,8 +72,7 @@ class StoreControl extends Control
             if ($this->storePermissions->mayCreateStore()) {
                 $this->handle_add($this->session->id());
 
-                $this->pageHelper->addBread($this->translator->trans('store.bread'), '/?page=fsbetrieb');
-                $this->pageHelper->addBread($this->translator->trans('storeedit.add-new'));
+                $this->pageHelper->addBread($this->translator->trans('storeedit.add-new'), '/?page=fsbetrieb');
 
                 $chosenRegion = ($regionId > 0 && UnitType::isAccessibleRegion($this->regionGateway->getType($regionId))) ? $region : null;
                 $this->pageHelper->addContent($this->view->betrieb_form(
@@ -89,13 +88,15 @@ class StoreControl extends Control
                 $this->flashMessageHelper->info($this->translator->trans('store.smneeded'));
                 $this->routeHelper->goAndExit('/?page=settings&sub=up_bip');
             }
-        } elseif ($id = $this->identificationHelper->getActionId('delete')) {
+        } elseif ($this->identificationHelper->getAction('own')) {
+            $this->pageHelper->addBread($this->translator->trans('store.ownStores'));
+            $this->pageHelper->addContent($this->view->storeOwnList());
         } elseif ($id = $this->identificationHelper->getActionId('edit')) {
-            $this->pageHelper->addBread($this->translator->trans('store.bread'), '/?page=fsbetrieb');
+            $this->pageHelper->addBread($this->translator->trans('storeedit.bread'), '/?page=fsbetrieb');
             $this->pageHelper->addBread($this->translator->trans('storeedit.bread'));
             $store = $this->storeGateway->getStore($id);
             $data['name'] = $store->name;
-            $data['bezirk_id'] = $store->regionId;
+            $data['bezirk_id'] = $store->region->id;
             $data['lat'] = $store->location->lat;
             $data['lon'] = $store->location->lon;
             $data['str'] = $store->address->street;
@@ -104,8 +105,8 @@ class StoreControl extends Control
 
             $data['public_info'] = $store->publicInfo;
             $data['public_time'] = $store->publicTime->value;
-            $data['betrieb_kategorie_id'] = $store->categoryId;
-            $data['kette_id'] = $store->chainId;
+            $data['betrieb_kategorie_id'] = $store->category ? $store->category->id : null;
+            $data['kette_id'] = $store->chain ? $store->chain->id : null;
             $data['betrieb_status_id'] = $store->cooperationStatus->value;
             $data['besonderheiten'] = $store->description;
 
@@ -133,7 +134,7 @@ class StoreControl extends Control
 
                 $this->dataHelper->setEditData($data);
 
-                $regionId = $store->regionId;
+                $regionId = $store->region->id;
                 $regionName = $this->regionGateway->getRegionName($regionId);
 
                 $this->pageHelper->addContent($this->view->betrieb_form(
@@ -160,13 +161,10 @@ class StoreControl extends Control
                 $this->routeHelper->goAndExit('/');
             } else {
                 $this->pageHelper->addBread($this->translator->trans('store.bread'), '/?page=fsbetrieb');
-                $storesMapped = $this->storeTransactions->listOverviewInformationsOfStoresInRegion($regionId, true);
-
-                $this->pageHelper->addContent($this->view->vueComponent('vue-storelist', 'store-list', [
+                $this->pageHelper->addContent($this->view->vueComponent('vue-store-region-list', 'store-region-list', [
                     'regionName' => $region['name'],
                     'regionId' => $regionId,
-                    'showCreateStore' => $this->storePermissions->mayCreateStore(),
-                    'stores' => array_values($storesMapped),
+                    'showCreateStore' => $this->storePermissions->mayCreateStore()
                 ]));
             }
         }

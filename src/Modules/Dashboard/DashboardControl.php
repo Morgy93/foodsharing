@@ -56,7 +56,6 @@ class DashboardControl extends Control
     {
         $this->session->updateLastActivity();
 
-        $this->params['broadcast'] = $this->getBroadcast();
         $this->params['quiz'] = $this->getQuiz();
 
         if ($this->session->mayRole(Role::FOODSAVER)) {
@@ -64,11 +63,6 @@ class DashboardControl extends Control
         }
 
         $this->pageHelper->addContent($this->view->index($this->params), CNT_MAIN);
-    }
-
-    private function getBroadcast(): array
-    {
-        return $this->contentGateway->getDetail(ContentId::BROADCAST_MESSAGE);
     }
 
     private function getEvents(): object
