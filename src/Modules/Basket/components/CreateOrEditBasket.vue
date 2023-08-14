@@ -17,38 +17,6 @@
             class="form-control-sm"
           >
         </div>
-        <label>Beschreibung</label>
-        <b-form-textarea
-          id="forum-create-thread-form-body"
-          v-model="body"
-          rows="6"
-        />
-        <button
-          class="btn btn-primary"
-        >
-          {{ $i18n('upload.image') }}
-        </button>
-        <b-form-group
-          v-slot="{ ariaDescribedby }"
-          label="Individual radios"
-        >
-          <b-form-radio
-            v-model="selected"
-            :aria-describedby="ariaDescribedby"
-            name="some-radios"
-            value="A"
-          >
-            Option A
-          </b-form-radio>
-          <b-form-radio
-            v-model="selected"
-            :aria-describedby="ariaDescribedby"
-            name="some-radios"
-            value="B"
-          >
-            Option B
-          </b-form-radio>
-        </b-form-group>
       </div>
       <div class="col col-6">
         <label>Abholadresse</label>
@@ -65,6 +33,45 @@
             <i class="fas fa-pencil-alt" />
           </button>
         </div>
+      </div>
+    </div>
+    <div class="row m-2">
+      <div class="col col-6">
+        <label>Beschreibung</label>
+        <b-form-textarea
+          id="forum-create-thread-form-body"
+          v-model="body"
+          rows="3"
+        />
+      </div>
+      <div class="col col-6">
+        <button
+          class="btn btn-outline-primary"
+        >
+          {{ $i18n('upload.image') }}
+        </button>
+      </div>
+    </div>
+    <div class="row m-2">
+      <div class="col col-6">
+        <b-form-group
+          v-slot="{ ariaDescribedby }"
+          label="Kontakt per"
+        >
+          <b-form-radio
+            v-for="contactType in contactTypes"
+            :key="contactType.key"
+            v-model="selected"
+            :aria-describedby="ariaDescribedby"
+            :name="contactType.key"
+            :value="contactType.key"
+          >
+            {{ contactType.label }}
+          </b-form-radio>
+        </b-form-group>
+      </div>
+      <div class="col col-6">
+        <label>Geschätztes Gewicht (kg)</label>
       </div>
     </div>
     <b-modal
@@ -96,6 +103,10 @@ export default {
   data: function () {
     return {
       zoom: 17,
+      contactTypes: [
+        { key: 'phone', label: 'Telefon' },
+        { key: 'message', label: 'Nachricht' },
+      ],
     }
   },
   computed: {
