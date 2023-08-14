@@ -69,9 +69,25 @@
             {{ contactType.label }}
           </b-form-radio>
         </b-form-group>
+
+        <b-form-group label="Wie lange soll dein Essenskorb gültig sein?">
+          <b-form-select v-model="selectedDuration">
+            <option
+              v-for="(duration, index) in durationOptions"
+              :key="index"
+              :value="duration.days"
+            >
+              {{ duration.label }}
+            </option>
+          </b-form-select>
+        </b-form-group>
       </div>
       <div class="col col-6">
         <label>Geschätztes Gewicht (kg)</label>
+        <input
+          type="text"
+          class="form-control-sm"
+        >
       </div>
     </div>
     <b-modal
@@ -107,6 +123,15 @@ export default {
         { key: 'phone', label: 'Telefon' },
         { key: 'message', label: 'Nachricht' },
       ],
+      durationOptions: [
+        { days: 1, label: 'Ein Tag', value: '1 day' },
+        { days: 2, label: 'Zwei Tage', value: '2 days' },
+        { days: 3, label: 'Drei Tage', value: '3 days' },
+        { days: 7, label: 'Eine Woche', value: '1 week' },
+        { days: 14, label: 'Zwei Wochen', value: '2 weeks' },
+        { days: 21, label: 'Drei Wochen', value: '3 weeks' },
+      ],
+      selectedDuration: null,
     }
   },
   computed: {
