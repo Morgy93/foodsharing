@@ -3,7 +3,7 @@ declare(strict_types=1);
 
 use Phinx\Migration\AbstractMigration;
 
-final class AddTitelColumnToBasketTable extends AbstractMigration
+final class AddTitleColumnToBasketTable extends AbstractMigration
 {
     /**
      * Change Method.
