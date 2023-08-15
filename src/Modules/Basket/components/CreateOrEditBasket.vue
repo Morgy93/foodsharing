@@ -137,7 +137,7 @@
     >
       <leaflet-location-search
         id="location"
-        :zoom="17"
+        :zoom="zoom"
         :coordinates="coordinates"
         :street="getUserDetails.street"
         :postal-code="getUserDetails.postalCode"
