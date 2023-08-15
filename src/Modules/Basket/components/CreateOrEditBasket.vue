@@ -120,7 +120,8 @@
       <div class="col col-6">
         <label>Geschätztes Gewicht (kg)</label>
         <input
-          type="text"
+          v-model="weight"
+          type="number"
           class="form-control-sm"
         >
       </div>
@@ -134,26 +135,28 @@
       ok-variant="outline-danger"
       @ok="deleteThread"
     >
-      <LeafletLocationSearchVForm
-        :coordinates="getLocations"
-        :zoom="zoom"
-        :postal-code="getUserDetails.postalCode"
+      <leaflet-location-search
+        id="location"
+        :zoom="17"
+        :coordinates="coordinates"
         :street="getUserDetails.street"
+        :postal-code="getUserDetails.postalCode"
         :city="getUserDetails.city"
+        @address-change="onAddressChanged"
       />
     </b-modal>
   </div>
 </template>
 
 <script>
-import LeafletLocationSearchVForm from '@/components/map/LeafletLocationSearchVForm'
 import DataUser from '@/stores/user'
 import { addBasket } from '@/api/baskets'
 import { VueTelInput } from 'vue-tel-input'
 import 'vue-tel-input/dist/vue-tel-input.css'
+import LeafletLocationSearch from '@/components/map/LeafletLocationSearch.vue'
 
 export default {
-  components: { LeafletLocationSearchVForm, VueTelInput },
+  components: { LeafletLocationSearch, VueTelInput },
   data: function () {
     return {
       preferredCountries: ['DE', 'AT', 'CH'],
@@ -172,28 +175,57 @@ export default {
         { days: 14, label: 'Zwei Wochen', value: '2 weeks' },
         { days: 21, label: 'Drei Wochen', value: '3 weeks' },
       ],
-      selectedDuration: null,
+      selectedDuration: 3,
       selectedContactType: null,
       title: null,
       description: null,
       landlinePhoneNumber: null,
       mobilePhoneNumber: null,
+      weight: null,
+      lat: null,
+      lon: null,
+      coordinates: null,
+      address: null,
+      city: null,
+      postcode: null,
     }
   },
   computed: {
     getAddress () {
-      return `${this.getUserDetails.address} ${this.getUserDetails.postcode} ${this.getUserDetails.city}`
+      return `${this.address} ${this.postcode} ${this.city}`
     },
     getLocations: () => DataUser.getters.getLocations(),
     getUserDetails: () => DataUser.getters.getUserDetails(),
   },
   async mounted () {
     await DataUser.mutations.fetchDetails()
+    this.lat = this.getUserDetails.lat
+    this.lon = this.getUserDetails.lon
+    this.coordinates = this.getLocations
+    this.address = this.getUserDetails.address
+    this.city = this.getUserDetails.city
+    this.postcode = this.getUserDetails.postcode
   },
   methods: {
+    onAddressChanged (coordinates, street, postalCode, city) {
+      this.coordinates = coordinates
+      this.address = street
+      this.postcode = postalCode
+      this.city = city
+    },
     tryAddBasket () {
       try {
-        addBasket(this.title, this.description, this.selectedContactType)
+        addBasket(
+          this.title,
+          this.description,
+          this.selectedContactType,
+          this.landlinePhoneNumber,
+          this.mobilePhoneNumber,
+          this.weight,
+          this.selectedDuration,
+          this.lat,
+          this.lon,
+        )
       } catch (e) {
 
       }
