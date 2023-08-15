@@ -13,6 +13,7 @@
         <div>
           <label>Titel</label>
           <input
+            v-model="title"
             type="text"
             class="form-control-sm"
           >
@@ -40,7 +41,7 @@
         <label>Beschreibung</label>
         <b-form-textarea
           id="forum-create-thread-form-body"
-          v-model="body"
+          v-model="description"
           rows="3"
         />
       </div>
@@ -61,7 +62,7 @@
           <b-form-radio
             v-for="contactType in contactTypes"
             :key="contactType.key"
-            v-model="selected"
+            v-model="selectedContactType"
             :aria-describedby="ariaDescribedby"
             :name="contactType.key"
             :value="contactType.key"
@@ -81,6 +82,12 @@
             </option>
           </b-form-select>
         </b-form-group>
+        <button
+          class="btn btn-primary"
+          @click="tryAddBasket"
+        >
+          Veröffentlichen
+        </button>
       </div>
       <div class="col col-6">
         <label>Geschätztes Gewicht (kg)</label>
@@ -113,6 +120,7 @@
 <script>
 import LeafletLocationSearchVForm from '@/components/map/LeafletLocationSearchVForm'
 import DataUser from '@/stores/user'
+import { addBasket } from '@/api/baskets'
 
 export default {
   components: { LeafletLocationSearchVForm },
@@ -132,6 +140,9 @@ export default {
         { days: 21, label: 'Drei Wochen', value: '3 weeks' },
       ],
       selectedDuration: null,
+      selectedContactType: null,
+      title: null,
+      description: null,
     }
   },
   computed: {
@@ -143,6 +154,15 @@ export default {
   },
   async mounted () {
     await DataUser.mutations.fetchDetails()
+  },
+  methods: {
+    tryAddBasket () {
+      try {
+        addBasket(this.title, this.description, this.selectedContactType)
+      } catch (e) {
+
+      }
+    },
   },
 }
 </script>

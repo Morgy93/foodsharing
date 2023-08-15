@@ -1,5 +1,19 @@
 import { get, post, remove } from './base'
 
+export async function addBasket (title, description, contactType, tel, handy, weight, lifetime, lat, lon) {
+  return (post('/baskets', {
+    title: title,
+    description: description,
+    contactTypes: contactType,
+    tel: tel,
+    handy: handy,
+    weight: weight,
+    lifetime: lifetime,
+    lat: lat,
+    lon: lon,
+  }))
+}
+
 export async function getBaskets () {
   const baskets = (await get('/baskets?type=mine')).baskets
   return baskets.map(basket => {

@@ -199,6 +199,8 @@ final class BasketRestController extends AbstractFOSRestController
      *
      * @OA\Tag(name="basket")
      * @Rest\Get("baskets/{basketId}", requirements={"basketId" = "\d+"})
+     *
+     * @throws Exception
      */
     public function getBasketAction(int $basketId): Response
     {

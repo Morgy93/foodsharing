@@ -2,6 +2,7 @@
 
 namespace Foodsharing\Modules\Basket;
 
+use Exception;
 use Foodsharing\Modules\Core\BaseGateway;
 use Foodsharing\Modules\Core\DBConstants\Basket\Status as BasketStatus;
 use Foodsharing\Modules\Core\DBConstants\BasketRequests\Status as RequestStatus;
@@ -21,6 +22,7 @@ class BasketGateway extends BaseGateway
     }
 
     public function addBasket(
+        $title,
         $desc,
         $pic,
         $tel,
@@ -42,6 +44,7 @@ class BasketGateway extends BaseGateway
         return $this->db->insert(
             'fs_basket',
             [
+                'title' => strip_tags($title),
                 'foodsaver_id' => $fsId,
                 'status' => BasketStatus::REQUESTED_MESSAGE_READ,
                 'time' => date('Y-m-d H:i:s'),
@@ -67,11 +70,13 @@ class BasketGateway extends BaseGateway
      * set only a basket that matches this will be returned.
      *
      * @param int $id the basket's id
-     * @param int|bool $status a basket status or false
+     * @param bool|int $status a basket status or false
      *
      * @return array the details of the basket or an empty array
+     *
+     * @throws Exception
      */
-    public function getBasket($id, $status = false)
+    public function getBasket(int $id, bool|int $status = false): array
     {
         $status_sql = '';
 
@@ -82,6 +87,7 @@ class BasketGateway extends BaseGateway
         $stm = '
 			SELECT
 				b.id,
+				b.title,
 				b.status,
 				b.description,
 				b.picture,
