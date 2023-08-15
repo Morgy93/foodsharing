@@ -71,6 +71,34 @@
           </b-form-radio>
         </b-form-group>
 
+        <div v-if="selectedContactType === 'phone'">
+          <label>Telefon</label>
+          <VueTelInput
+            :value="landlinePhoneNumber"
+            :class="{ 'is-invalid': !isValid }"
+            :valid-characters-only="validCharactersOnly"
+            :mode="mode"
+            :input-options="inputOptions"
+            :default-country="defaultCountry"
+            :preferred-countries="preferredCountries"
+            @input="update"
+            @validate="validate"
+          />
+
+          <label>Handy</label>
+          <VueTelInput
+            :value="mobilePhoneNumber"
+            :class="{ 'is-invalid': !isValid }"
+            :valid-characters-only="validCharactersOnly"
+            :mode="mode"
+            :input-options="inputOptions"
+            :default-country="defaultCountry"
+            :preferred-countries="preferredCountries"
+            @input="update"
+            @validate="validate"
+          />
+        </div>
+
         <b-form-group label="Wie lange soll dein Essenskorb gültig sein?">
           <b-form-select v-model="selectedDuration">
             <option
@@ -121,11 +149,16 @@
 import LeafletLocationSearchVForm from '@/components/map/LeafletLocationSearchVForm'
 import DataUser from '@/stores/user'
 import { addBasket } from '@/api/baskets'
+import { VueTelInput } from 'vue-tel-input'
+import 'vue-tel-input/dist/vue-tel-input.css'
 
 export default {
-  components: { LeafletLocationSearchVForm },
+  components: { LeafletLocationSearchVForm, VueTelInput },
   data: function () {
     return {
+      preferredCountries: ['DE', 'AT', 'CH'],
+      validCharactersOnly: true,
+      defaultCountry: 'DE',
       zoom: 17,
       contactTypes: [
         { key: 'phone', label: 'Telefon' },
@@ -143,6 +176,8 @@ export default {
       selectedContactType: null,
       title: null,
       description: null,
+      landlinePhoneNumber: null,
+      mobilePhoneNumber: null,
     }
   },
   computed: {
