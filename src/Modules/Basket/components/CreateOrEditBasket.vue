@@ -130,10 +130,10 @@
       ref="LocationPickerModal"
       title="LocationPickerModal"
       :cancel-title="$i18n('button.cancel')"
-      :ok-title="$i18n('button.yes_i_am_sure')"
+      ok-title="Adresse übernehmen"
       cancel-variant="primary"
       ok-variant="outline-danger"
-      @ok="deleteThread"
+      @ok="onLocationPickerModalOk"
     >
       <leaflet-location-search
         id="location"
@@ -142,7 +142,7 @@
         :street="getUserDetails.street"
         :postal-code="getUserDetails.postalCode"
         :city="getUserDetails.city"
-        @address-change="onAddressChanged"
+        @address-change="onAddressChangedInternal"
       />
     </b-modal>
   </div>
@@ -188,6 +188,10 @@ export default {
       address: null,
       city: null,
       postcode: null,
+      selectedCoordinates: null,
+      selectedAddress: null,
+      selectedPostcode: null,
+      selectedCity: null,
     }
   },
   computed: {
@@ -212,6 +216,15 @@ export default {
       this.address = street
       this.postcode = postalCode
       this.city = city
+    },
+    onAddressChangedInternal (coordinates, street, postalCode, city) {
+      this.selectedCoordinates = coordinates
+      this.selectedAddress = street
+      this.selectedPostcode = postalCode
+      this.selectedCity = city
+    },
+    onLocationPickerModalOk () {
+      this.onAddressChanged(this.selectedCoordinates, this.selectedAddress, this.selectedPostcode, this.selectedCity)
     },
     tryAddBasket () {
       try {
