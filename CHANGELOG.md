@@ -93,7 +93,7 @@
 - New vue component for blog posts !2676 !2687 @alex.simm
 - Changed forum post response to empty content #1499 !2638 @krauterisator
 - Refactor add pickup modal !2693 @chriswalg
-- Refactored store !2458 @chriswalg @alex.simm
+- Refactored store !2458 !2798 !2802 @chriswalg @alex.simm
 - Refactor add pickup modal !2693 !2784 @chriswalg
 - Refactor edit pickup rules to vue component and moved it to storeInformationModal !2686 !2731 @chriswalg 
 - Refactor own store list in vue !2668 !2683 @chriswalg

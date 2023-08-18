@@ -55,6 +55,9 @@ export async function listStoresForCurrentUser () {
 export async function listStoresDetailsForCurrentUser (expand) {
   return get('/user/current/stores/details')
 }
+export async function listStoreTeamMembershipRequests (storeId) {
+  return get(`/stores/${storeId}/requests`)
+}
 
 export async function requestStoreTeamMembership (storeId, userId) {
   return post(`/stores/${storeId}/requests/${userId}`)

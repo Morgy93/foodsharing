@@ -86,6 +86,23 @@ class StoreTransactions
         return $this->getDisplayedStoreTeam($store, $includeUserDetails);
     }
 
+    /**
+     * Get store applications for a specific user and store.
+     *
+     * @param int $userId   the ID of the user
+     * @param int $storeId  the ID of the store
+     *
+     * @return array an array containing store requests
+     */
+    public function getStoreApplications(int $userId, int $storeId): array
+    {
+        $store = $this->storeGateway->getMyStore($userId, $storeId);
+
+        return [
+            'storeRequests' => $store['requests'] ?? [],
+        ];
+    }
+
     public function getCommonStoreMetadata($supressStoreChains = true): CommonStoreMetadata
     {
         $store = new CommonStoreMetadata();

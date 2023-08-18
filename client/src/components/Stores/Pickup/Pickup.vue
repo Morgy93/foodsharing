@@ -8,14 +8,14 @@
         </div>
         <div
           class="pickup-date"
-          :class="{'today': isToday, 'past': isInPast, 'soon': isSoon, 'empty': emptySlots > 0, 'coord': isCoordinator}"
+          :class="{'today': isToday, 'past': isInPast, 'soon': isSoon, 'empty': emptySlots > 0, 'coord': (isCoordinator || mayEditStore)}"
         >
           <span
             v-html="$dateFormatter.dateTime(date)"
           />
 
           <b-dropdown
-            v-if="isCoordinator && !isInPast"
+            v-if="(isCoordinator || mayEditStore) && !isInPast"
             no-caret
             right
             variant="badge-light"
@@ -55,8 +55,8 @@
             :profile="slot.profile"
             :confirmed="slot.isConfirmed"
             :allow-leave="slot.profile.id == user.id && !isInPast"
-            :allow-kick="isCoordinator && !isInPast"
-            :allow-confirm="isCoordinator"
+            :allow-kick="(isCoordinator || mayEditStore) && !isInPast"
+            :allow-confirm="(isCoordinator || mayEditStore)"
             :allow-chat="slot.profile.id !== user.id"
             @leave="$refs.modal_leave.show()"
             @kick="activeSlot = slot, $refs.modal_kick.show()"
@@ -66,13 +66,13 @@
             v-for="n in emptySlots"
             :key="n"
             :allow-join="!isUserParticipant && isAvailable && n == 1"
-            :allow-remove="isCoordinator && n == emptySlots && !isInPast"
+            :allow-remove="(isCoordinator || mayEditStore) && n == emptySlots && !isInPast"
             @join="$refs.modal_join.show(); fetchSameDayPickups(); checkPickupRule()"
             @remove="$emit('remove-slot', date)"
           />
           <div class="add-pickup-slot">
             <button
-              v-if="isCoordinator && totalSlots < 10 && !isInPast"
+              v-if="(isCoordinator || mayEditStore) && totalSlots < 10 && !isInPast"
               v-b-tooltip.hover="$i18n('pickup.slot_add')"
               class="btn secondary"
               @click="$emit('add-slot', date)"
@@ -259,6 +259,7 @@ export default {
     isAvailable: { type: Boolean, default: false },
     totalSlots: { type: Number, default: 0 },
     occupiedSlots: { type: Array, default: () => [] },
+    mayEditStore: { type: Boolean, default: false },
     isCoordinator: { type: Boolean, default: false },
     user: { type: Object, default: () => { return { id: null } } },
     description: { type: String, default: () => { return null } },

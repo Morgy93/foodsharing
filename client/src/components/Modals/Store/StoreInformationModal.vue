@@ -11,15 +11,7 @@
     @ok="submit"
   >
     <template #modal-title>
-      {{ $i18n('terminology.store') }}
-      <b-form-checkbox
-        v-if="hasEditPermission"
-        id="editMode"
-        v-model="editMode"
-        switch
-      >
-        {{ $i18n('storeedit.bread') }}
-      </b-form-checkbox>
+      {{ store.name }}
     </template>
     <b-card no-body>
       <b-tabs
@@ -292,7 +284,7 @@
                 id="description"
                 v-model="store.description"
                 rows="5"
-                max-rows="100"
+                max-rows="18"
                 :disabled="!editMode"
               />
               <div
@@ -479,10 +471,12 @@ export default {
   props: {
     isJumper: { type: Boolean, default: null },
     storeId: { type: Number, default: null },
-    mayDoPickup: { type: Boolean, default: null },
+    mayEditStore: { type: Boolean, default: null },
+    isCoordinator: { type: Boolean, default: null },
   },
   data () {
     return {
+      editMode: false,
       editPickups: {},
       previousEditPickups: null,
       selectedWeekDay: null,
@@ -493,16 +487,12 @@ export default {
         { value: 1, text: this.$i18n('menu.entry.helpwanted') },
         { value: 2, text: this.$i18n('menu.entry.helpneeded') },
       ],
-      editMode: null,
       store: {},
     }
   },
   computed: {
     storeInformation () {
       return StoreData.getters.getStoreInformation()
-    },
-    hasEditPermission () {
-      return this.store.contact !== null
     },
     publicInfoState () {
       if (!this.editMode) return null
@@ -562,25 +552,11 @@ export default {
       return ''
     },
   },
-  watch: {
-    isJumper (newValue) {
-      if (newValue === false && this.mayDoPickup) {
-        PickupsData.mutations.fetchRegularPickup(this.storeId)
-        this.editPickups = this.regularPickup()
-      }
-    },
-    mayDoPickup (newValue) {
-      if (newValue && this.isJumper === false) {
-        PickupsData.mutations.fetchRegularPickup(this.storeId)
-        this.editPickups = this.regularPickup()
-      }
-    },
-  },
-  created () {
+  async created () {
     // Load data
     this.store = this.storeInformation
-    if (this.isJumper === false && this.mayDoPickup) {
-      PickupsData.mutations.fetchRegularPickup(this.storeId)
+    if (!this.isJumper) {
+      await PickupsData.mutations.fetchRegularPickup(this.storeId)
       this.editPickups = this.regularPickup()
     }
   },
@@ -623,6 +599,7 @@ export default {
       }
     },
     async showModal () {
+      this.editMode = (this.mayEditStore || this.isCoordinator)
       this.previousEditPickups = structuredClone(this.editPickups)
       if (this.store.categoryId === null) {
         this.store.categoryId = 0
@@ -640,7 +617,6 @@ export default {
       }
     },
     async resetModal () {
-      this.editMode = false
       await StoreData.mutations.loadStoreInformation(this.storeId)
       if (this.store.groceries !== null) {
         const selectedValues = StoreData.getters.getGrocerieTypes().filter(opt => this.store.groceries.indexOf(opt.id) !== -1).map(opt => opt.name)

@@ -5,7 +5,7 @@
   >
     <div
       v-show="displayInfos"
-      class="store-desc card-body bg-white p-2"
+      class="store-desc card-body p-2"
     >
       <div
         id="inputAdress"
@@ -177,11 +177,7 @@ export default {
       return this.press === 1
     },
     useRegionPickupRules () {
-      if (this.regionPickupRules === true && this.regionPickupRuleActive === true) {
-        return true
-      } else {
-        return false
-      }
+      return this.regionPickupRules === true && this.regionPickupRuleActive === true
     },
   },
   methods: {

@@ -3,11 +3,10 @@
     <Container
       :title="$i18n('pickup.dates')"
       tag="pickup_list"
-      class="bg-white"
     >
       <div class="text-right mt-2">
         <button
-          v-if="isCoordinator"
+          v-if="(isCoordinator || mayEditStore)"
           v-b-tooltip
           :title="$i18n('pickup.add_onetime_pickup')"
           class="btn btn-primary btn-sm"
@@ -16,7 +15,7 @@
           <i class="fas fa-plus" />
         </button>
         <button
-          v-if="isCoordinator"
+          v-if="(isCoordinator || mayEditStore)"
           v-b-tooltip
           :title="$i18n('store.delete_date')"
           class="btn btn-primary btn-sm"
@@ -39,6 +38,7 @@
             v-bind="pickup"
             :store-id="storeId"
             :store-title="storeTitle"
+            :may-edit-store="mayEditStore"
             :is-coordinator="isCoordinator"
             :user="user"
             :description="pickup.description"
@@ -102,6 +102,10 @@ export default {
       default: null,
     },
     mayDoPickup: {
+      type: Boolean,
+      default: null,
+    },
+    mayEditStore: {
       type: Boolean,
       default: null,
     },

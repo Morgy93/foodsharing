@@ -1,13 +1,11 @@
 <template>
   <div
-    class="bg-white ui-corner-top"
+    class="ui-corner-top"
     :class="classes"
   >
     <span class="text-muted">{{ $i18n('store.sm.makeRegularTeamMember') }}</span>
-
     <user-search-input
       id="new-foodsaver-search"
-      class="m-1"
       :placeholder="$i18n('store.sm.searchPlaceholder')"
       button-icon="fa-user-plus"
       :button-tooltip="$i18n('store.sm.makeRegularTeamMember')"

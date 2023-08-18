@@ -1,19 +1,19 @@
 <template>
   <Container
-    class="bg-white"
     :title="storeName"
     tag="store_options"
   >
     <StoreInformationModal
       :is-jumper="isJumper"
       :store-id="storeId"
-      :may-do-pickup="mayDoPickup"
+      :may-edit-store="mayEditStore"
+      :is-coordinator="isCoordinator"
     />
     <button
-      v-if="teamConversionId != null && isUserInStore"
+      v-if="teamConversationId != null && isUserInStore"
       type="button"
       class="list-group-item list-group-item-action"
-      @click="openChat(teamConversionId)"
+      @click="openChat(teamConversationId)"
       v-text="$i18n('store.chat.team')"
     />
     <button
@@ -57,7 +57,7 @@ export default {
     storeName: { type: String, required: true },
     fsId: { type: Number, required: true },
     mayLeaveStoreTeam: { type: Boolean, default: false },
-    teamConversionId: {
+    teamConversationId: {
       type: Number,
       default: null,
     },
@@ -67,7 +67,11 @@ export default {
     },
     mayEditStore: {
       type: Boolean,
-      default: false,
+      default: null,
+    },
+    isCoordinator: {
+      type: Boolean,
+      default: null,
     },
     storeId: {
       type: Number,

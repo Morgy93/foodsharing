@@ -887,6 +887,8 @@ store:
     pickupAsc: "Neueste zuletzt"
     pickupReset: "Standard-Sortierung"
     filter: "Zeige nur an:"
+    filterAll: "Alle"
+    filterActive: "Aktive"
     filterUnverified: "Unverifizierte"
     filterJumper: "Springer"
     filterQuizSM: "Quiz für Betriebsverantwortliche bestanden"
@@ -920,6 +922,9 @@ store:
   not_verified: "Du bist unverifiziert. Daher kannst du keine keine Slots und keine Telefonnummern von Teammitgliedern sehen."
   team:
     isfull: "Team ist voll"
+    search_input: "Suche nach Name / Telefonnr."
+    search_reset: "Suche zurücksetzen"
+    no_record: "Es wurde kein Eintrag gefunden."
   filter: "Filtern nach …"
   enter_date: "Einzelnen Abholtermin eintragen"
   enter_date_description: "Nachdem du Datum, Uhrzeit und Abholendenzahl ausgewählt hast, kannst du einmalig für diesen Termin Slots einstellen. Solltest du regelmäßige (wöchentlich automatisch wiederkehrende) Slots erstellen wollen, nutze bitte das Menü 'Betriebsinformationen ansehen'."

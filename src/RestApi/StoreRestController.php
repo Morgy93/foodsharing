@@ -9,10 +9,13 @@ use Foodsharing\Modules\Bell\BellGateway;
 use Foodsharing\Modules\Bell\DTO\Bell;
 use Foodsharing\Modules\Core\DatabaseNoValueFoundException;
 use Foodsharing\Modules\Core\DBConstants\Bell\BellType;
+use Foodsharing\Modules\Core\DBConstants\Foodsaver\Role;
+use Foodsharing\Modules\Core\DBConstants\Region\WorkgroupFunction;
 use Foodsharing\Modules\Core\DBConstants\Store\CooperationStatus;
 use Foodsharing\Modules\Core\DBConstants\Store\Milestone;
 use Foodsharing\Modules\Core\DBConstants\Store\StoreLogAction;
 use Foodsharing\Modules\Foodsaver\FoodsaverGateway;
+use Foodsharing\Modules\Group\GroupFunctionGateway;
 use Foodsharing\Modules\Region\RegionGateway;
 use Foodsharing\Modules\Store\DTO\CommonStoreMetadata;
 use Foodsharing\Modules\Store\DTO\PatchStore;
@@ -53,7 +56,8 @@ class StoreRestController extends AbstractFOSRestController
         private StoreTransactions $storeTransactions,
         private StorePermissions $storePermissions,
         private RegionGateway $regionGateway,
-        private BellGateway $bellGateway
+        private BellGateway $bellGateway,
+        private GroupFunctionGateway $groupFunctionGateway
     ) {
     }
 
@@ -239,9 +243,9 @@ class StoreRestController extends AbstractFOSRestController
         try {
             $store = $this->storeGateway->getMyStore($this->session->id(), $storeId);
 
-            $teamConversionId = null;
+            $teamConversationId = null;
             if ($this->storePermissions->mayChatWithRegularTeam($store)) {
-                $teamConversionId = $store['team_conversation_id'];
+                $teamConversationId = $store['team_conversation_id'];
             }
 
             $jumperConversationId = null;
@@ -249,9 +253,28 @@ class StoreRestController extends AbstractFOSRestController
                 $jumperConversationId = $store['springer_conversation_id'];
             }
 
+            $isOrgUser = $this->session->mayRole(Role::ORGA);
+            $isAmbassador = false;
+            $isCoordinator = false;
+
+            if (!$isOrgUser) {
+                $storeGroup = $this->groupFunctionGateway->getRegionFunctionGroupId($store['bezirk_id'], WorkgroupFunction::STORES_COORDINATION);
+                if (empty($storeGroup)) {
+                    if ($this->session->isAdminFor($store['bezirk_id'])) {
+                        $isAmbassador = true;
+                    }
+                } elseif ($this->session->isAdminFor($storeGroup)) {
+                    $isCoordinator = true;
+                }
+            }
+
             $params = [
+                'isCoordinator' => $isCoordinator,
+                'isAmbassador' => $isAmbassador,
+                'isOrgUser' => $isOrgUser,
+                'isJumper' => $store['jumper'],
                 'mayDoPickup' => $this->storePermissions->mayDoPickup($storeId),
-                'teamConversionId' => $teamConversionId,
+                'teamConversationId' => $teamConversationId,
                 'jumperConversationId' => $jumperConversationId,
                 'mayEditStore' => $this->storePermissions->mayEditStore($storeId),
                 'mayLeaveStoreTeam' => $this->storePermissions->mayLeaveStoreTeam($storeId, $this->session->id()),
@@ -576,6 +599,34 @@ class StoreRestController extends AbstractFOSRestController
         $this->storeTransactions->requestStoreTeamMembership($storeId, $userId);
 
         return $this->handleView($this->view([], 200));
+    }
+
+    /**
+     * Get applications to store team.
+     *
+     * @OA\Response(response="200", description="Success")
+     * @OA\Response(response="401", description="Not logged in")
+     * @OA\Response(response="403", description="Insufficient permissions")
+     * @OA\Response(response="404", description="Store does not exist")
+     * @OA\Tag(name="stores")
+     * @Rest\Get("stores/{storeId}/requests")
+     */
+    public function listStoreTeamMembershipRequestsAction(int $storeId): Response
+    {
+        $userId = $this->session->id();
+        if (!$userId) {
+            throw new UnauthorizedHttpException('', self::NOT_LOGGED_IN);
+        }
+        if (!$this->storeGateway->storeExists($storeId)) {
+            throw new NotFoundHttpException('Store does not exist.');
+        }
+        if (!$this->storePermissions->mayEditStore($storeId)) {
+            throw new AccessDeniedHttpException();
+        }
+
+        $response = $this->storeTransactions->getStoreApplications($userId, $storeId);
+
+        return $this->handleView($this->view($response, 200));
     }
 
     /**

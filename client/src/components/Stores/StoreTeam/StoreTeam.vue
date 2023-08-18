@@ -11,15 +11,15 @@
   <div>
     <Container
       :title="title"
-      :toggle-visiblity="filteredUser.length > defaultAmount"
+      :toggle-visiblity="list.length > defaultAmount"
       tag="store_team"
-      class="bg-white store-team"
+      class="store-team"
       @show-full-list="showFullList"
       @reduce-list="reduceList"
     >
       <div class="text-center mt-2 mb-2">
         <button
-          v-if="mayEditStore"
+          v-if="(isCoordinator || mayEditStore)"
           v-b-tooltip.hover.top
           :title="$i18n(managementModeEnabled ? 'store.sm.managementToggleOff' : 'store.sm.managementToggleOn')"
           class="btn btn-primary btn-sm"
@@ -28,27 +28,47 @@
         >
           {{ managementModeEnabled ? $i18n('store.sm.buttonManagementToggleOff') : $i18n('store.sm.buttonManagementToggleOn') }}
         </button>
-        <button
-          class="px-1 d-md-none text-light btn btn-sm"
-          href="#"
-          @click.prevent="toggleTeamDisplay"
-        >
-          <i :class="['fas fa-fw', `fa-chevron-${displayMembers ? 'down' : 'left'}`]" />
-        </button>
       </div>
 
-      <div
-        v-if="managementModeEnabled"
-        class="text-center"
-      >
-        {{ activeMembers }} {{ activeText }} - {{ $i18n('store.of_that') }} {{ jumperCount }} {{ $i18n('store.jumping') }} <br> {{ unverifiedCount }} {{ unverifiedText }}
+      <div class="text-center mb-1">
+        <template v-for="filterButton in updatedFilterButtons">
+          <b-button
+            :key="filterButton.key"
+            v-b-tooltip.hover.bottom="filterButton.tooltip"
+            class="mr-2"
+            size="sm"
+            :variant="getFilterButtonClass(isFilterActive(filterButton.state))"
+            @click="applyFilter(filterButton.state)"
+          >
+            {{ filterButton.count }} <i :class="filterButton.icon" />
+          </b-button>
+        </template>
+      </div>
+
+      <div class="search-container">
+        <input
+          v-model="userSearchString"
+          type="text"
+          class="form-control-sm"
+          :placeholder="$i18n('store.team.search_input')"
+          @input="updateList"
+        >
+        <b-button
+          v-b-tooltip.hover.top
+          variant="outline-secondary"
+          size="sm"
+          :title="$i18n('store.team.search_reset')"
+          @click="resetUserSearchString"
+        >
+          <i class="fas fa-trash-alt" />
+        </b-button>
       </div>
       <!-- preparation for more store-management features -->
       <StoreManagementPanel
         v-if="managementModeEnabled"
         :store-id="storeId"
         :team="team"
-        classes="p-2 team-management"
+        classes="pt-2 team-management"
         :region-id="regionId"
       />
 
@@ -57,14 +77,12 @@
           ref="teamlist"
           :items="filteredList"
           :fields="tableFields"
-          :class="{'d-none': !displayMembers}"
           details-td-class="col-actions"
           primary-key="id"
           thead-class="d-none"
           sort-by="ava"
           :busy="isBusy"
-          :sort-desc.sync="sortdesc"
-          :sort-compare="sortfun"
+          :empty-text="$i18n('store.team.no_record')"
           show-empty
           sort-null-last
         >
@@ -83,6 +101,7 @@
           <template #cell(mobinfo)="data">
             <StoreTeamInfotext
               :member="data.item"
+              :is-coordinator="isCoordinator"
               :may-edit-store="mayEditStore"
             />
           </template>
@@ -112,6 +131,7 @@
             <StoreTeamInfotext
               v-if="wXS"
               :member="data.item"
+              :is-coordinator="isCoordinator"
               :may-edit-store="mayEditStore"
               classes="text-center"
             />
@@ -138,7 +158,7 @@
               </b-button>
 
               <b-button
-                v-if="mayEditStore && data.item.isJumper"
+                v-if="(isCoordinator || mayEditStore) && data.item.isJumper"
                 size="sm"
                 variant="primary"
                 :block="!(wXS || wSM)"
@@ -149,13 +169,13 @@
               </b-button>
 
               <b-button
-                v-if="mayEditStore && data.item.isActive && !data.item.isManager"
+                v-if="(isCoordinator || mayEditStore) && data.item.isActive && !data.item.isManager"
                 size="sm"
                 variant="primary"
                 :block="!(wXS || wSM)"
                 @click="toggleStandbyState(data.item.id, true)"
               >
-                <i class="fas fa-fw fa-mug-hot" />
+                <i class="fas fa-running" />
                 {{ $i18n('store.sm.makeJumper') }}
               </b-button>
 
@@ -224,7 +244,7 @@ import StoreManagementPanel from '@/components/Stores/StoreTeam/StoreManagementP
 import StoreTeamAvatar from '@/components/Stores/StoreTeam/StoreTeamAvatar.vue'
 import StoreTeamInfo from '@/components/Stores/StoreTeam/StoreTeamInfo.vue'
 import StoreTeamInfotext from '@/components/Stores/StoreTeam/StoreTeamInfotext.vue'
-import StoreData from '@/stores/stores'
+import StoreData, { STORE_TEAM_STATE } from '@/stores/stores'
 import Container from '@/components/Container/Container.vue'
 import ListToggleMixin from '@/mixins/ContainerToggleMixin'
 
@@ -234,6 +254,7 @@ export default {
   props: {
     fsId: { type: Number, required: true },
     mayEditStore: { type: Boolean, default: false },
+    isCoordinator: { type: Boolean, default: false },
     team: { type: Array, required: true },
     storeId: { type: Number, required: true },
     storeTitle: { type: String, default: '' },
@@ -243,18 +264,77 @@ export default {
     return {
       foodsaver: this.team?.map(fs => this.foodsaverData(fs)),
       sortfun: this.tableSortFunction,
-      sortdesc: true,
       managementModeEnabled: false,
-      displayMembers: true,
       isBusy: false,
       selectedDataItem: null,
+      userSearchString: null,
+      activeFilter: null,
+      defaultAmountForDesktop: 30,
+      defaultAmountForMobile: 10,
+      filterButtons: [
+        {
+          key: 'all',
+          tooltip: this.$i18n('store.sm.filterAll'),
+          state: null,
+          count: null,
+          icon: 'fas fa-users',
+        },
+        {
+          key: 'active',
+          tooltip: this.$i18n('store.sm.filterActive'),
+          state: STORE_TEAM_STATE.ACTIVE,
+          count: null,
+          icon: 'fas fa-user',
+        },
+        {
+          key: 'jumper',
+          tooltip: this.$i18n('store.sm.filterJumper'),
+          state: STORE_TEAM_STATE.JUMPER,
+          count: null,
+          icon: 'fas fa-running',
+        },
+        {
+          key: 'unverified',
+          tooltip: this.$i18n('store.sm.filterUnverified'),
+          state: STORE_TEAM_STATE.UNVERIFIED,
+          count: null,
+          icon: 'fas fa-user-alt-slash',
+        },
+      ],
+      isReduced: true,
     }
   },
   computed: {
-    filteredUser () {
-      const data = this.foodsaver
-      this.setList(data)
-      return data
+    updatedFilterButtons () {
+      return this.filterButtons.map(filter => {
+        if (filter.state === null) {
+          return { ...filter, count: this.foodsaver.length }
+        } else if (filter.state === STORE_TEAM_STATE.ACTIVE) {
+          return { ...filter, count: this.activeMembers }
+        } else if (filter.state === STORE_TEAM_STATE.JUMPER) {
+          return { ...filter, count: this.jumperCount }
+        } else if (filter.state === STORE_TEAM_STATE.UNVERIFIED) {
+          return { ...filter, count: this.unverifiedCount }
+        }
+        return filter
+      })
+    },
+    isFilterActive () {
+      return (value) => this.activeFilter === value
+    },
+    getFilterButtonClass () {
+      return (value) => (value ? 'primary' : 'secondary')
+    },
+    filteredUsers () {
+      let filtered = this.foodsaver ?? []
+      if (this.activeFilter === STORE_TEAM_STATE.ACTIVE) {
+        filtered = filtered.filter(member => member.isActive)
+      } else if (this.activeFilter === STORE_TEAM_STATE.JUMPER) {
+        filtered = filtered.filter(member => member.isJumper)
+      } else if (this.activeFilter === STORE_TEAM_STATE.UNVERIFIED) {
+        filtered = filtered.filter(member => !member.isVerified)
+      }
+      return filtered
     },
     tableFields () {
       const fields = [
@@ -270,15 +350,13 @@ export default {
       return fields
     },
     jumperCount () {
-      const isJumperType = 2
-      return this.team.filter(member => member.team_active === isJumperType).length
+      return this.foodsaver.filter(member => member.isJumper).length
     },
     unverifiedCount () {
-      const unverifiedState = 0
-      return this.team.filter(member => member.verified === unverifiedState).length
+      return this.foodsaver.filter(member => member.isVerified === false).length
     },
     activeMembers () {
-      return this.team.length - this.jumperCount - this.unverifiedCount
+      return this.foodsaver.filter(member => member.isActive).length
     },
     unverifiedText () {
       return this.unverifiedCount === 1 ? this.$i18n('store.unverified_member') : this.$i18n('store.unverified_members')
@@ -286,22 +364,71 @@ export default {
     activeText () {
       return this.activeMembers === 1 ? this.$i18n('store.one_active') : this.$i18n('store.active')
     },
+    activeFilterText () {
+      switch (this.activeFilter) {
+        case STORE_TEAM_STATE.ACTIVE:
+          return this.activeText
+        case STORE_TEAM_STATE.JUMPER:
+          return this.$i18n('store.jumping')
+        case STORE_TEAM_STATE.UNVERIFIED:
+          return this.unverifiedText
+        default:
+          return this.$i18n('store.sm.filterAll')
+      }
+    },
     title () {
-      return `${this.$i18n('store.team_container')} (${this.activeMembers} ${this.activeText}) `
+      return `${this.$i18n('store.team_container')} (${this.activeFilterText})`
     },
   },
   watch: {
     team () {
       this.foodsaver = this.team?.map(fs => this.foodsaverData(fs))
+      this.updateList()
     },
   },
+  mounted () {
+    this.setDefaultAmountForDesktop(this.defaultAmountForDesktop)
+    this.setDefaultAmountForMobile(this.defaultAmountForMobile)
+  },
   methods: {
+    /**
+     * Calculates and sorts the list of users, filtered by buttons and search string, and sets it in the mixin where
+     * it can be collapsed or expanded by the "show more" button.
+     */
+    updateList () {
+      // filter by selected button
+      let newList = this.filteredUsers
+
+      // filter by name
+      if (this.userSearchString !== null) {
+        const searchString = this.userSearchString.trim().toLowerCase()
+        newList = newList.filter(member => {
+          return (
+            member.name.toLowerCase().includes(searchString) ||
+            (member.phoneNumberIsValid && member.phoneNumber.includes(searchString))
+          )
+        })
+      }
+
+      // sort
+      newList = newList.sort((a, b) => {
+        return this.sortfun(a, b)
+      })
+
+      this.setList(newList)
+    },
+    applyFilter (state) {
+      this.activeFilter = state
+      this.updateList()
+    },
+    resetUserSearchString () {
+      this.userSearchString = null
+      this.updateList()
+    },
     toggleManageControls () {
       this.sortfun = this.managementModeEnabled ? this.tableSortFunction : this.pickupSortFunction
       this.managementModeEnabled = !this.managementModeEnabled
-    },
-    toggleTeamDisplay () {
-      this.displayMembers = !this.displayMembers
+      this.updateList()
     },
     canCopy () {
       return !!navigator.clipboard
@@ -356,6 +483,8 @@ export default {
         pulseError(this.$i18n('error_unexpected'))
         this.isBusy = false
         return
+      } finally {
+        await StoreData.mutations.loadStoreMember(this.storeId)
       }
       const index = this.team.findIndex(fs => fs.id === fsId)
       if (index >= 0) {
@@ -392,6 +521,7 @@ export default {
         fs._showDetails = false
         this.foodsaver[index] = fs
       }
+      await StoreData.mutations.loadStoreMember(this.storeId)
       this.isBusy = false
     },
     async demoteAsManager (fsId, fsName) {
@@ -417,6 +547,7 @@ export default {
         fs._showDetails = false
         this.foodsaver[index] = fs
       }
+      await StoreData.mutations.loadStoreMember(this.storeId)
       this.isBusy = false
     },
     /* eslint-disable brace-style */
@@ -494,7 +625,7 @@ export default {
         fetchCount: fs.stat_fetchcount,
       }
     },
-    async removeFromTeam (fsId, fsName) {
+    async removeFromTeam (fsId) {
       if (!fsId) {
         return
       }
@@ -514,6 +645,15 @@ export default {
 </script>
 
 <style lang="scss" scoped>
+.search-container {
+  display: flex;
+  align-items: center;
+}
+
+.search-container input {
+  width: 100%;
+}
+
 .store-team .team-management {
   border-bottom: 2px solid var(--fs-color-warning-500);
 }

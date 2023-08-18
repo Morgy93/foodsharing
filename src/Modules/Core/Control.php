@@ -116,7 +116,7 @@ abstract class Control
         if ($this->session->mayRole()) {
             $posthtml = '
 				<div class="tools ui-padding">
-				<textarea id="wallpost-text" name="text" placeholder="' . $this->translator->trans('wall.message_placeholder') . '" class="comment textarea"></textarea>
+				<textarea id="wallpost-text" name="text" class="comment textarea"></textarea>
 				<div id="attach-preview"></div>
 				<div style="display: none;" id="wallpost-attach" /></div>
 
