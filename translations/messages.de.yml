@@ -1231,6 +1231,7 @@ wall:
   error-delete: "Diesen Eintrag kannst du nicht entfernen."
   created: "Klasse, dein Pinnwandeintrag wurde gespeichert."
   error-create: "Dein Pinnwandeintrag konnte nicht gespeichert werden."
+  message_placeholder: Nachricht schreiben...
 
 events:
   bread: "Termine"
