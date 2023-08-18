@@ -68,6 +68,9 @@ export default {
     setTimeout(function () { map.invalidateSize() }, 400)
   },
   methods: {
+    getMapObject () {
+      return this.$refs.map.mapObject
+    },
     resetMap (mapObject) {
       const resizeObserver = new ResizeObserver((_) => {
         mapObject.invalidateSize()
