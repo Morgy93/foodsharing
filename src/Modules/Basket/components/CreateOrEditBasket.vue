@@ -164,8 +164,8 @@ export default {
       defaultCountry: 'DE',
       zoom: 17,
       contactTypes: [
-        { key: '1', label: 'Telefon' },
-        { key: '2', label: 'Nachricht' },
+        { key: 1, label: 'Telefon' },
+        { key: 2, label: 'Nachricht' },
       ],
       durationOptions: [
         { days: 1, label: 'Ein Tag', value: '1 day' },
@@ -231,7 +231,7 @@ export default {
         addBasket(
           this.title,
           this.description,
-          this.selectedContactType,
+          [this.selectedContactType],
           this.landlinePhoneNumber,
           this.mobilePhoneNumber,
           this.weight,
