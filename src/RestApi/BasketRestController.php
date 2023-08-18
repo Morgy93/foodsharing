@@ -285,6 +285,7 @@ final class BasketRestController extends AbstractFOSRestController
      * @Rest\RequestParam(name="lifetime", nullable=true, default=7)
      * @Rest\RequestParam(name="lat", nullable=true)
      * @Rest\RequestParam(name="lon", nullable=true)
+     * @throws Exception
      */
     public function addBasketAction(ParamFetcher $paramFetcher): Response
     {
@@ -313,10 +314,10 @@ final class BasketRestController extends AbstractFOSRestController
             $contactTypes,
             $paramFetcher->get(self::TEL),
             $paramFetcher->get(self::MOBILE_NUMBER),
-            $paramFetcher->get('weight'),
+            (int)$paramFetcher->get('weight'),
             $location['lat'],
             $location['lon'],
-            $paramFetcher->get('lifetime')
+            (int)$paramFetcher->get('lifetime')
         );
 
         if (!$basket) {

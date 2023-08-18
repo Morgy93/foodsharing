@@ -64,14 +64,14 @@
             :key="contactType.key"
             v-model="selectedContactType"
             :aria-describedby="ariaDescribedby"
-            :name="contactType.key"
+            :name="contactType.label"
             :value="contactType.key"
           >
             {{ contactType.label }}
           </b-form-radio>
         </b-form-group>
 
-        <div v-if="selectedContactType === '1'">
+        <div v-if="selectedContactType === 1">
           <label>Telefon</label>
           <VueTelInput
             :value="landlinePhoneNumber"
