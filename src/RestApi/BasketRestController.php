@@ -276,6 +276,7 @@ final class BasketRestController extends AbstractFOSRestController
      *
      * @OA\Tag(name="basket")
      * @Rest\Post("baskets")
+     * @Rest\RequestParam(name="title", nullable=false)
      * @Rest\RequestParam(name="description", nullable=false)
      * @Rest\RequestParam(name="contactTypes", nullable=true)
      * @Rest\RequestParam(name="tel", nullable=true)
@@ -298,6 +299,7 @@ final class BasketRestController extends AbstractFOSRestController
         }
 
         $location = $this->fetchLocationOrUserHome($paramFetcher);
+        $title = $paramFetcher->get('title');
 
         $contactTypes = $paramFetcher->get(self::CONTACT_TYPES);
         if ($contactTypes !== null && \is_array($contactTypes)) {
@@ -305,6 +307,7 @@ final class BasketRestController extends AbstractFOSRestController
         }
 
         $basket = $this->basketTransactions->addBasket(
+            $title,
             $description,
             '',
             $contactTypes,

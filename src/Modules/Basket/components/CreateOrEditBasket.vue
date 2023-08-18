@@ -71,7 +71,7 @@
           </b-form-radio>
         </b-form-group>
 
-        <div v-if="selectedContactType === 'phone'">
+        <div v-if="selectedContactType === '1'">
           <label>Telefon</label>
           <VueTelInput
             :value="landlinePhoneNumber"
@@ -164,8 +164,8 @@ export default {
       defaultCountry: 'DE',
       zoom: 17,
       contactTypes: [
-        { key: 'phone', label: 'Telefon' },
-        { key: 'message', label: 'Nachricht' },
+        { key: '1', label: 'Telefon' },
+        { key: '2', label: 'Nachricht' },
       ],
       durationOptions: [
         { days: 1, label: 'Ein Tag', value: '1 day' },
