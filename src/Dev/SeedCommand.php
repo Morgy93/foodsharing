@@ -481,7 +481,6 @@ class SeedCommand extends Command implements CustomCommandInterface
         $I->addRegionAdmin(RegionIDs::STORE_CHAIN_GROUP_AUSTRIA, $userbot['id']);
         $I->addRegionAdmin(RegionIDs::STORE_CHAIN_GROUP_SWITZERLAND, $userbot['id']);
 
-
         // Make ambassador responsible for all work groups in the region
         $this->output->writeln('- make ambassador responsible for all work groups');
         $workGroupsIds = $I->grabColumnFromDatabase('fs_bezirk', 'id', ['parent_id' => $region1, 'type' => UnitType::WORKING_GROUP]);
