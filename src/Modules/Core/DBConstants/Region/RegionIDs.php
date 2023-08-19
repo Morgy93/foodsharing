@@ -21,6 +21,8 @@ class RegionIDs
     public const EDITORIAL_GROUP = 327;
     public const BOT_WELCOME_TEAM = 328;
     public const STORE_CHAIN_GROUP = 332;
+    public const STORE_CHAIN_GROUP_AUSTRIA = 858;
+    public const STORE_CHAIN_GROUP_SWITZERLAND = 1004;
 
     // region and ambassador groups
     public const EUROPE_BOT_GROUP = 881;
