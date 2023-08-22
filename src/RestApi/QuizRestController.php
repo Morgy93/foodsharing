@@ -87,22 +87,22 @@ final class QuizRestController extends AbstractFOSRestController
     {
         $this->sanityChecks($quizId);
         $session = $this->assertSessionRunning($quizId);
-        $current_question_store =& $session['quiz_questions'][$session['quiz_index']];
-        $question = $this->quizGateway->getQuestion($current_question_store['id']);
-        $this->session->set('quiz-quest-start', time()); // TODO Remove
+        $question_sessiondata =& $session['quiz_questions'][$session['quiz_index']];
+        $question = $this->quizGateway->getQuestion($question_sessiondata['id']);
 
-        if(!isset($current_question_store['start_time'])) {
-            $current_question_store['start_time'] = time();
-            $this->quizSessionGateway->updateQuizSession($session);
-        } else {
+        if(isset($question_sessiondata['start_time']) ) {
             // test for timeout:
-            $question_age = time() - $current_question_store['start_time'];
-            if(!$session['easymode'] && $question_age > $current_question_store['duration'] + self::NETWORK_BUFFER_TIME_IN_SECONDS) {
+            $question_age = time() - $question_sessiondata['start_time'];
+            if(!$session['easymode'] && $question_age > $question_sessiondata['duration']) {
                 //set question as timed out and try getting a question again
-                $current_question_store['userduration'] = $question_age;
+                $question_sessiondata['userduration'] = $question_age;
                 $this->set_question_answered($quizId, $session);
                 return $this->getNextQuestion($quizId);
             }
+            $question['age'] = $question_age;
+        } else {
+            $question_sessiondata['start_time'] = time();
+            $this->quizSessionGateway->updateQuizSession($session);
         }
         $question['answers'] = $this->quizGateway->getAnswers($question['id'], false);
         $question['timed'] = !$session['easymode'];
@@ -141,7 +141,6 @@ final class QuizRestController extends AbstractFOSRestController
         return $this->handleView($this->view([
             'answered' => $question['answers'],
             'solution' => $solution,
-            's' => $session,
         ], 200));
     }
 
@@ -197,23 +196,24 @@ final class QuizRestController extends AbstractFOSRestController
         $failurePointsTotal = 0;
         $quizLog = [];
         foreach ($session['quiz_questions'] as &$answered_question) {
-            if(!$session['easymode'] && $answered_question['userduration'] > $answered_question['duration'] + self::NETWORK_BUFFER_TIME_IN_SECONDS){
-                $failurePointsTotal += $answered_question['fp']; 
-                continue;
-            }
             $failurePoints = 0;
             $question = $this->quizGateway->getQuestion($answered_question['id']);
             $solution = $this->quizGateway->getAnswers($answered_question['id']);
-            foreach ($solution as $answer) {
-                $answerWasSelected = in_array($answer['id'], $answered_question['answers']);
-                $answeredWrongly = ($answerWasSelected && $answer['right'] == AnswerRating::WRONG)
-                    || (!$answerWasSelected && $answer['right'] == AnswerRating::CORRECT)
-                    || ($answered_question['userduration'] > $answered_question['duration']);
-                $failurePoints += round($answeredWrongly * $question['fp'] / count($solution), 3);
+            $question['timed_out'] = !$session['easymode'] && $answered_question['userduration'] > $answered_question['duration'] + self::NETWORK_BUFFER_TIME_IN_SECONDS;
+            if($question['timed_out']){
+                $failurePoints = $answered_question['fp'];
+            } else {
+                foreach ($solution as $answer) {
+                    $answerWasSelected = in_array($answer['id'], $answered_question['answers']);
+                    $answeredWrongly = ($answerWasSelected && $answer['right'] == AnswerRating::WRONG)
+                        || (!$answerWasSelected && $answer['right'] == AnswerRating::CORRECT)
+                        || ($answered_question['userduration'] > $answered_question['duration']);
+                    $failurePoints += round($answeredWrongly * $question['fp'] / count($solution), 3);
+                }
             }
             $failurePointsTotal += $failurePoints;
             $question['answeres'] = $solution;
-            $question['useranswers'] = $answered_question['answers'];
+            $question['useranswers'] = $answered_question['answers'] ?? [];
             $question['userfp'] = $failurePoints;
             $question['userduration'] = $answered_question['userduration'];
             $quizLog[] = $question;

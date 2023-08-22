@@ -47,7 +47,7 @@
     </div>
 
     <!-- Results section -->
-    <div>
+    <div v-if="canViewResults">
       <hr>
       <b-button
         block
@@ -186,7 +186,7 @@
 import Container from '@/components/Container/Container.vue'
 import i18n from '@/helper/i18n'
 import { getQuestion, getQuizStatus, startQuiz, answerQuestion, commentQuestion } from '@/api/quiz'
-import { pulseSuccess } from '@/script'
+import { pulseSuccess, pulseError } from '@/script'
 
 const QUIZ_STATUS = {
   neverTried: 0,
@@ -222,6 +222,7 @@ export default {
       comment: '',
       commentSectionVisible: false,
       isQuizModalShown: false,
+      timeOutTimer: null,
     }
   },
   computed: {
@@ -275,20 +276,37 @@ export default {
       if (this.isFetching) return
       this.isFetching = true
       this.question = (await getQuestion(this.quiz.id)).question
-      this.status.answered = this.question.index
+      if (this.status.answered !== this.question.index) {
+        pulseError('Die Zeit deiner letzten Frage ist bereits abgelaufen.')
+        this.status.answered = this.question.index
+      }
       this.isFetching = false
     },
     async handInQuestion () {
       const selected = Object.entries(this.selectedAnswers).filter(a => a[1]).map(a => +a[0])
       this.solution = await answerQuestion(this.quiz.id, selected)
       this.isQuestionActive = false
+      window.clearTimeout(this.timeOutTimer)
     },
     async animateTimer () {
       await new Promise(resolve => window.requestAnimationFrame(resolve))
-      this.$refs['time-left']?.animate(
-        [{ width: '100%' }, { width: '0%' }],
-        { duration: this.question.duration * 1000, iterations: 1 },
-      )
+      let duration = this.question.duration
+      let initialWidth = 1
+      if (this.question.age) {
+        initialWidth -= this.question.age / this.question.duration
+        duration -= this.question.age
+      }
+      if (this.$refs['time-left']) {
+        this.$refs['time-left'].animate(
+          [{ width: initialWidth * 100 + '%' }, { width: '0%' }],
+          { duration: duration * 1000, iterations: 1 },
+        )
+        this.timeOutTimer = window.setTimeout(this.timeOut, duration * 1000)
+      }
+    },
+    timeOut () {
+      pulseError('Die Zeit ist um.')
+      this.handInQuestion()
     },
     showStartModal (timed) {
       this.timed = timed
