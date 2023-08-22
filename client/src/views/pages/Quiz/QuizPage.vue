@@ -1,5 +1,4 @@
 <template>
-  <!-- eslint-disable vue/max-attributes-per-line -->
   <Container
     v-if="status"
     :title="title"
@@ -52,9 +51,68 @@
       <b-button
         block
         variant="secondary"
+        @click="displayResults()"
       >
         Ergebnisse des letzten Versuchs ansehen
       </b-button>
+
+      <b-collapse
+        ref="results-collapse"
+        v-model="showResults"
+      >
+        <div v-if="results">
+          <br>
+          <h5>
+            {{ $i18n(`quiz.results.title.${results.status}`) }}
+          </h5>
+          <p>
+            {{ $i18n(`quiz.results.points.${results.status}`, results) }}
+          </p>
+
+          <div
+            v-for="(result, i) in results.details"
+            :key="result.id"
+            no-body
+          >
+            <b-card-header>
+              <b-button
+                v-b-toggle="`accordion-${i}`"
+                block
+                size="sm"
+                class="result-detail-toggle"
+              >
+                <span>
+                  Frage {{ i+1 }}
+                </span>
+                <b-badge
+                  pill
+                  :variant="result.userfp ? 'danger' : 'success'"
+                  class="fp-counter"
+                >
+                  {{ result.userfp }} Fehler
+                </b-badge>
+              </b-button>
+            </b-card-header>
+            <b-collapse
+              :id="`accordion-${i}`"
+              accordion="results-accordion"
+            >
+              <b-card-body>
+                <p>
+                  <b>Frage:</b>
+                  {{ result.text }}
+                </p>
+                <p>
+                  <a :href="result.wikilink">Infos dazu im Wiki</a>
+                </p>
+                <p>
+                  <a href="#">Kommentar schreiben</a>
+                </p>
+              </b-card-body>
+            </b-collapse>
+          </div>
+        </div>
+      </b-collapse>
     </div>
 
     <b-modal
@@ -109,7 +167,14 @@
               <span class="explanation">
                 <b>Erklärung: </b>
                 {{ solutionById[answer.id]?.explanation }}
+
               </span>
+              <a
+                href="#"
+                @click="(event)=>{event.target.previousElementSibling.classList.add('expanded')}"
+              >
+                Mehr anzeigen
+              </a>
             </p>
           </div>
         </div>
@@ -185,7 +250,7 @@
 
 import Container from '@/components/Container/Container.vue'
 import i18n from '@/helper/i18n'
-import { getQuestion, getQuizStatus, startQuiz, answerQuestion, commentQuestion } from '@/api/quiz'
+import { getQuestion, getQuizStatus, startQuiz, answerQuestion, commentQuestion, getQuizResults } from '@/api/quiz'
 import { pulseSuccess, pulseError } from '@/script'
 
 const QUIZ_STATUS = {
@@ -223,6 +288,9 @@ export default {
       commentSectionVisible: false,
       isQuizModalShown: false,
       timeOutTimer: null,
+      console: window.console, // TODO remove
+      results: null,
+      showResults: false,
     }
   },
   computed: {
@@ -266,20 +334,20 @@ export default {
     async fetchStatus () {
       this.status = await getQuizStatus(this.quiz.id)
     },
+    async fetchResults () {
+      this.results = await getQuizResults(this.quiz.id)
+    },
     async initQuiz () {
       if (!this.isQuizRunning) {
         await startQuiz(this.quiz.id, this.timed)
       }
       this.showNextQuestion()
+      this.results = null
     },
     async fetchQuestion () {
       if (this.isFetching) return
       this.isFetching = true
       this.question = (await getQuestion(this.quiz.id)).question
-      if (this.status.answered !== this.question.index) {
-        pulseError('Die Zeit deiner letzten Frage ist bereits abgelaufen.')
-        this.status.answered = this.question.index
-      }
       this.isFetching = false
     },
     async handInQuestion () {
@@ -317,6 +385,10 @@ export default {
         this.fetchStatus(),
         this.fetchQuestion(),
       ])
+      if (this.status.answered !== this.question.index) {
+        pulseError('Die Zeit deiner letzten Frage ist bereits abgelaufen.')
+        this.status.answered = this.question.index
+      }
       this.isQuizModalShown = true
       this.animateTimer()
       this.questionStarted = Date.now()
@@ -354,6 +426,12 @@ export default {
     pauseQuiz () {
       this.fetchStatus()
       this.isQuizModalShown = false
+    },
+    async displayResults () {
+      if (!this.results) {
+        await this.fetchResults()
+      }
+      this.showResults = !this.showResults
     },
   },
 }
@@ -395,12 +473,21 @@ export default {
     background-color: var(--fs-color-danger-500);
     color:white;
 
-    b-form-checkbox {
-      color: white !important;
-    }
+    // b-form-checkbox {
+    //   color: white !important;
+    // }
   }
   &.neutral {
     background-color: var(--fs-color-warning-200);
+  }
+}
+
+::v-deep .answer-wrapper {
+  &.success label, &.failiure label{
+    color: var(--lt-color-white);
+  }
+  &.neutral label{
+    color: var(--lt-color-black);
   }
 }
 
@@ -415,6 +502,29 @@ export default {
 .show-full-expl {
   position: relative;
   top: -5px;
+}
+
+.explanation:not(.expanded) {
+  overflow: hidden;
+  -webkit-box-orient: vertical;
+  display: -webkit-inline-box;
+  max-width: calc(100% - 10em);
+  -webkit-line-clamp: 1;
+  vertical-align: bottom;
+  word-break: break-all;
+}
+
+.explanation.expanded ~ a {
+  display: none;
+}
+
+.fp-counter {
+  float: right;
+  top: .2em;
+}
+
+.result-detail-toggle span:nth-child(1) {
+  float: left;
 }
 
 </style>

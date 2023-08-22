@@ -260,6 +260,14 @@ quiz:
       3: Deine Lernpause ist um. Du darfst jetzt zwei weitere Male am Quiz teilnehmen. Hoffentlich hast du die Zeit genutzt, um dich besser mit den Inhalten vertraut zu machen.
       4: Du hast nur noch einen letzten Versuch dieses Quiz zu bestehen! Wenn du jetzt durchfällst, wirst du dauerhaft für dieses Quiz disqualifiziert. Bitte nimm nur Teil, wenn du dich ausführlich mit den Inhalten aus dem Wiki beschäftigt hast. 
     disqualified: Leider bist du für dieses Quiz disqualifiziert, da du fünf mal nicht bestanden hast.
+  results:
+    title:
+      1: "Herzlichen Glückwunsch!"
+      2: "Du hast leider nicht bestanden."
+    points:
+      1: "Du hast mit {fp} von maximal {maxfp} Fehlerpunkten bestanden!"
+      2: "Du hattest {fp} Fehlerpunkte und hättest mit höchstens {maxfp} bestanden."
+
 
 # quiz: "Quiz
 # For legacy UI reasons (QuizView), needs to be toplevel with this exact key:

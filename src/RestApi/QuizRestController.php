@@ -199,7 +199,7 @@ final class QuizRestController extends AbstractFOSRestController
             $failurePoints = 0;
             $question = $this->quizGateway->getQuestion($answered_question['id']);
             $solution = $this->quizGateway->getAnswers($answered_question['id']);
-            $question['timed_out'] = !$session['easymode'] && $answered_question['userduration'] > $answered_question['duration'] + self::NETWORK_BUFFER_TIME_IN_SECONDS;
+            $question['timed_out'] = !$session['easymode'] && ($answered_question['userduration'] > $answered_question['duration'] + self::NETWORK_BUFFER_TIME_IN_SECONDS);
             if($question['timed_out']){
                 $failurePoints = $answered_question['fp'];
             } else {

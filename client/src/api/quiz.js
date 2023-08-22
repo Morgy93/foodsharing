@@ -4,6 +4,10 @@ export function getQuizStatus (quizId) {
   return get(`/quiz/${quizId}/status`)
 }
 
+export function getQuizResults (quizId) {
+  return get(`/quiz/${quizId}/results`)
+}
+
 export function getQuestion (quizId) {
   return get(`/quiz/${quizId}/question`)
 }
