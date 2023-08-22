@@ -103,7 +103,11 @@
                   {{ result.text }}
                 </p>
                 <p>
-                  <a :href="result.wikilink">Infos dazu im Wiki</a>
+                  <a href="#">Antworten</a>
+                  <span>Test</span>
+                </p>
+                <p>
+                  <a :href="result.wikilink">Weitere Infos dazu im Wiki</a>
                 </p>
                 <p>
                   <a href="#">Kommentar schreiben</a>
