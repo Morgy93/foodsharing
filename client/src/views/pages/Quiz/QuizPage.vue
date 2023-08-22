@@ -1,11 +1,21 @@
 <template>
   <!-- eslint-disable vue/max-attributes-per-line -->
   <Container
+    v-if="status"
     :title="title"
     :collapsible="false"
     :wrap-content="true"
   >
-    <div v-html="quiz?.desc" />
+    <!-- Quiz description -->
+    <div v-html="quiz.desc" />
+
+    <!-- State based info -->
+    <div v-if="!isQuizModalShown">
+      <hr>
+      <p>{{ stateBasedInfo }}</p>
+    </div>
+
+    <!-- Buttons -->
     <div v-if="!isQuizModalShown">
       <div v-if="canStart">
         <b-button
@@ -25,7 +35,7 @@
         </b-button>
       </div>
 
-      <div v-if="canContinue">
+      <div v-if="isQuizRunning">
         <b-button
           block
           variant="primary"
@@ -34,6 +44,17 @@
           {{ $i18n('quiz.continuenow') }}
         </b-button>
       </div>
+    </div>
+
+    <!-- Results section -->
+    <div>
+      <hr>
+      <b-button
+        block
+        variant="secondary"
+      >
+        Ergebnisse des letzten Versuchs ansehen
+      </b-button>
     </div>
 
     <b-modal
@@ -58,7 +79,7 @@
 
     <b-modal
       v-model="isQuizModalShown"
-      :title="$i18n('quiz.infomodal.title', { index: status.answered+1, questions: status.questions })"
+      :title="$i18n('quiz.infomodal.title', { index: status?.answered+1, questions: status?.questions })"
       hide-header-close
       no-close-on-backdrop
       no-close-on-esc
@@ -86,10 +107,9 @@
             <p> {{ $i18n(answerText(selectedAnswers[answer.id], solutionById[answer.id]?.right)) }}</p>
             <p>
               <span class="explanation">
-                <b>Erklärung:</b>
+                <b>Erklärung: </b>
                 {{ solutionById[answer.id]?.explanation }}
               </span>
-              <a class="show-full-expl" href="#">Mehr anzeigen</a>
             </p>
           </div>
         </div>
@@ -136,7 +156,7 @@
           />
         </div>
         <b-button
-          v-if="(!isQuestionActive || !status.timed ) && !isQuizFinished"
+          v-if="(!isQuestionActive || !status?.timed ) && !isQuizFinished"
           variant="outline-primary"
           @click="pauseQuiz"
         >
@@ -168,6 +188,16 @@ import i18n from '@/helper/i18n'
 import { getQuestion, getQuizStatus, startQuiz, answerQuestion, commentQuestion } from '@/api/quiz'
 import { pulseSuccess } from '@/script'
 
+const QUIZ_STATUS = {
+  neverTried: 0,
+  running: 1,
+  passed: 2,
+  failed: 3,
+  pause: 4,
+  pauseElapsed: 5,
+  disqualified: 6,
+}
+
 export default {
   components: {
     Container,
@@ -175,7 +205,7 @@ export default {
   props: {
     quiz: {
       type: Object,
-      default: () => null,
+      required: true,
     },
   },
   data () {
@@ -183,7 +213,7 @@ export default {
       infoKeys: ['wiki', 'real_life_examples', 'limited_tries', 'alone', 'read_carefully', 'multiple_choice', 'comment', 'pause', 'feedback'],
       timed: undefined,
       isFetching: false,
-      status: { status: undefined },
+      status: null,
       question: null,
       selectedAnswers: {},
       questionStarted: null,
@@ -195,21 +225,37 @@ export default {
     }
   },
   computed: {
-    title () {
-      return i18n(`quiz.title.${this.status?.status}`, this.quiz)
-    },
     canStart () {
-      return [0, 3, 5].includes(this.status?.status)
+      return [QUIZ_STATUS.neverTried, QUIZ_STATUS.failed, QUIZ_STATUS.pauseElapsed].includes(this.status.status)
     },
-    canContinue () {
-      return this.status?.status === 1
+    canViewResults () {
+      return ![QUIZ_STATUS.neverTried, QUIZ_STATUS.running].includes(this.status.status)
+    },
+    isQuizRunning () {
+      return this.status.status === QUIZ_STATUS.running
+    },
+    isQuizFinished () {
+      return !this.isQuestionActive && this.status.answered + 1 >= this.status.questions
     },
     solutionById () {
       if (!this.solution) return {}
       return Object.fromEntries(this.solution.solution.map(a => [a.id, a]))
     },
-    isQuizFinished () {
-      return !this.isQuestionActive && this.status.answered + 1 >= this.status.questions
+    statusName () {
+      return Object.keys(QUIZ_STATUS).find(key => QUIZ_STATUS[key] === this.status.status)
+    },
+    title () {
+      return i18n(`quiz.title.${this.statusName}`, this.quiz)
+    },
+    stateBasedInfo () {
+      if (!this.statusName) return ''
+      switch (this.status.status) {
+        case QUIZ_STATUS.failed:
+        case QUIZ_STATUS.pauseElapsed:
+          return i18n(`quiz.state_based_info.${this.statusName}.${this.status.tries}`)
+        default:
+          return i18n(`quiz.state_based_info.${this.statusName}`, this.status)
+      }
     },
   },
   mounted: function () {
@@ -220,7 +266,7 @@ export default {
       this.status = await getQuizStatus(this.quiz.id)
     },
     async initQuiz () {
-      if (!this.canContinue) {
+      if (!this.isQuizRunning) {
         await startQuiz(this.quiz.id, this.timed)
       }
       this.showNextQuestion()
@@ -229,6 +275,7 @@ export default {
       if (this.isFetching) return
       this.isFetching = true
       this.question = (await getQuestion(this.quiz.id)).question
+      this.status.answered = this.question.index
       this.isFetching = false
     },
     async handInQuestion () {
@@ -287,6 +334,7 @@ export default {
       pulseSuccess(this.$i18n('quiz.comment.sent'))
     },
     pauseQuiz () {
+      this.fetchStatus()
       this.isQuizModalShown = false
     },
   },
@@ -323,12 +371,18 @@ export default {
 
   &.success {
     background-color: var(--fs-color-success-500);
+    color:white;
   }
   &.failiure {
     background-color: var(--fs-color-danger-500);
+    color:white;
+
+    b-form-checkbox {
+      color: white !important;
+    }
   }
   &.neutral {
-    background-color: var(--fs-color-info-300);
+    background-color: var(--fs-color-warning-200);
   }
 }
 
@@ -338,13 +392,6 @@ export default {
   .btn{
     margin-top: .5em;
   }
-}
-
-.explanation {
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  max-width: 20em;
 }
 
 .show-full-expl {

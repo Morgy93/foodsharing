@@ -22,6 +22,7 @@ use Symfony\Component\HttpKernel\Exception\UnauthorizedHttpException;
 
 final class QuizRestController extends AbstractFOSRestController
 {
+    public const NETWORK_BUFFER_TIME_IN_SECONDS = 5;
     public function __construct(
         private Session $session,
         private QuizGateway $quizGateway,
@@ -63,6 +64,7 @@ final class QuizRestController extends AbstractFOSRestController
      */
     public function getQuizStatus(int $quizId): Response
     {
+        // TODO clean up with gateway
         $quiz = $this->sanityChecks($quizId);
         $session = $this->quizSessionGateway->getRunningSession($quizId, $this->session->id());
         $status = $this->quizSessionGateway->getQuizStatus($quizId, $this->session->id());
@@ -85,12 +87,26 @@ final class QuizRestController extends AbstractFOSRestController
     {
         $this->sanityChecks($quizId);
         $session = $this->assertSessionRunning($quizId);
-        $question = $this->quizGateway->getQuestion($session['quiz_questions'][$session['quiz_index']]['id']);
-        $this->session->set('quiz-quest-start', time());
+        $current_question_store =& $session['quiz_questions'][$session['quiz_index']];
+        $question = $this->quizGateway->getQuestion($current_question_store['id']);
+        $this->session->set('quiz-quest-start', time()); // TODO Remove
 
-        $this->quizSessionGateway->updateQuizSession($session['id'], $session['quiz_questions'], $session['quiz_index']);
+        if(!isset($current_question_store['start_time'])) {
+            $current_question_store['start_time'] = time();
+            $this->quizSessionGateway->updateQuizSession($session);
+        } else {
+            // test for timeout:
+            $question_age = time() - $current_question_store['start_time'];
+            if(!$session['easymode'] && $question_age > $current_question_store['duration'] + self::NETWORK_BUFFER_TIME_IN_SECONDS) {
+                //set question as timed out and try getting a question again
+                $current_question_store['userduration'] = $question_age;
+                $this->set_question_answered($quizId, $session);
+                return $this->getNextQuestion($quizId);
+            }
+        }
         $question['answers'] = $this->quizGateway->getAnswers($question['id'], false);
         $question['timed'] = !$session['easymode'];
+        $question['index'] = $session['quiz_index'];
 
         return $this->handleView($this->view([
             'question' => $question,
@@ -107,7 +123,7 @@ final class QuizRestController extends AbstractFOSRestController
     {
         $this->sanityChecks($quizId);
         $session = $this->assertSessionRunning($quizId);
-        $question = $session['quiz_questions'][$session['quiz_index']];
+        $question =& $session['quiz_questions'][$session['quiz_index']];
 
         //Check that only answers to the question were given
         $solution = $this->quizGateway->getAnswers($question['id']);
@@ -119,18 +135,23 @@ final class QuizRestController extends AbstractFOSRestController
 
         //Update quiz state stored in session:
         $question['answers'] = $answers->answers;
-        $question['userduration'] = (time() - (int)$this->session->get('quiz-quest-start'));
-        $session['quiz_questions'][$session['quiz_index']] = $question;
-        $this->quizSessionGateway->updateQuizSession($session['id'], $session['quiz_questions'], $session['quiz_index'] + 1);
-
-        if ($session['quiz_index'] + 1 == count($session['quiz_questions'])) {
-            $this->finalizeQuiz($quizId, $session);
-        }
+        $question['userduration'] = (time() - $question['start_time']);
+        $this->set_question_answered($quizId, $session);
 
         return $this->handleView($this->view([
-            'answered' => $answers->answers,
-            'solution' => $solution
+            'answered' => $question['answers'],
+            'solution' => $solution,
+            's' => $session,
         ], 200));
+    }
+
+    private function set_question_answered(int $quizId, array $session) {
+        ++$session['quiz_index'];
+        $this->quizSessionGateway->updateQuizSession($session);
+
+        if ($session['quiz_index'] == count($session['quiz_questions'])) {
+            $this->finalizeQuiz($quizId, $session);
+        }
     }
 
     /**
@@ -143,6 +164,9 @@ final class QuizRestController extends AbstractFOSRestController
         $this->assertSessionRunning($quizId, false);
 
         $session = $this->quizSessionGateway->getLatestSession($quizId, $this->session->id());
+        if(!$session) {
+            throw new AccessDeniedHttpException('There must be at least one finished quiz session.');
+        }
 
         return $this->handleView($this->view($session, 200));
     }
@@ -173,6 +197,10 @@ final class QuizRestController extends AbstractFOSRestController
         $failurePointsTotal = 0;
         $quizLog = [];
         foreach ($session['quiz_questions'] as &$answered_question) {
+            if(!$session['easymode'] && $answered_question['userduration'] > $answered_question['duration'] + self::NETWORK_BUFFER_TIME_IN_SECONDS){
+                $failurePointsTotal += $answered_question['fp']; 
+                continue;
+            }
             $failurePoints = 0;
             $question = $this->quizGateway->getQuestion($answered_question['id']);
             $solution = $this->quizGateway->getAnswers($answered_question['id']);

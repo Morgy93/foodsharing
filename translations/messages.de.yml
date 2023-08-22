@@ -216,13 +216,13 @@ quiz:
     pause: Später weitermachen
     finish: Quiz abschließen
   title:
-    0: "{name} - Jetzt das Quiz durchführen!"
-    1: "{name} - Quiz fortführen!"
-    2: "{name} - Dieses Quiz hast du bestanden!"
-    3: "{name} - Versuchs nochmal!"
-    4: "Lernpause ({name})"
-    5: "{name} - Jetzt kannst du es nochmal versuchen!"
-    6: "{name} - Leider disqualifiziert."
+    neverTried: "{name} - Jetzt das Quiz durchführen!"
+    running: "{name} - Quiz fortführen!"
+    passed: "{name} - Dieses Quiz hast du bestanden!"
+    failed: "{name} - Versuchs nochmal!"
+    pause: "Lernpause ({name})"
+    pauseElapsed: "{name} - Jetzt kannst du es nochmal versuchen!"
+    disqualified: "{name} - Leider disqualifiziert."
   startmodal:
     title: "Hinweise zum Quiz"
     infos: 
@@ -248,6 +248,19 @@ quiz:
     false_true: Diese Antwort wäre richtig gewesen.
     true_false: Falsch! Diese Antwort stimmt nicht.
     true_true: Richtig! Diese Antwort stimmt.
+  state_based_info:
+    neverTried: Dieses Quiz hast du noch nie bearbeitet. Nimm dir Zeit, alle aufgeführten Wiki-Artikel aufmerksam durchzulesen, damit du auf die Fragen vorbereitet bist. 
+    running: Du hast das Quiz bereits gestartet und bislang {answered} von {questions} Fragen beantwortet.
+    passed: Dieses Quiz hast du bestanden.
+    failed:
+      1: Beim ersten Versuch hast du dieses Quiz leider nicht bestanden. Das kann schon mal passieren. Schau dir nochmal in die entsprechenden Wiki-Artikel und probiers nochmal.
+      2: In den ersten beiden Versuchen hast du dieses Quiz leider nicht bestanden. Du hast noch einen dritten Versuch, bevor du einen Monat Lernpause einlegen musst. Schau dir unbedingt die entsprechenden Wiki-Artikel an, damit du das Quiz bestehen kannst.
+    pause: Du hast dieses Quiz drei mal nicht bestanden. Zuverlässigkeit, sicheres Beherrschen der Regeln und professionelles Auftreten sind bei Foodsharing unverzichtbar. Mit deinen Antworten vermittelst du das zum jetzigen Zeitpunkt leider nicht. Daher bekommst du einen Monat Lernpause, bevor du zwei weitere Versuche erhälst, das Quiz zu bestehen. Deine Lernpause endet in {wait} Tagen.
+    pauseElapsed: 
+      3: Deine Lernpause ist um. Du darfst jetzt zwei weitere Male am Quiz teilnehmen. Hoffentlich hast du die Zeit genutzt, um dich besser mit den Inhalten vertraut zu machen.
+      4: Du hast nur noch einen letzten Versuch dieses Quiz zu bestehen! Wenn du jetzt durchfällst, wirst du dauerhaft für dieses Quiz disqualifiziert. Bitte nimm nur Teil, wenn du dich ausführlich mit den Inhalten aus dem Wiki beschäftigt hast. 
+    disqualified: Leider bist du für dieses Quiz disqualifiziert, da du fünf mal nicht bestanden hast.
+
 # quiz: "Quiz
 # For legacy UI reasons (QuizView), needs to be toplevel with this exact key:
 quizusercomment: |

@@ -259,12 +259,12 @@ class QuizSessionGateway extends BaseGateway
         } if (count($quizSessions) < 3) {
             return ['status' => QuizStatus::FAILED, 'tries' => count($quizSessions)];
         }
-        $pauseEnd = Carbon::createFromTimestamp(end($quizSessions)['time_ts'])->addDays(30);
+        $pauseEnd = Carbon::createFromTimestamp(end($quizSessions)['time_end_ts'])->addDays(30);
         $now = Carbon::now();
         if (count($quizSessions) == 3 && $now->isBefore($pauseEnd)) {
             return ['status' => QuizStatus::PAUSE, 'wait' => intval(round($now->floatDiffInDays($pauseEnd)))];
         } if (count($quizSessions) == 4 || (count($quizSessions) == 3 && $now->greaterThanOrEqualTo($pauseEnd))) {
-            return ['status' => QuizStatus::PAUSE_ELAPSED];
+            return ['status' => QuizStatus::PAUSE_ELAPSED, 'tries' => count($quizSessions)];
         }
 
         return ['status' => QuizStatus::DISQUALIFIED];
@@ -273,7 +273,7 @@ class QuizSessionGateway extends BaseGateway
     private function collectQuizStatus(int $quizId, int $fsId): array
     {
         return $this->db->fetchAll('
-			SELECT foodsaver_id, `status`, UNIX_TIMESTAMP(`time_start`) AS time_ts
+			SELECT foodsaver_id, `status`, UNIX_TIMESTAMP(`time_start`) AS time_ts, UNIX_TIMESTAMP(`time_end`) AS time_end_ts
 			FROM fs_quiz_session
 			WHERE foodsaver_id = :fsId AND quiz_id = :quizId
             ORDER BY time_ts ASC;
@@ -305,15 +305,15 @@ class QuizSessionGateway extends BaseGateway
         return [];
     }
 
-    public function updateQuizSession(int $sessionId, array $questions, int $quizIndex): int
+    public function updateQuizSession(array $session): int
     {
         return $this->db->update(
             'fs_quiz_session',
             [
-                'quiz_questions' => serialize($questions),
-                'quiz_index' => $quizIndex
+                'quiz_questions' => serialize($session['quiz_questions']),
+                'quiz_index' => $session['quiz_index']
             ],
-            ['id' => $sessionId]
+            ['id' => $session['id']]
         );
     }
 
@@ -414,6 +414,9 @@ class QuizSessionGateway extends BaseGateway
             'fsId' => $fsId,
             'runningStatus' => QuizStatus::RUNNING,
         ]);
+        if (!$result) {
+            return null;
+        }
         $result['details'] = unserialize($result['details']);
 
         return $result;
