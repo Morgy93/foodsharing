@@ -212,7 +212,7 @@ final class QuizRestController extends AbstractFOSRestController
                 }
             }
             $failurePointsTotal += $failurePoints;
-            $question['answeres'] = $solution;
+            $question['answers'] = $solution;
             $question['useranswers'] = $answered_question['answers'] ?? [];
             $question['userfp'] = $failurePoints;
             $question['userduration'] = $answered_question['userduration'];

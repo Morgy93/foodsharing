@@ -102,16 +102,21 @@
                   <b>Frage:</b>
                   {{ result.text }}
                 </p>
-                <p>
-                  <a href="#">Antworten</a>
-                  <span>Test</span>
-                </p>
+                <a href="#">Antworten</a>
+
+                <div
+                  v-for="answer in result.answers"
+                  :key="answer.id"
+                >
+                  {{ answer }}
+                </div>
                 <p>
                   <a :href="result.wikilink">Weitere Infos dazu im Wiki</a>
                 </p>
                 <p>
                   <a href="#">Kommentar schreiben</a>
                 </p>
+                {{ result }}
               </b-card-body>
             </b-collapse>
           </div>
