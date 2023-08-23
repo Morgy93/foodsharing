@@ -224,9 +224,8 @@ class MaintenanceGateway extends BaseGateway
     }
 
     /**
-     * Updates all quiz sessions that were finished or aborted more than two weeks ago by setting
-     * questions and answers to null. After this the quiz results can not be seen anymore.
-     * TODO: This is not actually what this function does!
+     * Updates all quiz sessions that were finished more than two weeks ago by setting
+     * questions and answers to null. After this the quiz results can not be seen in detail anymore.
      *
      * @return int the number of updated entries
      */
@@ -240,6 +239,28 @@ class MaintenanceGateway extends BaseGateway
             ],
             [
                 'status' => [SessionStatus::FAILED, SessionStatus::PASSED],
+                'time_end <' => Carbon::now()->subWeeks(2)->format('Y-m-d H:i:s'),
+            ]
+        );
+    }
+
+    /**
+     * Updates all quiz sessions that were abandoned more than two weeks ago by setting
+     * questions to null and marking the quiz as failed.
+     *
+     * @return int the number of updated entries
+     */
+    public function failAbandonedQuizSessions(): int
+    {
+        return $this->db->update(
+            'fs_quiz_session',
+            [
+                'status' => SessionStatus::FAILED,
+                'quiz_questions' => null,
+                'fp' => -1,
+            ],
+            [
+                'status' => [SessionStatus::RUNNING],
                 'time_end <' => Carbon::now()->subWeeks(2)->format('Y-m-d H:i:s'),
             ]
         );

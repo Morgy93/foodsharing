@@ -8,6 +8,9 @@
       {{ $i18n(`quiz.results.points.${results.status}`, results) }}
     </p>
 
+    <p v-if="!results.details">
+      <i>Die ganaue Auswertung wird nur für 2 Wochen nach dem Quiz gespeichert und ist nicht mehr verfügbar.</i>
+    </p>
     <div
       v-for="(result, i) in results.details"
       :key="result.id"

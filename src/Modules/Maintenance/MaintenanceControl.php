@@ -105,6 +105,8 @@ class MaintenanceControl extends ConsoleControl
          */
         $this->updateFinishedQuizSessions();
 
+        $this->failAbandonedQuizSessions();
+
         /*
          * Remove failed and unprocessed E-Mais form IMAP folder
          */
@@ -327,6 +329,13 @@ class MaintenanceControl extends ConsoleControl
     {
         self::info('removing questions from finished quiz sessions...');
         $count = $this->maintenanceGateway->updateFinishedQuizSessions();
+        self::success($count . ' sessions updated');
+    }
+
+    private function failAbandonedQuizSessions()
+    {
+        self::info('Marking abandoned quiz sessions as failed...');
+        $count = $this->maintenanceGateway->failAbandonedQuizSessions();
         self::success($count . ' sessions updated');
     }
 
