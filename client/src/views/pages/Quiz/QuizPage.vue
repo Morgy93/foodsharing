@@ -53,8 +53,7 @@
         variant="secondary"
         @click="displayResults()"
       >
-        Ergebnisse des letzten Versuchs ansehen
-        <!-- TODO -->
+        {{ $i18n('quiz.show_results') }}
       </b-button>
 
       <b-collapse

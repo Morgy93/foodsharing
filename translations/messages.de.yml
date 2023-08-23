@@ -276,6 +276,7 @@ quiz:
     deleted: "Die ganaue Auswertung wird nur für 2 Wochen nach dem Quiz gespeichert und ist nicht mehr verfügbar."
   fp_badge: "{userfp} Fehler"
   error_tooltip: "Bei dieser Antwort hast du einen Fehler gemacht."
+  show_results: Ergebnisse des letzten Versuchs ansehen
 
 
 # quiz: "Quiz
