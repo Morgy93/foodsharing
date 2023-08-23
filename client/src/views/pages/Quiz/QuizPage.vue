@@ -135,7 +135,6 @@ export default {
       status: null,
       isQuizModalShown: false,
       timeOutTimer: null,
-      console: window.console, // TODO remove
       results: null,
       showResults: false,
     }
@@ -204,6 +203,3 @@ export default {
   },
 }
 </script>
-
-<style lang="scss" scoped>
-</style>
