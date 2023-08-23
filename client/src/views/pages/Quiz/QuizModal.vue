@@ -35,6 +35,10 @@
       </div>
     </b-form-group>
 
+    <p v-if="!isQuestionActive">
+      <Wikilink :link="question.wikilink" />
+    </p>
+
     <QuestionCommentField
       v-if="!isQuestionActive"
       :question-id="question.id"
@@ -81,11 +85,13 @@ import { answerQuestion, getQuestion } from '@/api/quiz'
 import { pulseError } from '@/script'
 import QuestionCommentField from './QuestionCommentField'
 import ExpandableExplanation from './ExpandableExplanation'
+import Wikilink from './Wikilink'
 
 export default {
   components: {
     QuestionCommentField,
     ExpandableExplanation,
+    Wikilink,
   },
   props: {
     quiz: {

@@ -177,7 +177,6 @@ quiz:
   resultsbelow: "Die Auswertung findest Du unten."
   heavysigh: "Geschafft!"
   donecorrectly: "hast Du komplett richtig beantwortet. Prima!"
-  wikilink: "Passender Wiki-Artikel zu diesem Thema"
   choice:
     correcta: "ist richtig!"
     correctb: "ist falsch. Das hast Du richtig erkannt!"
@@ -277,6 +276,7 @@ quiz:
   fp_badge: "{userfp} Fehler"
   error_tooltip: "Bei dieser Antwort hast du einen Fehler gemacht."
   show_results: Ergebnisse des letzten Versuchs ansehen
+  wikilink: Weitere Infos dazu im Wiki
 
 
 # quiz: "Quiz

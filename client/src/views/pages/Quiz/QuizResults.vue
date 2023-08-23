@@ -69,7 +69,7 @@
             </span>
           </p>
           <p>
-            <a :href="externalLink(result.wikilink)">Weitere Infos dazu im Wiki</a>
+            <Wikilink :link="result.wikilink" />
           </p>
           <p>
             <QuestionCommentField
@@ -86,12 +86,14 @@
 
 import QuestionCommentField from './QuestionCommentField'
 import ExpandableExplanation from './ExpandableExplanation'
+import Wikilink from './Wikilink'
 import i18n from '@/helper/i18n'
 
 export default {
   components: {
     QuestionCommentField,
     ExpandableExplanation,
+    Wikilink,
   },
   props: {
     results: {
@@ -113,12 +115,6 @@ export default {
   methods: {
     answerColorClass (right) {
       return ['failiure', 'success', 'neutral'][right]
-    },
-    externalLink (url) {
-      if (!url.startsWith('http')) {
-        url = 'https://'
-      }
-      return url
     },
   },
 }
