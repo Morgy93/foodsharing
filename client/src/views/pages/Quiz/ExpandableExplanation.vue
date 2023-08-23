@@ -4,7 +4,7 @@
       ref="explanation"
       class="explanation"
     >
-      <b>Erklärung: </b>
+      <b>{{ $i18n('explanation') }}:</b>
       {{ text }}
 
     </span>
@@ -12,8 +12,7 @@
       href="#a"
       @click="expand"
     >
-      Mehr anzeigen
-      <!-- TODO translate -->
+      {{ $i18n('globals.show_more') }}
     </a>
   </div>
 </template>

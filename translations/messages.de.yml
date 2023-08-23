@@ -275,7 +275,7 @@ quiz:
       time_out: "Du hast das Quiz nicht zuende bearbeitet."
     deleted: "Die ganaue Auswertung wird nur für 2 Wochen nach dem Quiz gespeichert und ist nicht mehr verfügbar."
   fp_badge: "{userfp} Fehler"
-  error_tooptip: "Bei dieser Antwort hast du einen Fehler gemacht."
+  error_tooltip: "Bei dieser Antwort hast du einen Fehler gemacht."
 
 
 # quiz: "Quiz
