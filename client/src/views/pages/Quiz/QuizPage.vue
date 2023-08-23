@@ -57,84 +57,11 @@
       </b-button>
 
       <b-collapse
-        ref="results-collapse"
         v-model="showResults"
       >
-        <div v-if="results">
-          <br>
-          <h5>
-            {{ $i18n(`quiz.results.title.${results.status}`) }}
-          </h5>
-          <p>
-            {{ $i18n(`quiz.results.points.${results.status}`, results) }}
-          </p>
-
-          <div
-            v-for="(result, i) in results.details"
-            :key="result.id"
-            no-body
-          >
-            <b-card-header>
-              <b-button
-                v-b-toggle="`accordion-${i}`"
-                block
-                size="sm"
-                class="result-detail-toggle"
-              >
-                <span>
-                  Frage {{ i+1 }}
-                </span>
-                <b-badge
-                  pill
-                  :variant="result.userfp ? 'danger' : 'success'"
-                  class="fp-counter"
-                >
-                  {{ result.userfp }} Fehler
-                </b-badge>
-              </b-button>
-            </b-card-header>
-            <b-collapse
-              :id="`accordion-${i}`"
-              accordion="results-accordion"
-            >
-              <b-card-body>
-                <p>
-                  <b>Frage:</b>
-                  {{ result.text }}
-                </p>
-                <div>
-                  <a href="#">Antworten</a>
-
-                  <div
-                    v-for="answer in [...result.answers].sort((a,b) => a.right-b.right)"
-                    :key="answer.id"
-                    class="result-answer-container"
-                  >
-                    <span
-                      :class="answerColorClass(answer.right)"
-                    >
-                      <i
-                        v-if="result.useranswers.includes(answer.id) ^ answer.right === 1"
-                        v-b-tooltip="'Bei dieser Antwort hast du einen Fehler gemacht.'"
-                        class="fas fa-exclamation-triangle mistake-icon"
-                      />
-                      <b>{{ ['Falsch', 'Richtig', 'Neutral'][answer.right] }}:</b>
-                      {{ answer.text }}
-                      <br>
-                      <a href="#">Erklärung anzeigen</a>
-                    </span>
-                  </div>
-                </div>
-                <p>
-                  <a :href="result.wikilink">Weitere Infos dazu im Wiki</a>
-                </p>
-                <p>
-                  <a href="#">Kommentar schreiben</a>
-                </p>
-              </b-card-body>
-            </b-collapse>
-          </div>
-        </div>
+        <QuizResults
+          :results="results"
+        />
       </b-collapse>
     </div>
 
@@ -164,7 +91,8 @@
       :status="status"
       @update:questions-answered="(answered) => status.answered = answered"
       @update:visible="(visible) => isQuizModalShown = visible"
-      @fetch-status="(resolve) => fetchStatus().then(() => resolve?.())"
+      @fetch-status="fetchStatus"
+      @finished-quiz="onFinishedQuiz"
     />
   </Container>
 </template>
@@ -175,6 +103,7 @@ import Container from '@/components/Container/Container.vue'
 import i18n from '@/helper/i18n'
 import { getQuizStatus, startQuiz, getQuizResults } from '@/api/quiz'
 import QuizModal from './QuizModal'
+import QuizResults from './QuizResults'
 
 const QUIZ_STATUS = {
   neverTried: 0,
@@ -190,6 +119,7 @@ export default {
   components: {
     Container,
     QuizModal,
+    QuizResults,
   },
   props: {
     quiz: {
@@ -228,21 +158,19 @@ export default {
     },
     stateBasedInfo () {
       if (!this.statusName) return ''
-      switch (this.status.status) {
-        case QUIZ_STATUS.failed:
-        case QUIZ_STATUS.pauseElapsed:
-          return i18n(`quiz.state_based_info.${this.statusName}.${this.status.tries}`)
-        default:
-          return i18n(`quiz.state_based_info.${this.statusName}`, this.status)
+      if ([QUIZ_STATUS.failed, QUIZ_STATUS.pauseElapsed].includes(this.status.status)) {
+        return i18n(`quiz.state_based_info.${this.statusName}.${this.status.tries}`)
       }
+      return i18n(`quiz.state_based_info.${this.statusName}`, this.status)
     },
   },
   mounted: function () {
     this.fetchStatus()
   },
   methods: {
-    async fetchStatus () {
+    async fetchStatus (resolve) {
       this.status = await getQuizStatus(this.quiz.id)
+      resolve?.()
     },
     async fetchResults () {
       this.results = await getQuizResults(this.quiz.id)
@@ -263,51 +191,19 @@ export default {
       if (!right ^ selected) return 'success'
       return 'failiure'
     },
-    async displayResults () {
+    async displayResults (visibility = !this.showResults) {
       if (!this.results) {
         await this.fetchResults()
       }
-      this.showResults = !this.showResults
+      this.showResults = visibility
+    },
+    onFinishedQuiz () {
+      this.results = null
+      this.displayResults(true)
     },
   },
 }
 </script>
 
 <style lang="scss" scoped>
-
-.success {
-  background-color: var(--fs-color-success-500);
-  color:white;
-}
-.failiure {
-  background-color: var(--fs-color-danger-500);
-  color:white;
-}
-.neutral {
-  background-color: var(--fs-color-warning-200);
-}
-
-.fp-counter {
-  float: right;
-  top: .2em;
-}
-
-.result-detail-toggle span:nth-child(1) {
-  float: left;
-}
-
-.result-answer-container>span {
-  display: block;
-  padding: .5em .75em;
-  margin-bottom: .25em;
-  border-radius: 1em;
-  a {
-    color: currentColor;
-  }
-}
-
-.mistake-icon {
-  float: right;
-}
-
 </style>

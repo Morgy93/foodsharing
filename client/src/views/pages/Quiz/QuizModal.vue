@@ -28,53 +28,17 @@
 
         <div v-if="!isQuestionActive">
           <p>{{ $i18n(answerText(solutionById[answer.id]?.right, selectedAnswers[answer.id])) }}</p>
-          <p>
-            <span class="explanation">
-              <b>Erklärung: </b>
-              {{ solutionById[answer.id]?.explanation }}
-
-            </span>
-            <a
-              href="#"
-              @click="(event)=>{event.target.previousElementSibling.classList.add('expanded')}"
-            >
-              Mehr anzeigen
-              <!-- TODO translate -->
-            </a>
-          </p>
+          <ExpandableExplanation
+            :text="solutionById[answer.id]?.explanation"
+          />
         </div>
       </div>
     </b-form-group>
 
-    <div v-if="!isQuestionActive">
-      <a
-        ref="comment-collapse-toggle"
-        v-b-toggle
-        href="#comment-collapse"
-        @click.prevent
-      >
-        {{ $i18n('quiz.comment.toggle') }}
-      </a>
-      <b-collapse
-        id="comment-collapse"
-        ref="comment-collapse"
-        v-model="commentSectionVisible"
-      >
-        <b-form-textarea
-          v-model="comment"
-          label="Frage Kommentieren"
-          :placeholder="$i18n('quiz.comment.placeholder')"
-          rows="3"
-        />
-        <b-button
-          variant="primary"
-          :disabled="!comment"
-          @click="sendCommentHandler"
-        >
-          {{ $i18n('quiz.comment.send') }}
-        </b-button>
-      </b-collapse>
-    </div>
+    <QuestionCommentField
+      v-if="!isQuestionActive"
+      :question-id="question.id"
+    />
 
     <template #modal-footer>
       <div
@@ -113,10 +77,16 @@
 
 <script>
 
-import { answerQuestion, commentQuestion, getQuestion } from '@/api/quiz'
-import { pulseError, pulseSuccess } from '@/script'
+import { answerQuestion, getQuestion } from '@/api/quiz'
+import { pulseError } from '@/script'
+import QuestionCommentField from './QuestionCommentField'
+import ExpandableExplanation from './ExpandableExplanation'
 
 export default {
+  components: {
+    QuestionCommentField,
+    ExpandableExplanation,
+  },
   props: {
     quiz: {
       type: Object,
@@ -135,8 +105,6 @@ export default {
     return {
       isQuestionActive: true,
       selectedAnswers: {},
-      comment: '',
-      commentSectionVisible: false,
       question: null,
       questionStarted: null,
       solution: null,
@@ -173,12 +141,6 @@ export default {
       this.isQuestionActive = true
       this.selectedAnswers = {}
     },
-    async sendCommentHandler () {
-      await commentQuestion(this.question.id, this.comment)
-      this.commentSectionVisible = false
-      this.$refs['comment-collapse-toggle'].disabled = true
-      pulseSuccess(this.$i18n('quiz.comment.sent'))
-    },
     async fetchQuestion () {
       if (this.isFetching) return
       this.isFetching = true
@@ -203,7 +165,7 @@ export default {
     },
     finishQuiz () {
       this.closeQuiz()
-      // Show result
+      this.$emit('finished-quiz')
     },
     closeQuiz () {
       this.$emit('update:visible', false)
@@ -228,7 +190,6 @@ export default {
     answerText (right, selected) {
       const path = 'quiz.answers.'
       if (right === 2) return path + 'neutral'
-      console.log({ right, selected, result: `${path}${!!selected}_${!!right}` })
       return `${path}${!!selected}_${!!right}`
     },
   },
@@ -254,28 +215,6 @@ export default {
   background-color: var(--fs-color-primary-500);
   width: 0%;
 }
-#comment-collapse {
-  text-align: right;
-  .btn{
-    margin-top: .5em;
-  }
-}
-.show-full-expl {
-  position: relative;
-  top: -5px;
-}
-.explanation:not(.expanded) {
-  overflow: hidden;
-  -webkit-box-orient: vertical;
-  display: -webkit-inline-box;
-  max-width: calc(100% - 10em);
-  -webkit-line-clamp: 1;
-  vertical-align: bottom;
-  word-break: break-all;
-}
-.explanation.expanded ~ a {
-  display: none;
-}
 
 .answer-wrapper {
   padding: .5em 2em;
@@ -283,23 +222,19 @@ export default {
   margin-bottom: 1em;
 }
 
-.answer-wrapper {
-  &.success, &.failiure {
-    a {
-      color: white;
-    }
-  }
-  // &.neutral label{
-  //   color: var(--lt-color-black);
-  // }
-}
+// .answer-wrapper {
+//   &.success, &.failiure {
+//     a {
+//       color: white;
+//     }
+//   }
+//   // &.neutral label{
+//   //   color: var(--lt-color-black);
+//   // }
+// }
 .success {
   background-color: var(--fs-color-success-500);
   color:white;
-
-  b-form-checkbox {
-    color: white !important;
-  }
 }
 .failiure {
   background-color: var(--fs-color-danger-500);

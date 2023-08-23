@@ -226,6 +226,7 @@ class MaintenanceGateway extends BaseGateway
     /**
      * Updates all quiz sessions that were finished or aborted more than two weeks ago by setting
      * questions and answers to null. After this the quiz results can not be seen anymore.
+     * TODO: This is not actually what this function does!
      *
      * @return int the number of updated entries
      */

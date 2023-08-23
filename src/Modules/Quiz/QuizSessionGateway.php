@@ -412,7 +412,7 @@ class QuizSessionGateway extends BaseGateway
         ', [
             'quizId' => $quizId,
             'fsId' => $fsId,
-            'runningStatus' => QuizStatus::RUNNING,
+            'runningStatus' => SessionStatus::RUNNING,
         ]);
         if (!$result) {
             return null;
