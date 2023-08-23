@@ -220,18 +220,15 @@ export default {
   padding: .5em 2em;
   border-radius: 1em;
   margin-bottom: 1em;
+  ::v-deep .custom-control-label {
+    color: currentColor;
+  }
+
+  &:not(.neutral) ::v-deep a {
+    color: currentColor;
+  }
 }
 
-// .answer-wrapper {
-//   &.success, &.failiure {
-//     a {
-//       color: white;
-//     }
-//   }
-//   // &.neutral label{
-//   //   color: var(--lt-color-black);
-//   // }
-// }
 .success {
   background-color: var(--fs-color-success-500);
   color:white;

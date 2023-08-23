@@ -5,11 +5,11 @@
       {{ $i18n(`quiz.results.title.${results.status}`) }}
     </h5>
     <p>
-      {{ $i18n(`quiz.results.points.${results.status}`, results) }}
+      {{ pointsMessage }}
     </p>
 
     <p v-if="!results.details">
-      <i>Die ganaue Auswertung wird nur für 2 Wochen nach dem Quiz gespeichert und ist nicht mehr verfügbar.</i>
+      <i>{{ $i18n(`quiz.results.deleted`) }}</i>
     </p>
     <div
       v-for="(result, i) in results.details"
@@ -24,14 +24,14 @@
           class="result-detail-toggle"
         >
           <span>
-            Frage {{ i+1 }}
+            {{ $i18n(`quiz.question`) }} {{ i+1 }}
           </span>
           <b-badge
             pill
             :variant="result.userfp ? 'danger' : 'success'"
             class="fp-counter"
           >
-            {{ result.userfp }} Fehler
+            {{ $i18n(`quiz.fp_badge`, result) }}
           </b-badge>
         </b-button>
       </b-card-header>
@@ -41,11 +41,11 @@
       >
         <b-card-body>
           <p>
-            <b>Frage:</b>
+            <b>{{ $i18n(`quiz.question`) }}:</b>
             {{ result.text }}
           </p>
           <p>
-            <b>Antworten:</b>
+            <b>{{ $i18n(`quiz.answers.name`) }}:</b>
             <span
               v-for="answer in [...result.answers].sort((a,b) => a.right-b.right)"
               :key="answer.id"
@@ -56,10 +56,10 @@
               >
                 <i
                   v-if="result.useranswers.includes(answer.id) ^ answer.right === 1"
-                  v-b-tooltip="'Bei dieser Antwort hast du einen Fehler gemacht.'"
+                  v-b-tooltip="$i18n(`quiz.error_tooltip`)"
                   class="fas fa-exclamation-triangle mistake-icon"
                 />
-                <b>{{ ['Falsch', 'Richtig', 'Neutral'][answer.right] }}:</b>
+                <b>{{ $i18n(`quiz.answers.short.${answer.right}`) }}:</b>
                 {{ answer.text }}
                 <br>
                 <ExpandableExplanation
@@ -86,6 +86,7 @@
 
 import QuestionCommentField from './QuestionCommentField'
 import ExpandableExplanation from './ExpandableExplanation'
+import i18n from '@/helper/i18n'
 
 export default {
   components: {
@@ -101,6 +102,13 @@ export default {
   data () {
     return {
     }
+  },
+  computed: {
+    pointsMessage () {
+      let status = this.results.status
+      if (+this.results.fp === -1) status = 'time_out'
+      return i18n(`quiz.results.points.${status}`, this.results)
+    },
   },
   methods: {
     answerColorClass (right) {
@@ -118,7 +126,7 @@ export default {
 
 <style lang="scss">
 
-.fp-counter {
+.badge.fp-counter {
   float: right;
   top: .2em;
 }

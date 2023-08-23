@@ -248,6 +248,11 @@ quiz:
     false_true: Diese Antwort wäre richtig gewesen.
     true_false: Falsch! Diese Antwort stimmt nicht.
     true_true: Richtig! Diese Antwort stimmt.
+    short:
+      0: Falsch
+      1: Richtig
+      2: Neutral
+    name: Antorten
   state_based_info:
     neverTried: Dieses Quiz hast du noch nie bearbeitet. Nimm dir Zeit, alle aufgeführten Wiki-Artikel aufmerksam durchzulesen, damit du auf die Fragen vorbereitet bist. 
     running: Du hast das Quiz bereits gestartet und bislang {answered} von {questions} Fragen beantwortet.
@@ -267,6 +272,10 @@ quiz:
     points:
       1: "Du hast mit {fp} von maximal {maxfp} Fehlerpunkten bestanden!"
       2: "Du hattest {fp} Fehlerpunkte und hättest mit höchstens {maxfp} bestanden."
+      time_out: "Du hast das Quiz nicht zuende bearbeitet."
+    deleted: "Die ganaue Auswertung wird nur für 2 Wochen nach dem Quiz gespeichert und ist nicht mehr verfügbar."
+  fp_badge: "{userfp} Fehler"
+  error_tooptip: "Bei dieser Antwort hast du einen Fehler gemacht."
 
 
 # quiz: "Quiz

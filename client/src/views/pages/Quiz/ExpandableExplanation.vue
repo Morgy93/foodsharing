@@ -1,5 +1,5 @@
 <template>
-  <p>
+  <div>
     <span
       ref="explanation"
       class="explanation"
@@ -15,7 +15,7 @@
       Mehr anzeigen
       <!-- TODO translate -->
     </a>
-  </p>
+  </div>
 </template>
 
 <script>
