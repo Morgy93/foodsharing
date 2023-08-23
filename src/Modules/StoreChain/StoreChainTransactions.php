@@ -15,7 +15,6 @@ use Foodsharing\Modules\StoreChain\DTO\StoreChainForChainList;
 
 class StoreChainTransactions
 {
-
     private array $regionIds = [RegionIDs::STORE_CHAIN_GROUP, RegionIDs::STORE_CHAIN_GROUP_AUSTRIA, RegionIDs::STORE_CHAIN_GROUP_SWITZERLAND];
 
     public function __construct(

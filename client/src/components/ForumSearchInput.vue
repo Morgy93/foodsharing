@@ -33,6 +33,7 @@ import VueSimpleSuggest from 'vue-simple-suggest'
 import { getThread } from '@/api/forum'
 import { searchForum } from '@/api/search'
 import { pulseError } from '@/script'
+import { RegionIDs } from '@/stores/chains'
 
 export default {
   components: { VueSimpleSuggest },
@@ -80,8 +81,11 @@ export default {
       const isNumber = /^\d+\.?\d*$/.test(query)
       if (isNumber) {
         const thread = (await getThread(Number(query))).data
-        if (this.regionId === thread.regionId) {
-          matchingForums.push({ id: thread.id, name: thread.title })
+        for (const regionIdKey in RegionIDs) {
+          const regionId = RegionIDs[regionIdKey]
+          if (regionId === thread.regionId) {
+            matchingForums.push({ id: thread.id, name: thread.title })
+          }
         }
       } else if (query.length >= 3 || isNumber) {
         try {

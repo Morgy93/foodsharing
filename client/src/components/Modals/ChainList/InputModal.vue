@@ -107,7 +107,6 @@
           v-model="input.forumThread"
           class="m-1"
           :placeholder="$i18n('chain.inputmodal.inputs.thread.placeholder')"
-          :region-id="332"
         />
       </b-form-group>
 
