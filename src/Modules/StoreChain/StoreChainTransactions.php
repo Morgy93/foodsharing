@@ -15,6 +15,9 @@ use Foodsharing\Modules\StoreChain\DTO\StoreChainForChainList;
 
 class StoreChainTransactions
 {
+
+    private array $regionIds = [RegionIDs::STORE_CHAIN_GROUP, RegionIDs::STORE_CHAIN_GROUP_AUSTRIA, RegionIDs::STORE_CHAIN_GROUP_SWITZERLAND];
+
     public function __construct(
         private readonly StoreChainGateway $storeChainGateway,
         private readonly FoodsaverGateway $foodsaverGateway,
@@ -49,12 +52,15 @@ class StoreChainTransactions
      */
     public function addStoreChain(StoreChain $storeData): int
     {
-        $this->throwExceptionIfKeyAccountManagerIsInvalid($storeData->kams);
-        $this->throwExceptionIfForumInvalid($storeData->forumThread);
+        $this->throwExceptionIfKeyAccountManagerIsInvalid($storeData->kams, $this->regionIds);
+        $this->throwExceptionIfForumInvalid($storeData->forumThread, $this->regionIds);
 
         return $this->storeChainGateway->addStoreChain($storeData);
     }
 
+    /**
+     * @throws StoreChainTransactionException
+     */
     public function updateStoreChain(int $chainId, PatchStoreChain $storeModel, bool $updateKams): bool
     {
         if (!$chainId) {
@@ -118,11 +124,11 @@ class StoreChainTransactions
             $changed = true;
         }
         if (!empty($storeModel->forumThread)) {
-            $this->throwExceptionIfForumInvalid($storeModel->forumThread);
+            $this->throwExceptionIfForumInvalid($storeModel->forumThread, $this->regionIds);
             $params->forumThread = $storeModel->forumThread;
             $changed = true;
         } else {
-            $this->throwExceptionIfForumInvalid($params->forumThread);
+            $this->throwExceptionIfForumInvalid($params->forumThread, $this->regionIds);
         }
         if (!is_null($storeModel->notes)) {
             $params->notes = $storeModel->notes;
@@ -139,10 +145,10 @@ class StoreChainTransactions
 
                 return $obj;
             }, $storeModel->kams);
-            $this->throwExceptionIfKeyAccountManagerIsInvalid($params->kams);
+            $this->throwExceptionIfKeyAccountManagerIsInvalid($params->kams, $this->regionIds);
             $changed = true;
         } else {
-            $this->throwExceptionIfKeyAccountManagerIsInvalid($params->kams);
+            $this->throwExceptionIfKeyAccountManagerIsInvalid($params->kams, $this->regionIds);
         }
 
         if (!empty($storeModel->estimatedStoreCount)) {
@@ -159,28 +165,57 @@ class StoreChainTransactions
         }
     }
 
-    private function throwExceptionIfKeyAccountManagerIsInvalid($kams)
+    /**
+     * @throws StoreChainTransactionException
+     */
+    private function throwExceptionIfKeyAccountManagerIsInvalid($kams, array $regionIds): void
     {
         $ids = array_map(function ($item) { return $item->id; }, $kams);
         if (!$this->foodsaverGateway->foodsaversExist($ids)) {
             throw new StoreChainTransactionException(StoreChainTransactionException::KEY_ACCOUNT_MANAGER_ID_NOT_EXISTS);
         }
 
-        foreach ($ids as $id) {
-            if (!$this->regionGateway->hasMember($id, RegionIDs::STORE_CHAIN_GROUP)) {
-                throw new StoreChainTransactionException(StoreChainTransactionException::KEY_ACCOUNT_MANAGER_ID_NOT_IN_GROUP);
+        $invalidKams = [];
+
+        foreach ($regionIds as $regionId) {
+            $isValid = true;
+            foreach ($ids as $id) {
+                if (!$this->regionGateway->hasMember($id, $regionId)) {
+                    $isValid = false;
+                    break;
+                }
             }
+
+            if (!$isValid) {
+                $invalidKams[] = $regionId;
+            }
+        }
+
+        if (!empty($invalidKams)) {
+            throw new StoreChainTransactionException(StoreChainTransactionException::KEY_ACCOUNT_MANAGER_ID_NOT_IN_GROUP);
         }
     }
 
-    private function throwExceptionIfForumInvalid(int $threadId)
+    /**
+     * @throws StoreChainTransactionException
+     */
+    private function throwExceptionIfForumInvalid(int $threadId, array $regionIds): void
     {
         $forumResult = $this->forumGateway->getForumsForThread($threadId);
         if (empty($forumResult)) {
             throw new StoreChainTransactionException(StoreChainTransactionException::THREAD_ID_NOT_EXISTS);
         }
 
-        if ($forumResult[0]['forumId'] != RegionIDs::STORE_CHAIN_GROUP) {
+        $validForum = false;
+
+        foreach ($regionIds as $regionId) {
+            if ($forumResult[0]['forumId'] == $regionId) {
+                $validForum = true;
+                break;
+            }
+        }
+
+        if (!$validForum) {
             throw new StoreChainTransactionException(StoreChainTransactionException::WRONG_FORUM);
         }
     }
