@@ -102,13 +102,28 @@
                   <b>Frage:</b>
                   {{ result.text }}
                 </p>
-                <a href="#">Antworten</a>
+                <div>
+                  <a href="#">Antworten</a>
 
-                <div
-                  v-for="answer in result.answers"
-                  :key="answer.id"
-                >
-                  {{ answer }}
+                  <div
+                    v-for="answer in [...result.answers].sort((a,b) => a.right-b.right)"
+                    :key="answer.id"
+                    class="result-answer-container"
+                  >
+                    <span
+                      :class="answerColorClass(answer.right)"
+                    >
+                      <i
+                        v-if="result.useranswers.includes(answer.id) ^ answer.right === 1"
+                        v-b-tooltip="'Bei dieser Antwort hast du einen Fehler gemacht.'"
+                        class="fas fa-exclamation-triangle mistake-icon"
+                      />
+                      <b>{{ ['Falsch', 'Richtig', 'Neutral'][answer.right] }}:</b>
+                      {{ answer.text }}
+                      <br>
+                      <a href="#">Erklärung anzeigen</a>
+                    </span>
+                  </div>
                 </div>
                 <p>
                   <a :href="result.wikilink">Weitere Infos dazu im Wiki</a>
@@ -116,7 +131,6 @@
                 <p>
                   <a href="#">Kommentar schreiben</a>
                 </p>
-                {{ result }}
               </b-card-body>
             </b-collapse>
           </div>
@@ -143,115 +157,15 @@
         </li>
       </ul>
     </b-modal>
-
-    <b-modal
-      v-model="isQuizModalShown"
-      :title="$i18n('quiz.infomodal.title', { index: status?.answered+1, questions: status?.questions })"
-      hide-header-close
-      no-close-on-backdrop
-      no-close-on-esc
-      centered
-      size="lg"
-      scrollable
-    >
-      <b-form-group
-        :label="question?.text"
-      >
-        <div
-          v-for="answer in question?.answers"
-          :key="answer.id"
-          class="answer-wrapper"
-          :class="isQuestionActive ? '' : answerColorClass(selectedAnswers[answer.id], solutionById[answer.id]?.right)"
-        >
-          <b-form-checkbox
-            v-model="selectedAnswers[answer.id]"
-            :disabled="!isQuestionActive"
-          >
-            {{ answer.text }}
-          </b-form-checkbox>
-
-          <div v-if="!isQuestionActive">
-            <p> {{ $i18n(answerText(selectedAnswers[answer.id], solutionById[answer.id]?.right)) }}</p>
-            <p>
-              <span class="explanation">
-                <b>Erklärung: </b>
-                {{ solutionById[answer.id]?.explanation }}
-
-              </span>
-              <a
-                href="#"
-                @click="(event)=>{event.target.previousElementSibling.classList.add('expanded')}"
-              >
-                Mehr anzeigen
-              </a>
-            </p>
-          </div>
-        </div>
-      </b-form-group>
-
-      <div v-if="!isQuestionActive">
-        <a
-          ref="comment-collapse-toggle"
-          v-b-toggle
-          href="#comment-collapse"
-          @click.prevent
-        >
-          {{ $i18n('quiz.comment.toggle') }}
-        </a>
-        <b-collapse
-          id="comment-collapse"
-          ref="comment-collapse"
-          v-model="commentSectionVisible"
-        >
-          <b-form-textarea
-            v-model="comment"
-            label="Frage Kommentieren"
-            :placeholder="$i18n('quiz.comment.placeholder')"
-            rows="3"
-          />
-          <b-button
-            variant="primary"
-            :disabled="!comment"
-            @click="sendCommentHandler"
-          >
-            {{ $i18n('quiz.comment.send') }}
-          </b-button>
-        </b-collapse>
-      </div>
-
-      <template #modal-footer>
-        <div
-          v-if="question?.timed && isQuestionActive"
-          class="time-bar"
-        >
-          <div
-            ref="time-left"
-            class="time-left"
-          />
-        </div>
-        <b-button
-          v-if="(!isQuestionActive || !status?.timed ) && !isQuizFinished"
-          variant="outline-primary"
-          @click="pauseQuiz"
-        >
-          {{ $i18n('quiz.button.pause') }}
-        </b-button>
-        <b-button
-          v-if="!isQuizFinished"
-          variant="primary"
-          @click="continueQuizHandler"
-        >
-          {{ $i18n('button.next') }}
-        </b-button>
-        <b-button
-          v-if="isQuizFinished"
-          variant="primary"
-          @click="finishQuiz"
-        >
-          {{ $i18n('quiz.button.finish') }}
-        </b-button>
-      </template>
-    </b-modal>
+    <QuizModal
+      ref="quizModal"
+      :visible="isQuizModalShown"
+      :quiz="quiz"
+      :status="status"
+      @update:questions-answered="(answered) => status.answered = answered"
+      @update:visible="(visible) => isQuizModalShown = visible"
+      @fetch-status="(resolve) => fetchStatus().then(() => resolve?.())"
+    />
   </Container>
 </template>
 
@@ -259,8 +173,8 @@
 
 import Container from '@/components/Container/Container.vue'
 import i18n from '@/helper/i18n'
-import { getQuestion, getQuizStatus, startQuiz, answerQuestion, commentQuestion, getQuizResults } from '@/api/quiz'
-import { pulseSuccess, pulseError } from '@/script'
+import { getQuizStatus, startQuiz, getQuizResults } from '@/api/quiz'
+import QuizModal from './QuizModal'
 
 const QUIZ_STATUS = {
   neverTried: 0,
@@ -275,6 +189,7 @@ const QUIZ_STATUS = {
 export default {
   components: {
     Container,
+    QuizModal,
   },
   props: {
     quiz: {
@@ -288,13 +203,6 @@ export default {
       timed: undefined,
       isFetching: false,
       status: null,
-      question: null,
-      selectedAnswers: {},
-      questionStarted: null,
-      solution: null,
-      isQuestionActive: true,
-      comment: '',
-      commentSectionVisible: false,
       isQuizModalShown: false,
       timeOutTimer: null,
       console: window.console, // TODO remove
@@ -311,13 +219,6 @@ export default {
     },
     isQuizRunning () {
       return this.status.status === QUIZ_STATUS.running
-    },
-    isQuizFinished () {
-      return !this.isQuestionActive && this.status.answered + 1 >= this.status.questions
-    },
-    solutionById () {
-      if (!this.solution) return {}
-      return Object.fromEntries(this.solution.solution.map(a => [a.id, a]))
     },
     statusName () {
       return Object.keys(QUIZ_STATUS).find(key => QUIZ_STATUS[key] === this.status.status)
@@ -350,91 +251,17 @@ export default {
       if (!this.isQuizRunning) {
         await startQuiz(this.quiz.id, this.timed)
       }
-      this.showNextQuestion()
+      this.$refs.quizModal.showNextQuestion()
       this.results = null
-    },
-    async fetchQuestion () {
-      if (this.isFetching) return
-      this.isFetching = true
-      this.question = (await getQuestion(this.quiz.id)).question
-      this.isFetching = false
-    },
-    async handInQuestion () {
-      const selected = Object.entries(this.selectedAnswers).filter(a => a[1]).map(a => +a[0])
-      this.solution = await answerQuestion(this.quiz.id, selected)
-      this.isQuestionActive = false
-      window.clearTimeout(this.timeOutTimer)
-    },
-    async animateTimer () {
-      await new Promise(resolve => window.requestAnimationFrame(resolve))
-      let duration = this.question.duration
-      let initialWidth = 1
-      if (this.question.age) {
-        initialWidth -= this.question.age / this.question.duration
-        duration -= this.question.age
-      }
-      if (this.$refs['time-left']) {
-        this.$refs['time-left'].animate(
-          [{ width: initialWidth * 100 + '%' }, { width: '0%' }],
-          { duration: duration * 1000, iterations: 1 },
-        )
-        this.timeOutTimer = window.setTimeout(this.timeOut, duration * 1000)
-      }
-    },
-    timeOut () {
-      pulseError('Die Zeit ist um.')
-      this.handInQuestion()
     },
     showStartModal (timed) {
       this.timed = timed
       this.$refs['start-info-modal'].show()
     },
-    async showNextQuestion () {
-      await Promise.all([
-        this.fetchStatus(),
-        this.fetchQuestion(),
-      ])
-      if (this.status.answered !== this.question.index) {
-        pulseError('Die Zeit deiner letzten Frage ist bereits abgelaufen.')
-        this.status.answered = this.question.index
-      }
-      this.isQuizModalShown = true
-      this.animateTimer()
-      this.questionStarted = Date.now()
-      this.isQuestionActive = true
-      this.selectedAnswers = {}
-    },
-    answerColorClass (selected, right) {
+    answerColorClass (right, selected = true) {
       if (right === 2) return 'neutral'
       if (!right ^ selected) return 'success'
       return 'failiure'
-    },
-    answerText (selected, right) {
-      const path = 'quiz.answers.'
-      if (right === 2) return path + 'neutral'
-      return `${path}${!!selected}_${!!right}`
-    },
-    finishQuiz () {
-      this.isQuizModalShown = false
-      this.fetchStatus()
-      // Show result
-    },
-    continueQuizHandler () {
-      if (this.isQuestionActive) {
-        this.handInQuestion()
-        return
-      }
-      this.showNextQuestion()
-    },
-    async sendCommentHandler () {
-      await commentQuestion(this.question.id, this.comment)
-      this.commentSectionVisible = false
-      this.$refs['comment-collapse-toggle'].disabled = true
-      pulseSuccess(this.$i18n('quiz.comment.sent'))
-    },
-    pauseQuiz () {
-      this.fetchStatus()
-      this.isQuizModalShown = false
     },
     async displayResults () {
       if (!this.results) {
@@ -448,83 +275,16 @@ export default {
 
 <style lang="scss" scoped>
 
-.time-bar {
-  flex-grow: 1;
-  height: 1em;
-  border: 1px solid var(--fs-color-primary-500);
-  border-radius: 1em;
-  overflow: hidden;
-  text-align:center;
-  position: relative;
-
-  span {
-    position: absolute;
-    transform: translate(-50%, -4px);
-  }
+.success {
+  background-color: var(--fs-color-success-500);
+  color:white;
 }
-
-.time-left {
-  height: 100%;
-  background-color: var(--fs-color-primary-500);
-  width: 0%;
+.failiure {
+  background-color: var(--fs-color-danger-500);
+  color:white;
 }
-
-.answer-wrapper {
-  padding: .5em 2em;
-  border-radius: 1em;
-  margin-bottom: 1em;
-
-  &.success {
-    background-color: var(--fs-color-success-500);
-    color:white;
-  }
-  &.failiure {
-    background-color: var(--fs-color-danger-500);
-    color:white;
-
-    // b-form-checkbox {
-    //   color: white !important;
-    // }
-  }
-  &.neutral {
-    background-color: var(--fs-color-warning-200);
-  }
-}
-
-::v-deep .answer-wrapper {
-  &.success label, &.failiure label{
-    color: var(--lt-color-white);
-  }
-  &.neutral label{
-    color: var(--lt-color-black);
-  }
-}
-
-#comment-collapse {
-  text-align: right;
-
-  .btn{
-    margin-top: .5em;
-  }
-}
-
-.show-full-expl {
-  position: relative;
-  top: -5px;
-}
-
-.explanation:not(.expanded) {
-  overflow: hidden;
-  -webkit-box-orient: vertical;
-  display: -webkit-inline-box;
-  max-width: calc(100% - 10em);
-  -webkit-line-clamp: 1;
-  vertical-align: bottom;
-  word-break: break-all;
-}
-
-.explanation.expanded ~ a {
-  display: none;
+.neutral {
+  background-color: var(--fs-color-warning-200);
 }
 
 .fp-counter {
@@ -534,6 +294,20 @@ export default {
 
 .result-detail-toggle span:nth-child(1) {
   float: left;
+}
+
+.result-answer-container>span {
+  display: block;
+  padding: .5em .75em;
+  margin-bottom: .25em;
+  border-radius: 1em;
+  a {
+    color: currentColor;
+  }
+}
+
+.mistake-icon {
+  float: right;
 }
 
 </style>
