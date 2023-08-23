@@ -64,7 +64,7 @@ final class QuizRestController extends AbstractFOSRestController
      */
     public function getQuizStatus(int $quizId): Response
     {
-        // TODO clean up with gateway
+        // TODO clean up with gatewaycount()
         $quiz = $this->sanityChecks($quizId);
         $session = $this->quizSessionGateway->getRunningSession($quizId, $this->session->id());
         $status = $this->quizSessionGateway->getQuizStatus($quizId, $this->session->id());
@@ -105,6 +105,7 @@ final class QuizRestController extends AbstractFOSRestController
             $this->quizSessionGateway->updateQuizSession($session);
         }
         $question['answers'] = $this->quizGateway->getAnswers($question['id'], false);
+        shuffle($question['answers']);
         $question['timed'] = !$session['easymode'];
         $question['index'] = $session['quiz_index'];
 
