@@ -17,6 +17,8 @@ import Passport from './components/Passport.vue'
 import Notifications from './components/Notifications.vue'
 import SleepingMode from './components/SleepingMode.vue'
 import QuizPage from '@/views/pages/Quiz/QuizPage.vue'
+import ChangeEmailForm from './components/ChangeEmailForm'
+import DeleteAccount from './components/DeleteAccount.vue'
 
 vueRegister({
   QuizPage,
@@ -24,6 +26,10 @@ vueRegister({
 vueApply('#vue-quizpage', true)
 
 switch (GET('sub')) {
+  case 'deleteaccount':
+    vueRegister({ DeleteAccount })
+    vueApply('#delete-account')
+    break
   case 'info':
     vueRegister({ Notifications })
     vueApply('#notifications')
@@ -39,6 +45,10 @@ switch (GET('sub')) {
   case 'sleeping':
     vueRegister({ SleepingMode })
     vueApply('#sleeping-mode')
+    break
+  case 'changeEmail':
+    vueRegister({ ChangeEmailForm })
+    vueApply('#change-email-form')
     break
   case 'general':
     vueRegister({ ProfilePicture, NameInput, LeafletLocationSearchVForm, RegionTreeVForm })

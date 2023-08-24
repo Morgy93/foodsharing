@@ -38,18 +38,17 @@
       tag="span"
     >
       <span v-if="user.isJumper">
-        <i class="fas fa-fw fa-star member-jumper" />
+        <i class="fas fa-running" />
       </span>
       <span v-else-if="!user.isVerified">
-        <i class="fas fa-fw fa-eye-slash member-unverified" />
-      </span>
+        <i class="fas fa-user-slash" />      </span>
       <span v-else>{{ user.fetchCount }}</span>
     </b-badge>
   </div>
 </template>
 
 <script>
-import Avatar from '@/components/Avatar'
+import Avatar from '@/components/Avatar.vue'
 
 export default {
   components: { Avatar },

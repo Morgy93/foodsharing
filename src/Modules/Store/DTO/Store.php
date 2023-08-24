@@ -223,7 +223,7 @@ class Store
         $obj->chain = MinimalIdentifier::createFromId($queryResult['chainId']);
 
         $obj->cooperationStatus = CooperationStatus::tryFrom($queryResult['cooperationStatus']);
-        if ($queryResult['cooperationStart']) {
+        if ($queryResult['cooperationStart'] && $queryResult['cooperationStart'] != '0000-00-00') {
             $cooperationStart = DateTime::createFromFormat('Y-m-d', $queryResult['cooperationStart']);
             if ($cooperationStart) {
                 $obj->cooperationStart = $cooperationStart;

@@ -6,25 +6,21 @@ use Foodsharing\Lib\Session;
 use Foodsharing\Modules\Bell\BellGateway;
 use Foodsharing\Modules\Bell\DTO\Bell;
 use Foodsharing\Modules\Core\DBConstants\Bell\BellType;
-use Foodsharing\Utility\ImageHelper;
 
 class BuddyTransactions
 {
     private BuddyGateway $buddyGateway;
     private BellGateway $bellGateway;
     private Session $session;
-    private ImageHelper $imageHelper;
 
     public function __construct(
         BuddyGateway $buddyGateway,
         BellGateway $bellGateway,
-        Session $session,
-        ImageHelper $imageHelper
+        Session $session
     ) {
         $this->buddyGateway = $buddyGateway;
         $this->bellGateway = $bellGateway;
         $this->session = $session;
-        $this->imageHelper = $imageHelper;
     }
 
     /**
@@ -56,8 +52,8 @@ class BuddyTransactions
         $this->bellGateway->addBell($userId, Bell::create(
             'buddy_request_title',
             'buddy_request',
-            $this->imageHelper->img($this->session->user('photo')),
-            ['href' => '/profile/' . (int)$this->session->id() . ''],
+            $this->session->user('photo') ?? '',
+            ['href' => '/profile/' . (int)$this->session->id()],
             ['name' => $this->session->user('name')],
             BellType::createIdentifier(BellType::BUDDY_REQUEST, $this->session->id(), $userId)
         ));

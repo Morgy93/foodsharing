@@ -476,6 +476,16 @@ settings:
     passfail: Le mot de passe est faux, faute de frappe ?
     passcheck: Confirme les informations grâce au mot de passe
     question: 'Devons-nous vraiment remplacer ton courriel par celui-ci :'
+    input_label_password: Veuillez entrer votre mot de passe pour confirmer
+    confirm_email_required: Les adresses e-mail ne correspondent pas
+    wrong_password: Le mot de passe est erroné.
+    input_label_email_confirm: Veuillez confirmer votre nouvelle adresse e-mail ici
+    explanation: Ici, vous pouvez modifier l'adresse e-mail avec laquelle vous avez
+      enregistré votre compte. Après l'envoi, vous recevrez un e-mail avec un lien
+      de confirmation à la nouvelle adresse.
+    explanation_password: Confirmez la demande de changement avec votre mot de passe
+      actuel
+    input_label_email: Entrez votre nouvelle adresse e-mail ici
   email: Modifier l'adresse courriel
   sleep:
     saved: Les préférences ont été enregistrés
@@ -1044,25 +1054,22 @@ legal:
   acknowledge: Acceptes-tu les conditions ?
   pp: Politique de confidentialité
   if_delete:
-    legal_1: Voici <a href="https://foodsharing.de/?page=legal" target="_blank">notre
-      accord actuel sur la protection des données.</a>
-    legal_2: Ici, vous trouverez <a href="https://www.dsgvo.tools/aufbewahrungsfristen/"
-      target="_blank">comment les lois se rapportent les unes aux autres. (Page en
-      allemand)</a>
+    legal_1: notre politique de confidentialité actuelle
+    legal_2: Lois sur les délais de conservation (page en allemand)
     this_gets_deleted_main: 'Les informations suivantes seront supprimées par toi
       et ne pourront pas être récupérées :'
-    this_gets_deleted_stores: <ul><li>Coopérations aux quelles tu avais adhéré.</ul></li>
+    this_gets_deleted_stores: Coopérations aux quelles tu avais adhéré.
     this_doesnt_get_deleted: 'Les informations suivantes ne sont plus disponibles
       dans le système actif, mais sont archivées séparément sur la base du article
       17, paragraphe 3 du RGPD :'
-    this_doesnt_get_deleted_address: <ul><li>Ton adresse</ul></li>
-    this_doesnt_get_deleted_history: <ul><li>Historique de ta vérification</ul></li>
-    this_doesnt_get_deleted_name: <ul><li>Ton nom</ul></li>
-    this_gets_deleted_verify: <ul><li>Ta vérification sera supprimée.</ul></li>
-    this_gets_deleted_friendlist: <ul><li>Ta liste d'amis sera supprimée.</ul></li>
-    this_gets_deleted_quiz: <ul><li>Ton quiz collecteur.ice sera supprimé.</ul></li>
-    this_gets_deleted_trustbananas: <ul><li>Les bananes-confiance que tu as attribuées
-      sont supprimées.</ul></li>
+    this_doesnt_get_deleted_address: Ton adresse
+    this_doesnt_get_deleted_history: Historique de ta vérification
+    this_doesnt_get_deleted_name: Ton nom
+    this_gets_deleted_verify: Ta vérification sera supprimée.
+    this_gets_deleted_friendlist: Ta liste d'amis sera supprimée.
+    this_gets_deleted_quiz: Ton quiz collecteur.ice sera supprimé.
+    this_gets_deleted_trustbananas: Les bananes-confiance que tu as attribuées sont
+      supprimées.
 message_text_to_group_admin_workgroup: "La région/le groupe de travail<b>{groupName}</b>
   n'a<b>plus</b> d'ambassadeur.rice/d'admin.<br><br><br>Elle possède la structure
   ID ci-contre :<br>{idStructureList}<br><br>l'ID est : {groupId}<br><br>URL : \"
@@ -1114,6 +1121,7 @@ store:
       peu.
     request: Je souhaite aider dans cette équipe.
     no-duplicate: Il existe déjà une demande.
+    unverified: L'utilisateur*rice n'est pas vérifié
   sm:
     makeRegularTeamMember: Intégrer dans l'équipe
     makeJumper: Nommer remplaçant(e)
@@ -1137,6 +1145,17 @@ store:
     demoteAsManager: Retirer en tant que responsable coopération
     promoteToManager: Rendre responsable
     searchPlaceholder: Nom ou ID
+    buttonManagementToggleOn: basculer en mode de gestion
+    buttonManagementToggleOff: retour au mode normal
+    promoteToManagerNotPossible: La personne ne peut être promue de responsable car
+      il y a déjà trois managers ou la personne n’a pas encore réussi le quiz.
+    filterAll: Tous
+    filterActive: actifs
+    buttonManagementToggle: Mode de gestion
+    toogleIsReducedStateOpen: développer la liste
+    filterSleeping: bonnet de couchage
+    toogleIsReducedStateClosed: réduire la liste
+    filterManage: Quiz de responsable de magasin ou supérieur
   springer_conversation_name: Replaçant(e) {name}
   team_conversation_name: Équipe {name}
   days_before: avant
@@ -1189,8 +1208,8 @@ store:
   tooltip_jumping: Tu es remplaçant(e) pour cette coopération
   peoplecame: Il est arrivé plusieurs fois que des personnes se rendent au magasin
     sans avoir prévenu.
-  willgetcontacted: Tu es actuellement sur la liste des remplaçant.e.s. Dès qu'une
-    aide est nécessaire, tu seras contacté.
+  willgetcontacted: Tu es actuellement sur la liste de réserve. Dès qu'une aide est
+    nécessaire, tu seras contacté.
   enterdate: Inscrire une date de collecte
   filter: Filtrer par …
   enternumber: Tu dois encore choisir le nombre de personnes qui viendront faire la
@@ -1220,6 +1239,9 @@ store:
     grande chaîne ! Respecter les règles de la chaîne de magasins !
   team:
     isfull: L'équipe est pleine
+    search_input: Recherche par nom / numéro de téléphone
+    search_reset: Réinitialiser la recherche
+    no_record: Aucune entrée n'a été trouvée.
   leaveinfo: Ici, tu peux indiquer quelques informations pour les collecteurs.rices
     qui souhaitent postuler pour faire partie de l'équipe.
   prefetchfour: 4 semaines
@@ -1232,6 +1254,28 @@ store:
   particularities_chain_tooltip: Cet établissement fait partie d'une chaîne. Pour
     cette raison, ces informations supplémentaires sont affichées, qui s'appliquent
     à tous les établissements de cette chaîne.
+  enter_date: Entrez une seule date de ramassage
+  delete_date: Supprimer une seule date de ramassage
+  team_container: Équipe
+  active: Actifs
+  one_active: actif
+  of_that: de ça
+  unverified_member: non vérifié
+  unverified_members: non vérifiés
+  info_container: Information
+  delete_date_description: Si vous utilisez des créneaux réguliers (hebdomadaires
+    récurrents automatiquement) dans votre entreprise et que vous souhaitez empêcher
+    la création d'une date spécifique (par exemple, un jour férié), vous pouvez utiliser
+    cette fonction pour vous en assurer en spécifiant la date et l'heure. Si vous
+    souhaitez supprimer des créneaux déjà visibles, vous pouvez le faire directement
+    en cliquant sur le créneau, à condition que personne n'ait été renseigné.
+  enter_date_description: Après avoir sélectionné la date, l'heure et le nombre de
+    personnes à récupérer, vous pouvez définir des créneaux une seule fois pour ce
+    rendez-vous. Si vous souhaitez créer des créneaux réguliers (hebdomadaires récurrents
+    automatiquement), veuillez utiliser le menu « Afficher les informations sur l'établissement
+    ».
+  not_verified: Vous n'êtes pas encore vérifié. Par conséquent, vous ne pouvez pas
+    voir les créneaux horaires et les numéros de téléphone des membres de l'équipe.
 storeview:
   want_to_fetch: J'aimerais m'engager dans cette équipe.
   specials: Particularités
@@ -1364,6 +1408,7 @@ menu:
     baskets: Paniers solidaires
     your_baskets: Tes paniers solidaires
     chainList: Aperçu des chaînes
+    security: Sécurité
   content: modifier les contenus
   manage_mailboxes: gérer les boîtes de réception
   email: envoyer la lettre d'information
@@ -1735,6 +1780,8 @@ pickup:
     bread: Modifier les horaires des collectes
     slot_titel: Slots
     disable_auto_slot: La fente automatique à l'avenir devrait être désactivée.
+    description_titel: Description
+    disable_auto_slot_titel: désactivation
   history:
     search: Voir les collectes
     title: Historique des collectes
@@ -1832,6 +1879,11 @@ pickup:
     title: Historique des collecteurs.rices désinscrits au cours des 7 derniers jours
   no_slots_available: Aucun slot disponible
   region_pickup_rule_failed: Cette entrée ne respecte pas les règles du secteur géographique
+  edit_description: Modifier la description
+  description_optional: Description (facultatif)
+  description: Description
+  description_modal_text: 'Donne une nouvelle description pour la collecte :'
+  description_max_length_info: Longueur maximale de la description atteinte (100 caractères)
 events:
   bread: Évènements
   past: Évènements passés
@@ -2266,7 +2318,7 @@ bell:
   new_quiz_comment_title: Nouveau commentaire sur le Quiz
   fs_sleepmode: '{name} {nachname} est inacti.f.ve'
   fs_sleepmode_title: Nouveau membre en mode sommeil
-  store_cr_times: Les horaires de collecte ont changé
+  store_cr_times: Les horaires de collecte ont été ajustés
   store_cr_times_title: '{name}'
   store_wallpost: Nouvelle contribution sur le mur.
   store_wallpost_title: '{name}'
@@ -3171,7 +3223,44 @@ chain:
     create: La chaîne n’a pas pu être créée ({error}).
     edit: La chaîne n’a pas pu être modifiée ({error}).
     notfs: 'Vous devez être un Foodsaver pour voir cette liste.'
+  errorCodes:
+    EMPTY_COUNTRY: Le champ Pays est vide
+    EMPTY_ZIP: Le champ du code postal est vide
+    EMPTY_CITY: Le champ de la ville est vide
+    INVALID_STATUS: Le champ d’état n’est pas valide
+    KEY_ACCOUNT_MANAGER_ID_NOT_EXISTS: Key Account Manager n’existe pas
+    WRONG_FORUM: Le fil de discussion du forum n'appartient pas au GT Chaînes d'approvisionnement
+    EMPTY_NAME: Le champ Nom est vide
+    THREAD_ID_NOT_EXISTS: Le fil de discussion du forum n’existe pas
+    INVALID_STORECHAIN_ID: L’id de la chaînes n’est pas valide
+    KEY_ACCOUNT_MANAGER_ID_NOT_IN_GROUP: Ce responsable grands comptes ne fait pas
+      partie du groupe de travail pour les chaînes d'affaires/entreprises
 usersearch:
   no_tag_preset: Utilisateur non trouvé
   select_tag: Rechercher des utilisateurs par nom
   search_tag: Rechercher des utilisateurs
+notifications:
+  chat:
+    title: Messages de chat
+    description: Soyez averti des nouveaux messages de chat même si vous n’êtes pas
+      connecté.
+  groups:
+    title: Groupes de travail
+  threads:
+    title: Sujets du forum
+  regions:
+    title: Secteurs géographique
+  newsletter:
+    title: Bulletin
+    description: Recevez des informations actualisées sur foodsharing par e-mail environ
+      une fois par mois.
+  checkbox_push: notifications push
+  foodSharePoints:
+    title: Frigo solidaire
+    description: Reçois des notifications de nouveaux messages sur les tableau Fairteiler
+      que tu suis.
+  checkbox_bell: Cloche
+  checkbox_disabled: désactivé
+  success: Enregistré avec succès
+  config_button: configurer individuellement
+  checkbox_email: Courrier électronique

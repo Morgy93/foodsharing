@@ -249,51 +249,17 @@ class ContentControl extends Control
 
     public function releaseNotes(): void
     {
-        $releaseList = [
-            [
-                'id' => '2022-12',
-                'title' => $this->translator->trans('releases.2022-12'),
-                'markdown' => $this->parseGitlabLinks($this->getnotes('2022-12')),
-                'visible' => true,
-            ],
-            [
-                'id' => '2022-05',
-                'title' => $this->translator->trans('releases.2022-05'),
-                'markdown' => $this->parseGitlabLinks($this->getnotes('2022-05')),
+        $releaseIds = ['2023-08', '2022-12', '2022-05', '2022-01', '2021-09', '2021-03', '2020-12', '2020-10',
+            '2020-08', '2020-05'];
+        $releaseList = array_map(function ($id) {
+            return [
+                'id' => $id,
+                'title' => $this->translator->trans('releases.' . $id),
+                'markdown' => $this->parseGitlabLinks($this->getnotes($id)),
                 'visible' => false,
-            ],
-            [
-                'id' => '2022-01',
-                'title' => $this->translator->trans('releases.2022-01'),
-                'markdown' => $this->parseGitlabLinks($this->getnotes('2022-01')),
-                'visible' => false,
-            ],
-            [
-                'id' => '2021-09',
-                'title' => $this->translator->trans('releases.2021-09'),
-                'markdown' => $this->parseGitlabLinks($this->getnotes('2021-09')),
-            ], [
-                'id' => '2021-03',
-                'title' => $this->translator->trans('releases.2021-03'),
-                'markdown' => $this->parseGitlabLinks($this->getnotes('2021-03')),
-            ], [
-                'id' => '2020-12',
-                'title' => 'Release "Dragonfruit" (Dezember 2020)',
-                'markdown' => $this->parseGitlabLinks($this->getnotes('2020-12')),
-            ], [
-                'id' => '2020-10',
-                'title' => 'Release "Cranberry" (Oktober 2020)',
-                'markdown' => $this->parseGitlabLinks($this->getnotes('2020-10')),
-            ], [
-                'id' => '2020-08',
-                'title' => 'Release "Birne" (August 2020)',
-                'markdown' => $this->parseGitlabLinks($this->getnotes('2020-08')),
-            ], [
-                'id' => '2020-05',
-                'title' => 'Release "Apfelsine" (Mai 2020)',
-                'markdown' => $this->parseGitlabLinks($this->getnotes('2020-05')),
-            ],
-        ];
+            ];
+        }, $releaseIds);
+        $releaseList[0]['visible'] = true;
 
         $this->pageHelper->addContent($this->view->vueComponent('vue-release-notes', 'ReleaseNotes', [
             'releaseList' => $releaseList,

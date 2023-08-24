@@ -293,6 +293,15 @@ settings:
     sent: Now go to your <strong>new</strong> email inbox to confirm the address.
     passfail: Your password is wrong, you made a mistake?
     question: 'Do you really want us to change your email address to this:'
+    input_label_email_confirm: Please confirm your new e-mail address here
+    wrong_password: The password is wrong.
+    explanation: Here you can change the e-mail address with which you registered
+      your account. After submitting, you will receive an e-mail to the new address
+      with a confirmation link.
+    input_label_email: Enter your new e-mail address here
+    explanation_password: Please confirm the change with you current password
+    confirm_email_required: The e-mail addresses do not match
+    input_label_password: Please enter your password for validation
   chatmail: "If you receive an internal message on the foodsharing homepage,\nbut
     you are not logged in at the moment, we can inform you by mail.\nDo you want that?\n"
   follow:
@@ -389,6 +398,7 @@ menu:
     group_overview: Group overview of global working groups
     baskets: Food baskets
     chainList: Chain list
+    security: Security
 profile:
   banana:
     by: ' by '
@@ -421,17 +431,17 @@ profile:
     textMay: and is therefore allowed to accept food on behalf of foodsharing.
   regions: '{name} is a foodsaver in'
   stats:
-    baskets: Food baskets
+    baskets: food baskets
     weight: saved
-    posts: Posts
-    count: picked up
+    posts: posts
+    count: pick-ups
   infos:
     buddies: Buddies
     never: Never
     lastActivity: Last activity
     fetchrate: Fetch rate
     registrationDate: Registration date
-    title: Informations
+    title: Information
     foodsharerId: Foodsharer ID
     foodsaverId: Foodsaver ID
     fsMail: Internal mailbox
@@ -443,7 +453,7 @@ profile:
   report:
     sent: Report was sent
     send: Send report
-    title: 'Reports about {name}'
+    title: 'Report about {name}'
     reporterAdminNoArbitration: You are admin of the local reporting group and since
       there is no local arbitration board, you cannot submit a report.
     reportedAdminNoArbitration: You cannot submit a report about {name} because he*she
@@ -572,7 +582,7 @@ profile:
   sleepinfo: '{name} is inactive from {from} to {until}'
   sleeping: '{name} is inactive for an indefinite period'
   workgroups: '{name} is responsible for the following working groups'
-  homeRegion: home district of {name}
+  homeRegion: Home district of {name}
   ambRegions: '{name} is {role} for'
   online: '{name} is online.'
   mailBounceWarning_3: will remove this block.
@@ -609,7 +619,7 @@ profile:
     week_3: Last week
     week_4: Two weeks ago
     calenderWeek: CW
-    title: Engagement stats
+    title: Commitment stats
     securePickupWeek: Thanks for {count} stepping in and securing pick-ups on short
       notice!
     pickupCount: '# of pick-ups'
@@ -621,7 +631,7 @@ profile:
       A total of {weight} kg was shared.
     respActStores: 'Thanks for coordinating {count} active '
     basketsSharedWeek: 'The food baskets were shared with {count} persons. '
-    tooltip_visibility: The engagement statistic is visible from the role of Store
+    tooltip_visibility: The commitment statistic is visible from the role of Store
       Coordinator upwards. It's limited to joint home districts or joint stores.
     weekDesc: Calendar week {week}, from {weekStart} to {weekEnd}
   deletesuccess: Single pickup slot deleted
@@ -857,6 +867,8 @@ pickup:
     added: Pick-up slot was added.
     disable_auto_slot: Automatic slot in the future should be disabled.
     slot_titel: Slots
+    disable_auto_slot_titel: Deactivation
+    description_titel: Description
   slot_remove: Delete slot
   slot_add: Add slot
   no_slots_available: No pick-up slots available
@@ -928,6 +940,11 @@ pickup:
     freeSlots: "{slots} free"
 
   region_pickup_rule_failed: This entry does not comply with district regulations
+  description_optional: Description (optional)
+  description_modal_text: 'Enter a new description for the pickup:'
+  edit_description: Edit description
+  description: Description
+  description_max_length_info: Maximal length of the description reached (100 letters)
 storeview:
   show_information: Show store information
   cooperation: Cooperation since {startTime}.
@@ -945,7 +962,7 @@ storeview:
   store: Store
   want_to_fetch: I would like to help in this team.
   public_and_statistics: "Public activites and statistical information"
-  no_permission_to_view: "Only for store manager visible."
+  no_permission_to_view: "Only visible to store managers."
   groceries:
     label: Which kinds of food are allowed to be collected?
     select_tag: Choose food category
@@ -1551,6 +1568,7 @@ releases:
   "2022-01": Release "Grapefruit" 🍋 (January 2022)
   "2022-05": Release "Blueberry" 🍇 (May 2022)
   "2022-12": "Release \"Icecream\" 🍨 (December 2022)"
+  "2023-08": "Release \"Jackfruit\" 🍈 (August 2023)"
 
 footer:
   it_devdocs: by foodsharing IT
@@ -1789,6 +1807,7 @@ store:
     got-it: The responsibles have been informed of your request and will get in touch
       with you.
     no-duplicate: There is already a request.
+    unverified: User is not verified
   sm:
     reallyRemove: Do you really want to remove {name} from the store team?
     removeFromTeam: Remove from the team
@@ -1812,6 +1831,18 @@ store:
     demoteAsManager: Remove as Store Coordinator
     promoteToManager: Make Store Coordinator
     searchPlaceholder: Name or ID
+    buttonManagementToggleOn: toggle management mode
+    buttonManagementToggleOff: back to normal mode
+    promoteToManagerNotPossible: This person can not be promoted to store manager
+      because either this store already has three managers or the person has not passed
+      the quiz yet.
+    filterAll: All
+    filterActive: Active
+    buttonManagementToggle: Management mode
+    toogleIsReducedStateOpen: expand list
+    filterManage: Store manager quiz or above
+    toogleIsReducedStateClosed: collapse list
+    filterSleeping: sleepyhead
   address: Address
   may_referred_to_in_public: This store may be referred to in public.
   isNotVerified: Is not yet verified.
@@ -1855,10 +1886,14 @@ store:
   pickup_slot_unavailable: This pick-up slot is further in the future than intended
     by the responsibles. So please try again at a later date.
   appliedFor: Request made
-  willgetcontacted: You are currently on the list of standby foodsavers. You will
-    be contacted if help is needed.
+  willgetcontacted: You are currently on the list of standby foodsavers. Therefore
+    you cannot see phone numbers of team members, wall entries, the team chat and
+    pickup slots. You can write in the chat for standby foodsavers.
   team:
     isfull: Team is full
+    search_input: Search for name / phone number
+    search_reset: reset search
+    no_record: No record found.
   filter: Filter by …
   enterdate: Add pick-up date
   enternumber: You need to select the number of people who can pick up.
@@ -1894,13 +1929,34 @@ store:
     hours before the pick-up, this rule is not taken into account.
   regionPickupRules: additional rule for much sought-after slots
   ownStores: My stores
-  managing: Corporate responsibility
+  managing: Store coordinator
   member: Member
   isAppliedForTeam: Request
   jumping: Standby
   particularities_chain_tooltip: This store is part of a chain. This is why this additional
     information is displayed, which applies to all establishments in the chain.
   particularities_chain: Particularities of the chain
+  enter_date: Enter a single pick-up date
+  delete_date: Delete a single pick-up date
+  enter_date_description: After you have selected the date, time and number of people
+    for a pick-up, you can set slots once for this appointment. If you want to create
+    regular (automatically recurring weekly) slots, please use the 'Show store information'
+    menu.
+  delete_date_description: If you use regular (automatically recurring weekly) slots
+    for your pick-ups and want to prevent a specific date (e.g. public holiday) from
+    being created, you can use this function by specifying date and time from the
+    slots to be removed from your series. If you want to delete slots that are already
+    visible, you can also do this directly by clicking on the slot as long as no one
+    is already registered.
+  team_container: Team
+  one_active: active
+  of_that: of that
+  unverified_member: unverified
+  unverified_members: unverified
+  active: active
+  info_container: Information
+  not_verified: You are unverified. Therefore you cannot see pickup slots and phone
+    numbers of team members.
 search:
   mygroups: My groups
   mybuddies: My buddies
@@ -2121,23 +2177,21 @@ legal:
     you must take note of the data protection declaration described.
   acknowledge: Do you take note of the agreement?
   if_delete:
-    legal_1: Here is <a href="https://foodsharing.de/?page=legal" target="_blank">our
-      current data protection agreement.</a>
+    legal_1: our current privacy policy
     this_gets_deleted_main: 'The following information will be deleted from you and
       cannot be recovered:'
-    this_gets_deleted_stores: <ul><li>Stores you had joined.</ul></li>
-    this_gets_deleted_quiz: <ul><li>Your foodsaver-Quiz will be removed.</ul></li>
-    this_gets_deleted_trustbananas: <ul><li>Bananas that you gave to others will be
-      removed.</ul></li>
-    this_doesnt_get_deleted_name: <ul><li>Your Name</ul></li>
-    this_doesnt_get_deleted_address: <ul><li>Your Address</ul></li>
-    this_doesnt_get_deleted_history: <ul><li>Your verification history</ul></li>
-    this_gets_deleted_verify: <ul><li>Your verification will be removed.</ul></li>
-    this_gets_deleted_friendlist: <ul><li>Your friends list will be removed.</ul></li>
+    this_gets_deleted_stores: Stores you had joined.
+    this_gets_deleted_quiz: All your quizzes will be removed.
+    this_gets_deleted_trustbananas: Bananas that you gave to others will be removed.
+    this_doesnt_get_deleted_name: Your Name
+    this_doesnt_get_deleted_address: Your Address
+    this_doesnt_get_deleted_history: Your verification history
+    this_gets_deleted_verify: Your verification will be removed.
+    this_gets_deleted_friendlist: Your friends list will be removed.
     this_doesnt_get_deleted: 'The following information is no longer available in
       the active system, but is archived separately based on Article 17 paragraph
       3 sentence 1 letter b GDPR:'
-    legal_2: Thank you.
+    legal_2: Laws on retention periods (page in German)
 answers: Which answers are correct?
 name: Name
 bcard:
@@ -2459,7 +2513,7 @@ dashboard:
     reset: Reset
     grid_toggle:
       2_columns: Go to 2 columns view
-      3_columns: Go to 2 columns view
+      3_columns: Go to 3 columns view
   source_event: Appointment {0}
   showmore: Show more
   showless: Show less
@@ -2472,7 +2526,7 @@ dashboard:
   empty_section: You don't have a {type} yet
   activity_filter_info: Here you can indicate which updates should be displayed on
     your start page.
-  no_more_updates_store: No more store informations
+  no_more_updates_store: No further store information
   no_more_updates_mailbox: No more mailbox messages
   no_more_updates_friendWall: No more status messages
   no_more_updates_forum: No further forum entries
@@ -2661,9 +2715,9 @@ mail:
   noreply_addresses_not_allowed: Emails to "noreply@…" cannot be delivered.<br Please
     check the recipient address.
 regionOptions:
-  enableMediationButton: Enable mediation request link on the profiles of the home
-    users of this district.
-  enableReportButton: Enable report link on the profiles of the home users of this
+  enableMediationButton: Enable mediation request link on the profiles of foodsavers
+    with this home district.
+  enableReportButton: Enable report link on the profiles of foodsavers with this home
     district.
   save: Save options
   success: Options saved successfully
@@ -2918,8 +2972,8 @@ chain:
   errorCodes:
     INVALID_STORECHAIN_ID: Store chain Id is not valid
     KEY_ACCOUNT_MANAGER_ID_NOT_EXISTS: Store chain key account manager does not exist
-    KEY_ACCOUNT_MANAGER_ID_NOT_IN_GROUP: Store chain key account manager belong to
-      AG Storechain
+    KEY_ACCOUNT_MANAGER_ID_NOT_IN_GROUP: This key account manager is not part of the
+      Working Group for business chains/companies
     THREAD_ID_NOT_EXISTS: Store chain thread does not exist
     WRONG_FORUM: Thread is from wrong forum
     EMPTY_NAME: Name can not be empty
@@ -3161,3 +3215,28 @@ usersearch:
   no_tag_preset: User not found
   select_tag: Search users by name
   search_tag: Search users
+notifications:
+  chat:
+    title: Chat messages
+    description: Receive a notification about new chat messages even if you are not
+      logged in.
+  foodSharePoints:
+    title: Food-Share Points
+    description: Receive a notification about new posts on walls of the Food-Share
+      points that you follow.
+  config_button: configure individually
+  threads:
+    title: Forum threads
+  regions:
+    title: Regions
+  groups:
+    title: Working groups
+  newsletter:
+    title: Newsletter
+    description: Receive new information about foodsharing via E-Mail about once per
+      month.
+  checkbox_email: E-Mail
+  checkbox_push: Push
+  checkbox_bell: Bell
+  checkbox_disabled: Deactivated
+  success: Saved successfully

@@ -202,7 +202,7 @@ class StoreGateway extends BaseGateway
             'telefon' => $store->contact->phone,
             'fax' => $store->contact->fax,
             'email' => $store->contact->email,
-            'begin' => $store->cooperationStart ? $this->db->date($store->cooperationStart, false) : null,
+            'begin' => $store->cooperationStart ? $this->db->date($store->cooperationStart, false) : '0000-00-00',
             'team_status' => $store->teamStatus->value,
 
             'prefetchtime' => $store->calendarInterval,
@@ -379,6 +379,10 @@ class StoreGateway extends BaseGateway
         return $result;
     }
 
+    /**
+     * @deprecated The function is too complex. It needs be replaced with a function that uses DTOs and the logic
+     * should be moved into a transaction class.
+     */
     public function getMyStore(int $fs_id, int $storeId): array
     {
         $result = $this->db->fetch('

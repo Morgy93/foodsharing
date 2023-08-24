@@ -1,5 +1,5 @@
 <template>
-  <div class="list-group">
+  <div class="list-group bg-white mb-2">
     <div
       class="list-group-item list-group-header"
       :class="{collapsible}"
@@ -7,10 +7,11 @@
     >
       <h5
         :class="{ 'expanded': isExpanded }"
-        v-html="title"
+        v-text="title"
       />
       <i
         v-if="collapsible"
+        :id="title"
         :alt="isExpanded ? $i18n('globals.show_more') : $i18n('globals.show_less')"
         class="fas fa-angle-down"
         :class="{ 'fa-rotate-180': isExpanded }"
@@ -35,6 +36,7 @@
 </template>
 
 <script>
+
 export default {
   name: 'ToggleContainer',
   props: {
@@ -43,11 +45,12 @@ export default {
     toggleVisiblity: { type: Boolean, default: false },
     collapsible: { type: Boolean, default: true },
     wrapContent: { type: Boolean, default: false },
+    containerIsExpanded: { type: Boolean, default: true },
   },
   data () {
     return {
       isToggled: false,
-      isExpanded: true,
+      isExpanded: this.containerIsExpanded,
     }
   },
   computed: {
@@ -59,6 +62,11 @@ export default {
     const state = this.getExpanded()
     if (state !== null) {
       this.setExpanded(state)
+    }
+
+    const listState = this.getListState()
+    if (listState !== null) {
+      this.setListState(listState)
     }
   },
   methods: {
@@ -74,12 +82,18 @@ export default {
       localStorage.setItem(`expanded_${this.tag}`, JSON.stringify(state))
     },
     showFullList () {
-      this.isToggled = true
-      this.$emit('show-full-list')
+      this.setListState(true)
     },
     reduceList () {
-      this.isToggled = false
-      this.$emit('reduce-list')
+      this.setListState(false)
+    },
+    getListState () {
+      return JSON.parse(localStorage.getItem(`list_state_${this.tag}`))
+    },
+    setListState (state) {
+      this.isToggled = state
+      localStorage.setItem(`list_state_${this.tag}`, JSON.stringify(state))
+      this.$emit(state ? 'show-full-list' : 'reduce-list')
     },
   },
 }

@@ -1082,6 +1082,7 @@ store:
   jumping: Yedek
   member: Üye
   isAppliedForTeam: İstek
+  team_container: Takım
 polls:
   title: Başlık
   new_poll: Yeni Anket oluştur
@@ -2364,19 +2365,17 @@ legal:
   if_delete:
     this_doesnt_get_deleted: 'Aşağıdaki bilgiler artık aktif sistemde mevcut değildir,
       ancak DSGVO 17. Madde, Paragraf 3 uyarınca ayrı olarak arşivlenir:'
-    legal_1: Burada <a href="https://foodsharing.de/?page=legal" target="_blank">geçerli
-      veri koruma sözleşmemizi görebilirsiniz</a>
-    this_gets_deleted_friendlist: <ul><li>Arkadaş listeniz kaldırılacak.</ul></li>
-    this_gets_deleted_quiz: <ul><li>Foodsaver testiniz kaldırılacak.</ul></li>
-    this_doesnt_get_deleted_history: <ul><li>Onaylanma geçmişiniz</ul></li>
-    legal_2: Burada <a href="https://www.dsgvo.tools/aufbeehrungsfristen/" target="_blank">yasaların
-      birbiriyle nasıl ilişkili olduğunu bulabilirsiniz. (Sayfa almanca )</a>
+    legal_1: mevcut gizlilik politikamız
+    this_gets_deleted_friendlist: Arkadaş listeniz kaldırılacak.
+    this_gets_deleted_quiz: Foodsaver testiniz kaldırılacak.
+    this_doesnt_get_deleted_history: Onaylanma geçmişiniz
+    legal_2: Saklama sürelerine ilişkin kanunlar (sayfa almanca)
     this_gets_deleted_main: 'Aşağıdaki bilgileri siliyorsun ve bundan sonra eski haline
       getirelemez:'
-    this_gets_deleted_stores: <ul><li>Katıldığınız işletmeler.</ul></li>
-    this_gets_deleted_verify: <ul><li>Onaylanmanız kaldırılacak.</ul></li>
-    this_doesnt_get_deleted_name: <ul><li>Adınız</ul></li>
-    this_doesnt_get_deleted_address: <ul><li>Adresiniz</ul></li>
+    this_gets_deleted_stores: Katıldığınız işletmeler.
+    this_gets_deleted_verify: Onaylanmanız kaldırılacak.
+    this_doesnt_get_deleted_name: Adınız
+    this_doesnt_get_deleted_address: Adresiniz
     this_gets_deleted_trustbananas: ''
   agree_privacy_notice: Kişisel verilerin gizliliğini koruma yükümlülüğü ve bunun
     sonucunda ortaya çıkan davranışlar konusunda bilgilendirildim. Kayıtlarım için
@@ -2493,7 +2492,7 @@ storeview:
   managers: Sorumlu Foodsaver
   team: Kurtarma Ekibi
   public_and_statistics: İstatistik ve Halkla İlişkiler
-  no_permission_to_view: Yetki eksikliği
+  no_permission_to_view: Sadece işletme sorumluları tarafından görülebilir
   groceries:
     label: Hangi yiyecekler alınabilir?
     select_tag: Yiyecek kategorisini seçin

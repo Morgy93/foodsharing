@@ -24,6 +24,10 @@ export function setRegionOptions (regionId, enableReportButton, enableMediationB
   })
 }
 
+export function getRegionOptions (regionId) {
+  return get(`/region/${regionId}/options`)
+}
+
 export function setRegionPin (regionId, lat, lon, desc, status) {
   return post(`/region/${regionId}/pin`, {
     lat: lat,

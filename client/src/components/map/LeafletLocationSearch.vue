@@ -22,8 +22,9 @@
     <LeafletLocationPicker
       ref="locationPicker"
       :icon="icon"
-      :coordinates="coordinates"
-      :zoom="zoom"
+      :coordinates="currentCoords"
+      :zoom="currentZoom"
+      :bounds="currentBounds"
       :marker-draggable="!disabled"
       @coordinates-changed="updateCoordinates"
     />
@@ -50,9 +51,9 @@
         <b-form-input
           id="input-street"
           ref="inputStreet"
-          :value="street"
+          v-model="currentStreet"
           :disabled="disabled || !differentLocation"
-          @change="$event => updateAddress('street', $event)"
+          @change="emitAddressChange"
         />
       </b-form-group>
       <b-form-group
@@ -63,10 +64,10 @@
         <b-form-input
           id="input-postal"
           ref="inputPostal"
-          :value="postalCode"
+          v-model="currentPostal"
           class="my-2"
           :disabled="disabled || !differentLocation"
-          @change="$event => updateAddress('postalCode', $event)"
+          @change="emitAddressChange"
         />
       </b-form-group>
       <b-form-group
@@ -77,10 +78,10 @@
         <b-form-input
           id="input-city"
           ref="inputCity"
-          :value="city"
+          v-model="currentCity"
           class="my-2"
           :disabled="disabled || !differentLocation"
-          @change="$event => updateAddress('city', $event)"
+          @change="emitAddressChange"
         />
       </b-form-group>
     </div>
@@ -122,12 +123,14 @@ export default {
     return {
       icon: L.AwesomeMarkers.icon({ icon: this.iconName, markerColor: this.iconColor }),
       differentLocation: null,
-      coords: this.coordinates,
+      currentCoords: this.coordinates,
       currentPostal: this.postalCode,
       currentStreet: this.street,
       currentCity: this.city,
       searchInput: null,
       geolocationSearchEngine: null,
+      currentZoom: this.zoom,
+      currentBounds: null,
     }
   },
   mounted () {
@@ -158,28 +161,28 @@ export default {
   },
   methods: {
     updateCoordinates (coords) {
-      this.coords = coords
+      this.currentCoords = coords
       // if the marker was dragged, we need to do reverse geocoding to find the address
       if (this.doReverseGeocoding) {
         this.geolocationSearchEngine.reverseGeocode([coords.lat, coords.lon])
       }
     },
+    /**
+     * This function is called when a suggestion was selected in the search field.
+     */
     updateMap (event, searchResult) {
-      this.searchInput = searchResult.description
-      if (!this.differentLocation) {
-        this.coords = { lat: searchResult.geometry.coordinates[1], lon: searchResult.geometry.coordinates[0] }
-      }
       // set the map to the new coordinates
-      this.$refs.locationPicker.centerMapAndMarker(this.coords)
       if (searchResult.properties.extent) {
         const bounds = searchResult.properties.extent
-        this.$refs.locationPicker.setBounds([bounds[1], bounds[0]], [bounds[3], bounds[2]])
+        this.currentBounds = [[bounds[1], bounds[0]], [bounds[3], bounds[2]]]
       } else {
-        this.$refs.locationPicker.setZoom(17)
+        this.currentZoom = 17
       }
 
       // update the address data
       if (!this.differentLocation) {
+        this.currentCoords = { lat: searchResult.geometry.coordinates[1], lon: searchResult.geometry.coordinates[0] }
+
         const prop = searchResult.properties
         if (prop.postcode) {
           this.currentPostal = prop.postcode
@@ -191,34 +194,10 @@ export default {
           this.currentStreet = prop.street + (prop.housenumber ? ' ' + prop.housenumber : '')
         }
       }
-      this.updateAddress()
-    },
-    updateAddress (field, value) {
-      if (!this.currentCity) {
-        this.currentCity = this.city
-      }
-      if (!this.currentPostal) {
-        this.currentPostal = this.postalCode
-      }
-      if (!this.currentStreet) {
-        this.currentStreet = this.street
-      }
-
-      if (field === 'street') {
-        this.currentStreet = value
-      }
-
-      if (field === 'postalCode') {
-        this.currentPostal = value
-      }
-
-      if (field === 'city') {
-        this.currentCity = value
-      }
       this.emitAddressChange()
     },
     emitAddressChange () {
-      this.$emit('address-change', this.coords, this.currentStreet, this.currentPostal, this.currentCity)
+      this.$emit('address-change', this.currentCoords, this.currentStreet, this.currentPostal, this.currentCity)
     },
   },
 }

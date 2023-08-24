@@ -1,12 +1,14 @@
 <template>
   <div>
     <b-modal
-      id="AddPickupModal"
-      :title="$i18n('store.enterdate')"
+      :id="modalId"
+      :title="title"
       :cancel-title="$i18n('button.cancel')"
       :ok-title="$i18n('button.send')"
+      :ok-disabled="isDateTimeNotSelected"
       @ok="trySetPickupSlots"
     >
+      <p>{{ description }}</p>
       <b-row>
         <b-col cols="3">
           {{ $i18n('day') }}
@@ -29,15 +31,15 @@
           {{ $i18n('time') }}
         </b-col>
         <b-col>
-          <b-form-timepicker
+          <b-form-input
             v-model="selectedSlotTime"
-            v-bind="labelsTimepicker || {}"
-            :locale="locale"
+            type="time"
+            placeholder="HH:mm"
           />
         </b-col>
       </b-row>
       <b-row
-        v-if="disableAutoPickupSlot === false"
+        v-if="!deletePickupMode"
         class="pt-2"
       >
         <b-col cols="3">
@@ -56,7 +58,7 @@
         </b-col>
       </b-row>
       <b-row
-        v-if="disableAutoPickupSlot === false"
+        v-if="!deletePickupMode"
         class="pt-2"
       >
         <b-col cols="3">
@@ -70,20 +72,6 @@
           />
         </b-col>
       </b-row>
-      <hr>
-      <b-row class="pt-2">
-        <b-col cols="3">
-          {{ $i18n('pickup.edit.disable_auto_slot_titel') }}
-        </b-col>
-        <b-col>
-          <b-form-checkbox
-            v-model="disableAutoPickupSlot"
-            class="pt-2"
-          >
-            {{ $i18n('pickup.edit.disable_auto_slot') }}
-          </b-form-checkbox>
-        </b-col>
-      </b-row>
     </b-modal>
   </div>
 </template>
@@ -93,14 +81,18 @@ import { setPickupSlots } from '@/api/pickups'
 import { getters } from '@/stores/stores'
 import i18n, { locale } from '@/helper/i18n'
 import { pulseError } from '@/script'
+import PickupsData from '@/stores/pickups'
 
 export default {
   props: {
     storeId: { type: Number, required: true },
+    title: { type: String, required: true },
+    deletePickupMode: { type: Boolean, default: false },
+    modalId: { type: String, required: true },
+    description: { type: String, required: true },
   },
   data () {
     return {
-      disableAutoPickupSlot: false,
       locale: locale,
       labelsTimepicker: {
         labelHours: i18n('timepicker.labelHours'),
@@ -138,14 +130,8 @@ export default {
     maxCountPickupSlot () {
       return getters.getMaxCountPickupSlot()
     },
-  },
-  watch: {
-    disableAutoPickupSlot (newVal) {
-      if (newVal) {
-        this.selectedSlotCount = 0
-      } else {
-        this.selectedSlotCount = 1
-      }
+    isDateTimeNotSelected () {
+      return !this.selectedSlotDate || !this.selectedSlotTime
     },
   },
   async created () {
@@ -154,28 +140,30 @@ export default {
   methods: {
     async trySetPickupSlots () {
       try {
-        if (!this.selectedSlotDate || !this.selectedSlotTime) {
-          return
-        }
-
         const combinedDateTime = new Date(this.selectedSlotDate)
 
         const timeParts = this.selectedSlotTime.split(':')
         const hours = parseInt(timeParts[0])
         const minutes = parseInt(timeParts[1])
-        const seconds = parseInt(timeParts[2])
 
         combinedDateTime.setHours(hours)
         combinedDateTime.setMinutes(minutes)
-        combinedDateTime.setSeconds(seconds)
+        combinedDateTime.setSeconds(0)
 
         if (!this.selectedSlotCount || this.slotDescription === '') {
           this.slotDescription = null
         }
 
+        if (this.deletePickupMode) {
+          this.selectedSlotCount = 0
+        }
+
         await setPickupSlots(this.storeId, combinedDateTime, this.selectedSlotCount, this.slotDescription)
-      } catch {
-        pulseError(this.$i18n('storeedit.unsuccess'))
+        await PickupsData.mutations.loadPickups(this.storeId)
+      } catch (err) {
+        const errorDescription = err.jsonContent ?? { message: '' }
+        const errorMessage = `(${errorDescription.message ?? 'Unknown'})`
+        pulseError(this.$i18n('storeedit.unsuccess', { error: errorMessage }))
       }
     },
   },

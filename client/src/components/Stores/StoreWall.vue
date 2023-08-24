@@ -1,63 +1,74 @@
 <template>
-  <div class="store-wall">
-    <div
-      v-if="mayWritePost"
-      class="newpost m-1 p-1"
-    >
-      <b-form-textarea
-        id="newpost"
-        v-model="newPostText"
-        :placeholder="$i18n('wall.message_placeholder')"
-        rows="2"
-        max-rows="6"
-        @keydown.ctrl.enter="writePost"
-      />
+  <Container
+    v-if="filteredPosts"
+    :title="$i18n('wall.name')"
+    tag="store_wall"
+    :toggle-visiblity="filteredPosts.length > defaultAmount"
+    @show-full-list="showFullList"
+    @reduce-list="reduceList"
+  >
+    <div class="store-wall">
+      <div
+        v-if="mayWritePost"
+        class="newpost m-1 p-1"
+      >
+        <b-form-textarea
+          id="newpost"
+          v-model="newPostText"
+          rows="2"
+          max-rows="6"
+          @keydown.ctrl.enter="writePost"
+        />
 
-      <div class="submit d-flex">
-        <b-button
-          class="ml-auto mt-2"
-          :class="{'d-none': !newPostExists}"
-          variant="outline-secondary"
-          :disabled="!newPostExists"
-          @click.prevent.stop="writePost"
-        >
-          {{ $i18n('button.send') }}
-        </b-button>
+        <div class="submit d-flex">
+          <b-button
+            class="ml-auto mt-2"
+            :class="{'d-none': !newPostExists}"
+            variant="outline-secondary"
+            :disabled="!newPostExists"
+            @click.prevent.stop="writePost"
+          >
+            {{ $i18n('button.send') }}
+          </b-button>
+        </div>
       </div>
-    </div>
 
-    <ul
-      v-if="displayedPosts"
-      class="posts list-unstyled"
-      :class="{'has-more-posts': hasMorePosts}"
-    >
-      <WallPost
-        v-for="p in displayedPosts"
-        :key="p.id"
-        :post="p"
-        :managers="managers"
-        :may-delete-everything="mayDeleteEverything"
-        class="wallpost"
-        @delete-post="deletePost"
-      />
-    </ul>
-    <b-link
-      v-if="hasMorePosts"
-      class="d-block text-muted text-center py-2"
-      @click="isExcerptListExpanded = true"
-    >
-      {{ $i18n('wall.see-more') }}
-    </b-link>
-  </div>
+      <ul
+        v-if="displayedPosts"
+        class="posts list-unstyled"
+        :class="{'has-more-posts': hasMorePosts}"
+      >
+        <WallPost
+          v-for="p in filteredList"
+          :key="p.id"
+          :post="p"
+          :managers="managers"
+          :may-delete-everything="mayDeleteEverything"
+          class="wallpost"
+          @delete-post="deletePost"
+        />
+      </ul>
+      <b-link
+        v-if="hasMorePosts"
+        class="d-block text-muted text-center py-2"
+        @click="isExcerptListExpanded = true"
+      >
+        {{ $i18n('wall.see-more') }}
+      </b-link>
+    </div>
+  </Container>
 </template>
 
 <script>
 import { getStoreWall, deleteStorePost, writeStorePost } from '@/api/stores'
-import WallPost from '../../WallPost/components/WallPost'
+import WallPost from '@php/Modules/WallPost/components/WallPost.vue'
 import { showLoader, hideLoader, pulseError } from '@/script'
+import ListToggleMixin from '@/mixins/ContainerToggleMixin'
+import Container from '@/components/Container/Container.vue'
 
 export default {
-  components: { WallPost },
+  components: { WallPost, Container },
+  mixins: [ListToggleMixin],
   props: {
     storeId: { type: Number, required: true },
     showOnlyExcerpt: { type: Boolean, default: false },
@@ -65,6 +76,7 @@ export default {
     mayWritePost: { type: Boolean, required: true },
     mayDeleteEverything: { type: Boolean, required: true },
     numberOfVisiblePostsPerExcerptIteration: { type: Number, default: 3 },
+    mayReadStoreWall: { type: Boolean, default: null },
   },
   data () {
     return {
@@ -74,6 +86,11 @@ export default {
     }
   },
   computed: {
+    filteredPosts () {
+      const data = this.posts
+      this.setList(data)
+      return data
+    },
     newPostExists () {
       return this.newPostText.trim().length > 0
     },
@@ -85,7 +102,9 @@ export default {
     },
   },
   async created () {
-    await this.loadPosts()
+    if (this.mayReadStoreWall) {
+      await this.loadPosts()
+    }
   },
   methods: {
     async loadPosts () {

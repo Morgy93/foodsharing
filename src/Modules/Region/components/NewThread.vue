@@ -30,6 +30,7 @@
         <div class="col-auto">
           <button
             class="btn btn-primary btn-sm"
+            :disabled="!body || !title || isLoading"
             @click="createNewThread"
           >
             {{ $i18n('button.create') }}

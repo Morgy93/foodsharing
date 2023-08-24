@@ -118,19 +118,23 @@ class SearchGateway extends BaseGateway
     /**
      * @param string $q Search string as provided by an end user. Individual words all have to be found in the result, each being the prefixes of words of the results
      *(e.g. hell worl is expanded to a MySQL match condition of +hell* +worl*). The input string is properly sanitized, e.g. no further control over the search operation is possible.
-     * @param bool $showDetails show detailed address info if true. Show only city if false
-     * @param array|null $groupIds the groupids a person must be in to be found. Set to null to query over all users.
+     * @param array|null $detailsGroupIds The detailed address will be shown for users whose home region is in this list. Set to null to always include details.
+     * @param array|null $groupIds the groups a person must be in to be found. Set to null to query over all users.
      *
      * @return array SearchResult[] Array of foodsavers containing the search term
      */
-    public function searchUserInGroups(string $q, bool $showDetails, ?array $groupIds = []): array
+    public function searchUserInGroups(string $q, ?array $detailsGroupIds, ?array $groupIds): array
     {
         $searchString = $this->prepareSearchString($q);
-        $select = 'SELECT fs.id, fs.name, fs.nachname, fs.anschrift, fs.stadt, fs.plz FROM fs_foodsaver fs';
-        $fulltextCondition = 'MATCH (fs.name, fs.nachname) AGAINST (? IN BOOLEAN MODE) AND deleted_at IS NULL';
+        $select = 'SELECT fs.id, fs.name, fs.nachname, fs.anschrift, fs.stadt, fs.plz, fs.bezirk_id, b.name as regionName FROM fs_foodsaver fs, fs_bezirk b';
+        $fulltextCondition = 'MATCH (fs.name, fs.nachname) AGAINST (? IN BOOLEAN MODE)
+                              AND deleted_at IS NULL
+                              AND b.id = fs.bezirk_id';
         $groupBy = ' GROUP BY fs.id';
-        if (empty($groupIds)) {
+        if (is_null($groupIds)) {
             $results = $this->db->fetchAll($select . ' WHERE ' . $fulltextCondition . $groupBy, [$searchString]);
+        } elseif (empty($groupIds)) {
+            return [];
         } else {
             $results = $this->db->fetchAll(
                 $select . ', fs_foodsaver_has_bezirk hb WHERE ' .
@@ -139,11 +143,10 @@ class SearchGateway extends BaseGateway
                 array_merge([$searchString], $groupIds));
         }
 
-        return array_map(function ($x) use ($showDetails) {
-            $teaser = $showDetails ? $x['anschrift'] . ', ' . $x['plz'] . ' ' . $x['stadt'] : $x['stadt'];
-            $teaser ??= '';
-
-            return SearchResult::create($x['id'], $x['name'] . ' ' . $x['nachname'], $teaser);
+        return array_map(function ($x) use ($detailsGroupIds) {
+            return (is_null($detailsGroupIds) || in_array($x['bezirk_id'], $detailsGroupIds))
+                ? SearchResult::create($x['id'], $x['name'] . ' ' . $x['nachname'], $x['anschrift'] . ', ' . $x['plz'] . ' ' . $x['stadt'])
+                : SearchResult::create($x['id'], $x['name'], $x['regionName']);
         }, $results);
     }
 

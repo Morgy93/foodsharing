@@ -1,43 +1,44 @@
 <template>
-  <div class="bootstrap">
-    <div class="card rounded">
-      <div class="card-header text-white bg-primary">
-        <div class="row align-items-center">
-          <div class="col text-truncate font-weight-bold">
-            {{ $i18n('pickup.dates') }}
-          </div>
-          <div class="col col-5 text-right">
-            <div
-              class="btn-group slot-actions"
-              role="group"
-            >
-              <button
-                v-if="isCoordinator"
-                v-b-tooltip
-                :title="$i18n('pickup.add_onetime_pickup')"
-                class="btn btn-primary btn-sm"
-                @click="$bvModal.show('AddPickupModal')"
-              >
-                <i class="fas fa-plus" />
-              </button>
-            </div>
-          </div>
-        </div>
+  <div>
+    <Container
+      :title="$i18n('pickup.dates')"
+      tag="pickup_list"
+    >
+      <div class="text-right mt-2">
+        <button
+          v-if="(isCoordinator || mayEditStore)"
+          v-b-tooltip
+          :title="$i18n('pickup.add_onetime_pickup')"
+          class="btn btn-primary btn-sm"
+          @click="$bvModal.show('AddPickupModal')"
+        >
+          <i class="fas fa-plus" />
+        </button>
+        <button
+          v-if="(isCoordinator || mayEditStore)"
+          v-b-tooltip
+          :title="$i18n('store.delete_date')"
+          class="btn btn-primary btn-sm"
+          @click="$bvModal.show('DeletePickupModal')"
+        >
+          <i class="fas fa-trash-alt" />
+        </button>
       </div>
       <div
         :class="{disabledLoading: isLoading}"
         class="pickup-list card-body"
       >
-        <div v-if="!hasPickups">
+        <div v-if="pickups.length <= 0">
           {{ $i18n('pickup.no_slots_available') }}
         </div>
-        <div v-if="hasPickups">
+        <div v-if="pickups.length">
           <Pickup
             v-for="pickup in pickups"
             :key="pickup.date.valueOf()"
             v-bind="pickup"
             :store-id="storeId"
             :store-title="storeTitle"
+            :may-edit-store="mayEditStore"
             :is-coordinator="isCoordinator"
             :user="user"
             :description="pickup.description"
@@ -54,24 +55,30 @@
           />
         </div>
       </div>
-    </div>
+    </Container>
     <AddPickupModal
+      :store-id="storeId"
+    />
+    <DeletePickupModal
       :store-id="storeId"
     />
   </div>
 </template>
 
 <script>
+import Container from '@/components/Container/Container.vue'
 import { VBTooltip } from 'bootstrap-vue'
-import Pickup from './Pickup'
-import AddPickupModal from './AddPickupModal.vue'
-import { setPickupSlots, confirmPickup, joinPickup, leavePickup, listPickups } from '@/api/pickups'
+import Pickup from '@/components/Stores/Pickup/Pickup.vue'
+import AddPickupModal from '@/components/Modals/Store/AddPickupModal.vue'
+import DeletePickupModal from '../Modals/Store/DeletePickupModal.vue'
+import { setPickupSlots, confirmPickup, joinPickup, leavePickup } from '@/api/pickups'
 import { sendMessage } from '@/api/conversations'
 import DataUser from '@/stores/user'
-import { ajreq, pulseError, pulseSuccess } from '@/script'
+import { pulseError, pulseSuccess } from '@/script'
+import PickupsData from '@/stores/pickups'
 
 export default {
-  components: { Pickup, AddPickupModal },
+  components: { Pickup, AddPickupModal, DeletePickupModal, Container },
   directives: { VBTooltip },
   props: {
     storeId: {
@@ -90,40 +97,50 @@ export default {
       type: Number,
       default: null,
     },
+    mayDoPickup: {
+      type: Boolean,
+      default: null,
+    },
+    mayEditStore: {
+      type: Boolean,
+      default: null,
+    },
   },
   data () {
     return {
-      pickups: [],
-      hasPickups: false,
       isLoading: false,
       isModalOpen: false,
       user: DataUser.getters.getUser(),
+      interval: null,
     }
   },
-  _interval: null,
+  computed: {
+    pickups () {
+      return PickupsData.getters.getPickups()
+    },
+  },
   async created () {
-    await this.reload()
-
-    // pull for updates every 30 seconds
-    this._interval = setInterval(() => {
-      this.reload(true) // reload without loading indicator
-    }, 30 * 1000)
+    await this.loadPickups()
   },
   destroyed () {
-    clearInterval(this._interval)
+    clearInterval(this.interval)
   },
   methods: {
-    openModal () {
-      this.isModalOpen = true
+    async loadPickups () {
+      if (this.mayDoPickup) {
+        await this.tryLoadPickups()
+        // pull for updates every 30 seconds
+        this.interval = setInterval(() => {
+          this.tryLoadPickups(true) // reload without loading indicator
+        }, 30 * 1000)
+      } else {
+        clearInterval(this.interval)
+      }
     },
-    closeModal () {
-      this.isModalOpen = false
-    },
-    async reload (silent = false) {
+    async tryLoadPickups (silent = false) {
       if (!silent) this.isLoading = true
       try {
-        this.pickups = await listPickups(this.storeId)
-        this.hasPickups = this.pickups.length > 0
+        await PickupsData.mutations.loadPickups(this.storeId)
       } catch (e) {
         pulseError(this.$i18n('pickuplist.error_loadingPickup') + e)
       }
@@ -138,7 +155,7 @@ export default {
         console.error(e)
         pulseError(this.$i18n('pickuplist.tooslow') + '<br /><br />' + this.$i18n('pickuplist.tryagain'))
       }
-      this.reload()
+      await this.tryLoadPickups()
     },
     async leave (date) {
       this.isLoading = true
@@ -147,7 +164,7 @@ export default {
       } catch (e) {
         pulseError(this.$i18n('pickuplist.error_leave') + e)
       }
-      this.reload()
+      await this.tryLoadPickups()
     },
     async kick (data) {
       this.isLoading = true
@@ -156,7 +173,7 @@ export default {
       } catch (e) {
         pulseError(this.$i18n('pickuplist.error_kick') + e)
       }
-      this.reload()
+      await this.tryLoadPickups()
     },
     async confirm (data) {
       this.isLoading = true
@@ -165,7 +182,7 @@ export default {
       } catch (e) {
         pulseError(this.$i18n('pickuplist.error_confirm') + e)
       }
-      this.reload()
+      await this.tryLoadPickups()
     },
     async setSlots (date, totalSlots, description) {
       this.isLoading = true
@@ -174,7 +191,7 @@ export default {
       } catch (e) {
         pulseError(this.$i18n('pickuplist.error_changeSlotCount') + e)
       }
-      this.reload()
+      await this.tryLoadPickups()
     },
     async sendTeamMessage (msg) {
       try {
@@ -192,16 +209,7 @@ export default {
       } catch (e) {
         pulseError(this.$i18n('pickuplist.error_changeSlotCount') + e)
       }
-      this.reload()
-    },
-    loadAddPickupModal () {
-      ajreq(
-        'adddate',
-        {
-          app: 'betrieb',
-          id: this.storeId,
-        },
-      )
+      await this.tryLoadPickups()
     },
   },
 }

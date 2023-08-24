@@ -241,7 +241,8 @@
 import { optimizedCompare } from '@/utils'
 import { BButton, BFormSelect, BTable, BPagination, VBTooltip } from 'bootstrap-vue'
 import { addMember } from '@/api/groups'
-import { removeMember, listRegionMembers, setAdminOrAmbassador, removeAdminOrAmbassador } from '@/api/regions'
+import { removeMember, setAdminOrAmbassador, removeAdminOrAmbassador } from '@/api/regions'
+import RegionsData from '@/stores/regions'
 import { hideLoader, pulseError, showLoader } from '@/script'
 import i18n from '@/helper/i18n'
 import UserSearchInput from '@/components/UserSearchInput'
@@ -377,19 +378,14 @@ export default {
       return columns
     },
   },
-  async mounted () {
-    // fetch the member list from the server
-    showLoader()
-    this.isBusy = true
-    try {
-      this.memberList = await listRegionMembers(this.groupId)
-    } catch (e) {
-      pulseError(i18n('error_unexpected'))
-    }
-    this.isBusy = false
-    hideLoader()
+  mounted () {
+    this.getMemberList()
   },
   methods: {
+    async getMemberList () {
+      await RegionsData.mutations.fetchMemberList(this.groupId)
+      this.memberList = RegionsData.getters.getMemberList(this.groupId)
+    },
     async showVerifyConfirmation (isVerified, memberId, memberName) {
       const returnFromModal = await this.$bvModal.msgBoxConfirm(i18n(isVerified ? 'pass.verify.do' : 'pass.verify.undo', { name: memberName, id: memberId }), {
         modalClass: 'bootstrap',
@@ -516,11 +512,11 @@ export default {
       showLoader()
       this.isBusy = true
       try {
-        const addedUser = await addMember(this.groupId, userId)
+        await addMember(this.groupId, userId)
 
         // the backend doesn't care if the user was already in the group, so we have to check here
         if (!this.containsMember(userId)) {
-          this.memberList.push(addedUser)
+          this.getMemberList()
         }
       } catch (e) {
         pulseError(i18n('error_unexpected'))

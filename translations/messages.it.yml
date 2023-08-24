@@ -636,22 +636,20 @@ legal:
     personali e del comportamento conseguente. Riceverò una conferma di ciò tramite
     e-mail per i miei documenti all'indirizzo che ho fornito.
   if_delete:
-    this_gets_deleted_friendlist: <ul><li>La tua lista di amici viene eliminata.</ul></li>
-    this_doesnt_get_deleted_address: <ul><li>Il tuo indirizzo</ul></li>
-    this_gets_deleted_trustbananas: <ul><li>Le banane che hai distribuito vengono
-      eliminate.</ul></li>
-    this_doesnt_get_deleted_name: <ul><li>Il tuo nome</ul></li>
+    this_gets_deleted_friendlist: La tua lista di amici viene eliminata.
+    this_doesnt_get_deleted_address: Il tuo indirizzo
+    this_gets_deleted_trustbananas: Le banane che hai distribuito vengono eliminate.
+    this_doesnt_get_deleted_name: Il tuo nome
     this_gets_deleted_main: 'Le seguenti informazioni saranno eliminate dal vostro
       account e non potranno essere ripristinate:'
     this_doesnt_get_deleted: "Le seguenti informazioni non sono più disponibili nel
       sistema attivo, ma vengono archiviate separatamente sulla base dell'articolo
       17, paragrafo 3 del GDPR:"
-    this_doesnt_get_deleted_history: <ul><li>Storia della tua verifica</ul></li>
-    legal_1: Ecco <a href="https://foodsharing.de/?page=legal" target="_blank">il
-      nostro attuale accordo sulla privacy.</a>
-    this_gets_deleted_stores: <ul><li>Aziende a cui ti sei uniti.</ul></li>
-    this_gets_deleted_quiz: <ul><li>Il tuo quiz Foodsaver sarà rimosso.</ul></li>
-    this_gets_deleted_verify: <ul><li>La tua verifica sarà rimossa.</ul></li>
+    this_doesnt_get_deleted_history: Storia della tua verifica
+    legal_1: Il nostro attuale accordo sulla privacy
+    this_gets_deleted_stores: Aziende a cui ti sei uniti.
+    this_gets_deleted_quiz: Il tuo quiz Foodsaver sarà rimosso.
+    this_gets_deleted_verify: La tua verifica sarà rimossa.
     legal_2: Qui puoi trovare <a href="https://www.dsgvo.tools/aufbewahrungsfristen/"
       target="_blank">come le leggi si relazionano tra loro. (Pagina in tedesco)</a>
 fsp:

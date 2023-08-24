@@ -1,105 +1,86 @@
 <template>
   <!-- eslint-disable vue/max-attributes-per-line -->
-  <div class="store-pickup-history">
-    <div
-      v-if="storeId != null"
-      class="head ui-widget-header ui-corner-top"
-      @click.prevent="toggleDisplay"
-    >
-      <span class="pickup-history-title">
-        {{ $i18n('pickup.history.title') }}
-      </span>
-      <a
-        class="text-light float-right pl-2 pr-1"
-        href="#"
-        @click.prevent.stop="toggleDisplay"
-      >
-        <i :class="['fas fa-fw', `fa-chevron-${display ? 'down' : 'left'}`]" />
-      </a>
-    </div>
+  <Container :title="$i18n('pickup.history.title')" :container-is-expanded="isContainerExpanded" tag="pickup_history">
     <div class="corner-bottom margin-bottom bootstrap pickup-history">
-      <div
-        :class="{'p-1': true, 'd-none': !display}"
-      >
-        <b-form id="pickup-date-form" class="p-1" inline>
-          <label class="sr-only" for="datepicker-from">From date:</label>
-          <b-form-datepicker
-            id="datepicker-from"
-            v-model="fromDate"
-            v-b-tooltip.hover
-            v-bind="calendarLabels"
-            :value-as-date="true"
-            :date-format-options="dateFormatOptions"
-            selected-variant="secondary"
-            :max="maxDateFrom"
-            :min="minDateFrom"
-            :required="true"
-            form="pickup-date-form"
-            :hide-header="true"
-            :start-weekday="1"
-            :locale="$i18n('calendar.locale')"
-            :title="$i18n('date.from')"
-            no-highlight-today
-          />
+      <b-form id="pickup-date-form" class="p-1" inline>
+        <label class="sr-only" for="datepicker-from">From date:</label>
+        <b-form-datepicker
+          id="datepicker-from"
+          v-model="fromDate"
+          v-b-tooltip.hover
+          v-bind="calendarLabels"
+          :value-as-date="true"
+          :date-format-options="dateFormatOptions"
+          selected-variant="secondary"
+          :max="maxDateFrom"
+          :min="minDateFrom"
+          :required="true"
+          form="pickup-date-form"
+          :hide-header="true"
+          :start-weekday="1"
+          :locale="$i18n('calendar.locale')"
+          :title="$i18n('date.from')"
+          no-highlight-today
+        />
 
-          <hr class="w-auto date-separator">
+        <hr class="w-auto date-separator">
 
-          <label class="sr-only" for="datepicker-from">To date:</label>
-          <b-form-datepicker
-            id="datepicker-to"
-            v-model="toDate"
-            v-b-tooltip.hover
-            v-bind="calendarLabels"
-            :value-as-date="true"
-            :date-format-options="dateFormatOptions"
-            selected-variant="secondary"
-            :max="maxDateTo"
-            :min="minDateTo"
-            :hide-header="true"
-            :start-weekday="1"
-            :locale="$i18n('calendar.locale')"
-            :title="$i18n('date.to')"
-            no-highlight-today
-          />
-        </b-form>
-        <div class="p-1 pickup-search-button">
-          <b-button
-            variant="secondary"
-            size="sm"
-            class="d-block mx-auto"
-            :class="{'disabled': !searchable}"
-            @click.prevent="searchHistory"
-          >
-            <i class="fas fa-fw fa-search" />
-            {{ $i18n('pickup.history.search') }}
-          </b-button>
-        </div>
+        <label class="sr-only" for="datepicker-from">To date:</label>
+        <b-form-datepicker
+          id="datepicker-to"
+          v-model="toDate"
+          v-b-tooltip.hover
+          v-bind="calendarLabels"
+          :value-as-date="true"
+          :date-format-options="dateFormatOptions"
+          selected-variant="secondary"
+          :max="maxDateTo"
+          :min="minDateTo"
+          :hide-header="true"
+          :start-weekday="1"
+          :locale="$i18n('calendar.locale')"
+          :title="$i18n('date.to')"
+          no-highlight-today
+        />
+      </b-form>
+      <div class="p-1 pickup-search-button">
+        <b-button
+          variant="secondary"
+          size="sm"
+          class="d-block mx-auto"
+          :class="{'disabled': !searchable}"
+          @click.prevent="searchHistory"
+        >
+          <i class="fas fa-fw fa-search" />
+          {{ $i18n('pickup.history.search') }}
+        </b-button>
+      </div>
 
-        <div class="p-1 pickup-table">
-          <SignoutHistory :store-id="storeId" />
+      <div class="p-1 pickup-table">
+        <SignoutHistory :store-id="storeId" />
 
-          <Pickup
-            v-for="pickupDate in pickupList"
-            :key="`${pickupDate[0].storeId}-${pickupDate[0].date_ts}`"
-            v-bind="pickupDate"
-            :date="pickupDate[0].date"
-            :store-id="pickupDate[0].storeId"
-            :store-title="pickupDate[0].storeTitle"
-            :occupied-slots="pickupDate"
-            class="pickup-block"
-          />
-        </div>
+        <Pickup
+          v-for="pickupDate in pickupList"
+          :key="`${pickupDate[0].storeId}-${pickupDate[0].date_ts}`"
+          v-bind="pickupDate"
+          :date="pickupDate[0].date"
+          :store-id="pickupDate[0].storeId"
+          :store-title="pickupDate[0].storeTitle"
+          :occupied-slots="pickupDate"
+          class="pickup-block"
+        />
       </div>
     </div>
-  </div>
+  </Container>
 </template>
 
 <script>
 import { listPastPickupsForUser, listPickupHistory } from '@/api/pickups'
 import i18n from '@/helper/i18n'
 import { pulseError } from '@/script'
-import Pickup from './Pickup'
-import SignoutHistory from '@/components/Stores/SignoutHistory/SignoutHistory'
+import Pickup from '@/components/Stores/Pickup/Pickup.vue'
+import SignoutHistory from '@/components/Stores/SignoutHistory/SignoutHistory.vue'
+import Container from '@/components/Container/Container.vue'
 
 const calendarLabels = {
   labelPrevYear: i18n('calendar.labelPrevYear'),
@@ -116,7 +97,7 @@ const calendarLabels = {
 }
 
 export default {
-  components: { SignoutHistory, Pickup },
+  components: { SignoutHistory, Pickup, Container },
   props: {
     collapsedAtFirst: { type: Boolean, default: true },
     fsId: { type: Number, default: null },
@@ -125,13 +106,13 @@ export default {
   },
   data () {
     let fromDate = null
-    if (this.fsID) {
+    if (this.fsId) {
       fromDate = new Date()
       fromDate.setDate(fromDate.getDate() - 2 * 7) // subtract 2 weeks
     }
     const maxDate = new Date()
     let minDate = new Date()
-    if (this.fsID) {
+    if (this.fsId) {
       minDate = new Date()
       minDate.setDate(minDate.getDate() - 4 * 7) // subtract 4 weeks
     } else {
@@ -146,7 +127,7 @@ export default {
     }
 
     return {
-      display: !this.collapsedAtFirst,
+      isContainerExpanded: false,
       isLoading: false,
       fromDate,
       toDate: maxDate,

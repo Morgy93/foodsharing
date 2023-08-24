@@ -8,58 +8,94 @@
   Sleeping team members will come last in each of those sections.
   Check `tableSortFunction` (and StoreGateway:getStoreTeam) for details.
   -->
-  <div :class="['bootstrap store-team w-100', `team-${storeId}`]">
-    <div class="card rounded mb-2">
-      <div class="card-header text-white bg-primary">
-        <div class="row align-items-center">
-          <div class="col font-weight-bold">
-            {{ $i18n('store.teamName', { storeTitle }) }}
-          </div>
-
-          <div class="col col-4 text-right">
-            <button
-              v-if="mayEditStore"
-              v-b-tooltip.hover.top
-              :title="$i18n(managementModeEnabled ? 'store.sm.managementToggleOff' : 'store.sm.managementToggleOn')"
-              :class="[managementModeEnabled ? ['text-warning', 'active'] : 'text-light', 'btn', 'btn-primary', 'btn-sm']"
-              href="#"
-              @click.prevent="toggleManageControls"
-            >
-              <i class="fas fa-fw fa-cog" />
-            </button>
-            <button
-              class="px-1 d-md-none text-light btn btn-sm"
-              href="#"
-              @click.prevent="toggleTeamDisplay"
-            >
-              <i :class="['fas fa-fw', `fa-chevron-${displayMembers ? 'down' : 'left'}`]" />
-            </button>
-          </div>
-        </div>
+  <div>
+    <Container
+      :title="title"
+      :toggle-visiblity="list.length > defaultAmount"
+      tag="store_team"
+      class="store-team"
+      @show-full-list="showFullList"
+      @reduce-list="reduceList"
+    >
+      <div class="text-center mt-2 mb-2">
+        <button
+          v-if="(isCoordinator || mayEditStore)"
+          v-b-tooltip.hover.top
+          :title="$i18n(managementModeEnabled ? 'store.sm.managementToggleOff' : 'store.sm.managementToggleOn')"
+          class="btn btn-primary btn-sm"
+          href="#"
+          @click.prevent="toggleManageControls"
+        >
+          {{ $i18n('store.sm.buttonManagementToggle') }}
+        </button>
+        <button
+          v-if="applications.storeRequests && applications.storeRequests.length > 0"
+          class="btn btn-danger btn-sm"
+          href="#"
+          @click="$bvModal.show('requests')"
+        >
+          {{ $i18n('store.requests', { count: applications.storeRequests.length}) }}
+        </button>
       </div>
 
+      <div class="text-center mb-2">
+        <template v-for="(filterButton, index) in updatedFilterButtons">
+          <br
+            v-if="index === 3"
+            :key="index"
+          >
+          <b-button
+            v-if="(filterButton.manageMode && managementModeEnabled) || filterButton.manageMode === false"
+            :key="filterButton.key"
+            v-b-tooltip.hover.bottom="filterButton.tooltip"
+            class="mr-2 mb-1"
+            size="sm"
+            :variant="getFilterButtonClass(isFilterActive(filterButton.state))"
+            @click="applyFilter(filterButton.state)"
+          >
+            {{ filterButton.count }} <i :class="filterButton.icon" />
+          </b-button>
+        </template>
+      </div>
+
+      <div class="search-container">
+        <input
+          v-model="userSearchString"
+          type="text"
+          class="form-control-sm"
+          :placeholder="$i18n('store.team.search_input')"
+          @input="updateList"
+        >
+        <b-button
+          v-b-tooltip.hover.top
+          variant="outline-secondary"
+          size="sm"
+          :title="$i18n('store.team.search_reset')"
+          @click="resetUserSearchString"
+        >
+          <i class="fas fa-times" />
+        </b-button>
+      </div>
       <!-- preparation for more store-management features -->
       <StoreManagementPanel
         v-if="managementModeEnabled"
         :store-id="storeId"
         :team="team"
-        classes="p-2 team-management"
+        classes="pt-2 team-management"
         :region-id="regionId"
       />
 
       <div class="card-body team-list">
         <b-table
           ref="teamlist"
-          :items="foodsaver"
+          :items="filteredList"
           :fields="tableFields"
-          :class="{'d-none': !displayMembers}"
           details-td-class="col-actions"
           primary-key="id"
           thead-class="d-none"
           sort-by="ava"
           :busy="isBusy"
-          :sort-desc.sync="sortdesc"
-          :sort-compare="sortfun"
+          :empty-text="$i18n('store.team.no_record')"
           show-empty
           sort-null-last
         >
@@ -78,6 +114,7 @@
           <template #cell(mobinfo)="data">
             <StoreTeamInfotext
               :member="data.item"
+              :is-coordinator="isCoordinator"
               :may-edit-store="mayEditStore"
             />
           </template>
@@ -107,6 +144,7 @@
             <StoreTeamInfotext
               v-if="wXS"
               :member="data.item"
+              :is-coordinator="isCoordinator"
               :may-edit-store="mayEditStore"
               classes="text-center"
             />
@@ -133,7 +171,7 @@
               </b-button>
 
               <b-button
-                v-if="mayEditStore && data.item.isJumper"
+                v-if="(isCoordinator || mayEditStore) && data.item.isJumper"
                 size="sm"
                 variant="primary"
                 :block="!(wXS || wSM)"
@@ -144,13 +182,13 @@
               </b-button>
 
               <b-button
-                v-if="mayEditStore && data.item.isActive && !data.item.isManager"
+                v-if="(isCoordinator || mayEditStore) && data.item.isActive && !data.item.isManager"
                 size="sm"
                 variant="primary"
                 :block="!(wXS || wSM)"
                 @click="toggleStandbyState(data.item.id, true)"
               >
-                <i class="fas fa-fw fa-mug-hot" />
+                <i class="fas fa-running" />
                 {{ $i18n('store.sm.makeJumper') }}
               </b-button>
 
@@ -181,7 +219,7 @@
                 size="sm"
                 variant="danger"
                 :block="!(wXS || wSM)"
-                @click="removeFromTeam(data.item.id, data.item.name)"
+                @click="openDeleteModal(data.item)"
               >
                 <i class="fas fa-fw fa-user-times" />
                 {{ $i18n('store.sm.removeFromTeam') }}
@@ -190,7 +228,24 @@
           </template>
         </b-table>
       </div>
-    </div>
+    </Container>
+    <b-modal
+      id="deleteModal"
+      ref="deleteModal"
+      :title="$i18n('store.sm.reallyRemove', { name: selectedDataItem ? selectedDataItem.name : '' })"
+      :cancel-title="$i18n('button.cancel')"
+      :ok-title="$i18n('button.yes_i_am_sure')"
+      cancel-variant="primary"
+      ok-variant="outline-danger"
+      @ok="removeFromTeam(selectedDataItem ? selectedDataItem.id : null, selectedDataItem ? selectedDataItem.name : '')"
+    >
+      {{ $i18n('really_delete') }}
+    </b-modal>
+    <StoreApplications
+      :store-id="storeId"
+      :store-title="storeTitle"
+      :store-requests="applications.storeRequests"
+    />
   </div>
 </template>
 
@@ -202,19 +257,22 @@ import {
 import phoneNumber from '@/helper/phone-numbers'
 import { chat, pulseSuccess, pulseError } from '@/script'
 import MediaQueryMixin from '@/mixins/MediaQueryMixin'
-
-import { legacyXhrCall } from './legacy'
-import StoreManagementPanel from './StoreManagementPanel'
-import StoreTeamAvatar from './StoreTeamAvatar'
-import StoreTeamInfo from './StoreTeamInfo'
-import StoreTeamInfotext from './StoreTeamInfotext'
+import StoreManagementPanel from '@/components/Stores/StoreTeam/StoreManagementPanel.vue'
+import StoreTeamAvatar from '@/components/Stores/StoreTeam/StoreTeamAvatar.vue'
+import StoreTeamInfo from '@/components/Stores/StoreTeam/StoreTeamInfo.vue'
+import StoreTeamInfotext from '@/components/Stores/StoreTeam/StoreTeamInfotext.vue'
+import StoreData, { STORE_TEAM_STATE } from '@/stores/stores'
+import Container from '@/components/Container/Container.vue'
+import ListToggleMixin from '@/mixins/ContainerToggleMixin'
+import StoreApplications from '@/components/Modals/Store/StoreApplications.vue'
 
 export default {
-  components: { StoreManagementPanel, StoreTeamAvatar, StoreTeamInfo, StoreTeamInfotext },
-  mixins: [MediaQueryMixin],
+  components: { StoreManagementPanel, StoreTeamAvatar, StoreTeamInfo, StoreTeamInfotext, Container, StoreApplications },
+  mixins: [MediaQueryMixin, ListToggleMixin],
   props: {
     fsId: { type: Number, required: true },
     mayEditStore: { type: Boolean, default: false },
+    isCoordinator: { type: Boolean, default: false },
     team: { type: Array, required: true },
     storeId: { type: Number, required: true },
     storeTitle: { type: String, default: '' },
@@ -224,13 +282,109 @@ export default {
     return {
       foodsaver: this.team?.map(fs => this.foodsaverData(fs)),
       sortfun: this.tableSortFunction,
-      sortdesc: true,
       managementModeEnabled: false,
-      displayMembers: true,
       isBusy: false,
+      selectedDataItem: null,
+      userSearchString: null,
+      activeFilter: null,
+      defaultAmountForDesktop: 30,
+      defaultAmountForMobile: 10,
+      filterButtons: [
+        {
+          key: 'all',
+          tooltip: this.$i18n('store.sm.filterAll'),
+          state: null,
+          count: null,
+          icon: 'fas fa-users',
+          manageMode: false,
+        },
+        {
+          key: 'active',
+          tooltip: this.$i18n('store.sm.filterActive'),
+          state: STORE_TEAM_STATE.ACTIVE,
+          count: null,
+          icon: 'fas fa-user',
+          manageMode: false,
+        },
+        {
+          key: 'jumper',
+          tooltip: this.$i18n('store.sm.filterJumper'),
+          state: STORE_TEAM_STATE.JUMPER,
+          count: null,
+          icon: 'fas fa-running',
+          manageMode: false,
+        },
+        {
+          key: 'sleeping',
+          tooltip: this.$i18n('store.sm.filterSleeping'),
+          state: STORE_TEAM_STATE.SLEEPING,
+          count: null,
+          icon: 'fas fa-bed',
+          manageMode: true,
+        },
+        {
+          key: 'unverified',
+          tooltip: this.$i18n('store.sm.filterUnverified'),
+          state: STORE_TEAM_STATE.UNVERIFIED,
+          count: null,
+          icon: 'fas fa-user-alt-slash',
+          manageMode: true,
+        },
+        {
+          key: 'manage_role',
+          tooltip: this.$i18n('store.sm.filterManage'),
+          state: STORE_TEAM_STATE.MANAGE_ROLE,
+          count: null,
+          icon: 'fas fa-gem',
+          manageMode: true,
+        },
+      ],
+      isReduced: true,
     }
   },
   computed: {
+    applications () {
+      return StoreData.getters.getStoreApplications()
+    },
+    updatedFilterButtons () {
+      return this.filterButtons.map(filter => {
+        if (filter.state === null) {
+          return { ...filter, count: this.allMembers }
+        } else if (filter.state === STORE_TEAM_STATE.ACTIVE) {
+          return { ...filter, count: this.activeMembers }
+        } else if (filter.state === STORE_TEAM_STATE.JUMPER) {
+          return { ...filter, count: this.jumperCount }
+        } else if (filter.state === STORE_TEAM_STATE.UNVERIFIED) {
+          return { ...filter, count: this.unverifiedCount }
+        } else if (filter.state === STORE_TEAM_STATE.SLEEPING) {
+          return { ...filter, count: this.sleepingMembers }
+        } else if (filter.state === STORE_TEAM_STATE.MANAGE_ROLE) {
+          return { ...filter, count: this.membersHasStoreMangerQuizRole }
+        }
+        return filter
+      })
+    },
+    isFilterActive () {
+      return (value) => this.activeFilter === value
+    },
+    getFilterButtonClass () {
+      return (value) => (value ? 'primary' : 'secondary')
+    },
+    filteredUsers () {
+      let filtered = this.foodsaver ?? []
+      if (this.activeFilter === STORE_TEAM_STATE.ACTIVE) {
+        filtered = filtered.filter(member => member.isActive)
+      } else if (this.activeFilter === STORE_TEAM_STATE.JUMPER) {
+        filtered = filtered.filter(member => member.isJumper)
+      } else if (this.activeFilter === STORE_TEAM_STATE.UNVERIFIED) {
+        filtered = filtered.filter(member => !member.isVerified)
+      } else if (this.activeFilter === STORE_TEAM_STATE.MANAGE_ROLE) {
+        filtered = filtered.filter(member => member.mayManage)
+      } else if (this.activeFilter === STORE_TEAM_STATE.SLEEPING) {
+        filtered = filtered.filter(member => member.sleepStatus)
+      }
+      return filtered
+    },
     tableFields () {
       const fields = [
         { key: 'ava', class: 'col-ava', sortable: true },
@@ -244,14 +398,105 @@ export default {
       }
       return fields
     },
+    jumperCount () {
+      return this.foodsaver.filter(member => member.isJumper).length
+    },
+    unverifiedCount () {
+      return this.foodsaver.filter(member => member.isVerified === false).length
+    },
+    allMembers () {
+      return this.activeMembers + this.jumperCount
+    },
+    activeMembers () {
+      return this.foodsaver.filter(member => member.isActive).length
+    },
+    sleepingMembers () {
+      return this.foodsaver.filter(member => member.sleepStatus).length
+    },
+    membersHasStoreMangerQuizRole () {
+      return this.foodsaver.filter(member => member.mayManage).length
+    },
+    unverifiedText () {
+      return this.unverifiedCount === 1 ? this.$i18n('store.unverified_member') : this.$i18n('store.unverified_members')
+    },
+    activeText () {
+      return this.activeMembers === 1 ? this.$i18n('store.one_active') : this.$i18n('store.active')
+    },
+    toogleIsReducedStateText () {
+      return this.isReduced ? this.$i18n('store.sm.toogleIsReducedStateOpen') : this.$i18n('store.sm.toogleIsReducedStateClosed')
+    },
+    activeFilterText () {
+      switch (this.activeFilter) {
+        case STORE_TEAM_STATE.ACTIVE:
+          return this.activeText
+        case STORE_TEAM_STATE.JUMPER:
+          return this.$i18n('store.jumping')
+        case STORE_TEAM_STATE.UNVERIFIED:
+          return this.unverifiedText
+        case STORE_TEAM_STATE.MANAGE_ROLE:
+          return this.$i18n('store.sm.filterManage')
+        case STORE_TEAM_STATE.SLEEPING:
+          return this.$i18n('store.sm.filterSleeping')
+        default:
+          return this.$i18n('store.sm.filterAll')
+      }
+    },
+    title () {
+      return `${this.$i18n('store.team_container')} (${this.activeFilterText})`
+    },
+  },
+  watch: {
+    team () {
+      this.foodsaver = this.team?.map(fs => this.foodsaverData(fs))
+      this.updateList()
+    },
+  },
+  async mounted () {
+    if (this.mayEditStore) {
+      await StoreData.mutations.loadStoreApplications(this.storeId)
+    }
+    this.setDefaultAmountForDesktop(this.defaultAmountForDesktop)
+    this.setDefaultAmountForMobile(this.defaultAmountForMobile)
   },
   methods: {
+    /**
+     * Calculates and sorts the list of users, filtered by buttons and search string, and sets it in the mixin where
+     * it can be collapsed or expanded by the "show more" button.
+     */
+    updateList () {
+      // filter by selected button
+      let newList = this.filteredUsers
+
+      // filter by name
+      if (this.userSearchString !== null) {
+        const searchString = this.userSearchString.trim().toLowerCase()
+        newList = newList.filter(member => {
+          return (
+            member.name.toLowerCase().includes(searchString) ||
+            (member.phoneNumberIsValid && member.phoneNumber.includes(searchString))
+          )
+        })
+      }
+
+      // sort
+      newList = newList.sort((a, b) => {
+        return this.sortfun(a, b)
+      })
+
+      this.setList(newList)
+    },
+    applyFilter (state) {
+      this.activeFilter = state
+      this.updateList()
+    },
+    resetUserSearchString () {
+      this.userSearchString = null
+      this.updateList()
+    },
     toggleManageControls () {
       this.sortfun = this.managementModeEnabled ? this.tableSortFunction : this.pickupSortFunction
       this.managementModeEnabled = !this.managementModeEnabled
-    },
-    toggleTeamDisplay () {
-      this.displayMembers = !this.displayMembers
+      this.updateList()
     },
     canCopy () {
       return !!navigator.clipboard
@@ -267,6 +512,9 @@ export default {
       if (user.isManager) return false
       if (user.id === this.fsId) return true
       return this.mayEditStore
+    },
+    openDeleteModal (dataItem) {
+      this.$refs.deleteModal.show(dataItem)
     },
     mayBecomeManager (user) {
       if (!user.mayManage) return false
@@ -285,6 +533,7 @@ export default {
       })
       if (!wasOpen) {
         row.toggleDetails()
+        this.selectedDataItem = row.item
       }
     },
     openChat (fsId) {
@@ -302,6 +551,8 @@ export default {
         pulseError(this.$i18n('error_unexpected'))
         this.isBusy = false
         return
+      } finally {
+        await StoreData.mutations.loadStoreMember(this.storeId)
       }
       const index = this.team.findIndex(fs => fs.id === fsId)
       if (index >= 0) {
@@ -310,7 +561,7 @@ export default {
         fs.isJumper = newStatusIsStandby
         fs.isActive = !newStatusIsStandby
         fs._showDetails = false
-        this.$set(this.team, index, fs)
+        this.foodsaver[index] = fs
       }
       this.isBusy = false
     },
@@ -322,7 +573,11 @@ export default {
       try {
         await promoteToStoreManager(this.storeId, fsId)
       } catch (e) {
-        pulseError(this.$i18n('error_unexpected'))
+        if (e.code === 422) {
+          pulseError(this.$i18n('store.sm.promoteToManagerNotPossible'))
+        } else {
+          pulseError(this.$i18n('error_unexpected'))
+        }
         this.isBusy = false
         return
       }
@@ -332,8 +587,9 @@ export default {
         fs.isManager = true
         fs._rowVariant = 'warning'
         fs._showDetails = false
-        this.$set(this.team, index, fs)
+        this.foodsaver[index] = fs
       }
+      await StoreData.mutations.loadStoreMember(this.storeId)
       this.isBusy = false
     },
     async demoteAsManager (fsId, fsName) {
@@ -357,8 +613,9 @@ export default {
         fs.isManager = false
         fs._rowVariant = ''
         fs._showDetails = false
-        this.$set(this.team, index, fs)
+        this.foodsaver[index] = fs
       }
+      await StoreData.mutations.loadStoreMember(this.storeId)
       this.isBusy = false
     },
     /* eslint-disable brace-style */
@@ -436,18 +693,14 @@ export default {
         fetchCount: fs.stat_fetchcount,
       }
     },
-    legacyXhrCall,
-    async removeFromTeam (fsId, fsName) {
+    async removeFromTeam (fsId) {
       if (!fsId) {
-        return
-      }
-      if (!confirm(this.$i18n('store.sm.reallyRemove', { name: fsName }))) {
         return
       }
       this.isBusy = true
       try {
         await removeStoreMember(this.storeId, fsId)
-        window.location.reload()
+        await StoreData.mutations.loadStoreMember(this.storeId)
       } catch (e) {
         pulseError(this.$i18n('error_unexpected'))
         this.isBusy = false
@@ -460,6 +713,15 @@ export default {
 </script>
 
 <style lang="scss" scoped>
+.search-container {
+  display: flex;
+  align-items: center;
+}
+
+.search-container input {
+  width: 100%;
+}
+
 .store-team .team-management {
   border-bottom: 2px solid var(--fs-color-warning-500);
 }

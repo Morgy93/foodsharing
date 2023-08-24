@@ -178,9 +178,9 @@ class WorkGroupControl extends Control
     }
 
     /**
-     * Old photos that were uploaded by Xhr are named "workgroup/[uuid].jpg" and are in the /images/workgroup
-     * directory. New ones that were uploaded with the REST API already contain the full path when stored in the
-     * database. This function returns a valid path for all photos.
+     * Old photos that were uploaded by Xhr are named "workgroup/[uuid].jpg" or "photo/[uuid].jpg" and are in the
+     * /images/workgroup directory. New ones that were uploaded with the REST API already contain the full path when
+     * stored in the database. This function returns a valid path for all photos.
      *
      * @param string $photo the group's photo file from the database
      *
@@ -188,7 +188,7 @@ class WorkGroupControl extends Control
      */
     private function fixPhotoPath(string $photo): string
     {
-        return (!empty($photo) && str_starts_with($photo, 'workgroup'))
+        return (!empty($photo) && (str_starts_with($photo, 'workgroup') || str_starts_with($photo, 'photo')))
             ? '/images/' . $photo
             : $photo;
     }

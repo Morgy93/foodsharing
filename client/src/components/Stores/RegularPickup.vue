@@ -61,6 +61,7 @@
             :locale="locale"
             v-bind="labelsTimepicker || {}"
             size="sm"
+            minutes-step="5"
             :disabled="!editMode"
           />
         </b-col>

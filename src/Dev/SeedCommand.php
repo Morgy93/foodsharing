@@ -327,8 +327,17 @@ class SeedCommand extends Command implements CustomCommandInterface
         }
     }
 
-    private function writeUser($user, $password, $name = 'user')
+    private function writeUser(Foodsharing $I, $user, $password, $name = 'user')
     {
+        // Make sure that the user is a member of all parent regions of the home region
+        if (!empty($user['bezirk_id'])) {
+            $regionId = $I->grabFromDatabase('fs_bezirk', 'parent_id', ['id' => $user['bezirk_id']]);
+            while ($regionId !== 0) {
+                $I->addRegionMember($regionId, $user['id']);
+                $regionId = $I->grabFromDatabase('fs_bezirk', 'parent_id', ['id' => $regionId]);
+            }
+        }
+
         $this->output->writeln('- created ' . $name . ' ' . $user['email'] . ' with password "' . $password . '"');
     }
 
@@ -337,9 +346,12 @@ class SeedCommand extends Command implements CustomCommandInterface
         $I = $this->helper;
         $I->_getDbh()->beginTransaction();
         $I->_getDriver()->executeQuery('SET FOREIGN_KEY_CHECKS=0;', []);
-        $regionOne = $I->createRegion('Göttingen', ['has_children' => 1]);
+        $regionEurope = $I->createRegion('Europa', ['parent_id' => RegionIDs::ROOT, 'type' => UnitType::COUNTRY, 'has_children' => 1]);
+        $regionGermany = $I->createRegion('Deutschland', ['parent_id' => $regionEurope['id'], 'type' => UnitType::COUNTRY, 'has_children' => 1]);
+        $regionLowerSaxony = $I->createRegion('Niedersachsen', ['parent_id' => $regionGermany['id'], 'type' => UnitType::FEDERAL_STATE, 'has_children' => 1]);
+        $regionOne = $I->createRegion('Göttingen', ['parent_id' => $regionLowerSaxony['id'], 'type' => UnitType::CITY, 'has_children' => 1]);
         $region1 = $regionOne['id'];
-        $regionTwo = $I->createRegion('Entenhausen');
+        $regionTwo = $I->createRegion('Entenhausen', ['parent_id' => $regionLowerSaxony['id'], 'type' => UnitType::CITY, 'has_children' => 1]);
         $region2 = $regionTwo['id'];
         $regionOneWorkGroup = $I->createWorkingGroup('Schnippelparty Göttingen', ['parent_id' => $regionOne['id']]);
         $region_vorstand = RegionIDs::TEAM_BOARD_MEMBER;
@@ -378,16 +390,16 @@ class SeedCommand extends Command implements CustomCommandInterface
         // Create users
         $this->output->writeln('Create basic users:');
         $user1 = $I->createFoodsharer($password, ['email' => 'user1@example.com', 'name' => 'One']);
-        $this->writeUser($user1, $password, 'foodsharer');
+        $this->writeUser($I, $user1, $password, 'foodsharer');
 
         $user2 = $I->createFoodsaver($password, ['email' => 'user2@example.com', 'name' => 'Two', 'bezirk_id' => $region1]);
-        $this->writeUser($user2, $password, 'foodsaver');
+        $this->writeUser($I, $user2, $password, 'foodsaver');
 
         $userStoreManager = $I->createStoreCoordinator($password, ['email' => 'storemanager1@example.com', 'name' => 'Three', 'bezirk_id' => $region1]);
-        $this->writeUser($userStoreManager, $password, 'store coordinator');
+        $this->writeUser($I, $userStoreManager, $password, 'store coordinator');
 
         $userStoreManager2 = $I->createStoreCoordinator($password, ['email' => 'storemanager2@example.com', 'name' => 'Four', 'bezirk_id' => $region1]);
-        $this->writeUser($userStoreManager2, $password, 'store coordinator2');
+        $this->writeUser($I, $userStoreManager2, $password, 'store coordinator2');
 
         $userbot = $I->createAmbassador($password, [
             'email' => 'userbot@example.com',
@@ -395,7 +407,7 @@ class SeedCommand extends Command implements CustomCommandInterface
             'bezirk_id' => $region1,
             'about_me_intern' => 'hello!'
         ]);
-        $this->writeUser($userbot, $password, 'ambassador');
+        $this->writeUser($I, $userbot, $password, 'ambassador');
 
         $userbot2 = $I->createAmbassador($password, [
             'email' => 'userbot2@example.com',
@@ -403,7 +415,7 @@ class SeedCommand extends Command implements CustomCommandInterface
             'bezirk_id' => $region1,
             'about_me_intern' => 'hello!'
         ]);
-        $this->writeUser($userbot2, $password, 'ambassador');
+        $this->writeUser($I, $userbot2, $password, 'ambassador');
 
         // Create an ambassador whose profile is already deleted and cannot be used but who will show up in verification histories
         $userbotDeleted = $I->createAmbassador($password, [
@@ -413,7 +425,7 @@ class SeedCommand extends Command implements CustomCommandInterface
             'about_me_intern' => 'hello!',
             'deleted_at' => Carbon::now()->subYear()
         ]);
-        $this->writeUser($userbotDeleted, $password, 'deleted ambassador');
+        $this->writeUser($I, $userbotDeleted, $password, 'deleted ambassador');
 
         $userbotregion2 = $I->createAmbassador($password, [
             'email' => 'userbotreg2@example.com',
@@ -423,13 +435,13 @@ class SeedCommand extends Command implements CustomCommandInterface
         ]);
         $I->addRegionAdmin($region2, $userbotregion2['id']);
 
-        $this->writeUser($userbotregion2, $password, 'ambassador');
+        $this->writeUser($I, $userbotregion2, $password, 'ambassador');
 
         $userorga = $I->createOrga($password, false, ['email' => 'userorga@example.com', 'name' => 'Orga', 'bezirk_id' => $region1]);
-        $this->writeUser($userorga, $password, 'orga');
+        $this->writeUser($I, $userorga, $password, 'orga');
 
         $userorgaWG = $I->createOrga($password, false, ['email' => 'userorgaWG@example.com', 'name' => 'OrgaWG', 'bezirk_id' => $region1, 'id' => RegionIDs::CREATING_WORK_GROUPS_WORK_GROUP]);
-        $this->writeUser($userorgaWG, $password, 'orga');
+        $this->writeUser($I, $userorgaWG, $password, 'orga');
         $I->addRegionAdmin(RegionIDs::CREATING_WORK_GROUPS_WORK_GROUP, $userorgaWG['id']);
         $I->addRegionMember(RegionIDs::CREATING_WORK_GROUPS_WORK_GROUP, $userorgaWG['id']);
 

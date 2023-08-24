@@ -59,6 +59,11 @@ class MapRestController extends AbstractFOSRestController
             $teamSearchStatus = [];
             $status = $paramFetcher->get('status');
             $userId = null;
+
+            $excludedStoreTypes = array_merge($excludedStoreTypes, [
+                CooperationStatus::PERMANENTLY_CLOSED
+            ]);
+
             if (is_array($status) && !empty($status)) {
                 foreach ($status as $s) {
                     switch ($s) {

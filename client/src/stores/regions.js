@@ -1,10 +1,11 @@
 import Vue from 'vue'
-import { joinRegion, listRegionChildren } from '@/api/regions'
+import { joinRegion, listRegionChildren, listRegionMembers } from '@/api/regions'
 import { url } from '@/helper/urls'
 
 export const store = Vue.observable({
   regions: [],
   choosedRegionChildren: [],
+  memberList: [],
 
 })
 
@@ -19,6 +20,9 @@ export const getters = {
 
   find (regionId) {
     return store.regions.find(region => region.id === regionId)
+  },
+  getMemberList () {
+    return store.memberList
   },
 }
 
@@ -35,6 +39,9 @@ export const mutations = {
   async joinRegion (regionId) {
     await joinRegion(regionId)
     document.location.href = url('relogin_and_redirect_to_url', url('region_forum', regionId))
+  },
+  async fetchMemberList (regionId) {
+    store.memberList = await listRegionMembers(regionId)
   },
 }
 

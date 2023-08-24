@@ -1,13 +1,11 @@
 <template>
   <div
-    class="bg-white ui-corner-top"
+    class="ui-corner-top"
     :class="classes"
   >
     <span class="text-muted">{{ $i18n('store.sm.makeRegularTeamMember') }}</span>
-
     <user-search-input
       id="new-foodsaver-search"
-      class="m-1"
       :placeholder="$i18n('store.sm.searchPlaceholder')"
       button-icon="fa-user-plus"
       :button-tooltip="$i18n('store.sm.makeRegularTeamMember')"
@@ -15,19 +13,6 @@
       :region-id="regionId"
       @user-selected="addNewTeamMember"
     />
-
-    <div v-if="requireReload">
-      <span class="text-muted d-inline-block py-2">{{ $i18n('store.sm.reloadRequired') }}</span>
-      <b-button
-        variant="secondary"
-        block
-        class="reload-page"
-        @click.prevent="reload"
-      >
-        <i class="fas fa-fw fa-sync-alt" />
-        {{ $i18n('store.sm.reloadPage') }}
-      </b-button>
-    </div>
 
     <hr>
 
@@ -115,7 +100,8 @@
 <script>
 import { addStoreMember } from '@/api/stores'
 import { reload, pulseError, showLoader, hideLoader } from '@/script'
-import UserSearchInput from '@/components/UserSearchInput'
+import UserSearchInput from '@/components/UserSearchInput.vue'
+import StoreData from '@/stores/stores'
 
 export default {
   components: { UserSearchInput },
@@ -138,12 +124,11 @@ export default {
       showLoader()
       try {
         await addStoreMember(this.storeId, userId)
+        await StoreData.mutations.loadStoreMember(this.storeId)
       } catch (e) {
         pulseError(this.$i18n('error_unexpected'))
       }
       hideLoader()
-      // convince user to trigger page reload for server refresh of teamlist
-      this.requireReload = true
     },
     filterNotInTeam (userId) {
       return !this.team.some(x => x.id === userId)

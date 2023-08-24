@@ -104,7 +104,6 @@ compose_body: "Nachricht"
 # FORM DATA KEYS: SettingsView
 # --
 # comment: "Anregungen, Kritik und Kommentare" # this looks very unused
-newmail: "Gib hier deine neue E-Mail-Adresse ein"
 passcheck: "Bestätige die Änderung bitte mit deinem Passwort"
 homepage: "Deine Webseite"
 #
@@ -553,18 +552,18 @@ legal:
   agree_privacy_policy: "Ich habe die Datenschutzvereinbarung zur Kenntnis genommen."
   delete_account: "Ich möchte meinen Account löschen."
   if_delete:
-    legal_1: "Hier ist <a href=\"https://foodsharing.de/?page=legal\" target=\"_blank\">unsere derzeitige Datenschutz-Vereinbarung.</a>"
-    legal_2: "Hier findest Du, <a href=\"https://www.dsgvo.tools/aufbewahrungsfristen/\" target=\"_blank\">wie sich die Gesetze aufeinander beziehen. (Seite auf Deutsch)</a>"
+    legal_1: "Unsere derzeitige Datenschutz-Vereinbarung"
+    legal_2: "Gesetze zu den Aufgewahrungsfristen (Seite auf Deutsch)"
     this_gets_deleted_main: "Folgende Informationen werden von dir gelöscht und können nicht wiederhergestellt werden:"
-    this_gets_deleted_stores: "<ul><li>Betriebe denen du beigetreten warst.</ul></li>"
-    this_gets_deleted_quiz: "<ul><li>Dein foodsaver-Quiz wird entfernt.</ul></li>"
-    this_gets_deleted_verify: "<ul><li>Deine Verifzierung wird entfernt.</ul></li>"
-    this_gets_deleted_friendlist: "<ul><li>Deine Freundesliste wird entfernt.</ul></li>"
-    this_gets_deleted_trustbananas: "<ul><li>Bananen, die du vergeben hast, werden entfernt.</ul></li>"
+    this_gets_deleted_stores: "Betriebe denen du beigetreten warst."
+    this_gets_deleted_quiz: "Alle deine Quizze werden entfernt."
+    this_gets_deleted_verify: "Deine Verifizierung wird entfernt."
+    this_gets_deleted_friendlist: "Deine Freundesliste wird entfernt."
+    this_gets_deleted_trustbananas: "Bananen, die du vergeben hast, werden entfernt."
     this_doesnt_get_deleted: "Folgende Informationen sind nicht mehr im aktiven System verfügbar, werden aber seperat archiviert auf Grund von Artikel 17, Abs. 3 DSGVO:"
-    this_doesnt_get_deleted_name: "<ul><li>Dein Name</ul></li>"
-    this_doesnt_get_deleted_address: "<ul><li>Deine Adresse</ul></li>"
-    this_doesnt_get_deleted_history: "<ul><li>Historie deiner Verifizierung</ul></li>"
+    this_doesnt_get_deleted_name: "Dein Name"
+    this_doesnt_get_deleted_address: "Deine Adresse"
+    this_doesnt_get_deleted_history: "Historie deiner Verifizierung"
 
   actions:
     safe: "Einstellungen übernehmen"
@@ -878,7 +877,7 @@ storeview:
 
 store:
   bread: "Alle Betriebe" #also in MapView
-  actions: "Optionen"
+  requests: "Offene Anfragen ({count})"
   chat:
     team: "Nachricht ans Team"
     jumper: "Nachricht an Springer"
@@ -894,8 +893,14 @@ store:
   tooltip_managing: "Du bist verantwortlich für diesen Betrieb"
   tooltip_jumping: "Du bist Springer für diesen Betrieb"
   managing: "Betriebsverantwortung"
+  team_container: "Team"
   jumping: "Springer"
   member: "Mitglied"
+  active: "Aktive"
+  one_active: "Aktiver"
+  of_that: "davon"
+  unverified_member: "unverifizierter"
+  unverified_members: "unverifizierte"
   isAppliedForTeam: "Anfrage"
   allStoresOfRegion: "Alle Betriebe aus dem Bezirk"
   ownStores: "Eigene Betriebe"
@@ -935,8 +940,11 @@ store:
   regionPickupRulesInactive: "Die zusätzlichen Bezirksregeln für Abholungen sind nicht aktiv"
   regionPickupRuleLong: "Innerhalb von {regionPickupRuleTimespan} Tagen dürfen nicht mehr als insgesamt {regionPickupRuleLimit} Abholungen unter Berücksichtigung aller Betriebe mit Bezirksregeln durchgeführt werden. Pro Tag darf höchstens insgesamt {regionPickupRuleLimitDay}-mal bei diesen Betrieben abgeholt werden. {regionPickupRuleInactive} Stunden vor der Abholung wird diese Regel nicht berücksichtigt."
   sm:
+    buttonManagementToggle: "BV-Modus"
     managementToggleOn: "Ansicht für Betriebsverantwortliche aktivieren"
     managementToggleOff: "Zurück zur Standard-Ansicht"
+    toogleIsReducedStateOpen: "Liste aufklappen"
+    toogleIsReducedStateClosed: "Liste zuklappen"
     managementEffect: "Sortierung nach letztem Abholdatum:"
     managementActions: "Aktionen für Betriebsverantwortliche"
     byLastPickup: "Nach letzter Abholung sortieren"
@@ -944,7 +952,11 @@ store:
     pickupAsc: "Neueste zuletzt"
     pickupReset: "Standard-Sortierung"
     filter: "Zeige nur an:"
+    filterAll: "Alle"
+    filterActive: "Aktive"
     filterUnverified: "Unverifizierte"
+    filterSleeping: "Schlafmütze"
+    filterManage: "BV-Quiz oder höher"
     filterJumper: "Springer"
     filterQuizSM: "Quiz für Betriebsverantwortliche bestanden"
     removeFromTeam: "Aus dem Team entfernen"
@@ -952,6 +964,7 @@ store:
     makeJumper: "Auf die Springerliste"
     makeRegularTeamMember: "In das Team aufnehmen"
     promoteToManager: "Verantwortlich machen"
+    promoteToManagerNotPossible: "Die Person kann nicht verantwortlich gemacht werden, da es schon drei Betriebsverantwortliche gibt oder die Person noch nicht das Quiz bestanden hat."
     demoteAsManager: "Als Betriebsverantwortliche*n entfernen"
     reallyDemote: "Möchtest du wirklich {name} die Verantwortung für diesen Betrieb entziehen?"
     reloadRequired: "Zum Aktualisieren der Team-Infos:"
@@ -965,17 +978,26 @@ store:
     no-duplicate: 'Es existiert bereits eine Anfrage.'
     title: "Anfragen für {storeTitle}"
     verified: "Nutzer*in ist verifiziert"
+    unverified: "Nutzer*in ist nicht verifiziert"
     to-team: "Aufnehmen"
     to-jumper: "Springerliste"
     to-nowhere: "Ablehnen"
+  info_container: "Informationen"
 #
 # Store and StoreUser
 # --
-  willgetcontacted: "Du bist momentan auf der Springerliste. Sobald Hilfe benötigt wird, wirst Du kontaktiert."
+  willgetcontacted: "Du bist momentan auf der Springerliste. Daher kannst du keine Telefonnummern von Teammitgliedern, keine Pinnwand-Einträge, keinen Team-Chat und keine Slots sehen. Du hast die Möglichkeit, den Springer-Chat zu schreiben."
+  not_verified: "Du bist unverifiziert. Daher kannst du keine keine Slots und keine Telefonnummern von Teammitgliedern sehen."
   team:
     isfull: "Team ist voll"
+    search_input: "Suche nach Name / Telefonnr."
+    search_reset: "Suche zurücksetzen"
+    no_record: "Es wurde kein Eintrag gefunden."
   filter: "Filtern nach …"
-  enterdate: "Abholtermin eintragen"
+  enter_date: "Einzelnen Abholtermin eintragen"
+  enter_date_description: "Nachdem du Datum, Uhrzeit und Abholendenzahl ausgewählt hast, kannst du einmalig für diesen Termin Slots einstellen. Solltest du regelmäßige (wöchentlich automatisch wiederkehrende) Slots erstellen wollen, nutze bitte das Menü 'Betriebsinformationen ansehen'."
+  delete_date: "Einzelnen Abholtermin löschen"
+  delete_date_description: "Solltest du regelmäßige (wöchentlich automatisch wiederkehrende) Slots in deinem Betrieb nutzen und verhindern wollen, dass ein bestimmter Termin (z.B. Feiertag) erzeugt wird, kannst du durch Angabe von Datum und Uhrzeit durch diese Funktion dafür sorgen. Solltest du bereits sichtbare Slots löschen wollen, ist dies auch direkt per Klick auf den Slot möglich, sofern kein:e Foodsaver:in eingetragen ist."
   enternumber: "Du musst noch die Anzahl der Abholer*innen auswählen."
   leaveinfo: "Hier kannst Du einige Infos für die Foodsaver angeben, die sich für das Team bewerben möchten."
   maxchar: "(max. 180 Zeichen)"
@@ -1269,7 +1291,6 @@ chat:
 
 wall:
   name: "Pinnwand"
-  message_placeholder: "Nachricht schreiben…"
   see-more: "Alle Beiträge anzeigen"
   delete: "Eintrag löschen"
   confirm-deletion: "Soll der folgende Pinnwand-Eintrag von {name} wirklich entfernt werden?"
@@ -1788,12 +1809,17 @@ settings:
     tooltip: "{name} nimmt sich gerade eine Auszeit und ist im Schlafmützen-Modus"
   email: "E-Mail-Adresse ändern"
   changemail:
+    explanation: "Hier kannst du die E-Mail-Adresse ändern, mit der du dich registriert hast. Nach dem Absenden bekommst du eine E-Mail an deine neue Adresse gesendet, in der sich ein Link befindet, über den du deine neue Adresse bestätigen kannst."
+    explanation_password: "Bestätige den Änderungswunsch mit deinem aktuellen Passwort"
+    input_label_email: "Gib hier deine neue E-Mail-Adresse ein"
+    input_label_email_confirm: "Bitte bestätige hier deine neue E-Mail-Adresse"
+    input_label_password: "Bitte gib zur Bestätigung dein Passwort ein"
+    confirm_email_required: "Die E-Mail-Adressen stimmen nicht überein"
     question: "Sollen wir deine Emailadresse wirklich zu dieser ändern:"
-    passcheck: "Bestätige die Änderung bitte mit deinem Passwort"
-    passfail: "Das Passwort stimmt nicht, vertippt?"
     invalid: "Mit der eingegebenen E-Mail-Adresse stimmt etwas nicht."
     domain: "Bitte verwende eine andere E-Mail-Adresse, damit du dein Passwort jederzeit wiederherstellen kannst."
-    occupied: "Die E-Mail-Adresse konnte nicht geändert werden, irgendwer benutzt sie schon."
+    occupied: "Die E-Mail-Adresse konnte nicht geändert werden, da sie bereits verwendet wird."
+    wrong_password: "Das Password stimmt nicht."
     sent: "Gehe jetzt zu deinem <strong>neuen</strong> E-Mail-Postfach, um die Adresse zu bestätigen."
     done: "Deine E-Mail-Adresse wurde geändert."
   saved: "Änderungen wurden gespeichert."
@@ -2363,6 +2389,7 @@ footer:
     denns: Denn's Biomarkt
 
 releases:
+  "2023-08": "Release \"Jackfrucht\" 🍈 (August 2023)"
   "2022-12": "Release \"Icecream\" 🍨 (Dezember 2022)"
   "2022-05": "Release \"Heidelbeere\" 🍇 (Mai 2022)"
   "2022-01": "Release \"Grapefruit\" 🍋 (Januar 2022)"

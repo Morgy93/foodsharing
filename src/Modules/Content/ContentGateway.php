@@ -41,9 +41,12 @@ class ContentGateway extends BaseGateway
         return $this->db->fetchAllByCriteria('fs_content', ['id', 'title', 'body'], ['id' => $ids]);
     }
 
-    public function list($filter): array
+    /**
+     * @param int[] $filter a list of content ids to restrict the results to, or null to list all pages
+     */
+    public function list(array $filter = null): array
     {
-        return $this->db->fetchAllByCriteria('fs_content', ['id', 'name'], $filter);
+        return $this->db->fetchAllByCriteria('fs_content', ['id', 'name'], $filter ? ['id' => $filter] : []);
     }
 
     public function getDetail($id): array

@@ -7,7 +7,7 @@
     <div v-if="member.fetchCount && member.lastPickup">
       {{ $i18n('store.lastPickup', { date: $dateFormatter.dateTime(member.lastPickup) }) }}
     </div>
-    <div v-else-if="mayEditStore">
+    <div v-else-if="(isCoordinator || mayEditStore)">
       {{ $i18n('store.noPickup') }}
     </div>
     <div v-if="member.isJumper">
@@ -27,6 +27,7 @@ export default {
   props: {
     classes: { type: String, default: 'mh-50px' },
     mayEditStore: { type: Boolean, required: true },
+    isCoordinator: { type: Boolean, required: true },
     member: { type: Object, required: true },
   },
 }

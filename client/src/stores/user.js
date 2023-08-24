@@ -29,6 +29,9 @@ export const getters = {
   isSleeping () {
     return store.details?.isSleeping
   },
+  isVerified () {
+    return store.details?.isVerified
+  },
   isFoodsaver () {
     return store.user?.isFoodsaver
   },

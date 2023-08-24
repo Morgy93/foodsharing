@@ -11,15 +11,7 @@
     @ok="submit"
   >
     <template #modal-title>
-      {{ $i18n('terminology.store') }}
-      <b-form-checkbox
-        v-if="hasEditPermission"
-        id="editMode"
-        v-model="editMode"
-        switch
-      >
-        {{ $i18n('storeedit.bread') }}
-      </b-form-checkbox>
+      {{ store.name }}
     </template>
     <b-card no-body>
       <b-tabs
@@ -51,7 +43,6 @@
               <b-form-textarea
                 id="publicInfo"
                 v-model="store.publicInfo"
-                :placeholder="$i18n('wall.message_placeholder')"
                 :state="publicInfoState"
                 rows="5"
                 max-rows="10"
@@ -292,9 +283,8 @@
               <b-form-textarea
                 id="description"
                 v-model="store.description"
-                :placeholder="$i18n('wall.message_placeholder')"
                 rows="5"
-                max-rows="100"
+                max-rows="18"
                 :disabled="!editMode"
               />
               <div
@@ -455,17 +445,17 @@
 
 <script>
 // Stores
-import { getters, mutations } from '@/stores/stores'
-import { getters as pickupGetters, mutations as pickupMutations } from '@/stores/pickups'
+import StoreData from '@/stores/stores'
+import PickupsData from '@/stores/pickups'
 
 // Others
 import { pulseError, showLoader, hideLoader, pulseSuccess } from '@/script'
-import { getStoreInformation, updateStore } from '@/api/stores'
+import { updateStore } from '@/api/stores'
 import { editRegularPickup } from '@/api/pickups'
 
 import LeafletLocationSearch from '@/components/map/LeafletLocationSearch.vue'
 import RegionTreeVForm from '@/components/regiontree/RegionTreeVForm.vue'
-import RegularPickup from './RegularPickup.vue'
+import RegularPickup from '@/components/Stores/RegularPickup.vue'
 
 import MediaQueryMixin from '@/mixins/MediaQueryMixin'
 import AutoResizeTextareaMixin from '@/mixins/AutoResizeTextareaMixin'
@@ -479,10 +469,15 @@ export default {
   },
   mixins: [MediaQueryMixin, AutoResizeTextareaMixin],
   props: {
-    storeId: { type: Number, required: true },
+    isJumper: { type: Boolean, default: null },
+    storeId: { type: Number, default: null },
+    mayEditStore: { type: Boolean, default: null },
+    isCoordinator: { type: Boolean, default: null },
+    isVerified: { type: Boolean, default: null },
   },
   data () {
     return {
+      editMode: false,
       editPickups: {},
       previousEditPickups: null,
       selectedWeekDay: null,
@@ -493,47 +488,12 @@ export default {
         { value: 1, text: this.$i18n('menu.entry.helpwanted') },
         { value: 2, text: this.$i18n('menu.entry.helpneeded') },
       ],
-      editMode: null,
-      store: {
-        name: null,
-        publicInfo: null,
-        description: null,
-        contact: {
-          name: null,
-          phone: null,
-          fax: null,
-          email: null,
-        },
-        chainId: null,
-        categoryId: null,
-        address: {
-          street: null,
-          city: null,
-          zipCode: null,
-        },
-        location: {
-          lon: 0.0,
-          lat: 0.0,
-        },
-        region: null,
-        cooperationStatus: null,
-        cooperationStart: null,
-        weight: null,
-        publicTime: null,
-        calendarInterval: null,
-        options: {
-          useRegionPickupRule: null,
-        },
-        groceries: [],
-        effort: null,
-        showsSticker: null,
-        publicity: null,
-      },
+      store: {},
     }
   },
   computed: {
-    hasEditPermission () {
-      return this.store.contact !== null
+    storeInformation () {
+      return StoreData.getters.getStoreInformation()
     },
     publicInfoState () {
       if (!this.editMode) return null
@@ -548,42 +508,42 @@ export default {
       },
     },
     maxCountPickupSlot () {
-      return getters.getMaxCountPickupSlot()
+      return StoreData.getters.getMaxCountPickupSlot()
     },
     storeChains () {
-      return getters.getStoreChains()?.map(item => ({ value: item.id, text: item.name }))
+      return StoreData.getters.getStoreChains()?.map(item => ({ value: item.id, text: item.name }))
     },
     storeCooperationStatusTypes () {
-      return getters.getStoreCooperationStatus()?.map(item => ({ value: item.id, text: item.name }))
+      return StoreData.getters.getStoreCooperationStatus()?.map(item => ({ value: item.id, text: item.name }))
     },
     weightTypes () {
-      return getters.getStoreWeightTypes()?.map(item => ({ value: item.id, text: item.name }))
+      return StoreData.getters.getStoreWeightTypes()?.map(item => ({ value: item.id, text: item.name }))
     },
     publicTimes () {
-      return getters.getPublicTimes()?.map(item => ({ value: item.id, text: item.name }))
+      return StoreData.getters.getPublicTimes()?.map(item => ({ value: item.id, text: item.name }))
     },
     categoryTypes () {
-      return getters.getStoreCategoryTypes()?.map(item => ({ value: item.id, text: item.name }))
+      return StoreData.getters.getStoreCategoryTypes()?.map(item => ({ value: item.id, text: item.name }))
     },
     convinceStatusTypes () {
-      return getters.getStoreConvinceStatusTypes()?.map(item => ({ value: item.id, text: item.name }))
+      return StoreData.getters.getStoreConvinceStatusTypes()?.map(item => ({ value: item.id, text: item.name }))
     },
     foodSearchCriteria () {
       return this.foodSearchCriteriaField.trim().toLowerCase()
     },
     storeFoodIds () {
-      const selectedValues = getters.getGrocerieTypes().filter(opt => this.storeFoodNames.indexOf(opt.name) !== -1).filter(opt => opt.name)
+      const selectedValues = StoreData.getters.getGrocerieTypes().filter(opt => this.storeFoodNames.indexOf(opt.name) !== -1).filter(opt => opt.name)
       return [...new Set(selectedValues.map(opt => opt.id))]
     },
     availableFoodOptions () {
       const foodSearchCriteria = this.foodSearchCriteria
       // Filter out already selected options
-      const options = getters.getGrocerieTypes().filter(opt => this.storeFoodNames.indexOf(opt.name) === -1)
+      const options = StoreData.getters.getGrocerieTypes().filter(opt => this.storeFoodNames.indexOf(opt.name) === -1)
       if (foodSearchCriteria) {
-        // Show only opitions that match foodSearchCriteria
+        // Show only options that match foodSearchCriteria
         return options.filter(opt => opt.name.toLowerCase().indexOf(foodSearchCriteria) > -1).map(opt => opt.name)
       }
-      // Show all options availab
+      // Show all available options
       return [...new Set(options.map(opt => opt.name))]
     },
     foodSearchCriteriaFieldDesc () {
@@ -595,13 +555,15 @@ export default {
   },
   async created () {
     // Load data
-    await mutations.fetch()
-    await pickupMutations.fetchRegularPickup(this.storeId)
-    this.editPickups = this.regularPickup()
+    this.store = this.storeInformation
+    if (!this.isJumper && this.isVerified) {
+      await PickupsData.mutations.fetchRegularPickup(this.storeId)
+      this.editPickups = this.regularPickup()
+    }
   },
   methods: {
     regularPickup () {
-      return pickupGetters.getRegularPickup()
+      return PickupsData.getters.getRegularPickup()
     },
     dispatchResize () {
       window.dispatchEvent(new Event('resize'))
@@ -625,6 +587,7 @@ export default {
         await updateStore(store)
         if (this.isUpdatedRegularPickup()) {
           await editRegularPickup(this.storeId, this.editPickups)
+          await PickupsData.mutations.loadPickups(this.storeId)
         }
         pulseSuccess(this.$i18n('storeedit.edit_success'))
         this.$bvModal.hide('storeInformationModal')
@@ -637,8 +600,8 @@ export default {
       }
     },
     async showModal () {
+      this.editMode = (this.mayEditStore || this.isCoordinator)
       this.previousEditPickups = structuredClone(this.editPickups)
-      this.store = await getStoreInformation(this.storeId)
       if (this.store.categoryId === null) {
         this.store.categoryId = 0
       }
@@ -648,17 +611,16 @@ export default {
       }
 
       if (this.store.groceries !== null) {
-        const selectedValues = getters.getGrocerieTypes().filter(opt => this.store.groceries.indexOf(opt.id) !== -1).map(opt => opt.name)
+        const selectedValues = StoreData.getters.getGrocerieTypes().filter(opt => this.store.groceries.indexOf(opt.id) !== -1).map(opt => opt.name)
         this.storeFoodNames = [...new Set(selectedValues)]
       } else {
         this.storeFoodNames = []
       }
     },
     async resetModal () {
-      this.editMode = false
-      this.store = await getStoreInformation(this.storeId)
+      await StoreData.mutations.loadStoreInformation(this.storeId)
       if (this.store.groceries !== null) {
-        const selectedValues = getters.getGrocerieTypes().filter(opt => this.store.groceries.indexOf(opt.id) !== -1).map(opt => opt.name)
+        const selectedValues = StoreData.getters.getGrocerieTypes().filter(opt => this.store.groceries.indexOf(opt.id) !== -1).map(opt => opt.name)
         this.storeFoodNames = [...new Set(selectedValues)]
       } else {
         this.storeFoodNames = []

@@ -77,10 +77,16 @@ final class ContentPermissions
             || $this->session->isAdminFor(RegionIDs::PR_START_PAGE);
     }
 
-    public function getEditableContentIds(): array
+    /**
+     * Returns a list of content IDs that the user may edit, or null indicating that the user may edit all content
+     * pages.
+     *
+     * @return int[]|null
+     */
+    public function getEditableContentIds(): ?array
     {
         if ($this->session->mayRole(Role::ORGA)) {
-            return ['id' => []];
+            return null;
         }
 
         $regionContentMap = [
@@ -98,7 +104,7 @@ final class ContentPermissions
             }
         }
 
-        return ['id' => $ids];
+        return $ids;
     }
 
     public function mayEditContentId(int $id): bool
