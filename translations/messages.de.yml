@@ -2806,6 +2806,10 @@ chain:
           zip: Plz.
           city: Stadt
           country: Land
+        allowed_country:
+          germany: 'Deutschland'
+          austria: 'Österreich'
+          switzerland: 'Schweiz'
       status:
         label: Status
       thread:

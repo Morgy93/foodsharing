@@ -54,14 +54,10 @@
           maxlength="50"
           trim
         />
-        <b-form-input
+        <b-form-select
           id="country-input"
           v-model="input.headquartersCountry"
-          :placeholder="$i18n('chain.inputmodal.inputs.headquarters.placeholder.country')"
-          :formatter="singleSpacing"
-          :state="!!input.headquartersCountry"
-          maxlength="50"
-          trim
+          :options="regions"
         />
       </b-form-group>
 
@@ -219,6 +215,11 @@ export default {
       input: {},
       chainEditing: -1, // The id of the chain to be edited or -1 if a new chain should be created instead
       finishHandle: (chainId, data) => { return true },
+      regions: {
+        STORE_CHAIN_GROUP: this.$i18n('chain.inputmodal.inputs.headquarters.allowed_country.germany'),
+        STORE_CHAIN_GROUP_AUSTRIA: this.$i18n('chain.inputmodal.inputs.headquarters.allowed_country.austria'),
+        STORE_CHAIN_GROUP_SWITZERLAND: this.$i18n('chain.inputmodal.inputs.headquarters.allowed_country.switzerland'),
+      },
     }
   },
   computed: {
