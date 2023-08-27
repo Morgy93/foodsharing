@@ -1,12 +1,6 @@
 import Vue from 'vue'
 import { listChains, listChainStores, createChain, editChain } from '@/api/chains'
 
-export const RegionIDs = {
-  STORE_CHAIN_GROUP: 332,
-  STORE_CHAIN_GROUP_AUSTRIA: 858,
-  STORE_CHAIN_GROUP_SWITZERLAND: 1004,
-}
-
 export const store = Vue.observable({
   chains: null,
   stores: null,
