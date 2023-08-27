@@ -91,6 +91,7 @@
       </b-form-group>
 
       <b-form-group
+        v-if="input.headquartersCountry != ''"
         :label="$i18n('chain.inputmodal.inputs.thread.label')"
         label-for="thread-input"
         label-cols-sm="2"
@@ -102,6 +103,7 @@
           id="new-foodsaver-search"
           v-model="input.forumThread"
           class="m-1"
+          :country-id="input.headquartersCountry"
           :placeholder="$i18n('chain.inputmodal.inputs.thread.placeholder')"
         />
       </b-form-group>
@@ -215,11 +217,23 @@ export default {
       input: {},
       chainEditing: -1, // The id of the chain to be edited or -1 if a new chain should be created instead
       finishHandle: (chainId, data) => { return true },
-      regions: {
-        STORE_CHAIN_GROUP: this.$i18n('chain.inputmodal.inputs.headquarters.allowed_country.germany'),
-        STORE_CHAIN_GROUP_AUSTRIA: this.$i18n('chain.inputmodal.inputs.headquarters.allowed_country.austria'),
-        STORE_CHAIN_GROUP_SWITZERLAND: this.$i18n('chain.inputmodal.inputs.headquarters.allowed_country.switzerland'),
-      },
+      regions: [
+        {
+          name: 'STORE_CHAIN_GROUP',
+          value: 332,
+          text: this.$i18n('chain.inputmodal.inputs.headquarters.allowed_country.germany'),
+        },
+        {
+          name: 'STORE_CHAIN_GROUP_AUSTRIA',
+          value: 858,
+          text: this.$i18n('chain.inputmodal.inputs.headquarters.allowed_country.austria'),
+        },
+        {
+          name: 'STORE_CHAIN_GROUP_SWITZERLAND',
+          value: 1004,
+          text: this.$i18n('chain.inputmodal.inputs.headquarters.allowed_country.switzerland'),
+        },
+      ],
     }
   },
   computed: {

@@ -46,6 +46,7 @@ export default {
     regionId: { type: Number, default: null },
     subforumId: { type: Number, default: 0 },
     value: { type: Number, default: 0 },
+    countryId: { type: Number, required: true },
   },
   data () {
     return {
@@ -89,7 +90,7 @@ export default {
         }
       } else if (query.length >= 3 || isNumber) {
         try {
-          matchingForums = await searchForum(this.regionId, this.subforumId, query)
+          matchingForums = await searchForum(this.countryId, this.subforumId, query)
           if (this.filter) {
             // let the external function filter by forum id
             const filteredIds = matchingForums.map(x => x.id).filter(this.filter)
