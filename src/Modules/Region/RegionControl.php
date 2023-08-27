@@ -166,7 +166,13 @@ final class RegionControl extends Control
             $menu['mailbox'] = ['name' => $regionOrGroupString, 'href' => '/?page=mailbox'];
         }
 
-        if ($regionId == RegionIDs::STORE_CHAIN_GROUP) {
+        $chainGroupIds = [
+            RegionIDs::STORE_CHAIN_GROUP,
+            RegionIDs::STORE_CHAIN_GROUP_AUSTRIA,
+            RegionIDs::STORE_CHAIN_GROUP_SWITZERLAND
+        ];
+
+        if (in_array($regionId, $chainGroupIds)) {
             $menu['chainList'] = ['name' => 'menu.entry.chainList', 'href' => '/?page=chain'];
         }
 
