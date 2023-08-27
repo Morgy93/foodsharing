@@ -82,7 +82,8 @@ export default {
       if (isNumber) {
         const thread = (await getThread(Number(query))).data
         if (this.countryId === thread.regionId) {
-          matchingForums.push({ id: thread.id, name: thread.title })
+          matchingForums.push({id: thread.id, name: thread.title})
+        }
       } else if (query.length >= 3 || isNumber) {
         try {
           matchingForums = await searchForum(this.countryId, this.subforumId, query)
