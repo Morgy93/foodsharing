@@ -520,7 +520,7 @@ final class RegionControl extends Control
         $viewdata['regionPickupRuleLimitDayNumber'] = intval(array_key_exists(RegionOptionType::REGION_PICKUP_RULE_LIMIT_DAY_NUMBER, $regionOptions) ? $regionOptions[RegionOptionType::REGION_PICKUP_RULE_LIMIT_DAY_NUMBER] : 0);
         $viewdata['regionPickupRuleInactiveHours'] = intval(array_key_exists(RegionOptionType::REGION_PICKUP_RULE_INACTIVE_HOURS, $regionOptions) ? $regionOptions[RegionOptionType::REGION_PICKUP_RULE_INACTIVE_HOURS] : 0);
         $viewdata['regionPickupRuleActiveStoreList'] = $this->storeGateway->listRegionStoresActivePickupRule($region['id']);
-
+        $viewdata['reportReasonOptions'] = intval(array_key_exists(RegionOptionType::REPORT_REASON_OPTIONS, $regionOptions) ? $regionOptions[RegionOptionType::REPORT_REASON_OPTIONS] : 0);
         $response->setContent($this->render('pages/Region/options.twig', $viewdata));
     }
 

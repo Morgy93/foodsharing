@@ -134,6 +134,7 @@
       :is-reporter-id-arbitration-admin="isReporterIdArbitrationAdmin"
       :is-report-button-enabled="isReportButtonEnabled"
       :reporter-has-report-group="reporterHasReportGroup"
+      :reason-option-settings="reasonOptionSettings"
       :mailbox-name="mailboxNameReportRequest"
     />
     <ProfileHistoryModal
@@ -181,6 +182,7 @@ export default {
     isReportButtonEnabled: { type: Boolean, required: true },
     reporterHasReportGroup: { type: Boolean, required: true },
     mailboxNameReportRequest: { type: String, required: true },
+    reasonOptionSettings: { type: Number, required: true, default: 1 },
   },
   data () {
     return {

@@ -78,6 +78,13 @@ final class RegionPermissions
         if ($this->session->mayRole(Role::ORGA)) {
             return true;
         }
+        if ($this->groupFunctionGateway->existRegionFunctionGroup($regionId, WorkgroupFunction::REPORT)) {
+            if ($this->groupFunctionGateway->isRegionFunctionGroupAdmin($regionId, WorkgroupFunction::REPORT, $this->session->id())) {
+                return true;
+            }
+
+            return false;
+        }
 
         return $this->session->isAmbassadorForRegion([$regionId], false, false);
     }

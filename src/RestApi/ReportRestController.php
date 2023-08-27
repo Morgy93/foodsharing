@@ -126,10 +126,11 @@ class ReportRestController extends AbstractFOSRestController
         if (!$this->session->mayRole()) {
             throw new UnauthorizedHttpException('', self::NOT_LOGGED_IN);
         }
+
         $this->reportGateway->addBetriebReport(
             $paramFetcher->get('reportedId'),
             $paramFetcher->get('reporterId'),
-            $paramFetcher->get('reasonId'),
+            1,
             $paramFetcher->get('reason'),
             $paramFetcher->get('message'),
             $paramFetcher->get('storeId')

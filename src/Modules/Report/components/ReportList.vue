@@ -72,7 +72,15 @@
                 {{ row.item.rp_name }} {{ row.item.rp_nachname }}
               </a> ({{ row.item.rp_id }})
             </p>
-            <p><strong>{{ $i18n('reports.reason') }}</strong>: {{ row.item.tvalue }}</p>
+            <p><strong>{{ $i18n('reports.reason') }}</strong>:</p>
+            <ul>
+              <li
+                v-for="reason in row.item.tvalue.split(', ')"
+                :key="reason"
+              >
+                {{ reason }}
+              </li>
+            </ul>
             <p><strong>{{ $i18n('reports.message') }}</strong>: {{ row.item.msg }}</p>
           </div>
         </template>

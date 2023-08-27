@@ -14,6 +14,17 @@
         >
           {{ $i18n('regionOptions.enableReportButton') }}
         </b-form-checkbox>
+        <b-form-group label="Meldeoptionen auswählen">
+          <b-form-radio-group
+            id="reportReasonRadioOptions"
+            v-model="selectedReportReasonOptions"
+            :options="reportReasonOptionsRadio"
+            name="radio-options-slots"
+            stacked
+            :disabled="!reportButtonEnabled || !maySetReport"
+          />
+        </b-form-group>
+
         <b-form-checkbox
           id="enableMediationButton"
           v-model="mediationButtonEnabled"
@@ -143,7 +154,7 @@ export default {
       type: Array,
       default: () => [],
     },
-
+    reportReasonOptions: { type: Number, required: true, default: 1 },
   },
   data () {
     return {
@@ -175,6 +186,11 @@ export default {
         { text: '60', value: 60 },
         { text: '72', value: 72 },
       ],
+      selectedReportReasonOptions: this.reportReasonOptions,
+      reportReasonOptionsRadio: [
+        { text: 'Vereinfachte Meldungsgründe', value: '1' },
+        { text: 'Erweiterte Meldungsgründe: Verhaltensregeln - B) Verhalten bei Abholungen', value: '2' },
+      ],
     }
   },
   methods: {
@@ -187,7 +203,7 @@ export default {
     async trySendOptions () {
       showLoader()
       try {
-        await setRegionOptions(this.regionId, this.reportButtonEnabled, this.mediationButtonEnabled, this.regionPickupRuleActive, this.pickupRuleTimespan, this.pickupRuleLimit, this.pickupRuleLimitDay, this.pickupRuleInactive)
+        await setRegionOptions(this.regionId, this.reportButtonEnabled, this.mediationButtonEnabled, this.regionPickupRuleActive, this.pickupRuleTimespan, this.pickupRuleLimit, this.pickupRuleLimitDay, this.pickupRuleInactive, this.selectedReportReasonOptions)
         pulseInfo(i18n('regionOptions.success'))
       } catch (err) {
         console.error(err)

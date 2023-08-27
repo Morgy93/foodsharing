@@ -77,11 +77,12 @@
         <b-alert variant="info" show>
           <div>{{ $i18n('profile.report.info') }}</div>
         </b-alert>
+        <div>{{ $i18n('profile.report.kindofreport') }}</div>
         <b-form-select
           v-model="reportReason"
           :options="reportReasonOptions"
+          name="reportReason"
           class="mb-2"
-          align-v="stretch"
         />
         <b-form-select
           v-model="storeList"
@@ -140,33 +141,71 @@ export default {
     isReportButtonEnabled: { type: Boolean, required: true },
     reporterHasReportGroup: { type: Boolean, required: true },
     mailboxName: { type: String, required: true },
+    reasonOptionSettings: { type: Number, required: false, default: 1 },
+    reasonOptionSettingsOther: { type: Boolean, required: false, default: false },
   },
   data () {
-    return {
-      reportText: '',
-      reportReason: null,
-      storeList: null,
-      reportReasonOptions: [
-        { value: null, text: this.$i18n('profile.report.kindofreport') },
+    const reportReasonOptionsValues = []
+    if (this.reasonOptionSettings === 2) {
+      reportReasonOptionsValues.push(
+        { value: '1', text: this.$i18n('profile.report.report_b1_1') },
+        { value: '2', text: this.$i18n('profile.report.report_b1_2') },
+        { value: '20', text: this.$i18n('profile.report.report_b1_3') },
+        { value: '21', text: this.$i18n('profile.report.report_b1_4') },
+        { value: '22', text: this.$i18n('profile.report.report_b1_5') },
+        { value: '23', text: this.$i18n('profile.report.report_b2') },
+        { value: '24', text: this.$i18n('profile.report.report_b3_1') },
+        { value: '25', text: this.$i18n('profile.report.report_b3_2') },
+        { value: '26', text: this.$i18n('profile.report.report_b4_1') },
+        { value: '27', text: this.$i18n('profile.report.report_b4_2') },
+        { value: '28', text: this.$i18n('profile.report.report_b5') },
+        { value: '29', text: this.$i18n('profile.report.report_b6_1') },
+        { value: '30', text: this.$i18n('profile.report.report_b6_2') },
+        { value: '31', text: this.$i18n('profile.report.report_b7') },
+        { value: '32', text: this.$i18n('profile.report.report_b8') },
+        { value: '33', text: this.$i18n('profile.report.report_b9') },
+        { value: '34', text: this.$i18n('profile.report.report_b10') },
+        { value: '35', text: this.$i18n('profile.report.report_b11') },
+        { value: '36', text: this.$i18n('profile.report.report_b12') },
+        { value: '37', text: this.$i18n('profile.report.report_b13') },
+      )
+    } else {
+      reportReasonOptionsValues.push(
         { value: '1', text: this.$i18n('profile.report.late') },
         { value: '2', text: this.$i18n('profile.report.noshow') },
         { value: '10', text: this.$i18n('profile.report.cancellation') },
         { value: '15', text: this.$i18n('profile.report.sells') },
-      ],
+      )
+    }
+    if (this.reasonOptionSettingsOther) {
+      reportReasonOptionsValues.push(
+        { value: '99', text: this.$i18n('profile.report.other') },
+      )
+    }
+    return {
+      reportText: '',
+      storeList: null,
+      reportReasonOptions: reportReasonOptionsValues,
+      reportReason: [],
     }
   },
   computed: {
     sendButtonDisabled () {
-      return this.reportText.length <= 0 || this.reportReason === null || this.storeList === null
+      return this.reportText.length <= 0 || this.reportReason === null
     },
   },
   methods: {
     async trySendReport () {
-      const reportReasonText = this.reportReasonOptions.find(reportReasonOptions => reportReasonOptions.value === this.reportReason)
       const message = this.reportText.trim()
       if (!message) return
       try {
-        await addReport(this.reportedId, this.reporterId, this.reportReason, reportReasonText.text, message, this.storeList)
+        const selectedReasons = this.reportReason.map(optionValue => {
+          const selectedOption = this.reportReasonOptions.find(option => option.value === optionValue)
+          return selectedOption ? selectedOption.text : ''
+        })
+        const sortedSelectedReasons = selectedReasons.sort() // Sortiere das Array
+        const selectedReasonsText = sortedSelectedReasons.join(', ')
+        await addReport(this.reportedId, this.reporterId, 1, selectedReasonsText, message, this.storeList)
         pulseInfo(i18n('profile.report.sent'))
         this.reportReason = null
         this.storeList = null
@@ -186,6 +225,6 @@ export default {
 <style lang="scss" scoped>
 #mediation_request {
   min-width: 50vw;
-  max-width: 550px;
+  max-width: 250px;
 }
 </style>
