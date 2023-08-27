@@ -912,11 +912,11 @@ class StoreTransactions
         $storeName = $this->storeGateway->getStoreName($storeId);
 
         $bellData = Bell::create('store_new_request_title', 'store_new_request', 'fas fa-user-plus', [
-            'href' => '/store/' . $storeId,
+            'href' => '/store/' . $storeId . '?showTeamRequests',
         ], [
             'user' => $this->session->user('name'),
             'name' => $storeName,
-        ], 'store-request-' . $storeId);
+        ], BellType::createIdentifier(BellType::NEW_STORE_REQUEST, $storeId));
 
         $this->bellGateway->addBell($bellRecipients, $bellData);
     }

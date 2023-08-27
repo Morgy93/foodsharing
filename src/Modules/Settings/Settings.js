@@ -4,7 +4,7 @@ import '@/globals'
 import './Settings.css'
 import 'jquery-jcrop'
 import 'jquery-dynatree'
-import { GET } from '@/script'
+import { GET, collapse_wrapper } from '@/script'
 import { expose } from '@/utils'
 import { confirmDeleteUser } from '../Foodsaver/Foodsaver'
 import { vueApply, vueRegister } from '@/vue'
@@ -18,6 +18,9 @@ import Notifications from './components/Notifications.vue'
 import SleepingMode from './components/SleepingMode.vue'
 import ChangeEmailForm from './components/ChangeEmailForm'
 import DeleteAccount from './components/DeleteAccount.vue'
+
+// collapse_wrapper is used by v_input_wrapper if it has the parameter 'collapse'
+expose({ collapse_wrapper })
 
 switch (GET('sub')) {
   case 'deleteaccount':

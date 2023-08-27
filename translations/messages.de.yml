@@ -1444,8 +1444,12 @@ reports:
 bell:
   no_bells: "Du hast derzeit keine Benachrichtigungen."
   forum_answer_title: "{forum}" # this old key is kept for compatibility with bells generated before #869
-  forum_reply_title: "{forum}: {title}"
-  forum_answer: "{user} hat dir geantwortet"
+  forum_reply_title: "{forum}: {title}" # this old key is kept for compatibility with bells generated before !TODO
+  forum_answer: "{user} hat dir geantwortet" # this old key is kept for compatibility with bells generated before !TODO
+  forum_post_title: "{title}"
+  forum_post:
+    one: "Neuer Beitrag von {user} im Forum {forum}"
+    many: "{count} neue Beiträge im Forum {forum}"
   blog_new_check_title: "Neuer Blogartikel"
   blog_new_check: "{title}"
   ft_update_title: "{name}"

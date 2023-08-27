@@ -72,6 +72,7 @@
 - Disable send button in NewThread.vue if body and title is empty !2810 @chriswalg
 - Update member list after adding a member !2811 @chriswalg
 - Fix missing thumbnails in store team list !2818 @chriswalg
+- Fix that the region chooser does not show lower regions when changing a higher region !2823 @alex.simm
 
 ## Refactoring
 - added poppins font in Styleguide !2564 @Niklas003
@@ -95,13 +96,13 @@
 - New vue component for blog posts !2676 !2687 @alex.simm
 - Changed forum post response to empty content #1499 !2638 @krauterisator
 - Refactor add pickup modal !2693 @chriswalg
-- Refactored store !2458 !2798 !2802 !2806 !2807 !2814 !2816 !2820 @chriswalg @alex.simm
+- Refactored store !2458 !2798 !2802 !2806 !2807 !2814 !2816 !2820 !2824 @chriswalg @alex.simm
 - Refactor add pickup modal !2693 !2784 @chriswalg
 - Refactor edit pickup rules to vue component and moved it to storeInformationModal !2686 !2731 @chriswalg 
 - Refactor own store list in vue !2668 !2683 @chriswalg
 - Refactored the list of group applications to vue, which not also shows profile pictures #343 !2696 @alex.simm
 - Refactor the list of food share points in a region to vue !2702 @alex.simm
-- Refactor notification settings page to vue and rest api !2700 !2778 @chriswalg
+- Refactor notification settings page to vue and rest api !2700 !2778 !2825 @chriswalg
 - Refactor setting sleeping mode to vue !2749 !2760 @chriswalg
 - Refactor user passport generation page #1617 !2660 !2758 @chriswalg
 - Replaced the form for changing the email address with a vue component !2753 @alex.simm
