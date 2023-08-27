@@ -225,7 +225,14 @@ final class PageHelper
             } else {
                 $group['isAdmin'] = $this->workGroupPermissions->mayEdit($group);
                 $group['hasSubgroups'] = $this->regionGateway->hasSubgroups($groupId);
-                if ($group['id'] == RegionIDs::STORE_CHAIN_GROUP) {
+
+                $chainGroupIds = [
+                    RegionIDs::STORE_CHAIN_GROUP,
+                    RegionIDs::STORE_CHAIN_GROUP_AUSTRIA,
+                    RegionIDs::STORE_CHAIN_GROUP_SWITZERLAND
+                ];
+
+                if (in_array($group['id'], $chainGroupIds)) {
                     $group['isChainGroup'] = true;
                 }
                 $workingGroups[] = $group;
