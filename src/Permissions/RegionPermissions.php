@@ -70,6 +70,14 @@ final class RegionPermissions
             return true;
         }
 
+        if ($this->groupFunctionGateway->existRegionFunctionGroup($regionId, WorkgroupFunction::FSMANAGEMENT)) {
+            if ($this->groupFunctionGateway->isRegionFunctionGroupAdmin($regionId, WorkgroupFunction::FSMANAGEMENT, $this->session->id())) {
+                return true;
+            }
+
+            return false;
+        }
+
         return $this->session->isAmbassadorForRegion([$regionId], false, false);
     }
 
