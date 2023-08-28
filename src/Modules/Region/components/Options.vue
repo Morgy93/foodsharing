@@ -161,7 +161,7 @@ export default {
       default: () => [],
     },
     reportReasonOptions: { type: Number, required: true, default: 1 },
-    isReportReasonOtherEnabled: { type: Boolean,  default: false },
+    isReportReasonOtherEnabled: { type: Boolean, default: false },
   },
   data () {
     return {
