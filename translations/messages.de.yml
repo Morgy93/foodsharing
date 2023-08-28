@@ -1574,7 +1574,9 @@ regionOptions:
   regionPickupLimitDayNumber: "Bitte gib die insgesamte maximale Anzahl von Abholungen für EINEN TAG an"
   regionPickupInactiveHours: "Bitte gib die Anzahl Stunden vor einer Abholung an, in denen die Regel nicht mehr gilt"
   regionPickupRuleActiveStoreList: "Liste der Betriebe im Bezirk, die für die ROSINEN Regel berücksichtigt werden. ACHTUNG: Alle Abholung der aufgelisteten Betriebe werden zusammengezählt und für die Regel berücksichtigt."
-
+  regionReportReasonSimple: "Vereinfachte Meldungsgründe"
+  regionReportReasonCategoryB: "Erweiterte Meldungsgründe: Verhaltensregeln - B) Verhalten bei Abholungen"
+  regionReportReasonOther: "Sonstiges als Meldungsgrund hinzufügen."
 regionPin:
   header_page: "Öffentliche Ortsgruppenbeschreibung für {bezirk}"
   desc: "Beschreibung"

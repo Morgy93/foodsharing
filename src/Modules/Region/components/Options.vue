@@ -24,7 +24,13 @@
             :disabled="!reportButtonEnabled || !maySetReport"
           />
         </b-form-group>
-
+        <b-form-checkbox
+          id="enableReportReasonOther"
+          v-model="reportReasonOtherEnabled"
+          :disabled="!reportButtonEnabled || !maySetReport"
+        >
+          {{ $i18n('regionOptions.regionReportReasonOther') }}
+        </b-form-checkbox>
         <b-form-checkbox
           id="enableMediationButton"
           v-model="mediationButtonEnabled"
@@ -155,6 +161,7 @@ export default {
       default: () => [],
     },
     reportReasonOptions: { type: Number, required: true, default: 1 },
+    isReportReasonOtherEnabled: { type: Boolean,  default: false },
   },
   data () {
     return {
@@ -188,9 +195,10 @@ export default {
       ],
       selectedReportReasonOptions: this.reportReasonOptions,
       reportReasonOptionsRadio: [
-        { text: 'Vereinfachte Meldungsgründe', value: '1' },
-        { text: 'Erweiterte Meldungsgründe: Verhaltensregeln - B) Verhalten bei Abholungen', value: '2' },
+        { text: this.$i18n('regionOptions.regionReportReasonSimple'), value: '1' },
+        { text: this.$i18n('regionOptions.regionReportReasonCategoryB'), value: '2' },
       ],
+      reportReasonOtherEnabled: this.isReportReasonOtherEnabled,
     }
   },
   methods: {
@@ -203,7 +211,7 @@ export default {
     async trySendOptions () {
       showLoader()
       try {
-        await setRegionOptions(this.regionId, this.reportButtonEnabled, this.mediationButtonEnabled, this.regionPickupRuleActive, this.pickupRuleTimespan, this.pickupRuleLimit, this.pickupRuleLimitDay, this.pickupRuleInactive, this.selectedReportReasonOptions)
+        await setRegionOptions(this.regionId, this.reportButtonEnabled, this.mediationButtonEnabled, this.regionPickupRuleActive, this.pickupRuleTimespan, this.pickupRuleLimit, this.pickupRuleLimitDay, this.pickupRuleInactive, this.selectedReportReasonOptions, this.reportReasonOtherEnabled)
         pulseInfo(i18n('regionOptions.success'))
       } catch (err) {
         console.error(err)

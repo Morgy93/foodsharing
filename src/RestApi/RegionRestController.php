@@ -221,6 +221,7 @@ class RegionRestController extends AbstractFOSRestController
      * @Rest\RequestParam(name="regionPickupRuleLimitDay")
      * @Rest\RequestParam(name="regionPickupRuleInactive")
      * @Rest\RequestParam(name="selectedReportReasonOptions")
+     * @Rest\RequestParam(name="reportReasonOtherEnabled")
      */
     public function setRegionOptions(ParamFetcher $paramFetcher, int $regionId): Response
     {
@@ -241,6 +242,9 @@ class RegionRestController extends AbstractFOSRestController
             }
             if (isset($params['selectedReportReasonOptions'])) {
                 $this->regionGateway->setRegionOption($regionId, RegionOptionType::REPORT_REASON_OPTIONS, strval(intval($params['selectedReportReasonOptions'])));
+            }
+            if (isset($params['reportReasonOtherEnabled'])) {
+                $this->regionGateway->setRegionOption($regionId, RegionOptionType::REPORT_REASON_OTHER, strval(intval($params['selectedReportReasonOptions'])));
             }
         }
 

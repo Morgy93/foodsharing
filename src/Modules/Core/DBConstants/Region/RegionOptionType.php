@@ -16,4 +16,5 @@ class RegionOptionType
     public const REGION_PICKUP_RULE_LIMIT_DAY_NUMBER = 6; // How many hours before a pickup is the rule being ignored ?
     public const REGION_PICKUP_RULE_INACTIVE_HOURS = 7; // How many hours before a pickup is the rule being ignored ?
     public const REPORT_REASON_OPTIONS = 8; // What report Reasons should be shown ? 1 view reasons, 2, Reasons category B)
+    public const REPORT_REASON_OTHER = 9; // Add reason "other" to report reasons
 }
