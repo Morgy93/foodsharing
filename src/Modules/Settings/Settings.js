@@ -23,6 +23,7 @@ import DeleteAccount from './components/DeleteAccount.vue'
 // collapse_wrapper is used by v_input_wrapper if it has the parameter 'collapse'
 expose({ collapse_wrapper })
 
+// TODO move to switch
 vueRegister({
   QuizPage,
 })
