@@ -77,7 +77,6 @@
         <b-alert variant="info" show>
           <div>{{ $i18n('profile.report.info') }}</div>
         </b-alert>
-        <div>{{ $i18n('profile.report.kindofreport') }}</div>
         <b-form-select
           v-model="reportReason"
           :options="reportReasonOptions"
@@ -146,28 +145,33 @@ export default {
   },
   data () {
     const reportReasonOptionsValues = []
+
+    reportReasonOptionsValues.push(
+      { value: '0', text: this.$i18n('profile.report.kindofreport') },
+    )
+
     if (this.reasonOptionSettings === 2) {
       reportReasonOptionsValues.push(
-        { value: '1', text: this.$i18n('profile.report.report_b1_1') },
-        { value: '2', text: this.$i18n('profile.report.report_b1_2') },
-        { value: '20', text: this.$i18n('profile.report.report_b1_3') },
-        { value: '21', text: this.$i18n('profile.report.report_b1_4') },
-        { value: '22', text: this.$i18n('profile.report.report_b1_5') },
-        { value: '23', text: this.$i18n('profile.report.report_b2') },
-        { value: '24', text: this.$i18n('profile.report.report_b3_1') },
-        { value: '25', text: this.$i18n('profile.report.report_b3_2') },
-        { value: '26', text: this.$i18n('profile.report.report_b4_1') },
-        { value: '27', text: this.$i18n('profile.report.report_b4_2') },
-        { value: '28', text: this.$i18n('profile.report.report_b5') },
-        { value: '29', text: this.$i18n('profile.report.report_b6_1') },
-        { value: '30', text: this.$i18n('profile.report.report_b6_2') },
-        { value: '31', text: this.$i18n('profile.report.report_b7') },
-        { value: '32', text: this.$i18n('profile.report.report_b8') },
-        { value: '33', text: this.$i18n('profile.report.report_b9') },
-        { value: '34', text: this.$i18n('profile.report.report_b10') },
-        { value: '35', text: this.$i18n('profile.report.report_b11') },
-        { value: '36', text: this.$i18n('profile.report.report_b12') },
-        { value: '37', text: this.$i18n('profile.report.report_b13') },
+        { value: '2010', text: this.$i18n('profile.report.report_b1_0') },
+        { value: '2011', text: this.$i18n('profile.report.report_b1_1') },
+        { value: '2012', text: this.$i18n('profile.report.report_b1_2') },
+        { value: '2013', text: this.$i18n('profile.report.report_b1_3') },
+        { value: '2014', text: this.$i18n('profile.report.report_b1_4') },
+        { value: '2020', text: this.$i18n('profile.report.report_b2') },
+        { value: '2030', text: this.$i18n('profile.report.report_b3_0') },
+        { value: '2031', text: this.$i18n('profile.report.report_b3_1') },
+        { value: '2040', text: this.$i18n('profile.report.report_b4_0') },
+        { value: '2041', text: this.$i18n('profile.report.report_b4_1') },
+        { value: '2050', text: this.$i18n('profile.report.report_b5') },
+        { value: '2060', text: this.$i18n('profile.report.report_b6_0') },
+        { value: '2061', text: this.$i18n('profile.report.report_b6_1') },
+        { value: '2070', text: this.$i18n('profile.report.report_b7') },
+        { value: '2080', text: this.$i18n('profile.report.report_b8') },
+        { value: '2090', text: this.$i18n('profile.report.report_b9') },
+        { value: '2100', text: this.$i18n('profile.report.report_b10') },
+        { value: '2110', text: this.$i18n('profile.report.report_b11') },
+        { value: '2120', text: this.$i18n('profile.report.report_b12') },
+        { value: '2130', text: this.$i18n('profile.report.report_b13') },
       )
     } else {
       reportReasonOptionsValues.push(
@@ -179,7 +183,7 @@ export default {
     }
     if (this.reasonOptionOther) {
       reportReasonOptionsValues.push(
-        { value: '999', text: this.$i18n('profile.report.report_other') },
+        { value: '9999', text: this.$i18n('profile.report.report_other') },
       )
     }
     return {

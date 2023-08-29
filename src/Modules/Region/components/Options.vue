@@ -15,7 +15,7 @@
           {{ $i18n('regionOptions.enableReportButton') }}
         </b-form-checkbox>
         <b-form-group>
-          <label>label=$i18n('regionOptions.regionReportReasonChoose')</label>
+          <label>{{ $i18n('regionOptions.regionReportReasonChoose') }}</label>
           <b-form-radio-group
             id="reportReasonRadioOptions"
             v-model="selectedReportReasonOptions"
