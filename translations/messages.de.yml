@@ -1570,7 +1570,7 @@ regionOptions:
   regionReportReasonChoose: "Meldeoptionen auswählen"
   regionReportReasonSimple: "Vereinfachte Meldungsgründe"
   regionReportReasonCategoryB: "Erweiterte Meldungsgründe: Verhaltensregeln - B) Verhalten bei Abholungen"
-  regionReportReasonOther: "Sonstiges als Meldungsgrund hinzufügen."
+  regionReportReasonOther:  "Meldungsgrund hinzufügen : Sonstiges"
   enableMediationButton: "Technische Unterstützung für Mediationen durch einen Mediations-Link auf den Profilen der Stammfoodsaver des Bezirkes aktivieren."
   regionPickupRuleActive: "Folgende Bezirksregel für Abholungen bei ROSINEN (Raren Oft Sagenhaften Inspesondere Nicht alltäglichen Extrem beliebten Nüztliche)-Betrieben aktivieren:"
   regionPickupTimespan: "Bitte gib den Zeitraum in Tagen an, in denen die Regelung gültig ist"
