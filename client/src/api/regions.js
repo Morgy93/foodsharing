@@ -12,7 +12,7 @@ export function masterUpdate (regionId) {
   return patch(`/region/${regionId}/masterupdate`)
 }
 
-export function setRegionOptions (regionId, enableReportButton, enableMediationButton, regionPickupRuleActive, regionPickupRuleTimespan, regionPickupRuleLimit, regionPickupRuleLimitDay, regionPickupRuleInactive, selectedReportReasonOptions, reportReasonOtherEnabled) {
+export function setRegionOptions (regionId, enableReportButton, enableMediationButton, regionPickupRuleActive, regionPickupRuleTimespan, regionPickupRuleLimit, regionPickupRuleLimitDay, regionPickupRuleInactive, selectedReportReasonOptions, enableReportReasonOther) {
   return post(`/region/${regionId}/options`, {
     enableReportButton: enableReportButton,
     enableMediationButton: enableMediationButton,
@@ -22,7 +22,7 @@ export function setRegionOptions (regionId, enableReportButton, enableMediationB
     regionPickupRuleLimitDay: regionPickupRuleLimitDay,
     regionPickupRuleInactive: regionPickupRuleInactive,
     selectedReportReasonOptions: selectedReportReasonOptions,
-    reportReasonOtherEnabled: reportReasonOtherEnabled,
+    enableReportReasonOther: enableReportReasonOther,
   })
 }
 

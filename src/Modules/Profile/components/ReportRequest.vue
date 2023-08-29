@@ -144,11 +144,9 @@ export default {
     reasonOptionOther: { type: Boolean, required: true },
   },
   data () {
-    const reportReasonOptionsValues = []
-
-    reportReasonOptionsValues.push(
+    const reportReasonOptionsValues = [
       { value: null, text: this.$i18n('profile.report.kindofreport') },
-    )
+    ]
 
     if (this.reasonOptionSettings === 2) {
       reportReasonOptionsValues.push(
@@ -190,7 +188,7 @@ export default {
       reportText: '',
       storeList: null,
       reportReasonOptions: reportReasonOptionsValues,
-      reportReason: [],
+      reportReason: null,
     }
   },
   computed: {
