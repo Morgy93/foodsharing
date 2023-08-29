@@ -31,6 +31,7 @@
 - Improved pickup table display on smaller devices !2779 @AntonBallmaier 
 - Added a validation for login form, to prevent send a api call. !2787 @chriswalg
 - Remove closed stores from map, dashboard and navigation #786 !2790 @chriswalg
+- Optional Reason for Reports added !2833 @fs_k
 
 ## Bugfixes
 - Reimplementation of the StoreManager empty pickup E-Mail notification !2574 @KoeMai
