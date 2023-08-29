@@ -85,6 +85,9 @@ export default {
   watch: {
     storeRequests: {
       handler (newRequests) {
+        if (newRequests <= 0) {
+          this.$bvModal.hide('requests')
+        }
         this.requests = newRequests
       },
     },
