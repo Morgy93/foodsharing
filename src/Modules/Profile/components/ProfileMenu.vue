@@ -135,6 +135,7 @@
       :is-report-button-enabled="isReportButtonEnabled"
       :reporter-has-report-group="reporterHasReportGroup"
       :reason-option-settings="reasonOptionSettings"
+      :reason-option-other="reasonOptionOther"
       :mailbox-name="mailboxNameReportRequest"
     />
     <ProfileHistoryModal
@@ -183,6 +184,7 @@ export default {
     reporterHasReportGroup: { type: Boolean, required: true },
     mailboxNameReportRequest: { type: String, required: true },
     reasonOptionSettings: { type: Number, required: true, default: 1 },
+    reasonOptionOther: { type: Boolean, required: true },
   },
   data () {
     return {

@@ -113,6 +113,7 @@ class ProfileView extends View
             // ReportRequest
             $isReportButtonEnabled = intval($this->regionGateway->getRegionOption($regionId, RegionOptionType::ENABLE_REPORT_BUTTON)) === 1;
             $reasonOptionSettings = intval($this->regionGateway->getRegionOption($regionId, RegionOptionType::REPORT_REASON_OPTIONS));
+            $reasonOptionOther = intval($this->regionGateway->getRegionOption($regionId, RegionOptionType::REPORT_REASON_OTHER)) === 1;
 
             if ($this->regionGateway->getRegionOption($regionId, RegionOptionType::ENABLE_REPORT_BUTTON)) {
                 // if the current user is not allowed to see all stores of the profile, the report dialog will only show stores in which both users are
@@ -182,7 +183,8 @@ class ProfileView extends View
                 'reporterHasReportGroup' => $reporterHasReportGroup ?? false,
                 'mailboxNameReportRequest' => $MailboxNameReportRequest ?? '',
                 'reasonOptionSettings' => $reasonOptionSettings ?? 0,
-                'buttonNameReportRequest' => $buttonNameReportRequest ?? $this->translator->trans('profile.report.oldReportButton')
+                'buttonNameReportRequest' => $buttonNameReportRequest ?? $this->translator->trans('profile.report.oldReportButton'),
+                'reasonOptionOther' => $reasonOptionOther ?? false
             ])
         );
 

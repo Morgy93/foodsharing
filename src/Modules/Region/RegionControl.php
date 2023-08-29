@@ -521,6 +521,7 @@ final class RegionControl extends Control
         $viewdata['regionPickupRuleInactiveHours'] = intval(array_key_exists(RegionOptionType::REGION_PICKUP_RULE_INACTIVE_HOURS, $regionOptions) ? $regionOptions[RegionOptionType::REGION_PICKUP_RULE_INACTIVE_HOURS] : 0);
         $viewdata['regionPickupRuleActiveStoreList'] = $this->storeGateway->listRegionStoresActivePickupRule($region['id']);
         $viewdata['reportReasonOptions'] = intval(array_key_exists(RegionOptionType::REPORT_REASON_OPTIONS, $regionOptions) ? $regionOptions[RegionOptionType::REPORT_REASON_OPTIONS] : 0);
+        $viewdata['isReportReasonOtherEnabled'] = boolval(array_key_exists(RegionOptionType::REPORT_REASON_OTHER, $regionOptions) ? $regionOptions[RegionOptionType::REPORT_REASON_OTHER] : 0);
         $response->setContent($this->render('pages/Region/options.twig', $viewdata));
     }
 

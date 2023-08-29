@@ -141,8 +141,8 @@ export default {
     isReportButtonEnabled: { type: Boolean, required: true },
     reporterHasReportGroup: { type: Boolean, required: true },
     mailboxName: { type: String, required: true },
-    reasonOptionSettings: { type: Number, required: false, default: 1 },
-    reasonOptionSettingsOther: { type: Boolean, required: false, default: false },
+    reasonOptionSettings: { type: Number, required: true, default: 1 },
+    reasonOptionOther: { type: Boolean, required: true },
   },
   data () {
     const reportReasonOptionsValues = []
@@ -177,9 +177,9 @@ export default {
         { value: '15', text: this.$i18n('profile.report.sells') },
       )
     }
-    if (this.reasonOptionSettingsOther) {
+    if (this.reasonOptionOther) {
       reportReasonOptionsValues.push(
-        { value: '99', text: this.$i18n('profile.report.other') },
+        { value: '999', text: this.$i18n('profile.report.report_other') },
       )
     }
     return {
@@ -196,16 +196,11 @@ export default {
   },
   methods: {
     async trySendReport () {
+      const reportReasonText = this.reportReasonOptions.find(reportReasonOptions => reportReasonOptions.value === this.reportReason)
       const message = this.reportText.trim()
       if (!message) return
       try {
-        const selectedReasons = this.reportReason.map(optionValue => {
-          const selectedOption = this.reportReasonOptions.find(option => option.value === optionValue)
-          return selectedOption ? selectedOption.text : ''
-        })
-        const sortedSelectedReasons = selectedReasons.sort() // Sortiere das Array
-        const selectedReasonsText = sortedSelectedReasons.join(', ')
-        await addReport(this.reportedId, this.reporterId, 1, selectedReasonsText, message, this.storeList)
+        await addReport(this.reportedId, this.reporterId, this.reportReason, reportReasonText.text, message, this.storeList)
         pulseInfo(i18n('profile.report.sent'))
         this.reportReason = null
         this.storeList = null

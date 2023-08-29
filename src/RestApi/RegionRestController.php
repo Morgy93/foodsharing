@@ -244,7 +244,7 @@ class RegionRestController extends AbstractFOSRestController
                 $this->regionGateway->setRegionOption($regionId, RegionOptionType::REPORT_REASON_OPTIONS, strval(intval($params['selectedReportReasonOptions'])));
             }
             if (isset($params['reportReasonOtherEnabled'])) {
-                $this->regionGateway->setRegionOption($regionId, RegionOptionType::REPORT_REASON_OTHER, strval(intval($params['selectedReportReasonOptions'])));
+                $this->regionGateway->setRegionOption($regionId, RegionOptionType::REPORT_REASON_OTHER, strval(intval($params['reportReasonOtherEnabled'])));
             }
         }
 
