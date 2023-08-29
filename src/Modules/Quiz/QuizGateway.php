@@ -212,16 +212,20 @@ class QuizGateway extends BaseGateway
     public function listQuestions(int $quizId): array
     {
         $questions = $this->getQuestions($quizId);
-        if ($questions) {
-            foreach ($questions as $key => $q) {
-                $questions[$key]['answers'] = $this->getAnswers($q['id']);
-                $questions[$key]['comment_count'] = $this->countComments($q['id']);
-            }
-
-            return $questions;
+        foreach ($questions as &$question) {
+            $question['answers'] = $this->getAnswers($question['id']);
+            $question['comment_count'] = $this->countComments($question['id']);
         }
 
-        return [];
+        return $questions;
+    }
+
+    public function listComments(int $questionId): array
+    {
+        return $this->db->fetchAllByCriteria(
+            'fs_question_has_wallpost',
+            ['question_id' => $questionId]
+        );
     }
 
     private function countComments(int $questionId): int
