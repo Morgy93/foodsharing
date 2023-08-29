@@ -81,11 +81,15 @@ class QuizControl extends Control
 
     private function listQuiz($quizId): void
     {
+        $this->pageHelper->addContent($this->view->vueComponent('vue-quiz-editor', 'QuizEditor', [
+            'initialQuizId' => $quizId,
+        ]));
+
+        // return;
+
         if ($quizId > 0) {
             if ($name = $this->quizGateway->getQuizName($quizId)) {
                 $this->pageHelper->addBread($name, '/?page=quiz&id=' . $quizId);
-                $topbtn = ' - ' . $name;
-                $slogan = 'Quizfragen für ' . $name;
             }
             $this->listQuestions($quizId);
         }

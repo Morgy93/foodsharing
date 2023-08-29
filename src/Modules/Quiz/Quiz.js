@@ -12,6 +12,12 @@ import { GET } from '@/browser'
 import '../WallPost/WallPost.css'
 import { initWall } from '@/wall'
 
+import { vueApply, vueRegister } from '@/vue'
+import QuizEditor from '@/components/Quiz/QuizEditor'
+
+vueRegister({ QuizEditor })
+vueApply('#vue-quiz-editor', true)
+
 const sub = GET('sub')
 if (sub === 'wall') {
   initWall('question', GET('id'))
