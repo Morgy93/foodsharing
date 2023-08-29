@@ -23,3 +23,15 @@ export function answerQuestion (quizId, selectedAnswers) {
 export function commentQuestion (questionId, text) {
   return post(`/question/${questionId}/comment`, { text })
 }
+
+export function getQuiz (quizId) {
+  return get(`/quiz/${quizId}`)
+}
+
+export function getQuestions (quizId) {
+  return get(`/quiz/${quizId}/questions`)
+}
+
+export function getQuestionComments (questionId) {
+  return get(`/quiz/${questionId}/comments`)
+}
