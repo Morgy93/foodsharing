@@ -147,7 +147,7 @@ export default {
     const reportReasonOptionsValues = []
 
     reportReasonOptionsValues.push(
-      { value: '0', text: this.$i18n('profile.report.kindofreport') },
+      { value: null, text: this.$i18n('profile.report.kindofreport') },
     )
 
     if (this.reasonOptionSettings === 2) {
