@@ -131,6 +131,7 @@ class ReportRestController extends AbstractFOSRestController
             $paramFetcher->get('reportedId'),
             $paramFetcher->get('reporterId'),
             1,
+            $paramFetcher->get('reasonId'),
             $paramFetcher->get('reason'),
             $paramFetcher->get('message'),
             $paramFetcher->get('storeId')

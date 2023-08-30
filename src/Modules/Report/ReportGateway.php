@@ -7,16 +7,18 @@ use Foodsharing\Modules\Core\BaseGateway;
 
 class ReportGateway extends BaseGateway
 {
-    /* Reporttype: 1: Other (see list ReportView for list of possible reasons, they are all mapped to 1...), 2: missed pickup */
+    /* Reporttype: 1: report
+       reasonId : corresponding id to reason (came to late, didn't show for pickup etc.*/
 
-    public function addBetriebReport($reportedId, $reporterId, $reasonId, $reason, $message, $storeId = 0): int
+    public function addBetriebReport($reportedId, $reporterId, $reporttype, $reasonId, $reason, $message, $storeId = 0): int
     {
         return $this->db->insert(
             'fs_report',
             [
                 'foodsaver_id' => (int)$reportedId,
                 'reporter_id' => (int)$reporterId,
-                'reporttype' => (int)$reasonId,
+                'reporttype' => (int)$reporttype,
+                'rp_reason_id' => (int)$reasonId,
                 'betrieb_id' => (int)$storeId,
                 'time' => date('Y-m-d H:i:s'),
                 'committed' => 0,
@@ -120,6 +122,7 @@ class ReportGateway extends BaseGateway
 	            	r.`msg`,
 	            	r.`tvalue`,
 	            	r.`reporttype`,
+	            	r.`rp_reason_id`,
 					r.`time`,
 					UNIX_TIMESTAMP(r.`time`) AS time_ts,
 
@@ -159,6 +162,7 @@ class ReportGateway extends BaseGateway
             	r.`msg`,
             	r.`tvalue`,
             	r.`reporttype`,
+              	r.`rp_reason_id`,
 				r.`time`,
 				r.committed,
 				r.betrieb_id,
@@ -212,6 +216,7 @@ class ReportGateway extends BaseGateway
 				r.`msg`,
 				r.`tvalue`,
 				r.`reporttype`,
+    			r.`rp_reason_id`,
 				r.`time`,
 				r.`betrieb_id`,
 				s.`name` as betrieb_name,
@@ -242,7 +247,7 @@ class ReportGateway extends BaseGateway
     public function getReportsByReporteeRegions($regions, ?array $excludeReportsWithUsers, ?array $onlyReportsWithUsers = null)
     {
         $query = $this->reportSelect();
-
+        $query->where('r.reporttype = 1');
         if ($regions !== null && is_array($regions)) {
             if (!empty($regions)) {
                 /* fluentpdo ignores the where clause when $regions is empty... */
