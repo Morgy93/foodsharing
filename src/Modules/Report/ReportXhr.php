@@ -76,27 +76,9 @@ class ReportXhr extends Control
 
             $dialog->addButton($this->translator->trans('profile.report.xhr.allofthem') . ' ' . $report['fs_name'], 'goTo(\'/?page=report&sub=foodsaver&id=' . $report['fs_id'] . '\');');
 
-            if ($report['committed'] === 0) {
-                $dialog->addButton($this->translator->trans('profile.report.xhr.delivered'), 'ajreq(\'comReport\',{\'id\':' . (int)$_GET['id'] . '});');
-            }
             $dialog->addButton($this->translator->trans('button.delete'), 'if(confirm("' . $this->translator->trans('profile.report.xhr.plsconfirm') . '")){ajreq(\'delReport\',{id:' . $report['id'] . '});$(\'#' . $dialog->getId() . '\').dialog(\'close\');}');
 
             return $dialog->xhrout();
-        }
-
-        return null;
-    }
-
-    public function comReport(): ?array
-    {
-        if ($this->reportPermissions->mayHandleReports()) {
-            $this->reportGateway->confirmReport($_GET['id']);
-            $this->flashMessageHelper->info($this->translator->trans('profile.report.xhr.confirmed'));
-
-            return [
-                'status' => 1,
-                'script' => 'reload();'
-            ];
         }
 
         return null;

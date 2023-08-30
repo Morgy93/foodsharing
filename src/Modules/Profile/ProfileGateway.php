@@ -249,7 +249,7 @@ final class ProfileGateway extends BaseGateway
 
     private function getViolationCount(int $fsId): int
     {
-        return (int)$this->db->count('fs_report', ['foodsaver_id' => $fsId]);
+        return (int)$this->db->count('fs_report', ['foodsaver_id' => $fsId, 'reporttype' => 1]);
     }
 
     private function getNotesCount(int $fsId): int

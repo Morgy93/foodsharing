@@ -43,62 +43,7 @@ class ReportGateway extends BaseGateway
 
     public function delReport($id): void
     {
-        $this->db->delete('fs_report', ['id' => (int)$id]);
-    }
-
-    public function confirmReport($id): void
-    {
-        $this->db->update('fs_report', ['committed' => 1], ['id' => $id]);
-    }
-
-    public function getReportedSavers(): array
-    {
-        return $this->db->fetchAll(
-            '
-			SELECT 	fs.name,
-					CONCAT(fs.nachname," (",COUNT(rp.foodsaver_id),")") AS nachname,
-					fs.photo,
-					fs.id,
-					fs.sleep_status,
-					COUNT(rp.foodsaver_id) AS count,
-					CONCAT("/?page=report&sub=foodsaver&id=",fs.id) AS `href`
-
-			FROM 	fs_foodsaver fs,
-					fs_report rp
-
-			WHERE 	rp.foodsaver_id = fs.id
-
-			GROUP 	BY rp.foodsaver_id
-
-			ORDER BY count DESC, fs.name
-		'
-        );
-    }
-
-    public function getReportStats(): array
-    {
-        $ret = $this->db->fetchAll(
-            '
-			SELECT 	`committed`, COUNT(`id`) as count
-			FROM 	fs_report
-			GROUP BY `committed`
-			ORDER BY `committed`
-		'
-        );
-        $new = 0;
-        $com = 0;
-        foreach ($ret as $r) {
-            if ($r['committed'] == 0) {
-                $new = $r['count'];
-            } else {
-                $com = $r['count'];
-            }
-        }
-
-        return [
-            'com' => $com,
-            'new' => $new
-        ];
+        $this->db->delete('fs_report', ['id' => (int)$id, 'reporttype' => 1]);
     }
 
     public function getReportedSaver($id): ?array
@@ -142,6 +87,7 @@ class ReportGateway extends BaseGateway
 
 				WHERE
 					r.foodsaver_id = :id
+				and r.reporttype = 1
 
 	          	ORDER BY
 					r.`time` DESC
@@ -189,6 +135,7 @@ class ReportGateway extends BaseGateway
 
 			WHERE
 				r.`id` = :id
+			and r.reporttype = 1
 		';
         $report = $this->db->fetch($stm, [':id' => (int)$id]);
         if (!$report) {
@@ -276,6 +223,7 @@ class ReportGateway extends BaseGateway
     public function getReportsForRegionlessByReporterRegion($regions, $excludeReportsAboutUser = null)
     {
         $query = $this->reportSelect();
+        $query->where('r.reporttype = 1');
         $query->where('fs.bezirk_id = 0');
         if ($regions !== null && is_array($regions)) {
             $query = $query->where('rp.bezirk_id', $regions);
@@ -290,6 +238,7 @@ class ReportGateway extends BaseGateway
     public function getReports($committed = '0'): array
     {
         $query = $this->reportSelect();
+        $query->where('r.reporttype = 1');
         $query = $query->where('r.committed = ?', $committed);
 
         return $query->fetchAll();
