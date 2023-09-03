@@ -382,6 +382,8 @@ class SeedCommand extends Command implements CustomCommandInterface
         $I->createWorkingGroup('Verwaltung-AG Praxisaustausch', ['parent_id' => RegionIDs::GLOBAL_WORKING_GROUPS, 'id' => RegionIDs::FSMANAGEMENT_TEAM_ADMIN_GROUP]);
         $I->createWorkingGroup('Öffentlichkeitsarbeit-AG Praxisaustausch', ['parent_id' => RegionIDs::GLOBAL_WORKING_GROUPS, 'id' => RegionIDs::PR_TEAM_ADMIN_GROUP]);
         $I->createWorkingGroup('Moderation-AG Praxisaustausch', ['parent_id' => RegionIDs::GLOBAL_WORKING_GROUPS, 'id' => RegionIDs::MODERATION_TEAM_ADMIN_GROUP]);
+        $I->createWorkingGroup('BOT-Begrüßungsteam', ['parent_id' => RegionIDs::GLOBAL_WORKING_GROUPS, 'id' => RegionIDs::BOT_WELCOME_TEAM]);
+        $I->createWorkingGroup('AG Hygiene', ['parent_id' => RegionIDs::GLOBAL_WORKING_GROUPS, 'id' => RegionIDs::HYGIENE_GROUP]);
 
         $region1Subregion = $I->createRegion('Stadtteil von Göttingen', ['type' => UnitType::PART_OF_TOWN, 'parent_id' => $region1]);
 
@@ -470,12 +472,14 @@ class SeedCommand extends Command implements CustomCommandInterface
 
         $I->addRegionMember($ag_testimonials, $user2['id']);
         $I->addRegionMember(RegionIDs::STORE_CHAIN_GROUP, $user2['id']);
-
+        
         $I->addRegionAdmin(RegionIDs::IT_SUPPORT_GROUP, $userStoreManager2['id']);
         $I->addRegionMember(RegionIDs::IT_SUPPORT_GROUP, $userStoreManager2['id']);
         $I->addRegionAdmin(RegionIDs::NEWSLETTER_WORK_GROUP, $user2['id']);
         $I->addRegionAdmin(RegionIDs::EDITORIAL_GROUP, $userbot['id']);
         $I->addRegionAdmin(RegionIDs::STORE_CHAIN_GROUP, $userbot['id']);
+        $I->addRegionMember(RegionIDs::BOT_WELCOME_TEAM, $userbot['id']);
+        $I->addRegionMember(RegionIDs::HYGIENE_GROUP, $userbot['id']);
 
         // Make ambassador responsible for all work groups in the region
         $this->output->writeln('- make ambassador responsible for all work groups');
@@ -684,8 +688,8 @@ class SeedCommand extends Command implements CustomCommandInterface
         $this->output->writeln(' done');
 
         $this->output->writeln('Create quizzes');
-        foreach (range(1, 3) as $quizRole) {
-            $I->createQuiz($quizRole, 3);
+        foreach (range(1, 5) as $quizId) {
+            $I->createQuiz($quizId, 3);
             $this->output->write('.');
         }
         $this->output->writeln(' done');
