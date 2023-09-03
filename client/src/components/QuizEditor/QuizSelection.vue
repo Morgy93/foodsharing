@@ -1,6 +1,6 @@
 <template>
   <Container
-    :title="'Quizze'"
+    :title="$i18n('quiz.plural')"
   >
     <a
       v-for="quiz in visibleQuizes"
@@ -8,8 +8,14 @@
       type="button"
       class="list-group-item list-group-item-action"
       :href="`/quiz/edit/${quiz.id}`"
-      v-text="quiz.name"
-    />
+    >
+      <i
+        v-b-tooltip="$i18n('quiz.editable_tooltip')"
+        class="fas fa-fw fa-cog"
+        :class="quiz.edit ? '' : 'invisible'"
+      />
+      {{ quiz.name }}
+    </a>
   </Container>
 </template>
 
