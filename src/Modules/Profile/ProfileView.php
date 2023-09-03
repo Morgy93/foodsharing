@@ -127,7 +127,7 @@ class ProfileView extends View
                     });
                 }
 
-                if (count($reportStores) > 0 ) {
+                if (count($reportStores) > 0) {
                     $storeListOptions = [['value' => null, 'text' => $this->translator->trans('profile.choosestore')]];
                     foreach ($reportStores as $store) {
                         $storeListOptions[] = ['value' => $store['id'], 'text' => $store['name']];
