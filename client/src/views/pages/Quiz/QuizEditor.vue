@@ -1,13 +1,13 @@
 <template>
   <section class="container my-3 my-sm-5">
     <div class="row">
-      <div class="col-sm-3">
-        {{ visibleQuizes }}
+      <!-- TODO basic page layout needs improvement -->
+      <div class="col-lg-3">
         <QuizSelection
           :visible-quizes="visibleQuizes"
         />
       </div>
-      <div class="col-sm-9">
+      <div class="col-lg-9">
         <QuizMetadataEditor
           :quiz-id="quizId"
         />
