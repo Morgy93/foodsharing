@@ -126,15 +126,15 @@ class ProfileView extends View
                         return in_array($store['id'], $myStoreIds);
                     });
                 }
-
+                $storeListOptions = [['value' => null, 'text' => $this->translator->trans('profile.choosestore')]];
                 if (count($reportStores) > 0) {
-                    $storeListOptions = [['value' => null, 'text' => $this->translator->trans('profile.choosestore')]];
+
                     foreach ($reportStores as $store) {
                         $storeListOptions[] = ['value' => $store['id'], 'text' => $store['name']];
                     }
-                } else {
-                    $storeListOptions = [['value' => null, 'text' => $this->translator->trans('profile.choosenostore')]];
                 }
+                $storeListOptions[] = ['value' => null, 'text' => $this->translator->trans('profile.choosereasonnostore')];
+                $storeListOptions[] = ['value' => null, 'text' => $this->translator->trans('profile.chooseantherstore')];
 
                 $isReportedIdReportAdmin = $this->groupFunctionGateway->isRegionFunctionGroupAdmin($regionId, WorkgroupFunction::REPORT, $this->foodsaver['id']);
                 $isReporterIdReportAdmin = $this->groupFunctionGateway->isRegionFunctionGroupAdmin($regionId, WorkgroupFunction::REPORT, $this->session->id());

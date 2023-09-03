@@ -2048,7 +2048,8 @@ profile:
   deletesuccess: "Einzeltermin gelöscht"
   cantdeletethis: "Du kannst keine Einzeltermine löschen!"
   choosestore: "Bitte den betroffenen Betrieb auswählen" #in ProfileView
-  choosenostore: "Betriebsauswahl nicht möglich" #in ProfileView
+  choosereasonnostore: "Betrifft keinen Betrieb" #in ProfileView
+  chooseantherstore: "Betrifft einen nicht aufgeführten Betrieb" #in ProfileView
 
 dashboard:
   title: "Dashboard"
