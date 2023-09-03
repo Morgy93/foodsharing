@@ -1,0 +1,79 @@
+<template>
+  <Container
+    v-if="quiz"
+    :title="$i18n('quiz.general.title', quiz)"
+    :wrap-content="true"
+  >
+    <!-- Todo add quiz easy mode state -->
+    <p>
+      <b v-text="$i18n('quiz.key_facts.to_pass')" />
+      <span v-text="quizKeyFacts" />
+    </p>
+
+    <p>
+      <b v-text="$i18n('desc')+':'" />
+      <span v-html="quiz.desc" />
+    </p>
+
+    <div
+      v-if="canEdit"
+    >
+      <hr>
+      <b-button
+        block
+        variant="primary"
+      >
+        {{ $i18n('quiz.general.edit') }}
+      </b-button>
+    </div>
+  </Container>
+</template>
+
+<script>
+import Container from '@/components/Container/Container.vue'
+import { getQuestions, getQuiz } from '@/api/quiz'
+import i18n from '@/helper/i18n'
+
+export default {
+  components: {
+    Container,
+  },
+  props: {
+    quizId: {
+      type: Number,
+      required: true,
+    },
+  },
+  data () {
+    return {
+      quiz: null,
+      questions: null,
+    }
+  },
+  computed: {
+    quizKeyFacts () {
+      const params = Object.assign({}, this.quiz, { questcountEasymode: this.quiz.questcount * 2 })
+      return i18n(`quiz.key_facts.${this.quiz.easymode ? 'easy' : 'hard'}mode`, params)
+    },
+    canEdit () {
+      return true
+    },
+  },
+  mounted: function () {
+    this.fetchQuizDetails()
+  },
+  methods: {
+    async fetchQuizDetails () {
+      [this.quiz, this.questions] = await Promise.all([
+        getQuiz(this.quizId),
+        getQuestions(this.quizId),
+      ])
+    },
+  },
+}
+
+</script>
+
+<style>
+
+</style>
