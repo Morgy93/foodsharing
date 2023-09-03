@@ -10,6 +10,7 @@ use Foodsharing\Modules\Core\DBConstants\Foodsaver\Role;
 use Foodsharing\Modules\Core\DBConstants\FoodSharePoint\FollowerType;
 use Foodsharing\Modules\Core\DBConstants\Info\InfoType;
 use Foodsharing\Modules\Core\DBConstants\Mailbox\MailboxFolder;
+use Foodsharing\Modules\Core\DBConstants\Quiz\QuizIDs;
 use Foodsharing\Modules\Core\DBConstants\Quiz\SessionStatus;
 use Foodsharing\Modules\Core\DBConstants\Region\RegionIDs;
 use Foodsharing\Modules\Core\DBConstants\Region\RegionOptionType;
@@ -164,14 +165,16 @@ class Foodsharing extends \Codeception\Module\Db
     public function createQuiz(int $quizId, int $questionCount = 1): array
     {
         $roles = [
-            Role::FOODSAVER => 'Foodsaver/in',
-            Role::STORE_MANAGER => 'Betriebsverantwortliche/r',
-            Role::AMBASSADOR => 'Botschafter/in'
+            QuizIDs::FOODSAVER => 'Foodsaver/in',
+            QuizIDs::STORE_MANAGER => 'Betriebsverantwortliche/r',
+            QuizIDs::AMBASSADOR => 'Botschafter/in',
+            QuizIDs::KEY_ACCOUNT_MANAGER => 'Ketten Manager',
+            QuizIDs::HYGIENE => 'Hygieneschulung',
         ];
         $params = [
             'id' => $quizId,
-            'name' => 'Quiz #' . $quizId,
-            'desc' => 'Werde ' . $roles[$quizId] . ' mit diesem Quiz.',
+            'name' => $roles[$quizId],
+            'desc' => '<p>Dies ist die Beschreibung des Quizzes "' . $roles[$quizId] . '". Hier sind noch ne Menge weitere Infos zu finden.</p><p>Außerdem sollte <b>Formatierung</b> funktionieren, sowie ein Link zum <a href="wiki.foodsharing.de">Wiki</a> enthalten sein.</p>',
             'maxfp' => 0,
             'questcount' => $questionCount,
         ];
@@ -179,7 +182,7 @@ class Foodsharing extends \Codeception\Module\Db
 
         $params['questions'] = [];
         for ($i = 1; $i <= $questionCount; ++$i) {
-            $questionText = 'Frage #' . $i . ' für Quiz #' . $params['id'];
+            $questionText = 'Welche Antworten sind richtig? Dies ist Frage #' . $i . ' für Quiz #' . $params['id'] . '.';
             $params['questions'][] = $this->createQuestion($params['id'], $questionText);
         }
 
