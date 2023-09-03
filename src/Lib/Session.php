@@ -296,6 +296,11 @@ class Session
         return false;
     }
 
+    public function isMemberIn(int $regionId): bool
+    {
+        return in_array($regionId, array_column($this->getRegions(), 'id'));
+    }
+
     public function getCurrentRegionId()
     {
         if (isset($_SESSION['client']['bezirk_id'])) {
