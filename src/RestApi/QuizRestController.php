@@ -243,6 +243,9 @@ final class QuizRestController extends AbstractFOSRestController
     {
         $quiz = $this->quizSanityChecks($quizId);
 
+        // TODO workaround while db has no easymode col:
+        $quiz['easymode'] = true;
+
         return $this->handleView($this->view($quiz, 200));
     }
 

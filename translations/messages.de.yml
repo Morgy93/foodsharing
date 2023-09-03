@@ -276,7 +276,13 @@ quiz:
   error_tooltip: "Bei dieser Antwort hast du einen Fehler gemacht."
   show_results: Ergebnisse des letzten Versuchs ansehen
   wikilink: Weitere Infos dazu im Wiki
-
+  key_facts:
+    to_pass: "Zum Bestehen:"
+    easymode: "Maximal {maxfp} Fehlerpunkte in {questcount} Fragen mit, oder {questcountEasymode} Fragen ohne Zeitbegrenzung"
+    hardmode: "Maximal {maxfp} Fehlerpunkte in {questcount} Fragen mit Zeitbegrenzung"
+  general:
+    title: "Quiz \"{name}\" - Allgemeines"
+    edit: Quiz bearbeiten
 
 # quiz: "Quiz
 # For legacy UI reasons (QuizView), needs to be toplevel with this exact key:
