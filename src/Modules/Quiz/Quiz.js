@@ -13,7 +13,7 @@ import '../WallPost/WallPost.css'
 import { initWall } from '@/wall'
 
 import { vueApply, vueRegister } from '@/vue'
-import QuizEditor from '@/components/Quiz/QuizEditor'
+import QuizEditor from '@/views/pages/Quiz/QuizEditor'
 
 vueRegister({ QuizEditor })
 vueApply('#vue-quiz-editor', true)
