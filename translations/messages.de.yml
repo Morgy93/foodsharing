@@ -168,6 +168,7 @@ quiz:
   congrats_details: "Herzlichen Glückwunsch! Mit {points} von maximal {max_points} Fehlerpunkten bestanden!"
   not_passed_details: "Du hast leider nicht bestanden. Du hattest {points} von maximal {max_points} Fehlerpunkten!"
   type: "-Quiz"
+  plural: "Quizze"
   finishnow:
     fs: "Jetzt die Foodsaver-Anmeldung abschließen."
     bv: "Jetzt die Betriebsverantwortlichenanmeldung abschließen."
@@ -281,8 +282,9 @@ quiz:
     easymode: "Maximal {maxfp} Fehlerpunkte in {questcount} Fragen mit, oder {questcountEasymode} Fragen ohne Zeitbegrenzung"
     hardmode: "Maximal {maxfp} Fehlerpunkte in {questcount} Fragen mit Zeitbegrenzung"
   general:
-    title: "Quiz \"{name}\" - Allgemeines"
+    title: "Allgemeine Informationen"
     edit: Quiz bearbeiten
+  editable_tooltip: "Du kannst dieses Quiz bearbeiten."
 
 # quiz: "Quiz
 # For legacy UI reasons (QuizView), needs to be toplevel with this exact key:

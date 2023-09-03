@@ -1,7 +1,7 @@
 <template>
   <Container
     v-if="quiz"
-    :title="$i18n('quiz.general.title', quiz)"
+    :title="$i18n('quiz.general.title')"
     :wrap-content="true"
   >
     <!-- Todo add quiz easy mode state -->
