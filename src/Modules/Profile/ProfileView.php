@@ -128,7 +128,6 @@ class ProfileView extends View
                 }
                 $storeListOptions = [['value' => null, 'text' => $this->translator->trans('profile.choosestore')]];
                 if (count($reportStores) > 0) {
-
                     foreach ($reportStores as $store) {
                         $storeListOptions[] = ['value' => $store['id'], 'text' => $store['name']];
                     }
