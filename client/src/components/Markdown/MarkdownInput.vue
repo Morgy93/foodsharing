@@ -17,19 +17,27 @@
         <b-button @click="heading">
           <i class="fas fa-heading" />
         </b-button>
+        <b-button @click="link">
+          <i class="fas fa-link" />
+        </b-button>
         <b-button @click="code">
           <i class="fas fa-code" />
         </b-button>
         <b-button @click="quote">
           <i class="fas fa-quote-right" />
         </b-button>
-        <b-button><i class="fas fa-list" /></b-button>
-        <b-button><i class="fas fa-list-ol" /></b-button>
-        <b-button><i class="fas fa-link" /></b-button>
-        <b-button><i class="fas fa-at" /></b-button>
-        <b-button><i class="fas fa-table" /></b-button>
-        <b-button><i class="fas fa-minus" /></b-button>
-        <b-button>
+        <b-button @click="unorderedList">
+          <i class="fas fa-list" />
+        </b-button>
+        <b-button @click="orderedList">
+          <i class="fas fa-list-ol" />
+        </b-button>
+        <b-button @click="hrule">
+          <i class="fas fa-minus" />
+        </b-button>
+        <!-- <b-button><i class="fas fa-at" /></b-button> supposed to be a way to insert links to user profiles easily -->
+        <!-- <b-button><i class="fas fa-table" /></b-button> -->
+        <b-button @click="preview">
           <i class="fas fa-eye" />
         </b-button>
       </b-button-group>
@@ -41,11 +49,21 @@
       class="md-text-area"
       rows="4"
     />
+    <b-modal
+      id="preview-modal"
+      title="Formatierungsvorschau"
+      centered
+      ok-only
+    >
+      <Markdown :source="value" />
+    </b-modal>
   </div>
 </template>
 
 <script>
+import Markdown from './Markdown.vue'
 export default {
+  components: { Markdown },
   data () {
     return {
       value: '',
@@ -79,6 +97,9 @@ export default {
       this.value = this.value.substring(0, lineStart) + lineStarter + this.value.substring(lineStart)
       this.setFocus(start + lineStarter.length, end + lineStarter.length)
     },
+    link () {
+      this.wrapSelection('[', '](https://)')
+    },
     code () {
       const [start, end] = this.getSelection()
       const selected = this.value.substring(start, end)
@@ -92,13 +113,34 @@ export default {
       }
     },
     quote () {
+      this.prefixLines('\n', '\n> ', true)
+    },
+    unorderedList () {
+      this.prefixLines(/\n(?!- )/g, '\n- ')
+    },
+    orderedList () {
+      this.prefixLines(/\n(?!\d\. )/g, '\n1. ')
+    },
+    hrule () {
+      this.wrapSelection('\n\n---\n\n', '')
+    },
+    prefixLines (pattern, replacement, includeEmptyLine = false) {
       let [start, end] = this.getSelection()
       let selected = this.value.substring(start, end)
       start += Number(selected.startsWith('\n'))
       end -= Number(selected.endsWith('\n'))
       start = this.getLineStart(start)
+      const restOfLineLength = this.value.substring(end).indexOf('\n')
+      if (restOfLineLength !== -1) {
+        end += restOfLineLength
+      } else {
+        end = this.value.length
+      }
       selected = this.value.substring(start, end)
-      selected = '> ' + selected.replaceAll('\n', '\n> ') + (this.value.substring(end).startsWith('\n\n') ? '' : '\n')
+      selected = ('\n' + selected).replaceAll(pattern, replacement).substring(1)
+      if (includeEmptyLine) {
+        selected += (this.value.substring(end).startsWith('\n\n') ? '' : '\n')
+      }
       this.value = this.value.substring(0, start) + selected + this.value.substring(end)
       end = start + selected.length
       this.setFocus(start, end)
@@ -120,11 +162,14 @@ export default {
       this.baseTextArea.selectionEnd = end
       this.baseTextArea.selectionStart = start
     },
+    preview () {
+      this.$bvModal.show('preview-modal')
+    },
   },
 }
 </script>
 
-<style lang="scss">
+<style lang="scss" scoped>
 .md-button-toolbar{
   flex-grow: 1;
   margin-right: 0;
