@@ -4,7 +4,6 @@
     :title="$i18n('quiz.general.title')"
     :wrap-content="true"
   >
-    <!-- Todo add quiz easy mode state -->
     <p>
       <b v-text="$i18n('quiz.key_facts.to_pass')" />
       <span v-text="quizKeyFacts" />
@@ -22,9 +21,13 @@
       <b-button
         block
         variant="primary"
+        @click="$bvModal.show('quizBasicsInputModal')"
       >
         {{ $i18n('quiz.general.edit') }}
       </b-button>
+      <QuizBasicsInputModal
+        :quiz="quiz"
+      />
     </div>
   </Container>
 </template>
@@ -33,10 +36,12 @@
 import Container from '@/components/Container/Container.vue'
 import { getQuestions, getQuiz } from '@/api/quiz'
 import i18n from '@/helper/i18n'
+import QuizBasicsInputModal from './QuizBasicsInputModal.vue'
 
 export default {
   components: {
     Container,
+    QuizBasicsInputModal,
   },
   props: {
     quizId: {
@@ -73,7 +78,3 @@ export default {
 }
 
 </script>
-
-<style>
-
-</style>
