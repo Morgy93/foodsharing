@@ -28,7 +28,7 @@ export default {
   },
   props: {
     visibleQuizes: {
-      type: Object,
+      type: Array,
       required: true,
     },
   },

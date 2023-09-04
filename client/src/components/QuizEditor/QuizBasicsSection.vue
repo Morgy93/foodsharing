@@ -48,6 +48,10 @@ export default {
       type: Number,
       required: true,
     },
+    canEdit: {
+      type: Boolean,
+      required: true,
+    },
   },
   data () {
     return {
@@ -59,9 +63,6 @@ export default {
     quizKeyFacts () {
       const params = Object.assign({}, this.quiz, { questcountEasymode: this.quiz.questcount * 2 })
       return i18n(`quiz.key_facts.${this.quiz.easymode ? 'easy' : 'hard'}mode`, params)
-    },
-    canEdit () {
-      return true
     },
   },
   mounted: function () {

@@ -10,6 +10,7 @@
       <div class="col-lg-9">
         <QuizMetadataEditor
           :quiz-id="quizId"
+          :can-edit="canEdit"
         />
       </div>
     </div>
@@ -26,18 +27,18 @@ export default {
     QuizSelection,
   },
   props: {
-    initialQuizId: {
+    quizId: {
       type: Number,
       required: true,
     },
     visibleQuizes: {
-      type: Object,
+      type: Array,
       required: true,
     },
   },
   data () {
     return {
-      quizId: this.initialQuizId,
+      canEdit: this.visibleQuizes.find(quiz => quiz.id === this.quizId).edit,
     }
   },
 }

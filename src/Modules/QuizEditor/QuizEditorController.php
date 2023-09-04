@@ -35,7 +35,7 @@ class QuizEditorController extends FoodsharingController
 
         $this->pageHelper->addTitle('Titel');
         $vue = $this->prepareVueComponent('vue-quiz-editor', 'QuizEditor', [
-            'initialQuizId' => $quizId,
+            'quizId' => $quizId,
             'visibleQuizes' => $quizPermissions->listQuizesForEditor(),
         ]);
         $this->pageHelper->addContent($vue);

@@ -3,6 +3,7 @@
     id="quizBasicsInputModal"
     :title="'Quiz bearbeiten'"
   >
+    {{ form }}
     <b-form>
       <b-form-group
         label="Name:"
@@ -67,7 +68,10 @@
         />
       </b-form-group>
 
-      <MarkdownInput />
+      <MarkdownInput
+        :initial-value="form.desc"
+        @update:value="newValue => form.desc = newValue"
+      />
     </b-form>
   </b-modal>
 </template>
@@ -86,6 +90,7 @@ export default {
   data () {
     return {
       form: Object.assign({}, this.quiz),
+      console: console,
     }
   },
 }

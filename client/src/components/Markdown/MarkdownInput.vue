@@ -47,7 +47,8 @@
       ref="input"
       v-model="value"
       class="md-text-area"
-      rows="4"
+      :rows="rows"
+      @input="inputEvent"
     />
     <b-modal
       id="preview-modal"
@@ -64,9 +65,19 @@
 import Markdown from './Markdown.vue'
 export default {
   components: { Markdown },
+  props: {
+    rows: {
+      type: Number,
+      default: 4,
+    },
+    initialValue: {
+      type: String,
+      default: '',
+    },
+  },
   data () {
     return {
-      value: '',
+      value: this.initialValue,
     }
   },
   computed: {
@@ -164,6 +175,9 @@ export default {
     },
     preview () {
       this.$bvModal.show('preview-modal')
+    },
+    inputEvent () {
+      this.$emit('update:value', this.value)
     },
   },
 }
