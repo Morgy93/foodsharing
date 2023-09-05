@@ -5,7 +5,10 @@
         size="sm"
         class="md-button-toolbar"
       >
-        <b-button @click="bold">
+        <b-button
+          v-b-tooltip.hover="$i18n('md_input.tooltip.bold')"
+          @click="bold"
+        >
           <i class="fas fa-bold" />
         </b-button>
         <b-button @click="italic">
@@ -48,6 +51,7 @@
       v-model="value"
       class="md-text-area"
       :rows="rows"
+      :state="state"
       @input="inputEvent"
     />
     <b-modal
@@ -73,6 +77,10 @@ export default {
     initialValue: {
       type: String,
       default: '',
+    },
+    state: {
+      type: Boolean,
+      default: null,
     },
   },
   data () {
