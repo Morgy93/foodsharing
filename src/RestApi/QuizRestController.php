@@ -21,6 +21,8 @@ use Symfony\Component\HttpKernel\Exception\AccessDeniedHttpException;
 use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
 use Symfony\Component\HttpKernel\Exception\UnauthorizedHttpException;
 
+// TODO: permission checks
+
 final class QuizRestController extends AbstractFOSRestController
 {
     public const NETWORK_BUFFER_TIME_IN_SECONDS = 5;
@@ -243,10 +245,32 @@ final class QuizRestController extends AbstractFOSRestController
     {
         $quiz = $this->quizSanityChecks($quizId);
 
-        // TODO workaround while db has no easymode col:
-        $quiz['easymode'] = true;
-
         return $this->handleView($this->view($quiz, 200));
+    }
+
+    /**
+     * @OA\Tag(name="quiz")
+     * @Rest\RequestParam(name="name", nullable=false)
+     * @Rest\RequestParam(name="desc", nullable=false)
+     * @Rest\RequestParam(name="maxfp", nullable=false)
+     * @Rest\RequestParam(name="questcount", nullable=false)
+     * @Rest\RequestParam(name="questcount_untimed", nullable=true)
+     * @Rest\Patch("quiz/{quizId}", requirements={"questionId" = "\d+"})
+     */
+    public function updateQuiz(int $quizId, ParamFetcher $paramFetcher): Response
+    {
+        $this->quizSanityChecks($quizId);
+
+        $this->quizGateway->updateQuiz(
+            $quizId,
+            $paramFetcher->get('name'),
+            $paramFetcher->get('desc'),
+            $paramFetcher->get('maxfp'),
+            $paramFetcher->get('questcount'),
+            $paramFetcher->get('questcount_untimed')
+        );
+
+        return $this->handleView($this->view(['success' => true], 200));
     }
 
     /**

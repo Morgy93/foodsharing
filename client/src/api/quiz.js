@@ -1,4 +1,4 @@
-import { get, post } from './base'
+import { get, patch, post } from './base'
 
 export function getQuizStatus (quizId) {
   return get(`/quiz/${quizId}/status`)
@@ -34,4 +34,8 @@ export function getQuestions (quizId) {
 
 export function getQuestionComments (questionId) {
   return get(`/quiz/${questionId}/comments`)
+}
+
+export function editQuiz (quizId, data) {
+  return patch(`/quiz/${quizId}`, data)
 }

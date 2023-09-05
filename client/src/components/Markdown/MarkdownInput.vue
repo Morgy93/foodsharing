@@ -11,36 +11,66 @@
         >
           <i class="fas fa-bold" />
         </b-button>
-        <b-button @click="italic">
+        <b-button
+          v-b-tooltip.hover="$i18n('md_input.tooltip.italic')"
+          @click="italic"
+        >
           <i class="fas fa-italic" />
         </b-button>
-        <b-button @click="strikethrough">
+        <b-button
+          v-b-tooltip.hover="$i18n('md_input.tooltip.strikethrough')"
+          @click="strikethrough"
+        >
           <i class="fas fa-strikethrough" />
         </b-button>
-        <b-button @click="heading">
+        <b-button
+          v-b-tooltip.hover="$i18n('md_input.tooltip.heading')"
+          @click="heading"
+        >
           <i class="fas fa-heading" />
         </b-button>
-        <b-button @click="link">
+        <b-button
+          v-b-tooltip.hover="$i18n('md_input.tooltip.link')"
+          @click="link"
+        >
           <i class="fas fa-link" />
         </b-button>
-        <b-button @click="code">
+        <b-button
+          v-b-tooltip.hover="$i18n('md_input.tooltip.code')"
+          @click="code"
+        >
           <i class="fas fa-code" />
         </b-button>
-        <b-button @click="quote">
+        <b-button
+          v-b-tooltip.hover="$i18n('md_input.tooltip.quote')"
+          @click="quote"
+        >
           <i class="fas fa-quote-right" />
         </b-button>
-        <b-button @click="unorderedList">
+        <b-button
+          v-b-tooltip.hover="$i18n('md_input.tooltip.unorderedList')"
+          @click="unorderedList"
+        >
           <i class="fas fa-list" />
         </b-button>
-        <b-button @click="orderedList">
+        <b-button
+          v-b-tooltip.hover="$i18n('md_input.tooltip.orderedList')"
+          @click="orderedList"
+        >
           <i class="fas fa-list-ol" />
         </b-button>
-        <b-button @click="hrule">
+        <b-button
+          v-b-tooltip.hover="$i18n('md_input.tooltip.hrule')"
+          @click="hrule"
+        >
           <i class="fas fa-minus" />
         </b-button>
         <!-- <b-button><i class="fas fa-at" /></b-button> supposed to be a way to insert links to user profiles easily -->
         <!-- <b-button><i class="fas fa-table" /></b-button> -->
-        <b-button @click="preview">
+        <b-button
+          v-b-tooltip.hover="$i18n('md_input.tooltip.preview')"
+          @click="preview"
+        >
           <i class="fas fa-eye" />
         </b-button>
       </b-button-group>
@@ -48,7 +78,7 @@
 
     <b-form-textarea
       ref="input"
-      v-model="value"
+      v-model.trim="value"
       class="md-text-area"
       :rows="rows"
       :state="state"
@@ -56,7 +86,7 @@
     />
     <b-modal
       id="preview-modal"
-      title="Formatierungsvorschau"
+      :title="$i18n('md_input.preview')"
       centered
       ok-only
     >

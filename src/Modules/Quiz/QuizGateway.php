@@ -50,15 +50,17 @@ class QuizGateway extends BaseGateway
         );
     }
 
-    public function updateQuiz(int $id, string $name, string $desc, int $maxFailurePoints, int $questionCount): int
+    public function updateQuiz(int $id, string $name, string $desc, int $maxFailurePoints, int $questionCount, ?int $questionCountUntimed): int
     {
         return $this->db->update(
             'fs_quiz',
             [
                 'name' => $name,
                 'desc' => $desc,
+                'is_desc_htmlentity_encoded' => 0,
                 'maxfp' => $maxFailurePoints,
-                'questcount' => $questionCount
+                'questcount' => $questionCount,
+                'questcount_untimed' => $questionCountUntimed,
             ],
             ['id' => $id]
         );
@@ -72,8 +74,10 @@ class QuizGateway extends BaseGateway
                 'id',
                 'name',
                 'desc',
+                'is_desc_htmlentity_encoded',
                 'maxfp',
-                'questcount'
+                'questcount',
+                'questcount_untimed',
             ],
             ['id' => $id]
         );

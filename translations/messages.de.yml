@@ -279,7 +279,7 @@ quiz:
   wikilink: Weitere Infos dazu im Wiki
   key_facts:
     to_pass: "Zum Bestehen:"
-    easymode: "Maximal {maxfp} Fehlerpunkte in {questcount} Fragen mit, oder {questcountEasymode} Fragen ohne Zeitbegrenzung"
+    easymode: "Maximal {maxfp} Fehlerpunkte in {questcount} Fragen mit, oder {questcount_untimed} Fragen ohne Zeitbegrenzung"
     hardmode: "Maximal {maxfp} Fehlerpunkte in {questcount} Fragen mit Zeitbegrenzung"
   general:
     title: "Allgemeine Informationen"
@@ -3082,3 +3082,17 @@ notifications:
   success: "Erfolgreich gespeichert"
   config_button: 'einzeln konfigurieren'
 
+md_input:
+  tooltip:
+    bold: Fett
+    italic: Kursiv
+    strikethrough: Durchgestrichen
+    heading: Überschrift
+    link: Link
+    code: Code
+    quote: Zitat
+    unorderedList: Liste
+    orderedList: Nummerierte Liste
+    hrule: Trennlinie
+    preview: Vorschau
+  preview: Formatierungsvorschau

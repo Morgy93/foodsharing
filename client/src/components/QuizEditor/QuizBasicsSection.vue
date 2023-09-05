@@ -11,7 +11,14 @@
 
     <p>
       <b v-text="$i18n('desc')+':'" />
-      <span v-html="quiz.desc" />
+      <span
+        v-if="quiz.is_desc_htmlentity_encoded"
+        v-html="quiz.desc"
+      />
+      <Markdown
+        v-else
+        :source="quiz.desc"
+      />
     </p>
 
     <div
@@ -27,6 +34,7 @@
       </b-button>
       <QuizBasicsInputModal
         :quiz="quiz"
+        @update="fetchQuiz()"
       />
     </div>
   </Container>
@@ -37,11 +45,13 @@ import Container from '@/components/Container/Container.vue'
 import { getQuestions, getQuiz } from '@/api/quiz'
 import i18n from '@/helper/i18n'
 import QuizBasicsInputModal from './QuizBasicsInputModal.vue'
+import Markdown from '@/components/Markdown/Markdown.vue'
 
 export default {
   components: {
     Container,
     QuizBasicsInputModal,
+    Markdown,
   },
   props: {
     quizId: {
@@ -61,8 +71,7 @@ export default {
   },
   computed: {
     quizKeyFacts () {
-      const params = Object.assign({}, this.quiz, { questcountEasymode: this.quiz.questcount * 2 })
-      return i18n(`quiz.key_facts.${this.quiz.easymode ? 'easy' : 'hard'}mode`, params)
+      return i18n(`quiz.key_facts.${this.quiz.questcount_untimed ? 'easy' : 'hard'}mode`, this.quiz)
     },
   },
   mounted: function () {
@@ -70,10 +79,16 @@ export default {
   },
   methods: {
     async fetchQuizDetails () {
-      [this.quiz, this.questions] = await Promise.all([
-        getQuiz(this.quizId),
-        getQuestions(this.quizId),
+      await Promise.all([
+        this.fetchQuiz(),
+        this.fetchQuestions(),
       ])
+    },
+    async fetchQuiz () {
+      this.quiz = await getQuiz(this.quizId)
+    },
+    async fetchQuestions () {
+      this.questions = await getQuestions(this.quizId)
     },
   },
 }
