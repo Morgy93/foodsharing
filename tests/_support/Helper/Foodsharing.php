@@ -4,9 +4,7 @@ namespace Helper;
 
 use Carbon\Carbon;
 use DateTime;
-use DateTimeZone;
 use Faker;
-use Foodsharing\Modules\Core\DBConstants\Foodsaver\Role;
 use Foodsharing\Modules\Core\DBConstants\FoodSharePoint\FollowerType;
 use Foodsharing\Modules\Core\DBConstants\Info\InfoType;
 use Foodsharing\Modules\Core\DBConstants\Mailbox\MailboxFolder;
@@ -194,7 +192,7 @@ class Foodsharing extends \Codeception\Module\Db
         $params = [
             'text' => $text,
             'duration' => 60,
-            'wikilink' => 'wiki.foodsharing.de'
+            'wikilink' => 'https://wiki.foodsharing.de'
         ];
         $questionId = $this->haveInDatabase('fs_question', $params);
         $params['id'] = $questionId;
@@ -259,7 +257,7 @@ class Foodsharing extends \Codeception\Module\Db
         return $params;
     }
 
-    public function addVerificationHistory(int $userId, int $ambassadorId, bool $verified, ?DateTime $date = null)
+    public function addVerificationHistory(int $userId, int $ambassadorId, bool $verified, \DateTime $date = null)
     {
         if (is_null($date)) {
             $date = $this->faker->dateTimeThisDecade();
@@ -272,7 +270,7 @@ class Foodsharing extends \Codeception\Module\Db
         ]);
     }
 
-    public function addPassHistory(int $userId, int $ambassadorId, ?DateTime $date = null)
+    public function addPassHistory(int $userId, int $ambassadorId, \DateTime $date = null)
     {
         if (is_null($date)) {
             $date = $this->faker->dateTimeThisDecade();
@@ -565,7 +563,7 @@ class Foodsharing extends \Codeception\Module\Db
 
     public function createBlacklistedEmailAddress(): void
     {
-        $since = (new DateTime('2010-10-14 12:00:00'))->format('Y-m-d H:i:s');
+        $since = (new \DateTime('2010-10-14 12:00:00'))->format('Y-m-d H:i:s');
         $this->haveInDatabase('fs_email_blacklist', ['email' => 'bad.com', 'since' => $since, 'reason' => 'Disposable email addresses should not be used for registration.']);
     }
 
@@ -1161,8 +1159,8 @@ class Foodsharing extends \Codeception\Module\Db
     private function updateForumThreadWithPost($threadId, $post)
     {
         $last_post_id = $this->grabFromDatabase('fs_theme', 'last_post_id', ['id' => $threadId]);
-        $last_post_date = new DateTime($this->grabFromDatabase('fs_theme_post', 'time', ['id' => $last_post_id]));
-        $this_post_date = new DateTime($post['time']);
+        $last_post_date = new \DateTime($this->grabFromDatabase('fs_theme_post', 'time', ['id' => $last_post_id]));
+        $this_post_date = new \DateTime($post['time']);
         if ($last_post_date >= $this_post_date) {
             $this->_getDriver()->executeQuery('UPDATE fs_theme SET last_post_id = ? WHERE id = ?', [$post['id'], $threadId]);
         }
@@ -1184,10 +1182,10 @@ class Foodsharing extends \Codeception\Module\Db
         if ($date === null) {
             return null;
         }
-        if ($date instanceof DateTime) {
+        if ($date instanceof \DateTime) {
             $dt = $date;
         } else {
-            $dt = new DateTime($date, new DateTimeZone('Europe/Berlin'));
+            $dt = new \DateTime($date, new \DateTimeZone('Europe/Berlin'));
         }
 
         return $dt->format('Y-m-d H:i:s');
@@ -1201,10 +1199,10 @@ class Foodsharing extends \Codeception\Module\Db
         if ($date === null) {
             return null;
         }
-        if ($date instanceof DateTime) {
+        if ($date instanceof \DateTime) {
             $dt = $date;
         } else {
-            $dt = new DateTime($date, new DateTimeZone('Europe/Berlin'));
+            $dt = new \DateTime($date, new \DateTimeZone('Europe/Berlin'));
         }
 
         return $dt->format('Y-m-d');
