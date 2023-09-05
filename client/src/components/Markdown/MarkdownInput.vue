@@ -210,6 +210,7 @@ export default {
       await new Promise(resolve => window.requestAnimationFrame(resolve))
       this.baseTextArea.selectionEnd = end
       this.baseTextArea.selectionStart = start
+      this.inputEvent()
     },
     preview () {
       this.$bvModal.show('preview-modal')
