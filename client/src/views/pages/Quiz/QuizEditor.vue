@@ -8,7 +8,12 @@
         />
       </div>
       <div class="col-lg-9">
-        <QuizMetadataEditor
+        <QuizBasicsSection
+          :quiz-id="quizId"
+          :can-edit="canEdit"
+        />
+
+        <QuestionsSection
           :quiz-id="quizId"
           :can-edit="canEdit"
         />
@@ -18,13 +23,15 @@
 </template>
 
 <script>
-import QuizMetadataEditor from '@/components/QuizEditor/QuizBasicsSection.vue'
 import QuizSelection from '@/components/QuizEditor/QuizSelection.vue'
+import QuestionsSection from '@/components/QuizEditor/QuestionsSection.vue'
+import QuizBasicsSection from '@/components/QuizEditor/QuizBasicsSection.vue'
 
 export default {
   components: {
-    QuizMetadataEditor,
     QuizSelection,
+    QuizBasicsSection,
+    QuestionsSection,
   },
   props: {
     quizId: {

@@ -42,7 +42,7 @@
 
 <script>
 import Container from '@/components/Container/Container.vue'
-import { getQuestions, getQuiz } from '@/api/quiz'
+import { getQuiz } from '@/api/quiz'
 import i18n from '@/helper/i18n'
 import QuizBasicsInputModal from './QuizBasicsInputModal.vue'
 import Markdown from '@/components/Markdown/Markdown.vue'
@@ -66,7 +66,6 @@ export default {
   data () {
     return {
       quiz: null,
-      questions: null,
     }
   },
   computed: {
@@ -75,20 +74,11 @@ export default {
     },
   },
   mounted: function () {
-    this.fetchQuizDetails()
+    this.fetchQuiz()
   },
   methods: {
-    async fetchQuizDetails () {
-      await Promise.all([
-        this.fetchQuiz(),
-        this.fetchQuestions(),
-      ])
-    },
     async fetchQuiz () {
       this.quiz = await getQuiz(this.quizId)
-    },
-    async fetchQuestions () {
-      this.questions = await getQuestions(this.quizId)
     },
   },
 }

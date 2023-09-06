@@ -284,7 +284,18 @@ quiz:
   general:
     title: "Allgemeine Informationen"
     edit: Quiz bearbeiten
+  questions_section:
+    title: Quizfragen ({count})
   editable_tooltip: "Du kannst dieses Quiz bearbeiten."
+  timelimit: "Zeitlimit"
+  fp_description: "Insgesamt {fp}, also {per_mistake} pro falscher Antwort"
+  question_options:
+    edit: "Frage bearbeiten"
+    add_answer: "Antwort hinzufügen"
+    show_comments: "Kommentare anzeigen"
+    delete: "Frage löschen"
+  answer_options:
+    edit: "Antwort bearbeiten"
 
 # quiz: "Quiz
 # For legacy UI reasons (QuizView), needs to be toplevel with this exact key:
