@@ -43,7 +43,7 @@ export default {
 
 <style lang="scss" scoped>
 .overflow-menu {
-  color: white;
+  color: var(--fs-color-dark);
 
   &.float {
     float: right;

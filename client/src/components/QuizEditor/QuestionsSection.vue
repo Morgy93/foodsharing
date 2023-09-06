@@ -14,6 +14,7 @@
           v-b-toggle="`accordion-${i}`"
           block
           class="result-detail-toggle"
+          variant="outline-primary"
         >
           <span class="question-title">
             {{ $i18n(`quiz.question`) }} #{{ question.id }}
@@ -228,6 +229,9 @@ export default {
 }
 .result-detail-toggle {
   display: flex;
+  &:hover .overflow-menu {
+    color: white;
+  }
 }
 
 .result-answer-container>span {
@@ -253,23 +257,24 @@ export default {
   &:active {
     background-color: #fffa;
   }
-
 }
 
 .success {
   background-color: var(--fs-color-success-500);
   color:white;
+  .overflow-menu {
+    color: white;
+  }
 }
 .failiure {
   background-color: var(--fs-color-danger-500);
   color:white;
+  .overflow-menu {
+    color: white;
+  }
 }
 .neutral {
   background-color: var(--fs-color-warning-200);
-
-  .overflow-menu {
-    color: var(--fs-color-dark);
-  }
 }
 
 </style>
