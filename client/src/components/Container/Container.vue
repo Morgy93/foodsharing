@@ -17,8 +17,11 @@
         :class="{ 'fa-rotate-180': isExpanded }"
       />
     </div>
-    <div :class="wrapContent ? 'ui-widget-content corner-bottom margin-bottom ui-padding': ''">
-      <slot v-if="isExpanded" />
+    <div
+      v-if="isExpanded"
+      :class="wrapContent ? 'ui-widget-content corner-bottom margin-bottom ui-padding': ''"
+    >
+      <slot />
     </div>
     <button
       v-if="isExpanded && isToggleVisible && !isToggled"
