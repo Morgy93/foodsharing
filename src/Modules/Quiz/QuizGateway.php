@@ -90,13 +90,14 @@ class QuizGateway extends BaseGateway
         return $quiz ? $quiz['name'] : '';
     }
 
-    public function addQuestion(int $quizId, string $text, int $failurePoints, int $duration): int
+    public function addQuestion(int $quizId, string $text, int $failurePoints, int $duration, string $wikiLink): int
     {
         $questionId = $this->db->insert(
             'fs_question',
             [
                 'text' => $text,
-                'duration' => $duration
+                'duration' => $duration,
+                'wikilink' => $wikiLink,
             ]
         );
         if ($questionId > 0) {

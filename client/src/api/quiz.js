@@ -1,4 +1,4 @@
-import { get, patch, post } from './base'
+import { get, patch, post, remove } from './base'
 
 export function getQuizStatus (quizId) {
   return get(`/quiz/${quizId}/status`)
@@ -42,4 +42,24 @@ export function editQuiz (quizId, data) {
 
 export function editQuestion (questionId, data) {
   return patch(`/question/${questionId}`, data)
+}
+
+export function editAnswer (answerId, data) {
+  return patch(`/answer/${answerId}`, data)
+}
+
+export function deleteQuestion (questionId) {
+  return remove(`/question/${questionId}`)
+}
+
+export function deleteAnswer (answerId) {
+  return remove(`/answer/${answerId}`)
+}
+
+export function addAnswer (questionId, data) {
+  return post(`/question/${questionId}/answer`, data)
+}
+
+export function addQuestion (quizId, data) {
+  return post(`/quiz/${quizId}/question`, data)
 }

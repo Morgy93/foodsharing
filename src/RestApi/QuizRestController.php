@@ -273,7 +273,6 @@ final class QuizRestController extends AbstractFOSRestController
         return $this->handleView($this->view(['success' => true], 200));
     }
 
-
     /**
      * @OA\Tag(name="quiz")
      * @Rest\RequestParam(name="text", nullable=false)
@@ -300,6 +299,70 @@ final class QuizRestController extends AbstractFOSRestController
 
     /**
      * @OA\Tag(name="quiz")
+     * @Rest\RequestParam(name="text", nullable=false)
+     * @Rest\RequestParam(name="fp", nullable=false)
+     * @Rest\RequestParam(name="duration", nullable=false)
+     * @Rest\RequestParam(name="wikilink", nullable=false)
+     * @Rest\Post("quiz/{quizId}/question", requirements={"quizId" = "\d+"})
+     */
+    public function addQuestion(int $quizId, ParamFetcher $paramFetcher): Response
+    {
+        $this->quizSanityChecks($quizId);
+
+        $this->quizGateway->addQuestion(
+            $quizId, 
+            $paramFetcher->get('text'),
+            $paramFetcher->get('fp'),
+            $paramFetcher->get('duration'),
+            $paramFetcher->get('wikilink')
+        );
+
+        return $this->handleView($this->view(['success' => true], 200));
+    }
+
+    /**
+     * @OA\Tag(name="quiz")
+     * @Rest\RequestParam(name="text", nullable=false)
+     * @Rest\RequestParam(name="explanation", nullable=false)
+     * @Rest\RequestParam(name="right", nullable=false)
+     * @Rest\Patch("answer/{answerId}", requirements={"answerId" = "\d+"})
+     */
+    public function updateAnswer(int $answerId, ParamFetcher $paramFetcher): Response
+    {
+        $this->answerSanityChecks($answerId);
+        $this->quizGateway->updateAnswer(
+            $answerId,
+            $paramFetcher->get('text'),
+            $paramFetcher->get('explanation'),
+            $paramFetcher->get('right'),
+        );
+
+        return $this->handleView($this->view(['success' => true], 200));
+    }
+
+    /**
+     * @OA\Tag(name="quiz")
+     * @Rest\RequestParam(name="text", nullable=false)
+     * @Rest\RequestParam(name="explanation", nullable=false)
+     * @Rest\RequestParam(name="right", nullable=false)
+     * @Rest\Post("question/{questionId}/answer", requirements={"questionId" = "\d+"})
+     */
+    public function addAnswer(int $questionId, ParamFetcher $paramFetcher): Response
+    {
+        $this->questionSanityChecks($questionId);
+        $this->quizGateway->addAnswer(
+            $questionId,
+            $paramFetcher->get('text'),
+            $paramFetcher->get('explanation'),
+            $paramFetcher->get('right'),
+        );
+
+        return $this->handleView($this->view(['success' => true], 200));
+    }
+
+
+    /**
+     * @OA\Tag(name="quiz")
      * @Rest\Get("quiz/{quizId}/questions", requirements={"quizId" = "\d+"})
      */
     public function getAllQuestions(int $quizId): Response
@@ -308,6 +371,31 @@ final class QuizRestController extends AbstractFOSRestController
         $questions = $this->quizGateway->listQuestions($quizId);
 
         return $this->handleView($this->view($questions, 200));
+    }
+
+
+    /**
+     * @OA\Tag(name="quiz")
+     * @Rest\Delete("question/{questionId}", requirements={"questionId" = "\d+"})
+     */
+    public function deleteQuestions(int $questionId): Response
+    {
+        $this->questionSanityChecks($questionId);
+        $this->quizGateway->deleteQuestion($questionId);
+
+        return $this->handleView($this->view(['success' => true], 200));
+    }
+
+    /**
+     * @OA\Tag(name="quiz")
+     * @Rest\Delete("answer/{answerId}", requirements={"answerId" = "\d+"})
+     */
+    public function deleteAnswer(int $answerId): Response
+    {
+        $this->answerSanityChecks($answerId);
+        $this->quizGateway->deleteAnswer($answerId);
+
+        return $this->handleView($this->view(['success' => true], 200));
     }
 
     /**
@@ -347,4 +435,19 @@ final class QuizRestController extends AbstractFOSRestController
 
         return $question;
     }
+
+    private function answerSanityChecks($answerId)
+    {
+        if (!$this->session->id()) {
+            throw new UnauthorizedHttpException('');
+        }
+        $answer = $this->quizGateway->getAnswer($answerId);
+        if (!$answer) {
+            throw new BadRequestHttpException('Invalid answerId given.');
+        }
+
+        return $answer;
+    }
 }
+
+
