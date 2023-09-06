@@ -184,7 +184,7 @@ class QuizGateway extends BaseGateway
         return $questions;
     }
 
-    public function updateQuestion(int $questionId, int $quizId, string $text, int $failurePoints, int $duration, string $wikiLink): void
+    public function updateQuestion(int $questionId, string $text, int $failurePoints, int $duration, string $wikiLink): void
     {
         $this->db->update(
             'fs_question',
@@ -200,8 +200,7 @@ class QuizGateway extends BaseGateway
             'fs_question_has_quiz',
             ['fp' => $failurePoints],
             [
-                'question_id' => $questionId,
-                'quiz_id' => $quizId
+                'question_id' => $questionId
             ]
         );
     }

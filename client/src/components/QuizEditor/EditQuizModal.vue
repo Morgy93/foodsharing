@@ -1,6 +1,6 @@
 <template>
   <b-modal
-    id="quizBasicsInputModal"
+    id="editQuizModal"
     :title="'Quiz bearbeiten'"
     :ok-disabled="!valuesValid"
     scrollable

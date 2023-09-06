@@ -28,11 +28,11 @@
       <b-button
         block
         variant="primary"
-        @click="$bvModal.show('quizBasicsInputModal')"
+        @click="$bvModal.show('editQuizModal')"
       >
         {{ $i18n('quiz.general.edit') }}
       </b-button>
-      <QuizBasicsInputModal
+      <EditQuizModal
         :quiz="quiz"
         @update="fetchQuiz()"
       />
@@ -44,13 +44,13 @@
 import Container from '@/components/Container/Container.vue'
 import { getQuiz } from '@/api/quiz'
 import i18n from '@/helper/i18n'
-import QuizBasicsInputModal from './QuizBasicsInputModal.vue'
+import EditQuizModal from './EditQuizModal.vue'
 import Markdown from '@/components/Markdown/Markdown.vue'
 
 export default {
   components: {
     Container,
-    QuizBasicsInputModal,
+    EditQuizModal,
     Markdown,
   },
   props: {

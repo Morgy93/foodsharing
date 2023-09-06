@@ -15,27 +15,35 @@
           block
           class="result-detail-toggle"
         >
-          <span>
-            {{ $i18n(`quiz.question`) }} {{ i+1 }}
+          <span class="question-title">
+            {{ $i18n(`quiz.question`) }} #{{ question.id }}
+            -
+            {{ question.text }}
           </span>
-
-          <OverflowMenu
-            :options="[
-              {hide: !canEdit, icon:'pen', textKey: 'quiz.question_options.edit', callback: () => console.log(1)},
-              {hide: !canEdit, icon:'plus-circle', textKey: 'quiz.question_options.add_answer', callback: () => console.log(4)},
-              {hide: !question.comment_count, icon:'comments', textKey: 'quiz.question_options.show_comments', callback: () => console.log(2)},
-              {hide: !canEdit, icon:'trash', textKey: 'quiz.question_options.delete', callback: () => console.log(3)},
-            ]"
-          />
 
           <b-badge
             v-if="question.comment_count"
-            pill
-            class="fp-counter"
+            class="comment-badge"
           >
             {{ question.comment_count }}
             <i class="fas fa-comments" />
           </b-badge>
+
+          <OverflowMenu
+            :options="[
+              {hide: !canEdit, icon:'pen', textKey: 'quiz.question_options.edit', callback: () => $bvModal.show(`editQuestionModal-${i}`)},
+              {hide: !canEdit, icon:'plus-circle', textKey: 'quiz.question_options.add_answer', callback: () => console.log(4)},
+              {hide: !question.comment_count, icon:'comments', textKey: 'quiz.question_options.show_comments', callback: () => console.log(2)},
+              {hide: !canEdit, icon:'trash', textKey: 'quiz.question_options.delete', callback: () => console.log(3)},
+            ]"
+            :float="false"
+          />
+
+          <EditQuestionModal
+            :id="`editQuestionModal-${i}`"
+            :question="question"
+            @update="fetchQuestions()"
+          />
         </b-button>
       </b-card-header>
       <b-collapse
@@ -93,11 +101,13 @@
 import { getQuestions } from '@/api/quiz'
 import Container from '@/components/Container/Container.vue'
 import OverflowMenu from '@/components/OverflowMenu.vue'
+import EditQuestionModal from './EditQuestionModal.vue'
 
 export default {
   components: {
     Container,
     OverflowMenu,
+    EditQuestionModal,
   },
   props: {
     quizId: {
@@ -130,14 +140,18 @@ export default {
 </script>
 
 <style scoped lang="scss">
-
-.badge.fp-counter {
-  float: right;
-  top: .2em;
+.question-title {
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+  flex-grow: 1;
+  text-align: left;
 }
-
-.result-detail-toggle span:nth-child(1) {
-  float: left;
+.comment-badge {
+  line-height: normal;
+}
+.result-detail-toggle {
+  display: flex;
 }
 
 .result-answer-container>span {

@@ -39,3 +39,7 @@ export function getQuestionComments (questionId) {
 export function editQuiz (quizId, data) {
   return patch(`/quiz/${quizId}`, data)
 }
+
+export function editQuestion (questionId, data) {
+  return patch(`/question/${questionId}`, data)
+}

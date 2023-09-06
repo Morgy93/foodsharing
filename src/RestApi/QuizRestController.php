@@ -273,6 +273,31 @@ final class QuizRestController extends AbstractFOSRestController
         return $this->handleView($this->view(['success' => true], 200));
     }
 
+
+    /**
+     * @OA\Tag(name="quiz")
+     * @Rest\RequestParam(name="text", nullable=false)
+     * @Rest\RequestParam(name="fp", nullable=false)
+     * @Rest\RequestParam(name="duration", nullable=false)
+     * @Rest\RequestParam(name="wikilink", nullable=false)
+     * @Rest\Patch("question/{questionId}", requirements={"questionId" = "\d+"})
+     */
+    public function updateQuestion(int $questionId, ParamFetcher $paramFetcher): Response
+    {
+        $this->questionSanityChecks($questionId);
+
+        $this->quizGateway->updateQuestion(
+            $questionId,
+            $paramFetcher->get('text'),
+            $paramFetcher->get('fp'),
+            $paramFetcher->get('duration'),
+            $paramFetcher->get('wikilink')
+        );
+
+        return $this->handleView($this->view(['success' => true], 200));
+    }
+
+
     /**
      * @OA\Tag(name="quiz")
      * @Rest\Get("quiz/{quizId}/questions", requirements={"quizId" = "\d+"})

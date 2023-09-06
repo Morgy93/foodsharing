@@ -5,6 +5,7 @@
     right
     variant="badge-light"
     class="overflow-menu"
+    :class="{float}"
   >
     <template #button-content>
       <i class="fas fa-ellipsis-v" />
@@ -27,6 +28,10 @@ export default {
       type: Array,
       default: () => [],
     },
+    float: {
+      type: Boolean,
+      default: true,
+    },
   },
   computed: {
     activeOptions () {
@@ -38,8 +43,11 @@ export default {
 
 <style lang="scss" scoped>
 .overflow-menu {
-  float: right;
   color: white;
+
+  &.float {
+    float: right;
+  }
 
   ::v-deep .btn {
     padding: 0.25em .75em;

@@ -296,6 +296,10 @@ quiz:
     delete: "Frage löschen"
   answer_options:
     edit: "Antwort bearbeiten"
+  fp_options:
+    joke: "{fp} Fehlerpunkte (Keine Wertung)"
+    default: "{fp} Fehlerpunkte"
+    ko: "{fp} Fehlerpunkte (k.o.)"
 
 # quiz: "Quiz
 # For legacy UI reasons (QuizView), needs to be toplevel with this exact key:
