@@ -180,11 +180,12 @@ class Foodsharing extends \Codeception\Module\Db
             'desc' => $descs[$quizId] || '<p>Dies ist die Beschreibung des Quizzes "' . $roles[$quizId] . '". Hier sind noch ne Menge weitere Infos zu finden.</p><p>Außerdem sollte <b>Formatierung</b> funktionieren, sowie ein Link zum <a href="wiki.foodsharing.de">Wiki</a> enthalten sein.</p>',
             'maxfp' => 0,
             'questcount' => $questionCount,
+            'questcount_untimed' => $quizId === 1 ? $questionCount * 2 : null,
         ];
         $params['id'] = $this->haveInDatabase('fs_quiz', $params);
 
         $params['questions'] = [];
-        for ($i = 1; $i <= $questionCount; ++$i) {
+        for ($i = 1; $i <= $questionCount * 3; ++$i) {
             $questionText = 'Welche Antworten sind richtig? Dies ist Frage #' . $i . ' für Quiz #' . $params['id'] . '.';
             $params['questions'][] = $this->createQuestion($params['id'], $questionText);
         }
