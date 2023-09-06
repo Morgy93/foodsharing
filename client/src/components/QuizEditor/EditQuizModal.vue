@@ -4,6 +4,7 @@
     :title="'Quiz bearbeiten'"
     :ok-disabled="!valuesValid"
     scrollable
+    centered
     @ok="handleOk"
   >
     <b-form ref="form">
@@ -87,6 +88,7 @@
       <MarkdownInput
         :initial-value="form.desc"
         :state="!form.desc.includes('<')"
+        :rows="6"
         @update:value="newValue => form.desc = newValue"
       />
     </b-form>

@@ -296,6 +296,7 @@ quiz:
     delete: "Frage löschen"
   answer_options:
     edit: "Antwort bearbeiten"
+    delete: "Antwort löschen"
   fp_options:
     joke: "{fp} Fehlerpunkte (Keine Wertung)"
     default: "{fp} Fehlerpunkte"

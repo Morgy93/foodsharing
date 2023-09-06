@@ -32,9 +32,9 @@
           <OverflowMenu
             :options="[
               {hide: !canEdit, icon:'pen', textKey: 'quiz.question_options.edit', callback: () => $bvModal.show(`editQuestionModal-${i}`)},
-              {hide: !canEdit, icon:'plus-circle', textKey: 'quiz.question_options.add_answer', callback: () => console.log(4)},
+              {hide: !canEdit, icon:'plus-circle', textKey: 'quiz.question_options.add_answer', callback: () => addAnswerHandler(`addAnswerModal-${i}`)},
               {hide: !question.comment_count, icon:'comments', textKey: 'quiz.question_options.show_comments', callback: () => console.log(2)},
-              {hide: !canEdit, icon:'trash', textKey: 'quiz.question_options.delete', callback: () => console.log(3)},
+              {hide: !canEdit, icon:'trash', textKey: 'quiz.question_options.delete', callback: () => deleteQuestionHandler(question.id)},
             ]"
             :float="false"
           />
@@ -42,6 +42,13 @@
           <EditQuestionModal
             :id="`editQuestionModal-${i}`"
             :question="question"
+            @update="fetchQuestions()"
+          />
+
+          <EditAnswerModal
+            :id="`addAnswerModal-${i}`"
+            :answer="newAnswer"
+            :question-id="question.id"
             @update="fetchQuestions()"
           />
         </b-button>
@@ -79,8 +86,15 @@
               >
                 <OverflowMenu
                   :options="[
-                    {hide: !canEdit, icon:'pen', textKey: 'quiz.answer_options.edit', callback: () => console.log(1)},
+                    {hide: !canEdit, icon:'pen', textKey: 'quiz.answer_options.edit', callback: () => $bvModal.show(`editAnswerModal-${answer.id}`)},
+                    {hide: !canEdit, icon:'trash', textKey: 'quiz.answer_options.delete', callback: () => deleteAnswerHandler(answer.id)},
                   ]"
+                />
+
+                <EditAnswerModal
+                  :id="`editAnswerModal-${answer.id}`"
+                  :answer="answer"
+                  @update="fetchQuestions()"
                 />
 
                 <b>{{ $i18n(`quiz.answers.short.${answer.right}`) }}:</b>
@@ -94,20 +108,42 @@
         </b-card-body>
       </b-collapse>
     </div>
+
+    <div
+      v-if="canEdit"
+    >
+      <hr>
+      <b-button
+        block
+        variant="primary"
+        @click="$bvModal.show('addQuestionModal')"
+      >
+        Frage hinzufügen
+      </b-button>
+
+      <EditQuestionModal
+        :id="`addQuestionModal`"
+        :question="newQuestion"
+        :quiz-id="quizId"
+        @update="fetchQuestions()"
+      />
+    </div>
   </Container>
 </template>
 
 <script>
-import { getQuestions } from '@/api/quiz'
+import { deleteAnswer, deleteQuestion, getQuestions } from '@/api/quiz'
 import Container from '@/components/Container/Container.vue'
 import OverflowMenu from '@/components/OverflowMenu.vue'
 import EditQuestionModal from './EditQuestionModal.vue'
+import EditAnswerModal from './EditAnswerModal.vue'
 
 export default {
   components: {
     Container,
     OverflowMenu,
     EditQuestionModal,
+    EditAnswerModal,
   },
   props: {
     quizId: {
@@ -123,6 +159,17 @@ export default {
     return {
       questions: null,
       console: console,
+      newAnswer: {
+        text: '',
+        explanation: '',
+        right: 1,
+      },
+      newQuestion: {
+        text: '',
+        fp: 1,
+        duration: 120,
+        wikilink: '',
+      },
     }
   },
   mounted: function () {
@@ -134,6 +181,35 @@ export default {
     },
     answerColorClass (right) {
       return ['failiure', 'success', 'neutral'][right]
+    },
+    async deleteQuestionHandler (questionId) {
+      const confirmed = await this.$bvModal.msgBoxConfirm('Willst du diese Frage wirklich löschen?', {
+        title: 'Sicher?',
+        okVariant: 'danger',
+        okTitle: 'Löschen',
+        cancelTitle: 'Abbrechen',
+        centered: true,
+      })
+      if (confirmed) {
+        await deleteQuestion(questionId)
+        await this.fetchQuestions()
+      }
+    },
+    async deleteAnswerHandler (answerId) {
+      const confirmed = await this.$bvModal.msgBoxConfirm('Willst du diese Antwort wirklich löschen?', {
+        title: 'Sicher?',
+        okVariant: 'danger',
+        okTitle: 'Löschen',
+        cancelTitle: 'Abbrechen',
+        centered: true,
+      })
+      if (confirmed) {
+        await deleteAnswer(answerId)
+        await this.fetchQuestions()
+      }
+    },
+    addAnswerHandler (id) {
+      this.$bvModal.show(id)
     },
   },
 }
@@ -190,6 +266,10 @@ export default {
 }
 .neutral {
   background-color: var(--fs-color-warning-200);
+
+  .overflow-menu {
+    color: var(--fs-color-dark);
+  }
 }
 
 </style>

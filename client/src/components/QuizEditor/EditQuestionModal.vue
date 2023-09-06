@@ -4,7 +4,9 @@
     :title="'Frage bearbeiten'"
     :ok-disabled="!valuesValid"
     scrollable
+    centered
     @ok="handleOk"
+    @show="loadForm()"
   >
     <b-form ref="form">
       <b-form-group
@@ -53,7 +55,7 @@
           v-model="form.wikilink"
           placeholder="https://wiki.foodsharing.de/..."
           required
-          :state="form.wikilink.startsWith('https://wiki.foodsharing.de/')"
+          :state="form.wikilink?.startsWith('https://wiki.foodsharing.de/')"
           trim
         />
       </b-form-group>
@@ -62,7 +64,7 @@
 </template>
 
 <script>
-import { editQuestion } from '@/api/quiz'
+import { addQuestion, editQuestion } from '@/api/quiz'
 
 export default {
   props: {
@@ -74,13 +76,14 @@ export default {
       type: String,
       default: 'editQuestionModal',
     },
+    quizId: {
+      type: Number,
+      default: -1,
+    },
   },
   data () {
-    const form = Object.assign({}, this.question)
-    delete form.answers
-    delete form.comment_count
     return {
-      form,
+      form: {},
       durationOptions: this.buildDurationOptions(),
       fpOptions: this.buildFpOptions(),
     }
@@ -89,12 +92,16 @@ export default {
     valuesValid () {
       return this.form.text &&
         this.form.duration &&
-        this.form.wikilink.startsWith('https://wiki.foodsharing.de/')
+        this.form.wikilink?.startsWith('https://wiki.foodsharing.de/')
     },
   },
   methods: {
     async handleOk () {
-      await editQuestion(this.question.id, this.form)
+      if (this.question.id) {
+        await editQuestion(this.question.id, this.form)
+      } else {
+        await addQuestion(this.quizId, this.form)
+      }
       this.$emit('update')
     },
     buildDurationOptions () {
@@ -120,6 +127,11 @@ export default {
         value: fp,
         text: this.$i18n('quiz.fp_options.' + ({ 0: 'joke', 12: 'ko' }[fp] || 'default'), { fp }),
       }))
+    },
+    loadForm () {
+      this.form = Object.assign({}, this.question)
+      delete this.form.answers
+      delete this.form.comment_count
     },
   },
 }
