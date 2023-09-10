@@ -7,6 +7,7 @@ use Foodsharing\Modules\Bell\BellGateway;
 use Foodsharing\Modules\Bell\DTO\Bell;
 use Foodsharing\Modules\Core\DBConstants\Bell\BellType;
 use Foodsharing\Modules\Core\DBConstants\Region\WorkgroupFunction;
+use Foodsharing\Modules\Core\DBConstants\Report\ReportType;
 use Foodsharing\Modules\Foodsaver\FoodsaverGateway;
 use Foodsharing\Modules\Group\GroupFunctionGateway;
 use Foodsharing\Modules\Report\ReportGateway;
@@ -129,6 +130,7 @@ class ReportRestController extends AbstractFOSRestController
         $this->reportGateway->addBetriebReport(
             $paramFetcher->get('reportedId'),
             $paramFetcher->get('reporterId'),
+            ReportType::GOALS_REPORT,
             $paramFetcher->get('reasonId'),
             $paramFetcher->get('reason'),
             $paramFetcher->get('message'),

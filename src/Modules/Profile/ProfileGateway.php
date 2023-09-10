@@ -7,6 +7,7 @@ use Foodsharing\Lib\WebSocketConnection;
 use Foodsharing\Modules\Core\BaseGateway;
 use Foodsharing\Modules\Core\Database;
 use Foodsharing\Modules\Core\DBConstants\BasketRequests\Status as RequestStatus;
+use Foodsharing\Modules\Core\DBConstants\Report\ReportType;
 use Foodsharing\Modules\Core\DBConstants\Store\CooperationStatus;
 use Foodsharing\Modules\Core\DBConstants\Store\StoreLogAction;
 use Foodsharing\Modules\Core\DBConstants\Unit\UnitType;
@@ -249,7 +250,7 @@ final class ProfileGateway extends BaseGateway
 
     private function getViolationCount(int $fsId): int
     {
-        return (int)$this->db->count('fs_report', ['foodsaver_id' => $fsId]);
+        return (int)$this->db->count('fs_report', ['foodsaver_id' => $fsId, 'reporttype' => ReportType::GOALS_REPORT]);
     }
 
     private function getNotesCount(int $fsId): int

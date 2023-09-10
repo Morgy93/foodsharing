@@ -3,6 +3,7 @@
 namespace Foodsharing\Modules\Report;
 
 use Foodsharing\Modules\Core\Control;
+use Foodsharing\Modules\Core\DBConstants\Report\ReportType;
 use Foodsharing\Permissions\ReportPermissions;
 use Foodsharing\Utility\ImageHelper;
 use Symfony\Component\HttpFoundation\Request;
@@ -55,7 +56,7 @@ class ReportControl extends Control
     public function foodsaver(): void
     {
         if ($this->reportPermissions->mayHandleReports()) {
-            if ($foodsaver = $this->reportGateway->getReportedSaver($_GET['id'])) {
+            if ($foodsaver = $this->reportGateway->getReportedSaver($_GET['id'], ReportType::GOALS_REPORT)) {
                 $this->pageHelper->addBread(
                     $this->translator->trans('menu.reports'),
                     '/?page=report&sub=foodsaver&id=' . (int)$foodsaver['id']

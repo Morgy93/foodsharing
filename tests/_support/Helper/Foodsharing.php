@@ -14,6 +14,7 @@ use Foodsharing\Modules\Core\DBConstants\Quiz\SessionStatus;
 use Foodsharing\Modules\Core\DBConstants\Region\RegionIDs;
 use Foodsharing\Modules\Core\DBConstants\Region\RegionOptionType;
 use Foodsharing\Modules\Core\DBConstants\Region\RegionPinStatus;
+use Foodsharing\Modules\Core\DBConstants\Report\ReportType;
 use Foodsharing\Modules\Core\DBConstants\StoreTeam\MembershipStatus as STATUS;
 use Foodsharing\Modules\Core\DBConstants\Unit\UnitType;
 use Foodsharing\Modules\Core\DBConstants\Voting\VotingScope;
@@ -1025,13 +1026,14 @@ class Foodsharing extends \Codeception\Module\Db
         return $params;
     }
 
-    public function addReport($reporterId, $reporteeId, $storeId = 0, $confirmed = 0, $reason = null, $msg = null)
+    public function addReport($reporterId, $reporteeId, $rpReasonId = 2, $storeId = 0, $confirmed = 0, $reason = null, $msg = null)
     {
         $params = [
             'reporter_id' => $reporterId,
             'foodsaver_id' => $reporteeId,
             'betrieb_id' => $storeId,
-            'reporttype' => 1,
+            'reporttype' => ReportType::GOALS_REPORT,
+            'rp_report_id' => $rpReasonId,
             'time' => $this->toDateTime($this->faker->dateTimeBetween('first day of january this year', $max = 'now')),
             'msg' => $msg ?? $this->faker->text(500),
             'tvalue' => $reason ?? $this->faker->text(50),

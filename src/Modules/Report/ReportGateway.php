@@ -4,19 +4,22 @@ namespace Foodsharing\Modules\Report;
 
 use Envms\FluentPDO\Queries\Select;
 use Foodsharing\Modules\Core\BaseGateway;
+use Foodsharing\Modules\Core\DBConstants\Report\ReportType;
 
 class ReportGateway extends BaseGateway
 {
-    /* Reporttype: 1: Other (see list ReportView for list of possible reasons, they are all mapped to 1...), 2: missed pickup */
+    /* Reporttype:  see Reporttype define
+       ReasonId     : corresponding id to reason (came to late, didn't show for pickup etc.*/
 
-    public function addBetriebReport($reportedId, $reporterId, $reasonId, $reason, $message, $storeId = 0): int
+    public function addBetriebReport($reportedId, $reporterId, $rpType, $reasonId, $reason, $message, $storeId = 0): int
     {
         return $this->db->insert(
             'fs_report',
             [
                 'foodsaver_id' => (int)$reportedId,
                 'reporter_id' => (int)$reporterId,
-                'reporttype' => (int)$reasonId,
+                'rp_type' => (int)$rpType,
+                'rp_reason_id' => (int)$reasonId,
                 'betrieb_id' => (int)$storeId,
                 'time' => date('Y-m-d H:i:s'),
                 'committed' => 0,
@@ -26,80 +29,12 @@ class ReportGateway extends BaseGateway
         );
     }
 
-    public function getFoodsaverBetriebe($fsId): array
-    {
-        $stm = '
-			SELECT 	b.id, b.name
-			FROM 	fs_betrieb_team t,
-					fs_betrieb b
-			WHERE 	t.betrieb_id = b.id
-			AND 	t.foodsaver_id = :foodsaver_id
-		';
-
-        return $this->db->fetchAll($stm, [':foodsaver_id' => (int)$fsId]);
-    }
-
     public function delReport($id): void
     {
         $this->db->delete('fs_report', ['id' => (int)$id]);
     }
 
-    public function confirmReport($id): void
-    {
-        $this->db->update('fs_report', ['committed' => 1], ['id' => $id]);
-    }
-
-    public function getReportedSavers(): array
-    {
-        return $this->db->fetchAll(
-            '
-			SELECT 	fs.name,
-					CONCAT(fs.nachname," (",COUNT(rp.foodsaver_id),")") AS nachname,
-					fs.photo,
-					fs.id,
-					fs.sleep_status,
-					COUNT(rp.foodsaver_id) AS count,
-					CONCAT("/?page=report&sub=foodsaver&id=",fs.id) AS `href`
-
-			FROM 	fs_foodsaver fs,
-					fs_report rp
-
-			WHERE 	rp.foodsaver_id = fs.id
-
-			GROUP 	BY rp.foodsaver_id
-
-			ORDER BY count DESC, fs.name
-		'
-        );
-    }
-
-    public function getReportStats(): array
-    {
-        $ret = $this->db->fetchAll(
-            '
-			SELECT 	`committed`, COUNT(`id`) as count
-			FROM 	fs_report
-			GROUP BY `committed`
-			ORDER BY `committed`
-		'
-        );
-        $new = 0;
-        $com = 0;
-        foreach ($ret as $r) {
-            if ($r['committed'] == 0) {
-                $new = $r['count'];
-            } else {
-                $com = $r['count'];
-            }
-        }
-
-        return [
-            'com' => $com,
-            'new' => $new
-        ];
-    }
-
-    public function getReportedSaver($id): ?array
+    public function getReportedSaver($id, $rpType): ?array
     {
         $stm = '
 			SELECT 	`id`,
@@ -119,7 +54,8 @@ class ReportGateway extends BaseGateway
 					r.id,
 	            	r.`msg`,
 	            	r.`tvalue`,
-	            	r.`reporttype`,
+	            	r.`rp_type`,
+	            	r.`rp_reason_id`,
 					r.`time`,
 					UNIX_TIMESTAMP(r.`time`) AS time_ts,
 
@@ -139,11 +75,12 @@ class ReportGateway extends BaseGateway
 
 				WHERE
 					r.foodsaver_id = :id
+				and r.rp_type = :rpType
 
 	          	ORDER BY
 					r.`time` DESC
 			';
-            $fs['reports'] = $this->db->fetchAll($stm, [':id' => (int)$id]);
+            $fs['reports'] = $this->db->fetchAll($stm, [':id' => (int)$id, ':rpType' => (int)$rpType]);
 
             return $fs;
         }
@@ -158,7 +95,8 @@ class ReportGateway extends BaseGateway
 				r.id,
             	r.`msg`,
             	r.`tvalue`,
-            	r.`reporttype`,
+            	r.`rp_type`,
+            	r.`rp_reason_id`,
 				r.`time`,
 				r.committed,
 				r.betrieb_id,
@@ -264,29 +202,7 @@ class ReportGateway extends BaseGateway
 
         // restrict access only to new reports to avoid social conflicts from old entries
         $query = $query->where('time >= \'2021-01-01\'');
-
-        return $query->fetchAll();
-    }
-
-    public function getReportsForRegionlessByReporterRegion($regions, $excludeReportsAboutUser = null)
-    {
-        $query = $this->reportSelect();
-        $query->where('fs.bezirk_id = 0');
-        if ($regions !== null && is_array($regions)) {
-            $query = $query->where('rp.bezirk_id', $regions);
-        }
-        if ($excludeReportsAboutUser !== null) {
-            $query = $query->where('fs.id != ?', $excludeReportsAboutUser);
-        }
-
-        return $query->fetchAll();
-    }
-
-    public function getReports($committed = '0'): array
-    {
-        $query = $this->reportSelect();
-        $query = $query->where('r.committed = ?', $committed);
-
+        $query = $query->where('rp_type', ReportType::GOALS_REPORT);
         return $query->fetchAll();
     }
 }
