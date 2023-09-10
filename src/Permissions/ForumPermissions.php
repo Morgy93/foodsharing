@@ -54,6 +54,9 @@ class ForumPermissions
         if ($this->session->mayRole(Role::ORGA)) {
             return true;
         }
+        if (!$this->session->isVerifiedMail()) {
+            return false;
+        }
 
         if ($ambassadorForum && !$this->session->isAdminFor($regionId)) {
             return false;

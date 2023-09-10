@@ -409,7 +409,8 @@ class Session
             'photo' => $fs['photo'],
             'rolle' => (int)$fs['rolle'],
             'verified' => (int)$fs['verified'],
-            'last_activity' => $fs['last_activity']
+            'last_activity' => $fs['last_activity'],
+            'verified_mail' => $fs['active']
         ];
         if ((int)$fs['rolle'] > 0) {
             if ($r = $this->regionGateway->listRegionsForBotschafter($fs['id'])
@@ -546,5 +547,10 @@ class Session
             $this->loginGateway->updateLastActivityInDatabase($this->id());
             $this->refreshFromDatabase();
         }
+    }
+
+    public function isVerifiedMail(): bool
+    {
+        return $_SESSION['client']['verified_mail'] === 1;
     }
 }

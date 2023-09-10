@@ -45,6 +45,10 @@ final class EventPermissions
 
     public function mayCommentInEvent(array $event): bool
     {
+        if (!$this->session->isVerifiedMail()) {
+            return false;
+        }
+
         return $this->maySeeEvent($event);
     }
 }
