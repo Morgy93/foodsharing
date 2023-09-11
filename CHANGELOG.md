@@ -4,6 +4,7 @@
 
 ## Changes
 - Changed team state translation from full to closed !2831 @chriswalg
+- prevent post on forum or comment on event / wallposts for unverified mail accounts !2854 @chriswalg
 
 ## Bugfixes
 
