@@ -111,9 +111,7 @@ class StoreTransactions
             return CommonLabel::createFromArray($row);
         }, $this->storeGateway->getBasics_groceries());
 
-        $store->categories = [
-            new CommonLabel(0, $this->translator->trans('store.no_chain')),
-            new CommonLabel(-1, $this->translator->trans('store.nodeclaration')),
+        $store->categories = [new CommonLabel(0, $this->translator->trans('store.nodeclaration')),
             ...array_map(function ($row) {
                 return CommonLabel::createFromArray($row);
             }, $this->storeGateway->getStoreCategories())];
@@ -152,7 +150,9 @@ class StoreTransactions
         ]);
 
         if (!$supressStoreChains) {
-            $store->storeChains = [new CommonLabel(0, $this->translator->trans('store.nodeclaration')),
+            $store->storeChains = [
+                new CommonLabel(-1, $this->translator->trans('store.nodeclaration')),
+                new CommonLabel(0, $this->translator->trans('store.no_chain')),
                 ...array_map(function ($row) {
                     return CommonLabel::createFromArray($row);
                 }, $this->storeGateway->getBasics_chain())];
