@@ -942,6 +942,7 @@ store:
   peoplecame: "Es ist des Öfteren vorgekommen, dass Leute unabgesprochen zum Laden gegangen sind."
   nochains: "Bitte nur inhabergeführte Betriebe bis maximal 3 Filialen ansprechen, niemals Filialen einer größeren Kette ansprechen! Betriebskettenregeln beachten!"
   nodeclaration: "Keine Angabe"
+  no_chain: "keine Kette"
   prefetchone: "1 Woche"
   prefetchtwo: "2 Wochen"
   prefetchthree: "3 Wochen"

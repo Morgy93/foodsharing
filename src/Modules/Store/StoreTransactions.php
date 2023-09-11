@@ -111,7 +111,9 @@ class StoreTransactions
             return CommonLabel::createFromArray($row);
         }, $this->storeGateway->getBasics_groceries());
 
-        $store->categories = [new CommonLabel(0, $this->translator->trans('store.nodeclaration')),
+        $store->categories = [
+            new CommonLabel(0, $this->translator->trans('store.no_chain')),
+            new CommonLabel(-1, $this->translator->trans('store.nodeclaration')),
             ...array_map(function ($row) {
                 return CommonLabel::createFromArray($row);
             }, $this->storeGateway->getStoreCategories())];
