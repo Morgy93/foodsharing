@@ -1,3 +1,20 @@
+# Unreleased
+
+## Features
+
+## Changes
+- Changed team state translation from full to closed !2831 @chriswalg
+
+## Bugfixes
+
+## Refactoring
+- Use REST for quickreplying to wall posts !2795 @alex.simm
+
+## Dev/Test/CI stuff
+
+## Development documentation
+
+
 # Release "Jackfruit", 2023-09-09
 
 ## Features
@@ -32,7 +49,6 @@
 - Add user id to bbb conference name !2821 @chriswalg
 - Truncate only if title is longer than 150 characters !2819 @chriswalg
 - added a checkbox doesNotAffectStore in report form !2839 @chriswalg
-
 
 ## Bugfixes
 - Reimplementation of the StoreManager empty pickup E-Mail notification !2574 @KoeMai
@@ -74,7 +90,7 @@
 - Update member list after adding a member !2811 @chriswalg
 - Fix missing thumbnails in store team list !2818 @chriswalg
 - Fix that the region chooser does not show lower regions when changing a higher region !2823 @alex.simm
-- Fix condition check for date in release banner !2846 @chriswalg
+- Fix condition check for release banner !2846 !2850 @chriswalg
 
 ## Refactoring
 - added poppins font in Styleguide !2564 @Niklas003
@@ -101,7 +117,7 @@
 - Refactored the list of group applications to vue, which not also shows profile pictures #343 !2696 @alex.simm
 - Refactor the list of food share points in a region to vue !2702 @alex.simm
 - Refactor notification settings page to vue and rest api !2700 !2778 !2825 @chriswalg
-- Refactor setting sleeping mode to vue !2749 !2760 @chriswalg
+- Refactor setting sleeping mode to vue !2749 !2760 !2855 @chriswalg
 - Refactor user passport generation page #1617 !2660 !2758 @chriswalg
 - Replaced the form for changing the email address with a vue component !2753 @alex.simm
 - Refactor account deletion to vue !2775 @chriswalg

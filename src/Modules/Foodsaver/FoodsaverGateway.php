@@ -315,7 +315,9 @@ class FoodsaverGateway extends BaseGateway
 					fs.`photo`,
 					fs.`email`,
 					fs.`geschlecht`,
-					fs.`sleep_status`
+					fs.`sleep_status`,
+					fs.`sleep_from`,
+					fs.`sleep_until`
 
 			FROM    `fs_foodsaver` fs
 			        INNER JOIN `fs_botschafter` amb

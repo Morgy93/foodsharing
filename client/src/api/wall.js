@@ -5,7 +5,9 @@ export function getWallPosts (target, targetId) {
 }
 
 export function addPost (target, targetId, body) {
-  return post(`/wall/${target}/${targetId}`, body)
+  return post(`/wall/${target}/${targetId}`, {
+    body: body,
+  })
 }
 
 export function deletePost (target, targetId, postId) {

@@ -61,34 +61,6 @@ class WallPostXhr extends Control
         }
     }
 
-    public function quickreply()
-    {
-        if (!$this->wallPostPermissions->mayWriteWall($this->session->id(), $this->table, $this->id)) {
-            return XhrResponses::PERMISSION_DENIED;
-        }
-        $data = json_decode(file_get_contents('php://input'), true);
-        $message = trim(strip_tags($data['msg'] ?? ''));
-
-        if (!empty($message) && $post_id = $this->wallPostGateway->addPost(
-            $message,
-            $this->session->id(),
-            $this->table,
-            $this->id
-        )) {
-            echo json_encode([
-                'status' => 1,
-                'message' => $this->translator->trans('wall.created'),
-            ]);
-            exit;
-        }
-
-        echo json_encode([
-            'status' => 0,
-            'message' => $this->translator->trans('wall.error-create'),
-        ]);
-        exit;
-    }
-
     public function post()
     {
         if (!$this->wallPostPermissions->mayWriteWall($this->session->id(), $this->table, $this->id)) {

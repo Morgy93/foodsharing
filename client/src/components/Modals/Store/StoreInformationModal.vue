@@ -484,7 +484,7 @@ export default {
       foodSearchCriteriaField: '',
       storeFoodNames: [],
       teamStatusOptions: [
-        { value: 0, text: this.$i18n('store.team.isfull') },
+        { value: 0, text: this.$i18n('store.team.is_closed') },
         { value: 1, text: this.$i18n('menu.entry.helpwanted') },
         { value: 2, text: this.$i18n('menu.entry.helpneeded') },
       ],

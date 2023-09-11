@@ -127,7 +127,6 @@ class XhrAppController extends AbstractController
         'Team::contact',
         // 'WallPost::delpost',
         // 'WallPost::update',
-        'WallPost::quickreply',
         // 'WallPost::post',
         'WallPost::attachimage',
         // 'WallPost::attach_allow',

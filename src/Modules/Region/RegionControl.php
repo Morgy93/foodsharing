@@ -17,6 +17,7 @@ use Foodsharing\Permissions\RegionPermissions;
 use Foodsharing\Permissions\ReportPermissions;
 use Foodsharing\Permissions\VotingPermissions;
 use Foodsharing\Permissions\WorkGroupPermissions;
+use Foodsharing\Utility\DataHelper;
 use Foodsharing\Utility\ImageHelper;
 use Symfony\Component\Form\FormFactoryInterface;
 use Symfony\Component\HttpFoundation\Request;
@@ -42,6 +43,7 @@ final class RegionControl extends Control
     private WorkGroupPermissions $workGroupPermission;
 
     private const DisplayAvatarListEntries = 30;
+    private DataHelper $dataHelper;
 
     /**
      * @required
@@ -65,7 +67,8 @@ final class RegionControl extends Control
         VotingGateway $votingGateway,
         VotingPermissions $votingPermissions,
         WorkGroupPermissions $workGroupPermissions,
-        StoreGateway $storeGateway
+        StoreGateway $storeGateway,
+        DataHelper $dataHelper
     ) {
         $this->gateway = $gateway;
         $this->eventGateway = $eventGateway;
@@ -81,6 +84,7 @@ final class RegionControl extends Control
         $this->votingPermissions = $votingPermissions;
         $this->workGroupPermission = $workGroupPermissions;
         $this->storeGateway = $storeGateway;
+        $this->dataHelper = $dataHelper;
         parent::__construct();
     }
 
@@ -181,7 +185,7 @@ final class RegionControl extends Control
                 'user' => [
                     'id' => $fs['id'],
                     'name' => $fs['name'],
-                    'sleep_status' => $fs['sleep_status']
+                    'sleep_status' => $this->dataHelper->parseSleepingState($fs['sleep_status'], $fs['sleep_from'], $fs['sleep_until'])
                 ],
                 'size' => 50,
                 'imageUrl' => $this->imageService->img($fs['photo'], 50, 'q')

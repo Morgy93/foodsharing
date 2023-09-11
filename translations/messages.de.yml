@@ -925,7 +925,7 @@ store:
   willgetcontacted: "Du bist momentan auf der Springerliste. Daher kannst du keine Telefonnummern von Teammitgliedern, keine Pinnwand-Einträge, keinen Team-Chat und keine Slots sehen. Du hast die Möglichkeit, den Springer-Chat zu schreiben."
   not_verified: "Du bist unverifiziert. Daher kannst du keine keine Slots und keine Telefonnummern von Teammitgliedern sehen."
   team:
-    isfull: "Team ist voll"
+    is_closed: "Team ist geschlossen"
     search_input: "Suche nach Name / Telefonnr."
     search_reset: "Suche zurücksetzen"
     no_record: "Es wurde kein Eintrag gefunden."
@@ -986,7 +986,7 @@ storeedit:
     status: "Status" #also in QuizView
   fetch:
     teamStatus: "Teamstatus"
-    teamStatus0: "Dieses Team ist voll und sucht zurzeit keine weiteren Helfer*innen"
+    teamStatus0: "Dieses Team ist geschlossen und sucht zurzeit keine weiteren Helfer*innen"
     teamStatus1: "Es werden noch Helfer*innen gesucht"
     teamStatus2: "Es werden dringend noch Helfer*innen gesucht"
   add_success: "Kooperationsbetrieb wurde eingetragen"

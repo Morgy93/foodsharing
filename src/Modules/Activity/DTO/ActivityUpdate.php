@@ -16,7 +16,6 @@ class ActivityUpdate
 
     public string $icon;
     public array $gallery;
-    public ?string $quickreply;
 
     public int $fs_id;
     public ?string $fs_name;
@@ -36,7 +35,6 @@ class ActivityUpdate
         ?string $source_suffix,
         string $icon,
         ?array $gallery,
-        ?string $quickreply,
         int $fs_id,
         ?string $fs_name,
         int $entity_id,
@@ -56,7 +54,6 @@ class ActivityUpdate
 
         $u->icon = $icon;
         $u->gallery = $gallery ?? [];
-        $u->quickreply = $quickreply;
 
         $u->fs_id = $fs_id;
         $u->fs_name = $fs_name;

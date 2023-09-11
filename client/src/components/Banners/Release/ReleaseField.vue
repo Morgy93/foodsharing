@@ -55,18 +55,16 @@ export default {
   },
   computed: {
     isSet () {
-      return JSON.parse(localStorage.getItem(this.tag))
+      return localStorage.getItem(this.tag)
     },
 
     isNew () {
-      const storage = JSON.parse(localStorage.getItem(`${this.tag}_time`))
-      return new Date() > new Date(storage)
+      return ReleaseData.version !== localStorage.getItem(this.tag)
     },
   },
   created () {
     if (this.isNew) {
       localStorage.removeItem(this.tag)
-      localStorage.removeItem(`${this.tag}_time`)
     }
   },
   mounted () {
@@ -76,8 +74,7 @@ export default {
   },
   methods: {
     setSeen () {
-      localStorage.setItem(this.tag, JSON.stringify(true))
-      localStorage.setItem(`${this.tag}_time`, JSON.stringify(new Date()))
+      localStorage.setItem(this.tag, ReleaseData.version)
     },
     close () {
       this.setSeen()
