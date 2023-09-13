@@ -117,12 +117,81 @@
               label-for="chainId"
               class="bootstrap input-wrapper"
             >
-              <b-form-select
-                id="chainId"
-                v-model="store.chainId"
-                :options="storeChains"
+              <b-form-tags
+                v-if="storeChains !== null"
+                id="tags-with-dropdown"
+                v-model="store.chain"
+                :limit="1"
                 :disabled="!editMode"
-              />
+                n-outer-focus
+                class="mb-2"
+              >
+                <template #default="{ tags, disabled, addTag, removeTag }">
+                  <ul
+                    v-if="tags.length > 0"
+                    class="list-inline d-inline-block mb-2"
+                  >
+                    <li
+                      v-for="tag in tags"
+                      :key="tag"
+                      class="list-inline-item"
+                    >
+                      <b-form-tag
+                        :title="tag"
+                        :disabled="disabled"
+                        variant="info"
+                        @remove="removeTag(tag)"
+                      >
+                        {{ tag }}
+                      </b-form-tag>
+                    </li>
+                  </ul>
+
+                  <b-dropdown
+                    v-if="editMode"
+                    size="sm"
+                    variant="outline-secondary"
+                    block
+                    menu-class="w-100"
+                  >
+                    <template #button-content>
+                      <i class="fas fa-cutlery" /> Wähle eine Kette
+                    </template>
+                    <b-dropdown-form
+                      @submit.stop.prevent="() => {}"
+                    >
+                      <b-form-group
+                        :label="$i18n('storeview.groceries.search_tag')"
+                        label-for="tag-search-input"
+                        label-cols-md="auto"
+                        class="mb-0"
+                        label-size="sm"
+                        :description="foodSearchCriteriaFieldDesc"
+                        :disabled="disabled"
+                      >
+                        <b-form-input
+                          id="tag-search-input"
+                          v-model="chainSearchCriteriaField"
+                          type="search"
+                          size="sm"
+                          autocomplete="off"
+                        />
+                      </b-form-group>
+                    </b-dropdown-form>
+                    <b-dropdown-divider />
+                    <b-dropdown-item-button
+                      v-for="chain in availableChainOptions"
+                      :key="chain"
+                      @click="onSelectChainClick({ chain, addTag })"
+                    >
+                      {{ chain }}
+                    </b-dropdown-item-button>
+                    <b-dropdown-text v-if="storeChains.length === 0">
+                      {{ $i18n('storeview.groceries.no_tag_preset') }}
+                    </b-dropdown-text>
+                  </b-dropdown>
+                </template>
+              </b-form-tags>
             </b-form-group>
             <b-form-group
               :label="$i18n('address')"
@@ -482,6 +551,7 @@ export default {
       previousEditPickups: null,
       selectedWeekDay: null,
       foodSearchCriteriaField: '',
+      chainSearchCriteriaField: '',
       storeFoodNames: [],
       teamStatusOptions: [
         { value: 0, text: this.$i18n('store.team.is_closed') },
@@ -531,6 +601,9 @@ export default {
     foodSearchCriteria () {
       return this.foodSearchCriteriaField.trim().toLowerCase()
     },
+    chainSearchCriteria () {
+      return this.chainSearchCriteriaField.trim().toLowerCase()
+    },
     storeFoodIds () {
       const selectedValues = StoreData.getters.getGrocerieTypes().filter(opt => this.storeFoodNames.indexOf(opt.name) !== -1).filter(opt => opt.name)
       return [...new Set(selectedValues.map(opt => opt.id))]
@@ -545,6 +618,11 @@ export default {
       }
       // Show all available options
       return [...new Set(options.map(opt => opt.name))]
+    },
+    availableChainOptions () {
+      return this.storeChains
+        .filter(chain => chain.text.toLowerCase().indexOf(this.chainSearchCriteria) > -1)
+        .map(chain => chain.text)
     },
     foodSearchCriteriaFieldDesc () {
       if (this.foodSearchCriteria && this.availableFoodOptions.length === 0) {
@@ -639,6 +717,10 @@ export default {
       addTag(option)
       this.foodSearchCriteriaField = ''
     },
+    onSelectChainClick ({ chain, addTag }) {
+      addTag(chain)
+      this.chainSearchCriteriaField = ''
+    },
     onAddressChanged (coordinates, street, postalCode, city) {
       this.store.location = coordinates
       this.store.address.street = street
@@ -671,5 +753,10 @@ export default {
 <style>
 .b-form-btn-label-control.form-control > .btn {
   font-size: 0.5em;
+}
+
+ul.dropdown-menu.w-100.show {
+  max-height: 51rem;
+  overflow-x: auto;
 }
 </style>
