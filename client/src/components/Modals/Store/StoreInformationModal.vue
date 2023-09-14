@@ -161,7 +161,7 @@
                       @submit.stop.prevent="() => {}"
                     >
                       <b-form-group
-                        :label="$i18n('storeview.groceries.search_tag')"
+                        label="Suche nach einer Kette"
                         label-for="tag-search-input"
                         label-cols-md="auto"
                         class="mb-0"
