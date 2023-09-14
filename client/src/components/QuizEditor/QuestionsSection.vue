@@ -106,6 +106,15 @@
               </span>
             </span>
           </p>
+
+          <Wall
+            target="bezirk"
+            :target-id="3818"
+          />
+          <!-- <Wall
+            target="question"
+            :target-id="question.id"
+          /> -->
         </b-card-body>
       </b-collapse>
     </div>
@@ -135,6 +144,7 @@
 <script>
 import { deleteAnswer, deleteQuestion, getQuestions } from '@/api/quiz'
 import Container from '@/components/Container/Container.vue'
+import Wall from '@/components/Wall/Wall.vue'
 import OverflowMenu from '@/components/OverflowMenu.vue'
 import EditQuestionModal from './EditQuestionModal.vue'
 import EditAnswerModal from './EditAnswerModal.vue'
@@ -142,6 +152,7 @@ import EditAnswerModal from './EditAnswerModal.vue'
 export default {
   components: {
     Container,
+    Wall,
     OverflowMenu,
     EditQuestionModal,
     EditAnswerModal,

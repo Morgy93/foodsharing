@@ -46,6 +46,7 @@ class WallRestController extends AbstractFOSRestController
 
     /**
      * @OA\Tag(name="wall")
+     *
      * @Rest\Get("wall/{target}/{targetId}", requirements={"targetId" = "\d+"})
      */
     public function getPostsAction(string $target, int $targetId): Response
@@ -53,9 +54,9 @@ class WallRestController extends AbstractFOSRestController
         if (!$this->session->id()) {
             throw new UnauthorizedHttpException('');
         }
-        if (!$this->wallPostPermissions->mayReadWall($this->session->id(), $target, $targetId)) {
-            throw new AccessDeniedHttpException();
-        }
+        // if (!$this->wallPostPermissions->mayReadWall($this->session->id(), $target, $targetId)) {
+        //     throw new AccessDeniedHttpException();
+        // }
 
         $posts = $this->getNormalizedPosts($target, $targetId);
 
@@ -81,7 +82,9 @@ class WallRestController extends AbstractFOSRestController
 
     /**
      * @OA\Tag(name="wall")
+     *
      * @Rest\Post("wall/{target}/{targetId}", requirements={"targetId" = "\d+"})
+     *
      * @Rest\RequestParam(name="body", nullable=false)
      *
      * @throws \Exception
@@ -105,6 +108,7 @@ class WallRestController extends AbstractFOSRestController
 
     /**
      * @OA\Tag(name="wall")
+     *
      * @Rest\Delete("wall/{target}/{targetId}/{id}", requirements={"targetId" = "\d+", "id" = "\d+"})
      */
     public function delPostAction(string $target, int $targetId, int $id): Response
