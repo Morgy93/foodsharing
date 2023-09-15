@@ -45,67 +45,67 @@ class XhrMethods
 
     public function xhr_continueMail($data): ?array
     {
-        if ($this->newsletterEmailPermissions->mayAdministrateNewsletterEmail()) {
-            $mail_id = (int)$data['id'];
+        if (!$this->newsletterEmailPermissions->mayAdministrateNewsletterEmail()) {
+            return null;
+        }
 
-            $mail = $this->emailGateway->getOne_send_email($mail_id);
-            $recip = $this->emailGateway->getMailNext($mail_id);
+        $mail_id = (int)$data['id'];
 
-            if (empty($recip)) {
-                return [
-                    'status' => 2,
-                    'comment' => $this->translator->trans('recipients.done'),
-                ];
-            }
+        $mail = $this->emailGateway->getOne_send_email($mail_id);
+        $recip = $this->emailGateway->getMailNext($mail_id);
 
-            $mailbox = $this->mailboxGateway->getMailbox((int)$mail['mailbox_id']);
-            $mailbox['email'] = $mailbox['name'] . '@' . PLATFORM_MAILBOX_HOST;
-
-            $sender = $this->database->fetchByCriteria('foodsaver', ['geschlecht', 'name'], ['id' => $this->session->id()]);
-
-            $this->emailGateway->setEmailStatus($mail['id'], $recip, EmailStatus::STATUS_INITIALISED);
-
-            foreach ($recip as $fs) {
-                $anrede = $this->translator->trans('salutation.' . $fs['geschlecht']);
-
-                $search = ['{NAME}', '{ANREDE}', '{EMAIL}'];
-                $replace = [$fs['name'], $anrede, $fs['email']];
-
-                $attach = false;
-                if (!empty($mail['attach'])) {
-                    $attach = json_decode($mail['attach'], true);
-                }
-
-                $message = str_replace($search, $replace, $mail['message']);
-                $subject = str_replace($search, $replace, $mail['name']);
-
-                $check = false;
-                if ($this->emailHelper->libmail($mailbox, $fs['email'], $subject, $message, $attach, $fs['token'])) {
-                    $check = true;
-                }
-
-                if (!$check) {
-                    $this->emailGateway->setEmailStatus($mail['id'], [$fs['id']], EmailStatus::STATUS_INVALID_MAIL);
-                } else {
-                    $this->emailGateway->setEmailStatus($mail['id'], [$fs['id']], EmailStatus::STATUS_SENT);
-                }
-            }
-
-            $mails_left = $this->emailGateway->getMailsLeft($mail['id']);
-            if ($mails_left) {
-                // throttle to 5 mails per second here to avoid queue bloat
-                sleep(2);
-            }
-            $current = $fs['email'] ?? $this->translator->trans('recipients.unknown');
-
+        if (empty($recip)) {
             return [
-                'left' => $mails_left,
-                'status' => 1,
-                'comment' => $this->translator->trans('recipients.status', ['{current}' => $current]),
+                'status' => 2,
+                'comment' => $this->translator->trans('recipients.done'),
             ];
         }
 
-        return null;
+        $mailbox = $this->mailboxGateway->getMailbox((int)$mail['mailbox_id']);
+        $mailbox['email'] = $mailbox['name'] . '@' . PLATFORM_MAILBOX_HOST;
+
+        $sender = $this->database->fetchByCriteria('foodsaver', ['geschlecht', 'name'], ['id' => $this->session->id()]);
+
+        $this->emailGateway->setEmailStatus($mail['id'], $recip, EmailStatus::STATUS_INITIALISED);
+
+        foreach ($recip as $fs) {
+            $anrede = $this->translator->trans('salutation.' . $fs['geschlecht']);
+
+            $search = ['{NAME}', '{ANREDE}', '{EMAIL}'];
+            $replace = [$fs['name'], $anrede, $fs['email']];
+
+            $attach = false;
+            if (!empty($mail['attach'])) {
+                $attach = json_decode($mail['attach'], true);
+            }
+
+            $message = str_replace($search, $replace, $mail['message']);
+            $subject = str_replace($search, $replace, $mail['name']);
+
+            $check = false;
+            if ($this->emailHelper->libmail($mailbox, $fs['email'], $subject, $message, $attach, $fs['token'])) {
+                $check = true;
+            }
+
+            if (!$check) {
+                $this->emailGateway->setEmailStatus($mail['id'], [$fs['id']], EmailStatus::STATUS_INVALID_MAIL);
+            } else {
+                $this->emailGateway->setEmailStatus($mail['id'], [$fs['id']], EmailStatus::STATUS_SENT);
+            }
+        }
+
+        $mails_left = $this->emailGateway->getMailsLeft($mail['id']);
+        if ($mails_left) {
+            // throttle to 5 mails per second here to avoid queue bloat
+            sleep(2);
+        }
+        $current = $fs['email'] ?? $this->translator->trans('recipients.unknown');
+
+        return [
+            'left' => $mails_left,
+            'status' => 1,
+            'comment' => $this->translator->trans('recipients.status', ['{current}' => $current]),
+        ];
     }
 
     public function xhr_newregion($data): ?array
