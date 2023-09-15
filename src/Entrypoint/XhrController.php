@@ -67,12 +67,7 @@ class XhrController extends AbstractController
         }
 
         if (!in_array($action, XhrController::csrf_whitelist) && !$session->isValidCsrfHeader()) {
-            $response = new Response();
-            $response->setProtocolVersion('1.1');
-            $response->setStatusCode(Response::HTTP_FORBIDDEN);
-            $response->setContent('CSRF Failed: CSRF token missing or incorrect.');
-
-            return $response;
+            return new Response('CSRF Failed: CSRF token missing or incorrect.', Response::HTTP_FORBIDDEN);
         }
 
         $func = 'xhr_' . $action;
@@ -80,32 +75,26 @@ class XhrController extends AbstractController
             return new Response(null, Response::HTTP_BAD_REQUEST);
         }
 
-        $response = new Response();
-
         $influxdb->addPageStatData(['controller' => $func]);
 
         /** @var array|null $func */
-        $data = $xhr->$func($_GET);
+        $data = $xhr->$func($request->query->all());
 
         if ($data === XhrResponses::PERMISSION_DENIED) {
-            $response->setProtocolVersion('1.1');
-            $response->setStatusCode(Response::HTTP_FORBIDDEN);
-            $response->setContent('Permission denied');
-
-            return $response;
+            return new Response('Permission denied', Response::HTTP_FORBIDDEN);
         }
 
+        $response = new Response();
+
         if (is_array($data)) {
-            $data = json_encode($data);
             $response->headers->set('Content-Type', 'application/json');
+            $response->setContent(json_encode($data));
         }
 
         // check for page caching
         if (isset($cache) && $cache->shouldCache()) {
             $cache->cache($data);
         }
-
-        $response->setContent($data);
 
         return $response;
     }
