@@ -172,26 +172,24 @@ class XhrMethods
 
     public function xhr_getBezirk($data): ?array
     {
-        global $g_data;
-
         if (!$this->regionPermissions->mayAdministrateRegions()) {
             return XhrResponses::PERMISSION_DENIED;
         }
-        $g_data = $this->groupGateway->getGroupLegacy($data['id']);
+        $data = $this->groupGateway->getGroupLegacy($data['id']);
 
-        $g_data['mailbox_name'] = '';
-        if ($mbname = $this->mailboxGateway->getMailboxname($g_data['mailbox_id'])) {
-            $g_data['mailbox_name'] = $mbname;
+        $data['mailbox_name'] = '';
+        if ($mbname = $this->mailboxGateway->getMailboxname($data['mailbox_id'])) {
+            $data['mailbox_name'] = $mbname;
         }
 
         $out = [];
         $out['status'] = 1;
 
         $inputs = '<input type="text" name="botschafter[]" value="" class="tag input text value" />';
-        if (!empty($g_data['foodsaver'])) {
+        if (!empty($data['foodsaver'])) {
             $inputs = '';
-            if (isset($g_data['botschafter']) && is_array($g_data['botschafter'])) {
-                foreach ($g_data['botschafter'] as $fs) {
+            if (isset($data['botschafter']) && is_array($data['botschafter'])) {
+                foreach ($data['botschafter'] as $fs) {
                     $inputs .= '<input type="text" name="botschafter[' . $fs['id'] . '-a]" value="' . $fs['name'] . '" class="tag input text value" />';
                 }
             }
@@ -262,7 +260,7 @@ class XhrMethods
                 'masterupdate',
                 [
                     'desc' => $this->translator->trans('region.hull.closure', [
-                        '{region}' => $g_data['name'],
+                        '{region}' => $data['name'],
                     ]),
                 ]
             );
@@ -351,8 +349,6 @@ class XhrMethods
             return null;
         }
 
-        global $g_data;
-        $g_data = $data;
         $regionId = intval($data['bezirk_id']);
         $parentId = intval($data['parent_id']);
 
@@ -401,17 +397,17 @@ class XhrMethods
 
         $oldRegionData = $this->groupGateway->getGroupLegacy($regionId);
 
-        if (strlen($g_data['mailbox_name']) > 1) {
+        if (strlen($data['mailbox_name']) > 1) {
             try {
                 $mbid = (int)$this->database->fetchValue('SELECT mailbox_id FROM fs_bezirk WHERE id = ?', [$regionId]);
-                $this->database->update('fs_mailbox', ['name' => strip_tags($g_data['mailbox_name'])], ['id' => $mbid]);
+                $this->database->update('fs_mailbox', ['name' => strip_tags($data['mailbox_name'])], ['id' => $mbid]);
             } catch (DatabaseNoValueFoundException) {
-                $mbid = $this->database->insert('fs_mailbox', ['name' => strip_tags($g_data['mailbox_name'])]);
+                $mbid = $this->database->insert('fs_mailbox', ['name' => strip_tags($data['mailbox_name'])]);
                 $this->database->update('fs_bezirk', ['mailbox_id' => $mbid], ['id' => $regionId]);
             }
         }
 
-        $g_data = $this->sanitizerService->handleTagSelect('botschafter', $g_data);
+        $data = $this->sanitizerService->handleTagSelect('botschafter', $data);
 
         // If the workgroup is moved it loses the old functions.
         // else a region is moved, all workgroups loose their related targets
@@ -426,9 +422,9 @@ class XhrMethods
             $oldRegionData = $this->groupGateway->getGroupLegacy($regionId);
         }
 
-        $this->regionGateway->update_bezirkNew($regionId, $g_data);
+        $this->regionGateway->update_bezirkNew($regionId, $data);
 
-        $functionId = $g_data['workgroup_function'];
+        $functionId = $data['workgroup_function'];
         $oldFunctionId = $oldRegionData['workgroup_function'];
         if ($functionId && !$oldFunctionId) {
             if (WorkgroupFunction::isValidFunction($functionId)) {
