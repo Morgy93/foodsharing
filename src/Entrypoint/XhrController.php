@@ -84,10 +84,7 @@ class XhrController extends AbstractController
 
         $influxdb->addPageStatData(['controller' => $func]);
 
-        ob_start();
-        echo $xhr->$func($_GET);
-        $page = ob_get_contents();
-        ob_end_clean();
+        $page = $xhr->$func($_GET);
 
         if ($page === XhrResponses::PERMISSION_DENIED) {
             $response->setProtocolVersion('1.1');
