@@ -51,12 +51,11 @@ class Sanitizer
         return $result;
     }
 
-    public function handleTagSelect(string $identifier): void
+    public function handleTagSelect(string $identifier, array $data): array
     {
-        global $g_data;
         $recip = [];
-        if (isset($g_data[$identifier]) && is_array($g_data[$identifier])) {
-            foreach ($g_data[$identifier] as $key => $r) {
+        if (isset($data[$identifier]) && is_array($data[$identifier])) {
+            foreach ($data[$identifier] as $key => $r) {
                 if ($key != '') {
                     $part = explode('-', $key);
                     $recip[$part[0]] = $part[0];
@@ -64,7 +63,9 @@ class Sanitizer
             }
         }
 
-        $g_data[$identifier] = $recip;
+        $data[$identifier] = $recip;
+
+        return $data;
     }
 
     public function jsSafe(string $str, string $quote = "'"): string

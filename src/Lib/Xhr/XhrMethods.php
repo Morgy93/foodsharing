@@ -411,7 +411,7 @@ class XhrMethods
             }
         }
 
-        $this->sanitizerService->handleTagSelect('botschafter');
+        $g_data = $this->sanitizerService->handleTagSelect('botschafter', $g_data);
 
         // If the workgroup is moved it loses the old functions.
         // else a region is moved, all workgroups loose their related targets
