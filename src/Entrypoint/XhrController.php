@@ -84,9 +84,9 @@ class XhrController extends AbstractController
 
         $influxdb->addPageStatData(['controller' => $func]);
 
-        $page = $xhr->$func($_GET);
+        $data = $xhr->$func($_GET);
 
-        if ($page === XhrResponses::PERMISSION_DENIED) {
+        if ($data === XhrResponses::PERMISSION_DENIED) {
             $response->setProtocolVersion('1.1');
             $response->setStatusCode(Response::HTTP_FORBIDDEN);
             $response->setContent('Permission denied');
@@ -94,18 +94,17 @@ class XhrController extends AbstractController
             return $response;
         }
 
-        if (is_string($page) && (!trim($page) || $page[0] == '{' || $page[0] == '[')) {
-            // just assume it's JSON, to prevent the browser from interpreting it as
-            // HTML, which could result in XSS possibilities
+        if (is_array($data)) {
+            $data = json_encode($data);
             $response->headers->set('Content-Type', 'application/json');
         }
 
         // check for page caching
         if (isset($cache) && $cache->shouldCache()) {
-            $cache->cache($page);
+            $cache->cache($data);
         }
 
-        $response->setContent($page);
+        $response->setContent($data);
 
         return $response;
     }
