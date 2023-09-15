@@ -84,6 +84,7 @@ class XhrController extends AbstractController
 
         $influxdb->addPageStatData(['controller' => $func]);
 
+        /** @var array|null $func */
         $data = $xhr->$func($_GET);
 
         if ($data === XhrResponses::PERMISSION_DENIED) {

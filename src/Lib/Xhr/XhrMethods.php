@@ -43,7 +43,7 @@ class XhrMethods
     ) {
     }
 
-    public function xhr_continueMail($data)
+    public function xhr_continueMail($data): ?array
     {
         if ($this->newsletterEmailPermissions->mayAdministrateNewsletterEmail()) {
             $mail_id = (int)$data['id'];
@@ -105,13 +105,13 @@ class XhrMethods
             ];
         }
 
-        return 0;
+        return null;
     }
 
-    public function xhr_newregion($data)
+    public function xhr_newregion($data): ?array
     {
         if (!$this->regionPermissions->mayAdministrateRegions()) {
-            return;
+            return null;
         }
 
         $data['name'] = strip_tags($data['name']);
@@ -121,13 +121,13 @@ class XhrMethods
         $data['email_name'] = 'foodsharing ' . $data['name'];
 
         if (empty($data['name'])) {
-            return;
+            return null;
         }
 
         $out = $this->regionGateway->addRegion($data);
 
         if (!$out) {
-            return;
+            return null;
         }
 
         $parentId = intval($data['parent_id']);
@@ -141,7 +141,7 @@ class XhrMethods
         ];
     }
 
-    public function xhr_bezirkTree($data)
+    public function xhr_bezirkTree($data): ?array
     {
         $region = $this->regionGateway->getBezirkByParent(
             $data['p'],
@@ -170,7 +170,7 @@ class XhrMethods
         return $out;
     }
 
-    public function xhr_getBezirk($data)
+    public function xhr_getBezirk($data): ?array
     {
         global $g_data;
 
@@ -345,10 +345,10 @@ class XhrMethods
         return $out;
     }
 
-    public function xhr_saveBezirk($data)
+    public function xhr_saveBezirk($data): ?array
     {
         if (!$this->regionPermissions->mayAdministrateRegions()) {
-            return;
+            return null;
         }
 
         global $g_data;
@@ -505,11 +505,13 @@ class XhrMethods
         ];
     }
 
-    public function xhr_abortEmail($data)
+    public function xhr_abortEmail($data): ?array
     {
         $mailOwnerId = $this->emailGateway->getOne_send_email($data['id'])['foodsaver_id'];
         if ($this->session->id() == $mailOwnerId) {
             $this->emailGateway->setEmailStatus($data['id'], $mailOwnerId, EmailStatus::STATUS_CANCELED);
         }
+
+        return null;
     }
 }
