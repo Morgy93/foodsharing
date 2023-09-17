@@ -6,6 +6,7 @@
 ## Changes
 - Changed team state translation from full to closed !2831 @chriswalg
 - Add "call" (tel:) button visibility also for desktop, not only mobile" #1138 !2835 @chriswalg
+- Moved StoreInformationModal to a tab on store page and changed the buttons for chats and leaving team !2874 @chriswalg
 
 ## Bugfixes
 
