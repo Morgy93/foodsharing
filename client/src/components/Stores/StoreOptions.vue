@@ -3,13 +3,6 @@
     :title="storeName"
     tag="store_options"
   >
-    <StoreInformationModal
-      :is-jumper="isJumper"
-      :store-id="storeId"
-      :may-edit-store="mayEditStore"
-      :is-coordinator="isCoordinator"
-      :is-verified="isVerified"
-    />
     <button
       v-if="teamConversationId != null && isUserInStore"
       type="button"
@@ -27,7 +20,7 @@
     <button
       type="button"
       class="list-group-item list-group-item-action"
-      @click="$bvModal.show('storeInformationModal')"
+      @click="toggleStoreInformation"
       v-text="$i18n('storeview.show_information')"
     />
     <button
@@ -46,12 +39,10 @@ import conversationStore from '@/stores/conversations'
 import { pulseError } from '@/script'
 import DataUser from '@/stores/user'
 import { removeStoreMember } from '@/api/stores'
-import StoreInformationModal from '@/components/Modals/Store/StoreInformationModal.vue'
 import Container from '@/components/Container/Container.vue'
 
 export default {
   components: {
-    StoreInformationModal,
     Container,
   },
   props: {
@@ -104,6 +95,9 @@ export default {
         return
       }
       this.isBusy = false
+    },
+    toggleStoreInformation () {
+      this.$emit('toggle-store-information')
     },
   },
 }

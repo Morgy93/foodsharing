@@ -3,6 +3,14 @@
     v-if="storeInformation"
     class="container my-3 my-sm-5"
   >
+    <StoreInformationModal
+      v-if="showStoreInformation"
+      :is-jumper="permissions.isJumper"
+      :store-id="storeId"
+      :may-edit-store="permissions.mayEditStore"
+      :is-coordinator="permissions.isCoordinator"
+      :is-verified="isVerified"
+    />
     <div class="row">
       <div class="col-lg-3 mr-lg-4 mr-xl-0">
         <StoreOptions
@@ -17,6 +25,7 @@
           :store-id="storeId"
           :is-coordinator="permissions.isCoordinator"
           :is-verified="isVerified"
+          @toggle-store-information="toggleStoreInformation"
         />
         <StoreWall
           v-if="viewIsMobile"
@@ -118,9 +127,11 @@ import PickupList from '@/components/Stores/PickupList.vue'
 import DataUser from '@/stores/user'
 import StoreData from '@/stores/stores'
 import { pulseInfo } from '@/script'
+import StoreInformationModal from '@/components/Stores/StoreInformation.vue'
 
 export default {
   components: {
+    StoreInformationModal,
     StoreOptions,
     StoreTeam,
     StoreInfos,
@@ -139,6 +150,7 @@ export default {
     return {
       isUserInStore: false,
       lastFetchDate: null,
+      showStoreInformation: false,
     }
   },
   computed: {
@@ -177,6 +189,9 @@ export default {
     }
   },
   methods: {
+    toggleStoreInformation () {
+      this.showStoreInformation = !this.showStoreInformation
+    },
     loadRightsInfo () {
       if (this.permissions.mayEditStore && !this.permissions.isManager) {
         if (this.permissions.isOrgUser) {
