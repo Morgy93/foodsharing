@@ -3,19 +3,6 @@
     v-if="storeInformation"
     class="container my-3 my-sm-5"
   >
-    <StoreMenu
-      :store-name="storeInformation.name"
-      :team-conversation-id="permissions.teamConversationId"
-      :jumper-conversation-id="permissions.jumperConversationId"
-      :may-edit-store="permissions.mayEditStore"
-      :is-user-in-store="isUserInStore"
-      :may-leave-store-team="permissions.mayLeaveStoreTeam"
-      :is-jumper="permissions.isJumper"
-      :fs-id="userId"
-      :store-id="storeId"
-      :is-coordinator="permissions.isCoordinator"
-      :is-verified="isVerified"
-    />
     <b-tabs
       content-class="mt-3"
       card
@@ -34,6 +21,19 @@
               :managers="storeManagers"
               :may-write-post="permissions.mayWritePost"
               :may-delete-everything="permissions.mayDeleteEverything"
+            />
+            <StoreMenu
+              :store-name="storeInformation.name"
+              :team-conversation-id="permissions.teamConversationId"
+              :jumper-conversation-id="permissions.jumperConversationId"
+              :may-edit-store="permissions.mayEditStore"
+              :is-user-in-store="isUserInStore"
+              :may-leave-store-team="permissions.mayLeaveStoreTeam"
+              :is-jumper="permissions.isJumper"
+              :fs-id="userId"
+              :store-id="storeId"
+              :is-coordinator="permissions.isCoordinator"
+              :is-verified="isVerified"
             />
             <StoreTeam
               v-if="!viewIsMobile"

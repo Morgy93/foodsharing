@@ -1,24 +1,34 @@
 <template>
-  <b-button-group>
+  <Container
+    :title="storeName"
+    tag="store_options"
+  >
     <b-button
       v-if="teamConversationId != null && isUserInStore"
+      variant="primary"
+      class="mt-2"
+      block
       @click="openChat(teamConversationId)"
     >
       {{ $i18n('store.chat.team') }}
     </b-button>
     <b-button
       v-if="jumperConversationId != null && isUserInStore || isJumper"
+      variant="outline-primary"
+      block
       @click="openChat(jumperConversationId)"
     >
       {{ $i18n('store.chat.jumper') }}
     </b-button>
     <b-button
       v-if="mayLeaveStoreTeam && isUserInStore || isJumper"
+      variant="outline-warning"
+      block
       @click="removeFromTeam(fsId, $i18n('storeedit.team.leave_myself'))"
     >
       {{ $i18n('storeedit.team.leave') }}
     </b-button>
-  </b-button-group>
+  </Container>
 </template>
 
 <script>
@@ -26,8 +36,10 @@ import conversationStore from '@/stores/conversations'
 import { pulseError } from '@/script'
 import DataUser from '@/stores/user'
 import { removeStoreMember } from '@/api/stores'
+import Container from '@/components/Container/Container.vue'
 
 export default {
+  components: { Container },
   props: {
     storeName: { type: String, required: true },
     fsId: { type: Number, required: true },
