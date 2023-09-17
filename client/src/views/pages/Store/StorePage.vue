@@ -14,14 +14,6 @@
       >
         <div class="row">
           <div class="col-lg-3 mr-lg-4 mr-xl-0">
-            <StoreWall
-              v-if="viewIsMobile"
-              :may-read-store-wall="permissions.mayReadStoreWall"
-              :store-id="storeId"
-              :managers="storeManagers"
-              :may-write-post="permissions.mayWritePost"
-              :may-delete-everything="permissions.mayDeleteEverything"
-            />
             <StoreMenu
               :store-name="storeInformation.name"
               :team-conversation-id="permissions.teamConversationId"
@@ -34,6 +26,14 @@
               :store-id="storeId"
               :is-coordinator="permissions.isCoordinator"
               :is-verified="isVerified"
+            />
+            <StoreWall
+              v-if="viewIsMobile"
+              :may-read-store-wall="permissions.mayReadStoreWall"
+              :store-id="storeId"
+              :managers="storeManagers"
+              :may-write-post="permissions.mayWritePost"
+              :may-delete-everything="permissions.mayDeleteEverything"
             />
             <StoreTeam
               v-if="!viewIsMobile"
