@@ -425,6 +425,12 @@
         </b-card-text>
       </b-tab>
     </b-tabs>
+    <b-button
+      variant="primary"
+      @click="submit"
+    >
+      {{ $i18n('button.save') }}
+    </b-button>
   </b-card>
 </template>
 

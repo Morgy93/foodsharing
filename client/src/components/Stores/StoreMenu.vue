@@ -1,37 +1,24 @@
 <template>
-  <Container
-    :title="storeName"
-    tag="store_options"
-  >
-    <button
+  <b-button-group>
+    <b-button
       v-if="teamConversationId != null && isUserInStore"
-      type="button"
-      class="list-group-item list-group-item-action"
       @click="openChat(teamConversationId)"
-      v-text="$i18n('store.chat.team')"
-    />
-    <button
+    >
+      {{ $i18n('store.chat.team') }}
+    </b-button>
+    <b-button
       v-if="jumperConversationId != null && isUserInStore || isJumper"
-      type="button"
-      class="list-group-item list-group-item-action"
       @click="openChat(jumperConversationId)"
-      v-html="$i18n('store.chat.jumper')"
-    />
-    <button
-      type="button"
-      class="list-group-item list-group-item-action"
-      @click="toggleStoreInformation"
-      v-text="$i18n('storeview.show_information')"
-    />
-    <button
+    >
+      {{ $i18n('store.chat.jumper') }}
+    </b-button>
+    <b-button
       v-if="mayLeaveStoreTeam && isUserInStore || isJumper"
-      type="button"
-      class="list-group-item list-group-item-action"
-      href="#"
       @click="removeFromTeam(fsId, $i18n('storeedit.team.leave_myself'))"
-      v-text="$i18n('storeedit.team.leave')"
-    />
-  </Container>
+    >
+      {{ $i18n('storeedit.team.leave') }}
+    </b-button>
+  </b-button-group>
 </template>
 
 <script>
@@ -39,12 +26,8 @@ import conversationStore from '@/stores/conversations'
 import { pulseError } from '@/script'
 import DataUser from '@/stores/user'
 import { removeStoreMember } from '@/api/stores'
-import Container from '@/components/Container/Container.vue'
 
 export default {
-  components: {
-    Container,
-  },
   props: {
     storeName: { type: String, required: true },
     fsId: { type: Number, required: true },
@@ -95,9 +78,6 @@ export default {
         return
       }
       this.isBusy = false
-    },
-    toggleStoreInformation () {
-      this.$emit('toggle-store-information')
     },
   },
 }
