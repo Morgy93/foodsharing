@@ -71,7 +71,7 @@ class FoodsaverControl extends Control
                     CNT_RIGHT
                 );
             }
-        // end region-view
+            // end region-view
         } elseif ($fsId && $this->profilePermissions->mayAdministrateUserProfile($fsId)) {
             // begin user-edit
             if (!$fs = $this->foodsaverGateway->getFoodsaver($fsId)) {
