@@ -269,7 +269,7 @@
             <b-form-textarea
               id="description"
               v-model="store.description"
-              rows="5"
+              rows="12"
               max-rows="18"
               :disabled="!editMode"
             />
