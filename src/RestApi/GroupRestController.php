@@ -87,10 +87,14 @@ class GroupRestController extends AbstractFOSRestController
             'dialin' => $conference['dialin'],
             'id' => $conference['id'],
         ];
+
+        $name = $this->session->user('name') . ' (' . $this->session->id() . ')';
+
         /* We do a 301 redirect directly to have less likeliness that the user forwards the BBB join URL as this is already personalized */
         if ($paramFetcher->get('redirect') == 'true') {
-            return $this->redirect($bbb->joinURL($key, $this->session->user('name'), true));
+            return $this->redirect($bbb->joinURL($key, $name, true));
         }
+
         /* Without the redirect, we return information about the conference */
         return $this->handleView($this->view($data, 200));
     }

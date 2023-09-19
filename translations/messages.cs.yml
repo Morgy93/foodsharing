@@ -283,7 +283,7 @@ navigation:
   basket: ''
   help: ''
   notifications: ''
-  profil: ''
+  profil: '👋 Ahoj!'
   support: ''
   groups: ''
 pickup:
@@ -1094,6 +1094,7 @@ bell:
   new_foodsaver_title: ''
   new_foodsaver: ''
   store_wallpost: ''
+  forum_post_title: '{title}'
 genderlist:
   home_district_tab: ''
   gender_female: ''
@@ -1419,7 +1420,7 @@ dashboard:
   source_foodsharepoint: ''
   no_more_updates_forum: ''
   invitationCount: ''
-  greeting_short: ''
+  greeting_short: 'Ahoj!'
   chooseHomeRegion: ''
   polls: ''
   updates_title_some: ''

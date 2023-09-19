@@ -1,0 +1,30 @@
+geb_datum: Data de nascimento (AAAA-MM-DD)
+name: Nome
+add: Adicionar
+nachname: Sobrenome
+subject: Tópico
+message: Mensagem
+address: Morada
+edit: Editar
+edit_websites: Editar sites públicos
+desc: Descrição
+description: Descrição
+plz: Código postal (automaticamente a partir do mapa acima)
+email: E-Mail
+attachement: Anexo
+handy: Número de celular (com código do país, começa com +)
+anschrift: Rua e número da casa (automático a partir do mapa acima, se necessário,
+  corrigir posteriormente)"
+geschlecht: Sexo
+botschafter: Embaixador/a
+options: Opções
+picture: Foto
+parent_id: Distrito dos pais
+fs_id: ID-Foodsharing
+lat: Latitude
+lon: Longitude
+telefon: Número de telefone fixo (com código do país, começa com +)
+stadt: Sua cidade ou município
+bezirk: Distrito
+betrieb: Cooperação comercial
+active: Activado

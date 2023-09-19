@@ -2,6 +2,7 @@
 
 namespace Foodsharing\Modules\Mailbox;
 
+use Carbon\Carbon;
 use Ddeboer\Imap\Message\EmailAddress;
 use Exception;
 use Foodsharing\Lib\Session;
@@ -19,9 +20,12 @@ class MailboxGateway extends BaseGateway
         }
     }
 
-    public function mailboxActivity(int $mid): int
+    /**
+     * Updates the last access date of a mailbox.
+     */
+    public function updateMailboxActivityIndicator(int $mailboxId): void
     {
-        return $this->db->update('fs_mailbox', ['last_access' => $this->db->now()], ['id' => $mid]);
+        $this->db->update('fs_mailbox', ['last_access' => $this->db->now()], ['id' => $mailboxId]);
     }
 
     public function addContact(string $email, int $fsId): bool
@@ -122,18 +126,6 @@ class MailboxGateway extends BaseGateway
 
     public function deleteMessage(int $mid): int
     {
-        $attach = $this->db->fetchValueByCriteria('fs_mailbox_message', 'attach', ['id' => $mid]);
-        if (!empty($attach)) {
-            $attach = json_decode($attach, true);
-            if (is_array($attach)) {
-                foreach ($attach as $a) {
-                    if (isset($a['filename'])) {
-                        @unlink('data/mailattach/' . $a['filename']);
-                    }
-                }
-            }
-        }
-
         return $this->db->delete('fs_mailbox_message', ['id' => $mid]);
     }
 
@@ -142,6 +134,9 @@ class MailboxGateway extends BaseGateway
         return $this->db->update('fs_mailbox_message', ['folder' => $folder], ['id' => $mail_id]);
     }
 
+    /**
+     * @deprecated use getEmail instead
+     */
     public function getMessage(int $message_id)
     {
         $data = $this->db->fetch(
@@ -173,11 +168,41 @@ class MailboxGateway extends BaseGateway
         return $data;
     }
 
-    public function setRead(int $mail_id, int $read): int
+    public function getEmail(int $emailId): Email
     {
-        return $this->db->update('fs_mailbox_message', ['read' => $read], ['id' => $mail_id]);
+        $data = $this->db->fetch(
+            '
+			SELECT 	m.`id`,
+					m.`folder`,
+					m.`sender`,
+					m.`to`,
+					m.`subject`,
+					UNIX_TIMESTAMP(m.`time`) AS time_ts,
+					m.`attach`,
+					m.`read`,
+					m.`answer`,
+					m.`body`,
+					m.body_html,
+					m.`mailbox_id`
+			FROM 	fs_mailbox_message m
+			LEFT JOIN fs_mailbox b
+			ON m.mailbox_id = b.id
+			WHERE	m.id = :message_id
+		',
+            [':message_id' => $emailId]
+        );
+
+        return $this->parseEmail($data);
     }
 
+    public function markEmailAsRead(int $emailId, bool $isRead): void
+    {
+        $this->db->update('fs_mailbox_message', ['read' => $isRead ? 1 : 0], ['id' => $emailId]);
+    }
+
+    /**
+     * @deprecated use listEmails instead
+     */
     public function listMessages(int $mailbox_id, int $folder): array
     {
         $data = $this->db->fetchAll(
@@ -208,36 +233,67 @@ class MailboxGateway extends BaseGateway
         return $data;
     }
 
-    public function saveMessage(
-        int $mailbox_id, // mailbox id
-        int $folder, // folder
-        EmailAddress $from, // sender
-        array $to, // to
-        string $subject, // subject
-        string $body,
-        string $html,
-        string $time, // time,
-        string $attach = '', // attachements
-        int $read = 0,
-        int $answer = 0
-    ): int {
-        $from = $this->formatAddress($from);
-        $to = $this->formatAddresses($to);
+    /**
+     * Returns all emails from a folder of a mailbox without the emails' body.
+     *
+     * @return Email[]
+     */
+    public function listEmails(int $mailboxId, int $folder): array
+    {
+        $data = $this->db->fetchAll(
+            '
+			SELECT 	`id`,
+					`folder`,
+					`sender`,
+					`to`,
+					`subject`,
+					`time`,
+					UNIX_TIMESTAMP(`time`) AS time_ts,
+					`attach`,
+					`read`,
+					`answer`,
+			        `mailbox_id`
+			FROM 	fs_mailbox_message
+			WHERE	mailbox_id = :mailbox_id
+			AND 	folder = :farray_folder
+			ORDER BY `time` DESC
+		',
+            [':mailbox_id' => $mailboxId, ':farray_folder' => $folder]
+        );
+
+        return array_map(function ($x) {
+            return $this->parseEmail($x);
+        }, $data);
+    }
+
+    public function saveMessage(Email $email): int
+    {
+        $from = $this->formatAddress($email->from);
+        $to = $this->formatAddresses($email->to);
+
+        // convert attachments into an array that is stored as json in the database
+        $attachments = array_map(function ($a) {
+            return [
+                'origname' => $a->fileName,
+                'filename' => $a->hashedFileName,
+                'mime' => $a->mimeType
+            ];
+        }, $email->attachments ?? []);
 
         return $this->db->insert(
             'fs_mailbox_message',
             [
-                'mailbox_id' => $mailbox_id,
-                'folder' => $folder,
+                'mailbox_id' => $email->mailboxId,
+                'folder' => $email->mailboxFolder,
                 'sender' => $from,
                 'to' => $to,
-                'subject' => strip_tags($subject),
-                'body' => strip_tags($body),
-                'body_html' => strip_tags($html),
-                'time' => strip_tags($time),
-                'attach' => strip_tags($attach),
-                'read' => $read,
-                'answer' => $answer,
+                'subject' => strip_tags($email->subject),
+                'body' => strip_tags($email->body),
+                'body_html' => '',
+                'time' => $email->time->format('Y-m-d H:i:s'),
+                'attach' => json_encode($attachments),
+                'read' => $email->isRead,
+                'answer' => $email->isAnswered,
             ]
         );
     }
@@ -630,5 +686,61 @@ class MailboxGateway extends BaseGateway
         }, $addresses);
 
         return json_encode($mapped);
+    }
+
+    /**
+     * Converts a data array from the database into an Email object.
+     */
+    private function parseEmail(array $data): Email
+    {
+        // convert the data to an Email object
+        $from = $this->parseAddress($data['sender']);
+        $to = $this->parseAddresses($data['to']);
+        $email = Email::create(
+            intval($data['id']), intval($data['mailbox_id']), intval($data['folder']),
+            $from, $to,
+            Carbon::createFromTimestamp($data['time_ts']), $data['subject'],
+            $data['body'] ?? null, $data['body_html'] ?? null,
+            $data['read'] > 0, $data['answer'] > 0
+        );
+
+        // parse the attachments
+        if (!empty($data['attach'])) {
+            $attach = json_decode($data['attach'], true);
+            if (!empty($attach)) {
+                $email->attachments = array_map(function ($a) {
+                    $a = $this->fixAttachment($a);
+
+                    return EmailAttachment::create($a['origname'], $a['filename'], -1, $a['mime']);
+                }, $attach);
+            }
+        }
+
+        return $email;
+    }
+
+    /**
+     * Tries to fix the data of an attachment in case the data is corrupted and some of the keys are missing. The
+     * returned array can safely be parsed into an EmailAttachment.
+     *
+     * @param array $attachment an email attachment from the database
+     *
+     * @return array the same array with fixed keys
+     */
+    private function fixAttachment(array $attachment): array
+    {
+        // replace the missing original file name by the hashed file name
+        if (!isset($attachment['origname'])) {
+            if (isset($attachment['filename'])) {
+                $attachment['origname'] = $attachment['filename'];
+            }
+        }
+
+        // replace the missing mime type by a generic one
+        if (!isset($attachment['mime'])) {
+            $attachment['mime'] = 'application/octet-stream';
+        }
+
+        return $attachment;
     }
 }

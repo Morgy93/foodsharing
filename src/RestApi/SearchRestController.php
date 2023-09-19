@@ -3,11 +3,6 @@
 namespace Foodsharing\RestApi;
 
 use Foodsharing\Lib\Session;
-use Foodsharing\Modules\Core\DBConstants\Foodsaver\Role;
-use Foodsharing\Modules\Core\DBConstants\Region\RegionIDs;
-use Foodsharing\Modules\Core\DBConstants\Unit\UnitType;
-use Foodsharing\Modules\Foodsaver\FoodsaverGateway;
-use Foodsharing\Modules\Region\RegionGateway;
 use Foodsharing\Modules\Search\SearchGateway;
 use Foodsharing\Modules\Search\SearchTransactions;
 use Foodsharing\Permissions\ForumPermissions;
@@ -50,7 +45,7 @@ class SearchRestController extends AbstractFOSRestController
     public function getSearchLegacyIndexAction(): Response
     {
         if (!$this->session->mayRole()) {
-            throw new AccessDeniedHttpException();
+            throw new UnauthorizedHttpException('');
         }
         $data = $this->searchTransactions->generateIndex();
 
@@ -65,7 +60,7 @@ class SearchRestController extends AbstractFOSRestController
      * @Rest\QueryParam(name="q", description="Search query.")
      * @Rest\QueryParam(name="regionId", requirements="\d+", nullable=true, description="Restricts the search to a region")
      */
-    public function listUserResultsAction(ParamFetcher $paramFetcher, Session $session, FoodsaverGateway $foodsaverGateway, RegionGateway $regionGateway): Response
+    public function listUserResultsAction(ParamFetcher $paramFetcher, Session $session): Response
     {
         if (!$session->id()) {
             throw new UnauthorizedHttpException('', 'not logged in');
@@ -77,43 +72,7 @@ class SearchRestController extends AbstractFOSRestController
             throw new AccessDeniedHttpException('insufficient permissions to search in that region');
         }
 
-        if (preg_match('/^[0-9]+$/', $q) && $foodsaverGateway->foodsaverExists((int)$q)) {
-            $user = $foodsaverGateway->getFoodsaverName((int)$q);
-            $results = [['id' => (int)$q, 'value' => $user . ' (' . (int)$q . ')']];
-        } else {
-            if (!empty($regionId)) {
-                $regions = [$regionId];
-            } elseif (in_array(RegionIDs::EUROPE_WELCOME_TEAM, $this->session->listRegionIDs(), true) ||
-                $this->session->mayRole(Role::ORGA)) {
-                $regions = null;
-            } else {
-                $regions = array_column(array_filter(
-                    $regionGateway->listForFoodsaver($session->id()),
-                    function ($v) {
-                        return in_array($v['type'], UnitType::getSearchableUnitTypes());
-                    }
-                ), 'id');
-                $ambassador = $regionGateway->getFsAmbassadorIds($session->id());
-                foreach ($ambassador as $region) {
-                    /* TODO: Refactor listIdsForDescendantsAndSelf to work with multiple regions. I did not do this now as it might impose too big of a risk for the release.
-                    2020-05-15 NerdyProjects I will care within a few weeks!
-                    Anyway, the performance of this should be orders of magnitude higher than the previous implementation.
-                     */
-                    $regions = array_merge(
-                        $regions,
-                        $regionGateway->listIdsForDescendantsAndSelf($region)
-                    );
-                }
-                $regions = array_unique($regions);
-            }
-
-            $results = $this->searchGateway->searchUserInGroups(
-                $q,
-                false,
-                $regions
-            );
-            $results = array_map(function ($v) { return ['id' => $v->id, 'value' => $v->name . ' (' . $v->id . ')']; }, $results);
-        }
+        $results = $this->searchTransactions->searchForUser($q, $regionId);
 
         return $this->handleView($this->view($results, 200));
     }

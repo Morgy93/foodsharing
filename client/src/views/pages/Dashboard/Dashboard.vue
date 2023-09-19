@@ -8,7 +8,7 @@
         v-if="broadcast"
         :entry="broadcast"
       />
-      <Release v-if="!isBeta" />
+      <Release />
       <ErrorContainer />
       <Intro />
       <InformationsContainer />

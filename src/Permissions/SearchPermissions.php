@@ -17,11 +17,7 @@ class SearchPermissions
 
     public function maySearchAllRegions(): bool
     {
-        if ($this->session->mayRole(Role::ORGA)) {
-            return true;
-        }
-
-        return $this->session->isAmbassador();
+        return $this->session->mayRole(Role::ORGA);
     }
 
     public function maySearchInRegion(int $regionId): bool
@@ -31,11 +27,6 @@ class SearchPermissions
         }
 
         return in_array($regionId, $this->session->listRegionIDs());
-    }
-
-    public function maySeeUserAddress(): bool
-    {
-        return $this->session->mayRole(Role::ORGA);
     }
 
     public function maySearchByEmailAddress(): bool

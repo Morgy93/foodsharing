@@ -87,6 +87,7 @@ class StatisticsGateway extends BaseGateway
         $fetchCount = (int)$this->db->fetch($q)['fetchCount'];
         // time range to average over in days
         $diffDays = 99;
+
         // divide number of fetches by time difference
         return (int)($fetchCount / $diffDays);
     }
@@ -111,6 +112,7 @@ class StatisticsGateway extends BaseGateway
 		';
         // get count from db
         $basketCount = (int)$this->db->fetchValue($q, [':diffWeeks' => $diffWeeks]);
+
         // divide number of fetches by time difference
         return (int)($basketCount / $diffWeeks);
     }

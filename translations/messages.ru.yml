@@ -1950,6 +1950,7 @@ bell:
   foodsaver_verified: ''
   forum_answer: ''
   workgroup_request_accept_title: ''
+  forum_post_title: '{title}'
 memberlist:
   header_for_district: ''
   header_for_workgroup: ''

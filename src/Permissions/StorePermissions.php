@@ -210,11 +210,13 @@ class StorePermissions
         if (!$fsId) {
             return false;
         }
-        if (!$this->session->mayRole(Role::STORE_MANAGER)) {
-            return false;
-        }
+
         if ($this->session->mayRole(Role::ORGA)) {
             return true;
+        }
+
+        if (!$this->session->mayRole(Role::STORE_MANAGER)) {
+            return false;
         }
 
         if (!$this->storeGateway->storeExists($storeId)) {

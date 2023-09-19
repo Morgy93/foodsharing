@@ -650,6 +650,10 @@ dashboard:
     kg</b>. Hjemmedistriktet ditt er <b>{region}</b>.
   eventCount: Neste hendelser ({count})
   polls: Dine pågående avstemninger
+  release:
+    for_news_from_it: Hvis det er noen spørsmål eller utfordringer, se først på
+    for_support: Ellers kan du kontakte oss på
+    for_release_notes: Du finner de viktigste endringene på
 search:
   persons: personer
   groups: grupper
@@ -855,6 +859,7 @@ profile:
     cancellation: Hyppige kanselleringer av samlinger på kort varsel uten å lete etter
       en erstatning
     sells: Personen selger berget mat
+    doesNotAffectStore: Påvirker ikke noe eller et annet selskap
   notFound: Denne brukerprofilen eksisterer ikke eller eksisterer ikke lenger
   go: Gå til profilsiden
   workgroups_member: Du og {name} er i følgende arbeidsgrupper
@@ -962,6 +967,15 @@ settings:
     domain: Vennligst velg en annen e-postadresse, slik at du alltid vil kunne gjenopprette
       passordet ditt.
     question: 'Vil du virkelig at vi skal endre e-postadressen din til denne:'
+    explanation: Her kan du endre e-postadressen du brukte til å registrere deg. Etter
+      innsending vil en e-post bli sendt til den nye adressen din med en lenke for
+      å bekrefte den nye adressen.
+    explanation_password: Bekreft endringsforespørselen med ditt nåværende passord
+    input_label_email: Skriv inn din nye e-postadresse her
+    input_label_email_confirm: Vennligst bekreft din nye e-postadresse her
+    input_label_password: Vennligst skriv inn passordet ditt for å bekrefte
+    confirm_email_required: De angitte e-postadressene stemmer ikke overens
+    wrong_password: Passordet er feil.
   saved: Endringene ble lagret.
   push:
     disabled: Push-varsler er deaktivert
@@ -1225,6 +1239,10 @@ bell:
   foodsaver_verified_title: Du er nå verifisert!
   new_foodsaver_needs_verification: må verifiseres
   foodsaver_verified: Hent ID-en din under...
+  forum_post_title: '{title}'
+  forum_post:
+    one: Nytt innlegg av {user} i forumet {forum}
+    many: '{count} nye innlegg i forumet {forum}'
 reports:
   when: Tid
   time: Tid
@@ -1408,22 +1426,20 @@ legal:
     og den resulterende oppførselen. Jeg vil motta en bekreftelse på dette på e-post
     til den adressen jeg har oppgitt.
   if_delete:
-    this_doesnt_get_deleted_name: <ul><li>Ditt navn</ul></li>
-    this_doesnt_get_deleted_address: <ul><li>Din adresse</ul></li>
-    legal_1: Her er <a href="https://foodsharing.de/?page=legal" target="_blank">vår
-      nåværende databeskyttelsesavtale.</a>
+    this_doesnt_get_deleted_name: Ditt navn
+    this_doesnt_get_deleted_address: Din adresse
+    legal_1: vår nåværende databeskyttelsesavtale
     this_gets_deleted_main: 'Følgende informasjon vil bli slettet fra deg og kan ikke
       gjenopprettes:'
-    this_gets_deleted_trustbananas: <ul><li>Bananer du har gitt til andre vil bli
-      fjernet.</ul></li>
-    this_gets_deleted_friendlist: <ul><li>Vennelisten din vil bli fjernet.</ul></li>
-    this_gets_deleted_verify: <ul><li>Bekreftelsen din vil bli fjernet.</ul></li>
-    this_gets_deleted_quiz: <ul><li>Din matsparingsquiz vil bli fjernet.</ul></li>
-    this_doesnt_get_deleted_history: <ul><li>Bekreftelsesloggen din</ul></li>
-    this_gets_deleted_stores: <ul><li>Bedrifter du har sluttet deg til.</ul></li>
+    this_gets_deleted_trustbananas: Bananer du har gitt til andre vil bli fjernet.
+    this_gets_deleted_friendlist: Vennelisten din vil bli fjernet.
+    this_gets_deleted_verify: Bekreftelsen din vil bli fjernet.
+    this_gets_deleted_quiz: Din matsparingsquiz vil bli fjernet.
+    this_doesnt_get_deleted_history: Bekreftelsesloggen din
+    this_gets_deleted_stores: Bedrifter du har sluttet deg til.
     this_doesnt_get_deleted: 'Følgende informasjon er ikke lenger tilgjengelig i det
       aktive systemet, men arkiveres separat på grunn av artikkel 17, paragraf 3 GDPR:'
-    legal_2: Hei Verden
+    legal_2: Lover om oppbevaringsperioder (side på tysk)
 group:
   show-all: Vis alt
   function:
@@ -1842,7 +1858,7 @@ date:
   to: til
   from: fra
   time: '{time}'
-  clock: klokka
+  clock:  
 recipients:
   unknown: ukjent
   confirm: Send e-post?
@@ -2232,6 +2248,17 @@ store:
     promoteToManager: Gi ansvar
     reloadRequired: 'Slik oppdaterer du teaminformasjonen:'
     reallyDemote: Vil du virkelig fjerne ansvaret for dette selskapet fra {name}?
+    buttonManagementToggleOn: administrasjonsmodus
+    buttonManagementToggleOff: tilbake til normal modus
+    promoteToManagerNotPossible: Personen kan ikke holdes ansvarlig fordi det allerede
+      er tre ledere eller personen ennå ikke har bestått quizen.
+    filterAll: alle
+    filterActive: aktive
+    filterSleeping: Søvnhode
+    buttonManagementToggle: administrere
+    toogleIsReducedStateOpen: utvide listen
+    toogleIsReducedStateClosed: kollaps liste
+    filterManage: Samarbeidsoffiser-quiz eller høyere
   address: Adresse
   attribution: Attribusjon
   unknownDate: ukjent
@@ -2251,6 +2278,7 @@ store:
     withdrawn: Søknaden ble trukket.
     no-duplicate: En forespørsel eksisterer allerede.
     verified: Brukeren er bekreftet
+    unverified: Brukeren er ikke verifisert
   team_conversation_name: '{name}-laget'
   appliedFor: Forespørsel fremsatt
   bread: Alle virksomheter
@@ -2293,6 +2321,10 @@ store:
   tooltip_jumping: Du er en jumper for dette selskapet
   team:
     isfull: Laget er fullt
+    search_input: Søk på navn/tlf.nr.
+    search_reset: tilbakestill søket
+    no_record: Ingen post funnet.
+    is_closed: Laget er stengt
   enterdate: Skriv inn hentedato
   maxchar: (maks. 180 tegn)
   nodetails: Ikke oppgi nøyaktige hentetider her.
@@ -2346,6 +2378,16 @@ store:
     som skal hentes, kan du angi tidsluker én gang for denne datoen. Hvis du vil opprette
     regelmessige (automatisk tilbakevendende ukentlige) tider, kan du bruke menyen
     "Vis bedriftsinformasjon".
+  team_container: Team
+  one_active: aktiv
+  active: aktive
+  of_that: av dem
+  unverified_member: ubekreftet
+  unverified_members: ubekreftet
+  not_verified: Du er ikke bekreftet ennå. Derfor kan du ikke se noen spilleautomater
+    og telefonnumre til teammedlemmer.
+  info_container: Informasjon
+  requests: Åpne forespørsler ({count})
 storeview:
   status: Nåværende status
   public_time_at_night: om natten
@@ -2687,14 +2729,16 @@ quizusercomment: "Gi oss tilbakemelding på dette spørsmålet.\nVar det for let
   vanskelig, uforståelig?\nEller er individuelle svar eller forklaringer feil?\n"
 releases:
   "2020-12": Versjon «dragefrukt» (desember 2020)
-  "2021-03": Release «jordbær» 🍓 (mars 2021)
+  "2021-03": Versjon «jordbær» 🍓 (mars 2021)
   "2021-09": Versjon "fig" 🥧 (september 2021)
   "2020-08": Versjon «pære» (august 2020)
   "2020-05": Versjon «appelsin» (mai 2020)
   "2020-10": Versjon «cranberry» (oktober 2020)
   "2022-05": Versjon "Blåbær" 🍇 (Mai 2022)
   "2022-01": Versjon "Grapefrukt" 🍋 (Januar 2022)
-  "2022-12": Utgivelse "Iskrem" 🍨 (desember 2022)
+  "2022-12": Versjon "Iskrem" 🍨 (desember 2022)
+  "2023-08": Versjon «Jackfrukt» 🍈 (september 2023)
+  "2023-09": Versjon «Jackfrukt» 🍈 (september 2023)
 push_notifications:
   test_notification_title: Push-varsler er aktivert
   test_notification_body: Flott, det ser ut til å ha fungert :)

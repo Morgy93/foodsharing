@@ -24,7 +24,7 @@ $I->login($user['email']);
 $I->amOnPage('/?page=dashboard');
 $I->waitForActiveAPICalls();
 $I->waitForElement('.testing-region-join');
-$I->see('Bitte auswählen...', ['css' => '.testing-region-join-select']);
+$I->see('Bitte auswählen', ['css' => '.testing-region-join-select']);
 $I->selectOption('.testing-region-join-select', $region['name']);
 $I->click('.testing-region-join .btn.btn-primary');
 $I->waitForActiveAPICalls();

@@ -1694,6 +1694,7 @@ bell:
   no_bells: ''
   workgroup_request_accept_title: ''
   sharepoint_activate_title: ''
+  forum_post_title: '{title}'
 genderlist:
   gender_female: ''
   number_table_header: ''

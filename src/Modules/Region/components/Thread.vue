@@ -17,7 +17,7 @@
     >
       <div class="card-header text-white bg-primary">
         <div class="row m-1">
-          <h4 class="text-truncate">
+          <h4 :class="{'text-truncate': title.length > 150}">
             <i v-if="!isOpen" class="fas fa-lock mr-1" :title="$i18n('forum.thread.closed')" />
             {{ title }}
           </h4>

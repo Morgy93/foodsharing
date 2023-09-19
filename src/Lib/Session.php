@@ -42,7 +42,7 @@ class Session
 
     private const DEFAULT_NORMAL_SESSION_TIMESPAN = '24 hours';
 
-    private const DEFAULT_PERSISTENT_SESSION_TIMESPAN = '38 years';
+    private const DEFAULT_PERSISTENT_SESSION_TIMESPAN = '14 days';
 
     public function __construct(
         private Mem $mem,
@@ -264,9 +264,16 @@ class Session
         return $out;
     }
 
-    public function getMyAmbassadorRegionIds(): array
+    public function getMyAmbassadorRegionIds(bool $includeWorkingGroups = true): array
     {
         $managedRegions = $this->getManagedRegions();
+
+        if (!$includeWorkingGroups) {
+            $managedRegions = array_filter($managedRegions, function ($region) {
+                return !UnitType::isGroup($region['type']);
+            });
+        }
+
         $out = [];
         foreach ($managedRegions as $region) {
             $out[] = $region['bezirk_id'];

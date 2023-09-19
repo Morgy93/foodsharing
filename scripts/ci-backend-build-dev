@@ -3,15 +3,29 @@
 
 dir=$(dirname "$0")
 
-# shellcheck source=./__helping-functions.sh
+# shellcheck source=./__common.sh
 source "$dir"/__common.sh
 
+
+gitlab_start_section composer Composer
 composer validate --no-check-all --no-check-publish
 composer install --verbose --prefer-dist --no-progress --no-interaction --no-scripts --ignore-platform-reqs
+gitlab_end_section composer
 
+gitlab_start_section cs_fixer PHP CS Fixer
+# running this twice to have output in CI and on Gitlab.
+# results are cached, so it shouldn't take much longer on the second run
+# the gitlab run's error code is suppressed,
+# so this script only ends after both the report and human-readable output were generated
+vendor/bin/php-cs-fixer fix --dry-run --diff --verbose --format=gitlab > gitlab-ci-cs-report.json || true
 vendor/bin/php-cs-fixer fix --dry-run --diff --verbose --ansi
-vendor/bin/parallel-lint --no-progress --exclude vendor .
+gitlab_end_section cs_fixer
+
+gitlab_start_section phpstan PHPStan
+# same for PHPStan, it also caches results
+vendor/bin/phpstan analyse --memory-limit=768M --no-progress --error-format=gitlab > gitlab-ci-phpstan-report.json || true
 vendor/bin/phpstan analyse --memory-limit=768M --no-progress
+gitlab_end_section phpstan
 
 log-header "Create folder structure ..."
 bin/console foodsharing:setup

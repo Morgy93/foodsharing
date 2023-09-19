@@ -7,8 +7,8 @@ services:
     Foodsharing\:
         resource: '../../src/*'
         exclude:
-         - '../../src/Lib/{Flourish,Cache,Session,View/v*}'
-         - '../../src/{Dev,Debug}'
+         - '../../src/Lib/{Flourish,Caching.php,View/v*}'
+         - '../../src/Dev'
          - '../../src/Kernel.php'
          - '../../src/Modules/{PushNotification/Notification,Foodsaver/Profile.php,Message/Message.php}'
          - '../../src/Modules/Uploads/DTO/'
@@ -28,30 +28,8 @@ services:
 
     HTMLPurifier: '@exercise_html_purifier.default'
 
-    mysqli:
-      class: mysqli
-      arguments:
-        - !php/const DB_HOST
-        - !php/const DB_USER
-        - !php/const DB_PASS
-        - !php/const DB_DB
-      calls:
-        - [query, ['SET NAMES "utf8mb4"']]
-
     #Foodsharing\Debug\DebugBar:
     #    class: Foodsharing\Debug\DisabledDebugBar
-
-    PDO:
-        alias: RealPDO
-
-    RealPDO:
-        class: PDO
-        arguments:
-        - !php/const DSN
-        - !php/const DB_USER
-        - !php/const DB_PASS
-        calls:
-        - [ setAttribute, [!php/const PDO::ATTR_EMULATE_PREPARES, false]]
 
     InfluxDB\Database:
         factory: ['InfluxDB\Client', 'fromdsn']

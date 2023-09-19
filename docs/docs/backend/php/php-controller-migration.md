@@ -4,7 +4,11 @@
 
 - Routing:
     - old controllers are mostly called through these kinds of URLs: `/?page=general&sub=`
-    - Symfony does not support that kind of routing, so you will have to make up new REST-style URLs.
+    - Symfony does not support that kind of routing.
+      Because all our routes first go through the mandatory `page` parameter, we can however port this 1:1:
+      For example, `/?page=settings&sub=any&id=get&c=parameters` would turn into `/settings?sub=any&id=get&c=parameters`.
+      We can then add a Symfony route for `/settings` pointing to our ported controller,
+      and keep doing whatever handling of query parameters as is.
     - Check in https://gitlab.com/foodsharing-dev/images/-/blob/master/web/foodsharing.conf -
       is there a rewrite related to the controller you want to refactor? Getting rid of those is a hard topic,
       because it involves synchronizing the MR with an MR in the images repository (for the dev environment),
@@ -20,6 +24,7 @@
     - does the controller use the `sub` parameter?
     Telltale signs are: `$_GET['sub']`, `$request->query->get('sub')` and `$this->sub`.
     In the first iteration of the `FoodsharingController` compatibility layer, there is no support for porting this yet.
+    - However, you do not really need to at first. We're just moving off page= for now.
 
 ## Porting
 - Create a new Controller extending `FoodsharingController` in the same module as the old one
@@ -31,22 +36,21 @@
     This is the most individual step, so only the most common patterns are documented here:
 
 ### Basic controller structure
+
 ```php
 <?php
 
 namespace Foodsharing\Modules\Basket;
 
 use Foodsharing\Lib\FoodsharingController;
+use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 
 class ExampleController extends FoodsharingController
 {
-	/**
-	 * @Route("/example/{id}", name="example_id", requirements={"id"="\d+"})
-	 * @return Response
-	 */
-	public function someAction($id): Response
+	#[Route(path: "/example", name: "example_index"]
+	public function index(Request $request): Response
 	{
         // controller logic here
 		return $this->renderGlobal();
@@ -69,11 +73,13 @@ Common code patterns and how to port them:
 #### There is a constructor
 
 Port: Usually, you should be able to carry over the constructor from the old controller as-is.
-You will have to pass through a ContainerInterface to the superclass though.
+Most importantly, you need to call the parent constructor, though.
 ```php
-public function __construct(ContainerInterface $container /* other DI arguments */)
+public function __construct(/* DI arguments */)
 {
     parent::__construct($container);
+
+    /* ...*/
 }
 ```
 
@@ -95,11 +101,11 @@ Port:
 Create the response manually instead of taking it as a parameter, and explicitly return it.
 ```php
 public function someAction($id): Response
-	{
-        $response = new Response();
-        // do stuff with it as usual
-		return $response;
-	}
+{
+    $response = new Response();
+    // do stuff with it as usual
+    return $response;
+}
 ```
 
 ### Finishing up
@@ -108,7 +114,8 @@ public function someAction($id): Response
     If it's in a controller, generate the URL instead of hardcoding it: https://symfony.com/doc/current/routing.html#generating-urls.
     Generating URLs for other parts of the application (mainly JS) is not easily possible yet.
 
-- Keep the old controller to catch any requests using the old scheme, and rewrite it to forward to the new controller.
-  Ideally (TODO), we should use metrics to figure out if old URLs are still requested (through bookmarks, or maybe even code missed while porting)
+- If you just ported something based on the `page` parameter, you can throw out the old controller, and instead add the `page` value to `Routing::PORTED`.
+  Any `page=xxx` URLs will then automatically be redirected towards the new controller.
+  If you're changing any more routing beyond that (e.g. `sub`), please do the redirects in the new controller.
 
 - Finally, update any tests that expected the old URLs

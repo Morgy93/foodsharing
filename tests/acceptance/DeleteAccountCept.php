@@ -13,9 +13,9 @@ $I->login($foodsaver['email'], $pass);
 $I->amOnPage('/?page=settings&sub=deleteaccount');
 
 $I->click('#delete-account');
-
-$I->seeInPopup('wirklich');
-$I->acceptPopup();
+$I->waitForElement('#modal-delete-account');
+$I->see('wirklich');
+$I->executeJS("$('button:contains(Account löschen)').trigger('click')");
 $I->waitForActiveAPICalls();
 
 $I->seeInDatabase('fs_foodsaver', [

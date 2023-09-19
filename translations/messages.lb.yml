@@ -1854,6 +1854,7 @@ bell:
   store_request_imposed: ''
   new_quiz_comment: ''
   no_bells: ''
+  forum_post_title: '{title}'
 list:
   filter_for: ''
 genderlist:

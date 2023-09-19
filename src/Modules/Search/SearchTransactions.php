@@ -4,6 +4,9 @@ namespace Foodsharing\Modules\Search;
 
 use Foodsharing\Lib\Session;
 use Foodsharing\Modules\Buddy\BuddyGateway;
+use Foodsharing\Modules\Core\DBConstants\Foodsaver\Role;
+use Foodsharing\Modules\Core\DBConstants\Region\RegionIDs;
+use Foodsharing\Modules\Core\DBConstants\Unit\UnitType;
 use Foodsharing\Modules\Foodsaver\FoodsaverGateway;
 use Foodsharing\Modules\Region\RegionGateway;
 use Foodsharing\Modules\Search\DTO\SearchIndexEntry;
@@ -15,39 +18,18 @@ use Foodsharing\Utility\Sanitizer;
 
 class SearchTransactions
 {
-    private SearchGateway $searchGateway;
-    private FoodsaverGateway $foodsaverGateway;
-    private RegionGateway $regionGateway;
-    private StoreGateway $storeGateway;
-    private BuddyGateway $buddyGateway;
-    private WorkGroupGateway $workGroupGateway;
-    private Session $session;
-    private SearchPermissions $searchPermissions;
-    private Sanitizer $sanitizerService;
-    private ImageHelper $imageHelper;
-
     public function __construct(
-        SearchGateway $searchGateway,
-        FoodsaverGateway $foodsaverGateway,
-        RegionGateway $regionGateway,
-        BuddyGateway $buddyGateway,
-        WorkGroupGateway $workGroupGateway,
-        StoreGateway $storeGateway,
-        Session $session,
-        SearchPermissions $searchPermissions,
-        Sanitizer $sanitizerService,
-        ImageHelper $imageHelper
+        private readonly SearchGateway $searchGateway,
+        private readonly FoodsaverGateway $foodsaverGateway,
+        private readonly RegionGateway $regionGateway,
+        private readonly BuddyGateway $buddyGateway,
+        private readonly WorkGroupGateway $workGroupGateway,
+        private readonly StoreGateway $storeGateway,
+        private readonly Session $session,
+        private readonly SearchPermissions $searchPermissions,
+        private readonly Sanitizer $sanitizerService,
+        private readonly ImageHelper $imageHelper
     ) {
-        $this->searchGateway = $searchGateway;
-        $this->foodsaverGateway = $foodsaverGateway;
-        $this->regionGateway = $regionGateway;
-        $this->buddyGateway = $buddyGateway;
-        $this->workGroupGateway = $workGroupGateway;
-        $this->storeGateway = $storeGateway;
-        $this->session = $session;
-        $this->searchPermissions = $searchPermissions;
-        $this->sanitizerService = $sanitizerService;
-        $this->imageHelper = $imageHelper;
     }
 
     /**
@@ -60,13 +42,18 @@ class SearchTransactions
     public function search(string $query): array
     {
         $regionsFilter = null;
+        $regionDetails = null;
         if (!$this->searchPermissions->maySearchAllRegions()) {
-            $regionsFilter = $this->regionGateway->listIdsForDescendantsAndSelf($this->session->getCurrentRegionId());
+            $regionsFilter = $this->regionGateway->listIdsForDescendantsAndSelf($this->session->getCurrentRegionId(), true, false);
+
+            $ambassadorRegions = $this->session->getMyAmbassadorRegionIds(false);
+            $regionsFilter = array_merge($regionsFilter, $ambassadorRegions);
+            $regionDetails = $ambassadorRegions;
         }
 
         $regions = $this->searchGateway->searchRegions($query);
-        $users = $this->searchGateway->searchUserInGroups($query, $this->searchPermissions->maySeeUserAddress(), $regionsFilter);
-        $stores = $this->searchGateway->searchStores($query, $regionsFilter);
+        $users = $this->searchGateway->searchUserInGroups($query, $regionDetails, $regionsFilter);
+        $stores = $this->searchGateway->searchStores($query);
         $foodSharePoints = $this->searchGateway->searchFoodSharePoints($query);
         if ($singleUser = $this->searchUserByID($query)) {
             array_unshift($users, $singleUser);
@@ -169,5 +156,52 @@ class SearchTransactions
         }, $bezirke);
 
         return $index;
+    }
+
+    public function searchForUser(string $query, ?int $regionId): array
+    {
+        // Search by user ID
+        if (preg_match('/^[0-9]+$/', $query) && $this->foodsaverGateway->foodsaverExists((int)$query)) {
+            if (is_null($regionId) || $this->regionGateway->hasMember((int)$query, $regionId)) {
+                $user = $this->foodsaverGateway->getFoodsaverName((int)$query);
+
+                return [['id' => (int)$query, 'value' => $user . ' (' . (int)$query . ')']];
+            } else {
+                return [];
+            }
+        }
+
+        // Find all regions in which the user is allowed to search
+        if (!empty($regionId)) {
+            $regions = [$regionId];
+        } elseif (in_array(RegionIDs::EUROPE_WELCOME_TEAM, $this->session->listRegionIDs(), true) ||
+            $this->session->mayRole(Role::ORGA)) {
+            $regions = null;
+        } else {
+            $regions = array_column(array_filter(
+                $this->session->getRegions(),
+                function ($v) {
+                    return in_array($v['type'], UnitType::getSearchableUnitTypes());
+                }
+            ), 'id');
+            $ambassador = $this->session->getMyAmbassadorRegionIds();
+            foreach ($ambassador as $region) {
+                /* TODO: Refactor listIdsForDescendantsAndSelf to work with multiple regions. I did not do this now as it might impose too big of a risk for the release.
+                2020-05-15 NerdyProjects I will care within a few weeks!
+                Anyway, the performance of this should be orders of magnitude higher than the previous implementation.
+                 */
+                $regions = array_merge(
+                    $regions,
+                    $this->regionGateway->listIdsForDescendantsAndSelf($region)
+                );
+            }
+            $regions = array_unique($regions);
+        }
+
+        $results = $this->searchGateway->searchUserInGroups($query, [], $regions);
+
+        return array_map(function ($v) {
+            return ['id' => $v->id, 'value' => $v->name . ' (' . $v->id . ')'];
+        }, $results);
     }
 }

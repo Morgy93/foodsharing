@@ -44,7 +44,7 @@ class ContentControl extends Control
                 $this->pageHelper->addContent($this->content_form());
 
                 $this->pageHelper->addContent($this->v_utils->v_field($this->v_utils->v_menu([
-                    $this->routeHelper->pageLink('content')
+                    ['href' => '/?page=content', 'name' => $this->translator->trans('bread.backToOverview')]
                 ]), $this->translator->trans('content.actions')), CNT_RIGHT);
             } elseif ($id = $this->identificationHelper->getActionId('delete')) {
                 if ($this->contentGateway->delete($id)) {
@@ -66,7 +66,7 @@ class ContentControl extends Control
                 $this->pageHelper->addContent($this->content_form());
 
                 $this->pageHelper->addContent($this->v_utils->v_field($this->v_utils->v_menu([
-                    $this->routeHelper->pageLink('content')
+                    ['href' => '/?page=content', 'name' => $this->translator->trans('bread.backToOverview')]
                 ]), $this->translator->trans('content.actions')), CNT_RIGHT);
             } elseif ($id = $this->identificationHelper->getActionId('view')) {
                 $this->addContent($id);
@@ -74,58 +74,12 @@ class ContentControl extends Control
                 $this->routeHelper->goAndExit('/?page=content&a=edit&id=' . (int)$_GET['id']);
             } else {
                 $this->pageHelper->addBread($this->translator->trans('content.public'), '/?page=content');
-
-                $contentIds = $this->contentPermissions->getEditableContentIds();
-                if ($data = $this->contentGateway->list($contentIds)) {
-                    $rows = [];
-                    foreach ($data as $d) {
-                        $link = '<a class="linkrow ui-corner-all" href="/?page=content&id=' . $d['id'] . '">';
-                        $rows[] = [
-                            ['cnt' => $d['id']],
-                            ['cnt' => $link . $d['name'] . '</a>'],
-                            ['cnt' => $this->legacyToolbar($d['id'], $d['name'])],
-                        ];
-                    }
-
-                    $table = $this->v_utils->v_tablesorter([
-                        ['name' => 'ID', 'width' => 30],
-                        ['name' => $this->translator->trans('content.name')],
-                        ['name' => $this->translator->trans('content.actions'), 'sort' => false, 'width' => 50]
-                    ], $rows);
-
-                    $this->pageHelper->addContent($this->v_utils->v_field($table, $this->translator->trans('edit_websites')));
-                } else {
-                    $this->flashMessageHelper->info($this->translator->trans('content.empty'));
-                }
-
-                if ($this->contentPermissions->mayCreateContent()) {
-                    $this->pageHelper->addContent($this->v_utils->v_field($this->v_utils->v_menu([
-                        ['href' => '/?page=content&a=neu', 'name' => $this->translator->trans('content.new')]
-                    ]), $this->translator->trans('content.actions')), CNT_RIGHT);
-                }
+                $this->pageHelper->addContent($this->view->vueComponent('content-list', 'ContentList', [
+                    'mayEditContent' => $this->contentPermissions->mayEditContent(),
+                    'mayCreateContent' => $this->contentPermissions->mayCreateContent(),
+                ]));
             }
         }
-    }
-
-    public function legacyToolbar($id, string $contentName): string
-    {
-        $page = $this->routeHelper->getPage();
-        // edit
-        $out = '<li onclick="goTo(\'/?page=' . $page . '&id=' . $id . '&a=edit\');"'
-            . ' title="' . $this->translator->trans('button.edit') . '" class="ui-state-default ui-corner-left">'
-            . '<span class="ui-icon ui-icon-wrench"></span>'
-            . '</li>';
-
-        // delete
-        $confirmMsg = $this->translator->trans('content.delete', ['{name}' => $contentName]);
-        $link = "'/?page=" . $page . '&a=delete&id=' . $id . "'";
-        $out .= '<li class="ui-state-default ui-corner-right"'
-            . ' title="' . $this->translator->trans('button.delete') . '"'
-            . ' onclick="ifconfirm(' . $link . ',\'' . $confirmMsg . '\');">'
-            . '<span class="ui-icon ui-icon-trash"></span>'
-        . '</li>';
-
-        return '<ul class="toolbar" class="ui-widget ui-helper-clearfix">' . $out . '</ul>';
     }
 
     public function partner(): void
@@ -249,51 +203,17 @@ class ContentControl extends Control
 
     public function releaseNotes(): void
     {
-        $releaseList = [
-            [
-                'id' => '2022-12',
-                'title' => $this->translator->trans('releases.2022-12'),
-                'markdown' => $this->parseGitlabLinks($this->getnotes('2022-12')),
-                'visible' => true,
-            ],
-            [
-                'id' => '2022-05',
-                'title' => $this->translator->trans('releases.2022-05'),
-                'markdown' => $this->parseGitlabLinks($this->getnotes('2022-05')),
+        $releaseIds = ['2023-09', '2022-12', '2022-05', '2022-01', '2021-09', '2021-03', '2020-12', '2020-10',
+            '2020-08', '2020-05'];
+        $releaseList = array_map(function ($id) {
+            return [
+                'id' => $id,
+                'title' => $this->translator->trans('releases.' . $id),
+                'markdown' => $this->parseGitlabLinks($this->getnotes($id)),
                 'visible' => false,
-            ],
-            [
-                'id' => '2022-01',
-                'title' => $this->translator->trans('releases.2022-01'),
-                'markdown' => $this->parseGitlabLinks($this->getnotes('2022-01')),
-                'visible' => false,
-            ],
-            [
-                'id' => '2021-09',
-                'title' => $this->translator->trans('releases.2021-09'),
-                'markdown' => $this->parseGitlabLinks($this->getnotes('2021-09')),
-            ], [
-                'id' => '2021-03',
-                'title' => $this->translator->trans('releases.2021-03'),
-                'markdown' => $this->parseGitlabLinks($this->getnotes('2021-03')),
-            ], [
-                'id' => '2020-12',
-                'title' => 'Release "Dragonfruit" (Dezember 2020)',
-                'markdown' => $this->parseGitlabLinks($this->getnotes('2020-12')),
-            ], [
-                'id' => '2020-10',
-                'title' => 'Release "Cranberry" (Oktober 2020)',
-                'markdown' => $this->parseGitlabLinks($this->getnotes('2020-10')),
-            ], [
-                'id' => '2020-08',
-                'title' => 'Release "Birne" (August 2020)',
-                'markdown' => $this->parseGitlabLinks($this->getnotes('2020-08')),
-            ], [
-                'id' => '2020-05',
-                'title' => 'Release "Apfelsine" (Mai 2020)',
-                'markdown' => $this->parseGitlabLinks($this->getnotes('2020-05')),
-            ],
-        ];
+            ];
+        }, $releaseIds);
+        $releaseList[0]['visible'] = true;
 
         $this->pageHelper->addContent($this->view->vueComponent('vue-release-notes', 'ReleaseNotes', [
             'releaseList' => $releaseList,

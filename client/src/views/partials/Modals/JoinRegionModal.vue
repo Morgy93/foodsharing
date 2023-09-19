@@ -19,6 +19,7 @@
       <select
         v-model="selected[0]"
         class="testing-region-join-select custom-select"
+        @change="updateSelected(0)"
       >
         <option
           :value="0"
@@ -36,6 +37,7 @@
         :key="listId"
         v-model="selected[listId + 1]"
         class="custom-select"
+        @change="updateSelected(listId + 1)"
       >
         <option
           :value="null"
@@ -73,7 +75,6 @@
 <script>
 // Stores
 import DataRegions from '@/stores/regions'
-import DataUser from '@/stores/user'
 // Others
 import { pulseError, showLoader, hideLoader } from '@/script'
 export default {
@@ -96,9 +97,6 @@ export default {
     9: Stadtteil
   */
   computed: {
-    isLoggedIn () {
-      return DataUser.getters.isLoggedIn()
-    },
     regionIsInValid () {
       return ![1, 9, 2, 3].includes(this.selectedRegionType)
     },
@@ -119,26 +117,24 @@ export default {
         .filter(region => this.selectedRegionList.includes(region.id) && region.list.length > 0)
     },
   },
-  watch: {
-    selected: {
-      async handler (ids) {
-        for (const [index, id] of ids.entries()) {
-          const region = this.regions.find(r => r.id === id)
-          if (id && !region) {
-            let list = await DataRegions.mutations.fetchChoosedRegionChildren(id)
-            list = list.filter(r => r.type !== 7) // removes all arbeitsgruppen
-            if (list.length > 0) {
-              this.regions.push({ id, list })
-            }
-          } else if (id === null) {
-            this.selected.length = index
-          }
-        }
-      },
-      deep: true,
-    },
-  },
   methods: {
+    async updateSelected (index) {
+      this.selected.length = index + 1
+
+      for (let i = 0; i < index + 1; i++) {
+        const id = this.selected[i]
+        const region = this.regions.find(r => r.id === id)
+        if (id && !region) {
+          let list = await DataRegions.mutations.fetchChoosedRegionChildren(id)
+          list = list.filter(r => r.type !== 7) // removes all arbeitsgruppen
+          if (list.length > 0) {
+            this.regions.push({ id, list })
+          }
+        } else if (id === null) {
+          this.selected.length = index
+        }
+      }
+    },
     async joinRegion () {
       try {
         showLoader()

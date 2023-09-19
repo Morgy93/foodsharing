@@ -6,6 +6,7 @@ use Foodsharing\Lib\Mail\AsyncMail;
 use Foodsharing\Lib\Xhr\Xhr;
 use Foodsharing\Lib\Xhr\XhrResponses;
 use Foodsharing\Modules\Core\Control;
+use Foodsharing\Utility\PostHelper;
 use Foodsharing\Utility\Sanitizer;
 
 class TeamXhr extends Control
@@ -16,7 +17,8 @@ class TeamXhr extends Control
     public function __construct(
         TeamGateway $gateway,
         TeamView $view,
-        Sanitizer $sanitizerService
+        Sanitizer $sanitizerService,
+        private readonly PostHelper $postHelper,
     ) {
         $this->gateway = $gateway;
         $this->view = $view;
@@ -36,7 +38,7 @@ class TeamXhr extends Control
             $xhr->send();
         }
 
-        if ($id = $this->getPostInt('id')) {
+        if ($id = $this->postHelper->getPostInt('id')) {
             if ($user = $this->gateway->getUser($id)) {
                 if (!$user['contact_public']) {
                     return XhrResponses::PERMISSION_DENIED;

@@ -1399,94 +1399,94 @@ class StoreChainApiCest
     /*
      * Test pagination for list of store chain
      */
-   public function testInformationForGetAllStoreChainPaginationEndpoint(ApiTester $I)
-   {
-       $role = 'orga';
+    public function testInformationForGetAllStoreChainPaginationEndpoint(ApiTester $I)
+    {
+        $role = 'orga';
 
-       $modificationDate = new DateTime('now', new DateTimeZone('Europe/Berlin'));
+        $modificationDate = new DateTime('now', new DateTimeZone('Europe/Berlin'));
 
-       // Already existing 1
-       // Already existing 2
-       $this->createStoreChain($I, $modificationDate, 3, [$this->chainKeyAccountManager['id']]);
-       $this->createStoreChain($I, $modificationDate, 2, [$this->chainKeyAccountManager['id']]);
-       $this->createStoreChain($I, $modificationDate, 1, [$this->chainKeyAccountManager['id']]);
-       $this->createStoreChain($I, $modificationDate, 0, [$this->chainKeyAccountManager['id']]);
+        // Already existing 1
+        // Already existing 2
+        $this->createStoreChain($I, $modificationDate, 3, [$this->chainKeyAccountManager['id']]);
+        $this->createStoreChain($I, $modificationDate, 2, [$this->chainKeyAccountManager['id']]);
+        $this->createStoreChain($I, $modificationDate, 1, [$this->chainKeyAccountManager['id']]);
+        $this->createStoreChain($I, $modificationDate, 0, [$this->chainKeyAccountManager['id']]);
 
-       $I->login($this->getUserByRole($role)['email']);
-       $I->haveHttpHeader('Content-Type', 'application/json');
+        $I->login($this->getUserByRole($role)['email']);
+        $I->haveHttpHeader('Content-Type', 'application/json');
 
-       // Test unlimited
-       $I->sendGet(self::API_BASE, ['pageSize' => 0, 'offset' => 0]);
-       $I->seeResponseCodeIs(Http::OK);
-       $I->seeResponseIsJson();
-       $storeCounts = $I->grabDataFromResponseByJsonPath('$..storeCount');
-       $I->assertEquals(1, $storeCounts[0]);
-       $I->assertEquals(0, $storeCounts[1]);
-       $I->assertEquals(3, $storeCounts[2]);
-       $I->assertEquals(2, $storeCounts[3]);
-       $I->assertEquals(1, $storeCounts[4]);
-       $I->assertEquals(0, $storeCounts[5]);
+        // Test unlimited
+        $I->sendGet(self::API_BASE, ['pageSize' => 0, 'offset' => 0]);
+        $I->seeResponseCodeIs(Http::OK);
+        $I->seeResponseIsJson();
+        $storeCounts = $I->grabDataFromResponseByJsonPath('$..storeCount');
+        $I->assertEquals(1, $storeCounts[0]);
+        $I->assertEquals(0, $storeCounts[1]);
+        $I->assertEquals(3, $storeCounts[2]);
+        $I->assertEquals(2, $storeCounts[3]);
+        $I->assertEquals(1, $storeCounts[4]);
+        $I->assertEquals(0, $storeCounts[5]);
 
-       // Test size limit with offset
-       $I->sendGet(self::API_BASE, ['pageSize' => 2, 'offset' => 2]);
-       $I->seeResponseCodeIs(Http::OK);
-       $I->seeResponseIsJson();
-       $storeCounts = $I->grabDataFromResponseByJsonPath('$..storeCount');
-       $I->assertEquals(3, $storeCounts[0]);
-       $I->assertEquals(2, $storeCounts[1]);
+        // Test size limit with offset
+        $I->sendGet(self::API_BASE, ['pageSize' => 2, 'offset' => 2]);
+        $I->seeResponseCodeIs(Http::OK);
+        $I->seeResponseIsJson();
+        $storeCounts = $I->grabDataFromResponseByJsonPath('$..storeCount');
+        $I->assertEquals(3, $storeCounts[0]);
+        $I->assertEquals(2, $storeCounts[1]);
 
-       // Test size limit
-       $I->sendGet(self::API_BASE, ['pageSize' => 1]);
-       $I->seeResponseCodeIs(Http::OK);
-       $I->seeResponseIsJson();
-       $storeCounts = $I->grabDataFromResponseByJsonPath('$..storeCount');
-       $I->assertEquals(1, $storeCounts[0]);
+        // Test size limit
+        $I->sendGet(self::API_BASE, ['pageSize' => 1]);
+        $I->seeResponseCodeIs(Http::OK);
+        $I->seeResponseIsJson();
+        $storeCounts = $I->grabDataFromResponseByJsonPath('$..storeCount');
+        $I->assertEquals(1, $storeCounts[0]);
 
-       $I->sendGet(self::API_BASE, ['pageSize' => 2]);
-       $I->seeResponseCodeIs(Http::OK);
-       $I->seeResponseIsJson();
-       $storeCounts = $I->grabDataFromResponseByJsonPath('$..storeCount');
-       $I->assertEquals(1, $storeCounts[0]);
-       $I->assertEquals(0, $storeCounts[1]);
+        $I->sendGet(self::API_BASE, ['pageSize' => 2]);
+        $I->seeResponseCodeIs(Http::OK);
+        $I->seeResponseIsJson();
+        $storeCounts = $I->grabDataFromResponseByJsonPath('$..storeCount');
+        $I->assertEquals(1, $storeCounts[0]);
+        $I->assertEquals(0, $storeCounts[1]);
 
-       // Test size limit with offset
-       $I->sendGet(self::API_BASE, ['pageSize' => 2, 'offset' => 2]);
-       $I->seeResponseCodeIs(Http::OK);
-       $I->seeResponseIsJson();
-       $storeCounts = $I->grabDataFromResponseByJsonPath('$..storeCount');
-       $I->assertEquals(3, $storeCounts[0]);
-       $I->assertEquals(2, $storeCounts[1]);
+        // Test size limit with offset
+        $I->sendGet(self::API_BASE, ['pageSize' => 2, 'offset' => 2]);
+        $I->seeResponseCodeIs(Http::OK);
+        $I->seeResponseIsJson();
+        $storeCounts = $I->grabDataFromResponseByJsonPath('$..storeCount');
+        $I->assertEquals(3, $storeCounts[0]);
+        $I->assertEquals(2, $storeCounts[1]);
 
-       // Test partial output on end of storechain table
-       $I->sendGet(self::API_BASE, ['pageSize' => 2, 'offset' => 5]);
-       $I->seeResponseCodeIs(Http::OK);
-       $I->seeResponseIsJson();
-       $storeCounts = $I->grabDataFromResponseByJsonPath('$..storeCount');
-       $I->assertEquals(0, $storeCounts[0]);
-   }
+        // Test partial output on end of storechain table
+        $I->sendGet(self::API_BASE, ['pageSize' => 2, 'offset' => 5]);
+        $I->seeResponseCodeIs(Http::OK);
+        $I->seeResponseIsJson();
+        $storeCounts = $I->grabDataFromResponseByJsonPath('$..storeCount');
+        $I->assertEquals(0, $storeCounts[0]);
+    }
 
-   /*
-     * Test pagination for list of store chain
-     */
-   public function testBadRequestInformationForGetAllStoreChainPaginationEndpoint(ApiTester $I)
-   {
-       $role = 'orga';
+    /*
+      * Test pagination for list of store chain
+      */
+    public function testBadRequestInformationForGetAllStoreChainPaginationEndpoint(ApiTester $I)
+    {
+        $role = 'orga';
 
-       $I->login($this->getUserByRole($role)['email']);
-       $I->haveHttpHeader('Content-Type', 'application/json');
+        $I->login($this->getUserByRole($role)['email']);
+        $I->haveHttpHeader('Content-Type', 'application/json');
 
-       $I->sendGet(self::API_BASE, ['pageSize' => 'a', 'offset' => 0]);
-       $I->seeResponseCodeIs(Http::BAD_REQUEST);
+        $I->sendGet(self::API_BASE, ['pageSize' => 'a', 'offset' => 0]);
+        $I->seeResponseCodeIs(Http::BAD_REQUEST);
 
-       $I->sendGet(self::API_BASE, ['pageSize' => 0, 'offset' => 'a']);
-       $I->seeResponseCodeIs(Http::BAD_REQUEST);
+        $I->sendGet(self::API_BASE, ['pageSize' => 0, 'offset' => 'a']);
+        $I->seeResponseCodeIs(Http::BAD_REQUEST);
 
-       $I->sendGet(self::API_BASE, ['pageSize' => -1, 'offset' => 0]);
-       $I->seeResponseCodeIs(Http::BAD_REQUEST);
+        $I->sendGet(self::API_BASE, ['pageSize' => -1, 'offset' => 0]);
+        $I->seeResponseCodeIs(Http::BAD_REQUEST);
 
-       $I->sendGet(self::API_BASE, ['pageSize' => 0, 'offset' => -1]);
-       $I->seeResponseCodeIs(Http::BAD_REQUEST);
-   }
+        $I->sendGet(self::API_BASE, ['pageSize' => 0, 'offset' => -1]);
+        $I->seeResponseCodeIs(Http::BAD_REQUEST);
+    }
 
     /*
      * Test list stores of store chain
@@ -1595,29 +1595,29 @@ class StoreChainApiCest
         $I->assertEquals($stores[4]['id'], $storeIds[0]);
     }
 
-   public function testBadRequestInformationForGetStoresOfStoreChainEndpoint(ApiTester $I)
-   {
-       $I->login($this->getUserByRole('chainManager')['email']);
-       $I->haveHttpHeader('Content-Type', 'application/json');
+    public function testBadRequestInformationForGetStoresOfStoreChainEndpoint(ApiTester $I)
+    {
+        $I->login($this->getUserByRole('chainManager')['email']);
+        $I->haveHttpHeader('Content-Type', 'application/json');
 
-       // Test bad id
-       $I->sendGet(self::API_BASE . '/42/stores');
-       $I->seeResponseCodeIs(Http::NOT_FOUND);
+        // Test bad id
+        $I->sendGet(self::API_BASE . '/42/stores');
+        $I->seeResponseCodeIs(Http::NOT_FOUND);
 
-       $I->sendGet(self::API_BASE . '/a/stores');
-       $I->seeResponseCodeIs(Http::NOT_FOUND);
+        $I->sendGet(self::API_BASE . '/a/stores');
+        $I->seeResponseCodeIs(Http::NOT_FOUND);
 
-       // Test bad pagination for stores of store chain
-       $I->sendGet(self::API_BASE . '/' . StoreChainApiCest::CHAIN_ID . '/stores', ['pageSize' => 'a', 'offset' => 0]);
-       $I->seeResponseCodeIs(Http::BAD_REQUEST);
+        // Test bad pagination for stores of store chain
+        $I->sendGet(self::API_BASE . '/' . StoreChainApiCest::CHAIN_ID . '/stores', ['pageSize' => 'a', 'offset' => 0]);
+        $I->seeResponseCodeIs(Http::BAD_REQUEST);
 
-       $I->sendGet(self::API_BASE . '/' . StoreChainApiCest::CHAIN_ID . '/stores', ['pageSize' => 0, 'offset' => 'a']);
-       $I->seeResponseCodeIs(Http::BAD_REQUEST);
+        $I->sendGet(self::API_BASE . '/' . StoreChainApiCest::CHAIN_ID . '/stores', ['pageSize' => 0, 'offset' => 'a']);
+        $I->seeResponseCodeIs(Http::BAD_REQUEST);
 
-       $I->sendGet(self::API_BASE . '/' . StoreChainApiCest::CHAIN_ID . '/stores', ['pageSize' => -1, 'offset' => 0]);
-       $I->seeResponseCodeIs(Http::BAD_REQUEST);
+        $I->sendGet(self::API_BASE . '/' . StoreChainApiCest::CHAIN_ID . '/stores', ['pageSize' => -1, 'offset' => 0]);
+        $I->seeResponseCodeIs(Http::BAD_REQUEST);
 
-       $I->sendGet(self::API_BASE . '/' . StoreChainApiCest::CHAIN_ID . '/stores', ['pageSize' => 0, 'offset' => -1]);
-       $I->seeResponseCodeIs(Http::BAD_REQUEST);
-   }
+        $I->sendGet(self::API_BASE . '/' . StoreChainApiCest::CHAIN_ID . '/stores', ['pageSize' => 0, 'offset' => -1]);
+        $I->seeResponseCodeIs(Http::BAD_REQUEST);
+    }
 }

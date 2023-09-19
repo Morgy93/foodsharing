@@ -36,13 +36,6 @@ export default {
     title: { type: String, default: 'dashboard.event' }, // dashboard.event -> dashboard.eventCount
     options: { type: Boolean, default: false },
   },
-  data () {
-    const defaultAmount = 2
-    return {
-      defaultAmount,
-      amount: defaultAmount,
-    }
-  },
   computed: {
     data () {
       let data = getters.getAccepted()

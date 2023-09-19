@@ -72,6 +72,37 @@ class StoreTransactions
     ) {
     }
 
+    /**
+     * Returns a store's data including the team members in a format suitable for the frontend.
+     *
+     * @param int $userId the user who is requesting the data
+     * @param int $storeId the store
+     * @param bool $includeUserDetails whether to include phone numbers and last fetch dates for the team members
+     */
+    public function getMyStoreTeam(int $userId, int $storeId, bool $includeUserDetails): array
+    {
+        $store = $this->storeGateway->getMyStore($userId, $storeId);
+
+        return $this->getDisplayedStoreTeam($store, $includeUserDetails);
+    }
+
+    /**
+     * Get store applications for a specific user and store.
+     *
+     * @param int $userId   the ID of the user
+     * @param int $storeId  the ID of the store
+     *
+     * @return array an array containing store requests
+     */
+    public function getStoreApplications(int $userId, int $storeId): array
+    {
+        $store = $this->storeGateway->getMyStore($userId, $storeId);
+
+        return [
+            'storeRequests' => $store['requests'] ?? [],
+        ];
+    }
+
     public function getCommonStoreMetadata($supressStoreChains = true): CommonStoreMetadata
     {
         $store = new CommonStoreMetadata();
@@ -881,11 +912,11 @@ class StoreTransactions
         $storeName = $this->storeGateway->getStoreName($storeId);
 
         $bellData = Bell::create('store_new_request_title', 'store_new_request', 'fas fa-user-plus', [
-            'href' => '/?page=fsbetrieb&id=' . $storeId,
+            'href' => '/store/' . $storeId . '?showTeamRequests',
         ], [
             'user' => $this->session->user('name'),
             'name' => $storeName,
-        ], 'store-request-' . $storeId);
+        ], BellType::createIdentifier(BellType::NEW_STORE_REQUEST, $storeId));
 
         $this->bellGateway->addBell($bellRecipients, $bellData);
     }
@@ -982,5 +1013,34 @@ class StoreTransactions
         }
 
         return true;
+    }
+
+    /**
+     * Returns all team member of the store (active and waiting list) and makes sure that details like the phone
+     * number are only included if allowed.
+     *
+     * @param array $store store data from the database
+     * @param bool $includeUserDetails whether to include or omit phone numbers and last fetch date
+     */
+    private function getDisplayedStoreTeam(array $store, bool $includeUserDetails): array
+    {
+        $allowedFields = [
+            // personal info
+            'id', 'name', 'photo', 'quiz_rolle', 'sleep_status', 'verified',
+            // team-related info
+            'verantwortlich', 'team_active', 'stat_fetchcount', 'add_date',
+        ];
+        if ($includeUserDetails) {
+            array_push($allowedFields, 'handy', 'telefon', 'last_fetch');
+        }
+
+        return array_map(
+            function ($teamMember) use ($allowedFields) {
+                return array_filter($teamMember, function ($key) use ($allowedFields) {
+                    return in_array($key, $allowedFields);
+                }, ARRAY_FILTER_USE_KEY);
+            },
+            array_merge($store['foodsaver'], $store['springer']),
+        );
     }
 }

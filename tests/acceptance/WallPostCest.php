@@ -41,9 +41,6 @@ class WallPostCest
         }
     }
 
-    /**
-     * @param \Codeception\Example $example
-     */
     public function cannotAddEmptyWallPost(AcceptanceTester $I)
     {
         $I->login($this->regionMember['email']);

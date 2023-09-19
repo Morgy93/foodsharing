@@ -5,7 +5,6 @@
         <textarea
           id="wallpost-body"
           v-model="text"
-          :placeholder="i18n('wall.message_placeholder')"
           rows="3"
           class="form-control"
         />

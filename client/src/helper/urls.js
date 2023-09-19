@@ -19,6 +19,8 @@ const urls = {
   communitiesSwitzerland: () => '/?page=content&sub=communitiesSwitzerland',
   contact: () => '/?page=content&sub=contact',
   contentEdit: () => '/?page=content',
+  contentEditEntry: (id) => `/?page=content&a=edit&id=${id}`,
+  contentNew: () => '/?page=content&a=neu',
   conversations: (conversationId = null) => `/?page=msg${conversationId ? `&cid=${conversationId}` : ''}`,
   dashboard: () => '/?page=dashboard',
   dataprivacy: () => '/?page=legal',
@@ -61,12 +63,13 @@ const urls = {
   settingsCalendar: () => '/?page=settings&sub=calendar',
   settingsNotifications: () => '/?page=settings&sub=info',
   statistics: () => '/statistik',
-  store: (storeId) => `/?page=fsbetrieb&id=${storeId}`,
+  store: (storeId) => `/store/${storeId}`,
   storeList: () => '/?page=fsbetrieb',
   storeOwnList: () => '/?page=betrieb&a=own',
 
   team: () => '/team',
   transparency: () => '/?page=content&sub=transparency',
+  upload: (uuid) => `/api/uploads/${uuid}`,
 
   workingGroupEdit: (groupId) => `/?page=groups&sub=edit&id=${groupId}`,
   workshops: () => '/?page=content&sub=workshops',

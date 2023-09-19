@@ -12,6 +12,7 @@ use Foodsharing\Modules\Region\RegionGateway;
 use Foodsharing\Permissions\FoodSharePointPermissions;
 use Foodsharing\Utility\IdentificationHelper;
 use Foodsharing\Utility\Sanitizer;
+use Foodsharing\Utility\UriHelper;
 use Symfony\Component\HttpFoundation\Request;
 
 class FoodSharePointControl extends Control
@@ -38,7 +39,8 @@ class FoodSharePointControl extends Control
         MailboxGateway $mailboxGateway,
         Sanitizer $sanitizerService,
         IdentificationHelper $identificationHelper,
-        FoodSharePointPermissions $foodSharePointPermissions
+        FoodSharePointPermissions $foodSharePointPermissions,
+        private readonly UriHelper $uriHelper,
     ) {
         $this->view = $view;
         $this->foodSharePointGateway = $foodSharePointGateway;
@@ -85,7 +87,7 @@ class FoodSharePointControl extends Control
 
     private function setup(Request $request): void
     {
-        if ($request->query->has('uri') && $foodSharePointId = $this->uriInt(2)) {
+        if ($request->query->has('uri') && $foodSharePointId = $this->uriHelper->uriInt(2)) {
             $this->routeHelper->goAndExit('/?page=fairteiler&sub=ft&id=' . $foodSharePointId);
         }
 

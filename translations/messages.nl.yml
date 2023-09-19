@@ -2118,6 +2118,7 @@ bell:
   workgroup_request_accept_title: ''
   foodsaver_verified_title: ''
   workgroup_request_decline_title: ''
+  forum_post_title: '{title}'
 regionOptions:
   regionPickupTimespan: ''
   success: ''

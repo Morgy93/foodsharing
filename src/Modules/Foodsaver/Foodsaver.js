@@ -47,14 +47,6 @@ const fsapp = {
   },
 }
 
-export async function confirmDeleteSelf (fsId) {
-  if (window.confirm(i18n('foodsaver.delete_account_sure'))) {
-    await deleteUser(fsId, null)
-    pulseSuccess(i18n('success'))
-    goTo('/?page=logout')
-  }
-}
-
 export async function confirmDeleteUser (fsId, name) {
   let reason
   do {
@@ -72,7 +64,6 @@ fsapp.init()
 expose({
   fsapp,
   confirmDeleteUser,
-  confirmDeleteSelf,
 })
 
 if (document.querySelector('#map')) {

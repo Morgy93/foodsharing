@@ -5,6 +5,8 @@ include:
 
 gemnasium-dependency_scanning:
   rules:
+    - if: $CI_COMMIT_BRANCH == 'production' && $SKIP_CI_TESTS == 'true'
+      when: never
     - if: $CI_COMMIT_BRANCH == 'master' || $CI_COMMIT_BRANCH == 'production'
     - if: $CI_MERGE_REQUEST_ID
       changes:
@@ -13,8 +15,6 @@ gemnasium-dependency_scanning:
         - client/yarn.lock
         - websocket/yarn.lock
         - docs/yarn.lock
-    - if: $CI_COMMIT_BRANCH == 'production' && $SKIP_CI_TESTS == 'true'
-      when: never
 
 variables:
   DS_EXCLUDED_ANALYZERS: "gemnasium-maven, gemnasium-python"
@@ -149,16 +149,16 @@ build:backend-dev:
   stage: build
   interruptible: true
   rules:
+    - if: $CI_COMMIT_BRANCH == 'production' && $SKIP_CI_TESTS == 'true'
+      when: never
+    - if: $CI_PIPELINE_SOURCE == "schedule"
+      when: never
     - if: $CI_COMMIT_BRANCH == 'master' || $CI_COMMIT_BRANCH == 'production'
     - !reference [.dirs-app-rule, rules]
     - !reference [.dirs-backend-rule, rules]
     - !reference [.dirs-frontend-rule, rules]
     - !reference [.dirs-websocket-rule, rules]
     - !reference [.dirs-docs-rule, rules]
-    - if: $CI_COMMIT_BRANCH == 'production' && $SKIP_CI_TESTS == 'true'
-      when: never
-    - if: $CI_PIPELINE_SOURCE == "schedule"
-      when: never
   image: registry.gitlab.com/foodsharing-dev/images/php:latest
   script:
     - ./scripts/ci-backend-build-dev
@@ -171,6 +171,10 @@ build:backend-dev:
     paths:
       - assets
       - vendor
+    reports:
+      codequality: gitlab-ci-cs-report.json
+      # we could have both in theory, but in practice: https://gitlab.com/gitlab-org/gitlab/-/issues/351546
+      #- gitlab-ci-phpstan-report.json
 
 build:websocket:
   extends:
@@ -281,13 +285,13 @@ test:backend-code:
   stage: test
   interruptible: true
   rules:
-    - if: $CI_COMMIT_BRANCH == 'master' || $CI_COMMIT_BRANCH == 'production'
-    - !reference [.dirs-app-rule, rules]
-    - !reference [.dirs-backend-rule, rules]
     - if: $CI_COMMIT_BRANCH == 'production' && $SKIP_CI_TESTS == 'true'
       when: never
     - if: $CI_PIPELINE_SOURCE == "schedule"
       when: never
+    - if: $CI_COMMIT_BRANCH == 'master' || $CI_COMMIT_BRANCH == 'production'
+    - !reference [.dirs-app-rule, rules]
+    - !reference [.dirs-backend-rule, rules]
   image: registry.gitlab.com/foodsharing-dev/images/php:latest
   variables:
     MYSQL_ROOT_PASSWORD: root
@@ -348,15 +352,15 @@ test:backend-acceptance:
   interruptible: true
   timeout: 60 minutes
   rules:
+    - if: $CI_COMMIT_BRANCH == 'production' && $SKIP_CI_TESTS == 'true'
+      when: never
+    - if: $CI_PIPELINE_SOURCE == "schedule"
+      when: never
     - if: $CI_COMMIT_BRANCH == 'master' || $CI_COMMIT_BRANCH == 'production'
     - !reference [.dirs-app-rule, rules]
     - !reference [.dirs-backend-rule, rules]
     - !reference [.dirs-frontend-rule, rules]
     - !reference [.dirs-websocket-rule, rules]
-    - if: $CI_COMMIT_BRANCH == 'production' && $SKIP_CI_TESTS == 'true'
-      when: never
-    - if: $CI_PIPELINE_SOURCE == "schedule"
-      when: never
   tags:
     - foodsharing-test
   image: registry.gitlab.com/foodsharing-dev/images/php:latest
@@ -414,13 +418,13 @@ test:frontend:
   stage: test
   interruptible: true
   rules:
-    - if: $CI_COMMIT_BRANCH == 'master' || $CI_COMMIT_BRANCH == 'production'
-    - !reference [.dirs-app-rule, rules]
-    - !reference [.dirs-frontend-rule, rules]
     - if: $CI_COMMIT_BRANCH == 'production' && $SKIP_CI_TESTS == 'true'
       when: never
     - if: $CI_PIPELINE_SOURCE == "schedule"
       when: never
+    - if: $CI_COMMIT_BRANCH == 'master' || $CI_COMMIT_BRANCH == 'production'
+    - !reference [.dirs-app-rule, rules]
+    - !reference [.dirs-frontend-rule, rules]
   image: registry.gitlab.com/foodsharing-dev/images/node:latest
   variables:
     REDIS_HOST: redis
@@ -439,13 +443,13 @@ test:websocket:
   stage: test
   interruptible: true
   rules:
-    - if: $CI_COMMIT_BRANCH == 'master' || $CI_COMMIT_BRANCH == 'production'
-    - !reference [.dirs-app-rule, rules]
-    - !reference [.dirs-websocket-rule, rules]
     - if: $CI_COMMIT_BRANCH == 'production' && $SKIP_CI_TESTS == 'true'
       when: never
     - if: $CI_PIPELINE_SOURCE == "schedule"
       when: never
+    - if: $CI_COMMIT_BRANCH == 'master' || $CI_COMMIT_BRANCH == 'production'
+    - !reference [.dirs-app-rule, rules]
+    - !reference [.dirs-websocket-rule, rules]
   image: registry.gitlab.com/foodsharing-dev/images/node:latest
   variables:
     REDIS_HOST: redis

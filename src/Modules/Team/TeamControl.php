@@ -5,6 +5,7 @@ namespace Foodsharing\Modules\Team;
 use Foodsharing\Modules\Content\ContentGateway;
 use Foodsharing\Modules\Core\Control;
 use Foodsharing\Modules\Core\DBConstants\Region\RegionIDs;
+use Foodsharing\Utility\UriHelper;
 
 class TeamControl extends Control
 {
@@ -14,7 +15,8 @@ class TeamControl extends Control
     public function __construct(
         TeamGateway $gateway,
         TeamView $view,
-        ContentGateway $contentGateway
+        ContentGateway $contentGateway,
+        private readonly UriHelper $uriHelper,
     ) {
         $this->gateway = $gateway;
         $this->view = $view;
@@ -33,7 +35,7 @@ class TeamControl extends Control
         // b) /team/ehemalige - displays former active members
         // c) /team/{:id} - displays specific user
 
-        if ($id = $this->uriInt(2)) {
+        if ($id = $this->uriHelper->uriInt(2)) {
             // Type c, display user
             if ($user = $this->gateway->getUser($id)) {
                 $this->pageHelper->addTitle($user['name']);
@@ -50,7 +52,7 @@ class TeamControl extends Control
             $this->routeHelper->goAndExit('/team');
         }
 
-        if ($teamType = $this->uriStr(2)) {
+        if ($teamType = $this->uriHelper->uriStr(2)) {
             if ($teamType === 'ehemalige') {
                 // Type b, display "Ehemalige"
                 $this->pageHelper->addBread($this->translator->trans('team.former'), '/team/ehemalige');

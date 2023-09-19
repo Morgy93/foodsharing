@@ -12,6 +12,7 @@ use Foodsharing\Modules\Core\DBConstants\Store\CooperationStatus;
 use Foodsharing\Modules\Core\DBConstants\Store\Milestone;
 use Foodsharing\Modules\Core\DBConstants\Store\TeamSearchStatus;
 use Foodsharing\Modules\Core\DBConstants\StoreTeam\MembershipStatus;
+use Foodsharing\Modules\Core\DTO\GeoLocation;
 use Foodsharing\Modules\Core\Pagination;
 use Foodsharing\Modules\Map\DTO\MapMarker;
 use Foodsharing\Modules\Region\RegionGateway;
@@ -202,7 +203,7 @@ class StoreGateway extends BaseGateway
             'telefon' => $store->contact->phone,
             'fax' => $store->contact->fax,
             'email' => $store->contact->email,
-            'begin' => $store->cooperationStart ? $this->db->date($store->cooperationStart, false) : null,
+            'begin' => $store->cooperationStart ? $this->db->date($store->cooperationStart, false) : '0000-00-00',
             'team_status' => $store->teamStatus->value,
 
             'prefetchtime' => $store->calendarInterval,
@@ -379,6 +380,10 @@ class StoreGateway extends BaseGateway
         return $result;
     }
 
+    /**
+     * @deprecated The function is too complex. It needs be replaced with a function that uses DTOs and the logic
+     * should be moved into a transaction class.
+     */
     public function getMyStore(int $fs_id, int $storeId): array
     {
         $result = $this->db->fetch('
@@ -413,6 +418,8 @@ class StoreGateway extends BaseGateway
         			b.`team_conversation_id`,
         			b.`springer_conversation_id`,
         			b.`use_region_pickup_rule`,
+                    b.lat,
+                    b.lon,
         			count(DISTINCT(a.date)) AS pickup_count
 
 			FROM 	`fs_betrieb` b
@@ -431,7 +438,11 @@ class StoreGateway extends BaseGateway
             $result['lebensmittel'] = $this->getGroceries($storeId);
             $result['foodsaver'] = $this->getStoreTeam($storeId);
             $result['springer'] = $this->getBetriebSpringer($storeId);
-            $result['requests'] = $this->getApplications($storeId);
+
+            $result['requests'] = $this->getApplications($storeId, GeoLocation::createFromArray([
+                'lat' => (float)$result['lat'],
+                'lon' => (float)$result['lon'],
+            ]));
             $result['verantwortlich'] = false;
             $result['team'] = [];
             $result['jumper'] = false;
@@ -493,16 +504,19 @@ class StoreGateway extends BaseGateway
         return $this->db->insertMultiple('fs_betrieb_has_lebensmittel', $newFoodData);
     }
 
-    private function getApplications(int $storeId): array
+    private function getApplications(int $storeId, GeoLocation $storePosition): array
     {
-        return $this->db->fetchAll('
+        $applications = $this->db->fetchAll('
 			SELECT 		fs.`id`,
 						fs.photo,
 						CONCAT(fs.name," ",fs.nachname) AS name,
 						name as vorname,
 						fs.sleep_status,
-			       		fs.verified
-
+			       		fs.verified,
+                        ST_DISTANCE_SPHERE(
+                            Point(fs.lon, fs.lat),
+                            Point(:storeLon, :storeLat)
+                        ) / 1000 AS distance
 			FROM 		`fs_betrieb_team` t
 						INNER JOIN `fs_foodsaver` fs
 			            ON fs.id = t.foodsaver_id
@@ -511,9 +525,19 @@ class StoreGateway extends BaseGateway
 			AND 		t.active = :membershipStatus
 			AND			fs.deleted_at IS NULL
 		', [
+            ':storeLat' => $storePosition->lat,
+            ':storeLon' => $storePosition->lon,
             ':storeId' => $storeId,
-            ':membershipStatus' => MembershipStatus::APPLIED_FOR_TEAM
+            ':membershipStatus' => MembershipStatus::APPLIED_FOR_TEAM,
         ]);
+        foreach ($applications as &$application) {
+            if (is_null($application['distance'])) {
+                continue;
+            }
+            $application['distance'] = $application['distance'] < 1 ? 0 : round($application['distance']);
+        }
+
+        return $applications;
     }
 
     public function getStoreName(int $storeId): string

@@ -7,6 +7,7 @@ use Foodsharing\Modules\Core\BaseGateway;
 use Foodsharing\Modules\Core\Database;
 use Foodsharing\Modules\Core\DBConstants\Foodsaver\Role;
 use Foodsharing\Modules\Core\DBConstants\Region\RegionIDs;
+use Foodsharing\Modules\Core\DBConstants\Region\RegionOptionType;
 use Foodsharing\Modules\Core\DBConstants\Region\WorkgroupFunction;
 use Foodsharing\Modules\Core\DBConstants\Unit\UnitType;
 use Foodsharing\Modules\Foodsaver\FoodsaverGateway;
@@ -151,17 +152,6 @@ class RegionGateway extends BaseGateway
         );
     }
 
-    public function getFsAmbassadorIds(?int $foodsaverId): array
-    {
-        if ($foodsaverId === null) {
-            return [];
-        }
-
-        return $this->db->fetchAllValuesByCriteria('fs_botschafter', 'bezirk_id',
-            ['foodsaver_id' => $foodsaverId]
-        );
-    }
-
     public function listIdsForDescendantsAndSelf(int $regionId, bool $includeSelf = true, bool $includeWorkgroups = true): array
     {
         if ($regionId == RegionIDs::ROOT) {
@@ -290,84 +280,36 @@ class RegionGateway extends BaseGateway
         $region['botschafter'] = $this->foodsaverGateway->getAdminsOrAmbassadors($regionId);
         shuffle($region['botschafter']);
 
-        if ($welcomeGroupId = $this->groupFunctionGateway->getRegionFunctionGroupId($regionId, WorkgroupFunction::WELCOME)) {
-            $region['welcomeAdmins'] = $this->foodsaverGateway->getAdminsOrAmbassadors($welcomeGroupId);
-            shuffle($region['welcomeAdmins']);
-        } else {
-            $region['welcomeAdmins'] = [];
-        }
+        $functionMappings = [
+            WorkgroupFunction::WELCOME => 'welcomeAdmins',
+            WorkgroupFunction::VOTING => 'votingAdmins',
+            WorkgroupFunction::FSP => 'fspAdmins',
+            WorkgroupFunction::STORES_COORDINATION => 'storesAdmins',
+            WorkgroupFunction::REPORT => 'reportAdmins',
+            WorkgroupFunction::MEDIATION => 'mediationAdmins',
+            WorkgroupFunction::ARBITRATION => 'arbitrationAdmins',
+            WorkgroupFunction::FSMANAGEMENT => 'fsManagementAdmins',
+            WorkgroupFunction::PR => 'prAdmins',
+            WorkgroupFunction::MODERATION => 'moderationAdmins',
+            WorkgroupFunction::BOARD => 'boardAdmins',
+        ];
 
-        if ($votingGroupId = $this->groupFunctionGateway->getRegionFunctionGroupId($regionId, WorkgroupFunction::VOTING)) {
-            $region['votingAdmins'] = $this->foodsaverGateway->getAdminsOrAmbassadors($votingGroupId);
-            shuffle($region['votingAdmins']);
-        } else {
-            $region['votingAdmins'] = [];
-        }
-
-        if ($fspGroupId = $this->groupFunctionGateway->getRegionFunctionGroupId($regionId, WorkgroupFunction::FSP)) {
-            $region['fspAdmins'] = $this->foodsaverGateway->getAdminsOrAmbassadors($fspGroupId);
-            shuffle($region['fspAdmins']);
-        } else {
-            $region['fspAdmins'] = [];
-        }
-
-        if ($storesGroupId = $this->groupFunctionGateway->getRegionFunctionGroupId($regionId, WorkgroupFunction::STORES_COORDINATION)) {
-            $region['storesAdmins'] = $this->foodsaverGateway->getAdminsOrAmbassadors($storesGroupId);
-            shuffle($region['storesAdmins']);
-        } else {
-            $region['storesAdmins'] = [];
-        }
-
-        if ($reportGroupId = $this->groupFunctionGateway->getRegionFunctionGroupId($regionId, WorkgroupFunction::REPORT)) {
-            $region['reportAdmins'] = $this->foodsaverGateway->getAdminsOrAmbassadors($reportGroupId);
-            shuffle($region['reportAdmins']);
-        } else {
-            $region['reportAdmins'] = [];
-        }
-
-        if ($mediationGroupId = $this->groupFunctionGateway->getRegionFunctionGroupId($regionId, WorkgroupFunction::MEDIATION)) {
-            $region['mediationAdmins'] = $this->foodsaverGateway->getAdminsOrAmbassadors($mediationGroupId);
-            shuffle($region['mediationAdmins']);
-        } else {
-            $region['mediationAdmins'] = [];
-        }
-
-        if ($arbitrationGroupId = $this->groupFunctionGateway->getRegionFunctionGroupId($regionId, WorkgroupFunction::ARBITRATION)) {
-            $region['arbitrationAdmins'] = $this->foodsaverGateway->getAdminsOrAmbassadors($arbitrationGroupId);
-            shuffle($region['arbitrationAdmins']);
-        } else {
-            $region['arbitrationAdmins'] = [];
-        }
-
-        if ($fsManagementGroupId = $this->groupFunctionGateway->getRegionFunctionGroupId($regionId, WorkgroupFunction::FSMANAGEMENT)) {
-            $region['fsManagementAdmins'] = $this->foodsaverGateway->getAdminsOrAmbassadors($fsManagementGroupId);
-            shuffle($region['fsManagementAdmins']);
-        } else {
-            $region['fsManagementAdmins'] = [];
-        }
-
-        if ($prGroupId = $this->groupFunctionGateway->getRegionFunctionGroupId($regionId, WorkgroupFunction::PR)) {
-            $region['prAdmins'] = $this->foodsaverGateway->getAdminsOrAmbassadors($prGroupId);
-            shuffle($region['prAdmins']);
-        } else {
-            $region['prAdmins'] = [];
-        }
-
-        if ($moderationGroupId = $this->groupFunctionGateway->getRegionFunctionGroupId($regionId, WorkgroupFunction::MODERATION)) {
-            $region['moderationAdmins'] = $this->foodsaverGateway->getAdminsOrAmbassadors($moderationGroupId);
-            shuffle($region['moderationAdmins']);
-        } else {
-            $region['moderationAdmins'] = [];
-        }
-
-        if ($boardGroupId = $this->groupFunctionGateway->getRegionFunctionGroupId($regionId, WorkgroupFunction::BOARD)) {
-            $region['boardAdmins'] = $this->foodsaverGateway->getAdminsOrAmbassadors($boardGroupId);
-            shuffle($region['boardAdmins']);
-        } else {
-            $region['boardAdmins'] = [];
+        foreach ($functionMappings as $function => $resultKey) {
+            $region[$resultKey] = $this->getAdminsOrAmbassadorsByFunction($regionId, $function);
+            shuffle($region[$resultKey]);
         }
 
         return $region;
+    }
+
+    private function getAdminsOrAmbassadorsByFunction(int $parentId, int $function): array
+    {
+        $groupId = $this->groupFunctionGateway->getRegionFunctionGroupId($parentId, $function);
+        if ($groupId) {
+            return $this->foodsaverGateway->getAdminsOrAmbassadors($groupId);
+        } else {
+            return [];
+        }
     }
 
     /**
@@ -690,7 +632,7 @@ class RegionGateway extends BaseGateway
      *
      * @return string|null value of option or null if not found
      *
-     * @throws \Exception
+     * @throws Exception
      */
     public function getRegionOption(int $regionId, int $optionType): ?string
     {
@@ -701,6 +643,45 @@ class RegionGateway extends BaseGateway
             ]);
         } catch (Exception $e) {
             return null;
+        }
+    }
+
+    /**
+     * Returns all options for the region as an array, or an empty array if no options are set for the region.
+     *
+     * @param int $regionId ID of region
+     *
+     * @return array associative array of options or empty array if not found
+     *
+     * @throws Exception
+     */
+    public function getRegionOptions(int $regionId): array
+    {
+        try {
+            $optionTypes = [
+                RegionOptionType::REGION_PICKUP_RULE_ACTIVE => 'regionPickupRuleActive',
+                RegionOptionType::REGION_PICKUP_RULE_TIMESPAN_DAYS => 'regionPickupRuleTimespan',
+                RegionOptionType::REGION_PICKUP_RULE_LIMIT_NUMBER => 'regionPickupRuleLimit',
+                RegionOptionType::REGION_PICKUP_RULE_LIMIT_DAY_NUMBER => 'regionPickupRuleLimitDay',
+                RegionOptionType::REGION_PICKUP_RULE_INACTIVE_HOURS => 'regionPickupRuleInactive'
+            ];
+
+            $options = $this->db->fetchAllByCriteria('fs_region_options', ['option_type', 'option_value'], [
+                'region_id' => $regionId,
+                'option_type' => array_keys($optionTypes)
+            ]);
+
+            $mappedOptions = [];
+            foreach ($options as $option) {
+                $optionType = $option['option_type'];
+                $optionName = $optionTypes[$optionType];
+                $optionValue = $optionType === RegionOptionType::REGION_PICKUP_RULE_ACTIVE ? (bool)$option['option_value'] : $option['option_value'];
+                $mappedOptions[$optionName] = $optionValue;
+            }
+
+            return $mappedOptions;
+        } catch (Exception $e) {
+            return [];
         }
     }
 
@@ -725,7 +706,7 @@ class RegionGateway extends BaseGateway
      *
      * @return array|null value of option or null if not found
      *
-     * @throws \Exception
+     * @throws Exception
      */
     public function getAllRegionOptions(int $regionId): ?array
     {

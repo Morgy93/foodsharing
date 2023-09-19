@@ -120,15 +120,8 @@ class QuizView extends View
      */
     private function legacyToolbar($id): string
     {
-        if (isset($_GET['bid'])) {
-            $bid = '&bid=' . (int)$_GET['bid'];
-        } else {
-            $bid = $this->session->getCurrentRegionId();
-        }
-
-        $page = $this->routeHelper->getPage();
         $confirmMsg = 'Soll diese Quiz-Session wirklich gel&ouml;scht werden?';
-        $link = "'/?page=" . $page . '&a=delete&id=' . $id . "'";
+        $link = "'/?page=quiz&a=delete&id=" . $id . "'";
         $out = '
 			<li class="ui-state-default ui-corner-left ui-corner-right"'
             . ' title="' . $this->translator->trans('button.delete') . '"'

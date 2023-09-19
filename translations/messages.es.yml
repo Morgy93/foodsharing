@@ -2,7 +2,7 @@ about_me_intern: Descripción breve
 regions: Distritos
 ort: Ciudad/Municipio (automáticamente desde el mapa de arriba)
 photo: Foto
-info: Información
+info: Informaciones
 status: Situación actual
 body: Mensaje
 title: Título
@@ -39,7 +39,7 @@ newsletter: Boletín
 compose_body: Mensaje
 pass1: Tu nueva contraseña deseada
 infotype: Notificación
-dateend: Fecha de fin
+dateend: Fecha de fin de consumo
 online_type: ¿Ocurre el evento fuera de línea o en línea?
 opt: Opciones
 dashboard:
@@ -166,18 +166,18 @@ month:
     "1": ''
     "5": ''
     "3": ''
-  "1": ''
-  "3": ''
-  "7": ''
-  "11": ''
-  "2": ''
-  "6": ''
-  "8": ''
-  "10": ''
-  "12": ''
-  "5": ''
-  "4": ''
-  "9": ''
+  "1": 'enero'
+  "3": 'marzo'
+  "7": 'julio'
+  "11": 'noviembre'
+  "2": 'febrero'
+  "6": 'junio'
+  "8": 'agosto'
+  "10": 'octubre'
+  "12": 'diciembre'
+  "5": 'mayo'
+  "4": 'abril'
+  "9": 'septiembre'
 newmail: Introduzca aquí su nueva dirección de correo electrónico
 mailbox_id: Correo electrónico del remitente
 leader: Administrador de grupos
@@ -208,7 +208,7 @@ regionPin:
   success: ''
   text_desc: ''
   header_page: ''
-storemanagers: Gerentes de operaciones
+storemanagers: Responsable de operaciones
 team_status: Estado del equipo
 edit_websites: Editar páginas web públicas
 parent_id: Distrito superior
@@ -217,13 +217,13 @@ daterange: Período
 fetchstate: ¿Todo salió bien?
 request_time: 'Fecha y hora de la solicitud:'
 sleep_msg: Aquí puede dejar un breve mensaje de por qué no tiene tiempo en este momento.
-contact_type: ¿Cómo le gustaría ser contactado?
+contact_type: ¿Cómo te gustaría ser contactado/a?
 lifetime: ¿Por cuánto tiempo debe ser válida su canasta de alimentos?
-testemail: Dirección de correo electrónico para la prueba
+testemail: Dirección de correo electrónico de prueba
 location_name: Lugar / sala de conferencias
 fsp_bezirk_id: ¿En qué distrito está el punto de distribución?
 passcheck: Por favor confirme el cambio con su contraseña
-fetchercount: Número de recogidas
+fetchercount: Número de rescatistas
 quiz:
   question: Pregunta
   goodluck: ¡Buena suerte!
@@ -231,40 +231,43 @@ quiz:
   trynumber: ''
   choice:
     whatisko: ''
-    sadlywrong: ''
-    correctb: ''
+    sadlywrong: 'De nuevo has respondido incorrectamente.'
+    correctb: '¡Es falso! ¡Te has dado cuenta perfectamente de ello!'
     percenta: ''
-    wronga: ''
+    wronga: 'Esto hubiese sido lo correcto.'
     nresponses: 'Respuestas neutrales'
-    wrongb: ''
+    wrongb: '¡Así no es!'
     koquestion: ''
     answer: 'Respuesta'
-    correcta: ''
+    correcta: '¡Es correcto!'
     wresponses: 'Respuestas incorrectas'
-    alsowrong: ''
+    alsowrong: 'Se ha calificado como incorrecto ya que o no hiciste la selección
+      o se terminó el tiempo disponible para responder.'
     joke: ''
     writecomment: 'Escribe un comentario sobre esta pregunta'
     send: ''
     responses: 'Respuestas'
-    fpsum: ''
+    fpsum: 'Total de errores puntuales'
     cresponses: 'Respuestas correctas'
     percentb: ''
-    neut: ''
+    neut: 'Es neutro, por lo tanto, sin puntuación.'
   waitxdays: ''
   learnbreak: 'Pausa de estudio'
-  donecorrectly: ''
+  donecorrectly: 'Has respondido correctamente todo. ¡Excelente!'
   timedstart: ''
   questions: 'Preguntas'
   session_deleted: ''
   days: 'días'
-  congrats_details: ''
-  type: ''
+  congrats_details: '¡Felicidades! Has aprobado con {points} el máximo permitido de
+    {max_points} errores puntuales!'
+  type: '-examen'
   finishnow:
     fs: 'Complete el registro de Foodsaver ahora.'
     bv: ''
     bot: ''
   heavysigh: '¡Hecho!'
-  not_passed_details: ''
+  not_passed_details: 'Lamentablemente has reprobado. ¡Tuviste {points} del máximo
+    permitido de {max_points} errores puntuales!'
   wikilink: ''
   threestrikes: ''
   failedbeforebut: ''
@@ -272,7 +275,7 @@ quiz:
   quizleft: ''
   safeandsound: ''
   resultsbelow: ''
-  finished: ''
+  finished: '¡Felicidades, lo lograste!'
   notfinishedyet: ''
   nownownow: 'Iniciar cuestionario ahora'
   regstart: ''
@@ -282,9 +285,9 @@ terminology:
     f: salvacomidas
     d: salvacomidas
   ambassador:
-    m: ''
-    f: ''
-    d: ''
+    m: 'Embajador'
+    f: 'Embajadora'
+    d: 'Embajador*a'
   orga:
     m: ''
     d: ''
@@ -297,7 +300,7 @@ terminology:
     m: ''
     d: ''
   stores: ''
-  homepage: ''
+  homepage: 'Sitio web'
   forum: ''
   events: ''
   storemanager:
@@ -309,7 +312,7 @@ terminology:
   polls: ''
   buddies: ''
   options: ''
-  ambassadors: ''
+  ambassadors: 'Embajadores'
   ambassador_forum: ''
   store: ''
   welcomeAdmins: ''
@@ -322,7 +325,7 @@ terminology:
   fsp: 'Punto de distribución de alimentos'
   fsManagementAdmins: ''
   boardAdmins: ''
-  statistic: ''
+  statistic: 'Estadísticas'
   region: ''
   settings: ''
   regions: ''
@@ -330,7 +333,7 @@ terminology:
     "0": ''
     "4": ''
     "1": ''
-    "3": ''
+    "3": 'Embajador*a'
     "2": ''
   baskets: ''
   basket: ''
@@ -353,7 +356,7 @@ terminology:
   n_foodsaver: ''
   reportAdmins: ''
 groups:
-  empty: Aún no estás en ningún grupo de trabajo
+  empty: ¿Aún no estás en ningún grupo de trabajo?
 position: Puesto en foodsharing (público)
 infomail_message: Notificación de mensajes de chat sobre foodsharing
 kette_id: cadena corporativa
@@ -586,28 +589,28 @@ bootstrap-datepicker:
   labelCurrentMonth: ''
   labelNextMonth: ''
   labelPrevDecade: ''
-right: ''
+right: 'clasificación'
 group:
   apply:
-    accept: ''
+    accept: 'aceptar solicitud'
     time:
-      "2": ''
-      "5": ''
-      "1": ''
-      "3": ''
-    declined: ''
+      "2": '2-3 horas'
+      "5": '5 o más horas'
+      "1": '1-2 horas'
+      "3": '3-4 horas'
+    declined: 'Solicitud rechazada'
     title: ''
     erfahrung: ''
     summary: ''
     faehigkeit: ''
-    send: ''
+    send: 'enviar solicitud'
     zeit: ''
-    sent: ''
-    accepted: ''
+    sent: 'La solicitud fue enviada.'
+    accepted: 'solicitud aceptada'
     motivation: ''
-  show-all: ''
+  show-all: 'mostrar todo'
   function:
-    pr: ''
+    pr: 'Relación pública'
     tooltip_function_9: ''
     duplicate_mediation_team: ''
     duplicate_arbitration_team: ''
@@ -625,7 +628,7 @@ group:
     tooltip_function_6: ''
     tooltip_function_1: ''
     title: ''
-    welcome: ''
+    welcome: 'Saludo'
     tooltip_function_3: ''
     stores: ''
     board: ''
@@ -635,9 +638,9 @@ group:
     voting: ''
     duplicate_stores_team: ''
     duplicate_board_team: ''
-    mediation: ''
+    mediation: 'Mediación'
     duplicate_fsp_team: ''
-    moderation: ''
+    moderation: 'Moderación'
     tooltip_function_4: ''
     tooltip_function_5: ''
     duplicate_report_team: ''
@@ -648,7 +651,7 @@ group:
     go: ''
     contact: ''
     apply: ''
-    save: ''
+    save: 'guardar cambios'
   application_requirements:
     requirements: ''
     everybody: ''
@@ -665,12 +668,12 @@ group:
   member_list:
     is_verified: ''
     is_home_region: ''
-    remove_title: ''
+    remove_title: 'eliminar miembro'
     remove_admin_text: ''
     remove_ambassador_text: ''
     set_admin_title: ''
     set_admin_text: ''
-    old_edit_hint_link: ''
+    old_edit_hint_link: 'miembros'
     add_member: ''
     admin_mode_off: ''
     remove_text_region: ''
@@ -683,7 +686,7 @@ group:
     old_edit_hint: ''
   edit:
     title: 'Editar {group}'
-    name_required: ''
+    name_required: 'Por favor ingrese un nombre.'
     description_required: 'Por favor, introduzca una descripción.'
     description_placeholder: 'Descripción del grupo de trabajo'
   administrators: ''
@@ -711,16 +714,16 @@ group:
   image: ''
   userId: 'ID'
   entertime: 'Tiempo:'
-  last_activity: ''
-  members: ''
+  last_activity: 'Última actividad'
+  members: 'miembros'
   applications: 'Aplicaciones'
   no_groups: ''
   already_applied: ''
   contact:
-    admins: ''
-    sent: ''
+    admins: '{count} personas de contacto:'
+    sent: 'El mensaje ha sido envidado exitosamente.'
     empty: ''
-    send: ''
+    send: 'Enviar mensaje'
     title: ''
     disclaimer: ''
   applications_for: 'Aplicaciones para %name%'
@@ -728,7 +731,7 @@ group:
   really_quit_district: ''
   really_quit_workgroup: ''
   member_count: ''
-  enterskills: ''
+  enterskills: 'Habilidades:'
   saved: ''
   quit_name_workgroup: ''
   delete_group_sure: ''
@@ -737,7 +740,7 @@ group:
   filter_by_last_activity: 'No activo en meses'
   enterxp: 'Experiencia:'
   quit_name_district: ''
-  role_name: ''
+  role_name: 'Role'
 register:
   error_email_exist: ''
   login_email: ''
@@ -746,7 +749,7 @@ register:
   pass2: ''
   lastname_required: ''
   set-password: ''
-  error: ''
+  error: 'Se ha producido un error'
   error_birthdate: ''
   activation_success: ''
   pass1: ''
@@ -756,19 +759,19 @@ register:
   join_success_message: ''
   prev: ''
   join_error: ''
-  man: ''
+  man: 'masculino'
   login_passwd2: ''
   account-exists: ''
   login_passwd1: ''
   birthdate_hint: ''
   signup_newsletter: ''
   phone_not_valid: ''
-  other: ''
+  other: 'diverso'
   password_minLength: ''
   login_name: ''
   password_required: ''
   login_mobile_phone: ''
-  forgotten_password: ''
+  forgotten_password: '¿Has olvidado tu contraseña?'
   topbar: ''
   lastname_minLength: ''
   requiredFields: ''
@@ -784,7 +787,7 @@ register:
   activation_failed: ''
   login_location: ''
   confirmPassword_required: ''
-  woman: ''
+  woman: 'femenino'
   firstname_required: ''
   have_read_the_legal_stuff1: ''
   firstname_minLength: ''
@@ -793,14 +796,14 @@ register:
   change-password: ''
   confirmPassword_sameAsPassword: ''
 button:
-  rotate_right: ''
-  save: ''
+  rotate_right: 'rotar las agujas del reloj'
+  save: 'ahorrar'
   send: 'Enviar'
   new: 'Nuevo'
   yes_i_am_sure: 'Sí, estoy seguro'
-  upload: ''
+  upload: 'subir'
   next: ''
-  apply: ''
+  apply: 'aplicar'
   edit: 'Editar'
   change_picture: 'Cambiar imagen'
   delete: ''
@@ -809,7 +812,7 @@ button:
   attach_image: 'Subir imagen (formato png o jpg)'
   clear_filter: ''
   cancel: 'Cancelar'
-  permadelete: ''
+  permadelete: 'borrar permanentemente'
 pass:
   nav:
     options: 'Opciones'
@@ -1116,23 +1119,23 @@ pickup:
   to_be_confirmed: ''
   join_title_date: ''
 date:
-  wednesday: ''
+  wednesday: 'miércoles'
   to: ''
-  sunday: ''
+  sunday: 'domingo'
   Today: ''
-  yesterday: ''
-  monday: ''
+  yesterday: 'ayer'
+  monday: 'lunes'
   from: ''
   time: ''
-  clock: ''
+  clock: ' '
   today: ''
-  friday: ''
-  tuesday: ''
-  -- Yesterday: ''
-  thursday: ''
-  saturday: ''
-  -- Tomorrow: ''
-  tomorrow: ''
+  friday: 'viernes'
+  tuesday: 'martes'
+  -- Yesterday: 'Ayer'
+  thursday: 'jueves'
+  saturday: 'sábado'
+  -- Tomorrow: 'Mañana'
+  tomorrow: 'mañana'
 bell:
   new_quiz_comment: ''
   store_cr_times_title: ''
@@ -1188,6 +1191,7 @@ bell:
   store_new_title: ''
   no_bells: ''
   blog_new_check: ''
+  forum_post_title: '{title}'
 foodsaver:
   restricted: ''
   upgrade:
@@ -2115,7 +2119,7 @@ legal:
   acknowledge: ''
   dont_agree: ''
   delete_account: ''
-  pp: ''
+  pp: 'Política de privacidad'
   if_delete:
     this_doesnt_get_deleted: ''
     legal_1: ''
@@ -2130,19 +2134,19 @@ legal:
     this_gets_deleted_verify: ''
     this_gets_deleted_friendlist: ''
   actions:
-    safe: ''
+    safe: 'aplicar configuraciones'
   must_accept_pp: ''
   are_you_sure_to_downgrade: ''
-  privacy_notice: ''
+  privacy_notice: 'Instrucciones de protección de datos'
   privacy_notice_agree:
     not_acknowledge: ''
-    acknowledge: ''
-    select: ''
+    acknowledge: 'Estoy de acuerdo'
+    select: 'Por favor seleccione'
   not_acknowledge_pp_description: ''
   agree_privacy_notice: ''
   agree_privacy_policy: ''
   not_acknowledge_pn_description: ''
-  legal_agreement: ''
+  legal_agreement: 'Acuerdo legal'
 error_ajax: ''
 ageBandList:
   district_tab: ''
@@ -2151,13 +2155,13 @@ ageBandList:
   NumberOfAgeband: ''
   header_for_district: ''
 date_short:
-  Tuesday: ''
-  Monday: ''
-  Saturday: ''
-  Thursday: ''
-  Friday: ''
-  Wednesday: ''
-  Sunday: ''
+  Tuesday: 'mar.'
+  Monday: 'lun.'
+  Saturday: 'sab.'
+  Thursday: 'jue.'
+  Friday: 'vie.'
+  Wednesday: 'mié.'
+  Sunday: 'dom.'
 pickuplist:
   day_tab: ''
   time_table_header: ''
@@ -2229,7 +2233,7 @@ footer:
   wiki: ''
 picture_upload_widget:
   choose_picture: 'Elige una imagen de tu computadora.'
-  picture_upload: ''
+  picture_upload: 'Subir foto'
 storestatus:
   "5": ''
   "0": ''
@@ -2363,10 +2367,10 @@ information:
     description: ''
     title: ''
 pronoun:
-  "2": ''
-  "1": ''
-  "3": ''
-  "0": ''
+  "2": 'ella'
+  "1": 'él'
+  "3": 'él*ella'
+  "0": 'él/ella'
 login:
   steady_login: ''
   error_no_email: ''
@@ -2392,9 +2396,9 @@ login:
   save_password: ''
   logout: ''
 gender:
-  d: ''
-  m: ''
-  f: ''
+  d: 'Ambos u Otro'
+  m: 'Hombre'
+  f: 'Mujer'
 are_you_sure: ''
 really_delete: ''
 validate:
@@ -2541,25 +2545,25 @@ filterlist:
   filter_for_name_id: ''
 upload:
   image-problem: ''
-  crop_dialog_title: ''
-  new_file: ''
+  crop_dialog_title: 'recortar imagen'
+  new_file: 'subir nuevo archivo'
   no_image: ''
-  image: ''
-  new_image: ''
-  file: ''
+  image: 'Cargar imagen'
+  new_image: 'subir nueva foto'
+  file: 'subir archivo'
   no_image_yet: ''
   preview_image: 'Vista previa'
   no_image_chosen: ''
-  choose_file: ''
+  choose_file: 'subir archivo'
 public_time: 'Tiempo aproximado de recogida'
 quizusercomment: ''
 bread:
   backToStore: ''
   backToOverview: ''
 answers: '¿Qué respuestas son correctas?'
-fpcapital: ''
+fpcapital: 'PF'
 abholmenge: '¿Aproximadamente cuántos kilogramos se toman por recogida?'
-duration: ''
+duration: 'Tiempo para responder'
 message_text_to_group_admin_workgroup: ''
 ui:
   switch:
@@ -2567,39 +2571,47 @@ ui:
     on: 'publicado'
 no: ''
 week_num: ''
-maxfp: ''
+maxfp: 'máximo número de errores puntuales para aprobar'
 wikilink: 'Enlace a la página wiki'
 formatting:
   md: ''
 sig:
   buddies: ''
-sticker: ''
+sticker: '¿La empresa/tienda/asociación esta de acuerdo con poner una pegatina visible
+  en la entrada o en otro lugar?'
 day: ''
-ansprechpartner: ''
+ansprechpartner: 'Persona/s de contacto en la empresa (gerente de tienda etc.)'
 explanation: 'Explicación'
 error_unexpected: ''
-fp: ''
+fp: 'puntos de error'
 yes: ''
-teaser: ''
-questcount: ''
-use_region_pickup_rule: ''
+teaser: 'teaser'
+questcount: '¿Cuántas preguntas se deben formular en el examen?'
+use_region_pickup_rule: '¿Deben aplicar las reglas de ROSINEN del distrito por las
+  colecciones?'
 savewithus: ''
-fpko: ''
+fpko: 'puntos de error (k. o.)'
 image: 'Imagen'
 lebensmittel: '¿Qué alimentos se pueden recoger?'
 besonderheiten: 'Particularidades'
-fpsingular: ''
+fpsingular: 'punto de error'
 fetch_count: '¿Cuántas recogidas debería haber hecho un solicitante?'
 store_status_impact_explanation: ''
-nofp: ''
-filter_by: ''
-presse: ''
-prefetchtime: ''
-public_info: ''
+nofp: 'ningún error puntual (¡ es en broma!)'
+filter_by: 'filtrar por'
+presse: '¿Está de acuerdo la empresa/tienda/asociación de ser mencionada por la prensa
+  y foodsharing.de?'
+prefetchtime: '¿Cuantas semanas antes foodsaver pueden apuntarse por vacantes automáticos?'
+public_info: 'información pública de la empresa'
 list:
   filter_for: ''
-ueberzeugungsarbeit: ''
+ueberzeugungsarbeit: '¿Era fácil convencer un/unos encargado/s a cooperar con foodsharing?'
 banana_count: '¿Cuántas bananas de confianza necesita un miembro?'
 success: ''
 text: 'Texto'
 deletelow: ''
+notifications:
+  checkbox_disabled: Desactivado
+  config_button: configurar por separado
+  success: Registro exitoso
+  checkbox_bell: campana
