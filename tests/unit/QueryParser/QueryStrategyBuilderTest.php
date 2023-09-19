@@ -65,22 +65,22 @@ class QueryStrategyBuilderTest extends \Codeception\Test\Unit
         $this->assertEquals(QueryStrategyBuilder::NO_STRATEGY_FOUND, $errors[0]->getCode());
     }
 
-      public function testTranslationToStrategies()
-      {
-          // Test successful
-          $validator = Validation::createValidatorBuilder()
-              ->enableAnnotationMapping()
-              ->addDefaultDoctrineAnnotationReader() // add this only when using annotations
-              ->getValidator();
+    public function testTranslationToStrategies()
+    {
+        // Test successful
+        $validator = Validation::createValidatorBuilder()
+            ->enableAnnotationMapping()
+            ->addDefaultDoctrineAnnotationReader() // add this only when using annotations
+            ->getValidator();
 
-          $rawQueries = ['option:in:Berlin'];
-          $collection = new QueryStrategyBuilder(TestValidClassQSB::class);
-          $errors = $collection->validate($validator, $rawQueries);
-          $this->assertCount(0, $errors);
+        $rawQueries = ['option:in:Berlin'];
+        $collection = new QueryStrategyBuilder(TestValidClassQSB::class);
+        $errors = $collection->validate($validator, $rawQueries);
+        $this->assertCount(0, $errors);
 
-          $queries = $collection->findQueryConditionStrategies($rawQueries);
-          $this->assertCount(1, $queries);
-          $this->assertEquals(InListQueryConditionStrategy::class, get_class($queries[0]));
-          $this->assertEquals(['Berlin'], $queries[0]->generateSqlValues());
-      }
+        $queries = $collection->findQueryConditionStrategies($rawQueries);
+        $this->assertCount(1, $queries);
+        $this->assertEquals(InListQueryConditionStrategy::class, get_class($queries[0]));
+        $this->assertEquals(['Berlin'], $queries[0]->generateSqlValues());
+    }
 }
