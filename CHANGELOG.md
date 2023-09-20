@@ -2,6 +2,7 @@
 
 ## Features
 - Storemanagers see how far applicants to the store live away #1661 !2772 @Anton Ballmaier
+- When creating a new thread, the forum is automatically searched for similar named threads !2878
 
 ## Changes
 - Changed team state translation from full to closed !2831 @chriswalg
