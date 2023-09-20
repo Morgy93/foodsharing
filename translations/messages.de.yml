@@ -1200,6 +1200,7 @@ forum:
     success: "Prima, deine Antwort wurde gespeichert."
     error: "Post konnte nicht gespeichert werden."
   not_found: "Dieser Thread ist nicht vorhanden."
+  similar_threads_warning: In diesem Forum gibt es bereits Beiträge mit ähnlichem Titel. Bitte überprüfe, dass dein Beitrag dort nicht besser aufgehoben wäre.
 
 chat:
   open_chat: "Nachricht schreiben"

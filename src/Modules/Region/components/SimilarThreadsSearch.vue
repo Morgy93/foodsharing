@@ -9,7 +9,7 @@
       variant="warning"
     >
       <i class="fas fa-exclamation-triangle" />
-      In diesem Forum gibt es bereits Beiträge mit ähnlichem Titel. Bitte überprüfe, dass dein Beitrag dort nicht besser aufgehoben wäre.
+      {{ $i18n('forum.similar_threads_warning') }}
     </b-alert>
     <SearchResultEntry
       v-for="thread in filteredThreads"
