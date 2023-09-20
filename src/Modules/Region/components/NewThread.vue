@@ -10,7 +10,18 @@
 
     <div class="card-header text-black bg-white">
       <label class="font-weight-bold">{{ $i18n('forum.thread.title') }}*</label>
-      <b-form-input id="forum-create-thread-form-title" v-model="title" />
+      <b-form-input
+        id="forum-create-thread-form-title"
+        v-model="title"
+        @input="$refs.threadsSearch.fetch()"
+      />
+      <SimilarThreadsSearch
+        ref="threadsSearch"
+        :group-id="groupId"
+        :subforum-id="subforumId"
+        :query="title"
+      />
+
       <div
         class="mt-3"
         v-html="$i18n('forum.markdown_description')"
@@ -45,8 +56,10 @@
 import { createThread } from '@/api/forum'
 import { pulseError } from '@/script'
 import i18n from '@/helper/i18n'
+import SimilarThreadsSearch from './SimilarThreadsSearch.vue'
 
 export default {
+  components: { SimilarThreadsSearch },
   props: {
     groupId: { type: Number, required: true },
     subforumId: { type: Number, required: true },
@@ -83,6 +96,9 @@ export default {
 }
 </script>
 
-<style scoped>
-
+<style lang="scss" scoped>
+#forum-create-thread-form-title {
+  position: relative;
+  z-index: 1;
+}
 </style>
