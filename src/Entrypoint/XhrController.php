@@ -86,9 +86,9 @@ class XhrController extends AbstractController
 
         $response = new Response();
 
-        if (is_array($data)) {
-            $response->headers->set('Content-Type', 'application/json');
-            $response->setContent(json_encode($data));
+        if ($data !== null) {
+            $response = $this->json($data);
+            $data = $response->getContent();
         }
 
         // check for page caching
