@@ -33,7 +33,7 @@ class SearchTransactions
     }
 
     /**
-     * Searches for regions, stores, and foodsavers.
+     * Searches for regions, stores, foodsavers, food share points and working groups.
      *
      * @param string $query the search query
      *
@@ -41,121 +41,57 @@ class SearchTransactions
      */
     public function search(string $query): array
     {
-        $regionsFilter = null;
-        $regionDetails = null;
-        if (!$this->searchPermissions->maySearchAllRegions()) {
-            $regionsFilter = $this->regionGateway->listIdsForDescendantsAndSelf($this->session->getCurrentRegionId(), true, false);
+        // TODO: Search by Email for IT-Support Group and ORGA
+        // $this->searchPermissions->maySearchByEmailAddress()
 
-            $ambassadorRegions = $this->session->getMyAmbassadorRegionIds(false);
-            $regionsFilter = array_merge($regionsFilter, $ambassadorRegions);
-            $regionDetails = $ambassadorRegions;
-        }
+        $foodsaverId = $this->session->id();
+        $maySearchGlobal = $this->searchPermissions->maySearchGlobal();
+        
+        $regions = $this->searchGateway->searchRegions($query, $foodsaverId);
+        $this->formatUserList($regions, 'ambassador', ['id', 'name', 'photo']);
+        
+        $searchAllWorkingGroups = $this->searchPermissions->maySearchAllWorkingGroups();
+        $workingGroups = $this->searchGateway->searchWorkingGroups($query, $foodsaverId, $searchAllWorkingGroups);
+        $this->formatUserList($workingGroups, 'admin', ['id', 'name', 'photo']);
+        
+        $includeInactiveStores = $this->session->mayRole(Role::STORE_MANAGER);
+        $stores = $this->searchGateway->searchStores($query, $foodsaverId, $includeInactiveStores, $maySearchGlobal);
+        
+        $foodSharePoints = $this->searchGateway->searchFoodSharePoints($query, $foodsaverId, $maySearchGlobal);
 
-        $regions = $this->searchGateway->searchRegions($query);
-        $users = $this->searchGateway->searchUserInGroups($query, $regionDetails, $regionsFilter);
-        $stores = $this->searchGateway->searchStores($query);
-        $foodSharePoints = $this->searchGateway->searchFoodSharePoints($query);
-        if ($singleUser = $this->searchUserByID($query)) {
-            array_unshift($users, $singleUser);
-        }
+        $chats = $this->searchGateway->searchChats($query, $foodsaverId);
+        $this->formatUserList($chats, 'member', ['id', 'name']);
 
-        if ($this->searchPermissions->maySearchByEmailAddress()) {
-            if ($singleUser = $this->searchUserByEmail($query)) {
-                array_unshift($users, $singleUser);
-            }
-        }
+        $threads = $this->searchGateway->searchThreads($query, $foodsaverId);
+
+        $users = $this->searchGateway->searchUsers($query, $foodsaverId, $maySearchGlobal);
 
         return [
             'regions' => $regions,
-            'users' => $users,
+            'workingGroups' => $workingGroups,
             'stores' => $stores,
-            'foodSharePoints' => $foodSharePoints
+            'foodSharePoints' => $foodSharePoints,
+            'chats' => $chats,
+            'threads' => $threads,
+            'users' => $users,
         ];
     }
 
-    private function searchUserByEmail(string $query): array
+    private function formatUserList(array &$entries, string $namespace, array $keys)
     {
-        if (str_ends_with($query, PLATFORM_MAILBOX_HOST) || !filter_var($query, FILTER_VALIDATE_EMAIL)) {
-            return [];
+        foreach ($entries as &$entry) {
+            if (empty($entry[$namespace . '_' . $keys[0] . 's'])) {
+                $entry[$namespace . 's'] = [];
+            } else {
+                $entry[$namespace . 's'] = array_map(
+                    fn (...$values) => array_combine($keys, $values),
+                    ...array_map(fn ($key) => explode(',', $entry[$namespace . '_'  . $key . 's']), $keys)
+                );
+            }
+            foreach ($keys as $key) {
+                unset($entry[$namespace . '_'  . $key . 's']);
+            }
         }
-
-        $user = $this->foodsaverGateway->getUserFromEmail($query);
-        if (empty($user)) {
-            return [];
-        }
-
-        return [
-            'id' => $user['id'],
-            'name' => $user['name'],
-            'teaser' => 'FS-ID: ' . $user['id'] . ' | Mail: ' . $user['email'],
-        ];
-    }
-
-    private function searchUserByID(string $query): array
-    {
-        if (!preg_match('/^[0-9]+$/', $query)) {
-            return [];
-        }
-        $userId = intval($query);
-
-        if (!$this->foodsaverGateway->foodsaverExists($userId)) {
-            return [];
-        }
-
-        return [
-            'id' => $userId,
-            'name' => $this->foodsaverGateway->getFoodsaverName($userId),
-            'teaser' => 'FS-ID: ' . $userId,
-        ];
-    }
-
-    /**
-     * Generates the search index for instant search. Each category (stores, regions, buddies, groups)
-     * is mapped to a list of {@link SearchIndexEntry}s.
-     */
-    public function generateIndex(): array
-    {
-        $userId = $this->session->id();
-        $index = [];
-
-        // load buddies of the user
-        if ($buddies = $this->buddyGateway->listBuddies($userId)) {
-            $index['myBuddies'] = array_map(function ($b) {
-                $img = '/img/avatar-mini.png';
-                if (!empty($b['photo'])) {
-                    $img = $this->imageHelper->img($b['photo']);
-                }
-
-                return SearchIndexEntry::create($b['id'], $b['name'] . ' ' . $b['nachname'], null, $img);
-            }, $buddies);
-        }
-
-        // load groups in which the user is a member
-        if ($groups = $this->workGroupGateway->listMemberGroups($userId)) {
-            $index['myGroups'] = array_map(function ($b) {
-                $img = '/img/groups.png';
-                if (!empty($b['photo'])) {
-                    $img = 'images/' . str_replace('photo/', 'photo/thumb_', $b['photo']);
-                }
-
-                return SearchIndexEntry::create($b['id'], $b['name'], $this->sanitizerService->tt($b['teaser'], 65), $img);
-            }, $groups);
-        }
-
-        // load stores in which the user is a member
-        if ($betriebe = $this->storeGateway->listMyStores($userId)) {
-            $index['myStores'] = array_map(function ($b) {
-                return SearchIndexEntry::create($b['id'], $b['name'], $b['str'] . ', ' . $b['plz'] . ' ' . $b['stadt'], null);
-            }, $betriebe);
-        }
-
-        // load regions in which the user is a member
-        $bezirke = $this->regionGateway->listForFoodsaverExceptWorkingGroups($userId);
-        $index['myRegions'] = array_map(function ($b) {
-            return SearchIndexEntry::create($b['id'], $b['name'], null, null);
-        }, $bezirke);
-
-        return $index;
     }
 
     public function searchForUser(string $query, ?int $regionId): array
