@@ -2994,7 +2994,7 @@ globals:
 search:
   title: Suche
   placeholder: Jetzt Suche starten …
-  informations: Du kannst nach Personen, Gruppen, Betrieben, Bezirken und Fairteilern suchen.
+  informations: Du kannst nach Personen, Gruppen, Betrieben, Bezirken, Chats, Forenbeiträgen und Fairteilern suchen.
   forum: Nach Titel suchen …
   noresults: Es konnten keine Ergebnisse gefunden werden
   thread-title-only: Es werden nur Titel durchsucht, nicht der Text von Beiträgen.

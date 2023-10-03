@@ -1,12 +1,16 @@
 <template>
   <div>
+    {{ results }}
     <div
       v-if="isEmpty && !isLoading"
       class="alert alert-warning"
     >
       {{ $i18n('search.noresults') }}
     </div>
-    <div
+
+    {{ {isEmpty} }}
+
+    <!-- <div
       v-if="filtered.myBuddies.length"
       class="entry"
     >
@@ -150,13 +154,19 @@
         :teaser="region.teaser"
         :image="region.image"
       />
-    </div>
+    </div> -->
+    <search-result-entry
+      :href="$url('forum', 1)"
+      title="Titel"
+      teaser="Teaser"
+      :image="null"
+    />
   </div>
 </template>
 
 <script>
 import SearchResultEntry from './SearchResultEntry'
-
+/*
 function arrayFilterDuplicate (list, ignore) {
   const ids = ignore.map(e => e.id)
   return list.filter(e => ids.indexOf(e.id) === -1)
@@ -167,45 +177,22 @@ function match (word, e) {
   if (e.teaser && e.teaser.toLowerCase().indexOf(word) !== -1) return true
   return false
 }
+*/
 
 export default {
   components: { SearchResultEntry },
   props: {
-    stores: {
-      type: Array,
-      default: () => [],
-    },
-    groups: {
-      type: Array,
-      default: () => [],
-    },
-    regions: {
-      type: Array,
-      default: () => [],
-    },
-    foodSharePoints: {
-      type: Array,
-      default: () => [],
-    },
-    users: {
-      type: Array,
-      default: () => [],
-    },
-    myGroups: {
-      type: Array,
-      default: () => [],
-    },
-    myStores: {
-      type: Array,
-      default: () => [],
-    },
-    myRegions: {
-      type: Array,
-      default: () => [],
-    },
-    myBuddies: {
-      type: Array,
-      default: () => [],
+    results: {
+      type: Object,
+      default: () => ({
+        regions: [],
+        workingGroups: [],
+        stores: [],
+        foodSharePoints: [],
+        chats: [],
+        threads: [],
+        users: [],
+      }),
     },
     query: {
       type: String,
@@ -217,6 +204,7 @@ export default {
     },
   },
   computed: {
+    /*
     filtered () {
       const query = this.query.toLowerCase().trim()
       const searchTerms = query.match(/[^ ,;+.]+/g)
@@ -252,17 +240,16 @@ export default {
       res.regions = arrayFilterDuplicate(res.regions, res.myGroups)
       return res
     },
+    */
     isEmpty () {
       return (
-        !this.filtered.stores.length &&
-                !this.filtered.regions.length &&
-                !this.filtered.users.length &&
-                !this.filtered.groups.length &&
-                !this.filtered.foodSharePoints.length &&
-                !this.filtered.myGroups.length &&
-                !this.filtered.myStores.length &&
-                !this.filtered.myRegions.length &&
-                !this.filtered.myBuddies.length
+        !this.results.regions.length &&
+        !this.results.workingGroups.length &&
+        !this.results.stores.length &&
+        !this.results.foodSharePoints.length &&
+        !this.results.chats.length &&
+        !this.results.threads.length &&
+        !this.results.users.length
       )
     },
   },
