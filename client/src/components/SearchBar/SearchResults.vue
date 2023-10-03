@@ -1,6 +1,5 @@
 <template>
   <div>
-    {{ results }}
     <div
       v-if="isEmpty && !isLoading"
       class="alert alert-warning"
@@ -8,7 +7,7 @@
       {{ $i18n('search.noresults') }}
     </div>
 
-    {{ {isEmpty} }}
+    {{ results }}
 
     <!-- <div
       v-if="filtered.myBuddies.length"
@@ -166,18 +165,6 @@
 
 <script>
 import SearchResultEntry from './SearchResultEntry'
-/*
-function arrayFilterDuplicate (list, ignore) {
-  const ids = ignore.map(e => e.id)
-  return list.filter(e => ids.indexOf(e.id) === -1)
-}
-
-function match (word, e) {
-  if (e.name && e.name.toLowerCase().indexOf(word) !== -1) return true
-  if (e.teaser && e.teaser.toLowerCase().indexOf(word) !== -1) return true
-  return false
-}
-*/
 
 export default {
   components: { SearchResultEntry },
@@ -204,53 +191,8 @@ export default {
     },
   },
   computed: {
-    /*
-    filtered () {
-      const query = this.query.toLowerCase().trim()
-      const searchTerms = query.match(/[^ ,;+.]+/g)
-
-      const containsAllSearchTerms = (searchResultEntry) => {
-        if (!searchTerms.length) return false
-        for (const searchTerm of searchTerms) {
-          if (!match(searchTerm, searchResultEntry)) return false
-        }
-        return true
-      }
-
-      const res = {
-        stores: this.stores.filter(containsAllSearchTerms),
-        regions: this.regions.filter(containsAllSearchTerms),
-        users: this.users.filter(containsAllSearchTerms),
-        groups: this.groups.filter(containsAllSearchTerms),
-        foodSharePoints: this.foodSharePoints.filter(containsAllSearchTerms),
-        myGroups: this.myGroups.filter(containsAllSearchTerms),
-        myStores: this.myStores.filter(containsAllSearchTerms),
-        myRegions: this.myRegions.filter(containsAllSearchTerms),
-        myBuddies: this.myBuddies.filter(containsAllSearchTerms),
-      }
-
-      // additionally remove elements in global search which are already contained in the private lists
-
-      res.stores = arrayFilterDuplicate(res.stores, res.myStores)
-      res.groups = arrayFilterDuplicate(res.groups, res.myGroups)
-      res.regions = arrayFilterDuplicate(res.regions, res.myRegions)
-      res.users = arrayFilterDuplicate(res.users, res.myBuddies)
-
-      // because myGroups are still contained in the regions response, we filter them out additionally
-      res.regions = arrayFilterDuplicate(res.regions, res.myGroups)
-      return res
-    },
-    */
     isEmpty () {
-      return (
-        !this.results.regions.length &&
-        !this.results.workingGroups.length &&
-        !this.results.stores.length &&
-        !this.results.foodSharePoints.length &&
-        !this.results.chats.length &&
-        !this.results.threads.length &&
-        !this.results.users.length
-      )
+      return Object.values(this.results).every(value => value.length === 0)
     },
   },
 }
