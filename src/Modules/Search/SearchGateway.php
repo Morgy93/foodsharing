@@ -15,104 +15,338 @@ class SearchGateway extends BaseGateway
 
     /**
      * Searches the given term in the database of regions.
-     *
-     * @param string $q Query string / search term
-     *
-     * @return array SearchResult[] Array of regions containing the search term
      */
-    public function searchRegions(string $q): array
+    public function searchRegions(string $query, int $foodsaverId): array
     {
-        return $this->searchTable(
-            'fs_bezirk',
-            ['name'],
-            $q,
-            [
-                'name' => '`name`',
-                'teaser' => 'CONCAT("")'
-            ]
-        );
+        list($searchClauses, $parameters) = $this->generateSearchClauses(['region.name', 'region.email'], $query);
+
+        return $this->db->fetchAll('SELECT
+                region.id,
+                region.name,
+                region.email,
+                parent.id AS parent_id,
+                parent.name AS parent_name,
+                GROUP_CONCAT(foodsaver.id) AS ambassador_ids,
+                GROUP_CONCAT(foodsaver.name) AS ambassador_names,
+                GROUP_CONCAT(IFNULL(foodsaver.photo, "")) AS ambassador_photos,
+                IF(ISNULL(has_region.foodsaver_id), NULL, 1) as is_member
+            FROM fs_bezirk region
+            LEFT OUTER JOIN fs_bezirk parent ON parent.id = region.parent_id
+            LEFT OUTER JOIN fs_botschafter ambassador ON ambassador.bezirk_id = region.id
+            LEFT OUTER JOIN fs_foodsaver foodsaver ON foodsaver.id = ambassador.foodsaver_id
+            LEFT OUTER JOIN fs_foodsaver_has_bezirk has_region ON has_region.bezirk_id = region.id AND has_region.foodsaver_id = ?
+            WHERE region.type != 7
+            AND region.id != 0
+            AND ' . $searchClauses . '
+            GROUP BY region.id
+            ORDER BY is_member DESC, name ASC
+            LIMIT 50',
+            [$foodsaverId, ...$parameters]);
+    }
+
+    /**
+     * Searches the given term in the database of working groups.
+     */
+    public function searchWorkingGroups(string $query, int $foodsaverId, bool $searchAllWorkingGroups): array
+    {
+        list($searchClauses, $parameters) = $this->generateSearchClauses(['region.name', 'region.email', 'parent.name'], $query);
+        $membershipCheck = $searchAllWorkingGroups ? '' : 'AND (NOT ISNULL(has_parent_region.foodsaver_id) OR NOT ISNULL(has_region.foodsaver_id))';
+
+        return $this->db->fetchAll('SELECT
+                region.id,
+                region.name,
+                region.email,
+                region.apply_type,
+                parent.id AS parent_id,
+                parent.name AS parent_name,
+                has_region.active as is_member,
+                MAX(IF(ambassador.foodsaver_id = ?, 1, 0)) AS is_admin,
+                GROUP_CONCAT(foodsaver.id) AS admin_ids,
+                GROUP_CONCAT(foodsaver.name) AS admin_names,
+                GROUP_CONCAT(IFNULL(foodsaver.photo, "")) AS admin_photos
+            FROM fs_bezirk region
+            JOIN fs_bezirk parent ON parent.id = region.parent_id
+            LEFT OUTER JOIN fs_foodsaver_has_bezirk has_region ON has_region.bezirk_id = region.id AND has_region.foodsaver_id = ?
+            LEFT OUTER JOIN fs_foodsaver_has_bezirk has_parent_region ON has_parent_region.bezirk_id = parent.id AND has_parent_region.foodsaver_id = ?
+            LEFT OUTER JOIN fs_botschafter ambassador ON ambassador.bezirk_id = region.id
+            LEFT OUTER JOIN fs_foodsaver foodsaver ON foodsaver.id = ambassador.foodsaver_id
+            WHERE region.type = 7
+            ' . $membershipCheck . '
+            AND ' . $searchClauses . '
+            GROUP BY region.id
+            ORDER BY is_admin DESC, is_member DESC, name ASC
+            LIMIT 50',
+            [$foodsaverId, $foodsaverId, $foodsaverId, ...$parameters]);
     }
 
     /**
      * Searches the given term in the database of stores.
-     *
-     * @return array SearchResult[] Array of stores containing the search term
      */
-    public function searchStores(string $q, array $regions = null): array
+    public function searchStores(string $query, int $foodsaverId, bool $includeInactiveStores, bool $searchGlobal): array
     {
-        return $this->searchTable(
-            'fs_betrieb',
-            ['name', 'stadt', 'plz', 'str'],
-            $q,
-            [
-                'name' => '`name`',
-                'teaser' => 'CONCAT(`str`,", ",`plz`," ",`stadt`)'
-            ],
-            $regions
+        list($searchClauses, $searchParameters) = $this->generateSearchClauses(
+            ['store.name', 'store.str', 'store.plz', 'store.stadt', 'IFNULL(chain.name, "")'],
+            $query
         );
+        $onlyActiveClause = '';
+        if (!$includeInactiveStores) {
+            $onlyActiveClause = 'AND 
+                (store.betrieb_status_id IN (3,5) OR store.team_status != 0 OR NOT ISNULL(store_team.active)) AND
+                store.betrieb_status_id != 7';
+        }
+        $regionRestrictionClause = '';
+        if (!$searchGlobal) {
+            $regionRestrictionClause = 'AND ? IN (has_region.foodsaver_id, kam.foodsaver_id)';
+            $searchParameters[] = $foodsaverId;
+        }
+
+        return $this->db->fetchAll('SELECT
+                store.id,
+                store.name,
+                store.betrieb_status_id AS cooperation_status,
+                store.str,
+                store.plz,
+                store.stadt,
+                region.id AS region_id,
+                region.name AS region_name,
+                chain.name AS chain_name,
+                store_team.active as membership_status,
+                store_team.verantwortlich as is_manager
+            FROM fs_betrieb AS store
+            JOIN fs_bezirk region ON region.id = store.bezirk_id
+            JOIN fs_foodsaver_has_bezirk has_region ON has_region.bezirk_id = store.bezirk_id
+            LEFT OUTER JOIN fs_key_account_manager AS kam ON kam.chain_id = store.kette_id AND kam.foodsaver_id = ?
+            LEFT OUTER JOIN fs_chain AS chain ON chain.id = kam.chain_id
+            LEFT OUTER JOIN fs_betrieb_team AS store_team ON store_team.betrieb_id = store.id AND store_team.foodsaver_id = ?
+            WHERE ' . $searchClauses . '
+            ' . $onlyActiveClause . '
+            ' . $regionRestrictionClause . '
+            GROUP BY store.id
+            ORDER BY is_manager DESC, IF(membership_status = 1, 2, IF(membership_status = 2, 1, 0)) DESC, name ASC
+            LIMIT 50',
+            [$foodsaverId, $foodsaverId, ...$searchParameters]);
     }
 
     /**
      * Searches the given term in the list of food-share-points.
-     *
-     * @return array SearchResult[] Array of food-share-points containing the search term
      */
-    public function searchFoodSharePoints(string $q, array $regions = null): array
+    public function searchFoodSharePoints(string $query, int $foodsaverId, bool $searchGlobal): array
     {
-        return $this->searchTable(
-            'fs_fairteiler',
-            ['name', 'ort', 'plz', 'anschrift'],
-            $q,
-            [
-                'name' => '`name`',
-                'teaser' => 'CONCAT(`anschrift`,", ",`plz`," ",`ort`)'
-            ],
-            $regions
+        // TODO search global
+        list($searchClauses, $parameters) = $this->generateSearchClauses(
+            ['share_point.name', 'share_point.anschrift', 'share_point.plz', 'share_point.ort', 'region.name'],
+            $query
+        );
+
+        return $this->db->fetchAll('SELECT
+                share_point.id,
+                share_point.name,
+                share_point.picture,
+                share_point.anschrift,
+                share_point.plz,
+                share_point.ort,
+                region.id AS region_id,
+                region.name AS region_name
+            FROM fs_fairteiler share_point
+            JOIN fs_bezirk region ON region.id = share_point.bezirk_id
+            JOIN fs_foodsaver_has_bezirk has_region ON has_region.bezirk_id = region.id
+            WHERE has_region.foodsaver_id = ?
+            AND share_point.status = 1
+            AND ' . $searchClauses . '
+            ORDER BY name ASC
+            LIMIT 50',
+            [$foodsaverId, ...$parameters]
         );
     }
 
-    private function searchTable(string $table, array $fields, string $query, array $show = [], array $regions_to_search = null): array
+    /**
+     * Searches the given term in the list of own chats.
+     */
+    public function searchChats(string $query, int $foodsaverId): array
     {
-        $q = trim($query);
+        list($searchClauses, $parameters) = $this->generateSearchClauses(['member_names', 'IFNULL(name, "")'], $query);
 
-        str_replace([',', ';', '+', '.'], ' ', $q);
+        return $this->db->fetchAll('SELECT
+                conversation.id,
+                conversation.name,
+                conversation.last,
+                conversation.last_foodsaver_id,
+                LEFT(conversation.last_message, 100) AS last_message,
+                GROUP_CONCAT(foodsaver.id) AS member_ids,
+                GROUP_CONCAT(foodsaver.name) AS member_names
+            FROM fs_foodsaver_has_conversation AS has_conversation
+            JOIN fs_conversation AS conversation ON conversation.id = has_conversation.conversation_id
+            JOIN fs_foodsaver_has_conversation AS has_member ON has_member.conversation_id = conversation.id
+            JOIN fs_foodsaver AS foodsaver ON foodsaver.id = has_member.foodsaver_id
+            WHERE has_conversation.foodsaver_id = ? -- Only include own chats
+            AND has_member.foodsaver_id != has_conversation.foodsaver_id -- Exclude searching for oneself in chat member lists
+            GROUP BY conversation.id
+            HAVING ' . $searchClauses . '
+            ORDER BY last DESC
+            LIMIT 50',
+            [$foodsaverId, ...$parameters]
+        );
+    }
 
-        do {
-            $q = str_replace('  ', ' ', $q);
-        } while (strpos($q, '  ') !== false);
+    /**
+     * Searches the given term in the list of forum threads.
+     */
+    public function searchThreads(string $query, int $foodsaverId): array
+    {
+        list($searchClauses, $parameters) = $this->generateSearchClauses(['thread.name'], $query);
 
-        $terms = explode(' ', $q);
+        return $this->db->fetchAll('SELECT
+                thread.id,
+                thread.name,
+                thread.time,
+                thread.sticky,
+                thread.status,
+                region.id AS region_id,
+                region.name AS region_name,
+                has_thread.bot_theme AS bot_forum
+            FROM fs_theme AS thread
+            JOIN fs_bezirk_has_theme AS has_thread ON has_thread.theme_id = thread.id
+            JOIN fs_bezirk AS region ON region.id = has_thread.bezirk_id
+            JOIN fs_foodsaver_has_bezirk AS has_region ON has_region.bezirk_id = region.id
+            LEFT OUTER JOIN fs_botschafter AS ambassador ON ambassador.foodsaver_id = has_region.foodsaver_id AND ambassador.bezirk_id = region.id
+            WHERE thread.active = 1 AND has_region.foodsaver_id = ?
+            AND(NOT ISNULL(ambassador.foodsaver_id) OR has_thread.bot_theme = 0) -- show Bot forums only to bots
+            AND ' . $searchClauses . '
+            ORDER BY time DESC
+            LIMIT 50',
+            [$foodsaverId, ...$parameters]
+        );
+    }
 
-        foreach ($terms as $i => $t) {
-            $terms[$i] = $this->db->quote('%' . $t . '%');
+    /**
+     * Searches the given term in the list of users.
+     */
+    public function searchUsers(string $query, int $foodsaverId, bool $searchGlobal): array
+    {
+        if ($searchGlobal) {
+            return $this->searchUsersGlobal($query);
         }
+        list($searchClauses, $parameters) = $this->generateSearchClauses(['foodsaver.name', "IFNULL(foodsaver.last_name, '')"], $query);
 
-        $fsql = 'CONCAT(' . implode(',', $fields) . ')';
+        return $this->db->fetchAll('SELECT
+                foodsaver.id,
+                foodsaver.name,
+                foodsaver.photo,
+                foodsaver.home_region AS region_id,
+                region.name AS region_name,
+                MAX(foodsaver.last_name) as last_name,
+                MAX(foodsaver.mobile) as mobile
+            FROM (
+                -- Region / AG members:
+                SELECT
+                    foodsaver.id,
+                    foodsaver.name,
+                    foodsaver.photo,
+                    foodsaver.bezirk_id AS home_region,
+                    IF(MAX(NOT ISNULL(ambassador.foodsaver_id) AND region.type != 7) = 1, foodsaver.handy, null) AS mobile,
+                    IF(MAX(NOT ISNULL(ambassador.foodsaver_id) AND region.type != 7) = 1, foodsaver.nachname, null) AS last_name
+                FROM fs_foodsaver AS foodsaver
+                JOIN fs_foodsaver_has_bezirk has_region ON has_region.foodsaver_id = foodsaver.id
+                JOIN fs_bezirk region ON region.id = has_region.bezirk_id
+                JOIN fs_foodsaver_has_bezirk have_region ON have_region.bezirk_id = region.id
+                LEFT OUTER JOIN fs_botschafter ambassador ON ambassador.bezirk_id = region.id and ambassador.foodsaver_id = have_region.foodsaver_id 
+                WHERE have_region.foodsaver_id = ?
+                AND region.type IN (1,7,9)
+                GROUP BY foodsaver.id
+                UNION
+            
+                -- Buddies:
+                SELECT
+                    foodsaver.id,
+                    foodsaver.name,
+                    foodsaver.photo,
+                    foodsaver.bezirk_id AS home_region,
+                    NULL, NULL
+                FROM fs_foodsaver AS foodsaver
+                JOIN fs_buddy AS buddy ON buddy.buddy_id = foodsaver.id
+                WHERE buddy.foodsaver_id = ?
+                AND buddy.confirmed = 1
+                UNION
+            
+                -- By store team:
+                SELECT
+                    foodsaver.id,
+                    foodsaver.name,
+                    foodsaver.photo,
+                    foodsaver.bezirk_id AS home_region,
+                    IF(MAX(IF(my_store_team.active = 1, 1, 0)) = 1, foodsaver.handy, null) AS mobile,
+                    IF(MAX(IF(my_store_team.verantwortlich = 1, 1, 0)) = 1, foodsaver.nachname, null) AS last_name
+                FROM fs_betrieb_team AS my_store_team
+                JOIN fs_betrieb_team AS store_team ON store_team.betrieb_id = my_store_team.betrieb_id
+                JOIN fs_foodsaver AS foodsaver ON foodsaver.id = store_team.foodsaver_id 
+                WHERE my_store_team.foodsaver_id = ?
+                AND my_store_team.active != 0
+                GROUP BY foodsaver.id
+                UNION
+            
+                -- By Chat membership:
+                SELECT
+                    foodsaver.id,
+                    foodsaver.name,
+                    foodsaver.photo,
+                    foodsaver.bezirk_id AS home_region,
+                    NULL, NULL
+                FROM fs_foodsaver_has_conversation AS have_conversation
+                JOIN fs_foodsaver_has_conversation AS has_conversation ON have_conversation.conversation_id = has_conversation.conversation_id
+                JOIN fs_foodsaver AS foodsaver ON foodsaver.id = has_conversation.foodsaver_id
+                WHERE have_conversation.foodsaver_id = ?
+                GROUP BY foodsaver.id
+                UNION
 
-        $fs_sql = '';
-        if (!empty($regions_to_search)) {
-            $fs_sql = ' AND bezirk_id IN(' . implode(',', $regions_to_search) . ')';
-        }
+                -- By Id:
+                SELECT
+                    foodsaver.id,
+                    foodsaver.name,
+                    foodsaver.photo,
+                    foodsaver.bezirk_id AS home_region,
+                    NULL, NULL
+                FROM fs_foodsaver AS foodsaver
+                WHERE foodsaver.id = ?
+            ) foodsaver
+            JOIN fs_bezirk AS region ON region.id = foodsaver.home_region
+            WHERE (foodsaver.id = ? OR (foodsaver.id != ? AND ' . $searchClauses . '))
+            GROUP BY foodsaver.id
+            ORDER BY ISNULL(foodsaver.last_name), foodsaver.name, foodsaver.last_name 
+            LIMIT 50
+            ',
+            [$foodsaverId, $foodsaverId, $foodsaverId, $foodsaverId, $parameters[0], $parameters[0], $foodsaverId, ...$parameters]
+        );
+    }
 
-        $results = $this->db->fetchAll('
-			SELECT 	`id`,
-					 ' . $show['name'] . ' AS name,
-					 ' . $show['teaser'] . ' AS teaser
+    private function searchUsersGlobal(string $query): array
+    {
+        list($searchClauses, $parameters) = $this->generateSearchClauses(['name', 'last_name'], $query);
 
+        return $this->db->fetchAll('SELECT
+                foodsaver.id,
+                foodsaver.name,
+                foodsaver.photo,
+                foodsaver.bezirk_id AS region_id,
+                region.name AS region_name,
+                foodsaver.nachname as last_name,
+                foodsaver.handy as mobile
+            FROM fs_foodsaver as foodsaver
+            JOIN fs_bezirk as region ON region.id = foodsaver.bezirk_id
+            WHERE ' . $searchClauses . '
+            ORDER BY foodsaver.name, foodsaver.last_name
+            LIMIT 50',
+            [...$parameters]
+        );
+    }
 
-			FROM 	' . $table . '
+    private function generateSearchClauses($searchCriteria, $query)
+    {
+        $query = preg_replace('/[,;+\.\s]+/', ' ', $query);
+        $queryTerms = explode(' ', trim($query));
+        $searchCriteria = 'CONCAT(' . implode(',";",', $searchCriteria) . ')';
+        $searchClauses = array_map(fn ($term) => $searchCriteria . ' LIKE CONCAT("%", ?, "%")', $queryTerms);
 
-			WHERE ' . $fsql . ' LIKE ' . implode(' AND ' . $fsql . ' LIKE ', $terms) . '
-			' . $fs_sql . '
-
-			ORDER BY `name`
-
-			LIMIT 0,50
-		');
-
-        return array_map(function ($x) {
-            return SearchResult::create($x['id'], $x['name'], $x['teaser']);
-        }, $results);
+        return [implode(' AND ', $searchClauses), $queryTerms];
     }
 
     /**

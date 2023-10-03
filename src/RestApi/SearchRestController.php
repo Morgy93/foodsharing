@@ -40,22 +40,6 @@ class SearchRestController extends AbstractFOSRestController
 
     /**
      * @OA\Tag(name="search")
-     * @Rest\Get("search/index")
-     */
-    public function getSearchLegacyIndexAction(): Response
-    {
-        if (!$this->session->mayRole()) {
-            throw new UnauthorizedHttpException('');
-        }
-        $data = $this->searchTransactions->generateIndex();
-
-        $view = $this->view($data, 200);
-
-        return $this->handleView($view);
-    }
-
-    /**
-     * @OA\Tag(name="search")
      * @Rest\Get("search/user")
      * @Rest\QueryParam(name="q", description="Search query.")
      * @Rest\QueryParam(name="regionId", requirements="\d+", nullable=true, description="Restricts the search to a region")
@@ -78,7 +62,7 @@ class SearchRestController extends AbstractFOSRestController
     }
 
     /**
-     * General search endpoint that returns foodsavers, stores, and regions.
+     * General search endpoint that returns foodsavers, stores, and regions, food share points and working groups.
      *
      * @OA\Tag(name="search")
      * @Rest\Get("search/all")
