@@ -150,4 +150,15 @@ class GroupFunctionGateway extends BaseGateway
             ['bezirk_id' => $groupId]
         );
     }
+
+    public function isAdminForSpecialWG(array $workgroupFunctions, int $foodsaverId)
+    {
+        return $this->db->fetch('SELECT COUNT(*)
+            from fs_region_function region_function
+            JOIN fs_botschafter ambassador ON ambassador.bezirk_id = region_function.region_id
+            WHERE ambassador.foodsaver_id = ?
+            AND region_function.function_id IN (' . implode(',', $workgroupFunctions) . ')',
+            [$foodsaverId]
+        );
+    }
 }
