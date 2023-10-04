@@ -20,12 +20,12 @@
       <small>ID: {{ user.id }}</small>
       <br>
       <small>
-        <a
-          v-if="user.region_id"
-          :href="$url('forum', user.region_id)"
-        >
-          {{ user.region_name }}
-        </a>
+        <span v-if="user.region_id">
+          aus
+          <a :href="$url('forum', user.region_id)">
+            {{ user.region_name }}
+          </a>
+        </span>
         <i v-else>Kein Stammbezirk</i>
       </small>
     </div>
