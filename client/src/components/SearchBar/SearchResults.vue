@@ -7,7 +7,19 @@
       {{ $i18n('search.noresults') }}
     </div>
 
-    {{ results }}
+    <div
+      v-if="results.users.length"
+      class="entry"
+    >
+      <h3 class="dropdown-header">
+        <i class="icon-subnav fas fa-user" /> {{ $i18n('globals.type.persons') }}
+      </h3>
+      <UserResultEntry
+        v-for="user in results.users"
+        :key="user.id"
+        :user="user"
+      />
+    </div>
 
     <!-- <div
       v-if="filtered.myBuddies.length"
@@ -160,14 +172,16 @@
       teaser="Teaser"
       :image="null"
     />
+    {{ results.users[0] }}
   </div>
 </template>
 
 <script>
 import SearchResultEntry from './SearchResultEntry'
+import UserResultEntry from './ResultEntry/UserResultEntry'
 
 export default {
-  components: { SearchResultEntry },
+  components: { SearchResultEntry, UserResultEntry },
   props: {
     results: {
       type: Object,
