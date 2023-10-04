@@ -1,6 +1,6 @@
 <template>
   <b-dropdown
-    variant="primary"
+    :variant="variant"
     split
     right
     class="phone-button"
@@ -32,6 +32,10 @@ export default {
     phoneNumber: {
       type: String,
       required: true,
+    },
+    variant: {
+      type: String,
+      default: 'primary',
     },
   },
   computed: {
