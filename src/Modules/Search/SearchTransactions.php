@@ -9,7 +9,6 @@ use Foodsharing\Modules\Core\DBConstants\Region\RegionIDs;
 use Foodsharing\Modules\Core\DBConstants\Unit\UnitType;
 use Foodsharing\Modules\Foodsaver\FoodsaverGateway;
 use Foodsharing\Modules\Region\RegionGateway;
-use Foodsharing\Modules\Search\DTO\SearchIndexEntry;
 use Foodsharing\Modules\Store\StoreGateway;
 use Foodsharing\Modules\WorkGroup\WorkGroupGateway;
 use Foodsharing\Permissions\SearchPermissions;
@@ -46,17 +45,17 @@ class SearchTransactions
 
         $foodsaverId = $this->session->id();
         $maySearchGlobal = $this->searchPermissions->maySearchGlobal();
-        
+
         $regions = $this->searchGateway->searchRegions($query, $foodsaverId);
         $this->formatUserList($regions, 'ambassador', ['id', 'name', 'photo']);
-        
+
         $searchAllWorkingGroups = $this->searchPermissions->maySearchAllWorkingGroups();
         $workingGroups = $this->searchGateway->searchWorkingGroups($query, $foodsaverId, $searchAllWorkingGroups);
         $this->formatUserList($workingGroups, 'admin', ['id', 'name', 'photo']);
-        
+
         $includeInactiveStores = $this->session->mayRole(Role::STORE_MANAGER);
         $stores = $this->searchGateway->searchStores($query, $foodsaverId, $includeInactiveStores, $maySearchGlobal);
-        
+
         $foodSharePoints = $this->searchGateway->searchFoodSharePoints($query, $foodsaverId, $maySearchGlobal);
 
         $chats = $this->searchGateway->searchChats($query, $foodsaverId);
@@ -85,11 +84,11 @@ class SearchTransactions
             } else {
                 $entry[$namespace . 's'] = array_map(
                     fn (...$values) => array_combine($keys, $values),
-                    ...array_map(fn ($key) => explode(',', $entry[$namespace . '_'  . $key . 's']), $keys)
+                    ...array_map(fn ($key) => explode(',', $entry[$namespace . '_' . $key . 's']), $keys)
                 );
             }
             foreach ($keys as $key) {
-                unset($entry[$namespace . '_'  . $key . 's']);
+                unset($entry[$namespace . '_' . $key . 's']);
             }
         }
     }

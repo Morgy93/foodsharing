@@ -8,7 +8,6 @@ use Foodsharing\Modules\Core\DBConstants\Region\RegionIDs;
 use Foodsharing\Modules\Core\DBConstants\Region\WorkgroupFunction;
 use Foodsharing\Modules\Group\GroupFunctionGateway;
 
-
 class SearchPermissions
 {
     private Session $session;
@@ -17,8 +16,7 @@ class SearchPermissions
     public function __construct(
         Session $session,
         GroupFunctionGateway $groupFunctionGateway
-    )
-    {
+    ) {
         $this->session = $session;
         $this->groupFunctionGateway = $groupFunctionGateway;
     }
@@ -40,7 +38,8 @@ class SearchPermissions
     public function maySearchAllWorkingGroups(): bool
     {
         $privilegedFunctionWorkgroups = [WorkgroupFunction::REPORT, WorkgroupFunction::ARBITRATION, WorkgroupFunction::PR];
-        return  $this->session->mayRole(Role::ORGA) ||
+
+        return $this->session->mayRole(Role::ORGA) ||
             $this->session->isAmbassador() ||
             $this->groupFunctionGateway->isAdminForSpecialWG($privilegedFunctionWorkgroups, $this->session->id());
     }
