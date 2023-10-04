@@ -46,9 +46,9 @@ export default {
       const formatter = new Intl.ListFormat(this.$i18n('calendar.locale'), { type: 'conjunction' })
       const allNamesAvailable = this.chat.members.length === this.chat.member_count
       const names = this.chat.members.map(member => member.name)
-      if (!allNamesAvailable) names.push('weiteren')
+      if (!allNamesAvailable) names.push(this.$i18n('search.results.chat.chat_with_others'))
       const jointNames = formatter.format(names)
-      return `Chat mit ${jointNames}`
+      return this.$i18n('search.results.chat.chat_with', { names: `Chat mit ${jointNames}` })
     },
   },
   methods: {

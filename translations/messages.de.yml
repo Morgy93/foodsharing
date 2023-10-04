@@ -2998,6 +2998,10 @@ search:
   thread-title-only: Es werden nur Titel durchsucht, nicht der Text von Beiträgen.
   user_search:
     placeholder: Name oder ID
+  results:
+    chat:
+      chat_with: "Chat mit {names}"
+      chat_with_others: "weiteren"
 
 activitypost:
   Response: Antworten
