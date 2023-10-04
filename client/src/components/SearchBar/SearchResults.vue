@@ -8,6 +8,49 @@
     </div>
 
     <div
+      v-if="results.chats.length"
+      class="entry"
+    >
+      <h3 class="dropdown-header">
+        <i class="icon-subnav fas fa-comment" /> {{ $i18n('globals.type.chats') }}
+      </h3>
+      <ChatResultEntry
+        v-for="chat in results.chats"
+        :key="chat.id"
+        :chat="chat"
+        @close="$emit('close')"
+      />
+    </div>
+
+    <div
+      v-if="results.foodSharePoints.length"
+      class="entry"
+    >
+      <h3 class="dropdown-header">
+        <i class="icon-subnav fas fa-recycle" /> {{ $i18n('globals.type.foodshare_points') }}
+      </h3>
+      <FoodSharePointResultEntry
+        v-for="foodSharePoint in results.foodSharePoints"
+        :key="foodSharePoint.id"
+        :food-share-point="foodSharePoint"
+      />
+    </div>
+
+    <div
+      v-if="results.stores.length"
+      class="entry"
+    >
+      <h3 class="dropdown-header">
+        <i class="icon-subnav fas fa-shopping-cart" /> {{ $i18n('globals.type.stores') }}
+      </h3>
+      <StoreResultEntry
+        v-for="store in results.stores"
+        :key="store.id"
+        :store="store"
+      />
+    </div>
+
+    <div
       v-if="results.regions.length"
       class="entry"
     >
@@ -20,8 +63,6 @@
         :region="region"
       />
     </div>
-
-    {{ results.regions }}
 
     <div
       v-if="results.workingGroups.length"
@@ -51,77 +92,19 @@
         @close="$emit('close')"
       />
     </div>
-
-    <!--
-    
-    <div
-      v-if="filtered.myStores.length"
-      class="entry"
-    >
-      <h3 class="dropdown-header">
-        <i class="icon-subnav fas fa-shopping-cart" /> {{ $i18n('globals.type.my_stores') }}
-      </h3>
-      <search-result-entry
-        v-for="store in filtered.myStores"
-        :key="store.id"
-        :href="$url('store', store.id)"
-        :title="store.name"
-        :teaser="store.teaser"
-        :image="store.image"
-      />
-    </div>
-
-
-    <div
-      v-if="filtered.stores.length"
-      class="entry"
-    >
-      <h3 class="dropdown-header">
-        <i class="icon-subnav fas fa-shopping-cart" /> {{ $i18n('globals.type.stores') }}
-      </h3>
-      <search-result-entry
-        v-for="store in filtered.stores"
-        :key="store.id"
-        :href="$url('store', store.id)"
-        :title="store.name"
-        :teaser="store.teaser"
-        :image="store.image"
-      />
-    </div>
-    <div
-      v-if="filtered.foodSharePoints.length"
-      class="entry"
-    >
-      <h3 class="dropdown-header">
-        <i class="icon-subnav fas fa-recycle" /> {{ $i18n('globals.type.foodshare_points') }}
-      </h3>
-      <search-result-entry
-        v-for="foodSharePoint in filtered.foodSharePoints"
-        :key="foodSharePoint.id"
-        :href="$url('foodsharepoint', foodSharePoint.id)"
-        :title="foodSharePoint.name"
-        :teaser="foodSharePoint.teaser"
-        :image="foodSharePoint.image"
-      />
-    </div>
-    -->
-    <search-result-entry
-      :href="$url('forum', 1)"
-      title="Titel"
-      teaser="Teaser"
-      :image="null"
-    />
   </div>
 </template>
 
 <script>
-import SearchResultEntry from './SearchResultEntry'
 import UserResultEntry from './ResultEntry/UserResultEntry'
 import WorkingGroupResultEntry from './ResultEntry/WorkingGroupResultEntry'
 import RegionResultEntry from './ResultEntry/RegionResultEntry'
+import StoreResultEntry from './ResultEntry/StoreResultEntry'
+import FoodSharePointResultEntry from './ResultEntry/FoodSharePointResultEntry'
+import ChatResultEntry from './ResultEntry/ChatResultEntry'
 
 export default {
-  components: { SearchResultEntry, UserResultEntry, WorkingGroupResultEntry, RegionResultEntry },
+  components: { UserResultEntry, WorkingGroupResultEntry, RegionResultEntry, StoreResultEntry, FoodSharePointResultEntry, ChatResultEntry },
   props: {
     results: {
       type: Object,
