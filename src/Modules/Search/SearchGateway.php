@@ -103,9 +103,9 @@ class SearchGateway extends BaseGateway
                 store.id,
                 store.name,
                 store.betrieb_status_id AS cooperation_status,
-                store.str,
-                store.plz,
-                store.stadt,
+                store.str AS street,
+                store.plz AS zip,
+                store.stadt AS city,
                 region.id AS region_id,
                 region.name AS region_name,
                 chain.name AS chain_name,
@@ -131,30 +131,33 @@ class SearchGateway extends BaseGateway
      */
     public function searchFoodSharePoints(string $query, int $foodsaverId, bool $searchGlobal): array
     {
-        // TODO search global
-        list($searchClauses, $parameters) = $this->generateSearchClauses(
+        list($searchClauses, $searchParameters) = $this->generateSearchClauses(
             ['share_point.name', 'share_point.anschrift', 'share_point.plz', 'share_point.ort', 'region.name'],
             $query
         );
+        $regionRestrictionClause = '';
+        if (!$searchGlobal) {
+            $regionRestrictionClause = 'AND has_region.foodsaver_id = ?';
+            $searchParameters[] = $foodsaverId;
+        }
 
         return $this->db->fetchAll('SELECT
                 share_point.id,
                 share_point.name,
-                share_point.picture,
-                share_point.anschrift,
-                share_point.plz,
-                share_point.ort,
+                share_point.anschrift AS street,
+                share_point.plz AS zip,
+                share_point.ort AS city,
                 region.id AS region_id,
                 region.name AS region_name
             FROM fs_fairteiler share_point
             JOIN fs_bezirk region ON region.id = share_point.bezirk_id
             JOIN fs_foodsaver_has_bezirk has_region ON has_region.bezirk_id = region.id
-            WHERE has_region.foodsaver_id = ?
-            AND share_point.status = 1
+            WHERE share_point.status = 1
             AND ' . $searchClauses . '
+            ' . $regionRestrictionClause . '
             ORDER BY name ASC
             LIMIT 30',
-            [$foodsaverId, ...$parameters]
+            $searchParameters
         );
     }
 
@@ -163,20 +166,24 @@ class SearchGateway extends BaseGateway
      */
     public function searchChats(string $query, int $foodsaverId): array
     {
-        list($searchClauses, $parameters) = $this->generateSearchClauses(['member_names', 'IFNULL(name, "")'], $query);
+        list($searchClauses, $parameters) = $this->generateSearchClauses(['GROUP_CONCAT(foodsaver.name)', 'IFNULL(name, "")'], $query);
 
         return $this->db->fetchAll('SELECT
                 conversation.id,
                 conversation.name,
                 conversation.last,
                 conversation.last_foodsaver_id,
-                LEFT(conversation.last_message, 100) AS last_message,
-                GROUP_CONCAT(foodsaver.id) AS member_ids,
-                GROUP_CONCAT(foodsaver.name) AS member_names
+                last_author.name as last_foodsaver_name,
+                LEFT(conversation.last_message, 120) AS last_message,
+                GROUP_CONCAT(foodsaver.id LIMIT 5) AS member_ids,
+                GROUP_CONCAT(foodsaver.name LIMIT 5) AS member_names,
+                GROUP_CONCAT(foodsaver.photo LIMIT 5) AS member_photos,
+                COUNT(*) AS member_count
             FROM fs_foodsaver_has_conversation AS has_conversation
             JOIN fs_conversation AS conversation ON conversation.id = has_conversation.conversation_id
             JOIN fs_foodsaver_has_conversation AS has_member ON has_member.conversation_id = conversation.id
             JOIN fs_foodsaver AS foodsaver ON foodsaver.id = has_member.foodsaver_id
+            JOIN fs_foodsaver AS last_author ON last_author.id = conversation.last_foodsaver_id 
             WHERE has_conversation.foodsaver_id = ? -- Only include own chats
             AND has_member.foodsaver_id != has_conversation.foodsaver_id -- Exclude searching for oneself in chat member lists
             GROUP BY conversation.id

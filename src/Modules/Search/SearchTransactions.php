@@ -59,7 +59,7 @@ class SearchTransactions
         $foodSharePoints = $this->searchGateway->searchFoodSharePoints($query, $foodsaverId, $maySearchGlobal);
 
         $chats = $this->searchGateway->searchChats($query, $foodsaverId);
-        $this->formatUserList($chats, 'member', ['id', 'name']);
+        $this->formatUserList($chats, 'member', ['id', 'name', 'photo']);
 
         $threads = $this->searchGateway->searchThreads($query, $foodsaverId);
 
