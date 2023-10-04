@@ -2985,6 +2985,8 @@ globals:
     my_groups: Meine Gruppen
     persons: Personen
     my_persons: Meine Personen
+    chats: Chats
+    threads: Themen (Forum)
   you: Du
 
 search:
