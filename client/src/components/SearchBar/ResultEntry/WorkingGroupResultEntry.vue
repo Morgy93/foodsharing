@@ -40,6 +40,7 @@
 </template>
 <script>
 import AvatarStack from '@/components/AvatarStack.vue'
+import DataUser from '@/stores/user'
 
 export default {
   components: { AvatarStack },
@@ -51,7 +52,7 @@ export default {
   },
   computed: {
     url () {
-      if (this.workingGroup.is_member) {
+      if (this.workingGroup.is_member || DataUser.getters.isOrga()) {
         return this.$url('forum', this.workingGroup.id)
       } else {
         return this.$url('workingGroups', this.workingGroup.parent_id)

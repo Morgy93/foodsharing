@@ -8,6 +8,22 @@
     </div>
 
     <div
+      v-if="results.regions.length"
+      class="entry"
+    >
+      <h3 class="dropdown-header">
+        <i class="icon-subnav fas fa-globe" /> {{ $i18n('globals.type.regions') }}
+      </h3>
+      <RegionResultEntry
+        v-for="region in results.regions"
+        :key="region.id"
+        :region="region"
+      />
+    </div>
+
+    {{ results.regions }}
+
+    <div
       v-if="results.workingGroups.length"
       class="entry"
     >
@@ -20,8 +36,6 @@
         :working-group="group"
       />
     </div>
-
-    {{ results.workingGroups }}
 
     <div
       v-if="results.users.length"
@@ -39,22 +53,7 @@
     </div>
 
     <!--
-    <div
-      v-if="filtered.myGroups.length"
-      class="entry"
-    >
-      <h3 class="dropdown-header">
-        <i class="icon-subnav fas fa-users" /> {{ $i18n('globals.type.my_groups') }}
-      </h3>
-      <search-result-entry
-        v-for="group in filtered.myGroups"
-        :key="group.id"
-        :href="$url('forum', group.id)"
-        :title="group.name"
-        :teaser="group.teaser"
-        :image="group.image"
-      />
-    </div>
+    
     <div
       v-if="filtered.myStores.length"
       class="entry"
@@ -71,55 +70,8 @@
         :image="store.image"
       />
     </div>
-    <div
-      v-if="filtered.myRegions.length"
-      class="entry"
-    >
-      <h3 class="dropdown-header">
-        <i class="icon-subnav fas fa-home" /> {{ $i18n('globals.type.my_regions') }}
-      </h3>
-      <search-result-entry
-        v-for="region in filtered.myRegions"
-        :key="region.id"
-        :href="$url('forum', region.id)"
-        :title="region.name"
-        :teaser="region.teaser"
-        :image="region.image"
-      />
-    </div>
 
-    <div
-      v-if="filtered.groups.length"
-      class="entry"
-    >
-      <h3 class="dropdown-header">
-        <i class="icon-subnav fas fa-users" /> {{ $i18n('globals.type.groups') }}
-      </h3>
-      <search-result-entry
-        v-for="group in filtered.groups"
-        :key="group.id"
-        :href="$url('forum', group.id)"
-        :title="group.name"
-        :teaser="group.teaser"
-        :image="group.image"
-      />
-    </div>
-    <div
-      v-if="filtered.users.length"
-      class="entry"
-    >
-      <h3 class="dropdown-header">
-        <i class="icon-subnav fas fa-child" /> {{ $i18n('globals.type.persons') }}
-      </h3>
-      <search-result-entry
-        v-for="user in filtered.users"
-        :key="user.id"
-        :href="$url('profile', user.id)"
-        :title="user.name"
-        :teaser="user.teaser"
-        :image="user.image"
-      />
-    </div>
+
     <div
       v-if="filtered.stores.length"
       class="entry"
@@ -152,22 +104,7 @@
         :image="foodSharePoint.image"
       />
     </div>
-    <div
-      v-if="filtered.regions.length"
-      class="entry"
-    >
-      <h3 class="dropdown-header">
-        <i class="icon-subnav fas fa-home" /> {{ $i18n('globals.type.regions') }}
-      </h3>
-      <search-result-entry
-        v-for="region in filtered.regions"
-        :key="region.id"
-        :href="$url('forum', region.id)"
-        :title="region.name"
-        :teaser="region.teaser"
-        :image="region.image"
-      />
-    </div> -->
+    -->
     <search-result-entry
       :href="$url('forum', 1)"
       title="Titel"
@@ -181,9 +118,10 @@
 import SearchResultEntry from './SearchResultEntry'
 import UserResultEntry from './ResultEntry/UserResultEntry'
 import WorkingGroupResultEntry from './ResultEntry/WorkingGroupResultEntry'
+import RegionResultEntry from './ResultEntry/RegionResultEntry'
 
 export default {
-  components: { SearchResultEntry, UserResultEntry, WorkingGroupResultEntry },
+  components: { SearchResultEntry, UserResultEntry, WorkingGroupResultEntry, RegionResultEntry },
   props: {
     results: {
       type: Object,
