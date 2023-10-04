@@ -18,6 +18,7 @@
         v-for="user in results.users"
         :key="user.id"
         :user="user"
+        @close="$emit('close')"
       />
     </div>
 
@@ -172,7 +173,7 @@
       teaser="Teaser"
       :image="null"
     />
-    {{ results.users[0] }}
+    {{ results.users }}
   </div>
 </template>
 
@@ -220,4 +221,11 @@ export default {
   margin-bottom: 1rem;
   border-bottom: 1px solid var(--fs-border-default);
 }
+
+.entry ::v-deep .btn {
+  height: fit-content;
+  padding-top: 4px;
+  padding-bottom: 4px;
+}
+
 </style>
