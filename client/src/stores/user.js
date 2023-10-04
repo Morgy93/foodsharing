@@ -35,6 +35,9 @@ export const getters = {
   isFoodsaver () {
     return store.user?.isFoodsaver
   },
+  isOrga () {
+    return store.role >= 4
+  },
   getUser () {
     return store.user
   },
