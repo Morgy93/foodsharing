@@ -8,6 +8,22 @@
     </div>
 
     <div
+      v-if="results.workingGroups.length"
+      class="entry"
+    >
+      <h3 class="dropdown-header">
+        <i class="icon-subnav fas fa-users" /> {{ $i18n('globals.type.groups') }}
+      </h3>
+      <WorkingGroupResultEntry
+        v-for="group in results.workingGroups"
+        :key="group.id"
+        :working-group="group"
+      />
+    </div>
+
+    {{ results.workingGroups }}
+
+    <div
       v-if="results.users.length"
       class="entry"
     >
@@ -22,22 +38,7 @@
       />
     </div>
 
-    <!-- <div
-      v-if="filtered.myBuddies.length"
-      class="entry"
-    >
-      <h3 class="dropdown-header">
-        <i class="icon-subnav fas fa-user" /> {{ $i18n('globals.type.my_buddies') }}
-      </h3>
-      <search-result-entry
-        v-for="buddy in filtered.myBuddies"
-        :key="buddy.id"
-        :href="$url('profile', buddy.id)"
-        :title="buddy.name"
-        :teaser="buddy.teaser"
-        :image="buddy.image"
-      />
-    </div>
+    <!--
     <div
       v-if="filtered.myGroups.length"
       class="entry"
@@ -173,16 +174,16 @@
       teaser="Teaser"
       :image="null"
     />
-    {{ results.users }}
   </div>
 </template>
 
 <script>
 import SearchResultEntry from './SearchResultEntry'
 import UserResultEntry from './ResultEntry/UserResultEntry'
+import WorkingGroupResultEntry from './ResultEntry/WorkingGroupResultEntry'
 
 export default {
-  components: { SearchResultEntry, UserResultEntry },
+  components: { SearchResultEntry, UserResultEntry, WorkingGroupResultEntry },
   props: {
     results: {
       type: Object,
