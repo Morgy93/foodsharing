@@ -44,6 +44,7 @@
         class="results"
         :results="results"
         :is-loading="isLoading"
+        @close="$refs.searchBarModal.hide"
       />
       <div
         v-else
@@ -163,9 +164,10 @@ export default {
   margin-bottom: 0;
 }
 
-::v-deep.results .dropdown-item,
-::v-deep.results .dropdown-header {
+::v-deep.results > .entry > .dropdown-item,
+::v-deep.results > .entry > .dropdown-header {
   padding-left: 0;
+  padding-right: 0;
 }
 
 </style>
