@@ -56,7 +56,6 @@ class SearchGateway extends BaseGateway
                 region.id,
                 region.name,
                 region.email,
-                region.apply_type,
                 parent.id AS parent_id,
                 parent.name AS parent_name,
                 has_region.active as is_member,
@@ -334,8 +333,8 @@ class SearchGateway extends BaseGateway
                 foodsaver.bezirk_id AS region_id,
                 region.name AS region_name,
                 foodsaver.nachname as last_name,
-                foodsaver.handy as mobile
-                0 as buddy -- TODO!
+                foodsaver.handy as mobile,
+                0 as buddy
             FROM fs_foodsaver as foodsaver
             JOIN fs_bezirk as region ON region.id = foodsaver.bezirk_id
             WHERE ' . $searchClauses . '
