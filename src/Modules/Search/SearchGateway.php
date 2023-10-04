@@ -40,7 +40,7 @@ class SearchGateway extends BaseGateway
             AND ' . $searchClauses . '
             GROUP BY region.id
             ORDER BY is_member DESC, name ASC
-            LIMIT 50',
+            LIMIT 30',
             [$foodsaverId, ...$parameters]);
     }
 
@@ -75,7 +75,7 @@ class SearchGateway extends BaseGateway
             AND ' . $searchClauses . '
             GROUP BY region.id
             ORDER BY is_admin DESC, is_member DESC, name ASC
-            LIMIT 50',
+            LIMIT 30',
             [$foodsaverId, $foodsaverId, $foodsaverId, ...$parameters]);
     }
 
@@ -123,7 +123,7 @@ class SearchGateway extends BaseGateway
             ' . $regionRestrictionClause . '
             GROUP BY store.id
             ORDER BY is_manager DESC, IF(membership_status = 1, 2, IF(membership_status = 2, 1, 0)) DESC, name ASC
-            LIMIT 50',
+            LIMIT 30',
             [$foodsaverId, $foodsaverId, ...$searchParameters]);
     }
 
@@ -154,7 +154,7 @@ class SearchGateway extends BaseGateway
             AND share_point.status = 1
             AND ' . $searchClauses . '
             ORDER BY name ASC
-            LIMIT 50',
+            LIMIT 30',
             [$foodsaverId, ...$parameters]
         );
     }
@@ -183,7 +183,7 @@ class SearchGateway extends BaseGateway
             GROUP BY conversation.id
             HAVING ' . $searchClauses . '
             ORDER BY last DESC
-            LIMIT 50',
+            LIMIT 30',
             [$foodsaverId, ...$parameters]
         );
     }
@@ -213,7 +213,7 @@ class SearchGateway extends BaseGateway
             AND(NOT ISNULL(ambassador.foodsaver_id) OR has_thread.bot_theme = 0) -- show Bot forums only to bots
             AND ' . $searchClauses . '
             ORDER BY time DESC
-            LIMIT 50',
+            LIMIT 30',
             [$foodsaverId, ...$parameters]
         );
     }
@@ -226,7 +226,7 @@ class SearchGateway extends BaseGateway
         if ($searchGlobal) {
             return $this->searchUsersGlobal($query);
         }
-        list($searchClauses, $parameters) = $this->generateSearchClauses(['foodsaver.name', "IFNULL(foodsaver.last_name, '')"], $query);
+        list($searchClauses, $parameters) = $this->generateSearchClauses(['foodsaver.name', 'region.name', "IFNULL(foodsaver.last_name, '')"], $query);
 
         return $this->db->fetchAll('SELECT
                 foodsaver.id,
@@ -235,7 +235,8 @@ class SearchGateway extends BaseGateway
                 foodsaver.home_region AS region_id,
                 region.name AS region_name,
                 MAX(foodsaver.last_name) as last_name,
-                MAX(foodsaver.mobile) as mobile
+                MAX(foodsaver.mobile) as mobile,
+                MAX(foodsaver.buddy) AS buddy
             FROM (
                 -- Region / AG members:
                 SELECT
@@ -244,7 +245,8 @@ class SearchGateway extends BaseGateway
                     foodsaver.photo,
                     foodsaver.bezirk_id AS home_region,
                     IF(MAX(NOT ISNULL(ambassador.foodsaver_id) AND region.type != 7) = 1, foodsaver.handy, null) AS mobile,
-                    IF(MAX(NOT ISNULL(ambassador.foodsaver_id) AND region.type != 7) = 1, foodsaver.nachname, null) AS last_name
+                    IF(MAX(NOT ISNULL(ambassador.foodsaver_id) AND region.type != 7) = 1, foodsaver.nachname, null) AS last_name,
+                    0 AS buddy
                 FROM fs_foodsaver AS foodsaver
                 JOIN fs_foodsaver_has_bezirk has_region ON has_region.foodsaver_id = foodsaver.id
                 JOIN fs_bezirk region ON region.id = has_region.bezirk_id
@@ -261,7 +263,7 @@ class SearchGateway extends BaseGateway
                     foodsaver.name,
                     foodsaver.photo,
                     foodsaver.bezirk_id AS home_region,
-                    NULL, NULL
+                    NULL, NULL, 1
                 FROM fs_foodsaver AS foodsaver
                 JOIN fs_buddy AS buddy ON buddy.buddy_id = foodsaver.id
                 WHERE buddy.foodsaver_id = ?
@@ -275,7 +277,8 @@ class SearchGateway extends BaseGateway
                     foodsaver.photo,
                     foodsaver.bezirk_id AS home_region,
                     IF(MAX(IF(my_store_team.active = 1, 1, 0)) = 1, foodsaver.handy, null) AS mobile,
-                    IF(MAX(IF(my_store_team.verantwortlich = 1, 1, 0)) = 1, foodsaver.nachname, null) AS last_name
+                    IF(MAX(IF(my_store_team.verantwortlich = 1, 1, 0)) = 1, foodsaver.nachname, null) AS last_name,
+                    0
                 FROM fs_betrieb_team AS my_store_team
                 JOIN fs_betrieb_team AS store_team ON store_team.betrieb_id = my_store_team.betrieb_id
                 JOIN fs_foodsaver AS foodsaver ON foodsaver.id = store_team.foodsaver_id 
@@ -290,7 +293,7 @@ class SearchGateway extends BaseGateway
                     foodsaver.name,
                     foodsaver.photo,
                     foodsaver.bezirk_id AS home_region,
-                    NULL, NULL
+                    NULL, NULL, 0
                 FROM fs_foodsaver_has_conversation AS have_conversation
                 JOIN fs_foodsaver_has_conversation AS has_conversation ON have_conversation.conversation_id = has_conversation.conversation_id
                 JOIN fs_foodsaver AS foodsaver ON foodsaver.id = has_conversation.foodsaver_id
@@ -304,15 +307,15 @@ class SearchGateway extends BaseGateway
                     foodsaver.name,
                     foodsaver.photo,
                     foodsaver.bezirk_id AS home_region,
-                    NULL, NULL
+                    NULL, NULL, 0
                 FROM fs_foodsaver AS foodsaver
                 WHERE foodsaver.id = ?
             ) foodsaver
             JOIN fs_bezirk AS region ON region.id = foodsaver.home_region
             WHERE (foodsaver.id = ? OR (foodsaver.id != ? AND ' . $searchClauses . '))
             GROUP BY foodsaver.id
-            ORDER BY ISNULL(foodsaver.last_name), foodsaver.name, foodsaver.last_name 
-            LIMIT 50
+            ORDER BY foodsaver.buddy DESC, ISNULL(foodsaver.last_name), foodsaver.name, foodsaver.last_name 
+            LIMIT 30
             ',
             [$foodsaverId, $foodsaverId, $foodsaverId, $foodsaverId, $parameters[0], $parameters[0], $foodsaverId, ...$parameters]
         );
@@ -320,7 +323,7 @@ class SearchGateway extends BaseGateway
 
     private function searchUsersGlobal(string $query): array
     {
-        list($searchClauses, $parameters) = $this->generateSearchClauses(['name', 'last_name'], $query);
+        list($searchClauses, $parameters) = $this->generateSearchClauses(['foodsaver.name', 'foodsaver.nachname'], $query);
 
         return $this->db->fetchAll('SELECT
                 foodsaver.id,
@@ -333,8 +336,8 @@ class SearchGateway extends BaseGateway
             FROM fs_foodsaver as foodsaver
             JOIN fs_bezirk as region ON region.id = foodsaver.bezirk_id
             WHERE ' . $searchClauses . '
-            ORDER BY foodsaver.name, foodsaver.last_name
-            LIMIT 50',
+            ORDER BY foodsaver.name, last_name
+            LIMIT 30',
             [...$parameters]
         );
     }
