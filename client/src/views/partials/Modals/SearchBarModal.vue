@@ -80,7 +80,8 @@ export default {
   },
   watch: {
     query (query) {
-      if (query.trim().length > 2) {
+      const totalQueryLength = query.split(/[,;+.\s]+/g).join('').length
+      if (totalQueryLength > 2) {
         this.showResults = true
         this.delayedFetch()
         return
