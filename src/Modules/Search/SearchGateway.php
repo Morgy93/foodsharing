@@ -84,8 +84,9 @@ class SearchGateway extends BaseGateway
     public function searchStores(string $query, int $foodsaverId, bool $includeInactiveStores, bool $searchGlobal): array
     {
         list($searchClauses, $searchParameters) = $this->generateSearchClauses(
-            ['store.name', 'store.str', 'store.plz', 'store.stadt', 'IFNULL(chain.name, "")'],
-            $query
+            ['store.name', 'IFNULL(chain.name, "")'],
+            $query,
+            ['store.str', 'store.plz', 'store.stadt', 'region.name']
         );
         $onlyActiveClause = '';
         if (!$includeInactiveStores) {
@@ -132,8 +133,9 @@ class SearchGateway extends BaseGateway
     public function searchFoodSharePoints(string $query, int $foodsaverId, bool $searchGlobal): array
     {
         list($searchClauses, $searchParameters) = $this->generateSearchClauses(
-            ['share_point.name', 'share_point.anschrift', 'share_point.plz', 'share_point.ort', 'region.name'],
-            $query
+            ['share_point.name'],
+            $query,
+            ['share_point.anschrift', 'share_point.plz', 'share_point.ort', 'region.name']
         );
         $regionRestrictionClause = '';
         if (!$searchGlobal) {
@@ -199,21 +201,22 @@ class SearchGateway extends BaseGateway
      */
     public function searchThreads(string $query, int $foodsaverId): array
     {
-        list($searchClauses, $parameters) = $this->generateSearchClauses(['thread.name'], $query);
+        list($searchClauses, $parameters) = $this->generateSearchClauses(['thread.name'], $query, ['region.name']);
 
         return $this->db->fetchAll('SELECT
                 thread.id,
                 thread.name,
-                thread.time,
+                post.time,
                 thread.sticky,
-                thread.status,
+                thread.status AS closed,
                 region.id AS region_id,
                 region.name AS region_name,
-                has_thread.bot_theme AS bot_forum
+                has_thread.bot_theme AS is_ambassador_forum
             FROM fs_theme AS thread
             JOIN fs_bezirk_has_theme AS has_thread ON has_thread.theme_id = thread.id
             JOIN fs_bezirk AS region ON region.id = has_thread.bezirk_id
             JOIN fs_foodsaver_has_bezirk AS has_region ON has_region.bezirk_id = region.id
+            JOIN fs_theme_post AS post ON post.id = thread.last_post_id
             LEFT OUTER JOIN fs_botschafter AS ambassador ON ambassador.foodsaver_id = has_region.foodsaver_id AND ambassador.bezirk_id = region.id
             WHERE thread.active = 1 AND has_region.foodsaver_id = ?
             AND(NOT ISNULL(ambassador.foodsaver_id) OR has_thread.bot_theme = 0) -- show Bot forums only to bots
@@ -232,7 +235,7 @@ class SearchGateway extends BaseGateway
         if ($searchGlobal) {
             return $this->searchUsersGlobal($query);
         }
-        list($searchClauses, $parameters) = $this->generateSearchClauses(['foodsaver.name', 'region.name', 'IFNULL(foodsaver.last_name, "")'], $query);
+        list($searchClauses, $parameters) = $this->generateSearchClauses(['foodsaver.name', 'IFNULL(foodsaver.last_name, "")'], $query, ['region.name']);
 
         return $this->db->fetchAll('SELECT
                 foodsaver.id,
@@ -330,7 +333,7 @@ class SearchGateway extends BaseGateway
 
     private function searchUsersGlobal(string $query): array
     {
-        list($searchClauses, $parameters) = $this->generateSearchClauses(['foodsaver.name', 'foodsaver.nachname'], $query);
+        list($searchClauses, $parameters) = $this->generateSearchClauses(['foodsaver.name', 'foodsaver.nachname'], $query, ['region.name']);
 
         // TODO Buddys
         return $this->db->fetchAll('SELECT
@@ -351,10 +354,13 @@ class SearchGateway extends BaseGateway
         );
     }
 
-    private function generateSearchClauses($searchCriteria, $query)
+    private function generateSearchClauses($searchCriteria, $query, array $detailedSearchCriteria = [])
     {
         $query = preg_replace('/[,;+\.\s]+/', ' ', $query);
         $queryTerms = explode(' ', trim($query));
+        if (count($queryTerms) > 1) {
+            $searchCriteria = array_merge($searchCriteria, $detailedSearchCriteria);
+        }
         $searchCriteria = 'CONCAT(' . implode(',";",', $searchCriteria) . ')';
         $searchClauses = array_map(fn ($term) => $searchCriteria . ' LIKE CONCAT("%", ?, "%")', $queryTerms);
 
