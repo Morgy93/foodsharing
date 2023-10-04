@@ -226,7 +226,7 @@ class SearchGateway extends BaseGateway
         if ($searchGlobal) {
             return $this->searchUsersGlobal($query);
         }
-        list($searchClauses, $parameters) = $this->generateSearchClauses(['foodsaver.name', 'region.name', "IFNULL(foodsaver.last_name, '')"], $query);
+        list($searchClauses, $parameters) = $this->generateSearchClauses(['foodsaver.name', 'region.name', 'IFNULL(foodsaver.last_name, "")'], $query);
 
         return $this->db->fetchAll('SELECT
                 foodsaver.id,
@@ -255,7 +255,7 @@ class SearchGateway extends BaseGateway
                 WHERE have_region.foodsaver_id = ?
                 AND region.type IN (1,7,9)
                 GROUP BY foodsaver.id
-                UNION
+                UNION ALL
             
                 -- Buddies:
                 SELECT
@@ -263,12 +263,13 @@ class SearchGateway extends BaseGateway
                     foodsaver.name,
                     foodsaver.photo,
                     foodsaver.bezirk_id AS home_region,
-                    NULL, NULL, 1
-                FROM fs_foodsaver AS foodsaver
-                JOIN fs_buddy AS buddy ON buddy.buddy_id = foodsaver.id
-                WHERE buddy.foodsaver_id = ?
-                AND buddy.confirmed = 1
-                UNION
+                    NULL, NULL,
+                    1
+                FROM fs_buddy AS buddy
+                JOIN fs_foodsaver AS foodsaver ON foodsaver.id = buddy.foodsaver_id
+                WHERE buddy.confirmed = 1
+                AND buddy.buddy_id = ?
+                UNION ALL
             
                 -- By store team:
                 SELECT
@@ -285,7 +286,7 @@ class SearchGateway extends BaseGateway
                 WHERE my_store_team.foodsaver_id = ?
                 AND my_store_team.active != 0
                 GROUP BY foodsaver.id
-                UNION
+                UNION ALL
             
                 -- By Chat membership:
                 SELECT
@@ -299,7 +300,7 @@ class SearchGateway extends BaseGateway
                 JOIN fs_foodsaver AS foodsaver ON foodsaver.id = has_conversation.foodsaver_id
                 WHERE have_conversation.foodsaver_id = ?
                 GROUP BY foodsaver.id
-                UNION
+                UNION ALL
 
                 -- By Id:
                 SELECT
@@ -314,7 +315,7 @@ class SearchGateway extends BaseGateway
             JOIN fs_bezirk AS region ON region.id = foodsaver.home_region
             WHERE (foodsaver.id = ? OR (foodsaver.id != ? AND ' . $searchClauses . '))
             GROUP BY foodsaver.id
-            ORDER BY foodsaver.buddy DESC, ISNULL(foodsaver.last_name), foodsaver.name, foodsaver.last_name 
+            ORDER BY MAX(foodsaver.buddy) DESC, ISNULL(foodsaver.last_name), foodsaver.name, foodsaver.last_name 
             LIMIT 30
             ',
             [$foodsaverId, $foodsaverId, $foodsaverId, $foodsaverId, $parameters[0], $parameters[0], $foodsaverId, ...$parameters]
@@ -325,6 +326,7 @@ class SearchGateway extends BaseGateway
     {
         list($searchClauses, $parameters) = $this->generateSearchClauses(['foodsaver.name', 'foodsaver.nachname'], $query);
 
+        // TODO Buddys
         return $this->db->fetchAll('SELECT
                 foodsaver.id,
                 foodsaver.name,
@@ -333,6 +335,7 @@ class SearchGateway extends BaseGateway
                 region.name AS region_name,
                 foodsaver.nachname as last_name,
                 foodsaver.handy as mobile
+                0 as buddy -- TODO!
             FROM fs_foodsaver as foodsaver
             JOIN fs_bezirk as region ON region.id = foodsaver.bezirk_id
             WHERE ' . $searchClauses . '
