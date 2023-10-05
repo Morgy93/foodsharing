@@ -7,17 +7,17 @@
       <h6 class="m-0 text-truncate d-inline">
         <i
           v-if="is_ambassador"
-          v-b-tooltip.noninteractive="'Du bist Botschafter dieses Bezirks'"
+          v-b-tooltip.noninteractive="$i18n('search.results.region.ambassador_tooltip')"
           class="fas fa-user-cog"
         />
         <i
           v-else-if="is_home"
-          v-b-tooltip.noninteractive="'Dies ist dein Stammbezirk'"
+          v-b-tooltip.noninteractive="$i18n('search.results.region.home_region_tooltip')"
           class="fas fa-home"
         />
         <i
           v-else-if="region.is_member"
-          v-b-tooltip.noninteractive="'Du bist Mitglied dieses Bezirks'"
+          v-b-tooltip.noninteractive="$i18n('search.results.region.member_tooltip')"
           class="fas fa-user-check"
         />
         {{ region.name }}
@@ -25,7 +25,7 @@
       <br>
       <small class="separate">
         <span v-if="region.parent_id">
-          in
+          {{ $i18n('search.results.in') }}
           <a :href="$url('forum', region.parent_id)">
             {{ region.parent_name }}
           </a>
