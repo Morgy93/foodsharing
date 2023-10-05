@@ -7,12 +7,12 @@
       <h6 class="m-0 text-truncate d-inline">
         <i
           v-if="thread.sticky"
-          v-b-tooltip.noninteractive="'Thema ist angeheftet.'"
+          v-b-tooltip.noninteractive="$i18n('search.results.thread.sticky_tooltip')"
           class="fas fa-thumbtack"
         />
         <i
           v-if="thread.closed"
-          v-b-tooltip.noninteractive="'Thema ist geschlossen.'"
+          v-b-tooltip.noninteractive="$i18n('search.results.thread.closed_tooltip')"
           :class="{'ml-1': thread.sticky}"
           class="fas fa-lock"
         />
@@ -21,14 +21,15 @@
       <br>
       <small class="separate">
         <span v-if="thread.region_id">
-          im
+          {{ $i18n('search.results.in') }}
           <a :href="$url('forum', thread.region_id)">
-            {{ thread.is_ambassador_forum ? 'BOT-' : '' }}Forum
+            {{ $i18n(`search.results.thread.${thread.is_ambassador_forum ? 'ambassador_' : ''}forum`) }}
             {{ thread.region_name }}
           </a>
         </span>
         <span>
-          letzter Beitrag {{ $dateFormatter.relativeTime(new Date(thread.time)) }}
+          {{ $i18n('search.results.thread.last_post') }}
+          {{ $dateFormatter.relativeTime(new Date(thread.time)) }}
         </span>
       </small>
     </div>

@@ -7,17 +7,17 @@
       <h6 class="m-0 text-truncate d-inline">
         <i
           v-if="store.is_manager"
-          v-b-tooltip.noninteractive="'Du bist Verantwortlich für diesen Betrieb'"
+          v-b-tooltip.noninteractive="$i18n('search.results.store.manager_tooltip')"
           class="fas fa-user-cog"
         />
         <i
           v-else-if="is_member"
-          v-b-tooltip.noninteractive="'Du bist Mitglied dieses Betriebs'"
+          v-b-tooltip.noninteractive="$i18n('search.results.store.member_tooltip')"
           class="fas fa-user-check"
         />
         <i
           v-else-if="is_jumper"
-          v-b-tooltip.noninteractive="'Du bist Springer dieses Betriebs'"
+          v-b-tooltip.noninteractive="$i18n('search.results.store.jumper_tooltip')"
           class="fas fa-running"
         />
         {{ store.name }}
@@ -25,7 +25,7 @@
       <br>
       <small class="separate">
         <span v-if="store.region_id">
-          in
+          {{ $i18n('search.results.in') }}
           <a :href="$url('stores', store.region_id)">
             {{ store.region_name }}
           </a>

@@ -21,12 +21,12 @@
       <br>
       <small>
         <span v-if="user.region_id">
-          aus
+          {{ $i18n('search.results.from') }}
           <a :href="$url('forum', user.region_id)">
             {{ user.region_name }}
           </a>
         </span>
-        <i v-else>Kein Stammbezirk</i>
+        <i v-else>{{ $i18n('search.results.user.no_home_region') }}</i>
       </small>
     </div>
     <PhoneButton

@@ -13,13 +13,13 @@
       :href="$url('phone_number', phoneNumber, true)"
     >
       <i class="fas fa-phone" />
-      Anrufen
+      {{ $i18n('pickup.call') }}
     </b-dropdown-item>
     <b-dropdown-item
       @click.prevent="copyIntoClipboard(phoneNumber)"
     >
       <i class="fas fa-clone" />
-      Kopieren
+      {{ $i18n('pickup.copyNumber') }}
     </b-dropdown-item>
   </b-dropdown>
 </template>
@@ -44,11 +44,10 @@ export default {
     },
   },
   methods: {
-    copyIntoClipboard (text) {
+    async copyIntoClipboard (text) {
       if (this.isClipboardAvailable) {
-        navigator.clipboard.writeText(text).then(() => {
-          pulseSuccess(this.$i18n('pickup.copiedNumber', { number: text }))
-        })
+        await navigator.clipboard.writeText(text)
+        pulseSuccess(this.$i18n('pickup.copiedNumber', { number: text }))
       }
     },
   },
