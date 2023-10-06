@@ -430,7 +430,7 @@ profile:
     cta: 'The complete profile of {name} is available after registration:'
     textMayNot: and is therefore not allowed to accept any food on behalf of foodsharing.
     textMay: and is therefore allowed to accept food on behalf of foodsharing.
-  regions: '{name} is a foodsaver in'
+  regions: '{name} has joined the following districts'
   stats:
     baskets: food baskets
     weight: saved
@@ -443,8 +443,8 @@ profile:
     fetchrate: Fetch rate
     registrationDate: Registration date
     title: Information
-    foodsharerId: Foodsharer ID
-    foodsaverId: Foodsaver ID
+    foodsharerId: Foodsharing ID
+    foodsaverId: Foodsaving ID
     fsMail: Internal mailbox
     privateMail: Private email address
     buddycount1: '{name} is buddy with {count} foodsavers'
