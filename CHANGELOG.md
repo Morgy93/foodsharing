@@ -8,6 +8,7 @@
 ## Changes
 - Changed team state translation from full to closed !2831 @chriswalg
 - Add "call" (tel:) button visibility also for desktop, not only mobile" #1138 !2835 @chriswalg
+- Changed verbing of profile->regions translation !1691 @callypo
 
 ## Bugfixes
 - Added error handling for cache helper for bell notifications or other requests !2869 @chriswalg
