@@ -143,4 +143,10 @@ final class RegionPermissions
 
         return in_array($regionId, $this->session->listRegionIDs());
     }
+
+    // excluding working groups!
+    public function isAmbassadorForAnyRegion(): bool
+    {
+        return $this->regionGateway->isAmbassadorForAnyRegion();
+    }
 }
