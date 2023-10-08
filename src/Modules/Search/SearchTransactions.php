@@ -3,29 +3,15 @@
 namespace Foodsharing\Modules\Search;
 
 use Foodsharing\Lib\Session;
-use Foodsharing\Modules\Buddy\BuddyGateway;
 use Foodsharing\Modules\Core\DBConstants\Foodsaver\Role;
-use Foodsharing\Modules\Foodsaver\FoodsaverGateway;
-use Foodsharing\Modules\Region\RegionGateway;
-use Foodsharing\Modules\Store\StoreGateway;
-use Foodsharing\Modules\WorkGroup\WorkGroupGateway;
 use Foodsharing\Permissions\SearchPermissions;
-use Foodsharing\Utility\ImageHelper;
-use Foodsharing\Utility\Sanitizer;
 
 class SearchTransactions
 {
     public function __construct(
         private readonly SearchGateway $searchGateway,
-        private readonly FoodsaverGateway $foodsaverGateway,
-        private readonly RegionGateway $regionGateway,
-        private readonly BuddyGateway $buddyGateway,
-        private readonly WorkGroupGateway $workGroupGateway,
-        private readonly StoreGateway $storeGateway,
         private readonly Session $session,
-        private readonly SearchPermissions $searchPermissions,
-        private readonly Sanitizer $sanitizerService,
-        private readonly ImageHelper $imageHelper
+        private readonly SearchPermissions $searchPermissions
     ) {
     }
 
