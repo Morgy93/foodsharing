@@ -479,8 +479,6 @@ final class RegionControl extends Control
         $sub = $request->query->get('sub');
         $viewData = $this->regionViewData($region, $sub);
 
-        $viewData['genderData']['district'] = $this->gateway->genderCountRegion((int)$region['id']);
-        $viewData['genderData']['homeDistrict'] = $this->gateway->genderCountHomeRegion((int)$region['id']);
         $viewData['pickupData']['daily'] = 0;
         $viewData['pickupData']['weekly'] = 0;
         $viewData['pickupData']['monthly'] = 0;

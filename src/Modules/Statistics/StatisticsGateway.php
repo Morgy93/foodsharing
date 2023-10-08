@@ -5,6 +5,7 @@ namespace Foodsharing\Modules\Statistics;
 use Foodsharing\Modules\Core\BaseGateway;
 use Foodsharing\Modules\Core\DBConstants\Region\RegionIDs;
 use Foodsharing\Modules\Core\DBConstants\Unit\UnitType;
+use Foodsharing\Modules\Statistics\DTO\StatisticsGender;
 
 class StatisticsGateway extends BaseGateway
 {
@@ -120,5 +121,39 @@ class StatisticsGateway extends BaseGateway
     public function countActiveFoodSharePoints(): int
     {
         return $this->db->count('fs_fairteiler', ['status' => 1]);
+    }
+
+    public function genderCountRegion(int $regionId): array
+    {
+        $list = $this->db->fetchAll(
+            'select  fs.geschlecht as gender,
+						   count(*) as numberOfGender
+					from fs_foodsaver_has_bezirk fb
+		 			left outer join fs_foodsaver fs on fb.foodsaver_id=fs.id
+					where fb.bezirk_id = :regionId
+					and fs.deleted_at is null
+					group by geschlecht',
+            [':regionId' => $regionId]);
+
+        return array_map(function ($StatisticsGender) {
+            return StatisticsGender::create($StatisticsGender['gender'], $StatisticsGender['numberOfGender']);
+        }, $list);
+    }
+
+    public function genderCountHomeRegion(int $regionId): array
+    {
+        $list = $this->db->fetchAll(
+            'select  fs.geschlecht as gender,
+						   count(*) as numberOfGender
+					from fs_foodsaver fs
+					where fs.bezirk_id = :regionId
+					and fs.deleted_at is null
+					group by geschlecht',
+            [':regionId' => $regionId]
+        );
+
+        return array_map(function ($StatisticsGender) {
+            return StatisticsGender::create($StatisticsGender['gender'], $StatisticsGender['numberOfGender']);
+        }, $list);
     }
 }

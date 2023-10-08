@@ -19,6 +19,7 @@
 - Preparations to routing/link building code for future porting to Symfony controllers !2738 @\_fridtjof_
 - Moved the database connection to Doctrine DBAL !2801 @\_fridtjof_
 - Refactored the list of editable content to vue !2862 @alex.simm
+- Use REST for statistic !2879 @fs_k
 - Modernized ContentControl to a Symfony controller !2876 @\_fridtjof_
 - Modernized TeamControl to a Symfony contorller !2881 @\_fridtjof_
 

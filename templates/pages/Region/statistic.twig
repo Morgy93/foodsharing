@@ -5,9 +5,8 @@
         id: 'vue-genderlist',
         component: 'gender-list',
         props: {
+            regionId : region.id,
             regionName: region.name,
-            genderDataTab: genderData.district,
-            genderDataHomeDistrictTab: genderData.homeDistrict,
         }
     } %}
     {% include 'partials/vue-wrapper.twig' with {

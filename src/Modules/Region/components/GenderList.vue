@@ -14,6 +14,7 @@
           <b-tab
             :title="$i18n('genderlist.district_tab')"
             active
+            @click="reloadGenderDataTab"
           >
             <b-table
               :fields="fields"
@@ -24,6 +25,7 @@
               hover
               small
               caption-top
+              :busy="isGenderDataLoading"
             >
               <template slot="table-caption">
                 {{ $i18n('genderlist.gender_district_table_caption') }}
@@ -32,6 +34,7 @@
           </b-tab>
           <b-tab
             :title="$i18n('genderlist.home_district_tab')"
+            @click="reloadGenderHomeDistrictDataTab"
           >
             <b-table
               :fields="fields"
@@ -42,6 +45,7 @@
               hover
               small
               caption-top
+              :busy="isGenderHomeDistrictDataLoading"
             >
               <template slot="table-caption">
                 {{ $i18n('genderlist.gender_home_district_table_caption') }}
@@ -57,25 +61,22 @@
 <script>
 
 import { BCard, BTable, BTabs, BTab } from 'bootstrap-vue'
-
+import { getRegionGenderData } from '@/api/statistics'
 export default {
   components: { BCard, BTable, BTabs, BTab },
   props: {
+    regionId: { type: Number, required: true },
     regionName: {
       type: String,
       default: '',
     },
-    genderDataTab: {
-      type: Array,
-      default: () => [],
-    },
-    genderDataHomeDistrictTab: {
-      type: Array,
-      default: () => [],
-    },
   },
   data () {
     return {
+      isGenderDataLoading: false,
+      isGenderHomeDistrictDataLoading: false,
+      genderDataTab: [],
+      genderDataHomeDistrictTab: [],
       sortBy: 'gender',
       sortDesc: true,
       fields: [
@@ -99,12 +100,48 @@ export default {
           sortable: true,
         },
         {
-          key: 'NumberOfGender',
+          key: 'numberOfGender',
           label: this.$i18n('genderlist.number_table_header'),
           sortable: true,
         },
       ],
     }
+  },
+  async created () {
+    await this.asyncGenderData()
+    this.isGenderHomeDistrictDataLoading = false
+  },
+  methods: {
+    async asyncGenderData () {
+      this.isGenderDataLoading = true
+      try {
+        console.log('asyncGenderData called')
+        this.genderDataTab = await getRegionGenderData(this.regionId, false)
+      } catch (error) {
+        console.error('Error fetching genderDataTab:', error)
+      }
+      this.isGenderDataLoading = false
+    },
+    async asyncGenderHomeDistrictData () {
+      this.isGenderHomeDistrictDataLoading = true
+      try {
+        // Make the API request to fetch gender data for the specified region
+        this.genderDataHomeDistrictTab = await getRegionGenderData(this.regionId, true)
+      } catch (error) {
+        console.error('Error fetching asyncGenderHomeDistrictData:', error)
+      }
+      this.isGenderHomeDistrictDataLoading = false
+    },
+    async reloadGenderDataTab () {
+      if (this.genderDataTab.length === 0) {
+        await this.asyncGenderData()
+      }
+    },
+    async reloadGenderHomeDistrictDataTab () {
+      if (this.genderDataHomeDistrictTab.length === 0) {
+        await this.asyncGenderHomeDistrictData()
+      }
+    },
   },
 }
 </script>
