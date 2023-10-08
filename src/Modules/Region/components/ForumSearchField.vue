@@ -101,7 +101,7 @@ export default {
       }
       this.timeout = setTimeout(() => {
         this.fetch()
-      }, 200)
+      }, 500)
     },
     close () {
       this.isOpen = false

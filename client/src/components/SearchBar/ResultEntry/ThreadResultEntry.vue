@@ -3,7 +3,7 @@
     :href="$url('forumThread', thread.region_id, thread.id)"
     class="d-flex dropdown-item search-result"
   >
-    <div class="flex-grow-1">
+    <div class="text-truncate flex-grow-1">
       <h6 class="m-0 text-truncate d-inline">
         <i
           v-if="thread.sticky"
@@ -20,7 +20,7 @@
       </h6>
       <br>
       <small class="separate">
-        <span v-if="thread.region_id">
+        <span v-if="thread.region_id && !hideRegion">
           {{ $i18n('search.results.in') }}
           <a :href="$url('forum', thread.region_id)">
             {{ $i18n(`search.results.thread.${thread.is_ambassador_forum ? 'ambassador_' : ''}forum`) }}
@@ -43,6 +43,10 @@ export default {
     thread: {
       type: Object,
       required: true,
+    },
+    hideRegion: {
+      type: Boolean,
+      default: false,
     },
   },
   computed: {
