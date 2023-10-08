@@ -341,7 +341,7 @@ class SearchGateway extends BaseGateway
         );
     }
 
-    public function searchUsersGlobal(string $query, ?int $restrictToRegionId): array
+    public function searchUsersGlobal(string $query, ?int $restrictToRegionId = null): array
     {
         list($searchClauses, $parameters) = $this->generateSearchClauses(['foodsaver.name', 'foodsaver.nachname'], $query, ['region.name']);
         $regionRestrictionClause = '';

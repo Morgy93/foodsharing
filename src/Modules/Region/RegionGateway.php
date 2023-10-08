@@ -119,7 +119,7 @@ class RegionGateway extends BaseGateway
      */
     public function isAmbassadorForAnyRegion(int $foodsaverId): bool
     {
-        return $this->db->fetch('SELECT COUNT(*)
+        return $this->db->fetchValue('SELECT COUNT(*)
             FROM `fs_botschafter` ambassador
             JOIN fs_bezirk region on region.id = ambassador.bezirk_id
             WHERE region.type != :working_group_type
