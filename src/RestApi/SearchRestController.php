@@ -52,12 +52,16 @@ class SearchRestController extends AbstractFOSRestController
 
         $q = $paramFetcher->get('q');
         $regionId = $paramFetcher->get('regionId');
-        if (!empty($regionId) && !$this->searchPermissions->maySearchInRegion($regionId)) {
+
+        if(!$regionId) {
+            $results = $this->searchGateway->searchUsers($q, $this->session->id(), false);
+        } else if (!$this->searchPermissions->maySearchInRegion($regionId)) {
             throw new AccessDeniedHttpException('insufficient permissions to search in that region');
+        } else {
+            $results = $this->searchGateway->searchUsersGlobal($q, $regionId);
         }
 
-        $results = $this->searchTransactions->searchForUser($q, $regionId);
-
+        $results = array_map(fn ($user) => ['id' => $user['id'], 'value' => $user['name'] . ' (' . $user['id'] . ')'], $results);
         return $this->handleView($this->view($results, 200));
     }
 
@@ -90,14 +94,7 @@ class SearchRestController extends AbstractFOSRestController
      * @OA\Parameter(name="groupId", in="path", @OA\Schema(type="integer"), description="which forum to return threads for (region or group)")
      * @OA\Parameter(name="subforumId", in="path", @OA\Schema(type="integer"), description="ID of the forum in the group (normal or ambassador forum)")
      * @OA\Parameter(name="q", in="query", @OA\Schema(type="string"), description="search query")
-     * @OA\Response(response="200", description="Success",
-     *     @OA\Schema(type="object", @OA\Property(property="data", type="array",
-     *         @OA\Items(type="object",
-     *             @OA\Property(property="id", type="integer", description="thread id"),
-     *             @OA\Property(property="name", type="string", description="thread title")
-     *         )
-     *     ))
-     * )
+     * @OA\Response(response="200", description="Success", @OA\Schema(type="array"))
      * @OA\Response(response="400", description="Empty search query.")
      * @OA\Response(response="403", description="Insufficient permissions to search in that forum.")
      * @OA\Tag(name="search")

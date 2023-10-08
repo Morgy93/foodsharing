@@ -36,7 +36,7 @@ class SearchTransactions
      *
      * @param string $query the search query
      *
-     * @return array SearchResult[]
+     * @return array
      */
     public function search(string $query): array
     {
@@ -91,52 +91,5 @@ class SearchTransactions
                 unset($entry[$namespace . '_' . $key . 's']);
             }
         }
-    }
-
-    public function searchForUser(string $query, ?int $regionId): array
-    {
-        // Search by user ID
-        if (preg_match('/^[0-9]+$/', $query) && $this->foodsaverGateway->foodsaverExists((int)$query)) {
-            if (is_null($regionId) || $this->regionGateway->hasMember((int)$query, $regionId)) {
-                $user = $this->foodsaverGateway->getFoodsaverName((int)$query);
-
-                return [['id' => (int)$query, 'value' => $user . ' (' . (int)$query . ')']];
-            } else {
-                return [];
-            }
-        }
-
-        // Find all regions in which the user is allowed to search
-        if (!empty($regionId)) {
-            $regions = [$regionId];
-        } elseif (in_array(RegionIDs::EUROPE_WELCOME_TEAM, $this->session->listRegionIDs(), true) ||
-            $this->session->mayRole(Role::ORGA)) {
-            $regions = null;
-        } else {
-            $regions = array_column(array_filter(
-                $this->session->getRegions(),
-                function ($v) {
-                    return in_array($v['type'], UnitType::getSearchableUnitTypes());
-                }
-            ), 'id');
-            $ambassador = $this->session->getMyAmbassadorRegionIds();
-            foreach ($ambassador as $region) {
-                /* TODO: Refactor listIdsForDescendantsAndSelf to work with multiple regions. I did not do this now as it might impose too big of a risk for the release.
-                2020-05-15 NerdyProjects I will care within a few weeks!
-                Anyway, the performance of this should be orders of magnitude higher than the previous implementation.
-                 */
-                $regions = array_merge(
-                    $regions,
-                    $this->regionGateway->listIdsForDescendantsAndSelf($region)
-                );
-            }
-            $regions = array_unique($regions);
-        }
-
-        $results = $this->searchGateway->searchUserInGroups($query, [], $regions);
-
-        return array_map(function ($v) {
-            return ['id' => $v->id, 'value' => $v->name . ' (' . $v->id . ')'];
-        }, $results);
     }
 }
