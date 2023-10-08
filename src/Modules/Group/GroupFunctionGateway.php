@@ -153,7 +153,7 @@ class GroupFunctionGateway extends BaseGateway
 
     public function isAdminForSpecialWG(array $workgroupFunctions, int $foodsaverId): bool
     {
-        return $this->db->fetch('SELECT COUNT(*)
+        return $this->db->fetchValue('SELECT COUNT(*)
             from fs_region_function region_function
             JOIN fs_botschafter ambassador ON ambassador.bezirk_id = region_function.region_id
             WHERE ambassador.foodsaver_id = ?
