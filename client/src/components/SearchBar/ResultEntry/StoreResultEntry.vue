@@ -43,6 +43,8 @@
   </a>
 </template>
 <script>
+import { STORE_TEAM_STATE } from '@/stores/stores';
+
 
 export default {
   components: { },
@@ -54,10 +56,10 @@ export default {
   },
   computed: {
     is_member () {
-      return this.store.membership_status === 1
+      return this.store.membership_status === STORE_TEAM_STATE.ACTIVE
     },
     is_jumper () {
-      return this.store.membership_status === 2
+      return this.store.membership_status === STORE_TEAM_STATE.JUMPER
     },
   },
 }
