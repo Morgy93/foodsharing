@@ -5,8 +5,6 @@ namespace Foodsharing\Modules\Search;
 use Foodsharing\Lib\Session;
 use Foodsharing\Modules\Buddy\BuddyGateway;
 use Foodsharing\Modules\Core\DBConstants\Foodsaver\Role;
-use Foodsharing\Modules\Core\DBConstants\Region\RegionIDs;
-use Foodsharing\Modules\Core\DBConstants\Unit\UnitType;
 use Foodsharing\Modules\Foodsaver\FoodsaverGateway;
 use Foodsharing\Modules\Region\RegionGateway;
 use Foodsharing\Modules\Store\StoreGateway;
@@ -35,8 +33,6 @@ class SearchTransactions
      * Searches for regions, stores, foodsavers, food share points and working groups.
      *
      * @param string $query the search query
-     *
-     * @return array
      */
     public function search(string $query): array
     {

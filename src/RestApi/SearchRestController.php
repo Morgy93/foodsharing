@@ -53,15 +53,16 @@ class SearchRestController extends AbstractFOSRestController
         $q = $paramFetcher->get('q');
         $regionId = $paramFetcher->get('regionId');
 
-        if(!$regionId) {
+        if (!$regionId) {
             $results = $this->searchGateway->searchUsers($q, $this->session->id(), false);
-        } else if (!$this->searchPermissions->maySearchInRegion($regionId)) {
+        } elseif (!$this->searchPermissions->maySearchInRegion($regionId)) {
             throw new AccessDeniedHttpException('insufficient permissions to search in that region');
         } else {
             $results = $this->searchGateway->searchUsersGlobal($q, $regionId);
         }
 
         $results = array_map(fn ($user) => ['id' => $user['id'], 'value' => $user['name'] . ' (' . $user['id'] . ')'], $results);
+
         return $this->handleView($this->view($results, 200));
     }
 

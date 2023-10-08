@@ -207,7 +207,7 @@ class SearchGateway extends BaseGateway
     {
         list($searchClauses, $parameters) = $this->generateSearchClauses(['thread.name'], $query, ['region.name']);
         $regionRestrictionClause = '';
-        if($regionId > 0) {
+        if ($regionId > 0) {
             $regionRestrictionClause = 'AND has_thread.bezirk_id = ? AND has_thread.bot_theme = ?';
             array_push($parameters, $regionId, $subforumId);
         }
@@ -345,7 +345,7 @@ class SearchGateway extends BaseGateway
     {
         list($searchClauses, $parameters) = $this->generateSearchClauses(['foodsaver.name', 'foodsaver.nachname'], $query, ['region.name']);
         $regionRestrictionClause = '';
-        if($restrictToRegionId) {
+        if ($restrictToRegionId) {
             $regionRestrictionClause = 'AND region.id = ?';
             $parameters[] = $restrictToRegionId;
         }
