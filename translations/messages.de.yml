@@ -3013,9 +3013,9 @@ search:
       home_region_tooltip: Dies ist dein Stammbezirk
       member_tooltip: Du bist Mitglied dieses Bezirks
     store:
-      manager_tooltip: Du bist Verantwortlich für diesen Betrieb
+      manager_tooltip: Du bist verantwortlich für diesen Betrieb
       member_tooltip: Du bist Mitglied dieses Betriebs
-      jumper_tooltip: u bist Springer dieses Betriebs
+      jumper_tooltip: Du bist Springer dieses Betriebs
     thread:
       sticky_tooltip: Thema ist angeheftet
       closed_tooltip: Thema ist geschlossen
