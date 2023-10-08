@@ -12,13 +12,16 @@ class SearchPermissions
 {
     private Session $session;
     private GroupFunctionGateway $groupFunctionGateway;
+    private RegionPermissions $regionPermissions;
 
     public function __construct(
         Session $session,
-        GroupFunctionGateway $groupFunctionGateway
+        GroupFunctionGateway $groupFunctionGateway,
+        RegionPermissions $regionPermissions
     ) {
         $this->session = $session;
         $this->groupFunctionGateway = $groupFunctionGateway;
+        $this->regionPermissions = $regionPermissions;
     }
 
     public function maySearchInRegion(int $regionId): bool
@@ -40,7 +43,7 @@ class SearchPermissions
         $privilegedFunctionWorkgroups = [WorkgroupFunction::REPORT, WorkgroupFunction::ARBITRATION, WorkgroupFunction::PR];
 
         return $this->session->mayRole(Role::ORGA) ||
-            $this->session->isAmbassador() ||
+            $this->regionPermissions->isAmbassadorForAnyRegion() ||
             $this->groupFunctionGateway->isAdminForSpecialWG($privilegedFunctionWorkgroups, $this->session->id());
     }
 

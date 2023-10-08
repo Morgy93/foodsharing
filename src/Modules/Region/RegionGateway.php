@@ -114,6 +114,23 @@ class RegionGateway extends BaseGateway
         return $this->db->exists('fs_botschafter', ['bezirk_id' => $regionId, 'foodsaver_id' => $foodsaverId]);
     }
 
+    /**
+     * @return bool true when the given user is an admin/ambassador for the given group/region
+     */
+    public function isAmbassadorForAnyRegion(int $foodsaverId): bool
+    {
+        return $this->db->fetch('SELECT COUNT(*)
+            FROM `fs_botschafter` ambassador
+            JOIN fs_bezirk region on region.id = ambassador.bezirk_id
+            WHERE region.type != :working_group_type
+            AND ambassador.foodsaver_id = :foodsaver_id',
+            [
+                'working_group_type' => UnitType::WORKING_GROUP,
+                'foodsaver_id' => $foodsaverId,
+            ]
+        ) > 0;
+    }
+
     public function listForFoodsaver(?int $foodsaverId): array
     {
         if ($foodsaverId === null) {
