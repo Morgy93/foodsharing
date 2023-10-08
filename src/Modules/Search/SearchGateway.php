@@ -4,6 +4,9 @@ namespace Foodsharing\Modules\Search;
 
 use Foodsharing\Modules\Core\BaseGateway;
 use Foodsharing\Modules\Core\Database;
+use Foodsharing\Modules\Core\DBConstants\Region\RegionIDs;
+use Foodsharing\Modules\Core\DBConstants\Store\CooperationStatus;
+use Foodsharing\Modules\Core\DBConstants\Unit\UnitType;
 use Foodsharing\Modules\Search\DTO\SearchResult;
 
 class SearchGateway extends BaseGateway
@@ -35,8 +38,8 @@ class SearchGateway extends BaseGateway
             LEFT OUTER JOIN fs_botschafter ambassador ON ambassador.bezirk_id = region.id
             LEFT OUTER JOIN fs_foodsaver foodsaver ON foodsaver.id = ambassador.foodsaver_id
             LEFT OUTER JOIN fs_foodsaver_has_bezirk has_region ON has_region.bezirk_id = region.id AND has_region.foodsaver_id = ?
-            WHERE region.type != 7
-            AND region.id != 0
+            WHERE region.type != ' . UnitType::WORKING_GROUP . '
+            AND region.id != ' . RegionIDs::ROOT . '
             AND ' . $searchClauses . '
             GROUP BY region.id
             ORDER BY is_member DESC, name ASC
@@ -69,7 +72,7 @@ class SearchGateway extends BaseGateway
             LEFT OUTER JOIN fs_foodsaver_has_bezirk has_parent_region ON has_parent_region.bezirk_id = parent.id AND has_parent_region.foodsaver_id = ?
             LEFT OUTER JOIN fs_botschafter ambassador ON ambassador.bezirk_id = region.id
             LEFT OUTER JOIN fs_foodsaver foodsaver ON foodsaver.id = ambassador.foodsaver_id
-            WHERE region.type = 7
+            WHERE region.type = ' . UnitType::WORKING_GROUP . '
             ' . $membershipCheck . '
             AND ' . $searchClauses . '
             GROUP BY region.id
@@ -91,8 +94,9 @@ class SearchGateway extends BaseGateway
         $onlyActiveClause = '';
         if (!$includeInactiveStores) {
             $onlyActiveClause = 'AND 
-                (store.betrieb_status_id IN (3,5) OR store.team_status != 0 OR NOT ISNULL(store_team.active)) AND
-                store.betrieb_status_id != 7';
+                (store.betrieb_status_id IN (' . CooperationStatus::COOPERATION_STARTING . ',' . CooperationStatus::COOPERATION_ESTABLISHED . ')
+                    OR store.team_status != 0 OR NOT ISNULL(store_team.active)) AND
+                store.betrieb_status_id != ' . CooperationStatus::PERMANENTLY_CLOSED;
         }
         $regionRestrictionClause = '';
         if (!$searchGlobal) {
@@ -253,8 +257,8 @@ class SearchGateway extends BaseGateway
                     foodsaver.name,
                     foodsaver.photo,
                     foodsaver.bezirk_id AS home_region,
-                    IF(MAX(NOT ISNULL(ambassador.foodsaver_id) AND region.type != 7) = 1, foodsaver.handy, null) AS mobile,
-                    IF(MAX(NOT ISNULL(ambassador.foodsaver_id) AND region.type != 7) = 1, foodsaver.nachname, null) AS last_name,
+                    IF(MAX(NOT ISNULL(ambassador.foodsaver_id) AND region.type != ' . UnitType::WORKING_GROUP . ') = 1, foodsaver.handy, null) AS mobile,
+                    IF(MAX(NOT ISNULL(ambassador.foodsaver_id) AND region.type != ' . UnitType::WORKING_GROUP . ') = 1, foodsaver.nachname, null) AS last_name,
                     0 AS buddy
                 FROM fs_foodsaver AS foodsaver
                 JOIN fs_foodsaver_has_bezirk has_region ON has_region.foodsaver_id = foodsaver.id
@@ -262,7 +266,7 @@ class SearchGateway extends BaseGateway
                 JOIN fs_foodsaver_has_bezirk have_region ON have_region.bezirk_id = region.id
                 LEFT OUTER JOIN fs_botschafter ambassador ON ambassador.bezirk_id = region.id and ambassador.foodsaver_id = have_region.foodsaver_id 
                 WHERE have_region.foodsaver_id = ?
-                AND region.type IN (1,7,9)
+                AND region.type IN (' . UnitType::CITY . ',' . UnitType::PART_OF_TOWN . ',' . UnitType::WORKING_GROUP . ')
                 GROUP BY foodsaver.id
                 UNION ALL
             
