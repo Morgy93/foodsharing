@@ -77,11 +77,6 @@ class UnitType
         return [self::WORKING_GROUP];
     }
 
-    public static function getSearchableUnitTypes(): array
-    {
-        return [UnitType::WORKING_GROUP, UnitType::CITY, UnitType::REGION, UnitType::BIG_CITY, UnitType::DISTRICT, UnitType::PART_OF_TOWN];
-    }
-
     public static function isValid(int $value): bool
     {
         switch ($value) {

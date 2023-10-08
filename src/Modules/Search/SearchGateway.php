@@ -7,7 +7,6 @@ use Foodsharing\Modules\Core\Database;
 use Foodsharing\Modules\Core\DBConstants\Region\RegionIDs;
 use Foodsharing\Modules\Core\DBConstants\Store\CooperationStatus;
 use Foodsharing\Modules\Core\DBConstants\Unit\UnitType;
-use Foodsharing\Modules\Search\DTO\SearchResult;
 
 class SearchGateway extends BaseGateway
 {
@@ -342,9 +341,14 @@ class SearchGateway extends BaseGateway
         );
     }
 
-    private function searchUsersGlobal(string $query): array
+    public function searchUsersGlobal(string $query, ?int $restrictToRegionId): array
     {
         list($searchClauses, $parameters) = $this->generateSearchClauses(['foodsaver.name', 'foodsaver.nachname'], $query, ['region.name']);
+        $regionRestrictionClause = '';
+        if($restrictToRegionId) {
+            $regionRestrictionClause = 'AND region.id = ?';
+            $parameters[] = $restrictToRegionId;
+        }
 
         // TODO Buddys
         return $this->db->fetchAll('SELECT
@@ -359,6 +363,7 @@ class SearchGateway extends BaseGateway
             FROM fs_foodsaver as foodsaver
             JOIN fs_bezirk as region ON region.id = foodsaver.bezirk_id
             WHERE ' . $searchClauses . '
+            ' . $regionRestrictionClause . '
             ORDER BY foodsaver.name, last_name
             LIMIT 30',
             [...$parameters]
@@ -376,65 +381,5 @@ class SearchGateway extends BaseGateway
         $searchClauses = array_map(fn ($term) => $searchCriteria . ' LIKE CONCAT("%", ?, "%")', $queryTerms);
 
         return [implode(' AND ', $searchClauses), $queryTerms];
-    }
-
-    /**
-     * @param string $q Search string as provided by an end user. Individual words all have to be found in the result, each being the prefixes of words of the results
-     *(e.g. hell worl is expanded to a MySQL match condition of +hell* +worl*). The input string is properly sanitized, e.g. no further control over the search operation is possible.
-     * @param array|null $detailsGroupIds The detailed address will be shown for users whose home region is in this list. Set to null to always include details.
-     * @param array|null $groupIds the groups a person must be in to be found. Set to null to query over all users.
-     *
-     * @return array SearchResult[] Array of foodsavers containing the search term
-     */
-    public function searchUserInGroups(string $q, ?array $detailsGroupIds, ?array $groupIds): array
-    {
-        $searchString = $this->prepareSearchString($q);
-        $select = 'SELECT fs.id, fs.name, fs.nachname, fs.anschrift, fs.stadt, fs.plz, fs.bezirk_id, b.name as regionName FROM fs_foodsaver fs, fs_bezirk b';
-        $fulltextCondition = 'MATCH (fs.name, fs.nachname) AGAINST (? IN BOOLEAN MODE)
-                              AND deleted_at IS NULL
-                              AND b.id = fs.bezirk_id';
-        $groupBy = ' GROUP BY fs.id';
-        if (is_null($groupIds)) {
-            $results = $this->db->fetchAll($select . ' WHERE ' . $fulltextCondition . $groupBy, [$searchString]);
-        } elseif (empty($groupIds)) {
-            return [];
-        } else {
-            $results = $this->db->fetchAll(
-                $select . ', fs_foodsaver_has_bezirk hb WHERE ' .
-                $fulltextCondition .
-                ' AND fs.id = hb.foodsaver_id AND hb.bezirk_id IN (' . $this->db->generatePlaceholders(count($groupIds)) . ')' . $groupBy,
-                array_merge([$searchString], $groupIds));
-        }
-
-        return array_map(function ($x) use ($detailsGroupIds) {
-            return (is_null($detailsGroupIds) || in_array($x['bezirk_id'], $detailsGroupIds))
-                ? SearchResult::create($x['id'], $x['name'] . ' ' . $x['nachname'], $x['anschrift'] . ', ' . $x['plz'] . ' ' . $x['stadt'])
-                : SearchResult::create($x['id'], $x['name'], $x['regionName']);
-        }, $results);
-    }
-
-    /**
-     * Sanitises a search query for an SQL request.
-     */
-    private function prepareSearchString(string $q): string
-    {
-        /* remove all non-word characters as they will not be indexed by the database and might change the search condition */
-        $q = mb_ereg_replace('\W', ' ', $q) ?: '';
-
-        /* put + before and * after the words, omitting all words with less than 3 characters, because they would not be found in the result. */
-        /* TODO: this number depends on innodb_ft_min_token_size MySQL setting. It could be viable setting it to 1 alternatively. */
-        return implode(' ',
-            array_map(
-                function ($a) {
-                    return '+' . $a . '*';
-                },
-                array_filter(
-                    explode(' ', $q),
-                    function ($v) {
-                        return mb_strlen($v) > 2;
-                    }
-                )
-            )
-        );
     }
 }
