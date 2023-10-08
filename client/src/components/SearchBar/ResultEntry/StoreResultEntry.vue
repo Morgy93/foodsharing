@@ -43,8 +43,7 @@
   </a>
 </template>
 <script>
-import { STORE_TEAM_STATE } from '@/stores/stores';
-
+import { STORE_TEAM_STATE } from '@/stores/stores'
 
 export default {
   components: { },
