@@ -86,7 +86,7 @@ class SearchGateway extends BaseGateway
      */
     public function searchStores(string $query, int $foodsaverId, bool $includeInactiveStores, bool $searchGlobal): array
     {
-        list($searchClauses, $searchParameters) = $this->generateSearchClauses(
+        list($searchClauses, $parameters) = $this->generateSearchClauses(
             ['store.name', 'IFNULL(chain.name, "")'],
             $query,
             ['store.str', 'store.plz', 'store.stadt', 'region.name']
@@ -101,7 +101,7 @@ class SearchGateway extends BaseGateway
         $regionRestrictionClause = '';
         if (!$searchGlobal) {
             $regionRestrictionClause = 'AND ? IN (has_region.foodsaver_id, kam.foodsaver_id)';
-            $searchParameters[] = $foodsaverId;
+            $parameters[] = $foodsaverId;
         }
 
         return $this->db->fetchAll('SELECT
@@ -128,7 +128,7 @@ class SearchGateway extends BaseGateway
             GROUP BY store.id
             ORDER BY is_manager DESC, IF(membership_status = 1, 2, IF(membership_status = 2, 1, 0)) DESC, name ASC
             LIMIT 30',
-            [$foodsaverId, $foodsaverId, ...$searchParameters]);
+            [$foodsaverId, $foodsaverId, ...$parameters]);
     }
 
     /**
@@ -136,7 +136,7 @@ class SearchGateway extends BaseGateway
      */
     public function searchFoodSharePoints(string $query, int $foodsaverId, bool $searchGlobal): array
     {
-        list($searchClauses, $searchParameters) = $this->generateSearchClauses(
+        list($searchClauses, $parameters) = $this->generateSearchClauses(
             ['share_point.name'],
             $query,
             ['share_point.anschrift', 'share_point.plz', 'share_point.ort', 'region.name']
@@ -144,7 +144,7 @@ class SearchGateway extends BaseGateway
         $regionRestrictionClause = '';
         if (!$searchGlobal) {
             $regionRestrictionClause = 'AND has_region.foodsaver_id = ?';
-            $searchParameters[] = $foodsaverId;
+            $parameters[] = $foodsaverId;
         }
 
         return $this->db->fetchAll('SELECT
@@ -163,7 +163,7 @@ class SearchGateway extends BaseGateway
             ' . $regionRestrictionClause . '
             ORDER BY name ASC
             LIMIT 30',
-            $searchParameters
+            $parameters
         );
     }
 
@@ -202,10 +202,16 @@ class SearchGateway extends BaseGateway
 
     /**
      * Searches the given term in the list of forum threads.
+     * Use params $regionId and $subforumId to restrict the search to one forum.
      */
-    public function searchThreads(string $query, int $foodsaverId): array
+    public function searchThreads(string $query, int $foodsaverId, int $regionId = 0, int $subforumId = 0): array
     {
         list($searchClauses, $parameters) = $this->generateSearchClauses(['thread.name'], $query, ['region.name']);
+        $regionRestrictionClause = '';
+        if($regionId > 0) {
+            $regionRestrictionClause = 'AND has_thread.bezirk_id = ? AND has_thread.bot_theme = ?';
+            array_push($parameters, $regionId, $subforumId);
+        }
 
         return $this->db->fetchAll('SELECT
                 thread.id,
@@ -225,6 +231,7 @@ class SearchGateway extends BaseGateway
             WHERE thread.active = 1 AND has_region.foodsaver_id = ?
             AND(NOT ISNULL(ambassador.foodsaver_id) OR has_thread.bot_theme = 0) -- show Bot forums only to bots
             AND ' . $searchClauses . '
+            ' . $regionRestrictionClause . '
             ORDER BY time DESC
             LIMIT 30',
             [$foodsaverId, ...$parameters]
@@ -403,36 +410,6 @@ class SearchGateway extends BaseGateway
             return (is_null($detailsGroupIds) || in_array($x['bezirk_id'], $detailsGroupIds))
                 ? SearchResult::create($x['id'], $x['name'] . ' ' . $x['nachname'], $x['anschrift'] . ', ' . $x['plz'] . ' ' . $x['stadt'])
                 : SearchResult::create($x['id'], $x['name'], $x['regionName']);
-        }, $results);
-    }
-
-    /**
-     * Searches in the titles of forum threads (called themes in the database) of a group for a given string.
-     *
-     * @param string $q Search string as provided by an end user. Individual words all have to be found in the result, each being the prefixes of words of the results
-     *(e.g. hell worl is expanded to a MySQL match condition of +hell* +worl*). The input string is properly sanitized, e.g. no further control over the search operation is possible.
-     * @param int $groupId ID of a group (region or work group) in which will be searched
-     * @param int $subforumId ID of the forum in the group
-     *
-     * @return array SearchResult[] Array of forum threads containing the search term
-     */
-    public function searchForumTitle(string $q, int $groupId, int $subforumId): array
-    {
-        $searchString = $this->prepareSearchString($q);
-        $results = $this->db->fetchAll(
-            'SELECT t.id, t.name, p.time
-				   FROM fs_theme t, fs_bezirk_has_theme ht, fs_theme_post p
-				   WHERE MATCH (t.name) AGAINST (? IN BOOLEAN MODE)
-				   AND t.id = ht.theme_id AND ht.bezirk_id = ?
-				   AND t.active = 1 AND ht.bot_theme = ?
-				   AND p.id = t.last_post_id
-				   GROUP BY t.id
-				   ORDER BY p.time DESC
-			', [$searchString, $groupId, $subforumId]
-        );
-
-        return array_map(function ($x) {
-            return SearchResult::create($x['id'], $x['name'], $x['time']);
         }, $results);
     }
 

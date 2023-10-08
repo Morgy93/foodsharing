@@ -118,7 +118,7 @@ class SearchRestController extends AbstractFOSRestController
             throw new BadRequestHttpException();
         }
 
-        $results = $this->searchGateway->searchForumTitle($q, $groupId, $subforumId);
+        $results = $this->searchGateway->searchThreads($q, $this->session->id(), $groupId, $subforumId);
 
         return $this->handleView($this->view($results, 200));
     }
