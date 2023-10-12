@@ -93,9 +93,10 @@ class SearchGateway extends BaseGateway
         $onlyActiveClause = '';
         if (!$includeInactiveStores) {
             $onlyActiveClause = 'AND 
-                (store.betrieb_status_id IN (' . CooperationStatus::COOPERATION_STARTING . ',' . CooperationStatus::COOPERATION_ESTABLISHED . ')
+                (store.betrieb_status_id IN (?,?)
                     OR store.team_status != 0 OR NOT ISNULL(store_team.active)) AND
-                store.betrieb_status_id != ' . CooperationStatus::PERMANENTLY_CLOSED;
+                store.betrieb_status_id != ?';
+            array_push($parameters, CooperationStatus::COOPERATION_STARTING, CooperationStatus::COOPERATION_ESTABLISHED, CooperationStatus::PERMANENTLY_CLOSED);
         }
         $regionRestrictionClause = '';
         if (!$searchGlobal) {
