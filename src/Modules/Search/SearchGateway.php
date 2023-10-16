@@ -21,8 +21,10 @@ class SearchGateway extends BaseGateway
     public function searchRegions(string $query, int $foodsaverId): array
     {
         list($searchClauses, $parameters) = $this->generateSearchClauses(['region.name', 'region.email'], $query);
+        $workingGroupType = UnitType::WORKING_GROUP;
+        $rootRegionId = RegionIDs::ROOT;
 
-        return $this->db->fetchAll('SELECT
+        return $this->db->fetchAll("SELECT
                 region.id,
                 region.name,
                 region.email,
@@ -30,19 +32,19 @@ class SearchGateway extends BaseGateway
                 parent.name AS parent_name,
                 GROUP_CONCAT(foodsaver.id) AS ambassador_ids,
                 GROUP_CONCAT(foodsaver.name) AS ambassador_names,
-                GROUP_CONCAT(IFNULL(foodsaver.photo, "")) AS ambassador_photos,
+                GROUP_CONCAT(IFNULL(foodsaver.photo, '')) AS ambassador_photos,
                 IF(ISNULL(has_region.foodsaver_id), NULL, 1) as is_member
             FROM fs_bezirk region
             LEFT OUTER JOIN fs_bezirk parent ON parent.id = region.parent_id
             LEFT OUTER JOIN fs_botschafter ambassador ON ambassador.bezirk_id = region.id
             LEFT OUTER JOIN fs_foodsaver foodsaver ON foodsaver.id = ambassador.foodsaver_id
             LEFT OUTER JOIN fs_foodsaver_has_bezirk has_region ON has_region.bezirk_id = region.id AND has_region.foodsaver_id = ?
-            WHERE region.type != ' . UnitType::WORKING_GROUP . '
-            AND region.id != ' . RegionIDs::ROOT . '
-            AND ' . $searchClauses . '
+            WHERE region.type != {$workingGroupType}
+            AND region.id != {$rootRegionId}
+            AND {$searchClauses}
             GROUP BY region.id
             ORDER BY is_member DESC, name ASC
-            LIMIT 30',
+            LIMIT 30",
             [$foodsaverId, ...$parameters]);
     }
 
@@ -53,8 +55,9 @@ class SearchGateway extends BaseGateway
     {
         list($searchClauses, $parameters) = $this->generateSearchClauses(['region.name', 'region.email', 'parent.name'], $query);
         $membershipCheck = $searchAllWorkingGroups ? '' : 'AND (NOT ISNULL(has_parent_region.foodsaver_id) OR NOT ISNULL(has_region.foodsaver_id))';
+        $workingGroupType = UnitType::WORKING_GROUP;
 
-        return $this->db->fetchAll('SELECT
+        return $this->db->fetchAll("SELECT
                 region.id,
                 region.name,
                 region.email,
@@ -64,19 +67,19 @@ class SearchGateway extends BaseGateway
                 MAX(IF(ambassador.foodsaver_id = ?, 1, 0)) AS is_admin,
                 GROUP_CONCAT(foodsaver.id) AS admin_ids,
                 GROUP_CONCAT(foodsaver.name) AS admin_names,
-                GROUP_CONCAT(IFNULL(foodsaver.photo, "")) AS admin_photos
+                GROUP_CONCAT(IFNULL(foodsaver.photo, '')) AS admin_photos
             FROM fs_bezirk region
             JOIN fs_bezirk parent ON parent.id = region.parent_id
             LEFT OUTER JOIN fs_foodsaver_has_bezirk has_region ON has_region.bezirk_id = region.id AND has_region.foodsaver_id = ?
             LEFT OUTER JOIN fs_foodsaver_has_bezirk has_parent_region ON has_parent_region.bezirk_id = parent.id AND has_parent_region.foodsaver_id = ?
             LEFT OUTER JOIN fs_botschafter ambassador ON ambassador.bezirk_id = region.id
             LEFT OUTER JOIN fs_foodsaver foodsaver ON foodsaver.id = ambassador.foodsaver_id
-            WHERE region.type = ' . UnitType::WORKING_GROUP . '
-            ' . $membershipCheck . '
-            AND ' . $searchClauses . '
+            WHERE region.type = {$workingGroupType}
+            {$membershipCheck}
+            AND {$searchClauses}
             GROUP BY region.id
             ORDER BY is_admin DESC, is_member DESC, name ASC
-            LIMIT 30',
+            LIMIT 30",
             [$foodsaverId, $foodsaverId, $foodsaverId, ...$parameters]);
     }
 
@@ -93,10 +96,9 @@ class SearchGateway extends BaseGateway
         $onlyActiveClause = '';
         if (!$includeInactiveStores) {
             $onlyActiveClause = 'AND 
-                (store.betrieb_status_id IN (?,?)
+                (store.betrieb_status_id IN (' . CooperationStatus::COOPERATION_STARTING->value . ',' . CooperationStatus::COOPERATION_ESTABLISHED->value . ')
                     OR store.team_status != 0 OR NOT ISNULL(store_team.active)) AND
-                store.betrieb_status_id != ?';
-            array_push($parameters, CooperationStatus::COOPERATION_STARTING, CooperationStatus::COOPERATION_ESTABLISHED, CooperationStatus::PERMANENTLY_CLOSED);
+                store.betrieb_status_id != ' . CooperationStatus::PERMANENTLY_CLOSED->value;
         }
         $regionRestrictionClause = '';
         if (!$searchGlobal) {
@@ -104,7 +106,7 @@ class SearchGateway extends BaseGateway
             $parameters[] = $foodsaverId;
         }
 
-        return $this->db->fetchAll('SELECT
+        return $this->db->fetchAll("SELECT
                 store.id,
                 store.name,
                 store.betrieb_status_id AS cooperation_status,
@@ -122,12 +124,12 @@ class SearchGateway extends BaseGateway
             LEFT OUTER JOIN fs_key_account_manager AS kam ON kam.chain_id = store.kette_id AND kam.foodsaver_id = ?
             LEFT OUTER JOIN fs_chain AS chain ON chain.id = kam.chain_id
             LEFT OUTER JOIN fs_betrieb_team AS store_team ON store_team.betrieb_id = store.id AND store_team.foodsaver_id = ?
-            WHERE ' . $searchClauses . '
-            ' . $onlyActiveClause . '
-            ' . $regionRestrictionClause . '
+            WHERE {$searchClauses}
+            {$onlyActiveClause}
+            {$regionRestrictionClause}
             GROUP BY store.id
             ORDER BY is_manager DESC, IF(membership_status = 1, 2, IF(membership_status = 2, 1, 0)) DESC, name ASC
-            LIMIT 30',
+            LIMIT 30",
             [$foodsaverId, $foodsaverId, ...$parameters]);
     }
 
@@ -147,7 +149,7 @@ class SearchGateway extends BaseGateway
             $parameters[] = $foodsaverId;
         }
 
-        return $this->db->fetchAll('SELECT
+        return $this->db->fetchAll("SELECT
                 share_point.id,
                 share_point.name,
                 share_point.anschrift AS street,
@@ -159,10 +161,10 @@ class SearchGateway extends BaseGateway
             JOIN fs_bezirk region ON region.id = share_point.bezirk_id
             JOIN fs_foodsaver_has_bezirk has_region ON has_region.bezirk_id = region.id
             WHERE share_point.status = 1
-            AND ' . $searchClauses . '
-            ' . $regionRestrictionClause . '
+            AND {$searchClauses}
+            {$regionRestrictionClause}
             ORDER BY name ASC
-            LIMIT 30',
+            LIMIT 30",
             $parameters
         );
     }
@@ -174,7 +176,7 @@ class SearchGateway extends BaseGateway
     {
         list($searchClauses, $parameters) = $this->generateSearchClauses(['GROUP_CONCAT(foodsaver.name)', 'IFNULL(name, "")'], $query);
 
-        return $this->db->fetchAll('SELECT
+        return $this->db->fetchAll("SELECT
                 conversation.id,
                 conversation.name,
                 conversation.last,
@@ -193,9 +195,9 @@ class SearchGateway extends BaseGateway
             WHERE has_conversation.foodsaver_id = ? -- Only include own chats
             AND has_member.foodsaver_id != has_conversation.foodsaver_id -- Exclude searching for oneself in chat member lists
             GROUP BY conversation.id
-            HAVING ' . $searchClauses . '
+            HAVING {$searchClauses}
             ORDER BY last DESC
-            LIMIT 30',
+            LIMIT 30",
             [$foodsaverId, ...$parameters]
         );
     }
@@ -223,7 +225,7 @@ class SearchGateway extends BaseGateway
             array_push($parameters, $foodsaverId);
         }
 
-        return $this->db->fetchAll('SELECT
+        return $this->db->fetchAll("SELECT
                 thread.id,
                 thread.name,
                 post.time,
@@ -236,13 +238,13 @@ class SearchGateway extends BaseGateway
             JOIN fs_bezirk_has_theme AS has_thread ON has_thread.theme_id = thread.id
             JOIN fs_bezirk AS region ON region.id = has_thread.bezirk_id
             JOIN fs_theme_post AS post ON post.id = thread.last_post_id
-            ' . $hasRegionJoins . '
+            {$hasRegionJoins}
             WHERE thread.active = 1
-            AND ' . $searchClauses . '
-            ' . $regionRestrictionClause . '
-            ' . $hasRegionClause . '
+            AND {$searchClauses}
+            {$regionRestrictionClause}
+            {$hasRegionClause}
             ORDER BY time DESC
-            LIMIT 30',
+            LIMIT 30",
             [...$parameters]
         );
     }
@@ -354,28 +356,32 @@ class SearchGateway extends BaseGateway
     public function searchUsersGlobal(string $query, ?int $restrictToRegionId = null): array
     {
         list($searchClauses, $parameters) = $this->generateSearchClauses(['foodsaver.name', 'foodsaver.nachname'], $query, ['region.name']);
+        $parameters[] = $parameters[0]; // Param for id search
         $regionRestrictionClause = '';
+        $hasRegionJoin = '';
         if ($restrictToRegionId) {
-            $regionRestrictionClause = 'AND region.id = ?';
+            $hasRegionJoin = 'JOIN fs_foodsaver_has_bezirk has_region ON has_region.foodsaver_id = foodsaver.id';
+            $regionRestrictionClause = 'AND has_region.bezirk_id = ?';
             $parameters[] = $restrictToRegionId;
         }
 
         // TODO Buddys
-        return $this->db->fetchAll('SELECT
+        return $this->db->fetchAll("SELECT
                 foodsaver.id,
                 foodsaver.name,
                 foodsaver.photo,
                 foodsaver.bezirk_id AS region_id,
-                region.name AS region_name,
+                home_region.name AS region_name,
                 foodsaver.nachname as last_name,
                 foodsaver.handy as mobile,
                 0 as buddy
             FROM fs_foodsaver as foodsaver
-            JOIN fs_bezirk as region ON region.id = foodsaver.bezirk_id
-            WHERE ' . $searchClauses . '
-            ' . $regionRestrictionClause . '
+            JOIN fs_bezirk as home_region ON home_region.id = foodsaver.bezirk_id
+            {$hasRegionJoin}
+            WHERE ({$searchClauses} OR (foodsaver.id = ?))
+            {$regionRestrictionClause}
             ORDER BY foodsaver.name, last_name
-            LIMIT 30',
+            LIMIT 30",
             [...$parameters]
         );
     }
