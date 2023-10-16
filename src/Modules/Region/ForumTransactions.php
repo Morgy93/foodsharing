@@ -47,40 +47,85 @@ class ForumTransactions
         return $url;
     }
 
-    public function notifyFollowersViaBell($threadId, $authorId, $postId): void
+    public function addPostToThread(int $foodsaverId, int $threadId, string $body): int
     {
-        $subscribedFs = $this->forumFollowerGateway->getThreadBellFollower($threadId, $authorId);
+        $rawBody = $body;
+        $pid = $this->forumGateway->addPost($foodsaverId, $threadId, $body);
+        $this->notifyFollowersViaMail($threadId, $rawBody, $foodsaverId, $pid);
+        $this->notifyFollowersViaBell($threadId, $foodsaverId, $pid);
 
-        if (empty($subscribedFs)) {
+        return $pid;
+    }
+
+    public function deletePostFromThread(int $postId, int $authorId): void
+    {
+        $this->adjustBellNotification($postId, $authorId);
+        $this->forumGateway->deletePost($postId);
+    }
+
+    private function notifyFollowersViaBell(int $threadId, int $authorId, int $postId): void
+    {
+        $subscribedGroups = $this->forumFollowerGateway->getThreadFollowersByLastUnseenBellForThread($threadId, $authorId);
+
+        if (empty($subscribedGroups)) {
             return;
         }
 
         $info = $this->forumGateway->getThreadInfo($threadId);
         $regionName = $this->regionGateway->getRegionName($info['region_id']);
 
-        $bellData = Bell::create(
-            'forum_reply_title',
-            'forum_answer',
-            'fas fa-comments',
-            ['href' => $this->url($info['region_id'], $info['ambassador_forum'], $threadId, $postId)],
-            [
-                'user' => $this->session->user('name'),
-                'forum' => $regionName,
-                'title' => $info['title'],
-            ],
-            BellType::createIdentifier(BellType::NEW_FORUM_POST, $postId)
-        );
-        $this->bellGateway->addBell(array_column($subscribedFs, 'id'), $bellData);
+        foreach ($subscribedGroups as &$group) {
+            if (empty($group['bellId'])) {
+                $count = 1;
+                $href = $this->url($info['region_id'], $info['ambassador_forum'], $threadId, $postId);
+            } else {
+                $count = unserialize($group['vars'])['count'] + 1;
+                $href = unserialize($group['attr'])['href'];
+                $this->bellGateway->deleteBellForFoodsavers($group['bellId'], $group['foodsaverIds']);
+            }
+
+            $bell = $this->createForumBell($threadId, $postId, $count, $href, $regionName, $info['title']);
+            $this->bellGateway->addBell($group['foodsaverIds'], $bell);
+        }
     }
 
-    public function addPostToThread($fsId, $threadId, $body)
+    private function adjustBellNotification(int $postId, int $authorId): void
     {
-        $rawBody = $body;
-        $pid = $this->forumGateway->addPost($fsId, $threadId, $body);
-        $this->notifyFollowersViaMail($threadId, $rawBody, $fsId, $pid);
-        $this->notifyFollowersViaBell($threadId, $fsId, $pid);
+        $threadId = $this->forumGateway->getThreadForPost($postId);
+        $groups = $this->forumFollowerGateway->getUsersWithUnseenBellIncludingDeletedPost($threadId, $postId, $authorId);
 
-        return $pid;
+        if (empty($groups)) {
+            return;
+        }
+
+        foreach ($groups as &$group) {
+            $vars = unserialize($group['vars']);
+            $href = unserialize($group['attr'])['href'];
+
+            $this->bellGateway->deleteBellForFoodsavers($group['bellId'], $group['foodsaverIds']);
+
+            if ($vars['count'] > 1) {
+                $bell = $this->createForumBell($threadId, $postId, $vars['count'] - 1, $href, $vars['forum'], $vars['title']);
+                $this->bellGateway->addBell($group['foodsaverIds'], $bell);
+            }
+        }
+    }
+
+    private function createForumBell(int $threadId, int $postId, int $count, string $href, string $regionName, string $title): Bell
+    {
+        return Bell::create(
+            'forum_post_title',
+            'forum_post.' . ($count == 1 ? 'one' : 'many'),
+            'fas fa-comment' . ($count == 1 ? '' : 's'),
+            ['href' => $href],
+            [
+                'forum' => $regionName,
+                'title' => $title,
+                'count' => $count,
+                'user' => $this->session->user('name'),
+            ],
+            BellType::createIdentifier(BellType::NEW_FORUM_POST, $threadId, $postId, $count)
+        );
     }
 
     public function createThread($fsId, $title, $body, $region, $ambassadorForum, $isActive, $sendMail)
@@ -99,16 +144,11 @@ class ForumTransactions
         return $threadId;
     }
 
-    public function activateThread(int $threadId): void
-    {
-        $this->forumGateway->activateThread($threadId);
-    }
-
-    public function notificationMail($recipients, $tpl, $data): void
+    private function sendNotificationMail(array $recipients, string $template, array $data): void
     {
         foreach ($recipients as $recipient) {
             $this->emailHelper->tplMail(
-                $tpl,
+                $template,
                 $recipient['email'],
                 array_merge($data, [
                     'anrede' => $this->translator->trans('salutation.' . $recipient['geschlecht']),
@@ -129,7 +169,7 @@ class ForumTransactions
                 'post' => $this->sanitizerService->markdownToHtml($rawPostBody),
                 'poster' => $posterName
             ];
-            $this->notificationMail($follower, 'forum/answer', $data);
+            $this->sendNotificationMail($follower, 'forum/answer', $data);
         }
     }
 
@@ -152,7 +192,7 @@ class ForumTransactions
                 'bezirk' => $region['name'],
             ];
 
-            $this->notificationMail($moderators, 'forum/activation', $data);
+            $this->sendNotificationMail($moderators, 'forum/activation', $data);
         }
     }
 
@@ -185,7 +225,7 @@ class ForumTransactions
             'link' => BASE_URL . $this->url($regionData['id'], $isAmbassadorForum, $threadId),
             'post' => $this->sanitizerService->markdownToHtml($body),
             ];
-        $this->notificationMail($recipients,
+        $this->sendNotificationMail($recipients,
             $isAmbassadorForum ? 'forum/new_region_ambassador_message' : 'forum/new_message', $data);
     }
 

@@ -1,13 +1,18 @@
 # Unreleased
 
 ## Features
+- Improve bell notifications for forum posts #719 !2827 !2826 @AntonBallmaier
 - Added a MarkdownInput component, that is used every where md is used. !2865 @AntonBallmaier
 - Storemanagers see how far applicants to the store live away #1661 !2772 @Anton Ballmaier
+- Threads can be renamed !2882 @AntonBallmaier
+- The button to jump to the start or end of a thread can be accessed from anywhere in the thread !2882 @AntonBallmaier
 - Exported calendars can be filtered by the invitation status #1535 !2873 @alex.simm
 
 ## Changes
 - Changed team state translation from full to closed !2831 @chriswalg
 - Add "call" (tel:) button visibility also for desktop, not only mobile" #1138 !2835 @chriswalg
+- Administrating threads has a cleaner look !2882 @AntonBallmaier
+- Pinned Threads are sorted by name !2883 !2891 @AntonBallmaier
 
 ## Bugfixes
 - Added error handling for cache helper for bell notifications or other requests !2869 @chriswalg

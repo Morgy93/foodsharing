@@ -690,7 +690,7 @@ profile:
     fsMail: Intern postkasse
     privateMail: Privat e-postadresse
     never: aldri
-    lastActivity: Siste innlogging
+    lastActivity: Siste aktivitet
     registrationDate: Registreringsdato
     title: Informasjon
     foodsharerId: Matdeler-ID
@@ -923,6 +923,8 @@ settings:
     export: Eksporter kalender
     export_tooltip: Dette lar deg se dine neste hentedatoer med et kalenderprogram
       du velger.
+    include_invitations: Kalenderen skal også inneholde invitasjoner til avtaler som
+      jeg ennå ikke har svart på.
   notifications: Varsler
   title: Innstillinger
   account: Kontoalternativer
@@ -1276,7 +1278,7 @@ reports:
   from: Fra
   report_id: Meldings-ID
   about_last_name: Om etternavn
-  all_reports: Alle rapporter
+  all_reports: Alle klager
   from_last_name: Fra etternavn
   no_reports_fallback: Det er ingen rapporter ennå
   reportmessage: Fortell oss kort hvordan du kan nås hvis vi har spørsmål.
@@ -1384,7 +1386,7 @@ register:
   account-exists: Du er allerede registrert. Logg ut hvis du vil registrere deg på
     nytt.
   birthdate_hint: Du kan finne mer informasjon i <a href="/?page=legal" target="_blank">personvernreglene</a>
-    i punkt 2d) når du registrerer deg som matdeler eller matredder.
+    i punkt 2d.
 geb_datum: Fødselsdato (ÅÅÅÅ-MM-DD)
 login:
   pwreset:
@@ -1577,7 +1579,7 @@ group:
   application_requirements:
     open: Alle kan ta del direkte.
     everybody: Alle kan søke.
-    requires_properties: Alle som svarer til gitte krav.
+    requires_properties: Alle som oppfyller visse kriterier.
     nobody: Ingen (lukket gruppe).
     requirements: Hvem kan ta del i denne gruppen?
     fetch_count: Hvor mange hentinger må en søker ha gjort?
@@ -1616,7 +1618,7 @@ group:
     set_admin_text: Er du sikker på at du vil legge til {name} ({id}) som administrator?
     set_ambassador_title: Registrer medlem som ambassadør
     is_home_region: Hjemdistrikt
-    is_verified: Bekreftet
+    is_verified: bekreftet
     remove_text_group: Er du sikker på at du vil fjerne {name} ({id}) fra arbeidsgruppen?
     remove_text_region: Er du sikker på at du vil fjerne {name} ({id}) fra regionen?
     not_verified: ikke låst opp
@@ -1706,7 +1708,7 @@ pass:
   hintSelect: "Med et klikk på opprettelsesdatoen merkes alle matreddere med samme
     dato eller uten opprettelsesdato.\n"
   noPhoto: 'Følgende personer har ikke lastet opp et bilde ennå:'
-  notGenerated: Medlemskortet kunne ikke opprettes.
+  notGenerated: Derfor kunne ikke medlemskortene deres genereres.
   hintVerify: "Matreddere som har fullført sine innledende hentinger og har verifisert
     nøyaktigheten til de oppgitte dataene, kan verifiseres.\n"
 button:
@@ -2069,7 +2071,7 @@ timepicker:
 calendar:
   labelCalendar: Kalender
   labelToday: i dag
-  locale: no
+  locale: nb
   labelNextMonth: neste måned
   labelNextYear: neste år
   labelNav: Kalendernavigering
@@ -2441,7 +2443,7 @@ storeview:
   visible_for_team: Denne teksten er bare synlig for innsamlingsteamet.
   invalid_field: Ugyldig feltinnhold. Endringen kan ikke lagres.
   contact:
-    name: Navn/Fornavn
+    name: Navn
   management: Administrasjon
   source_data: Basisdata
   select_related_region: Valg av ansvarlig distrikt

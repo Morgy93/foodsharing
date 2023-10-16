@@ -167,7 +167,7 @@ group:
     add_member: Includere nel team
     admin_mode_on: Attiva vista per amministratori
     admin_mode_off: Torna alla visualizzazione standard
-    is_verified: Verificat@
+    is_verified: verificat@
     remove_admin_text: Ti vuoi davvero cancellare {name} ({id}) come amministratore?
     remove_ambassador_title: Cancellarsi come ambasciatore
     remove_admin_title: Cancellarsi come amministratore
@@ -181,7 +181,7 @@ group:
     set_ambassador_text: Vuoi davvero registrare {name} ({id}) come ambasciatore?
     is_home_region: Distretto principale
     old_edit_hint: L'amministrazione dei soci si trova ora nella scheda
-    not_verified: Non verificato
+    not_verified: non verificat@
   application_region: 'Candidatura per '
   motivation: Testo motivazionale
   entermotivation: 'Motivazione:'
@@ -228,7 +228,7 @@ pass:
     confirm: Sicuro?
     undo: Annulla verifica {name} ({id})
     do: Verifica l'account di {name} ({id})
-  notGenerated: Non è stato possibile creare il tuo ID.
+  notGenerated: Non è stato possibile creare la tua carta d'identificazione
   noPhoto: 'Le seguenti persone non hanno ancora caricato una foto:'
   claim: Condividi il cibo invece di buttarlo via!
   hintVerify: "Possono essere verificati i foodsaver che hanno ricevuto un documento
@@ -336,7 +336,7 @@ homepage: Il tuo sito web
 sleep_msg: Qui puoi lasciare un breve messaggio sul perché non hai tempo in questo
   momento.
 sleep_status: il tuo stato attuale
-passcheck: Si prega di confermare la modifica con la password
+passcheck: Si prega di confermare la modifica inserendo la password
 newmail: Inserisci qui il tuo nuovo indirizzo e-mail
 infomail_message: Notifica di messaggi su chat Foodsharing
 newsletter: Bollettino
@@ -555,8 +555,7 @@ register:
   login_email: Indirizzo e-mail
   email_required: È richiesto un indirizzo e-mail.
   birthdate_hint: Puoi trovare ulteriori informazioni nella <a href="/?page=legal"
-    target="_blank">Protezione dati</a> al punto 2d) quando ti registri come foodsharer
-    o foodsaver.
+    target="_blank">Protezione dati</a> al punto 2d.
   requiredFields: Campo obbligatorio
   mail_hint: 'Importante: prestare attenzione all''ortografia!'
   register_button_label: Registrati
@@ -627,7 +626,7 @@ legal:
     di protezione dei dati.
   actions:
     safe: Salva le impostazioni
-  delete_account: Voglio eliminare il mio account.
+  delete_account: voglio eliminare il mio account.
   agree_privacy_policy: Ho letto l'accordo sulla protezione dei dati.
   dont_agree: Non acconsento al trattamento dei miei dati e
   not_acknowledge_pp_description: Per utilizzare la piattaforma Foodsharing è necessario
@@ -685,20 +684,20 @@ fsp:
   location: CAP/ località
   street: Indirizzo
   address: Indirizzo
-  acceptSuccess: Divisore è ora attivo
+  acceptSuccess: Punto di condivisione è ora attivo
   acceptName: Attivare {name}
   suggest: Proponi divisori
   addSuccess: Il divisore è stato inserito con successo
-  addError: Impossibile inserire il divisore. Hai compilato tutto correttamente?
-  add: Inserisci divisori
-  new: Nuovo divisore
+  addError: Impossibile inserire punto di condivisione. Hai compilato tutto correttamente?
+  add: Inserisci punto di condivisione
+  new: Nuovo punto di condivisione
   description: descrizione
   followers: Seguiti
   managers: Referenti
   unfollow: divisore equi non seguiere più
   suggestSuccess: I divisori vengono proposti e devono poi essere confermati da un/a
     ambasciatore/trice o responsabile del divisore.
-  none: non sono ancora stati inseriti divisori
+  none: non sono ancora stati inseriti punti di condivisione
   publicwall: Tieni presente, che i tuoi contributi sono visibili pubblicamente sulla
     bacheca del divisore.
   editSuccess: Il divisore è stato elaborato con successo
@@ -925,7 +924,7 @@ store:
     toogleIsReducedStateOpen: Espandi elenco
     toogleIsReducedStateClosed: Chiudi elenco
   days_before: prima
-  days: Giorni
+  days: giorni
   my_last_pickup: Il mio ultimo ritiro
   address: Indirizzo
   average_collection_quantity: Quantità di ritiro in media
@@ -943,14 +942,14 @@ store:
     jumper: messaggio ai intervenisti
   actions: Opzioni
   isManager: Responsabile di questa agenzia.
-  lastPickupShort: ultimo {date}
-  lastPickup: 'Ultimo ritiro: {date}'
-  jumperSince: 'Intervenista da: {date}'
-  memberSince: 'Nel team da: {date}'
+  lastPickupShort: ultimo {data}
+  lastPickup: 'Ultimo recupero: {data}'
+  jumperSince: 'Jolly da: {data}'
+  memberSince: 'Nel team da: {data}'
   teamName: '{storeTitle}-Team'
   error: Impossibile caricare l´agenzia.
   go: Alla pagina del team
-  noStores: Nessun agenzia è stato ancora inserito
+  noStores: Nessuna attività è stata ancora inserita
   addNewStoresButton: Nuova agenzia registrata
   allStoresOfRegion: Tutte le agenzie del distretto
   pickup_slot_unavailable: Questo slot è più lontano nel futuro di quanto pianificato
@@ -1022,7 +1021,7 @@ store:
   isAppliedForTeam: Richiesta
   team_container: Team
   managing: Coordinatore del negozio
-  active: Attivo
+  active: attivo
   one_active: Attivo
   unverified_members: non verificati
   delete_date_description: Se nella vostra azienda utilizzate slot regolari (che si
@@ -1072,7 +1071,7 @@ storeview:
   visible_for_team: Questo testo è visibile solo al team dello store.
   invalid_field: Contenuto della casella non valido. La modifica non può essere salvata.
   contact:
-    name: Cognome/Nome
+    name: Nome e cognome
   management: Amministrazione
   source_data: Dati anagrafici
   select_related_region: Selezione del distretto responsabile
@@ -1627,7 +1626,7 @@ events:
     guide: 'Istruzioni: <strong><a href="https://wiki.foodsharing.de/Mumble">wiki.foodsharing.de/Mumble
       </a></strong>'
     location: 'Il nostro server Mumble: <br> <strong> mumble.foodsharing.de </strong>'
-    text: Conduciamo conferenze vocali online con <em> Mumble </em>.
+    text: Conduciamo conferenze vocali online con <em>Mumble</em>.
     title: Appuntamento online (Mumble)
   duration: 'durata: {duration}'
   span: '{from} a {until}'
@@ -1708,9 +1707,9 @@ timepicker:
   labelSelected: Orario selezionato
   labelDecrement: Ridurrere
   labelIncrement: Aumentare
-  labelSeconds: Secondi
-  labelMinutes: Minuti
-  labelHours: Ore
+  labelSeconds: secondi
+  labelMinutes: minuti
+  labelHours: ore
 calendar:
   labelHelp: La navigazione è possibile anche con i tasti freccia
   labelNav: Navigazione nel calendario
@@ -1723,7 +1722,7 @@ calendar:
   labelCurrentMonth: Corrente mese
   labelPrevMonth: Lo scorso mese
   labelPrevYear: L'anno scorso
-  locale: de
+  locale: it
   export:
     pickup:
       description: 'Ritiro foodsharing presso <a href="{url}">{store}</a>'
@@ -1754,7 +1753,7 @@ bell:
   passgen_failed: Per favore carica una foto, poi funzionerà.
   buddy_request: '{name} ti conosce.'
   buddy_request_title: Conosci {name}?
-  betrieb_fetch: '{count} orari di ritiro non confermati'
+  betrieb_fetch: '{count} orari di recupero non confermati'
   new_quiz_comment: '{comment}'
   store_wallpost_title: '{name}'
   poll_new: '{title}'
@@ -1860,8 +1859,8 @@ pickuplist:
   NumberOfStores_table_header: numero di agenzie
 genderlist:
   number_table_header: Numero
-  gender_female: femmina
-  gender_male: maschio
+  gender_female: donna
+  gender_male: Uomo
   gender_not_selected: non selezionato
   header_for_district: Distribuzione dei Foodsaver per sesso a {bezirk}
   gender_table_header: Sesso
@@ -2453,6 +2452,8 @@ settings:
     export: Esporta calendario
     export_tooltip: Puoi visualizzare le date di ritiro utilizzando un software di
       calendario a tua scelta.
+    include_invitations: Il calendario dovrebbe contenere anche gli inviti ad appuntamenti
+      a cui non ho ancora risposto.
   photo:
     info: "Il tuo viso dovrebbe essere <a href=\"{link_photo}\">riconoscibile</a>
       nella tua foto del profilo,\nperché sarà usato per il foodsharing<a href=\"\
@@ -2683,7 +2684,7 @@ footer:
     info: '<a href="https://www.manitu.de/webhosting/" title="Webhosting">ospitato</a>
       ad emissioni neutrali di CO<sub>2</sub>'
   partner_names:
-    wiener_tafel: 'Wiener Tafel'
+    wiener_tafel: 'Banco alimentare Vienna'
     denns: 'Denn’s Biomarkt'
     lebensministerium: 'Ministero federale dell''agricoltura, delle regioni e del
       turismo'
@@ -2777,7 +2778,7 @@ stats:
       al nostro lavoro.
     foodsaver: I Foodsaver sono impegnati in un mondo senza sprechi alimentari.
     cooperations: Le aziende collaborano con noi continuamente e con soddisfazione.
-    weight: Cibo salvato con successo dal bidone.
+    weight: di cibo salvato con successo dal bidone.
   title: Statistiche totali
 blog:
   permissions:
@@ -3195,12 +3196,12 @@ notifications:
       volta al mese.
     title: Newsletter
   foodSharePoints:
-    title: Frigo solidali
-    description: Ricevi una notifica in caso di nuovi post sulle bacheche dei frigo
-      solidali che segui.
+    title: Punto di condivisione
+    description: Ricevi una notifica in caso di nuovi post sulle bacheche dei punti
+      di condivisione solidali che segui.
   groups:
     title: Gruppi di lavoro
-  checkbox_push: Spingere
+  checkbox_push: Push
   checkbox_disabled: Disabilitato
   regions:
     title: Zone

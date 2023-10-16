@@ -1165,8 +1165,8 @@ forum:
   new_thread: "Neues Thema verfassen"
   follow:
     header: "Benachrichtigung bei neuen Antworten:"
-    bell: "als Glocke"
-    email: "als E-Mail"
+    bell: "per Glocke"
+    email: "per E-Mail"
   post:
     delete: "Beitrag löschen" #also in ThreadPostActions
     body: "Nachricht"
@@ -1188,8 +1188,12 @@ forum:
     close: "Thema schließen"
     open: "Thema wieder öffnen"
     closed: "geschlossenes Thema"
+    sticky: "angeheftetes Thema"
     navigate_to_newest_post: "zum neuesten Beitrag springen"
     navigate_to_oldest_post: "zum ersten Beitrag springen"
+    subscriptions:
+      subscribe: Abonnieren
+      subscribed: Abonniert
   hold_back_for_moderation: "Das Thema wurde gespeichert und wird veröffentlicht, sobald ein*e Botschafter*in/Moderator*in es bestätigt."
   no_posts: "Bisher keine Beiträge vorhanden"
   no_threads: "Noch keine Themen gepostet"
@@ -3074,6 +3078,19 @@ notifications:
   checkbox_disabled: 'Deaktiviert'
   success: "Erfolgreich gespeichert"
   config_button: 'einzeln konfigurieren'
+
+thread:
+  options:
+    rename: "Titel bearbeiten"
+    pin: "Beitrag anheften"
+    unpin: "Nicht mehr anheften"
+    lock: "Thema schließen" 
+    unlock: "Thema öffnen"
+  rename:
+    edit_description: "Titel bearbeiten"
+    description_modal_text: "Gib einen neuen Titel für diesen Beitrag ein:"
+    placeholder: "Titel"
+    max_length_info: "Maximale Länge des Titels erreicht (260 Zeichen)"
 
 markdown_input:
   tooltip:

@@ -1,113 +1,88 @@
-<!-- eslint-disable vue/max-attributes-per-line -->
 <template>
   <div
     :class="{disabledLoading: isLoading}"
     class="bootstrap"
   >
-    <div v-if="isLoading && !regionId">
-      <div class="card-header text-white bg-primary">
-        {{ title || '...' }}
-      </div>
-      <div class="card-body p-5" />
+    <div class="rounded text-white bg-primary p-2">
+      <h4 :class="{'text-truncate': title.length > 150}">
+        <i
+          v-if="!isOpen"
+          class="fas fa-lock mr-1"
+          :title="$i18n('forum.thread.closed')"
+        />
+        <i
+          v-if="isSticky"
+          class="fas fa-thumbtack mr-1"
+          :title="$i18n('forum.thread.sticky')"
+        />
+        {{ title }}
+
+        <OverflowMenu
+          variant="light"
+          :options="overflowMenuOptions"
+        />
+      </h4>
     </div>
 
+    <SubscribeButton
+      :is-following-bell="isFollowingBell"
+      :is-following-email="isFollowingEmail"
+      :thread-id="id"
+      @update:bell="newState => isFollowingBell = newState"
+      @update:email="newState => isFollowingEmail = newState"
+    />
+
     <div
-      v-if="regionId"
-      class="card rounded above"
+      v-if="!isActive && mayModerate"
+      class="card-body mb-2"
     >
-      <div class="card-header text-white bg-primary">
-        <div class="row m-1">
-          <h4 :class="{'text-truncate': title.length > 150}">
-            <i v-if="!isOpen" class="fas fa-lock mr-1" :title="$i18n('forum.thread.closed')" />
-            {{ title }}
-          </h4>
-        </div>
-      </div>
-      <ThreadActions
-        :is-following-bell.sync="isFollowingBell"
-        :is-following-email.sync="isFollowingEmail"
-        :is-sticky.sync="isSticky"
-        :may-moderate="mayModerate"
-        :status="status"
-        @update:follow-bell="updateFollowBell"
-        @update:follow-email="updateFollowEmail"
-        @update:sticky="updateStickyness"
-        @close="close"
-        @open="open"
-      />
       <div
-        v-if="!isActive && mayModerate"
-        class="card-body mb-2"
+        class="alert alert-warning mb-2"
+        role="alert"
       >
-        <div
-          class="alert alert-warning mb-2"
-          role="alert"
+        <span>
+          {{ $i18n('forum.thread.inactive') }}
+        </span>
+      </div>
+      <div>
+        <button
+          class="btn btn-primary btn-sm"
+          @click="activateThread"
         >
-          <span>
-            {{ $i18n('forum.thread.inactive') }}
-          </span>
-        </div>
-        <div>
-          <button
-            class="btn btn-primary btn-sm"
-            @click="activateThread"
-          >
-            <i class="fas fa-check" /> {{ $i18n('forum.thread.activate') }}
-          </button>
-          <button
-            class="btn btn-danger btn-sm float-right"
-            @click="$refs.deleteModal.show()"
-          >
-            <i class="fas fa-trash-alt" /> {{ $i18n('forum.thread.delete') }}
-          </button>
-        </div>
+          <i class="fas fa-check" /> {{ $i18n('forum.thread.activate') }}
+        </button>
+        <button
+          class="btn btn-danger btn-sm float-right"
+          @click="$refs.deleteModal.show()"
+        >
+          <i class="fas fa-trash-alt" /> {{ $i18n('forum.thread.delete') }}
+        </button>
       </div>
     </div>
-
-    <ThreadFastnavigationButton v-if="isFastNavigationVisible" :label="$i18n('forum.thread.navigate_to_newest_post')" @navigate="navigateToNewestPost" />
-
-    <div
-      v-for="post in posts"
-      :key="post.id"
-    >
-      <ThreadPost
-        :id="post.id"
-        :user-id="userId"
-        :author="post.author"
-        :body="post.body"
-        :deep-link="getPostLink(post.id)"
-        :reactions="post.reactions"
-        :may-delete="post.mayDelete"
-        :may-edit="false"
-        :is-loading="loadingPosts.indexOf(post.id) != -1"
-        :created-at="new Date(post.createdAt)"
-        :may-reply="isOpen"
-        @delete="deletePost(post)"
-        @reaction-add="reactionAdd(post, arguments[0])"
-        @reaction-remove="reactionRemove(post, arguments[0])"
-        @reply="reply"
-        @scroll="scrollToPost(post.id)"
-      />
-    </div>
-
-    <ThreadFastnavigationButton v-if="isFastNavigationVisible" :label="$i18n('forum.thread.navigate_to_oldest_post')" @navigate="navigateToOldestPost" />
-
-    <div
-      v-if="regionId"
-      class="card rounded below"
-    >
-      <ThreadActions
-        :is-following-bell="isFollowingBell"
-        :is-following-email="isFollowingEmail"
-        :is-sticky="isSticky"
-        :may-moderate="mayModerate"
-        :status="status"
-        @update:follow-bell="updateFollowBell"
-        @update:follow-email="updateFollowEmail"
-        @update:sticky="updateStickyness"
-        @close="close"
-        @open="open"
-      />
+    <div id="posts-wrapper">
+      <div
+        v-for="post in posts"
+        :key="post.id"
+      >
+        <ThreadPost
+          :id="post.id"
+          :user-id="userId"
+          :author="post.author"
+          :body="post.body"
+          :deep-link="getPostLink(post.id)"
+          :reactions="post.reactions"
+          :may-delete="post.mayDelete"
+          :may-edit="false"
+          :is-loading="loadingPosts.indexOf(post.id) != -1"
+          :created-at="new Date(post.createdAt)"
+          :may-reply="isOpen"
+          @delete="deletePost(post)"
+          @reaction-add="reactionAdd(post, arguments[0])"
+          @reaction-remove="reactionRemove(post, arguments[0])"
+          @reply="reply"
+          @scroll="scrollToPost(post.id)"
+        />
+      </div>
     </div>
 
     <div
@@ -124,6 +99,15 @@
     >
       <strong>{{ $i18n('error_unexpected') }}:</strong> {{ errorMessage }}
     </div>
+
+    <SubscribeButton
+      :is-following-bell="isFollowingBell"
+      :is-following-email="isFollowingEmail"
+      :thread-id="id"
+      @update:bell="newState => isFollowingBell = newState"
+      @update:email="newState => isFollowingEmail = newState"
+    />
+
     <ThreadForm
       v-if="isOpen"
       ref="form"
@@ -142,27 +126,50 @@
     >
       {{ $i18n('really_delete') }}
     </b-modal>
+
+    <b-modal
+      ref="title_edit_modal"
+      centered
+      :title="$i18n('thread.rename.edit_description')"
+      :cancel-title="$i18n('button.cancel')"
+      :ok-title="$i18n('button.save')"
+      @ok="updateTitle"
+    >
+      <p>
+        {{ $i18n('thread.rename.description_modal_text') }}
+      </p>
+      <b-form-input
+        v-model="newTitle"
+        :placeholder="$i18n('thread.rename.placeholder')"
+        :maxlength="260"
+      />
+      <small v-if="newTitle?.length === 260">
+        <i class="fas fa-info-circle" />
+        {{ $i18n('thread.rename.max_length_info') }}
+      </small>
+    </b-modal>
+
+    <JumpScrollButton
+      element-id="posts-wrapper"
+    />
   </div>
 </template>
 
 <script>
 
-import { BModal } from 'bootstrap-vue'
-
-import ThreadActions from './ThreadActions'
+import * as api from '@/api/forum'
+import { GET } from '@/browser'
+import OverflowMenu from '@/components/OverflowMenu.vue'
+import { pulseError } from '@/script'
+import DataUser from '@/stores/user'
+import JumpScrollButton from './JumpScrollButton'
+import SubscribeButton from './SubscribeButton.vue'
 import ThreadForm from './ThreadForm'
 import ThreadPost from './ThreadPost'
-import ThreadFastnavigationButton from './ThreadFastnavigationButton'
-import * as api from '@/api/forum'
-import { pulseError } from '@/script'
-import i18n from '@/helper/i18n'
-import DataUser from '@/stores/user'
-import { GET } from '@/browser'
-import { setThreadStatus } from '@/api/forum'
 import ThreadStatus from './ThreadStatus'
 
 export default {
-  components: { BModal, ThreadActions, ThreadForm, ThreadPost, ThreadFastnavigationButton },
+  components: { ThreadForm, ThreadPost, OverflowMenu, JumpScrollButton, SubscribeButton },
   props: {
     id: {
       type: Number,
@@ -175,17 +182,20 @@ export default {
       regionId: null,
       regionSubId: null,
       posts: [],
+      creator: null,
 
       isSticky: true,
       isActive: true,
       mayModerate: false,
       mayDelete: false,
-      isFollowingEmail: true,
-      isFollowingBell: true,
+      isFollowingEmail: false,
+      isFollowingBell: false,
+      isOnlyPostsVisible: false,
 
       isLoading: false,
       loadingPosts: [],
       errorMessage: null,
+      newTitle: '',
 
       status: ThreadStatus.THREAD_OPEN,
     }
@@ -200,14 +210,15 @@ export default {
     isOpen () {
       return this.status === ThreadStatus.THREAD_OPEN
     },
-    newestPostId () {
-      return this.posts[this.posts.length - 1].id
+    mayRename () {
+      return this.mayModerate || this.userId === this.creator?.id
     },
-    oldestPostId () {
-      return this.posts[0].id
-    },
-    isFastNavigationVisible () {
-      return this.posts.length > 2
+    overflowMenuOptions () {
+      return [
+        { hide: !this.mayRename, icon: 'pen', textKey: 'thread.options.rename', callback: this.openEditTitleModal },
+        { hide: !this.mayModerate, icon: `lock${this.isOpen ? '' : '-open'}`, textKey: `thread.options.${this.isOpen ? '' : 'un'}lock`, callback: this.updateClosed },
+        { hide: !this.mayModerate, icon: 'thumbtack', textKey: `thread.options.${this.isSticky ? 'un' : ''}pin`, callback: this.updateStickyness },
+      ]
     },
   },
   async created () {
@@ -220,19 +231,10 @@ export default {
       return this.$url('forum', this.regionId, this.regionSubId, this.id, postId)
     },
     scrollToPost (postId) {
-      const deepLink = this.getPostLink(postId)
-      window.history.pushState({ postId }, 'Post deeplink', deepLink)
-
       const p = window.document.getElementById(`post-${postId}`)
       if (p) {
         p.scrollIntoView({ behavior: 'smooth', block: 'center' })
       }
-    },
-    navigateToNewestPost () {
-      this.scrollToPost(this.newestPostId)
-    },
-    navigateToOldestPost () {
-      this.scrollToPost(this.oldestPostId)
     },
     reply (body) {
       // this.$refs.form.text = `> ${body.split('\n').join('\n> ')}\n\n${this.$refs.form.text}`
@@ -253,6 +255,7 @@ export default {
           isFollowingEmail: res.isFollowingEmail,
           isFollowingBell: res.isFollowingBell,
           status: res.status,
+          creator: res.creator,
         })
         this.isLoading = false
       } catch (err) {
@@ -265,32 +268,6 @@ export default {
         }
       }
     },
-    async updateFollowBell () {
-      const targetState = !this.isFollowingBell
-      try {
-        if (targetState) {
-          await api.followThreadByBell(this.id)
-        } else {
-          await api.unfollowThreadByBell(this.id)
-        }
-        this.isFollowingBell = targetState
-      } catch (err) {
-        pulseError(i18n('error_unexpected'))
-      }
-    },
-    async updateFollowEmail () {
-      const targetState = !this.isFollowingEmail
-      try {
-        if (targetState) {
-          await api.followThreadByEmail(this.id)
-        } else {
-          await api.unfollowThreadByEmail(this.id)
-        }
-        this.isFollowingEmail = targetState
-      } catch (err) {
-        pulseError(i18n('error_unexpected'))
-      }
-    },
     async updateStickyness () {
       const targetState = !this.isSticky
       try {
@@ -301,7 +278,7 @@ export default {
         }
         this.isSticky = targetState
       } catch (err) {
-        pulseError(i18n('error_unexpected'))
+        pulseError(this.$i18n('error_unexpected'))
       }
     },
     async deletePost (post) {
@@ -311,7 +288,7 @@ export default {
         await api.deletePost(post.id)
         await this.reload(true)
       } catch (err) {
-        pulseError(i18n('error_unexpected'))
+        pulseError(this.$i18n('error_unexpected'))
       } finally {
         this.loadingPosts.splice(this.loadingPosts.indexOf(post.id), 1)
       }
@@ -333,7 +310,7 @@ export default {
         } catch (err) {
           // failed? remove it again
           this.reactionRemove(post, key, true)
-          pulseError(i18n('error_unexpected'))
+          pulseError(this.$i18n('error_unexpected'))
         }
       }
     },
@@ -350,7 +327,7 @@ export default {
         } catch (err) {
           // failed? add it again
           this.reactionAdd(post, key, true)
-          pulseError(i18n('error_unexpected'))
+          pulseError(this.$i18n('error_unexpected'))
         }
       }
     },
@@ -388,7 +365,7 @@ export default {
         await api.activateThread(this.id)
       } catch (err) {
         this.isActive = false
-        pulseError(i18n('error_unexpected'))
+        pulseError(this.$i18n('error_unexpected'))
       }
     },
     async deleteThread () {
@@ -400,22 +377,31 @@ export default {
         window.location = this.$url('forum', this.regionId, this.regionSubId)
       } catch (err) {
         this.isLoading = false
-        pulseError(i18n('error_unexpected'))
+        pulseError(this.$i18n('error_unexpected'))
       }
     },
-    async close () {
-      await this.setStatus(ThreadStatus.THREAD_CLOSED)
+    async updateClosed () {
+      this.isLoading = true
+      const targetStatus = [ThreadStatus.THREAD_CLOSED, ThreadStatus.THREAD_OPEN][this.status]
+      try {
+        await api.setThreadStatus(this.id, targetStatus)
+        this.status = targetStatus
+      } catch (err) {
+        pulseError(this.$i18n('error_unexpected'))
+      }
+      this.isLoading = false
     },
-    async open () {
-      await this.setStatus(ThreadStatus.THREAD_OPEN)
+    openEditTitleModal () {
+      this.newTitle = this.title
+      this.$refs.title_edit_modal.show()
     },
-    async setStatus (status) {
+    async updateTitle () {
       this.isLoading = true
       try {
-        await setThreadStatus(this.id, status)
-        this.status = status
+        await api.setTitle(this.id, this.newTitle)
+        this.title = this.newTitle
       } catch (err) {
-        pulseError(i18n('error_unexpected'))
+        pulseError(this.$i18n('error_unexpected'))
       }
       this.isLoading = false
     },
@@ -426,5 +412,9 @@ export default {
 <style lang="scss" scoped>
 .card-body > .alert {
   margin-bottom: 0;
+}
+
+.text-strike {
+  text-decoration: line-through;
 }
 </style>

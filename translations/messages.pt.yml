@@ -52,11 +52,18 @@ bell:
   store_request_imposed_title: '{name}'
   store_wallpost_title: '{name}'
   store_request_accept_wait_title: '{name}'
+  forum_answer_title: '{forum}'
 email_template:
   help_needed:
     link: https://devdocs.foodsharing.network/
 footer:
   meta:
     version: 'Versão: {version}'
+  partner_names:
+    denns: Denn’s Biomarkt
 dashboard:
   source_mailbox: '{0}'
+storeview:
+  counter: <strong>{count}<span style="white-space:nowrap"> </span>{suffix}</strong>
+calendar:
+  locale: pt

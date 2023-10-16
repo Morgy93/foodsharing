@@ -504,26 +504,28 @@ class StoreGateway extends BaseGateway
         return $this->db->insertMultiple('fs_betrieb_has_lebensmittel', $newFoodData);
     }
 
+    /**
+     * @return list<array<mixed>> all foodsavers that currently apply to the store team
+     */
     private function getApplications(int $storeId, GeoLocation $storePosition): array
     {
-        $applications = $this->db->fetchAll('
-			SELECT 		fs.`id`,
-						fs.photo,
-						CONCAT(fs.name," ",fs.nachname) AS name,
-						name as vorname,
-						fs.sleep_status,
-			       		fs.verified,
-                        ST_DISTANCE_SPHERE(
-                            Point(fs.lon, fs.lat),
-                            Point(:storeLon, :storeLat)
-                        ) / 1000 AS distance
-			FROM 		`fs_betrieb_team` t
-						INNER JOIN `fs_foodsaver` fs
-			            ON fs.id = t.foodsaver_id
-
-			WHERE 		`betrieb_id` = :storeId
-			AND 		t.active = :membershipStatus
-			AND			fs.deleted_at IS NULL
+        $applications = $this->db->fetchAll('SELECT
+                foodsaver.id,
+                foodsaver.photo,
+                CONCAT(foodsaver.name," ",foodsaver.nachname) AS name,
+                name as vorname,
+                foodsaver.sleep_status,
+                foodsaver.verified,
+                FLOOR(ST_DISTANCE_SPHERE(
+                    Point(foodsaver.lon, foodsaver.lat),
+                    Point(:storeLon, :storeLat)
+                ) / 1000) AS distance
+			FROM fs_betrieb_team betrieb_team
+			INNER JOIN fs_foodsaver foodsaver
+			    ON foodsaver.id = betrieb_team.foodsaver_id
+			WHERE `betrieb_id` = :storeId
+			    AND betrieb_team.active = :membershipStatus
+			    AND foodsaver.deleted_at IS NULL
 		', [
             ':storeLat' => $storePosition->lat,
             ':storeLon' => $storePosition->lon,

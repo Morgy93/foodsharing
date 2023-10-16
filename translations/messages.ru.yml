@@ -723,7 +723,7 @@ profile:
   about_me_intern: ''
   choosestore: ''
   sleeping: ''
-  warning: ''
+  warning: 'Предупреждение'
   mediation:
     no_group: ''
     title: ''
@@ -1271,7 +1271,7 @@ storeview:
   team: ''
   no_permission_to_view: ''
   specials: ''
-  counter: ''
+  counter: '<strong>{count}<span style="white-space:nowrap"> </span>{suffix}</strong>'
   status_notes: ''
   visible_for_team: ''
   invalid_field: ''
@@ -1505,7 +1505,7 @@ pickup:
   kick_message_footer: ''
   really_leave_date_title: ''
 calendar:
-  locale: ''
+  locale: 'ru'
   labelPrevMonth: ''
   labelCurrentMonth: ''
   labelNextMonth: ''
@@ -1609,7 +1609,7 @@ wall:
   placeholder: Напишите новую запись на стене…
 events:
   create:
-    mumble: ''
+    mumble: 'Конференция в Мамбле'
     offline: ''
     inviteAll: ''
     endtime: ''
@@ -1928,7 +1928,7 @@ bell:
   new_quiz_comment: '{comment}'
   betrieb_fetch_title: '{betrieb}'
   forum_reply_title: '{forum}: {title}'
-  forum_answer_title: ''
+  forum_answer_title: '{forum}'
   store_new_request: ''
   new_quiz_comment_title: ''
   new_foodsaver_title: ''

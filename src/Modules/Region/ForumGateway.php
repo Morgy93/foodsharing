@@ -26,8 +26,8 @@ class ForumGateway extends BaseGateway
 
     public function listThreads(int $regionId, int $subforumId = 0, int $limit = 15, int $offset = 0): array
     {
-        $threads = $this->db->fetchAll('
-			SELECT 		t.id,
+        $threads = $this->db->fetchAll('SELECT
+                        t.id,
 						t.name as title,
 						t.`time`,
 						UNIX_TIMESTAMP(t.`time`) AS time_ts,
@@ -66,7 +66,9 @@ class ForumGateway extends BaseGateway
 			AND 		bt.bot_theme = :subforumId
 			AND 		t.`active` = 1
 
-			ORDER BY t.sticky DESC, t.last_post_id DESC
+			ORDER BY    t.`sticky` DESC,
+                        CASE WHEN sticky = 1 THEN t.`name` END ASC,
+                        CASE WHEN sticky = 0 THEN p.`time` END DESC
 
 			LIMIT :limit
 			OFFSET :offset
@@ -196,6 +198,14 @@ class ForumGateway extends BaseGateway
     public function setThreadStatus(int $threadId, int $status): bool
     {
         return $this->db->update('fs_theme', ['status' => $status], ['id' => $threadId]) > 0;
+    }
+
+    /**
+     * Sets the title of a thread and returns whether the title was set successfully.
+     */
+    public function setThreadTitle(int $threadId, string $title): bool
+    {
+        return $this->db->update('fs_theme', ['name' => $title], ['id' => $threadId]) > 0;
     }
 
     // Post-related

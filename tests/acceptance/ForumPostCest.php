@@ -49,137 +49,244 @@ class ForumPostCest
 
     // tests
 
+    public function ClickFollowUnfollow(AcceptanceTester $I)
+    {
+        $I->login($this->foodsaver['email']);
+        $I->amOnPage($I->forumThreadUrl($this->thread_ambassador_user['id'], null));
+
+        $button = '.subscribe-btn .btn-block';
+        $dropdown = '.subscribe-btn .dropdown-toggle';
+        $bellSwitch = '.dropdown-menu .bell-switch';
+        $emailSwitch = '.dropdown-menu .email-switch';
+        $isChecked = ' input:checked';
+        $isNotChecked = ' input:not(:checked)';
+
+        $I->waitForActiveAPICalls();
+        $I->waitForElement($button);
+        $I->see('Abonnieren', $button);
+        $I->click($dropdown);
+        $I->waitForElementVisible($bellSwitch);
+        $I->seeElementInDOM($bellSwitch . $isNotChecked);
+        $I->seeElementInDOM($emailSwitch . $isNotChecked);
+        $I->click($dropdown);
+        $I->waitForElementNotVisible($bellSwitch);
+        $I->click($button);
+        $I->waitForActiveAPICalls();
+        $I->seeInDatabase('fs_theme_follower', [
+            'foodsaver_id' => $this->foodsaver['id'],
+            'theme_id' => $this->thread_ambassador_user['id'],
+            'bell_notification' => 1,
+            'infotype' => 0,
+        ]);
+        $I->see('Abonniert', $button);
+        $I->click($dropdown);
+        $I->waitForElementVisible($bellSwitch);
+        $I->seeElementInDOM($bellSwitch . $isChecked);
+        $I->seeElementInDOM($emailSwitch . $isNotChecked);
+        $I->waitForElementVisible($bellSwitch);
+        $I->click($bellSwitch . ' a');
+        $I->waitForActiveAPICalls();
+        $I->seeInDatabase('fs_theme_follower', [
+            'foodsaver_id' => $this->foodsaver['id'],
+            'theme_id' => $this->thread_ambassador_user['id'],
+            'bell_notification' => 0,
+            'infotype' => 0,
+        ]);
+        $I->seeElementInDOM($bellSwitch . $isNotChecked);
+        $I->click($bellSwitch . ' a');
+        $I->waitForActiveAPICalls();
+        $I->seeInDatabase('fs_theme_follower', [
+            'foodsaver_id' => $this->foodsaver['id'],
+            'theme_id' => $this->thread_ambassador_user['id'],
+            'bell_notification' => 1,
+            'infotype' => 0,
+        ]);
+        $I->seeElementInDOM($bellSwitch . $isChecked);
+        $I->seeElementInDOM($emailSwitch . $isNotChecked);
+
+        $I->click($emailSwitch . ' a');
+        $I->waitForActiveAPICalls();
+        $I->seeInDatabase('fs_theme_follower', [
+            'foodsaver_id' => $this->foodsaver['id'],
+            'theme_id' => $this->thread_ambassador_user['id'],
+            'bell_notification' => 1,
+            'infotype' => 1,
+        ]);
+        $I->seeElementInDOM($emailSwitch . $isChecked);
+        $I->click($emailSwitch . ' a');
+        $I->waitForActiveAPICalls();
+        $I->seeInDatabase('fs_theme_follower', [
+            'foodsaver_id' => $this->foodsaver['id'],
+            'theme_id' => $this->thread_ambassador_user['id'],
+            'bell_notification' => 1,
+            'infotype' => 0,
+        ]);
+        $I->seeElementInDOM($emailSwitch . $isNotChecked);
+    }
+
     /**
-     * @example["ambassador", "thread_ambassador_user", true]
-     * @example["foodsaver", "thread_ambassador_user", false]
-     * @example["ambassador", "thread_user_ambassador", true]
-     * @example["foodsaver", "thread_user_ambassador", false]
+     * @example["ambassador", "thread_ambassador_user"]
+     * @example["ambassador", "thread_user_ambassador"]
      */
-    public function SeePostButtonsAndClickFollowUnfollow(AcceptanceTester $I, Codeception\Example $example)
+    public function CloseAndOpenThread(AcceptanceTester $I, Codeception\Example $example)
     {
-        $followMailSwitch = '.above .toggle-status .email'; // per Mail folgen
-        $followBellSwitch = '.below .toggle-status .bell'; // per Glocke folgen
-
         $I->login($this->{$example[0]}['email']);
-
-        // FOLLOW FORUM THREAD BY MAIL
         $I->amOnPage($I->forumThreadUrl($this->{$example[1]}['id'], null));
-        $this->waitForPostButtons($I, false, false, $example[2]);
+        $I->seeInDatabase('fs_theme', [
+            'id' => $this->{$example[1]}['id'],
+            'status' => 0,
+        ]);
 
-        $I->waitForElement($followMailSwitch);
-        $I->click($followMailSwitch);
-        $this->waitForPostButtons($I, true, false, $example[2]);
+        $overflowMenu = '.overflow-menu button';
 
-        $I->waitForElement($followBellSwitch);
-        $I->click($followBellSwitch);
-        $this->waitForPostButtons($I, true, true, $example[2]);
-
-        // Simulate page reload
         $I->waitForActiveAPICalls();
-        $I->amOnPage($I->forumThreadUrl($this->{$example[1]}['id'], null));
-        $this->waitForPostButtons($I, true, true, $example[2]);
+        $I->waitForElement($overflowMenu);
 
-        $I->waitForElement($followMailSwitch);
-        $I->click($followMailSwitch);
-        $this->waitForPostButtons($I, false, true, $example[2]);
-
-        $I->waitForElement($followBellSwitch);
-        $I->click($followBellSwitch);
-        $this->waitForPostButtons($I, false, false, $example[2]);
-
-        // Simulate page reload
+        $I->click($overflowMenu);
+        $I->see('Thema schließen');
+        $I->click('Thema schließen');
         $I->waitForActiveAPICalls();
-        $I->amOnPage($I->forumThreadUrl($this->{$example[1]}['id'], null));
-        $this->waitForPostButtons($I, false, false, $example[2]);
+        $I->seeInDatabase('fs_theme', [
+            'id' => $this->{$example[1]}['id'],
+            'status' => 1,
+        ]);
 
-        $I->waitForElement($followBellSwitch);
-        $I->click($followBellSwitch);
-        $this->waitForPostButtons($I, false, true, $example[2]);
-
-        // Simulate page reload
+        $I->click($overflowMenu);
+        $I->see('Thema öffnen');
+        $I->click('Thema öffnen');
         $I->waitForActiveAPICalls();
-        $I->amOnPage($I->forumThreadUrl($this->{$example[1]}['id'], null));
-        $this->waitForPostButtons($I, false, true, $example[2]);
+        $I->seeInDatabase('fs_theme', [
+            'id' => $this->{$example[1]}['id'],
+            'status' => 0,
+        ]);
     }
 
-    private function waitForPostButtons(AcceptanceTester $I, $followMail, $followBell, $stickUnstick)
+    /**
+     * @example["foodsaver", "thread_ambassador_user", false]
+     * @example["foodsaver", "thread_user_ambassador", true]
+     */
+    public function CanNotCloseAndOpenThread(AcceptanceTester $I, Codeception\Example $example)
     {
-        $followMailSwitch = '.above .toggle-status .email';
-        $followBellSwitch = '.below .toggle-status .bell';
-        $stickySwitch = '.above .toggle-status .sticky'; // Thema fixieren
-        $switchOn = ' a.enabled';
-        $switchOff = ' a:not(.enabled)';
-        $stickyText = 'Thema fixieren';
+        $I->login($this->{$example[0]}['email']);
+        $I->amOnPage($I->forumThreadUrl($this->{$example[1]}['id'], null));
+
+        $overflowMenu = '.overflow-menu button';
 
         $I->waitForActiveAPICalls();
-        $I->waitForElement($followMailSwitch);
-        $I->seeNumberOfElements($followMailSwitch, 1);
-        if ($followMail) {
-            // mail switch should be enabled
-            $I->seeNumberOfElements($followMailSwitch . $switchOn, 1);
+        if ($example[2]) {
+            $I->click($overflowMenu);
+            $I->dontSee('Thema schließen');
         } else {
-            // mail switch should be disabled
-            $I->seeNumberOfElements($followMailSwitch . $switchOff, 1);
+            $I->dontSee($overflowMenu);
         }
 
-        $I->waitForElement($followBellSwitch);
-        $I->seeNumberOfElements($followBellSwitch, 1);
-        if ($followBell) {
-            // bell switch should be enabled
-            $I->seeNumberOfElements($followBellSwitch . $switchOn, 1);
+        $I->updateInDatabase('fs_theme', ['status' => 1], ['id' => $this->{$example[1]}['id']]);
+        $I->amOnPage($I->forumThreadUrl($this->{$example[1]}['id'], null));
+        $I->waitForActiveAPICalls();
+        if ($example[2]) {
+            $I->click($overflowMenu);
+            $I->dontSee('Thema öffnen');
         } else {
-            // bell switch should be disabled
-            $I->seeNumberOfElements($followBellSwitch . $switchOff, 1);
-        }
-
-        if ($stickUnstick) {
-            $I->waitForText($stickyText, 3);
-            $I->seeNumberOfElements($stickySwitch, 1);
-        } else {
-            $I->dontSee($stickyText);
+            $I->dontSee($overflowMenu);
         }
     }
 
-    public function StickUnstickPost(AcceptanceTester $I)
+    /**
+     * @example["ambassador", "thread_ambassador_user"]
+     * @example["ambassador", "thread_user_ambassador"]
+     */
+    public function PinAndUnpinThread(AcceptanceTester $I, Codeception\Example $example)
     {
-        $stickySwitch = '.above .toggle-status .sticky'; // Thema fixieren
+        $I->login($this->{$example[0]}['email']);
+        $I->amOnPage($I->forumThreadUrl($this->{$example[1]}['id'], null));
+        $I->seeInDatabase('fs_theme', [
+            'id' => $this->{$example[1]}['id'],
+            'sticky' => 0,
+        ]);
 
-        $I->login($this->ambassador['email']);
-        $I->amOnPage($I->forumThreadUrl($this->thread_user_ambassador['id'], null));
+        $overflowMenu = '.overflow-menu button';
+
         $I->waitForActiveAPICalls();
+        $I->waitForElement($overflowMenu);
 
-        $nick = $I->haveFriend('nick');
-        $nick->does(function (AcceptanceTester $I) {
-            $I->login($this->foodsaver['email']);
-            $I->amOnPage($I->forumUrl($this->testBezirk['id']));
-            /* selector matches thread_user_ambassador after thread_ambassador_user */
-            $title = $this->thread_user_ambassador['name'];
-            $I->see($title, '#thread-' . $this->thread_ambassador_user['id'] . ' + #thread-' . $this->thread_user_ambassador['id']);
-        });
-
-        $I->waitForElement($stickySwitch);
-        $I->click($stickySwitch);
-
-        $nick->does(function (AcceptanceTester $I) {
-            $I->waitForActiveAPICalls();
-            $I->wait(2);
-            $I->amOnPage($I->forumUrl($this->testBezirk['id']));
-            $title = $this->thread_ambassador_user['name'];
-            $I->see($title, '#thread-' . $this->thread_user_ambassador['id'] . ' + #thread-' . $this->thread_ambassador_user['id']);
-        });
-
-        $I->waitForElementVisible($stickySwitch);
+        $I->click($overflowMenu);
+        $I->see('Beitrag anheften');
+        $I->click('Beitrag anheften');
         $I->waitForActiveAPICalls();
-        $I->click($stickySwitch);
+        $I->seeInDatabase('fs_theme', [
+            'id' => $this->{$example[1]}['id'],
+            'sticky' => 1,
+        ]);
 
-        $nick->does(function (AcceptanceTester $I) {
-            $I->wait(2);
-            $I->amOnPage($I->forumUrl($this->testBezirk['id']));
-            $title = $this->thread_user_ambassador['name'];
-            $I->see($title, '#thread-' . $this->thread_ambassador_user['id'] . ' + #thread-' . $this->thread_user_ambassador['id']);
-            $I->waitForActiveAPICalls();
-        });
+        $I->click($overflowMenu);
+        $I->see('Nicht mehr anheften');
+        $I->click('Nicht mehr anheften');
         $I->waitForActiveAPICalls();
+        $I->seeInDatabase('fs_theme', [
+            'id' => $this->{$example[1]}['id'],
+            'sticky' => 0,
+        ]);
+    }
+
+    /**
+     * @example["foodsaver", "thread_ambassador_user", false]
+     * @example["foodsaver", "thread_user_ambassador", true]
+     */
+    public function CanNotPinAndUnpinThread(AcceptanceTester $I, Codeception\Example $example)
+    {
+        $I->login($this->{$example[0]}['email']);
+        $I->amOnPage($I->forumThreadUrl($this->{$example[1]}['id'], null));
+
+        $overflowMenu = '.overflow-menu button';
+
+        $I->waitForActiveAPICalls();
+        if ($example[2]) {
+            $I->click($overflowMenu);
+            $I->dontSee('Beitrag anheften');
+        } else {
+            $I->dontSee($overflowMenu);
+        }
+
+        $I->updateInDatabase('fs_theme', ['sticky' => 1], ['id' => $this->{$example[1]}['id']]);
+        $I->amOnPage($I->forumThreadUrl($this->{$example[1]}['id'], null));
+        $I->waitForActiveAPICalls();
+        if ($example[2]) {
+            $I->click($overflowMenu);
+            $I->dontSee('Nicht mehr anheften');
+        } else {
+            $I->dontSee($overflowMenu);
+        }
+    }
+
+    /**
+     * @example["ambassador", "thread_ambassador_user"]
+     * @example["ambassador", "thread_user_ambassador"]
+     * @example["foodsaver", "thread_user_ambassador"]
+     */
+    public function RenameThread(AcceptanceTester $I, Codeception\Example $example)
+    {
+        $I->login($this->{$example[0]}['email']);
+        $I->amOnPage($I->forumThreadUrl($this->{$example[1]}['id'], null));
+        $I->updateInDatabase('fs_theme', ['name' => 'initial title'], ['id' => $this->{$example[1]}['id']]);
+
+        $overflowMenu = '.overflow-menu button';
+        $modalInput = '.modal-dialog input';
+
+        $I->waitForActiveAPICalls();
+        $I->waitForElement($overflowMenu);
+
+        $I->click($overflowMenu);
+        $I->waitForText('Titel bearbeiten');
+        $I->see('Titel bearbeiten');
+        $I->click('Titel bearbeiten');
+        $I->waitForElementVisible($modalInput);
+        $I->fillField($modalInput, 'new title');
+        $I->click('Speichern');
+        $I->waitForActiveAPICalls();
+        $I->seeInDatabase('fs_theme', [
+            'id' => $this->{$example[1]}['id'],
+            'name' => 'new title',
+        ]);
     }
 
     private function _createThread(AcceptanceTester $I, $regionId, $title, $emailPossible, $sendEmail = false)

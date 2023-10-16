@@ -1481,7 +1481,7 @@ storeview:
   public_time_at_noon_or_afternoon: ''
   visible_for_team: ''
   public_time_in_the_evening: ''
-  counter: ''
+  counter: '<strong>{count}<span style="white-space:nowrap"> </span>{suffix}</strong>'
   visible_for_public: ''
   no_permission_to_view: ''
   status: ''
@@ -1686,7 +1686,7 @@ bell:
   foodsaver_verified: ''
   passgen_failed_title: ''
   forum_reply_title: '{forum}: {title}'
-  forum_answer_title: ''
+  forum_answer_title: '{forum}'
   blog_new_check: '{title}'
   store_wallpost: ''
   new_foodsaver: ''
@@ -2143,7 +2143,7 @@ footer:
   partner_names:
     wiener_tafel: ''
     lebensministerium: ''
-    denns: ''
+    denns: 'Denn’s Biomarkt'
   call_to_action: ''
   partner: ''
   our_partner: ''
@@ -2232,7 +2232,7 @@ pronoun:
   "3": ''
 calendar:
   labelSelected: ''
-  locale: ''
+  locale: 'el'
   labelHelp: ''
   export:
     pickup:

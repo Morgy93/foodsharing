@@ -10,7 +10,7 @@ group:
   application_requirements:
     requirements: Who can enter this group?
     nobody: Nobody (closed group).
-    requires_properties: Anybody fulfilling certain criteria.
+    requires_properties: Anyone who meets certain criteria.
     everybody: Everybody can apply.
     open: Anyone can join directly.
     fetch_count: How many pick-ups does an applicant need to have done?
@@ -26,7 +26,7 @@ group:
   members: Members
   administrators: Group administrators
   title: foodsharing working groups
-  subtitle: find help and or work…
+  subtitle: Here you will find help and lots to do …
   member_count: '{0} No members|{1} One member| [2, Inf[ %count% members'
   admin_count: '{0} No administrators|{1} One administrator| [2, Inf[ %count% administrators'
   image: image for %name%
@@ -117,7 +117,7 @@ group:
     zeit: How many hours do you have time and inclination to spend on it per week?
     erfahrung: "In the group, can you draw on experiences that you have gained elsewhere?\n
       If so, where or what?\n"
-    faehigkeit: What are your skills that you have in this area?
+    faehigkeit: What skills do you have in this area?
     motivation: What is your motivation to participate in the group {group}?
     summary: '{name} would like to participate in the {group} working group.'
     accept: Accept the application
@@ -176,7 +176,7 @@ group:
     old_edit_hint: You can now find the member administration on the tab
     remove_text_group: Do you really want to remove {name} ({id}) from this workgroup?
     remove_text_region: Do you really want to remove {name} ({id}) from the region?
-    is_verified: Verified
+    is_verified: verified
     is_home_region: Home region
     not_verified: not verified
   application_from: by
@@ -283,6 +283,8 @@ settings:
     export: Export calendar
     export_tooltip: You can view your upcoming pickup dates using a calendar program
       of your choice.
+    include_invitations: The calendar should also contain invitations to appointments
+      that I have not yet responded to.
   saved: The changes were saved.
   changemail:
     done: Your e-mail address was changed.
@@ -353,7 +355,7 @@ menu:
     donate: Donate
     press: Press
     forcompanies: For companies
-    imprint: Impressum
+    imprint: Legal notice
     regionalgroups: Local groups
     Germany: Germany
     Austria: Austria
@@ -495,7 +497,7 @@ profile:
         sexist: sexist remarks
         homophobe: homophobe remarks
         brutal: Violence and threats
-        other: Other inappropriate statements and conduct
+        other: Other inappropriate statements and behavior
         hurtful: insulting remarks
       residence: FS’s place of residence
       returned: Did not return deposit bottles/boxes, etc
@@ -506,7 +508,7 @@ profile:
       trasher: Throws away saved food
       picky: Does not take all food intended for pickup
       complaints: Made allegations
-      additional: Took food or asked the company food to be saved outside his/her
+      additional: Took food or asked the company for food to be saved outside his/her
         pickup
       other: Violated other rules of conduct (everything else)
       vsfs: towards foodsavers
@@ -714,7 +716,7 @@ events:
     isPublic: Yes, it is public
     public: Is the event public?
     title: Create a new event
-    mumble: Multi-local on mumble.foodsharing.de
+    mumble: Conference using Mumble
     offline: A normal real life event
     online: Via video or telephone conference
     multiday: The event lasts for several days
@@ -739,7 +741,7 @@ events:
   goto: Go to the event
   edited: Event was changed successfully.
   button:
-    change: Change RSVP
+    change: Modify answer
     maybe: Maybe
     yes: I will join
     no: I can not
@@ -811,9 +813,9 @@ forum:
 timepicker:
   labelNowButton: Now
   labelCloseButton: Close
-  labelSeconds: Seconds
-  labelMinutes: Minutes
-  labelHours: Hours
+  labelSeconds: seconds
+  labelMinutes: minutes
+  labelHours: hours
   labelNoTimeSelected: No time selected
   labelSelected: Selected time
   labelDecrement: Decrease
@@ -828,7 +830,7 @@ calendar:
   labelPrevMonth: Previous month
   labelPrevYear: Previous year
   labelNoDateSelected: Select date
-  locale: de
+  locale: en
   labelNav: Calendar navigation
   labelHelp: Navigation is also possible with arrow keys
   export:
@@ -971,9 +973,9 @@ storeview:
   common: "Common information"
   visible_for_public: "This text is visible for all foodsavers."
   visible_for_team: "This text is visible for the team of the store."
-  invalid_field: "Invalid field content. The change is not stored."
+  invalid_field: "Invalid field content. The change cannot be saved."
   contact:
-    name: "Name/first name"
+    name: "First and last name"
   management: "Management"
   source_data: "Source data"
   select_related_region: "Select related region"
@@ -1102,7 +1104,7 @@ login:
     error: Sorry, there is a problem with your data.
     expired: Sorry, you waited a little too long. Please request a new password again.
     success: Great, your password has been changed successfully. You can now log in.
-    mailSent: All right! A link to change your password has been emailed to you.
+    mailSent: Alright! A link to change your password has been emailed to you.
     wrongMail: Unfortunately we cannot find that e-mail address. Please try again.
   logout: Logout
   topbar: Log in
@@ -1393,7 +1395,7 @@ email_template:
   withlove: Lots of love,
   impress:
     general_information_requirements: Information according to § 5 Telemediengesetz
-    title: Imprint
+    title: Legal notice
     address: "foodsharing e.V.\nNeven-DuMont-Str. 14 \n50667 Cologne \nRepresented
       by:\n\nFrank Bowinkelmann \nContact Details:\nE-Mail: info@foodsharing.de\n\n
       \nRegister Entry:\nRegistration Court: District Court Cologne\nRegistration
@@ -1612,7 +1614,7 @@ footer:
   infosDeveloper: For developers
   guide: Hygiene guide
   dataprivacy: Privacy
-  imprint: Impressum
+  imprint: Legal notice
   team: Team
   denns_at_alt_text: Denns BioMarkt
   wiener_tafel_alt_text: Wiener Tafel
@@ -1627,11 +1629,11 @@ footer:
     beta_testing_issues: Test tasks of the Beta version
   hosting:
     info: <a href="https://www.manitu.de/webhosting/" title="Webhosting">hosted</a>
-      carbon free
+      in a CO<sub>2</sub> neutral manner
     tooltip: Carbon-neutrally <a href="https://www.manitu.de/webhosting/" title="Webhosting">hosted</a>
       at manitu
   partner_names:
-    wiener_tafel: Food bank Wien
+    wiener_tafel: Food bank Vienna
     denns: Denn’s Biomarkt
     lebensministerium: Ministry of Agriculture, Regions and Tourism
 basket:
@@ -1759,7 +1761,7 @@ foodsaver:
     summary: '{count} foodsavers in {region}'
     inactive: 'who haven’t been active in the last 6 months:'
   upgrade:
-    learning: "Watch now explanation video"
+    learning: "Watch the explanatory video now"
     to_sm: Become a Store Coordinator
     needs_sm: You need to become a Store Coordinator first
     needs_fs: You need to become a foodsaver first
@@ -1879,7 +1881,7 @@ store:
   unknownDate: unknown
   team_conversation_name: Team {name}
   days_before: before
-  days: Days
+  days: days
   attribution: Attribution
   particularities: Special features
   teamName: '{storeTitle} team'
@@ -2066,7 +2068,7 @@ wall:
 pass:
   nav:
     title: Let’s go!
-    generate: Marked passports generate
+    generate: generate selected passports
     deselect: Mark nothing
     select: Mark all
     options: Options
@@ -2095,7 +2097,7 @@ pass:
   none: '— not yet created —'
   hintVerify: "Foodsavers can be verified as soon as they received their ID card and
     their personal data has been checked.\n"
-  notGenerated: The passports could not be generated.
+  notGenerated: Therefore, their passports could not be generated.
 ui:
   switch:
     on: published
@@ -2420,13 +2422,13 @@ register:
   login_passwd1: Password (at least 8 symbols)
   register_button_label: Register
   topbar: Join
-  pass2: Password repeat
+  pass2: Password repetition
   other: other
   woman: female
   man: male
   select_your_gender: For the salutation…
   join_error: Your registration was not successful.
-  join_success: Your registration was successfull.
+  join_success: Your registration was successful.
   finish: Send registration
   next: next
   prev: previous
@@ -2460,8 +2462,8 @@ register:
   lastname_minLength: The last name must consist of at least two characters.
   firstname_minLength: The first name must consist of at least two characters.
   confirmPassword_sameAsPassword: The password must match.
-  birthdate_hint: You can find more information in the <a href="/?page=legal" target="_blank">
-    privacy policy </a> in point 2d) when registering as a foodsharer or foodsaver.
+  birthdate_hint: You can find more information in the <a href="/?page=legal" target="_blank">privacy
+    policy</a> in point 2d.
   mail_hint: 'Important: pay attention to the correct spelling!'
   landline_example: Example +49 30 123456789
 bread:
@@ -2541,7 +2543,7 @@ dashboard:
   options:
     hide:
       text: Change view
-      tooltip: Here can you hide information on the dashboard.
+      tooltip: Here you can hide and show individual areas on the dashboard.
     reset: Reset
     grid_toggle:
       2_columns: Go to 2 columns view
@@ -2555,7 +2557,7 @@ dashboard:
   source_friendWall: Pinboard from {0}
   source_foodsharepoint: Food-Share Point {0}
   save_selection: Save settings
-  empty_section: You don’t have a {type} yet
+  empty_section: You don’t have {type} yet
   activity_filter_info: Here you can indicate which updates should be displayed on
     your start page.
   no_more_updates_store: No further store information
@@ -2846,7 +2848,7 @@ startpage:
     text: Fight food-waste in your household. We provide information on how to do
       this at trade fairs and events.
     title: in private
-  slogan_3: foodsharing is and remains free of charge.
+  slogan_3: foodsharing is and will remain free of charge.
   slogan_2: collaborative, sustainable & appreciative
   slogan_1: Together for more food appreciation
   join: Join
@@ -3029,7 +3031,7 @@ chain:
     kams: KAM
     notes: Notes
   new: Create new Chain
-  allowpress: Public mentions allowed.
+  allowpress: Public mention allowed.
   tooltips:
     modificationDate: Last changed
     options: Options

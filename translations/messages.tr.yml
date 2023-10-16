@@ -1288,7 +1288,7 @@ events:
     regions: Sizin Bölgeleriniz
     offline: Gerçek hayatta tamamen normal
     online: Video veya telefon konferansı yoluyla
-    mumble: Birçok yerde mumble.foodsharing.de adresinde
+    mumble: Mumble Konferansı
     groups: Sizin çalışma gruplarınız
     multiday: Etkinlik birkaç gün sürecek
     starttime: Başlangıç Saati
@@ -2340,7 +2340,7 @@ profile:
 stats:
   total:
     foodsaver: Foodsaverlar gıda israfının olmadığı bir dünya için gönüllü oluyor.
-    weight: Yiyecekler çöp kutusundan başarıyla kurtarıldı.
+    weight: gıdayı çöpten kurtardık.
     cooperations: Firmalar sürekli işbirliği yapıyor ve bizden memnunlar.
     baskets: Yiyecek sepetlerinin tümü çevrimiçi olarak yayınlandı.
     pickups: Foodsavers'larımız kurtarma operasyonlarını başarıyla tamamladı.
@@ -2508,7 +2508,7 @@ legal:
   legal_agreement: Yasal anlaşma
   are_you_sure_to_downgrade: 'Dikkat: Foodsaver seviyesine indirilmeyi seçtiniz. Emin
     misiniz?'
-  delete_account: Hesabımı silmek istiyorum.
+  delete_account: hesabımı silmek istiyorum.
   privacy_notice: Gizlilik Politikası
   acknowledge: Anlaşmayı dikkate alıyor musunuz?
   not_acknowledge_pp_description: Foodsharing platformunu kullanabilmek için açıklanan
@@ -2551,7 +2551,7 @@ register:
   activation_success: <strong>Etkinleştirme başarılı.</strong> E-posta adresiniz ve
     seçtiğiniz şifreyle şimdi oturum açın.
   birthdate_hint: Foodsharer veya Foodsaver olarak kaydolurken <a href="/?page=legal"
-    target="_blank">Gizlilik Politikası</a>'nın 2d) maddesinde daha fazla bilgi bulabilirsiniz.
+    target="_blank">Gizlilik Politikası</a>'nın 2d.
   topbar: Sen de katıl
   title: Kayıt
   register_button_label: Kayıt ol
@@ -2862,7 +2862,7 @@ calendar:
   labelNoDateSelected: Tarih seç
   labelCalendar: Takvim
   labelNav: Takvim Navigasyonu
-  locale: de
+  locale: tk
 fpcapital: Hata Noktası
 memberlist:
   header_for_district: '{bezirk} bölgesinde Foodsaver'

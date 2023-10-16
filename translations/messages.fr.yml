@@ -189,11 +189,11 @@ group:
     set_admin_text: Veux-tu vraiment inscrire {name} ({id}) comme admin ?
     remove_ambassador_title: Se désinscrire en tant qu’ambassadeur·ice
     set_ambassador_text: Veux-tu vraiment inscrire {name} ({id}) comme ambassadeur·ice ?
-    remove_admin_title: Se désinscrire en tant qu’administrateur
+    remove_admin_title: supprimer en tant qu’administrateur
     remove_text_group: Veux-tu vraiment supprimer {name} ({id}) du groupe de travail ?
     remove_text_region: Veux-tu vraiment supprimer {name} ({id}) de la région ?
     old_edit_hint: Tu trouveras désormais la gestion des membres sous l’onglet
-    is_verified: Vérifié
+    is_verified: vérifié
     is_home_region: District principal
     not_verified: non vérifié
   last_activity: Dernière activité
@@ -229,7 +229,7 @@ bcard:
   role: "Rôle/District"
 
 pass:
-  notGenerated: Votre badge n’a pas pu être généré.
+  notGenerated: Leurs passeports n’ont pas pu être générés.
   noPhoto: "Les personnes suivantes n’ont pas encore importé de photo :"
   button:
     verify: Vérifier
@@ -397,7 +397,7 @@ edit: modifier
 message: Message
 nachname: Nom
 add: ajouter
-geb_datum: Date de naissance (AAAA-MM-JJ)
+geb_datum: Date de naissance (AAA-MM-JJ)
 position: Position chez foodsharing (public)
 page:
   welcome_main_1: Nous sommes une initiative qui agit contre le gaspillage alimentaire.
@@ -435,6 +435,8 @@ settings:
     export: Exporter le calendrier
     export_tooltip: Vous pouvez voir vos dates de ramassage avec un programme de calendrier
       de votre choix.
+    include_invitations: Le calendrier doit également contenir des invitations à des
+      rendez-vous auxquels je n’ai pas encore répondu.
   push:
     disabled: Les notifications push on été désactivées
     disable: Désactiver les notifications push
@@ -498,7 +500,7 @@ settings:
       que tu ne peux pas t’engager à faire des collectes pour le moment.\nC’est utile
       de savoir si tu réponds tout de même aux messages et que tu feras tout de même
       quelques collectes, écris-le ;)\n"
-    header: Fonction "sommeil"
+    header: Fonction « sommeil »
     title: Mode sommeil
     from: Du
     until: au
@@ -697,7 +699,7 @@ foodsaver:
     orga: Fait partie de l’équipe organisation nationale
     remove: Supprimer du secteur géographique
     actions: Options
-    last-activity: Dernière connection
+    last-activity: Dernière activité
     role: Rôle
     name: Nom
     photo: Photo
@@ -736,9 +738,9 @@ recipients:
     au lieu du nom\net utilisez <strong>{ANREDE}</strong> pour la salutation.\n<p>{ANREDE}
     {NAME} donne par exemple : « Cher Peter »\n"
   unknown: inconnu
-  abort: annuler l’envoi
-  continue: envoyer
-  variables: Titre
+  abort: Annuler l’envoi
+  continue: Continuer l’envoi
+  variables: Salutation personnelle
   test: Tester la lettre d’information
   body: Message
   empty-region: Il n’y a encore aucun(e) collecteur·ice dans les secteurs géographiques
@@ -834,7 +836,7 @@ fsp:
   addedOn: Ajouté le
   pic: Photo
   location: Code postal / Lieu
-  street: adresse
+  street: Rue
   address: adresse
   editSuccess: Le frigo solidaire a été modifié avec succès
   editName: Modifier le frigo solidaire « {name} »
@@ -999,8 +1001,7 @@ register:
   login_passwd2: nouvelle saisie du mot de passe
   login_passwd1: Mot de passe (minimum 8 caractères)
   birthdate_hint: Tu trouveras plus d’informations dans la rubrique <a href="/?page=legal"
-    target="_blank">Datenschutzerklärung</a> au point 2d) « Bei der Anmeldung als
-    Foodsharer bzw. Foodsaver ».
+    target="_blank">Datenschutzerklärung</a> au point 2d.
   requiredFields: saisie obligatoire
   register_button_label: S’inscrire
   title: Inscription
@@ -1056,7 +1057,7 @@ legal:
     d’utilisation de tes données.
   actions:
     safe: Accepter les paramètres
-  delete_account: Je souhaite supprimer mon compte.
+  delete_account: je souhaite supprimer mon compte.
   agree_privacy_policy: J’ai lu et accepte les conditions d’utilisation.
   dont_agree: Je ne suis pas d’accord avec le traitement de mes données et
   not_acknowledge_pp_description: Afin d’utiliser la plateforme foodsharing, tu dois
@@ -1172,7 +1173,7 @@ store:
   springer_conversation_name: Replaçant(e) {name}
   team_conversation_name: Équipe {name}
   days_before: avant
-  days: Jours
+  days: jours
   my_last_pickup: Ma dernière collecte
   address: Adresse
   may_not_referred_to_in_public: Ne pas mentionner cette coopération publiquement
@@ -1187,7 +1188,7 @@ store:
   isNotVerified: N’est pas encore vérifié(e).
   isJumper: Est sur la liste des remplaçant·e·s.
   noPickup: Aucune collecte à ce jour.
-  isManager: Responsable coopération pour cette coopération.
+  isManager: Responsable pour cette coopération.
   unknownDate: inconnue
   lastPickupShort: dernière collecte le {date}
   lastPickup: 'Dernière collecte : {date}'
@@ -1270,12 +1271,12 @@ store:
   enter_date: Entrez une seule date de ramassage
   delete_date: Supprimer une seule date de ramassage
   team_container: Équipe
-  active: Actifs
+  active: actifs
   one_active: actif
   of_that: de ça
   unverified_member: non vérifié
   unverified_members: non vérifiés
-  info_container: Information
+  info_container: Informations
   delete_date_description: Si vous utilisez des créneaux réguliers (hebdomadaires
     récurrents automatiquement) dans votre entreprise et que vous souhaitez empêcher
     la création d’une date spécifique (par exemple, un jour férié), vous pouvez utiliser
@@ -1313,7 +1314,7 @@ storeview:
   visible_for_team: Ce texte n’est visible que par l’équipe de ramassage.
   invalid_field: Contenu de champ invalide. La modification ne peut pas être enregistrée.
   contact:
-    name: Nom/Prénom
+    name: Nom et prénom
   management: Administration
   source_data: Données de base
   select_related_region: Sélection du district responsable
@@ -1666,7 +1667,7 @@ profile:
     privateMail: Adresse courriel privée
     never: Jamais
     registrationDate: Date d’inscription
-    lastActivity: Dernière connexion
+    lastActivity: Dernière activité
     title: Infos
     buddycount_followed: '{name} connaissent {count} collecteur·ice·s'
     buddycount_known: '{name} connait {count} collecteur·ice·s'
@@ -1688,7 +1689,7 @@ profile:
     violations: Signalements <strong>({count})</strong>
     notes: Notes <strong>({count})</strong>
     verificationHistory: Historique de vérification du membre
-    history: Historique du membre
+    history: Historique de la carte de membre
     buddy: Je connais {name}
     edit: Modifier le profil
   banana:
@@ -1753,7 +1754,7 @@ profile:
       ou aux magasins communs.
     weekDesc: Semaine du calendrier {week}, de {weekStart} à {weekEnd}
     categorieName: Catégorie
-    calenderWeek: Semaine du calendrier
+    calenderWeek: Semaine
     week_0: Dans deux semaines
     week_4: Il y a deux semaines
     title: Statistiques d’engagement
@@ -1937,7 +1938,7 @@ events:
       des <b>différents groupes</b>\npar un lien partagé ou dans le menu de l’évènement.\n
       <br>\nPour que le rendez-vous soit également affiché sur le tableau de bord
       pour les nouveaux arrivant·e·s, \nenregistre-le à nouveau ultérieurement.\n"
-    mumble: Sur la plateforme de chat liée à foodsharing (BigBlueButton)
+    mumble: Conférence par Mumble
     online: Par conférence vidéo/téléphonique
     offline: Dans la vraie vie (IRL)
     desc: Description de l’évènement ?
@@ -2005,9 +2006,9 @@ timepicker:
   labelSelected: Heure choisie
   labelDecrement: Limiter
   labelIncrement: Augmenter
-  labelSeconds: Secondes
-  labelMinutes: Minutes
-  labelHours: Heures
+  labelSeconds: secondes
+  labelMinutes: minutes
+  labelHours: heures
 calendar:
   labelHelp: La navigation est aussi possible grâce aux flèches
   labelNav: Naviguer dans le calendrier
@@ -2020,7 +2021,7 @@ calendar:
   labelCurrentMonth: Mois actuel
   labelPrevMonth: Mois précédent
   labelPrevYear: Année précédente
-  locale: de
+  locale: fr
   export:
     event:
       linkTitle: Événement Foodsharing
@@ -2208,7 +2209,7 @@ footer:
     tooltip: <a href="https://www.manitu.de/webhosting/" title="Webhosting">Hébergement</a>
       neutre en CO<sub>2</sub> sur manitu
   partner_names:
-    wiener_tafel: Wiener Tafel
+    wiener_tafel: Banque alimentaire de Vienne
     denns: Denn’s Biomarkt
     lebensministerium: Bundesministerium für Landwirtschaft, Regionen und Tourismus
   infosDeveloper: Pour les développeurs·euses
@@ -2408,7 +2409,7 @@ reports:
   from_first_name: De prénom
   from: De
   city: Ville
-  all_reports: Tous les signalements
+  all_reports: Toutes les plaintes
   about_first_name: À propos du prénom
   about_last_name: À propos du nom
   about: À propos de
@@ -2777,12 +2778,12 @@ stats:
     fsp: frigos solidaires sont utilisés pour partager les denrées.
     baskets: paniers alimentaires ont été postés sur le site à ce jour.
     pickups: missions de sauvetage ont été menées à bien par nos collecteur·ice·s.
-    foodsharer: Les partageur·euse·s sont enregistrés sur le site de foodsharing et
-      soutiennent notre travail.
-    foodsaver: Les collecteur·ice·s s’engagent de manière bénévole pour un monde sans
+    foodsharer: partageur·euse·s sont enregistrés sur le site de foodsharing et soutiennent
+      notre travail.
+    foodsaver: collecteur·ice·s s’engagent de manière bénévole pour un monde sans
       gaspillage alimentaire.
-    cooperations: Les magasins sont satisfaits de la coopération durable avec foodsharing.
-    weight: Denrées sauvées.
+    cooperations: magasins sont satisfaits de la coopération durable avec foodsharing.
+    weight: de nourriture ont été sauvées des poubelles.
   title: Statistique générale
 region:
   still_contains_elements: Le secteur géographique ne peut pas être supprimé car il
@@ -2803,7 +2804,7 @@ region:
     title: Type de secteur géographique
     workgroup: Groupe de travail
     country: Pays
-    state: Région
+    state: Etat fédéral
     region: Département
     townpart: Quartier
     bigcity: Grande ville (pas de possibilité de rejoindre, veuillez choisir un quartier
@@ -3007,7 +3008,7 @@ quiz:
   safeandsound: Mais pas de problème. Ta session a été enregistrée. Tu peux continuer
     à répondre à tout moment.
   continuenow: Répondre au quiz maintenant !
-  continuetype: -Continuer le quiz
+  continuetype: ': Continuer le quiz'
   trynumber: C’était la tentative numéro
   failedbeforebut: " fois déjà, tu as échoué au quiz. C’est le nombre d’essais qu’il
     te reste à faire :"
@@ -3278,7 +3279,7 @@ notifications:
     title: Bulletin
     description: Recevez des informations actualisées sur foodsharing par e-mail environ
       une fois par mois.
-  checkbox_push: notifications push
+  checkbox_push: Push
   foodSharePoints:
     title: Frigo solidaire
     description: Reçois des notifications de nouveaux messages sur les tableau Fairteiler

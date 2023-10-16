@@ -58,6 +58,8 @@ settings:
     teaser: ''
     event_link_desc: ''
     token-warning: ''
+    include_invitations: Kalendář by měl obsahovat i pozvánky na schůzky, na které
+      jsem dosud nereagoval.
   changemail:
     passfail: ''
     sent: ''
@@ -954,7 +956,7 @@ events:
     isPublic: ''
     delinvites: ''
     multiday: ''
-    mumble: ''
+    mumble: 'Konference v Mumble'
     offline: ''
     online: ''
   goto: ''
@@ -1043,7 +1045,7 @@ reports:
 bell:
   store_request_deny_title: '{name}'
   new_foodsaver_needs_introduction: ''
-  forum_answer_title: ''
+  forum_answer_title: '{forum}'
   forum_answer: ''
   store_new_request: ''
   store_request_accept_wait: ''
@@ -1339,7 +1341,7 @@ profile:
   workgroups_admin: ''
   online: ''
   go: ''
-  warning: ''
+  warning: 'Varování'
   cantdeletethis: ''
   history:
     noActor: ''
@@ -1613,7 +1615,7 @@ footer:
   partner_names:
     lebensministerium: ''
     wiener_tafel: ''
-    denns: ''
+    denns: 'Denn’s Biomarkt'
   our_partner: ''
   blog: ''
   partner: ''
@@ -1989,7 +1991,7 @@ storeview:
   teamInfo: ''
   pickupWeight: ''
   status: ''
-  counter: ''
+  counter: '<strong>{count}<span style="white-space:nowrap"> </span>{suffix}</strong>'
   pickupCount: ''
   public_and_statistics: ''
   visible_for_public: ''
@@ -2042,7 +2044,7 @@ calendar:
   labelNextMonth: ''
   labelNextYear: ''
   labelNav: ''
-  locale: ''
+  locale: 'cs'
   labelHelp: ''
 date_short:
   Sunday: ''
@@ -2609,3 +2611,5 @@ markdown_input:
     hrule: vodorovná čára
     link: odkaz
     heading: titulek
+notifications:
+  checkbox_push: Push notifikace

@@ -1094,3 +1094,11 @@ div.bottom_bar .button-interactions {
 .bootstrap input.form-control::placeholder {
   color: var(--fs-color-dark);
 }
+
+p.b-dropdown-text {
+  font-weight: 200;
+}
+
+blockquote > p:last-child {
+  margin-bottom: 0;
+}

@@ -195,6 +195,20 @@ class BellGateway extends BaseGateway
         return $deleted > 0;
     }
 
+    public function deleteBellForFoodsavers(int $bellId, array $foodsaverIds): void
+    {
+        // add the bell for all foodsavers (100 per query)
+        $parts = array_chunk($foodsaverIds, 100);
+        foreach ($parts as $part) {
+            $this->db->delete('fs_foodsaver_has_bell', [
+                'foodsaver_id' => $part,
+                'bell_id' => $bellId,
+            ]);
+        }
+
+        $this->updateMultipleFoodsaverClients($foodsaverIds);
+    }
+
     public function delBellsByIdentifier(string $identifier): void
     {
         $foodsaverIds = $this->db->fetchAllValues(
