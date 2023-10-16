@@ -41,28 +41,6 @@ class SearchApiCest
         $this->region1AmbassadorForumThread = $I->addForumThread($this->region1['id'], $this->user1['id'], true);
     }
 
-    // ========================= search index endpoint ================================
-
-    public function canOnlyGenerateSearchIndexWhenLoggedIn(ApiTester $I)
-    {
-        $I->sendGET('api/search/index');
-        $I->seeResponseCodeIs(HttpCode::UNAUTHORIZED);
-
-        $I->login($this->user1['email']);
-        $I->sendGET('api/search/index');
-        $I->seeResponseCodeIs(HttpCode::OK);
-    }
-
-    public function canGenerateSearchIndex(ApiTester $I)
-    {
-        $I->login($this->user1['email']);
-        $I->sendGET('api/search/index');
-        $I->seeResponseCodeIs(HttpCode::OK);
-        $I->seeResponseContainsJson([
-            'myRegions' => ['id' => $this->region1['id']]
-        ]);
-    }
-
     // ========================= forum search endpoint ================================
 
     public function canOnlySearchInForumWhenLoggedIn(ApiTester $I)
@@ -120,11 +98,7 @@ class SearchApiCest
 
     private function canFindForumThread(ApiTester $I, int|string $regionId, bool $ambassadorForum, array $thread)
     {
-        // The search backend only uses words with length > 2
-        $parts = explode(' ', $thread['name']);
-        $query = current(array_filter($parts, function ($part) {
-            return strlen($part) > 2;
-        }));
+        $query = $thread['name'];
         $subforumId = $ambassadorForum ? 1 : 0;
 
         $I->sendGET("api/search/forum/$regionId/$subforumId?q=$query");

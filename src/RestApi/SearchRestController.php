@@ -116,7 +116,8 @@ class SearchRestController extends AbstractFOSRestController
             throw new BadRequestHttpException();
         }
 
-        $results = $this->searchGateway->searchThreads($q, $this->session->id(), $groupId, $subforumId);
+        $disableRegionCheck = $this->forumPermissions->maySearchEveryForum();
+        $results = $this->searchGateway->searchThreads($q, $this->session->id(), $groupId, $subforumId, $disableRegionCheck);
 
         return $this->handleView($this->view($results, 200));
     }

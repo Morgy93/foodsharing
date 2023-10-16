@@ -204,13 +204,23 @@ class SearchGateway extends BaseGateway
      * Searches the given term in the list of forum threads.
      * Use params $regionId and $subforumId to restrict the search to one forum.
      */
-    public function searchThreads(string $query, int $foodsaverId, int $regionId = 0, int $subforumId = 0): array
+    public function searchThreads(string $query, int $foodsaverId, int $regionId = 0, int $subforumId = 0, $disableRegionCheck = false): array
     {
         list($searchClauses, $parameters) = $this->generateSearchClauses(['thread.name'], $query, ['region.name']);
         $regionRestrictionClause = '';
         if ($regionId > 0) {
             $regionRestrictionClause = 'AND has_thread.bezirk_id = ? AND has_thread.bot_theme = ?';
             array_push($parameters, $regionId, $subforumId);
+        }
+
+        $hasRegionJoins = '';
+        $hasRegionClause = '';
+        if (!$disableRegionCheck) {
+            $hasRegionJoins = 'JOIN fs_foodsaver_has_bezirk AS has_region ON has_region.bezirk_id = region.id
+                    LEFT OUTER JOIN fs_botschafter AS ambassador ON ambassador.foodsaver_id = has_region.foodsaver_id AND ambassador.bezirk_id = region.id';
+            $hasRegionClause = 'AND has_region.foodsaver_id = ?
+                                AND(NOT ISNULL(ambassador.foodsaver_id) OR has_thread.bot_theme = 0) -- show Bot forums only to bots';
+            array_push($parameters, $foodsaverId);
         }
 
         return $this->db->fetchAll('SELECT
@@ -225,16 +235,15 @@ class SearchGateway extends BaseGateway
             FROM fs_theme AS thread
             JOIN fs_bezirk_has_theme AS has_thread ON has_thread.theme_id = thread.id
             JOIN fs_bezirk AS region ON region.id = has_thread.bezirk_id
-            JOIN fs_foodsaver_has_bezirk AS has_region ON has_region.bezirk_id = region.id
             JOIN fs_theme_post AS post ON post.id = thread.last_post_id
-            LEFT OUTER JOIN fs_botschafter AS ambassador ON ambassador.foodsaver_id = has_region.foodsaver_id AND ambassador.bezirk_id = region.id
-            WHERE thread.active = 1 AND has_region.foodsaver_id = ?
-            AND(NOT ISNULL(ambassador.foodsaver_id) OR has_thread.bot_theme = 0) -- show Bot forums only to bots
+            ' . $hasRegionJoins . '
+            WHERE thread.active = 1
             AND ' . $searchClauses . '
             ' . $regionRestrictionClause . '
+            ' . $hasRegionClause . '
             ORDER BY time DESC
             LIMIT 30',
-            [$foodsaverId, ...$parameters]
+            [...$parameters]
         );
     }
 
