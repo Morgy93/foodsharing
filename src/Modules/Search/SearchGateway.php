@@ -144,9 +144,11 @@ class SearchGateway extends BaseGateway
             ['share_point.anschrift', 'share_point.plz', 'share_point.ort', 'region.name']
         );
         $regionRestrictionClause = '';
+        $hasRegionJoin = '';
         if (!$searchGlobal) {
             $regionRestrictionClause = 'AND has_region.foodsaver_id = ?';
             $parameters[] = $foodsaverId;
+            $hasRegionJoin = 'JOIN fs_foodsaver_has_bezirk has_region ON has_region.bezirk_id = region.id';
         }
 
         return $this->db->fetchAll("SELECT
@@ -159,7 +161,7 @@ class SearchGateway extends BaseGateway
                 region.name AS region_name
             FROM fs_fairteiler share_point
             JOIN fs_bezirk region ON region.id = share_point.bezirk_id
-            JOIN fs_foodsaver_has_bezirk has_region ON has_region.bezirk_id = region.id
+            {$hasRegionJoin}
             WHERE share_point.status = 1
             AND {$searchClauses}
             {$regionRestrictionClause}
@@ -251,11 +253,12 @@ class SearchGateway extends BaseGateway
 
     /**
      * Searches the given term in the list of users.
+     * @param $includeMails only used in global search
      */
-    public function searchUsers(string $query, int $foodsaverId, bool $searchGlobal): array
+    public function searchUsers(string $query, int $foodsaverId, bool $searchGlobal, bool $includeMails = false): array
     {
         if ($searchGlobal) {
-            return $this->searchUsersGlobal($query);
+            return $this->searchUsersGlobal($query, null, $includeMails);
         }
         list($searchClauses, $parameters) = $this->generateSearchClauses(['foodsaver.name', 'IFNULL(foodsaver.last_name, "")'], $query, ['region.name']);
 
@@ -353,9 +356,15 @@ class SearchGateway extends BaseGateway
         );
     }
 
-    public function searchUsersGlobal(string $query, ?int $restrictToRegionId = null): array
+    public function searchUsersGlobal(string $query, ?int $restrictToRegionId = null, bool $includeMails = false): array
     {
-        list($searchClauses, $parameters) = $this->generateSearchClauses(['foodsaver.name', 'foodsaver.nachname'], $query, ['region.name']);
+        $searchCriteria = ['foodsaver.name', 'foodsaver.nachname'];
+        $mailReturnClause = '';
+        if ($includeMails) {
+            $searchCriteria[] = 'foodsaver.email';
+            $mailReturnClause = 'foodsaver.email,';
+        }
+        list($searchClauses, $parameters) = $this->generateSearchClauses($searchCriteria, $query, ['home_region.name']);
         $parameters[] = $parameters[0]; // Param for id search
         $regionRestrictionClause = '';
         $hasRegionJoin = '';
@@ -374,6 +383,7 @@ class SearchGateway extends BaseGateway
                 home_region.name AS region_name,
                 foodsaver.nachname as last_name,
                 foodsaver.handy as mobile,
+                {$mailReturnClause}
                 0 as buddy
             FROM fs_foodsaver as foodsaver
             JOIN fs_bezirk as home_region ON home_region.id = foodsaver.bezirk_id

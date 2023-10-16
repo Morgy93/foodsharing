@@ -19,11 +19,16 @@
       </h6>
       <small>ID: {{ user.id }}</small>
       <br>
-      <small>
+      <small class="separate">
         <span v-if="user.region_id">
           {{ $i18n('search.results.from') }}
           <a :href="$url('forum', user.region_id)">
             {{ user.region_name }}
+          </a>
+        </span>
+        <span v-if="user.email">
+          <a :href="`mailto:${user.email}`">
+            {{ user.email }}
           </a>
         </span>
         <i v-else>{{ $i18n('search.results.user.no_home_region') }}</i>
@@ -64,3 +69,9 @@ export default {
   },
 }
 </script>
+
+<style lang="scss" scoped>
+.separate>*:not(:last-child)::after {
+  content: '•';
+}
+</style>

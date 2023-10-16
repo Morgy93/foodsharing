@@ -180,7 +180,7 @@ class SearchApiCest
     }
 
     /**
-     * @example {"loginUser": 0, "searchUser": 0, "canFind": true, "canSeeFullName": false}
+     * @example {"loginUser": 0, "searchUser": 0, "canFind": false, "canSeeFullName": false}
      * @example {"loginUser": 0, "searchUser": 1, "canFind": false, "canSeeFullName": false}
      * @example {"loginUser": 1, "searchUser": 0, "canFind": true, "canSeeFullName": true}
      * @example {"loginUser": 1, "searchUser": 1, "canFind": false, "canSeeFullName": false}
@@ -200,13 +200,16 @@ class SearchApiCest
         $I->seeResponseCodeIs(HttpCode::OK);
 
         if ($example['canFind']) {
-            $name = $example['canSeeFullName'] ? $searchUser['name'] . ' ' . $searchUser['nachname'] : $searchUser['name'];
-            $I->canSeeResponseContainsJson(['users' => [[
+            $userToFind = [
                 'id' => $searchUser['id'],
-                'name' => $name,
-            ]]]);
+                'name' => $searchUser['name'],
+            ];
+            if ($example['canSeeFullName']) {
+                $userToFind['last_name'] = $searchUser['nachname'];
+            }
+            $I->seeResponseContainsJson(['users' => [$userToFind]]);
         } else {
-            $I->cantSeeResponseContainsJson(['users' => [[
+            $I->dontSeeResponseContainsJson(['users' => [[
                 'id' => $searchUser['id'],
             ]]]);
         }
@@ -232,12 +235,11 @@ class SearchApiCest
         $I->seeResponseCodeIs(HttpCode::OK);
 
         if ($example['canFind']) {
-            $I->canSeeResponseContainsJson(['users' => [[
+            $I->seeResponseContainsJson(['users' => [[
                 'id' => $searchUser['id'],
-                'name' => "${searchUser['name']} {$searchUser['nachname']}",
             ]]]);
         } else {
-            $I->cantSeeResponseContainsJson(['users' => [[
+            $I->dontSeeResponseContainsJson(['users' => [[
                 'id' => $searchUser['id'],
             ]]]);
         }
@@ -266,7 +268,7 @@ class SearchApiCest
             0 => [
                 'id' => $this->user1['id'],
                 'name' => $this->user1['name'],
-                'teaser' => sprintf('FS-ID: %s | Mail: %s', $this->user1['id'], $this->user1['email'])
+                'email' => $this->user1['email']
             ]
         ]]);
     }

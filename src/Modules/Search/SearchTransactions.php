@@ -45,7 +45,7 @@ class SearchTransactions
 
         $threads = $this->searchGateway->searchThreads($query, $foodsaverId);
 
-        $users = $this->searchGateway->searchUsers($query, $foodsaverId, $maySearchGlobal);
+        $users = $this->searchGateway->searchUsers($query, $foodsaverId, $maySearchGlobal, $this->searchPermissions->maySearchByEmailAddress());
 
         return [
             'regions' => $regions,
