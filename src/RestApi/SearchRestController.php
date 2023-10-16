@@ -54,7 +54,6 @@ class SearchRestController extends AbstractFOSRestController
         $regionId = $paramFetcher->get('regionId');
         $maySearchByEmailAddress = $this->searchPermissions->maySearchByEmailAddress();
 
-
         if (!$regionId) {
             $results = $this->searchGateway->searchUsers($q, $this->session->id(), false, $maySearchByEmailAddress);
         } elseif (!$this->searchPermissions->maySearchInRegion($regionId)) {

@@ -170,7 +170,7 @@ class ForumPermissions
         return !$thread['active'] && $this->mayModerate($thread['id']);
     }
 
-    public  function maySearchEveryForum(): bool
+    public function maySearchEveryForum(): bool
     {
         return $this->session->mayRole(Role::ORGA);
     }
