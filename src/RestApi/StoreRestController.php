@@ -663,6 +663,7 @@ class StoreRestController extends AbstractFOSRestController
      *
      * @OA\Parameter(name="storeId", in="path", @OA\Schema(type="integer"), description="for which store to remove a request")
      * @OA\Parameter(name="userId", in="path", @OA\Schema(type="integer"), description="whose request should be removed")
+     * @Rest\RequestParam(name="message")
      * @OA\Response(response="200", description="Success")
      * @OA\Response(response="401", description="Not logged in")
      * @OA\Response(response="403", description="Insufficient permissions to remove the request")
@@ -670,14 +671,19 @@ class StoreRestController extends AbstractFOSRestController
      * @OA\Tag(name="stores")
      * @Rest\Delete("stores/{storeId}/requests/{userId}")
      */
-    public function declineStoreRequestAction(int $storeId, int $userId): Response
+    public function declineStoreRequestAction(int $storeId, int $userId, ParamFetcher $paramFetcher): Response
     {
+        // TODO
         $this->handleEditTeamExceptions($storeId, $userId, false, true);
         if ($this->storeGateway->getUserTeamStatus($userId, $storeId) !== TeamMembershipStatus::Applied) {
             throw new NotFoundHttpException('Request does not exist.');
         }
 
-        $this->storeTransactions->declineStoreRequest($storeId, $userId);
+        $message = $paramFetcher->get('message');
+        if ($this->session->id() != $userId && empty($message)) {
+            throw new BadRequestHttpException('Message to the denied user required.');
+        }
+        $this->storeTransactions->declineStoreRequest($storeId, $userId, $message);
 
         if ($this->session->id() == $userId) {
             $LogAction = StoreLogAction::REQUEST_CANCELLED;
@@ -721,6 +727,7 @@ class StoreRestController extends AbstractFOSRestController
      *
      * @OA\Parameter(name="storeId", in="path", @OA\Schema(type="integer"), description="which store to manage")
      * @OA\Parameter(name="userId", in="path", @OA\Schema(type="integer"), description="which user to remove from the store team")
+     * @Rest\RequestParam(name="message")
      * @OA\Response(response="200", description="Success")
      * @OA\Response(response="401", description="Not logged in")
      * @OA\Response(response="403", description="Insufficient permissions to manage this store team (if user is not yourself)")
@@ -729,8 +736,9 @@ class StoreRestController extends AbstractFOSRestController
      * @OA\Tag(name="stores")
      * @Rest\Delete("stores/{storeId}/members/{userId}")
      */
-    public function removeStoreMemberAction(int $storeId, int $userId): Response
+    public function removeStoreMemberAction(int $storeId, int $userId, ParamFetcher $paramFetcher): Response
     {
+        // TODO
         $this->handleEditTeamExceptions($storeId, $userId, false, true);
         if (!$this->storePermissions->mayLeaveStoreTeam($storeId, $userId)) {
             throw new UnprocessableEntityHttpException();
@@ -746,6 +754,7 @@ class StoreRestController extends AbstractFOSRestController
      *
      * @OA\Parameter(name="storeId", in="path", @OA\Schema(type="integer"), description="which store to manage")
      * @OA\Parameter(name="userId", in="path", @OA\Schema(type="integer"), description="which user to add as manager")
+     * @Rest\RequestParam(name="message")
      * @OA\Response(response="200", description="Success")
      * @OA\Response(response="401", description="Not logged in")
      * @OA\Response(response="403", description="Insufficient permissions to manage this store team")
@@ -754,8 +763,9 @@ class StoreRestController extends AbstractFOSRestController
      * @OA\Tag(name="stores")
      * @Rest\Patch("stores/{storeId}/managers/{userId}")
      */
-    public function addStoreManagerAction(int $storeId, int $userId): Response
+    public function addStoreManagerAction(int $storeId, int $userId, ParamFetcher $paramFetcher): Response
     {
+        // TODO
         $this->handleEditTeamExceptions($storeId, $userId, true);
         $userRole = $this->foodsaverGateway->getRole($userId);
         if (!$this->storePermissions->mayBecomeStoreManager($storeId, $userId, $userRole)) {
@@ -772,6 +782,7 @@ class StoreRestController extends AbstractFOSRestController
      *
      * @OA\Parameter(name="storeId", in="path", @OA\Schema(type="integer"), description="which store to manage")
      * @OA\Parameter(name="userId", in="path", @OA\Schema(type="integer"), description="which user to remove as manager")
+     * @Rest\RequestParam(name="message")
      * @OA\Response(response="200", description="Success")
      * @OA\Response(response="401", description="Not logged in")
      * @OA\Response(response="403", description="Insufficient permissions to manage this store team")
@@ -780,8 +791,9 @@ class StoreRestController extends AbstractFOSRestController
      * @OA\Tag(name="stores")
      * @Rest\Delete("stores/{storeId}/managers/{userId}")
      */
-    public function removeStoreManagerAction(int $storeId, int $userId): Response
+    public function removeStoreManagerAction(int $storeId, int $userId, ParamFetcher $paramFetcher): Response
     {
+        // TODO
         $this->handleEditTeamExceptions($storeId, $userId);
         if (!$this->storePermissions->mayLoseStoreManagement($storeId, $userId)) {
             throw new UnprocessableEntityHttpException();
@@ -798,6 +810,7 @@ class StoreRestController extends AbstractFOSRestController
      *
      * @OA\Parameter(name="storeId", in="path", @OA\Schema(type="integer"), description="team of which store to manage")
      * @OA\Parameter(name="userId", in="path", @OA\Schema(type="integer"), description="who should be moved to the standby team")
+     * @Rest\RequestParam(name="message")
      * @OA\Response(response="200", description="Success")
      * @OA\Response(response="401", description="Not logged in")
      * @OA\Response(response="403", description="Insufficient permissions to manage this store team")
@@ -805,8 +818,9 @@ class StoreRestController extends AbstractFOSRestController
      * @OA\Tag(name="stores")
      * @Rest\Patch("stores/{storeId}/members/{userId}/standby")
      */
-    public function moveMemberToStandbyTeamAction(int $storeId, int $userId): Response
+    public function moveMemberToStandbyTeamAction(int $storeId, int $userId, ParamFetcher $paramFetcher): Response
     {
+        // TODO
         if (!$this->session->id()) {
             throw new UnauthorizedHttpException('', self::NOT_LOGGED_IN);
         }

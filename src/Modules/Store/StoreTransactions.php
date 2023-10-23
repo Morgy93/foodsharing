@@ -757,14 +757,16 @@ class StoreTransactions
     /**
      * Rejects (denies) a user's request for a store and creates a bell notification for that user.
      */
-    public function declineStoreRequest(int $storeId, int $userId): void
+    public function declineStoreRequest(int $storeId, int $userId, ?string $message): void
     {
         $this->storeGateway->removeUserFromTeam($storeId, $userId);
+        $this->messageGateway->getConversationForUser()
 
         // userId = affected user, sessionId = active user
         // => don't add a bell notification if the request was withdrawn by the user
         if ($userId !== $this->session->id()) {
             $this->triggerBellForJoining($storeId, $userId, StoreLogAction::REQUEST_DECLINED);
+            $this
         }
     }
 
