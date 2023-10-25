@@ -663,7 +663,7 @@ class StoreRestController extends AbstractFOSRestController
      *
      * @OA\Parameter(name="storeId", in="path", @OA\Schema(type="integer"), description="for which store to remove a request")
      * @OA\Parameter(name="userId", in="path", @OA\Schema(type="integer"), description="whose request should be removed")
-     * @Rest\RequestParam(name="message")
+     * @Rest\RequestParam(name="message", nullable=true)
      * @OA\Response(response="200", description="Success")
      * @OA\Response(response="401", description="Not logged in")
      * @OA\Response(response="403", description="Insufficient permissions to remove the request")
@@ -680,9 +680,6 @@ class StoreRestController extends AbstractFOSRestController
         }
 
         $message = $paramFetcher->get('message');
-        if ($this->session->id() != $userId && empty($message)) {
-            throw new BadRequestHttpException('Message to the denied user required.');
-        }
         $this->storeTransactions->declineStoreRequest($storeId, $userId, $message);
 
         if ($this->session->id() == $userId) {

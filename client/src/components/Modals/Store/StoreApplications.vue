@@ -65,6 +65,12 @@
         </b-button-group>
       </div>
     </b-modal>
+    <RequiredMessageModal
+      ref="requiredMessageModal"
+      message-key="decline_store_request"
+      user-name="Anton"
+      :params="{storeName: storeTitle}"
+    />
   </div>
 </template>
 
@@ -73,9 +79,10 @@ import { acceptStoreRequest, declineStoreRequest } from '@/api/stores'
 import Avatar from '@/components/Avatar'
 import { hideLoader, showLoader, pulseError } from '@/script'
 import StoreData from '@/stores/stores'
+import RequiredMessageModal from '../RequiredMessageModal.vue'
 
 export default {
-  components: { Avatar },
+  components: { Avatar, RequiredMessageModal },
   props: {
     storeId: { type: Number, required: true },
     storeTitle: { type: String, default: '' },
@@ -110,9 +117,16 @@ export default {
       }
     },
     async denyRequest (storeId, userId, index) {
+      this.$refs.requiredMessageModal.show()
+      let messageDetails
+      try {
+        messageDetails = await this.$refs.requiredMessageModal.getConfirmationPromise()
+      } catch {
+        return
+      }
       showLoader()
       try {
-        await declineStoreRequest(storeId, userId)
+        await declineStoreRequest(storeId, userId, messageDetails)
         this.$delete(this.requests, index)
       } catch (e) {
         pulseError(this.$i18n('error_unexpected'))

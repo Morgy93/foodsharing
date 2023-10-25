@@ -3087,3 +3087,14 @@ markdown_input:
     ---
 
     *Du hast aber noch keinen Text eingegeben, der hier angezeigt werden könnte.*"
+
+
+required_messages:
+  sure_title: "Bist du dir sicher?"
+  message_info: "{name} würde die folgende Nachricht dazu erhalten:"
+  placeholder: "Optional hier Informationen ergänzen…"
+  decline_store_request: 
+    really: "Möchtest die Teamanfrage von {name} wirklich ablehnen?"
+    main: "deine Anfrage, ins Team des Betriebs {storeName} aufgenommen zu werden, haben wir abgelehnt."
+    footer: "Liebe Grüße, deine Betriebsverantwortlichen"
+  

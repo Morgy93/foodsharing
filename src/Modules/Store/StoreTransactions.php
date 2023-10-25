@@ -24,6 +24,7 @@ use Foodsharing\Modules\Core\DTO\PatchGeoLocation;
 use Foodsharing\Modules\Foodsaver\FoodsaverGateway;
 use Foodsharing\Modules\Foodsaver\Profile;
 use Foodsharing\Modules\Message\MessageGateway;
+use Foodsharing\Modules\Message\MessageTransactions;
 use Foodsharing\Modules\Region\DTO\MinimalRegionIdentifier;
 use Foodsharing\Modules\Region\RegionGateway;
 use Foodsharing\Modules\Store\DTO\CommonLabel;
@@ -61,6 +62,7 @@ class StoreTransactions
 
     public function __construct(
         private readonly MessageGateway $messageGateway,
+        private readonly MessageTransactions $messageTransactions,
         private readonly PickupGateway $pickupGateway,
         private readonly StoreGateway $storeGateway,
         private readonly TranslatorInterface $translator,
@@ -760,13 +762,13 @@ class StoreTransactions
     public function declineStoreRequest(int $storeId, int $userId, ?string $message): void
     {
         $this->storeGateway->removeUserFromTeam($storeId, $userId);
-        $this->messageGateway->getConversationForUser()
 
         // userId = affected user, sessionId = active user
         // => don't add a bell notification if the request was withdrawn by the user
         if ($userId !== $this->session->id()) {
             $this->triggerBellForJoining($storeId, $userId, StoreLogAction::REQUEST_DECLINED);
-            $this
+            $params = ['{storeName}' => $this->storeGateway->getStoreName($storeId)];
+            $this->messageTransactions->sendRequiredMessageToUser($userId, $this->session->id(), 'decline_store_request', $message, $params);
         }
     }
 

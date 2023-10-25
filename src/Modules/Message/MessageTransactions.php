@@ -149,6 +149,19 @@ class MessageTransactions
         }
     }
 
+    public function sendRequiredMessageToUser(int $userId, int $senderId, string $translationKey, ?string $message, array $params = [])
+    {
+        $foodsaver = $this->foodsaverGateway->getFoodsaver($userId);
+        $salutation = $this->translator->trans('salutation.' . $foodsaver['geschlecht']) . ' ' . $foodsaver['name'];
+        $main = $this->translator->trans("required_messages.{$translationKey}.main", $params);
+        $optionalMessage = empty($message) ? '' : ("\n\n" . $message);
+        $footer = $this->translator->trans("required_messages.{$translationKey}.footer");
+
+        $formattedMessage = "{$salutation},\n{$main}{$optionalMessage}\n\n{$footer}";
+
+        $this->sendMessageToUser($userId, $senderId, $formattedMessage);
+    }
+
     public function sendMessageToUser(int $userId, int $senderId, string $body, string $notificationTemplate = null): ?Message
     {
         $conversationId = $this->messageGateway->getOrCreateConversation([$senderId, $userId]);

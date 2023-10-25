@@ -67,8 +67,8 @@ export async function acceptStoreRequest (storeId, userId, moveToStandby) {
   return patch(`/stores/${storeId}/requests/${userId}`, { moveToStandby })
 }
 
-export async function declineStoreRequest (storeId, userId) {
-  return remove(`/stores/${storeId}/requests/${userId}`)
+export async function declineStoreRequest (storeId, userId, message) {
+  return remove(`/stores/${storeId}/requests/${userId}`, { message })
 }
 
 export async function promoteToStoreManager (storeId, userId) {
