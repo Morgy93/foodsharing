@@ -75,8 +75,8 @@ export async function promoteToStoreManager (storeId, userId) {
   return patch(`/stores/${storeId}/managers/${userId}`)
 }
 
-export async function demoteAsStoreManager (storeId, userId) {
-  return remove(`/stores/${storeId}/managers/${userId}`)
+export async function demoteAsStoreManager (storeId, userId, message) {
+  return remove(`/stores/${storeId}/managers/${userId}`, { message })
 }
 
 export async function addStoreMember (storeId, userId) {
@@ -87,8 +87,8 @@ export async function removeStoreMember (storeId, userId, message) {
   return remove(`/stores/${storeId}/members/${userId}`, { message })
 }
 
-export async function moveMemberToStandbyTeam (storeId, userId) {
-  return patch(`/stores/${storeId}/members/${userId}/standby`)
+export async function moveMemberToStandbyTeam (storeId, userId, message) {
+  return patch(`/stores/${storeId}/members/${userId}/standby`, { message })
 }
 
 export async function moveMemberToRegularTeam (storeId, userId) {

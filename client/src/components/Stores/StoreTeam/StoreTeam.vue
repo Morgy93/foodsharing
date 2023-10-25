@@ -175,7 +175,7 @@
                 size="sm"
                 variant="primary"
                 :block="!(wXS || wSM)"
-                @click="toggleStandbyState(data.item.id, false)"
+                @click="toggleStandbyState(data.item, false)"
               >
                 <i class="fas fa-fw fa-clipboard-check" />
                 {{ $i18n('store.sm.makeRegularTeamMember') }}
@@ -186,7 +186,7 @@
                 size="sm"
                 variant="primary"
                 :block="!(wXS || wSM)"
-                @click="toggleStandbyState(data.item.id, true)"
+                @click="toggleStandbyState(data.item, true)"
               >
                 <i class="fas fa-running" />
                 {{ $i18n('store.sm.makeJumper') }}
@@ -208,7 +208,7 @@
                 size="sm"
                 variant="outline-primary"
                 :block="!(wXS || wSM)"
-                @click="demoteAsManager(data.item.id, data.item.name)"
+                @click="demoteAsManager(data.item)"
               >
                 <i class="fas fa-fw fa-cog" />
                 {{ $i18n('store.sm.demoteAsManager') }}
@@ -230,8 +230,18 @@
       </div>
     </Container>
     <RequiredMessageModal
-      ref="requiredMessageModal"
+      ref="kickModal"
       message-key="kick_from_store_team"
+      :initial-params="{storeName: storeTitle}"
+    />
+    <RequiredMessageModal
+      ref="standbyModal"
+      message-key="move_to_standby_team"
+      :initial-params="{storeName: storeTitle}"
+    />
+    <RequiredMessageModal
+      ref="demoteManagerModal"
+      message-key="demote_store_manager"
       :initial-params="{storeName: storeTitle}"
     />
     <StoreApplications
@@ -503,9 +513,9 @@ export default {
       return this.mayEditStore
     },
     async openDeleteModal (user) {
-      this.$refs.requiredMessageModal.show({ name: user.vorname })
+      this.$refs.kickModal.show({ name: user.vorname })
       try {
-        const messageDetails = await this.$refs.requiredMessageModal.getConfirmationPromise()
+        const messageDetails = await this.$refs.kickModal.getConfirmationPromise()
         this.removeFromTeam(user.id, messageDetails)
       } catch {}
     },
@@ -532,13 +542,23 @@ export default {
     openChat (fsId) {
       chat(fsId)
     },
-    async toggleStandbyState (fsId, newStatusIsStandby) {
+    async toggleStandbyState (user, newStatusIsStandby) {
+      let messageDetails
+      if (newStatusIsStandby && user.id !== this.fsId) {
+        this.$refs.standbyModal.show({ name: user.vorname })
+        try {
+          messageDetails = await this.$refs.standbyModal.getConfirmationPromise()
+        } catch {
+          return
+        }
+      }
+
       this.isBusy = true
       try {
         if (newStatusIsStandby) {
-          await moveMemberToStandbyTeam(this.storeId, fsId)
+          await moveMemberToStandbyTeam(this.storeId, user.id, messageDetails)
         } else {
-          await moveMemberToRegularTeam(this.storeId, fsId)
+          await moveMemberToRegularTeam(this.storeId, user.id)
         }
       } catch (e) {
         pulseError(this.$i18n('error_unexpected'))
@@ -547,7 +567,7 @@ export default {
       } finally {
         await StoreData.mutations.loadStoreMember(this.storeId)
       }
-      const index = this.team.findIndex(fs => fs.id === fsId)
+      const index = this.team.findIndex(fs => fs.id === user.id)
       if (index >= 0) {
         const fs = this.foodsaver[index]
         fs.isWaiting = newStatusIsStandby
@@ -585,22 +605,30 @@ export default {
       await StoreData.mutations.loadStoreMember(this.storeId)
       this.isBusy = false
     },
-    async demoteAsManager (fsId, fsName) {
-      if (!fsId) {
-        return
+    async demoteAsManager (user) {
+      let messageDetails
+      if (user.id === this.fsId) {
+        if (!confirm(this.$i18n('store.sm.reallyDemote', { name: user.name }))) {
+          return
+        }
+      } else {
+        this.$refs.demoteManagerModal.show({ name: user.vorname })
+        try {
+          messageDetails = await this.$refs.demoteManagerModal.getConfirmationPromise()
+        } catch {
+          return
+        }
       }
-      if (!confirm(this.$i18n('store.sm.reallyDemote', { name: fsName }))) {
-        return
-      }
+
       this.isBusy = true
       try {
-        await demoteAsStoreManager(this.storeId, fsId)
+        await demoteAsStoreManager(this.storeId, user.id, messageDetails)
       } catch (e) {
         pulseError(this.$i18n('error_unexpected'))
         this.isBusy = false
         return
       }
-      const index = this.team.findIndex(fs => fs.id === fsId)
+      const index = this.team.findIndex(fs => fs.id === user.id)
       if (index >= 0) {
         const fs = this.foodsaver[index]
         fs.isManager = false
