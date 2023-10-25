@@ -3094,10 +3094,18 @@ required_messages:
   message_info: "{name} würde die folgende Nachricht dazu erhalten:"
   placeholder: "Optional hier Informationen ergänzen…"
   decline_store_request: 
-    really: "Möchtest die Teamanfrage von {name} wirklich ablehnen?"
+    really: "Möchtest du die Teamanfrage von {name} wirklich ablehnen?"
     main: "deine Anfrage, ins Team des Betriebs {storeName} aufgenommen zu werden, haben wir abgelehnt."
     footer: "Liebe Grüße, deine Betriebsverantwortlichen"
   kick_from_store_team:
-    really: "Möchtest die {name} wirklich aus dem Betriebsteam entfernen?"
+    really: "Möchtest du {name} wirklich aus dem Betriebsteam entfernen?"
     main: "wir haben dich aus dem Team des Betriebs {storeName} entfernt."
     footer: "Liebe Grüße, deine Betriebsverantwortlichen"
+  move_to_standby_team:
+    really: "Möchtest du {name} wirklich auf die Springerliste verschieben?"
+    main: "wir haben dich auf die Springerliste des Betriebs {storeName} verschoben."
+    footer: "Liebe Grüße, deine Betriebsverantwortlichen"
+  demote_store_manager:
+    really: "Möchtest du {name} wirklich den Status als Betriebsverantwortliche*r entziehen?"
+    main: "ich habe dir den Status als Betriebsverantwortliche*r des Betriebs {storeName} entzogen."
+    footer: "Liebe Grüße, {senderName}"

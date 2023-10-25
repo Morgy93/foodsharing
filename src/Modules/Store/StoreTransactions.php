@@ -827,7 +827,7 @@ class StoreTransactions
         }
     }
 
-    public function moveMemberToStandbyTeam(int $storeId, int $userId): void
+    public function moveMemberToStandbyTeam(int $storeId, int $userId, ?string $message): void
     {
         $this->storeGateway->setUserMembershipStatus($storeId, $userId, MembershipStatus::JUMPER);
 
@@ -839,6 +839,11 @@ class StoreTransactions
         $teamChatId = $this->storeGateway->getBetriebConversation($storeId);
         if ($teamChatId) {
             $this->messageGateway->deleteUserFromConversation($teamChatId, $userId);
+        }
+
+        if ($userId !== $this->session->id()) {
+            $params = ['{storeName}' => $this->storeGateway->getStoreName($storeId)];
+            $this->messageTransactions->sendRequiredMessageToUser($userId, $this->session->id(), 'move_to_standby_team', $message, $params);
         }
 
         $this->storeGateway->addStoreLog($storeId, $this->session->id(), $userId, null, StoreLogAction::MOVED_TO_JUMPER);
@@ -872,7 +877,7 @@ class StoreTransactions
         }
     }
 
-    public function downgradeResponsibleMember(int $storeId, int $userId): void
+    public function downgradeResponsibleMember(int $storeId, int $userId, ?string $message): void
     {
         /* check if other managers exist (cannot leave as last manager) */
         $this->storeGateway->removeStoreManager($storeId, $userId);
@@ -881,6 +886,11 @@ class StoreTransactions
         $standbyTeamChatId = $this->storeGateway->getBetriebConversation($storeId, true);
         if ($standbyTeamChatId) {
             $this->messageGateway->deleteUserFromConversation($standbyTeamChatId, $userId);
+        }
+
+        if ($userId !== $this->session->id()) {
+            $params = ['{storeName}' => $this->storeGateway->getStoreName($storeId)];
+            $this->messageTransactions->sendRequiredMessageToUser($userId, $this->session->id(), 'demote_store_manager', $message, $params);
         }
     }
 

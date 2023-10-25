@@ -750,7 +750,6 @@ class StoreRestController extends AbstractFOSRestController
      *
      * @OA\Parameter(name="storeId", in="path", @OA\Schema(type="integer"), description="which store to manage")
      * @OA\Parameter(name="userId", in="path", @OA\Schema(type="integer"), description="which user to add as manager")
-     * @Rest\RequestParam(name="message", nullable=true)
      * @OA\Response(response="200", description="Success")
      * @OA\Response(response="401", description="Not logged in")
      * @OA\Response(response="403", description="Insufficient permissions to manage this store team")
@@ -759,9 +758,8 @@ class StoreRestController extends AbstractFOSRestController
      * @OA\Tag(name="stores")
      * @Rest\Patch("stores/{storeId}/managers/{userId}")
      */
-    public function addStoreManagerAction(int $storeId, int $userId, ParamFetcher $paramFetcher): Response
+    public function addStoreManagerAction(int $storeId, int $userId): Response
     {
-        // TODO
         $this->handleEditTeamExceptions($storeId, $userId, true);
         $userRole = $this->foodsaverGateway->getRole($userId);
         if (!$this->storePermissions->mayBecomeStoreManager($storeId, $userId, $userRole)) {
@@ -789,13 +787,13 @@ class StoreRestController extends AbstractFOSRestController
      */
     public function removeStoreManagerAction(int $storeId, int $userId, ParamFetcher $paramFetcher): Response
     {
-        // TODO
         $this->handleEditTeamExceptions($storeId, $userId);
         if (!$this->storePermissions->mayLoseStoreManagement($storeId, $userId)) {
             throw new UnprocessableEntityHttpException();
         }
 
-        $this->storeTransactions->downgradeResponsibleMember($storeId, $userId);
+        $message = $paramFetcher->get('message');
+        $this->storeTransactions->downgradeResponsibleMember($storeId, $userId, $message);
 
         return $this->handleView($this->view([], 200));
     }
@@ -816,7 +814,6 @@ class StoreRestController extends AbstractFOSRestController
      */
     public function moveMemberToStandbyTeamAction(int $storeId, int $userId, ParamFetcher $paramFetcher): Response
     {
-        // TODO
         if (!$this->session->id()) {
             throw new UnauthorizedHttpException('', self::NOT_LOGGED_IN);
         }
@@ -827,7 +824,8 @@ class StoreRestController extends AbstractFOSRestController
             throw new NotFoundHttpException('User is not a member of this store.');
         }
 
-        $this->storeTransactions->moveMemberToStandbyTeam($storeId, $userId);
+        $message = $paramFetcher->get('message');
+        $this->storeTransactions->moveMemberToStandbyTeam($storeId, $userId, $message);
 
         return $this->handleView($this->view([], 200));
     }
