@@ -3108,4 +3108,4 @@ required_messages:
   demote_store_manager:
     really: "Möchtest du {name} wirklich den Status als Betriebsverantwortliche*r entziehen?"
     main: "ich habe dir den Status als Betriebsverantwortliche*r des Betriebs {storeName} entzogen."
-    footer: "Liebe Grüße, {senderName}"
+    footer: "Liebe Grüße"
