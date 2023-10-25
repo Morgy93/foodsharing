@@ -673,7 +673,6 @@ class StoreRestController extends AbstractFOSRestController
      */
     public function declineStoreRequestAction(int $storeId, int $userId, ParamFetcher $paramFetcher): Response
     {
-        // TODO
         $this->handleEditTeamExceptions($storeId, $userId, false, true);
         if ($this->storeGateway->getUserTeamStatus($userId, $storeId) !== TeamMembershipStatus::Applied) {
             throw new NotFoundHttpException('Request does not exist.');
@@ -724,7 +723,7 @@ class StoreRestController extends AbstractFOSRestController
      *
      * @OA\Parameter(name="storeId", in="path", @OA\Schema(type="integer"), description="which store to manage")
      * @OA\Parameter(name="userId", in="path", @OA\Schema(type="integer"), description="which user to remove from the store team")
-     * @Rest\RequestParam(name="message")
+     * @Rest\RequestParam(name="message", nullable=true)
      * @OA\Response(response="200", description="Success")
      * @OA\Response(response="401", description="Not logged in")
      * @OA\Response(response="403", description="Insufficient permissions to manage this store team (if user is not yourself)")
@@ -735,13 +734,13 @@ class StoreRestController extends AbstractFOSRestController
      */
     public function removeStoreMemberAction(int $storeId, int $userId, ParamFetcher $paramFetcher): Response
     {
-        // TODO
         $this->handleEditTeamExceptions($storeId, $userId, false, true);
         if (!$this->storePermissions->mayLeaveStoreTeam($storeId, $userId)) {
             throw new UnprocessableEntityHttpException();
         }
 
-        $this->storeTransactions->removeStoreMember($storeId, $userId);
+        $message = $paramFetcher->get('message');
+        $this->storeTransactions->removeStoreMember($storeId, $userId, $message);
 
         return $this->handleView($this->view([], 200));
     }
@@ -751,7 +750,7 @@ class StoreRestController extends AbstractFOSRestController
      *
      * @OA\Parameter(name="storeId", in="path", @OA\Schema(type="integer"), description="which store to manage")
      * @OA\Parameter(name="userId", in="path", @OA\Schema(type="integer"), description="which user to add as manager")
-     * @Rest\RequestParam(name="message")
+     * @Rest\RequestParam(name="message", nullable=true)
      * @OA\Response(response="200", description="Success")
      * @OA\Response(response="401", description="Not logged in")
      * @OA\Response(response="403", description="Insufficient permissions to manage this store team")
@@ -779,7 +778,7 @@ class StoreRestController extends AbstractFOSRestController
      *
      * @OA\Parameter(name="storeId", in="path", @OA\Schema(type="integer"), description="which store to manage")
      * @OA\Parameter(name="userId", in="path", @OA\Schema(type="integer"), description="which user to remove as manager")
-     * @Rest\RequestParam(name="message")
+     * @Rest\RequestParam(name="message", nullable=true)
      * @OA\Response(response="200", description="Success")
      * @OA\Response(response="401", description="Not logged in")
      * @OA\Response(response="403", description="Insufficient permissions to manage this store team")
@@ -807,7 +806,7 @@ class StoreRestController extends AbstractFOSRestController
      *
      * @OA\Parameter(name="storeId", in="path", @OA\Schema(type="integer"), description="team of which store to manage")
      * @OA\Parameter(name="userId", in="path", @OA\Schema(type="integer"), description="who should be moved to the standby team")
-     * @Rest\RequestParam(name="message")
+     * @Rest\RequestParam(name="message", nullable=true)
      * @OA\Response(response="200", description="Success")
      * @OA\Response(response="401", description="Not logged in")
      * @OA\Response(response="403", description="Insufficient permissions to manage this store team")

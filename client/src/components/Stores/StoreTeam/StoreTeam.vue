@@ -229,18 +229,11 @@
         </b-table>
       </div>
     </Container>
-    <b-modal
-      id="deleteModal"
-      ref="deleteModal"
-      :title="$i18n('store.sm.reallyRemove', { name: selectedDataItem ? selectedDataItem.name : '' })"
-      :cancel-title="$i18n('button.cancel')"
-      :ok-title="$i18n('button.yes_i_am_sure')"
-      cancel-variant="primary"
-      ok-variant="outline-danger"
-      @ok="removeFromTeam(selectedDataItem ? selectedDataItem.id : null, selectedDataItem ? selectedDataItem.name : '')"
-    >
-      {{ $i18n('really_delete') }}
-    </b-modal>
+    <RequiredMessageModal
+      ref="requiredMessageModal"
+      message-key="kick_from_store_team"
+      :initial-params="{storeName: storeTitle}"
+    />
     <StoreApplications
       :store-id="storeId"
       :store-title="storeTitle"
@@ -265,9 +258,10 @@ import StoreData, { STORE_TEAM_STATE } from '@/stores/stores'
 import Container from '@/components/Container/Container.vue'
 import ListToggleMixin from '@/mixins/ContainerToggleMixin'
 import StoreApplications from '@/components/Modals/Store/StoreApplications.vue'
+import RequiredMessageModal from '@/components/Modals/RequiredMessageModal.vue'
 
 export default {
-  components: { StoreManagementPanel, StoreTeamAvatar, StoreTeamInfo, StoreTeamInfotext, Container, StoreApplications },
+  components: { StoreManagementPanel, StoreTeamAvatar, StoreTeamInfo, StoreTeamInfotext, Container, StoreApplications, RequiredMessageModal },
   mixins: [MediaQueryMixin, ListToggleMixin],
   props: {
     fsId: { type: Number, required: true },
@@ -505,11 +499,11 @@ export default {
     },
     mayRemoveFromStore (user) {
       if (user.isManager) return false
-      if (user.id === this.fsId) return true
+      if (user.id === this.fsId) return false // Store options should be used to leave the store
       return this.mayEditStore
     },
-    openDeleteModal (dataItem) {
-      this.$refs.deleteModal.show(dataItem)
+    openDeleteModal (user) {
+      this.$refs.requiredMessageModal.show({ name: user.vorname })
     },
     mayBecomeManager (user) {
       if (!user.mayManage) return false
@@ -681,6 +675,7 @@ export default {
         isWaiting: fs.team_active === 2 || fs.verified < 1, // MembershipStatus::JUMPER or unverified
         sleepStatus: fs.sleep_status,
         name: fs.name,
+        vorname: fs.vorname,
         phoneNumber: validPhoneNumber,
         phoneNumberIsValid: !!validPhoneNumber,
         joinDate: fs.add_date ? new Date(fs.add_date * 1000) : null, // unix time

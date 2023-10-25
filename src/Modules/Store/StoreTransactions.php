@@ -797,7 +797,7 @@ class StoreTransactions
         $this->triggerBellForJoining($storeId, $userId, StoreLogAction::ADDED_WITHOUT_REQUEST);
     }
 
-    public function removeStoreMember(int $storeId, int $userId): void
+    public function removeStoreMember(int $storeId, int $userId, ?string $message): void
     {
         $this->pickupGateway->deleteAllDatesFromAFoodsaver($userId, $storeId);
         $this->storeGateway->removeUserFromTeam($storeId, $userId);
@@ -810,6 +810,11 @@ class StoreTransactions
 
         if ($jumperChatConversationId = $this->storeGateway->getBetriebConversation($storeId, true)) {
             $this->messageGateway->deleteUserFromConversation($jumperChatConversationId, $userId);
+        }
+
+        if ($userId !== $this->session->id()) {
+            $params = ['{storeName}' => $this->storeGateway->getStoreName($storeId)];
+            $this->messageTransactions->sendRequiredMessageToUser($userId, $this->session->id(), 'kick_from_store_team', $message, $params);
         }
     }
 
@@ -1030,7 +1035,7 @@ class StoreTransactions
     {
         $allowedFields = [
             // personal info
-            'id', 'name', 'photo', 'quiz_rolle', 'sleep_status', 'verified',
+            'id', 'name', 'vorname', 'photo', 'quiz_rolle', 'sleep_status', 'verified',
             // team-related info
             'verantwortlich', 'team_active', 'stat_fetchcount', 'add_date',
         ];

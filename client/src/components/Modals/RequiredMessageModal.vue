@@ -11,12 +11,12 @@
     @cancel="rejectCallback?.()"
   >
     <p>
-      {{ $i18n(`required_messages.${messageKey}.really`, fullParams) }}
-      {{ $i18n(`required_messages.message_info`, fullParams) }}
+      {{ $i18n(`required_messages.${messageKey}.really`, params) }}
+      {{ $i18n(`required_messages.message_info`, params) }}
     </p>
     <blockquote>
-      <div>{{ $i18n('salutation.3') }} {{ userName }},</div>
-      <div>{{ $i18n(`required_messages.${messageKey}.main`, fullParams) }}</div>
+      <div>{{ $i18n('salutation.3') }} {{ params.name }},</div>
+      <div>{{ $i18n(`required_messages.${messageKey}.main`, params) }}</div>
       <br>
       <b-form-textarea
         v-model="optionalMessage"
@@ -34,11 +34,11 @@
 export default {
   props: {
     messageKey: { type: String, required: true },
-    userName: { type: String, required: true },
-    params: { type: Object, default: () => ({}) },
+    initialParams: { type: Object, default: () => ({}) },
   },
   data () {
     return {
+      params: Object.assign({ name: '' }, this.initialParams),
       optionalMessage: '',
       resolveCallback: null,
       rejectCallback: null,
@@ -48,12 +48,10 @@ export default {
     id () {
       return `requiredMessageModal-${this.messageKey}`
     },
-    fullParams () {
-      return Object.assign({ name: this.userName }, this.params)
-    },
   },
   methods: {
-    show () {
+    show (params = {}) {
+      this.params = Object.assign(this.params, params)
       this.$bvModal.show(this.id)
     },
     getConfirmationPromise () {

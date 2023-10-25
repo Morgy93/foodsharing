@@ -3097,4 +3097,7 @@ required_messages:
     really: "Möchtest die Teamanfrage von {name} wirklich ablehnen?"
     main: "deine Anfrage, ins Team des Betriebs {storeName} aufgenommen zu werden, haben wir abgelehnt."
     footer: "Liebe Grüße, deine Betriebsverantwortlichen"
-  
+  kick_from_store_team:
+    really: "Möchtest die {name} wirklich aus dem Betriebsteam entfernen?"
+    main: "wir haben dich aus dem Team des Betriebs {storeName} entfernt."
+    footer: "Liebe Grüße, deine Betriebsverantwortlichen"

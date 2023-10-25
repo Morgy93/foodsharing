@@ -58,7 +58,7 @@
           <b-button
             v-b-tooltip.hover="$i18n('store.request.to-nowhere')"
             variant="outline-danger"
-            @click="denyRequest(storeId, request.id, index)"
+            @click="denyRequest(storeId, request, index)"
           >
             <i class="fas fa-user-times" />
           </b-button>
@@ -68,8 +68,7 @@
     <RequiredMessageModal
       ref="requiredMessageModal"
       message-key="decline_store_request"
-      user-name="Anton"
-      :params="{storeName: storeTitle}"
+      :initial-params="{storeName: storeTitle}"
     />
   </div>
 </template>
@@ -116,8 +115,8 @@ export default {
         hideLoader()
       }
     },
-    async denyRequest (storeId, userId, index) {
-      this.$refs.requiredMessageModal.show()
+    async denyRequest (storeId, user, index) {
+      this.$refs.requiredMessageModal.show({ name: user.vorname })
       let messageDetails
       try {
         messageDetails = await this.$refs.requiredMessageModal.getConfirmationPromise()
@@ -126,7 +125,7 @@ export default {
       }
       showLoader()
       try {
-        await declineStoreRequest(storeId, userId, messageDetails)
+        await declineStoreRequest(storeId, user.id, messageDetails)
         this.$delete(this.requests, index)
       } catch (e) {
         pulseError(this.$i18n('error_unexpected'))
