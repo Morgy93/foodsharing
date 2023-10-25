@@ -2,6 +2,7 @@ import sinon from 'sinon'
 import { mount } from '@vue/test-utils'
 import { resetModules } from '>/utils'
 import '@/vue'
+import { setActivePinia, createPinia } from 'pinia'
 
 const assert = require('assert')
 
@@ -22,6 +23,7 @@ describe('StoreRegionList', () => {
   let storeList
 
   beforeEach(() => {
+    setActivePinia(createPinia())
     storeList = require('./StoreRegionList').default
   })
   afterEach(() => {
