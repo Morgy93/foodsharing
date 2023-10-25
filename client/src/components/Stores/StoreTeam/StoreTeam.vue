@@ -502,8 +502,12 @@ export default {
       if (user.id === this.fsId) return false // Store options should be used to leave the store
       return this.mayEditStore
     },
-    openDeleteModal (user) {
+    async openDeleteModal (user) {
       this.$refs.requiredMessageModal.show({ name: user.vorname })
+      try {
+        const messageDetails = await this.$refs.requiredMessageModal.getConfirmationPromise()
+        this.removeFromTeam(user.id, messageDetails)
+      } catch {}
     },
     mayBecomeManager (user) {
       if (!user.mayManage) return false
@@ -683,13 +687,13 @@ export default {
         fetchCount: fs.stat_fetchcount,
       }
     },
-    async removeFromTeam (fsId) {
-      if (!fsId) {
+    async removeFromTeam (userId, messageDetails) {
+      if (!userId) {
         return
       }
       this.isBusy = true
       try {
-        await removeStoreMember(this.storeId, fsId)
+        await removeStoreMember(this.storeId, userId, messageDetails)
         await StoreData.mutations.loadStoreMember(this.storeId)
       } catch (e) {
         pulseError(this.$i18n('error_unexpected'))

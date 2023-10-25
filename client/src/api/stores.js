@@ -83,8 +83,8 @@ export async function addStoreMember (storeId, userId) {
   return post(`/stores/${storeId}/members/${userId}`)
 }
 
-export async function removeStoreMember (storeId, userId) {
-  return remove(`/stores/${storeId}/members/${userId}`)
+export async function removeStoreMember (storeId, userId, message) {
+  return remove(`/stores/${storeId}/members/${userId}`, { message })
 }
 
 export async function moveMemberToStandbyTeam (storeId, userId) {
