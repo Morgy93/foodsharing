@@ -81,9 +81,8 @@ class RegionTransactions
     public function removeRegionAdmin(int $regionId, int $fsId, ?string $message)
     {
         $this->regionGateway->removeRegionAdmin($regionId, $fsId);
-        if ($this->session->id() !== $fsId) {
-            $params = ['{regionName}' => $this->regionGateway->getRegionName($regionId)];
-            $this->messageTransactions->sendRequiredMessageToUser($fsId, $this->session->id(), 'demote_admin', $message, $params);
-        }
+        
+        $params = ['{regionName}' => $this->regionGateway->getRegionName($regionId)];
+        $this->messageTransactions->sendRequiredMessageToUser($fsId, $this->session->id(), 'demote_admin', $message, $params);
     }
 }

@@ -812,10 +812,8 @@ class StoreTransactions
             $this->messageGateway->deleteUserFromConversation($jumperChatConversationId, $userId);
         }
 
-        if ($userId !== $this->session->id()) {
-            $params = ['{storeName}' => $this->storeGateway->getStoreName($storeId)];
-            $this->messageTransactions->sendRequiredMessageToUser($userId, $this->session->id(), 'kick_from_store_team', $message, $params);
-        }
+        $params = ['{storeName}' => $this->storeGateway->getStoreName($storeId)];
+        $this->messageTransactions->sendRequiredMessageToUser($userId, $this->session->id(), 'kick_from_store_team', $message, $params);
     }
 
     public function leaveAllStoreTeams(int $userId): void
@@ -841,10 +839,8 @@ class StoreTransactions
             $this->messageGateway->deleteUserFromConversation($teamChatId, $userId);
         }
 
-        if ($userId !== $this->session->id()) {
-            $params = ['{storeName}' => $this->storeGateway->getStoreName($storeId)];
-            $this->messageTransactions->sendRequiredMessageToUser($userId, $this->session->id(), 'move_to_standby_team', $message, $params);
-        }
+        $params = ['{storeName}' => $this->storeGateway->getStoreName($storeId)];
+        $this->messageTransactions->sendRequiredMessageToUser($userId, $this->session->id(), 'move_to_standby_team', $message, $params);
 
         $this->storeGateway->addStoreLog($storeId, $this->session->id(), $userId, null, StoreLogAction::MOVED_TO_JUMPER);
     }
@@ -888,10 +884,8 @@ class StoreTransactions
             $this->messageGateway->deleteUserFromConversation($standbyTeamChatId, $userId);
         }
 
-        if ($userId !== $this->session->id()) {
-            $params = ['{storeName}' => $this->storeGateway->getStoreName($storeId)];
-            $this->messageTransactions->sendRequiredMessageToUser($userId, $this->session->id(), 'demote_store_manager', $message, $params);
-        }
+        $params = ['{storeName}' => $this->storeGateway->getStoreName($storeId)];
+        $this->messageTransactions->sendRequiredMessageToUser($userId, $this->session->id(), 'demote_store_manager', $message, $params);
     }
 
     private function addUserToStore(int $storeId, int $userId, bool $moveToStandby): void

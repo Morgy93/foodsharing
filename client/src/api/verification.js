@@ -1,11 +1,11 @@
 import { post, get, patch, remove } from './base'
 
-export async function verifyUser (userId) {
-  return patch(`/user/${userId}/verification`)
+export async function verifyUser (userId, message) {
+  return patch(`/user/${userId}/verification`, { message })
 }
 
-export async function deverifyUser (userId) {
-  return remove(`/user/${userId}/verification`)
+export async function deverifyUser (userId, message) {
+  return remove(`/user/${userId}/verification`, { message })
 }
 
 export async function getVerificationHistory (userId) {

@@ -34,9 +34,8 @@ class WorkGroupTransactions
     {
         $this->forumFollowerGateway->deleteForumSubscription($groupId, $memberId);
         $this->workGroupGateway->removeFromGroup($groupId, $memberId);
-        if ($this->session->id() !== $memberId) {
-            $params = ['{regionName}' => $this->workGroupGateway->getGroup($groupId)['name']];
-            $this->messageTransactions->sendRequiredMessageToUser($memberId, $this->session->id(), 'kick_from_working_group', $message, $params);
-        }
+        
+        $params = ['{regionName}' => $this->workGroupGateway->getGroup($groupId)['name']];
+        $this->messageTransactions->sendRequiredMessageToUser($memberId, $this->session->id(), 'kick_from_working_group', $message, $params);
     }
 }

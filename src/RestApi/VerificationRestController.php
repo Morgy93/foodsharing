@@ -7,6 +7,7 @@ use Foodsharing\Modules\Bell\BellGateway;
 use Foodsharing\Modules\Bell\DTO\Bell;
 use Foodsharing\Modules\Core\DBConstants\Bell\BellType;
 use Foodsharing\Modules\Foodsaver\FoodsaverGateway;
+use Foodsharing\Modules\Message\MessageTransactions;
 use Foodsharing\Modules\PassportGenerator\PassportGeneratorTransaction;
 use Foodsharing\Modules\Profile\DTO\PassHistoryEntry;
 use Foodsharing\Modules\Profile\DTO\VerificationHistoryEntry;
@@ -17,6 +18,7 @@ use Foodsharing\Permissions\ProfilePermissions;
 use Foodsharing\Utility\EmailHelper;
 use FOS\RestBundle\Controller\AbstractFOSRestController;
 use FOS\RestBundle\Controller\Annotations as Rest;
+use FOS\RestBundle\Request\ParamFetcher;
 use Nelmio\ApiDocBundle\Annotation\Model;
 use OpenApi\Annotations as OA;
 use Symfony\Component\HttpFoundation\Response;
@@ -38,6 +40,7 @@ class VerificationRestController extends AbstractFOSRestController
     protected TranslatorInterface $translator;
     private PassportPermissions $passportPermissions;
     private PassportGeneratorTransaction $passportGeneratorTransaction;
+    private MessageTransactions $messageTransactions;
 
     public function __construct(
         BellGateway $bellGateway,
@@ -50,6 +53,7 @@ class VerificationRestController extends AbstractFOSRestController
         TranslatorInterface $translator,
         PassportPermissions $passportPermissions,
         PassportGeneratorTransaction $passportGeneratorTransaction,
+        MessageTransactions $messageTransactions,
     ) {
         $this->bellGateway = $bellGateway;
         $this->foodsaverGateway = $foodsaverGateway;
@@ -61,6 +65,7 @@ class VerificationRestController extends AbstractFOSRestController
         $this->translator = $translator;
         $this->passportPermissions = $passportPermissions;
         $this->passportGeneratorTransaction = $passportGeneratorTransaction;
+        $this->messageTransactions = $messageTransactions;
     }
 
     /**
@@ -74,8 +79,9 @@ class VerificationRestController extends AbstractFOSRestController
      * @OA\Response(response="422", description="Already verified.")
      * @OA\Tag(name="verification")
      * @Rest\Patch("user/{userId}/verification", requirements={"userId" = "\d+"})
+     * @Rest\RequestParam(name="message", nullable=true)
      */
-    public function verifyUserAction(int $userId): Response
+    public function verifyUserAction(int $userId, ParamFetcher $paramFetcher): Response
     {
         $sessionId = $this->session->id();
         if (!$sessionId) {
@@ -112,6 +118,9 @@ class VerificationRestController extends AbstractFOSRestController
             'anrede' => $this->translator->trans('salutation.' . $fs['geschlecht']),
         ], false, true);
 
+        $message = $paramFetcher->get('message');
+        $this->messageTransactions->sendRequiredMessageToUser($userId, $this->session->id(), 'verify', $message);
+
         return $this->handleView($this->view([], 200));
     }
 
@@ -127,8 +136,9 @@ class VerificationRestController extends AbstractFOSRestController
      * @OA\Response(response="422", description="Already deverified.")
      * @OA\Tag(name="verification")
      * @Rest\Delete("user/{userId}/verification", requirements={"userId" = "\d+"})
+     * @Rest\RequestParam(name="message", nullable=true)
      */
-    public function deverifyUserAction(int $userId): Response
+    public function deverifyUserAction(int $userId, ParamFetcher $paramFetcher): Response
     {
         $sessionId = $this->session->id();
         if (!$sessionId) {
@@ -149,6 +159,9 @@ class VerificationRestController extends AbstractFOSRestController
         }
 
         $this->foodsaverGateway->changeUserVerification($userId, $sessionId, false);
+
+        $message = $paramFetcher->get('message');
+        $this->messageTransactions->sendRequiredMessageToUser($userId, $this->session->id(), 'unverify', $message);
 
         return $this->handleView($this->view([], 200));
     }

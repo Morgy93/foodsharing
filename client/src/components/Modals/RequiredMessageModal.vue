@@ -11,7 +11,7 @@
     @cancel="rejectCallback?.()"
   >
     <p>
-      {{ $i18n(`required_messages.${messageKey}.really`, params) }}
+      <span v-html="$i18n(`required_messages.${messageKey}.really`, params)" />
       {{ $i18n(`required_messages.message_info`, params) }}
     </p>
     <blockquote>

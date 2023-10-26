@@ -62,9 +62,7 @@ class FoodsaverTransactions
     {
         $this->foodsaverGateway->deleteFromRegion($regionId, $fsId, $actorId, $message);
 
-        if ($fsId !== $actorId) {
-            $params = ['{regionName}' => $this->regionGateway->getRegionName($regionId)];
-            $this->messageTransactions->sendRequiredMessageToUser($fsId, $actorId, 'kick_from_region', $message, $params);
-        }
+        $params = ['{regionName}' => $this->regionGateway->getRegionName($regionId)];
+        $this->messageTransactions->sendRequiredMessageToUser($fsId, $actorId, 'kick_from_region', $message, $params);
     }
 }

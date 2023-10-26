@@ -3097,28 +3097,36 @@ required_messages:
   decline_store_request: 
     really: "Möchtest du die Teamanfrage von {name} wirklich ablehnen?"
     main: "deine Anfrage, ins Team des Betriebs {storeName} aufgenommen zu werden, haben wir abgelehnt."
-    footer: "Liebe Grüße, deine Betriebsverantwortlichen"
+    footer: "Viele Grüße, deine Betriebsverantwortlichen"
   kick_from_store_team:
     really: "Möchtest du {name} wirklich aus dem Betriebsteam entfernen?"
     main: "wir haben dich aus dem Team des Betriebs {storeName} entfernt."
-    footer: "Liebe Grüße, deine Betriebsverantwortlichen"
+    footer: "Viele Grüße, deine Betriebsverantwortlichen"
   move_to_standby_team:
     really: "Möchtest du {name} wirklich auf die Springerliste verschieben?"
     main: "wir haben dich auf die Springerliste des Betriebs {storeName} verschoben."
-    footer: "Liebe Grüße, deine Betriebsverantwortlichen"
+    footer: "Viele Grüße, deine Betriebsverantwortlichen"
   demote_store_manager:
     really: "Möchtest du {name} wirklich den Status als Betriebsverantwortliche*r entziehen?"
-    main: "ich habe dir den Status als Betriebsverantwortliche*r des Betriebs {storeName} entzogen."
-    footer: "Liebe Grüße"
+    main: "ich habe dir den Status als Betriebsverantwortliche:r des Betriebs {storeName} entzogen."
+    footer: "Viele Grüße"
   demote_admin:
     really: "Möchtest du {name} wirklich als Admin austragen?"
     main: "ich habe dich als Admin der Arbeitsgruppe {regionName} ausgetragen."
-    footer: "Liebe Grüße"
+    footer: "Viele Grüße"
   kick_from_region:
     really: "Möchtest du {name} wirklich als aus dem Bezirk austragen?"
     main: "wir haben dich aus dem Bezirk {regionName} ausgetragen."
-    footer: "Liebe Grüße, deine Botschafter*innen"
+    footer: "Viele Grüße, deine Botschafter:innen"
   kick_from_working_group:
     really: "Möchtest du {name} wirklich als aus der Arbeitsgruppe austragen?"
     main: "wir haben dich aus der Arbeitsgruppe {regionName} ausgetragen."
-    footer: "Liebe Grüße, deine Admins"
+    footer: "Viele Grüße, deine Admins"
+  verify:
+    really: "Möchtest du {name} wirklich verifizieren? Bitte stelle sicher, dass {name} alle <a href='https://wiki.foodsharing.de/Voraussetzungen_f%C3%BCr_Rollen_in_foodsharing#Voraussetzungen_f.C3.BCr_verifizierte_Foodsaver'>Voraussetzungen für verifizierte Foodsaver</a> erfüllt."
+    main: "wir haben dich als Foodsaver:in verifiziert!"
+    footer: "Viele Grüße, deine Botschafter:innen"
+  unverify:
+    really: "Möchtest du {name} wirklich die Verifizierung entziehen? Bitte stelle sicher, dass hierfür ein guter Grund besteht und deine Handlung im Einklang ist mit den <a href='https://wiki.foodsharing.de/Regelverletzungen_-_Konsequenzen_und_Bearbeitung#Konsequenzen_f.C3.BCr_Regelverletzungen'>Regeln zu Konsequenzen bei Regelverletzungen</a>."
+    main: "wir haben dir die Verifizierung als als Foodsaver:in entzogen."
+    footer: "Viele Grüße, deine Botschafter:innen"

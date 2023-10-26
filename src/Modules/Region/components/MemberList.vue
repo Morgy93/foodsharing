@@ -160,7 +160,7 @@
           v-if="row.item.isVerified"
           class="btn btn-sm btn-primary"
           :title="$i18n('group.member_list.is_verified')"
-          @click="showVerifyConfirmation(false, row.item.id,row.item.name)"
+          @click="showVerificationChangeConfirmation(row.item, false)"
         >
           <i class="fas fa-user-check" />
         </button>
@@ -168,7 +168,7 @@
           v-else
           class="btn btn-sm btn-secondary"
           :title="$i18n('group.member_list.not_verified')"
-          @click="showVerifyConfirmation(true, row.item.id,row.item.name)"
+          @click="showVerificationChangeConfirmation(row.item, true)"
         >
           <i class="fas fa-user-check" />
         </button>
@@ -251,6 +251,16 @@
       ref="kickWorkingGroupModal"
       message-key="kick_from_working_group"
       :initial-params="{regionName: regionName}"
+    />
+    <RequiredMessageModal
+      v-if="!isWorkGroup && mayEditMembers"
+      ref="verifyModal"
+      message-key="verify"
+    />
+    <RequiredMessageModal
+      v-if="!isWorkGroup && mayEditMembers"
+      ref="unverifyModal"
+      message-key="unverify"
     />
   </div>
 </template>
@@ -405,25 +415,16 @@ export default {
       await RegionsData.mutations.fetchMemberList(this.groupId)
       this.memberList = RegionsData.getters.getMemberList(this.groupId)
     },
-    async showVerifyConfirmation (isVerified, memberId, memberName) {
-      const returnFromModal = await this.$bvModal.msgBoxConfirm(i18n(isVerified ? 'pass.verify.do' : 'pass.verify.undo', { name: memberName, id: memberId }), {
-        modalClass: 'bootstrap',
-        title: i18n(isVerified ? 'pass.button.verify' : 'pass.button.unverify'),
-        cancelTitle: i18n('button.cancel'),
-        okTitle: i18n('button.yes_i_am_sure'),
-        headerClass: 'd-flex',
-        contentClass: 'pr-3 pt-3',
-      })
-      if (returnFromModal) {
-        await this.updateVerificationStatusFromUser(isVerified, memberId)
-        const index = this.memberList.findIndex(member => member.id === memberId)
-        if (index >= 0) {
-          this.memberList[index].isVerified = isVerified
-        }
-      }
+    async showVerificationChangeConfirmation (user, isVerified) {
+      if (user.id === this.userId) return
+      const modal = isVerified ? this.$refs.verifyModal : this.$refs.unverifyModal
+      modal.show({ name: user.name })
+      try {
+        const messageDetails = await modal.getConfirmationPromise()
+        this.updateVerificationStatusFromUser(user.id, isVerified, messageDetails)
+      } catch { }
     },
     compare: optimizedCompare,
-
     clearFilter () {
       this.filterStatus = null
       this.filterText = ''
@@ -539,20 +540,24 @@ export default {
       this.isBusy = false
       hideLoader()
     },
-    async updateVerificationStatusFromUser (isVerified, userId) {
+    async updateVerificationStatusFromUser (userId, isVerified, messageDetails) {
       showLoader()
       this.isBusy = true
       try {
         if (isVerified) {
-          await verifyUser(userId)
+          await verifyUser(userId, messageDetails)
         } else {
-          await deverifyUser(userId)
+          await deverifyUser(userId, messageDetails)
         }
       } catch (e) {
         pulseError(i18n('error_unexpected'))
       }
       this.isBusy = false
       hideLoader()
+      const index = this.memberList.findIndex(member => member.id === userId)
+      if (index >= 0) {
+        this.memberList[index].isVerified = isVerified
+      }
     },
   },
 }
