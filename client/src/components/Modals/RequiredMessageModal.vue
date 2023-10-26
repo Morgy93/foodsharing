@@ -4,9 +4,7 @@
     :title="$i18n('required_messages.sure_title')"
     :cancel-title="$i18n('button.cancel')"
     :ok-title="$i18n('button.yes_i_am_sure')"
-    :hide-header-close="true"
-    modal-class="bootstrap"
-    header-class="d-flex"
+    centered
     @ok="resolveCallback?.(optionalMessage)"
     @cancel="rejectCallback?.()"
   >
