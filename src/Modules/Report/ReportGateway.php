@@ -203,6 +203,7 @@ class ReportGateway extends BaseGateway
         // restrict access only to new reports to avoid social conflicts from old entries
         $query = $query->where('time >= \'2021-01-01\'');
         $query = $query->where('rp_type', ReportType::GOALS_REPORT);
+
         return $query->fetchAll();
     }
 }
