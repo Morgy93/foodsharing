@@ -4,7 +4,6 @@ import '@/core'
 import '@/globals'
 import '@/tablesorter'
 import {
-
   checkAllCb,
 } from '@/script'
 import {
