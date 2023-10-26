@@ -59,7 +59,7 @@
             :allow-confirm="(isCoordinator || mayEditStore)"
             :allow-chat="slot.profile.id !== user.id"
             @leave="$refs.modal_leave.show()"
-            @kick="activeSlot = slot, $refs.modal_kick.show()"
+            @kick="showKickSlotConfirmation(slot)"
             @confirm="$emit('confirm', {date: date, fsId: slot.profile.id})"
           />
           <EmptySlot
@@ -138,7 +138,12 @@
         </b-alert>
       </div>
     </b-modal>
-
+    <RequiredMessageModal
+      ref="kickSlotModal"
+      message-key="kick_from_pickup_slot"
+      :initial-params="{ storeName: storeTitle, date: $dateFormatter.dateTime(date) }"
+      :identifier="date.valueOf()"
+    />
     <b-modal
       ref="modal_leave"
       :title="$i18n('pickup.really_leave_date_title', { date: $dateFormatter.dateTime(date) })"
@@ -152,33 +157,6 @@
     >
       <p>{{ $i18n('pickup.really_leave_date', { date: $dateFormatter.dateTime(date) }) }}</p>
     </b-modal>
-
-    <b-modal
-      ref="modal_kick"
-      :title="$i18n('pickup.signout_confirm')"
-      :cancel-title="$i18n('button.cancel')"
-      :ok-title="$i18n('button.yes_i_am_sure')"
-      :hide-header-close="true"
-      modal-class="bootstrap"
-      header-class="d-flex"
-      @ok="$emit('kick', { 'date': date, 'fsId': activeSlot.profile.id, 'message': kickMessage })"
-    >
-      <p>
-        {{ $i18n('pickup.really_kick_user_info', slotInfo ) }}
-      </p>
-      <blockquote>
-        <div>{{ $i18n('salutation.3') }} {{ slotInfo['name'] }},</div>
-        <div>{{ $i18n('pickup.kick_message', slotInfo) }}</div>
-        <b-form-textarea
-          v-model="kickMessage"
-          :placeholder="$i18n('pickup.kick_message_placeholder')"
-          max-rows="4"
-          maxlength="3000"
-        />
-        <div>{{ $i18n('pickup.kick_message_footer') }}</div>
-      </blockquote>
-    </b-modal>
-
     <b-modal
       ref="modal_team_message"
       :title="$i18n('pickup.leave_team_message_title')"
@@ -240,17 +218,13 @@
 </template>
 
 <script>
-
-import { BFormTextarea, BModal, VBTooltip } from 'bootstrap-vue'
-
 import { listSameDayPickupsForUser, checkPickupRuleStore } from '@/api/pickups'
-
 import TakenSlot from '@/components/Stores/Pickup/TakenSlot.vue'
 import EmptySlot from '@/components/Stores/Pickup/EmptySlot.vue'
+import RequiredMessageModal from '@/components/Modals/RequiredMessageModal.vue'
 
 export default {
-  components: { EmptySlot, TakenSlot, BFormTextarea, BModal },
-  directives: { VBTooltip },
+  components: { EmptySlot, TakenSlot, RequiredMessageModal },
   props: {
     storeId: { type: Number, required: true },
     storeTitle: { type: String, default: '' },
@@ -328,7 +302,14 @@ export default {
       this.okVariant = (!this.pickupRulePass) ? 'danger' : 'success'
       this.loadedPickupRule = true
     },
-
+    async showKickSlotConfirmation (slot) {
+      this.$refs.kickSlotModal.show({ name: slot.profile.name })
+      console.log(slot.profile.name)
+      try {
+        const message = await this.$refs.kickSlotModal.getConfirmationPromise()
+        this.$emit('kick', { fsId: slot.profile.id, date: this.date, message })
+      } catch {}
+    },
   },
 }
 </script>

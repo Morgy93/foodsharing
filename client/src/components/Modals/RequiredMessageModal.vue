@@ -33,6 +33,7 @@ export default {
   props: {
     messageKey: { type: String, required: true },
     initialParams: { type: Object, default: () => ({}) },
+    identifier: { type: String, default: '' },
   },
   data () {
     return {
@@ -44,7 +45,7 @@ export default {
   },
   computed: {
     id () {
-      return `requiredMessageModal-${this.messageKey}`
+      return `requiredMessageModal-${this.messageKey}-${this.identifier}`
     },
   },
   methods: {
