@@ -288,8 +288,6 @@ pass:
     Foodsaver, die einen Ausweis bekommen haben und die Richtigkeit ihrer Personendaten bestätigt haben, können über die <a href="{url}">Mitgliederliste des Bezirks</a> verifiziert werden.
   claim: "Teile Lebensmittel, anstatt sie wegzuwerfen!"
   verify:
-    do: "Account von {name} ({id}) verifizieren"
-    undo: "Verifizierung von {name} ({id}) aufheben"
     confirm: "Sicher?"
     text: |
       Persodaten gecheckt? <br>
@@ -297,10 +295,6 @@ pass:
     failed: "Es ist ein Problem aufgetreten"
     hasPickup: "Noch für Abholungen eingetragen"
     checkPickups: "Vor dem Entverifizieren musst du die eingetragenen Abholtermine prüfen."
-  button:
-    verify: "Verifizieren"
-    unverify: "Entverifizieren"
-    check: "Termine prüfen"
   noPhoto: "Die folgenden Personen haben noch kein Foto hochgeladen:"
   notGenerated: "Ihr Ausweis konnte daher nicht erstellt werden."
 
@@ -462,15 +456,11 @@ group:
   member_list:
     remove_admin_title: "Als Admin austragen"
     remove_ambassador_title: "Als Botschafter austragen"
-    remove_admin_text: "Möchtest du {name} ({id}) wirklich als Admin austragen?"
-    remove_ambassador_text: "Möchtest du {name} ({id}) wirklich als Botschafter austragen?"
     set_admin_title: "Mitglied als Admin eintragen"
     set_ambassador_title: "Mitglied als Botschafter eintragen"
     set_admin_text: "Möchtest du {name} ({id}) wirklich als Admin eintragen?"
     set_ambassador_text: "Möchtest du {name} ({id}) wirklich als Botschafter eintragen?"
     remove_title: "Mitglied entfernen"
-    remove_text_group: "Möchtest du {name} ({id}) wirklich aus der Arbeitsgruppe entfernen?"
-    remove_text_region: "Möchtest du {name} ({id}) wirklich aus der Region entfernen?"
     add_member: "In das Team aufnehmen"
     admin_mode_on: "Ansicht für Administrator*innen aktivieren"
     admin_mode_off: "Zurück zur Standard-Ansicht"
@@ -1013,14 +1003,8 @@ pickup:
   copiedNumber: "„{number}“ wurde in die Zwischenablage kopiert."
   signout_sure: "Möchtest du dieses Team verlassen?"
   signout_info: "Sämtliche deiner Abholtermine werden gelöscht."
-  signout_confirm: "Bist du dir sicher?"
   really_leave_date_title: "Für {date} austragen?"
-  really_kick_user_info: |
-    Möchtest du {name} wirklich aus der Abholung am {date} austragen?
-    {name} wird die folgende Nachricht dazu erhalten:
   kick_message: "wir haben dich aus der {storeName}-Abholung am {date} ausgetragen."
-  kick_message_placeholder: "Optional hier Informationen ergänzen…"
-  kick_message_footer: "Liebe Grüße, deine Betriebsverantwortlichen"
   really_leave_date: "Du bist für diese Abholung verantwortlich. Bitte kümmere dich eigenständig um Ersatz."
   leave_pickup_ok: "Ich habe bereits Ersatz"
   leave_pickup_message_team: "Team benachrichtigen"

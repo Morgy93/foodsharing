@@ -169,13 +169,9 @@ group:
     set_admin_title: Make administrator
     set_ambassador_text: Do you really want to make {name} ({id}) an ambassador?
     remove_ambassador_title: remove as ambassador
-    remove_ambassador_text: Are you sure you want to remove {name} ({id}) as an ambassador?
-    remove_admin_text: Are you sure you want to remove {name} ({id}) as an admin?
     remove_admin_title: remove as admin
     old_edit_hint_link: Members
     old_edit_hint: You can now find the member administration on the tab
-    remove_text_group: Do you really want to remove {name} ({id}) from this workgroup?
-    remove_text_region: Do you really want to remove {name} ({id}) from the region?
     is_verified: verified
     is_home_region: Home region
     not_verified: not verified
@@ -851,7 +847,6 @@ calendar:
       description: Description
 
 pickup:
-  signout_confirm: Are you sure?
   copyNumber: Copy phone number
   open_profile: Open profile
   confirm: Confirm
@@ -904,8 +899,6 @@ pickup:
   leave_team_message_template: Dear all, {date} …
   really_leave_date: You are responsible for this pick-up. Please arrange a replacement
     independently.
-  kick_message_footer: Best wishes, your Store Coordinators
-  kick_message_placeholder: Optionally add information here…
   really_leave_date_title: Sign out for {date}?
   signout_info: All your pick-up dates will be deleted.
   take_empty_slot: sign up here
@@ -917,7 +910,6 @@ pickup:
   join_cancel: rather not
   really_join_date: Would you like to sign up for the pick-up on {date}?
   kick_message: we have removed you from the {storeName} pick-up on {date}.
-  really_kick_user_info: "Do you really want to unsubscribe {name} from the pick-up
     on {date}?\n{name} will receive the following message about this:\n"
   same_day_entry: '[{when}] {name}'
   same_day_hint: 'On the {day} you have signed into the following pick-ups:'
@@ -2079,15 +2071,9 @@ pass:
     options: Options
   name: Name
   noPhoto: 'The following persons have not uploaded a photo yet:'
-  button:
-    verify: Verify
-    check: Check appointments
-    unverify: remove verification
   verify:
     failed: A problem occured
     confirm: Sure?
-    undo: Cancel verification of {name} ({id})
-    do: Verify {name}’s account ({id})
     checkPickups: Before de-verifying you have to check the pick-up dates entered.
     hasPickup: Still registered for pick-ups
     text: "Checked your personal data? <br>\nHand over member card?\n"

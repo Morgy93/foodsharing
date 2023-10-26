@@ -817,22 +817,16 @@ group:
     is_verified: 'verificad@'
     is_home_region: 'Distrito de origen'
     remove_title: 'eliminar miembro'
-    remove_admin_text: '¿Estás seguro de que quieres eliminar {name} ({id}) como administrador(a)?'
-    remove_ambassador_text: '¿Estás segura de que quieres eliminar {name} ({id}) como
-      embajador(a)?'
     set_admin_title: 'Asignar como administrador(a)'
     set_admin_text: '¿Debería {name} ({id}) realmente convertirse en administrador(a)?'
     old_edit_hint_link: 'miembros'
     add_member: 'incluir en el equipo'
     admin_mode_off: 'Volver a la vista estándar'
-    remove_text_region: '¿Está segur@ de que desea eliminar a {name} ({id}) del distrito?'
     set_ambassador_text: '¿Debería {name} ({id}) realmente convertirse en embajador
       de este distrito?'
     admin_mode_on: 'Activar vista para administrador@s'
     remove_admin_title: 'eliminar como administrador(a)'
     set_ambassador_title: 'Asignar como embajador(a)'
-    remove_text_group: '¿Está segur@ de que desea eliminar a {name} ({id}) del grupo
-      de trabajo?'
     remove_ambassador_title: 'eliminar como embajador(a)'
     old_edit_hint: 'Ahora puede encontrar la gestión de miembros en la pestaña'
     not_verified: no verificad@
@@ -1311,18 +1305,11 @@ pickup:
       refresh: 'Actualizar'
     header: 'Fechas de recogida'
   signout_info: 'Se eliminarán todas tus recogidas pendientes.'
-  really_kick_user_info: '¿Realmente quieres cancelar la suscripción de {name} a la
-    recogida el {date}?
-
-    {name} recibirá el siguiente mensaje sobre esto:
-
-    '
   leave_pickup_ok: 'Ya tengo un reemplazo'
   leave_pickup_message_team: 'Notificar al equipo'
   edit_recurring_pickups: 'Editar fechas de recogida habituales'
   really_leave_date_title: '¿Cerrar sesión para el {date}?'
   region_pickup_rule_failed: 'Esta entrada no cumple con las reglas del condado'
-  kick_message_placeholder: 'Opcionalmente agregue información aquí…'
   history:
     title: 'Historial de recogidas'
     search: 'Mostrar recogidas'
@@ -1386,14 +1373,12 @@ pickup:
   team_message_send_and_leave: 'enviar y darse de baja'
   really_leave_date: 'Usted es responsable de esta recogida. Por favor, organice un
     reemplazo usted mismo.'
-  signout_confirm: '¿Estas segur@?'
   copiedNumber: '“{number}” se copió en el portapapeles.'
   leave_team_message_title: 'Mensaje al equipo'
   open_profile: 'Abrir perfil'
   kick: 'Eliminar'
   kick_message: 'lo eliminamos de la recogida en {storeName} el {date}.'
   leave: 'Dejar'
-  kick_message_footer: 'Saludos cordiales, los responsables para la empresa'
   dates: 'Fechas de recogida'
   to_be_confirmed: 'Esta fecha de recogida aún debe ser confirmada por un responsable
     para esta empresa.'

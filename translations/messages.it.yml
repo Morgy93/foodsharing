@@ -168,14 +168,10 @@ group:
     admin_mode_on: Attiva vista per amministratori
     admin_mode_off: Torna alla visualizzazione standard
     is_verified: verificat@
-    remove_admin_text: Ti vuoi davvero cancellare {name} ({id}) come amministratore?
     remove_ambassador_title: Cancellarsi come ambasciatore
     remove_admin_title: Cancellarsi come amministratore
     set_admin_title: Registrare il membro come amministratore
-    remove_text_group: Vuoi davvero rimuovere {name} ({id}) dal gruppo di lavoro?
-    remove_text_region: Vuoi davvero rimuovere {name} ({id}) dalla regione?
     set_ambassador_title: Registrare il membro come ambasciatore
-    remove_ambassador_text: Ti vuoi davvero cancellare {name} ({id}) come ambasciatore?
     old_edit_hint_link: Membri
     set_admin_text: Vuoi davvero registrare {name} ({id}) come amministratore?
     set_ambassador_text: Vuoi davvero registrare {name} ({id}) come ambasciatore?
@@ -215,10 +211,6 @@ bcard:
   role: Rotolo/Distretto
 
 pass:
-  button:
-    check: Controlla gli appuntamenti
-    verify: Verifica
-    unverify: Deverificare
   verify:
     checkPickups: Prima di annullare la verifica devi controllare le date di ritiro
       inserite.
@@ -226,8 +218,6 @@ pass:
     failed: Si è verificato un problema
     text: "Dati personali controllati? <br>\nConsegnare la carta d'identità?\n"
     confirm: Sicuro?
-    undo: Annulla verifica {name} ({id})
-    do: Verifica l'account di {name} ({id})
   notGenerated: Pertanto non è stato possibile creare le loro tessere associative.
   noPhoto: 'Le seguenti persone non hanno ancora caricato una foto:'
   claim: Condividi il cibo invece di buttarlo via!
@@ -759,13 +749,8 @@ pickup:
   leave_pickup_ok: Ho già un sostituto
   really_leave_date: Sei responsabile di questo ritiro. Si prega di prendersi cura
     della propria sostituzione.
-  kick_message_footer: Saluti, vostri responsabili delle agenzie
-  kick_message_placeholder: Facoltativamente, aggiungi informazioni qui …
   kick_message: ti abbiamo rimosso dal ritiro {storeName} il {date}.
-  really_kick_user_info: "Vuoi davvero annullare l'iscrizione di {name} dalla raccolta
-    il {date}?\n{name} riceverà il seguente messaggio su questo:\n"
   really_leave_date_title: Annullare l'iscrizione per {date}?
-  signout_confirm: Ne sei sicuro?
   signout_info: Tutte le date dei tuoi ritiri verranno eliminate.
   signout_sure: Vuoi lasciare questo team?
   copiedNumber: '«{number}» è stato copiato negli appunti.'

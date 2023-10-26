@@ -1606,21 +1606,16 @@ group:
     admin_mode_off: Tilbake til standardvisningen
     remove_title: Fjern medlem
     remove_text: Er du sikker på at du vil fjerne {name} ({id}) fra arbeidsgruppen?
-    remove_admin_text: Er du sikker på at du vil avregistrere {name} ({id}) som administrator?
     set_admin_title: Registrer medlem som administrator
     set_ambassador_text: Er du sikker på at du vil legge til {name} ({id}) som ambassadør?
     old_edit_hint: Du finner nå medlemsadministrasjonen i menypunktet
     old_edit_hint_link: Medlemmer
     remove_admin_title: fjern som admin
     remove_ambassador_title: fjerne som ambassadør
-    remove_ambassador_text: Er du sikker på at du vil avregistrere {name} ({id}) som
-      ambassadør?
     set_admin_text: Er du sikker på at du vil legge til {name} ({id}) som administrator?
     set_ambassador_title: Registrer medlem som ambassadør
     is_home_region: Hjemdistrikt
     is_verified: bekreftet
-    remove_text_group: Er du sikker på at du vil fjerne {name} ({id}) fra arbeidsgruppen?
-    remove_text_region: Er du sikker på at du vil fjerne {name} ({id}) fra regionen?
     not_verified: ikke låst opp
   saved: Endringene har blitt lagret
   subtitle: her kan du finne hjelp og mye å gjøre…
@@ -2123,7 +2118,6 @@ pickup:
   join_cancel: helst ikke
   same_day_entry: '[{when}] {name}'
   join_title_date: Sikker?
-  signout_confirm: Er du sikker?
   call: Anrop
   confirm: Bekreft
   leave: Forlat
@@ -2138,8 +2132,6 @@ pickup:
   same_day_hint: 'Du er påmeldt til følgende samlinger på {day}:'
   delete_title: Slett innsamlingsdato
   really_delete_date: Vil du virkelig slette hentingen på {date}?
-  kick_message_footer: Mange hilsener, samarbeidsoffiserer
-  kick_message_placeholder: Om nødvendig, legg til informasjon her…
   leave_team_message_template: Kjære alle sammen, {date} …
   signout_info: Alle dine hentedatoer vil bli slettet.
   really_join_date: Ønsker du å gjøre en bindende påmelding til henting {date}?
@@ -2147,8 +2139,6 @@ pickup:
   kick: kaste ut
   open_profile: Se profiler
   really_leave_date_title: Avregistrere {date}?
-  really_kick_user_info: "Vil du virkelig avbestille {name} fra å hente den {date}?\n
-    {name} vil motta følgende melding om dette:\n"
   team_message_send_and_leave: Send og avslutt
   edit_recurring_pickups: Behandle vanlige hentetider
   really_leave_date: Du er ansvarlig for denne hentingen. Vennligst ordne en erstatning

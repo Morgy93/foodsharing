@@ -181,8 +181,6 @@ group:
     add_member: Intégrer dans l’équipe
     admin_mode_on: Activer la vue pour les administrateur·rice·s
     admin_mode_off: Retour à l’affichage standard
-    remove_ambassador_text: Veux-tu vraiment supprimer {name} ({id}) en tant qu’ambassadeur·ice ?
-    remove_admin_text: Veux-tu vraiment supprimer {name} ({id}) en tant qu’admin ?
     old_edit_hint_link: Membre
     set_admin_title: Inscrire un·e membre en tant qu’admin
     set_ambassador_title: Inscrire un·e membre en tant qu’ambassadeur·ice
@@ -190,8 +188,6 @@ group:
     remove_ambassador_title: Se désinscrire en tant qu’ambassadeur·ice
     set_ambassador_text: Veux-tu vraiment inscrire {name} ({id}) comme ambassadeur·ice ?
     remove_admin_title: supprimer en tant qu’administrateur
-    remove_text_group: Veux-tu vraiment supprimer {name} ({id}) du groupe de travail ?
-    remove_text_region: Veux-tu vraiment supprimer {name} ({id}) de la région ?
     old_edit_hint: Tu trouveras désormais la gestion des membres sous l’onglet
     is_verified: vérifié
     is_home_region: District principal
@@ -231,15 +227,9 @@ bcard:
 pass:
   notGenerated: Leurs passeports n’ont pas pu être générés.
   noPhoto: "Les personnes suivantes n’ont pas encore importé de photo :"
-  button:
-    verify: Vérifier
-    check: Vérifier les occurences
-    unverify: Dévérifier
   verify:
     failed: Une erreur s’est produite
     confirm: Sûr·e ?
-    undo: Vérification du compte de {name} ({id}) annulée
-    do: Vérifier le compte de {name} ({id})
     text: "Données personnelles ok ? <br>\nBadge remis à l’intéressé(e) ?\n"
     checkPickups: Avant de retirer la vérification, vérifie les collectes de ce membre.
     hasPickup: Encore inscrit pour des collectes
@@ -1832,13 +1822,8 @@ pickup:
   leave_pickup_ok: J’ai déjà trouvé un(e) replaçant(e)
   really_leave_date: Tu es responsable de cette collecte, c’est ton rôle de trouver
     un(e) remplaçant(e).
-  kick_message_footer: Amicalement, l’équipe des responsables coopération
-  kick_message_placeholder: 'Informations complémentaires (optionnel)…'
   kick_message: Nous t’avons retiré de la collecte du {date} dans la coopération {storeName}.
-  really_kick_user_info: "Souhaites-tu vraiment retirer {name} de la collecte du {date} ?\n
-    {name} recevra le message suivant :\n"
   really_leave_date_title: Se retirer de la collecte du {date} ?
-  signout_confirm: Continuer ?
   signout_info: Toutes tes collectes futures dans cette équipe vont être retirées.
   signout_sure: Souhaites-tu quitter cette équipe ?
   copiedNumber: '« {number} » a été copié dans le presse-papier.'
