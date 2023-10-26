@@ -772,22 +772,6 @@ class StoreTransactions
         }
     }
 
-    public function createKickMessage(int $foodsaverId, int $storeId, DateTime $pickupDate, ?string $message = null): string
-    {
-        $fs = $this->foodsaverGateway->getFoodsaver($foodsaverId);
-        $storeName = $this->storeGateway->getStoreName($storeId);
-
-        $salutation = $this->translator->trans('salutation.' . $fs['geschlecht']) . ' ' . $fs['name'];
-        $mandatoryMessage = $this->translator->trans('pickup.kick_message', [
-            '{storeName}' => $storeName,
-            '{date}' => date('d.m.Y H:i', $pickupDate->getTimestamp())
-        ]);
-        $optionalMessage = empty($message) ? '' : ("\n\n" . $message);
-        $footer = $this->translator->trans('pickup.kick_message_footer');
-
-        return $salutation . ",\n" . $mandatoryMessage . $optionalMessage . "\n\n" . $footer;
-    }
-
     public function addStoreMember(int $storeId, int $userId, bool $moveToStandby = false): void
     {
         $this->addUserToStore($storeId, $userId, $moveToStandby);

@@ -171,10 +171,13 @@ final class PickupRestController extends AbstractFOSRestController
                 empty($message) ? null : $message
             );
 
-            // send direct message to the user
             if ($sendKickMessage) {
-                $formattedMessage = $this->storeTransactions->createKickMessage($fsId, $storeId, $date, $message);
-                $this->messageTransactions->sendMessageToUser($fsId, $this->session->id(), $formattedMessage);
+                $storeName = $this->storeGateway->getStoreName($storeId);
+                $params = [
+                    '{storeName}' => $storeName,
+                    '{date}' => date('d.m.Y H:i', $date->getTimestamp())
+                ];
+                $this->messageTransactions->sendRequiredMessageToUser($fsId, $this->session->id(), 'kick_from_pickup_slot', $message, $params);
             }
         }
     }
