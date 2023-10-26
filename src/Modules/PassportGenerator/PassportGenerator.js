@@ -1,14 +1,10 @@
-/* eslint-disable eqeqeq,camelcase */
+/* eslint-disable camelcase */
 import $ from 'jquery'
 import '@/core'
 import '@/globals'
 import '@/tablesorter'
-import {
-  checkAllCb,
-} from '@/script'
-import {
-  expose,
-} from '@/utils'
+import { checkAllCb } from '@/script'
+import { expose } from '@/utils'
 import './PassportGenerator.css'
 
 expose({
