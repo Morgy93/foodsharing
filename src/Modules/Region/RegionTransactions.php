@@ -78,7 +78,7 @@ class RegionTransactions
         }
     }
 
-    public function removeRegionAdmin(int $regionId, int $fsId, ?string $message)
+    public function removeRegionAdmin(int $regionId, int $fsId, ?string $message = null)
     {
         $this->regionGateway->removeRegionAdmin($regionId, $fsId);
 

@@ -149,7 +149,7 @@ class MessageTransactions
         }
     }
 
-    public function sendRequiredMessageToUser(int $userId, int $senderId, string $translationKey, ?string $message, array $params = [])
+    public function sendRequiredMessageToUser(int $userId, int $senderId, string $translationKey, ?string $message = null, array $params = [])
     {
         if ($userId === $senderId) {
             return;

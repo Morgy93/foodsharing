@@ -58,7 +58,7 @@ class FoodsaverTransactions
         $this->foodsaverGateway->deleteFoodsaver($foodsaverId, $this->session->id(), $reason);
     }
 
-    public function deleteFromRegion(int $regionId, ?int $fsId, int $actorId, ?string $message): void
+    public function deleteFromRegion(int $regionId, ?int $fsId, int $actorId, ?string $message = null): void
     {
         $this->foodsaverGateway->deleteFromRegion($regionId, $fsId, $actorId, $message);
 

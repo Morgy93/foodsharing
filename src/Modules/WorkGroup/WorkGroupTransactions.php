@@ -30,7 +30,7 @@ class WorkGroupTransactions
      *
      * @throws \Exception
      */
-    public function removeMemberFromGroup(int $groupId, int $memberId, ?string $message): void
+    public function removeMemberFromGroup(int $groupId, int $memberId, ?string $message = null): void
     {
         $this->forumFollowerGateway->deleteForumSubscription($groupId, $memberId);
         $this->workGroupGateway->removeFromGroup($groupId, $memberId);

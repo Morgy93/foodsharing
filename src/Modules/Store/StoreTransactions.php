@@ -759,7 +759,7 @@ class StoreTransactions
     /**
      * Rejects (denies) a user's request for a store and creates a bell notification for that user.
      */
-    public function declineStoreRequest(int $storeId, int $userId, ?string $message): void
+    public function declineStoreRequest(int $storeId, int $userId, ?string $message = null): void
     {
         $this->storeGateway->removeUserFromTeam($storeId, $userId);
 
@@ -781,7 +781,7 @@ class StoreTransactions
         $this->triggerBellForJoining($storeId, $userId, StoreLogAction::ADDED_WITHOUT_REQUEST);
     }
 
-    public function removeStoreMember(int $storeId, int $userId, ?string $message): void
+    public function removeStoreMember(int $storeId, int $userId, ?string $message = null): void
     {
         $this->pickupGateway->deleteAllDatesFromAFoodsaver($userId, $storeId);
         $this->storeGateway->removeUserFromTeam($storeId, $userId);
@@ -809,7 +809,7 @@ class StoreTransactions
         }
     }
 
-    public function moveMemberToStandbyTeam(int $storeId, int $userId, ?string $message): void
+    public function moveMemberToStandbyTeam(int $storeId, int $userId, ?string $message = null): void
     {
         $this->storeGateway->setUserMembershipStatus($storeId, $userId, MembershipStatus::JUMPER);
 
@@ -857,7 +857,7 @@ class StoreTransactions
         }
     }
 
-    public function downgradeResponsibleMember(int $storeId, int $userId, ?string $message): void
+    public function downgradeResponsibleMember(int $storeId, int $userId, ?string $message = null): void
     {
         /* check if other managers exist (cannot leave as last manager) */
         $this->storeGateway->removeStoreManager($storeId, $userId);
