@@ -2,8 +2,10 @@
 
 namespace Foodsharing\Modules\Region;
 
+use Foodsharing\Lib\Session;
 use Foodsharing\Modules\Core\DBConstants\Unit\UnitType;
 use Foodsharing\Modules\Foodsaver\FoodsaverGateway;
+use Foodsharing\Modules\Message\MessageTransactions;
 use Foodsharing\Modules\Unit\DTO\UserUnit;
 use Foodsharing\Modules\Unit\UnitGateway;
 use Foodsharing\RestApi\Models\Notifications\Region;
@@ -18,6 +20,8 @@ class RegionTransactions
         private readonly FoodsaverGateway $foodsaverGateway,
         private readonly UnitGateway $unitGateway,
         private readonly RegionGateway $regionGateway,
+        private readonly Session $session,
+        private readonly MessageTransactions $messageTransactions,
     ) {
     }
 
@@ -71,6 +75,15 @@ class RegionTransactions
     {
         foreach ($regions as $region) {
             $this->regionGateway->updateRegionNotification($userId, $region->id, $region->notifyByEmailAboutNewThreads);
+        }
+    }
+
+    public function removeRegionAdmin(int $regionId, int $fsId, ?string $message)
+    {
+        $this->regionGateway->removeRegionAdmin($regionId, $fsId);
+        if($this->session->id() !== $fsId) {
+            $params = ['{regionName}' => $this->regionGateway->getRegionName($regionId)];
+            $this->messageTransactions->sendRequiredMessageToUser($fsId, $this->session->id(), 'demote_admin', $message, $params);
         }
     }
 }

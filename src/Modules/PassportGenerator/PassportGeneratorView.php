@@ -29,8 +29,8 @@ final class PassportGeneratorView extends View
                 $action = 'do';
             }
             $verified = '<span style="display:none;">' . $sort . '</span>'
-                . '<a href="#" title="'
-                . $this->translator->trans('pass.verify.' . $action, ['{name}' => $fs['name']])
+                . '<a title="'
+                . $this->translator->trans('group.member_list.' . ($fs['verified'] ? 'is' : 'not') . '_verified')
                 . '" class="verify verify-' . $action . '">'
                 . /* weird icon magic: */ '<span></span>'
                 . '</a>';
@@ -86,11 +86,11 @@ final class PassportGeneratorView extends View
         ], $this->translator->trans('pass.nav.title'));
     }
 
-    public function tips(): string
+    public function tips(int $regionId): string
     {
         return $this->v_utils->v_info(
             '<p>' . $this->translator->trans('pass.hintSelect') . '</p>' .
-            '<p>' . $this->translator->trans('pass.hintVerify') . '</p>',
+            '<p>' . $this->translator->trans('pass.hintVerify', ['{url}' => "/?page=bezirk&bid={$regionId}&sub=members"]) . '</p>',
             $this->translator->trans('pass.hint')
         );
     }

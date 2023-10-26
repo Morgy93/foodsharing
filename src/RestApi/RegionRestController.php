@@ -14,6 +14,7 @@ use Foodsharing\Modules\Core\DBConstants\Region\WorkgroupFunction;
 use Foodsharing\Modules\Core\DBConstants\Unit\UnitType;
 use Foodsharing\Modules\Event\EventGateway;
 use Foodsharing\Modules\Foodsaver\FoodsaverGateway;
+use Foodsharing\Modules\Foodsaver\FoodsaverTransactions;
 use Foodsharing\Modules\Group\GroupFunctionGateway;
 use Foodsharing\Modules\Region\RegionGateway;
 use Foodsharing\Modules\Region\RegionTransactions;
@@ -58,7 +59,8 @@ class RegionRestController extends AbstractFOSRestController
         private RegionTransactions $regionTransactions,
         private WorkGroupPermissions $workGroupPermissions,
         private WorkGroupTransactions $workGroupTransactions,
-        private EventGateway $eventGateway
+        private EventGateway $eventGateway,
+        private FoodsaverTransactions $foodsaverTransactions,
     ) {
     }
 
@@ -407,8 +409,9 @@ class RegionRestController extends AbstractFOSRestController
      * @OA\Response(response="404", description="Region not found")
      * @OA\Tag(name="region")
      * @Rest\Delete("region/{regionId}/members/{memberId}", requirements={"regionId" = "\d+", "memberId" = "\d+"})
+     * @Rest\RequestParam(name="message", nullable=true)
      */
-    public function removeMember(int $regionId, int $memberId): Response
+    public function removeMember(int $regionId, int $memberId, ParamFetcher $paramFetcher): Response
     {
         if (!$this->session->mayRole()) {
             throw new UnauthorizedHttpException('');
@@ -420,17 +423,18 @@ class RegionRestController extends AbstractFOSRestController
             throw new NotFoundHttpException();
         }
 
+        $message = $paramFetcher->get('message');
         if (UnitType::isGroup($region['type'])) {
             if (!$this->workGroupPermissions->mayEdit($region)) {
                 throw new AccessDeniedHttpException();
             }
             $this->regionGateway->removeRegionAdmin($regionId, $memberId);
-            $this->workGroupTransactions->removeMemberFromGroup($regionId, $memberId);
+            $this->workGroupTransactions->removeMemberFromGroup($regionId, $memberId, $message);
         } else {
             if (!$this->regionPermissions->mayDeleteFoodsaverFromRegion($regionId)) {
                 throw new AccessDeniedHttpException();
             }
-            $this->foodsaverGateway->deleteFromRegion($regionId, $memberId, $this->session->id());
+            $this->foodsaverTransactions->deleteFromRegion($regionId, $memberId, $this->session->id(), $message);
         }
 
         return $this->handleView($this->view([], 200));
@@ -485,8 +489,9 @@ class RegionRestController extends AbstractFOSRestController
      * @OA\Response(response="404", description="Region not found")
      * @OA\Tag(name="region")
      * @Rest\Delete ("region/{regionId}/members/{memberId}/admin", requirements={"regionId" = "\d+", "memberId" = "\d+"})
+     * @Rest\RequestParam(name="message", nullable=true)
      */
-    public function removeAdminOrAmbassador(int $regionId, int $memberId): Response
+    public function removeAdminOrAmbassador(int $regionId, int $memberId, ParamFetcher $paramFetcher): Response
     {
         if (!$this->session->mayRole()) {
             throw new UnauthorizedHttpException('');
@@ -511,7 +516,8 @@ class RegionRestController extends AbstractFOSRestController
             }
         }
 
-        $this->regionGateway->removeRegionAdmin($regionId, $memberId);
+        $message = $paramFetcher->get('message');
+        $this->regionTransactions->removeRegionAdmin($regionId, $memberId, $message);
 
         return $this->handleView($this->view([], 200));
     }

@@ -798,7 +798,7 @@ class FoodsaverGateway extends BaseGateway
      *
      * @throws \Exception
      */
-    public function deleteFromRegion(int $regionId, ?int $fsId, int $actorId): void
+    public function deleteFromRegion(int $regionId, ?int $fsId, int $actorId, ?string $message, bool $sendMessage = false): void
     {
         if ($fsId === null) {
             return;

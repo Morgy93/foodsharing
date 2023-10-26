@@ -49,12 +49,12 @@ export function listRegionStores (regionId) {
   return get(`/region/${regionId}/stores`)
 }
 
-export function removeMember (regionId, memberId) {
-  return remove(`/region/${regionId}/members/${memberId}`)
+export function removeMember (regionId, memberId, message) {
+  return remove(`/region/${regionId}/members/${memberId}`, { message })
 }
 
-export function removeAdminOrAmbassador (regionId, memberId) {
-  return remove(`/region/${regionId}/members/${memberId}/admin`)
+export function removeAdminOrAmbassador (regionId, memberId, message) {
+  return remove(`/region/${regionId}/members/${memberId}/admin`, { message })
 }
 
 export function setAdminOrAmbassador (regionId, memberId) {

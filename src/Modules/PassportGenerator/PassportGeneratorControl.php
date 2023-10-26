@@ -82,7 +82,7 @@ final class PassportGeneratorControl extends Control
             $this->pageHelper->addContent('</form>');
             $this->pageHelper->addContent($this->view->menubar(), CNT_RIGHT);
             $this->pageHelper->addContent($this->view->start(), CNT_RIGHT);
-            $this->pageHelper->addContent($this->view->tips(), CNT_RIGHT);
+            $this->pageHelper->addContent($this->view->tips($this->regionId), CNT_RIGHT);
         }
 
         if (isset($_GET['dl1'])) {

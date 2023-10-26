@@ -285,7 +285,7 @@ pass:
   hintSelect: |
     Mit einem Klick auf das Erstellungsdatum werden alle Foodsaver mit dem gleichen Datum beziehungsweise ohne Erstellungsdatum markiert.
   hintVerify: |
-    Foodsaver, die einen Ausweis bekommen haben und die Richtigkeit ihrer Personendaten bestätigt haben, können verifiziert werden.
+    Foodsaver, die einen Ausweis bekommen haben und die Richtigkeit ihrer Personendaten bestätigt haben, können über die <a href="{url}">Mitgliederliste des Bezirks</a> verifiziert werden.
   claim: "Teile Lebensmittel, anstatt sie wegzuwerfen!"
   verify:
     do: "Account von {name} ({id}) verifizieren"
@@ -479,6 +479,7 @@ group:
     is_verified: "Verifiziert"
     not_verified: "Nicht verifiziert"
     is_home_region: "Stammbezirk"
+    confirm_remove_admin_self: "Möchtest du deinen Posten als Admin wirklich abgeben?"
 
 legal:
   pp: "Datenschutzerklärung"
@@ -3109,3 +3110,15 @@ required_messages:
     really: "Möchtest du {name} wirklich den Status als Betriebsverantwortliche*r entziehen?"
     main: "ich habe dir den Status als Betriebsverantwortliche*r des Betriebs {storeName} entzogen."
     footer: "Liebe Grüße"
+  demote_admin:
+    really: "Möchtest du {name} wirklich als Admin austragen?"
+    main: "ich habe dich als Admin der Arbeitsgruppe {regionName} ausgetragen."
+    footer: "Liebe Grüße"
+  kick_from_region:
+    really: "Möchtest du {name} wirklich als aus dem Bezirk austragen?"
+    main: "wir haben dich aus dem Bezirk {regionName} ausgetragen."
+    footer: "Liebe Grüße, deine Botschafter*innen"
+  kick_from_working_group:
+    really: "Möchtest du {name} wirklich als aus der Arbeitsgruppe austragen?"
+    main: "wir haben dich aus der Arbeitsgruppe {regionName} ausgetragen."
+    footer: "Liebe Grüße, deine Admins"

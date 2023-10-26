@@ -234,6 +234,24 @@
         class="my-0"
       />
     </div>
+    <RequiredMessageModal
+      v-if="isWorkGroup && mayEditMembers"
+      ref="demoteAdminModal"
+      message-key="demote_admin"
+      :initial-params="{regionName: regionName}"
+    />
+    <RequiredMessageModal
+      v-if="!isWorkGroup && mayEditMembers"
+      ref="kickRegionModal"
+      message-key="kick_from_region"
+      :initial-params="{regionName: regionName}"
+    />
+    <RequiredMessageModal
+      v-if="isWorkGroup && mayEditMembers"
+      ref="kickWorkingGroupModal"
+      message-key="kick_from_working_group"
+      :initial-params="{regionName: regionName}"
+    />
   </div>
 </template>
 
@@ -248,9 +266,10 @@ import i18n from '@/helper/i18n'
 import UserSearchInput from '@/components/UserSearchInput'
 import Avatar from '@/components/Avatar'
 import { verifyUser, deverifyUser } from '@/api/verification'
+import RequiredMessageModal from '@/components/Modals/RequiredMessageModal.vue'
 
 export default {
-  components: { Avatar, BButton, BFormSelect, BTable, BPagination, UserSearchInput },
+  components: { Avatar, BButton, BFormSelect, BTable, BPagination, UserSearchInput, RequiredMessageModal },
   directives: { VBTooltip },
   props: {
     userId: { type: Number, default: null },
@@ -418,11 +437,11 @@ export default {
     roleCheckForRegionAndWorkGroup (isGroup, itemRole) {
       return isGroup ? itemRole >= 2 : itemRole === 3
     },
-    async tryRemoveAdminMember (memberId) {
+    async tryRemoveAdminMember (memberId, messageDetails) {
       showLoader()
       this.isBusy = true
       try {
-        await removeAdminOrAmbassador(this.groupId, memberId)
+        await removeAdminOrAmbassador(this.groupId, memberId, messageDetails)
         const index = this.memberList.findIndex(member => member.id === memberId)
         if (index >= 0) {
           this.memberList[index].isAdminOrAmbassadorOfRegion = false
@@ -434,17 +453,18 @@ export default {
       hideLoader()
     },
     async showRemoveAdminMemberConfirmation (memberId, memberName) {
-      const remove = await this.$bvModal.msgBoxConfirm(i18n(this.isWorkGroup ? 'group.member_list.remove_admin_text' : 'group.member_list.remove_ambassador_text', { name: memberName, id: memberId }), {
-        modalClass: 'bootstrap',
-        title: i18n(this.isWorkGroup ? 'group.member_list.remove_admin_title' : 'group.member_list.remove_ambassador_title'),
-        cancelTitle: i18n('button.cancel'),
-        okTitle: i18n('yes'),
-        headerClass: 'd-flex',
-        contentClass: 'pr-3 pt-3',
-      })
-      if (remove) {
-        this.tryRemoveAdminMember(memberId)
+      let messageDetails
+      if (memberId === this.userId) {
+        if (!confirm(i18n('group.member_list.confirm_remove_admin_self'))) {
+          return
+        }
+      } else {
+        this.$refs.demoteAdminModal.show({ name: memberName })
+        try {
+          messageDetails = await this.$refs.demoteAdminModal.getConfirmationPromise()
+        } catch { return }
       }
+      this.tryRemoveAdminMember(memberId, messageDetails)
     },
     async trySetAdminMember (memberId) {
       showLoader()
@@ -474,11 +494,11 @@ export default {
         this.trySetAdminMember(memberId)
       }
     },
-    async tryRemoveMember (memberId) {
+    async tryRemoveMember (memberId, messageDetails) {
       showLoader()
       this.isBusy = true
       try {
-        await removeMember(this.groupId, memberId)
+        await removeMember(this.groupId, memberId, messageDetails)
         const index = this.memberList.findIndex(member => member.id === memberId)
         if (index >= 0) {
           this.memberList.splice(index, 1)
@@ -490,17 +510,12 @@ export default {
       hideLoader()
     },
     async showRemoveMemberConfirmation (memberId, memberName) {
-      const remove = await this.$bvModal.msgBoxConfirm(i18n(this.isWorkGroup ? 'group.member_list.remove_text_group' : 'group.member_list.remove_text_region', { name: memberName, id: memberId }), {
-        modalClass: 'bootstrap',
-        title: i18n('group.member_list.remove_title'),
-        cancelTitle: i18n('button.cancel'),
-        okTitle: i18n('yes'),
-        headerClass: 'd-flex',
-        contentClass: 'pr-3 pt-3',
-      })
-      if (remove) {
-        this.tryRemoveMember(memberId)
-      }
+      const modal = this.isWorkGroup ? this.$refs.kickWorkingGroupModal : this.$refs.kickRegionModal
+      modal.show({ name: memberName })
+      try {
+        const messageDetails = await modal.getConfirmationPromise()
+        this.tryRemoveMember(memberId, messageDetails)
+      } catch {}
     },
     containsMember (memberId) {
       return this.memberList.some(member => member.id === memberId)
