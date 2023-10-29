@@ -4,11 +4,7 @@ namespace Foodsharing\Modules\Search;
 
 use Foodsharing\Lib\Session;
 use Foodsharing\Modules\Core\DBConstants\Foodsaver\Role;
-use Foodsharing\Modules\Search\DTO\ChatSearchResult;
-use Foodsharing\Modules\Search\DTO\FoodSharePointSearchResult;
-use Foodsharing\Modules\Search\DTO\StoreSearchResult;
-use Foodsharing\Modules\Search\DTO\ThreadSearchResult;
-use Foodsharing\Modules\Search\DTO\UserSearchResult;
+use Foodsharing\Modules\Search\DTO\MixedSearchResults;
 use Foodsharing\Permissions\SearchPermissions;
 
 class SearchTransactions
@@ -25,7 +21,7 @@ class SearchTransactions
      *
      * @param string $query the search query
      */
-    public function search(string $query): array
+    public function search(string $query): MixedSearchResults
     {
         // TODO: Search by Email for IT-Support Group and ORGA
         // $this->searchPermissions->maySearchByEmailAddress()
@@ -35,22 +31,15 @@ class SearchTransactions
         $searchAllWorkingGroups = $this->searchPermissions->maySearchAllWorkingGroups();
         $includeInactiveStores = $this->session->mayRole(Role::STORE_MANAGER);
 
-        $regions = $this->searchGateway->searchRegions($query, $foodsaverId);
-        $workingGroups = $this->searchGateway->searchWorkingGroups($query, $foodsaverId, $searchAllWorkingGroups);
-        $stores = $this->searchGateway->searchStores($query, $foodsaverId, $includeInactiveStores, $maySearchGlobal);
-        $foodSharePoints = $this->searchGateway->searchFoodSharePoints($query, $foodsaverId, $maySearchGlobal);
-        $chats = $this->searchGateway->searchChats($query, $foodsaverId);
-        $threads = $this->searchGateway->searchThreads($query, $foodsaverId);
-        $users = $this->searchGateway->searchUsers($query, $foodsaverId, $maySearchGlobal, $this->searchPermissions->maySearchByEmailAddress());
+        $result = new MixedSearchResults();
+        $result->regions = $this->searchGateway->searchRegions($query, $foodsaverId);
+        $result->workingGroups = $this->searchGateway->searchWorkingGroups($query, $foodsaverId, $searchAllWorkingGroups);
+        $result->stores = $this->searchGateway->searchStores($query, $foodsaverId, $includeInactiveStores, $maySearchGlobal);
+        $result->foodSharePoints = $this->searchGateway->searchFoodSharePoints($query, $foodsaverId, $maySearchGlobal);
+        $result->chats = $this->searchGateway->searchChats($query, $foodsaverId);
+        $result->threads = $this->searchGateway->searchThreads($query, $foodsaverId);
+        $result->users = $this->searchGateway->searchUsers($query, $foodsaverId, $maySearchGlobal, $this->searchPermissions->maySearchByEmailAddress());
 
-        return [
-            'regions' => $regions,
-            'workingGroups' => $workingGroups,
-            'stores' => $stores,
-            'foodSharePoints' => $foodSharePoints,
-            'chats' => $chats,
-            'threads' => $threads,
-            'users' => $users,
-        ];
+        return $result;
     }
 }
