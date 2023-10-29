@@ -6,14 +6,14 @@
     <div class="text-truncate flex-grow-1">
       <h6 class="m-0 text-truncate d-inline">
         <i
-          v-if="thread.sticky"
+          v-if="thread.is_sticky"
           v-b-tooltip.noninteractive="$i18n('search.results.thread.sticky_tooltip')"
           class="fas fa-thumbtack"
         />
         <i
-          v-if="thread.closed"
+          v-if="thread.is_closed"
           v-b-tooltip.noninteractive="$i18n('search.results.thread.closed_tooltip')"
-          :class="{'ml-1': thread.sticky}"
+          :class="{'ml-1': thread.is_sticky}"
           class="fas fa-lock"
         />
         {{ thread.name }}

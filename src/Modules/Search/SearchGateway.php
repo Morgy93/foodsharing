@@ -7,6 +7,13 @@ use Foodsharing\Modules\Core\Database;
 use Foodsharing\Modules\Core\DBConstants\Region\RegionIDs;
 use Foodsharing\Modules\Core\DBConstants\Store\CooperationStatus;
 use Foodsharing\Modules\Core\DBConstants\Unit\UnitType;
+use Foodsharing\Modules\Search\DTO\ChatSearchResult;
+use Foodsharing\Modules\Search\DTO\FoodSharePointSearchResult;
+use Foodsharing\Modules\Search\DTO\RegionSearchResult;
+use Foodsharing\Modules\Search\DTO\StoreSearchResult;
+use Foodsharing\Modules\Search\DTO\ThreadSearchResult;
+use Foodsharing\Modules\Search\DTO\UserSearchResult;
+use Foodsharing\Modules\Search\DTO\WorkingGroupSearchResult;
 
 class SearchGateway extends BaseGateway
 {
@@ -17,6 +24,10 @@ class SearchGateway extends BaseGateway
 
     /**
      * Searches the given term in the database of regions.
+     *
+     * @param string $query The search query
+     * @param integer $foodsaverId The searching user
+     * @return array<RegionSearchResult>
      */
     public function searchRegions(string $query, int $foodsaverId): array
     {
@@ -24,7 +35,7 @@ class SearchGateway extends BaseGateway
         $workingGroupType = UnitType::WORKING_GROUP;
         $rootRegionId = RegionIDs::ROOT;
 
-        return $this->db->fetchAll("SELECT
+        $regions = $this->db->fetchAll("SELECT
                 region.id,
                 region.name,
                 region.email,
@@ -46,10 +57,16 @@ class SearchGateway extends BaseGateway
             ORDER BY is_member DESC, name ASC
             LIMIT 30",
             [$foodsaverId, ...$parameters]);
+        return array_map(fn ($region) => RegionSearchResult::createFromArray($region), $regions);
     }
 
     /**
      * Searches the given term in the database of working groups.
+     *
+     * @param string $query The search query
+     * @param integer $foodsaverId The searching user
+     * @param bool $searchAllWorkingGroups Whether to search for all groups. Otherwise search is restricted to groups in whose parent the searching users is a member.
+     * @return array<WorkingGroupSearchResult>
      */
     public function searchWorkingGroups(string $query, int $foodsaverId, bool $searchAllWorkingGroups): array
     {
@@ -57,7 +74,7 @@ class SearchGateway extends BaseGateway
         $membershipCheck = $searchAllWorkingGroups ? '' : 'AND (NOT ISNULL(has_parent_region.foodsaver_id) OR NOT ISNULL(has_region.foodsaver_id))';
         $workingGroupType = UnitType::WORKING_GROUP;
 
-        return $this->db->fetchAll("SELECT
+        $workingGroups =  $this->db->fetchAll("SELECT
                 region.id,
                 region.name,
                 region.email,
@@ -81,10 +98,17 @@ class SearchGateway extends BaseGateway
             ORDER BY is_admin DESC, is_member DESC, name ASC
             LIMIT 30",
             [$foodsaverId, $foodsaverId, $foodsaverId, ...$parameters]);
+        return array_map(fn ($workingGroup) => WorkingGroupSearchResult::createFromArray($workingGroup), $workingGroups);
     }
 
     /**
      * Searches the given term in the database of stores.
+     *
+     * @param string $query The search query
+     * @param integer $foodsaverId The searching user
+     * @param bool $includeInactiveStores Whether to include inactive store in the search results
+     * @param bool $searchGlobal Whether to search for all stores. Otherwise search is restricted to stores in whose region the searching users is a member.
+     * @return array<StoreSearchResult>
      */
     public function searchStores(string $query, int $foodsaverId, bool $includeInactiveStores, bool $searchGlobal): array
     {
@@ -106,7 +130,7 @@ class SearchGateway extends BaseGateway
             $parameters[] = $foodsaverId;
         }
 
-        return $this->db->fetchAll("SELECT
+        $stores = $this->db->fetchAll("SELECT
                 store.id,
                 store.name,
                 store.betrieb_status_id AS cooperation_status,
@@ -131,10 +155,16 @@ class SearchGateway extends BaseGateway
             ORDER BY is_manager DESC, IF(membership_status = 1, 2, IF(membership_status = 2, 1, 0)) DESC, name ASC
             LIMIT 30",
             [$foodsaverId, $foodsaverId, ...$parameters]);
+        return array_map(fn ($store) => StoreSearchResult::createFromArray($store), $stores);
     }
 
     /**
      * Searches the given term in the list of food-share-points.
+     *
+     * @param string $query The search query
+     * @param integer $foodsaverId The searching user
+     * @param bool $searchGlobal Whether to search for all food-share-points. Otherwise search is restricted to food-share-points in whose region the searching users is a member.
+     * @return array<FoodSharePointSearchResult>
      */
     public function searchFoodSharePoints(string $query, int $foodsaverId, bool $searchGlobal): array
     {
@@ -151,7 +181,7 @@ class SearchGateway extends BaseGateway
             $hasRegionJoin = 'JOIN fs_foodsaver_has_bezirk has_region ON has_region.bezirk_id = region.id';
         }
 
-        return $this->db->fetchAll("SELECT
+        $foodSharePoints = $this->db->fetchAll("SELECT
                 share_point.id,
                 share_point.name,
                 share_point.anschrift AS street,
@@ -169,16 +199,21 @@ class SearchGateway extends BaseGateway
             LIMIT 30",
             $parameters
         );
+        return array_map(fn ($foodSharePoint) => FoodSharePointSearchResult::createFromArray($foodSharePoint), $foodSharePoints);
     }
 
     /**
      * Searches the given term in the list of own chats.
+     *
+     * @param string $query The search query
+     * @param integer $foodsaverId The searching user
+     * @return array<ChatSearchResult>
      */
     public function searchChats(string $query, int $foodsaverId): array
     {
         list($searchClauses, $parameters) = $this->generateSearchClauses(['GROUP_CONCAT(foodsaver.name)', 'IFNULL(name, "")'], $query);
 
-        return $this->db->fetchAll("SELECT
+        $chats = $this->db->fetchAll("SELECT
                 conversation.id,
                 conversation.name,
                 conversation.last,
@@ -202,11 +237,19 @@ class SearchGateway extends BaseGateway
             LIMIT 30",
             [$foodsaverId, ...$parameters]
         );
+        return array_map(fn ($chat) => ChatSearchResult::createFromArray($chat), $chats);
     }
 
     /**
      * Searches the given term in the list of forum threads.
      * Use params $regionId and $subforumId to restrict the search to one forum.
+     *
+     * @param string $query The search query
+     * @param integer $foodsaverId The searching user
+     * @param int $regionId The Region whose forum should be searched. Use 0 to not restict the search to one region.
+     * @param int $subforumId The subforum id of the forum the search should be restricted to. Ignored if $regionId is 0.
+     * @param bool $disableRegionCheck Whether to disable the region check assuring the seaching user is member in the groups of found threads.
+     * @return array<ThreadSearchResult>
      */
     public function searchThreads(string $query, int $foodsaverId, int $regionId = 0, int $subforumId = 0, $disableRegionCheck = false): array
     {
@@ -227,12 +270,12 @@ class SearchGateway extends BaseGateway
             array_push($parameters, $foodsaverId);
         }
 
-        return $this->db->fetchAll("SELECT
+        $threads = $this->db->fetchAll("SELECT
                 thread.id,
                 thread.name,
                 post.time,
-                thread.sticky,
-                thread.status AS closed,
+                thread.sticky AS is_sticky,
+                thread.status AS is_closed,
                 region.id AS region_id,
                 region.name AS region_name,
                 has_thread.bot_theme AS is_ambassador_forum
@@ -249,11 +292,22 @@ class SearchGateway extends BaseGateway
             LIMIT 30",
             [...$parameters]
         );
+        return array_map(fn ($thread) => ThreadSearchResult::createFromArray($thread), $threads);
     }
 
     /**
      * Searches the given term in the list of users.
-     * @param $includeMails only used in global search
+     * 
+     * @param string $query The search query
+     * @param integer $foodsaverId The searching user
+     * @param bool $searchGlobal Whether to search for all uses. Otherwise search is restricted to users with at least one point of contact to the searching user. Those include:
+     *      - Membership in common reagion or working group
+     *      - Buddies
+     *      - Membership in common store team
+     *      - Have a chat together
+     *      - Serching for exact foodsaver ids yields users even without a point of contact.
+     * @param bool $includeMails Whether to allow finding unsers by their log-in mail address. only used in global search
+     * @return array<UserSearchResult>
      */
     public function searchUsers(string $query, int $foodsaverId, bool $searchGlobal, bool $includeMails = false): array
     {
@@ -262,15 +316,15 @@ class SearchGateway extends BaseGateway
         }
         list($searchClauses, $parameters) = $this->generateSearchClauses(['foodsaver.name', 'IFNULL(foodsaver.last_name, "")'], $query, ['region.name']);
 
-        return $this->db->fetchAll('SELECT
+        $users = $this->db->fetchAll('SELECT
                 foodsaver.id,
                 foodsaver.name,
                 foodsaver.photo,
                 foodsaver.home_region AS region_id,
                 region.name AS region_name,
                 MAX(foodsaver.last_name) as last_name,
-                MAX(foodsaver.mobile) as mobile,
-                MAX(foodsaver.buddy) AS buddy
+                MAX(foodsaver.mobile) AS mobile,
+                MAX(foodsaver.is_buddy) AS is_buddy
             FROM (
                 -- Region / AG members:
                 SELECT
@@ -280,7 +334,7 @@ class SearchGateway extends BaseGateway
                     foodsaver.bezirk_id AS home_region,
                     IF(MAX(NOT ISNULL(ambassador.foodsaver_id) AND region.type != ' . UnitType::WORKING_GROUP . ') = 1, foodsaver.handy, null) AS mobile,
                     IF(MAX(NOT ISNULL(ambassador.foodsaver_id) AND region.type != ' . UnitType::WORKING_GROUP . ') = 1, foodsaver.nachname, null) AS last_name,
-                    0 AS buddy
+                    0 AS is_buddy
                 FROM fs_foodsaver AS foodsaver
                 JOIN fs_foodsaver_has_bezirk has_region ON has_region.foodsaver_id = foodsaver.id
                 JOIN fs_bezirk region ON region.id = has_region.bezirk_id
@@ -349,13 +403,22 @@ class SearchGateway extends BaseGateway
             JOIN fs_bezirk AS region ON region.id = foodsaver.home_region
             WHERE (foodsaver.id = ? OR (foodsaver.id != ? AND ' . $searchClauses . '))
             GROUP BY foodsaver.id
-            ORDER BY MAX(foodsaver.buddy) DESC, ISNULL(foodsaver.last_name), foodsaver.name, foodsaver.last_name 
+            ORDER BY MAX(foodsaver.is_buddy) DESC, ISNULL(foodsaver.last_name), foodsaver.name, foodsaver.last_name 
             LIMIT 30
             ',
             [$foodsaverId, $foodsaverId, $foodsaverId, $foodsaverId, $parameters[0], $parameters[0], $foodsaverId, ...$parameters]
         );
+        return array_map(fn ($user) => UserSearchResult::createFromArray($user), $users);
     }
 
+    /**
+     * Searches the given term in the list of users.
+     * 
+     * @param string $query The search query
+     * @param ?int $restrictToRegionId The id of a region to restrict the search to
+     * @param bool $includeMails Whether to allow finding unsers by their log-in mail address
+     * @return array<UserSearchResult>
+     */
     public function searchUsersGlobal(string $query, ?int $restrictToRegionId = null, bool $includeMails = false): array
     {
         $searchCriteria = ['foodsaver.name', 'foodsaver.nachname'];
@@ -375,7 +438,7 @@ class SearchGateway extends BaseGateway
         }
 
         // TODO Buddys
-        return $this->db->fetchAll("SELECT
+        $users = $this->db->fetchAll("SELECT
                 foodsaver.id,
                 foodsaver.name,
                 foodsaver.photo,
@@ -384,7 +447,7 @@ class SearchGateway extends BaseGateway
                 foodsaver.nachname as last_name,
                 foodsaver.handy as mobile,
                 {$mailReturnClause}
-                0 as buddy
+                0 AS is_buddy
             FROM fs_foodsaver as foodsaver
             JOIN fs_bezirk as home_region ON home_region.id = foodsaver.bezirk_id
             {$hasRegionJoin}
@@ -394,9 +457,18 @@ class SearchGateway extends BaseGateway
             LIMIT 30",
             [...$parameters]
         );
+        return array_map(fn ($user) => UserSearchResult::createFromArray($user), $users);
     }
 
-    private function generateSearchClauses($searchCriteria, $query, array $detailedSearchCriteria = [])
+    /**
+     * Generates the SQL WHERE clause used to decide, which search results fit the given query.
+     *
+     * @param array $searchCriteria A list of SQL identifiers the words of the query get matched against.
+     * @param string $query The search query
+     * @param array $detailedSearchCriteria A list of SQL identifiers the words of the query get matched against, only if the size of the query is more than one word. This can be used to allow further specification of search results.
+     * @return array A tuple, including the SQL WHERE clause text as the first element, and an array of query parameters in the second.  
+     */
+    private function generateSearchClauses(array $searchCriteria, string $query, array $detailedSearchCriteria = []): array
     {
         $query = preg_replace('/[,;+\.\s]+/', ' ', $query);
         $queryTerms = explode(' ', trim($query));

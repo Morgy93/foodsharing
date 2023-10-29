@@ -6,7 +6,7 @@
     <Avatar
       class="mr-2"
       :size="35"
-      :url="user.photo"
+      :url="user.avatar"
     />
     <div class="text-truncate flex-grow-1">
       <h6 class="m-0 text-truncate d-inline">
@@ -26,12 +26,12 @@
             {{ user.region_name }}
           </a>
         </span>
+        <i v-else>{{ $i18n('search.results.user.no_home_region') }}</i>
         <span v-if="user.email">
           <a :href="`mailto:${user.email}`">
             {{ user.email }}
           </a>
         </span>
-        <i v-else>{{ $i18n('search.results.user.no_home_region') }}</i>
       </small>
     </div>
     <PhoneButton
