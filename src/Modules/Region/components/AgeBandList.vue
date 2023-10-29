@@ -13,6 +13,7 @@
         <b-tab
           :title="$i18n('ageBandList.district_tab')"
           active
+          @click="reloadAgeBandDataTab"
         >
           <b-table
             :fields="fields"
@@ -22,10 +23,12 @@
             hover
             small
             caption-top
+            :busy="isAgeBandDataLoading"
           />
         </b-tab>
         <b-tab
           :title="$i18n('ageBandList.home_district_tab')"
+          @click="reloadAgeBandHomeDistrictDataTab"
         >
           <b-table
             :fields="fields"
@@ -35,6 +38,7 @@
             hover
             small
             caption-top
+            :busy="isAgeBandHomeDistrictDataLoading"
           />
         </b-tab>
       </b-tabs>
@@ -45,36 +49,72 @@
 <script>
 
 import { BTable, BTabs, BTab } from 'bootstrap-vue'
+import { getRegionAgeBandData } from '@/api/statistics'
 
 export default {
   components: { BTable, BTabs, BTab },
   props: {
+    regionId: { type: Number, required: true },
     regionName: {
       type: String,
       default: '',
     },
-    ageBandDataTab: {
-      type: Array,
-      default: () => [],
-    },
-    ageBandDataHomeDistrictTab: {
-      type: Array,
-      default: () => [],
-    },
   },
   data () {
     return {
+      isAgeBandDataLoading: false,
+      isAgeBandHomeDistrictDataLoading: false,
+      ageBandDataTab: [],
+      ageBandDataHomeDistrictTab: [],
       sortBy: 'ageBand',
       fields: [{
+        key: 'ageBand',
         label: this.$i18n('ageBandList.ageBand'),
         sortable: true,
       },
       {
+        key: 'numberOfAgeBand',
         label: this.$i18n('ageBandList.NumberOfAgeband'),
         sortable: true,
       },
       ],
     }
+  },
+  async created () {
+    await this.asyncAgeBandData()
+    this.isAgeBandHomeDistrictDataLoading = false
+  },
+  methods: {
+    async asyncAgeBandData () {
+      this.isAgeBandDataLoading = true
+      try {
+        console.log('asyncAgeBandData called')
+        this.ageBandDataTab = await getRegionAgeBandData(this.regionId, false)
+      } catch (error) {
+        console.error('Error fetching ageBandDataTab:', error)
+      }
+      this.isAgeBandDataLoading = false
+    },
+    async asyncAgeBandHomeDistrictData () {
+      this.isAgeBandHomeDistrictDataLoading = true
+      try {
+        // Make the API request to fetch gender data for the specified region
+        this.ageBandDataHomeDistrictTab = await getRegionAgeBandData(this.regionId, true)
+      } catch (error) {
+        console.error('Error fetching asyncAgeBandHomeDistrictData:', error)
+      }
+      this.isAgeBandHomeDistrictDataLoading = false
+    },
+    async reloadAgeBandDataTab () {
+      if (this.ageBandDataTab.length === 0) {
+        await this.asyncAgeBandData()
+      }
+    },
+    async reloadAgeBandHomeDistrictDataTab () {
+      if (this.ageBandDataHomeDistrictTab.length === 0) {
+        await this.asyncAgeBandHomeDistrictData()
+      }
+    },
   },
 }
 </script>

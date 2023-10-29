@@ -3,8 +3,10 @@
 namespace Foodsharing\Modules\Statistics;
 
 use Foodsharing\Modules\Core\BaseGateway;
+use Foodsharing\Modules\Core\DBConstants\Foodsaver\Role;
 use Foodsharing\Modules\Core\DBConstants\Region\RegionIDs;
 use Foodsharing\Modules\Core\DBConstants\Unit\UnitType;
+use Foodsharing\Modules\Statistics\DTO\StatisticsAgeBand;
 use Foodsharing\Modules\Statistics\DTO\StatisticsGender;
 
 class StatisticsGateway extends BaseGateway
@@ -154,6 +156,71 @@ class StatisticsGateway extends BaseGateway
 
         return array_map(function ($StatisticsGender) {
             return StatisticsGender::create($StatisticsGender['gender'], $StatisticsGender['numberOfGender']);
+        }, $list);
+    }
+
+    public function ageBandHomeDistrict(int $districtId): array
+    {
+        $list = $this->db->fetchAll(
+            'SELECT
+				CASE
+				WHEN age >=18 AND age <=25 THEN \'18-25\'
+				WHEN age >=26 AND age <=33 THEN \'26-33\'
+				WHEN age >=34 AND age <=41 THEN \'34-41\'
+				WHEN age >=42 AND age <=49 THEN \'42-49\'
+				WHEN age >=50 AND age <=57 THEN \'50-57\'
+				WHEN age >=58 AND age <=65 THEN \'58-65\'
+				WHEN age >=66 AND age <=73 THEN \'66-73\'
+				WHEN age >=74 AND age < 100 THEN \'74+\'
+				WHEN age >= 100 or age < 18 THEN \'invalid\'
+				WHEN age IS NULL THEN \'unknown\'
+				END AS ageBand,
+				COUNT(*) AS numberOfAgeBand
+				FROM
+				(
+				 SELECT DATE_FORMAT(NOW(), \'%Y\') - DATE_FORMAT(geb_datum, \'%Y\') - (DATE_FORMAT(NOW(), \'00-%m-%d\') < DATE_FORMAT(geb_datum, \'00-%m-%d\')) AS age,
+				 id FROM fs_foodsaver WHERE rolle >= :rolle AND bezirk_id = :id and deleted_at is null
+				) AS tbl
+				GROUP BY ageBand',
+            ['rolle' => Role::FOODSAVER, ':id' => $districtId]
+        );
+
+        return array_map(function ($StatisticsAgeBand) {
+            return StatisticsAgeBand::create($StatisticsAgeBand['ageBand'], $StatisticsAgeBand['numberOfAgeBand']);
+        }, $list);
+    }
+
+    public function ageBandDistrict(int $districtId): array
+    {
+        $list = $this->db->fetchAll(
+            'SELECT
+				CASE
+				WHEN age >=18 AND age <=25 THEN \'18-25\'
+				WHEN age >=26 AND age <=33 THEN \'26-33\'
+				WHEN age >=34 AND age <=41 THEN \'34-41\'
+				WHEN age >=42 AND age <=49 THEN \'42-49\'
+				WHEN age >=50 AND age <=57 THEN \'50-57\'
+				WHEN age >=58 AND age <=65 THEN \'58-65\'
+				WHEN age >=66 AND age <=73 THEN \'66-73\'
+				WHEN age >=74 AND age < 100 THEN \'74+\'
+				WHEN age >= 100 or age < 18 THEN \'invalid\'
+				WHEN age IS NULL THEN \'unknown\'
+				END AS ageBand,
+				COUNT(*) AS numberOfAgeBand
+				FROM
+				(
+				 SELECT DATE_FORMAT(NOW(), \'%Y\') - DATE_FORMAT(geb_datum, \'%Y\') - (DATE_FORMAT(NOW(), \'00-%m-%d\') < DATE_FORMAT(geb_datum, \'00-%m-%d\')) AS age,
+				 		fs.id
+				 FROM fs_foodsaver_has_bezirk fb
+					 left outer join fs_foodsaver fs on fb.foodsaver_id=fs.id
+					 WHERE fs.rolle >= :rolle AND fb.bezirk_id = :id and fs.deleted_at is null
+				) AS tbl
+				GROUP BY ageBand',
+            ['rolle' => Role::FOODSAVER, ':id' => $districtId]
+        );
+
+        return array_map(function ($StatisticsAgeBand) {
+            return StatisticsAgeBand::create($StatisticsAgeBand['ageBand'], $StatisticsAgeBand['numberOfAgeBand']);
         }, $list);
     }
 }

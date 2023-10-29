@@ -13,9 +13,8 @@
         id: 'vue-ageBandlist',
         component: 'ageBand-list',
         props: {
+            regionId : region.id,
             regionName: region.name,
-            ageBandDataTab: ageBand.district,
-            ageBandDataHomeDistrictTab: ageBand.homeDistrict,
         }
     } %}
     {% include 'partials/vue-wrapper.twig' with {

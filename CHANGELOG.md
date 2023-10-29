@@ -7,6 +7,7 @@
 - Threads can be renamed !2882 @AntonBallmaier
 - The button to jump to the start or end of a thread can be accessed from anywhere in the thread !2882 @AntonBallmaier
 - Exported calendars can be filtered by the invitation status #1535 !2873 @alex.simm
+- Added spanish translation !2892 @irgendwer
 
 ## Changes
 - Changed team state translation from full to closed !2831 @chriswalg
@@ -18,13 +19,13 @@
 - Added error handling for cache helper for bell notifications or other requests !2869 @chriswalg
 
 ## Refactoring
-- Refactor mailbox modul to vue and rest api !2580 !2870 @chriswalg @alex.simm
+- Refactor mailbox modul to vue and rest api !2580 !2870 !2871 @chriswalg @alex.simm
 - Use REST for quickreplying to wall posts !2795 @alex.simm
 - Cleaned up a lot of core code all over the place !2738 @\_fridtjof_
 - Preparations to routing/link building code for future porting to Symfony controllers !2738 @\_fridtjof_
 - Moved the database connection to Doctrine DBAL !2801 @\_fridtjof_
 - Refactored the list of editable content to vue !2862 @alex.simm
-- Use REST for statistic !2879 @fs_k
+- Use REST for statistic !2879 !2887 @fs_k
 - Modernized ContentControl to a Symfony controller !2876 @\_fridtjof_
 - Modernized TeamControl to a Symfony contorller !2881 @\_fridtjof_
 
@@ -49,6 +50,7 @@
 - Store chain information is visible on the store page !2742 @alex.simm
 - Add home district count to region top #79 !2692 @Morgy93
 - Storemanagers can set a description for pickup slots #1653 !2757 !2781 @AntonBallmaier
+- Improved bell menu #1684 #1685 #1686 #1687 !2832 @AntonBallmaier
 
 ## Changes
 - Added a new content page for it infos to menu !2590 @chriswalg

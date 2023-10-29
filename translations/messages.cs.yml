@@ -1006,7 +1006,7 @@ recipients:
 date:
   -- Tomorrow: ''
   friday: 'pátek'
-  tomorrow: ''
+  tomorrow: 'zítra'
   yesterday: ''
   today: ''
   clock: ''
@@ -1385,7 +1385,7 @@ dashboard:
   options:
     hide:
       tooltip: ''
-      text: ''
+      text: 'Změnit pohled'
     grid_toggle:
       2_columns: ''
       3_columns: ''

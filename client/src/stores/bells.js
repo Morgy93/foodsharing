@@ -1,45 +1,53 @@
 import Vue from 'vue'
-import { deleteBell, getBellList, markBellsAsRead } from '@/api/bells'
+import { deleteBells, getBellList, markBellsAsRead } from '@/api/bells'
 import { getCache, getCacheInterval, setCache } from '@/helper/cache'
 
 const bellsRateLimitInterval = 60000 // 1 minute in milliseconds
 const cacheRequestName = 'bells'
+const pageSize = 20
 
 export const store = Vue.observable({
   bells: [],
+  limit: pageSize,
+  finishedFirstLoad: false,
 })
 
 export const getters = {
   get: () => store.bells,
-  getUnreadCount: () => store.bells.filter(b => !b.isRead).length,
+  getUnreadCount: () => {
+    const count = store.bells.filter(b => !b.isRead).length
+    const maybeMore = !(count < store.bells.length || getters.getAreAllLoaded())
+    return { count, maybeMore }
+  },
+  getAreAllLoaded: () => store.finishedFirstLoad && store.bells.length < store.limit,
 }
 
+// even with "pagination", allways fetch all pages 1 to n to prevent invalid states if the bells changed
 export const mutations = {
   async fetch (withoutCache = false) {
     try {
       if (await getCacheInterval(cacheRequestName, bellsRateLimitInterval) || withoutCache) {
-        store.bells = await getBellList()
+        store.bells = await getBellList(store.limit)
 
         await setCache(cacheRequestName, store.bells)
+        store.finishedFirstLoad = true
       } else {
         store.bells = await getCache(cacheRequestName)
+        store.limit = Math.max(pageSize, Math.ceil(store.bells.length / pageSize) * pageSize)
+        store.finishedFirstLoad = true
       }
     } catch (e) {
       console.error('Error fetching bells:', e)
     }
   },
-  async delete (id) {
-    const bell = store.bells.find(b => b.id === id)
-    // this.$set(bell, 'isDeleting', true)
+  async delete (ids) {
     try {
-      await deleteBell(id)
-      store.bells.splice(store.bells.indexOf(bell), 1)
+      await deleteBells(ids)
+      store.bells = store.bells.filter(b => !ids.includes(b.id))
       await setCache(cacheRequestName, store.bells)
-      const withoutCache = true
-      await this.fetch(withoutCache)
+      await this.fetch(true)
     } catch (err) {
       console.log(err)
-      // this.$set(bell, 'isDeleting', false)
       throw err
     }
   },
@@ -48,22 +56,27 @@ export const mutations = {
     this.markBells(bellsToMarkAsRead)
   },
   markNewBellsAsRead () {
-    const bellsToMarkAsRead = store.bells
+    const bellsToMarkAsRead = store.bells.filter(bell => !bell.isRead)
     this.markBells(bellsToMarkAsRead)
   },
   allBellsWithSameHref (bell) {
     return store.bells.filter(b => b.href === bell.href)
   },
   async markBells (bellsToMarkAsRead) {
-    const ids = []
+    const ids = bellsToMarkAsRead.map(bell => bell.id)
+    bellsToMarkAsRead.forEach(bell => { bell.isRead = true })
 
-    for (const b of bellsToMarkAsRead) {
-      b.isRead = true
-      ids.push(b.id)
-      await setCache(cacheRequestName, store.bells)
+    await Promise.all([
+      await setCache(cacheRequestName, store.bells),
+      await markBellsAsRead(ids),
+    ])
+  },
+  async loadMore () {
+    if (store.bells.length === store.limit) {
+      store.limit += pageSize
+      store.finishedFirstLoad = false
     }
-
-    await markBellsAsRead(ids)
+    await this.fetch(true)
   },
 }
 

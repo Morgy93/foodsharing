@@ -66,6 +66,11 @@ class MailboxTransactions
             foreach ($email->attachments as $attachment) {
                 $path = $this->getAttachmentFilePath($attachment);
                 $attachment->size = file_exists($path) ? filesize($path) : EmailAttachment::SIZE_UNKNOWN;
+
+                // Mark old files with a prefix so that they can be distinguished in the frontend
+                if (str_starts_with($path, self::OLD_EMAIL_ATTACHMENT_DIRECTORY)) {
+                    $attachment->hashedFileName = 'old:' . $attachment->hashedFileName;
+                }
             }
         }
 

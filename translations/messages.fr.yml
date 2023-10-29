@@ -606,7 +606,7 @@ mailbox:
   failed: Le courriel n’a pas pu être envoyé.
   okay: Le courriel a bien été envoyé.
   not-allowed: Tu n’as pas l’autorisation nécessaire de faire ceci.
-  sm-quiz: Quiz pour les responsables des opérations
+  sm-quiz: Quiz pour les responsables des coopérations
   not-available: "Tu dois être {role} pour accéder aux boîtes de réception.\nRésolvez
     le {quiz} ici quand tu seras prêt·e.\n"
   name: Nom affiché
@@ -659,6 +659,8 @@ mailbox:
   close_edit_mode: Arrêter de modifier
   add: Ajouter
   mails: Courriels
+  mark_as_read: Marquer comme lu
+  unknown_sender: Expéditeur inconnu
 foodsaver:
   mailchange_error: L’activation de votre nouvelle adresse électronique a échoué.
     Veuillez réessayer.
@@ -696,7 +698,7 @@ foodsaver:
     et sur la <a href=\"/team/ehemalige\">liste des anciens élèves</a>\net peut être
     consulté sur le site Web.\n"
   manage:
-    orga: Fait partie de l’équipe organisation nationale
+    orga: fait partie de l’équipe d’administration mondiale
     remove: Supprimer du secteur géographique
     actions: Options
     last-activity: Dernière activité
@@ -789,6 +791,10 @@ forum:
       active: activé
       activate: activer
       disable: désactiver
+    sticky: fil épinglé
+    subscriptions:
+      subscribed: abonné
+      subscribe: s’abonner
   follow:
     email: comme courriel
     bell: par la cloche
@@ -1236,11 +1242,11 @@ store:
   complete: base de données complète
   smneeded: Pour créer une collaboration, tu dois être responsable de coopération.
   locked: Tu ne peux pas modifier cette collaboration.
-  regionPickupRuleLong: Pas plus de {regionPickupRuleLimit} collectes provenant d’entreprises
-    exceptionnellement populaires peuvent être enregistrés dans un délai de ±{regionPickupRuleTimespan}
-    jours suivant la date de ramassage souhaitée. Un maximum de {regionPickupRuleLimitDay}
-    ramassages peuvent être effectués dans ces commerces par jour. {regionPickupRuleInactive}
-    heures avant la collecte, cette règle n’est plus prise en compte.
+  regionPickupRuleLong: Pas plus de {regionPickupRuleLimit} collectes auprès d'entreprises
+    exceptionnellement populaires ne peuvent être enregistrés dans les {regionPickupRuleTimespan}
+    jours précédant et suivant la date de ramassage souhaitée. Un maximum de {regionPickupRuleLimitDay}
+    ramassages peuvent être effectués par jour auprès de ces entreprises. {regionPickupRuleInactive}
+    heures avant le retrait, cette règle n'est plus prise en compte.
   useRegionPickupRules: "C’est une coopération très populaire. Outre les règles de
     fonctionnement, les règles de collecte suivantes s’appliquent à l’échelle du secteur
     géographique :"
@@ -1423,6 +1429,9 @@ menu:
     your_baskets: Tes paniers solidaires
     chainList: Aperçu des chaînes
     security: Sécurité
+    load_more: Charger plus
+    refresh: Actualiser
+    delete_read: Effacer tout ce qui a été lu
   content: modifier les contenus
   manage_mailboxes: gérer les boîtes de réception
   email: envoyer la lettre d'information
@@ -1430,8 +1439,12 @@ menu:
   quiz: Gérer le quiz
   blog: Modifier un article de blog
   manage_regions: Gérer les secteurs géographiques
+  bell:
+    delete_read_confirmation:
+      text: Tu veux vraiment supprimer {count} cloches lues ?
+      title: Supprimer les notifications ?
 dashboard:
-  pickupdates: Prochains évènements
+  pickupdates: Prochaines collectes
   no_more_updates_event: Plus de nouveaux évènements
   deleted_user: Utilisateur supprimé
   push:
@@ -1458,7 +1471,7 @@ dashboard:
     managing_stores: Tes établissements où tu es responsable
     users: Collecteur·ice
     baskets: Paniers solidaires
-    jumping_stores: Tes établissements où tu es remplaçant-e
+    jumping_stores: Où tu es remplaçant·e
     events: Événements
     polls: Votations
   foodsaver_amount: "Tu as fait <b>{pickups} x</b> collectes et a sauvé <b>{weight} kg</b>
@@ -1505,7 +1518,7 @@ dashboard:
   invitation: Tu as reçu une invitation
   options:
     hide:
-      text: Gérer une annonce
+      text: Change de vue
       tooltip: Ici, tu peux masquer ou afficher des zones spécifiques sur le tableau
         de bord.
     grid_toggle:
@@ -1764,7 +1777,7 @@ profile:
   choosestore: Veuillez sélectionner le magasin concerné
   cantdeletethis: Tu ne peux pas effacer des rendez-vous individuels !
 pickuplist:
-  NumberOfAppointments_table_header: Nombre d’évènements
+  NumberOfAppointments_table_header: nº de ramassages
   unclear: Statut confus
   error_whileSending: Erreur lors de l’envoi du message
   error_confirm: 'Erreur lors de la confirmation : '
@@ -1774,9 +1787,9 @@ pickuplist:
   error_loadingPickup: 'Erreur de chargement des créneaux de collecte : '
   tryagain: Réessaye après avoir chargé à nouveau la page.
   tooslow: Pas assez rapide ! Quelqu’un s’est inscrit pour cette collecte avant toi.
-  NumberOfFoodSavers_table_header: Nombre de Foodsaver
-  NumberOfSlots_table_header: Nombre des créneaux de collecte
-  NumberOfStores_table_header: Nombre de magasins
+  NumberOfFoodSavers_table_header: nº de Foodsaver
+  NumberOfSlots_table_header: nº de fentes
+  NumberOfStores_table_header: nº de magasins
   time_table_header: Période
   year_tab: Année
   month_tab: Mois
@@ -2193,8 +2206,8 @@ footer:
   contact: Contact
   our_partner: Nos partenaires
   partner: Partenaires
-  infosPrivatePersons: Pour les personnes privées
-  infosCompany: Pour les entreprises
+  infosPrivatePersons: pour les personnes privées
+  infosCompany: pour les entreprises
   guide: Conseils d’hygiène
   dataprivacy: Protection des données
   imprint: Mentions légales
@@ -2212,7 +2225,7 @@ footer:
     wiener_tafel: Banque alimentaire de Vienne
     denns: Denn’s Biomarkt
     lebensministerium: Bundesministerium für Landwirtschaft, Regionen und Tourismus
-  infosDeveloper: Pour les développeurs·euses
+  infosDeveloper: pour les développeurs·euses
   meta:
     version: 'Version : {version}'
     it_devdocs: by foodsharing IT
@@ -2265,16 +2278,16 @@ content:
   last_modified: dernière édition
   delete_tooltip: Supprimer la page
 genderlist:
-  gender_district_table_caption: Répartition de la caractéristique « sexe » à tous
-    les collecteur·ice·s du secteur géographique
+  gender_district_table_caption: Répartition par sexe de tous les collecteur·ice·s
+    du district
   number_table_header: nombre
   gender_female: femme
   gender_male: homme
   gender_not_selected: non choisi
   gender_divers: Autre
   gender_table_header: Sexe
-  gender_home_district_table_caption: Répartition de la caractéristique « sexe » aux
-    collecteur·ice·s du secteur géographique favori
+  gender_home_district_table_caption: Répartition par sexe de tous les collecteur·ice·s
+    qui ont leur district d’origine ici
   home_district_tab: Secteur géographique favori
   district_tab: Secteur géographique
   header_for_district: Répartition des Foodsaver suivant leur sexe à {bezirk}
@@ -2373,6 +2386,12 @@ bell:
   forum_post:
     one: Nouveau message de {user} dans le forum {forum}
     many: '{count} nouveaux messages sur le forum {forum}'
+  forum_new_thread: de {user} dans le forum {forum}
+  forum_announcement: de {user} dans le forum {forum}
+  forum_mention_title: '{user} a parlé de toi ({forum})'
+  forum_new_thread_title: 'Nouveau fil de discussion : {title}'
+  forum_announcement_title: 'Message important : {title}'
+  forum_mention: dans le sujet « {title} » du forum {forum}
 personal_data:
   landline: Numéro de fixe
   mobile: Numéro de portable
@@ -2531,11 +2550,11 @@ startpage:
     title: Faire un don
     link: Soutenir foodsharing
   towns:
-    text: "« Les villes participantes diffèrent selon qu’elles sont en route vers
-      la limitation du gaspillage alimentaire \nou qu’elles l’ont déjà atteinte. Ce
-      dernier est le cas lorsqu’il y a, à côté d’une équipe foodsharing sur place,
-      \nune déclaration de motivation, signée par la municipalité, symbolisant le
-      partenariat entre foodsharing \net les pouvoirs publics. »\n"
+    text: "Les villes participantes diffèrent selon qu’elles sont en route vers la
+      limitation du gaspillage alimentaire \nou qu’elles l’ont déjà atteinte. Ce dernier
+      est le cas lorsqu’il y a, à côté d’une équipe foodsharing sur place, \nune déclaration
+      de motivation, signée par la municipalité, symbolisant le partenariat entre
+      foodsharing \net les pouvoirs publics.\n"
     title: Villes foodsharing
   demands:
     text: "Pour endiguer efficacement le gaspillage alimentaire, il ne suffit pas
@@ -2723,12 +2742,12 @@ poll:
   vote_success: Tu as voté avec succès.
   error_cannot_vote: Tu ne peux pas participer à ce vote
   submit_vote: envoyer le vote
-  submit_vote_warning: 'Attention : le vote est anonyme et tu ne peux plus changer
-    ton vote après avoir voté.'
+  submit_vote_warning: 'Attention : Le vote est anonyme, vous ne pouvez donc pas modifier
+    votre sélection après avoir voté.'
   type_2:
-    tooltip_positive: accepte
-    tooltip_neutral: neutre-ne se prononce pas
-    tooltip_negative: refus
+    tooltip_positive: Consentement
+    tooltip_neutral: Abstention
+    tooltip_negative: Rejet
   type_description_3: Vote d’évaluation entre +3 (d’accord) und -3 (pas d’accord)
   type_description_2: "Possibilités de vote : accepte-est d’accord / ne se prononce
     pas / refuse-n’est pas d’accord"
@@ -3008,7 +3027,7 @@ quiz:
   safeandsound: Mais pas de problème. Ta session a été enregistrée. Tu peux continuer
     à répondre à tout moment.
   continuenow: Répondre au quiz maintenant !
-  continuetype: ': Continuer le quiz'
+  continuetype: '-quiz : continuer'
   trynumber: C’était la tentative numéro
   failedbeforebut: " fois déjà, tu as échoué au quiz. C’est le nombre d’essais qu’il
     te reste à faire :"
@@ -3305,3 +3324,15 @@ markdown_input:
   empty_preview_placeholder: "Il s’agit de l’aperçu du formatage. Le texte est formaté
     ici tel qu’il sera affiché ultérieurement.\n---\n*Mais vous n’avez saisi aucun
     texte susceptible d’être affiché ici.*"
+thread:
+  options:
+    rename: Modifier le titre
+    unlock: Rouvrir la discussion
+    pin: épingler le fil
+    lock: Fermer la discussion
+    unpin: détacher le fil
+  rename:
+    description_modal_text: 'Entrez un nouveau titre pour ce fil :'
+    placeholder: Titre
+    max_length_info: Longueur maximale du titre atteinte (260 caractères)
+    edit_description: Modifier le titre

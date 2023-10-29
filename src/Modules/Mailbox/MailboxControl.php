@@ -51,4 +51,36 @@ class MailboxControl extends Control
             'mailboxes' => $this->mailboxGateway->getMailboxesWithUnreadCount($mailboxIds),
         ]));
     }
+
+    /**
+     * @deprecated This function is used for downloading attachments of old emails. It can be removed when all files
+     *             have been moved to the upload API.
+     */
+    public function dlattach()
+    {
+        if (isset($_GET['mid'], $_GET['i'])) {
+            if ($m = $this->mailboxGateway->getAttachmentFileInfo($_GET['mid'])) {
+                if ($this->mailboxPermissions->mayMailbox($m['mailbox_id'])) {
+                    if ($attach = json_decode($m['attach'], true)) {
+                        if (isset($attach[(int)$_GET['i']])) {
+                            $file = 'data/mailattach/' . $attach[(int)$_GET['i']]['filename'];
+
+                            $filename = $attach[(int)$_GET['i']]['origname'];
+                            $size = filesize($file);
+                            $mime = $attach[(int)$_GET['i']]['mime'];
+                            if ($mime) {
+                                header('Content-Type: ' . $mime);
+                            }
+                            header('Content-Disposition: attachment; filename="' . $filename . '"');
+                            header('Content-Length: $size');
+                            readfile($file);
+                            exit;
+                        }
+                    }
+                }
+            }
+        }
+
+        $this->routeHelper->goPageAndExit('mailbox');
+    }
 }

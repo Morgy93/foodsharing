@@ -6,7 +6,7 @@ export async function getMailUnreadCount () {
 
 export async function setEmailProperties (emailId, isRead = null, folder = null) {
   return patch(`/mailbox/${emailId}`, {
-    isRead: isRead !== null ? (isRead ? 1 : 0) : null,
+    isRead: isRead !== null ? isRead : undefined,
     folder: folder,
   })
 }

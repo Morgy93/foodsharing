@@ -79,6 +79,8 @@ dashboard:
   release:
     for_support: Aksi takdirde bizimle şu adresten iletişime geçebilirsiniz
     for_release_notes: En önemli değişiklikleri şu adreste bulabilirsiniz
+    for_news_from_it: Herhangi bir sorunuz veya herhangi bir zorluk varsa öncelikle
+      aşağıya bakın
 geb_datum: Doğum tarihi (YYYY-AA-GG)
 add: ekle
 lat: Enlem
@@ -167,7 +169,7 @@ team_status: Ekip Statüsü
 betrieb_kategorie_id: Kategori
 first_post: İlk Pano Kayıtı
 begin: İşbirliğinin başlangıcı
-besonderheiten: Ekip Statüsü
+besonderheiten: Tanım
 public_info: Şirket hakkında açık görünen bilgiler
 fax: Faks
 lebensmittel: Hangi yiyecekler alınabilir?
@@ -567,6 +569,12 @@ bell:
   forum_post:
     many: “{forum}” forumunda {count} yeni gönderi
     one: '{user} “{forum}” forumunda yeni bir yazı yazdı'
+  forum_new_thread: '{forum} forumunda {user} tarafından'
+  forum_announcement: '{forum} forumunda {user} tarafından'
+  forum_mention_title: '{user} sizden bahsetti ({forum})'
+  forum_new_thread_title: 'Yeni Gönderi: {title}'
+  forum_announcement_title: 'Önemli mesaj: {title}'
+  forum_mention: '{forum} forumunun "{title}" konusunda'
 sig:
   buddies: Tanıdığın insanlar
 error:
@@ -1090,10 +1098,11 @@ store:
   tooltip_jumping: Bu işletmenin yedek listesindesiniz
   jumperSince: 'Şu tarihten beri yedek listesinde: {date}'
   go: Ekip sayfasına
-  regionPickupRuleLong: Tüm Bölge Kuralları işletmeleri dikkate alınarak, {regionPickupRuleTimespan}
-    gün içinde toplam {regionPickupRuleLimit} adetten fazla alım yapılamaz. Bu işletmelerden
-    günde en fazla {regionPickupRuleLimitDay} kez alım yapılabilir. Alım tarihinden
-    {regionPickupRuleInactive} saat önce, bu kural dikkate alınmaz.
+  regionPickupRuleLong: İstenilen teslim alma tarihinden sonraki ±{regionPickupRuleTimespan}
+    gün içinde, ülke çapında ki adalet kuralı işletmelerinde, {regionPickupRuleLimit}
+    defadan fazla alım yapılamaz. Bu işletmelerde, günde en fazla {regionPickupRuleLimitDay}
+    kez alım yapılabilir. {regionPickupRuleInactive} Teslim alıma saatler kala, bu
+    kural dikkate alınmaz.
   unknownDate: bilinmeyen
   days_before: önce
   peoplecame: İnsanların mağazaya sık sık çağrılmadan gittiği oldu.
@@ -1412,7 +1421,7 @@ foodsaver:
   manage:
     photo: Fotoğraf
     actions: Opsiyonlar
-    orga: Ülke çapındaki organizasyon ekibinin bir parçasıdır
+    orga: küresel yönetici ekibinin bir parçası
     last-activity: Son Aktivite
     remove: Bu Bölgeden sil
     name: İsim
@@ -1513,6 +1522,12 @@ mailbox:
   move_to: Taşınmak
   close_edit_mode: Düzenlemeyi durdur
   add: Ekle
+  search: Arama
+  conformation_modal:
+    title: Onaylama
+    message: E-postayı silmek istediğinizden emin misiniz?
+  mark_as_read: E-postayı okundu olarak işaretle
+  unknown_sender: Bilinmeyen gönderen
 basket:
   sent_request: Başvuru gönderildi
   n_requests: 'Şimdiye kadar ki başvurular: <strong>{count}</strong>'
@@ -1690,6 +1705,13 @@ menu:
     group_overview: 'Küresel çalışma gruplarına genel bakış'
     chainList: 'İşletme zinciri listesi'
     security: Güvenlik
+    load_more: Daha fazla yükle
+    refresh: Güncelle
+    delete_read: Tüm okunmuş olanları sil
+  bell:
+    delete_read_confirmation:
+      text: '{count} okuma çanlarını silmek istediğinizden emin misiniz?'
+      title: Bildirimler temizlensin mi?
 footer:
   infosDeveloper: Geliştiriciler için
   wiki: Viki
@@ -1887,6 +1909,7 @@ wall:
   see-more: Tüm gönderileri göster
   info-logging: Anlaşmazlıkları önlemek için, içeriğin ve onu gerçekleştiren kişinin
     günlüğe kaydedildiğini lütfen unutmayın.
+  placeholder: Yeni bir pano yazısı yazın...
 settings:
   changemail:
     done: E-posta adresiniz değiştirildi.
@@ -1961,12 +1984,14 @@ settings:
       title: Yeni bir jeton oluştur
     export_tooltip: Seçtiğiniz bir takvim programı ile tahsilat tarihlerinizi görüntüleyebilirsiniz.
     export: Takvimi dışa aktar
+    include_invitations: Takvimde henüz yanıtlamadığım randevu davetleri de bulunmalıdır.
   title: Ayarlar
   passport:
     menu: Kimlik Kartı
-    verified_text: Bu kimlik yazıcı işareti olmadan indirilir. PDF, yazdırılmaya ve
-      düzenlenmeye karşı korumalıdır. Yalnızca akıllı telefonda gösterilmelidir. Basılı
-      bir kimliğe ihtiyacınız varsa, elçinizle iletişime geçin.
+    verified_text: Bu kimlik kartı akıllı telefonlarda kullanılmak üzere tasarlanmıştır.
+      Oraya kaydedebilir ve istendiğinde gösterebilirsiniz. Akıllı telefonunuz yoksa
+      veya başka bir nedenden dolayı klasik . . bir kimliğe ihtiyacınız varsa yerel
+      Elçinizle iletişime geçin.
     non_verified_text: Henüz doğrulanmadınız. Kimliği yalnızca doğrulanmış Foodsaverlar
       indirilebilir.
     button: Kimliği indir
@@ -2036,6 +2061,10 @@ forum:
     delete: Konuyu sil
     inactive: "Bu konu henüz aktif değil.\nBurdan kilidini açabilir ve tüm Foodsaverların
       bundan haberdar olmasını sağlayabilirsiniz.\n"
+    sticky: sabitlenmiş Konu
+    subscriptions:
+      subscribed: Abone olundu
+      subscribe: Abone ol
   hold_back_for_moderation: Konu kaydedildi ve bir elçi/moderatör onaylar onaylamaz
     yayınlanacak.
   sending_error: Gönderilirken bir hata oluştu
@@ -2093,8 +2122,8 @@ base:
   keywords: foodsharing, yiyecek, gıda, son kullanma tarihi, yiyecek israfı, yiyecek
     atmak, bağış yapmak, yiyecek takası
   slogan: Yiyecekleri atmak yerine paylaşmak - foodsharing
-  whatfor: Foodsharing.de'de yiyeceklerinizi son kullanma tarihi geçmeden önce sosyal
-    kuruluşlara veya diğer kişilere verebilirsiniz
+  whatfor: Foodsharing.network'de yiyeceklerinizi son kullanma tarihi geçmeden önce
+    sosyal kuruluşlara veya diğer kişilere verebilirsiniz
   jsrequired: Ne yazık ki, JavaScript olmadan burada hiçbir şey çalışmıyor.
 addresspicker:
   placeholder: Lütfen adresi burada arayın. Gerekirse, aşağıda düzeltin.
@@ -2225,6 +2254,7 @@ profile:
     kindofreport: 'Lütfen mesaj türünü seçiniz'
     reportedAdminNoArbitration: '{name} aleyhinde şikayette bulunamazsınız çünkü bu
       Admin, bölgenin yerel raporlama grubundadır ve orada bir tahkim kurulu yoktur.'
+    doesNotAffectStore: Hiçbir işletmeyi veya başka bir işletmeyi etkilemez
   choosestore: Lütfen ilgili işletmeyi seçiniz
   cantdeleteall: Tüm randevuları silemezsiniz!
   deletesuccess: Tek randevu silindi
@@ -3165,3 +3195,18 @@ markdown_input:
     hrule: yatay çizgi
     link: bağlantı
     heading: başlık
+  empty_preview_placeholder: "Bu bir formatlama önizlemesidir. Metin burada, daha
+    sonra görüntüleneceği şekilde formatlanmıştır.\n---\n*Henüz burada görüntülenebilecek
+    herhangi bir metin girmediniz.*"
+thread:
+  options:
+    rename: Başlığı düzenle
+    unlock: Konuyu aç
+    pin: Gönderiyi sabitle
+    lock: Konuyu kapat
+    unpin: Artık sabitlemeyi kaldır
+  rename:
+    description_modal_text: 'Bu yazı için yeni bir başlık girin:'
+    placeholder: Başlık
+    max_length_info: Maksimum başlık uzunluğuna ulaşıldı (260 karakter)
+    edit_description: Başlığı düzenle

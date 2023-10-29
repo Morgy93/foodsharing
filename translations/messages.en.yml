@@ -5,8 +5,8 @@ group:
   applications: Applications
   applications_for: Applications for {name}
   mail_link_title:
-    workgroup: e-mail inbox
-    region: e-mail inbox
+    workgroup: E-mail inbox
+    region: E-mail inbox
   application_requirements:
     requirements: Who can enter this group?
     nobody: Nobody (closed group).
@@ -47,7 +47,7 @@ group:
 
   function:
     title: Working group function
-    fsp: Food-Share Points
+    fsp: Food-Share Point
     voting: Polls
     stores: Stores
     welcome: Greeting
@@ -240,7 +240,7 @@ settings:
       is placed over your profile picture.\n"
     range: 'Indicate how long you will not be available for:'
     tooltip: '{name} is currently taking a break and is in nightcap mode'
-    full: I’m going to be away indefinetely
+    full: I’m going to be away indefinitely
     info: "With the nightcap feature, you tell the community that you are currently
       out of town or don’t have time to save food right now for other reasons.\nIt
       is helpful to know if you are able to respond to messages\nor even sometimes
@@ -354,7 +354,7 @@ menu:
     mailbox: Mailbox
     donate: Donate
     press: Press
-    forcompanies: For companies
+    forcompanies: for companies
     imprint: Legal notice
     regionalgroups: Local groups
     Germany: Germany
@@ -363,7 +363,7 @@ menu:
     international: International
     forum: Forum
     BOTforum: Ambassador forum
-    wall: pinboard
+    wall: Pinboard
     events: Events
     members: Members
     workingGroupEdit: Manage group
@@ -391,7 +391,7 @@ menu:
     release-notes: What’s new?
     donations: Donations
     options: Options
-    friendcircle: circle of friends
+    friendcircle: Circle of friends
     selfservice: Self service
     fundraising: Fundraising
     pin: Description of local group
@@ -402,6 +402,13 @@ menu:
     baskets: Food baskets
     chainList: Chain list
     security: Security
+    load_more: Load more
+    refresh: Refresh
+    delete_read: Delete all read
+  bell:
+    delete_read_confirmation:
+      text: Do you really want to delete {count} read bells?
+      title: Delete notifications?
 profile:
   banana:
     by: ' by '
@@ -705,6 +712,8 @@ mailbox:
   for_quoting:
     has_from: wrote on
     written_text:  
+  mark_as_read: Mark as read
+  unknown_sender: Unknown sender
 events:
   description: Description
   create:
@@ -735,7 +744,7 @@ events:
     edit: Edit event
     yes: Accept invitation
     options: Event options
-    no: I can not
+    no: I can’t
     maybe: maybe I can
   notFound: Either this event does not exist or you can not access it.
   goto: Go to the event
@@ -744,7 +753,7 @@ events:
     change: Modify answer
     maybe: Maybe
     yes: I will join
-    no: I can not
+    no: I can’t
   add_event: New event
   add_new_event: Add a new event
   rsvp:
@@ -792,6 +801,10 @@ forum:
       non_active: disabled
       disable: disabled
       activate: enabled
+    sticky: pinned Thread
+    subscriptions:
+      subscribed: subscribed
+      subscribe: Subscribe
   post:
     delete: Delete post
     body: Message
@@ -805,8 +818,8 @@ forum:
     months about this topic by e-mail (only possible in forums without moderation)
   follow:
     header: 'Notification about new answers:'
-    email: by e-mail
-    bell: by bell notification
+    email: via e-mail
+    bell: as bell notification
   new_thread: Compose new thread
   deleted_user: deleted user
   not_found: This thread does not exist.
@@ -862,9 +875,9 @@ pickup:
     title: Pick-up history
     search: Show pick-ups
   signout_history:
-    title: "History of logged out food savers from pick-ups for the last 7 days"
+    title: "Cancellation history for the last 7 days"
     reload: "Reload"
-    no_signouts_found: "No sign-outs found."
+    no_signouts_found: "No cancellations found."
     slot: "Pick-up"
     signout_via_responsible_person:
       via: "by"
@@ -1036,7 +1049,7 @@ terminology:
   community: Local group {name}
   basket: Food basket
   statistic: Statistics
-  wall: pinboard
+  wall: Pinboard
   admins: Administrators
   ambassadors: Ambassadors
   ambassador:
@@ -1186,9 +1199,9 @@ bell:
   new_foodsaver_title: '{name} is new in {bezirk}'
   betrieb_fetch: '{count} unconfirmed pick-ups'
   new_foodsaver_verified: Already verified — ready to go
-  new_foodsaver: needs introductory pick-ups
-  new_foodsaver_needs_introduction: needs introductory pick-ups
-  new_foodsaver_needs_verification: needs to be verified
+  new_foodsaver: Needs introductory pick-ups
+  new_foodsaver_needs_introduction: Needs introductory pick-ups
+  new_foodsaver_needs_verification: Needs to be verified
   new_quiz_comment_title: New quiz comment
   fs_sleepmode: '{name} {nachname} is now inactive'
   fs_sleepmode_title: New nightcap
@@ -1204,6 +1217,12 @@ bell:
   forum_post:
     one: New post by {user} in forum {forum}
     many: '{count} new posts in the forum {forum}'
+  forum_new_thread: by {user} in the forum {forum}
+  forum_announcement: by {user} in the forum {forum}
+  forum_mention_title: '{user} mentioned you ({forum})'
+  forum_new_thread_title: 'New thread: {title}'
+  forum_announcement_title: 'Important notice: {title}'
+  forum_mention: in the topic “{title}” of the forum {forum}
 reports:
   time: Time
   region: Home district
@@ -1599,7 +1618,7 @@ footer:
   version: 'Version: {version}'
   donate:
     cta: Donate now
-    call_to: You want to support foodsharing?
+    call_to: Would you like to support foodsharing?
   statistics: Statistics
   blog: Blog
   wiki: Wiki
@@ -1609,9 +1628,9 @@ footer:
   call_to_donate: "You would like to\nsupport foodsharing?\n"
   our_partner: Our partners
   partner: Partners
-  infosPrivatePersons: For private persons
-  infosCompany: For companies
-  infosDeveloper: For developers
+  infosPrivatePersons: for private persons
+  infosCompany: for companies
+  infosDeveloper: for developers
   guide: Hygiene guide
   dataprivacy: Privacy
   imprint: Legal notice
@@ -1953,15 +1972,14 @@ store:
   useRegionPickupRules: 'This is a CHERRY store. In addition to the rules for this
     store, the following district-wide CHERRY rule applies:'
   regionPickupRulesInactive: The additional district rules for pick-ups are not active
-  regionPickupRuleLong: Within ±{regionPickupRuleTimespan} days of the desired collection
-    date, no more than {regionPickupRuleLimit} collections may already be registered
-    at popular “cherry” companies, taking into account all stores with pick-up rule,
-    regardless which district. No more than a total of {regionPickupRuleLimitDay}
-    times may be picked up from these stores per day. {regionPickupRuleInactive} hours
-    before the pick-up, this rule is no longer taken into account.
+  regionPickupRuleLong: No more than {regionPickupRuleLimit} pickups from popular
+    “cherry” companies may be registered within each {regionPickupRuleTimespan} days
+    before and after the desired pickup date. A maximum of {regionPickupRuleLimitDay}
+    pickups may be made from these companies per day. {regionPickupRuleInactive} hours
+    before pickup, this rule is no longer taken into account.
   regionPickupRules: additional rule for much sought-after slots
   ownStores: My stores
-  managing: Store coordinator
+  managing: Cooperation responsibility
   member: Member
   isAppliedForTeam: Request
   jumping: Standby
@@ -2042,7 +2060,7 @@ date:
   monday: Monday
   yesterday: yesterday
   -- Yesterday: Yesterday
-  tomorrow: tomorrow
+  tomorrow: tmrw.
   -- Tomorrow: Tomorrow
   today: today
   Today: Today
@@ -2057,7 +2075,7 @@ wall:
   delete: Delete post
   see-more: Show all posts
   message_placeholder: Write a message…
-  name: pinboard
+  name: Pinboard
   info-somebody-else: This entry is older than a month. As a Store Coordinator you
     can remove it.
   confirm-deletion: Do you really want to delete the following pinboard post from
@@ -2337,8 +2355,8 @@ ageBandList:
   ageBand: Age group
   header_for_district: 'Age ranges in {bezirk} '
 pickuplist:
-  NumberOfFoodSavers_table_header: Number of foodsavers
-  NumberOfStores_table_header: Number of stores
+  NumberOfFoodSavers_table_header: '# foodsavers'
+  NumberOfStores_table_header: '# stores'
   year_tab: Year
   month_tab: Month
   week_tab: Week
@@ -2351,7 +2369,7 @@ pickuplist:
   error_leave: 'Failed to leave: '
   error_loadingPickup: 'Loading of the pick-up slots failed: '
   NumberOfSlots_table_header: '# slots'
-  NumberOfAppointments_table_header: Number of appointments
+  NumberOfAppointments_table_header: '# pickup dates'
   unclear: Status unclear
   tryagain: Try again after reloading.
   tooslow: Unfortunately, the registration did not work. This is probably because
@@ -2367,10 +2385,10 @@ genderlist:
   district_tab: Region
   number_table_header: Quantity
   header_for_district: Gender distribution of the foodsavers in {bezirk}
-  gender_home_district_table_caption: Allocation of the characteristic ‘gender’ to
-    the root district foodsavers
-  gender_district_table_caption: Breakdown of the characteristic ‘gender’ among all
-    foodsaver who joined the district
+  gender_home_district_table_caption: Gender distribution of all foodsavers who have
+    their home district here
+  gender_district_table_caption: Gender distribution of all foodsavers who joined
+    the district
 memberlist:
   header_for_workgroup: Foodsavers in the working group {bezirk}
   header_for_district: Foodsavers in the region {bezirk}
@@ -2474,7 +2492,7 @@ explanation: Explanation
 fp: Failure points
 text: text
 public_info: Public information of the store
-besonderheiten: Special features
+besonderheiten: Description
 begin: Start of cooperation
 fetchercount: Number of collectors
 team_status: Team status
@@ -2726,8 +2744,8 @@ base:
   slogan: Share food instead of throwing it away — foodsharing
   keywords: foodsharing, food, groceries, expiration date, food waste, throw away
     food, donate, food swap
-  whatfor: At foodsharing.de you can give your groceries to social institutions or
-    other people before they expire
+  whatfor: At foodsharing.network you can give your groceries to social institutions
+    or other people before they expire
 becomeregion:
   save: Save
   enterregion:
@@ -2777,7 +2795,7 @@ list:
 startpage:
   donate:
     title: Donate
-    link: support foodsharing
+    link: Support foodsharing
     text: "We seek sponsorship for any expenditure. In some cases, however, we are
       not or not fully successful, \ne.g. for the financing of events, legal advice
       or insurances.\nWe would be delighted in receiving any support.\n"
@@ -2797,8 +2815,8 @@ startpage:
       part3: you can find
       part2: map
       part4: Food-Share Points
-      part5: which are shelves or fridges where you can pick up and bring food for
-        free.
+      part5: ', which are shelves or fridges where you can pick up and bring food
+        for free.'
       part1: On the
     title: Close to you
     text2:
@@ -2974,7 +2992,7 @@ quiz:
     bv: Finish the signup process for store coordinators now.
     bot: Finish the ambassador signup process now.
   donecorrectly: you answered absolutely correct. Congrats!
-  wikilink: A wiki article to about this topic
+  wikilink: Related wiki article on this topic
   learnbreak: learning break
   safeandsound: No problem. Your session is saved. You can continue it at any time.
   continuetype: '-quiz: continue now'
@@ -3295,3 +3313,15 @@ markdown_input:
   empty_preview_placeholder: "This is the formatting preview. The text is formatted
     here as it will be displayed later.\n---\n*But you haven’t entered any text that
     could be displayed here.*"
+thread:
+  options:
+    rename: Rename
+    unlock: Reopen thread
+    pin: Pin thread
+    lock: Close thread
+    unpin: Unpin thread
+  rename:
+    description_modal_text: 'Enter a new title for this thread:'
+    placeholder: Title
+    max_length_info: Maximum title length reached (260 characters)
+    edit_description: Edit description

@@ -8,7 +8,6 @@ use Foodsharing\Modules\Bell\DTO\BellForExpirationUpdates;
 use Foodsharing\Modules\Bell\DTO\BellForList;
 use Foodsharing\Modules\Core\BaseGateway;
 use Foodsharing\Modules\Core\Database;
-use Foodsharing\Modules\Core\DatabaseNoValueFoundException;
 
 class BellGateway extends BaseGateway
 {
@@ -104,8 +103,7 @@ class BellGateway extends BaseGateway
             $limit = ' LIMIT ' . $offset . ', ' . $limit;
         }
 
-        $stm = '
-			SELECT
+        $stm = 'SELECT
 				b.`id`,
 				b.`name`,
 				b.`body`,
@@ -115,18 +113,15 @@ class BellGateway extends BaseGateway
 				b.`time`,
 				hb.seen,
 				b.closeable
-
 			FROM
 				fs_bell b,
 				`fs_foodsaver_has_bell` hb
-
 			WHERE
 				hb.bell_id = b.id
-
-			AND
-				hb.foodsaver_id = :foodsaver_id
-
-			ORDER BY b.`time` DESC
+			    AND hb.foodsaver_id = :foodsaver_id
+			ORDER BY
+                hb.seen ASC,
+                b.`time` DESC
 			' . $limit . '
 		';
         $rows = $this->db->fetchAll($stm, [':foodsaver_id' => $fsId]);
@@ -177,22 +172,18 @@ class BellGateway extends BaseGateway
      * Deletes the bell with the given ID for a specific foodsaver. Returns whether the bell was succesfully
      * deleted.
      */
-    public function delBellForFoodsaver(int $bellId, int $fsId): bool
+    public function delBellsForFoodsaver(array $bellIds, int $fsId): int
     {
-        try {
-            $bellIsCloseable = $this->db->fetchValueByCriteria('fs_bell', 'closeable', ['id' => $bellId]);
-        } catch (DatabaseNoValueFoundException) {
-            $bellIsCloseable = false;
-        }
-
-        if (!$bellIsCloseable) {
-            return false;
-        }
-
-        $deleted = $this->db->delete('fs_foodsaver_has_bell', ['bell_id' => $bellId, 'foodsaver_id' => $fsId]);
+        $deleted = $this->db->execute('DELETE hb
+            FROM fs_foodsaver_has_bell hb
+            JOIN fs_bell b ON b.id = hb.bell_id
+			WHERE hb.foodsaver_id = ?
+                AND b.closeable
+                AND b.id IN (' . $this->db->generatePlaceholders(count($bellIds)) . ')
+            ', [$fsId, ...$bellIds])->rowCount();
         $this->updateFoodsaverClient($fsId);
 
-        return $deleted > 0;
+        return $deleted;
     }
 
     public function deleteBellForFoodsavers(int $bellId, array $foodsaverIds): void

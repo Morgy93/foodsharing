@@ -8,6 +8,7 @@
         <MailboxMainNav
           :selected-email="email"
           :folder-type="email.mailboxFolder"
+          @toggle-email-state="toggleEmailState"
           @try-move-email="tryMoveEmail"
           @try-delete-email="tryDeleteEmail"
         />
@@ -15,7 +16,7 @@
           <div class="row">
             <div
               class="col col-6"
-              v-text="email.from.name ? email.from.name : email.from.address"
+              v-text="fromHeader"
             />
             <div class="col col-6 text-right">
               {{ $i18n('mailbox.date') }} : {{ displayedMailDate }} Uhr
@@ -33,13 +34,13 @@
               class="pt-2"
             >
               <b-list-group-item
-                v-for="attachment in email.attachments"
+                v-for="(attachment, index) in email.attachments"
                 :key="attachment.id"
               >
                 <b-link
                   v-if="attachment.size > 0"
                   :download="attachment.fileName"
-                  :href="$url('upload', attachment.hashedFileName)"
+                  :href="attachmentDownloadLink(attachment.hashedFileName, email.id, index)"
                 >
                   {{ attachment.fileName }} ({{ formatFileSize(attachment.size) }})
                 </b-link>
@@ -77,6 +78,7 @@ export default {
   data () {
     return {
       isBusy: false,
+      isRead: null,
     }
   },
   computed: {
@@ -89,6 +91,19 @@ export default {
         minute: 'numeric',
       })
     },
+    fromHeader () {
+      const partOne = this.email.from.name ? this.email.from.name : this.email.from.address
+      const partTwo = this.email.from.address
+      const combined = partOne + ' - ' + partTwo
+      const result = this.email.from.name ? combined : partTwo
+      return result ?? `(${this.$i18n('mailbox.unknown_sender')})`
+    },
+  },
+  mounted () {
+    if (this.email !== null) {
+      this.isRead = this.email.isRead
+      this.trySetEmailStatus()
+    }
   },
   methods: {
     async tryMoveEmail (folder) {
@@ -102,12 +117,17 @@ export default {
       this.isBusy = false
       hideLoader()
     },
-    async trySetEmailStatus (state) {
+    toggleEmailState () {
+      this.trySetEmailStatus()
+      this.closeAndReturnToMailbox()
+    },
+    async trySetEmailStatus () {
+      const state = !this.isRead
       showLoader()
       this.isBusy = true
       try {
-        await setEmailProperties(this.email.id, null, state)
-        this.setIsReadState(state)
+        await setEmailProperties(this.email.id, state, null)
+        this.isRead = state
       } catch (e) {
         pulseError(i18n('error_unexpected'))
       }
@@ -125,9 +145,6 @@ export default {
       }
       this.isBusy = false
       hideLoader()
-    },
-    setIsReadState (state) {
-      return this.email.isRead
     },
     closeAndReturnToMailbox () {
       store.setPage(MAILBOX_PAGE.EMAIL_LIST)
@@ -154,6 +171,11 @@ export default {
     addLinks (text) {
       const urlRegex = /(https?:\/\/[^\s]+)/g
       return text ? text.replace(urlRegex, '<a href="$1" target="_blank" rel="noopener noreferrer">$1</a>') : ''
+    },
+    attachmentDownloadLink (hashedFileName, emailId, attachmentIndex) {
+      return hashedFileName.startsWith('old:')
+        ? this.$url('mailboxOldAttachment', emailId, attachmentIndex)
+        : this.$url('upload', hashedFileName)
     },
   },
 }

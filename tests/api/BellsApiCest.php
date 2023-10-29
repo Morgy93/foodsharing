@@ -59,7 +59,7 @@ class BellsApiCest
 
     public function canDeleteBell(ApiTester $I)
     {
-        $I->sendDELETE('api/bells/' . $this->bells[0]);
+        $I->sendDELETE('api/bells', ['ids' => [$this->bells[0]]]);
         $I->seeResponseCodeIs(HttpCode::UNAUTHORIZED);
 
         $I->seeInDatabase('fs_foodsaver_has_bell', [
@@ -68,7 +68,7 @@ class BellsApiCest
         ]);
 
         $I->login($this->user['email']);
-        $I->sendDELETE('api/bells/' . $this->bells[0]);
+        $I->sendDELETE('api/bells', ['ids' => [$this->bells[0]]]);
         $I->seeResponseCodeIs(HttpCode::OK);
 
         $I->dontSeeInDatabase('fs_foodsaver_has_bell', [

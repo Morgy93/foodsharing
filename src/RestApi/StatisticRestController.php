@@ -3,6 +3,7 @@
 namespace Foodsharing\RestApi;
 
 use Foodsharing\Modules\Region\RegionGateway;
+use Foodsharing\Modules\Statistics\DTO\StatisticsAgeBand;
 use Foodsharing\Modules\Statistics\DTO\StatisticsGender;
 use Foodsharing\Modules\Statistics\StatisticsGateway;
 use FOS\RestBundle\Controller\AbstractFOSRestController;
@@ -41,16 +42,47 @@ class StatisticRestController extends AbstractFOSRestController
             throw new NotFoundHttpException('region does not exist');
         }
         $homeRegion = $paramFetcher->get('homeRegion');
-        $result = [];
-        if ($homeRegion !== null) {
-            // Cast $homeRegion to boolean
-            $homeRegion = filter_var($homeRegion, FILTER_VALIDATE_BOOLEAN);
 
-            if ($homeRegion) {
-                $result = $this->statisticsGateway->genderCountHomeRegion($regionId);
-            } else {
-                $result = $this->statisticsGateway->genderCountRegion($regionId);
-            }
+        // Cast $homeRegion to boolean
+        $homeRegion = filter_var($homeRegion, FILTER_VALIDATE_BOOLEAN);
+
+        if ($homeRegion) {
+            $result = $this->statisticsGateway->genderCountHomeRegion($regionId);
+        } else {
+            $result = $this->statisticsGateway->genderCountRegion($regionId);
+        }
+
+        return $this->handleView($this->view($result, 200));
+    }
+
+    /**
+     * Returns the age band distribution from a region.
+     * If homeregion is set only the homeregion of foodsavers from this regionId are considered.
+     */
+    #[OA2\Tag(name: 'statistics')]
+    #[Rest\Get('statistics/regions/{regionId<\d+>}/age-band')]
+    #[OA2\Response(response: '200', description: 'Success', content: new OA2\JsonContent(
+        type: 'array',
+        items: new OA2\Items(ref: new Model(type: StatisticsAgeBand::class)))
+    )]
+    #[Rest\QueryParam(name: 'homeRegion', requirements: 'true|false', default: false, description: 'result limit to homeregion')]
+    public function getStatisticRegionAgeBand(
+        int $regionId,
+        ParamFetcher $paramFetcher
+    ): Response {
+        $region = $this->regionGateway->getRegion($regionId);
+        if (empty($region)) {
+            throw new NotFoundHttpException('region does not exist');
+        }
+        $homeRegion = $paramFetcher->get('homeRegion');
+
+        // Cast $homeRegion to boolean
+        $homeRegion = filter_var($homeRegion, FILTER_VALIDATE_BOOLEAN);
+
+        if ($homeRegion) {
+            $result = $this->statisticsGateway->ageBandHomeDistrict($regionId);
+        } else {
+            $result = $this->statisticsGateway->ageBandDistrict($regionId);
         }
 
         return $this->handleView($this->view($result, 200));

@@ -47,6 +47,7 @@ const urls = {
   mailbox: (mailboxId = null) => `/?page=mailbox${mailboxId ? `&show=${mailboxId}` : ''}`,
   mailboxManage: () => '/?page=mailbox&a=manage',
   mailboxMailto: (email) => `/?page=mailbox&mailto=${email}`,
+  mailboxOldAttachment: (emailId, attachmentIndex) => `/?page=mailbox&a=dlattach&mid=${emailId}&i=${attachmentIndex}`,
   map: () => '/karte',
   newsFromIT: () => '/content?sub=newsFromIT',
   vision: () => '/ueber-uns',

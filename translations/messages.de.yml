@@ -1455,6 +1455,12 @@ bell:
   forum_post:
     one: "Neuer Beitrag von {user} im Forum {forum}"
     many: "{count} neue Beiträge im Forum {forum}"
+  forum_announcement_title: "Wichtige Mitteilung: {title}"
+  forum_announcement: "von {user} im Forum {forum}"
+  forum_mention_title: "{user} hat dich erwähnt ({forum})"
+  forum_mention: 'im Thema "{title}" des Forums {forum}'
+  forum_new_thread_title: "Neuer Beitrag: {title}"
+  forum_new_thread: "von {user} im Forum {forum}"
   blog_new_check_title: "Neuer Blogartikel"
   blog_new_check: "{title}"
   ft_update_title: "{name}"
@@ -1683,6 +1689,7 @@ mailbox:
   delete: "In die Tonne"
   move_to: "Verschieben nach"
   sender: "Absender"
+  unknown_sender: "Unbekannter Absender"
   recipient: "Empfänger*in"
   date: "Datum"
   subject: "Betreff"
@@ -1716,6 +1723,7 @@ mailbox:
   filetype: "Dieser Dateityp ist nicht erlaubt"
   filesize: "Sorry, die Datei ist zu groß."
   mark_as_unread: "E-Mail ungelesen markieren"
+  mark_as_read: "E-Mail gelesen markieren"
   mark_all: "alle markieren"
   delete_selected: "Auswahl löschen"
   close_edit_mode: "Bearbeiten beenden"
@@ -2266,6 +2274,9 @@ menu:
     activities: "Aktionen"
     infos: "Informationen"
     mark_as_read: "Alle als gelesen markieren"
+    load_more: "Weitere laden"
+    refresh: "Aktualisieren"
+    delete_read: "Alle gelesenen löschen"
     all_messages: "Alle Nachrichten"
     messages: "Nachrichten"
     your_groups: "Deine Gruppen"
@@ -2331,6 +2342,11 @@ menu:
     language: "Sprache wählen"
     options: "Optionen"
     pin: "Ortsgruppenbeschreibung"
+  bell:
+    delete_read_confirmation:
+      text: "Willst du wirklich {count} gelesene Glocken löschen?"
+      title: "Benachrichtigungen löschen?"
+
 
 footer:
   call_to_action: "Mitmachen"

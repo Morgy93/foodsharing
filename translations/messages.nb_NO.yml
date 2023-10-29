@@ -272,7 +272,7 @@ base:
   slogan: Del mat i stedet for å kaste den – foodsharing
   keywords: foodsharing, matdeling, mat, matavfall, matsparer, matdeler, matredder,
     bytte mat, levere in mat, distribusjon
-  whatfor: På foodsharing.de kan du gi dagligvarene dine til sosiale institusjoner
+  whatfor: På foodsharing.network kan du gi dagligvarene dine til sosiale institusjoner
     eller andre mennesker før de utløper
 tablesorter:
   from: av
@@ -443,6 +443,9 @@ menu:
     your_baskets: Matkurvene dine
     chainList: Kjedeoversikt
     security: Sikkerhet
+    load_more: Last mer
+    refresh: Oppdatere
+    delete_read: Slett alle lesninger
   content: Rediger innhold
   email: Send nyhetsbrev
   reports: Overtredelsesrapporter
@@ -450,6 +453,10 @@ menu:
   blog: Rediger blogginnlegg
   quiz: Administrer quizer
   manage_mailboxes: Administrer postkasser
+  bell:
+    delete_read_confirmation:
+      text: Vil du virkelig slette {count} leseklokker?
+      title: Slette varsler?
 personal_data:
   landline: Hustelefon
   mobile: Mobilnummer
@@ -481,7 +488,7 @@ basket:
   mapsearch: Søk etter en adresse …
   nearby: matkurver i nærheten
   recent: nyeste matkurver
-  all: alle matkurver
+  all: Alle matkurver
   description: Beskrivelse
   title: Matkurver
   date: Opprettelsesdato
@@ -1080,6 +1087,8 @@ mailbox:
     not_found_explanation: Den vedlagte filen ble ikke lenger funnet på serveren
     not_found: ikke funnet
   add: Legg til
+  mark_as_read: Merk som lest
+  unknown_sender: Ukjent avsender
 map:
   title: Kart
   donates: Selskapet donerer
@@ -1197,12 +1206,10 @@ genderlist:
   gender_table_header: Kjønn
   district_tab: distrikt
   home_district_tab: Hjemdistrikt
-  gender_home_district_table_caption: Fordeling av attributtet «kjønn» blant matredderne
-    i hjemdistriktet
+  gender_home_district_table_caption: Kjønnsfordeling i hjemdistriktet
   gender_not_selected: ikke valgt
   header_for_district: Fordeling av matreddere etter kjønn i {bezirk}
-  gender_district_table_caption: Fordeling av attributtet «kjønn» blant alle matreddere
-    som har sluttet seg til distriktet
+  gender_district_table_caption: Kjønnsfordeling på alle matsparere i distriktet
 memberlist:
   header_for_district: Matreddere i distrikt {bezirk}
   header_for_workgroup: Matreddere i arbeidsgruppe {bezirk}
@@ -1255,20 +1262,26 @@ bell:
   workgroup_request_decline: Du ble ikke tatt opp i arbeidsgruppen.
   poll_new_title: Ny avstemning
   store_cr_times: Pickup-spor er justert
-  new_foodsaver: trenger innledende pickuper
-  new_foodsaver_needs_introduction: trenger innledende pickuper
+  new_foodsaver: Trenger innledende pickuper
+  new_foodsaver_needs_introduction: Trenger innledende pickuper
   passgen_failed: Last opp et bilde, så fungerer det.
   new_quiz_comment_title: Ny quizkommentar
   store_new_title: Nytt selskap
   store_wallpost: Nytt innlegg på oppslagstavlen.
   fs_sleepmode_title: Ny nattlue
   foodsaver_verified_title: Du er nå verifisert!
-  new_foodsaver_needs_verification: må verifiseres
+  new_foodsaver_needs_verification: Må verifiseres
   foodsaver_verified: Hent medlemskortet ditt på …
   forum_post_title: '{title}'
   forum_post:
     one: Nytt innlegg av {user} i forumet {forum}
     many: '{count} nye innlegg i forumet {forum}'
+  forum_new_thread: fra {user} i forumet {forum}
+  forum_announcement: fra {user} i forumet {forum}
+  forum_mention_title: '{user} nevnte deg ({forum})'
+  forum_new_thread_title: 'Ny tråd: {title}'
+  forum_announcement_title: 'Viktig melding: {title}'
+  forum_mention: i emnet “{title}” i forumet {forum}
 reports:
   when: Tid
   time: Tid
@@ -1844,8 +1857,8 @@ footer:
     call_to: Vil du støtte matdeling?
   partner: Partnere
   imprint: Impressum
-  infosCompany: For bedrifter
-  infosPrivatePersons: For privatpersoner
+  infosCompany: for bedrifter
+  infosPrivatePersons: for privatpersoner
   our_partner: Våre partnere
   lebensministerium_alt_text: Livsdepartementet
   donate_now: Donér nå
@@ -1859,7 +1872,7 @@ footer:
     it_devdocs: av foodsharing IT
     version: 'Versjon: {version}'
     beta_testing_issues: Testoppgaver for betaversjonen
-  infosDeveloper: For utviklere
+  infosDeveloper: for utviklere
   hosting:
     info: CO<sub>2</sub>-nøytral <a href="https://www.manitu.de/webhosting/" title="Webhosting">hosted</a>
     tooltip: CO<sub>2</sub>-nøytral <a href="https://www.manitu.de/webhosting/" title="Webhosting">hosted</a>
@@ -1878,7 +1891,7 @@ date:
   monday: mandag
   yesterday: i går
   -- Yesterday: i går
-  tomorrow: i morgen
+  tomorrow: i morgen
   -- Tomorrow: i morgen
   today: i dag
   Today: i dag
@@ -2031,6 +2044,10 @@ forum:
       title: Postlevering
       disable: deaktivere
       activate: aktivere
+    sticky: festet tråd
+    subscriptions:
+      subscribed: abonnerer
+      subscribe: Abonnere
   post:
     body: Beskjed
     delete: Slett innlegget
@@ -2628,7 +2645,7 @@ bread:
 apply_type: Hvem kan melde seg inn i denne gruppen?
 public_time: Omtrentlig tid på dagen for henting
 public_info: Offentlig info for butikken
-besonderheiten: Spesialfunksjoner
+besonderheiten: Beskrivelse
 fetchercount: Antall innsamlere
 team_status: Lagstatus
 verantwortlicher: Ansvarlige medlemmer
@@ -3169,3 +3186,15 @@ markdown_input:
   empty_preview_placeholder: "Dette er forhåndsvisningen av formateringen. Teksten
     vises her slik den vil vises senere.\n---\n*Men du har ikke skrevet inn noen tekst
     som kan vises her.*"
+thread:
+  options:
+    rename: Endre tittel
+    unlock: Åpne tråden
+    pin: Fest tråden
+    lock: Lukk tråden
+    unpin: Løsne tråden
+  rename:
+    description_modal_text: 'Skriv inn en ny tittel for denne tråden:'
+    placeholder: Tittel
+    max_length_info: Maksimal tittellengde er nådd (260 tegn)
+    edit_description: Rediger tittel
