@@ -4,6 +4,7 @@ namespace Foodsharing\RestApi;
 
 use Foodsharing\Lib\Session;
 use Foodsharing\Modules\Search\DTO\MixedSearchResults;
+use Foodsharing\Modules\Search\DTO\SimplifiedUserSearchResult;
 use Foodsharing\Modules\Search\SearchGateway;
 use Foodsharing\Modules\Search\SearchTransactions;
 use Foodsharing\Permissions\ForumPermissions;
@@ -45,6 +46,10 @@ class SearchRestController extends AbstractFOSRestController
      * @Rest\Get("search/user")
      * @Rest\QueryParam(name="q", description="Search query.")
      * @Rest\QueryParam(name="regionId", requirements="\d+", nullable=true, description="Restricts the search to a region")
+     * @OA\RequestBody(@OA\JsonContent(
+     *    type="array",
+     *    @OA\Items(ref=@Model(type=SimplifiedUserSearchResult::class))
+     * ))
      */
     public function listUserResultsAction(ParamFetcher $paramFetcher, Session $session): Response
     {
@@ -57,16 +62,16 @@ class SearchRestController extends AbstractFOSRestController
         $maySearchByEmailAddress = $this->searchPermissions->maySearchByEmailAddress();
 
         if (!$regionId) {
-            $results = $this->searchGateway->searchUsers($q, $this->session->id(), false, $maySearchByEmailAddress);
+            $users = $this->searchGateway->searchUsers($q, $this->session->id(), false, $maySearchByEmailAddress);
         } elseif (!$this->searchPermissions->maySearchInRegion($regionId)) {
             throw new AccessDeniedHttpException('insufficient permissions to search in that region');
         } else {
-            $results = $this->searchGateway->searchUsersGlobal($q, $regionId, $maySearchByEmailAddress);
+            $users = $this->searchGateway->searchUsersGlobal($q, $regionId, false, false);
         }
 
-        $results = array_map(fn ($user) => ['id' => $user['id'], 'value' => $user['name'] . ' (' . $user['id'] . ')'], $results);
+        $users = array_map(fn ($user) => SimplifiedUserSearchResult::fromUserSearchResult($user), $users);
 
-        return $this->handleView($this->view($results, 200));
+        return $this->handleView($this->view($users, 200));
     }
 
     /**
