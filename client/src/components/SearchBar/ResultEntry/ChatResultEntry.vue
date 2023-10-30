@@ -48,7 +48,7 @@ export default {
       const names = this.chat.members.map(member => member.name)
       if (!allNamesAvailable) names.push(this.$i18n('search.results.chat.chat_with_others'))
       const jointNames = formatter.format(names)
-      return this.$i18n('search.results.chat.chat_with', { names: `Chat mit ${jointNames}` })
+      return this.$i18n('search.results.chat.chat_with', { names: jointNames })
     },
   },
   methods: {
