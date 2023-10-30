@@ -419,9 +419,12 @@ class SearchGateway extends BaseGateway
      * @param bool $includeMails Whether to allow finding unsers by their log-in mail address
      * @return array<UserSearchResult>
      */
-    public function searchUsersGlobal(string $query, ?int $restrictToRegionId = null, bool $includeMails = false): array
+    public function searchUsersGlobal(string $query, ?int $restrictToRegionId = null, bool $includeMails = false, bool $includeLastNames = true): array
     {
-        $searchCriteria = ['foodsaver.name', 'foodsaver.nachname'];
+        $searchCriteria = ['foodsaver.name'];
+        if($includeLastNames){
+            $searchCriteria[] = 'foodsaver.nachname';
+        }
         $mailReturnClause = '';
         if ($includeMails) {
             $searchCriteria[] = 'foodsaver.email';
@@ -436,6 +439,7 @@ class SearchGateway extends BaseGateway
             $regionRestrictionClause = 'AND has_region.bezirk_id = ?';
             $parameters[] = $restrictToRegionId;
         }
+        $lastNameSource = $includeLastNames ? 'foodsaver.nachname' : 'NULL';
 
         // TODO Buddys
         $users = $this->db->fetchAll("SELECT
@@ -444,7 +448,7 @@ class SearchGateway extends BaseGateway
                 foodsaver.photo,
                 foodsaver.bezirk_id AS region_id,
                 home_region.name AS region_name,
-                foodsaver.nachname as last_name,
+                {$lastNameSource} as last_name,
                 foodsaver.handy as mobile,
                 {$mailReturnClause}
                 0 AS is_buddy
