@@ -3,6 +3,7 @@
 namespace Foodsharing\Modules\Search\DTO;
 
 use Nelmio\ApiDocBundle\Annotation\Model;
+use Foodsharing\Modules\Foodsaver\DTO\FoodsaverForAvatar;
 use OpenApi\Annotations as OA;
 
 class ChatSearchResult extends SearchResult

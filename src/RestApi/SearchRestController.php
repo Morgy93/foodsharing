@@ -3,6 +3,7 @@
 namespace Foodsharing\RestApi;
 
 use Foodsharing\Lib\Session;
+use Foodsharing\Modules\Search\DTO\MixedSearchResults;
 use Foodsharing\Modules\Search\SearchGateway;
 use Foodsharing\Modules\Search\SearchTransactions;
 use Foodsharing\Permissions\ForumPermissions;
@@ -15,6 +16,7 @@ use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\Exception\AccessDeniedHttpException;
 use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
 use Symfony\Component\HttpKernel\Exception\UnauthorizedHttpException;
+use Nelmio\ApiDocBundle\Annotation\Model;
 
 class SearchRestController extends AbstractFOSRestController
 {
@@ -73,6 +75,11 @@ class SearchRestController extends AbstractFOSRestController
      * @OA\Tag(name="search")
      * @Rest\Get("search/all")
      * @Rest\QueryParam(name="q", description="Search query.")
+     * @OA\Response(
+     * 		response="200",
+     * 		description="Success.",
+     *      @Model(type=MixedSearchResults::class)
+     * )
      */
     public function searchAction(ParamFetcher $paramFetcher): Response
     {
