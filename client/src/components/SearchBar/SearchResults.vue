@@ -89,7 +89,7 @@
         v-for="chat in results.chats"
         :key="chat.id"
         :chat="chat"
-        @close="$emit('close')"
+        @close-modal="$emit('close')"
       />
     </div>
 

@@ -54,7 +54,7 @@ export default {
   methods: {
     openChat () {
       conversationStore.openChat(this.chat.id)
-      this.$emit('close')
+      this.$emit('close-modal')
     },
   },
 }
