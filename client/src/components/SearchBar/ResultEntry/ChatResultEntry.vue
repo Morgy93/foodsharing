@@ -13,7 +13,7 @@
         <a :href="$url('profile', chat.last_foodsaver_id)">
           {{ chat.last_foodsaver_name }}
         </a>
-        {{ $dateFormatter.relativeTime(new Date(chat.last)) }}:
+        {{ $dateFormatter.relativeTime(new Date(chat.last_message_date)) }}:
         {{ chat.last_message }}
       </small>
     </div>

@@ -44,7 +44,7 @@ class SearchGateway extends BaseGateway
                 GROUP_CONCAT(foodsaver.id) AS ambassador_ids,
                 GROUP_CONCAT(foodsaver.name) AS ambassador_names,
                 GROUP_CONCAT(IFNULL(foodsaver.photo, '')) AS ambassador_photos,
-                IF(ISNULL(has_region.foodsaver_id), NULL, 1) as is_member
+                IF(ISNULL(has_region.foodsaver_id), NULL, 1) AS is_member
             FROM fs_bezirk region
             LEFT OUTER JOIN fs_bezirk parent ON parent.id = region.parent_id
             LEFT OUTER JOIN fs_botschafter ambassador ON ambassador.bezirk_id = region.id
@@ -80,7 +80,7 @@ class SearchGateway extends BaseGateway
                 region.email,
                 parent.id AS parent_id,
                 parent.name AS parent_name,
-                has_region.active as is_member,
+                has_region.active AS is_member,
                 MAX(IF(ambassador.foodsaver_id = ?, 1, 0)) AS is_admin,
                 GROUP_CONCAT(foodsaver.id) AS admin_ids,
                 GROUP_CONCAT(foodsaver.name) AS admin_names,
@@ -140,8 +140,8 @@ class SearchGateway extends BaseGateway
                 region.id AS region_id,
                 region.name AS region_name,
                 chain.name AS chain_name,
-                store_team.active as membership_status,
-                store_team.verantwortlich as is_manager
+                store_team.active AS membership_status,
+                store_team.verantwortlich AS is_manager
             FROM fs_betrieb AS store
             JOIN fs_bezirk region ON region.id = store.bezirk_id
             JOIN fs_foodsaver_has_bezirk has_region ON has_region.bezirk_id = store.bezirk_id
@@ -216,9 +216,9 @@ class SearchGateway extends BaseGateway
         $chats = $this->db->fetchAll("SELECT
                 conversation.id,
                 conversation.name,
-                conversation.last,
+                conversation.last AS last_message_date,
                 conversation.last_foodsaver_id,
-                last_author.name as last_foodsaver_name,
+                last_author.name AS last_foodsaver_name,
                 LEFT(conversation.last_message, 120) AS last_message,
                 GROUP_CONCAT(foodsaver.id LIMIT 5) AS member_ids,
                 GROUP_CONCAT(foodsaver.name LIMIT 5) AS member_names,
@@ -322,7 +322,7 @@ class SearchGateway extends BaseGateway
                 foodsaver.photo,
                 foodsaver.home_region AS region_id,
                 region.name AS region_name,
-                MAX(foodsaver.last_name) as last_name,
+                MAX(foodsaver.last_name) AS last_name,
                 MAX(foodsaver.mobile) AS mobile,
                 MAX(foodsaver.is_buddy) AS is_buddy
             FROM (
@@ -448,12 +448,12 @@ class SearchGateway extends BaseGateway
                 foodsaver.photo,
                 foodsaver.bezirk_id AS region_id,
                 home_region.name AS region_name,
-                {$lastNameSource} as last_name,
-                foodsaver.handy as mobile,
+                {$lastNameSource} AS last_name,
+                foodsaver.handy AS mobile,
                 {$mailReturnClause}
                 0 AS is_buddy
-            FROM fs_foodsaver as foodsaver
-            JOIN fs_bezirk as home_region ON home_region.id = foodsaver.bezirk_id
+            FROM fs_foodsaver AS foodsaver
+            JOIN fs_bezirk AS home_region ON home_region.id = foodsaver.bezirk_id
             {$hasRegionJoin}
             WHERE ({$searchClauses} OR (foodsaver.id = ?))
             {$regionRestrictionClause}

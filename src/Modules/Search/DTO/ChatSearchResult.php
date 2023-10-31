@@ -13,7 +13,7 @@ class ChatSearchResult extends SearchResult
      * 
      * @OA\Property(example="2023-10-04 13:38:03")
      */
-    public string $last;
+    public string $last_message_date;
 
     /**
      * Unique identifier of the foodsaver who last sent a message in the chat.
@@ -62,7 +62,7 @@ class ChatSearchResult extends SearchResult
         $result = new ChatSearchResult();
         $result->id = $data['id'];
         $result->name = $data['name'];
-        $result->last = $data['last'];
+        $result->last_message_date = $data['last_message_date'];
         $result->last_foodsaver_id = $data['last_foodsaver_id'];
         $result->last_foodsaver_name = $data['last_foodsaver_name'];
         $result->last_message = $data['last_message'];
