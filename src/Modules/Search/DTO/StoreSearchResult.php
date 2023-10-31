@@ -26,7 +26,7 @@ class StoreSearchResult extends SearchResult
      * 
      * @OA\Property(example="Oskar-Michels-Ring 29")
      */
-    public string $zip;
+    public string $zipCode;
 
     /**
      * City of the stores adress.
@@ -77,7 +77,7 @@ class StoreSearchResult extends SearchResult
         $result->name = $data['name'];
         $result->cooperation_status = CooperationStatus::from($data['cooperation_status']);
         $result->street = $data['street'];
-        $result->zip = $data['zip'];
+        $result->zipCode = $data['zip'];
         $result->city = $data['city'];
         $result->region_id = $data['region_id'];
         $result->region_name = $data['region_name'];

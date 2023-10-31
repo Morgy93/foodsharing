@@ -16,9 +16,9 @@ class FoodSharePointSearchResult extends SearchResult
     /**
      * Zip code of the food share points adress.
      * 
-     * @OA\Property(example="Oskar-Michels-Ring 29")
+     * @OA\Property(example="12345")
      */
-    public string $zip;
+    public string $zipCode;
 
     /**
      * City of the food share points adress.
@@ -47,7 +47,7 @@ class FoodSharePointSearchResult extends SearchResult
         $result->id = $data['id'];
         $result->name = $data['name'];
         $result->street = $data['street'];
-        $result->zip = $data['zip'];
+        $result->zipCode = $data['zip'];
         $result->city = $data['city'];
         $result->region_id = $data['region_id'];
         $result->region_name = $data['region_name'];

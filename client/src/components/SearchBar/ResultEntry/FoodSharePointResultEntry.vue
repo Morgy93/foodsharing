@@ -17,7 +17,7 @@
         </span>
         <span v-if="foodSharePoint.city">
           <span v-if="foodSharePoint.street">{{ foodSharePoint.street }},</span>
-          <span v-if="foodSharePoint.zip">{{ foodSharePoint.zip }}</span>
+          <span v-if="foodSharePoint.zipCode">{{ foodSharePoint.zipCode }}</span>
           {{ foodSharePoint.city }}
         </span>
       </small>

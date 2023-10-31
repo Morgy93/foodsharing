@@ -35,7 +35,7 @@
         </span>
         <span v-if="store.city">
           <span v-if="store.street">{{ store.street }},</span>
-          <span v-if="store.zip">{{ store.zip }}</span>
+          <span v-if="store.zipCode">{{ store.zipCode }}</span>
           {{ store.city }}
         </span>
       </small>
