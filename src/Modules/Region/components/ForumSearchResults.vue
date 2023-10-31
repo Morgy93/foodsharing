@@ -11,14 +11,10 @@
       v-if="!isEmpty"
       class="found-threads"
     >
-      <b-alert
-        variant="info"
-        show
-      >
+      <div class="alert alert-info">
         <i class="fas fa-info-circle" />
         <span> {{ $i18n('search.thread-title-only') }} </span>
-      </b-alert>
-
+      </div>
       <h3 class="dropdown-header">
         <i class="fas fa-comments" /> {{ $i18n('terminology.threads') }}
       </h3>
