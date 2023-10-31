@@ -44,7 +44,7 @@ class SearchPermissions
 
         return $this->session->mayRole(Role::ORGA) ||
             $this->regionPermissions->isAmbassadorForAnyRegion() ||
-            $this->groupFunctionGateway->isAdminForSpecialWG($privilegedFunctionWorkgroups, $this->session->id());
+            $this->groupFunctionGateway->isAdminForSpecialWorkingGroup($privilegedFunctionWorkgroups, $this->session->id());
     }
 
     public function maySearchGlobal(): bool
