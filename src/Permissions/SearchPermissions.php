@@ -43,7 +43,7 @@ class SearchPermissions
         $privilegedFunctionWorkgroups = [WorkgroupFunction::REPORT, WorkgroupFunction::ARBITRATION, WorkgroupFunction::PR];
 
         return $this->session->mayRole(Role::ORGA) ||
-            $this->regionPermissions->isAmbassadorForAnyRegion() ||
+            $this->regionPermissions->isAmbassadorOfAtLeastOneRegion() ||
             $this->groupFunctionGateway->isAdminForSpecialWorkingGroup($privilegedFunctionWorkgroups, $this->session->id());
     }
 

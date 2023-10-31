@@ -116,7 +116,7 @@ class RegionGateway extends BaseGateway
     /**
      * @return bool true when the given user is an admin/ambassador for the given group/region
      */
-    public function isAmbassadorForAnyRegion(int $foodsaverId): bool
+    public function isAmbassadorOfAtLeastOneRegion(int $foodsaverId): bool
     {
         return $this->db->fetchValue('SELECT COUNT(*)
             FROM `fs_botschafter` ambassador

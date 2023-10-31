@@ -145,8 +145,8 @@ final class RegionPermissions
     }
 
     // excluding working groups!
-    public function isAmbassadorForAnyRegion(): bool
+    public function isAmbassadorOfAtLeastOneRegion(): bool
     {
-        return $this->regionGateway->isAmbassadorForAnyRegion($this->session->id());
+        return $this->regionGateway->isAmbassadorOfAtLeastOneRegion($this->session->id());
     }
 }
