@@ -3,7 +3,7 @@
 namespace Foodsharing\RestApi;
 
 use Foodsharing\Lib\Session;
-use Foodsharing\Modules\Search\DTO\MixedSearchResults;
+use Foodsharing\Modules\Search\DTO\MixedSearchResult;
 use Foodsharing\Modules\Search\DTO\SimplifiedUserSearchResult;
 use Foodsharing\Modules\Search\SearchGateway;
 use Foodsharing\Modules\Search\SearchTransactions;
@@ -83,7 +83,7 @@ class SearchRestController extends AbstractFOSRestController
      * @OA\Response(
      * 		response="200",
      * 		description="Success.",
-     *      @Model(type=MixedSearchResults::class)
+     *      @Model(type=MixedSearchResult::class)
      * )
      */
     public function searchAction(ParamFetcher $paramFetcher): Response

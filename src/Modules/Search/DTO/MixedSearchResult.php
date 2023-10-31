@@ -5,7 +5,7 @@ namespace Foodsharing\Modules\Search\DTO;
 use Nelmio\ApiDocBundle\Annotation\Model;
 use OpenApi\Annotations as OA;
 
-class MixedSearchResults
+class MixedSearchResult
 {
     /**
      * Array of regions.

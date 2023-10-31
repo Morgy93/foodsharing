@@ -4,7 +4,7 @@ namespace Foodsharing\Modules\Search;
 
 use Foodsharing\Lib\Session;
 use Foodsharing\Modules\Core\DBConstants\Foodsaver\Role;
-use Foodsharing\Modules\Search\DTO\MixedSearchResults;
+use Foodsharing\Modules\Search\DTO\MixedSearchResult;
 use Foodsharing\Permissions\SearchPermissions;
 
 class SearchTransactions
@@ -21,7 +21,7 @@ class SearchTransactions
      *
      * @param string $query the search query
      */
-    public function search(string $query): MixedSearchResults
+    public function search(string $query): MixedSearchResult
     {
         // TODO: Search by Email for IT-Support Group and ORGA
         // $this->searchPermissions->maySearchByEmailAddress()
@@ -31,7 +31,7 @@ class SearchTransactions
         $searchAllWorkingGroups = $this->searchPermissions->maySearchAllWorkingGroups();
         $includeInactiveStores = $this->session->mayRole(Role::STORE_MANAGER);
 
-        $result = new MixedSearchResults();
+        $result = new MixedSearchResult();
         $result->regions = $this->searchGateway->searchRegions($query, $foodsaverId);
         $result->workingGroups = $this->searchGateway->searchWorkingGroups($query, $foodsaverId, $searchAllWorkingGroups);
         $result->stores = $this->searchGateway->searchStores($query, $foodsaverId, $includeInactiveStores, $maySearchGlobal);
