@@ -23,7 +23,7 @@
         <span v-if="thread.region_id && !hideRegion">
           {{ $i18n('search.results.in') }}
           <a :href="$url('forum', thread.region_id)">
-            {{ $i18n(`search.results.thread.${thread.isAmbassador_forum ? 'ambassador_' : ''}forum`) }}
+            {{ $i18n(`search.results.thread.${thread.is_inside_ambassador_forum ? 'ambassador_' : ''}forum`) }}
             {{ thread.region_name }}
           </a>
         </span>

@@ -32,7 +32,7 @@ class ThreadSearchResult extends SearchResult
      * 
      * @OA\Property(example=false)
      */
-    public bool $is_ambassador_forum;
+    public bool $is_inside_ambassador_forum;
 
     /**
      * Unique identifier of the forums region.
@@ -56,7 +56,7 @@ class ThreadSearchResult extends SearchResult
         $result->time = $data['time'];
         $result->is_sticky = boolval($data['is_sticky']);
         $result->is_closed = boolval($data['is_closed']);
-        $result->is_ambassador_forum = boolval($data['is_ambassador_forum']);
+        $result->is_inside_ambassador_forum = boolval($data['is_inside_ambassador_forum']);
         $result->region_id = $data['region_id'];
         $result->region_name = $data['region_name'];
         return $result;

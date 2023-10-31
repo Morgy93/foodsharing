@@ -278,7 +278,7 @@ class SearchGateway extends BaseGateway
                 thread.status AS is_closed,
                 region.id AS region_id,
                 region.name AS region_name,
-                has_thread.bot_theme AS is_ambassador_forum
+                has_thread.bot_theme AS is_inside_ambassador_forum
             FROM fs_theme AS thread
             JOIN fs_bezirk_has_theme AS has_thread ON has_thread.theme_id = thread.id
             JOIN fs_bezirk AS region ON region.id = has_thread.bezirk_id
