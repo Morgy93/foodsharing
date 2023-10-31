@@ -16,16 +16,16 @@ class UserSearchResult extends SearchResult
     public ?string $avatar;
 
     /**
-     * Zip code of the food share points adress.
+     * Last name of the user.
      * 
-     * @OA\Property(example="Oskar-Michels-Ring 29")
+     * @OA\Property(example="Mustermann")
      */
     public ?string $last_name;
 
     /**
-     * City of the food share points adress.
+     * Mobile phone number of the user.
      * 
-     * @OA\Property(example="Münster")
+     * @OA\Property(example="+49 1234 56789")
      */
     public ?string $mobile;
 
@@ -37,14 +37,14 @@ class UserSearchResult extends SearchResult
     public bool $is_buddy;
 
     /**
-     * Unique identifier of the food share points region.
+     * Unique identifier of the users home region.
      *
      * @OA\Property(example=1)
      */
     public int $region_id;
 
     /**
-     * Name of the food share points region.
+     * Name of the users home region.
      * 
      * @OA\Property(example="Münster")
      */
