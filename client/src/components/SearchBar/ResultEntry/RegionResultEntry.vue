@@ -6,12 +6,12 @@
     <div class="text-truncate flex-grow-1">
       <h6 class="m-0 text-truncate d-inline">
         <i
-          v-if="is_ambassador"
+          v-if="isAmbassador"
           v-b-tooltip.noninteractive="$i18n('search.results.region.ambassador_tooltip')"
           class="fas fa-user-cog"
         />
         <i
-          v-else-if="is_home"
+          v-else-if="isHome"
           v-b-tooltip.noninteractive="$i18n('search.results.region.home_region_tooltip')"
           class="fas fa-home"
         />
@@ -56,11 +56,11 @@ export default {
     },
   },
   computed: {
-    is_ambassador () {
+    isAmbassador () {
       // eslint-disable-next-line eqeqeq
       return this.region.ambassadors.includes(ambassador => ambassador.id == DataUser.getters.getUserId())
     },
-    is_home () {
+    isHome () {
       return this.region.id === DataUser.getters.getHomeRegion()
     },
   },

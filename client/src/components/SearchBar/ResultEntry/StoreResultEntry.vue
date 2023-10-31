@@ -11,12 +11,12 @@
           class="fas fa-user-cog"
         />
         <i
-          v-else-if="is_member"
+          v-else-if="isMember"
           v-b-tooltip.noninteractive="$i18n('search.results.store.member_tooltip')"
           class="fas fa-user-check"
         />
         <i
-          v-else-if="is_jumper"
+          v-else-if="isJumper"
           v-b-tooltip.noninteractive="$i18n('search.results.store.jumper_tooltip')"
           class="fas fa-running"
         />
@@ -54,10 +54,10 @@ export default {
     },
   },
   computed: {
-    is_member () {
+    isMember () {
       return this.store.membership_status === STORE_TEAM_STATE.ACTIVE
     },
-    is_jumper () {
+    isJumper () {
       return this.store.membership_status === STORE_TEAM_STATE.JUMPER
     },
   },

@@ -23,7 +23,7 @@
         <span v-if="thread.region_id && !hideRegion">
           {{ $i18n('search.results.in') }}
           <a :href="$url('forum', thread.region_id)">
-            {{ $i18n(`search.results.thread.${thread.is_ambassador_forum ? 'ambassador_' : ''}forum`) }}
+            {{ $i18n(`search.results.thread.${thread.isAmbassador_forum ? 'ambassador_' : ''}forum`) }}
             {{ thread.region_name }}
           </a>
         </span>
@@ -50,12 +50,9 @@ export default {
     },
   },
   computed: {
-    is_ambassador () {
+    isAmbassador () {
       // eslint-disable-next-line eqeqeq
       return this.region.ambassadors.includes(ambassador => ambassador.id == DataUser.getters.getUserId())
-    },
-    is_home () {
-      return this.region.id === DataUser.getters.getHomeRegion()
     },
   },
 }
