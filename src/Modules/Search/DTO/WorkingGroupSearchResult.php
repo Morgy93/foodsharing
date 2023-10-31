@@ -19,7 +19,7 @@ class WorkingGroupSearchResult extends SearchResult
     public string $email;
 
     /**
-     * Unique identifier of the regions parent working group.
+     * Unique identifier of the working groups parent region.
      *
      * @OA\Property(example=1)
      */
