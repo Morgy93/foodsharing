@@ -71,8 +71,8 @@ class SearchGatewayTest extends \Codeception\Test\Unit
         ];
 
         $this->chats = [
-            'chat1' => $this->tester->createConversation([$this->users['user-city1']['id'], $this->users['user-city2']['id']], ['last_message_id' => 1,'last_message' => 'msg']),
-            'chat2' => $this->tester->createConversation([$this->users['user-city2']['id'], $this->users['user-city3']['id']], ['last_message_id' => 1,'last_message' => 'msg']),
+            'chat1' => $this->tester->createConversation([$this->users['user-city1']['id'], $this->users['user-city2']['id']], ['last_message_id' => 1, 'last_message' => 'msg']),
+            'chat2' => $this->tester->createConversation([$this->users['user-city2']['id'], $this->users['user-city3']['id']], ['last_message_id' => 1, 'last_message' => 'msg']),
         ];
     }
 
