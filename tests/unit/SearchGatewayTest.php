@@ -36,11 +36,21 @@ class SearchGatewayTest extends \Codeception\Test\Unit
             'city3' => $regionCity3,
             'city4' => $regionCity4,
         ];
-        $this->users = array_merge(array_map(fn($region, $key) => ['user-' . $key,$this->tester->createFoodsaver(null, [#
-            'name' => 'Nutzer ' . $key,
-            'last_name' => 'Nachname',
-            'bezirk_id' => $region['id'],
-        ])));
+
+        $this->groups = [
+            'wg-city1' => $this->tester->createRegion('AG Dresden', ['parent_id' => $regionCity1['id'], 'type' => UnitType::WORKING_GROUP, 'email' => 'ag-mail-dresden']),
+            'wg-city2' => $this->tester->createRegion('AG Freiberg', ['parent_id' => $regionCity2['id'], 'type' => UnitType::WORKING_GROUP, 'email' => 'ag-mail-freiberg']),
+        ];
+
+        $this->users = array_combine(
+            array_map(fn($key) => 'user-' . $key, array_keys($this->regions)),
+            array_map(fn($region) => 
+                $this->tester->createFoodsaver(null, [
+                    'name' => 'Nutzer aus ' . $region['name'],
+                    'nachname' => 'Nachname',
+                    'bezirk_id' => $region['id'],
+                ]), $this->regions)
+        );
     }
 
     private function assertCorrectSearchResult($variableName, $expectedElements, $searchResult)
@@ -53,17 +63,29 @@ class SearchGatewayTest extends \Codeception\Test\Unit
 
     public function testSearchRegions()
     {
-        //Basic example:
+        // Basic example:
         $this->assertCorrectSearchResult('regions', ['state1', 'state2'], $this->gateway->searchRegions('Sachsen', 1));
         
-        //Not only word start:
+        // Not only word start:
         $this->assertCorrectSearchResult('regions', ['city2', 'city4'], $this->gateway->searchRegions('berg', 1));
         
-        //cAsE dOsN't MaTtEr:
+        // cAsE dOsN't MaTtEr:
         $this->assertCorrectSearchResult('regions', ['city1'], $this->gateway->searchRegions('dRESDEN', 1));
 
-        //Searching for mail adress:
+        // Searching for mail adress:
         $this->assertCorrectSearchResult('regions', ['city1'], $this->gateway->searchRegions('dreeesden', 1));
+    }
+
+    public function testSearchWorkingGroups()
+    {
+        // Only find wgs in own regions
+        $this->assertCorrectSearchResult('groups', ['wg-city1'], $this->gateway->searchWorkingGroups('ag', $this->users['user-city1']['id'], false));
+
+        // Searching for mail adress:
+        $this->assertCorrectSearchResult('groups', ['wg-city1'], $this->gateway->searchWorkingGroups('ag-mail', $this->users['user-city1']['id'], false));
+
+        // except if searching globally:
+        $this->assertCorrectSearchResult('groups', ['wg-city1', 'wg-city2'], $this->gateway->searchWorkingGroups('ag', $this->users['user-city1']['id'], true));
     }
 
     // public function testSearchUserInGroups()
