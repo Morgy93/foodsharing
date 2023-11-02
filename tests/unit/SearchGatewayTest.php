@@ -47,16 +47,32 @@ class SearchGatewayTest extends \Codeception\Test\Unit
         $this->users = array_combine(
             array_map(fn ($key) => 'user-' . $key, array_keys($this->regions)),
             array_map(fn ($region) => $this->tester->createFoodsaver(null, [
-                    'name' => 'Nutzer aus ' . $region['name'],
+                    'name' => 'Nutzer',
                     'nachname' => 'Nachname',
                     'bezirk_id' => $region['id'],
                 ]), $this->regions)
         );
+        $this->users['bot-city1'] = $this->tester->createAmbassador(null, [
+            'name' => 'Nutzer Bot',
+            'nachname' => 'Nachname',
+            'bezirk_id' => $regionCity1['id'],
+        ]);
+        $this->tester->addRegionAdmin($regionCity1['id'], $this->users['bot-city1']['id']);
 
         $this->stores = [
             'store-city1' => $this->tester->createStore($regionCity1['id'], null, null, ['name' => 'BetriebA', 'betrieb_status_id' => CooperationStatus::COOPERATION_ESTABLISHED->value]),
             'store-city1-closed' => $this->tester->createStore($regionCity1['id'], null, null, ['name' => 'Betrieb geschlossen', 'betrieb_status_id' => CooperationStatus::PERMANENTLY_CLOSED->value]),
-            'store-city1' => $this->tester->createStore($regionCity2['id'], null, null, ['name' => 'BetriebB', 'betrieb_status_id' => CooperationStatus::COOPERATION_ESTABLISHED->value]),
+            'store-city2' => $this->tester->createStore($regionCity2['id'], null, null, ['name' => 'BetriebB', 'betrieb_status_id' => CooperationStatus::COOPERATION_ESTABLISHED->value]),
+        ];
+
+        $this->sharePoints = [
+            'fsp-city1' => $this->tester->createFoodSharePoint($this->users['user-city3']['id'], $regionCity1['id'], ['name' => 'FairteilerA']),
+            'fsp-city2' => $this->tester->createFoodSharePoint($this->users['user-city3']['id'], $regionCity2['id'], ['name' => 'FairteilerB']),
+        ];
+
+        $this->chats = [
+            'chat1' => $this->tester->createConversation([$this->users['user-city1']['id'], $this->users['user-city2']['id']], ['last_message_id' => 1,'last_message' => 'msg']),
+            'chat2' => $this->tester->createConversation([$this->users['user-city2']['id'], $this->users['user-city3']['id']], ['last_message_id' => 1,'last_message' => 'msg']),
         ];
     }
 
@@ -98,7 +114,7 @@ class SearchGatewayTest extends \Codeception\Test\Unit
     public function testSearchStores()
     {
         // Only find active stores in own regions
-        $this->assertCorrectSearchResult('stores', ['store-city1'], $this->gateway->searchWorkingGroups('Betrieb', $this->users['user-city1']['id'], false, false));
+        $this->assertCorrectSearchResult('stores', ['store-city1'], $this->gateway->searchStores('Betrieb', $this->users['user-city1']['id'], false, false));
 
         // Include inactive stores
         $this->assertCorrectSearchResult('stores', ['store-city1', 'store-city1-closed'], $this->gateway->searchStores('Betrieb', $this->users['user-city1']['id'], true, false));
@@ -107,54 +123,30 @@ class SearchGatewayTest extends \Codeception\Test\Unit
         $this->assertCorrectSearchResult('stores', ['store-city1', 'store-city2'], $this->gateway->searchStores('Betrieb', $this->users['user-city1']['id'], false, true));
     }
 
-    // public function testSearchUserInGroups()
-    // {
-    //     $region1 = $this->tester->createRegion();
-    //     $region2 = $this->tester->createRegion();
+    public function testSearchFoodSharePoints()
+    {
+        // Only find food share points in own regions
+        $this->assertCorrectSearchResult('sharePoints', ['fsp-city1'], $this->gateway->searchFoodSharePoints('Fairteiler', $this->users['user-city1']['id'], false));
 
-    //     $fs1 = $this->tester->createFoodsaver(null, ['name' => 'Alberto', 'nachname' => 'Albertino']);
-    //     $fs2 = $this->tester->createFoodsaver(null, ['name' => 'Albert', 'nachname' => 'Hunne']);
-    //     $fs3 = $this->tester->createFoodsaver(null, ['name' => 'Fred', 'nachname' => 'Weiß']);
-    //     $fs4 = $this->tester->createFoodsaver(null, ['name' => 'Karl-Heinz', 'nachname' => 'Liebermensch']);
-    //     $fs5 = $this->tester->createFoodsaver(null, ['name' => 'Matthias (Matze)', 'nachname' => 'Altenburg von um Heuschreckenland']);
+        // Search global
+        $this->assertCorrectSearchResult('sharePoints', ['fsp-city1', 'fsp-city2'], $this->gateway->searchFoodSharePoints('Fairteiler', $this->users['user-city1']['id'], true));
+    }
 
-    //     $this->tester->addRegionMember($region1['id'], $fs4['id']);
-    //     $this->tester->addRegionMember($region2['id'], $fs2['id']);
-    //     $this->tester->addRegionMember($region2['id'], $fs3['id']);
+    public function testSearchChats()
+    {
+        // Only find chats the users is a member in
+        $this->assertCorrectSearchResult('chats', ['chat1'], $this->gateway->searchChats('Nutzer', $this->users['user-city1']['id'], false));
+    }
 
-    //     $f1 = $fs1['id'];
-    //     $f2 = $fs2['id'];
-    //     $f3 = $fs3['id'];
-    //     $f4 = $fs4['id'];
-    //     $f5 = $fs5['id'];
+    public function testSearchUsers()
+    {
+        // Find users in same region and users with common chat:
+        $this->assertCorrectSearchResult('users', ['user-city2', 'bot-city1'], $this->gateway->searchUsers('Nutzer', $this->users['user-city1']['id'], false));
 
-    //     $this->assertEqualsCanonicalizing(
-    //         [$f1, $f2],
-    //         array_column($this->searchGateway->searchUserInGroups('Albe', [], null), 'id')
-    //     );
-    //     $this->assertEqualsCanonicalizing(
-    //         [$f4],
-    //         array_column($this->searchGateway->searchUserInGroups('Karl-Heinz', [], null), 'id')
-    //     );
-    //     $this->assertEqualsCanonicalizing(
-    //         [$f5],
-    //         array_column($this->searchGateway->searchUserInGroups('-(Matze)', [], null), 'id')
-    //     );
-    //     $this->assertEqualsCanonicalizing(
-    //         [$f5],
-    //         array_column($this->searchGateway->searchUserInGroups('von Heuschreckenland', [], null), 'id')
-    //     );
-    //     $this->assertEqualsCanonicalizing(
-    //         [$f5],
-    //         array_column($this->searchGateway->searchUserInGroups('um Heuschreckenland', [], null), 'id')
-    //     );
-    //     $this->assertEqualsCanonicalizing(
-    //         [],
-    //         array_column($this->searchGateway->searchUserInGroups('Fr*d', [], null), 'id')
-    //     );
-    //     $this->assertEqualsCanonicalizing(
-    //         [$f2],
-    //         array_column($this->searchGateway->searchUserInGroups('Alb', [], [$region2['id']]), 'id')
-    //     );
-    // }
+        // Search by last name as bot:
+        $this->assertCorrectSearchResult('users', ['user-city1'], $this->gateway->searchUsers('Nachname', $this->users['bot-city1']['id'], false));
+
+        // Search global, last name and region name as criteria:
+        $this->assertCorrectSearchResult('users', ['user-city3'], $this->gateway->searchUsers('Nachname Magdeburg', $this->users['bot-city1']['id'], true));
+    }
 }
