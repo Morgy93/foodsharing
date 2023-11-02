@@ -29,6 +29,8 @@ class StoreChainApiCest
     private $chainKeyAccountManagerOtherChain;
     private $chainManager;
     private $deletedKeyAccountManager;
+    private $timeZone;
+    private $timeZoneOffsetInHours;
 
     private $orga;
     private $region;
@@ -41,13 +43,17 @@ class StoreChainApiCest
 
     public function _before(ApiTester $I)
     {
+        $this->timeZone = new DateTimeZone('Europe/Berlin');
+        $now = new DateTime('now', $this->timeZone);
+        $this->timeZoneOffsetInHours = $this->timeZone->getOffset($now) / (60 * 60);
+
         $this->region = $I->createRegion();
         $this->agChain = $I->createWorkingGroup('AG Betriebsketten', ['id' => RegionIDs::STORE_CHAIN_GROUP]);
 
         $I->haveInDatabase('fs_chain', ['id' => StoreChainApiCest::CHAIN_ID, 'name' => 'Chain', 'status' => 2]);
         $I->haveInDatabase('fs_chain', ['id' => StoreChainApiCest::CHAIN_ID_1, 'name' => 'Chain 1']);
         $I->haveInDatabase('fs_betrieb_kategorie', ['id' => 20, 'name' => 'Category']);
-        $delete_at = new DateTime('now', new DateTimeZone('Europe/Berlin'));
+        $delete_at = new DateTime('now', $this->timeZone);
         $this->deletedKeyAccountManager = $I->createStoreCoordinator(null, ['deleted_at' => $delete_at->format('c')]);
         $this->foodsharer = $I->createFoodsharer(null, ['verified' => 0]);
         $this->user = $I->createFoodsaver(null, ['verified' => 1]);
@@ -240,7 +246,7 @@ class StoreChainApiCest
 
         $modificationDate = $I->grabFromDatabase('fs_chain', 'modification_date', [
                 'id' => $id]);
-        $modificationDate = DateTime::createFromFormat('Y-m-d H:i:s', $modificationDate . ' 00:00:00', new DateTimeZone('Europe/Berlin'));
+        $modificationDate = DateTime::createFromFormat('Y-m-d H:i:s', $modificationDate . ' 00:00:00', $this->timeZone);
         $modificationDateString = $modificationDate->format('c');
 
         $I->seeResponseContainsJson([
@@ -320,7 +326,7 @@ class StoreChainApiCest
 
         $modificationDate = $I->grabFromDatabase('fs_chain', 'modification_date', [
                 'id' => $id]);
-        $modificationDate = DateTime::createFromFormat('Y-m-d H:i:s', $modificationDate . ' 00:00:00', new DateTimeZone('Europe/Berlin'));
+        $modificationDate = DateTime::createFromFormat('Y-m-d H:i:s', $modificationDate . ' 00:00:00', $this->timeZone);
 
         $I->seeResponseContainsJson([
                 'chain' => [
@@ -802,7 +808,7 @@ class StoreChainApiCest
         $I->seeResponseCodeIs(Http::OK);
 
         $modificationDate = $I->grabFromDatabase('fs_chain', 'modification_date', ['id' => StoreChainApiCest::CHAIN_ID]);
-        $modificationDate = DateTime::createFromFormat('Y-m-d H:i:s', $modificationDate . ' 00:00:00', new DateTimeZone('Europe/Berlin'));
+        $modificationDate = DateTime::createFromFormat('Y-m-d H:i:s', $modificationDate . ' 00:00:00', $this->timeZone);
 
         $I->seeResponseContainsJson([
                 'chain' => [
@@ -872,7 +878,7 @@ class StoreChainApiCest
         $I->seeResponseCodeIs(Http::OK);
 
         $modificationDate = $I->grabFromDatabase('fs_chain', 'modification_date', ['id' => StoreChainApiCest::CHAIN_ID]);
-        $modificationDate = DateTime::createFromFormat('Y-m-d H:i:s', $modificationDate . ' 00:00:00', new DateTimeZone('Europe/Berlin'));
+        $modificationDate = DateTime::createFromFormat('Y-m-d H:i:s', $modificationDate . ' 00:00:00', $this->timeZone);
 
         $I->seeResponseContainsJson([
                 'chain' => [
@@ -1199,7 +1205,7 @@ class StoreChainApiCest
     {
         $role = $example['role'];
         $details = $example['details'];
-        $modificationDate = new DateTime('now', new DateTimeZone('Europe/Berlin'));
+        $modificationDate = new DateTime('now', $this->timeZone);
         $newChain = $I->addStoreChain([
             'name' => 'New Chain',
             'status' => 2,
@@ -1232,7 +1238,7 @@ class StoreChainApiCest
                 'status' => $newChain['status'],
                 'allowPress' => $newChain['allow_press'],
                 'commonStoreInformation' => $newChain['common_store_information'],
-                'modificationDate' => $modificationDate->format('Y-m-d\T00:00:00+02:00'),
+                'modificationDate' => $modificationDate->format("Y-m-d\T00:00:00+0{$this->timeZoneOffsetInHours}:00"),
                 'forumThread' => $details ? $newChain['forum_thread'] : null,
                 'notes' => $details ? $newChain['notes'] : null,
                 'kams' => [
@@ -1336,7 +1342,7 @@ class StoreChainApiCest
         $role = $example['role'];
         $details = $example['details'];
 
-        $modificationDate = new DateTime('now', new DateTimeZone('Europe/Berlin'));
+        $modificationDate = new DateTime('now', $this->timeZone);
 
         $newChain = $this->createStoreChain($I, $modificationDate, 3, [$this->chainKeyAccountManager['id']]);
         $newChain1 = $this->createStoreChain($I, $modificationDate, 2, [$this->chainKeyAccountManager['id']]);
@@ -1354,7 +1360,7 @@ class StoreChainApiCest
                 'status' => $newChain['status'],
                 'allowPress' => $newChain['allow_press'],
                 'commonStoreInformation' => $newChain['common_store_information'],
-                'modificationDate' => $modificationDate->format('Y-m-d\T00:00:00+02:00'),
+                'modificationDate' => $modificationDate->format("Y-m-d\T00:00:00+0{$this->timeZoneOffsetInHours}:00"),
                 'forumThread' => $details ? $newChain['forum_thread'] : null,
                 'notes' => $details ? $newChain['notes'] : null,
                 'kams' => [
@@ -1377,7 +1383,7 @@ class StoreChainApiCest
                 'status' => $newChain1['status'],
                 'allowPress' => $newChain1['allow_press'],
                 'commonStoreInformation' => $newChain1['common_store_information'],
-                'modificationDate' => $modificationDate->format('Y-m-d\T00:00:00+02:00'),
+                'modificationDate' => $modificationDate->format("Y-m-d\T00:00:00+0{$this->timeZoneOffsetInHours}:00"),
                 'forumThread' => $details ? $newChain1['forum_thread'] : null,
                 'notes' => $details ? $newChain1['notes'] : null,
                 'kams' => [
@@ -1403,7 +1409,7 @@ class StoreChainApiCest
     {
         $role = 'orga';
 
-        $modificationDate = new DateTime('now', new DateTimeZone('Europe/Berlin'));
+        $modificationDate = new DateTime('now', $this->timeZone);
 
         // Already existing 1
         // Already existing 2
@@ -1532,7 +1538,7 @@ class StoreChainApiCest
 
     public function testContentOfGetStoresOfStoreChainEndpoint(ApiTester $I)
     {
-        $modificationDate = new DateTime('now', new DateTimeZone('Europe/Berlin'));
+        $modificationDate = new DateTime('now', $this->timeZone);
         $newChain = $I->addStoreChain([
             'name' => 'New Chain',
             'status' => 2,

@@ -7,6 +7,7 @@
 - Threads can be renamed !2882 @AntonBallmaier
 - The button to jump to the start or end of a thread can be accessed from anywhere in the thread !2882 @AntonBallmaier
 - Exported calendars can be filtered by the invitation status #1535 !2873 @alex.simm
+- Members of the Store Coordination GOALS group / ambassadors can add more than 3 storemanagers and remove the last one !2895 @AntonBallmaier
 - Added spanish translation !2892 @irgendwer
 
 ## Changes
