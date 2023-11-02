@@ -9,7 +9,7 @@ class MixedSearchResult
 {
     /**
      * Array of regions.
-     * 
+     *
      * @var array<RegionSearchResult> Array of regions
      *
      * @OA\Property(
@@ -21,7 +21,7 @@ class MixedSearchResult
 
     /**
      * Array of workingGroups.
-     * 
+     *
      * @var array<WorkingGroupSearchResult> Array of workingGroups
      *
      * @OA\Property(
@@ -33,7 +33,7 @@ class MixedSearchResult
 
     /**
      * Array of stores.
-     * 
+     *
      * @var array<StoreSearchResult> Array of stores
      *
      * @OA\Property(
@@ -45,7 +45,7 @@ class MixedSearchResult
 
     /**
      * Array of foodSharePoints.
-     * 
+     *
      * @var array<FoodSharePointSearchResult> Array of foodSharePoints
      *
      * @OA\Property(
@@ -57,7 +57,7 @@ class MixedSearchResult
 
     /**
      * Array of chats.
-     * 
+     *
      * @var array<ChatSearchResult> Array of chats
      *
      * @OA\Property(
@@ -69,7 +69,7 @@ class MixedSearchResult
 
     /**
      * Array of threads.
-     * 
+     *
      * @var array<ThreadSearchResult> Array of threads
      *
      * @OA\Property(
@@ -81,7 +81,7 @@ class MixedSearchResult
 
     /**
      * Array of users.
-     * 
+     *
      * @var array<UserSearchResult> Array of users
      *
      * @OA\Property(

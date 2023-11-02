@@ -2,6 +2,7 @@
 <?php
 
 use Foodsharing\Modules\Core\DBConstants\Region\RegionIDs;
+use Foodsharing\Modules\Core\DBConstants\Store\CooperationStatus;
 use Foodsharing\Modules\Core\DBConstants\Unit\UnitType;
 use Foodsharing\Modules\Search\SearchGateway;
 
@@ -11,12 +12,13 @@ class SearchGatewayTest extends \Codeception\Test\Unit
     protected SearchGateway $gateway;
     protected array $regions;
     protected array $users;
-
+    protected array $groups;
+    protected array $stores;
 
     public function _before()
     {
         $this->gateway = $this->tester->get(SearchGateway::class);
-        
+
         $regionEurope = $this->tester->createRegion('Europa', ['parent_id' => RegionIDs::ROOT, 'type' => UnitType::COUNTRY, 'has_children' => 1]);
         $regionCountry = $this->tester->createRegion('Deutschland', ['parent_id' => $regionEurope['id'], 'type' => UnitType::COUNTRY, 'has_children' => 1]);
         $regionState1 = $this->tester->createRegion('Sachsen', ['parent_id' => $regionCountry['id'], 'type' => UnitType::FEDERAL_STATE, 'has_children' => 1]);
@@ -25,7 +27,7 @@ class SearchGatewayTest extends \Codeception\Test\Unit
         $regionCity2 = $this->tester->createRegion('Freiberg', ['parent_id' => $regionState1['id'], 'type' => UnitType::CITY, 'has_children' => 1]);
         $regionCity3 = $this->tester->createRegion('Magdeburg', ['parent_id' => $regionState2['id'], 'type' => UnitType::CITY, 'has_children' => 1]);
         $regionCity4 = $this->tester->createRegion('Bad Dürrenberg', ['parent_id' => $regionState2['id'], 'type' => UnitType::CITY, 'has_children' => 1]);
-        
+
         $this->regions = [
             'europe' => $regionEurope,
             'country' => $regionCountry,
@@ -43,21 +45,26 @@ class SearchGatewayTest extends \Codeception\Test\Unit
         ];
 
         $this->users = array_combine(
-            array_map(fn($key) => 'user-' . $key, array_keys($this->regions)),
-            array_map(fn($region) => 
-                $this->tester->createFoodsaver(null, [
+            array_map(fn ($key) => 'user-' . $key, array_keys($this->regions)),
+            array_map(fn ($region) => $this->tester->createFoodsaver(null, [
                     'name' => 'Nutzer aus ' . $region['name'],
                     'nachname' => 'Nachname',
                     'bezirk_id' => $region['id'],
                 ]), $this->regions)
         );
+
+        $this->stores = [
+            'store-city1' => $this->tester->createStore($regionCity1['id'], null, null, ['name' => 'BetriebA', 'betrieb_status_id' => CooperationStatus::COOPERATION_ESTABLISHED->value]),
+            'store-city1-closed' => $this->tester->createStore($regionCity1['id'], null, null, ['name' => 'Betrieb geschlossen', 'betrieb_status_id' => CooperationStatus::PERMANENTLY_CLOSED->value]),
+            'store-city1' => $this->tester->createStore($regionCity2['id'], null, null, ['name' => 'BetriebB', 'betrieb_status_id' => CooperationStatus::COOPERATION_ESTABLISHED->value]),
+        ];
     }
 
     private function assertCorrectSearchResult($variableName, $expectedElements, $searchResult)
     {
         $this->assertEqualsCanonicalizing(
-            array_map(fn($key) => $this->$variableName[$key]['id'], $expectedElements),
-            array_map(fn($searchResultObj) => $searchResultObj->id, $searchResult)
+            array_map(fn ($key) => $this->$variableName[$key]['id'], $expectedElements),
+            array_map(fn ($searchResultObj) => $searchResultObj->id, $searchResult)
         );
     }
 
@@ -65,10 +72,10 @@ class SearchGatewayTest extends \Codeception\Test\Unit
     {
         // Basic example:
         $this->assertCorrectSearchResult('regions', ['state1', 'state2'], $this->gateway->searchRegions('Sachsen', 1));
-        
+
         // Not only word start:
         $this->assertCorrectSearchResult('regions', ['city2', 'city4'], $this->gateway->searchRegions('berg', 1));
-        
+
         // cAsE dOsN't MaTtEr:
         $this->assertCorrectSearchResult('regions', ['city1'], $this->gateway->searchRegions('dRESDEN', 1));
 
@@ -86,6 +93,18 @@ class SearchGatewayTest extends \Codeception\Test\Unit
 
         // except if searching globally:
         $this->assertCorrectSearchResult('groups', ['wg-city1', 'wg-city2'], $this->gateway->searchWorkingGroups('ag', $this->users['user-city1']['id'], true));
+    }
+
+    public function testSearchStores()
+    {
+        // Only find active stores in own regions
+        $this->assertCorrectSearchResult('stores', ['store-city1'], $this->gateway->searchWorkingGroups('Betrieb', $this->users['user-city1']['id'], false, false));
+
+        // Include inactive stores
+        $this->assertCorrectSearchResult('stores', ['store-city1', 'store-city1-closed'], $this->gateway->searchStores('Betrieb', $this->users['user-city1']['id'], true, false));
+
+        // Search global
+        $this->assertCorrectSearchResult('stores', ['store-city1', 'store-city2'], $this->gateway->searchStores('Betrieb', $this->users['user-city1']['id'], false, true));
     }
 
     // public function testSearchUserInGroups()

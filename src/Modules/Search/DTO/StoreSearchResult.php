@@ -16,21 +16,21 @@ class StoreSearchResult extends SearchResult
 
     /**
      * Street in which the store lays.
-     * 
+     *
      * @OA\Property(example="Oskar-Michels-Ring 29")
      */
     public string $street;
 
     /**
      * Zip code of the stores adress.
-     * 
+     *
      * @OA\Property(example="Oskar-Michels-Ring 29")
      */
     public string $zipCode;
 
     /**
      * City of the stores adress.
-     * 
+     *
      * @OA\Property(example="Münster")
      */
     public string $city;
@@ -44,28 +44,28 @@ class StoreSearchResult extends SearchResult
 
     /**
      * Name of the stores region.
-     * 
+     *
      * @OA\Property(example="Münster")
      */
     public string $region_name;
 
     /**
      * Identifier of the searching users membership to the store.
-     * 
+     *
      * @OA\Property(example=1)
      */
     public ?int $membership_status;
 
     /**
      * Whether the searching user is manager of the store.
-     * 
+     *
      * @OA\Property(example=true)
      */
     public bool $is_manager;
 
     /**
      * Name of the chain the store belongs to, null if the store has no chain.
-     * 
+     *
      * @OA\Property(example=null)
      */
     public ?string $chain_name;
@@ -84,6 +84,7 @@ class StoreSearchResult extends SearchResult
         $result->membership_status = $data['membership_status'];
         $result->is_manager = boolval($data['is_manager']);
         $result->chain_name = $data['chain_name'];
+
         return $result;
     }
 }

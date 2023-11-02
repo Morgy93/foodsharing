@@ -152,11 +152,11 @@ class GroupFunctionGateway extends BaseGateway
     }
 
     /**
-     * Wheter the given user is admin of a given specific kind of GOALS working group. 
+     * Wheter the given user is admin of a given specific kind of GOALS working group.
      *
      * @param array $workgroupFunctions Working group function to check for
-     * @param integer $foodsaverId The users id
-     * @return boolean True if the user is admin of a fitting working group
+     * @param int $foodsaverId The users id
+     * @return bool True if the user is admin of a fitting working group
      */
     public function isAdminForSpecialWorkingGroup(array $workgroupFunctions, int $foodsaverId): bool
     {

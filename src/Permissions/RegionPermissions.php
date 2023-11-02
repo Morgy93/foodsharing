@@ -146,10 +146,8 @@ final class RegionPermissions
 
     /**
      * Wheter the current user is ambassador of at least one region.
-     * 
-     * This does not account for beein Admin in a working group!
      *
-     * @return boolean
+     * This does not account for beein Admin in a working group!
      */
     public function isAmbassadorOfAtLeastOneRegion(): bool
     {

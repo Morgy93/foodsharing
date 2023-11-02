@@ -2,7 +2,6 @@
 
 namespace Foodsharing\Modules\Search\DTO;
 
-use Foodsharing\Modules\Foodsaver\DTO\FoodsaverForAvatar;
 use OpenApi\Annotations as OA;
 
 class SimplifiedUserSearchResult
@@ -27,6 +26,7 @@ class SimplifiedUserSearchResult
         $result->id = $user->id;
         $name = empty($user->last_name) ? $user->name : "{$user->name} {$user->last_name}";
         $result->value = "{$name} ({$user->id})";
+
         return $result;
     }
 }

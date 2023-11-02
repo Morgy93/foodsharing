@@ -26,7 +26,7 @@ class SearchGateway extends BaseGateway
      * Searches the given term in the database of regions.
      *
      * @param string $query The search query
-     * @param integer $foodsaverId The searching user
+     * @param int $foodsaverId The searching user
      * @return array<RegionSearchResult>
      */
     public function searchRegions(string $query, int $foodsaverId): array
@@ -57,6 +57,7 @@ class SearchGateway extends BaseGateway
             ORDER BY is_member DESC, name ASC
             LIMIT 30",
             [$foodsaverId, ...$parameters]);
+
         return array_map(fn ($region) => RegionSearchResult::createFromArray($region), $regions);
     }
 
@@ -64,7 +65,7 @@ class SearchGateway extends BaseGateway
      * Searches the given term in the database of working groups.
      *
      * @param string $query The search query
-     * @param integer $foodsaverId The searching user
+     * @param int $foodsaverId The searching user
      * @param bool $searchAllWorkingGroups Whether to search for all groups. Otherwise search is restricted to groups in whose parent the searching users is a member.
      * @return array<WorkingGroupSearchResult>
      */
@@ -74,7 +75,7 @@ class SearchGateway extends BaseGateway
         $membershipCheck = $searchAllWorkingGroups ? '' : 'AND (NOT ISNULL(has_parent_region.foodsaver_id) OR NOT ISNULL(has_region.foodsaver_id))';
         $workingGroupType = UnitType::WORKING_GROUP;
 
-        $workingGroups =  $this->db->fetchAll("SELECT
+        $workingGroups = $this->db->fetchAll("SELECT
                 region.id,
                 region.name,
                 region.email,
@@ -98,6 +99,7 @@ class SearchGateway extends BaseGateway
             ORDER BY is_admin DESC, is_member DESC, name ASC
             LIMIT 30",
             [$foodsaverId, $foodsaverId, $foodsaverId, ...$parameters]);
+
         return array_map(fn ($workingGroup) => WorkingGroupSearchResult::createFromArray($workingGroup), $workingGroups);
     }
 
@@ -105,7 +107,7 @@ class SearchGateway extends BaseGateway
      * Searches the given term in the database of stores.
      *
      * @param string $query The search query
-     * @param integer $foodsaverId The searching user
+     * @param int $foodsaverId The searching user
      * @param bool $includeInactiveStores Whether to include inactive store in the search results
      * @param bool $searchGlobal Whether to search for all stores. Otherwise search is restricted to stores in whose region the searching users is a member.
      * @return array<StoreSearchResult>
@@ -155,6 +157,7 @@ class SearchGateway extends BaseGateway
             ORDER BY is_manager DESC, IF(membership_status = 1, 2, IF(membership_status = 2, 1, 0)) DESC, name ASC
             LIMIT 30",
             [$foodsaverId, $foodsaverId, ...$parameters]);
+
         return array_map(fn ($store) => StoreSearchResult::createFromArray($store), $stores);
     }
 
@@ -162,7 +165,7 @@ class SearchGateway extends BaseGateway
      * Searches the given term in the list of food-share-points.
      *
      * @param string $query The search query
-     * @param integer $foodsaverId The searching user
+     * @param int $foodsaverId The searching user
      * @param bool $searchGlobal Whether to search for all food-share-points. Otherwise search is restricted to food-share-points in whose region the searching users is a member.
      * @return array<FoodSharePointSearchResult>
      */
@@ -199,6 +202,7 @@ class SearchGateway extends BaseGateway
             LIMIT 30",
             $parameters
         );
+
         return array_map(fn ($foodSharePoint) => FoodSharePointSearchResult::createFromArray($foodSharePoint), $foodSharePoints);
     }
 
@@ -206,7 +210,7 @@ class SearchGateway extends BaseGateway
      * Searches the given term in the list of own chats.
      *
      * @param string $query The search query
-     * @param integer $foodsaverId The searching user
+     * @param int $foodsaverId The searching user
      * @return array<ChatSearchResult>
      */
     public function searchChats(string $query, int $foodsaverId): array
@@ -237,6 +241,7 @@ class SearchGateway extends BaseGateway
             LIMIT 30",
             [$foodsaverId, ...$parameters]
         );
+
         return array_map(fn ($chat) => ChatSearchResult::createFromArray($chat), $chats);
     }
 
@@ -245,10 +250,10 @@ class SearchGateway extends BaseGateway
      * Use params $regionId and $subforumId to restrict the search to one forum.
      *
      * @param string $query The search query
-     * @param integer $foodsaverId The searching user
+     * @param int $foodsaverId The searching user
      * @param int $regionId The Region whose forum should be searched. Use 0 to not restict the search to one region.
      * @param int $subforumId The subforum id of the forum the search should be restricted to. Ignored if $regionId is 0.
-     * @param bool $disableRegionCheck Whether to disable the region check assuring the seaching user is member in the groups of found threads.
+     * @param bool $disableRegionCheck whether to disable the region check assuring the seaching user is member in the groups of found threads
      * @return array<ThreadSearchResult>
      */
     public function searchThreads(string $query, int $foodsaverId, int $regionId = 0, int $subforumId = 0, $disableRegionCheck = false): array
@@ -292,14 +297,15 @@ class SearchGateway extends BaseGateway
             LIMIT 30",
             [...$parameters]
         );
+
         return array_map(fn ($thread) => ThreadSearchResult::createFromArray($thread), $threads);
     }
 
     /**
      * Searches the given term in the list of users.
-     * 
+     *
      * @param string $query The search query
-     * @param integer $foodsaverId The searching user
+     * @param int $foodsaverId The searching user
      * @param bool $searchGlobal Whether to search for all uses. Otherwise search is restricted to users with at least one point of contact to the searching user. Those include:
      *      - Membership in common reagion or working group
      *      - Buddies
@@ -408,12 +414,13 @@ class SearchGateway extends BaseGateway
             ',
             [$foodsaverId, $foodsaverId, $foodsaverId, $foodsaverId, $parameters[0], $parameters[0], $foodsaverId, ...$parameters]
         );
+
         return array_map(fn ($user) => UserSearchResult::createFromArray($user), $users);
     }
 
     /**
      * Searches the given term in the list of users.
-     * 
+     *
      * @param string $query The search query
      * @param ?int $restrictToRegionId The id of a region to restrict the search to
      * @param bool $includeMails Whether to allow finding unsers by their log-in mail address
@@ -422,7 +429,7 @@ class SearchGateway extends BaseGateway
     public function searchUsersGlobal(string $query, ?int $restrictToRegionId = null, bool $includeMails = false, bool $includeLastNames = true): array
     {
         $searchCriteria = ['foodsaver.name'];
-        if($includeLastNames){
+        if ($includeLastNames) {
             $searchCriteria[] = 'foodsaver.nachname';
         }
         $mailReturnClause = '';
@@ -461,16 +468,17 @@ class SearchGateway extends BaseGateway
             LIMIT 30",
             [...$parameters]
         );
+
         return array_map(fn ($user) => UserSearchResult::createFromArray($user), $users);
     }
 
     /**
      * Generates the SQL WHERE clause used to decide, which search results fit the given query.
      *
-     * @param array $searchCriteria A list of SQL identifiers the words of the query get matched against.
+     * @param array $searchCriteria a list of SQL identifiers the words of the query get matched against
      * @param string $query The search query
      * @param array $detailedSearchCriteria A list of SQL identifiers the words of the query get matched against, only if the size of the query is more than one word. This can be used to allow further specification of search results.
-     * @return array A tuple, including the SQL WHERE clause text as the first element, and an array of query parameters in the second.  
+     * @return array a tuple, including the SQL WHERE clause text as the first element, and an array of query parameters in the second
      */
     private function generateSearchClauses(array $searchCriteria, string $query, array $detailedSearchCriteria = []): array
     {
