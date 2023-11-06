@@ -83,10 +83,12 @@ export default {
         clearTimeout(this.timeout)
         this.open()
         this.isLoading = false
+        this.threads = []
       } else {
         clearTimeout(this.timeout)
         this.close()
         this.isLoading = false
+        this.threads = []
       }
     },
   },
@@ -95,6 +97,7 @@ export default {
       this.isOpen = true
     },
     delayedFetch () {
+      this.isLoading = true
       if (this.timeout) {
         clearTimeout(this.timeout)
         this.timer = null
@@ -108,7 +111,6 @@ export default {
     },
     async fetch () {
       const curQuery = this.query
-      this.isLoading = true
       const res = await searchForum(this.groupId, this.subforumId, curQuery)
       if (curQuery !== this.query) {
         // query has changed, throw away this response
