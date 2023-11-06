@@ -18,6 +18,7 @@
 
 ## Bugfixes
 - Added error handling for cache helper for bell notifications or other requests !2869 @chriswalg
+- Allow adding regular pickups even if there is one for every day already !2897 @AntonBallmaier
 
 ## Refactoring
 - Refactor mailbox modul to vue and rest api !2580 !2870 !2871 @chriswalg @alex.simm
