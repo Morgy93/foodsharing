@@ -6,7 +6,7 @@ class SettingsCest
     protected array $users;
     protected array $groups;
     protected array $stores;
-    
+
     final public function _before()
     {
         $this->gateway = $this->tester->get(SearchGateway::class);
@@ -68,7 +68,6 @@ class SettingsCest
         ];
     }
 
-
     final public function canSearch(AcceptanceTester $I): void
     {
         $I->login($this->users['user-city1']['email']);
@@ -77,10 +76,10 @@ class SettingsCest
 
         $I->click('a.nav-link .fa-search');
         $I->waitForElementVisible('#searchBarModal .modal-dialog');
-        $I->fillField('#searchField', "Nu");
+        $I->fillField('#searchField', 'Nu');
         $I->waitForActiveAPICalls();
         $I->see('Du kannst nach Personen, Gruppen, Betrieben, Bezirken, Chats, Forenbeiträgen und Fairteilern suchen.');
-        $I->fillField('#searchField', "Nutzer Bot");
+        $I->fillField('#searchField', 'Nutzer Bot');
         $I->waitForActiveAPICalls();
 
         $I->see('Personen');
