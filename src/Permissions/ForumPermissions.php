@@ -51,11 +51,12 @@ class ForumPermissions
 
     public function mayPostToRegion(int $regionId, $ambassadorForum): bool
     {
-        if ($this->session->mayRole(Role::ORGA)) {
-            return true;
-        }
         if (!$this->session->isVerifiedMail()) {
             return false;
+        }
+
+        if ($this->session->mayRole(Role::ORGA)) {
+            return true;
         }
 
         if ($ambassadorForum && !$this->session->isAdminFor($regionId)) {
