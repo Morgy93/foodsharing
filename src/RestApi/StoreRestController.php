@@ -75,7 +75,7 @@ class StoreRestController extends AbstractFOSRestController
      *      @Model(type=CommonStoreMetadata::class)
      * )
      * @OA\Response(response="401", description="Not logged in")
-
+     *
      * @Rest\Get("stores/meta-data")
      */
     public function getCommonStoreMetadata(): Response

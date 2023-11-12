@@ -3,7 +3,6 @@
 namespace Foodsharing\Modules\WallPost;
 
 use Flourish\fImage;
-use Foodsharing\Lib\Session;
 use Foodsharing\Lib\Xhr\XhrResponses;
 use Foodsharing\Modules\Core\Control;
 use Foodsharing\Modules\FoodSharePoint\FoodSharePointTransactions;
@@ -22,13 +21,11 @@ class WallPostXhr extends Control
         WallPostGateway $wallPostGateway,
         WallPostPermissions $wallPostPermissions,
         WallPostView $view,
-        Session $session,
     ) {
         $this->foodSharePointTransactions = $foodSharePointTransactions;
         $this->wallPostGateway = $wallPostGateway;
         $this->wallPostPermissions = $wallPostPermissions;
         $this->view = $view;
-        $this->session = $session;
 
         parent::__construct();
 

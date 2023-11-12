@@ -22,7 +22,7 @@ class ContentGateway extends BaseGateway
      */
     public function getContent(int $id): ?Content
     {
-        $content = $this->db->fetchByCriteria('fs_content', ['title', 'body', 'last_mod'], ['id' => $id]);
+        $content = $this->db->fetchByCriteria('fs_content', ['name', 'title', 'body', 'last_mod'], ['id' => $id]);
 
         if ($content == null) {
             return null;
@@ -33,7 +33,7 @@ class ContentGateway extends BaseGateway
                 ->shiftTimezone(new DateTimeZone('UTC'))
             : null;
 
-        return Content::create($content['title'], $content['body'], $lastModified);
+        return Content::create($id, $content['name'], $content['title'], $content['body'], $lastModified);
     }
 
     public function getMultiple(array $ids): array
@@ -46,7 +46,16 @@ class ContentGateway extends BaseGateway
      */
     public function list(array $filter = null): array
     {
-        return $this->db->fetchAllByCriteria('fs_content', ['id', 'name'], $filter ? ['id' => $filter] : []);
+        $list = $this->db->fetchAllByCriteria('fs_content', ['id', 'name', 'title', 'last_mod'], $filter ? ['id' => $filter] : []);
+
+        return array_map(function ($content) {
+            $lastModified = $content['last_mod'] != null
+                ? Carbon::createFromFormat('Y-m-d H:i:s', $content['last_mod'], new DateTimeZone('Europe/Berlin'))
+                    ->shiftTimezone(new DateTimeZone('UTC'))
+                : null;
+
+            return Content::create($content['id'], $content['name'], $content['title'], '', $lastModified);
+        }, $list);
     }
 
     public function getDetail($id): array

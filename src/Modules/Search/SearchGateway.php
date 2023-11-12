@@ -187,6 +187,7 @@ class SearchGateway extends BaseGateway
     {
         /* remove all non-word characters as they will not be indexed by the database and might change the search condition */
         $q = mb_ereg_replace('\W', ' ', $q) ?: '';
+
         /* put + before and * after the words, omitting all words with less than 3 characters, because they would not be found in the result. */
         /* TODO: this number depends on innodb_ft_min_token_size MySQL setting. It could be viable setting it to 1 alternatively. */
         return implode(' ',

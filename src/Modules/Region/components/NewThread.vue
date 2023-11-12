@@ -11,16 +11,13 @@
     <div class="card-header text-black bg-white">
       <label class="font-weight-bold">{{ $i18n('forum.thread.title') }}*</label>
       <b-form-input id="forum-create-thread-form-title" v-model="title" />
-      <div
-        class="mt-3"
-        v-html="$i18n('forum.markdown_description')"
-      />
       <label class="font-weight-bold mt-3">{{ $i18n('forum.post.body') }}*</label>
-      <b-form-textarea
-        id="forum-create-thread-form-body"
-        v-model="body"
-        rows="6"
+      <MarkdownInput
+        :rows="6"
+        :value="body"
+        @update:value="newValue => body = newValue"
       />
+
       <label class="mt-3">{{ $i18n('forum.inform_per_email') }}*</label>
       <div class="row">
         <div class="col">
@@ -45,8 +42,10 @@
 import { createThread } from '@/api/forum'
 import { pulseError } from '@/script'
 import i18n from '@/helper/i18n'
+import MarkdownInput from '@/components/Markdown/MarkdownInput.vue'
 
 export default {
+  components: { MarkdownInput },
   props: {
     groupId: { type: Number, required: true },
     subforumId: { type: Number, required: true },
@@ -54,7 +53,7 @@ export default {
   data () {
     return {
       sendMail: false,
-      body: null,
+      body: '',
       title: null,
       isLoading: false,
     }
@@ -82,7 +81,3 @@ export default {
   },
 }
 </script>
-
-<style scoped>
-
-</style>

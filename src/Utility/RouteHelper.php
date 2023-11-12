@@ -2,17 +2,20 @@
 
 namespace Foodsharing\Utility;
 
+use Foodsharing\Entrypoint\IndexController;
 use Foodsharing\Lib\Session;
-use Foodsharing\Modules\Legal\LegalControl;
 use Foodsharing\Modules\Legal\LegalGateway;
-use Symfony\Contracts\Translation\TranslatorInterface;
+use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\HttpFoundation\RequestStack;
+use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 
 final class RouteHelper
 {
     public function __construct(
         private readonly Session $session,
-        private readonly TranslatorInterface $translator,
-        private readonly LegalGateway $legalGateway
+        private readonly LegalGateway $legalGateway,
+        private readonly RequestStack $requestStack,
+        private readonly UrlGeneratorInterface $router,
     ) {
     }
 
@@ -29,18 +32,28 @@ final class RouteHelper
 
     public function goLoginAndExit(): never
     {
-        $this->goAndExit('/?page=login&ref=' . urlencode($this->getSelf()));
+        $this->goPageAndExit('login', ['ref' => urlencode($this->getSelf())]);
     }
 
-    public function goPageAndExit(string $page = ''): never
+    public function goPageAndExit(string $page = '', array $params = [], bool $pageIsSymfonyRoute = false): never
     {
         if (empty($page)) {
-            $page = $this->getPage();
-            if (isset($_GET['bid'])) {
-                $page .= '&bid=' . (int)$_GET['bid'];
+            if ($this->request()->query->has('bid')) {
+                $params['bid'] = (int)$this->request()->query->get('bid');
+            }
+            if ($this->isUsingLegacyController()) {
+                $url = $this->router->generate('index', ['page' => $this->getPage(), ...$params]);
+            } else {
+                $url = $this->router->generate($this->getSymfonyRoute(), $params);
+            }
+        } else {
+            if (!$pageIsSymfonyRoute) {
+                $url = $this->router->generate('index', ['page' => $page, ...$params]);
+            } else {
+                $url = $this->router->generate($page, $params);
             }
         }
-        $this->goAndExit('/?page=' . $page);
+        $this->goAndExit($url);
     }
 
     public function getSelf()
@@ -48,24 +61,19 @@ final class RouteHelper
         return $_SERVER['REQUEST_URI'];
     }
 
+    public function getSymfonyRoute(): string
+    {
+        return $this->request()->attributes->get('_route');
+    }
+
     public function getPage(): string
     {
-        return $this->getGet('page') ?: 'index';
+        return $this->request()->query->get('page', 'index');
     }
 
     public function getSubPage(): string
     {
-        return $this->getGet('sub') ?: 'index';
-    }
-
-    private function getGet(string $name): string
-    {
-        return $_GET[$name] ?? false;
-    }
-
-    public function pageLink(string $page, ?string $title = null): array
-    {
-        return ['href' => '/?page=' . $page, 'name' => $title ?? $this->translator->trans('bread.backToOverview')];
+        return $this->request()->query->get('sub', 'index');
     }
 
     public function autolink(string $str, array $attributes = []): string
@@ -82,14 +90,22 @@ final class RouteHelper
             $str
         ) ?: '';
         $str = substr($str, 1);
+
         // adds http:// if not existing
         return preg_replace('`href=\"www`', 'href="http://www', $str) ?: '';
+    }
+
+    public function isUsingLegacyController(): bool
+    {
+        $controller = $this->request()->attributes->get('_controller');
+
+        return $controller === IndexController::class;
     }
 
     public function getLegalControlIfNecessary(): ?string
     {
         if ($this->session->mayRole() && !$this->onSettingsOrLogoutPage() && !$this->legalRequirementsMetByUser()) {
-            return LegalControl::class;
+            return 'legal';
         }
 
         return null;
@@ -120,5 +136,10 @@ final class RouteHelper
     private function onSettingsOrLogoutPage(): bool
     {
         return in_array($this->getPage(), ['settings', 'logout']);
+    }
+
+    private function request(): Request
+    {
+        return $this->requestStack->getCurrentRequest();
     }
 }

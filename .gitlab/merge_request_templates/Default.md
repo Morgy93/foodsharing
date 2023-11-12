@@ -1,4 +1,10 @@
-<!-- Please leave the merge request in the draft state as long as you are working on it and remove the 
+<!-- 
+Please read https://devdocs.foodsharing.de/docs/current/contributing/ before contributing.
+
+If it's not just a small change or a doc fix, then an issue must exist.
+Link the issue below or create a new one instead.
+
+Leave the merge request in the draft state as long as you are working on it and remove the 
 draft state when you are done and would like a review. -->
 Closes #____ (e.g. #230)
 

@@ -26,21 +26,26 @@
           {{ $i18n('settings.calendar.delete_token.button') }}
         </b-button>
 
-        <ul
-          v-if="token"
-          class="webcal"
-        >
-          <li class="pb-1">
-            <a :href="webcalPickups">
-              {{ webcalPickups }}
-            </a>
-          </li>
-          <li class="pb-1">
-            <a :href="httpPickups">
-              {{ httpPickups }}
-            </a>
-          </li>
-        </ul>
+        <div v-if="token" class="mt-3">
+          <hr>
+
+          <b-form-checkbox v-model="includeInvitations" class="mt-3">
+            {{ $i18n('settings.calendar.include_invitations') }}
+          </b-form-checkbox>
+
+          <ul class="webcal">
+            <li class="pb-1">
+              <a :href="webcalPickups">
+                {{ webcalPickups }}
+              </a>
+            </li>
+            <li class="pb-1">
+              <a :href="httpPickups">
+                {{ httpPickups }}
+              </a>
+            </li>
+          </ul>
+        </div>
 
         <b-alert variant="warning" show>
           {{ $i18n('settings.calendar.token-warning') }}
@@ -58,10 +63,8 @@
 import { hideLoader, pulseError, showLoader } from '@/script'
 import { createApiToken, getApiToken, removeApiToken } from '@/api/calendar'
 import i18n from '@/helper/i18n'
-import { BAlert, BButton } from 'bootstrap-vue'
 
 export default {
-  components: { BAlert, BButton },
   props: {
     baseUrlWebcal: { type: String, required: true },
     baseUrlHttp: { type: String, required: true },
@@ -69,14 +72,18 @@ export default {
   data () {
     return {
       token: null,
+      includeInvitations: true,
     }
   },
   computed: {
+    queryParams () {
+      return `?events=${this.includeInvitations ? 'all' : 'accepted'}`
+    },
     webcalPickups () {
-      return this.baseUrlWebcal + this.token
+      return this.baseUrlWebcal + this.token + this.queryParams
     },
     httpPickups () {
-      return this.baseUrlHttp + this.token
+      return this.baseUrlHttp + this.token + this.queryParams
     },
   },
   async mounted () {

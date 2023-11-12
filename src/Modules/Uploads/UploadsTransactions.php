@@ -2,7 +2,7 @@
 
 namespace Foodsharing\Modules\Uploads;
 
-use Foodsharing\Modules\Uploads\DTO\Image;
+use Foodsharing\Modules\Uploads\DTO\UploadedFile;
 use Foodsharing\Modules\Uploads\Exceptions\Base64DecodingException;
 use Foodsharing\Modules\Uploads\Exceptions\FileSizeTooBigException;
 use Foodsharing\Modules\Uploads\Exceptions\InvalidFileException;
@@ -10,6 +10,11 @@ use Imagick;
 
 class UploadsTransactions
 {
+    public function __construct(
+        private readonly UploadsGateway $uploadsGateway
+    ) {
+    }
+
     /**
      * Returns the actual path of the file with the specified parameters.
      */
@@ -131,13 +136,13 @@ class UploadsTransactions
      * This method generates a temporary file, before it can be saved in the database and on the non-temporary harddrive location.
      * It validates the image and remove exif data too.
      *
-     * @return Image data of the temporary file
+     * @return UploadedFile data of the temporary file
      *
      * @throws FileSizeTooBigException
      * @throws Base64DecodingException
      * @throws InvalidFileException
      */
-    public function storeTemporaryValidatedFile(string $bodyBase64Encoded): Image
+    public function storeTemporaryValidatedFile(string $bodyBase64Encoded): UploadedFile
     {
         $maxBase64Size = 4 * (UploadAttributes::MAX_UPLOAD_FILE_SIZE / 3);
         if (strlen($bodyBase64Encoded) > $maxBase64Size) {
@@ -158,16 +163,17 @@ class UploadsTransactions
         $mimeTypeOfTemporaryFile = mime_content_type($temporaryFile);
 
         // image? check if its valid
-        if (!$this->isValidImage($temporaryFile)) {
+        if (str_contains($mimeTypeOfTemporaryFile, 'image') && !$this->isValidImage($temporaryFile)) {
             unlink($temporaryFile);
             throw new InvalidFileException('invalid image provided');
         }
 
-        return new Image(
+        return new UploadedFile(
             filePath: $temporaryFile,
             fileSize: $sizeOfTemporaryFile,
             hashedBody: $bodyHashOfTemporaryFile,
-            mimeType: $mimeTypeOfTemporaryFile
+            mimeType: $mimeTypeOfTemporaryFile,
+            uploaderId: 0,
         );
     }
 
@@ -190,5 +196,26 @@ class UploadsTransactions
             // otherwise just move it
             rename($temporaryFilePath, $reservedFilePathForPersistentFile);
         }
+    }
+
+    /**
+     * Returns meta data of an uploaded file or null if the given UUID does not exist.
+     */
+    public function getUploadedFile(string $uuid): ?UploadedFile
+    {
+        $image = $this->uploadsGateway->getUploadedFile($uuid);
+        if (empty($image)) {
+            return null;
+        }
+
+        $image->filePath = $this->generateFilePath($uuid);
+
+        return $image;
+    }
+
+    public function deleteUploadedFile(string $uuid): void
+    {
+        @unlink($this->generateFilePath($uuid));
+        $this->uploadsGateway->deleteUpload($uuid);
     }
 }

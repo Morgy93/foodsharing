@@ -1,3 +1,4 @@
+<!-- eslint-disable vue/no-v-model-argument -->
 <template>
   <Container
     v-if="filteredPosts"
@@ -10,14 +11,16 @@
     <div class="store-wall">
       <div
         v-if="mayWritePost"
-        class="newpost m-1 p-1"
+        class="m-1 p-1"
       >
-        <b-form-textarea
-          id="newpost"
-          v-model="newPostText"
-          rows="2"
-          max-rows="6"
-          @keydown.ctrl.enter="writePost"
+        <MarkdownInput
+          variant="outline-primary"
+          :placeholder="$i18n('wall.placeholder')"
+          :rows="2"
+          :conceal-toolbar="true"
+          :value="newPostText"
+          @update:value="newValue => newPostText = newValue"
+          @submit="writePost"
         />
 
         <div class="submit d-flex">
@@ -65,9 +68,10 @@ import WallPost from '@php/Modules/WallPost/components/WallPost.vue'
 import { showLoader, hideLoader, pulseError } from '@/script'
 import ListToggleMixin from '@/mixins/ContainerToggleMixin'
 import Container from '@/components/Container/Container.vue'
+import MarkdownInput from '../Markdown/MarkdownInput.vue'
 
 export default {
-  components: { WallPost, Container },
+  components: { WallPost, Container, MarkdownInput },
   mixins: [ListToggleMixin],
   props: {
     storeId: { type: Number, required: true },
@@ -151,9 +155,6 @@ export default {
 </script>
 
 <style lang="scss" scoped>
-.newpost textarea#newpost {
-  overflow-y: auto !important;
-}
 
 ul.posts {
   margin: 0;

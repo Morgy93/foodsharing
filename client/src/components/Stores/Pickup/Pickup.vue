@@ -202,11 +202,13 @@
       modal-class="bootstrap"
       header-class="d-flex"
       @ok="$emit('edit-description', date, totalSlots, newDescription)"
+      @shown="$refs.modal_edit_description_input.focus()"
     >
       <p>
         {{ $i18n('pickup.description_modal_text') }}
       </p>
       <b-form-input
+        ref="modal_edit_description_input"
         v-model="newDescription"
         :placeholder="$i18n('pickup.description')"
         :maxlength="100"

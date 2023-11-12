@@ -479,14 +479,10 @@ final class RegionControl extends Control
         $sub = $request->query->get('sub');
         $viewData = $this->regionViewData($region, $sub);
 
-        $viewData['genderData']['district'] = $this->gateway->genderCountRegion((int)$region['id']);
-        $viewData['genderData']['homeDistrict'] = $this->gateway->genderCountHomeRegion((int)$region['id']);
         $viewData['pickupData']['daily'] = 0;
         $viewData['pickupData']['weekly'] = 0;
         $viewData['pickupData']['monthly'] = 0;
         $viewData['pickupData']['yearly'] = 0;
-        $viewData['ageBand']['district'] = $this->gateway->AgeBandDistrict((int)$region['id']);
-        $viewData['ageBand']['homeDistrict'] = $this->gateway->AgeBandHomeDistrict((int)$region['id']);
 
         if ($region['type'] !== UnitType::COUNTRY || $this->regionPermissions->mayAccessStatisticCountry()) {
             $viewData['pickupData']['daily'] = $this->gateway->listRegionPickupsByDate((int)$region['id'], '%Y-%m-%d');

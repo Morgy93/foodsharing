@@ -107,6 +107,15 @@ class ForumPermissions
         return false;
     }
 
+    public function mayRename(int $threadId): bool
+    {
+        if ($this->mayModerate($threadId)) {
+            return true;
+        }
+
+        return $this->forumGateway->getThread($threadId)['creator_id'] == $this->session->id();
+    }
+
     public function mayAccessThread(int $threadId): bool
     {
         if ($this->session->mayRole(Role::ORGA)) {

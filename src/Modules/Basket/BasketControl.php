@@ -5,13 +5,17 @@ namespace Foodsharing\Modules\Basket;
 use Foodsharing\Modules\Core\Control;
 use Foodsharing\Modules\Core\DBConstants\Basket\Status;
 use Foodsharing\Modules\Core\DBConstants\Map\MapConstants;
+use Foodsharing\Utility\UriHelper;
 
 class BasketControl extends Control
 {
     private BasketGateway $basketGateway;
 
-    public function __construct(BasketView $view, BasketGateway $basketGateway)
-    {
+    public function __construct(
+        BasketView $view,
+        BasketGateway $basketGateway,
+        private readonly UriHelper $uriHelper,
+    ) {
         $this->view = $view;
         $this->basketGateway = $basketGateway;
 
@@ -22,12 +26,12 @@ class BasketControl extends Control
 
     public function index(): void
     {
-        if ($id = $this->uriInt(2)) {
+        if ($id = $this->uriHelper->uriInt(2)) {
             if ($basket = $this->basketGateway->getBasket($id)) {
                 $this->basket($basket);
             }
         } else {
-            if ($m = $this->uriStr(2)) {
+            if ($m = $this->uriHelper->uriStr(2)) {
                 if (method_exists($this, $m)) {
                     $this->$m();
                 } else {

@@ -43,7 +43,7 @@ class StoreMaintainceTransactionsTest extends \Codeception\Test\Unit
         $this->tester->addStoreTeam($storeWithRegularPickup['id'], $foodsaver1['id'], false);
         $this->tester->addStoreTeam($storeWithRegularPickup['id'], $storeCoordinator['id'], true);
 
-        $referenceDate = new Carbon();
+        $referenceDate = Carbon::create(2020, 12, 10, 10, 10, 10);
         $dayOfPickup = $referenceDate->clone()->addHour();
         $timeOfPickup = $referenceDate->clone()->format('H:i:s');
         $dayOfWeekToday = intval($dayOfPickup->format('w'));

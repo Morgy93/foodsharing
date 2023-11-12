@@ -7,10 +7,13 @@ use Foodsharing\Lib\Routing;
 use Foodsharing\Modules\Core\Control;
 use Foodsharing\Utility\PageHelper;
 use Foodsharing\Utility\RouteHelper;
+use Foodsharing\Utility\WebpackHelper;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\DependencyInjection\Exception\ServiceNotFoundException;
+use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\HttpFoundation\UrlHelper;
 
 class IndexController extends AbstractController
 {
@@ -22,19 +25,33 @@ class IndexController extends AbstractController
     public function __invoke(
         Request $request,
         RouteHelper $routeHelper,
-        PageHelper $pageHelper
+        PageHelper $pageHelper,
+        WebpackHelper $webpackHelper,
+        UrlHelper $urlHelper,
     ): Response {
         $response = new Response('--');
 
-        $app = $routeHelper->getPage();
+        $page = $request->query->get('page', 'index');
+        $page = $routeHelper->getLegalControlIfNecessary() ?? $page;
 
-        $controllerName = $routeHelper->getLegalControlIfNecessary() ?? Routing::getClassName($app, 'Control');
+        if (Routing::isPorted($page)) {
+            return $this->doPortedRedirect($page, $request, $urlHelper);
+        }
+
+        $controllerFqcn = Routing::getClassName($page, 'Control');
 
         try {
             global $container;
-            if ($controllerName !== null) {
+            if ($controllerFqcn !== null) {
+                // set up assets for this module
+                $moduleName = Routing::getModuleName($page);
+                if (!empty($moduleName)) {
+                    $projectDir = $container->get('kernel')->getProjectDir();
+                    $webpackHelper->prepareWebpackAssets($projectDir, $moduleName);
+                }
+
                 /** @var Control $controller */
-                $controller = $container->get(ltrim($controllerName, '\\'));
+                $controller = $container->get(ltrim($controllerFqcn, '\\'));
                 $controller->setRequest($request);
             }
         } catch (ServiceNotFoundException) {
@@ -53,6 +70,7 @@ class IndexController extends AbstractController
             }
             $sub = $controller->getSub();
             if ($sub !== false && is_callable([$controller, $sub])) {
+                // this only happens if the submethod is public
                 $controller->$sub($request, $response);
             }
         } else {
@@ -67,5 +85,21 @@ class IndexController extends AbstractController
         }
 
         return $response;
+    }
+
+    // because the highest level routing parameter is always 'page',
+    // we can easily port almost all controllers without thought
+    // by turning that parameter into a root level path
+    // e.g. /?page=bezirk&a=b&c=1 becomes /bezirk?a=b&c=1
+    private function doPortedRedirect(string $page, Request $request, UrlHelper $urlHelper): Response
+    {
+        $request->query->remove('page');
+
+        $page = Routing::getPortedName($page);
+        $newUrl = '/' . $page . '?' . http_build_query($request->query->all());
+
+        // use 307 here because it is guaranteed not to change anything about the request otherwise
+        // (could also use 308 here)
+        return new RedirectResponse($urlHelper->getAbsoluteUrl($newUrl), Response::HTTP_TEMPORARY_REDIRECT);
     }
 }

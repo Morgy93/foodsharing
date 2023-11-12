@@ -1,4 +1,3 @@
-CHANGELOG.md merge=union
 /composer.lock -merge
 
 # Settings for line ending treatment
