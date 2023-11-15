@@ -77,7 +77,7 @@ class MapGateway extends BaseGateway
 				b.description,
 				b.picture,
 				b.foodsaver_id,
-				UNIX_TIMESTAMP(b.time) AS time,
+				UNIX_TIMESTAMP(b.time) AS created_at,
 				fs.id AS fs_id,
 				fs.name AS fs_name,
 				fs.photo AS fs_photo,
@@ -99,7 +99,7 @@ class MapGateway extends BaseGateway
 
         $bubbleData = BasketBubbleData::create($basket['id'], $basket['description'], $basket['picture']);
         if ($includeDetails) {
-            $bubbleData->createdAt = Carbon::createFromTimestamp('time');
+            $bubbleData->createdAt = Carbon::createFromTimestamp('created_at');
             $bubbleData->creator = new Profile($basket['fs_id'], $basket['fs_name'], $basket['fs_photo'], $basket['fs_sleep_status']);
         }
 

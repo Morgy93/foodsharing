@@ -41,13 +41,12 @@
         {{ bubbleData.description }}
       </div>
 
-      <b-button
-        variant="primary"
-        class="mx-5"
+      <a
+        class="btn btn-primary mx-5"
+        type="button"
         :href="$url('basket', bubbleData.id)"
-      >
-        {{ $i18n('basket.go') }}
-      </b-button>
+        v-text="$i18n('basket.go')"
+      />
     </div>
   </div>
 </template>
