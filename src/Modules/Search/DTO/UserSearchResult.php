@@ -50,7 +50,6 @@ class UserSearchResult extends SearchResult
      */
     public string $region_name;
 
-
     /**
      * Name of the users home region.
      *
