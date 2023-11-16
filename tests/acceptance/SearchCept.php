@@ -1,6 +1,6 @@
 <?php
 
-class SettingsCest
+class SettingsCept
 {
     protected array $regions;
     protected array $users;
