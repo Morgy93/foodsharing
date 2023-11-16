@@ -55,7 +55,7 @@ class WorkingGroupSearchResult extends SearchResult
      *     @OA\Items(ref=@Model(type=FoodsaverForAvatar::class))
      * )
      */
-    public array $ambassadors;
+    public array $admins;
 
     public static function createFromArray(array $data): WorkingGroupSearchResult
     {
