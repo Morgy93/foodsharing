@@ -50,6 +50,14 @@ class UserSearchResult extends SearchResult
      */
     public string $region_name;
 
+
+    /**
+     * Name of the users home region.
+     *
+     * @OA\Property(example="Münster")
+     */
+    public ?string $email;
+
     public static function createFromArray(array $data): UserSearchResult
     {
         $result = new UserSearchResult();
@@ -61,6 +69,7 @@ class UserSearchResult extends SearchResult
         $result->last_name = $data['last_name'];
         $result->mobile = $data['mobile'];
         $result->is_buddy = $data['is_buddy'];
+        $result->email = $data['email'] ?? null;
 
         return $result;
     }

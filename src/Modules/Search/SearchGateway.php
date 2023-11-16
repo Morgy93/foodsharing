@@ -320,14 +320,21 @@ class SearchGateway extends BaseGateway
         if ($searchGlobal) {
             return $this->searchUsersGlobal($query, null, $includeMails);
         }
-        list($searchClauses, $parameters) = $this->generateSearchClauses(['foodsaver.name', 'IFNULL(foodsaver.last_name, "")'], $query, ['region.name']);
+        $searchCriteria = ['foodsaver.name', 'IFNULL(foodsaver.last_name, "")'];
+        $mailReturnClause = '';
+        if ($includeMails) {
+            $searchCriteria[] = 'foodsaver.email';
+            $mailReturnClause = 'foodsaver.email,';
+        }
+        list($searchClauses, $parameters) = $this->generateSearchClauses($searchCriteria, $query, ['region.name']);
 
-        $users = $this->db->fetchAll('SELECT
+        $users = $this->db->fetchAll("SELECT
                 foodsaver.id,
                 foodsaver.name,
                 foodsaver.photo,
                 foodsaver.home_region AS region_id,
                 region.name AS region_name,
+                {$mailReturnClause}
                 MAX(foodsaver.last_name) AS last_name,
                 MAX(foodsaver.mobile) AS mobile,
                 MAX(foodsaver.is_buddy) AS is_buddy
@@ -336,6 +343,7 @@ class SearchGateway extends BaseGateway
                 SELECT
                     foodsaver.id,
                     foodsaver.name,
+                    foodsaver.email,
                     foodsaver.photo,
                     foodsaver.bezirk_id AS home_region,
                     IF(MAX(NOT ISNULL(ambassador.foodsaver_id) AND region.type != ' . UnitType::WORKING_GROUP . ') = 1, foodsaver.handy, null) AS mobile,
@@ -347,7 +355,7 @@ class SearchGateway extends BaseGateway
                 JOIN fs_foodsaver_has_bezirk have_region ON have_region.bezirk_id = region.id
                 LEFT OUTER JOIN fs_botschafter ambassador ON ambassador.bezirk_id = region.id and ambassador.foodsaver_id = have_region.foodsaver_id 
                 WHERE have_region.foodsaver_id = ?
-                AND region.type IN (' . UnitType::CITY . ',' . UnitType::PART_OF_TOWN . ',' . UnitType::WORKING_GROUP . ')
+                AND region.type IN (" . UnitType::CITY . ',' . UnitType::PART_OF_TOWN . ',' . UnitType::WORKING_GROUP . ')
                 GROUP BY foodsaver.id
                 UNION ALL
             
@@ -355,6 +363,7 @@ class SearchGateway extends BaseGateway
                 SELECT
                     foodsaver.id,
                     foodsaver.name,
+                    foodsaver.email,
                     foodsaver.photo,
                     foodsaver.bezirk_id AS home_region,
                     NULL, NULL,
@@ -369,6 +378,7 @@ class SearchGateway extends BaseGateway
                 SELECT
                     foodsaver.id,
                     foodsaver.name,
+                    foodsaver.email,
                     foodsaver.photo,
                     foodsaver.bezirk_id AS home_region,
                     IF(MAX(IF(my_store_team.active = 1, 1, 0)) = 1, foodsaver.handy, null) AS mobile,
@@ -386,6 +396,7 @@ class SearchGateway extends BaseGateway
                 SELECT
                     foodsaver.id,
                     foodsaver.name,
+                    foodsaver.email,
                     foodsaver.photo,
                     foodsaver.bezirk_id AS home_region,
                     NULL, NULL, 0
@@ -400,6 +411,7 @@ class SearchGateway extends BaseGateway
                 SELECT
                     foodsaver.id,
                     foodsaver.name,
+                    foodsaver.email,
                     foodsaver.photo,
                     foodsaver.bezirk_id AS home_region,
                     NULL, NULL, 0
