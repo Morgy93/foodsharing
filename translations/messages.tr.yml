@@ -1044,6 +1044,7 @@ store:
     distance: yaklaşık {distance} km uzakta yaşıyor
     distance_close: 1 km'den daha yakın bir mesafede yaşıyor
     distance_unknown: ikamet yeri sağlanmadı
+    air_line: Gösterilen mesafe kuş uçuşu uzaklığına denk gelir.
   filter: … göre filtrele
   enterdate: Alım tarihini girin
   important: 'Önemli:'

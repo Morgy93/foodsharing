@@ -2,23 +2,26 @@
 
 ## Features
 - Improve bell notifications for forum posts #719 !2827 !2826 @AntonBallmaier
-- Added a MarkdownInput component, that is used every where md is used. !2865 @AntonBallmaier
-- Storemanagers see how far applicants to the store live away #1661 !2772 @Anton Ballmaier
+- Added a MarkdownInput component, that is used every where md is used. !2865 !2893 @AntonBallmaier
+- Storemanagers see how far applicants to the store live away #1661 !2772 !2893 @Anton Ballmaier
 - Threads can be renamed !2882 @AntonBallmaier
 - The button to jump to the start or end of a thread can be accessed from anywhere in the thread !2882 @AntonBallmaier
 - Exported calendars can be filtered by the invitation status #1535 !2873 @alex.simm
 - Members of the Store Coordination GOALS group / ambassadors can add more than 3 storemanagers and remove the last one !2895 @AntonBallmaier
 - Added spanish translation !2892 @irgendwer
+- Made store log accessible by store managers !2902 @AntonBallmaier
 
 ## Changes
 - Changed team state translation from full to closed !2831 @chriswalg
 - Add "call" (tel:) button visibility also for desktop, not only mobile" #1138 !2835 @chriswalg
 - Administrating threads has a cleaner look !2882 @AntonBallmaier
 - Pinned Threads are sorted by name !2883 !2891 @AntonBallmaier
+- Changed behaviour from deleting unconfirmed slots at midnight into keeping them #1707 !2901 @irgendwer
 
 ## Bugfixes
 - Added error handling for cache helper for bell notifications or other requests !2869 @chriswalg
 - Allow adding regular pickups even if there is one for every day already !2897 @AntonBallmaier
+- fix if last activity date is „0000-00-00 00:00:00“ !2853 @chriswalg
 
 ## Refactoring
 - Refactor mailbox modul to vue and rest api !2580 !2870 !2871 @chriswalg @alex.simm
@@ -36,6 +39,7 @@
 - Updated quality tools !2867 @\_fridtjof_
 - Show CS Fixer results in gitlab !2867 @\_fridtjof_
 - Added the Symfony profiler and debug toolbar !1580 @\_fridtjof_
+- Added feature toggles !2633 @martincodes-de
 
 ## Development documentation
 

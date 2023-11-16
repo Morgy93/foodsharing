@@ -5,6 +5,7 @@
   >
     <div class="rounded text-white bg-primary p-2">
       <h4 :class="{'text-truncate': title.length > 150}">
+        <b-skeleton v-if="isLoading" />
         <i
           v-if="!isOpen"
           class="fas fa-lock mr-1"
@@ -25,12 +26,19 @@
     </div>
 
     <SubscribeButton
+      v-if="!isLoading"
       :is-following-bell="isFollowingBell"
       :is-following-email="isFollowingEmail"
       :thread-id="id"
       @update:bell="newState => isFollowingBell = newState"
       @update:email="newState => isFollowingEmail = newState"
     />
+
+    <b-card v-if="isLoading">
+      <b-skeleton width="85%" />
+      <b-skeleton width="55%" />
+      <b-skeleton width="70%" />
+    </b-card>
 
     <div
       v-if="!isActive && mayModerate"
@@ -101,6 +109,7 @@
     </div>
 
     <SubscribeButton
+      v-if="!isLoading"
       :is-following-bell="isFollowingBell"
       :is-following-email="isFollowingEmail"
       :thread-id="id"
@@ -184,7 +193,7 @@ export default {
       posts: [],
       creator: null,
 
-      isSticky: true,
+      isSticky: false,
       isActive: true,
       mayModerate: false,
       mayDelete: false,
@@ -237,7 +246,6 @@ export default {
       }
     },
     reply (body) {
-      // this.$refs.form.text = `> ${body.split('\n').join('\n> ')}\n\n${this.$refs.form.text}`
       this.$refs.form.focus()
     },
     async reload (isDeleteAction = false) {

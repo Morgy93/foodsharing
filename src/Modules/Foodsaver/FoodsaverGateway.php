@@ -4,6 +4,7 @@ namespace Foodsharing\Modules\Foodsaver;
 
 use Carbon\Carbon;
 use DateTime;
+use Exception;
 use Foodsharing\Modules\Core\BaseGateway;
 use Foodsharing\Modules\Core\Database;
 use Foodsharing\Modules\Core\DBConstants\Foodsaver\Role;
@@ -71,6 +72,7 @@ class FoodsaverGateway extends BaseGateway
 
     /**
      * @return RegionGroupMemberEntry[]
+     * @throws Exception
      */
     public function listActiveFoodsaversByRegion(int $regionId, bool $includeAdminFields): array
     {
@@ -83,6 +85,7 @@ class FoodsaverGateway extends BaseGateway
 					fs.sleep_until,
 					fs.rolle as role,
 					fs.last_login as last_activity,
+					fs.anmeldedatum as registration_date,
 					fs.verified,
 					fs.bezirk_id as home_region,
                     if (isnull(fsbot.`bezirk_id`) , false, true) as isAdminOrAmbassadorOfRegion
@@ -108,7 +111,7 @@ class FoodsaverGateway extends BaseGateway
                 $foodsaver['isAdminOrAmbassadorOfRegion']);
             if ($includeAdminFields) {
                 $member->role = $foodsaver['role'];
-                $member->lastActivity = new DateTime($foodsaver['last_activity']);
+                $member->lastActivity = ($foodsaver['last_activity'] === '0000-00-00 00:00:00') ? new DateTime($foodsaver['registration_date']) : new DateTime($foodsaver['last_activity']);
                 $member->isVerified = $foodsaver['verified'];
                 $member->isHomeRegion = $foodsaver['home_region'] == $regionId;
             }
@@ -778,7 +781,7 @@ class FoodsaverGateway extends BaseGateway
     }
 
     /**
-     * @throws \Exception
+     * @throws Exception
      */
     public function emailDomainIsBlacklisted(string $email): bool
     {
@@ -796,7 +799,7 @@ class FoodsaverGateway extends BaseGateway
      * @param int|null $fsId foodsaverid that is being deleted from a region
      * @param int $actorId foodsaverid that is performing the action (either self or ambassador)
      *
-     * @throws \Exception
+     * @throws Exception
      */
     public function deleteFromRegion(int $regionId, ?int $fsId, int $actorId): void
     {

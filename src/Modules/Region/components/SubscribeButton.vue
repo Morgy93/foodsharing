@@ -3,16 +3,24 @@
     split
     block
     right
-    :variant="isFollowingBell ? 'primary' : 'outline-secondary'"
+    :variant="isFollowing ? 'primary' : 'outline-secondary'"
     class="subscribe-btn my-2"
-    @click="updateFollowBell()"
+    @click="updateFollowing()"
   >
     <template #button-content>
-      <span v-if="!isFollowingBell">
-        <i class="far fa-bell mr-1" /> Abonnieren
+      <span v-if="isFollowing">
+        <i
+          v-if="isFollowingBell"
+          class="fas fa-bell mr-1"
+        />
+        <i
+          v-if="isFollowingEmail"
+          class="fas fa-envelope mr-1"
+        />
+        {{ $i18n('forum.thread.subscriptions.subscribed') }}
       </span>
-      <span v-if="isFollowingBell">
-        <i class="fas fa-bell mr-1" /> Abonniert
+      <span v-else>
+        <i class="far fa-bell mr-1" /> {{ $i18n('forum.thread.subscriptions.subscribe') }}
       </span>
     </template>
     <b-dropdown-text>{{ $i18n('forum.follow.header') }}</b-dropdown-text>
@@ -57,6 +65,11 @@ export default {
       required: true,
     },
   },
+  computed: {
+    isFollowing () {
+      return this.isFollowingBell || this.isFollowingEmail
+    },
+  },
   methods: {
     async updateFollowBell () {
       const targetState = !this.isFollowingBell
@@ -82,6 +95,14 @@ export default {
         this.$emit('update:email', targetState)
       } catch (err) {
         pulseError(this.$i18n('error_unexpected'))
+      }
+    },
+    updateFollowing () {
+      if (this.isFollowingEmail) {
+        this.updateFollowEmail()
+      }
+      if (!this.isFollowingEmail || this.isFollowingBell) {
+        this.updateFollowBell()
       }
     },
   },

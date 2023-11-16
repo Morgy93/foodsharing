@@ -1149,6 +1149,7 @@ store:
     distance_close: vive a menos de 1 km de distancia
     distance_unknown: no se especifica el lugar de residencia
     unverified: Usuario no está verificad@
+    air_line: La distancia indicada es en línea recta.
   all_of_my_stores: 'Todas mis empresas'
   prefetchone: '1 semana'
   go: 'A la página del equipo'

@@ -241,7 +241,7 @@ class StoreCest
         $I->click('#Abholungshistorie');
         $I->waitForText('Abholungen anzeigen');
         // select a date ~4 years in the past, to see if the calendar works
-        $I->click('#datepicker-from');
+        $I->click('.date-picker-from');
         $I->click('button[title="Vorheriges Jahr"]');
         $I->click('button[title="Vorheriges Jahr"]');
         $I->click('button[title="Vorheriges Jahr"]');
@@ -418,5 +418,39 @@ class StoreCest
             $I->see("{$this->foodsaver['name']} {$this->foodsaver['nachname']}", '.store-team');
             $I->waitForElement('.store-team #member-' . $this->foodsaver['id'] . '.member-info.jumper', 5);
         }
+    }
+
+    public function canAccessStoreLog(AcceptanceTester $I)
+    {
+        call_user_func([$this, 'loginAs'], $I, 'StoreManager');
+        $I->amOnPage($I->storeUrl($this->store['id']));
+        $I->waitForActiveAPICalls();
+
+        $I->click('#store-log');
+        $I->click('.multiselect');
+        $I->click('#null-4'); // Foodsaver zum Springer machen
+        $I->click('.multiselect .multiselect__select');
+        $I->click('#search-store-log');
+        $I->waitForActiveAPICalls();
+        $I->cantSeeElement('.log-entry-content');
+
+        //Perform store action
+        $I->click("{$this->foodsaver['name']} {$this->foodsaver['nachname']}", '.store-team');
+        $I->click('Auf die Springerliste', '.member-actions');
+        $I->waitForActiveAPICalls();
+
+        //See storelog now contains something
+        $I->click('#search-store-log');
+        $I->waitForActiveAPICalls();
+        $I->canSee('auf die Springerliste gesetzt');
+
+        //Only find entries if category is matching
+        $I->click('.multiselect');
+        $I->click('#null-3'); // Enable other category
+        $I->click('#null-4'); // Disable "Foodsaver zum Springer machen"
+        $I->click('.multiselect .multiselect__select');
+        $I->click('#search-store-log');
+        $I->waitForActiveAPICalls();
+        $I->cantSeeElement('.log-entry-content');
     }
 }

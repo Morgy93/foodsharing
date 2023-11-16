@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Foodsharing\Modules\Store;
 
+use Carbon\Carbon;
 use Exception;
 use Foodsharing\Modules\Core\BaseGateway;
 use Foodsharing\Modules\Core\Database;
@@ -517,7 +518,7 @@ class StoreGateway extends BaseGateway
                 foodsaver.sleep_status,
                 foodsaver.verified,
                 FLOOR(ST_DISTANCE_SPHERE(
-                    Point(foodsaver.lon, foodsaver.lat),
+                    Point(NULLIF(foodsaver.lon, ""), NULLIF(foodsaver.lat, "")),
                     Point(:storeLon, :storeLat)
                 ) / 1000) AS distance
 			FROM fs_betrieb_team betrieb_team
@@ -1235,32 +1236,29 @@ class StoreGateway extends BaseGateway
         }, $results);
     }
 
-    public function getStoreLogsByActionType(int $storeId, array $storeActions): array
+    public function getStoreLogsByActionType(int $storeId, array $storeActions, Carbon $fromDate, Carbon $toDate): array
     {
-        $logEntries = $this->db->fetchAll('
-			SELECT
+        $logEntries = $this->db->fetchAll('SELECT
 				date_activity as performed_at,
 				action as action_id,
-				fs_id_a as affected_foodsaver_id,
-				fs_id_p as performed_foodsaver_id,
+				fs_id_a as acting_foodsaver_id,
+				fs_id_p as affected_foodsaver_id,
 				date_reference,
 				content,
 				reason
-
 			FROM
 				fs_store_log
-
 			WHERE
-				store_id = :storeId
-		', [
-            'storeId' => $storeId,
-        ]);
+				store_id = ?
+                AND date_activity >= ?
+                AND date_activity <= ? 
+                AND action IN (' . $this->db->generatePlaceholders(count($storeActions)) . ')
+            ORDER BY performed_at DESC
+            LIMIT 100
+		    ',
+            [$storeId, $fromDate, $toDate, ...$storeActions]);
 
-        $logEntriesWithRequiredStoreActions = array_filter($logEntries, function ($logEntry) use ($storeActions) {
-            return in_array($logEntry['action_id'], $storeActions);
-        });
-
-        return $logEntriesWithRequiredStoreActions;
+        return $logEntries;
     }
 
     public function listRegionStoresActivePickupRule(int $regionId): array

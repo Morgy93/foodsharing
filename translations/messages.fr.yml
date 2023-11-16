@@ -1142,6 +1142,7 @@ store:
     distance: habite à environ {distance} km
     distance_close: habite à moins de 1 km
     distance_unknown: Aucun lieu de résidence précisé
+    air_line: La distance affichée est à vol d’oiseau.
   sm:
     makeRegularTeamMember: Intégrer dans l’équipe
     makeJumper: Nommer remplaçant(e)

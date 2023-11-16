@@ -43,7 +43,7 @@ class Routing
         'wallpost' => 'WallPost',
         'groups' => 'WorkGroup',
         'store' => 'Store',
-        'chain' => 'StoreChain'
+        'chain' => 'StoreChain',
     ];
 
     private const PORTED = [

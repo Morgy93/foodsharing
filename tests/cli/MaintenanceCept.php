@@ -45,6 +45,4 @@ $I->amInPath('');
 $I->runShellCommand('bin/console foodsharing:daily-cronjob');
 
 $I->seeInShellOutput('send 1 warnings...');
-$I->seeInShellOutput('delete unconfirmed fetchdates');
-$I->seeInShellOutput('2 deleted');
 $I->seeInShellOutput('updating Wien BIEB group');

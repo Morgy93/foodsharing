@@ -2326,6 +2326,7 @@ store:
     distance_unknown: ikke oppgitt bosted
     distance: bor ca {distance} km unna
     distance_close: bor mindre enn 1 km unna
+    air_line: Avstanden som vises er i luftlinje.
   team_conversation_name: '{name}-laget'
   appliedFor: Forespørsel fremsatt
   bread: Alle virksomheter

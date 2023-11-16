@@ -53,6 +53,13 @@
 import Markdown from './Markdown.vue'
 import RouteAndDeviceCheckMixin from '@/mixins/RouteAndDeviceCheckMixin'
 
+function getMaxRowsForScreenSize () {
+  const minimumMaxRows = 8
+  const relativeScreenUsage = 0.7
+  const lineHeight = 24
+  return Math.max(minimumMaxRows, Math.floor((window.innerHeight * relativeScreenUsage) / lineHeight))
+}
+
 export default {
   components: { Markdown },
   mixins: [RouteAndDeviceCheckMixin],
@@ -63,7 +70,7 @@ export default {
     },
     maxRows: {
       type: Number,
-      default: 15,
+      default: getMaxRowsForScreenSize(),
     },
     value: {
       type: String,
@@ -111,9 +118,6 @@ export default {
     }
   },
   computed: {
-    baseTextArea () {
-      return this.$refs.input?.$refs?.input
-    },
     modelValue: {
       get () {
         return this.value
@@ -128,10 +132,14 @@ export default {
       if (this.isSafari) return false
       if (this.disabled) return true
       if (this.isPreview) return false
+      if (this.modelValue.length > 0) return false
       return this.concealToolbar
     },
   },
   methods: {
+    getBaseTextArea () {
+      return this.$refs.input?.$refs?.input
+    },
     bold () {
       this.wrapSelection('**')
     },
@@ -211,13 +219,13 @@ export default {
       this.setFocus(start + wrapper.length, end + wrapper.length)
     },
     getSelection () {
-      return [this.baseTextArea.selectionStart, this.baseTextArea.selectionEnd]
+      return [this.getBaseTextArea().selectionStart, this.getBaseTextArea().selectionEnd]
     },
     async setFocus (start = 0, end = 0) {
       this.$refs.input.focus()
       await new Promise(resolve => window.requestAnimationFrame(resolve))
-      this.baseTextArea.selectionEnd = end
-      this.baseTextArea.selectionStart = start
+      this.getBaseTextArea().selectionEnd = end
+      this.getBaseTextArea().selectionStart = start
     },
     onEnter (evt) {
       const [start, end] = this.getSelection()

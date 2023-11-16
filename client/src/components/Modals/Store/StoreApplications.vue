@@ -11,6 +11,13 @@
       scrollable
       size="lg"
     >
+      <b-alert
+        show
+        variant="info"
+      >
+        <i class="fas fa-info-circle" />
+        {{ $i18n('store.request.air_line') }}
+      </b-alert>
       <div
         v-for="(request, index) in requests"
         :key="request.id"

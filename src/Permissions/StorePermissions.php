@@ -281,6 +281,11 @@ class StorePermissions
         return $this->mayEditStore($storeId);
     }
 
+    public function maySeeStoreLog(int $storeId): bool
+    {
+        return $this->mayEditStore($storeId);
+    }
+
     public function mayDoPickup(int $storeId): bool
     {
         if (!$this->session->isVerified()) {
