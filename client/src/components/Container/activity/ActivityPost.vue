@@ -181,7 +181,6 @@ import StateTogglerMixin from '@/mixins/StateTogglerMixin'
 import MediaQueryMixin from '@/mixins/MediaQueryMixin'
 import AutoResizeTextareaMixin from '@/mixins/AutoResizeTextareaMixin'
 
-import { sendQuickreply } from '@/api/dashboard'
 import { pulseInfo } from '@/script'
 import { createPost } from '@/api/forum'
 import { addPost } from '@/api/wall'
@@ -256,8 +255,7 @@ export default {
       return 'dashboard.source_' + this.type + this.source_suffix
     },
     canQuickreply () {
-      // old endpoints use the 'quickreply' variable, new endpoints are distinguishable by the activity's type
-      return (this.quickreply !== null && this.quickreply.length > 0) || ['forum', 'event', 'mailbox'].includes(this.type)
+      return ['forum', 'event', 'mailbox'].includes(this.type)
     },
     isReplyEmpty () {
       return (
@@ -301,10 +299,6 @@ export default {
             body += this.desc.replace('\n', '\n>\t')
             await sendEmail(this.mailboxId, to, null, null, subject, body, null, this.entity_id)
             pulseInfo(this.$i18n('mailbox.okay'))
-          } else {
-            // quickreplies to emails still use old XHR requests
-            const { message } = await sendQuickreply(this.quickreply, this.quickreplyValue)
-            pulseInfo(message)
           }
           this.quickreplyValue = ''
         } catch (e) {
