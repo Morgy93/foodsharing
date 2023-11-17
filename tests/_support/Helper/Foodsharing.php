@@ -1026,7 +1026,7 @@ class Foodsharing extends \Codeception\Module\Db
         return $params;
     }
 
-    public function addReport($reporterId, $reporteeId, $rpReasonId = 2, $storeId = 0, $confirmed = 0, $reason = null, $msg = null)
+    public function addReport($reporterId, $reporteeId, $rpReasonId, $storeId = 0, $reason = null, $msg = null)
     {
         $params = [
             'reporter_id' => $reporterId,
