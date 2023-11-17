@@ -9,7 +9,6 @@ use Foodsharing\Utility\EmailHelper;
 use Foodsharing\Utility\FlashMessageHelper;
 use Foodsharing\Utility\PageHelper;
 use Foodsharing\Utility\RouteHelper;
-use Foodsharing\Utility\TranslationHelper;
 use ReflectionClass;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Contracts\Service\Attribute\Required;
@@ -17,8 +16,6 @@ use Symfony\Contracts\Translation\TranslatorInterface;
 
 abstract class Control
 {
-    protected bool $isControl = false;
-    protected bool $isXhrControl = false;
     protected $view;
     private false|string $sub;
 
@@ -28,11 +25,9 @@ abstract class Control
     protected Utils $v_utils;
     private \Twig\Environment $twig;
     protected Request $request;
-    private InfluxMetrics $metrics;
     protected EmailHelper $emailHelper;
     protected FlashMessageHelper $flashMessageHelper;
     protected RouteHelper $routeHelper;
-    protected TranslationHelper $translationHelper;
     protected TranslatorInterface $translator;
 
     public function __construct()
@@ -41,16 +36,11 @@ abstract class Control
         $this->mem = $container->get(Mem::class);
         $this->session = $container->get(Session::class);
         $this->v_utils = $container->get(Utils::class);
-        $this->metrics = $container->get(InfluxMetrics::class);
         $this->pageHelper = $container->get(PageHelper::class);
         $this->emailHelper = $container->get(EmailHelper::class);
         $this->routeHelper = $container->get(RouteHelper::class);
         $this->flashMessageHelper = $container->get(FlashMessageHelper::class);
-        $this->translationHelper = $container->get(TranslationHelper::class);
         $this->translator = $container->get('translator'); // TODO TranslatorInterface is an alias
-
-        $reflection = new ReflectionClass($this);
-        $className = $reflection->getShortName();
 
         $this->sub = false;
         if (isset($_GET['sub'])) {
@@ -61,29 +51,10 @@ abstract class Control
             }
         }
 
-        if (($pos = strpos($className, 'Control')) !== false) {
-            $this->isControl = true;
-        } elseif (($pos = strpos($className, 'Xhr')) !== false) {
-            $this->isXhrControl = true;
-        }
-
-        if ($this->isControl) {
-            $projectDir = $container->get('kernel')->getProjectDir();
-            $webpackModules = $projectDir . '/assets/modules.json';
-            $manifest = json_decode(file_get_contents($webpackModules), true);
-            $moduleName = substr($className, 0, $pos);
-            $entry = 'Modules/' . $moduleName;
-            if (isset($manifest[$entry])) {
-                foreach ($manifest[$entry] as $asset) {
-                    if (str_ends_with($asset, '.js')) {
-                        $this->pageHelper->addWebpackScript($asset);
-                    } elseif (str_ends_with($asset, '.css')) {
-                        $this->pageHelper->addWebpackStylesheet($asset);
-                    }
-                }
-            }
-        }
-        $this->metrics->addPageStatData(['controller' => $className]);
+        $reflection = new ReflectionClass($this);
+        $className = $reflection->getShortName();
+        $metrics = $container->get(InfluxMetrics::class);
+        $metrics->addPageStatData(['controller' => $className]);
     }
 
     #[Required]
@@ -150,105 +121,5 @@ abstract class Control
     public function submitted(): bool
     {
         return !empty($_POST);
-    }
-
-    public function isSubmitted($form = false): bool
-    {
-        if (!empty($_POST)) {
-            return $form === false || $_POST['submitted'] == $form;
-        }
-
-        return false;
-    }
-
-    public function getPostDate($name)
-    {
-        if ($date = $this->getPostString($name)) {
-            $date = explode(' ', $date);
-            $date = trim($date[0]);
-            if (!empty($date)) {
-                $date = explode('-', $date);
-                if (count($date) == 3 && (int)$date[0] > 0 && (int)$date[1] > 0 && (int)$date[2] > 0) {
-                    return mktime(0, 0, 0, (int)$date[1], (int)$date[2], (int)$date[0]);
-                }
-            }
-        }
-
-        return false;
-    }
-
-    public function getPostTime($name)
-    {
-        if (isset($_POST[$name]['hour'], $_POST[$name]['min'])) {
-            return [
-                'hour' => (int)$_POST[$name]['hour'],
-                'min' => (int)$_POST[$name]['min']
-            ];
-        }
-
-        return false;
-    }
-
-    public function getPostString($name)
-    {
-        if ($val = $this->getPost($name)) {
-            $val = strip_tags($val);
-            $val = trim($val);
-
-            if (!empty($val)) {
-                return $val;
-            }
-        }
-
-        return false;
-    }
-
-    public function getPostInt($name)
-    {
-        if ($val = $this->getPost($name)) {
-            $val = trim($val);
-
-            return (int)$val;
-        }
-
-        return false;
-    }
-
-    public function getPost($name)
-    {
-        if (isset($_POST[$name]) && !empty($_POST[$name])) {
-            return $_POST[$name];
-        }
-
-        return false;
-    }
-
-    public function uri($index)
-    {
-        if (isset($_GET['uri'])) {
-            $uri = explode('/', $_SERVER['REQUEST_URI']);
-            if (isset($uri[$index])) {
-                return $uri[$index];
-            }
-        }
-
-        return false;
-    }
-
-    public function uriInt($index)
-    {
-        $val = (int)$this->uri($index);
-
-        return $val;
-    }
-
-    public function uriStr($index)
-    {
-        $val = $this->uri($index);
-        if ($val !== false) {
-            return preg_replace('/[^a-z0-9\-]/', '', $val);
-        }
-
-        return false;
     }
 }

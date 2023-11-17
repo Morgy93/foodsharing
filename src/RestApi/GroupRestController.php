@@ -94,6 +94,7 @@ class GroupRestController extends AbstractFOSRestController
         if ($paramFetcher->get('redirect') == 'true') {
             return $this->redirect($bbb->joinURL($key, $name, true));
         }
+
         /* Without the redirect, we return information about the conference */
         return $this->handleView($this->view($data, 200));
     }

@@ -252,7 +252,7 @@ class SettingsControl extends Control
     {
         $fsId = $this->session->id();
         if ($this->quizSessionGateway->hasPassedQuiz($fsId, Role::FOODSAVER)) {
-            if ($this->isSubmitted()) {
+            if ($this->submitted()) {
                 if (empty($_POST['accepted'])) {
                     $check = false;
                     $this->flashMessageHelper->error($this->translator->trans('foodsaver.upgrade.needs_rv'));
@@ -276,7 +276,7 @@ class SettingsControl extends Control
     {
         $fsId = $this->session->id();
         if ($this->quizSessionGateway->hasPassedQuiz($fsId, Role::STORE_MANAGER)) {
-            if ($this->isSubmitted()) {
+            if ($this->submitted()) {
                 if (empty($_POST['accepted'])) {
                     $check = false;
                     $this->flashMessageHelper->error($this->translator->trans('foodsaver.upgrade.needs_rv'));

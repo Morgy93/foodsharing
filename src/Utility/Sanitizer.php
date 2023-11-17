@@ -83,6 +83,7 @@ class Sanitizer
                 /* following char is whitespace -> last word is complete but might have whitespace at the end */
                 return preg_replace('/\s$/', '', $shortened) . ' ...';
             }
+
             /* word is broken: remove it */
             return preg_replace('/\s?\S*$/', '', $shortened) . ' ...';
         }

@@ -136,7 +136,7 @@ class BlogControl extends Control
             $this->pageHelper->addContent($this->view->blog_entry_form($regions));
 
             $this->pageHelper->addContent($this->v_utils->v_field($this->v_utils->v_menu([
-                $this->routeHelper->pageLink('blog')
+                ['href' => '/page=blog', 'name' => $this->translator->trans('bread.backToOverview')]
             ]), $this->translator->trans('blog.actions')), CNT_LEFT);
         } else {
             $this->flashMessageHelper->info($this->translator->trans('blog.permissions.new'));
@@ -190,7 +190,7 @@ class BlogControl extends Control
 
             if ($this->blogGateway->update_blog_entry($_GET['id'], $g_data)) {
                 $this->flashMessageHelper->success($this->translator->trans('blog.success.edit'));
-                $this->routeHelper->goPageAndExit('blog&sub=manage');
+                $this->routeHelper->goPageAndExit('blog', ['sub' => 'manage']);
             } else {
                 $this->flashMessageHelper->error($this->translator->trans('blog.failure.edit'));
             }

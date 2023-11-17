@@ -5,7 +5,6 @@ namespace Foodsharing\Modules\Region;
 use Exception;
 use Foodsharing\Modules\Core\BaseGateway;
 use Foodsharing\Modules\Core\Database;
-use Foodsharing\Modules\Core\DBConstants\Foodsaver\Role;
 use Foodsharing\Modules\Core\DBConstants\Region\RegionIDs;
 use Foodsharing\Modules\Core\DBConstants\Region\RegionOptionType;
 use Foodsharing\Modules\Core\DBConstants\Region\WorkgroupFunction;
@@ -514,33 +513,6 @@ class RegionGateway extends BaseGateway
         $this->db->update('fs_bezirk', ['master' => $masterId], ['id' => $regionIds]);
     }
 
-    public function genderCountRegion(int $regionId): array
-    {
-        return $this->db->fetchAll(
-            'select  fs.geschlecht as gender,
-						   count(*) as NumberOfGender
-					from fs_foodsaver_has_bezirk fb
-		 			left outer join fs_foodsaver fs on fb.foodsaver_id=fs.id
-					where fb.bezirk_id = :regionId
-					and fs.deleted_at is null
-					group by geschlecht',
-            [':regionId' => $regionId]
-        );
-    }
-
-    public function genderCountHomeRegion(int $regionId): array
-    {
-        return $this->db->fetchAll(
-            'select  fs.geschlecht as gender,
-						   count(*) as NumberOfGender
-					from fs_foodsaver fs
-					where fs.bezirk_id = :regionId
-					and fs.deleted_at is null
-					group by geschlecht',
-            [':regionId' => $regionId]
-        );
-    }
-
     public function listRegionPickupsByDate(int $regionId, string $dateFormat): array
     {
         $regionIDs = implode(',', array_map('intval', $this->listIdsForDescendantsAndSelf($regionId)));
@@ -559,67 +531,9 @@ class RegionGateway extends BaseGateway
 					from fs_abholer a
 					left outer join fs_betrieb b on a.betrieb_id = b.id
 						where b.bezirk_id in (' . $regionIDs . ')
-						and a.confirmed = 1
 					group by date_Format(date,:groupFormat)
 					order by date desc',
             [':format' => $dateFormat, ':groupFormat' => $dateFormat]
-        );
-    }
-
-    public function ageBandHomeDistrict(int $districtId): array
-    {
-        return $this->db->fetchAll(
-            'SELECT
-				CASE
-				WHEN age >=18 AND age <=25 THEN \'18-25\'
-				WHEN age >=26 AND age <=33 THEN \'26-33\'
-				WHEN age >=34 AND age <=41 THEN \'34-41\'
-				WHEN age >=42 AND age <=49 THEN \'42-49\'
-				WHEN age >=50 AND age <=57 THEN \'50-57\'
-				WHEN age >=58 AND age <=65 THEN \'58-65\'
-				WHEN age >=66 AND age <=73 THEN \'66-73\'
-				WHEN age >=74 AND age < 100 THEN \'74+\'
-				WHEN age >= 100 or age < 18 THEN \'invalid\'
-				WHEN age IS NULL THEN \'unknown\'
-				END AS Altersgruppe,
-				COUNT(*) AS Anzahl
-				FROM
-				(
-				 SELECT DATE_FORMAT(NOW(), \'%Y\') - DATE_FORMAT(geb_datum, \'%Y\') - (DATE_FORMAT(NOW(), \'00-%m-%d\') < DATE_FORMAT(geb_datum, \'00-%m-%d\')) AS age,
-				 id FROM fs_foodsaver WHERE rolle >= :rolle AND bezirk_id = :id and deleted_at is null
-				) AS tbl
-				GROUP BY Altersgruppe',
-            ['rolle' => Role::FOODSAVER, ':id' => $districtId]
-        );
-    }
-
-    public function ageBandDistrict(int $districtId): array
-    {
-        return $this->db->fetchAll(
-            'SELECT
-				CASE
-				WHEN age >=18 AND age <=25 THEN \'18-25\'
-				WHEN age >=26 AND age <=33 THEN \'26-33\'
-				WHEN age >=34 AND age <=41 THEN \'34-41\'
-				WHEN age >=42 AND age <=49 THEN \'42-49\'
-				WHEN age >=50 AND age <=57 THEN \'50-57\'
-				WHEN age >=58 AND age <=65 THEN \'58-65\'
-				WHEN age >=66 AND age <=73 THEN \'66-73\'
-				WHEN age >=74 AND age < 100 THEN \'74+\'
-				WHEN age >= 100 or age < 18 THEN \'invalid\'
-				WHEN age IS NULL THEN \'unknown\'
-				END AS Altersgruppe,
-				COUNT(*) AS Anzahl
-				FROM
-				(
-				 SELECT DATE_FORMAT(NOW(), \'%Y\') - DATE_FORMAT(geb_datum, \'%Y\') - (DATE_FORMAT(NOW(), \'00-%m-%d\') < DATE_FORMAT(geb_datum, \'00-%m-%d\')) AS age,
-				 		fs.id
-				 FROM fs_foodsaver_has_bezirk fb
-					 left outer join fs_foodsaver fs on fb.foodsaver_id=fs.id
-					 WHERE fs.rolle >= :rolle AND fb.bezirk_id = :id and fs.deleted_at is null
-				) AS tbl
-				GROUP BY Altersgruppe',
-            ['rolle' => Role::FOODSAVER, ':id' => $districtId]
         );
     }
 

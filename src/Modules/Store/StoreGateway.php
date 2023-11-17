@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Foodsharing\Modules\Store;
 
+use Carbon\Carbon;
 use Exception;
 use Foodsharing\Modules\Core\BaseGateway;
 use Foodsharing\Modules\Core\Database;
@@ -12,6 +13,7 @@ use Foodsharing\Modules\Core\DBConstants\Store\CooperationStatus;
 use Foodsharing\Modules\Core\DBConstants\Store\Milestone;
 use Foodsharing\Modules\Core\DBConstants\Store\TeamSearchStatus;
 use Foodsharing\Modules\Core\DBConstants\StoreTeam\MembershipStatus;
+use Foodsharing\Modules\Core\DTO\GeoLocation;
 use Foodsharing\Modules\Core\Pagination;
 use Foodsharing\Modules\Map\DTO\MapMarker;
 use Foodsharing\Modules\Region\RegionGateway;
@@ -417,6 +419,8 @@ class StoreGateway extends BaseGateway
         			b.`team_conversation_id`,
         			b.`springer_conversation_id`,
         			b.`use_region_pickup_rule`,
+                    b.lat,
+                    b.lon,
         			count(DISTINCT(a.date)) AS pickup_count
 
 			FROM 	`fs_betrieb` b
@@ -435,7 +439,11 @@ class StoreGateway extends BaseGateway
             $result['lebensmittel'] = $this->getGroceries($storeId);
             $result['foodsaver'] = $this->getStoreTeam($storeId);
             $result['springer'] = $this->getBetriebSpringer($storeId);
-            $result['requests'] = $this->getApplications($storeId);
+
+            $result['requests'] = $this->getApplications($storeId, GeoLocation::createFromArray([
+                'lat' => (float)$result['lat'],
+                'lon' => (float)$result['lon'],
+            ]));
             $result['verantwortlich'] = false;
             $result['team'] = [];
             $result['jumper'] = false;
@@ -497,27 +505,42 @@ class StoreGateway extends BaseGateway
         return $this->db->insertMultiple('fs_betrieb_has_lebensmittel', $newFoodData);
     }
 
-    private function getApplications(int $storeId): array
+    /**
+     * @return list<array<mixed>> all foodsavers that currently apply to the store team
+     */
+    private function getApplications(int $storeId, GeoLocation $storePosition): array
     {
-        return $this->db->fetchAll('
-			SELECT 		fs.`id`,
-						fs.photo,
-						CONCAT(fs.name," ",fs.nachname) AS name,
-						name as vorname,
-						fs.sleep_status,
-			       		fs.verified
-
-			FROM 		`fs_betrieb_team` t
-						INNER JOIN `fs_foodsaver` fs
-			            ON fs.id = t.foodsaver_id
-
-			WHERE 		`betrieb_id` = :storeId
-			AND 		t.active = :membershipStatus
-			AND			fs.deleted_at IS NULL
+        $applications = $this->db->fetchAll('SELECT
+                foodsaver.id,
+                foodsaver.photo,
+                CONCAT(foodsaver.name," ",foodsaver.nachname) AS name,
+                name as vorname,
+                foodsaver.sleep_status,
+                foodsaver.verified,
+                FLOOR(ST_DISTANCE_SPHERE(
+                    Point(NULLIF(foodsaver.lon, ""), NULLIF(foodsaver.lat, "")),
+                    Point(:storeLon, :storeLat)
+                ) / 1000) AS distance
+			FROM fs_betrieb_team betrieb_team
+			INNER JOIN fs_foodsaver foodsaver
+			    ON foodsaver.id = betrieb_team.foodsaver_id
+			WHERE `betrieb_id` = :storeId
+			    AND betrieb_team.active = :membershipStatus
+			    AND foodsaver.deleted_at IS NULL
 		', [
+            ':storeLat' => $storePosition->lat,
+            ':storeLon' => $storePosition->lon,
             ':storeId' => $storeId,
-            ':membershipStatus' => MembershipStatus::APPLIED_FOR_TEAM
+            ':membershipStatus' => MembershipStatus::APPLIED_FOR_TEAM,
         ]);
+        foreach ($applications as &$application) {
+            if (is_null($application['distance'])) {
+                continue;
+            }
+            $application['distance'] = $application['distance'] < 1 ? 0 : round($application['distance']);
+        }
+
+        return $applications;
     }
 
     public function getStoreName(int $storeId): string
@@ -1213,32 +1236,29 @@ class StoreGateway extends BaseGateway
         }, $results);
     }
 
-    public function getStoreLogsByActionType(int $storeId, array $storeActions): array
+    public function getStoreLogsByActionType(int $storeId, array $storeActions, Carbon $fromDate, Carbon $toDate): array
     {
-        $logEntries = $this->db->fetchAll('
-			SELECT
+        $logEntries = $this->db->fetchAll('SELECT
 				date_activity as performed_at,
 				action as action_id,
-				fs_id_a as affected_foodsaver_id,
-				fs_id_p as performed_foodsaver_id,
+				fs_id_a as acting_foodsaver_id,
+				fs_id_p as affected_foodsaver_id,
 				date_reference,
 				content,
 				reason
-
 			FROM
 				fs_store_log
-
 			WHERE
-				store_id = :storeId
-		', [
-            'storeId' => $storeId,
-        ]);
+				store_id = ?
+                AND date_activity >= ?
+                AND date_activity <= ? 
+                AND action IN (' . $this->db->generatePlaceholders(count($storeActions)) . ')
+            ORDER BY performed_at DESC
+            LIMIT 100
+		    ',
+            [$storeId, $fromDate, $toDate, ...$storeActions]);
 
-        $logEntriesWithRequiredStoreActions = array_filter($logEntries, function ($logEntry) use ($storeActions) {
-            return in_array($logEntry['action_id'], $storeActions);
-        });
-
-        return $logEntriesWithRequiredStoreActions;
+        return $logEntries;
     }
 
     public function listRegionStoresActivePickupRule(int $regionId): array

@@ -11,6 +11,7 @@ use Foodsharing\Modules\Core\DBConstants\Store\TeamSearchStatus;
 use Foodsharing\Modules\Group\GroupFunctionGateway;
 use Foodsharing\Modules\Region\RegionGateway;
 use Foodsharing\Modules\Store\StoreGateway;
+use Foodsharing\Modules\Store\StoreManagerAmount;
 use Foodsharing\Modules\Store\TeamStatus as UserTeamStatus;
 
 class StorePermissions
@@ -88,17 +89,7 @@ class StorePermissions
             return true;
         }
 
-        $storeRegion = $this->storeGateway->getStoreRegionId($storeId);
-        $storeGroup = $this->groupFunctionGateway->getRegionFunctionGroupId($storeRegion, WorkgroupFunction::STORES_COORDINATION);
-        if (empty($storeGroup)) {
-            if ($this->session->isAdminFor($storeRegion)) {
-                return true;
-            }
-        } elseif ($this->session->isAdminFor($storeGroup)) {
-            return true;
-        }
-
-        return false;
+        return $this->mayCoordianteRegionStores($storeId);
     }
 
     public function mayReadStoreWall(int $storeId): bool
@@ -115,17 +106,7 @@ class StorePermissions
             return true;
         }
 
-        $storeRegion = $this->storeGateway->getStoreRegionId($storeId);
-        $storeGroup = $this->groupFunctionGateway->getRegionFunctionGroupId($storeRegion, WorkgroupFunction::STORES_COORDINATION);
-        if (empty($storeGroup)) {
-            if ($this->session->isAdminFor($storeRegion)) {
-                return true;
-            }
-        } elseif ($this->session->isAdminFor($storeGroup)) {
-            return true;
-        }
-
-        return false;
+        return $this->mayCoordianteRegionStores($storeId);
     }
 
     public function mayWriteStoreWall(int $storeId): bool
@@ -210,11 +191,13 @@ class StorePermissions
         if (!$fsId) {
             return false;
         }
-        if (!$this->session->mayRole(Role::STORE_MANAGER)) {
-            return false;
-        }
+
         if ($this->session->mayRole(Role::ORGA)) {
             return true;
+        }
+
+        if (!$this->session->mayRole(Role::STORE_MANAGER)) {
+            return false;
         }
 
         if (!$this->storeGateway->storeExists($storeId)) {
@@ -225,7 +208,14 @@ class StorePermissions
             return true;
         }
 
-        // Check store mannager role by group of region
+        return $this->mayCoordianteRegionStores($storeId);
+    }
+
+    public function mayCoordianteRegionStores(int $storeId): bool
+    {
+        if ($this->session->mayRole(Role::ORGA)) {
+            return true;
+        }
         $storeRegion = $this->storeGateway->getStoreRegionId($storeId);
         $storeGroup = $this->groupFunctionGateway->getRegionFunctionGroupId($storeRegion, WorkgroupFunction::STORES_COORDINATION);
         if (empty($storeGroup)) {
@@ -291,6 +281,11 @@ class StorePermissions
         return $this->mayEditStore($storeId);
     }
 
+    public function maySeeStoreLog(int $storeId): bool
+    {
+        return $this->mayEditStore($storeId);
+    }
+
     public function mayDoPickup(int $storeId): bool
     {
         if (!$this->session->isVerified()) {
@@ -336,8 +331,7 @@ class StorePermissions
     {
         $currentManagers = $this->storeGateway->getStoreManagers($storeId);
 
-        // at most three managers are allowed right now
-        if (count($currentManagers) >= 3) {
+        if (!$this->mayIgnoreStoremanagerCountRestrictions($storeId) && count($currentManagers) >= StoreManagerAmount::MAXIMUM->value) {
             return false;
         }
 
@@ -358,11 +352,16 @@ class StorePermissions
         }
 
         // at least one other manager needs to remain after leaving
-        if (count($currentManagers) <= 1) {
+        if (!$this->mayIgnoreStoremanagerCountRestrictions($storeId) && count($currentManagers) <= StoreManagerAmount::MINIMUM->value) {
             return false;
         }
 
         return true;
+    }
+
+    public function mayIgnoreStoremanagerCountRestrictions(int $storeId): bool
+    {
+        return $this->mayCoordianteRegionStores($storeId);
     }
 
     public function maySeePickupOptions(int $userId): bool

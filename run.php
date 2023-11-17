@@ -4,8 +4,6 @@ use Foodsharing\Kernel;
 
 require __DIR__ . '/vendor/autoload.php';
 
-\Doctrine\Common\Annotations\AnnotationRegistry::registerLoader('class_exists');
-
 require_once 'config.inc.php';
 
 $env = $_SERVER['FS_ENV'] ?? getenv('FS_ENV') ?? 'dev';

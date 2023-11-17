@@ -137,3 +137,14 @@ function wait-for-assets() {
   done
   echo
 }
+
+function gitlab_start_section() {
+  local section_id=$1; shift
+  local message=$*
+  echo -e "\e[0Ksection_start:$(date +%s):section_$section_id\r\e[0K$message"
+}
+
+function gitlab_end_section() {
+  local section_id=$1
+  echo -e "\e[0Ksection_end:$(date +%s):section_$section_id\r\e[0K"
+}

@@ -2,7 +2,6 @@
 
 namespace Foodsharing\Modules\Report;
 
-use Envms\FluentPDO\Queries\Select;
 use Foodsharing\Modules\Core\BaseGateway;
 use Foodsharing\Modules\Core\DBConstants\Report\ReportType;
 
@@ -88,7 +87,7 @@ class ReportGateway extends BaseGateway
         return null;
     }
 
-    public function getReport($id): ?array
+    public function getReport($id, $rpType): ?array
     {
         $stm = '
 			SELECT
@@ -123,8 +122,9 @@ class ReportGateway extends BaseGateway
 
 			WHERE
 				r.`id` = :id
+			and r.rp_type = :rpType
 		';
-        $report = $this->db->fetch($stm, [':id' => (int)$id]);
+        $report = $this->db->fetch($stm, [':id' => (int)$id,':rpType' => (int)$rpType]);
         if (!$report) {
             return null;
         }
@@ -140,70 +140,65 @@ class ReportGateway extends BaseGateway
         return $report;
     }
 
-    private function reportSelect(): Select
+    private function reportSelectDbal(): \Doctrine\DBAL\Query\QueryBuilder
     {
-        $query = $this->db->fluent()
-            ->from('fs_report r')
-            ->disableSmartJoin()
-            ->select('
-				r.id,
-				r.`msg`,
-				r.`tvalue`,
-				r.`reporttype`,
-				r.`time`,
-				r.`betrieb_id`,
-				s.`name` as betrieb_name,
-				UNIX_TIMESTAMP(r.`time`) AS time_ts,
+        return $this->db->builder()
+            ->from('fs_report', 'r')
+            ->select(
+                'r.id',
+                'r.`msg`',
+                'r.`tvalue`',
+                'r.`reporttype`',
+                'r.`time`',
+                'r.`betrieb_id`',
+                's.`name` as betrieb_name',
+                'UNIX_TIMESTAMP(r.`time`) AS time_ts',
 
-				fs.id AS fs_id,
-				fs.name AS fs_name,
-				fs.nachname AS fs_nachname,
-				fs.photo AS fs_photo,
-				fs.email AS fs_email,
-				fs.stadt AS fs_stadt,
+                'fs.id AS fs_id',
+                'fs.name AS fs_name',
+                'fs.nachname AS fs_nachname',
+                'fs.photo AS fs_photo',
+                'fs.email AS fs_email',
+                'fs.stadt AS fs_stadt',
 
-				rp.id AS rp_id,
-				rp.name AS rp_name,
-				rp.nachname AS rp_nachname,
-				rp.photo AS rp_photo,
-
-				b.name AS b_name')
-            ->leftJoin('fs_foodsaver fs ON r.foodsaver_id = fs.id')
-            ->leftJoin('fs_foodsaver rp ON r.reporter_id = rp.id')
-            ->leftJoin('fs_bezirk b ON fs.bezirk_id = b.id')
-            ->leftJoin('fs_betrieb s ON r.betrieb_id = s.id')
-            ->orderBy('r.time DESC');
-
-        return $query;
+                'rp.id AS rp_id',
+                'rp.name AS rp_name',
+                'rp.nachname AS rp_nachname',
+                'rp.photo AS rp_photo',
+                'b.name AS b_name')
+            ->leftJoin('r', 'fs_foodsaver', 'fs', 'r.foodsaver_id = fs.id')
+            ->leftJoin('r', 'fs_foodsaver', 'rp', 'r.reporter_id = rp.id')
+            ->leftJoin('r', 'fs_bezirk', 'b', 'fs.bezirk_id = b.id')
+            ->leftJoin('r', 'fs_betrieb', 's', 'r.betrieb_id = s.id')
+            ->orderBy('r.time', 'DESC');
     }
 
     public function getReportsByReporteeRegions($regions, ?array $excludeReportsWithUsers, ?array $onlyReportsWithUsers = null)
     {
-        $query = $this->reportSelect();
+        $query = $this->reportSelectDbal();
 
-        if ($regions !== null && is_array($regions)) {
+        if (is_array($regions)) {
             if (!empty($regions)) {
-                /* fluentpdo ignores the where clause when $regions is empty... */
-                $query = $query->where('fs.bezirk_id', $regions);
+                // querybuilder ignores the where clause when $regions is empty
+                $query->andWhere($query->expr()->in('fs.bezirk_id', $regions));
             } else {
                 return [];
             }
         }
         if (!empty($excludeReportsWithUsers)) {
-            $in = str_repeat('?,', count($excludeReportsWithUsers) - 1) . '?';
-            $query = $query->where('r.reporter_id not in (' . $in . ')', $excludeReportsWithUsers);
-            $query = $query->where('r.foodsaver_id not in (' . $in . ')', $excludeReportsWithUsers);
+            $query->andWhere($query->expr()->notIn('r.reporter_id', $excludeReportsWithUsers));
+            $query->andWhere($query->expr()->notIn('r.foodsaver_id', $excludeReportsWithUsers));
         }
         if (!empty($onlyReportsWithUsers)) {
-            $in = str_repeat('?,', count($onlyReportsWithUsers) - 1) . '?';
-            $query = $query->where('r.reporter_id in (' . $in . ')', $onlyReportsWithUsers);
-            $query = $query->where('r.foodsaver_id in (' . $in . ')', $onlyReportsWithUsers, 'OR');
+            $query->andWhere($query->expr()->notIn('r.reporter_id', $onlyReportsWithUsers));
+            $query->orWhere($query->expr()->notIn('r.foodsaver_id', $onlyReportsWithUsers));
         }
 
         // restrict access only to new reports to avoid social conflicts from old entries
-        $query = $query->where('time >= \'2021-01-01\'');
-        $query = $query->where('rp_type', ReportType::GOALS_REPORT);
+        $query->andWhere('time >= \'2021-01-01\'');
+        $query->andWhere('rp_type', ReportType::GOALS_REPORT);
 
-        return $query->fetchAll();
+        return $query->fetchAllAssociative();
     }
 }
+

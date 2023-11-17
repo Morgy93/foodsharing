@@ -50,24 +50,96 @@ class ForumFollowerGateway extends BaseGateway
     ', [':fsId' => $fsId]);
     }
 
-    public function getThreadBellFollower(int $threadId, int $fsId): array
+    /**
+     * Fetches all users (except the author) who need to be notified for a new post, grouped by the bell for that thread they currently have.
+     *
+     * @return list<array<mixed>> the groups of users per bell
+     */
+    public function getThreadFollowersByLastUnseenBellForThread(int $threadId, int $authorId): array
     {
-        return $this->db->fetchAll('
-			SELECT 	DISTINCT fs.id AS id
-
-			FROM 	fs_foodsaver fs,
-					fs_theme_follower tf
-			WHERE 	tf.foodsaver_id = fs.id
-			AND 	tf.theme_id = :threadId
-			AND		fs.deleted_at IS NULL
-			AND		tf.bell_notification = :followstatus_enabled
-			AND		fs.deleted_at IS NULL
-			AND		fs.id != :fsId
-		', [
-            ':threadId' => $threadId,
-            ':fsId' => $fsId,
+        $threadFollowers = $this->db->fetchAll('SELECT
+                GROUP_CONCAT(foodsaverId) as foodsaverIds,
+                bellId,
+                attr,
+                vars
+            FROM (
+                SELECT
+                    foodsaver.id AS foodsaverId,
+                    bell.id AS bellId,
+                    bell.attr,
+                    bell.vars
+                FROM
+                    fs_foodsaver foodsaver
+                JOIN fs_theme_follower theme_follower ON
+                    theme_follower.foodsaver_id = foodsaver.id
+                LEFT OUTER JOIN(
+                    SELECT
+                        foodsaver_has_bell.foodsaver_id,
+                        bell.id,
+                        bell.vars,
+                        bell.attr
+                    FROM
+                        fs_bell bell
+                    JOIN fs_foodsaver_has_bell foodsaver_has_bell ON
+                        foodsaver_has_bell.bell_id = bell.id
+                    WHERE
+                        bell.identifier LIKE CONCAT("forum-", :threadId1, "-%")
+                    	AND foodsaver_has_bell.seen = 0
+                ) AS bell ON
+                    bell.foodsaver_id = foodsaver.id
+                WHERE
+                    foodsaver.deleted_at IS NULL
+                    AND theme_follower.theme_id = :threadId2
+                    AND foodsaver.id != :authorId
+                    AND theme_follower.bell_notification = :followstatus_enabled
+                GROUP BY foodsaver.id
+            ) as ungrouped
+            GROUP BY bellId
+        ', [
+            ':threadId1' => $threadId,
+            ':threadId2' => $threadId,
+            ':authorId' => $authorId,
             ':followstatus_enabled' => FollowStatus::ENABLED,
         ]);
+
+        foreach ($threadFollowers as &$threadFollower) {
+            $threadFollower['foodsaverIds'] = array_map('intval', explode(',', $threadFollower['foodsaverIds']));
+        }
+
+        return $threadFollowers;
+    }
+
+    /**
+     * Fetches all users (except the author) who have an unseen bell for the given deleted post, grouped by the exact bell they have.
+     *
+     * @return list<array<mixed>> the groups of users per bell
+     */
+    public function getUsersWithUnseenBellIncludingDeletedPost(int $threadId, int $postId, int $authorId): array
+    {
+        $results = $this->db->fetchAll('SELECT
+                bell.id as bellId,
+                bell.attr,
+                bell.vars,
+                GROUP_CONCAT(foodsaver_has_bell.foodsaver_id) as foodsaverIds
+            FROM fs_foodsaver_has_bell foodsaver_has_bell
+            JOIN fs_bell bell ON bell.id = foodsaver_has_bell.bell_id
+            WHERE
+                bell.identifier LIKE CONCAT("forum-", :threadId, "-%")
+                AND SUBSTR(REGEXP_SUBSTR(bell.attr, "#post([0-9]+)"), 6) <= :postId #get the referenced post id by extracting from href
+                AND foodsaver_has_bell.seen = 0
+                AND foodsaver_has_bell.foodsaver_id != :authorId
+            GROUP BY bell.id
+        ', [
+            ':threadId' => $threadId,
+            ':postId' => $postId,
+            ':authorId' => $authorId,
+        ]);
+
+        foreach ($results as &$result) {
+            $result['foodsaverIds'] = array_map('intval', explode(',', $result['foodsaverIds']));
+        }
+
+        return $results;
     }
 
     public function isFollowingEmail(?int $fsId, int $threadId): bool

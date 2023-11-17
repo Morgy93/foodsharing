@@ -184,6 +184,7 @@ import AutoResizeTextareaMixin from '@/mixins/AutoResizeTextareaMixin'
 import { sendQuickreply } from '@/api/dashboard'
 import { pulseInfo } from '@/script'
 import { createPost } from '@/api/forum'
+import { addPost } from '@/api/wall'
 
 import Markdown from '@/components/Markdown/Markdown'
 import Avatar from '@/components/Avatar'
@@ -254,7 +255,7 @@ export default {
     },
     canQuickreply () {
       // old endpoints use the 'quickreply' variable, new endpoints are distinguishable by the activity's type
-      return (this.quickreply !== null && this.quickreply.length > 0) || this.type === 'forum'
+      return (this.quickreply !== null && this.quickreply.length > 0) || this.type === 'forum' || this.type === 'event'
     },
     isReplyEmpty () {
       return (
@@ -277,12 +278,15 @@ export default {
       if ((this.viewIsMD && !this.isReplyEmpty) || (forced && !this.isReplyEmpty)) {
         this.qrLoading = true
         try {
+          // forum posts and wall posts already use the REST API for quickreplies
           if (this.type === 'forum') {
-            // forum posts already use the REST API for quickreplies
             await createPost(this.entity_id, this.quickreplyValue)
             pulseInfo(this.$i18n('forum.quickreply.success'))
+          } else if (this.type === 'event') {
+            await addPost('event', this.entity_id, this.quickreplyValue)
+            pulseInfo(this.$i18n('forum.quickreply.success'))
           } else {
-            // quickreplies to emails and wall posts (events, buddies, and stores) still use old XHR requests
+            // quickreplies to emails still use old XHR requests
             const { message } = await sendQuickreply(this.quickreply, this.quickreplyValue)
             pulseInfo(message)
           }

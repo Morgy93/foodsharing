@@ -11,6 +11,7 @@ import { vueRegister, vueApply } from '@/vue'
 
 import './Content.css'
 import ReleaseNotes from './components/ReleaseNotes.vue'
+import ContentList from './components/ContentList'
 
 expose({
   ifconfirm,
@@ -21,4 +22,9 @@ if (GET('sub') === 'releaseNotes') {
     ReleaseNotes,
   })
   vueApply('#vue-release-notes')
+} else if (GET('sub') === undefined && GET('a') === undefined) {
+  vueRegister({
+    ContentList,
+  })
+  vueApply('#content-list')
 }

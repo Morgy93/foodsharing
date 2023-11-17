@@ -5,13 +5,13 @@
         {{ $i18n('button.answer') }}
       </div>
       <div class="card-body">
-        <p v-html="$i18n('forum.markdown_description')" />
-        <textarea
-          ref="textarea"
-          v-model="text"
-          class="form-control"
-          rows="3"
-          @keyup.ctrl.enter="submit"
+        <MarkdownInput
+          ref="input"
+          :rows="3"
+          :value="text"
+          :conceal-toolbar="true"
+          @update:value="newValue => text = newValue"
+          @submit="submit"
         />
       </div>
       <div class="card-footer below">
@@ -32,9 +32,10 @@
 </template>
 
 <script>
+import MarkdownInput from '@/components/Markdown/MarkdownInput.vue'
 
 export default {
-  props: {},
+  components: { MarkdownInput },
   data () {
     return {
       text: '',
@@ -42,17 +43,15 @@ export default {
   },
   methods: {
     submit () {
-      if (!this.text.trim()) return
+      if (!this.text.trim()) {
+        return
+      }
       this.$emit('submit', this.text.trim())
       this.text = ''
     },
     focus () {
-      this.$refs.textarea.focus()
+      this.$refs.input.setFocus()
     },
   },
 }
 </script>
-
-<style lang="scss" scoped>
-
-</style>

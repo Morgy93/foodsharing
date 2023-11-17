@@ -2,31 +2,19 @@
 
 namespace Foodsharing\Modules\StoreUser;
 
-use Exception;
 use Foodsharing\Modules\Core\Control;
+use Symfony\Component\HttpFoundation\Request;
 
+// forward old links to the new path
 class StoreUserControl extends Control
 {
-    public function __construct(
-        StoreUserView $view,
-    ) {
-        $this->view = $view;
-
-        parent::__construct();
-
+    public function index(Request $request): void
+    {
         if (!$this->session->mayRole()) {
             $this->routeHelper->goLoginAndExit();
         }
-    }
-
-    /**
-     * @throws Exception
-     */
-    public function index(): void
-    {
-        if (isset($_GET['id'])) {
-            $storeId = intval($_GET['id']);
-            $this->routeHelper->goAndExit('/store/' . $storeId);
+        if ($id = $request->query->get('id')) {
+            $this->routeHelper->goAndExit('/store/' . intval($id));
         }
     }
 }

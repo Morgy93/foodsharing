@@ -7,6 +7,7 @@ use Foodsharing\Modules\Core\DBConstants\Event\EventType;
 use Foodsharing\Modules\Region\RegionGateway;
 use Foodsharing\Permissions\EventPermissions;
 use Foodsharing\Utility\DataHelper;
+use Foodsharing\Utility\PostHelper;
 
 class EventControl extends Control
 {
@@ -20,7 +21,8 @@ class EventControl extends Control
         EventGateway $eventGateway,
         RegionGateway $regionGateway,
         DataHelper $dataHelper,
-        EventPermissions $eventPermissions
+        EventPermissions $eventPermissions,
+        private readonly PostHelper $postHelper,
     ) {
         $this->view = $view;
         $this->eventGateway = $eventGateway;
@@ -119,7 +121,7 @@ class EventControl extends Control
         $this->pageHelper->addBread($event['name'], '/?page=event&id=' . $eventId);
         $this->pageHelper->addBread($this->translator->trans('events.edit'));
 
-        if ($this->isSubmitted() && $data = $this->validateEvent()) {
+        if ($this->submitted() && $data = $this->validateEvent()) {
             if ($this->eventGateway->updateEvent($_GET['id'], $data)) {
                 if (isset($_POST['delinvites']) && $_POST['delinvites'] == 1) {
                     $this->eventGateway->deleteInvites($_GET['id']);
@@ -153,7 +155,7 @@ class EventControl extends Control
         $this->pageHelper->addBread($this->translator->trans('events.bread'), '/?page=event');
         $this->pageHelper->addBread($this->translator->trans('events.create.title'));
 
-        if ($this->isSubmitted()) {
+        if ($this->submitted()) {
             if (($data = $this->validateEvent()) && $id = $this->eventGateway->addEvent($this->session->id(), $data)) {
                 if ($data['invite']) {
                     $this->eventGateway->inviteFullRegion($data['bezirk_id'], $id, $data['invitesubs']);
@@ -185,7 +187,7 @@ class EventControl extends Control
 
         if (isset($_POST['public']) && $_POST['public'] == 1) {
             $out['public'] = 1;
-        } elseif ($regionId = $this->getPostInt('bezirk_id')) {
+        } elseif ($regionId = $this->postHelper->getPostInt('bezirk_id')) {
             $out['bezirk_id'] = (int)$regionId;
             if (isset($_POST['invite']) && $_POST['invite'] == InvitationStatus::ACCEPTED) {
                 $out['invite'] = true;
@@ -195,8 +197,8 @@ class EventControl extends Control
             }
         }
 
-        if (($start_date = $this->getPostDate('date')) && $start_time = $this->getPostTime('time_start')) {
-            if ($end_time = $this->getPostTime('time_end')) {
+        if (($start_date = $this->postHelper->getPostDate('date')) && $start_time = $this->postHelper->getPostTime('time_start')) {
+            if ($end_time = $this->postHelper->getPostTime('time_end')) {
                 $out['start'] = date('Y-m-d', $start_date) . ' ' . sprintf('%02d', $start_time['hour']) . ':' . sprintf(
                     '%02d',
                     $start_time['min']
@@ -206,7 +208,7 @@ class EventControl extends Control
                     $end_time['min']
                 ) . ':00';
 
-                if ((int)$this->getPostInt('addend') == 1 && ($ed = $this->getPostDate('dateend'))) {
+                if ((int)$this->postHelper->getPostInt('addend') == 1 && ($ed = $this->postHelper->getPostDate('dateend'))) {
                     $out['end'] = date('Y-m-d', $ed) . ' ' . sprintf('%02d', $end_time['hour']) . ':' . sprintf(
                         '%02d',
                         $end_time['min']
@@ -215,15 +217,15 @@ class EventControl extends Control
             }
         }
 
-        if ($name = $this->getPostString('name')) {
+        if ($name = $this->postHelper->getPostString('name')) {
             $out['name'] = $name;
         }
 
-        if ($description = $this->getPostString('description')) {
+        if ($description = $this->postHelper->getPostString('description')) {
             $out['description'] = $description;
         }
 
-        $online_type = $this->getPostInt('online_type');
+        $online_type = $this->postHelper->getPostInt('online_type');
 
         if (EventType::isOnline($online_type)) {
             $out['online'] = 1;
@@ -231,12 +233,12 @@ class EventControl extends Control
         } else {
             $out['online'] = 0;
             $id = $this->eventGateway->addLocation(
-                $this->getPostString('location_name'),
-                $this->getPost('lat'),
-                $this->getPost('lon'),
-                $this->getPostString('anschrift'),
-                $this->getPostString('plz'),
-                $this->getPostString('ort')
+                $this->postHelper->getPostString('location_name'),
+                $this->postHelper->getPost('lat'),
+                $this->postHelper->getPost('lon'),
+                $this->postHelper->getPostString('anschrift'),
+                $this->postHelper->getPostString('plz'),
+                $this->postHelper->getPostString('ort')
             );
             $out['location_id'] = $id;
         }

@@ -180,12 +180,7 @@ export default {
     addNewItem () {
       const selectedWeekdays = Object.values(this.editPickupsCopied).map(item => item.weekday)
       const availableWeekdays = this.weekdays.filter(weekday => !selectedWeekdays.includes(weekday.value))
-
-      if (availableWeekdays.length === 0) {
-        return
-      }
-
-      const nextWeekday = availableWeekdays[0].value
+      const nextWeekday = availableWeekdays[0]?.value ?? 1
 
       const newIndex = Object.keys(this.editPickupsCopied).length
       const newPickup = {

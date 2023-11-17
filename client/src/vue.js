@@ -3,6 +3,7 @@ import i18n from '@/helper/i18n'
 import dateFormatter from '@/helper/date-formatter'
 import { isValidPhoneNumber } from '@/helper/phone-numbers'
 import { url } from '@/helper/urls'
+import { isFeatureToggleActive } from '@/helper/featuretoggles'
 import BootstrapVue from 'bootstrap-vue'
 import Vuelidate from 'vuelidate'
 
@@ -15,6 +16,7 @@ Vue.prototype.$i18n = (key, variables = {}) => {
 Vue.prototype.$url = url
 Vue.prototype.$isValidPhoneNumber = isValidPhoneNumber
 Vue.prototype.$dateFormatter = dateFormatter
+Vue.prototype.$isFeatureToggleActive = isFeatureToggleActive
 
 export function vueRegister (components) {
   for (const key in components) {

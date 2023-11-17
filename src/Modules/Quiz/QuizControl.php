@@ -8,6 +8,7 @@ use Foodsharing\Permissions\QuizPermissions;
 use Foodsharing\Utility\DataHelper;
 use Foodsharing\Utility\IdentificationHelper;
 use Foodsharing\Utility\ImageHelper;
+use Foodsharing\Utility\TranslationHelper;
 
 class QuizControl extends Control
 {
@@ -27,7 +28,8 @@ class QuizControl extends Control
         ImageHelper $imageTransactions,
         IdentificationHelper $identificationHelper,
         DataHelper $dataHelper,
-        QuizPermissions $quizPermissions
+        QuizPermissions $quizPermissions,
+        private readonly TranslationHelper $translationHelper,
     ) {
         $this->view = $view;
         $this->quizGateway = $quizGateway;
@@ -131,7 +133,7 @@ class QuizControl extends Control
     {
         $quizId = (int)$_GET['qid'];
         if ($quiz = $this->quizGateway->getQuiz($quizId)) {
-            if ($this->isSubmitted()) {
+            if ($this->submitted()) {
                 $name = trim(strip_tags($_POST['name']));
                 if (!empty($name)) {
                     $desc = trim($_POST['desc']);
@@ -152,7 +154,7 @@ class QuizControl extends Control
 
     public function newquiz(): void
     {
-        if ($this->isSubmitted()) {
+        if ($this->submitted()) {
             $name = trim(strip_tags($_POST['name']));
             if (!empty($name)) {
                 $desc = trim($_POST['desc']);

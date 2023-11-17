@@ -4,6 +4,7 @@ namespace Foodsharing\Modules\Report;
 
 use Foodsharing\Lib\Xhr\XhrDialog;
 use Foodsharing\Modules\Core\Control;
+use Foodsharing\Modules\Core\DBConstants\Report\ReportType;
 use Foodsharing\Modules\Foodsaver\FoodsaverGateway;
 use Foodsharing\Permissions\ReportPermissions;
 use Foodsharing\Utility\Sanitizer;
@@ -43,7 +44,7 @@ class ReportXhr extends Control
 
     public function loadReport(): ?array
     {
-        if ($this->reportPermissions->mayHandleReports() && $report = $this->reportGateway->getReport($_GET['id'])) {
+        if ($this->reportPermissions->mayHandleReports() && $report = $this->reportGateway->getReport($_GET['id'], ReportType::GOALS_REPORT)) {
             $reason = explode('=>', $report['tvalue']);
 
             $dialog = new XhrDialog();

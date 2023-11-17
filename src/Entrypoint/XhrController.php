@@ -3,7 +3,7 @@
 namespace Foodsharing\Entrypoint;
 
 use Foodsharing\Annotation\DisableCsrfProtection;
-use Foodsharing\Lib\Cache\Caching;
+use Foodsharing\Lib\Caching;
 use Foodsharing\Lib\Db\Mem;
 use Foodsharing\Lib\Session;
 use Foodsharing\Lib\Xhr\XhrMethods;

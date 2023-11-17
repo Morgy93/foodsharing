@@ -15,14 +15,15 @@ class Container extends Module
 
         $this->symfonyModule = $this->getModule('Symfony');
 
-        // Persist RealPDO (see config/packages/services.yaml) between tests.
-        // PHP's PDO only closes its underlying connection if no references to it exist,
+        // Persist the database connection between tests.
+        // PHP's PDO (which is used as a driver for DBAL)
+        // only closes its underlying connection if no references to it exist,
         // and is not guranteed to do so immediately.
         // Usually, services are not kept between tests by Symfony,
         // which means we end up with a dangling DB connection for every test executed.
         // At some point, we hit MariaDB's connection limit,
         // which makes every test fail immediately.
-        $this->symfonyModule->persistService('RealPDO');
+        $this->symfonyModule->persistService('doctrine.dbal.default_connection');
 
         // needed so Control-based classes (which rely on this global currently)
         // can be used in unit tests

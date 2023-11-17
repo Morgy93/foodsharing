@@ -58,7 +58,6 @@ class StoreMaintainceTransactionsTest extends \Codeception\Test\Unit
         $this->assertEquals(2, $statistics['count_stores']);
         $this->assertEquals(1, $statistics['count_stores_with_notifications']);
         $this->assertEquals(1, $statistics['count_unique_foodsavers']);
-        $this->assertEquals(2, $statistics['count_total_empty_pickups']);
     }
 
     public function testTriggerFetchWarningNotificationWithOnlyRegularPickups()

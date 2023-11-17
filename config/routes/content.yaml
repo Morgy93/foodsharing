@@ -1,0 +1,41 @@
+partner:
+  path: /partner
+  controller: Foodsharing\Modules\Content\ContentController::show
+  defaults:
+    name: partner
+
+ueber-uns:
+  path: /ueber-uns
+  controller: Foodsharing\Modules\Content\ContentController::show
+  defaults:
+    name: about
+
+fuer-unternehmen:
+  path: /fuer-unternehmen
+  controller: Foodsharing\Modules\Content\ContentController::show
+  defaults:
+    name: fuer_unternehmen
+
+leeretonne:
+  path: /leeretonne
+  controller: Foodsharing\Modules\Content\ContentController::show
+  defaults:
+    name: leeretonne
+
+fairteilerrettung:
+  path: /fairteilerrettung
+  controller: Foodsharing\Modules\Content\ContentController::show
+  defaults:
+    name: fairteilerrettung
+
+impressum:
+  path: /impressum
+  controller: Foodsharing\Modules\Content\ContentController::show
+  defaults:
+    name: impressum
+
+ratgeber:
+  path: /ratgeber
+  controller: Foodsharing\Modules\Content\ContentController::show
+  defaults:
+    name: ratgeber

@@ -3,28 +3,26 @@
 namespace Foodsharing\Modules\Core;
 
 use Carbon\Carbon;
-use Envms\FluentPDO\Query;
-use PDO;
+use Doctrine\DBAL\Connection;
+use Doctrine\DBAL\Exception\DriverException;
+use Doctrine\DBAL\ParameterType;
+use Doctrine\DBAL\Query\QueryBuilder;
+use Doctrine\DBAL\Result;
 
 class Database
 {
-    private PDO $pdo;
-    private $fluent;
-    private $influxMetrics;
+    private QueryBuilder $queryBuilder;
 
-    public function __construct(PDO $pdo, InfluxMetrics $influxMetrics)
-    {
-        $this->pdo = $pdo;
-        $this->fluent = new Query($pdo);
-        $this->influxMetrics = $influxMetrics;
+    public function __construct(
+        private readonly Connection $dbalConnection,
+        private readonly InfluxMetrics $influxMetrics,
+    ) {
+        $this->queryBuilder = $this->dbalConnection->createQueryBuilder();
     }
 
-    /**
-     * @return Query FluentPDO Querybuilder
-     */
-    public function fluent()
+    public function builder(): QueryBuilder
     {
-        return $this->fluent;
+        return $this->queryBuilder;
     }
 
     // === high-level methods that build SQL internally ===
@@ -275,7 +273,7 @@ class Database
 
         $this->preparedQuery($query, array_values($data));
 
-        return (int)$this->pdo->lastInsertId();
+        return (int)$this->dbalConnection->lastInsertId();
     }
 
     /**
@@ -349,9 +347,9 @@ class Database
 
         // flatten values array
         $flattened = $this->flattenArray($fullData, false);
-        $statement = $this->preparedQuery($query, array_values($flattened));
+        $result = $this->preparedQuery($query, array_values($flattened));
 
-        return (int)$statement->rowCount();
+        return $result->rowCount();
     }
 
     /**
@@ -426,13 +424,13 @@ class Database
      */
     public function fetch(string $query, array $params = []): array
     {
-        $out = $this->preparedQuery($query, $params)->fetch();
+        $result = $this->preparedQuery($query, $params)->fetchAssociative();
         // TODO throw Exception if no result was found
-        if (!$out) {
+        if (!$result) {
             return [];
         }
 
-        return $out;
+        return $result;
     }
 
     /**
@@ -447,7 +445,7 @@ class Database
      */
     public function fetchAll(string $query, array $params = []): array
     {
-        $out = $this->preparedQuery($query, $params)->fetchAll();
+        $out = $this->preparedQuery($query, $params)->fetchAllAssociative();
         if (!$out) {
             return [];
         }
@@ -467,7 +465,7 @@ class Database
      */
     public function fetchAllValues(string $query, array $params = []): array
     {
-        $out = $this->preparedQuery($query, $params)->fetchAll(\PDO::FETCH_COLUMN, 0);
+        $out = $this->preparedQuery($query, $params)->fetchFirstColumn();
         if (!$out) {
             return [];
         }
@@ -487,7 +485,7 @@ class Database
      */
     public function fetchValue(string $query, array $params = [])
     {
-        $out = $this->preparedQuery($query, $params)->fetchAll();
+        $out = $this->preparedQuery($query, $params)->fetchAllAssociative();
         if (empty($out)) {
             throw new DatabaseNoValueFoundException('Expected one or more results, but none was returned.');
         }
@@ -504,7 +502,7 @@ class Database
      *                        or a map of placeholder names to their values.
      *                        Example: [':placeholder' => 10] or [10, "abcdef"] without placeholder names
      *
-     * @return \PDOStatement the result of the query execution
+     * @return Result the result of the query execution
      *
      * @throws \Exception if the query is malformed
      *
@@ -512,7 +510,7 @@ class Database
      * @see Database::delete()
      * @deprecated Use more specific methods if possible
      */
-    public function execute(string $query, array $params = []): \PDOStatement
+    public function execute(string $query, array $params = []): Result
     {
         return $this->preparedQuery($query, $params);
     }
@@ -526,14 +524,14 @@ class Database
      *
      * @return string string of comma separated question marks
      */
-    public function generatePlaceholders($length): string
+    public function generatePlaceholders(int $length): string
     {
         return implode(', ', array_fill(0, $length, '?'));
     }
 
     public function quote($string): string
     {
-        return $this->pdo->quote($string);
+        return $this->dbalConnection->quote($string);
     }
 
     /**
@@ -574,12 +572,12 @@ class Database
 
     public function beginTransaction(): bool
     {
-        return $this->pdo->beginTransaction();
+        return $this->dbalConnection->beginTransaction();
     }
 
     public function commit(): bool
     {
-        return $this->pdo->commit();
+        return $this->dbalConnection->commit();
     }
 
     // === private methods ===
@@ -621,27 +619,17 @@ class Database
      *                        or a map of placeholder names to their values.
      *                        Example: [':placeholder' => 10] or [10, "abcdef"] without placeholder names
      *
-     * @return \PDOStatement the result of the query execution
+     * @return Result the result of the query execution
      *
-     * @throws \Exception if the PDO does not accept the $query
+     * @throws \Exception if the connection does not accept the $query
      */
-    private function preparedQuery(string $query, array $params): \PDOStatement
+    private function preparedQuery(string $query, array $params): Result
     {
         $timing_start = hrtime(true);
         try {
-            // Depending on the PDO's error handling, when the query can't be prepared,
-            // this will either throw a PDOException, or return false.
-            // to cover both cases, either throw an exception ourselves,
-            // or catch the PDOException and attach it to a new exception.
-            $statement = $this->pdo->prepare($query);
-        } catch (\PDOException $exception) {
-            throw new \Exception("Query '$query' can't be prepared.", $exception->getCode());
-        }
-        if (empty($statement)) {
-            // PDO did not throw an exception, but returned false.
-            // For consistency, we throw one ourselves.
-            $errorInfo = $this->pdo->errorInfo();
-            throw new \Exception("Query '$query' can't be prepared. Error info: " . implode(', ', $errorInfo));
+            $statement = $this->dbalConnection->prepare($query);
+        } catch (DriverException $e) {
+            throw new \Exception("Query '$query' can't be prepared.", $e->getCode(), $e);
         }
 
         /**
@@ -652,27 +640,32 @@ class Database
 
         foreach ($params as $param => $value) {
             if (is_bool($value)) {
-                $type = \PDO::PARAM_INT;
+                $type = ParameterType::INTEGER;
             } elseif (is_int($value)) {
-                $type = \PDO::PARAM_INT;
+                $type = ParameterType::INTEGER;
             } else {
-                $type = \PDO::PARAM_STR;
+                $type = ParameterType::STRING;
             }
 
             // Positional arguments start with 1, not 0
             if (is_int($param)) {
                 ++$param;
             }
+
+            if (is_string($param) && str_starts_with($param, ':')) {
+                // TODO log a deprecation warning here
+                $param = substr($param, 1);
+            }
+
             $statement->bindValue($param, $value, $type);
         }
 
-        $statement->setFetchMode(PDO::FETCH_ASSOC);
-        $statement->execute();
+        $result = $statement->executeQuery();
 
         $timing_stop = hrtime(true);
         $this->influxMetrics->addDbQuery(intdiv($timing_stop - $timing_start, 1000 * 1000));
 
-        return $statement;
+        return $result;
     }
 
     /**

@@ -1,0 +1,69 @@
+geb_datum: Data de nascimento (AAAA-MM-DD)
+name: Nome
+add: Adicionar
+nachname: Sobrenome
+subject: Tópico
+message: Mensagem
+address: Morada
+edit: Editar
+edit_websites: Editar sites públicos
+desc: Descrição
+description: Descrição
+plz: Código postal (Automaticamente a partir do mapa acima)
+email: E-mail
+attachement: Anexo
+handy: Número de celular (com código do país, começa com +)
+anschrift: Rua e número da casa (automático a partir do mapa acima, se necessário,
+  corrigir posteriormente)"
+geschlecht: Sexo
+botschafter: Embaixador/a
+options: Opções
+picture: Foto
+parent_id: Distrito dos pais
+fs_id: ID-Foodsharing
+lat: Latitude
+lon: Longitude
+telefon: Número de telefone fixo (com código do país, começa com +)
+stadt: Sua cidade ou município
+bezirk: Distrito
+betrieb: Cooperação comercial
+active: Activado
+store:
+  request:
+    distance: mora a cerca de {distance} km de distância
+    distance_close: mora a menos de 1 km de distância
+navigation:
+  profil: 👋 Olá {name}!
+bell:
+  poll_new: '{title}'
+  workgroup_request_decline_title: '{name}'
+  workgroup_request_accept_title: '{name}'
+  blog_new_check: '{title}'
+  ft_update_title: '{name}'
+  new_quiz_comment: '{comment}'
+  betrieb_fetch_title: '{betrieb}'
+  store_cr_times_title: '{name}'
+  store_request_accept_title: '{name}'
+  forum_reply_title: '{forum}: {title}'
+  forum_post_title: '{title}'
+  report_reason: '{reason}'
+  store_request_deny_title: '{name}'
+  ft_update: '{teaser}'
+  store_request_imposed_title: '{name}'
+  store_wallpost_title: '{name}'
+  store_request_accept_wait_title: '{name}'
+  forum_answer_title: '{forum}'
+email_template:
+  help_needed:
+    link: https://devdocs.foodsharing.network/
+footer:
+  meta:
+    version: 'Versão: {version}'
+  partner_names:
+    denns: Denn’s Biomarkt
+dashboard:
+  source_mailbox: '{0}'
+storeview:
+  counter: <strong>{count}<span style="white-space:nowrap"> </span>{suffix}</strong>
+calendar:
+  locale: pt
