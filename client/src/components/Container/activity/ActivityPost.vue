@@ -188,6 +188,7 @@ import { addPost } from '@/api/wall'
 
 import Markdown from '@/components/Markdown/Markdown'
 import Avatar from '@/components/Avatar'
+import { sendEmail } from '@/api/mailbox'
 
 export default {
   components: { Markdown, Avatar },
@@ -218,6 +219,7 @@ export default {
 
     // Individual update-type properties for mailboxes: ActivityUpdateMailbox
     sender_email: { type: String, default: '' },
+    mailboxId: { type: Number, default: null },
   },
   /* eslint-enable */
   data () {
@@ -255,7 +257,7 @@ export default {
     },
     canQuickreply () {
       // old endpoints use the 'quickreply' variable, new endpoints are distinguishable by the activity's type
-      return (this.quickreply !== null && this.quickreply.length > 0) || this.type === 'forum' || this.type === 'event'
+      return (this.quickreply !== null && this.quickreply.length > 0) || ['forum', 'event', 'mailbox'].includes(this.type)
     },
     isReplyEmpty () {
       return (
@@ -285,6 +287,20 @@ export default {
           } else if (this.type === 'event') {
             await addPost('event', this.entity_id, this.quickreplyValue)
             pulseInfo(this.$i18n('forum.quickreply.success'))
+          } else if (this.type === 'mailbox') {
+            const subject = 'Re: ' + this.title
+            const to = [this.sender_email]
+            const date = this.$dateFormatter.format(this.dateObject, {
+              day: 'numeric',
+              month: 'numeric',
+              year: 'numeric',
+              hour: 'numeric',
+              minute: 'numeric',
+            })
+            let body = this.quickreplyValue + '\n\n\n\n--------- ' + this.$i18n('mailbox.signature', { date: date }) + ' ---------\n\n>\t'
+            body += this.desc.replace('\n', '\n>\t')
+            await sendEmail(this.mailboxId, to, null, null, subject, body, null, this.entity_id)
+            pulseInfo(this.$i18n('mailbox.okay'))
           } else {
             // quickreplies to emails still use old XHR requests
             const { message } = await sendQuickreply(this.quickreply, this.quickreplyValue)
@@ -292,6 +308,7 @@ export default {
           }
           this.quickreplyValue = ''
         } catch (e) {
+          console.error(e)
           pulseInfo(this.$i18n('forum.quickreply.error'))
         } finally {
           this.qrLoading = false
