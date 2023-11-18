@@ -67,24 +67,6 @@ export async function listPickupHistory (storeId, fromDate, toDate) {
   }, {})
 }
 
-export async function listPastPickupsForUser (fsId, fromDate, toDate) {
-  const from = fromDate.toISOString()
-  const to = toDate.toISOString()
-  const res = await get(`/foodsaver/${fsId}/pickups/${from}/${to}`)
-  let slots = res.pickups[0].occupiedSlots
-  slots = slots.map(s => ({
-    ...s,
-    isConfirmed: true,
-    date: new Date(Date.parse(s.date)),
-  }))
-
-  // https://github.com/you-dont-need/You-Dont-Need-Lodash-Underscore#_groupby
-  return slots.reduce((r, v, i, a, k = v.storeId + '-' + v.date_ts) => {
-    (r[k] || (r[k] = [])).push(v)
-    return r
-  }, {})
-}
-
 export async function listSameDayPickupsForUser (fsId, onDate) {
   const day = onDate.toISOString()
   const res = await get(`/foodsaver/${fsId}/pickups/${day}`)

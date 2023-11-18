@@ -1149,6 +1149,7 @@ store:
     distance_close: vive a menos de 1 km de distancia
     distance_unknown: no se especifica el lugar de residencia
     unverified: Usuario no está verificad@
+    air_line: La distancia indicada es en línea recta.
   all_of_my_stores: 'Todas mis empresas'
   prefetchone: '1 semana'
   go: 'A la página del equipo'
@@ -1265,6 +1266,11 @@ store:
     el menú “Ver información de la empresa”.
   not_verified: No estás verificado. Por lo tanto, aún no puedes ver las fechas de
     recogida ni los números de teléfono de los miembros del equipo.
+  log:
+    search: Ver las acciones seleccionadas
+    selected_log_types: '{amount} tipos de acción seleccionados'
+    title: Registro de las operaciones
+    log_types_placeholder: Seleccione las acciones que se mostrarán
 pickup:
   overview:
     status:

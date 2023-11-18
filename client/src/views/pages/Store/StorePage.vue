@@ -55,7 +55,12 @@
         <PickupHistory
           v-if="permissions.maySeePickupHistory"
           :store-id="storeId"
-          :coop-start="storeInformation.cooperationStart"
+          :cooperation-start="storeInformation.cooperationStart"
+        />
+        <StoreLog
+          v-if="permissions.maySeeStoreLog"
+          :store-id="storeId"
+          :cooperation-start="storeInformation.cooperationStart"
         />
         <StoreWall
           v-if="!viewIsMobile"
@@ -118,6 +123,7 @@ import PickupList from '@/components/Stores/PickupList.vue'
 import DataUser from '@/stores/user'
 import StoreData from '@/stores/stores'
 import { pulseInfo } from '@/script'
+import StoreLog from '@/components/Stores/StoreLog.vue'
 
 export default {
   components: {
@@ -127,6 +133,7 @@ export default {
     PickupHistory,
     StoreWall,
     PickupList,
+    StoreLog,
   },
   mixins: [MediaQueryMixin],
   props: {

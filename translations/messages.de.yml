@@ -958,6 +958,47 @@ store:
   complete: "kompletter Datenbank"
   smneeded: "Zum Anlegen eines Betriebs musst du Betriebsverantwortliche*r sein."
   locked: "Diesen Betrieb kannst du nicht bearbeiten."
+  log:
+    title: "Betriebsprotokoll"
+    search: "Ausgewählte Aktionen anzeigen"
+    selected_log_types: "{amount} Aktions-Typen ausgewählt"
+    log_types_placeholder: "Anzuzeigende Aktions-Typen auswählen"
+    type:
+      1: Beitrittsanfragen stellen
+      2: Beitrittsanfragen ablehnen
+      3: Beitrittsanfragen annehmen
+      4: Foodsaver ohne Anfrage ins Team aufnehmen
+      5: Foodsaver zum Springer machen
+      6: Foodsaver ins aktive Team aufnehmen
+      7: Foodsaver aus dem Team entfernen
+      8: Team verlassen
+      9: Betriebsverantwortliche*n eintragen
+      10: Betriebsverantwortliche*n austragen
+      11: Eintragen für Abholung
+      12: Austragen für Abholung
+      13: Für Abholung ausgetragen werden
+      14: Abholslot bestätigen
+      15: Pinnwandeintrag löschen
+      16: Beitrittsanfrage zurückziehen
+    message:
+      1: "{actor} hat eine Beitrittsanfrage gestellt."
+      2: "{actor} hat die Beitrittsanfrage von {target} abgelehnt."
+      3: "{actor} hat die Beitrittsanfrage von {target} angenommen."
+      4: "{actor} hat {target} ohne Anfrage ins Team aufgenommen."
+      5: "{actor} hat {target} auf die Springerliste gesetzt."
+      6: "{actor} hat {target} ins aktive Team aufgenommen."
+      7: "{actor} hat {target} aus dem Team entfernt."
+      8: "{actor} hat das Team verlassen."
+      9: "{actor} hat {target} als Betriebsverantwortliche*n eingetragen."
+      10: "{actor} hat {target} als Betriebsverantwortliche*n ausgetragen."
+      11: "{actor} hat sich für die Abholung am {date} eingetragen."
+      12: "{actor} hat sich für die Abholung am {date} ausgetragen."
+      13: "{actor} hat {target} für die Abholung am {date} ausgetragen."
+      13_with_reason: "{actor} hat {target} für die Abholung am {date} mit folgender Nachricht ausgetragen"
+      14: "{actor} hat den Abholslot von {target} am {date} bestätigt."
+      15: "{actor} hat {target}s Pinnwandeintrag vom {date} gelöscht"
+      16: "{actor} hat die Beitrittsanfrage zurückgezogen"
+    max_entries_message: Maximal 100 Einträge werden angezeigt. Bitte grenze den Suchbereich ein.
 
 storeedit:
   bread: "Betrieb bearbeiten"
