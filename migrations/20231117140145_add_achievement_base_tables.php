@@ -5,20 +5,9 @@ use Phinx\Migration\AbstractMigration;
 
 final class AddAchievementBaseTables extends AbstractMigration
 {
-    /**
-     * Change Method.
-     *
-     * Write your reversible migrations using this method.
-     *
-     * More information on writing migrations is available here:
-     * https://book.cakephp.org/phinx/0/en/migrations.html#the-change-method
-     *
-     * Remember to call "create()" or "update()" and NOT "save()" when working
-     * with the Table class.
-     */
     public function change(): void
     {
-        $achievementsTable = $this->table("fs_achievements");
+        $achievementsTable = $this->table("fs_achievement");
         $achievementsTable->addColumn("name", "string");
         $achievementsTable->addColumn("description", "string");
         $achievementsTable->addColumn("validity_in_days_after_assignment", "integer", [
@@ -39,7 +28,7 @@ final class AddAchievementBaseTables extends AbstractMigration
             "update" => "NO_ACTION",
         ]);
         $foodsaverHasAchievementTable->addColumn("achievement_id", "integer");
-        $foodsaverHasAchievementTable->addForeignKey("achievement_id", "fs_achievements", "id", [
+        $foodsaverHasAchievementTable->addForeignKey("achievement_id", "fs_achievement", "id", [
             "delete" => "CASCADE",
             "update" => "NO_ACTION",
         ]);
