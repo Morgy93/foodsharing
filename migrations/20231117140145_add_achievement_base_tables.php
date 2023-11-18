@@ -51,6 +51,7 @@ final class AddAchievementBaseTables extends AbstractMigration
         $foodsaverHasAchievementTable->addTimestamps();
 
         $foodsaverHasAchievementTable->addIndex("foodsaver_id");
+        $foodsaverHasAchievementTable->addIndex("achievement_id");
         $foodsaverHasAchievementTable->addIndex("valid_until");
 
         $foodsaverHasAchievementTable->create();
