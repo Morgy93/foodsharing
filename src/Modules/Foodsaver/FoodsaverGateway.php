@@ -165,7 +165,8 @@ class FoodsaverGateway extends BaseGateway
 			fs.geschlecht,
 			fs.privacy_policy_accepted_date,
 			fs.privacy_notice_accepted_date,
-			fs.last_login as last_activity
+			fs.last_login as last_activity,
+			fs.active
 
 		FROM	fs_foodsaver fs
 

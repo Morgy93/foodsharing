@@ -382,6 +382,7 @@ class Session
             'gender' => $fs['geschlecht'],
             'privacy_policy_accepted_date' => $fs['privacy_policy_accepted_date'],
             'privacy_notice_accepted_date' => $fs['privacy_notice_accepted_date'],
+            'verified_mail' => $fs['active'],
             'last_activity' => $fs['last_activity']
         ]);
         $this->set('buddy-ids', $fs['buddys']);
@@ -409,8 +410,8 @@ class Session
             'photo' => $fs['photo'],
             'rolle' => (int)$fs['rolle'],
             'verified' => (int)$fs['verified'],
-            'last_activity' => $fs['last_activity'],
-            'verified_mail' => $fs['active']
+            'verified_mail' => $fs['active'],
+            'last_activity' => $fs['last_activity']
         ];
         if ((int)$fs['rolle'] > 0) {
             if ($r = $this->regionGateway->listRegionsForBotschafter($fs['id'])
@@ -533,7 +534,7 @@ class Session
         return isset($_SESSION['mob']) && $_SESSION['mob'] == 1;
     }
 
-    public function updateLastActivity()
+    public function updateLastActivity(): void
     {
         $session_last_activity = $_SESSION['client']['last_activity'];
         if ($session_last_activity === '0000-00-00 00:00:00') {
