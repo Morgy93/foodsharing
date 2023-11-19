@@ -10,7 +10,7 @@ class ReportGateway extends BaseGateway
     /* Reporttype:  see Reporttype define
        ReasonId     : corresponding id to reason (came to late, didn't show for pickup etc.*/
 
-    public function addBetriebReport($reportedId, $reporterId, $rpType, $reasonId, $reason, $message, $storeId = 0): int
+    public function addBetriebReport($reportedId, $reporterId, $reportType, $reasonId, $reason, $message, $storeId = 0): int
     {
         return $this->db->insert(
             'fs_report',
