@@ -10,16 +10,16 @@ class ReportGateway extends BaseGateway
     /* Reporttype:  see Reporttype define
        ReasonId     : corresponding id to reason (came to late, didn't show for pickup etc.*/
 
-    public function addBetriebReport($reportedId, $reporterId, $reportType, $reasonId, $reason, $message, $storeId = 0): int
+    public function addBetriebReport(int $reportedId, int $reporterId, int $reportType, int $reasonId,  $reason, $message, int $storeId = 0): int
     {
         return $this->db->insert(
             'fs_report',
             [
-                'foodsaver_id' => (int)$reportedId,
-                'reporter_id' => (int)$reporterId,
-                'rp_type' => (int)$rpType,
-                'rp_reason_id' => (int)$reasonId,
-                'betrieb_id' => (int)$storeId,
+                'foodsaver_id' => $reportedId,
+                'reporter_id' => $reporterId,
+                'report_type' => $reportType,
+                'report_reason_id' => $reasonId,
+                'betrieb_id' => $storeId,
                 'time' => date('Y-m-d H:i:s'),
                 'committed' => 0,
                 'msg' => strip_tags($message),
@@ -33,7 +33,7 @@ class ReportGateway extends BaseGateway
         $this->db->delete('fs_report', ['id' => (int)$id]);
     }
 
-    public function getReportedSaver($id, $rpType): ?array
+    public function getReportedSaver(int $id, int $reportType): ?array
     {
         $stm = '
 			SELECT 	`id`,
@@ -53,8 +53,8 @@ class ReportGateway extends BaseGateway
 					r.id,
 	            	r.`msg`,
 	            	r.`tvalue`,
-	            	r.`rp_type`,
-	            	r.`rp_reason_id`,
+	            	r.`report_type`,
+	            	r.`report_reason_id`,
 					r.`time`,
 					UNIX_TIMESTAMP(r.`time`) AS time_ts,
 
@@ -74,12 +74,12 @@ class ReportGateway extends BaseGateway
 
 				WHERE
 					r.foodsaver_id = :id
-				and r.rp_type = :rpType
+				and r.report_type = :reportType
 
 	          	ORDER BY
 					r.`time` DESC
 			';
-            $fs['reports'] = $this->db->fetchAll($stm, [':id' => (int)$id, ':rpType' => (int)$rpType]);
+            $fs['reports'] = $this->db->fetchAll($stm, [':id' => $id, ':reportType' => $reportType]);
 
             return $fs;
         }
@@ -87,15 +87,15 @@ class ReportGateway extends BaseGateway
         return null;
     }
 
-    public function getReport($id, $rpType): ?array
+    public function getReport(int $id, int $reportType): ?array
     {
         $stm = '
 			SELECT
 				r.id,
             	r.`msg`,
             	r.`tvalue`,
-            	r.`rp_type`,
-            	r.`rp_reason_id`,
+            	r.`report_type`,
+            	r.`report_reason_id`,
 				r.`time`,
 				r.committed,
 				r.betrieb_id,
@@ -122,9 +122,9 @@ class ReportGateway extends BaseGateway
 
 			WHERE
 				r.`id` = :id
-			and r.rp_type = :rpType
+			and r.report_type = :reportType
 		';
-        $report = $this->db->fetch($stm, [':id' => (int)$id,':rpType' => (int)$rpType]);
+        $report = $this->db->fetch($stm, [':id' => $id,':reportType' => $reportTypeype]);
         if (!$report) {
             return null;
         }
@@ -173,7 +173,7 @@ class ReportGateway extends BaseGateway
             ->orderBy('r.time', 'DESC');
     }
 
-    public function getReportsByReporteeRegions($regions, ?array $excludeReportsWithUsers, ?array $onlyReportsWithUsers = null)
+    public function getReportsByReporteeRegions($regions,int $reportType,  ?array $excludeReportsWithUsers, ?array $onlyReportsWithUsers = null)
     {
         $query = $this->reportSelectDbal();
 
@@ -196,7 +196,7 @@ class ReportGateway extends BaseGateway
 
         // restrict access only to new reports to avoid social conflicts from old entries
         $query->andWhere('time >= \'2021-01-01\'');
-        $query->andWhere('rp_type', ReportType::GOALS_REPORT);
+        $query->andWhere('report_type', $reportType);
 
         return $query->fetchAllAssociative();
     }

@@ -1026,14 +1026,14 @@ class Foodsharing extends \Codeception\Module\Db
         return $params;
     }
 
-    public function addReport($reporterId, $reporteeId, $rpReasonId, $storeId = 0, $reason = null, $msg = null)
+    public function addReport(int $reporterId, int $reportedId, int $reportType, int $reportReasonId, $storeId = 0, $reason = null, $msg = null)
     {
         $params = [
             'reporter_id' => $reporterId,
-            'foodsaver_id' => $reporteeId,
+            'foodsaver_id' => $reportedId,
             'betrieb_id' => $storeId,
-            'reporttype' => ReportType::GOALS_REPORT,
-            'rp_report_id' => $rpReasonId,
+            'report_type' => $reportType,
+            'report_reason_id' => $reportReasonId,
             'time' => $this->toDateTime($this->faker->dateTimeBetween('first day of january this year', $max = 'now')),
             'msg' => $msg ?? $this->faker->text(500),
             'tvalue' => $reason ?? $this->faker->text(50),

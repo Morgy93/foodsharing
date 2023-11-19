@@ -105,7 +105,7 @@ class ReportRestController extends AbstractFOSRestController
             }
         }
 
-        $reports = $this->reportGateway->getReportsByReporteeRegions($regions, $excludeIDs, $onlyWithIds);
+        $reports = $this->reportGateway->getReportsByReporteeRegions($regions, ReportType::GOALS_REPORT, $excludeIDs, $onlyWithIds, );
 
         return $this->handleView($this->view(['data' => $reports], 200));
     }

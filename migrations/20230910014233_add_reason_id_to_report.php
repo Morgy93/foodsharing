@@ -10,7 +10,7 @@ final class AddReasonIdToReport extends AbstractMigration
     {
         $this->table('fs_report')
             ->addColumn(
-                'rp_reason_id',
+                'report_reason_id',
                 'integer',
                 [
                     'null' => false,
