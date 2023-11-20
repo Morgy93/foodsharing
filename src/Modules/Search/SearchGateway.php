@@ -346,7 +346,7 @@ class SearchGateway extends BaseGateway
                     foodsaver.email,
                     foodsaver.photo,
                     foodsaver.bezirk_id AS home_region,
-                    IF(MAX(NOT ISNULL(ambassador.foodsaver_id) AND region.type != ' . UnitType::WORKING_GROUP . ') = 1, foodsaver.handy, null) AS mobile,
+                    IF(MAX(NOT ISNULL(ambassador.foodsaver_id) AND region.type != " . UnitType::WORKING_GROUP . ') = 1, foodsaver.handy, null) AS mobile,
                     IF(MAX(NOT ISNULL(ambassador.foodsaver_id) AND region.type != ' . UnitType::WORKING_GROUP . ') = 1, foodsaver.nachname, null) AS last_name,
                     0 AS is_buddy
                 FROM fs_foodsaver AS foodsaver
@@ -355,7 +355,7 @@ class SearchGateway extends BaseGateway
                 JOIN fs_foodsaver_has_bezirk have_region ON have_region.bezirk_id = region.id
                 LEFT OUTER JOIN fs_botschafter ambassador ON ambassador.bezirk_id = region.id and ambassador.foodsaver_id = have_region.foodsaver_id 
                 WHERE have_region.foodsaver_id = ?
-                AND region.type IN (" . UnitType::CITY . ',' . UnitType::PART_OF_TOWN . ',' . UnitType::WORKING_GROUP . ')
+                AND region.type IN (' . UnitType::CITY . ',' . UnitType::PART_OF_TOWN . ',' . UnitType::WORKING_GROUP . ')
                 GROUP BY foodsaver.id
                 UNION ALL
             
