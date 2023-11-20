@@ -34,6 +34,7 @@
 - Use REST for statistic !2879 !2887 @fs_k
 - Modernized ContentControl to a Symfony controller !2876 @\_fridtjof_
 - Modernized TeamControl to a Symfony contorller !2881 @\_fridtjof_
+- Replaced the maps on basket pages with vue and removed vMap !2880 @alex.simm
 
 ## Dev/Test/CI stuff
 - removed CHANGELOG.md merge=union !2866 @chriswalg

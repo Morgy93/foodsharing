@@ -1161,6 +1161,49 @@ store:
     engellemek istiyorsanız, tarih ve saati belirterek bunu sağlamak için bu işlevi
     kullanabilirsiniz. Halihazırda görünen slotları silmek isterseniz, foodsaver yazılı
     olmadığı sürece doğrudan slota tıklayarak da bu işlemi gerçekleştirebilirsiniz.
+  log:
+    message:
+      6: "{actor}, {target}'ı aktif ekibe ekledi."
+      1: '{actor} katılma isteği gönderdi.'
+      14: "{actor}, {target}'ın {date} tarihinde ki kurtarım slotunu onayladı."
+      3: "{actor}, {target}'ın katılma isteğini kabul etti."
+      4: "{actor}, {target}'ı istekte bulunmadan ekibe ekledi."
+      11: '{actor}, {date} tarihinde ki kurtarma için kaydoldu.'
+      7: "{actor}, {target}'ı ekipden çıkardı."
+      13: "{actor}, {date} tarihinde ki kurtarımdan {target} 'i çıkardı."
+      13_with_reason: "{actor}, aşağıdaki mesajla {date} tarihinde ki kurtarımdan
+        {target}'i çıkardı"
+      8: '{actor} ekipden ayrıldı.'
+      16: '{actor} katılma isteğini geri çekti'
+      10: "{actor}, {target}'ı işletme sorumlusu olarak çıkardı."
+      12: '{actor}, {date} tarihinde ki kurtarımdan çıktı.'
+      2: "{actor}, {target}'ın katılma isteğini reddetti."
+      5: "{actor}, {target}'ı yedek listesine koydu."
+      9: "{actor}, işletme sorumlusu olarak {target}'ı girdi."
+      15: "{actor}, {target}'ın {date} tarihine ait pano gönderisini sildi"
+    type:
+      3: Üyelik isteklerini kabul et
+      2: Üyelik isteklerini reddedin
+      7: Foodsaver'ı ekipten çıkarın
+      14: Kurtarma Slotunu onayla
+      1: Üyelik başvurusunda bulunun
+      16: Üyelik başvurusunu geri çekin
+      8: Ekipten ayrıl
+      4: Foodsaver'ı istek olmadan ekibe ekleyin
+      10: İşletme sorumlularını çıkarın
+      6: Foodsaver'ı aktif ekibe ekleyin
+      12: Kurtarma listesinden çıkın
+      9: İşletme sorumlularını girin
+      5: Foodsaver'ı yedeğe alın
+      13: Kurtarım için çıkış yapılabilir
+      11: Kurtarmak için kaydolun
+      15: Pano kayıdını sil
+    max_entries_message: Maksimum 100 giriş görüntülenebilir.. Lütfen arama alanını
+      sınırlandırın.
+    log_types_placeholder: Görüntülenecek eylem türlerini seçin
+    search: Seçili eylemleri göster
+    selected_log_types: '{amount} işlem türü seçildi'
+    title: İşletme Tutanağı
 polls:
   title: Başlık
   new_poll: Yeni Anket oluştur

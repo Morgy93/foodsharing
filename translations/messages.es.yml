@@ -1266,6 +1266,11 @@ store:
     el menú “Ver información de la empresa”.
   not_verified: No estás verificado. Por lo tanto, aún no puedes ver las fechas de
     recogida ni los números de teléfono de los miembros del equipo.
+  log:
+    search: Ver las acciones seleccionadas
+    selected_log_types: '{amount} tipos de acción seleccionados'
+    title: Registro de las operaciones
+    log_types_placeholder: Seleccione las acciones que se mostrarán
 pickup:
   overview:
     status:

@@ -2009,6 +2009,49 @@ store:
   not_verified: You are unverified. Therefore you cannot see pickup slots and phone
     numbers of team members at the moment.
   requests: Open requests ({count})
+  log:
+    message:
+      6: '{actor} has added {target} to the active team.'
+      1: '{actor} would like to join the team.'
+      14: '{actor} has confirmed the pick-up request from {target} on {date}.'
+      3: '{actor} has accepted the membership application from {target}.'
+      4: '{actor} has added {target} manually.'
+      11: '{actor} signed up for the pick-up on {date}.'
+      7: '{actor} has removed {target} from the team.'
+      13: '{actor} has signed {target} out for the pickup on {date}.'
+      13_with_reason: '{actor} has cancelled the pickup from {target} on {date} with
+        the following message'
+      8: '{actor} has left the team.'
+      16: '{actor} has withdrawn the membership application'
+      10: '{actor} removed {target} as store coordinator.'
+      12: '{actor} signed out for the pick-up on {date}.'
+      2: '{actor} has rejected the membership request from {target}.'
+      5: '{actor} has put {target} on the jumper list.'
+      9: '{actor} enlisted {target} as store coordinator.'
+      15: '{actor} deleted the wall entry of {target} from {date}'
+    type:
+      3: accepted membership requests
+      2: rejected membership requests
+      7: removed from team
+      14: Slot confirmations
+      1: membership requests made
+      16: Withdrawals of membership applications
+      8: left team
+      4: added members without request
+      10: removed as store coordinator
+      6: moved to the active team
+      12: sign out for pickup
+      9: set as store coordinator
+      5: moved to jumpers
+      13: removed from pickup
+      11: register for pickup
+      15: deleted wall posts
+    max_entries_message: A maximum of 100 entries will be displayed. Please limit
+      the search range.
+    log_types_placeholder: Select action types to display
+    search: List selected actions
+    selected_log_types: '{amount} action types selected'
+    title: Store log
 search:
   mygroups: My groups
   mybuddies: My buddies
