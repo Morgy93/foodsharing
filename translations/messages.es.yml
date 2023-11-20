@@ -1271,6 +1271,32 @@ store:
     selected_log_types: '{amount} tipos de acción seleccionados'
     title: Registro de las operaciones
     log_types_placeholder: Seleccione las acciones que se mostrarán
+    message:
+      6: '{actor} ha añadido {target} al equipo.'
+      1: '{actor} ha enviado una solicitud de unión.'
+      3: '{actor} ha aceptado la solicitud de afiliación de {target}.'
+      4: '{actor} ha añadido a {target} al equipo sin solicitarlo.'
+      7: '{actor} ha eliminado a {target} del equipo.'
+      2: '{actor} ha rechazado la solicitud de afiliación de {target}.'
+      8: '{actor} ha dejado al equipo.'
+      10: '{actor} ha dado de baja a {target} como responsable de las operaciones.'
+    type:
+      3: Aceptar las solicitudes de unión
+      2: Rechazar las solicitudes de unión
+      7: Eliminar Foodsaver del equipo
+      14: Confirme la hora de la recogida
+      1: Enviar una solicitud de unión
+      16: Retirar la solicitud de afiliación
+      8: Abandonar el equipo
+      4: Añadir Foodsaver al equipo sin la petición
+      10: Eliminar al responsable
+      6: Añadir Foodsaver al equipo activo
+      12: Firmar para recoger
+      9: Indique al responsable
+      11: Regístrese para la recogida
+      15: Eliminar una entrada del tablón de anuncios
+    max_entries_message: Se mostrará un máximo de 100 entradas. Reduzca el rango de
+      la búsqueda.
 pickup:
   overview:
     status:
