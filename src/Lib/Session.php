@@ -382,7 +382,7 @@ class Session
             'gender' => $fs['geschlecht'],
             'privacy_policy_accepted_date' => $fs['privacy_policy_accepted_date'],
             'privacy_notice_accepted_date' => $fs['privacy_notice_accepted_date'],
-            'verified_mail' => $fs['active'],
+            'verified_mail' => $fs['verified_mail'],
             'last_activity' => $fs['last_activity']
         ]);
         $this->set('buddy-ids', $fs['buddys']);
@@ -410,7 +410,7 @@ class Session
             'photo' => $fs['photo'],
             'rolle' => (int)$fs['rolle'],
             'verified' => (int)$fs['verified'],
-            'verified_mail' => $fs['active'],
+            'verified_mail' => $fs['verified_mail'],
             'last_activity' => $fs['last_activity']
         ];
         if ((int)$fs['rolle'] > 0) {
