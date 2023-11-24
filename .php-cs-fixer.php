@@ -31,7 +31,11 @@ $config->setRules([
         'identical' => null,
     ],
     'single_line_comment_spacing' => [],
-    'ordered_imports' => ['sort_algorithm' => 'alpha', 'imports_order' => ['class', 'function', 'const']]
+    'ordered_imports' => ['sort_algorithm' => 'alpha', 'imports_order' => ['class', 'function', 'const']],
+    'global_namespace_import' => false,
+    'phpdoc_separation' => false,
+    'nullable_type_declaration_for_default_null_value' => false,
+    'operator_linebreak' => false,
 ])
     ->setFinder($finder);
 return $config;

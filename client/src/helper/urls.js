@@ -5,7 +5,7 @@ import phoneNumbers from './phone-numbers'
 const urls = {
   profile: (id) => `/profile/${id}`,
   profileNotes: (fsId) => `/profile/${fsId}/notes`,
-  academy: () => '/?page=content&sub=academy',
+  academy: () => '/content?sub=academy',
   application: (groupId, userId) => `/?page=application&bid=${groupId}&fid=${userId}`,
   basket: (basketId) => `/essenskoerbe/${basketId}`,
   baskets: () => '/essenskoerbe',
@@ -13,12 +13,14 @@ const urls = {
   blogAdd: () => '/?page=blog&sub=add',
   blogEdit: (blogId) => `/?page=blog&sub=edit&id=${blogId}`,
   blogList: () => '/?page=blog&sub=manage',
-  claims: () => '/?page=content&sub=forderungen',
-  communitiesAustria: () => '/?page=content&sub=communitiesAustria',
-  communitiesGermany: () => '/?page=content&sub=communitiesGermany',
-  communitiesSwitzerland: () => '/?page=content&sub=communitiesSwitzerland',
-  contact: () => '/?page=content&sub=contact',
-  contentEdit: () => '/?page=content',
+  claims: () => '/content?sub=forderungen',
+  communitiesAustria: () => '/content?sub=communitiesAustria',
+  communitiesGermany: () => '/content?sub=communitiesGermany',
+  communitiesSwitzerland: () => '/content?sub=communitiesSwitzerland',
+  contact: () => '/content?sub=contact',
+  contentEdit: () => '/content',
+  contentEditEntry: (id) => `/content?a=edit&id=${id}`,
+  contentNew: () => '/content?a=neu',
   conversations: (conversationId = null) => `/?page=msg${conversationId ? `&cid=${conversationId}` : ''}`,
   dashboard: () => '/?page=dashboard',
   dataprivacy: () => '/?page=legal',
@@ -26,17 +28,17 @@ const urls = {
   email: () => '/?page=email',
   event: (eventId) => `/?page=event&id=${eventId}`,
   eventEdit: (eventId) => `/?page=event&id=${eventId}&sub=edit`,
-  festival: () => '/?page=content&sub=festival',
+  festival: () => '/content?sub=festival',
   foodsharepoint: (fspId) => `/?page=fairteiler&sub=ft&id=${fspId}`,
   foodsaverEdit: (fsId) => `/?page=foodsaver&a=edit&id=${fsId}`,
-  fsstaedte: () => '/?page=content&sub=fsstaedte',
+  fsstaedte: () => '/content?sub=fsstaedte',
   home: () => '/',
   imprint: () => '/impressum',
-  infos: () => '/?page=content&sub=infohub',
+  infos: () => '/content?sub=infohub',
   infosCompany: () => '/fuer-unternehmen',
-  international: () => '/?page=content&sub=international',
-  joininfo: () => '/?page=content&sub=joininfo',
-  leeretonne: () => '/?page=content&sub=leeretonne',
+  international: () => '/content?sub=international',
+  joininfo: () => '/content?sub=joininfo',
+  leeretonne: () => '/content?sub=leeretonne',
   login: () => '/?page=login',
   logout: () => {
     const url = new URL(window.location.href)
@@ -45,18 +47,19 @@ const urls = {
   mailbox: (mailboxId = null) => `/?page=mailbox${mailboxId ? `&show=${mailboxId}` : ''}`,
   mailboxManage: () => '/?page=mailbox&a=manage',
   mailboxMailto: (email) => `/?page=mailbox&mailto=${email}`,
+  mailboxOldAttachment: (emailId, attachmentIndex) => `/?page=mailbox&a=dlattach&mid=${emailId}&i=${attachmentIndex}`,
   map: () => '/karte',
-  newsFromIT: () => '/?page=content&sub=newsFromIT',
+  newsFromIT: () => '/content?sub=newsFromIT',
   vision: () => '/ueber-uns',
   partner: () => '/partner',
   passwordReset: () => '/?page=login&sub=passwordReset',
   poll: (pollId) => `/?page=poll&id=${pollId}`,
   pollEdit: (pollId) => `/?page=poll&id=${pollId}&sub=edit`,
-  press: () => '/?page=content&sub=presse',
+  press: () => '/content?sub=presse',
   region: () => '/?page=region',
-  releaseNotes: () => '/?page=content&sub=releaseNotes',
+  releaseNotes: () => '/content?sub=releaseNotes',
   violations: (fsId) => `/?page=report&sub=foodsaver&id=${fsId}`,
-  security: () => '/?page=content&sub=security',
+  security: () => '/content?sub=security',
   settings: () => '/?page=settings',
   settingsCalendar: () => '/?page=settings&sub=calendar',
   settingsNotifications: () => '/?page=settings&sub=info',
@@ -66,10 +69,11 @@ const urls = {
   storeOwnList: () => '/?page=betrieb&a=own',
 
   team: () => '/team',
-  transparency: () => '/?page=content&sub=transparency',
+  transparency: () => '/content?sub=transparency',
+  upload: (uuid) => `/api/uploads/${uuid}`,
 
   workingGroupEdit: (groupId) => `/?page=groups&sub=edit&id=${groupId}`,
-  workshops: () => '/?page=content&sub=workshops',
+  workshops: () => '/content?sub=workshops',
   urlencode: (url) => encodeURIComponent(`${url}`),
   donations: () => 'https://spenden.foodsharing.de',
   circle_of_friends: () => 'https://spenden.foodsharing.de/freundeskreis',
@@ -84,7 +88,7 @@ const urls = {
 
   // region id
   forum: (regionId, subforumId = 0, threadId = null, postId = null, newThread = false) => {
-    const str = [`/?page=bezirk${regionId ? `&bid=${regionId}` : ''}`]
+    const str = [`/region${regionId ? `?bid=${regionId}` : ''}`]
     if (subforumId === 1) {
       str.push('&sub=botforum')
     } else {
@@ -106,28 +110,28 @@ const urls = {
   forumThread: (regionId, threadId, postId = null) => {
     return url('forum', regionId, 0, threadId, postId)
   },
-  events: (regionId) => `/?page=bezirk&bid=${regionId}&sub=events`,
+  events: (regionId) => `/region?bid=${regionId}&sub=events`,
   foodsaverList: (regionId) => `/?page=foodsaver&bid=${regionId}`,
-  foodsharepoints: (regionId) => `/?page=bezirk&bid=${regionId}&sub=fairteiler`,
-  members: (regionId) => `/?page=bezirk&bid=${regionId}&sub=members`,
-  options: (regionId) => `/?page=bezirk&bid=${regionId}&sub=options`,
+  foodsharepoints: (regionId) => `/region?bid=${regionId}&sub=fairteiler`,
+  members: (regionId) => `/region?bid=${regionId}&sub=members`,
+  options: (regionId) => `/region?bid=${regionId}&sub=options`,
   passports: (regionId) => `/?page=passgen&bid=${regionId}`,
-  pin: (regionId) => `/?page=bezirk&bid=${regionId}&sub=pin`,
+  pin: (regionId) => `/region?bid=${regionId}&sub=pin`,
   pollNew: (regionId) => `/?page=poll&bid=${regionId}&sub=new`,
-  polls: (regionId) => `/?page=bezirk&bid=${regionId}&sub=polls`,
-  region_forum: (regionId) => `/?page=bezirk&bid=${regionId}&sub=forum`,
+  polls: (regionId) => `/region?bid=${regionId}&sub=polls`,
+  region_forum: (regionId) => `/region?bid=${regionId}&sub=forum`,
   reports: (regionId = null) => regionId ? `/?page=report&bid=${regionId}` : '/?page=report',
-  statistic: (regionId) => `/?page=bezirk&bid=${regionId}&sub=statistic`,
+  statistic: (regionId) => `/region?bid=${regionId}&sub=statistic`,
   storeAdd: (regionId = null) => regionId ? `/?page=betrieb&a=new&bid=${regionId}` : '/?page=betrieb&a=new',
   storeEdit: (storeId) => `/?page=betrieb&a=edit&id=${storeId}`,
   stores: (regionId) => `/?page=betrieb&bid=${regionId}`,
-  wall: (regionId) => `/?page=bezirk&bid=${regionId}&sub=wall`,
+  wall: (regionId) => `/region?bid=${regionId}&sub=wall`,
   workingGroups: (regionId = null) => regionId ? `/?page=groups&p=${regionId}` : '/?page=groups',
   subGroups: (parentGroupId) => parentGroupId ? `/?page=groups&p=${parentGroupId}` : '/?page=groups',
 
   // whats new & changelog
-  changelog: () => '/?page=content&sub=changelog',
-  release_notes: () => '/?page=content&sub=releaseNotes',
+  changelog: () => '/content?sub=changelog',
+  release_notes: () => '/content?sub=releaseNotes',
 
   // phone
   phone_number: (phoneNumber, allowInvalid) => `tel:${phoneNumbers.callableNumber(phoneNumber, allowInvalid)}`,
@@ -167,7 +171,7 @@ const urls = {
 
   // Beta Testing
   beta: () => 'https://beta.foodsharing.de',
-  beta_testing_forum: () => 'https://beta.foodsharing.de/?page=bezirk&bid=734&sub=forum',
+  beta_testing_forum: () => 'https://beta.foodsharing.de/region?bid=734&sub=forum',
 
   // Gitlab
   git_revision: (revision) => `https://gitlab.com/foodsharing-dev/foodsharing/tree/${revision}`,

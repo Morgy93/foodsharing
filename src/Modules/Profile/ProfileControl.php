@@ -10,6 +10,7 @@ use Foodsharing\Modules\Mails\MailsGateway;
 use Foodsharing\Modules\Region\RegionGateway;
 use Foodsharing\Permissions\ProfilePermissions;
 use Foodsharing\Permissions\ReportPermissions;
+use Foodsharing\Utility\UriHelper;
 
 final class ProfileControl extends Control
 {
@@ -31,6 +32,7 @@ final class ProfileControl extends Control
         MailboxGateway $mailboxGateway,
         ReportPermissions $reportPermissions,
         ProfilePermissions $profilePermissions,
+        private readonly UriHelper $uriHelper,
     ) {
         $this->view = $view;
         $this->mailsGateway = $mailsGateway;
@@ -43,7 +45,7 @@ final class ProfileControl extends Control
 
         parent::__construct();
 
-        if (!$profileId = $this->uriInt(2)) {
+        if (!$profileId = $this->uriHelper->uriInt(2)) {
             $this->routeHelper->goPageAndExit('dashboard');
         }
 
@@ -80,7 +82,7 @@ final class ProfileControl extends Control
 
         // FOODSHARING/profile/12345/ | FOODSHARING/profile/12345/notes
         // ^uriStr(0)  ^(1)    ^(2)   | ^uriStr(0)  ^(1)    ^(2)  ^(3)
-        $subpage = $this->uriStr(3);
+        $subpage = $this->uriHelper->uriStr(3);
 
         if ($subpage === 'notes') {
             $this->orgaTeamNotes();

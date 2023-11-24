@@ -74,7 +74,7 @@ export default {
   font-weight: bolder;
 
   // Jackfrucht
-  &[data-id="2023-08"] { border-color: #d7c955; }
+  &[data-id="2023-09"] { border-color: #d7c955; }
 
   // Icecream
   &[data-id="2022-12"] { border-color: #76b5c5; }

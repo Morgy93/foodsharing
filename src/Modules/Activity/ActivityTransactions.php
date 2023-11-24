@@ -161,8 +161,6 @@ class ActivityTransactions
         $out = [];
 
         foreach ($updates as $u) {
-            $replyUrl = '/xhrapp?app=wallpost&m=quickreply&table=event&id=' . (int)$u['event_id'];
-
             $out[] = ActivityUpdate::create(
                 'event',
                 Carbon::createFromTimestamp($u['time_ts']),
@@ -172,7 +170,6 @@ class ActivityTransactions
                 '',
                 $u['fs_photo'] ?? '',
                 $u['gallery'] ?? [],
-                $replyUrl,
                 $u['fs_id'],
                 $u['fs_name'],
                 $u['event_id']
@@ -197,7 +194,6 @@ class ActivityTransactions
                 '',
                 $u['fs_photo'] ?? '',
                 $u['gallery'] ?? [],
-                null,
                 $u['fs_id'],
                 $u['fs_name'],
                 $u['fsp_id'],
@@ -243,7 +239,6 @@ class ActivityTransactions
                 $is_own ? '_own' : '',
                 $u['fs_photo'] ?? '',
                 $u['gallery'] ?? [],
-                null,
                 $u['fs_id'],
                 $u['fs_name'],
                 $u['fs_id']
@@ -344,7 +339,6 @@ class ActivityTransactions
                 $is_bot ? '_bot' : '',
                 $u['foodsaver_photo'] ?? '',
                 [],
-                null,
                 (int)$u['foodsaver_id'],
                 $u['foodsaver_name'],
                 (int)$u['id'],
@@ -374,7 +368,6 @@ class ActivityTransactions
                 $u['region_name'],
                 '',
                 $u['foodsaver_photo'] ?? '',
-                null,
                 null,
                 $u['foodsaver_id'],
                 $u['foodsaver_name'],

@@ -92,7 +92,7 @@ class StatsGateway extends BaseGateway
 					a.betrieb_id = b.id
 				LEFT OUTER JOIN fs_fetchweight w ON
 					b.abholmenge = w.id
-				WHERE a.date < NOW() AND a.confirmed = 1
+				WHERE a.date < NOW()
 				GROUP BY a.foodsaver_id
 			) as fetches ON fetches.id = fs.id
 			LEFT OUTER JOIN (
@@ -153,7 +153,7 @@ class StatsGateway extends BaseGateway
 					DATE_FORMAT(min(`date`),"%Y-%m-%d") as first_fetch,
 					DATE_FORMAT(max(`date`),"%Y-%m-%d") as last_fetch
 				FROM fs_abholer
-				WHERE `date` < NOW() AND confirmed = 1 AND betrieb_id > 0
+				WHERE `date` < NOW() AND betrieb_id > 0
 				GROUP BY betrieb_id, foodsaver_id
 			) as stats ON stats.foodsaver_id = team.foodsaver_id AND stats.betrieb_id = team.betrieb_id
 			SET

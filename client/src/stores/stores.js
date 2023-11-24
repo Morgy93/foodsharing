@@ -6,6 +6,7 @@ import {
   getStoreInformation,
   getStorePermissions,
   listStoreTeamMembershipRequests,
+  getStoreLog,
 } from '@/api/stores'
 import { getRegionOptions } from '@/api/regions'
 
@@ -16,6 +17,26 @@ export const STORE_TEAM_STATE = Object.freeze({
   SLEEPING: 3,
   MANAGE_ROLE: 4,
 })
+
+export const STORE_LOG_ACTION = Object.freeze({
+  REQUEST_TO_JOIN: 1,
+  REQUEST_DECLINED: 2,
+  REQUEST_APPROVED: 3,
+  ADDED_WITHOUT_REQUEST: 4,
+  MOVED_TO_JUMPER: 5,
+  MOVED_TO_TEAM: 6,
+  REMOVED_FROM_STORE: 7,
+  LEFT_STORE: 8,
+  APPOINT_STORE_MANAGER: 9,
+  REMOVED_AS_STORE_MANAGER: 10,
+  SIGN_UP_SLOT: 11,
+  SIGN_OUT_SLOT: 12,
+  REMOVED_FROM_SLOT: 13,
+  SLOT_CONFIRMED: 14,
+  DELETED_FROM_WALL: 15,
+  REQUEST_CANCELLED: 16,
+})
+
 export const store = Vue.observable({
   stores: [],
   metadata: {},
@@ -24,6 +45,7 @@ export const store = Vue.observable({
   permissions: null,
   regionPickupRule: {},
   applications: [],
+  log: [],
 })
 
 export const getters = {
@@ -100,6 +122,15 @@ export const getters = {
   getStoreApplications () {
     return store.applications
   },
+  isManager (userId) {
+    return store.storeMember.find(user => user.id === userId && user.verantwortlich === 1)
+  },
+  getFilteredStoreLog (actionIds, userId) {
+    return store.log.filter(entry =>
+      actionIds.includes(entry.action_id) &&
+      (userId === entry.acting_foodsaver.id),
+    )
+  },
 }
 
 export const mutations = {
@@ -123,6 +154,15 @@ export const mutations = {
   },
   async loadStoreApplications (storeId) {
     store.applications = await listStoreTeamMembershipRequests(storeId)
+  },
+  async loadStoreLog (storeId) {
+    const actions = [STORE_LOG_ACTION.SIGN_UP_SLOT]
+
+    const today = new Date()
+    const toDate = new Date(today)
+    toDate.setDate(today.getDate() + 30)
+
+    store.log = await getStoreLog(storeId, actions, [today, toDate])
   },
 }
 

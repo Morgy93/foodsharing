@@ -40,18 +40,11 @@
       #default
     >
       <search-results
-        v-if="isOpen"
+        v-if="showResults"
         class="results"
-        :users="results.users || []"
-        :regions="results.regions || []"
-        :stores="results.stores || []"
-        :food-share-points="results.foodSharePoints || []"
-        :my-groups="index.myGroups"
-        :my-regions="index.myRegions"
-        :my-stores="index.myStores"
-        :my-buddies="index.myBuddies"
-        :query="query"
+        :results="results"
         :is-loading="isLoading"
+        @close="$refs.searchBarModal.hide"
       />
       <div
         v-else
@@ -73,49 +66,30 @@
 </template>
 
 <script>
-// Components
 import SearchResults from '@/components/SearchBar/SearchResults'
-// Others
-import { instantSearch, instantSearchIndex } from '@/api/search'
+import { instantSearch } from '@/api/search'
 export default {
   components: { SearchResults },
   data () {
     return {
       query: '',
-      isOpen: false,
+      showResults: false,
       isLoading: false,
-      isIndexLoaded: false,
-      results: {
-        stores: [],
-        users: [],
-        regions: [],
-        foodSharePoints: [],
-      },
-      index: {
-        myStores: [],
-        myGroups: [],
-        myRegions: [],
-        myBuddies: [],
-      },
+      results: undefined,
     }
   },
   watch: {
     query (query) {
-      if (!this.isIndexLoaded) {
-        this.fetchIndex()
-      }
-      if (query.trim().length > 2) {
-        this.isOpen = true
+      const totalQueryLength = query.split(/[,;+.\s]+/g).join('').length
+      if (totalQueryLength > 2) {
+        this.showResults = true
         this.delayedFetch()
-      } else if (query.trim().length) {
-        clearTimeout(this.timeout)
-        this.isOpen = true
-        this.isLoading = false
-      } else {
-        clearTimeout(this.timeout)
-        this.isOpen = false
-        this.isLoading = false
+        return
       }
+      clearTimeout(this.timeout)
+      this.showResults = false
+      this.isLoading = false
+      this.results = undefined
     },
   },
   methods: {
@@ -123,34 +97,23 @@ export default {
       this.$refs.searchField.focus()
     },
     delayedFetch () {
+      this.isLoading = true
       if (this.timeout) {
         clearTimeout(this.timeout)
-        this.timer = null
       }
       this.timeout = setTimeout(() => {
         this.fetch()
-      }, 200)
-    },
-    close () {
-      this.isOpen = false
+      }, 500)
     },
     async fetch () {
       const curQuery = this.query
-      this.isLoading = true
-      const res = await instantSearch(curQuery)
+      const results = await instantSearch(curQuery)
       if (curQuery !== this.query) {
         // query has changed, throw away this response
         return false
       }
-      this.results = res
+      this.results = results
       this.isLoading = false
-    },
-    async fetchIndex () {
-      this.isIndexLoaded = true
-      this.index = await instantSearchIndex()
-    },
-    clickOutListener () {
-      this.isOpen = false
     },
   },
 }
@@ -202,9 +165,10 @@ export default {
   margin-bottom: 0;
 }
 
-::v-deep.results .dropdown-item,
-::v-deep.results .dropdown-header {
+::v-deep.results > .entry > .dropdown-item,
+::v-deep.results > .entry > .dropdown-header {
   padding-left: 0;
+  padding-right: 0;
 }
 
 </style>

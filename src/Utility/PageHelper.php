@@ -88,7 +88,13 @@ final class PageHelper
             $bodyClasses[] = 'fs';
         }
 
-        $bodyClasses[] = 'page-' . $this->routeHelper->getPage();
+        if ($this->routeHelper->isUsingLegacyController()) {
+            $page = $this->routeHelper->getPage();
+        } else {
+            $page = $this->routeHelper->getSymfonyRoute();
+        }
+
+        $bodyClasses[] = 'page-' . $page;
 
         return [
             'head' => $this->getHeadData(),
@@ -96,7 +102,7 @@ final class PageHelper
             'bodyClasses' => $bodyClasses,
             'serverDataJSON' => json_encode($this->getServerData()),
             'menu' => $this->getMenu(),
-            'route' => $this->routeHelper->getPage(),
+            'route' => $page,
             'dev' => FS_ENV == 'dev',
             'hidden' => $this->hidden,
             'isMob' => $this->session->isMob(),

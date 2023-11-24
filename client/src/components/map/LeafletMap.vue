@@ -3,7 +3,7 @@
 <template>
   <l-map
     ref="map"
-    style="height: 300px"
+    :style="mapStyle"
     :zoom="zoom"
     :center="[center.lat, center.lon]"
     :bounds="bounds"
@@ -44,6 +44,7 @@ export default {
     zoom: { type: Number, required: true },
     center: { type: Object, required: true },
     bounds: { type: Array, default: null },
+    height: { type: Number, default: 300 },
   },
   data () {
     return {
@@ -60,6 +61,9 @@ export default {
     useVectorMap () {
       // return isWebGLSupported()
       return false
+    },
+    mapStyle () {
+      return `height: ${this.height}px`
     },
   },
   methods: {

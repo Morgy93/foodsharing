@@ -142,18 +142,12 @@
           :label="$i18n('poll.new_poll.description')"
           class="mb-4"
         >
-          <div
-            class="mb-2 ml-2"
-            v-html="$i18n('forum.markdown_description')"
-          />
-          <b-form-textarea
-            id="input-description"
-            v-model="$v.description.$model"
-            :placeholder="$i18n('poll.new_poll.description_placeholder')"
-            trim
+          <MarkdownInput
+            :rows="5"
+            :value="$v.description.$model"
             :state="$v.description.$error ? false : null"
-            rows="5"
-            class="ml-1"
+            :placeholder="$i18n('poll.new_poll.description_placeholder')"
+            @update:value="newValue => $v.description.$model = newValue"
           />
           <div
             v-if="$v.description.$error"
@@ -250,28 +244,12 @@
 </template>
 
 <script>
-
-import {
-  BForm,
-  BFormGroup,
-  BFormInput,
-  BFormRadio,
-  BFormDatepicker,
-  BFormTimepicker,
-  BFormTextarea,
-  BFormSpinbutton,
-  BFormCheckbox,
-  BButton,
-  BFormRow,
-  BCol,
-  BModal,
-  BAlert,
-} from 'bootstrap-vue'
 import { createPoll } from '@/api/voting'
 import { pulseError } from '@/script'
 import dataFormatter from '@/helper/date-formatter'
 import i18n, { locale } from '@/helper/i18n'
 import { required, minLength } from 'vuelidate/lib/validators'
+import MarkdownInput from '@/components/Markdown/MarkdownInput.vue'
 
 const EDIT_TIME_HOURS = 1
 const DEFAULT_START_TIME_HOURS = 2
@@ -291,22 +269,7 @@ function areEntriesUnique (array) {
 }
 
 export default {
-  components: {
-    BForm,
-    BFormGroup,
-    BFormInput,
-    BFormRadio,
-    BFormDatepicker,
-    BFormTimepicker,
-    BFormTextarea,
-    BFormSpinbutton,
-    BFormCheckbox,
-    BButton,
-    BFormRow,
-    BCol,
-    BModal,
-    BAlert,
-  },
+  components: { MarkdownInput },
   props: {
     region: {
       type: Object,
@@ -421,7 +384,7 @@ export default {
       e.preventDefault()
       this.isLoading = true
       try {
-        const poll = await createPoll(this.region.id, this.name, this.description, this.startDateTime, this.endDateTime, this.scope, this.type, this.options, this.shuffleOptions, true)
+        const poll = await createPoll(this.region.id, this.name, this.description.trim(), this.startDateTime, this.endDateTime, this.scope, this.type, this.options, this.shuffleOptions, true)
         window.location = this.$url('poll', poll.id)
       } catch (e) {
         pulseError(i18n('error_unexpected') + ': ' + e.message)

@@ -41,7 +41,7 @@
     >
       <div
         v-if="regionId > 0"
-        v-html="$i18n('settings.name_change.foodsaver_info', {link: `href=/?page=bezirk&bid=${regionId}&sub=forum`})"
+        v-html="$i18n('settings.name_change.foodsaver_info', {link: `href=/region?bid=${regionId}&sub=forum`})"
       />
       <div
         v-else

@@ -60,7 +60,7 @@
         <div class="desc-block-title mb-2 py-1">
           {{ $i18n('store.attribution') }}
         </div>
-        <span v-if="allowedToMentionInPublic">{{ $i18n('store.may_referred_to_in_public') }}</span>
+        <span v-if="press">{{ $i18n('store.may_referred_to_in_public') }}</span>
         <span v-else>{{ $i18n('store.may_not_referred_to_in_public') }}</span>
       </div>
       <div
@@ -172,9 +172,6 @@ export default {
     },
     weightTypes () {
       return getters.getStoreWeightTypes()?.map(item => ({ value: item.id, text: item.name }))
-    },
-    allowedToMentionInPublic () {
-      return this.press === 1
     },
     useRegionPickupRules () {
       return this.regionPickupRules === true && this.regionPickupRuleActive === true

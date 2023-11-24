@@ -15,10 +15,24 @@
         />
       </div>
       <div class="releasefield__links">
+        {{ $i18n('dashboard.release.for_release_notes') }}
         <a
           class="releasefield__link"
           :href="$url('release_notes')"
           v-text="$i18n('menu.entry.release-notes')"
+        /><br>
+        {{ $i18n('dashboard.release.for_news_from_it') }}
+        <a
+          class="releasefield__link"
+          :href="$url('newsFromIT')"
+          v-text="$i18n('navigation.news_from_it')"
+        />
+        <br>
+        {{ $i18n('dashboard.release.for_support') }}
+        <a
+          class="releasefield__link"
+          :href="$url('contact')"
+          v-text="$i18n('navigation.contact')"
         />
       </div>
     </div>
@@ -41,18 +55,16 @@ export default {
   },
   computed: {
     isSet () {
-      return JSON.parse(localStorage.getItem(this.tag))
+      return localStorage.getItem(this.tag)
     },
 
     isNew () {
-      const storage = JSON.parse(localStorage.getItem(`${this.tag}_time`))
-      return new Date(this.time) > new Date(storage)
+      return ReleaseData.version !== localStorage.getItem(this.tag)
     },
   },
   created () {
     if (this.isNew) {
       localStorage.removeItem(this.tag)
-      localStorage.removeItem(`${this.tag}_time`)
     }
   },
   mounted () {
@@ -62,8 +74,7 @@ export default {
   },
   methods: {
     setSeen () {
-      localStorage.setItem(this.tag, JSON.stringify(true))
-      localStorage.setItem(`${this.tag}_time`, JSON.stringify(new Date()))
+      localStorage.setItem(this.tag, ReleaseData.version)
     },
     close () {
       this.setSeen()

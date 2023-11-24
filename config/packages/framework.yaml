@@ -40,3 +40,7 @@ fos_rest:
 
     serializer:
         serialize_null: true
+
+doctrine:
+    dbal:
+        url: !php/const DATABASE_URL

@@ -67,6 +67,7 @@ define('CNT_LEFT', 4);
 define('CNT_OVERTOP', 5);
 
 define('DSN', 'mysql:host=' . DB_HOST . ';dbname=' . DB_DB . ';charset=utf8mb4');
+define('DATABASE_URL', 'mysql://' . DB_USER . ':' . DB_PASS . '@' . DB_HOST . '/' . DB_DB . '?charset=utf8mb4');
 
 // define('WEBPUSH_PUBLIC_KEY', 'TO CHANGE AT DEPLOYMENT');
 // define('WEBPUSH_PRIVATE_KEY', 'TO CHANGE AT DEPLOYMENT');

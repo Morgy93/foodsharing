@@ -4,7 +4,7 @@ namespace Foodsharing\Lib;
 
 class Routing
 {
-    private static $classes = [
+    private const CLASSES = [
         'activity' => 'Activity',
         'application' => 'Application',
         'basket' => 'Basket',
@@ -12,7 +12,6 @@ class Routing
         'blog' => 'Blog',
         'buddy' => 'Buddy',
         'bcard' => 'BusinessCard',
-        'content' => 'Content',
         'dashboard' => 'Dashboard',
         'email' => 'Email',
         'event' => 'Event',
@@ -31,7 +30,6 @@ class Routing
         'poll' => 'Voting',
         'profile' => 'Profile',
         'quiz' => 'Quiz',
-        'bezirk' => 'Region',
         'region' => 'RegionAdmin',
         'register' => 'Register',
         'relogin' => 'Relogin',
@@ -41,21 +39,45 @@ class Routing
         'statistics' => 'Statistics',
         'betrieb' => 'Store',
         'fsbetrieb' => 'StoreUser',
-        'team' => 'Team',
         'wallpost' => 'WallPost',
         'groups' => 'WorkGroup',
         'store' => 'Store',
-        'chain' => 'StoreChain'
+        'chain' => 'StoreChain',
     ];
 
-    public static $fqcnPrefix = '\\Foodsharing\\Modules\\';
+    private const PORTED = [
+        'content',
+        'team',
+        'bezirk',
+    ];
 
-    public static function getClassName($appName, $type = 'Xhr')
+    private const RENAMES = [
+        'bezirk' => 'region'
+    ];
+
+    public const FQCN_PREFIX = '\\Foodsharing\\Modules\\';
+
+    public static function getClassName(string $appName, $type = 'Xhr'): ?string
     {
-        if (!array_key_exists($appName, self::$classes)) {
+        if (!array_key_exists($appName, self::CLASSES)) {
             return null;
         }
 
-        return self::$fqcnPrefix . self::$classes[$appName] . '\\' . self::$classes[$appName] . $type;
+        return self::FQCN_PREFIX . self::CLASSES[$appName] . '\\' . self::CLASSES[$appName] . $type;
+    }
+
+    public static function getModuleName(string $appName): ?string
+    {
+        return self::CLASSES[$appName];
+    }
+
+    public static function isPorted(string $pageName): bool
+    {
+        return in_array($pageName, self::PORTED);
+    }
+
+    public static function getPortedName(string $pageName): string
+    {
+        return array_key_exists($pageName, self::RENAMES) ? self::RENAMES[$pageName] : $pageName;
     }
 }

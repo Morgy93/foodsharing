@@ -9,7 +9,15 @@
       static
       centered
       scrollable
+      size="lg"
     >
+      <b-alert
+        show
+        variant="info"
+      >
+        <i class="fas fa-info-circle" />
+        {{ $i18n('store.request.air_line') }}
+      </b-alert>
       <div
         v-for="(request, index) in requests"
         :key="request.id"
@@ -36,6 +44,9 @@
           <a :href="$url('profile', request.id)">
             {{ request.name }}
           </a>
+          <p>
+            {{ formatDistance(request.distance) }}
+          </p>
         </div>
 
         <b-button-group class="request-actions my-1" size="sm">
@@ -115,6 +126,15 @@ export default {
       } finally {
         hideLoader()
       }
+    },
+    formatDistance (distance) {
+      if (distance === null) {
+        return this.$i18n('store.request.distance_unknown')
+      }
+      if (distance === 0) {
+        return this.$i18n('store.request.distance_close')
+      }
+      return this.$i18n('store.request.distance', { distance })
     },
   },
 }

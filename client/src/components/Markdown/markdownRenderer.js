@@ -21,6 +21,7 @@ const md = markdownIt('zero', {
     'list',
     'fence',
     'code',
+    'escape',
   ])
 
 export default md

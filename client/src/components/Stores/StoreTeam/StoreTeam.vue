@@ -389,12 +389,10 @@ export default {
       const fields = [
         { key: 'ava', class: 'col-ava', sortable: true },
         { key: 'info', class: 'col-info' },
+        { key: 'call', class: 'col-call' },
       ]
       if (this.wSM) {
         fields.push({ key: 'mobinfo', class: 'col-mobinfo' })
-      }
-      if (this.wXS || this.wSM) {
-        fields.push({ key: 'call', class: 'col-call' })
       }
       return fields
     },
@@ -421,9 +419,6 @@ export default {
     },
     activeText () {
       return this.activeMembers === 1 ? this.$i18n('store.one_active') : this.$i18n('store.active')
-    },
-    toogleIsReducedStateText () {
-      return this.isReduced ? this.$i18n('store.sm.toogleIsReducedStateOpen') : this.$i18n('store.sm.toogleIsReducedStateClosed')
     },
     activeFilterText () {
       switch (this.activeFilter) {
