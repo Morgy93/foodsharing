@@ -86,7 +86,7 @@
       </b-alert>
 
       <MarkdownInput
-        :initial-value="form.desc"
+        :value="form.desc"
         :state="!form.desc.includes('<')"
         :rows="6"
         @update:value="newValue => form.desc = newValue"

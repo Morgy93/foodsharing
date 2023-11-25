@@ -34,7 +34,7 @@
             :options="[
               {hide: !canEdit, icon:'pen', textKey: 'quiz.question_options.edit', callback: () => $bvModal.show(`editQuestionModal-${i}`)},
               {hide: !canEdit, icon:'plus-circle', textKey: 'quiz.question_options.add_answer', callback: () => addAnswerHandler(`addAnswerModal-${i}`)},
-              {hide: !question.comment_count, icon:'comments', textKey: 'quiz.question_options.show_comments', callback: () => console.log(2)},
+              {hide: !question.comment_count, icon:'comments', textKey: 'quiz.question_options.show_comments', callback: () => console.log(question)},
               {hide: !canEdit, icon:'trash', textKey: 'quiz.question_options.delete', callback: () => deleteQuestionHandler(question.id)},
             ]"
             :float="false"
@@ -106,14 +106,9 @@
               </span>
             </span>
           </p>
-
-          <Wall
+          <!-- <Wall
             target="bezirk"
             :target-id="3818"
-          />
-          <!-- <Wall
-            target="question"
-            :target-id="question.id"
           /> -->
         </b-card-body>
       </b-collapse>
@@ -144,7 +139,6 @@
 <script>
 import { deleteAnswer, deleteQuestion, getQuestions } from '@/api/quiz'
 import Container from '@/components/Container/Container.vue'
-import Wall from '@/components/Wall/Wall.vue'
 import OverflowMenu from '@/components/OverflowMenu.vue'
 import EditQuestionModal from './EditQuestionModal.vue'
 import EditAnswerModal from './EditAnswerModal.vue'
@@ -152,7 +146,6 @@ import EditAnswerModal from './EditAnswerModal.vue'
 export default {
   components: {
     Container,
-    Wall,
     OverflowMenu,
     EditQuestionModal,
     EditAnswerModal,
