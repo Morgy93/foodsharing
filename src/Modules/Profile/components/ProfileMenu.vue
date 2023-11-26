@@ -44,12 +44,20 @@
         <i class="fas fa-pencil-alt fa-fw" /> {{ $i18n('profile.nav.edit') }}
       </b-list-group-item>
       <b-list-group-item
-        v-if="fsId !== fsIdSession && isNoBuddy && !isBuddy"
+        v-if="fsId !== fsIdSession && buddyType === buddyTypes.NO_BUDDY"
         type="button"
         class="list-group-item list-group-item-action"
-        @click="trySendBuddyRequest(fsId)"
+        @click="sendBuddyRequest(fsId)"
       >
-        <i class="fas fa-user fa-fw" /> {{ $i18n('profile.nav.buddy', { name: foodSaverName }) }}
+        <i class="fas fa-user-friends fa-fw" /> {{ $i18n('profile.nav.buddy', { name: foodSaverName }) }}
+      </b-list-group-item>
+      <b-list-group-item
+        v-if="fsId !== fsIdSession && buddyType !== buddyTypes.NO_BUDDY"
+        type="button"
+        class="list-group-item list-group-item-action"
+        @click="removeBuddyRequest(fsId)"
+      >
+        <i class="fas fa-user-slash fa-fw" /> {{ $i18n('profile.nav.remove_buddy', { name: foodSaverName }) }}
       </b-list-group-item>
       <b-list-group-item
         v-if="mayHistory"
@@ -149,7 +157,7 @@ import conversationStore from '@/stores/conversations'
 import MediationRequest from './MediationRequest'
 import ReportRequest from './ReportRequest'
 import ProfileHistoryModal from './ProfileHistoryModal'
-import { sendBuddyRequest } from '@/api/buddy'
+import { sendBuddyRequest, removeBuddyRequest } from '@/api/buddy'
 import i18n from '@/helper/i18n'
 
 export default {
@@ -161,7 +169,7 @@ export default {
     isSleeping: { type: Boolean, default: false },
     isOnline: { type: Boolean, default: false },
     foodSaverName: { type: String, default: '' },
-    isNoBuddy: { type: Boolean, default: false },
+    initialBuddyType: { type: Number, default: 0 },
     mayAdmin: { type: Boolean, default: false },
     mayHistory: { type: Boolean, default: false },
     noteCount: { type: Number, default: 0 },
@@ -184,7 +192,12 @@ export default {
   },
   data () {
     return {
-      isBuddy: false,
+      buddyType: this.initialBuddyType,
+      buddyTypes: {
+        NO_BUDDY: -1,
+        REQUESTED: 0,
+        BUDDY: 1,
+      },
     }
   },
   computed: {
@@ -199,17 +212,46 @@ export default {
     openChat (fsId) {
       conversationStore.openChatWithUser(fsId)
     },
-    async trySendBuddyRequest (userId) {
+    async sendBuddyRequest (userId) {
+      const confimation = await this.$bvModal.msgBoxConfirm(this.$i18n('buddy.send.confirm_text'), {
+        title: this.$i18n('buddy.send.confirm_title', { name: this.foodSaverName }),
+        // okVariant: 'danger',
+        okTitle: this.$i18n('button.send'),
+        cancelTitle: this.$i18n('button.cancel'),
+        hideHeaderClose: false,
+        centered: true,
+      })
+      if (!confimation) return
       try {
-        const value = await sendBuddyRequest(userId)
-        if (value) {
+        const request = await sendBuddyRequest(userId)
+        if (request.isBuddy) {
           pulseInfo(i18n('buddy.request_accepted'))
+          this.buddyType = this.buddyTypes.BUDDY
         } else {
           pulseInfo(i18n('buddy.request_sent'))
-          this.isBuddy = true
+          this.buddyType = this.buddyTypes.REQUESTED
         }
       } catch (err) {
         pulseError(i18n('error_unexpected'))
+        this.buddyType = this.buddyTypes.NO_BUDDY
+      }
+    },
+    async removeBuddyRequest (userId) {
+      const confimation = await this.$bvModal.msgBoxConfirm(this.$i18n('buddy.remove.confirm_text'), {
+        title: this.$i18n('buddy.remove.confirm_title', { name: this.foodSaverName }),
+        okVariant: 'danger',
+        okTitle: this.$i18n('button.send'),
+        cancelTitle: this.$i18n('button.cancel'),
+        hideHeaderClose: false,
+        centered: true,
+      })
+      if (!confimation) return
+      try {
+        await removeBuddyRequest(userId)
+        this.buddyType = this.buddyTypes.NO_BUDDY
+      } catch (err) {
+        pulseError(i18n('error_unexpected'))
+        this.buddyType = this.buddyTypes.REQUESTED
       }
     },
     OpenHistory (type) {
