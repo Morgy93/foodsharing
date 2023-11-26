@@ -31,14 +31,14 @@ class BuddyGateway extends BaseGateway
         return $this->db->fetchAllValuesByCriteria('fs_buddy', 'buddy_id', ['foodsaver_id' => $fsId, 'confirmed' => 1]);
     }
 
-    public function removeRequest($buddyId, $fsId): void
+    public function removeRequest(int $foodsaverId, int $buddyId): void
     {
-        $this->db->delete('fs_buddy', ['foodsaver_id' => (int)$buddyId, 'buddy_id' => (int)$fsId]);
+        $this->db->delete('fs_buddy', ['foodsaver_id' => $foodsaverId, 'buddy_id' => $buddyId]);
     }
 
-    public function buddyRequestedMe($buddyId, $fsId): bool
+    public function buddyRequestedUser($buddyId, $userId): bool
     {
-        if ($this->db->exists('fs_buddy', ['foodsaver_id' => (int)$buddyId, 'buddy_id' => (int)$fsId])) {
+        if ($this->db->exists('fs_buddy', ['foodsaver_id' => (int)$buddyId, 'buddy_id' => (int)$userId])) {
             return true;
         }
 
@@ -67,6 +67,14 @@ class BuddyGateway extends BaseGateway
             'foodsaver_id' => $buddyId,
             'buddy_id' => $foodsaverId,
             'confirmed' => BuddyId::BUDDY
+        ]);
+    }
+
+    public function unconfirmBuddy(int $buddyId, int $foodsaverId) {
+        $this->db->update('fs_buddy', [
+            'foodsaver_id' => $foodsaverId,
+            'buddy_id' => $buddyId,
+            'confirmed' => BuddyId::REQUESTED
         ]);
     }
 }
