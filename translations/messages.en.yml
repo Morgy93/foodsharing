@@ -823,6 +823,11 @@ forum:
   new_thread: Compose new thread
   deleted_user: deleted user
   not_found: This thread does not exist.
+  mail_confirmation:
+    text: Do you really want this new post to be sent as an email to all members of
+      this working group or district? You should only do this if your request affects
+      everyone and is so important that everyone should be aware of it.
+    title: Really send e-mail notification?
 timepicker:
   labelNowButton: Now
   labelCloseButton: Close
@@ -860,7 +865,7 @@ calendar:
 pickup:
   signout_confirm: Are you sure?
   copyNumber: Copy phone number
-  open_profile: Open profile
+  open_profile: Profile of
   confirm: Confirm
   call: Call
   team_message_success: Message was successfully sent to the team
@@ -1109,6 +1114,8 @@ terminology:
     "2": Store Coordinator
     "3": Ambassador
     "4": Orga person
+  no_pickups: none
+  previous_pickups: Previous pick-ups
 login:
   pwreset:
     bread: Reset password
@@ -1915,7 +1922,7 @@ store:
     example in food baskets, on Facebook, or in the press).
   memberSince: 'In team since: {date}'
   lastPickupShort: last {date}
-  lastPickup: 'Last pick-up: {date}'
+  lastPickup: 'Last pick-up:'
   jumperSince: 'Standby since: {date}'
   tooltip_managing: You are responsible for this store
   not-in-team: You are not a member of this store’s team yet.
@@ -2052,6 +2059,8 @@ store:
     search: List selected actions
     selected_log_types: '{amount} action types selected'
     title: Store log
+  signInDateTime: Sign-in time
+  slot_state: Slot state
 search:
   mygroups: My groups
   mybuddies: My buddies
@@ -2066,8 +2075,33 @@ search:
   thread-title-only: Only titles are searched, not the content of the threads.
   user_search:
     placeholder: Name or ID
-  informations: You can search for people, groups, stores, regions, and Food-Share
-    Points.
+  informations: You can search for people, groups, stores, regions, chats, threads,
+    and Food-Share Points.
+  results:
+    region:
+      ambassador_tooltip: You are an ambassador for this district
+      home_region_tooltip: This is your home district
+      member_tooltip: You are a member of this district
+    working_group:
+      member_tooltip: You are a member of this working group
+      admin_tooltip: You are admin of this working group
+    thread:
+      closed_tooltip: Thread is closed
+      forum: Forum
+      sticky_tooltip: Thread is pinned
+      ambassador_forum: Ambassadors’ Forum
+      last_post: last post
+    in: in
+    chat:
+      chat_with: Chat with {names}
+      chat_with_others: others
+    user:
+      no_home_region: No home district
+    store:
+      manager_tooltip: You are responsible for this store
+      jumper_tooltip: You are on the standby list for this store
+      member_tooltip: You are a member of this store team
+    from: from
 month:
   short:
     "12": Dec.
@@ -3238,6 +3272,8 @@ globals:
     my_groups: My groups
     persons: Persons
     my_persons: My friends
+    threads: Threads
+    chats: Chats
   save: Save
   close: Close
   select: Please select …

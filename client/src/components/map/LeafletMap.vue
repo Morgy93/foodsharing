@@ -32,8 +32,9 @@ import { LMap, LTileLayer } from 'vue2-leaflet'
 // import 'mapbox-gl-leaflet'
 // import 'mapbox-gl/dist/mapbox-gl.css'
 import 'leaflet/dist/leaflet.css'
-import { MAP_ATTRIBUTION, MAP_RASTER_TILES_URL } from '@/consts'
+import { MAP_ATTRIBUTION } from '@/consts'
 // import { isWebGLSupported } from '@/utils'
+import { getMapRasterTilesUrl } from '@/mapUtils'
 
 // window.mapboxgl = mapboxgl // mapbox-gl-leaflet expects this to be global
 
@@ -54,7 +55,7 @@ export default {
         accessToken: 'no-token',
         style: MAP_TILES_URL,
       }, */
-      tileUrl: MAP_RASTER_TILES_URL,
+      tileUrl: getMapRasterTilesUrl(),
     }
   },
   computed: {

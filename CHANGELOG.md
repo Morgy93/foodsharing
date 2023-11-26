@@ -13,6 +13,7 @@
 - The source code of forum posts can now be copied !2913 @AntonBallmaier
 - Added confirmation modal to sending mail when creating a new thread !2877 @AntonBallmaier
 - Buddies can now be remove !2919 @AntonBallmaier
+- If youre phone number is invalid, you get informed about that on the dashboard now !2916 @AntonBallmaier
 
 ## Changes
 - Changed team state translation from full to closed !2831 @chriswalg
@@ -24,6 +25,8 @@
 - Reworked all search functionality !2886 @AntonBallmaier
 - Markdown in forum posts is now rendered in the front end to reduce inconsistencies !2913 !2917 @AntonBallmaier
 - When adding buddies there is now a confirmation pop-up !2919 @AntonBallmaier
+- Change the direction of score voting !2920 @AntonBallmaier
+- Select no value by default in score voting !2920 @AntonBallmaier
 
 ## Bugfixes
 - Added error handling for cache helper for bell notifications or other requests !2869 @chriswalg
@@ -51,6 +54,7 @@
 - Show CS Fixer results in gitlab !2867 @\_fridtjof_
 - Added the Symfony profiler and debug toolbar !1580 @\_fridtjof_
 - Added feature toggles !2633 @martincodes-de
+- The backend now provides the map tile api key for the client #1074 !2621 @alex.simm
 
 ## Development documentation
 

@@ -1111,7 +1111,7 @@ store:
   all_of_my_stores: Tüm işletmelerim
   isManager: Bu işletmeden sorumlu.
   mayAmb: Elçi sınavını geçti.
-  may_not_referred_to_in_public: "Bu şirketi asla açık açık dile getirmeyin (misal:
+  may_not_referred_to_in_public: "Bu şirketi asla açıkdan dile getirmeyin (misal:
     yemek sepetlerinde, Facebook'da veya basın başvurularında)."
   tooltip_yellow: Önümüzdeki beş gün içinde ki açık alımlar
   tooltip_orange: Önümüzdeki üç gün içinde ki açık alımlar
@@ -1121,7 +1121,7 @@ store:
   ownStores: Kendi işletmeleriniz
   teamName: '{storeTitle}-Ekibi'
   memberSince: Şu tarihten beri ekipte {date}
-  lastPickup: 'Son alım tarihi: {date}'
+  lastPickup: 'Son alım tarihi:'
   chat:
     jumper: Yedek listesinde olanlara mesaj
     team: Ekibe mesaj
@@ -1204,6 +1204,8 @@ store:
     search: Seçili eylemleri göster
     selected_log_types: '{amount} işlem türü seçildi'
     title: İşletme Tutanağı
+  signInDateTime: Giriş Tarihi
+  slot_state: Slot durumu
 polls:
   title: Başlık
   new_poll: Yeni Anket oluştur
@@ -1357,7 +1359,7 @@ events:
       <br>\nRandevuyu bu arada gösterge tablosunda yeni gelenlere de göstermek için,\n
       daha sonra tekrar kaydedin.\n"
     endtime: Zaman sonu
-  bread: Tarih
+  bread: Randevular
   add_new_event: Şimdi yeni bir tarih girin
   mumble:
     text: <em>Mumble</em> ile çevrimiçi sesli konferanslar düzenle.
@@ -1534,7 +1536,7 @@ mailbox:
   date: Tarih
   member: E-Posta kutusu kullanıcısı
   actions: Opsiyonlar
-  title: Posta kutuları
+  title: E-Posta kutuları
   filesize: Üzgünüz, dosya çok büyük.
   filetype: Bu dosya türüne izin verilmiyor
   fromto: Gönderen/Kime
@@ -1775,8 +1777,9 @@ footer:
     call_to: foodsharing'i desteklemek ister misiniz?
   hosting:
     tooltip: <a href="https://www.manitu.de/webhosting/" title="Webhosting">gehostet</a>
-      Manitu da Net Sıfır Karbon
-    info: Net Sıfır Karbon <a href="https://www.manitu.de/webhosting/" title="Webhosting">gehostet</a>
+      Manitu da Net <sub>2</sub>- Sıfır Karbon
+    info: Net <sub>2</sub> Sıfır Karbon <a href="https://www.manitu.de/webhosting/"
+      title="Webhosting">gehostet</a>
   partner: Partner
   guide: Hijyen rehberi
   infosCompany: İşletmeler için
@@ -2551,6 +2554,7 @@ terminology:
     d: Organizatör
   reports: Raporlama Görünümü (Yerel raporlama grubu)
   n_home_regions: o ana bölgeye sahip bir kişi|İşte %count% kişilik ana bölge
+  previous_pickups: Önceki Alımlar
 legal:
   if_delete:
     this_doesnt_get_deleted: 'Aşağıdaki bilgiler artık aktif sistemde mevcut değildir,
@@ -2682,7 +2686,7 @@ storeview:
   managers: Sorumlu Foodsaver
   team: Kurtarma Ekibi
   public_and_statistics: İstatistik ve Halkla İlişkiler
-  no_permission_to_view: Sadece işletme sorumluları tarafından görülebilir
+  no_permission_to_view: Sadece işletme sorumluları tarafından görülebilir.
   groceries:
     label: Hangi yiyecekler alınabilir?
     select_tag: Yiyecek kategorisini seçin
@@ -2886,7 +2890,7 @@ pickup:
   team_message_send_and_leave: Gönder ve çıkış yap
   join_cancel: Yok değil
   take_empty_slot: Buraya yazıl
-  open_profile: Profile git
+  open_profile: Profili
   copiedNumber: '"{number}" panoya kopyalandı.'
   signout_info: Alım randevularınızın tümü silinecektir.
   really_kick_user_info: "{name}'ı {date} tarihindeki alma işleminden çıkarmak istediğinizden
@@ -2910,7 +2914,7 @@ pickup:
   really_leave_date: Bu alımdan siz sorumlusunuz. Lütfen yerinize birilerini ayarlayın.
   leave_pickup_ok: Yedek birini buldum bile
   description_optional: Açıklama (isteğe bağlı)
-  description: Açıklaması
+  description: Açıklama
   edit_description: Açıklamayı düzenle
   description_max_length_info: Maksimum açıklama uzunluğuna ulaşıldı (100 karakter)
   description_modal_text: 'Yeni bir teslim alma açıklaması girin:'
@@ -3095,7 +3099,7 @@ globals:
     stores: 'İşletmeler'
     foodshare_points: 'Gıda Dağıtım Noktası'
     my_foodshare_points: 'Gıda Dağıtım Noktalarım'
-    mailboxes: 'Posta kutuları'
+    mailboxes: 'E-Posta kutuları'
     my_buddies: 'Arkadaşlarım'
     persons: 'Kişiler'
     my_stores: 'İşletmelerim'
@@ -3105,6 +3109,8 @@ globals:
     my_persons: 'Arkadaşlarım'
     my_regions: 'Bölgelerim'
     groups: 'Gruplar'
+    threads: Konular
+    chats: Sanal Sohbet
   select: 'Lütfen seçin …'
   close: 'Kapat'
   show_more: 'Daha fazla göster'
@@ -3113,14 +3119,39 @@ globals:
   show_less: 'Daha az göster'
 search:
   placeholder: 'Şimdi aramaya başlayın …'
-  informations: 'Kişileri, grupları, şirketleri, semtleri ve gıda dağıtım noktalarını
-    arayabilirsiniz.'
+  informations: 'Kişileri, grupları, işletmeleri, semtleri, sohbetleri, forum gönderilerini
+    ve gıda dağıtım noktalarını arayabilirsiniz.'
   noresults: 'Sonuç bulunamadı'
   forum: 'Başlığa göre ara …'
   thread-title-only: 'Gönderilerin içeriği değil, yalnızca başlıklar aranır.'
   title: 'Arama'
   user_search:
     placeholder: 'İsim veya İD'
+  results:
+    region:
+      ambassador_tooltip: Bu bölgenin Elçisisiniz
+      home_region_tooltip: Bu senin ana bölgen
+      member_tooltip: Bu bölgenin bir üyesisiniz
+    working_group:
+      member_tooltip: Bu çalışma grubunun (AG) üyesisiniz
+      admin_tooltip: Bu çalışma grubunun (AG) yöneticisisiniz
+    thread:
+      closed_tooltip: Konu kapandı
+      forum: Forum
+      sticky_tooltip: Konu sabitlendi
+      ambassador_forum: Elçi (BOT)-Forumu
+      last_post: son gönderi
+    in: içinde
+    chat:
+      chat_with: '{names} ile sohbet et'
+      chat_with_others: diğerleri
+    user:
+      no_home_region: Ana bölge yok
+    store:
+      manager_tooltip: Bu işletmeden siz sorumlusunuz
+      jumper_tooltip: Bu işletmenin yedek listesindesiniz
+      member_tooltip: Bu işletmenin bir üyesisiniz
+    from: "'den / 'dan"
 language_chooser:
   choose_button: 'Güncelle'
   translation_help_info_text: 'Bu bağlantı tercüme portalına yönlendiriyor, başlamak
@@ -3217,7 +3248,7 @@ notifications:
     title: Bölgeler
   checkbox_disabled: Devre dışı
   success: Başarıyla kaydedildi
-  config_button: ayrı ayrı yapılandır
+  config_button: tek tek yapılandır
   newsletter:
     title: E-Bülten
     description: Yaklaşık ayda bir kez e-postayla gıda paylaşımına ilişkin güncel

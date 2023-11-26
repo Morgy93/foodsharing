@@ -1,8 +1,9 @@
 import L from 'leaflet'
 // import 'mapbox-gl-leaflet'
 
-import { MAP_RASTER_TILES_URL, MAP_ATTRIBUTION } from '@/consts'
+import { MAP_RASTER_TILES_URL_GEOAPIFY, MAP_RASTER_TILES_URL_OSM, MAP_ATTRIBUTION } from '@/consts'
 import { isWebGLSupported } from '@/utils'
+import { serverData, isDev, isTest } from '@/helper/server-data'
 
 /**
  * @deprecated use the Vue component @/components/map/LeafletMap instead
@@ -17,8 +18,18 @@ export function initMap (element, center, zoom, maxZoom = 20) {
   } else {
     // WebGL is not supported, fallback to raster tiles
   }
-  L.tileLayer(MAP_RASTER_TILES_URL, { maxZoom: maxZoom }).addTo(map)
+  L.tileLayer(getMapRasterTilesUrl(), { maxZoom: maxZoom }).addTo(map)
   map.attributionControl.setPrefix(MAP_ATTRIBUTION)
 
   return map
+}
+
+export function getMapRasterTilesUrl () {
+  if (isTest) {
+    return '/mock/geoapify/{z}/{x}/{y}.png'
+  } else if (isDev) {
+    return MAP_RASTER_TILES_URL_OSM
+  } else {
+    return MAP_RASTER_TILES_URL_GEOAPIFY + serverData.mapTilesApiKey
+  }
 }

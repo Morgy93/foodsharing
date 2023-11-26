@@ -815,6 +815,12 @@ forum:
   from: de {name}
   deleted_user: utilisateur supprimé
   not_found: Ce fil n’existe pas.
+  mail_confirmation:
+    text: Souhaites-tu vraiment que cette nouvelle contribution soit envoyée par e-mail
+      à tous les membres de ce GT ou de ce district ? Tu ne devrais le faire que si
+      ta demande concerne tout le monde et qu’elle est suffisamment importante pour
+      que tout le monde en soit informé.
+    title: Vraiment envoyer la notification par courriel ?
 fsp:
   info:
     mail: Cloche et notification par courriel
@@ -950,6 +956,8 @@ terminology:
   pickup: Collecte
   store: 'Magasin'
   n_home_regions: un(e) avec district d’origine|%count% avec district d’origine
+  no_pickups: aucune
+  previous_pickups: Précédentes collectes
 register:
   activation_success: <strong>Activation réussie.</strong> Connecte-toi maintenant
     avec ton adresse courriel et le mot de passe que tu as choisi.
@@ -1090,8 +1098,8 @@ legal:
 message_text_to_group_admin_workgroup: "La région/le groupe de travail<b>{groupName}</b>
   n’a<b>plus</b> d’ambassadeur·ice/d’admin.<br><br><br>Elle possède la structure ID
   ci-contre :<br>{idStructureList}<br><br>l’ID est : {groupId}<br><br>URL : \" <a
-  href=\"/region?bid={groupId}&sub=forum\" target=\"_blank\">Clique ici pour
-  rejoindre la région/le groupe de travail</a>"
+  href=\"/region?bid={groupId}&sub=forum\" target=\"_blank\">Clique ici pour rejoindre
+  la région/le groupe de travail</a>"
 gender:
   d: les deux ou autre
   f: Femme
@@ -1198,7 +1206,7 @@ store:
   isManager: Responsable pour cette coopération.
   unknownDate: inconnue
   lastPickupShort: dernière collecte le {date}
-  lastPickup: 'Dernière collecte : {date}'
+  lastPickup: 'Dernière collecte :'
   jumperSince: Remplaçant(e) depuis le {date}
   memberSince: Dans l’équipe depuis le {date}
   teamName: Équipe {storeTitle}
@@ -1297,6 +1305,30 @@ store:
   not_verified: Vous n’êtes pas encore vérifié. Par conséquent, vous ne pouvez pas
     voir les créneaux horaires et les numéros de téléphone des membres de l’équipe.
   requests: Demandes ouvertes ({count})
+  log:
+    type:
+      3: Demandes d’adhésion acceptées
+      2: Demandes d’adhésion refusées
+      7: Ejections de l’équipe
+      14: Confirmations d’inscriptions
+      1: Demandes d’adhésion
+      16: Retraits des demandes d’adhésion
+      8: Départs d’équipe
+      4: Personnes ajoutées manuellement à l’équipe
+      10: Retrait des responsabilités liées à cette coopération
+      6: intégré dans l’équipe active
+      12: Annulation des collectes
+      9: Ajouter aux responsables de cette coopération
+      5: Déplacé sur la liste de remplacement
+      13: Débits pour les collectes
+      11: Inscription pour les ramassages
+      15: Suppression d’entrées de mur
+    max_entries_message: Un maximum de 100 entrées est affiché. Limite le champ de
+      recherche.
+    log_types_placeholder: Sélectionner les types d’actions à afficher
+    search: Liste des actions sélectionnées
+    selected_log_types: '{amount} types d’actions sélectionnés'
+    title: Protocole d’actions
 storeview:
   want_to_fetch: J’aimerais m’engager dans cette équipe.
   specials: Particularités
@@ -1851,7 +1883,7 @@ pickup:
   signout_sure: Souhaites-tu quitter cette équipe ?
   copiedNumber: '« {number} » a été copié dans le presse-papier.'
   copyNumber: Copier le numéro dans le presse-papier
-  open_profile: Voir le profil
+  open_profile: Profil de
   leave: Se retirer
   kick: Retirer
   confirm: Confirmer
@@ -2246,7 +2278,32 @@ search:
   user_search:
     placeholder: Nom ou identifiant
   informations: Tu peux rechercher des personnes, des groupes, des magasins, des secteurs
-    géographiques et des frigos solidaires.
+    géographiques, des chats, des messages sur les forum et des frigos solidaires.
+  results:
+    region:
+      ambassador_tooltip: Tu es l’ambassadeur de cette région
+      home_region_tooltip: C’est ton quartier d’origine
+      member_tooltip: Tu es membre de ce district
+    working_group:
+      member_tooltip: Tu es membre de cette équipe de travail
+      admin_tooltip: Vous êtes administrateur de ce groupe de travail
+    thread:
+      closed_tooltip: Le fil de discussion est fermé
+      forum: Forum
+      sticky_tooltip: Le fil de discussion est épinglé
+      ambassador_forum: Forum des ambassadeurs
+      last_post: dernière contribution
+    in: en
+    chat:
+      chat_with: Chat avec {names}
+      chat_with_others: autres
+    user:
+      no_home_region: Pas de district d’origine
+    store:
+      manager_tooltip: Tu es responsable de cette coopération
+      jumper_tooltip: Vous êtes sur la liste d’attente pour ce magasin
+      member_tooltip: Tu es membre de l’équipe de ce magasin
+    from: de
 index:
   confirm_open_video: Souhaites-tu regarder la vidéo sur YouTube ? La vidéo se lancera
     dans un nouvel onglet.
@@ -3075,6 +3132,8 @@ globals:
     my_regions: Mon secteur géographique
     my_groups: Mes groupes
     groups: Groupes
+    threads: Fils
+    chats: Chats
   show_less: Afficher moins
   close: Fermer
   reset: Réinitialiser

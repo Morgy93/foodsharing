@@ -100,15 +100,15 @@ edit: редактировать
 geb_datum: Дата рождения (гггг-мм-дд)
 bootstrap-datepicker:
   labelToday: Сегодня
-  labelNextYear: ''
+  labelNextYear: 'следующий год'
   labelNextDecade: ''
   labelPrevDecade: ''
-  labelPrevYear: ''
-  labelPrevMonth: ''
+  labelPrevYear: 'прошлый год'
+  labelPrevMonth: 'месяц назад'
   labelSelected: ''
-  labelCurrentMonth: ''
+  labelCurrentMonth: 'текущий месяц'
   labelHelp: ''
-  labelNextMonth: ''
+  labelNextMonth: 'следующий месяц'
   labelNoDateSelected: ''
   labelCalendar: ''
   labelNav: ''
@@ -2376,6 +2376,9 @@ search:
   user_search:
     placeholder: ''
   noresults: ''
+  results:
+    thread:
+      forum: форум
 deletefromregion: ''
 push_notifications:
   test_notification_title: ''
@@ -2639,3 +2642,10 @@ markdown_input:
     hrule: горизонтальная линия
     link: ссылка
     heading: Заголовок
+notifications:
+  newsletter:
+    title: рассылка
+  checkbox_email: емейл
+thread:
+  rename:
+    placeholder: Название
