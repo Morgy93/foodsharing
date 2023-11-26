@@ -66,12 +66,7 @@ class BuddyApiCest
         ]);
 
         $I->sendPUT('api/buddy/' . $this->user2['id']);
-        $I->seeResponseCodeIs(HttpCode::OK);
-        $I->seeInDatabase('fs_buddy', [
-            'foodsaver_id' => $this->user1['id'],
-            'buddy_id' => $this->user2['id'],
-            'confirmed' => BuddyId::REQUESTED
-        ]);
+        $I->seeResponseCodeIs(HttpCode::BAD_REQUEST);
     }
 
     public function canNotSendRequestToBuddy(ApiTester $I)
