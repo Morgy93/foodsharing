@@ -11,6 +11,13 @@
       :is-verified="isVerified"
     />
     <button
+      v-if="isCoordinator || mayEditStore"
+      type="button"
+      class="list-group-item list-group-item-action"
+      @click="openChat(coordinatorConversationId)"
+      v-text="$i18n('store.chat.coordinators')"
+    />
+    <button
       v-if="teamConversationId != null && isUserInStore"
       type="button"
       class="list-group-item list-group-item-action"
@@ -58,6 +65,10 @@ export default {
     storeName: { type: String, required: true },
     fsId: { type: Number, required: true },
     mayLeaveStoreTeam: { type: Boolean, default: false },
+    coordinatorConversationId: {
+      type: Number,
+      default: null,
+    },
     teamConversationId: {
       type: Number,
       default: null,

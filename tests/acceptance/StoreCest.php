@@ -17,6 +17,7 @@ class StoreCest
     private array $foodsaverDifferentRegion;
     private array $storeManager;
 
+    private array $coordinatorConversation;
     private array $teamConversation;
     private array $jumperConversation;
 
@@ -35,12 +36,13 @@ class StoreCest
         $this->foodsaverWithStoreManagerQuiz = $I->createStoreCoordinator(null, $extra_params);
 
         // init store conversations (DIRTY, HOW IT WORKS ...)
+        $this->coordinatorConversation = $I->createConversation([$this->storeManager['id']]);
         $this->teamConversation = $I->createConversation([$this->storeManager['id'], $this->foodsaver['id']]);
         $this->jumperConversation = $I->createConversation([$this->storeManager['id'], $this->foodsaverOnJumperList['id']]);
 
         // init store
         $this->store = $I->createStore(
-            $regionId, $this->teamConversation['id'], $this->jumperConversation['id'], ['betrieb_status_id' => CooperationStatus::COOPERATION_ESTABLISHED->value]
+            $regionId, $this->coordinatorConversation['id'], $this->teamConversation['id'], $this->jumperConversation['id'], ['betrieb_status_id' => CooperationStatus::COOPERATION_ESTABLISHED->value]
         );
 
         // add user to region (DIRTY, HOW IT WORKS ...)
@@ -265,7 +267,12 @@ class StoreCest
         call_user_func([$this, 'loginAs'], $I, $example[0]);
 
         if ($example[0] === 'StoreManager') {
-            $I->wantTo("Can see team and jumper chat as {$example[0]}");
+            $I->wantTo("Can see coordinator, team and jumper chat as {$example[0]}");
+
+            $I->seeInDatabase('fs_foodsaver_has_conversation', [
+                'conversation_id' => $this->store['coordinator_conversation_id'],
+                'foodsaver_id' => $this->storeManager['id'],
+            ]);
 
             $I->seeInDatabase('fs_foodsaver_has_conversation', [
                 'conversation_id' => $this->store['team_conversation_id'],
@@ -279,7 +286,12 @@ class StoreCest
         }
 
         if ($example[0] === 'Foodsaver') {
-            $I->wantTo("Can see the team, but not jumper chat as {$example[0]}");
+            $I->wantTo("Can see the team, but not coordinator or jumper chat as {$example[0]}");
+
+            $I->dontSeeInDatabase('fs_foodsaver_has_conversation', [
+                'conversation_id' => $this->store['coordinator_conversation_id'],
+                'foodsaver_id' => $this->storeManager['id'],
+            ]);
 
             $I->seeInDatabase('fs_foodsaver_has_conversation', [
                 'conversation_id' => $this->store['team_conversation_id'],
@@ -293,7 +305,12 @@ class StoreCest
         }
 
         if ($example[0] === 'FoodsaverOnJumperList') {
-            $I->wantTo("Can see not the team, but jumper chat as {$example[0]}");
+            $I->wantTo("Can see not the coordinator or team, but jumper chat as {$example[0]}");
+
+            $I->dontSeeInDatabase('fs_foodsaver_has_conversation', [
+                'conversation_id' => $this->store['coordinator_conversation_id'],
+                'foodsaver_id' => $this->storeManager['id'],
+            ]);
 
             $I->dontSeeInDatabase('fs_foodsaver_has_conversation', [
                 'conversation_id' => $this->store['team_conversation_id'],

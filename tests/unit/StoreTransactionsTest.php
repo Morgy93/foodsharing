@@ -157,10 +157,12 @@ class StoreTransactionsTest extends \Codeception\Test\Unit
             'stadt' => $store->city,
             'public_info' => $store->publicInfo]);
 
+        $coordinatorConversation = $this->tester->grabFromDatabase('fs_betrieb', 'coordinator_conversation_id', ['id' => $dbStoreId]);
+        $this->tester->seeInDatabase('fs_foodsaver_has_conversation', ['conversation_id' => $coordinatorConversation, 'foodsaver_id' => $storeCreator['id']]);
         $teamConversation = $this->tester->grabFromDatabase('fs_betrieb', 'team_conversation_id', ['id' => $dbStoreId]);
         $this->tester->seeInDatabase('fs_foodsaver_has_conversation', ['conversation_id' => $teamConversation, 'foodsaver_id' => $storeCreator['id']]);
-        $sprinterConversation = $this->tester->grabFromDatabase('fs_betrieb', 'springer_conversation_id', ['id' => $dbStoreId]);
-        $this->tester->seeInDatabase('fs_foodsaver_has_conversation', ['conversation_id' => $sprinterConversation, 'foodsaver_id' => $storeCreator['id']]);
+        $springerConversation = $this->tester->grabFromDatabase('fs_betrieb', 'springer_conversation_id', ['id' => $dbStoreId]);
+        $this->tester->seeInDatabase('fs_foodsaver_has_conversation', ['conversation_id' => $springerConversation, 'foodsaver_id' => $storeCreator['id']]);
 
         // Check creator is store owner
         $this->tester->seeInDatabase('fs_betrieb_team', [
@@ -170,8 +172,9 @@ class StoreTransactionsTest extends \Codeception\Test\Unit
             'active' => MembershipStatus::MEMBER]);
 
         // Check existing conversation
+        $this->tester->seeInDatabase('fs_conversation', ['locked' => 1, 'id' => $coordinatorConversation, 'name' => 'Team ' . $store->name]);
         $this->tester->seeInDatabase('fs_conversation', ['locked' => 1, 'id' => $teamConversation, 'name' => 'Team ' . $store->name]);
-        $this->tester->seeInDatabase('fs_conversation', ['locked' => 1, 'id' => $sprinterConversation, 'name' => 'Springer ' . $store->name]);
+        $this->tester->seeInDatabase('fs_conversation', ['locked' => 1, 'id' => $springerConversation, 'name' => 'Springer ' . $store->name]);
 
         // Check creation of notes in store wall
         $this->tester->seeInDatabase('fs_betrieb_notiz', [

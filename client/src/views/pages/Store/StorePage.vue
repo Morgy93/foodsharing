@@ -7,6 +7,7 @@
       <div class="col-lg-3 mr-lg-4 mr-xl-0">
         <StoreOptions
           :store-name="storeInformation.name"
+          :coordinator-conversation-id="permissions.coordinatorConversationId"
           :team-conversation-id="permissions.teamConversationId"
           :jumper-conversation-id="permissions.jumperConversationId"
           :may-edit-store="permissions.mayEditStore"

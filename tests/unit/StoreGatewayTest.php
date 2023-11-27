@@ -358,16 +358,23 @@ class StoreGatewayTest extends Unit
         $this->tester->seeInDatabase('fs_betrieb', ['bezirk_id' => $newRegion['id'], 'id' => $this->store['id']]);
     }
 
+    public function testGetNoCoordinatorConversation(): void
+    {
+        $conversationId = $this->gateway->getBetriebConversation($this->store['id'], 1);
+
+        $this->tester->assertEquals(0, $conversationId);
+    }
+
     public function testGetNoTeamConversation(): void
     {
-        $conversationId = $this->gateway->getBetriebConversation($this->store['id']);
+        $conversationId = $this->gateway->getBetriebConversation($this->store['id'], 2);
 
         $this->tester->assertEquals(0, $conversationId);
     }
 
     public function testGetNoSpringerConversation(): void
     {
-        $conversationId = $this->gateway->getBetriebConversation($this->store['id'], true);
+        $conversationId = $this->gateway->getBetriebConversation($this->store['id'], 3);
 
         $this->tester->assertEquals(0, $conversationId);
     }

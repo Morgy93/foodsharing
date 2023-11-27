@@ -195,6 +195,7 @@ final class MessageGateway extends BaseGateway
 			FROM
             	fs_foodsaver_has_conversation hc
                 left outer join fs_conversation c on hc.conversation_id = c.id
+                left outer join fs_betrieb ccoordinatestore on c.id = ccoordinatestore.team_conversation_id
                 left outer join fs_betrieb cstore on c.id = cstore.team_conversation_id
                 left outer join fs_betrieb cjumpstore on c.id = cjumpstore.springer_conversation_id
 

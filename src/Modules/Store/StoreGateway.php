@@ -416,6 +416,7 @@ class StoreGateway extends BaseGateway
         			b.`abholmenge`,
         			b.`team_status`,
         			b.`prefetchtime`,
+        			b.`coordinator_conversation_id`,
         			b.`team_conversation_id`,
         			b.`springer_conversation_id`,
         			b.`use_region_pickup_rule`,
@@ -791,12 +792,15 @@ class StoreGateway extends BaseGateway
         return TeamStatus::NoMember;
     }
 
-    public function getBetriebConversation(int $storeId, bool $springerConversation = false): ?int
+    public function getBetriebConversation(int $storeId, int $conversationType): ?int
     {
-        if ($springerConversation) {
-            $chatType = 'springer_conversation_id';
-        } else {
+        if ($conversationType == 1) {
+            $chatType = 'coordinator_conversation_id';
+        }
+        elseif ($conversationType == 2) {
             $chatType = 'team_conversation_id';
+        } else {
+            $chatType = 'springer_conversation_id';
         }
 
         return $this->db->fetchValueByCriteria('fs_betrieb', $chatType, ['id' => $storeId]);
@@ -971,10 +975,16 @@ class StoreGateway extends BaseGateway
         return $this->db->update('fs_betrieb', ['bezirk_id' => $regionId], ['id' => $storeId]);
     }
 
-    public function updateStoreConversation(int $storeId, int $conversationId, bool $isStandby): int
+    public function updateStoreConversation(int $storeId, int $conversationId, int $conversationType): int
     {
-        $fieldToUpdate = $isStandby ? 'springer_conversation_id' : 'team_conversation_id';
-
+        if ($conversationType == 1) {
+            $fieldToUpdate = 'coordinator_conversation_id';
+        }
+        elseif ($conversationType == 2) {
+            $fieldToUpdate = 'team_conversation_id';
+        } else {
+            $fieldToUpdate = 'springer_conversation_id';
+        }
         return $this->db->update('fs_betrieb', [$fieldToUpdate => $conversationId], ['id' => $storeId]);
     }
 
@@ -986,9 +996,11 @@ class StoreGateway extends BaseGateway
 
 			FROM	fs_betrieb
 
-			WHERE	team_conversation_id = :memberId
+			WHERE   coordinator_conversation_id = :coordinatorId
+            OR      team_conversation_id = :memberId
 			OR      springer_conversation_id = :jumperId
 		', [
+            ':coordinatorId' => $id,
             ':memberId' => $id,
             ':jumperId' => $id
         ]);
@@ -1251,7 +1263,7 @@ class StoreGateway extends BaseGateway
 			WHERE
 				store_id = ?
                 AND date_activity >= ?
-                AND date_activity <= ? 
+                AND date_activity <= ?
                 AND action IN (' . $this->db->generatePlaceholders(count($storeActions)) . ')
             ORDER BY performed_at DESC
             LIMIT 100
