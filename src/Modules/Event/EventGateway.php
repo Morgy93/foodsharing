@@ -152,7 +152,7 @@ class EventGateway extends BaseGateway
      */
     public function getEventsByStatus(int $userId, array $statuses): array
     {
-        return $this->db->fetchAll("SELECT
+        return $this->db->fetchAll('SELECT
 			e.id,
 			e.name,
 			e.description,
@@ -162,7 +162,7 @@ class EventGateway extends BaseGateway
 			r.name AS regionName,
 			UNIX_TIMESTAMP(e.start) AS start_ts,
 			UNIX_TIMESTAMP(e.end) AS end_ts,
-			IFNULL(fhe.status, 0) AS status,
+			IFNULL(fhe.status, ' . InvitationStatus::INVITED . ') AS status,
 			l.street,
 			l.zip,
 			l.city
@@ -174,7 +174,7 @@ class EventGateway extends BaseGateway
 		WHERE
 			fhb.foodsaver_id = :fs_id
 			AND e.end > NOW()
-			AND IFNULL(fhe.status, 0) IN (" . implode(',', $statuses) . ')
+			AND IFNULL(fhe.status, ' . InvitationStatus::INVITED . ') IN (' . implode(',', $statuses) . ')
 		ORDER BY e.start
 		', ['fs_id' => $userId]);
     }
