@@ -294,14 +294,6 @@ class EventView extends View
             );
         }
 
-        if (!empty($invites['invited'])) {
-            $avatars = $this->placeFsAvatars($invites['invited'], 54);
-            $out .= $this->v_utils->v_field(
-                $avatars,
-                $this->translator->trans('events.invitedCount', ['{count}' => count($invites['invited'])])
-            );
-        }
-
         return $out;
     }
 

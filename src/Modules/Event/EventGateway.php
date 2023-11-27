@@ -122,19 +122,17 @@ class EventGateway extends BaseGateway
 
 			AND
 				fhe.event_id = :eventId
-		', [':eventId' => $eventId]);
+                AND fhe.status != :invitedStatus
+		', [':eventId' => $eventId, ':invitedStatus' => InvitationStatus::INVITED]);
 
         $out = [
-            'invited' => [],
             'accepted' => [],
             'maybe' => [],
             'may' => []
         ];
         foreach ($invites as $i) {
             $out['may'][$i['id']] = true;
-            if ($i['status'] == InvitationStatus::INVITED) {
-                $out['invited'][] = $i;
-            } elseif ($i['status'] == InvitationStatus::ACCEPTED) {
+            if ($i['status'] == InvitationStatus::ACCEPTED) {
                 $out['accepted'][] = $i;
             } elseif ($i['status'] == InvitationStatus::MAYBE) {
                 $out['maybe'][] = $i;
