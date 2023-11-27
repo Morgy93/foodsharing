@@ -162,7 +162,7 @@ class EventGateway extends BaseGateway
 			r.name AS regionName,
 			UNIX_TIMESTAMP(e.start) AS start_ts,
 			UNIX_TIMESTAMP(e.end) AS end_ts,
-			IFNULL(fhe.status, ' . InvitationStatus::INVITED . ') AS status,
+			CAST(IFNULL(fhe.status, ' . InvitationStatus::INVITED . ') AS INTEGER) AS status,
 			l.street,
 			l.zip,
 			l.city
