@@ -40,7 +40,7 @@ class EventGateway extends BaseGateway
 		', [':regionId' => $regionId]);
     }
 
-    public function getEvent(int $eventId, bool $withInvitations = false): ?array
+    public function getEvent(int $eventId, bool $withAttendees = false): ?array
     {
         $event = $this->db->fetch('
 			SELECT
@@ -72,8 +72,8 @@ class EventGateway extends BaseGateway
             return null;
         }
 
-        if ($withInvitations) {
-            $event['invites'] = $this->getEventInvites($eventId);
+        if ($withAttendees) {
+            $event['invites'] = $this->getEventAttendees($eventId);
         }
 
         if ($event['location_id'] === null) {
@@ -106,7 +106,7 @@ class EventGateway extends BaseGateway
         ]);
     }
 
-    private function getEventInvites($eventId)
+    private function getEventAttendees($eventId)
     {
         $invites = $this->db->fetchAll('
 			SELECT 	fs.id,
@@ -184,7 +184,6 @@ class EventGateway extends BaseGateway
             'foodsaver_id' => $creatorId,
             'bezirk_id' => $event['bezirk_id'],
             'location_id' => $event['location_id'],
-            'public' => $event['public'],
             'name' => $event['name'],
             'start' => $event['start'],
             'end' => $event['end'],
@@ -201,7 +200,6 @@ class EventGateway extends BaseGateway
         $extracted_event = [
             'bezirk_id' => $event['bezirk_id'],
             'location_id' => $event['location_id'],
-            'public' => $event['public'],
             'name' => $event['name'],
             'start' => $event['start'],
             'end' => $event['end'],
