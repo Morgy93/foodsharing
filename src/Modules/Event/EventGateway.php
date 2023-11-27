@@ -143,7 +143,7 @@ class EventGateway extends BaseGateway
     }
 
     /**
-     * Returns all future events with specific statuses a foodsaver is invited to.
+     * Returns all future events with specific statuses from a foodsavers regions.
      *
      * @param int $userId The id of the user
      * @param array $statuses Array of InvitationStatus. Statuses to be included in the result
@@ -152,7 +152,7 @@ class EventGateway extends BaseGateway
      */
     public function getEventsByStatus(int $userId, array $statuses): array
     {
-        return $this->db->fetchAll('SELECT
+        return $this->db->fetchAll("SELECT
 			e.id,
 			e.name,
 			e.description,
@@ -162,18 +162,19 @@ class EventGateway extends BaseGateway
 			r.name AS regionName,
 			UNIX_TIMESTAMP(e.start) AS start_ts,
 			UNIX_TIMESTAMP(e.end) AS end_ts,
-			fhe.status,
+			IFNULL(fhe.status, 0) AS status,
 			l.street,
 			l.zip,
 			l.city
 		FROM fs_event e
-		JOIN fs_foodsaver_has_event fhe ON e.id = fhe.event_id
+		JOIN fs_foodsaver_has_bezirk fhb ON e.bezirk_id = fhb.bezirk_id
+        LEFT OUTER JOIN fs_foodsaver_has_event fhe ON e.id = fhe.event_id AND fhe.foodsaver_id = fhb.foodsaver_id
 		LEFT JOIN fs_location l ON e.location_id = l.id
 		LEFT JOIN fs_bezirk r ON e.bezirk_id = r.id
 		WHERE
-			fhe.foodsaver_id = :fs_id
+			fhb.foodsaver_id = :fs_id
 			AND e.end > NOW()
-			AND STATUS IN (' . implode(',', $statuses) . ')
+			AND IFNULL(fhe.status, 0) IN (" . implode(',', $statuses) . ')
 		ORDER BY e.start
 		', ['fs_id' => $userId]);
     }
