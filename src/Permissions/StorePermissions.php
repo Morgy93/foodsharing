@@ -316,8 +316,6 @@ class StorePermissions
 
     public function mayChatWithCoordinators(array $store): bool
     {
-        return true;
-        
         if (!$store['verantwortlich']) {
             return false;
         }

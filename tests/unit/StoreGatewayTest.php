@@ -8,6 +8,7 @@ use Foodsharing\Modules\Core\DBConstants\Store\CooperationStatus;
 use Foodsharing\Modules\Core\DBConstants\StoreTeam\MembershipStatus;
 use Foodsharing\Modules\Core\DBConstants\Unit\UnitType;
 use Foodsharing\Modules\Region\DTO\MinimalRegionIdentifier;
+use Foodsharing\Modules\Store\StoreTransactions;
 use Foodsharing\Modules\Store\DTO\Store;
 use Foodsharing\Modules\Store\StoreGateway;
 use Foodsharing\Modules\Store\TeamStatus;
@@ -360,21 +361,21 @@ class StoreGatewayTest extends Unit
 
     public function testGetNoCoordinatorConversation(): void
     {
-        $conversationId = $this->gateway->getBetriebConversation($this->store['id'], 1);
+        $conversationId = $this->gateway->getBetriebConversation($this->store['id'], StoreTransactions::CONVERSATION_TYPE_COORDINATOR);
 
         $this->tester->assertEquals(0, $conversationId);
     }
 
     public function testGetNoTeamConversation(): void
     {
-        $conversationId = $this->gateway->getBetriebConversation($this->store['id'], 2);
+        $conversationId = $this->gateway->getBetriebConversation($this->store['id'], StoreTransactions::CONVERSATION_TYPE_TEAM);
 
         $this->tester->assertEquals(0, $conversationId);
     }
 
     public function testGetNoSpringerConversation(): void
     {
-        $conversationId = $this->gateway->getBetriebConversation($this->store['id'], 3);
+        $conversationId = $this->gateway->getBetriebConversation($this->store['id'], StoreTransactions::CONVERSATION_TYPE_SPRINGER);
 
         $this->tester->assertEquals(0, $conversationId);
     }

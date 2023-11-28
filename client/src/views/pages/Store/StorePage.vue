@@ -16,6 +16,7 @@
           :is-jumper="permissions.isJumper"
           :fs-id="userId"
           :store-id="storeId"
+          :is-manager="permissions.isManager"
           :is-coordinator="permissions.isCoordinator"
           :is-verified="isVerified"
         />

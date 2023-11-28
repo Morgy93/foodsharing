@@ -17,24 +17,33 @@ use Foodsharing\Modules\Core\DTO\GeoLocation;
 use Foodsharing\Modules\Core\Pagination;
 use Foodsharing\Modules\Map\DTO\MapMarker;
 use Foodsharing\Modules\Region\RegionGateway;
+use Foodsharing\Modules\Store\StoreTransactions;
 use Foodsharing\Modules\Store\DTO\MinimalStoreIdentifier;
 use Foodsharing\Modules\Store\DTO\Store;
 use Foodsharing\Modules\Store\DTO\StoreTeamMembership;
+use Foodsharing\Modules\Message\MessageGateway;
+use Symfony\Contracts\Translation\TranslatorInterface;
 use Foodsharing\Utility\DataHelper;
 
 class StoreGateway extends BaseGateway
 {
     private readonly RegionGateway $regionGateway;
+    private readonly MessageGateway $messageGateway;
+    private readonly TranslatorInterface $translator;
     private readonly DataHelper $dataHelper;
 
     public function __construct(
         Database $db,
         RegionGateway $regionGateway,
+        MessageGateway $messageGateway,
+        TranslatorInterface $translator,
         DataHelper $dataHelper
     ) {
         parent::__construct($db);
 
         $this->regionGateway = $regionGateway;
+        $this->messageGateway = $messageGateway;
+        $this->translator = $translator;
         $this->dataHelper = $dataHelper;
     }
 
@@ -449,6 +458,15 @@ class StoreGateway extends BaseGateway
             $result['team'] = [];
             $result['jumper'] = false;
 
+            // In case there is not yet a coordinator chat, create one
+            if (($result['coordinator_conversation_id']) == null) {
+                $coordinateChatId = $this->messageGateway->createConversation([$fs_id], true);
+                $coordinateConversationName = $this->translator->trans('store.coordinator_conversation_name', ['{name}' => $result['name']]);
+                $this->messageGateway->renameConversation($coordinateChatId, $coordinateConversationName);
+                $this->updateStoreConversation($storeId, $coordinateChatId, StoreTransactions::CONVERSATION_TYPE_COORDINATOR);
+                $result['coordinator_conversation_id'] = $coordinateChatId;
+            }
+
             if (!empty($result['springer'])) {
                 foreach ($result['springer'] as $v) {
                     if ($v['id'] == $fs_id) {
@@ -794,10 +812,9 @@ class StoreGateway extends BaseGateway
 
     public function getBetriebConversation(int $storeId, int $conversationType): ?int
     {
-        if ($conversationType == 1) {
+        if ($conversationType == StoreTransactions::CONVERSATION_TYPE_COORDINATOR) {
             $chatType = 'coordinator_conversation_id';
-        }
-        elseif ($conversationType == 2) {
+        } elseif ($conversationType == StoreTransactions::CONVERSATION_TYPE_TEAM) {
             $chatType = 'team_conversation_id';
         } else {
             $chatType = 'springer_conversation_id';
@@ -977,10 +994,9 @@ class StoreGateway extends BaseGateway
 
     public function updateStoreConversation(int $storeId, int $conversationId, int $conversationType): int
     {
-        if ($conversationType == 1) {
+        if ($conversationType == StoreTransactions::CONVERSATION_TYPE_COORDINATOR) {
             $fieldToUpdate = 'coordinator_conversation_id';
-        }
-        elseif ($conversationType == 2) {
+        } elseif ($conversationType == StoreTransactions::CONVERSATION_TYPE_TEAM) {
             $fieldToUpdate = 'team_conversation_id';
         } else {
             $fieldToUpdate = 'springer_conversation_id';

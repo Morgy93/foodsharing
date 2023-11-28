@@ -5,13 +5,14 @@
   >
     <StoreInformationModal
       :is-jumper="isJumper"
+      :is-manager="isManager"
       :store-id="storeId"
       :may-edit-store="mayEditStore"
       :is-coordinator="isCoordinator"
       :is-verified="isVerified"
     />
     <button
-      v-if="isCoordinator || mayEditStore"
+      v-if="coordinatorConversationId != null && isManager"
       type="button"
       class="list-group-item list-group-item-action"
       @click="openChat(coordinatorConversationId)"
@@ -65,30 +66,13 @@ export default {
     storeName: { type: String, required: true },
     fsId: { type: Number, required: true },
     mayLeaveStoreTeam: { type: Boolean, default: false },
-    coordinatorConversationId: {
-      type: Number,
-      default: null,
-    },
-    teamConversationId: {
-      type: Number,
-      default: null,
-    },
-    jumperConversationId: {
-      type: Number,
-      default: null,
-    },
-    mayEditStore: {
-      type: Boolean,
-      default: null,
-    },
-    isCoordinator: {
-      type: Boolean,
-      default: null,
-    },
-    storeId: {
-      type: Number,
-      default: null,
-    },
+    coordinatorConversationId: { type: Number, default: null },
+    teamConversationId: { type: Number, default: null },
+    jumperConversationId: { type: Number, default: null },
+    mayEditStore: { type: Boolean, default: null },
+    isManager: { type: Boolean, default: null },
+    isCoordinator: { type: Boolean, default: null },
+    storeId: { type: Number, default: null },
     isUserInStore: { type: Boolean, default: false },
     isJumper: { type: Boolean, default: false },
     mayDoPickup: { type: Boolean, default: false },
