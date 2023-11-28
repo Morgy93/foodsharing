@@ -1000,7 +1000,7 @@ class StoreGateway extends BaseGateway
         } else {
             $fieldToUpdate = 'springer_conversation_id';
         }
-        
+
         return $this->db->update('fs_betrieb', [$fieldToUpdate => $conversationId], ['id' => $storeId]);
     }
 
