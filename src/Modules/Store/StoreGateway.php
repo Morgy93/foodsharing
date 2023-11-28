@@ -16,14 +16,14 @@ use Foodsharing\Modules\Core\DBConstants\StoreTeam\MembershipStatus;
 use Foodsharing\Modules\Core\DTO\GeoLocation;
 use Foodsharing\Modules\Core\Pagination;
 use Foodsharing\Modules\Map\DTO\MapMarker;
+use Foodsharing\Modules\Message\MessageGateway;
 use Foodsharing\Modules\Region\RegionGateway;
-use Foodsharing\Modules\Store\StoreTransactions;
 use Foodsharing\Modules\Store\DTO\MinimalStoreIdentifier;
 use Foodsharing\Modules\Store\DTO\Store;
 use Foodsharing\Modules\Store\DTO\StoreTeamMembership;
-use Foodsharing\Modules\Message\MessageGateway;
-use Symfony\Contracts\Translation\TranslatorInterface;
 use Foodsharing\Utility\DataHelper;
+use Symfony\Contracts\Translation\TranslatorInterface;
+
 
 class StoreGateway extends BaseGateway
 {
@@ -459,7 +459,7 @@ class StoreGateway extends BaseGateway
             $result['jumper'] = false;
 
             // In case there is not yet a coordinator chat, create one
-            if (($result['coordinator_conversation_id']) == null) {
+            if ($result['coordinator_conversation_id'] == null) {
                 $coordinateChatId = $this->messageGateway->createConversation([$fs_id], true);
                 $coordinateConversationName = $this->translator->trans('store.coordinator_conversation_name', ['{name}' => $result['name']]);
                 $this->messageGateway->renameConversation($coordinateChatId, $coordinateConversationName);

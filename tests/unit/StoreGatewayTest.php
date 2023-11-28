@@ -8,9 +8,9 @@ use Foodsharing\Modules\Core\DBConstants\Store\CooperationStatus;
 use Foodsharing\Modules\Core\DBConstants\StoreTeam\MembershipStatus;
 use Foodsharing\Modules\Core\DBConstants\Unit\UnitType;
 use Foodsharing\Modules\Region\DTO\MinimalRegionIdentifier;
-use Foodsharing\Modules\Store\StoreTransactions;
 use Foodsharing\Modules\Store\DTO\Store;
 use Foodsharing\Modules\Store\StoreGateway;
+use Foodsharing\Modules\Store\StoreTransactions;
 use Foodsharing\Modules\Store\TeamStatus;
 
 class StoreGatewayTest extends Unit
