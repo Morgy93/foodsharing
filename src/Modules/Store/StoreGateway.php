@@ -24,7 +24,6 @@ use Foodsharing\Modules\Store\DTO\StoreTeamMembership;
 use Foodsharing\Utility\DataHelper;
 use Symfony\Contracts\Translation\TranslatorInterface;
 
-
 class StoreGateway extends BaseGateway
 {
     private readonly RegionGateway $regionGateway;
@@ -1001,6 +1000,7 @@ class StoreGateway extends BaseGateway
         } else {
             $fieldToUpdate = 'springer_conversation_id';
         }
+        
         return $this->db->update('fs_betrieb', [$fieldToUpdate => $conversationId], ['id' => $storeId]);
     }
 
