@@ -24,6 +24,8 @@
 - Changed behaviour from deleting unconfirmed slots at midnight into keeping them #1707 !2901 @irgendwer
 - Reworked all search functionality !2886 @AntonBallmaier
 - Markdown in forum posts is now rendered in the front end to reduce inconsistencies !2913 !2917 @AntonBallmaier
+- Change the direction of score voting !2920 @AntonBallmaier
+- Select no value by default in score voting !2920 @AntonBallmaier
 
 ## Bugfixes
 - Added error handling for cache helper for bell notifications or other requests !2869 @chriswalg
@@ -31,6 +33,7 @@
 - fix if last activity date is „0000-00-00 00:00:00“ !2853 @chriswalg
 - fix reaction tooltip with deleted users !2909 @AntonBallmaier
 - Controll characters like * can now be escaped using the front end md engine !2913 @AntonBallmaier
+- make relative links generated in the beta-version readable in the prod version !2924 @AntonBallmaier
 
 ## Refactoring
 - Refactor mailbox modul to vue and rest api !2580 !2870 !2871 @chriswalg @alex.simm
@@ -51,7 +54,7 @@
 - Show CS Fixer results in gitlab !2867 @\_fridtjof_
 - Added the Symfony profiler and debug toolbar !1580 @\_fridtjof_
 - Added feature toggles !2633 @martincodes-de
-- The backend now provides the map tile api key for the client #1074 !2621 @alex.simm
+- The backend now provides the map tile api key for the client #1074 !2621 !2925 @alex.simm
 
 ## Development documentation
 

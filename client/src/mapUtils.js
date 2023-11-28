@@ -3,7 +3,7 @@ import L from 'leaflet'
 
 import { MAP_RASTER_TILES_URL_GEOAPIFY, MAP_RASTER_TILES_URL_OSM, MAP_ATTRIBUTION } from '@/consts'
 import { isWebGLSupported } from '@/utils'
-import { serverData, isDev, isTest } from '@/helper/server-data'
+import { mapTilesApiKey, isDev, isTest } from '@/helper/server-data'
 
 /**
  * @deprecated use the Vue component @/components/map/LeafletMap instead
@@ -30,6 +30,6 @@ export function getMapRasterTilesUrl () {
   } else if (isDev) {
     return MAP_RASTER_TILES_URL_OSM
   } else {
-    return MAP_RASTER_TILES_URL_GEOAPIFY + serverData.mapTilesApiKey
+    return MAP_RASTER_TILES_URL_GEOAPIFY + mapTilesApiKey
   }
 }
