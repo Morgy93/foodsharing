@@ -12,7 +12,7 @@
         configure
       </button>
     </slot>
-    <slot />
+    <slot v-if="selection.length" />
     <b-modal
       ref="configure-modal"
       modal-class="bootstrap"
