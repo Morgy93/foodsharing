@@ -44,9 +44,6 @@ export default {
     this.fetchDonationLink()
   },
   methods: {
-    toggleBanner () {
-      this.isBannerCollapsed = !this.isBannerCollapsed
-    },
     async fetchDonationLink () {
       try {
         const response = await fetch('https://spenden.twingle.de/donation-status/amount-OsgX2t1ixdKwggsQa1pN6g%253D%253D?status=0')
@@ -59,3 +56,9 @@ export default {
   },
 }
 </script>
+
+<style scoped>
+.badge {
+  font-size: 130%;
+}
+</style>
