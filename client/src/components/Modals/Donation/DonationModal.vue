@@ -1,35 +1,32 @@
 <template>
   <div>
     <b-container>
-      <b-collapse
-        id="banner-collapse"
-        :visible="!isBannerCollapsed"
-      >
-        <b-container class="mt-2">
-          <h3>Spenden für foodsharing - wir brauchen Deine Unterstützung!</h3>
-        </b-container>
-        <b-container class="mt-2">
-          <p>
-            Du kannst uns <a
-              href="https://spenden.foodsharing.de/"
-              target="_self"
-            >unter</a> mit einer Spende unterstützen.
-          </p>
-          <b-button variant="primary">
-            Bisherige Spenden <b-badge variant="light">
-              {{ donationLink.status.amount }} €
-            </b-badge>
-          </b-button>
-        </b-container>
-      </b-collapse>
-      <b-button
-        v-if="!isBannerCollapsed"
-        variant="outline-primary"
-        class="mb-2"
-        @click="toggleBanner"
-      >
-        <i class="fas fa-times" />
-      </b-button>
+      <div>
+        <b-alert
+          v-model="showTop"
+          class="position-fixed fixed-top m-0 rounded-0"
+          style="z-index: 2000;"
+          variant="success"
+          dismissible
+        >
+          <b-container class="mt-2">
+            <h3>Spenden für foodsharing - wir brauchen Deine Unterstützung!</h3>
+          </b-container>
+          <b-container class="mt-2">
+            <p>
+              Du kannst uns <a
+                href="https://spenden.foodsharing.de/"
+                target="_self"
+              >unter</a> mit einer Spende unterstützen.
+            </p>
+            <b-button variant="primary">
+              Bisherige Spenden <b-badge variant="light">
+                {{ donationLink.status.amount }} €
+              </b-badge>
+            </b-button>
+          </b-container>
+        </b-alert>
+      </div>
     </b-container>
   </div>
 </template>
@@ -39,7 +36,7 @@ export default {
   name: 'YourComponent',
   data () {
     return {
-      isBannerCollapsed: false,
+      showTop: true,
       donationLink: '',
     }
   },
