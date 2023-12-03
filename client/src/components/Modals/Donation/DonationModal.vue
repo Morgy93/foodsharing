@@ -37,7 +37,6 @@
           >
             <b-progress-bar
               show-progress
-              animated
               variant="secondary"
               :value="donationAmount.status.amount"
             />
