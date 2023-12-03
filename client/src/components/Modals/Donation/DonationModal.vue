@@ -21,10 +21,27 @@
             </p>
             <b-button variant="primary">
               Bisherige Spenden <b-badge variant="light">
-                {{ donationLink.status.amount }} €
+                {{ formatCurrency(donationAmount.status.amount) }}
+              </b-badge>
+            </b-button>
+            <b-button variant="primary">
+              Spendenziel <b-badge variant="light">
+                {{ formatCurrency(donationGoal) }}
               </b-badge>
             </b-button>
           </b-container>
+          <b-progress
+            v-if="donationAmount"
+            class="mt-2 container"
+            :max="donationGoal"
+          >
+            <b-progress-bar
+              show-progress
+              animated
+              variant="secondary"
+              :value="donationAmount.status.amount"
+            />
+          </b-progress>
         </b-alert>
       </div>
     </b-container>
@@ -37,7 +54,8 @@ export default {
   data () {
     return {
       showTop: true,
-      donationLink: '',
+      donationAmount: '',
+      donationGoal: 50000,
     }
   },
   mounted () {
@@ -48,10 +66,13 @@ export default {
       try {
         const response = await fetch('https://spenden.twingle.de/donation-status/amount-OsgX2t1ixdKwggsQa1pN6g%253D%253D?status=0')
         const data = await response.json() // Assuming the data is in JSON format
-        this.donationLink = data
+        this.donationAmount = data
       } catch (error) {
         console.error('Error fetching donation link:', error)
       }
+    },
+    formatCurrency (amount) {
+      return new Intl.NumberFormat('de-DE', { style: 'currency', currency: 'EUR' }).format(amount)
     },
   },
 }
