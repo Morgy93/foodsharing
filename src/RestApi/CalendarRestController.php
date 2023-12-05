@@ -10,6 +10,7 @@ use Foodsharing\Modules\Settings\SettingsGateway;
 use Foodsharing\Modules\Store\PickupGateway;
 use FOS\RestBundle\Controller\AbstractFOSRestController;
 use FOS\RestBundle\Controller\Annotations as Rest;
+use FOS\RestBundle\Request\ParamFetcher;
 use Jsvrcek\ICS\CalendarExport;
 use Jsvrcek\ICS\CalendarStream;
 use Jsvrcek\ICS\Exception\CalendarEventException;
@@ -123,8 +124,9 @@ class CalendarRestController extends AbstractFOSRestController
      * @OA\Response(response="403", description="Insufficient permissions or invalid token.")
      * @OA\Tag(name="calendar")
      * @Rest\Get("calendar/{token}")
+     * @Rest\QueryParam(name="events", requirements="(all|answered)", default="all", description="Include all or only answered invitations to events")
      */
-    public function listAppointmentsAction(string $token): Response
+    public function listAppointmentsAction(string $token, ParamFetcher $paramFetcher): Response
     {
         // check access token
         $userId = $this->settingsGateway->getUserForToken($token);
@@ -139,10 +141,15 @@ class CalendarRestController extends AbstractFOSRestController
         }, $dates);
 
         // add all future meetings
-        $meetings = $this->eventGateway->getEventsByStatus(
-            $userId,
-            [InvitationStatus::INVITED, InvitationStatus::ACCEPTED, InvitationStatus::MAYBE]
-        );
+        switch ($paramFetcher->get('events')) {
+            case 'answered':
+                $statuses = [InvitationStatus::ACCEPTED, InvitationStatus::MAYBE];
+                break;
+            default:
+                $statuses = [InvitationStatus::ACCEPTED, InvitationStatus::MAYBE, InvitationStatus::INVITED];
+                break;
+        }
+        $meetings = $this->eventGateway->getEventsByStatus($userId, $statuses);
         $events = array_map(function ($meeting) use ($userId) {
             return $this->createMeetingEvent($meeting, $userId);
         }, $meetings);

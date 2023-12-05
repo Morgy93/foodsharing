@@ -63,7 +63,7 @@ class WorkGroupXhr extends Control
 
         $this->workGroupGateway->addToGroup($_GET['id'], $this->session->id());
 
-        $url = urlencode('/?page=bezirk&bid=' . (int)$_GET['id'] . '&sub=wall');
+        $url = urlencode('/region?bid=' . (int)$_GET['id'] . '&sub=wall');
 
         return [
             'status' => 1,

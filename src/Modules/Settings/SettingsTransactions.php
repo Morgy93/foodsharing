@@ -61,7 +61,7 @@ class SettingsTransactions
             'anrede' => $this->translator->trans('salutation.' . $user['geschlecht']),
             'name' => $user['name'],
             'address' => $request->email,
-            'link' => BASE_URL . '/?page=content&sub=contact'
+            'link' => BASE_URL . '/content?sub=contact'
         ], false, true);
 
         // send a confirmation email to the new address

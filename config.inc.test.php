@@ -9,6 +9,8 @@ if (isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] == 'on') {
 
 $host = 'lmr.local/';
 
+define('SITE_ENVIRONMENT', 'test');
+
 define('PROTOCOL', $protocol);
 define('DB_HOST', 'db');
 define('DB_USER', 'root');

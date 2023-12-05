@@ -80,7 +80,7 @@ class ForumRestController extends AbstractFOSRestController
     {
         return [
             'id' => $post['id'],
-            'body' => $this->sanitizerService->markdownToHtml($post['body']),
+            'body' => $post['body'],
             'createdAt' => str_replace(' ', 'T', $post['time']),
             'author' => RestNormalization::normalizeUser($post, 'author_'),
             'reactions' => $post['reactions'] ?: new \ArrayObject(),
@@ -262,18 +262,21 @@ class ForumRestController extends AbstractFOSRestController
      * @Rest\RequestParam(name="isSticky", nullable=true, default=null, description="should thread be pinned to the top of forum?")
      * @Rest\RequestParam(name="isActive", nullable=true, default=null, description="should a thread in a moderated forum be activated?")
      * @Rest\RequestParam(name="status", nullable=true, default=null, description="if the thread is open or closed")
+     * @Rest\RequestParam(name="title", nullable=true, default=null, description="the title of the thread")
      */
     public function patchThreadAction(int $threadId, ParamFetcher $paramFetcher): SymfonyResponse
     {
         if (!$this->session->id()) {
             throw new UnauthorizedHttpException('');
         }
-        if (!$this->forumPermissions->mayModerate($threadId)) {
-            throw new AccessDeniedHttpException();
-        }
+
+        $mayModerate = $this->forumPermissions->mayModerate($threadId);
 
         $isSticky = $paramFetcher->get('isSticky');
         if (!is_null($isSticky)) {
+            if (!$mayModerate) {
+                throw new AccessDeniedHttpException();
+            }
             if ($isSticky === true) {
                 $this->forumGateway->stickThread($threadId);
             } else {
@@ -282,11 +285,28 @@ class ForumRestController extends AbstractFOSRestController
         }
         $isActive = $paramFetcher->get('isActive');
         if ($isActive === true) {
-            $this->forumTransactions->activateThread($threadId);
+            if (!$mayModerate) {
+                throw new AccessDeniedHttpException();
+            }
+            if (!$this->forumPermissions->mayModerate($threadId)) {
+                throw new AccessDeniedHttpException();
+            }
+            $this->forumGateway->activateThread($threadId);
         }
         $status = $paramFetcher->get('status');
         if (!is_null($status)) {
+            if (!$mayModerate) {
+                throw new AccessDeniedHttpException();
+            }
             $this->forumGateway->setThreadStatus($threadId, intval($status));
+        }
+
+        $title = $paramFetcher->get('title');
+        if (!is_null($title)) {
+            if (!$this->forumPermissions->mayRename($threadId)) {
+                throw new AccessDeniedHttpException();
+            }
+            $this->forumGateway->setThreadTitle($threadId, $title);
         }
 
         return $this->getThreadAction($threadId);
@@ -407,7 +427,7 @@ class ForumRestController extends AbstractFOSRestController
             throw new AccessDeniedHttpException();
         }
 
-        $this->forumGateway->deletePost($postId);
+        $this->forumTransactions->deletePostFromThread($postId, $this->session->id());
 
         return $this->handleView($this->view([]));
     }

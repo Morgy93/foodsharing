@@ -21,6 +21,7 @@ import Options from './components/Options'
 import Pin from './components/Pin'
 import EventList from '../Event/components/EventList'
 import { leaveRegion } from '@/api/regions'
+
 // Wallpost
 import '../WallPost/WallPost.css'
 import { initWall } from '@/wall'

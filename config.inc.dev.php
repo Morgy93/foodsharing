@@ -7,6 +7,8 @@ if (isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] == 'on') {
     $protocol = 'https';
 }
 
+define('SITE_ENVIRONMENT', 'development');
+
 $host = 'localhost:18080';
 
 define('PROTOCOL', $protocol);

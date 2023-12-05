@@ -24,7 +24,7 @@ class ApplicationTransactions
         $this->applicationGateway->acceptApplication($group['id'], $userId);
 
         $bellData = Bell::create('workgroup_request_accept_title', 'workgroup_request_accept', 'fas fa-user-check', [
-            'href' => '/?page=bezirk&bid=' . $group['id']
+            'href' => '/region?bid=' . $group['id']
         ], [
             'name' => $group['name']
         ], BellType::createIdentifier(BellType::WORK_GROUP_REQUEST_ACCEPTED, $userId));

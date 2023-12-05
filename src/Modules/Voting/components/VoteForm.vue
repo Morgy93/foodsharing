@@ -6,8 +6,7 @@
       <b-alert
         v-if="poll.shuffleOptions"
         show
-        variant="dark"
-        class="mt-5"
+        variant="info"
       >
         {{ $i18n("poll.hint_random_order") }}
       </b-alert>
@@ -43,8 +42,7 @@
       <b-alert
         v-if="mayVote"
         show
-        variant="dark"
-        class="mt-5"
+        variant="warning"
       >
         {{ $i18n('poll.submit_vote_warning') }}
       </b-alert>

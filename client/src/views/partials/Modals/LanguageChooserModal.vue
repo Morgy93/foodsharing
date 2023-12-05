@@ -48,6 +48,7 @@ export default {
       languages: [
         { value: 'de', text: 'Deutsch' },
         { value: 'en', text: 'English' },
+        { value: 'es', text: 'Español' },
         { value: 'fr', text: 'Français' },
         { value: 'it', text: 'Italiano' },
         { value: 'nb_NO', text: 'Norsk (Bokmål)' },

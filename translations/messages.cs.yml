@@ -58,6 +58,10 @@ settings:
     teaser: ''
     event_link_desc: ''
     token-warning: ''
+    include_invitations: Kalendář by měl obsahovat i pozvánky na schůzky, na které
+      jsem dosud nereagoval.
+    export: ''
+    export_tooltip: ''
   changemail:
     passfail: ''
     sent: ''
@@ -67,6 +71,13 @@ settings:
     domain: ''
     invalid: ''
     passcheck: ''
+    input_label_email_confirm: ''
+    explanation_password: ''
+    wrong_password: ''
+    confirm_email_required: ''
+    input_label_password: ''
+    input_label_email: ''
+    explanation: ''
   photo:
     title: ''
     info: ''
@@ -92,6 +103,10 @@ settings:
     range: ''
     missing-date: ''
     temp: ''
+    status: ''
+    until: ''
+    from: ''
+    message: ''
   passport:
     menu: ''
     verified_text: ''
@@ -130,7 +145,7 @@ email_template:
   login: ''
   help_needed:
     or: ''
-    link: ''
+    link: 'https://devdocs.foodsharing.network/'
     main: ''
     support_mail: ''
   foodsharepoint: ''
@@ -283,7 +298,7 @@ navigation:
   basket: ''
   help: ''
   notifications: ''
-  profil: '👋 Ahoj!'
+  profil: '👋 Ahoj {name}!'
   support: ''
   groups: ''
 pickup:
@@ -341,6 +356,10 @@ pickup:
     added: ''
     slotcount: ''
     many-people: ''
+    disable_auto_slot: ''
+    disable_auto_slot_titel: ''
+    slot_titel: ''
+    description_titel: ''
   history:
     title: ''
     search: ''
@@ -389,6 +408,11 @@ pickup:
   signout_info: ''
   to_be_confirmed: ''
   dates: ''
+  description_modal_text: ''
+  edit_description: ''
+  description: ''
+  description_optional: ''
+  description_max_length_info: ''
 regionPin:
   header_page: ''
   pin_visible: ''
@@ -464,6 +488,10 @@ chain:
         invalidfeedback: ''
         description: ''
         placeholder: ''
+      estimatedStoreCount:
+        description: ''
+        label: ''
+        invalidfeedback: ''
     cancel: ''
     ok: ''
     title:
@@ -482,6 +510,7 @@ chain:
     notes: ''
     status: ''
     kams: ''
+    estimatedStoreCount: ''
   error:
     create: ''
     notfs: ''
@@ -503,6 +532,17 @@ chain:
     edit: ''
     showstores: ''
   pagetitle: ''
+  errorCodes:
+    EMPTY_COUNTRY: ''
+    EMPTY_CITY: ''
+    EMPTY_NAME: ''
+    INVALID_STORECHAIN_ID: ''
+    WRONG_FORUM: ''
+    KEY_ACCOUNT_MANAGER_ID_NOT_IN_GROUP: ''
+    KEY_ACCOUNT_MANAGER_ID_NOT_EXISTS: ''
+    INVALID_STATUS: ''
+    EMPTY_ZIP: ''
+    THREAD_ID_NOT_EXISTS: ''
 legal:
   if_delete:
     this_doesnt_get_deleted: ''
@@ -694,6 +734,9 @@ terminology:
   store: ''
   subgroups: ''
   ambassadors: ''
+  no_pickups: ''
+  previous_pickups: ''
+  n_home_regions: ''
 store:
   bread: ''
   error: ''
@@ -726,6 +769,14 @@ store:
     makeJumper: ''
     demoteAsManager: ''
     reloadPage: ''
+    filterAll: ''
+    filterManage: ''
+    promoteToManagerNotPossible: ''
+    filterActive: ''
+    filterSleeping: ''
+    buttonManagementToggle: ''
+    toogleIsReducedStateOpen: ''
+    toogleIsReducedStateClosed: ''
   request:
     verified: ''
     to-nowhere: ''
@@ -737,6 +788,11 @@ store:
     request: ''
     to-team: ''
     got-it: ''
+    distance: bydlí asi {distance} km daleko
+    distance_close: bydlí méně než 1 km daleko
+    distance_unknown: ''
+    unverified: ''
+    air_line: ''
   important: ''
   nochains: ''
   all_of_my_stores: ''
@@ -760,6 +816,10 @@ store:
   willgetcontacted: ''
   team:
     isfull: ''
+    no_record: ''
+    search_reset: ''
+    search_input: ''
+    is_closed: ''
   filter: ''
   enterdate: ''
   maxchar: ''
@@ -805,6 +865,68 @@ store:
   regionPickupRules: ''
   tooltip_yellow: ''
   not-in-team: ''
+  log:
+    message:
+      6: ''
+      1: ''
+      14: ''
+      3: ''
+      4: ''
+      11: ''
+      7: ''
+      13: ''
+      13_with_reason: ''
+      8: ''
+      16: ''
+      10: ''
+      12: ''
+      2: ''
+      5: ''
+      9: ''
+      15: ''
+    type:
+      3: ''
+      2: ''
+      7: ''
+      14: ''
+      1: ''
+      16: ''
+      8: ''
+      4: ''
+      10: ''
+      6: ''
+      12: ''
+      9: ''
+      5: ''
+      13: ''
+      11: ''
+      15: ''
+    max_entries_message: ''
+    log_types_placeholder: ''
+    search: ''
+    selected_log_types: ''
+    title: ''
+  signInDateTime: ''
+  jumping: ''
+  of_that: ''
+  requests: ''
+  isAppliedForTeam: ''
+  team_container: ''
+  managing: ''
+  active: ''
+  one_active: ''
+  unverified_members: ''
+  slot_state: ''
+  delete_date_description: ''
+  member: ''
+  enter_date: ''
+  particularities_chain: ''
+  enter_date_description: ''
+  info_container: ''
+  not_verified: ''
+  unverified_member: ''
+  particularities_chain_tooltip: ''
+  delete_date: ''
 storeedit:
   team:
     bread: ''
@@ -863,6 +985,12 @@ forum:
       title: ''
       active: ''
       non_active: ''
+      disable: ''
+      activate: ''
+    sticky: ''
+    subscriptions:
+      subscribed: ''
+      subscribe: ''
   inform_per_email: ''
   follow:
     header: ''
@@ -876,7 +1004,11 @@ forum:
     success: ''
   hold_back_for_moderation: ''
   no_threads: ''
-  markdown_description: ''
+  not_found: ''
+  mail_confirmation:
+    text: ''
+    title: ''
+  deleted_user: ''
 chat:
   empty_message: ''
   select_recipients: ''
@@ -899,6 +1031,7 @@ chat:
   placeholder: ''
   incorrect_address: ''
   new_messages: ''
+  unknown_username: ''
 wall:
   message_placeholder: ''
   delete: ''
@@ -910,6 +1043,7 @@ wall:
   see-more: ''
   error-create: ''
   info-logging: ''
+  placeholder: ''
 events:
   created: ''
   description: ''
@@ -953,7 +1087,7 @@ events:
     isPublic: ''
     delinvites: ''
     multiday: ''
-    mumble: ''
+    mumble: 'Konference v Mumble'
     offline: ''
     online: ''
   goto: ''
@@ -1002,22 +1136,22 @@ recipients:
   testmail: ''
 date:
   -- Tomorrow: ''
-  friday: ''
-  tomorrow: ''
+  friday: 'pátek'
+  tomorrow: 'zítra'
   yesterday: ''
   today: ''
   clock: ''
   time: ''
   to: ''
-  monday: ''
+  monday: 'pondělí'
   Today: ''
-  thursday: ''
-  wednesday: ''
+  thursday: 'čtvrtek'
+  wednesday: 'středa'
   -- Yesterday: ''
-  sunday: ''
-  saturday: ''
+  sunday: 'neděle'
+  saturday: 'sobota'
   from: ''
-  tuesday: ''
+  tuesday: 'úterý'
 reports:
   report_id: ''
   about_first_name: ''
@@ -1040,9 +1174,9 @@ reports:
   all_reports: ''
   about: ''
 bell:
-  store_request_deny_title: ''
+  store_request_deny_title: '{name}'
   new_foodsaver_needs_introduction: ''
-  forum_answer_title: ''
+  forum_answer_title: '{forum}'
   forum_answer: ''
   store_new_request: ''
   store_request_accept_wait: ''
@@ -1051,50 +1185,59 @@ bell:
   foodsaver_verified: ''
   store_new_title: ''
   passgen_failed_title: ''
-  store_request_imposed_title: ''
+  store_request_imposed_title: '{name}'
   buddy_request_title: ''
-  workgroup_request_accept_title: ''
-  poll_new: ''
+  workgroup_request_accept_title: '{name}'
+  poll_new: '{title}'
   workgroup_request_decline: ''
   banana_given_title: ''
   banana_given: ''
   store_request_deny: ''
-  new_quiz_comment: ''
+  new_quiz_comment: '{comment}'
   no_bells: ''
   fs_sleepmode_title: ''
-  store_request_accept_title: ''
+  store_request_accept_title: '{name}'
   workgroup_request_accept: ''
   new_foodsaver_verified: ''
   store_new_request_title: ''
   betrieb_fetch: ''
   store_request_accept: ''
-  store_wallpost_title: ''
+  store_wallpost_title: '{name}'
   sharepoint_activate_title: ''
-  ft_update: ''
+  ft_update: '{teaser}'
   buddy_request: ''
   sharepoint_activate: ''
   new_quiz_comment_title: ''
-  betrieb_fetch_title: ''
+  betrieb_fetch_title: '{betrieb}'
   passgen_failed: ''
-  store_cr_times_title: ''
+  store_cr_times_title: '{name}'
   poll_new_title: ''
   store_cr_times: ''
-  forum_reply_title: ''
+  forum_reply_title: '{forum}: {title}'
   blog_new_check_title: ''
   store_request_imposed: ''
-  workgroup_request_decline_title: ''
-  blog_new_check: ''
+  workgroup_request_decline_title: '{name}'
+  blog_new_check: '{title}'
   store_new: ''
-  report_reason: ''
+  report_reason: '{reason}'
   new_report_title: ''
   new_foodsaver_verified_title: ''
-  store_request_accept_wait_title: ''
+  store_request_accept_wait_title: '{name}'
   fs_sleepmode: ''
-  ft_update_title: ''
+  ft_update_title: '{name}'
   new_foodsaver_title: ''
   new_foodsaver: ''
   store_wallpost: ''
   forum_post_title: '{title}'
+  forum_new_thread: ''
+  forum_announcement: ''
+  forum_post:
+    one: ''
+    many: ''
+  forum_mention_title: ''
+  forum_new_thread_title: ''
+  forum_announcement_title: ''
+  forum_mention: ''
 genderlist:
   home_district_tab: ''
   gender_female: ''
@@ -1134,7 +1277,9 @@ ageBandList:
   ageBand: ''
   header_for_district: ''
 mailbox:
-  reply: ''
+  reply:
+    full: ''
+    short: ''
   manage: ''
   add_success: ''
   trash: ''
@@ -1174,6 +1319,26 @@ mailbox:
   refresh: ''
   saved: ''
   already_exists: ''
+  search: ''
+  delete_selected: ''
+  conformation_modal:
+    title: ''
+    message: ''
+  for_quoting:
+    has_from: ''
+    written_text: ''
+  mark_all: ''
+  tag_recipient_hint: ''
+  mark_as_read: ''
+  mailsend_unsuccess: ''
+  attachment:
+    not_found_explanation: ''
+    not_found: ''
+  move_to: ''
+  close_edit_mode: ''
+  add: ''
+  mails: ''
+  unknown_sender: ''
 profile:
   commitments_stat:
     pickupCount: ''
@@ -1297,6 +1462,7 @@ profile:
     send: ''
     reportedAdminNoArbitration: ''
     info: ''
+    doesNotAffectStore: ''
   deletesuccess: ''
   reportRequest: ''
   public:
@@ -1338,7 +1504,7 @@ profile:
   workgroups_admin: ''
   online: ''
   go: ''
-  warning: ''
+  warning: 'Varování'
   cantdeletethis: ''
   history:
     noActor: ''
@@ -1382,7 +1548,7 @@ dashboard:
   options:
     hide:
       tooltip: ''
-      text: ''
+      text: 'Změnit pohled'
     grid_toggle:
       2_columns: ''
       3_columns: ''
@@ -1393,7 +1559,7 @@ dashboard:
   save_selection: ''
   source_friendWall_own: ''
   source_forum: ''
-  source_mailbox: ''
+  source_mailbox: '{0}'
   source_store: ''
   no_more_updates_foodsharepoint: ''
   activation_mail_failure: ''
@@ -1420,7 +1586,7 @@ dashboard:
   source_foodsharepoint: ''
   no_more_updates_forum: ''
   invitationCount: ''
-  greeting_short: 'Ahoj!'
+  greeting_short: 'Ahoj {name}!'
   chooseHomeRegion: ''
   polls: ''
   updates_title_some: ''
@@ -1436,6 +1602,10 @@ dashboard:
     read: ''
     go: ''
   invitation: ''
+  release:
+    for_news_from_it: ''
+    for_support: ''
+    for_release_notes: ''
 basket:
   nearby: ''
   sent_request: ''
@@ -1589,6 +1759,14 @@ menu:
     transparency: ''
     chainList: ''
     infos: ''
+    load_more: ''
+    refresh: ''
+    delete_read: ''
+    security: ''
+  bell:
+    delete_read_confirmation:
+      text: ''
+      title: ''
 footer:
   hosting:
     tooltip: ''
@@ -1605,14 +1783,14 @@ footer:
   wiki: ''
   meta:
     it_devdocs: ''
-    version: ''
+    version: 'Verze: {version}'
     beta_testing_issues: ''
   infosCompany: ''
   infosPrivatePersons: ''
   partner_names:
     lebensministerium: ''
     wiener_tafel: ''
-    denns: ''
+    denns: 'Denn’s Biomarkt'
   our_partner: ''
   blog: ''
   partner: ''
@@ -1689,7 +1867,7 @@ poll:
   ended_at: ''
   allowed_voters: ''
   scope_description_0: ''
-  type_description_3: ''
+  type_description_3: 'Výběr hodnocení s hodnotami mezi -3 (odmítnutí) a +3 (schválení)'
   vote_success: ''
   untraceable: ''
   submit_vote_question: ''
@@ -1815,6 +1993,7 @@ group:
     set_admin_text: ''
     old_edit_hint_link: ''
     remove_text_region: ''
+    not_verified: ''
   apply:
     faehigkeit: ''
     zeit: ''
@@ -1964,6 +2143,8 @@ globals:
     my_regions: ''
     my_foodshare_points: ''
     groups: ''
+    threads: ''
+    chats: ''
   save: ''
   close: ''
   select: ''
@@ -1988,7 +2169,7 @@ storeview:
   teamInfo: ''
   pickupWeight: ''
   status: ''
-  counter: ''
+  counter: '<strong>{count}<span style="white-space:nowrap"> </span>{suffix}</strong>'
   pickupCount: ''
   public_and_statistics: ''
   visible_for_public: ''
@@ -2041,7 +2222,7 @@ calendar:
   labelNextMonth: ''
   labelNextYear: ''
   labelNav: ''
-  locale: ''
+  locale: 'cs'
   labelHelp: ''
 date_short:
   Sunday: ''
@@ -2052,8 +2233,8 @@ date_short:
   Wednesday: ''
   Saturday: ''
 month:
-  "1": ''
-  "5": ''
+  "1": 'leden'
+  "5": 'květen'
   short:
     "2": ''
     "8": ''
@@ -2067,16 +2248,16 @@ month:
     "10": ''
     "11": ''
     "1": ''
-  "2": ''
-  "8": ''
-  "3": ''
-  "4": ''
-  "10": ''
-  "11": ''
-  "9": ''
-  "12": ''
-  "7": ''
-  "6": ''
+  "2": 'únor'
+  "8": 'srpen'
+  "3": 'březen'
+  "4": 'duben'
+  "10": 'říjen'
+  "11": 'listopad'
+  "9": 'září'
+  "12": 'prosinec'
+  "7": 'červenec'
+  "6": 'červen'
 foodsaver:
   bread: ''
   about_me_intern: ''
@@ -2177,6 +2358,7 @@ storelist:
   nowaste: ''
   addressdata: ''
   zipcode: ''
+  memberState: ''
 stats:
   avg:
     pickups: ''
@@ -2247,6 +2429,10 @@ content:
   edit_success: ''
   bread: ''
   edit: ''
+  id: ''
+  title: ''
+  last_modified: ''
+  delete_tooltip: ''
 home:
   title: ''
   home: ''
@@ -2269,6 +2455,8 @@ addresspicker:
 map:
   title: ''
   donates: ''
+  filters:
+    my_stores: ''
 password:
   reset: ''
   insertmail: ''
@@ -2296,6 +2484,7 @@ releases:
   "2022-05": ''
   "2020-05": ''
   "2021-09": ''
+  "2023-09": ''
 numbers:
   thousands_separator: ''
   million_abbreviation: ''
@@ -2385,7 +2574,32 @@ search:
   thread-title-only: ''
   user_search:
     placeholder: ''
-photo: ''
+  results:
+    region:
+      ambassador_tooltip: ''
+      home_region_tooltip: ''
+      member_tooltip: ''
+    working_group:
+      member_tooltip: ''
+      admin_tooltip: ''
+    thread:
+      closed_tooltip: ''
+      forum: ''
+      sticky_tooltip: ''
+      ambassador_forum: ''
+      last_post: ''
+    in: ''
+    chat:
+      chat_with: ''
+      chat_with_others: ''
+    user:
+      no_home_region: ''
+    store:
+      manager_tooltip: ''
+      jumper_tooltip: ''
+      member_tooltip: ''
+    from: ''
+photo: 'Fotka'
 ort: ''
 daterange: ''
 upload:
@@ -2583,7 +2797,7 @@ public_info: ''
 status: ''
 presse: ''
 contact_type: ''
-body: ''
+body: 'Zprávy'
 validate:
   required: ''
 kette_id: ''
@@ -2595,3 +2809,59 @@ messages:
   bread: ''
 besonderheiten: ''
 deletefromregion: ''
+markdown_input:
+  tooltip:
+    orderedList: číslovaný seznam
+    preview: náhled
+    quote: citát
+    unorderedList: seznam s odrážkami
+    italic: kurzíva
+    code: kód
+    strikethrough: přeškrtnuté
+    bold: tučné
+    hrule: vodorovná čára
+    link: odkaz
+    heading: titulek
+  empty_preview_placeholder: ''
+notifications:
+  checkbox_push: Push notifikace
+  newsletter:
+    description: ''
+    title: ''
+  foodSharePoints:
+    title: ''
+    description: ''
+  groups:
+    title: ''
+  checkbox_disabled: ''
+  regions:
+    title: ''
+  chat:
+    description: ''
+    title: ''
+  threads:
+    title: ''
+  config_button: ''
+  success: ''
+  checkbox_email: ''
+  checkbox_bell: ''
+thread:
+  options:
+    rename: ''
+    unlock: ''
+    pin: ''
+    lock: ''
+    unpin: ''
+  rename:
+    description_modal_text: ''
+    placeholder: ''
+    max_length_info: ''
+    edit_description: ''
+  post:
+    options:
+      copy_source: ''
+    copy_source_success: ''
+usersearch:
+  search_tag: ''
+  no_tag_preset: ''
+  select_tag: ''
