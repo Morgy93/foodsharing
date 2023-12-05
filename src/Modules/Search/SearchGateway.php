@@ -343,6 +343,7 @@ class SearchGateway extends BaseGateway
                 SELECT
                     foodsaver.id,
                     foodsaver.name,
+                    foodsaver.nachname AS hidden_last_name,
                     foodsaver.email,
                     foodsaver.photo,
                     foodsaver.bezirk_id AS home_region,
@@ -363,6 +364,7 @@ class SearchGateway extends BaseGateway
                 SELECT
                     foodsaver.id,
                     foodsaver.name,
+                    foodsaver.nachname AS hidden_last_name,
                     foodsaver.email,
                     foodsaver.photo,
                     foodsaver.bezirk_id AS home_region,
@@ -378,6 +380,7 @@ class SearchGateway extends BaseGateway
                 SELECT
                     foodsaver.id,
                     foodsaver.name,
+                    foodsaver.nachname AS hidden_last_name,
                     foodsaver.email,
                     foodsaver.photo,
                     foodsaver.bezirk_id AS home_region,
@@ -396,6 +399,7 @@ class SearchGateway extends BaseGateway
                 SELECT
                     foodsaver.id,
                     foodsaver.name,
+                    foodsaver.nachname AS hidden_last_name,
                     foodsaver.email,
                     foodsaver.photo,
                     foodsaver.bezirk_id AS home_region,
@@ -411,6 +415,7 @@ class SearchGateway extends BaseGateway
                 SELECT
                     foodsaver.id,
                     foodsaver.name,
+                    foodsaver.nachname AS hidden_last_name,
                     foodsaver.email,
                     foodsaver.photo,
                     foodsaver.bezirk_id AS home_region,
@@ -499,7 +504,7 @@ class SearchGateway extends BaseGateway
         if (count($queryTerms) > 1) {
             $searchCriteria = array_merge($searchCriteria, $detailedSearchCriteria);
         }
-        $searchCriteria = 'CONCAT(' . implode(',";",', $searchCriteria) . ')';
+        $searchCriteria = 'CONCAT("\"",' . implode(',"\";\"",', $searchCriteria) . ',"\"")';
         $searchClauses = array_map(fn ($term) => $searchCriteria . ' LIKE CONCAT("%", ?, "%")', $queryTerms);
 
         return [implode(' AND ', $searchClauses), $queryTerms];
