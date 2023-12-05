@@ -272,19 +272,20 @@ export default {
    * https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Date/toLocaleDateString
    *
    * @param {Date} date a date to format
+   * @param {Boolean} options.weekday whether to include the weekday in the result
    * @returns {string} the formated date with time
    */
-  dateTime (date = new Date()) {
+  dateTime (date = new Date(), { weekday = true } = {}) {
     const d = new Date(date)
     const options = {
-      weekday: !this.isToday(d) ? 'long' : undefined,
+      weekday: weekday && !this.isToday(d) ? 'long' : undefined,
       year: !this.isSameYear(d) ? 'numeric' : undefined,
       month: 'short',
       day: 'numeric',
       hour: '2-digit',
       minute: '2-digit',
     }
-    if (this.isToday(d)) {
+    if (this.isToday(d) && weekday) {
       const rtf = new RelativeTimeFormat(locale, { numeric: 'auto' })
       return `${toCapitalize(rtf.format(0, 'day'))}, ${d.toLocaleString(locale, options)}`
     }
@@ -302,15 +303,16 @@ export default {
    * @param {Object} options options for the formatter
    * @param {Boolean} options.isRelativeTime force to use relative time otherwise it uses same day as trigger
    * @param {Boolean} options.short to show the relative time in short format (e.g. '10 s ago' in stead of '10 seconds ago')
+   * @param {Boolean} options.weekday whether to include the weekday in the result
    * @returns {string} the relative time
    */
-  base (date = new Date(), { isRelativeTime = this.isToday(date), short = false } = {}) {
+  base (date = new Date(), { isRelativeTime = this.isToday(date), short = false, weekday = true } = {}) {
     const d = new Date(date)
     if (this.isSameYear(d)) {
       if (isRelativeTime) {
         return this.relativeTime(d, { short })
       } else {
-        return this.dateTime(d)
+        return this.dateTime(d, { weekday })
       }
     } else {
       return this.relativeTime(d) + ` (${this.dateTime(d)})`

@@ -3,6 +3,8 @@
 namespace Foodsharing\RestApi;
 
 use Foodsharing\Lib\Session;
+use Foodsharing\Modules\Search\DTO\MixedSearchResult;
+use Foodsharing\Modules\Search\DTO\SimplifiedUserSearchResult;
 use Foodsharing\Modules\Search\SearchGateway;
 use Foodsharing\Modules\Search\SearchTransactions;
 use Foodsharing\Permissions\ForumPermissions;
@@ -10,6 +12,7 @@ use Foodsharing\Permissions\SearchPermissions;
 use FOS\RestBundle\Controller\AbstractFOSRestController;
 use FOS\RestBundle\Controller\Annotations as Rest;
 use FOS\RestBundle\Request\ParamFetcher;
+use Nelmio\ApiDocBundle\Annotation\Model;
 use OpenApi\Annotations as OA;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\Exception\AccessDeniedHttpException;
@@ -40,25 +43,13 @@ class SearchRestController extends AbstractFOSRestController
 
     /**
      * @OA\Tag(name="search")
-     * @Rest\Get("search/index")
-     */
-    public function getSearchLegacyIndexAction(): Response
-    {
-        if (!$this->session->mayRole()) {
-            throw new UnauthorizedHttpException('');
-        }
-        $data = $this->searchTransactions->generateIndex();
-
-        $view = $this->view($data, 200);
-
-        return $this->handleView($view);
-    }
-
-    /**
-     * @OA\Tag(name="search")
      * @Rest\Get("search/user")
      * @Rest\QueryParam(name="q", description="Search query.")
      * @Rest\QueryParam(name="regionId", requirements="\d+", nullable=true, description="Restricts the search to a region")
+     * @OA\RequestBody(@OA\JsonContent(
+     *    type="array",
+     *    @OA\Items(ref=@Model(type=SimplifiedUserSearchResult::class))
+     * ))
      */
     public function listUserResultsAction(ParamFetcher $paramFetcher, Session $session): Response
     {
@@ -68,21 +59,32 @@ class SearchRestController extends AbstractFOSRestController
 
         $q = $paramFetcher->get('q');
         $regionId = $paramFetcher->get('regionId');
-        if (!empty($regionId) && !$this->searchPermissions->maySearchInRegion($regionId)) {
+        $maySearchByEmailAddress = $this->searchPermissions->maySearchByEmailAddress();
+
+        if (!$regionId) {
+            $users = $this->searchGateway->searchUsers($q, $this->session->id(), false, $maySearchByEmailAddress);
+        } elseif (!$this->searchPermissions->maySearchInRegion($regionId)) {
             throw new AccessDeniedHttpException('insufficient permissions to search in that region');
+        } else {
+            $users = $this->searchGateway->searchUsersGlobal($q, $regionId, false, false);
         }
 
-        $results = $this->searchTransactions->searchForUser($q, $regionId);
+        $users = array_map(fn ($user) => SimplifiedUserSearchResult::fromUserSearchResult($user), $users);
 
-        return $this->handleView($this->view($results, 200));
+        return $this->handleView($this->view($users, 200));
     }
 
     /**
-     * General search endpoint that returns foodsavers, stores, and regions.
+     * General search endpoint that returns foodsavers, stores, and regions, food share points and working groups.
      *
      * @OA\Tag(name="search")
      * @Rest\Get("search/all")
      * @Rest\QueryParam(name="q", description="Search query.")
+     * @OA\Response(
+     * 		response="200",
+     * 		description="Success.",
+     *      @Model(type=MixedSearchResult::class)
+     * )
      */
     public function searchAction(ParamFetcher $paramFetcher): Response
     {
@@ -106,14 +108,7 @@ class SearchRestController extends AbstractFOSRestController
      * @OA\Parameter(name="groupId", in="path", @OA\Schema(type="integer"), description="which forum to return threads for (region or group)")
      * @OA\Parameter(name="subforumId", in="path", @OA\Schema(type="integer"), description="ID of the forum in the group (normal or ambassador forum)")
      * @OA\Parameter(name="q", in="query", @OA\Schema(type="string"), description="search query")
-     * @OA\Response(response="200", description="Success",
-     *     @OA\Schema(type="object", @OA\Property(property="data", type="array",
-     *         @OA\Items(type="object",
-     *             @OA\Property(property="id", type="integer", description="thread id"),
-     *             @OA\Property(property="name", type="string", description="thread title")
-     *         )
-     *     ))
-     * )
+     * @OA\Response(response="200", description="Success", @OA\Schema(type="array"))
      * @OA\Response(response="400", description="Empty search query.")
      * @OA\Response(response="403", description="Insufficient permissions to search in that forum.")
      * @OA\Tag(name="search")
@@ -134,7 +129,8 @@ class SearchRestController extends AbstractFOSRestController
             throw new BadRequestHttpException();
         }
 
-        $results = $this->searchGateway->searchForumTitle($q, $groupId, $subforumId);
+        $disableRegionCheck = $this->forumPermissions->maySearchEveryForum();
+        $results = $this->searchGateway->searchThreads($q, $this->session->id(), $groupId, $subforumId, $disableRegionCheck);
 
         return $this->handleView($this->view($results, 200));
     }

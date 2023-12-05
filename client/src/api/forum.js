@@ -83,3 +83,7 @@ export function createThread (forumId, forumSubId, title, body, sendMail) {
   },
   )
 }
+
+export function setTitle (threadId, title) {
+  return patch(`/forum/thread/${threadId}`, { title })
+}

@@ -73,7 +73,7 @@
         >
           <b-alert
             show
-            variant="dark"
+            variant="warning"
           >
             {{ $i18n('poll.may_not_yet_vote') }}
           </b-alert>

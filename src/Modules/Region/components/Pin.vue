@@ -9,7 +9,7 @@
       <b-form
         :class="{disabledLoading: isLoading,'card-body': true}"
       >
-        <div class="rounded pa-3">
+        <div class="rounded p-3">
           <b-form-checkbox
             id="pin-active-check"
             v-model="isActive"
@@ -32,15 +32,11 @@
             :label="$i18n('regionPin.desc')"
             label-for="text_description"
           >
-            <div
-              class="mb-2 ml-2"
-              v-html="$i18n('forum.markdown_description')"
-            />
-            <b-form-textarea
-              id="text_description"
-              v-model="tadesc"
+            <MarkdownInput
+              :rows="12"
+              :value="description"
               :placeholder="$i18n('regionPin.text_desc')"
-              rows="12"
+              @update:value="newDescription => description = newDescription"
             />
           </b-form-group>
 
@@ -56,20 +52,20 @@
   </div>
 </template>
 <script>
-import { BButton, BFormTextarea } from 'bootstrap-vue'
 import { setRegionPin } from '@/api/regions'
 import { pulseError, pulseInfo } from '@/script'
 import i18n from '@/helper/i18n'
 import L from 'leaflet'
 import LeafletLocationPicker from '@/components/map/LeafletLocationPicker'
 import 'leaflet.awesome-markers'
+import MarkdownInput from '@/components/Markdown/MarkdownInput.vue'
 L.AwesomeMarkers.Icon.prototype.options.prefix = 'fa'
 
 const STATUS_INACTIVE = 0
 const STATUS_ACTIVE = 1
 
 export default {
-  components: { BButton, BFormTextarea, LeafletLocationPicker },
+  components: { LeafletLocationPicker, MarkdownInput },
   props: {
     lat: {
       type: String,
@@ -95,7 +91,7 @@ export default {
       isLoading: false,
       inlat: this.lat,
       inlon: this.lon,
-      tadesc: this.desc,
+      description: this.desc,
       isActive: this.status === STATUS_ACTIVE,
       locationPickerIcon: L.AwesomeMarkers.icon({ icon: 'users', markerColor: 'green' }),
     }
@@ -105,7 +101,7 @@ export default {
       this.isLoading = true
       const status = this.isActive ? STATUS_ACTIVE : STATUS_INACTIVE
       try {
-        await setRegionPin(this.regionId, this.inlat, this.inlon, this.tadesc, status)
+        await setRegionPin(this.regionId, this.inlat, this.inlon, this.description, status)
         pulseInfo(i18n('regionPin.success'))
       } catch (err) {
         console.error(err)

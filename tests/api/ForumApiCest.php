@@ -74,7 +74,7 @@ class ForumApiCest
         $I->sendGET($threadPath);
         $I->seeResponseIsJson();
         $I->assertEquals(
-            '<p>' . $body . '</p>',
+            $body,
             $I->grabDataFromResponseByJsonPath('$.data.posts[1].body')[0]
         );
     }

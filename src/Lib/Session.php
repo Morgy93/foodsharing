@@ -535,7 +535,7 @@ class Session
     public function updateLastActivity()
     {
         $session_last_activity = $_SESSION['client']['last_activity'];
-        if ($session_last_activity === null) {
+        if ($session_last_activity === '0000-00-00 00:00:00') {
             $session_last_activity = date('Y-m-d');
         }
 

@@ -4,15 +4,7 @@
       <b-row class="p-2">
         <b-col cols="6">
           <b-button
-            v-if="page === MAILBOX_PAGE.EMAIL_LIST && !isEditModeEnabled"
-            size="sm"
-            variant="outline-primary"
-            @click="enableEditMode"
-          >
-            {{ $i18n('button.edit') }}
-          </b-button>
-          <b-button
-            v-if="page === MAILBOX_PAGE.READ_EMAIL || isEditModeEnabled"
+            v-if="page === MAILBOX_PAGE.READ_EMAIL || page === MAILBOX_PAGE.EMAIL_LIST"
             v-b-tooltip.hover
             :title="$i18n('mailbox.delete')"
             size="sm"
@@ -26,23 +18,34 @@
             v-if="page === MAILBOX_PAGE.READ_EMAIL"
             size="sm"
             variant="outline-primary"
+            :disabled="!isValidSender"
             @click="showAnswerMailPage"
           >
             {{ $i18n('mailbox.reply.short') }}
           </b-button>
           <b-button
-            v-if="page === MAILBOX_PAGE.EMAIL_LIST && !isRead && isEditModeEnabled"
+            v-if="page === MAILBOX_PAGE.EMAIL_LIST"
             v-b-tooltip.hover
-            :title="$i18n('mailbox.mark_as_unread')"
+            :title="getTranslationForReadOrUnReadState"
             size="sm"
             variant="outline-primary"
             :disabled="areMailsNotSelected"
-            @click="mailboxViewSetReadState"
+            @click="mailboxViewToggleReadStateForMails"
           >
             <i class="fas fa-check" />
           </b-button>
           <b-button
-            v-if="page === MAILBOX_PAGE.EMAIL_LIST && !isSelected && isEditModeEnabled"
+            v-if="page === MAILBOX_PAGE.READ_EMAIL"
+            v-b-tooltip.hover
+            :title="getTranslationForReadOrUnReadState"
+            size="sm"
+            variant="outline-primary"
+            @click="mailboxSingleEmailViewToggleEmailState"
+          >
+            <i class="fas fa-check" />
+          </b-button>
+          <b-button
+            v-if="page === MAILBOX_PAGE.EMAIL_LIST && !isSelected"
             size="sm"
             variant="outline-primary"
             @click="mailboxViewSelectAllRows"
@@ -50,7 +53,7 @@
             {{ $i18n('mailbox.mark_all') }}
           </b-button>
           <b-button
-            v-else-if="page === MAILBOX_PAGE.EMAIL_LIST && isEditModeEnabled"
+            v-else-if="page === MAILBOX_PAGE.EMAIL_LIST"
             size="sm"
             variant="outline-primary"
             @click="mailboxViewClearSelected"
@@ -58,7 +61,7 @@
             {{ $i18n('mailbox.delete_selected') }}
           </b-button>
           <b-dropdown
-            v-if="page === MAILBOX_PAGE.READ_EMAIL || isEditModeEnabled"
+            v-if="page === MAILBOX_PAGE.READ_EMAIL || page === MAILBOX_PAGE.EMAIL_LIST"
             id="dropdown-move-to"
             :text="$i18n('mailbox.move_to')"
             class="m-md-2"
@@ -78,20 +81,11 @@
           class="text-right"
         >
           <b-button
-            v-if="!isEditModeEnabled"
             size="sm"
             variant="primary"
             @click="showNewMailPage"
           >
             {{ $i18n('mailbox.write') }}
-          </b-button>
-          <b-button
-            v-else
-            size="sm"
-            variant="primary"
-            @click="disableEditMode"
-          >
-            {{ $i18n('mailbox.close_edit_mode') }}
           </b-button>
         </b-col>
       </b-row>
@@ -120,7 +114,6 @@ export default {
     return {
       isSelected: false,
       isRead: false,
-      isEditModeEnabled: false,
       showEmailDeletionConfirmationModal: false,
     }
   },
@@ -130,6 +123,20 @@ export default {
     },
     areMailsNotSelected () {
       return this.selectedEmail < 1
+    },
+    getTranslationForReadOrUnReadState () {
+      if (Array.isArray(this.selectedEmail)) {
+        const areAnyUnread = this.selectedEmail.some((item) => !item.isRead)
+        return areAnyUnread ? this.$i18n('mailbox.mark_as_read') : this.$i18n('mailbox.mark_as_unread')
+      } else if (typeof this.selectedEmail === 'object') {
+        return this.selectedEmail.isRead ? this.$i18n('mailbox.mark_as_unread') : this.$i18n('mailbox.mark_as_read')
+      } else {
+        console.error('Fehler: selectedEmail hat einen ungültigen Typ')
+        return ''
+      }
+    },
+    isValidSender () {
+      return this.selectedEmail.from.address?.length > 0
     },
   },
   created () {
@@ -156,8 +163,11 @@ export default {
       this.$emit('select-all-rows')
       this.isSelected = true
     },
-    mailboxViewSetReadState () {
-      this.$emit('set-read-state')
+    mailboxSingleEmailViewToggleEmailState () {
+      this.$emit('toggle-email-state')
+    },
+    mailboxViewToggleReadStateForMails () {
+      this.$emit('toggle-read-state-for-mails')
     },
     mailboxViewClearSelected () {
       this.$emit('clear-selected')
@@ -172,12 +182,6 @@ export default {
     },
     cancelEmailDeletion () {
       this.showEmailDeletionConfirmationModal = false
-    },
-    enableEditMode () {
-      this.isEditModeEnabled = true
-    },
-    disableEditMode () {
-      this.isEditModeEnabled = false
     },
     moveEmail () {
       const folderMappings = {

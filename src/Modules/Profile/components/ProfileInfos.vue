@@ -2,10 +2,9 @@
   <div class="infos">
     <ul>
       <li
-        v-if="lastActivity"
         class="mb-2"
       >
-        <b>{{ $i18n('profile.infos.lastActivity') }}:</b> {{ lastActivity }}
+        <b>{{ $i18n('profile.infos.lastActivity') }}:</b> {{ lastActivityText }}
       </li>
       <li
         v-if="registrationDate"
@@ -53,6 +52,9 @@ export default {
     isfoodsaver: { type: Boolean, default: false },
   },
   computed: {
+    lastActivityText () {
+      return this.lastActivity ? this.lastActivity : this.$i18n('profile.infos.never')
+    },
     getFsIdTranslation () {
       return !this.isfoodsaver ? this.$i18n('profile.infos.foodsharerId') : this.$i18n('profile.infos.foodsaverId')
     },

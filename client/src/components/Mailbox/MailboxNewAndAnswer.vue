@@ -188,22 +188,12 @@
       </b-row>
 
       <div class="p-2">
-        <div v-if="answerMode">
-          <b-form-textarea
-            id="textarea"
-            v-model="getMailBody"
-            rows="12"
-            max-rows="12"
-          />
-        </div>
-        <div v-else>
-          <b-form-textarea
-            id="textarea"
-            v-model="mailBody"
-            rows="12"
-            max-rows="12"
-          />
-        </div>
+        <b-form-textarea
+          id="textarea"
+          v-model="mailBody"
+          rows="12"
+          max-rows="12"
+        />
       </div>
 
       <b-row class="p-2">
@@ -271,22 +261,8 @@ export default {
     answerMode () {
       return store.state.answerMode
     },
-    mailboxAddress () {
-      return this.selectedMailbox[1] + '@foodsharing.network'
-    },
     selectedMailbox () {
       return store.state.selectedMailbox
-    },
-    getMailBody () {
-      let value = null
-      if (this.answerMode) {
-        const mailFromAdress = '<' + this.email.from.address + '>'
-        const mailFromAndAdress = this.email.from.name ? this.email.from.name + ' ' + mailFromAdress : mailFromAdress
-        const mailFromAndDate = mailFromAndAdress + ' ' + this.$i18n('mailbox.for_quoting.has_from') + ' ' + this.displayedMailDate + ' ' + this.$i18n('mailbox.for_quoting.written_text') + ': \n\n'
-        const replacedContent = '> ' + this.email.body.replace('\r', '\n')
-        value = mailFromAndDate + replacedContent
-      }
-      return value
     },
     areAllEmailsValid () {
       if (this.emailTo.length === 0) {
@@ -334,6 +310,7 @@ export default {
   created () {
     window.addEventListener('resize', this.checkMobile)
     this.checkMobile()
+    this.getMailBody()
     if (this.answerMode) {
       this.subject = this.email.subject
       this.emailTo.push(this.email.from.address)
@@ -343,6 +320,18 @@ export default {
     window.removeEventListener('resize', this.checkMobile)
   },
   methods: {
+    getMailBody () {
+      if (this.answerMode) {
+        const mailFromAddress = `<${this.email.from.address}>`
+        const mailFromAndAddress = this.email.from.name ? `${this.email.from.name} ${mailFromAddress}` : mailFromAddress
+        const mailFromAndDate = `${mailFromAndAddress} ${this.$i18n('mailbox.for_quoting.has_from')} ${this.displayedMailDate} ${this.$i18n('mailbox.for_quoting.written_text')}: \n\n`
+        const replacedContent = `> ${this.email.body.replace(/\r/g, '\n')}`
+
+        this.mailBody = mailFromAndDate + replacedContent
+      } else {
+        this.mailBody = null
+      }
+    },
     checkMobile () {
       this.isMobile = window.innerWidth <= 768
     },
@@ -388,7 +377,7 @@ export default {
 
         // send the email
         if (this.answerMode) {
-          await sendEmail(this.selectedMailbox[0], [this.email.from.address], null, null, this.email.subject, this.email.body, attachments, this.email.id)
+          await sendEmail(this.selectedMailbox[0], [this.email.from.address], null, null, this.subject, this.mailBody, attachments, this.email.id)
         } else {
           await sendEmail(this.selectedMailbox[0], this.emailTo, null, null, this.subject, this.mailBody, attachments, null)
         }

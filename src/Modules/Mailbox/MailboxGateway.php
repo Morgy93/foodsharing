@@ -162,8 +162,8 @@ class MailboxGateway extends BaseGateway
             [':message_id' => $message_id]
         );
 
-        $data['sender'] = $this->parseAddress($data['sender']);
-        $data['to'] = $this->parseAddresses($data['to']);
+        $data['sender'] = $this->parseAddress($data['sender']) ?? new EmailAddress('');
+        $data['to'] = $this->parseAddresses($data['to']) ?? [];
 
         return $data;
     }
@@ -226,8 +226,8 @@ class MailboxGateway extends BaseGateway
         );
 
         foreach ($data as &$d) {
-            $d['sender'] = $this->parseAddress($d['sender']);
-            $d['to'] = $this->parseAddresses($d['to']);
+            $d['sender'] = $this->parseAddress($d['sender']) ?? new EmailAddress('');
+            $d['to'] = $this->parseAddresses($d['to']) ?? [];
         }
 
         return $data;
@@ -634,30 +634,40 @@ class MailboxGateway extends BaseGateway
     }
 
     /**
-     * Converts a JSON string into an email address DTO.
+     * Converts a JSON string into an email address DTO. Returns null if the JSON cannot be parsed.
      */
-    private function parseAddress(string $json): EmailAddress
+    private function parseAddress(string $json): ?EmailAddress
     {
-        $json = $this->fixQuotedAddressJson($json);
-        $data = json_decode($json, true, 512, JSON_THROW_ON_ERROR + JSON_INVALID_UTF8_IGNORE);
-        $name = isset($data['personal']) ? $data['personal'] : null;
+        try {
+            $json = $this->fixQuotedAddressJson($json);
+            $data = json_decode($json, true, 512, JSON_THROW_ON_ERROR + JSON_INVALID_UTF8_IGNORE);
+            $name = isset($data['personal']) ? $data['personal'] : null;
 
-        return new EmailAddress($data['mailbox'], $data['host'] ?? '', $name);
+            return new EmailAddress($data['mailbox'], $data['host'] ?? '', $name);
+        } catch (Exception) {
+            return null;
+        }
     }
 
     /**
-     * Converts a JSON string into an array of email address DTOs.
+     * Converts a JSON string into an array of email address DTOs. Returns null if the JSON cannot be parsed.
+     *
+     * @return ?EmailAddress[]
      */
-    private function parseAddresses(string $json): array
+    private function parseAddresses(string $json): ?array
     {
         $json = $this->fixQuotedAddressJson($json);
-        $data = json_decode($json, true, 512, JSON_THROW_ON_ERROR + JSON_INVALID_UTF8_IGNORE);
+        try {
+            $data = json_decode($json, true, 512, JSON_THROW_ON_ERROR + JSON_INVALID_UTF8_IGNORE);
 
-        return array_map(function ($x) {
-            $name = isset($x['personal']) ? $x['personal'] : null;
+            return array_map(function ($x) {
+                $name = isset($x['personal']) ? $x['personal'] : null;
 
-            return new EmailAddress($x['mailbox'], $x['host'] ?? '', $name);
-        }, $data);
+                return new EmailAddress($x['mailbox'], $x['host'] ?? '', $name);
+            }, $data);
+        } catch (Exception) {
+            return null;
+        }
     }
 
     /**
@@ -694,8 +704,8 @@ class MailboxGateway extends BaseGateway
     private function parseEmail(array $data): Email
     {
         // convert the data to an Email object
-        $from = $this->parseAddress($data['sender']);
-        $to = $this->parseAddresses($data['to']);
+        $from = $this->parseAddress($data['sender']) ?? new EmailAddress('');
+        $to = $this->parseAddresses($data['to']) ?? [];
         $email = Email::create(
             intval($data['id']), intval($data['mailbox_id']), intval($data['folder']),
             $from, $to,

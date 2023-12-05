@@ -48,7 +48,7 @@ final class PassportGeneratorControl extends Control
 
     public function index(): void
     {
-        $this->pageHelper->addBread($this->region['name'], '/?page=bezirk&bid=' . $this->regionId);
+        $this->pageHelper->addBread($this->region['name'], '/region?bid=' . $this->regionId);
         $this->pageHelper->addBread($this->translator->trans('pass.bread'));
 
         $this->pageHelper->addTitle($this->region['name']);

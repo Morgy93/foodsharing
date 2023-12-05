@@ -31,53 +31,6 @@
 # The code that actually handles these parameters (Control::uri) only looks at the REQUEST_URI,
 # which is not changed by Symfony.
 
-partner:
-  path: /partner
-  controller: Foodsharing\Entrypoint\IndexController
-
-ueber-uns:
-  path: /ueber-uns
-  controller: Foodsharing\Entrypoint\IndexController
-
-team:
-  path: /team
-  controller: Foodsharing\Entrypoint\IndexController
-
-# specific user, see comment in TeamControl::index
-team_id:
-  path: /team/{id}
-  controller: Foodsharing\Entrypoint\IndexController
-  requirements:
-    id: '\d+'
-
-team_type:
-  path: /team/{type}
-  controller: Foodsharing\Entrypoint\IndexController
-
-faq:
-  path: /faq
-  controller: Foodsharing\Entrypoint\IndexController
-
-fuer-unternehmen:
-  path: /fuer-unternehmen
-  controller: Foodsharing\Entrypoint\IndexController
-
-leeretonne:
-  path: /leeretonne
-  controller: Foodsharing\Entrypoint\IndexController
-
-fairteilerrettung:
-  path: /fairteilerrettung
-  controller: Foodsharing\Entrypoint\IndexController
-
-impressum:
-  path: /impressum
-  controller: Foodsharing\Entrypoint\IndexController
-
-ratgeber:
-  path: /ratgeber
-  controller: Foodsharing\Entrypoint\IndexController
-
 recovery:
   path: /recovery
   controller: Foodsharing\Entrypoint\IndexController

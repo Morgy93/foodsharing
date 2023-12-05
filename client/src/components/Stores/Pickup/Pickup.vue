@@ -58,6 +58,7 @@
             :allow-kick="(isCoordinator || mayEditStore) && !isInPast"
             :allow-confirm="(isCoordinator || mayEditStore)"
             :allow-chat="slot.profile.id !== user.id"
+            :date="date"
             @leave="$refs.modal_leave.show()"
             @kick="activeSlot = slot, $refs.modal_kick.show()"
             @confirm="$emit('confirm', {date: date, fsId: slot.profile.id})"
@@ -202,11 +203,13 @@
       modal-class="bootstrap"
       header-class="d-flex"
       @ok="$emit('edit-description', date, totalSlots, newDescription)"
+      @shown="$refs.modal_edit_description_input.focus()"
     >
       <p>
         {{ $i18n('pickup.description_modal_text') }}
       </p>
       <b-form-input
+        ref="modal_edit_description_input"
         v-model="newDescription"
         :placeholder="$i18n('pickup.description')"
         :maxlength="100"

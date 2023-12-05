@@ -177,6 +177,8 @@ final class PageHelper
             $sentryConfig = RAVEN_JAVASCRIPT_CONFIG;
         }
 
+        $mapTilesApiKey = defined('GEOAPIFY_API_KEY') ? GEOAPIFY_API_KEY : null;
+
         return array_merge($this->extraJsServerData, [
             'user' => $userData,
             'permissions' => $permissions,
@@ -186,7 +188,8 @@ final class PageHelper
             'ravenConfig' => $sentryConfig,
             'isDev' => getenv('FS_ENV') === 'dev',
             'isTest' => getenv('FS_ENV') === 'test',
-            'locale' => $this->session->getLocale()
+            'locale' => $this->session->getLocale(),
+            'mapTilesApiKey' => $mapTilesApiKey
         ]);
     }
 

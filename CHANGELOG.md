@@ -1,27 +1,63 @@
 # Unreleased
 
 ## Features
-- Storemanagers see how far applicants to the store live away #1661 !2772 @Anton Ballmaier
+- Improve bell notifications for forum posts #719 !2827 !2826 @AntonBallmaier
+- Added a MarkdownInput component, that is used every where md is used. !2865 !2893 @AntonBallmaier
+- Storemanagers see how far applicants to the store live away #1661 !2772 !2893 @Anton Ballmaier
+- Threads can be renamed !2882 @AntonBallmaier
+- The button to jump to the start or end of a thread can be accessed from anywhere in the thread !2882 @AntonBallmaier
+- Exported calendars can be filtered by the invitation status #1535 !2873 @alex.simm
+- Members of the Store Coordination GOALS group / ambassadors can add more than 3 storemanagers and remove the last one !2895 @AntonBallmaier
+- Added spanish translation !2892 @irgendwer
+- Made store log accessible by store managers !2902 @AntonBallmaier
+- The source code of forum posts can now be copied !2913 @AntonBallmaier
+- Added confirmation modal to sending mail when creating a new thread !2877 @AntonBallmaier
+- If youre phone number is invalid, you get informed about that on the dashboard now !2916 @AntonBallmaier
 
 ## Changes
 - Changed team state translation from full to closed !2831 @chriswalg
 - Add "call" (tel:) button visibility also for desktop, not only mobile" #1138 !2835 @chriswalg
+- Administrating threads has a cleaner look !2882 @AntonBallmaier
+- Pinned Threads are sorted by name !2883 !2891 @AntonBallmaier
+- rework slot dropdown to modal #1228 !2813 @chriswalg
+- Changed behaviour from deleting unconfirmed slots at midnight into keeping them #1707 !2901 @irgendwer
+- Reworked all search functionality !2886 @AntonBallmaier
+- Markdown in forum posts is now rendered in the front end to reduce inconsistencies !2913 !2917 @AntonBallmaier
+- Change the direction of score voting !2920 @AntonBallmaier
+- Select no value by default in score voting !2920 @AntonBallmaier
 - Moved StoreInformationModal to a tab on store page and changed the buttons for chats and leaving team !2874 @chriswalg
 
 ## Bugfixes
+- Added error handling for cache helper for bell notifications or other requests !2869 @chriswalg
+- Allow adding regular pickups even if there is one for every day already !2897 @AntonBallmaier
+- fix if last activity date is „0000-00-00 00:00:00“ !2853 @chriswalg
+- fix reaction tooltip with deleted users !2909 @AntonBallmaier
+- Controll characters like * can now be escaped using the front end md engine !2913 @AntonBallmaier
+- make relative links generated in the beta-version readable in the prod version !2924 @AntonBallmaier
+- Fix server error when trying to log in on beta @AntonBallmaier
 
 ## Refactoring
-- Refactor mailbox modul to vue and rest api !2580 !2870 @chriswalg @alex.simm
+- Refactor mailbox modul to vue and rest api !2580 !2870 !2871 @chriswalg @alex.simm
 - Use REST for quickreplying to wall posts !2795 @alex.simm
 - Cleaned up a lot of core code all over the place !2738 @\_fridtjof_
 - Preparations to routing/link building code for future porting to Symfony controllers !2738 @\_fridtjof_
 - Moved the database connection to Doctrine DBAL !2801 @\_fridtjof_
 - Refactored the list of editable content to vue !2862 @alex.simm
+- Use REST for statistic !2879 !2887 @fs_k
+- Modernized ContentControl to a Symfony controller !2876 @\_fridtjof_
+- Modernized TeamControl to a Symfony contorller !2881 @\_fridtjof_
+- Replaced the maps on basket pages with vue and removed vMap !2880 @alex.simm
+- Modernized RegionControl to a Symfony controller !2741 @\_fridtjof_
 
 ## Dev/Test/CI stuff
 - removed CHANGELOG.md merge=union !2866 @chriswalg
 - Updated quality tools !2867 @\_fridtjof_
 - Show CS Fixer results in gitlab !2867 @\_fridtjof_
+- Added the Symfony profiler and debug toolbar !1580 @\_fridtjof_
+- Added feature toggles !2633 @martincodes-de
+- The backend now provides the map tile api key for the client #1074 !2621 !2925 @alex.simm
+- Bump vue-advanced-chat to 2.0.10 !2927 @chriswalg
+- Added a rate limiter to the login endpoint !2672 @alex.simm
 
 ## Development documentation
 
@@ -38,6 +74,7 @@
 - Store chain information is visible on the store page !2742 @alex.simm
 - Add home district count to region top #79 !2692 @Morgy93
 - Storemanagers can set a description for pickup slots #1653 !2757 !2781 @AntonBallmaier
+- Improved bell menu #1684 #1685 #1686 #1687 !2832 @AntonBallmaier
 
 ## Changes
 - Added a new content page for it infos to menu !2590 @chriswalg
@@ -1070,7 +1107,7 @@ and persistent session disabled after each request, so that LastLogin is set cor
 
 
 # 2020-01-26
-Another release from your lovely dev Team. A lot of changes have been done "under the hood" that will help developers with modernization of the codebase and to improve the website further. A lot of old code has been removed, restructured and database access has been improved. Some nightly maintanance have been optimized. A more user friendly overview of the new improvements can be found here: https://foodsharing.de/?page=bezirk&bid=741&sub=forum&tid=98018 accessable for every foodsaver.
+Another release from your lovely dev Team. A lot of changes have been done "under the hood" that will help developers with modernization of the codebase and to improve the website further. A lot of old code has been removed, restructured and database access has been improved. Some nightly maintanance have been optimized. A more user friendly overview of the new improvements can be found here: https://foodsharing.de/region?bid=741&sub=forum&tid=98018 accessable for every foodsaver.
 
 
 ## Features

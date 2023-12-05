@@ -1,6 +1,8 @@
 #!/usr/bin/env bash
 # This script is creating the artifacts for deployment
 
+export FS_ENV=prod
+
 dir=$(dirname "$0")
 
 # shellcheck source=./__common.sh

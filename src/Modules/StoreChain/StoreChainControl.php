@@ -29,7 +29,7 @@ class StoreChainControl extends Control
             $this->routeHelper->goAndExit('?page=settings&sub=up_fs');
         }
 
-        $this->pageHelper->addBread($this->translator->trans('chain.bread.workinggroup'), '/?page=bezirk&bid=' . RegionIDs::STORE_CHAIN_GROUP);
+        $this->pageHelper->addBread($this->translator->trans('chain.bread.workinggroup'), '/region?bid=' . RegionIDs::STORE_CHAIN_GROUP);
         $this->pageHelper->addBread($this->translator->trans('chain.bread.list'), '/#');
         $this->pageHelper->addTitle($this->translator->trans('chain.pagetitle'));
 

@@ -150,4 +150,22 @@ class GroupFunctionGateway extends BaseGateway
             ['bezirk_id' => $groupId]
         );
     }
+
+    /**
+     * Wheter the given user is admin of a given specific kind of GOALS working group.
+     *
+     * @param array $workgroupFunctions Working group function to check for
+     * @param int $foodsaverId The users id
+     * @return bool True if the user is admin of a fitting working group
+     */
+    public function isAdminForSpecialWorkingGroup(array $workgroupFunctions, int $foodsaverId): bool
+    {
+        return $this->db->fetchValue('SELECT COUNT(*)
+            from fs_region_function region_function
+            JOIN fs_botschafter ambassador ON ambassador.bezirk_id = region_function.region_id
+            WHERE ambassador.foodsaver_id = ?
+            AND region_function.function_id IN (' . implode(',', $workgroupFunctions) . ')',
+            [$foodsaverId]
+        ) > 0;
+    }
 }

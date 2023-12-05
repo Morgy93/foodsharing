@@ -12,7 +12,7 @@
           @try-delete-email="tryDeleteEmail"
           @try-move-email="tryMoveEmail"
           @select-all-rows="selectAllRows"
-          @set-read-state="setReadState"
+          @toggle-read-state-for-mails="toggleReadStateForMails"
           @clear-selected="clearSelected"
         />
         <b-table
@@ -46,6 +46,16 @@
               @click="showEmail(row.item.id)"
             >
               {{ formatEmailAddress(row.item.from) }}
+            </a>
+          </template>
+          <template #cell(recipient)="row">
+            <a
+              :key="row.item.id"
+              href="#"
+              :class="{ unReadMail: !row.item.isRead }"
+              @click="showEmail(row.item.id)"
+            >
+              {{ formatRecipientAddresses(row.item.to) }}
             </a>
           </template>
           <template #cell(subject)="row">
@@ -91,44 +101,12 @@ import { BTable } from 'bootstrap-vue'
 import { hideLoader, pulseError, showLoader } from '@/script'
 import { deleteEmail, getAllEmails, setEmailProperties } from '@/api/mailbox'
 import i18n from '@/helper/i18n'
-import { store, MAILBOX_PAGE } from '@/stores/mailbox'
+import { store, MAILBOX_FOLDER, MAILBOX_PAGE } from '@/stores/mailbox'
 
 export default {
   components: { Container, BTable, MailboxMainNav },
   data () {
     return {
-      columns: [
-        {
-          key: 'selected',
-          label: '',
-          sortable: false,
-          class: 'align-middle leftcolumn',
-        },
-        {
-          key: 'sender',
-          label: this.$i18n('mailbox.sender'),
-          sortable: false,
-          class: 'align-middle',
-        },
-        {
-          key: 'subject',
-          sortable: false,
-          label: this.$i18n('mailbox.subject'),
-          class: 'align-middle',
-        },
-        {
-          key: 'date',
-          label: this.$i18n('mailbox.date'),
-          sortable: false,
-          class: 'align-middle',
-        },
-        {
-          key: 'attachments',
-          label: '',
-          sortable: true,
-          class: 'align-middle',
-        },
-      ],
       emailId: null,
       mailboxMails: [],
       selected: [],
@@ -138,10 +116,29 @@ export default {
     selectedMailbox () {
       return store.state.selectedMailbox
     },
+    columns () {
+      const baseColumns = [
+        { key: 'selected', label: '', sortable: false, class: 'align-middle leftcolumn' },
+        { key: 'subject', sortable: false, label: this.$i18n('mailbox.subject'), class: 'align-middle' },
+        { key: 'date', label: this.$i18n('mailbox.date'), sortable: false, class: 'align-middle' },
+        { key: 'attachments', label: '', sortable: true, class: 'align-middle' },
+      ]
+
+      const useSender = this.selectedMailbox[2] === MAILBOX_FOLDER.INBOX
+      const senderOrRecipientColumn = {
+        key: useSender ? 'sender' : 'recipient',
+        label: useSender ? this.$i18n('mailbox.sender') : this.$i18n('mailbox.recipient'),
+        sortable: false,
+        class: 'align-middle',
+      }
+      return [baseColumns[0], senderOrRecipientColumn, ...baseColumns.slice(1)]
+    },
   },
   watch: {
     selectedMailbox () {
+      this.$refs.selectableTable.isBusy = true
       this.tryGetAllEmails()
+      this.$refs.selectableTable.isBusy = false
     },
   },
   created () {
@@ -184,17 +181,34 @@ export default {
       hideLoader()
     },
     formatEmailAddress (address) {
-      return (address.name !== undefined && address.name !== null) ? address.name : address.address
+      const result = (address.name !== undefined && address.name !== null) ? address.name : address.address
+      return result ?? `(${this.$i18n('mailbox.unknown_sender')})`
+    },
+    formatRecipientAddresses (addresses) {
+      return addresses.map(address => this.formatEmailAddress(address)).join(', ')
     },
     showEmail (emailId) {
       this.emailId = emailId
       store.setPage(MAILBOX_PAGE.READ_EMAIL)
       this.$emit('update:selected-email-id', this.emailId)
     },
-    setReadState () {
+    async toggleReadStateForMails () {
+      showLoader()
+      this.isBusy = true
+      const areAnyUnread = this.selected.some((item) => !item.isRead)
+
       this.selected.forEach((item) => {
-        if (item.isRead === false) { item.isRead = true }
+        item.isRead = areAnyUnread
       })
+
+      try {
+        await Promise.all(this.selected.map(email => setEmailProperties(email.id, areAnyUnread, this.selectedMailbox[2])))
+        await this.tryGetAllEmails()
+      } catch (e) {
+        pulseError(i18n('error_unexpected'))
+      }
+      this.isBusy = false
+      hideLoader()
     },
     onRowSelected (items) {
       this.selected = items

@@ -266,6 +266,8 @@ build:docs:
   services:
     - name: registry.gitlab.com/foodsharing-dev/images/mariadb:latest
       alias: db
+    - name: registry.gitlab.com/foodsharing-dev/images/influxdb:latest
+      alias: influxdb
   script:
     - ./scripts/ci-docs-build
   needs:

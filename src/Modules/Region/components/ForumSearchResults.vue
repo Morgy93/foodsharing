@@ -1,7 +1,15 @@
 <template>
-  <div class="mt-3">
+  <div class="mt-3 results">
     <div
-      v-if="isEmpty && !isLoading"
+      v-if="query"
+      class="alert alert-info"
+    >
+      <i class="fas fa-info-circle" />
+      <span> {{ $i18n('search.thread-title-only') }} </span>
+    </div>
+
+    <div
+      v-if="isEmpty && !isLoading && query.trim().length >= 3"
       class="dropdown-header alert alert-warning"
     >
       {{ $i18n('search.noresults') }}
@@ -11,39 +19,25 @@
       v-if="!isEmpty"
       class="found-threads"
     >
-      <div class="m-1 text-center text-muted">
-        <i class="fas fa-info-circle" />
-        <span> {{ $i18n('search.thread-title-only') }} </span>
-      </div>
-
       <h3 class="dropdown-header">
-        <i class="fas fa-comment" /> {{ $i18n('terminology.threads') }}
+        <i class="fas fa-comments" /> {{ $i18n('terminology.threads') }}
       </h3>
 
-      <search-result-entry
-        v-for="thread in filteredThreads"
+      <ThreadResultEntry
+        v-for="thread in threads"
         :key="thread.id"
-        :href="$url('forum', groupId, subforumId, thread.id)"
-        :title="thread.name"
-        :teaser="getThreadDate(thread)"
-        teaser-icon="far fa-clock"
+        :thread="thread"
+        :hide-region="true"
       />
     </div>
   </div>
 </template>
 
 <script>
-import SearchResultEntry from '@/components/SearchBar/SearchResultEntry'
-
-function match (word, e) {
-  if (e.name && e.name.toLowerCase().indexOf(word) !== -1) return true
-  return e.teaser && e.teaser.toLowerCase().indexOf(word) !== -1
-}
+import ThreadResultEntry from '@/components/SearchBar/ResultEntry/ThreadResultEntry'
 
 export default {
-  components: {
-    SearchResultEntry,
-  },
+  components: { ThreadResultEntry },
   props: {
     threads: {
       type: Array,
@@ -67,28 +61,8 @@ export default {
     },
   },
   computed: {
-    filteredThreads () {
-      const query = this.query.toLowerCase().trim()
-      const words = query.match(/[^ ,;+.]+/g)
-
-      // filter elements, whether all of the query words are contained somewhere in name or teaser
-      const filterFunction = (e) => {
-        if (!words.length) return false
-        for (const word of words) {
-          if (!match(word, e)) return false
-        }
-        return true
-      }
-      return this.threads.filter(filterFunction)
-    },
     isEmpty () {
-      return !this.filteredThreads.length
-    },
-  },
-  methods: {
-    getThreadDate (thread) {
-      const lastUpdated = new Date(Date.parse(thread.teaser))
-      return this.$dateFormatter.base(lastUpdated)
+      return !this.threads.length
     },
   },
 }
@@ -110,4 +84,11 @@ export default {
     color: var(--fs-color-gray-500);
   }
 }
+
+::v-deep .found-threads > .dropdown-item,
+::v-deep .found-threads > .dropdown-header {
+  padding-left: 0;
+  padding-right: 0;
+}
+
 </style>

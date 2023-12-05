@@ -3,14 +3,15 @@
 $I = new AcceptanceTester($scenario);
 $I->wantTo('add a foodsaver to a working group by seeing their ID in the tag select');
 
-$group = $I->createWorkingGroup('a test group');
+$region = $I->createRegion();
+$group = $I->createWorkingGroup('a test group', ['parent_id' => $region['id']]);
 $foodsaver = $I->createFoodsaver(null, ['name' => 'WorkingGroupTestUser', 'nachname' => 'lastNameOfThat']);
-$I->addRegionMember($group['parent_id'], $foodsaver['id']);
+$I->addRegionMember($region['id'], $foodsaver['id']);
 $admin = $I->createFoodsaver();
 $I->addRegionMember($group['id'], $admin['id']);
 $I->addRegionAdmin($group['id'], $admin['id']);
-$I->addRegionMember($group['parent_id'], $admin['id']);
-$I->addRegionAdmin($group['parent_id'], $admin['id']);
+$I->addRegionMember($region['id'], $admin['id']);
+$I->addRegionAdmin($region['id'], $admin['id']);
 
 $I->login($admin['email']);
 $I->amOnPage($I->groupMemberListUrl($group['id']));

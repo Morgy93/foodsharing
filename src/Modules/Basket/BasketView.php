@@ -4,7 +4,6 @@ namespace Foodsharing\Modules\Basket;
 
 use Foodsharing\Lib\Session;
 use Foodsharing\Lib\View\Utils;
-use Foodsharing\Lib\View\vMap;
 use Foodsharing\Lib\View\vPage;
 use Foodsharing\Modules\Core\DBConstants\Map\MapConstants;
 use Foodsharing\Modules\Core\View;
@@ -73,25 +72,18 @@ class BasketView extends View
 
     private function findMap($location): string
     {
-        $map = new vMap($location);
-
         if (is_array($location)) {
-            $map->setCenter($location['lat'], $location['lon']);
+            $center = ['lat' => $location['lat'], 'lon' => $location['lon']];
+            $zoom = MapConstants::ZOOM_CITY;
         } else {
-            $map->setCenter(MapConstants::CENTER_GERMANY_LAT, MapConstants::CENTER_GERMANY_LON);
-            $map->setZoom(MapConstants::ZOOM_COUNTRY);
+            $center = ['lat' => MapConstants::CENTER_GERMANY_LAT, 'lon' => MapConstants::CENTER_GERMANY_LON];
+            $zoom = MapConstants::ZOOM_COUNTRY;
         }
 
-        $map->setSearchPanel('mapsearch');
-        $map->setMarkerCluster();
-        $map->setDefaultMarkerOptions('shopping-basket', 'green');
-
-        return '<div class="ui-widget">
-			<input id="mapsearch" type="text" name="mapsearch" value="" placeholder="'
-            . $this->translator->trans('basket.mapsearch')
-            . '" class="input text value ui-corner-top" />
-			<div class="findmap">' . $map->render() . '</div>
-		</div>';
+        return $this->vueComponent('baskets-location-map', 'BasketsLocationMap', [
+            'center' => $center,
+            'zoom' => $zoom,
+        ]);
     }
 
     public function nearbyBaskets(array $baskets): string
@@ -158,14 +150,12 @@ class BasketView extends View
             }
 
             if ($basket['lat'] != 0 || $basket['lon'] != 0) {
-                $map = new vMap([$basket['lat'], $basket['lon']]);
-                $map->addMarker($basket['lat'], $basket['lon']);
+                $map = $this->vueComponent('basket-location-map', 'BasketLocationMap', [
+                    'zoom' => MapConstants::ZOOM_CITY,
+                    'coordinates' => ['lat' => $basket['lat'], 'lon' => $basket['lon']],
+                ]);
 
-                $map->setDefaultMarkerOptions('shopping-basket', 'green');
-
-                $map->setCenter($basket['lat'], $basket['lon']);
-
-                $page->addSectionRight($map->render(), $this->translator->trans('basket.where'));
+                $page->addSectionRight($map, $this->translator->trans('basket.where'));
             }
         } else {
             $page->addSection(
