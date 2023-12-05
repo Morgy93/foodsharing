@@ -43,7 +43,7 @@ daterange: "Zeitraum"
 regions: "Bezirke" # TODO check if used anywhere else
 groups:
   empty: "Du bist noch in keinen Arbeitsgruppen"
-message_text_to_group_admin_workgroup: "Die Region/Arbeitsgruppe <b>{groupName}</b> hat <b>keine*n</b> Botschafter*in/Administrator*in mehr.<br><br><br>Sie besitzt folgende ID-Struktur:<br>{idStructureList}<br><br>Die ID lautet: {groupId}<br><br>URL: \"<a href=\"https://foodsharing.de/?page=bezirk&bid={groupId}&sub=forum\" target=\"_blank\">Klicke hier um zur Region/Arbeitsgruppe zu gehen</a>"
+message_text_to_group_admin_workgroup: "Die Region/Arbeitsgruppe <b>{groupName}</b> hat <b>keine*n</b> Botschafter*in/Administrator*in mehr.<br><br><br>Sie besitzt folgende ID-Struktur:<br>{idStructureList}<br><br>Die ID lautet: {groupId}<br><br>URL: \"<a href=\"https://foodsharing.de/region?bid={groupId}&sub=forum\" target=\"_blank\">Klicke hier um zur Region/Arbeitsgruppe zu gehen</a>"
 #
 # FORM DATA KEYS: SettingsView
 # --
@@ -617,7 +617,8 @@ terminology:
   events: "Termine"
   stores: "Betriebe"
   store: Betrieb
-  pickup: "Abholung"
+  previous_pickups: "Bisherige Abholungen"
+  no_pickups: "keine"
   foodsharer:
     m: "Foodsharer"
     f: "Foodsharerin"
@@ -847,8 +848,10 @@ store:
   teamName: "{storeTitle}-Team"
   memberSince: "Im Team seit: {date}"
   jumperSince: "Springer seit: {date}"
-  lastPickup: "Letzte Abholung: {date}"
+  lastPickup: "Letzte Abholung:"
   lastPickupShort: "zuletzt {date}"
+  signInDateTime: "Eintragungszeitpunkt"
+  slot_state: "Slot Status"
   unknownDate: "unbekannt"
   isManager: "Verantwortlich für diesen Betrieb."
   noPickup: "Hat noch nie hier abgeholt."
@@ -1049,7 +1052,7 @@ pickup:
   confirm: "Bestätigen"
   kick: "Austragen"
   leave: "Austragen"
-  open_profile: "Profil aufrufen"
+  open_profile: "Profil von"
   copyNumber: "Nummer kopieren"
   copiedNumber: "„{number}“ wurde in die Zwischenablage kopiert."
   signout_sure: "Möchtest du dieses Team verlassen?"
@@ -1182,7 +1185,7 @@ calendar:
   export:
     pickup:
       name: "{store} Abholung"
-      unconfirmed: unbestätigt
+      unconfirmed: "unbestätigt"
       description: 'foodsharing-Abholung bei <a href="{url}">{store}</a>'
     event:
       statusUnspecified: Du hast noch nicht angegeben, ob du an diesem Termin teilnimmst. Das kannst du auf der verlinkten Seite tun.
@@ -1245,6 +1248,9 @@ forum:
     success: "Prima, deine Antwort wurde gespeichert."
     error: "Post konnte nicht gespeichert werden."
   not_found: "Dieser Thread ist nicht vorhanden."
+  mail_confirmation:
+    text: "Möchtest du wirklich, dass dieser neue Beitrag als Email an alle Mitglieder dieser AG bzw. dieses Bezirks versendet wird? Das solltest du nur dann tun, wenn dein Anliegen alle betrifft und so wichtig ist, dass es auch alle mitbekommen sollten."
+    title: "Wirklich Email Benachrichtigung versenden?"
 
 chat:
   open_chat: "Nachricht schreiben"
@@ -2665,7 +2671,7 @@ poll:
   type_description_0: "Auswählen (nur eine Option kann gewählt werden)"
   type_description_1: "Ankreuzen (mehrere Optionen können gewählt werden)"
   type_description_2: "Wahlmöglichkeiten jeweils Zustimmung / Enthaltung / Ablehnung"
-  type_description_3: "Bewertungswahl mit Werten zwischen +3 (Zustimmung) und -3 (Ablehnung)"
+  type_description_3: "Bewertungswahl mit Werten zwischen -3 (Ablehnung) und +3 (Zustimmung)"
   type_2:
     tooltip_negative: "Ablehnung"
     tooltip_neutral: "Enthaltung"
@@ -3142,13 +3148,17 @@ thread:
     rename: "Titel bearbeiten"
     pin: "Beitrag anheften"
     unpin: "Nicht mehr anheften"
-    lock: "Thema schließen" 
+    lock: "Thema schließen"
     unlock: "Thema öffnen"
   rename:
     edit_description: "Titel bearbeiten"
     description_modal_text: "Gib einen neuen Titel für diesen Beitrag ein:"
     placeholder: "Titel"
     max_length_info: "Maximale Länge des Titels erreicht (260 Zeichen)"
+  post:
+    options:
+      copy_source: "Quelltext kopieren"
+    copy_source_success: "Quelltext kopiert!"
 
 markdown_input:
   tooltip:
@@ -3164,7 +3174,8 @@ markdown_input:
     hrule: Trennlinie
     preview: Vorschau
   empty_preview_placeholder: "Dies ist die Formatierungsvorschau. Der Text wird hier so formatiert, wie er auch später angezeigt wird.
-    
+
     ---
 
     *Du hast aber noch keinen Text eingegeben, der hier angezeigt werden könnte.*"
+

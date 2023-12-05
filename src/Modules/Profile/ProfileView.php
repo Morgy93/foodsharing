@@ -423,7 +423,7 @@ class ProfileView extends View
         $ambassador = [];
         if ($this->foodsaver['botschafter']) {
             foreach ($this->foodsaver['botschafter'] as $foodsaver) {
-                $ambassador[$foodsaver['id']] = '<a class="light" href="/?page=bezirk&bid=' . $foodsaver['id'] . '&sub=forum">' . $foodsaver['name'] . '</a>';
+                $ambassador[$foodsaver['id']] = '<a class="light" href="/region?bid=' . $foodsaver['id'] . '&sub=forum">' . $foodsaver['name'] . '</a>';
             }
             $infos[] = [
                 'name' => $this->translator->trans('profile.ambRegions', [
@@ -449,14 +449,14 @@ class ProfileView extends View
             $fsHomeDistrict = '';
             foreach ($this->foodsaver['foodsaver'] as $foodsaver) {
                 if ($foodsaver['id'] == $this->foodsaver['bezirk_id']) {
-                    $fsHomeDistrict = '<a class="light" href="/?page=bezirk&bid=' . $foodsaver['id'] . '&sub=forum">' . $foodsaver['name'] . '</a>';
+                    $fsHomeDistrict = '<a class="light" href="/region?bid=' . $foodsaver['id'] . '&sub=forum">' . $foodsaver['name'] . '</a>';
                     if ($this->profilePermissions->maySeeHistory($this->foodsaver['id']) && !empty($this->foodsaver['home_district_history'])) {
                         $fsHomeDistrict .= ' (<a class="light" href="/profile/' . $this->foodsaver['home_district_history']['changer_id'] . '">' . $this->foodsaver['home_district_history']['changer_full_name'] . '</a> ';
                         $fsHomeDistrict .= Carbon::parse($this->foodsaver['home_district_history']['date'])->format('d.m.Y H:i:s') . ')';
                     }
                 }
                 if (!isset($ambassador[$foodsaver['id']])) {
-                    $fsa[] = '<a class="light" href="/?page=bezirk&bid=' . $foodsaver['id'] . '&sub=forum">' . $foodsaver['name'] . '</a>';
+                    $fsa[] = '<a class="light" href="/region?bid=' . $foodsaver['id'] . '&sub=forum">' . $foodsaver['name'] . '</a>';
                 }
             }
             if (!empty($fsa)) {
@@ -494,7 +494,7 @@ class ProfileView extends View
             $ambassador = [];
             foreach ($this->foodsaver['orga'] as $foodsaver) {
                 if ($this->session->mayRole(Role::FOODSAVER)) {
-                    $ambassador[$foodsaver['id']] = '<a class="light" href="/?page=bezirk&bid=' . $foodsaver['id'] . '&sub=forum">' . $foodsaver['name'] . '</a>';
+                    $ambassador[$foodsaver['id']] = '<a class="light" href="/region?bid=' . $foodsaver['id'] . '&sub=forum">' . $foodsaver['name'] . '</a>';
                 } else {
                     $ambassador[$foodsaver['id']] = $foodsaver['name'];
                 }

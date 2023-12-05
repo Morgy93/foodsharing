@@ -15,6 +15,7 @@ import DataUser from '@/stores/user'
 // components
 import ErrorField from './ErrorField.vue'
 import ModalLoader from '@/views/partials/Modals/ModalLoader.vue'
+import { isValidPhoneNumber } from '@/helper/phone-numbers'
 
 export default {
   components: {
@@ -30,8 +31,9 @@ export default {
     /**
      * Shows an error when the user has an invalid mobile phone number
      */
+    await DataUser.mutations.fetchDetails()
     const mobilePhoneNumber = DataUser.getters.getMobilePhoneNumber()
-    if (mobilePhoneNumber && !this.$isValidPhoneNumber(mobilePhoneNumber)) {
+    if (mobilePhoneNumber && !isValidPhoneNumber(mobilePhoneNumber)) {
       this.list.push({
         field: 'invalid_mobile_phonenumber',
         links: [{

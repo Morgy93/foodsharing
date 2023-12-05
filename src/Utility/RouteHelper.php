@@ -19,6 +19,7 @@ final class RouteHelper
     ) {
     }
 
+    // For Symfony controllers: Use $this->redirect(toRoute) instead.
     public function goAndExit(string $url): never
     {
         header('Location: ' . $url);

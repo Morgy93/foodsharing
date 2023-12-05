@@ -27,8 +27,10 @@
           v-if="wXS"
           :link="deepLink"
           :date="createdAt"
+          classes="flex-grow-1 text-right"
           @scroll="$emit('scroll', $event)"
         />
+        <OverflowMenu :options="overflowMenuOptions" />
       </div>
       <div class="d-flex m-2">
         <div
@@ -57,10 +59,9 @@
             {{ $i18n('chat.open_chat') }}
           </a>
         </div>
-        <div
-          class="body m-2 mr-md-5 text-break"
-          v-html="body"
-        />
+        <div class="body m-2 mr-md-5 text-break">
+          <Markdown :source="body" />
+        </div>
       </div>
       <div class="card-footer">
         <div class="d-flex align-items-center justify-content-end justify-content-sm-between">
@@ -93,9 +94,12 @@ import ThreadPostActions from './ThreadPostActions'
 import ThreadPostDate from './ThreadPostDate'
 import conversationStore from '@/stores/conversations'
 import MediaQueryMixin from '@/mixins/MediaQueryMixin'
+import Markdown from '@/components/Markdown/Markdown.vue'
+import OverflowMenu from '@/components/OverflowMenu.vue'
+import { pulseSuccess } from '@/script'
 
 export default {
-  components: { Avatar, ThreadPostActions, ThreadPostDate },
+  components: { Avatar, ThreadPostActions, ThreadPostDate, Markdown, OverflowMenu },
   mixins: [MediaQueryMixin],
   props: {
     id: { type: Number, default: null },
@@ -114,10 +118,19 @@ export default {
     isMe () {
       return this.userId === this.author.id
     },
+    overflowMenuOptions () {
+      return [
+        { hide: !navigator.clipboard, icon: 'copy', textKey: 'thread.post.options.copy_source', callback: this.copySourceCodeToClipboard },
+      ]
+    },
   },
   methods: {
     openChat () {
       conversationStore.openChatWithUser(this.author.id)
+    },
+    async copySourceCodeToClipboard () {
+      await navigator.clipboard.writeText(this.body)
+      pulseSuccess(this.$i18n('thread.post.copy_source_success'))
     },
   },
 }

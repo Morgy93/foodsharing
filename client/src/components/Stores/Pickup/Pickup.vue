@@ -58,6 +58,7 @@
             :allow-kick="(isCoordinator || mayEditStore) && !isInPast"
             :allow-confirm="(isCoordinator || mayEditStore)"
             :allow-chat="slot.profile.id !== user.id"
+            :date="date"
             @leave="$refs.modal_leave.show()"
             @kick="activeSlot = slot, $refs.modal_kick.show()"
             @confirm="$emit('confirm', {date: date, fsId: slot.profile.id})"

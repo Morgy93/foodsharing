@@ -36,7 +36,7 @@ class ForumTransactions
 
     public function url($regionId, $ambassadorForum, $threadId = null, $postId = null): string
     {
-        $url = '/?page=bezirk&bid=' . $regionId . '&sub=' . ($ambassadorForum ? 'botforum' : 'forum');
+        $url = '/region?bid=' . $regionId . '&sub=' . ($ambassadorForum ? 'botforum' : 'forum');
         if ($threadId) {
             $url .= '&tid=' . $threadId;
         }

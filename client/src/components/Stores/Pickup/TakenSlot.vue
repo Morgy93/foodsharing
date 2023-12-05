@@ -1,88 +1,139 @@
 <template>
-  <b-dropdown
-    :id="`slot-${uniqueId}`"
-    no-caret
-    toggle-class="btn p-0 filled"
-  >
-    <b-tooltip
-      :target="`slot-${uniqueId}`"
-      triggers="hover blur"
+  <div>
+    <b-modal
+      ref="takenSlotModal"
+      :title="modalTitle"
     >
-      <div>
-        {{ profile.name }}
+      <b-row>
+        <b-col cols="5">
+          <Avatar
+            :url="profile.avatar"
+            :size="130"
+          />
+        </b-col>
+        <b-col cols="7">
+          <p>
+            <b>{{ profile.name }}</b>
+          </p>
+          <p>
+            <b>{{ $i18n('store.slot_state') }}:</b><br>
+            {{ isConfirmedText }}
+          </p>
+          <p>
+            <b>{{ $i18n('terminology.previous_pickups') }}:</b> {{ pickupsCount }}
+          </p>
+          <p>
+            <b>{{ $i18n('store.lastPickup') }}</b><br>
+            {{ getLastFetchDate }}
+          </p>
+          <p v-if="performedAtSignUpSlot">
+            <b>{{ $i18n('store.signInDateTime') }}</b>:<br>
+            {{ performedAtSignUpSlot }}
+          </p>
+        </b-col>
+      </b-row>
+      <b-button
+        variant="outline-primary"
+        :href="`/profile/${profile.id}`"
+        size="sm"
+        class="mb-2"
+      >
+        <i class="fas fa-fw fa-user" /> {{ $i18n('profile.go') }}
+      </b-button>
+      <b-button
+        v-if="allowChat && !isMe"
+        variant="outline-primary"
+        class="mb-2"
+        size="sm"
+        @click="openChat"
+      >
+        <i class="fas fa-fw fa-comment" />  {{ $i18n('chat.open_chat') }}
+      </b-button>
+      <b-button
+        v-if="phoneNumber && !isMe"
+        :href="$url('phone_number', phoneNumber)"
+        class="mb-2"
+        size="sm"
+        variant="outline-primary"
+      >
+        <i class="fas fa-fw fa-phone" /> {{ $i18n('pickup.call') }}
+      </b-button>
+      <b-button
+        v-if="phoneNumber && !isMe"
+        variant="outline-primary"
+        class="mb-2"
+        size="sm"
+        @click="copyIntoClipboard(phoneNumber)"
+      >
+        <i
+          class="fas fa-fw"
+          :class="[canCopy ? 'fa-clone' : 'fa-phone-slash']"
+        />
+        <span v-if="canCopy">{{ $i18n('pickup.copyNumber') }}</span>
+        <span v-else>{{ phoneNumber }}</span>
+      </b-button>
+      <template #modal-footer="{ hide }">
+        <b-button
+          size="sm"
+          @click="hide()"
+        >
+          {{ $i18n('globals.close') }}
+        </b-button>
+        <b-button
+          v-if="isManager && !confirmed"
+          size="sm"
+          variant="success"
+          @click="confirmSlot()"
+        >
+          {{ $i18n('pickup.confirm') }}
+        </b-button>
+        <b-button
+          v-if="isManager || isMe"
+          size="sm"
+          variant="danger"
+          @click="removeFromSlot"
+        >
+          {{ $i18n('pickup.kick') }}
+        </b-button>
+      </template>
+    </b-modal>
+
+    <b-button
+      :id="`slot-${uniqueId}`"
+      toggle-class="btn p-0 filled"
+      @click="openModal"
+    >
+      <div class="button-container">
+        <Avatar
+          :url="profile.avatar"
+          :size="50"
+          :class="{'pending': !confirmed, 'confirmed': confirmed}"
+        />
+        <div :class="{'slotstatus': true, 'pending': !confirmed, 'confirmed': confirmed}">
+          <i :class="{'slotstatus-icon fas': true, 'fa-clock': !confirmed, 'fa-check-circle': confirmed}" />
+        </div>
       </div>
-      <div v-if="!confirmed">
-        ({{ $i18n('pickup.to_be_confirmed') }})
-      </div>
-    </b-tooltip>
-    <template #button-content>
-      <Avatar
-        :url="profile.avatar"
-        :size="50"
-        :class="{'pending': !confirmed, 'confirmed': confirmed}"
-      />
-      <div :class="{'slotstatus': true, 'pending': !confirmed, 'confirmed': confirmed}">
-        <i :class="{'slotstatus-icon fas': true, 'fa-clock': !confirmed, 'fa-check-circle': confirmed}" />
-      </div>
-    </template>
-    <b-dropdown-item :href="`/profile/${profile.id}`">
-      <i class="fas fa-fw fa-user" /> {{ $i18n('pickup.open_profile') }}
-    </b-dropdown-item>
-    <b-dropdown-item
-      v-if="allowChat && !isMe"
-      @click="openChat"
-    >
-      <i class="fas fa-fw fa-comment" /> {{ $i18n('chat.open_chat') }}
-    </b-dropdown-item>
-    <b-dropdown-item
-      v-if="phoneNumber && !isMe"
-      :href="$url('phone_number', phoneNumber)"
-    >
-      <i class="fas fa-fw fa-phone" /> {{ $i18n('pickup.call') }}
-    </b-dropdown-item>
-    <b-dropdown-item
-      v-if="phoneNumber && !isMe"
-      @click="copyIntoClipboard(phoneNumber)"
-    >
-      <!-- eslint-disable-next-line vue/max-attributes-per-line -->
-      <i class="fas fa-fw" :class="[canCopy ? 'fa-clone' : 'fa-phone-slash']" />
-      <span v-if="canCopy">{{ $i18n('pickup.copyNumber') }}</span>
-      <span v-else>{{ phoneNumber }}</span>
-    </b-dropdown-item>
-    <b-dropdown-item
-      v-if="!confirmed && allowConfirm"
-      @click="$emit('confirm', profile.id)"
-    >
-      <i class="fas fa-fw fa-check" /> {{ $i18n('pickup.confirm') }}
-    </b-dropdown-item>
-    <b-dropdown-item
-      v-if="allowLeave"
-      @click="$emit('leave')"
-    >
-      <i class="fa fa-fw fa-times-circle" /> {{ $i18n('pickup.leave') }}
-    </b-dropdown-item>
-    <b-dropdown-item
-      v-if="allowKick && !allowLeave"
-      @click="$emit('kick', profile.id)"
-    >
-      <i class="fas fa-fw fa-times-circle" /> {{ $i18n('pickup.kick') }}
-    </b-dropdown-item>
-  </b-dropdown>
+    </b-button>
+  </div>
 </template>
 
 <script>
 import Avatar from '@/components/Avatar'
-import { BDropdown, BDropdownItem } from 'bootstrap-vue'
 import { pulseSuccess } from '@/script'
 import PhoneNumbers from '@/helper/phone-numbers'
 import conversationStore from '@/stores/conversations'
 import DataUser from '@/stores/user'
+import StoreData, { STORE_LOG_ACTION } from '@/stores/stores'
 
 import { v4 as uuidv4 } from 'uuid'
 
 export default {
-  components: { Avatar, BDropdown, BDropdownItem },
+  components: { Avatar },
   props: {
+    date: {
+      type: Date,
+      required: true,
+    },
     profile: {
       type: Object,
       default: null,
@@ -114,6 +165,59 @@ export default {
     }
   },
   computed: {
+    isConfirmedText () {
+      return this.confirmed ? this.$i18n('pickup.overview.status.confirmed') : this.$i18n('pickup.overview.status.pending')
+    },
+    modalTitle () {
+      return this.$dateFormatter.dateTime(this.date, { short: true })
+    },
+    pickupsCount () {
+      const userItem = this.storeMember.find(item => item.id === this.profile.id)
+      const pickupsCount = userItem?.stat_fetchcount ?? null
+
+      if (pickupsCount === 0) {
+        return this.$i18n('terminology.no_pickups')
+      } else {
+        return pickupsCount
+      }
+    },
+    performedAtSignUpSlot () {
+      const storeLog = StoreData.getters.getFilteredStoreLog([STORE_LOG_ACTION.SIGN_UP_SLOT], this.profile.id)
+      const filteredEntries = storeLog.filter(entry =>
+        new Date(entry.date_reference).getTime() === this.date.getTime(),
+      )
+
+      let lastEntryWithOldestDate = null
+      let oldestTimestamp = null
+
+      filteredEntries.forEach(entry => {
+        const performedAtTimestamp = new Date(entry.performed_at).getTime()
+
+        if (!oldestTimestamp || performedAtTimestamp >= oldestTimestamp) {
+          oldestTimestamp = performedAtTimestamp
+          lastEntryWithOldestDate = entry
+        }
+      })
+
+      if (lastEntryWithOldestDate) {
+        return this.$dateFormatter.dateTime(new Date(lastEntryWithOldestDate.performed_at), { short: true })
+      } else {
+        return ''
+      }
+    },
+    storeMember () {
+      return StoreData.getters.getStoreMember()
+    },
+    userId () {
+      return DataUser.getters.getUserId()
+    },
+    isManager () {
+      return StoreData.getters.isManager(this.userId)
+    },
+    getLastFetchDate () {
+      const lastFetchDate = this.getLastFetchDateFromUser(this.profile.id)
+      return this.$dateFormatter.date(lastFetchDate, { short: true })
+    },
     phoneNumber () {
       return PhoneNumbers.callableNumber(this.profile.mobile || this.profile.landline)
     },
@@ -128,6 +232,39 @@ export default {
     this.uniqueId = uuidv4()
   },
   methods: {
+    confirmSlot () {
+      if (this.confirmed && !this.allowConfirm) {
+        return
+      }
+      this.$emit('confirm', this.profile.id)
+      this.$refs.takenSlotModal.hide()
+    },
+    removeFromSlot () {
+      this.isMe ? this.leaveFromSlot() : this.kickFromSlot()
+    },
+    kickFromSlot () {
+      if (this.allowKick) {
+        this.$emit('kick', this.profile.id)
+      }
+      this.$refs.takenSlotModal.hide()
+    },
+    leaveFromSlot () {
+      if (this.allowLeave) {
+        this.$emit('leave')
+      }
+    },
+    openModal () {
+      this.$refs.takenSlotModal.show()
+    },
+    getLastFetchDateFromUser (userId) {
+      const MILLISECONDS_PER_SECOND = 1000
+      const userItem = this.storeMember.find(item => item.id === userId)
+      const lastFetchTimestamp = userItem?.last_fetch ?? null
+
+      if (lastFetchTimestamp !== null) {
+        return new Date(lastFetchTimestamp * MILLISECONDS_PER_SECOND)
+      }
+    },
     copyIntoClipboard (text) {
       if (navigator.clipboard) {
         navigator.clipboard.writeText(text).then(() => {
@@ -136,6 +273,7 @@ export default {
       }
     },
     openChat () {
+      this.$refs.takenSlotModal.hide()
       conversationStore.openChatWithUser(this.profile.id)
     },
   },
@@ -143,34 +281,46 @@ export default {
 </script>
 
 <style lang="scss" scoped>
+.button-container {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 100%;
+}
+
 .slotstatus {
   position: absolute;
-  top: -2px;
-  right: -2px;
-  height: 1.5rem;
-  width: 1.5rem;
-  z-index: 3;
+  height: 20px;
+  width: 20px;
+  top: -1em;
+  left: 100%;
   border-radius: 50%;
   background-color: var(--fs-color-light);
 
   &.pending {
     color: var(--fs-color-danger-500);
   }
+
   &.confirmed {
     color: var(--fs-color-secondary-500);
   }
+}
 
-  // Check / Clock inside the statuspatch
-  .slotstatus-icon {
-    position: absolute;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-    font-size: 1rem;
-  }
+// Check / Clock inside the status patch
+.slotstatus-icon {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  font-size: 1rem;
 }
 
 .avatar.pending {
   opacity: 0.45;
+}
+
+.profile-name {
+  font-size: 1rem;
 }
 </style>
