@@ -227,6 +227,7 @@ import { uploadFile } from '@/api/uploads'
 import { hideLoader, pulseError, pulseSuccess, showLoader } from '@/script'
 import i18n from '@/helper/i18n'
 import { store, MAILBOX_PAGE } from '@/stores/mailbox'
+import { MAX_UPLOAD_FILE_SIZE } from '@/consts'
 
 export default {
   components: { Container },
@@ -342,11 +343,18 @@ export default {
       return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)
     },
     storeFiles (event) {
+      // Stores files that were selected as attachments. Uploading is only done when the email is actually being sent.
       const files = Array.from(event.target.files)
-      files.forEach(file => {
+      const filteredFiles = files.filter(file => file.size <= MAX_UPLOAD_FILE_SIZE)
+      filteredFiles.forEach(file => {
         this.attachmentFilesName.push(file.name)
         this.attachmentFilesObjects.push(file)
       })
+
+      // Show an error message if any of the selected files were too large
+      if (files.length > filteredFiles.length) {
+        pulseError(this.$i18n('mailbox.attachment.too_large_to_send'))
+      }
     },
     async trySetEmailStatus (state) {
       showLoader()

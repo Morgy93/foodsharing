@@ -1758,7 +1758,6 @@ mailbox:
     full: "E-Mail beantworten"
     short: "Antworten"
   reply_all: "Allen antworten"
-  attach: "Datei anhängen (maximal 1,2 MB)"
   claim: "foodsharing.de – verwenden statt verschwenden"
   signature: "Nachricht vom {date}"
   manage: "Mailbox-Manager"
@@ -1795,6 +1794,8 @@ mailbox:
   attachment:
     not_found: "nicht gefunden"
     not_found_explanation: "Die angehängte Datei konnte auf dem Server nicht mehr gefunden werden"
+    too_large_to_send: "Einige der Dateien waren zu groß und konnten nicht an die Email abgehängt werden."
+    attach: "Anhänge (maximal 1,5 MB pro Datei)"
   conformation_modal:
     title: "Bestätigung"
     message: "Sind Sie sicher, dass Sie die E-Mail löschen möchten?"
