@@ -1796,7 +1796,9 @@ mailbox:
     message: "Sind Sie sicher, dass Sie die E-Mail löschen möchten?"
   search: "Durchsuchen"
   add: "Hinzufügen"
-  mailsend_unsuccess: "E-Mail konnten nicht versendet werden. {error}"
+  mailsend_unsuccess: "E-Mail konnte nicht versendet werden. {error}"
+  more: "mehr"
+  less: "weniger"
 
 settings:
   title: "Einstellungen"
