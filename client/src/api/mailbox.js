@@ -46,15 +46,3 @@ export async function createMailbox (name, alias, users) {
     users: users,
   })
 }
-
-export async function getMemberBoxes () {
-  return get('/mailbox/member')
-}
-
-export async function createMailbox (name, alias, users) {
-  return post('/mailbox/create', {
-    name: name,
-    alias: alias,
-    users: users,
-  })
-}
