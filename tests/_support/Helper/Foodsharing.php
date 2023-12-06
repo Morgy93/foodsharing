@@ -604,6 +604,9 @@ class Foodsharing extends \Codeception\Module\Db
         if ($folder == MailboxFolder::FOLDER_INBOX) {
             $extra_params['sender'] = $this->createRandomEmailAddress($this->faker->boolean());
             $extra_params['to'] = [$this->createFoodsharingEmailAddress($mailbox)];
+            for ($i = 0; $i < $this->faker->numberBetween(0, 3); ++$i) {
+                $extra_params['to'][] = $this->createRandomEmailAddress(false);
+            }
         } else {
             $extra_params['to'] = [];
             for ($i = 0; $i < $this->faker->numberBetween(1, 5); ++$i) {
