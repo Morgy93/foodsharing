@@ -326,7 +326,7 @@ class SearchGateway extends BaseGateway
             $searchCriteria[] = 'foodsaver.email';
             $mailReturnClause = 'foodsaver.email,';
         }
-        list($searchClauses, $parameters) = $this->generateSearchClauses($searchCriteria, $query, ['region.name']);
+        list($searchClauses, $parameters) = $this->generateSearchClauses($searchCriteria, $query, ['region.name'], 'foodsaver.hidden_last_name');
 
         $users = $this->db->fetchAll("SELECT
                 foodsaver.id,
@@ -495,18 +495,48 @@ class SearchGateway extends BaseGateway
      * @param array $searchCriteria a list of SQL identifiers the words of the query get matched against
      * @param string $query The search query
      * @param array $detailedSearchCriteria A list of SQL identifiers the words of the query get matched against, only if the size of the query is more than one word. This can be used to allow further specification of search results.
+     * @param ?string $privateSearchCriterium Search criterium not to be disclosed easily
      * @return array a tuple, including the SQL WHERE clause text as the first element, and an array of query parameters in the second
      */
-    private function generateSearchClauses(array $searchCriteria, string $query, array $detailedSearchCriteria = []): array
+    private function generateSearchClauses(array $searchCriteria, string $query, array $detailedSearchCriteria = [], ?string $privateSearchCriterium = null): array
     {
         $query = preg_replace('/[,;+\.\s]+/', ' ', $query);
         $queryTerms = explode(' ', trim($query));
         if (count($queryTerms) > 1) {
             $searchCriteria = array_merge($searchCriteria, $detailedSearchCriteria);
         }
-        $searchCriteria = 'CONCAT("\"",' . implode(',"\";\"",', $searchCriteria) . ',"\"")';
-        $searchClauses = array_map(fn ($term) => $searchCriteria . ' LIKE CONCAT("%", ?, "%")', $queryTerms);
+        $searchCriteria = 'CONCAT("\"",' . implode(',"\";\"",', $searchCriteria) . ',"\"")'; // String of semicolon separated, enquoted search criteria
+        $placeholders = $queryTerms;
+        $searchClauseFromTerm = fn ($term) => $searchCriteria . ' LIKE CONCAT("%", ?, "%")';
+        if (!empty($privateSearchCriterium)) {
+            $searchClauseFromTerm = function ($term) use ($searchCriteria, $privateSearchCriterium) {
+                $searchClause = $searchCriteria . ' LIKE CONCAT("%", ?, "%")';
+                $privateClause = $privateSearchCriterium . ' LIKE ?';
+                if (strlen($term) > 3) { // Match start of private criterium
+                    $privateClause = $privateSearchCriterium . ' LIKE CONCAT(?, "%")';
+                }
+                return "(({$searchClause}) OR ({$privateClause}))";
+            };
+            $placeholders = [];
+            foreach ($queryTerms as $term) {
+                $placeholders[] = $term;
+                $placeholders[] = $term;
+            }
+        }
 
-        return [implode(' AND ', $searchClauses), $queryTerms];
+        $searchClauses = array_map($searchClauseFromTerm, $queryTerms);
+
+        // Jedes Suchwort muss entweder Concat(all) like term sein, oder
+        // 1. Falls Suchwort > 3 Zeichen => nachname% like term
+        // 2. Falls Suchwort <= 3 Zeichen => nachname like term 
+
+
+        // "Ballma" soll "Anton" ergeben
+        // "Anton Bal" soll nicht Anton ergeben
+        // "Anton Ball" soll Anton ergeben
+        // "Ka Kem" soll Ka ergeben (weil vollständig eingegeben)
+
+
+        return [implode(' AND ', $searchClauses), $placeholders];
     }
 }
