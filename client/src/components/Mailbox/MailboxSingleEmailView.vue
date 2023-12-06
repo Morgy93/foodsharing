@@ -138,7 +138,7 @@ export default {
     },
   },
   mounted () {
-    if (this.email !== null) {
+    if (this.email !== null && this.email.isRead !== true) {
       this.isRead = this.email.isRead
       this.trySetEmailStatus()
     }
