@@ -25,16 +25,6 @@ class MaintenanceGateway extends BaseGateway
     }
 
     /**
-     * Deletes all unconfirmed fetch dates in the past.
-     *
-     * @return int the number of deleted entries
-     */
-    public function deleteUnconfirmedFetchDates(): int
-    {
-        return $this->db->delete('fs_abholer', ['confirmed' => 0, 'date <' => $this->db->now()]);
-    }
-
-    /**
      * Removes sleep status from users if it was active since yesterday and the user is not endless inactive.
      *
      * @return int the number of users that were changed

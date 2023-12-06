@@ -3,7 +3,6 @@
 namespace Foodsharing\Modules\WallPost;
 
 use Flourish\fImage;
-use Foodsharing\Lib\Session;
 use Foodsharing\Lib\Xhr\XhrResponses;
 use Foodsharing\Modules\Core\Control;
 use Foodsharing\Modules\FoodSharePoint\FoodSharePointTransactions;
@@ -22,13 +21,11 @@ class WallPostXhr extends Control
         WallPostGateway $wallPostGateway,
         WallPostPermissions $wallPostPermissions,
         WallPostView $view,
-        Session $session,
     ) {
         $this->foodSharePointTransactions = $foodSharePointTransactions;
         $this->wallPostGateway = $wallPostGateway;
         $this->wallPostPermissions = $wallPostPermissions;
         $this->view = $view;
-        $this->session = $session;
 
         parent::__construct();
 
@@ -59,34 +56,6 @@ class WallPostXhr extends Control
                 'status' => 0
             ];
         }
-    }
-
-    public function quickreply()
-    {
-        if (!$this->wallPostPermissions->mayWriteWall($this->session->id(), $this->table, $this->id)) {
-            return XhrResponses::PERMISSION_DENIED;
-        }
-        $data = json_decode(file_get_contents('php://input'), true);
-        $message = trim(strip_tags($data['msg'] ?? ''));
-
-        if (!empty($message) && $post_id = $this->wallPostGateway->addPost(
-            $message,
-            $this->session->id(),
-            $this->table,
-            $this->id
-        )) {
-            echo json_encode([
-                'status' => 1,
-                'message' => $this->translator->trans('wall.created'),
-            ]);
-            exit;
-        }
-
-        echo json_encode([
-            'status' => 0,
-            'message' => $this->translator->trans('wall.error-create'),
-        ]);
-        exit;
     }
 
     public function post()

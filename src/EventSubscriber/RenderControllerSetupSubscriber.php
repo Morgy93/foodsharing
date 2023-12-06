@@ -3,13 +3,12 @@
 namespace Foodsharing\EventSubscriber;
 
 use Foodsharing\Entrypoint\IndexController;
-use Foodsharing\Lib\Cache\Caching;
+use Foodsharing\Lib\Caching;
 use Foodsharing\Lib\ContentSecurityPolicy;
 use Foodsharing\Lib\Db\Mem;
 use Foodsharing\Lib\FoodsharingController;
 use Foodsharing\Lib\Session;
 use Foodsharing\Modules\Core\InfluxMetrics;
-use Foodsharing\Utility\DataHelper;
 use Foodsharing\Utility\PageHelper;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
@@ -147,9 +146,7 @@ class RenderControllerSetupSubscriber implements EventSubscriberInterface
         $content_right_width = 6;
 
         global $g_data;
-        /** @var DataHelper $dataHelper */
-        $dataHelper = $this->get(DataHelper::class);
-        $g_data = $dataHelper->getPostData();
+        $g_data = $request->request->all();
 
         // TODO check if all of these are actually needed anymore
         /** @var PageHelper $pageHelper */

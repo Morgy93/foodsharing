@@ -175,8 +175,6 @@ final class MessageGateway extends BaseGateway
 
     /**
      * Method returns an array of all conversations a given user is part of.
-     *
-     * @param int $limit
      */
     private function listConversationsForUserWithoutMembers(int $fsId, int $limit = null, int $offset = 0, int $cid = null): array
     {

@@ -2,12 +2,10 @@
 
 namespace Foodsharing\Lib\Xhr;
 
-use Foodsharing\Lib\Db\Db;
 use Foodsharing\Lib\Session;
 use Foodsharing\Lib\View\Utils;
-use Foodsharing\Modules\Bell\BellGateway;
-use Foodsharing\Modules\Bell\DTO\Bell;
-use Foodsharing\Modules\Core\DBConstants\Bell\BellType;
+use Foodsharing\Modules\Core\Database;
+use Foodsharing\Modules\Core\DatabaseNoValueFoundException;
 use Foodsharing\Modules\Core\DBConstants\Email\EmailStatus;
 use Foodsharing\Modules\Core\DBConstants\Region\WorkgroupFunction;
 use Foodsharing\Modules\Core\DBConstants\Unit\UnitType;
@@ -20,67 +18,29 @@ use Foodsharing\Modules\Region\RegionGateway;
 use Foodsharing\Modules\Store\StoreGateway;
 use Foodsharing\Permissions\NewsletterEmailPermissions;
 use Foodsharing\Permissions\RegionPermissions;
-use Foodsharing\Permissions\StorePermissions;
 use Foodsharing\Utility\EmailHelper;
 use Foodsharing\Utility\Sanitizer;
 use Symfony\Contracts\Translation\TranslatorInterface;
 
 class XhrMethods
 {
-    private Db $model;
-    private Session $session;
-    private Utils $v_utils;
-    private GroupFunctionGateway $groupFunctionGateway;
-    private GroupGateway $groupGateway;
-    private RegionGateway $regionGateway;
-    private StorePermissions $storePermissions;
-    private BellGateway $bellGateway;
-    private StoreGateway $storeGateway;
-    private FoodsaverGateway $foodsaverGateway;
-    private EmailGateway $emailGateway;
-    private MailboxGateway $mailboxGateway;
-    private Sanitizer $sanitizerService;
-    private EmailHelper $emailHelper;
-    private NewsletterEmailPermissions $newsletterEmailPermissions;
-    private RegionPermissions $regionPermissions;
-    private TranslatorInterface $translator;
-
     public function __construct(
-        Session $session,
-        Db $model,
-        Utils $viewUtils,
-        GroupFunctionGateway $groupFunctionGateway,
-        GroupGateway $groupGateway,
-        RegionGateway $regionGateway,
-        BellGateway $bellGateway,
-        StoreGateway $storeGateway,
-        StorePermissions $storePermissions,
-        FoodsaverGateway $foodsaverGateway,
-        EmailGateway $emailGateway,
-        MailboxGateway $mailboxGateway,
-        Sanitizer $sanitizerService,
-        EmailHelper $emailHelper,
-        NewsletterEmailPermissions $newsletterEmailPermissions,
-        RegionPermissions $regionPermission,
-        TranslatorInterface $translator
+        private readonly Session $session,
+        private readonly Database $database,
+        private readonly Utils $v_utils,
+        private readonly GroupFunctionGateway $groupFunctionGateway,
+        private readonly GroupGateway $groupGateway,
+        private readonly RegionGateway $regionGateway,
+        private readonly StoreGateway $storeGateway,
+        private readonly FoodsaverGateway $foodsaverGateway,
+        private readonly EmailGateway $emailGateway,
+        private readonly MailboxGateway $mailboxGateway,
+        private readonly Sanitizer $sanitizerService,
+        private readonly EmailHelper $emailHelper,
+        private readonly NewsletterEmailPermissions $newsletterEmailPermissions,
+        private readonly RegionPermissions $regionPermissions,
+        private readonly TranslatorInterface $translator
     ) {
-        $this->session = $session;
-        $this->model = $model;
-        $this->v_utils = $viewUtils;
-        $this->groupFunctionGateway = $groupFunctionGateway;
-        $this->groupGateway = $groupGateway;
-        $this->regionGateway = $regionGateway;
-        $this->bellGateway = $bellGateway;
-        $this->storeGateway = $storeGateway;
-        $this->storePermissions = $storePermissions;
-        $this->foodsaverGateway = $foodsaverGateway;
-        $this->emailGateway = $emailGateway;
-        $this->mailboxGateway = $mailboxGateway;
-        $this->sanitizerService = $sanitizerService;
-        $this->emailHelper = $emailHelper;
-        $this->newsletterEmailPermissions = $newsletterEmailPermissions;
-        $this->regionPermissions = $regionPermission;
-        $this->translator = $translator;
     }
 
     public function xhr_continueMail($data)
@@ -101,7 +61,7 @@ class XhrMethods
             $mailbox = $this->mailboxGateway->getMailbox((int)$mail['mailbox_id']);
             $mailbox['email'] = $mailbox['name'] . '@' . PLATFORM_MAILBOX_HOST;
 
-            $sender = $this->model->getValues(['geschlecht', 'name'], 'foodsaver', $this->session->id());
+            $sender = $this->database->fetchByCriteria('foodsaver', ['geschlecht', 'name'], ['id' => $this->session->id()]);
 
             $this->emailGateway->setEmailStatus($mail['id'], $recip, EmailStatus::STATUS_INITIALISED);
 
@@ -171,7 +131,7 @@ class XhrMethods
         }
 
         $parentId = intval($data['parent_id']);
-        $this->model->update('UPDATE fs_bezirk SET has_children = 1 WHERE `id` = ' . $parentId);
+        $this->database->update('fs_bezirk', ['has_children' => 1], ['id' => $parentId]);
 
         return json_encode([
             'status' => 1,
@@ -179,55 +139,6 @@ class XhrMethods
                 . $this->translator->trans('region.created', ['{region}' => $data['name']]) .
                 '");',
         ]);
-    }
-
-    public function xhr_editpickups($data)
-    {
-        if (!$this->storePermissions->mayEditPickups($data['bid'])) {
-            return XhrResponses::PERMISSION_DENIED;
-        }
-
-        $this->model->del('DELETE FROM `fs_abholzeiten` WHERE `betrieb_id` = ' . (int)$data['bid']);
-
-        if (is_array($data['newfetchtime'])) {
-            for ($i = 0; $i < (count($data['newfetchtime']) - 1); ++$i) {
-                $this->model->sql('
-			REPLACE INTO 	`fs_abholzeiten`
-			(
-					`betrieb_id`,
-					`dow`,
-					`time`,
-					`fetcher`
-			)
-			VALUES
-			(
-				' . (int)$data['bid'] . ',
-				' . (int)$data['newfetchtime'][$i] . ',
-				' . $this->model->strval(
-                    sprintf('%02d', $data['nfttime']['hour'][$i])
-                        . ':' .
-                        sprintf('%02d', $data['nfttime']['min'][$i]) . ':00'
-                ) . ',
-				' . (int)$data['nft-count'][$i] . '
-			)
-		');
-            }
-        }
-        $storeName = $this->storeGateway->getStoreName($data['bid']);
-
-        $team = $this->storeGateway->getStoreTeam($data['bid']);
-        $team = array_map(function ($foodsaver) {
-            return $foodsaver['id'];
-        }, $team);
-        $bellData = Bell::create('store_cr_times_title', 'store_cr_times', 'fas fa-user-clock', [
-            'href' => '/?page=fsbetrieb&id=' . (int)$data['bid'],
-        ], [
-            'user' => $this->session->user('name'),
-            'name' => $storeName,
-        ], BellType::createIdentifier(BellType::STORE_TIME_CHANGED, (int)$data['bid']));
-        $this->bellGateway->addBell($team, $bellData);
-
-        return json_encode(['status' => 1]);
     }
 
     public function xhr_bezirkTree($data)
@@ -551,14 +462,13 @@ class XhrMethods
 
         $oldRegionData = $this->groupGateway->getGroupLegacy($regionId);
 
-        $mbid = (int)$this->model->qOne('SELECT mailbox_id FROM fs_bezirk WHERE id = ' . $regionId);
-
         if (strlen($g_data['mailbox_name']) > 1) {
-            if ($mbid > 0) {
-                $this->model->update('UPDATE fs_mailbox SET name = ' . $this->model->strval($g_data['mailbox_name']) . ' WHERE id = ' . (int)$mbid);
-            } else {
-                $mbid = $this->model->insert('INSERT INTO fs_mailbox(`name`)VALUES(' . $this->model->strval($g_data['mailbox_name']) . ')');
-                $this->model->update('UPDATE fs_bezirk SET mailbox_id = ' . (int)$mbid . ' WHERE id = ' . $regionId);
+            try {
+                $mbid = (int)$this->database->fetchValue('SELECT mailbox_id FROM fs_bezirk WHERE id = ?', [$regionId]);
+                $this->database->update('fs_mailbox', ['name' => strip_tags($g_data['mailbox_name'])], ['id' => $mbid]);
+            } catch (DatabaseNoValueFoundException) {
+                $mbid = $this->database->insert('fs_mailbox', ['name' => strip_tags($g_data['mailbox_name'])]);
+                $this->database->update('fs_bezirk', ['mailbox_id' => $mbid], ['id' => $regionId]);
             }
         }
 

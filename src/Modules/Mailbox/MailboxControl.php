@@ -34,35 +34,6 @@ class MailboxControl extends Control
         }
     }
 
-    public function dlattach()
-    {
-        if (isset($_GET['mid'], $_GET['i'])) {
-            if ($m = $this->mailboxGateway->getAttachmentFileInfo($_GET['mid'])) {
-                if ($this->mailboxPermissions->mayMailbox($m['mailbox_id'])) {
-                    if ($attach = json_decode($m['attach'], true)) {
-                        if (isset($attach[(int)$_GET['i']])) {
-                            $file = 'data/mailattach/' . $attach[(int)$_GET['i']]['filename'];
-
-                            $filename = $attach[(int)$_GET['i']]['origname'];
-                            $size = filesize($file);
-
-                            $mime = $attach[(int)$_GET['i']]['mime'];
-                            if ($mime) {
-                                header('Content-Type: ' . $mime);
-                            }
-                            header('Content-Disposition: attachment; filename="' . $filename . '"');
-                            header('Content-Length: ' . $size);
-                            readfile($file);
-                            exit;
-                        }
-                    }
-                }
-            }
-        }
-
-        $this->routeHelper->goPageAndExit('mailbox');
-    }
-
     public function index()
     {
         $this->pageHelper->setContentWidth(8, 16);
@@ -73,37 +44,12 @@ class MailboxControl extends Control
             $this->session->id(),
             $this->session->mayRole(Role::STORE_MANAGER)
         );
-        if ($boxes) {
-            $messageId = $_GET['show'] ?? null;
-            if (!is_null($messageId) && $this->mailboxPermissions->mayMessage($messageId)) {
-                $this->pageHelper->addJs('ajreq("loadMail", {id:' . intval($messageId) . '});');
-                $mailboxId = $this->mailboxGateway->getMailboxId($messageId);
-                if (!is_null($mailboxId) && $this->mailboxPermissions->mayMailbox($mailboxId)) {
-                    $folder = 'inbox';
-                    $this->pageHelper->addJs('
-						ajreq("loadmails", {
-							mb:' . intval($mailboxId) . ',
-							folder: "' . $folder . '",
-						});
-					');
-                }
-            }
 
-            $mailboxIds = array_column($boxes, 'id');
-            $this->pageHelper->addContent($this->view->vueComponent('vue-mailbox', 'Mailbox', [
-                'hostname' => PLATFORM_MAILBOX_HOST,
-                'mailboxes' => $this->mailboxGateway->getMailboxesWithUnreadCount($mailboxIds),
-            ]), CNT_LEFT);
-
-            $mailadresses = $this->mailboxGateway->getMailAdresses($this->session->id());
-
-            $this->pageHelper->addContent($this->view->legacyMailfolderFields(), CNT_LEFT);
-            $this->pageHelper->addContent($this->view->folderlist($boxes, $mailadresses));
-        }
-
-        if (isset($_GET['mailto']) && $this->emailHelper->validEmail($_GET['mailto'])) {
-            $this->pageHelper->addJs('mb_mailto("' . $_GET['mailto'] . '");');
-        }
+        $mailboxIds = array_column($boxes, 'id');
+        $this->pageHelper->addContent($this->view->vueComponent('vue-mailbox', 'Mailbox', [
+            'hostname' => PLATFORM_MAILBOX_HOST,
+            'mailboxes' => $this->mailboxGateway->getMailboxesWithUnreadCount($mailboxIds),
+        ]));
     }
 
     public function newbox()
@@ -135,5 +81,37 @@ class MailboxControl extends Control
             $this->flashMessageHelper->error($this->translator->trans('mailbox.not-allowed'));
             $this->routeHelper->goPageAndExit('dashboard');
         }
+    }
+
+    /**
+     * @deprecated This function is used for downloading attachments of old emails. It can be removed when all files
+     *             have been moved to the upload API.
+     */
+    public function dlattach()
+    {
+        if (isset($_GET['mid'], $_GET['i'])) {
+            if ($m = $this->mailboxGateway->getAttachmentFileInfo($_GET['mid'])) {
+                if ($this->mailboxPermissions->mayMailbox($m['mailbox_id'])) {
+                    if ($attach = json_decode($m['attach'], true)) {
+                        if (isset($attach[(int)$_GET['i']])) {
+                            $file = 'data/mailattach/' . $attach[(int)$_GET['i']]['filename'];
+
+                            $filename = $attach[(int)$_GET['i']]['origname'];
+                            $size = filesize($file);
+                            $mime = $attach[(int)$_GET['i']]['mime'];
+                            if ($mime) {
+                                header('Content-Type: ' . $mime);
+                            }
+                            header('Content-Disposition: attachment; filename="' . $filename . '"');
+                            header('Content-Length: ' . $size);
+                            readfile($file);
+                            exit;
+                        }
+                    }
+                }
+            }
+        }
+
+        $this->routeHelper->goPageAndExit('mailbox');
     }
 }

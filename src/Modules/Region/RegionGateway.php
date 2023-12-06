@@ -5,8 +5,8 @@ namespace Foodsharing\Modules\Region;
 use Exception;
 use Foodsharing\Modules\Core\BaseGateway;
 use Foodsharing\Modules\Core\Database;
-use Foodsharing\Modules\Core\DBConstants\Foodsaver\Role;
 use Foodsharing\Modules\Core\DBConstants\Region\RegionIDs;
+use Foodsharing\Modules\Core\DBConstants\Region\RegionOptionType;
 use Foodsharing\Modules\Core\DBConstants\Region\WorkgroupFunction;
 use Foodsharing\Modules\Core\DBConstants\Unit\UnitType;
 use Foodsharing\Modules\Foodsaver\FoodsaverGateway;
@@ -113,6 +113,23 @@ class RegionGateway extends BaseGateway
         return $this->db->exists('fs_botschafter', ['bezirk_id' => $regionId, 'foodsaver_id' => $foodsaverId]);
     }
 
+    /**
+     * @return bool true when the given user is an admin/ambassador for the given group/region
+     */
+    public function isAmbassadorOfAtLeastOneRegion(int $foodsaverId): bool
+    {
+        return $this->db->fetchValue('SELECT COUNT(*)
+            FROM `fs_botschafter` ambassador
+            JOIN fs_bezirk region on region.id = ambassador.bezirk_id
+            WHERE region.type != :working_group_type
+            AND ambassador.foodsaver_id = :foodsaver_id',
+            [
+                'working_group_type' => UnitType::WORKING_GROUP,
+                'foodsaver_id' => $foodsaverId,
+            ]
+        ) > 0;
+    }
+
     public function listForFoodsaver(?int $foodsaverId): array
     {
         if ($foodsaverId === null) {
@@ -147,17 +164,6 @@ class RegionGateway extends BaseGateway
     public function getFsRegionIds(int $foodsaverId): array
     {
         return $this->db->fetchAllValuesByCriteria('fs_foodsaver_has_bezirk', 'bezirk_id',
-            ['foodsaver_id' => $foodsaverId]
-        );
-    }
-
-    public function getFsAmbassadorIds(?int $foodsaverId): array
-    {
-        if ($foodsaverId === null) {
-            return [];
-        }
-
-        return $this->db->fetchAllValuesByCriteria('fs_botschafter', 'bezirk_id',
             ['foodsaver_id' => $foodsaverId]
         );
     }
@@ -290,84 +296,36 @@ class RegionGateway extends BaseGateway
         $region['botschafter'] = $this->foodsaverGateway->getAdminsOrAmbassadors($regionId);
         shuffle($region['botschafter']);
 
-        if ($welcomeGroupId = $this->groupFunctionGateway->getRegionFunctionGroupId($regionId, WorkgroupFunction::WELCOME)) {
-            $region['welcomeAdmins'] = $this->foodsaverGateway->getAdminsOrAmbassadors($welcomeGroupId);
-            shuffle($region['welcomeAdmins']);
-        } else {
-            $region['welcomeAdmins'] = [];
-        }
+        $functionMappings = [
+            WorkgroupFunction::WELCOME => 'welcomeAdmins',
+            WorkgroupFunction::VOTING => 'votingAdmins',
+            WorkgroupFunction::FSP => 'fspAdmins',
+            WorkgroupFunction::STORES_COORDINATION => 'storesAdmins',
+            WorkgroupFunction::REPORT => 'reportAdmins',
+            WorkgroupFunction::MEDIATION => 'mediationAdmins',
+            WorkgroupFunction::ARBITRATION => 'arbitrationAdmins',
+            WorkgroupFunction::FSMANAGEMENT => 'fsManagementAdmins',
+            WorkgroupFunction::PR => 'prAdmins',
+            WorkgroupFunction::MODERATION => 'moderationAdmins',
+            WorkgroupFunction::BOARD => 'boardAdmins',
+        ];
 
-        if ($votingGroupId = $this->groupFunctionGateway->getRegionFunctionGroupId($regionId, WorkgroupFunction::VOTING)) {
-            $region['votingAdmins'] = $this->foodsaverGateway->getAdminsOrAmbassadors($votingGroupId);
-            shuffle($region['votingAdmins']);
-        } else {
-            $region['votingAdmins'] = [];
-        }
-
-        if ($fspGroupId = $this->groupFunctionGateway->getRegionFunctionGroupId($regionId, WorkgroupFunction::FSP)) {
-            $region['fspAdmins'] = $this->foodsaverGateway->getAdminsOrAmbassadors($fspGroupId);
-            shuffle($region['fspAdmins']);
-        } else {
-            $region['fspAdmins'] = [];
-        }
-
-        if ($storesGroupId = $this->groupFunctionGateway->getRegionFunctionGroupId($regionId, WorkgroupFunction::STORES_COORDINATION)) {
-            $region['storesAdmins'] = $this->foodsaverGateway->getAdminsOrAmbassadors($storesGroupId);
-            shuffle($region['storesAdmins']);
-        } else {
-            $region['storesAdmins'] = [];
-        }
-
-        if ($reportGroupId = $this->groupFunctionGateway->getRegionFunctionGroupId($regionId, WorkgroupFunction::REPORT)) {
-            $region['reportAdmins'] = $this->foodsaverGateway->getAdminsOrAmbassadors($reportGroupId);
-            shuffle($region['reportAdmins']);
-        } else {
-            $region['reportAdmins'] = [];
-        }
-
-        if ($mediationGroupId = $this->groupFunctionGateway->getRegionFunctionGroupId($regionId, WorkgroupFunction::MEDIATION)) {
-            $region['mediationAdmins'] = $this->foodsaverGateway->getAdminsOrAmbassadors($mediationGroupId);
-            shuffle($region['mediationAdmins']);
-        } else {
-            $region['mediationAdmins'] = [];
-        }
-
-        if ($arbitrationGroupId = $this->groupFunctionGateway->getRegionFunctionGroupId($regionId, WorkgroupFunction::ARBITRATION)) {
-            $region['arbitrationAdmins'] = $this->foodsaverGateway->getAdminsOrAmbassadors($arbitrationGroupId);
-            shuffle($region['arbitrationAdmins']);
-        } else {
-            $region['arbitrationAdmins'] = [];
-        }
-
-        if ($fsManagementGroupId = $this->groupFunctionGateway->getRegionFunctionGroupId($regionId, WorkgroupFunction::FSMANAGEMENT)) {
-            $region['fsManagementAdmins'] = $this->foodsaverGateway->getAdminsOrAmbassadors($fsManagementGroupId);
-            shuffle($region['fsManagementAdmins']);
-        } else {
-            $region['fsManagementAdmins'] = [];
-        }
-
-        if ($prGroupId = $this->groupFunctionGateway->getRegionFunctionGroupId($regionId, WorkgroupFunction::PR)) {
-            $region['prAdmins'] = $this->foodsaverGateway->getAdminsOrAmbassadors($prGroupId);
-            shuffle($region['prAdmins']);
-        } else {
-            $region['prAdmins'] = [];
-        }
-
-        if ($moderationGroupId = $this->groupFunctionGateway->getRegionFunctionGroupId($regionId, WorkgroupFunction::MODERATION)) {
-            $region['moderationAdmins'] = $this->foodsaverGateway->getAdminsOrAmbassadors($moderationGroupId);
-            shuffle($region['moderationAdmins']);
-        } else {
-            $region['moderationAdmins'] = [];
-        }
-
-        if ($boardGroupId = $this->groupFunctionGateway->getRegionFunctionGroupId($regionId, WorkgroupFunction::BOARD)) {
-            $region['boardAdmins'] = $this->foodsaverGateway->getAdminsOrAmbassadors($boardGroupId);
-            shuffle($region['boardAdmins']);
-        } else {
-            $region['boardAdmins'] = [];
+        foreach ($functionMappings as $function => $resultKey) {
+            $region[$resultKey] = $this->getAdminsOrAmbassadorsByFunction($regionId, $function);
+            shuffle($region[$resultKey]);
         }
 
         return $region;
+    }
+
+    private function getAdminsOrAmbassadorsByFunction(int $parentId, int $function): array
+    {
+        $groupId = $this->groupFunctionGateway->getRegionFunctionGroupId($parentId, $function);
+        if ($groupId) {
+            return $this->foodsaverGateway->getAdminsOrAmbassadors($groupId);
+        } else {
+            return [];
+        }
     }
 
     /**
@@ -572,33 +530,6 @@ class RegionGateway extends BaseGateway
         $this->db->update('fs_bezirk', ['master' => $masterId], ['id' => $regionIds]);
     }
 
-    public function genderCountRegion(int $regionId): array
-    {
-        return $this->db->fetchAll(
-            'select  fs.geschlecht as gender,
-						   count(*) as NumberOfGender
-					from fs_foodsaver_has_bezirk fb
-		 			left outer join fs_foodsaver fs on fb.foodsaver_id=fs.id
-					where fb.bezirk_id = :regionId
-					and fs.deleted_at is null
-					group by geschlecht',
-            [':regionId' => $regionId]
-        );
-    }
-
-    public function genderCountHomeRegion(int $regionId): array
-    {
-        return $this->db->fetchAll(
-            'select  fs.geschlecht as gender,
-						   count(*) as NumberOfGender
-					from fs_foodsaver fs
-					where fs.bezirk_id = :regionId
-					and fs.deleted_at is null
-					group by geschlecht',
-            [':regionId' => $regionId]
-        );
-    }
-
     public function listRegionPickupsByDate(int $regionId, string $dateFormat): array
     {
         $regionIDs = implode(',', array_map('intval', $this->listIdsForDescendantsAndSelf($regionId)));
@@ -617,67 +548,9 @@ class RegionGateway extends BaseGateway
 					from fs_abholer a
 					left outer join fs_betrieb b on a.betrieb_id = b.id
 						where b.bezirk_id in (' . $regionIDs . ')
-						and a.confirmed = 1
 					group by date_Format(date,:groupFormat)
 					order by date desc',
             [':format' => $dateFormat, ':groupFormat' => $dateFormat]
-        );
-    }
-
-    public function ageBandHomeDistrict(int $districtId): array
-    {
-        return $this->db->fetchAll(
-            'SELECT
-				CASE
-				WHEN age >=18 AND age <=25 THEN \'18-25\'
-				WHEN age >=26 AND age <=33 THEN \'26-33\'
-				WHEN age >=34 AND age <=41 THEN \'34-41\'
-				WHEN age >=42 AND age <=49 THEN \'42-49\'
-				WHEN age >=50 AND age <=57 THEN \'50-57\'
-				WHEN age >=58 AND age <=65 THEN \'58-65\'
-				WHEN age >=66 AND age <=73 THEN \'66-73\'
-				WHEN age >=74 AND age < 100 THEN \'74+\'
-				WHEN age >= 100 or age < 18 THEN \'invalid\'
-				WHEN age IS NULL THEN \'unknown\'
-				END AS Altersgruppe,
-				COUNT(*) AS Anzahl
-				FROM
-				(
-				 SELECT DATE_FORMAT(NOW(), \'%Y\') - DATE_FORMAT(geb_datum, \'%Y\') - (DATE_FORMAT(NOW(), \'00-%m-%d\') < DATE_FORMAT(geb_datum, \'00-%m-%d\')) AS age,
-				 id FROM fs_foodsaver WHERE rolle >= :rolle AND bezirk_id = :id and deleted_at is null
-				) AS tbl
-				GROUP BY Altersgruppe',
-            ['rolle' => Role::FOODSAVER, ':id' => $districtId]
-        );
-    }
-
-    public function ageBandDistrict(int $districtId): array
-    {
-        return $this->db->fetchAll(
-            'SELECT
-				CASE
-				WHEN age >=18 AND age <=25 THEN \'18-25\'
-				WHEN age >=26 AND age <=33 THEN \'26-33\'
-				WHEN age >=34 AND age <=41 THEN \'34-41\'
-				WHEN age >=42 AND age <=49 THEN \'42-49\'
-				WHEN age >=50 AND age <=57 THEN \'50-57\'
-				WHEN age >=58 AND age <=65 THEN \'58-65\'
-				WHEN age >=66 AND age <=73 THEN \'66-73\'
-				WHEN age >=74 AND age < 100 THEN \'74+\'
-				WHEN age >= 100 or age < 18 THEN \'invalid\'
-				WHEN age IS NULL THEN \'unknown\'
-				END AS Altersgruppe,
-				COUNT(*) AS Anzahl
-				FROM
-				(
-				 SELECT DATE_FORMAT(NOW(), \'%Y\') - DATE_FORMAT(geb_datum, \'%Y\') - (DATE_FORMAT(NOW(), \'00-%m-%d\') < DATE_FORMAT(geb_datum, \'00-%m-%d\')) AS age,
-				 		fs.id
-				 FROM fs_foodsaver_has_bezirk fb
-					 left outer join fs_foodsaver fs on fb.foodsaver_id=fs.id
-					 WHERE fs.rolle >= :rolle AND fb.bezirk_id = :id and fs.deleted_at is null
-				) AS tbl
-				GROUP BY Altersgruppe',
-            ['rolle' => Role::FOODSAVER, ':id' => $districtId]
         );
     }
 
@@ -690,7 +563,7 @@ class RegionGateway extends BaseGateway
      *
      * @return string|null value of option or null if not found
      *
-     * @throws \Exception
+     * @throws Exception
      */
     public function getRegionOption(int $regionId, int $optionType): ?string
     {
@@ -701,6 +574,45 @@ class RegionGateway extends BaseGateway
             ]);
         } catch (Exception $e) {
             return null;
+        }
+    }
+
+    /**
+     * Returns all options for the region as an array, or an empty array if no options are set for the region.
+     *
+     * @param int $regionId ID of region
+     *
+     * @return array associative array of options or empty array if not found
+     *
+     * @throws Exception
+     */
+    public function getRegionOptions(int $regionId): array
+    {
+        try {
+            $optionTypes = [
+                RegionOptionType::REGION_PICKUP_RULE_ACTIVE => 'regionPickupRuleActive',
+                RegionOptionType::REGION_PICKUP_RULE_TIMESPAN_DAYS => 'regionPickupRuleTimespan',
+                RegionOptionType::REGION_PICKUP_RULE_LIMIT_NUMBER => 'regionPickupRuleLimit',
+                RegionOptionType::REGION_PICKUP_RULE_LIMIT_DAY_NUMBER => 'regionPickupRuleLimitDay',
+                RegionOptionType::REGION_PICKUP_RULE_INACTIVE_HOURS => 'regionPickupRuleInactive'
+            ];
+
+            $options = $this->db->fetchAllByCriteria('fs_region_options', ['option_type', 'option_value'], [
+                'region_id' => $regionId,
+                'option_type' => array_keys($optionTypes)
+            ]);
+
+            $mappedOptions = [];
+            foreach ($options as $option) {
+                $optionType = $option['option_type'];
+                $optionName = $optionTypes[$optionType];
+                $optionValue = $optionType === RegionOptionType::REGION_PICKUP_RULE_ACTIVE ? (bool)$option['option_value'] : $option['option_value'];
+                $mappedOptions[$optionName] = $optionValue;
+            }
+
+            return $mappedOptions;
+        } catch (Exception $e) {
+            return [];
         }
     }
 
@@ -725,7 +637,7 @@ class RegionGateway extends BaseGateway
      *
      * @return array|null value of option or null if not found
      *
-     * @throws \Exception
+     * @throws Exception
      */
     public function getAllRegionOptions(int $regionId): ?array
     {

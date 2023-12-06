@@ -36,7 +36,7 @@ class FoodsharingUrl extends \Codeception\Module\Db
 
     public function groupMemberListUrl($groupId)
     {
-        return '/?page=bezirk&sub=members&bid=' . (int)$groupId;
+        return '/region?sub=members&bid=' . (int)$groupId;
     }
 
     public function groupListUrl()
@@ -50,19 +50,19 @@ class FoodsharingUrl extends \Codeception\Module\Db
             $regionId = $this->grabFromDatabase('fs_bezirk_has_theme', 'bezirk_id', ['theme_id' => $id]);
         }
 
-        return '/?page=bezirk&bid=' . (int)$regionId . '&sub=forum&tid=' . (int)$id;
+        return '/region?bid=' . (int)$regionId . '&sub=forum&tid=' . (int)$id;
     }
 
     public function forumUrl($id, $botforum = false)
     {
         $sub = $botforum ? 'botforum' : 'forum';
 
-        return '/?page=bezirk&bid=' . (int)$id . '&sub=' . $sub;
+        return '/region?bid=' . (int)$id . '&sub=' . $sub;
     }
 
     public function regionWallUrl($id)
     {
-        return '/?page=bezirk&bid=' . (int)$id . '&sub=wall';
+        return '/region?bid=' . (int)$id . '&sub=wall';
     }
 
     public function foodSharePointRegionListUrl($region_id)

@@ -3,6 +3,7 @@ import { getCache, getCacheInterval, setCache } from '@/helper/cache'
 import { getMailUnreadCount } from '@/api/mailbox'
 import { getDetails } from '@/api/user'
 import serverData from '@/helper/server-data'
+import { ROLE } from '@/consts'
 
 const mailUnreadCountRateLimitInterval = 300000 // 5 minutes in milliseconds
 const userDetailsRateLimitInterval = 60000 // 1 minute in milliseconds
@@ -29,8 +30,14 @@ export const getters = {
   isSleeping () {
     return store.details?.isSleeping
   },
+  isVerified () {
+    return store.details?.isVerified
+  },
   isFoodsaver () {
     return store.user?.isFoodsaver
+  },
+  isOrga () {
+    return store.role >= ROLE.ORGA
   },
   getUser () {
     return store.user

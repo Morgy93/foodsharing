@@ -122,6 +122,13 @@ class StoreGatewayTest extends Unit
         );
     }
 
+    public function testNullForCooperationStatus()
+    {
+        $store = $this->tester->createStore($this->region['id'], null, null, ['begin' => '0000-00-00']);
+        $readStore = $this->gateway->getStore($store['id']);
+        $this->assertNull($readStore->cooperationStart);
+    }
+
     public function testListStoresInRegionStoreContent(): void
     {
         $region = $this->tester->createRegion();
@@ -203,6 +210,16 @@ class StoreGatewayTest extends Unit
         $this->assertEquals(1, count($listOfStores));
 
         $this->assertEquals($listOfStores[0]->updatedAt, $expectedCreationDateTime);
+    }
+
+    public function testBeginSetToNullForCompatibility()
+    {
+        $store = $this->tester->createStore($this->region['id']);
+        $patch = $this->gateway->getStore($store['id']);
+        $patch->cooperationStart = null;
+        $this->gateway->updateStoreData($patch);
+
+        $this->tester->seeInDatabase('fs_betrieb', ['begin' => '0000-00-00', 'id' => $store['id']]);
     }
 
     /**

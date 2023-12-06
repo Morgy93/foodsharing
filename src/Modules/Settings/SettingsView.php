@@ -295,30 +295,11 @@ class SettingsView extends View
         ]);
     }
 
-    public function delete_account(int $fsId)
+    public function delete_account(int $fsId): string
     {
-        $content = $this->v_utils->v_info(
-            $this->translator->trans('foodsaver.delete_own_account')
-                . $this->translator->trans('notice') . '<br/>'
-                . $this->translator->trans('legal.if_delete.legal_1') . '<br/>'
-                . $this->translator->trans('legal.if_delete.legal_2') . '<br/><br/>'
-                . $this->translator->trans('legal.if_delete.this_gets_deleted_main')
-                . $this->translator->trans('legal.if_delete.this_gets_deleted_stores')
-                . $this->translator->trans('legal.if_delete.this_gets_deleted_quiz')
-                . $this->translator->trans('legal.if_delete.this_gets_deleted_verify')
-                . $this->translator->trans('legal.if_delete.this_gets_deleted_friendlist')
-                . $this->translator->trans('legal.if_delete.this_gets_deleted_trustbananas') . '<br/><br/>'
-                . $this->translator->trans('legal.if_delete.this_doesnt_get_deleted') . '<br/>'
-                . $this->translator->trans('legal.if_delete.this_doesnt_get_deleted_name')
-                . $this->translator->trans('legal.if_delete.this_doesnt_get_deleted_address')
-                . $this->translator->trans('legal.if_delete.this_doesnt_get_deleted_history')
-                . '<button type="button" id="delete-account" class="btn btn-sm btn-danger"'
-                . ' onclick="confirmDeleteSelf(' . $fsId . ')">'
-                . $this->translator->trans('foodsaver.delete_account_now')
-                . '</button>'
-        );
-
-        return $this->v_utils->v_field($content, '⚠️ ' . $this->translator->trans('foodsaver.delete_account'), ['class' => 'ui-padding bootstrap']);
+        return $this->vueComponent('delete-account', 'DeleteAccount', [
+            'userId' => $fsId
+        ]);
     }
 
     public function foodsaver_form()

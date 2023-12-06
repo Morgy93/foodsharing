@@ -141,33 +141,6 @@ class StoreCest
      * @example["StoreManager"]
      * @example["Foodsaver"]
      */
-    public function canRenameStore(AcceptanceTester $I, Codeception\Example $example)
-    {
-        call_user_func([$this, 'loginAs'], $I, $example[0]);
-
-        $I->amOnPage($I->storeEditUrl($this->store['id']));
-
-        if ($example[0] === 'StoreManager') {
-            $I->wantTo("Can rename a store as {$example[0]}");
-
-            $newStoreName = "RENAME__{$this->store['name']}";
-            $I->canSee('Name', '.wrapper-label');
-            $I->fillField('#name', $newStoreName);
-            $I->click('Senden');
-            $I->see($newStoreName, '.last');
-        }
-
-        if ($example[0] === 'Foodsaver') {
-            $I->wantTo("Can't rename a store as {$example[0]}");
-            $I->cantSee('#name');
-            $I->cantSee('Senden');
-        }
-    }
-
-    /**
-     * @example["StoreManager"]
-     * @example["Foodsaver"]
-     */
     public function canSeeStoreOnDashboard(AcceptanceTester $I, Codeception\Example $example)
     {
         call_user_func([$this, 'loginAs'], $I, $example[0]);
@@ -179,7 +152,7 @@ class StoreCest
                 'active' => MembershipStatus::MEMBER,
                 'verantwortlich' => 1,
             ]);
-            $I->see('Deine verantwortlichen Betriebe', ['css' => '.list-group-header']);
+            $I->see('Deine Betriebsverantwortungen', ['css' => '.list-group-header']);
             $I->see($this->store['name'], ['css' => '.field-headline']);
             $I->seeElement('.fas.fa-cog');
         }
@@ -197,18 +170,6 @@ class StoreCest
     }
 
     /**
-     * @example["StoreManager"]
-     * @example["Foodsaver"]
-     */
-    public function canAccessStorePage(AcceptanceTester $I, Codeception\Example $example)
-    {
-        call_user_func([$this, 'loginAs'], $I, $example[0]);
-
-        $I->amOnPage($I->storeUrl($this->store['id']));
-        $I->see($this->store['name'], '#main .bread');
-    }
-
-    /**
      * @example["Foodsharer"]
      * @example["FoodsaverNoRegion"]
      * @example["foodsaverDifferentRegion"]
@@ -218,6 +179,7 @@ class StoreCest
         call_user_func([$this, 'loginAs'], $I, $example[0]);
 
         $I->amOnPage($I->storeUrl($this->store['id']));
+        $I->waitForActiveAPICalls();
         $I->cantSeeInCurrentUrl('fsbetrieb');
     }
 
@@ -273,12 +235,13 @@ class StoreCest
         ]);
 
         $I->amOnPage($I->storeUrl($this->store['id']));
+        $I->waitForActiveAPICalls();
         $I->waitForText('Abholungshistorie');
         // expand UI (should be collapsed by default)
-        $I->click('.pickup-history-title');
+        $I->click('#Abholungshistorie');
         $I->waitForText('Abholungen anzeigen');
         // select a date ~4 years in the past, to see if the calendar works
-        $I->click('#datepicker-from');
+        $I->click('.date-picker-from');
         $I->click('button[title="Vorheriges Jahr"]');
         $I->click('button[title="Vorheriges Jahr"]');
         $I->click('button[title="Vorheriges Jahr"]');
@@ -352,6 +315,7 @@ class StoreCest
     {
         call_user_func([$this, 'loginAs'], $I, $example[0]);
         $I->amOnPage($I->storeUrl($this->store['id']));
+        $I->waitForActiveAPICalls();
 
         if ($example[0] === 'StoreManager') {
             $I->wantTo("Can remove a member as {$example[0]}");
@@ -359,12 +323,9 @@ class StoreCest
             // remove a member from the team entirely
             $I->click("{$this->foodsaverOnJumperList['name']} {$this->foodsaverOnJumperList['nachname']}", '.store-team');
             $I->click('Aus dem Team entfernen', '.member-actions');
-            $I->seeInPopup('aus diesem Betriebs-Team entfernen?');
-            $I->cancelPopup();
-            // confirm alert this time
-            $I->click('Aus dem Team entfernen', '.member-actions');
-            $I->seeInPopup('aus diesem Betriebs-Team entfernen?');
-            $I->acceptPopup();
+            $I->waitForElement('#deleteModal');
+            $I->see('Möchtest du wirklich ' . $this->foodsaverOnJumperList['name'] . ' ' . $this->foodsaverOnJumperList['nachname'] . ' aus diesem Betriebs-Team entfernen?', '#deleteModal');
+            $I->click('Ja, ich bin mir sicher', '#deleteModal');
             $I->waitForActiveAPICalls();
             $I->dontSee("{$this->foodsaverOnJumperList['name']} {$this->foodsaverOnJumperList['nachname']}", '.store-team');
             $I->dontSeeInDatabase('fs_betrieb_team', [
@@ -387,6 +348,7 @@ class StoreCest
     {
         call_user_func([$this, 'loginAs'], $I, $example[0]);
         $I->amOnPage($I->storeUrl($this->store['id']));
+        $I->waitForActiveAPICalls();
 
         if ($example[0] === 'StoreManager') {
             $I->click('Ansicht für Betriebsverantwortliche aktivieren');
@@ -397,12 +359,8 @@ class StoreCest
             $I->click('#new-foodsaver-search li.suggest-item');
             $I->click('#new-foodsaver-search button[type="submit"]');
             $I->waitForActiveAPICalls();
-            // reload team list
-            $I->waitForElement('button.reload-page', 5);
-            $I->click('button.reload-page');
 
             // promote foodsaver to storemanager
-            $I->click('Ansicht für Betriebsverantwortliche aktivieren');
             $I->click("{$this->foodsaverWithStoreManagerQuiz['name']} {$this->foodsaverWithStoreManagerQuiz['nachname']}", '.store-team');
             $I->click('Verantwortlich machen', '.member-actions');
             $I->waitForActiveAPICalls();
@@ -448,6 +406,7 @@ class StoreCest
     {
         call_user_func([$this, 'loginAs'], $I, $example[0]);
         $I->amOnPage($I->storeUrl($this->store['id']));
+        $I->waitForActiveAPICalls();
 
         if ($example[0] === 'StoreManager') {
             $I->click('Ansicht für Betriebsverantwortliche aktivieren');
@@ -459,5 +418,39 @@ class StoreCest
             $I->see("{$this->foodsaver['name']} {$this->foodsaver['nachname']}", '.store-team');
             $I->waitForElement('.store-team #member-' . $this->foodsaver['id'] . '.member-info.jumper', 5);
         }
+    }
+
+    public function canAccessStoreLog(AcceptanceTester $I)
+    {
+        call_user_func([$this, 'loginAs'], $I, 'StoreManager');
+        $I->amOnPage($I->storeUrl($this->store['id']));
+        $I->waitForActiveAPICalls();
+
+        $I->click('#store-log');
+        $I->click('.multiselect');
+        $I->click('#null-4'); // Foodsaver zum Springer machen
+        $I->click('.multiselect .multiselect__select');
+        $I->click('#search-store-log');
+        $I->waitForActiveAPICalls();
+        $I->cantSeeElement('.log-entry-content');
+
+        //Perform store action
+        $I->click("{$this->foodsaver['name']} {$this->foodsaver['nachname']}", '.store-team');
+        $I->click('Auf die Springerliste', '.member-actions');
+        $I->waitForActiveAPICalls();
+
+        //See storelog now contains something
+        $I->click('#search-store-log');
+        $I->waitForActiveAPICalls();
+        $I->canSee('auf die Springerliste gesetzt');
+
+        //Only find entries if category is matching
+        $I->click('.multiselect');
+        $I->click('#null-3'); // Enable other category
+        $I->click('#null-4'); // Disable "Foodsaver zum Springer machen"
+        $I->click('.multiselect .multiselect__select');
+        $I->click('#search-store-log');
+        $I->waitForActiveAPICalls();
+        $I->cantSeeElement('.log-entry-content');
     }
 }

@@ -8,8 +8,5 @@ source "$dir"/__common.sh
 echo "Linting php with php-cs-fixer"
 run-in-container app vendor/bin/php-cs-fixer fix --dry-run --diff --verbose
 
-echo "Linting php with parallel-lint"
-run-in-container app vendor/bin/parallel-lint --exclude vendor .
-
 echo "Linting php with phpstan"
 run-in-container app vendor/bin/phpstan analyse --memory-limit=768M

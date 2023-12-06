@@ -69,9 +69,6 @@ class MessagePushNotification extends PushNotification
         return $this->message->body;
     }
 
-    /**
-     * {@inheritdoc}
-     */
     public function getTitle(TranslatorInterface $translator): string
     {
         $userName = $this->author->name ?? $translator->trans('dashboard.deleted_user');

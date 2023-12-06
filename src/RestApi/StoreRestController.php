@@ -2,16 +2,22 @@
 
 namespace Foodsharing\RestApi;
 
+use Carbon\Carbon;
 use DateTime;
+use DateTimeZone;
 use Exception;
 use Foodsharing\Lib\Session;
 use Foodsharing\Modules\Bell\BellGateway;
 use Foodsharing\Modules\Bell\DTO\Bell;
 use Foodsharing\Modules\Core\DatabaseNoValueFoundException;
 use Foodsharing\Modules\Core\DBConstants\Bell\BellType;
+use Foodsharing\Modules\Core\DBConstants\Foodsaver\Role;
+use Foodsharing\Modules\Core\DBConstants\Region\WorkgroupFunction;
+use Foodsharing\Modules\Core\DBConstants\Store\CooperationStatus;
 use Foodsharing\Modules\Core\DBConstants\Store\Milestone;
 use Foodsharing\Modules\Core\DBConstants\Store\StoreLogAction;
 use Foodsharing\Modules\Foodsaver\FoodsaverGateway;
+use Foodsharing\Modules\Group\GroupFunctionGateway;
 use Foodsharing\Modules\Region\RegionGateway;
 use Foodsharing\Modules\Store\DTO\CommonStoreMetadata;
 use Foodsharing\Modules\Store\DTO\PatchStore;
@@ -25,6 +31,7 @@ use Foodsharing\RestApi\Models\Store\CreateStoreModel;
 use Foodsharing\RestApi\Models\Store\MinimalStoreModel;
 use Foodsharing\RestApi\Models\Store\StorePaginationResult;
 use Foodsharing\RestApi\Models\Store\StoreStatusForMemberModel;
+use Foodsharing\Utility\TimeHelper;
 use FOS\RestBundle\Controller\AbstractFOSRestController;
 use FOS\RestBundle\Controller\Annotations as Rest;
 use FOS\RestBundle\Request\ParamFetcher;
@@ -52,7 +59,8 @@ class StoreRestController extends AbstractFOSRestController
         private StoreTransactions $storeTransactions,
         private StorePermissions $storePermissions,
         private RegionGateway $regionGateway,
-        private BellGateway $bellGateway
+        private BellGateway $bellGateway,
+        private GroupFunctionGateway $groupFunctionGateway
     ) {
     }
 
@@ -70,7 +78,7 @@ class StoreRestController extends AbstractFOSRestController
      *      @Model(type=CommonStoreMetadata::class)
      * )
      * @OA\Response(response="401", description="Not logged in")
-
+     *
      * @Rest\Get("stores/meta-data")
      */
     public function getCommonStoreMetadata(): Response
@@ -190,6 +198,106 @@ class StoreRestController extends AbstractFOSRestController
     }
 
     /**
+     * Provides store members.
+     *
+     * Depending on the access permission some information are not provided.
+     *
+     * @OA\Tag(name="stores")
+     * @OA\Response(response="200", description="Success")
+     * @OA\Response(response="401", description="Not logged in")
+     * @OA\Response(response="403", description="Not allowed to see/list stores")
+     * @OA\Response(response="404", description="Store not found")
+     * @Rest\Get("/stores/{storeId}/member", requirements={"storeId" = "\d+"})
+     */
+    public function getStoreMembersAction(int $storeId)
+    {
+        $userId = $this->session->id();
+        if (!$userId) {
+            throw new UnauthorizedHttpException('');
+        }
+
+        try {
+            $maySeeDetails = $this->storePermissions->maySeePhoneNumbers($storeId);
+            $result = $this->storeTransactions->getMyStoreTeam($userId, $storeId, $maySeeDetails);
+
+            return $this->handleView($this->view($result, 200));
+        } catch (DatabaseNoValueFoundException $ex) {
+            throw new NotFoundHttpException('Store not found.');
+        }
+    }
+
+    /**
+     * Provides store permissions.
+     **
+     * @OA\Tag(name="stores")
+     * @OA\Response(response="200", description="Success")
+     * @OA\Response(response="401", description="Not logged in")
+     * @OA\Response(response="403", description="Not allowed to see/list stores")
+     * @OA\Response(response="404", description="Store not found")
+     * @Rest\Get("/stores/{storeId}/permissions", requirements={"storeId" = "\d+"})
+     */
+    public function getStorePermissionsAction(int $storeId)
+    {
+        $userId = $this->session->id();
+        if (!$userId) {
+            throw new UnauthorizedHttpException('');
+        }
+
+        try {
+            $store = $this->storeGateway->getMyStore($this->session->id(), $storeId);
+
+            $teamConversationId = null;
+            if ($this->storePermissions->mayChatWithRegularTeam($store)) {
+                $teamConversationId = $store['team_conversation_id'];
+            }
+
+            $jumperConversationId = null;
+            if ($this->storePermissions->mayChatWithJumperWaitingTeam($store)) {
+                $jumperConversationId = $store['springer_conversation_id'];
+            }
+
+            $isOrgUser = $this->session->mayRole(Role::ORGA);
+            $isAmbassador = false;
+            $isCoordinator = false;
+
+            if (!$isOrgUser) {
+                $storeGroup = $this->groupFunctionGateway->getRegionFunctionGroupId($store['bezirk_id'], WorkgroupFunction::STORES_COORDINATION);
+                if (empty($storeGroup)) {
+                    if ($this->session->isAdminFor($store['bezirk_id'])) {
+                        $isAmbassador = true;
+                    }
+                } elseif ($this->session->isAdminFor($storeGroup)) {
+                    $isCoordinator = true;
+                }
+            }
+
+            $params = [
+                'isCoordinator' => $isCoordinator,
+                'isAmbassador' => $isAmbassador,
+                'isOrgUser' => $isOrgUser,
+                'isJumper' => $store['jumper'],
+                'isManager' => $store['verantwortlich'],
+                'mayDoPickup' => $this->storePermissions->mayDoPickup($storeId),
+                'teamConversationId' => $teamConversationId,
+                'jumperConversationId' => $jumperConversationId,
+                'mayEditStore' => $this->storePermissions->mayEditStore($storeId),
+                'mayLeaveStoreTeam' => $this->storePermissions->mayLeaveStoreTeam($storeId, $this->session->id()),
+                'storeId' => $storeId,
+                'maySeePickupHistory' => $this->storePermissions->maySeePickupHistory($storeId),
+                'maySeeStoreLog' => $this->storePermissions->maySeeStoreLog($storeId),
+                'mayReadStoreWall' => $this->storePermissions->mayReadStoreWall($storeId),
+                'mayWritePost' => $this->storePermissions->mayWriteStoreWall($storeId),
+                'mayDeleteEverything' => $this->storePermissions->mayDeleteStoreWall($storeId),
+                'maySeePickups' => $this->storePermissions->maySeePickups($storeId) && $store['betrieb_status_id'] === CooperationStatus::COOPERATION_STARTING || $store['betrieb_status_id'] === CooperationStatus::COOPERATION_ESTABLISHED,
+            ];
+
+            return $this->handleView($this->view($params, 200));
+        } catch (DatabaseNoValueFoundException $ex) {
+            throw new NotFoundHttpException('Store not found.');
+        }
+    }
+
+    /**
      * Creates a new store.
      *
      * This method creates a new store. The store will initial contains the provided information.
@@ -293,8 +401,10 @@ class StoreRestController extends AbstractFOSRestController
 
         $this->throwBadRequestExceptionOnError($validationErrors);
 
-        if (!empty($storeModel->regionId) && !$this->regionGateway->hasMember($this->session->id(), $storeModel->regionId)) {
-            throw new AccessDeniedHttpException('no member of other region');
+        if (!$this->session->mayRole(Role::ORGA)) {
+            if (!empty($storeModel->regionId) && !$this->regionGateway->hasMember($this->session->id(), $storeModel->regionId)) {
+                throw new AccessDeniedHttpException('no member of other region');
+            }
         }
 
         try {
@@ -496,6 +606,34 @@ class StoreRestController extends AbstractFOSRestController
         $this->storeTransactions->requestStoreTeamMembership($storeId, $userId);
 
         return $this->handleView($this->view([], 200));
+    }
+
+    /**
+     * Get applications to store team.
+     *
+     * @OA\Response(response="200", description="Success")
+     * @OA\Response(response="401", description="Not logged in")
+     * @OA\Response(response="403", description="Insufficient permissions")
+     * @OA\Response(response="404", description="Store does not exist")
+     * @OA\Tag(name="stores")
+     * @Rest\Get("stores/{storeId}/requests")
+     */
+    public function listStoreTeamMembershipRequestsAction(int $storeId): Response
+    {
+        $userId = $this->session->id();
+        if (!$userId) {
+            throw new UnauthorizedHttpException('', self::NOT_LOGGED_IN);
+        }
+        if (!$this->storeGateway->storeExists($storeId)) {
+            throw new NotFoundHttpException('Store does not exist.');
+        }
+        if (!$this->storePermissions->mayEditStore($storeId)) {
+            throw new AccessDeniedHttpException();
+        }
+
+        $response = $this->storeTransactions->getStoreApplications($userId, $storeId);
+
+        return $this->handleView($this->view($response, 200));
     }
 
     /**
@@ -724,45 +862,62 @@ class StoreRestController extends AbstractFOSRestController
      * The log contains only entries from the past 7 days.
      *
      * @OA\Parameter(name="storeId", in="path", @OA\Schema(type="integer"))
+     * @OA\Parameter(name="fromDate", in="path", @OA\Schema(type="string"), description="The fist date from which to include actions")
+     * @OA\Parameter(name="toDate", in="path", @OA\Schema(type="string"), description="The last date from which to include actions")
      * @OA\Parameter(name="storeLogActionIds", in="path", @OA\Schema(type="string"), description="The ids of the actions, seperated by commas like: 1,2,3")
      * @OA\Tag(name="stores")
-     * @Rest\Get("stores/{storeId}/log/{storeLogActionIds}")
+     * @Rest\Get("stores/{storeId}/log/{fromDate}/{toDate}/{storeLogActionIds}", requirements={
+     *      "storeId" = "\d+",
+     *      "fromDate" = "[^/]+",
+     *      "toDate" = "[^/]+",
+     *      "storeLogActionIds" = "(\d+,)*\d+"
+     * })
      */
-    public function showStoreLogHistoryAction(int $storeId, string $storeLogActionIds): Response
+    public function showStoreLogHistoryAction(int $storeId, string $fromDate, string $toDate, string $storeLogActionIds): Response
     {
         if (!$this->session->id()) {
             throw new UnauthorizedHttpException('', self::NOT_LOGGED_IN);
         }
 
-        if (!$this->storePermissions->maySeePickupHistory($storeId)) {
-            throw new AccessDeniedHttpException();
+        $storeLogActions = explode(',', $storeLogActionIds);
+
+        if (count($storeLogActions) === 1 && $storeLogActions['0'] == StoreLogAction::SIGN_UP_SLOT) {
+            if (!$this->storePermissions->maySeePickupSlotDateTime($storeId)) {
+                throw new AccessDeniedHttpException();
+            }
+        } else {
+            if (!$this->storePermissions->maySeeStoreLog($storeId)) {
+                throw new AccessDeniedHttpException();
+            }
+        }
+
+        $fromDate = TimeHelper::parsePickupDate($fromDate);
+        $toDate = TimeHelper::parsePickupDate($toDate);
+        if (is_null($fromDate) || is_null($toDate)) {
+            throw new BadRequestHttpException('Invalid date format');
+        }
+
+        if (Carbon::now()->subMonths(6)->subDay() > $fromDate) { // 6 months + 1 day for rounding
+            throw new BadRequestHttpException('Cannot access store log more than 6 months back.');
         }
 
         $storeLogActions = explode(',', $storeLogActionIds);
-        $storeLogEntries = $this->storeGateway->getStoreLogsByActionType($storeId, $storeLogActions);
+        $storeLogEntries = $this->storeGateway->getStoreLogsByActionType($storeId, $storeLogActions, $fromDate, $toDate);
+        $extendedLogEntries = $this->extendStoreLogWithFoodsaverProfilData($storeId, $storeLogEntries);
 
-        $storeLogEntriesFromLastSevenDays = array_filter($storeLogEntries, function ($logEntry) {
-            $performedAt = new DateTime($logEntry['performed_at']);
-            $performedAtTimestamp = $performedAt->getTimestamp();
-            $dateBeforeSevenDays = new DateTime('-7 days');
-            $dateBeforeSevenDays = $dateBeforeSevenDays->setTime(0, 0, 0, 0);
-            $dateBeforeSevenDaysTimestamp = $dateBeforeSevenDays->getTimestamp();
+        $timeZone = new DateTimeZone('Europe/Berlin');
+        $timeZoneOffset = $timeZone->getOffset(new DateTime('now', $timeZone));
 
-            return $performedAtTimestamp >= $dateBeforeSevenDaysTimestamp;
-        });
-
-        $storeLogEntriesFromLastSevenDaysWithCorrectedDateFormat = array_map(function ($logEntry) {
+        $extendedLogEntries = array_map(function ($logEntry) use ($timeZoneOffset) {
             $correctedSlotDate = new DateTime($logEntry['date_reference']);
-            $correctedSlotDate->add(new \DateInterval('PT2H'));
+            $correctedSlotDate->add(new \DateInterval("PT{$timeZoneOffset}S"));
             $logEntry['date_reference'] = $correctedSlotDate->format(DATE_ATOM);
 
             $correctedPerformedAtDate = new DateTime($logEntry['performed_at']);
             $logEntry['performed_at'] = $correctedPerformedAtDate->format(DATE_ATOM);
 
             return $logEntry;
-        }, $storeLogEntriesFromLastSevenDays);
-
-        $extendedLogEntries = $this->extendStoreLogWithFoodsaverProfilData($storeId, $storeLogEntriesFromLastSevenDaysWithCorrectedDateFormat);
+        }, $extendedLogEntries);
 
         return $this->handleView($this->view($extendedLogEntries, 200));
     }
@@ -772,25 +927,23 @@ class StoreRestController extends AbstractFOSRestController
         $storeTeam = [];
         foreach ($this->storeGateway->getStoreTeam($storeId) as $teamMember) {
             $foodsaverId = $teamMember['id'];
-            $storeTeam[$foodsaverId] = RestNormalization::normalizeStoreUser($teamMember);
+            $storeTeam[$foodsaverId] = RestNormalization::normalizeUser($teamMember);
         }
 
         $mergedStoreLogEntries = [];
 
         foreach ($storeLogEntries as $entry) {
+            $actingFoodsaverId = $entry['acting_foodsaver_id'];
+            unset($entry['acting_foodsaver_id']);
+            $entry['acting_foodsaver'] = $storeTeam[$actingFoodsaverId] ?? RestNormalization::normalizeUser($this->foodsaverGateway->getFoodsaver($actingFoodsaverId));
+
             $affectedFoodsaverId = $entry['affected_foodsaver_id'];
-            $performedFoodsaverId = $entry['performed_foodsaver_id'];
-
-            $affectedFoodsaverModel = $storeTeam[$affectedFoodsaverId] ?? RestNormalization::normalizeStoreUser($this->foodsaverGateway->getFoodsaver($affectedFoodsaverId));
-            $performedFoodsaverModel = null;
-
-            if (!is_null($performedFoodsaverId)) {
-                $performedFoodsaverModel = $storeTeam[$performedFoodsaverId] ?? RestNormalization::normalizeStoreUser($this->foodsaverGateway->getFoodsaver($performedFoodsaverId));
+            unset($entry['affected_foodsaver_id']);
+            if (!is_null($affectedFoodsaverId)) {
+                $entry['affected_foodsaver'] = $storeTeam[$affectedFoodsaverId] ?? RestNormalization::normalizeUser($this->foodsaverGateway->getFoodsaver($affectedFoodsaverId));
+            } else {
+                $entry['affected_foodsaver'] = null;
             }
-
-            $entry['affected_foodsaver'] = $affectedFoodsaverModel;
-            $entry['performed_foodsaver'] = $performedFoodsaverModel;
-
             $mergedStoreLogEntries[] = $entry;
         }
 

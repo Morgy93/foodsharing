@@ -5,12 +5,11 @@ namespace Foodsharing\Lib;
 use Foodsharing\Lib\Db\Mem;
 use Foodsharing\Lib\View\Utils;
 use Foodsharing\Modules\Core\InfluxMetrics;
-use Foodsharing\Modules\Core\View;
 use Foodsharing\Utility\EmailHelper;
 use Foodsharing\Utility\FlashMessageHelper;
 use Foodsharing\Utility\PageHelper;
 use Foodsharing\Utility\RouteHelper;
-use Foodsharing\Utility\TranslationHelper;
+use Foodsharing\Utility\WebpackHelper;
 use ReflectionClass;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Response;
@@ -24,7 +23,6 @@ use Symfony\Contracts\Translation\TranslatorInterface;
  */
 abstract class FoodsharingController extends AbstractController
 {
-    protected View $view;
     // $sub was deliberately left out in this compatibility layer for the time being.
     // However, a replacement or better solution for its behavior will be necessary for porting some controllers.
 
@@ -32,11 +30,9 @@ abstract class FoodsharingController extends AbstractController
     protected Mem $mem;
     protected Session $session;
     protected Utils $v_utils;
-    private InfluxMetrics $metrics;
     protected EmailHelper $emailHelper;
     protected FlashMessageHelper $flashMessageHelper;
     protected RouteHelper $routeHelper;
-    protected TranslationHelper $translationHelper;
     protected TranslatorInterface $translator;
 
     /**
@@ -55,13 +51,13 @@ abstract class FoodsharingController extends AbstractController
         $this->mem = $container->get(Mem::class);
         $this->session = $container->get(Session::class);
         $this->v_utils = $container->get(Utils::class);
-        $this->metrics = $container->get(InfluxMetrics::class);
         $this->pageHelper = $container->get(PageHelper::class);
         $this->emailHelper = $container->get(EmailHelper::class);
         $this->routeHelper = $container->get(RouteHelper::class);
         $this->flashMessageHelper = $container->get(FlashMessageHelper::class);
-        $this->translationHelper = $container->get(TranslationHelper::class);
         $this->translator = $container->get('translator'); // TODO TranslatorInterface is an alias
+        /** @var WebpackHelper $controlCommon */
+        $controlCommon = $container->get(WebpackHelper::class);
 
         $reflection = new ReflectionClass($this);
         $className = $reflection->getShortName();
@@ -81,21 +77,12 @@ abstract class FoodsharingController extends AbstractController
         }
 
         $projectDir = $container->get('kernel')->getProjectDir();
-        $webpackModules = $projectDir . '/assets/modules.json';
-        $manifest = json_decode(file_get_contents($webpackModules), true);
+        // the module name is derived from the controller name and must match the directory it's in
         $moduleName = substr($className, 0, $pos);
-        $entry = 'Modules/' . $moduleName;
-        if (isset($manifest[$entry])) {
-            foreach ($manifest[$entry] as $asset) {
-                if (str_ends_with($asset, '.js')) {
-                    $this->pageHelper->addWebpackScript($asset);
-                } elseif (str_ends_with($asset, '.css')) {
-                    $this->pageHelper->addWebpackStylesheet($asset);
-                }
-            }
-        }
+        $controlCommon->prepareWebpackAssets($projectDir, $moduleName);
 
-        $this->metrics->addPageStatData(['controller' => $className]);
+        $metrics = $container->get(InfluxMetrics::class);
+        $metrics->addPageStatData(['controller' => $className]);
     }
 
     /**
@@ -111,9 +98,30 @@ abstract class FoodsharingController extends AbstractController
      *
      * @param string $template which template should be used when rendering the website
      */
-    protected function renderGlobal(string $template = 'default'): Response
+    protected function renderGlobal(string $template = 'layouts/default.twig', array $data = []): Response
     {
-        return $this->render('layouts/' . $template . '.twig', $this->pageHelper->generateAndGetGlobalViewData());
+        $globalData = $this->pageHelper->generateAndGetGlobalViewData();
+        $viewData = array_merge($globalData, $data);
+
+        return parent::render($template, $viewData);
+    }
+
+    protected function renderContent(string $template = 'layouts/default.twig', array $data = []): string
+    {
+        $globalData = $this->pageHelper->generateAndGetGlobalViewData();
+        $viewData = array_merge($globalData, $data);
+
+        return parent::renderView($template, $viewData);
+    }
+
+    protected function render(string $view, array $parameters = [], Response $response = null): Response
+    {
+        if (!key_exists('content', $parameters)) {
+            // this call lacks data from PageHelper::generateAndGetGlobalViewData
+            throw new \Exception("This render call is probably unported!\nMake sure to include PageHelper::generateAndGetGlobalViewData with your data!\n(Or use renderGlobal instead)");
+        }
+
+        return parent::render($view, $parameters, $response);
     }
 
     /**
@@ -125,13 +133,11 @@ abstract class FoodsharingController extends AbstractController
      */
     protected function prepareVueComponent(string $htmlId, string $componentName, array $props = [], array $initialData = []): string
     {
-        $response = $this->render('partials/vue-wrapper.twig', [
+        return $this->renderView('partials/vue-wrapper.twig', [
             'id' => $htmlId,
             'component' => $componentName,
             'props' => $props,
             'initialData' => $initialData,
         ]);
-
-        return $response->getContent();
     }
 }

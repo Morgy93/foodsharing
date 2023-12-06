@@ -2,6 +2,7 @@
 
 namespace Foodsharing\RestApi;
 
+use Exception;
 use Foodsharing\Lib\Session;
 use Foodsharing\Modules\Bell\BellGateway;
 use Foodsharing\Modules\Bell\DTO\Bell;
@@ -257,6 +258,34 @@ class RegionRestController extends AbstractFOSRestController
         }
 
         return $this->handleView($this->view([], 200));
+    }
+
+    /**
+     * Returns the region options for a specific region.
+     *
+     * @OA\Tag(name="region")
+     * @OA\Parameter(name="regionId", in="path", @OA\Schema(type="integer"), description="ID of the region")
+     * @OA\Response(response="200", description="Success", @OA\Schema(type="array", @OA\Items(
+     *     @OA\Property(property="regionPickupRuleActive", type="boolean"),
+     *     @OA\Property(property="regionPickupRuleTimespan", type="integer"),
+     *     @OA\Property(property="regionPickupRuleLimit", type="integer"),
+     *     @OA\Property(property="regionPickupRuleLimitDay", type="integer"),
+     *     @OA\Property(property="regionPickupRuleInactive", type="integer"),
+     * )))
+     * @OA\Response(response="401", description="Not logged in")
+     * @Rest\Get("region/{regionId}/options", requirements={"regionId" = "\d+"})
+     *
+     * @throws Exception
+     */
+    public function getRegionOptionsAction(int $regionId): Response
+    {
+        if (!$this->session->mayRole()) {
+            throw new UnauthorizedHttpException('');
+        }
+
+        $options = $this->regionGateway->getRegionOptions($regionId);
+
+        return $this->handleView($this->view($options, 200));
     }
 
     private function isValidNumber($value, float $lowerBound, float $upperBound): bool

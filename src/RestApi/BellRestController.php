@@ -91,17 +91,23 @@ class BellRestController extends AbstractFOSRestController
      * @OA\Response(response="403", description="Insufficient permissions to delete the bell.")
      * @OA\Response(response="404", description="The user does not have a bell with that ID.")
      * @OA\Tag(name="bells")
-     * @Rest\Delete("bells/{bellId}", requirements={"bellId" = "\d+"})
+     * @Rest\Delete("bells")
+     * @Rest\RequestParam(name="ids")
      */
-    public function deleteBellAction(int $bellId): Response
+    public function deleteBellsAction(ParamFetcher $paramFetcher): Response
     {
         $id = $this->session->id();
         if (!$id) {
             throw new UnauthorizedHttpException('');
         }
 
-        $deleted = $this->bellGateway->delBellForFoodsaver($bellId, $id);
+        $bellIds = $paramFetcher->get('ids');
+        if (!is_array($bellIds) || empty($bellIds)) {
+            throw new BadRequestHttpException();
+        }
 
-        return $this->handleView($this->view([], $deleted ? 200 : 404));
+        $deleted = $this->bellGateway->delBellsForFoodsaver($bellIds, $id);
+
+        return $this->handleView($this->view(['deleted' => $deleted], $deleted ? 200 : 404));
     }
 }

@@ -9,6 +9,10 @@ use DateTime;
  */
 class Content
 {
+    public int $id;
+
+    public string $name;
+
     public string $title;
 
     public string $body;
@@ -18,9 +22,11 @@ class Content
      */
     public ?DateTime $lastModified;
 
-    public static function create(string $title, string $body, ?DateTime $lastModified): Content
+    public static function create(int $id, string $name, string $title, string $body, ?DateTime $lastModified): Content
     {
         $c = new Content();
+        $c->id = $id;
+        $c->name = $name;
         $c->title = $title;
         $c->body = $body;
         $c->lastModified = $lastModified;

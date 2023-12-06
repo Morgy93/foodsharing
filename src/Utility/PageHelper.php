@@ -88,7 +88,13 @@ final class PageHelper
             $bodyClasses[] = 'fs';
         }
 
-        $bodyClasses[] = 'page-' . $this->routeHelper->getPage();
+        if ($this->routeHelper->isUsingLegacyController()) {
+            $page = $this->routeHelper->getPage();
+        } else {
+            $page = $this->routeHelper->getSymfonyRoute();
+        }
+
+        $bodyClasses[] = 'page-' . $page;
 
         return [
             'head' => $this->getHeadData(),
@@ -96,7 +102,7 @@ final class PageHelper
             'bodyClasses' => $bodyClasses,
             'serverDataJSON' => json_encode($this->getServerData()),
             'menu' => $this->getMenu(),
-            'route' => $this->routeHelper->getPage(),
+            'route' => $page,
             'dev' => FS_ENV == 'dev',
             'hidden' => $this->hidden,
             'isMob' => $this->session->isMob(),
@@ -171,6 +177,8 @@ final class PageHelper
             $sentryConfig = RAVEN_JAVASCRIPT_CONFIG;
         }
 
+        $mapTilesApiKey = defined('GEOAPIFY_API_KEY') ? GEOAPIFY_API_KEY : null;
+
         return array_merge($this->extraJsServerData, [
             'user' => $userData,
             'permissions' => $permissions,
@@ -180,7 +188,8 @@ final class PageHelper
             'ravenConfig' => $sentryConfig,
             'isDev' => getenv('FS_ENV') === 'dev',
             'isTest' => getenv('FS_ENV') === 'test',
-            'locale' => $this->session->getLocale()
+            'locale' => $this->session->getLocale(),
+            'mapTilesApiKey' => $mapTilesApiKey
         ]);
     }
 

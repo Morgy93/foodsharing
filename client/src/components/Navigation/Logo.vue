@@ -2,22 +2,22 @@
   <Link
     aria-label="foodsharing"
     class="foodsharing"
-    :href="isLoggedIn ? $url('dashboard') : $url('home') "
+    :href="isLoggedIn ? $url('dashboard') : $url('home')"
   >
-    <template
-      v-if="viewIsMD && !small"
-      #text
-    >
-      food<span class="part">shar<span class="apple">i</span>ng</span>
-    </template>
-    <template
-      v-else
-      #text
-    >
-      f<span class="part">s</span>
+    <template #text>
+      <span v-if="viewIsMD && !small">
+        food<span class="part">shar<span class="apple">i</span>ng</span>
+      </span>
+      <span v-else>
+        f<span class="part">s</span>
+      </span>
+      <span v-if="isBeta || isDev">
+        &nbsp;{{ isBeta ? 'Beta' : 'Dev' }}
+      </span>
     </template>
   </Link>
 </template>
+
 <script>
 // Store
 import DataUser from '@/stores/user'
@@ -25,11 +25,13 @@ import DataUser from '@/stores/user'
 import Link from '@/components/Navigation/_NavItems/NavLink'
 // Mixins
 import MediaQueryMixin from '@/mixins/MediaQueryMixin'
+import RouteAndDeviceCheckMixin from '@/mixins/RouteAndDeviceCheckMixin'
+
 export default {
   components: {
     Link,
   },
-  mixins: [MediaQueryMixin],
+  mixins: [MediaQueryMixin, RouteAndDeviceCheckMixin],
   props: {
     small: {
       type: Boolean,

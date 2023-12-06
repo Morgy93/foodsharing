@@ -143,4 +143,14 @@ final class RegionPermissions
 
         return in_array($regionId, $this->session->listRegionIDs());
     }
+
+    /**
+     * Wheter the current user is ambassador of at least one region.
+     *
+     * This does not account for beein Admin in a working group!
+     */
+    public function isAmbassadorOfAtLeastOneRegion(): bool
+    {
+        return $this->regionGateway->isAmbassadorOfAtLeastOneRegion($this->session->id());
+    }
 }

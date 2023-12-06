@@ -1044,12 +1044,6 @@ ul.linklist li > a:hover .avatar span.bubble {
   border: 10px solid var(--fs-color-secondary-500);
 }
 
-.vmap {
-  width: 100%;
-  height: 450px;
-  background-color: var(--fs-color-light);
-}
-
 .bottom_bar {
   border-top: 1px solid var(--fs-border-default) !important;
   padding-top: 7px;
@@ -1093,4 +1087,12 @@ div.bottom_bar .button-interactions {
 
 .bootstrap input.form-control::placeholder {
   color: var(--fs-color-dark);
+}
+
+p.b-dropdown-text {
+  font-weight: 200;
+}
+
+blockquote > p:last-child {
+  margin-bottom: 0;
 }

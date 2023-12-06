@@ -99,6 +99,18 @@ export default {
   height: 24px;
 }
 
+.avatar--50 {
+  display: inline-flex;
+  width: 50px;
+  height: 50px;
+}
+
+.avatar--130 {
+  display: inline-flex;
+  width: 130px;
+  height: 130px;
+}
+
 .sleeping::after {
   content: '';
   display: block;

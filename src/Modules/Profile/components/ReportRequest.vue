@@ -84,11 +84,17 @@
           align-v="stretch"
         />
         <b-form-select
+          v-if="!doesNotAffectStore && storeListOptions.length > 1"
           v-model="storeList"
           :options="storeListOptions"
           class="mb-2"
           align-v="stretch"
         />
+        <b-form-checkbox
+          v-model="doesNotAffectStore"
+        >
+          {{ $i18n('profile.report.doesNotAffectStore') }}
+        </b-form-checkbox>
         <b-form-textarea
           v-model="reportText"
           class="mb-2"
@@ -143,6 +149,7 @@ export default {
   },
   data () {
     return {
+      doesNotAffectStore: false,
       reportText: '',
       reportReason: null,
       storeList: null,
@@ -157,8 +164,17 @@ export default {
   },
   computed: {
     sendButtonDisabled () {
-      return this.reportText.length <= 0 || this.reportReason === null || this.storeList === null
+      if (this.doesNotAffectStore) {
+        return this.reportText.length <= 0 || this.reportReason === null
+      } else {
+        return this.reportText.length <= 0 || this.reportReason === null || this.storeList === null
+      }
     },
+  },
+  mounted () {
+    if (this.storeListOptions.length <= 1) {
+      this.doesNotAffectStore = true
+    }
   },
   methods: {
     async trySendReport () {

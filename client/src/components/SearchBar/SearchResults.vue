@@ -6,206 +6,132 @@
     >
       {{ $i18n('search.noresults') }}
     </div>
+
     <div
-      v-if="filtered.myBuddies.length"
+      v-if="results.regions.length"
       class="entry"
     >
       <h3 class="dropdown-header">
-        <i class="icon-subnav fas fa-user" /> {{ $i18n('globals.type.my_buddies') }}
+        <i class="icon-subnav fas fa-globe" /> {{ $i18n('globals.type.regions') }}
       </h3>
-      <search-result-entry
-        v-for="buddy in filtered.myBuddies"
-        :key="buddy.id"
-        :href="$url('profile', buddy.id)"
-        :title="buddy.name"
-        :teaser="buddy.teaser"
-        :image="buddy.image"
-      />
-    </div>
-    <div
-      v-if="filtered.myGroups.length"
-      class="entry"
-    >
-      <h3 class="dropdown-header">
-        <i class="icon-subnav fas fa-users" /> {{ $i18n('globals.type.my_groups') }}
-      </h3>
-      <search-result-entry
-        v-for="group in filtered.myGroups"
-        :key="group.id"
-        :href="$url('forum', group.id)"
-        :title="group.name"
-        :teaser="group.teaser"
-        :image="group.image"
-      />
-    </div>
-    <div
-      v-if="filtered.myStores.length"
-      class="entry"
-    >
-      <h3 class="dropdown-header">
-        <i class="icon-subnav fas fa-shopping-cart" /> {{ $i18n('globals.type.my_stores') }}
-      </h3>
-      <search-result-entry
-        v-for="store in filtered.myStores"
-        :key="store.id"
-        :href="$url('store', store.id)"
-        :title="store.name"
-        :teaser="store.teaser"
-        :image="store.image"
-      />
-    </div>
-    <div
-      v-if="filtered.myRegions.length"
-      class="entry"
-    >
-      <h3 class="dropdown-header">
-        <i class="icon-subnav fas fa-home" /> {{ $i18n('globals.type.my_regions') }}
-      </h3>
-      <search-result-entry
-        v-for="region in filtered.myRegions"
+      <RegionResultEntry
+        v-for="region in results.regions"
         :key="region.id"
-        :href="$url('forum', region.id)"
-        :title="region.name"
-        :teaser="region.teaser"
-        :image="region.image"
+        :region="region"
       />
     </div>
 
     <div
-      v-if="filtered.groups.length"
+      v-if="results.workingGroups.length"
       class="entry"
     >
       <h3 class="dropdown-header">
         <i class="icon-subnav fas fa-users" /> {{ $i18n('globals.type.groups') }}
       </h3>
-      <search-result-entry
-        v-for="group in filtered.groups"
+      <WorkingGroupResultEntry
+        v-for="group in results.workingGroups"
         :key="group.id"
-        :href="$url('forum', group.id)"
-        :title="group.name"
-        :teaser="group.teaser"
-        :image="group.image"
+        :working-group="group"
       />
     </div>
+
     <div
-      v-if="filtered.users.length"
+      v-if="results.users.length"
       class="entry"
     >
       <h3 class="dropdown-header">
-        <i class="icon-subnav fas fa-child" /> {{ $i18n('globals.type.persons') }}
+        <i class="icon-subnav fas fa-user" /> {{ $i18n('globals.type.persons') }}
       </h3>
-      <search-result-entry
-        v-for="user in filtered.users"
+      <UserResultEntry
+        v-for="user in results.users"
         :key="user.id"
-        :href="$url('profile', user.id)"
-        :title="user.name"
-        :teaser="user.teaser"
-        :image="user.image"
+        :user="user"
+        @close="$emit('close')"
       />
     </div>
+
     <div
-      v-if="filtered.stores.length"
+      v-if="results.stores.length"
       class="entry"
     >
       <h3 class="dropdown-header">
         <i class="icon-subnav fas fa-shopping-cart" /> {{ $i18n('globals.type.stores') }}
       </h3>
-      <search-result-entry
-        v-for="store in filtered.stores"
+      <StoreResultEntry
+        v-for="store in results.stores"
         :key="store.id"
-        :href="$url('store', store.id)"
-        :title="store.name"
-        :teaser="store.teaser"
-        :image="store.image"
+        :store="store"
       />
     </div>
+
     <div
-      v-if="filtered.foodSharePoints.length"
+      v-if="results.threads.length"
+      class="entry"
+    >
+      <h3 class="dropdown-header">
+        <i class="icon-subnav fas fa-comments" /> {{ $i18n('globals.type.threads') }}
+      </h3>
+      <ThreadResultEntry
+        v-for="thread in results.threads"
+        :key="thread.id"
+        :thread="thread"
+      />
+    </div>
+
+    <div
+      v-if="results.chats.length"
+      class="entry"
+    >
+      <h3 class="dropdown-header">
+        <i class="icon-subnav fas fa-comment" /> {{ $i18n('globals.type.chats') }}
+      </h3>
+      <ChatResultEntry
+        v-for="chat in results.chats"
+        :key="chat.id"
+        :chat="chat"
+        @close-modal="$emit('close')"
+      />
+    </div>
+
+    <div
+      v-if="results.foodSharePoints.length"
       class="entry"
     >
       <h3 class="dropdown-header">
         <i class="icon-subnav fas fa-recycle" /> {{ $i18n('globals.type.foodshare_points') }}
       </h3>
-      <search-result-entry
-        v-for="foodSharePoint in filtered.foodSharePoints"
+      <FoodSharePointResultEntry
+        v-for="foodSharePoint in results.foodSharePoints"
         :key="foodSharePoint.id"
-        :href="$url('foodsharepoint', foodSharePoint.id)"
-        :title="foodSharePoint.name"
-        :teaser="foodSharePoint.teaser"
-        :image="foodSharePoint.image"
-      />
-    </div>
-    <div
-      v-if="filtered.regions.length"
-      class="entry"
-    >
-      <h3 class="dropdown-header">
-        <i class="icon-subnav fas fa-home" /> {{ $i18n('globals.type.regions') }}
-      </h3>
-      <search-result-entry
-        v-for="region in filtered.regions"
-        :key="region.id"
-        :href="$url('forum', region.id)"
-        :title="region.name"
-        :teaser="region.teaser"
-        :image="region.image"
+        :food-share-point="foodSharePoint"
       />
     </div>
   </div>
 </template>
 
 <script>
-import SearchResultEntry from './SearchResultEntry'
-
-function arrayFilterDuplicate (list, ignore) {
-  const ids = ignore.map(e => e.id)
-  return list.filter(e => ids.indexOf(e.id) === -1)
-}
-
-function match (word, e) {
-  if (e.name && e.name.toLowerCase().indexOf(word) !== -1) return true
-  if (e.teaser && e.teaser.toLowerCase().indexOf(word) !== -1) return true
-  return false
-}
+import UserResultEntry from './ResultEntry/UserResultEntry'
+import WorkingGroupResultEntry from './ResultEntry/WorkingGroupResultEntry'
+import RegionResultEntry from './ResultEntry/RegionResultEntry'
+import StoreResultEntry from './ResultEntry/StoreResultEntry'
+import FoodSharePointResultEntry from './ResultEntry/FoodSharePointResultEntry'
+import ChatResultEntry from './ResultEntry/ChatResultEntry'
+import ThreadResultEntry from './ResultEntry/ThreadResultEntry'
 
 export default {
-  components: { SearchResultEntry },
+  components: { UserResultEntry, WorkingGroupResultEntry, RegionResultEntry, StoreResultEntry, FoodSharePointResultEntry, ChatResultEntry, ThreadResultEntry },
   props: {
-    stores: {
-      type: Array,
-      default: () => [],
-    },
-    groups: {
-      type: Array,
-      default: () => [],
-    },
-    regions: {
-      type: Array,
-      default: () => [],
-    },
-    foodSharePoints: {
-      type: Array,
-      default: () => [],
-    },
-    users: {
-      type: Array,
-      default: () => [],
-    },
-    myGroups: {
-      type: Array,
-      default: () => [],
-    },
-    myStores: {
-      type: Array,
-      default: () => [],
-    },
-    myRegions: {
-      type: Array,
-      default: () => [],
-    },
-    myBuddies: {
-      type: Array,
-      default: () => [],
+    results: {
+      type: Object,
+      default: () => ({
+        regions: [],
+        workingGroups: [],
+        stores: [],
+        foodSharePoints: [],
+        chats: [],
+        threads: [],
+        users: [],
+      }),
     },
     query: {
       type: String,
@@ -217,53 +143,8 @@ export default {
     },
   },
   computed: {
-    filtered () {
-      const query = this.query.toLowerCase().trim()
-      const searchTerms = query.match(/[^ ,;+.]+/g)
-
-      const containsAllSearchTerms = (searchResultEntry) => {
-        if (!searchTerms.length) return false
-        for (const searchTerm of searchTerms) {
-          if (!match(searchTerm, searchResultEntry)) return false
-        }
-        return true
-      }
-
-      const res = {
-        stores: this.stores.filter(containsAllSearchTerms),
-        regions: this.regions.filter(containsAllSearchTerms),
-        users: this.users.filter(containsAllSearchTerms),
-        groups: this.groups.filter(containsAllSearchTerms),
-        foodSharePoints: this.foodSharePoints.filter(containsAllSearchTerms),
-        myGroups: this.myGroups.filter(containsAllSearchTerms),
-        myStores: this.myStores.filter(containsAllSearchTerms),
-        myRegions: this.myRegions.filter(containsAllSearchTerms),
-        myBuddies: this.myBuddies.filter(containsAllSearchTerms),
-      }
-
-      // additionally remove elements in global search which are already contained in the private lists
-
-      res.stores = arrayFilterDuplicate(res.stores, res.myStores)
-      res.groups = arrayFilterDuplicate(res.groups, res.myGroups)
-      res.regions = arrayFilterDuplicate(res.regions, res.myRegions)
-      res.users = arrayFilterDuplicate(res.users, res.myBuddies)
-
-      // because myGroups are still contained in the regions response, we filter them out additionally
-      res.regions = arrayFilterDuplicate(res.regions, res.myGroups)
-      return res
-    },
     isEmpty () {
-      return (
-        !this.filtered.stores.length &&
-                !this.filtered.regions.length &&
-                !this.filtered.users.length &&
-                !this.filtered.groups.length &&
-                !this.filtered.foodSharePoints.length &&
-                !this.filtered.myGroups.length &&
-                !this.filtered.myStores.length &&
-                !this.filtered.myRegions.length &&
-                !this.filtered.myBuddies.length
-      )
+      return Object.values(this.results).every(value => value.length === 0)
     },
   },
 }
@@ -277,4 +158,11 @@ export default {
   margin-bottom: 1rem;
   border-bottom: 1px solid var(--fs-border-default);
 }
+
+.entry ::v-deep .btn {
+  height: fit-content;
+  padding-top: 4px;
+  padding-bottom: 4px;
+}
+
 </style>

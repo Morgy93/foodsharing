@@ -24,6 +24,7 @@ class StoreUserCest
         $I->addStoreTeam($this->store['id'], $this->storeCoordinator['id'], true);
 
         $I->amOnPage($I->storeUrl($this->store['id']));
+        $I->waitForActiveAPICalls();
 
         $I->see('Abholmenge im Schnitt');
         $I->see($example[1]);
@@ -39,6 +40,7 @@ class StoreUserCest
         $I->addStoreTeam($this->store['id'], $this->storeCoordinator['id'], true);
 
         $I->amOnPage($I->storeUrl($this->store['id']));
+        $I->waitForActiveAPICalls();
 
         $I->see('Namensnennung');
     }

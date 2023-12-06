@@ -1,10 +1,11 @@
 import Vue from 'vue'
-import { listRegisteredPickups, listPickupOptions, getRegularPickup } from '@/api/pickups'
+import { listRegisteredPickups, listPickupOptions, getRegularPickup, listPickups } from '@/api/pickups'
 
 export const store = Vue.observable({
   registred: [],
   options: [],
   regularPickup: [],
+  pickups: [],
 })
 
 export const getters = {
@@ -17,6 +18,9 @@ export const getters = {
   getRegularPickup () {
     return store.regularPickup
   },
+  getPickups () {
+    return store.pickups
+  },
 }
 
 export const mutations = {
@@ -28,6 +32,9 @@ export const mutations = {
   },
   async fetchOptions (amount = 10) {
     store.options = await listPickupOptions(amount)
+  },
+  async loadPickups (storeId) {
+    store.pickups = await listPickups(storeId)
   },
 }
 

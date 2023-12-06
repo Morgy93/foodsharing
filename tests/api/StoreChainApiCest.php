@@ -29,6 +29,8 @@ class StoreChainApiCest
     private $chainKeyAccountManagerOtherChain;
     private $chainManager;
     private $deletedKeyAccountManager;
+    private $timeZone;
+    private $timeZoneOffsetInHours;
 
     private $orga;
     private $region;
@@ -41,13 +43,17 @@ class StoreChainApiCest
 
     public function _before(ApiTester $I)
     {
+        $this->timeZone = new DateTimeZone('Europe/Berlin');
+        $now = new DateTime('now', $this->timeZone);
+        $this->timeZoneOffsetInHours = $this->timeZone->getOffset($now) / (60 * 60);
+
         $this->region = $I->createRegion();
         $this->agChain = $I->createWorkingGroup('AG Betriebsketten', ['id' => RegionIDs::STORE_CHAIN_GROUP]);
 
         $I->haveInDatabase('fs_chain', ['id' => StoreChainApiCest::CHAIN_ID, 'name' => 'Chain', 'status' => 2]);
         $I->haveInDatabase('fs_chain', ['id' => StoreChainApiCest::CHAIN_ID_1, 'name' => 'Chain 1']);
         $I->haveInDatabase('fs_betrieb_kategorie', ['id' => 20, 'name' => 'Category']);
-        $delete_at = new DateTime('now', new DateTimeZone('Europe/Berlin'));
+        $delete_at = new DateTime('now', $this->timeZone);
         $this->deletedKeyAccountManager = $I->createStoreCoordinator(null, ['deleted_at' => $delete_at->format('c')]);
         $this->foodsharer = $I->createFoodsharer(null, ['verified' => 0]);
         $this->user = $I->createFoodsaver(null, ['verified' => 1]);
@@ -240,7 +246,7 @@ class StoreChainApiCest
 
         $modificationDate = $I->grabFromDatabase('fs_chain', 'modification_date', [
                 'id' => $id]);
-        $modificationDate = DateTime::createFromFormat('Y-m-d H:i:s', $modificationDate . ' 00:00:00', new DateTimeZone('Europe/Berlin'));
+        $modificationDate = DateTime::createFromFormat('Y-m-d H:i:s', $modificationDate . ' 00:00:00', $this->timeZone);
         $modificationDateString = $modificationDate->format('c');
 
         $I->seeResponseContainsJson([
@@ -320,7 +326,7 @@ class StoreChainApiCest
 
         $modificationDate = $I->grabFromDatabase('fs_chain', 'modification_date', [
                 'id' => $id]);
-        $modificationDate = DateTime::createFromFormat('Y-m-d H:i:s', $modificationDate . ' 00:00:00', new DateTimeZone('Europe/Berlin'));
+        $modificationDate = DateTime::createFromFormat('Y-m-d H:i:s', $modificationDate . ' 00:00:00', $this->timeZone);
 
         $I->seeResponseContainsJson([
                 'chain' => [
@@ -802,7 +808,7 @@ class StoreChainApiCest
         $I->seeResponseCodeIs(Http::OK);
 
         $modificationDate = $I->grabFromDatabase('fs_chain', 'modification_date', ['id' => StoreChainApiCest::CHAIN_ID]);
-        $modificationDate = DateTime::createFromFormat('Y-m-d H:i:s', $modificationDate . ' 00:00:00', new DateTimeZone('Europe/Berlin'));
+        $modificationDate = DateTime::createFromFormat('Y-m-d H:i:s', $modificationDate . ' 00:00:00', $this->timeZone);
 
         $I->seeResponseContainsJson([
                 'chain' => [
@@ -872,7 +878,7 @@ class StoreChainApiCest
         $I->seeResponseCodeIs(Http::OK);
 
         $modificationDate = $I->grabFromDatabase('fs_chain', 'modification_date', ['id' => StoreChainApiCest::CHAIN_ID]);
-        $modificationDate = DateTime::createFromFormat('Y-m-d H:i:s', $modificationDate . ' 00:00:00', new DateTimeZone('Europe/Berlin'));
+        $modificationDate = DateTime::createFromFormat('Y-m-d H:i:s', $modificationDate . ' 00:00:00', $this->timeZone);
 
         $I->seeResponseContainsJson([
                 'chain' => [
@@ -1199,7 +1205,7 @@ class StoreChainApiCest
     {
         $role = $example['role'];
         $details = $example['details'];
-        $modificationDate = new DateTime('now', new DateTimeZone('Europe/Berlin'));
+        $modificationDate = new DateTime('now', $this->timeZone);
         $newChain = $I->addStoreChain([
             'name' => 'New Chain',
             'status' => 2,
@@ -1232,7 +1238,7 @@ class StoreChainApiCest
                 'status' => $newChain['status'],
                 'allowPress' => $newChain['allow_press'],
                 'commonStoreInformation' => $newChain['common_store_information'],
-                'modificationDate' => $modificationDate->format('Y-m-d\T00:00:00+02:00'),
+                'modificationDate' => $modificationDate->format("Y-m-d\T00:00:00+0{$this->timeZoneOffsetInHours}:00"),
                 'forumThread' => $details ? $newChain['forum_thread'] : null,
                 'notes' => $details ? $newChain['notes'] : null,
                 'kams' => [
@@ -1336,7 +1342,7 @@ class StoreChainApiCest
         $role = $example['role'];
         $details = $example['details'];
 
-        $modificationDate = new DateTime('now', new DateTimeZone('Europe/Berlin'));
+        $modificationDate = new DateTime('now', $this->timeZone);
 
         $newChain = $this->createStoreChain($I, $modificationDate, 3, [$this->chainKeyAccountManager['id']]);
         $newChain1 = $this->createStoreChain($I, $modificationDate, 2, [$this->chainKeyAccountManager['id']]);
@@ -1354,7 +1360,7 @@ class StoreChainApiCest
                 'status' => $newChain['status'],
                 'allowPress' => $newChain['allow_press'],
                 'commonStoreInformation' => $newChain['common_store_information'],
-                'modificationDate' => $modificationDate->format('Y-m-d\T00:00:00+02:00'),
+                'modificationDate' => $modificationDate->format("Y-m-d\T00:00:00+0{$this->timeZoneOffsetInHours}:00"),
                 'forumThread' => $details ? $newChain['forum_thread'] : null,
                 'notes' => $details ? $newChain['notes'] : null,
                 'kams' => [
@@ -1377,7 +1383,7 @@ class StoreChainApiCest
                 'status' => $newChain1['status'],
                 'allowPress' => $newChain1['allow_press'],
                 'commonStoreInformation' => $newChain1['common_store_information'],
-                'modificationDate' => $modificationDate->format('Y-m-d\T00:00:00+02:00'),
+                'modificationDate' => $modificationDate->format("Y-m-d\T00:00:00+0{$this->timeZoneOffsetInHours}:00"),
                 'forumThread' => $details ? $newChain1['forum_thread'] : null,
                 'notes' => $details ? $newChain1['notes'] : null,
                 'kams' => [
@@ -1399,94 +1405,94 @@ class StoreChainApiCest
     /*
      * Test pagination for list of store chain
      */
-   public function testInformationForGetAllStoreChainPaginationEndpoint(ApiTester $I)
-   {
-       $role = 'orga';
+    public function testInformationForGetAllStoreChainPaginationEndpoint(ApiTester $I)
+    {
+        $role = 'orga';
 
-       $modificationDate = new DateTime('now', new DateTimeZone('Europe/Berlin'));
+        $modificationDate = new DateTime('now', $this->timeZone);
 
-       // Already existing 1
-       // Already existing 2
-       $this->createStoreChain($I, $modificationDate, 3, [$this->chainKeyAccountManager['id']]);
-       $this->createStoreChain($I, $modificationDate, 2, [$this->chainKeyAccountManager['id']]);
-       $this->createStoreChain($I, $modificationDate, 1, [$this->chainKeyAccountManager['id']]);
-       $this->createStoreChain($I, $modificationDate, 0, [$this->chainKeyAccountManager['id']]);
+        // Already existing 1
+        // Already existing 2
+        $this->createStoreChain($I, $modificationDate, 3, [$this->chainKeyAccountManager['id']]);
+        $this->createStoreChain($I, $modificationDate, 2, [$this->chainKeyAccountManager['id']]);
+        $this->createStoreChain($I, $modificationDate, 1, [$this->chainKeyAccountManager['id']]);
+        $this->createStoreChain($I, $modificationDate, 0, [$this->chainKeyAccountManager['id']]);
 
-       $I->login($this->getUserByRole($role)['email']);
-       $I->haveHttpHeader('Content-Type', 'application/json');
+        $I->login($this->getUserByRole($role)['email']);
+        $I->haveHttpHeader('Content-Type', 'application/json');
 
-       // Test unlimited
-       $I->sendGet(self::API_BASE, ['pageSize' => 0, 'offset' => 0]);
-       $I->seeResponseCodeIs(Http::OK);
-       $I->seeResponseIsJson();
-       $storeCounts = $I->grabDataFromResponseByJsonPath('$..storeCount');
-       $I->assertEquals(1, $storeCounts[0]);
-       $I->assertEquals(0, $storeCounts[1]);
-       $I->assertEquals(3, $storeCounts[2]);
-       $I->assertEquals(2, $storeCounts[3]);
-       $I->assertEquals(1, $storeCounts[4]);
-       $I->assertEquals(0, $storeCounts[5]);
+        // Test unlimited
+        $I->sendGet(self::API_BASE, ['pageSize' => 0, 'offset' => 0]);
+        $I->seeResponseCodeIs(Http::OK);
+        $I->seeResponseIsJson();
+        $storeCounts = $I->grabDataFromResponseByJsonPath('$..storeCount');
+        $I->assertEquals(1, $storeCounts[0]);
+        $I->assertEquals(0, $storeCounts[1]);
+        $I->assertEquals(3, $storeCounts[2]);
+        $I->assertEquals(2, $storeCounts[3]);
+        $I->assertEquals(1, $storeCounts[4]);
+        $I->assertEquals(0, $storeCounts[5]);
 
-       // Test size limit with offset
-       $I->sendGet(self::API_BASE, ['pageSize' => 2, 'offset' => 2]);
-       $I->seeResponseCodeIs(Http::OK);
-       $I->seeResponseIsJson();
-       $storeCounts = $I->grabDataFromResponseByJsonPath('$..storeCount');
-       $I->assertEquals(3, $storeCounts[0]);
-       $I->assertEquals(2, $storeCounts[1]);
+        // Test size limit with offset
+        $I->sendGet(self::API_BASE, ['pageSize' => 2, 'offset' => 2]);
+        $I->seeResponseCodeIs(Http::OK);
+        $I->seeResponseIsJson();
+        $storeCounts = $I->grabDataFromResponseByJsonPath('$..storeCount');
+        $I->assertEquals(3, $storeCounts[0]);
+        $I->assertEquals(2, $storeCounts[1]);
 
-       // Test size limit
-       $I->sendGet(self::API_BASE, ['pageSize' => 1]);
-       $I->seeResponseCodeIs(Http::OK);
-       $I->seeResponseIsJson();
-       $storeCounts = $I->grabDataFromResponseByJsonPath('$..storeCount');
-       $I->assertEquals(1, $storeCounts[0]);
+        // Test size limit
+        $I->sendGet(self::API_BASE, ['pageSize' => 1]);
+        $I->seeResponseCodeIs(Http::OK);
+        $I->seeResponseIsJson();
+        $storeCounts = $I->grabDataFromResponseByJsonPath('$..storeCount');
+        $I->assertEquals(1, $storeCounts[0]);
 
-       $I->sendGet(self::API_BASE, ['pageSize' => 2]);
-       $I->seeResponseCodeIs(Http::OK);
-       $I->seeResponseIsJson();
-       $storeCounts = $I->grabDataFromResponseByJsonPath('$..storeCount');
-       $I->assertEquals(1, $storeCounts[0]);
-       $I->assertEquals(0, $storeCounts[1]);
+        $I->sendGet(self::API_BASE, ['pageSize' => 2]);
+        $I->seeResponseCodeIs(Http::OK);
+        $I->seeResponseIsJson();
+        $storeCounts = $I->grabDataFromResponseByJsonPath('$..storeCount');
+        $I->assertEquals(1, $storeCounts[0]);
+        $I->assertEquals(0, $storeCounts[1]);
 
-       // Test size limit with offset
-       $I->sendGet(self::API_BASE, ['pageSize' => 2, 'offset' => 2]);
-       $I->seeResponseCodeIs(Http::OK);
-       $I->seeResponseIsJson();
-       $storeCounts = $I->grabDataFromResponseByJsonPath('$..storeCount');
-       $I->assertEquals(3, $storeCounts[0]);
-       $I->assertEquals(2, $storeCounts[1]);
+        // Test size limit with offset
+        $I->sendGet(self::API_BASE, ['pageSize' => 2, 'offset' => 2]);
+        $I->seeResponseCodeIs(Http::OK);
+        $I->seeResponseIsJson();
+        $storeCounts = $I->grabDataFromResponseByJsonPath('$..storeCount');
+        $I->assertEquals(3, $storeCounts[0]);
+        $I->assertEquals(2, $storeCounts[1]);
 
-       // Test partial output on end of storechain table
-       $I->sendGet(self::API_BASE, ['pageSize' => 2, 'offset' => 5]);
-       $I->seeResponseCodeIs(Http::OK);
-       $I->seeResponseIsJson();
-       $storeCounts = $I->grabDataFromResponseByJsonPath('$..storeCount');
-       $I->assertEquals(0, $storeCounts[0]);
-   }
+        // Test partial output on end of storechain table
+        $I->sendGet(self::API_BASE, ['pageSize' => 2, 'offset' => 5]);
+        $I->seeResponseCodeIs(Http::OK);
+        $I->seeResponseIsJson();
+        $storeCounts = $I->grabDataFromResponseByJsonPath('$..storeCount');
+        $I->assertEquals(0, $storeCounts[0]);
+    }
 
-   /*
-     * Test pagination for list of store chain
-     */
-   public function testBadRequestInformationForGetAllStoreChainPaginationEndpoint(ApiTester $I)
-   {
-       $role = 'orga';
+    /*
+      * Test pagination for list of store chain
+      */
+    public function testBadRequestInformationForGetAllStoreChainPaginationEndpoint(ApiTester $I)
+    {
+        $role = 'orga';
 
-       $I->login($this->getUserByRole($role)['email']);
-       $I->haveHttpHeader('Content-Type', 'application/json');
+        $I->login($this->getUserByRole($role)['email']);
+        $I->haveHttpHeader('Content-Type', 'application/json');
 
-       $I->sendGet(self::API_BASE, ['pageSize' => 'a', 'offset' => 0]);
-       $I->seeResponseCodeIs(Http::BAD_REQUEST);
+        $I->sendGet(self::API_BASE, ['pageSize' => 'a', 'offset' => 0]);
+        $I->seeResponseCodeIs(Http::BAD_REQUEST);
 
-       $I->sendGet(self::API_BASE, ['pageSize' => 0, 'offset' => 'a']);
-       $I->seeResponseCodeIs(Http::BAD_REQUEST);
+        $I->sendGet(self::API_BASE, ['pageSize' => 0, 'offset' => 'a']);
+        $I->seeResponseCodeIs(Http::BAD_REQUEST);
 
-       $I->sendGet(self::API_BASE, ['pageSize' => -1, 'offset' => 0]);
-       $I->seeResponseCodeIs(Http::BAD_REQUEST);
+        $I->sendGet(self::API_BASE, ['pageSize' => -1, 'offset' => 0]);
+        $I->seeResponseCodeIs(Http::BAD_REQUEST);
 
-       $I->sendGet(self::API_BASE, ['pageSize' => 0, 'offset' => -1]);
-       $I->seeResponseCodeIs(Http::BAD_REQUEST);
-   }
+        $I->sendGet(self::API_BASE, ['pageSize' => 0, 'offset' => -1]);
+        $I->seeResponseCodeIs(Http::BAD_REQUEST);
+    }
 
     /*
      * Test list stores of store chain
@@ -1532,7 +1538,7 @@ class StoreChainApiCest
 
     public function testContentOfGetStoresOfStoreChainEndpoint(ApiTester $I)
     {
-        $modificationDate = new DateTime('now', new DateTimeZone('Europe/Berlin'));
+        $modificationDate = new DateTime('now', $this->timeZone);
         $newChain = $I->addStoreChain([
             'name' => 'New Chain',
             'status' => 2,
@@ -1595,29 +1601,29 @@ class StoreChainApiCest
         $I->assertEquals($stores[4]['id'], $storeIds[0]);
     }
 
-   public function testBadRequestInformationForGetStoresOfStoreChainEndpoint(ApiTester $I)
-   {
-       $I->login($this->getUserByRole('chainManager')['email']);
-       $I->haveHttpHeader('Content-Type', 'application/json');
+    public function testBadRequestInformationForGetStoresOfStoreChainEndpoint(ApiTester $I)
+    {
+        $I->login($this->getUserByRole('chainManager')['email']);
+        $I->haveHttpHeader('Content-Type', 'application/json');
 
-       // Test bad id
-       $I->sendGet(self::API_BASE . '/42/stores');
-       $I->seeResponseCodeIs(Http::NOT_FOUND);
+        // Test bad id
+        $I->sendGet(self::API_BASE . '/42/stores');
+        $I->seeResponseCodeIs(Http::NOT_FOUND);
 
-       $I->sendGet(self::API_BASE . '/a/stores');
-       $I->seeResponseCodeIs(Http::NOT_FOUND);
+        $I->sendGet(self::API_BASE . '/a/stores');
+        $I->seeResponseCodeIs(Http::NOT_FOUND);
 
-       // Test bad pagination for stores of store chain
-       $I->sendGet(self::API_BASE . '/' . StoreChainApiCest::CHAIN_ID . '/stores', ['pageSize' => 'a', 'offset' => 0]);
-       $I->seeResponseCodeIs(Http::BAD_REQUEST);
+        // Test bad pagination for stores of store chain
+        $I->sendGet(self::API_BASE . '/' . StoreChainApiCest::CHAIN_ID . '/stores', ['pageSize' => 'a', 'offset' => 0]);
+        $I->seeResponseCodeIs(Http::BAD_REQUEST);
 
-       $I->sendGet(self::API_BASE . '/' . StoreChainApiCest::CHAIN_ID . '/stores', ['pageSize' => 0, 'offset' => 'a']);
-       $I->seeResponseCodeIs(Http::BAD_REQUEST);
+        $I->sendGet(self::API_BASE . '/' . StoreChainApiCest::CHAIN_ID . '/stores', ['pageSize' => 0, 'offset' => 'a']);
+        $I->seeResponseCodeIs(Http::BAD_REQUEST);
 
-       $I->sendGet(self::API_BASE . '/' . StoreChainApiCest::CHAIN_ID . '/stores', ['pageSize' => -1, 'offset' => 0]);
-       $I->seeResponseCodeIs(Http::BAD_REQUEST);
+        $I->sendGet(self::API_BASE . '/' . StoreChainApiCest::CHAIN_ID . '/stores', ['pageSize' => -1, 'offset' => 0]);
+        $I->seeResponseCodeIs(Http::BAD_REQUEST);
 
-       $I->sendGet(self::API_BASE . '/' . StoreChainApiCest::CHAIN_ID . '/stores', ['pageSize' => 0, 'offset' => -1]);
-       $I->seeResponseCodeIs(Http::BAD_REQUEST);
-   }
+        $I->sendGet(self::API_BASE . '/' . StoreChainApiCest::CHAIN_ID . '/stores', ['pageSize' => 0, 'offset' => -1]);
+        $I->seeResponseCodeIs(Http::BAD_REQUEST);
+    }
 }

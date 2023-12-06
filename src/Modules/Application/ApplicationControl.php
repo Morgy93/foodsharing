@@ -44,7 +44,7 @@ class ApplicationControl extends Control
         if (!$application) {
             return;
         }
-        $this->pageHelper->addBread($this->bezirk['name'], '/?page=bezirk&bid=' . $this->bezirk_id);
+        $this->pageHelper->addBread($this->bezirk['name'], '/region?bid=' . $this->bezirk_id);
         $this->pageHelper->addBread($this->translator->trans('group.application_from') . $application['name'], '');
         $this->pageHelper->addContent($this->view->application($application));
 

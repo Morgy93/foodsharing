@@ -4,6 +4,9 @@ export async function getStoreMetaData () {
   return await get('/stores/meta-data')
 }
 
+export async function getStoreMember (storeId) {
+  return await get(`/stores/${storeId}/member`)
+}
 export async function getStoreInformation (storeId) {
   const result = await get(`/stores/${storeId}/information`)
   result.chainId = result.chain ? result.chain.id : null
@@ -52,6 +55,9 @@ export async function listStoresForCurrentUser () {
 export async function listStoresDetailsForCurrentUser (expand) {
   return get('/user/current/stores/details')
 }
+export async function listStoreTeamMembershipRequests (storeId) {
+  return get(`/stores/${storeId}/requests`)
+}
 
 export async function requestStoreTeamMembership (storeId, userId) {
   return post(`/stores/${storeId}/requests/${userId}`)
@@ -89,6 +95,13 @@ export async function moveMemberToRegularTeam (storeId, userId) {
   return remove(`/stores/${storeId}/members/${userId}/standby`)
 }
 
-export async function getStoreLog (storeId, storeActionLogsAsArray) {
-  return get(`/stores/${storeId}/log/${storeActionLogsAsArray.join(',')}`)
+export async function getStoreLog (storeId, storeActionTypes, dateRange) {
+  dateRange[0].setHours(0, 0, 0, 0)
+  dateRange[1].setHours(24, 0, 0, 0)
+  const [fromDate, toDate] = dateRange.map(date => date.toISOString())
+  return get(`/stores/${storeId}/log/${fromDate}/${toDate}/${storeActionTypes.join(',')}`)
+}
+
+export async function getStorePermissions (storeId) {
+  return get(`/stores/${storeId}/permissions`)
 }

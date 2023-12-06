@@ -1,10 +1,11 @@
 import Vue from 'vue'
-import { getBaskets, getBasketsNearby } from '@/api/baskets'
+import { getBaskets, getBasketsNearby, listBasketCoordinates } from '@/api/baskets'
 
 export const store = Vue.observable({
   own: [],
   nearby: [],
   radius: 45,
+  allCoordinates: [],
 })
 
 export const getters = {
@@ -20,6 +21,9 @@ export const getters = {
   getRequestdCount () {
     return store.own.map(basket => basket.requests.length).reduce((a, b) => a + b, 0)
   },
+  getAllBasketCoordinates () {
+    return store.allCoordinates
+  },
 }
 
 export const mutations = {
@@ -32,6 +36,9 @@ export const mutations = {
   },
   async fetchGermany () {
     return await this.fetchNearby({ lat: 50.89, lon: 10.13 }, 50)
+  },
+  async fetchAllCoordinates () {
+    store.allCoordinates = await listBasketCoordinates()
   },
 }
 
