@@ -4,6 +4,7 @@ namespace Foodsharing\Modules\Mailbox;
 
 use Carbon\Carbon;
 use Ddeboer\Imap\Message\EmailAddress;
+use Exception;
 use Foodsharing\Lib\Db\Mem;
 use Foodsharing\Lib\Mail\AsyncMail;
 use Foodsharing\Lib\Session;
@@ -259,8 +260,8 @@ class MailboxTransactions
         $this->mailboxGateway->deleteMessage($emailId);
     }
 
-     *
-     * @throws \Exception
+    /**
+     * @throws Exception
      */
     public function createMailboxAndAddUser(Creation $mailboxCreation): void
     {

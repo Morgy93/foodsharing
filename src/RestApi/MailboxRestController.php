@@ -320,4 +320,65 @@ class MailboxRestController extends AbstractFOSRestController
 
         return $this->handleView($this->view([], 200));
     }
+
+    /**
+     * Returns a list ......
+     *
+     * @OA\Tag(name="mailbox")
+     * @OA\Response(response="200", description="success")
+     * @OA\Response(response="401", description="Not logged in")
+     * @Rest\Get("mailbox/member")
+     */
+    public function listMemberMailboxesAction(): HttpResponse
+    {
+        if (!$this->session->mayRole()) {
+            throw new UnauthorizedHttpException('');
+        }
+
+        if (!$this->mailboxPermissions->mayManageMailboxes()) {
+            throw new AccessDeniedHttpException();
+        }
+
+        $boxes = $this->mailboxGateway->getMemberBoxes();
+
+        return $this->handleView($this->view($boxes, 200));
+    }
+
+    /**
+     * Creates a Mailbox.
+     *
+     * @throws Exception
+     */
+    #[Tag('mailbox')]
+    #[Rest\Post(path: 'mailbox/create')]
+    #[Response(response: HttpResponse::HTTP_OK, description: 'Successful')]
+    #[Response(response: HttpResponse::HTTP_FORBIDDEN, description: 'Forbidden')]
+    #[RequestBody(content: new JsonContent(type: 'array', items: new Items(ref: new Model(type: Creation::class))))]
+    #[ParamConverter(data: 'Creation', class: 'array<Foodsharing\RestApi\Models\Mailbox\Creation>', converter: 'fos_rest.request_body')]
+    public function createMailboxAction(Creation $mailboxCreation, ValidatorInterface $validator): HttpResponse
+    {
+        if (!$this->session->mayRole()) {
+            throw new UnauthorizedHttpException('');
+        }
+
+        if (!$this->mailboxPermissions->mayManageMailboxes()) {
+            throw new AccessDeniedHttpException();
+        }
+
+        $errors = $validator->validate($mailboxCreation);
+        if (count($errors) > 0) {
+            $errorMessages = [];
+            foreach ($errors as $error) {
+                $errorMessages[] = [
+                    'field' => $error->getPropertyPath(),
+                    'message' => $error->getMessage(),
+                ];
+            }
+            throw new BadRequestHttpException(json_encode($errorMessages));
+        }
+
+        $this->mailboxTransactions->createMailboxAndAddUser($mailboxCreation);
+
+        return $this->handleView($this->view([], 200));
+    }
 }
