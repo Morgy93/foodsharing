@@ -261,6 +261,9 @@ export default {
     answerMode () {
       return store.state.answerMode
     },
+    answerAll () {
+      return store.state.answerAll
+    },
     selectedMailbox () {
       return store.state.selectedMailbox
     },
@@ -293,7 +296,7 @@ export default {
     },
     answerMode (newVal, oldVal) {
       if (newVal) {
-        this.emailTo.push(this.email.from.address)
+        this.updateRecipientsForAnswerMode()
       } else if (!newVal && oldVal) {
         const index = this.emailTo.indexOf(this.email.from.address)
         if (index > -1) {
@@ -313,7 +316,7 @@ export default {
     this.getMailBody()
     if (this.answerMode) {
       this.subject = this.email.subject
-      this.emailTo.push(this.email.from.address)
+      this.updateRecipientsForAnswerMode()
     }
   },
   destroyed () {
@@ -424,6 +427,18 @@ export default {
     },
     closeAndReturnToMailbox () {
       store.setPage(MAILBOX_PAGE.EMAIL_LIST)
+    },
+    updateRecipientsForAnswerMode () {
+      this.emailTo.push(this.email.from.address)
+
+      // if replying to all, add all except the currently selected mailbox to the recipients
+      if (this.answerAll) {
+        const addressToFilter = this.selectedMailbox[1] + '@'
+        const additionalRecipients = this.email.to
+          .map(x => x.address)
+          .filter(x => !x.startsWith(addressToFilter))
+        this.emailTo.push(...additionalRecipients)
+      }
     },
   },
 }

@@ -1757,6 +1757,7 @@ mailbox:
   reply:
     full: "E-Mail beantworten"
     short: "Antworten"
+  reply_all: "Allen antworten"
   attach: "Datei anhängen (maximal 1,2 MB)"
   claim: "foodsharing.de – verwenden statt verschwenden"
   signature: "Nachricht vom {date}"

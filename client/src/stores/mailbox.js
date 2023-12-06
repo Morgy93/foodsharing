@@ -16,13 +16,15 @@ export const store = {
   state: reactive({
     page: null,
     answerMode: false,
+    answerAll: false,
     selectedMailbox: [],
   }),
   setPage (value) {
     this.state.page = value
   },
-  setAnswerMode (value) {
+  setAnswerMode (value, answerAll = false) {
     this.state.answerMode = value
+    this.state.answerAll = answerAll
   },
   setMailbox (mailboxId, mailboxName, folderId) {
     this.state.selectedMailbox = [mailboxId, mailboxName, folderId]
