@@ -509,6 +509,10 @@ class SearchGateway extends BaseGateway
         $placeholders = $queryTerms;
         $searchClauseFromTerm = fn ($term) => $searchCriteria . ' LIKE CONCAT("%", ?, "%")';
         if (!empty($privateSearchCriterium)) {
+            // if there is a private search criterion, the search term might also match the start of that.
+            // if the term is short (<= 3 chars) this it is only valid if it matches the whole private criterium,
+            // to make it hard enough to guess last names.
+            // Terms longer than 3 chars are matched agains the start of the private criterium.
             $searchClauseFromTerm = function ($term) use ($searchCriteria, $privateSearchCriterium) {
                 $searchClause = $searchCriteria . ' LIKE CONCAT("%", ?, "%")';
                 $privateClause = $privateSearchCriterium . ' LIKE ?';
@@ -517,6 +521,7 @@ class SearchGateway extends BaseGateway
                 }
                 return "(({$searchClause}) OR ({$privateClause}))";
             };
+            // Each placeholder is needed twice in this case
             $placeholders = [];
             foreach ($queryTerms as $term) {
                 $placeholders[] = $term;
@@ -525,18 +530,6 @@ class SearchGateway extends BaseGateway
         }
 
         $searchClauses = array_map($searchClauseFromTerm, $queryTerms);
-
-        // Jedes Suchwort muss entweder Concat(all) like term sein, oder
-        // 1. Falls Suchwort > 3 Zeichen => nachname% like term
-        // 2. Falls Suchwort <= 3 Zeichen => nachname like term 
-
-
-        // "Ballma" soll "Anton" ergeben
-        // "Anton Bal" soll nicht Anton ergeben
-        // "Anton Ball" soll Anton ergeben
-        // "Ka Kem" soll Ka ergeben (weil vollständig eingegeben)
-
-
         return [implode(' AND ', $searchClauses), $placeholders];
     }
 }
