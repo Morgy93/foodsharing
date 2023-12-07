@@ -274,6 +274,20 @@ export default {
     newLine () {
       this.quickreplyValue += '\n'
     },
+    formatReplyBody () {
+      const date = this.$dateFormatter.format(this.dateObject, {
+        day: 'numeric',
+        month: 'numeric',
+        year: 'numeric',
+        hour: 'numeric',
+        minute: 'numeric',
+      })
+      return this.quickreplyValue +
+        '\n\n\n\n--------- ' +
+        this.$i18n('mailbox.signature', { date: date }) +
+        ' ---------\n\n>\t' +
+        this.desc.replace('\n', '\n>\t')
+    },
     async send (forced = false) {
       if ((this.viewIsMD && !this.isReplyEmpty) || (forced && !this.isReplyEmpty)) {
         this.qrLoading = true
@@ -288,15 +302,7 @@ export default {
           } else if (this.type === 'mailbox') {
             const subject = 'Re: ' + this.title
             const to = [this.sender_email]
-            const date = this.$dateFormatter.format(this.dateObject, {
-              day: 'numeric',
-              month: 'numeric',
-              year: 'numeric',
-              hour: 'numeric',
-              minute: 'numeric',
-            })
-            let body = this.quickreplyValue + '\n\n\n\n--------- ' + this.$i18n('mailbox.signature', { date: date }) + ' ---------\n\n>\t'
-            body += this.desc.replace('\n', '\n>\t')
+            const body = this.formatReplyBody()
             await sendEmail(this.mailboxId, to, null, null, subject, body, null, this.entity_id)
             pulseInfo(this.$i18n('mailbox.okay'))
           }
