@@ -26,19 +26,38 @@ class SearchTransactions
         // TODO: Search by Email for IT-Support Group and ORGA
         // $this->searchPermissions->maySearchByEmailAddress()
 
+        // TODO: remove timing measurement before release
+        $result = new MixedSearchResult();
+        $result->timings = [];
+
+        $start = microtime(true);
         $foodsaverId = $this->session->id();
         $maySearchGlobal = $this->searchPermissions->maySearchGlobal();
         $searchAllWorkingGroups = $this->searchPermissions->maySearchAllWorkingGroups();
         $includeInactiveStores = $this->session->mayRole(Role::STORE_MANAGER);
+        $result->timings['permissions'] = microtime(true) - $start;
 
-        $result = new MixedSearchResult();
+        $start = microtime(true);
         $result->regions = $this->searchGateway->searchRegions($query, $foodsaverId);
+        $result->timings['regions'] = microtime(true) - $start;
+        $start = microtime(true);
         $result->workingGroups = $this->searchGateway->searchWorkingGroups($query, $foodsaverId, $searchAllWorkingGroups);
+        $result->timings['groups'] = microtime(true) - $start;
+        $start = microtime(true);
         $result->stores = $this->searchGateway->searchStores($query, $foodsaverId, $includeInactiveStores, $maySearchGlobal);
+        $result->timings['stores'] = microtime(true) - $start;
+        $start = microtime(true);
         $result->foodSharePoints = $this->searchGateway->searchFoodSharePoints($query, $foodsaverId, $maySearchGlobal);
+        $result->timings['fsp'] = microtime(true) - $start;
+        $start = microtime(true);
         $result->chats = $this->searchGateway->searchChats($query, $foodsaverId);
+        $result->timings['chats'] = microtime(true) - $start;
+        $start = microtime(true);
         $result->threads = $this->searchGateway->searchThreads($query, $foodsaverId);
+        $result->timings['threads'] = microtime(true) - $start;
+        $start = microtime(true);
         $result->users = $this->searchGateway->searchUsers($query, $foodsaverId, $maySearchGlobal, $this->searchPermissions->maySearchByEmailAddress());
+        $result->timings['users'] = microtime(true) - $start;
 
         return $result;
     }
