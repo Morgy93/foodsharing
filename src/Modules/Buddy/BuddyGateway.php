@@ -36,9 +36,9 @@ class BuddyGateway extends BaseGateway
         $this->db->delete('fs_buddy', ['foodsaver_id' => $foodsaverId, 'buddy_id' => $buddyId]);
     }
 
-    public function buddyRequestedUser($buddyId, $userId): bool
+    public function buddyRequestedUser(int $buddyId, int $userId): bool
     {
-        if ($this->db->exists('fs_buddy', ['foodsaver_id' => (int)$buddyId, 'buddy_id' => (int)$userId])) {
+        if ($this->db->exists('fs_buddy', ['foodsaver_id' => $buddyId, 'buddy_id' => $userId])) {
             return true;
         }
 
