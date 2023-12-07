@@ -519,6 +519,7 @@ class SearchGateway extends BaseGateway
                 if (strlen($term) > 3) { // Match start of private criterium
                     $privateClause = $privateSearchCriterium . ' LIKE CONCAT(?, "%")';
                 }
+
                 return "(({$searchClause}) OR ({$privateClause}))";
             };
             // Each placeholder is needed twice in this case
@@ -530,6 +531,7 @@ class SearchGateway extends BaseGateway
         }
 
         $searchClauses = array_map($searchClauseFromTerm, $queryTerms);
+
         return [implode(' AND ', $searchClauses), $placeholders];
     }
 }
