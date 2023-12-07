@@ -60,7 +60,6 @@ class EventControl extends Control
 
         $eventId = intval($eventId);
         $event = $this->eventGateway->getEvent($eventId, true);
-
         if (!$event || !$this->eventPermissions->maySeeEvent($event)) {
             $this->flashMessageHelper->info($this->translator->trans('events.notFound'));
 
@@ -71,6 +70,7 @@ class EventControl extends Control
         $regionLink = '/region?bid=' . $regionId;
         $regionEventsLink = $regionLink . '&sub=events';
         $regionName = $this->regionGateway->getRegionName($regionId);
+        $event['inviteCount'] = $this->regionGateway->getRegionDetails($regionId)['fs_count'];
         if (empty($regionName)) {
             $regionName = '';
         }

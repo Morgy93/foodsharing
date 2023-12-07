@@ -265,12 +265,15 @@ class EventView extends View
         return $this->vueComponent('event-panel', 'EventPanel', [
             'eventId' => $event['id'],
             'regionName' => $event['regionName'],
+            'regionId' => $event['bezirk_id'],
+            'inviteCount' => $event['inviteCount'],
             'start' => $event['start'],
             'end' => $event['end'],
             'title' => $event['name'],
             'mayEdit' => $mayEdit,
             'status' => $event['status'] ?? '',
             'e' => $event,
+            'border' => true,
         ]);
     }
 
