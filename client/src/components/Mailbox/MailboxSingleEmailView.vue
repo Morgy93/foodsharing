@@ -201,13 +201,13 @@ export default {
       return bytes.toFixed(1) + ' ' + units[u]
     },
     getBody (email) {
-      return email.bodyHtml ? DOMPurify.sanitize(email.bodyHtml) : this.getPlainBody(DOMPurify.sanitize(email.body))
+      return email.bodyHtml ? this.getPlainBody(DOMPurify.sanitize(email.bodyHtml)) : this.getPlainBody(DOMPurify.sanitize(email.body))
     },
     getPlainBody (text) {
       return this.addLineBreaks(this.addLinks((text)))
     },
     addLineBreaks (text) {
-      return text ? text.replace(/\n/g, '<br>') : ''
+      return text ? text.replace(/\\n|\n/g, '<br>') : ''
     },
     addLinks (text) {
       const urlRegex = /(https?:\/\/[^\s]+)/g
