@@ -67,7 +67,9 @@ export default {
   },
   computed: {
     photoPath () {
-      return `/images/basket/medium-${this.bubbleData.photo}` ?? null
+      return this.bubbleData.photo.startsWith('/api')
+        ? this.bubbleData.photo + '?w=300&h=300'
+        : `/images/basket/medium-${this.bubbleData.photo}`
     },
     displayDate () {
       return this.bubbleData.createdAt
