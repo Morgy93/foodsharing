@@ -239,7 +239,7 @@ export default {
         },
         {
           key: 'actions',
-          label: '',
+          label: this.$i18n('storelist.actions'),
           sortable: false,
         },
       ],

@@ -269,7 +269,7 @@ export default {
         },
         {
           key: 'actions',
-          label: '',
+          label: this.$i18n('chain.columns.actions'),
         },
       ],
       statusOptions: [

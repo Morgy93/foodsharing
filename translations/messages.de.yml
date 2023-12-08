@@ -2481,6 +2481,7 @@ storelist:
  managing: "Betriebe für die du verantwortlich bist"
  fetching: "Betriebe bei denen du Lebensmittel abholst"
  others: "Weitere Betriebe aus {region}"
+ actions: "Aktionen"
 
 push_notifications:
   test_notification_title: "Push-Benachrichtigungen aktiviert"
@@ -2887,6 +2888,7 @@ chain:
     headquarters: Zentrale
     kams: KAMs
     notes: Hinweise
+    actions: Aktionen
   new: Neue Kette eintragen
   allowpress: Öffentliche Nennung erlaubt.
   tooltips:
