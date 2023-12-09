@@ -11,7 +11,7 @@ use Foodsharing\Modules\Region\DTO\MinimalRegionIdentifier;
 class Region extends MinimalRegionIdentifier
 {
     /**
-     * Id of the parent of this region
+     * Id of the parent of this region.
      */
     public int $parentId;
 
