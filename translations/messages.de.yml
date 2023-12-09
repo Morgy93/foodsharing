@@ -623,6 +623,7 @@ terminology:
   events: "Termine"
   stores: "Betriebe"
   store: Betrieb
+  pickup: "Abholung"
   previous_pickups: "Bisherige Abholungen"
   no_pickups: "keine"
   foodsharer:
@@ -854,9 +855,11 @@ store:
   teamName: "{storeTitle}-Team"
   memberSince: "Im Team seit: {date}"
   jumperSince: "Springer seit: {date}"
-  lastPickup: "Letzte Abholung:"
+  lastPickupTitle: "Letzte Abholung"
+  lastPickup: "Letzte Abholung: {date}"
   lastPickupShort: "zuletzt {date}"
   signInDateTime: "Eintragungszeitpunkt"
+  slotsCurrentlyOccupied: "Aktuell belegte Slots"
   slot_state: "Slot Status"
   unknownDate: "unbekannt"
   isManager: "Verantwortlich für diesen Betrieb."
@@ -2218,6 +2221,7 @@ team:
 basket:
   title: "Essenskörbe"
   description: "Beschreibung" #also in ReportXhr
+  contact_types: "Kontaktmöglichkeiten"
   my_list_empty: "Du hast keine Essenskörbe eingetragen"
   all: "Alle Essenskörbe"
   all_map: "Alle Körbe auf der Karte"
@@ -2280,12 +2284,13 @@ basket:
     write: "Per Nachricht"
     call: "Per Telefonanruf"
   valid:
-    "1": "einen Tag"
-    "2": "zwei Tage"
-    "3": "drei Tage"
-    "7": "eine Woche"
-    "14": "zwei Wochen"
-    "21": "drei Wochen"
+    "1": "Einen Tag"
+    "2": "Zwei Tage"
+    "3": "Drei Tage"
+    "5": "Fünf Tage"
+    "7": "Eine Woche"
+    "14": "Zwei Wochen"
+    "21": "Drei Wochen"
   has:
     bread: "Backwaren"
     greens: "Obst & Gemüse"
@@ -2319,6 +2324,13 @@ basket:
   not-allowed: "Du bist nicht dazu berechtigt, diesen Essenskorb zu bearbeiten."
   publish_error: "Es gab einen Fehler. Der Essenskorb konnte nicht veröffentlicht werden."
   published: "Danke dir, der Essenskorb wurde veröffentlicht."
+  delete_confirmation:
+    text: Willst du wirklich diesen Essenskorb löschen?
+    title: Essenskorb löschen?
+  modal_error:
+    no_contact: "Bitte wähle eine Möglichkeit aus, wie der Essenskorb angefragt werden soll."
+    no_phone: "Bitte gib eine Telefonnummer an."
+  use_home_address: "Persönliche Adresse nutzen"
 
 personal_data:
   label: "Kontakt"
@@ -3066,6 +3078,7 @@ globals:
     chats: Chats
     threads: Themen
   you: Du
+  telephone_number: Telefonnummer
 
 search:
   title: Suche

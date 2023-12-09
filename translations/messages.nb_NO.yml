@@ -482,6 +482,7 @@ basket:
     "3": tre dager
     "2": to dager
     "1": en dag
+    "5": fem dager
   where: Hvor?
   on: Matkurv fra {platform}
   by: Matkurv fra {name}
@@ -555,6 +556,14 @@ basket:
     synlig for matkurvbrukere.\n"
   not_withdrawn: 'Forespørselen om matkurven kunne ikke trekkes tilbake: '
   no_nearby: Det er ingen matkurver innenfor en radius på {radius} km
+  use_home_address: Bruk hjemmeadresse
+  modal_error:
+    no_contact: Velg en måte du ønsker at matkurven skal forespørres på.
+    no_phone: Vennligst oppgi et telefonnummer.
+  contact_types: Kontaktmuligheter
+  delete_confirmation:
+    text: Vil du virkelig slette denne matkurven?
+    title: Tømmer du matkurven?
 team:
   contacted: Meldingen din ble sendt.
   email: Epostadresse
@@ -1108,13 +1117,15 @@ mailbox:
   conformation_modal:
     title: Bekreftelse
     message: Vil du virkelig slette denne e-posten?
-  mailsend_unsuccess: E-poster kunne ikke sendes. {error}
+  mailsend_unsuccess: E-post kunne ikke sendes. {error}
   attachment:
     not_found_explanation: Den vedlagte filen ble ikke lenger funnet på serveren
     not_found: ikke funnet
   add: Legg til
   mark_as_read: Merk som lest
   unknown_sender: Ukjent avsender
+  less: mindre
+  more: mer
 map:
   title: Kart
   donates: Selskapet donerer
@@ -3101,6 +3112,7 @@ globals:
     signup: Delta
     signout: Logg ut
     signin: Logg inn
+  telephone_number: Telefonnummer
 savewithus: Spar hos oss!
 logincontrol:
   title: Avslutt abonnement på nyhetsbrev

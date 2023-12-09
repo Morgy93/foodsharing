@@ -74,11 +74,16 @@ export default {
       }
     },
     getImageUrl (picture) {
+      // TODO: at most 3 weeks after the next release no active basket references an image using the /images/basket/... format.
+      // All of these images, as well as this additional logic can be deleted than.
+      // There are more places in the code base referencing this. Simply search for /images/basket to find all of them.
       if (picture) {
+        if (picture.startsWith('/api')) {
+          return `${picture}?w=35&h=35`
+        }
         return `/images/basket/thumb-${picture}`
-      } else {
-        return '/img/basket.png'
       }
+      return '/img/basket.png'
     },
     getDistanceNumber (lat, lon) {
       const deg2rad = (degrees) => degrees * (Math.PI / 180)

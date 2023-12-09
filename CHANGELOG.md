@@ -9,6 +9,7 @@
 - Exported calendars can be filtered by the invitation status #1535 !2873 @alex.simm
 - Members of the Store Coordination GOALS group / ambassadors can add more than 3 storemanagers and remove the last one !2895 @AntonBallmaier
 - Added spanish translation !2892 @irgendwer
+- Food basked can now be given a location different from the users home address !2906 @AntonBallmaier
 - Made store log accessible by store managers !2902 @AntonBallmaier
 - The source code of forum posts can now be copied !2913 @AntonBallmaier
 - Added confirmation modal to sending mail when creating a new thread !2877 @AntonBallmaier
@@ -19,7 +20,7 @@
 - Add "call" (tel:) button visibility also for desktop, not only mobile" #1138 !2835 @chriswalg
 - Administrating threads has a cleaner look !2882 @AntonBallmaier
 - Pinned Threads are sorted by name !2883 !2891 @AntonBallmaier
-- rework slot dropdown to modal #1228 !2813 @chriswalg
+- rework slot dropdown to modal #1228 !2813 !2915 @chriswalg
 - Changed behaviour from deleting unconfirmed slots at midnight into keeping them #1707 !2901 @irgendwer
 - Reworked all search functionality !2886 @AntonBallmaier
 - Markdown in forum posts is now rendered in the front end to reduce inconsistencies !2913 !2917 @AntonBallmaier
@@ -45,6 +46,7 @@
 - Use REST for statistic !2879 !2887 @fs_k
 - Modernized ContentControl to a Symfony controller !2876 @\_fridtjof_
 - Modernized TeamControl to a Symfony contorller !2881 @\_fridtjof_
+- Refactor food basked creation to vue and rest api !2906 @AntonBallmaier
 - Replaced the maps on basket pages with vue and removed vMap !2880 @alex.simm
 - Modernized RegionControl to a Symfony controller !2741 @\_fridtjof_
 
@@ -57,7 +59,9 @@
 - The backend now provides the map tile api key for the client #1074 !2621 !2925 @alex.simm
 - Update PHP deployer to version 7.3.3 !2931 @chriswalg
 - Bump vue-advanced-chat to 2.0.10 !2927 @chriswalg
+- Added database tables for achievements !2910 @martincodes-de
 - Added a rate limiter to the login endpoint !2672 @alex.simm
+- Added feature toggle for achievement system !2933 @martincodes-de
 
 ## Development documentation
 

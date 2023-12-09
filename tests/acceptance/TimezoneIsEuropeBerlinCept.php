@@ -14,15 +14,14 @@ $I->click('.testing-basket-dropdown > .nav-link');
 $I->waitForText('Essenskorb anlegen');
 $I->click('.testing-basket-create');
 
-$I->waitForText('Wie lange soll dein Essenskorb gültig sein?');
-$I->fillField('description', $description);
+$I->waitForText('Beschreibung, Bild, Übergabeort und Zeitraum sind öffentlich sichtbar.');
+$I->fillField('#basket-description-input', $description);
 
 $min_time = new DateTime('-1 second', new DateTimeZone('Europe/Berlin')); /* microsends in PHP7.1+ make it fail because of rounding otherwise */
 
-$I->click('Essenskorb veröffentlichen');
+$I->click('Speichern');
+$I->waitForActiveAPICalls();
 
-$I->waitForElementVisible('#pulse-info', 4);
-$I->see('Danke Dir, der Essenskorb wurde veröffentlicht');
 $max_time = new DateTime('+1 second', new DateTimeZone('Europe/Berlin'));
 
 $id = $I->grabFromDatabase('fs_basket', 'id', ['foodsaver_id' => $foodsaver['id'], 'description' => $description]);

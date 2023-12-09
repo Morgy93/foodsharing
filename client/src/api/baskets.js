@@ -1,4 +1,4 @@
-import { get, post, remove } from './base'
+import { get, post, remove, put } from './base'
 
 export async function getBaskets () {
   const baskets = (await get('/baskets?type=mine')).baskets
@@ -36,4 +36,12 @@ export async function getBasketsNearby (lat, lon, distance = 30) {
     return (await get(`/baskets/nearby?lat=${lat}&lon=${lon}&distance=${distance}`)).baskets
   }
   throw new Error('Missing lat or lon')
+}
+
+export async function addBasket (basketData) {
+  return post('/baskets', basketData)
+}
+
+export async function editBasket (basketId, basketData) {
+  return put(`/baskets/${basketId}`, basketData)
 }

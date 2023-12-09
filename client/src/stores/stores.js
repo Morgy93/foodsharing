@@ -162,14 +162,16 @@ export const mutations = {
   async loadStoreApplications (storeId) {
     store.applications = await listStoreTeamMembershipRequests(storeId)
   },
-  async loadStoreLog (storeId) {
+  async loadStoreLog (storeId, calendarInterval) {
     const actions = [STORE_LOG_ACTION.SIGN_UP_SLOT]
+    const intervalPerDays = calendarInterval / 3600 / 24
 
+    const fromDate = new Date()
+    fromDate.setDate(fromDate.getDate() - intervalPerDays)
     const today = new Date()
-    const toDate = new Date(today)
-    toDate.setDate(today.getDate() + 30)
+    today.setDate(today.getDate() + 1) // buffer to include everything from today
 
-    store.log = await getStoreLog(storeId, actions, [today, toDate])
+    store.log = await getStoreLog(storeId, actions, [fromDate, today])
   },
 }
 

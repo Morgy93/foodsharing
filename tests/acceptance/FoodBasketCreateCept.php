@@ -2,7 +2,7 @@
 
 $I = new AcceptanceTester($scenario);
 
-$description = sq('yay');
+$description = 'my basket';
 $updateDescription = sq('upd');
 $pass = sq('pass');
 
@@ -17,32 +17,27 @@ $I->see('Essenskörbe', ['css' => '.testing-basket-dropdown']);
 $I->click('.testing-basket-dropdown > .nav-link');
 $I->waitForText('Essenskorb anlegen');
 $I->click('.testing-basket-create');
-$I->waitForText('Wie lange soll dein Essenskorb gültig sein?');
-/*
- * Check for default options on the foodbasket create form.
- * this was implemented mainly to check the v_components when refactoring default options.
- */
-$I->seeCheckboxIsChecked('.input.cb-contact_type[value="1"]');
-$I->dontSeeCheckboxIsChecked('.input.cb-contact_type[value="2"]');
-$I->seeOptionIsSelected('#weight', '3 kg');
-$I->dontSeeElement('#handy');
-$I->checkOption('.input.cb-contact_type[value="2"]');
-$I->waitForElement('#handy');
-$I->seeInField('#handy', $foodsaver['handy']);
-$I->seeOptionIsSelected('#lifetime', 'eine Woche');
+$I->waitForText('Beschreibung, Bild, Übergabeort und Zeitraum sind öffentlich sichtbar.');
 
-$I->fillField('description', $description);
+$I->fillField('#basket-description-input', $description);
+$I->seeCheckboxIsChecked('#chat-checkbox');
+$I->dontSeeCheckboxIsChecked('#phone-checkbox');
+$I->dontSee('Telefonnummer');
+$I->click('#chat-checkbox + .custom-control-label');
+$I->see('Bitte wähle eine Möglichkeit aus, wie der Essenskorb angefragt werden soll.');
+$I->click('#phone-checkbox + .custom-control-label');
+$I->see('Telefonnummer');
+$I->fillField('#phone-number-input', '12345');
 
-// /* This line should not be necessary - actually the window should not get too big! */
-// $I->scrollTo('//*[contains(text(),"Essenskorb veröffentlichen")]');
-$I->click('Essenskorb veröffentlichen');
+$I->selectOption('#duration-select', 'Eine Woche');
 
-$I->waitForElementVisible('#pulse-info', 4);
-$I->see('Danke dir, der Essenskorb wurde veröffentlicht');
+$I->click('Speichern');
+$I->waitForActiveAPICalls();
 
 $I->seeInDatabase('fs_basket', [
     'description' => $description,
-    'foodsaver_id' => $foodsaver['id']
+    'foodsaver_id' => $foodsaver['id'],
+    'handy' => '12345'
 ]);
 
 $id = $I->grabFromDatabase('fs_basket', 'id', ['description' => $description,
@@ -51,21 +46,21 @@ $id = $I->grabFromDatabase('fs_basket', 'id', ['description' => $description,
 //Check update of the foodbasket
 $I->amOnPage($I->foodBasketInfoUrl($id));
 $I->waitForActiveAPICalls();
-$I->waitForElementNotVisible('#fancybox-loading');
 $I->click('Essenskorb bearbeiten');
-$I->waitForElementNotVisible('#fancybox-loading', 3);
-$I->waitForText('Essenskorb bearbeiten', 3);
-$I->waitForText('Essenskorb veröffentlichen', 3);
-$I->waitForElement('#description');
-$I->fillField('description', $description . $updateDescription);
-$I->click('Essenskorb veröffentlichen');
-$I->waitForActiveAPICalls();
-$I->waitForText('Aktualisiert am');
+$I->waitForText('Beschreibung, Bild, Übergabeort und Zeitraum sind öffentlich sichtbar.');
 
-$I->see($updateDescription);
+$I->fillField('#basket-description-input', $description . ' edited');
+$I->click('#chat-checkbox + .custom-control-label');
+$I->click('Speichern');
+$I->waitForActiveAPICalls();
+$I->waitForPageBody();
+$I->see('Aktualisiert am');
+$I->see($description . ' edited');
+
 $I->seeInDatabase('fs_basket', [
-    'description' => $description . $updateDescription,
-    'foodsaver_id' => $foodsaver['id']
+    'description' => $description . ' edited',
+    'foodsaver_id' => $foodsaver['id'],
+    'handy' => '12345'
 ]);
 
 $picker = $I->createFoodsaver();
@@ -75,6 +70,7 @@ $nick->does(
     static function (AcceptanceTester $I) use ($id, $picker) {
         $I->login($picker['email']);
         $I->amOnPage($I->foodBasketInfoUrl($id));
+        $I->waitForPageBody();
 
         $I->waitForText('Essenskorb anfragen');
         $I->click('Essenskorb anfragen');

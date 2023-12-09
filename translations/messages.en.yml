@@ -714,6 +714,8 @@ mailbox:
     written_text:  
   mark_as_read: Mark as read
   unknown_sender: Unknown sender
+  less: less
+  more: more
 events:
   description: Description
   create:
@@ -1683,6 +1685,7 @@ basket:
     "3": three days
     "2": two days
     "1": one day
+    "5": five days
   contact:
     call: By phone
     write: By message
@@ -1758,6 +1761,15 @@ basket:
   go: to the food basket
   my_list_empty: You have not entered any food baskets
   not_withdrawn: 'The request for the food basket could not be withdrawn: '
+  use_home_address: Use home address
+  modal_error:
+    no_contact: Please select a way in which you would like the food basket to be
+      requested.
+    no_phone: Please provide a telephone number.
+  contact_types: Contact options
+  delete_confirmation:
+    text: Do you really want to delete this food basket?
+    title: Delete the food basket?
 map:
   title: Map
   donates: company donates
@@ -3283,6 +3295,7 @@ globals:
     signin: Sign in
     signout: Sign out
     signup: Participate
+  telephone_number: Telephone number
 bootstrap-datepicker:
   labelPrevDecade: Previous decade
   labelPrevYear: Previous year
