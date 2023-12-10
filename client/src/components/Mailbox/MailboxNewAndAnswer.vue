@@ -414,10 +414,10 @@ export default {
       if (this.answerMode) {
         const mailFromAddress = `<${this.email.from.address}>`
         const mailFromAndAddress = this.email.from.name ? `${this.email.from.name} ${mailFromAddress}` : mailFromAddress
-        const mailFromAndDate = `${mailFromAndAddress} ${this.$i18n('mailbox.for_quoting.has_from')} ${this.displayedMailDate} ${this.$i18n('mailbox.for_quoting.written_text')}: \n\n`
+        const mailFromAndDate = this.$i18n('mailbox.reply_header', { name: mailFromAndAddress, date: this.displayedMailDate })
         const replacedContent = `> ${this.email.body.replace(/\r/g, '\n')}`
 
-        this.mailBody = mailFromAndDate + replacedContent
+        this.mailBody = mailFromAndDate + ': \n\n' + replacedContent
       } else {
         this.mailBody = null
       }

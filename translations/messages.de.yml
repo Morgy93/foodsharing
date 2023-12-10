@@ -1788,9 +1788,7 @@ mailbox:
   to: "An"
   fromto: "Von/An"
   tag_recipient_hint: "Empfänger (mehrere mit Semikolon getrennt)"
-  for_quoting:
-    written_text: "geschrieben"
-    has_from: "hat am"
+  reply_header: "{name} hat am {date} geschrieben"
   attachment:
     not_found: "nicht gefunden"
     not_found_explanation: "Die angehängte Datei konnte auf dem Server nicht mehr gefunden werden"
