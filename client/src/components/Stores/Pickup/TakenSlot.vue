@@ -228,9 +228,8 @@ export default {
     },
     getLastFetchDate () {
       const lastFetchDate = this.getLastFetchDateFromUser(this.profile.id)
-      const noPickupTranslation = this.$i18n('terminology.no_pickups')
       const dateFormatterLastFetchDate = this.$dateFormatter.date(lastFetchDate, { short: true })
-      return lastFetchDate ? dateFormatterLastFetchDate : noPickupTranslation
+      return lastFetchDate ? dateFormatterLastFetchDate : this.$i18n('terminology.no_pickups')
     },
     phoneNumber () {
       return PhoneNumbers.callableNumber(this.profile.mobile || this.profile.landline)
