@@ -92,7 +92,7 @@
             <a
               v-if="row.item.chain.forumThread"
               class="thread-link"
-              :href="$url('forumThread', row.item.chain.regionId, row.item.chain.forumThread)"
+              :href="$url('forumThread', null, row.item.chain.forumThread)"
             >
               {{ row.item.chain.name }}
             </a>

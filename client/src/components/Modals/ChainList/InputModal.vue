@@ -54,14 +54,12 @@
           maxlength="50"
           trim
         />
-        <b-form-input
+        <b-form-select
           id="country-input"
           v-model="input.headquartersCountry"
           :placeholder="$i18n('chain.inputmodal.inputs.headquarters.placeholder.country')"
-          :formatter="singleSpacing"
           :state="!!input.headquartersCountry"
-          maxlength="50"
-          trim
+          :options="countryOptions"
         />
       </b-form-group>
 
@@ -225,6 +223,17 @@ export default {
   computed: {
     mode () {
       return (this.chainEditing >= 0 ? 'edit' : 'new')
+    },
+    countryOptions () {
+      const options = [
+        'Deutschland',
+        'Österreich',
+        'Schweiz',
+      ]
+      if (this.input.headquartersCountry && !options.includes(this.input.headquartersCountry)) {
+        options.unshift({ disabled: true, value: this.input.headquartersCountry, text: this.input.headquartersCountry })
+      }
+      return options
     },
   },
   methods: {

@@ -37,7 +37,6 @@ class StoreChainTransactions
                 $item->chain->estimatedStoreCount = null;
                 $item->chain->forumThread = null;
                 $item->chain->notes = null;
-                $item->chain->regionId = null;
             }
         }
 
@@ -167,7 +166,10 @@ class StoreChainTransactions
         }
 
         foreach ($ids as $id) {
-            if (!$this->regionGateway->hasMember($id, RegionIDs::STORE_CHAIN_GROUP)) {
+            foreach (RegionIDs::getStoreChainGroups() as $storeChainGroup) {
+                if ($this->regionGateway->hasMember($id, $storeChainGroup)) {
+                    break;
+                }
                 throw new StoreChainTransactionException(StoreChainTransactionException::KEY_ACCOUNT_MANAGER_ID_NOT_IN_GROUP);
             }
         }
@@ -180,8 +182,11 @@ class StoreChainTransactions
             throw new StoreChainTransactionException(StoreChainTransactionException::THREAD_ID_NOT_EXISTS);
         }
 
-        if ($forumResult[0]['forumId'] != RegionIDs::STORE_CHAIN_GROUP) {
-            throw new StoreChainTransactionException(StoreChainTransactionException::WRONG_FORUM);
+        foreach (RegionIDs::getStoreChainGroups() as $storeChainGroup) {
+            if ($forumResult[0]['forumId'] == $storeChainGroup) {
+                return;
+            }
         }
+        throw new StoreChainTransactionException(StoreChainTransactionException::WRONG_FORUM);
     }
 }

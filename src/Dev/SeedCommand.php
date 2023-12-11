@@ -347,7 +347,9 @@ class SeedCommand extends Command implements CustomCommandInterface
         $I->_getDbh()->beginTransaction();
         $I->_getDriver()->executeQuery('SET FOREIGN_KEY_CHECKS=0;', []);
         $regionEurope = $I->createRegion('Europa', ['parent_id' => RegionIDs::ROOT, 'type' => UnitType::COUNTRY, 'has_children' => 1]);
-        $regionGermany = $I->createRegion('Deutschland', ['parent_id' => $regionEurope['id'], 'type' => UnitType::COUNTRY, 'has_children' => 1]);
+        $regionGermany = $I->createRegion('Deutschland', ['parent_id' => $regionEurope['id'], 'type' => UnitType::COUNTRY, 'has_children' => 1, 'id' => RegionIDs::GERMANY]);
+        $regionSwitzerland = $I->createRegion('Schweiz', ['parent_id' => $regionEurope['id'], 'type' => UnitType::COUNTRY, 'has_children' => 1, 'id' => RegionIDs::SWITZERLAND]);
+        $regionAustria = $I->createRegion('Österreich', ['parent_id' => $regionEurope['id'], 'type' => UnitType::COUNTRY, 'has_children' => 1, 'id' => RegionIDs::AUSTRIA]);
         $regionLowerSaxony = $I->createRegion('Niedersachsen', ['parent_id' => $regionGermany['id'], 'type' => UnitType::FEDERAL_STATE, 'has_children' => 1]);
         $regionOne = $I->createRegion('Göttingen', ['parent_id' => $regionLowerSaxony['id'], 'type' => UnitType::CITY, 'has_children' => 1]);
         $region1 = $regionOne['id'];
@@ -375,7 +377,9 @@ class SeedCommand extends Command implements CustomCommandInterface
         $I->createWorkingGroup('Abstimmungs-AG Praxisaustausch', ['parent_id' => RegionIDs::GLOBAL_WORKING_GROUPS, 'id' => RegionIDs::VOTING_ADMIN_GROUP]);
         $I->createWorkingGroup('Fairteiler-AG Praxisaustausch', ['parent_id' => RegionIDs::GLOBAL_WORKING_GROUPS, 'id' => RegionIDs::FSP_TEAM_ADMIN_GROUP]);
         $I->createWorkingGroup('Betriebskoordination-AG Praxisaustausch', ['parent_id' => RegionIDs::GLOBAL_WORKING_GROUPS, 'id' => RegionIDs::STORE_COORDINATION_TEAM_ADMIN_GROUP]);
-        $I->createWorkingGroup('AG Betriebsketten', ['parent_id' => RegionIDs::GLOBAL_WORKING_GROUPS, 'id' => RegionIDs::STORE_CHAIN_GROUP]);
+        $I->createWorkingGroup('AG Betriebsketten', ['parent_id' => RegionIDs::GLOBAL_WORKING_GROUPS, 'id' => RegionIDs::STORE_CHAIN_GROUP_GERMANY]);
+        $I->createWorkingGroup('Betriebsketten Östereich', ['parent_id' => RegionIDs::AUSTRIA, 'id' => RegionIDs::STORE_CHAIN_GROUP_AUSTRIA]);
+        $I->createWorkingGroup('Betriebsketten Schweiz', ['parent_id' => RegionIDs::SWITZERLAND, 'id' => RegionIDs::STORE_CHAIN_GROUP_SWITZERLAND]);
         $I->createWorkingGroup('Meldungen-AG Praxisaustausch', ['parent_id' => RegionIDs::GLOBAL_WORKING_GROUPS, 'id' => RegionIDs::REPORT_TEAM_ADMIN_GROUP]);
         $I->createWorkingGroup('Mediation-AG Praxisaustausch', ['parent_id' => RegionIDs::GLOBAL_WORKING_GROUPS, 'id' => RegionIDs::MEDIATION_TEAM_ADMIN_GROUP]);
         $I->createWorkingGroup('Schiedsstelle-AG Praxisaustausch', ['parent_id' => RegionIDs::GLOBAL_WORKING_GROUPS, 'id' => RegionIDs::ARBITRATION_TEAM_ADMIN_GROUP]);
@@ -469,13 +473,15 @@ class SeedCommand extends Command implements CustomCommandInterface
         $I->addRegionMember($ag_aktive, $userbot['id']);
 
         $I->addRegionMember($ag_testimonials, $user2['id']);
-        $I->addRegionMember(RegionIDs::STORE_CHAIN_GROUP, $user2['id']);
+        $I->addRegionMember(RegionIDs::STORE_CHAIN_GROUP_GERMANY, $user2['id']);
 
         $I->addRegionAdmin(RegionIDs::IT_SUPPORT_GROUP, $userStoreManager2['id']);
         $I->addRegionMember(RegionIDs::IT_SUPPORT_GROUP, $userStoreManager2['id']);
         $I->addRegionAdmin(RegionIDs::NEWSLETTER_WORK_GROUP, $user2['id']);
         $I->addRegionAdmin(RegionIDs::EDITORIAL_GROUP, $userbot['id']);
-        $I->addRegionAdmin(RegionIDs::STORE_CHAIN_GROUP, $userbot['id']);
+        $I->addRegionAdmin(RegionIDs::STORE_CHAIN_GROUP_GERMANY, $userbot['id']);
+        $I->addRegionAdmin(RegionIDs::STORE_CHAIN_GROUP_SWITZERLAND, $userbot['id']);
+        $I->addRegionAdmin(RegionIDs::STORE_CHAIN_GROUP_AUSTRIA, $userbot['id']);
 
         // Make ambassador responsible for all work groups in the region
         $this->output->writeln('- make ambassador responsible for all work groups');

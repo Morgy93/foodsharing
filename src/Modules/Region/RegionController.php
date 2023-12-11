@@ -136,7 +136,7 @@ final class RegionController extends FoodsharingController
             $menu['mailbox'] = ['name' => $regionOrGroupString, 'href' => '/?page=mailbox'];
         }
 
-        if ($regionId == RegionIDs::STORE_CHAIN_GROUP) {
+        if (in_array($regionId, RegionIDs::getStoreChainGroups())) {
             $menu['chainList'] = ['name' => 'menu.entry.chainList', 'href' => '/?page=chain'];
         }
 

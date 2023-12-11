@@ -22,7 +22,6 @@ class RegionIDs
 
     public const EDITORIAL_GROUP = 327;
     public const BOT_WELCOME_TEAM = 328;
-    public const STORE_CHAIN_GROUP = 332;
 
     // region and ambassador groups
     public const EUROPE_BOT_GROUP = 881;
@@ -43,6 +42,12 @@ class RegionIDs
     public const BOARD_ADMIN_GROUP = 3875;
     public const ORGA_COORDINATION_GROUP = 3818;
 
+    //Store Chain Groups:
+    public const STORE_CHAIN_GROUP = 332;
+    public const STORE_CHAIN_GROUP_GERMANY = 332;
+    public const STORE_CHAIN_GROUP_AUSTRIA = 858;
+    public const STORE_CHAIN_GROUP_SWITZERLAND = 1004;
+
     // groups used for displaying team page:
     public const TEAM_BOARD_MEMBER = 1373;
     public const TEAM_ALUMNI_MEMBER = 1564;
@@ -60,11 +65,25 @@ class RegionIDs
     public static function hasSpecialPermission(int $regionId): bool
     {
         return in_array($regionId, [
-            self::NEWSLETTER_WORK_GROUP, self::QUIZ_AND_REGISTRATION_WORK_GROUP,
-            self::PR_PARTNER_AND_TEAM_WORK_GROUP, self::PR_START_PAGE,
-            self::EUROPE_REPORT_TEAM, self::IT_SUPPORT_GROUP, self::IT_AND_SOFTWARE_DEVELOPMENT_GROUP,
-            self::EDITORIAL_GROUP, self::STORE_CHAIN_GROUP
+            self::NEWSLETTER_WORK_GROUP,
+            self::QUIZ_AND_REGISTRATION_WORK_GROUP,
+            self::PR_PARTNER_AND_TEAM_WORK_GROUP,
+            self::PR_START_PAGE,
+            self::EUROPE_REPORT_TEAM,
+            self::IT_SUPPORT_GROUP,
+            self::IT_AND_SOFTWARE_DEVELOPMENT_GROUP,
+            self::EDITORIAL_GROUP,
+            ...self::getStoreChainGroups(),
         ]);
+    }
+
+    public static function getStoreChainGroups(): array
+    {
+        return [
+            self::STORE_CHAIN_GROUP_GERMANY,
+            self::STORE_CHAIN_GROUP_AUSTRIA,
+            self::STORE_CHAIN_GROUP_SWITZERLAND,
+        ];
     }
 
     public static function getTestRegions(): array

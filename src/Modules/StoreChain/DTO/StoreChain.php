@@ -158,13 +158,6 @@ class StoreChain
      */
     public ?DateTime $modificationDate = null;
 
-    /**
-     * Region of store chain management.
-     *
-     * @OA\Property(readOnly=true)
-     */
-    public ?int $regionId = RegionIDs::STORE_CHAIN_GROUP;
-
     public static function createFromArray(array $data): StoreChain
     {
         $obj = new StoreChain();
