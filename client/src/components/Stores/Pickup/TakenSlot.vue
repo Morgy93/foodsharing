@@ -27,7 +27,7 @@
             <b>{{ $i18n('terminology.previous_pickups') }}:</b> {{ pickupsCount }}
           </p>
           <p>
-            <b>{{ $i18n('store.lastPickupTitle') }}</b><br>
+            <b>{{ $i18n('store.lastPickupTitle') }}:</b><br>
             {{ getLastFetchDate }}
           </p>
           <p>
