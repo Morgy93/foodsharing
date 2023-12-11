@@ -4,6 +4,40 @@
     :title="showTitel"
     :toggle-visibility="true"
   >
+    <b-modal
+      id="modal_open_addressbook"
+      ref="modal_open_addressbook"
+      title="Globales Adressbuch"
+      :cancel-title="$i18n('button.cancel')"
+      :ok-title="$i18n('foodsaver.delete_account')"
+      header-class="d-flex"
+      content-class="pr-3 pt-3"
+      size="xl"
+      scrollable
+    >
+      <b-button-group>
+        <b-button
+          variant="success"
+          @click="updateFilter(9)"
+        >
+          Bezirke
+        </b-button>
+        <b-button
+          variant="info"
+          @click="updateFilter(7)"
+        >
+          Arbeitsgruppen
+        </b-button>
+      </b-button-group>
+      <b-form-input
+        v-model="filterName"
+        placeholder="Suche nach ..."
+      />
+      <b-table
+        :fields="fields"
+        :items="filteredRegions"
+      />
+    </b-modal>
     <div class="card bg-white">
       <b-row class="p-2">
         <b-col
@@ -73,6 +107,22 @@
                     @click="addTag()"
                   >
                     +
+                  </b-button>
+                </b-input-group-append>
+                <b-input-group-append>
+                  <b-button
+                    v-if="!isMobile"
+                    variant="outline-primary"
+                    @click="openAddressbook"
+                  >
+                    Adressbuch
+                  </b-button>
+                  <b-button
+                    v-else
+                    variant="outline-primary"
+                    @click="openAddressbook"
+                  >
+                    <i class="far fa-address-book" />
                   </b-button>
                 </b-input-group-append>
               </b-input-group>
@@ -222,7 +272,7 @@
 
 <script>
 import Container from '@/components/Container/Container.vue'
-import { sendEmail, setEmailProperties } from '@/api/mailbox'
+import { sendEmail, setEmailProperties, listRegions } from '@/api/mailbox'
 import { uploadFile } from '@/api/uploads'
 import { hideLoader, pulseError, pulseSuccess, showLoader } from '@/script'
 import i18n from '@/helper/i18n'
@@ -244,9 +294,40 @@ export default {
       attachmentFilesName: [],
       attachmentFilesObjects: [],
       isMobile: false,
+      fields: [
+        {
+          key: 'name',
+          sortable: true,
+        },
+        {
+          key: 'emailAddress',
+          sortable: false,
+        },
+      ],
+      regions: [],
+      filterName: null,
+      filter: { type: 9, name: null }, // Standardfilter auf Typ 9 und keinen Namen
     }
   },
   computed: {
+    filteredRegions () {
+      const typeFilter = this.filter.type
+      const nameFilter = this.filterName
+
+      console.log('typeFilter:', typeFilter)
+      console.log('nameFilter:', nameFilter)
+      console.log('Regions:', this.regions)
+
+      const filtered = this.regions.filter(region => {
+        const typeMatch = region.type === typeFilter || typeFilter === 0
+        const nameMatch = !nameFilter || region.name.toLowerCase().includes(nameFilter.toLowerCase())
+        return typeMatch && nameMatch
+      })
+
+      console.log('Filtered Regions:', filtered)
+
+      return filtered
+    },
     showTitel () {
       return store.state.answerMode ? this.$i18n('mailbox.reply.full') : this.$i18n('mailbox.write')
     },
@@ -324,6 +405,11 @@ export default {
     window.removeEventListener('resize', this.checkMobile)
   },
   methods: {
+    updateFilter (type) {
+      console.log('type', type)
+      this.filter.type = type
+      console.log('filter', this.filter)
+    },
     getMailBody () {
       if (this.answerMode) {
         const mailFromAddress = `<${this.email.from.address}>`
@@ -447,6 +533,21 @@ export default {
           .filter(x => !x.startsWith(addressToFilter))
         this.emailTo.push(...additionalRecipients)
       }
+    },
+    openAddressbook () {
+      this.getRegions()
+      this.$refs.modal_open_addressbook.show()
+    },
+    async getRegions () {
+      showLoader()
+      this.isBusy = true
+      try {
+        this.regions = await listRegions()
+      } catch (e) {
+        pulseError(i18n('error_unexpected'))
+      }
+      this.isBusy = false
+      hideLoader()
     },
   },
 }
