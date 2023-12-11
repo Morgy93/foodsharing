@@ -13,10 +13,6 @@
           <p>
             <b>{{ profile.name }}</b>
           </p>
-          <p>
-            <b>{{ $i18n('foodsaver.manage.role') }}:</b>
-            {{ getQuizRole() }}
-          </p>
         </b-col>
         <b-col cols="7">
           <p>
@@ -281,15 +277,6 @@ export default {
 
       if (lastFetchTimestamp !== null) {
         return new Date(lastFetchTimestamp * MILLISECONDS_PER_SECOND)
-      }
-    },
-    getQuizRole () {
-      const userItem = this.storeMember.find(item => item.id === this.profile.id)
-      const quizRole = userItem?.quiz_rolle
-
-      if (quizRole !== undefined) {
-        const terminologyKey = 'terminology.role.' + quizRole
-        return this.$i18n(terminologyKey)
       }
     },
     copyIntoClipboard (text) {
