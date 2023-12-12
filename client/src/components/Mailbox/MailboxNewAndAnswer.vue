@@ -304,16 +304,6 @@ export default {
       attachmentFilesName: [],
       attachmentFilesObjects: [],
       isMobile: false,
-      fields: [
-        {
-          key: 'name',
-          sortable: true,
-        },
-        {
-          key: 'emailAddress',
-          sortable: false,
-        },
-      ],
       regions: [],
       filterName: null,
       filter: { type: MAILBOX_ADDRESSBOOK_FILTER_TYPES.GROUPS, name: null },
