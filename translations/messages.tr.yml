@@ -984,7 +984,7 @@ reports:
   message: Açıklama
 message_text_to_group_admin_workgroup: '<b>{groupName}</b> bölgesi/çalışma grubu artık
   <b>herhangi bir</b> Elçiye/Yöneticiye sahip değil.<br><br><br>Şu kimlik yapısına
-  sahip: <br>{idStructureList}<br><br>Kimlik: {groupId}<br><br>URL: <a href="/?page=bezirk&bid={groupId}&sub=forum"
+  sahip: <br>{idStructureList}<br><br>Kimlik: {groupId}<br><br>URL: <a href="/region?bid={groupId}&sub=forum"
   target= "_blank">Bölgeye/çalışma grubuna gitmek için burayı tıklayın</a>'
 success: Başarıyla tamamlandı
 error_ajax: "Bu ne yazık ki işe yaramadı.\nBelki internet bağlantınız şu anda çalışmıyordur.\n
@@ -1111,7 +1111,7 @@ store:
   all_of_my_stores: Tüm işletmelerim
   isManager: Bu işletmeden sorumlu.
   mayAmb: Elçi sınavını geçti.
-  may_not_referred_to_in_public: "Bu şirketi asla açık açık dile getirmeyin (misal:
+  may_not_referred_to_in_public: "Bu şirketi asla açıkdan dile getirmeyin (misal:
     yemek sepetlerinde, Facebook'da veya basın başvurularında)."
   tooltip_yellow: Önümüzdeki beş gün içinde ki açık alımlar
   tooltip_orange: Önümüzdeki üç gün içinde ki açık alımlar
@@ -1161,6 +1161,52 @@ store:
     engellemek istiyorsanız, tarih ve saati belirterek bunu sağlamak için bu işlevi
     kullanabilirsiniz. Halihazırda görünen slotları silmek isterseniz, foodsaver yazılı
     olmadığı sürece doğrudan slota tıklayarak da bu işlemi gerçekleştirebilirsiniz.
+  log:
+    message:
+      6: "{actor}, {target}'ı aktif ekibe ekledi."
+      1: '{actor} katılma isteği gönderdi.'
+      14: "{actor}, {target}'ın {date} tarihinde ki kurtarım slotunu onayladı."
+      3: "{actor}, {target}'ın katılma isteğini kabul etti."
+      4: "{actor}, {target}'ı istekte bulunmadan ekibe ekledi."
+      11: '{actor}, {date} tarihinde ki kurtarma için kaydoldu.'
+      7: "{actor}, {target}'ı ekipden çıkardı."
+      13: "{actor}, {date} tarihinde ki kurtarımdan {target} 'i çıkardı."
+      13_with_reason: "{actor}, aşağıdaki mesajla {date} tarihinde ki kurtarımdan
+        {target}'i çıkardı"
+      8: '{actor} ekipden ayrıldı.'
+      16: '{actor} katılma isteğini geri çekti'
+      10: "{actor}, {target}'ı işletme sorumlusu olarak çıkardı."
+      12: '{actor}, {date} tarihinde ki kurtarımdan çıktı.'
+      2: "{actor}, {target}'ın katılma isteğini reddetti."
+      5: "{actor}, {target}'ı yedek listesine koydu."
+      9: "{actor}, işletme sorumlusu olarak {target}'ı girdi."
+      15: "{actor}, {target}'ın {date} tarihine ait pano gönderisini sildi"
+    type:
+      3: Üyelik isteklerini kabul et
+      2: Üyelik isteklerini reddedin
+      7: Foodsaver'ı ekipten çıkarın
+      14: Kurtarma Slotunu onayla
+      1: Üyelik başvurusunda bulunun
+      16: Üyelik başvurusunu geri çekin
+      8: Ekipten ayrıl
+      4: Foodsaver'ı istek olmadan ekibe ekleyin
+      10: İşletme sorumlularını çıkarın
+      6: Foodsaver'ı aktif ekibe ekleyin
+      12: Kurtarma listesinden çıkın
+      9: İşletme sorumlularını girin
+      5: Foodsaver'ı yedeğe alın
+      13: Kurtarım için çıkış yapılabilir
+      11: Kurtarmak için kaydolun
+      15: Pano kayıdını sil
+    max_entries_message: Maksimum 100 giriş görüntülenebilir.. Lütfen arama alanını
+      sınırlandırın.
+    log_types_placeholder: Görüntülenecek eylem türlerini seçin
+    search: Seçili eylemleri göster
+    selected_log_types: '{amount} işlem türü seçildi'
+    title: İşletme Tutanağı
+  signInDateTime: Giriş Tarihi
+  slot_state: Slot durumu
+  lastPickupTitle: Son alım tarihi
 polls:
   title: Başlık
   new_poll: Yeni Anket oluştur
@@ -1237,8 +1283,8 @@ poll:
   scope_description_2: Bölgedeki, şu anda herhangi bir işletmeden sorumlu, işletme
     sorumluları
   type_description_0: Seçin (yalnızca bir seçenek seçilebilir)
-  type_description_3: +3 (katılıyorum) ile -3 (katılmıyorum) arasında değerlere sahip
-    derecelendirme seçeneği
+  type_description_3: -3 (red) ile +3 (onay) arasında ki değerlere sahip derecelendirme
+    seçeneği
   untraceable: Hangi seçeneğe nasıl oy verdiğinize ilişkin bilgiler, geriye doğru
     izlenemez ve bu nedenle artık burada görüntülenemez.
   error_cannot_vote: Bu ankette oy kullanamazsınız
@@ -1314,7 +1360,7 @@ events:
       <br>\nRandevuyu bu arada gösterge tablosunda yeni gelenlere de göstermek için,\n
       daha sonra tekrar kaydedin.\n"
     endtime: Zaman sonu
-  bread: Tarih
+  bread: Randevular
   add_new_event: Şimdi yeni bir tarih girin
   mumble:
     text: <em>Mumble</em> ile çevrimiçi sesli konferanslar düzenle.
@@ -1491,7 +1537,7 @@ mailbox:
   date: Tarih
   member: E-Posta kutusu kullanıcısı
   actions: Opsiyonlar
-  title: Posta kutuları
+  title: E-Posta kutuları
   filesize: Üzgünüz, dosya çok büyük.
   filetype: Bu dosya türüne izin verilmiyor
   fromto: Gönderen/Kime
@@ -1545,6 +1591,7 @@ basket:
     "3": üç gün
     "14": iki hafta
     "21": üç hafta
+    "5": beş gün
   request-fs: Yemek sepeti başvurusunu foodsharing sayfamızda yapın
   request_close: Yemek sepeti talebini sonuçlandırın
   send_request: Başvuruyu gönderin
@@ -1732,8 +1779,9 @@ footer:
     call_to: foodsharing'i desteklemek ister misiniz?
   hosting:
     tooltip: <a href="https://www.manitu.de/webhosting/" title="Webhosting">gehostet</a>
-      Manitu da Net Sıfır Karbon
-    info: Net Sıfır Karbon <a href="https://www.manitu.de/webhosting/" title="Webhosting">gehostet</a>
+      Manitu da Net <sub>2</sub>- Sıfır Karbon
+    info: Net <sub>2</sub> Sıfır Karbon <a href="https://www.manitu.de/webhosting/"
+      title="Webhosting">gehostet</a>
   partner: Partner
   guide: Hijyen rehberi
   infosCompany: İşletmeler için
@@ -2088,6 +2136,11 @@ forum:
   new_thread: Yeni bir konu oluştur
   deleted_user: Silinmiş üye
   not_found: Bu konu mevcut değil.
+  mail_confirmation:
+    text: Bu yeni gönderinin bu grubun veya bölgenin tüm üyelerine e-posta olarak
+      gönderilmesini gerçekten istiyor musunuz? Bunu yalnızca Konu herkesi ilgilendiriyorsa
+      ve herkesin bunun farkında olmasını gerektirecek kadar önemliyse yapmalısınız.
+    title: Gerçekten e-posta bildirimleri göndermek istiyor musunuz?
 chat:
   open_chat: Bir mesaj yaz
   new_messages: Yeni Mesajlar
@@ -2508,6 +2561,8 @@ terminology:
     d: Organizatör
   reports: Raporlama Görünümü (Yerel raporlama grubu)
   n_home_regions: o ana bölgeye sahip bir kişi|İşte %count% kişilik ana bölge
+  previous_pickups: Önceki Alımlar
+  no_pickups: yok
 legal:
   if_delete:
     this_doesnt_get_deleted: 'Aşağıdaki bilgiler artık aktif sistemde mevcut değildir,
@@ -2639,7 +2694,7 @@ storeview:
   managers: Sorumlu Foodsaver
   team: Kurtarma Ekibi
   public_and_statistics: İstatistik ve Halkla İlişkiler
-  no_permission_to_view: Sadece işletme sorumluları tarafından görülebilir
+  no_permission_to_view: Sadece işletme sorumluları tarafından görülebilir.
   groceries:
     label: Hangi yiyecekler alınabilir?
     select_tag: Yiyecek kategorisini seçin
@@ -2843,7 +2898,7 @@ pickup:
   team_message_send_and_leave: Gönder ve çıkış yap
   join_cancel: Yok değil
   take_empty_slot: Buraya yazıl
-  open_profile: Profile git
+  open_profile: Profili
   copiedNumber: '"{number}" panoya kopyalandı.'
   signout_info: Alım randevularınızın tümü silinecektir.
   really_kick_user_info: "{name}'ı {date} tarihindeki alma işleminden çıkarmak istediğinizden
@@ -2867,7 +2922,7 @@ pickup:
   really_leave_date: Bu alımdan siz sorumlusunuz. Lütfen yerinize birilerini ayarlayın.
   leave_pickup_ok: Yedek birini buldum bile
   description_optional: Açıklama (isteğe bağlı)
-  description: Açıklaması
+  description: Açıklama
   edit_description: Açıklamayı düzenle
   description_max_length_info: Maksimum açıklama uzunluğuna ulaşıldı (100 karakter)
   description_modal_text: 'Yeni bir teslim alma açıklaması girin:'
@@ -3052,7 +3107,7 @@ globals:
     stores: 'İşletmeler'
     foodshare_points: 'Gıda Dağıtım Noktası'
     my_foodshare_points: 'Gıda Dağıtım Noktalarım'
-    mailboxes: 'Posta kutuları'
+    mailboxes: 'E-Posta kutuları'
     my_buddies: 'Arkadaşlarım'
     persons: 'Kişiler'
     my_stores: 'İşletmelerim'
@@ -3062,6 +3117,8 @@ globals:
     my_persons: 'Arkadaşlarım'
     my_regions: 'Bölgelerim'
     groups: 'Gruplar'
+    threads: Konular
+    chats: Sanal Sohbet
   select: 'Lütfen seçin …'
   close: 'Kapat'
   show_more: 'Daha fazla göster'
@@ -3070,14 +3127,39 @@ globals:
   show_less: 'Daha az göster'
 search:
   placeholder: 'Şimdi aramaya başlayın …'
-  informations: 'Kişileri, grupları, şirketleri, semtleri ve gıda dağıtım noktalarını
-    arayabilirsiniz.'
+  informations: 'Kişileri, grupları, işletmeleri, semtleri, sohbetleri, forum gönderilerini
+    ve gıda dağıtım noktalarını arayabilirsiniz.'
   noresults: 'Sonuç bulunamadı'
   forum: 'Başlığa göre ara …'
   thread-title-only: 'Gönderilerin içeriği değil, yalnızca başlıklar aranır.'
   title: 'Arama'
   user_search:
     placeholder: 'İsim veya İD'
+  results:
+    region:
+      ambassador_tooltip: Bu bölgenin Elçisisiniz
+      home_region_tooltip: Bu senin ana bölgen
+      member_tooltip: Bu bölgenin bir üyesisiniz
+    working_group:
+      member_tooltip: Bu çalışma grubunun (AG) üyesisiniz
+      admin_tooltip: Bu çalışma grubunun (AG) yöneticisisiniz
+    thread:
+      closed_tooltip: Konu kapandı
+      forum: Forum
+      sticky_tooltip: Konu sabitlendi
+      ambassador_forum: Elçi (BOT)-Forumu
+      last_post: son gönderi
+    in: içinde
+    chat:
+      chat_with: '{names} ile sohbet et'
+      chat_with_others: diğerleri
+    user:
+      no_home_region: Ana bölge yok
+    store:
+      manager_tooltip: Bu işletmeden siz sorumlusunuz
+      jumper_tooltip: Bu işletmenin yedek listesindesiniz
+      member_tooltip: Bu işletmenin bir üyesisiniz
+    from: "'den / 'dan"
 language_chooser:
   choose_button: 'Güncelle'
   translation_help_info_text: 'Bu bağlantı tercüme portalına yönlendiriyor, başlamak
@@ -3174,7 +3256,7 @@ notifications:
     title: Bölgeler
   checkbox_disabled: Devre dışı
   success: Başarıyla kaydedildi
-  config_button: ayrı ayrı yapılandır
+  config_button: tek tek yapılandır
   newsletter:
     title: E-Bülten
     description: Yaklaşık ayda bir kez e-postayla gıda paylaşımına ilişkin güncel
@@ -3211,3 +3293,7 @@ thread:
     placeholder: Başlık
     max_length_info: Maksimum başlık uzunluğuna ulaşıldı (260 karakter)
     edit_description: Başlığı düzenle
+  post:
+    options:
+      copy_source: Kaynak kodunu kopyala
+    copy_source_success: Kaynak kodu kopyalandı!

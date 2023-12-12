@@ -18,9 +18,8 @@
         @update:value="newValue => body = newValue"
       />
 
-      <label class="mt-3">{{ $i18n('forum.inform_per_email') }}*</label>
-      <div class="row">
-        <div class="col">
+      <div class="row mt-3">
+        <div v-if="!isModerated" class="col">
           <input id="send_mail_button" v-model="sendMail" class="mr-2" type="checkbox">
           {{ sendMailLabelText }}
         </div>
@@ -49,6 +48,7 @@ export default {
   props: {
     groupId: { type: Number, required: true },
     subforumId: { type: Number, required: true },
+    isModerated: { type: Boolean, required: true },
   },
   data () {
     return {
@@ -68,6 +68,20 @@ export default {
   },
   methods: {
     async createNewThread () {
+      if (this.sendMail) {
+        const confimation = await this.$bvModal.msgBoxConfirm(this.$i18n('forum.mail_confirmation.text'), {
+          title: this.$i18n('forum.mail_confirmation.title'),
+          okVariant: 'danger',
+          okTitle: this.$i18n('button.send'),
+          cancelTitle: this.$i18n('button.cancel'),
+          hideHeaderClose: false,
+          centered: true,
+        })
+        if (!confimation) {
+          this.sendMail = false
+          return
+        }
+      }
       this.isLoading = true
       try {
         await createThread(this.groupId, this.subforumId, this.title, this.body, this.sendMail)

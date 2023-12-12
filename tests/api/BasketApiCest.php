@@ -126,7 +126,14 @@ class BasketApiCest
     public function addBasket(ApiTester $I)
     {
         $I->login($this->user[self::EMAIL]);
-        $I->sendPOST(self::API_BASKETS, ['description' => 'test description']);
+        $I->haveHttpHeader('Content-Type', 'application/json');
+        $I->sendPost(self::API_BASKETS, [
+            'description' => 'test description',
+            'lat' => 0.0,
+            'lon' => 0.0,
+            'contactTypes' => [1],
+            'lifeTimeInDays' => 3,
+        ]);
         $I->seeResponseCodeIs(Http::OK);
         $I->seeResponseIsJson();
     }
@@ -141,44 +148,10 @@ class BasketApiCest
         $I->seeResponseCodeIs(Http::UNAUTHORIZED);
         $I->sendDELETE(self::API_BASKETS . '/' . $basket[self::ID]);
         $I->seeResponseCodeIs(Http::UNAUTHORIZED);
+
+        $I->haveHttpHeader('Content-Type', 'application/json');
         $I->sendPOST(self::API_BASKETS);
         $I->seeResponseCodeIs(Http::UNAUTHORIZED);
-    }
-
-    public function setEmptyPicture(ApiTester $I)
-    {
-        $basket = $I->createFoodbasket($this->user[self::ID]);
-
-        $I->login($this->user[self::EMAIL]);
-        $I->sendPUT(self::API_BASKETS . '/' . $basket[self::ID] . '/picture');
-        $I->seeResponseCodeIs(Http::BAD_REQUEST);
-    }
-
-    public function setValidPicture(ApiTester $I)
-    {
-        $basket = $I->createFoodbasket($this->user[self::ID]);
-
-        $I->login($this->user[self::EMAIL]);
-        $I->sendPUT(self::API_BASKETS . '/' . $basket[self::ID] . '/picture', base64_decode(self::TEST_PICTURE));
-        $I->seeResponseCodeIs(Http::OK);
-    }
-
-    public function setInvalidPicture(ApiTester $I)
-    {
-        $basket = $I->createFoodbasket($this->user[self::ID]);
-
-        $I->login($this->user[self::EMAIL]);
-        $I->sendPUT(self::API_BASKETS . '/' . $basket[self::ID] . '/picture', substr(base64_decode(self::TEST_PICTURE), 0, 10));
-        $I->seeResponseCodeIs(Http::BAD_REQUEST);
-    }
-
-    public function removePicture(ApiTester $I)
-    {
-        $basket = $I->createFoodbasket($this->user[self::ID]);
-
-        $I->login($this->user[self::EMAIL]);
-        $I->sendDELETE(self::API_BASKETS . '/' . $basket[self::ID] . '/picture');
-        $I->seeResponseCodeIs(\Codeception\Util\HttpCode::OK);
     }
 
     public function editBasket(ApiTester $I)
@@ -189,21 +162,22 @@ class BasketApiCest
         $basket = $I->createFoodbasket($this->user[self::ID]);
 
         $I->login($this->user[self::EMAIL]);
+
+        $I->haveHttpHeader('Content-Type', 'application/json');
         $I->sendPUT(self::API_BASKETS . '/' . $basket[self::ID], ['description' => '']);
         $I->seeResponseCodeIs(\Codeception\Util\HttpCode::BAD_REQUEST);
 
+        $I->haveHttpHeader('Content-Type', 'application/json');
         $I->sendPUT(self::API_BASKETS . '/' . $basket[self::ID], [
-            'description' => $testDescription, 'lat' => $lat, 'lon' => $lon
+            'description' => $testDescription,
+            'lat' => $lat,
+            'lon' => $lon,
+            'contactTypes' => [1],
+            'lifeTimeInDays' => 3,
         ]);
         $I->seeResponseCodeIs(\Codeception\Util\HttpCode::OK);
         $I->seeResponseIsJson();
         $I->canSeeResponseContainsJson([
-            'description' => $testDescription
-        ]);
-        $I->assertEqualsWithDelta($lat, $I->grabDataFromResponseByJsonPath('basket.lat')[0], 0.1);
-        $I->assertEqualsWithDelta($lon, $I->grabDataFromResponseByJsonPath('basket.lon')[0], 0.1);
-
-        $I->sendPUT(self::API_BASKETS . '/' . $basket[self::ID], [
             'description' => $testDescription
         ]);
         $I->assertEqualsWithDelta($lat, $I->grabDataFromResponseByJsonPath('basket.lat')[0], 0.1);

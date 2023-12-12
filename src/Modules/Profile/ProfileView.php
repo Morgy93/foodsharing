@@ -232,6 +232,7 @@ class ProfileView extends View
         $formattedLastActivity = ($this->foodsaver['last_activity'] !== '0000-00-00 00:00:00')
             ? Carbon::parse($this->foodsaver['last_activity'])->format('d.m.Y')
             : null;
+        $maySeeLastActivity = $this->profilePermissions->maySeelastActivity($fsId);
 
         $page->addSectionLeft(
             $this->vueComponent('vue-profile-infos', 'ProfileInfos', [
@@ -239,7 +240,8 @@ class ProfileView extends View
                 'fsMail' => $fsMail,
                 'privateMail' => $this->profilePermissions->maySeePrivateEmail($fsId) ? $this->foodsaver['email'] : '',
                 'registrationDate' => $this->profilePermissions->maySeeRegistrationDate($fsId) ? Carbon::parse($this->foodsaver['anmeldedatum'])->format('d.m.Y') : '',
-                'lastActivity' => $this->profilePermissions->maySeelastActivity($fsId) ? $formattedLastActivity : '',
+                'maySeeLastActivity' => $maySeeLastActivity,
+                'lastActivity' => $maySeeLastActivity ? $formattedLastActivity : '',
                 'buddyCount' => $this->foodsaver['stat_buddycount'],
                 'name' => $this->foodsaver['name'],
                 'fsId' => $this->foodsaver['id'],
@@ -423,7 +425,7 @@ class ProfileView extends View
         $ambassador = [];
         if ($this->foodsaver['botschafter']) {
             foreach ($this->foodsaver['botschafter'] as $foodsaver) {
-                $ambassador[$foodsaver['id']] = '<a class="light" href="/?page=bezirk&bid=' . $foodsaver['id'] . '&sub=forum">' . $foodsaver['name'] . '</a>';
+                $ambassador[$foodsaver['id']] = '<a class="light" href="/region?bid=' . $foodsaver['id'] . '&sub=forum">' . $foodsaver['name'] . '</a>';
             }
             $infos[] = [
                 'name' => $this->translator->trans('profile.ambRegions', [
@@ -449,14 +451,14 @@ class ProfileView extends View
             $fsHomeDistrict = '';
             foreach ($this->foodsaver['foodsaver'] as $foodsaver) {
                 if ($foodsaver['id'] == $this->foodsaver['bezirk_id']) {
-                    $fsHomeDistrict = '<a class="light" href="/?page=bezirk&bid=' . $foodsaver['id'] . '&sub=forum">' . $foodsaver['name'] . '</a>';
+                    $fsHomeDistrict = '<a class="light" href="/region?bid=' . $foodsaver['id'] . '&sub=forum">' . $foodsaver['name'] . '</a>';
                     if ($this->profilePermissions->maySeeHistory($this->foodsaver['id']) && !empty($this->foodsaver['home_district_history'])) {
                         $fsHomeDistrict .= ' (<a class="light" href="/profile/' . $this->foodsaver['home_district_history']['changer_id'] . '">' . $this->foodsaver['home_district_history']['changer_full_name'] . '</a> ';
                         $fsHomeDistrict .= Carbon::parse($this->foodsaver['home_district_history']['date'])->format('d.m.Y H:i:s') . ')';
                     }
                 }
                 if (!isset($ambassador[$foodsaver['id']])) {
-                    $fsa[] = '<a class="light" href="/?page=bezirk&bid=' . $foodsaver['id'] . '&sub=forum">' . $foodsaver['name'] . '</a>';
+                    $fsa[] = '<a class="light" href="/region?bid=' . $foodsaver['id'] . '&sub=forum">' . $foodsaver['name'] . '</a>';
                 }
             }
             if (!empty($fsa)) {
@@ -494,7 +496,7 @@ class ProfileView extends View
             $ambassador = [];
             foreach ($this->foodsaver['orga'] as $foodsaver) {
                 if ($this->session->mayRole(Role::FOODSAVER)) {
-                    $ambassador[$foodsaver['id']] = '<a class="light" href="/?page=bezirk&bid=' . $foodsaver['id'] . '&sub=forum">' . $foodsaver['name'] . '</a>';
+                    $ambassador[$foodsaver['id']] = '<a class="light" href="/region?bid=' . $foodsaver['id'] . '&sub=forum">' . $foodsaver['name'] . '</a>';
                 } else {
                     $ambassador[$foodsaver['id']] = $foodsaver['name'];
                 }

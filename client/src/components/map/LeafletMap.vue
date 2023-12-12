@@ -3,7 +3,7 @@
 <template>
   <l-map
     ref="map"
-    style="height: 300px"
+    :style="mapStyle"
     :zoom="zoom"
     :center="[center.lat, center.lon]"
     :bounds="bounds"
@@ -32,8 +32,9 @@ import { LMap, LTileLayer } from 'vue2-leaflet'
 // import 'mapbox-gl-leaflet'
 // import 'mapbox-gl/dist/mapbox-gl.css'
 import 'leaflet/dist/leaflet.css'
-import { MAP_ATTRIBUTION, MAP_RASTER_TILES_URL } from '@/consts'
+import { MAP_ATTRIBUTION } from '@/consts'
 // import { isWebGLSupported } from '@/utils'
+import { getMapRasterTilesUrl } from '@/mapUtils'
 
 // window.mapboxgl = mapboxgl // mapbox-gl-leaflet expects this to be global
 
@@ -44,6 +45,7 @@ export default {
     zoom: { type: Number, required: true },
     center: { type: Object, required: true },
     bounds: { type: Array, default: null },
+    height: { type: Number, default: 300 },
   },
   data () {
     return {
@@ -53,13 +55,16 @@ export default {
         accessToken: 'no-token',
         style: MAP_TILES_URL,
       }, */
-      tileUrl: MAP_RASTER_TILES_URL,
+      tileUrl: getMapRasterTilesUrl(),
     }
   },
   computed: {
     useVectorMap () {
       // return isWebGLSupported()
       return false
+    },
+    mapStyle () {
+      return `height: ${this.height}px`
     },
   },
   methods: {

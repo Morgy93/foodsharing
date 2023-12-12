@@ -14,12 +14,36 @@
         />
         <div class="border-left border-right p-2">
           <div class="row">
+            <div class="col col-auto">
+              {{ $i18n('mailbox.from') }}:
+            </div>
             <div
               class="col col-6"
-              v-text="fromHeader"
+              v-html="fromHeader"
             />
-            <div class="col col-6 text-right">
+            <div class="col col-5 text-right">
               {{ $i18n('mailbox.date') }} : {{ displayedMailDate }} Uhr
+            </div>
+          </div>
+          <div class="row mt-1">
+            <div class="col col-1 d-flex align-items-center">
+              {{ $i18n('mailbox.to') }}:
+            </div>
+            <div class="toClass">
+              <span
+                v-for="(mailAddress, index) in displayedEmails"
+                :key="index"
+              >
+                {{ index > 0 ? ', ' : '' }}{{ mailAddress }}
+              </span>
+              <b-button
+                v-if="shouldShowToggleButton"
+                size="sm"
+                variant="outline-primary"
+                @click="toggleEmails"
+              >
+                {{ isExpanded ? "... " + $i18n('mailbox.less') : "... " + $i18n('mailbox.more') }}
+              </b-button>
             </div>
           </div>
           <div class="pt-2">
@@ -79,9 +103,23 @@ export default {
     return {
       isBusy: false,
       isRead: null,
+      isExpanded: false,
     }
   },
   computed: {
+    allEmailAddresses () {
+      return this.email.to.map(recipient => recipient.address)
+    },
+    shouldShowToggleButton () {
+      return this.allEmailAddresses.length > 2
+    },
+    displayedEmails () {
+      if (this.isExpanded) {
+        return this.allEmailAddresses
+      } else {
+        return this.allEmailAddresses.slice(0, 2)
+      }
+    },
     displayedMailDate () {
       return this.$dateFormatter.format(this.email.time, {
         day: 'numeric',
@@ -92,11 +130,11 @@ export default {
       })
     },
     fromHeader () {
-      const partOne = this.email.from.name ? this.email.from.name : this.email.from.address
-      const partTwo = this.email.from.address
-      const combined = partOne + ' - ' + partTwo
-      const result = this.email.from.name ? combined : partTwo
-      return result ?? `(${this.$i18n('mailbox.unknown_sender')})`
+      const name = this.email.from.name ? this.email.from.name : ''
+      const address = this.email.from.address
+      const combined = name ? `<a href="mailto:${address}">${address}</a>` : address
+      const result = name ? combined : address
+      return result || `(${this.$i18n('mailbox.unknown_sender')})`
     },
   },
   mounted () {
@@ -106,6 +144,9 @@ export default {
     }
   },
   methods: {
+    toggleEmails () {
+      this.isExpanded = !this.isExpanded
+    },
     async tryMoveEmail (folder) {
       showLoader()
       this.isBusy = true
@@ -182,5 +223,8 @@ export default {
 </script>
 
 <style scoped>
-
+.toClass {
+  max-width: 40rem;
+  padding-top: 0.5rem;
+}
 </style>

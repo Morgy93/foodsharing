@@ -28,7 +28,7 @@ $I->see('Bitte auswählen', ['css' => '.testing-region-join-select']);
 $I->selectOption('.testing-region-join-select', $region['name']);
 $I->click('.testing-region-join .btn.btn-primary');
 $I->waitForActiveAPICalls();
-$I->amOnPage('/?page=bezirk');
+$I->amOnPage('/region');
 $I->waitForElement('.user_display_name');
 $I->see('Neues Thema verfassen', ['css' => '.button']);
 $I->dontSeeInDatabase('fs_foodsaver_has_bell', ['foodsaver_id' => $ambassador['id']]);

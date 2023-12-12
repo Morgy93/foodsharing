@@ -74,7 +74,7 @@ class WorkGroupControl extends Control
             function ($group) {
                 return [
                     'name' => $group['name'],
-                    'href' => '/?page=bezirk&bid=' . $group['id'] . '&sub=forum'
+                    'href' => '/region?bid=' . $group['id'] . '&sub=forum'
                 ];
             }, $myGroups
         );

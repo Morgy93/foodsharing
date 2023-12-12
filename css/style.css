@@ -1044,12 +1044,6 @@ ul.linklist li > a:hover .avatar span.bubble {
   border: 10px solid var(--fs-color-secondary-500);
 }
 
-.vmap {
-  width: 100%;
-  height: 450px;
-  background-color: var(--fs-color-light);
-}
-
 .bottom_bar {
   border-top: 1px solid var(--fs-border-default) !important;
   padding-top: 7px;

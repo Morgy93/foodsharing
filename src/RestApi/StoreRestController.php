@@ -879,8 +879,16 @@ class StoreRestController extends AbstractFOSRestController
             throw new UnauthorizedHttpException('', self::NOT_LOGGED_IN);
         }
 
-        if (!$this->storePermissions->maySeeStoreLog($storeId)) {
-            throw new AccessDeniedHttpException();
+        $storeLogActions = explode(',', $storeLogActionIds);
+
+        if (count($storeLogActions) === 1 && $storeLogActions['0'] == StoreLogAction::SIGN_UP_SLOT) {
+            if (!$this->storePermissions->maySeePickupSlotDateTime($storeId)) {
+                throw new AccessDeniedHttpException();
+            }
+        } else {
+            if (!$this->storePermissions->maySeeStoreLog($storeId)) {
+                throw new AccessDeniedHttpException();
+            }
         }
 
         $fromDate = TimeHelper::parsePickupDate($fromDate);

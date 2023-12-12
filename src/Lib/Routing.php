@@ -30,7 +30,6 @@ class Routing
         'poll' => 'Voting',
         'profile' => 'Profile',
         'quiz' => 'Quiz',
-        'bezirk' => 'Region',
         'region' => 'RegionAdmin',
         'register' => 'Register',
         'relogin' => 'Relogin',
@@ -49,9 +48,12 @@ class Routing
     private const PORTED = [
         'content',
         'team',
+        'bezirk',
     ];
 
-    private const RENAMES = [];
+    private const RENAMES = [
+        'bezirk' => 'region'
+    ];
 
     public const FQCN_PREFIX = '\\Foodsharing\\Modules\\';
 
@@ -76,8 +78,6 @@ class Routing
 
     public static function getPortedName(string $pageName): string
     {
-        // ignored because PHPStan complains about RENAMES being empty. This will change with the RegionController port though
-        /* @phpstan-ignore-next-line */
         return array_key_exists($pageName, self::RENAMES) ? self::RENAMES[$pageName] : $pageName;
     }
 }

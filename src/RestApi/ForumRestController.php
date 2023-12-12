@@ -80,7 +80,7 @@ class ForumRestController extends AbstractFOSRestController
     {
         return [
             'id' => $post['id'],
-            'body' => $this->sanitizerService->markdownToHtml($post['body']),
+            'body' => $post['body'],
             'createdAt' => str_replace(' ', 'T', $post['time']),
             'author' => RestNormalization::normalizeUser($post, 'author_'),
             'reactions' => $post['reactions'] ?: new \ArrayObject(),

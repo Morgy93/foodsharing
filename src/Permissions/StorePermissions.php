@@ -286,6 +286,11 @@ class StorePermissions
         return $this->mayEditStore($storeId);
     }
 
+    public function maySeePickupSlotDateTime(int $storeId): bool
+    {
+        return $this->mayDoPickup($storeId);
+    }
+
     public function mayDoPickup(int $storeId): bool
     {
         if (!$this->session->isVerified()) {

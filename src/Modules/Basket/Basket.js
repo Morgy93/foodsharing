@@ -4,62 +4,29 @@ import '@/globals'
 
 import $ from 'jquery'
 
-import { ajax, ajreq, pulseInfo, pulseError } from '@/script'
+import { ajax } from '@/script'
 import './Basket.css'
 
-import { addMarker, clearCluster, commitCluster } from '@php/Lib/View/vMap'
-
 import { vueApply, vueRegister } from '@/vue'
-import RequestForm from './components/RequestForm'
-import i18n from '@/helper/i18n'
-import { expose } from '@/utils'
-import { removeBasket, listBasketCoordinates } from '@/api/baskets'
-import basketStore from '@/stores/baskets'
+import RequestForm from '@/components/Basket/RequestForm'
+import EditForm from '@/components/Basket/EditForm'
+import { listBasketCoordinates } from '@/api/baskets'
 import AvatarList from '@/components/AvatarList'
-
-expose({
-  tryRemoveBasket,
-})
+import BasketLocationMap from '@/components/Basket/BasketLocationMap'
+import BasketsLocationMap from '@/components/Basket/BasketsLocationMap'
 
 const mapsearch = {
   lat: null,
   lon: null,
   $basketList: null,
 
-  init: function () {
-    this.$basketList = $('#cbasketlist')
-  },
-  setMarker: function (marker) {
-    clearCluster()
-    $.each(marker, function (i, marker) {
-      addMarker({
-        lat: marker.lat,
-        lng: marker.lon,
-        click: function () {
-          mapsearch.loadBasket(marker.id)
-        },
-      })
-    })
-
-    commitCluster()
-  },
-  loadBasket: function (id) {
-    ajreq('bubble', {
-      app: 'basket',
-      id: id,
-    })
-  },
-  fillBasketList: function (baskets) {
-    this.$basketList.html('')
-    $.each(baskets, function (i, basket) {
-      mapsearch.appendList(basket)
-    })
-    this.$basketList.show('highlight', { color: 'var(--fs-color-warning-200)' })
-  },
   appendList: function (basket) {
     let img = '/img/basket.png'
 
     if (basket.picture != '') {
+      if (basket.picture.startsWith('/api')) {
+        return `${basket.picture}`
+      }
       img = `/images/basket/thumb-${basket.picture}`
     }
 
@@ -76,8 +43,6 @@ const mapsearch = {
     this.$basketList.append(`<li><a class="ui-corner-all" onclick="ajreq('bubble',{app:'basket',id:${basket.id},modal:1});return false;" href="#"><span style="float:left;margin-right:7px;"><img width="35px" src="${img}" class="ui-corner-all"></span><span style="height:35px;overflow:hidden;font-size:11px;line-height:16px;"><strong style="float:right;margin:0 0 0 3px;">(${distance})</strong>${basket.description}</span><span class="clear"></span></a></li>`)
   },
 }
-
-mapsearch.init()
 
 if ($('#mapsearch').length > 0) {
   listBasketCoordinates().then((data) => {
@@ -112,19 +77,21 @@ $(document).ready(() => {
     vueApply('#' + requestFormContainerId)
   }
 
+  const editFormContainerId = 'vue-basket-edit-form'
+  if (document.getElementById(editFormContainerId)) {
+    vueRegister({
+      EditForm,
+    })
+    vueApply('#' + editFormContainerId)
+  }
+
   // Creator avatar is only visible on /essenskoerbe/{id}, not on /essenskoerbe/find
   if (document.getElementById('basket-creator')) {
-    vueRegister({ AvatarList })
+    vueRegister({ AvatarList, BasketLocationMap })
     vueApply('#basket-creator')
+    vueApply('#basket-location-map')
+  } else if (document.getElementById('baskets-location-map')) {
+    vueRegister({ BasketsLocationMap })
+    vueApply('#baskets-location-map')
   }
 })
-
-async function tryRemoveBasket (basketId) {
-  try {
-    await removeBasket(basketId)
-    pulseInfo(i18n('basket.not_active'))
-    await basketStore.getters.getOwn()
-  } catch (e) {
-    pulseError(i18n('error_unexpected'))
-  }
-}
