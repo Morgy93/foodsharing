@@ -287,6 +287,7 @@ import { hideLoader, pulseError, pulseSuccess, showLoader } from '@/script'
 import i18n from '@/helper/i18n'
 import { store, MAILBOX_PAGE, MAILBOX_ADDRESSBOOK_FILTER_TYPES } from '@/stores/mailbox'
 import { MAX_UPLOAD_FILE_SIZE } from '@/consts'
+import { getCache, getCacheInterval, setCache } from '@/helper/cache'
 
 export default {
   components: { Container },
@@ -555,15 +556,19 @@ export default {
       this.$refs.modal_open_addressbook.show()
     },
     async getRegions () {
-      showLoader()
-      this.isBusy = true
+      const mailboxRegionsRateLimitInterval = 86400000 // 24 hours in Millisekunden
+      const cacheRequestName = 'MailboxRegions'
       try {
-        this.regions = await listRegions()
+        if (await getCacheInterval(cacheRequestName, mailboxRegionsRateLimitInterval)) {
+          this.regions = await listRegions()
+
+          await setCache(cacheRequestName, this.regions)
+        } else {
+          this.regions = await getCache(cacheRequestName)
+        }
       } catch (e) {
-        pulseError(i18n('error_unexpected'))
+        console.error('Error fetching regions:', e)
       }
-      this.isBusy = false
-      hideLoader()
     },
   },
 }
