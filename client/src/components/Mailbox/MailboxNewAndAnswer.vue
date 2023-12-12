@@ -30,7 +30,7 @@
       </b-button-group>
       <b-form-input
         v-model="filterName"
-        placeholder="Suche nach ..."
+        :placeholder="$i18n('mailbox.search_name_email')"
         class="mb-2"
       />
       <b-list-group>
