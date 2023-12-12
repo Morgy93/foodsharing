@@ -105,7 +105,7 @@
           v-model="input.forumThread"
           class="m-1"
           :placeholder="$i18n('chain.inputmodal.inputs.thread.placeholder')"
-          :region-id="332"
+          :region-id="countryStoreChainGroup"
         />
       </b-form-group>
 
@@ -124,7 +124,7 @@
           :placeholder="$i18n('store.sm.searchPlaceholder')"
           button-icon="fa-user-plus"
           :button-tooltip="$i18n('store.sm.makeRegularTeamMember')"
-          :region-id="332"
+          :region-id="countryStoreChainGroup"
           :disabled="!adminPermissions"
         />
       </b-form-group>
@@ -234,6 +234,13 @@ export default {
         options.unshift({ disabled: true, value: this.input.headquartersCountry, text: this.input.headquartersCountry })
       }
       return options
+    },
+    countryStoreChainGroup () {
+      return {
+        Deutschland: 332,
+        Österreich: 858,
+        Schweiz: 1004,
+      }[this.input.headquartersCountry] || 332
     },
   },
   methods: {
