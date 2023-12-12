@@ -1802,6 +1802,8 @@ mailbox:
   mailsend_unsuccess: "E-Mail konnte nicht versendet werden. {error}"
   more: "mehr"
   less: "weniger"
+  global_addressbook: "Globales Adressbuch"
+  addressbook: "Adressbuch"
   search_name_email: "Suche nach Name oder E-Mail-Adresse"
 
 settings:

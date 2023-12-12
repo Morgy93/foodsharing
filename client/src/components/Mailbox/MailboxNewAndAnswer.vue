@@ -7,7 +7,7 @@
     <b-modal
       id="modal_open_addressbook"
       ref="modal_open_addressbook"
-      title="Globales Adressbuch"
+      :title="$i18n('mailbox.global_addressbook')"
       hide-footer
       header-class="d-flex"
       content-class="pr-3 pt-3"
@@ -124,7 +124,7 @@
                     variant="outline-primary"
                     @click="openAddressbook"
                   >
-                    Adressbuch
+                    {{ $i18n('mailbox.addressbook') }}
                   </b-button>
                   <b-button
                     v-else
