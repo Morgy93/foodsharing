@@ -8,35 +8,44 @@
       id="modal_open_addressbook"
       ref="modal_open_addressbook"
       title="Globales Adressbuch"
-      :cancel-title="$i18n('button.cancel')"
-      :ok-title="$i18n('foodsaver.delete_account')"
+      hide-footer
       header-class="d-flex"
       content-class="pr-3 pt-3"
       size="xl"
       scrollable
     >
-      <b-button-group>
+      <b-button-group class="mb-2">
         <b-button
-          variant="success"
-          @click="updateFilter(9)"
+          :variant="getButtonVariant(MAILBOX_ADDRESSBOOK_FILTER_TYPES.GROUPS)"
+          @click="updateFilter(MAILBOX_ADDRESSBOOK_FILTER_TYPES.GROUPS)"
         >
-          Bezirke
+          {{ $i18n('terminology.groups') }}
         </b-button>
         <b-button
-          variant="info"
-          @click="updateFilter(7)"
+          :variant="getButtonVariant(MAILBOX_ADDRESSBOOK_FILTER_TYPES.REGIONS)"
+          @click="updateFilter(MAILBOX_ADDRESSBOOK_FILTER_TYPES.REGIONS)"
         >
-          Arbeitsgruppen
+          {{ $i18n('terminology.regions') }}
         </b-button>
       </b-button-group>
       <b-form-input
         v-model="filterName"
         placeholder="Suche nach ..."
+        class="mb-2"
       />
-      <b-table
-        :fields="fields"
-        :items="filteredRegions"
-      />
+      <b-list-group>
+        <b-list-group-item
+          v-for="filteredRegion in filteredRegions"
+          :key="filteredRegion.id"
+          class="pb-2"
+          :class="{ 'selected-item': emailTo.includes(filteredRegion.emailAddress) }"
+          href="#"
+          @click="selectEmailFromAdressbock(filteredRegion.emailAddress)"
+        >
+          <b>{{ filteredRegion.name }}</b><br>
+          {{ filteredRegion.emailAddress }}
+        </b-list-group-item>
+      </b-list-group>
     </b-modal>
     <div class="card bg-white">
       <b-row class="p-2">
@@ -276,7 +285,7 @@ import { sendEmail, setEmailProperties, listRegions } from '@/api/mailbox'
 import { uploadFile } from '@/api/uploads'
 import { hideLoader, pulseError, pulseSuccess, showLoader } from '@/script'
 import i18n from '@/helper/i18n'
-import { store, MAILBOX_PAGE } from '@/stores/mailbox'
+import { store, MAILBOX_PAGE, MAILBOX_ADDRESSBOOK_FILTER_TYPES } from '@/stores/mailbox'
 import { MAX_UPLOAD_FILE_SIZE } from '@/consts'
 
 export default {
@@ -306,25 +315,22 @@ export default {
       ],
       regions: [],
       filterName: null,
-      filter: { type: 9, name: null }, // Standardfilter auf Typ 9 und keinen Namen
+      filter: { type: MAILBOX_ADDRESSBOOK_FILTER_TYPES.GROUPS, name: null },
     }
   },
   computed: {
+    MAILBOX_ADDRESSBOOK_FILTER_TYPES () {
+      return MAILBOX_ADDRESSBOOK_FILTER_TYPES
+    },
     filteredRegions () {
       const typeFilter = this.filter.type
       const nameFilter = this.filterName
-
-      console.log('typeFilter:', typeFilter)
-      console.log('nameFilter:', nameFilter)
-      console.log('Regions:', this.regions)
 
       const filtered = this.regions.filter(region => {
         const typeMatch = region.type === typeFilter || typeFilter === 0
         const nameMatch = !nameFilter || region.name.toLowerCase().includes(nameFilter.toLowerCase())
         return typeMatch && nameMatch
       })
-
-      console.log('Filtered Regions:', filtered)
 
       return filtered
     },
@@ -405,10 +411,20 @@ export default {
     window.removeEventListener('resize', this.checkMobile)
   },
   methods: {
+    getButtonVariant (filterType) {
+      return this.filter.type === filterType ? 'primary' : 'secondary'
+    },
+    selectEmailFromAdressbock (mailAddress) {
+      const index = this.emailTo.indexOf(mailAddress)
+
+      if (index !== -1) {
+        this.emailTo.splice(index, 1)
+      } else {
+        this.emailTo.push(mailAddress)
+      }
+    },
     updateFilter (type) {
-      console.log('type', type)
       this.filter.type = type
-      console.log('filter', this.filter)
     },
     getMailBody () {
       if (this.answerMode) {
@@ -554,6 +570,10 @@ export default {
 </script>
 
 <style scoped>
+.selected-item {
+  background-color: var(--fs-color-secondary-400);
+}
+
 .badge-primary {
   background-color: darkgrey;
 }

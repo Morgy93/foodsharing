@@ -12,6 +12,11 @@ export const MAILBOX_FOLDER = Object.freeze({
   TRASH: 3,
 })
 
+export const MAILBOX_ADDRESSBOOK_FILTER_TYPES = Object.freeze({
+  REGIONS: 9,
+  GROUPS: 7,
+})
+
 export const store = {
   state: reactive({
     page: null,
