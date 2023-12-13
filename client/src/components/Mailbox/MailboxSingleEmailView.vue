@@ -201,7 +201,7 @@ export default {
       return bytes.toFixed(1) + ' ' + units[u]
     },
     getBody (email) {
-      return email.bodyHtml ? this.getPlainBody(DOMPurify.sanitize(email.bodyHtml)) : this.getPlainBody(DOMPurify.sanitize(email.body))
+      return this.getPlainBody(DOMPurify.sanitize(email.bodyHtml ?? email.body))
     },
     getPlainBody (text) {
       return this.addLineBreaks(this.addLinks((text)))
