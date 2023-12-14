@@ -460,8 +460,8 @@ class StoreGateway extends BaseGateway
             // In case there is not yet a coordinator chat, create one
             if ($result['coordinator_conversation_id'] == null) {
                 $coordinateChatId = $this->messageGateway->createConversation([$fs_id], true);
-                $coordinateConversationName = $this->translator->trans('store.coordinator_conversation_name', ['{name}' => $result['name']]);
-                $this->messageGateway->renameConversation($coordinateChatId, $coordinateConversationName);
+                $coordinatorConversationName = $this->translator->trans('store.coordinator_conversation_name', ['{name}' => $result['name']]);
+                $this->messageGateway->renameConversation($coordinateChatId, $coordinatorConversationName);
                 $this->updateStoreConversation($storeId, $coordinateChatId, StoreTransactions::CONVERSATION_TYPE_COORDINATOR);
                 $result['coordinator_conversation_id'] = $coordinateChatId;
             }
@@ -811,9 +811,9 @@ class StoreGateway extends BaseGateway
 
     public function getStoreConversation(int $storeId, int $conversationType): ?int
     {
-        if ($conversationType == StoreTransactions::CONVERSATION_TYPE_COORDINATOR) {
+        if ($conversationType === StoreTransactions::CONVERSATION_TYPE_COORDINATOR) {
             $chatType = 'coordinator_conversation_id';
-        } elseif ($conversationType == StoreTransactions::CONVERSATION_TYPE_TEAM) {
+        } elseif ($conversationType === StoreTransactions::CONVERSATION_TYPE_TEAM) {
             $chatType = 'team_conversation_id';
         } else {
             $chatType = 'springer_conversation_id';
@@ -993,9 +993,9 @@ class StoreGateway extends BaseGateway
 
     public function updateStoreConversation(int $storeId, int $conversationId, int $conversationType): int
     {
-        if ($conversationType == StoreTransactions::CONVERSATION_TYPE_COORDINATOR) {
+        if ($conversationType === StoreTransactions::CONVERSATION_TYPE_COORDINATOR) {
             $fieldToUpdate = 'coordinator_conversation_id';
-        } elseif ($conversationType == StoreTransactions::CONVERSATION_TYPE_TEAM) {
+        } elseif ($conversationType === StoreTransactions::CONVERSATION_TYPE_TEAM) {
             $fieldToUpdate = 'team_conversation_id';
         } else {
             $fieldToUpdate = 'springer_conversation_id';
