@@ -390,6 +390,7 @@ sticker | Yes=0; No=1 |int(4) |
 abholmenge | See @WeightHelper |int(4) |
 team_status | 0 = Team Voll; 1 = Es werden noch Helfer gesucht; 2 = Es werden dringend Helfer gesucht |int(4)=1 |
 prefetchtime | Frequence of expected regular pickups in seconds |unsigned int(10)=1209600 |
+coordinator_conversation_id |  |unsigned int(10) | Nullable
 team_conversation_id |  |unsigned int(10) | Nullable
 springer_conversation_id |  |unsigned int(10) | Nullable
 deleted_at |  |datetime | Nullable

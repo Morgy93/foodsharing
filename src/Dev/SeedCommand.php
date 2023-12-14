@@ -108,40 +108,40 @@ class SeedCommand extends Command implements CustomCommandInterface
 
         $I->createEvents($region1, $user['id']);
 
-        $store = $I->createStore($region1, null, null, ['betrieb_status_id' => CooperationStatus::COOPERATION_ESTABLISHED->value, 'betrieb_kategorie_id' => '1']);
+        $store = $I->createStore($region1, null, null, null, ['betrieb_status_id' => CooperationStatus::COOPERATION_ESTABLISHED->value, 'betrieb_kategorie_id' => '1']);
         $I->addStoreTeam($store['id'], $user['id'], true);
         $I->addRecurringPickup($store['id']);
         for ($i = 1; $i < 3; ++$i) {
             $this->helper->addCollector($user['id'], $store['id'], ['date' => Carbon::today()->add('minute', 60 * $i)->toDateTimeString()]);
         }
 
-        $storeEinAb = $I->createStore($region1, null, null, ['betrieb_status_id' => CooperationStatus::COOPERATION_ESTABLISHED->value, 'betrieb_kategorie_id' => '6', 'abholmenge' => '0']);
+        $storeEinAb = $I->createStore($region1, null, null, null, ['betrieb_status_id' => CooperationStatus::COOPERATION_ESTABLISHED->value, 'betrieb_kategorie_id' => '6', 'abholmenge' => '0']);
         $I->addStoreTeam($storeEinAb['id'], $user['id'], false);
         $this->helper->addCollector($user['id'], $storeEinAb['id'], ['date' => Carbon::now()->toDateTimeString()]);
 
-        $storePr = $I->createStore($region1, null, null, ['betrieb_status_id' => CooperationStatus::COOPERATION_ESTABLISHED->value, 'betrieb_kategorie_id' => '11', 'abholmenge' => '0']);
+        $storePr = $I->createStore($region1, null, null, null, ['betrieb_status_id' => CooperationStatus::COOPERATION_ESTABLISHED->value, 'betrieb_kategorie_id' => '11', 'abholmenge' => '0']);
         $I->addStoreTeam($storePr['id'], $user['id'], false);
         $this->helper->addCollector($user['id'], $storePr['id'], ['date' => Carbon::now()->toDateTimeString()]);
 
-        $storeSuper = $I->createStore($region1, null, null, ['betrieb_status_id' => CooperationStatus::COOPERATION_ESTABLISHED->value, 'betrieb_kategorie_id' => '14']);
+        $storeSuper = $I->createStore($region1, null, null, null, ['betrieb_status_id' => CooperationStatus::COOPERATION_ESTABLISHED->value, 'betrieb_kategorie_id' => '14']);
         $I->addStoreTeam($storeSuper['id'], $user['id'], true);
         for ($i = 1; $i < 3; ++$i) {
             $this->helper->addCollector($user['id'], $storeSuper['id'], ['date' => Carbon::today()->add('minute', 50 * $i)->toDateTimeString()]);
         }
 
-        $storeBacery = $I->createStore($region1, null, null, ['betrieb_status_id' => CooperationStatus::COOPERATION_ESTABLISHED->value, 'betrieb_kategorie_id' => '1', 'abholmenge' => '1']);
+        $storeBacery = $I->createStore($region1, null, null, null, ['betrieb_status_id' => CooperationStatus::COOPERATION_ESTABLISHED->value, 'betrieb_kategorie_id' => '1', 'abholmenge' => '1']);
         $I->addStoreTeam($storeBacery['id'], $user['id'], false);
         $this->helper->addCollector($user['id'], $storeBacery['id'], ['date' => Carbon::now()->toDateTimeString()]);
 
-        $storeBioBakery = $I->createStore($region1, null, null, ['betrieb_status_id' => CooperationStatus::COOPERATION_ESTABLISHED->value, 'betrieb_kategorie_id' => '2', 'abholmenge' => '1']);
+        $storeBioBakery = $I->createStore($region1, null, null, null, ['betrieb_status_id' => CooperationStatus::COOPERATION_ESTABLISHED->value, 'betrieb_kategorie_id' => '2', 'abholmenge' => '1']);
         $I->addStoreTeam($storeBioBakery['id'], $user['id'], false);
         $this->helper->addCollector($user['id'], $storeBioBakery['id'], ['date' => Carbon::now()->toDateTimeString()]);
 
-        $storeBioGrocery = $I->createStore($region1, null, null, ['betrieb_status_id' => CooperationStatus::COOPERATION_ESTABLISHED->value, 'betrieb_kategorie_id' => '3', 'abholmenge' => '1']);
+        $storeBioGrocery = $I->createStore($region1, null, null, null, ['betrieb_status_id' => CooperationStatus::COOPERATION_ESTABLISHED->value, 'betrieb_kategorie_id' => '3', 'abholmenge' => '1']);
         $I->addStoreTeam($storeBioGrocery['id'], $user['id'], false);
         $this->helper->addCollector($user['id'], $storeBioGrocery['id'], ['date' => Carbon::now()->toDateTimeString()]);
 
-        $storeDrink = $I->createStore($region1, null, null, ['betrieb_status_id' => CooperationStatus::COOPERATION_ESTABLISHED->value, 'betrieb_kategorie_id' => '4', 'abholmenge' => '1']);
+        $storeDrink = $I->createStore($region1, null, null, null, ['betrieb_status_id' => CooperationStatus::COOPERATION_ESTABLISHED->value, 'betrieb_kategorie_id' => '4', 'abholmenge' => '1']);
         $I->addStoreTeam($storeDrink['id'], $user['id'], false);
         for ($i = 1; $i < 3; ++$i) {
             $this->helper->addCollector($user['id'], $storeDrink['id'], ['date' => Carbon::today()->add('minute', 50 * $i)->toDateTimeString()]);
@@ -497,15 +497,17 @@ class SeedCommand extends Command implements CustomCommandInterface
 
         // Create store team conversations
         $this->output->writeln('- create store team conversations');
-        $conv1 = $I->createConversation([$userbot['id'], $user2['id'], $userStoreManager['id']], ['name' => 'betrieb_bla', 'locked' => 1]);
-        $conv2 = $I->createConversation([$userbot['id']], ['name' => 'springer_bla', 'locked' => 1]);
+        $conv1 = $I->createConversation([$userbot['id'], $userStoreManager['id']], ['name' => 'coordinator_bla', 'locked' => 1]);
+        $conv2 = $I->createConversation([$userbot['id'], $user2['id'], $userStoreManager['id']], ['name' => 'betrieb_bla', 'locked' => 1]);
+        $conv3 = $I->createConversation([$userbot['id']], ['name' => 'springer_bla', 'locked' => 1]);
         $I->addConversationMessage($userStoreManager['id'], $conv1['id']);
-        $I->addConversationMessage($userbot['id'], $conv1['id']);
+        $I->addConversationMessage($userStoreManager['id'], $conv2['id']);
         $I->addConversationMessage($userbot['id'], $conv2['id']);
+        $I->addConversationMessage($userbot['id'], $conv3['id']);
 
         // Create a store and add team members
         $this->output->writeln('- create store and add team members');
-        $store = $I->createStore($region1, $conv1['id'], $conv2['id'], ['betrieb_status_id' => 5]);
+        $store = $I->createStore($region1, $conv1['id'], $conv2['id'], $conv3['id'], ['betrieb_status_id' => 5]);
         $I->addStoreTeam($store['id'], $user2['id']);
         $I->addStoreTeam($store['id'], $userStoreManager['id'], true);
         $I->addStoreTeam($store['id'], $userbot['id'], true);
@@ -620,15 +622,16 @@ class SeedCommand extends Command implements CustomCommandInterface
         $this->stores = [$store['id']];
         foreach (range(0, 40) as $_) {
             // TODO conversations are missing the other store members
-            $conv1 = $I->createConversation([$userbot['id']], ['name' => 'team', 'locked' => 1]);
-            $conv2 = $I->createConversation([$userbot['id']], ['name' => 'springer', 'locked' => 1]);
+            $conv1 = $I->createConversation([$userbot['id']], ['name' => 'coordinator', 'locked' => 1]);
+            $conv2 = $I->createConversation([$userbot['id']], ['name' => 'team', 'locked' => 1]);
+            $conv3 = $I->createConversation([$userbot['id']], ['name' => 'springer', 'locked' => 1]);
 
             $extra_params = [];
             if (rand(0, 1) == 1) {
                 $extra_params['kette_id'] = $this->chain_ids[random_int(0, 10)];
             }
 
-            $store = $I->createStore($region1, $conv1['id'], $conv2['id'], $extra_params);
+            $store = $I->createStore($region1, $conv1['id'], $conv2['id'], $conv3['id'], $extra_params);
             foreach (range(0, 5) as $_) {
                 $I->addRecurringPickup($store['id']);
             }

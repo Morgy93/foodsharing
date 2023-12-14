@@ -314,6 +314,15 @@ class StorePermissions
         return $this->mayDoPickup($storeId);
     }
 
+    public function mayChatWithCoordinators(array $store): bool
+    {
+        if (!$store['verantwortlich']) {
+            return false;
+        }
+
+        return $store['coordinator_conversation_id'] !== null;
+    }
+
     public function mayChatWithRegularTeam(array $store): bool
     {
         if ($store['jumper']) {

@@ -14,6 +14,7 @@
 - The source code of forum posts can now be copied !2913 @AntonBallmaier
 - Added confirmation modal to sending mail when creating a new thread !2877 @AntonBallmaier
 - If youre phone number is invalid, you get informed about that on the dashboard now !2916 @AntonBallmaier
+- Store chat for coordinators now available !2923 #1156 @McGoldi
 - When answering posts in the forum, the answered message is now quoted !2937 @AntonBallmaier
 
 ## Changes

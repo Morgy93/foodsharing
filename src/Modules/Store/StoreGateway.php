@@ -16,25 +16,33 @@ use Foodsharing\Modules\Core\DBConstants\StoreTeam\MembershipStatus;
 use Foodsharing\Modules\Core\DTO\GeoLocation;
 use Foodsharing\Modules\Core\Pagination;
 use Foodsharing\Modules\Map\DTO\MapMarker;
+use Foodsharing\Modules\Message\MessageGateway;
 use Foodsharing\Modules\Region\RegionGateway;
 use Foodsharing\Modules\Store\DTO\MinimalStoreIdentifier;
 use Foodsharing\Modules\Store\DTO\Store;
 use Foodsharing\Modules\Store\DTO\StoreTeamMembership;
 use Foodsharing\Utility\DataHelper;
+use Symfony\Contracts\Translation\TranslatorInterface;
 
 class StoreGateway extends BaseGateway
 {
     private readonly RegionGateway $regionGateway;
+    private readonly MessageGateway $messageGateway;
+    private readonly TranslatorInterface $translator;
     private readonly DataHelper $dataHelper;
 
     public function __construct(
         Database $db,
         RegionGateway $regionGateway,
+        MessageGateway $messageGateway,
+        TranslatorInterface $translator,
         DataHelper $dataHelper
     ) {
         parent::__construct($db);
 
         $this->regionGateway = $regionGateway;
+        $this->messageGateway = $messageGateway;
+        $this->translator = $translator;
         $this->dataHelper = $dataHelper;
     }
 
@@ -416,6 +424,7 @@ class StoreGateway extends BaseGateway
         			b.`abholmenge`,
         			b.`team_status`,
         			b.`prefetchtime`,
+        			b.`coordinator_conversation_id`,
         			b.`team_conversation_id`,
         			b.`springer_conversation_id`,
         			b.`use_region_pickup_rule`,
@@ -447,6 +456,15 @@ class StoreGateway extends BaseGateway
             $result['verantwortlich'] = false;
             $result['team'] = [];
             $result['jumper'] = false;
+
+            // In case there is not yet a coordinator chat, create one
+            if ($result['coordinator_conversation_id'] == null) {
+                $coordinateChatId = $this->messageGateway->createConversation([$fs_id], true);
+                $coordinatorConversationName = $this->translator->trans('store.coordinator_conversation_name', ['{name}' => $result['name']]);
+                $this->messageGateway->renameConversation($coordinateChatId, $coordinatorConversationName);
+                $this->updateStoreConversation($storeId, $coordinateChatId, StoreTransactions::CONVERSATION_TYPE_COORDINATOR);
+                $result['coordinator_conversation_id'] = $coordinateChatId;
+            }
 
             if (!empty($result['springer'])) {
                 foreach ($result['springer'] as $v) {
@@ -791,12 +809,14 @@ class StoreGateway extends BaseGateway
         return TeamStatus::NoMember;
     }
 
-    public function getBetriebConversation(int $storeId, bool $springerConversation = false): ?int
+    public function getStoreConversation(int $storeId, int $conversationType): ?int
     {
-        if ($springerConversation) {
-            $chatType = 'springer_conversation_id';
-        } else {
+        if ($conversationType === StoreTransactions::CONVERSATION_TYPE_COORDINATOR) {
+            $chatType = 'coordinator_conversation_id';
+        } elseif ($conversationType === StoreTransactions::CONVERSATION_TYPE_TEAM) {
             $chatType = 'team_conversation_id';
+        } else {
+            $chatType = 'springer_conversation_id';
         }
 
         return $this->db->fetchValueByCriteria('fs_betrieb', $chatType, ['id' => $storeId]);
@@ -971,9 +991,15 @@ class StoreGateway extends BaseGateway
         return $this->db->update('fs_betrieb', ['bezirk_id' => $regionId], ['id' => $storeId]);
     }
 
-    public function updateStoreConversation(int $storeId, int $conversationId, bool $isStandby): int
+    public function updateStoreConversation(int $storeId, int $conversationId, int $conversationType): int
     {
-        $fieldToUpdate = $isStandby ? 'springer_conversation_id' : 'team_conversation_id';
+        if ($conversationType === StoreTransactions::CONVERSATION_TYPE_COORDINATOR) {
+            $fieldToUpdate = 'coordinator_conversation_id';
+        } elseif ($conversationType === StoreTransactions::CONVERSATION_TYPE_TEAM) {
+            $fieldToUpdate = 'team_conversation_id';
+        } else {
+            $fieldToUpdate = 'springer_conversation_id';
+        }
 
         return $this->db->update('fs_betrieb', [$fieldToUpdate => $conversationId], ['id' => $storeId]);
     }
@@ -986,9 +1012,11 @@ class StoreGateway extends BaseGateway
 
 			FROM	fs_betrieb
 
-			WHERE	team_conversation_id = :memberId
+			WHERE   coordinator_conversation_id = :coordinatorId
+            OR      team_conversation_id = :memberId
 			OR      springer_conversation_id = :jumperId
 		', [
+            ':coordinatorId' => $id,
             ':memberId' => $id,
             ':jumperId' => $id
         ]);
@@ -1251,7 +1279,7 @@ class StoreGateway extends BaseGateway
 			WHERE
 				store_id = ?
                 AND date_activity >= ?
-                AND date_activity <= ? 
+                AND date_activity <= ?
                 AND action IN (' . $this->db->generatePlaceholders(count($storeActions)) . ')
             ORDER BY performed_at DESC
             LIMIT 100

@@ -326,7 +326,7 @@ class Foodsharing extends \Codeception\Module\Db
         return $params;
     }
 
-    public function createStore($bezirk_id, $team_conversation = null, $springer_conversation = null, $extra_params = [])
+    public function createStore($bezirk_id, $coordinator_conversation = null, $team_conversation = null, $springer_conversation = null, $extra_params = [])
     {
         $params = array_merge([
             'betrieb_status_id' => $this->faker->numberBetween(0, 6),
@@ -357,6 +357,7 @@ class Foodsharing extends \Codeception\Module\Db
 
             // relations
             'bezirk_id' => $bezirk_id,
+            'coordinator_conversation_id' => $coordinator_conversation,
             'team_conversation_id' => $team_conversation,
             'springer_conversation_id' => $springer_conversation,
             'kette_id' => 0,
