@@ -695,17 +695,17 @@ class StoreTransactions
 
     public function setStoreNameInConversations(int $storeId, string $storeName): void
     {
-        if ($ccid = $this->storeGateway->getStoreConversation($storeId, StoreTransactions::CONVERSATION_TYPE_COORDINATOR)) {
-            $coordinateConversationName = $this->translator->trans('store.coordinator_conversation_name', ['{name}' => $storeName]);
-            $this->messageGateway->renameConversation($ccid, $coordinateConversationName);
+        if ($coordinatorConversationId = $this->storeGateway->getStoreConversation($storeId, StoreTransactions::CONVERSATION_TYPE_COORDINATOR)) {
+            $coordinatorConversationName = $this->translator->trans('store.coordinator_conversation_name', ['{name}' => $storeName]);
+            $this->messageGateway->renameConversation($coordinatorConversationId, $coordinatorConversationName);
         }
-        if ($tcid = $this->storeGateway->getStoreConversation($storeId, StoreTransactions::CONVERSATION_TYPE_TEAM)) {
+        if ($teamConversationId = $this->storeGateway->getStoreConversation($storeId, StoreTransactions::CONVERSATION_TYPE_TEAM)) {
             $teamConversationName = $this->translator->trans('store.team_conversation_name', ['{name}' => $storeName]);
-            $this->messageGateway->renameConversation($tcid, $teamConversationName);
+            $this->messageGateway->renameConversation($teamConversationId, $teamConversationName);
         }
-        if ($scid = $this->storeGateway->getStoreConversation($storeId, StoreTransactions::CONVERSATION_TYPE_SPRINGER)) {
-            $springerConversationName = $this->translator->trans('store.springer_conversation_name', ['{name}' => $storeName]);
-            $this->messageGateway->renameConversation($scid, $springerConversationName);
+        if ($jumperConversationId = $this->storeGateway->getStoreConversation($storeId, StoreTransactions::CONVERSATION_TYPE_SPRINGER)) {
+            $jumperConversationName = $this->translator->trans('store.springer_conversation_name', ['{name}' => $storeName]);
+            $this->messageGateway->renameConversation($jumperConversationId, $jumperConversationName);
         }
     }
 
