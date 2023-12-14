@@ -12,21 +12,21 @@
       :is-verified="isVerified"
     />
     <button
-      v-if="coordinatorConversationId != null && isManager"
+      v-if="coordinatorConversationId && isManager"
       type="button"
       class="list-group-item list-group-item-action"
       @click="openChat(coordinatorConversationId)"
       v-text="$i18n('store.chat.coordinators')"
     />
     <button
-      v-if="teamConversationId != null && isUserInStore"
+      v-if="teamConversationId && isUserInStore"
       type="button"
       class="list-group-item list-group-item-action"
       @click="openChat(teamConversationId)"
       v-text="$i18n('store.chat.team')"
     />
     <button
-      v-if="jumperConversationId != null && isUserInStore || isJumper"
+      v-if="jumperConversationId && isUserInStore || isJumper"
       type="button"
       class="list-group-item list-group-item-action"
       @click="openChat(jumperConversationId)"
