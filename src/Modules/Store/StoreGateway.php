@@ -809,7 +809,7 @@ class StoreGateway extends BaseGateway
         return TeamStatus::NoMember;
     }
 
-    public function getBetriebConversation(int $storeId, int $conversationType): ?int
+    public function getStoreConversation(int $storeId, int $conversationType): ?int
     {
         if ($conversationType == StoreTransactions::CONVERSATION_TYPE_COORDINATOR) {
             $chatType = 'coordinator_conversation_id';
