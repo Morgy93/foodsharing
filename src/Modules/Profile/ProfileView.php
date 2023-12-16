@@ -232,6 +232,7 @@ class ProfileView extends View
         $formattedLastActivity = ($this->foodsaver['last_activity'] !== '0000-00-00 00:00:00')
             ? Carbon::parse($this->foodsaver['last_activity'])->format('d.m.Y')
             : null;
+        $maySeeLastActivity = $this->profilePermissions->maySeelastActivity($fsId);
 
         $page->addSectionLeft(
             $this->vueComponent('vue-profile-infos', 'ProfileInfos', [
@@ -239,7 +240,8 @@ class ProfileView extends View
                 'fsMail' => $fsMail,
                 'privateMail' => $this->profilePermissions->maySeePrivateEmail($fsId) ? $this->foodsaver['email'] : '',
                 'registrationDate' => $this->profilePermissions->maySeeRegistrationDate($fsId) ? Carbon::parse($this->foodsaver['anmeldedatum'])->format('d.m.Y') : '',
-                'lastActivity' => $this->profilePermissions->maySeelastActivity($fsId) ? $formattedLastActivity : '',
+                'maySeeLastActivity' => $maySeeLastActivity,
+                'lastActivity' => $maySeeLastActivity ? $formattedLastActivity : '',
                 'buddyCount' => $this->foodsaver['stat_buddycount'],
                 'name' => $this->foodsaver['name'],
                 'fsId' => $this->foodsaver['id'],

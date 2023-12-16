@@ -2,6 +2,7 @@
 
 namespace Foodsharing\Modules\Basket;
 
+use Foodsharing\Modules\Basket\DTO\Basket;
 use Foodsharing\Modules\Core\BaseGateway;
 use Foodsharing\Modules\Core\DBConstants\Basket\Status as BasketStatus;
 use Foodsharing\Modules\Core\DBConstants\BasketRequests\Status as RequestStatus;
@@ -21,17 +22,9 @@ class BasketGateway extends BaseGateway
     }
 
     public function addBasket(
-        $desc,
-        $pic,
-        $tel,
-        $contact_type,
-        $weight,
-        $location_type,
-        $lat,
-        $lon,
-        $lifeTimeInSeconds,
+        Basket $basket,
         $region_id,
-        $fsId
+        $userId
     ): int {
         $appost = 1;
 
@@ -42,21 +35,21 @@ class BasketGateway extends BaseGateway
         return $this->db->insert(
             'fs_basket',
             [
-                'foodsaver_id' => $fsId,
+                'foodsaver_id' => $userId,
                 'status' => BasketStatus::REQUESTED_MESSAGE_READ,
                 'time' => date('Y-m-d H:i:s'),
-                'description' => strip_tags($desc),
-                'picture' => strip_tags($pic),
-                'tel' => strip_tags($tel['tel']),
-                'handy' => strip_tags($tel['handy']),
-                'contact_type' => strip_tags($contact_type),
-                'location_type' => (int)$location_type,
-                'weight' => (float)$weight,
-                'lat' => (float)$lat,
-                'lon' => (float)$lon,
+                'description' => $basket->description,
+                'picture' => strip_tags($basket->imageUrl),
+                'tel' => strip_tags($basket->telephone),
+                'handy' => strip_tags($basket->mobile),
+                'contact_type' => implode(':', $basket->contactTypes),
+                'location_type' => 0,
+                'weight' => null,
+                'lat' => $basket->lat,
+                'lon' => $basket->lon,
                 'bezirk_id' => (int)$region_id,
                 'appost' => $appost,
-                'until' => date('Y-m-d H:i:s', time() + $lifeTimeInSeconds),
+                'until' => date('Y-m-d H:i:s', time() + $basket->lifeTimeInDays * 24 * 60 * 60),
             ]
         );
     }
@@ -352,20 +345,20 @@ class BasketGateway extends BaseGateway
 
     public function editBasket(
         int $id,
-        string $desc,
-        ?string $pic,
-        float $lat,
-        float $lon,
+        Basket $basket,
         ?int $fsId
     ): int {
         return $this->db->update(
             'fs_basket',
             [
                 'update' => date('Y-m-d H:i:s'),
-                'description' => strip_tags($desc),
-                'picture' => strip_tags($pic ?? ''),
-                'lat' => $lat,
-                'lon' => $lon
+                'description' => $basket->description,
+                'picture' => strip_tags($basket->imageUrl),
+                'lat' => $basket->lat,
+                'lon' => $basket->lon,
+                'tel' => strip_tags($basket->telephone),
+                'handy' => strip_tags($basket->mobile),
+                'contact_type' => implode(':', $basket->contactTypes),
             ],
             ['id' => $id, 'foodsaver_id' => $fsId]
         );

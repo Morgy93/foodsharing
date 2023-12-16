@@ -661,6 +661,8 @@ mailbox:
   mails: Courriels
   mark_as_read: Marquer comme lu
   unknown_sender: Expéditeur inconnu
+  less: moins
+  more: plus
 foodsaver:
   mailchange_error: L’activation de votre nouvelle adresse électronique a échoué.
     Veuillez réessayer.
@@ -1206,7 +1208,7 @@ store:
   isManager: Responsable pour cette coopération.
   unknownDate: inconnue
   lastPickupShort: dernière collecte le {date}
-  lastPickup: 'Dernière collecte :'
+  lastPickup: 'Dernière collecte : {date}'
   jumperSince: Remplaçant(e) depuis le {date}
   memberSince: Dans l’équipe depuis le {date}
   teamName: Équipe {storeTitle}
@@ -1350,6 +1352,8 @@ store:
       15: '{actor} a supprimé l’entrée de {target} sur le tableau d’affichage du {date}'
   signInDateTime: Date d’inscription
   slot_state: Statut du créneau
+  lastPickupTitle: Dernière collecte
+  slotsCurrentlyOccupied: Emplacements actuellement occupés
 storeview:
   want_to_fetch: J’aimerais m’engager dans cette équipe.
   specials: Particularités
@@ -2206,6 +2210,7 @@ basket:
     "3": trois jours
     "2": deux jours
     "1": un jour
+    "5": cinq jours
   contact:
     call: Par appel téléphonique
     write: Par message
@@ -2238,6 +2243,14 @@ basket:
   title: Paniers solidaires
   not_withdrawn: "La demande de panier solidaire n’a pas pu être retirée : "
   no_nearby: Il n’y a pas de paniers solidaires dans un rayon de {radius} kilomètres
+  use_home_address: Utiliser l’adresse du domicile
+  modal_error:
+    no_contact: Veuillez sélectionner comment le panier solidaire doit être demandé.
+    no_phone: Veuillez indiquer un numéro de téléphone.
+  contact_types: Possibilités de contact
+  delete_confirmation:
+    text: Tu veux vraiment effacer ce panier solidaire ?
+    title: Supprimer le panier solidaire ?
 formatting:
   md: Tu peux utiliser Markdown pour formater <a href="https://www.markdownguide.org/">Markdown</a>
     à utiliser.
@@ -3166,6 +3179,7 @@ globals:
   select: Sélectionner svp …
   save: Enregistrer
   you: Toi
+  telephone_number: Numéro de téléphone
 navigation:
   system_administration: Administration du système
   help_needed: Besoin d’aide ?

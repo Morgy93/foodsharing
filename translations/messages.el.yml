@@ -327,6 +327,7 @@ basket:
   add: ''
   title: ''
   not_withdrawn: ''
+  use_home_address: Χρησιμοποιήστε τη διεύθυνση του σπιτιού μου
 region:
   no-huge: ''
   not-member: ''

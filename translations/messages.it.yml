@@ -498,8 +498,8 @@ terminology:
   boardAdmins: Consiglio di amministrazione
   fsps: 'Punti di condivisione'
   n_home_regions: uno con il distretto di residenza|%count% con il distretto di residenza
-  no_pickups: ''
-  previous_pickups: ''
+  no_pickups: 'nessuna'
+  previous_pickups: 'Collezioni precedenti'
 register:
   woman: femmina
   signup_newsletter: Vorrei ricevere la newsletter di foodsharing circa una volta
@@ -944,7 +944,7 @@ store:
   actions: Opzioni
   isManager: Responsabile di questa agenzia.
   lastPickupShort: ultimo {data}
-  lastPickup: 'Ultimo recupero:'
+  lastPickup: 'Ultimo recupero: {date}'
   jumperSince: 'Jolly da: {data}'
   memberSince: 'Nel team da: {data}'
   teamName: '{storeTitle}-Team'
@@ -1089,6 +1089,7 @@ store:
     max_entries_message: ''
   signInDateTime: ''
   slot_state: ''
+  lastPickupTitle: Ultimo recupero
 storeview:
   want_to_fetch: Vorrei aiutare in questo team.
   specials: particolarità
@@ -1847,7 +1848,7 @@ bell:
   forum_announcement: ''
   forum_mention_title: ''
   forum_new_thread_title: ''
-  forum_announcement_title: ''
+  forum_announcement_title: 'Messaggio importante: {title}'
   forum_mention: ''
 content:
   edit: Modifica pagina
@@ -2006,9 +2007,9 @@ menu:
     group_overview: 'Panoramica di gruppo dei gruppi di lavoro globali'
     chainList: 'Panoramica delle catene'
     security: Sicurezza
-    load_more: ''
-    refresh: ''
-    delete_read: ''
+    load_more: 'caricare di più'
+    refresh: 'Aggiornare'
+    delete_read: 'Elimina tutto letto'
   reports: Messaggi
   content: Modifica contenuti
   manage_mailboxes: Gestire caselle di posta
@@ -2043,6 +2044,7 @@ basket:
     "3": tre giorni
     "2": due giorni
     "1": un giorno
+    "5": cinque giorni
   contact:
     call: Con una telefonata
     write: Per messaggio
@@ -2115,6 +2117,10 @@ basket:
     tuo indirizzo non è visibile per gli utenti del cesto alimentare.\n"
   no_nearby: 'Non ci sono cesti alimentari nel raggio di {radius} chilometri'
   not_withdrawn: 'Impossibile ritirare la richiesta del cestino alimentare: '
+  use_home_address: Usa l'indirizzo di casa
+  modal_error:
+    no_phone: Si prega di fornire un numero di telefono.
+  contact_types: Opzioni di contatto
 team:
   not-found: Pagina non trovata
   ratelimit: Si prega di attendere {minutes} finché non si può inviare il prossimo
@@ -2234,7 +2240,8 @@ search:
   title: Ricerca
   user_search:
     placeholder: Nome o ID
-  informations: 'Puoi cercare persone, gruppi, aziende, quartieri e frigo solidali.'
+  informations: 'Puoi cercare persone, gruppi, aziende, quartieri, chat, post di forum
+    e frigo solidali.'
   results:
     region:
       ambassador_tooltip: ''
@@ -2245,14 +2252,14 @@ search:
       admin_tooltip: ''
     thread:
       closed_tooltip: ''
-      forum: ''
+      forum: 'Forum'
       sticky_tooltip: ''
       ambassador_forum: ''
       last_post: ''
     in: ''
     chat:
-      chat_with: ''
-      chat_with_others: ''
+      chat_with: 'Chiacchiera con {names}'
+      chat_with_others: 'altri'
     user:
       no_home_region: ''
     store:
@@ -2690,6 +2697,8 @@ mailbox:
   mails: E-mails
   mark_as_read: Segna come letto
   unknown_sender: Mittente sconosciuto
+  less: meno
+  more: più
 messages:
   bread: Notizie
 map:
@@ -3082,8 +3091,8 @@ globals:
     my_persons: 'I miei amici'
     my_stores: 'Le mie aziende'
     my_foodshare_points: 'I miei frigo solidali'
-    threads: ''
-    chats: ''
+    threads: 'Discussioni'
+    chats: 'Chat'
   reset: 'Resetta'
   account:
     signout: 'Esci'
@@ -3095,6 +3104,7 @@ globals:
   show_less: 'Mostra meno'
   save: 'Salva'
   show_more: 'Mostra di più'
+  telephone_number: Numero di telefono
 activitypost:
   response: 'risposta'
   quickreply_info: '<code class="key">Maiusc + Invio</code> per aggiungere una nuova

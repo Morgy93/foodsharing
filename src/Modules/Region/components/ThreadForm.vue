@@ -50,7 +50,10 @@ export default {
       this.text = ''
     },
     focus () {
-      this.$refs.input.setFocus()
+      this.$refs.input.setFocus(this.text.length)
+    },
+    prepend (text) {
+      this.text = text + this.text
     },
   },
 }

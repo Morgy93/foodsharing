@@ -734,6 +734,7 @@ basket:
   login: ''
   by: ''
   description: ''
+  use_home_address: Benotzt Är Heemadress
 menu:
   entry:
     contact: ''
@@ -2697,7 +2698,7 @@ contact_type: ''
 image: ''
 food_art: ''
 regions: ''
-lat: ''
+lat: 'Breet'
 home:
   home: ''
   title: ''
@@ -2794,7 +2795,7 @@ buddy:
 fsp_bezirk_id: ''
 kette_id: ''
 parent_id: ''
-lon: ''
+lon: 'Längt'
 conference:
   description_text: ''
   privacy_notice: ''
