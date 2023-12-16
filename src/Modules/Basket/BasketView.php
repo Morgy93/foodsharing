@@ -93,7 +93,11 @@ class BasketView extends View
         foreach ($baskets as $b) {
             $img = '/img/basket.png';
             if (!empty($b['picture'])) {
-                $img = '/images/basket/thumb-' . $b['picture'];
+                if (str_starts_with($b['picture'], '/api')) {
+                    $img = $b['picture'] . '?w=35&h=35';
+                } else {
+                    $img = '/images/basket/thumb-' . $b['picture'];
+                }
             }
 
             $distance = $this->numberHelper->format_distance($b['distance']);
@@ -240,24 +244,12 @@ class BasketView extends View
                 'allowRequestByMessage' => $allowContactByMessage
             ]);
         }
-        if ($this->basketPermissions->mayEdit($basket['fs_id'])) {
-            $request = '
-				<div class="ui-padding-bottom">
-					<a class="button button-big" href="#" onclick="ajreq(\'editBasket\','
-                    . '{app:\'basket\''
-                    . ',id:' . (int)$basket['id']
-                    . '});">' . $this->translator->trans('basket.edit') . '
-					</a>
-				</div>';
-        }
-        if ($this->basketPermissions->mayDelete($basket)) {
-            $request = $request . '
 
-				<div>
-					<a class="button button-big" href="#" onclick="tryRemoveBasket(' . (int)$basket['id'] . ');">'
-                    . $this->translator->trans('basket.delete') . '
-					</a>
-				</div>';
+        if ($this->basketPermissions->mayDelete($basket)) {
+            $request .= $this->vueComponent('vue-basket-edit-form', 'edit-form', [
+                'basket' => $basket,
+                'mayEdit' => $this->basketPermissions->mayEdit($basket['fs_id']),
+            ]);
         }
 
         $basketUser = new Profile($basket['fs_id'], $basket['fs_name'], $basket['fs_photo'], $basket['sleep_status']);
@@ -271,88 +263,16 @@ class BasketView extends View
 
     private function pageImg(string $img): string
     {
-        $img = ($img == '') ? '/img/foodloob.gif' : '/images/basket/medium-' . $img;
-
-        return '<img class="basket-img" src="' . $img . '" />';
-    }
-
-    public function basketForm(array $foodsaver): string
-    {
-        $out = '';
-
-        $out .= $this->v_utils->v_form_textarea('description', ['maxlength' => 1705]);
-
-        $values = [
-            ['id' => 0.25, 'name' => '250 g'],
-            ['id' => 0.5, 'name' => '500 g'],
-            ['id' => 0.75, 'name' => '750 g'],
-        ];
-
-        $kgValues = array_merge(range(1, 9), range(10, 100, 10));
-        foreach ($kgValues as $i) {
-            $values[] = [
-                'id' => $i,
-                'name' => $i . '<span style="white-space:nowrap">&thinsp;</span>kg',
-            ];
+        $imgUrl = '/img/foodloob.gif';
+        if (!empty($img)) {
+            if (str_starts_with($img, '/api')) {
+                $imgUrl = $img;
+            } else {
+                $imgUrl = '/images/basket/medium-' . $img;
+            }
         }
 
-        $out .= $this->v_utils->v_form_select('weight', [
-            'values' => $values,
-            'selected' => 3,
-        ]);
-
-        $out .= $this->v_utils->v_form_checkbox('contact_type', [
-            'values' => [
-                ['id' => 1, 'name' => $this->translator->trans('basket.contact.write')],
-                ['id' => 2, 'name' => $this->translator->trans('basket.contact.call')],
-            ],
-            'checked' => [1],
-        ]);
-
-        $out .= $this->v_utils->v_form_text('tel', ['value' => $foodsaver['telefon']]);
-        $out .= $this->v_utils->v_form_text('handy', ['value' => $foodsaver['handy']]);
-
-        $out .= $this->v_utils->v_form_select('lifetime', [
-            'values' => [
-                ['id' => 1, 'name' => $this->translator->trans('basket.valid.1')],
-                ['id' => 2, 'name' => $this->translator->trans('basket.valid.2')],
-                ['id' => 3, 'name' => $this->translator->trans('basket.valid.3')],
-                ['id' => 7, 'name' => $this->translator->trans('basket.valid.7')],
-                ['id' => 14, 'name' => $this->translator->trans('basket.valid.14')],
-                ['id' => 21, 'name' => $this->translator->trans('basket.valid.21')],
-            ],
-            'selected' => 7,
-        ]);
-
-        $out .= $this->v_utils->v_form_checkbox('food_type', [
-            'values' => [
-                ['id' => 1, 'name' => $this->translator->trans('basket.has.bread')],
-                ['id' => 2, 'name' => $this->translator->trans('basket.has.greens')],
-                ['id' => 3, 'name' => $this->translator->trans('basket.has.dairy')],
-                ['id' => 4, 'name' => $this->translator->trans('basket.has.dry')],
-                ['id' => 5, 'name' => $this->translator->trans('basket.has.frozen')],
-                ['id' => 6, 'name' => $this->translator->trans('basket.has.prepared')],
-                ['id' => 7, 'name' => $this->translator->trans('basket.has.pet')],
-            ],
-        ]);
-
-        return $out . $this->v_utils->v_form_checkbox('food_art', [
-            'values' => [
-                ['id' => 1, 'name' => $this->translator->trans('basket.is.organic')],
-                ['id' => 2, 'name' => $this->translator->trans('basket.is.veggie')],
-                ['id' => 3, 'name' => $this->translator->trans('basket.is.vegan')],
-                ['id' => 4, 'name' => $this->translator->trans('basket.is.gf')],
-            ],
-        ]);
-    }
-
-    public function basketEditForm(array $basket): string
-    {
-        $out = '';
-
-        $out .= $this->v_utils->v_form_textarea('description', ['maxlength' => 1705, 'value' => $basket['description']]);
-
-        return $out . $this->v_utils->v_form_hidden('basket_id', $basket['id']);
+        return '<img class="basket-img" src="' . $imgUrl . '" />';
     }
 
     public function fsBubble(array $basket): string
@@ -375,16 +295,26 @@ class BasketView extends View
 		</div>';
     }
 
-    public function bubbleNoUser(array $basket): string
+    private function bubbleImage(array $basket): string
     {
         $img = '';
         if (!empty($basket['picture'])) {
+            if (str_starts_with($basket['picture'], '/api')) {
+                $imgUrl = $basket['picture'] . '?w=300&h=300';
+            } else {
+                $imgUrl = '/images/basket/medium-' . $basket['picture'];
+            }
             $img = '<div style="width: 100%; overflow: hidden;">
-				<img src="/images/basket/medium-' . $basket['picture'] . '" width="100%" />
+				<img src="' . $imgUrl . '" width="100%" />
 			</div>';
         }
 
-        return $img . $this->v_utils->v_input_wrapper(
+        return $img;
+    }
+
+    public function bubbleNoUser(array $basket): string
+    {
+        return $this->bubbleImage($basket) . $this->v_utils->v_input_wrapper(
             $this->translator->trans('basket.description'),
             nl2br($this->routeHelper->autolink($basket['description']))
         );
@@ -392,14 +322,7 @@ class BasketView extends View
 
     public function bubble(array $basket): string
     {
-        $img = '';
-        if (!empty($basket['picture'])) {
-            $img = '<div style="width: 100%; overflow: hidden;">
-				<img src="/images/basket/medium-' . $basket['picture'] . '" width="100%" />
-			</div>';
-        }
-
-        return $img . $this->v_utils->v_input_wrapper(
+        return $this->bubbleImage($basket) . $this->v_utils->v_input_wrapper(
             $this->translator->trans('basket.date'),
             $this->timeHelper->niceDate($basket['time_ts'])
         ) . $this->v_utils->v_input_wrapper(

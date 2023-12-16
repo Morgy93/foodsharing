@@ -690,6 +690,7 @@ basket:
   on: ''
   expires: ''
   go: ''
+  use_home_address: Utilizar o meu endereço residencial
 menu:
   entry:
     options: ''

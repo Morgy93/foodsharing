@@ -211,6 +211,7 @@ basket:
   request: ''
   request_empty: ''
   image: ''
+  use_home_address: Используйте свой домашний адрес
 storelist:
   status: ''
   cooperating: ''

@@ -1121,6 +1121,7 @@ basket:
   request_denied: ''
   not-allowed: ''
   publish_error: ''
+  use_home_address: Gebruik je thuisadres
 personal_data:
   label: ''
   landline: ''

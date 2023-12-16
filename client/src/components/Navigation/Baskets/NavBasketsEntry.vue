@@ -95,10 +95,12 @@ export default {
   methods: {
     getImageUrl (picture) {
       if (picture) {
+        if (picture.startsWith('/api')) {
+          return `${picture}?w=35&h=35`
+        }
         return `/images/basket/thumb-${picture}`
-      } else {
-        return '/img/basket.png'
       }
+      return '/img/basket.png'
     },
     openChat (userId) {
       conversationStore.openChatWithUser(userId)

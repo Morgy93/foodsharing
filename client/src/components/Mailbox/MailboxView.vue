@@ -127,7 +127,7 @@ export default {
       const useSender = this.selectedMailbox[2] === MAILBOX_FOLDER.INBOX
       const senderOrRecipientColumn = {
         key: useSender ? 'sender' : 'recipient',
-        label: useSender ? this.$i18n('mailbox.sender') : this.$i18n('mailbox.recipient'),
+        label: useSender ? this.$i18n('mailbox.from') : this.$i18n('mailbox.to'),
         sortable: false,
         class: 'align-middle',
       }
@@ -136,9 +136,13 @@ export default {
   },
   watch: {
     selectedMailbox () {
-      this.$refs.selectableTable.isBusy = true
+      if (this.$refs.selectableTable) {
+        this.$refs.selectableTable.isBusy = true
+      }
       this.tryGetAllEmails()
-      this.$refs.selectableTable.isBusy = false
+      if (this.$refs.selectableTable) {
+        this.$refs.selectableTable.isBusy = false
+      }
     },
   },
   created () {

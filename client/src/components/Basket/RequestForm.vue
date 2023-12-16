@@ -131,10 +131,6 @@ export default {
     }
   },
   _interval: null,
-  async created () {
-  },
-  destroyed () {
-  },
   methods: {
     async request (message) {
       this.isLoading = true
@@ -178,7 +174,3 @@ export default {
   },
 }
 </script>
-
-<style scoped>
-
-</style>
