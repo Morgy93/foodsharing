@@ -10,5 +10,6 @@ source "$dir"/__common.sh
 log-header "Running client e2e tests with playwright"
 npm ci
 npm install playwright
+npx playwright install
 npx playwright test
 
