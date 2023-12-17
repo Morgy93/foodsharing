@@ -15,27 +15,28 @@ use Symfony\Component\Routing\Annotation\Route;
 
 class ContentController extends FoodsharingController
 {
-    private const SUB_TO_ID = [
-        'presse' => ContentId::PRESS,
-        'communitiesGermany' => ContentId::COMMUNITIES_GERMANY,
-        'communitiesAustria' => ContentId::COMMUNITIES_AUSTRIA,
-        'communitiesSwitzerland' => ContentId::COMMUNITIES_SWITZERLAND,
-        'forderungen' => ContentId::DEMANDS,
-        'contact' => ContentId::CONTACT,
-        'academy' => ContentId::ACADEMY,
-        'festival' => ContentId::FESTIVAL,
-        'international' => ContentId::INTERNATIONAL,
-        'transparency' => ContentId::TRANSPARENCY,
-        'leeretonne' => ContentId::CAMPAIGN_LEERE_TONNE,
-        'newsFromIT' => ContentId::NEWS_FROM_IT,
-        'foodSharePointRescue' => ContentId::RESCUE_FOOD_SHARE_POINT,
-        'impressum' => ContentId::IMPRESSUM,
-        'about' => ContentId::ABOUT,
-        'fuer_unternehmen' => ContentId::FOR_COMPANIES,
-        'fsstaedte' => ContentId::FOODSHARING_STAEDTE,
-        'workshops' => ContentId::WORKSHOPS,
-        'security' => ContentId::SECURITY_PAGE,
-    ];
+    private const SUB_TO_ID
+        = [
+            'presse' => ContentId::PRESS,
+            'communitiesGermany' => ContentId::COMMUNITIES_GERMANY,
+            'communitiesAustria' => ContentId::COMMUNITIES_AUSTRIA,
+            'communitiesSwitzerland' => ContentId::COMMUNITIES_SWITZERLAND,
+            'forderungen' => ContentId::DEMANDS,
+            'contact' => ContentId::CONTACT,
+            'academy' => ContentId::ACADEMY,
+            'festival' => ContentId::FESTIVAL,
+            'international' => ContentId::INTERNATIONAL,
+            'transparency' => ContentId::TRANSPARENCY,
+            'leeretonne' => ContentId::PAST_CAMPAIGNS,
+            'newsFromIT' => ContentId::NEWS_FROM_IT,
+            'foodSharePointRescue' => ContentId::RESCUE_FOOD_SHARE_POINT,
+            'impressum' => ContentId::IMPRINT,
+            'about' => ContentId::ABOUT,
+            'fuer_unternehmen' => ContentId::FOR_COMPANIES,
+            'fsstaedte' => ContentId::FOODSHARING_CITIES,
+            'workshops' => ContentId::WORKSHOPS,
+            'security' => ContentId::SECURITY_PAGE,
+        ];
 
     public function __construct(
         private readonly ContentView $view,
@@ -65,15 +66,15 @@ class ContentController extends FoodsharingController
         }
 
         if ($this->identificationHelper->getAction('neu')) {
-            $this->handle_add();
+            $this->handleAdd();
 
             $this->pageHelper->addBread($this->translator->trans('content.bread'), '/content');
             $this->pageHelper->addBread($this->translator->trans('content.new'));
 
-            $this->pageHelper->addContent($this->content_form());
+            $this->pageHelper->addContent($this->contentForm());
 
             $this->pageHelper->addContent($this->v_utils->v_field($this->v_utils->v_menu([
-                ['href' => '/content', 'name' => $this->translator->trans('bread.backToOverview')]
+                ['href' => '/content', 'name' => $this->translator->trans('bread.backToOverview')],
             ]), $this->translator->trans('content.actions')), CNT_RIGHT);
         } elseif ($id = $this->identificationHelper->getActionId('delete')) {
             if ($this->contentGateway->delete($id)) {
@@ -84,7 +85,7 @@ class ContentController extends FoodsharingController
             if (!$this->contentPermissions->mayEditContentId((int)$_GET['id'])) {
                 return $this->redirect('/content');
             }
-            $this->handle_edit();
+            $this->handleEdit();
 
             $this->pageHelper->addBread($this->translator->trans('content.bread'), '/content');
             $this->pageHelper->addBread($this->translator->trans('content.edit'));
@@ -92,10 +93,10 @@ class ContentController extends FoodsharingController
             $data = $this->contentGateway->getDetail($id);
             $this->dataHelper->setEditData($data);
 
-            $this->pageHelper->addContent($this->content_form());
+            $this->pageHelper->addContent($this->contentForm());
 
             $this->pageHelper->addContent($this->v_utils->v_field($this->v_utils->v_menu([
-                ['href' => '/content', 'name' => $this->translator->trans('bread.backToOverview')]
+                ['href' => '/content', 'name' => $this->translator->trans('bread.backToOverview')],
             ]), $this->translator->trans('content.actions')), CNT_RIGHT);
         } elseif ($id = $this->identificationHelper->getActionId('view')) {
             $this->addContent($id);
@@ -127,11 +128,6 @@ class ContentController extends FoodsharingController
         return $this->renderGlobal();
     }
 
-    public function ratgeber(): Response
-    {
-        return $this->redirect('https://wiki.foodsharing.de/Hygiene-Ratgeber_f%C3%BCr_Lebensmittel', 301);
-    }
-
     public function joininfo(): Response
     {
         $this->pageHelper->addBread($this->translator->trans('startpage.join'));
@@ -143,13 +139,23 @@ class ContentController extends FoodsharingController
 
     public function releaseNotes(): Response
     {
-        $releaseIds = ['2023-09', '2022-12', '2022-05', '2022-01', '2021-09', '2021-03', '2020-12', '2020-10',
-            '2020-08', '2020-05'];
+        $releaseIds = [
+            '2023-09',
+            '2022-12',
+            '2022-05',
+            '2022-01',
+            '2021-09',
+            '2021-03',
+            '2020-12',
+            '2020-10',
+            '2020-08',
+            '2020-05',
+        ];
         $releaseList = array_map(function ($id) {
             return [
                 'id' => $id,
                 'title' => $this->translator->trans('releases.' . $id),
-                'markdown' => $this->parseGitlabLinks($this->getnotes($id)),
+                'markdown' => $this->parseGitlabLinks($this->getNotes($id)),
                 'visible' => false,
             ];
         }, $releaseIds);
@@ -177,7 +183,7 @@ class ContentController extends FoodsharingController
         return $this->renderGlobal();
     }
 
-    private function content_form(string $titleKey = 'contentmanagement'): string
+    private function contentForm(string $titleKey = 'contentmanagement'): string
     {
         $title = $this->translator->trans($titleKey);
 
@@ -194,11 +200,11 @@ class ContentController extends FoodsharingController
                     'nowrapper' => true,
                 ]),
                 $this->translator->trans('content.content')
-            )
+            ),
         ], ['submit' => $this->translator->trans('button.save')]);
     }
 
-    private function handle_edit(): void
+    private function handleEdit(): void
     {
         global $g_data;
         if ($this->submitted()) {
@@ -212,7 +218,7 @@ class ContentController extends FoodsharingController
         }
     }
 
-    private function handle_add(): void
+    private function handleAdd(): void
     {
         global $g_data;
         if ($this->submitted()) {
@@ -231,7 +237,7 @@ class ContentController extends FoodsharingController
         return !empty($_POST);
     }
 
-    private function getnotes(string $filename): string
+    private function getNotes(string $filename): string
     {
         $projectDir = $this->getParameter('kernel.project_dir');
 
@@ -241,10 +247,26 @@ class ContentController extends FoodsharingController
     private function parseGitlabLinks($markdown)
     {
         $markdown = preg_replace('/\W@(\S+)/', ' [@\1](https://gitlab.com/\1)', $markdown) ?? $markdown;
-        $markdown = preg_replace('/(android)!([0-9]+)/', '[\1!\2](https://gitlab.com/foodsharing-dev/foodsharing-android/merge_requests/\2)', $markdown) ?? $markdown;
-        $markdown = preg_replace('/(android)#([0-9]+)/', '[\1#\2](https://gitlab.com/foodsharing-dev/foodsharing-android/issues/\2))', $markdown) ?? $markdown;
-        $markdown = preg_replace('/\W!([0-9]+)/', ' [!\1](https://gitlab.com/foodsharing-dev/foodsharing/merge_requests/\1)', $markdown) ?? $markdown;
-        $markdown = preg_replace('/\W#([0-9]+)/', ' [#\1](https://gitlab.com/foodsharing-dev/foodsharing/issues/\1)', $markdown) ?? $markdown;
+        $markdown = preg_replace(
+            '/(android)!([0-9]+)/',
+            '[\1!\2](https://gitlab.com/foodsharing-dev/foodsharing-android/merge_requests/\2)',
+            $markdown
+        ) ?? $markdown;
+        $markdown = preg_replace(
+            '/(android)#([0-9]+)/',
+            '[\1#\2](https://gitlab.com/foodsharing-dev/foodsharing-android/issues/\2))',
+            $markdown
+        ) ?? $markdown;
+        $markdown = preg_replace(
+            '/\W!([0-9]+)/',
+            ' [!\1](https://gitlab.com/foodsharing-dev/foodsharing/merge_requests/\1)',
+            $markdown
+        ) ?? $markdown;
+        $markdown = preg_replace(
+            '/\W#([0-9]+)/',
+            ' [#\1](https://gitlab.com/foodsharing-dev/foodsharing/issues/\1)',
+            $markdown
+        ) ?? $markdown;
 
         return $markdown;
     }
