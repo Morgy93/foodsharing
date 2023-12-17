@@ -256,8 +256,8 @@ class MailboxRestController extends AbstractFOSRestController
      */
     #[OA2\Tag(name: 'mailbox')]
     #[Rest\Get('mailbox/regions')]
-    #[OA2\Response(response: '200', description: 'Success')]
-    #[OA2\Response(response: '401', description: 'Not logged in')]
+    #[OA2\Response(response: Response::HTTP_OK, description: 'Success')]
+    #[OA2\Response(response: Response::HTTP_UNAUTHORIZED, description: 'Not logged in')]
     public function listRegions(): Response
     {
         if (!$this->session->mayRole()) {
@@ -266,6 +266,6 @@ class MailboxRestController extends AbstractFOSRestController
 
         $regions = $this->mailboxGateway->getRegionsWithMailAdresses();
 
-        return $this->handleView($this->view($regions, 200));
+        return $this->handleView($this->view($regions, Response::HTTP_OK));
     }
 }
