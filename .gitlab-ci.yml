@@ -143,6 +143,15 @@ outdated:
       - docs/**/*
       - scripts/**/*
 
+.dirs-playwright-rule:
+  rules:
+    if: $CI_MERGE_REQUEST_ID
+    changes:
+      - tests/e2e/package.json
+      - tests/e2e/package-lock.json
+      - tests/e2e/playwright.config.ts
+      - tests/e2e/specs/**/*
+
 build:backend-dev:
   extends:
     - .defaults
@@ -157,6 +166,7 @@ build:backend-dev:
     - !reference [.dirs-app-rule, rules]
     - !reference [.dirs-backend-rule, rules]
     - !reference [.dirs-frontend-rule, rules]
+    - !reference [.dirs-playwright-rule, rules]
     - !reference [.dirs-websocket-rule, rules]
     - !reference [.dirs-docs-rule, rules]
   image: registry.gitlab.com/foodsharing-dev/images/php:latest
@@ -451,6 +461,7 @@ test:playwright:
     - if: $CI_COMMIT_BRANCH == 'master' || $CI_COMMIT_BRANCH == 'production'
     - !reference [.dirs-app-rule, rules]
     - !reference [.dirs-frontend-rule, rules]
+    - !reference [.dirs-playwright-rule, rules]
     - if: $CI_COMMIT_BRANCH == 'production' && $SKIP_CI_TESTS == 'true'
       when: never
     - if: $CI_PIPELINE_SOURCE == "schedule"

@@ -58,7 +58,7 @@ class ForumPermissions
         if ($ambassadorForum && !$this->session->isAdminFor($regionId)) {
             return false;
         }
-        if (!in_array($regionId, $this->session->listRegionIDs())) {
+        if (!$this->session->mayBezirk($regionId)) {
             return false;
         }
 
