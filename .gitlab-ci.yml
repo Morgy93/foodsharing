@@ -143,6 +143,16 @@ outdated:
       - docs/**/*
       - scripts/**/*
 
+
+.dirs-playwright-rule:
+  rules:
+    if: $CI_MERGE_REQUEST_ID
+    changes:
+      - package.json
+      - package-lock.json
+      - .husky/*
+      - .eslintrc.cjs
+
 build:backend-dev:
   extends:
     - .defaults
@@ -451,6 +461,7 @@ test:playwright:
     - if: $CI_COMMIT_BRANCH == 'master' || $CI_COMMIT_BRANCH == 'production'
     - !reference [.dirs-app-rule, rules]
     - !reference [.dirs-frontend-rule, rules]
+    - !reference [.dirs-playwright-rule, rules]
     - if: $CI_COMMIT_BRANCH == 'production' && $SKIP_CI_TESTS == 'true'
       when: never
     - if: $CI_PIPELINE_SOURCE == "schedule"
