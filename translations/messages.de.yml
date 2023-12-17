@@ -43,7 +43,7 @@ daterange: "Zeitraum"
 regions: "Bezirke" # TODO check if used anywhere else
 groups:
   empty: "Du bist noch in keinen Arbeitsgruppen"
-message_text_to_group_admin_workgroup: "Die Region/Arbeitsgruppe <b>{groupName}</b> hat <b>keine*n</b> Botschafter*in/Administrator*in mehr.<br><br><br>Sie besitzt folgende ID-Struktur:<br>{idStructureList}<br><br>Die ID lautet: {groupId}<br><br>URL: \"<a href=\"https://foodsharing.de/?page=bezirk&bid={groupId}&sub=forum\" target=\"_blank\">Klicke hier um zur Region/Arbeitsgruppe zu gehen</a>"
+message_text_to_group_admin_workgroup: "Die Region/Arbeitsgruppe <b>{groupName}</b> hat <b>keine*n</b> Botschafter*in/Administrator*in mehr.<br><br><br>Sie besitzt folgende ID-Struktur:<br>{idStructureList}<br><br>Die ID lautet: {groupId}<br><br>URL: \"<a href=\"https://foodsharing.de/region?bid={groupId}&sub=forum\" target=\"_blank\">Klicke hier um zur Region/Arbeitsgruppe zu gehen</a>"
 #
 # FORM DATA KEYS: SettingsView
 # --
@@ -618,6 +618,8 @@ terminology:
   stores: "Betriebe"
   store: Betrieb
   pickup: "Abholung"
+  previous_pickups: "Bisherige Abholungen"
+  no_pickups: "keine"
   foodsharer:
     m: "Foodsharer"
     f: "Foodsharerin"
@@ -847,8 +849,12 @@ store:
   teamName: "{storeTitle}-Team"
   memberSince: "Im Team seit: {date}"
   jumperSince: "Springer seit: {date}"
+  lastPickupTitle: "Letzte Abholung"
   lastPickup: "Letzte Abholung: {date}"
   lastPickupShort: "zuletzt {date}"
+  signInDateTime: "Eintragungszeitpunkt"
+  slotsCurrentlyOccupied: "Aktuell belegte Slots"
+  slot_state: "Slot Status"
   unknownDate: "unbekannt"
   isManager: "Verantwortlich für diesen Betrieb."
   noPickup: "Hat noch nie hier abgeholt."
@@ -963,6 +969,7 @@ store:
     search: "Ausgewählte Aktionen anzeigen"
     selected_log_types: "{amount} Aktions-Typen ausgewählt"
     log_types_placeholder: "Anzuzeigende Aktions-Typen auswählen"
+    no_description: "keine"
     type:
       1: Beitrittsanfragen stellen
       2: Beitrittsanfragen ablehnen
@@ -980,6 +987,9 @@ store:
       14: Abholslot bestätigen
       15: Pinnwandeintrag löschen
       16: Beitrittsanfrage zurückziehen
+      17: Einzelner Abholtermin erstellt oder geändert
+      18: Automatischer Abholtermin erstellt oder geändert
+
     message:
       1: "{actor} hat eine Beitrittsanfrage gestellt."
       2: "{actor} hat die Beitrittsanfrage von {target} abgelehnt."
@@ -998,6 +1008,8 @@ store:
       14: "{actor} hat den Abholslot von {target} am {date} bestätigt."
       15: "{actor} hat {target}s Pinnwandeintrag vom {date} gelöscht"
       16: "{actor} hat die Beitrittsanfrage zurückgezogen"
+      17: "{actor} hat den Abholtermin [ {date} mit {totalSlots} Slots mit Beschreibung: {description} ] erstellt oder geändert"
+      18: "{actor} hat automatischen Abholtermin [ {weekday} {startTimeOfPickup} Slots: {maxCountOfSlots} mit Beschreibung: {description} ] erstellt oder geändert"
     max_entries_message: Maximal 100 Einträge werden angezeigt. Bitte grenze den Suchbereich ein.
 
 storeedit:
@@ -1049,7 +1061,7 @@ pickup:
   confirm: "Bestätigen"
   kick: "Austragen"
   leave: "Austragen"
-  open_profile: "Profil aufrufen"
+  open_profile: "Profil von"
   copyNumber: "Nummer kopieren"
   copiedNumber: "„{number}“ wurde in die Zwischenablage kopiert."
   signout_sure: "Möchtest du dieses Team verlassen?"
@@ -1182,7 +1194,7 @@ calendar:
   export:
     pickup:
       name: "{store} Abholung"
-      unconfirmed: unbestätigt
+      unconfirmed: "unbestätigt"
       description: 'foodsharing-Abholung bei <a href="{url}">{store}</a>'
     event:
       statusUnspecified: Du hast noch nicht angegeben, ob du an diesem Termin teilnimmst. Das kannst du auf der verlinkten Seite tun.
@@ -1245,6 +1257,9 @@ forum:
     success: "Prima, deine Antwort wurde gespeichert."
     error: "Post konnte nicht gespeichert werden."
   not_found: "Dieser Thread ist nicht vorhanden."
+  mail_confirmation:
+    text: "Möchtest du wirklich, dass dieser neue Beitrag als Email an alle Mitglieder dieser AG bzw. dieses Bezirks versendet wird? Das solltest du nur dann tun, wenn dein Anliegen alle betrifft und so wichtig ist, dass es auch alle mitbekommen sollten."
+    title: "Wirklich Email Benachrichtigung versenden?"
 
 chat:
   open_chat: "Nachricht schreiben"
@@ -1784,7 +1799,9 @@ mailbox:
     message: "Sind Sie sicher, dass Sie die E-Mail löschen möchten?"
   search: "Durchsuchen"
   add: "Hinzufügen"
-  mailsend_unsuccess: "E-Mail konnten nicht versendet werden. {error}"
+  mailsend_unsuccess: "E-Mail konnte nicht versendet werden. {error}"
+  more: "mehr"
+  less: "weniger"
 
 settings:
   title: "Einstellungen"
@@ -2204,6 +2221,7 @@ team:
 basket:
   title: "Essenskörbe"
   description: "Beschreibung" #also in ReportXhr
+  contact_types: "Kontaktmöglichkeiten"
   my_list_empty: "Du hast keine Essenskörbe eingetragen"
   all: "Alle Essenskörbe"
   all_map: "Alle Körbe auf der Karte"
@@ -2266,12 +2284,13 @@ basket:
     write: "Per Nachricht"
     call: "Per Telefonanruf"
   valid:
-    "1": "einen Tag"
-    "2": "zwei Tage"
-    "3": "drei Tage"
-    "7": "eine Woche"
-    "14": "zwei Wochen"
-    "21": "drei Wochen"
+    "1": "Einen Tag"
+    "2": "Zwei Tage"
+    "3": "Drei Tage"
+    "5": "Fünf Tage"
+    "7": "Eine Woche"
+    "14": "Zwei Wochen"
+    "21": "Drei Wochen"
   has:
     bread: "Backwaren"
     greens: "Obst & Gemüse"
@@ -2305,6 +2324,13 @@ basket:
   not-allowed: "Du bist nicht dazu berechtigt, diesen Essenskorb zu bearbeiten."
   publish_error: "Es gab einen Fehler. Der Essenskorb konnte nicht veröffentlicht werden."
   published: "Danke dir, der Essenskorb wurde veröffentlicht."
+  delete_confirmation:
+    text: Willst du wirklich diesen Essenskorb löschen?
+    title: Essenskorb löschen?
+  modal_error:
+    no_contact: "Bitte wähle eine Möglichkeit aus, wie der Essenskorb angefragt werden soll."
+    no_phone: "Bitte gib eine Telefonnummer an."
+  use_home_address: "Persönliche Adresse nutzen"
 
 personal_data:
   label: "Kontakt"
@@ -2665,7 +2691,7 @@ poll:
   type_description_0: "Auswählen (nur eine Option kann gewählt werden)"
   type_description_1: "Ankreuzen (mehrere Optionen können gewählt werden)"
   type_description_2: "Wahlmöglichkeiten jeweils Zustimmung / Enthaltung / Ablehnung"
-  type_description_3: "Bewertungswahl mit Werten zwischen +3 (Zustimmung) und -3 (Ablehnung)"
+  type_description_3: "Bewertungswahl mit Werten zwischen -3 (Ablehnung) und +3 (Zustimmung)"
   type_2:
     tooltip_negative: "Ablehnung"
     tooltip_neutral: "Enthaltung"
@@ -3047,17 +3073,51 @@ globals:
     my_groups: Meine Gruppen
     persons: Personen
     my_persons: Meine Personen
+    chats: Chats
+    threads: Themen
   you: Du
+  telephone_number: Telefonnummer
 
 search:
   title: Suche
   placeholder: Jetzt Suche starten …
-  informations: Du kannst nach Personen, Gruppen, Betrieben, Bezirken und Fairteilern suchen.
+  informations: Du kannst nach Personen, Gruppen, Betrieben, Bezirken, Chats, Forenbeiträgen und Fairteilern suchen.
   forum: Nach Titel suchen …
   noresults: Es konnten keine Ergebnisse gefunden werden
   thread-title-only: Es werden nur Titel durchsucht, nicht der Text von Beiträgen.
   user_search:
     placeholder: Name oder ID
+  results:
+    in: in
+    from: aus
+    chat:
+      chat_with: "Chat mit {names}"
+      chat_with_others: "weiteren"
+    region:
+      ambassador_tooltip: Du bist Botschafter dieses Bezirks
+      home_region_tooltip: Dies ist dein Stammbezirk
+      member_tooltip: Du bist Mitglied dieses Bezirks
+    store:
+      manager_tooltip: Du bist verantwortlich für diesen Betrieb
+      member_tooltip: Du bist Mitglied dieses Betriebs
+      jumper_tooltip: Du bist Springer dieses Betriebs
+    thread:
+      sticky_tooltip: Thema ist angeheftet
+      closed_tooltip: Thema ist geschlossen
+      forum: Forum
+      ambassador_forum: BOT-Forum
+      last_post: letzter Beitrag
+    user:
+      no_home_region: Kein Stammbezirk
+    working_group:
+      admin_tooltip: Du bist Admin dieser AG
+      member_tooltip: Du bist Mitglied dieser AG
+
+
+
+
+
+
 
 activitypost:
   Response: Antworten
@@ -3109,13 +3169,17 @@ thread:
     rename: "Titel bearbeiten"
     pin: "Beitrag anheften"
     unpin: "Nicht mehr anheften"
-    lock: "Thema schließen" 
+    lock: "Thema schließen"
     unlock: "Thema öffnen"
   rename:
     edit_description: "Titel bearbeiten"
     description_modal_text: "Gib einen neuen Titel für diesen Beitrag ein:"
     placeholder: "Titel"
     max_length_info: "Maximale Länge des Titels erreicht (260 Zeichen)"
+  post:
+    options:
+      copy_source: "Quelltext kopieren"
+    copy_source_success: "Quelltext kopiert!"
 
 markdown_input:
   tooltip:
@@ -3131,7 +3195,8 @@ markdown_input:
     hrule: Trennlinie
     preview: Vorschau
   empty_preview_placeholder: "Dies ist die Formatierungsvorschau. Der Text wird hier so formatiert, wie er auch später angezeigt wird.
-    
+
     ---
 
     *Du hast aber noch keinen Text eingegeben, der hier angezeigt werden könnte.*"
+

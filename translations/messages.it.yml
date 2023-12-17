@@ -498,6 +498,8 @@ terminology:
   boardAdmins: Consiglio di amministrazione
   fsps: 'Punti di condivisione'
   n_home_regions: uno con il distretto di residenza|%count% con il distretto di residenza
+  no_pickups: 'nessuna'
+  previous_pickups: 'Collezioni precedenti'
 register:
   woman: femmina
   signup_newsletter: Vorrei ricevere la newsletter di foodsharing circa una volta
@@ -770,7 +772,7 @@ pickup:
   signout_sure: Vuoi lasciare questo team?
   copiedNumber: '«{number}» è stato copiato negli appunti.'
   copyNumber: Copiare il numero
-  open_profile: Richiama il profilo
+  open_profile: Profilo di
   leave: cancellare
   kick: Cancellare
   signout_history:
@@ -888,6 +890,7 @@ store:
     distance_unknown: Nessun luogo di residenza inserito
     distance: Si trova a circa {distance} km di distanza
     distance_close: Si trova a meno di 1 km di distanza
+    air_line: La distanza è indicata in linea d'aria.
   sm:
     removeFromTeam: Rimuovare dal team
     filterUnverified: Non verificate
@@ -941,7 +944,7 @@ store:
   actions: Opzioni
   isManager: Responsabile di questa agenzia.
   lastPickupShort: ultimo {data}
-  lastPickup: 'Ultimo recupero: {data}'
+  lastPickup: 'Ultimo recupero: {date}'
   jumperSince: 'Jolly da: {data}'
   memberSince: 'Nel team da: {data}'
   teamName: '{storeTitle}-Team'
@@ -1043,6 +1046,50 @@ store:
     visualizzate queste informazioni aggiuntive, che si applicano a tutti gli stabilimenti
     della catena.
   delete_date: Elimina una singola data di ritiro
+  log:
+    type:
+      3: richieste di adesione accettate
+      2: richieste di adesione respinte
+      7: rimosso dal team
+      1: Richieste di adesione effettuate
+      8: ha lasciato il team
+      4: membri aggiunti senza richiesta
+      6: spostato nel team attivo
+      9: impostato come coordinatore del negozio
+      14: ''
+      16: ''
+      10: ''
+      12: ''
+      5: ''
+      13: ''
+      11: ''
+      15: ''
+    log_types_placeholder: Seleziona i tipi di azione da visualizzare
+    search: Elenca le azioni selezionate
+    selected_log_types: '{amount} tipi di azione selezionati'
+    title: Registro delle operazioni
+    message:
+      6: '{actor} ha aggiunto {target} al team attivo.'
+      3: '{actor} ha accettato la richiesta di partecipazione di {target}.'
+      4: '{actor} ha aggiunto {target} al team senza richiesta.'
+      7: '{actor} ha rimosso {target} dalla squadra.'
+      8: '{actor} ha lasciato il team.'
+      5: "{actor} ha inserito {target} nell'elenco Jolly."
+      1: ''
+      14: ''
+      11: ''
+      13: ''
+      13_with_reason: ''
+      16: ''
+      10: ''
+      12: ''
+      2: ''
+      9: ''
+      15: ''
+    max_entries_message: ''
+  signInDateTime: ''
+  slot_state: ''
+  lastPickupTitle: Ultimo recupero
 storeview:
   want_to_fetch: Vorrei aiutare in questo team.
   specials: particolarità
@@ -1091,7 +1138,7 @@ storeview:
   cooperation_status: Stato di cooperazione
 message_text_to_group_admin_workgroup: 'La regione/gruppo di lavoro <b>{groupName}</b>
   non <b>ha più </b> ambasciatori/amministratori.<br><br><br>Ha la seguente struttura
-  ID:<br>{idStructureList}<br><br> L''ID è:{groupId}<br><br>URL: "<a href="/?page=bezirk&bid={groupId}&sub=forum"
+  ID:<br>{idStructureList}<br><br> L''ID è:{groupId}<br><br>URL: "<a href="/region?bid={groupId}&sub=forum"
   target="_blank">Clicca qui per andare alla regione/gruppo di lavoro</a>'
 startpage:
   towns:
@@ -1285,8 +1332,8 @@ poll:
     tooltip_positive: Consenso
     tooltip_neutral: Astensioni
     tooltip_negative: Rifiuto
-  type_description_3: Scelta di valutazione con valori compresi tra +3 (d'accordo)
-    e -3 (in disaccordo)
+  type_description_3: Scelta di valutazione con valori compresi tra -3 (in disaccordo)
+    e +3 (d’accordo)
   type_description_2: Opzioni in ogni caso consenso / astensione / rifiuto
   type_description_1: Spuntare (si possono selezionare diverse opzioni)
   type_description_0: Selezionare (solo una opzione può essere selezionata)
@@ -1603,6 +1650,9 @@ forum:
     a conferma da parte di un ambasciatore/moderatore.
   not_found: Questa discussione non esiste.
   deleted_user: utente eliminato
+  mail_confirmation:
+    text: ''
+    title: ''
 first_post: Primo post in bacheca
 events:
   rsvp:
@@ -1794,6 +1844,12 @@ bell:
   forum_post:
     one: Nuovo post di {user} nel forum {forum}
     many: '{count} nuovi post nel forum {forum}'
+  forum_new_thread: ''
+  forum_announcement: ''
+  forum_mention_title: ''
+  forum_new_thread_title: ''
+  forum_announcement_title: 'Messaggio importante: {title}'
+  forum_mention: ''
 content:
   edit: Modifica pagina
   new_success: La pagina è stata creata
@@ -1951,6 +2007,9 @@ menu:
     group_overview: 'Panoramica di gruppo dei gruppi di lavoro globali'
     chainList: 'Panoramica delle catene'
     security: Sicurezza
+    load_more: 'caricare di più'
+    refresh: 'Aggiornare'
+    delete_read: 'Elimina tutto letto'
   reports: Messaggi
   content: Modifica contenuti
   manage_mailboxes: Gestire caselle di posta
@@ -1958,6 +2017,10 @@ menu:
   quiz: Gestire il quiz
   blog: Modifica i post del blog
   manage_regions: Gestire distretti
+  bell:
+    delete_read_confirmation:
+      text: ''
+      title: ''
 basket:
   published: Grazie, il cesto di cibo è stato pubblicato.
   publish_error: C'è stato un errore. Il cesto di cibo non poteva essere pubblicato.
@@ -1981,6 +2044,7 @@ basket:
     "3": tre giorni
     "2": due giorni
     "1": un giorno
+    "5": cinque giorni
   contact:
     call: Con una telefonata
     write: Per messaggio
@@ -2053,6 +2117,10 @@ basket:
     tuo indirizzo non è visibile per gli utenti del cesto alimentare.\n"
   no_nearby: 'Non ci sono cesti alimentari nel raggio di {radius} chilometri'
   not_withdrawn: 'Impossibile ritirare la richiesta del cestino alimentare: '
+  use_home_address: Usa l'indirizzo di casa
+  modal_error:
+    no_phone: Si prega di fornire un numero di telefono.
+  contact_types: Opzioni di contatto
 team:
   not-found: Pagina non trovata
   ratelimit: Si prega di attendere {minutes} finché non si può inviare il prossimo
@@ -2172,7 +2240,33 @@ search:
   title: Ricerca
   user_search:
     placeholder: Nome o ID
-  informations: 'Puoi cercare persone, gruppi, aziende, quartieri e frigo solidali.'
+  informations: 'Puoi cercare persone, gruppi, aziende, quartieri, chat, post di forum
+    e frigo solidali.'
+  results:
+    region:
+      ambassador_tooltip: ''
+      home_region_tooltip: ''
+      member_tooltip: ''
+    working_group:
+      member_tooltip: ''
+      admin_tooltip: ''
+    thread:
+      closed_tooltip: ''
+      forum: 'Forum'
+      sticky_tooltip: ''
+      ambassador_forum: ''
+      last_post: ''
+    in: ''
+    chat:
+      chat_with: 'Chiacchiera con {names}'
+      chat_with_others: 'altri'
+    user:
+      no_home_region: ''
+    store:
+      manager_tooltip: ''
+      jumper_tooltip: ''
+      member_tooltip: ''
+    from: ''
 profile:
   report:
     arbAdminAgainstRepAdmin: Sei un amministratore del collegio arbitrale e vuoi segnalare
@@ -2603,6 +2697,8 @@ mailbox:
   mails: E-mails
   mark_as_read: Segna come letto
   unknown_sender: Mittente sconosciuto
+  less: meno
+  more: più
 messages:
   bread: Notizie
 map:
@@ -2995,6 +3091,8 @@ globals:
     my_persons: 'I miei amici'
     my_stores: 'Le mie aziende'
     my_foodshare_points: 'I miei frigo solidali'
+    threads: 'Discussioni'
+    chats: 'Chat'
   reset: 'Resetta'
   account:
     signout: 'Esci'
@@ -3006,6 +3104,7 @@ globals:
   show_less: 'Mostra meno'
   save: 'Salva'
   show_more: 'Mostra di più'
+  telephone_number: Numero di telefono
 activitypost:
   response: 'risposta'
   quickreply_info: '<code class="key">Maiusc + Invio</code> per aggiungere una nuova
@@ -3251,3 +3350,7 @@ thread:
     placeholder: Titolo
     max_length_info: Lunghezza massima del titolo raggiunta (260 caratteri)
     edit_description: Modifica titolo
+  post:
+    options:
+      copy_source: ''
+    copy_source_success: ''

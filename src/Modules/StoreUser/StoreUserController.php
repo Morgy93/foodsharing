@@ -25,12 +25,13 @@ class StoreUserController extends FoodsharingController
         }
 
         if (!$storeGateway->storeExists($storeId)) {
-            $this->routeHelper->goAndExit('/?page=dashboard');
+            return $this->redirect('/?page=dashboard');
         }
 
         if (!$storePermissions->mayAccessStore($storeId)) {
             $this->flashMessageHelper->info($this->translator->trans('store.not-in-team'));
-            $this->routeHelper->goAndExit('/?page=map&bid=' . $storeId);
+
+            return $this->redirect('/?page=map&bid=' . $storeId);
         }
 
         $params['storeId'] = $storeId;

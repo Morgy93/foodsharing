@@ -34,20 +34,21 @@ use Foodsharing\RestApi\Models\Group\UserGroupModel;
 use Foodsharing\RestApi\Models\Region\UserRegionModel;
 use Foodsharing\Utility\DataHelper;
 use Foodsharing\Utility\EmailHelper;
-use FOS\RestBundle\Controller\AbstractFOSRestController;
 use FOS\RestBundle\Controller\Annotations as Rest;
 use FOS\RestBundle\Request\ParamFetcher;
 use Mobile_Detect;
 use Nelmio\ApiDocBundle\Annotation\Model;
 use OpenApi\Annotations as OA;
+use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\Exception\AccessDeniedHttpException;
 use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
 use Symfony\Component\HttpKernel\Exception\HttpException;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 use Symfony\Component\HttpKernel\Exception\UnauthorizedHttpException;
+use Symfony\Component\RateLimiter\RateLimiterFactory;
 
-class UserRestController extends AbstractFOSRestController
+class UserRestController extends FoodsharingRestController
 {
     private const MIN_RATING_MESSAGE_LENGTH = 100;
     private const MIN_PASSWORD_LENGTH = 8;
@@ -282,8 +283,10 @@ class UserRestController extends AbstractFOSRestController
      * @Rest\RequestParam(name="password")
      * @Rest\RequestParam(name="remember_me", default=false)
      */
-    public function loginAction(ParamFetcher $paramFetcher): Response
+    public function loginAction(ParamFetcher $paramFetcher, Request $request, RateLimiterFactory $loginLimiter): Response
     {
+        $this->checkRateLimit($request, $loginLimiter);
+
         $email = $paramFetcher->get('email');
         $password = $paramFetcher->get('password');
         $rememberMe = (bool)$paramFetcher->get('remember_me');

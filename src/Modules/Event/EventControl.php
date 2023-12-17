@@ -52,7 +52,7 @@ class EventControl extends Control
                 $link = '/?page=dashboard';
             } else {
                 // overview page: events in one region
-                $link = '/?page=bezirk&sub=events&bid=' . $regionId;
+                $link = '/region?&sub=events&bid=' . $regionId;
             }
 
             return $this->routeHelper->goAndExit($link);
@@ -68,7 +68,7 @@ class EventControl extends Control
         }
 
         $regionId = $event['bezirk_id'];
-        $regionLink = '/?page=bezirk&bid=' . $regionId;
+        $regionLink = '/region?bid=' . $regionId;
         $regionEventsLink = $regionLink . '&sub=events';
         $regionName = $this->regionGateway->getRegionName($regionId);
         if (empty($regionName)) {
@@ -116,7 +116,7 @@ class EventControl extends Control
             return $this->routeHelper->goAndExit('/?page=event&id=' . $eventId);
         }
 
-        $regionEventsLink = '/?page=bezirk&sub=events&bid=' . $event['bezirk_id'];
+        $regionEventsLink = '/region?sub=events&bid=' . $event['bezirk_id'];
         $this->pageHelper->addBread($this->translator->trans('events.bread'), $regionEventsLink);
         $this->pageHelper->addBread($event['name'], '/?page=event&id=' . $eventId);
         $this->pageHelper->addBread($this->translator->trans('events.edit'));

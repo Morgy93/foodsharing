@@ -20,9 +20,17 @@ Script command is: python3 ./scripts/releaseNotes.py
 Since we can tag the latest commit of the release on branch master, it is not necessary to create a new branch for the release. Also, in contrast to hotfixes which are cherry-picked, it is not necessary to merge the changes back into master after the release.
 
 * Update the date of the release in the changelog and commit it to branch master.
-* Create a new docs tag with `cd docs && yarn && yarn run version YYYY-MM__NAME`
+
+* Create a new docs tag with
+  * `install yarn` on your local system
+  * `./scripts/db-docs-build`
+  * `cd docs && yarn && yarn run version YYYY-MM__NAME`
+  * `./scripts/restart`
+  * check is http://localhost:13000 running
+  * check is http://localhost:13000/docs/current/backend/database/database-tables-columns available
+
 * Add a new tag on the latest commit in master. We use the date in the format `YYYY-MM` for the tag name.
-  * either on the command line using `git tag YYYY-MM` and `git push –tags`
+  * either on the command line using `git tag YYYY-MM-DD` and `git push –tags`
   * or in the project's tag list on GitLab
 * Create a new merge request in GitLab from `master` to `production`. Merge it and wait for the deployment to finish.
 * Add a new section to the changelog and commit it to master.

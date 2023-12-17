@@ -1,11 +1,7 @@
+### Compatibility endpoints
 index:
   path: /
   controller: Foodsharing\Entrypoint\IndexController
-
-website:
-  type: annotation
-  prefix: /
-  resource: ../src/Modules/
 
 xhr:
   path: /xhr
@@ -14,6 +10,11 @@ xhr:
 xhrapp:
   path: /xhrapp
   controller: Foodsharing\Entrypoint\XhrAppController
+
+website:
+  type: annotation
+  prefix: /
+  resource: ../src/Modules/
 
 mock:
   type: annotation

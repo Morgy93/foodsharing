@@ -135,12 +135,38 @@ search:
   user_search:
     placeholder: 'Nombre o DNI'
   forum: 'Buscar por título …'
-  informations: 'Puedes buscar por personas, grupos, empresas, distritos y distribuidores.'
+  informations: 'Puedes buscar por personas, grupos, empresas, distritos, chats, temas
+    y distribuidores.'
   noresults: 'No se pudieron encontrar resultados'
   thread-title-only: 'Sólo se buscan títulos, no el texto de las publicaciones del
     foro.'
   placeholder: 'Iniciar busqueda …'
   title: 'Buscar'
+  results:
+    working_group:
+      member_tooltip: Eres miembro de este grupo
+      admin_tooltip: Eres administrador de este grupo
+    thread:
+      last_post: último mensaje
+      ambassador_forum: Foro de Embajadores
+      closed_tooltip: Tema cerrado
+      forum: Foro
+      sticky_tooltip: Hilo fijado
+    store:
+      manager_tooltip: Eres responsable de esta colaboración
+      member_tooltip: Eres miembro de este negocio
+      jumper_tooltip: Estás en la lista de sustitutos de esta empresa
+    chat:
+      chat_with_others: otros
+      chat_with: Chatea con {names}
+    from: de
+    in: en
+    region:
+      ambassador_tooltip: Eres embajador de este distrito
+      home_region_tooltip: Este es su distrito de origen
+      member_tooltip: Eres miembro de este distrito
+    user:
+      no_home_region: Ningún distrito de origen
 reports:
   reason: razón
   message: descripción
@@ -374,6 +400,8 @@ terminology:
   n_foodsaver: 'un(a) rescatista|%count% rescatistas'
   reportAdmins: 'Equipo de manejo de quejas'
   n_home_regions: un@ con distrito de origen|%count% con distrito de origen
+  no_pickups: 'ninguna'
+  previous_pickups: Recogidas anteriores
 groups:
   empty: Aún no estás en ningún grupo de trabajo
 position: Puesto en foodsharing (público)
@@ -477,7 +505,8 @@ poll:
     tooltip_positive: 'Consentimiento'
     tooltip_negative: 'Rechazo'
     tooltip_neutral: 'Abstención'
-  type_description_3: 'Elección con valores entre +3 (aprobación) y -3 (rechazo)'
+  type_description_3: 'Selección de calificaciones con valores entre -3 (rechazo)
+    y +3 (aprobación)'
   scope_description_0: 'Tod@s l@s rescatistas verificad@s y no verificad@s del distrito/grupo'
   in_future: 'no ha comenzado todavía'
   allowed_voters: 'Elegible para votar'
@@ -1271,6 +1300,48 @@ store:
     selected_log_types: '{amount} tipos de acción seleccionados'
     title: Registro de las operaciones
     log_types_placeholder: Seleccione las acciones que se mostrarán
+    message:
+      6: '{actor} ha añadido {target} al equipo.'
+      1: '{actor} ha enviado una solicitud de unión.'
+      3: '{actor} ha aceptado la solicitud de afiliación de {target}.'
+      4: '{actor} ha añadido a {target} al equipo sin solicitarlo.'
+      7: '{actor} ha eliminado a {target} del equipo.'
+      2: '{actor} ha rechazado la solicitud de afiliación de {target}.'
+      8: '{actor} ha dejado al equipo.'
+      10: '{actor} ha dado de baja a {target} como responsable de las operaciones.'
+      16: '{actor} ha retirado la solicitud de afiliación'
+      15: '{actor} ha eliminado la entrada del muro de {target} de {date}'
+      5: '{actor} ha puesto a {target} en la lista de sustitutos.'
+      9: '{actor} ha asignado a {target} como responsable de la cooperación.'
+      11: '{actor} se ha registrado para ser recogido el {date}.'
+      12: '{actor} firmó para la recogida el {date}.'
+      14: '{actor} ha confirmado el horario de recogida de {target} el {date}.'
+      13: '{actor} ha firmado el envío de {target} para su recogida el {date}.'
+      13_with_reason: '{actor} ha firmado el envió de {target} para recogerse el {date}
+        con el siguiente mensaje'
+    type:
+      3: Aceptar las solicitudes de unión
+      2: Rechazar las solicitudes de unión
+      7: Eliminar Foodsaver del equipo
+      14: Confirme la hora de la recogida
+      1: Enviar una solicitud de unión
+      16: Retirar la solicitud de afiliación
+      8: Abandonar el equipo
+      4: Añadir Foodsaver al equipo sin la petición
+      10: Eliminar al responsable
+      6: Añadir Foodsaver al equipo activo
+      12: Firmar para recoger
+      9: Indique al responsable
+      11: Regístrese para la recogida
+      15: Eliminar una entrada del tablón de anuncios
+      13: Firmar para recoger
+      5: Pasar a la lista de suplentes
+    max_entries_message: Se mostrará un máximo de 100 entradas. Reduzca el rango de
+      la búsqueda.
+  signInDateTime: Fecha de entrada
+  slot_state: Estado de la ranura
+  lastPickupTitle: Última recogida
+  slotsCurrentlyOccupied: Espacios actualmente ocupados
 pickup:
   overview:
     status:
@@ -1395,7 +1466,7 @@ pickup:
   signout_confirm: '¿Estas segur@?'
   copiedNumber: '“{number}” se copió en el portapapeles.'
   leave_team_message_title: 'Mensaje al equipo'
-  open_profile: 'Abrir perfil'
+  open_profile: 'Perfil de'
   kick: 'Eliminar'
   kick_message: 'lo eliminamos de la recogida en {storeName} el {date}.'
   leave: 'Dejar'
@@ -1805,6 +1876,7 @@ basket:
     "14": 'dos semanas'
     "2": 'dos días'
     "21": 'tres semanas'
+    "5": cinco días
   has:
     bread: 'Productos de panadería'
     frozen: 'productos congelados'
@@ -1926,6 +1998,14 @@ basket:
     También puede encontrar otras cestas de alimentos cerca de usted en nuestro mapa.
 
     '
+  use_home_address: Utilizar el domicilio
+  modal_error:
+    no_contact: Elige cómo se debe ordenar la canasta de alimentos.
+    no_phone: Indique un número de teléfono.
+  contact_types: Opciones de contacto
+  delete_confirmation:
+    text: ¿Realmente quieres eliminar esta canasta de alimentos?
+    title: ¿Eliminar canasta de alimentos?
 menu:
   entry:
     press: 'Prensa'
@@ -2167,6 +2247,11 @@ forum:
   no_posts: 'Aún no hay publicaciones'
   not_found: Este hilo no existe.
   deleted_user: usuario eliminad@
+  mail_confirmation:
+    title: ¿Realmente quiere enviar una notificación por correo electrónico?
+    text: ¿Realmente quieres que este nuevo post sea enviado por correo electrónico
+      a todos los miembros de este grupo o distrito? Solo debes hacerlo si tu petición
+      afecta a todos y es tan importante que todos deberían saberlo.
 buddy:
   request_sent: 'Solicitud enviada.'
   request_accepted: 'Ahora son amig@s.'
@@ -2491,7 +2576,7 @@ mailbox:
     written_text:  
   mark_all: seleccionar todo
   tag_recipient_hint: Destinatari@s (varios separad@s por punto y coma)
-  mailsend_unsuccess: No se pudieron enviar los correos electrónicos. {error}
+  mailsend_unsuccess: No se ha podido enviar el correo electrónico. {error}
   attachment:
     not_found_explanation: El archivo adjunto no se pudo encontrar en el servidor
     not_found: extraviado
@@ -2501,6 +2586,8 @@ mailbox:
   mails: Correos electrónicos
   mark_as_read: Marcar como leído
   unknown_sender: Remitente desconocido
+  less: menos
+  more: más
 settings:
   follow:
     thread: '¿Quiere mantenerse actualizado sobre el tema del foro “{thread}”?'
@@ -2778,6 +2865,8 @@ globals:
     persons: 'Personas'
     my_stores: 'Mis empresas'
     groups: 'Grupos'
+    threads: Hilos
+    chats: Chats
   you: 'Tú'
   account:
     signin: 'Iniciar sesión'
@@ -2787,6 +2876,7 @@ globals:
   select: 'Por favor seleccione …'
   reset: 'Reiniciar'
   save: 'Ahorrar'
+  telephone_number: Número de teléfono
 legal:
   acknowledge: '¿Aceptas el acuerdo?'
   dont_agree: 'No estoy de acuerdo con el procesamiento de mis datos y'
@@ -3319,7 +3409,9 @@ fpcapital: 'PF'
 abholmenge: '¿Aproximadamente cuántos kilogramos se toman por recogida?'
 duration: 'Tiempo para responder'
 message_text_to_group_admin_workgroup: 'La región/grupo de trabajo <b>{groupName}</b>
-  no tiene ni embajador(-a) ni administrador(-a).<br>'
+  ya no tiene <b>embajador/administrador</b>.<br><br><br>Tiene la siguiente estructura
+  de ID:<br>{idStructureList}<br><br>El ID es: {groupId}<br><br>URL: <a href="/region?bid={groupId}&sub=forum"
+  target="_blank">Haga clic aquí para ir a la región/grupo de trabajo</a>'
 ui:
   switch:
     off: 'inactivo'
@@ -3426,3 +3518,7 @@ thread:
     placeholder: Título
     max_length_info: Se alcanzó la longitud máxima del título (260 caracteres)
     edit_description: Editar título
+  post:
+    options:
+      copy_source: Copiar código fuente
+    copy_source_success: ¡Código fuente copiado!

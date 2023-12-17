@@ -198,7 +198,7 @@ poll:
   already_voted: Du har allerede deltatt i denne avstemningen
   not_available: Denne avstemming eksisterer ikke, eller du har ikke tilgang til den.
   submit_vote_question: Virkelig stemme nå? Valget ditt kan ikke endres i etterkant.
-  type_description_3: Score avstemning med verdier mellom +3 (godkjenning) og -3 (avvisning)
+  type_description_3: Score avstemning med verdier mellom -3 (avvisning) og +3 (godkjenning)
   may_not_edit: Enten har du ikke rettighetene til å endre denne avstemningen eller
     tidsperioden for redigering er utløpt.
 polls:
@@ -482,6 +482,7 @@ basket:
     "3": tre dager
     "2": to dager
     "1": en dag
+    "5": fem dager
   where: Hvor?
   on: Matkurv fra {platform}
   by: Matkurv fra {name}
@@ -555,6 +556,14 @@ basket:
     synlig for matkurvbrukere.\n"
   not_withdrawn: 'Forespørselen om matkurven kunne ikke trekkes tilbake: '
   no_nearby: Det er ingen matkurver innenfor en radius på {radius} km
+  use_home_address: Bruk hjemmeadresse
+  modal_error:
+    no_contact: Velg hvordan matkurven skal bestilles.
+    no_phone: Vennligst oppgi et telefonnummer.
+  contact_types: Kontaktmuligheter
+  delete_confirmation:
+    text: Vil du virkelig slette denne matkurven?
+    title: Tømmer du matkurven?
 team:
   contacted: Meldingen din ble sendt.
   email: Epostadresse
@@ -673,7 +682,33 @@ search:
     placeholder: Navn eller ID
   noresults: Ingen resultater ble funnet
   thread-title-only: Det søkes kun i titler, ikke teksten til artikler.
-  informations: Du kan søke etter personer, grupper, selskaper, distrikter og distribusjonsstasjoner.
+  informations: Du kan søke etter personer, grupper, selskaper, distrikter, chatter,
+    tråder og distribusjonsstasjoner.
+  results:
+    region:
+      ambassador_tooltip: Du er en ambassadør for dette distriktet
+      home_region_tooltip: Dette er ditt hjemdistrikt
+      member_tooltip: Du er medlem av dette distriktet
+    working_group:
+      member_tooltip: Du er medlem av denne arbeidsgruppen
+      admin_tooltip: Du er administrator for denne arbeidsgruppen
+    thread:
+      closed_tooltip: Tråden er lukket
+      forum: Forum
+      sticky_tooltip: Tråden er festet
+      ambassador_forum: Forum for ambassadører
+      last_post: siste innlegg
+    in: i
+    chat:
+      chat_with: Chat med {names}
+      chat_with_others: andre
+    user:
+      no_home_region: Ingen hjemdistrikt
+    store:
+      manager_tooltip: Du er ansvarlig for denne bedriften
+      jumper_tooltip: Du er en reserve i teamet for dette bedriften
+      member_tooltip: Du er en del av teamet i dette bedriften
+    from: fra
 profile:
   public:
     mayNot: ikke aktiv
@@ -1082,13 +1117,15 @@ mailbox:
   conformation_modal:
     title: Bekreftelse
     message: Vil du virkelig slette denne e-posten?
-  mailsend_unsuccess: E-poster kunne ikke sendes. {error}
+  mailsend_unsuccess: E-post kunne ikke sendes. {error}
   attachment:
     not_found_explanation: Den vedlagte filen ble ikke lenger funnet på serveren
     not_found: ikke funnet
   add: Legg til
   mark_as_read: Merk som lest
   unknown_sender: Ukjent avsender
+  less: mindre
+  more: mer
 map:
   title: Kart
   donates: Selskapet donerer
@@ -2075,6 +2112,12 @@ forum:
     foran den, for eksempel som i han&bsol;*hun.'
   deleted_user: Slettet bruker
   not_found: Denne tråden eksisterer ikke.
+  mail_confirmation:
+    text: Ønsker du virkelig at dette nye innlegget skal sendes som e-post til alle
+      medlemmene i denne arbeidsgruppen eller distriktet? Du bør bare gjøre dette
+      hvis forespørselen din påvirker alle og er så viktig at alle bør være klar over
+      det.
+    title: Sender du virkelig e-postvarsling?
 timepicker:
   labelNowButton: nå
   labelCloseButton: Lukk
@@ -2158,7 +2201,7 @@ pickup:
   really_join_date: Ønsker du å gjøre en bindende påmelding til henting {date}?
   dates: Hentingsdatoere
   kick: kaste ut
-  open_profile: Se profiler
+  open_profile: Profilen til
   really_leave_date_title: Avregistrere {date}?
   really_kick_user_info: "Vil du virkelig avbestille {name} fra å hente den {date}?\n
     {name} vil motta følgende melding om dette:\n"
@@ -2476,6 +2519,12 @@ store:
       2: '{actor} har avslått medlemsforespørselen fra {target}.'
       5: '{actor} satte [target} på hoppelisten.'
       9: '{actor} har utnevnt {target} til samarbeidsansvarlig.'
+      14: '{actor} har bekreftet registreringen av {target} for {date}.'
+      15: '{actor} har slettet anslagstavleoppføringen til {target} fra {date}'
+  signInDateTime: Tidspunkt for innskrivning
+  slot_state: Status for plass
+  lastPickupTitle: Siste henting
+  slotsCurrentlyOccupied: Plasser som for øyeblikket er belagt
 storeview:
   status: Nåværende status
   public_time_at_night: om natten
@@ -2666,6 +2715,8 @@ terminology:
   pickup: Plukke opp
   store: Selskapet
   n_home_regions: en med hjemdistrikt|%count% med hjemdistrikt
+  no_pickups: ingen
+  previous_pickups: Tidligere samlinger
 gender:
   d: mangfoldig
   f: Fru
@@ -2780,7 +2831,7 @@ list:
 mailbox_name: Postboksnavn
 message_text_to_group_admin_workgroup: 'Regionen/arbeidsgruppen <b>{groupName}</b>
   har <b>ingen</b> ambassadør/administrator lenger.<br><br><br>Den har følgende ID-struktur:<br>{idStructureList}<br><br>IDen
-  er: {groupId}<br><br>URL: <a href ="/?page=bezirk&bid={groupId}&sub=forum" target="_blank">Klikk
+  er: {groupId}<br><br>URL: <a href ="/region?bid={groupId}&sub=forum" target="_blank">Klikk
   her for å gå til regionen / arbeidsgruppen</a>'
 parent_id: Foreldredistriktet
 food_type: Hvilke typer matvarer er inkludert?
@@ -3054,6 +3105,8 @@ globals:
     my_mailboxes: Mine postkasser
     buddies: Venner
     my_foodshare_points: Mine distribusjonsstasjoner
+    threads: Tråder
+    chats: Chatter
   show_more: Vis mer
   reset: Tilbakestill
   show_less: Vis mindre
@@ -3061,6 +3114,7 @@ globals:
     signup: Delta
     signout: Logg ut
     signin: Logg inn
+  telephone_number: Telefonnummer
 savewithus: Spar hos oss!
 logincontrol:
   title: Avslutt abonnement på nyhetsbrev
@@ -3239,3 +3293,7 @@ thread:
     placeholder: Tittel
     max_length_info: Maksimal tittellengde er nådd (260 tegn)
     edit_description: Rediger tittel
+  post:
+    options:
+      copy_source: Kopier kildekoden
+    copy_source_success: Kildekoden er kopiert!

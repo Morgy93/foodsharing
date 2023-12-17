@@ -61,7 +61,7 @@ class ContentController extends FoodsharingController
         }
 
         if (!$this->contentPermissions->mayEditContent()) {
-            $this->routeHelper->goAndExit('/');
+            return $this->redirect('/');
         }
 
         if ($this->identificationHelper->getAction('neu')) {
@@ -82,7 +82,7 @@ class ContentController extends FoodsharingController
             }
         } elseif ($id = $this->identificationHelper->getActionId('edit')) {
             if (!$this->contentPermissions->mayEditContentId((int)$_GET['id'])) {
-                $this->routeHelper->goAndExit('/content');
+                return $this->redirect('/content');
             }
             $this->handle_edit();
 
@@ -100,7 +100,7 @@ class ContentController extends FoodsharingController
         } elseif ($id = $this->identificationHelper->getActionId('view')) {
             $this->addContent($id);
         } elseif (isset($_GET['id'])) {
-            $this->routeHelper->goAndExit('/content?a=edit&id=' . (int)$_GET['id']);
+            return $this->redirect('/content?a=edit&id=' . (int)$_GET['id']);
         } else {
             $this->pageHelper->addBread($this->translator->trans('content.public'), '/content');
 

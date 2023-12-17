@@ -303,6 +303,11 @@ class ForumPostCest
             $I->click('#send_mail_button');
         }
         $I->click('Anlegen');
+        if ($sendEmail) {
+            $I->waitForElementVisible('.modal-dialog');
+            $I->click('Senden');
+            $I->waitForElementNotVisible('.modal-dialog');
+        }
         $I->waitForPageBody();
     }
 
@@ -385,7 +390,7 @@ class ForumPostCest
         $mail = $I->getMails()[0];
         $I->assertStringContainsString($title, $mail->text);
         $I->assertStringContainsString('tigt werden', $mail->subject);
-        $I->assertRegExp('/http:\/\/.*bezirk.*&amp;tid=[0-9]+/', $mail->html, 'mail should contain a link to thread');
+        $I->assertRegExp('/http:\/\/.*region.*&amp;tid=[0-9]+/', $mail->html, 'mail should contain a link to thread');
         preg_match('/http:\/\/.*?\/(.*?)"/', $mail->html, $matches);
         $link = html_entity_decode($matches[1]);
         $I->deleteAllMails();
@@ -409,14 +414,14 @@ class ForumPostCest
     }
 
     /**
-     * @example["foodsaver", "bigTestBezirk"]
+     * @example["foodsaver", "moderatedTestBezirk"]
      */
     public function DeleteLastPostAndGetRedirectedToForum(AcceptanceTester $I, Codeception\Example $example)
     {
         $I->login($this->{$example[0]}['email']);
         $title = 'TestThreadTitleForDeletion';
         $I->deleteAllMails();
-        $this->_createThread($I, $this->{$example[1]}['id'], $title, true, true);
+        $this->_createThread($I, $this->{$example[1]}['id'], $title, false, false);
         $I->amOnPage($I->forumUrl($this->{$example[1]}['id']));
         $I->waitForActiveAPICalls();
 
@@ -442,7 +447,9 @@ class ForumPostCest
         $I->click('.forum_threads a');
         $I->waitForPageBody();
 
-        $I->seeCurrentUrlMatches('~' . $I->forumUrl($this->{$example[1]}['id']) . '&tid=(\d+)~');
+        $regexForumUrl = preg_quote($I->forumUrl($this->{$example[1]}['id']));
+        $regex = /* @lang PhpRegExp */ '~' . $regexForumUrl . '&tid=(\d+)~';
+        $I->seeCurrentUrlMatches($regex);
         $I->click('a[title="Beitrag löschen"]');
         $I->wait(1);
         $I->canSee('Beitrag löschen');

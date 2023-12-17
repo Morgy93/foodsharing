@@ -105,6 +105,12 @@ export default {
   height: 50px;
 }
 
+.avatar--130 {
+  display: inline-flex;
+  width: 130px;
+  height: 130px;
+}
+
 .sleeping::after {
   content: '';
   display: block;
