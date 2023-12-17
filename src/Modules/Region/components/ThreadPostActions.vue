@@ -140,11 +140,8 @@ export default {
       return !!this.reactions[key].find(r => r.id === DataUser.getters.getUserId())
     },
     concatUsers (users) {
-      const names = users.map(u => u.id === DataUser.getters.getUserId() ? this.$i18n('globals.you') : u.name)
-      if (names.length === 1) {
-        return names[0]
-      }
-      return `${names.slice(0, names.length - 1).join(', ')} & ${names[names.length - 1]}`
+      const names = users.map(u => u.id === DataUser.getters.getUserId() ? this.$i18n('globals.you') : u.name ?? this.$i18n('forum.deleted_user'))
+      return names.length > 1 ? `${names.slice(0, names.length - 1).join(', ')} & ${names[names.length - 1]}` : names[0]
     },
   },
 }

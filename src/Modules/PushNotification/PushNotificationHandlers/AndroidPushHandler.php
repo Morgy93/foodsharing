@@ -26,9 +26,6 @@ class AndroidPushHandler implements PushNotificationHandlerInterface
         $this->fcmKey = FCM_KEY;
     }
 
-    /**
-     * {@inheritdoc}
-     */
     public static function getTypeIdentifier(): string
     {
         return self::typeIdentifier;
@@ -101,9 +98,6 @@ class AndroidPushHandler implements PushNotificationHandlerInterface
         return $deadSubscriptions;
     }
 
-    /**
-     * {@inheritdoc}
-     */
     public function getServerInformation(): array
     {
         return [];

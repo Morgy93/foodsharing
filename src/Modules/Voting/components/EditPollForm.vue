@@ -31,18 +31,12 @@
           :label="$i18n('poll.new_poll.description')"
           class="mb-4"
         >
-          <div
-            class="mb-2 ml-2"
-            v-html="$i18n('forum.markdown_description')"
-          />
-          <b-form-textarea
-            id="input-description"
-            v-model="$v.description.$model"
-            :placeholder="$i18n('poll.new_poll.description_placeholder')"
-            trim
+          <MarkdownInput
+            :rows="5"
+            :value="$v.description.$model"
             :state="$v.description.$error ? false : null"
-            rows="5"
-            class="ml-1"
+            :placeholder="$i18n('poll.new_poll.description_placeholder')"
+            @update:value="newValue => $v.description.$model = newValue"
           />
           <div
             v-if="$v.description.$error"
@@ -131,34 +125,14 @@
 
 <script>
 
-import {
-  BForm,
-  BFormGroup,
-  BFormInput,
-  BFormTextarea,
-  BFormSpinbutton,
-  BButton,
-  BFormRow,
-  BCol,
-  BModal,
-} from 'bootstrap-vue'
 import { editPoll } from '@/api/voting'
 import { pulseError } from '@/script'
 import i18n from '@/helper/i18n'
 import { required, minLength } from 'vuelidate/lib/validators'
+import MarkdownInput from '@/components/Markdown/MarkdownInput.vue'
 
 export default {
-  components: {
-    BForm,
-    BFormGroup,
-    BFormInput,
-    BFormTextarea,
-    BFormSpinbutton,
-    BButton,
-    BFormRow,
-    BCol,
-    BModal,
-  },
+  components: { MarkdownInput },
   props: {
     poll: {
       type: Object,
@@ -203,7 +177,7 @@ export default {
       e.preventDefault()
       this.isLoading = true
       try {
-        await editPoll(this.poll.id, this.name, this.description, this.options)
+        await editPoll(this.poll.id, this.name, this.description.trim(), this.options)
         window.location = this.$url('poll', this.poll.id)
       } catch (e) {
         pulseError(i18n('error_unexpected') + ': ' + e.message)

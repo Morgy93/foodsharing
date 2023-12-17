@@ -41,28 +41,6 @@ class SearchApiCest
         $this->region1AmbassadorForumThread = $I->addForumThread($this->region1['id'], $this->user1['id'], true);
     }
 
-    // ========================= search index endpoint ================================
-
-    public function canOnlyGenerateSearchIndexWhenLoggedIn(ApiTester $I)
-    {
-        $I->sendGET('api/search/index');
-        $I->seeResponseCodeIs(HttpCode::UNAUTHORIZED);
-
-        $I->login($this->user1['email']);
-        $I->sendGET('api/search/index');
-        $I->seeResponseCodeIs(HttpCode::OK);
-    }
-
-    public function canGenerateSearchIndex(ApiTester $I)
-    {
-        $I->login($this->user1['email']);
-        $I->sendGET('api/search/index');
-        $I->seeResponseCodeIs(HttpCode::OK);
-        $I->seeResponseContainsJson([
-            'myRegions' => ['id' => $this->region1['id']]
-        ]);
-    }
-
     // ========================= forum search endpoint ================================
 
     public function canOnlySearchInForumWhenLoggedIn(ApiTester $I)
@@ -120,11 +98,7 @@ class SearchApiCest
 
     private function canFindForumThread(ApiTester $I, int|string $regionId, bool $ambassadorForum, array $thread)
     {
-        // The search backend only uses words with length > 2
-        $parts = explode(' ', $thread['name']);
-        $query = current(array_filter($parts, function ($part) {
-            return strlen($part) > 2;
-        }));
+        $query = $thread['name'];
         $subforumId = $ambassadorForum ? 1 : 0;
 
         $I->sendGET("api/search/forum/$regionId/$subforumId?q=$query");
@@ -206,7 +180,7 @@ class SearchApiCest
     }
 
     /**
-     * @example {"loginUser": 0, "searchUser": 0, "canFind": true, "canSeeFullName": false}
+     * @example {"loginUser": 0, "searchUser": 0, "canFind": false, "canSeeFullName": false}
      * @example {"loginUser": 0, "searchUser": 1, "canFind": false, "canSeeFullName": false}
      * @example {"loginUser": 1, "searchUser": 0, "canFind": true, "canSeeFullName": true}
      * @example {"loginUser": 1, "searchUser": 1, "canFind": false, "canSeeFullName": false}
@@ -226,13 +200,16 @@ class SearchApiCest
         $I->seeResponseCodeIs(HttpCode::OK);
 
         if ($example['canFind']) {
-            $name = $example['canSeeFullName'] ? $searchUser['name'] . ' ' . $searchUser['nachname'] : $searchUser['name'];
-            $I->canSeeResponseContainsJson(['users' => [[
+            $userToFind = [
                 'id' => $searchUser['id'],
-                'name' => $name,
-            ]]]);
+                'name' => $searchUser['name'],
+            ];
+            if ($example['canSeeFullName']) {
+                $userToFind['last_name'] = $searchUser['nachname'];
+            }
+            $I->seeResponseContainsJson(['users' => [$userToFind]]);
         } else {
-            $I->cantSeeResponseContainsJson(['users' => [[
+            $I->dontSeeResponseContainsJson(['users' => [[
                 'id' => $searchUser['id'],
             ]]]);
         }
@@ -258,12 +235,11 @@ class SearchApiCest
         $I->seeResponseCodeIs(HttpCode::OK);
 
         if ($example['canFind']) {
-            $I->canSeeResponseContainsJson(['users' => [[
+            $I->seeResponseContainsJson(['users' => [[
                 'id' => $searchUser['id'],
-                'name' => "${searchUser['name']} {$searchUser['nachname']}",
             ]]]);
         } else {
-            $I->cantSeeResponseContainsJson(['users' => [[
+            $I->dontSeeResponseContainsJson(['users' => [[
                 'id' => $searchUser['id'],
             ]]]);
         }
@@ -292,7 +268,7 @@ class SearchApiCest
             0 => [
                 'id' => $this->user1['id'],
                 'name' => $this->user1['name'],
-                'teaser' => sprintf('FS-ID: %s | Mail: %s', $this->user1['id'], $this->user1['email'])
+                'email' => $this->user1['email']
             ]
         ]]);
     }

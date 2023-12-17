@@ -2,18 +2,14 @@
 
 /* If you make changes here check if changes at the production server are needed */
 
-/* Adding Whoops during testing can be very useful as the screenshots in the tests/_output folder can show a nice
-     error message. It also catches warnings and the whole site runs in a way that is always throwing warnings out.
-     But hopefully we fix all those at some point :)
-*/
-Foodsharing\Debug\Whoops::register();
-
 $protocol = 'http';
 if (isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] == 'on') {
     $protocol = 'https';
 }
 
 $host = 'lmr.local/';
+
+define('SITE_ENVIRONMENT', 'test');
 
 define('PROTOCOL', $protocol);
 define('DB_HOST', 'db');

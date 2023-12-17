@@ -26,7 +26,7 @@ class MessageRestController extends AbstractFOSRestController
         FoodsaverGateway $foodsaverGateway,
         MessageGateway $messageGateway,
         MessageTransactions $messageTransactions,
-        Session $session
+        Session $session,
     ) {
         $this->foodsaverGateway = $foodsaverGateway;
         $this->messageGateway = $messageGateway;

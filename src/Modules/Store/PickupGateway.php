@@ -161,8 +161,7 @@ class PickupGateway extends BaseGateway implements BellUpdaterInterface
     }
 
     /**
-     * @param bool $markNotificationAsUnread:
-     * if an older notification exists, that has already been marked as read,
+     * @param bool $markNotificationAsUnread if an older notification exists that has already been marked as read,
      * it can be marked as unread again while updating it
      */
     public function updateBellNotificationForStoreManagers(int $storeId, bool $markNotificationAsUnread = false): void

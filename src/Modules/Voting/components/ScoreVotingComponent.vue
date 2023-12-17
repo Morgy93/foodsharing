@@ -1,44 +1,24 @@
 <template>
   <div class="bootstrap">
-    <b-form-group v-if="smallLayout">
-      <div
-        v-for="i in options.length"
-        :key="i"
-        class="mb-5"
-      >
-        {{ options[i - 1].text }}
-        <vue-slider
-          v-model="selected[i-1]"
-          :min="-3"
-          :max="3"
-          :value="0"
-          :marks="marks"
-          :adsorb="true"
-          class="mt-2"
-          :disabled="!enabled"
-          direction="rtl"
-        />
-      </div>
-    </b-form-group>
-    <b-form-group v-else>
+    <b-form-group class="flex-wrap">
       <b-form-row
         v-for="i in options.length"
         :key="i"
         class="mb-5"
       >
-        <b-col>
+        <b-col class="min-width-250 pb-2">
           {{ options[i - 1].text }}
         </b-col>
-        <b-col>
+        <b-col class="min-width-250">
           <vue-slider
             v-model="selected[i-1]"
             :min="-3"
             :max="3"
-            :value="0"
             :marks="marks"
             :adsorb="true"
             :disabled="!enabled"
-            direction="rtl"
+            tooltip="none"
+            :class="{'untouched-slider': selected[i-1] === null}"
           />
         </b-col>
       </b-form-row>
@@ -66,9 +46,8 @@ export default {
   },
   data () {
     return {
-      selected: Array(this.options.length).fill(0),
+      selected: Array(this.options.length).fill(null),
       marks: [-3, -2, -1, 0, 1, 2, 3],
-      smallLayout: window.innerWidth < 500,
     }
   },
   computed: {
@@ -79,22 +58,33 @@ export default {
       }
       return v
     },
+    selectionValid () {
+      return !this.selected.some(s => s === null)
+    },
   },
   watch: {
     votingRequestValues () { this.$emit('update-voting-request-values', this.votingRequestValues) },
+    selectionValid () { this.$emit('update-valid-selection', this.selectionValid) },
   },
   created () {
-    this.$emit('update-valid-selection', true)
     this.$emit('update-voting-request-values', this.votingRequestValues)
-    window.addEventListener('resize', this.updateWidth)
-  },
-  methods: {
-    updateWidth (event) {
-      this.smallLayout = window.innerWidth < 500
-    },
   },
 }
 </script>
 
-<style scoped lang="scss">
+<style lang="scss">
+
+.untouched-slider{
+  .vue-slider-dot {
+    display: none;
+  }
+  .vue-slider-mark-step-active {
+    box-shadow: 0 0 0 2px #e8e8e8 !important;
+  }
+}
+
+.min-width-250 {
+  min-width: 250px;
+}
+
 </style>

@@ -23,7 +23,7 @@
         +{{ hiddenUsers.length }}
       </span>
     </div>
-    <b-tooltip v-if="hiddenUsers.length" :target="'hidden-fetcher-'+uniqueId" triggers="hover">
+    <b-tooltip v-if="hiddenUsers.length && showOverflowTooltip" :target="'hidden-fetcher-'+uniqueId" triggers="hover">
       <span v-for="(user, index) in hiddenUsers" :key="user.id">
         <span v-if="index != 0">, </span>
         <a :href="$url('profile', user.id)" class="tooltip-link">{{ user.name }}</a>
@@ -78,6 +78,10 @@ export default {
     borderColor: {
       type: String,
       default: 'white',
+    },
+    showOverflowTooltip: {
+      type: Boolean,
+      default: true,
     },
   },
   data () {

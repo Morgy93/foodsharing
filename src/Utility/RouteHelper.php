@@ -19,6 +19,7 @@ final class RouteHelper
     ) {
     }
 
+    // For Symfony controllers: Use $this->redirect(toRoute) instead.
     public function goAndExit(string $url): never
     {
         header('Location: ' . $url);
@@ -90,6 +91,7 @@ final class RouteHelper
             $str
         ) ?: '';
         $str = substr($str, 1);
+
         // adds http:// if not existing
         return preg_replace('`href=\"www`', 'href="http://www', $str) ?: '';
     }

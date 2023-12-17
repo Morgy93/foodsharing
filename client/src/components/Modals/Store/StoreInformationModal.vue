@@ -349,16 +349,12 @@
               :label="$i18n('storeview.specials')"
               label-for="description"
             >
-              <b-form-textarea
+              <MarkdownInput
                 id="description"
-                v-model="store.description"
-                rows="5"
-                max-rows="18"
+                :rows="5"
+                :value="store.description"
                 :disabled="!editMode"
-              />
-              <div
-                class="mb-2 ml-2"
-                v-html="$i18n('forum.markdown_description')"
+                @update:value="newDescription => store.description = newDescription"
               />
             </b-form-group>
           </b-card-text>
@@ -528,6 +524,7 @@ import RegularPickup from '@/components/Stores/RegularPickup.vue'
 
 import MediaQueryMixin from '@/mixins/MediaQueryMixin'
 import AutoResizeTextareaMixin from '@/mixins/AutoResizeTextareaMixin'
+import MarkdownInput from '@/components/Markdown/MarkdownInput.vue'
 
 export default {
   name: 'StoreInformationEditModal',
@@ -535,6 +532,7 @@ export default {
     LeafletLocationSearch,
     RegionTreeVForm,
     RegularPickup,
+    MarkdownInput,
   },
   mixins: [MediaQueryMixin, AutoResizeTextareaMixin],
   props: {

@@ -71,7 +71,7 @@ class GroupRestController extends AbstractFOSRestController
         if (!$this->session->mayRole()) {
             throw new UnauthorizedHttpException('');
         }
-        if (!in_array($groupId, $this->session->listRegionIDs())) {
+        if (!$this->session->mayBezirk($groupId)) {
             throw new AccessDeniedHttpException();
         }
         $group = $regionGateway->getRegion($groupId);
@@ -94,6 +94,7 @@ class GroupRestController extends AbstractFOSRestController
         if ($paramFetcher->get('redirect') == 'true') {
             return $this->redirect($bbb->joinURL($key, $name, true));
         }
+
         /* Without the redirect, we return information about the conference */
         return $this->handleView($this->view($data, 200));
     }

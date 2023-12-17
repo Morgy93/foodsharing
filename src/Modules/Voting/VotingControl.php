@@ -35,8 +35,8 @@ class VotingControl extends Control
             if (isset($_GET['id']) && ($poll = $this->votingTransactions->getPoll($_GET['id'], true))
                 && $this->votingPermissions->maySeePoll($poll)) {
                 $region = $this->regionGateway->getRegion($poll->regionId);
-                $this->pageHelper->addBread($region['name'], '/?page=bezirk&bid=' . $region['id']);
-                $this->pageHelper->addBread($this->translator->trans('terminology.polls'), '/?page=bezirk&bid=' . $region['id'] . '&sub=polls');
+                $this->pageHelper->addBread($region['name'], '/region?bid=' . $region['id']);
+                $this->pageHelper->addBread($this->translator->trans('terminology.polls'), '/region?bid=' . $region['id'] . '&sub=polls');
                 $this->pageHelper->addBread($poll->name);
                 $this->pageHelper->addTitle($poll->name);
 
@@ -61,8 +61,8 @@ class VotingControl extends Control
                 }
             } elseif (isset($_GET['sub']) && $_GET['sub'] === 'new' && isset($_GET['bid']) && ($region = $this->regionGateway->getRegion($_GET['bid']))
                 && $this->votingPermissions->mayCreatePoll($region['id'])) {
-                $this->pageHelper->addBread($region['name'], '/?page=bezirk&bid=' . $region['id']);
-                $this->pageHelper->addBread($this->translator->trans('terminology.polls'), '/?page=bezirk&bid=' . $region['id'] . '&sub=polls');
+                $this->pageHelper->addBread($region['name'], '/region?bid=' . $region['id']);
+                $this->pageHelper->addBread($this->translator->trans('terminology.polls'), '/region?bid=' . $region['id'] . '&sub=polls');
                 $this->pageHelper->addBread($this->translator->trans('polls.new_poll'));
                 $this->pageHelper->addTitle($this->translator->trans('polls.new_poll'));
 

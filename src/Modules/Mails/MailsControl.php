@@ -376,13 +376,6 @@ class MailsControl extends ConsoleControl
                 $this->mailer->send($email);
                 self::success('email send OK');
 
-                // remove attachments from temp folder
-                if (!empty($data['attachments'])) {
-                    foreach ($data['attachments'] as $a) {
-                        @unlink($a[0]);
-                    }
-                }
-
                 break;
             } catch (\Throwable $e) {
                 self::error('email send error: ' . $e->getMessage());

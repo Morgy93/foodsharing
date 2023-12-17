@@ -576,7 +576,7 @@ class Foodsharing extends \Codeception\Module\Db
 
         // add up to 10 emails to each folder
         foreach ([MailboxFolder::FOLDER_INBOX, MailboxFolder::FOLDER_SENT, MailboxFolder::FOLDER_TRASH] as $folder) {
-            $numMails = $this->faker->numberBetween(0, 10);
+            $numMails = $this->faker->numberBetween(1, 10);
             for ($i = 0; $i < $numMails; ++$i) {
                 $this->createEmail($mb, $folder);
             }

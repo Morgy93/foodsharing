@@ -4,9 +4,6 @@ use Foodsharing\Modules\Login\LoginService;
 
 class MailActivationTest extends \Codeception\Test\Unit
 {
-    /**
-     * @var \UnitTester
-     */
     protected UnitTester $tester;
 
     private LoginService $service;

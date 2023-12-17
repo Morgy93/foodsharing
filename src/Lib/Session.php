@@ -439,7 +439,18 @@ class Session
 
     public function mayBezirk($regionId): bool
     {
-        return isset($_SESSION['client']['bezirke'][$regionId]) || $this->isAdminFor($regionId) || $this->mayRole(Role::ORGA);
+        if ($this->mayRole(Role::ORGA)) {
+            return true;
+        }
+        // use database check if the session includes the region to unsure previleges are lost after removal from a region
+        $isMember = isset($_SESSION['client']['bezirke'][$regionId]);
+        if ($isMember && !$this->regionGateway->hasMember($this->id(), $regionId)) {
+            unset($_SESSION['client']['bezirke'][$regionId]);
+
+            return false;
+        }
+
+        return $isMember;
     }
 
     public function mayIsStoreResponsible($storeId)
@@ -535,7 +546,7 @@ class Session
     public function updateLastActivity()
     {
         $session_last_activity = $_SESSION['client']['last_activity'];
-        if ($session_last_activity === null) {
+        if ($session_last_activity === '0000-00-00 00:00:00') {
             $session_last_activity = date('Y-m-d');
         }
 

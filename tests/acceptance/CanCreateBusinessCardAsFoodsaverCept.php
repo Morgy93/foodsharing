@@ -12,4 +12,4 @@ $I->login($foodsaver['email'], $pass);
 
 $I->amOnPage('/?page=bcard');
 
-$I->waitForText('Deine foodsharing Visitenkarte');
+$I->waitForText('Deine foodsharing-Visitenkarte');

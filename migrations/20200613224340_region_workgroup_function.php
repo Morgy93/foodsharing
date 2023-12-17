@@ -34,7 +34,6 @@ class RegionWorkgroupFunction extends AbstractMigration
         /**
          * from incremental-20200419-region-workgroup-function:
          * CREATE TABLE `fs_region_function`.
-        ) ;
          */
         $table = $this->table('fs_region_function');
         /* phinx always creates a primary key ID, so we don't need it here if that fits our needs. */

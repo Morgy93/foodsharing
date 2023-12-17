@@ -20,9 +20,9 @@ Foodsaver | | FS | User on the online platform, who has passed the Foodsaver-Qui
 Foodsharer | | FSh | Users on the online platform. Can offer or pick up food baskets and use foodsharepoints.
 key account manager | | KAM | Negotiated with an operating chain and represents our "face" for this chain. Communicates information between the operators and the chain.
 Food | Lebensmittel | LM | Everything that nourishes people physically.
-local report group | Lokale Meldegruppe | LMG | Edits reports of rule violations for a region.
+local report group | Lokale Meldungsgruppe | LMG | Edits reports of rule violations for a region.
 Mediation team | Mediationsgruppe | MT | Can be consulted between people to help start a communication and resolve a underlying conflict.
-(local) arbitration board | (lokale) Schiedstelle | LS | Appeals against decisions on reports of rule violations. Decides on deletion of contributions in the region's forum.
+(local) arbitration board | (lokale) Schiedsstelle | LS | Appeals against decisions on reports of rule violations. Decides on deletion of contributions in the region's forum.
 rule violation | Regelverletzung | MR | Rule violation messages are an important tool to address problems, inconsistencies and misunderstandings before they escalate into bigger conflicts. It is always preferred to first resolve things personally if it is possible.
 Mumble | | | Speech conference software for foodsharing conference calls on foodsharing's own Mumble server (open source, IP telephony).
 quiz | | | A prerequisite for becoming a foodsaver, company manager or ambassador. There is one quiz for each of these roles.

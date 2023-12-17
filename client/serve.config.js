@@ -21,7 +21,7 @@ module.exports = {
     proxy: {
       '!/sockjs-node/**': {
         target,
-        changeOrigin: true,
+        changeOrigin: false,
         xfwd: true,
         ws: true,
       },

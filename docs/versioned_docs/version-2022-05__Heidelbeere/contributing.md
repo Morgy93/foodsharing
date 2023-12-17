@@ -113,7 +113,7 @@ The next steps will be:
 - The newest version of the master branch will be deployed automatically to <https://beta.foodsharing.de/> after some time, where you can try it out (uses production database).
   - See <https://gitlab.com/foodsharing-dev/foodsharing/environments> for an overview of the different environments.
 
-- After your MR has been merged, you are responsible to create a testing issue in the Beta Testing forum: <https://foodsharing.de/?page=bezirk&bid=734&sub=forum>:
+- After your MR has been merged, you are responsible to create a testing issue in the Beta Testing forum: <https://foodsharing.de/region?bid=734&sub=forum>:
   - Consider writing a detailed description **in German**.
   - Describe in a few sentences, what should be tested from a **user perspective**.
   - Also mention different settings (e.g. **different browsers**, roles, ...) how this change can be tested.

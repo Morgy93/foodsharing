@@ -90,7 +90,7 @@ class IndexController extends AbstractController
     // because the highest level routing parameter is always 'page',
     // we can easily port almost all controllers without thought
     // by turning that parameter into a root level path
-    // e.g. /?page=bezirk&a=b&c=1 becomes /bezirk?a=b&c=1
+    // e.g. /?page=content&a=b&c=1 becomes /content?a=b&c=1
     private function doPortedRedirect(string $page, Request $request, UrlHelper $urlHelper): Response
     {
         $request->query->remove('page');

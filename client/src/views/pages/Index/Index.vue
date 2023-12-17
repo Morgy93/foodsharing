@@ -167,7 +167,7 @@
               {{ $i18n('startpage.member.text') }}
               <b-link
                 class="link"
-                href="/?page=content&sub=joininfo"
+                href="/content?sub=joininfo"
               >
                 {{ $i18n('startpage.more_infos') }}
               </b-link>
@@ -319,7 +319,7 @@
             {{ $i18n('startpage.demands.text') }}
             <b-link
               class="link"
-              href="/?page=content&sub=forderungen"
+              href="/content?sub=forderungen"
             >
               {{ $i18n('startpage.more_infos') }}
             </b-link>

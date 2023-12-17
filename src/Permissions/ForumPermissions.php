@@ -58,7 +58,7 @@ class ForumPermissions
         if ($ambassadorForum && !$this->session->isAdminFor($regionId)) {
             return false;
         }
-        if (!in_array($regionId, $this->session->listRegionIDs())) {
+        if (!$this->session->mayBezirk($regionId)) {
             return false;
         }
 
@@ -102,6 +102,15 @@ class ForumPermissions
         }
 
         return false;
+    }
+
+    public function mayRename(int $threadId): bool
+    {
+        if ($this->mayModerate($threadId)) {
+            return true;
+        }
+
+        return $this->forumGateway->getThread($threadId)['creator_id'] == $this->session->id();
     }
 
     public function mayAccessThread(int $threadId): bool
@@ -159,5 +168,10 @@ class ForumPermissions
     public function mayDeleteThread(array $thread): bool
     {
         return !$thread['active'] && $this->mayModerate($thread['id']);
+    }
+
+    public function maySearchEveryForum(): bool
+    {
+        return $this->session->mayRole(Role::ORGA);
     }
 }
