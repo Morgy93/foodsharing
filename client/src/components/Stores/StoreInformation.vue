@@ -140,7 +140,7 @@
               v-model="store.region"
               modal-title="storeview.select_related_region"
               input-name="regionId"
-              :selectable-region-types="[1, 8, 9]"
+              :selectable-region-types="[REGION_UNIT_TYPE.CITY, REGION_UNIT_TYPE.BIG_CITY, REGION_UNIT_TYPE.PART_OF_TOWN]"
               :disabled="!editMode"
             />
           </b-form-group>
@@ -450,6 +450,7 @@ import RegularPickup from '@/components/Stores/RegularPickup.vue'
 
 import MediaQueryMixin from '@/mixins/MediaQueryMixin'
 import AutoResizeTextareaMixin from '@/mixins/AutoResizeTextareaMixin'
+import { REGION_UNIT_TYPE } from '@/stores/regions'
 
 export default {
   name: 'StoreInformationEditModal',
@@ -483,6 +484,9 @@ export default {
     }
   },
   computed: {
+    REGION_UNIT_TYPE () {
+      return REGION_UNIT_TYPE
+    },
     storeInformation () {
       return StoreData.getters.getStoreInformation()
     },
