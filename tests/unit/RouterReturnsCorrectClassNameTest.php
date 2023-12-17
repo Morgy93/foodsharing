@@ -23,12 +23,12 @@ class RouterReturnsCorrectClassNameTest extends \Codeception\Test\Unit
     public function testReturnFqcnForControlClass()
     {
         $actual = Routing::getClassName('settings', 'Control');
-        $this->assertEquals('\\Foodsharing\\Modules\\Settings\\SettingsControl', $actual);
+        $this->assertEquals('Foodsharing\\Modules\\Settings\\SettingsControl', $actual);
     }
 
     public function testReturnFqcnForXhrClass()
     {
         $actual = Routing::getClassName('settings', 'Xhr');
-        $this->assertEquals('\\Foodsharing\\Modules\\Settings\\SettingsXhr', $actual);
+        $this->assertEquals('Foodsharing\\Modules\\Settings\\SettingsXhr', $actual);
     }
 }

@@ -38,6 +38,8 @@
 - Controll characters like * can now be escaped using the front end md engine !2913 @AntonBallmaier
 - make relative links generated in the beta-version readable in the prod version !2924 @AntonBallmaier
 - Fix server error when trying to log in on beta @AntonBallmaier
+- Fix the display of long names in passport generation #1634 !2941 @AntonBallmaier
+- Fix security problem #1692 !2940 @AntonBallmaier
 
 ## Refactoring
 - Refactor mailbox modul to vue and rest api !2580 !2870 !2871 !2918 @chriswalg @alex.simm
@@ -51,7 +53,7 @@
 - Modernized TeamControl to a Symfony contorller !2881 @\_fridtjof_
 - Refactor food basked creation to vue and rest api !2906 @AntonBallmaier
 - Replaced the maps on basket pages with vue and removed vMap !2880 @alex.simm
-- Modernized RegionControl to a Symfony controller !2741 @\_fridtjof_
+- Modernized RegionControl to a Symfony controller !2741 !2945 @\_fridtjof_
 
 ## Dev/Test/CI stuff
 - removed CHANGELOG.md merge=union !2866 @chriswalg
@@ -65,6 +67,8 @@
 - Added database tables for achievements !2910 @martincodes-de
 - Added a rate limiter to the login endpoint !2672 @alex.simm
 - Added feature toggle for achievement system !2933 @martincodes-de
+- Added playwright e2e test framework !2803 @thomas.hauschild @chriswalg
+- Updated playwright to 1.40.1 !2948 @thomas.hauschild
 
 ## Development documentation
 
@@ -98,7 +102,7 @@
 - Add CTA on the profile-page for calendar export #1583 !2705 @sefn
 - Remove relative time from last pickup #1571 #1643 !2706 !2744 @sefn
 - Removed unused global report !2763 @chriswalg
-- Improved pickup table display on smaller devices !2779 @AntonBallmaier 
+- Improved pickup table display on smaller devices !2779 @AntonBallmaier
 - Added a validation for login form, to prevent send a api call. !2787 @chriswalg
 - Remove closed stores from map, dashboard and navigation #786 !2790 @chriswalg
 - Add user id to bbb conference name !2821 @chriswalg
@@ -128,9 +132,9 @@
 - Bugfix for Date-Formatter #1571 !2706 @sefn
 - Fixed push notifications button #1638 !2728 !2729 @florianunsinn
 - In the user details, only include that a calendar token exists but not the token itself !2735 @alex.simm
-- Fixed undefined "mailbox" #1612 !2746 @chriswalg @alex.simm 
+- Fixed undefined "mailbox" #1612 !2746 @chriswalg @alex.simm
 - Workaround for unvisible attachments because long mailbox names !2751 @chriswalg
-- Fixed errors in delayed vue map initialisation #1637 #1660 !2750 !2773 !2791 @chriswalg 
+- Fixed errors in delayed vue map initialisation #1637 #1660 !2750 !2773 !2791 @chriswalg
 - Check if thread exist before display the thread #1650 !2756 @chriswalg
 - Fix no error messages on BadRequestHttpExceptions on beta !2701 @KoeMai
 - removed styleguide from non-dev environments #1636 !2745 @sefn
@@ -140,7 +144,7 @@
 - Pickup options can no longer be loaded multiple times in the pickup table !2779 @AntonBallmaier
 - Temporarily disable store page and member page for Europe and Germany !2777 !2788 @alex.simm
 - Restricted the search permissions by role and regions #1642 !2768 !2815 @alex.simm
-- Fixed the old paths of working group pictures !2809 @alex.simm 
+- Fixed the old paths of working group pictures !2809 @alex.simm
 - Disable send button in NewThread.vue if body and title is empty !2810 @chriswalg
 - Update member list after adding a member !2811 @chriswalg
 - Fix missing thumbnails in store team list !2818 @chriswalg @irgendwer
@@ -170,7 +174,7 @@
 - Changed forum post response to empty content #1499 !2638 @krauterisator
 - Refactored store !2458 !2798 !2802 !2806 !2807 !2814 !2816 !2820 !2824 @chriswalg @alex.simm
 - Refactor add pickup modal !2693 !2784 @chriswalg
-- Refactor edit pickup rules to vue component and moved it to storeInformationModal !2686 !2731 @chriswalg 
+- Refactor edit pickup rules to vue component and moved it to storeInformationModal !2686 !2731 @chriswalg
 - Refactor own store list in vue !2668 !2683 @chriswalg
 - Refactored the list of group applications to vue, which not also shows profile pictures #343 !2696 @alex.simm
 - Refactor the list of food share points in a region to vue !2702 @alex.simm

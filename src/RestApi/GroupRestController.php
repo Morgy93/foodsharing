@@ -71,7 +71,7 @@ class GroupRestController extends AbstractFOSRestController
         if (!$this->session->mayRole()) {
             throw new UnauthorizedHttpException('');
         }
-        if (!in_array($groupId, $this->session->listRegionIDs())) {
+        if (!$this->session->mayBezirk($groupId)) {
             throw new AccessDeniedHttpException();
         }
         $group = $regionGateway->getRegion($groupId);

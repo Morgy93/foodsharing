@@ -30,7 +30,7 @@ class SearchPermissions
             return true;
         }
 
-        return in_array($regionId, $this->session->listRegionIDs());
+        return $this->session->mayBezirk($regionId);
     }
 
     public function maySearchByEmailAddress(): bool

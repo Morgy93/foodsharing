@@ -174,26 +174,27 @@ class PassportGeneratorTransaction extends AbstractController
                 }
                 $pdf->Image($backgroundFile, $backgroundMarginX + $x, $backgroundMarginY + $y, 83, 55);
 
-                $pdf->SetFont('Ubuntu-L', '', 10);
                 $name = $foodsaver['name'] . ' ' . $foodsaver['nachname'];
+                $fontSize = 10;
                 $maxWidth = 49;
-                if (round($pdf->GetStringWidth($name)) > $maxWidth) {
-                    $pdf->SetFont('Ubuntu-L', '', 8);
-                    if (round($pdf->GetStringWidth($name)) <= $maxWidth) {
-                        $pdf->Text($nameMaxWidthMarginX + $x, $nameMaxWidthMarginY + $y, $name);
-                    }
-                    $size = 8;
-                    while (round($pdf->GetStringWidth($foodsaver['name'])) > $maxWidth
-                        || round($pdf->GetStringWidth($foodsaver['nachname'])) > $maxWidth
-                    ) {
-                        $size -= 0.5;
-                        $pdf->SetFont('Ubuntu-L', '', $size);
-                    }
-                    $pdf->Text($nameMarginX + $x, $nameMarginY + $y, $foodsaver['name']);
-                    $pdf->Text($nameMarginX + $x, $nameMarginY + 0.2 + $y, $foodsaver['nachname']);
-                } else {
+                $pdf->SetFont('Ubuntu-L', '', $fontSize);
+                $maxFontSize = min($maxWidth / $pdf->GetStringWidth($name) * $fontSize, $fontSize);
+                if ($maxFontSize >= 8) {
+                    $pdf->SetFont('Ubuntu-L', '', $maxFontSize);
                     $pdf->Text($nameMarginX + $x, $nameMarginY + $y - 0.2, $name);
+                } else {
+                    // Require line break after first name
+                    $fontSize = min(
+                        $maxWidth / $pdf->GetStringWidth($foodsaver['name']) * $fontSize,
+                        $maxWidth / $pdf->GetStringWidth($foodsaver['nachname']) * $fontSize,
+                        8
+                    );
+                    $pdf->SetFont('Ubuntu-L', '', $fontSize);
+                    $lineHeight = $pdf->getStringHeight(0, $foodsaver['name']) * 0.7;
+                    $pdf->Text($nameMarginX + $x, $nameMarginY + $y - 0.2, $foodsaver['name']);
+                    $pdf->Text($nameMarginX + $x, $nameMarginY + $y + $lineHeight - 0.2, $foodsaver['nachname']);
                 }
+
                 $pdf->SetFont('Ubuntu-L', '', 10);
                 $pdf->Text($roleMarginX + $x, $roleMarginY + $y, $this->getRole($foodsaver['geschlecht'], $foodsaver['rolle']));
                 $pdf->Text($validDownMarginX + $x, $validDownMarginY + $y, $untilFrom);
