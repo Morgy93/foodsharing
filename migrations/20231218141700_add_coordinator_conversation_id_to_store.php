@@ -15,7 +15,7 @@ final class AddCoordinatorConversationIdToStore extends AbstractMigration
                 'limit' => '10',
                 'signed' => false,
                 'identity' => 'enable',
-                'after' => 'stat_add_date'
+                'after' => 'prefetchtime'
             ])
             ->addIndex(['coordinator_conversation_id'], [
                 'name' => 'betrieb_FKIndex8_conv_coordinator',
