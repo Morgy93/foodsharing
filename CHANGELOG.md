@@ -71,6 +71,7 @@
 - Update codeception to 5.x !2605 @chriswalg @peter.toennies
 - Updated playwright to 1.40.1 !2948 @thomas.hauschild
 - Added eslint, husky, prettier and documentation for playwright tests !2949 @thomas.hauschild
+- Updated Contributors section in README.md !2954 @thomas.hauschild
 
 ## Development documentation
 
