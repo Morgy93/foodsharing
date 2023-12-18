@@ -10,6 +10,7 @@ use FOS\RestBundle\Controller\Annotations as Rest;
 use OpenApi\Annotations as OA;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
+use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 use Symfony\Component\HttpKernel\Exception\UnauthorizedHttpException;
 
 class BuddyRestController extends AbstractFOSRestController
@@ -77,7 +78,7 @@ class BuddyRestController extends AbstractFOSRestController
         }
 
         if (!$this->buddyGateway->buddyRequestedUser($this->session->id(), $userId)) {
-            throw new BadRequestHttpException('You cannot delete a request you did not send');
+            throw new NotFoundHttpException('You cannot delete a request you did not send');
         }
 
         $this->buddyTransactions->removeBuddyRequest($userId);
