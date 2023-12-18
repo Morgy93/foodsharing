@@ -8,17 +8,13 @@ use Foodsharing\Modules\Core\DBConstants\Content\ContentId;
 
 class StatisticsControl extends Control
 {
-    private ContentGateway $contentGateway;
-    private StatisticsGateway $statisticsGateway;
 
     public function __construct(
-        StatisticsGateway $statisticsGateway,
         StatisticsView $view,
-        ContentGateway $contentGateway
+        private readonly StatisticsGateway $statisticsGateway,
+        private readonly ContentGateway $contentGateway,
     ) {
-        $this->statisticsGateway = $statisticsGateway;
         $this->view = $view;
-        $this->contentGateway = $contentGateway;
 
         parent::__construct();
     }
