@@ -147,10 +147,12 @@ class Routing
         'content',
         'team',
         'bezirk',
+        'statistics',
     ];
 
     private const RENAMES = [
-        'bezirk' => 'region'
+        'bezirk' => 'region',
+        'statistics' => 'statistik',
     ];
 
     public static function getClassName(string $appName, $type = 'Xhr'): ?string
