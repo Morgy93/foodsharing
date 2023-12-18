@@ -47,11 +47,11 @@ class BuddyRestController extends AbstractFOSRestController
             throw new UnauthorizedHttpException('');
         }
 
-        if ($this->buddyGateway->buddyRequestedUser($this->session->id(), $userId)) {
+        if ($this->buddyGateway->hasSentBuddyRequest($this->session->id(), $userId)) {
             throw new BadRequestHttpException('You cannot send mutliple requests');
         }
 
-        $accepting = $this->buddyGateway->buddyRequestedUser($userId, $this->session->id());
+        $accepting = $this->buddyGateway->hasSentBuddyRequest($userId, $this->session->id());
         if ($accepting) {
             $this->buddyTransactions->acceptBuddyRequest($userId);
         } else {
@@ -77,7 +77,7 @@ class BuddyRestController extends AbstractFOSRestController
             throw new UnauthorizedHttpException('');
         }
 
-        if (!$this->buddyGateway->buddyRequestedUser($this->session->id(), $userId)) {
+        if (!$this->buddyGateway->hasSentBuddyRequest($this->session->id(), $userId)) {
             throw new NotFoundHttpException('You cannot delete a request you did not send');
         }
 

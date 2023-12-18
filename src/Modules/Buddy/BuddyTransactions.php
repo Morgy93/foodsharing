@@ -66,7 +66,7 @@ class BuddyTransactions
     public function removeBuddyRequest(int $userId): void
     {
         $this->buddyGateway->removeRequest($this->session->id(), $userId);
-        if ($this->buddyGateway->buddyRequestedUser($userId, $this->session->id())) {
+        if ($this->buddyGateway->hasSentBuddyRequest($userId, $this->session->id())) {
             $this->buddyGateway->unconfirmBuddy($this->session->id(), $userId);
         }
         $this->deleteBuddyRequestBells($userId);
