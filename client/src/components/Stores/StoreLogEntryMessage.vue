@@ -62,8 +62,9 @@ export default {
 
       if (action.action_id === STORE_LOG_ACTION.CREATE_OR_UPDATE_SINGLE_PICKUP_SLOT) {
         const actionContent = JSON.parse(action.content)
-        params.description = actionContent.description
+        params.description = actionContent.description ? actionContent.description : this.$i18n('store.log.no_description')
         params.totalSlots = actionContent.totalSlots
+        params.date = this.$dateFormatter.format(actionContent.date)
       }
 
       if (action.action_id === STORE_LOG_ACTION.CREATE_OR_UPDATE_REGULAR_PICKUP) {
