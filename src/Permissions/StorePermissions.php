@@ -142,11 +142,8 @@ class StorePermissions
         if ($this->session->id() === $post['foodsaver_id']) {
             return true;
         }
-        if ($this->mayEditStore($storeId)) {
-            return $post['zeit'] <= Carbon::today()->subMonth();
-        }
-
-        return false;
+        
+        return $this->mayEditStore($storeId);
     }
 
     /**
