@@ -12,6 +12,8 @@ use Symfony\Contracts\Translation\TranslatorInterface;
 
 class AddStoreCoordinatorChatCommand extends Command
 {
+    protected static $defaultName = 'foodsharing:AddStoreCoordinatorChat';
+
     private readonly MessageGateway $messageGateway;
     private readonly TranslatorInterface $translator;
     private readonly StoreGateway $storeGateway;
