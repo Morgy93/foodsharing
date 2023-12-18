@@ -199,6 +199,7 @@ export default {
   data () {
     return {
       buddyType: this.initialBuddyType,
+      buddyTypes: BUDDY_TYPES,
     }
   },
   computed: {
