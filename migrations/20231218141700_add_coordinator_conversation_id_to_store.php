@@ -1,3 +1,7 @@
+<?php
+
+declare(strict_types=1);
+
 use Phinx\Migration\AbstractMigration;
 
 final class AddCoordinatorChatToStore extends AbstractMigration
