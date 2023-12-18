@@ -72,7 +72,7 @@ class BuddyTransactions
         $this->deleteBuddyRequestBells($userId);
     }
 
-    private function deleteBuddyRequestBells(int $userId)
+    private function deleteBuddyRequestBells(int $userId): void
     {
         $this->bellGateway->delBellsByIdentifier(BellType::createIdentifier(BellType::BUDDY_REQUEST, $this->session->id(), $userId));
         $this->bellGateway->delBellsByIdentifier(BellType::createIdentifier(BellType::BUDDY_REQUEST, $userId, $this->session->id()));
