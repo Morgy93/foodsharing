@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 use Phinx\Migration\AbstractMigration;
 
-final class AddCoordinatorChatToStore extends AbstractMigration
+final class AddCoordinatorConversationIdToStore extends AbstractMigration
 {
     public function change(): void
     {
