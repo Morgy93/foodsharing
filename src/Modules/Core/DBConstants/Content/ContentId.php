@@ -72,11 +72,11 @@ class ContentId
     public const FESTIVAL = 72;
     public const INTERNATIONAL = 74;
     public const TRANSPARENCY = 68;
-    public const CAMPAIGN_LEERE_TONNE = 46;
+    public const PAST_CAMPAIGNS = 46;
     public const RESCUE_FOOD_SHARE_POINT = 49;
-    public const IMPRESSUM = 8;
+    public const IMPRINT = 8;
     public const ABOUT = 9;
-    public const FOODSHARING_STAEDTE = 66;
+    public const FOODSHARING_CITIES = 66;
     public const FOR_COMPANIES = 4;
     public const WORKSHOPS = 71;
     public const STATISTICS_PAGE = 11;

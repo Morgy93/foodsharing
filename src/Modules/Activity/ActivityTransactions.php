@@ -299,10 +299,12 @@ class ActivityTransactions
     private function loadForumUpdates(int $page, array $hidden_ids): array
     {
         $myRegionIds = $this->session->listRegionIDs();
-        $region_ids = [];
-        if ($myRegionIds === [] || count($myRegionIds) === 0) {
+
+        if (!$myRegionIds) {
             return [];
         }
+
+        $region_ids = [];
 
         foreach ($myRegionIds as $regionId) {
             if ($regionId > 0 && !isset($hidden_ids[$regionId])) {

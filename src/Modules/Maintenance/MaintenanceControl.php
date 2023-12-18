@@ -9,7 +9,7 @@ use Foodsharing\Modules\Core\DBConstants\Region\WorkgroupFunction;
 use Foodsharing\Modules\Foodsaver\FoodsaverGateway;
 use Foodsharing\Modules\Group\GroupGateway;
 use Foodsharing\Modules\Store\StoreGateway;
-use Foodsharing\Modules\Store\StoreMaintainceTransactions;
+use Foodsharing\Modules\Store\StoreMaintenanceTransactions;
 use Foodsharing\Utility\IMAPFolderCleanupHelper;
 
 class MaintenanceControl extends ConsoleControl
@@ -22,7 +22,7 @@ class MaintenanceControl extends ConsoleControl
         private readonly MaintenanceGateway $maintenanceGateway,
         private readonly BellUpdateTrigger $bellUpdateTrigger,
         private readonly GroupGateway $groupGateway,
-        private readonly StoreMaintainceTransactions $storeMaintenanceTransactions,
+        private readonly StoreMaintenanceTransactions $storeMaintenanceTransactions,
         private readonly IMAPFolderCleanupHelper $imapFolderCleanupHelper
     ) {
         parent::__construct();
@@ -325,8 +325,6 @@ class MaintenanceControl extends ConsoleControl
             $deleted = $this->imapFolderCleanupHelper->cleanupFolder($imap['host'], $imap['user'], $imap['password'], IMAP_FAILED_BOX, $deleteDelayDays);
             self::info($deleted . ' E-Mails deleted from ' . $imap['host'] . ' ' . IMAP_FAILED_BOX);
         }
-        $deleted = $this->imapFolderCleanupHelper->cleanupFolder(BOUNCE_IMAP_HOST, BOUNCE_IMAP_USER, BOUNCE_IMAP_PASS, BOUNCE_IMAP_UNPROCESSED_BOX, $deleteDelayDays);
-        self::info($deleted . ' E-Mails deleted from ' . BOUNCE_IMAP_HOST . ' ' . BOUNCE_IMAP_UNPROCESSED_BOX);
         self::success('All folders processed');
     }
 }

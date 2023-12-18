@@ -1,0 +1,46 @@
+namespace: Tests
+support_namespace: Support
+actor_suffix: Tester
+paths:
+    tests: tests
+    output: tests/_output
+    data: tests/Support/Data
+    support: tests/Support
+    envs: tests/_envs
+coverage:
+    enabled: true
+    show_only_summary: true
+    remote: true
+    work_dir: /app
+    include:
+        - src/*
+    exclude:
+        - src/lib/*
+settings:
+    colors: true
+    memory_limit: 1024M
+    backup_globals: false
+bootstrap: _bootstrap.php
+extensions:
+    enabled: [Codeception\Extension\RunFailed]
+    commands: [Foodsharing\Dev\SeedCommand]
+modules:
+    enabled:
+        - Db:
+            dsn: mysql:host=db;dbname=foodsharing;charset=utf8mb4
+            user: root
+            password: root
+            cleanup: true
+            dump: dump.sql
+            populate: true
+        - Tests\Support\Helper\Foodsharing: # custom module that inherits from Db so also needs db config
+            # custom module that inherits from Db so also needs db config
+            dsn: mysql:host=db;dbname=foodsharing;charset=utf8mb4
+            user: root
+            password: root
+        - Tests\Support\Helper\FoodsharingUrl: # custom module that inherits from Db so also needs db config
+            dsn: mysql:host=db;dbname=foodsharing;charset=utf8mb4
+            user: root
+            password: root
+        - Tests\Support\Helper\Maildev:
+            url: http://maildev:1080

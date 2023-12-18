@@ -12,6 +12,12 @@ class IMAPFolderCleanupHelper
 {
     public function cleanupFolder(?string $imapHost, ?string $imapUser, ?string $imapPass, ?string $folder, ?int $deleteDelayDays): int
     {
+        if ($imapHost === null || $imapUser === null || $imapPass === null || $folder === null || $deleteDelayDays === null) {
+            ConsoleControl::error('Invalid parameters: All parameters must be provided.');
+
+            return -1;
+        }
+
         $deleted = 0;
         try {
             $server = new Server($imapHost);

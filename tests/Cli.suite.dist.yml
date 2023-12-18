@@ -1,0 +1,11 @@
+# Codeception Test Suite Configuration
+
+actor: CliTester
+modules:
+    enabled:
+        - Filesystem
+        - Asserts
+        - Cli
+        - Sequence
+        - Db
+        - Tests\Support\Helper\Foodsharing

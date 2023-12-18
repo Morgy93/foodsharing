@@ -3,6 +3,7 @@
 namespace Foodsharing\Dev;
 
 use Carbon\Carbon;
+use Codeception\Command\Shared\ConfigTrait;
 use Codeception\CustomCommandInterface;
 use Codeception\Lib\Di;
 use Codeception\Lib\ModuleContainer;
@@ -12,15 +13,14 @@ use Foodsharing\Modules\Core\DBConstants\Store\CooperationStatus;
 use Foodsharing\Modules\Core\DBConstants\Unit\UnitType;
 use Foodsharing\Modules\Core\DBConstants\Voting\VotingScope;
 use Foodsharing\Modules\Core\DBConstants\Voting\VotingType;
-use Foodsharing\Modules\WorkGroup\WorkGroupGateway;
-use Helper\Foodsharing;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
+use Tests\Support\Helper\Foodsharing;
 
 class SeedCommand extends Command implements CustomCommandInterface
 {
-    use \Codeception\Command\Shared\Config;
+    use ConfigTrait;
 
     /**
      * @var Foodsharing
@@ -39,23 +39,15 @@ class SeedCommand extends Command implements CustomCommandInterface
     protected $reportAdmins = [];
     protected $arbitrationAdmins = [];
     protected $mediationAdmins = [];
-    protected $storesGroupAdmins = [];
     protected $fsManagementAdmins = [];
     protected $prAdmins = [];
     protected $moderationAdmins = [];
     protected $boardAdmins = [];
 
     /**
-     * @var WorkGroupGateway
-     */
-    protected $workGroupGateway;
-
-    /**
      * returns the name of the command.
-     *
-     * @return string
      */
-    public static function getCommandName()
+    public static function getCommandName(): string
     {
         return 'foodsharing:seed';
     }
@@ -66,14 +58,14 @@ class SeedCommand extends Command implements CustomCommandInterface
         $this->setHelp('This commands adds seed data to the database. The general rule is that before running this command, you have a working instance of foodsharing without customized data (e.g. missing regions, quizzes, ...) but already including all the data that is directly used in the code (so you will not get any internal server errors). The future goal is, to make the code as much independent of data as possible and move all data you may want to playing around into the seed.');
     }
 
-    protected function execute(InputInterface $input, OutputInterface $output)
+    protected function execute(InputInterface $input, OutputInterface $output): int
     {
         $this->output = $output;
 
         $config = $this->getGlobalConfig();
         $di = new Di();
         $module = new ModuleContainer($di, $config);
-        $this->helper = $module->create('\Helper\Foodsharing');
+        $this->helper = $module->create('Tests\Support\Helper\Foodsharing');
         $this->helper->_initialize();
 
         // Clear existing data to prevent collisions

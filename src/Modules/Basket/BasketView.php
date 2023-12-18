@@ -224,7 +224,7 @@ class BasketView extends View
         $request = '';
 
         if ($this->basketPermissions->mayRequest($basket['fs_id'])) {
-            $hasRequested = $requests && count($requests) > 0;
+            $hasRequested = $requests ? true : false;
 
             if (!empty($basket['contact_type'])) {
                 $contact_type = explode(':', $basket['contact_type']);

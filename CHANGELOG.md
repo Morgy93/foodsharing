@@ -38,6 +38,7 @@
 - Controll characters like * can now be escaped using the front end md engine !2913 @AntonBallmaier
 - make relative links generated in the beta-version readable in the prod version !2924 @AntonBallmaier
 - Fix server error when trying to log in on beta @AntonBallmaier
+- Fix variable replacement on "fairteiler" page
 - Fix the display of long names in passport generation #1634 !2941 @AntonBallmaier
 - Fix security problem #1692 !2940 @AntonBallmaier
 
@@ -68,7 +69,9 @@
 - Added a rate limiter to the login endpoint !2672 @alex.simm
 - Added feature toggle for achievement system !2933 @martincodes-de
 - Added playwright e2e test framework !2803 @thomas.hauschild @chriswalg
+- Update codeception to 5.x !2605 @chriswalg @peter.toennies
 - Updated playwright to 1.40.1 !2948 @thomas.hauschild
+- Added eslint, husky, prettier and documentation for playwright tests !2949 @thomas.hauschild
 
 ## Development documentation
 
@@ -183,6 +186,7 @@
 - Refactor user passport generation page #1617 !2660 !2758 @chriswalg
 - Replaced the form for changing the email address with a vue component !2753 @alex.simm
 - Refactor account deletion to vue !2775 @chriswalg
+- English customization in code, unused routes removed !2936 @BibaltiK
 
 ## Dev/Test/CI stuff
 - Fix given null parameter !2550 @BibaltiK

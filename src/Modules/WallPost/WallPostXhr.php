@@ -69,21 +69,17 @@ class WallPostXhr extends Control
             $attach = null;
             if (!empty($_POST['attach'])) {
                 $parts = explode(':', $_POST['attach']);
-                if (count($parts) > 0) {
-                    $attach = [];
-                    foreach ($parts as $p) {
-                        $file = explode('-', $p);
-                        if (count($file) > 0) {
-                            if (!isset($attach[$file[0]])) {
-                                $attach[$file[0]] = [];
-                            }
-                            $attach[$file[0]][] = [
-                                'file' => $file[1]
-                            ];
-                        }
+                $attach = null;
+                foreach ($parts as $p) {
+                    $file = explode('-', $p);
+                    if (!isset($attach[$file[0]])) {
+                        $attach[$file[0]] = [];
                     }
-                    $attach = json_encode($attach) ?: null;
+                    $attach[$file[0]][] = [
+                        'file' => $file[1]
+                    ];
                 }
+                $attach = json_encode($attach) ?: null;
             }
             if ($this->wallPostGateway->addPost($message, $this->session->id(), $this->table, $this->id, $attach)) {
                 if ($this->table === 'fairteiler') {
