@@ -19,7 +19,7 @@ final class AddCoordinatorConversationIdToStore extends AbstractMigration
             ])
             ->addIndex(['coordinator_conversation_id'], [
                 'name' => 'betrieb_FKIndex8_conv_coordinator',
-                'unique' => true,
+                'unique' => false
             ])
             ->save();
     }
