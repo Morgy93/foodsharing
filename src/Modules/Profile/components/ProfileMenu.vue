@@ -216,7 +216,7 @@ export default {
     async sendBuddyRequest (userId) {
       const confimation = await this.$bvModal.msgBoxConfirm(this.$i18n('buddy.send.confirm_text'), {
         title: this.$i18n('buddy.send.confirm_title', { name: this.foodSaverName }),
-        okTitle: this.$i18n('button.send'),
+        okTitle: this.$i18n('yes'),
         cancelTitle: this.$i18n('button.cancel'),
         hideHeaderClose: false,
         centered: true,
@@ -240,7 +240,7 @@ export default {
       const confimation = await this.$bvModal.msgBoxConfirm(this.$i18n('buddy.remove.confirm_text'), {
         title: this.$i18n('buddy.remove.confirm_title', { name: this.foodSaverName }),
         okVariant: 'danger',
-        okTitle: this.$i18n('button.send'),
+        okTitle: this.$i18n('yes'),
         cancelTitle: this.$i18n('button.cancel'),
         hideHeaderClose: false,
         centered: true,
