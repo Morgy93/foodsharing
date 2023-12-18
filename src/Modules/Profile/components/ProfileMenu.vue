@@ -55,7 +55,7 @@
         v-if="fsId !== fsIdSession && buddyType !== buddyTypes.NO_BUDDY"
         type="button"
         class="list-group-item list-group-item-action"
-        @click="removeBuddyRequest(fsId)"
+        @click="removeBuddy(fsId)"
       >
         <i class="fas fa-user-slash fa-fw" /> {{ $i18n('profile.nav.remove_buddy', { name: foodSaverName }) }}
       </b-list-group-item>
@@ -157,7 +157,7 @@ import conversationStore from '@/stores/conversations'
 import MediationRequest from './MediationRequest'
 import ReportRequest from './ReportRequest'
 import ProfileHistoryModal from './ProfileHistoryModal'
-import { sendBuddyRequest, removeBuddyRequest } from '@/api/buddy'
+import { sendBuddyRequest, removeBuddy } from '@/api/buddy'
 import i18n from '@/helper/i18n'
 
 export default {
@@ -236,7 +236,7 @@ export default {
         this.buddyType = this.buddyTypes.NO_BUDDY
       }
     },
-    async removeBuddyRequest (userId) {
+    async removeBuddy (userId) {
       const confimation = await this.$bvModal.msgBoxConfirm(this.$i18n('buddy.remove.confirm_text'), {
         title: this.$i18n('buddy.remove.confirm_title', { name: this.foodSaverName }),
         okVariant: 'danger',
@@ -247,7 +247,7 @@ export default {
       })
       if (!confimation) return
       try {
-        await removeBuddyRequest(userId)
+        await removeBuddy(userId)
         this.buddyType = this.buddyTypes.NO_BUDDY
       } catch (err) {
         pulseError(i18n('error_unexpected'))
