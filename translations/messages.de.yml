@@ -1008,8 +1008,8 @@ store:
       14: "{actor} hat den Abholslot von {target} am {date} bestätigt."
       15: "{actor} hat {target}s Pinnwandeintrag vom {date} gelöscht"
       16: "{actor} hat die Beitrittsanfrage zurückgezogen"
-      17: "{actor} hat den Abholtermin [ {date} mit {totalSlots} Slots mit Beschreibung: {description} ] erstellt oder geändert"
-      18: "{actor} hat automatischen Abholtermin [ {weekday} {startTimeOfPickup} Slots: {maxCountOfSlots} mit Beschreibung: {description} ] erstellt oder geändert"
+      17: "{actor} hat den Abholtermin <i> {date} mit {totalSlots} Slots mit Beschreibung: {description} </i> erstellt oder geändert"
+      18: "{actor} hat automatischen Abholtermin <i> {weekday} {startTimeOfPickup} Slots: {maxCountOfSlots} mit Beschreibung: {description} </i> erstellt oder geändert"
     max_entries_message: Maximal 100 Einträge werden angezeigt. Bitte grenze den Suchbereich ein.
 
 storeedit:
