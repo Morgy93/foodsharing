@@ -160,6 +160,12 @@ import ProfileHistoryModal from './ProfileHistoryModal'
 import { sendBuddyRequest, removeBuddy } from '@/api/buddy'
 import i18n from '@/helper/i18n'
 
+const BUDDY_TYPES = Object.freeze({
+  NO_BUDDY: -1,
+  REQUESTED: 0,
+  BUDDY: 1,
+})
+
 export default {
   components: { Avatar, ReportRequest, MediationRequest, ProfileHistoryModal },
   props: {
@@ -169,7 +175,7 @@ export default {
     isSleeping: { type: Boolean, default: false },
     isOnline: { type: Boolean, default: false },
     foodSaverName: { type: String, default: '' },
-    initialBuddyType: { type: Number, default: 0 },
+    initialBuddyType: { type: Number, default: BUDDY_TYPES.NO_BUDDY },
     mayAdmin: { type: Boolean, default: false },
     mayHistory: { type: Boolean, default: false },
     noteCount: { type: Number, default: 0 },
@@ -193,11 +199,6 @@ export default {
   data () {
     return {
       buddyType: this.initialBuddyType,
-      buddyTypes: {
-        NO_BUDDY: -1,
-        REQUESTED: 0,
-        BUDDY: 1,
-      },
     }
   },
   computed: {
@@ -226,14 +227,14 @@ export default {
         const request = await sendBuddyRequest(userId)
         if (request.isBuddy) {
           pulseInfo(i18n('buddy.request_accepted'))
-          this.buddyType = this.buddyTypes.BUDDY
+          this.buddyType = BUDDY_TYPES.BUDDY
         } else {
           pulseInfo(i18n('buddy.request_sent'))
-          this.buddyType = this.buddyTypes.REQUESTED
+          this.buddyType = BUDDY_TYPES.REQUESTED
         }
       } catch (err) {
         pulseError(i18n('error_unexpected'))
-        this.buddyType = this.buddyTypes.NO_BUDDY
+        this.buddyType = BUDDY_TYPES.NO_BUDDY
       }
     },
     async removeBuddy (userId) {
@@ -248,10 +249,10 @@ export default {
       if (!confimation) return
       try {
         await removeBuddy(userId)
-        this.buddyType = this.buddyTypes.NO_BUDDY
+        this.buddyType = BUDDY_TYPES.NO_BUDDY
       } catch (err) {
         pulseError(i18n('error_unexpected'))
-        this.buddyType = this.buddyTypes.REQUESTED
+        this.buddyType = BUDDY_TYPES.REQUESTED
       }
     },
     OpenHistory (type) {
