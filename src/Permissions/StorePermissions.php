@@ -2,7 +2,6 @@
 
 namespace Foodsharing\Permissions;
 
-use Carbon\Carbon;
 use Foodsharing\Lib\Session;
 use Foodsharing\Modules\Core\DatabaseNoValueFoundException;
 use Foodsharing\Modules\Core\DBConstants\Foodsaver\Role;
@@ -142,7 +141,7 @@ class StorePermissions
         if ($this->session->id() === $post['foodsaver_id']) {
             return true;
         }
-        
+
         return $this->mayEditStore($storeId);
     }
 
