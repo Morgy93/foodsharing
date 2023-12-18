@@ -2,6 +2,13 @@
 
 namespace Foodsharing\Modules\Store;
 
+enum ConversationType: int
+{
+    case Coordinator = 1;
+    case Team = 2;
+    case Springer = 3;
+}
+
 use Carbon\Carbon;
 use DateTime;
 use Exception;
@@ -51,12 +58,7 @@ class StoreTransactions
         CooperationStatus::COOPERATION_ESTABLISHED
     ];
 
-    public const CONVERSATION_TYPE_COORDINATOR = 1;
-    public const CONVERSATION_TYPE_TEAM = 2;
-    public const CONVERSATION_TYPE_SPRINGER = 3;
-
     public const MAX_SLOTS_PER_PICKUP = 10;
-    // status constants for getAvailablePickupStatus
     private const STATUS_RED_TODAY_TOMORROW = 3;
     private const STATUS_ORANGE_3_DAYS = 2;
     private const STATUS_YELLOW_5_DAYS = 1;
@@ -287,13 +289,13 @@ class StoreTransactions
         $this->storeGateway->addStoreManager($storeId, $authorFsId);
 
         $coordinateChatId = $this->messageGateway->createConversation([$authorFsId], true);
-        $this->storeGateway->updateStoreConversation($storeId, $coordinateChatId, StoreTransactions::CONVERSATION_TYPE_COORDINATOR);
+        $this->storeGateway->updateStoreConversation($storeId, $coordinateChatId, ConversationType::Coordinator);
 
         $storeTeamChatId = $this->messageGateway->createConversation([$authorFsId], true);
-        $this->storeGateway->updateStoreConversation($storeId, $storeTeamChatId, StoreTransactions::CONVERSATION_TYPE_TEAM);
+        $this->storeGateway->updateStoreConversation($storeId, $storeTeamChatId, ConversationType::Team);
 
         $standbyTeamChatId = $this->messageGateway->createConversation([$authorFsId], true);
-        $this->storeGateway->updateStoreConversation($storeId, $standbyTeamChatId, StoreTransactions::CONVERSATION_TYPE_SPRINGER);
+        $this->storeGateway->updateStoreConversation($storeId, $standbyTeamChatId, ConversationType::Springer);
 
         $this->setStoreNameInConversations($storeId, $createStore->name);
 
@@ -695,15 +697,15 @@ class StoreTransactions
 
     public function setStoreNameInConversations(int $storeId, string $storeName): void
     {
-        if ($coordinatorConversationId = $this->storeGateway->getStoreConversation($storeId, StoreTransactions::CONVERSATION_TYPE_COORDINATOR)) {
+        if ($coordinatorConversationId = $this->storeGateway->getStoreConversation($storeId, ConversationType::Coordinator)) {
             $coordinatorConversationName = $this->translator->trans('store.coordinator_conversation_name', ['{name}' => $storeName]);
             $this->messageGateway->renameConversation($coordinatorConversationId, $coordinatorConversationName);
         }
-        if ($teamConversationId = $this->storeGateway->getStoreConversation($storeId, StoreTransactions::CONVERSATION_TYPE_TEAM)) {
+        if ($teamConversationId = $this->storeGateway->getStoreConversation($storeId, ConversationType::Team)) {
             $teamConversationName = $this->translator->trans('store.team_conversation_name', ['{name}' => $storeName]);
             $this->messageGateway->renameConversation($teamConversationId, $teamConversationName);
         }
-        if ($jumperConversationId = $this->storeGateway->getStoreConversation($storeId, StoreTransactions::CONVERSATION_TYPE_SPRINGER)) {
+        if ($jumperConversationId = $this->storeGateway->getStoreConversation($storeId, ConversationType::Springer)) {
             $jumperConversationName = $this->translator->trans('store.springer_conversation_name', ['{name}' => $storeName]);
             $this->messageGateway->renameConversation($jumperConversationId, $jumperConversationName);
         }
@@ -811,15 +813,15 @@ class StoreTransactions
 
         $this->storeGateway->addStoreLog($storeId, $this->session->id(), $userId, null, StoreLogAction::REMOVED_FROM_STORE);
 
-        if ($coordinatorChatConversationId = $this->storeGateway->getStoreConversation($storeId, StoreTransactions::CONVERSATION_TYPE_COORDINATOR)) {
+        if ($coordinatorChatConversationId = $this->storeGateway->getStoreConversation($storeId, ConversationType::Coordinator)) {
             $this->messageGateway->deleteUserFromConversation($coordinatorChatConversationId, $userId);
         }
 
-        if ($teamChatConversationId = $this->storeGateway->getStoreConversation($storeId, StoreTransactions::CONVERSATION_TYPE_TEAM)) {
+        if ($teamChatConversationId = $this->storeGateway->getStoreConversation($storeId, ConversationType::Team)) {
             $this->messageGateway->deleteUserFromConversation($teamChatConversationId, $userId);
         }
 
-        if ($jumperChatConversationId = $this->storeGateway->getStoreConversation($storeId, StoreTransactions::CONVERSATION_TYPE_SPRINGER)) {
+        if ($jumperChatConversationId = $this->storeGateway->getStoreConversation($storeId, ConversationType::Springer)) {
             $this->messageGateway->deleteUserFromConversation($jumperChatConversationId, $userId);
         }
     }
@@ -837,12 +839,12 @@ class StoreTransactions
     {
         $this->storeGateway->setUserMembershipStatus($storeId, $userId, MembershipStatus::JUMPER);
 
-        $standbyTeamChatId = $this->storeGateway->getStoreConversation($storeId, StoreTransactions::CONVERSATION_TYPE_SPRINGER);
+        $standbyTeamChatId = $this->storeGateway->getStoreConversation($storeId, ConversationType::Springer);
         if ($standbyTeamChatId) {
             $this->messageGateway->addUserToConversation($standbyTeamChatId, $userId);
         }
 
-        $teamChatId = $this->storeGateway->getStoreConversation($storeId, StoreTransactions::CONVERSATION_TYPE_TEAM);
+        $teamChatId = $this->storeGateway->getStoreConversation($storeId, ConversationType::Team);
         if ($teamChatId) {
             $this->messageGateway->deleteUserFromConversation($teamChatId, $userId);
         }
@@ -854,12 +856,12 @@ class StoreTransactions
     {
         $this->storeGateway->setUserMembershipStatus($storeId, $userId, MembershipStatus::MEMBER);
 
-        $teamChatId = $this->storeGateway->getStoreConversation($storeId, StoreTransactions::CONVERSATION_TYPE_TEAM);
+        $teamChatId = $this->storeGateway->getStoreConversation($storeId, ConversationType::Team);
         if ($teamChatId) {
             $this->messageGateway->addUserToConversation($teamChatId, $userId);
         }
 
-        $standbyTeamChatId = $this->storeGateway->getStoreConversation($storeId, StoreTransactions::CONVERSATION_TYPE_SPRINGER);
+        $standbyTeamChatId = $this->storeGateway->getStoreConversation($storeId, ConversationType::Springer);
         if ($standbyTeamChatId) {
             $this->messageGateway->deleteUserFromConversation($standbyTeamChatId, $userId);
         }
@@ -872,12 +874,12 @@ class StoreTransactions
         $this->storeGateway->addStoreManager($storeId, $userId);
         $this->storeGateway->addStoreLog($storeId, $this->session->id(), $userId, null, StoreLogAction::APPOINT_STORE_MANAGER);
 
-        $coordinatorTeamChatId = $this->storeGateway->getStoreConversation($storeId, StoreTransactions::CONVERSATION_TYPE_COORDINATOR);
+        $coordinatorTeamChatId = $this->storeGateway->getStoreConversation($storeId, ConversationType::Coordinator);
         if ($coordinatorTeamChatId) {
             $this->messageGateway->addUserToConversation($coordinatorTeamChatId, $userId);
         }
 
-        $standbyTeamChatId = $this->storeGateway->getStoreConversation($storeId, StoreTransactions::CONVERSATION_TYPE_SPRINGER);
+        $standbyTeamChatId = $this->storeGateway->getStoreConversation($storeId, ConversationType::Springer);
         if ($standbyTeamChatId) {
             $this->messageGateway->addUserToConversation($standbyTeamChatId, $userId);
         }
@@ -889,12 +891,12 @@ class StoreTransactions
         $this->storeGateway->removeStoreManager($storeId, $userId);
         $this->storeGateway->addStoreLog($storeId, $this->session->id(), $userId, null, StoreLogAction::REMOVED_AS_STORE_MANAGER);
 
-        $coordinatorTeamChatId = $this->storeGateway->getStoreConversation($storeId, StoreTransactions::CONVERSATION_TYPE_COORDINATOR);
+        $coordinatorTeamChatId = $this->storeGateway->getStoreConversation($storeId, ConversationType::Coordinator);
         if ($coordinatorTeamChatId) {
             $this->messageGateway->deleteUserFromConversation($coordinatorTeamChatId, $userId);
         }
 
-        $standbyTeamChatId = $this->storeGateway->getStoreConversation($storeId, StoreTransactions::CONVERSATION_TYPE_SPRINGER);
+        $standbyTeamChatId = $this->storeGateway->getStoreConversation($storeId, ConversationType::Springer);
         if ($standbyTeamChatId) {
             $this->messageGateway->deleteUserFromConversation($standbyTeamChatId, $userId);
         }

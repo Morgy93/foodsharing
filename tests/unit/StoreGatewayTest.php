@@ -361,21 +361,21 @@ class StoreGatewayTest extends Unit
 
     public function testGetNoCoordinatorConversation(): void
     {
-        $conversationId = $this->gateway->getStoreConversation($this->store['id'], StoreTransactions::CONVERSATION_TYPE_COORDINATOR);
+        $conversationId = $this->gateway->getStoreConversation($this->store['id'], Foodsharing\Modules\Store\ConversationType::Coordinator);
 
         $this->tester->assertEquals(0, $conversationId);
     }
 
     public function testGetNoTeamConversation(): void
     {
-        $conversationId = $this->gateway->getStoreConversation($this->store['id'], StoreTransactions::CONVERSATION_TYPE_TEAM);
+        $conversationId = $this->gateway->getStoreConversation($this->store['id'], Foodsharing\Modules\Store\ConversationType::Team);
 
         $this->tester->assertEquals(0, $conversationId);
     }
 
     public function testGetNoSpringerConversation(): void
     {
-        $conversationId = $this->gateway->getStoreConversation($this->store['id'], StoreTransactions::CONVERSATION_TYPE_SPRINGER);
+        $conversationId = $this->gateway->getStoreConversation($this->store['id'], Foodsharing\Modules\Store\ConversationType::Springer);
 
         $this->tester->assertEquals(0, $conversationId);
     }

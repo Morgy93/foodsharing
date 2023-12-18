@@ -459,10 +459,16 @@ class StoreGateway extends BaseGateway
 
             // In case there is not yet a coordinator chat, create one
             if ($result['coordinator_conversation_id'] == null) {
-                $coordinateChatId = $this->messageGateway->createConversation([$fs_id], true);
+                $biebs = $this->getBiebsForStore($storeId);
+                if (!is_array($biebs)) {
+                    $biebs = [$biebs];
+                }
+                $biebs = array_column($biebs, 'id');
+
+                $coordinateChatId = $this->messageGateway->createConversation($biebs, true);
                 $coordinatorConversationName = $this->translator->trans('store.coordinator_conversation_name', ['{name}' => $result['name']]);
                 $this->messageGateway->renameConversation($coordinateChatId, $coordinatorConversationName);
-                $this->updateStoreConversation($storeId, $coordinateChatId, StoreTransactions::CONVERSATION_TYPE_COORDINATOR);
+                $this->updateStoreConversation($storeId, $coordinateChatId, ConversationType::Coordinator);
                 $result['coordinator_conversation_id'] = $coordinateChatId;
             }
 
@@ -809,11 +815,11 @@ class StoreGateway extends BaseGateway
         return TeamStatus::NoMember;
     }
 
-    public function getStoreConversation(int $storeId, int $conversationType): ?int
+    public function getStoreConversation(int $storeId, ConversationType $conversationType): ?int
     {
-        if ($conversationType === StoreTransactions::CONVERSATION_TYPE_COORDINATOR) {
+        if ($conversationType === ConversationType::Coordinator) {
             $chatType = 'coordinator_conversation_id';
-        } elseif ($conversationType === StoreTransactions::CONVERSATION_TYPE_TEAM) {
+        } elseif ($conversationType === ConversationType::Team) {
             $chatType = 'team_conversation_id';
         } else {
             $chatType = 'springer_conversation_id';
@@ -991,11 +997,11 @@ class StoreGateway extends BaseGateway
         return $this->db->update('fs_betrieb', ['bezirk_id' => $regionId], ['id' => $storeId]);
     }
 
-    public function updateStoreConversation(int $storeId, int $conversationId, int $conversationType): int
+    public function updateStoreConversation(int $storeId, int $conversationId, ConversationType $conversationType): int
     {
-        if ($conversationType === StoreTransactions::CONVERSATION_TYPE_COORDINATOR) {
+        if ($conversationType === ConversationType::Coordinator) {
             $fieldToUpdate = 'coordinator_conversation_id';
-        } elseif ($conversationType === StoreTransactions::CONVERSATION_TYPE_TEAM) {
+        } elseif ($conversationType === ConversationType::Team) {
             $fieldToUpdate = 'team_conversation_id';
         } else {
             $fieldToUpdate = 'springer_conversation_id';

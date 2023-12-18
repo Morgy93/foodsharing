@@ -3,7 +3,9 @@
 namespace Foodsharing\Command;
 
 use Foodsharing\Modules\Store\StoreGateway;
+use Foodsharing\Modules\Store\StoreTransactions;
 use Foodsharing\Modules\Message\MessageGateway;
+use Foodsharing\Modules\Store\ConversationType;
 use Symfony\Contracts\Translation\TranslatorInterface;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
@@ -34,12 +36,14 @@ class AddStoreCoordinatorChatCommand extends Command
     {
         $stores = $this->storeGateway->getStores();
         foreach ($stores as $store) {
+            $biebsArray = $this->storeGateway->getBiebsForStore($store['Id']);
+            $biebs = array_column($biebsArray, 'id');
 
             if ($store['coordinator_conversation_id'] == null) {
-                $coordinateChatId = $this->messageGateway->createConversation([], true);
+                $coordinateChatId = $this->messageGateway->createConversation([$biebs], true);
                 $coordinatorConversationName = $this->translator->trans('store.coordinator_conversation_name', ['{name}' => $store['name']]);
                 $this->messageGateway->renameConversation($coordinateChatId, $coordinatorConversationName);
-                $this->storeGateway->updateStoreConversation($store['Id'], $coordinateChatId, 1); //StoreTransactions::CONVERSATION_TYPE_COORDINATOR);
+                $this->storeGateway->updateStoreConversation($store['Id'], $coordinateChatId, ConversationType::Coordinator);
             }
         }
 
