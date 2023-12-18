@@ -8,7 +8,7 @@ final class AddCoordinatorChatToStore extends AbstractMigration
 {
     public function change(): void
     {
-       $this->table('fs_betrieb')
+        $this->table('fs_betrieb')
             ->addColumn('coordinator_conversation_id', 'integer', [
                 'null' => true,
                 'default' => null,

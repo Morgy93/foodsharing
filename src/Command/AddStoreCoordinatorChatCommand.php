@@ -2,14 +2,13 @@
 
 namespace Foodsharing\Command;
 
-use Foodsharing\Modules\Store\StoreGateway;
-use Foodsharing\Modules\Store\StoreTransactions;
 use Foodsharing\Modules\Message\MessageGateway;
 use Foodsharing\Modules\Store\ConversationType;
-use Symfony\Contracts\Translation\TranslatorInterface;
+use Foodsharing\Modules\Store\StoreGateway;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
+use Symfony\Contracts\Translation\TranslatorInterface;
 
 class AddStoreCoordinatorChatCommand extends Command
 {
