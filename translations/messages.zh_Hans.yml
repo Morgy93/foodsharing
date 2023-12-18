@@ -137,6 +137,10 @@ dashboard:
   source_forum: ''
   source_event: ''
   activation_mail_failure: ''
+  release:
+    for_news_from_it: ''
+    for_support: ''
+    for_release_notes: ''
 bcard:
   generate: ''
   title: ''
@@ -307,6 +311,10 @@ pickup:
     add: ''
     added: ''
     many-people: ''
+    disable_auto_slot: ''
+    disable_auto_slot_titel: ''
+    slot_titel: ''
+    description_titel: ''
   leave_team_message_template: ''
   copyNumber: ''
   team_message_success: ''
@@ -342,6 +350,11 @@ pickup:
   slot_remove: ''
   really_leave_date_title: ''
   open_profile: ''
+  description_modal_text: ''
+  edit_description: ''
+  description: ''
+  description_optional: ''
+  description_max_length_info: ''
 pickuplist:
   week_tab: ''
   year_tab: ''
@@ -431,6 +444,14 @@ menu:
     education: ''
     fundraising: ''
     groups: ''
+    load_more: ''
+    refresh: ''
+    delete_read: ''
+    security: ''
+  bell:
+    delete_read_confirmation:
+      text: ''
+      title: ''
 storelist:
   addressdata: ''
   entered: ''
@@ -452,6 +473,7 @@ storelist:
   address: ''
   others: ''
   isManaging: ''
+  memberState: ''
 globals:
   type:
     my_regions: ''
@@ -468,6 +490,8 @@ globals:
     my_mailboxes: ''
     buddies: ''
     stores: ''
+    threads: ''
+    chats: ''
   reset: ''
   select: ''
   you: ''
@@ -665,6 +689,7 @@ group:
     remove_text_group: ''
     set_admin_title: ''
     set_admin_text: ''
+    not_verified: ''
   photo: ''
   entertime: ''
   quit_name_district: ''
@@ -860,6 +885,9 @@ terminology:
   profile_picture: ''
   baskets: ''
   group: ''
+  no_pickups: ''
+  previous_pickups: ''
+  n_home_regions: ''
 yes: ''
 delete: ''
 select: ''
@@ -1137,7 +1165,9 @@ mailbox:
   failed: ''
   claim: ''
   hostinfo: ''
-  reply: ''
+  reply:
+    full: ''
+    short: ''
   title: ''
   inbox: ''
   signature: ''
@@ -1145,6 +1175,26 @@ mailbox:
   from: ''
   not-allowed: ''
   fromto: ''
+  search: ''
+  delete_selected: ''
+  conformation_modal:
+    title: ''
+    message: ''
+  for_quoting:
+    has_from: ''
+    written_text: ''
+  mark_all: ''
+  tag_recipient_hint: ''
+  mark_as_read: ''
+  mailsend_unsuccess: ''
+  attachment:
+    not_found_explanation: ''
+    not_found: ''
+  move_to: ''
+  close_edit_mode: ''
+  add: ''
+  mails: ''
+  unknown_sender: ''
 settings:
   calendar:
     menu: ''
@@ -1162,6 +1212,9 @@ settings:
     event_link_desc: ''
     sync: ''
     title: ''
+    include_invitations: ''
+    export: ''
+    export_tooltip: ''
   push:
     disable: ''
     not-supported: ''
@@ -1191,6 +1244,10 @@ settings:
     tooltip: ''
     header: ''
     saved: ''
+    status: ''
+    until: ''
+    from: ''
+    message: ''
   follow:
     mail: ''
     thread: ''
@@ -1206,6 +1263,13 @@ settings:
     occupied: ''
     passfail: ''
     question: ''
+    input_label_email_confirm: ''
+    explanation_password: ''
+    wrong_password: ''
+    confirm_email_required: ''
+    input_label_password: ''
+    input_label_email: ''
+    explanation: ''
   businesscard: ''
   passport:
     menu: ''
@@ -1326,6 +1390,7 @@ profile:
     title: ''
     arbAdminAgainstRepAdmin: ''
     kindofreport: ''
+    doesNotAffectStore: ''
   infos:
     never: ''
     foodsaverId: ''
@@ -1493,6 +1558,7 @@ chain:
     name: ''
     stores: ''
     status: ''
+    estimatedStoreCount: ''
   inputmodal:
     ok: ''
     inputs:
@@ -1527,6 +1593,10 @@ chain:
       press:
         label: ''
         description: ''
+      estimatedStoreCount:
+        description: ''
+        label: ''
+        invalidfeedback: ''
     cancel: ''
     title:
       edit: ''
@@ -1558,6 +1628,17 @@ chain:
   allowpress: ''
   new: ''
   listheader: ''
+  errorCodes:
+    EMPTY_COUNTRY: ''
+    EMPTY_CITY: ''
+    EMPTY_NAME: ''
+    INVALID_STORECHAIN_ID: ''
+    WRONG_FORUM: ''
+    KEY_ACCOUNT_MANAGER_ID_NOT_IN_GROUP: ''
+    KEY_ACCOUNT_MANAGER_ID_NOT_EXISTS: ''
+    INVALID_STATUS: ''
+    EMPTY_ZIP: ''
+    THREAD_ID_NOT_EXISTS: ''
 bootstrap-datepicker:
   labelHelp: ''
   labelNextMonth: ''
@@ -1588,6 +1669,11 @@ store:
     title: ''
     withdraw: ''
     got-it: ''
+    distance_unknown: ''
+    distance: ''
+    unverified: ''
+    air_line: ''
+    distance_close: ''
   tooltip_orange: ''
   sm:
     makeJumper: ''
@@ -1612,6 +1698,14 @@ store:
     pickupDesc: ''
     managementToggleOff: ''
     reloadPage: ''
+    filterAll: ''
+    filterManage: ''
+    promoteToManagerNotPossible: ''
+    filterActive: ''
+    filterSleeping: ''
+    buttonManagementToggle: ''
+    toogleIsReducedStateOpen: ''
+    toogleIsReducedStateClosed: ''
   bread: ''
   chat:
     jumper: ''
@@ -1657,6 +1751,10 @@ store:
   lastPickupShort: ''
   team:
     isfull: ''
+    no_record: ''
+    search_reset: ''
+    search_input: ''
+    is_closed: ''
   filter: ''
   enternumber: ''
   leaveinfo: ''
@@ -1683,6 +1781,68 @@ store:
   prefetchfour: ''
   appliedFor: ''
   isManager: ''
+  log:
+    message:
+      6: ''
+      1: ''
+      14: ''
+      3: ''
+      4: ''
+      11: ''
+      7: ''
+      13: ''
+      13_with_reason: ''
+      8: ''
+      16: ''
+      10: ''
+      12: ''
+      2: ''
+      5: ''
+      9: ''
+      15: ''
+    type:
+      3: ''
+      2: ''
+      7: ''
+      14: ''
+      1: ''
+      16: ''
+      8: ''
+      4: ''
+      10: ''
+      6: ''
+      12: ''
+      9: ''
+      5: ''
+      13: ''
+      11: ''
+      15: ''
+    max_entries_message: ''
+    log_types_placeholder: ''
+    search: ''
+    selected_log_types: ''
+    title: ''
+  signInDateTime: ''
+  jumping: ''
+  of_that: ''
+  requests: ''
+  isAppliedForTeam: ''
+  team_container: ''
+  managing: ''
+  active: ''
+  one_active: ''
+  unverified_members: ''
+  slot_state: ''
+  delete_date_description: ''
+  member: ''
+  enter_date: ''
+  particularities_chain: ''
+  enter_date_description: ''
+  info_container: ''
+  not_verified: ''
+  unverified_member: ''
+  particularities_chain_tooltip: ''
+  delete_date: ''
 storeedit:
   team:
     bread: ''
@@ -1745,6 +1905,8 @@ forum:
       active: ''
       non_active: ''
       title: ''
+      disable: ''
+      activate: ''
     close: ''
     title: ''
     inactive: ''
@@ -1758,6 +1920,10 @@ forum:
     stick: ''
     navigate_to_oldest_post: ''
     navigate_to_newest_post: ''
+    sticky: ''
+    subscriptions:
+      subscribed: ''
+      subscribe: ''
   quickreply:
     success: ''
     error: ''
@@ -1776,6 +1942,11 @@ forum:
   no_threads: ''
   inform_per_email: ''
   threads: ''
+  not_found: ''
+  mail_confirmation:
+    text: ''
+    title: ''
+  deleted_user: ''
 addresspicker:
   label: ''
   placeholder: ''
@@ -1856,6 +2027,15 @@ bell:
   blog_new_check_title: ''
   poll_new: '{title}'
   forum_post_title: '{title}'
+  forum_new_thread: ''
+  forum_announcement: ''
+  forum_post:
+    one: ''
+    many: ''
+  forum_mention_title: ''
+  forum_new_thread_title: ''
+  forum_announcement_title: ''
+  forum_mention: ''
 basket:
   howto: ''
   is:
@@ -2118,6 +2298,31 @@ search:
   forum: ''
   informations: ''
   thread-title-only: ''
+  results:
+    region:
+      ambassador_tooltip: ''
+      home_region_tooltip: ''
+      member_tooltip: ''
+    working_group:
+      member_tooltip: ''
+      admin_tooltip: ''
+    thread:
+      closed_tooltip: ''
+      forum: ''
+      sticky_tooltip: ''
+      ambassador_forum: ''
+      last_post: ''
+    in: ''
+    chat:
+      chat_with: ''
+      chat_with_others: ''
+    user:
+      no_home_region: ''
+    store:
+      manager_tooltip: ''
+      jumper_tooltip: ''
+      member_tooltip: ''
+    from: ''
 content:
   new_success: ''
   delete_success: ''
@@ -2132,9 +2337,15 @@ content:
   name: ''
   empty: ''
   delete: ''
+  id: ''
+  title: ''
+  last_modified: ''
+  delete_tooltip: ''
 map:
   donates: ''
   title: ''
+  filters:
+    my_stores: ''
 gender:
   f: ''
   d: ''
@@ -2251,6 +2462,7 @@ chat:
   confirm_draft_discard: ''
   select_recipients: ''
   incorrect_address: ''
+  unknown_username: ''
 stats:
   avg:
     pickups: ''
@@ -2299,6 +2511,7 @@ wall:
   error-delete: ''
   confirm-deletion: ''
   see-more: ''
+  placeholder: ''
 regionOptions:
   regionPickupInactiveHours: ''
   header_page: ''
@@ -2419,6 +2632,7 @@ releases:
   "2020-05": ''
   "2022-01": ''
   "2020-12": ''
+  "2023-09": ''
 storestatus:
   "1": ''
   "2": ''
@@ -2593,3 +2807,59 @@ nofp: ''
 ueberzeugungsarbeit: ''
 passcheck: ''
 questcount: ''
+thread:
+  options:
+    rename: ''
+    unlock: ''
+    pin: ''
+    lock: ''
+    unpin: ''
+  rename:
+    description_modal_text: ''
+    placeholder: ''
+    max_length_info: ''
+    edit_description: ''
+  post:
+    options:
+      copy_source: ''
+    copy_source_success: ''
+notifications:
+  newsletter:
+    description: ''
+    title: ''
+  foodSharePoints:
+    title: ''
+    description: ''
+  groups:
+    title: ''
+  checkbox_push: ''
+  checkbox_disabled: ''
+  regions:
+    title: ''
+  chat:
+    description: ''
+    title: ''
+  threads:
+    title: ''
+  config_button: ''
+  success: ''
+  checkbox_email: ''
+  checkbox_bell: ''
+markdown_input:
+  tooltip:
+    orderedList: ''
+    preview: ''
+    quote: ''
+    unorderedList: ''
+    italic: ''
+    code: ''
+    strikethrough: ''
+    bold: ''
+    hrule: ''
+    link: ''
+    heading: ''
+  empty_preview_placeholder: ''
+usersearch:
+  search_tag: ''
+  no_tag_preset: ''
+  select_tag: ''

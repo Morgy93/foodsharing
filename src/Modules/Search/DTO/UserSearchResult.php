@@ -37,6 +37,13 @@ class UserSearchResult extends SearchResult
     public bool $is_buddy;
 
     /**
+     * Whether the user is verified.
+     *
+     * @OA\Property(example=true)
+     */
+    public bool $is_verified;
+
+    /**
      * Unique identifier of the users home region.
      *
      * @OA\Property(example=1)
@@ -68,6 +75,7 @@ class UserSearchResult extends SearchResult
         $result->last_name = $data['last_name'];
         $result->mobile = $data['mobile'];
         $result->is_buddy = $data['is_buddy'];
+        $result->is_verified = $data['is_verified'];
         $result->email = $data['email'] ?? null;
 
         return $result;

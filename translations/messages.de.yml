@@ -617,6 +617,7 @@ terminology:
   events: "Termine"
   stores: "Betriebe"
   store: Betrieb
+  pickup: "Abholung"
   previous_pickups: "Bisherige Abholungen"
   no_pickups: "keine"
   foodsharer:
@@ -848,9 +849,11 @@ store:
   teamName: "{storeTitle}-Team"
   memberSince: "Im Team seit: {date}"
   jumperSince: "Springer seit: {date}"
-  lastPickup: "Letzte Abholung:"
+  lastPickupTitle: "Letzte Abholung"
+  lastPickup: "Letzte Abholung: {date}"
   lastPickupShort: "zuletzt {date}"
   signInDateTime: "Eintragungszeitpunkt"
+  slotsCurrentlyOccupied: "Aktuell belegte Slots"
   slot_state: "Slot Status"
   unknownDate: "unbekannt"
   isManager: "Verantwortlich für diesen Betrieb."
@@ -966,6 +969,7 @@ store:
     search: "Ausgewählte Aktionen anzeigen"
     selected_log_types: "{amount} Aktions-Typen ausgewählt"
     log_types_placeholder: "Anzuzeigende Aktions-Typen auswählen"
+    no_description: "keine"
     type:
       1: Beitrittsanfragen stellen
       2: Beitrittsanfragen ablehnen
@@ -983,6 +987,9 @@ store:
       14: Abholslot bestätigen
       15: Pinnwandeintrag löschen
       16: Beitrittsanfrage zurückziehen
+      17: Einzelner Abholtermin erstellt oder geändert
+      18: Automatischer Abholtermin erstellt oder geändert
+
     message:
       1: "{actor} hat eine Beitrittsanfrage gestellt."
       2: "{actor} hat die Beitrittsanfrage von {target} abgelehnt."
@@ -1001,6 +1008,8 @@ store:
       14: "{actor} hat den Abholslot von {target} am {date} bestätigt."
       15: "{actor} hat {target}s Pinnwandeintrag vom {date} gelöscht"
       16: "{actor} hat die Beitrittsanfrage zurückgezogen"
+      17: "{actor} hat den Abholtermin [ {date} mit {totalSlots} Slots mit Beschreibung: {description} ] erstellt oder geändert"
+      18: "{actor} hat automatischen Abholtermin [ {weekday} {startTimeOfPickup} Slots: {maxCountOfSlots} mit Beschreibung: {description} ] erstellt oder geändert"
     max_entries_message: Maximal 100 Einträge werden angezeigt. Bitte grenze den Suchbereich ein.
 
 storeedit:
@@ -1790,7 +1799,9 @@ mailbox:
     message: "Sind Sie sicher, dass Sie die E-Mail löschen möchten?"
   search: "Durchsuchen"
   add: "Hinzufügen"
-  mailsend_unsuccess: "E-Mail konnten nicht versendet werden. {error}"
+  mailsend_unsuccess: "E-Mail konnte nicht versendet werden. {error}"
+  more: "mehr"
+  less: "weniger"
 
 settings:
   title: "Einstellungen"
@@ -2211,6 +2222,7 @@ team:
 basket:
   title: "Essenskörbe"
   description: "Beschreibung" #also in ReportXhr
+  contact_types: "Kontaktmöglichkeiten"
   my_list_empty: "Du hast keine Essenskörbe eingetragen"
   all: "Alle Essenskörbe"
   all_map: "Alle Körbe auf der Karte"
@@ -2273,12 +2285,13 @@ basket:
     write: "Per Nachricht"
     call: "Per Telefonanruf"
   valid:
-    "1": "einen Tag"
-    "2": "zwei Tage"
-    "3": "drei Tage"
-    "7": "eine Woche"
-    "14": "zwei Wochen"
-    "21": "drei Wochen"
+    "1": "Einen Tag"
+    "2": "Zwei Tage"
+    "3": "Drei Tage"
+    "5": "Fünf Tage"
+    "7": "Eine Woche"
+    "14": "Zwei Wochen"
+    "21": "Drei Wochen"
   has:
     bread: "Backwaren"
     greens: "Obst & Gemüse"
@@ -2312,6 +2325,13 @@ basket:
   not-allowed: "Du bist nicht dazu berechtigt, diesen Essenskorb zu bearbeiten."
   publish_error: "Es gab einen Fehler. Der Essenskorb konnte nicht veröffentlicht werden."
   published: "Danke dir, der Essenskorb wurde veröffentlicht."
+  delete_confirmation:
+    text: Willst du wirklich diesen Essenskorb löschen?
+    title: Essenskorb löschen?
+  modal_error:
+    no_contact: "Bitte wähle eine Möglichkeit aus, wie der Essenskorb angefragt werden soll."
+    no_phone: "Bitte gib eine Telefonnummer an."
+  use_home_address: "Persönliche Adresse nutzen"
 
 personal_data:
   label: "Kontakt"
@@ -2650,6 +2670,7 @@ buddy:
     confirm_text: "Möchtest du die Bekanntschaft beenden? Updates auf euren Profilpinnwänden werden euch dann nicht mehr auf der Startseite angezeigt."
   request_sent: "Anfrage versendet."
   request_accepted: "Jetzt kennt ihr euch."
+  is_buddy: "Ihr seid Bekannte"
 
 polls:
   hint: "Das Abstimmungsmodul kann in der überregionalen Arbeitsgruppe „Abstimmungen – Test“ getestet werden."
@@ -3063,6 +3084,7 @@ globals:
     chats: Chats
     threads: Themen
   you: Du
+  telephone_number: Telefonnummer
 
 search:
   title: Suche
@@ -3070,6 +3092,7 @@ search:
   informations: Du kannst nach Personen, Gruppen, Betrieben, Bezirken, Chats, Forenbeiträgen und Fairteilern suchen.
   forum: Nach Titel suchen …
   noresults: Es konnten keine Ergebnisse gefunden werden
+  maxresults: Pro Kategorie werden max. 30 Ergebnisse angezeigt. Nutze eventuell einen spezifischeren Suchbegriff.
   thread-title-only: Es werden nur Titel durchsucht, nicht der Text von Beiträgen.
   user_search:
     placeholder: Name oder ID

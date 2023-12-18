@@ -375,12 +375,8 @@ export default {
           }
         })
 
-        // send the email
-        if (this.answerMode) {
-          await sendEmail(this.selectedMailbox[0], [this.email.from.address], null, null, this.subject, this.mailBody, attachments, this.email.id)
-        } else {
-          await sendEmail(this.selectedMailbox[0], this.emailTo, null, null, this.subject, this.mailBody, attachments, null)
-        }
+        const emailId = this.answerMode ? this.email.id : null
+        await sendEmail(this.selectedMailbox[0], this.emailTo, null, null, this.subject, this.mailBody, attachments, emailId)
         this.closeAndReturnToMailbox()
         pulseSuccess(this.$i18n('mailbox.okay'))
       } catch (err) {

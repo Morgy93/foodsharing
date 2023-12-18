@@ -384,7 +384,7 @@ menu:
     other_stores: Other stores #MapView
     fs: Foodsaver
     ids: Passports
-    joinregion: Join a region
+    joinregion: Join a district
     language: "Choose language"
 
     conference: Video conference
@@ -398,7 +398,7 @@ menu:
     helpwanted: Help wanted
     helpneeded: Help wanted urgently
     in_negotiation: In negotiation
-    group_overview: Group overview of global working groups
+    group_overview: Overview of global working groups
     baskets: Food baskets
     chainList: Chain list
     security: Security
@@ -714,6 +714,8 @@ mailbox:
     written_text:  
   mark_as_read: Mark as read
   unknown_sender: Unknown sender
+  less: less
+  more: more
 events:
   description: Description
   create:
@@ -1359,7 +1361,7 @@ poll:
   vote_success: You have successfully voted.
   submit_vote_warning: 'Caution: voting is anonymous. You can not change your choices
     after submitting.'
-  type_description_3: Score voting with values between +3 (approval) and -3 (disapproval)
+  type_description_3: Score voting with values between -3 (disapproval) and +3 (approval)
   type_description_2: Choosing between approval / neutral / disapproval
   scope_description_2: All Store Coordinators in the region, who are currently responsible
     for a store
@@ -1683,6 +1685,7 @@ basket:
     "3": three days
     "2": two days
     "1": one day
+    "5": five days
   contact:
     call: By phone
     write: By message
@@ -1758,6 +1761,15 @@ basket:
   go: to the food basket
   my_list_empty: You have not entered any food baskets
   not_withdrawn: 'The request for the food basket could not be withdrawn: '
+  use_home_address: Use home address
+  modal_error:
+    no_contact: Please select a way in which you would like the food basket to be
+      requested.
+    no_phone: Please provide a telephone number.
+  contact_types: Contact options
+  delete_confirmation:
+    text: Do you really want to delete this food basket?
+    title: Delete the food basket?
 map:
   title: Map
   donates: company donates
@@ -1922,7 +1934,7 @@ store:
     example in food baskets, on Facebook, or in the press).
   memberSince: 'In team since: {date}'
   lastPickupShort: last {date}
-  lastPickup: 'Last pick-up:'
+  lastPickup: 'Last pick-up: {date}'
   jumperSince: 'Standby since: {date}'
   tooltip_managing: You are responsible for this store
   not-in-team: You are not a member of this store’s team yet.
@@ -2033,34 +2045,43 @@ store:
       10: '{actor} removed {target} as store coordinator.'
       12: '{actor} signed out for the pick-up on {date}.'
       2: '{actor} has rejected the membership request from {target}.'
-      5: '{actor} has put {target} on the jumper list.'
+      5: '{actor} has put {target} on the list of standby foodsavers'
       9: '{actor} enlisted {target} as store coordinator.'
       15: '{actor} deleted the wall entry of {target} from {date}'
+      18: '{actor} created or changed an automated pick-up date [ {weekday} {startTimeOfPickup}
+        slots: {maxCountOfSlots} with the following description: {description} ]'
+      17: '{actor} created or changed the pick-up date [ {date} with {totalSlots}
+        slots with the following description: {description} ]'
     type:
-      3: accepted membership requests
-      2: rejected membership requests
-      7: removed from team
-      14: Slot confirmations
+      3: membership requests accepted
+      2: membership requests rejected
+      7: team members removed from team
+      14: pick-ups confirmed
       1: membership requests made
-      16: Withdrawals of membership applications
-      8: left team
-      4: added members without request
-      10: removed as store coordinator
-      6: moved to the active team
-      12: sign out for pickup
-      9: set as store coordinator
-      5: moved to jumpers
-      13: removed from pickup
-      11: register for pickup
-      15: deleted wall posts
+      16: team applications withdrawn
+      8: team members left team
+      4: members added manually
+      10: store coordinators removed
+      6: team members moved to active team
+      12: signed out from pick-ups
+      9: store coordinators appointed
+      5: team members made standby
+      13: removed from pick-ups
+      11: signed up for pick-ups
+      15: wall posts deleted
+      18: Automated pick-up slot created or changed
+      17: Single pick-up slot created or changed
     max_entries_message: A maximum of 100 entries will be displayed. Please limit
       the search range.
     log_types_placeholder: Select action types to display
     search: List selected actions
     selected_log_types: '{amount} action types selected'
     title: Store log
+    no_description: no
   signInDateTime: Sign-in time
   slot_state: Slot state
+  lastPickupTitle: Last pick-up
+  slotsCurrentlyOccupied: Currently occupied slots
 search:
   mygroups: My groups
   mybuddies: My buddies
@@ -3283,6 +3304,7 @@ globals:
     signin: Sign in
     signout: Sign out
     signup: Participate
+  telephone_number: Telephone number
 bootstrap-datepicker:
   labelPrevDecade: Previous decade
   labelPrevYear: Previous year
@@ -3311,19 +3333,19 @@ join_region:
       or a district!
     is_state: <strong>This is a state.</strong><br> Please choose a city, a region
       or a disctrict!
-    not_allowed: You cannot join this region.
+    not_allowed: You cannot join this district.
     is_big_city: <strong>This is a large city.</strong><br> Please choose a city,
       a region or a district!
-  headline: Please choose the region in which you want to become active.
-  description: You can join your first district by clicking through to your district
-    starting with <em>Europe</em> and your country. If you don’t find a district for
-    you, choose a level higher or join the nearest district. If you don’t have the
-    opportunity to train as a food saver in the area, you can consider starting your
-    own district. In this case, please read the wiki carefully, in particular the
-    <a href="{href}">article on founding or reactivating districts<a>. If you want
-    to start the district or have explicit questions that the wiki doesn’t answer,
-    send us a <a href="{mail}">mail</a>. We’re not a central point for questions of
-    all kinds, but we can help with district-related questions.
+  headline: Please choose the district in which you want to become active.
+  description: You can join a district by clicking through to your district starting
+    with <em>Europe</em> and your country. If you don’t find a district for you, choose
+    a level higher or join the nearest district. If you don’t have the opportunity
+    to be trained as a foodsaver in the area, you can consider starting your own district.
+    In this case, please read the wiki carefully, in particular the <a href="{href}">article
+    on founding or reactivating districts<a>. If you want to start the district or
+    have explicit questions that the wiki doesn’t answer, send us a <a href="{mail}">mail</a>.
+    We’re not a central point for questions of all kinds, but we can help with district-related
+    questions.
 navigation:
   map: Map
   contact: Contact & Support
@@ -3405,3 +3427,7 @@ thread:
     placeholder: Title
     max_length_info: Maximum title length reached (260 characters)
     edit_description: Edit description
+  post:
+    options:
+      copy_source: Copy source code
+    copy_source_success: Source code copied!

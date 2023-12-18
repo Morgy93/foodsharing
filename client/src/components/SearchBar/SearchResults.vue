@@ -8,6 +8,13 @@
     </div>
 
     <div
+      v-if="hasMaxSearchResultCount"
+      class="alert alert-warning"
+    >
+      {{ $i18n('search.maxresults') }}
+    </div>
+
+    <div
       v-if="results.regions.length"
       class="entry"
     >
@@ -118,6 +125,8 @@ import FoodSharePointResultEntry from './ResultEntry/FoodSharePointResultEntry'
 import ChatResultEntry from './ResultEntry/ChatResultEntry'
 import ThreadResultEntry from './ResultEntry/ThreadResultEntry'
 
+const MAX_SEARCH_RESULT_COUNT = 30
+
 export default {
   components: { UserResultEntry, WorkingGroupResultEntry, RegionResultEntry, StoreResultEntry, FoodSharePointResultEntry, ChatResultEntry, ThreadResultEntry },
   props: {
@@ -145,6 +154,9 @@ export default {
   computed: {
     isEmpty () {
       return Object.values(this.results).every(value => value.length === 0)
+    },
+    hasMaxSearchResultCount () {
+      return Object.values(this.results).some(list => list.length >= MAX_SEARCH_RESULT_COUNT)
     },
   },
 }

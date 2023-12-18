@@ -10,25 +10,32 @@
             :url="profile.avatar"
             :size="130"
           />
-        </b-col>
-        <b-col cols="7">
           <p>
             <b>{{ profile.name }}</b>
           </p>
           <p>
+            <b>{{ $i18n('foodsaver.manage.role') }}:</b>
+            {{ getQuizRole() }}
+          </p>
+        </b-col>
+        <b-col cols="7">
+          <p>
             <b>{{ $i18n('store.slot_state') }}:</b><br>
             {{ isConfirmedText }}
+          </p>
+          <p v-if="signUpPerformedAtDateFormatted">
+            <b>{{ $i18n('store.signInDateTime') }}</b>:<br>
+            {{ signUpPerformedAtDateFormatted }}
           </p>
           <p>
             <b>{{ $i18n('terminology.previous_pickups') }}:</b> {{ pickupsCount }}
           </p>
           <p>
-            <b>{{ $i18n('store.lastPickup') }}</b><br>
+            <b>{{ $i18n('store.lastPickupTitle') }}</b><br>
             {{ getLastFetchDate }}
           </p>
-          <p v-if="performedAtSignUpSlot">
-            <b>{{ $i18n('store.signInDateTime') }}</b>:<br>
-            {{ performedAtSignUpSlot }}
+          <p>
+            <b>{{ $i18n('store.slotsCurrentlyOccupied') }}</b>: {{ countUserIdInPickups }}
           </p>
         </b-col>
       </b-row>
@@ -80,20 +87,20 @@
           {{ $i18n('globals.close') }}
         </b-button>
         <b-button
-          v-if="isManager && !confirmed"
-          size="sm"
-          variant="success"
-          @click="confirmSlot()"
-        >
-          {{ $i18n('pickup.confirm') }}
-        </b-button>
-        <b-button
-          v-if="isManager || isMe"
+          v-if="allowKick || allowLeave"
           size="sm"
           variant="danger"
           @click="removeFromSlot"
         >
           {{ $i18n('pickup.kick') }}
+        </b-button>
+        <b-button
+          v-if="allowConfirm && !confirmed"
+          size="sm"
+          variant="success"
+          @click="confirmSlot()"
+        >
+          {{ $i18n('pickup.confirm') }}
         </b-button>
       </template>
     </b-modal>
@@ -126,6 +133,7 @@ import DataUser from '@/stores/user'
 import StoreData, { STORE_LOG_ACTION } from '@/stores/stores'
 
 import { v4 as uuidv4 } from 'uuid'
+import PickupsData from '@/stores/pickups'
 
 export default {
   components: { Avatar },
@@ -165,6 +173,14 @@ export default {
     }
   },
   computed: {
+    pickups () {
+      return PickupsData.getters.getPickups()
+    },
+    countUserIdInPickups () {
+      return this.pickups.reduce((count, pickup) => {
+        return count + pickup.occupiedSlots.filter(slot => slot.profile.id === this.profile.id).length
+      }, 0)
+    },
     isConfirmedText () {
       return this.confirmed ? this.$i18n('pickup.overview.status.confirmed') : this.$i18n('pickup.overview.status.pending')
     },
@@ -181,7 +197,7 @@ export default {
         return pickupsCount
       }
     },
-    performedAtSignUpSlot () {
+    signUpPerformedAtDateFormatted () {
       const storeLog = StoreData.getters.getFilteredStoreLog([STORE_LOG_ACTION.SIGN_UP_SLOT], this.profile.id)
       const filteredEntries = storeLog.filter(entry =>
         new Date(entry.date_reference).getTime() === this.date.getTime(),
@@ -216,7 +232,9 @@ export default {
     },
     getLastFetchDate () {
       const lastFetchDate = this.getLastFetchDateFromUser(this.profile.id)
-      return this.$dateFormatter.date(lastFetchDate, { short: true })
+      const noPickupTranslation = this.$i18n('terminology.no_pickups')
+      const dateFormatterLastFetchDate = this.$dateFormatter.date(lastFetchDate, { short: true })
+      return lastFetchDate ? dateFormatterLastFetchDate : noPickupTranslation
     },
     phoneNumber () {
       return PhoneNumbers.callableNumber(this.profile.mobile || this.profile.landline)
@@ -263,6 +281,15 @@ export default {
 
       if (lastFetchTimestamp !== null) {
         return new Date(lastFetchTimestamp * MILLISECONDS_PER_SECOND)
+      }
+    },
+    getQuizRole () {
+      const userItem = this.storeMember.find(item => item.id === this.profile.id)
+      const quizRole = userItem?.quiz_rolle
+
+      if (quizRole !== undefined) {
+        const terminologyKey = 'terminology.role.' + quizRole
+        return this.$i18n(terminologyKey)
       }
     },
     copyIntoClipboard (text) {

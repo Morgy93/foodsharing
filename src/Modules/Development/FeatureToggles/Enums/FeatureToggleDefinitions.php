@@ -11,6 +11,8 @@ namespace Foodsharing\Modules\Development\FeatureToggles\Enums;
  */
 enum FeatureToggleDefinitions: string
 {
+    case ACHIEVEMENT_SYSTEM = 'achievementSystem';
+
     /**
      * Returns all feature toggle identifiers.
      *

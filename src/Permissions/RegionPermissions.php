@@ -132,7 +132,7 @@ final class RegionPermissions
             return true;
         }
 
-        return in_array($regionId, $this->session->listRegionIDs());
+        return $this->session->mayBezirk($regionId);
     }
 
     public function mayListFoodSharePointsInRegion(int $regionId)
@@ -141,7 +141,7 @@ final class RegionPermissions
             return true;
         }
 
-        return in_array($regionId, $this->session->listRegionIDs());
+        return $this->session->mayBezirk($regionId);
     }
 
     /**

@@ -4,22 +4,16 @@ import '@/globals'
 
 import $ from 'jquery'
 
-import { ajax, pulseInfo, pulseError } from '@/script'
+import { ajax } from '@/script'
 import './Basket.css'
 
 import { vueApply, vueRegister } from '@/vue'
-import RequestForm from './components/RequestForm'
-import i18n from '@/helper/i18n'
-import { expose } from '@/utils'
-import { removeBasket, listBasketCoordinates } from '@/api/baskets'
-import basketStore from '@/stores/baskets'
+import RequestForm from '@/components/Basket/RequestForm'
+import EditForm from '@/components/Basket/EditForm'
+import { listBasketCoordinates } from '@/api/baskets'
 import AvatarList from '@/components/AvatarList'
-import BasketLocationMap from './components/BasketLocationMap'
-import BasketsLocationMap from './components/BasketsLocationMap'
-
-expose({
-  tryRemoveBasket,
-})
+import BasketLocationMap from '@/components/Basket/BasketLocationMap'
+import BasketsLocationMap from '@/components/Basket/BasketsLocationMap'
 
 const mapsearch = {
   lat: null,
@@ -30,6 +24,9 @@ const mapsearch = {
     let img = '/img/basket.png'
 
     if (basket.picture != '') {
+      if (basket.picture.startsWith('/api')) {
+        return `${basket.picture}`
+      }
       img = `/images/basket/thumb-${basket.picture}`
     }
 
@@ -80,6 +77,14 @@ $(document).ready(() => {
     vueApply('#' + requestFormContainerId)
   }
 
+  const editFormContainerId = 'vue-basket-edit-form'
+  if (document.getElementById(editFormContainerId)) {
+    vueRegister({
+      EditForm,
+    })
+    vueApply('#' + editFormContainerId)
+  }
+
   // Creator avatar is only visible on /essenskoerbe/{id}, not on /essenskoerbe/find
   if (document.getElementById('basket-creator')) {
     vueRegister({ AvatarList, BasketLocationMap })
@@ -90,13 +95,3 @@ $(document).ready(() => {
     vueApply('#baskets-location-map')
   }
 })
-
-async function tryRemoveBasket (basketId) {
-  try {
-    await removeBasket(basketId)
-    pulseInfo(i18n('basket.not_active'))
-    await basketStore.getters.getOwn()
-  } catch (e) {
-    pulseError(i18n('error_unexpected'))
-  }
-}

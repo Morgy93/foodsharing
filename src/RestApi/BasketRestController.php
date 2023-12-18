@@ -2,25 +2,26 @@
 
 namespace Foodsharing\RestApi;
 
-use Exception;
 use Foodsharing\Lib\Session;
 use Foodsharing\Modules\Basket\BasketGateway;
-use Foodsharing\Modules\Basket\BasketTransactions;
+use Foodsharing\Modules\Basket\DTO\Basket;
 use Foodsharing\Modules\Core\DBConstants\Basket\Status as BasketStatus;
 use Foodsharing\Modules\Core\DBConstants\BasketRequests\Status as RequestStatus;
 use Foodsharing\Modules\Message\MessageTransactions;
 use Foodsharing\Permissions\BasketPermissions;
-use Foodsharing\Utility\ImageHelper;
 use FOS\RestBundle\Controller\AbstractFOSRestController;
 use FOS\RestBundle\Controller\Annotations as Rest;
 use FOS\RestBundle\Request\ParamFetcher;
+use Nelmio\ApiDocBundle\Annotation\Model;
 use OpenApi\Annotations as OA;
+use Sensio\Bundle\FrameworkExtraBundle\Configuration\ParamConverter;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\Exception\AccessDeniedHttpException;
 use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 use Symfony\Component\HttpKernel\Exception\UnauthorizedHttpException;
+use Symfony\Component\Validator\Validator\ValidatorInterface;
 
 /**
  * Rest controller for food baskets.
@@ -28,8 +29,6 @@ use Symfony\Component\HttpKernel\Exception\UnauthorizedHttpException;
 final class BasketRestController extends AbstractFOSRestController
 {
     private BasketGateway $gateway;
-    private BasketTransactions $basketTransactions;
-    private ImageHelper $imageHelper;
     private MessageTransactions $messageTransactions;
     private Session $session;
     private BasketPermissions $basketPermissions;
@@ -49,24 +48,15 @@ final class BasketRestController extends AbstractFOSRestController
     private const LAT = 'lat';
     private const LON = 'lon';
     private const TEL = 'tel';
-
-    private const BYTES_PER_KILOBYTE = 1024;
-    private const KILOBYTES_PER_MEGABYTE = 1024;
-    private const MAX_PICTURE_SIZE_BYTES = 60 * self::KILOBYTES_PER_MEGABYTE * self::BYTES_PER_KILOBYTE;
-    private const SIZES = [800 => '', 450 => 'medium-', 200 => 'thumb-', 75 => '75x75-', 50 => '50x50-'];
     private const MAX_BASKET_DISTANCE = 50;
 
     public function __construct(
         BasketGateway $gateway,
-        BasketTransactions $basketTransactions,
-        ImageHelper $imageHelper,
         MessageTransactions $messageTransactions,
         Session $session,
         BasketPermissions $basketPermissions
     ) {
         $this->gateway = $gateway;
-        $this->basketTransactions = $basketTransactions;
-        $this->imageHelper = $imageHelper;
         $this->messageTransactions = $messageTransactions;
         $this->session = $session;
         $this->basketPermissions = $basketPermissions;
@@ -274,51 +264,27 @@ final class BasketRestController extends AbstractFOSRestController
      *
      * @OA\Tag(name="basket")
      * @Rest\Post("baskets")
-     * @Rest\RequestParam(name="description", nullable=false)
-     * @Rest\RequestParam(name="contactTypes", nullable=true)
-     * @Rest\RequestParam(name="tel", nullable=true)
-     * @Rest\RequestParam(name="handy", nullable=true)
-     * @Rest\RequestParam(name="weight", nullable=true)
-     * @Rest\RequestParam(name="lifetime", nullable=true, default=7)
-     * @Rest\RequestParam(name="lat", nullable=true)
-     * @Rest\RequestParam(name="lon", nullable=true)
+     * @OA\RequestBody(@Model(type=Basket::class))
+     * @ParamConverter("basket", class="Foodsharing\Modules\Basket\DTO\Basket", converter="fos_rest.request_body")
      */
-    public function addBasketAction(ParamFetcher $paramFetcher): Response
+    public function addBasketAction(Basket $basket, ValidatorInterface $validator): Response
     {
         if (!$this->session->mayRole()) {
             throw new UnauthorizedHttpException('', self::NOT_LOGGED_IN);
         }
 
-        // prepare and check description
-        $description = trim(strip_tags($paramFetcher->get(self::DESCRIPTION)));
-        if (empty($description)) {
-            throw new BadRequestHttpException('The description must not be empty.');
+        $errors = $validator->validate($basket);
+        if ($errors->count() > 0) {
+            $firstError = $errors->get(0);
+            throw new BadRequestHttpException(json_encode(['field' => $firstError->getPropertyPath(), 'message' => $firstError->getMessage()]));
         }
 
-        $location = $this->fetchLocationOrUserHome($paramFetcher);
-
-        $contactTypes = $paramFetcher->get(self::CONTACT_TYPES);
-        if ($contactTypes !== null && \is_array($contactTypes)) {
-            $contactTypes = array_map('intval', $contactTypes);
-        }
-
-        $basket = $this->basketTransactions->addBasket(
-            $description,
-            '',
-            $contactTypes,
-            $paramFetcher->get(self::TEL),
-            $paramFetcher->get(self::MOBILE_NUMBER),
-            $paramFetcher->get('weight'),
-            $location['lat'],
-            $location['lon'],
-            $paramFetcher->get('lifetime')
-        );
-
-        if (!$basket) {
+        $basketId = $this->gateway->addBasket($basket, $this->session->user('bezirk_id'), $this->session->id());
+        if (!$basketId) {
             throw new BadRequestHttpException('Unable to create the basket.');
         }
 
-        return $this->getBasketAction($basket[self::ID]);
+        return $this->getBasketAction($basketId);
     }
 
     /**
@@ -368,109 +334,30 @@ final class BasketRestController extends AbstractFOSRestController
      *
      * @OA\Tag(name="basket")
      * @Rest\Put("baskets/{basketId}", requirements={"basketId" = "\d+"})
-     * @Rest\RequestParam(name="description", nullable=false)
-     * @Rest\RequestParam(name="lat", nullable=true)
-     * @Rest\RequestParam(name="lon", nullable=true)
+     * @OA\RequestBody(@Model(type=Basket::class))
+     * @ParamConverter("basket", class="Foodsharing\Modules\Basket\DTO\Basket", converter="fos_rest.request_body")
      *
      * @param int $basketId ID of an existing basket
      */
-    public function editBasketAction(int $basketId, ParamFetcher $paramFetcher): Response
+    public function editBasketAction(int $basketId, Basket $basket, ValidatorInterface $validator): Response
     {
         if (!$this->session->mayRole()) {
             throw new UnauthorizedHttpException('', self::NOT_LOGGED_IN);
         }
 
-        $basket = $this->findEditableBasket($basketId);
-
-        // prepare and check description
-        $description = trim(strip_tags($paramFetcher->get(self::DESCRIPTION)));
-        if (empty($description)) {
-            throw new BadRequestHttpException('The description must not be empty.');
+        $this->findEditableBasket($basketId);
+        $errors = $validator->validate($basket);
+        if ($errors->count() > 0) {
+            $firstError = $errors->get(0);
+            throw new BadRequestHttpException(json_encode(['field' => $firstError->getPropertyPath(), 'message' => $firstError->getMessage()]));
         }
-
-        $location = $this->fetchLocationOrUserHome($paramFetcher, [self::LAT => $basket[self::LAT], self::LON => $basket[self::LON]]);
 
         //update basket
         $this->gateway->editBasket(
             $basketId,
-            $description,
-            $basket[self::PICTURE],
-            $location[self::LAT],
-            $location[self::LON],
+            $basket,
             $this->session->id()
         );
-
-        return $this->getBasketAction($basketId);
-    }
-
-    /**
-     * Sets a new picture for this basket.
-     *
-     * @OA\Tag(name="basket")
-     * @Rest\Put("baskets/{basketId}/picture", requirements={"basketId" = "\d+"})
-     *
-     * @param int $basketId ID of an existing basket
-     */
-    public function setPictureAction(int $basketId, Request $request): Response
-    {
-        if (!$this->session->mayRole()) {
-            throw new UnauthorizedHttpException('', self::NOT_LOGGED_IN);
-        }
-
-        $basket = $this->findEditableBasket($basketId);
-
-        $data = $request->getContent();
-        if ($data === '') {
-            throw new BadRequestHttpException('The picture data must not be empty.');
-        }
-        if (strlen($data) > self::MAX_PICTURE_SIZE_BYTES) {
-            $maxPictureSizeMegabytes = self::MAX_PICTURE_SIZE_BYTES / (self::KILOBYTES_PER_MEGABYTE * self::BYTES_PER_KILOBYTE);
-            throw new BadRequestHttpException('The picture data must not exceed ' . $maxPictureSizeMegabytes . ' MB.');
-        }
-
-        //save and resize image
-        $tmp = uniqid('tmp/', true);
-        file_put_contents($tmp, $request->getContent());
-        try {
-            $picname = $this->imageHelper->createResizedPictures($tmp, 'images/basket/', self::SIZES);
-            unlink($tmp);
-        } catch (Exception $e) {
-            throw new BadRequestHttpException('Picture could not be resized: ' . $e->getMessage());
-        }
-
-        //remove old images
-        if (isset($basket[self::PICTURE]) && $basket[self::PICTURE] !== '') {
-            $this->imageHelper->removeResizedPictures('images/basket/', $basket[self::PICTURE], self::SIZES);
-        }
-
-        //update basket
-        $basket[self::PICTURE] = $picname;
-        $this->gateway->editBasket($basketId, $basket[self::DESCRIPTION], $picname, $basket[self::LAT], $basket[self::LON], $this->session->id());
-
-        return $this->getBasketAction($basketId);
-    }
-
-    /**
-     * Sets a new picture for this basket.
-     *
-     * @OA\Tag(name="basket")
-     * @Rest\Delete("baskets/{basketId}/picture", requirements={"basketId" = "\d+"})
-     *
-     * @param int $basketId ID of an existing basket
-     */
-    public function removePictureAction(int $basketId): Response
-    {
-        if (!$this->session->mayRole()) {
-            throw new UnauthorizedHttpException('', self::NOT_LOGGED_IN);
-        }
-
-        //update basket
-        $basket = $this->findEditableBasket($basketId);
-        if (isset($basket[self::PICTURE])) {
-            $this->imageHelper->removeResizedPictures('images/basket/', $basket[self::PICTURE], self::SIZES);
-            $basket[self::PICTURE] = null;
-            $this->gateway->editBasket($basketId, $basket[self::DESCRIPTION], null, $basket[self::LAT], $basket[self::LON], $this->session->id());
-        }
 
         return $this->getBasketAction($basketId);
     }
@@ -597,6 +484,8 @@ final class BasketRestController extends AbstractFOSRestController
     {
         $lat = $paramFetcher->get(self::LAT);
         $lon = $paramFetcher->get(self::LON);
+        $lat = is_numeric($lat) ? (float)$lat : null;
+        $lon = is_numeric($lon) ? (float)$lon : null;
         if (!$this->isValidNumber($lat, -90.0, 90.0) || !$this->isValidNumber($lon, -180.0, 180.0)) {
             if ($defaultLocation !== null) {
                 return $defaultLocation;
@@ -606,8 +495,8 @@ final class BasketRestController extends AbstractFOSRestController
                 if (!$loc || ($loc[self::LAT] === 0 && $loc[self::LON] === 0)) {
                     throw new BadRequestHttpException('The user profile has no address.');
                 }
-                $lat = $loc[self::LAT];
-                $lon = $loc[self::LON];
+                $lat = (float)$loc[self::LAT];
+                $lon = (float)$loc[self::LON];
             }
         }
 

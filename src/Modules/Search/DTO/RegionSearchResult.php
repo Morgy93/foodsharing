@@ -55,7 +55,7 @@ class RegionSearchResult extends SearchResult
         $result = new RegionSearchResult();
         $result->id = $data['id'];
         $result->name = $data['name'];
-        $result->email = $data['email'];
+        $result->email = str_replace('@foodsharing.network', '', $data['email']);
         $result->parent_id = $data['parent_id'];
         $result->parent_name = $data['parent_name'];
         $result->is_member = boolval($data['is_member']);

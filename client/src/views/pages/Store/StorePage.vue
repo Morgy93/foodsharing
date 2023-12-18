@@ -174,7 +174,7 @@ export default {
     await StoreData.mutations.loadStoreInformation(this.storeId)
     await StoreData.mutations.loadGetRegionOptions(this.storeInformation.region.id)
     await StoreData.mutations.loadStoreMember(this.storeId)
-    await StoreData.mutations.loadStoreLog(this.storeId)
+    await StoreData.mutations.loadStoreLog(this.storeId, this.storeInformation.calendarInterval)
 
     this.checkIsUserInStore()
     this.getLastFetchDate()

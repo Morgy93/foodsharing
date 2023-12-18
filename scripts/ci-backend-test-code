@@ -39,12 +39,12 @@ echo
 
 log-header "Create DB dump file for codeception"
 mysqldump -uroot -proot -hdb foodsharing > dump.sql
-pwd 
+pwd
 log-header "Running tests"
 failed=0
 SECONDS=0
 
-vendor/bin/codecept run -s acceptance --xml=report-code.xml --html=report-code.html --coverage-text --coverage-cobertura="code-cobertura.xml" || failed=1
+vendor/bin/codecept run -s Acceptance --xml=report-code.xml --html=report-code.html || failed=1
 echo $SECONDS seconds elapsed
 
 if [ $failed -eq 0 ] # first run succeeded, we can finish early

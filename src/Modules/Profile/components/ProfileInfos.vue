@@ -2,6 +2,7 @@
   <div class="infos">
     <ul>
       <li
+        v-if="maySeeLastActivity"
         class="mb-2"
       >
         <b>{{ $i18n('profile.infos.lastActivity') }}:</b> {{ lastActivityText }}
@@ -41,6 +42,7 @@
 
 export default {
   props: {
+    maySeeLastActivity: { type: Boolean, default: false },
     lastActivity: { type: String, default: '' },
     registrationDate: { type: String, default: '' },
     privateMail: { type: String, default: null },

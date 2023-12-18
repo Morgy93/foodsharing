@@ -9,20 +9,23 @@
 - Exported calendars can be filtered by the invitation status #1535 !2873 @alex.simm
 - Members of the Store Coordination GOALS group / ambassadors can add more than 3 storemanagers and remove the last one !2895 @AntonBallmaier
 - Added spanish translation !2892 @irgendwer
+- Food basked can now be given a location different from the users home address !2906 @AntonBallmaier
 - Made store log accessible by store managers !2902 @AntonBallmaier
 - The source code of forum posts can now be copied !2913 @AntonBallmaier
 - Added confirmation modal to sending mail when creating a new thread !2877 @AntonBallmaier
 - Buddies can now be remove !2919 @AntonBallmaier
 - If youre phone number is invalid, you get informed about that on the dashboard now !2916 @AntonBallmaier
+- When answering posts in the forum, the answered message is now quoted !2937 @AntonBallmaier
 
 ## Changes
 - Changed team state translation from full to closed !2831 @chriswalg
+- add store log to create or update pickup !2838 @chriswalg
 - Add "call" (tel:) button visibility also for desktop, not only mobile" #1138 !2835 @chriswalg
 - Administrating threads has a cleaner look !2882 @AntonBallmaier
 - Pinned Threads are sorted by name !2883 !2891 @AntonBallmaier
-- rework slot dropdown to modal #1228 !2813 @chriswalg
+- rework slot dropdown to modal #1228 !2813 !2915 @chriswalg
 - Changed behaviour from deleting unconfirmed slots at midnight into keeping them #1707 !2901 @irgendwer
-- Reworked all search functionality !2886 @AntonBallmaier
+- Reworked all search functionality !2886 !2914 @AntonBallmaier
 - Markdown in forum posts is now rendered in the front end to reduce inconsistencies !2913 !2917 @AntonBallmaier
 - When adding buddies there is now a confirmation pop-up !2919 @AntonBallmaier
 - Change the direction of score voting !2920 @AntonBallmaier
@@ -31,12 +34,17 @@
 ## Bugfixes
 - Added error handling for cache helper for bell notifications or other requests !2869 @chriswalg
 - Allow adding regular pickups even if there is one for every day already !2897 @AntonBallmaier
-- fix if last activity date is „0000-00-00 00:00:00“ !2853 @chriswalg
+- fix if last activity date is „0000-00-00 00:00:00“ #1746 !2939 !2853 @chriswalg
 - fix reaction tooltip with deleted users !2909 @AntonBallmaier
 - Controll characters like * can now be escaped using the front end md engine !2913 @AntonBallmaier
+- make relative links generated in the beta-version readable in the prod version !2924 @AntonBallmaier
+- Fix server error when trying to log in on beta @AntonBallmaier
+- Fix variable replacement on "fairteiler" page
+- Fix the display of long names in passport generation #1634 !2941 @AntonBallmaier
+- Fix security problem #1692 !2940 @AntonBallmaier
 
 ## Refactoring
-- Refactor mailbox modul to vue and rest api !2580 !2870 !2871 @chriswalg @alex.simm
+- Refactor mailbox modul to vue and rest api !2580 !2870 !2871 !2918 @chriswalg @alex.simm
 - Use REST for quickreplying to wall posts !2795 @alex.simm
 - Cleaned up a lot of core code all over the place !2738 @\_fridtjof_
 - Preparations to routing/link building code for future porting to Symfony controllers !2738 @\_fridtjof_
@@ -45,8 +53,9 @@
 - Use REST for statistic !2879 !2887 @fs_k
 - Modernized ContentControl to a Symfony controller !2876 @\_fridtjof_
 - Modernized TeamControl to a Symfony contorller !2881 @\_fridtjof_
+- Refactor food basked creation to vue and rest api !2906 @AntonBallmaier
 - Replaced the maps on basket pages with vue and removed vMap !2880 @alex.simm
-- Modernized RegionControl to a Symfony controller !2741 @\_fridtjof_
+- Modernized RegionControl to a Symfony controller !2741 !2945 @\_fridtjof_
 
 ## Dev/Test/CI stuff
 - removed CHANGELOG.md merge=union !2866 @chriswalg
@@ -54,7 +63,16 @@
 - Show CS Fixer results in gitlab !2867 @\_fridtjof_
 - Added the Symfony profiler and debug toolbar !1580 @\_fridtjof_
 - Added feature toggles !2633 @martincodes-de
-- The backend now provides the map tile api key for the client #1074 !2621 @alex.simm
+- The backend now provides the map tile api key for the client #1074 !2621 !2925 @alex.simm
+- Update PHP deployer to version 7.3.3 !2931 @chriswalg
+- Bump vue-advanced-chat to 2.0.10 !2927 @chriswalg
+- Added database tables for achievements !2910 @martincodes-de
+- Added a rate limiter to the login endpoint !2672 @alex.simm
+- Added feature toggle for achievement system !2933 @martincodes-de
+- Added playwright e2e test framework !2803 @thomas.hauschild @chriswalg
+- Update codeception to 5.x !2605 @chriswalg @peter.toennies
+- Updated playwright to 1.40.1 !2948 @thomas.hauschild
+- Added eslint, husky, prettier and documentation for playwright tests !2949 @thomas.hauschild
 
 ## Development documentation
 
@@ -88,7 +106,7 @@
 - Add CTA on the profile-page for calendar export #1583 !2705 @sefn
 - Remove relative time from last pickup #1571 #1643 !2706 !2744 @sefn
 - Removed unused global report !2763 @chriswalg
-- Improved pickup table display on smaller devices !2779 @AntonBallmaier 
+- Improved pickup table display on smaller devices !2779 @AntonBallmaier
 - Added a validation for login form, to prevent send a api call. !2787 @chriswalg
 - Remove closed stores from map, dashboard and navigation #786 !2790 @chriswalg
 - Add user id to bbb conference name !2821 @chriswalg
@@ -118,9 +136,9 @@
 - Bugfix for Date-Formatter #1571 !2706 @sefn
 - Fixed push notifications button #1638 !2728 !2729 @florianunsinn
 - In the user details, only include that a calendar token exists but not the token itself !2735 @alex.simm
-- Fixed undefined "mailbox" #1612 !2746 @chriswalg @alex.simm 
+- Fixed undefined "mailbox" #1612 !2746 @chriswalg @alex.simm
 - Workaround for unvisible attachments because long mailbox names !2751 @chriswalg
-- Fixed errors in delayed vue map initialisation #1637 #1660 !2750 !2773 !2791 @chriswalg 
+- Fixed errors in delayed vue map initialisation #1637 #1660 !2750 !2773 !2791 @chriswalg
 - Check if thread exist before display the thread #1650 !2756 @chriswalg
 - Fix no error messages on BadRequestHttpExceptions on beta !2701 @KoeMai
 - removed styleguide from non-dev environments #1636 !2745 @sefn
@@ -130,7 +148,7 @@
 - Pickup options can no longer be loaded multiple times in the pickup table !2779 @AntonBallmaier
 - Temporarily disable store page and member page for Europe and Germany !2777 !2788 @alex.simm
 - Restricted the search permissions by role and regions #1642 !2768 !2815 @alex.simm
-- Fixed the old paths of working group pictures !2809 @alex.simm 
+- Fixed the old paths of working group pictures !2809 @alex.simm
 - Disable send button in NewThread.vue if body and title is empty !2810 @chriswalg
 - Update member list after adding a member !2811 @chriswalg
 - Fix missing thumbnails in store team list !2818 @chriswalg @irgendwer
@@ -160,7 +178,7 @@
 - Changed forum post response to empty content #1499 !2638 @krauterisator
 - Refactored store !2458 !2798 !2802 !2806 !2807 !2814 !2816 !2820 !2824 @chriswalg @alex.simm
 - Refactor add pickup modal !2693 !2784 @chriswalg
-- Refactor edit pickup rules to vue component and moved it to storeInformationModal !2686 !2731 @chriswalg 
+- Refactor edit pickup rules to vue component and moved it to storeInformationModal !2686 !2731 @chriswalg
 - Refactor own store list in vue !2668 !2683 @chriswalg
 - Refactored the list of group applications to vue, which not also shows profile pictures #343 !2696 @alex.simm
 - Refactor the list of food share points in a region to vue !2702 @alex.simm
@@ -169,6 +187,7 @@
 - Refactor user passport generation page #1617 !2660 !2758 @chriswalg
 - Replaced the form for changing the email address with a vue component !2753 @alex.simm
 - Refactor account deletion to vue !2775 @chriswalg
+- English customization in code, unused routes removed !2936 @BibaltiK
 
 ## Dev/Test/CI stuff
 - Fix given null parameter !2550 @BibaltiK

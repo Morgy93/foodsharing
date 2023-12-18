@@ -505,7 +505,8 @@ poll:
     tooltip_positive: 'Consentimiento'
     tooltip_negative: 'Rechazo'
     tooltip_neutral: 'Abstención'
-  type_description_3: 'Elección con valores entre +3 (aprobación) y -3 (rechazo)'
+  type_description_3: 'Selección de calificaciones con valores entre -3 (rechazo)
+    y +3 (aprobación)'
   scope_description_0: 'Tod@s l@s rescatistas verificad@s y no verificad@s del distrito/grupo'
   in_future: 'no ha comenzado todavía'
   allowed_voters: 'Elegible para votar'
@@ -1242,7 +1243,7 @@ store:
   maxchar: '(máx. 180 caracteres)'
   noStores: 'Aún no hay empresas registradas'
   attribution: 'Atribución'
-  lastPickup: 'Última recogida:'
+  lastPickup: 'Última recogida: {date}'
   nochains: '¡Póngase en contacto únicamente con empresas gestionadas por sus propietarios
     con un máximo de tres sucursales, nunca con sucursales de cadenas más grandes!
     ¡Tenga en cuenta las reglas de cooperación con cadenas corporativas!'
@@ -1339,6 +1340,8 @@ store:
       la búsqueda.
   signInDateTime: Fecha de entrada
   slot_state: Estado de la ranura
+  lastPickupTitle: Última recogida
+  slotsCurrentlyOccupied: Espacios actualmente ocupados
 pickup:
   overview:
     status:
@@ -1873,6 +1876,7 @@ basket:
     "14": 'dos semanas'
     "2": 'dos días'
     "21": 'tres semanas'
+    "5": cinco días
   has:
     bread: 'Productos de panadería'
     frozen: 'productos congelados'
@@ -1994,6 +1998,14 @@ basket:
     También puede encontrar otras cestas de alimentos cerca de usted en nuestro mapa.
 
     '
+  use_home_address: Utilizar el domicilio
+  modal_error:
+    no_contact: Elige cómo se debe ordenar la canasta de alimentos.
+    no_phone: Indique un número de teléfono.
+  contact_types: Opciones de contacto
+  delete_confirmation:
+    text: ¿Realmente quieres eliminar esta canasta de alimentos?
+    title: ¿Eliminar canasta de alimentos?
 menu:
   entry:
     press: 'Prensa'
@@ -2564,7 +2576,7 @@ mailbox:
     written_text:  
   mark_all: seleccionar todo
   tag_recipient_hint: Destinatari@s (varios separad@s por punto y coma)
-  mailsend_unsuccess: No se pudieron enviar los correos electrónicos. {error}
+  mailsend_unsuccess: No se ha podido enviar el correo electrónico. {error}
   attachment:
     not_found_explanation: El archivo adjunto no se pudo encontrar en el servidor
     not_found: extraviado
@@ -2574,6 +2586,8 @@ mailbox:
   mails: Correos electrónicos
   mark_as_read: Marcar como leído
   unknown_sender: Remitente desconocido
+  less: menos
+  more: más
 settings:
   follow:
     thread: '¿Quiere mantenerse actualizado sobre el tema del foro “{thread}”?'
@@ -2862,6 +2876,7 @@ globals:
   select: 'Por favor seleccione …'
   reset: 'Reiniciar'
   save: 'Ahorrar'
+  telephone_number: Número de teléfono
 legal:
   acknowledge: '¿Aceptas el acuerdo?'
   dont_agree: 'No estoy de acuerdo con el procesamiento de mis datos y'
@@ -3503,3 +3518,7 @@ thread:
     placeholder: Título
     max_length_info: Se alcanzó la longitud máxima del título (260 caracteres)
     edit_description: Editar título
+  post:
+    options:
+      copy_source: Copiar código fuente
+    copy_source_success: ¡Código fuente copiado!

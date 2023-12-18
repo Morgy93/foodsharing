@@ -1121,7 +1121,7 @@ store:
   ownStores: Kendi işletmeleriniz
   teamName: '{storeTitle}-Ekibi'
   memberSince: Şu tarihten beri ekipte {date}
-  lastPickup: 'Son alım tarihi:'
+  lastPickup: 'Son alım tarihi: {date}'
   chat:
     jumper: Yedek listesinde olanlara mesaj
     team: Ekibe mesaj
@@ -1181,6 +1181,10 @@ store:
       5: "{actor}, {target}'ı yedek listesine koydu."
       9: "{actor}, işletme sorumlusu olarak {target}'ı girdi."
       15: "{actor}, {target}'ın {date} tarihine ait pano gönderisini sildi"
+      18: '{actor}, otomatik teslim alma tarihini oluşturdu veya değiştirdi [ {weekday}
+        {startTimeOfPickup} Slots: {maxCountOfSlots} açıklamalı: {description} ]'
+      17: '{actor} teslim alma tarihini [ {date} ile {totalSlots} açıklamalı slots:
+        {description} ] oluşturdu veya değiştirdi'
     type:
       3: Üyelik isteklerini kabul et
       2: Üyelik isteklerini reddedin
@@ -1198,14 +1202,19 @@ store:
       13: Kurtarım için çıkış yapılabilir
       11: Kurtarmak için kaydolun
       15: Pano kayıdını sil
+      18: Otomatik alma randevusu oluşturuldu veya değiştirildi
+      17: Bireysel kurtarma randevusu oluşturuldu veya değiştirildi
     max_entries_message: Maksimum 100 giriş görüntülenebilir.. Lütfen arama alanını
       sınırlandırın.
     log_types_placeholder: Görüntülenecek eylem türlerini seçin
     search: Seçili eylemleri göster
     selected_log_types: '{amount} işlem türü seçildi'
     title: İşletme Tutanağı
+    no_description: hiç biri
   signInDateTime: Giriş Tarihi
   slot_state: Slot durumu
+  lastPickupTitle: Son alım tarihi
+  slotsCurrentlyOccupied: Şu anda dolu slotlar
 polls:
   title: Başlık
   new_poll: Yeni Anket oluştur
@@ -1282,8 +1291,8 @@ poll:
   scope_description_2: Bölgedeki, şu anda herhangi bir işletmeden sorumlu, işletme
     sorumluları
   type_description_0: Seçin (yalnızca bir seçenek seçilebilir)
-  type_description_3: +3 (katılıyorum) ile -3 (katılmıyorum) arasında değerlere sahip
-    derecelendirme seçeneği
+  type_description_3: -3 (red) ile +3 (onay) arasında ki değerlere sahip derecelendirme
+    seçeneği
   untraceable: Hangi seçeneğe nasıl oy verdiğinize ilişkin bilgiler, geriye doğru
     izlenemez ve bu nedenle artık burada görüntülenemez.
   error_cannot_vote: Bu ankette oy kullanamazsınız
@@ -1574,6 +1583,8 @@ mailbox:
     message: E-postayı silmek istediğinizden emin misiniz?
   mark_as_read: E-postayı okundu olarak işaretle
   unknown_sender: Bilinmeyen gönderen
+  less: daha az
+  more: daha fazla
 basket:
   sent_request: Başvuru gönderildi
   n_requests: 'Şimdiye kadar ki başvurular: <strong>{count}</strong>'
@@ -1590,6 +1601,7 @@ basket:
     "3": üç gün
     "14": iki hafta
     "21": üç hafta
+    "5": beş gün
   request-fs: Yemek sepeti başvurusunu foodsharing sayfamızda yapın
   request_close: Yemek sepeti talebini sonuçlandırın
   send_request: Başvuruyu gönderin
@@ -1681,6 +1693,14 @@ basket:
     Ardından yukarıdaki <b>Katıl</b>''ı tıklayın ve hemen başlayın.
 
     '
+  use_home_address: Kişisel adresi kullan
+  modal_error:
+    no_contact: Lütfen yiyecek sepetinin talep edilmesini istediğiniz yolu seçin.
+    no_phone: Lütfen bir telefon numarası verin.
+  contact_types: İletişim seçenekleri
+  delete_confirmation:
+    text: Bu yemek sepetini gerçekten silmek istiyor musun?
+    title: Yemek sepeti silinsin mi?
 menu:
   entry:
     joinregion: Bir bölgeye katılın
@@ -2134,6 +2154,11 @@ forum:
   new_thread: Yeni bir konu oluştur
   deleted_user: Silinmiş üye
   not_found: Bu konu mevcut değil.
+  mail_confirmation:
+    text: Bu yeni gönderinin bu grubun veya bölgenin tüm üyelerine e-posta olarak
+      gönderilmesini gerçekten istiyor musunuz? Bunu yalnızca Konu herkesi ilgilendiriyorsa
+      ve herkesin bunun farkında olmasını gerektirecek kadar önemliyse yapmalısınız.
+    title: Gerçekten e-posta bildirimleri göndermek istiyor musunuz?
 chat:
   open_chat: Bir mesaj yaz
   new_messages: Yeni Mesajlar
@@ -2555,6 +2580,7 @@ terminology:
   reports: Raporlama Görünümü (Yerel raporlama grubu)
   n_home_regions: o ana bölgeye sahip bir kişi|İşte %count% kişilik ana bölge
   previous_pickups: Önceki Alımlar
+  no_pickups: yok
 legal:
   if_delete:
     this_doesnt_get_deleted: 'Aşağıdaki bilgiler artık aktif sistemde mevcut değildir,
@@ -3117,6 +3143,7 @@ globals:
   reset: 'Sıfırla'
   you: 'Sen'
   show_less: 'Daha az göster'
+  telephone_number: Telefon numarası
 search:
   placeholder: 'Şimdi aramaya başlayın …'
   informations: 'Kişileri, grupları, işletmeleri, semtleri, sohbetleri, forum gönderilerini
@@ -3285,3 +3312,7 @@ thread:
     placeholder: Başlık
     max_length_info: Maksimum başlık uzunluğuna ulaşıldı (260 karakter)
     edit_description: Başlığı düzenle
+  post:
+    options:
+      copy_source: Kaynak kodunu kopyala
+    copy_source_success: Kaynak kodu kopyalandı!

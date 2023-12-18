@@ -90,4 +90,6 @@ class MixedSearchResult
      * )
      */
     public array $users;
+
+    public array $timings; // Only used for testing in beta.
 }

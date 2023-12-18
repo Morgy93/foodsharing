@@ -17,12 +17,10 @@
         class="mr-auto"
       >
         <div class="preview">
-          <p>
-            <img
-              :src="filename"
-              :alt="previewAlt"
-            >
-          </p>
+          <img
+            :src="filename"
+            :alt="previewAlt"
+          >
         </div>
       </div>
       <div class="mr-auto">
@@ -33,7 +31,7 @@
           {{ $i18n('upload.no_image_yet') }}
         </div>
         <button
-          class="btn btn-sm btn-primary"
+          class="btn btn-sm btn-primary btn-block mt-2"
           :class="{'disabledLoading': isLoading}"
           @click.prevent="openUploadDialog"
         >
@@ -79,7 +77,7 @@
           ref="croppie"
           :boundary="boundary"
           :viewport="{ height: imgHeight, width: imgWidth }"
-          :enable-resize="false"
+          :enable-resize="enableResize"
         />
       </div>
     </b-modal>
@@ -115,6 +113,10 @@ export default {
     imgWidth: {
       type: Number,
       default: 0,
+    },
+    enableResize: {
+      type: Boolean,
+      default: false,
     },
   },
   data () {

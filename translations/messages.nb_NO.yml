@@ -198,7 +198,7 @@ poll:
   already_voted: Du har allerede deltatt i denne avstemningen
   not_available: Denne avstemming eksisterer ikke, eller du har ikke tilgang til den.
   submit_vote_question: Virkelig stemme nå? Valget ditt kan ikke endres i etterkant.
-  type_description_3: Score avstemning med verdier mellom +3 (godkjenning) og -3 (avvisning)
+  type_description_3: Score avstemning med verdier mellom -3 (avvisning) og +3 (godkjenning)
   may_not_edit: Enten har du ikke rettighetene til å endre denne avstemningen eller
     tidsperioden for redigering er utløpt.
 polls:
@@ -482,6 +482,7 @@ basket:
     "3": tre dager
     "2": to dager
     "1": en dag
+    "5": fem dager
   where: Hvor?
   on: Matkurv fra {platform}
   by: Matkurv fra {name}
@@ -555,6 +556,14 @@ basket:
     synlig for matkurvbrukere.\n"
   not_withdrawn: 'Forespørselen om matkurven kunne ikke trekkes tilbake: '
   no_nearby: Det er ingen matkurver innenfor en radius på {radius} km
+  use_home_address: Bruk hjemmeadresse
+  modal_error:
+    no_contact: Velg hvordan matkurven skal bestilles.
+    no_phone: Vennligst oppgi et telefonnummer.
+  contact_types: Kontaktmuligheter
+  delete_confirmation:
+    text: Vil du virkelig slette denne matkurven?
+    title: Tømmer du matkurven?
 team:
   contacted: Meldingen din ble sendt.
   email: Epostadresse
@@ -1108,13 +1117,15 @@ mailbox:
   conformation_modal:
     title: Bekreftelse
     message: Vil du virkelig slette denne e-posten?
-  mailsend_unsuccess: E-poster kunne ikke sendes. {error}
+  mailsend_unsuccess: E-post kunne ikke sendes. {error}
   attachment:
     not_found_explanation: Den vedlagte filen ble ikke lenger funnet på serveren
     not_found: ikke funnet
   add: Legg til
   mark_as_read: Merk som lest
   unknown_sender: Ukjent avsender
+  less: mindre
+  more: mer
 map:
   title: Kart
   donates: Selskapet donerer
@@ -2338,7 +2349,7 @@ store:
   address: Adresse
   attribution: Attribusjon
   unknownDate: ukjent
-  lastPickup: 'Siste henting:'
+  lastPickup: 'Siste henting: {date}'
   lastPickupShort: siste {date}
   teamName: '{storeTitle} team'
   actions: Alternativer
@@ -2512,6 +2523,8 @@ store:
       15: '{actor} har slettet anslagstavleoppføringen til {target} fra {date}'
   signInDateTime: Tidspunkt for innskrivning
   slot_state: Status for plass
+  lastPickupTitle: Siste henting
+  slotsCurrentlyOccupied: Plasser som for øyeblikket er belagt
 storeview:
   status: Nåværende status
   public_time_at_night: om natten
@@ -3101,6 +3114,7 @@ globals:
     signup: Delta
     signout: Logg ut
     signin: Logg inn
+  telephone_number: Telefonnummer
 savewithus: Spar hos oss!
 logincontrol:
   title: Avslutt abonnement på nyhetsbrev
@@ -3279,3 +3293,7 @@ thread:
     placeholder: Tittel
     max_length_info: Maksimal tittellengde er nådd (260 tegn)
     edit_description: Rediger tittel
+  post:
+    options:
+      copy_source: Kopier kildekoden
+    copy_source_success: Kildekoden er kopiert!

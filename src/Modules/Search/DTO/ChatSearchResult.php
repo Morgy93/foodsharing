@@ -13,28 +13,28 @@ class ChatSearchResult extends SearchResult
      *
      * @OA\Property(example="2023-10-04 13:38:03")
      */
-    public string $last_message_date;
+    public ?string $last_message_date = null;
 
     /**
      * Unique identifier of the foodsaver who last sent a message in the chat.
      *
      * @OA\Property(example=1)
      */
-    public int $last_foodsaver_id;
+    public ?int $last_foodsaver_id = null;
 
     /**
      * Name of the foodsaver who last sent a message in the chat.
      *
      * @OA\Property(example="Max")
      */
-    public string $last_foodsaver_name;
+    public ?string $last_foodsaver_name = null;
 
     /**
      * Last message that was sent in the chat.
      *
      * @OA\Property(example="Have a nice day!")
      */
-    public string $last_message;
+    public ?string $last_message = null;
 
     /**
      * Members of the chat.

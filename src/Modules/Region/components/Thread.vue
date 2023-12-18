@@ -87,7 +87,7 @@
           @delete="deletePost(post)"
           @reaction-add="reactionAdd(post, arguments[0])"
           @reaction-remove="reactionRemove(post, arguments[0])"
-          @reply="reply"
+          @reply="reply(post)"
           @scroll="scrollToPost(post.id)"
         />
       </div>
@@ -245,7 +245,14 @@ export default {
         p.scrollIntoView({ behavior: 'smooth', block: 'center' })
       }
     },
-    reply (body) {
+    reply (post) {
+      const maxQuotedLines = 5
+      let quoteLines = post.body.split('\n').map(line => `> ${line}`)
+      if (quoteLines.length > maxQuotedLines) {
+        quoteLines = quoteLines.slice(0, maxQuotedLines)
+        quoteLines[maxQuotedLines - 1] += ' [...]'
+      }
+      this.$refs.form.prepend(quoteLines.join('\n') + '\n\n')
       this.$refs.form.focus()
     },
     async reload (isDeleteAction = false) {
