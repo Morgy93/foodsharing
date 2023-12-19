@@ -198,7 +198,7 @@ services:
   playwright:
     user: ${CURRENT_USER}
     container_name: foodsharing_dev_playwright
-    image: mcr.microsoft.com/playwright:v1.37.0-jammy
+    image: mcr.microsoft.com/playwright:v1.40.0-jammy
     command: sh -c "cd /home/pwuser && npx -y playwright@1.37.0 run-server --port 3005"
     ports:
       - "3005:3005"
