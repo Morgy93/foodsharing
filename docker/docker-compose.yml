@@ -200,8 +200,10 @@ services:
     container_name: foodsharing_dev_playwright
     image: mcr.microsoft.com/playwright:v1.40.1-jammy
     command: sh -c "cd /home/pwuser && npx -y playwright@1.40.1 run-server --port 3005"
-    ports:
-      - "3005:3005"
+    expose:
+      - 3005
+    # ports:
+    #   - 3005:3005
 
 volumes:
   database:
