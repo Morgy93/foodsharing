@@ -11,12 +11,17 @@
     <div class="text-truncate flex-grow-1">
       <h6 class="m-0 text-truncate d-inline">
         <i
-          v-if="user.buddy"
-          v-b-tooltip.noninteractive="'Ihr seid Bekannte'"
+          v-if="user.is_buddy"
+          v-b-tooltip.noninteractive="$i18n('buddy.is_buddy')"
           class="fas fa-user-friends"
         />
         {{ user.name }} {{ user.last_name }}
       </h6>
+      <i
+        v-if="!user.is_verified"
+        v-b-tooltip.noninteractive="$i18n('store.request.unverified')"
+        class="fas fa-user-slash"
+      />
       <small>ID: {{ user.id }}</small>
       <br>
       <small class="separate">

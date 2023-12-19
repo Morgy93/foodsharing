@@ -33,9 +33,3 @@ impressum:
   controller: Foodsharing\Modules\Content\ContentController::show
   defaults:
     name: impressum
-
-ratgeber:
-  path: /ratgeber
-  controller: Foodsharing\Modules\Content\ContentController::show
-  defaults:
-    name: ratgeber

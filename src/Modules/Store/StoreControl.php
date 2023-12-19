@@ -238,7 +238,7 @@ class StoreControl extends Control
 
         $g_data['bezirk_id'] ??= $this->session->getCurrentRegionId();
 
-        if (!in_array($g_data['bezirk_id'], $this->session->listRegionIDs())) {
+        if (!$this->session->mayBezirk($g_data['bezirk_id'])) {
             $this->flashMessageHelper->error($this->translator->trans('storeedit.not-in-region'));
             $this->routeHelper->goPageAndExit();
         }

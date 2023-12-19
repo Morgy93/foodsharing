@@ -44,7 +44,7 @@ log-header "Running tests"
 failed=0
 SECONDS=0
 
-vendor/bin/codecept run acceptance --xml=report-acceptance-0.xml --html=report-acceptance-0.html || failed=1
+vendor/bin/codecept run Acceptance --xml=report-acceptance-0.xml --html=report-acceptance-0.html || failed=1
 echo $SECONDS seconds elapsed
 
 if [ $failed -eq 0 ] # first run succeeded, we can finish early

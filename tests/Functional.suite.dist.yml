@@ -1,0 +1,26 @@
+# Codeception Test Suite Configuration
+#
+# Suite for Functional (integration) tests
+# Emulate web requests and make application process them
+# Include one of framework modules (Symfony2, Yii2, Laravel5) to use it
+
+actor: FunctionalTester
+modules:
+    enabled:
+        - Symfony:
+            app_path: 'src'
+            environment: 'test'
+            kernel_class: 'Foodsharing\Kernel'
+            cache_router: 'true'
+        # add framework module here
+        - Tests\Support\Helper\Functional
+        - Asserts
+        - Tests\Support\Helper\Api
+        - Tests\Support\Helper\Foodsharing
+        - Tests\Support\Helper\FoodsharingUrl
+        - Sequence
+        - Tests\Support\Helper\Maildev
+        - Db
+        - REST:
+            url: '/'
+            depends: Symfony

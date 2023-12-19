@@ -6,13 +6,16 @@ use Foodsharing\Lib\Session;
 use Foodsharing\Modules\Core\DBConstants\Region\RegionPinStatus;
 use Foodsharing\Modules\Core\DBConstants\Store\CooperationStatus;
 use Foodsharing\Modules\Core\DBConstants\Store\TeamSearchStatus;
+use Foodsharing\Modules\FoodSharePoint\FoodSharePointGateway;
 use Foodsharing\Modules\Map\MapGateway;
 use Foodsharing\Modules\Region\RegionGateway;
 use Foodsharing\Modules\Store\StoreGateway;
+use Foodsharing\RestApi\Models\Map\FoodSharePointBubbleData;
 use FOS\RestBundle\Controller\AbstractFOSRestController;
 use FOS\RestBundle\Controller\Annotations as Rest;
 use FOS\RestBundle\Request\ParamFetcher;
-use OpenApi\Annotations as OA;
+use Nelmio\ApiDocBundle\Annotation\Model;
+use OpenApi\Attributes as OA;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 use Symfony\Component\HttpKernel\Exception\UnauthorizedHttpException;
@@ -20,23 +23,23 @@ use Symfony\Component\HttpKernel\Exception\UnauthorizedHttpException;
 class MapRestController extends AbstractFOSRestController
 {
     public function __construct(
-        private MapGateway $mapGateway,
-        private RegionGateway $regionGateway,
-        private StoreGateway $storeGateway,
-        private Session $session
+        private readonly MapGateway $mapGateway,
+        private readonly RegionGateway $regionGateway,
+        private readonly StoreGateway $storeGateway,
+        private readonly FoodSharePointGateway $foodSharePointGateway,
+        private readonly Session $session
     ) {
     }
 
     /**
      * Returns the coordinates of all baskets.
-     *
-     * @OA\Response(response="200", description="Success.")
-     * @OA\Response(response="401", description="Not logged in.")
-     * @OA\Tag(name="map")
-     * @Rest\Get("map/markers")
-     * @Rest\QueryParam(name="types")
-     * @Rest\QueryParam(name="status")
      */
+    #[OA\Tag('map')]
+    #[Rest\Get(path: 'map/markers')]
+    #[Rest\QueryParam(name: 'types')]
+    #[Rest\QueryParam(name: 'status')]
+    #[OA\Response(response: Response::HTTP_OK, description: 'Successful')]
+    #[OA\Response(response: Response::HTTP_UNAUTHORIZED, description: 'Not logged in.')]
     public function getMapMarkersAction(ParamFetcher $paramFetcher): Response
     {
         $types = (array)$paramFetcher->get('types');
@@ -61,7 +64,7 @@ class MapRestController extends AbstractFOSRestController
             $userId = null;
 
             $excludedStoreTypes = array_merge($excludedStoreTypes, [
-                CooperationStatus::PERMANENTLY_CLOSED
+                CooperationStatus::PERMANENTLY_CLOSED,
             ]);
 
             if (is_array($status) && !empty($status)) {
@@ -75,7 +78,8 @@ class MapRestController extends AbstractFOSRestController
                             break;
                         case 'nkoorp':
                             $excludedStoreTypes = array_merge($excludedStoreTypes, [
-                                CooperationStatus::COOPERATION_STARTING, CooperationStatus::COOPERATION_ESTABLISHED
+                                CooperationStatus::COOPERATION_STARTING,
+                                CooperationStatus::COOPERATION_ESTABLISHED,
                             ]);
                             break;
                         case 'mine':
@@ -85,21 +89,24 @@ class MapRestController extends AbstractFOSRestController
                 }
             }
 
-            $markers['betriebe'] = $this->storeGateway->getStoreMarkers($excludedStoreTypes, $teamSearchStatus, $userId);
+            $markers['betriebe'] = $this->storeGateway->getStoreMarkers(
+                $excludedStoreTypes,
+                $teamSearchStatus,
+                $userId
+            );
         }
 
-        return $this->handleView($this->view($markers, 200));
+        return $this->handleView($this->view($markers, Response::HTTP_OK));
     }
 
     /**
      * Returns the data for the bubble of a community marker on the map.
-     *
-     * @OA\Response(response="200", description="Success.")
-     * @OA\Response(response="404", description="The region does not exist or does not have a community description.")
-     * @OA\Tag(name="map")
-     * @Rest\Get("map/regions/{regionId}")
-     * @Rest\QueryParam(name="regionId", requirements="\d+", nullable=true, description="Region for which to return the description")
      */
+    #[OA\Tag('map')]
+    #[Rest\Get(path: 'map/regions/{regionId}')]
+    #[Rest\QueryParam(name: 'regionId', requirements: '\d+', description: 'Region for which to return the description', nullable: true)]
+    #[OA\Response(response: Response::HTTP_OK, description: 'Successful')]
+    #[OA\Response(response: Response::HTTP_NOT_FOUND, description: 'The region does not exist or does not have a community description.')]
     public function getRegionBubbleAction(int $regionId): Response
     {
         $region = $this->regionGateway->getRegion($regionId);
@@ -110,7 +117,29 @@ class MapRestController extends AbstractFOSRestController
 
         return $this->handleView($this->view([
             'name' => $region['name'],
-            'description' => $pin['desc']
-        ], 200));
+            'description' => $pin['desc'],
+        ], Response::HTTP_OK));
+    }
+
+    /**
+     * Returns the data for a FoodSharePoint.
+     */
+    #[OA\Tag('map')]
+    #[Rest\Get(path: 'map/foodSharePoint/{foodSharePointId}')]
+    #[OA\Response(
+        response: Response::HTTP_OK,
+        description: 'Successful',
+        content: new Model(type: FoodSharePointBubbleData::class)
+    )]
+    #[OA\Response(response: Response::HTTP_NOT_FOUND, description: 'The Foodsharepoint does not exist')]
+    public function getFoodSharePoint(int $foodSharePointId): Response
+    {
+        $foodSharePoint = $this->foodSharePointGateway->getFoodSharePoint($foodSharePointId);
+
+        if (count($foodSharePoint) === 0) {
+            throw new NotFoundHttpException('The Foodsharepoint does not exist');
+        }
+
+        return $this->handleView($this->view(new FoodSharePointBubbleData($foodSharePoint), Response::HTTP_OK));
     }
 }

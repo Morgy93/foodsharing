@@ -80,8 +80,9 @@ export default {
   },
   watch: {
     query (query) {
-      const totalQueryLength = query.split(/[,;+.\s]+/g).join('').length
-      if (totalQueryLength > 2) {
+      // Require at least one word of length 3 or two of length 2:
+      const queryLengthScore = query.split(/[,;+.\s]+/g).map(word => word.length - 1).reduce((a, b) => a + b)
+      if (queryLengthScore > 1) {
         this.showResults = true
         this.delayedFetch()
         return
@@ -103,7 +104,7 @@ export default {
       }
       this.timeout = setTimeout(() => {
         this.fetch()
-      }, 500)
+      }, 200)
     },
     async fetch () {
       const curQuery = this.query

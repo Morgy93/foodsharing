@@ -17,6 +17,8 @@ use Foodsharing\Modules\Search\DTO\WorkingGroupSearchResult;
 
 class SearchGateway extends BaseGateway
 {
+    private const MAX_SEARCH_RESULT_COUNT = 30;
+
     public function __construct(Database $db)
     {
         parent::__construct($db);
@@ -55,7 +57,7 @@ class SearchGateway extends BaseGateway
             AND {$searchClauses}
             GROUP BY region.id
             ORDER BY is_member DESC, name ASC
-            LIMIT 30",
+            LIMIT " . self::MAX_SEARCH_RESULT_COUNT,
             [$foodsaverId, ...$parameters]);
 
         return array_map(fn ($region) => RegionSearchResult::createFromArray($region), $regions);
@@ -97,7 +99,7 @@ class SearchGateway extends BaseGateway
             AND {$searchClauses}
             GROUP BY region.id
             ORDER BY is_admin DESC, is_member DESC, name ASC
-            LIMIT 30",
+            LIMIT " . self::MAX_SEARCH_RESULT_COUNT,
             [$foodsaverId, $foodsaverId, $foodsaverId, ...$parameters]);
 
         return array_map(fn ($workingGroup) => WorkingGroupSearchResult::createFromArray($workingGroup), $workingGroups);
@@ -155,7 +157,7 @@ class SearchGateway extends BaseGateway
             {$regionRestrictionClause}
             GROUP BY store.id
             ORDER BY is_manager DESC, IF(membership_status = 1, 2, IF(membership_status = 2, 1, 0)) DESC, name ASC
-            LIMIT 30",
+            LIMIT " . self::MAX_SEARCH_RESULT_COUNT,
             [$foodsaverId, $foodsaverId, ...$parameters]);
 
         return array_map(fn ($store) => StoreSearchResult::createFromArray($store), $stores);
@@ -199,7 +201,7 @@ class SearchGateway extends BaseGateway
             AND {$searchClauses}
             {$regionRestrictionClause}
             ORDER BY name ASC
-            LIMIT 30",
+            LIMIT " . self::MAX_SEARCH_RESULT_COUNT,
             $parameters
         );
 
@@ -215,7 +217,7 @@ class SearchGateway extends BaseGateway
      */
     public function searchChats(string $query, int $foodsaverId): array
     {
-        list($searchClauses, $parameters) = $this->generateSearchClauses(['GROUP_CONCAT(foodsaver.name)', 'IFNULL(name, "")'], $query);
+        list($searchClauses, $parameters) = $this->generateSearchClauses(['GROUP_CONCAT(foodsaver.name SEPARATOR "\";\"")', 'IFNULL(name, "")'], $query);
 
         $chats = $this->db->fetchAll("SELECT
                 conversation.id,
@@ -235,10 +237,11 @@ class SearchGateway extends BaseGateway
             JOIN fs_foodsaver AS last_author ON last_author.id = conversation.last_foodsaver_id 
             WHERE has_conversation.foodsaver_id = ? -- Only include own chats
             AND has_member.foodsaver_id != has_conversation.foodsaver_id -- Exclude searching for oneself in chat member lists
+            AND foodsaver.deleted_at IS NULL
             GROUP BY conversation.id
             HAVING {$searchClauses}
-            ORDER BY last DESC
-            LIMIT 30",
+            ORDER BY COUNT(*) ASC, last DESC
+            LIMIT " . self::MAX_SEARCH_RESULT_COUNT,
             [$foodsaverId, ...$parameters]
         );
 
@@ -294,7 +297,7 @@ class SearchGateway extends BaseGateway
             {$regionRestrictionClause}
             {$hasRegionClause}
             ORDER BY time DESC
-            LIMIT 30",
+            LIMIT " . self::MAX_SEARCH_RESULT_COUNT,
             [...$parameters]
         );
 
@@ -326,12 +329,13 @@ class SearchGateway extends BaseGateway
             $searchCriteria[] = 'foodsaver.email';
             $mailReturnClause = 'foodsaver.email,';
         }
-        list($searchClauses, $parameters) = $this->generateSearchClauses($searchCriteria, $query, ['region.name']);
+        list($searchClauses, $parameters) = $this->generateSearchClauses($searchCriteria, $query, ['region.name'], 'foodsaver.hidden_last_name');
 
         $users = $this->db->fetchAll("SELECT
                 foodsaver.id,
                 foodsaver.name,
                 foodsaver.photo,
+                foodsaver.verified AS is_verified,
                 foodsaver.home_region AS region_id,
                 region.name AS region_name,
                 {$mailReturnClause}
@@ -343,8 +347,10 @@ class SearchGateway extends BaseGateway
                 SELECT
                     foodsaver.id,
                     foodsaver.name,
+                    foodsaver.nachname AS hidden_last_name,
                     foodsaver.email,
                     foodsaver.photo,
+                    foodsaver.verified,
                     foodsaver.bezirk_id AS home_region,
                     IF(MAX(NOT ISNULL(ambassador.foodsaver_id) AND region.type != " . UnitType::WORKING_GROUP . ') = 1, foodsaver.handy, null) AS mobile,
                     IF(MAX(NOT ISNULL(ambassador.foodsaver_id) AND region.type != ' . UnitType::WORKING_GROUP . ') = 1, foodsaver.nachname, null) AS last_name,
@@ -363,8 +369,10 @@ class SearchGateway extends BaseGateway
                 SELECT
                     foodsaver.id,
                     foodsaver.name,
+                    foodsaver.nachname AS hidden_last_name,
                     foodsaver.email,
                     foodsaver.photo,
+                    foodsaver.verified,
                     foodsaver.bezirk_id AS home_region,
                     NULL, NULL,
                     1
@@ -378,8 +386,10 @@ class SearchGateway extends BaseGateway
                 SELECT
                     foodsaver.id,
                     foodsaver.name,
+                    foodsaver.nachname AS hidden_last_name,
                     foodsaver.email,
                     foodsaver.photo,
+                    foodsaver.verified,
                     foodsaver.bezirk_id AS home_region,
                     IF(MAX(IF(my_store_team.active = 1, 1, 0)) = 1, foodsaver.handy, null) AS mobile,
                     IF(MAX(IF(my_store_team.verantwortlich = 1, 1, 0)) = 1, foodsaver.nachname, null) AS last_name,
@@ -396,8 +406,10 @@ class SearchGateway extends BaseGateway
                 SELECT
                     foodsaver.id,
                     foodsaver.name,
+                    foodsaver.nachname AS hidden_last_name,
                     foodsaver.email,
                     foodsaver.photo,
+                    foodsaver.verified,
                     foodsaver.bezirk_id AS home_region,
                     NULL, NULL, 0
                 FROM fs_foodsaver_has_conversation AS have_conversation
@@ -411,8 +423,10 @@ class SearchGateway extends BaseGateway
                 SELECT
                     foodsaver.id,
                     foodsaver.name,
+                    foodsaver.nachname AS hidden_last_name,
                     foodsaver.email,
                     foodsaver.photo,
+                    foodsaver.verified,
                     foodsaver.bezirk_id AS home_region,
                     NULL, NULL, 0
                 FROM fs_foodsaver AS foodsaver
@@ -422,8 +436,7 @@ class SearchGateway extends BaseGateway
             WHERE (foodsaver.id = ? OR (foodsaver.id != ? AND ' . $searchClauses . '))
             GROUP BY foodsaver.id
             ORDER BY MAX(foodsaver.is_buddy) DESC, ISNULL(foodsaver.last_name), foodsaver.name, foodsaver.last_name 
-            LIMIT 30
-            ',
+            LIMIT ' . self::MAX_SEARCH_RESULT_COUNT,
             [$foodsaverId, $foodsaverId, $foodsaverId, $foodsaverId, $parameters[0], $parameters[0], $foodsaverId, ...$parameters]
         );
 
@@ -465,6 +478,7 @@ class SearchGateway extends BaseGateway
                 foodsaver.id,
                 foodsaver.name,
                 foodsaver.photo,
+                foodsaver.verified AS is_verified,
                 foodsaver.bezirk_id AS region_id,
                 home_region.name AS region_name,
                 {$lastNameSource} AS last_name,
@@ -477,7 +491,7 @@ class SearchGateway extends BaseGateway
             WHERE ({$searchClauses} OR (foodsaver.id = ?))
             {$regionRestrictionClause}
             ORDER BY foodsaver.name, last_name
-            LIMIT 30",
+            LIMIT " . self::MAX_SEARCH_RESULT_COUNT,
             [...$parameters]
         );
 
@@ -490,18 +504,43 @@ class SearchGateway extends BaseGateway
      * @param array $searchCriteria a list of SQL identifiers the words of the query get matched against
      * @param string $query The search query
      * @param array $detailedSearchCriteria A list of SQL identifiers the words of the query get matched against, only if the size of the query is more than one word. This can be used to allow further specification of search results.
+     * @param ?string $privateSearchCriterium Search criterium not to be disclosed easily
      * @return array a tuple, including the SQL WHERE clause text as the first element, and an array of query parameters in the second
      */
-    private function generateSearchClauses(array $searchCriteria, string $query, array $detailedSearchCriteria = []): array
+    private function generateSearchClauses(array $searchCriteria, string $query, array $detailedSearchCriteria = [], ?string $privateSearchCriterium = null): array
     {
         $query = preg_replace('/[,;+\.\s]+/', ' ', $query);
         $queryTerms = explode(' ', trim($query));
         if (count($queryTerms) > 1) {
             $searchCriteria = array_merge($searchCriteria, $detailedSearchCriteria);
         }
-        $searchCriteria = 'CONCAT(' . implode(',";",', $searchCriteria) . ')';
-        $searchClauses = array_map(fn ($term) => $searchCriteria . ' LIKE CONCAT("%", ?, "%")', $queryTerms);
+        $searchCriteria = 'CONCAT("\"",' . implode(',"\";\"",', $searchCriteria) . ',"\"")'; // String of semicolon separated, enquoted search criteria
+        $placeholders = $queryTerms;
+        $searchClauseFromTerm = fn ($term) => $searchCriteria . ' LIKE CONCAT("%", ?, "%")';
+        if (!empty($privateSearchCriterium)) {
+            // if there is a private search criterion, the search term might also match the start of that.
+            // if the term is short (<= 3 chars) this it is only valid if it matches the whole private criterium,
+            // to make it hard enough to guess last names.
+            // Terms longer than 3 chars are matched agains the start of the private criterium.
+            $searchClauseFromTerm = function ($term) use ($searchCriteria, $privateSearchCriterium) {
+                $searchClause = $searchCriteria . ' LIKE CONCAT("%", ?, "%")';
+                $privateClause = $privateSearchCriterium . ' LIKE ?';
+                if (strlen($term) > 3) { // Match start of private criterium
+                    $privateClause = $privateSearchCriterium . ' LIKE CONCAT(?, "%")';
+                }
 
-        return [implode(' AND ', $searchClauses), $queryTerms];
+                return "(({$searchClause}) OR ({$privateClause}))";
+            };
+            // Each placeholder is needed twice in this case
+            $placeholders = [];
+            foreach ($queryTerms as $term) {
+                $placeholders[] = $term;
+                $placeholders[] = $term;
+            }
+        }
+
+        $searchClauses = array_map($searchClauseFromTerm, $queryTerms);
+
+        return [implode(' AND ', $searchClauses), $placeholders];
     }
 }

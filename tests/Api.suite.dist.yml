@@ -1,0 +1,13 @@
+actor: ApiTester
+modules:
+    enabled:
+        - Asserts
+        - Tests\Support\Helper\Api
+        - Tests\Support\Helper\Foodsharing
+        - Tests\Support\Helper\FoodsharingUrl
+        - Sequence
+        - Tests\Support\Helper\Maildev
+        - Db
+        - REST:
+            url: http://nginx:8080/
+            depends: PhpBrowser

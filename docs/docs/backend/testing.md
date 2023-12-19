@@ -28,7 +28,7 @@ Run the tests with:
 or 
 
 ```
-./scripts/test acceptance LoginCest
+./scripts/test Acceptance LoginCest
 ```
 
 or
