@@ -18,6 +18,27 @@ use Foodsharing\Modules\Search\DTO\WorkingGroupSearchResult;
 class SearchGateway extends BaseGateway
 {
     private const MAX_SEARCH_RESULT_COUNT = 30;
+    private const SEARCH_CRITERIA = [
+        'regions' => ['basic' => ['region.name', 'region.email']],
+        'workingGroups' => ['basic' => ['region.name', 'region.email', 'parent.name']],
+        'stores' => [
+            'basic' => ['store.name', 'IFNULL(chain.name, "")'],
+            'detailed' => ['store.str', 'store.plz', 'store.stadt', 'region.name'],
+        ],
+        'foodSharePoints' => [
+            'basic' => ['share_point.name'],
+            'detailed' => ['share_point.anschrift', 'share_point.plz', 'share_point.ort', 'region.name'],
+        ],
+        'chats' => ['basic' => ['GROUP_CONCAT(foodsaver.name SEPARATOR "\";\"")', 'IFNULL(name, "")']],
+        'threads' => [
+            'basic' => ['thread.name'],
+            'detailed' => ['region.name'],
+        ],
+        'users' => [
+            'basic' => ['foodsaver.name', 'IFNULL(foodsaver.last_name, "")'],
+            'detailed' => ['region.name'],
+        ],
+    ];
 
     public function __construct(Database $db)
     {
@@ -33,7 +54,7 @@ class SearchGateway extends BaseGateway
      */
     public function searchRegions(string $query, int $foodsaverId): array
     {
-        list($searchClauses, $parameters) = $this->generateSearchClauses(['region.name', 'region.email'], $query);
+        list($searchClauses, $parameters) = $this->generateSearchClauses(self::SEARCH_CRITERIA['regions'], $query);
         $workingGroupType = UnitType::WORKING_GROUP;
         $rootRegionId = RegionIDs::ROOT;
 
@@ -64,6 +85,43 @@ class SearchGateway extends BaseGateway
     }
 
     /**
+     * Searches the regions to be part of the local search index.
+     *
+     * @param int $foodsaverId The searching user
+     * @return array<RegionSearchResult>
+     */
+    public function getRegionsForSearchIndex(int $foodsaverId): array
+    {
+        $searchCriteria = $this->generateSearchCriteria(self::SEARCH_CRITERIA['regions'], true, true);
+        $workingGroupType = UnitType::WORKING_GROUP;
+        $rootRegionId = RegionIDs::ROOT;
+
+        $regions = $this->db->fetchAll("SELECT
+                region.id,
+                region.name,
+                region.email,
+                parent.id AS parent_id,
+                parent.name AS parent_name,
+                GROUP_CONCAT(foodsaver.id) AS ambassador_ids,
+                GROUP_CONCAT(foodsaver.name) AS ambassador_names,
+                GROUP_CONCAT(IFNULL(foodsaver.photo, '')) AS ambassador_photos,
+                1 AS is_member,
+                {$searchCriteria} AS search_string
+            FROM fs_bezirk region
+            JOIN fs_foodsaver_has_bezirk has_region ON has_region.bezirk_id = region.id AND has_region.foodsaver_id = ?
+            LEFT OUTER JOIN fs_bezirk parent ON parent.id = region.parent_id
+            LEFT OUTER JOIN fs_botschafter ambassador ON ambassador.bezirk_id = region.id
+            LEFT OUTER JOIN fs_foodsaver foodsaver ON foodsaver.id = ambassador.foodsaver_id
+            WHERE region.type != {$workingGroupType}
+            AND region.id != {$rootRegionId}
+            GROUP BY region.id
+            ORDER BY name ASC",
+            [$foodsaverId]);
+
+        return array_map(fn ($region) => RegionSearchResult::createFromArray($region), $regions);
+    }
+
+    /**
      * Searches the given term in the database of working groups.
      *
      * @param string $query The search query
@@ -73,7 +131,7 @@ class SearchGateway extends BaseGateway
      */
     public function searchWorkingGroups(string $query, int $foodsaverId, bool $searchAllWorkingGroups): array
     {
-        list($searchClauses, $parameters) = $this->generateSearchClauses(['region.name', 'region.email', 'parent.name'], $query);
+        list($searchClauses, $parameters) = $this->generateSearchClauses(self::SEARCH_CRITERIA['workingGroups'], $query);
         $membershipCheck = $searchAllWorkingGroups ? '' : 'AND (NOT ISNULL(has_parent_region.foodsaver_id) OR NOT ISNULL(has_region.foodsaver_id))';
         $workingGroupType = UnitType::WORKING_GROUP;
 
@@ -105,6 +163,45 @@ class SearchGateway extends BaseGateway
         return array_map(fn ($workingGroup) => WorkingGroupSearchResult::createFromArray($workingGroup), $workingGroups);
     }
 
+
+    /**
+     * Searches the working groups to be part of the local search index.
+     *
+     * @param int $foodsaverId The searching user
+     * @return array<WorkingGroupSearchResult>
+     */
+    public function getWorkingGroupsForSearchIndex(int $foodsaverId): array
+    {
+        $searchCriteria = $this->generateSearchCriteria(self::SEARCH_CRITERIA['workingGroups'], true, true);
+        $workingGroupType = UnitType::WORKING_GROUP;
+
+        $workingGroups = $this->db->fetchAll("SELECT
+                region.id,
+                region.name,
+                region.email,
+                parent.id AS parent_id,
+                parent.name AS parent_name,
+                has_region.active AS is_member,
+                MAX(IF(ambassador.foodsaver_id = ?, 1, 0)) AS is_admin,
+                GROUP_CONCAT(foodsaver.id) AS admin_ids,
+                GROUP_CONCAT(foodsaver.name) AS admin_names,
+                GROUP_CONCAT(IFNULL(foodsaver.photo, '')) AS admin_photos,
+                {$searchCriteria} AS search_string
+            FROM fs_bezirk region
+            JOIN fs_bezirk parent ON parent.id = region.parent_id
+            JOIN fs_foodsaver_has_bezirk has_region ON has_region.bezirk_id = region.id AND has_region.foodsaver_id = ?
+            LEFT OUTER JOIN fs_foodsaver_has_bezirk has_parent_region ON has_parent_region.bezirk_id = parent.id AND has_parent_region.foodsaver_id = ?
+            LEFT OUTER JOIN fs_botschafter ambassador ON ambassador.bezirk_id = region.id
+            LEFT OUTER JOIN fs_foodsaver foodsaver ON foodsaver.id = ambassador.foodsaver_id
+            WHERE region.type = {$workingGroupType}
+            GROUP BY region.id
+            ORDER BY is_admin DESC, is_member DESC, name ASC
+            LIMIT " . self::MAX_SEARCH_RESULT_COUNT,
+            [$foodsaverId, $foodsaverId, $foodsaverId]);
+
+        return array_map(fn ($workingGroup) => WorkingGroupSearchResult::createFromArray($workingGroup), $workingGroups);
+    }
+
     /**
      * Searches the given term in the database of stores.
      *
@@ -116,11 +213,7 @@ class SearchGateway extends BaseGateway
      */
     public function searchStores(string $query, int $foodsaverId, bool $includeInactiveStores, bool $searchGlobal): array
     {
-        list($searchClauses, $parameters) = $this->generateSearchClauses(
-            ['store.name', 'IFNULL(chain.name, "")'],
-            $query,
-            ['store.str', 'store.plz', 'store.stadt', 'region.name']
-        );
+        list($searchClauses, $parameters) = $this->generateSearchClauses(self::SEARCH_CRITERIA['stores'], $query);
         $onlyActiveClause = '';
         if (!$includeInactiveStores) {
             $onlyActiveClause = 'AND 
@@ -173,11 +266,7 @@ class SearchGateway extends BaseGateway
      */
     public function searchFoodSharePoints(string $query, int $foodsaverId, bool $searchGlobal): array
     {
-        list($searchClauses, $parameters) = $this->generateSearchClauses(
-            ['share_point.name'],
-            $query,
-            ['share_point.anschrift', 'share_point.plz', 'share_point.ort', 'region.name']
-        );
+        list($searchClauses, $parameters) = $this->generateSearchClauses(self::SEARCH_CRITERIA['foodSharePoints'], $query);
         $regionRestrictionClause = '';
         $hasRegionJoin = '';
         if (!$searchGlobal) {
@@ -217,8 +306,7 @@ class SearchGateway extends BaseGateway
      */
     public function searchChats(string $query, int $foodsaverId): array
     {
-        list($searchClauses, $parameters) = $this->generateSearchClauses(['GROUP_CONCAT(foodsaver.name SEPARATOR "\";\"")', 'IFNULL(name, "")'], $query);
-
+        list($searchClauses, $parameters) = $this->generateSearchClauses(self::SEARCH_CRITERIA['chats'], $query);
         $chats = $this->db->fetchAll("SELECT
                 conversation.id,
                 conversation.name,
@@ -261,7 +349,7 @@ class SearchGateway extends BaseGateway
      */
     public function searchThreads(string $query, int $foodsaverId, int $regionId = 0, int $subforumId = 0, $disableRegionCheck = false): array
     {
-        list($searchClauses, $parameters) = $this->generateSearchClauses(['thread.name'], $query, ['region.name']);
+        list($searchClauses, $parameters) = $this->generateSearchClauses(self::SEARCH_CRITERIA['threads'], $query);
         $regionRestrictionClause = '';
         if ($regionId > 0) {
             $regionRestrictionClause = 'AND has_thread.bezirk_id = ? AND has_thread.bot_theme = ?';
@@ -323,13 +411,12 @@ class SearchGateway extends BaseGateway
         if ($searchGlobal) {
             return $this->searchUsersGlobal($query, null, $includeMails);
         }
-        $searchCriteria = ['foodsaver.name', 'IFNULL(foodsaver.last_name, "")'];
         $mailReturnClause = '';
         if ($includeMails) {
             $searchCriteria[] = 'foodsaver.email';
             $mailReturnClause = 'foodsaver.email,';
         }
-        list($searchClauses, $parameters) = $this->generateSearchClauses($searchCriteria, $query, ['region.name'], 'foodsaver.hidden_last_name');
+        list($searchClauses, $parameters) = $this->generateSearchClauses(self::SEARCH_CRITERIA['users'], $query, 'foodsaver.hidden_last_name');
 
         $users = $this->db->fetchAll("SELECT
                 foodsaver.id,
@@ -453,16 +540,19 @@ class SearchGateway extends BaseGateway
      */
     public function searchUsersGlobal(string $query, ?int $restrictToRegionId = null, bool $includeMails = false, bool $includeLastNames = true): array
     {
-        $searchCriteria = ['foodsaver.name'];
+        $searchCriteria = [
+            'basic' => ['foodsaver.name'],
+            'detailed' => ['home_region.name'],
+        ];
         if ($includeLastNames) {
-            $searchCriteria[] = 'foodsaver.nachname';
+            $searchCriteria['basic'][] = 'foodsaver.nachname';
         }
         $mailReturnClause = '';
         if ($includeMails) {
-            $searchCriteria[] = 'foodsaver.email';
+            $searchCriteria['basic'][] = 'foodsaver.email';
             $mailReturnClause = 'foodsaver.email,';
         }
-        list($searchClauses, $parameters) = $this->generateSearchClauses($searchCriteria, $query, ['home_region.name']);
+        list($searchClauses, $parameters) = $this->generateSearchClauses($searchCriteria, $query);
         $parameters[] = $parameters[0]; // Param for id search
         $regionRestrictionClause = '';
         $hasRegionJoin = '';
@@ -499,22 +589,39 @@ class SearchGateway extends BaseGateway
     }
 
     /**
+     * Generates the SQL CONCAT term used to check search query words against
+     *
+     * @param array $searchCriteria A list of SQL identifiers the words of the query get matched against
+     * @param array $detailedSearchCriteria A list of SQL identifiers the words of the query get matched against, only if the size of the query is more than one word. This can be used to allow further specification of search results.
+     * @return string an SQL CONCAT term
+     */
+    private function generateSearchCriteria(array $searchCriteria, bool $useDetailed, bool $separateDetailed = false): string
+    {
+        $usedCriteria = $searchCriteria['basic'];
+        if ($useDetailed && array_key_exists('detailed', $searchCriteria) && count($searchCriteria['detailed'])) {
+            if ($separateDetailed) {
+                $usedCriteria = array_merge($usedCriteria, ['"!!!"']);
+            }
+            $usedCriteria = array_merge($usedCriteria, $searchCriteria['detailed']);
+        }
+        $searchCriteriaTerm = 'CONCAT("\"",' . implode(',"\";\"",', $usedCriteria) . ',"\"")'; // String of semicolon separated, enquoted search criteria
+        return $searchCriteriaTerm;
+    }
+
+    /**
      * Generates the SQL WHERE clause used to decide, which search results fit the given query.
      *
-     * @param array $searchCriteria a list of SQL identifiers the words of the query get matched against
+     * @param array $searchCriteria An array with lists of SQL identifiers the words of the query get matched against
      * @param string $query The search query
      * @param array $detailedSearchCriteria A list of SQL identifiers the words of the query get matched against, only if the size of the query is more than one word. This can be used to allow further specification of search results.
      * @param ?string $privateSearchCriterium Search criterium not to be disclosed easily
      * @return array a tuple, including the SQL WHERE clause text as the first element, and an array of query parameters in the second
      */
-    private function generateSearchClauses(array $searchCriteria, string $query, array $detailedSearchCriteria = [], ?string $privateSearchCriterium = null): array
+    private function generateSearchClauses(array $searchCriteria, string $query, ?string $privateSearchCriterium = null): array
     {
         $query = preg_replace('/[,;+\.\s]+/', ' ', $query);
         $queryTerms = explode(' ', trim($query));
-        if (count($queryTerms) > 1) {
-            $searchCriteria = array_merge($searchCriteria, $detailedSearchCriteria);
-        }
-        $searchCriteria = 'CONCAT("\"",' . implode(',"\";\"",', $searchCriteria) . ',"\"")'; // String of semicolon separated, enquoted search criteria
+        $searchCriteria = $this->generateSearchCriteria($searchCriteria, count($queryTerms) > 1);
         $placeholders = $queryTerms;
         $searchClauseFromTerm = fn ($term) => $searchCriteria . ' LIKE CONCAT("%", ?, "%")';
         if (!empty($privateSearchCriterium)) {

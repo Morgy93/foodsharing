@@ -103,6 +103,30 @@ class SearchRestController extends AbstractFOSRestController
     }
 
     /**
+     * Returns search index for quick local search of likely searched entities.
+     *
+     * @OA\Tag(name="search")
+     * @Rest\Get("search/index")
+     * @OA\Response(
+     * 		response="200",
+     * 		description="Success.",
+     *      @Model(type=MixedSearchResult::class)
+     * )
+     */
+    public function searchIndexAction(): Response
+    {
+        if (!$this->session->mayRole()) {
+            throw new UnauthorizedHttpException('');
+        }
+
+        $results = $this->searchTransactions->searchIndex();
+
+        return $this->handleView($this->view($results, 200));
+    }
+
+    
+
+    /**
      * Searches in the titles of forum threads in a specific group.
      *
      * @OA\Parameter(name="groupId", in="path", @OA\Schema(type="integer"), description="which forum to return threads for (region or group)")

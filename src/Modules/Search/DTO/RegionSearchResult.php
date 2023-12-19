@@ -60,7 +60,7 @@ class RegionSearchResult extends SearchResult
         $result->parent_name = $data['parent_name'];
         $result->is_member = boolval($data['is_member']);
         $result->ambassadors = self::formatUserList($data, 'ambassador');
-
+        $result->setSearchString($data);
         return $result;
     }
 }

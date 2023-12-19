@@ -68,7 +68,7 @@ class WorkingGroupSearchResult extends SearchResult
         $result->is_member = boolval($data['is_member']);
         $result->is_admin = boolval($data['is_admin']);
         $result->admins = self::formatUserList($data, 'admin');
-
+        $result->setSearchString($data);
         return $result;
     }
 }
