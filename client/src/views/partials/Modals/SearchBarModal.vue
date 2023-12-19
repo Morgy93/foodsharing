@@ -27,6 +27,7 @@
         type="text"
         class="form-control"
         :placeholder="$i18n('search.placeholder')"
+        tabindex="1"
       >
       <i
         class="icon icon-right fas"
