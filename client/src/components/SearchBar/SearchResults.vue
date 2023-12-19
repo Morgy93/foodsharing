@@ -153,7 +153,7 @@ export default {
   },
   computed: {
     isEmpty () {
-      return Object.values(this.results).every(value => value.length === 0)
+      return Object.values(this.results).every(value => !value.length)
     },
     hasMaxSearchResultCount () {
       return Object.values(this.results).some(list => list.length >= MAX_SEARCH_RESULT_COUNT)
