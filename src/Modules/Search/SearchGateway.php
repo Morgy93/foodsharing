@@ -163,7 +163,6 @@ class SearchGateway extends BaseGateway
         return array_map(fn ($workingGroup) => WorkingGroupSearchResult::createFromArray($workingGroup), $workingGroups);
     }
 
-
     /**
      * Searches the working groups to be part of the local search index.
      *
@@ -223,8 +222,8 @@ class SearchGateway extends BaseGateway
         }
         $regionRestrictionClause = '';
         if (!$searchGlobal) {
-            $regionRestrictionClause = 'AND ? IN (has_region.foodsaver_id, kam.foodsaver_id)';
-            $parameters[] = $foodsaverId;
+            $regionRestrictionClause = 'JOIN fs_foodsaver_has_bezirk has_region ON has_region.bezirk_id = store.bezirk_id AND ? IN (has_region.foodsaver_id, kam.foodsaver_id)';
+            array_unshift($parameters, $foodsaverId);
         }
 
         $stores = $this->db->fetchAll("SELECT
@@ -241,13 +240,48 @@ class SearchGateway extends BaseGateway
                 store_team.verantwortlich AS is_manager
             FROM fs_betrieb AS store
             JOIN fs_bezirk region ON region.id = store.bezirk_id
-            JOIN fs_foodsaver_has_bezirk has_region ON has_region.bezirk_id = store.bezirk_id
             LEFT OUTER JOIN fs_key_account_manager AS kam ON kam.chain_id = store.kette_id AND kam.foodsaver_id = ?
+            {$regionRestrictionClause}
             LEFT OUTER JOIN fs_chain AS chain ON chain.id = kam.chain_id
             LEFT OUTER JOIN fs_betrieb_team AS store_team ON store_team.betrieb_id = store.id AND store_team.foodsaver_id = ?
             WHERE {$searchClauses}
             {$onlyActiveClause}
-            {$regionRestrictionClause}
+            GROUP BY store.id
+            ORDER BY is_manager DESC, IF(membership_status = 1, 2, IF(membership_status = 2, 1, 0)) DESC, name ASC
+            LIMIT " . self::MAX_SEARCH_RESULT_COUNT,
+            [$foodsaverId, $foodsaverId, ...$parameters]);
+
+        return array_map(fn ($store) => StoreSearchResult::createFromArray($store), $stores);
+    }
+
+    /**
+     * Searches the stores to be part of the local search index.
+     *
+     * @param int $foodsaverId The searching user
+     * @return array<StoreSearchResult>
+     */
+    public function getStoresForSearchIndex(int $foodsaverId): array
+    {
+        $searchCriteria = $this->generateSearchCriteria(self::SEARCH_CRITERIA['stores'], true, true);
+
+        $stores = $this->db->fetchAll("SELECT
+                store.id,
+                store.name,
+                store.betrieb_status_id AS cooperation_status,
+                store.str AS street,
+                store.plz AS zip,
+                store.stadt AS city,
+                region.id AS region_id,
+                region.name AS region_name,
+                chain.name AS chain_name,
+                store_team.active AS membership_status,
+                store_team.verantwortlich AS is_manager
+            FROM fs_betrieb AS store
+            JOIN fs_bezirk region ON region.id = store.bezirk_id
+            JOIN fs_foodsaver_has_bezirk has_region ON has_region.bezirk_id = store.bezirk_id
+            JOIN fs_betrieb_team AS store_team ON store_team.betrieb_id = store.id AND store_team.foodsaver_id = ?
+            LEFT OUTER JOIN fs_key_account_manager AS kam ON kam.chain_id = store.kette_id AND kam.foodsaver_id = ?
+            LEFT OUTER JOIN fs_chain AS chain ON chain.id = kam.chain_id
             GROUP BY store.id
             ORDER BY is_manager DESC, IF(membership_status = 1, 2, IF(membership_status = 2, 1, 0)) DESC, name ASC
             LIMIT " . self::MAX_SEARCH_RESULT_COUNT,
