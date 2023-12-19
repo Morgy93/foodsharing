@@ -133,9 +133,6 @@ export default {
       this.isIndexLoaded = true
       this.index = await instantSearchIndex()
     },
-    clickOutListener () {
-      this.isOpen = false
-    },
   },
 }
 </script>
