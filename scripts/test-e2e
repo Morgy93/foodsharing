@@ -1,15 +1,10 @@
 #!/usr/bin/env bash
 
-export FS_ENV=test
-
 dir=$(dirname "$0")
 
 # shellcheck source=./__common.sh
 source "$dir"/__common.sh
 
 log-header "Running client e2e tests with playwright"
-npm ci
-npm install playwright
-npx playwright install
-npx playwright test
+PW_TEST_CONNECT_WS_ENDPOINT=ws://127.0.0.1:3005/ npx playwright test
 
