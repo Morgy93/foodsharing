@@ -29,10 +29,8 @@ test.describe("user", () => {
     await page.getByPlaceholder("Beispiel +49 179").fill("+49 123456789");
     await page.getByRole("button", { name: "weiter" }).click();
 
-    await page.getByText("Ich habe die Datenschutzerklä").click();
-    await page
-      .getByText("Ich habe die Rechtsvereinbarung zur Kenntnis genommen")
-      .click();
+    await page.getByRole("checkbox", { name: "acceptGdpr" }).check();
+    await page.getByRole("checkbox", { name: "acceptLegal" }).check();
     await page.getByRole("button", { name: "Anmeldung absenden" }).click();
 
     await page.getByRole("button", { name: "Einloggen", exact: true }).click();

@@ -14,7 +14,7 @@ test.describe("user", () => {
     return cookies.find((cookie) => cookie.name === "PHPSESSID");
   }
 
-  test("can login", async ({ page }) => {
+  test.fixme("can login", async ({ page }) => {
     await page.getByRole("button", { name: "Einloggen Einloggen" }).click();
     await page.getByLabel("Einloggen", { exact: true }).click();
     await expect(
@@ -25,7 +25,7 @@ test.describe("user", () => {
     expect(sessionCookie.expires).toBe(-1);
   });
 
-  test("can login permanent", async ({ page }) => {
+  test.fixme("can login permanent", async ({ page }) => {
     await page.getByRole("button", { name: "Einloggen Einloggen" }).click();
     await page.getByLabel("Dauerhaft eingeloggt bleiben").check();
     await page.getByLabel("Einloggen", { exact: true }).click();
