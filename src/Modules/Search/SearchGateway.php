@@ -19,6 +19,8 @@ use Foodsharing\Modules\Search\DTO\WorkingGroupSearchResult;
 class SearchGateway extends BaseGateway
 {
     private const MAX_SEARCH_RESULT_COUNT = 30;
+    private const MAX_CHATS_IN_SEARCH_INDEX_COUNT = 50;
+    private const MAX_THREADS_IN_SEARCH_INDEX_COUNT = 200;
     private const SEARCH_CRITERIA = [
         'regions' => ['basic' => ['region.name', 'region.email']],
         'workingGroups' => ['basic' => ['region.name', 'region.email', 'parent.name']],
@@ -30,7 +32,7 @@ class SearchGateway extends BaseGateway
             'basic' => ['share_point.name'],
             'detailed' => ['share_point.anschrift', 'share_point.plz', 'share_point.ort', 'region.name'],
         ],
-        'chats' => ['basic' => ['GROUP_CONCAT(foodsaver.name SEPARATOR "\";\"")', 'IFNULL(name, "")']],
+        'chats' => ['basic' => ['GROUP_CONCAT(foodsaver.name SEPARATOR "\";\"")', 'IFNULL(conversation.name, "")']],
         'threads' => [
             'basic' => ['thread.name'],
             'detailed' => ['region.name'],
@@ -405,6 +407,45 @@ class SearchGateway extends BaseGateway
     }
 
     /**
+     * Searches the chats to be part of the local search index.
+     *
+     * @param int $foodsaverId The searching user
+     * @return array<ChatSearchResult>
+     */
+    public function getChatsForSearchIndex(int $foodsaverId): array
+    {
+        $searchCriteria = $this->generateSearchCriteria(self::SEARCH_CRITERIA['chats'], true, true);
+
+        $chats = $this->db->fetchAll("SELECT
+                conversation.id,
+                conversation.name,
+                conversation.last AS last_message_date,
+                conversation.last_foodsaver_id,
+                last_author.name AS last_foodsaver_name,
+                LEFT(conversation.last_message, 120) AS last_message,
+                GROUP_CONCAT(foodsaver.id LIMIT 5) AS member_ids,
+                GROUP_CONCAT(foodsaver.name LIMIT 5) AS member_names,
+                GROUP_CONCAT(foodsaver.photo LIMIT 5) AS member_photos,
+                COUNT(*) AS member_count,
+                {$searchCriteria} AS search_string
+            FROM fs_foodsaver_has_conversation AS has_conversation
+            JOIN fs_conversation AS conversation ON conversation.id = has_conversation.conversation_id
+            JOIN fs_foodsaver_has_conversation AS has_member ON has_member.conversation_id = conversation.id
+            JOIN fs_foodsaver AS foodsaver ON foodsaver.id = has_member.foodsaver_id
+            JOIN fs_foodsaver AS last_author ON last_author.id = conversation.last_foodsaver_id 
+            WHERE has_conversation.foodsaver_id = ? -- Only include own chats
+            AND has_member.foodsaver_id != has_conversation.foodsaver_id -- Exclude searching for oneself in chat member lists
+            AND foodsaver.deleted_at IS NULL
+            GROUP BY conversation.id
+            ORDER BY last DESC
+            LIMIT " . self::MAX_CHATS_IN_SEARCH_INDEX_COUNT,
+            [$foodsaverId]
+        );
+
+        return array_map(fn ($chat) => ChatSearchResult::createFromArray($chat), $chats);
+    }
+
+    /**
      * Searches the given term in the list of forum threads.
      * Use params $regionId and $subforumId to restrict the search to one forum.
      *
@@ -455,6 +496,43 @@ class SearchGateway extends BaseGateway
             ORDER BY time DESC
             LIMIT " . self::MAX_SEARCH_RESULT_COUNT,
             [...$parameters]
+        );
+
+        return array_map(fn ($thread) => ThreadSearchResult::createFromArray($thread), $threads);
+    }
+
+    /**
+     * Searches the threads to be part of the local search index.
+     *
+     * @param int $foodsaverId The searching user
+     * @return array<ThreadSearchResult>
+     */
+    public function getThreadsForSearchIndex(int $foodsaverId): array
+    {
+        $searchCriteria = $this->generateSearchCriteria(self::SEARCH_CRITERIA['threads'], true, true);
+
+        $threads = $this->db->fetchAll("SELECT
+                thread.id,
+                thread.name,
+                post.time,
+                thread.sticky AS is_sticky,
+                thread.status AS is_closed,
+                region.id AS region_id,
+                region.name AS region_name,
+                has_thread.bot_theme AS is_inside_ambassador_forum,
+                {$searchCriteria} AS search_string
+            FROM fs_theme AS thread
+            JOIN fs_bezirk_has_theme AS has_thread ON has_thread.theme_id = thread.id
+            JOIN fs_bezirk AS region ON region.id = has_thread.bezirk_id
+            JOIN fs_theme_post AS post ON post.id = thread.last_post_id
+            JOIN fs_theme_follower AS follower ON follower.theme_id = thread.id AND follower.foodsaver_id = ?
+            JOIN fs_foodsaver_has_bezirk AS has_region ON has_region.bezirk_id = region.id AND has_region.foodsaver_id = ?
+            LEFT OUTER JOIN fs_botschafter AS ambassador ON ambassador.foodsaver_id = has_region.foodsaver_id AND ambassador.bezirk_id = region.id
+            WHERE thread.active = 1
+            AND (NOT ISNULL(ambassador.foodsaver_id) OR has_thread.bot_theme = 0) -- show Bot forums only to bots'
+            ORDER BY time DESC
+            LIMIT " . self::MAX_THREADS_IN_SEARCH_INDEX_COUNT,
+            [$foodsaverId, $foodsaverId]
         );
 
         return array_map(fn ($thread) => ThreadSearchResult::createFromArray($thread), $threads);
@@ -597,6 +675,54 @@ class SearchGateway extends BaseGateway
 
         return array_map(fn ($user) => UserSearchResult::createFromArray($user), $users);
     }
+
+    /**
+     * Searches the users to be part of the local search index.
+     *
+     * @param int $foodsaverId The searching user
+     * @return array<UserSearchResult>
+     */
+    public function getUsersForSearchIndex(int $foodsaverId): array
+    {
+        $searchCriteria = $this->generateSearchCriteria(self::SEARCH_CRITERIA['users'], true, true);
+
+        $users = $this->db->fetchAll("SELECT
+                foodsaver.id,
+                foodsaver.name,
+                foodsaver.photo,
+                foodsaver.verified AS is_verified,
+                foodsaver.home_region AS region_id,
+                region.name AS region_name,
+                foodsaver.last_name AS last_name,
+                foodsaver.mobile AS mobile,
+                foodsaver.is_buddy AS is_buddy,
+                {$searchCriteria} AS search_string
+            FROM (
+                -- Buddies:
+                SELECT
+                    foodsaver.id,
+                    foodsaver.name,
+                    foodsaver.nachname AS hidden_last_name,
+                    foodsaver.email,
+                    foodsaver.photo,
+                    foodsaver.verified,
+                    foodsaver.bezirk_id AS home_region,
+                    NULL AS last_name,
+                    NULL AS mobile,
+                    1 AS is_buddy
+                FROM fs_buddy AS buddy
+                JOIN fs_foodsaver AS foodsaver ON foodsaver.id = buddy.foodsaver_id
+                WHERE buddy.confirmed = 1
+                AND buddy.buddy_id = ?
+            ) foodsaver
+            JOIN fs_bezirk AS region ON region.id = foodsaver.home_region
+            ORDER BY foodsaver.name",
+            [$foodsaverId]
+        );
+
+        return array_map(fn ($user) => UserSearchResult::createFromArray($user), $users);
+    }
+
 
     /**
      * Searches the given term in the list of users.

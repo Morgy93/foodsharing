@@ -71,11 +71,11 @@ class SearchTransactions
         $result = new MixedSearchResult();
         $result->regions = $this->searchGateway->getRegionsForSearchIndex($foodsaverId);
         $result->workingGroups = $this->searchGateway->getWorkingGroupsForSearchIndex($foodsaverId);
-        $result->stores = $this->searchGateway->getStoresForSearchIndex($foodsaverId); // Stores of the user
-        $result->foodSharePoints = $this->searchGateway->getFoodSharePointsForSearchIndex($foodsaverId); // fsps of the user
-        // $result->chats = []; // last 50 chats of the user
-        // $result->threads = []; // last 50 threads of the user
-        // $result->users = []; // buddies
+        $result->stores = $this->searchGateway->getStoresForSearchIndex($foodsaverId);
+        $result->foodSharePoints = $this->searchGateway->getFoodSharePointsForSearchIndex($foodsaverId);
+        $result->chats = $this->searchGateway->getChatsForSearchIndex($foodsaverId);
+        $result->threads = $this->searchGateway->getThreadsForSearchIndex($foodsaverId);
+        $result->users = $this->searchGateway->getUsersForSearchIndex($foodsaverId);
         return $result;
     }
 }
