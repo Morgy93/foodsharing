@@ -2,6 +2,7 @@
 
 namespace Foodsharing\RestApi;
 
+use Codeception\Util\HttpCode;
 use Foodsharing\Lib\Session;
 use Foodsharing\Modules\Buddy\BuddyGateway;
 use Foodsharing\Modules\Buddy\BuddyTransactions;
@@ -83,6 +84,6 @@ class BuddyRestController extends AbstractFOSRestController
 
         $this->buddyTransactions->removeBuddyRequest($userId);
 
-        return $this->handleView($this->view(true, 200));
+        return $this->handleView($this->view(true, HttpCode::OK));
     }
 }
