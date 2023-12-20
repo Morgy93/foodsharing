@@ -46,7 +46,7 @@ class SearchResult
     protected function setSearchString($data): void
     {
         if(array_key_exists('search_string', $data)) {
-            $this->search_string = $data['search_string'];
+            $this->search_string = transliterator_transliterate('Any-Latin; Latin-ASCII; Lower()', $data['search_string']);
         }
     }
 }
