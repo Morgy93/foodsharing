@@ -77,7 +77,7 @@ class UserSearchResult extends SearchResult
         $result->is_buddy = $data['is_buddy'];
         $result->is_verified = $data['is_verified'];
         $result->email = $data['email'] ?? null;
-
+        $result->setSearchString($data);
         return $result;
     }
 }

@@ -84,7 +84,7 @@ class StoreSearchResult extends SearchResult
         $result->membership_status = $data['membership_status'];
         $result->is_manager = boolval($data['is_manager']);
         $result->chain_name = $data['chain_name'];
-
+        $result->setSearchString($data);
         return $result;
     }
 }

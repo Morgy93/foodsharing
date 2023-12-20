@@ -59,7 +59,7 @@ class ThreadSearchResult extends SearchResult
         $result->is_inside_ambassador_forum = boolval($data['is_inside_ambassador_forum']);
         $result->region_id = $data['region_id'];
         $result->region_name = $data['region_name'];
-
+        $result->setSearchString($data);
         return $result;
     }
 }

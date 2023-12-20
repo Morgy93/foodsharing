@@ -51,7 +51,7 @@ class FoodSharePointSearchResult extends SearchResult
         $result->city = $data['city'];
         $result->region_id = $data['region_id'];
         $result->region_name = $data['region_name'];
-
+        $result->setSearchString($data);
         return $result;
     }
 }

@@ -68,7 +68,7 @@ class ChatSearchResult extends SearchResult
         $result->last_message = $data['last_message'];
         $result->member_count = $data['member_count'];
         $result->members = self::formatUserList($data, 'member');
-
+        $result->setSearchString($data);
         return $result;
     }
 }
