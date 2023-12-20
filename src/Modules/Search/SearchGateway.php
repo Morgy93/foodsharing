@@ -6,6 +6,7 @@ use Foodsharing\Modules\Core\BaseGateway;
 use Foodsharing\Modules\Core\Database;
 use Foodsharing\Modules\Core\DBConstants\Region\RegionIDs;
 use Foodsharing\Modules\Core\DBConstants\Store\CooperationStatus;
+use Foodsharing\Modules\Core\DBConstants\StoreTeam\MembershipStatus;
 use Foodsharing\Modules\Core\DBConstants\Unit\UnitType;
 use Foodsharing\Modules\Search\DTO\ChatSearchResult;
 use Foodsharing\Modules\Search\DTO\FoodSharePointSearchResult;
@@ -329,6 +330,36 @@ class SearchGateway extends BaseGateway
             ORDER BY name ASC
             LIMIT " . self::MAX_SEARCH_RESULT_COUNT,
             $parameters
+        );
+
+        return array_map(fn ($foodSharePoint) => FoodSharePointSearchResult::createFromArray($foodSharePoint), $foodSharePoints);
+    }
+
+    /**
+     * Searches the food share points to be part of the local search index.
+     *
+     * @param int $foodsaverId The searching user
+     * @return array<FoodSharePointSearchResult>
+     */
+    public function getFoodSharePointsForSearchIndex(int $foodsaverId): array
+    {
+        $searchCriteria = $this->generateSearchCriteria(self::SEARCH_CRITERIA['foodSharePoints'], true, true);
+
+        $foodSharePoints = $this->db->fetchAll("SELECT
+                share_point.id,
+                share_point.name,
+                share_point.anschrift AS street,
+                share_point.plz AS zip,
+                share_point.ort AS city,
+                region.id AS region_id,
+                region.name AS region_name,
+                {$searchCriteria} AS search_string
+            FROM fs_fairteiler share_point
+            JOIN fs_bezirk region ON region.id = share_point.bezirk_id
+            JOIN fs_fairteiler_follower follower ON follower.fairteiler_id = share_point.id AND follower.foodsaver_id = ?
+            WHERE share_point.status = 1
+            ORDER BY name ASC",
+            [$foodsaverId]
         );
 
         return array_map(fn ($foodSharePoint) => FoodSharePointSearchResult::createFromArray($foodSharePoint), $foodSharePoints);
