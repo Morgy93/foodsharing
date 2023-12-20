@@ -277,20 +277,18 @@ class SearchGateway extends BaseGateway
                 region.name AS region_name,
                 chain.name AS chain_name,
                 store_team.active AS membership_status,
-                store_team.verantwortlich AS is_manager
+                store_team.verantwortlich AS is_manager,
+                {$searchCriteria} AS search_string
             FROM fs_betrieb AS store
             JOIN fs_bezirk region ON region.id = store.bezirk_id
-            JOIN fs_foodsaver_has_bezirk has_region ON has_region.bezirk_id = store.bezirk_id
+            JOIN fs_betrieb_team AS store_team ON store_team.betrieb_id = store.id AND store_team.foodsaver_id = ?
             LEFT OUTER JOIN fs_key_account_manager AS kam ON kam.chain_id = store.kette_id AND kam.foodsaver_id = ?
             LEFT OUTER JOIN fs_chain AS chain ON chain.id = kam.chain_id
-            LEFT OUTER JOIN fs_betrieb_team AS store_team ON store_team.betrieb_id = store.id AND store_team.foodsaver_id = ?
-            WHERE {$searchClauses}
-            {$onlyActiveClause}
-            {$regionRestrictionClause}
+            WHERE store_team.active IN (" . MembershipStatus::MEMBER . "," . MembershipStatus::JUMPER . ")
+            AND store.betrieb_status_id != " . CooperationStatus::PERMANENTLY_CLOSED->value . "
             GROUP BY store.id
-            ORDER BY is_manager DESC, IF(membership_status = 1, 2, IF(membership_status = 2, 1, 0)) DESC, name ASC
-            LIMIT " . self::MAX_SEARCH_RESULT_COUNT,
-            [$foodsaverId, $foodsaverId, ...$parameters]);
+            ORDER BY is_manager DESC, IF(membership_status = 1, 2, IF(membership_status = 2, 1, 0)) DESC, name ASC",
+            [$foodsaverId, $foodsaverId]);
 
         return array_map(fn ($store) => StoreSearchResult::createFromArray($store), $stores);
     }
