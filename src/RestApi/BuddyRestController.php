@@ -33,12 +33,12 @@ class BuddyRestController extends AbstractFOSRestController
     /**
      * Sends a buddy request to a user.
      */
-    #[OA\Tag(name: "buddy")]
-    #[OA\Parameter(name: "userId", in: "path", schema: new OA\Schema(type: "integer"), description: "which user to send the request to")]
-    #[OA\Response(response: "200", description: "Success.", content: new OA\JsonContent(type: "object", properties: [new OA\Property(property: "isBuddy", type: "boolean", description: "whether the other user is now this user's buddy")]))]
-    #[OA\Response(response: "400", description: "Already send a request to that user.")]
-    #[OA\Response(response: "403", description: "Insufficient permissions to send the request.")]
-    #[Rest\Put("buddy/{userId}", requirements: ["userId" => "\d+"])]
+    #[OA\Tag(name: 'buddy')]
+    #[OA\Parameter(name: 'userId', in: 'path', schema: new OA\Schema(type: 'integer'), description: 'which user to send the request to')]
+    #[OA\Response(response: '200', description: 'Success.', content: new OA\JsonContent(type: 'object', properties: [new OA\Property(property: 'isBuddy', type: 'boolean', description: "whether the other user is now this user's buddy")]))]
+    #[OA\Response(response: '400', description: 'Already send a request to that user.')]
+    #[OA\Response(response: '403', description: 'Insufficient permissions to send the request.')]
+    #[Rest\Put('buddy/{userId}', requirements: ['userId' => "\d+"])]
     public function sendRequestAction(int $userId): Response
     {
         if (!$this->session->id()) {
@@ -62,12 +62,12 @@ class BuddyRestController extends AbstractFOSRestController
     /**
      * Removes a buddy request to a user.
      */
-    #[OA\Parameter(name: "userId", in: "path", schema: new OA\Schema(type: "integer"), description: "which user to remove the request to")]
-    #[OA\Response(response: "200", description: "Success.", content: new OA\JsonContent(type: "boolean"))]
-    #[OA\Response(response: "400", description: "Not currently requested to be a buddy of that user.")]
-    #[OA\Response(response: "403", description: "Insufficient permissions to send the request.")]
-    #[OA\Tag(name: "buddy")]
-    #[Rest\Delete("buddy/{userId}", requirements: ["userId" => "\d+"])]
+    #[OA\Parameter(name: 'userId', in: 'path', schema: new OA\Schema(type: 'integer'), description: 'which user to remove the request to')]
+    #[OA\Response(response: '200', description: 'Success.', content: new OA\JsonContent(type: 'boolean'))]
+    #[OA\Response(response: '400', description: 'Not currently requested to be a buddy of that user.')]
+    #[OA\Response(response: '403', description: 'Insufficient permissions to send the request.')]
+    #[OA\Tag(name: 'buddy')]
+    #[Rest\Delete('buddy/{userId}', requirements: ['userId' => "\d+"])]
     public function removeRequestAction(int $userId): Response
     {
         if (!$this->session->id()) {
