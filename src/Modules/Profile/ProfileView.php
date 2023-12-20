@@ -399,6 +399,7 @@ class ProfileView extends View
         ) {
             $infos = $this->renderFoodsaverTeamMemberInformation($infos);
         }
+        $infos = $this->renderOrgaUserInformation($infos);
         $infos = $this->renderSleepingHatInformation($infos);
         $infos = $this->renderAboutMeInternalInformation($infos);
 
@@ -503,6 +504,21 @@ class ProfileView extends View
             $infos[] = [
                 'name' => $this->translator->trans('profile.workgroups_admin', ['{name}' => $this->foodsaver['name']]),
                 'val' => implode(', ', $ambassador),
+            ];
+        }
+
+        return $infos;
+    }
+
+    private function renderOrgaUserInformation(array $infos): array
+    {
+        if ($this->foodsaver['rolle'] >= Role::ORGA) {
+            $infos[] = [
+                'name' => $this->translator->trans('profile.orga_rights', [
+                    '{name}' => $this->foodsaver['name'],
+                    '{wikiurl}' => 'https://wiki.foodsharing.de/Benutzerrolle_:_Orga',
+                ]),
+                'val' => '',
             ];
         }
 

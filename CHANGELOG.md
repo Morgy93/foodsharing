@@ -16,6 +16,8 @@
 - Buddies can now be removed !2919 @AntonBallmaier
 - If youre phone number is invalid, you get informed about that on the dashboard now !2916 @AntonBallmaier
 - When answering posts in the forum, the answered message is now quoted !2937 @AntonBallmaier
+- Permissions as Orga-user are now displayed on users profile pages #1757 !2955 @AntonBallmaier
+- Provision of RestApi for a foodsharepoint for the map bubble !2946 @BibaltiK
 
 ## Changes
 - Changed team state translation from full to closed !2831 @chriswalg
@@ -30,6 +32,7 @@
 - When adding buddies there is now a confirmation pop-up !2919 @AntonBallmaier
 - Change the direction of score voting !2920 @AntonBallmaier
 - Select no value by default in score voting !2920 @AntonBallmaier
+- Show required label for phone number during register !2964 @thomas.hauschild
 
 ## Bugfixes
 - Added error handling for cache helper for bell notifications or other requests !2869 @chriswalg
@@ -73,6 +76,8 @@
 - Update codeception to 5.x !2605 @chriswalg @peter.toennies
 - Updated playwright to 1.40.1 !2948 @thomas.hauschild
 - Added eslint, husky, prettier and documentation for playwright tests !2949 @thomas.hauschild
+- Various playwright config changed, see !2952 @thomas.hauschild
+- Migrations to playwright !2959 !2960 !2961 @thomas.hauschild
 
 ## Development documentation
 

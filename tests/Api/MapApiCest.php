@@ -14,6 +14,7 @@ class MapApiCest
 {
     private $region;
     private $communityPin;
+    private $foodSharePoint;
     private $user;
 
     final public function _before(ApiTester $I): void
@@ -28,6 +29,7 @@ class MapApiCest
         $I->createStore($this->region['id'], null, null, ['lat' => 49.1, 'lon' => 5.2, 'team_status' => TeamSearchStatus::OPEN->value, 'betrieb_status_id' => CooperationStatus::COOPERATION_ESTABLISHED->value]);
         $I->createStore($this->region['id'], null, null, ['lat' => 49.1, 'lon' => 5.2, 'team_status' => TeamSearchStatus::CLOSED->value, 'betrieb_status_id' => CooperationStatus::COOPERATION_ESTABLISHED->value]);
         $I->createStore($this->region['id'], null, null, ['lat' => null, 'lon' => null, 'team_status' => TeamSearchStatus::OPEN->value, 'betrieb_status_id' => CooperationStatus::COOPERATION_ESTABLISHED->value]);
+        $this->foodSharePoint = $I->createFoodSharePoint($this->user['id']);
     }
 
     final public function canFetchMarkersWithoutLogin(ApiTester $I): void
@@ -113,6 +115,18 @@ class MapApiCest
     {
         $I->updateInDatabase('fs_region_pin', ['status' => RegionPinStatus::INACTIVE], ['region_id' => $this->region['id']]);
         $I->sendGet('api/map/regions/' . $this->region['id']);
+        $I->seeResponseCodeIs(HttpCode::NOT_FOUND);
+    }
+
+    public function canFetchFoodSharePointWithoutLogin(ApiTester $I)
+    {
+        $I->sendGet('api/map/foodSharePoint/' . $this->foodSharePoint['id']);
+        $I->seeResponseCodeIs(HttpCode::OK);
+    }
+
+    public function canNotFetchFoodSharePointWithoutLogin(ApiTester $I)
+    {
+        $I->sendGet('api/map/foodSharePoint/' . ($this->foodSharePoint['id'] + 1));
         $I->seeResponseCodeIs(HttpCode::NOT_FOUND);
     }
 }
